@@ -338,7 +338,6 @@
     const qGraphic = document.getElementById('qGraphic');
     if (q.graphic) { qGraphic.innerHTML = q.graphic; qGraphic.style.display = 'block'; }
     else { qGraphic.innerHTML = ''; qGraphic.style.display = 'none'; }
-    renderMath(questionText.parentElement.parentElement || document.body);
     optionsList.innerHTML = '';
     feedback.className = 'feedback';
     feedback.textContent = '';
@@ -350,6 +349,8 @@
       div.addEventListener('click', () => selectAnswer(i, div));
       optionsList.appendChild(div);
     });
+
+    renderMath(questionText.parentElement.parentElement || document.body);
 
     const prevAnswer = answers[current];
     if (prevAnswer !== undefined) lockOptions(prevAnswer);
