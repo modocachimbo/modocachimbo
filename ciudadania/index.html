@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ciudadanía · Modo Cachimbo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #050505; --surface: #0e0e0e; --surface-2: #141414;
+    --border: #232323; --accent: #C6E000; --accent-soft: rgba(198,224,0,0.1);
+    --text: #f2f2f2; --text-dim: #9a9a9a; --text-faint: #5f5f5f;
+  }
+
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px 60px; }
+
+  header.top { display: flex; align-items: center; justify-content: space-between; padding: 26px 0; flex-wrap: wrap; gap: 14px; }
+
+  .back-row { display: flex; align-items: center; gap: 12px; }
+  .back { display: flex; align-items: center; gap: 8px; color: var(--text); text-decoration: none; font-size: 22px; font-weight: 800; font-family: 'Sora', sans-serif; }
+  .back:hover { color: var(--accent); }
+  .back svg { width: 20px; height: 20px; }
+
+  .home-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; border-radius: 12px;
+    border: 1px solid var(--border); color: var(--text);
+    text-decoration: none; flex-shrink: 0;
+    transition: border-color .15s ease, color .15s ease;
+  }
+  .home-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .home-btn svg { width: 17px; height: 17px; fill: currentColor; }
+
+  .auth-row { display: flex; align-items: center; gap: 14px; }
+  .btn-guest {
+    background: var(--accent); color: #0e0e0e;
+    font-family: 'Sora', sans-serif; font-weight: 700; font-size: 13.5px;
+    padding: 9px 20px; border-radius: 100px; text-decoration: none; cursor: default;
+  }
+  .link-login { color: #d8d8d8; text-decoration: none; font-size: 14px; font-weight: 600; }
+  .link-login:hover { color: var(--accent); }
+  .vip-widget { position: relative; }
+  .vip-popover {
+    display: none;
+    position: absolute; top: calc(100% + 10px); right: 0;
+    width: 260px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 16px; z-index: 20;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  }
+  .vip-popover.show { display: block; }
+  .vip-popover p { font-size: 11.5px; color: var(--text-dim); line-height: 1.5; margin-bottom: 10px; }
+  .vip-popover input {
+    width: 100%; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 12px; color: var(--text); font-size: 13px; text-align: center;
+    letter-spacing: 0.5px; font-weight: 600; margin-bottom: 8px; box-sizing: border-box;
+  }
+  .vip-popover input:focus { outline: none; border-color: var(--accent); }
+  .vip-popover input::placeholder { color: var(--text-faint); font-weight: 400; letter-spacing: normal; }
+  .vip-popover button {
+    width: 100%; background: var(--accent); color: #0e0e0e; border: none; border-radius: 10px;
+    padding: 10px; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer;
+  }
+  .vip-popover button:disabled { opacity: 0.6; }
+  .vip-msg { display: none; margin-top: 10px; font-size: 11.5px; line-height: 1.5; padding: 8px 10px; border-radius: 8px; }
+  .vip-msg.show { display: block; }
+  .vip-msg.ok { background: rgba(198,224,0,0.1); color: var(--accent); }
+  .vip-msg.error { background: rgba(224,60,60,0.08); color: #ff8a8a; }
+  .link-login.vip-active { color: var(--accent); }
+
+
+  .section-title {
+    font-family: 'Sora', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    padding: 10px 0 14px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 26px;
+  }
+
+  .courses { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; grid-auto-rows: 1fr; align-items: stretch; }
+  @media (max-width: 900px) { .courses { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px) { .courses { grid-template-columns: 1fr; } }
+
+  .course {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 26px 24px;
+    display: flex;
+    flex-direction: column;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  .course.active:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+  .course .icon { width: 76px; height: 76px; color: var(--accent); margin-bottom: 18px; }
+  .course .icon svg { width: 100%; height: 100%; fill: currentColor; display: block; }
+
+  .course h3 { font-family: 'Sora', sans-serif; font-size: 19px; font-weight: 800; color: var(--accent); }
+
+  .course .rule { width: 26px; height: 3px; background: #fff; border-radius: 2px; margin: 9px 0 auto; }
+
+  .course .btn {
+    margin-top: 20px;
+    align-self: flex-start;
+    background: var(--accent);
+    color: #0e0e0e;
+    text-decoration: none;
+    font-family: 'Sora', sans-serif;
+    font-size: 13.5px;
+    font-weight: 700;
+    padding: 11px 22px;
+    border-radius: 100px;
+  }
+
+  .coffee {
+    margin: 36px 0 0;
+    background: linear-gradient(135deg, var(--surface), var(--surface-2));
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 34px;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+  }
+  .coffee-text { flex: 1; min-width: 240px; }
+  .coffee-text .tag { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 10px; display: block; }
+  .coffee-text h3 { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+  .coffee-text p { color: var(--text-dim); font-size: 13.5px; line-height: 1.65; }
+  .coffee-text p b { color: var(--text); }
+
+  .qr-box {
+    width: 168px; height: 168px; border-radius: 18px;
+    border: 1.5px solid var(--border); background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; overflow: hidden; padding: 8px;
+  }
+  .qr-box img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div class="back-row">
+        <a class="back" href="../areas/ciencias-sociales.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Ciencias Sociales</a>
+        <a class="home-btn" href="../index.html" title="Ir al inicio" aria-label="Ir al inicio"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24.66 24.65"><g id="Capa_2" data-name="Capa 2"><g id="Capa_4" data-name="Capa 4"><path d="M11.88,0h.87a2.91,2.91,0,0,1,1.39.84l9.64,9.65a3.33,3.33,0,0,1,.36.39,2.2,2.2,0,0,1,.31,2.35,2.14,2.14,0,0,1-1.82,1.35c-.68.08-.6,0-.61.67,0,2.28,0,4.57,0,6.85a2.63,2.63,0,0,1-2.65,2.54H15.57c-.65,0-.92-.26-.92-.91V18.19a1.16,1.16,0,0,0-1.24-1.25c-.71,0-1.43,0-2.14,0A1.17,1.17,0,0,0,10,18.25v5.56a.74.74,0,0,1-.83.83H5.27A2.6,2.6,0,0,1,3,23.39a3,3,0,0,1-.42-1.71V14.86a.23.23,0,0,0-.23-.25,2.64,2.64,0,0,1-.74-.1A2.32,2.32,0,0,1,0,12.75v-.87a2.91,2.91,0,0,1,.86-1.42Q5.66,5.67,10.45.88A2.86,2.86,0,0,1,11.88,0Z"/></g></g></svg></a>
+      </div>
+      <div class="auth-row">
+        <a class="btn-guest" title="Próximamente">Invitado</a>
+        <div class="vip-widget">
+          <button class="link-login" id="vipToggle" type="button" style="background:none; border:none; cursor:pointer; font-family: 'Inter', sans-serif;">Ingresar código</button>
+          <div class="vip-popover" id="vipPopover">
+            <p>¿Tienes un código VIP? Desbloquea todos los Repasos o todas las Fijas de una vez.</p>
+            <input type="text" id="vipInput" placeholder="Ej: REPASO-VIP489R" autocomplete="off" autocapitalize="characters">
+            <button id="vipSubmit" type="button">Activar</button>
+            <div class="vip-msg" id="vipMsg"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="section-title">Ciudadanía</div>
+
+    <div class="courses">
+
+      <div class="course active">
+        <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.66 95.79"><g id="Capa_2" data-name="Capa 2"><g id="Capa_4" data-name="Capa 4"><path d="M0,55.64C1.4,54.12,3.36,53.72,5.16,53c.14-.06.3-.09.46-.14,3.2-1,3.18-1,3.21-4.41A15.48,15.48,0,0,0,8,42.77a5.42,5.42,0,0,0-3.46-3.55,5,5,0,0,1-2.08-1.16,1.51,1.51,0,0,1,.6-2.7c1.25-.42,2.52-.76,3.77-1.16.44-.14.9-.28.37-.87C5.07,31,4.31,28,3.87,25a19,19,0,0,1,.8-10,8.5,8.5,0,0,1,7-5.74c7.23-1,14.45-2,21.68-3L58.5,2.72,77.81,0a3.57,3.57,0,0,1,1.52.2l39.88,12c.75.22,1.48.45,1.6,1.38a1.93,1.93,0,0,1-1.18,1.92,4.92,4.92,0,0,1-1.16.6,5.84,5.84,0,0,0-4,4.36,20.55,20.55,0,0,0-.48,7.37,1.44,1.44,0,0,0,1.2,1.41c1.6.49,3.18,1.06,4.74,1.64a11.57,11.57,0,0,1,1.92,1c.43.26.94.59.84,1.2s-.68.71-1.19.84c-1.39.34-2.78.7-4.18,1-.63.15-.77.42-.37,1A13.83,13.83,0,0,1,119.09,44a24.8,24.8,0,0,1-.8,6.64,12,12,0,0,1-4.32,7c.79.26,1.4.43,2,.65a1.47,1.47,0,0,1,.6,2.62,3.38,3.38,0,0,1-1.49,1c-3.39,1-4.35,3.63-4.82,6.72a24.25,24.25,0,0,0,0,5.25,1.21,1.21,0,0,0,1,1.26,38.51,38.51,0,0,1,5,1.71,15,15,0,0,1,1.7.86c.5.3,1.15.6,1,1.33s-.78.72-1.32.85L109.13,82q-28,6.78-56,13.59a6,6,0,0,1-3.38-.12q-21.44-7-42.91-14c-2.68-.87-4.2-2.92-5.29-5.37A27.54,27.54,0,0,1,0,70.49V64.26a12.49,12.49,0,0,1,3.17-6.75C2,57,.88,57.05,0,56.36ZM55.47,30.76c.11-1.13.13-1.93-1.15-2.35C40.65,24,27,19.54,13.34,15.1c-3-1-4.67,0-5.29,3.1a18.87,18.87,0,0,0,.46,9.11c.56,1.89,1.55,3.47,3.69,4,4.66,1.24,9.3,2.56,14,3.86L53.8,43c.6.16,1.24.53,1.27-.64C55.17,38.43,55.34,34.52,55.47,30.76ZM115,44.56a12.21,12.21,0,0,0-.58-4.25c-.82-2.36-2.3-3.13-4.66-2.36Q89,44.68,68.29,51.44a1.42,1.42,0,0,0-1.14,1.65c.18,3.7.31,7.41.44,11.12.07,2.07,0,2.08,2,1.52q20.28-5.67,40.57-11.32a5.1,5.1,0,0,0,3.46-2.85A17.3,17.3,0,0,0,115,44.56ZM51.43,78.33h.28a13.66,13.66,0,0,1,0-1.92,1.7,1.7,0,0,0-1.47-2.13c-2.53-.72-5-1.61-7.52-2.42l-33.68-11a3.4,3.4,0,0,0-1.74-.27c-1.85.34-2.53,1.71-2.9,3.28a20.51,20.51,0,0,0-.12,7.37c.47,3.56,2.22,5.62,6,6.6,13.23,3.48,26.37,7.3,39.55,11,1.43.4,1.61.28,1.62-1.2C51.44,84.55,51.43,81.44,51.43,78.33Zm6.36-38.59a21.54,21.54,0,0,1,0,2.32c-.12,1.07.31,1.2,1.24,1q25.65-6.42,51.32-12.78c.83-.21,1.19-.44,1.07-1.42a21.38,21.38,0,0,1,.54-9.24c.56-1.81.57-1.79-1.33-1.4Q85.19,23.42,59.75,28.62c-1.2.25-1.7.76-1.69,2C58.1,33.73,58,36.88,57.79,39.74Zm7.1,23.07c-.17-2.84-.33-6-.27-9.14,0-1.25-.41-1.8-1.7-2.06C49.75,49,36.59,46.22,23.43,43.51L11.13,41c-.46-.09-1.11-.35-.75.57a20.7,20.7,0,0,1,.91,10.14c-.12,1,.24,1.35,1.19,1.59Q34,58.59,55.44,64c2.75.69,5.5,1.35,8.24,2.07,1,.26,1.33,0,1.22-1C64.83,64.4,64.89,63.76,64.89,62.81ZM54,87.64C54,89.3,54,89.31,55.25,89q25.65-6.39,51.3-12.75c1-.25,1.21-.64,1.11-1.65-.32-3.31-.4-6.62.82-9.81.09-.25.36-.53.18-.77s-.59-.07-.89,0l-22,4.5c-3.52.72-7,1.46-10.54,2.16s-6.67,2.3-10.4,2.28c-3,0-6.09,1.12-9.13,1.75-.69.14-1.24.28-1.26,1.23C54.34,79.83,54.17,83.73,54,87.64Z"/></g></g></svg></div>
+        <h3>Libro</h3>
+        <div class="rule"></div>
+        <a class="btn" href="libros/index.html">Entrar</a>
+      </div>
+
+      <div class="course active">
+        <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 97.34 93.59"><g id="Capa_2" data-name="Capa 2"><g id="Capa_4" data-name="Capa 4"><path d="M0,14.53A18.46,18.46,0,0,1,3.47,6.42a16.86,16.86,0,0,1,23.64-2.8c.62.51.58.81.05,1.33Q16,16,4.8,27.13c-.59.59-.92.51-1.39-.11A17.11,17.11,0,0,1,.32,20.47C.21,20,.11,19.55,0,19.08Z"/><path d="M91.29,48A42.6,42.6,0,0,1,79.62,77.36a.9.9,0,0,0-.06,1.42c1.89,2.38,3.79,4.75,5.6,7.19a4.63,4.63,0,0,1-2.33,7.41,4.34,4.34,0,0,1-4.54-1.15c-1.65-1.71-3-3.71-4.45-5.54-.52-.64-1.06-1.27-1.51-2s-.83-.68-1.47-.27a39.84,39.84,0,0,1-9.54,4.38,43.5,43.5,0,0,1-10.51,1.87,42.24,42.24,0,0,1-22.37-5,23.75,23.75,0,0,1-2.13-1.25c-.62-.43-1-.36-1.47.26-1.67,2.22-3.4,4.41-5.12,6.6a4.94,4.94,0,0,1-3.88,2.22,4.43,4.43,0,0,1-4.25-2.34,4.37,4.37,0,0,1,.26-5c1.42-1.94,2.94-3.81,4.41-5.71.46-.6.9-1.22,1.41-1.78s.4-.81-.05-1.27A40.44,40.44,0,0,1,8.73,63.34C4.16,50.87,5,38.71,11.48,27.13A40.75,40.75,0,0,1,37.62,6.93c14.21-3.65,27.17-.73,38.49,8.65a41.55,41.55,0,0,1,14.6,25.66A54.48,54.48,0,0,1,91.29,48ZM48.61,82.41A34.26,34.26,0,1,0,14.36,48.17,34.2,34.2,0,0,0,48.61,82.41Z"/><path d="M80.54,0c6.63.23,11.75,3.14,14.81,9.06s2.52,11.84-1.19,17.42a.35.35,0,0,1,0,.08c-1,1.32-1,1.32-2.13.16L70.3,5.22c-1-1-1-1,.14-1.87A16.38,16.38,0,0,1,80.54,0Z"/><path d="M32.47,45.47c3,0,6.07,0,9.11,0a1.46,1.46,0,0,0,1.52-.84,4.64,4.64,0,0,1,2-2,1.38,1.38,0,0,0,.78-1.45c0-3.58,0-7.15,0-10.72a2.81,2.81,0,1,1,5.62.11c0,3.57,0,7.14,0,10.72a1.52,1.52,0,0,0,.78,1.45A6.19,6.19,0,0,1,55,49.38a6.12,6.12,0,0,1-5.08,5.13,6.1,6.1,0,0,1-6.57-2.58,1.59,1.59,0,0,0-1.5-.73q-9.24,0-18.49,0c-1.95,0-3.21-1-3.28-2.69-.08-1.81,1.16-3,3.21-3,3.07,0,6.14,0,9.2,0Z"/></g></g></svg></div>
+        <h3>Repaso 2027-I</h3>
+        <div class="rule"></div>
+        <a class="btn" href="repaso.html?year=2027-I">Entrar</a>
+      </div>
+
+      <div class="course active">
+        <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 106.57 97.05"><g id="Capa_2" data-name="Capa 2"><g id="Capa_4" data-name="Capa 4"><path d="M84.33,30.71a7.91,7.91,0,0,1-3.92,7c-.88.55-.89,1-.42,1.77q4.64,7.94,9.21,15.9c2.57,4.47.49,9.63-4.36,10.75a6.52,6.52,0,0,1-6.36-1.81,3.68,3.68,0,0,0-2.38-1.05A74.52,74.52,0,0,0,52,64.88a94.17,94.17,0,0,0-13,3.85c-1.64.61-1.63.6-2.48-.87-4.16-7.2-8.31-14.42-12.51-21.6-.6-1-.5-1.53.42-2.29A86.78,86.78,0,0,0,45.09,20a55.79,55.79,0,0,0,3-6.21,2.21,2.21,0,0,0,.08-1.56A7,7,0,0,1,61,6.66Q65.82,14.81,70.49,23c.43.77.75.86,1.54.43A8.23,8.23,0,0,1,84.33,30.71Z"/><path d="M14.77,81A15,15,0,0,1,7.26,53.14C10.85,51,14.5,49,18.09,46.85c.81-.48,1.26-.48,1.77.42q6.84,12,13.77,23.86c.43.76.39,1.15-.41,1.6-3.58,2-7.12,4.09-10.68,6.14A15.79,15.79,0,0,1,14.77,81Z"/><path d="M47.54,90.66a3,3,0,0,1-1.07,2.48c-.95.88-1.91,1.75-2.87,2.62-2.05,1.87-3.75,1.72-5.47-.49L29.35,83.9c-.57-.75-1.12-1.5-1.72-2.22-.36-.45-.44-.77.15-1.11q4.08-2.32,8.14-4.7c.56-.33.9-.17,1.26.31q4.83,6.3,9.68,12.58A2.72,2.72,0,0,1,47.54,90.66Z"/><path d="M98.28,41.45c-1.66,0-3.32,0-5,0a3.24,3.24,0,0,1-3.48-3.1,3.2,3.2,0,0,1,3.37-3.22c3.31-.06,6.63-.06,9.94,0,2.13,0,3.45,1.34,3.43,3.23s-1.4,3.09-3.54,3.1C101.45,41.46,99.86,41.45,98.28,41.45Z"/><path d="M86.28,3.44a2.75,2.75,0,0,1-.38,1.31c-1.72,3-3.43,6-5.19,9a3.1,3.1,0,0,1-3.49,1.54,3,3,0,0,1-2.16-4.12,99.23,99.23,0,0,1,5.76-10,2.9,2.9,0,0,1,3.51-.9A3.13,3.13,0,0,1,86.28,3.44Z"/><path d="M88.05,21.92a2.85,2.85,0,0,1,1.44-2.61c2.89-1.69,5.77-3.4,8.7-5a3.1,3.1,0,0,1,4.3,1.16,3.14,3.14,0,0,1-1.19,4.32c-2.81,1.67-5.64,3.33-8.51,4.9A3.1,3.1,0,0,1,88.05,21.92Z"/></g></g></svg></div>
+        <h3>Fijas 2027-I</h3>
+        <div class="rule"></div>
+        <a class="btn" href="fijas.html?year=2027-I">Entrar</a>
+      </div>
+
+    </div>
+
+    <section class="coffee">
+      <div class="coffee-text">
+        <span class="tag">Apoya el proyecto</span>
+        <h3>Invítame un café ☕</h3>
+        <p>Este espacio es y seguirá siendo gratuito. Si te sirvió, puedes apoyar con lo que quieras vía Yape escaneando el código QR. Ayuda a que <b>Modo Cachimbo</b> siga creciendo.</p>
+      </div>
+      <div class="qr-box">
+        <img src="../assets/qr-yape.jpeg" alt="QR Yape">
+      </div>
+    </section>
+  </div>
+<script>
+function jsonpRequest(url) {
+  return new Promise(function (resolve, reject) {
+    var callbackName = 'jsonp_cb_' + Math.random().toString(36).slice(2);
+    var script = document.createElement('script');
+    var timeoutId;
+
+    window[callbackName] = function (data) {
+      resolve(data);
+      cleanup();
+    };
+
+    function cleanup() {
+      clearTimeout(timeoutId);
+      delete window[callbackName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+
+    script.onerror = function () { reject(new Error('jsonp error')); cleanup(); };
+    timeoutId = setTimeout(function () { reject(new Error('timeout')); cleanup(); }, 10000);
+
+    var sep = url.indexOf('?') === -1 ? '?' : '&';
+    script.src = url + sep + 'callback=' + callbackName;
+    document.body.appendChild(script);
+  });
+}
+
+  // ===== Widget de código VIP (header) =====
+  (function () {
+    var VIP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyztYgFAYuPTOcXyTlkhrooG6wP9WhJGZsHk-M1mJgM2ggOOUX8JOuewax_vXSylrAJ/exec';
+
+    var toggle = document.getElementById('vipToggle');
+    var popover = document.getElementById('vipPopover');
+    var input = document.getElementById('vipInput');
+    var submit = document.getElementById('vipSubmit');
+    var msg = document.getElementById('vipMsg');
+
+    function actualizarEstadoBoton() {
+      var repasoVip = localStorage.getItem('unlocked_repaso-VIP') === '1';
+      var fijasVip = localStorage.getItem('unlocked_fijas-VIP') === '1';
+      if (repasoVip && fijasVip) {
+        toggle.textContent = '✓ VIP total activo';
+        toggle.classList.add('vip-active');
+      } else if (repasoVip) {
+        toggle.textContent = '✓ VIP Repasos activo';
+        toggle.classList.add('vip-active');
+      } else if (fijasVip) {
+        toggle.textContent = '✓ VIP Fijas activo';
+        toggle.classList.add('vip-active');
+      }
+    }
+    actualizarEstadoBoton();
+
+    toggle.addEventListener('click', function () {
+      popover.classList.toggle('show');
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!popover.contains(e.target) && e.target !== toggle) {
+        popover.classList.remove('show');
+      }
+    });
+
+    async function activarVip() {
+      var codigo = input.value.trim().toUpperCase();
+      msg.classList.remove('show', 'ok', 'error');
+
+      if (!codigo) {
+        msg.textContent = 'Ingresa un código.';
+        msg.classList.add('show', 'error');
+        return;
+      }
+
+      submit.disabled = true;
+      submit.textContent = 'Verificando…';
+
+      try {
+        var url = VIP_SCRIPT_URL + '?modo=vip&codigo=' + encodeURIComponent(codigo);
+        var data = await jsonpRequest(url);
+
+        if (data.success) {
+          localStorage.setItem('unlocked_' + data.categoria + '-VIP', '1');
+          msg.textContent = data.message;
+          msg.classList.add('show', 'ok');
+          actualizarEstadoBoton();
+          input.value = '';
+        } else {
+          msg.textContent = data.message || 'Código inválido.';
+          msg.classList.add('show', 'error');
+        }
+      } catch (err) {
+        msg.textContent = 'No se pudo verificar. Revisa tu conexión.';
+        msg.classList.add('show', 'error');
+      }
+
+      submit.disabled = false;
+      submit.textContent = 'Activar';
+    }
+
+    submit.addEventListener('click', activarVip);
+    input.addEventListener('keydown', function (e) { if (e.key === 'Enter') activarVip(); });
+  })();
+
+</script>
+</body>
+</html>
