@@ -124,7 +124,11 @@
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
   function formatQText(str) {
-    return escapeHtml(str).replace(/\*(.+?)\*/g, '<em>$1</em>');
+    let esc = escapeHtml(str);
+    esc = esc.replace(/&lt;u&gt;(.+?)&lt;\/u&gt;/g, '<u>$1</u>');
+    esc = esc.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    esc = esc.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    return esc;
   }
 
   const params = new URLSearchParams(window.location.search);

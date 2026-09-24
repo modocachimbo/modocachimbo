@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Libros · Historia del Perú CPU · Modo Cachimbo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #050505; --surface: #0e0e0e; --surface-2: #141414;
+    --border: #232323; --accent: #C6E000; --accent-soft: rgba(198,224,0,0.1);
+    --text: #f2f2f2; --text-dim: #9a9a9a; --text-faint: #5f5f5f;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px 60px; }
+  header.top { display: flex; align-items: center; justify-content: space-between; padding: 26px 0; }
+  .back { display: flex; align-items: center; gap: 8px; color: var(--text-dim); text-decoration: none; font-size: 14px; font-weight: 500; }
+  .home-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 9px;
+    border: 1px solid var(--border); color: var(--text-dim);
+    text-decoration: none; margin-left: 12px; flex-shrink: 0;
+  }
+  .home-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .home-btn svg { width: 15px; height: 15px; }
+  .back-row { display: flex; align-items: center; }
+
+  .back:hover { color: var(--accent); }
+  .back svg { width: 16px; height: 16px; }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+  .logo span { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 15px; }
+  .page-title { padding: 20px 0 8px; }
+  .page-title .eyebrow { font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .page-title h1 { font-family: 'Sora', sans-serif; font-weight: 800; font-size: clamp(28px, 5vw, 42px); margin-top: 8px; }
+  .page-title p { color: var(--text-dim); font-size: 14px; margin-top: 10px; max-width: 560px; line-height: 1.6; }
+
+  .years-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 30px 0 20px; }
+  @media (max-width: 760px) { .years-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .year-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    padding: 20px 18px; text-decoration: none; color: inherit;
+    display: flex; flex-direction: column; gap: 8px;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  .year-card.active:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .year-card .yr { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 800; }
+  .year-card .count { font-size: 12px; color: var(--accent); font-weight: 600; }
+  .year-card.disabled { opacity: 0.38; cursor: default; pointer-events: none; }
+  .year-card.disabled .count { color: var(--text-faint); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div class="back-row">
+        <a class="back" href="../index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Historia del Perú</a>
+        <a class="home-btn" href="../../index.html" title="Ir al inicio" aria-label="Ir al inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg></a>
+      </div>
+      <div class="logo"><div class="dot"></div><span>Libros</span></div>
+    </header>
+
+    <div class="page-title">
+      <div class="eyebrow">Historia del Perú · Libros</div>
+      <h1>Elige un año</h1>
+      <p>Cada año trae un temario de 10 temas. Dentro de cada tema hay 10 preguntas con su respuesta marcada y un botón para practicar.</p>
+    </div>
+
+    <div class="years-grid" id="yearsGrid"></div>
+  </div>
+
+<script>
+  const allYears = [
+    "2027-III","2027-II","2027-I",
+    "2026-III","2026-II","2026-I",
+    "2025-III","2025-II","2025-I",
+    "2024-III","2024-II","2024-I",
+    "2023-III","2023-II","2023-I",
+    "2022-III","2022-II","2022-I",
+    "2021-III","2021-II","2021-I",
+    "2020-III","2020-II","2020-I",
+    "2019-III","2019-II","2019-I",
+    "2018-III","2018-II","2018-I",
+    "2017-III","2017-II","2017-I",
+    "2016-III","2016-II","2016-I",
+    "2015-III","2015-II","2015-I"
+  ];
+
+  const grid = document.getElementById('yearsGrid');
+
+  fetch('data/manifest.json')
+    .then(r => r.json())
+    .then(manifest => {
+      const activeMap = {};
+      manifest.forEach(m => { activeMap[m.id] = m; });
+
+      allYears.forEach(id => {
+        const info = activeMap[id];
+        const active = !!info;
+        const a = document.createElement(active ? 'a' : 'div');
+        a.className = 'year-card ' + (active ? 'active' : 'disabled');
+        if (active) a.href = 'temario.html?year=' + encodeURIComponent(id);
+        a.innerHTML = `<div class="yr">${id}</div><div class="count">${active ? info.temas + ' temas' : 'Próximamente'}</div>`;
+        grid.appendChild(a);
+      });
+    })
+    .catch(() => {
+      grid.innerHTML = '<div class="state-msg" style="grid-column:1/-1;">No se pudo cargar la lista de libros.</div>';
+    });
+</script>
+</body>
+</html>

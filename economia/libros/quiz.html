@@ -213,8 +213,11 @@
 
   // Escapa HTML y convierte *texto* en cursiva (para nombres científicos, etc.)
   function formatQText(str) {
-    const esc = str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    return esc.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    let esc = str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    esc = esc.replace(/&lt;u&gt;(.+?)&lt;\/u&gt;/g, '<u>$1</u>');
+    esc = esc.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    esc = esc.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    return esc;
   }
 
   function shuffle(arr) {
@@ -357,7 +360,6 @@
     const q = activeQuestions[current];
     topicText.textContent = q.topic || 'Economía';
     questionText.innerHTML = formatQText(q.text);
-    renderMath(quizBody);
     optionsList.innerHTML = '';
     feedback.className = 'feedback';
     feedback.textContent = '';
@@ -369,6 +371,8 @@
       div.addEventListener('click', () => selectAnswer(i, div));
       optionsList.appendChild(div);
     });
+
+    renderMath(quizBody);
 
     const prevAnswer = answers[current];
     if (prevAnswer !== undefined) lockOptions(prevAnswer);
