@@ -185,6 +185,8 @@
   .endscreen .score { font-family: 'Sora', sans-serif; font-size: 40px; font-weight: 800; color: var(--accent); margin: 14px 0; }
 
   .state-msg { text-align: center; color: var(--text-dim); font-size: 13px; padding: 40px 24px; }
+  .q-graphic { margin: 4px 0 16px; display: flex; justify-content: center; background: #fff; border-radius: 12px; padding: 12px; }
+  .q-graphic svg { max-width: 100%; height: auto; display: block; }
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
@@ -451,6 +453,7 @@ function jsonpRequest(url) {
     `;
     quizBody.innerHTML = `
       <div class="badge" id="topicBadge"><span class="dot"></span><span id="topicText"></span></div>
+      <div class="q-graphic" id="qGraphic" style="display:none;"></div>
       <div class="question"><p id="questionText"></p></div>
       <div class="options" id="optionsList"></div>
       <div class="feedback" id="feedback"></div>
@@ -506,6 +509,9 @@ function jsonpRequest(url) {
     const q = activeQuestions[current];
     topicText.textContent = q.topic || 'Física';
     questionText.innerHTML = formatQText(q.text);
+    const qGraphic = document.getElementById('qGraphic');
+    if (q.graphic) { qGraphic.innerHTML = q.graphic; qGraphic.style.display = 'block'; }
+    else { qGraphic.innerHTML = ''; qGraphic.style.display = 'none'; }
     optionsList.innerHTML = '';
     feedback.className = 'feedback';
     feedback.textContent = '';
