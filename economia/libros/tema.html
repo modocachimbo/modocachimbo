@@ -169,7 +169,7 @@
               ${isCorrect ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
             </div>`;
           });
-          div.innerHTML = `<div class="qnum">${idx + 1}</div>${q.graphic ? `<div class="q-graphic">${q.graphic}</div>` : ''}<div class="qtext">${formatQText(q.text).replace(/\n/g,'<br>')}</div>${optsHtml}`;
+          div.innerHTML = `<div class="qnum">${idx + 1}</div><div class="qtext">${formatQText(q.text).replace(/\n/g,'<br>')}</div>${q.graphic ? `<div class="q-graphic">${q.graphic}</div>` : ''}${optsHtml}`;
           renderMath(div);
           qlistEl.appendChild(div);
         });

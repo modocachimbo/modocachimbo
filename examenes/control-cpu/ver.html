@@ -247,7 +247,7 @@
             </div>`;
           });
           const temaTag = q.asignatura ? `<div class="qtema">${q.asignatura}</div>` : (q.tema ? `<div class="qtema">${q.tema}</div>` : '');
-          div.innerHTML = `<div class="qnum-row"><div class="qnum">${q.num || ''}</div>${temaTag}</div>${q.graphic ? `<div class="q-graphic">${q.graphic}</div>` : ''}<div class="qtext">${q.text.replace(/\n/g,'<br>')}</div>${optsHtml}`;
+          div.innerHTML = `<div class="qnum-row"><div class="qnum">${q.num || ''}</div>${temaTag}</div><div class="qtext">${q.text.replace(/\n/g,'<br>')}</div>${q.graphic ? `<div class="q-graphic">${q.graphic}</div>` : ''}${optsHtml}`;
 
           if (q.solution_html) {
             const btn = document.createElement('button');
