@@ -95,6 +95,11 @@
     .then(manifest => {
       const activeMap = {};
       manifest.forEach(m => { activeMap[m.id] = m; });
+      // años nuevos publicados desde el panel que aún no están en la lista
+      const rom = { I: 1, II: 2, III: 3 };
+      const orden = id => { const x = String(id).match(/^(\d{4})-(III|II|I)$/); return x ? +x[1] * 10 + rom[x[2]] : 0; };
+      manifest.forEach(m => { if (!allYears.includes(m.id)) allYears.push(m.id); });
+      allYears.sort((a, b) => orden(b) - orden(a));
 
       allYears.forEach(id => {
         const info = activeMap[id];

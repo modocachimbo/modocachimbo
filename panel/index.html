@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Panel admin · Modo Cachimbo</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -179,8 +182,64 @@
   .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 200; background: #1b1b1b; border: 1px solid #333; color: var(--text); font-size: 13.5px; font-weight: 600; padding: 12px 18px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.5); animation: pop .25s ease; max-width: calc(100% - 32px); }
   .toast.bad { border-color: rgba(224,60,60,0.5); color: #ffc2c2; }
 
+  /* Zona de imagen */
+  .izona { margin-top: 10px; border-radius: 12px; }
+  .izona.drag { outline: 2px dashed var(--accent); outline-offset: 2px; }
+  .izona.cargando { opacity: .5; pointer-events: none; }
+  .iz-prev { background: #fff; border-radius: 12px; padding: 10px; display: flex; justify-content: center; }
+  .iz-prev img, .iz-prev svg { max-width: 100%; max-height: 340px; height: auto; display: block; }
+  .iz-bar { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .iz-info { font-size: 12px; color: var(--text-faint); margin-right: auto; }
+  .iz-vacia { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border: 1px dashed #2c2c2c; border-radius: 12px; padding: 10px 12px; font-size: 12.5px; color: var(--text-faint); }
+  .iz-vacia.armada { border-color: var(--accent); color: var(--text); background: var(--accent-soft); padding: 16px; justify-content: center; }
+  .iz-link { background: none; border: none; color: var(--accent); font-weight: 700; cursor: pointer; font-size: inherit; text-decoration: underline; padding: 0; }
+  .iz-hint { font-size: 12px; }
+
+  /* Subir tema */
+  .formato { background: #0a0a0a; border: 1px solid #1f1f1f; border-radius: 12px; padding: 12px 14px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: #bdbdbd; line-height: 1.6; white-space: pre-wrap; margin-top: 10px; }
+  details.fmt summary { cursor: pointer; font-size: 13px; color: var(--accent); font-weight: 600; margin: 4px 0; }
+  .ta.big { min-height: 320px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; }
+  .row-btns { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+  .filebtn { position: relative; overflow: hidden; }
+  .filebtn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .meta-grid { display: grid; grid-template-columns: 1.3fr 1fr .6fr 2fr; gap: 10px; }
+  .meta-grid label { display: flex; flex-direction: column; gap: 6px; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-faint); font-weight: 700; }
+  .inp { background: #0a0a0a; border: 1px solid #2a2a2a; border-radius: 10px; padding: 10px 12px; color: var(--text); font-size: 14px; width: 100%; }
+  .inp:focus { outline: none; border-color: var(--accent); }
+  select.inp { appearance: none; background-image: linear-gradient(45deg, transparent 50%, #777 50%), linear-gradient(135deg, #777 50%, transparent 50%); background-position: calc(100% - 16px) 50%, calc(100% - 11px) 50%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 28px; }
+  .pcard { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 20px 22px; margin-bottom: 12px; }
+  .pcard.bad { border-color: rgba(224,60,60,0.45); }
+  .qnum2 { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 9px; background: var(--accent-soft); color: var(--accent); font-family: 'Sora', sans-serif; font-weight: 800; font-size: 13px; margin-bottom: 12px; }
+  .perr { font-size: 12.5px; color: var(--red); background: rgba(224,60,60,0.08); border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; }
+  .ptext { font-size: 14.5px; line-height: 1.7; color: #ececec; margin-bottom: 6px; }
+  .popt { display: flex; align-items: center; gap: 12px; padding: 9px 4px; font-size: 13.5px; color: var(--text-dim); border-top: 1px solid #1a1a1a; }
+  .popt .l { width: 24px; height: 24px; border-radius: 7px; display: flex; align-items: center; justify-content: center; background: var(--surface-2); font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .popt.ok { color: #f5ffcc; font-weight: 600; }
+  .popt.ok .l { background: var(--accent); color: #0e0e0e; }
+  .popt .chk { margin-left: auto; color: var(--accent); font-weight: 800; }
+  .pimg { margin: 10px 0 12px; }
+  .pubbar { position: sticky; bottom: 0; z-index: 15; margin-top: 16px; background: rgba(5,5,5,0.94); backdrop-filter: blur(6px); border-top: 1px solid #1a1a1a; padding: 14px 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .pubbar #subResumen { font-size: 13.5px; color: var(--text-dim); }
+  .pubbar #subResumen .bad { color: var(--red); }
+  .modo-op { border: 1px solid var(--border); background: #0b0b0b; border-radius: 14px; padding: 14px 16px; margin-top: 10px; cursor: pointer; display: flex; flex-direction: column; gap: 4px; }
+  .modo-op:hover { border-color: var(--accent); }
+  .modo-op b { font-size: 14.5px; }
+  .modo-op span { font-size: 13px; color: var(--text-dim); }
+  .katex { font-size: 1.05em; }
+
+  /* Acciones de tema y botones de peligro */
+  .tema-acc { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: -4px 0 14px; }
+  .tema-acc .ttl { margin-right: auto; font-size: 13.5px; color: var(--text-dim); }
+  .tema-acc .ttl b { color: var(--text); }
+  .rbtn.danger { color: var(--red); border-color: rgba(224,60,60,0.3); }
+  .rbtn.danger:hover { background: rgba(224,60,60,0.1); color: #ffb3b3; }
+  .rbtn.danger.confirm { background: #c43d3d; border-color: #c43d3d; color: #fff; }
+  .mfoot .izq { margin-right: auto; }
+
+  @media (max-width: 760px) { .meta-grid { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 600px) {
     .wrap { padding: 0 16px; }
+    .pcard { padding: 18px 16px; }
     .rgrid { grid-template-columns: 1fr; }
     .rcard { padding: 18px 16px; }
     .big-count { text-align: left; }
@@ -223,6 +282,7 @@
     <section id="panelView" hidden>
       <nav class="tabs" role="tablist">
         <button class="tab on" data-tab="reportes" type="button">Reportes <span class="badge" id="badgePend" hidden>0</span></button>
+        <button class="tab" data-tab="subir" type="button">Subir tema</button>
         <button class="tab" data-tab="editar" type="button">Editar preguntas</button>
         <button class="tab" data-tab="corr" type="button">Correcciones <span class="badge" id="badgeRev" hidden>0</span></button>
       </nav>
@@ -244,6 +304,78 @@
         <div class="toolbar"><input class="search" id="search" type="search" placeholder="Buscar por pregunta, tema o comentario…"></div>
         <div class="chips last" id="chips"></div>
         <div id="list"></div>
+      </div>
+
+      <!-- Subir tema -->
+      <div id="tab-subir" hidden>
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Nuevo contenido</div>
+            <h1>Subir tema</h1>
+            <p>Pega las preguntas en tu formato de siempre. Revisas la vista previa, agregas imágenes y publicas.</p>
+          </div>
+        </div>
+
+        <div id="subPaso1">
+          <textarea class="ta big" id="subTexto" spellcheck="false" placeholder="CURSO: Lenguaje
+CICLO: 2027-I
+TEMA: 02 - Nombre del tema
+
+PREGUNTA 1:
+Enunciado de la pregunta…
+A) Alternativa
+B) Alternativa correcta ✅
+C) Alternativa
+D) Alternativa
+E) Alternativa"></textarea>
+          <div class="row-btns">
+            <button type="button" class="btn-main" id="subRevisar">Revisar preguntas →</button>
+            <label class="btn-ghost filebtn">Subir archivo .txt / .md<input type="file" id="subArchivo" accept=".txt,.md,text/plain,text/markdown"></label>
+            <span class="hint">Tu texto se guarda solo mientras no cierres la pestaña.</span>
+          </div>
+          <details class="fmt" style="margin-top:16px;">
+            <summary>Ver el formato y los trucos (ecuaciones, cursiva, clave)</summary>
+            <div class="formato">CURSO: Química                 ← nombre del curso
+CICLO: 2027-I                  ← 2027-I, 2027-II o 2027-III
+TEMA: 03 - Estequiometría      ← número y nombre
+
+PREGUNTA 1:
+Calcule la masa de $H_2O$ que se forma a partir de $4\ g$ de $H_2$.
+A) 18 g
+B) 36 g ✅                      ← la ✅ marca la correcta (también ✔ o ✓)
+C) 9 g
+D) 72 g
+E) 27 g
+
+PREGUNTA 2:
+…
+CLAVE: C                        ← (opcional) en lugar de la ✅
+
+Ecuaciones:  $x^2$   $\frac{a}{b}$   $\sqrt{16}$   $H_2SO_4$   $\Delta H$   $10^{-3}$
+Cursiva: *Homo sapiens*     Negrita: **importante**     Subrayado: &lt;u&gt;texto&lt;/u&gt;
+Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div>
+          </details>
+        </div>
+
+        <div id="subPaso2" hidden>
+          <div class="picker">
+            <div class="meta-grid">
+              <label>Curso<select class="inp" id="subCurso"></select></label>
+              <label>Ciclo<input class="inp" id="subCiclo" placeholder="2027-I"></label>
+              <label>Tema N°<input class="inp" id="subNum" placeholder="02" inputmode="numeric"></label>
+              <label>Nombre del tema<input class="inp" id="subNombre" placeholder="Nombre del tema"></label>
+            </div>
+          </div>
+          <div id="subAvisos"></div>
+          <div id="subLista"></div>
+          <div class="pubbar">
+            <button type="button" class="btn-ghost" id="subVolver">← Volver al texto</button>
+            <span id="subResumen"></span>
+            <button type="button" class="btn-main" id="subPublicar" disabled>Publicar tema</button>
+          </div>
+        </div>
+
+        <div id="subListo" hidden></div>
       </div>
 
       <!-- Editar preguntas -->
@@ -378,7 +510,8 @@
   /* ---------- pestañas ---------- */
   document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
-    ['reportes', 'editar', 'corr'].forEach(id => { $('tab-' + id).hidden = id !== t.dataset.tab; });
+    ['reportes', 'subir', 'editar', 'corr'].forEach(id => { $('tab-' + id).hidden = id !== t.dataset.tab; });
+    if (t.dataset.tab === 'subir') initSubir();
     if (t.dataset.tab === 'editar') renderPicker();
     if (t.dataset.tab === 'corr') cargarCorrecciones();
   }));
@@ -519,16 +652,68 @@
   function renderPreguntas(temas) {
     const t = temas.find(x => pad2(x.num) === sel.tema);
     if (!t) { $('qlist').innerHTML = '<div class="state-msg">Elige un tema.</div>'; return; }
-    $('qlist').innerHTML = t.questions.map((q, i) => {
+    const url = SITE_ROOT + sel.carpeta + '/libros/tema.html?year=' + encodeURIComponent(sel.anio) + '&tema=' + encodeURIComponent(t.num);
+    $('qlist').innerHTML = `
+      <div class="tema-acc">
+        <span class="ttl"><b>Tema ${esc(t.num)} · ${esc(t.name)}</b> — ${t.questions.length} preguntas</span>
+        <a class="rbtn link" href="${esc(url)}" target="_blank" rel="noopener">Ver en la web ${ICON_EXT}</a>
+        <button class="rbtn" type="button" id="btnRenombrar">Renombrar</button>
+        <button class="rbtn danger" type="button" id="btnBorrarTema">Borrar tema</button>
+      </div>` + t.questions.map((q, i) => {
       const o = q.options[q.correct];
       return `<div class="qrow">
         <div class="num">${i + 1}</div>
-        <div class="body"><div class="t">${esc(plano(q.text))}</div><div class="k">Clave: <b>${o ? esc(o.letter + ') ' + plano(o.text)) : '—'}</b></div></div>
+        <div class="body"><div class="t">${q.graphic ? '🖼 ' : ''}${esc(plano(q.text))}</div><div class="k">Clave: <b>${o ? esc(o.letter + ') ' + plano(o.text)) : '—'}</b></div></div>
         <button class="rbtn" type="button" data-n="${i + 1}">${ICON_EDIT} Editar</button>
       </div>`;
     }).join('');
     $('qlist').querySelectorAll('[data-n]').forEach(b => b.addEventListener('click', () =>
       abrirEditor({ carpeta: sel.carpeta, curso: NOMBRE[sel.carpeta], anio: sel.anio, tema: sel.tema, n: +b.dataset.n })));
+    $('btnRenombrar').addEventListener('click', () => renombrarTema(t));
+    $('btnBorrarTema').addEventListener('click', () => borrarTema(t));
+  }
+
+  // Mini ventana para escribir un dato; resuelve con el texto o null
+  function pedirTexto({ titulo, sub, valor = '', placeholder = '', boton = 'Guardar', peligro = false, exacto = null }) {
+    return new Promise(resolve => {
+      const o = document.createElement('div');
+      o.className = 'ov';
+      o.innerHTML = `<div class="mcard" style="max-width:480px;">
+        <h3>${esc(titulo)}</h3><p class="sub" style="margin-top:6px; line-height:1.55;">${sub}</p>
+        <input class="inp" id="ptIn" style="margin-top:16px;" value="${esc(valor)}" placeholder="${esc(placeholder)}" autocomplete="off">
+        <div class="mfoot"><button type="button" class="btn-ghost" data-x>Cancelar</button>
+        <button type="button" class="btn-main" data-ok ${peligro ? 'style="background:#c43d3d;color:#fff;"' : ''}>${esc(boton)}</button></div></div>`;
+      document.body.appendChild(o);
+      const inp = o.querySelector('#ptIn'), ok = o.querySelector('[data-ok]');
+      const check = () => { ok.disabled = exacto ? inp.value.trim() !== exacto : !inp.value.trim() || inp.value.trim() === valor; };
+      inp.addEventListener('input', check); check();
+      inp.focus(); inp.select();
+      const fin = v => { o.remove(); resolve(v); };
+      o.querySelector('[data-x]').addEventListener('click', () => fin(null));
+      ok.addEventListener('click', () => fin(inp.value.trim()));
+      inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !ok.disabled) fin(inp.value.trim()); if (e.key === 'Escape') fin(null); });
+    });
+  }
+
+  async function renombrarTema(t) {
+    const nombre = await pedirTexto({ titulo: 'Renombrar tema ' + t.num, sub: 'El nuevo nombre se verá en el temario y en cada pregunta.', valor: t.name });
+    if (!nombre) return;
+    try {
+      await api('renombrarTema', { carpeta: sel.carpeta, curso: NOMBRE[sel.carpeta], anio: sel.anio, tema: t.num, nombre });
+      delete cacheArchivos[sel.carpeta + '|' + sel.anio];
+      toast('Tema renombrado'); renderPicker();
+    } catch (e) { toast(e.message, true); }
+  }
+
+  async function borrarTema(t) {
+    const r = await pedirTexto({ titulo: 'Borrar Tema ' + t.num + ' · ' + t.name, sub: `Se borrarán sus <b>${t.questions.length} preguntas</b> de la web. GitHub guarda el historial, pero desde el panel no se puede deshacer.<br><br>Escribe <b>BORRAR</b> para confirmar.`, placeholder: 'BORRAR', boton: 'Borrar tema', peligro: true, exacto: 'BORRAR' });
+    if (r !== 'BORRAR') return;
+    try {
+      await api('borrarTema', { carpeta: sel.carpeta, curso: NOMBRE[sel.carpeta], anio: sel.anio, tema: t.num, confirmar: 'BORRAR' });
+      delete cacheArchivos[sel.carpeta + '|' + sel.anio]; delete cacheManifest[sel.carpeta];
+      sel.tema = null; sel.anio = null;
+      toast('Tema borrado'); renderPicker();
+    } catch (e) { toast(e.message, true); }
   }
 
   /* ---------- MODAL EDITOR ---------- */
@@ -564,7 +749,9 @@
       ${distinta ? `<div class="banner warn" style="margin-top:14px;">Ojo: la pregunta ${ctx.n} publicada no coincide con la del reporte. Es posible que el orden haya cambiado; revisa antes de guardar.</div>` : ''}
       <label class="fld">Pregunta</label>
       <textarea class="ta" id="edText">${esc(q.text)}</textarea>
-      <div class="hint">Puedes usar *cursiva* y **negrita**. Los saltos de línea se respetan.</div>
+      <div class="hint">Puedes usar *cursiva*, **negrita** y ecuaciones entre $…$ (ej.: $x^2$). Los saltos de línea se respetan.</div>
+      <label class="fld">Imagen o gráfico</label>
+      <div id="edImg"></div>
       <label class="fld">Alternativas <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— toca la letra para marcar la correcta</span></label>
       <div id="edOpts">${q.options.map((o, i) => `
         <div class="opt ${i === q.correct ? 'sel' : ''}" data-i="${i}">
@@ -576,6 +763,7 @@
       </div>
       <div class="err" id="edErr"></div>
       <div class="mfoot">
+        <button type="button" class="rbtn danger izq" id="edBorrar">Borrar pregunta</button>
         <button type="button" class="btn-ghost" id="edCancel">Cancelar</button>
         <button type="button" class="btn-main" id="edSave" disabled>Guardar y publicar</button>
       </div>`;
@@ -591,7 +779,8 @@
     }
     function cambio() {
       const v = leer();
-      const dif = v.correct !== q.correct || v.text !== q.text || v.options.some((o, i) => o.text !== q.options[i].text);
+      const dif = v.correct !== q.correct || v.text !== q.text || v.options.some((o, i) => o.text !== q.options[i].text) ||
+        zonaImg.estado().cambio !== 'igual';
       save.disabled = !dif;
     }
     optsEl.querySelectorAll('.opt').forEach(row => row.querySelector('.opt-radio').addEventListener('click', () => {
@@ -599,17 +788,46 @@
       optsEl.querySelectorAll('.opt').forEach(r => r.classList.toggle('sel', r === row));
       cambio();
     }));
+    const zonaImg = crearZonaImagen(body.querySelector('#edImg'), { actual: q.graphic || '', onChange: () => cambio() });
     body.addEventListener('input', cambio);
     body.querySelector('#edCancel').addEventListener('click', cerrarModal);
+
+    // Borrar pregunta: pide un segundo clic para confirmar
+    const bBorrar = body.querySelector('#edBorrar');
+    bBorrar.addEventListener('click', async () => {
+      if (!bBorrar.classList.contains('confirm')) {
+        bBorrar.classList.add('confirm'); bBorrar.textContent = '¿Seguro? Toca otra vez';
+        setTimeout(() => { if (bBorrar.isConnected) { bBorrar.classList.remove('confirm'); bBorrar.textContent = 'Borrar pregunta'; } }, 4000);
+        return;
+      }
+      bBorrar.disabled = true; bBorrar.textContent = 'Borrando…';
+      try {
+        await api('borrarPregunta', { carpeta: ctx.carpeta, curso: ctx.curso, anio: ctx.anio, tema: pad2(ctx.tema), n: ctx.n, textoAntes: q.text });
+        delete cacheArchivos[ctx.carpeta + '|' + ctx.anio];
+        cerrarModal(); toast('Pregunta ' + ctx.n + ' borrada');
+        if (!$('tab-editar').hidden) renderPicker();
+      } catch (e) {
+        bBorrar.disabled = false; bBorrar.classList.remove('confirm'); bBorrar.textContent = 'Borrar pregunta';
+        const err = body.querySelector('#edErr'); err.textContent = e.message; err.classList.add('show');
+      }
+    });
 
     save.addEventListener('click', async () => {
       const v = leer();
       const err = body.querySelector('#edErr');
       err.classList.remove('show');
       if (!norm(v.text) || v.options.some(o => !norm(o.text))) { err.textContent = 'La pregunta y las alternativas no pueden quedar vacías.'; err.classList.add('show'); return; }
-      save.disabled = true; save.innerHTML = '<span class="spin-s"></span> Publicando…';
+      const imagenes = [];
+      const st = zonaImg.estado();
+      if (st.cambio === 'quitar') v.graphic = null;
+      if (st.cambio === 'nueva') {
+        const path = imgRuta(ctx.carpeta, ctx.anio, ctx.tema, st.img.ext);
+        imagenes.push({ path, data: st.img.dataUrl });
+        v.graphic = imgHtml(path);
+      }
+      save.disabled = true; save.innerHTML = '<span class="spin-s"></span> ' + (imagenes.length ? 'Subiendo imagen…' : 'Publicando…');
       try {
-        const r = await api('corregir', { carpeta: ctx.carpeta, curso: ctx.curso, anio: ctx.anio, tema: pad2(ctx.tema), n: ctx.n, textoAntes: q.text, pregunta: JSON.stringify(v) });
+        const r = await api('corregir', { carpeta: ctx.carpeta, curso: ctx.curso, anio: ctx.anio, tema: pad2(ctx.tema), n: ctx.n, textoAntes: q.text, pregunta: JSON.stringify(v), imagenes: JSON.stringify(imagenes) });
         delete cacheArchivos[ctx.carpeta + '|' + ctx.anio];
         if (r.sinCambios) { cerrarModal(); toast('No había cambios que guardar'); return; }
         const oNew = v.options[v.correct];
@@ -658,7 +876,7 @@
         </div>
         <div class="rq">${esc(plano(c.textoNuevo || c.textoAntes)).slice(0, 220)}</div>
         ${c.claveAntes === c.claveNueva && c.cambioTexto === 'Sí'
-          ? `<div class="rgrid"><div class="rbox new" style="grid-column:1/-1;"><div class="k">Se corrigió el texto</div><div class="v">La clave sigue siendo ${esc(plano(c.claveNueva))}</div></div></div>`
+          ? `<div class="rgrid"><div class="rbox new" style="grid-column:1/-1;"><div class="k">Se corrigió el texto o la imagen</div><div class="v">La clave sigue siendo ${esc(plano(c.claveNueva))}</div></div></div>`
           : `<div class="rgrid">
               <div class="rbox"><div class="k">Clave antes</div><div class="v">${esc(plano(c.claveAntes))}</div></div>
               <div class="rbox new"><div class="k">Clave ahora</div><div class="v">${esc(plano(c.claveNueva))}</div></div>
@@ -695,5 +913,7 @@
     show('login');
   })();
 </script>
+<script src="imagenes.js"></script>
+<script src="subir.js"></script>
 </body>
 </html>

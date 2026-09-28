@@ -1,0 +1,261 @@
+/* =========================================================
+   Panel · Subir tema
+   Formato:
+     CURSO: Lenguaje
+     CICLO: 2027-I
+     TEMA: 01 - Teoría de la información
+     PREGUNTA 1:
+     Enunciado… (ecuaciones entre $…$)
+     A) …
+     B) … ✅
+   ========================================================= */
+const MARCA = /\s*(✅|✔️|✔|☑️|☑|✓)\s*/gu;
+const LETRAS = 'ABCDEF';
+
+function sinTildes(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim(); }
+function detectarCurso(txt) {
+  const t = sinTildes(txt).replace(/[^a-z ]/g, ' ').replace(/\s+/g, ' ').trim();
+  if (!t) return '';
+  const alias = { 'raz verbal': 'raz-verbal', 'rv': 'raz-verbal', 'razonamiento verbal': 'raz-verbal', 'hist del peru': 'historia-peru', 'historia peru': 'historia-peru', 'hist universal': 'historia-universal' };
+  if (alias[t]) return alias[t];
+  const hit = CURSOS.find(([id, nom]) => sinTildes(nom) === t || id.replace(/-/g, ' ') === t) ||
+              CURSOS.find(([id, nom]) => sinTildes(nom).startsWith(t) || t.startsWith(sinTildes(nom)));
+  return hit ? hit[0] : '';
+}
+function normalizarCiclo(s) {
+  const m = String(s || '').toUpperCase().replace(/\s+/g, '').match(/^(\d{4})[-–_]?(III|II|I)$/);
+  return m ? m[1] + '-' + m[2] : String(s || '').trim();
+}
+
+// Lee el texto y devuelve { meta, preguntas: [{num, text, options, correct, errores[]}], avisos[] }
+function parsearTexto(raw) {
+  const meta = { curso: '', ciclo: '', tema: '', nombre: '' };
+  const preguntas = [], avisos = [];
+  let cur = null, lastOpt = null;
+  const lineas = String(raw || '').replace(/\r/g, '').split('\n');
+  for (const linea of lineas) {
+    const l = linea.trim();
+    if (!l || /^[-=_*]{3,}$/.test(l)) continue;
+    let m;
+    if (!cur && (m = l.match(/^(CURSO|ASIGNATURA)\s*:\s*(.+)$/i))) { meta.curso = m[2].trim(); continue; }
+    if (!cur && (m = l.match(/^(CICLO|AÑO|ANIO|PERIODO)\s*:\s*(.+)$/i))) { meta.ciclo = m[2].trim(); continue; }
+    if (!cur && (m = l.match(/^TEMA\s*:?\s*N?[°º]?\s*(\d{1,3})\s*[-–—:.)]?\s*(.*)$/i))) { meta.tema = m[1]; meta.nombre = m[2].trim(); continue; }
+    if ((m = l.match(/^PREGUNTA\s*N?[°º]?\s*(\d{1,3})\s*[:.)\-–]?\s*(.*)$/i))) {
+      cur = { num: +m[1], textLines: m[2] ? [m[2]] : [], options: [], marcas: [], clave: null };
+      preguntas.push(cur); lastOpt = null; continue;
+    }
+    if (!cur) { avisos.push('Línea ignorada (antes de la PREGUNTA 1): "' + l.slice(0, 60) + '"'); continue; }
+    if ((m = l.match(/^(?:RESPUESTA|CLAVE|RPTA\.?)\s*(?:CORRECTA)?\s*[:=]?\s*\(?([A-Fa-f])\)?\s*$/i))) { cur.clave = m[1].toUpperCase(); continue; }
+    const esperada = LETRAS[cur.options.length];
+    if (esperada && (m = l.match(/^\(?([A-Fa-f])\s*[).]\s*(.*)$/)) && m[1].toUpperCase() === esperada) {
+      let t = m[2];
+      MARCA.lastIndex = 0;
+      if (MARCA.test(t)) { cur.marcas.push(cur.options.length); MARCA.lastIndex = 0; t = t.replace(MARCA, ' ').trim(); }
+      lastOpt = { letter: esperada, text: t };
+      cur.options.push(lastOpt);
+      continue;
+    }
+    if (lastOpt) {
+      MARCA.lastIndex = 0;
+      if (MARCA.test(l)) { if (!cur.marcas.includes(cur.options.length - 1)) cur.marcas.push(cur.options.length - 1); MARCA.lastIndex = 0; }
+      const extra = l.replace(MARCA, ' ').trim();
+      if (extra) lastOpt.text += ' ' + extra;
+    } else cur.textLines.push(l);
+  }
+  preguntas.forEach((q, i) => {
+    q.text = q.textLines.join('\n').trim();
+    delete q.textLines;
+    q.errores = [];
+    if (q.clave) {
+      const idx = q.options.findIndex(o => o.letter === q.clave);
+      if (idx < 0) q.errores.push('La clave ' + q.clave + ' no existe entre las alternativas');
+      else if (q.marcas.length && !q.marcas.includes(idx)) q.errores.push('La ✅ y la CLAVE no coinciden');
+      else q.correct = idx;
+    } else if (q.marcas.length === 1) q.correct = q.marcas[0];
+    else if (q.marcas.length > 1) q.errores.push('Tiene más de una ✅');
+    if (!q.text) q.errores.push('Falta el enunciado');
+    if (q.options.length < 2) q.errores.push('Tiene menos de 2 alternativas');
+    q.options.forEach(o => { if (!o.text) q.errores.push('La alternativa ' + o.letter + ' está vacía'); });
+    if (q.correct == null && !q.errores.length) q.errores.push('Falta marcar la clave con ✅');
+    if (q.num !== i + 1) avisos.push('La PREGUNTA ' + q.num + ' está en la posición ' + (i + 1) + ' (se numerará como ' + (i + 1) + ')');
+  });
+  return { meta, preguntas, avisos };
+}
+
+/* ---------- Vista previa (igual que la web del alumno) ---------- */
+function formatQText(str) {
+  let e = esc(str);
+  e = e.replace(/&lt;u&gt;(.+?)&lt;\/u&gt;/g, '<u>$1</u>');
+  e = e.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  e = e.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  return e;
+}
+function renderMath(el) {
+  if (window.renderMathInElement) {
+    renderMathInElement(el, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false });
+  }
+}
+
+const SUB = { parse: null, zonas: [], borrador: 'mc_panel_borrador' };
+
+function initSubir() {
+  const ta = $('subTexto');
+  if (!ta.dataset.listo) {
+    ta.dataset.listo = '1';
+    const b = ss('get', SUB.borrador); if (b && !ta.value) ta.value = b;
+    ta.addEventListener('input', () => ss('set', SUB.borrador, ta.value));
+    $('subArchivo').addEventListener('change', async e => {
+      const f = e.target.files[0]; e.target.value = '';
+      if (!f) return;
+      if (f.size > 2000000) { toast('El archivo es muy grande', true); return; }
+      ta.value = await f.text(); ss('set', SUB.borrador, ta.value);
+      toast('Archivo cargado: ' + f.name);
+    });
+    $('subRevisar').addEventListener('click', revisarTexto);
+    $('subVolver').addEventListener('click', () => { $('subPaso2').hidden = true; $('subPaso1').hidden = false; window.scrollTo(0, 0); });
+    $('subPublicar').addEventListener('click', publicarTema);
+    $('subCurso').innerHTML = '<option value="">— Elige el curso —</option>' + CURSOS.map(([id, n]) => `<option value="${id}">${esc(n)}</option>`).join('');
+    ['subCurso', 'subCiclo', 'subNum', 'subNombre'].forEach(id => $(id).addEventListener('input', validarMeta));
+  }
+}
+
+function revisarTexto() {
+  const r = parsearTexto($('subTexto').value);
+  if (!r.preguntas.length) { toast('No encontré preguntas. Revisa que cada una empiece con "PREGUNTA 1:"', true); return; }
+  // conservar imágenes ya pegadas (por posición)
+  const previas = SUB.zonas.map(z => z && z.estado());
+  SUB.parse = r;
+  $('subCurso').value = detectarCurso(r.meta.curso) || $('subCurso').value;
+  $('subCiclo').value = normalizarCiclo(r.meta.ciclo) || $('subCiclo').value;
+  $('subNum').value = r.meta.tema ? pad2(r.meta.tema) : $('subNum').value;
+  $('subNombre').value = r.meta.nombre || $('subNombre').value;
+
+  const errores = r.preguntas.filter(q => q.errores.length).length;
+  $('subAvisos').innerHTML =
+    (errores ? `<div class="banner warn"><div><b>${errores} pregunta${errores > 1 ? 's tienen' : ' tiene'} errores.</b> Corrígelas en el texto y vuelve a revisar.</div></div>` : '') +
+    (r.avisos.length ? `<div class="banner info"><div>${r.avisos.slice(0, 6).map(esc).join('<br>')}${r.avisos.length > 6 ? '<br>…' : ''}</div></div>` : '');
+
+  $('subLista').innerHTML = r.preguntas.map((q, i) => `
+    <article class="pcard ${q.errores.length ? 'bad' : ''}">
+      <div class="qnum2">${i + 1}</div>
+      ${q.errores.length ? `<div class="perr">⚠ ${q.errores.map(esc).join(' · ')}</div>` : ''}
+      <div class="ptext">${formatQText(q.text).replace(/\n/g, '<br>')}</div>
+      <div class="pimg" data-i="${i}"></div>
+      ${q.options.map((o, k) => `<div class="popt ${k === q.correct ? 'ok' : ''}"><span class="l">${esc(o.letter)}</span><span>${formatQText(o.text)}</span>${k === q.correct ? '<span class="chk">✓</span>' : ''}</div>`).join('')}
+    </article>`).join('');
+  SUB.zonas = [...$('subLista').querySelectorAll('.pimg')].map((el, i) => {
+    const z = crearZonaImagen(el, { actual: '', onChange: () => {} });
+    const p = previas[i];
+    if (p && p.cambio === 'nueva') { z.restaurar = p; }
+    return z;
+  });
+  // restaurar imágenes previas
+  SUB.zonas.forEach(z => { if (z.restaurar) { const img = z.restaurar.img; z.recibirPreparada(img); } });
+  renderMath($('subLista'));
+  $('subPaso1').hidden = true; $('subPaso2').hidden = false;
+  validarMeta();
+  window.scrollTo(0, 0);
+}
+
+function validarMeta() {
+  if (!SUB.parse) return;
+  const curso = $('subCurso').value, ciclo = normalizarCiclo($('subCiclo').value), num = $('subNum').value.trim(), nombre = $('subNombre').value.trim();
+  const errs = [];
+  if (!curso) errs.push('elige el curso');
+  if (!/^\d{4}-(I|II|III)$/.test(ciclo)) errs.push('el ciclo debe ser como 2027-I');
+  if (!/^\d{1,3}$/.test(num)) errs.push('pon el número de tema');
+  if (!nombre) errs.push('pon el nombre del tema');
+  const malas = SUB.parse.preguntas.filter(q => q.errores.length).length;
+  if (malas) errs.push('corrige ' + malas + ' pregunta' + (malas > 1 ? 's' : ''));
+  const n = SUB.parse.preguntas.length;
+  $('subResumen').innerHTML = errs.length
+    ? `<span class="bad">Falta: ${errs.join(', ')}.</span>`
+    : `<b>${n} pregunta${n > 1 ? 's' : ''}</b> para ${esc(NOMBRE[curso])} · ${esc(ciclo)} · Tema ${esc(pad2(num))}`;
+  $('subPublicar').disabled = !!errs.length;
+}
+
+function armarPreguntas(carpeta, anio, tema, nombre) {
+  const imagenes = [];
+  const preguntas = SUB.parse.preguntas.map((q, i) => {
+    const out = { text: q.text, topic: NOMBRE[carpeta] + ' · ' + nombre, options: q.options.map(o => ({ letter: o.letter, text: o.text })), correct: q.correct };
+    const st = SUB.zonas[i] && SUB.zonas[i].estado();
+    if (st && st.cambio === 'nueva') {
+      const path = imgRuta(carpeta, anio, tema, st.img.ext);
+      imagenes.push({ path, data: st.img.dataUrl });
+      out.graphic = imgHtml(path);
+    }
+    return out;
+  });
+  return { preguntas, imagenes };
+}
+
+async function publicarTema() {
+  const carpeta = $('subCurso').value, anio = normalizarCiclo($('subCiclo').value), tema = pad2($('subNum').value.trim()), nombre = $('subNombre').value.trim();
+  const btn = $('subPublicar');
+  btn.disabled = true; btn.innerHTML = '<span class="spin-s"></span> Revisando…';
+  try {
+    // ¿Ya existe el tema?
+    let existente = null;
+    const man = await api('archivo', { carpeta });
+    if ((man.manifest || []).some(x => x.id === anio)) {
+      const temas = (await api('archivo', { carpeta, anio })).temas || [];
+      existente = temas.find(t => pad2(t.num) === tema) || null;
+    }
+    let modo = 'nuevo';
+    if (existente) {
+      modo = await elegirModo(existente, SUB.parse.preguntas.length);
+      if (!modo) { btn.disabled = false; btn.textContent = 'Publicar tema'; return; }
+    }
+    const { preguntas, imagenes } = armarPreguntas(carpeta, anio, tema, nombre);
+    btn.innerHTML = '<span class="spin-s"></span> ' + (imagenes.length ? `Subiendo ${imagenes.length} imagen${imagenes.length > 1 ? 'es' : ''} y publicando…` : 'Publicando…');
+    const r = await api('publicarTema', { carpeta, curso: NOMBRE[carpeta], anio, tema, nombre, modo, preguntas: JSON.stringify(preguntas), imagenes: JSON.stringify(imagenes) });
+    delete cacheManifest[carpeta]; delete cacheArchivos[carpeta + '|' + anio];
+    ss('del', SUB.borrador);
+    const url = SITE_ROOT + carpeta + '/libros/tema.html?year=' + encodeURIComponent(anio) + '&tema=' + encodeURIComponent(tema);
+    $('subPaso2').hidden = true;
+    $('subListo').hidden = false;
+    $('subListo').innerHTML = `<div class="done">
+        <div class="ico">${ICON_OK}</div>
+        <div class="eyebrow">Publicado</div>
+        <h3>¡Tema ${esc(tema)} publicado!</h3>
+        <p><b style="color:#f5ffcc">${esc(NOMBRE[carpeta])} · ${esc(anio)} · ${esc(nombre)}</b><br>
+        ${modo === 'agregar' ? (preguntas.length === 1 ? 'Se agregó 1 pregunta' : 'Se agregaron ' + preguntas.length + ' preguntas') + '; el tema ahora tiene ' + r.preguntasTema + '.' : r.preguntasTema + ' preguntas' + (imagenes.length ? ' y ' + imagenes.length + ' imagen' + (imagenes.length > 1 ? 'es' : '') : '') + '.'}
+        El año ${esc(anio)} tiene ${r.temas} tema${r.temas > 1 ? 's' : ''}.<br>Los alumnos lo verán en 1 a 10 minutos.</p>
+        <div class="mfoot" style="justify-content:center;">
+          <a class="rbtn link" href="${esc(url)}" target="_blank" rel="noopener">Ver en la web ${ICON_EXT}</a>
+          <button type="button" class="btn-main" id="subOtro">Subir otro tema</button>
+        </div></div>`;
+    $('subOtro').addEventListener('click', () => {
+      $('subTexto').value = ''; SUB.parse = null; SUB.zonas = [];
+      $('subListo').hidden = true; $('subPaso1').hidden = false;
+    });
+    window.scrollTo(0, 0);
+  } catch (e) {
+    toast(e.message === 'TEMA_EXISTE' ? 'Ese tema ya existe; vuelve a publicar y elige qué hacer.' : e.message, true);
+  }
+  btn.disabled = false; btn.textContent = 'Publicar tema';
+  validarMeta();
+}
+
+// Pregunta qué hacer si el tema ya existe → 'reemplazar' | 'agregar' | null
+function elegirModo(existente, nuevas) {
+  return new Promise(resolve => {
+    const o = document.createElement('div');
+    o.className = 'ov';
+    const n = existente.questions.length;
+    o.innerHTML = `<div class="mcard" style="max-width:520px;">
+      <div class="eyebrow" style="color:var(--amber)">Este tema ya existe</div>
+      <h3>Tema ${esc(existente.num)} · ${esc(existente.name)}</h3>
+      <p class="sub" style="margin-top:6px;">Ya tiene <b>${n} pregunta${n > 1 ? 's' : ''}</b> publicadas. ¿Qué hago con las ${nuevas} nuevas?</p>
+      <div class="modo-op" data-m="reemplazar"><b>Reemplazar el tema completo</b><span>Quedarán solo las ${nuevas} nuevas (y el nombre nuevo).</span></div>
+      <div class="modo-op" data-m="agregar"><b>Agregar al final</b><span>El tema quedará con ${n + nuevas} preguntas.</span></div>
+      <div class="mfoot"><button type="button" class="btn-ghost" data-m="">Cancelar</button></div>
+    </div>`;
+    document.body.appendChild(o);
+    o.addEventListener('click', e => {
+      const b = e.target.closest('[data-m]');
+      if (!b && e.target !== o) return;
+      o.remove(); resolve(b ? (b.dataset.m || null) : null);
+    });
+  });
+}
