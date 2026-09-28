@@ -1,0 +1,112 @@
+{
+  "version": 1,
+  "activo": true,
+  "paginas": {
+    "inicio": {
+      "activa": true,
+      "version": 1,
+      "boton": true,
+      "pasos": [
+        {
+          "objetivo": "centro",
+          "titulo": "¡Hola, cachimbo! 👋",
+          "texto": "Bienvenido a **Modo Cachimbo**: libros, repasos, fijas y exámenes pasados para que llegues listo a tu examen de admisión. Te muestro rápido cómo funciona."
+        },
+        {
+          "objetivo": "cursos",
+          "titulo": "Elige tu área",
+          "texto": "Aquí están las áreas. Entra a una para ver sus cursos: Biología, Álgebra, Lenguaje y más."
+        },
+        {
+          "objetivo": "examenes",
+          "titulo": "Exámenes de admisión",
+          "texto": "Practica con exámenes reales de años anteriores, organizados por modalidad."
+        },
+        {
+          "objetivo": "codigo",
+          "titulo": "¿Tienes un código?",
+          "texto": "Si te dieron un código de acceso, actívalo aquí para desbloquear **Repasos** y **Fijas** en este dispositivo."
+        },
+        {
+          "objetivo": "centro",
+          "titulo": "¡Listo! 🎓",
+          "texto": "Puedes volver a ver esta guía cuando quieras con el botón **?** de abajo. ¡Éxitos en tu preparación!"
+        }
+      ]
+    },
+    "area": {
+      "activa": false,
+      "version": 1,
+      "boton": true,
+      "pasos": []
+    },
+    "curso": {
+      "activa": true,
+      "version": 1,
+      "boton": true,
+      "pasos": [
+        {
+          "objetivo": "libro",
+          "titulo": "Libro 📘",
+          "texto": "Los temas del libro con sus preguntas y la **respuesta marcada**. Ideal para estudiar tema por tema."
+        },
+        {
+          "objetivo": "repaso",
+          "titulo": "Repaso 🔁",
+          "texto": "Todas las preguntas del ciclo mezcladas y con **5 vidas**. Perfecto para medir cuánto sabes."
+        },
+        {
+          "objetivo": "fijas",
+          "titulo": "Fijas 🎯",
+          "texto": "Las preguntas más probables, seleccionadas para el examen. ¡No te las pierdas!"
+        }
+      ]
+    },
+    "libros": {
+      "activa": false,
+      "version": 1,
+      "boton": true,
+      "pasos": []
+    },
+    "estudio": {
+      "activa": true,
+      "version": 1,
+      "boton": true,
+      "pasos": [
+        {
+          "objetivo": "correcta",
+          "titulo": "Modo estudio",
+          "texto": "Cada pregunta muestra su **respuesta correcta** marcada en verde ✓. Léela con calma y entiende por qué."
+        },
+        {
+          "objetivo": "practicar",
+          "titulo": "Ponte a prueba",
+          "texto": "Cuando termines de repasar, toca **Practicar** para resolver el tema en modo quiz."
+        },
+        {
+          "objetivo": "error",
+          "titulo": "¿Error en la clave?",
+          "texto": "Si crees que una respuesta está mal, avísanos aquí. La revisamos y la corregimos para todos. 🙌"
+        }
+      ]
+    },
+    "quiz": {
+      "activa": false,
+      "version": 1,
+      "boton": true,
+      "pasos": []
+    },
+    "repaso": {
+      "activa": false,
+      "version": 1,
+      "boton": true,
+      "pasos": []
+    },
+    "fijas": {
+      "activa": false,
+      "version": 1,
+      "boton": true,
+      "pasos": []
+    }
+  }
+}

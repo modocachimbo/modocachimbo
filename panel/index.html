@@ -329,6 +329,14 @@
   .rf-temas em { color: var(--text-faint); font-style: normal; margin-left: auto; font-size: 12px; }
   .chip:disabled { opacity: .35; cursor: not-allowed; }
   @media (max-width: 600px) { .cu-form { grid-template-columns: 1fr; } .cu-campos { grid-template-columns: 1fr; } }
+  /* Tutorial */
+  .tu-top { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+  .tu-paso { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-top: 1px solid #1a1a1a; }
+  .tu-num { flex-shrink: 0; width: 30px; height: 30px; border-radius: 9px; background: var(--accent-soft); color: var(--accent); font-family: 'Sora', sans-serif; font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+  .tu-campos { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+  .tu-acc { display: flex; flex-direction: column; gap: 6px; }
+  .tu-acc .rbtn:disabled { opacity: .3; }
+  @media (max-width: 600px) { .tu-paso { flex-wrap: wrap; } .tu-acc { flex-direction: row; margin-left: 42px; } }
   @media (max-width: 760px) { .meta-grid { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 600px) {
     .wrap { padding: 0 16px; }
@@ -379,6 +387,7 @@
         <button class="tab" data-tab="editar" type="button">Editar preguntas</button>
         <button class="tab" data-tab="cursos" type="button">Cursos</button>
         <button class="tab" data-tab="alertas" type="button">Alertas</button>
+        <button class="tab" data-tab="tutorial" type="button">Tutorial</button>
         <button class="tab" data-tab="codigos" type="button">Códigos</button>
         <button class="tab" data-tab="corr" type="button">Correcciones <span class="badge" id="badgeRev" hidden>0</span></button>
       </nav>
@@ -522,6 +531,22 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
           <button class="btn-main" id="btnNuevaAlerta" type="button">＋ Nueva alerta</button>
         </div>
         <div id="alList"></div>
+      </div>
+
+      <!-- Tutorial -->
+      <div id="tab-tutorial" hidden>
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Primera visita</div>
+            <h1>Tutorial</h1>
+            <p>Una guía paso a paso que ilumina partes de la página. Cada alumno la ve una vez por página.</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="hint" id="tuEstado"></span>
+            <button class="btn-main" id="tuGuardar" type="button" disabled>Guardar y publicar</button>
+          </div>
+        </div>
+        <div id="tuBody"></div>
       </div>
 
       <!-- Códigos -->
@@ -674,7 +699,8 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
   /* ---------- pestañas ---------- */
   document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
-    ['reportes', 'subir', 'editar', 'cursos', 'alertas', 'codigos', 'corr'].forEach(id => { $('tab-' + id).hidden = id !== t.dataset.tab; });
+    ['reportes', 'subir', 'editar', 'cursos', 'alertas', 'tutorial', 'codigos', 'corr'].forEach(id => { $('tab-' + id).hidden = id !== t.dataset.tab; });
+    if (t.dataset.tab === 'tutorial' && !TU.datos) cargarTutorial();
     if (t.dataset.tab === 'cursos') cargarCursos();
     if (t.dataset.tab === 'codigos') cargarCodigos();
     if (t.dataset.tab === 'alertas') cargarAlertas();
@@ -1088,6 +1114,8 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
 <script src="mantenimiento.js"></script>
 <script src="../assets/cursos.js"></script>
 <script src="cursos-panel.js"></script>
+<script src="../assets/tutorial.js" data-solo-lista></script>
+<script src="tutorial-panel.js"></script>
 <script>
   $('btnNuevaAlerta').addEventListener('click', () => editarAlerta(null));
   $('btnCrearCod').addEventListener('click', () => editarCodigo(null));
@@ -1095,6 +1123,8 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
   $('cdBuscar').addEventListener('input', renderCodigos);
   $('btnRevArch').addEventListener('click', revisarArchivos);
   $('btnNuevoCurso').addEventListener('click', () => formCurso(null));
+  $('tuGuardar').addEventListener('click', guardarTutorial);
+  window.addEventListener('beforeunload', e => { if (TU.cambios) { e.preventDefault(); e.returnValue = ''; } });
 </script>
 </body>
 </html>
