@@ -107,7 +107,7 @@
         const a = document.createElement(active ? 'a' : 'div');
         a.className = 'year-card ' + (active ? 'active' : 'disabled');
         if (active) a.href = 'temario.html?year=' + encodeURIComponent(id);
-        a.innerHTML = `<div class="yr">${id}</div><div class="count">${active ? info.temas + ' temas' : 'Próximamente'}</div>`;
+        a.innerHTML = `<div class="yr">${id}</div><div class="count">${active ? info.temas + (info.temas === 1 ? ' tema' : ' temas') : 'Próximamente'}</div>`;
         grid.appendChild(a);
       });
     })
