@@ -236,6 +236,32 @@
   .rbtn.danger.confirm { background: #c43d3d; border-color: #c43d3d; color: #fff; }
   .mfoot .izq { margin-right: auto; }
 
+  /* Alertas */
+  .alcard { border-left: 4px solid var(--c); }
+  .altit { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 16px; margin-bottom: 6px; }
+  .almsg { font-size: 13.5px; color: var(--text-dim); line-height: 1.55; }
+  .almeta { font-size: 12px; color: var(--text-faint); margin-top: 10px; }
+  .sw { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600; color: var(--text-dim); cursor: pointer; user-select: none; }
+  .sw input { display: none; }
+  .sw span { width: 36px; height: 20px; border-radius: 20px; background: #2a2a2a; position: relative; transition: background .15s; flex-shrink: 0; }
+  .sw span::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #888; transition: all .15s; }
+  .sw input:checked + span { background: var(--accent); }
+  .sw input:checked + span::after { left: 18px; background: #0e0e0e; }
+  .alcardm { max-width: 980px; }
+  .algrid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px; align-items: start; }
+  .alprev { position: sticky; top: 0; background: #070707; border: 1px dashed #262626; border-radius: 18px; padding: 16px; }
+  .alprev .lbl { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-faint); font-weight: 700; margin-bottom: 12px; }
+  .alprev .mca-card { max-width: 100%; padding: 32px 24px 24px; }
+  .chips.seg { margin-bottom: 0; }
+  .chips.seg .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; }
+  .alsel { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .alsel .inp { flex: 1; min-width: 150px; }
+  .alpags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .ck { display: inline-flex; align-items: center; gap: 7px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; font-size: 13px; cursor: pointer; }
+  .ck input { accent-color: #C6E000; }
+  .al2 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .al2 label { display: flex; flex-direction: column; gap: 6px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-faint); font-weight: 700; }
+  @media (max-width: 820px) { .algrid { grid-template-columns: 1fr; } .alprev { position: static; } .al2 { grid-template-columns: 1fr; } }
   @media (max-width: 760px) { .meta-grid { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 600px) {
     .wrap { padding: 0 16px; }
@@ -284,6 +310,7 @@
         <button class="tab on" data-tab="reportes" type="button">Reportes <span class="badge" id="badgePend" hidden>0</span></button>
         <button class="tab" data-tab="subir" type="button">Subir tema</button>
         <button class="tab" data-tab="editar" type="button">Editar preguntas</button>
+        <button class="tab" data-tab="alertas" type="button">Alertas</button>
         <button class="tab" data-tab="corr" type="button">Correcciones <span class="badge" id="badgeRev" hidden>0</span></button>
       </nav>
 
@@ -394,6 +421,19 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
           <div id="pkTemaWrap" hidden><div class="lbl">Tema</div><div class="chips" id="pkTema"></div></div>
         </div>
         <div id="qlist"></div>
+      </div>
+
+      <!-- Alertas -->
+      <div id="tab-alertas" hidden>
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Avisos para los alumnos</div>
+            <h1>Alertas</h1>
+            <p>Mensajes que aparecen en todo el sitio, en un curso, en un año o en un tema específico. Puedes apagarlas sin borrarlas.</p>
+          </div>
+          <button class="btn-main" id="btnNuevaAlerta" type="button">＋ Nueva alerta</button>
+        </div>
+        <div id="alList"></div>
       </div>
 
       <!-- Correcciones -->
@@ -510,7 +550,8 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
   /* ---------- pestañas ---------- */
   document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
-    ['reportes', 'subir', 'editar', 'corr'].forEach(id => { $('tab-' + id).hidden = id !== t.dataset.tab; });
+    ['reportes', 'subir', 'editar', 'alertas', 'corr'].forEach(id => { $('tab-' + id).hidden = id !== t.dataset.tab; });
+    if (t.dataset.tab === 'alertas') cargarAlertas();
     if (t.dataset.tab === 'subir') initSubir();
     if (t.dataset.tab === 'editar') renderPicker();
     if (t.dataset.tab === 'corr') cargarCorrecciones();
@@ -915,5 +956,8 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
 </script>
 <script src="imagenes.js"></script>
 <script src="subir.js"></script>
+<script src="../assets/alertas.js" data-solo-previa></script>
+<script src="alertas-panel.js"></script>
+<script>$('btnNuevaAlerta').addEventListener('click', () => editarAlerta(null));</script>
 </body>
 </html>
