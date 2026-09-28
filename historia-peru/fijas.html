@@ -193,6 +193,7 @@
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 <script src="../assets/mc-config.js"></script>
 <script src="../assets/acceso.js"></script>
+<script src="../assets/cursos.js"></script>
 </head>
 <body>
 
@@ -386,14 +387,23 @@
       return;
     }
 
-    // Primero intenta cargar un set curado y fijo (libros/data/{year}-fijas.json).
+    // Configuración de Fijas desde el panel (assets/cursos.json)
+    let fz = null;
     try {
-      const rFijas = await fetch('libros/data/' + year + '-fijas.json');
-      if (rFijas.ok) {
-        temasData = await rFijas.json();
-        fixedMode = true;
-      }
-    } catch (e) { /* no existe set curado, seguimos con el fallback */ }
+      const c = window.MCCursos ? await MCCursos.curso(PRODUCTO.replace(/^fijas-/, '')) : null;
+      if (c && c.fijas && c.fijas.anio === year) fz = c.fijas;
+    } catch (e) {}
+
+    // Banco propio de Fijas (libros/data/{year}-fijas.json), salvo que el panel diga "temas del libro"
+    if (!fz || fz.modo === 'banco') {
+      try {
+        const rFijas = await fetch('libros/data/' + year + '-fijas.json');
+        if (rFijas.ok) {
+          temasData = await rFijas.json();
+          fixedMode = true;
+        }
+      } catch (e) { /* no existe banco propio, seguimos con los temas del libro */ }
+    }
 
     if (!fixedMode) {
       try {
@@ -405,6 +415,12 @@
         startScreen.classList.add('show');
         return;
       }
+      // Solo los temas elegidos en el panel
+      if (fz && Array.isArray(fz.temas)) {
+        const elegidos = fz.temas.map(t => String(t).padStart(2, '0'));
+        temasData = temasData.filter(t => elegidos.includes(String(t.num).padStart(2, '0')));
+      }
+      if (fz && fz.porTema === 0) fixedMode = true; // todas las preguntas de cada tema elegido
     }
 
     questions = fixedMode ? pickAllFromTemas(temasData) : pickOnePerTema(temasData);
@@ -421,7 +437,7 @@
       ? `Set fijo de ${questions.length} preguntas de ${temasLabel} (${year}). Tienes 5 vidas.`
       : `Una pregunta de cada uno de los ${temasData.length} temas de ${year}, ideal para un repaso rápido. Tienes 5 vidas.`;
     document.getElementById('startCount').textContent = fixedMode
-      ? `${questions.length} preguntas · ${temasData.length} temas fijos`
+      ? `${questions.length} preguntas · ${temasData.length} tema${temasData.length === 1 ? ' fijo' : 's fijos'}`
       : `${questions.length} preguntas · 1 por tema`;
     btnStart.disabled = false;
     startScreen.classList.add('show');

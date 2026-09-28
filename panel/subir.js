@@ -40,7 +40,7 @@ function parsearTexto(raw) {
     if (!cur && (m = l.match(/^(CURSO|ASIGNATURA)\s*:\s*(.+)$/i))) { meta.curso = m[2].trim(); continue; }
     if (!cur && (m = l.match(/^(CICLO|AÑO|ANIO|PERIODO)\s*:\s*(.+)$/i))) { meta.ciclo = m[2].trim(); continue; }
     if (!cur && (m = l.match(/^TEMA\s*:?\s*N?[°º]?\s*(\d{1,3})\s*[-–—:.)]?\s*(.*)$/i))) { meta.tema = m[1]; meta.nombre = m[2].trim(); continue; }
-    if ((m = l.match(/^PREGUNTA\s*N?[°º]?\s*(\d{1,3})\s*[:.)\-–]?\s*(.*)$/i))) {
+    if ((m = l.match(/^PREGUNTA\s*N?[°º]?\s*(\d{1,3})\s*(?:[:.)]\s*(.*))?$/i))) {
       cur = { num: +m[1], textLines: m[2] ? [m[2]] : [], options: [], marcas: [], clave: null };
       preguntas.push(cur); lastOpt = null; continue;
     }
@@ -114,9 +114,11 @@ function initSubir() {
     $('subRevisar').addEventListener('click', revisarTexto);
     $('subVolver').addEventListener('click', () => { $('subPaso2').hidden = true; $('subPaso1').hidden = false; window.scrollTo(0, 0); });
     $('subPublicar').addEventListener('click', publicarTema);
-    $('subCurso').innerHTML = '<option value="">— Elige el curso —</option>' + CURSOS.map(([id, n]) => `<option value="${id}">${esc(n)}</option>`).join('');
-    ['subCurso', 'subCiclo', 'subNum', 'subNombre'].forEach(id => $(id).addEventListener('input', validarMeta));
+    ['subCurso', 'subCiclo', 'subNum', 'subNombre', 'subDestino'].forEach(id => $(id).addEventListener('input', validarMeta));
   }
+  const actual = $('subCurso').value;
+  $('subCurso').innerHTML = '<option value="">— Elige el curso —</option>' + CURSOS.map(([id, n]) => `<option value="${id}">${esc(n)}</option>`).join('');
+  $('subCurso').value = actual;
 }
 
 function revisarTexto() {
@@ -170,7 +172,7 @@ function validarMeta() {
   const n = SUB.parse.preguntas.length;
   $('subResumen').innerHTML = errs.length
     ? `<span class="bad">Falta: ${errs.join(', ')}.</span>`
-    : `<b>${n} pregunta${n > 1 ? 's' : ''}</b> para ${esc(NOMBRE[curso])} · ${esc(ciclo)} · Tema ${esc(pad2(num))}`;
+    : `<b>${n} pregunta${n > 1 ? 's' : ''}</b> para ${esc(NOMBRE[curso])} · ${esc(ciclo)} · Tema ${esc(pad2(num))}${$('subDestino').value === 'fijas' ? ' · <b>Banco de Fijas</b>' : ''}`;
   $('subPublicar').disabled = !!errs.length;
 }
 
@@ -195,11 +197,16 @@ async function publicarTema() {
   btn.disabled = true; btn.innerHTML = '<span class="spin-s"></span> Revisando…';
   try {
     // ¿Ya existe el tema?
+    const destino = $('subDestino').value;
     let existente = null;
-    const man = await api('archivo', { carpeta });
-    if ((man.manifest || []).some(x => x.id === anio)) {
-      const temas = (await api('archivo', { carpeta, anio })).temas || [];
-      existente = temas.find(t => pad2(t.num) === tema) || null;
+    if (destino === 'fijas') {
+      try { existente = ((await api('archivo', { carpeta, anio: anio + '-fijas' })).temas || []).find(t => pad2(t.num) === tema) || null; } catch (e) { existente = null; }
+    } else {
+      const man = await api('archivo', { carpeta });
+      if ((man.manifest || []).some(x => x.id === anio)) {
+        const temas = (await api('archivo', { carpeta, anio })).temas || [];
+        existente = temas.find(t => pad2(t.num) === tema) || null;
+      }
     }
     let modo = 'nuevo';
     if (existente) {
@@ -208,7 +215,7 @@ async function publicarTema() {
     }
     const { preguntas, imagenes } = armarPreguntas(carpeta, anio, tema, nombre);
     btn.innerHTML = '<span class="spin-s"></span> ' + (imagenes.length ? `Subiendo ${imagenes.length} imagen${imagenes.length > 1 ? 'es' : ''} y publicando…` : 'Publicando…');
-    const r = await api('publicarTema', { carpeta, curso: NOMBRE[carpeta], anio, tema, nombre, modo, preguntas: JSON.stringify(preguntas), imagenes: JSON.stringify(imagenes) });
+    const r = await api('publicarTema', { carpeta, curso: NOMBRE[carpeta], anio, tema, nombre, modo, destino, preguntas: JSON.stringify(preguntas), imagenes: JSON.stringify(imagenes) });
     delete cacheManifest[carpeta]; delete cacheArchivos[carpeta + '|' + anio];
     ss('del', SUB.borrador);
     const url = SITE_ROOT + carpeta + '/libros/tema.html?year=' + encodeURIComponent(anio) + '&tema=' + encodeURIComponent(tema);
@@ -218,9 +225,9 @@ async function publicarTema() {
         <div class="ico">${ICON_OK}</div>
         <div class="eyebrow">Publicado</div>
         <h3>¡Tema ${esc(tema)} publicado!</h3>
-        <p><b style="color:#f5ffcc">${esc(NOMBRE[carpeta])} · ${esc(anio)} · ${esc(nombre)}</b><br>
+        <p><b style="color:#f5ffcc">${esc(NOMBRE[carpeta])} · ${esc(anio)}${destino === 'fijas' ? ' · Banco de Fijas' : ''} · ${esc(nombre)}</b><br>
         ${modo === 'agregar' ? (preguntas.length === 1 ? 'Se agregó 1 pregunta' : 'Se agregaron ' + preguntas.length + ' preguntas') + '; el tema ahora tiene ' + r.preguntasTema + '.' : r.preguntasTema + ' preguntas' + (imagenes.length ? ' y ' + imagenes.length + ' imagen' + (imagenes.length > 1 ? 'es' : '') : '') + '.'}
-        El año ${esc(anio)} tiene ${r.temas} tema${r.temas > 1 ? 's' : ''}.<br>Los alumnos lo verán en 1 a 10 minutos.</p>
+        ${destino === 'fijas' ? 'Para usarlo, en <b>Cursos → Repaso y Fijas</b> elige "Banco de Fijas propio".' : `El año ${esc(anio)} tiene ${r.temas} tema${r.temas > 1 ? 's' : ''}.`}<br>Los alumnos lo verán en 1 a 10 minutos.</p>
         <div class="mfoot" style="justify-content:center;">
           <a class="rbtn link" href="${esc(url)}" target="_blank" rel="noopener">Ver en la web ${ICON_EXT}</a>
           <button type="button" class="btn-main" id="subOtro">Subir otro tema</button>

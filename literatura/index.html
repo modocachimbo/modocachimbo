@@ -296,21 +296,7 @@ function jsonpRequest(url) {
 
 </script>
 <script src="../assets/alertas.js" defer></script>
-<script>
-  // Repaso y Fijas apuntan solos al ciclo más reciente que tenga temas
-  (function () {
-    var rom = { I: 1, II: 2, III: 3 };
-    var orden = function (id) { var m = String(id).match(/^(\d{4})-(III|II|I)$/); return m ? +m[1] * 10 + rom[m[2]] : 0; };
-    fetch('libros/data/manifest.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : []; }).then(function (man) {
-      var ult = (man || []).filter(function (m) { return orden(m.id) && m.temas > 0; }).sort(function (a, b) { return orden(b.id) - orden(a.id); })[0];
-      if (!ult) return;
-      document.querySelectorAll('a[href^="repaso.html?year="], a[href^="fijas.html?year="]').forEach(function (a) {
-        a.href = a.getAttribute('href').split('?')[0] + '?year=' + encodeURIComponent(ult.id);
-        var card = a.closest('.course'), h = card && card.querySelector('h3');
-        if (h) h.textContent = h.textContent.replace(/\d{4}-(III|II|I)\b/, ult.id);
-      });
-    }).catch(function () {});
-  })();
-</script>
+<script src="../assets/cursos.js"></script>
+<script>MCCursos.pintarCurso('literatura');</script>
 </body>
 </html>

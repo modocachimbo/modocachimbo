@@ -103,7 +103,7 @@
 
       allYears.forEach(id => {
         const info = activeMap[id];
-        const active = !!info;
+        const active = !!info && info.temas > 0; // año sin temas = Próximamente
         const a = document.createElement(active ? 'a' : 'div');
         a.className = 'year-card ' + (active ? 'active' : 'disabled');
         if (active) a.href = 'temario.html?year=' + encodeURIComponent(id);

@@ -6,6 +6,7 @@
 function nombreArchivo(h) {
   if (h.archivo === 'manifest.json') return 'Lista de años';
   if (h.archivo === 'alertas.json') return 'Alertas';
+  if (h.archivo === 'cursos.json') return 'Lista de cursos';
   return 'Preguntas ' + h.archivo.replace('.json', '');
 }
 function fechaHora(iso) { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleString('es-PE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }); }

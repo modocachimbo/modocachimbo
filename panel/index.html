@@ -293,6 +293,42 @@
   .cdnuevos > div { display: flex; align-items: center; gap: 8px; background: #0a0a0a; border: 1px solid #1f1f1f; border-radius: 10px; padding: 8px 10px; }
   .cdnuevos code { flex: 1; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 15px; font-weight: 700; color: #f5ffcc; letter-spacing: .5px; }
   @media (max-width: 600px) { .cdgrid { grid-template-columns: 1fr 1fr; } .cduso .bar { flex-basis: 100%; } }
+  .dest { display: flex; flex-direction: column; gap: 6px; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-faint); font-weight: 700; margin-top: 12px; max-width: 420px; }
+  /* Cursos */
+  .cu-area { margin-bottom: 22px; }
+  .cu-atit { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 15px; margin-bottom: 10px; display: flex; gap: 8px; align-items: center; }
+  .cu-atit span { font-family: 'Inter', sans-serif; font-size: 11px; background: #1c1c1c; color: var(--text-dim); border-radius: 100px; padding: 1px 8px; }
+  .cu-row { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; flex-wrap: wrap; }
+  .cu-row.oculto { opacity: .55; }
+  .cu-ico { width: 40px; height: 40px; flex-shrink: 0; color: var(--accent); display: flex; align-items: center; justify-content: center; }
+  .cu-ico svg, .cu-ico img { width: 100%; height: 100%; fill: currentColor; object-fit: contain; display: block; }
+  .cu-ico.big { width: 84px; height: 84px; background: #0a0a0a; border: 1px dashed #2a2a2a; border-radius: 16px; padding: 12px; }
+  .ci-vacio { font-family: 'Sora', sans-serif; font-weight: 800; color: var(--text-faint); font-size: 22px; }
+  .cu-info { flex: 1; min-width: 200px; }
+  .cu-info b { font-size: 14.5px; }
+  .cu-cfg { font-size: 12px; color: var(--text-faint); margin-top: 4px; }
+  .cfg { color: var(--accent); font-weight: 600; }
+  .cfg.off { color: var(--text-faint); font-weight: 500; }
+  .cfg.warn { color: var(--amber); }
+  .cu-acc { display: flex; gap: 6px; flex-wrap: wrap; }
+  .cu-acc .rbtn:disabled { opacity: .3; cursor: default; }
+  .cu-form { display: grid; grid-template-columns: 150px 1fr; gap: 18px; margin-top: 16px; }
+  .cu-icoed { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+  .cu-campos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .cu-campos label { display: flex; flex-direction: column; gap: 6px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-faint); font-weight: 700; }
+  .an-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid #1a1a1a; flex-wrap: wrap; }
+  .an-row b { font-family: 'Sora', sans-serif; font-size: 15px; }
+  .an-row > span:not(.pill) { font-size: 13px; color: var(--text-dim); margin-right: auto; }
+  .an-nuevo { display: flex; gap: 8px; margin-top: 16px; }
+  .an-nuevo .inp { max-width: 200px; }
+  .rf-box { background: #0b0b0b; border: 1px solid #1f1f1f; border-radius: 14px; padding: 14px 16px; margin-top: 14px; }
+  .rf-tit { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+  .rf-box .hint { margin-bottom: 10px; }
+  .rf-temas { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; max-height: 260px; overflow-y: auto; }
+  .rf-temas .ck { justify-content: flex-start; }
+  .rf-temas em { color: var(--text-faint); font-style: normal; margin-left: auto; font-size: 12px; }
+  .chip:disabled { opacity: .35; cursor: not-allowed; }
+  @media (max-width: 600px) { .cu-form { grid-template-columns: 1fr; } .cu-campos { grid-template-columns: 1fr; } }
   @media (max-width: 760px) { .meta-grid { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 600px) {
     .wrap { padding: 0 16px; }
@@ -341,6 +377,7 @@
         <button class="tab on" data-tab="reportes" type="button">Reportes <span class="badge" id="badgePend" hidden>0</span></button>
         <button class="tab" data-tab="subir" type="button">Subir tema</button>
         <button class="tab" data-tab="editar" type="button">Editar preguntas</button>
+        <button class="tab" data-tab="cursos" type="button">Cursos</button>
         <button class="tab" data-tab="alertas" type="button">Alertas</button>
         <button class="tab" data-tab="codigos" type="button">Códigos</button>
         <button class="tab" data-tab="corr" type="button">Correcciones <span class="badge" id="badgeRev" hidden>0</span></button>
@@ -424,6 +461,12 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
               <label>Tema N°<input class="inp" id="subNum" placeholder="02" inputmode="numeric"></label>
               <label>Nombre del tema<input class="inp" id="subNombre" placeholder="Nombre del tema"></label>
             </div>
+            <label class="dest">Destino
+              <select class="inp" id="subDestino">
+                <option value="libro">Libro — temas del año (también los usa el Repaso)</option>
+                <option value="fijas">Banco de Fijas propio del año</option>
+              </select>
+            </label>
           </div>
           <div id="subAvisos"></div>
           <div id="subLista"></div>
@@ -453,6 +496,19 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
           <div id="pkTemaWrap" hidden><div class="lbl">Tema</div><div class="chips" id="pkTema"></div></div>
         </div>
         <div id="qlist"></div>
+      </div>
+
+      <!-- Cursos -->
+      <div id="tab-cursos" hidden>
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Estructura del sitio</div>
+            <h1>Cursos</h1>
+            <p id="cuStats"></p>
+          </div>
+          <button class="btn-main" id="btnNuevoCurso" type="button">＋ Nuevo curso</button>
+        </div>
+        <div id="cuList"></div>
       </div>
 
       <!-- Alertas -->
@@ -513,14 +569,25 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
 <script>
   const CFG = window.MC_CONFIG || {};
   const $ = id => document.getElementById(id);
-  const CURSOS = [
+  let CURSOS = [
     ['algebra','Álgebra'],['anatomia','Anatomía'],['aritmetica','Aritmética'],['biologia','Biología'],
     ['ciudadania','Ciudadanía'],['economia','Economía'],['estadistica','Estadística'],['filosofia','Filosofía'],
     ['fisica','Física'],['geografia','Geografía'],['geometria','Geometría'],['historia-peru','Historia del Perú'],
     ['historia-universal','Historia Universal'],['lenguaje','Lenguaje'],['literatura','Literatura'],
     ['psicologia','Psicología'],['quimica','Química'],['raz-verbal','Razonamiento Verbal'],['trigonometria','Trigonometría']
   ];
-  const NOMBRE = Object.fromEntries(CURSOS);
+  let NOMBRE = Object.fromEntries(CURSOS);
+  let REG = null; // registro de cursos (assets/cursos.json)
+  async function cargarRegistro() {
+    try {
+      REG = (await api('cursos')).registro;
+      const ordenArea = {}; (REG.areas || []).forEach((a, i) => { ordenArea[a.id] = i; });
+      const lista = (REG.cursos || []).slice().sort((a, b) => (ordenArea[a.area] ?? 99) - (ordenArea[b.area] ?? 99) || (a.orden || 0) - (b.orden || 0));
+      CURSOS = lista.map(c => [c.id, c.nombre + (c.oculto ? ' (oculto)' : '')]);
+      NOMBRE = Object.fromEntries(lista.map(c => [c.id, c.nombre]));
+    } catch (e) { /* si falla, se queda la lista por defecto */ }
+    return REG;
+  }
   const ICON_EXT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>';
   const ICON_EDIT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>';
   const ICON_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
@@ -596,7 +663,7 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
       const r = await api('listar', {}, pass);
       PASS = pass; ss('set', 'mc_panel_pass', pass);
       DATA = r.reportes || [];
-      show('panel'); renderReportes();
+      show('panel'); renderReportes(); cargarRegistro();
     } catch (err) {
       $('loginErr').textContent = err instanceof ApiError ? err.message : 'No se pudo conectar. Revisa tu internet o el acceso del Apps Script.';
       $('loginErr').classList.add('show');
@@ -607,7 +674,8 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
   /* ---------- pestañas ---------- */
   document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
-    ['reportes', 'subir', 'editar', 'alertas', 'codigos', 'corr'].forEach(id => { $('tab-' + id).hidden = id !== t.dataset.tab; });
+    ['reportes', 'subir', 'editar', 'cursos', 'alertas', 'codigos', 'corr'].forEach(id => { $('tab-' + id).hidden = id !== t.dataset.tab; });
+    if (t.dataset.tab === 'cursos') cargarCursos();
     if (t.dataset.tab === 'codigos') cargarCodigos();
     if (t.dataset.tab === 'alertas') cargarAlertas();
     if (t.dataset.tab === 'subir') initSubir();
@@ -1006,7 +1074,7 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
     if (!CFG.REPORTES_URL) { $('setupMsg').hidden = false; return; }
     const saved = ss('get', 'mc_panel_pass');
     if (saved) {
-      try { const r = await api('listar', {}, saved); PASS = saved; DATA = r.reportes || []; show('panel'); renderReportes(); return; }
+      try { const r = await api('listar', {}, saved); PASS = saved; DATA = r.reportes || []; show('panel'); renderReportes(); cargarRegistro(); return; }
       catch (e) { ss('del', 'mc_panel_pass'); }
     }
     show('login');
@@ -1018,12 +1086,15 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
 <script src="alertas-panel.js"></script>
 <script src="codigos-panel.js"></script>
 <script src="mantenimiento.js"></script>
+<script src="../assets/cursos.js"></script>
+<script src="cursos-panel.js"></script>
 <script>
   $('btnNuevaAlerta').addEventListener('click', () => editarAlerta(null));
   $('btnCrearCod').addEventListener('click', () => editarCodigo(null));
   $('btnImportar').addEventListener('click', importarCodigos);
   $('cdBuscar').addEventListener('input', renderCodigos);
   $('btnRevArch').addEventListener('click', revisarArchivos);
+  $('btnNuevoCurso').addEventListener('click', () => formCurso(null));
 </script>
 </body>
 </html>

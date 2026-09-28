@@ -1,0 +1,385 @@
+{
+  "version": 1,
+  "areas": [
+    {
+      "id": "ciencia-tecnologia",
+      "nombre": "Ciencia y Tecnología"
+    },
+    {
+      "id": "matematica",
+      "nombre": "Matemática"
+    },
+    {
+      "id": "comunicacion",
+      "nombre": "Comunicación"
+    },
+    {
+      "id": "ciencias-sociales",
+      "nombre": "Ciencias Sociales"
+    }
+  ],
+  "cursos": [
+    {
+      "id": "biologia",
+      "nombre": "Biología",
+      "area": "ciencia-tecnologia",
+      "orden": 1,
+      "oculto": false,
+      "icono": "assets/icons/biologia.svg",
+      "prefijo": "BIO",
+      "libro": "CPU",
+      "repaso": {
+        "anio": "2027-I"
+      },
+      "fijas": {
+        "anio": "2027-I",
+        "modo": "banco",
+        "temas": "todos",
+        "porTema": 1
+      }
+    },
+    {
+      "id": "anatomia",
+      "nombre": "Anatomía",
+      "area": "ciencia-tecnologia",
+      "orden": 2,
+      "oculto": false,
+      "icono": "assets/icons/anatomia.svg",
+      "prefijo": "ALG",
+      "libro": "",
+      "repaso": {
+        "anio": "2027-I"
+      },
+      "fijas": {
+        "anio": "2027-I",
+        "modo": "temas",
+        "temas": "todos",
+        "porTema": 1
+      }
+    },
+    {
+      "id": "quimica",
+      "nombre": "Química",
+      "area": "ciencia-tecnologia",
+      "orden": 3,
+      "oculto": false,
+      "icono": "assets/icons/quimica.svg",
+      "prefijo": "ALG",
+      "libro": "",
+      "repaso": {
+        "anio": "2027-I"
+      },
+      "fijas": {
+        "anio": "2027-I",
+        "modo": "temas",
+        "temas": "todos",
+        "porTema": 1
+      }
+    },
+    {
+      "id": "fisica",
+      "nombre": "Física",
+      "area": "ciencia-tecnologia",
+      "orden": 4,
+      "oculto": false,
+      "icono": "assets/icons/fisica.svg",
+      "prefijo": "ALG",
+      "libro": "",
+      "repaso": {
+        "anio": "2027-I"
+      },
+      "fijas": {
+        "anio": "2027-I",
+        "modo": "temas",
+        "temas": "todos",
+        "porTema": 1
+      }
+    },
+    {
+      "id": "algebra",
+      "nombre": "Álgebra",
+      "area": "matematica",
+      "orden": 1,
+      "oculto": false,
+      "icono": "assets/icons/algebra.svg",
+      "prefijo": "ALG",
+      "libro": "",
+      "repaso": {
+        "anio": "2027-I"
+      },
+      "fijas": {
+        "anio": "2027-I",
+        "modo": "temas",
+        "temas": "todos",
+        "porTema": 1
+      }
+    },
+    {
+      "id": "aritmetica",
+      "nombre": "Aritmética",
+      "area": "matematica",
+      "orden": 2,
+      "oculto": false,
+      "icono": "assets/icons/aritmetica.svg",
+      "prefijo": "ARI",
+      "libro": "",
+      "repaso": {
+        "anio": "2027-I"
+      },
+      "fijas": {
+        "anio": "2027-I",
+        "modo": "temas",
+        "temas": "todos",
+        "porTema": 1
+      }
+    },
+    {
+      "id": "geometria",
+      "nombre": "Geometría",
+      "area": "matematica",
+      "orden": 3,
+      "oculto": false,
+      "icono": "assets/icons/geometria.svg",
+      "prefijo": "GEO",
+      "libro": "",
+      "repaso": {
+        "anio": "2027-I"
+      },
+      "fijas": {
+        "anio": "2027-I",
+        "modo": "temas",
+        "temas": "todos",
+        "porTema": 1
+      }
+    },
+    {
+      "id": "trigonometria",
+      "nombre": "Trigonometría",
+      "area": "matematica",
+      "orden": 4,
+      "oculto": false,
+      "icono": "assets/icons/trigonometria.svg",
+      "prefijo": "TRI",
+      "libro": "",
+      "repaso": {
+        "anio": "2027-I"
+      },
+      "fijas": {
+        "anio": "2027-I",
+        "modo": "temas",
+        "temas": "todos",
+        "porTema": 1
+      }
+    },
+    {
+      "id": "estadistica",
+      "nombre": "Estadística",
+      "area": "matematica",
+      "orden": 5,
+      "oculto": false,
+      "icono": "assets/icons/estadistica.svg",
+      "prefijo": "EST",
+      "libro": "",
+      "repaso": {
+        "anio": "2027-I"
+      },
+      "fijas": {
+        "anio": "2027-I",
+        "modo": "temas",
+        "temas": "todos",
+        "porTema": 1
+      }
+    },
+    {
+      "id": "raz-verbal",
+      "nombre": "Razonamiento Verbal",
+      "area": "comunicacion",
+      "orden": 1,
+      "oculto": false,
+      "icono": "assets/icons/raz-verbal.svg",
+      "prefijo": "RVB",
+      "libro": "",
+      "repaso": {
+        "anio": "2027-I"
+      },
+      "fijas": {
+        "anio": "2027-I",
+        "modo": "temas",
+        "temas": "todos",
+        "porTema": 1
+      },
+      "corto": "Raz. Verbal"
+    },
+    {
+      "id": "literatura",
+      "nombre": "Literatura",
+      "area": "comunicacion",
+      "orden": 2,
+      "oculto": false,
+      "icono": "assets/icons/literatura.svg",
+      "prefijo": "LIT",
+      "libro": "",
+      "repaso": {
+        "anio": "2027-I"
+      },
+      "fijas": {
+        "anio": "2027-I",
+        "modo": "temas",
+        "temas": "todos",
+        "porTema": 1
+      }
+    },
+    {
+      "id": "lenguaje",
+      "nombre": "Lenguaje",
+      "area": "comunicacion",
+      "orden": 3,
+      "oculto": false,
+      "icono": "assets/icons/lenguaje.svg",
+      "prefijo": "LEN",
+      "libro": "",
+      "repaso": {
+        "anio": "2027-I"
+      },
+      "fijas": {
+        "anio": "2027-I",
+        "modo": "temas",
+        "temas": "todos",
+        "porTema": 1
+      }
+    },
+    {
+      "id": "historia-peru",
+      "nombre": "Historia del Perú",
+      "area": "ciencias-sociales",
+      "orden": 1,
+      "oculto": false,
+      "icono": "assets/icons/historia-peru.svg",
+      "prefijo": "HPE",
+      "libro": "",
+      "repaso": {
+        "anio": "2027-I"
+      },
+      "fijas": {
+        "anio": "2027-I",
+        "modo": "temas",
+        "temas": "todos",
+        "porTema": 1
+      }
+    },
+    {
+      "id": "historia-universal",
+      "nombre": "Historia Universal",
+      "area": "ciencias-sociales",
+      "orden": 2,
+      "oculto": false,
+      "icono": "assets/icons/historia-universal.svg",
+      "prefijo": "HUN",
+      "libro": "",
+      "repaso": {
+        "anio": "2027-I"
+      },
+      "fijas": {
+        "anio": "2027-I",
+        "modo": "temas",
+        "temas": "todos",
+        "porTema": 1
+      }
+    },
+    {
+      "id": "geografia",
+      "nombre": "Geografía",
+      "area": "ciencias-sociales",
+      "orden": 3,
+      "oculto": false,
+      "icono": "assets/icons/geografia.svg",
+      "prefijo": "GEF",
+      "libro": "",
+      "repaso": {
+        "anio": "2027-I"
+      },
+      "fijas": {
+        "anio": "2027-I",
+        "modo": "temas",
+        "temas": "todos",
+        "porTema": 1
+      }
+    },
+    {
+      "id": "economia",
+      "nombre": "Economía",
+      "area": "ciencias-sociales",
+      "orden": 4,
+      "oculto": false,
+      "icono": "assets/icons/economia.svg",
+      "prefijo": "ECO",
+      "libro": "",
+      "repaso": {
+        "anio": "2027-I"
+      },
+      "fijas": {
+        "anio": "2027-I",
+        "modo": "temas",
+        "temas": "todos",
+        "porTema": 1
+      }
+    },
+    {
+      "id": "ciudadania",
+      "nombre": "Ciudadanía",
+      "area": "ciencias-sociales",
+      "orden": 5,
+      "oculto": false,
+      "icono": "assets/icons/ciudadania.svg",
+      "prefijo": "CIU",
+      "libro": "",
+      "repaso": {
+        "anio": "2027-I"
+      },
+      "fijas": {
+        "anio": "2027-I",
+        "modo": "temas",
+        "temas": "todos",
+        "porTema": 1
+      }
+    },
+    {
+      "id": "psicologia",
+      "nombre": "Psicología",
+      "area": "ciencias-sociales",
+      "orden": 6,
+      "oculto": false,
+      "icono": "assets/icons/psicologia.svg",
+      "prefijo": "PSI",
+      "libro": "",
+      "repaso": {
+        "anio": "2027-I"
+      },
+      "fijas": {
+        "anio": "2027-I",
+        "modo": "temas",
+        "temas": "todos",
+        "porTema": 1
+      }
+    },
+    {
+      "id": "filosofia",
+      "nombre": "Filosofía",
+      "area": "ciencias-sociales",
+      "orden": 7,
+      "oculto": false,
+      "icono": "assets/icons/filosofia.svg",
+      "prefijo": "FIL",
+      "libro": "",
+      "repaso": {
+        "anio": "2027-I"
+      },
+      "fijas": {
+        "anio": "2027-I",
+        "modo": "temas",
+        "temas": "todos",
+        "porTema": 1
+      }
+    }
+  ]
+}
