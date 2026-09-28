@@ -146,6 +146,8 @@
   }
   .qr-box img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
 </style>
+<script src="../assets/mc-config.js"></script>
+<script src="../assets/acceso.js"></script>
 </head>
 <body>
   <div class="wrap">
@@ -159,8 +161,8 @@
         <div class="vip-widget">
           <button class="link-login" id="vipToggle" type="button" style="background:none; border:none; cursor:pointer; font-family: 'Inter', sans-serif;">Ingresar código</button>
           <div class="vip-popover" id="vipPopover">
-            <p>¿Tienes un código VIP? Desbloquea todos los Repasos o todas las Fijas de una vez.</p>
-            <input type="text" id="vipInput" placeholder="Ej: REPASO-VIP489R" autocomplete="off" autocapitalize="characters">
+            <p>¿Tienes un código? Actívalo aquí para desbloquear Repasos y Fijas en este dispositivo.</p>
+            <input type="text" id="vipInput" placeholder="Ej: MC-7K3P-Q9XR" autocomplete="off" autocapitalize="characters">
             <button id="vipSubmit" type="button">Activar</button>
             <div class="vip-msg" id="vipMsg"></div>
           </div>
@@ -241,9 +243,8 @@ function jsonpRequest(url) {
 }
 
   // ===== Widget de código VIP (header) =====
+  // Códigos administrados desde el panel (assets/acceso.js)
   (function () {
-    var VIP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyztYgFAYuPTOcXyTlkhrooG6wP9WhJGZsHk-M1mJgM2ggOOUX8JOuewax_vXSylrAJ/exec';
-
     var toggle = document.getElementById('vipToggle');
     var popover = document.getElementById('vipPopover');
     var input = document.getElementById('vipInput');
@@ -251,18 +252,14 @@ function jsonpRequest(url) {
     var msg = document.getElementById('vipMsg');
 
     function actualizarEstadoBoton() {
-      var repasoVip = localStorage.getItem('unlocked_repaso-VIP') === '1';
-      var fijasVip = localStorage.getItem('unlocked_fijas-VIP') === '1';
-      if (repasoVip && fijasVip) {
-        toggle.textContent = '✓ VIP total activo';
-        toggle.classList.add('vip-active');
-      } else if (repasoVip) {
-        toggle.textContent = '✓ VIP Repasos activo';
-        toggle.classList.add('vip-active');
-      } else if (fijasVip) {
-        toggle.textContent = '✓ VIP Fijas activo';
-        toggle.classList.add('vip-active');
-      }
+      var prods = (window.MCAcceso ? MCAcceso.activos() : []).map(function (a) { return a.producto; });
+      var leer = function (k) { try { return localStorage.getItem(k) === '1'; } catch (e) { return false; } };
+      var repasoVip = prods.indexOf('repaso-VIP') >= 0 || leer('unlocked_repaso-VIP');
+      var fijasVip = prods.indexOf('fijas-VIP') >= 0 || leer('unlocked_fijas-VIP');
+      var total = prods.indexOf('TODO-VIP') >= 0 || (repasoVip && fijasVip);
+      var texto = total ? '✓ VIP total activo' : repasoVip ? '✓ VIP Repasos activo' : fijasVip ? '✓ VIP Fijas activo' :
+        prods.length ? '✓ Código activo' : '';
+      if (texto) { toggle.textContent = texto; toggle.classList.add('vip-active'); }
     }
     actualizarEstadoBoton();
 
@@ -279,35 +276,28 @@ function jsonpRequest(url) {
     async function activarVip() {
       var codigo = input.value.trim().toUpperCase();
       msg.classList.remove('show', 'ok', 'error');
-
       if (!codigo) {
         msg.textContent = 'Ingresa un código.';
         msg.classList.add('show', 'error');
         return;
       }
-
       submit.disabled = true;
       submit.textContent = 'Verificando…';
-
       try {
-        var url = VIP_SCRIPT_URL + '?modo=vip&codigo=' + encodeURIComponent(codigo);
-        var data = await jsonpRequest(url);
-
-        if (data.success) {
-          localStorage.setItem('unlocked_' + data.categoria + '-VIP', '1');
-          msg.textContent = data.message;
+        var r = await MCAcceso.activar(codigo, '');
+        if (r.ok) {
+          msg.textContent = r.mensaje;
           msg.classList.add('show', 'ok');
           actualizarEstadoBoton();
           input.value = '';
         } else {
-          msg.textContent = data.message || 'Código inválido.';
+          msg.textContent = r.mensaje || 'Código inválido.';
           msg.classList.add('show', 'error');
         }
       } catch (err) {
         msg.textContent = 'No se pudo verificar. Revisa tu conexión.';
         msg.classList.add('show', 'error');
       }
-
       submit.disabled = false;
       submit.textContent = 'Activar';
     }

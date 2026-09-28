@@ -262,6 +262,37 @@
   .al2 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
   .al2 label { display: flex; flex-direction: column; gap: 6px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-faint); font-weight: 700; }
   @media (max-width: 820px) { .algrid { grid-template-columns: 1fr; } .alprev { position: static; } .al2 { grid-template-columns: 1fr; } }
+  /* Códigos */
+  .acc-box { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 18px 20px; }
+  .acc-ttl { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 15px; margin-bottom: 8px; }
+  .acc-ttl span { font-family: 'Inter', sans-serif; font-weight: 500; font-size: 12.5px; color: var(--text-faint); }
+  .acc-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid #1a1a1a; flex-wrap: wrap; }
+  .acc-row > div { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 2px; }
+  .acc-row b { font-size: 14px; }
+  .acc-row span { font-size: 12.5px; color: var(--text-dim); line-height: 1.5; }
+  .acc-row .sw span { font-size: 0; }
+  .acc-row.legacy { margin-top: 6px; }
+  .acc-add { display: flex; gap: 8px; flex-wrap: wrap; padding: 12px 0; border-top: 1px solid #1a1a1a; }
+  .acc-add .inp { flex: 1; min-width: 140px; }
+  .cdcode { display: inline-flex; align-items: center; gap: 8px; background: #0a0a0a; border: 1px solid #2a2a2a; color: #f5ffcc; border-radius: 9px; padding: 6px 10px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13.5px; font-weight: 700; letter-spacing: .5px; cursor: pointer; }
+  .cdcode:hover { border-color: var(--accent); }
+  .cdcode svg { width: 13px; height: 13px; color: var(--text-faint); }
+  .cdnota { font-size: 13px; color: var(--text-dim); margin-bottom: 8px; }
+  .cduso { display: flex; align-items: center; gap: 12px; font-size: 12.5px; color: var(--text-dim); flex-wrap: wrap; }
+  .cduso .bar { flex: 0 0 160px; height: 6px; background: #1c1c1c; border-radius: 6px; overflow: hidden; }
+  .cduso .bar i { display: block; height: 100%; background: var(--accent); border-radius: 6px; }
+  .cduso b { color: var(--text); }
+  .cduso em { color: var(--text-faint); font-style: normal; }
+  .cddevs { margin-top: 12px; background: #0a0a0a; border: 1px solid #1d1d1d; border-radius: 12px; padding: 10px 12px; }
+  .dev { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid #161616; font-size: 12.5px; color: var(--text-dim); flex-wrap: wrap; }
+  .dev b { color: var(--text); }
+  .cdgrid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 16px; align-items: end; }
+  .cdgrid > label:not(.ck) { display: flex; flex-direction: column; gap: 6px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-faint); font-weight: 700; }
+  .inp:disabled { opacity: .4; }
+  .cdnuevos { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; }
+  .cdnuevos > div { display: flex; align-items: center; gap: 8px; background: #0a0a0a; border: 1px solid #1f1f1f; border-radius: 10px; padding: 8px 10px; }
+  .cdnuevos code { flex: 1; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 15px; font-weight: 700; color: #f5ffcc; letter-spacing: .5px; }
+  @media (max-width: 600px) { .cdgrid { grid-template-columns: 1fr 1fr; } .cduso .bar { flex-basis: 100%; } }
   @media (max-width: 760px) { .meta-grid { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 600px) {
     .wrap { padding: 0 16px; }
@@ -311,6 +342,7 @@
         <button class="tab" data-tab="subir" type="button">Subir tema</button>
         <button class="tab" data-tab="editar" type="button">Editar preguntas</button>
         <button class="tab" data-tab="alertas" type="button">Alertas</button>
+        <button class="tab" data-tab="codigos" type="button">Códigos</button>
         <button class="tab" data-tab="corr" type="button">Correcciones <span class="badge" id="badgeRev" hidden>0</span></button>
       </nav>
 
@@ -436,6 +468,25 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
         <div id="alList"></div>
       </div>
 
+      <!-- Códigos -->
+      <div id="tab-codigos" hidden>
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Repaso y Fijas</div>
+            <h1>Códigos de acceso</h1>
+            <p id="cdStats"></p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn-ghost" id="btnImportar" type="button">Importar</button>
+            <button class="btn-main" id="btnCrearCod" type="button">＋ Crear códigos</button>
+          </div>
+        </div>
+        <div id="cdConfig"></div>
+        <div class="toolbar" style="margin-top:18px;"><input class="search" id="cdBuscar" type="search" placeholder="Buscar por código, usuario o curso…"></div>
+        <div class="chips last" id="cdChips"></div>
+        <div id="cdList"></div>
+      </div>
+
       <!-- Correcciones -->
       <div id="tab-corr" hidden>
         <div class="page-head">
@@ -550,7 +601,8 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
   /* ---------- pestañas ---------- */
   document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
-    ['reportes', 'subir', 'editar', 'alertas', 'corr'].forEach(id => { $('tab-' + id).hidden = id !== t.dataset.tab; });
+    ['reportes', 'subir', 'editar', 'alertas', 'codigos', 'corr'].forEach(id => { $('tab-' + id).hidden = id !== t.dataset.tab; });
+    if (t.dataset.tab === 'codigos') cargarCodigos();
     if (t.dataset.tab === 'alertas') cargarAlertas();
     if (t.dataset.tab === 'subir') initSubir();
     if (t.dataset.tab === 'editar') renderPicker();
@@ -715,7 +767,7 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
   }
 
   // Mini ventana para escribir un dato; resuelve con el texto o null
-  function pedirTexto({ titulo, sub, valor = '', placeholder = '', boton = 'Guardar', peligro = false, exacto = null }) {
+  function pedirTexto({ titulo, sub, valor = '', placeholder = '', boton = 'Guardar', peligro = false, exacto = null, vacioOk = false }) {
     return new Promise(resolve => {
       const o = document.createElement('div');
       o.className = 'ov';
@@ -726,7 +778,7 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
         <button type="button" class="btn-main" data-ok ${peligro ? 'style="background:#c43d3d;color:#fff;"' : ''}>${esc(boton)}</button></div></div>`;
       document.body.appendChild(o);
       const inp = o.querySelector('#ptIn'), ok = o.querySelector('[data-ok]');
-      const check = () => { ok.disabled = exacto ? inp.value.trim() !== exacto : !inp.value.trim() || inp.value.trim() === valor; };
+      const check = () => { ok.disabled = exacto ? inp.value.trim() !== exacto : vacioOk ? false : !inp.value.trim() || inp.value.trim() === valor; };
       inp.addEventListener('input', check); check();
       inp.focus(); inp.select();
       const fin = v => { o.remove(); resolve(v); };
@@ -958,6 +1010,12 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
 <script src="subir.js"></script>
 <script src="../assets/alertas.js" data-solo-previa></script>
 <script src="alertas-panel.js"></script>
-<script>$('btnNuevaAlerta').addEventListener('click', () => editarAlerta(null));</script>
+<script src="codigos-panel.js"></script>
+<script>
+  $('btnNuevaAlerta').addEventListener('click', () => editarAlerta(null));
+  $('btnCrearCod').addEventListener('click', () => editarCodigo(null));
+  $('btnImportar').addEventListener('click', importarCodigos);
+  $('cdBuscar').addEventListener('input', renderCodigos);
+</script>
 </body>
 </html>

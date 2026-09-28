@@ -191,6 +191,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script src="../assets/mc-config.js"></script>
+<script src="../assets/acceso.js"></script>
 </head>
 <body>
 
@@ -284,35 +286,9 @@
   const year = params.get('year');
 
   // === Candado de acceso ===
+  // Códigos administrados desde el panel (assets/acceso.js)
   const PRODUCTO = 'repaso-historia-peru';
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyztYgFAYuPTOcXyTlkhrooG6wP9WhJGZsHk-M1mJgM2ggOOUX8JOuewax_vXSylrAJ/exec';
   const WHATSAPP_URL = 'https://wa.me/51917797543?text=' + encodeURIComponent('Hola! Quiero acceso a Repaso de Historia del Perú en Modo Cachimbo 🎓');
-
-function jsonpRequest(url) {
-  return new Promise(function (resolve, reject) {
-    var callbackName = 'jsonp_cb_' + Math.random().toString(36).slice(2);
-    var script = document.createElement('script');
-    var timeoutId;
-
-    window[callbackName] = function (data) {
-      resolve(data);
-      cleanup();
-    };
-
-    function cleanup() {
-      clearTimeout(timeoutId);
-      delete window[callbackName];
-      if (script.parentNode) script.parentNode.removeChild(script);
-    }
-
-    script.onerror = function () { reject(new Error('jsonp error')); cleanup(); };
-    timeoutId = setTimeout(function () { reject(new Error('timeout')); cleanup(); }, 10000);
-
-    var sep = url.indexOf('?') === -1 ? '?' : '&';
-    script.src = url + sep + 'callback=' + callbackName;
-    document.body.appendChild(script);
-  });
-}
 
   const lockScreen = document.getElementById('lockScreen');
   const lockInput = document.getElementById('lockInput');
@@ -320,44 +296,45 @@ function jsonpRequest(url) {
   const lockError = document.getElementById('lockError');
   const lockWhatsapp = document.getElementById('lockWhatsapp');
   lockWhatsapp.href = WHATSAPP_URL;
+  let preguntasCargadas = false;
 
   function unlockAndStart() {
+    if (accesoRetirado) { location.reload(); return; }
     lockScreen.classList.remove('show');
-    loadQuestions();
+    if (!preguntasCargadas) { preguntasCargadas = true; loadQuestions(); }
+  }
+  let accesoRetirado = false;
+  function bloquear(mensaje) {
+    if (preguntasCargadas) { // el acceso venció o se desactivó mientras la página estaba abierta
+      accesoRetirado = true;
+      ['startScreen', 'quizHeader', 'quizBody', 'endScreen'].forEach(function (id) { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+    }
+    lockScreen.classList.add('show');
+    if (mensaje) {
+      lockError.textContent = mensaje;
+      lockError.classList.add('show');
+      lockWhatsapp.classList.add('show');
+    }
   }
 
   async function tryUnlock() {
     const codigo = lockInput.value.trim().toUpperCase();
     lockError.classList.remove('show');
     lockWhatsapp.classList.remove('show');
-
     if (!codigo) {
       lockError.textContent = 'Ingresa tu código de acceso.';
       lockError.classList.add('show');
       return;
     }
-
     btnUnlock.disabled = true;
     btnUnlock.textContent = 'Verificando…';
-
     try {
-      const url = SCRIPT_URL + '?codigo=' + encodeURIComponent(codigo) + '&producto=' + encodeURIComponent(PRODUCTO);
-      const data = await jsonpRequest(url);
-
-      if (data.success) {
-        localStorage.setItem('unlocked_' + PRODUCTO, '1');
-        unlockAndStart();
-      } else {
-        lockError.textContent = data.message || 'Código inválido.';
-        lockError.classList.add('show');
-        lockWhatsapp.classList.add('show');
-      }
+      const r = await MCAcceso.activar(codigo, PRODUCTO);
+      if (r.ok) unlockAndStart();
+      else bloquear(r.mensaje || 'Código inválido.');
     } catch (e) {
-      lockError.textContent = 'No se pudo verificar el código. Revisa tu conexión e intenta de nuevo.';
-      lockError.classList.add('show');
-      lockWhatsapp.classList.add('show');
+      bloquear('No se pudo verificar el código. Revisa tu conexión e intenta de nuevo.');
     }
-
     btnUnlock.disabled = false;
     btnUnlock.textContent = 'Desbloquear';
   }
@@ -366,27 +343,11 @@ function jsonpRequest(url) {
   lockInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') tryUnlock(); });
 
   async function verificarAcceso() {
-    // 1) ¿Ya se desbloqueó antes en este dispositivo (código propio o VIP)?
-    if (localStorage.getItem('unlocked_' + PRODUCTO) === '1' || localStorage.getItem('unlocked_repaso-VIP') === '1') {
-      lockScreen.classList.remove('show');
-      loadQuestions();
-      return;
-    }
-
-    // 2) ¿Está abierto para todos ahorita mismo, según la hoja de Config?
-    try {
-      const url = SCRIPT_URL + '?modo=estado&producto=' + encodeURIComponent(PRODUCTO);
-      const data = await jsonpRequest(url);
-      if (data.abierto) {
-        lockScreen.classList.remove('show');
-        loadQuestions();
-        return;
-      }
-    } catch (e) {
-      // Si falla la consulta de estado, seguimos y pedimos el código normalmente
-    }
-
-    // 3) Ninguno de los anteriores: se queda mostrando el candado
+    // Si este dispositivo ya tenía acceso, abre al toque y confirma en segundo plano
+    if (MCAcceso.accesoLocal(PRODUCTO)) unlockAndStart();
+    const v = await MCAcceso.verificar(PRODUCTO);
+    if (v.acceso) unlockAndStart();
+    else bloquear(v.mensaje);
   }
 
   verificarAcceso();
