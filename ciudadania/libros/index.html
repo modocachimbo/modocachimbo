@@ -50,34 +50,9 @@
   .year-card .count { font-size: 12px; color: var(--accent); font-weight: 600; }
   .year-card.disabled { opacity: 0.38; cursor: default; pointer-events: none; }
   .year-card.disabled .count { color: var(--text-faint); }
-  .keys-toast {
-    position: fixed; left: 20px; bottom: 20px; z-index: 50;
-    display: flex; align-items: flex-start; gap: 10px;
-    max-width: 320px; background: var(--surface-2); border: 1px solid var(--border);
-    border-radius: 14px; padding: 14px 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-    animation: keysToastIn .25s ease;
-  }
-  .keys-toast .ico {
-    width: 20px; height: 20px; flex-shrink: 0; color: #FBBF24; margin-top: 1px;
-  }
-  .keys-toast .msg { font-size: 12.5px; line-height: 1.5; color: var(--text-dim); }
-  .keys-toast .msg b { color: var(--text); }
-  .keys-toast .close {
-    background: none; border: none; color: var(--text-faint); cursor: pointer;
-    font-size: 16px; line-height: 1; padding: 0; margin-left: auto;
-  }
-  .keys-toast .close:hover { color: var(--text); }
-  @keyframes keysToastIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-  @media (max-width: 480px) { .keys-toast { left: 12px; right: 12px; max-width: none; bottom: 12px; } }
 </style>
 </head>
 <body>
-  <div class="keys-toast" id="keysToast">
-    <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-    <div class="msg"><b>Claves no oficiales.</b> Las respuestas de este libro son de elaboración propia y pueden contener errores. Verifícalas con tu profesor.</div>
-    <button class="close" id="keysToastClose" aria-label="Cerrar">✕</button>
-  </div>
-
   <div class="wrap">
     <header class="top">
       <div class="back-row">
@@ -134,12 +109,6 @@
     .catch(() => {
       grid.innerHTML = '<div class="state-msg" style="grid-column:1/-1;">No se pudo cargar la lista de libros.</div>';
     });
-</script>
-<script>
-  const keysToast = document.getElementById('keysToast');
-  document.getElementById('keysToastClose').addEventListener('click', () => {
-    keysToast.style.display = 'none';
-  });
 </script>
 </body>
 </html>
