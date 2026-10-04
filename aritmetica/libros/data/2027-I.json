@@ -1,5 +1,283 @@
 [
   {
+    "num": "01",
+    "name": "Lógica proposicional",
+    "questions": [
+      {
+        "text": "En una conferencia organizada por la facultad de ciencias de la UNI, el expositor mencionó las siguientes expresiones:\nI. El número 20 tiene 6 divisores.\nII. El cuadrado de 4 más el cuadrado de 3 es 25.\nIII. Si un número es tres entonces el doble de un número es 6.\nIV. Harald Helfgott resolvió la conjetura débil de Goldbach en 2013.\nV. Considerado primer sabio matemático del Perú nacido en Huánuco es Mariano Dámaso Beraún.\nVI. Mariano Dámaso Beraún publicó el \"Ensayo sobre la trisección del ángulo\".\nVII. Tanto la física como las matemáticas son ciencias.\nCon esta información ayudemos al expositor a responder cuántas son proposiciones:",
+        "topic": "Aritmética · Lógica proposicional",
+        "options": [
+          {
+            "letter": "A",
+            "text": "3"
+          },
+          {
+            "letter": "B",
+            "text": "4"
+          },
+          {
+            "letter": "C",
+            "text": "5"
+          },
+          {
+            "letter": "D",
+            "text": "6"
+          },
+          {
+            "letter": "E",
+            "text": "7"
+          }
+        ],
+        "correct": 4
+      },
+      {
+        "text": "En la conferencia anual organizada por la CONAMAT, se pidió a cada participante que escribiera proposiciones simples y compuestas para poder ingresar, ellos escribieron:\n- 94 es número compuesto o 94 es primo.\n- El número 80 es par y el 35 es impar.\n- Los números 40 y 27 son pares.\n- Juan y Pedro son primos.\n- O Juan viaja a Tumbes por avión o viaja a Tumbes por tren.\n- Un ángulo es recto si y solo si su medida es 90°.\nDespués de una revisión, ¿indicar cuántas son proposiciones bicondicionales?",
+        "topic": "Aritmética · Lógica proposicional",
+        "options": [
+          {
+            "letter": "A",
+            "text": "1"
+          },
+          {
+            "letter": "B",
+            "text": "2"
+          },
+          {
+            "letter": "C",
+            "text": "3"
+          },
+          {
+            "letter": "D",
+            "text": "4"
+          },
+          {
+            "letter": "E",
+            "text": "5"
+          }
+        ],
+        "correct": 0
+      },
+      {
+        "text": "En el siguiente texto que habla de sus profesiones:\n\"No es el caso que, Carlos sea médico o abogado; en conclusión, Carlos no es abogado\". Indicar el nombre del esquema molecular:",
+        "topic": "Aritmética · Lógica proposicional",
+        "options": [
+          {
+            "letter": "A",
+            "text": "Negativo"
+          },
+          {
+            "letter": "B",
+            "text": "Condicional"
+          },
+          {
+            "letter": "C",
+            "text": "Bicondicional"
+          },
+          {
+            "letter": "D",
+            "text": "Disyunción fuerte"
+          },
+          {
+            "letter": "E",
+            "text": "Conjuntivo"
+          }
+        ],
+        "correct": 1
+      },
+      {
+        "text": "Un físico experimental diseña un interruptor inteligente representado por la siguiente proposición:\n$$\\sim(p\\vee q)\\rightarrow\\sim q$$\nDetermine la matriz principal:",
+        "topic": "Aritmética · Lógica proposicional",
+        "options": [
+          {
+            "letter": "A",
+            "text": "VVVV"
+          },
+          {
+            "letter": "B",
+            "text": "VFFV"
+          },
+          {
+            "letter": "C",
+            "text": "VVFF"
+          },
+          {
+            "letter": "D",
+            "text": "FFFF"
+          },
+          {
+            "letter": "E",
+            "text": "FVFV"
+          }
+        ],
+        "correct": 0
+      },
+      {
+        "text": "En el aula de Ciencias Empresariales el profesor deja la siguiente tabla del esquema molecular y pide a sus estudiantes reemplazar los valores de verdad en los círculos:\nLos valores de verdad que deben reemplazar a los círculos en el orden indicado son:",
+        "topic": "Aritmética · Lógica proposicional",
+        "options": [
+          {
+            "letter": "A",
+            "text": "VVVV"
+          },
+          {
+            "letter": "B",
+            "text": "VFFV"
+          },
+          {
+            "letter": "C",
+            "text": "VVFF"
+          },
+          {
+            "letter": "D",
+            "text": "FFFF"
+          },
+          {
+            "letter": "E",
+            "text": "FVFV"
+          }
+        ],
+        "correct": 0,
+        "graphic": "<img class=\"mc-img\" src=\"/modocachimbo/assets/img/aritmetica/2027-I/t01-e3grk22y5a.webp\" alt=\"Figura de la pregunta\" loading=\"lazy\" style=\"max-width:100%;height:auto;display:block;margin:0 auto;border-radius:6px;\">"
+      },
+      {
+        "text": "Tres estudiantes de matemática José, Paul y Richard en el curso de lógica discuten de quién dice la verdad, para ello el profesor le da a cada uno su esquema molecular:\n- José: $p\\rightarrow(p\\vee q)$\n- Paul: $(p\\wedge q)\\rightarrow(p\\wedge q)$\n- Richard: $\\sim[(p\\wedge q)\\rightarrow p]$\nIndicar el valor de verdad de cada uno respectivamente al reducir su esquema molecular.",
+        "topic": "Aritmética · Lógica proposicional",
+        "options": [
+          {
+            "letter": "A",
+            "text": "VVV"
+          },
+          {
+            "letter": "B",
+            "text": "VVF"
+          },
+          {
+            "letter": "C",
+            "text": "VFF"
+          },
+          {
+            "letter": "D",
+            "text": "FVF"
+          },
+          {
+            "letter": "E",
+            "text": "FVV"
+          }
+        ],
+        "correct": 1
+      },
+      {
+        "text": "Jaimito quiere encontrar los valores de verdad \"$p$\", \"$q$\" y \"$r$\" respectivamente del siguiente esquema molecular:\n$$(p\\wedge\\sim q)\\rightarrow r$$\ny para ello le dicen que toda la proposición es falsa, determinar los valores de verdad.",
+        "topic": "Aritmética · Lógica proposicional",
+        "options": [
+          {
+            "letter": "A",
+            "text": "VVF"
+          },
+          {
+            "letter": "B",
+            "text": "VFF"
+          },
+          {
+            "letter": "C",
+            "text": "VVV"
+          },
+          {
+            "letter": "D",
+            "text": "VFV"
+          },
+          {
+            "letter": "E",
+            "text": "FFF"
+          }
+        ],
+        "correct": 1
+      },
+      {
+        "text": "Dadas las proposiciones:\n- $p$: Marco es comerciante.\n- $q$: Marco es un próspero industrial.\n- $r$: Marco es ingeniero.\nAl simbolizar el enunciado:\n\"Si no es el caso que, Marcos sea un comerciante y un próspero industrial, entonces es ingeniero o no es comerciante\". Indicar cuántas son verdades en la matriz principal:",
+        "topic": "Aritmética · Lógica proposicional",
+        "options": [
+          {
+            "letter": "A",
+            "text": "1"
+          },
+          {
+            "letter": "B",
+            "text": "3"
+          },
+          {
+            "letter": "C",
+            "text": "4"
+          },
+          {
+            "letter": "D",
+            "text": "6"
+          },
+          {
+            "letter": "E",
+            "text": "7"
+          }
+        ],
+        "correct": 4
+      },
+      {
+        "text": "La empresa de tecnología Microsoft ha creado un nuevo comando lógico llamado \"Micrus\" ($\\otimes$) definido como:\n$$p\\otimes q=(p\\vee q)\\wedge\\sim r$$\nEl equipo de soporte debe simplificar la siguiente instrucción para reducir el consumo de datos:\n$$\\{[(p\\otimes q)\\vee\\sim r]\\wedge\\sim r\\}\\rightarrow\\sim\\{[(q\\otimes p)\\wedge\\sim r]\\vee\\sim r\\}$$",
+        "topic": "Aritmética · Lógica proposicional",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$p$"
+          },
+          {
+            "letter": "B",
+            "text": "$q$"
+          },
+          {
+            "letter": "C",
+            "text": "$r$"
+          },
+          {
+            "letter": "D",
+            "text": "$p\\vee r$"
+          },
+          {
+            "letter": "E",
+            "text": "$q\\wedge r$"
+          }
+        ],
+        "correct": 2
+      },
+      {
+        "text": "Hallar la expresión mínima equivalente del circuito mostrado e indicar el nombre del esquema mostrado:",
+        "topic": "Aritmética · Lógica proposicional",
+        "options": [
+          {
+            "letter": "A",
+            "text": "Negativo"
+          },
+          {
+            "letter": "B",
+            "text": "Condicional"
+          },
+          {
+            "letter": "C",
+            "text": "Bicondicional"
+          },
+          {
+            "letter": "D",
+            "text": "Disyunción inclusiva"
+          },
+          {
+            "letter": "E",
+            "text": "Disyunción exclusiva"
+          }
+        ],
+        "correct": 3,
+        "graphic": "<img class=\"mc-img\" src=\"/modocachimbo/assets/img/aritmetica/2027-I/t01-e3grkuwrz4.webp\" alt=\"Figura de la pregunta\" loading=\"lazy\" style=\"max-width:100%;height:auto;display:block;margin:0 auto;border-radius:6px;\">"
+      }
+    ]
+  },
+  {
     "num": "02",
     "name": "Teoría de conjuntos",
     "questions": [
