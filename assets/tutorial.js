@@ -8,11 +8,17 @@
   var ROOT = new URL('..', SCRIPT ? SCRIPT.src : location.href);
   var cerca = function (sel) { return function () { var a = document.querySelector(sel); return a ? (a.closest('.course') || a) : null; }; };
   var nth = function (sel, i) { return function () { return document.querySelectorAll(sel)[i] || null; }; };
+  // El primero que se vea (en celular algunos botones pasan a la barra de abajo)
+  var visible = function (sels) { return function () {
+    for (var i = 0; i < sels.length; i++) { var el = document.querySelector(sels[i]); if (el && el.getBoundingClientRect().width > 0) return el; }
+    return null;
+  }; };
 
   // Partes que se pueden iluminar en cada tipo de página
   var OBJETIVOS = {
-    inicio: [['hero', 'Título de bienvenida', '.hero'], ['cursos', 'Tarjetas de áreas (Mis cursos)', nth('section.cards', 0)],
-      ['examenes', 'Exámenes de admisión', nth('section.cards', 1)], ['codigo', 'Botón "Ingresar código"', '#vipToggle'], ['cafe', 'Invítame un café', '.coffee']],
+    inicio: [['hero', 'Saludo y cuenta regresiva', '.saludo'], ['cursos', 'Tarjetas de áreas (Mis cursos)', nth('section.cards', 0)],
+      ['examenes', 'Exámenes de admisión', nth('section.cards', 1)], ['codigo', 'Botón "Ingresar código"', visible(['#vipToggle', '#barCodigo', '.sal-accesos button.chip'])],
+      ['menu', 'Barra de abajo (celular)', '.barra'], ['cafe', 'Invítame un café', '.coffee']],
     area: [['cursos', 'Lista de cursos', '.courses'], ['primero', 'Primer curso', '.courses .course'], ['volver', 'Botón volver', 'a.back'], ['codigo', 'Botón "Ingresar código"', '#vipToggle']],
     curso: [['libro', 'Tarjeta Libro', cerca('a[href="libros/index.html"]')], ['repaso', 'Tarjeta Repaso', cerca('a[data-mc="repaso"], a[href^="repaso.html"]')],
       ['fijas', 'Tarjeta Fijas', cerca('a[data-mc="fijas"], a[href^="fijas.html"]')], ['codigo', 'Botón "Ingresar código"', '#vipToggle'], ['volver', 'Botón volver', 'a.back']],
