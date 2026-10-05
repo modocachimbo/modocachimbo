@@ -9,7 +9,7 @@ const ALU = { lista: [], cargado: false };
   const st = document.createElement('style');
   st.textContent = `
   .al-tabla-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 18px; background: var(--surface); }
-  .al-tabla { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 640px; }
+  .al-tabla { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 860px; }
   .al-tabla th { text-align: left; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-faint); font-weight: 700; padding: 14px 16px; border-bottom: 1px solid var(--border); white-space: nowrap; }
   .al-tabla td { padding: 12px 16px; border-bottom: 1px solid #191919; vertical-align: middle; }
   .al-tabla tr:last-child td { border-bottom: none; }
@@ -55,6 +55,13 @@ async function cargarAlumnos(forzar) {
     return;
   }
   ALU.lista = r.data || []; ALU.cargado = true;
+  // Progreso de cada alumno (supabase/04-progreso.sql); si aún no existe, la tabla sale sin esas columnas
+  const g = await cliente.rpc('progreso_alumnos');
+  ALU.progreso = !g.error;
+  if (!g.error) {
+    const por = {}; (g.data || []).forEach(x => { por[x.email] = x; });
+    ALU.lista.forEach(a => { const x = por[a.email] || {}; a.practicas = x.practicas || 0; a.promedio = x.promedio || 0; a.falladas = x.falladas || 0; });
+  }
   renderAlumnos();
 }
 
@@ -69,7 +76,7 @@ function renderAlumnos() {
   if (!rows.length) { $('aluList').innerHTML = '<div class="state-msg">Ningún alumno coincide con la búsqueda.</div>'; return; }
   const icono = window.MCRacha ? MCRacha.icono : '🔥';
   $('aluList').innerHTML = `<div class="al-tabla-wrap"><table class="al-tabla">
-    <thead><tr><th>Alumno</th><th>Carrera</th><th class="num">Racha</th><th class="num">Mejor</th><th class="num">Preguntas hoy</th><th class="num">Último día cumplido</th></tr></thead>
+    <thead><tr><th>Alumno</th><th>Carrera</th><th class="num">Racha</th><th class="num">Mejor</th><th class="num">Preguntas hoy</th><th class="num">Último día cumplido</th>${ALU.progreso ? '<th class="num">Prácticas</th><th class="num">Promedio</th><th class="num">Por repasar</th>' : ''}</tr></thead>
     <tbody>${rows.map(a => {
       const nom = a.apodo || a.nombre || (a.email || '').split('@')[0];
       const ini = esc((nom || '?').charAt(0).toUpperCase());
@@ -81,6 +88,7 @@ function renderAlumnos() {
         <td class="num">${a.mejor}</td>
         <td class="num">${a.hoy}</td>
         <td class="num">${alFecha(a.ultima)}</td>
+        ${ALU.progreso ? `<td class="num">${a.practicas}</td><td class="num">${a.practicas ? a.promedio + '%' : '—'}</td><td class="num">${a.falladas}</td>` : ''}
       </tr>`;
     }).join('')}</tbody></table></div>`;
 }

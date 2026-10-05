@@ -402,6 +402,8 @@
         const rFijas = await fetch('libros/data/' + year + '-fijas.json');
         if (rFijas.ok) {
           temasData = await rFijas.json();
+          // Origen de cada pregunta, para "Repasar mis falladas"
+          temasData.forEach(t => (t.questions || []).forEach((q, i) => { q._ref = 'psicologia/libros/data/' + year + '-fijas.json#' + t.num + '#' + i; q._tit = t.name; }));
           fixedMode = true;
         }
       } catch (e) { /* no existe banco propio, seguimos con los temas del libro */ }
@@ -412,6 +414,8 @@
         const r = await fetch('libros/data/' + year + '.json');
         if (!r.ok) throw 0;
         temasData = await r.json();
+        // Origen de cada pregunta, para "Repasar mis falladas"
+        temasData.forEach(t => (t.questions || []).forEach((q, i) => { q._ref = 'psicologia/libros/data/' + year + '.json#' + t.num + '#' + i; q._tit = t.name; }));
       } catch (e) {
         startScreen.innerHTML = '<div class="state-msg">Todavía no hay temario cargado para ' + year + '.</div>';
         startScreen.classList.add('show');
@@ -590,6 +594,11 @@
     endScreen.classList.add('show');
     finalScore.textContent = `${score} pts`;
     endMessage.textContent = lives <= 0 ? 'Se acabaron tus vidas. ¡Sigue practicando!' : 'Así te fue en esta práctica';
+    // Progreso del estudiante (assets/progreso.js), una sola vez por ronda
+    if (showEnd.ronda === activeQuestions) return;
+    showEnd.ronda = activeQuestions;
+    const prog = { tipo: 'fijas', carpeta: 'psicologia', anio: year, titulo: 'Psicología · Fijas ' + year, preguntas: activeQuestions, respuestas: answers };
+    window.MCProgreso ? MCProgreso.terminar(prog) : (window.mcProgresoPend = (window.mcProgresoPend || []).concat([prog]));
   }
 
   document.getElementById('btnRestart').addEventListener('click', () => {

@@ -251,7 +251,12 @@
     const results = await Promise.allSettled(
       requestedYears.map(y => fetch('data/' + y + '.json').then(r => { if (!r.ok) throw 0; return r.json(); }))
     );
-    results.forEach(r => { if (r.status === 'fulfilled') questions = questions.concat(r.value); });
+    results.forEach((r, k) => {
+      if (r.status !== 'fulfilled') return;
+      // Origen de cada pregunta, para "Repasar mis falladas"
+      r.value.forEach((q, i) => { q._ref = 'examenes/ordinario/data/' + requestedYears[k] + '.json##' + i; q._tit = 'Examen Ordinario ' + requestedYears[k]; });
+      questions = questions.concat(r.value);
+    });
 
     if (questions.length === 0) {
       startScreen.innerHTML = '<div class="state-msg">Todavía no hay preguntas cargadas para ' + requestedYears.join(', ') + '.</div>';
@@ -412,6 +417,11 @@
     endScreen.classList.add('show');
     finalScore.textContent = `${score} pts`;
     endMessage.textContent = lives <= 0 ? 'Se acabaron tus vidas. ¡Sigue practicando!' : 'Así te fue en esta práctica';
+    // Progreso del estudiante (assets/progreso.js), una sola vez por ronda
+    if (showEnd.ronda === activeQuestions) return;
+    showEnd.ronda = activeQuestions;
+    const prog = { tipo: 'examen', carpeta: 'ordinario', anio: requestedYears.join(','), titulo: 'Examen Ordinario · ' + requestedYears.join(', '), preguntas: activeQuestions, respuestas: answers };
+    window.MCProgreso ? MCProgreso.terminar(prog) : (window.mcProgresoPend = (window.mcProgresoPend || []).concat([prog]));
   }
 
   document.getElementById('btnRestart').addEventListener('click', () => {
