@@ -61,6 +61,10 @@
     var s = document.createElement('script');
     s.src = BASE + 'assets/racha.js';
     document.head.appendChild(s);
+    // Avisos de temas y cursos nuevos (assets/novedades.js)
+    var n = document.createElement('script');
+    n.src = BASE + 'assets/novedades.js';
+    document.head.appendChild(n);
   }
 
   function avisar() {
