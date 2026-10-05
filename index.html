@@ -51,18 +51,6 @@
 
   .auth-row { display: flex; align-items: center; gap: 14px; }
 
-  .btn-guest {
-    background: var(--accent);
-    color: #0e0e0e;
-    font-family: 'Sora', sans-serif;
-    font-weight: 700;
-    font-size: 13.5px;
-    padding: 9px 20px;
-    border-radius: 100px;
-    text-decoration: none;
-    cursor: default;
-  }
-
   .link-login {
     color: #d8d8d8;
     text-decoration: none;
@@ -306,6 +294,7 @@
 </style>
 <script src="assets/mc-config.js"></script>
 <script src="assets/acceso.js"></script>
+<script src="assets/auth.js"></script>
 </head>
 <body>
 
@@ -313,7 +302,6 @@
     <header class="top">
       <div class="logo"><div class="dot"></div><span>Modo Cachimbo</span></div>
       <div class="auth-row">
-        <a class="btn-guest" title="Próximamente">Invitado</a>
         <div class="vip-widget">
           <button class="link-login" id="vipToggle" type="button" style="background:none; border:none; cursor:pointer; font-family: 'Inter', sans-serif;">Ingresar código</button>
           <div class="vip-popover" id="vipPopover">
@@ -323,6 +311,7 @@
             <div class="vip-msg" id="vipMsg"></div>
           </div>
         </div>
+        <div data-mc-auth></div>
       </div>
     </header>
 
