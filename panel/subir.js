@@ -198,11 +198,12 @@ async function publicarTema() {
   try {
     // ¿Ya existe el tema?
     const destino = $('subDestino').value;
-    let existente = null;
+    let existente = null, temasCurso = null;
     if (destino === 'fijas') {
       try { existente = ((await api('archivo', { carpeta, anio: anio + '-fijas' })).temas || []).find(t => pad2(t.num) === tema) || null; } catch (e) { existente = null; }
     } else {
       const man = await api('archivo', { carpeta });
+      temasCurso = (man.manifest || []).reduce((n, x) => n + (+x.temas || 0), 0);
       if ((man.manifest || []).some(x => x.id === anio)) {
         const temas = (await api('archivo', { carpeta, anio })).temas || [];
         existente = temas.find(t => pad2(t.num) === tema) || null;
@@ -232,6 +233,13 @@ async function publicarTema() {
           <a class="rbtn link" href="${esc(url)}" target="_blank" rel="noopener">Ver en la web ${ICON_EXT}</a>
           <button type="button" class="btn-main" id="subOtro">Subir otro tema</button>
         </div></div>`;
+    // Aviso a los alumnos: solo temas nuevos (no Fijas). El primer tema de un curso avisa "curso nuevo".
+    if (modo === 'nuevo' && destino !== 'fijas') {
+      const res = document.createElement('div'); res.className = 'nv-res'; res.textContent = 'Avisando a los alumnos…';
+      $('subListo').querySelector('.mfoot').before(res);
+      const d = { tipo: temasCurso === 0 ? 'curso' : 'tema', carpeta, curso: NOMBRE[carpeta], anio, tema, nombre };
+      avisarNovedad(d).then(r => pintarResultadoNovedad(res, d, r), () => pintarResultadoNovedad(res, d, { ok: false, motivo: 'error' }));
+    }
     $('subOtro').addEventListener('click', () => {
       $('subTexto').value = ''; SUB.parse = null; SUB.zonas = [];
       $('subListo').hidden = true; $('subPaso1').hidden = false;
