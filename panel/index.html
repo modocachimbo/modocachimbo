@@ -64,6 +64,11 @@
   .card-hero .btn-main { margin-top: 12px; width: 100%; padding: 15px; font-size: 15px; border-radius: 14px; }
   .err { display: none; margin-top: 12px; font-size: 12.5px; color: var(--red); background: rgba(224,60,60,0.08); border-radius: 10px; padding: 10px 12px; line-height: 1.5; text-align: left; }
   .err.show { display: block; }
+  .gate { margin-top: 20px; display: grid; gap: 12px; justify-items: center; }
+  .gate-msg { font-size: 13.5px; color: var(--text-dim); line-height: 1.55; }
+  .gate-msg b { color: var(--text); }
+  .gate-msg.mal { color: var(--red); background: rgba(224,60,60,0.08); border-radius: 12px; padding: 12px 14px; }
+  .gate .btn-main, .gate .btn-ghost { width: 100%; text-align: center; justify-content: center; }
 
   /* Pestañas */
   .tabs { display: flex; gap: 6px; margin: 22px 0 6px; border-bottom: 1px solid #1a1a1a; overflow-x: auto; }
@@ -373,8 +378,11 @@
         <div class="eyebrow">Solo administrador</div>
         <h1>Panel admin</h1>
         <p>Reportes de alumnos y corrección de preguntas.</p>
-        <input class="pass" id="passInput" type="password" placeholder="Contraseña" required>
-        <button class="btn-main" id="btnLogin" type="submit">Entrar</button>
+        <div class="gate" id="gateCuenta"><div class="gate-msg">Revisando tu cuenta…</div></div>
+        <div id="passZona" hidden>
+          <input class="pass" id="passInput" type="password" placeholder="Contraseña" required>
+          <button class="btn-main" id="btnLogin" type="submit">Entrar</button>
+        </div>
         <div class="err" id="loginErr"></div>
       </form>
     </section>
@@ -695,8 +703,41 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
   }
   function salir() { ss('del', 'mc_panel_pass'); PASS = ''; DATA = []; $('passInput').value = ''; show('login'); }
 
+  /* ---------- cuenta de Google: solo correos en public.admins ---------- */
+  // 'ok' | 'sin-sesion' | 'denegado' | 'error' (Supabase no respondió: se permite la contraseña)
+  let GATE = null;
+  async function revisarCuenta() {
+    if (!window.MCAuth) return 'error';
+    let cliente;
+    try { cliente = await MCAuth.listo; } catch (e) { return 'error'; }
+    if (!MCAuth.usuario()) return 'sin-sesion';
+    try {
+      const r = await cliente.rpc('es_admin');
+      if (r.error) return 'error';
+      return r.data ? 'ok' : 'denegado';
+    } catch (e) { return 'error'; }
+  }
+  function pintarCuenta() {
+    const u = window.MCAuth && MCAuth.usuario();
+    const g = $('gateCuenta');
+    $('passZona').hidden = !(GATE === 'ok' || GATE === 'error');
+    if (GATE === 'ok') g.innerHTML = `<div class="gate-msg">Conectado como <b>${esc(u.email)}</b></div>`;
+    else if (GATE === 'error') g.innerHTML = '<div class="gate-msg">No se pudo revisar tu cuenta de Google. Por ahora entra solo con la contraseña.</div>';
+    else if (GATE === 'sin-sesion') g.innerHTML = '<div class="gate-msg">Primero entra con la cuenta de Google de administrador.</div><button class="btn-main" type="button" id="gateGoogle">Entrar con Google</button>';
+    else if (GATE === 'denegado') g.innerHTML = `<div class="gate-msg mal">⛔ <b>Acceso denegado.</b><br>${esc(u.email)} no es administrador de Modo Cachimbo.</div><button class="btn-ghost" type="button" id="gateOtra">Usar otra cuenta</button>`;
+    const bg = $('gateGoogle'); if (bg) bg.addEventListener('click', () => MCAuth.entrarGoogle());
+    const bo = $('gateOtra'); if (bo) bo.addEventListener('click', async () => { await MCAuth.salir(); MCAuth.entrarGoogle(); });
+  }
+  async function exigirCuenta() {
+    GATE = await revisarCuenta();
+    pintarCuenta();
+    if (GATE !== 'ok' && GATE !== 'error') { salir(); return false; }
+    return true;
+  }
+
   $('loginForm').addEventListener('submit', async e => {
     e.preventDefault();
+    if (GATE !== 'ok' && GATE !== 'error') return;
     const pass = $('passInput').value;
     const btn = $('btnLogin');
     btn.disabled = true; btn.textContent = 'Verificando…';
@@ -1116,6 +1157,11 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
   /* ---------- inicio ---------- */
   (async function init() {
     if (!CFG.REPORTES_URL) { $('setupMsg').hidden = false; return; }
+    // auth.js se carga más abajo: esperar a que estén todos los scripts
+    if (document.readyState === 'loading') await new Promise(r => document.addEventListener('DOMContentLoaded', r));
+    show('login');
+    if (window.MCAuth) MCAuth.alCambiar(async () => { const antes = GATE; GATE = await revisarCuenta(); if (GATE !== antes) { pintarCuenta(); if (GATE !== 'ok' && GATE !== 'error' && PASS) salir(); } });
+    if (!(await exigirCuenta())) return;
     const saved = ss('get', 'mc_panel_pass');
     if (saved) {
       try { const r = await api('listar', {}, saved); PASS = saved; DATA = r.reportes || []; show('panel'); renderReportes(); cargarRegistro(); return; }
