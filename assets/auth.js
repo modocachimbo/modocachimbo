@@ -123,9 +123,10 @@
     '.mcu-btn{background:var(--accent,#C6E000);color:#0e0e0e;font-family:Sora,sans-serif;font-weight:700;font-size:13.5px;padding:9px 20px;border-radius:100px;border:none;cursor:pointer}' +
     '.mcu-btn:hover{opacity:.88}' +
     '.mcu-user{position:relative}' +
-    '.mcu-chip{display:flex;align-items:center;gap:8px;background:var(--surface,#0e0e0e);border:1px solid var(--border,#232323);color:var(--text,#f2f2f2);border-radius:100px;padding:4px 14px 4px 4px;cursor:pointer;font:600 13.5px Inter,sans-serif}' +
+    '.mcu-chip{display:flex;align-items:center;gap:10px;min-width:132px;max-width:220px;background:var(--surface,#0e0e0e);border:1px solid var(--border,#232323);color:var(--text,#f2f2f2);border-radius:100px;padding:5px 20px 5px 5px;cursor:pointer;font:600 14.5px Inter,sans-serif}' +
+    '.mcu-chip .mcu-nom{flex:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
     '.mcu-chip:hover{border-color:var(--accent,#C6E000)}' +
-    '.mcu-av{width:30px;height:30px;border-radius:50%;background:var(--accent,#C6E000);color:#0e0e0e;display:flex;align-items:center;justify-content:center;font:800 13px Sora,sans-serif;overflow:hidden;flex-shrink:0}' +
+    '.mcu-av{width:34px;height:34px;border-radius:50%;background:var(--accent,#C6E000);color:#0e0e0e;display:flex;align-items:center;justify-content:center;font:800 13px Sora,sans-serif;overflow:hidden;flex-shrink:0}' +
     '.mcu-av img{width:100%;height:100%;object-fit:cover}' +
     '.mcu-menu{display:none;position:absolute;top:calc(100% + 8px);right:0;min-width:190px;background:var(--surface,#0e0e0e);border:1px solid var(--border,#232323);border-radius:14px;padding:6px;z-index:60;box-shadow:0 20px 40px rgba(0,0,0,.5)}' +
     '.mcu-menu.show{display:block}' +
@@ -268,7 +269,7 @@
       if (f) { var img = el('img'); img.alt = ''; img.referrerPolicy = 'no-referrer'; img.src = f; av.appendChild(img); }
       else av.textContent = n.charAt(0).toUpperCase();
       chip.appendChild(av);
-      chip.appendChild(el('span', '', n));
+      chip.appendChild(el('span', 'mcu-nom', n));
 
       var menu = el('div', 'mcu-menu');
       menu.appendChild(el('small', '', u.email || ''));
