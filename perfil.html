@@ -34,6 +34,14 @@
   .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 22px; padding: 26px 24px; margin-top: 18px; }
   .panel h2 { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; margin-bottom: 4px; }
   .panel .nota { color: var(--text-dim); font-size: 13px; line-height: 1.6; }
+  .racha-fila { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+  .racha-dato { background: var(--surface-2); border: 1px solid var(--border); border-radius: 16px; padding: 14px 10px; text-align: center; }
+  .racha-dato b { display: flex; align-items: center; justify-content: center; gap: 7px; font: 800 30px/1 'Sora', sans-serif; font-variant-numeric: tabular-nums; }
+  .racha-dato b svg { width: 19px; height: 25px; color: var(--accent); }
+  .racha-dato span { display: block; margin-top: 7px; font-size: 12px; color: var(--text-dim); font-weight: 600; }
+  .racha-dato.on b { color: var(--accent); }
+  .racha-hoy { height: 6px; border-radius: 6px; background: #262626; overflow: hidden; margin-top: 14px; }
+  .racha-hoy i { display: block; height: 100%; width: 0; background: var(--accent); }
 
   .cabecera { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
   .avatar { width: 72px; height: 72px; border-radius: 50%; background: var(--accent); color: #0e0e0e; display: flex; align-items: center; justify-content: center; font: 800 28px 'Sora', sans-serif; overflow: hidden; flex-shrink: 0; }
@@ -154,6 +162,18 @@
         <ul class="lista" id="accesos"></ul>
       </section>
 
+      <section class="panel" id="racha">
+        <h2>Mi racha</h2>
+        <p class="nota">Responde 10 preguntas al día para sumar un día. Tienes 1 día de descanso por semana: si faltas 2 días, vuelve a 0.</p>
+        <div class="racha-fila">
+          <div class="racha-dato" id="rActual"><b>–</b><span>días de racha</span></div>
+          <div class="racha-dato"><b id="rMejor">–</b><span>mejor racha</span></div>
+          <div class="racha-dato"><b id="rHoy">–</b><span>preguntas hoy</span></div>
+        </div>
+        <div class="racha-hoy"><i id="rBarra"></i></div>
+        <p class="nota" id="rNota" style="margin-top:10px"></p>
+      </section>
+
       <section class="panel">
         <h2>Mi progreso</h2>
         <p class="nota">Muy pronto: tu avance por curso, tus temas débiles y las preguntas que fallaste para repasarlas.</p>
@@ -264,6 +284,24 @@
 
   // Se llama al saber si hay sesión, y otra vez al entrar o salir
   MCAuth.alCambiar(cargar);
+
+  // Racha de estudio (assets/racha.js la carga auth.js)
+  function pintarRacha(r) {
+    if (!r) return;
+    var meta = r.meta || 10, n = r.actual || 0;
+    var b = $('rActual').querySelector('b'); b.innerHTML = MCRacha.icono; b.appendChild(document.createTextNode(n));
+    $('rActual').classList.toggle('on', !!r.cumplido_hoy);
+    $('rActual').querySelector('span').textContent = n === 1 ? 'día de racha' : 'días de racha';
+    $('rMejor').textContent = Math.max(r.mejor || 0, n);
+    $('rHoy').textContent = Math.min(r.hoy || 0, meta) + '/' + meta;
+    $('rBarra').style.width = Math.min((r.hoy || 0) / meta, 1) * 100 + '%';
+    $('rNota').textContent = r.cumplido_hoy ? '¡Hoy ya sumaste tu día! Vuelve mañana para seguir.'
+      : 'Te faltan ' + (meta - Math.min(r.hoy || 0, meta)) + ' preguntas hoy para sumar tu día.' + (r.descanso_usado ? ' Ya usaste tu descanso de esta semana.' : '');
+  }
+  (function esperarRacha(i) {
+    if (window.MCRacha) MCRacha.alCambiar(pintarRacha);
+    else if (i < 100) setTimeout(function () { esperarRacha(i + 1); }, 150);
+  })(0);
   MCAuth.listo.catch(function () {
     ver('cargando');
     $('cargando').innerHTML = '<p>No se pudo conectar. Revisa tu internet y recarga la página.</p>';

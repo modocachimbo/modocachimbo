@@ -389,6 +389,7 @@
         <button class="tab" data-tab="alertas" type="button">Alertas</button>
         <button class="tab" data-tab="tutorial" type="button">Tutorial</button>
         <button class="tab" data-tab="codigos" type="button">Códigos</button>
+        <button class="tab" data-tab="alumnos" type="button">Alumnos</button>
         <button class="tab" data-tab="corr" type="button">Correcciones <span class="badge" id="badgeRev" hidden>0</span></button>
       </nav>
 
@@ -568,6 +569,20 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
         <div id="cdList"></div>
       </div>
 
+      <!-- Alumnos (cuentas de Supabase) -->
+      <div id="tab-alumnos" hidden>
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Cuentas con Google</div>
+            <h1>Alumnos</h1>
+            <p id="aluStats">Racha de estudio de cada alumno.</p>
+          </div>
+          <button class="btn-ghost" id="aluRecargar" type="button">Actualizar</button>
+        </div>
+        <div class="toolbar"><input class="search" id="aluBuscar" type="search" placeholder="Buscar por nombre, apodo, correo o carrera…"></div>
+        <div id="aluList"></div>
+      </div>
+
       <!-- Correcciones -->
       <div id="tab-corr" hidden>
         <div class="page-head">
@@ -699,10 +714,11 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
   /* ---------- pestañas ---------- */
   document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
-    ['reportes', 'subir', 'editar', 'cursos', 'alertas', 'tutorial', 'codigos', 'corr'].forEach(id => { $('tab-' + id).hidden = id !== t.dataset.tab; });
+    ['reportes', 'subir', 'editar', 'cursos', 'alertas', 'tutorial', 'codigos', 'alumnos', 'corr'].forEach(id => { $('tab-' + id).hidden = id !== t.dataset.tab; });
     if (t.dataset.tab === 'tutorial' && !TU.datos) cargarTutorial();
     if (t.dataset.tab === 'cursos') cargarCursos();
     if (t.dataset.tab === 'codigos') cargarCodigos();
+    if (t.dataset.tab === 'alumnos') cargarAlumnos();
     if (t.dataset.tab === 'alertas') cargarAlertas();
     if (t.dataset.tab === 'subir') initSubir();
     if (t.dataset.tab === 'editar') renderPicker();
@@ -1111,6 +1127,8 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
 <script src="../assets/alertas.js" data-solo-previa></script>
 <script src="alertas-panel.js"></script>
 <script src="codigos-panel.js"></script>
+<script src="../assets/auth.js"></script>
+<script src="alumnos-panel.js"></script>
 <script src="mantenimiento.js"></script>
 <script src="../assets/cursos.js"></script>
 <script src="cursos-panel.js"></script>

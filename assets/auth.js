@@ -53,9 +53,20 @@
 
   function usuario() { return sesion ? sesion.user : null; }
 
+  // La racha (assets/racha.js) se carga sola cuando hay alumno con sesión
+  var rachaPedida = false;
+  function cargarRacha() {
+    if (rachaPedida || window.MCRacha || !usuario()) return;
+    rachaPedida = true;
+    var s = document.createElement('script');
+    s.src = BASE + 'assets/racha.js';
+    document.head.appendChild(s);
+  }
+
   function avisar() {
     // Página privada sin sesión (venció o cerró sesión): a la bienvenida
     if (window.MC_PRIVADA && cliente && iniciado && !usuario() && window.MC_BIENVENIDA) { window.MC_BIENVENIDA(); return; }
+    cargarRacha();
     oyentes.forEach(function (fn) { try { fn(usuario()); } catch (e) {} });
     pintarWidgets();
   }
@@ -122,7 +133,7 @@
   var CSS = '' +
     '.mcu-btn{background:var(--accent,#C6E000);color:#0e0e0e;font-family:Sora,sans-serif;font-weight:700;font-size:13.5px;padding:9px 20px;border-radius:100px;border:none;cursor:pointer}' +
     '.mcu-btn:hover{opacity:.88}' +
-    '.mcu-user{position:relative}' +
+    '.mcu-user{position:relative;display:flex;align-items:center;gap:8px}' +
     '.mcu-chip{display:flex;align-items:center;gap:10px;min-width:132px;max-width:220px;background:var(--surface,#0e0e0e);border:1px solid var(--border,#232323);color:var(--text,#f2f2f2);border-radius:100px;padding:5px 20px 5px 5px;cursor:pointer;font:600 14.5px Inter,sans-serif}' +
     '.mcu-chip .mcu-nom{flex:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
     '.mcu-chip:hover{border-color:var(--accent,#C6E000)}' +
@@ -270,6 +281,10 @@
       else av.textContent = n.charAt(0).toUpperCase();
       chip.appendChild(av);
       chip.appendChild(el('span', 'mcu-nom', n));
+      // Lugar para la racha (lo llena assets/racha.js)
+      var racha = el('a', 'mcu-racha'); racha.href = BASE + 'perfil.html#racha';
+      racha.setAttribute('data-mc-racha', ''); racha.hidden = true;
+      cont.appendChild(racha);
 
       var menu = el('div', 'mcu-menu');
       menu.appendChild(el('small', '', u.email || ''));
@@ -283,6 +298,7 @@
       cont.appendChild(chip); cont.appendChild(menu);
       caja.appendChild(cont);
     });
+    if (u && window.MCRacha) window.MCRacha.pintar();
   }
 
   document.addEventListener('click', function (e) {
@@ -304,6 +320,7 @@
     salir: salir,
     alCambiar: alCambiar,
     abrirIngreso: abrirIngreso,
+    token: function () { return sesion ? sesion.access_token : ''; },
     base: BASE
   };
 })();
