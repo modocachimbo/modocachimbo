@@ -55,6 +55,10 @@
   form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px; }
   .campo { display: flex; flex-direction: column; gap: 6px; }
   .campo.ancho { grid-column: 1 / -1; }
+  .bloque-info { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; font-size: 13px; color: var(--text-dim); }
+  .bloque-info[hidden] { display: none; }
+  .bloque-info .tit { width: 100%; color: var(--text); font-weight: 600; }
+  .bloque-info .pt { background: var(--accent-soft); color: var(--accent); border-radius: 100px; padding: 5px 10px; font-weight: 700; font-size: 12.5px; white-space: nowrap; }
   @media (max-width: 560px) { form { grid-template-columns: 1fr; } }
   label { font-size: 12.5px; font-weight: 600; color: var(--text-dim); }
   label small { font-weight: 400; color: var(--text-faint); }
@@ -86,6 +90,7 @@
 </style>
 <script src="assets/mc-config.js"></script>
 <script src="assets/acceso.js"></script>
+<script src="assets/carreras.js"></script>
 <script src="assets/auth.js"></script>
 </head>
 <body>
@@ -129,10 +134,19 @@
             <label for="apodo">Apodo <small>(cómo te saludamos)</small></label>
             <input id="apodo" name="apodo" maxlength="30">
           </div>
-          <div class="campo ancho">
-            <label for="carrera">Carrera a la que postulas</label>
-            <input id="carrera" name="carrera" maxlength="80" placeholder="Ej: Medicina Humana">
+          <div class="campo">
+            <label for="bloque">Bloque</label>
+            <select id="bloque">
+              <option value="">Elegir bloque…</option>
+            </select>
           </div>
+          <div class="campo">
+            <label for="carrera">Carrera a la que postulas</label>
+            <select id="carrera" name="carrera">
+              <option value="">Primero elige tu bloque</option>
+            </select>
+          </div>
+          <div class="campo ancho bloque-info" id="bloqueInfo" hidden></div>
           <div class="campo">
             <label for="modalidad">Modalidad</label>
             <select id="modalidad" name="modalidad">
@@ -190,6 +204,43 @@
   var $ = function (id) { return document.getElementById(id); };
   var CAMPOS = ['nombre', 'apodo', 'carrera', 'modalidad', 'fecha_examen', 'celular'];
   var NOMBRES = { 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'TODO-VIP': 'Acceso total' };
+
+  // Bloque y carrera (lista en assets/carreras.js)
+  var BLOQ = MCCarreras.bloques;
+  BLOQ.forEach(function (b) {
+    var o = document.createElement('option'); o.value = b.id; o.textContent = 'Bloque ' + b.id + ' · ' + b.nombre;
+    $('bloque').appendChild(o);
+  });
+  function llenarCarreras(bid, actual) {
+    var sel = $('carrera'); sel.textContent = '';
+    var b = BLOQ.filter(function (x) { return x.id === bid; })[0];
+    var o0 = document.createElement('option'); o0.value = ''; o0.textContent = b ? 'Elegir carrera…' : 'Primero elige tu bloque';
+    sel.appendChild(o0);
+    // Carrera escrita antes a mano que no está en la lista: se conserva
+    if (actual && !MCCarreras.bloqueDe(actual)) {
+      var ox = document.createElement('option'); ox.value = actual; ox.textContent = actual + ' (escrita antes)'; sel.appendChild(ox);
+    }
+    (b ? b.carreras : []).forEach(function (c) { var o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o); });
+    sel.disabled = !b && !(actual && !MCCarreras.bloqueDe(actual));
+    sel.value = actual || '';
+    pintarBloque();
+  }
+  function pintarBloque() {
+    var b = BLOQ.filter(function (x) { return x.id === $('bloque').value; })[0], info = $('bloqueInfo');
+    if (!b) { info.hidden = true; return; }
+    var p = b.puntos;
+    info.innerHTML = '<span class="tit">Puntos por pregunta correcta en el Bloque ' + b.id + '</span>' +
+      '<span class="pt">Comunicación ' + p.com + '</span><span class="pt">Matemática ' + p.mat + '</span>' +
+      '<span class="pt">Ciencia y Tecnología ' + p.cta + '</span><span class="pt">Ciencias Sociales ' + p.ccss + '</span>';
+    info.hidden = false;
+  }
+  function ponerCarrera(valor) {
+    var b = MCCarreras.bloqueDe(valor);
+    $('bloque').value = b ? b.id : '';
+    llenarCarreras(b ? b.id : '', b ? MCCarreras.oficial(valor) : valor);
+  }
+  $('bloque').addEventListener('change', function () { llenarCarreras(this.value, ''); });
+  llenarCarreras('', '');
 
   function ver(cual) {
     $('cargando').hidden = cual !== 'cargando';
@@ -254,7 +305,8 @@
     pintarAccesos();
     pintarCabecera(u, {});
     MCAuth.perfil(true).then(function (p) {
-      CAMPOS.forEach(function (c) { $(c).value = p[c] || ''; });
+      CAMPOS.forEach(function (c) { if (c !== 'carrera') $(c).value = p[c] || ''; });
+      ponerCarrera(p.carrera || '');
       pintarCabecera(u, p);
     }).catch(function () {
       $('estado').textContent = 'No se pudo cargar tu perfil. Recarga la página.';
