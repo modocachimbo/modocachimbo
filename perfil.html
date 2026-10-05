@@ -43,6 +43,20 @@
   .racha-hoy { height: 6px; border-radius: 6px; background: #262626; overflow: hidden; margin-top: 14px; }
   .racha-hoy i { display: block; height: 100%; width: 0; background: var(--accent); }
 
+  .prog-repasar { display: block; text-align: center; margin-top: 14px; }
+  .prog-repasar[hidden] { display: none; }
+  .prog-cursos { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
+  .prog-curso { background: var(--surface-2); border: 1px solid var(--border); border-radius: 16px; padding: 14px 16px; min-width: 0; }
+  .prog-cab { display: flex; align-items: baseline; gap: 10px; }
+  .prog-cab b { font: 700 15px 'Sora', sans-serif; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .prog-cab span { font: 800 16px 'Sora', sans-serif; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .prog-barra { height: 6px; border-radius: 6px; background: #262626; overflow: hidden; margin: 9px 0 8px; }
+  .prog-barra i { display: block; height: 100%; background: var(--accent); }
+  .prog-sub { font-size: 12.5px; color: var(--text-dim); }
+  .prog-debiles { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .prog-debiles a { font-size: 12px; font-weight: 600; color: #ffb4b4; background: rgba(224,60,60,.1); border: 1px solid rgba(224,60,60,.25); border-radius: 100px; padding: 5px 10px; text-decoration: none; }
+  .prog-debiles a:hover { border-color: #ff8a8a; }
+
   .cabecera { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
   .avatar { width: 72px; height: 72px; border-radius: 50%; background: var(--accent); color: #0e0e0e; display: flex; align-items: center; justify-content: center; font: 800 28px 'Sora', sans-serif; overflow: hidden; flex-shrink: 0; }
   .avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -188,9 +202,16 @@
         <p class="nota" id="rNota" style="margin-top:10px"></p>
       </section>
 
-      <section class="panel">
+      <section class="panel" id="progreso">
         <h2>Mi progreso</h2>
-        <p class="nota">Muy pronto: tu avance por curso, tus temas débiles y las preguntas que fallaste para repasarlas.</p>
+        <p class="nota">Se guarda solo cada vez que terminas una práctica, un Repaso, unas Fijas o un examen.</p>
+        <div class="racha-fila">
+          <div class="racha-dato"><b id="pPracticas">–</b><span>prácticas</span></div>
+          <div class="racha-dato"><b id="pPromedio">–</b><span>promedio</span></div>
+          <div class="racha-dato"><b id="pFalladas">–</b><span>por repasar</span></div>
+        </div>
+        <a class="btn prog-repasar" id="pRepasar" href="falladas.html" hidden>🔁 Repasar mis preguntas falladas</a>
+        <div class="prog-cursos" id="pCursos"><p class="nota">Cargando tu progreso…</p></div>
       </section>
 
       <button class="btn sec" type="button" id="btnSalir" style="margin-top:18px">Cerrar sesión</button>
@@ -336,6 +357,75 @@
 
   // Se llama al saber si hay sesión, y otra vez al entrar o salir
   MCAuth.alCambiar(cargar);
+
+  // Mi progreso (assets/progreso.js lo carga auth.js)
+  var NOMBRE_CURSO = { ordinario: 'Exámenes · Ordinario', cpu: 'Exámenes · CPU', 'control-cpu': 'Exámenes · Control CPU' };
+  fetch('assets/cursos.json').then(function (r) { return r.json(); }).then(function (d) {
+    (d.cursos || []).forEach(function (c) { NOMBRE_CURSO[c.id] = c.nombre; });
+  }).catch(function () {});
+  function pintarProgreso(d) {
+    var P = d.practicas, F = d.falladas;
+    var n = P.reduce(function (s, x) { return s + (x.intentos || 0); }, 0);
+    $('pPracticas').textContent = n;
+    $('pPromedio').textContent = P.length ? Math.round(P.reduce(function (s, x) { return s + x.mejor; }, 0) / P.length) + '%' : '–';
+    $('pFalladas').textContent = F.length;
+    var rep = $('pRepasar');
+    rep.hidden = !F.length;
+    rep.textContent = '🔁 Repasar mis ' + F.length + ' pregunta' + (F.length === 1 ? '' : 's') + ' fallada' + (F.length === 1 ? '' : 's');
+    var caja = $('pCursos'); caja.textContent = '';
+    if (!P.length) {
+      var v = document.createElement('p'); v.className = 'nota';
+      v.textContent = 'Aún no terminaste ninguna práctica. Cuando termines una, aquí verás tu avance por curso.';
+      caja.appendChild(v); return;
+    }
+    // Agrupar por curso (o tipo de examen)
+    var grupos = {}, orden = [];
+    P.forEach(function (x) {
+      var k = x.carpeta || x.tipo;
+      if (!grupos[k]) { grupos[k] = []; orden.push(k); }
+      grupos[k].push(x);
+    });
+    orden.forEach(function (k) {
+      var L = grupos[k];
+      var prom = Math.round(L.reduce(function (s, x) { return s + x.mejor; }, 0) / L.length);
+      var temas = L.filter(function (x) { return x.tipo === 'libro' && x.tema; });
+      var debiles = temas.filter(function (x) { return x.mejor < 60; }).sort(function (a, b) { return a.mejor - b.mejor; }).slice(0, 4);
+      var div = document.createElement('div'); div.className = 'prog-curso';
+      var cab = document.createElement('div'); cab.className = 'prog-cab';
+      var b = document.createElement('b'); b.textContent = NOMBRE_CURSO[k] || k;
+      var sp = document.createElement('span'); sp.textContent = prom + '%';
+      cab.appendChild(b); cab.appendChild(sp); div.appendChild(cab);
+      var barra = document.createElement('div'); barra.className = 'prog-barra';
+      var i = document.createElement('i'); i.style.width = prom + '%'; barra.appendChild(i); div.appendChild(barra);
+      var sub = document.createElement('div'); sub.className = 'prog-sub';
+      var partes = [];
+      if (temas.length) partes.push(temas.length + (temas.length === 1 ? ' tema practicado' : ' temas practicados'));
+      ['repaso', 'fijas', 'examen'].forEach(function (t) {
+        var x = L.filter(function (y) { return y.tipo === t; });
+        if (x.length) partes.push({ repaso: 'Repaso', fijas: 'Fijas', examen: 'Mejor nota' }[t] + ' ' + Math.max.apply(null, x.map(function (y) { return y.mejor; })) + '%');
+      });
+      sub.textContent = partes.join(' · ');
+      div.appendChild(sub);
+      if (debiles.length) {
+        var dd = document.createElement('div'); dd.className = 'prog-debiles';
+        debiles.forEach(function (x) {
+          var a = document.createElement('a');
+          a.href = x.carpeta + '/libros/tema.html?year=' + encodeURIComponent(x.anio) + '&tema=' + encodeURIComponent(x.tema);
+          a.textContent = 'Reforzar: ' + String(x.titulo || '').replace(/^.*? · /, '') + ' (' + x.mejor + '%)';
+          dd.appendChild(a);
+        });
+        div.appendChild(dd);
+      }
+      caja.appendChild(div);
+    });
+  }
+  (function esperarProgreso(n) {
+    if (window.MCProgreso) {
+      MCProgreso.cargar().then(pintarProgreso, function () {
+        $('pCursos').innerHTML = '<p class="nota">No se pudo cargar tu progreso. Recarga la página.</p>';
+      });
+    } else if (n < 100) setTimeout(function () { esperarProgreso(n + 1); }, 150);
+  })(0);
 
   // Racha de estudio (assets/racha.js la carga auth.js)
   function pintarRacha(r) {

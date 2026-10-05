@@ -61,6 +61,10 @@
     var s = document.createElement('script');
     s.src = BASE + 'assets/racha.js';
     document.head.appendChild(s);
+    // Progreso del estudiante (assets/progreso.js)
+    var g = document.createElement('script');
+    g.src = BASE + 'assets/progreso.js';
+    document.head.appendChild(g);
     // Avisos de temas y cursos nuevos (assets/novedades.js)
     var n = document.createElement('script');
     n.src = BASE + 'assets/novedades.js';

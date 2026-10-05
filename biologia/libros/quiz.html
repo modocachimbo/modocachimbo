@@ -315,6 +315,8 @@
       const r = await fetch('data/' + year + '.json');
       if (!r.ok) throw 0;
       temas = await r.json();
+      // Origen de cada pregunta, para "Repasar mis falladas"
+      temas.forEach(t => (t.questions || []).forEach((q, i) => { q._ref = 'biologia/libros/data/' + year + '.json' + '#' + t.num + '#' + i; q._tit = t.name; }));
     } catch (e) {
       startScreen.innerHTML = '<div class="state-msg">Todavía no hay preguntas cargadas para ' + year + '.</div>';
       startScreen.classList.add('show');
@@ -489,6 +491,11 @@
     endScreen.classList.add('show');
     finalScore.textContent = `${score} pts`;
     endMessage.textContent = lives <= 0 ? 'Se acabaron tus vidas. ¡Sigue practicando!' : 'Así te fue en esta práctica';
+    // Progreso del estudiante (assets/progreso.js), una sola vez por ronda
+    if (showEnd.ronda === activeQuestions) return;
+    showEnd.ronda = activeQuestions;
+    const prog = { tipo: 'libro', carpeta: 'biologia', anio: year, tema: temaParam || null, titulo: 'Biología · ' + (temaParam ? ((activeQuestions[0] && activeQuestions[0]._tit) || 'Tema ' + temaParam) : 'Todos los temas'), preguntas: activeQuestions, respuestas: answers };
+    window.MCProgreso ? MCProgreso.terminar(prog) : (window.mcProgresoPend = (window.mcProgresoPend || []).concat([prog]));
   }
 
   document.getElementById('btnRestart').addEventListener('click', () => {
