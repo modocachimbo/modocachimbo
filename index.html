@@ -58,9 +58,8 @@
     gap: 14px;
   }
 
-  .logo { display: flex; align-items: center; gap: 10px; }
-  .logo .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 14px rgba(198,224,0,0.6); }
-  .logo span { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 18px; letter-spacing: 0.3px; }
+  .logo { display: flex; align-items: center; }
+  .logo img { height: 40px; width: auto; display: block; }
 
   .auth-row { display: flex; align-items: center; gap: 14px; }
 
@@ -101,36 +100,31 @@
   .link-login.vip-active { color: var(--accent); }
 
 
-  .hero {
-    padding: 56px 0 36px;
-    text-align: center;
+  /* ===== Saludo del alumno ===== */
+  .saludo {
+    margin-top: 8px; padding: 28px 30px; border-radius: 24px; border: 1px solid var(--border);
+    background: radial-gradient(520px 220px at 0% 0%, rgba(198,224,0,0.09), transparent 70%), var(--surface);
+    display: grid; grid-template-columns: 1fr auto; gap: 18px 28px; align-items: center;
   }
-
-  .hero .eyebrow {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
-    color: var(--accent); font-weight: 600;
-    background: var(--accent-soft); padding: 7px 16px; border-radius: 100px;
-    margin-bottom: 22px;
+  .sal-texto h1 { font-family: 'Sora', sans-serif; font-weight: 800; font-size: clamp(26px, 4.4vw, 36px); line-height: 1.15; letter-spacing: -0.5px; }
+  .sal-texto h1 .accent { color: var(--accent); }
+  .sal-texto p { color: var(--text-dim); font-size: 14px; line-height: 1.6; margin-top: 6px; }
+  .sal-cuenta {
+    min-width: 150px; text-align: center; padding: 14px 18px; border-radius: 18px;
+    background: var(--accent-soft); border: 1px solid rgba(198,224,0,0.25); color: var(--accent); text-decoration: none;
   }
-
-  .hero h1 {
-    font-family: 'Sora', sans-serif;
-    font-weight: 800;
-    line-height: 1.05;
-    font-size: clamp(40px, 10vw, 88px);
-    letter-spacing: -1px;
+  .sal-cuenta b { display: block; font: 800 38px/1 'Sora', sans-serif; }
+  .sal-cuenta span { display: block; font-size: 12px; font-weight: 600; margin-top: 6px; color: #d8e88a; }
+  .sal-cuenta.vacia { font-size: 13px; font-weight: 600; padding: 16px 18px; }
+  .sal-cuenta.vacia:hover { border-color: var(--accent); }
+  .sal-accesos { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-top: 16px; border-top: 1px solid var(--border); }
+  .sal-accesos .rot { font-size: 12px; color: var(--text-faint); margin-right: 4px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); border: 1px solid rgba(198,224,0,0.22); border-radius: 100px; padding: 6px 12px;
   }
-
-  .hero h1 .accent { color: var(--accent); }
-
-  .hero p {
-    max-width: 560px;
-    margin: 22px auto 0;
-    color: var(--text-dim);
-    font-size: clamp(14px, 2vw, 17px);
-    line-height: 1.65;
-  }
+  button.chip { cursor: pointer; font-family: 'Inter', sans-serif; background: var(--accent); color: #0e0e0e; border-color: var(--accent); }
+  button.chip:hover { opacity: .88; }
 
   .section-title {
     font-family: 'Sora', sans-serif;
@@ -138,6 +132,7 @@
     font-size: 22px;
     padding: 36px 0 14px;
     border-bottom: 1px solid var(--border);
+    scroll-margin-top: 8px;
   }
 
   .cards {
@@ -151,9 +146,6 @@
 
   @media (max-width: 900px) {
     .cards { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (max-width: 520px) {
-    .cards { grid-template-columns: 1fr; }
   }
 
   .card {
@@ -305,6 +297,45 @@
     font-size: 12px;
   }
 
+  /* ===== Barra de abajo (solo celular) ===== */
+  .barra { display: none; }
+  @media (max-width: 720px) {
+    .wrap { padding: 0 16px; }
+    body { -webkit-text-size-adjust: 100%; }
+    header.top { padding: 18px 0; flex-wrap: nowrap; }
+    .logo img { height: 32px; }
+    .vip-widget { display: none; }
+    .cards { grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 18px 0 8px; }
+    .card { padding: 18px 16px; border-radius: 18px; }
+    .card .icon { width: 46px; height: 46px; margin-bottom: 12px; }
+    .card h3 { font-size: 14.5px; line-height: 1.3; }
+    .card .rule { margin: 8px 0 14px; }
+    .card p { display: none; }
+    .card .btn { margin-top: auto; align-self: stretch; font-size: 12.5px; padding: 9px 10px; }
+    .coffee .qr-box { margin: 0 auto; }
+    .saludo { grid-template-columns: 1fr; padding: 22px 20px; }
+    .sal-cuenta { display: flex; align-items: baseline; justify-content: center; gap: 8px; }
+    .sal-cuenta b { display: inline; font-size: 30px; }
+    .sal-cuenta span { display: inline; margin-top: 0; }
+    .section-title { font-size: 19px; padding-top: 30px; }
+    .coffee { padding: 24px 20px; }
+    footer { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+    .barra {
+      display: grid; grid-template-columns: repeat(5, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+      background: rgba(10,10,10,0.96); border-top: 1px solid var(--border);
+      padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+      -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    }
+    .barra a, .barra button {
+      display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 2px; border-radius: 12px;
+      color: var(--text-faint); text-decoration: none; background: none; border: none; cursor: pointer;
+      font: 600 10.5px 'Inter', sans-serif; -webkit-tap-highlight-color: transparent;
+    }
+    .barra svg { width: 22px; height: 22px; }
+    .barra .activo { color: var(--accent); }
+    body .mct-ayuda { bottom: calc(80px + env(safe-area-inset-bottom)); }
+  }
+
   /* ===== Bienvenida (sin sesión) ===== */
   html.mc-fuera .wrap { display: none; }
   html:not(.mc-fuera) .bienvenida { display: none; }
@@ -436,9 +467,9 @@
     </div>
   </div>
 
-  <div class="wrap">
+  <div class="wrap" id="top">
     <header class="top">
-      <div class="logo"><div class="dot"></div><span>Modo Cachimbo</span></div>
+      <a class="logo" href="index.html" aria-label="Modo Cachimbo · Inicio"><img src="assets/img/logo-modo-cachimbo-horizontal.svg" alt="Modo Cachimbo" width="160" height="34"></a>
       <div class="auth-row">
         <div class="vip-widget">
           <button class="link-login" id="vipToggle" type="button" style="background:none; border:none; cursor:pointer; font-family: 'Inter', sans-serif;">Ingresar código</button>
@@ -453,13 +484,16 @@
       </div>
     </header>
 
-    <section class="hero">
-      <div class="eyebrow"><span>●</span> Preparación admisión</div>
-      <h1>Modo <span class="accent">Cachimbo</span></h1>
-      <p>Exámenes pasados, libros, fijas y repaso de preguntas para que llegues listo a tu examen de admisión. ¿Qué esperas? Activa tu Modo Cachimbo.</p>
+    <section class="saludo" id="saludo">
+      <div class="sal-texto">
+        <h1 id="salNombre">¡Hola! 👋</h1>
+        <p>¿Qué estudiamos hoy? Elige un curso o practica con un examen pasado.</p>
+      </div>
+      <a class="sal-cuenta vacia" id="salCuenta" href="perfil.html">📅 Pon la fecha de tu examen</a>
+      <div class="sal-accesos" id="salAccesos"></div>
     </section>
 
-    <div class="section-title">Mis cursos</div>
+    <div class="section-title" id="cursos">Mis cursos</div>
 
     <section class="cards">
 
@@ -505,7 +539,7 @@
 
     </section>
 
-    <div class="section-title" style="margin-top: 8px;">Exámenes de admisión</div>
+    <div class="section-title" id="examenes" style="margin-top: 8px;">Exámenes de admisión</div>
 
     <section class="cards">
 
@@ -565,6 +599,13 @@
       </div>
       <div class="footer-note">Modo Cachimbo · Hecho con dedicación para estudiantes de admisión</div>
     </footer>
+    <nav class="barra" aria-label="Menú">
+      <a href="#top" class="activo" id="barInicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Inicio</a>
+      <a href="#cursos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>Cursos</a>
+      <a href="#examenes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6v3H9z"/><path d="M15 5h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3"/><path d="m9 14 2 2 4-4"/></svg>Exámenes</a>
+      <button type="button" id="barCodigo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="m10.8 12.2 8.7-8.7"/><path d="m17 6 3 3"/><path d="m14.5 8.5 2 2"/></svg>Código</button>
+      <a href="perfil.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Perfil</a>
+    </nav>
   </div>
 
 <script>
@@ -625,8 +666,19 @@ function jsonpRequest(url) {
 
     var fondo = document.getElementById('codFondo'), input = document.getElementById('codInput');
     var btn = document.getElementById('codActivar'), msg = document.getElementById('codMsg');
+    var luego = document.getElementById('codLuego');
     function cerrarCodigo() { fondo.classList.remove('show'); seguir(); }
-    document.getElementById('codLuego').addEventListener('click', cerrarCodigo);
+    luego.addEventListener('click', cerrarCodigo);
+    fondo.addEventListener('click', function (e) { if (e.target === fondo && luego.textContent === 'Cerrar') cerrarCodigo(); });
+    // Abrir la ventana del código desde la barra de abajo o desde "Activa tu código"
+    function abrirCodigo() {
+      document.getElementById('codTitulo').textContent = 'Activa tu código 🔑';
+      luego.textContent = 'Cerrar';
+      input.value = ''; msg.className = 'cod-msg';
+      fondo.classList.add('show');
+      setTimeout(function () { input.focus(); }, 50);
+    }
+    document.getElementById('barCodigo').addEventListener('click', abrirCodigo);
     async function activar() {
       var codigo = input.value.trim().toUpperCase();
       msg.className = 'cod-msg';
@@ -636,7 +688,8 @@ function jsonpRequest(url) {
         var r = await MCAcceso.activar(codigo, '');
         if (r.ok) {
           msg.textContent = r.mensaje || '¡Código activado!'; msg.className = 'cod-msg show ok';
-          if (typeof actualizarEstadoBoton === 'function') actualizarEstadoBoton();
+          pintarAccesos();
+          if (window.mcEstadoCodigo) window.mcEstadoCodigo();
           setTimeout(cerrarCodigo, 1400);
         } else { msg.textContent = r.mensaje || 'Código inválido.'; msg.className = 'cod-msg show error'; }
       } catch (e) {
@@ -654,13 +707,71 @@ function jsonpRequest(url) {
       return !visto && !tieneCodigo;
     }
 
+    // ===== Saludo: nombre, cuenta regresiva y accesos activos =====
+    var NOMBRES = { 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'TODO-VIP': 'Acceso total' };
+    var cursos = {};
+    fetch('assets/cursos.json').then(function (r) { return r.json(); }).then(function (d) {
+      (d.cursos || []).forEach(function (c) { cursos[c.id] = c.nombre; });
+      pintarAccesos();
+    }).catch(function () {});
+    function nombreProducto(p) {
+      if (NOMBRES[p]) return NOMBRES[p];
+      var m = /^(repaso|fijas|curso)-(.+)$/.exec(p);
+      if (!m) return p;
+      var c = cursos[m[2]] || m[2];
+      return m[1] === 'repaso' ? 'Repaso ' + c : m[1] === 'fijas' ? 'Fijas ' + c : c + ' completo';
+    }
+    function pintarAccesos() {
+      var caja = document.getElementById('salAccesos');
+      var prods = (window.MCAcceso ? MCAcceso.activos() : []).map(function (a) { return a.producto; });
+      ['repaso-VIP', 'fijas-VIP'].forEach(function (p) {
+        try { if (localStorage.getItem('unlocked_' + p) === '1' && prods.indexOf(p) < 0) prods.push(p); } catch (e) {}
+      });
+      prods = prods.filter(function (p, i) { return p && prods.indexOf(p) === i; });
+      caja.textContent = '';
+      var rot = document.createElement('span'); rot.className = 'rot';
+      rot.textContent = prods.length ? 'Tus accesos:' : 'Aún no tienes Repasos ni Fijas activos.';
+      caja.appendChild(rot);
+      prods.forEach(function (p) {
+        var c = document.createElement('span'); c.className = 'chip'; c.textContent = '✓ ' + nombreProducto(p);
+        caja.appendChild(c);
+      });
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'chip';
+      b.textContent = prods.length ? '+ Otro código' : '🔑 Activa tu código';
+      b.addEventListener('click', abrirCodigo);
+      caja.appendChild(b);
+    }
+    function pintarSaludo(u, p) {
+      var m = u.user_metadata || {};
+      var nombre = ((p && (p.apodo || p.nombre)) || m.full_name || m.name || (u.email || '').split('@')[0] || '').split(' ')[0];
+      var h = document.getElementById('salNombre');
+      h.textContent = '¡Hola' + (nombre ? ', ' : '');
+      if (nombre) { var s = document.createElement('span'); s.className = 'accent'; s.textContent = nombre; h.appendChild(s); }
+      h.appendChild(document.createTextNode('! 👋'));
+      var cta = document.getElementById('salCuenta'), f = p && p.fecha_examen;
+      if (!f) { cta.className = 'sal-cuenta vacia'; cta.textContent = '📅 Pon la fecha de tu examen'; return; }
+      var hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+      var q = f.split('-'), n = Math.round((new Date(+q[0], +q[1] - 1, +q[2]) - hoy) / 86400000);
+      if (n < 0) { cta.className = 'sal-cuenta vacia'; cta.textContent = '📅 Actualiza la fecha de tu examen'; return; }
+      cta.className = 'sal-cuenta'; cta.textContent = '';
+      var b = document.createElement('b'), t = document.createElement('span');
+      b.textContent = n === 0 ? '¡Hoy!' : n;
+      t.textContent = n === 0 ? 'es tu examen 🍀' : n === 1 ? 'día para tu examen' : 'días para tu examen';
+      cta.appendChild(b); cta.appendChild(t);
+    }
+    pintarAccesos();
+    window.mcPintarAccesos = pintarAccesos;
+
     function alCambiar(u) {
       if (!u) { raiz.classList.add('mc-fuera'); bvGoogle.disabled = false; return; }
       raiz.classList.remove('mc-fuera');
+      pintarSaludo(u, null);
+      MCAuth.perfil().then(function (p) { var a = MCAuth.usuario(); if (a && a.id === u.id) pintarSaludo(u, p); }).catch(function () {});
       if (primeraVez(u)) {
         var m = u.user_metadata || {};
         var nombre = (m.full_name || m.name || '').split(' ')[0];
         document.getElementById('codTitulo').textContent = nombre ? '¡Hola, ' + nombre + '! 👋' : '¡Hola! 👋';
+        luego.textContent = 'Más tarde';
         fondo.classList.add('show');
         setTimeout(function () { input.focus(); }, 50);
       } else seguir();
@@ -670,6 +781,19 @@ function jsonpRequest(url) {
       alCambiar(MCAuth.usuario());
       MCAuth.alCambiar(alCambiar);
     }, function () {});
+  })();
+
+  // ===== Barra de abajo: marca la sección que se está viendo =====
+  (function () {
+    var enlaces = document.querySelectorAll('.barra a[href^="#"]');
+    function marcar() {
+      var y = window.scrollY + window.innerHeight * 0.35, actual = '#top';
+      ['cursos', 'examenes'].forEach(function (id) { var el = document.getElementById(id); if (el && el.offsetTop <= y) actual = '#' + id; });
+      if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) actual = '#examenes';
+      enlaces.forEach(function (a) { a.classList.toggle('activo', a.getAttribute('href') === actual); });
+    }
+    window.addEventListener('scroll', marcar, { passive: true });
+    marcar();
   })();
 
   // ===== Widget de código VIP (header) =====
@@ -692,6 +816,7 @@ function jsonpRequest(url) {
       if (texto) { toggle.textContent = texto; toggle.classList.add('vip-active'); }
     }
     actualizarEstadoBoton();
+    window.mcEstadoCodigo = actualizarEstadoBoton;
 
     toggle.addEventListener('click', function () {
       popover.classList.toggle('show');
@@ -719,6 +844,7 @@ function jsonpRequest(url) {
           msg.textContent = r.mensaje;
           msg.classList.add('show', 'ok');
           actualizarEstadoBoton();
+          if (window.mcPintarAccesos) window.mcPintarAccesos();
           input.value = '';
         } else {
           msg.textContent = r.mensaje || 'Código inválido.';
