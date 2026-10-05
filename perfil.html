@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi perfil · Modo Cachimbo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #050505;
+    --surface: #0e0e0e;
+    --surface-2: #141414;
+    --border: #232323;
+    --accent: #C6E000;
+    --accent-soft: rgba(198,224,0,0.1);
+    --text: #f2f2f2;
+    --text-dim: #9a9a9a;
+    --text-faint: #5f5f5f;
+  }
+
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px 60px; }
+
+  header.top { display: flex; align-items: center; justify-content: space-between; padding: 28px 0; gap: 14px; flex-wrap: wrap; }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+  .logo .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 14px rgba(198,224,0,0.6); }
+  .logo span { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 18px; }
+
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 22px; padding: 26px 24px; margin-top: 18px; }
+  .panel h2 { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+  .panel .nota { color: var(--text-dim); font-size: 13px; line-height: 1.6; }
+
+  .cabecera { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .avatar { width: 72px; height: 72px; border-radius: 50%; background: var(--accent); color: #0e0e0e; display: flex; align-items: center; justify-content: center; font: 800 28px 'Sora', sans-serif; overflow: hidden; flex-shrink: 0; }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .cabecera h1 { font-family: 'Sora', sans-serif; font-size: 24px; font-weight: 800; line-height: 1.2; }
+  .cabecera .correo { color: var(--text-dim); font-size: 13.5px; margin-top: 4px; word-break: break-all; }
+
+  .cuenta { margin-top: 20px; background: var(--accent-soft); color: var(--accent); border-radius: 14px; padding: 14px 16px; font-size: 14px; line-height: 1.5; display: none; }
+  .cuenta b { font-family: 'Sora', sans-serif; font-size: 22px; }
+
+  form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px; }
+  .campo { display: flex; flex-direction: column; gap: 6px; }
+  .campo.ancho { grid-column: 1 / -1; }
+  @media (max-width: 560px) { form { grid-template-columns: 1fr; } }
+  label { font-size: 12.5px; font-weight: 600; color: var(--text-dim); }
+  label small { font-weight: 400; color: var(--text-faint); }
+  input, select {
+    width: 100%; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px;
+    padding: 11px 12px; color: var(--text); font: 500 14px 'Inter', sans-serif; color-scheme: dark;
+  }
+  input:focus, select:focus { outline: none; border-color: var(--accent); }
+
+  .acciones { grid-column: 1 / -1; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 4px; }
+  .btn { background: var(--accent); color: #0e0e0e; border: none; border-radius: 100px; padding: 11px 24px; font: 700 14px 'Sora', sans-serif; cursor: pointer; text-decoration: none; display: inline-block; }
+  .btn:disabled { opacity: .6; cursor: default; }
+  .btn.sec { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+  .estado { font-size: 13px; }
+  .estado.ok { color: var(--accent); }
+  .estado.error { color: #ff8a8a; }
+
+  .lista { list-style: none; margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .lista li { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 13.5px; }
+  .lista li span { color: var(--text-dim); }
+
+  .vacio { text-align: center; padding: 50px 24px; }
+  .vacio h1 { font-family: 'Sora', sans-serif; font-size: 24px; margin-bottom: 10px; }
+  .vacio p { color: var(--text-dim); font-size: 14px; line-height: 1.6; max-width: 420px; margin: 0 auto 22px; }
+
+  .volver { display: inline-block; margin-top: 26px; color: var(--text-dim); font-size: 13.5px; text-decoration: none; }
+  .volver:hover { color: var(--accent); }
+  [hidden] { display: none !important; }
+</style>
+<script src="assets/mc-config.js"></script>
+<script src="assets/acceso.js"></script>
+<script src="assets/auth.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <a class="logo" href="index.html"><div class="dot"></div><span>Modo Cachimbo</span></a>
+      <div data-mc-auth></div>
+    </header>
+
+    <div id="cargando" class="panel vacio"><p>Cargando…</p></div>
+
+    <!-- Sin sesión -->
+    <div id="sinSesion" class="panel vacio" hidden>
+      <h1>Tu perfil de cachimbo</h1>
+      <p>Ingresa con Google o con tu correo para guardar tus datos, ver tu cuenta regresiva y, muy pronto, tu avance por curso.</p>
+      <button class="btn" type="button" id="btnIngresar">Ingresar</button>
+    </div>
+
+    <!-- Con sesión -->
+    <div id="conSesion" hidden>
+      <section class="panel">
+        <div class="cabecera">
+          <div class="avatar" id="avatar"></div>
+          <div>
+            <h1 id="saludo">Hola</h1>
+            <div class="correo" id="correo"></div>
+          </div>
+        </div>
+        <div class="cuenta" id="cuenta"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Mis datos</h2>
+        <p class="nota">Con esto personalizamos tu inicio. Solo tú puedes verlos.</p>
+        <form id="form" novalidate>
+          <div class="campo">
+            <label for="nombre">Nombre completo</label>
+            <input id="nombre" name="nombre" maxlength="80" autocomplete="name">
+          </div>
+          <div class="campo">
+            <label for="apodo">Apodo <small>(cómo te saludamos)</small></label>
+            <input id="apodo" name="apodo" maxlength="30">
+          </div>
+          <div class="campo ancho">
+            <label for="carrera">Carrera a la que postulas</label>
+            <input id="carrera" name="carrera" maxlength="80" placeholder="Ej: Medicina Humana">
+          </div>
+          <div class="campo">
+            <label for="modalidad">Modalidad</label>
+            <select id="modalidad" name="modalidad">
+              <option value="">Elegir…</option>
+              <option>Ordinario</option>
+              <option>CPU</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label for="fecha_examen">Fecha de tu examen</label>
+            <input id="fecha_examen" name="fecha_examen" type="date">
+          </div>
+          <div class="campo ancho">
+            <label for="celular">Celular <small>(opcional, para avisos por WhatsApp)</small></label>
+            <input id="celular" name="celular" inputmode="numeric" maxlength="9" placeholder="9 dígitos">
+          </div>
+          <div class="acciones">
+            <button class="btn" type="submit" id="guardar">Guardar</button>
+            <span class="estado" id="estado" role="status"></span>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>Mis accesos</h2>
+        <p class="nota" id="accesosNota">Códigos activados en este equipo. Pronto quedarán guardados en tu cuenta para usarlos en cualquier equipo.</p>
+        <ul class="lista" id="accesos"></ul>
+      </section>
+
+      <section class="panel">
+        <h2>Mi progreso</h2>
+        <p class="nota">Muy pronto: tu avance por curso, tus temas débiles y las preguntas que fallaste para repasarlas.</p>
+      </section>
+
+      <button class="btn sec" type="button" id="btnSalir" style="margin-top:18px">Cerrar sesión</button>
+    </div>
+
+    <a class="volver" href="index.html">← Volver al inicio</a>
+  </div>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var CAMPOS = ['nombre', 'apodo', 'carrera', 'modalidad', 'fecha_examen', 'celular'];
+  var NOMBRES = { 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'TODO-VIP': 'Acceso total' };
+
+  function ver(cual) {
+    $('cargando').hidden = cual !== 'cargando';
+    $('sinSesion').hidden = cual !== 'sin';
+    $('conSesion').hidden = cual !== 'con';
+  }
+
+  function cuentaRegresiva(fecha) {
+    var caja = $('cuenta');
+    if (!fecha) { caja.style.display = 'none'; return; }
+    var hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+    var p = fecha.split('-'), dia = new Date(+p[0], +p[1] - 1, +p[2]);
+    var n = Math.round((dia - hoy) / 86400000);
+    caja.textContent = '';
+    if (n > 0) {
+      var b = document.createElement('b'); b.textContent = n;
+      caja.appendChild(document.createTextNode('Faltan '));
+      caja.appendChild(b);
+      caja.appendChild(document.createTextNode(n === 1 ? ' día para tu examen. ¡Tú puedes!' : ' días para tu examen. ¡Tú puedes!'));
+    } else if (n === 0) caja.textContent = '¡Hoy es tu examen! Mucha suerte 🍀';
+    else caja.textContent = 'Tu fecha de examen ya pasó. Actualízala si vas a postular otra vez.';
+    caja.style.display = 'block';
+  }
+
+  function pintarCabecera(u, p) {
+    var m = u.user_metadata || {};
+    var nombre = p.apodo || p.nombre || m.full_name || m.name || u.email.split('@')[0];
+    $('saludo').textContent = 'Hola, ' + nombre.split(' ')[0];
+    $('correo').textContent = u.email || '';
+    var foto = p.foto_url || m.avatar_url || m.picture || '';
+    var av = $('avatar'); av.textContent = '';
+    if (/^https:\/\//.test(foto)) {
+      var img = document.createElement('img'); img.alt = ''; img.referrerPolicy = 'no-referrer'; img.src = foto;
+      av.appendChild(img);
+    } else av.textContent = nombre.charAt(0).toUpperCase();
+    cuentaRegresiva(p.fecha_examen);
+  }
+
+  function pintarAccesos() {
+    var ul = $('accesos'); ul.textContent = '';
+    var lista = window.MCAcceso ? MCAcceso.activos() : [];
+    if (!lista.length) {
+      var li = document.createElement('li'); li.textContent = 'Aún no activaste ningún código en este equipo.';
+      ul.appendChild(li); return;
+    }
+    lista.forEach(function (a) {
+      var li = document.createElement('li');
+      var prod = a.producto || '';
+      var nom = NOMBRES[prod] || prod.replace(/^curso-/, 'Curso: ').replace(/^(repaso|fijas)-/, function (x, t) { return (t === 'repaso' ? 'Repaso: ' : 'Fijas: '); });
+      li.appendChild(document.createTextNode(nom));
+      var s = document.createElement('span');
+      s.textContent = a.codigo + (a.vence ? ' · vence ' + new Date(a.vence).toLocaleDateString('es-PE') : '');
+      li.appendChild(s);
+      ul.appendChild(li);
+    });
+  }
+
+  function cargar() {
+    var u = MCAuth.usuario();
+    if (!u) { ver('sin'); return; }
+    ver('con');
+    pintarAccesos();
+    pintarCabecera(u, {});
+    MCAuth.perfil(true).then(function (p) {
+      CAMPOS.forEach(function (c) { $(c).value = p[c] || ''; });
+      pintarCabecera(u, p);
+    }).catch(function () {
+      $('estado').textContent = 'No se pudo cargar tu perfil. Recarga la página.';
+      $('estado').className = 'estado error';
+    });
+  }
+
+  $('form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var est = $('estado'), btn = $('guardar');
+    var datos = {};
+    CAMPOS.forEach(function (c) { var v = $(c).value.trim(); datos[c] = v || null; });
+    if (datos.celular && !/^9\d{8}$/.test(datos.celular)) {
+      est.textContent = 'El celular debe tener 9 dígitos y empezar con 9.'; est.className = 'estado error'; return;
+    }
+    btn.disabled = true; est.textContent = 'Guardando…'; est.className = 'estado';
+    MCAuth.guardarPerfil(datos).then(function (p) {
+      est.textContent = '✓ Guardado'; est.className = 'estado ok';
+      pintarCabecera(MCAuth.usuario(), p);
+    }).catch(function () {
+      est.textContent = 'No se pudo guardar. Revisa tu conexión e inténtalo otra vez.'; est.className = 'estado error';
+    }).then(function () { btn.disabled = false; });
+  });
+
+  $('btnIngresar').addEventListener('click', function () { MCAuth.abrirIngreso(); });
+  $('btnSalir').addEventListener('click', function () { MCAuth.salir(); });
+
+  // Se llama al saber si hay sesión, y otra vez al entrar o salir
+  MCAuth.alCambiar(cargar);
+  MCAuth.listo.catch(function () {
+    ver('cargando');
+    $('cargando').innerHTML = '<p>No se pudo conectar. Revisa tu internet y recarga la página.</p>';
+  });
+})();
+</script>
+</body>
+</html>
