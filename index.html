@@ -4,6 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Modo Cachimbo · @ProfeRojitas</title>
+<script>
+  // Sin sesión guardada: se muestra la bienvenida en vez del inicio (sin parpadeo)
+  (function () {
+    var hay = false;
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (/^sb-[a-z0-9]+-auth-token$/.test(k)) { var t = JSON.parse(localStorage.getItem(k) || 'null'); if (t && t.refresh_token) hay = true; }
+      }
+    } catch (e) {}
+    if (!hay) document.documentElement.classList.add('mc-fuera');
+  })();
+</script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
 
@@ -291,12 +304,137 @@
     color: var(--text-faint);
     font-size: 12px;
   }
+
+  /* ===== Bienvenida (sin sesión) ===== */
+  html.mc-fuera .wrap { display: none; }
+  html:not(.mc-fuera) .bienvenida { display: none; }
+  html.mc-fuera .mct-ayuda, html.mc-fuera .mct-capa, html.mc-fuera .mct-foco, html.mc-fuera .mct-burbuja,
+  html.mc-fuera .mca-franja, html.mc-fuera .mca-ov { display: none !important; }
+
+  .bienvenida {
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 32px 16px 20px;
+    background:
+      radial-gradient(900px 500px at 15% 20%, rgba(198,224,0,0.07), transparent 60%),
+      radial-gradient(700px 500px at 90% 90%, rgba(198,224,0,0.05), transparent 60%),
+      var(--bg);
+  }
+  .bv-card {
+    width: 100%; max-width: 920px; display: grid; grid-template-columns: 1.05fr 1fr;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 26px; overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+  }
+  .bv-arte {
+    position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px;
+    padding: 48px 36px; background: #070707; border-right: 1px solid var(--border); overflow: hidden;
+  }
+  .bv-arte::before {
+    content: ""; position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(198,224,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(198,224,0,0.05) 1px, transparent 1px);
+    background-size: 34px 34px;
+    -webkit-mask-image: radial-gradient(circle at 50% 45%, #000 0%, transparent 72%);
+            mask-image: radial-gradient(circle at 50% 45%, #000 0%, transparent 72%);
+  }
+  .bv-arte::after {
+    content: ""; position: absolute; width: 360px; height: 360px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(198,224,0,0.16), transparent 65%); top: 50%; left: 50%; transform: translate(-50%, -58%);
+  }
+  .bv-arte img { position: relative; z-index: 1; width: 100%; max-width: 320px; height: auto; display: block; }
+  .bv-lema {
+    position: relative; z-index: 1; font-size: 11.5px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; background: var(--accent-soft); padding: 7px 14px; border-radius: 100px;
+  }
+  .bv-form { padding: 52px 44px; display: flex; flex-direction: column; justify-content: center; }
+  .bv-form h1 { font-family: 'Sora', sans-serif; font-weight: 800; font-size: clamp(26px, 4vw, 34px); line-height: 1.15; letter-spacing: -0.5px; }
+  .bv-form h1 .accent { color: var(--accent); }
+  .bv-form > p { color: var(--text-dim); font-size: 14px; line-height: 1.65; margin: 14px 0 28px; }
+  .bv-google {
+    width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px;
+    background: #fff; color: #1f1f1f; border: none; border-radius: 100px; padding: 15px 18px;
+    font: 600 15px 'Inter', sans-serif; cursor: pointer; transition: transform .15s ease, background .15s ease;
+  }
+  .bv-google:hover { background: #ececec; transform: translateY(-1px); }
+  .bv-google:disabled { opacity: .6; cursor: default; transform: none; }
+  .bv-google svg { width: 20px; height: 20px; }
+  .bv-msg { display: none; margin-top: 12px; font-size: 12.5px; color: #ff8a8a; background: rgba(224,60,60,0.08); border-radius: 10px; padding: 10px 12px; line-height: 1.5; }
+  .bv-msg.show { display: block; }
+  .bv-lista { list-style: none; margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--border); display: grid; gap: 10px; }
+  .bv-lista li { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+  .bv-lista li::before { content: ""; width: 7px; height: 7px; margin-top: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+  .bv-lista b { color: var(--text); font-weight: 600; }
+  .bv-ayuda { margin-top: 22px; font-size: 12.5px; color: var(--text-faint); }
+  .bv-ayuda a { color: var(--text-dim); }
+  .bv-ayuda a:hover { color: var(--accent); }
+  .bv-pie { margin-top: 22px; color: var(--text-faint); font-size: 12px; font-family: 'Sora', sans-serif; font-weight: 700; }
+
+  @media (max-width: 760px) {
+    .bv-card { grid-template-columns: 1fr; border-radius: 22px; }
+    .bv-arte { border-right: none; border-bottom: 1px solid var(--border); padding: 34px 24px 26px; gap: 16px; }
+    .bv-arte img { max-width: 210px; }
+    .bv-arte::after { width: 260px; height: 260px; }
+    .bv-form { padding: 30px 22px 28px; }
+    .bv-form > p { margin: 10px 0 22px; }
+  }
+
+  /* ===== Código al primer ingreso ===== */
+  .cod-fondo { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none; align-items: center; justify-content: center; z-index: 210; padding: 16px; }
+  .cod-fondo.show { display: flex; }
+  .cod-caja { width: 100%; max-width: 400px; background: var(--surface); border: 1px solid var(--border); border-radius: 22px; padding: 30px 24px 22px; text-align: center; }
+  .cod-caja h3 { font-family: 'Sora', sans-serif; font-size: 21px; font-weight: 800; margin-bottom: 8px; }
+  .cod-caja p { color: var(--text-dim); font-size: 13.5px; line-height: 1.6; margin-bottom: 18px; }
+  .cod-caja input {
+    width: 100%; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 13px 14px;
+    color: var(--text); font: 600 15px 'Inter', sans-serif; text-align: center; letter-spacing: 1px; margin-bottom: 10px;
+  }
+  .cod-caja input:focus { outline: none; border-color: var(--accent); }
+  .cod-caja input::placeholder { color: var(--text-faint); font-weight: 400; letter-spacing: normal; }
+  .cod-activar { width: 100%; background: var(--accent); color: #0e0e0e; border: none; border-radius: 12px; padding: 13px; font: 700 14px 'Sora', sans-serif; cursor: pointer; }
+  .cod-activar:disabled { opacity: .6; cursor: default; }
+  .cod-luego { margin-top: 12px; background: none; border: none; color: var(--text-dim); font: 600 13.5px 'Inter', sans-serif; cursor: pointer; padding: 8px; }
+  .cod-luego:hover { color: var(--text); }
+  .cod-msg { display: none; margin-top: 12px; font-size: 12.5px; line-height: 1.5; padding: 9px 11px; border-radius: 9px; }
+  .cod-msg.show { display: block; }
+  .cod-msg.ok { background: rgba(198,224,0,0.1); color: var(--accent); }
+  .cod-msg.error { background: rgba(224,60,60,0.08); color: #ff8a8a; }
 </style>
 <script src="assets/mc-config.js"></script>
 <script src="assets/acceso.js"></script>
 <script src="assets/auth.js"></script>
 </head>
 <body>
+
+  <section class="bienvenida" id="bienvenida" aria-label="Bienvenida">
+    <div class="bv-card">
+      <div class="bv-arte">
+        <img src="assets/img/logo-modo-cachimbo.svg" alt="Modo Cachimbo" width="320" height="264">
+        <span class="bv-lema">Preparación admisión</span>
+      </div>
+      <div class="bv-form">
+        <h1>¡Bienvenido,<br><span class="accent">cachimbo</span>!</h1>
+        <p>Ingresa con tu cuenta de Google para estudiar con libros, exámenes pasados, repasos y fijas.</p>
+        <button class="bv-google" type="button" id="bvGoogle"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg><span>Continuar con Google</span></button>
+        <div class="bv-msg" id="bvMsg" role="status"></div>
+        <ul class="bv-lista">
+          <li><span><b>Libros y exámenes</b> pasados de la UNJFSC, gratis.</span></li>
+          <li><span><b>Repasos, fijas y práctica</b> con tu código de alumno.</span></li>
+          <li><span><b>Tu perfil</b> con cuenta regresiva para tu examen.</span></li>
+        </ul>
+        <p class="bv-ayuda">¿Problemas para entrar? <a id="bvWhatsapp" href="#" target="_blank" rel="noopener noreferrer">Escríbeme por WhatsApp</a></p>
+      </div>
+    </div>
+    <div class="bv-pie">@ProfeRojitas</div>
+  </section>
+
+  <div class="cod-fondo" id="codFondo">
+    <div class="cod-caja" role="dialog" aria-modal="true" aria-labelledby="codTitulo">
+      <h3 id="codTitulo">¡Hola!</h3>
+      <p>¿Tienes tu código de alumno? Actívalo ahora para abrir Repasos, Fijas y la práctica de los libros.</p>
+      <input type="text" id="codInput" placeholder="Ej: MC-7K3P-Q9XR" autocomplete="off" autocapitalize="characters">
+      <button class="cod-activar" type="button" id="codActivar">Activar código</button>
+      <div class="cod-msg" id="codMsg" role="status"></div>
+      <button class="cod-luego" type="button" id="codLuego">Más tarde</button>
+    </div>
+  </div>
 
   <div class="wrap">
     <header class="top">
@@ -455,6 +593,84 @@ function jsonpRequest(url) {
     document.body.appendChild(script);
   });
 }
+
+  // ===== Bienvenida, código al primer ingreso y regreso a la página pedida =====
+  (function () {
+    var raiz = document.documentElement;
+    var CFG = window.MC_CONFIG || {};
+    var wa = 'https://wa.me/' + (CFG.WHATSAPP || '51917797543') + '?text=' + encodeURIComponent('Hola! Tengo problemas para entrar a Modo Cachimbo');
+    document.getElementById('bvWhatsapp').href = wa;
+
+    var bvGoogle = document.getElementById('bvGoogle'), bvMsg = document.getElementById('bvMsg');
+    bvGoogle.addEventListener('click', function () {
+      bvGoogle.disabled = true;
+      bvMsg.classList.remove('show');
+      MCAuth.entrarGoogle().then(function (r) { if (r && r.error) throw r.error; }).catch(function () {
+        bvGoogle.disabled = false;
+        bvMsg.textContent = 'No se pudo abrir Google. Revisa tu conexión e inténtalo otra vez.';
+        bvMsg.classList.add('show');
+      });
+    });
+
+    // Solo rutas internas del sitio (evita mandar a otra web)
+    function destino() {
+      var v = new URLSearchParams(location.search).get('volver') || '';
+      return /^[a-z0-9][a-z0-9\-\/._]*\.html(\?[a-z0-9=&%._\-]*)?$/i.test(v) && v.indexOf('..') < 0 ? v : '';
+    }
+    function seguir() {
+      var d = destino();
+      if (d) location.replace(d);
+      else if (location.search) history.replaceState(null, '', location.pathname);
+    }
+
+    var fondo = document.getElementById('codFondo'), input = document.getElementById('codInput');
+    var btn = document.getElementById('codActivar'), msg = document.getElementById('codMsg');
+    function cerrarCodigo() { fondo.classList.remove('show'); seguir(); }
+    document.getElementById('codLuego').addEventListener('click', cerrarCodigo);
+    async function activar() {
+      var codigo = input.value.trim().toUpperCase();
+      msg.className = 'cod-msg';
+      if (!codigo) { msg.textContent = 'Escribe tu código.'; msg.className = 'cod-msg show error'; return; }
+      btn.disabled = true; btn.textContent = 'Verificando…';
+      try {
+        var r = await MCAcceso.activar(codigo, '');
+        if (r.ok) {
+          msg.textContent = r.mensaje || '¡Código activado!'; msg.className = 'cod-msg show ok';
+          if (typeof actualizarEstadoBoton === 'function') actualizarEstadoBoton();
+          setTimeout(cerrarCodigo, 1400);
+        } else { msg.textContent = r.mensaje || 'Código inválido.'; msg.className = 'cod-msg show error'; }
+      } catch (e) {
+        msg.textContent = 'No se pudo verificar. Revisa tu conexión.'; msg.className = 'cod-msg show error';
+      }
+      btn.disabled = false; btn.textContent = 'Activar código';
+    }
+    btn.addEventListener('click', activar);
+    input.addEventListener('keydown', function (e) { if (e.key === 'Enter') activar(); });
+
+    function primeraVez(u) {
+      var clave = 'mc_bienvenida_' + u.id, visto = false;
+      try { visto = localStorage.getItem(clave) === '1'; localStorage.setItem(clave, '1'); } catch (e) { visto = true; }
+      var tieneCodigo = window.MCAcceso && MCAcceso.activos().length > 0;
+      return !visto && !tieneCodigo;
+    }
+
+    function alCambiar(u) {
+      if (!u) { raiz.classList.add('mc-fuera'); bvGoogle.disabled = false; return; }
+      raiz.classList.remove('mc-fuera');
+      if (primeraVez(u)) {
+        var m = u.user_metadata || {};
+        var nombre = (m.full_name || m.name || '').split(' ')[0];
+        document.getElementById('codTitulo').textContent = nombre ? '¡Hola, ' + nombre + '! 👋' : '¡Hola! 👋';
+        fondo.classList.add('show');
+        setTimeout(function () { input.focus(); }, 50);
+      } else seguir();
+    }
+    // Si no carga Supabase (sin internet) se respeta lo que había en este navegador
+    MCAuth.listo.then(function () {
+      alCambiar(MCAuth.usuario());
+      MCAuth.alCambiar(alCambiar);
+    }, function () {});
+  })();
 
   // ===== Widget de código VIP (header) =====
   // Códigos administrados desde el panel (assets/acceso.js)
