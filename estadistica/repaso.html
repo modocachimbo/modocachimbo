@@ -525,6 +525,8 @@
   function selectAnswer(index, el) {
     if (answered) return;
     answered = true;
+    // Cuenta para la racha de estudio (assets/racha.js)
+    window.MCRacha ? MCRacha.respondio() : (window.mcRachaPend = (window.mcRachaPend || 0) + 1);
     answers[current] = index;
     const q = activeQuestions[current];
     const isCorrect = index === q.correct;

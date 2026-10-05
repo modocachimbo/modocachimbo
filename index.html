@@ -80,6 +80,20 @@
   .sal-cuenta span { display: block; font-size: 12px; font-weight: 600; margin-top: 6px; color: #d8e88a; }
   .sal-cuenta.vacia { font-size: 13px; font-weight: 600; padding: 16px 18px; }
   .sal-cuenta.vacia:hover { border-color: var(--accent); }
+  .sal-cajas { display: flex; gap: 12px; align-items: stretch; }
+  .sal-cajas > * { display: flex; flex-direction: column; justify-content: center; }
+  .sal-racha {
+    min-width: 150px; text-align: center; padding: 14px 18px 12px; border-radius: 18px; text-decoration: none;
+    background: var(--surface-2); border: 1px solid var(--border); color: var(--text); transition: border-color .15s;
+  }
+  .sal-racha:hover { border-color: var(--accent); }
+  .sal-racha .num { display: flex; align-items: center; justify-content: center; gap: 8px; font: 800 38px/1 'Sora', sans-serif; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+  .sal-racha .num svg { width: 24px; height: 32px; }
+  .sal-racha.on .num { color: var(--accent); }
+  .sal-racha .lbl { display: block; font-size: 12px; font-weight: 600; margin-top: 6px; color: var(--text-dim); }
+  .sal-racha .barra-hoy { height: 5px; border-radius: 5px; background: #262626; margin-top: 10px; overflow: hidden; }
+  .sal-racha .barra-hoy i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 5px; transition: width .4s ease; }
+  .sal-racha .hoy { display: block; font-size: 11px; color: var(--text-faint); margin-top: 5px; font-variant-numeric: tabular-nums; }
   .sal-accesos { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-top: 16px; border-top: 1px solid var(--border); }
   .sal-accesos .rot { font-size: 12px; color: var(--text-faint); margin-right: 4px; }
   .chip {
@@ -286,9 +300,9 @@
     .card .btn { margin-top: auto; align-self: stretch; font-size: 12.5px; padding: 9px 10px; }
     .coffee .qr-box { margin: 0 auto; }
     .saludo { grid-template-columns: 1fr; padding: 22px 20px; }
-    .sal-cuenta { display: flex; align-items: baseline; justify-content: center; gap: 8px; }
-    .sal-cuenta b { display: inline; font-size: 30px; }
-    .sal-cuenta span { display: inline; margin-top: 0; }
+    .sal-cajas { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+    .sal-cuenta, .sal-racha { min-width: 0; padding: 12px 10px; }
+    .sal-cuenta b, .sal-racha .num { font-size: 30px; }
     .section-title { font-size: 19px; padding-top: 30px; }
     .coffee { padding: 24px 20px; }
     footer { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
@@ -452,7 +466,15 @@
         <h1 id="salNombre">¡Hola! 👋</h1>
         <p>¿Qué estudiamos hoy? Elige un curso o practica con un examen pasado.</p>
       </div>
-      <a class="sal-cuenta vacia" id="salCuenta" href="perfil.html">📅 Pon la fecha de tu examen</a>
+      <div class="sal-cajas">
+        <a class="sal-racha" id="salRacha" href="perfil.html#racha" hidden>
+          <span class="num" id="salRachaNum">0</span>
+          <span class="lbl" id="salRachaLbl">días de racha</span>
+          <span class="barra-hoy"><i id="salRachaBarra"></i></span>
+          <span class="hoy" id="salRachaHoy">Hoy 0/10 preguntas</span>
+        </a>
+        <a class="sal-cuenta vacia" id="salCuenta" href="perfil.html">📅 Pon la fecha de tu examen</a>
+      </div>
       <div class="sal-accesos" id="salAccesos"></div>
     </section>
 
@@ -726,6 +748,24 @@ function jsonpRequest(url) {
       cta.appendChild(b); cta.appendChild(t);
     }
     pintarAccesos();
+
+    // ===== Racha de estudio (assets/racha.js la carga auth.js) =====
+    function pintarRacha(r) {
+      var caja = document.getElementById('salRacha');
+      if (!r) { caja.hidden = true; return; }
+      var meta = r.meta || 10, hoy = Math.min(r.hoy || 0, meta), n = r.actual || 0;
+      var num = document.getElementById('salRachaNum');
+      num.innerHTML = MCRacha.icono; num.appendChild(document.createTextNode(n));
+      document.getElementById('salRachaLbl').textContent = n === 1 ? 'día de racha' : 'días de racha';
+      document.getElementById('salRachaBarra').style.width = (hoy / meta * 100) + '%';
+      document.getElementById('salRachaHoy').textContent = r.cumplido_hoy ? '¡Hoy cumpliste! ✓' : 'Hoy ' + hoy + '/' + meta + ' preguntas';
+      caja.classList.toggle('on', !!r.cumplido_hoy);
+      caja.hidden = false;
+    }
+    (function esperarRacha(i) {
+      if (window.MCRacha) MCRacha.alCambiar(pintarRacha);
+      else if (i < 100) setTimeout(function () { esperarRacha(i + 1); }, 150);
+    })(0);
 
     function alCambiar(u) {
       if (!u) { raiz.classList.add('mc-fuera'); bvGoogle.disabled = false; return; }
