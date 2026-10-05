@@ -42,7 +42,7 @@
     .then(function (r) {
       sesion = r.data.session;
       // Quita el #access_token=… de la barra después de entrar
-      if (/access_token=|error_description=/.test(location.hash)) {
+      if (/access_token=|error_description=/.test(location.hash) || location.href.slice(-1) === '#') {
         history.replaceState(null, '', location.pathname + location.search);
       }
       iniciado = true;
