@@ -275,8 +275,20 @@
   .ptext .mcq-img .pimg { width: 100%; margin: 0; }
   .pder { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 40%); gap: 14px; align-items: start; }
   .pder .hint { margin-bottom: 6px; }
+  .pder.izq { grid-template-columns: minmax(0, 40%) minmax(0, 1fr); }
+  .pder.izq > div:first-child { order: 2; }
+  .ppos { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: -4px 0 12px; }
+  .ppos button { background: var(--surface-2); color: var(--text-dim); border: 1px solid var(--border); border-radius: 10px; padding: 6px 12px; font-size: 12.5px; font-weight: 600; cursor: pointer; }
+  .ppos button.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .pcard.lado-der, .pcard.lado-izq { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 40%); column-gap: 14px; }
+  .pcard.lado-izq { grid-template-columns: minmax(0, 40%) minmax(0, 1fr); }
+  .pcard.lado-der > *, .pcard.lado-izq > * { grid-column: 1 / -1; }
+  .pcard.lado-der > .popts, .pcard.lado-der > .pimg-g, .pcard.lado-izq > .popts, .pcard.lado-izq > .pimg-g { grid-row: 20; align-self: start; }
+  .pcard.lado-der > .popts { grid-column: 1; } .pcard.lado-der > .pimg-g { grid-column: 2; }
+  .pcard.lado-izq > .popts { grid-column: 2; } .pcard.lado-izq > .pimg-g { grid-column: 1; }
+  .pcard.lado-der > .popts.popts-cortas, .pcard.lado-izq > .popts.popts-cortas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .popts-cortas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 14px; }
-  @media (max-width: 600px) { .pder { grid-template-columns: 1fr; } .popts-cortas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 600px) { .pder, .pder.izq { grid-template-columns: 1fr; } .pcard.lado-der, .pcard.lado-izq { display: block; } .popts-cortas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   .pubbar { position: sticky; bottom: 0; z-index: 15; margin-top: 16px; background: rgba(5,5,5,0.94); backdrop-filter: blur(6px); border-top: 1px solid #1a1a1a; padding: 14px 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .pubbar #subResumen { font-size: 13.5px; color: var(--text-dim); }
   .pubbar #subResumen .bad { color: var(--red); }
@@ -550,7 +562,7 @@ E) Alternativa"></textarea>
             <div class="fmt-tit">Imágenes, tablas y columnas</div>
             <div class="fmt-grid">
               <code>[IMAGEN]</code><span>En su propia línea, donde va la imagen dentro del enunciado. Puedes poner varias; al revisar te pide pegar cada una (Ctrl+V).</span>
-              <code>[IMAGEN DERECHA]</code><span>Imagen al lado de las alternativas (en celular sale arriba de ellas).</span>
+              <code>[IMAGEN DERECHA]<br>[IMAGEN IZQUIERDA]</code><span>Imagen al lado de las alternativas (en celular sale arriba de ellas). Si usas el botón para pegar una imagen sin marca, al revisar puedes elegir dónde va: debajo, a la izquierda o a la derecha.</span>
               <code>| Meses | fi | Fi |<br>|---|---|---|<br>| [120 - > | | 126 |</code><span>Tabla. La línea <code>|---|</code> hace que la primera fila sea el título.</span>
               <code>I. CaO || p) cal viva</code><span>Columnas sin bordes, para "asociar" o listas en varias columnas.</span>
             </div>
@@ -1150,7 +1162,7 @@ E) Alternativa"></textarea>
       ${distinta ? `<div class="banner warn" style="margin-top:14px;">Ojo: la pregunta ${ctx.n} publicada no coincide con la del reporte. Es posible que el orden haya cambiado; revisa antes de guardar.</div>` : ''}
       <label class="fld">Pregunta</label>
       <textarea class="ta" id="edText">${esc(q.text)}</textarea>
-      <div class="hint">Puedes usar *cursiva*, **negrita** y ecuaciones entre $…$ (ej.: $x^2$). Los saltos de línea se respetan. Para una imagen nueva en medio del texto escribe <b>[IMAGEN]</b> (o <b>[IMAGEN DERECHA]</b>) en su propia línea; las ya publicadas se ven como [IMG:…], muévelas o bórralas como texto.</div>
+      <div class="hint">Puedes usar *cursiva*, **negrita** y ecuaciones entre $…$ (ej.: $x^2$). Los saltos de línea se respetan. Para una imagen nueva en medio del texto escribe <b>[IMAGEN]</b> (o <b>[IMAGEN DERECHA]</b> / <b>[IMAGEN IZQUIERDA]</b>) en su propia línea; las ya publicadas se ven como [IMG:…], muévelas o bórralas como texto.</div>
       <div id="edMarcas"></div>
       <label class="fld">Imagen o gráfico <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— debajo del enunciado</span></label>
       <div id="edImg"></div>
@@ -1242,7 +1254,7 @@ E) Alternativa"></textarea>
         const st = zonasMarca[km++].zona.estado();
         const path = imgRuta(ctx.carpeta, ctx.anio, ctx.tema, st.img.ext);
         imagenes.push({ path, data: st.img.dataUrl });
-        return '[IMG' + (m === '[IMAGEN DERECHA]' ? '-DER' : '') + ':' + path + ']';
+        return '[IMG' + (m === '[IMAGEN DERECHA]' ? '-DER' : m === '[IMAGEN IZQUIERDA]' ? '-IZQ' : '') + ':' + path + ']';
       }).join('\n');
       const st = zonaImg.estado();
       if (st.cambio === 'quitar') v.graphic = null;

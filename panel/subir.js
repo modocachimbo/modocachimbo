@@ -10,7 +10,8 @@
      B) … ✅
    Además (se ve con assets/pregunta.js):
      [IMAGEN]           pega una imagen en esa línea del enunciado
-     [IMAGEN DERECHA]   imagen al lado de las alternativas
+     [IMAGEN DERECHA]   imagen a la derecha de las alternativas
+     [IMAGEN IZQUIERDA] imagen a la izquierda de las alternativas
      | a | b |          tabla        I. CaO || p) cal viva   columnas
      A) VVV   B) FVV   C) VVF       varias alternativas en una línea
    ========================================================= */
@@ -18,11 +19,12 @@ const MARCA = /\s*(✅|✔️|✔|☑️|☑|✓)\s*/gu;
 const LETRAS = 'ABCDEF';
 const MAX_IMG = 6;
 
-// "[imagen]", "[ IMAGEN A LA DERECHA ]"… → '[IMAGEN]' | '[IMAGEN DERECHA]' | null
+// "[imagen]", "[ IMAGEN A LA DERECHA ]", "[imagen izquierda]"… → '[IMAGEN]' | '[IMAGEN DERECHA]' | '[IMAGEN IZQUIERDA]' | null
 function marcaImagen(l) {
-  const m = sinTildes(l).match(/^\[\s*imagen(?:\s+(?:a\s+la\s+)?(derecha))?\s*\]$/);
-  return m ? (m[1] ? '[IMAGEN DERECHA]' : '[IMAGEN]') : null;
+  const m = sinTildes(l).match(/^\[\s*imagen(?:\s+(?:a\s+la\s+)?(derecha|izquierda))?\s*\]$/);
+  return m ? (m[1] ? '[IMAGEN ' + m[1].toUpperCase() + ']' : '[IMAGEN]') : null;
 }
+const RX_MARCAS = /^\[IMAGEN( DERECHA| IZQUIERDA)?\]$/gm;
 // "A) VVV   B) FVV  C) VVF" → ['A) VVV', 'B) FVV', 'C) VVF'] (solo si las letras siguen en orden)
 function partirAlternativas(l, desde) {
   const partes = [];
@@ -109,13 +111,13 @@ function parsearTexto(raw) {
     if (!q.text) q.errores.push('Falta el enunciado');
     if (q.options.length < 2) q.errores.push('Tiene menos de 2 alternativas');
     q.options.forEach(o => { if (!o.text) q.errores.push('La alternativa ' + o.letter + ' está vacía'); });
-    const marcas = (q.text.match(/^\[IMAGEN( DERECHA)?\]$/gm) || []);
+    const marcas = (q.text.match(RX_MARCAS) || []);
     q.marcasImg = marcas.length;
-    if (q.malas) q.errores.push('La marca [IMAGEN] va en el enunciado, antes de las alternativas (o usa [IMAGEN DERECHA])');
+    if (q.malas) q.errores.push('La marca [IMAGEN] va en el enunciado, antes de las alternativas (o usa [IMAGEN DERECHA] / [IMAGEN IZQUIERDA])');
     delete q.malas;
-    if (marcas.filter(x => x === '[IMAGEN DERECHA]').length > 1) q.errores.push('Solo puede haber una [IMAGEN DERECHA]');
+    if (marcas.filter(x => x !== '[IMAGEN]').length > 1) q.errores.push('Solo puede haber una imagen al lado de las alternativas');
     if (marcas.length > MAX_IMG) q.errores.push('Máximo ' + MAX_IMG + ' imágenes por pregunta');
-    if (q.text && !q.text.replace(/^\[IMAGEN( DERECHA)?\]$/gm, '').trim()) q.errores.push('Falta el enunciado');
+    if (q.text && !q.text.replace(RX_MARCAS, '').trim()) q.errores.push('Falta el enunciado');
     if (q.correct == null && !q.errores.length) q.errores.push('Falta marcar la clave con ✅');
     if (q.num !== i + 1) avisos.push('La PREGUNTA ' + q.num + ' está en la posición ' + (i + 1) + ' (se numerará como ' + (i + 1) + ')');
   });
@@ -136,7 +138,7 @@ function renderMath(el) {
   }
 }
 
-const SUB = { parse: null, zonas: {}, borrador: 'mc_panel_borrador' };
+const SUB = { parse: null, zonas: {}, pos: {}, borrador: 'mc_panel_borrador' };
 
 function initSubir() {
   const ta = $('subTexto');
@@ -187,20 +189,41 @@ function revisarTexto() {
       <div class="qnum2">${i + 1}</div>
       ${q.errores.length ? `<div class="perr">⚠ ${q.errores.map(esc).join(' · ')}</div>` : ''}
       <div class="ptext">${v.html}</div>
-      ${q.marcasImg ? '' : `<div class="pimg" data-z="${i}|g"></div>`}
-      ${v.derecha ? `<div class="pder"><div>${opts}</div><div><div class="hint">Al lado de las alternativas</div>${v.derecha}</div></div>` : `<div class="${MCPregunta.cortas(q.options) ? 'popts-cortas' : ''}">${opts}</div>`}
+      ${q.marcasImg ? '' : `<div class="pimg pimg-g" data-z="${i}|g"></div>
+      <div class="ppos" data-q="${i}" hidden><span class="hint">Dónde va la imagen:</span>${[['abajo', 'Debajo del enunciado'], ['izq', 'A la izquierda'], ['der', 'A la derecha']].map(([k, t]) => `<button type="button" data-pos="${k}" class="${(SUB.pos[i] || 'abajo') === k ? 'on' : ''}">${t}</button>`).join('')}</div>`}
+      ${v.derecha ? `<div class="pder ${v.izq ? 'izq' : ''}"><div>${opts}</div><div><div class="hint">${v.izq ? 'A la izquierda' : 'A la derecha'} de las alternativas</div>${v.derecha}</div></div>` : `<div class="popts ${MCPregunta.cortas(q.options) ? 'popts-cortas' : ''}">${opts}</div>`}
     </article>`;
   }).join('');
   SUB.zonas = {};
+  const posPrevias = SUB.pos; SUB.pos = {};
   $('subLista').querySelectorAll('.pimg').forEach(el => {
     const k = el.dataset.z;
-    const z = SUB.zonas[k] = crearZonaImagen(el, { actual: '', onChange: validarMeta });
-    if (previas[k] && previas[k].cambio === 'nueva') z.recibirPreparada(previas[k].img);
+    const z = SUB.zonas[k] = crearZonaImagen(el, { actual: '', onChange: () => { pintarPos(k); validarMeta(); } });
+    if (previas[k] && previas[k].cambio === 'nueva') { z.recibirPreparada(previas[k].img); if (posPrevias[k.split('|')[0]]) SUB.pos[k.split('|')[0]] = posPrevias[k.split('|')[0]]; }
+    pintarPos(k);
   });
+  $('subLista').querySelectorAll('.ppos button').forEach(b => b.addEventListener('click', () => {
+    const i = b.parentElement.dataset.q; SUB.pos[i] = b.dataset.pos; pintarPos(i + '|g');
+  }));
   renderMath($('subLista'));
   $('subPaso1').hidden = true; $('subPaso2').hidden = false;
   validarMeta();
   window.scrollTo(0, 0);
+}
+
+// Imagen del botón (sin marcas): elegir si va debajo del enunciado o al lado de las alternativas
+function pintarPos(k) {
+  if (!/\|g$/.test(k)) return;
+  const i = k.split('|')[0], z = SUB.zonas[k], el = $('subLista').querySelector(`.ppos[data-q="${i}"]`);
+  if (!el || !z) return;
+  const hay = z.estado().cambio === 'nueva';
+  if (!hay) delete SUB.pos[i];
+  const pos = SUB.pos[i] || 'abajo';
+  el.hidden = !hay;
+  el.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.pos === pos));
+  const card = el.closest('.pcard');
+  card.classList.toggle('lado-der', hay && pos === 'der');
+  card.classList.toggle('lado-izq', hay && pos === 'izq');
 }
 
 function validarMeta() {
@@ -232,16 +255,19 @@ function armarPreguntas(carpeta, anio, tema, nombre) {
   const preguntas = SUB.parse.preguntas.map((q, i) => {
     // Cada [IMAGEN] se cambia por la ruta de la imagen pegada ahí
     let k = 0;
-    const text = q.text.replace(/^\[IMAGEN( DERECHA)?\]$/gm, (x, der) => {
+    let text = q.text.replace(RX_MARCAS, (x, lado) => {
       const z = SUB.zonas[i + '|' + (k++)], st = z && z.estado();
-      return st && st.cambio === 'nueva' ? '[IMG' + (der ? '-DER' : '') + ':' + subir(st) + ']' : '';
+      return st && st.cambio === 'nueva' ? '[IMG' + (lado === ' DERECHA' ? '-DER' : lado === ' IZQUIERDA' ? '-IZQ' : '') + ':' + subir(st) + ']' : '';
     });
     const out = { text, topic: NOMBRE[carpeta] + ' · ' + nombre, options: q.options.map(o => ({ letter: o.letter, text: o.text })), correct: q.correct };
     const st = SUB.zonas[i + '|g'] && SUB.zonas[i + '|g'].estado();
     if (st && st.cambio === 'nueva') {
       const path = imgRuta(carpeta, anio, tema, st.img.ext);
       imagenes.push({ path, data: st.img.dataUrl });
-      out.graphic = imgHtml(path);
+      // Imagen del botón: debajo del enunciado (como antes) o al lado de las alternativas
+      const pos = SUB.pos[i] || 'abajo';
+      if (pos === 'abajo') out.graphic = imgHtml(path);
+      else out.text = text + '\n[IMG-' + (pos === 'der' ? 'DER' : 'IZQ') + ':' + path + ']';
     }
     return out;
   });
