@@ -69,6 +69,13 @@
     var n = document.createElement('script');
     n.src = BASE + 'assets/novedades.js';
     document.head.appendChild(n);
+    // Cursos populares de la semana, solo en el inicio (assets/populares.js)
+    var pagina = location.href.replace(/[?#].*$/, '');
+    if (pagina === BASE || pagina === BASE + 'index.html') {
+      var pp = document.createElement('script');
+      pp.src = BASE + 'assets/populares.js';
+      document.head.appendChild(pp);
+    }
   }
 
   function avisar() {

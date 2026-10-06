@@ -86,7 +86,7 @@
     });
     if (!lista.length) return;
     Array.prototype.forEach.call(document.querySelectorAll('a[href]'), function (a) {
-      if (a.closest('.mcn, .barra, header, .mcu, [data-mc-auth], .back, .home-btn, .logo')) return;
+      if (a.closest('.mcn, .mcp, .barra, header, .mcu, [data-mc-auth], .back, .home-btn, .logo')) return;
       var k = rel(a.getAttribute('href'));
       if (k == null || !mapa[k] || k === aqui) return;
       var host = a.closest(HOST) || a;
@@ -111,7 +111,7 @@
       caja = document.createElement('section');
       caja.id = 'mcNovedades'; caja.className = 'mcn';
       caja.setAttribute('aria-label', 'Nuevo para ti');
-      ancla.parentNode.insertBefore(caja, ancla);
+      ancla.parentNode.insertBefore(caja, document.getElementById('mcPopulares') || ancla);
     }
     if (!lista.length) { caja.hidden = true; return; }
     css();
