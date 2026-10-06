@@ -2,7 +2,8 @@
    Modo Cachimbo · Frase del día en el saludo del inicio
    4 frases por día de la semana. Cada semana toca la siguiente,
    así en un mes no se repite ninguna. Durante el día no cambia.
-   Para editarlas: cambia el texto entre comillas.
+   Estas son las de base; desde el panel (Sitio → Frases del día)
+   se pueden cambiar sin tocar código.
    ========================================================= */
 (function () {
   var FRASES = {
@@ -49,11 +50,30 @@
       'Regálate el orgullo de terminar el día diciendo: “hoy no me rendí y aprendí algo nuevo”.'
     ]
   };
-  var hoy = new Date();
-  var dias = Math.floor(Date.UTC(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()) / 86400000);
-  var semana = Math.floor((dias + 3) / 7); // semanas que empiezan en lunes
-  var lista = FRASES[hoy.getDay()];
-  window.MCFrase = lista[semana % lista.length];
+  // Las frases que guardas en el panel (Sitio → Frases del día) reemplazan a estas.
+  var CACHE = 'mc_frases', HORA = 3600000;
+  function elegir(dias, fecha) {
+    fecha = fecha || new Date();
+    var n = Math.floor(Date.UTC(fecha.getFullYear(), fecha.getMonth(), fecha.getDate()) / 86400000);
+    var semana = Math.floor((n + 3) / 7); // semanas que empiezan en lunes
+    var lista = (dias && dias[fecha.getDay()] && dias[fecha.getDay()].length) ? dias[fecha.getDay()] : FRASES[fecha.getDay()];
+    return lista[semana % lista.length];
+  }
+  window.MCFrases = { base: FRASES, elegir: elegir };
+
   var el = document.getElementById('salFrase');
-  if (el) el.textContent = window.MCFrase;
+  if (!el) return;
+  var guardada = null;
+  try { guardada = JSON.parse(localStorage.getItem(CACHE)); } catch (e) { /* nada */ }
+  function poner(dias) { window.MCFrase = elegir(dias); el.textContent = window.MCFrase; }
+  poner(guardada && guardada.dias);
+  if (guardada && Date.now() - guardada.t < HORA) return;
+  if (!window.MCAuth || !MCAuth.listo) return;
+  MCAuth.listo.then(function (c) { return c.from('ajustes').select('valor').eq('clave', 'frases').maybeSingle(); })
+    .then(function (r) {
+      if (r.error) return;
+      var dias = r.data && r.data.valor && r.data.valor.dias || null;
+      try { localStorage.setItem(CACHE, JSON.stringify({ t: Date.now(), dias: dias })); } catch (e) { /* sin espacio */ }
+      poner(dias);
+    }).catch(function () {});
 })();
