@@ -261,6 +261,18 @@
   .popt.ok .l { background: var(--accent); color: #0e0e0e; }
   .popt .chk { margin-left: auto; color: var(--accent); font-weight: 800; }
   .pimg { margin: 10px 0 12px; }
+  .fmt-ayuda { margin-top: 14px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); padding: 12px 16px; font-size: 13px; color: var(--text-dim); }
+  .fmt-ayuda summary { cursor: pointer; font-weight: 700; color: var(--text); }
+  .fmt-grid { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 10px 16px; margin-top: 12px; align-items: start; line-height: 1.5; }
+  .fmt-grid code { background: #0a0a0a; border: 1px solid #2a2a2a; border-radius: 8px; padding: 6px 8px; color: var(--accent); font-size: 12px; overflow-x: auto; white-space: nowrap; display: block; }
+  .fmt-grid span code { display: inline; padding: 1px 4px; }
+  @media (max-width: 600px) { .fmt-grid { grid-template-columns: minmax(0, 1fr); } .fmt-grid span { margin-bottom: 6px; } }
+  .ptext .mcq-img { background: none; padding: 0; }
+  .ptext .mcq-img .pimg { width: 100%; margin: 0; }
+  .pder { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 40%); gap: 14px; align-items: start; }
+  .pder .hint { margin-bottom: 6px; }
+  .popts-cortas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 14px; }
+  @media (max-width: 600px) { .pder { grid-template-columns: 1fr; } .popts-cortas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   .pubbar { position: sticky; bottom: 0; z-index: 15; margin-top: 16px; background: rgba(5,5,5,0.94); backdrop-filter: blur(6px); border-top: 1px solid #1a1a1a; padding: 14px 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .pubbar #subResumen { font-size: 13.5px; color: var(--text-dim); }
   .pubbar #subResumen .bad { color: var(--red); }
@@ -506,6 +518,17 @@ E) Alternativa"></textarea>
             <label class="btn-ghost filebtn">Subir archivo .txt / .md<input type="file" id="subArchivo" accept=".txt,.md,text/plain,text/markdown"></label>
             <span class="hint">Tu texto se guarda solo mientras no cierres la pestaña.</span>
           </div>
+          <details class="fmt-ayuda">
+            <summary>Imágenes, tablas y columnas</summary>
+            <div class="fmt-grid">
+              <code>[IMAGEN]</code><span>En su propia línea, donde va la imagen dentro del enunciado. Puedes poner varias; al revisar te pide pegar cada una.</span>
+              <code>[IMAGEN DERECHA]</code><span>Imagen al lado de las alternativas (en celular sale arriba de ellas).</span>
+              <code>| Meses | fi | Fi |<br>|---|---|---|<br>| [120 - > | | 126 |</code><span>Tabla. La línea <code>|---|</code> hace que la primera fila sea el título.</span>
+              <code>I. CaO || p) cal viva</code><span>Columnas sin bordes, para "asociar" o listas en varias columnas.</span>
+              <code>A) VVV   B) FVV   C) VVF</code><span>Varias alternativas en una línea también valen. Si son cortas, se muestran en columnas solas.</span>
+              <code>$\sqrt{2}$  $\overline{ab}$  $H_2SO_4$</code><span>Fórmulas entre $…$: raíces, barras encima, subíndices, fracciones.</span>
+            </div>
+          </details>
           <details class="fmt" style="margin-top:16px;">
             <summary>Ver el formato y los trucos (ecuaciones, cursiva, clave)</summary>
             <div class="formato">CURSO: Química                 ← nombre del curso
@@ -1096,8 +1119,9 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
       ${distinta ? `<div class="banner warn" style="margin-top:14px;">Ojo: la pregunta ${ctx.n} publicada no coincide con la del reporte. Es posible que el orden haya cambiado; revisa antes de guardar.</div>` : ''}
       <label class="fld">Pregunta</label>
       <textarea class="ta" id="edText">${esc(q.text)}</textarea>
-      <div class="hint">Puedes usar *cursiva*, **negrita** y ecuaciones entre $…$ (ej.: $x^2$). Los saltos de línea se respetan.</div>
-      <label class="fld">Imagen o gráfico</label>
+      <div class="hint">Puedes usar *cursiva*, **negrita** y ecuaciones entre $…$ (ej.: $x^2$). Los saltos de línea se respetan. Para una imagen nueva en medio del texto escribe <b>[IMAGEN]</b> (o <b>[IMAGEN DERECHA]</b>) en su propia línea; las ya publicadas se ven como [IMG:…], muévelas o bórralas como texto.</div>
+      <div id="edMarcas"></div>
+      <label class="fld">Imagen o gráfico <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— debajo del enunciado</span></label>
       <div id="edImg"></div>
       <label class="fld">Alternativas <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— toca la letra para marcar la correcta</span></label>
       <div id="edOpts">${q.options.map((o, i) => `
@@ -1136,6 +1160,21 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
       cambio();
     }));
     const zonaImg = crearZonaImagen(body.querySelector('#edImg'), { actual: q.graphic || '', onChange: () => cambio() });
+    // Un recuadro por cada [IMAGEN] escrita en el texto
+    const marcasEl = body.querySelector('#edMarcas');
+    let zonasMarca = [];
+    function pintarMarcas() {
+      const lista = body.querySelector('#edText').value.split('\n').map(l => marcaImagen(l.trim())).filter(Boolean);
+      if (lista.length === zonasMarca.length && lista.every((m, i) => zonasMarca[i].marca === m)) return;
+      const viejas = zonasMarca.map(z => z.zona.estado());
+      marcasEl.innerHTML = lista.map((m, i) => `<label class="fld">${esc(m)} ${i + 1}</label><div data-m="${i}"></div>`).join('');
+      zonasMarca = lista.map((m, i) => {
+        const zona = crearZonaImagen(marcasEl.querySelector(`[data-m="${i}"]`), { actual: '', onChange: () => cambio() });
+        if (viejas[i] && viejas[i].cambio === 'nueva') zona.recibirPreparada(viejas[i].img);
+        return { marca: m, zona };
+      });
+    }
+    body.querySelector('#edText').addEventListener('input', pintarMarcas);
     body.addEventListener('input', cambio);
     body.querySelector('#edCancel').addEventListener('click', cerrarModal);
 
@@ -1165,6 +1204,15 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
       err.classList.remove('show');
       if (!norm(v.text) || v.options.some(o => !norm(o.text))) { err.textContent = 'La pregunta y las alternativas no pueden quedar vacías.'; err.classList.add('show'); return; }
       const imagenes = [];
+      if (zonasMarca.some(z => z.zona.estado().cambio !== 'nueva')) { err.textContent = 'Pega la imagen de cada [IMAGEN] que escribiste, o borra la marca.'; err.classList.add('show'); return; }
+      let km = 0;
+      v.text = v.text.split('\n').map(l => {
+        const m = marcaImagen(l.trim()); if (!m) return l;
+        const st = zonasMarca[km++].zona.estado();
+        const path = imgRuta(ctx.carpeta, ctx.anio, ctx.tema, st.img.ext);
+        imagenes.push({ path, data: st.img.dataUrl });
+        return '[IMG' + (m === '[IMAGEN DERECHA]' ? '-DER' : '') + ':' + path + ']';
+      }).join('\n');
       const st = zonaImg.estado();
       if (st.cambio === 'quitar') v.graphic = null;
       if (st.cambio === 'nueva') {
@@ -1266,6 +1314,7 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
   })();
 </script>
 <script src="imagenes.js"></script>
+<script src="../assets/pregunta.js"></script>
 <script src="subir.js"></script>
 <script src="../assets/alertas.js" data-solo-previa></script>
 <script src="alertas-panel.js"></script>

@@ -8,9 +8,34 @@
      Enunciado… (ecuaciones entre $…$)
      A) …
      B) … ✅
+   Además (se ve con assets/pregunta.js):
+     [IMAGEN]           pega una imagen en esa línea del enunciado
+     [IMAGEN DERECHA]   imagen al lado de las alternativas
+     | a | b |          tabla        I. CaO || p) cal viva   columnas
+     A) VVV   B) FVV   C) VVF       varias alternativas en una línea
    ========================================================= */
 const MARCA = /\s*(✅|✔️|✔|☑️|☑|✓)\s*/gu;
 const LETRAS = 'ABCDEF';
+const MAX_IMG = 6;
+
+// "[imagen]", "[ IMAGEN A LA DERECHA ]"… → '[IMAGEN]' | '[IMAGEN DERECHA]' | null
+function marcaImagen(l) {
+  const m = sinTildes(l).match(/^\[\s*imagen(?:\s+(?:a\s+la\s+)?(derecha))?\s*\]$/);
+  return m ? (m[1] ? '[IMAGEN DERECHA]' : '[IMAGEN]') : null;
+}
+// "A) VVV   B) FVV  C) VVF" → ['A) VVV', 'B) FVV', 'C) VVF'] (solo si las letras siguen en orden)
+function partirAlternativas(l, desde) {
+  const partes = [];
+  let resto = l, k = desde;
+  while (k + 1 < LETRAS.length) {
+    const sig = LETRAS[k + 1];
+    const m = resto.match(new RegExp('^(.*?\\S)\\s+\\(?(' + sig + ')\\s*\\)\\s*(.*)$'));
+    if (!m) break;
+    partes.push(m[1]); resto = m[2] + ') ' + m[3]; k++;
+  }
+  partes.push(resto);
+  return partes;
+}
 
 function sinTildes(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim(); }
 function detectarCurso(txt) {
@@ -45,14 +70,22 @@ function parsearTexto(raw) {
       preguntas.push(cur); lastOpt = null; continue;
     }
     if (!cur) { avisos.push('Línea ignorada (antes de la PREGUNTA 1): "' + l.slice(0, 60) + '"'); continue; }
+    const marca = marcaImagen(l);
+    if (marca) {
+      if (lastOpt && marca === '[IMAGEN]') cur.malas = (cur.malas || 0) + 1;
+      else cur.textLines.push(marca);
+      continue;
+    }
     if ((m = l.match(/^(?:RESPUESTA|CLAVE|RPTA\.?)\s*(?:CORRECTA)?\s*[:=]?\s*\(?([A-Fa-f])\)?\s*$/i))) { cur.clave = m[1].toUpperCase(); continue; }
     const esperada = LETRAS[cur.options.length];
     if (esperada && (m = l.match(/^\(?([A-Fa-f])\s*[).]\s*(.*)$/)) && m[1].toUpperCase() === esperada) {
-      let t = m[2];
-      MARCA.lastIndex = 0;
-      if (MARCA.test(t)) { cur.marcas.push(cur.options.length); MARCA.lastIndex = 0; t = t.replace(MARCA, ' ').trim(); }
-      lastOpt = { letter: esperada, text: t };
-      cur.options.push(lastOpt);
+      partirAlternativas(m[2], cur.options.length).forEach((pt, j) => {
+        let t = j ? pt.replace(/^\(?[A-F]\s*\)\s*/, '') : pt;
+        MARCA.lastIndex = 0;
+        if (MARCA.test(t)) { cur.marcas.push(cur.options.length); MARCA.lastIndex = 0; t = t.replace(MARCA, ' ').trim(); }
+        lastOpt = { letter: LETRAS[cur.options.length], text: t.trim() };
+        cur.options.push(lastOpt);
+      });
       continue;
     }
     if (lastOpt) {
@@ -76,6 +109,13 @@ function parsearTexto(raw) {
     if (!q.text) q.errores.push('Falta el enunciado');
     if (q.options.length < 2) q.errores.push('Tiene menos de 2 alternativas');
     q.options.forEach(o => { if (!o.text) q.errores.push('La alternativa ' + o.letter + ' está vacía'); });
+    const marcas = (q.text.match(/^\[IMAGEN( DERECHA)?\]$/gm) || []);
+    q.marcasImg = marcas.length;
+    if (q.malas) q.errores.push('La marca [IMAGEN] va en el enunciado, antes de las alternativas (o usa [IMAGEN DERECHA])');
+    delete q.malas;
+    if (marcas.filter(x => x === '[IMAGEN DERECHA]').length > 1) q.errores.push('Solo puede haber una [IMAGEN DERECHA]');
+    if (marcas.length > MAX_IMG) q.errores.push('Máximo ' + MAX_IMG + ' imágenes por pregunta');
+    if (q.text && !q.text.replace(/^\[IMAGEN( DERECHA)?\]$/gm, '').trim()) q.errores.push('Falta el enunciado');
     if (q.correct == null && !q.errores.length) q.errores.push('Falta marcar la clave con ✅');
     if (q.num !== i + 1) avisos.push('La PREGUNTA ' + q.num + ' está en la posición ' + (i + 1) + ' (se numerará como ' + (i + 1) + ')');
   });
@@ -96,7 +136,7 @@ function renderMath(el) {
   }
 }
 
-const SUB = { parse: null, zonas: [], borrador: 'mc_panel_borrador' };
+const SUB = { parse: null, zonas: {}, borrador: 'mc_panel_borrador' };
 
 function initSubir() {
   const ta = $('subTexto');
@@ -124,8 +164,9 @@ function initSubir() {
 function revisarTexto() {
   const r = parsearTexto($('subTexto').value);
   if (!r.preguntas.length) { toast('No encontré preguntas. Revisa que cada una empiece con "PREGUNTA 1:"', true); return; }
-  // conservar imágenes ya pegadas (por posición)
-  const previas = SUB.zonas.map(z => z && z.estado());
+  // conservar imágenes ya pegadas (por pregunta y posición)
+  const previas = {};
+  Object.keys(SUB.zonas).forEach(k => { previas[k] = SUB.zonas[k].estado(); });
   SUB.parse = r;
   $('subCurso').value = detectarCurso(r.meta.curso) || $('subCurso').value;
   $('subCiclo').value = normalizarCiclo(r.meta.ciclo) || $('subCiclo').value;
@@ -137,22 +178,25 @@ function revisarTexto() {
     (errores ? `<div class="banner warn"><div><b>${errores} pregunta${errores > 1 ? 's tienen' : ' tiene'} errores.</b> Corrígelas en el texto y vuelve a revisar.</div></div>` : '') +
     (r.avisos.length ? `<div class="banner info"><div>${r.avisos.slice(0, 6).map(esc).join('<br>')}${r.avisos.length > 6 ? '<br>…' : ''}</div></div>` : '');
 
-  $('subLista').innerHTML = r.preguntas.map((q, i) => `
+  // Vista previa: un recuadro por cada [IMAGEN]; sin marcas, uno debajo del enunciado (como antes)
+  $('subLista').innerHTML = r.preguntas.map((q, i) => {
+    const v = MCPregunta.armar(q.text, { marca: (k, der) => `<div class="pimg" data-z="${i}|${k}"></div>` });
+    const opts = q.options.map((o, k) => `<div class="popt ${k === q.correct ? 'ok' : ''}"><span class="l">${esc(o.letter)}</span><span>${formatQText(o.text)}</span>${k === q.correct ? '<span class="chk">✓</span>' : ''}</div>`).join('');
+    return `
     <article class="pcard ${q.errores.length ? 'bad' : ''}">
       <div class="qnum2">${i + 1}</div>
       ${q.errores.length ? `<div class="perr">⚠ ${q.errores.map(esc).join(' · ')}</div>` : ''}
-      <div class="ptext">${formatQText(q.text).replace(/\n/g, '<br>')}</div>
-      <div class="pimg" data-i="${i}"></div>
-      ${q.options.map((o, k) => `<div class="popt ${k === q.correct ? 'ok' : ''}"><span class="l">${esc(o.letter)}</span><span>${formatQText(o.text)}</span>${k === q.correct ? '<span class="chk">✓</span>' : ''}</div>`).join('')}
-    </article>`).join('');
-  SUB.zonas = [...$('subLista').querySelectorAll('.pimg')].map((el, i) => {
-    const z = crearZonaImagen(el, { actual: '', onChange: () => {} });
-    const p = previas[i];
-    if (p && p.cambio === 'nueva') { z.restaurar = p; }
-    return z;
+      <div class="ptext">${v.html}</div>
+      ${q.marcasImg ? '' : `<div class="pimg" data-z="${i}|g"></div>`}
+      ${v.derecha ? `<div class="pder"><div>${opts}</div><div><div class="hint">Al lado de las alternativas</div>${v.derecha}</div></div>` : `<div class="${MCPregunta.cortas(q.options) ? 'popts-cortas' : ''}">${opts}</div>`}
+    </article>`;
+  }).join('');
+  SUB.zonas = {};
+  $('subLista').querySelectorAll('.pimg').forEach(el => {
+    const k = el.dataset.z;
+    const z = SUB.zonas[k] = crearZonaImagen(el, { actual: '', onChange: validarMeta });
+    if (previas[k] && previas[k].cambio === 'nueva') z.recibirPreparada(previas[k].img);
   });
-  // restaurar imágenes previas
-  SUB.zonas.forEach(z => { if (z.restaurar) { const img = z.restaurar.img; z.recibirPreparada(img); } });
   renderMath($('subLista'));
   $('subPaso1').hidden = true; $('subPaso2').hidden = false;
   validarMeta();
@@ -169,6 +213,8 @@ function validarMeta() {
   if (!nombre) errs.push('pon el nombre del tema');
   const malas = SUB.parse.preguntas.filter(q => q.errores.length).length;
   if (malas) errs.push('corrige ' + malas + ' pregunta' + (malas > 1 ? 's' : ''));
+  const sinImg = Object.keys(SUB.zonas).filter(k => !/\|g$/.test(k) && SUB.zonas[k].estado().cambio !== 'nueva').length;
+  if (sinImg) errs.push('pega ' + (sinImg === 1 ? 'la imagen que falta' : 'las ' + sinImg + ' imágenes que faltan'));
   const n = SUB.parse.preguntas.length;
   $('subResumen').innerHTML = errs.length
     ? `<span class="bad">Falta: ${errs.join(', ')}.</span>`
@@ -178,9 +224,20 @@ function validarMeta() {
 
 function armarPreguntas(carpeta, anio, tema, nombre) {
   const imagenes = [];
+  const subir = st => {
+    const path = imgRuta(carpeta, anio, tema, st.img.ext);
+    imagenes.push({ path, data: st.img.dataUrl });
+    return path;
+  };
   const preguntas = SUB.parse.preguntas.map((q, i) => {
-    const out = { text: q.text, topic: NOMBRE[carpeta] + ' · ' + nombre, options: q.options.map(o => ({ letter: o.letter, text: o.text })), correct: q.correct };
-    const st = SUB.zonas[i] && SUB.zonas[i].estado();
+    // Cada [IMAGEN] se cambia por la ruta de la imagen pegada ahí
+    let k = 0;
+    const text = q.text.replace(/^\[IMAGEN( DERECHA)?\]$/gm, (x, der) => {
+      const z = SUB.zonas[i + '|' + (k++)], st = z && z.estado();
+      return st && st.cambio === 'nueva' ? '[IMG' + (der ? '-DER' : '') + ':' + subir(st) + ']' : '';
+    });
+    const out = { text, topic: NOMBRE[carpeta] + ' · ' + nombre, options: q.options.map(o => ({ letter: o.letter, text: o.text })), correct: q.correct };
+    const st = SUB.zonas[i + '|g'] && SUB.zonas[i + '|g'].estado();
     if (st && st.cambio === 'nueva') {
       const path = imgRuta(carpeta, anio, tema, st.img.ext);
       imagenes.push({ path, data: st.img.dataUrl });
@@ -241,7 +298,7 @@ async function publicarTema() {
       avisarNovedad(d).then(r => pintarResultadoNovedad(res, d, r), () => pintarResultadoNovedad(res, d, { ok: false, motivo: 'error' }));
     }
     $('subOtro').addEventListener('click', () => {
-      $('subTexto').value = ''; SUB.parse = null; SUB.zonas = [];
+      $('subTexto').value = ''; SUB.parse = null; SUB.zonas = {};
       $('subListo').hidden = true; $('subPaso1').hidden = false;
     });
     window.scrollTo(0, 0);
