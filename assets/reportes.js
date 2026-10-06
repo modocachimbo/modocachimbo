@@ -135,6 +135,17 @@
     return location.origin + location.pathname + location.search + (n ? '#q' + n : '');
   }
 
+  // Igual que el panel: primero POST normal (sin cookies de Google, que con
+  // varias cuentas abiertas hacen fallar a Apps Script); si no se puede, JSONP.
+  function enviar(url, datos) {
+    if (!window.fetch) return jsonp(url, datos);
+    var ctl = window.AbortController ? new AbortController() : null;
+    var t = setTimeout(function () { if (ctl) ctl.abort(); }, 30000);
+    return fetch(url, { method: 'POST', body: JSON.stringify(datos), credentials: 'omit', signal: ctl ? ctl.signal : undefined })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { clearTimeout(t); return j; }, function () { clearTimeout(t); return jsonp(url, datos); });
+  }
+
   function jsonp(url, params) {
     return new Promise(function (resolve, reject) {
       var cb = 'mc_rep_' + Math.random().toString(36).slice(2);
@@ -143,7 +154,7 @@
       function cleanup() { clearTimeout(t); try { delete window[cb]; } catch (e) { window[cb] = undefined; } if (s.parentNode) s.parentNode.removeChild(s); }
       window[cb] = function (data) { resolve(data); cleanup(); };
       s.onerror = function () { reject(new Error('jsonp')); cleanup(); };
-      t = setTimeout(function () { reject(new Error('timeout')); cleanup(); }, 12000);
+      t = setTimeout(function () { reject(new Error('timeout')); cleanup(); }, 25000);
       var q = Object.keys(params).map(function (k) { return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]); }).join('&');
       s.src = url + (url.indexOf('?') === -1 ? '?' : '&') + q + '&callback=' + cb;
       document.body.appendChild(s);
@@ -311,15 +322,17 @@
       if (!CFG.REPORTES_URL) { pantallaFinal(false); return; }
       send.disabled = true;
       send.innerHTML = '<span class="rep-spin"></span> Enviando…';
-      jsonp(CFG.REPORTES_URL, datos)
+      enviar(CFG.REPORTES_URL, datos)
         .then(function (r) {
           var ok = !!(r && r.ok);
           // Copia en la cuenta del alumno, para que vea el estado en Mi perfil (supabase/07-reportes.sql)
-          if (ok && window.MCAuth && MCAuth.usuario()) {
-            MCAuth.listo.then(function (c) {
-              return c.rpc('crear_reporte', { p: { carpeta: datos.carpeta, anio: datos.anio, tema: datos.tema, pregunta: datos.pregunta, extracto: datos.extracto, sugerida: datos.sugerida } });
-            }).catch(function () {});
-          }
+          try {
+            if (ok && window.MCAuth && MCAuth.usuario()) {
+              Promise.resolve(MCAuth.listo).then(function (c) {
+                return c.rpc('crear_reporte', { p: { carpeta: datos.carpeta, anio: datos.anio, tema: datos.tema, pregunta: datos.pregunta, extracto: datos.extracto, sugerida: datos.sugerida } });
+              }).catch(function () {});
+            }
+          } catch (e) { /* la copia del perfil nunca debe tapar el envío */ }
           pantallaFinal(ok);
         })
         .catch(function () { pantallaFinal(false); });
