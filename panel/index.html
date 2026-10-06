@@ -897,6 +897,7 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
   $('search').addEventListener('input', renderLista);
 
   function renderReportes() {
+    if (DATA.length && window.MCRep) MCRep.recibidos();
     $('lastUpdate').textContent = 'Actualizado: ' + new Date().toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
     const pend = DATA.filter(r => r.estado === 'Pendiente').length;
     $('badgePend').hidden = !pend; $('badgePend').textContent = pend;
@@ -970,6 +971,7 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
     try {
       await api('estado', { fila, estado });
       const r = DATA.find(x => x.fila === fila); if (r) r.estado = estado;
+      if (window.MCRep && r) MCRep.estado(r, estado === 'Descartado' ? 'Denegado' : 'Recibido');
       renderReportes();
       toast(estado === 'Descartado' ? 'Reporte descartado' : 'Reporte marcado como ' + estado.toLowerCase());
     } catch (e) { btn.disabled = false; toast(e.message, true); }
@@ -1225,6 +1227,7 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
         const r = await api('corregir', { carpeta: ctx.carpeta, curso: ctx.curso, anio: ctx.anio, tema: pad2(ctx.tema), n: ctx.n, textoAntes: q.text, pregunta: JSON.stringify(v), imagenes: JSON.stringify(imagenes) });
         delete cacheArchivos[ctx.carpeta + '|' + ctx.anio];
         if (r.sinCambios) { cerrarModal(); toast('No había cambios que guardar'); return; }
+        if (window.MCRep) MCRep.estado({ carpeta: ctx.carpeta, anio: ctx.anio, tema: ctx.tema, pregunta: ctx.n }, 'Corregido');
         const oNew = v.options[v.correct];
         body.innerHTML = `<div class="done">
           <div class="ico">${ICON_OK}</div>
@@ -1321,6 +1324,7 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
 <script src="codigos-panel.js"></script>
 <script src="../assets/auth.js"></script>
 <script src="alumnos-panel.js"></script>
+<script src="reportes-alumno.js"></script>
 <script src="../assets/carreras.js"></script>
 <script src="perfil-panel.js"></script>
 <script src="novedades-panel.js"></script>

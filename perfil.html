@@ -95,6 +95,16 @@
   .lista { list-style: none; margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
   .lista li { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 13.5px; }
   .lista li span { color: var(--text-dim); }
+  .rep-lista li { align-items: center; flex-wrap: nowrap; }
+  .rep-lista a { color: inherit; text-decoration: none; min-width: 0; flex: 1; }
+  .rep-lista a b { display: block; font-weight: 600; }
+  .rep-lista a small { display: block; color: var(--text-dim); font-size: 12.5px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rep-est { flex-shrink: 0; border-radius: 100px; padding: 5px 10px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+  .rep-est.Enviado { background: var(--surface); color: var(--text-dim); border: 1px solid var(--border); }
+  .rep-est.Recibido { background: rgba(80,160,255,.12); color: #8cc2ff; }
+  .rep-est.Corregido { background: var(--accent-soft); color: var(--accent); }
+  .rep-est.Denegado { background: rgba(224,60,60,.12); color: #ff9a9a; }
+  .rep-mas { margin-top: 10px; background: none; border: none; color: var(--accent); font-weight: 700; cursor: pointer; padding: 6px 0; }
 
   .vacio { text-align: center; padding: 50px 24px; }
   .vacio h1 { font-family: 'Sora', sans-serif; font-size: 24px; margin-bottom: 10px; }
@@ -215,6 +225,12 @@
         </div>
         <a class="btn prog-repasar" id="pRepasar" href="falladas.html" hidden>🔁 Repasar mis preguntas falladas</a>
         <div class="prog-cursos" id="pCursos"><p class="nota">Cargando tu progreso…</p></div>
+      </section>
+
+      <section class="panel" id="reportes" hidden>
+        <h2>Mis reportes de claves</h2>
+        <p class="nota">Cuando avisas de un posible error en una clave, aquí ves si el profe ya lo leyó y qué decidió.</p>
+        <ul class="lista rep-lista" id="repLista"></ul>
       </section>
 
       <button class="btn sec" type="button" id="btnSalir" style="margin-top:18px">Cerrar sesión</button>
@@ -410,12 +426,45 @@
   $('btnIngresar').addEventListener('click', function () { MCAuth.abrirIngreso(); });
   $('btnSalir').addEventListener('click', function () { MCAuth.salir(); });
 
+  // Mis reportes de claves (supabase/07-reportes.sql)
+  var REP_EST = { Enviado: '📨 Enviado', Recibido: '👀 Recibido', Corregido: '✅ Corregido', Denegado: '⛔ Denegado' };
+  var repTodos = false;
+  function cargarReportes() {
+    if (!MCAuth.usuario()) { $('reportes').hidden = true; return; }
+    MCAuth.listo.then(function (c) {
+      return cursosListos.then(function () { return c.from('reportes_alumno').select('id,carpeta,anio,tema,pregunta,extracto,estado,creado,actualizado').order('creado', { ascending: false }).limit(50); });
+    }).then(function (r) {
+      var L = (!r.error && r.data) || [], ul = $('repLista');
+      $('reportes').hidden = !L.length;
+      ul.textContent = '';
+      (repTodos ? L : L.slice(0, 5)).forEach(function (x) {
+        var li = document.createElement('li');
+        var a = document.createElement('a'), tm = /^\d$/.test(x.tema) ? '0' + x.tema : x.tema;
+        a.href = x.carpeta + '/libros/tema.html?year=' + encodeURIComponent(x.anio) + '&tema=' + encodeURIComponent(tm) + '#q' + x.pregunta;
+        var b = document.createElement('b'); b.textContent = (NOMBRE_CURSO[x.carpeta] || x.carpeta) + ' · Tema ' + tm + ' · Pregunta ' + x.pregunta;
+        var sm = document.createElement('small');
+        sm.textContent = new Date(x.creado).toLocaleDateString('es-PE', { day: '2-digit', month: 'short' }) + (x.extracto ? ' · ' + String(x.extracto).replace(/\[IMG[^\]]*\]/g, ' ').replace(/\s+/g, ' ') : '');
+        a.appendChild(b); a.appendChild(sm);
+        var e = document.createElement('span'); e.className = 'rep-est ' + x.estado; e.textContent = REP_EST[x.estado] || x.estado;
+        li.appendChild(a); li.appendChild(e); ul.appendChild(li);
+      });
+      var mas = $('repMas');
+      if (L.length > 5 && !mas) {
+        mas = document.createElement('button'); mas.type = 'button'; mas.id = 'repMas'; mas.className = 'rep-mas';
+        mas.addEventListener('click', function () { repTodos = !repTodos; cargarReportes(); });
+        ul.after(mas);
+      }
+      if (mas) { mas.hidden = L.length <= 5; mas.textContent = repTodos ? 'Ver menos' : 'Ver todos (' + L.length + ')'; }
+    }).catch(function () {});
+  }
+
   // Se llama al saber si hay sesión, y otra vez al entrar o salir
   MCAuth.alCambiar(cargar);
+  MCAuth.alCambiar(cargarReportes);
 
   // Mi progreso (assets/progreso.js lo carga auth.js)
   var NOMBRE_CURSO = { ordinario: 'Exámenes · Ordinario', cpu: 'Exámenes · CPU', 'control-cpu': 'Exámenes · Control CPU' };
-  fetch('assets/cursos.json').then(function (r) { return r.json(); }).then(function (d) {
+  var cursosListos = fetch('assets/cursos.json').then(function (r) { return r.json(); }).then(function (d) {
     (d.cursos || []).forEach(function (c) { NOMBRE_CURSO[c.id] = c.nombre; });
   }).catch(function () {});
   function pintarProgreso(d) {
