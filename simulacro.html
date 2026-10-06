@@ -376,6 +376,8 @@
   const barajar = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const fecha = iso => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' }); };
   const durTxt = m => (m >= 60 ? Math.floor(m / 60) + ' h' : '') + (m % 60 ? ' ' + (m % 60) + ' min' : '');
+  // Figuras antiguas guardadas con la ruta del sitio oficial (/modocachimbo/assets/…): se vuelven relativas
+  const grafico = g => String(g || '').replace(/(src=["'])\/modocachimbo\//g, '$1');
   function renderMath(el) {
     if (window.renderMathInElement) renderMathInElement(el, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false });
   }
@@ -627,7 +629,7 @@
     $('pNum').textContent = 'Pregunta ' + (i + 1) + ' de ' + PREGS.length;
     const r = MCPregunta.armar(q.text, { lecPos: q.lecPos, lecSigue: q.lecSigue });
     $('pTxt').innerHTML = r.html;
-    $('pGraf').hidden = !q.graphic; $('pGraf').innerHTML = q.graphic || '';
+    $('pGraf').hidden = !q.graphic; $('pGraf').innerHTML = grafico(q.graphic);
     const lista = $('pAlts');
     lista.innerHTML = q.options.map((o, k) => '<li><button type="button" data-k="' + k + '" class="' + (S.resp[i] === k ? 'on' : '') + '"><i>' + esc(o.letter || 'ABCDE'[k]) + '</i><span>' + MCPregunta.formato(o.text) + '</span></button></li>').join('');
     MCPregunta.alternativas(lista, q, r);
@@ -775,7 +777,7 @@
       const a = AREA_DE[q._curso], m = MCPregunta.armar(q.text, { lecPos: q.lecPos });
       html += '<div class="rev-item" data-i="' + i + '"><span class="preg-tag" style="--c:' + a.c + '">' + a.nom + ' · ' + esc(NOMBRE[q._curso] || q._curso) + '</span>' +
         '<div class="preg-num">Pregunta ' + (i + 1) + '<span class="rev-est ' + est + '">' + { ok: '✅ Correcta', mal: '❌ Incorrecta', blanco: '⚪ En blanco' }[est] + '</span></div>' +
-        '<div class="preg-txt">' + m.html + '</div>' + (q.graphic ? '<div class="preg-graf">' + q.graphic + '</div>' : '') +
+        '<div class="preg-txt">' + m.html + '</div>' + (q.graphic ? '<div class="preg-graf">' + grafico(q.graphic) + '</div>' : '') +
         '<ul class="alts ver">' + q.options.map((o, k) => '<li><button type="button" tabindex="-1" class="' + (k === q.correct ? 'ok' : k === r ? 'mal' : '') + '"><i>' + esc(o.letter || 'ABCDE'[k]) + '</i><span>' + MCPregunta.formato(o.text) + '</span></button></li>').join('') + '</ul></div>';
     });
     caja.innerHTML = html || '<p class="vacia">No hay preguntas en este grupo.</p>';

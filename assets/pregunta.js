@@ -22,7 +22,25 @@
     e = e.replace(/&lt;u&gt;(.+?)&lt;\/u&gt;/g, '<u>$1</u>');
     e = e.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     e = e.replace(/\*(.+?)\*/g, '<em>$1</em>');
-    return e;
+    return ecuaciones(e);
+  }
+  // $$ A \qquad B $$ → cada fórmula en su bloque: lado a lado si caben, una debajo de otra si no
+  function ecuaciones(e) {
+    return e.replace(/\$\$([\s\S]+?)\$\$/g, function (todo, f) {
+      var pre = '', cuerpo = f.trim();
+      var m = cuerpo.match(/^\{\s*((?:\\(?:large|Large|LARGE|small|displaystyle|textstyle)\s*)+)([\s\S]*)\}$/);
+      if (m) { pre = m[1]; cuerpo = m[2]; }
+      var partes = [], nivel = 0, ini = 0, rx = /\\qquad(?![a-zA-Z])|[{}]/g, x;
+      while ((x = rx.exec(cuerpo))) {
+        if (x[0] === '{') nivel++;
+        else if (x[0] === '}') nivel--;
+        else if (!nivel) { partes.push(cuerpo.slice(ini, x.index)); ini = x.index + x[0].length; }
+      }
+      partes.push(cuerpo.slice(ini));
+      partes = partes.map(function (p) { return p.trim(); }).filter(Boolean);
+      if (partes.length < 2) return todo;
+      return '<span class="mcq-ecs">' + partes.map(function (p) { return '<span>$$' + pre + p + '$$</span>'; }).join('') + '</span>';
+    });
   }
   function img(ruta) {
     return '<img class="mc-img" src="' + esc(RAIZ + ruta) + '" alt="Figura de la pregunta" loading="lazy">';
@@ -195,6 +213,8 @@
     '.mcq-cortas{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))}' +
     '.mcq-con-der{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,42%);column-gap:16px;align-items:start}' +
     '.mcq-con-der>*{grid-column:1}.mcq-con-der>.mcq-der{grid-column:2;align-self:center;background:#fff;border-radius:12px;padding:10px;display:flex;justify-content:center}' +
+    '.katex-display{overflow-x:auto;overflow-y:hidden;max-width:100%}@media (max-width:600px){.mcq-ecs .katex-display{font-size:.85em}}' +
+    '.mcq-ecs{display:flex;flex-wrap:wrap;justify-content:center;column-gap:2.5em}.mcq-ecs>span{max-width:100%;min-width:0}' +
     '.mcq-lec{margin:0 0 14px;padding:10px 14px;border-left:3px solid #c6e000;background:rgba(198,224,0,.07);border-radius:10px}' +
     '.mcq-lec summary{cursor:pointer;font-weight:800;letter-spacing:.05em;color:#f5ffcc;font-size:.85em}' +
     '.mcq-lec-pos{font-weight:500;letter-spacing:0;opacity:.75}' +
