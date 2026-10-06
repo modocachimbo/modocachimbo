@@ -6,7 +6,8 @@ const PROD_TIPOS = [
   ['TODO-VIP', 'Acceso total'], ['repaso-VIP', 'Todos los Repasos'], ['fijas-VIP', 'Todas las Fijas'],
   ['curso', 'Un curso (Repaso y Fijas)'], ['repaso', 'Solo Repaso de un curso'], ['fijas', 'Solo Fijas de un curso']
 ];
-const SITE_URL = location.origin + SITE_ROOT;
+// Link oficial fijo: así el mensaje no muestra el link de una vista previa.
+const SITE_URL = 'https://modocachimbo.github.io/modocachimbo/';
 
 function copiar(texto) {
   const ok = () => toast('Copiado');
