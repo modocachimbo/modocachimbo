@@ -445,6 +445,7 @@
         <button class="tab" data-tab="subir" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span>Subir tema</span></button>
         <button class="tab" data-tab="editar" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg><span>Editar preguntas</span></button>
         <button class="tab" data-tab="cursos" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span>Cursos</span></button>
+        <button class="tab" data-tab="perfil" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M15 8h2"/><path d="M15 12h2"/><path d="M7 16h10"/></svg><span>Perfil del alumno</span></button>
         <div class="menu-grupo">Sitio</div>
         <button class="tab" data-tab="alertas" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Alertas</span></button>
         <button class="tab" data-tab="tutorial" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Tutorial</span></button>
@@ -585,6 +586,22 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
           <button class="btn-main" id="btnNuevoCurso" type="button">＋ Nuevo curso</button>
         </div>
         <div id="cuList"></div>
+      </div>
+
+      <!-- Perfil del alumno -->
+      <div id="tab-perfil" hidden>
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Lo que llena cada alumno</div>
+            <h1>Perfil del alumno</h1>
+            <p>Bloques, carreras y puntos por curso que aparecen en Mi perfil, y preguntas extra para conocer mejor a tus alumnos.</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span class="hint" id="pfEstado"></span>
+            <button class="btn-main" id="pfGuardar" type="button" disabled>Guardar y publicar</button>
+          </div>
+        </div>
+        <div id="pfBody"></div>
       </div>
 
       <!-- Alertas -->
@@ -834,9 +851,10 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
     $('barraTitulo').textContent = t.querySelector('span').textContent;
     window.scrollTo(0, 0);
     document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
-    ['reportes', 'subir', 'editar', 'cursos', 'alertas', 'tutorial', 'codigos', 'alumnos', 'corr'].forEach(id => { $('tab-' + id).hidden = id !== t.dataset.tab; });
+    ['reportes', 'subir', 'editar', 'cursos', 'perfil', 'alertas', 'tutorial', 'codigos', 'alumnos', 'corr'].forEach(id => { $('tab-' + id).hidden = id !== t.dataset.tab; });
     if (t.dataset.tab === 'tutorial' && !TU.datos) cargarTutorial();
     if (t.dataset.tab === 'cursos') cargarCursos();
+    if (t.dataset.tab === 'perfil') cargarPerfilCfg();
     if (t.dataset.tab === 'codigos') cargarCodigos();
     if (t.dataset.tab === 'alumnos') cargarAlumnos();
     if (t.dataset.tab === 'alertas') cargarAlertas();
@@ -1254,6 +1272,8 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
 <script src="codigos-panel.js"></script>
 <script src="../assets/auth.js"></script>
 <script src="alumnos-panel.js"></script>
+<script src="../assets/carreras.js"></script>
+<script src="perfil-panel.js"></script>
 <script src="novedades-panel.js"></script>
 <script src="mantenimiento.js"></script>
 <script src="../assets/cursos.js"></script>
