@@ -312,7 +312,16 @@
       send.disabled = true;
       send.innerHTML = '<span class="rep-spin"></span> Enviando…';
       jsonp(CFG.REPORTES_URL, datos)
-        .then(function (r) { pantallaFinal(!!(r && r.ok)); })
+        .then(function (r) {
+          var ok = !!(r && r.ok);
+          // Copia en la cuenta del alumno, para que vea el estado en Mi perfil (supabase/07-reportes.sql)
+          if (ok && window.MCAuth && MCAuth.usuario()) {
+            MCAuth.listo.then(function (c) {
+              return c.rpc('crear_reporte', { p: { carpeta: datos.carpeta, anio: datos.anio, tema: datos.tema, pregunta: datos.pregunta, extracto: datos.extracto, sugerida: datos.sugerida } });
+            }).catch(function () {});
+          }
+          pantallaFinal(ok);
+        })
         .catch(function () { pantallaFinal(false); });
     });
   }
