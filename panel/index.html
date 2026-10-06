@@ -266,6 +266,9 @@
   .pimg { margin: 10px 0 12px; }
   .fmt-ayuda { margin-top: 14px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); padding: 12px 16px; font-size: 13px; color: var(--text-dim); }
   .fmt-ayuda summary { cursor: pointer; font-weight: 700; color: var(--text); }
+  .pcard.en-texto { border-left: 3px solid #c6e000; }
+  .pcard.sigue { margin-top: -6px; }
+  .plec-sig { font-size: 12px; font-weight: 700; letter-spacing: .4px; color: #c6e000; margin: 0 0 8px; }
   .fmt-tit { margin: 16px 0 0; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-faint); font-weight: 700; }
   .fmt-grid { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 10px 16px; margin-top: 8px; align-items: start; line-height: 1.5; }
   .fmt-grid code { background: #0a0a0a; border: 1px solid #2a2a2a; border-radius: 8px; padding: 6px 8px; color: var(--accent); font-size: 12px; overflow-x: auto; white-space: nowrap; display: block; }
@@ -536,6 +539,7 @@ E) Alternativa"></textarea>
               <code>PREGUNTA 1:<br>Calcule la masa de $H_2O$ …</code><span>Cada pregunta empieza con <code>PREGUNTA N:</code> y debajo va el enunciado.</span>
               <code>A) 18 g<br>B) 36 g ✅<br>C) 9 g</code><span>Una alternativa por línea. La ✅ marca la correcta (también vale ✔ o ✓).</span>
               <code>CLAVE: C</code><span>Opcional: en lugar de la ✅, al final de la pregunta.</span>
+              <code>TEXTO 03:<br>Hubo un tiempo en que…<br>PREGUNTA 9:<br>¿Cuál es el título del texto?<br>…<br>PREGUNTA 10:<br>…<br>FIN TEXTO</code><span>Lectura para varias preguntas (Raz. Verbal, comprensión). Escribe <code>TEXTO</code> (con su número) y pega la lectura; vale para todas las preguntas de abajo hasta otro <code>TEXTO</code> o <code>FIN TEXTO</code>. El alumno la ve arriba de cada pregunta ("pregunta 2 de 3") y al mezclar (Repaso, Fijas) las preguntas del mismo texto salen juntas y en orden. Deja una línea en blanco entre párrafos.</span>
               <code>A) VVV   B) FVV   C) VVF</code><span>Varias alternativas en una línea también valen. Si son cortas, se muestran en columnas solas.</span>
             </div>
             <div class="fmt-tit">Texto y fórmulas</div>
@@ -1140,7 +1144,7 @@ E) Alternativa"></textarea>
     const q = t && t.questions[ctx.n - 1];
     if (!q) { body.innerHTML = `<div class="state-msg error">No encontré la pregunta ${ctx.n} del Tema ${esc(ctx.tema)} (${esc(ctx.anio)}). Quizá se movió o se borró.</div>`; return; }
 
-    const distinta = ctx.extracto && !plano(q.text).startsWith(norm(ctx.extracto).replace(/…$/, '').slice(0, 40));
+    const distinta = ctx.extracto && !plano(MCPregunta.sinLectura(q.text)).startsWith(norm(ctx.extracto).replace(/…$/, '').slice(0, 40));
     let correct = q.correct;
 
     body.innerHTML = `

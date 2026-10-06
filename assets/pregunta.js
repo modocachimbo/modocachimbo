@@ -6,6 +6,8 @@
      | a | b | c |            tabla (si la 2.ª fila es |---|, la 1.ª es título)
      I. CaO || p) cal viva    columnas sin bordes (separadas por ||)
      **negrita**, *cursiva*, <u>subrayado</u>, $fórmulas$
+     [TEXTO 03] … [/TEXTO]    lectura que comparten varias preguntas
+                              (va al inicio; se ve en un recuadro plegable)
    En el panel, [IMAGEN] y [IMAGEN DERECHA] son las marcas que
    escribe el profesor; al publicar se cambian por [IMG:…].
    ========================================================= */
@@ -28,6 +30,7 @@
 
   var RX_IMG = /^\[IMG(-DER)?:\s*([^\]\s]+)\s*\]$/i;
   var RX_MARCA = /^\[IMAGEN(\s+DERECHA)?\]$/i;
+  var RX_LEC = /^\[((?:TEXTO|LECTURA)[^\]]{0,20})\]$/i, RX_LEC_FIN = /^\[\/(?:TEXTO|LECTURA)\]$/i;
   function esTabla(l) { return /^\|.*\|$/.test(l); }
   function esColumnas(l) { return !esTabla(l) && /\s\|\|\s/.test(l); }
   function celdas(l) { return l.replace(/^\||\|$/g, '').split('|').map(function (c) { return c.trim(); }); }
@@ -45,6 +48,19 @@
     }
     for (var i = 0; i < lineas.length; i++) {
       var l = lineas[i].trim(), m;
+      if ((m = l.match(RX_LEC))) {
+        // Lectura: las líneas seguidas forman un párrafo (vienen cortadas del PDF); línea en blanco = párrafo nuevo
+        cerrarParrafo();
+        var pars = [[]];
+        for (i++; i < lineas.length && !RX_LEC_FIN.test(lineas[i].trim()); i++) {
+          var t = lineas[i].trim();
+          if (t) pars[pars.length - 1].push(t); else if (pars[pars.length - 1].length) pars.push([]);
+        }
+        partes.push('<details class="mcq-lec" open><summary>' + esc(m[1].trim().toUpperCase()) +
+          (opts.lecPos ? '<span class="mcq-lec-pos"> · pregunta ' + esc(opts.lecPos) + '</span>' : '') + '</summary>' +
+          pars.filter(function (p) { return p.length; }).map(function (p) { return '<p>' + formato(p.join(' ')) + '</p>'; }).join('') + '</details>');
+        continue;
+      }
       if ((m = l.match(RX_IMG))) {
         cerrarParrafo();
         if (!RUTA.test(m[2])) continue;
@@ -88,6 +104,39 @@
     return { html: partes.join(''), derecha: derecha };
   }
 
+  // Texto sin la lectura compartida (para extractos y mensajes)
+  function sinLectura(texto) {
+    var lineas = String(texto || '').replace(/\r/g, '').split('\n'), out = [], dentro = false;
+    lineas.forEach(function (l) {
+      var t = l.trim();
+      if (!dentro && RX_LEC.test(t)) dentro = true;
+      else if (dentro) { if (RX_LEC_FIN.test(t)) dentro = false; }
+      else out.push(l);
+    });
+    return out.join('\n').trim();
+  }
+
+  // Mezcla al azar, pero las preguntas de un mismo TEXTO quedan juntas y en orden.
+  // Marca q.lecPos = '2 de 3' para mostrarlo en la lectura.
+  function claveLectura(t) {
+    var m = String(t || '').match(/^\s*\[((?:TEXTO|LECTURA)[^\]]{0,20})\]\n([\s\S]*?)\n\[\/(?:TEXTO|LECTURA)\]/i);
+    return m ? m[1] + '|' + m[2].trim() : '';
+  }
+  function mezclar(arr) {
+    var grupos = [], idx = {};
+    (arr || []).forEach(function (q) {
+      var k = claveLectura(q && q.text);
+      if (k && idx[k] != null) grupos[idx[k]].push(q);
+      else { if (k) idx[k] = grupos.length; grupos.push([q]); }
+    });
+    for (var i = grupos.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = grupos[i]; grupos[i] = grupos[j]; grupos[j] = t; }
+    var out = [];
+    grupos.forEach(function (g) {
+      g.forEach(function (q, k) { if (q && typeof q === 'object' && claveLectura(q.text)) q.lecPos = g.length > 1 ? (k + 1) + ' de ' + g.length : ''; out.push(q); });
+    });
+    return out;
+  }
+
   // ¿Las alternativas son tan cortas que caben en columnas?
   function cortas(options) {
     if (!options || options.length < 3) return false;
@@ -101,7 +150,7 @@
   // Pinta la pregunta en una página de práctica.
   // el = { texto, grafico, opciones } (elementos); q = { text, graphic, options }
   function pintar(el, q) {
-    var r = armar(q.text);
+    var r = armar(q.text, { lecPos: q.lecPos });
     el.texto.innerHTML = r.html;
     if (el.grafico) {
       if (q.graphic) { el.grafico.innerHTML = q.graphic; el.grafico.style.display = 'block'; }
@@ -133,9 +182,14 @@
     '.mcq-cortas{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))}' +
     '.mcq-con-der{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,42%);column-gap:16px;align-items:start}' +
     '.mcq-con-der>*{grid-column:1}.mcq-con-der>.mcq-der{grid-column:2;align-self:center;background:#fff;border-radius:12px;padding:10px;display:flex;justify-content:center}' +
+    '.mcq-lec{margin:0 0 14px;padding:10px 14px;border-left:3px solid #c6e000;background:rgba(198,224,0,.07);border-radius:10px}' +
+    '.mcq-lec summary{cursor:pointer;font-weight:800;letter-spacing:.05em;color:#f5ffcc;font-size:.85em}' +
+    '.mcq-lec-pos{font-weight:500;letter-spacing:0;opacity:.75}' +
+    '.mcq-lec:not([open]) summary::after{content:" · toca para leer";font-weight:400;letter-spacing:0;opacity:.7}' +
+    '.mcq-lec p{margin:8px 0 0;line-height:1.6}' +
     '@media (max-width:600px){.mcq-cortas{grid-template-columns:repeat(2,minmax(0,1fr))}' +
     '.mcq-con-der{grid-template-columns:minmax(0,1fr)}.mcq-con-der>.mcq-der{grid-column:1;grid-row:auto!important;order:-1}}';
   document.head.appendChild(st);
 
-  window.MCPregunta = { armar: armar, pintar: pintar, alternativas: alternativas, cortas: cortas, formato: formato, raiz: RAIZ };
+  window.MCPregunta = { armar: armar, pintar: pintar, alternativas: alternativas, cortas: cortas, formato: formato, sinLectura: sinLectura, mezclar: mezclar, raiz: RAIZ };
 })();

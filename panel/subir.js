@@ -13,6 +13,8 @@
      [IMAGEN DERECHA]   imagen al lado de las alternativas
      | a | b |          tabla        I. CaO || p) cal viva   columnas
      A) VVV   B) FVV   C) VVF       varias alternativas en una línea
+     TEXTO 03:          lectura que comparten las preguntas de abajo
+     …                  (hasta el siguiente TEXTO o hasta FIN TEXTO)
    ========================================================= */
 const MARCA = /\s*(✅|✔️|✔|☑️|☑|✓)\s*/gu;
 const LETRAS = 'ABCDEF';
@@ -56,18 +58,31 @@ function normalizarCiclo(s) {
 function parsearTexto(raw) {
   const meta = { curso: '', ciclo: '', tema: '', nombre: '' };
   const preguntas = [], avisos = [];
-  let cur = null, lastOpt = null;
+  let cur = null, lastOpt = null, lectura = null, enLectura = false;
+  const lecturas = [];
   const lineas = String(raw || '').replace(/\r/g, '').split('\n');
   for (const linea of lineas) {
     const l = linea.trim();
+    if (enLectura && !l) { lectura.lines.push(''); continue; }
     if (!l || /^[-=_*]{3,}$/.test(l)) continue;
     let m;
-    if (!cur && (m = l.match(/^(CURSO|ASIGNATURA)\s*:\s*(.+)$/i))) { meta.curso = m[2].trim(); continue; }
-    if (!cur && (m = l.match(/^(CICLO|AÑO|ANIO|PERIODO)\s*:\s*(.+)$/i))) { meta.ciclo = m[2].trim(); continue; }
-    if (!cur && (m = l.match(/^TEMA\s*:?\s*N?[°º]?\s*(\d{1,3})\s*[-–—:.)]?\s*(.*)$/i))) { meta.tema = m[1]; meta.nombre = m[2].trim(); continue; }
+    // Lectura compartida: "TEXTO 03:" … hasta la PREGUNTA; vale para las preguntas de abajo
+    if ((m = l.match(/^(TEXTO|LECTURA)\s*(?:N?[°º]?\s*(\d{1,3}))?\s*[:.]?\s*$/i))) {
+      lectura = { titulo: m[1].toUpperCase() + (m[2] ? ' ' + m[2] : ''), lines: [], n: 0 };
+      lecturas.push(lectura); enLectura = true; cur = null; lastOpt = null; continue;
+    }
+    if (/^(FIN\s+(DEL\s+)?(TEXTO|LECTURA)|\[\/(TEXTO|LECTURA)\])$/i.test(l)) { lectura = null; enLectura = false; continue; }
+    if (!cur && !enLectura && (m = l.match(/^(CURSO|ASIGNATURA)\s*:\s*(.+)$/i))) { meta.curso = m[2].trim(); continue; }
+    if (!cur && !enLectura && (m = l.match(/^(CICLO|AÑO|ANIO|PERIODO)\s*:\s*(.+)$/i))) { meta.ciclo = m[2].trim(); continue; }
+    if (!cur && !enLectura && (m = l.match(/^TEMA\s*:?\s*N?[°º]?\s*(\d{1,3})\s*[-–—:.)]?\s*(.*)$/i))) { meta.tema = m[1]; meta.nombre = m[2].trim(); continue; }
     if ((m = l.match(/^PREGUNTA\s*N?[°º]?\s*(\d{1,3})\s*(?:[:.)]\s*(.*))?$/i))) {
-      cur = { num: +m[1], textLines: m[2] ? [m[2]] : [], options: [], marcas: [], clave: null };
-      preguntas.push(cur); lastOpt = null; continue;
+      cur = { num: +m[1], textLines: m[2] ? [m[2]] : [], options: [], marcas: [], clave: null, lec: lectura };
+      if (lectura) lectura.n++;
+      preguntas.push(cur); lastOpt = null; enLectura = false; continue;
+    }
+    if (enLectura) {
+      if (marcaImagen(l)) lectura.malas = true; else lectura.lines.push(l);
+      continue;
     }
     if (!cur) { avisos.push('Línea ignorada (antes de la PREGUNTA 1): "' + l.slice(0, 60) + '"'); continue; }
     const marca = marcaImagen(l);
@@ -95,10 +110,18 @@ function parsearTexto(raw) {
       if (extra) lastOpt.text += ' ' + extra;
     } else cur.textLines.push(l);
   }
+  lecturas.forEach(x => {
+    x.cuerpo = x.lines.join('\n').trim();
+    if (!x.n) avisos.push('El ' + x.titulo + ' no tiene preguntas debajo (escribe PREGUNTA … después del texto)');
+  });
   preguntas.forEach((q, i) => {
     q.text = q.textLines.join('\n').trim();
     delete q.textLines;
     q.errores = [];
+    const x = q.lec; delete q.lec;
+    q.lectura = x && x.cuerpo ? '[' + x.titulo + ']\n' + x.cuerpo + '\n[/TEXTO]\n' : '';
+    if (x && !x.cuerpo) q.errores.push('El ' + x.titulo + ' está vacío');
+    if (x && x.malas) q.errores.push('Por ahora el ' + x.titulo + ' no puede llevar [IMAGEN]; ponla en la pregunta');
     if (q.clave) {
       const idx = q.options.findIndex(o => o.letter === q.clave);
       if (idx < 0) q.errores.push('La clave ' + q.clave + ' no existe entre las alternativas');
@@ -179,11 +202,21 @@ function revisarTexto() {
     (r.avisos.length ? `<div class="banner info"><div>${r.avisos.slice(0, 6).map(esc).join('<br>')}${r.avisos.length > 6 ? '<br>…' : ''}</div></div>` : '');
 
   // Vista previa: un recuadro por cada [IMAGEN]; sin marcas, uno debajo del enunciado (como antes)
+  // Preguntas del mismo TEXTO: la lectura se muestra una vez, en la primera
+  const tam = {};
+  r.preguntas.forEach(q => { if (q.lectura) tam[q.lectura] = (tam[q.lectura] || 0) + 1; });
+  const visto = {};
   $('subLista').innerHTML = r.preguntas.map((q, i) => {
+    const k = q.lectura ? (visto[q.lectura] = (visto[q.lectura] || 0) + 1) : 0;
+    const sigue = k > 1;
+    // La lectura va arriba; el número de la pregunta, debajo de ella (justo antes del enunciado)
+    const lec = k === 1 ? MCPregunta.armar(q.lectura, { lecPos: '1 de ' + tam[q.lectura] }).html : '';
     const v = MCPregunta.armar(q.text, { marca: (k, der) => `<div class="pimg" data-z="${i}|${k}"></div>` });
     const opts = q.options.map((o, k) => `<div class="popt ${k === q.correct ? 'ok' : ''}"><span class="l">${esc(o.letter)}</span><span>${formatQText(o.text)}</span>${k === q.correct ? '<span class="chk">✓</span>' : ''}</div>`).join('');
     return `
-    <article class="pcard ${q.errores.length ? 'bad' : ''}">
+    <article class="pcard ${q.errores.length ? 'bad' : ''} ${k ? 'en-texto' : ''} ${sigue ? 'sigue' : ''}">
+      ${lec}
+      ${sigue ? `<div class="plec-sig">${esc(q.lectura.split('\n')[0].replace(/[\[\]]/g, ''))} · pregunta ${k} de ${tam[q.lectura]} (misma lectura de arriba)</div>` : ''}
       <div class="qnum2">${i + 1}</div>
       ${q.errores.length ? `<div class="perr">⚠ ${q.errores.map(esc).join(' · ')}</div>` : ''}
       <div class="ptext">${v.html}</div>
@@ -236,7 +269,7 @@ function armarPreguntas(carpeta, anio, tema, nombre) {
       const z = SUB.zonas[i + '|' + (k++)], st = z && z.estado();
       return st && st.cambio === 'nueva' ? '[IMG' + (der ? '-DER' : '') + ':' + subir(st) + ']' : '';
     });
-    const out = { text, topic: NOMBRE[carpeta] + ' · ' + nombre, options: q.options.map(o => ({ letter: o.letter, text: o.text })), correct: q.correct };
+    const out = { text: q.lectura + text, topic: NOMBRE[carpeta] + ' · ' + nombre, options: q.options.map(o => ({ letter: o.letter, text: o.text })), correct: q.correct };
     const st = SUB.zonas[i + '|g'] && SUB.zonas[i + '|g'].estado();
     if (st && st.cambio === 'nueva') {
       const path = imgRuta(carpeta, anio, tema, st.img.ext);
