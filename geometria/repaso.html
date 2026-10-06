@@ -403,7 +403,7 @@
     btnStart.disabled = false;
     startScreen.classList.add('show');
 
-    activeQuestions = shuffle(questions);
+    activeQuestions = (window.MCPregunta ? MCPregunta.mezclar : shuffle)(questions);
     setupHeaderAndBody();
   }
 
@@ -563,7 +563,7 @@
   }
 
   document.getElementById('btnRestart').addEventListener('click', () => {
-    activeQuestions = shuffle(questions);
+    activeQuestions = (window.MCPregunta ? MCPregunta.mezclar : shuffle)(questions);
     current = 0; score = 0; lives = MAX_LIVES; answers.length = 0;
     quizHeader.style.display = 'block';
     quizBody.style.display = 'block';

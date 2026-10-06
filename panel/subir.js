@@ -202,12 +202,19 @@ function revisarTexto() {
     (r.avisos.length ? `<div class="banner info"><div>${r.avisos.slice(0, 6).map(esc).join('<br>')}${r.avisos.length > 6 ? '<br>…' : ''}</div></div>` : '');
 
   // Vista previa: un recuadro por cada [IMAGEN]; sin marcas, uno debajo del enunciado (como antes)
+  // Preguntas del mismo TEXTO: la lectura se muestra una vez, en la primera
+  const tam = {};
+  r.preguntas.forEach(q => { if (q.lectura) tam[q.lectura] = (tam[q.lectura] || 0) + 1; });
+  const visto = {};
   $('subLista').innerHTML = r.preguntas.map((q, i) => {
-    const v = MCPregunta.armar(q.lectura + q.text, { marca: (k, der) => `<div class="pimg" data-z="${i}|${k}"></div>` });
+    const k = q.lectura ? (visto[q.lectura] = (visto[q.lectura] || 0) + 1) : 0;
+    const sigue = k > 1;
+    const v = MCPregunta.armar((sigue ? '' : q.lectura) + q.text, { lecPos: k ? '1 de ' + tam[q.lectura] : '', marca: (k, der) => `<div class="pimg" data-z="${i}|${k}"></div>` });
     const opts = q.options.map((o, k) => `<div class="popt ${k === q.correct ? 'ok' : ''}"><span class="l">${esc(o.letter)}</span><span>${formatQText(o.text)}</span>${k === q.correct ? '<span class="chk">✓</span>' : ''}</div>`).join('');
     return `
-    <article class="pcard ${q.errores.length ? 'bad' : ''}">
+    <article class="pcard ${q.errores.length ? 'bad' : ''} ${k ? 'en-texto' : ''} ${sigue ? 'sigue' : ''}">
       <div class="qnum2">${i + 1}</div>
+      ${sigue ? `<div class="plec-sig">${esc(q.lectura.split('\n')[0].replace(/[\[\]]/g, ''))} · pregunta ${k} de ${tam[q.lectura]} (misma lectura de arriba)</div>` : ''}
       ${q.errores.length ? `<div class="perr">⚠ ${q.errores.map(esc).join(' · ')}</div>` : ''}
       <div class="ptext">${v.html}</div>
       ${q.marcasImg ? '' : `<div class="pimg" data-z="${i}|g"></div>`}
