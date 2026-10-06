@@ -71,11 +71,49 @@
   .gate .btn-main, .gate .btn-ghost { width: 100%; text-align: center; justify-content: center; }
 
   /* Pestañas */
-  .tabs { display: flex; gap: 6px; margin: 22px 0 6px; border-bottom: 1px solid #1a1a1a; overflow-x: auto; }
-  .tab { background: none; border: none; color: var(--text-dim); font-size: 14px; font-weight: 600; padding: 12px 14px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; }
-  .tab:hover { color: var(--text); }
-  .tab.on { color: var(--accent); border-bottom-color: var(--accent); }
+  /* Menú lateral */
+  :root { --menu-w: 240px; }
+  body.panel-on { padding-left: var(--menu-w); }
+  body.panel-on header.top .back, body.panel-on header.top .logo, body.panel-on #btnLogout { display: none; }
+  body.panel-on header.top { display: none; }
+  .menu { position: fixed; top: 0; left: 0; bottom: 0; width: var(--menu-w); z-index: 40; background: #080808; border-right: 1px solid #161616; display: flex; flex-direction: column; padding: 22px 14px 16px; overflow-y: auto; }
+  .menu-logo { display: block; padding: 0 10px; }
+  .menu-logo img { height: 34px; width: auto; display: block; }
+  .menu-sub { padding: 8px 10px 0; font-size: 11px; letter-spacing: 1.6px; text-transform: uppercase; font-weight: 700; color: var(--text-faint); }
+  .tabs { display: flex; flex-direction: column; gap: 2px; margin-top: 18px; }
+  .menu-grupo { font-size: 10.5px; letter-spacing: 1.6px; text-transform: uppercase; font-weight: 700; color: var(--text-faint); padding: 16px 12px 6px; }
+  .tab { background: none; border: none; color: var(--text-dim); font-size: 14px; font-weight: 600; padding: 10px 12px; cursor: pointer; border-radius: 12px; width: 100%; text-align: left; display: flex; align-items: center; gap: 11px; position: relative; }
+  .tab svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .tab span:first-of-type { flex: 1; }
+  .tab:hover { color: var(--text); background: #111; }
+  .tab.on { color: var(--accent); background: var(--accent-soft); }
+  .tab.on::before { content: ''; position: absolute; left: -14px; top: 8px; bottom: 8px; width: 3px; border-radius: 0 3px 3px 0; background: var(--accent); }
   .tab .badge { background: var(--amber); color: #111; border-radius: 100px; font-size: 11px; font-weight: 800; padding: 1px 7px; }
+  .menu-pie { margin-top: auto; padding-top: 18px; border-top: 1px solid #161616; display: flex; flex-direction: column; gap: 10px; }
+  .menu-cuenta { display: flex; align-items: center; gap: 10px; padding: 0 4px; min-width: 0; font-size: 12.5px; color: var(--text-dim); }
+  .menu-cuenta:empty { display: none; }
+  .menu-cuenta .av { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: #0e0e0e; display: grid; place-items: center; font: 800 12px 'Sora', sans-serif; overflow: hidden; flex-shrink: 0; }
+  .menu-cuenta .av img { width: 100%; height: 100%; object-fit: cover; }
+  .menu-cuenta span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .menu-web { display: flex; align-items: center; gap: 8px; padding: 0 4px; color: var(--text-dim); text-decoration: none; font-size: 13px; font-weight: 600; }
+  .menu-web:hover { color: var(--accent); }
+  .menu-web svg { width: 14px; height: 14px; }
+  .menu-pie .btn-ghost { justify-content: center; }
+  .menu-fondo { display: none; }
+  .barra-movil { display: none; }
+  @media (max-width: 900px) {
+    body.panel-on { padding-left: 0; }
+    body.panel-on header.top { display: none; }
+    .menu { transform: translateX(-100%); transition: transform .25s ease; box-shadow: 20px 0 60px rgba(0,0,0,.6); }
+    body.menu-abierto .menu { transform: none; }
+    body.menu-abierto .menu-fondo { display: block; position: fixed; inset: 0; z-index: 39; background: rgba(0,0,0,.6); }
+    body.panel-on .barra-movil { display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 30; background: rgba(5,5,5,.94); backdrop-filter: blur(6px); padding: 12px 0; border-bottom: 1px solid #161616; }
+    .barra-movil button { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 12px; width: 42px; height: 42px; display: grid; place-items: center; cursor: pointer; }
+    .barra-movil button svg { width: 20px; height: 20px; }
+    .barra-movil b { font: 700 15px 'Sora', sans-serif; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .barra-movil .badge { background: var(--amber); color: #111; border-radius: 100px; font-size: 11px; font-weight: 800; padding: 2px 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .menu { transition: none; } }
 
   .page-head { padding: 24px 0 16px; display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
   .page-head h1 { font-family: 'Sora', sans-serif; font-weight: 800; font-size: clamp(22px, 5vw, 30px); margin-top: 6px; }
@@ -389,17 +427,35 @@
 
     <!-- Panel -->
     <section id="panelView" hidden>
-      <nav class="tabs" role="tablist">
-        <button class="tab on" data-tab="reportes" type="button">Reportes <span class="badge" id="badgePend" hidden>0</span></button>
-        <button class="tab" data-tab="subir" type="button">Subir tema</button>
-        <button class="tab" data-tab="editar" type="button">Editar preguntas</button>
-        <button class="tab" data-tab="cursos" type="button">Cursos</button>
-        <button class="tab" data-tab="alertas" type="button">Alertas</button>
-        <button class="tab" data-tab="tutorial" type="button">Tutorial</button>
-        <button class="tab" data-tab="codigos" type="button">Códigos</button>
-        <button class="tab" data-tab="alumnos" type="button">Alumnos</button>
-        <button class="tab" data-tab="corr" type="button">Correcciones <span class="badge" id="badgeRev" hidden>0</span></button>
-      </nav>
+      <div class="barra-movil">
+        <button type="button" id="btnMenu" aria-label="Abrir menú" aria-controls="menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <b id="barraTitulo">Reportes</b>
+        <span class="badge" id="barraPend" hidden>0</span>
+      </div>
+      <aside class="menu" id="menu" aria-label="Menú del panel">
+        <a class="menu-logo" href="../index.html" title="Ir a la web"><img src="../assets/img/logo-modo-cachimbo-horizontal.svg" alt="Modo Cachimbo"></a>
+        <div class="menu-sub">Panel admin</div>
+        <nav class="tabs" role="tablist">
+        <div class="menu-grupo">Alumnos</div>
+        <button class="tab on" data-tab="reportes" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Reportes</span><span class="badge" id="badgePend" hidden>0</span></button>
+        <button class="tab" data-tab="corr" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span>Correcciones</span><span class="badge" id="badgeRev" hidden>0</span></button>
+        <button class="tab" data-tab="alumnos" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Alumnos</span></button>
+        <button class="tab" data-tab="codigos" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg><span>Códigos</span></button>
+        <div class="menu-grupo">Contenido</div>
+        <button class="tab" data-tab="subir" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span>Subir tema</span></button>
+        <button class="tab" data-tab="editar" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg><span>Editar preguntas</span></button>
+        <button class="tab" data-tab="cursos" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span>Cursos</span></button>
+        <div class="menu-grupo">Sitio</div>
+        <button class="tab" data-tab="alertas" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Alertas</span></button>
+        <button class="tab" data-tab="tutorial" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Tutorial</span></button>
+        </nav>
+        <div class="menu-pie">
+          <div class="menu-cuenta" id="menuCuenta"></div>
+          <a class="menu-web" href="../index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Ver la web</a>
+          <button class="btn-ghost" id="btnSalirMenu" type="button">Salir</button>
+        </div>
+      </aside>
+      <div class="menu-fondo" id="menuFondo"></div>
 
       <!-- Reportes -->
       <div id="tab-reportes">
@@ -700,6 +756,8 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
     $('loginView').hidden = view !== 'login';
     $('panelView').hidden = view !== 'panel';
     $('btnLogout').hidden = view !== 'panel';
+    document.body.classList.toggle('panel-on', view === 'panel');
+    if (view !== 'panel') document.body.classList.remove('menu-abierto');
   }
   function salir() { ss('del', 'mc_panel_pass'); PASS = ''; DATA = []; $('passInput').value = ''; show('login'); }
 
@@ -755,7 +813,26 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
   $('btnLogout').addEventListener('click', salir);
 
   /* ---------- pestañas ---------- */
+  /* ---------- menú lateral ---------- */
+  $('btnMenu').addEventListener('click', () => document.body.classList.add('menu-abierto'));
+  $('menuFondo').addEventListener('click', () => document.body.classList.remove('menu-abierto'));
+  $('btnSalirMenu').addEventListener('click', () => $('btnLogout').click());
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') document.body.classList.remove('menu-abierto'); });
+  // En celular, el número de reportes pendientes también se ve arriba
+  new MutationObserver(() => { $('barraPend').hidden = $('badgePend').hidden; $('barraPend').textContent = $('badgePend').textContent; })
+    .observe($('badgePend'), { attributes: true, childList: true, characterData: true, subtree: true });
+  function pintarCuentaMenu() {
+    const u = window.MCAuth && MCAuth.usuario(), c = $('menuCuenta');
+    if (!u) { c.innerHTML = ''; return; }
+    const m = u.user_metadata || {}, foto = m.avatar_url || m.picture || '';
+    c.innerHTML = `<span class="av">${/^https:\/\//.test(foto) ? `<img src="${esc(foto)}" alt="" referrerpolicy="no-referrer">` : esc((u.email || '?').charAt(0).toUpperCase())}</span><span title="${esc(u.email)}">${esc(u.email)}</span>`;
+  }
+  document.addEventListener('DOMContentLoaded', () => { if (window.MCAuth) { MCAuth.alCambiar(pintarCuentaMenu); pintarCuentaMenu(); } });
+
   document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+    document.body.classList.remove('menu-abierto');
+    $('barraTitulo').textContent = t.querySelector('span').textContent;
+    window.scrollTo(0, 0);
     document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
     ['reportes', 'subir', 'editar', 'cursos', 'alertas', 'tutorial', 'codigos', 'alumnos', 'corr'].forEach(id => { $('tab-' + id).hidden = id !== t.dataset.tab; });
     if (t.dataset.tab === 'tutorial' && !TU.datos) cargarTutorial();
