@@ -59,7 +59,7 @@ async function cargarAlumnos(forzar) {
   const g = await cliente.rpc('progreso_alumnos');
   ALU.progreso = !g.error;
   if (!g.error) {
-    const por = {}; (g.data || []).forEach(x => { por[x.email] = x; });
+    const por = {}; (Array.isArray(g.data) ? g.data : []).forEach(x => { por[x.email] = x; });
     ALU.lista.forEach(a => { const x = por[a.email] || {}; a.practicas = x.practicas || 0; a.promedio = x.promedio || 0; a.falladas = x.falladas || 0; });
   }
   renderAlumnos();
