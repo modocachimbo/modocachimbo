@@ -266,7 +266,8 @@
   .pimg { margin: 10px 0 12px; }
   .fmt-ayuda { margin-top: 14px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); padding: 12px 16px; font-size: 13px; color: var(--text-dim); }
   .fmt-ayuda summary { cursor: pointer; font-weight: 700; color: var(--text); }
-  .fmt-grid { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 10px 16px; margin-top: 12px; align-items: start; line-height: 1.5; }
+  .fmt-tit { margin: 16px 0 0; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-faint); font-weight: 700; }
+  .fmt-grid { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 10px 16px; margin-top: 8px; align-items: start; line-height: 1.5; }
   .fmt-grid code { background: #0a0a0a; border: 1px solid #2a2a2a; border-radius: 8px; padding: 6px 8px; color: var(--accent); font-size: 12px; overflow-x: auto; white-space: nowrap; display: block; }
   .fmt-grid span code { display: inline; padding: 1px 4px; }
   @media (max-width: 600px) { .fmt-grid { grid-template-columns: minmax(0, 1fr); } .fmt-grid span { margin-bottom: 6px; } }
@@ -523,37 +524,36 @@ E) Alternativa"></textarea>
             <span class="hint">Tu texto se guarda solo mientras no cierres la pestaña.</span>
           </div>
           <details class="fmt-ayuda">
-            <summary>Imágenes, tablas y columnas</summary>
+            <summary>Cómo escribir las preguntas (formato y trucos)</summary>
+            <div class="fmt-tit">Encabezado del tema</div>
             <div class="fmt-grid">
-              <code>[IMAGEN]</code><span>En su propia línea, donde va la imagen dentro del enunciado. Puedes poner varias; al revisar te pide pegar cada una.</span>
+              <code>CURSO: Química</code><span>Nombre del curso.</span>
+              <code>CICLO: 2027-I</code><span>2027-I, 2027-II o 2027-III.</span>
+              <code>TEMA: 03 - Estequiometría</code><span>Número y nombre del tema.</span>
+            </div>
+            <div class="fmt-tit">Preguntas y clave</div>
+            <div class="fmt-grid">
+              <code>PREGUNTA 1:<br>Calcule la masa de $H_2O$ …</code><span>Cada pregunta empieza con <code>PREGUNTA N:</code> y debajo va el enunciado.</span>
+              <code>A) 18 g<br>B) 36 g ✅<br>C) 9 g</code><span>Una alternativa por línea. La ✅ marca la correcta (también vale ✔ o ✓).</span>
+              <code>CLAVE: C</code><span>Opcional: en lugar de la ✅, al final de la pregunta.</span>
+              <code>A) VVV   B) FVV   C) VVF</code><span>Varias alternativas en una línea también valen. Si son cortas, se muestran en columnas solas.</span>
+            </div>
+            <div class="fmt-tit">Texto y fórmulas</div>
+            <div class="fmt-grid">
+              <code>*Homo sapiens*</code><span>Cursiva.</span>
+              <code>**importante**</code><span>Negrita.</span>
+              <code>&lt;u&gt;texto&lt;/u&gt;</code><span>Subrayado.</span>
+              <code>$x^2$  $\frac{a}{b}$  $\sqrt{16}$</code><span>Fórmulas entre $…$: potencias, fracciones, raíces.</span>
+              <code>$H_2SO_4$  $\Delta H$  $10^{-3}$</code><span>Subíndices, letras griegas, notación científica.</span>
+              <code>$\overline{ab}$</code><span>Barra encima.</span>
+            </div>
+            <div class="fmt-tit">Imágenes, tablas y columnas</div>
+            <div class="fmt-grid">
+              <code>[IMAGEN]</code><span>En su propia línea, donde va la imagen dentro del enunciado. Puedes poner varias; al revisar te pide pegar cada una (Ctrl+V).</span>
               <code>[IMAGEN DERECHA]</code><span>Imagen al lado de las alternativas (en celular sale arriba de ellas).</span>
               <code>| Meses | fi | Fi |<br>|---|---|---|<br>| [120 - > | | 126 |</code><span>Tabla. La línea <code>|---|</code> hace que la primera fila sea el título.</span>
               <code>I. CaO || p) cal viva</code><span>Columnas sin bordes, para "asociar" o listas en varias columnas.</span>
-              <code>A) VVV   B) FVV   C) VVF</code><span>Varias alternativas en una línea también valen. Si son cortas, se muestran en columnas solas.</span>
-              <code>$\sqrt{2}$  $\overline{ab}$  $H_2SO_4$</code><span>Fórmulas entre $…$: raíces, barras encima, subíndices, fracciones.</span>
             </div>
-          </details>
-          <details class="fmt" style="margin-top:16px;">
-            <summary>Ver el formato y los trucos (ecuaciones, cursiva, clave)</summary>
-            <div class="formato">CURSO: Química                 ← nombre del curso
-CICLO: 2027-I                  ← 2027-I, 2027-II o 2027-III
-TEMA: 03 - Estequiometría      ← número y nombre
-
-PREGUNTA 1:
-Calcule la masa de $H_2O$ que se forma a partir de $4\ g$ de $H_2$.
-A) 18 g
-B) 36 g ✅                      ← la ✅ marca la correcta (también ✔ o ✓)
-C) 9 g
-D) 72 g
-E) 27 g
-
-PREGUNTA 2:
-…
-CLAVE: C                        ← (opcional) en lugar de la ✅
-
-Ecuaciones:  $x^2$   $\frac{a}{b}$   $\sqrt{16}$   $H_2SO_4$   $\Delta H$   $10^{-3}$
-Cursiva: *Homo sapiens*     Negrita: **importante**     Subrayado: &lt;u&gt;texto&lt;/u&gt;
-Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div>
           </details>
         </div>
 
