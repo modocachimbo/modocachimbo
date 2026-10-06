@@ -71,6 +71,8 @@
   .campo.ancho { grid-column: 1 / -1; }
   .bloque-info { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; font-size: 13px; color: var(--text-dim); }
   .bloque-info[hidden] { display: none; }
+  .extras { display: contents; }
+  .extras[hidden] { display: none; }
   .bloque-info .tit { width: 100%; color: var(--text); font-weight: 600; }
   .bloque-info .pt { background: var(--accent-soft); color: var(--accent); border-radius: 100px; padding: 5px 10px; font-weight: 700; font-size: 12.5px; white-space: nowrap; }
   @media (max-width: 560px) { form { grid-template-columns: 1fr; } }
@@ -177,6 +179,7 @@
             <label for="celular">Celular <small>(opcional, para avisos por WhatsApp)</small></label>
             <input id="celular" name="celular" inputmode="numeric" maxlength="9" placeholder="9 dígitos">
           </div>
+          <div class="extras" id="extras" hidden></div>
           <div class="acciones">
             <button class="btn" type="submit" id="guardar">Guardar</button>
             <span class="estado" id="estado" role="status"></span>
@@ -227,11 +230,17 @@
   var NOMBRES = { 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'TODO-VIP': 'Acceso total' };
 
   // Bloque y carrera (lista en assets/carreras.js)
-  var BLOQ = MCCarreras.bloques;
-  BLOQ.forEach(function (b) {
-    var o = document.createElement('option'); o.value = b.id; o.textContent = 'Bloque ' + b.id + ' · ' + b.nombre;
-    $('bloque').appendChild(o);
-  });
+  // (se pueden cambiar desde el panel: MCCarreras.cargar() trae la versión guardada)
+  var BLOQ = MCCarreras.bloques, PERFIL = {};
+  function llenarBloques() {
+    var sel = $('bloque'); sel.textContent = '';
+    var o0 = document.createElement('option'); o0.value = ''; o0.textContent = 'Elegir bloque…'; sel.appendChild(o0);
+    BLOQ.forEach(function (b) {
+      var o = document.createElement('option'); o.value = b.id; o.textContent = 'Bloque ' + b.id + ' · ' + b.nombre;
+      sel.appendChild(o);
+    });
+  }
+  llenarBloques();
   function llenarCarreras(bid, actual) {
     var sel = $('carrera'); sel.textContent = '';
     var b = BLOQ.filter(function (x) { return x.id === bid; })[0];
@@ -249,10 +258,13 @@
   function pintarBloque() {
     var b = BLOQ.filter(function (x) { return x.id === $('bloque').value; })[0], info = $('bloqueInfo');
     if (!b) { info.hidden = true; return; }
-    var p = b.puntos;
-    info.innerHTML = '<span class="tit">Puntos por pregunta correcta en el Bloque ' + b.id + '</span>' +
-      '<span class="pt">Comunicación ' + p.com + '</span><span class="pt">Matemática ' + p.mat + '</span>' +
-      '<span class="pt">Ciencia y Tecnología ' + p.cta + '</span><span class="pt">Ciencias Sociales ' + p.ccss + '</span>';
+    var p = b.puntos || {};
+    info.textContent = '';
+    var t = document.createElement('span'); t.className = 'tit'; t.textContent = 'Puntos por pregunta correcta en el Bloque ' + b.id; info.appendChild(t);
+    [['com', 'Comunicación'], ['mat', 'Matemática'], ['cta', 'Ciencia y Tecnología'], ['ccss', 'Ciencias Sociales']].forEach(function (k) {
+      if (p[k[0]] == null) return;
+      var s = document.createElement('span'); s.className = 'pt'; s.textContent = k[1] + ' ' + p[k[0]]; info.appendChild(s);
+    });
     info.hidden = false;
   }
   function ponerCarrera(valor) {
@@ -262,6 +274,31 @@
   }
   $('bloque').addEventListener('change', function () { llenarCarreras(this.value, ''); });
   llenarCarreras('', '');
+
+  // Preguntas extra que se agregan desde el panel (se guardan en perfiles.extra)
+  function llenarExtras(resp) {
+    var caja = $('extras'); caja.textContent = '';
+    resp = resp || {};
+    MCCarreras.extras.forEach(function (x) {
+      var d = document.createElement('div'); d.className = 'campo' + (x.tipo === 'texto' ? ' ancho' : '');
+      var l = document.createElement('label'); l.htmlFor = 'x_' + x.id; l.textContent = x.etiqueta + ' ';
+      if (!x.obligatoria) { var sm = document.createElement('small'); sm.textContent = '(opcional)'; l.appendChild(sm); }
+      var el;
+      if (x.tipo === 'opciones' || x.tipo === 'sino') {
+        el = document.createElement('select');
+        var ops = x.tipo === 'sino' ? ['Sí', 'No'] : (x.opciones || []);
+        [''].concat(ops).forEach(function (v) { var o = document.createElement('option'); o.value = v; o.textContent = v || 'Elegir…'; el.appendChild(o); });
+        var r = resp[x.id];
+        if (r && ops.indexOf(r) < 0) { var ox = document.createElement('option'); ox.value = r; ox.textContent = r; el.appendChild(ox); }
+      } else {
+        el = document.createElement('input');
+        if (x.tipo === 'numero') { el.type = 'number'; el.inputMode = 'decimal'; } else el.maxLength = 120;
+      }
+      el.id = 'x_' + x.id; el.value = resp[x.id] == null ? '' : String(resp[x.id]);
+      d.appendChild(l); d.appendChild(el); caja.appendChild(d);
+    });
+    caja.hidden = !MCCarreras.extras.length;
+  }
 
   function ver(cual) {
     $('cargando').hidden = cual !== 'cargando';
@@ -325,7 +362,10 @@
     ver('con');
     pintarAccesos();
     pintarCabecera(u, {});
-    MCAuth.perfil(true).then(function (p) {
+    Promise.all([MCAuth.perfil(true), MCCarreras.cargar()]).then(function (rs) {
+      var p = PERFIL = rs[0] || {};
+      llenarBloques();
+      llenarExtras(p.extra);
       CAMPOS.forEach(function (c) { if (c !== 'carrera') $(c).value = p[c] || ''; });
       ponerCarrera(p.carrera || '');
       pintarCabecera(u, p);
@@ -343,8 +383,23 @@
     if (datos.celular && !/^9\d{8}$/.test(datos.celular)) {
       est.textContent = 'El celular debe tener 9 dígitos y empezar con 9.'; est.className = 'estado error'; return;
     }
+    // Respuestas extra: solo si ya existe la columna (supabase/05-perfil-config.sql)
+    if ('extra' in PERFIL || MCCarreras.extras.length) {
+      var extra = {}, falta = null;
+      Object.keys(PERFIL.extra || {}).forEach(function (k) { extra[k] = PERFIL.extra[k]; });
+      MCCarreras.extras.forEach(function (x) {
+        var el = $('x_' + x.id); if (!el) return;
+        var v = el.value.trim();
+        if (x.tipo === 'numero' && v !== '') v = Number(v);
+        if (v === '') delete extra[x.id]; else extra[x.id] = v;
+        if (x.obligatoria && v === '' && !falta) falta = x;
+      });
+      if (falta) { est.textContent = 'Completa: ' + falta.etiqueta; est.className = 'estado error'; $('x_' + falta.id).focus(); return; }
+      datos.extra = extra;
+    }
     btn.disabled = true; est.textContent = 'Guardando…'; est.className = 'estado';
     MCAuth.guardarPerfil(datos).then(function (p) {
+      if (p) PERFIL = p;
       est.textContent = '✓ Guardado'; est.className = 'estado ok';
       pintarCabecera(MCAuth.usuario(), p);
     }).catch(function () {

@@ -4,6 +4,10 @@
    puntos = puntos por pregunta correcta en el examen según el
    bloque (Comunicación, Matemática, Ciencia y Tecnología,
    Ciencias Sociales). Lo usará también el simulacro.
+   Esta lista es la de reserva: desde el panel (Contenido → Perfil
+   del alumno) se puede cambiar, y se guarda en Supabase
+   (supabase/05-perfil-config.sql, tabla ajustes, clave 'perfil')
+   junto con las preguntas extra del perfil. MCCarreras.cargar() la trae.
    ========================================================= */
 (function () {
   var BLOQUES = [
@@ -46,5 +50,38 @@
     return null;
   }
 
-  window.MCCarreras = { bloques: BLOQUES, bloqueDe: bloqueDe, oficial: oficial };
+  // Preguntas extra del perfil: [{ id, etiqueta, tipo: texto|opciones|numero|sino, opciones, obligatoria }]
+  var EXTRAS = [];
+  var CACHE = 'mc_perfil_cfg';
+
+  function valida(v) {
+    return v && Array.isArray(v.bloques) && v.bloques.length && v.bloques.every(function (b) {
+      return b && typeof b.id === 'string' && b.id && Array.isArray(b.carreras) && b.puntos && typeof b.puntos === 'object';
+    });
+  }
+  // Se cambian las listas en su lugar, así MCCarreras.bloques sigue siendo la misma
+  function aplicar(v) {
+    if (!valida(v)) return false;
+    BLOQUES.splice.apply(BLOQUES, [0, BLOQUES.length].concat(v.bloques));
+    EXTRAS.splice.apply(EXTRAS, [0, EXTRAS.length].concat(Array.isArray(v.extras) ? v.extras.filter(function (x) { return x && x.id && x.etiqueta; }) : []));
+    return true;
+  }
+  try { aplicar(JSON.parse(localStorage.getItem(CACHE))); } catch (e) { /* sin copia guardada */ }
+
+  // Trae la versión del panel. Si falla, quedan la copia guardada o la lista de arriba.
+  var cargando = null;
+  function cargar() {
+    if (!window.MCAuth) return Promise.resolve(window.MCCarreras);
+    if (!cargando) cargando = MCAuth.listo.then(function (c) {
+      return c.from('ajustes').select('valor').eq('clave', 'perfil').maybeSingle();
+    }).then(function (r) {
+      if (r && !r.error && r.data && aplicar(r.data.valor)) {
+        try { localStorage.setItem(CACHE, JSON.stringify(r.data.valor)); } catch (e) { /* lleno o bloqueado */ }
+      }
+      return window.MCCarreras;
+    }, function () { return window.MCCarreras; });
+    return cargando;
+  }
+
+  window.MCCarreras = { bloques: BLOQUES, extras: EXTRAS, bloqueDe: bloqueDe, oficial: oficial, cargar: cargar, aplicar: aplicar, norm: norm };
 })();

@@ -3,7 +3,7 @@
    Racha de cada alumno. Solo ven la lista los correos que
    están en la tabla public.admins (supabase/02-racha.sql).
    ========================================================= */
-const ALU = { lista: [], cargado: false };
+const ALU = { lista: [], cargado: false, extras: [] };
 
 (function estilosAlumnos() {
   const st = document.createElement('style');
@@ -62,6 +62,16 @@ async function cargarAlumnos(forzar) {
     const por = {}; (Array.isArray(g.data) ? g.data : []).forEach(x => { por[x.email] = x; });
     ALU.lista.forEach(a => { const x = por[a.email] || {}; a.practicas = x.practicas || 0; a.promedio = x.promedio || 0; a.falladas = x.falladas || 0; });
   }
+  // Respuestas a las preguntas extra del perfil (supabase/05-perfil-config.sql)
+  ALU.extras = [];
+  if (window.MCCarreras) {
+    const [x] = await Promise.all([cliente.rpc('alumnos_extra'), MCCarreras.cargar()]);
+    if (!x.error) {
+      const por = {}; (Array.isArray(x.data) ? x.data : []).forEach(e => { por[e.email] = e.extra || {}; });
+      ALU.extras = MCCarreras.extras.slice();
+      ALU.lista.forEach(a => { a.extra = por[a.email] || {}; });
+    }
+  }
   renderAlumnos();
 }
 
@@ -71,12 +81,12 @@ function renderAlumnos() {
   const hoy = L.filter(a => a.hoy >= 10).length;
   $('aluStats').innerHTML = `<b>${L.length}</b> alumno${L.length === 1 ? '' : 's'} · <b>${activos}</b> con racha · <b>${hoy}</b> cumplieron hoy`;
   const q = $('aluBuscar').value.trim().toLowerCase();
-  const rows = L.filter(a => !q || [a.nombre, a.apodo, a.email, a.carrera].join(' ').toLowerCase().includes(q));
+  const rows = L.filter(a => !q || [a.nombre, a.apodo, a.email, a.carrera].concat(Object.values(a.extra || {})).join(' ').toLowerCase().includes(q));
   if (!L.length) { $('aluList').innerHTML = '<div class="state-msg">Todavía no hay alumnos registrados.</div>'; return; }
   if (!rows.length) { $('aluList').innerHTML = '<div class="state-msg">Ningún alumno coincide con la búsqueda.</div>'; return; }
   const icono = window.MCRacha ? MCRacha.icono : '🔥';
   $('aluList').innerHTML = `<div class="al-tabla-wrap"><table class="al-tabla">
-    <thead><tr><th>Alumno</th><th>Carrera</th><th class="num">Racha</th><th class="num">Mejor</th><th class="num">Preguntas hoy</th><th class="num">Último día cumplido</th>${ALU.progreso ? '<th class="num">Prácticas</th><th class="num">Promedio</th><th class="num">Por repasar</th>' : ''}</tr></thead>
+    <thead><tr><th>Alumno</th><th>Carrera</th><th class="num">Racha</th><th class="num">Mejor</th><th class="num">Preguntas hoy</th><th class="num">Último día cumplido</th>${ALU.progreso ? '<th class="num">Prácticas</th><th class="num">Promedio</th><th class="num">Por repasar</th>' : ''}${ALU.extras.map(x => `<th>${esc(x.etiqueta)}</th>`).join('')}</tr></thead>
     <tbody>${rows.map(a => {
       const nom = a.apodo || a.nombre || (a.email || '').split('@')[0];
       const ini = esc((nom || '?').charAt(0).toUpperCase());
@@ -89,6 +99,7 @@ function renderAlumnos() {
         <td class="num">${a.hoy}</td>
         <td class="num">${alFecha(a.ultima)}</td>
         ${ALU.progreso ? `<td class="num">${a.practicas}</td><td class="num">${a.practicas ? a.promedio + '%' : '—'}</td><td class="num">${a.falladas}</td>` : ''}
+        ${ALU.extras.map(x => { const v = (a.extra || {})[x.id]; return `<td>${v == null || v === '' ? '—' : esc(v)}</td>`; }).join('')}
       </tr>`;
     }).join('')}</tbody></table></div>`;
 }
