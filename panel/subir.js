@@ -209,12 +209,15 @@ function revisarTexto() {
   $('subLista').innerHTML = r.preguntas.map((q, i) => {
     const k = q.lectura ? (visto[q.lectura] = (visto[q.lectura] || 0) + 1) : 0;
     const sigue = k > 1;
-    const v = MCPregunta.armar((sigue ? '' : q.lectura) + q.text, { lecPos: k ? '1 de ' + tam[q.lectura] : '', marca: (k, der) => `<div class="pimg" data-z="${i}|${k}"></div>` });
+    // La lectura va arriba; el número de la pregunta, debajo de ella (justo antes del enunciado)
+    const lec = k === 1 ? MCPregunta.armar(q.lectura, { lecPos: '1 de ' + tam[q.lectura] }).html : '';
+    const v = MCPregunta.armar(q.text, { marca: (k, der) => `<div class="pimg" data-z="${i}|${k}"></div>` });
     const opts = q.options.map((o, k) => `<div class="popt ${k === q.correct ? 'ok' : ''}"><span class="l">${esc(o.letter)}</span><span>${formatQText(o.text)}</span>${k === q.correct ? '<span class="chk">✓</span>' : ''}</div>`).join('');
     return `
     <article class="pcard ${q.errores.length ? 'bad' : ''} ${k ? 'en-texto' : ''} ${sigue ? 'sigue' : ''}">
-      <div class="qnum2">${i + 1}</div>
+      ${lec}
       ${sigue ? `<div class="plec-sig">${esc(q.lectura.split('\n')[0].replace(/[\[\]]/g, ''))} · pregunta ${k} de ${tam[q.lectura]} (misma lectura de arriba)</div>` : ''}
+      <div class="qnum2">${i + 1}</div>
       ${q.errores.length ? `<div class="perr">⚠ ${q.errores.map(esc).join(' · ')}</div>` : ''}
       <div class="ptext">${v.html}</div>
       ${q.marcasImg ? '' : `<div class="pimg" data-z="${i}|g"></div>`}
