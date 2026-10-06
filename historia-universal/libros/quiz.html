@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <script src="../../assets/guardia.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Practicar tema · Historia Universal · Modo Cachimbo</title>
+<title>Practicar tema · Historia del Mundo · Modo Cachimbo</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -220,7 +220,7 @@
     </div>
 
     <div class="startscreen" id="startScreen">
-      <div class="start-badge"><span class="dot"></span><span id="startBadgeText">Historia Universal</span></div>
+      <div class="start-badge"><span class="dot"></span><span id="startBadgeText">Historia del Mundo</span></div>
       <h1>Simulacro <span class="accent">Admisión</span></h1>
       <p id="startDesc">Cargando preguntas…</p>
       <div class="start-info">
@@ -340,7 +340,7 @@
       return;
     }
 
-    document.getElementById('startBadgeText').textContent = 'Historia Universal · ' + temaLabel;
+    document.getElementById('startBadgeText').textContent = 'Historia del Mundo · ' + temaLabel;
     document.getElementById('startDesc').textContent = `Preguntas de ${temaLabel}, mezcladas al azar. Tienes 5 vidas, ¡a ver cuánto sabes!`;
     document.getElementById('startCount').textContent = `${questions.length} preguntas`;
     btnStart.disabled = false;
@@ -416,7 +416,7 @@
   function renderQuestion() {
     answered = false;
     const q = activeQuestions[current];
-    topicText.textContent = q.topic || 'Historia Universal';
+    topicText.textContent = q.topic || 'Historia del Mundo';
     const qGraphic = document.getElementById('qGraphic');
     // Imágenes en medio del texto, tablas y columnas: assets/pregunta.js
     const mcq = window.MCPregunta ? MCPregunta.pintar({ texto: questionText, grafico: qGraphic }, q) : null;
@@ -501,7 +501,7 @@
     // Progreso del estudiante (assets/progreso.js), una sola vez por ronda
     if (showEnd.ronda === activeQuestions) return;
     showEnd.ronda = activeQuestions;
-    const prog = { tipo: 'libro', carpeta: 'historia-universal', anio: year, tema: temaParam || null, titulo: 'Historia Universal · ' + (temaParam ? ((activeQuestions[0] && activeQuestions[0]._tit) || 'Tema ' + temaParam) : 'Todos los temas'), preguntas: activeQuestions, respuestas: answers };
+    const prog = { tipo: 'libro', carpeta: 'historia-universal', anio: year, tema: temaParam || null, titulo: 'Historia del Mundo · ' + (temaParam ? ((activeQuestions[0] && activeQuestions[0]._tit) || 'Tema ' + temaParam) : 'Todos los temas'), preguntas: activeQuestions, respuestas: answers };
     window.MCProgreso ? MCProgreso.terminar(prog) : (window.mcProgresoPend = (window.mcProgresoPend || []).concat([prog]));
   }
 
@@ -525,7 +525,7 @@
   // Códigos administrados desde el panel (assets/acceso.js)
   // La práctica del libro se abre con los códigos de Repaso del curso
   const PRODUCTO = 'repaso-historia-universal';
-  const WHATSAPP_URL = 'https://wa.me/51917797543?text=' + encodeURIComponent('Hola! Quiero acceso a la práctica de Historia Universal en Modo Cachimbo 🎓');
+  const WHATSAPP_URL = 'https://wa.me/51917797543?text=' + encodeURIComponent('Hola! Quiero acceso a la práctica de Historia del Mundo en Modo Cachimbo 🎓');
 
   const lockScreen = document.getElementById('lockScreen');
   const lockInput = document.getElementById('lockInput');
