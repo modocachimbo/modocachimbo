@@ -154,6 +154,9 @@
   .rbox.sug .v { color: var(--amber); font-weight: 600; }
   .rbox.new { border-color: rgba(198,224,0,0.3); background: var(--accent-soft); }
   .rbox.new .v { color: var(--accent); font-weight: 600; }
+  .rautor { margin: 8px 0 12px; font-size: 13px; color: var(--text-dim); overflow-wrap: anywhere; }
+  .rautor b { color: var(--text); }
+  .rautor span { opacity: .75; }
   .rcom { margin-top: 10px; font-size: 13px; color: var(--text-dim); line-height: 1.55; background: #0a0a0a; border-left: 3px solid #333; border-radius: 0 10px 10px 0; padding: 10px 12px; }
   .rfoot { margin-top: 14px; display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
   .rbtn { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; text-decoration: none; padding: 8px 12px; border-radius: 10px; cursor: pointer; background: none; border: 1px solid var(--border); color: var(--text-dim); }
@@ -897,7 +900,7 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
   $('search').addEventListener('input', renderLista);
 
   function renderReportes() {
-    if (DATA.length && window.MCRep) MCRep.recibidos();
+    if (DATA.length && window.MCRep) { MCRep.recibidos(); MCRep.cargarAutores(renderReportes); }
     $('lastUpdate').textContent = 'Actualizado: ' + new Date().toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
     const pend = DATA.filter(r => r.estado === 'Pendiente').length;
     $('badgePend').hidden = !pend; $('badgePend').textContent = pend;
@@ -944,6 +947,7 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
           <span class="rdate">${fecha(r.fecha)}</span>
         </div>
         <div class="rq"><b>P${esc(r.pregunta)}</b>${esc(r.extracto)}</div>
+        ${autorHtml(r)}
         <div class="rgrid">
           <div class="rbox"><div class="k">Clave marcada</div><div class="v">${esc(r.marcada) || '—'}</div></div>
           <div class="rbox sug"><div class="k">Alumno sugiere</div><div class="v">${esc(r.sugerida) || '—'}</div></div>
@@ -964,6 +968,13 @@ Imágenes: se agregan en la vista previa con el botón "+ Imagen" (Ctrl+V).</div
       const letra = String(r.sugerida || '').match(/^([A-E])\)/);
       abrirEditor({ carpeta: r.carpeta, curso: r.curso, anio: r.anio, tema: pad2(r.tema), n: +r.pregunta, sugerida: letra ? letra[1] : null, extracto: r.extracto });
     }));
+  }
+
+  function autorHtml(r) {
+    const a = window.MCRep && MCRep.autor(r);
+    if (!a) return '';
+    const nom = a.apodo || a.nombre || (a.email || '').split('@')[0];
+    return `<div class="rautor">👤 Reportado por <b>${esc(nom)}</b>${a.nombre && a.apodo ? ' · ' + esc(a.nombre) : ''} <span>${esc(a.email || '')}</span></div>`;
   }
 
   async function cambiarEstado(fila, estado, btn) {
