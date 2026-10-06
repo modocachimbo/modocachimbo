@@ -227,6 +227,13 @@
         <div class="prog-cursos" id="pCursos"><p class="nota">Cargando tu progreso…</p></div>
       </section>
 
+      <section class="panel" id="simulacros">
+        <h2>Mis simulacros</h2>
+        <p class="nota">Tus simulacros terminados. Con «Repetir» das las mismas preguntas otra vez.</p>
+        <ul class="lista rep-lista" id="simLista"><li><span>Cargando…</span></li></ul>
+        <a class="btn sec" href="simulacro.html" style="margin-top:14px">Crear un simulacro</a>
+      </section>
+
       <section class="panel" id="reportes" hidden>
         <h2>Mis reportes de claves</h2>
         <p class="nota">Cuando avisas de un posible error en una clave, aquí ves si el profe ya lo leyó y qué decidió.</p>
@@ -243,7 +250,7 @@
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var CAMPOS = ['nombre', 'apodo', 'carrera', 'modalidad', 'fecha_examen', 'celular'];
-  var NOMBRES = { 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'TODO-VIP': 'Acceso total' };
+  var NOMBRES = { 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'TODO-VIP': 'Acceso total', 'simulacro': 'Simulacro' };
 
   // Bloque y carrera (lista en assets/carreras.js)
   // (se pueden cambiar desde el panel: MCCarreras.cargar() trae la versión guardada)
@@ -463,7 +470,7 @@
   MCAuth.alCambiar(cargarReportes);
 
   // Mi progreso (assets/progreso.js lo carga auth.js)
-  var NOMBRE_CURSO = { ordinario: 'Exámenes · Ordinario', cpu: 'Exámenes · CPU', 'control-cpu': 'Exámenes · Control CPU' };
+  var NOMBRE_CURSO = { ordinario: 'Exámenes · Ordinario', cpu: 'Exámenes · CPU', 'control-cpu': 'Exámenes · Control CPU', simulacro: 'Simulacros' };
   var cursosListos = fetch('assets/cursos.json').then(function (r) { return r.json(); }).then(function (d) {
     (d.cursos || []).forEach(function (c) { NOMBRE_CURSO[c.id] = c.nombre; });
   }).catch(function () {});
@@ -530,6 +537,36 @@
       });
     } else if (n < 100) setTimeout(function () { esperarProgreso(n + 1); }, 150);
   })(0);
+
+  // Mis simulacros (supabase/09-simulacros.sql)
+  function cargarSimulacros(u) {
+    var caja = $('simLista');
+    if (!u) return;
+    MCAuth.listo.then(function (c) {
+      return c.from('simulacros').select('id,nombre,ciclos,intentos,mejor,ultimo,actualizado').order('actualizado', { ascending: false }).limit(30);
+    }).then(function (r) {
+      if (r.error) throw r.error;
+      caja.textContent = '';
+      var L = r.data || [];
+      if (!L.length) { var v = document.createElement('li'); v.innerHTML = '<span>Aún no terminaste ningún simulacro.</span>'; caja.appendChild(v); return; }
+      var dec = function (n) { return (Math.round((+n || 0) * 10) / 10).toFixed(1).replace('.', ','); };
+      L.forEach(function (s) {
+        var li = document.createElement('li');
+        var d = document.createElement('a'); d.href = 'simulacro.html?repetir=' + encodeURIComponent(s.id);
+        var b = document.createElement('b'); b.textContent = s.nombre;
+        var sm = document.createElement('small');
+        sm.textContent = (s.ciclos || []).join(', ') + ' · ' + s.intentos + (s.intentos === 1 ? ' intento' : ' intentos') + ' · último ' + dec(s.ultimo) + ' · ' +
+          new Date(s.actualizado).toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        d.appendChild(b); d.appendChild(sm);
+        var pt = document.createElement('span'); pt.className = 'rep-est Corregido'; pt.textContent = 'Mejor ' + dec(s.mejor);
+        var rep = document.createElement('a'); rep.className = 'btn sec'; rep.style.cssText = 'padding:7px 14px;font-size:12.5px;flex:none';
+        rep.href = d.href; rep.textContent = 'Repetir';
+        li.appendChild(d); li.appendChild(pt); li.appendChild(rep);
+        caja.appendChild(li);
+      });
+    }).catch(function () { caja.innerHTML = '<li><span>No se pudo cargar tus simulacros.</span></li>'; });
+  }
+  MCAuth.alCambiar(cargarSimulacros);
 
   // Racha de estudio (assets/racha.js la carga auth.js)
   function pintarRacha(r) {

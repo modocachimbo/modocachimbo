@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script src="assets/guardia.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulacro · Modo Cachimbo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #050505; --surface: #0e0e0e; --surface-2: #141414; --border: #232323;
+    --accent: #C6E000; --accent-soft: rgba(198,224,0,.1); --on-accent: #0b0b0b;
+    --text: #f2f2f2; --dim: #9a9a9a; --faint: #5f5f5f;
+    --ok: #4ade80; --bad: #f87171; --warn: #fbbf24;
+    --com: #7dd3fc; --mat: #C6E000; --cta: #f9a8d4; --ccss: #fdba74;
+    color-scheme: dark;
+  }
+  body { background: var(--bg); color: var(--text); font: 15px/1.5 'Inter', sans-serif; min-height: 100vh; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px 70px; }
+  h1, h2, h3 { font-family: 'Sora', sans-serif; text-wrap: balance; }
+  button { font: inherit; cursor: pointer; }
+  button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+
+  header.top { display: flex; align-items: center; justify-content: space-between; padding: 24px 0; gap: 14px; flex-wrap: wrap; }
+  .logo img { height: 34px; width: auto; display: block; }
+  @media (max-width: 520px) { .logo img { height: 28px; } }
+
+  .eyebrow { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .hint { color: var(--dim); font-size: 13.5px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 22px; min-width: 0; }
+  .card h3 { font-size: 15px; margin-bottom: 10px; }
+  .btn { background: var(--accent); color: var(--on-accent); border: none; border-radius: 14px; padding: 13px 22px; font-weight: 700; text-decoration: none; display: inline-block; text-align: center; }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .btn.sec { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+  .btn.mini { padding: 8px 14px; border-radius: 10px; font-size: 13px; }
+  .nota { margin-top: 10px; font-size: 12.5px; color: var(--faint); line-height: 1.5; }
+  .nota b { color: var(--dim); }
+  .volver { display: inline-flex; gap: 6px; color: var(--dim); font-size: 13.5px; text-decoration: none; }
+  .volver:hover { color: var(--accent); }
+  .msg { text-align: center; padding: 50px 22px; }
+  .msg p { color: var(--dim); max-width: 440px; margin: 10px auto 0; }
+
+  /* Candado */
+  .lock { max-width: 440px; margin: 20px auto 0; text-align: center; padding: 34px 24px; }
+  .lock svg { width: 54px; height: 54px; color: var(--accent); margin-bottom: 14px; }
+  .lock h1 { font-size: 22px; margin-bottom: 8px; }
+  .lock h1 span { color: var(--accent); }
+  .lock p { color: var(--dim); font-size: 13.5px; margin-bottom: 18px; }
+  .lock input { width: 100%; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 13px; color: var(--text); font: 700 16px 'Sora', sans-serif; text-align: center; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+  .lock .error { color: var(--bad); font-size: 13px; margin-top: 12px; }
+  .lock .wa { display: inline-block; margin-top: 14px; color: var(--accent); font-weight: 700; font-size: 13.5px; text-decoration: none; }
+
+  /* Crear */
+  .crear { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 18px; margin-top: 18px; align-items: start; }
+  .col { display: grid; gap: 18px; min-width: 0; }
+  .campo { display: flex; flex-direction: column; gap: 7px; margin-bottom: 16px; }
+  .campo > label, .campo > .lbl { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--faint); font-weight: 700; }
+  .campo input[type=text], select { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 12px; padding: 11px 12px; font: 500 14px 'Inter', sans-serif; width: 100%; }
+  .dos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .ciclos { display: grid; gap: 8px; }
+  .ciclo { display: flex; gap: 12px; align-items: flex-start; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 11px 13px; cursor: pointer; }
+  .ciclo input { margin-top: 3px; accent-color: var(--accent); width: 17px; height: 17px; flex-shrink: 0; }
+  .ciclo b { font-family: 'Sora', sans-serif; font-size: 14.5px; }
+  .ciclo small { display: block; color: var(--dim); font-size: 12px; margin-top: 2px; }
+  .ciclo.on { border-color: var(--accent); background: var(--accent-soft); }
+  .ciclo.off { opacity: .55; cursor: default; }
+  .ciclo.off small { color: var(--warn); }
+  .tiempos { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tiempos button { background: var(--surface-2); color: var(--dim); border: 1px solid var(--border); border-radius: 12px; padding: 9px 14px; font-weight: 600; }
+  .tiempos button.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .pts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .pt { background: var(--surface-2); border-radius: 12px; padding: 10px 6px; text-align: center; border-top: 3px solid var(--c); }
+  .pt small { display: block; font-size: 11px; color: var(--dim); }
+  .pt strong { font-family: 'Sora', sans-serif; font-size: 20px; font-variant-numeric: tabular-nums; }
+  .reglas { list-style: none; display: grid; gap: 6px; font-size: 13.5px; color: var(--dim); }
+  .reglas b { color: var(--text); }
+  .area { border-left: 3px solid var(--c); padding: 4px 0 4px 12px; margin-bottom: 12px; }
+  .area-tit { display: flex; justify-content: space-between; gap: 10px; font-weight: 700; font-size: 13.5px; flex-wrap: wrap; }
+  .area-tit span { color: var(--c); font-variant-numeric: tabular-nums; }
+  .area-cur { color: var(--dim); font-size: 12.5px; margin-top: 2px; }
+  .lista { list-style: none; display: grid; gap: 8px; }
+  .lista li { display: flex; align-items: center; gap: 12px; background: var(--surface-2); border-radius: 12px; padding: 10px 12px; }
+  .lista li > div { flex: 1; min-width: 0; }
+  .lista li b { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lista li small { color: var(--dim); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .rank { list-style: none; display: grid; gap: 6px; }
+  .rank li { display: flex; align-items: center; gap: 10px; background: var(--surface-2); border-radius: 12px; padding: 9px 12px; font-variant-numeric: tabular-nums; }
+  .rank li .p { font-family: 'Sora', sans-serif; font-weight: 800; width: 26px; color: var(--faint); }
+  .rank li .n { flex: 1; min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rank li.yo { background: var(--accent-soft); border: 1px solid rgba(198,224,0,.3); }
+  .rank li.yo .p { color: var(--accent); }
+  .vacia { color: var(--dim); font-size: 13px; }
+
+  /* Examen */
+  .barra { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 8px); z-index: 10; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 10px 14px; margin-bottom: 16px; box-shadow: 0 8px 24px rgba(0,0,0,.5); }
+  .reloj { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--accent); }
+  .reloj.poco { color: var(--warn); }
+  .barra .hint { margin-right: auto; }
+  .examen { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
+  .preg-tag { display: inline-flex; gap: 6px; align-items: center; font-size: 12px; font-weight: 700; color: var(--c); background: color-mix(in srgb, var(--c) 12%, transparent); border-radius: 100px; padding: 4px 10px; }
+  .preg-num { font-family: 'Sora', sans-serif; font-size: 13px; color: var(--faint); margin: 14px 0 6px; }
+  .preg-txt { font-size: 16.5px; line-height: 1.6; overflow-wrap: anywhere; }
+  .preg-graf { margin-top: 12px; background: #fff; border-radius: 12px; padding: 10px; display: flex; justify-content: center; }
+  .preg-graf svg { max-width: 100%; height: auto; }
+  .alts { list-style: none; margin: 18px 0 0; display: grid; gap: 9px; }
+  .alts button { width: 100%; text-align: left; display: flex; gap: 12px; align-items: center; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; }
+  .alts button i { font-style: normal; width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; background: rgba(255,255,255,.06); font-weight: 700; flex-shrink: 0; }
+  .alts button span { min-width: 0; overflow-wrap: anywhere; }
+  .alts button.on { border-color: var(--accent); background: var(--accent-soft); }
+  .alts button.on i { background: var(--accent); color: var(--on-accent); }
+  .alts button.ok { border-color: var(--ok); background: rgba(74,222,128,.1); }
+  .alts button.ok i { background: var(--ok); color: var(--on-accent); }
+  .alts button.mal { border-color: var(--bad); background: rgba(248,113,113,.1); }
+  .alts button.mal i { background: var(--bad); color: var(--on-accent); }
+  .alts.ver button { cursor: default; }
+  .nav-preg { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+  .nav-preg .marcar { margin-right: auto; }
+  .marcar.on { border-color: var(--warn) !important; color: var(--warn) !important; }
+  .mapa-sec { margin-top: 12px; }
+  .mapa-sec small { display: block; font-size: 11px; font-weight: 700; color: var(--c); letter-spacing: .5px; margin-bottom: 6px; }
+  .celdas { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; }
+  .celdas button { aspect-ratio: 1; border-radius: 7px; border: 1px solid var(--border); background: var(--surface-2); color: var(--faint); font-size: 10.5px; font-weight: 700; padding: 0; font-variant-numeric: tabular-nums; }
+  .celdas button.resp { background: var(--c); color: var(--on-accent); border-color: transparent; }
+  .celdas button.rev { box-shadow: inset 0 0 0 2px var(--warn); }
+  .celdas button.act { outline: 2px solid var(--text); outline-offset: 1px; }
+  .leyenda { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11.5px; color: var(--dim); margin-top: 12px; }
+  .leyenda span::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 3px; border: 1px solid var(--border); margin-right: 5px; vertical-align: -1px; background: var(--k); }
+
+  /* Resultado */
+  .res-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 16px; margin-top: 18px; }
+  .puntaje { text-align: center; display: flex; flex-direction: column; justify-content: center; gap: 4px; background: radial-gradient(400px 200px at 50% 0%, rgba(198,224,0,.12), transparent 70%), var(--surface); }
+  .puntaje .num { font-family: 'Sora', sans-serif; font-size: 58px; font-weight: 800; color: var(--accent); line-height: 1; font-variant-numeric: tabular-nums; }
+  .cuenta { display: flex; justify-content: center; gap: 16px; margin-top: 10px; font-size: 13px; color: var(--dim); font-variant-numeric: tabular-nums; flex-wrap: wrap; }
+  .cuenta b { font-size: 16px; color: var(--text); }
+  .guardado { font-size: 12.5px; margin-top: 10px; color: var(--dim); }
+  .guardado.ok { color: var(--accent); }
+  .guardado.error { color: var(--bad); }
+  .t-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+  th { text-align: left; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--faint); font-weight: 700; padding: 0 8px 8px; }
+  td { padding: 9px 8px; border-top: 1px solid var(--border); }
+  td:first-child { border-left: 3px solid var(--c); }
+  td.r, th.r { text-align: right; }
+  tfoot td { font-weight: 800; }
+  .res-bot { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; margin-top: 16px; }
+  .filtros { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
+  .filtros button { background: var(--surface-2); color: var(--dim); border: 1px solid var(--border); border-radius: 100px; padding: 7px 14px; font-weight: 600; font-size: 13px; }
+  .filtros button.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .rev-item { border-top: 1px solid var(--border); padding: 18px 0; }
+  .rev-item:first-child { border-top: none; }
+  .rev-est { font-size: 12.5px; font-weight: 700; margin-left: 8px; }
+  .rev-est.ok { color: var(--ok); } .rev-est.mal { color: var(--bad); } .rev-est.blanco { color: var(--dim); }
+
+  .ov { position: fixed; inset: 0; background: rgba(0,0,0,.7); display: grid; place-items: center; z-index: 50; padding: 16px; }
+  .ov .card { max-width: 420px; width: 100%; text-align: center; }
+  .ov p { color: var(--dim); margin: 8px 0 18px; }
+  .ov .nav-preg { justify-content: center; }
+
+  @media (max-width: 820px) {
+    .crear, .examen, .res-top, .res-bot { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .pts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card { padding: 18px 16px; }
+    .dos { grid-template-columns: 1fr; }
+    .nav-preg .btn { flex: 1; padding: 12px 10px; }
+    .nav-preg .marcar { flex-basis: 100%; }
+  }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script src="assets/mc-config.js"></script>
+<script src="assets/acceso.js"></script>
+<script src="assets/carreras.js"></script>
+<script src="assets/pregunta.js"></script>
+<script src="assets/auth.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="index.html" aria-label="Modo Cachimbo · Inicio"><img src="assets/img/logo-modo-cachimbo-horizontal.svg" alt="Modo Cachimbo" width="160" height="34"></a>
+    <div data-mc-auth></div>
+  </header>
+
+  <div id="cargando" class="card msg"><p>Cargando…</p></div>
+
+  <!-- Candado -->
+  <section id="lock" class="card lock" hidden>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.5"/></svg>
+    <h1>Simulacro <span>Premium</span></h1>
+    <p>El simulacro necesita un código de acceso. Si ya tienes uno, ingrésalo abajo.</p>
+    <input type="text" id="lockInput" placeholder="Ej: MC-7K3P-Q9XR" autocomplete="off" autocapitalize="characters" aria-label="Código de acceso">
+    <button class="btn" type="button" id="btnUnlock" style="width:100%">Desbloquear</button>
+    <div class="error" id="lockError" hidden></div>
+    <a class="wa" id="lockWa" href="https://wa.me/51917797543" target="_blank" rel="noopener noreferrer" hidden>Escríbeme por WhatsApp</a>
+  </section>
+
+  <!-- 1. Crear -->
+  <section id="crear" hidden>
+    <a class="volver" href="index.html">‹ Inicio</a>
+    <div class="eyebrow" style="margin-top:14px">Simulacro UNJFSC</div>
+    <h1 style="font-size:clamp(26px,4vw,34px);margin-top:6px" id="crearTit">Crea tu simulacro</h1>
+    <p class="hint" style="max-width:62ch" id="crearSub">80 preguntas al azar de los libros de cada curso, repartidas como en el examen de admisión.</p>
+    <div class="crear">
+      <div class="card">
+        <div class="campo" id="campoNombre">
+          <label for="nombre">Nombre del simulacro</label>
+          <input type="text" id="nombre" maxlength="60" placeholder="Ej.: Simulacro 1">
+        </div>
+        <div class="campo" id="campoCiclos">
+          <span class="lbl">Ciclo académico</span>
+          <div class="ciclos" id="ciclos"></div>
+          <p class="nota" id="ciclosNota">Con un ciclo, las preguntas salen solo de ese ciclo. Con dos o más, salen al azar de los ciclos que elijas, con la misma cantidad por curso.</p>
+        </div>
+        <div class="dos">
+          <div class="campo"><label for="selBloque">Bloque</label><select id="selBloque"></select></div>
+          <div class="campo"><label for="selCarrera">Carrera</label><select id="selCarrera"></select></div>
+        </div>
+        <div class="campo"><span class="lbl">Puntos por pregunta correcta</span><div class="pts" id="pts"></div></div>
+        <div class="campo"><span class="lbl">Tiempo</span>
+          <div class="tiempos" id="tiempos">
+            <button type="button" data-m="60">1 h</button><button type="button" data-m="90">1 h 30</button><button type="button" data-m="120">2 h</button><button type="button" data-m="150">2 h 30</button><button type="button" data-m="180">3 h</button>
+          </div>
+        </div>
+        <ul class="reglas">
+          <li>✅ Correcta: <b>suma los puntos de tu bloque</b></li>
+          <li>❌ Incorrecta: <b>−0,1</b></li>
+          <li>⚪ En blanco: <b>0</b></li>
+          <li>⏱️ Puedes terminar antes; al acabarse el tiempo se entrega solo</li>
+        </ul>
+        <button class="btn" type="button" id="btnEmpezar" style="width:100%;margin-top:18px">Empezar simulacro</button>
+        <p class="nota" id="crearError" style="color:var(--bad)" hidden></p>
+        <p class="nota">Bloque y carrera vienen de tu perfil; si los cambias aquí, solo cuentan para este simulacro. Si se cierra la página, al volver sigues donde te quedaste.</p>
+      </div>
+      <div class="col">
+        <div class="card">
+          <h3>Cómo se reparten las preguntas</h3>
+          <div id="dist"></div>
+          <p class="nota">Puntaje máximo de tu bloque: <b id="maxPts">200</b> puntos.</p>
+        </div>
+        <div class="card">
+          <h3>Mis simulacros</h3>
+          <ul class="lista" id="misSim"><li class="vacia">Cargando…</li></ul>
+        </div>
+        <div class="card">
+          <h3>Top 10 de la semana</h3>
+          <ol class="rank" id="rankCrear"><li class="vacia">Cargando…</li></ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Examen -->
+  <section id="examen" hidden>
+    <div class="barra">
+      <span class="reloj" id="reloj">2:00:00</span>
+      <span class="hint" id="contador">0 de 80 respondidas</span>
+      <button class="btn mini" type="button" id="btnTerminar">Terminar</button>
+    </div>
+    <div class="examen">
+      <div class="card">
+        <span class="preg-tag" id="pTag"></span>
+        <div class="preg-num" id="pNum"></div>
+        <div class="preg-txt" id="pTxt"></div>
+        <div class="preg-graf" id="pGraf" hidden></div>
+        <ul class="alts" id="pAlts"></ul>
+        <div class="nav-preg">
+          <button class="btn sec marcar" type="button" id="btnMarcar">⚑ Revisar después</button>
+          <button class="btn sec" type="button" id="btnAnt">‹ Anterior</button>
+          <button class="btn" type="button" id="btnSig">Siguiente ›</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3 id="mapaTit" style="margin-bottom:2px">Tus preguntas</h3>
+        <p class="hint" style="font-size:12.5px">Toca un número para ir a esa pregunta.</p>
+        <div id="mapa"></div>
+        <div class="leyenda">
+          <span style="--k:linear-gradient(90deg,var(--com),var(--mat),var(--cta),var(--ccss))">Respondida</span>
+          <span style="--k:var(--surface-2)">En blanco</span>
+          <span style="--k:var(--warn)">Para revisar</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Resultado -->
+  <section id="resultado" hidden>
+    <div class="eyebrow" id="rTiempo">Simulacro terminado</div>
+    <h1 style="font-size:clamp(24px,4vw,32px);margin-top:6px" id="rTit">¡Buen trabajo!</h1>
+    <div class="res-top">
+      <div class="card puntaje">
+        <span class="hint">Tu puntaje</span>
+        <span class="num" id="rPuntaje">0</span>
+        <span class="hint" id="rDe"></span>
+        <div class="cuenta" id="rCuenta"></div>
+        <div class="guardado" id="rGuardado" role="status"></div>
+      </div>
+      <div class="card">
+        <h3>Por área</h3>
+        <div class="t-wrap"><table>
+          <thead><tr><th>Área</th><th class="r">✅</th><th class="r">❌</th><th class="r">⚪</th><th class="r">Puntos</th></tr></thead>
+          <tbody id="rTabla"></tbody>
+          <tfoot id="rTotal"></tfoot>
+        </table></div>
+      </div>
+    </div>
+    <div class="res-bot">
+      <div class="card">
+        <h3>Top 10 de la semana</h3>
+        <ol class="rank" id="rank"><li class="vacia">Cargando…</li></ol>
+      </div>
+      <div class="card">
+        <h3>Y ahora</h3>
+        <ul class="reglas">
+          <li>📋 <b>Revisa tus respuestas</b> con la clave correcta</li>
+          <li>🔁 Las incorrectas pasan a <b>Repasar mis preguntas falladas</b></li>
+          <li>📈 Tu puntaje queda en <b>Mis simulacros</b>, con el botón Repetir</li>
+        </ul>
+        <div class="nav-preg">
+          <button class="btn sec" type="button" id="btnRevisar">Revisar mis respuestas</button>
+          <a class="btn sec" id="btnRepetir" href="#" hidden>Repetir este simulacro</a>
+          <a class="btn" href="simulacro.html">Otro simulacro</a>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="revision" style="margin-top:16px" hidden>
+      <h3>Tus respuestas</h3>
+      <div class="filtros" id="filtros">
+        <button type="button" data-f="todas" class="on">Todas</button>
+        <button type="button" data-f="mal">Incorrectas</button>
+        <button type="button" data-f="blanco">En blanco</button>
+        <button type="button" data-f="ok">Correctas</button>
+      </div>
+      <div id="revLista"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  const PRODUCTO = 'simulacro';
+  const CLAVE_LS = 'mc_simulacro_v1';
+  const MIN_TEMAS = 3;         // un ciclo se habilita cuando todos los cursos tienen 3 temas o más
+  const PENALIDAD = 0.1;
+  // Reparto de las 80 preguntas (orden del examen). Carpeta del curso y cantidad.
+  const AREAS = [
+    { k: 'com', nom: 'Comunicación', c: 'var(--com)', cursos: [['lenguaje', 4], ['literatura', 2], ['raz-verbal', 14]] },
+    { k: 'mat', nom: 'Matemática', c: 'var(--mat)', cursos: [['algebra', 6], ['aritmetica', 4], ['geometria', 4], ['trigonometria', 2], ['estadistica', 4]] },
+    { k: 'cta', nom: 'Ciencia y Tecnología', c: 'var(--cta)', cursos: [['biologia', 6], ['quimica', 6], ['fisica', 4], ['anatomia', 4]] },
+    { k: 'ccss', nom: 'Ciencias Sociales', c: 'var(--ccss)', cursos: [['historia-universal', 2], ['historia-peru', 2], ['geografia', 4], ['psicologia', 4], ['filosofia', 2], ['economia', 2], ['ciudadania', 4]] }
+  ];
+  const AREA_DE = {}; AREAS.forEach(a => a.cursos.forEach(c => { AREA_DE[c[0]] = a; }));
+  const NOMBRE = {};
+  const MAN = {};
+  let CICLOS = [];           // [{ id, falta: [...] }]
+  let REPETIR = null;        // fila de simulacros cuando se repite
+  let S = null;              // examen en curso (se guarda en el navegador)
+  let PREGS = [];            // preguntas del examen en curso
+  let reloj = null;
+
+  const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const num1 = n => (Math.round(n * 10) / 10).toFixed(1).replace('.', ',');
+  const fmtNum = n => (Math.round(n * 10) / 10 % 1 === 0 ? String(Math.round(n)) : num1(n));
+  const barajar = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const fecha = iso => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' }); };
+  const durTxt = m => (m >= 60 ? Math.floor(m / 60) + ' h' : '') + (m % 60 ? ' ' + (m % 60) + ' min' : '');
+  function renderMath(el) {
+    if (window.renderMathInElement) renderMathInElement(el, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false });
+  }
+  function ver(id) {
+    ['cargando', 'lock', 'crear', 'examen', 'resultado'].forEach(x => { $(x).hidden = x !== id; });
+    window.scrollTo(0, 0);
+  }
+  function aviso(texto) { $('cargando').innerHTML = '<p>' + esc(texto) + '</p>'; ver('cargando'); }
+  function ls(v) {
+    try {
+      if (v === undefined) return JSON.parse(localStorage.getItem(CLAVE_LS) || 'null');
+      if (v === null) localStorage.removeItem(CLAVE_LS); else localStorage.setItem(CLAVE_LS, JSON.stringify(v));
+    } catch (e) { return null; }
+  }
+  function uid() { const u = window.MCAuth && MCAuth.usuario(); return u ? u.id : ''; }
+  function cliente() { return MCAuth.listo; }
+  function rpc(nombre, args) {
+    return cliente().then(c => c.rpc(nombre, args || {})).then(r => { if (r.error) throw r.error; return r.data; });
+  }
+
+  /* ---------- Ciclos y preguntas ---------- */
+  function temasDe(curso, ciclo) { const m = (MAN[curso] || []).filter(x => x.id === ciclo)[0]; return m ? (m.temas || 0) : 0; }
+  function ordenCiclo(id) {
+    const m = String(id).match(/^(\d{4})-([IVX]+)$/);
+    const R = { I: 1, II: 2, III: 3, IV: 4, V: 5 };
+    return m ? +m[1] * 10 + (R[m[2]] || 0) : 0;
+  }
+  function claveLec(t) {
+    const m = String(t || '').match(/^\s*\[((?:TEXTO|LECTURA)[^\]]{0,20})\]\n([\s\S]*?)\n\[\/(?:TEXTO|LECTURA)\]/i);
+    return m ? m[1] + '|' + m[2].trim() : '';
+  }
+  const cacheDatos = {};
+  function datos(curso, ciclo) {
+    const k = curso + '/' + ciclo;
+    if (!cacheDatos[k]) cacheDatos[k] = fetch(curso + '/libros/data/' + ciclo + '.json', { cache: 'no-cache' })
+      .then(r => r.ok ? r.json() : []).catch(() => [])
+      .then(temas => {
+        const out = [];
+        (Array.isArray(temas) ? temas : []).forEach(t => (t.questions || []).forEach((q, i) => {
+          if (!q || !Array.isArray(q.options) || !q.options.length) return;
+          out.push(Object.assign({}, q, {
+            _ref: curso + '/libros/data/' + ciclo + '.json#' + t.num + '#' + i, _tit: t.name,
+            _id: [curso, ciclo, t.num, i].join('|'), _curso: curso
+          }));
+        }));
+        return out;
+      });
+    return cacheDatos[k];
+  }
+  // n preguntas al azar; las de un mismo TEXTO van juntas
+  function elegir(pool, n) {
+    const grupos = [], idx = {};
+    pool.forEach(q => {
+      const k = claveLec(q.text);
+      if (k && idx[k] != null) grupos[idx[k]].push(q);
+      else { if (k) idx[k] = grupos.length; grupos.push([q]); }
+    });
+    const out = [], grandes = [];
+    barajar(grupos).forEach(g => {
+      if (out.length >= n) return;
+      if (g.length <= n - out.length) out.push.apply(out, g); else grandes.push(g);
+    });
+    grandes.sort((a, b) => a.length - b.length);
+    for (let i = 0; i < grandes.length && out.length < n; i++) out.push.apply(out, grandes[i].slice(0, n - out.length));
+    return out;
+  }
+  async function armarNuevo(ciclos) {
+    const lista = [];
+    for (const a of AREAS) {
+      for (const [curso, n] of a.cursos) {
+        const pool = [].concat.apply([], await Promise.all(ciclos.filter(c => temasDe(curso, c) > 0).map(c => datos(curso, c))));
+        let sel = elegir(pool, n);
+        if (sel.length < n) { // si faltan preguntas, se completa con otros ciclos de ese curso
+          const otros = (MAN[curso] || []).map(m => m.id).filter(c => ciclos.indexOf(c) < 0);
+          const extra = [].concat.apply([], await Promise.all(otros.map(c => datos(curso, c))));
+          sel = sel.concat(elegir(extra, n - sel.length));
+        }
+        lista.push.apply(lista, sel);
+      }
+    }
+    return lista;
+  }
+  async function cargarRefs(refs) {
+    const archivos = {};
+    refs.forEach(r => { const p = String(r).split('|'); if (p.length === 4 && AREA_DE[p[0]]) archivos[p[0] + '|' + p[1]] = 1; });
+    const mapa = {};
+    await Promise.all(Object.keys(archivos).map(k => { const p = k.split('|'); return datos(p[0], p[1]).then(L => L.forEach(q => { mapa[q._id] = q; })); }));
+    return refs.map(r => mapa[r]).filter(Boolean);
+  }
+  function prepararPreguntas(lista) {
+    PREGS = lista.map(q => Object.assign({}, q));
+    if (window.MCPregunta) MCPregunta.rangos(PREGS);
+  }
+
+  /* ---------- Pantalla: crear ---------- */
+  const BLOQ = MCCarreras.bloques;
+  let minutos = 120;
+  function bloqueSel() { return BLOQ.filter(b => b.id === $('selBloque').value)[0] || BLOQ[0]; }
+  function llenarBloques(bid, carrera) {
+    $('selBloque').innerHTML = BLOQ.map(b => '<option value="' + esc(b.id) + '">Bloque ' + esc(b.id) + ' · ' + esc(b.nombre) + '</option>').join('');
+    $('selBloque').value = bid && BLOQ.some(b => b.id === bid) ? bid : BLOQ[0].id;
+    llenarCarreras(carrera);
+  }
+  function llenarCarreras(carrera) {
+    const b = bloqueSel();
+    $('selCarrera').innerHTML = '<option value="">Sin elegir</option>' + b.carreras.map(c => '<option>' + esc(c) + '</option>').join('');
+    $('selCarrera').value = carrera && b.carreras.indexOf(carrera) >= 0 ? carrera : '';
+    pintarPuntos();
+  }
+  function pintarPuntos() {
+    const p = bloqueSel().puntos || {};
+    $('pts').innerHTML = AREAS.map(a => '<div class="pt" style="--c:' + a.c + '"><small>' + a.nom + '</small><strong>' + fmtNum(+p[a.k] || 0) + '</strong></div>').join('');
+    $('dist').innerHTML = AREAS.map(a => {
+      const n = a.cursos.reduce((s, c) => s + c[1], 0);
+      return '<div class="area" style="--c:' + a.c + '"><div class="area-tit">' + a.nom + '<span>' + n + ' preguntas · ' + fmtNum(+p[a.k] || 0) + ' pts c/u</span></div>' +
+        '<div class="area-cur">' + a.cursos.map(c => esc(NOMBRE[c[0]] || c[0]) + ' ' + c[1]).join(' · ') + '</div></div>';
+    }).join('');
+    $('maxPts').textContent = fmtNum(AREAS.reduce((s, a) => s + a.cursos.reduce((t, c) => t + c[1], 0) * (+p[a.k] || 0), 0));
+  }
+  $('selBloque').addEventListener('change', () => llenarCarreras(''));
+  $('selCarrera').addEventListener('change', () => {
+    const b = MCCarreras.bloqueDe($('selCarrera').value);
+    if (b && b.id !== $('selBloque').value) { $('selBloque').value = b.id; llenarCarreras($('selCarrera').value); }
+  });
+  function pintarTiempo() { $('tiempos').querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.m === minutos)); }
+  $('tiempos').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; minutos = +b.dataset.m; pintarTiempo(); });
+
+  function pintarCiclos() {
+    const caja = $('ciclos');
+    if (!CICLOS.length) { caja.innerHTML = '<p class="vacia">Todavía no hay libros subidos.</p>'; return; }
+    const listos = CICLOS.filter(c => !c.falta.length);
+    caja.innerHTML = CICLOS.map(c => {
+      const ok = !c.falta.length;
+      const det = ok ? 'Todos los cursos listos'
+        : 'Falta completar: ' + c.falta.slice(0, 4).map(f => esc(NOMBRE[f.curso] || f.curso) + ' (' + f.temas + ' de ' + MIN_TEMAS + ' temas)').join(', ') + (c.falta.length > 4 ? ' y ' + (c.falta.length - 4) + ' más' : '');
+      const marcado = ok && c.id === (listos[listos.length - 1] || {}).id;
+      return '<label class="ciclo ' + (ok ? (marcado ? 'on' : '') : 'off') + '"><input type="checkbox" value="' + esc(c.id) + '"' + (ok ? '' : ' disabled') + (marcado ? ' checked' : '') + '>' +
+        '<div><b>Ciclo ' + esc(c.id) + '</b><small>' + det + '</small></div></label>';
+    }).join('');
+    if (!listos.length) {
+      $('ciclosNota').textContent = 'Un ciclo se habilita cuando todos los cursos del simulacro tienen al menos ' + MIN_TEMAS + ' temas subidos.';
+    }
+    actualizarEmpezar();
+  }
+  function ciclosSel() { return [].slice.call($('ciclos').querySelectorAll('input:checked')).map(i => i.value); }
+  $('ciclos').addEventListener('change', e => {
+    const l = e.target.closest('.ciclo'); if (l) l.classList.toggle('on', e.target.checked);
+    actualizarEmpezar();
+  });
+  function actualizarEmpezar() { $('btnEmpezar').disabled = !REPETIR && !ciclosSel().length; }
+
+  function pintarMisSimulacros() {
+    const caja = $('misSim');
+    cliente().then(c => c.from('simulacros').select('id,nombre,ciclos,intentos,mejor,actualizado').order('actualizado', { ascending: false }).limit(30))
+      .then(r => {
+        if (r.error) throw r.error;
+        const L = r.data || [];
+        if (!L.length) { caja.innerHTML = '<li class="vacia">Aquí aparecerán los simulacros que termines, para repetirlos cuando quieras.</li>'; return; }
+        caja.innerHTML = L.map(s => '<li><div><b>' + esc(s.nombre) + '</b><small>' + esc((s.ciclos || []).join(', ')) + ' · ' +
+          s.intentos + (s.intentos === 1 ? ' intento' : ' intentos') + ' · mejor ' + num1(+s.mejor || 0) + ' · ' + fecha(s.actualizado) + '</small></div>' +
+          '<a class="btn sec mini" href="simulacro.html?repetir=' + encodeURIComponent(s.id) + '">Repetir</a></li>').join('');
+      })
+      .catch(() => { caja.innerHTML = '<li class="vacia">No se pudo cargar tu lista.</li>'; });
+  }
+  function pintarRanking(el) {
+    rpc('ranking_simulacro').then(L => {
+      L = L || [];
+      if (!L.length) { el.innerHTML = '<li class="vacia">Nadie ha terminado un simulacro esta semana. ¡Sé el primero!</li>'; return; }
+      el.innerHTML = L.map(r => '<li class="' + (r.yo ? 'yo' : '') + '"><span class="p">' + r.puesto + '</span><span class="n">' + esc(r.apodo) + (r.yo ? ' (tú)' : '') + '</span><b>' + num1(+r.puntaje) + '</b></li>').join('');
+    }).catch(() => { el.innerHTML = '<li class="vacia">No se pudo cargar el ranking.</li>'; });
+  }
+
+  async function abrirCrear() {
+    const params = new URLSearchParams(location.search);
+    const rep = params.get('repetir');
+    const perfil = await MCAuth.perfil().catch(() => null) || {};
+    await MCCarreras.cargar();
+    if (rep && /^[0-9a-f-]{36}$/i.test(rep)) {
+      const r = await cliente().then(c => c.from('simulacros').select('id,nombre,ciclos,bloque,carrera,minutos,preguntas').eq('id', rep).maybeSingle()).catch(() => null);
+      if (r && r.data) REPETIR = r.data;
+    }
+    const bAuto = MCCarreras.bloqueDe(perfil.carrera);
+    if (REPETIR) {
+      $('crearTit').textContent = 'Repetir: ' + REPETIR.nombre;
+      $('crearSub').textContent = 'Las mismas ' + (REPETIR.preguntas || []).length + ' preguntas, en el mismo orden. Tu puntaje se suma a este simulacro.';
+      $('campoNombre').hidden = true; $('campoCiclos').hidden = true;
+      llenarBloques(REPETIR.bloque || (bAuto && bAuto.id), REPETIR.carrera || MCCarreras.oficial(perfil.carrera));
+      minutos = Math.min(180, Math.max(60, REPETIR.minutos || 120));
+      $('btnEmpezar').textContent = 'Empezar de nuevo';
+    } else {
+      llenarBloques(bAuto && bAuto.id, MCCarreras.oficial(perfil.carrera));
+      $('nombre').value = 'Simulacro ' + new Date().toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit' });
+      pintarCiclos();
+    }
+    pintarTiempo();
+    actualizarEmpezar();
+    ver('crear');
+    pintarMisSimulacros();
+    pintarRanking($('rankCrear'));
+  }
+
+  $('btnEmpezar').addEventListener('click', async () => {
+    const btn = $('btnEmpezar'), err = $('crearError');
+    err.hidden = true;
+    btn.disabled = true; const txt = btn.textContent; btn.textContent = 'Armando tu simulacro…';
+    try {
+      let lista, ciclos;
+      if (REPETIR) { lista = await cargarRefs(REPETIR.preguntas || []); ciclos = REPETIR.ciclos || []; }
+      else { ciclos = ciclosSel(); lista = await armarNuevo(ciclos); }
+      if (lista.length < 10) throw new Error('No hay suficientes preguntas para armar el simulacro.');
+      const b = bloqueSel();
+      S = {
+        v: 1, uid: uid(), simId: REPETIR ? REPETIR.id : null,
+        nombre: REPETIR ? REPETIR.nombre : ($('nombre').value.trim().slice(0, 60) || 'Simulacro'),
+        ciclos: ciclos, bloque: b.id, carrera: $('selCarrera').value, puntos: b.puntos, minutos: minutos,
+        refs: lista.map(q => q._id), resp: {}, rev: {}, act: 0, inicio: Date.now(), fin: Date.now() + minutos * 60000
+      };
+      ls(S);
+      prepararPreguntas(lista);
+      empezarExamen();
+    } catch (e) {
+      err.textContent = e.message || 'No se pudo armar el simulacro. Revisa tu internet.';
+      err.hidden = false;
+    }
+    btn.textContent = txt; actualizarEmpezar();
+  });
+
+  /* ---------- Pantalla: examen ---------- */
+  function empezarExamen() {
+    ver('examen');
+    $('mapaTit').textContent = 'Tus ' + PREGS.length + ' preguntas';
+    pintarPregunta();
+    clearInterval(reloj);
+    reloj = setInterval(tic, 1000); tic();
+  }
+  function tic() {
+    if (!S || S.terminado) return;
+    const seg = Math.max(0, Math.round((S.fin - Date.now()) / 1000));
+    const h = Math.floor(seg / 3600), m = Math.floor(seg % 3600 / 60), s = seg % 60;
+    $('reloj').textContent = h + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+    $('reloj').classList.toggle('poco', seg < 600);
+    if (seg <= 0) terminar(true);
+  }
+  function guardarEstado() { if (S) ls(S); }
+  function pintarPregunta() {
+    const i = S.act, q = PREGS[i], a = AREA_DE[q._curso];
+    $('pTag').style.setProperty('--c', a.c);
+    $('pTag').textContent = a.nom + ' · ' + (NOMBRE[q._curso] || q._curso);
+    $('pNum').textContent = 'Pregunta ' + (i + 1) + ' de ' + PREGS.length;
+    const r = MCPregunta.armar(q.text, { lecPos: q.lecPos, lecSigue: q.lecSigue });
+    $('pTxt').innerHTML = r.html;
+    $('pGraf').hidden = !q.graphic; $('pGraf').innerHTML = q.graphic || '';
+    const lista = $('pAlts');
+    lista.innerHTML = q.options.map((o, k) => '<li><button type="button" data-k="' + k + '" class="' + (S.resp[i] === k ? 'on' : '') + '"><i>' + esc(o.letter || 'ABCDE'[k]) + '</i><span>' + MCPregunta.formato(o.text) + '</span></button></li>').join('');
+    MCPregunta.alternativas(lista, q, r);
+    renderMath($('pTxt')); renderMath(lista);
+    $('btnMarcar').classList.toggle('on', !!S.rev[i]);
+    $('btnAnt').disabled = i === 0;
+    $('btnSig').textContent = i === PREGS.length - 1 ? 'Terminar' : 'Siguiente ›';
+    pintarMapa();
+  }
+  function pintarMapa() {
+    let html = '', n = 0;
+    AREAS.forEach(a => {
+      let celdas = '';
+      PREGS.forEach((q, i) => {
+        if (AREA_DE[q._curso] !== a) return;
+        n++;
+        celdas += '<button type="button" data-i="' + i + '" class="' + (S.resp[i] != null ? 'resp ' : '') + (S.rev[i] ? 'rev ' : '') + (i === S.act ? 'act' : '') + '" aria-label="Pregunta ' + (i + 1) + '">' + (i + 1) + '</button>';
+      });
+      if (celdas) html += '<div class="mapa-sec" style="--c:' + a.c + '"><small>' + a.nom + '</small><div class="celdas">' + celdas + '</div></div>';
+    });
+    $('mapa').innerHTML = html;
+    $('contador').textContent = Object.keys(S.resp).length + ' de ' + PREGS.length + ' respondidas';
+  }
+  function irA(i) { S.act = Math.max(0, Math.min(PREGS.length - 1, i)); guardarEstado(); pintarPregunta(); $('pTag').scrollIntoView({ block: 'nearest' }); }
+  $('pAlts').addEventListener('click', e => {
+    const b = e.target.closest('button[data-k]'); if (!b) return;
+    const k = +b.dataset.k;
+    if (S.resp[S.act] === k) delete S.resp[S.act]; else S.resp[S.act] = k;
+    guardarEstado();
+    $('pAlts').querySelectorAll('button[data-k]').forEach(x => x.classList.toggle('on', S.resp[S.act] === +x.dataset.k));
+    pintarMapa();
+  });
+  $('mapa').addEventListener('click', e => { const b = e.target.closest('button'); if (b) irA(+b.dataset.i); });
+  $('btnSig').addEventListener('click', () => { if (S.act < PREGS.length - 1) irA(S.act + 1); else confirmarFin(); });
+  $('btnAnt').addEventListener('click', () => irA(S.act - 1));
+  $('btnMarcar').addEventListener('click', () => { if (S.rev[S.act]) delete S.rev[S.act]; else S.rev[S.act] = 1; guardarEstado(); $('btnMarcar').classList.toggle('on', !!S.rev[S.act]); pintarMapa(); });
+  $('btnTerminar').addEventListener('click', confirmarFin);
+
+  function dialogo(titulo, texto, botones) {
+    const o = document.createElement('div'); o.className = 'ov';
+    o.innerHTML = '<div class="card" role="dialog" aria-modal="true"><h3>' + esc(titulo) + '</h3><p>' + esc(texto) + '</p><div class="nav-preg"></div></div>';
+    const nav = o.querySelector('.nav-preg');
+    botones.forEach(([txt, cls, fn]) => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'btn ' + cls; b.textContent = txt;
+      b.addEventListener('click', () => { o.remove(); if (fn) fn(); }); nav.appendChild(b);
+    });
+    document.body.appendChild(o);
+    nav.lastChild.focus();
+  }
+  function confirmarFin() {
+    const blancos = PREGS.length - Object.keys(S.resp).length, revisar = Object.keys(S.rev).length;
+    const partes = [];
+    if (blancos) partes.push('Tienes ' + blancos + (blancos === 1 ? ' pregunta' : ' preguntas') + ' en blanco.');
+    if (revisar) partes.push('Marcaste ' + revisar + ' para revisar.');
+    dialogo('¿Terminar el simulacro?', (partes.join(' ') || 'Respondiste todas las preguntas.') + ' Ya no podrás cambiar tus respuestas.',
+      [['Seguir', 'sec', null], ['Terminar', '', () => terminar(false)]]);
+  }
+
+  /* ---------- Pantalla: resultado ---------- */
+  function calcular() {
+    const P = S.puntos || {}, areas = {};
+    let total = 0, max = 0, C = 0, I = 0, B = 0;
+    AREAS.forEach(a => { areas[a.k] = { c: 0, i: 0, b: 0, p: 0 }; });
+    PREGS.forEach((q, i) => {
+      const a = areas[AREA_DE[q._curso].k], pts = +P[AREA_DE[q._curso].k] || 0, r = S.resp[i];
+      max += pts;
+      if (r == null) { a.b++; B++; }
+      else if (r === q.correct) { a.c++; C++; a.p += pts; }
+      else { a.i++; I++; a.p -= PENALIDAD; }
+    });
+    AREAS.forEach(a => { areas[a.k].p = Math.round(areas[a.k].p * 10) / 10; total += areas[a.k].p; });
+    return { areas, total: Math.round(total * 10) / 10, max, C, I, B };
+  }
+  function terminar(porTiempo) {
+    if (!S || S.terminado) return;
+    clearInterval(reloj);
+    S.terminado = Date.now();
+    S.segundos = Math.round((Math.min(S.terminado, S.fin) - S.inicio) / 1000);
+    S.porTiempo = !!porTiempo;
+    guardarEstado();
+    // Racha: cada pregunta respondida cuenta
+    const n = Object.keys(S.resp).length;
+    for (let k = 0; k < n; k++) window.MCRacha ? MCRacha.respondio() : (window.mcRachaPend = (window.mcRachaPend || 0) + 1);
+    mostrarResultado();
+  }
+  function mostrarResultado() {
+    const R = calcular();
+    ver('resultado');
+    const min = Math.max(1, Math.round((S.segundos || 0) / 60));
+    $('rTiempo').textContent = (S.porTiempo ? 'Se acabó el tiempo' : 'Simulacro terminado') + ' · ' + durTxt(min).trim();
+    MCAuth.perfil().then(p => { const nom = ((p && (p.apodo || p.nombre)) || '').trim().split(' ')[0]; $('rTit').textContent = (R.total >= R.max / 2 ? '¡Buen trabajo' : '¡Sigue practicando') + (nom ? ', ' + nom : '') + '!'; }).catch(() => {});
+    $('rPuntaje').textContent = num1(R.total);
+    $('rDe').textContent = 'de ' + fmtNum(R.max) + ' · Bloque ' + S.bloque + ' · ' + S.nombre;
+    $('rCuenta').innerHTML = '<span>✅ <b>' + R.C + '</b> correctas</span><span>❌ <b>' + R.I + '</b> incorrectas</span><span>⚪ <b>' + R.B + '</b> en blanco</span>';
+    $('rTabla').innerHTML = AREAS.map(a => { const x = R.areas[a.k]; return '<tr><td style="--c:' + a.c + '">' + a.nom + '</td><td class="r">' + x.c + '</td><td class="r">' + x.i + '</td><td class="r">' + x.b + '</td><td class="r"><b>' + num1(x.p) + '</b></td></tr>'; }).join('');
+    $('rTotal').innerHTML = '<tr><td style="--c:var(--accent)">Total</td><td class="r">' + R.C + '</td><td class="r">' + R.I + '</td><td class="r">' + R.B + '</td><td class="r">' + num1(R.total) + '</td></tr>';
+    guardarResultado(R);
+  }
+  function guardarResultado(R) {
+    const st = $('rGuardado');
+    st.className = 'guardado'; st.textContent = 'Guardando tu resultado…';
+    const p = {
+      id: S.simId, nombre: S.nombre, ciclos: S.ciclos, bloque: S.bloque, carrera: S.carrera, minutos: S.minutos,
+      preguntas: PREGS.map(q => q._id), puntaje: R.total, maximo: R.max, correctas: R.C, incorrectas: R.I, blancos: R.B,
+      segundos: S.segundos, areas: R.areas
+    };
+    const yaGuardado = S.guardado ? Promise.resolve(S.guardado) : rpc('guardar_simulacro', { p: p });
+    yaGuardado.then(id => {
+      S.guardado = id; S.simId = id;
+      st.className = 'guardado ok'; st.textContent = '✓ Guardado en Mis simulacros';
+      const rep = $('btnRepetir'); rep.href = 'simulacro.html?repetir=' + encodeURIComponent(id); rep.hidden = false;
+      return guardarFalladas();
+    }).then(() => {
+      ls(null);
+      pintarRanking($('rank'));
+    }).catch(() => {
+      guardarEstado();
+      st.className = 'guardado error'; st.innerHTML = 'No se pudo guardar. <button type="button" class="btn sec mini" id="btnReintentar">Reintentar</button>';
+      $('btnReintentar').addEventListener('click', () => guardarResultado(R));
+      pintarRanking($('rank'));
+    });
+  }
+  // Incorrectas → "Repasar mis preguntas falladas"; correctas salen de esa lista
+  function guardarFalladas() {
+    if (S.falladasOk || !window.MCProgreso) return Promise.resolve();
+    const d = MCProgreso.armar({ tipo: 'simulacro', clave: 'simulacro', carpeta: '', anio: (S.ciclos || []).join(','), titulo: 'Simulacro', preguntas: PREGS, respuestas: PREGS.map((q, i) => S.resp[i]) });
+    if (!d.total) return Promise.resolve();
+    const porRef = {}; PREGS.forEach(q => { porRef[q._ref] = q._curso; });
+    d.falladas.forEach(f => { f.carpeta = porRef[f.ref] || ''; });
+    return rpc('guardar_practica', { p: d }).then(() => { S.falladasOk = true; }, () => {});
+  }
+
+  /* ---------- Revisión ---------- */
+  let filtro = 'todas';
+  $('btnRevisar').addEventListener('click', () => { $('revision').hidden = false; pintarRevision(); $('revision').scrollIntoView({ behavior: 'smooth' }); });
+  $('filtros').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    filtro = b.dataset.f; $('filtros').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); pintarRevision();
+  });
+  function pintarRevision() {
+    const caja = $('revLista'); let html = '';
+    PREGS.forEach((q, i) => {
+      const r = S.resp[i], est = r == null ? 'blanco' : r === q.correct ? 'ok' : 'mal';
+      if (filtro !== 'todas' && filtro !== est) return;
+      const a = AREA_DE[q._curso], m = MCPregunta.armar(q.text, { lecPos: q.lecPos });
+      html += '<div class="rev-item" data-i="' + i + '"><span class="preg-tag" style="--c:' + a.c + '">' + a.nom + ' · ' + esc(NOMBRE[q._curso] || q._curso) + '</span>' +
+        '<div class="preg-num">Pregunta ' + (i + 1) + '<span class="rev-est ' + est + '">' + { ok: '✅ Correcta', mal: '❌ Incorrecta', blanco: '⚪ En blanco' }[est] + '</span></div>' +
+        '<div class="preg-txt">' + m.html + '</div>' + (q.graphic ? '<div class="preg-graf">' + q.graphic + '</div>' : '') +
+        '<ul class="alts ver">' + q.options.map((o, k) => '<li><button type="button" tabindex="-1" class="' + (k === q.correct ? 'ok' : k === r ? 'mal' : '') + '"><i>' + esc(o.letter || 'ABCDE'[k]) + '</i><span>' + MCPregunta.formato(o.text) + '</span></button></li>').join('') + '</ul></div>';
+    });
+    caja.innerHTML = html || '<p class="vacia">No hay preguntas en este grupo.</p>';
+    caja.querySelectorAll('.rev-item').forEach(el => {
+      const q = PREGS[+el.dataset.i];
+      MCPregunta.alternativas(el.querySelector('.alts'), q, MCPregunta.armar(q.text, {}));
+    });
+    renderMath(caja);
+  }
+
+  /* ---------- Candado ---------- */
+  let abierto = false;
+  function abrir() { if (abierto) return; abierto = true; iniciar(); }
+  function bloquear(msg) {
+    if (abierto) return; // ya entró con el acceso guardado; se respeta para no cortar un examen
+    ver('lock');
+    if (msg) { $('lockError').textContent = msg; $('lockError').hidden = false; $('lockWa').hidden = false; }
+  }
+  async function desbloquear() {
+    const cod = $('lockInput').value.trim().toUpperCase();
+    $('lockError').hidden = true;
+    if (!cod) { $('lockError').textContent = 'Ingresa tu código de acceso.'; $('lockError').hidden = false; return; }
+    const b = $('btnUnlock'); b.disabled = true; b.textContent = 'Verificando…';
+    try { const r = await MCAcceso.activar(cod, PRODUCTO); if (r.ok) abrir(); else bloquear(r.mensaje || 'Código inválido.'); }
+    catch (e) { bloquear('No se pudo verificar el código. Revisa tu conexión e intenta de nuevo.'); }
+    b.disabled = false; b.textContent = 'Desbloquear';
+  }
+  $('btnUnlock').addEventListener('click', desbloquear);
+  $('lockInput').addEventListener('keydown', e => { if (e.key === 'Enter') desbloquear(); });
+  $('lockWa').href = 'https://wa.me/51917797543?text=' + encodeURIComponent('Hola! Quiero acceso al Simulacro de Modo Cachimbo 🎓');
+
+  /* ---------- Inicio ---------- */
+  async function cargarCursos() {
+    const reg = await fetch('assets/cursos.json', { cache: 'no-cache' }).then(r => r.json()).catch(() => null);
+    ((reg && reg.cursos) || []).forEach(c => { NOMBRE[c.id] = c.nombre; });
+    const ids = Object.keys(AREA_DE);
+    await Promise.all(ids.map(id => fetch(id + '/libros/data/manifest.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : []).catch(() => []).then(m => { MAN[id] = Array.isArray(m) ? m : []; })));
+    const todos = {};
+    ids.forEach(id => MAN[id].forEach(m => { if (m && m.id) todos[m.id] = 1; }));
+    CICLOS = Object.keys(todos).sort((a, b) => ordenCiclo(a) - ordenCiclo(b)).map(c => ({
+      id: c, falta: ids.filter(id => temasDe(id, c) < MIN_TEMAS).map(id => ({ curso: id, temas: temasDe(id, c) }))
+    }));
+  }
+  async function iniciar() {
+    aviso('Cargando…');
+    await MCAuth.listo.catch(() => null);
+    if (!uid()) { aviso('Ingresa con tu cuenta para dar el simulacro.'); return; }
+    await cargarCursos();
+    const guardado = ls();
+    if (guardado && guardado.v === 1 && guardado.uid === uid() && Array.isArray(guardado.refs)) {
+      S = guardado;
+      const lista = await cargarRefs(S.refs);
+      if (lista.length === S.refs.length) {
+        prepararPreguntas(lista);
+        if (S.terminado) { mostrarResultado(); return; }
+        if (Date.now() >= S.fin) { terminar(true); return; }
+        empezarExamen();
+        return;
+      }
+      S = null; ls(null); // las preguntas cambiaron: se empieza de nuevo
+    }
+    abrirCrear();
+  }
+  async function verificarAcceso() {
+    if (MCAcceso.accesoLocal(PRODUCTO)) abrir();
+    const v = await MCAcceso.verificar(PRODUCTO);
+    if (v.acceso) abrir(); else bloquear(v.mensaje);
+  }
+  verificarAcceso();
+})();
+</script>
+</body>
+</html>
