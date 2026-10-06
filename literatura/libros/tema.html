@@ -161,6 +161,7 @@
         document.getElementById('temaTitle').textContent = tema.name;
         document.getElementById('countLabel').textContent = `${tema.questions.length} preguntas con respuesta marcada.`;
 
+        if (window.MCPregunta && MCPregunta.rangos) MCPregunta.rangos(tema.questions);
         tema.questions.forEach((q, idx) => {
           const div = document.createElement('div');
           div.className = 'qcard';
@@ -175,7 +176,7 @@
             </div>`;
           });
           // Imágenes en medio del texto, tablas y columnas: assets/pregunta.js
-          const mcq = window.MCPregunta ? MCPregunta.armar(q.text) : { html: formatQText(q.text).replace(/\n/g,'<br>'), derecha: '' };
+          const mcq = window.MCPregunta ? MCPregunta.armar(q.text, { lecPos: q.lecPos, lecSigue: q.lecSigue }) : { html: formatQText(q.text).replace(/\n/g,'<br>'), derecha: '' };
           const cortas = window.MCPregunta && !mcq.derecha && MCPregunta.cortas(q.options);
           optsHtml = `<div class="${cortas ? 'mcq-cortas' : ''}" style="${cortas ? 'gap:8px;' : ''}">${optsHtml}</div>`;
           if (mcq.derecha) optsHtml = `<div class="mcq-con-der">${optsHtml}<div class="mcq-der" style="margin:0;">${mcq.derecha}</div></div>`;
