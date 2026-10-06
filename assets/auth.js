@@ -75,6 +75,10 @@
       var pp = document.createElement('script');
       pp.src = BASE + 'assets/populares.js';
       document.head.appendChild(pp);
+      // Top de la semana del simulacro (assets/ranking.js)
+      var rk = document.createElement('script');
+      rk.src = BASE + 'assets/ranking.js';
+      document.head.appendChild(rk);
     }
   }
 

@@ -111,7 +111,7 @@
       caja = document.createElement('section');
       caja.id = 'mcNovedades'; caja.className = 'mcn';
       caja.setAttribute('aria-label', 'Nuevo para ti');
-      ancla.parentNode.insertBefore(caja, document.getElementById('mcPopulares') || ancla);
+      ancla.parentNode.insertBefore(caja, document.getElementById('mcRanking') || document.getElementById('mcPopulares') || ancla);
     }
     if (!lista.length) { caja.hidden = true; return; }
     css();

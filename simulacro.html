@@ -153,6 +153,29 @@
   .filtros { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
   .filtros button { background: var(--surface-2); color: var(--dim); border: 1px solid var(--border); border-radius: 100px; padding: 7px 14px; font-weight: 600; font-size: 13px; }
   .filtros button.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .ins { width: 22px; height: 22px; border-radius: 7px; display: inline-grid; place-items: center; flex-shrink: 0; vertical-align: middle; margin-right: 8px; }
+  .ins svg { width: 14px; height: 14px; fill: none; stroke: #0b0b0b; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  .ins.g { background: var(--ok); } .ins.r { background: var(--bad); } .ins.l { background: var(--accent); }
+  .ins.n { background: #3a3a3a; } .ins.n svg { stroke: #bbb; }
+  .reglas li .ins { margin-top: -2px; }
+  th .ins { width: 18px; height: 18px; border-radius: 6px; margin: 0; } th .ins svg { width: 11px; height: 11px; }
+  .cuenta span { display: inline-flex; align-items: center; }
+  .cuenta .ins { width: 20px; height: 20px; margin-right: 6px; }
+  .rev-est { display: inline-flex; align-items: center; }
+  .rev-est .ins { width: 18px; height: 18px; margin-right: 5px; } .rev-est .ins svg { width: 11px; height: 11px; }
+  .ico-btn { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -3px; margin-right: 6px; }
+  .rank li .p { display: grid; place-items: center; }
+  .btn-mapa, .mapa-x { display: none; }
+  @media (max-width: 820px) {
+    .btn-mapa { display: inline-block; }
+    .barra { flex-wrap: nowrap; gap: 8px; padding: 10px 12px; }
+    .barra .hint { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12.5px; }
+    .barra .reloj { font-size: 20px; }
+    .mapa-card { display: none; }
+    .mapa-card.abierto { display: block; position: fixed; inset: auto 0 0 0; z-index: 40; max-height: 85vh; overflow-y: auto; border-radius: 20px 20px 0 0; padding-bottom: calc(22px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -12px 40px rgba(0,0,0,.7); }
+    .mapa-x { display: grid; place-items: center; position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); font-size: 22px; line-height: 1; }
+    body.sin-scroll { overflow: hidden; }
+  }
   .rev-item { border-top: 1px solid var(--border); padding: 18px 0; }
   .rev-item:first-child { border-top: none; }
   .rev-est { font-size: 12.5px; font-weight: 700; margin-left: 8px; }
@@ -182,6 +205,7 @@
 <script src="assets/carreras.js"></script>
 <script src="assets/pregunta.js"></script>
 <script src="assets/auth.js"></script>
+<script src="assets/ranking.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -231,10 +255,10 @@
           </div>
         </div>
         <ul class="reglas">
-          <li>✅ Correcta: <b>suma los puntos de tu bloque</b></li>
-          <li>❌ Incorrecta: <b>−0,1</b></li>
-          <li>⚪ En blanco: <b>0</b></li>
-          <li>⏱️ Puedes terminar antes; al acabarse el tiempo se entrega solo</li>
+          <li><span class="ins g"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>Correcta: <b>suma los puntos de tu bloque</b></li>
+          <li><span class="ins r"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></span>Incorrecta: <b>−0,1</b></li>
+          <li><span class="ins n"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12"/></svg></span>En blanco: <b>0</b></li>
+          <li><span class="ins l"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/></svg></span>Puedes terminar antes; al acabarse el tiempo se entrega solo</li>
         </ul>
         <button class="btn" type="button" id="btnEmpezar" style="width:100%;margin-top:18px">Empezar simulacro</button>
         <p class="nota" id="crearError" style="color:var(--bad)" hidden></p>
@@ -263,6 +287,7 @@
     <div class="barra">
       <span class="reloj" id="reloj">2:00:00</span>
       <span class="hint" id="contador">0 de 80 respondidas</span>
+      <button class="btn sec mini btn-mapa" type="button" id="btnMapa" aria-controls="mapaCard"><svg class="ico-btn" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Mapa</button>
       <button class="btn mini" type="button" id="btnTerminar">Terminar</button>
     </div>
     <div class="examen">
@@ -273,12 +298,13 @@
         <div class="preg-graf" id="pGraf" hidden></div>
         <ul class="alts" id="pAlts"></ul>
         <div class="nav-preg">
-          <button class="btn sec marcar" type="button" id="btnMarcar">⚑ Revisar después</button>
+          <button class="btn sec marcar" type="button" id="btnMarcar"><svg class="ico-btn" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V4h12l-3 4.5L18 13H6"/></svg>Revisar después</button>
           <button class="btn sec" type="button" id="btnAnt">‹ Anterior</button>
           <button class="btn" type="button" id="btnSig">Siguiente ›</button>
         </div>
       </div>
-      <div class="card">
+      <div class="card mapa-card" id="mapaCard">
+        <button class="mapa-x" type="button" id="mapaCerrar" aria-label="Cerrar mapa">×</button>
         <h3 id="mapaTit" style="margin-bottom:2px">Tus preguntas</h3>
         <p class="hint" style="font-size:12.5px">Toca un número para ir a esa pregunta.</p>
         <div id="mapa"></div>
@@ -306,7 +332,7 @@
       <div class="card">
         <h3>Por área</h3>
         <div class="t-wrap"><table>
-          <thead><tr><th>Área</th><th class="r">✅</th><th class="r">❌</th><th class="r">⚪</th><th class="r">Puntos</th></tr></thead>
+          <thead><tr><th>Área</th><th class="r"><span class="ins g"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></th><th class="r"><span class="ins r"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></span></th><th class="r"><span class="ins n"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12"/></svg></span></th><th class="r">Puntos</th></tr></thead>
           <tbody id="rTabla"></tbody>
           <tfoot id="rTotal"></tfoot>
         </table></div>
@@ -320,9 +346,9 @@
       <div class="card">
         <h3>Y ahora</h3>
         <ul class="reglas">
-          <li>📋 <b>Revisa tus respuestas</b> con la clave correcta</li>
-          <li>🔁 Las incorrectas pasan a <b>Repasar mis preguntas falladas</b></li>
-          <li>📈 Tu puntaje queda en <b>Mis simulacros</b>, con el botón Repetir</li>
+          <li><span class="ins l"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h11M8 12h11M8 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg></span><b>Revisa tus respuestas</b> con la clave correcta</li>
+          <li><span class="ins l"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 14-5.3L20 9M20 4v5h-5"/></svg></span>Las incorrectas pasan a <b>Repasar mis preguntas falladas</b></li>
+          <li><span class="ins l"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 17 6-6 4 4 6-7"/></svg></span>Tu puntaje queda en <b>Mis simulacros</b>, con el botón Repetir</li>
         </ul>
         <div class="nav-preg">
           <button class="btn sec" type="button" id="btnRevisar">Revisar mis respuestas</button>
@@ -354,6 +380,7 @@
   const PRUEBA = true;
   const MIN_TEMAS = 3;         // un ciclo se habilita cuando todos los cursos tienen 3 temas o más
   const PENALIDAD = 0.1;
+  const ICO = {"ok": "<span class=\"ins g\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m5 12.5 4.5 4.5L19 7.5\"/></svg></span>", "mal": "<span class=\"ins r\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m6 6 12 12M18 6 6 18\"/></svg></span>", "bl": "<span class=\"ins n\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M6 12h12\"/></svg></span>"};
   // Reparto de las 80 preguntas (orden del examen). Carpeta del curso y cantidad.
   const AREAS = [
     { k: 'com', nom: 'Comunicación', c: 'var(--com)', cursos: [['lenguaje', 4], ['literatura', 2], ['raz-verbal', 14]] },
@@ -509,11 +536,13 @@
     const caja = $('ciclos');
     if (!CICLOS.length) { caja.innerHTML = '<p class="vacia">Todavía no hay libros subidos.</p>'; return; }
     const listos = CICLOS.filter(c => !c.falta.length || PRUEBA);
+    const completos = CICLOS.filter(c => !c.falta.length);
+    const porDefecto = ((completos.length ? completos : listos)[(completos.length ? completos : listos).length - 1] || {}).id;
     caja.innerHTML = CICLOS.map(c => {
       const ok = !c.falta.length || PRUEBA;
       const det = !c.falta.length ? 'Todos los cursos listos'
         : (PRUEBA ? 'Modo prueba · ' : '') + 'Falta completar: ' + c.falta.slice(0, 4).map(f => esc(NOMBRE[f.curso] || f.curso) + ' (' + f.temas + ' de ' + MIN_TEMAS + ' temas)').join(', ') + (c.falta.length > 4 ? ' y ' + (c.falta.length - 4) + ' más' : '');
-      const marcado = ok && c.id === (listos[listos.length - 1] || {}).id;
+      const marcado = ok && c.id === porDefecto;
       return '<label class="ciclo ' + (ok ? (marcado ? 'on' : '') : 'off') + '"><input type="checkbox" value="' + esc(c.id) + '"' + (ok ? '' : ' disabled') + (marcado ? ' checked' : '') + '>' +
         '<div><b>Ciclo ' + esc(c.id) + '</b><small>' + det + '</small></div></label>';
     }).join('');
@@ -546,7 +575,7 @@
     rpc('ranking_simulacro').then(L => {
       L = L || [];
       if (!L.length) { el.innerHTML = '<li class="vacia">Nadie ha terminado un simulacro esta semana. ¡Sé el primero!</li>'; return; }
-      el.innerHTML = L.map(r => '<li class="' + (r.yo ? 'yo' : '') + '"><span class="p">' + r.puesto + '</span><span class="n">' + esc(r.apodo) + (r.yo ? ' (tú)' : '') + '</span><b>' + num1(+r.puntaje) + '</b></li>').join('');
+      el.innerHTML = L.map(r => '<li class="' + (r.yo ? 'yo' : '') + '"><span class="p">' + ((window.MCMedalla && MCMedalla(r.puesto, 20)) || r.puesto) + '</span><span class="n">' + esc(r.apodo) + (r.yo ? ' (tú)' : '') + '</span><b>' + num1(+r.puntaje) + '</b></li>').join('');
     }).catch(() => { el.innerHTML = '<li class="vacia">No se pudo cargar el ranking.</li>'; });
   }
 
@@ -651,7 +680,7 @@
       if (celdas) html += '<div class="mapa-sec" style="--c:' + a.c + '"><small>' + a.nom + '</small><div class="celdas">' + celdas + '</div></div>';
     });
     $('mapa').innerHTML = html;
-    $('contador').textContent = Object.keys(S.resp).length + ' de ' + PREGS.length + ' respondidas';
+    $('contador').textContent = Object.keys(S.resp).length + '/' + PREGS.length + ' respondidas';
   }
   function irA(i) { S.act = Math.max(0, Math.min(PREGS.length - 1, i)); guardarEstado(); pintarPregunta(); $('pTag').scrollIntoView({ block: 'nearest' }); }
   $('pAlts').addEventListener('click', e => {
@@ -667,6 +696,11 @@
   $('btnAnt').addEventListener('click', () => irA(S.act - 1));
   $('btnMarcar').addEventListener('click', () => { if (S.rev[S.act]) delete S.rev[S.act]; else S.rev[S.act] = 1; guardarEstado(); $('btnMarcar').classList.toggle('on', !!S.rev[S.act]); pintarMapa(); });
   $('btnTerminar').addEventListener('click', confirmarFin);
+  // Celular: el mapa se abre encima con el botón "Mapa"
+  function mapaMovil(abrir) { $('mapaCard').classList.toggle('abierto', abrir); document.body.classList.toggle('sin-scroll', abrir); }
+  $('btnMapa').addEventListener('click', () => mapaMovil(true));
+  $('mapaCerrar').addEventListener('click', () => mapaMovil(false));
+  $('mapa').addEventListener('click', e => { if (e.target.closest('button')) mapaMovil(false); });
 
   function dialogo(titulo, texto, botones) {
     const o = document.createElement('div'); o.className = 'ov';
@@ -723,7 +757,7 @@
     MCAuth.perfil().then(p => { const nom = ((p && (p.apodo || p.nombre)) || '').trim().split(' ')[0]; $('rTit').textContent = (R.total >= R.max / 2 ? '¡Buen trabajo' : '¡Sigue practicando') + (nom ? ', ' + nom : '') + '!'; }).catch(() => {});
     $('rPuntaje').textContent = num1(R.total);
     $('rDe').textContent = 'de ' + fmtNum(R.max) + ' · Bloque ' + S.bloque + ' · ' + S.nombre;
-    $('rCuenta').innerHTML = '<span>✅ <b>' + R.C + '</b> correctas</span><span>❌ <b>' + R.I + '</b> incorrectas</span><span>⚪ <b>' + R.B + '</b> en blanco</span>';
+    $('rCuenta').innerHTML = '<span>' + ICO.ok + '<b>' + R.C + '</b> correctas</span><span>' + ICO.mal + '<b>' + R.I + '</b> incorrectas</span><span>' + ICO.bl + '<b>' + R.B + '</b> en blanco</span>';
     $('rTabla').innerHTML = AREAS.map(a => { const x = R.areas[a.k]; return '<tr><td style="--c:' + a.c + '">' + a.nom + '</td><td class="r">' + x.c + '</td><td class="r">' + x.i + '</td><td class="r">' + x.b + '</td><td class="r"><b>' + num1(x.p) + '</b></td></tr>'; }).join('');
     $('rTotal').innerHTML = '<tr><td style="--c:var(--accent)">Total</td><td class="r">' + R.C + '</td><td class="r">' + R.I + '</td><td class="r">' + R.B + '</td><td class="r">' + num1(R.total) + '</td></tr>';
     guardarResultado(R);
@@ -776,7 +810,7 @@
       if (filtro !== 'todas' && filtro !== est) return;
       const a = AREA_DE[q._curso], m = MCPregunta.armar(q.text, { lecPos: q.lecPos });
       html += '<div class="rev-item" data-i="' + i + '"><span class="preg-tag" style="--c:' + a.c + '">' + a.nom + ' · ' + esc(NOMBRE[q._curso] || q._curso) + '</span>' +
-        '<div class="preg-num">Pregunta ' + (i + 1) + '<span class="rev-est ' + est + '">' + { ok: '✅ Correcta', mal: '❌ Incorrecta', blanco: '⚪ En blanco' }[est] + '</span></div>' +
+        '<div class="preg-num">Pregunta ' + (i + 1) + '<span class="rev-est ' + est + '">' + { ok: ICO.ok + 'Correcta', mal: ICO.mal + 'Incorrecta', blanco: ICO.bl + 'En blanco' }[est] + '</span></div>' +
         '<div class="preg-txt">' + m.html + '</div>' + (q.graphic ? '<div class="preg-graf">' + grafico(q.graphic) + '</div>' : '') +
         '<ul class="alts ver">' + q.options.map((o, k) => '<li><button type="button" tabindex="-1" class="' + (k === q.correct ? 'ok' : k === r ? 'mal' : '') + '"><i>' + esc(o.letter || 'ABCDE'[k]) + '</i><span>' + MCPregunta.formato(o.text) + '</span></button></li>').join('') + '</ul></div>';
     });

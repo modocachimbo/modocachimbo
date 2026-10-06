@@ -10,6 +10,10 @@
 --   · simulacro_intentos: cada vez que lo termina (puntaje, aciertos…).
 --   · ranking_simulacro(): top 10 de la semana (lunes a domingo,
 --     hora de Lima) con el mejor puntaje de cada alumno, por apodo.
+--     Solo cuenta el PRIMER intento de cada simulacro (al repetir ya
+--     se conocen las preguntas).
+--   · ranking_simulacro_admin(semana): lo mismo para el panel, con
+--     nombre, correo y carrera. Solo para administradores.
 -- =========================================================
 
 create table if not exists public.simulacros (
@@ -50,6 +54,7 @@ create table if not exists public.simulacro_intentos (
   areas       jsonb,                         -- {com:{c,i,b,p}, mat:…}
   creado      timestamptz not null default now()
 );
+alter table public.simulacro_intentos add column if not exists primero boolean not null default true;
 create index if not exists simulacro_intentos_creado on public.simulacro_intentos (creado);
 create index if not exists simulacro_intentos_usuario on public.simulacro_intentos (usuario, creado desc);
 alter table public.simulacro_intentos enable row level security;
@@ -69,6 +74,7 @@ returns uuid language plpgsql volatile security definer set search_path = '' as 
 declare
   uid uuid := auth.uid();
   sid uuid;
+  nuevo boolean := false;
   pts numeric(6,1);
   mx numeric(6,1);
   c integer; i integer; b integer;
@@ -97,12 +103,13 @@ begin
             least(greatest(coalesce((p ->> 'minutos')::integer, 120), 30), 240),
             p -> 'preguntas')
     returning id into sid;
+    nuevo := true;
   end if;
 
-  insert into public.simulacro_intentos (simulacro, usuario, puntaje, maximo, bloque, correctas, incorrectas, blancos, segundos, areas)
+  insert into public.simulacro_intentos (simulacro, usuario, puntaje, maximo, bloque, correctas, incorrectas, blancos, segundos, areas, primero)
   values (sid, uid, pts, mx, left(p ->> 'bloque', 4), c, i, b,
           least(greatest(coalesce((p ->> 'segundos')::integer, 0), 0), 6 * 3600),
-          case when jsonb_typeof(p -> 'areas') = 'object' then p -> 'areas' end);
+          case when jsonb_typeof(p -> 'areas') = 'object' then p -> 'areas' end, nuevo);
 
   update public.simulacros s set
     intentos = s.intentos + 1,
@@ -126,7 +133,7 @@ language sql stable security definer set search_path = '' as $$
   ), mejores as (
     select x.usuario, max(x.puntaje) as puntaje, min(x.creado) filter (where true) as primero
     from public.simulacro_intentos x, semana
-    where x.creado >= semana.desde
+    where x.creado >= semana.desde and x.primero
     group by x.usuario
   ), orden as (
     select m.usuario, m.puntaje,
@@ -144,3 +151,38 @@ language sql stable security definer set search_path = '' as $$
 $$;
 revoke all on function public.ranking_simulacro() from public, anon;
 grant execute on function public.ranking_simulacro() to authenticated;
+
+-- Panel: top 10 de una semana (cualquier día de esa semana; null = esta semana)
+create or replace function public.ranking_simulacro_admin(p_dia date default null)
+returns table (puesto integer, nombre text, apodo text, email text, carrera text, bloque text,
+               puntaje numeric, maximo numeric, simulacro text, intentos integer, fecha timestamptz, desde date)
+language plpgsql stable security definer set search_path = '' as $$
+declare
+  ini timestamptz;
+begin
+  if not exists (select 1 from public.admins a where lower(a.email) = lower(auth.jwt() ->> 'email')) then
+    raise exception 'no autorizado';
+  end if;
+  ini := (date_trunc('week', coalesce(p_dia::timestamp, now() at time zone 'America/Lima'))) at time zone 'America/Lima';
+  return query
+    with sem as (
+      select x.* from public.simulacro_intentos x
+      where x.creado >= ini and x.creado < ini + interval '7 days'
+    ), mejor as (
+      select distinct on (x.usuario) x.usuario, x.puntaje, x.maximo, x.bloque, x.simulacro, x.creado
+      from sem x where x.primero
+      order by x.usuario, x.puntaje desc, x.creado
+    ), orden as (
+      select m.*, (row_number() over (order by m.puntaje desc, m.creado))::integer as puesto from mejor m
+    )
+    select o.puesto, p.nombre, p.apodo, u.email::text, p.carrera, o.bloque, o.puntaje, o.maximo, s.nombre,
+           (select count(*) from sem y where y.usuario = o.usuario)::integer, o.creado, (ini at time zone 'America/Lima')::date
+    from orden o
+    join auth.users u on u.id = o.usuario
+    left join public.perfiles p on p.id = o.usuario
+    left join public.simulacros s on s.id = o.simulacro
+    where o.puesto <= 10
+    order by o.puesto;
+end $$;
+revoke all on function public.ranking_simulacro_admin(date) from public, anon;
+grant execute on function public.ranking_simulacro_admin(date) to authenticated;
