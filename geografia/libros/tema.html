@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <script src="../../assets/guardia.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tema · Geografía · Modo Cachimbo</title>
+<title>Tema · Espacio Geográfico · Modo Cachimbo</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -94,7 +94,7 @@
         <a class="back" id="backLink" href="temario.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> <span id="backLabel">Temario</span></a>
         <a class="home-btn" href="../../index.html" title="Ir al inicio" aria-label="Ir al inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg></a>
       </div>
-      <div class="course-badge"><div class="dot"></div><span id="badgeYear">Geografía</span></div>
+      <div class="course-badge"><div class="dot"></div><span id="badgeYear">Espacio Geográfico</span></div>
     </header>
 
     <div class="page-head">
@@ -148,7 +148,7 @@
   if (!year || !temaNum) {
     qlistEl.innerHTML = '<div class="state-msg">Falta indicar año y tema. Vuelve al temario.</div>';
   } else {
-    document.getElementById('badgeYear').textContent = 'Geografía · ' + year;
+    document.getElementById('badgeYear').textContent = 'Espacio Geográfico · ' + year;
     document.getElementById('practicarLink').href = `quiz.html?year=${encodeURIComponent(year)}&tema=${encodeURIComponent(temaNum)}`;
 
     fetch('data/' + year + '.json')
@@ -161,7 +161,6 @@
         document.getElementById('temaTitle').textContent = tema.name;
         document.getElementById('countLabel').textContent = `${tema.questions.length} preguntas con respuesta marcada.`;
 
-        if (window.MCPregunta && MCPregunta.rangos) MCPregunta.rangos(tema.questions);
         tema.questions.forEach((q, idx) => {
           const div = document.createElement('div');
           div.className = 'qcard';
@@ -176,7 +175,7 @@
             </div>`;
           });
           // Imágenes en medio del texto, tablas y columnas: assets/pregunta.js
-          const mcq = window.MCPregunta ? MCPregunta.armar(q.text, { lecPos: q.lecPos, lecSigue: q.lecSigue }) : { html: formatQText(q.text).replace(/\n/g,'<br>'), derecha: '' };
+          const mcq = window.MCPregunta ? MCPregunta.armar(q.text) : { html: formatQText(q.text).replace(/\n/g,'<br>'), derecha: '' };
           const cortas = window.MCPregunta && !mcq.derecha && MCPregunta.cortas(q.options);
           optsHtml = `<div class="${cortas ? 'mcq-cortas' : ''}" style="${cortas ? 'gap:8px;' : ''}">${optsHtml}</div>`;
           if (mcq.derecha) optsHtml = `<div class="mcq-con-der">${optsHtml}<div class="mcq-der" style="margin:0;">${mcq.derecha}</div></div>`;
@@ -185,7 +184,7 @@
           qlistEl.appendChild(div);
         });
 
-        window.MC_TEMA = { curso: 'Geografía', carpeta: 'geografia', year: year, num: tema.num, name: tema.name, questions: tema.questions };
+        window.MC_TEMA = { curso: 'Espacio Geográfico', carpeta: 'geografia', year: year, num: tema.num, name: tema.name, questions: tema.questions };
         document.dispatchEvent(new CustomEvent('mc:tema-listo'));
       })
       .catch(() => {
