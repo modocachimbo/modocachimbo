@@ -56,8 +56,8 @@
           var t = lineas[i].trim();
           if (t) pars[pars.length - 1].push(t); else if (pars[pars.length - 1].length) pars.push([]);
         }
-        partes.push('<details class="mcq-lec" open><summary>' + esc(m[1].trim().toUpperCase()) +
-          (opts.lecPos ? '<span class="mcq-lec-pos"> · pregunta ' + esc(opts.lecPos) + '</span>' : '') + '</summary>' +
+        partes.push('<details class="mcq-lec"' + (opts.lecSigue ? '' : ' open') + '><summary>' + esc(m[1].trim().toUpperCase()) +
+          (opts.lecPos ? '<span class="mcq-lec-pos"> · ' + esc(opts.lecPos) + '</span>' : '') + '</summary>' +
           pars.filter(function (p) { return p.length; }).map(function (p) { return '<p>' + formato(p.join(' ')) + '</p>'; }).join('') + '</details>');
         continue;
       }
@@ -116,8 +116,23 @@
     return out.join('\n').trim();
   }
 
+  // Preguntas seguidas del mismo TEXTO: marca q.lecPos = 'preguntas 6 a 8' (posiciones en arr)
+  // y q.lecSigue en las que no son la primera del grupo.
+  function rangos(arr) {
+    var i = 0;
+    while (i < arr.length) {
+      var k = claveLectura(arr[i] && arr[i].text), j = i + 1;
+      if (k) while (j < arr.length && claveLectura(arr[j] && arr[j].text) === k) j++;
+      for (var n = i; n < j; n++) {
+        if (!arr[n] || typeof arr[n] !== 'object') continue;
+        arr[n].lecPos = k ? (j - i > 1 ? 'preguntas ' + (i + 1) + ' a ' + j : 'pregunta ' + (i + 1)) : '';
+        arr[n].lecSigue = !!k && n > i;
+      }
+      i = j;
+    }
+    return arr;
+  }
   // Mezcla al azar, pero las preguntas de un mismo TEXTO quedan juntas y en orden.
-  // Marca q.lecPos = '2 de 3' para mostrarlo en la lectura.
   function claveLectura(t) {
     var m = String(t || '').match(/^\s*\[((?:TEXTO|LECTURA)[^\]]{0,20})\]\n([\s\S]*?)\n\[\/(?:TEXTO|LECTURA)\]/i);
     return m ? m[1] + '|' + m[2].trim() : '';
@@ -131,10 +146,8 @@
     });
     for (var i = grupos.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = grupos[i]; grupos[i] = grupos[j]; grupos[j] = t; }
     var out = [];
-    grupos.forEach(function (g) {
-      g.forEach(function (q, k) { if (q && typeof q === 'object' && claveLectura(q.text)) q.lecPos = g.length > 1 ? (k + 1) + ' de ' + g.length : ''; out.push(q); });
-    });
-    return out;
+    grupos.forEach(function (g) { g.forEach(function (q) { out.push(q); }); });
+    return rangos(out);
   }
 
   // ¿Las alternativas son tan cortas que caben en columnas?
@@ -191,5 +204,5 @@
     '.mcq-con-der{grid-template-columns:minmax(0,1fr)}.mcq-con-der>.mcq-der{grid-column:1;grid-row:auto!important;order:-1}}';
   document.head.appendChild(st);
 
-  window.MCPregunta = { armar: armar, pintar: pintar, alternativas: alternativas, cortas: cortas, formato: formato, sinLectura: sinLectura, mezclar: mezclar, raiz: RAIZ };
+  window.MCPregunta = { armar: armar, pintar: pintar, alternativas: alternativas, cortas: cortas, formato: formato, sinLectura: sinLectura, mezclar: mezclar, rangos: rangos, raiz: RAIZ };
 })();

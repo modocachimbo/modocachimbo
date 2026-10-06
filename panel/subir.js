@@ -203,20 +203,21 @@ function revisarTexto() {
 
   // Vista previa: un recuadro por cada [IMAGEN]; sin marcas, uno debajo del enunciado (como antes)
   // Preguntas del mismo TEXTO: la lectura se muestra una vez, en la primera
-  const tam = {};
-  r.preguntas.forEach(q => { if (q.lectura) tam[q.lectura] = (tam[q.lectura] || 0) + 1; });
+  const rango = {};
+  r.preguntas.forEach((q, i) => { if (q.lectura) { const x = rango[q.lectura] = rango[q.lectura] || [i + 1, i + 1]; x[1] = i + 1; } });
+  const txtRango = l => { const x = rango[l]; return x[0] === x[1] ? 'pregunta ' + x[0] : 'preguntas ' + x[0] + ' a ' + x[1]; };
   const visto = {};
   $('subLista').innerHTML = r.preguntas.map((q, i) => {
     const k = q.lectura ? (visto[q.lectura] = (visto[q.lectura] || 0) + 1) : 0;
     const sigue = k > 1;
     // La lectura va arriba; el número de la pregunta, debajo de ella (justo antes del enunciado)
-    const lec = k === 1 ? MCPregunta.armar(q.lectura, { lecPos: '1 de ' + tam[q.lectura] }).html : '';
+    const lec = k === 1 ? MCPregunta.armar(q.lectura, { lecPos: txtRango(q.lectura) }).html : '';
     const v = MCPregunta.armar(q.text, { marca: (k, der) => `<div class="pimg" data-z="${i}|${k}"></div>` });
     const opts = q.options.map((o, k) => `<div class="popt ${k === q.correct ? 'ok' : ''}"><span class="l">${esc(o.letter)}</span><span>${formatQText(o.text)}</span>${k === q.correct ? '<span class="chk">✓</span>' : ''}</div>`).join('');
     return `
     <article class="pcard ${q.errores.length ? 'bad' : ''} ${k ? 'en-texto' : ''} ${sigue ? 'sigue' : ''}">
       ${lec}
-      ${sigue ? `<div class="plec-sig">${esc(q.lectura.split('\n')[0].replace(/[\[\]]/g, ''))} · pregunta ${k} de ${tam[q.lectura]} (misma lectura de arriba)</div>` : ''}
+      ${sigue ? `<div class="plec-sig">${esc(q.lectura.split('\n')[0].replace(/[\[\]]/g, ''))} · ${txtRango(q.lectura)} (misma lectura de arriba)</div>` : ''}
       <div class="qnum2">${i + 1}</div>
       ${q.errores.length ? `<div class="perr">⚠ ${q.errores.map(esc).join(' · ')}</div>` : ''}
       <div class="ptext">${v.html}</div>

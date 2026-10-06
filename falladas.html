@@ -288,6 +288,7 @@
     startScreen.classList.add('show');
 
     activeQuestions = (window.MCPregunta ? MCPregunta.mezclar : shuffle)(questions).slice(0, RONDA);
+    if (window.MCPregunta) MCPregunta.rangos(activeQuestions);
     setupHeaderAndBody();
   }
 
