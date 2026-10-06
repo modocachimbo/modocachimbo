@@ -127,6 +127,7 @@
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
   function limpio(s) { // quita marcas *cursiva*, **negrita**, <u>, $...$ para mensajes
+    if (window.MCPregunta && MCPregunta.sinLectura) s = MCPregunta.sinLectura(s); // sin la lectura compartida
     return String(s || '').replace(/<\/?u>/g, '').replace(/\*\*(.+?)\*\*/g, '$1').replace(/\*(.+?)\*/g, '$1').replace(/\s+/g, ' ').trim();
   }
   function corto(s, n) { s = limpio(s); return s.length > n ? s.slice(0, n - 1) + '…' : s; }

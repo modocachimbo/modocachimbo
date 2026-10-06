@@ -536,6 +536,7 @@ E) Alternativa"></textarea>
               <code>PREGUNTA 1:<br>Calcule la masa de $H_2O$ …</code><span>Cada pregunta empieza con <code>PREGUNTA N:</code> y debajo va el enunciado.</span>
               <code>A) 18 g<br>B) 36 g ✅<br>C) 9 g</code><span>Una alternativa por línea. La ✅ marca la correcta (también vale ✔ o ✓).</span>
               <code>CLAVE: C</code><span>Opcional: en lugar de la ✅, al final de la pregunta.</span>
+              <code>TEXTO 03:<br>Hubo un tiempo en que…<br>PREGUNTA 9:<br>¿Cuál es el título del texto?<br>…<br>PREGUNTA 10:<br>…<br>FIN TEXTO</code><span>Lectura para varias preguntas (Raz. Verbal, comprensión). Escribe <code>TEXTO</code> (con su número) y pega la lectura; vale para todas las preguntas de abajo hasta otro <code>TEXTO</code> o <code>FIN TEXTO</code>. El alumno la ve arriba de cada pregunta. Deja una línea en blanco entre párrafos.</span>
               <code>A) VVV   B) FVV   C) VVF</code><span>Varias alternativas en una línea también valen. Si son cortas, se muestran en columnas solas.</span>
             </div>
             <div class="fmt-tit">Texto y fórmulas</div>
@@ -1140,7 +1141,7 @@ E) Alternativa"></textarea>
     const q = t && t.questions[ctx.n - 1];
     if (!q) { body.innerHTML = `<div class="state-msg error">No encontré la pregunta ${ctx.n} del Tema ${esc(ctx.tema)} (${esc(ctx.anio)}). Quizá se movió o se borró.</div>`; return; }
 
-    const distinta = ctx.extracto && !plano(q.text).startsWith(norm(ctx.extracto).replace(/…$/, '').slice(0, 40));
+    const distinta = ctx.extracto && !plano(MCPregunta.sinLectura(q.text)).startsWith(norm(ctx.extracto).replace(/…$/, '').slice(0, 40));
     let correct = q.correct;
 
     body.innerHTML = `
