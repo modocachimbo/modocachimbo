@@ -7,14 +7,28 @@
    ========================================================= */
 (function () {
   var COLORES = { 1: ['#f5c542', '#b8860b'], 2: ['#d9dee5', '#8a94a3'], 3: ['#e0995e', '#9a5a2a'] };
+  var uid = 0;
+  function estiloMedalla() {
+    if (document.getElementById('mc-medalla-css')) return;
+    var st = document.createElement('style'); st.id = 'mc-medalla-css';
+    // Destello que cruza la medalla cada pocos segundos
+    st.textContent = '.mc-medalla .brillo{animation:mcBrillo 3.6s ease-in-out infinite}' +
+      '@keyframes mcBrillo{0%,65%{transform:translateX(0)}100%{transform:translateX(42px)}}' +
+      '@media (prefers-reduced-motion:reduce){.mc-medalla .brillo{animation:none;opacity:0}}';
+    document.head.appendChild(st);
+  }
   function medalla(n, tam) {
     var c = COLORES[n];
     if (!c) return '';
     tam = tam || 26;
+    estiloMedalla();
+    var id = 'mcm' + (++uid);
     return '<svg class="mc-medalla" width="' + tam + '" height="' + Math.round(tam * 28 / 24) + '" viewBox="0 0 24 28" aria-label="Puesto ' + n + '" role="img">' +
       '<path d="M5 0h6l3.2 9.5H8.2z" fill="#C6E000"/><path d="M19 0h-6l-3.2 9.5h6z" fill="#8fa300"/>' +
       '<circle cx="12" cy="18.5" r="8.5" fill="' + c[0] + '" stroke="' + c[1] + '" stroke-width="1.6"/>' +
       '<circle cx="12" cy="18.5" r="5.6" fill="none" stroke="' + c[1] + '" stroke-width=".9" opacity=".55"/>' +
+      '<clipPath id="' + id + '"><circle cx="12" cy="18.5" r="8.5"/></clipPath>' +
+      '<g clip-path="url(#' + id + ')"><g transform="skewX(-20)"><rect class="brillo" x="-8" y="6" width="5" height="26" fill="#fff" opacity=".6" style="animation-delay:' + (n * 0.4) + 's"/></g></g>' +
       '<text x="12" y="22.2" text-anchor="middle" font-family="Sora,Inter,Arial,sans-serif" font-size="10" font-weight="800" fill="#1a1a1a">' + n + '</text></svg>';
   }
   window.MCMedalla = medalla;
@@ -49,6 +63,13 @@
       '.mcr-p b{font:700 14px Inter,sans-serif;color:var(--text,#f2f2f2);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
       '.mcr-p span{font:800 15px Sora,Inter,sans-serif;color:var(--accent,#C6E000);font-variant-numeric:tabular-nums}' +
       '.mcr-p.vac b{color:#5f5f5f}.mcr-p.vac .mc-medalla{opacity:.35}' +
+      // Podio: las medallas caen al aparecer y se balancean colgadas de la cinta
+      '.mcr-p .mc-medalla{transform-origin:50% 0;animation:mcrCae .7s cubic-bezier(.3,1.6,.5,1) both,mcrBalanceo 3.2s ease-in-out .7s infinite}' +
+      '.mcr-p.n1 .mc-medalla{animation-delay:.15s,.85s}.mcr-p.n3 .mc-medalla{animation-delay:.3s,1s}' +
+      '.mcr-p.vac .mc-medalla{animation:none}' +
+      '@keyframes mcrCae{from{transform:translateY(-14px) rotate(-12deg);opacity:0}to{transform:none;opacity:1}}' +
+      '@keyframes mcrBalanceo{0%,100%{transform:rotate(0)}25%{transform:rotate(5deg)}75%{transform:rotate(-5deg)}}' +
+      '@media (prefers-reduced-motion:reduce){.mcr-p .mc-medalla{animation:none}}' +
       '.mcr-pie{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:16px;font-size:13.5px;color:var(--text-dim,#9a9a9a)}' +
       '.mcr-pie b{color:var(--text,#f2f2f2)}' +
       '.mcr-bts{display:flex;gap:8px;flex-wrap:wrap}' +
@@ -72,7 +93,7 @@
     var yo = L.filter(function (x) { return x.yo; })[0];
     var podio = [2, 1, 3].map(function (n) {
       var x = por[n];
-      return '<div class="mcr-p n' + n + (x ? '' : ' vac') + (x && x.yo ? ' yo' : '') + '">' + medalla(n, n === 1 ? 34 : 28) +
+      return '<div class="mcr-p n' + n + (x ? '' : ' vac') + (x && x.yo ? ' yo' : '') + '">' + medalla(n, n === 1 ? 46 : 38) +
         '<b>' + (x ? esc(x.apodo) + (x.yo ? ' (tú)' : '') : 'Libre') + '</b><span>' + (x ? dec(x.puntaje) : '—') + '</span></div>';
     }).join('');
     var pie = yo ? 'Vas en el puesto <b>' + yo.puesto + '.º</b> con <b>' + dec(yo.puntaje) + '</b> puntos.'

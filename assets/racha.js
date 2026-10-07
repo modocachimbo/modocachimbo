@@ -41,7 +41,10 @@
       '.mcr-toast svg{width:26px;height:34px;color:#C6E000;flex-shrink:0;animation:mcrLlama 1s ease-in-out infinite alternate}' +
       '.mcr-toast b{display:block;font:800 16px Sora,Inter,sans-serif;color:#C6E000}' +
       '@keyframes mcrLlama{from{transform:scale(1)}to{transform:scale(1.12)}}' +
-      '@media (prefers-reduced-motion:reduce){.mcr-toast{transition:none}.mcr-toast svg{animation:none}}' +
+      // Fuego encendido (meta del día cumplida): la llama se mueve y brilla
+      '.mcu-racha.on svg,.sal-racha.on .num svg,.racha-dato.on b svg{transform-origin:50% 92%;animation:mcFuego 1.6s ease-in-out infinite;filter:drop-shadow(0 0 6px rgba(198,224,0,.55))}' +
+      '@keyframes mcFuego{0%,100%{transform:scale(1,1) skewX(0)}20%{transform:scale(.96,1.08) skewX(-3deg)}40%{transform:scale(1.04,.95) skewX(2deg)}60%{transform:scale(.97,1.1) skewX(3deg)}80%{transform:scale(1.02,.97) skewX(-2deg)}}' +
+      '@media (prefers-reduced-motion:reduce){.mcr-toast{transition:none}.mcr-toast svg,.mcu-racha.on svg,.sal-racha.on .num svg,.racha-dato.on b svg{animation:none}}' +
       '@media (max-width:520px){.mcu-racha{height:40px;padding:0 11px 0 9px;font-size:14px}}';
     document.head.appendChild(st);
   }
