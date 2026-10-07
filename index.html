@@ -71,6 +71,15 @@
   }
   .sal-texto h1 { font-family: 'Sora', sans-serif; font-weight: 800; font-size: clamp(26px, 4.4vw, 36px); line-height: 1.15; letter-spacing: -0.5px; }
   .sal-texto h1 .accent { color: var(--accent); }
+  /* Íconos propios (en lugar de emojis) */
+  .mi { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -0.14em; flex-shrink: 0; }
+  .mi.mano { color: var(--accent); width: .92em; height: .92em; margin-left: .18em; vertical-align: -0.1em; stroke-width: 2.2; transform-origin: 70% 85%; animation: mc-saludo 2.2s ease-in-out .4s 1; }
+  @keyframes mc-saludo { 0%, 60%, 100% { transform: rotate(0); } 10%, 30% { transform: rotate(14deg); } 20%, 40% { transform: rotate(-8deg); } 50% { transform: rotate(10deg); } }
+  @media (prefers-reduced-motion: reduce) { .mi.mano { animation: none; } }
+  .sal-cajas > .sal-cuenta.vacia { align-items: center; gap: 8px; }
+  .sal-cuenta.vacia .mi { width: 22px; height: 22px; }
+  .mi.taza { color: var(--accent); margin-left: 4px; }
+  .chip .mi { margin-right: 6px; }
   .sal-texto p { color: var(--text-dim); font-size: 14px; line-height: 1.6; margin-top: 6px; }
   .sal-cuenta {
     min-width: 150px; text-align: center; padding: 14px 18px; border-radius: 18px;
@@ -463,7 +472,7 @@
 
     <section class="saludo" id="saludo">
       <div class="sal-texto">
-        <h1 id="salNombre">¡Hola! 👋</h1>
+        <h1 id="salNombre">¡Hola!<svg class="mi mano" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 11V6a2 2 0 0 0-4 0"/><path d="M14 10V4a2 2 0 0 0-4 0v2"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-6-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></h1>
         <p id="salFrase">¿Qué estudiamos hoy? Elige un curso o practica con un examen pasado.</p>
         <script src="assets/frases.js"></script>
       </div>
@@ -474,7 +483,7 @@
           <span class="barra-hoy"><i id="salRachaBarra"></i></span>
           <span class="hoy" id="salRachaHoy">Hoy 0/10 preguntas</span>
         </a>
-        <a class="sal-cuenta vacia" id="salCuenta" href="perfil.html">📅 Pon la fecha de tu examen</a>
+        <a class="sal-cuenta vacia" id="salCuenta" href="perfil.html"><svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>Pon la fecha de tu examen</a>
       </div>
       <div class="sal-accesos" id="salAccesos"></div>
     </section>
@@ -575,7 +584,7 @@
 
       <div class="coffee-text">
         <span class="tag">Apoya el proyecto</span>
-        <h3>Invítame un café ☕</h3>
+        <h3>Invítame un café <svg class="mi taza" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z"/><path d="M6 2v2M10 2v2M14 2v2"/></svg></h3>
         <p>Este espacio es y seguirá siendo gratuito. Si te sirvió, puedes apoyar con lo que quieras vía Yape escaneando el código QR. Ayuda a que <b>Modo Cachimbo</b> siga creciendo.</p>
       </div>
       <div class="qr-box">
@@ -633,6 +642,11 @@ function jsonpRequest(url) {
 
   // ===== Bienvenida, código al primer ingreso y regreso a la página pedida =====
   (function () {
+    var ICONO = {
+      mano: '<svg class="mi mano" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 11V6a2 2 0 0 0-4 0"/><path d="M14 10V4a2 2 0 0 0-4 0v2"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-6-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>',
+      cal: '<svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>',
+      llave: '<svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="7.5" cy="15.5" r="5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>'
+    };
     var raiz = document.documentElement;
     var CFG = window.MC_CONFIG || {};
     var wa = 'https://wa.me/' + (CFG.WHATSAPP || '51917797543') + '?text=' + encodeURIComponent('Hola! Tengo problemas para entrar a Modo Cachimbo');
@@ -668,7 +682,7 @@ function jsonpRequest(url) {
     fondo.addEventListener('click', function (e) { if (e.target === fondo && luego.textContent === 'Cerrar') cerrarCodigo(); });
     // Abrir la ventana del código desde la barra de abajo o desde "Activa tu código"
     function abrirCodigo() {
-      document.getElementById('codTitulo').textContent = 'Activa tu código 🔑';
+      document.getElementById('codTitulo').innerHTML = 'Activa tu código ' + ICONO.llave;
       luego.textContent = 'Cerrar';
       input.value = ''; msg.className = 'cod-msg';
       fondo.classList.add('show');
@@ -732,7 +746,7 @@ function jsonpRequest(url) {
         caja.appendChild(c);
       });
       var b = document.createElement('button'); b.type = 'button'; b.className = 'chip';
-      b.textContent = prods.length ? '+ Otro código' : '🔑 Activa tu código';
+      if (prods.length) b.textContent = '+ Otro código'; else b.innerHTML = ICONO.llave + 'Activa tu código';
       b.addEventListener('click', abrirCodigo);
       caja.appendChild(b);
       var g = document.createElement('a'); g.className = 'sal-grupo'; g.target = '_blank'; g.rel = 'noopener noreferrer';
@@ -746,16 +760,16 @@ function jsonpRequest(url) {
       var h = document.getElementById('salNombre');
       h.textContent = '¡Hola' + (nombre ? ', ' : '');
       if (nombre) { var s = document.createElement('span'); s.className = 'accent'; s.textContent = nombre; h.appendChild(s); }
-      h.appendChild(document.createTextNode('! 👋'));
+      h.appendChild(document.createTextNode('!')); h.insertAdjacentHTML('beforeend', ICONO.mano);
       var cta = document.getElementById('salCuenta'), f = p && p.fecha_examen;
-      if (!f) { cta.className = 'sal-cuenta vacia'; cta.textContent = '📅 Pon la fecha de tu examen'; return; }
+      if (!f) { cta.className = 'sal-cuenta vacia'; cta.innerHTML = ICONO.cal + 'Pon la fecha de tu examen'; return; }
       var hoy = new Date(); hoy.setHours(0, 0, 0, 0);
       var q = f.split('-'), n = Math.round((new Date(+q[0], +q[1] - 1, +q[2]) - hoy) / 86400000);
-      if (n < 0) { cta.className = 'sal-cuenta vacia'; cta.textContent = '📅 Actualiza la fecha de tu examen'; return; }
+      if (n < 0) { cta.className = 'sal-cuenta vacia'; cta.innerHTML = ICONO.cal + 'Actualiza la fecha de tu examen'; return; }
       cta.className = 'sal-cuenta'; cta.textContent = '';
       var b = document.createElement('b'), t = document.createElement('span');
       b.textContent = n === 0 ? '¡Hoy!' : n;
-      t.textContent = n === 0 ? 'es tu examen 🍀' : n === 1 ? 'día para tu examen' : 'días para tu examen';
+      t.textContent = n === 0 ? 'es tu examen. ¡Éxitos!' : n === 1 ? 'día para tu examen' : 'días para tu examen';
       cta.appendChild(b); cta.appendChild(t);
     }
     pintarAccesos();
@@ -786,7 +800,8 @@ function jsonpRequest(url) {
       if (primeraVez(u)) {
         var m = u.user_metadata || {};
         var nombre = (m.full_name || m.name || '').split(' ')[0];
-        document.getElementById('codTitulo').textContent = nombre ? '¡Hola, ' + nombre + '! 👋' : '¡Hola! 👋';
+        var tit = document.getElementById('codTitulo');
+        tit.textContent = nombre ? '¡Hola, ' + nombre + '!' : '¡Hola!'; tit.insertAdjacentHTML('beforeend', ICONO.mano);
         luego.textContent = 'Más tarde';
         fondo.classList.add('show');
         setTimeout(function () { input.focus(); }, 50);

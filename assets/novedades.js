@@ -59,7 +59,8 @@
       '.mcn{margin:26px 0 6px;border:1px solid rgba(198,224,0,.28);background:linear-gradient(180deg,rgba(198,224,0,.07),rgba(198,224,0,.015));border-radius:22px;padding:18px 18px 12px}' +
       '.mcn[hidden]{display:none}' +
       '.mcn-cab{display:flex;align-items:center;gap:10px;margin-bottom:10px}' +
-      '.mcn-cab h2{font:800 16px Sora,Inter,sans-serif;margin:0;color:var(--text,#f2f2f2)}' +
+      '.mcn-cab h2{font:800 16px Sora,Inter,sans-serif;margin:0;color:var(--text,#f2f2f2);display:flex;align-items:center;gap:8px}' +
+      '.mcn-cab h2 .mi{width:18px;height:18px;fill:none;stroke:var(--accent,#C6E000);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}' +
       '.mcn-cab .mcn-n{margin-left:auto;font:700 12px Inter,sans-serif;color:var(--accent,#C6E000)}' +
       '.mcn-item{display:flex;align-items:center;gap:14px;padding:12px 4px;border-top:1px solid rgba(255,255,255,.06);text-decoration:none;color:inherit;min-width:0}' +
       '.mcn-item:first-of-type{border-top:none}' +
@@ -116,7 +117,7 @@
     if (!lista.length) { caja.hidden = true; return; }
     css();
     var ver = abierto ? lista : lista.slice(0, 3);
-    caja.innerHTML = '<div class="mcn-cab"><h2>✨ Nuevo para ti</h2><span class="mcn-n">' + lista.length + (lista.length === 1 ? ' novedad' : ' novedades') + '</span></div>' +
+    caja.innerHTML = '<div class="mcn-cab"><h2><svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 13.9 8.6 19 10.5l-5.1 1.9L12 17.5l-1.9-5.1L5 10.5l5.1-1.9z"/><path d="M19 2.5v4M17 4.5h4M5 17.5v3M3.5 19h3"/></svg>Nuevo para ti</h2><span class="mcn-n">' + lista.length + (lista.length === 1 ? ' novedad' : ' novedades') + '</span></div>' +
       ver.map(function (n) {
         var esCurso = n.tipo === 'curso';
         var tit = esCurso ? 'Curso nuevo: ' + n.curso : n.curso + ' · ' + (n.nombre || 'Tema ' + pad2(n.tema));

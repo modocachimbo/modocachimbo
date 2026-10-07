@@ -159,8 +159,9 @@
   .ins.n { background: #3a3a3a; } .ins.n svg { stroke: #bbb; }
   .reglas li .ins { margin-top: -2px; }
   th .ins { width: 18px; height: 18px; border-radius: 6px; margin: 0; } th .ins svg { width: 11px; height: 11px; }
-  .cuenta span { display: inline-flex; align-items: center; }
-  .cuenta .ins { width: 20px; height: 20px; margin-right: 6px; }
+  .cuenta span { display: inline-flex; align-items: center; gap: 6px; line-height: 1; }
+  .cuenta .ins { width: 20px; height: 20px; margin: 0; }
+  .cuenta b { line-height: 1; }
   .rev-est { display: inline-flex; align-items: center; }
   .rev-est .ins { width: 18px; height: 18px; margin-right: 5px; } .rev-est .ins svg { width: 11px; height: 11px; }
   .ico-btn { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -3px; margin-right: 6px; }
@@ -377,7 +378,7 @@
   const CLAVE_LS = 'mc_simulacro_v1';
   // PRUEBA = true: sin candado y con todos los ciclos elegibles, para que el profe lo pruebe.
   // Antes de abrirlo a los alumnos se cambia a false.
-  const PRUEBA = true;
+  const PRUEBA = false;
   const MIN_TEMAS = 3;         // un ciclo se habilita cuando todos los cursos tienen 3 temas o más
   const PENALIDAD = 0.1;
   const ICO = {"ok": "<span class=\"ins g\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m5 12.5 4.5 4.5L19 7.5\"/></svg></span>", "mal": "<span class=\"ins r\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m6 6 12 12M18 6 6 18\"/></svg></span>", "bl": "<span class=\"ins n\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M6 12h12\"/></svg></span>"};
