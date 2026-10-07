@@ -23,6 +23,7 @@
       '.mcp{margin:26px 0 4px}' +
       '.mcp[hidden]{display:none}' +
       '.mcp h2{font:800 16px Sora,Inter,sans-serif;margin:0 0 12px;color:var(--text,#f2f2f2);display:flex;align-items:center;gap:8px}' +
+      '.mcp h2 .mi{width:18px;height:18px;fill:none;stroke:var(--accent,#C6E000);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}' +
       '.mcp h2 small{font:600 12px Inter,sans-serif;color:var(--text-dim,#9a9a9a)}' +
       '.mcp-fila{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}' +
       '.mcp-it{position:relative;display:flex;align-items:center;gap:12px;padding:14px;border:1px solid rgba(255,255,255,.08);background:var(--surface,#141414);border-radius:18px;text-decoration:none;color:inherit;min-width:0;transition:border-color .15s,transform .15s}' +
@@ -60,7 +61,7 @@
       // Justo antes de "Mis cursos" (y debajo de "Nuevo para ti", que se pone antes de esta fila)
       ancla.parentNode.insertBefore(caja, ancla);
     }
-    caja.innerHTML = '<h2>🔥 Populares esta semana</h2><div class="mcp-fila">' +
+    caja.innerHTML = '<h2><svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>Populares esta semana</h2><div class="mcp-fila">' +
       elegidos.map(function (c, i) {
         return '<a class="mcp-it" href="' + esc(BASE + c.id + '/index.html') + '">' +
           '<span class="mcp-pos">#' + (i + 1) + '</span>' +

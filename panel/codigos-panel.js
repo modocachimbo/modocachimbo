@@ -3,7 +3,7 @@
    ========================================================= */
 const CD = { lista: [], config: { abiertos: {}, legacy: true }, hoy: '', filtro: 'Todos' };
 const PROD_TIPOS = [
-  ['TODO-VIP', 'Acceso total'], ['repaso-VIP', 'Todos los Repasos'], ['fijas-VIP', 'Todas las Fijas'],
+  ['TODO-VIP', 'Acceso total'], ['repaso-VIP', 'Todos los Repasos'], ['fijas-VIP', 'Todas las Fijas'], ['simulacro', 'Simulacro'],
   ['curso', 'Un curso (Repaso y Fijas)'], ['repaso', 'Solo Repaso de un curso'], ['fijas', 'Solo Fijas de un curso']
 ];
 // Link oficial fijo: así el mensaje no muestra el link de una vista previa.
@@ -23,6 +23,7 @@ function mensajeCodigo(c) {
 }
 function etiquetaProd(p) {
   if (p === 'TODO-VIP') return 'Acceso total'; if (p === 'repaso-VIP') return 'Todos los Repasos'; if (p === 'fijas-VIP') return 'Todas las Fijas';
+  if (p === 'simulacro') return 'Simulacro';
   const m = String(p).match(/^(curso|repaso|fijas)-(.+)$/); if (!m) return p;
   const n = NOMBRE[m[2]] || m[2];
   return m[1] === 'curso' ? n + ' (Repaso y Fijas)' : (m[1] === 'repaso' ? 'Repaso de ' : 'Fijas de ') + n;
@@ -46,13 +47,14 @@ function renderConfigAcceso() {
       ${ab[k] && ab[k].hasta ? `<span class="pill gray">hasta el ${esc(ab[k].hasta.split('-').reverse().join('/'))}</span>` : ''}
       <label class="sw"><input type="checkbox" data-abrir="${k}" ${ab[k] ? 'checked' : ''}><span></span>${ab[k] ? 'Abierto' : 'Con código'}</label>
     </div>`;
-  const extras = Object.keys(ab).filter(k => !['TODO', 'repaso', 'fijas'].includes(k));
+  const extras = Object.keys(ab).filter(k => !['TODO', 'repaso', 'fijas', 'simulacro'].includes(k));
   $('cdConfig').innerHTML = `
     <div class="acc-box">
       <div class="acc-ttl">Acceso libre <span>— abre el contenido para todos, sin código</span></div>
-      ${fila('TODO', 'Todo', 'Repasos y Fijas de todos los cursos')}
+      ${fila('TODO', 'Todo', 'Repasos, Fijas y Simulacro')}
       ${fila('repaso', 'Todos los Repasos', '19 cursos')}
       ${fila('fijas', 'Todas las Fijas', '19 cursos')}
+      ${fila('simulacro', 'Simulacro', 'Examen de 80 preguntas')}
       ${extras.map(k => `<div class="acc-row"><div><b>${esc(etiquetaProd(k))}</b><span>abierto para todos${ab[k].hasta ? ' hasta el ' + esc(ab[k].hasta.split('-').reverse().join('/')) : ''}</span></div>
         <button class="rbtn" type="button" data-cerrar="${esc(k)}">Cerrar</button></div>`).join('')}
       <div class="acc-add">
@@ -162,7 +164,7 @@ function renderCodigos() {
 
 /* ---------- Crear / editar ---------- */
 function editarCodigo(orig) {
-  const tipoDe = p => ['TODO-VIP', 'repaso-VIP', 'fijas-VIP'].includes(p) ? p : String(p).split('-')[0];
+  const tipoDe = p => ['TODO-VIP', 'repaso-VIP', 'fijas-VIP', 'simulacro'].includes(p) ? p : String(p).split('-')[0];
   const cursoDe = p => { const m = String(p).match(/^(curso|repaso|fijas)-(.+)$/); return m && m[2] !== 'VIP' ? m[2] : ''; };
   const st = { tipo: orig ? tipoDe(orig.producto) : 'TODO-VIP', curso: orig ? cursoDe(orig.producto) : '' };
   const o = document.createElement('div');
@@ -254,7 +256,7 @@ function importarCodigos() {
   o.querySelector('#impTxt').addEventListener('input', e => {
     filas = e.target.value.split(/\r?\n/).map(l => l.split(/\t|;|,(?=\S)/).map(x => x.trim())).filter(c => c[0] && !/^c[óo]digo$/i.test(c[0]))
       .map(c => ({ codigo: c[0].toUpperCase(), producto: c[1] || '', max: parseFloat(c[2]) || 0, usos: parseFloat(c[3]) || 0, nota: c[4] || '' }));
-    const malos = filas.filter(f => !/^(TODO-VIP|repaso-VIP|fijas-VIP|(curso|repaso|fijas)-[a-z0-9-]+)$/.test(f.producto));
+    const malos = filas.filter(f => !/^(TODO-VIP|repaso-VIP|fijas-VIP|simulacro|(curso|repaso|fijas)-[a-z0-9-]+)$/.test(f.producto));
     o.querySelector('#impPrev').innerHTML = filas.length
       ? `<b style="color:var(--text)">${filas.length} código${filas.length > 1 ? 's' : ''} detectado${filas.length > 1 ? 's' : ''}:</b> ` + filas.slice(0, 6).map(f => `${esc(f.codigo)} (${esc(etiquetaProd(f.producto))}, ${f.usos}/${f.max || '∞'})`).join(' · ') + (filas.length > 6 ? ' …' : '') +
         (malos.length ? `<br><span style="color:var(--red)">${malos.length} con producto no reconocido se saltarán.</span>` : '')

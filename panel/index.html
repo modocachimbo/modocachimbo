@@ -459,6 +459,7 @@
         <button class="tab on" data-tab="reportes" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Reportes</span><span class="badge" id="badgePend" hidden>0</span></button>
         <button class="tab" data-tab="corr" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span>Correcciones</span><span class="badge" id="badgeRev" hidden>0</span></button>
         <button class="tab" data-tab="alumnos" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Alumnos</span></button>
+        <button class="tab" data-tab="simulacro" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg><span>Top simulacro</span></button>
         <button class="tab" data-tab="codigos" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg><span>Códigos</span></button>
         <div class="menu-grupo">Contenido</div>
         <button class="tab" data-tab="subir" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span>Subir tema</span></button>
@@ -699,6 +700,22 @@ E) Alternativa"></textarea>
         <div id="cdList"></div>
       </div>
 
+      <!-- Top del simulacro -->
+      <div id="tab-simulacro" hidden>
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Simulacro</div>
+            <h1>Top 10 de la semana</h1>
+            <p id="simSemana">Mejor puntaje del primer intento de cada alumno (lunes a domingo).</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn-ghost" id="simAnt" type="button">‹ Semana anterior</button>
+            <button class="btn-ghost" id="simSig" type="button">Semana siguiente ›</button>
+          </div>
+        </div>
+        <div id="simList"></div>
+      </div>
+
       <!-- Alumnos (cuentas de Supabase) -->
       <div id="tab-alumnos" hidden>
         <div class="page-head">
@@ -898,13 +915,14 @@ E) Alternativa"></textarea>
     $('barraTitulo').textContent = t.querySelector('span').textContent;
     window.scrollTo(0, 0);
     document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
-    ['reportes', 'subir', 'editar', 'cursos', 'perfil', 'frases', 'alertas', 'tutorial', 'codigos', 'alumnos', 'corr'].forEach(id => { $('tab-' + id).hidden = id !== t.dataset.tab; });
+    ['reportes', 'subir', 'editar', 'cursos', 'perfil', 'frases', 'alertas', 'tutorial', 'codigos', 'alumnos', 'corr', 'simulacro'].forEach(id => { $('tab-' + id).hidden = id !== t.dataset.tab; });
     if (t.dataset.tab === 'tutorial' && !TU.datos) cargarTutorial();
     if (t.dataset.tab === 'cursos') cargarCursos();
     if (t.dataset.tab === 'perfil') cargarPerfilCfg();
     if (t.dataset.tab === 'frases') cargarFrases();
     if (t.dataset.tab === 'codigos') cargarCodigos();
     if (t.dataset.tab === 'alumnos') cargarAlumnos();
+    if (t.dataset.tab === 'simulacro') cargarTopSimulacro();
     if (t.dataset.tab === 'alertas') cargarAlertas();
     if (t.dataset.tab === 'subir') initSubir();
     if (t.dataset.tab === 'editar') renderPicker();
@@ -1357,6 +1375,8 @@ E) Alternativa"></textarea>
 <script src="codigos-panel.js"></script>
 <script src="../assets/auth.js"></script>
 <script src="alumnos-panel.js"></script>
+<script src="../assets/ranking.js"></script>
+<script src="simulacro-panel.js"></script>
 <script src="reportes-alumno.js"></script>
 <script src="../assets/carreras.js"></script>
 <script src="perfil-panel.js"></script>
