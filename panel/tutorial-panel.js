@@ -3,7 +3,7 @@
    ========================================================= */
 const TU = { datos: null, pag: 'inicio', cambios: false };
 const TU_PAGS = [['inicio', 'Inicio'], ['area', 'Área'], ['curso', 'Página del curso'], ['libros', 'Años y temario'],
-  ['estudio', 'Modo estudio (tema)'], ['quiz', 'Modo quiz'], ['repaso', 'Repaso'], ['fijas', 'Fijas']];
+  ['estudio', 'Modo estudio (tema)'], ['quiz', 'Modo quiz'], ['repaso', 'Repaso'], ['fijas', 'Fijas'], ['simulacro', 'Simulacro']];
 
 function tuPagina(k) {
   const p = TU.datos.paginas[k] = TU.datos.paginas[k] || { activa: false, version: 1, boton: true, pasos: [] };
@@ -27,7 +27,7 @@ function tuUrlEjemplo(k) {
   const y = encodeURIComponent(c.repaso.anio);
   const rutas = { inicio: '', area: 'areas/' + c.area + '.html', curso: c.id + '/index.html', libros: c.id + '/libros/index.html',
     estudio: c.id + '/libros/tema.html?year=' + y + '&tema=01', quiz: c.id + '/libros/quiz.html?year=' + y + '&tema=01',
-    repaso: c.id + '/repaso.html?year=' + y, fijas: c.id + '/fijas.html?year=' + y };
+    repaso: c.id + '/repaso.html?year=' + y, fijas: c.id + '/fijas.html?year=' + y, simulacro: 'simulacro.html' };
   const r = rutas[k];
   return SITE_ROOT + r + (r.includes('?') ? '&' : '?') + 'tutorial=borrador';
 }

@@ -107,6 +107,53 @@
       "version": 1,
       "boton": true,
       "pasos": []
+    },
+    "simulacro": {
+      "activa": true,
+      "version": 1,
+      "boton": true,
+      "pasos": [
+        {
+          "objetivo": "centro",
+          "titulo": "Tu simulacro de admisión",
+          "texto": "**80 preguntas** como el examen de la UNJFSC, con tiempo y el puntaje de tu bloque. Te muestro cómo armar el tuyo."
+        },
+        {
+          "objetivo": "ciclos",
+          "titulo": "Elige los ciclos",
+          "texto": "Marca de qué libro salen las preguntas. Con **un ciclo**, todas salen de ese ciclo. Con **varios**, se mezclan entre ellos."
+        },
+        {
+          "objetivo": "bloque",
+          "titulo": "Tu bloque y carrera",
+          "texto": "Vienen de tu perfil. Tu **bloque** decide cuántos puntos vale cada respuesta correcta en cada área."
+        },
+        {
+          "objetivo": "tiempo",
+          "titulo": "El tiempo",
+          "texto": "Son **2 horas**, como el examen real. Puedes cambiarlo de 1 a 3 horas y terminar antes si ya acabaste."
+        },
+        {
+          "objetivo": "reglas",
+          "titulo": "Cómo se califica",
+          "texto": "20 preguntas por área. Correcta: suma los puntos de tu bloque. Incorrecta: **resta 0,1**. En blanco: 0."
+        },
+        {
+          "objetivo": "empezar",
+          "titulo": "Durante el examen",
+          "texto": "Usa el **mapa** para saltar a cualquier pregunta y marca **Revisar después** las que dudes. Si se cierra la página, sigues donde te quedaste."
+        },
+        {
+          "objetivo": "mis",
+          "titulo": "Mis simulacros",
+          "texto": "Aquí quedan tus simulacros con su puntaje. Con **Repetir** das el mismo otra vez. Tus errores pasan a **falladas** para que los repases."
+        },
+        {
+          "objetivo": "ranking",
+          "titulo": "Top de la semana",
+          "texto": "Los 10 mejores puntajes de la semana. Solo cuenta el **primer intento** de cada simulacro y se reinicia cada lunes. ¡A por el podio!"
+        }
+      ]
     }
   }
 }

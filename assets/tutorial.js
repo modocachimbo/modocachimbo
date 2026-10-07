@@ -7,6 +7,8 @@
   var SCRIPT = document.currentScript;
   var ROOT = new URL('..', SCRIPT ? SCRIPT.src : location.href);
   var cerca = function (sel) { return function () { var a = document.querySelector(sel); return a ? (a.closest('.course') || a) : null; }; };
+  // El bloque que contiene al elemento (su campo o tarjeta)
+  var cercaDe = function (sel, caja) { return function () { var a = document.querySelector(sel); return a ? (a.closest(caja) || a) : null; }; };
   var nth = function (sel, i) { return function () { return document.querySelectorAll(sel)[i] || null; }; };
   // El primero que se vea (en celular algunos botones pasan a la barra de abajo)
   var visible = function (sels) { return function () {
@@ -28,13 +30,19 @@
       ['practicar', 'Botón Practicar', '.quiz-cta'], ['error', 'Botón "¿Error en la clave?"', '.qcard .rep-btn'], ['whatsapp', 'Burbuja de WhatsApp', '#mcBubble']],
     quiz: [['inicio', 'Pantalla de inicio', '#startScreen'], ['empezar', 'Botón Empezar', '#btnStart']],
     repaso: [['candado', 'Candado (código)', '#lockScreen'], ['codigo', 'Casilla del código', '#lockInput'], ['empezar', 'Botón Empezar', '#btnStart']],
-    fijas: [['candado', 'Candado (código)', '#lockScreen'], ['codigo', 'Casilla del código', '#lockInput'], ['empezar', 'Botón Empezar', '#btnStart']]
+    fijas: [['candado', 'Candado (código)', '#lockScreen'], ['codigo', 'Casilla del código', '#lockInput'], ['empezar', 'Botón Empezar', '#btnStart']],
+    simulacro: [['nombre', 'Nombre del simulacro', '#campoNombre'], ['ciclos', 'Elegir ciclos', '#campoCiclos'], ['bloque', 'Bloque y carrera', cercaDe('#selBloque', '.dos')],
+      ['tiempo', 'Tiempo', cercaDe('#tiempos', '.campo')], ['reglas', 'Reglas del puntaje', '.reglas'], ['reparto', 'Preguntas por área', cercaDe('#dist', '.card')],
+      ['empezar', 'Botón Empezar', '#btnEmpezar'], ['mis', 'Mis simulacros', cercaDe('#misSim', '.card')], ['ranking', 'Top de la semana', cercaDe('#rankCrear', '.card')]]
   };
+  // Páginas donde el tutorial espera a que se vea esta parte (por ejemplo, después del candado)
+  var ESPERA = { simulacro: '#crear' };
 
   function pagina() {
     var rel = location.pathname.slice(ROOT.pathname.length).replace(/^\/+/, '');
     var seg = rel.split('/'), resto = seg.slice(1).join('/');
     if (rel === '' || rel === 'index.html') return 'inicio';
+    if (rel === 'simulacro.html') return 'simulacro';
     if (seg[0] === 'areas') return 'area';
     if (['panel', 'assets', 'examenes'].indexOf(seg[0]) >= 0) return null;
     if (resto === '' || resto === 'index.html') return 'curso';
@@ -156,6 +164,8 @@
     var t0 = Date.now();
     (function revisar() {
       var hayModal = document.querySelector('.mca-ov, .rep-overlay, .aviso-overlay');
+      var falta = ESPERA[pag] && document.querySelector(ESPERA[pag]);
+      if (ESPERA[pag] && (!falta || falta.hidden || !falta.getBoundingClientRect().width)) { t0 = Date.now(); setTimeout(revisar, 500); return; }
       var algunObjetivo = (cfg.pasos || []).some(function (p) { return p.objetivo && p.objetivo !== 'centro' && buscar(pag, p.objetivo); });
       if (!hayModal && (algunObjetivo || Date.now() - t0 > 4000)) setTimeout(fn, 400);
       else if (Date.now() - t0 < 20000) setTimeout(revisar, 300);
