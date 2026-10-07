@@ -552,5 +552,281 @@
         "correct": 0
       }
     ]
+  },
+  {
+    "num": "03",
+    "name": "Numeración",
+    "questions": [
+      {
+        "text": "Un agricultor registra la producción de sacos de café de su finca utilizando dos sistemas de numeración distintos según el tipo de cliente. Para un cliente local, la producción se expresa como $\\overline{7mn}_{(x)}$, mientras que para la exportación se registra como $584_{(9)}$. Si ambas expresiones representan la misma cantidad total de sacos, determine el valor de $m+n+x$.",
+        "topic": "Aritmética · Numeración",
+        "options": [
+          {
+            "letter": "A",
+            "text": "11"
+          },
+          {
+            "letter": "B",
+            "text": "13"
+          },
+          {
+            "letter": "C",
+            "text": "14"
+          },
+          {
+            "letter": "D",
+            "text": "12"
+          },
+          {
+            "letter": "E",
+            "text": "16"
+          }
+        ],
+        "correct": 1
+      },
+      {
+        "text": "El sistema de seguridad de un banco almacena los códigos de acceso utilizando diferentes bases numéricas para evitar hackeos. Si el código asignado a la bóveda principal se representa como $\\overline{1331}_{(n+1)}$ en el servidor local y como $1000_{(6)}$ en el servidor de respaldo, determine el valor de la variable \"$n$\" sabiendo que ambos códigos son equivalentes.",
+        "topic": "Aritmética · Numeración",
+        "options": [
+          {
+            "letter": "A",
+            "text": "6"
+          },
+          {
+            "letter": "B",
+            "text": "5"
+          },
+          {
+            "letter": "C",
+            "text": "7"
+          },
+          {
+            "letter": "D",
+            "text": "4"
+          },
+          {
+            "letter": "E",
+            "text": "8"
+          }
+        ],
+        "correct": 3
+      },
+      {
+        "text": "Un comerciante mayorista de abarrotes registra el inventario de sacos de azúcar utilizando dos formatos. En el sistema de control interno de su almacén anota la cantidad como $\\overline{aba}_{(5)}$, pero en la guía de remisión oficial para la SUNAT lo registra en el sistema decimal como $\\overline{(b/2)(b/2)a}$. Si ambas anotaciones corresponden al mismo stock físico, calcule el valor de \"$a+b$\".",
+        "topic": "Aritmética · Numeración",
+        "options": [
+          {
+            "letter": "A",
+            "text": "4"
+          },
+          {
+            "letter": "B",
+            "text": "8"
+          },
+          {
+            "letter": "C",
+            "text": "8"
+          },
+          {
+            "letter": "D",
+            "text": "6"
+          },
+          {
+            "letter": "E",
+            "text": "10"
+          }
+        ],
+        "correct": 3
+      },
+      {
+        "text": "Un laboratorio de biotecnología codifica la cantidad de muestras analizadas en un día mediante una ecuación matemática basada en diferentes sistemas de numeración: $15424_{(a)} = \\overline{a1}_{(b)} \\cdot \\overline{b3}_{(8)}$. Si las variables $a$ y $b$ representan parámetros de calibración enteros y positivos de los equipos de lectura, determine el código final expresado por el numeral de base diez $\\overline{ab}$.",
+        "topic": "Aritmética · Numeración",
+        "options": [
+          {
+            "letter": "A",
+            "text": "13"
+          },
+          {
+            "letter": "B",
+            "text": "26"
+          },
+          {
+            "letter": "C",
+            "text": "39"
+          },
+          {
+            "letter": "D",
+            "text": "67"
+          },
+          {
+            "letter": "E",
+            "text": "65"
+          }
+        ],
+        "correct": 3
+      },
+      {
+        "text": "Una distribuidora de gas licuado de petróleo (GLP) utiliza un código interno de tres cifras para identificar cada lote de balones despachados. Por motivos de seguridad vial y rastreo digital, el sistema informático genera un código expandido colocándole el dígito 5 al inicio y otro 5 al final de la serie original. Si el operador nota que el código expandido equivale matemáticamente a 147 veces el código original del lote, determine la suma de las cifras de dicho código original.",
+        "topic": "Aritmética · Numeración",
+        "options": [
+          {
+            "letter": "A",
+            "text": "10"
+          },
+          {
+            "letter": "B",
+            "text": "14"
+          },
+          {
+            "letter": "C",
+            "text": "13"
+          },
+          {
+            "letter": "D",
+            "text": "11"
+          },
+          {
+            "letter": "E",
+            "text": "12"
+          }
+        ],
+        "correct": 1
+      },
+      {
+        "text": "Un arqueólogo descifra cuatro tablillas de piedra que registran las coordenadas de un antiguo asentamiento. Los datos fueron escritos en diferentes sistemas de numeración: $\\overline{32a}_{(c)}$, $\\overline{2c1}_{(7)}$, $\\overline{333}_{(b)}$ y $\\overline{bb1}_{(a)}$. Si todas las expresiones numéricas están correctamente estructuradas bajo las reglas aritméticas de base, determine el valor de la suma de las claves arqueológicas \"$a+b+c$\".",
+        "topic": "Aritmética · Numeración",
+        "options": [
+          {
+            "letter": "A",
+            "text": "12"
+          },
+          {
+            "letter": "B",
+            "text": "13"
+          },
+          {
+            "letter": "C",
+            "text": "14"
+          },
+          {
+            "letter": "D",
+            "text": "15"
+          },
+          {
+            "letter": "E",
+            "text": "16"
+          }
+        ],
+        "correct": 3
+      },
+      {
+        "text": "Un ingeniero agrónomo diseña un sistema de riego automatizado por goteo donde la presión del agua se regula mediante válvulas conectadas en cascada. La presión final registrada en el nodo central (en pascales) responde a la ecuación de sistemas numéricos sucesivos:\n[IMG:assets/img/aritmetica/2027-I/t03-kwa2poqds2.webp]\nDonde el proceso de acoplamiento se repite exactamente \"$a$\" veces. Determine el valor del parámetro \"$a$\" para establecer la calibración inicial del equipo.",
+        "topic": "Aritmética · Numeración",
+        "options": [
+          {
+            "letter": "A",
+            "text": "7"
+          },
+          {
+            "letter": "B",
+            "text": "8"
+          },
+          {
+            "letter": "C",
+            "text": "9"
+          },
+          {
+            "letter": "D",
+            "text": "11"
+          },
+          {
+            "letter": "E",
+            "text": "6"
+          }
+        ],
+        "correct": 2
+      },
+      {
+        "text": "Un sistema de codificación de datos para transacciones bancarias encripta los montos financieros utilizando dos bases numéricas de forma simultánea. El monto de una transferencia se registra en el servidor principal como $\\overline{aaa}_{(14)}$ dólares, mientras que el servidor de auditoría externa lo procesa como $\\overline{(n^2)n10}_{(a)}$ dólares. Si ambos registros contienen el mismo valor monetario real, determine el valor de la clave de validación \"$a + n$\".",
+        "topic": "Aritmética · Numeración",
+        "options": [
+          {
+            "letter": "A",
+            "text": "6"
+          },
+          {
+            "letter": "B",
+            "text": "8"
+          },
+          {
+            "letter": "C",
+            "text": "7"
+          },
+          {
+            "letter": "D",
+            "text": "5"
+          },
+          {
+            "letter": "E",
+            "text": "9"
+          }
+        ],
+        "correct": 3
+      },
+      {
+        "text": "Un maestro artesano carpintero desea fabricar una serie limitada de muebles colgantes exclusivos. Para calcular la cantidad de repisas que llevará cada diseño, emplea un juego de lógica matemática: determina cuántos números existentes de dos cifras cumplen la propiedad de ser exactamente iguales a siete veces la suma de sus propios dígitos. ¿Cuántos modelos distintos de muebles logrará diseñar el carpintero según esta regla?",
+        "topic": "Aritmética · Numeración",
+        "options": [
+          {
+            "letter": "A",
+            "text": "1"
+          },
+          {
+            "letter": "B",
+            "text": "2"
+          },
+          {
+            "letter": "C",
+            "text": "3"
+          },
+          {
+            "letter": "D",
+            "text": "4"
+          },
+          {
+            "letter": "E",
+            "text": "5"
+          }
+        ],
+        "correct": 3
+      },
+      {
+        "text": "En una planta empacadora automatizada del norte del país, dos sensores digitales registran el peso acumulado de los lotes de exportación usando sistemas de numeración personalizados para evitar errores de transmisión. El primer lote es registrado por los sensores como $\\overline{a58}_{(m)}$ y $\\overline{bb54}_{(n)}$ kilogramos respectivamente, mientras que el segundo lote genera las lecturas de $\\overline{a62}_{(m)}$ y $\\overline{bb57}_{(n)}$ kilogramos. Si ambas mediciones en cada lote representan la misma masa real, halle el valor de la constante de calibración automatizada definida por la suma \"$a+b+m+n$\".",
+        "topic": "Aritmética · Numeración",
+        "options": [
+          {
+            "letter": "A",
+            "text": "22"
+          },
+          {
+            "letter": "B",
+            "text": "21"
+          },
+          {
+            "letter": "C",
+            "text": "23"
+          },
+          {
+            "letter": "D",
+            "text": "25"
+          },
+          {
+            "letter": "E",
+            "text": "24"
+          }
+        ],
+        "correct": 3
+      }
+    ]
   }
 ]
