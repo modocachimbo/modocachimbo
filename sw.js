@@ -6,7 +6,7 @@
    - Apps Script, Supabase (datos) y todo lo demás: no se toca.
    Al cambiar este archivo, sube VERSION para limpiar lo viejo.
    ========================================================= */
-const VERSION = 'mc-v1';
+const VERSION = 'mc-v2';
 const OFFLINE = 'offline.html';
 const CDN = /^https:\/\/(cdn\.jsdelivr\.net\/npm\/(katex@|@supabase\/supabase-js@)|fonts\.(googleapis|gstatic)\.com\/)/;
 
