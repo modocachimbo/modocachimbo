@@ -13,8 +13,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <script src="assets/app.js" defer></script>
-<title>Duelos 1 vs 1 · Modo Cachimbo</title>
-<meta name="description" content="Reta a un amigo: las mismas preguntas, 60 segundos cada una. Gana quien acierta más.">
+<title>Duelos · Modo Cachimbo</title>
+<meta name="description" content="Reta hasta a 3 amigos: las mismas preguntas, 60 segundos cada una. Gana quien acierta más.">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
@@ -86,7 +86,7 @@
   .estado { font-size: 11.5px; font-weight: 700; border-radius: 100px; padding: 4px 10px; white-space: nowrap; background: rgba(255,255,255,.06); color: var(--dim); }
   .estado.ganaste { background: rgba(74,222,128,.14); color: var(--ok); }
   .estado.perdiste { background: rgba(248,113,113,.12); color: var(--bad); }
-  .estado.te-toca, .estado.a-medias { background: var(--accent-soft); color: var(--accent); }
+  .estado.te-toca, .estado.a-medias, .estado.en-sala { background: var(--accent-soft); color: var(--accent); }
   .rank { list-style: none; display: grid; gap: 6px; }
   .rank li { display: flex; align-items: center; gap: 10px; background: var(--surface-2); border-radius: 12px; padding: 9px 12px; font-variant-numeric: tabular-nums; }
   .rank li .p { width: 26px; display: grid; place-items: center; font-family: 'Sora', sans-serif; font-weight: 800; color: var(--faint); flex-shrink: 0; }
@@ -156,7 +156,7 @@
   @keyframes flash { from { transform: scale(.98); opacity: .6; } to { transform: none; opacity: 1; } }
 
   /* Resultado */
-  .res { text-align: center; padding: 30px 22px; background: radial-gradient(420px 220px at 50% 0%, rgba(198,224,0,.13), transparent 70%), var(--surface); }
+  .res { position: relative; text-align: center; padding: 30px 22px; background: radial-gradient(420px 220px at 50% 0%, rgba(198,224,0,.13), transparent 70%), var(--surface); }
   .res.perdio { background: radial-gradient(420px 220px at 50% 0%, rgba(249,168,212,.1), transparent 70%), var(--surface); }
   .res h1 { font-size: clamp(28px, 5vw, 40px); margin-top: 6px; }
   .res .trofeo { width: 64px; height: 64px; margin: 0 auto 6px; color: var(--accent); }
@@ -171,6 +171,79 @@
   .rev-cab b { font-weight: 700; }
   .rev-cab .ok { color: var(--ok); } .rev-cab .mal { color: var(--bad); }
 
+  /* Filtros */
+  .filtros { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .filtros .campo { margin-bottom: 0; }
+  .filtros select:disabled { opacity: .5; }
+  .filtro-nota { font-size: 12.5px; color: var(--dim); margin: 10px 0 18px; min-height: 19px; }
+  .filtro-nota b { color: var(--text); }
+  .chips button:disabled { opacity: .35; cursor: default; }
+  @media (max-width: 560px) { .filtros { grid-template-columns: 1fr; } }
+
+  /* Sala */
+  .cierre { display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 13px; font-weight: 700; color: var(--accent); background: var(--accent-soft); border-radius: 100px; padding: 6px 14px; font-variant-numeric: tabular-nums; }
+  .cierre.poco { color: var(--warn); background: rgba(251,191,36,.12); }
+  .cierre.fin { color: var(--dim); background: rgba(255,255,255,.06); }
+  .cierre i { width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: latido 1.4s ease-in-out infinite; }
+  .cierre.fin i { animation: none; }
+  @keyframes latido { 50% { opacity: .25; } }
+  .sala { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
+  .puesto-sala { background: var(--surface-2); border: 1px solid var(--border); border-radius: 16px; padding: 14px 6px 12px; min-width: 0; }
+  .puesto-sala b { display: block; font: 700 14px 'Sora', sans-serif; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .puesto-sala small { color: var(--dim); font-size: 11.5px; }
+  .puesto-sala.libre { border-style: dashed; background: transparent; }
+  .puesto-sala.libre .avatar { background: var(--surface-2); color: var(--faint); border: 1px dashed var(--border); }
+  .puesto-sala.libre b { color: var(--faint); font-weight: 600; }
+  .puesto-sala.yo { border-color: rgba(198,224,0,.45); }
+  .puesto-sala.entra .avatar { animation: entra .5s cubic-bezier(.3,1.6,.5,1) both; }
+  @keyframes entra { from { transform: scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
+  @media (max-width: 480px) { .sala { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  .check { display: flex; gap: 10px; align-items: flex-start; margin-top: 4px; font-size: 13px !important; color: var(--dim) !important; cursor: pointer; text-transform: none !important; letter-spacing: 0 !important; font-weight: 400 !important; }
+  .check b { color: var(--text); }
+  .check input { width: 18px; height: 18px; accent-color: var(--accent); margin-top: 1px; flex-shrink: 0; }
+  .cuenta { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: rgba(5,5,5,.92); text-align: center; }
+  .cuenta b { display: block; font: 800 clamp(110px, 30vw, 180px) 'Sora', sans-serif; color: var(--accent); line-height: 1; animation: pulso 1s ease-out infinite; }
+  .cuenta span { display: block; margin-top: 10px; font: 700 18px 'Sora', sans-serif; color: var(--dim); }
+  @keyframes pulso { from { transform: scale(1.35); opacity: .3; } 30% { transform: scale(1); opacity: 1; } }
+
+  /* Colores de cada jugador */
+  .c0 { --jc: var(--accent); } .c1 { --jc: #f9a8d4; } .c2 { --jc: #67e8f9; } .c3 { --jc: #fdba74; }
+  .avatar.c1, .avatar.c2, .avatar.c3 { background: var(--jc); }
+  .carril .pista i { background: var(--jc, var(--accent)); }
+  .carril b::before { content: ''; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--jc, var(--accent)); margin-right: 5px; vertical-align: 1px; }
+
+  /* Podio (como el top de la semana del simulacro) */
+  .podio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; align-items: end; margin: 22px auto 0; max-width: 520px; }
+  .podio.dos { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 360px; }
+  .pod { display: flex; flex-direction: column; align-items: center; gap: 5px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 16px; padding: 14px 6px; min-width: 0; }
+  .pod.p1 { padding-top: 24px; border-color: rgba(245,197,66,.45); background: linear-gradient(180deg, rgba(245,197,66,.12), var(--surface-2) 70%); }
+  .pod.yo { box-shadow: inset 0 0 0 1px rgba(198,224,0,.6); }
+  .pod b { font: 700 14px 'Inter', sans-serif; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pod strong { font: 800 22px 'Sora', sans-serif; color: var(--accent); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .pod small { color: var(--dim); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+  .pod .mc-medalla { transform-origin: 50% 0; animation: medCae .7s cubic-bezier(.3,1.6,.5,1) both, medBalanceo 3.2s ease-in-out .7s infinite; }
+  .pod.p1 .mc-medalla { animation-delay: .15s, .85s; } .pod.p3 .mc-medalla { animation-delay: .3s, 1s; }
+  .pod { animation: podSube .6s ease-out both; } .pod.p1 { animation-delay: .1s; } .pod.p3 { animation-delay: .2s; }
+  @keyframes medCae { from { transform: translateY(-14px) rotate(-12deg); opacity: 0; } to { transform: none; opacity: 1; } }
+  @keyframes medBalanceo { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(5deg); } 75% { transform: rotate(-5deg); } }
+  @keyframes podSube { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .cuarto { display: flex; align-items: center; gap: 10px; max-width: 520px; margin: 10px auto 0; background: var(--surface-2); border-radius: 12px; padding: 9px 14px; font-size: 13.5px; text-align: left; font-variant-numeric: tabular-nums; }
+  .cuarto .p { font: 800 14px 'Sora', sans-serif; color: var(--faint); width: 26px; text-align: center; }
+  .cuarto .n { flex: 1; min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cuarto small { color: var(--dim); }
+  .cuarto.yo { background: var(--accent-soft); }
+  .tabla { list-style: none; display: grid; gap: 8px; max-width: 460px; margin: 20px auto 0; text-align: left; }
+  .tabla li { display: flex; align-items: center; gap: 12px; background: var(--surface-2); border-radius: 12px; padding: 9px 12px; font-variant-numeric: tabular-nums; }
+  .tabla li .avatar { width: 34px; height: 34px; font-size: 14px; margin: 0; flex-shrink: 0; }
+  .tabla li div { flex: 1; min-width: 0; }
+  .tabla li b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tabla li small { color: var(--dim); font-size: 12px; }
+  .tabla li strong { font: 800 16px 'Sora', sans-serif; color: var(--accent); }
+  .confeti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; border-radius: inherit; }
+  .confeti i { position: absolute; top: -12px; width: 7px; height: 12px; border-radius: 2px; animation: cae 2.6s ease-in forwards; }
+  @keyframes cae { to { transform: translateY(460px) rotate(540deg); opacity: 0; } }
+
   @media (max-width: 820px) {
     .crear { grid-template-columns: 1fr; }
     .barra { grid-template-columns: auto minmax(0, 1fr); }
@@ -181,7 +254,7 @@
     .carril { grid-template-columns: 58px minmax(0, 1fr) 40px; }
     .vs { gap: 8px; }
   }
-  @media (prefers-reduced-motion: reduce) { .flash { animation: none; } .carril .pista i { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .flash, .pod, .pod .mc-medalla, .puesto-sala.entra .avatar, .cierre i, .cuenta b { animation: none; } .carril .pista i { transition: none; } .confeti { display: none; } }
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" media="print" onload="this.media='all'">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
@@ -205,29 +278,46 @@
   <section id="crear" hidden>
     <a class="volver" href="index.html">‹ Inicio</a>
     <div class="hero">
-      <div class="eyebrow" style="margin-top:14px">Duelos 1 vs 1</div>
-      <h1>Reta a un amigo y <span>demuestra quién sabe más</span></h1>
-      <p class="hint">Los dos responden las mismas preguntas, cada uno desde su celular y cuando pueda. Gana quien acierta más; si empatan, el más rápido.</p>
+      <div class="eyebrow" style="margin-top:14px">Duelos · hasta 4 jugadores</div>
+      <h1>Reta a tus amigos y <span>demuestra quién sabe más</span></h1>
+      <p class="hint">Todos responden las mismas preguntas, cada uno desde su celular. Gana quien acierta más; si empatan, el más rápido.</p>
     </div>
     <div class="crear">
       <div class="card">
-        <div class="campo">
-          <label for="selCurso">Curso</label>
-          <select id="selCurso"><option value="todos">Todos los cursos</option></select>
+        <div class="filtros">
+          <div class="campo">
+            <label for="selCiclo">Ciclo</label>
+            <select id="selCiclo"><option value="todos">Todos los ciclos</option></select>
+          </div>
+          <div class="campo">
+            <label for="selCurso">Curso</label>
+            <select id="selCurso"><option value="todos">Todos los cursos</option></select>
+          </div>
+          <div class="campo">
+            <label for="selTema">Tema</label>
+            <select id="selTema" disabled><option value="">Todos los temas</option></select>
+          </div>
         </div>
+        <p class="filtro-nota" id="filtroNota" role="status"></p>
         <div class="campo">
           <span class="lbl">De dónde salen las preguntas</span>
           <div class="chips" id="fuentes"></div>
           <p class="nota" id="fuenteNota"></p>
         </div>
         <div class="campo">
+          <span class="lbl">Jugadores</span>
+          <div class="chips" id="jugadores"><button type="button" data-j="2" class="on">2 · VS</button><button type="button" data-j="3">3</button><button type="button" data-j="4">4</button></div>
+          <label class="check"><input type="checkbox" id="chkAuto" checked><span><b>Inicio automático:</b> empieza solo apenas se llena la sala. Si lo quitas, tú tocas <b>Iniciar</b>.</span></label>
+        </div>
+        <div class="campo">
           <span class="lbl">Preguntas</span>
-          <div class="chips" id="cantidad"><button type="button" data-n="5">5</button><button type="button" data-n="10" class="on">10</button><button type="button" data-n="15">15</button></div>
+          <div class="chips" id="cantidad"><button type="button" data-n="5">5</button><button type="button" data-n="10" class="on">10</button><button type="button" data-n="15">15</button><button type="button" data-n="20">20</button></div>
         </div>
         <ul class="reglas">
           <li><span><b>60 segundos</b> por pregunta. Si se acaba, cuenta como no respondida.</span></li>
           <li><span>Ves al instante si acertaste, pero <b>no puedes volver</b> a una pregunta.</span></li>
-          <li><span>Tu rival tiene <b>24 horas</b> para aceptar y jugar su parte.</span></li>
+          <li><span>Todos empiezan <b>a la vez</b>, con una cuenta 3, 2, 1. Si nadie inicia en <b>5 minutos</b>, la sala se cierra.</span></li>
+          <li><span>Solo el <b>1.º puesto</b> suma al top de la semana.</span></li>
         </ul>
         <button class="btn" type="button" id="btnCrear" style="width:100%;margin-top:20px">Crear duelo</button>
         <p class="nota error" id="crearError" hidden></p>
@@ -261,6 +351,8 @@
       <h1 id="retoTit"></h1>
       <p class="hint" id="retoSub"></p>
       <div class="ficha" id="retoFicha"></div>
+      <div class="cierre" id="retoCierre"><i></i><span></span></div>
+      <div class="sala" id="retoSala"></div>
       <div id="retoCompartir">
         <div class="codigo" id="retoCodigo"></div>
         <span class="enlace" id="retoEnlace"></span>
@@ -269,11 +361,11 @@
           <button class="btn sec" type="button" id="btnCopiar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Copiar enlace</button>
         </div>
       </div>
-      <div class="vs" id="retoVs" hidden></div>
       <div class="botones">
         <button class="btn" type="button" id="btnJugar">Jugar mi parte ahora</button>
       </div>
       <p class="nota" id="retoNota"></p>
+      <div class="cuenta" id="cuenta" hidden aria-live="assertive"><div><b id="cuentaNum">3</b><span id="cuentaTxt">Prepárate</span></div></div>
       <p class="nota error" id="retoError" hidden></p>
     </div>
   </section>
@@ -285,10 +377,7 @@
         <svg viewBox="0 0 52 52" aria-hidden="true"><circle class="fondo" cx="26" cy="26" r="22"/><circle class="arco" id="arco" cx="26" cy="26" r="22" stroke-dasharray="138.2" stroke-dashoffset="0"/></svg>
         <span id="seg">60</span>
       </div>
-      <div class="carriles">
-        <div class="carril yo"><b>Tú</b><div class="pista"><i id="pistaYo"></i></div><em id="txtYo">0/10</em></div>
-        <div class="carril otro"><b id="nomOtro">Rival</b><div class="pista"><i id="pistaOtro"></i></div><em id="txtOtro">—</em></div>
-      </div>
+      <div class="carriles" id="carriles"></div>
       <div class="marcador">Aciertos<strong id="aciertos">0</strong></div>
     </div>
     <div class="card" id="pregCard">
@@ -309,7 +398,7 @@
       <div class="eyebrow" id="resEye"></div>
       <h1 id="resTit"></h1>
       <p class="hint" id="resSub"></p>
-      <div class="vs" id="resVs"></div>
+      <div id="resTabla"></div>
       <div class="botones dos" id="resBotones"></div>
       <p class="nota error" id="resError" hidden></p>
     </div>
@@ -332,20 +421,24 @@
     { id: 'banqueo', nom: 'Banqueo', prod: 'banqueo' }
   ];
   const NOM_FUENTE = {}; FUENTES.forEach(f => { NOM_FUENTE[f.id] = f.nom; });
-  const ESTADOS = { ganaste: 'Ganaste', perdiste: 'Perdiste', empate: 'Empate', 'sin-resultado': 'Sin rival', 'te-toca': 'Te toca', 'a-medias': 'A medias', esperando: 'Esperando' };
+  const ESTADOS = { ganaste: 'Ganaste', perdiste: 'Perdiste', empate: 'Empate', 'sin-resultado': 'Sin rivales', 'te-toca': 'Te toca', 'a-medias': 'A medias', esperando: 'Esperando', 'no-jugaste': 'No jugaste', 'en-sala': 'En la sala', cancelado: 'No se inició' };
   const CANDADO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
 
   let CURSOS = [], NOMBRE = {};
-  let sel = { curso: 'todos', fuente: 'mezcla', n: 10 };
+  let sel = { ciclo: 'todos', curso: 'todos', tema: '', temaNom: '', fuente: 'mezcla', n: 10, jugadores: 2, auto: true };
   let V = null;          // estado del duelo (ver_duelo)
   let G = null;          // partida en curso
-  let sondeo = null;     // intervalo que mira el avance del rival
+  let sondeo = null;     // intervalo que mira el avance de los demás
+  let reloj1s = null;    // cuenta regresiva de la sala
+  let desfase = 0;       // reloj del servidor − reloj del celular
 
   const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   const barajar = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const segs = ms => { const s = Math.round((+ms || 0) / 100) / 10; return (s % 1 ? s.toFixed(1).replace('.', ',') : String(s)) + ' s'; };
   const inicial = s => (String(s || '?').trim()[0] || '?').toUpperCase();
   const grafico = g => String(g || '').replace(/(src=["'])\/modocachimbo\//g, '$1');
+  const normTema = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+  const lista = L => L.length > 1 ? L.slice(0, -1).join(', ') + ' y ' + L[L.length - 1] : (L[0] || '');
   function renderMath(el) {
     // KaTeX carga sin bloquear la página: si aún no llegó, se dibuja apenas llegue
     if (!window.renderMathInElement) { document.addEventListener('mc:katex', () => renderMath(el), { once: true }); return; }
@@ -371,10 +464,24 @@
   }
   function enlace(cod) { return new URL('duelo.html?d=' + cod, location.href).href; }
   function irA(cod) { history.replaceState(null, '', 'duelo.html' + (cod ? '?d=' + cod : '')); }
-  function pararSondeo() { if (sondeo) { clearInterval(sondeo); sondeo = null; } }
+  function pararSondeo() { if (sondeo) { clearInterval(sondeo); sondeo = null; } if (reloj1s) { clearInterval(reloj1s); reloj1s = null; } }
   function cuentaRacha() {
     // Cada respuesta cuenta para la racha de estudio (assets/racha.js)
     window.MCRacha ? MCRacha.respondio() : (window.mcRachaPend = (window.mcRachaPend || 0) + 1);
+  }
+  function guardar(d) {
+    if (d && d.ahora) desfase = new Date(d.ahora) - Date.now();
+    V = d;
+  }
+  // Milisegundos que le quedan a la sala para cerrarse
+  function quedaSala() { return V ? new Date(V.vence) - (Date.now() + desfase) : 0; }
+  function mmss(ms) { const s = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+  // Un color fijo por jugador (0 = tú)
+  const COLOR = {};
+  function colorDe(j) {
+    if (j.yo) return 'c0';
+    if (COLOR[j.apodo] == null) COLOR[j.apodo] = 1 + Object.keys(COLOR).length % 3;
+    return 'c' + COLOR[j.apodo];
   }
 
   /* ---------- Preguntas de la web ---------- */
@@ -392,7 +499,7 @@
     return archivo(ruta).then(temas => {
       const out = [];
       temas.forEach(t => (t.questions || []).forEach((q, i) => {
-        if (valida(q) && /^[A-Za-z0-9._-]{1,12}$/.test(String(t.num))) out.push({ ref: ruta + '#' + t.num + '#' + i, q: Object.assign({ _tit: t.name }, q) });
+        if (valida(q) && /^[A-Za-z0-9._-]{1,12}$/.test(String(t.num))) out.push({ ref: ruta + '#' + t.num + '#' + i, tema: normTema(t.name), q: Object.assign({ _tit: t.name }, q) });
       }));
       return out;
     });
@@ -404,18 +511,25 @@
   }
   function ciclos(curso, seccion) {
     return archivo(curso + '/' + seccion + '/data/manifest.json')
-      .then(m => m.filter(x => x && /^\d{4}-(I|II|III)$/.test(x.id) && (x.temas == null || x.temas > 0)).map(x => x.id).sort((a, b) => ordenCiclo(b) - ordenCiclo(a)));
+      .then(m => m.filter(x => x && /^\d{4}-(I|II|III)$/.test(x.id) && (x.temas == null || x.temas > 0)).map(x => x.id));
   }
-  // Archivos de una fuente en un curso
-  function archivosDe(curso, fuente) {
-    const c = CURSOS.filter(x => x.id === curso)[0] || {};
-    if (fuente === 'libro') return ciclos(curso, 'libros').then(L => L.slice(0, 2).map(id => curso + '/libros/data/' + id + '.json'));
+  // Ciclos que tiene una fuente en un curso
+  function ciclosDe(curso, fuente) {
     if (fuente === 'fijas') {
-      const f = c.fijas || {};
-      if (!/^\d{4}-(I|II|III)$/.test(f.anio || '')) return Promise.resolve([]);
-      return Promise.resolve([curso + '/libros/data/' + f.anio + (f.modo === 'banco' ? '-fijas' : '') + '.json']);
+      const f = (CURSOS.filter(x => x.id === curso)[0] || {}).fijas || {};
+      return Promise.resolve(/^\d{4}-(I|II|III)$/.test(f.anio || '') ? [f.anio] : []);
     }
-    return ciclos(curso, fuente).then(L => L.map(id => curso + '/' + fuente + '/data/' + id + '.json'));
+    return ciclos(curso, fuente === 'libro' ? 'libros' : fuente);
+  }
+  // Archivos de una fuente en un curso, de un ciclo o de todos
+  function archivosDe(curso, fuente, ciclo) {
+    return ciclosDe(curso, fuente).then(L => L.filter(id => ciclo === 'todos' || id === ciclo).map(id => {
+      if (fuente === 'fijas') {
+        const f = (CURSOS.filter(x => x.id === curso)[0] || {}).fijas || {};
+        return curso + '/libros/data/' + id + (f.modo === 'banco' ? '-fijas' : '') + '.json';
+      }
+      return curso + '/' + (fuente === 'libro' ? 'libros' : fuente) + '/data/' + id + '.json';
+    }));
   }
   function tieneAcceso(curso, fuente) {
     const f = FUENTES.filter(x => x.id === fuente)[0];
@@ -429,12 +543,16 @@
   function fuenteAbierta(curso, fuente) {
     return curso === 'todos' ? fuente === 'mezcla' || CURSOS.some(c => tieneAcceso(c.id, fuente)) : tieneAcceso(curso, fuente);
   }
-  function poolDe(curso, fuente) {
-    return Promise.all(fuentesPara(curso, fuente).map(f => archivosDe(curso, f)))
+  // Preguntas de un curso con el filtro (ciclo, tema), sin repetir
+  function poolDe(curso, fuente, ciclo, tema) {
+    return Promise.all(fuentesPara(curso, fuente).map(f => archivosDe(curso, f, ciclo)))
       .then(L => Promise.all([].concat.apply([], L).map(preguntasDe)))
       .then(L => {
         const vistos = {}, out = [];
-        [].concat.apply([], L).forEach(x => { if (!vistos[x.ref]) { vistos[x.ref] = 1; x.curso = curso; out.push(x); } });
+        [].concat.apply([], L).forEach(x => {
+          if (vistos[x.ref] || (tema && x.tema !== tema)) return;
+          vistos[x.ref] = 1; x.curso = curso; out.push(x);
+        });
         return out;
       });
   }
@@ -455,13 +573,13 @@
     if (out.length < n) barajar(pool).forEach(x => { if (out.length < n && out.indexOf(x) < 0) out.push(x); });
     return out;
   }
-  async function armarPreguntas(curso, fuente, n) {
-    if (curso !== 'todos') return elegir(await poolDe(curso, fuente), n);
-    // Todos los cursos: una pregunta de cada curso al azar, dando vueltas si faltan
-    const pools = (await Promise.all(CURSOS.map(c => poolDe(c.id, fuente)))).filter(p => p.length).map(barajar);
+  async function armarPreguntas(o) {
+    if (o.curso !== 'todos') return elegir(await poolDe(o.curso, o.fuente, o.ciclo, o.tema), o.n);
+    // Todos los cursos: una pregunta de cada curso al azar, dando vueltas
+    const pools = (await Promise.all(CURSOS.map(c => poolDe(c.id, o.fuente, o.ciclo, '')))).filter(p => p.length).map(barajar);
     const orden = barajar(pools), out = [];
-    for (let vuelta = 0; out.length < n && orden.some(p => p.length); vuelta++) {
-      orden.forEach(p => { if (out.length < n && p.length) out.push(p.pop()); });
+    for (let vuelta = 0; out.length < o.n && orden.some(p => p.length); vuelta++) {
+      orden.forEach(p => { if (out.length < o.n && p.length) out.push(p.pop()); });
     }
     return barajar(out);
   }
@@ -484,6 +602,8 @@
   }
 
   /* ---------- Pantalla: crear ---------- */
+  let turno = 0;   // descarta respuestas viejas cuando el alumno cambia rápido de filtro
+  let disponibles = null;  // cuántas preguntas hay con el filtro (null = aún no se sabe)
   function pintarFuentes() {
     $('fuentes').innerHTML = FUENTES.map(f => {
       const abierto = fuenteAbierta(sel.curso, f.id);
@@ -491,9 +611,55 @@
     }).join('');
     const extra = ['fijas', 'seminarios', 'banqueo'].filter(f => fuenteAbierta(sel.curso, f)).map(f => NOM_FUENTE[f]);
     $('fuenteNota').innerHTML = sel.fuente === 'mezcla'
-      ? 'Mezcla el <b>Libro</b>' + (extra.length ? ' con <b>' + esc(extra.join(', ').replace(/, ([^,]*)$/, ' y $1')) + '</b>' : '') + '. Las secciones con candado entran cuando actives tu código.'
-      : sel.fuente === 'libro' ? 'Preguntas de los dos últimos ciclos del libro.'
+      ? 'Mezcla el <b>Libro</b>' + (extra.length ? ' con <b>' + esc(lista(extra)) + '</b>' : '') + '. Las secciones con candado entran cuando actives tu código.'
       : 'Solo de ' + esc(NOM_FUENTE[sel.fuente]) + (sel.curso === 'todos' ? ', de los cursos que tienes desbloqueados.' : '.');
+  }
+  // Ciclo → Curso → Tema: cada lista muestra solo lo que existe con lo elegido
+  async function actualizarFiltros() {
+    const t = ++turno;
+    pintarFuentes();
+    $('filtroNota').textContent = 'Buscando preguntas…';
+    const cursos = sel.curso === 'todos' ? CURSOS.map(c => c.id) : [sel.curso];
+    const L = await Promise.all(cursos.map(c => Promise.all(fuentesPara(c, sel.fuente).map(f => ciclosDe(c, f)))));
+    if (t !== turno) return;
+    const hay = {};
+    L.forEach(x => x.forEach(y => y.forEach(id => { hay[id] = 1; })));
+    const ids = Object.keys(hay).sort((a, b) => ordenCiclo(b) - ordenCiclo(a));
+    if (sel.ciclo !== 'todos' && !hay[sel.ciclo]) sel.ciclo = 'todos';
+    $('selCiclo').innerHTML = '<option value="todos">Todos los ciclos</option>' + ids.map(id => '<option value="' + esc(id) + '"' + (id === sel.ciclo ? ' selected' : '') + '>' + esc(id) + '</option>').join('');
+
+    const st = $('selTema');
+    if (sel.curso === 'todos') {
+      sel.tema = ''; sel.temaNom = '';
+      st.disabled = true; st.innerHTML = '<option value="">Elige un curso primero</option>';
+      disponibles = null;
+      $('filtroNota').innerHTML = 'Preguntas de <b>todos los cursos</b>, mezcladas.';
+      pintarCantidad();
+      return;
+    }
+    const pool = await poolDe(sel.curso, sel.fuente, sel.ciclo, '');
+    if (t !== turno) return;
+    const temas = {}, orden = [];
+    pool.forEach(x => { if (!temas[x.tema]) { temas[x.tema] = { nom: x.q._tit, n: 0 }; orden.push(x.tema); } temas[x.tema].n++; });
+    if (sel.tema && !temas[sel.tema]) { sel.tema = ''; sel.temaNom = ''; }
+    st.disabled = !orden.length;
+    st.innerHTML = '<option value="">Todos los temas</option>' + orden.map(k => '<option value="' + esc(k) + '"' + (k === sel.tema ? ' selected' : '') + '>' + esc(temas[k].nom) + ' (' + temas[k].n + ')</option>').join('');
+    disponibles = sel.tema ? temas[sel.tema].n : pool.length;
+    $('filtroNota').innerHTML = disponibles
+      ? 'Hay <b>' + disponibles + '</b> ' + (disponibles === 1 ? 'pregunta' : 'preguntas') + ' con este filtro.'
+      : '<span class="error">No hay preguntas con este filtro. Prueba con otro ciclo o con "De todo".</span>';
+    pintarCantidad();
+  }
+  // Las cantidades que no alcanzan se bloquean
+  function pintarCantidad() {
+    $('cantidad').querySelectorAll('button').forEach(b => {
+      const n = +b.dataset.n;
+      b.disabled = disponibles != null && n > disponibles;
+      b.classList.toggle('on', n === sel.n);
+    });
+    if (disponibles != null && disponibles >= 3 && sel.n > disponibles) {
+      $('filtroNota').innerHTML += ' Alcanza para un duelo de <b>' + [5, 10, 15, 20].filter(n => n <= disponibles).pop() + '</b> como máximo.';
+    }
   }
   $('fuentes').addEventListener('click', e => {
     const b = e.target.closest('[data-f]'); if (!b) return;
@@ -502,29 +668,49 @@
       $('crearError').hidden = false; return;
     }
     $('crearError').hidden = true;
-    sel.fuente = b.dataset.f; pintarFuentes();
+    sel.fuente = b.dataset.f; actualizarFiltros();
   });
+  $('selCiclo').addEventListener('change', () => { sel.ciclo = $('selCiclo').value; $('crearError').hidden = true; actualizarFiltros(); });
   $('selCurso').addEventListener('change', () => {
-    sel.curso = $('selCurso').value;
+    sel.curso = $('selCurso').value; sel.tema = ''; sel.temaNom = '';
     if (!fuenteAbierta(sel.curso, sel.fuente)) sel.fuente = 'mezcla';
     $('crearError').hidden = true;
-    pintarFuentes();
+    actualizarFiltros();
   });
+  $('selTema').addEventListener('change', () => {
+    const o = $('selTema').selectedOptions[0];
+    sel.tema = $('selTema').value; sel.temaNom = sel.tema && o ? o.textContent.replace(/\s\(\d+\)$/, '') : '';
+    $('crearError').hidden = true;
+    actualizarFiltros();
+  });
+  $('jugadores').addEventListener('click', e => {
+    const b = e.target.closest('[data-j]'); if (!b) return;
+    sel.jugadores = +b.dataset.j;
+    $('jugadores').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+  });
+  $('chkAuto').addEventListener('change', () => { sel.auto = $('chkAuto').checked; });
   $('cantidad').addEventListener('click', e => {
-    const b = e.target.closest('[data-n]'); if (!b) return;
-    sel.n = +b.dataset.n;
-    $('cantidad').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    const b = e.target.closest('[data-n]'); if (!b || b.disabled) return;
+    sel.n = +b.dataset.n; $('crearError').hidden = true;
+    pintarCantidad();
   });
-  function tituloDe(curso, fuente) {
-    return (curso === 'todos' ? 'Todos los cursos' : (NOMBRE[curso] || curso)) + ' · ' + NOM_FUENTE[fuente];
+  function tituloDe(o) {
+    const partes = [o.curso === 'todos' ? 'Todos los cursos' : (NOMBRE[o.curso] || o.curso)];
+    if (o.temaNom) partes.push(o.temaNom);
+    if (o.ciclo && o.ciclo !== 'todos') partes.push(o.ciclo);
+    if (o.fuente !== 'mezcla') partes.push(NOM_FUENTE[o.fuente]);
+    return partes.join(' · ').slice(0, 80);
   }
-  async function crearDuelo(opc) {
-    const lista = await armarPreguntas(opc.curso, opc.fuente, opc.n);
-    if (lista.length < 3) throw new Error(opc.fuente === 'libro' || opc.fuente === 'mezcla'
-      ? 'Aún no hay suficientes preguntas en este curso. Prueba con otro.'
-      : 'Aún no hay preguntas de ' + NOM_FUENTE[opc.fuente] + ' aquí. Prueba con "De todo".');
+  async function crearDuelo(o) {
+    const lista = await armarPreguntas(o);
+    if (lista.length < o.n) {
+      throw new Error(lista.length
+        ? 'Con este filtro solo hay ' + lista.length + (lista.length === 1 ? ' pregunta' : ' preguntas') + ' y elegiste ' + o.n + '. Elige menos preguntas o cambia el filtro.'
+        : 'No hay preguntas con este filtro. Prueba con otro ciclo, tema o con "De todo".');
+    }
     return rpc('crear_duelo', { p: {
-      titulo: tituloDe(opc.curso, opc.fuente), curso: opc.curso, fuente: opc.fuente, revancha_de: opc.revancha || null,
+      titulo: tituloDe(o), curso: o.curso, fuente: o.fuente, ciclo: o.ciclo !== 'todos' ? o.ciclo : null, tema: o.temaNom || null,
+      jugadores: o.jugadores || 2, auto: !!o.auto, revancha_de: o.revancha || null,
       preguntas: lista.map(x => ({ ref: x.ref, c: x.q.correct, k: x.q.options.length }))
     } });
   }
@@ -547,9 +733,10 @@
 
   function pintarMisDuelos(L) {
     $('misDuelos').innerHTML = L.length ? L.map(d => {
-      const marcador = d.mis_aciertos != null ? d.mis_aciertos + (d.sus_aciertos != null ? ' – ' + d.sus_aciertos : '') + ' de ' + d.n : d.n + ' preguntas';
-      return '<li><a href="duelo.html?d=' + esc(d.codigo) + '"><div><b>' + (d.rival ? 'vs ' + esc(d.rival) : 'Sin rival aún') + '</b><small>' + esc(d.titulo) + ' · ' + esc(marcador) + '</small></div>' +
-        '<span class="estado ' + esc(d.estado) + '">' + esc(ESTADOS[d.estado] || d.estado) + '</span></a></li>';
+      const marcador = d.mis_aciertos != null && !/en-sala|cancelado/.test(d.estado) ? d.mis_aciertos + ' de ' + d.n + (d.puesto && d.jugadores > 1 ? ' · ' + d.puesto + '.º de ' + d.jugadores : '') : d.n + ' preguntas';
+      const est = d.estado === 'perdiste' && d.puesto ? d.puesto + '.º lugar' : (ESTADOS[d.estado] || d.estado);
+      return '<li><a href="duelo.html?d=' + esc(d.codigo) + '"><div><b>' + (d.rival ? 'vs ' + esc(d.rival) : /te-toca|a-medias|esperando|en-sala/.test(d.estado) ? 'Esperando rivales' : 'Nadie más jugó') + '</b><small>' + esc(d.titulo) + ' · ' + esc(marcador) + '</small></div>' +
+        '<span class="estado ' + esc(d.estado) + '">' + esc(est) + '</span></a></li>';
     }).join('') : '<li class="vacia">Aún no tienes duelos. ¡Crea el primero!</li>';
   }
   function pintarRanking(L) {
@@ -559,16 +746,13 @@
   }
   function abrirCrear() {
     pararSondeo(); irA(''); V = null; G = null;
-    pintarFuentes();
+    actualizarFiltros();
     ver('crear');
     rpc('mis_duelos').then(pintarMisDuelos).catch(e => { $('misDuelos').innerHTML = '<li class="vacia">' + esc(textoError(e)) + '</li>'; });
     rpc('ranking_duelos').then(pintarRanking).catch(() => { $('rank').innerHTML = '<li class="vacia">El ranking aparecerá pronto.</li>'; });
   }
 
-  /* ---------- Pantalla: reto (compartir o aceptar) ---------- */
-  function jugadorHtml(nombre, clase, linea) {
-    return '<div class="jug ' + clase + '"><div class="avatar">' + esc(inicial(nombre)) + '</div><b>' + esc(nombre) + '</b><small>' + linea + '</small></div>';
-  }
+  /* ---------- Pantalla: sala (compartir y entrar) ---------- */
   async function abrirDuelo(cod) {
     pararSondeo();
     aviso('Cargando el duelo…');
@@ -576,41 +760,121 @@
     try { d = await rpc('ver_duelo', { p_codigo: cod }); }
     catch (e) { aviso(textoError(e), 'Ir a Duelos'); return; }
     if (!d) { aviso('No encontramos ese duelo. Revisa el código.', 'Ir a Duelos'); return; }
-    V = d; irA(d.codigo);
-    if (d.yo && d.yo.terminado) { mostrarResultado(); return; }
-    if (d.yo) { empezar(); return; }               // lo dejó a medias: sigue donde estaba
-    if (!d.rol && d.rival) { aviso('Este duelo ya tiene rival: ' + d.creador + ' vs ' + d.rival + '. Crea el tuyo y reta a quien quieras.', 'Crear mi duelo'); return; }
-    if (d.vencido) { aviso('Este duelo ya venció (duran 24 horas).', 'Crear otro duelo'); return; }
+    guardar(d); irA(d.codigo);
+    seguir();
+  }
+  // Decide qué pantalla toca según el estado del duelo
+  function seguir() {
+    const d = V, mio = d.jugadores.filter(j => j.yo)[0];
+    if (d.yo && (d.yo.terminado || (mio && mio.abandono))) { mostrarResultado(); return; }   // terminó o se le acabó el tiempo
+    if (!d.en_sala) {
+      // Duelos de antes: cada uno jugaba cuando quería
+      if (d.yo) { empezar(); return; }
+      aviso('Este duelo es de la versión anterior y ya no se puede jugar. Crea uno nuevo.', 'Crear mi duelo'); return;
+    }
+    if (d.yo && d.empieza) { arrancar(); return; }
+    if (d.yo) { pintarReto(); return; }
+    if (d.empieza) { aviso('Este duelo ya empezó. Crea el tuyo y reta a quien quieras.', 'Crear mi duelo'); return; }
+    if (quedaSala() <= 0) { aviso('La sala de este duelo ya se cerró: nadie lo inició en 5 minutos.', 'Crear mi duelo'); return; }
+    if (libres(d) <= 0) { aviso('Este duelo ya está lleno (' + d.max + ' jugadores). Crea el tuyo y reta a quien quieras.', 'Crear mi duelo'); return; }
     pintarReto();
   }
-  function venceTxt(iso) {
-    const h = Math.max(0, (new Date(iso) - Date.now()) / 36e5);
-    return h >= 1 ? 'Vence en ' + Math.floor(h) + ' h' : 'Vence en ' + Math.max(1, Math.round(h * 60)) + ' min';
+  function salaHtml(d) {
+    const js = d.jugadores.slice().sort((a, b) => (b.creador ? 1 : 0) - (a.creador ? 1 : 0));
+    let html = '';
+    for (let i = 0; i < d.max; i++) {
+      const j = js[i];
+      if (!j) { html += '<div class="puesto-sala libre"><div class="avatar">+</div><b>Libre</b><small>Esperando</small></div>'; continue; }
+      const linea = j.creador ? 'Creó el duelo' : 'Listo';
+      html += '<div class="puesto-sala ' + colorDe(j) + (j.yo ? ' yo' : '') + (VISTOS[j.apodo] ? '' : ' entra') + '"><div class="avatar ' + colorDe(j) + '">' + esc(inicial(j.yo ? 'Tú' : j.apodo)) + '</div><b>' + esc(j.yo ? 'Tú' : j.apodo) + '</b><small>' + esc(linea) + '</small></div>';
+      VISTOS[j.apodo] = 1;
+    }
+    return html;
+  }
+  const VISTOS = {};
+  function libres(d) { return d.max - d.jugadores.length; }
+  function pintarCierre(el) {
+    const q = quedaSala(), libre = libres(V);
+    el.classList.toggle('poco', q > 0 && q <= 60000);
+    el.classList.toggle('fin', q <= 0 || !!V.empieza);
+    el.lastChild.textContent = V.empieza ? '¡Empieza!' : q <= 0 ? 'Sala cerrada'
+      : (libre > 0 ? (libre === 1 ? 'Falta 1 jugador' : 'Faltan ' + libre + ' jugadores') : 'Sala llena') + ' · se cierra en ' + mmss(q);
+  }
+  // Botón de la sala: entrar, iniciar o esperar
+  function pintarBoton() {
+    const d = V, b = $('btnJugar'), dentro = !!d.yo, hay = d.jugadores.length;
+    b.hidden = false; b.disabled = false;
+    if (!dentro) { b.dataset.accion = 'entrar'; b.textContent = 'Entrar a la sala'; b.disabled = libres(d) <= 0 || quedaSala() <= 0; }
+    else if (d.soy_creador) {
+      b.dataset.accion = 'iniciar';
+      b.textContent = hay < 2 ? 'Iniciar (esperando amigos…)' : 'Iniciar duelo con ' + hay + ' jugadores';
+      b.disabled = hay < 2 || quedaSala() <= 0;
+    } else b.hidden = true;
+    $('retoNota').textContent = !dentro ? 'Al entrar esperas en la sala. Todos empiezan a la vez con una cuenta 3, 2, 1.'
+      : d.auto ? 'Empieza solo apenas entren los ' + d.max + '.' + (d.soy_creador ? ' Si alguien no llega, puedes iniciarlo tú.' : ' ' + d.creador + ' también puede iniciarlo antes.')
+      : d.soy_creador ? 'Toca Iniciar cuando estén todos.' : 'Esperando a que ' + d.creador + ' inicie el duelo.';
   }
   function pintarReto() {
-    const d = V, soyCreador = d.rol === 'creador';
-    $('retoEye').textContent = soyCreador ? 'Duelo creado' : 'Te retaron';
-    $('retoTit').textContent = soyCreador ? '¡Listo! Ahora reta a alguien' : '¡' + d.creador + ' te reta a un duelo!';
+    const d = V, soyCreador = d.soy_creador;
+    $('retoEye').textContent = d.max === 2 ? 'Duelo 1 vs 1' : 'Duelo de ' + d.max + ' jugadores';
+    $('retoTit').textContent = soyCreador ? '¡Listo! Invita a tus amigos' : d.yo ? 'Estás en la sala' : '¡' + d.creador + ' te reta a un duelo!';
     $('retoSub').textContent = soyCreador
-      ? (d.rival ? 'Tu rival es ' + d.rival + '. Puedes jugar tu parte cuando quieras.' : 'Envíale el enlace o el código a tu amigo. El primero que lo acepte será tu rival.')
-      : 'Las mismas ' + d.n + ' preguntas para los dos. Gana quien acierta más.';
-    $('retoFicha').innerHTML = '<span><b>' + esc(d.titulo) + '</b></span><span><b>' + d.n + '</b> preguntas</span><span><b>60 s</b> cada una</span><span>' + esc(venceTxt(d.vence)) + '</span>';
-    $('retoCompartir').hidden = !soyCreador || !!d.rival;
+      ? 'Envíales el código o el enlace. Todos empiezan a la vez cuando la sala esté lista.'
+      : 'Las mismas ' + d.n + ' preguntas para todos. Gana quien acierta más.';
+    $('retoFicha').innerHTML = '<span><b>' + esc(d.titulo) + '</b></span><span><b>' + d.n + '</b> preguntas</span><span><b>60 s</b> cada una</span>';
+    $('retoSala').innerHTML = salaHtml(d);
+    pintarCierre($('retoCierre'));
+    $('retoCompartir').hidden = d.cerrado;
     $('retoCodigo').textContent = d.codigo;
     $('retoEnlace').textContent = enlace(d.codigo);
-    $('btnWa').href = 'https://wa.me/?text=' + encodeURIComponent('⚔️ Te reto a un duelo en Modo Cachimbo: ' + d.titulo + ', ' + d.n + ' preguntas de 60 segundos. ¿Me ganas? ' + enlace(d.codigo));
-    const vs = $('retoVs');
-    vs.hidden = soyCreador && !d.rival;
-    vs.innerHTML = jugadorHtml(d.creador, soyCreador ? 'yo' : 'otro', soyCreador ? 'Tú' : 'Te reta') + '<span class="x">VS</span>' +
-      jugadorHtml(soyCreador ? (d.rival || '¿?') : 'Tú', soyCreador ? 'otro' : 'yo', soyCreador ? 'Rival' : 'Aceptas');
-    $('btnJugar').textContent = soyCreador ? 'Jugar mi parte ahora' : 'Aceptar el reto y empezar';
-    $('retoNota').textContent = soyCreador ? 'Cuando empieces, cada pregunta tendrá 60 segundos. No cierres la página a la mitad.' : 'Al empezar, cada pregunta tendrá 60 segundos. Tu tiempo cuenta para el desempate.';
+    $('btnWa').href = 'https://wa.me/?text=' + encodeURIComponent('⚔️ Te reto a un duelo en Modo Cachimbo: ' + d.titulo + ', ' + d.n + ' preguntas de 60 segundos. Entra a la sala: ' + enlace(d.codigo));
+    pintarBoton();
     $('retoError').hidden = true;
     ver('reto');
-    // Mientras espera, mira si alguien aceptó
-    if (soyCreador && !d.rival) sondeo = setInterval(() => rpc('ver_duelo', { p_codigo: d.codigo }).then(n => {
-      if (n && n.rival && !V.rival) { V = n; pararSondeo(); pintarReto(); }
-    }).catch(() => {}), 6000);
+    // Mientras espera: cuenta regresiva y quién va entrando
+    reloj1s = setInterval(() => {
+      pintarCierre($('retoCierre'));
+      if (quedaSala() <= 0 && !V.empieza) { pararSondeo(); aviso('La sala se cerró porque nadie inició el duelo en 5 minutos.', 'Crear otro duelo'); }
+    }, 1000);
+    sondeo = setInterval(() => rpc('ver_duelo', { p_codigo: d.codigo }).then(n => {
+      if (!n || $('reto').hidden) return;
+      guardar(n);
+      if (n.empieza && n.yo) { arrancar(); return; }
+      if (n.empieza && !n.yo) { pararSondeo(); aviso('El duelo empezó sin ti. Crea el tuyo y reta a quien quieras.', 'Crear mi duelo'); return; }
+      $('retoSala').innerHTML = salaHtml(n);
+      $('retoCompartir').hidden = n.cerrado;
+      pintarBoton();
+      pintarCierre($('retoCierre'));
+    }).catch(() => {}), 2000);
+  }
+  $('btnJugar').addEventListener('click', async () => {
+    const b = $('btnJugar'), accion = b.dataset.accion;
+    b.disabled = true; $('retoError').hidden = true;
+    try {
+      const n = await rpc(accion === 'iniciar' ? 'iniciar_duelo' : 'entrar_duelo', { p_codigo: V.codigo });
+      if (n) guardar(n);
+      pararSondeo(); seguir();
+    } catch (e) { b.disabled = false; $('retoError').textContent = textoError(e); $('retoError').hidden = false; }
+  });
+  // Cuenta 3, 2, 1 igual para todos (según el reloj del servidor) y luego la 1.ª pregunta
+  let precarga = null;
+  function arrancar() {
+    pararSondeo();
+    const fin = new Date(V.empieza).getTime() - desfase;   // en el reloj de este celular
+    if (fin - Date.now() <= 0) { $('cuenta').hidden = true; empezar(); return; }
+    // las preguntas se van cargando durante la cuenta
+    precarga = rpc('empezar_duelo', { p_codigo: V.codigo }).then(r => cargarRefs(r.preguntas)).catch(() => null);
+    $('cuenta').hidden = false;
+    const paso = () => {
+      const q = fin - Date.now();
+      if (q <= 0) { $('cuenta').hidden = true; empezar(); return; }
+      const s = Math.ceil(q / 1000);
+      const txt = s > 3 ? '¡Prepárate!' : String(s);
+      if ($('cuentaNum').textContent !== txt) { $('cuentaNum').textContent = txt; const b = $('cuentaNum'); b.style.animation = 'none'; void b.offsetWidth; b.style.animation = ''; }
+      $('cuentaTxt').textContent = 'Empieza el duelo · ' + V.jugadores.length + ' jugadores';
+      setTimeout(paso, 100);
+    };
+    paso();
   }
   $('btnCopiar').addEventListener('click', () => {
     const t = enlace(V.codigo), b = $('btnCopiar');
@@ -618,37 +882,35 @@
     const manual = () => { const r = document.createRange(); r.selectNodeContents($('retoEnlace')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.lastChild.textContent = 'Mantén presionado para copiar'; };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(listo, manual); else manual();
   });
-  $('btnJugar').addEventListener('click', () => empezar());
 
   /* ---------- Pantalla: juego ---------- */
   async function empezar() {
     pararSondeo();
-    const b = $('btnJugar'); b.disabled = true;
     let r;
     try { r = await rpc('empezar_duelo', { p_codigo: V.codigo }); }
-    catch (e) { b.disabled = false; $('retoError').textContent = textoError(e); $('retoError').hidden = false; if ($('reto').hidden) aviso(textoError(e), 'Ir a Duelos'); return; }
-    b.disabled = false;
+    catch (e) { aviso(textoError(e), 'Ir a Duelos'); return; }
+    if (r.espera) { setTimeout(empezar, Math.min(+r.espera, 5000) + 60); return; }   // el reloj del celular iba adelantado
     if (r.terminado) { await recargar(); mostrarResultado(); return; }
-    aviso('Cargando preguntas…');
-    const qs = await cargarRefs(r.preguntas);
+    const pre = precarga && await precarga; precarga = null;
+    if (!pre) aviso('Cargando preguntas…');
+    const qs = pre || await cargarRefs(r.preguntas);
     G = { codigo: V.codigo, qs, n: qs.length, actual: r.actual, aciertos: r.aciertos, ocupado: false,
           fin: Date.now() + Math.max(0, SEG * 1000 - (+r.lleva || 0)) };
-    if (!V.rol) V.rol = 'rival';
-    $('nomOtro').textContent = V.rol === 'creador' ? (V.rival || 'Rival') : V.creador;
     pintarCarriles();
     ver('juego');
     pintarPregunta();
-    const mirar = () => rpc('ver_duelo', { p_codigo: G.codigo }).then(n => { if (n && G) { V = n; pintarCarriles(); } }).catch(() => {});
+    const mirar = () => rpc('ver_duelo', { p_codigo: G.codigo }).then(n => { if (n && G) { guardar(n); pintarCarriles(); } }).catch(() => {});
     mirar(); sondeo = setInterval(mirar, 4000);
   }
+  // Una barra por jugador: tú primero y luego los demás en el orden en que entraron
   function pintarCarriles() {
-    $('pistaYo').style.width = (G.actual / G.n * 100) + '%';
-    $('txtYo').textContent = G.actual + '/' + G.n;
+    const otros = ((V && V.jugadores) || []).filter(j => !j.yo);
+    const carril = (clase, nombre, ancho, texto) => '<div class="carril ' + clase + '"><b>' + esc(nombre) + '</b><div class="pista"><i style="width:' + ancho + '%"></i></div><em>' + esc(texto) + '</em></div>';
+    let html = carril('yo c0', 'Tú', G.actual / G.n * 100, G.actual + '/' + G.n);
+    otros.forEach(j => { html += carril(colorDe(j), j.apodo, Math.min(j.actual, G.n) / G.n * 100, j.abandono ? 'Fuera' : j.terminado ? 'Listo' : j.actual + '/' + G.n); });
+    if (!otros.length) html += carril('c1', V && V.cerrado ? 'Nadie más' : 'Esperando…', 0, '—');
+    $('carriles').innerHTML = html;
     $('aciertos').textContent = G.aciertos;
-    const o = V && V.otro;
-    if (V && V.rol === 'creador' && V.rival) $('nomOtro').textContent = V.rival;
-    $('pistaOtro').style.width = o ? (o.actual / G.n * 100) + '%' : '0';
-    $('txtOtro').textContent = o ? (o.terminado ? 'Listo' : o.actual + '/' + G.n) : 'Aún no';
   }
   let tic = null;
   function pintarPregunta() {
@@ -659,7 +921,7 @@
     if (!q) {
       // La pregunta cambió en la web desde que se creó el duelo
       $('pTag').textContent = 'Pregunta no disponible';
-      $('pTxt').innerHTML = '<p class="hint">Esta pregunta ya no está en la web. Pasa a la siguiente; no cuenta en contra de ninguno… ni a favor.</p>';
+      $('pTxt').innerHTML = '<p class="hint">Esta pregunta ya no está en la web. Pasa a la siguiente; no cuenta en contra de nadie… ni a favor.</p>';
       $('pGraf').hidden = true;
       lista.innerHTML = '<li><button type="button" data-k="-1"><i>›</i><span>Siguiente pregunta</span></button></li>';
     } else {
@@ -720,40 +982,78 @@
 
   /* ---------- Pantalla: resultado ---------- */
   async function recargar() {
-    try { const n = await rpc('ver_duelo', { p_codigo: (V && V.codigo) || (G && G.codigo) }); if (n) V = n; } catch (e) {}
+    try { const n = await rpc('ver_duelo', { p_codigo: (V && V.codigo) || (G && G.codigo) }); if (n) guardar(n); } catch (e) {}
   }
-  let revPintada = '';
+  function nombreDe(j) { return j.yo ? 'Tú' : j.apodo; }
+  function lineaDe(j, n) {
+    if (!j.terminado) return 'Jugando ' + Math.min(j.actual + 1, n) + '/' + n;
+    if (j.aciertos == null) return 'Terminó';
+    return 'de ' + n + (j.abandono ? ' · no terminó' : ' · ' + segs(j.ms));
+  }
+  // Podio con medallas para los 3 primeros; el 4.º va debajo
+  function podioHtml(d) {
+    const js = d.jugadores;
+    const arriba = js.slice(0, 3), orden = arriba.length === 2 ? [0, 1] : [1, 0, 2];
+    const pods = orden.filter(i => arriba[i]).map(i => {
+      const j = arriba[i], p = 'p' + (i + 1);
+      return '<div class="pod ' + p + (j.yo ? ' yo' : '') + '">' + ((window.MCMedalla && MCMedalla(j.puesto, j.puesto === 1 ? 50 : 40)) || '') +
+        '<b>' + esc(nombreDe(j)) + '</b><strong>' + j.aciertos + '</strong><small>' + esc(lineaDe(j, d.n)) + '</small></div>';
+    }).join('');
+    const resto = js.slice(3).map(j => '<div class="cuarto' + (j.yo ? ' yo' : '') + '"><span class="p">' + j.puesto + '.º</span><span class="n">' + esc(nombreDe(j)) + '</span><small>' + j.aciertos + ' ' + esc(lineaDe(j, d.n)) + '</small></div>').join('');
+    return '<div class="podio' + (arriba.length === 2 ? ' dos' : '') + '">' + pods + '</div>' + resto;
+  }
+  // Mientras no hay resultado: cómo van todos
+  function tablaHtml(d) {
+    return '<ul class="tabla">' + d.jugadores.map(j =>
+      '<li><span class="avatar ' + colorDe(j) + '">' + esc(inicial(nombreDe(j))) + '</span><div><b>' + esc(nombreDe(j)) + '</b><small>' + esc(lineaDe(j, d.n)) + '</small></div>' +
+      (j.aciertos != null && j.terminado ? '<strong>' + j.aciertos + '</strong>' : '') + '</li>').join('') + '</ul>';
+  }
+  function confeti(el) {
+    if (el.querySelector('.confeti') || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const c = document.createElement('div'); c.className = 'confeti';
+    const col = ['#C6E000', '#f5c542', '#f9a8d4', '#67e8f9', '#fdba74'];
+    for (let i = 0; i < 40; i++) {
+      const p = document.createElement('i');
+      p.style.left = Math.random() * 100 + '%'; p.style.background = col[i % col.length];
+      p.style.animationDelay = (Math.random() * .8).toFixed(2) + 's'; p.style.animationDuration = (2 + Math.random() * 1.4).toFixed(2) + 's';
+      c.appendChild(p);
+    }
+    el.appendChild(c);
+    setTimeout(() => c.remove(), 4500);
+  }
+  let revPintada = '', vistoRes = '';
   async function mostrarResultado() {
     pararSondeo();
-    const d = V, yo = d.yo || { aciertos: 0, ms: 0 }, o = d.otro, res = d.resultado;
-    const nomOtro = (o && o.apodo) || (d.rol === 'creador' ? d.rival : d.creador) || 'Tu rival';
+    const d = V, yo = d.yo || { aciertos: 0, ms: 0 }, res = d.resultado;
+    const otros = d.jugadores.filter(j => !j.yo);
     let eye = 'Duelo terminado', tit, sub = '', perdio = false;
-    if (res) {
-      if (res.gane) { tit = '¡Ganaste el duelo!'; sub = 'Le ganaste a ' + nomOtro + '. Suma 1 al ranking de la semana.'; }
-      else if (res.empate) { tit = '¡Empate perfecto!'; sub = 'Mismos aciertos y mismo tiempo. Toca revancha.'; }
-      else if (res.ganador) { tit = 'Esta vez ganó ' + res.ganador; sub = 'Revisa en qué fallaste y pide la revancha.'; perdio = true; }
-      else { tit = 'Nadie aceptó el duelo'; sub = 'Pasaron 24 horas sin rival. Crea otro y envíalo de nuevo.'; }
+    if (res && d.en_sala && !d.empieza) { tit = 'El duelo no se inició'; sub = 'Nadie lo inició en 5 minutos. Crea otro y avisa a tus amigos antes.'; }
+    else if (res && res.jugadores < 2) { tit = 'Nadie más entró al duelo'; sub = 'Acertaste ' + yo.aciertos + ' de ' + d.n + '. Crea otro y envíalo apenas lo crees: la sala dura 5 minutos.'; }
+    else if (res) {
+      if (res.gane) { tit = '¡Ganaste el duelo!'; sub = 'Quedaste en el 1.º lugar' + (otros.length ? ' frente a ' + lista(otros.map(j => j.apodo)) : '') + '. Suma 1 al top de la semana.'; }
+      else if (res.empate && res.puesto === 1) { tit = '¡Empate en el 1.º lugar!'; sub = 'Mismos aciertos y mismo tiempo. Toca revancha para desempatar.'; }
+      else if (res.empate) { tit = 'Quedaste en el ' + res.puesto + '.º lugar'; sub = 'Hubo empate en el 1.º lugar, así que esta vez nadie suma al top.'; perdio = true; }
+      else { tit = res.jugadores > 2 ? 'Quedaste en el ' + res.puesto + '.º lugar' : 'Esta vez ganó ' + res.ganador; sub = (res.jugadores > 2 ? 'Ganó ' + res.ganador + '. ' : '') + 'Revisa en qué fallaste y pide la revancha.'; perdio = true; }
     } else {
       eye = 'Terminaste tu parte';
       tit = 'Acertaste ' + yo.aciertos + ' de ' + d.n;
-      sub = !d.rival && d.rol === 'creador' ? 'Ahora envía el enlace: el primero que lo acepte será tu rival.'
-        : o ? nomOtro + ' va en la pregunta ' + Math.min(o.actual + 1, d.n) + ' de ' + d.n + '. Esta página se actualiza sola.'
-        : 'Esperando a que ' + nomOtro + ' juegue su parte. Esta página se actualiza sola.';
+      const jugando = otros.filter(j => !j.terminado).map(j => j.apodo);
+      sub = jugando.length ? 'Esperando a que ' + lista(jugando) + ' ' + (jugando.length > 1 ? 'terminen' : 'termine') + '. Esta página se actualiza sola.'
+        : !d.cerrado ? 'La sala sigue abierta y alguien más puede entrar. El podio sale cuando se cierre.'
+        : 'Calculando el podio…';
     }
     $('resEye').textContent = eye; $('resTit').textContent = tit; $('resSub').textContent = sub;
     $('resTrofeo').hidden = !(res && res.gane);
     $('resCard').classList.toggle('perdio', perdio);
-    const ganaYo = res && res.gane, ganaOtro = res && res.ganador && !res.gane;
-    $('resVs').innerHTML =
-      '<div class="jug yo' + (ganaYo ? ' gana' : '') + '"><div class="avatar">' + esc(inicial('Tú')) + '</div><b>Tú</b><strong>' + yo.aciertos + '</strong><small>de ' + d.n + ' · ' + segs(yo.ms) + '</small></div>' +
-      '<span class="x">VS</span>' +
-      '<div class="jug otro' + (ganaOtro ? ' gana' : '') + '"><div class="avatar">' + esc(inicial(nomOtro)) + '</div><b>' + esc(nomOtro) + '</b><strong>' + (o && o.aciertos != null ? o.aciertos : '—') + '</strong><small>' +
-        (o && o.aciertos != null ? 'de ' + d.n + ' · ' + segs(o.ms) : o ? (o.terminado ? 'terminó' : 'jugando…') : 'sin jugar') + '</small></div>';
+    $('resTabla').innerHTML = (res && res.jugadores >= 2 ? podioHtml(d) : tablaHtml(d)) +
+      (!res && !d.cerrado ? '<div class="cierre" id="resCierre"><i></i><span></span></div>' : '');
+    if (res && res.gane && vistoRes !== d.codigo) confeti($('resCard'));
+    if (res) vistoRes = d.codigo;
 
     const bts = [];
-    if (!d.rival && d.rol === 'creador' && !d.vencido) bts.push('<a class="btn wa" target="_blank" rel="noopener noreferrer" href="https://wa.me/?text=' + esc(encodeURIComponent('⚔️ Acerté ' + yo.aciertos + ' de ' + d.n + ' en un duelo de Modo Cachimbo (' + d.titulo + '). ¿Me ganas? ' + enlace(d.codigo))) + '">Retar por WhatsApp</a>');
-    if (d.revancha) bts.push('<a class="btn" href="duelo.html?d=' + esc(d.revancha) + '">' + 'Ir a la revancha</a>');
-    else if (res && d.rival && d.rol) bts.push('<button class="btn" type="button" id="btnRevancha">Pedir revancha</button>');
+    if (!d.cerrado) bts.push('<a class="btn wa" target="_blank" rel="noopener noreferrer" href="https://wa.me/?text=' + esc(encodeURIComponent('⚔️ Acerté ' + yo.aciertos + ' de ' + d.n + ' en un duelo de Modo Cachimbo (' + d.titulo + '). ¿Me ganas? Entra rápido, la sala se cierra pronto: ' + enlace(d.codigo))) + '">Invitar por WhatsApp</a>');
+    if (d.revancha) bts.push('<a class="btn" href="duelo.html?d=' + esc(d.revancha) + '">Ir a la revancha</a>');
+    else if (res && res.jugadores >= 2) bts.push('<button class="btn" type="button" id="btnRevancha">Pedir revancha</button>');
     bts.push('<a class="btn sec" href="duelo.html">Nuevo duelo</a>');
     $('resBotones').innerHTML = bts.join('');
     $('resBotones').classList.toggle('dos', bts.length > 1);
@@ -762,11 +1062,13 @@
       rv.disabled = true; rv.textContent = 'Armando la revancha…'; $('resError').hidden = true;
       try {
         const fuente = fuenteAbierta(d.curso, d.fuente) ? d.fuente : 'mezcla';  // sin el código de esa sección, sale de "De todo"
-        const cod = await crearDuelo({ curso: d.curso, fuente, n: d.n, revancha: d.codigo });
+        const cod = await crearDuelo({ curso: d.curso, fuente, ciclo: d.ciclo || 'todos', tema: d.tema ? normTema(d.tema) : '', temaNom: d.tema || '', n: d.n,
+          jugadores: Math.min(Math.max(d.jugadores.length, 2), 4), auto: true, revancha: d.codigo });
         await abrirDuelo(cod);
       } catch (e) { rv.disabled = false; rv.textContent = 'Pedir revancha'; $('resError').textContent = textoError(e); $('resError').hidden = false; }
     });
     ver('resultado');
+    if ($('resCierre')) { pintarCierre($('resCierre')); reloj1s = setInterval(() => { if ($('resCierre')) pintarCierre($('resCierre')); }, 1000); }
 
     // Revisión: solo cuando el servidor ya mandó las correctas
     if (d.preguntas && d.correctas && revPintada !== d.codigo) {
@@ -774,12 +1076,12 @@
       const qs = await cargarRefs(d.preguntas);
       pintarRevision(qs, d.correctas, (d.yo && d.yo.respuestas) || []);
     }
-    // Se actualiza solo hasta que haya resultado (y después, por si el otro pide la revancha)
-    if ((!res || (d.rival && !d.revancha)) && !d.vencido) sondeo = setInterval(async () => {
-      const antes = JSON.stringify([V.otro, V.resultado, V.revancha, V.rival]);
+    // Se actualiza solo hasta que haya resultado, y después un rato por si alguien pide la revancha
+    if (!res || (!d.revancha && Date.now() + desfase - new Date(d.vence) < 20 * 60000)) sondeo = setInterval(async () => {
+      const antes = JSON.stringify([V.jugadores, V.resultado, V.revancha, V.cerrado]);
       await recargar();
-      if (JSON.stringify([V.otro, V.resultado, V.revancha, V.rival]) !== antes) mostrarResultado();
-    }, res ? 8000 : 5000);
+      if (JSON.stringify([V.jugadores, V.resultado, V.revancha, V.cerrado]) !== antes) mostrarResultado();
+    }, res ? 8000 : 4000);
   }
   function pintarRevision(qs, correctas, resp) {
     $('revTit').hidden = false;
