@@ -3,6 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#050505">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="assets/app/icono-180.png">
+<meta name="apple-mobile-web-app-title" content="Modo Cachimbo">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<script src="assets/app.js" defer></script>
 <title>Modo Cachimbo · @ProfeRojitas</title>
 <script>
   // Sin sesión guardada: se muestra la bienvenida en vez del inicio (sin parpadeo)
@@ -122,6 +131,16 @@
   .sal-grupo b { color: var(--text); }
   @media (max-width: 720px) { .sal-grupo { margin-left: 0; width: 100%; padding-top: 6px; } }
 
+  .app-aviso { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 14px; margin: 18px 0 22px; padding: 16px 44px 16px 16px; border: 1px solid var(--accent); border-radius: 18px; background: var(--accent-soft); }
+  .app-aviso[hidden] { display: none; }
+  .app-aviso img { width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0; }
+  .app-txt { flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 3px; font-size: 13px; color: var(--text-dim); line-height: 1.45; }
+  .app-txt > b { color: var(--text); font-size: 14px; }
+  .app-txt svg { width: 15px; height: 15px; vertical-align: -2px; fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .app-btn { flex-shrink: 0; font: inherit; font-weight: 800; font-size: 13px; background: var(--accent); color: #050505; border: 0; border-radius: 12px; padding: 10px 16px; cursor: pointer; }
+  .app-x { position: absolute; top: 10px; right: 10px; background: none; border: 0; color: var(--text-faint); font-size: 16px; cursor: pointer; padding: 6px; line-height: 1; }
+  @media (max-width: 520px) { .app-aviso { padding-right: 16px; } .app-txt { padding-right: 26px; } .app-btn { flex: 1 1 100%; padding: 12px; } }
+  .app-aviso[data-modo="iphone"] .solo-boton, .app-aviso[data-modo="boton"] .solo-iphone { display: none; }
   .section-title {
     font-family: 'Sora', sans-serif;
     font-weight: 800;
@@ -504,6 +523,17 @@
       </div>
       <div class="sal-accesos" id="salAccesos"></div>
     </section>
+
+    <div class="app-aviso" id="appInstalar" hidden>
+      <img src="assets/app/icono-192.png" alt="" width="48" height="48">
+      <div class="app-txt">
+        <b>Instala Modo Cachimbo en tu celular</b>
+        <span class="solo-boton">Ábrelo como una app y repasa lo que ya viste aunque no tengas internet.</span>
+        <span class="solo-iphone">En Safari toca <svg viewBox="0 0 24 24" aria-label="Compartir"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> <b>Compartir</b> y luego <b>Agregar a inicio</b>.</span>
+      </div>
+      <button type="button" class="app-btn solo-boton" data-app-instalar>Instalar</button>
+      <button type="button" class="app-x" data-app-cerrar aria-label="Cerrar">✕</button>
+    </div>
 
     <div class="section-title" id="cursos">Mis cursos</div>
 
