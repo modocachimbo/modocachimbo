@@ -199,9 +199,9 @@
     .nav-preg .marcar { flex-basis: 100%; }
   }
 </style>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" media="print" onload="this.media='all'">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="document.dispatchEvent(new Event('mc:katex'))"></script>
 <script src="assets/mc-config.js"></script>
 <script src="assets/acceso.js"></script>
 <script src="assets/carreras.js"></script>
@@ -408,6 +408,8 @@
   // Figuras antiguas guardadas con la ruta del sitio oficial (/modocachimbo/assets/…): se vuelven relativas
   const grafico = g => String(g || '').replace(/(src=["'])\/modocachimbo\//g, '$1');
   function renderMath(el) {
+    // KaTeX carga sin bloquear la página: si aún no llegó, se dibuja apenas llegue
+    if (!window.renderMathInElement) { document.addEventListener('mc:katex', () => renderMath(el), { once: true }); return; }
     if (window.renderMathInElement) renderMathInElement(el, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false });
   }
   function ver(id) {
