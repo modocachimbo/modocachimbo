@@ -1,17 +1,22 @@
 -- =========================================================
--- Modo Cachimbo · Duelos 1 vs 1
+-- Modo Cachimbo · Duelos (de 2 a 4 jugadores)
 -- Cómo usarlo: Supabase → SQL Editor → New query → pega todo
--- este archivo → Run. Se puede volver a correr sin problema.
+-- este archivo → Run. Se puede volver a correr sin problema
+-- (también encima de la versión anterior, la de 1 vs 1).
 -- Necesita haber corrido antes supabase/01-perfiles.sql.
 --
 -- Cómo funciona:
---   · Un alumno crea un duelo (10 preguntas) y comparte el enlace.
---     El primero que lo abre y empieza queda como su rival.
---   · Cada uno lo juega cuando quiera dentro de 24 horas; las
---     preguntas son las mismas y tienen 60 segundos cada una.
---     El tiempo lo mide el servidor.
---   · Gana quien acierta más; si empatan, el más rápido.
---     Si se acaban las 24 horas, gana el que terminó.
+--   · Un alumno crea un duelo y comparte el código o el enlace.
+--     La sala queda abierta 5 minutos: hasta 3 amigos pueden entrar
+--     (4 jugadores con el creador). Entrar = empezar a jugar.
+--   · Todos responden las mismas preguntas, con 60 segundos cada
+--     una. El tiempo lo mide el servidor.
+--   · El resultado sale cuando la sala se cerró (o se llenó) y todos
+--     terminaron. Quien abandona se queda con lo que respondió; lo
+--     que le faltó cuenta como no respondido.
+--   · Puestos: más aciertos primero; si empatan, el más rápido.
+--     Solo el 1.º puesto suma al ranking (si dos empatan en el
+--     1.º, nadie suma).
 --   · ranking_duelos(): top 10 de la semana (lunes a domingo,
 --     hora de Lima) por duelos ganados, con apodo.
 --
@@ -26,7 +31,7 @@ create table if not exists public.duelos (
   id          uuid primary key default gen_random_uuid(),
   codigo      text not null unique check (codigo ~ '^[A-Z0-9]{6}$'),
   creador     uuid not null references auth.users (id) on delete cascade,
-  rival       uuid references auth.users (id) on delete set null,
+  rival       uuid references auth.users (id) on delete set null,   -- solo lo usaban los duelos 1 vs 1 antiguos
   titulo      text not null check (char_length(titulo) between 1 and 80),
   curso       text not null check (char_length(curso) between 1 and 40),
   fuente      text not null check (fuente in ('mezcla', 'libro', 'fijas', 'seminarios', 'banqueo')),
@@ -34,10 +39,15 @@ create table if not exists public.duelos (
   n           integer not null check (n between 3 and 15),
   revancha_de uuid references public.duelos (id) on delete set null,
   creado      timestamptz not null default now(),
-  vence       timestamptz not null default now() + interval '24 hours'
+  vence       timestamptz not null default now() + interval '5 minutes'   -- hasta cuándo se puede entrar
 );
+-- Columnas nuevas (los duelos que ya existían quedan como 1 vs 1)
+alter table public.duelos add column if not exists max_jug integer not null default 2 check (max_jug between 2 and 4);
+alter table public.duelos alter column max_jug set default 4;
+alter table public.duelos add column if not exists ciclo text check (ciclo is null or ciclo ~ '^[0-9]{4}-(I|II|III)$');
+alter table public.duelos add column if not exists tema text check (tema is null or char_length(tema) between 1 and 80);
+alter table public.duelos alter column vence set default now() + interval '5 minutes';
 create index if not exists duelos_creador on public.duelos (creador, creado desc);
-create index if not exists duelos_rival on public.duelos (rival, creado desc);
 create index if not exists duelos_creado on public.duelos (creado);
 create index if not exists duelos_revancha on public.duelos (revancha_de);
 alter table public.duelos enable row level security;
@@ -68,37 +78,45 @@ returns text language sql stable security definer set search_path = '' as $$
 $$;
 revoke all on function public.duelo_apodo(uuid) from public, anon, authenticated;
 
--- Ganador del duelo: uuid del ganador, o null si empatan / aún no hay resultado.
--- empate = true cuando terminaron igual.
-create or replace function public.duelo_resultado(d public.duelos, out ganador uuid, out empate boolean, out listo boolean)
+-- Tabla de posiciones del duelo. ms = tiempo total, contando 60 s por
+-- cada pregunta que le faltó. plazo = ya no le alcanza el tiempo
+-- (65 s por pregunta desde que empezó), así que cuenta como terminado.
+create or replace function public.duelo_tabla(d public.duelos)
+returns table (usuario uuid, aciertos integer, ms bigint, actual integer, terminado boolean,
+               plazo boolean, inicio timestamptz, puesto integer)
+language sql stable security definer set search_path = '' as $$
+  select j.usuario, j.aciertos, j.ms + greatest(d.n - j.actual, 0)::bigint * 60000, j.actual,
+         j.terminado is not null,
+         j.terminado is null and now() >= j.inicio + make_interval(secs => d.n * 65),
+         j.inicio,
+         (rank() over (order by j.aciertos desc, j.ms + greatest(d.n - j.actual, 0)::bigint * 60000))::integer
+  from public.duelo_jugadas j where j.duelo = d.id;
+$$;
+revoke all on function public.duelo_tabla(public.duelos) from public, anon, authenticated;
+
+-- Resultado: listo = ya es final. ganador = el único 1.º puesto
+-- (null si empatan en el 1.º o si jugó uno solo).
+drop function if exists public.duelo_resultado(public.duelos);
+create or replace function public.duelo_resultado(d public.duelos, out ganador uuid, out empate boolean, out listo boolean, out jugadores integer)
 language plpgsql stable security definer set search_path = '' as $$
 declare
-  a public.duelo_jugadas;
-  b public.duelo_jugadas;
+  pend integer;
+  primeros integer;
 begin
-  ganador := null; empate := false; listo := false;
-  if d.rival is null then
-    listo := now() >= d.vence;  -- nadie aceptó: sin resultado
-    return;
-  end if;
-  select * into a from public.duelo_jugadas j where j.duelo = d.id and j.usuario = d.creador;
-  select * into b from public.duelo_jugadas j where j.duelo = d.id and j.usuario = d.rival;
-  if a.terminado is not null and b.terminado is not null then
-    listo := true;
-    if a.aciertos > b.aciertos or (a.aciertos = b.aciertos and a.ms < b.ms) then ganador := d.creador;
-    elsif b.aciertos > a.aciertos or (a.aciertos = b.aciertos and b.ms < a.ms) then ganador := d.rival;
+  ganador := null; empate := false;
+  select count(*), count(*) filter (where not t.terminado and not t.plazo), count(*) filter (where t.puesto = 1)
+    into jugadores, pend, primeros
+  from public.duelo_tabla(d) t;
+  listo := pend = 0 and (now() >= d.vence or jugadores >= d.max_jug);
+  if listo and jugadores >= 2 then
+    if primeros = 1 then select t.usuario into ganador from public.duelo_tabla(d) t where t.puesto = 1;
     else empate := true;
-    end if;
-  elsif now() >= d.vence then
-    listo := true;
-    if a.terminado is not null then ganador := d.creador;
-    elsif b.terminado is not null then ganador := d.rival;
     end if;
   end if;
 end $$;
 revoke all on function public.duelo_resultado(public.duelos) from public, anon, authenticated;
 
--- Crea un duelo. p = { titulo, curso, fuente, revancha_de?, preguntas:[{ref, c, k}] }
+-- Crea un duelo. p = { titulo, curso, fuente, ciclo?, tema?, revancha_de?, preguntas:[{ref, c, k}] }
 -- Devuelve el código (6 letras/números) para el enlace duelo.html?d=CODIGO
 create or replace function public.crear_duelo(p jsonb)
 returns text language plpgsql volatile security definer set search_path = '' as $$
@@ -108,7 +126,7 @@ declare
   letras constant text := 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
   q jsonb;
   lista jsonb := '[]';
-  previo public.duelos;
+  previo uuid;
 begin
   if uid is null then raise exception 'sin sesión'; end if;
   if (select count(*) from public.duelos x where x.creador = uid and x.creado > now() - interval '1 day') >= 40 then
@@ -127,7 +145,8 @@ begin
   end loop;
 
   if coalesce(p ->> 'revancha_de', '') ~ '^[A-Z0-9]{6}$' then
-    select * into previo from public.duelos x where x.codigo = p ->> 'revancha_de' and uid in (x.creador, x.rival);
+    select x.id into previo from public.duelos x where x.codigo = p ->> 'revancha_de'
+      and (x.creador = uid or exists (select 1 from public.duelo_jugadas j where j.duelo = x.id and j.usuario = uid));
   end if;
 
   loop
@@ -136,21 +155,22 @@ begin
     exit when not exists (select 1 from public.duelos x where x.codigo = cod);
   end loop;
 
-  insert into public.duelos (codigo, creador, rival, titulo, curso, fuente, preguntas, n, revancha_de)
+  insert into public.duelos (codigo, creador, titulo, curso, fuente, ciclo, tema, preguntas, n, revancha_de, max_jug, vence)
   values (cod, uid,
-          -- en la revancha, el rival es el mismo de antes
-          case when previo.id is not null then (case when previo.creador = uid then previo.rival else previo.creador end) end,
           left(coalesce(nullif(trim(p ->> 'titulo'), ''), 'Duelo'), 80),
           left(coalesce(nullif(trim(p ->> 'curso'), ''), 'todos'), 40),
           case when p ->> 'fuente' in ('mezcla', 'libro', 'fijas', 'seminarios', 'banqueo') then p ->> 'fuente' else 'mezcla' end,
-          lista, jsonb_array_length(lista), previo.id);
+          case when coalesce(p ->> 'ciclo', '') ~ '^[0-9]{4}-(I|II|III)$' then p ->> 'ciclo' end,
+          left(nullif(trim(coalesce(p ->> 'tema', '')), ''), 80),
+          lista, jsonb_array_length(lista), previo, 4, now() + interval '5 minutes');
   return cod;
 end $$;
 revoke all on function public.crear_duelo(jsonb) from public, anon;
 grant execute on function public.crear_duelo(jsonb) to authenticated;
 
--- Estado de un duelo para la página. Las respuestas correctas solo
--- se muestran a quien ya terminó; el puntaje del otro, también.
+-- Estado de un duelo para la página. Los puntajes de los demás y las
+-- respuestas correctas solo se muestran a quien ya terminó (o cuando
+-- el resultado es final).
 create or replace function public.ver_duelo(p_codigo text)
 returns jsonb language plpgsql stable security definer set search_path = '' as $$
 declare
@@ -158,42 +178,57 @@ declare
   d public.duelos;
   r record;
   yo public.duelo_jugadas;
-  otro public.duelo_jugadas;
-  rol text;
-  otro_id uuid;
+  juega boolean;
+  mostrar boolean;
   rev text;
+  lista jsonb;
+  mi_puesto integer;
 begin
   if uid is null then raise exception 'sin sesión'; end if;
   select * into d from public.duelos x where x.codigo = upper(trim(p_codigo));
   if d.id is null then return null; end if;
-  rol := case when uid = d.creador then 'creador' when uid = d.rival then 'rival' end;
-  otro_id := case when rol = 'creador' then d.rival when rol = 'rival' then d.creador end;
   select * into yo from public.duelo_jugadas j where j.duelo = d.id and j.usuario = uid;
-  if otro_id is not null then select * into otro from public.duelo_jugadas j where j.duelo = d.id and j.usuario = otro_id; end if;
+  juega := yo.duelo is not null;
   select * into r from public.duelo_resultado(d);
+  mostrar := yo.terminado is not null or (r.listo and juega);
   select x.codigo into rev from public.duelos x where x.revancha_de = d.id order by x.creado desc limit 1;
+  select t.puesto into mi_puesto from public.duelo_tabla(d) t where t.usuario = uid;
+
+  select coalesce(jsonb_agg(jsonb_build_object(
+           'apodo', public.duelo_apodo(t.usuario),
+           'yo', t.usuario = uid,
+           'creador', t.usuario = d.creador,
+           'actual', t.actual,
+           'terminado', t.terminado or t.plazo,
+           'abandono', t.plazo,
+           'aciertos', case when mostrar or t.usuario = uid then t.aciertos end,
+           'ms', case when mostrar or t.usuario = uid then t.ms end,
+           'puesto', case when r.listo then t.puesto end
+         ) order by case when r.listo then t.puesto end, t.inicio), '[]')
+    into lista
+  from public.duelo_tabla(d) t;
 
   return jsonb_build_object(
-    'codigo', d.codigo, 'titulo', d.titulo, 'curso', d.curso, 'fuente', d.fuente, 'n', d.n,
-    'creado', d.creado, 'vence', d.vence, 'vencido', now() >= d.vence,
-    'rol', rol,
+    'codigo', d.codigo, 'titulo', d.titulo, 'curso', d.curso, 'fuente', d.fuente,
+    'ciclo', d.ciclo, 'tema', d.tema, 'n', d.n, 'max', d.max_jug,
+    'creado', d.creado, 'vence', d.vence, 'ahora', now(),
+    'cerrado', now() >= d.vence or r.jugadores >= d.max_jug,
+    'rol', case when juega then 'jugador' when uid = d.creador then 'creador' end,
     'creador', public.duelo_apodo(d.creador),
-    'rival', case when d.rival is not null then public.duelo_apodo(d.rival) end,
-    'yo', case when yo.duelo is not null then jsonb_build_object(
+    'soy_creador', uid = d.creador,
+    'jugadores', lista,
+    'yo', case when juega then jsonb_build_object(
             'actual', yo.actual, 'aciertos', yo.aciertos, 'ms', yo.ms,
             'terminado', yo.terminado is not null, 'respuestas', yo.respuestas) end,
-    'otro', case when otro.duelo is not null then jsonb_build_object(
-            'apodo', public.duelo_apodo(otro_id),
-            'actual', otro.actual, 'terminado', otro.terminado is not null,
-            'aciertos', case when yo.terminado is not null or r.listo then otro.aciertos end,
-            'ms', case when yo.terminado is not null or r.listo then otro.ms end) end,
     'resultado', case when r.listo then jsonb_build_object(
             'empate', r.empate,
             'gane', r.ganador is not null and r.ganador = uid,
-            'ganador', case when r.ganador is not null then public.duelo_apodo(r.ganador) end) end,
-    'correctas', case when yo.terminado is not null or (r.listo and rol is not null)
+            'ganador', case when r.ganador is not null then public.duelo_apodo(r.ganador) end,
+            'puesto', mi_puesto,
+            'jugadores', r.jugadores) end,
+    'correctas', case when mostrar
             then (select jsonb_agg((e ->> 'c')::integer order by n) from jsonb_array_elements(d.preguntas) with ordinality t(e, n)) end,
-    'preguntas', case when yo.terminado is not null or (r.listo and rol is not null)
+    'preguntas', case when mostrar
             then (select jsonb_agg(e ->> 'ref' order by n) from jsonb_array_elements(d.preguntas) with ordinality t(e, n)) end,
     'revancha', rev
   );
@@ -201,28 +236,26 @@ end $$;
 revoke all on function public.ver_duelo(text) from public, anon;
 grant execute on function public.ver_duelo(text) to authenticated;
 
--- Empieza (o retoma) la parte del alumno. El primero que entra y no es
--- el creador queda como rival. Devuelve las preguntas (sin la correcta),
--- la que le toca y cuántos milisegundos lleva viéndola.
+-- Entra al duelo y empieza (o retoma) la parte del alumno.
+-- Devuelve las preguntas (sin la correcta), la que le toca y cuántos
+-- milisegundos lleva viéndola.
 create or replace function public.empezar_duelo(p_codigo text)
 returns jsonb language plpgsql volatile security definer set search_path = '' as $$
 declare
   uid uuid := auth.uid();
   d public.duelos;
   j public.duelo_jugadas;
+  otros integer;
 begin
   if uid is null then raise exception 'sin sesión'; end if;
   select * into d from public.duelos x where x.codigo = upper(trim(p_codigo)) for update;
   if d.id is null then raise exception 'No existe ese duelo.'; end if;
-  if uid <> d.creador and d.rival is not null and uid <> d.rival then
-    raise exception 'Este duelo ya tiene rival.';
-  end if;
   select * into j from public.duelo_jugadas x where x.duelo = d.id and x.usuario = uid;
   if j.duelo is null then
-    if now() >= d.vence then raise exception 'Este duelo ya venció.'; end if;
-    if uid <> d.creador and d.rival is null then
-      update public.duelos x set rival = uid where x.id = d.id;
-    end if;
+    if now() >= d.vence then raise exception 'La sala de este duelo ya se cerró.'; end if;
+    -- el creador siempre tiene su lugar; los demás, los que quedan
+    select count(*) into otros from public.duelo_jugadas x where x.duelo = d.id and x.usuario <> d.creador;
+    if uid <> d.creador and otros >= d.max_jug - 1 then raise exception 'Este duelo ya está lleno.'; end if;
     insert into public.duelo_jugadas (duelo, usuario) values (d.id, uid) returning * into j;
   end if;
   return jsonb_build_object(
@@ -262,7 +295,8 @@ begin
   end if;
   q := d.preguntas -> j.actual;
   t := least((extract(epoch from (now() - j.visto)) * 1000)::bigint, 600000)::integer;
-  if t > 63000 or now() >= d.vence + interval '2 minutes' or op is null or op < 0 or op >= (q ->> 'k')::integer then
+  -- fuera de tiempo: la pregunta pasó los 63 s, o ya se acabó su plazo total
+  if t > 63000 or now() >= j.inicio + make_interval(secs => d.n * 65) or op is null or op < 0 or op >= (q ->> 'k')::integer then
     op := -1; t := 60000;
   end if;
   t := least(t, 60000);
@@ -283,38 +317,42 @@ end $$;
 revoke all on function public.responder_duelo(text, integer, integer) from public, anon;
 grant execute on function public.responder_duelo(text, integer, integer) to authenticated;
 
--- Mis últimos 20 duelos (creados por mí o aceptados)
+-- Mis últimos 20 duelos (creados por mí o en los que jugué).
+-- rival = los nombres de los demás jugadores.
+drop function if exists public.mis_duelos();
 create or replace function public.mis_duelos()
 returns table (codigo text, titulo text, rival text, creado timestamptz, estado text,
-               mis_aciertos integer, sus_aciertos integer, n integer)
+               mis_aciertos integer, n integer, puesto integer, jugadores integer)
 language plpgsql stable security definer set search_path = '' as $$
 declare
   uid uuid := auth.uid();
   d public.duelos;
   r record;
   yo public.duelo_jugadas;
-  otro public.duelo_jugadas;
-  otro_id uuid;
 begin
   if uid is null then raise exception 'sin sesión'; end if;
-  for d in select * from public.duelos x where x.creador = uid or x.rival = uid order by x.creado desc limit 20 loop
-    otro_id := case when d.creador = uid then d.rival else d.creador end;
-    yo := null; otro := null;
+  for d in select * from public.duelos x
+           where x.creador = uid or exists (select 1 from public.duelo_jugadas j where j.duelo = x.id and j.usuario = uid)
+           order by x.creado desc limit 20 loop
+    yo := null;
     select * into yo from public.duelo_jugadas j where j.duelo = d.id and j.usuario = uid;
-    if otro_id is not null then select * into otro from public.duelo_jugadas j where j.duelo = d.id and j.usuario = otro_id; end if;
     select * into r from public.duelo_resultado(d);
-    codigo := d.codigo; titulo := d.titulo; creado := d.creado; n := d.n;
-    rival := case when otro_id is not null then public.duelo_apodo(otro_id) end;
+    codigo := d.codigo; titulo := d.titulo; creado := d.creado; n := d.n; jugadores := r.jugadores;
+    select string_agg(public.duelo_apodo(t.usuario), ', ' order by t.inicio) into rival
+      from public.duelo_tabla(d) t where t.usuario <> uid;
+    puesto := null;
+    if r.listo then select t.puesto into puesto from public.duelo_tabla(d) t where t.usuario = uid; end if;
     estado := case
+      when r.listo and yo.duelo is null then 'no-jugaste'
       when r.listo and r.ganador = uid then 'ganaste'
-      when r.listo and r.empate then 'empate'
-      when r.listo and r.ganador is not null then 'perdiste'
+      when r.listo and r.empate and puesto = 1 then 'empate'
+      when r.listo and r.jugadores >= 2 then 'perdiste'
       when r.listo then 'sin-resultado'
-      when yo.duelo is null then 'te-toca'
+      when yo.duelo is null and now() < d.vence then 'te-toca'
+      when yo.duelo is null then 'no-jugaste'
       when yo.terminado is null then 'a-medias'
       else 'esperando' end;
     mis_aciertos := yo.aciertos;
-    sus_aciertos := case when yo.terminado is not null or r.listo then otro.aciertos end;
     return next;
   end loop;
 end $$;
@@ -331,7 +369,7 @@ language sql stable security definer set search_path = '' as $$
   ), ganados as (
     select (public.duelo_resultado(d)).ganador as usuario, d.creado
     from public.duelos d, semana
-    where d.creado >= semana.desde and d.rival is not null
+    where d.creado >= semana.desde
   ), cuenta as (
     select g.usuario, count(*) as ganados, min(g.creado) as primero
     from ganados g where g.usuario is not null group by g.usuario
