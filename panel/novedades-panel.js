@@ -53,7 +53,7 @@ async function avisarNovedad(d) {
   const e = await novEstado();
   if (e !== 'ok') return { ok: false, motivo: e };
   if (!REG) await cargarRegistro();
-  const info = ((REG && REG.cursos) || []).find(c => c.id === d.carpeta) || {};
+  const info = ((REG && REG.cursos) || []).find(c => c.id === String(d.carpeta).split('--')[0]) || {};
   const cliente = await MCAuth.listo;
   const r = await cliente.rpc('crear_novedad', {
     p_tipo: d.tipo, p_carpeta: d.carpeta, p_curso: d.curso, p_area: info.area || null,

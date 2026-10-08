@@ -252,9 +252,15 @@ function validarMeta() {
   const n = SUB.parse.preguntas.length;
   $('subResumen').innerHTML = errs.length
     ? `<span class="bad">Falta: ${errs.join(', ')}.</span>`
-    : `<b>${n} pregunta${n > 1 ? 's' : ''}</b> para ${esc(NOMBRE[curso])} · ${esc(ciclo)} · Tema ${esc(pad2(num))}${$('subDestino').value === 'fijas' ? ' · <b>Banco de Fijas</b>' : ''}`;
+    : `<b>${n} pregunta${n > 1 ? 's' : ''}</b> para ${esc(NOMBRE[curso])} · ${esc(ciclo)} · Tema ${esc(pad2(num))}${DESTINO_TXT[$('subDestino').value] ? ' · <b>' + DESTINO_TXT[$('subDestino').value].slice(3) + '</b>' : ''}`;
   $('subPublicar').disabled = !!errs.length;
 }
+
+// Carpeta donde se guarda según el destino: quimica · quimica--seminarios · quimica--banqueo
+function carpetaDestino(curso, destino) {
+  return destino === 'seminario' ? curso + '--seminarios' : destino === 'banqueo' ? curso + '--banqueo' : curso;
+}
+const DESTINO_TXT = { fijas: ' · Banco de Fijas', seminario: ' · Seminarios', banqueo: ' · Banqueo' };
 
 function armarPreguntas(carpeta, anio, tema, nombre) {
   const imagenes = [];
@@ -270,7 +276,7 @@ function armarPreguntas(carpeta, anio, tema, nombre) {
       const z = SUB.zonas[i + '|' + (k++)], st = z && z.estado();
       return st && st.cambio === 'nueva' ? '[IMG' + (der ? '-DER' : '') + ':' + subir(st) + ']' : '';
     });
-    const out = { text: q.lectura + text, topic: NOMBRE[carpeta] + ' · ' + nombre, options: q.options.map(o => ({ letter: o.letter, text: o.text })), correct: q.correct };
+    const out = { text: q.lectura + text, topic: NOMBRE[partesCarpeta(carpeta).curso] + ' · ' + nombre, options: q.options.map(o => ({ letter: o.letter, text: o.text })), correct: q.correct };
     const st = SUB.zonas[i + '|g'] && SUB.zonas[i + '|g'].estado();
     if (st && st.cambio === 'nueva') {
       const path = imgRuta(carpeta, anio, tema, st.img.ext);
@@ -283,12 +289,12 @@ function armarPreguntas(carpeta, anio, tema, nombre) {
 }
 
 async function publicarTema() {
-  const carpeta = $('subCurso').value, anio = normalizarCiclo($('subCiclo').value), tema = pad2($('subNum').value.trim()), nombre = $('subNombre').value.trim();
+  const destino = $('subDestino').value;
+  const carpeta = carpetaDestino($('subCurso').value, destino), anio = normalizarCiclo($('subCiclo').value), tema = pad2($('subNum').value.trim()), nombre = $('subNombre').value.trim();
   const btn = $('subPublicar');
   btn.disabled = true; btn.innerHTML = '<span class="spin-s"></span> Revisando…';
   try {
     // ¿Ya existe el tema?
-    const destino = $('subDestino').value;
     let existente = null, temasCurso = null;
     if (destino === 'fijas') {
       try { existente = ((await api('archivo', { carpeta, anio: anio + '-fijas' })).temas || []).find(t => pad2(t.num) === tema) || null; } catch (e) { existente = null; }
@@ -307,17 +313,17 @@ async function publicarTema() {
     }
     const { preguntas, imagenes } = armarPreguntas(carpeta, anio, tema, nombre);
     btn.innerHTML = '<span class="spin-s"></span> ' + (imagenes.length ? `Subiendo ${imagenes.length} imagen${imagenes.length > 1 ? 'es' : ''} y publicando…` : 'Publicando…');
-    const r = await api('publicarTema', { carpeta, curso: NOMBRE[carpeta], anio, tema, nombre, modo, destino, preguntas: JSON.stringify(preguntas), imagenes: JSON.stringify(imagenes) });
+    const r = await api('publicarTema', { carpeta, curso: NOMBRE[carpeta], anio, tema, nombre, modo, destino: destino === 'fijas' ? 'fijas' : 'libro', preguntas: JSON.stringify(preguntas), imagenes: JSON.stringify(imagenes) });
     delete cacheManifest[carpeta]; delete cacheArchivos[carpeta + '|' + anio];
     ss('del', SUB.borrador);
-    const url = SITE_ROOT + carpeta + '/libros/tema.html?year=' + encodeURIComponent(anio) + '&tema=' + encodeURIComponent(tema);
+    const url = SITE_ROOT + rutaWeb(carpeta) + '/tema.html?year=' + encodeURIComponent(anio) + '&tema=' + encodeURIComponent(tema);
     $('subPaso2').hidden = true;
     $('subListo').hidden = false;
     $('subListo').innerHTML = `<div class="done">
         <div class="ico">${ICON_OK}</div>
         <div class="eyebrow">Publicado</div>
         <h3>¡Tema ${esc(tema)} publicado!</h3>
-        <p><b style="color:#f5ffcc">${esc(NOMBRE[carpeta])} · ${esc(anio)}${destino === 'fijas' ? ' · Banco de Fijas' : ''} · ${esc(nombre)}</b><br>
+        <p><b style="color:#f5ffcc">${esc(NOMBRE[partesCarpeta(carpeta).curso])} · ${esc(anio)}${DESTINO_TXT[destino] || ''} · ${esc(nombre)}</b><br>
         ${modo === 'agregar' ? (preguntas.length === 1 ? 'Se agregó 1 pregunta' : 'Se agregaron ' + preguntas.length + ' preguntas') + '; el tema ahora tiene ' + r.preguntasTema + '.' : r.preguntasTema + ' preguntas' + (imagenes.length ? ' y ' + imagenes.length + ' imagen' + (imagenes.length > 1 ? 'es' : '') : '') + '.'}
         ${destino === 'fijas' ? 'Para usarlo, en <b>Cursos → Repaso y Fijas</b> elige "Banco de Fijas propio".' : `El año ${esc(anio)} tiene ${r.temas} tema${r.temas > 1 ? 's' : ''}.`}<br>Los alumnos lo verán en 1 a 10 minutos.</p>
         <div class="mfoot" style="justify-content:center;">
@@ -328,7 +334,7 @@ async function publicarTema() {
     if (modo === 'nuevo' && destino !== 'fijas') {
       const res = document.createElement('div'); res.className = 'nv-res'; res.textContent = 'Avisando a los alumnos…';
       $('subListo').querySelector('.mfoot').before(res);
-      const d = { tipo: temasCurso === 0 ? 'curso' : 'tema', carpeta, curso: NOMBRE[carpeta], anio, tema, nombre };
+      const d = { tipo: temasCurso === 0 && !/--/.test(carpeta) ? 'curso' : 'tema', carpeta, curso: NOMBRE[carpeta], anio, tema, nombre };
       avisarNovedad(d).then(r => pintarResultadoNovedad(res, d, r), () => pintarResultadoNovedad(res, d, { ok: false, motivo: 'error' }));
     }
     $('subOtro').addEventListener('click', () => {

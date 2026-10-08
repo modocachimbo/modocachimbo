@@ -35,14 +35,17 @@
     return p + (q.length ? '?' + q.join('&') : '');
   }
 
-  function urlTema(n) { return n.carpeta + '/libros/tema.html?year=' + n.anio + '&tema=' + pad2(n.tema); }
-  function destino(n) { return n.tipo === 'curso' ? n.carpeta + '/' : urlTema(n); }
+  // carpeta "quimica" = Libro; "quimica--seminarios" / "quimica--banqueo" = esas secciones
+  function curso(n) { return String(n.carpeta).split('--')[0]; }
+  function seccion(n) { return String(n.carpeta).split('--')[1] || 'libros'; }
+  function urlTema(n) { return curso(n) + '/' + seccion(n) + '/tema.html?year=' + n.anio + '&tema=' + pad2(n.tema); }
+  function destino(n) { return n.tipo === 'curso' ? curso(n) + '/' : urlTema(n); }
 
   // Páginas cuyo enlace lleva hacia este aviso
   function claves(n) {
-    var c = n.carpeta, k = [c + '/', c + '/libros/'];
+    var c = curso(n), s = seccion(n), k = [c + '/', c + '/' + s + '/'];
     if (n.area) k.push('areas/' + n.area + '.html');
-    if (n.anio) k.push(c + '/libros/temario.html?year=' + n.anio);
+    if (n.anio) k.push(c + '/' + s + '/temario.html?year=' + n.anio);
     if (n.tipo === 'tema' && n.anio && n.tema) k.push(urlTema(n));
     return k;
   }

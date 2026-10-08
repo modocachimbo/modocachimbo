@@ -573,6 +573,8 @@ E) Alternativa"></textarea>
             <label class="dest">Destino
               <select class="inp" id="subDestino">
                 <option value="libro">Libro — temas del año (también los usa el Repaso)</option>
+                <option value="seminario">Seminarios del ciclo</option>
+                <option value="banqueo">Banqueo del ciclo</option>
                 <option value="fijas">Banco de Fijas propio del año</option>
               </select>
             </label>
@@ -595,10 +597,12 @@ E) Alternativa"></textarea>
           <div>
             <div class="eyebrow">Tus libros en GitHub</div>
             <h1>Editar preguntas</h1>
-            <p>Elige curso, año y tema. Los cambios se publican en la web en 1 a 10 minutos.</p>
+            <p>Elige sección, curso, año y tema. Los cambios se publican en la web en 1 a 10 minutos.</p>
           </div>
         </div>
         <div class="picker">
+          <div class="lbl">Sección</div>
+          <div class="chips" id="pkSeccion"></div>
           <div class="lbl">Curso</div>
           <div class="chips" id="pkCurso"></div>
           <div id="pkAnioWrap" hidden><div class="lbl">Año</div><div class="chips" id="pkAnio"></div></div>
@@ -763,7 +767,17 @@ E) Alternativa"></textarea>
     ['historia-universal','Historia Universal'],['lenguaje','Lenguaje'],['literatura','Literatura'],
     ['psicologia','Psicología'],['quimica','Química'],['raz-verbal','Razonamiento Verbal'],['trigonometria','Trigonometría']
   ];
-  let NOMBRE = Object.fromEntries(CURSOS);
+  // Secciones de cada curso: la "carpeta" del Libro es el curso (quimica);
+  // Seminarios y Banqueo usan quimica--seminarios / quimica--banqueo
+  const SECCIONES = [['libros', 'Libro'], ['seminarios', 'Seminarios'], ['banqueo', 'Banqueo']];
+  function claveSeccion(curso, sec) { return sec && sec !== 'libros' ? curso + '--' + sec : curso; }
+  function partesCarpeta(c) { const m = String(c || '').match(/^(.+?)(?:--(seminarios|banqueo))?$/); return { curso: m[1], seccion: m[2] || 'libros' }; }
+  function rutaWeb(c) { const x = partesCarpeta(c); return x.curso + '/' + x.seccion; }
+  function conSecciones(n) {
+    Object.keys(n).forEach(id => { if (!/--/.test(id)) { n[id + '--seminarios'] = n[id] + ' · Seminarios'; n[id + '--banqueo'] = n[id] + ' · Banqueo'; } });
+    return n;
+  }
+  let NOMBRE = conSecciones(Object.fromEntries(CURSOS));
   let REG = null; // registro de cursos (assets/cursos.json)
   async function cargarRegistro() {
     try {
@@ -771,7 +785,7 @@ E) Alternativa"></textarea>
       const ordenArea = {}; (REG.areas || []).forEach((a, i) => { ordenArea[a.id] = i; });
       const lista = (REG.cursos || []).slice().sort((a, b) => (ordenArea[a.area] ?? 99) - (ordenArea[b.area] ?? 99) || (a.orden || 0) - (b.orden || 0));
       CURSOS = lista.map(c => [c.id, c.nombre + (c.oculto ? ' (oculto)' : '')]);
-      NOMBRE = Object.fromEntries(lista.map(c => [c.id, c.nombre]));
+      NOMBRE = conSecciones(Object.fromEntries(lista.map(c => [c.id, c.nombre])));
     } catch (e) { /* si falla, se queda la lista por defecto */ }
     return REG;
   }
@@ -785,7 +799,7 @@ E) Alternativa"></textarea>
   let filtroEstado = 'Pendiente';
   const cacheArchivos = {};   // "carpeta|anio" -> temas
   const cacheManifest = {};   // carpeta -> manifest
-  const sel = { carpeta: null, anio: null, tema: null };
+  const sel = { carpeta: null, anio: null, tema: null, seccion: 'libros' };
 
   /* ---------- utilidades ---------- */
   function ss(action, k, v) { try { if (action === 'get') return sessionStorage.getItem(k); if (action === 'set') sessionStorage.setItem(k, v); if (action === 'del') sessionStorage.removeItem(k); } catch (e) {} return null; }
@@ -1044,8 +1058,14 @@ E) Alternativa"></textarea>
   }
 
   async function renderPicker() {
-    $('pkCurso').innerHTML = chipsHtml(CURSOS, sel.carpeta);
-    $('pkCurso').querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => { sel.carpeta = c.dataset.v; sel.anio = null; sel.tema = null; renderPicker(); }));
+    const cursoSel = sel.carpeta ? partesCarpeta(sel.carpeta).curso : null;
+    if (sel.carpeta) sel.seccion = partesCarpeta(sel.carpeta).seccion;
+    $('pkSeccion').innerHTML = chipsHtml(SECCIONES, sel.seccion);
+    $('pkSeccion').querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+      sel.seccion = c.dataset.v; sel.carpeta = cursoSel ? claveSeccion(cursoSel, sel.seccion) : null; sel.anio = null; sel.tema = null; renderPicker();
+    }));
+    $('pkCurso').innerHTML = chipsHtml(CURSOS, cursoSel);
+    $('pkCurso').querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => { sel.carpeta = claveSeccion(c.dataset.v, sel.seccion); sel.anio = null; sel.tema = null; renderPicker(); }));
     $('pkAnioWrap').hidden = !sel.carpeta;
     $('pkTemaWrap').hidden = true;
     if (!sel.carpeta) { $('qlist').innerHTML = '<div class="state-msg">Elige un curso para ver sus preguntas.</div>'; return; }
@@ -1053,7 +1073,7 @@ E) Alternativa"></textarea>
     $('pkAnio').innerHTML = '<span class="hint">Cargando…</span>';
     try {
       const m = await getManifest(sel.carpeta);
-      if (!m.length) { $('pkAnio').innerHTML = '<span class="hint">Este curso aún no tiene libros publicados.</span>'; $('qlist').innerHTML = ''; return; }
+      if (!m.length) { $('pkAnio').innerHTML = '<span class="hint">' + (sel.seccion === 'libros' ? 'Este curso aún no tiene libros publicados.' : 'Aún no hay temas publicados en esta sección.') + '</span>'; $('qlist').innerHTML = ''; return; }
       if (!sel.anio && m.length === 1) sel.anio = m[0].id;
       $('pkAnio').innerHTML = chipsHtml(m.map(x => [x.id, x.label || x.id, x.temas + ' temas']), sel.anio);
       $('pkAnio').querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => { sel.anio = c.dataset.v; sel.tema = null; renderPicker(); }));
