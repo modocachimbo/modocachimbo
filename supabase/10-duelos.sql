@@ -6,14 +6,17 @@
 -- Necesita haber corrido antes supabase/01-perfiles.sql.
 --
 -- Cómo funciona:
---   · Un alumno crea un duelo y comparte el código o el enlace.
---     La sala queda abierta 5 minutos: hasta 3 amigos pueden entrar
---     (4 jugadores con el creador). Entrar = empezar a jugar.
+--   · Un alumno crea un duelo para 2, 3 o 4 jugadores y comparte el
+--     código. Los demás entran a la sala de espera.
+--   · El duelo empieza para todos a la vez (cuenta 3, 2, 1): cuando
+--     el creador toca Iniciar (con al menos 2 en la sala) o, si marcó
+--     "inicio automático", apenas se llena la sala.
+--   · Si nadie lo inicia en 5 minutos, la sala se cierra sola.
 --   · Todos responden las mismas preguntas, con 60 segundos cada
 --     una. El tiempo lo mide el servidor.
---   · El resultado sale cuando la sala se cerró (o se llenó) y todos
---     terminaron. Quien abandona se queda con lo que respondió; lo
---     que le faltó cuenta como no respondido.
+--   · El resultado sale cuando todos terminaron. Quien abandona se
+--     queda con lo que respondió; lo que le faltó cuenta como no
+--     respondido.
 --   · Puestos: más aciertos primero; si empatan, el más rápido.
 --     Solo el 1.º puesto suma al ranking (si dos empatan en el
 --     1.º, nadie suma).
@@ -39,7 +42,7 @@ create table if not exists public.duelos (
   n           integer not null check (n between 3 and 15),
   revancha_de uuid references public.duelos (id) on delete set null,
   creado      timestamptz not null default now(),
-  vence       timestamptz not null default now() + interval '5 minutes'   -- hasta cuándo se puede entrar
+  vence       timestamptz not null default now() + interval '5 minutes'   -- hasta cuándo se puede iniciar
 );
 -- Columnas nuevas (los duelos que ya existían quedan como 1 vs 1)
 alter table public.duelos add column if not exists max_jug integer not null default 2 check (max_jug between 2 and 4);
@@ -47,6 +50,9 @@ alter table public.duelos alter column max_jug set default 4;
 alter table public.duelos add column if not exists ciclo text check (ciclo is null or ciclo ~ '^[0-9]{4}-(I|II|III)$');
 alter table public.duelos add column if not exists tema text check (tema is null or char_length(tema) between 1 and 80);
 alter table public.duelos alter column vence set default now() + interval '5 minutes';
+alter table public.duelos add column if not exists en_sala boolean not null default false;  -- false = duelos antiguos (cada uno jugaba cuando quería)
+alter table public.duelos add column if not exists auto boolean not null default false;     -- empieza solo cuando se llena la sala
+alter table public.duelos add column if not exists empieza timestamptz;                     -- cuándo aparece la 1.ª pregunta para todos
 create index if not exists duelos_creador on public.duelos (creador, creado desc);
 create index if not exists duelos_creado on public.duelos (creado);
 create index if not exists duelos_revancha on public.duelos (revancha_de);
@@ -81,13 +87,15 @@ revoke all on function public.duelo_apodo(uuid) from public, anon, authenticated
 -- Tabla de posiciones del duelo. ms = tiempo total, contando 60 s por
 -- cada pregunta que le faltó. plazo = ya no le alcanza el tiempo
 -- (65 s por pregunta desde que empezó), así que cuenta como terminado.
+-- En la sala de espera (aún no empieza) nadie tiene plazo.
 create or replace function public.duelo_tabla(d public.duelos)
 returns table (usuario uuid, aciertos integer, ms bigint, actual integer, terminado boolean,
                plazo boolean, inicio timestamptz, puesto integer)
 language sql stable security definer set search_path = '' as $$
   select j.usuario, j.aciertos, j.ms + greatest(d.n - j.actual, 0)::bigint * 60000, j.actual,
          j.terminado is not null,
-         j.terminado is null and now() >= j.inicio + make_interval(secs => d.n * 65),
+         j.terminado is null and (d.empieza is not null or not d.en_sala)
+           and now() >= coalesce(d.empieza, j.inicio) + make_interval(secs => d.n * 65),
          j.inicio,
          (rank() over (order by j.aciertos desc, j.ms + greatest(d.n - j.actual, 0)::bigint * 60000))::integer
   from public.duelo_jugadas j where j.duelo = d.id;
@@ -107,7 +115,11 @@ begin
   select count(*), count(*) filter (where not t.terminado and not t.plazo), count(*) filter (where t.puesto = 1)
     into jugadores, pend, primeros
   from public.duelo_tabla(d) t;
-  listo := pend = 0 and (now() >= d.vence or jugadores >= d.max_jug);
+  if d.en_sala and d.empieza is null then
+    listo := now() >= d.vence; jugadores := 0;   -- nadie lo inició: se canceló
+    return;
+  end if;
+  listo := pend = 0 and (d.en_sala or now() >= d.vence or jugadores >= d.max_jug);
   if listo and jugadores >= 2 then
     if primeros = 1 then select t.usuario into ganador from public.duelo_tabla(d) t where t.puesto = 1;
     else empate := true;
@@ -116,7 +128,8 @@ begin
 end $$;
 revoke all on function public.duelo_resultado(public.duelos) from public, anon, authenticated;
 
--- Crea un duelo. p = { titulo, curso, fuente, ciclo?, tema?, revancha_de?, preguntas:[{ref, c, k}] }
+-- Crea un duelo y mete al creador en la sala.
+-- p = { titulo, curso, fuente, ciclo?, tema?, jugadores (2..4), auto, revancha_de?, preguntas:[{ref, c, k}] }
 -- Devuelve el código (6 letras/números) para el enlace duelo.html?d=CODIGO
 create or replace function public.crear_duelo(p jsonb)
 returns text language plpgsql volatile security definer set search_path = '' as $$
@@ -127,6 +140,7 @@ declare
   q jsonb;
   lista jsonb := '[]';
   previo uuid;
+  nuevo uuid;
 begin
   if uid is null then raise exception 'sin sesión'; end if;
   if (select count(*) from public.duelos x where x.creador = uid and x.creado > now() - interval '1 day') >= 40 then
@@ -155,14 +169,18 @@ begin
     exit when not exists (select 1 from public.duelos x where x.codigo = cod);
   end loop;
 
-  insert into public.duelos (codigo, creador, titulo, curso, fuente, ciclo, tema, preguntas, n, revancha_de, max_jug, vence)
+  insert into public.duelos (codigo, creador, titulo, curso, fuente, ciclo, tema, preguntas, n, revancha_de, max_jug, auto, en_sala, vence)
   values (cod, uid,
           left(coalesce(nullif(trim(p ->> 'titulo'), ''), 'Duelo'), 80),
           left(coalesce(nullif(trim(p ->> 'curso'), ''), 'todos'), 40),
           case when p ->> 'fuente' in ('mezcla', 'libro', 'fijas', 'seminarios', 'banqueo') then p ->> 'fuente' else 'mezcla' end,
           case when coalesce(p ->> 'ciclo', '') ~ '^[0-9]{4}-(I|II|III)$' then p ->> 'ciclo' end,
           left(nullif(trim(coalesce(p ->> 'tema', '')), ''), 80),
-          lista, jsonb_array_length(lista), previo, 4, now() + interval '5 minutes');
+          lista, jsonb_array_length(lista), previo,
+          case when p ->> 'jugadores' in ('2', '3', '4') then (p ->> 'jugadores')::integer else 2 end,
+          coalesce((p ->> 'auto')::boolean, false), true, now() + interval '5 minutes')
+  returning id into nuevo;
+  insert into public.duelo_jugadas (duelo, usuario) values (nuevo, uid);
   return cod;
 end $$;
 revoke all on function public.crear_duelo(jsonb) from public, anon;
@@ -212,7 +230,10 @@ begin
     'codigo', d.codigo, 'titulo', d.titulo, 'curso', d.curso, 'fuente', d.fuente,
     'ciclo', d.ciclo, 'tema', d.tema, 'n', d.n, 'max', d.max_jug,
     'creado', d.creado, 'vence', d.vence, 'ahora', now(),
-    'cerrado', now() >= d.vence or r.jugadores >= d.max_jug,
+    'cerrado', d.empieza is not null or now() >= d.vence or (select count(*) from public.duelo_jugadas j where j.duelo = d.id) >= d.max_jug,
+    'en_sala', d.en_sala, 'auto', d.auto,
+    'empieza', d.empieza,
+    'iniciado', d.empieza is not null and now() >= d.empieza,
     'rol', case when juega then 'jugador' when uid = d.creador then 'creador' end,
     'creador', public.duelo_apodo(d.creador),
     'soy_creador', uid = d.creador,
@@ -236,9 +257,70 @@ end $$;
 revoke all on function public.ver_duelo(text) from public, anon;
 grant execute on function public.ver_duelo(text) to authenticated;
 
--- Entra al duelo y empieza (o retoma) la parte del alumno.
--- Devuelve las preguntas (sin la correcta), la que le toca y cuántos
--- milisegundos lleva viéndola.
+-- Entra a la sala de espera. Si el duelo es automático y con este
+-- jugador se llena, arranca (3 s de cuenta regresiva).
+create or replace function public.entrar_duelo(p_codigo text)
+returns jsonb language plpgsql volatile security definer set search_path = '' as $$
+declare
+  uid uuid := auth.uid();
+  d public.duelos;
+  hay integer;
+begin
+  if uid is null then raise exception 'sin sesión'; end if;
+  select * into d from public.duelos x where x.codigo = upper(trim(p_codigo)) for update;
+  if d.id is null then raise exception 'No existe ese duelo.'; end if;
+  if exists (select 1 from public.duelo_jugadas x where x.duelo = d.id and x.usuario = uid) then return public.ver_duelo(p_codigo); end if;
+  if not d.en_sala then raise exception 'Este duelo es de la versión anterior; crea uno nuevo.'; end if;
+  if d.empieza is not null then raise exception 'Este duelo ya empezó.'; end if;
+  if now() >= d.vence then raise exception 'La sala de este duelo ya se cerró.'; end if;
+  select count(*) into hay from public.duelo_jugadas x where x.duelo = d.id;
+  if hay >= d.max_jug then raise exception 'Este duelo ya está lleno.'; end if;
+  insert into public.duelo_jugadas (duelo, usuario) values (d.id, uid);
+  if d.auto and hay + 1 >= d.max_jug then perform public.duelo_arrancar(d.id); end if;
+  return public.ver_duelo(p_codigo);
+end $$;
+revoke all on function public.entrar_duelo(text) from public, anon;
+grant execute on function public.entrar_duelo(text) to authenticated;
+
+-- Arranca el duelo para todos: la 1.ª pregunta aparece en 4 s (3, 2, 1, ¡ya!)
+create or replace function public.duelo_arrancar(p_id uuid)
+returns void language plpgsql volatile security definer set search_path = '' as $$
+declare
+  t timestamptz := now() + interval '4 seconds';
+begin
+  update public.duelos x set empieza = t where x.id = p_id and x.empieza is null;
+  if found then
+    update public.duelo_jugadas j set inicio = t, visto = t where j.duelo = p_id;
+  end if;
+end $$;
+revoke all on function public.duelo_arrancar(uuid) from public, anon, authenticated;
+
+-- El creador inicia el duelo con los que estén en la sala (al menos 2)
+create or replace function public.iniciar_duelo(p_codigo text)
+returns jsonb language plpgsql volatile security definer set search_path = '' as $$
+declare
+  uid uuid := auth.uid();
+  d public.duelos;
+begin
+  if uid is null then raise exception 'sin sesión'; end if;
+  select * into d from public.duelos x where x.codigo = upper(trim(p_codigo)) for update;
+  if d.id is null then raise exception 'No existe ese duelo.'; end if;
+  if d.creador <> uid then raise exception 'Solo quien creó el duelo puede iniciarlo.'; end if;
+  if d.empieza is null then
+    if now() >= d.vence then raise exception 'La sala de este duelo ya se cerró.'; end if;
+    if (select count(*) from public.duelo_jugadas x where x.duelo = d.id) < 2 then
+      raise exception 'Espera a que entre al menos un amigo.';
+    end if;
+    perform public.duelo_arrancar(d.id);
+  end if;
+  return public.ver_duelo(p_codigo);
+end $$;
+revoke all on function public.iniciar_duelo(text) from public, anon;
+grant execute on function public.iniciar_duelo(text) to authenticated;
+
+-- Preguntas del jugador (sin la correcta), la que le toca y cuántos
+-- milisegundos lleva viéndola. Si aún no empieza: { espera: ms, preguntas }
+-- (las preguntas sin la correcta, para que se vayan cargando).
 create or replace function public.empezar_duelo(p_codigo text)
 returns jsonb language plpgsql volatile security definer set search_path = '' as $$
 declare
@@ -251,9 +333,16 @@ begin
   select * into d from public.duelos x where x.codigo = upper(trim(p_codigo)) for update;
   if d.id is null then raise exception 'No existe ese duelo.'; end if;
   select * into j from public.duelo_jugadas x where x.duelo = d.id and x.usuario = uid;
-  if j.duelo is null then
+  if d.en_sala then
+    if j.duelo is null then raise exception 'No entraste a este duelo.'; end if;
+    if d.empieza is null then raise exception 'El duelo aún no empieza.'; end if;
+    if now() < d.empieza then
+      return jsonb_build_object('espera', (extract(epoch from (d.empieza - now())) * 1000)::bigint,
+        'preguntas', (select jsonb_agg(e ->> 'ref' order by n) from jsonb_array_elements(d.preguntas) with ordinality t(e, n)));
+    end if;
+  elsif j.duelo is null then
+    -- duelos antiguos: entrar = empezar
     if now() >= d.vence then raise exception 'La sala de este duelo ya se cerró.'; end if;
-    -- el creador siempre tiene su lugar; los demás, los que quedan
     select count(*) into otros from public.duelo_jugadas x where x.duelo = d.id and x.usuario <> d.creador;
     if uid <> d.creador and otros >= d.max_jug - 1 then raise exception 'Este duelo ya está lleno.'; end if;
     insert into public.duelo_jugadas (duelo, usuario) values (d.id, uid) returning * into j;
@@ -262,7 +351,7 @@ begin
     'preguntas', (select jsonb_agg(e ->> 'ref' order by n) from jsonb_array_elements(d.preguntas) with ordinality t(e, n)),
     'actual', j.actual, 'aciertos', j.aciertos, 'respuestas', j.respuestas,
     'terminado', j.terminado is not null,
-    'lleva', (extract(epoch from (now() - j.visto)) * 1000)::bigint
+    'lleva', greatest((extract(epoch from (now() - j.visto)) * 1000)::bigint, 0)
   );
 end $$;
 revoke all on function public.empezar_duelo(text) from public, anon;
@@ -289,6 +378,7 @@ begin
   select * into j from public.duelo_jugadas x where x.duelo = d.id and x.usuario = uid for update;
   if j.duelo is null then raise exception 'Primero empieza el duelo.'; end if;
   if j.terminado is not null then raise exception 'Ya terminaste este duelo.'; end if;
+  if d.en_sala and (d.empieza is null or now() < d.empieza) then raise exception 'El duelo aún no empieza.'; end if;
   if p_i is distinct from j.actual then
     -- respuesta repetida o vieja (p. ej. doble clic): se devuelve el estado sin cambiar nada
     return jsonb_build_object('repetida', true, 'actual', j.actual, 'aciertos', j.aciertos);
@@ -296,7 +386,7 @@ begin
   q := d.preguntas -> j.actual;
   t := least((extract(epoch from (now() - j.visto)) * 1000)::bigint, 600000)::integer;
   -- fuera de tiempo: la pregunta pasó los 63 s, o ya se acabó su plazo total
-  if t > 63000 or now() >= j.inicio + make_interval(secs => d.n * 65) or op is null or op < 0 or op >= (q ->> 'k')::integer then
+  if t > 63000 or now() >= coalesce(d.empieza, j.inicio) + make_interval(secs => d.n * 65) or op is null or op < 0 or op >= (q ->> 'k')::integer then
     op := -1; t := 60000;
   end if;
   t := least(t, 60000);
@@ -343,6 +433,8 @@ begin
     puesto := null;
     if r.listo then select t.puesto into puesto from public.duelo_tabla(d) t where t.usuario = uid; end if;
     estado := case
+      when d.en_sala and d.empieza is null and r.listo then 'cancelado'
+      when d.en_sala and d.empieza is null then 'en-sala'
       when r.listo and yo.duelo is null then 'no-jugaste'
       when r.listo and r.ganador = uid then 'ganaste'
       when r.listo and r.empate and puesto = 1 then 'empate'

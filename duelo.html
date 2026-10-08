@@ -86,7 +86,7 @@
   .estado { font-size: 11.5px; font-weight: 700; border-radius: 100px; padding: 4px 10px; white-space: nowrap; background: rgba(255,255,255,.06); color: var(--dim); }
   .estado.ganaste { background: rgba(74,222,128,.14); color: var(--ok); }
   .estado.perdiste { background: rgba(248,113,113,.12); color: var(--bad); }
-  .estado.te-toca, .estado.a-medias { background: var(--accent-soft); color: var(--accent); }
+  .estado.te-toca, .estado.a-medias, .estado.en-sala { background: var(--accent-soft); color: var(--accent); }
   .rank { list-style: none; display: grid; gap: 6px; }
   .rank li { display: flex; align-items: center; gap: 10px; background: var(--surface-2); border-radius: 12px; padding: 9px 12px; font-variant-numeric: tabular-nums; }
   .rank li .p { width: 26px; display: grid; place-items: center; font-family: 'Sora', sans-serif; font-weight: 800; color: var(--faint); flex-shrink: 0; }
@@ -199,6 +199,14 @@
   @keyframes entra { from { transform: scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
   @media (max-width: 480px) { .sala { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
+  .check { display: flex; gap: 10px; align-items: flex-start; margin-top: 4px; font-size: 13px !important; color: var(--dim) !important; cursor: pointer; text-transform: none !important; letter-spacing: 0 !important; font-weight: 400 !important; }
+  .check b { color: var(--text); }
+  .check input { width: 18px; height: 18px; accent-color: var(--accent); margin-top: 1px; flex-shrink: 0; }
+  .cuenta { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: rgba(5,5,5,.92); text-align: center; }
+  .cuenta b { display: block; font: 800 clamp(110px, 30vw, 180px) 'Sora', sans-serif; color: var(--accent); line-height: 1; animation: pulso 1s ease-out infinite; }
+  .cuenta span { display: block; margin-top: 10px; font: 700 18px 'Sora', sans-serif; color: var(--dim); }
+  @keyframes pulso { from { transform: scale(1.35); opacity: .3; } 30% { transform: scale(1); opacity: 1; } }
+
   /* Colores de cada jugador */
   .c0 { --jc: var(--accent); } .c1 { --jc: #f9a8d4; } .c2 { --jc: #67e8f9; } .c3 { --jc: #fdba74; }
   .avatar.c1, .avatar.c2, .avatar.c3 { background: var(--jc); }
@@ -246,7 +254,7 @@
     .carril { grid-template-columns: 58px minmax(0, 1fr) 40px; }
     .vs { gap: 8px; }
   }
-  @media (prefers-reduced-motion: reduce) { .flash, .pod, .pod .mc-medalla, .puesto-sala.entra .avatar, .cierre i { animation: none; } .carril .pista i { transition: none; } .confeti { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .flash, .pod, .pod .mc-medalla, .puesto-sala.entra .avatar, .cierre i, .cuenta b { animation: none; } .carril .pista i { transition: none; } .confeti { display: none; } }
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" media="print" onload="this.media='all'">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
@@ -297,13 +305,18 @@
           <p class="nota" id="fuenteNota"></p>
         </div>
         <div class="campo">
+          <span class="lbl">Jugadores</span>
+          <div class="chips" id="jugadores"><button type="button" data-j="2" class="on">2 · VS</button><button type="button" data-j="3">3</button><button type="button" data-j="4">4</button></div>
+          <label class="check"><input type="checkbox" id="chkAuto" checked><span><b>Inicio automático:</b> empieza solo apenas se llena la sala. Si lo quitas, tú tocas <b>Iniciar</b>.</span></label>
+        </div>
+        <div class="campo">
           <span class="lbl">Preguntas</span>
           <div class="chips" id="cantidad"><button type="button" data-n="5">5</button><button type="button" data-n="10" class="on">10</button><button type="button" data-n="15">15</button></div>
         </div>
         <ul class="reglas">
           <li><span><b>60 segundos</b> por pregunta. Si se acaba, cuenta como no respondida.</span></li>
           <li><span>Ves al instante si acertaste, pero <b>no puedes volver</b> a una pregunta.</span></li>
-          <li><span>Hasta <b>4 jugadores</b>. La sala se cierra <b>5 minutos</b> después de crearla.</span></li>
+          <li><span>Todos empiezan <b>a la vez</b>, con una cuenta 3, 2, 1. Si nadie inicia en <b>5 minutos</b>, la sala se cierra.</span></li>
           <li><span>Solo el <b>1.º puesto</b> suma al top de la semana.</span></li>
         </ul>
         <button class="btn" type="button" id="btnCrear" style="width:100%;margin-top:20px">Crear duelo</button>
@@ -352,6 +365,7 @@
         <button class="btn" type="button" id="btnJugar">Jugar mi parte ahora</button>
       </div>
       <p class="nota" id="retoNota"></p>
+      <div class="cuenta" id="cuenta" hidden aria-live="assertive"><div><b id="cuentaNum">3</b><span id="cuentaTxt">Prepárate</span></div></div>
       <p class="nota error" id="retoError" hidden></p>
     </div>
   </section>
@@ -407,11 +421,11 @@
     { id: 'banqueo', nom: 'Banqueo', prod: 'banqueo' }
   ];
   const NOM_FUENTE = {}; FUENTES.forEach(f => { NOM_FUENTE[f.id] = f.nom; });
-  const ESTADOS = { ganaste: 'Ganaste', perdiste: 'Perdiste', empate: 'Empate', 'sin-resultado': 'Sin rivales', 'te-toca': 'Te toca', 'a-medias': 'A medias', esperando: 'Esperando', 'no-jugaste': 'No jugaste' };
+  const ESTADOS = { ganaste: 'Ganaste', perdiste: 'Perdiste', empate: 'Empate', 'sin-resultado': 'Sin rivales', 'te-toca': 'Te toca', 'a-medias': 'A medias', esperando: 'Esperando', 'no-jugaste': 'No jugaste', 'en-sala': 'En la sala', cancelado: 'No se inició' };
   const CANDADO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
 
   let CURSOS = [], NOMBRE = {};
-  let sel = { ciclo: 'todos', curso: 'todos', tema: '', temaNom: '', fuente: 'mezcla', n: 10 };
+  let sel = { ciclo: 'todos', curso: 'todos', tema: '', temaNom: '', fuente: 'mezcla', n: 10, jugadores: 2, auto: true };
   let V = null;          // estado del duelo (ver_duelo)
   let G = null;          // partida en curso
   let sondeo = null;     // intervalo que mira el avance de los demás
@@ -669,6 +683,12 @@
     $('crearError').hidden = true;
     actualizarFiltros();
   });
+  $('jugadores').addEventListener('click', e => {
+    const b = e.target.closest('[data-j]'); if (!b) return;
+    sel.jugadores = +b.dataset.j;
+    $('jugadores').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+  });
+  $('chkAuto').addEventListener('change', () => { sel.auto = $('chkAuto').checked; });
   $('cantidad').addEventListener('click', e => {
     const b = e.target.closest('[data-n]'); if (!b || b.disabled) return;
     sel.n = +b.dataset.n; $('crearError').hidden = true;
@@ -690,7 +710,7 @@
     }
     return rpc('crear_duelo', { p: {
       titulo: tituloDe(o), curso: o.curso, fuente: o.fuente, ciclo: o.ciclo !== 'todos' ? o.ciclo : null, tema: o.temaNom || null,
-      revancha_de: o.revancha || null,
+      jugadores: o.jugadores || 2, auto: !!o.auto, revancha_de: o.revancha || null,
       preguntas: lista.map(x => ({ ref: x.ref, c: x.q.correct, k: x.q.options.length }))
     } });
   }
@@ -713,9 +733,9 @@
 
   function pintarMisDuelos(L) {
     $('misDuelos').innerHTML = L.length ? L.map(d => {
-      const marcador = d.mis_aciertos != null ? d.mis_aciertos + ' de ' + d.n + (d.puesto && d.jugadores > 1 ? ' · ' + d.puesto + '.º de ' + d.jugadores : '') : d.n + ' preguntas';
+      const marcador = d.mis_aciertos != null && !/en-sala|cancelado/.test(d.estado) ? d.mis_aciertos + ' de ' + d.n + (d.puesto && d.jugadores > 1 ? ' · ' + d.puesto + '.º de ' + d.jugadores : '') : d.n + ' preguntas';
       const est = d.estado === 'perdiste' && d.puesto ? d.puesto + '.º lugar' : (ESTADOS[d.estado] || d.estado);
-      return '<li><a href="duelo.html?d=' + esc(d.codigo) + '"><div><b>' + (d.rival ? 'vs ' + esc(d.rival) : /te-toca|a-medias|esperando/.test(d.estado) ? 'Esperando rivales' : 'Nadie más jugó') + '</b><small>' + esc(d.titulo) + ' · ' + esc(marcador) + '</small></div>' +
+      return '<li><a href="duelo.html?d=' + esc(d.codigo) + '"><div><b>' + (d.rival ? 'vs ' + esc(d.rival) : /te-toca|a-medias|esperando|en-sala/.test(d.estado) ? 'Esperando rivales' : 'Nadie más jugó') + '</b><small>' + esc(d.titulo) + ' · ' + esc(marcador) + '</small></div>' +
         '<span class="estado ' + esc(d.estado) + '">' + esc(est) + '</span></a></li>';
     }).join('') : '<li class="vacia">Aún no tienes duelos. ¡Crea el primero!</li>';
   }
@@ -741,47 +761,65 @@
     catch (e) { aviso(textoError(e), 'Ir a Duelos'); return; }
     if (!d) { aviso('No encontramos ese duelo. Revisa el código.', 'Ir a Duelos'); return; }
     guardar(d); irA(d.codigo);
-    const mio = d.jugadores.filter(j => j.yo)[0];
+    seguir();
+  }
+  // Decide qué pantalla toca según el estado del duelo
+  function seguir() {
+    const d = V, mio = d.jugadores.filter(j => j.yo)[0];
     if (d.yo && (d.yo.terminado || (mio && mio.abandono))) { mostrarResultado(); return; }   // terminó o se le acabó el tiempo
-    if (d.yo) { empezar(); return; }               // lo dejó a medias: sigue donde estaba
-    const lleno = !d.soy_creador && libres(d) <= 0;
-    if (d.cerrado || lleno) {
-      aviso(lleno ? 'Este duelo ya está lleno (' + d.max + ' jugadores). Crea el tuyo y reta a quien quieras.'
-        : 'La sala de este duelo ya se cerró: solo se puede entrar durante 5 minutos.', 'Crear mi duelo');
-      return;
+    if (!d.en_sala) {
+      // Duelos de antes: cada uno jugaba cuando quería
+      if (d.yo) { empezar(); return; }
+      aviso('Este duelo es de la versión anterior y ya no se puede jugar. Crea uno nuevo.', 'Crear mi duelo'); return;
     }
+    if (d.yo && d.empieza) { arrancar(); return; }
+    if (d.yo) { pintarReto(); return; }
+    if (d.empieza) { aviso('Este duelo ya empezó. Crea el tuyo y reta a quien quieras.', 'Crear mi duelo'); return; }
+    if (quedaSala() <= 0) { aviso('La sala de este duelo ya se cerró: nadie lo inició en 5 minutos.', 'Crear mi duelo'); return; }
+    if (libres(d) <= 0) { aviso('Este duelo ya está lleno (' + d.max + ' jugadores). Crea el tuyo y reta a quien quieras.', 'Crear mi duelo'); return; }
     pintarReto();
   }
   function salaHtml(d) {
-    const js = d.jugadores.slice();
-    // El creador va primero aunque aún no haya entrado
-    if (!js.some(j => j.creador)) js.unshift({ apodo: d.creador, creador: true, yo: d.soy_creador, pendiente: true });
-    js.sort((a, b) => (b.creador ? 1 : 0) - (a.creador ? 1 : 0));
+    const js = d.jugadores.slice().sort((a, b) => (b.creador ? 1 : 0) - (a.creador ? 1 : 0));
     let html = '';
     for (let i = 0; i < d.max; i++) {
       const j = js[i];
       if (!j) { html += '<div class="puesto-sala libre"><div class="avatar">+</div><b>Libre</b><small>Esperando</small></div>'; continue; }
-      const linea = j.pendiente ? (j.yo ? 'Aún no juegas' : 'Creó el duelo') : j.terminado ? 'Terminó' : 'Jugando ' + Math.min(j.actual + 1, d.n) + '/' + d.n;
+      const linea = j.creador ? 'Creó el duelo' : 'Listo';
       html += '<div class="puesto-sala ' + colorDe(j) + (j.yo ? ' yo' : '') + (VISTOS[j.apodo] ? '' : ' entra') + '"><div class="avatar ' + colorDe(j) + '">' + esc(inicial(j.yo ? 'Tú' : j.apodo)) + '</div><b>' + esc(j.yo ? 'Tú' : j.apodo) + '</b><small>' + esc(linea) + '</small></div>';
       VISTOS[j.apodo] = 1;
     }
     return html;
   }
   const VISTOS = {};
-  // Lugares que quedan para los invitados (el del creador siempre está guardado)
-  function libres(d) { return d.max - d.jugadores.length - (d.jugadores.some(j => j.creador) ? 0 : 1); }
+  function libres(d) { return d.max - d.jugadores.length; }
   function pintarCierre(el) {
     const q = quedaSala(), libre = libres(V);
     el.classList.toggle('poco', q > 0 && q <= 60000);
-    el.classList.toggle('fin', q <= 0 || V.cerrado);
-    el.lastChild.textContent = q > 0 && !V.cerrado ? 'La sala se cierra en ' + mmss(q) + (libre > 0 ? ' · ' + libre + (libre === 1 ? ' lugar libre' : ' lugares libres') : ' · sala llena') : V.jugadores.length >= V.max ? 'Sala llena' : 'Sala cerrada';
+    el.classList.toggle('fin', q <= 0 || !!V.empieza);
+    el.lastChild.textContent = V.empieza ? '¡Empieza!' : q <= 0 ? 'Sala cerrada'
+      : (libre > 0 ? (libre === 1 ? 'Falta 1 jugador' : 'Faltan ' + libre + ' jugadores') : 'Sala llena') + ' · se cierra en ' + mmss(q);
+  }
+  // Botón de la sala: entrar, iniciar o esperar
+  function pintarBoton() {
+    const d = V, b = $('btnJugar'), dentro = !!d.yo, hay = d.jugadores.length;
+    b.hidden = false; b.disabled = false;
+    if (!dentro) { b.dataset.accion = 'entrar'; b.textContent = 'Entrar a la sala'; b.disabled = libres(d) <= 0 || quedaSala() <= 0; }
+    else if (d.soy_creador) {
+      b.dataset.accion = 'iniciar';
+      b.textContent = hay < 2 ? 'Iniciar (esperando amigos…)' : 'Iniciar duelo con ' + hay + ' jugadores';
+      b.disabled = hay < 2 || quedaSala() <= 0;
+    } else b.hidden = true;
+    $('retoNota').textContent = !dentro ? 'Al entrar esperas en la sala. Todos empiezan a la vez con una cuenta 3, 2, 1.'
+      : d.auto ? 'Empieza solo apenas entren los ' + d.max + '.' + (d.soy_creador ? ' Si alguien no llega, puedes iniciarlo tú.' : ' ' + d.creador + ' también puede iniciarlo antes.')
+      : d.soy_creador ? 'Toca Iniciar cuando estén todos.' : 'Esperando a que ' + d.creador + ' inicie el duelo.';
   }
   function pintarReto() {
     const d = V, soyCreador = d.soy_creador;
-    $('retoEye').textContent = soyCreador ? 'Tu sala de duelo' : 'Te retaron';
-    $('retoTit').textContent = soyCreador ? '¡Listo! Invita a tus amigos' : '¡' + d.creador + ' te reta a un duelo!';
+    $('retoEye').textContent = d.max === 2 ? 'Duelo 1 vs 1' : 'Duelo de ' + d.max + ' jugadores';
+    $('retoTit').textContent = soyCreador ? '¡Listo! Invita a tus amigos' : d.yo ? 'Estás en la sala' : '¡' + d.creador + ' te reta a un duelo!';
     $('retoSub').textContent = soyCreador
-      ? 'Envíales el código o el enlace. Pueden entrar hasta ' + (d.max - 1) + ' amigos mientras la sala esté abierta.'
+      ? 'Envíales el código o el enlace. Todos empiezan a la vez cuando la sala esté lista.'
       : 'Las mismas ' + d.n + ' preguntas para todos. Gana quien acierta más.';
     $('retoFicha').innerHTML = '<span><b>' + esc(d.titulo) + '</b></span><span><b>' + d.n + '</b> preguntas</span><span><b>60 s</b> cada una</span>';
     $('retoSala').innerHTML = salaHtml(d);
@@ -789,25 +827,54 @@
     $('retoCompartir').hidden = d.cerrado;
     $('retoCodigo').textContent = d.codigo;
     $('retoEnlace').textContent = enlace(d.codigo);
-    $('btnWa').href = 'https://wa.me/?text=' + encodeURIComponent('⚔️ Te reto a un duelo en Modo Cachimbo: ' + d.titulo + ', ' + d.n + ' preguntas de 60 segundos. Entra rápido, la sala dura 5 minutos: ' + enlace(d.codigo));
-    $('btnJugar').textContent = soyCreador ? 'Jugar mi parte ahora' : 'Entrar al duelo y empezar';
-    $('btnJugar').disabled = d.cerrado || (!soyCreador && libres(d) <= 0);
-    $('retoNota').textContent = 'Tu tiempo empieza cuando tocas el botón. Puedes empezar sin esperar a los demás.';
+    $('btnWa').href = 'https://wa.me/?text=' + encodeURIComponent('⚔️ Te reto a un duelo en Modo Cachimbo: ' + d.titulo + ', ' + d.n + ' preguntas de 60 segundos. Entra a la sala: ' + enlace(d.codigo));
+    pintarBoton();
     $('retoError').hidden = true;
     ver('reto');
     // Mientras espera: cuenta regresiva y quién va entrando
     reloj1s = setInterval(() => {
       pintarCierre($('retoCierre'));
-      if (quedaSala() <= 0) { $('btnJugar').disabled = true; $('retoCompartir').hidden = true; }
+      if (quedaSala() <= 0 && !V.empieza) { pararSondeo(); aviso('La sala se cerró porque nadie inició el duelo en 5 minutos.', 'Crear otro duelo'); }
     }, 1000);
     sondeo = setInterval(() => rpc('ver_duelo', { p_codigo: d.codigo }).then(n => {
       if (!n || $('reto').hidden) return;
       guardar(n);
+      if (n.empieza && n.yo) { arrancar(); return; }
+      if (n.empieza && !n.yo) { pararSondeo(); aviso('El duelo empezó sin ti. Crea el tuyo y reta a quien quieras.', 'Crear mi duelo'); return; }
       $('retoSala').innerHTML = salaHtml(n);
       $('retoCompartir').hidden = n.cerrado;
-      $('btnJugar').disabled = n.cerrado || (!n.soy_creador && libres(n) <= 0);
+      pintarBoton();
       pintarCierre($('retoCierre'));
-    }).catch(() => {}), 4000);
+    }).catch(() => {}), 2000);
+  }
+  $('btnJugar').addEventListener('click', async () => {
+    const b = $('btnJugar'), accion = b.dataset.accion;
+    b.disabled = true; $('retoError').hidden = true;
+    try {
+      const n = await rpc(accion === 'iniciar' ? 'iniciar_duelo' : 'entrar_duelo', { p_codigo: V.codigo });
+      if (n) guardar(n);
+      pararSondeo(); seguir();
+    } catch (e) { b.disabled = false; $('retoError').textContent = textoError(e); $('retoError').hidden = false; }
+  });
+  // Cuenta 3, 2, 1 igual para todos (según el reloj del servidor) y luego la 1.ª pregunta
+  let precarga = null;
+  function arrancar() {
+    pararSondeo();
+    const fin = new Date(V.empieza).getTime() - desfase;   // en el reloj de este celular
+    if (fin - Date.now() <= 0) { $('cuenta').hidden = true; empezar(); return; }
+    // las preguntas se van cargando durante la cuenta
+    precarga = rpc('empezar_duelo', { p_codigo: V.codigo }).then(r => cargarRefs(r.preguntas)).catch(() => null);
+    $('cuenta').hidden = false;
+    const paso = () => {
+      const q = fin - Date.now();
+      if (q <= 0) { $('cuenta').hidden = true; empezar(); return; }
+      const s = Math.ceil(q / 1000);
+      const txt = s > 3 ? '¡Prepárate!' : String(s);
+      if ($('cuentaNum').textContent !== txt) { $('cuentaNum').textContent = txt; const b = $('cuentaNum'); b.style.animation = 'none'; void b.offsetWidth; b.style.animation = ''; }
+      $('cuentaTxt').textContent = 'Empieza el duelo · ' + V.jugadores.length + ' jugadores';
+      setTimeout(paso, 100);
+    };
+    paso();
   }
   $('btnCopiar').addEventListener('click', () => {
     const t = enlace(V.codigo), b = $('btnCopiar');
@@ -815,19 +882,18 @@
     const manual = () => { const r = document.createRange(); r.selectNodeContents($('retoEnlace')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.lastChild.textContent = 'Mantén presionado para copiar'; };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(listo, manual); else manual();
   });
-  $('btnJugar').addEventListener('click', () => empezar());
 
   /* ---------- Pantalla: juego ---------- */
   async function empezar() {
     pararSondeo();
-    const b = $('btnJugar'); b.disabled = true;
     let r;
     try { r = await rpc('empezar_duelo', { p_codigo: V.codigo }); }
-    catch (e) { b.disabled = false; $('retoError').textContent = textoError(e); $('retoError').hidden = false; if ($('reto').hidden) aviso(textoError(e), 'Ir a Duelos'); return; }
-    b.disabled = false;
+    catch (e) { aviso(textoError(e), 'Ir a Duelos'); return; }
+    if (r.espera) { setTimeout(empezar, Math.min(+r.espera, 5000) + 60); return; }   // el reloj del celular iba adelantado
     if (r.terminado) { await recargar(); mostrarResultado(); return; }
-    aviso('Cargando preguntas…');
-    const qs = await cargarRefs(r.preguntas);
+    const pre = precarga && await precarga; precarga = null;
+    if (!pre) aviso('Cargando preguntas…');
+    const qs = pre || await cargarRefs(r.preguntas);
     G = { codigo: V.codigo, qs, n: qs.length, actual: r.actual, aciertos: r.aciertos, ocupado: false,
           fin: Date.now() + Math.max(0, SEG * 1000 - (+r.lleva || 0)) };
     pintarCarriles();
@@ -961,7 +1027,8 @@
     const d = V, yo = d.yo || { aciertos: 0, ms: 0 }, res = d.resultado;
     const otros = d.jugadores.filter(j => !j.yo);
     let eye = 'Duelo terminado', tit, sub = '', perdio = false;
-    if (res && res.jugadores < 2) { tit = 'Nadie más entró al duelo'; sub = 'Acertaste ' + yo.aciertos + ' de ' + d.n + '. Crea otro y envíalo apenas lo crees: la sala dura 5 minutos.'; }
+    if (res && d.en_sala && !d.empieza) { tit = 'El duelo no se inició'; sub = 'Nadie lo inició en 5 minutos. Crea otro y avisa a tus amigos antes.'; }
+    else if (res && res.jugadores < 2) { tit = 'Nadie más entró al duelo'; sub = 'Acertaste ' + yo.aciertos + ' de ' + d.n + '. Crea otro y envíalo apenas lo crees: la sala dura 5 minutos.'; }
     else if (res) {
       if (res.gane) { tit = '¡Ganaste el duelo!'; sub = 'Quedaste en el 1.º lugar' + (otros.length ? ' frente a ' + lista(otros.map(j => j.apodo)) : '') + '. Suma 1 al top de la semana.'; }
       else if (res.empate && res.puesto === 1) { tit = '¡Empate en el 1.º lugar!'; sub = 'Mismos aciertos y mismo tiempo. Toca revancha para desempatar.'; }
@@ -995,7 +1062,8 @@
       rv.disabled = true; rv.textContent = 'Armando la revancha…'; $('resError').hidden = true;
       try {
         const fuente = fuenteAbierta(d.curso, d.fuente) ? d.fuente : 'mezcla';  // sin el código de esa sección, sale de "De todo"
-        const cod = await crearDuelo({ curso: d.curso, fuente, ciclo: d.ciclo || 'todos', tema: d.tema ? normTema(d.tema) : '', temaNom: d.tema || '', n: d.n, revancha: d.codigo });
+        const cod = await crearDuelo({ curso: d.curso, fuente, ciclo: d.ciclo || 'todos', tema: d.tema ? normTema(d.tema) : '', temaNom: d.tema || '', n: d.n,
+          jugadores: Math.min(Math.max(d.jugadores.length, 2), 4), auto: true, revancha: d.codigo });
         await abrirDuelo(cod);
       } catch (e) { rv.disabled = false; rv.textContent = 'Pedir revancha'; $('resError').textContent = textoError(e); $('resError').hidden = false; }
     });
