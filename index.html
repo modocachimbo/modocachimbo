@@ -180,6 +180,19 @@
   .tag-nuevo { position: absolute; top: 16px; right: 16px; background: var(--accent); color: #0e0e0e; font: 800 10px/1 'Sora', sans-serif; letter-spacing: .8px; text-transform: uppercase; padding: 6px 10px; border-radius: 100px; box-shadow: 0 0 18px rgba(198,224,0,.35); animation: tagLatido 2.4s ease-in-out infinite; }
   @keyframes tagLatido { 0%, 100% { box-shadow: 0 0 10px rgba(198,224,0,.25); } 50% { box-shadow: 0 0 24px rgba(198,224,0,.6); } }
   @media (prefers-reduced-motion: reduce) { .tag-nuevo { animation: none; } }
+  /* Entrada a los Duelos 1 vs 1 */
+  .duelo-banner { position: relative; display: flex; align-items: center; gap: 22px; margin: 0 0 20px; padding: 22px 24px; border-radius: 22px; border: 1px solid var(--border); background: radial-gradient(500px 160px at 0% 50%, rgba(198,224,0,.1), transparent 70%), var(--surface); color: inherit; text-decoration: none; transition: border-color .2s ease, transform .2s ease; }
+  .duelo-banner:hover { border-color: var(--accent); transform: translateY(-3px); }
+  .duelo-banner .tag-nuevo { top: -10px; right: 20px; }
+  .duelo-vs { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .duelo-vs i { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; font: 800 14px 'Sora', sans-serif; font-style: normal; background: var(--accent); color: #0e0e0e; }
+  .duelo-vs i.r { background: #f9a8d4; }
+  .duelo-vs b { font: 800 14px 'Sora', sans-serif; color: #5f5f5f; }
+  .duelo-txt { flex: 1; min-width: 0; display: grid; gap: 4px; }
+  .duelo-txt strong { font: 800 18px 'Sora', sans-serif; }
+  .duelo-txt span { color: #9a9a9a; font-size: 14px; line-height: 1.5; }
+  .duelo-banner .btn { flex-shrink: 0; background: var(--accent); color: #0e0e0e; font: 700 13.5px 'Sora', sans-serif; padding: 11px 22px; border-radius: 100px; }
+  @media (max-width: 700px) { .duelo-banner { flex-wrap: wrap; gap: 14px; padding: 20px; } .duelo-banner .btn { width: 100%; text-align: center; } }
 
   .card .icon {
     width: 68px; height: 68px;
@@ -615,6 +628,16 @@
 
       <script>try { if (localStorage.getItem('mc_sim_visto')) document.getElementById('simNuevo').remove(); } catch (e) {}</script>
     </section>
+
+    <a class="duelo-banner" href="duelo.html">
+      <span class="tag-nuevo">Nuevo</span>
+      <span class="duelo-vs" aria-hidden="true"><i>Tú</i><b>VS</b><i class="r">?</i></span>
+      <span class="duelo-txt">
+        <strong>Duelos 1 vs 1</strong>
+        <span>Reta a un amigo: las mismas preguntas, 60 segundos cada una. Gana quien acierta más y sube al top de la semana.</span>
+      </span>
+      <span class="btn">Retar a alguien</span>
+    </a>
 
     <section class="coffee">
 
