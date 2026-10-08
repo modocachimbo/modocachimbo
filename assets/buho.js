@@ -8,98 +8,79 @@
    ========================================================= */
 (function () {
   if (window.MCBuho) return;
-  // Colores del búho (los del sitio: lima, con pancita crema y pico ámbar)
+  // Colores del logo: negro, blanco y lima (más rubor y lágrima para las emociones)
   var C = {
-    cuerpo: '#C6E000', sombra: '#93A800', ala: '#A9C000', panza: '#F6FFD0', pluma: '#B5CC2A',
-    ojo: '#FFFFFF', pupila: '#1B1B1B', pico: '#FFB020', picoOsc: '#E08A00', lengua: '#FF6B81',
-    rubor: '#FF8FB1', birrete: '#262626', borla: '#C6E000', lagrima: '#7DD3FC'
+    lima: '#C6E000', limaOsc: '#9DB300', negro: '#0B0B0B', blanco: '#F7F7F2', gris: '#D9D9D2',
+    pupila: '#0B0B0B', rubor: '#FF8FB1', lengua: '#FF6B81', lagrima: '#7DD3FC'
   };
   var ANIMOS = { normal: 1, feliz: 1, preocupado: 1, triste: 1, celebrando: 1, dormido: 1 };
+  // Las cejas largas del logo: cuánto se inclinan (grados) y suben (px) en cada ánimo, o su forma
+  var CEJA = { normal: [0, 0], feliz: [-8, -6], celebrando: [8, -12], preocupado: 'M97 64 L90 73 L66 74 L60 80 L42 84 L18 98 L38 74 L64 64 Z', triste: 'M95 58 L89 68 L66 76 L60 82 L44 90 L22 112 L38 82 L62 68 Z', dormido: [-6, -4] };
 
-  function ojo(cx, cy, animo, lado) {
-    var t = '';
-    if (animo === 'feliz' || animo === 'celebrando') // ojitos cerrados de alegría ∩
-      return '<path d="M' + (cx - 15) + ' ' + (cy + 5) + ' Q' + cx + ' ' + (cy - 15) + ' ' + (cx + 15) + ' ' + (cy + 5) + '" fill="none" stroke="' + C.pupila + '" stroke-width="7" stroke-linecap="round"/>';
-    if (animo === 'dormido') // ojitos cerrados ‿ con pestañas
-      return '<path d="M' + (cx - 15) + ' ' + cy + ' Q' + cx + ' ' + (cy + 12) + ' ' + (cx + 15) + ' ' + cy + '" fill="none" stroke="' + C.pupila + '" stroke-width="6" stroke-linecap="round"/>';
-    var dx = 0, dy = 0, r = 15;
-    if (animo === 'preocupado') { dx = lado * 0 - 6; dy = -2; r = 12; }
-    if (animo === 'triste') { dy = 6; r = 14; }
-    t += '<circle cx="' + cx + '" cy="' + cy + '" r="25" fill="' + C.ojo + '"/>';
-    t += '<g class="b-pupila"><circle cx="' + (cx + dx) + '" cy="' + (cy + dy) + '" r="' + r + '" fill="' + C.pupila + '"/>' +
-      '<circle cx="' + (cx + dx + 5) + '" cy="' + (cy + dy - 6) + '" r="5.5" fill="#fff"/>' +
-      '<circle cx="' + (cx + dx - 5) + '" cy="' + (cy + dy + 5) + '" r="2.4" fill="#fff"/></g>';
-    if (animo === 'triste') // párpado caído (del color del cuerpo)
-      t += '<path d="M' + (cx - 27) + ' ' + (cy - 26) + ' L' + (cx + 27) + ' ' + (cy - 26) + ' L' + (cx + 27) + ' ' + (cy - 6 + lado * 6) + ' Q' + cx + ' ' + (cy - 4) + ' ' + (cx - 27) + ' ' + (cy - 6 - lado * 6) + ' Z" fill="' + C.cuerpo + '"/>';
-    return t;
+  function ceja(animo) {
+    var a = CEJA[animo] || CEJA.normal;
+    // ceja izquierda con el borde de abajo "en plumas", como en el logo;
+    // preocupado y triste tienen su propia forma (la punta de adentro sube)
+    var d = typeof a === 'string' ? a : 'M99 96 L88 99 L66 84 L60 88 L44 70 L36 72 L12 30 L46 50 L66 64 Z';
+    var g = typeof a === 'string' ? '' : 'translate(0 ' + a[1] + ') rotate(' + a[0] + ' 96 96)';
+    return '<g class="b-cejas"><path d="' + d + '" fill="' + C.lima + '" transform="' + g + '"/>' +
+      '<g transform="translate(200 0) scale(-1 1)"><path d="' + d + '" fill="' + C.lima + '" transform="' + g + '"/></g></g>';
   }
-  function cejas(animo) {
-    var p = '';
-    if (animo === 'preocupado') p = 'M56 70 Q66 62 80 66 M144 70 Q134 62 120 66';
-    else if (animo === 'triste') p = 'M54 72 Q66 70 80 62 M146 72 Q134 70 120 62';
-    else return '';
-    return '<path d="' + p + '" fill="none" stroke="' + C.pupila + '" stroke-width="5" stroke-linecap="round"/>';
+  function ojo(cx, cy, animo, lado) {
+    if (animo === 'feliz' || animo === 'celebrando') // ojitos cerrados de alegría ∩
+      return '<path d="M' + (cx - 16) + ' ' + (cy + 6) + ' Q' + cx + ' ' + (cy - 16) + ' ' + (cx + 16) + ' ' + (cy + 6) + '" fill="none" stroke="' + C.lima + '" stroke-width="8" stroke-linecap="round"/>';
+    if (animo === 'dormido')
+      return '<path d="M' + (cx - 16) + ' ' + cy + ' Q' + cx + ' ' + (cy + 13) + ' ' + (cx + 16) + ' ' + cy + '" fill="none" stroke="' + C.lima + '" stroke-width="7" stroke-linecap="round"/>';
+    var dx = 0, dy = 0, r = 13;
+    if (animo === 'preocupado') { dx = -7; r = 11; }
+    if (animo === 'triste') { dy = 6; }
+    return '<circle cx="' + cx + '" cy="' + cy + '" r="24" fill="' + C.lima + '"/>' +
+      '<g class="b-pupila"><circle cx="' + (cx + dx) + '" cy="' + (cy + dy) + '" r="' + r + '" fill="' + C.pupila + '"/>' +
+      '<circle cx="' + (cx + dx + 5) + '" cy="' + (cy + dy - 5) + '" r="5" fill="#fff"/>' +
+      '<circle cx="' + (cx + dx - 4) + '" cy="' + (cy + dy + 5) + '" r="2.2" fill="#fff"/></g>';
   }
   function pico(animo) {
-    if (animo === 'celebrando') // pico abierto, riendo
-      return '<path d="M88 116 Q100 110 112 116 L100 126 Z" fill="' + C.pico + '"/>' +
-        '<path d="M90 128 Q100 146 110 128 Q100 132 90 128 Z" fill="' + C.picoOsc + '"/><path d="M95 133 Q100 141 105 133 Z" fill="' + C.lengua + '"/>';
-    if (animo === 'triste' || animo === 'preocupado')
-      return '<path d="M91 118 Q100 113 109 118 L100 131 Z" fill="' + C.pico + '"/>';
-    return '<path d="M89 116 Q100 110 111 116 L100 133 Z" fill="' + C.pico + '"/><path d="M95 122 L100 133 L105 122 Z" fill="' + C.picoOsc + '" opacity=".35"/>';
+    if (animo === 'celebrando')
+      return '<path d="M90 114 L110 114 L100 124 Z" fill="' + C.lima + '"/><path d="M92 128 Q100 144 108 128 Z" fill="' + C.limaOsc + '"/><path d="M96 132 Q100 139 104 132 Z" fill="' + C.lengua + '"/>';
+    if (animo === 'triste' || animo === 'preocupado') return '<path d="M92 116 L108 116 L100 132 Z" fill="' + C.lima + '"/>';
+    return '<path d="M90 114 L110 114 L100 136 Z" fill="' + C.lima + '"/>';
   }
   function alas(animo) {
-    // izquierda; la derecha es su espejo
-    var d = { normal: 'M42 120 Q20 146 34 182 Q46 172 52 150 Z', celebrando: 'M44 116 Q10 98 6 66 Q30 76 52 104 Z',
-      triste: 'M44 124 Q30 158 44 192 Q52 178 54 154 Z', preocupado: 'M44 118 Q24 130 40 158 Q50 150 54 138 Z' }[animo] || 'M42 120 Q20 146 34 182 Q46 172 52 150 Z';
+    var d = { celebrando: 'M48 126 Q18 108 10 78 Q34 88 56 112 Z', triste: 'M44 136 Q32 166 46 194 Q54 180 56 160 Z',
+      preocupado: 'M44 132 Q26 146 40 172 Q50 164 56 150 Z' }[animo] || 'M44 132 Q24 156 38 188 Q50 178 56 158 Z';
     var esp = d.replace(/(\d+(?:\.\d+)?) (\d+(?:\.\d+)?)/g, function (t, x, y) { return (200 - x) + ' ' + y; });
-    return '<path class="b-ala-i" d="' + d + '" fill="' + C.ala + '"/><path class="b-ala-d" d="' + esp + '" fill="' + C.ala + '"/>';
+    return '<path class="b-ala-i" d="' + d + '" fill="' + C.gris + '"/><path class="b-ala-d" d="' + esp + '" fill="' + C.gris + '"/>';
   }
   function extras(animo) {
-    if (animo === 'triste') return '<path class="b-lagrima" d="M128 116 Q121 128 128 135 Q135 128 128 116 Z" fill="' + C.lagrima + '"/>';
-    if (animo === 'preocupado') return '<path class="b-gota" d="M30 64 Q22 77 30 85 Q38 77 30 64 Z" fill="' + C.lagrima + '"/>';
-    if (animo === 'dormido') return '<g class="b-zzz" fill="' + C.cuerpo + '" font-family="Sora,Inter,Arial,sans-serif" font-weight="800">' +
-      '<text x="158" y="70" font-size="24">z</text><text x="176" y="50" font-size="18">z</text><text x="190" y="34" font-size="13">z</text></g>';
+    if (animo === 'triste') return '<path class="b-lagrima" d="M132 118 Q125 130 132 137 Q139 130 132 118 Z" fill="' + C.lagrima + '"/>';
+    if (animo === 'preocupado') return '<path class="b-gota" d="M172 74 Q164 87 172 95 Q180 87 172 74 Z" fill="' + C.lagrima + '"/>';
+    if (animo === 'dormido') return '<g class="b-zzz" fill="' + C.lima + '" font-family="Sora,Inter,Arial,sans-serif" font-weight="800">' +
+      '<text x="164" y="80" font-size="24">z</text><text x="180" y="60" font-size="18">z</text><text x="194" y="44" font-size="13">z</text></g>';
     if (animo === 'celebrando') return '<g class="b-confeti">' +
-      '<rect x="20" y="30" width="9" height="9" rx="2" fill="#F9A8D4" transform="rotate(20 24 34)"/>' +
-      '<rect x="170" y="96" width="9" height="9" rx="2" fill="#7DD3FC" transform="rotate(-25 174 100)"/>' +
-      '<circle cx="182" cy="30" r="5" fill="#FBBF24"/><circle cx="14" cy="104" r="4.5" fill="#7DD3FC"/>' +
-      '<path d="M160 16 l4 9 9 1 -7 6 2 9 -8 -5 -8 5 2 -9 -7 -6 9 -1 Z" fill="#FBBF24"/></g>';
+      '<rect x="40" y="6" width="9" height="9" rx="2" fill="#F9A8D4" transform="rotate(20 44 10)"/>' +
+      '<rect x="176" y="104" width="9" height="9" rx="2" fill="#7DD3FC" transform="rotate(-25 180 108)"/>' +
+      '<circle cx="150" cy="8" r="5" fill="#FBBF24"/><circle cx="10" cy="120" r="4.5" fill="#7DD3FC"/>' +
+      '<path d="M100 0 l4 9 9 1 -7 6 2 9 -8 -5 -8 5 2 -9 -7 -6 9 -1 Z" fill="#FBBF24"/></g>';
     return '';
-  }
-  function birrete(animo) { // gorro de graduación: ¡es el búho cachimbo!
-    var rot = animo === 'triste' ? -8 : animo === 'dormido' ? 14 : animo === 'celebrando' ? -6 : 0;
-    return '<g class="b-birrete" transform="rotate(' + rot + ' 100 40)">' +
-      '<path d="M72 40 L128 40 L126 56 Q100 64 74 56 Z" fill="' + C.birrete + '"/>' +
-      '<path d="M100 20 L154 36 L100 52 L46 36 Z" fill="' + C.birrete + '"/>' +
-      '<path d="M100 20 L154 36 L100 30 L46 36 Z" fill="#3d3d3d"/>' +
-      '<g class="b-borla"><path d="M100 36 Q130 38 140 44 L140 62" fill="none" stroke="' + C.borla + '" stroke-width="3" stroke-linecap="round"/>' +
-      '<path d="M135 60 L145 60 L147 72 L133 72 Z" fill="' + C.borla + '"/></g>' +
-      '<circle cx="100" cy="36" r="3.5" fill="' + C.borla + '"/></g>';
   }
   function svg(animo, tam) {
     animo = ANIMOS[animo] ? animo : 'normal';
     tam = tam || 96;
-    var rubor = animo === 'feliz' || animo === 'celebrando' ? .75 : animo === 'normal' ? .45 : animo === 'dormido' ? .4 : 0;
+    var rubor = animo === 'feliz' || animo === 'celebrando' ? .8 : animo === 'normal' || animo === 'dormido' ? .5 : 0;
     return '<svg class="mc-buho b-' + animo + '" width="' + tam + '" height="' + tam + '" viewBox="0 0 200 210" role="img" aria-label="Búho ' + animo + '">' +
-      '<ellipse cx="100" cy="203" rx="50" ry="6" fill="#000" opacity=".28"/>' +
+      '<ellipse cx="100" cy="203" rx="48" ry="6" fill="#000" opacity=".3"/>' +
       '<g class="b-cuerpo">' +
-      // patitas
-      '<path d="M78 192 q-6 8 -2 10 q4 -3 6 -1 q2 -3 6 0 q3 -3 -1 -9 Z M122 192 q6 8 2 10 q-4 -3 -6 -1 q-2 -3 -6 0 q-3 -3 1 -9 Z" fill="' + C.pico + '"/>' +
+      '<path d="M80 192 q-6 8 -2 10 q4 -3 6 -1 q2 -3 6 0 q3 -3 -1 -9 Z M120 192 q6 8 2 10 q-4 -3 -6 -1 q-2 -3 -6 0 q-3 -3 1 -9 Z" fill="' + C.lima + '"/>' +
       alas(animo) +
-      // cuerpo redondo con orejitas
-      '<path d="M100 44 C60 44 38 66 34 96 C30 128 38 170 62 188 C76 198 124 198 138 188 C162 170 170 128 166 96 C162 66 140 44 100 44 Z" fill="' + C.cuerpo + '"/>' +
-      '<path d="M40 82 L36 48 L66 60 Z M160 82 L164 48 L134 60 Z" fill="' + C.cuerpo + '"/>' +
-      '<path d="M44 74 L41 56 L58 63 Z M156 74 L159 56 L142 63 Z" fill="' + C.sombra + '" opacity=".6"/>' +
-      // pancita con plumitas
-      '<ellipse cx="100" cy="158" rx="40" ry="34" fill="' + C.panza + '"/>' +
-      '<path d="M84 146 q4 5 8 0 M108 146 q4 5 8 0 M96 160 q4 5 8 0 M84 172 q4 5 8 0 M108 172 q4 5 8 0" fill="none" stroke="' + C.pluma + '" stroke-width="3" stroke-linecap="round"/>' +
-      // antifaz claro alrededor de los ojos
-      '<path d="M100 82 C88 68 50 68 46 96 C44 118 64 128 80 124 C90 122 96 116 100 112 C104 116 110 122 120 124 C136 128 156 118 154 96 C150 68 112 68 100 82 Z" fill="' + C.panza + '" opacity=".55"/>' +
-      '<g class="b-ojos">' + ojo(74, 98, animo, -1) + ojo(126, 98, animo, 1) + '</g>' +
-      cejas(animo) +
-      (rubor ? '<ellipse cx="52" cy="124" rx="10" ry="6" fill="' + C.rubor + '" opacity="' + rubor + '"/><ellipse cx="148" cy="124" rx="10" ry="6" fill="' + C.rubor + '" opacity="' + rubor + '"/>' : '') +
-      pico(animo) + birrete(animo) + extras(animo) +
+      // cuerpo blanco redondo (el círculo blanco del logo, con barriga)
+      '<path d="M100 40 C58 40 30 68 30 106 C30 136 40 172 64 188 C78 198 122 198 136 188 C160 172 170 136 170 106 C170 68 142 40 100 40 Z" fill="' + C.blanco + '"/>' +
+      // antifaz negro con las puntas de plumas del logo
+      '<path d="M100 62 C74 62 44 72 42 104 C41 124 50 136 62 144 L56 164 L76 154 L88 176 L100 162 L112 176 L124 154 L144 164 L138 144 C150 136 159 124 158 104 C156 72 126 62 100 62 Z" fill="' + C.negro + '"/>' +
+      // plumitas de la barriga
+      '<path d="M78 178 q4 5 8 0 M96 184 q4 5 8 0 M114 178 q4 5 8 0" fill="none" stroke="' + C.gris + '" stroke-width="3" stroke-linecap="round"/>' +
+      '<g class="b-ojos">' + ojo(70, 104, animo, -1) + ojo(130, 104, animo, 1) + '</g>' +
+      (rubor ? '<ellipse cx="54" cy="130" rx="9" ry="5.5" fill="' + C.rubor + '" opacity="' + rubor + '"/><ellipse cx="146" cy="130" rx="9" ry="5.5" fill="' + C.rubor + '" opacity="' + rubor + '"/>' : '') +
+      pico(animo) + ceja(animo) + extras(animo) +
       '</g></svg>';
   }
 
@@ -109,8 +90,6 @@
     '.b-normal .b-ojos{animation:bParpadeo 4.5s infinite}' +
     '@keyframes bParpadeo{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}' +
     '.b-normal .b-cuerpo{animation:bRespira 3.2s ease-in-out infinite}' +
-    '.mc-buho .b-borla{transform-origin:100px 36px;animation:bBorla 2.6s ease-in-out infinite}' +
-    '@keyframes bBorla{0%,100%{transform:rotate(0)}50%{transform:rotate(8deg)}}' +
     '.b-feliz .b-cuerpo{animation:bLado 2.2s ease-in-out infinite}' +
     '@keyframes bLado{0%,100%{transform:rotate(0)}25%{transform:rotate(5deg)}75%{transform:rotate(-5deg)}}' +
     '.b-celebrando .b-cuerpo{animation:bSalto .8s ease-in-out infinite}' +
