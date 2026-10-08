@@ -275,7 +275,7 @@ function jsonpRequest(url) {
     var msg = document.getElementById('vipMsg');
 
     function actualizarEstadoBoton() {
-      var prods = (window.MCAcceso ? MCAcceso.activos() : []).map(function (a) { return a.producto; });
+      var prods = (window.MCAcceso ? MCAcceso.activos() : []).map(function (a) { return a.producto; }).join(',').split(',');
       var leer = function (k) { try { return localStorage.getItem(k) === '1'; } catch (e) { return false; } };
       var repasoVip = prods.indexOf('repaso-VIP') >= 0 || leer('unlocked_repaso-VIP');
       var fijasVip = prods.indexOf('fijas-VIP') >= 0 || leer('unlocked_fijas-VIP');

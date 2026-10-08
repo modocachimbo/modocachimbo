@@ -51,12 +51,13 @@
     });
   }
 
-  // ¿El producto del código "pc" abre la página "x"?
+  // ¿El producto del código "pc" abre la página "x"? Un código puede tener varios: "fijas-VIP,simulacro"
   function cubre(pc, x) {
     if (!pc || !x) return false;
-    if (pc === x || pc === 'TODO-VIP') return true;
     var cat = x.split('-')[0], curso = x.slice(cat.length + 1);
-    return pc === cat + '-VIP' || pc === 'curso-' + curso;
+    return String(pc).split(',').some(function (u) {
+      return u === x || u === 'TODO-VIP' || u === cat + '-VIP' || (!!curso && u === 'curso-' + curso);
+    });
   }
   // Accesos del sistema anterior (antes de los códigos del panel)
   function antiguo(x) {
