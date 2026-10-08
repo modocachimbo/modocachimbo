@@ -80,7 +80,7 @@
     if (rel === '' || rel === 'index.html') { ctx.pagina = 'inicio'; return ctx; }
     if (seg[0] === 'panel' || seg[0] === 'assets' || seg[0] === 'examenes' || seg[0] === 'areas') return ctx;
     ctx.carpeta = seg[0];
-    var resto = seg.slice(1).join('/');
+    var resto = seg.slice(1).join('/').replace(/^(seminarios|banqueo)\//, 'libros/');
     if (resto === '' || resto === 'index.html' || resto === 'libros/' || resto === 'libros/index.html' || resto === 'libros/temario.html') ctx.pagina = 'curso';
     else if (resto === 'libros/tema.html') ctx.pagina = 'estudio';
     else if (resto === 'libros/quiz.html') ctx.pagina = 'quiz';
