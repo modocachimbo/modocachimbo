@@ -174,6 +174,7 @@
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 <script src="../../assets/mc-config.js"></script>
+<script src="../../assets/pregunta.js"></script>
 <script src="../../assets/auth.js"></script>
 </head>
 <body>
@@ -245,12 +246,16 @@
             const isCorrect = i === q.correct;
             optsHtml += `<div class="opt-row ${isCorrect ? 'correct' : ''}">
               <div class="letter">${o.letter}</div>
-              <span>${o.text}</span>
+              <span>${window.MCPregunta ? MCPregunta.formato(o.text) : o.text}</span>
               ${isCorrect ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
             </div>`;
           });
           const temaTag = q.asignatura ? `<div class="qtema">${q.asignatura}</div>` : (q.tema ? `<div class="qtema">${q.tema}</div>` : '');
-          div.innerHTML = `<div class="qnum-row"><div class="qnum">${q.num || ''}</div>${temaTag}</div><div class="qtext">${q.text.replace(/\n/g,'<br>')}</div>${q.graphic ? `<div class="q-graphic">${q.graphic}</div>` : ''}${optsHtml}`;
+          const mcq = window.MCPregunta ? MCPregunta.armar(q.text, {}) : { html: q.text.replace(/\n/g,'<br>'), derecha: '' };
+          const cortas = window.MCPregunta && !mcq.derecha && MCPregunta.cortas(q.options);
+          optsHtml = `<div class="${cortas ? 'mcq-cortas' : ''}" style="${cortas ? 'gap:8px;' : ''}">${optsHtml}</div>`;
+          if (mcq.derecha) optsHtml = `<div class="mcq-con-der">${optsHtml}<div class="mcq-der" style="margin:0;">${mcq.derecha}</div></div>`;
+          div.innerHTML = `<div class="qnum-row"><div class="qnum">${q.num || ''}</div>${temaTag}</div><div class="qtext">${mcq.html}</div>${q.graphic ? `<div class="q-graphic">${q.graphic}</div>` : ''}${optsHtml}`;
 
           if (q.solution_html) {
             const btn = document.createElement('button');
