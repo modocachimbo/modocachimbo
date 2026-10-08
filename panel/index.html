@@ -249,6 +249,7 @@
   .filebtn { position: relative; overflow: hidden; }
   .filebtn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
   .meta-grid { display: grid; grid-template-columns: 1.3fr 1fr .6fr 2fr; gap: 10px; }
+  .meta-grid.ex-grid { grid-template-columns: 1fr 1fr; max-width: 520px; }
   .meta-grid label { display: flex; flex-direction: column; gap: 6px; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-faint); font-weight: 700; }
   .inp { background: #0a0a0a; border: 1px solid #2a2a2a; border-radius: 10px; padding: 10px 12px; color: var(--text); font-size: 14px; width: 100%; }
   .inp:focus { outline: none; border-color: var(--accent); }
@@ -463,6 +464,7 @@
         <button class="tab" data-tab="codigos" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg><span>Códigos</span></button>
         <div class="menu-grupo">Contenido</div>
         <button class="tab" data-tab="subir" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span>Subir tema</span></button>
+        <button class="tab" data-tab="examen" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="m9 15 2 2 4-4"/></svg><span>Subir examen</span></button>
         <button class="tab" data-tab="editar" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg><span>Editar preguntas</span></button>
         <button class="tab" data-tab="cursos" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span>Cursos</span></button>
         <button class="tab" data-tab="perfil" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M15 8h2"/><path d="M15 12h2"/><path d="M7 16h10"/></svg><span>Perfil del alumno</span></button>
@@ -503,8 +505,8 @@
         <div class="page-head">
           <div>
             <div class="eyebrow">Nuevo contenido</div>
-            <h1>Subir tema</h1>
-            <p>Pega las preguntas en tu formato de siempre. Revisas la vista previa, agregas imágenes y publicas.</p>
+            <h1 id="subTitulo">Subir tema</h1>
+            <p id="subIntro">Pega las preguntas en tu formato de siempre. Revisas la vista previa, agregas imágenes y publicas.</p>
           </div>
         </div>
 
@@ -527,13 +529,29 @@ E) Alternativa"></textarea>
             <label class="btn-ghost filebtn">Subir archivo .txt / .md<input type="file" id="subArchivo" accept=".txt,.md,text/plain,text/markdown"></label>
             <span class="hint">Tu texto se guarda solo mientras no cierres la pestaña.</span>
           </div>
-          <details class="fmt-ayuda">
-            <summary>Cómo escribir las preguntas (formato y trucos)</summary>
+          <details class="fmt-ayuda" id="exAyuda" hidden open>
+            <summary>Cómo escribir un examen</summary>
+            <div class="fmt-tit">Encabezado</div>
+            <div class="fmt-grid">
+              <code>EXAMEN: Ordinario</code><span>Ordinario, CPU o Examen de control (también lo eliges después).</span>
+              <code>CICLO: 2027-I</code><span>Ciclo del examen.</span>
+            </div>
+            <div class="fmt-tit">Cursos dentro del examen</div>
+            <div class="fmt-grid">
+              <code>CURSO: Lenguaje</code><span>Las preguntas de abajo son de ese curso, hasta el siguiente <code>CURSO:</code>.</span>
+              <code>TEMA: Lenguaje audiovisual</code><span>Opcional. Nombre del tema de las preguntas de abajo.</span>
+              <code>PREGUNTA 41:</code><span>Usa el número real del examen. Las preguntas se escriben igual que al subir un tema: mira <b>Formato de las preguntas</b> aquí abajo (lecturas, tablas, imágenes, fórmulas).</span>
+            </div>
+          </details>
+          <details class="fmt-ayuda" id="temaAyuda">
+            <summary id="temaAyudaTit">Cómo escribir las preguntas (formato y trucos)</summary>
+            <div id="temaEncabezado">
             <div class="fmt-tit">Encabezado del tema</div>
             <div class="fmt-grid">
               <code>CURSO: Química</code><span>Nombre del curso.</span>
               <code>CICLO: 2027-I</code><span>2027-I, 2027-II o 2027-III.</span>
               <code>TEMA: 03 - Estequiometría</code><span>Número y nombre del tema.</span>
+            </div>
             </div>
             <div class="fmt-tit">Preguntas y clave</div>
             <div class="fmt-grid">
@@ -564,6 +582,11 @@ E) Alternativa"></textarea>
 
         <div id="subPaso2" hidden>
           <div class="picker">
+            <div class="meta-grid ex-grid" id="subMetaExamen" hidden>
+              <label>Examen<select class="inp" id="exTipo"><option value="">— Elige —</option><option value="ordinario">Ordinario</option><option value="cpu">CPU</option><option value="control-cpu">Examen de control</option></select></label>
+              <label>Ciclo<input class="inp" id="exCiclo" placeholder="2027-I"></label>
+            </div>
+            <div id="subMetaTema">
             <div class="meta-grid">
               <label>Curso<select class="inp" id="subCurso"></select></label>
               <label>Ciclo<input class="inp" id="subCiclo" placeholder="2027-I"></label>
@@ -573,9 +596,12 @@ E) Alternativa"></textarea>
             <label class="dest">Destino
               <select class="inp" id="subDestino">
                 <option value="libro">Libro — temas del año (también los usa el Repaso)</option>
+                <option value="seminario">Seminarios del ciclo</option>
+                <option value="banqueo">Banqueo del ciclo</option>
                 <option value="fijas">Banco de Fijas propio del año</option>
               </select>
             </label>
+            </div>
           </div>
           <div id="subAvisos"></div>
           <div id="subLista"></div>
@@ -595,10 +621,12 @@ E) Alternativa"></textarea>
           <div>
             <div class="eyebrow">Tus libros en GitHub</div>
             <h1>Editar preguntas</h1>
-            <p>Elige curso, año y tema. Los cambios se publican en la web en 1 a 10 minutos.</p>
+            <p>Elige sección, curso, año y tema. Los cambios se publican en la web en 1 a 10 minutos.</p>
           </div>
         </div>
         <div class="picker">
+          <div class="lbl">Sección</div>
+          <div class="chips" id="pkSeccion"></div>
           <div class="lbl">Curso</div>
           <div class="chips" id="pkCurso"></div>
           <div id="pkAnioWrap" hidden><div class="lbl">Año</div><div class="chips" id="pkAnio"></div></div>
@@ -763,7 +791,17 @@ E) Alternativa"></textarea>
     ['historia-universal','Historia Universal'],['lenguaje','Lenguaje'],['literatura','Literatura'],
     ['psicologia','Psicología'],['quimica','Química'],['raz-verbal','Razonamiento Verbal'],['trigonometria','Trigonometría']
   ];
-  let NOMBRE = Object.fromEntries(CURSOS);
+  // Secciones de cada curso: la "carpeta" del Libro es el curso (quimica);
+  // Seminarios y Banqueo usan quimica--seminarios / quimica--banqueo
+  const SECCIONES = [['libros', 'Libro'], ['seminarios', 'Seminarios'], ['banqueo', 'Banqueo']];
+  function claveSeccion(curso, sec) { return sec && sec !== 'libros' ? curso + '--' + sec : curso; }
+  function partesCarpeta(c) { const m = String(c || '').match(/^(.+?)(?:--(seminarios|banqueo))?$/); return { curso: m[1], seccion: m[2] || 'libros' }; }
+  function rutaWeb(c) { const x = partesCarpeta(c); return x.curso + '/' + x.seccion; }
+  function conSecciones(n) {
+    Object.keys(n).forEach(id => { if (!/--/.test(id)) { n[id + '--seminarios'] = n[id] + ' · Seminarios'; n[id + '--banqueo'] = n[id] + ' · Banqueo'; } });
+    return n;
+  }
+  let NOMBRE = conSecciones(Object.fromEntries(CURSOS));
   let REG = null; // registro de cursos (assets/cursos.json)
   async function cargarRegistro() {
     try {
@@ -771,7 +809,7 @@ E) Alternativa"></textarea>
       const ordenArea = {}; (REG.areas || []).forEach((a, i) => { ordenArea[a.id] = i; });
       const lista = (REG.cursos || []).slice().sort((a, b) => (ordenArea[a.area] ?? 99) - (ordenArea[b.area] ?? 99) || (a.orden || 0) - (b.orden || 0));
       CURSOS = lista.map(c => [c.id, c.nombre + (c.oculto ? ' (oculto)' : '')]);
-      NOMBRE = Object.fromEntries(lista.map(c => [c.id, c.nombre]));
+      NOMBRE = conSecciones(Object.fromEntries(lista.map(c => [c.id, c.nombre])));
     } catch (e) { /* si falla, se queda la lista por defecto */ }
     return REG;
   }
@@ -785,7 +823,7 @@ E) Alternativa"></textarea>
   let filtroEstado = 'Pendiente';
   const cacheArchivos = {};   // "carpeta|anio" -> temas
   const cacheManifest = {};   // carpeta -> manifest
-  const sel = { carpeta: null, anio: null, tema: null };
+  const sel = { carpeta: null, anio: null, tema: null, seccion: 'libros' };
 
   /* ---------- utilidades ---------- */
   function ss(action, k, v) { try { if (action === 'get') return sessionStorage.getItem(k); if (action === 'set') sessionStorage.setItem(k, v); if (action === 'del') sessionStorage.removeItem(k); } catch (e) {} return null; }
@@ -915,7 +953,8 @@ E) Alternativa"></textarea>
     $('barraTitulo').textContent = t.querySelector('span').textContent;
     window.scrollTo(0, 0);
     document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
-    ['reportes', 'subir', 'editar', 'cursos', 'perfil', 'frases', 'alertas', 'tutorial', 'codigos', 'alumnos', 'corr', 'simulacro'].forEach(id => { $('tab-' + id).hidden = id !== t.dataset.tab; });
+    const pestana = t.dataset.tab === 'examen' ? 'subir' : t.dataset.tab; // "Subir examen" usa la misma pantalla que "Subir tema"
+    ['reportes', 'subir', 'editar', 'cursos', 'perfil', 'frases', 'alertas', 'tutorial', 'codigos', 'alumnos', 'corr', 'simulacro'].forEach(id => { $('tab-' + id).hidden = id !== pestana; });
     if (t.dataset.tab === 'tutorial' && !TU.datos) cargarTutorial();
     if (t.dataset.tab === 'cursos') cargarCursos();
     if (t.dataset.tab === 'perfil') cargarPerfilCfg();
@@ -924,7 +963,7 @@ E) Alternativa"></textarea>
     if (t.dataset.tab === 'alumnos') cargarAlumnos();
     if (t.dataset.tab === 'simulacro') cargarTopSimulacro();
     if (t.dataset.tab === 'alertas') cargarAlertas();
-    if (t.dataset.tab === 'subir') initSubir();
+    if (t.dataset.tab === 'subir' || t.dataset.tab === 'examen') initSubir(t.dataset.tab === 'examen' ? 'examen' : 'tema');
     if (t.dataset.tab === 'editar') renderPicker();
     if (t.dataset.tab === 'corr') cargarCorrecciones();
   }));
@@ -1044,8 +1083,14 @@ E) Alternativa"></textarea>
   }
 
   async function renderPicker() {
-    $('pkCurso').innerHTML = chipsHtml(CURSOS, sel.carpeta);
-    $('pkCurso').querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => { sel.carpeta = c.dataset.v; sel.anio = null; sel.tema = null; renderPicker(); }));
+    const cursoSel = sel.carpeta ? partesCarpeta(sel.carpeta).curso : null;
+    if (sel.carpeta) sel.seccion = partesCarpeta(sel.carpeta).seccion;
+    $('pkSeccion').innerHTML = chipsHtml(SECCIONES, sel.seccion);
+    $('pkSeccion').querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+      sel.seccion = c.dataset.v; sel.carpeta = cursoSel ? claveSeccion(cursoSel, sel.seccion) : null; sel.anio = null; sel.tema = null; renderPicker();
+    }));
+    $('pkCurso').innerHTML = chipsHtml(CURSOS, cursoSel);
+    $('pkCurso').querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => { sel.carpeta = claveSeccion(c.dataset.v, sel.seccion); sel.anio = null; sel.tema = null; renderPicker(); }));
     $('pkAnioWrap').hidden = !sel.carpeta;
     $('pkTemaWrap').hidden = true;
     if (!sel.carpeta) { $('qlist').innerHTML = '<div class="state-msg">Elige un curso para ver sus preguntas.</div>'; return; }
@@ -1053,7 +1098,7 @@ E) Alternativa"></textarea>
     $('pkAnio').innerHTML = '<span class="hint">Cargando…</span>';
     try {
       const m = await getManifest(sel.carpeta);
-      if (!m.length) { $('pkAnio').innerHTML = '<span class="hint">Este curso aún no tiene libros publicados.</span>'; $('qlist').innerHTML = ''; return; }
+      if (!m.length) { $('pkAnio').innerHTML = '<span class="hint">' + (sel.seccion === 'libros' ? 'Este curso aún no tiene libros publicados.' : 'Aún no hay temas publicados en esta sección.') + '</span>'; $('qlist').innerHTML = ''; return; }
       if (!sel.anio && m.length === 1) sel.anio = m[0].id;
       $('pkAnio').innerHTML = chipsHtml(m.map(x => [x.id, x.label || x.id, x.temas + ' temas']), sel.anio);
       $('pkAnio').querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => { sel.anio = c.dataset.v; sel.tema = null; renderPicker(); }));
@@ -1370,6 +1415,7 @@ E) Alternativa"></textarea>
 <script src="imagenes.js"></script>
 <script src="../assets/pregunta.js"></script>
 <script src="subir.js"></script>
+<script src="examen-panel.js"></script>
 <script src="../assets/alertas.js" data-solo-previa></script>
 <script src="alertas-panel.js"></script>
 <script src="codigos-panel.js"></script>

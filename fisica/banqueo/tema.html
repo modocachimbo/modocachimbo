@@ -187,7 +187,7 @@
           qlistEl.appendChild(div);
         });
 
-        window.MC_TEMA = { curso: 'Física', carpeta: 'fisica', year: year, num: tema.num, name: tema.name, questions: tema.questions };
+        window.MC_TEMA = { curso: 'Física', carpeta: 'fisica--banqueo', year: year, num: tema.num, name: tema.name, questions: tema.questions };
         document.dispatchEvent(new CustomEvent('mc:tema-listo'));
       })
       .catch(() => {

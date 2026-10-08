@@ -2,10 +2,12 @@
    Panel · Códigos de acceso
    ========================================================= */
 const CD = { lista: [], config: { abiertos: {}, legacy: true }, hoy: '', filtro: 'Todos' };
-const PROD_TIPOS = [
-  ['TODO-VIP', 'Acceso total'], ['repaso-VIP', 'Todos los Repasos'], ['fijas-VIP', 'Todas las Fijas'], ['simulacro', 'Simulacro'],
-  ['curso', 'Un curso (Repaso y Fijas)'], ['repaso', 'Solo Repaso de un curso'], ['fijas', 'Solo Fijas de un curso']
+// Un código puede abrir varias cosas a la vez: el producto se guarda como "fijas-VIP,simulacro"
+const PROD_TODOS = [
+  ['TODO-VIP', 'Acceso total'], ['repaso-VIP', 'Repasos y práctica'], ['fijas-VIP', 'Fijas'],
+  ['seminario-VIP', 'Seminarios'], ['banqueo-VIP', 'Banqueo'], ['simulacro', 'Simulacro']
 ];
+const PROD_CURSO = [['curso', 'Todo el curso'], ['repaso', 'Repaso y práctica'], ['fijas', 'Fijas'], ['seminario', 'Seminarios'], ['banqueo', 'Banqueo']];
 // Link oficial fijo: así el mensaje no muestra el link de una vista previa.
 const SITE_URL = 'https://modocachimbo.github.io/modocachimbo/';
 
@@ -21,13 +23,14 @@ function mensajeCodigo(c) {
     (c.vence ? `Válido hasta el ${c.vence.split('-').reverse().join('/')}.\n` : '') +
     `\nActívalo aquí: ${SITE_URL} → «Ingresar código»`;
 }
-function etiquetaProd(p) {
-  if (p === 'TODO-VIP') return 'Acceso total'; if (p === 'repaso-VIP') return 'Todos los Repasos'; if (p === 'fijas-VIP') return 'Todas las Fijas';
-  if (p === 'simulacro') return 'Simulacro';
-  const m = String(p).match(/^(curso|repaso|fijas)-(.+)$/); if (!m) return p;
+function etiquetaUno(p) {
+  const fijos = { 'TODO-VIP': 'Acceso total', 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'seminario-VIP': 'Todos los Seminarios', 'banqueo-VIP': 'Todo el Banqueo', simulacro: 'Simulacro' };
+  if (fijos[p]) return fijos[p];
+  const m = String(p).match(/^(curso|repaso|fijas|seminario|banqueo)-(.+)$/); if (!m) return p;
   const n = NOMBRE[m[2]] || m[2];
-  return m[1] === 'curso' ? n + ' (Repaso y Fijas)' : (m[1] === 'repaso' ? 'Repaso de ' : 'Fijas de ') + n;
+  return { curso: n + ' completo', repaso: 'Repaso de ' + n, fijas: 'Fijas de ' + n, seminario: 'Seminarios de ' + n, banqueo: 'Banqueo de ' + n }[m[1]];
 }
+function etiquetaProd(p) { return String(p || '').split(',').filter(Boolean).map(etiquetaUno).join(' + '); }
 function fechaCorta(iso) { const d = new Date(iso); return isNaN(d) ? '—' : d.toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' }); }
 
 async function cargarCodigos() {
@@ -47,18 +50,20 @@ function renderConfigAcceso() {
       ${ab[k] && ab[k].hasta ? `<span class="pill gray">hasta el ${esc(ab[k].hasta.split('-').reverse().join('/'))}</span>` : ''}
       <label class="sw"><input type="checkbox" data-abrir="${k}" ${ab[k] ? 'checked' : ''}><span></span>${ab[k] ? 'Abierto' : 'Con código'}</label>
     </div>`;
-  const extras = Object.keys(ab).filter(k => !['TODO', 'repaso', 'fijas', 'simulacro'].includes(k));
+  const extras = Object.keys(ab).filter(k => !['TODO', 'repaso', 'fijas', 'seminario', 'banqueo', 'simulacro'].includes(k));
   $('cdConfig').innerHTML = `
     <div class="acc-box">
       <div class="acc-ttl">Acceso libre <span>— abre el contenido para todos, sin código</span></div>
-      ${fila('TODO', 'Todo', 'Repasos, Fijas y Simulacro')}
-      ${fila('repaso', 'Todos los Repasos', '19 cursos')}
-      ${fila('fijas', 'Todas las Fijas', '19 cursos')}
+      ${fila('TODO', 'Todo', 'Repasos, Fijas, Seminarios, Banqueo y Simulacro')}
+      ${fila('repaso', 'Todos los Repasos', 'también la práctica del Libro')}
+      ${fila('fijas', 'Todas las Fijas', 'todos los cursos')}
+      ${fila('seminario', 'Todos los Seminarios', 'todos los cursos')}
+      ${fila('banqueo', 'Todo el Banqueo', 'todos los cursos')}
       ${fila('simulacro', 'Simulacro', 'Examen de 80 preguntas')}
       ${extras.map(k => `<div class="acc-row"><div><b>${esc(etiquetaProd(k))}</b><span>abierto para todos${ab[k].hasta ? ' hasta el ' + esc(ab[k].hasta.split('-').reverse().join('/')) : ''}</span></div>
         <button class="rbtn" type="button" data-cerrar="${esc(k)}">Cerrar</button></div>`).join('')}
       <div class="acc-add">
-        <select class="inp" id="accTipo"><option value="repaso">Repaso de…</option><option value="fijas">Fijas de…</option></select>
+        <select class="inp" id="accTipo"><option value="repaso">Repaso de…</option><option value="fijas">Fijas de…</option><option value="seminario">Seminarios de…</option><option value="banqueo">Banqueo de…</option></select>
         <select class="inp" id="accCurso"><option value="">— Curso —</option>${CURSOS.map(([id, n]) => `<option value="${id}">${esc(n)}</option>`).join('')}</select>
         <input class="inp" id="accHasta" type="date" title="Opcional: se cierra solo después de esta fecha">
         <button class="rbtn" type="button" id="accAbrir">Abrir este curso</button>
@@ -164,16 +169,26 @@ function renderCodigos() {
 
 /* ---------- Crear / editar ---------- */
 function editarCodigo(orig) {
-  const tipoDe = p => ['TODO-VIP', 'repaso-VIP', 'fijas-VIP', 'simulacro'].includes(p) ? p : String(p).split('-')[0];
-  const cursoDe = p => { const m = String(p).match(/^(curso|repaso|fijas)-(.+)$/); return m && m[2] !== 'VIP' ? m[2] : ''; };
-  const st = { tipo: orig ? tipoDe(orig.producto) : 'TODO-VIP', curso: orig ? cursoDe(orig.producto) : '' };
+  // st.todos: productos para todos los cursos · st.curso + st.deCurso: productos de un curso
+  const st = { todos: [], curso: '', deCurso: [] };
+  String(orig ? orig.producto : 'TODO-VIP').split(',').filter(Boolean).forEach(p => {
+    const m = p.match(/^(curso|repaso|fijas|seminario|banqueo)-(.+)$/);
+    if (m && m[2] !== 'VIP') { st.curso = st.curso || m[2]; if (m[2] === st.curso) st.deCurso.push(m[1]); }
+    else st.todos.push(p);
+  });
+  const multi = (g, ops, sel) => `<div class="chips" data-g="${g}">` + ops.map(([v, l]) =>
+    `<button type="button" class="chip ${sel.includes(v) ? 'on' : ''}" data-v="${esc(v)}">${l}</button>`).join('') + '</div>';
   const o = document.createElement('div');
   o.className = 'ov';
   o.innerHTML = `<div class="mcard" style="max-width:620px;"><button class="mx" type="button" aria-label="Cerrar">✕</button>
     <div class="eyebrow">${orig ? 'Editar código' : 'Nuevos códigos'}</div>
     <h3>${orig ? esc(orig.codigo) : 'Crear códigos'}</h3>
-    <label class="fld">¿Para qué es?</label>${chipsSel('tipo', PROD_TIPOS, st.tipo)}
-    <div id="cdCursoBox" style="margin-top:10px;"></div>
+    <label class="fld">¿Qué abre? <span class="hint">Puedes marcar varias cosas</span></label>
+    <div class="hint" style="margin:2px 0 6px;">Para todos los cursos</div>${multi('todos', PROD_TODOS, st.todos)}
+    <div class="hint" style="margin:12px 0 6px;">Solo de un curso</div>
+    <select class="inp" id="cdCurso"><option value="">— Ninguno —</option>${CURSOS.map(([id, n]) => `<option value="${id}" ${id === st.curso ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select>
+    <div id="cdCursoBox" style="margin-top:8px;"></div>
+    <div class="hint" id="cdResumen" style="margin-top:10px;"></div>
     <div class="cdgrid">
       <label>Dispositivos<input class="inp" id="cdMax" type="number" min="1" max="10000" value="${orig ? (orig.max || 2) : 2}"></label>
       <label class="ck" style="align-self:end;"><input type="checkbox" id="cdSinLim" ${orig && !orig.max ? 'checked' : ''}>Sin límite</label>
@@ -191,15 +206,33 @@ function editarCodigo(orig) {
   document.body.appendChild(o); document.body.classList.add('modal-open');
   const cerrar = () => { o.remove(); document.body.classList.remove('modal-open'); };
   o.querySelector('.mx').addEventListener('click', cerrar); o.querySelector('[data-x]').addEventListener('click', cerrar);
+  const producto = () => {
+    if (st.todos.includes('TODO-VIP')) return 'TODO-VIP';
+    const deCurso = st.curso ? (st.deCurso.includes('curso') ? ['curso'] : st.deCurso).map(t => t + '-' + st.curso) : [];
+    return st.todos.concat(deCurso).join(',');
+  };
+  const resumen = () => { const p = producto(); o.querySelector('#cdResumen').innerHTML = p ? 'Abrirá: <b style="color:#f5ffcc">' + esc(etiquetaProd(p)) + '</b>' : ''; };
   const pintarCurso = () => {
     const box = o.querySelector('#cdCursoBox');
-    box.innerHTML = ['curso', 'repaso', 'fijas'].includes(st.tipo)
-      ? `<select class="inp" id="cdCurso"><option value="">— Elige el curso —</option>${CURSOS.map(([id, n]) => `<option value="${id}" ${id === st.curso ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select>` : '';
-    const s = box.querySelector('#cdCurso'); if (s) s.addEventListener('change', e => { st.curso = e.target.value; });
+    box.innerHTML = st.curso ? multi('decurso', PROD_CURSO, st.deCurso) : '';
+    const g = box.querySelector('[data-g="decurso"]');
+    if (g) g.addEventListener('click', e => {
+      const b = e.target.closest('.chip'); if (!b) return;
+      const v = b.dataset.v, i = st.deCurso.indexOf(v);
+      if (i >= 0) st.deCurso.splice(i, 1); else st.deCurso.push(v);
+      if (v === 'curso' && i < 0) st.deCurso = ['curso']; else if (v !== 'curso') st.deCurso = st.deCurso.filter(x => x !== 'curso');
+      pintarCurso();
+    });
+    resumen();
   };
-  o.querySelector('[data-g="tipo"]').addEventListener('click', e => {
+  o.querySelector('#cdCurso').addEventListener('change', e => { st.curso = e.target.value; if (st.curso && !st.deCurso.length) st.deCurso = ['curso']; pintarCurso(); });
+  o.querySelector('[data-g="todos"]').addEventListener('click', e => {
     const b = e.target.closest('.chip'); if (!b) return;
-    o.querySelectorAll('[data-g="tipo"] .chip').forEach(x => x.classList.toggle('on', x === b)); st.tipo = b.dataset.v; pintarCurso();
+    const v = b.dataset.v, i = st.todos.indexOf(v);
+    if (i >= 0) st.todos.splice(i, 1); else st.todos.push(v);
+    if (v === 'TODO-VIP' && i < 0) st.todos = ['TODO-VIP']; else if (v !== 'TODO-VIP') st.todos = st.todos.filter(x => x !== 'TODO-VIP');
+    o.querySelectorAll('[data-g="todos"] .chip').forEach(x => x.classList.toggle('on', st.todos.includes(x.dataset.v)));
+    resumen();
   });
   const sinLim = o.querySelector('#cdSinLim'), max = o.querySelector('#cdMax');
   const syncLim = () => { max.disabled = sinLim.checked; }; sinLim.addEventListener('change', syncLim); syncLim();
@@ -207,10 +240,9 @@ function editarCodigo(orig) {
 
   o.querySelector('#cdSave').addEventListener('click', async () => {
     const err = o.querySelector('#cdErr'); err.classList.remove('show');
-    const necesitaCurso = ['curso', 'repaso', 'fijas'].includes(st.tipo);
-    if (necesitaCurso && !st.curso) { err.textContent = 'Elige el curso.'; err.classList.add('show'); return; }
+    if (!producto()) { err.textContent = st.curso ? 'Marca qué abre del curso.' : 'Marca qué abre el código.'; err.classList.add('show'); return; }
     const datos = {
-      producto: necesitaCurso ? st.tipo + '-' + st.curso : st.tipo,
+      producto: producto(),
       max: sinLim.checked ? 0 : Math.max(1, parseInt(max.value, 10) || 1),
       vence: o.querySelector('#cdVence').value, nota: o.querySelector('#cdNota').value
     };
@@ -256,7 +288,7 @@ function importarCodigos() {
   o.querySelector('#impTxt').addEventListener('input', e => {
     filas = e.target.value.split(/\r?\n/).map(l => l.split(/\t|;|,(?=\S)/).map(x => x.trim())).filter(c => c[0] && !/^c[óo]digo$/i.test(c[0]))
       .map(c => ({ codigo: c[0].toUpperCase(), producto: c[1] || '', max: parseFloat(c[2]) || 0, usos: parseFloat(c[3]) || 0, nota: c[4] || '' }));
-    const malos = filas.filter(f => !/^(TODO-VIP|repaso-VIP|fijas-VIP|simulacro|(curso|repaso|fijas)-[a-z0-9-]+)$/.test(f.producto));
+    const malos = filas.filter(f => !f.producto.split(',').every(x => /^(TODO-VIP|repaso-VIP|fijas-VIP|seminario-VIP|banqueo-VIP|simulacro|(curso|repaso|fijas|seminario|banqueo)-[a-z0-9-]+)$/.test(x)));
     o.querySelector('#impPrev').innerHTML = filas.length
       ? `<b style="color:var(--text)">${filas.length} código${filas.length > 1 ? 's' : ''} detectado${filas.length > 1 ? 's' : ''}:</b> ` + filas.slice(0, 6).map(f => `${esc(f.codigo)} (${esc(etiquetaProd(f.producto))}, ${f.usos}/${f.max || '∞'})`).join(' · ') + (filas.length > 6 ? ' …' : '') +
         (malos.length ? `<br><span style="color:var(--red)">${malos.length} con producto no reconocido se saltarán.</span>` : '')

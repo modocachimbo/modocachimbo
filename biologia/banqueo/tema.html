@@ -187,7 +187,7 @@
           qlistEl.appendChild(div);
         });
 
-        window.MC_TEMA = { curso: 'Biología', carpeta: 'biologia', year: year, num: tema.num, name: tema.name, questions: tema.questions };
+        window.MC_TEMA = { curso: 'Biología', carpeta: 'biologia--banqueo', year: year, num: tema.num, name: tema.name, questions: tema.questions };
         document.dispatchEvent(new CustomEvent('mc:tema-listo'));
       })
       .catch(() => {

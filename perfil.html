@@ -251,7 +251,8 @@
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var CAMPOS = ['nombre', 'apodo', 'carrera', 'modalidad', 'fecha_examen', 'celular'];
-  var NOMBRES = { 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'TODO-VIP': 'Acceso total', 'simulacro': 'Simulacro' };
+  var NOMBRES = { 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'seminario-VIP': 'Todos los Seminarios', 'banqueo-VIP': 'Todo el Banqueo', 'TODO-VIP': 'Acceso total', 'simulacro': 'Simulacro' };
+  var TIPO_NOM = { curso: 'Curso: ', repaso: 'Repaso: ', fijas: 'Fijas: ', seminario: 'Seminarios: ', banqueo: 'Banqueo: ' };
 
   // Bloque y carrera (lista en assets/carreras.js)
   // (se pueden cambiar desde el panel: MCCarreras.cargar() trae la versión guardada)
@@ -371,7 +372,9 @@
     lista.forEach(function (a) {
       var li = document.createElement('li');
       var prod = a.producto || '';
-      var nom = NOMBRES[prod] || prod.replace(/^curso-/, 'Curso: ').replace(/^(repaso|fijas)-/, function (x, t) { return (t === 'repaso' ? 'Repaso: ' : 'Fijas: '); });
+      var nom = prod.split(',').map(function (p) {
+        return NOMBRES[p] || p.replace(/^(curso|repaso|fijas|seminario|banqueo)-/, function (x, t) { return TIPO_NOM[t]; });
+      }).join(' + ');
       li.appendChild(document.createTextNode(nom));
       var s = document.createElement('span');
       s.textContent = a.codigo + (a.vence ? ' · vence ' + new Date(a.vence).toLocaleDateString('es-PE') : '');

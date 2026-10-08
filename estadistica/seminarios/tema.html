@@ -187,7 +187,7 @@
           qlistEl.appendChild(div);
         });
 
-        window.MC_TEMA = { curso: 'Estadística', carpeta: 'estadistica', year: year, num: tema.num, name: tema.name, questions: tema.questions };
+        window.MC_TEMA = { curso: 'Estadística', carpeta: 'estadistica--seminarios', year: year, num: tema.num, name: tema.name, questions: tema.questions };
         document.dispatchEvent(new CustomEvent('mc:tema-listo'));
       })
       .catch(() => {

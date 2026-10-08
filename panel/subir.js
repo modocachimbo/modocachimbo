@@ -159,10 +159,31 @@ function renderMath(el) {
   }
 }
 
-const SUB = { parse: null, zonas: {}, borrador: 'mc_panel_borrador' };
+const SUB = { parse: null, zonas: {}, borrador: 'mc_panel_borrador', modo: 'tema' };
+const PLACE_TEMA = $('subTexto') ? $('subTexto').placeholder : '';
 
-function initSubir() {
+// modo: 'tema' (Libro, Seminarios, Banqueo, Fijas) o 'examen' (Ordinario, CPU, Examen de control)
+function initSubir(modo) {
+  modo = modo === 'examen' ? 'examen' : 'tema';
   const ta = $('subTexto');
+  if (SUB.modo !== modo) {
+    ss('set', SUB.borrador, ta.value);
+    SUB.modo = modo; SUB.parse = null; SUB.zonas = {};
+    SUB.borrador = modo === 'examen' ? 'mc_panel_borrador_examen' : 'mc_panel_borrador';
+    ta.value = ss('get', SUB.borrador) || '';
+    $('subPaso2').hidden = true; $('subListo').hidden = true; $('subPaso1').hidden = false;
+  }
+  const ex = modo === 'examen';
+  $('subTitulo').textContent = ex ? 'Subir examen' : 'Subir tema';
+  $('subIntro').textContent = ex ? 'Pega el examen completo (Ordinario, CPU o Examen de control). Revisas la vista previa, agregas imágenes y publicas.'
+    : 'Pega las preguntas en tu formato de siempre. Revisas la vista previa, agregas imágenes y publicas.';
+  ta.placeholder = ex ? 'EXAMEN: Ordinario\nCICLO: 2027-I\n\nCURSO: Lenguaje\nTEMA: Lenguaje audiovisual\n\nPREGUNTA 1:\nEnunciado…\nA) Alternativa\nB) Alternativa correcta ✅\nC) Alternativa\nD) Alternativa\nE) Alternativa\n\nCURSO: Literatura\n\nPREGUNTA 6:\n…' : PLACE_TEMA;
+  // En examen se ve la guía del examen y, debajo, la misma guía de formato de las preguntas (sin el encabezado del tema)
+  $('exAyuda').hidden = !ex; $('temaEncabezado').hidden = ex;
+  $('temaAyudaTit').textContent = ex ? 'Formato de las preguntas (lecturas, tablas, imágenes, fórmulas)' : 'Cómo escribir las preguntas (formato y trucos)';
+  if ($('subNovAviso')) $('subNovAviso').style.display = ex ? 'none' : '';
+  $('subMetaExamen').hidden = !ex; $('subMetaTema').hidden = ex;
+  $('subPublicar').textContent = ex ? 'Publicar examen' : 'Publicar tema';
   if (!ta.dataset.listo) {
     ta.dataset.listo = '1';
     const b = ss('get', SUB.borrador); if (b && !ta.value) ta.value = b;
@@ -176,8 +197,8 @@ function initSubir() {
     });
     $('subRevisar').addEventListener('click', revisarTexto);
     $('subVolver').addEventListener('click', () => { $('subPaso2').hidden = true; $('subPaso1').hidden = false; window.scrollTo(0, 0); });
-    $('subPublicar').addEventListener('click', publicarTema);
-    ['subCurso', 'subCiclo', 'subNum', 'subNombre', 'subDestino'].forEach(id => $(id).addEventListener('input', validarMeta));
+    $('subPublicar').addEventListener('click', () => SUB.modo === 'examen' ? publicarExamen() : publicarTema());
+    ['subCurso', 'subCiclo', 'subNum', 'subNombre', 'subDestino', 'exTipo', 'exCiclo'].forEach(id => $(id).addEventListener('input', validarMeta));
   }
   const actual = $('subCurso').value;
   $('subCurso').innerHTML = '<option value="">— Elige el curso —</option>' + CURSOS.map(([id, n]) => `<option value="${id}">${esc(n)}</option>`).join('');
@@ -185,16 +206,22 @@ function initSubir() {
 }
 
 function revisarTexto() {
-  const r = parsearTexto($('subTexto').value);
+  const ex = SUB.modo === 'examen';
+  const r = ex ? parsearExamen($('subTexto').value) : parsearTexto($('subTexto').value);
   if (!r.preguntas.length) { toast('No encontré preguntas. Revisa que cada una empiece con "PREGUNTA 1:"', true); return; }
   // conservar imágenes ya pegadas (por pregunta y posición)
   const previas = {};
   Object.keys(SUB.zonas).forEach(k => { previas[k] = SUB.zonas[k].estado(); });
   SUB.parse = r;
-  $('subCurso').value = detectarCurso(r.meta.curso) || $('subCurso').value;
-  $('subCiclo').value = normalizarCiclo(r.meta.ciclo) || $('subCiclo').value;
-  $('subNum').value = r.meta.tema ? pad2(r.meta.tema) : $('subNum').value;
-  $('subNombre').value = r.meta.nombre || $('subNombre').value;
+  if (ex) {
+    $('exTipo').value = r.meta.tipo || $('exTipo').value;
+    $('exCiclo').value = normalizarCiclo(r.meta.ciclo) || $('exCiclo').value;
+  } else {
+    $('subCurso').value = detectarCurso(r.meta.curso) || $('subCurso').value;
+    $('subCiclo').value = normalizarCiclo(r.meta.ciclo) || $('subCiclo').value;
+    $('subNum').value = r.meta.tema ? pad2(r.meta.tema) : $('subNum').value;
+    $('subNombre').value = r.meta.nombre || $('subNombre').value;
+  }
 
   const errores = r.preguntas.filter(q => q.errores.length).length;
   $('subAvisos').innerHTML =
@@ -204,7 +231,7 @@ function revisarTexto() {
   // Vista previa: un recuadro por cada [IMAGEN]; sin marcas, uno debajo del enunciado (como antes)
   // Preguntas del mismo TEXTO: la lectura se muestra una vez, en la primera
   const rango = {};
-  r.preguntas.forEach((q, i) => { if (q.lectura) { const x = rango[q.lectura] = rango[q.lectura] || [i + 1, i + 1]; x[1] = i + 1; } });
+  r.preguntas.forEach((q, i) => { const n = ex ? q.num : i + 1; if (q.lectura) { const x = rango[q.lectura] = rango[q.lectura] || [n, n]; x[1] = n; } });
   const txtRango = l => { const x = rango[l]; return x[0] === x[1] ? 'pregunta ' + x[0] : 'preguntas ' + x[0] + ' a ' + x[1]; };
   const visto = {};
   $('subLista').innerHTML = r.preguntas.map((q, i) => {
@@ -218,7 +245,7 @@ function revisarTexto() {
     <article class="pcard ${q.errores.length ? 'bad' : ''} ${k ? 'en-texto' : ''} ${sigue ? 'sigue' : ''}">
       ${lec}
       ${sigue ? `<div class="plec-sig">${esc(q.lectura.split('\n')[0].replace(/[\[\]]/g, ''))} · ${txtRango(q.lectura)} (misma lectura de arriba)</div>` : ''}
-      <div class="qnum2">${i + 1}</div>
+      <div class="qnum2">${ex ? esc(q.num) : i + 1}</div>${ex ? `<div class="hint" style="margin:-4px 0 8px;">${esc(q.asignatura || '¿curso?')}${q.tema ? ' · ' + esc(q.tema) : ''}</div>` : ''}
       ${q.errores.length ? `<div class="perr">⚠ ${q.errores.map(esc).join(' · ')}</div>` : ''}
       <div class="ptext">${v.html}</div>
       ${q.marcasImg ? '' : `<div class="pimg" data-z="${i}|g"></div>`}
@@ -239,6 +266,7 @@ function revisarTexto() {
 
 function validarMeta() {
   if (!SUB.parse) return;
+  if (SUB.modo === 'examen') return validarMetaExamen();
   const curso = $('subCurso').value, ciclo = normalizarCiclo($('subCiclo').value), num = $('subNum').value.trim(), nombre = $('subNombre').value.trim();
   const errs = [];
   if (!curso) errs.push('elige el curso');
@@ -252,14 +280,24 @@ function validarMeta() {
   const n = SUB.parse.preguntas.length;
   $('subResumen').innerHTML = errs.length
     ? `<span class="bad">Falta: ${errs.join(', ')}.</span>`
-    : `<b>${n} pregunta${n > 1 ? 's' : ''}</b> para ${esc(NOMBRE[curso])} · ${esc(ciclo)} · Tema ${esc(pad2(num))}${$('subDestino').value === 'fijas' ? ' · <b>Banco de Fijas</b>' : ''}`;
+    : `<b>${n} pregunta${n > 1 ? 's' : ''}</b> para ${esc(NOMBRE[curso])} · ${esc(ciclo)} · Tema ${esc(pad2(num))}${DESTINO_TXT[$('subDestino').value] ? ' · <b>' + DESTINO_TXT[$('subDestino').value].slice(3) + '</b>' : ''}`;
   $('subPublicar').disabled = !!errs.length;
 }
 
+// Carpeta donde se guarda según el destino: quimica · quimica--seminarios · quimica--banqueo
+function carpetaDestino(curso, destino) {
+  return destino === 'seminario' ? curso + '--seminarios' : destino === 'banqueo' ? curso + '--banqueo' : curso;
+}
+const DESTINO_TXT = { fijas: ' · Banco de Fijas', seminario: ' · Seminarios', banqueo: ' · Banqueo' };
+
+// ruta(q, ext) → dónde va cada imagen; base(q) → campos de la pregunta además de text/options/correct
 function armarPreguntas(carpeta, anio, tema, nombre) {
+  return armarConImagenes((q, ext) => imgRuta(carpeta, anio, tema, ext), () => ({ topic: NOMBRE[partesCarpeta(carpeta).curso] + ' · ' + nombre }));
+}
+function armarConImagenes(ruta, base) {
   const imagenes = [];
-  const subir = st => {
-    const path = imgRuta(carpeta, anio, tema, st.img.ext);
+  const subir = (q, st) => {
+    const path = ruta(q, st.img.ext);
     imagenes.push({ path, data: st.img.dataUrl });
     return path;
   };
@@ -268,27 +306,23 @@ function armarPreguntas(carpeta, anio, tema, nombre) {
     let k = 0;
     const text = q.text.replace(/^\[IMAGEN( DERECHA)?\]$/gm, (x, der) => {
       const z = SUB.zonas[i + '|' + (k++)], st = z && z.estado();
-      return st && st.cambio === 'nueva' ? '[IMG' + (der ? '-DER' : '') + ':' + subir(st) + ']' : '';
+      return st && st.cambio === 'nueva' ? '[IMG' + (der ? '-DER' : '') + ':' + subir(q, st) + ']' : '';
     });
-    const out = { text: q.lectura + text, topic: NOMBRE[carpeta] + ' · ' + nombre, options: q.options.map(o => ({ letter: o.letter, text: o.text })), correct: q.correct };
+    const out = Object.assign(base(q), { text: q.lectura + text, options: q.options.map(o => ({ letter: o.letter, text: o.text })), correct: q.correct });
     const st = SUB.zonas[i + '|g'] && SUB.zonas[i + '|g'].estado();
-    if (st && st.cambio === 'nueva') {
-      const path = imgRuta(carpeta, anio, tema, st.img.ext);
-      imagenes.push({ path, data: st.img.dataUrl });
-      out.graphic = imgHtml(path);
-    }
+    if (st && st.cambio === 'nueva') out.graphic = imgHtml(subir(q, st));
     return out;
   });
   return { preguntas, imagenes };
 }
 
 async function publicarTema() {
-  const carpeta = $('subCurso').value, anio = normalizarCiclo($('subCiclo').value), tema = pad2($('subNum').value.trim()), nombre = $('subNombre').value.trim();
+  const destino = $('subDestino').value;
+  const carpeta = carpetaDestino($('subCurso').value, destino), anio = normalizarCiclo($('subCiclo').value), tema = pad2($('subNum').value.trim()), nombre = $('subNombre').value.trim();
   const btn = $('subPublicar');
   btn.disabled = true; btn.innerHTML = '<span class="spin-s"></span> Revisando…';
   try {
     // ¿Ya existe el tema?
-    const destino = $('subDestino').value;
     let existente = null, temasCurso = null;
     if (destino === 'fijas') {
       try { existente = ((await api('archivo', { carpeta, anio: anio + '-fijas' })).temas || []).find(t => pad2(t.num) === tema) || null; } catch (e) { existente = null; }
@@ -307,17 +341,17 @@ async function publicarTema() {
     }
     const { preguntas, imagenes } = armarPreguntas(carpeta, anio, tema, nombre);
     btn.innerHTML = '<span class="spin-s"></span> ' + (imagenes.length ? `Subiendo ${imagenes.length} imagen${imagenes.length > 1 ? 'es' : ''} y publicando…` : 'Publicando…');
-    const r = await api('publicarTema', { carpeta, curso: NOMBRE[carpeta], anio, tema, nombre, modo, destino, preguntas: JSON.stringify(preguntas), imagenes: JSON.stringify(imagenes) });
+    const r = await api('publicarTema', { carpeta, curso: NOMBRE[carpeta], anio, tema, nombre, modo, destino: destino === 'fijas' ? 'fijas' : 'libro', preguntas: JSON.stringify(preguntas), imagenes: JSON.stringify(imagenes) });
     delete cacheManifest[carpeta]; delete cacheArchivos[carpeta + '|' + anio];
     ss('del', SUB.borrador);
-    const url = SITE_ROOT + carpeta + '/libros/tema.html?year=' + encodeURIComponent(anio) + '&tema=' + encodeURIComponent(tema);
+    const url = SITE_ROOT + rutaWeb(carpeta) + '/tema.html?year=' + encodeURIComponent(anio) + '&tema=' + encodeURIComponent(tema);
     $('subPaso2').hidden = true;
     $('subListo').hidden = false;
     $('subListo').innerHTML = `<div class="done">
         <div class="ico">${ICON_OK}</div>
         <div class="eyebrow">Publicado</div>
         <h3>¡Tema ${esc(tema)} publicado!</h3>
-        <p><b style="color:#f5ffcc">${esc(NOMBRE[carpeta])} · ${esc(anio)}${destino === 'fijas' ? ' · Banco de Fijas' : ''} · ${esc(nombre)}</b><br>
+        <p><b style="color:#f5ffcc">${esc(NOMBRE[partesCarpeta(carpeta).curso])} · ${esc(anio)}${DESTINO_TXT[destino] || ''} · ${esc(nombre)}</b><br>
         ${modo === 'agregar' ? (preguntas.length === 1 ? 'Se agregó 1 pregunta' : 'Se agregaron ' + preguntas.length + ' preguntas') + '; el tema ahora tiene ' + r.preguntasTema + '.' : r.preguntasTema + ' preguntas' + (imagenes.length ? ' y ' + imagenes.length + ' imagen' + (imagenes.length > 1 ? 'es' : '') : '') + '.'}
         ${destino === 'fijas' ? 'Para usarlo, en <b>Cursos → Repaso y Fijas</b> elige "Banco de Fijas propio".' : `El año ${esc(anio)} tiene ${r.temas} tema${r.temas > 1 ? 's' : ''}.`}<br>Los alumnos lo verán en 1 a 10 minutos.</p>
         <div class="mfoot" style="justify-content:center;">
@@ -328,7 +362,7 @@ async function publicarTema() {
     if (modo === 'nuevo' && destino !== 'fijas') {
       const res = document.createElement('div'); res.className = 'nv-res'; res.textContent = 'Avisando a los alumnos…';
       $('subListo').querySelector('.mfoot').before(res);
-      const d = { tipo: temasCurso === 0 ? 'curso' : 'tema', carpeta, curso: NOMBRE[carpeta], anio, tema, nombre };
+      const d = { tipo: temasCurso === 0 && !/--/.test(carpeta) ? 'curso' : 'tema', carpeta, curso: NOMBRE[carpeta], anio, tema, nombre };
       avisarNovedad(d).then(r => pintarResultadoNovedad(res, d, r), () => pintarResultadoNovedad(res, d, { ok: false, motivo: 'error' }));
     }
     $('subOtro').addEventListener('click', () => {
