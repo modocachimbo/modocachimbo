@@ -179,6 +179,7 @@ function initSubir(modo) {
     : 'Pega las preguntas en tu formato de siempre. Revisas la vista previa, agregas imágenes y publicas.';
   ta.placeholder = ex ? 'EXAMEN: Ordinario\nCICLO: 2027-I\n\nCURSO: Lenguaje\nTEMA: Lenguaje audiovisual\n\nPREGUNTA 1:\nEnunciado…\nA) Alternativa\nB) Alternativa correcta ✅\nC) Alternativa\nD) Alternativa\nE) Alternativa\n\nCURSO: Literatura\n\nPREGUNTA 6:\n…' : PLACE_TEMA;
   $('exAyuda').hidden = !ex; $('temaAyuda').hidden = ex;
+  if ($('subNovAviso')) $('subNovAviso').style.display = ex ? 'none' : '';
   $('subMetaExamen').hidden = !ex; $('subMetaTema').hidden = ex;
   $('subPublicar').textContent = ex ? 'Publicar examen' : 'Publicar tema';
   if (!ta.dataset.listo) {
