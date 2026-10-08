@@ -39,7 +39,7 @@ create table if not exists public.duelos (
   curso       text not null check (char_length(curso) between 1 and 40),
   fuente      text not null check (fuente in ('mezcla', 'libro', 'fijas', 'seminarios', 'banqueo')),
   preguntas   jsonb not null,               -- [{ref:"curso/libros/data/2027-I.json#01#3", c:2, k:5}, …]
-  n           integer not null check (n between 3 and 15),
+  n           integer not null check (n between 3 and 20),
   revancha_de uuid references public.duelos (id) on delete set null,
   creado      timestamptz not null default now(),
   vence       timestamptz not null default now() + interval '5 minutes'   -- hasta cuándo se puede iniciar
@@ -50,6 +50,9 @@ alter table public.duelos alter column max_jug set default 4;
 alter table public.duelos add column if not exists ciclo text check (ciclo is null or ciclo ~ '^[0-9]{4}-(I|II|III)$');
 alter table public.duelos add column if not exists tema text check (tema is null or char_length(tema) between 1 and 80);
 alter table public.duelos alter column vence set default now() + interval '5 minutes';
+-- hasta 20 preguntas (antes eran 15)
+alter table public.duelos drop constraint if exists duelos_n_check;
+alter table public.duelos add constraint duelos_n_check check (n between 3 and 20);
 alter table public.duelos add column if not exists en_sala boolean not null default false;  -- false = duelos antiguos (cada uno jugaba cuando quería)
 alter table public.duelos add column if not exists auto boolean not null default false;     -- empieza solo cuando se llena la sala
 alter table public.duelos add column if not exists empieza timestamptz;                     -- cuándo aparece la 1.ª pregunta para todos
@@ -146,7 +149,7 @@ begin
   if (select count(*) from public.duelos x where x.creador = uid and x.creado > now() - interval '1 day') >= 40 then
     raise exception 'Ya creaste muchos duelos hoy. Intenta mañana.';
   end if;
-  if jsonb_typeof(p -> 'preguntas') <> 'array' or jsonb_array_length(p -> 'preguntas') not between 3 and 15 then
+  if jsonb_typeof(p -> 'preguntas') <> 'array' or jsonb_array_length(p -> 'preguntas') not between 3 and 20 then
     raise exception 'preguntas no válidas';
   end if;
   for q in select * from jsonb_array_elements(p -> 'preguntas') loop

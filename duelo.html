@@ -311,7 +311,7 @@
         </div>
         <div class="campo">
           <span class="lbl">Preguntas</span>
-          <div class="chips" id="cantidad"><button type="button" data-n="5">5</button><button type="button" data-n="10" class="on">10</button><button type="button" data-n="15">15</button></div>
+          <div class="chips" id="cantidad"><button type="button" data-n="5">5</button><button type="button" data-n="10" class="on">10</button><button type="button" data-n="15">15</button><button type="button" data-n="20">20</button></div>
         </div>
         <ul class="reglas">
           <li><span><b>60 segundos</b> por pregunta. Si se acaba, cuenta como no respondida.</span></li>
@@ -658,7 +658,7 @@
       b.classList.toggle('on', n === sel.n);
     });
     if (disponibles != null && disponibles >= 3 && sel.n > disponibles) {
-      $('filtroNota').innerHTML += ' Alcanza para un duelo de <b>' + [5, 10, 15].filter(n => n <= disponibles).pop() + '</b> como máximo.';
+      $('filtroNota').innerHTML += ' Alcanza para un duelo de <b>' + [5, 10, 15, 20].filter(n => n <= disponibles).pop() + '</b> como máximo.';
     }
   }
   $('fuentes').addEventListener('click', e => {
