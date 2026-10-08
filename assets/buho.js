@@ -8,90 +8,129 @@
    ========================================================= */
 (function () {
   if (window.MCBuho) return;
-  var LIMA = '#C6E000', NEGRO = '#050505', BLANCO = '#f4f4f4';
-
-  // Mechones (las "cejas" del logo). Cada ánimo los inclina distinto.
-  var CEJAS = {
-    normal:     'M98 100 L89 104 L50 78 L20 40 L58 60 Z',
-    dormido:    'M97 96 L88 100 L50 74 L22 40 L58 56 Z',
-    feliz:      'M96 86 L87 92 L50 70 L20 32 L58 50 Z',
-    celebrando: 'M96 82 L87 88 L50 66 L20 28 L58 46 Z',
-    preocupado: 'M95 76 L88 84 L50 78 L18 54 L56 62 Z',
-    triste:     'M94 74 L88 82 L50 82 L20 66 L56 66 Z'
+  // Colores del búho (los del sitio: lima, con pancita crema y pico ámbar)
+  var C = {
+    cuerpo: '#C6E000', sombra: '#93A800', ala: '#A9C000', panza: '#F6FFD0', pluma: '#B5CC2A',
+    ojo: '#FFFFFF', pupila: '#1B1B1B', pico: '#FFB020', picoOsc: '#E08A00', lengua: '#FF6B81',
+    rubor: '#FF8FB1', birrete: '#262626', borla: '#C6E000', lagrima: '#7DD3FC'
   };
-  function espejo(d) {
-    return d.replace(/(\d+(?:\.\d+)?) (\d+(?:\.\d+)?)/g, function (t, x, y) { return (200 - x) + ' ' + y; });
+  var ANIMOS = { normal: 1, feliz: 1, preocupado: 1, triste: 1, celebrando: 1, dormido: 1 };
+
+  function ojo(cx, cy, animo, lado) {
+    var t = '';
+    if (animo === 'feliz' || animo === 'celebrando') // ojitos cerrados de alegría ∩
+      return '<path d="M' + (cx - 15) + ' ' + (cy + 5) + ' Q' + cx + ' ' + (cy - 15) + ' ' + (cx + 15) + ' ' + (cy + 5) + '" fill="none" stroke="' + C.pupila + '" stroke-width="7" stroke-linecap="round"/>';
+    if (animo === 'dormido') // ojitos cerrados ‿ con pestañas
+      return '<path d="M' + (cx - 15) + ' ' + cy + ' Q' + cx + ' ' + (cy + 12) + ' ' + (cx + 15) + ' ' + cy + '" fill="none" stroke="' + C.pupila + '" stroke-width="6" stroke-linecap="round"/>';
+    var dx = 0, dy = 0, r = 15;
+    if (animo === 'preocupado') { dx = lado * 0 - 6; dy = -2; r = 12; }
+    if (animo === 'triste') { dy = 6; r = 14; }
+    t += '<circle cx="' + cx + '" cy="' + cy + '" r="25" fill="' + C.ojo + '"/>';
+    t += '<g class="b-pupila"><circle cx="' + (cx + dx) + '" cy="' + (cy + dy) + '" r="' + r + '" fill="' + C.pupila + '"/>' +
+      '<circle cx="' + (cx + dx + 5) + '" cy="' + (cy + dy - 6) + '" r="5.5" fill="#fff"/>' +
+      '<circle cx="' + (cx + dx - 5) + '" cy="' + (cy + dy + 5) + '" r="2.4" fill="#fff"/></g>';
+    if (animo === 'triste') // párpado caído (del color del cuerpo)
+      t += '<path d="M' + (cx - 27) + ' ' + (cy - 26) + ' L' + (cx + 27) + ' ' + (cy - 26) + ' L' + (cx + 27) + ' ' + (cy - 6 + lado * 6) + ' Q' + cx + ' ' + (cy - 4) + ' ' + (cx - 27) + ' ' + (cy - 6 - lado * 6) + ' Z" fill="' + C.cuerpo + '"/>';
+    return t;
   }
-  function ojos(animo) {
-    var L = 68, R = 132, Y = 114;
-    function anillo(cx, dx, dy, r) {
-      return '<circle cx="' + cx + '" cy="' + Y + '" r="23" fill="' + LIMA + '"/>' +
-        '<circle cx="' + (cx + dx) + '" cy="' + (Y + dy) + '" r="' + (r || 12) + '" fill="' + NEGRO + '"/>' +
-        '<circle cx="' + (cx + dx + 4) + '" cy="' + (Y + dy - 4) + '" r="3.6" fill="#fff"/>';
-    }
-    function arco(cx, arriba) { // ojo cerrado: ^ (feliz) o ‿ (dormido)
-      return '<path d="M' + (cx - 18) + ' ' + (Y + (arriba ? 8 : -2)) + ' Q' + cx + ' ' + (Y + (arriba ? -18 : 16)) + ' ' + (cx + 18) + ' ' + (Y + (arriba ? 8 : -2)) +
-        '" fill="none" stroke="' + LIMA + '" stroke-width="10" stroke-linecap="round"/>';
-    }
-    if (animo === 'feliz' || animo === 'celebrando') return arco(L, true) + arco(R, true);
-    if (animo === 'dormido') return arco(L, false) + arco(R, false);
-    if (animo === 'preocupado') return '<g class="b-mira">' + anillo(L, 5, -1, 10) + anillo(R, 5, -1, 10) + '</g>';
-    if (animo === 'triste') return anillo(L, 0, 5, 11) + anillo(R, 0, 5, 11) +
-      // párpado caído
-      '<path d="M44 106 Q68 96 92 106 L92 90 L44 90 Z" fill="' + NEGRO + '"/><path d="M108 106 Q132 96 156 106 L156 90 L108 90 Z" fill="' + NEGRO + '"/>';
-    return '<g class="b-parpadeo">' + anillo(L, 0, 0) + anillo(R, 0, 0) + '</g>';
+  function cejas(animo) {
+    var p = '';
+    if (animo === 'preocupado') p = 'M56 70 Q66 62 80 66 M144 70 Q134 62 120 66';
+    else if (animo === 'triste') p = 'M54 72 Q66 70 80 62 M146 72 Q134 70 120 62';
+    else return '';
+    return '<path d="' + p + '" fill="none" stroke="' + C.pupila + '" stroke-width="5" stroke-linecap="round"/>';
   }
   function pico(animo) {
-    if (animo === 'celebrando') return '<path d="M89 122 L111 122 L100 136 Z" fill="' + LIMA + '"/><path d="M94 140 L106 140 L100 150 Z" fill="' + LIMA + '"/>';
-    if (animo === 'triste') return '<path d="M92 126 L108 126 L100 144 Z" fill="' + LIMA + '"/>';
-    return '<path d="M90 122 L110 122 L100 148 Z" fill="' + LIMA + '"/>';
+    if (animo === 'celebrando') // pico abierto, riendo
+      return '<path d="M88 116 Q100 110 112 116 L100 126 Z" fill="' + C.pico + '"/>' +
+        '<path d="M90 128 Q100 146 110 128 Q100 132 90 128 Z" fill="' + C.picoOsc + '"/><path d="M95 133 Q100 141 105 133 Z" fill="' + C.lengua + '"/>';
+    if (animo === 'triste' || animo === 'preocupado')
+      return '<path d="M91 118 Q100 113 109 118 L100 131 Z" fill="' + C.pico + '"/>';
+    return '<path d="M89 116 Q100 110 111 116 L100 133 Z" fill="' + C.pico + '"/><path d="M95 122 L100 133 L105 122 Z" fill="' + C.picoOsc + '" opacity=".35"/>';
+  }
+  function alas(animo) {
+    // izquierda; la derecha es su espejo
+    var d = { normal: 'M42 120 Q20 146 34 182 Q46 172 52 150 Z', celebrando: 'M44 116 Q10 98 6 66 Q30 76 52 104 Z',
+      triste: 'M44 124 Q30 158 44 192 Q52 178 54 154 Z', preocupado: 'M44 118 Q24 130 40 158 Q50 150 54 138 Z' }[animo] || 'M42 120 Q20 146 34 182 Q46 172 52 150 Z';
+    var esp = d.replace(/(\d+(?:\.\d+)?) (\d+(?:\.\d+)?)/g, function (t, x, y) { return (200 - x) + ' ' + y; });
+    return '<path class="b-ala-i" d="' + d + '" fill="' + C.ala + '"/><path class="b-ala-d" d="' + esp + '" fill="' + C.ala + '"/>';
   }
   function extras(animo) {
-    if (animo === 'triste') return '<path class="b-lagrima" d="M148 136 Q141 147 148 154 Q155 147 148 136 Z" fill="#7dd3fc"/>';
-    if (animo === 'preocupado') return '<path class="b-gota" d="M170 70 Q162 82 170 90 Q178 82 170 70 Z" fill="#7dd3fc"/>';
-    if (animo === 'dormido') return '<g class="b-zzz" fill="' + LIMA + '" font-family="Sora,Inter,Arial,sans-serif" font-weight="800">' +
-      '<text x="170" y="66" font-size="22">z</text><text x="186" y="46" font-size="16">z</text><text x="198" y="30" font-size="12">z</text></g>';
+    if (animo === 'triste') return '<path class="b-lagrima" d="M128 116 Q121 128 128 135 Q135 128 128 116 Z" fill="' + C.lagrima + '"/>';
+    if (animo === 'preocupado') return '<path class="b-gota" d="M30 64 Q22 77 30 85 Q38 77 30 64 Z" fill="' + C.lagrima + '"/>';
+    if (animo === 'dormido') return '<g class="b-zzz" fill="' + C.cuerpo + '" font-family="Sora,Inter,Arial,sans-serif" font-weight="800">' +
+      '<text x="158" y="70" font-size="24">z</text><text x="176" y="50" font-size="18">z</text><text x="190" y="34" font-size="13">z</text></g>';
     if (animo === 'celebrando') return '<g class="b-confeti">' +
-      '<rect x="14" y="78" width="8" height="8" rx="2" fill="#f9a8d4" transform="rotate(20 18 82)"/>' +
-      '<rect x="176" y="84" width="8" height="8" rx="2" fill="#7dd3fc" transform="rotate(-25 180 88)"/>' +
-      '<circle cx="30" cy="150" r="4" fill="#fbbf24"/><circle cx="172" cy="150" r="4" fill="#f9a8d4"/>' +
-      '<rect x="96" y="2" width="8" height="8" rx="2" fill="#fbbf24" transform="rotate(35 100 6)"/></g>';
-    if (animo === 'feliz') return '<ellipse cx="52" cy="140" rx="9" ry="5" fill="' + LIMA + '" opacity=".35"/><ellipse cx="148" cy="140" rx="9" ry="5" fill="' + LIMA + '" opacity=".35"/>';
+      '<rect x="20" y="30" width="9" height="9" rx="2" fill="#F9A8D4" transform="rotate(20 24 34)"/>' +
+      '<rect x="170" y="96" width="9" height="9" rx="2" fill="#7DD3FC" transform="rotate(-25 174 100)"/>' +
+      '<circle cx="182" cy="30" r="5" fill="#FBBF24"/><circle cx="14" cy="104" r="4.5" fill="#7DD3FC"/>' +
+      '<path d="M160 16 l4 9 9 1 -7 6 2 9 -8 -5 -8 5 2 -9 -7 -6 9 -1 Z" fill="#FBBF24"/></g>';
     return '';
   }
+  function birrete(animo) { // gorro de graduación: ¡es el búho cachimbo!
+    var rot = animo === 'triste' ? -8 : animo === 'dormido' ? 14 : animo === 'celebrando' ? -6 : 0;
+    return '<g class="b-birrete" transform="rotate(' + rot + ' 100 40)">' +
+      '<path d="M72 40 L128 40 L126 56 Q100 64 74 56 Z" fill="' + C.birrete + '"/>' +
+      '<path d="M100 20 L154 36 L100 52 L46 36 Z" fill="' + C.birrete + '"/>' +
+      '<path d="M100 20 L154 36 L100 30 L46 36 Z" fill="#3d3d3d"/>' +
+      '<g class="b-borla"><path d="M100 36 Q130 38 140 44 L140 62" fill="none" stroke="' + C.borla + '" stroke-width="3" stroke-linecap="round"/>' +
+      '<path d="M135 60 L145 60 L147 72 L133 72 Z" fill="' + C.borla + '"/></g>' +
+      '<circle cx="100" cy="36" r="3.5" fill="' + C.borla + '"/></g>';
+  }
   function svg(animo, tam) {
-    animo = CEJAS[animo] ? animo : 'normal';
+    animo = ANIMOS[animo] ? animo : 'normal';
     tam = tam || 96;
-    var ceja = CEJAS[animo];
-    return '<svg class="mc-buho b-' + animo + '" width="' + tam + '" height="' + tam + '" viewBox="0 0 200 200" role="img" aria-label="Búho ' + animo + '">' +
+    var rubor = animo === 'feliz' || animo === 'celebrando' ? .75 : animo === 'normal' ? .45 : animo === 'dormido' ? .4 : 0;
+    return '<svg class="mc-buho b-' + animo + '" width="' + tam + '" height="' + tam + '" viewBox="0 0 200 210" role="img" aria-label="Búho ' + animo + '">' +
+      '<ellipse cx="100" cy="203" rx="50" ry="6" fill="#000" opacity=".28"/>' +
       '<g class="b-cuerpo">' +
-      '<circle cx="100" cy="112" r="80" fill="' + BLANCO + '"/>' +
-      // máscara negra con las "plumas" del logo hacia abajo
-      '<path d="M100 64 C72 64 40 74 38 108 C36 128 46 140 58 150 L50 174 L72 160 L86 188 L100 172 L114 188 L128 160 L150 174 L142 150 C154 140 164 128 162 108 C160 74 128 64 100 64 Z" fill="' + NEGRO + '"/>' +
-      ojos(animo) +
-      '<path d="' + ceja + '" fill="' + LIMA + '"/><path d="' + espejo(ceja) + '" fill="' + LIMA + '"/>' +
-      pico(animo) + extras(animo) +
+      // patitas
+      '<path d="M78 192 q-6 8 -2 10 q4 -3 6 -1 q2 -3 6 0 q3 -3 -1 -9 Z M122 192 q6 8 2 10 q-4 -3 -6 -1 q-2 -3 -6 0 q-3 -3 1 -9 Z" fill="' + C.pico + '"/>' +
+      alas(animo) +
+      // cuerpo redondo con orejitas
+      '<path d="M100 44 C60 44 38 66 34 96 C30 128 38 170 62 188 C76 198 124 198 138 188 C162 170 170 128 166 96 C162 66 140 44 100 44 Z" fill="' + C.cuerpo + '"/>' +
+      '<path d="M40 82 L36 48 L66 60 Z M160 82 L164 48 L134 60 Z" fill="' + C.cuerpo + '"/>' +
+      '<path d="M44 74 L41 56 L58 63 Z M156 74 L159 56 L142 63 Z" fill="' + C.sombra + '" opacity=".6"/>' +
+      // pancita con plumitas
+      '<ellipse cx="100" cy="158" rx="40" ry="34" fill="' + C.panza + '"/>' +
+      '<path d="M84 146 q4 5 8 0 M108 146 q4 5 8 0 M96 160 q4 5 8 0 M84 172 q4 5 8 0 M108 172 q4 5 8 0" fill="none" stroke="' + C.pluma + '" stroke-width="3" stroke-linecap="round"/>' +
+      // antifaz claro alrededor de los ojos
+      '<path d="M100 82 C88 68 50 68 46 96 C44 118 64 128 80 124 C90 122 96 116 100 112 C104 116 110 122 120 124 C136 128 156 118 154 96 C150 68 112 68 100 82 Z" fill="' + C.panza + '" opacity=".55"/>' +
+      '<g class="b-ojos">' + ojo(74, 98, animo, -1) + ojo(126, 98, animo, 1) + '</g>' +
+      cejas(animo) +
+      (rubor ? '<ellipse cx="52" cy="124" rx="10" ry="6" fill="' + C.rubor + '" opacity="' + rubor + '"/><ellipse cx="148" cy="124" rx="10" ry="6" fill="' + C.rubor + '" opacity="' + rubor + '"/>' : '') +
+      pico(animo) + birrete(animo) + extras(animo) +
       '</g></svg>';
   }
 
   var css = '.mc-buho{display:block;overflow:visible}' +
     '.mc-buho .b-cuerpo{transform-origin:50% 100%;transform-box:fill-box}' +
-    '.mc-buho .b-parpadeo{transform-origin:50% 56%;animation:bParpadeo 4.5s infinite}' +
-    '@keyframes bParpadeo{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}' +
-    '.b-feliz .b-cuerpo{animation:bLado 2.4s ease-in-out infinite}' +
-    '@keyframes bLado{0%,100%{transform:rotate(0)}25%{transform:rotate(4deg)}75%{transform:rotate(-4deg)}}' +
-    '.b-celebrando .b-cuerpo{animation:bSalto .9s ease-in-out infinite}' +
-    '@keyframes bSalto{0%,100%{transform:translateY(0)}40%{transform:translateY(-10px) scale(1.03)}}' +
-    '.b-celebrando .b-confeti{animation:bConfeti 1.8s ease-in-out infinite}' +
-    '@keyframes bConfeti{0%,100%{opacity:1}50%{opacity:.4}}' +
-    '.b-preocupado .b-mira{animation:bMira 3s ease-in-out infinite}' +
-    '@keyframes bMira{0%,100%{transform:translateX(0)}50%{transform:translateX(-8px)}}' +
+    '.mc-buho .b-ojos{transform-origin:50% 50%;transform-box:fill-box}' +
+    '.b-normal .b-ojos{animation:bParpadeo 4.5s infinite}' +
+    '@keyframes bParpadeo{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}' +
+    '.b-normal .b-cuerpo{animation:bRespira 3.2s ease-in-out infinite}' +
+    '.mc-buho .b-borla{transform-origin:100px 36px;animation:bBorla 2.6s ease-in-out infinite}' +
+    '@keyframes bBorla{0%,100%{transform:rotate(0)}50%{transform:rotate(8deg)}}' +
+    '.b-feliz .b-cuerpo{animation:bLado 2.2s ease-in-out infinite}' +
+    '@keyframes bLado{0%,100%{transform:rotate(0)}25%{transform:rotate(5deg)}75%{transform:rotate(-5deg)}}' +
+    '.b-celebrando .b-cuerpo{animation:bSalto .8s ease-in-out infinite}' +
+    '@keyframes bSalto{0%,100%{transform:translateY(0) scale(1,1)}15%{transform:translateY(0) scale(1.05,.94)}45%{transform:translateY(-14px) scale(.97,1.04)}}' +
+    '.b-celebrando .b-ala-i{transform-origin:52px 104px;animation:bAleteo .4s ease-in-out infinite alternate}' +
+    '.b-celebrando .b-ala-d{transform-origin:148px 104px;animation:bAleteoD .4s ease-in-out infinite alternate}' +
+    '@keyframes bAleteo{to{transform:rotate(-14deg)}}@keyframes bAleteoD{to{transform:rotate(14deg)}}' +
+    '.b-celebrando .b-confeti{animation:bConfeti 1.6s ease-in-out infinite}' +
+    '@keyframes bConfeti{0%,100%{opacity:1;transform:translateY(0)}50%{opacity:.5;transform:translateY(4px)}}' +
+    '.b-preocupado .b-pupila{animation:bMira 3s ease-in-out infinite}' +
+    '@keyframes bMira{0%,100%{transform:translateX(0)}50%{transform:translateX(10px)}}' +
+    '.b-preocupado .b-cuerpo{animation:bTiembla 2.4s ease-in-out infinite}' +
+    '@keyframes bTiembla{0%,80%,100%{transform:translateX(0)}84%{transform:translateX(-2px)}88%{transform:translateX(2px)}92%{transform:translateX(-2px)}}' +
     '.b-preocupado .b-gota,.b-triste .b-lagrima{animation:bCae 2.2s ease-in infinite}' +
-    '@keyframes bCae{0%{transform:translateY(-6px);opacity:0}25%{opacity:1}100%{transform:translateY(16px);opacity:0}}' +
+    '@keyframes bCae{0%{transform:translateY(-4px);opacity:0}25%{opacity:1}100%{transform:translateY(22px);opacity:0}}' +
+    '.b-triste .b-cuerpo{animation:bRespira 4.5s ease-in-out infinite}' +
     '.b-dormido .b-cuerpo{animation:bRespira 3.6s ease-in-out infinite}' +
-    '@keyframes bRespira{0%,100%{transform:scale(1)}50%{transform:scale(1.03,.98)}}' +
+    '@keyframes bRespira{0%,100%{transform:scale(1)}50%{transform:scale(1.025,.98)}}' +
     '.b-dormido .b-zzz{animation:bZzz 3s ease-in-out infinite}' +
-    '@keyframes bZzz{0%{opacity:0;transform:translateY(6px)}40%{opacity:1}100%{opacity:0;transform:translateY(-8px)}}' +
+    '@keyframes bZzz{0%{opacity:0;transform:translateY(6px)}40%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}' +
     '@media (prefers-reduced-motion:reduce){.mc-buho *{animation:none!important}}';
   function estilos() {
     if (document.getElementById('mc-buho-css')) return;
@@ -134,7 +173,7 @@
     if (clave === actual) return;
     var nuevoAnimo = !actual || JSON.parse(actual).animo !== m.animo;
     actual = clave;
-    if (nuevoAnimo) caja.querySelector('.buho-dibujo').innerHTML = MCBuho.svg(m.animo, 76);
+    if (nuevoAnimo) caja.querySelector('.buho-dibujo').innerHTML = MCBuho.svg(m.animo, 92);
     caja.querySelector('.buho-globo').innerHTML = '<b>' + esc(m.titulo) + '</b><span>' + esc(m.texto) + '</span>' +
       (m.link ? '<a href="' + esc(m.link) + '">' + esc(m.boton) + ' ›</a>' : '');
     caja.dataset.animo = m.animo;
@@ -145,7 +184,7 @@
     var st = document.createElement('style');
     st.textContent =
       '.buho-fila{display:flex;align-items:center;gap:12px;margin-top:14px}' +
-      '.buho-dibujo{flex-shrink:0;width:76px;height:76px}' +
+      '.buho-dibujo{flex-shrink:0;width:92px;height:92px}' +
       '.buho-globo{position:relative;min-width:0;background:var(--surface-2,#141414);border:1px solid var(--border,#232323);border-radius:16px;padding:10px 14px;font-size:13.5px;line-height:1.45;color:var(--text-dim,#9a9a9a)}' +
       '.buho-globo::before{content:"";position:absolute;left:-7px;top:50%;width:12px;height:12px;background:inherit;border-left:1px solid var(--border,#232323);border-bottom:1px solid var(--border,#232323);transform:translateY(-50%) rotate(45deg)}' +
       '.buho-globo b{display:block;font:800 14.5px Sora,Inter,sans-serif;color:var(--text,#f2f2f2);margin-bottom:2px}' +
@@ -153,7 +192,7 @@
       '[data-animo=preocupado] .buho-globo{border-color:rgba(251,191,36,.45)}[data-animo=preocupado] .buho-globo::before{border-color:rgba(251,191,36,.45)}' +
       '[data-animo=preocupado] .buho-globo b{color:#fbbf24}' +
       '[data-animo=celebrando] .buho-globo b,[data-animo=feliz] .buho-globo b{color:var(--accent,#C6E000)}' +
-      '@media (max-width:520px){.buho-dibujo{width:62px;height:62px}.buho-dibujo svg{width:62px;height:62px}.buho-globo{font-size:13px}}';
+      '@media (max-width:520px){.buho-dibujo{width:74px;height:74px}.buho-dibujo svg{width:74px;height:74px}.buho-globo{font-size:13px}}';
     document.head.appendChild(st);
     caja = document.createElement('div');
     caja.className = 'buho-fila'; caja.id = 'mcBuho';
