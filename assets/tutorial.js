@@ -23,7 +23,8 @@
       ['menu', 'Barra de abajo (celular)', '.barra'], ['cafe', 'Invítame un café', '.coffee']],
     area: [['cursos', 'Lista de cursos', '.courses'], ['primero', 'Primer curso', '.courses .course'], ['volver', 'Botón volver', 'a.back'], ['codigo', 'Botón "Ingresar código"', '#vipToggle']],
     curso: [['libro', 'Tarjeta Libro', cerca('a[href="libros/index.html"]')], ['repaso', 'Tarjeta Repaso', cerca('a[data-mc="repaso"], a[href^="repaso.html"]')],
-      ['fijas', 'Tarjeta Fijas', cerca('a[data-mc="fijas"], a[href^="fijas.html"]')], ['codigo', 'Botón "Ingresar código"', '#vipToggle'], ['volver', 'Botón volver', 'a.back']],
+      ['fijas', 'Tarjeta Fijas', cerca('a[data-mc="fijas"], a[href^="fijas.html"]')],
+      ['seminarios', 'Tarjeta Seminarios', cerca('a[data-mc="seminarios"]')], ['banqueo', 'Tarjeta Banqueo', cerca('a[data-mc="banqueo"]')], ['codigo', 'Botón "Ingresar código"', '#vipToggle'], ['volver', 'Botón volver', 'a.back']],
     libros: [['anios', 'Lista de años', '#yearsGrid'], ['anio', 'Primer año disponible', '#yearsGrid .year-card.active'],
       ['temas', 'Lista de temas', '#temaList'], ['tema', 'Primer tema', '#temaList > *']],
     estudio: [['pregunta', 'Primera pregunta', '.qcard'], ['correcta', 'Respuesta marcada', '.qcard .opt-row.correct'],
@@ -46,6 +47,7 @@
     if (seg[0] === 'areas') return 'area';
     if (['panel', 'assets', 'examenes'].indexOf(seg[0]) >= 0) return null;
     if (resto === '' || resto === 'index.html') return 'curso';
+    resto = resto.replace(/^(seminarios|banqueo)\//, 'libros/'); // Seminarios y Banqueo funcionan como el Libro
     if (resto === 'libros/' || resto === 'libros/index.html' || resto === 'libros/temario.html') return 'libros';
     if (resto === 'libros/tema.html') return 'estudio';
     if (resto === 'libros/quiz.html') return 'quiz';

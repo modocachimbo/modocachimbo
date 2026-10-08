@@ -3,6 +3,7 @@
    Lo administra el panel. Aquí se usa para:
    - dibujar los cursos de cada área
    - configurar Repaso / Fijas en la página de cada curso
+   - marcar Seminarios / Banqueo como Próximamente si aún no tienen temas
    - saber qué temas usa Fijas
    ========================================================= */
 (function () {
@@ -15,8 +16,8 @@
       .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
     return prom;
   }
-  function manifest(id) {
-    return fetch(new URL(id + '/libros/data/manifest.json', ROOT).href, { cache: 'no-cache' })
+  function manifest(id, seccion) {
+    return fetch(new URL(id + '/' + (seccion || 'libros') + '/data/manifest.json', ROOT).href, { cache: 'no-cache' })
       .then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; });
   }
   function curso(id) { return registro().then(function (reg) { return reg ? (reg.cursos || []).filter(function (c) { return c.id === id; })[0] || null : null; }); }
@@ -72,8 +73,27 @@
     });
   }
 
+  /* ---------- Página de un curso: Seminarios y Banqueo ---------- */
+  // Sin temas publicados en ningún ciclo, la tarjeta dice "Próximamente"
+  function pintarSecciones(id) {
+    ['seminarios', 'banqueo'].forEach(function (sec) {
+      var a = document.querySelector('a[data-mc="' + sec + '"]');
+      if (!a) return;
+      manifest(id, sec).then(function (man) {
+        var total = (man || []).reduce(function (s, m) { return s + (m.temas || 0); }, 0);
+        if (total > 0) return;
+        estilosDisabled();
+        var card = a.closest('.course');
+        a.removeAttribute('href');
+        a.textContent = 'Próximamente';
+        if (card) { card.classList.remove('active'); card.classList.add('disabled'); }
+      });
+    });
+  }
+
   /* ---------- Página de un curso: Repaso y Fijas ---------- */
   function pintarCurso(id) {
+    pintarSecciones(id);
     return Promise.all([curso(id), manifest(id)]).then(function (r) {
       var c = r[0], man = r[1];
       if (!c) return;
