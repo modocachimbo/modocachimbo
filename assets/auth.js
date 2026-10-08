@@ -79,6 +79,10 @@
       var rk = document.createElement('script');
       rk.src = BASE + 'assets/ranking.js';
       document.head.appendChild(rk);
+      // El búho con emociones junto al saludo (assets/buho.js)
+      var bu = document.createElement('script');
+      bu.src = BASE + 'assets/buho.js';
+      document.head.appendChild(bu);
     }
   }
 
