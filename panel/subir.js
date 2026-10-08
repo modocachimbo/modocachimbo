@@ -178,7 +178,9 @@ function initSubir(modo) {
   $('subIntro').textContent = ex ? 'Pega el examen completo (Ordinario, CPU o Examen de control). Revisas la vista previa, agregas imágenes y publicas.'
     : 'Pega las preguntas en tu formato de siempre. Revisas la vista previa, agregas imágenes y publicas.';
   ta.placeholder = ex ? 'EXAMEN: Ordinario\nCICLO: 2027-I\n\nCURSO: Lenguaje\nTEMA: Lenguaje audiovisual\n\nPREGUNTA 1:\nEnunciado…\nA) Alternativa\nB) Alternativa correcta ✅\nC) Alternativa\nD) Alternativa\nE) Alternativa\n\nCURSO: Literatura\n\nPREGUNTA 6:\n…' : PLACE_TEMA;
-  $('exAyuda').hidden = !ex; $('temaAyuda').hidden = ex;
+  // En examen se ve la guía del examen y, debajo, la misma guía de formato de las preguntas (sin el encabezado del tema)
+  $('exAyuda').hidden = !ex; $('temaEncabezado').hidden = ex;
+  $('temaAyudaTit').textContent = ex ? 'Formato de las preguntas (lecturas, tablas, imágenes, fórmulas)' : 'Cómo escribir las preguntas (formato y trucos)';
   if ($('subNovAviso')) $('subNovAviso').style.display = ex ? 'none' : '';
   $('subMetaExamen').hidden = !ex; $('subMetaTema').hidden = ex;
   $('subPublicar').textContent = ex ? 'Publicar examen' : 'Publicar tema';
@@ -229,7 +231,7 @@ function revisarTexto() {
   // Vista previa: un recuadro por cada [IMAGEN]; sin marcas, uno debajo del enunciado (como antes)
   // Preguntas del mismo TEXTO: la lectura se muestra una vez, en la primera
   const rango = {};
-  r.preguntas.forEach((q, i) => { if (q.lectura) { const x = rango[q.lectura] = rango[q.lectura] || [i + 1, i + 1]; x[1] = i + 1; } });
+  r.preguntas.forEach((q, i) => { const n = ex ? q.num : i + 1; if (q.lectura) { const x = rango[q.lectura] = rango[q.lectura] || [n, n]; x[1] = n; } });
   const txtRango = l => { const x = rango[l]; return x[0] === x[1] ? 'pregunta ' + x[0] : 'preguntas ' + x[0] + ' a ' + x[1]; };
   const visto = {};
   $('subLista').innerHTML = r.preguntas.map((q, i) => {
