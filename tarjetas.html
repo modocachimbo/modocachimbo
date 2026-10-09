@@ -80,6 +80,10 @@
   .fill::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent); transform: translateX(-100%); animation: brillo 2.4s ease-in-out infinite; }
   @keyframes brillo { 60%, 100% { transform: translateX(100%); } }
   .cuenta { font: 800 13px Sora, sans-serif; color: #e6e6e6; font-variant-numeric: tabular-nums; }
+  .sonido { flex: none; width: 34px; height: 34px; border-radius: 10px; border: 2px solid #2a2a2a; border-bottom-width: 4px; background: #161616; color: #e6e6e6; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
+  .sonido:active { transform: translateY(2px); border-bottom-width: 2px; }
+  .sonido .ico { width: 18px; height: 18px; }
+  .sonido.mudo { color: #6b6b6b; }
   .marcador { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font: 700 12px Sora, sans-serif; font-variant-numeric: tabular-nums; }
   .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 100px; }
   .pill.ok { color: var(--accent); background: rgba(198,224,0,.09); }
@@ -278,7 +282,7 @@
 
   <!-- Repaso con tarjetas -->
   <div id="juego" hidden>
-    <div class="barra"><div class="track"><div class="fill" id="fill"></div></div><div class="cuenta" id="cuenta">0 / 0</div></div>
+    <div class="barra"><div class="track"><div class="fill" id="fill"></div></div><div class="cuenta" id="cuenta">0 / 0</div><button class="sonido" id="btnSonido" type="button"></button></div>
     <div class="marcador"><span class="pill ok" id="mOk">0 me la sé</span><span class="pill rep" id="mRep">0 por repasar</span></div>
     <div class="escena" id="escena">
       <div class="mazo m2" id="m2"></div><div class="mazo m1" id="m1"></div>
@@ -345,7 +349,7 @@
   function aviso(t) { $('estado').textContent = t; mostrar('estado'); }
   function chips(cont, lista, actual, alElegir) {
     cont.innerHTML = lista.map(x => `<button type="button" class="chip ${x[0] === actual ? 'on' : ''}" data-v="${esc(x[0])}" ${x[3] ? 'disabled' : ''}>${esc(x[1])}${x[2] ? ` <small>${esc(x[2])}</small>` : ''}</button>`).join('');
-    cont.querySelectorAll('.chip').forEach(b => b.addEventListener('click', () => alElegir(b.dataset.v)));
+    cont.querySelectorAll('.chip').forEach(b => b.addEventListener('click', () => { Sonido.toque(); alElegir(b.dataset.v); }));
   }
 
   /* ---------- Datos ---------- */
@@ -516,6 +520,8 @@
   const svg = (d, relleno) => `<svg class="ico" viewBox="0 0 24 24" ${relleno ? 'fill="currentColor" stroke="none"' : 'fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"'}>${d}</svg>`;
   const ICO = {
     si: svg('<polyline points="20 6 9 17 4 12"/>'),
+    sonido: svg('<path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'),
+    mudo: svg('<path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><line x1="22" y1="9" x2="16" y2="15"/><line x1="16" y1="9" x2="22" y2="15"/>'),
     rep: svg('<path d="M3 12a9 9 0 0 1 15.4-6.4L21 8"/><polyline points="21 3 21 8 16 8"/><path d="M21 12a9 9 0 0 1-15.4 6.4L3 16"/><polyline points="3 21 3 16 8 16"/>'),
     toque: svg('<path d="M9 11V5a2 2 0 0 1 4 0v6"/><path d="M13 10a2 2 0 0 1 4 0v1"/><path d="M17 11a2 2 0 0 1 4 0v4a7 7 0 0 1-7 7h-1.5a6 6 0 0 1-4.6-2.2l-3.4-4.2a2 2 0 0 1 3-2.6L9 14.5"/>'),
     profe: svg('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'),
@@ -552,6 +558,70 @@
     if (c.ops) return tag + `<div class="cuerpo"><div class="ops" style="margin:auto 0;">${c.q.options.map((x, i) => `<div class="op ${i === c.q.correct ? 'si' : ''}"><b>${esc(x.letter)}</b><span>${MCPregunta.formato(x.text)}</span></div>`).join('')}</div></div>` + pie;
     return tag + `<div class="cuerpo"><div class="txt resp">${CHEK}${palabras(MCPregunta.formato(o.text))}</div></div>` + pie;
   }
+  /* ---------- Sonidos (hechos con código, sin archivos de audio) ---------- */
+  const Sonido = (function () {
+    let ctx = null, activo = true;
+    try { activo = localStorage.getItem('mc_sonido') !== '0'; } catch (e) {}
+    function audio() {
+      if (!activo) return null;
+      try {
+        if (!ctx) { const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; ctx = new AC(); }
+        if (ctx.state === 'suspended') ctx.resume();
+      } catch (e) { return null; }
+      return ctx;
+    }
+    // Una nota: frecuencia, cuándo empieza (s), cuánto dura, forma de onda, volumen y a qué frecuencia se desliza
+    function nota(f, t, dur, tipo, vol, hasta) {
+      const a = audio(); if (!a) return;
+      const o = a.createOscillator(), g = a.createGain(), t0 = a.currentTime + (t || 0);
+      o.type = tipo || 'sine'; o.frequency.setValueAtTime(f, t0);
+      if (hasta) o.frequency.exponentialRampToValueAtTime(hasta, t0 + dur);
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(vol || 0.2, t0 + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      o.connect(g); g.connect(a.destination); o.start(t0); o.stop(t0 + dur + 0.02);
+    }
+    // Un "fsss" corto, como papel que gira
+    function soplo(dur, vol, desde, hasta) {
+      const a = audio(); if (!a) return;
+      const n = Math.floor(a.sampleRate * dur), b = a.createBuffer(1, n, a.sampleRate), d = b.getChannelData(0);
+      for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+      const src = a.createBufferSource(), fl = a.createBiquadFilter(), g = a.createGain(), t0 = a.currentTime;
+      src.buffer = b; fl.type = 'bandpass'; fl.Q.value = 1.2;
+      fl.frequency.setValueAtTime(desde, t0); fl.frequency.exponentialRampToValueAtTime(hasta, t0 + dur);
+      g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol, t0 + dur * 0.3); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      src.connect(fl); fl.connect(g); g.connect(a.destination); src.start(t0); src.stop(t0 + dur);
+    }
+    const DO = 523.25, MI = 659.25, SOL = 783.99, DO2 = 1046.5, MI2 = 1318.5, SOL2 = 1568;
+    return {
+      get activo() { return activo; },
+      cambiar() { activo = !activo; try { localStorage.setItem('mc_sonido', activo ? '1' : '0'); } catch (e) {} if (activo) this.toque(); return activo; },
+      toque() { nota(1200, 0, 0.05, 'sine', 0.08); },
+      voltear() { soplo(0.16, 0.22, 900, 3200); nota(420, 0.02, 0.09, 'sine', 0.05, 640); },
+      bien() { nota(DO2, 0, 0.11, 'triangle', 0.22); nota(MI2, 0.09, 0.28, 'triangle', 0.24); nota(MI2 * 2, 0.09, 0.2, 'sine', 0.04); },
+      repasar() { nota(392, 0, 0.12, 'sine', 0.16, 330); nota(294, 0.1, 0.22, 'sine', 0.13, 262); },
+      racha(n) {
+        const notas = n >= 9 ? [DO, MI, SOL, DO2, MI2, SOL2] : n >= 6 ? [DO, MI, SOL, DO2, MI2] : [DO, MI, SOL, DO2];
+        notas.forEach((f, i) => nota(f, i * 0.07, 0.16, 'square', 0.06));
+      },
+      fin(pct) {
+        if (pct >= 70) {
+          [[DO, 0], [MI, .13], [SOL, .26], [DO2, .39]].forEach(([f, t]) => nota(f, t, .2, 'triangle', .2));
+          [DO2, MI2, SOL2].forEach(f => nota(f, .55, .9, 'triangle', .12));
+        } else {
+          nota(SOL, 0, .2, 'triangle', .18); nota(DO2, .18, .5, 'triangle', .18);
+        }
+      }
+    };
+  })();
+  function pintarBtnSonido() {
+    const b = $('btnSonido'), on = Sonido.activo;
+    b.classList.toggle('mudo', !on);
+    b.innerHTML = on ? ICO.sonido : ICO.mudo;
+    b.setAttribute('aria-label', on ? 'Silenciar sonidos' : 'Activar sonidos'); b.title = b.getAttribute('aria-label');
+  }
+  $('btnSonido').addEventListener('click', () => { Sonido.cambiar(); pintarBtnSonido(); });
+  pintarBtnSonido();
   const vibrar = ms => { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {} };
   function saltar(el) { el.classList.remove('salta'); void el.offsetWidth; el.classList.add('salta'); }
   function pintarCarta() {
@@ -588,7 +658,7 @@
     $('escena').classList.add('alzada'); clearTimeout(girando);
     girando = setTimeout(() => $('escena').classList.remove('alzada'), 650);
     ajustar(volteada ? $('caraR') : $('caraF'));
-    vibrar(8);
+    vibrar(8); Sonido.voltear();
     if ($('acciones').hidden) {
       $('acciones').hidden = false; $('acciones').classList.remove('aparece'); void $('acciones').offsetWidth; $('acciones').classList.add('aparece');
       $('hint').innerHTML = '<b>←</b> desliza para repasar · desliza para "me la sé" <b>→</b>';
@@ -604,7 +674,7 @@
     a.style.transition = 'transform .38s cubic-bezier(.5,0,.75,0), opacity .38s ease';
     a.style.transform = `translate(${sabe ? 130 : -130}%, -20px) rotate(${sabe ? 24 : -24}deg)`;
     a.style.opacity = '0';
-    vibrar(sabe ? 15 : [10, 40, 10]);
+    vibrar(sabe ? 15 : [10, 40, 10]); Sonido[sabe ? 'bien' : 'repasar']();
     setTimeout(() => {
       responder(sabe);
       a.style.transition = 'none'; a.style.transform = ''; a.style.opacity = '';
@@ -626,7 +696,10 @@
       else { falladas.push(c); cola.push(Object.assign({}, c, { otraVez: true })); saltar($('mRep')); }  // vuelve a salir al final de esta ronda
     }
     racha = sabe ? racha + 1 : 0;
-    if (racha >= 3 && racha % 3 === 0) combo((racha >= 9 ? ICO.estrella : racha >= 6 ? ICO.rayo : ICO.fuego) + ` ${racha} seguidas`);
+    if (racha >= 3 && racha % 3 === 0) {
+      combo((racha >= 9 ? ICO.estrella : racha >= 6 ? ICO.rayo : ICO.fuego) + ` ${racha} seguidas`);
+      const n = racha; setTimeout(() => Sonido.racha(n), 120);
+    }
     pos++;
     if (pos >= cola.length) terminar(); else pintarCarta();
   }
@@ -692,7 +765,7 @@
     const t0 = performance.now();
     (function paso(t) { const k = Math.min(1, (t - t0) / 1300); $('finPct').textContent = Math.round(pct * (1 - Math.pow(1 - k, 3))) + '%'; if (k < 1) requestAnimationFrame(paso); })(t0);
     if (pct >= 70 && !matchMedia('(prefers-reduced-motion: reduce)').matches) confeti();
-    vibrar([20, 60, 30]);
+    vibrar([20, 60, 30]); Sonido.fin(pct);
   }
   $('carta').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); voltear(); } });
   document.addEventListener('keydown', e => {
