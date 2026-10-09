@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>/* Abierta como app instalada: muestra la barra de abajo */ try { if ((window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true) document.documentElement.classList.add('mc-app'); } catch (e) {}</script>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#050505">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
@@ -329,7 +330,7 @@
     font-size: 12px;
   }
 
-  /* ===== Barra de abajo (solo celular) ===== */
+  /* ===== Barra de abajo (solo en la app instalada, en celular) ===== */
   .barra { display: none; }
   @media (max-width: 720px) {
     .wrap { padding: 0 16px; }
@@ -350,8 +351,8 @@
     .sal-cuenta b, .sal-racha .num { font-size: 30px; }
     .section-title { font-size: 19px; padding-top: 30px; }
     .coffee { padding: 24px 20px; }
-    footer { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
-    .barra {
+    html.mc-app footer { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+    html.mc-app .barra {
       display: grid; grid-template-columns: repeat(5, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
       background: rgba(10,10,10,0.96); border-top: 1px solid var(--border);
       padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
@@ -364,7 +365,7 @@
     }
     .barra svg { width: 22px; height: 22px; }
     .barra .activo { color: var(--accent); }
-    body .mct-ayuda { bottom: calc(80px + env(safe-area-inset-bottom)); }
+    html.mc-app body .mct-ayuda { bottom: calc(80px + env(safe-area-inset-bottom)); }
   }
 
   /* ===== Bienvenida (sin sesión) ===== */
