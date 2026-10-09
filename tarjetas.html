@@ -209,9 +209,23 @@
   .combo .ico { width: 24px; height: 24px; color: #ff6b00; }
   .fin .medalla { width: 76px; height: 76px; margin: 0 auto; border-radius: 50%; background: var(--accent); color: #2b3300; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 0 #8fa300; animation: entrar .6s cubic-bezier(.34,1.56,.64,1); }
   .fin .medalla .ico { width: 38px; height: 38px; }
+  /* Diana con flecha que se clava (pantalla final de 50% a 79%) */
+  .fin .medalla.tiro { background: none; box-shadow: none; width: 104px; height: 104px; margin-top: -8px; animation: entrar .5s cubic-bezier(.34,1.56,.64,1); }
+  .tiro svg { width: 104px; height: 104px; overflow: visible; }
+  .tiro .vuelo { transform: translate(60px, -60px); opacity: 0; animation: vuela .3s cubic-bezier(.55,0,.9,.4) .6s forwards; }
+  .tiro .vibra { transform-box: view-box; transform-origin: 56px 44px; animation: vibra .7s ease-out .9s; }
+  .tiro .golpe { transform-box: view-box; transform-origin: 50px 50px; opacity: 0; animation: golpe .55s ease-out .9s; }
+  .tiro .chispa { opacity: 0; animation: chispa .45s ease-out .9s; }
+  .tiro .blanco { transform-box: view-box; transform-origin: 50px 50px; animation: sacude .35s ease-out .9s; }
+  @keyframes vuela { from { opacity: 1; transform: translate(60px, -60px); } to { opacity: 1; transform: translate(0, 0); } }
+  @keyframes vibra { 0% { transform: rotate(0); } 15% { transform: rotate(-9deg); } 35% { transform: rotate(7deg); } 55% { transform: rotate(-4deg); } 75% { transform: rotate(2deg); } 100% { transform: rotate(0); } }
+  @keyframes golpe { 0% { opacity: .9; transform: scale(.3); } 100% { opacity: 0; transform: scale(2.2); } }
+  @keyframes chispa { 0% { opacity: 1; stroke-dashoffset: 8; } 100% { opacity: 0; stroke-dashoffset: -8; } }
+  @keyframes sacude { 0% { transform: scale(1); } 30% { transform: scale(.93); } 65% { transform: scale(1.04); } 100% { transform: scale(1); } }
+  @media (prefers-reduced-motion: reduce) { .tiro .vuelo { opacity: 1; transform: none; animation: none; } .tiro .vibra, .tiro .golpe, .tiro .chispa, .tiro .blanco { animation: none; } }
   .fin h2 { font-family: 'Sora', sans-serif; font-size: 23px; font-weight: 800; margin-top: 4px; }
   .anillo { position: relative; width: 168px; height: 168px; margin: 18px auto 10px; }
-  .anillo svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .anillo svg { width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
   .anillo circle { fill: none; stroke-width: 12; }
   .anillo .base { stroke: #1d1d1d; }
   .anillo .arco { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset 1.4s cubic-bezier(.3,.8,.3,1); filter: drop-shadow(0 0 6px rgba(198,224,0,.6)); }
@@ -522,6 +536,25 @@
     pos = 0; sabidas = 0; falladas = []; vistas = 0; total = cola.length; racha = 0;
     mostrar('juego'); pintarCarta();
   }
+  // Diana propia: anillos lima y oscuro, centro naranja, y una flecha que llega volando y se clava
+  const DIANA = `<svg viewBox="0 0 100 100" aria-hidden="true">
+    <g class="blanco">
+      <circle cx="50" cy="55" r="44" fill="#8fa300"/>
+      <circle cx="50" cy="50" r="44" fill="#c6e000"/><circle cx="50" cy="50" r="34" fill="#1d2300"/>
+      <circle cx="50" cy="50" r="24" fill="#c6e000"/><circle cx="50" cy="50" r="14" fill="#1d2300"/>
+      <circle cx="50" cy="50" r="6.5" fill="#ff9600"/>
+    </g>
+    <circle class="golpe" cx="50" cy="50" r="10" fill="none" stroke="#fff" stroke-width="3"/>
+    <g stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-dasharray="8 16">
+      <line class="chispa" x1="38" y1="62" x2="26" y2="74"/><line class="chispa" x1="36" y1="47" x2="20" y2="45"/><line class="chispa" x1="53" y1="64" x2="55" y2="80"/>
+    </g>
+    <g class="vuelo"><g class="vibra">
+      <line x1="53" y1="47" x2="96" y2="4" stroke="#2b3300" stroke-width="7" stroke-linecap="round"/>
+      <line x1="53" y1="47" x2="96" y2="4" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+      <path d="M88 12 L84 0 L92 4 Z M88 12 L100 16 L96 8 Z" fill="#ff9600" stroke="#2b3300" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M93 7 L90 -4 L97 -1 Z M93 7 L104 10 L101 3 Z" fill="#ff9600" stroke="#2b3300" stroke-width="1.5" stroke-linejoin="round"/>
+    </g></g>
+  </svg>`;
   // Íconos propios (sin emojis)
   const svg = (d, relleno) => `<svg class="ico" viewBox="0 0 24 24" ${relleno ? 'fill="currentColor" stroke="none"' : 'fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"'}>${d}</svg>`;
   const ICO = {
@@ -617,6 +650,11 @@
         if (pct >= 70) {
           [[DO, 0], [MI, .13], [SOL, .26], [DO2, .39]].forEach(([f, t]) => nota(f, t, .2, 'triangle', .2));
           [DO2, MI2, SOL2].forEach(f => nota(f, .55, .9, 'triangle', .12));
+        } else if (pct >= 50) {
+          // La flecha: un silbido mientras vuela y un "tac" al clavarse
+          setTimeout(() => soplo(0.3, 0.18, 2500, 700), 600);
+          nota(160, 0.9, 0.14, 'sine', 0.35, 70); nota(1800, 0.9, 0.05, 'triangle', 0.08);
+          nota(SOL, 1.05, .16, 'triangle', .16); nota(DO2, 1.2, .45, 'triangle', .18);
         } else {
           nota(SOL, 0, .2, 'triangle', .18); nota(DO2, .18, .5, 'triangle', .18);
         }
@@ -758,7 +796,9 @@
     subir();
     $('fill').style.width = '100%';
     const nf = falladas.length, pct = total ? Math.round(sabidas / total * 100) : 0;
-    $('finMedalla').innerHTML = pct === 100 ? ICO.copa : pct >= 80 ? ICO.estrella : pct >= 50 ? ICO.diana : ICO.libro;
+    const tiro = pct >= 50 && pct < 80;
+    $('finMedalla').classList.toggle('tiro', tiro);
+    $('finMedalla').innerHTML = pct === 100 ? ICO.copa : pct >= 80 ? ICO.estrella : tiro ? DIANA : ICO.libro;
     $('finTitulo').textContent = pct === 100 ? '¡Perfecto!' : pct >= 80 ? '¡Muy bien!' : pct >= 50 ? '¡Vas bien!' : '¡Sigue practicando!';
     $('finNum').textContent = sabidas + ' de ' + total;
     $('finOk').innerHTML = ICO.si + sabidas + ' me la sé'; $('finRep').innerHTML = ICO.rep + nf + ' por repasar';
