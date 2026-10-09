@@ -20,7 +20,9 @@
   var OBJETIVOS = {
     inicio: [['hero', 'Saludo y cuenta regresiva', '.saludo'], ['cursos', 'Tarjetas de áreas (Mis cursos)', nth('section.cards', 0)],
       ['examenes', 'Exámenes de admisión', nth('section.cards', 1)], ['codigo', 'Botón "Ingresar código"', visible(['#vipToggle', '#barCodigo', '.sal-accesos button.chip'])],
-      ['menu', 'Barra de abajo (celular)', '.barra'], ['cafe', 'Invítame un café', '.coffee']],
+      ['menu', 'Barra de abajo (app instalada)', '.barra'], ['cafe', 'Invítame un café', '.coffee'],
+      ['racha', 'Racha de estudio', '#salRacha'], ['fecha', 'Fecha de tu examen', '#salCuenta'],
+      ['nuevo', 'Lista "Nuevo para ti"', '#mcNovedades'], ['duelos', 'Banner de Duelos', '.duelo-banner']],
     area: [['cursos', 'Lista de cursos', '.courses'], ['primero', 'Primer curso', '.courses .course'], ['volver', 'Botón volver', 'a.back'], ['codigo', 'Botón "Ingresar código"', '#vipToggle']],
     curso: [['libro', 'Tarjeta Libro', cerca('a[href="libros/index.html"]')], ['repaso', 'Tarjeta Repaso', cerca('a[data-mc="repaso"], a[href^="repaso.html"]')],
       ['fijas', 'Tarjeta Fijas', cerca('a[data-mc="fijas"], a[href^="fijas.html"]')],
@@ -28,8 +30,13 @@
     libros: [['anios', 'Lista de años', '#yearsGrid'], ['anio', 'Primer año disponible', '#yearsGrid .year-card.active'],
       ['temas', 'Lista de temas', '#temaList'], ['tema', 'Primer tema', '#temaList > *']],
     estudio: [['pregunta', 'Primera pregunta', '.qcard'], ['correcta', 'Respuesta marcada', '.qcard .opt-row.correct'],
-      ['practicar', 'Botón Practicar', '.quiz-cta'], ['error', 'Botón "¿Error en la clave?"', '.qcard .rep-btn'], ['whatsapp', 'Burbuja de WhatsApp', '#mcBubble']],
-    quiz: [['inicio', 'Pantalla de inicio', '#startScreen'], ['empezar', 'Botón Empezar', '#btnStart']],
+      ['practicar', 'Botón Practicar', '.quiz-cta'], ['credito', 'Crédito del profesor', '#creditoLabel'], ['error', 'Botón "¿Error en la clave?"', '.qcard .rep-btn'], ['whatsapp', 'Burbuja de WhatsApp', '#mcBubble']],
+    quiz: [['inicio', 'Pantalla de inicio', '#startScreen'], ['vidas', 'Vidas y número de preguntas', '#startScreen .start-info'], ['empezar', 'Botón Empezar', '#btnStart']],
+    falladas: [['inicio', 'Pantalla de inicio', '#startScreen'], ['cuantas', 'Cuántas preguntas tienes', '#startScreen .start-info'], ['empezar', 'Botón Empezar', '#btnStart']],
+    duelo: [['filtros', 'Ciclo, curso y tema', '#crear .filtros'], ['fuentes', 'De dónde salen las preguntas', cercaDe('#fuentes', '.campo')],
+      ['jugadores', 'Jugadores e inicio automático', cercaDe('#jugadores', '.campo')], ['cantidad', 'Número de preguntas', cercaDe('#cantidad', '.campo')],
+      ['reglas', 'Reglas del duelo', '#crear .reglas'], ['crear', 'Botón Crear duelo', '#btnCrear'], ['codigo', 'Entrar con un código', cercaDe('#codUnirse', '.card')],
+      ['mis', 'Mis duelos', cercaDe('#misDuelos', '.card')], ['ranking', 'Top de la semana', cercaDe('#rank', '.card')]],
     repaso: [['candado', 'Candado (código)', '#lockScreen'], ['codigo', 'Casilla del código', '#lockInput'], ['empezar', 'Botón Empezar', '#btnStart']],
     fijas: [['candado', 'Candado (código)', '#lockScreen'], ['codigo', 'Casilla del código', '#lockInput'], ['empezar', 'Botón Empezar', '#btnStart']],
     simulacro: [['nombre', 'Nombre del simulacro', '#campoNombre'], ['ciclos', 'Elegir ciclos', '#campoCiclos'], ['bloque', 'Bloque y carrera', cercaDe('#selBloque', '.dos')],
@@ -37,13 +44,15 @@
       ['empezar', 'Botón Empezar', '#btnEmpezar'], ['mis', 'Mis simulacros', cercaDe('#misSim', '.card')], ['ranking', 'Top de la semana', cercaDe('#rankCrear', '.card')]]
   };
   // Páginas donde el tutorial espera a que se vea esta parte (por ejemplo, después del candado)
-  var ESPERA = { simulacro: '#crear' };
+  var ESPERA = { simulacro: '#crear', duelo: '#crear', quiz: '#startScreen', falladas: '#startScreen' };
 
   function pagina() {
     var rel = location.pathname.slice(ROOT.pathname.length).replace(/^\/+/, '');
     var seg = rel.split('/'), resto = seg.slice(1).join('/');
     if (rel === '' || rel === 'index.html') return 'inicio';
     if (rel === 'simulacro.html') return 'simulacro';
+    if (rel === 'duelo.html') return /[?&]d=/.test(location.search) ? null : 'duelo'; // solo en la pantalla de crear
+    if (rel === 'falladas.html') return 'falladas';
     if (seg[0] === 'areas') return 'area';
     if (['panel', 'assets', 'examenes'].indexOf(seg[0]) >= 0) return null;
     if (resto === '' || resto === 'index.html') return 'curso';

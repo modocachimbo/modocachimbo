@@ -4,18 +4,38 @@
   "paginas": {
     "inicio": {
       "activa": true,
-      "version": 2,
+      "version": 3,
       "boton": true,
       "pasos": [
         {
           "objetivo": "centro",
           "titulo": "¡Hola, cachimbo! 👋",
-          "texto": "Bienvenido a **Modo Cachimbo**: libros, repasos, fijas y exámenes pasados para que llegues listo a tu examen de admisión. Te muestro rápido cómo funciona."
+          "texto": "Bienvenido a **Modo Cachimbo**: libros, seminarios, banqueo, repasos, simulacros y duelos para que llegues listo a tu examen de admisión. Te muestro rápido cómo funciona."
+        },
+        {
+          "objetivo": "racha",
+          "titulo": "Tu racha 🔥",
+          "texto": "Responde **10 preguntas al día** para que tu racha suba. Tienes **1 descanso por semana**; si faltas más, vuelve a cero."
+        },
+        {
+          "objetivo": "fecha",
+          "titulo": "Tu examen",
+          "texto": "Pon la **fecha de tu examen** en tu perfil y aquí verás cuántos días te quedan."
+        },
+        {
+          "objetivo": "nuevo",
+          "titulo": "Nuevo para ti ✨",
+          "texto": "Cuando subimos un tema o curso nuevo, aparece aquí. Al abrirlo, el aviso desaparece."
         },
         {
           "objetivo": "cursos",
           "titulo": "Elige tu área",
           "texto": "Aquí están las áreas. Entra a una para ver sus cursos: Biología, Álgebra, Lenguaje y más."
+        },
+        {
+          "objetivo": "duelos",
+          "titulo": "Duelos con amigos ⚔️",
+          "texto": "Reta **hasta a 3 amigos** con las mismas preguntas, cada uno desde su celular. Gana quien acierta más; si empatan, el más rápido."
         },
         {
           "objetivo": "examenes",
@@ -25,12 +45,17 @@
         {
           "objetivo": "codigo",
           "titulo": "¿Tienes un código?",
-          "texto": "Si te dieron un código de acceso, actívalo aquí para desbloquear **Repasos** y **Fijas** en este dispositivo."
+          "texto": "Si te dieron un código de acceso, actívalo aquí para desbloquear **Repasos, Fijas, Seminarios, Banqueo** o el **Simulacro**."
+        },
+        {
+          "objetivo": "menu",
+          "titulo": "Barra de abajo",
+          "texto": "En la app tienes todo a un toque: **Inicio**, tus cursos, los exámenes, el código y tu **Perfil**."
         },
         {
           "objetivo": "centro",
           "titulo": "¡Listo! 🎓",
-          "texto": "Puedes volver a ver esta guía cuando quieras con el botón **?** de abajo. ¡Éxitos en tu preparación!"
+          "texto": "Puedes volver a ver esta guía cuando quieras con el botón **?**. ¡Éxitos en tu preparación!"
         }
       ]
     },
@@ -42,7 +67,7 @@
     },
     "curso": {
       "activa": true,
-      "version": 1,
+      "version": 2,
       "boton": true,
       "pasos": [
         {
@@ -59,6 +84,16 @@
           "objetivo": "fijas",
           "titulo": "Fijas 🎯",
           "texto": "Las preguntas más probables, seleccionadas para el examen. ¡No te las pierdas!"
+        },
+        {
+          "objetivo": "seminarios",
+          "titulo": "Seminarios 📝",
+          "texto": "Las preguntas de los seminarios del ciclo, tema por tema, con su respuesta marcada."
+        },
+        {
+          "objetivo": "banqueo",
+          "titulo": "Banqueo 🏦",
+          "texto": "Un banco grande de preguntas por tema para practicar a fondo antes del examen."
         }
       ]
     },
@@ -70,13 +105,18 @@
     },
     "estudio": {
       "activa": true,
-      "version": 1,
+      "version": 2,
       "boton": true,
       "pasos": [
         {
           "objetivo": "correcta",
           "titulo": "Modo estudio",
           "texto": "Cada pregunta muestra su **respuesta correcta** marcada en verde ✓. Léela con calma y entiende por qué."
+        },
+        {
+          "objetivo": "credito",
+          "titulo": "Crédito del profesor 👨‍🏫",
+          "texto": "En Seminarios y Banqueo verás aquí qué profesor preparó el tema."
         },
         {
           "objetivo": "practicar",
@@ -91,10 +131,26 @@
       ]
     },
     "quiz": {
-      "activa": false,
+      "activa": true,
       "version": 1,
       "boton": true,
-      "pasos": []
+      "pasos": [
+        {
+          "objetivo": "inicio",
+          "titulo": "Modo práctica",
+          "texto": "Las preguntas del tema salen **mezcladas**, y también **sus alternativas**: la correcta cambia de letra en cada intento. ¡Así aprendes, no memorizas la clave!"
+        },
+        {
+          "objetivo": "vidas",
+          "titulo": "5 vidas ❤️",
+          "texto": "Cada error te quita una vida. Al final ves tu puntaje y tus fallas pasan a **Repasar mis falladas** en tu perfil."
+        },
+        {
+          "objetivo": "empezar",
+          "titulo": "¡A practicar!",
+          "texto": "Toca **Empezar** cuando estés listo."
+        }
+      ]
     },
     "repaso": {
       "activa": false,
@@ -152,6 +208,70 @@
           "objetivo": "ranking",
           "titulo": "Top de la semana",
           "texto": "Los 10 mejores puntajes de la semana. Solo cuenta el **primer intento** de cada simulacro y se reinicia cada lunes. ¡A por el podio!"
+        }
+      ]
+    },
+    "duelo": {
+      "activa": true,
+      "version": 1,
+      "boton": true,
+      "pasos": [
+        {
+          "objetivo": "centro",
+          "titulo": "Duelos ⚔️",
+          "texto": "Reta a tus amigos: todos responden **las mismas preguntas** a la vez, cada uno desde su celular."
+        },
+        {
+          "objetivo": "filtros",
+          "titulo": "¿De qué será el duelo?",
+          "texto": "Elige el **ciclo**, el **curso** y el **tema**, o deja \"Todos\" para mezclar de todo."
+        },
+        {
+          "objetivo": "jugadores",
+          "titulo": "¿Cuántos juegan?",
+          "texto": "De **2 a 4 jugadores**. Con **Inicio automático** empieza solo cuando se llena la sala; si lo quitas, tú tocas **Iniciar** (con al menos 2)."
+        },
+        {
+          "objetivo": "cantidad",
+          "titulo": "Número de preguntas",
+          "texto": "5, 10, 15 o 20. Si no hay suficientes preguntas con tus filtros, esa opción se apaga."
+        },
+        {
+          "objetivo": "reglas",
+          "titulo": "Reglas",
+          "texto": "**60 segundos** por pregunta y no puedes volver atrás. Cada jugador ve las alternativas en **otro orden**, así que no sirve soplar la letra 😉."
+        },
+        {
+          "objetivo": "crear",
+          "titulo": "Crea y comparte",
+          "texto": "Toca **Crear duelo** y comparte el enlace o el código. Todos empiezan juntos con una cuenta **3, 2, 1**."
+        },
+        {
+          "objetivo": "codigo",
+          "titulo": "¿Te retaron?",
+          "texto": "Si un amigo te pasó un código, escríbelo aquí para entrar a su sala."
+        },
+        {
+          "objetivo": "ranking",
+          "titulo": "Top de la semana",
+          "texto": "Solo el **1.º puesto** de cada duelo suma aquí. Se reinicia cada lunes."
+        }
+      ]
+    },
+    "falladas": {
+      "activa": true,
+      "version": 1,
+      "boton": true,
+      "pasos": [
+        {
+          "objetivo": "inicio",
+          "titulo": "Repasa tus falladas 🔁",
+          "texto": "Aquí vuelven las preguntas que **fallaste** en tus prácticas, repasos y simulacros."
+        },
+        {
+          "objetivo": "cuantas",
+          "titulo": "Rondas cortas",
+          "texto": "Practícalas en rondas; cuando aciertes una, deja de aparecer. ¡La meta es dejar la lista en cero!"
         }
       ]
     }
