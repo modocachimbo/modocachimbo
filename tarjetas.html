@@ -413,7 +413,9 @@
   /* ---------- Acceso: el mismo código de la sección ---------- */
   // Un solo código para las Flashcards de todos los cursos (tarjetas-VIP); también las abre Acceso total
   const P_TARJETAS = 'tarjetas-' + CURSO;
+  const SIN_BLOQUEO = true; // TEMPORAL para probar: quitar antes de publicar
   function conAcceso(sec) {
+    if (SIN_BLOQUEO) return Promise.resolve(true);
     const P = P_TARJETAS;
     if (MCAcceso.accesoLocal(P)) { MCAcceso.verificar(P).then(v => { if (!v.acceso) pedirCodigo(sec, v.mensaje); }); return Promise.resolve(true); }
     return MCAcceso.verificar(P).then(v => v.acceso || pedirCodigo(sec, v.mensaje), () => pedirCodigo(sec, 'No se pudo verificar tu acceso. Revisa tu conexión.'));
