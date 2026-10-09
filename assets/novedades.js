@@ -124,7 +124,7 @@
       ver.map(function (n) {
         var esCurso = n.tipo === 'curso';
         var tit = esCurso ? 'Curso nuevo: ' + n.curso : n.curso + ' · ' + (n.nombre || 'Tema ' + pad2(n.tema));
-        var sub = esCurso ? 'Ya puedes empezar a estudiarlo' : 'Tema ' + pad2(n.tema) + ' nuevo · Libro ' + n.anio;
+        var sub = esCurso ? 'Ya puedes empezar a estudiarlo' : 'Tema ' + pad2(n.tema) + ' nuevo · ' + ({ seminarios: 'Seminario', banqueo: 'Banqueo' }[seccion(n)] || 'Libro') + ' ' + n.anio;
         return '<a class="mcn-item" href="' + esc(BASE + destino(n)) + '"><span class="mcn-ico">' + (esCurso ? '★' : esc(pad2(n.tema))) + '</span>' +
           '<span class="mcn-txt"><span class="mcn-tit">' + esc(tit) + '</span><span class="mcn-sub">' + esc(sub) + '</span></span>' + FLECHA + '</a>';
       }).join('') +
