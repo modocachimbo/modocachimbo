@@ -7,7 +7,7 @@ const PROD_TODOS = [
   ['TODO-VIP', 'Acceso total'], ['repaso-VIP', 'Repasos y práctica'], ['fijas-VIP', 'Fijas'],
   ['seminario-VIP', 'Seminarios'], ['banqueo-VIP', 'Banqueo'], ['tarjetas-VIP', 'Flashcards'], ['simulacro', 'Simulacro']
 ];
-const PROD_CURSO = [['curso', 'Todo el curso'], ['repaso', 'Repaso y práctica'], ['fijas', 'Fijas'], ['seminario', 'Seminarios'], ['banqueo', 'Banqueo'], ['tarjetas', 'Flashcards']];
+const PROD_CURSO = [['curso', 'Todo el curso'], ['repaso', 'Repaso y práctica'], ['fijas', 'Fijas'], ['seminario', 'Seminarios'], ['banqueo', 'Banqueo']];
 // Link oficial fijo: así el mensaje no muestra el link de una vista previa.
 const SITE_URL = 'https://modocachimbo.github.io/modocachimbo/';
 
@@ -64,7 +64,7 @@ function renderConfigAcceso() {
       ${extras.map(k => `<div class="acc-row"><div><b>${esc(etiquetaProd(k))}</b><span>abierto para todos${ab[k].hasta ? ' hasta el ' + esc(ab[k].hasta.split('-').reverse().join('/')) : ''}</span></div>
         <button class="rbtn" type="button" data-cerrar="${esc(k)}">Cerrar</button></div>`).join('')}
       <div class="acc-add">
-        <select class="inp" id="accTipo"><option value="repaso">Repaso de…</option><option value="fijas">Fijas de…</option><option value="seminario">Seminarios de…</option><option value="banqueo">Banqueo de…</option><option value="tarjetas">Flashcards de…</option></select>
+        <select class="inp" id="accTipo"><option value="repaso">Repaso de…</option><option value="fijas">Fijas de…</option><option value="seminario">Seminarios de…</option><option value="banqueo">Banqueo de…</option></select>
         <select class="inp" id="accCurso"><option value="">— Curso —</option>${CURSOS.map(([id, n]) => `<option value="${id}">${esc(n)}</option>`).join('')}</select>
         <input class="inp" id="accHasta" type="date" title="Opcional: se cierra solo después de esta fecha">
         <button class="rbtn" type="button" id="accAbrir">Abrir este curso</button>
