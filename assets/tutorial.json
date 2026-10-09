@@ -67,7 +67,7 @@
     },
     "curso": {
       "activa": true,
-      "version": 2,
+      "version": 3,
       "boton": true,
       "pasos": [
         {
@@ -94,6 +94,11 @@
           "objetivo": "banqueo",
           "titulo": "Banqueo 🏦",
           "texto": "Un banco grande de preguntas por tema para practicar a fondo antes del examen."
+        },
+        {
+          "objetivo": "tarjetas",
+          "titulo": "Flashcards 🃏",
+          "texto": "Repasa con tarjetas: eliges **Libro, Seminarios o Banqueo**, el año y los temas que quieras. Volteas cada tarjeta y marcas si ya te la sabes; las que fallas vuelven a salir."
         }
       ]
     },
@@ -105,7 +110,7 @@
     },
     "estudio": {
       "activa": true,
-      "version": 2,
+      "version": 3,
       "boton": true,
       "pasos": [
         {
@@ -122,6 +127,11 @@
           "objetivo": "practicar",
           "titulo": "Ponte a prueba",
           "texto": "Cuando termines de repasar, toca **Practicar** para resolver el tema en modo quiz."
+        },
+        {
+          "objetivo": "tarjetas",
+          "titulo": "Tarjetas 🃏",
+          "texto": "Repasa este tema con **flashcards**: ves la pregunta, volteas la tarjeta y marcas **Ya me la sé** o **Repasar**."
         },
         {
           "objetivo": "error",

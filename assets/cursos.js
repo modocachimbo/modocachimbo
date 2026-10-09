@@ -5,6 +5,7 @@
    - configurar Repaso / Fijas en la página de cada curso
    - marcar Seminarios / Banqueo como Próximamente si aún no tienen temas
    - saber qué temas usa Fijas
+   - agregar la tarjeta de Flashcards (tarjetas.html) en cada curso
    ========================================================= */
 (function () {
   var SCRIPT = document.currentScript;
@@ -91,9 +92,30 @@
     });
   }
 
+  /* ---------- Página de un curso: tarjeta de Flashcards ---------- */
+  var ICONO_TARJETAS = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M30 6h52a8 8 0 0 1 8 8v58a8 8 0 0 1-8 8h-3V14a1 1 0 0 0-1-1H22V14a8 8 0 0 1 8-8z" opacity=".55"/>' +
+    '<path fill-rule="evenodd" d="M18 20h52a8 8 0 0 1 8 8v58a8 8 0 0 1-8 8H18a8 8 0 0 1-8-8V28a8 8 0 0 1 8-8zm26 14c-9 0-15 5.5-15 12.5h9c0-2.4 2.4-4.5 6-4.5s6 1.9 6 4.3c0 2-1.2 3.1-4 4.7-4.3 2.4-6.5 5-6.5 10v2h8.6v-1.3c0-2.7 1-3.9 4-5.6 4.3-2.4 7-5.4 7-10.2C59 39.7 53 34 44 34zm-1 33a5 5 0 1 0 0 10 5 5 0 0 0 0-10z"/></svg>';
+  function pintarTarjetas(id) {
+    var cont = document.querySelector('.courses');
+    if (!cont || cont.querySelector('[data-mc="tarjetas"]')) return;
+    var d = document.createElement('div');
+    d.className = 'course active';
+    d.innerHTML = '<div class="icon">' + ICONO_TARJETAS + '</div><h3>Flashcards</h3><div class="rule"></div>' +
+      '<a class="btn" data-mc="tarjetas" href="../tarjetas.html?curso=' + encodeURIComponent(id) + '">Entrar</a>';
+    cont.appendChild(d);
+    // 6 tarjetas: en pantallas anchas van de 3 en 3 para que ninguna quede sola
+    if (!document.getElementById('mcc-css6')) {
+      var st = document.createElement('style'); st.id = 'mcc-css6';
+      st.textContent = '@media (min-width:1001px){.courses.con-tarjetas{grid-template-columns:repeat(3,1fr)}}';
+      document.head.appendChild(st);
+    }
+    cont.classList.add('con-tarjetas');
+  }
+
   /* ---------- Página de un curso: Repaso y Fijas ---------- */
   function pintarCurso(id) {
     pintarSecciones(id);
+    pintarTarjetas(id);
     return Promise.all([curso(id), manifest(id)]).then(function (r) {
       var c = r[0], man = r[1];
       if (!c) return;

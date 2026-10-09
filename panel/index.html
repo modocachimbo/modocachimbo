@@ -1143,6 +1143,7 @@ E) Alternativa"></textarea>
         <a class="rbtn link" href="${esc(url)}" target="_blank" rel="noopener">Ver en la web ${ICON_EXT}</a>
         <button class="rbtn" type="button" id="btnRenombrar">Renombrar</button>
         ${conCredito ? '<button class="rbtn" type="button" id="btnCredito">Crédito</button>' : ''}
+        <button class="rbtn" type="button" id="btnTarjetas">🃏 Tarjetas</button>
         <button class="rbtn danger" type="button" id="btnBorrarTema">Borrar tema</button>
       </div>` + t.questions.map((q, i) => {
       const o = q.options[q.correct];
@@ -1156,6 +1157,7 @@ E) Alternativa"></textarea>
       abrirEditor({ carpeta: sel.carpeta, curso: NOMBRE[sel.carpeta], anio: sel.anio, tema: sel.tema, n: +b.dataset.n })));
     $('btnRenombrar').addEventListener('click', () => renombrarTema(t));
     if (conCredito) $('btnCredito').addEventListener('click', () => creditoTema(t));
+    $('btnTarjetas').addEventListener('click', () => { const x = partesCarpeta(sel.carpeta); tarjetasTema({ curso: x.curso, seccion: x.seccion, anio: sel.anio, tema: pad2(t.num), nombre: t.name, preguntas: t.questions.length }); });
     $('btnBorrarTema').addEventListener('click', () => borrarTema(t));
   }
 
@@ -1461,6 +1463,7 @@ E) Alternativa"></textarea>
 <script src="../assets/cursos.js"></script>
 <script src="cursos-panel.js"></script>
 <script src="practica-panel.js"></script>
+<script src="tarjetas-panel.js"></script>
 <script src="../assets/tutorial.js" data-solo-lista></script>
 <script src="tutorial-panel.js"></script>
 <script>
