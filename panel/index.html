@@ -659,6 +659,7 @@ E) Alternativa"></textarea>
           </div>
           <button class="btn-main" id="btnNuevoCurso" type="button">＋ Nuevo curso</button>
         </div>
+        <div id="cuPractica"></div>
         <div id="cuList"></div>
       </div>
 
@@ -970,7 +971,7 @@ E) Alternativa"></textarea>
     const pestana = t.dataset.tab === 'examen' ? 'subir' : t.dataset.tab; // "Subir examen" usa la misma pantalla que "Subir tema"
     ['reportes', 'subir', 'editar', 'cursos', 'perfil', 'frases', 'alertas', 'tutorial', 'codigos', 'alumnos', 'corr', 'simulacro'].forEach(id => { $('tab-' + id).hidden = id !== pestana; });
     if (t.dataset.tab === 'tutorial' && !TU.datos) cargarTutorial();
-    if (t.dataset.tab === 'cursos') cargarCursos();
+    if (t.dataset.tab === 'cursos') { cargarCursos(); cargarPractica(); }
     if (t.dataset.tab === 'perfil') cargarPerfilCfg();
     if (t.dataset.tab === 'frases') cargarFrases();
     if (t.dataset.tab === 'codigos') cargarCodigos();
@@ -1459,6 +1460,7 @@ E) Alternativa"></textarea>
 <script src="mantenimiento.js"></script>
 <script src="../assets/cursos.js"></script>
 <script src="cursos-panel.js"></script>
+<script src="practica-panel.js"></script>
 <script src="../assets/tutorial.js" data-solo-lista></script>
 <script src="tutorial-panel.js"></script>
 <script>

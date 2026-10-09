@@ -283,7 +283,7 @@
     btnStart.disabled = false;
     startScreen.classList.add('show');
 
-    activeQuestions = (window.MCPregunta ? MCPregunta.mezclar : shuffle)(questions);
+    activeQuestions = (window.MCPregunta ? q => MCPregunta.mezclar(q, { alternativas: false }) : shuffle)(questions);
     setupHeaderAndBody();
   }
 
@@ -442,7 +442,7 @@
   }
 
   document.getElementById('btnRestart').addEventListener('click', () => {
-    activeQuestions = (window.MCPregunta ? MCPregunta.mezclar : shuffle)(questions);
+    activeQuestions = (window.MCPregunta ? q => MCPregunta.mezclar(q, { alternativas: false }) : shuffle)(questions);
     current = 0; score = 0; lives = MAX_LIVES; answers.length = 0;
     quizHeader.style.display = 'block';
     quizBody.style.display = 'block';
