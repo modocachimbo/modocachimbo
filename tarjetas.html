@@ -41,9 +41,10 @@
   .paso-ttl { font-size: 12px; font-weight: 700; color: #cfcfcf; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
   .paso-ttl .n { width: 20px; height: 20px; border-radius: 6px; background: var(--accent-soft); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; font: 800 11px Sora, sans-serif; }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip { border: 1px solid var(--border); background: var(--surface); color: #d8d8d8; border-radius: 100px; padding: 9px 16px; font: 600 13px Inter, sans-serif; cursor: pointer; }
+  .chip { border: 2px solid #2e2e2e; border-bottom-width: 4px; background: #161616; color: #e6e6e6; border-radius: 14px; padding: 9px 16px; font: 800 14px Nunito, 'Inter', sans-serif; cursor: pointer; transition: transform .08s ease; }
+  .chip:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
   .chip small { color: var(--text-faint); font-weight: 500; margin-left: 4px; }
-  .chip.on { background: var(--accent); border-color: var(--accent); color: #0e0e0e; }
+  .chip.on { background: var(--accent); border-color: #8fa300; color: #2b3300; }
   .chip.on small { color: rgba(14,14,14,.6); }
   .chip:disabled { opacity: .4; cursor: default; }
   .hint { color: var(--text-faint); font-size: 12.5px; }
@@ -55,9 +56,15 @@
   .tema .ct { color: var(--text-faint); font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
   .tema.todo { border-color: rgba(198,224,0,.3); font-weight: 600; }
 
-  .btn { width: 100%; padding: 14px; border-radius: 13px; border: 1px solid #262626; background: #141414; color: #ccc; font: 700 14px Sora, sans-serif; cursor: pointer; }
-  .btn.primary { background: var(--accent); color: #0e0e0e; border-color: var(--accent); }
-  .btn:disabled { opacity: .35; cursor: default; }
+  /* Botones gruesos estilo Duolingo: se hunden al tocarlos */
+  .btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 9px; padding: 15px 16px; border-radius: 16px;
+    border: 2px solid #2e2e2e; background: #1a1a1a; color: #e6e6e6; box-shadow: 0 5px 0 #2e2e2e;
+    font: 900 15px Nunito, 'Inter', sans-serif; text-transform: uppercase; letter-spacing: .7px; cursor: pointer;
+    transition: transform .08s ease, box-shadow .08s ease; -webkit-tap-highlight-color: transparent; }
+  .btn .ico { width: 19px; height: 19px; }
+  .btn:active { transform: translateY(5px); box-shadow: 0 0 0 transparent; }
+  .btn.primary { background: var(--accent); color: #2b3300; border-color: var(--accent); box-shadow: 0 5px 0 #8fa300; }
+  .btn:disabled { opacity: .35; cursor: default; transform: none; }
   .resumen { text-align: center; color: var(--text-dim); font-size: 12.5px; margin: 22px 0 10px; font-variant-numeric: tabular-nums; }
 
   /* Candado */
@@ -65,7 +72,7 @@
   .lock h2 { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 8px; }
   .lock h2 .accent { color: var(--accent); }
   .lock p { color: #999; font-size: 13px; line-height: 1.6; margin-bottom: 18px; }
-  .lock input { width: 100%; background: #141414; border: 1px solid #262626; border-radius: 12px; padding: 13px 14px; color: #f2f2f2; font-size: 14px; text-align: center; letter-spacing: 1px; font-weight: 600; margin-bottom: 12px; }
+  .lock input { width: 100%; background: #141414; border: 2px solid #2e2e2e; border-radius: 14px; font-family: Nunito, 'Inter', sans-serif; font-size: 16px !important; font-weight: 800 !important; padding: 13px 14px; color: #f2f2f2; font-size: 14px; text-align: center; letter-spacing: 1px; font-weight: 600; margin-bottom: 12px; }
   .lock input:focus { outline: none; border-color: var(--accent); }
   .lock-error { display: none; margin-top: 14px; font-size: 12.5px; color: #ff8a8a; background: rgba(224,60,60,0.08); border-radius: 10px; padding: 10px 12px; line-height: 1.5; }
   .lock-error.show { display: block; }
@@ -211,9 +218,9 @@
   .anillo .dentro { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .anillo .pct { font: 800 38px Sora, sans-serif; color: var(--accent); font-variant-numeric: tabular-nums; }
   .anillo .de { font-size: 12px; color: var(--text-dim); font-weight: 600; }
+  .fin .botones { display: flex; flex-direction: column; gap: 14px; margin-top: 20px; }
   .fin .stats { display: flex; justify-content: center; gap: 10px; margin: 6px 0 14px; flex-wrap: wrap; }
   .fin p { color: var(--text-dim); font-size: 13px; line-height: 1.6; }
-  .fin .botones { display: flex; flex-direction: column; gap: 10px; margin-top: 22px; }
   .confeti { position: absolute; top: -12px; width: 8px; height: 14px; border-radius: 2px; animation: cae linear forwards; pointer-events: none; }
   @keyframes cae { to { transform: translate(var(--dx), 620px) rotate(var(--r)); opacity: .2; } }
 
@@ -274,7 +281,7 @@
   <div class="lock" id="lock" hidden>
     <h2>Flashcards <span class="accent">Premium</span></h2>
     <p id="lockTexto">Ingresa tu código de alumno.</p>
-    <input type="text" id="lockInput" placeholder="Ej: BIO-4X9K" autocomplete="off" autocapitalize="characters">
+    <input type="text" id="lockInput" placeholder="Ej: MC-7K3P-Q9XR" autocomplete="off" autocapitalize="characters">
     <button class="btn primary" id="btnUnlock" type="button">Desbloquear</button>
     <div class="lock-error" id="lockError"></div>
     <a class="lock-whatsapp" id="lockWhatsapp" href="#" target="_blank" rel="noopener noreferrer">Escríbeme por WhatsApp</a>
@@ -345,7 +352,7 @@
     if (!window.renderMathInElement) { document.addEventListener('mc:katex', () => renderMath(el), { once: true }); return; }
     renderMathInElement(el, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false });
   }
-  function mostrar(id) { ['elegir', 'lock', 'juego', 'fin', 'estado'].forEach(x => { $(x).hidden = x !== id; }); $('lead').hidden = id === 'juego' || id === 'fin'; }
+  function mostrar(id) { ['elegir', 'lock', 'juego', 'fin', 'estado'].forEach(x => { $(x).hidden = x !== id; }); $('lead').hidden = id === 'juego' || id === 'fin' || id === 'lock'; }
   function aviso(t) { $('estado').textContent = t; mostrar('estado'); }
   function chips(cont, lista, actual, alElegir) {
     cont.innerHTML = lista.map(x => `<button type="button" class="chip ${x[0] === actual ? 'on' : ''}" data-v="${esc(x[0])}" ${x[3] ? 'disabled' : ''}>${esc(x[1])}${x[2] ? ` <small>${esc(x[2])}</small>` : ''}</button>`).join('');
@@ -439,7 +446,7 @@
       if (r.ok) { const f = alDesbloquear; alDesbloquear = null; if (f) f(true); }
       else { $('lockError').textContent = r.mensaje || 'Código inválido.'; $('lockError').classList.add('show'); $('lockWhatsapp').classList.add('show'); }
     } catch (e) { $('lockError').textContent = 'No se pudo verificar el código. Revisa tu conexión.'; $('lockError').classList.add('show'); }
-    $('btnUnlock').disabled = false; $('btnUnlock').textContent = 'Desbloquear';
+    $('btnUnlock').disabled = false; $('btnUnlock').innerHTML = ICO.llave + ' Desbloquear';
   }
   $('btnUnlock').addEventListener('click', desbloquear);
   $('lockInput').addEventListener('keydown', e => { if (e.key === 'Enter') desbloquear(); });
@@ -501,10 +508,7 @@
     const rep = c.filter(x => estado[x.id] && toca(x)).length, nuevas = c.filter(x => !estado[x.id]).length;
     $('resumen').textContent = `${n} tarjetas` + (rep ? ` · ${rep} te tocan repasar hoy` : '') + (nuevas ? ` · ${nuevas} nuevas` : '');
   }
-  $('btnEmpezar').addEventListener('click', async () => {
-    const ok = await conAcceso(sel.sec);
-    if (ok) empezar(elegidas(), sel.cant);
-  });
+  $('btnEmpezar').addEventListener('click', () => empezar(elegidas(), sel.cant));
 
   /* ---------- Juego ---------- */
   let cola = [], pos = 0, sabidas = 0, falladas = [], vistas = 0, total = 0;
@@ -522,6 +526,9 @@
   const svg = (d, relleno) => `<svg class="ico" viewBox="0 0 24 24" ${relleno ? 'fill="currentColor" stroke="none"' : 'fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"'}>${d}</svg>`;
   const ICO = {
     si: svg('<polyline points="20 6 9 17 4 12"/>'),
+    mazo: svg('<rect x="7" y="3" width="14" height="16" rx="2"/><path d="M3 7v12a2 2 0 0 0 2 2h11"/>'),
+    jugar: svg('<path d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/>', true),
+    llave: svg('<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>'),
     sonido: svg('<path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'),
     mudo: svg('<path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><line x1="22" y1="9" x2="16" y2="15"/><line x1="16" y1="9" x2="22" y2="15"/>'),
     rep: svg('<path d="M3 12a9 9 0 0 1 15.4-6.4L21 8"/><polyline points="21 3 21 8 16 8"/><path d="M21 12a9 9 0 0 1-15.4 6.4L3 16"/><polyline points="3 21 3 16 8 16"/>'),
@@ -776,6 +783,8 @@
     if (e.key === 'ArrowLeft') salir(false);
   });
   $('btnSe').innerHTML = ICO.si + ' Ya me la sé'; $('btnRep').innerHTML = ICO.rep + ' Repasar';
+  $('btnOtra').innerHTML = ICO.rep + ' Repasar las que fallé'; $('btnNueva').innerHTML = ICO.mazo + ' Elegir otras tarjetas';
+  $('btnEmpezar').innerHTML = ICO.jugar + ' Empezar'; $('btnUnlock').innerHTML = ICO.llave + ' Desbloquear';
   $('btnSe').addEventListener('click', () => salir(true));
   $('btnRep').addEventListener('click', () => salir(false));
   $('btnOtra').addEventListener('click', () => empezar(falladas.map(c => Object.assign({}, c, { otraVez: false })), 0));
@@ -812,6 +821,8 @@
     $('eyebrow').textContent = 'Flashcards · ' + nombreCurso;
     $('titulo').textContent = 'Repasa con tarjetas';
     $('lead').textContent = 'Elige de dónde sacar las tarjetas. En cada una ves la pregunta, la volteas y marcas si ya te la sabes; las que fallas vuelven a salir.';
+    // El candado va primero, antes de elegir
+    if (!(await conAcceso(null))) return;
     mostrar('elegir');
     pintarSecciones();
   }
