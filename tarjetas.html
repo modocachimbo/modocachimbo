@@ -15,7 +15,7 @@
 <script src="assets/app.js" defer></script>
 <title>Flashcards · Modo Cachimbo</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&family=Nunito:wght@700;800;900&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --bg: #050505; --surface: #0e0e0e; --surface-2: #141414;
@@ -115,59 +115,60 @@
   .carta.ida .reverso::after, .carta.regreso .frente::after { animation: reflejo .8s ease .25s; }
   @keyframes reflejo { to { transform: translateX(120%); } }
 
-  /* Frente: tarjeta clara, como de papel */
-  .frente { background: linear-gradient(180deg, #ffffff, #f3f4ee); color: #18190f;
-    box-shadow: 0 30px 60px -12px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.6) inset; }
-  .frente::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 6px; background: linear-gradient(90deg, var(--accent), #7ad3ff, #b18cff); }
-  .frente .marca { position: absolute; right: 14px; bottom: -26px; font: 800 150px/1 Sora, sans-serif; color: rgba(24,25,15,.045); pointer-events: none; }
-  /* Reverso: oscuro con la respuesta brillando */
-  .reverso { transform: rotateY(180deg); color: #f5ffcc; padding-bottom: 28px;
-    background: radial-gradient(90% 60% at 50% 45%, rgba(198,224,0,.22), transparent 70%), linear-gradient(160deg, #1a2205, #0b0d06 70%);
-    box-shadow: 0 30px 70px -10px rgba(198,224,0,.35), 0 0 0 1.5px rgba(198,224,0,.55) inset; }
-  .reverso::after { background: linear-gradient(105deg, transparent 38%, rgba(198,224,0,.35) 50%, transparent 62%); }
+  /* Estilo Duolingo: letra gruesa y redonda, tarjetas con borde inferior grueso */
+  .carta, .acciones .btn, .pill, .cuenta, .combo, .fin, .fin h2, .fin .btn, .anillo .pct { font-family: 'Nunito', 'Inter', sans-serif; }
+  .fin h2, .anillo .pct { font-weight: 900; }
+  .frente { background: #ffffff; color: #3c3c3c; border: 2px solid #e5e5e5; border-bottom-width: 7px; }
+  .frente .marca { position: absolute; right: 14px; bottom: -22px; font: 900 150px/1 Nunito, sans-serif; color: rgba(0,0,0,.04); pointer-events: none; }
+  .reverso { transform: rotateY(180deg); color: #2b3300; padding-bottom: 28px;
+    background: radial-gradient(90% 60% at 50% 40%, #e6ff5c, transparent 70%), #c6e000; border: 2px solid #b3cc00; border-bottom: 7px solid #8fa300; }
+  .reverso::after { background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.6) 50%, transparent 62%); }
 
-  .cara .tag { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 18px; font-size: 12px; font-weight: 600; position: relative; }
-  .cara .tag .num { font: 800 11px Sora, sans-serif; letter-spacing: 1.5px; border-radius: 100px; padding: 5px 11px; }
-  .frente .tag { color: #6b6d60; }
-  .frente .tag .num { background: #18190f; color: var(--accent); }
-  .cara .tag .prof { color: #5b21b6; background: #ede4ff; border-radius: 100px; padding: 3px 9px; }
-  .reverso .tag { color: rgba(245,255,204,.6); }
-  .reverso .tag .num { background: var(--accent); color: #0e0e0e; }
-  .cara .txt { font-size: 16.5px; line-height: 1.7; margin: auto 0; position: relative; }
-  .frente .txt { color: #1d1e14; font-weight: 500; }
-  .frente .mcq-lec { background: #f3f7d9; border-left-color: #9ab300; }
-  .frente .mcq-lec summary { color: #4d5a00; }
-  .frente .mcq-tabla th { color: #3e4a00; background: #eef5c4; }
-  .frente .mcq-tabla th, .frente .mcq-tabla td { border-color: #d9dccb; }
+  .cara .tag { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 18px; font-size: 13px; font-weight: 800; position: relative; }
+  .cara .tag .num { font: 900 12px Nunito, sans-serif; letter-spacing: 1px; border-radius: 12px; padding: 5px 11px; }
+  .frente .tag { color: #afafaf; }
+  .frente .tag .num { background: #f2fbd0; color: #6b7d00; border: 2px solid #dbef7a; }
+  .cara .tag .prof { color: #8e4ff0; background: #f3ecff; border: 2px solid #ddccff; border-radius: 12px; padding: 3px 9px; }
+  .reverso .tag { color: rgba(43,51,0,.6); }
+  .reverso .tag .num { background: #2b3300; color: #e6ff5c; }
+  .cara .txt { font-size: 19px; line-height: 1.55; margin: auto 0; position: relative; font-weight: 800; }
+  .frente .txt { color: #3c3c3c; }
+  .cara .katex { font-size: 1.08em; }
+  .reverso .resp .katex { font-size: 1.3em; }
+  .frente .q-graphic, .frente .mcq-img { background: transparent; border: 0; padding: 4px 0; }
+  .frente .mcq-lec { background: #f7f7f7; border-left-color: #c6e000; }
+  .frente .mcq-lec summary { color: #4b4b4b; }
+  .frente .mcq-tabla table { font-weight: 800; }
+  .frente .mcq-tabla th { color: #3c3c3c; background: #f2fbd0; }
+  .frente .mcq-tabla th, .frente .mcq-tabla td { border: 2px solid #e5e5e5; }
 
   /* La respuesta aparece palabra por palabra */
-  .reverso .txt.resp { font: 800 clamp(22px, 6.4vw, 29px)/1.35 Sora, sans-serif; color: #f5ffcc; text-align: center; letter-spacing: -.3px; }
+  .reverso .txt.resp { font: 900 clamp(24px, 7vw, 32px)/1.3 Nunito, sans-serif; color: #2b3300; text-align: center; }
   .resp .w { display: inline-block; opacity: 0; transform: translateY(14px) scale(.9); }
   .carta.vuelta .resp .w, .carta.ida .resp .w { animation: palabra .5s cubic-bezier(.22,1.3,.36,1) forwards; animation-delay: calc(.42s + var(--i) * 60ms); }
   @keyframes palabra { to { opacity: 1; transform: none; } }
-  .chek { width: 54px; height: 54px; margin: 0 auto 14px; border-radius: 50%; background: var(--accent); color: #0e0e0e; display: flex; align-items: center; justify-content: center; position: relative; transform: scale(0); }
-  .chek svg { width: 26px; height: 26px; }
-  .chek::before { content: ''; position: absolute; inset: -6px; border-radius: 50%; border: 2px solid var(--accent); opacity: 0; }
+  .chek { width: 58px; height: 58px; margin: 0 auto 16px; border-radius: 50%; background: #fff; color: #7a8f00; display: flex; align-items: center; justify-content: center; position: relative; transform: scale(0); box-shadow: 0 5px 0 #8fa300; }
+  .chek svg { width: 30px; height: 30px; }
+  .chek::before { content: ''; position: absolute; inset: -6px; border-radius: 50%; border: 3px solid #fff; opacity: 0; }
   .carta.vuelta .chek, .carta.ida .chek { animation: pop .55s cubic-bezier(.22,1.6,.36,1) .35s forwards; }
   .carta.vuelta .chek::before, .carta.ida .chek::before { animation: onda .9s ease-out .5s; }
   @keyframes pop { to { transform: scale(1); } }
   @keyframes onda { 0% { opacity: .9; transform: scale(.8); } 100% { opacity: 0; transform: scale(1.9); } }
 
-  .cara .pie { position: absolute; left: 0; right: 0; bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600; }
-  .frente .pie { color: #8a8c7c; }
-  .frente .pie .dedo { display: inline-block; font-size: 17px; animation: toque 1.6s ease-in-out infinite; }
+  .cara .pie { position: absolute; left: 0; right: 0; bottom: 22px; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; letter-spacing: .3px; }
+  .frente .pie { color: #afafaf; text-transform: uppercase; }
+  .frente .pie .dedo { display: inline-block; font-size: 18px; animation: toque 1.6s ease-in-out infinite; }
   @keyframes toque { 0%, 100% { transform: translateY(0) scale(1); } 40% { transform: translateY(-5px) scale(1.05); } 55% { transform: translateY(1px) scale(.92); } }
-  .reverso .pie { color: rgba(245,255,204,.45); }
-  .ops { display: flex; flex-direction: column; gap: 7px; margin-top: 16px; }
-  .op { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; padding: 9px 12px; border-radius: 12px; }
-  .op b { font-family: Sora, sans-serif; font-size: 12px; min-width: 14px; }
-  .frente .op { background: #eef0e6; color: #2a2b20; }
-  .frente .op b { color: #6f8200; }
-  .reverso .op { background: rgba(255,255,255,.05); color: rgba(245,255,204,.5); }
-  .reverso .op b { color: rgba(245,255,204,.5); }
-  .reverso .op.si { background: var(--accent); color: #0e0e0e; font-weight: 700; box-shadow: 0 0 24px rgba(198,224,0,.45); }
-  .reverso .op.si b { color: #0e0e0e; }
-  .q-graphic { margin: 10px 0; display: flex; justify-content: center; background: #fff; border-radius: 12px; padding: 10px; border: 1px solid #e3e5da; }
+  .ops { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+  .op { display: flex; gap: 10px; align-items: center; font-size: 16px; font-weight: 800; padding: 10px 12px; border-radius: 14px; border: 2px solid; border-bottom-width: 4px; }
+  .op b { font: 900 13px Nunito, sans-serif; min-width: 26px; height: 26px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; border: 2px solid; }
+  .frente .op { background: #fff; color: #4b4b4b; border-color: #e5e5e5; }
+  .frente .op b { color: #afafaf; border-color: #e5e5e5; }
+  .reverso .op { background: rgba(255,255,255,.35); color: rgba(43,51,0,.55); border-color: rgba(0,0,0,.06); }
+  .reverso .op b { color: rgba(43,51,0,.5); border-color: rgba(0,0,0,.1); }
+  .reverso .op.si { background: #fff; color: #2b3300; border-color: #fff; border-bottom-color: #8fa300; }
+  .reverso .op.si b { background: #c6e000; color: #2b3300; border-color: #8fa300; }
+  .q-graphic { margin: 10px 0; display: flex; justify-content: center; background: #fff; border-radius: 12px; padding: 10px; }
   .q-graphic svg { max-width: 100%; height: auto; display: block; }
 
   .sello { position: absolute; top: 26px; z-index: 3; font: 800 17px Sora, sans-serif; letter-spacing: 1.5px; padding: 8px 14px; border-radius: 12px; border: 3px solid; opacity: 0; pointer-events: none; }
@@ -175,10 +176,10 @@
   .sello.no { right: 20px; color: var(--orange); border-color: var(--orange); background: rgba(14,9,4,.85); transform: rotate(12deg); }
 
   .acciones { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
-  .acciones .btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px; border-radius: 16px; font-size: 15px; transition: transform .15s ease, box-shadow .2s ease; }
-  .acciones .btn:active { transform: scale(.95); }
-  .btn.rep { border-color: rgba(255,159,67,.5); color: var(--orange); background: rgba(255,159,67,.08); }
-  #btnSe { box-shadow: 0 10px 28px rgba(198,224,0,.28); }
+  .acciones .btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 15px; border-radius: 16px; font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: .6px; border: 0; transition: transform .08s ease, box-shadow .08s ease; }
+  .btn.rep { color: #fff; background: #ff9600; box-shadow: 0 5px 0 #cc7800; }
+  #btnSe { color: #2b3300; background: var(--accent); box-shadow: 0 5px 0 #8fa300; }
+  .acciones .btn:active { transform: translateY(5px); box-shadow: 0 0 0 transparent; }
   .acciones.aparece { animation: aparece .4s cubic-bezier(.34,1.56,.64,1); }
   @keyframes aparece { from { opacity: 0; transform: translateY(10px); } }
   .voltear-hint { text-align: center; color: #6a6a6a; font-size: 12px; margin-top: 6px; min-height: 18px; }
@@ -190,7 +191,13 @@
   @keyframes combo { 0% { opacity: 0; transform: translate(-50%, 20px) scale(.6); } 20% { opacity: 1; transform: translate(-50%, 0) scale(1.08); } 75% { opacity: 1; transform: translate(-50%, -6px) scale(1); } 100% { opacity: 0; transform: translate(-50%, -30px) scale(.95); } }
 
   .fin { text-align: center; margin-top: 26px; background: radial-gradient(120% 60% at 50% 0%, rgba(198,224,0,.12), transparent 60%), var(--surface); border: 1px solid var(--border); border-radius: 26px; padding: 30px 22px; position: relative; overflow: hidden; }
-  .fin .medalla { font-size: 40px; animation: entrar .6s cubic-bezier(.34,1.56,.64,1); }
+  .ico { width: 1.1em; height: 1.1em; flex-shrink: 0; vertical-align: -.18em; }
+  .acciones .btn .ico { width: 20px; height: 20px; }
+  .cara .pie .dedo .ico { width: 22px; height: 22px; color: #c6e000; }
+  .combo { display: inline-flex; align-items: center; gap: 8px; }
+  .combo .ico { width: 24px; height: 24px; color: #ff6b00; }
+  .fin .medalla { width: 76px; height: 76px; margin: 0 auto; border-radius: 50%; background: var(--accent); color: #2b3300; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 0 #8fa300; animation: entrar .6s cubic-bezier(.34,1.56,.64,1); }
+  .fin .medalla .ico { width: 38px; height: 38px; }
   .fin h2 { font-family: 'Sora', sans-serif; font-size: 23px; font-weight: 800; margin-top: 4px; }
   .anillo { position: relative; width: 168px; height: 168px; margin: 18px auto 10px; }
   .anillo svg { width: 100%; height: 100%; transform: rotate(-90deg); }
@@ -272,7 +279,7 @@
   <!-- Repaso con tarjetas -->
   <div id="juego" hidden>
     <div class="barra"><div class="track"><div class="fill" id="fill"></div></div><div class="cuenta" id="cuenta">0 / 0</div></div>
-    <div class="marcador"><span class="pill ok" id="mOk">✓ 0 me la sé</span><span class="pill rep" id="mRep">↻ 0 por repasar</span></div>
+    <div class="marcador"><span class="pill ok" id="mOk">0 me la sé</span><span class="pill rep" id="mRep">0 por repasar</span></div>
     <div class="escena" id="escena">
       <div class="mazo m2" id="m2"></div><div class="mazo m1" id="m1"></div>
       <div class="piso"></div>
@@ -288,14 +295,14 @@
       </div>
     </div>
     <div class="acciones" id="acciones" hidden>
-      <button class="btn rep" id="btnRep" type="button">↻ Repasar</button>
-      <button class="btn primary" id="btnSe" type="button">✓ Ya me la sé</button>
+      <button class="btn rep" id="btnRep" type="button">Repasar</button>
+      <button class="btn primary" id="btnSe" type="button">Ya me la sé</button>
     </div>
     <div class="voltear-hint" id="hint">Toca la tarjeta para ver la respuesta</div>
   </div>
 
   <div class="fin" id="fin" hidden>
-    <div class="medalla" id="finMedalla">🏆</div>
+    <div class="medalla" id="finMedalla"></div>
     <h2 id="finTitulo">¡Ronda terminada!</h2>
     <div class="anillo">
       <svg viewBox="0 0 120 120"><circle class="base" cx="60" cy="60" r="52"/><circle class="arco" id="finArco" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="326.7"/></svg>
@@ -504,6 +511,20 @@
     pos = 0; sabidas = 0; falladas = []; vistas = 0; total = cola.length; racha = 0;
     mostrar('juego'); pintarCarta();
   }
+  // Íconos propios (sin emojis)
+  const svg = (d, relleno) => `<svg class="ico" viewBox="0 0 24 24" ${relleno ? 'fill="currentColor" stroke="none"' : 'fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"'}>${d}</svg>`;
+  const ICO = {
+    si: svg('<polyline points="20 6 9 17 4 12"/>'),
+    rep: svg('<path d="M3 12a9 9 0 0 1 15.4-6.4L21 8"/><polyline points="21 3 21 8 16 8"/><path d="M21 12a9 9 0 0 1-15.4 6.4L3 16"/><polyline points="3 21 3 16 8 16"/>'),
+    toque: svg('<path d="M9 11V5a2 2 0 0 1 4 0v6"/><path d="M13 10a2 2 0 0 1 4 0v1"/><path d="M17 11a2 2 0 0 1 4 0v4a7 7 0 0 1-7 7h-1.5a6 6 0 0 1-4.6-2.2l-3.4-4.2a2 2 0 0 1 3-2.6L9 14.5"/>'),
+    profe: svg('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'),
+    fuego: svg('<path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 1.5-5 3-6 0 2 1 3 2 3 0-3-1-6 1-9z"/>', 1),
+    rayo: svg('<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>', 1),
+    estrella: svg('<path d="m12 2 3 6.5 7 .8-5.2 4.8 1.4 7L12 17.8l-6.2 3.3 1.4-7L2 9.3l7-.8z"/>', 1),
+    copa: svg('<path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 6h3a3 3 0 0 1-3 4"/><path d="M7 6H4a3 3 0 0 0 3 4"/>'),
+    diana: svg('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/>'),
+    libro: svg('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5V21h16"/>')
+  };
   const ICONO_GIRO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 3 21 9 15 9"/></svg>';
   function etiqueta(c, extra) {
     return `<div class="tag"><span class="num">TEMA ${esc(c.tema)}</span><span>${esc(c.nombre)}</span>${extra || ''}</div>`;
@@ -515,8 +536,8 @@
   }
   const CHEK = '<div class="chek"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>';
   function frenteHtml(c) {
-    const tag = etiqueta(c, c.q ? '' : '<span class="prof">✍️ Del profe</span>');
-    const pie = `<div class="pie"><span class="dedo">👆</span> Toca para ver la respuesta</div><div class="marca">?</div>`;
+    const tag = etiqueta(c, c.q ? '' : '<span class="prof">' + ICO.profe + ' Del profe</span>');
+    const pie = `<div class="pie"><span class="dedo">${ICO.toque}</span> Toca para ver la respuesta</div><div class="marca">?</div>`;
     if (!c.q) return tag + `<div class="cuerpo"><div class="txt">${MCPregunta.formato(c.frente).replace(/\n/g, '<br>')}</div></div>` + pie;
     const r = MCPregunta.armar(c.q.text, {});
     const ops = c.ops ? `<div class="ops">${c.q.options.map(o => `<div class="op"><b>${esc(o.letter)}</b><span>${MCPregunta.formato(o.text)}</span></div>`).join('')}</div>` : '';
@@ -543,8 +564,8 @@
     $('hint').innerHTML = '';
     $('cuenta').textContent = Math.min(vistas + 1, total) + ' / ' + total;
     $('fill').style.width = (vistas / total * 100) + '%';
-    $('mOk').textContent = '✓ ' + sabidas + ' me la sé';
-    $('mRep').textContent = '↻ ' + falladas.length + ' por repasar';
+    $('mOk').innerHTML = ICO.si + sabidas + ' me la sé';
+    $('mRep').innerHTML = ICO.rep + falladas.length + ' por repasar';
     // El mazo de atrás se achica cuando quedan pocas
     const quedan = cola.length - pos - 1;
     $('m1').style.opacity = quedan >= 1 ? '' : '0'; $('m2').style.opacity = quedan >= 2 ? '' : '0';
@@ -552,7 +573,8 @@
   // La tarjeta toma el alto de la cara que se ve; si es muy larga, su contenido se desliza por dentro
   function ajustar(cara) {
     const t = cara.querySelector('.tag'), c = cara.querySelector('.cuerpo');
-    const alto = (t ? t.offsetHeight + 18 : 0) + (c ? c.scrollHeight : 0) + 92;
+    const dentro = c ? [...c.children].reduce((h, x) => h + x.offsetHeight, 0) : 0;   // alto real del contenido, sin el espacio que lo centra
+    const alto = (t ? t.offsetHeight + 18 : 0) + dentro + (cara === $('caraR') ? 70 : 100);
     $('carta').style.minHeight = Math.max(380, Math.min(alto, Math.max(420, innerHeight - 250))) + 'px';
   }
   let volteada = false, girando = null;
@@ -591,7 +613,7 @@
     }, 380);
   }
   function combo(texto) {
-    const d = document.createElement('div'); d.className = 'combo'; d.textContent = texto;
+    const d = document.createElement('div'); d.className = 'combo'; d.innerHTML = texto;
     document.body.appendChild(d); setTimeout(() => d.remove(), 1300);
   }
   function responder(sabe) {
@@ -603,7 +625,7 @@
       else { falladas.push(c); cola.push(Object.assign({}, c, { otraVez: true })); saltar($('mRep')); }  // vuelve a salir al final de esta ronda
     }
     racha = sabe ? racha + 1 : 0;
-    if (racha >= 3 && racha % 3 === 0) combo(racha >= 9 ? `🚀 ¡${racha} seguidas!` : racha >= 6 ? `⚡ ${racha} seguidas` : `🔥 ${racha} seguidas`);
+    if (racha >= 3 && racha % 3 === 0) combo((racha >= 9 ? ICO.estrella : racha >= 6 ? ICO.rayo : ICO.fuego) + ` ${racha} seguidas`);
     pos++;
     if (pos >= cola.length) terminar(); else pintarCarta();
   }
@@ -653,10 +675,10 @@
     subir();
     $('fill').style.width = '100%';
     const nf = falladas.length, pct = total ? Math.round(sabidas / total * 100) : 0;
-    $('finMedalla').textContent = pct === 100 ? '🏆' : pct >= 80 ? '🌟' : pct >= 50 ? '💪' : '📚';
+    $('finMedalla').innerHTML = pct === 100 ? ICO.copa : pct >= 80 ? ICO.estrella : pct >= 50 ? ICO.diana : ICO.libro;
     $('finTitulo').textContent = pct === 100 ? '¡Perfecto!' : pct >= 80 ? '¡Muy bien!' : pct >= 50 ? '¡Vas bien!' : '¡Sigue practicando!';
     $('finNum').textContent = sabidas + ' de ' + total;
-    $('finOk').textContent = '✓ ' + sabidas + ' me la sé'; $('finRep').textContent = '↻ ' + nf + ' por repasar';
+    $('finOk').innerHTML = ICO.si + sabidas + ' me la sé'; $('finRep').innerHTML = ICO.rep + nf + ' por repasar';
     $('finRep').hidden = !nf;
     $('finTexto').textContent = (nf ? `${nf === 1 ? 'La que fallaste volverá a salir hasta que te la sepas.' : 'Las ' + nf + ' que fallaste volverán a salir hasta que te las sepas.'}`
       : 'Te las sabías todas al primer intento.') + ' Las que ya dominas aparecen cada vez menos, para que no se te olviden.';
@@ -677,6 +699,7 @@
     if (e.key === 'ArrowRight') salir(true);
     if (e.key === 'ArrowLeft') salir(false);
   });
+  $('btnSe').innerHTML = ICO.si + ' Ya me la sé'; $('btnRep').innerHTML = ICO.rep + ' Repasar';
   $('btnSe').addEventListener('click', () => salir(true));
   $('btnRep').addEventListener('click', () => salir(false));
   $('btnOtra').addEventListener('click', () => empezar(falladas.map(c => Object.assign({}, c, { otraVez: false })), 0));
