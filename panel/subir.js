@@ -199,6 +199,10 @@ function initSubir(modo) {
     $('subVolver').addEventListener('click', () => { $('subPaso2').hidden = true; $('subPaso1').hidden = false; window.scrollTo(0, 0); });
     $('subPublicar').addEventListener('click', () => SUB.modo === 'examen' ? publicarExamen() : publicarTema());
     ['subCurso', 'subCiclo', 'subNum', 'subNombre', 'subDestino', 'exTipo', 'exCiclo'].forEach(id => $(id).addEventListener('input', validarMeta));
+    // Crédito: solo Seminarios y Banqueo; se recuerda el último
+    try { $('subCredito').value = localStorage.getItem('mc_panel_credito') || ''; } catch (e) {}
+    const verCredito = () => { $('subCreditoBox').hidden = !conCredito(); };
+    $('subDestino').addEventListener('change', verCredito); $('subDestino').addEventListener('input', verCredito); verCredito();
   }
   const actual = $('subCurso').value;
   $('subCurso').innerHTML = '<option value="">— Elige el curso —</option>' + CURSOS.map(([id, n]) => `<option value="${id}">${esc(n)}</option>`).join('');
@@ -288,6 +292,7 @@ function validarMeta() {
 function carpetaDestino(curso, destino) {
   return destino === 'seminario' ? curso + '--seminarios' : destino === 'banqueo' ? curso + '--banqueo' : curso;
 }
+function conCredito() { return ['seminario', 'banqueo'].indexOf($('subDestino').value) >= 0; }
 const DESTINO_TXT = { fijas: ' · Banco de Fijas', seminario: ' · Seminarios', banqueo: ' · Banqueo' };
 
 // ruta(q, ext) → dónde va cada imagen; base(q) → campos de la pregunta además de text/options/correct
@@ -341,7 +346,9 @@ async function publicarTema() {
     }
     const { preguntas, imagenes } = armarPreguntas(carpeta, anio, tema, nombre);
     btn.innerHTML = '<span class="spin-s"></span> ' + (imagenes.length ? `Subiendo ${imagenes.length} imagen${imagenes.length > 1 ? 'es' : ''} y publicando…` : 'Publicando…');
-    const r = await api('publicarTema', { carpeta, curso: NOMBRE[carpeta], anio, tema, nombre, modo, destino: destino === 'fijas' ? 'fijas' : 'libro', preguntas: JSON.stringify(preguntas), imagenes: JSON.stringify(imagenes) });
+    const credito = conCredito() ? $('subCredito').value.replace(/\s+/g, ' ').trim().slice(0, 80) : '';
+    if (conCredito()) { try { localStorage.setItem('mc_panel_credito', credito); } catch (e) {} }
+    const r = await api('publicarTema', { carpeta, curso: NOMBRE[carpeta], anio, tema, nombre, credito, modo, destino: destino === 'fijas' ? 'fijas' : 'libro', preguntas: JSON.stringify(preguntas), imagenes: JSON.stringify(imagenes) });
     delete cacheManifest[carpeta]; delete cacheArchivos[carpeta + '|' + anio];
     ss('del', SUB.borrador);
     const url = SITE_ROOT + rutaWeb(carpeta) + '/tema.html?year=' + encodeURIComponent(anio) + '&tema=' + encodeURIComponent(tema);
