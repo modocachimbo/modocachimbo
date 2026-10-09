@@ -408,7 +408,9 @@
   const toca = c => { const e = estado[c.id]; return !e || e[1] <= hoy(); };
 
   /* ---------- Acceso: el mismo código de la sección ---------- */
+  const SIN_BLOQUEO = true; // TEMPORAL para probar: volver a false antes de publicar
   function conAcceso(sec) {
+    if (SIN_BLOQUEO) return Promise.resolve(true);
     const P = PRODUCTO[sec] + CURSO;
     if (MCAcceso.accesoLocal(P)) { MCAcceso.verificar(P).then(v => { if (!v.acceso) pedirCodigo(sec, v.mensaje); }); return Promise.resolve(true); }
     return MCAcceso.verificar(P).then(v => v.acceso || pedirCodigo(sec, v.mensaje), () => pedirCodigo(sec, 'No se pudo verificar tu acceso. Revisa tu conexión.'));
