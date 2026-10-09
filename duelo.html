@@ -255,6 +255,8 @@
     .vs { gap: 8px; }
   }
   @media (prefers-reduced-motion: reduce) { .flash, .pod, .pod .mc-medalla, .puesto-sala.entra .avatar, .cierre i, .cuenta b { animation: none; } .carril .pista i { transition: none; } .confeti { display: none; } }
+  /* El botón "?" del tutorial solo en la pantalla de crear */
+  body:has(#crear[hidden]) .mct-ayuda { display: none; }
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" media="print" onload="this.media='all'">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
@@ -1124,5 +1126,6 @@
   iniciar();
 })();
 </script>
+<script src="assets/tutorial.js" defer></script>
 </body>
 </html>
