@@ -155,7 +155,65 @@
     var m = String(t || '').match(/^\s*\[((?:TEXTO|LECTURA)[^\]]{0,20})\]\n([\s\S]*?)\n\[\/(?:TEXTO|LECTURA)\]/i);
     return m ? m[1] + '|' + m[2].trim() : '';
   }
-  function mezclar(arr) {
+  /* ---------- Alternativas mezcladas ----------
+     En la práctica (quiz, repaso, fijas, falladas, simulacro, duelos) el
+     contenido de las alternativas cambia de lugar en cada intento; las
+     letras siguen A, B, C… El admin lo apaga en Panel → Cursos
+     (Supabase, tabla ajustes, clave 'practica'). No se mezclan las
+     preguntas con alternativas como "A y B" o "Todas las anteriores". */
+  var K_ALT = 'mc_mezclar_alt';
+  function altActivo() { try { return localStorage.getItem(K_ALT) !== '0'; } catch (e) { return true; } }
+  // Se lee el ajuste en segundo plano; vale desde la siguiente página que se abra
+  setTimeout(function () {
+    if (!window.MCAuth || !MCAuth.listo) return;
+    MCAuth.listo.then(function (c) { return c.from('ajustes').select('valor').eq('clave', 'practica').maybeSingle(); })
+      .then(function (r) {
+        if (!r || r.error) return;
+        var v = r.data && r.data.valor;
+        try { localStorage.setItem(K_ALT, v && v.mezclar === false ? '0' : '1'); } catch (e) {}
+      }, function () {});
+  }, 1500);
+  var SIN_MEZCLA = /anteriores|\b(todas|ninguna|ambas)\b|^\s*(solo\s+)?[a-e]\s*(,|y|e|o|u)\s*[a-e]\b|\b(alternativas?|opci[oó]n(es)?|claves?)\s+[a-e]\b/i;
+  function sePuedeMezclar(q) {
+    var op = q && q.options;
+    if (!Array.isArray(op) || op.length < 3) return false;
+    if (typeof q.correct !== 'number' || q.correct < 0 || q.correct >= op.length) return false;
+    return !op.some(function (o) { return SIN_MEZCLA.test(String(o && o.text || '').replace(/\$[^$]*\$/g, '')); });
+  }
+  // Generador con semilla (el mismo orden para la misma semilla)
+  function azar(semilla) {
+    if (semilla == null) return Math.random;
+    var h = 1779033703 ^ String(semilla).length;
+    for (var i = 0; i < String(semilla).length; i++) { h = Math.imul(h ^ String(semilla).charCodeAt(i), 3432918353); h = h << 13 | h >>> 19; }
+    return function () {
+      h = Math.imul(h ^ h >>> 16, 2246822507); h = Math.imul(h ^ h >>> 13, 3266489909);
+      var t = (h ^= h >>> 16) >>> 0;
+      t = (t + 0x6D2B79F5) | 0; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  // Orden de las alternativas: orden[k] = posición original de la alternativa que se ve en k
+  function ordenAlt(q, semilla) {
+    var n = (q && q.options || []).length, o = [];
+    for (var i = 0; i < n; i++) o.push(i);
+    if (!altActivo() || !sePuedeMezclar(q)) return o;
+    var r = azar(semilla);
+    for (var j = n - 1; j > 0; j--) { var k = Math.floor(r() * (j + 1)), t = o[j]; o[j] = o[k]; o[k] = t; }
+    return o;
+  }
+  // Copia de la pregunta con las alternativas en ese orden (las letras quedan A, B, C…)
+  function conOrden(q, orden) {
+    if (!q || !Array.isArray(q.options) || !orden || orden.length !== q.options.length) return q;
+    var c = Object.assign({}, q);
+    c.options = orden.map(function (k, i) { return Object.assign({}, q.options[k], { letter: q.options[i].letter }); });
+    c.correct = orden.indexOf(q.correct);
+    c._orden = orden.slice();
+    return c;
+  }
+  function mezclarAlt(q, semilla) { return conOrden(q, ordenAlt(q, semilla)); }
+
+  function mezclar(arr, opciones) {
+    var alt = !(opciones && opciones.alternativas === false);
     var grupos = [], idx = {};
     (arr || []).forEach(function (q) {
       var k = claveLectura(q && q.text);
@@ -164,7 +222,7 @@
     });
     for (var i = grupos.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = grupos[i]; grupos[i] = grupos[j]; grupos[j] = t; }
     var out = [];
-    grupos.forEach(function (g) { g.forEach(function (q) { out.push(q); }); });
+    grupos.forEach(function (g) { g.forEach(function (q) { out.push(alt ? mezclarAlt(q) : q); }); });
     return rangos(out);
   }
 
@@ -224,5 +282,6 @@
     '.mcq-con-der{grid-template-columns:minmax(0,1fr)}.mcq-con-der>.mcq-der{grid-column:1;grid-row:auto!important;order:-1}}';
   document.head.appendChild(st);
 
-  window.MCPregunta = { armar: armar, pintar: pintar, alternativas: alternativas, cortas: cortas, formato: formato, sinLectura: sinLectura, mezclar: mezclar, rangos: rangos, raiz: RAIZ };
+  window.MCPregunta = { armar: armar, pintar: pintar, alternativas: alternativas, cortas: cortas, formato: formato, sinLectura: sinLectura, mezclar: mezclar, rangos: rangos,
+    ordenAlt: ordenAlt, conOrden: conOrden, mezclarAlt: mezclarAlt, sePuedeMezclar: sePuedeMezclar, raiz: RAIZ };
 })();

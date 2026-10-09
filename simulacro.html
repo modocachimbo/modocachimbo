@@ -509,8 +509,10 @@
     await Promise.all(Object.keys(archivos).map(k => { const p = k.split('|'); return datos(p[0], p[1]).then(L => L.forEach(q => { mapa[q._id] = q; })); }));
     return refs.map(r => mapa[r]).filter(Boolean);
   }
+  // S.ord guarda el orden de las alternativas de cada pregunta (se mezclan al armar el examen)
   function prepararPreguntas(lista) {
-    PREGS = lista.map(q => Object.assign({}, q));
+    const ord = (S && S.ord) || [];
+    PREGS = lista.map((q, i) => window.MCPregunta && ord[i] ? MCPregunta.conOrden(q, ord[i]) : Object.assign({}, q));
     if (window.MCPregunta) MCPregunta.rangos(PREGS);
   }
 
@@ -637,7 +639,7 @@
         v: 1, uid: uid(), simId: REPETIR ? REPETIR.id : null,
         nombre: REPETIR ? REPETIR.nombre : ($('nombre').value.trim().slice(0, 60) || 'Simulacro'),
         ciclos: ciclos, bloque: b.id, carrera: $('selCarrera').value, puntos: b.puntos, minutos: minutos,
-        refs: lista.map(q => q._id), resp: {}, rev: {}, act: 0, inicio: Date.now(), fin: Date.now() + minutos * 60000
+        refs: lista.map(q => q._id), ord: lista.map(q => window.MCPregunta ? MCPregunta.ordenAlt(q) : null), resp: {}, rev: {}, act: 0, inicio: Date.now(), fin: Date.now() + minutos * 60000
       };
       ls(S);
       prepararPreguntas(lista);

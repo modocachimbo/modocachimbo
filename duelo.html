@@ -597,6 +597,14 @@
     if (window.MCPregunta) MCPregunta.rangos(out.map(q => q || {}));
     return out;
   }
+  // Cada jugador ve las alternativas en su propio orden (fijo para ese duelo).
+  // Al servidor siempre va la posición original; q._orden[k] = original de la que se ve en k
+  function mezclarDuelo(qs, codigo) {
+    if (!window.MCPregunta || !MCPregunta.mezclarAlt) return qs;
+    return qs.map((q, i) => q ? MCPregunta.mezclarAlt(q, codigo + '|' + uid() + '|' + i) : q);
+  }
+  function aOriginal(q, k) { return q && q._orden && k >= 0 ? q._orden[k] : k; }
+  function aVista(q, k) { return q && q._orden && k != null && k >= 0 ? q._orden.indexOf(k) : k; }
   function etiqueta(q) {
     return (NOMBRE[q._curso] || q._curso || '') + (q._tit ? ' · ' + q._tit : '');
   }
@@ -893,7 +901,7 @@
     if (r.terminado) { await recargar(); mostrarResultado(); return; }
     const pre = precarga && await precarga; precarga = null;
     if (!pre) aviso('Cargando preguntas…');
-    const qs = pre || await cargarRefs(r.preguntas);
+    const qs = mezclarDuelo(pre || await cargarRefs(r.preguntas), V.codigo);
     G = { codigo: V.codigo, qs, n: qs.length, actual: r.actual, aciertos: r.aciertos, ocupado: false,
           fin: Date.now() + Math.max(0, SEG * 1000 - (+r.lleva || 0)) };
     pintarCarriles();
@@ -956,7 +964,7 @@
     if (boton) boton.classList.add('on');
     let r;
     for (let intento = 0; intento < 3 && !r; intento++) {
-      try { r = await rpc('responder_duelo', { p_codigo: G.codigo, p_i: G.actual, p_op: op }); }
+      try { r = await rpc('responder_duelo', { p_codigo: G.codigo, p_i: G.actual, p_op: aOriginal(G.qs[G.actual], op) }); }
       catch (e) {
         if (/terminaste/i.test(e.message || '')) { await recargar(); mostrarResultado(); return; }
         if (intento === 2) { $('veredicto').textContent = textoError(e) + ' Toca para reintentar.'; $('veredicto').className = 'veredicto mal'; botones.forEach(x => { x.disabled = false; }); G.ocupado = false; return; }
@@ -968,8 +976,9 @@
     G.actual = r.actual; G.aciertos = r.aciertos;
     const q = G.qs[G.actual - 1];
     if (q) {
-      botones.forEach((x, k) => { if (k === r.correcta) x.classList.add('ok'); else if (k === r.op) x.classList.add('mal'); x.classList.remove('on'); });
-      $('veredicto').textContent = r.ok ? '¡Correcta! +1' : r.op < 0 ? 'Se acabó el tiempo. Era la ' + (q.options[r.correcta].letter || LETRAS[r.correcta]) + '.' : 'Incorrecta. Era la ' + (q.options[r.correcta].letter || LETRAS[r.correcta]) + '.';
+      const vc = aVista(q, r.correcta), vo = aVista(q, r.op);
+      botones.forEach((x, k) => { if (k === vc) x.classList.add('ok'); else if (k === vo) x.classList.add('mal'); x.classList.remove('on'); });
+      $('veredicto').textContent = r.ok ? '¡Correcta! +1' : r.op < 0 ? 'Se acabó el tiempo. Era la ' + (q.options[vc].letter || LETRAS[vc]) + '.' : 'Incorrecta. Era la ' + (q.options[vc].letter || LETRAS[vc]) + '.';
       $('veredicto').className = 'veredicto ' + (r.ok ? 'ok' : 'mal');
     }
     pintarCarriles();
@@ -1073,7 +1082,7 @@
     // Revisión: solo cuando el servidor ya mandó las correctas
     if (d.preguntas && d.correctas && revPintada !== d.codigo) {
       revPintada = d.codigo;
-      const qs = await cargarRefs(d.preguntas);
+      const qs = mezclarDuelo(await cargarRefs(d.preguntas), d.codigo);
       pintarRevision(qs, d.correctas, (d.yo && d.yo.respuestas) || []);
     }
     // Se actualiza solo hasta que haya resultado, y después un rato por si alguien pide la revancha
@@ -1087,7 +1096,7 @@
     $('revTit').hidden = false;
     $('revLista').innerHTML = qs.map((q, i) => {
       if (!q) return '<div class="card rev-item"><div class="rev-cab"><b>Pregunta ' + (i + 1) + '</b><span>Ya no está en la web</span></div></div>';
-      const r = resp[i] || {}, c = correctas[i];
+      const r0 = resp[i] || {}, r = Object.assign({}, r0, { op: aVista(q, r0.op) }), c = aVista(q, correctas[i]);
       const estado = r.ok ? '<b class="ok">Acertaste · ' + segs(r.ms) + '</b>' : r.op < 0 ? '<b class="mal">Sin responder</b>' : r.op != null ? '<b class="mal">Fallaste · ' + segs(r.ms) + '</b>' : '';
       const m = MCPregunta.armar(q.text, { lecPos: q.lecPos });
       return '<div class="card rev-item" data-i="' + i + '"><div class="rev-cab"><span>Pregunta ' + (i + 1) + ' · ' + esc(etiqueta(q)) + '</span>' + estado + '</div>' +
