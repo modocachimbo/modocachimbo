@@ -408,14 +408,19 @@
   const toca = c => { const e = estado[c.id]; return !e || e[1] <= hoy(); };
 
   /* ---------- Acceso: el mismo código de la sección ---------- */
+  // Abre con el código de la sección (Repaso, Seminarios, Banqueo) o con un código solo de Flashcards
+  const SOLO_TARJETAS = 'tarjetas-' + CURSO;
   function conAcceso(sec) {
-    const P = PRODUCTO[sec] + CURSO;
-    if (MCAcceso.accesoLocal(P)) { MCAcceso.verificar(P).then(v => { if (!v.acceso) pedirCodigo(sec, v.mensaje); }); return Promise.resolve(true); }
-    return MCAcceso.verificar(P).then(v => v.acceso || pedirCodigo(sec, v.mensaje), () => pedirCodigo(sec, 'No se pudo verificar tu acceso. Revisa tu conexión.'));
+    const lista = [PRODUCTO[sec] + CURSO, SOLO_TARJETAS];
+    if (MCAcceso.accesoLocal(lista[1])) lista.reverse();
+    const revisar = () => MCAcceso.verificar(lista[0]).then(v => v.acceso ? v :
+      MCAcceso.verificar(lista[1]).then(w => w.acceso ? w : { acceso: false, mensaje: v.mensaje || w.mensaje }));
+    if (lista.some(MCAcceso.accesoLocal)) { revisar().then(v => { if (!v.acceso) pedirCodigo(sec, v.mensaje); }); return Promise.resolve(true); }
+    return revisar().then(v => v.acceso || pedirCodigo(sec, v.mensaje), () => pedirCodigo(sec, 'No se pudo verificar tu acceso. Revisa tu conexión.'));
   }
   let alDesbloquear = null;
   function pedirCodigo(sec, mensaje) {
-    $('lockTexto').innerHTML = `Las flashcards de <b>${esc(NOMBRE_SEC[sec])}</b> se abren con tu código de <b>${esc(CODIGO_DE[sec])}</b> de ${esc(nombreCurso)}. Si ya lo tienes, ingrésalo abajo.`;
+    $('lockTexto').innerHTML = `Las flashcards de <b>${esc(NOMBRE_SEC[sec])}</b> se abren con tu código de <b>${esc(CODIGO_DE[sec])}</b> de ${esc(nombreCurso)} o con un código de <b>Flashcards</b>. Si ya lo tienes, ingrésalo abajo.`;
     $('lockWhatsapp').href = 'https://wa.me/51917797543?text=' + encodeURIComponent('Hola! Quiero acceso a ' + CODIGO_DE[sec] + ' de ' + nombreCurso + ' en Modo Cachimbo 🎓');
     $('lockError').classList.toggle('show', !!mensaje); $('lockError').textContent = mensaje || '';
     $('lockWhatsapp').classList.toggle('show', !!mensaje);
@@ -428,7 +433,8 @@
     if (!codigo) { $('lockError').textContent = 'Ingresa tu código de acceso.'; $('lockError').classList.add('show'); return; }
     $('btnUnlock').disabled = true; $('btnUnlock').textContent = 'Verificando…';
     try {
-      const r = await MCAcceso.activar(codigo, PRODUCTO[sec] + CURSO);
+      let r = await MCAcceso.activar(codigo, PRODUCTO[sec] + CURSO);
+      if (!r.ok && r.motivo === 'otro') r = await MCAcceso.activar(codigo, SOLO_TARJETAS);
       if (r.ok) { const f = alDesbloquear; alDesbloquear = null; if (f) f(true); }
       else { $('lockError').textContent = r.mensaje || 'Código inválido.'; $('lockError').classList.add('show'); $('lockWhatsapp').classList.add('show'); }
     } catch (e) { $('lockError').textContent = 'No se pudo verificar el código. Revisa tu conexión.'; $('lockError').classList.add('show'); }

@@ -30,7 +30,7 @@
     libros: [['anios', 'Lista de años', '#yearsGrid'], ['anio', 'Primer año disponible', '#yearsGrid .year-card.active'],
       ['temas', 'Lista de temas', '#temaList'], ['tema', 'Primer tema', '#temaList > *']],
     estudio: [['pregunta', 'Primera pregunta', '.qcard'], ['correcta', 'Respuesta marcada', '.qcard .opt-row.correct'],
-      ['practicar', 'Botón Practicar', '.quiz-cta'], ['tarjetas', 'Botón Tarjetas', '#tarjetasLink'], ['credito', 'Crédito del profesor', '#creditoLabel'], ['error', 'Botón "¿Error en la clave?"', '.qcard .rep-btn'], ['whatsapp', 'Burbuja de WhatsApp', '#mcBubble']],
+      ['practicar', 'Botón Practicar', '.quiz-cta'], ['tarjetas', 'Botón Flashcards', '#tarjetasLink'], ['credito', 'Crédito del profesor', '#creditoLabel'], ['error', 'Botón "¿Error en la clave?"', '.qcard .rep-btn'], ['whatsapp', 'Burbuja de WhatsApp', '#mcBubble']],
     quiz: [['inicio', 'Pantalla de inicio', '#startScreen'], ['vidas', 'Vidas y número de preguntas', '#startScreen .start-info'], ['empezar', 'Botón Empezar', '#btnStart']],
     falladas: [['inicio', 'Pantalla de inicio', '#startScreen'], ['cuantas', 'Cuántas preguntas tienes', '#startScreen .start-info'], ['empezar', 'Botón Empezar', '#btnStart']],
     duelo: [['filtros', 'Ciclo, curso y tema', '#crear .filtros'], ['fuentes', 'De dónde salen las preguntas', cercaDe('#fuentes', '.campo')],

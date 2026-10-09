@@ -777,7 +777,7 @@ function jsonpRequest(url) {
     }
 
     // ===== Saludo: nombre, cuenta regresiva y accesos activos =====
-    var NOMBRES = { 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'seminario-VIP': 'Todos los Seminarios', 'banqueo-VIP': 'Todo el Banqueo', 'simulacro': 'Simulacro', 'TODO-VIP': 'Acceso total' };
+    var NOMBRES = { 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'seminario-VIP': 'Todos los Seminarios', 'banqueo-VIP': 'Todo el Banqueo', 'tarjetas-VIP': 'Todas las Flashcards', 'simulacro': 'Simulacro', 'TODO-VIP': 'Acceso total' };
     var cursos = {};
     fetch('assets/cursos.json').then(function (r) { return r.json(); }).then(function (d) {
       (d.cursos || []).forEach(function (c) { cursos[c.id] = c.nombre; });
@@ -785,10 +785,10 @@ function jsonpRequest(url) {
     }).catch(function () {});
     function nombreProducto(p) {
       if (NOMBRES[p]) return NOMBRES[p];
-      var m = /^(repaso|fijas|seminario|banqueo|curso)-(.+)$/.exec(p);
+      var m = /^(repaso|fijas|seminario|banqueo|tarjetas|curso)-(.+)$/.exec(p);
       if (!m) return p;
       var c = cursos[m[2]] || m[2];
-      var tipo = { repaso: 'Repaso ', fijas: 'Fijas ', seminario: 'Seminarios ', banqueo: 'Banqueo ' }[m[1]];
+      var tipo = { repaso: 'Repaso ', fijas: 'Fijas ', seminario: 'Seminarios ', banqueo: 'Banqueo ', tarjetas: 'Flashcards ' }[m[1]];
       return tipo ? tipo + c : c + ' completo';
     }
     function pintarAccesos() {
