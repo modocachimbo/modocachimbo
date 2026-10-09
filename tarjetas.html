@@ -74,42 +74,100 @@
 
   /* Juego */
   .barra { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
-  .track { flex: 1; height: 5px; background: #1c1c1c; border-radius: 100px; overflow: hidden; }
-  .fill { height: 100%; width: 0; background: var(--accent); border-radius: 100px; transition: width .3s ease; }
-  .cuenta { font: 700 12.5px Sora, sans-serif; color: var(--text-dim); font-variant-numeric: tabular-nums; }
-  .marcador { display: flex; justify-content: space-between; margin-top: 10px; font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
-  .marcador .ok { color: var(--accent); }
-  .marcador .rep { color: var(--orange); }
+  .track { flex: 1; height: 8px; background: #161616; border-radius: 100px; overflow: hidden; position: relative; }
+  .fill { height: 100%; width: 0; border-radius: 100px; transition: width .5s cubic-bezier(.34,1.56,.64,1);
+    background: linear-gradient(90deg, #9fbf00, var(--accent) 60%, #e9ff6a); box-shadow: 0 0 14px rgba(198,224,0,.55); position: relative; overflow: hidden; }
+  .fill::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent); transform: translateX(-100%); animation: brillo 2.4s ease-in-out infinite; }
+  @keyframes brillo { 60%, 100% { transform: translateX(100%); } }
+  .cuenta { font: 800 13px Sora, sans-serif; color: #e6e6e6; font-variant-numeric: tabular-nums; }
+  .marcador { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font: 700 12px Sora, sans-serif; font-variant-numeric: tabular-nums; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 100px; }
+  .pill.ok { color: var(--accent); background: rgba(198,224,0,.09); }
+  .pill.rep { color: var(--orange); background: rgba(255,159,67,.09); }
+  .pill.salta { animation: salta .45s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes salta { 40% { transform: scale(1.22); } }
 
-  .escena { perspective: 1400px; margin-top: 16px; }
-  .carta { position: relative; min-height: 340px; cursor: pointer; transition: transform .45s cubic-bezier(.3,.7,.3,1); transform-style: preserve-3d; -webkit-tap-highlight-color: transparent; }
+  .escena { position: relative; perspective: 1600px; margin-top: 18px; padding-bottom: 22px; }
+  .mazo { position: absolute; left: 0; right: 0; top: 0; bottom: 22px; border-radius: 26px; background: #101010; border: 1px solid #1e1e1e; transition: transform .4s ease, opacity .4s ease; }
+  .mazo.m1 { transform: translateY(11px) scale(.95); opacity: .8; }
+  .mazo.m2 { transform: translateY(22px) scale(.9); opacity: .45; }
+  .arrastre { position: relative; z-index: 2; touch-action: pan-y; will-change: transform; }
+  .arrastre.entrar { animation: entrar .45s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes entrar { from { transform: translateY(24px) scale(.93); opacity: .4; } }
+  .carta { position: relative; min-height: 360px; cursor: pointer; transform-style: preserve-3d; -webkit-tap-highlight-color: transparent;
+    transition: transform .7s cubic-bezier(.34,1.45,.5,1), min-height .3s ease; }
   .carta.vuelta { transform: rotateY(180deg); }
-  .cara { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 22px; padding: 22px 20px 48px; display: flex; flex-direction: column; overflow-y: auto; }
-  .frente { background: var(--surface); border: 1px solid var(--border); }
-  .reverso { background: linear-gradient(160deg, #141a03, #0e0e0e 60%); border: 1px solid rgba(198,224,0,.35); transform: rotateY(180deg); }
-  .cara .tag { font-size: 11px; color: var(--text-faint); font-weight: 600; margin-bottom: 14px; display: flex; gap: 6px; align-items: center; }
-  .cara .tag .prof { color: var(--accent); background: var(--accent-soft); border-radius: 100px; padding: 2px 8px; }
-  .cara .txt { font-size: 15.5px; line-height: 1.65; color: #ececec; margin: auto 0; }
-  .reverso .txt.resp { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 700; color: #f5ffcc; text-align: center; line-height: 1.45; }
-  .cara .pie { position: absolute; left: 0; right: 0; bottom: 16px; text-align: center; font-size: 11.5px; color: var(--text-faint); }
-  .ops { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
-  .op { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; color: #cfcfcf; padding: 8px 10px; border-radius: 10px; background: #141414; }
+  .carta.giro { animation: alza .7s ease; }
+  @keyframes alza { 45% { scale: 1.04; } }
+  .cara { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 26px; padding: 22px 22px 56px; display: flex; flex-direction: column; overflow: hidden auto; }
+  .frente { background: radial-gradient(120% 70% at 0% 0%, rgba(198,224,0,.13), transparent 55%), radial-gradient(90% 60% at 100% 100%, rgba(120,90,255,.10), transparent 60%), #0f0f0f;
+    border: 1px solid #262626; box-shadow: 0 24px 50px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.04); }
+  .frente::before { content: '?'; position: absolute; right: -6px; bottom: -40px; font: 800 190px/1 Sora, sans-serif; color: rgba(198,224,0,.05); pointer-events: none; }
+  .reverso { transform: rotateY(180deg); color: #10140a;
+    background: radial-gradient(120% 80% at 100% 0%, #f2ff8c, transparent 55%), linear-gradient(155deg, #d4ee12, #b8d300 55%, #93ab00);
+    box-shadow: 0 24px 60px rgba(198,224,0,.25), inset 0 1px 0 rgba(255,255,255,.5); }
+  .reverso::before { content: '✓'; position: absolute; right: 8px; bottom: -34px; font: 800 170px/1 Sora, sans-serif; color: rgba(0,0,0,.07); pointer-events: none; }
+  .cara .tag { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 18px; font-size: 11.5px; font-weight: 600; color: #8a8a8a; position: relative; }
+  .cara .tag .num { font: 800 11px Sora, sans-serif; letter-spacing: 1.5px; color: #0e0e0e; background: var(--accent); border-radius: 100px; padding: 4px 10px; }
+  .cara .tag .prof { color: #e9d5ff; background: rgba(160,110,255,.18); border-radius: 100px; padding: 3px 9px; }
+  .reverso .tag { color: rgba(16,20,10,.65); }
+  .reverso .tag .num { background: #10140a; color: var(--accent); }
+  .cara .txt { font-size: 16px; line-height: 1.68; color: #f0f0f0; margin: auto 0; position: relative; }
+  .reverso .txt.resp { font: 800 clamp(21px, 6vw, 27px)/1.35 Sora, sans-serif; color: #0d1006; text-align: center; letter-spacing: -.3px; }
+  .cara .pie { position: absolute; left: 0; right: 0; bottom: 18px; display: flex; justify-content: center; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; color: #6d6d6d; }
+  .cara .pie svg { width: 15px; height: 15px; color: var(--accent); animation: gira 2.2s ease-in-out infinite; }
+  @keyframes gira { 0%, 55% { transform: rotate(0); } 85%, 100% { transform: rotate(360deg); } }
+  .reverso .pie { color: rgba(16,20,10,.55); }
+  .ops { display: flex; flex-direction: column; gap: 7px; margin-top: 16px; }
+  .op { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; color: #d0d0d0; padding: 9px 11px; border-radius: 12px; background: rgba(255,255,255,.04); border: 1px solid #222; }
   .op b { color: var(--accent); font-family: Sora, sans-serif; font-size: 12px; min-width: 14px; }
-  .op.si { background: rgba(198,224,0,.14); color: #f5ffcc; font-weight: 600; }
+  .reverso .op { background: rgba(0,0,0,.08); border-color: rgba(0,0,0,.08); color: rgba(16,20,10,.6); }
+  .reverso .op b { color: rgba(16,20,10,.6); }
+  .reverso .op.si { background: #10140a; color: var(--accent); font-weight: 700; border-color: #10140a; }
+  .reverso .op.si b { color: var(--accent); }
   .q-graphic { margin: 10px 0; display: flex; justify-content: center; background: #fff; border-radius: 12px; padding: 10px; }
   .q-graphic svg { max-width: 100%; height: auto; display: block; }
 
-  .acciones { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
-  .acciones .btn { display: flex; align-items: center; justify-content: center; gap: 8px; }
-  .btn.rep { border-color: rgba(255,159,67,.45); color: var(--orange); background: rgba(255,159,67,.08); }
-  .acciones[hidden] { display: none; }
-  .voltear-hint { text-align: center; color: var(--text-faint); font-size: 12px; margin-top: 14px; }
+  .sello { position: absolute; top: 26px; z-index: 3; font: 800 17px Sora, sans-serif; letter-spacing: 1.5px; padding: 8px 14px; border-radius: 12px; border: 3px solid; opacity: 0; pointer-events: none; }
+  .sello.si { left: 20px; color: var(--accent); border-color: var(--accent); background: rgba(10,12,4,.85); transform: rotate(-12deg); }
+  .sello.no { right: 20px; color: var(--orange); border-color: var(--orange); background: rgba(14,9,4,.85); transform: rotate(12deg); }
 
-  .fin { text-align: center; margin-top: 30px; background: var(--surface); border: 1px solid var(--border); border-radius: 22px; padding: 30px 22px; }
-  .fin h2 { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; }
-  .fin .grande { font: 800 44px Sora, sans-serif; color: var(--accent); margin: 14px 0 4px; font-variant-numeric: tabular-nums; }
+  .acciones { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
+  .acciones .btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px; border-radius: 16px; font-size: 15px; transition: transform .15s ease, box-shadow .2s ease; }
+  .acciones .btn:active { transform: scale(.95); }
+  .btn.rep { border-color: rgba(255,159,67,.5); color: var(--orange); background: rgba(255,159,67,.08); }
+  #btnSe { box-shadow: 0 10px 28px rgba(198,224,0,.28); }
+  .acciones.aparece { animation: aparece .4s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes aparece { from { opacity: 0; transform: translateY(10px); } }
+  .voltear-hint { text-align: center; color: #6a6a6a; font-size: 12px; margin-top: 6px; min-height: 18px; }
+  .voltear-hint b { color: #9a9a9a; }
+
+  .combo { position: fixed; left: 50%; top: 22%; z-index: 50; transform: translate(-50%, 0); pointer-events: none;
+    font: 800 22px Sora, sans-serif; color: #0e0e0e; background: var(--accent); padding: 10px 20px; border-radius: 100px; box-shadow: 0 14px 40px rgba(198,224,0,.45);
+    animation: combo 1.2s cubic-bezier(.34,1.56,.64,1) forwards; white-space: nowrap; }
+  @keyframes combo { 0% { opacity: 0; transform: translate(-50%, 20px) scale(.6); } 20% { opacity: 1; transform: translate(-50%, 0) scale(1.08); } 75% { opacity: 1; transform: translate(-50%, -6px) scale(1); } 100% { opacity: 0; transform: translate(-50%, -30px) scale(.95); } }
+
+  .fin { text-align: center; margin-top: 26px; background: radial-gradient(120% 60% at 50% 0%, rgba(198,224,0,.12), transparent 60%), var(--surface); border: 1px solid var(--border); border-radius: 26px; padding: 30px 22px; position: relative; overflow: hidden; }
+  .fin .medalla { font-size: 40px; animation: entrar .6s cubic-bezier(.34,1.56,.64,1); }
+  .fin h2 { font-family: 'Sora', sans-serif; font-size: 23px; font-weight: 800; margin-top: 4px; }
+  .anillo { position: relative; width: 168px; height: 168px; margin: 18px auto 10px; }
+  .anillo svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .anillo circle { fill: none; stroke-width: 12; }
+  .anillo .base { stroke: #1d1d1d; }
+  .anillo .arco { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset 1.4s cubic-bezier(.3,.8,.3,1); filter: drop-shadow(0 0 6px rgba(198,224,0,.6)); }
+  .anillo .dentro { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .anillo .pct { font: 800 38px Sora, sans-serif; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .anillo .de { font-size: 12px; color: var(--text-dim); font-weight: 600; }
+  .fin .stats { display: flex; justify-content: center; gap: 10px; margin: 6px 0 14px; flex-wrap: wrap; }
   .fin p { color: var(--text-dim); font-size: 13px; line-height: 1.6; }
   .fin .botones { display: flex; flex-direction: column; gap: 10px; margin-top: 22px; }
+  .confeti { position: absolute; top: -12px; width: 8px; height: 14px; border-radius: 2px; animation: cae linear forwards; pointer-events: none; }
+  @keyframes cae { to { transform: translate(var(--dx), 620px) rotate(var(--r)); opacity: .2; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .carta, .arrastre, .fill, .anillo .arco { transition: none !important; }
+    .arrastre.entrar, .carta.giro, .fill::after, .cara .pie svg, .combo, .confeti, .pill.salta, .acciones.aparece { animation: none !important; }
+  }
 
   .state-msg { text-align: center; color: var(--text-dim); font-size: 13.5px; padding: 50px 10px; }
   [hidden] { display: none !important; }
@@ -171,23 +229,33 @@
   <!-- Repaso con tarjetas -->
   <div id="juego" hidden>
     <div class="barra"><div class="track"><div class="fill" id="fill"></div></div><div class="cuenta" id="cuenta">0 / 0</div></div>
-    <div class="marcador"><span class="ok" id="mOk">✓ 0 me la sé</span><span class="rep" id="mRep">↻ 0 por repasar</span></div>
-    <div class="escena">
-      <div class="carta" id="carta" role="button" tabindex="0" aria-label="Voltear tarjeta">
-        <div class="cara frente" id="caraF"></div>
-        <div class="cara reverso" id="caraR"></div>
+    <div class="marcador"><span class="pill ok" id="mOk">✓ 0 me la sé</span><span class="pill rep" id="mRep">↻ 0 por repasar</span></div>
+    <div class="escena" id="escena">
+      <div class="mazo m2" id="m2"></div><div class="mazo m1" id="m1"></div>
+      <div class="arrastre" id="arrastre">
+        <div class="carta" id="carta" role="button" tabindex="0" aria-label="Voltear tarjeta">
+          <div class="cara frente" id="caraF"></div>
+          <div class="cara reverso" id="caraR"></div>
+        </div>
+        <div class="sello si" id="selloSi">ME LA SÉ</div>
+        <div class="sello no" id="selloNo">REPASAR</div>
       </div>
     </div>
-    <div class="voltear-hint" id="hint">Toca la tarjeta para ver la respuesta</div>
     <div class="acciones" id="acciones" hidden>
       <button class="btn rep" id="btnRep" type="button">↻ Repasar</button>
       <button class="btn primary" id="btnSe" type="button">✓ Ya me la sé</button>
     </div>
+    <div class="voltear-hint" id="hint">Toca la tarjeta para ver la respuesta</div>
   </div>
 
   <div class="fin" id="fin" hidden>
-    <h2>¡Ronda terminada!</h2>
-    <div class="grande" id="finNum">0</div>
+    <div class="medalla" id="finMedalla">🏆</div>
+    <h2 id="finTitulo">¡Ronda terminada!</h2>
+    <div class="anillo">
+      <svg viewBox="0 0 120 120"><circle class="base" cx="60" cy="60" r="52"/><circle class="arco" id="finArco" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="326.7"/></svg>
+      <div class="dentro"><div class="pct" id="finPct">0%</div><div class="de" id="finNum">0 de 0</div></div>
+    </div>
+    <div class="stats"><span class="pill ok" id="finOk"></span><span class="pill rep" id="finRep"></span></div>
     <p id="finTexto"></p>
     <div class="botones">
       <button class="btn primary" id="btnOtra" type="button">Repasar las que fallé</button>
@@ -387,79 +455,173 @@
     const orden = [0, 1, 2].flatMap(g => barajar(cartas.filter(c => grupo(c) === g)));
     cola = cant ? orden.slice(0, cant) : orden;
     if (!cola.length) { aviso('No hay tarjetas para repasar.'); return; }
-    pos = 0; sabidas = 0; falladas = []; vistas = 0; total = cola.length;
+    pos = 0; sabidas = 0; falladas = []; vistas = 0; total = cola.length; racha = 0;
     mostrar('juego'); pintarCarta();
   }
+  const ICONO_GIRO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 3 21 9 15 9"/></svg>';
+  function etiqueta(c, extra) {
+    return `<div class="tag"><span class="num">TEMA ${esc(c.tema)}</span><span>${esc(c.nombre)}</span>${extra || ''}</div>`;
+  }
   function frenteHtml(c) {
-    const tag = `<div class="tag">Tema ${esc(c.tema)} · ${esc(c.nombre)}${c.q ? '' : ' <span class="prof">Del profe</span>'}</div>`;
-    if (!c.q) return tag + `<div class="txt">${MCPregunta.formato(c.frente).replace(/\n/g, '<br>')}</div><div class="pie">Toca para voltear</div>`;
+    const tag = etiqueta(c, c.q ? '' : '<span class="prof">✍️ Del profe</span>');
+    const pie = `<div class="pie">${ICONO_GIRO} Toca para voltear</div>`;
+    if (!c.q) return tag + `<div class="txt">${MCPregunta.formato(c.frente).replace(/\n/g, '<br>')}</div>` + pie;
     const r = MCPregunta.armar(c.q.text, {});
     const ops = c.ops ? `<div class="ops">${c.q.options.map(o => `<div class="op"><b>${esc(o.letter)}</b><span>${MCPregunta.formato(o.text)}</span></div>`).join('')}</div>` : '';
-    return tag + `<div class="txt">${r.html}${c.q.graphic ? `<div class="q-graphic">${c.q.graphic}</div>` : ''}${r.derecha ? `<div class="q-graphic">${r.derecha}</div>` : ''}${ops}</div><div class="pie">Toca para voltear</div>`;
+    return tag + `<div class="txt">${r.html}${c.q.graphic ? `<div class="q-graphic">${c.q.graphic}</div>` : ''}${r.derecha ? `<div class="q-graphic">${r.derecha}</div>` : ''}${ops}</div>` + pie;
   }
   function reversoHtml(c) {
-    const tag = `<div class="tag">Respuesta</div>`;
-    if (!c.q) return tag + `<div class="txt resp">${MCPregunta.formato(c.reverso).replace(/\n/g, '<br>')}</div>`;
+    const tag = etiqueta(c, '<span>· Respuesta</span>');
+    const pie = `<div class="pie">Desliza → si te la sabías · ← para repasar</div>`;
+    if (!c.q) return tag + `<div class="txt resp">${MCPregunta.formato(c.reverso).replace(/\n/g, '<br>')}</div>` + pie;
     const o = c.q.options[c.q.correct];
-    if (c.ops) return tag + `<div class="ops" style="margin:auto 0;">${c.q.options.map((x, i) => `<div class="op ${i === c.q.correct ? 'si' : ''}"><b>${esc(x.letter)}</b><span>${MCPregunta.formato(x.text)}</span></div>`).join('')}</div>`;
-    return tag + `<div class="txt resp">${MCPregunta.formato(o.text)}</div>`;
+    if (c.ops) return tag + `<div class="ops" style="margin:auto 0;">${c.q.options.map((x, i) => `<div class="op ${i === c.q.correct ? 'si' : ''}"><b>${esc(x.letter)}</b><span>${MCPregunta.formato(x.text)}</span></div>`).join('')}</div>` + pie;
+    return tag + `<div class="txt resp">${MCPregunta.formato(o.text)}</div>` + pie;
   }
+  const vibrar = ms => { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {} };
+  function saltar(el) { el.classList.remove('salta'); void el.offsetWidth; el.classList.add('salta'); }
   function pintarCarta() {
     const c = cola[pos];
-    $('carta').classList.remove('vuelta');
+    $('carta').classList.remove('vuelta', 'giro');
     $('caraF').innerHTML = frenteHtml(c); $('caraR').innerHTML = reversoHtml(c);
     $('caraF').scrollTop = 0; $('caraR').scrollTop = 0;
     renderMath($('carta'));
-    // La tarjeta crece con el contenido más largo de sus dos caras
     ajustar($('caraF'));
     $('acciones').hidden = true; $('hint').hidden = false;
+    $('hint').innerHTML = 'Toca la tarjeta para ver la respuesta';
     $('cuenta').textContent = Math.min(vistas + 1, total) + ' / ' + total;
     $('fill').style.width = (vistas / total * 100) + '%';
     $('mOk').textContent = '✓ ' + sabidas + ' me la sé';
     $('mRep').textContent = '↻ ' + falladas.length + ' por repasar';
+    // El mazo de atrás se achica cuando quedan pocas
+    const quedan = cola.length - pos - 1;
+    $('m1').style.opacity = quedan >= 1 ? '' : '0'; $('m2').style.opacity = quedan >= 2 ? '' : '0';
   }
   // La tarjeta toma el alto de la cara que se ve (una lectura larga no agranda la respuesta)
   function ajustar(cara) {
-    $('carta').style.minHeight = '340px';
-    $('carta').style.minHeight = Math.max(340, cara.scrollHeight) + 'px';
+    $('carta').style.minHeight = '360px';
+    $('carta').style.minHeight = Math.max(360, cara.scrollHeight) + 'px';
   }
   function voltear() {
-    if ($('juego').hidden) return;
-    $('carta').classList.toggle('vuelta');
-    ajustar($('carta').classList.contains('vuelta') ? $('caraR') : $('caraF'));
-    $('acciones').hidden = false; $('hint').hidden = true;
+    if ($('juego').hidden || saliendo) return;
+    const carta = $('carta');
+    carta.classList.toggle('vuelta');
+    carta.classList.remove('giro'); void carta.offsetWidth; carta.classList.add('giro');
+    ajustar(carta.classList.contains('vuelta') ? $('caraR') : $('caraF'));
+    vibrar(8);
+    if ($('acciones').hidden) {
+      $('acciones').hidden = false; $('acciones').classList.remove('aparece'); void $('acciones').offsetWidth; $('acciones').classList.add('aparece');
+      $('hint').innerHTML = '<b>←</b> desliza para repasar · desliza para "me la sé" <b>→</b>';
+    }
+  }
+  // La tarjeta sale volando hacia un lado y entra la siguiente desde el mazo
+  let saliendo = false, racha = 0;
+  function salir(sabe) {
+    if (saliendo || $('acciones').hidden) return;
+    saliendo = true;
+    const a = $('arrastre');
+    $(sabe ? 'selloSi' : 'selloNo').style.opacity = '1';
+    a.style.transition = 'transform .38s cubic-bezier(.5,0,.75,0), opacity .38s ease';
+    a.style.transform = `translate(${sabe ? 130 : -130}%, -20px) rotate(${sabe ? 24 : -24}deg)`;
+    a.style.opacity = '0';
+    vibrar(sabe ? 15 : [10, 40, 10]);
+    setTimeout(() => {
+      responder(sabe);
+      a.style.transition = 'none'; a.style.transform = ''; a.style.opacity = '';
+      $('selloSi').style.opacity = '0'; $('selloNo').style.opacity = '0';
+      a.classList.remove('entrar'); void a.offsetWidth; a.classList.add('entrar');
+      saliendo = false;
+    }, 380);
+  }
+  function combo(texto) {
+    const d = document.createElement('div'); d.className = 'combo'; d.textContent = texto;
+    document.body.appendChild(d); setTimeout(() => d.remove(), 1300);
   }
   function responder(sabe) {
-    if ($('acciones').hidden) return;
     const c = cola[pos];
     marcar(c.id, sabe);
     if (!c.otraVez) {
       vistas++;
-      if (sabe) sabidas++;
-      else { falladas.push(c); cola.push(Object.assign({}, c, { otraVez: true })); }  // vuelve a salir al final de esta ronda
+      if (sabe) { sabidas++; saltar($('mOk')); }
+      else { falladas.push(c); cola.push(Object.assign({}, c, { otraVez: true })); saltar($('mRep')); }  // vuelve a salir al final de esta ronda
     }
+    racha = sabe ? racha + 1 : 0;
+    if (racha >= 3 && racha % 3 === 0) combo(racha >= 9 ? `🚀 ¡${racha} seguidas!` : racha >= 6 ? `⚡ ${racha} seguidas` : `🔥 ${racha} seguidas`);
     pos++;
     if (pos >= cola.length) terminar(); else pintarCarta();
+  }
+
+  // Deslizar con el dedo (o el mouse): derecha = me la sé, izquierda = repasar
+  (function () {
+    const a = $('arrastre');
+    let x0 = null, y0 = 0, dx = 0, moviendo = false, ignorarClick = false;
+    a.addEventListener('pointerdown', e => { if (saliendo) return; x0 = e.clientX; y0 = e.clientY; dx = 0; moviendo = false; });
+    a.addEventListener('pointermove', e => {
+      if (x0 === null) return;
+      dx = e.clientX - x0;
+      if (!moviendo && Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(e.clientY - y0)) {
+        moviendo = true; a.style.transition = 'none';
+        try { a.setPointerCapture(e.pointerId); } catch (err) {}
+      }
+      if (!moviendo) return;
+      const listo = !$('acciones').hidden, f = listo ? 1 : .35;
+      a.style.transform = `translateX(${dx * f}px) rotate(${dx * f / 18}deg)`;
+      if (listo) { $('selloSi').style.opacity = Math.max(0, Math.min(1, dx / 110)); $('selloNo').style.opacity = Math.max(0, Math.min(1, -dx / 110)); }
+    });
+    const soltar = () => {
+      if (x0 === null) return;
+      x0 = null;
+      if (!moviendo) return;
+      ignorarClick = true; setTimeout(() => { ignorarClick = false; }, 50);
+      if (Math.abs(dx) > 100 && !$('acciones').hidden) { salir(dx > 0); return; }
+      a.style.transition = 'transform .5s cubic-bezier(.34,1.56,.64,1)'; a.style.transform = '';
+      $('selloSi').style.opacity = '0'; $('selloNo').style.opacity = '0';
+      if ($('acciones').hidden && Math.abs(dx) > 60) { $('hint').innerHTML = '<b>Primero voltea la tarjeta</b> para ver la respuesta'; }
+    };
+    a.addEventListener('pointerup', soltar); a.addEventListener('pointercancel', soltar);
+    $('carta').addEventListener('click', e => { if (ignorarClick || e.target.closest('summary, a')) return; voltear(); });
+  })();
+
+  function confeti() {
+    const colores = ['#C6E000', '#e9ff6a', '#FF9F43', '#ffffff', '#a78bfa'];
+    for (let i = 0; i < 70; i++) {
+      const d = document.createElement('i'); d.className = 'confeti';
+      d.style.left = Math.random() * 100 + '%'; d.style.background = colores[i % colores.length];
+      d.style.setProperty('--dx', (Math.random() * 160 - 80) + 'px'); d.style.setProperty('--r', (Math.random() * 720 - 360) + 'deg');
+      d.style.animationDuration = (1.6 + Math.random() * 1.6) + 's'; d.style.animationDelay = (Math.random() * .5) + 's';
+      $('fin').appendChild(d); setTimeout(() => d.remove(), 4000);
+    }
   }
   function terminar() {
     subir();
     $('fill').style.width = '100%';
-    $('finNum').textContent = sabidas + ' / ' + total;
-    const nf = falladas.length;
-    $('finTexto').textContent = (nf ? `Te sabías ${sabidas} de ${total} al primer intento. ${nf === 1 ? 'La que fallaste volverá a salir hasta que te la sepas.' : 'Las ' + nf + ' que fallaste volverán a salir hasta que te las sepas.'}`
-      : '¡Te las sabías todas!') + ' Las que ya dominas aparecen cada vez menos, para que no se te olviden.';
+    const nf = falladas.length, pct = total ? Math.round(sabidas / total * 100) : 0;
+    $('finMedalla').textContent = pct === 100 ? '🏆' : pct >= 80 ? '🌟' : pct >= 50 ? '💪' : '📚';
+    $('finTitulo').textContent = pct === 100 ? '¡Perfecto!' : pct >= 80 ? '¡Muy bien!' : pct >= 50 ? '¡Vas bien!' : '¡Sigue practicando!';
+    $('finNum').textContent = sabidas + ' de ' + total;
+    $('finOk').textContent = '✓ ' + sabidas + ' me la sé'; $('finRep').textContent = '↻ ' + nf + ' por repasar';
+    $('finRep').hidden = !nf;
+    $('finTexto').textContent = (nf ? `${nf === 1 ? 'La que fallaste volverá a salir hasta que te la sepas.' : 'Las ' + nf + ' que fallaste volverán a salir hasta que te las sepas.'}`
+      : 'Te las sabías todas al primer intento.') + ' Las que ya dominas aparecen cada vez menos, para que no se te olviden.';
     $('btnOtra').hidden = !nf;
     mostrar('fin');
+    // Anillo y número que suben solos
+    const arco = $('finArco'), L = 326.7;
+    arco.style.transition = 'none'; arco.style.strokeDashoffset = L; void arco.getBoundingClientRect();
+    arco.style.transition = ''; arco.style.strokeDashoffset = L * (1 - pct / 100);
+    const t0 = performance.now();
+    (function paso(t) { const k = Math.min(1, (t - t0) / 1300); $('finPct').textContent = Math.round(pct * (1 - Math.pow(1 - k, 3))) + '%'; if (k < 1) requestAnimationFrame(paso); })(t0);
+    if (pct >= 70 && !matchMedia('(prefers-reduced-motion: reduce)').matches) confeti();
+    vibrar([20, 60, 30]);
   }
-  $('carta').addEventListener('click', e => { if (!e.target.closest('summary, a')) voltear(); });
   $('carta').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); voltear(); } });
   document.addEventListener('keydown', e => {
     if ($('juego').hidden || e.target.tagName === 'INPUT') return;
-    if (e.key === 'ArrowRight') responder(true);
-    if (e.key === 'ArrowLeft') responder(false);
+    if (e.key === 'ArrowRight') salir(true);
+    if (e.key === 'ArrowLeft') salir(false);
   });
-  $('btnSe').addEventListener('click', () => responder(true));
-  $('btnRep').addEventListener('click', () => responder(false));
+  $('btnSe').addEventListener('click', () => salir(true));
+  $('btnRep').addEventListener('click', () => salir(false));
   $('btnOtra').addEventListener('click', () => empezar(falladas.map(c => Object.assign({}, c, { otraVez: false })), 0));
   $('btnNueva').addEventListener('click', () => { if (DIRECTO) location.href = CURSO + '/index.html'; else { mostrar('elegir'); pintarTemas(); } });
 
