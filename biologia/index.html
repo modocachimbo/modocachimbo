@@ -324,6 +324,11 @@ function jsonpRequest(url) {
 <script src="../assets/alertas.js" defer></script>
 <script src="../assets/cursos.js"></script>
 <script>MCCursos.pintarCurso('biologia');</script>
+<script>
+  // Prueba de sonidos: Libro, Repaso, Fijas, Seminarios, Banqueo y Flashcards suenan al entrar
+  document.addEventListener('click', function (e) { var a = e.target.closest && e.target.closest('a.btn'); if (a && !a.dataset.mcNav) a.dataset.mcNav = 'seccion'; }, true);
+</script>
 <script src="../assets/tutorial.js" defer></script>
+<script src="../assets/sonido.js"></script>
 </body>
 </html>

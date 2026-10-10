@@ -53,6 +53,10 @@
     src.connect(fl); fl.connect(g); g.connect(salida); src.start(t0); src.stop(t0 + dur);
   }
   var DO = 523.25, MI = 659.25, SOL = 783.99, DO2 = 1046.5, MI2 = 1318.5, SOL2 = 1568;
+  // La burbuja: una nota redonda que sube
+  function blup(vol, dur, desde, hasta, t) { nota(desde || 320, t || 0, dur || 0.09, 'sine', vol || 0.26, hasta || 1100); }
+  // En prueba solo en Biología: los nuevos sonidos de acierto y fallo
+  var PRUEBA = /\/biologia\//.test(location.pathname);
 
   var S = {
     get activo() { return activo; },
@@ -65,10 +69,20 @@
     },
     toque: function () { nota(320, 0, 0.09, 'sine', 0.26, 1100); },
     // Acierto: dos notas alegres que suben
-    bien: function () { nota(DO2, 0, 0.11, 'triangle', 0.22); nota(MI2, 0.09, 0.28, 'triangle', 0.24); nota(MI2 * 2, 0.09, 0.2, 'sine', 0.04); },
+    bien: function () {
+      if (PRUEBA) { [DO2, MI2, SOL2].forEach(function (f, i) { nota(f, i * 0.07, 0.14 + i * 0.06, 'triangle', 0.18); }); return; }
+      nota(DO2, 0, 0.11, 'triangle', 0.22); nota(MI2, 0.09, 0.28, 'triangle', 0.24); nota(MI2 * 2, 0.09, 0.2, 'sine', 0.04); },
     // Fallo: dos notas suaves que bajan, sin sonar a castigo
-    mal: function () { nota(392, 0, 0.12, 'sine', 0.16, 330); nota(294, 0.1, 0.22, 'sine', 0.13, 262); },
+    mal: function () {
+      if (PRUEBA) { nota(700, 0, 0.1, 'sine', 0.2, 450); nota(450, 0.1, 0.16, 'sine', 0.18, 250); return; }
+      nota(392, 0, 0.12, 'sine', 0.16, 330); nota(294, 0.1, 0.22, 'sine', 0.13, 262); },
     empezar: function () { soplo(0.25, 0.14, 600, 2600); [DO, MI, SOL].forEach(function (f, i) { nota(f * 2, 0.05 + i * 0.06, 0.12, 'triangle', 0.16); }); },
+    // Al navegar (data-mc-nav): entrar a un área, a un curso, a Libro/Repaso/Fijas, a un tema y a Practicar/Flashcards
+    area: function () { blup(0.28, 0.12, 280, 1000); },
+    curso: function () { blup(); nota(1760, 0.06, 0.12, 'sine', 0.05); },
+    seccion: function () { blup(0.17, 0.07, 340, 1000); },
+    tema: function () { blup(0.22, 0.06, 380, 1200); },
+    practicar: function () { blup(0.24, 0.08); [DO, MI, SOL].forEach(function (f, i) { nota(f * 2, 0.09 + i * 0.06, 0.12, 'sine', 0.16); }); },
     // Se acabaron las vidas: tres notas que caen
     perder: function () { [SOL, MI, DO].forEach(function (f, i) { nota(f / 2, i * 0.16, 0.24, 'triangle', 0.16); }); nota(DO / 2, 0.5, 0.5, 'sine', 0.12, DO / 2.4); },
     // Fin de ronda: fanfarria desde 70%, si no dos notas tranquilas
@@ -97,6 +111,17 @@
   document.addEventListener('click', function (e) {
     var b = e.target.closest && e.target.closest('[data-mc-son]');
     if (b) { e.preventDefault(); S.cambiar(); }
+  });
+  // Enlaces con data-mc-nav: suena y se espera un instante antes de cambiar de página para que no se corte
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest && e.target.closest('[data-mc-nav]');
+    var fn = el && S[el.getAttribute('data-mc-nav')];
+    if (!fn || !activo || e.defaultPrevented) return;
+    fn();
+    var href = el.tagName === 'A' && el.getAttribute('href');
+    if (!href || href === '#' || el.target === '_blank' || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button) return;
+    e.preventDefault();
+    setTimeout(function () { location.href = el.href; }, el.getAttribute('data-mc-nav') === 'practicar' ? 220 : 130);
   });
   // Los botones pueden aparecer después (la cabecera del quiz se arma al cargar)
   if (window.MutationObserver) {

@@ -320,6 +320,11 @@ function jsonpRequest(url) {
 </script>
 <script src="../assets/cursos.js"></script>
 <script>MCCursos.pintarArea('ciencia-tecnologia');</script>
+<script>
+  // Prueba de sonidos: por ahora solo Biología suena al entrar
+  document.addEventListener('click', function (e) { var a = e.target.closest && e.target.closest('a.btn[href$="biologia/index.html"]'); if (a) a.dataset.mcNav = 'curso'; }, true);
+</script>
 <script src="../assets/tutorial.js" defer></script>
+<script src="../assets/sonido.js"></script>
 </body>
 </html>
