@@ -165,6 +165,9 @@
     if (a.matches('.mct-atr, .mct-saltar')) return 'volver';
     if (a.matches('.mct-ayuda')) return 'toque';
     if (EN_TARJETAS) return '';
+    // Práctica, Repaso y Fijas: Siguiente con la burbuja, Atrás como retroceder
+    if (a.matches('#btnNext')) return 'toque';
+    if (a.matches('#btnBack')) return 'volver';
     if (a.matches('#mcPopulares a')) return 'curso';
     // Inicio: "Nuevo para ti", Top del simulacro
     if (a.matches('a.mcn-item')) return 'tema';
