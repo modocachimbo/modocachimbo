@@ -113,8 +113,17 @@
   });
   // Qué suena al tocar cada cosa de la web (si el enlace no trae su propio data-mc-nav)
   var EN_AREA = /\/areas\//.test(location.pathname);
+  // Flashcards trae sus propios sonidos: ahí solo suenan retroceder y la casita
+  var EN_TARJETAS = /\/tarjetas\.html$/.test(location.pathname);
+  var EN_SIMULACRO = /\/simulacro\.html$/.test(location.pathname);
   function tipoDe(a) {
     if (a.matches('a.back, a.home-btn, a.volver, a.logo')) return 'volver';
+    if (EN_TARJETAS) return '';
+    if (a.matches('#mcPopulares a')) return 'curso';
+    if (a.matches('#btnEmpezar, #btnCrear, #btnUnirse, #btnJugar, #btnRevancha')) return 'practicar';
+    // Simulacro: marcar una alternativa no dice si está bien, así que suena la burbuja suave
+    if (EN_SIMULACRO && a.matches('.alts:not(.ver) li button')) return 'seccion';
+    if (a.matches('.chips button, .tiempos button, #repMas, #btnCopiar, #btnAnt, #btnSig, #btnMarcar, #btnMapa, #mapaCerrar, #btnTerminar, #btnRevisar, button[data-i], button[data-f], #btnUnlock')) return 'toque';
     if (a.matches('#practicarLink, #tarjetasLink, #btnStartSim')) return 'practicar';
     if (a.matches('a.year-card.active, .year-card.multi, a.tema-card, .exam-sublist a')) return 'tema';
     if (a.matches('a[href$="perfil.html"], a[href*="perfil.html#"]')) return 'tema';
@@ -124,6 +133,7 @@
       if (/^(areas|examenes)\//.test(h)) return 'area';
       if (EN_AREA) return 'curso';
       if (/(libros|seminarios|banqueo)\/|repaso\.html|fijas\.html|tarjetas\.html/.test(h)) return 'seccion';
+      if (/simulacro\.html|duelo\.html/.test(h)) return 'practicar';
     }
     return '';
   }
@@ -132,9 +142,11 @@
     if (!a || a.hasAttribute('data-mc-nav')) return;
     var t = tipoDe(a); if (t) a.setAttribute('data-mc-nav', t);
   }, true);
-  // Casillas para elegir (exámenes del simulacro): la burbuja suave
+  // Casillas y listas para elegir (exámenes, ciclos y bloque del simulacro): la burbuja suave
   document.addEventListener('change', function (e) {
-    if (e.target.matches && e.target.matches('.pick input[type="checkbox"]') && activo) S.seccion();
+    if (!activo || EN_TARJETAS || !e.target.matches) return;
+    if (e.target.matches('.pick input[type="checkbox"], #ciclos input')) S.seccion();
+    else if (e.target.matches('#selBloque, #selCarrera')) S.toque();
   });
   // Enlaces con data-mc-nav: suena y se espera un instante antes de cambiar de página para que no se corte
   document.addEventListener('click', function (e) {

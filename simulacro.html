@@ -765,6 +765,7 @@
     const n = Object.keys(S.resp).length;
     for (let k = 0; k < n; k++) window.MCRacha ? MCRacha.respondio() : (window.mcRachaPend = (window.mcRachaPend || 0) + 1);
     mostrarResultado();
+    if (window.MCSonido) { const R = calcular(); MCSonido.fin(R.max ? Math.round(R.total / R.max * 100) : 0); }
   }
   function mostrarResultado() {
     const R = calcular();
