@@ -28,7 +28,7 @@
   })();
 </script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&family=Nunito:wght@600;700;800;900&display=swap');
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -459,6 +459,10 @@
   .cod-msg.show { display: block; }
   .cod-msg.ok { background: rgba(198,224,0,0.1); color: var(--accent); }
   .cod-msg.error { background: rgba(224,60,60,0.08); color: #ff8a8a; }
+
+  /* Letra gruesita en toda la web (Nunito); las fórmulas y el código conservan su letra */
+  body, body :not(.katex):not(.katex *):not(code):not(pre):not(kbd):not(samp):not(.formato):not(.ta.big):not(.cdnuevos code) { font-family: 'Nunito', 'Inter', system-ui, sans-serif !important; }
+  body { font-weight: 600; }
 </style>
 <script src="assets/mc-config.js"></script>
 <script src="assets/acceso.js"></script>
