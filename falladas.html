@@ -311,7 +311,16 @@
   const answers = [];
 
   // Las preguntas que el alumno falló (supabase/04-progreso.sql), buscadas en su archivo de origen
-  const RONDA = 20;
+  // ?hoy=1: solo los errores de hoy (botón de abajo a la izquierda, assets/errores.js)
+  const HOY = params.get('hoy') === '1';
+  const RONDA = HOY ? 50 : 20;
+  if (HOY) {
+    document.title = 'Errores de hoy · Modo Cachimbo';
+    document.getElementById('startBadgeText').textContent = 'Errores de hoy';
+    document.querySelector('#startScreen h1').innerHTML = 'Repasa tus <span class="accent">errores de hoy</span>';
+    const vb = document.querySelector('.backlink a'); vb.lastChild.textContent = ' Volver';
+    vb.addEventListener('click', e => { if (history.length > 1 && document.referrer) { e.preventDefault(); history.back(); } });
+  }
   let ultimoGuardado = Promise.resolve();
   function esperarProgreso() {
     return new Promise(res => {
@@ -329,9 +338,9 @@
   async function loadQuestions() {
     if (!(await esperarProgreso())) { aviso('Entra con tu cuenta para ver tus preguntas falladas. <a href="perfil.html">Ir a Mi perfil</a>'); return; }
     let lista;
-    try { lista = (await MCProgreso.cargar()).falladas; }
+    try { lista = HOY ? await MCProgreso.errores() : (await MCProgreso.cargar()).falladas; }
     catch (e) { aviso('No se pudo cargar tus preguntas. Revisa tu internet y recarga.'); return; }
-    if (!lista.length) { aviso('🎉 No tienes preguntas falladas por repasar. <a href="index.html">Sigue practicando</a>'); return; }
+    if (!lista.length) { aviso(HOY ? 'No tienes errores hoy. ¡Bien! <a href="index.html">Sigue practicando</a>' : '🎉 No tienes preguntas falladas por repasar. <a href="index.html">Sigue practicando</a>'); return; }
     // Agrupar por archivo para pedir cada uno una sola vez
     const porArchivo = {};
     lista.forEach(f => { const arch = f.ref.split('#')[0]; (porArchivo[arch] = porArchivo[arch] || []).push(f); });
@@ -350,7 +359,9 @@
     }));
     if (!questions.length) { aviso('Tus preguntas falladas ya no están disponibles. ¡Sigue practicando!'); return; }
 
-    document.getElementById('startDesc').textContent = `Tienes ${questions.length} pregunta${questions.length === 1 ? '' : 's'} por repasar. Cuando respondas bien una, sale de tu lista.`;
+    document.getElementById('startDesc').textContent = HOY
+      ? `Fallaste ${questions.length} pregunta${questions.length === 1 ? '' : 's'} hoy en tus cursos, mezcladas aquí. Cuando respondas bien una, sale de tu lista.`
+      : `Tienes ${questions.length} pregunta${questions.length === 1 ? '' : 's'} por repasar. Cuando respondas bien una, sale de tu lista.`;
     document.getElementById('startCount').textContent = `${Math.min(questions.length, RONDA)} preguntas`;
     btnStart.disabled = false;
     startScreen.classList.add('show');

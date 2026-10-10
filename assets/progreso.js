@@ -56,7 +56,43 @@
     });
   }
 
-  window.MCProgreso = { terminar: terminar, cargar: cargar, armar: armar, huella: huella };
+  // Errores de hoy: las falladas desde las 00:00 de Perú (UTC-5, sin horario de verano)
+  function inicioHoy() {
+    var h = 5 * 3600000, d = new Date(Date.now() - h);
+    return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) + h);
+  }
+  function deHoy(lista) {
+    var t = inicioHoy().getTime();
+    return (lista || []).filter(function (f) { return f.ultima && new Date(f.ultima).getTime() >= t; });
+  }
+  function errores() {
+    var u = MCAuth.usuario();
+    if (!u) return Promise.resolve([]);
+    return MCAuth.listo.then(function (c) {
+      return c.from('falladas').select('ref,huella,carpeta,titulo,veces,ultima').gte('ultima', inicioHoy().toISOString()).order('ultima', { ascending: false }).limit(300);
+    }).then(function (r) { if (r.error) throw r.error; return r.data || []; });
+  }
+  // De dónde salió la pregunta, según su archivo
+  function origen(ref) {
+    var a = String(ref || '').split('#')[0];
+    if (/\/seminarios\//.test(a)) return 'Seminario';
+    if (/\/banqueo\//.test(a)) return 'Banqueo';
+    if (/-fijas\.json$/.test(a)) return 'Fijas';
+    if (/\/libros\//.test(a)) return 'Práctica';
+    return 'Examen';
+  }
+
+  // Avisar a quien muestre el número de errores (assets/errores.js, Mi perfil)
+  var terminarBase = terminar;
+  terminar = function (d) {
+    return terminarBase(d).then(function (p) {
+      try { document.dispatchEvent(new CustomEvent('mc:errores')); } catch (e) {}
+      return p;
+    });
+  };
+
+  window.MCProgreso = { terminar: terminar, cargar: cargar, armar: armar, huella: huella,
+                        inicioHoy: inicioHoy, deHoy: deHoy, errores: errores, origen: origen };
 
   // Prácticas que terminaron antes de que cargara este archivo
   var pend = window.mcProgresoPend || [];
