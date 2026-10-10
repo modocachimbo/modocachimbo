@@ -601,16 +601,33 @@
   }
   /* ---------- Sonidos (hechos con código, sin archivos de audio) ---------- */
   const Sonido = (function () {
-    let ctx = null, activo = true;
+    let ctx = null, salida = null, activo = true;
     try { activo = localStorage.getItem('mc_sonido') !== '0'; } catch (e) {}
     function audio() {
       if (!activo) return null;
       try {
-        if (!ctx) { const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; ctx = new AC(); }
+        if (!ctx) {
+          const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
+          // iPhone: que suene aunque el botón de silencio esté puesto
+          try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+          ctx = new AC();
+          // Volumen general más fuerte, con un compresor para que no se distorsione
+          const comp = ctx.createDynamicsCompressor();
+          comp.threshold.value = -12; comp.knee.value = 6; comp.ratio.value = 10; comp.attack.value = 0.002; comp.release.value = 0.15;
+          salida = ctx.createGain(); salida.gain.value = 3; salida.connect(comp); comp.connect(ctx.destination);
+        }
         if (ctx.state === 'suspended') ctx.resume();
       } catch (e) { return null; }
       return ctx;
     }
+    // El navegador solo deja sonar después de un toque: se "despierta" el audio en el primero
+    ['pointerdown', 'touchend', 'keydown'].forEach(function (ev) {
+      document.addEventListener(ev, function abrir() {
+        const a = audio(); if (!a) return;
+        try { const s = a.createBufferSource(); s.buffer = a.createBuffer(1, 1, 22050); s.connect(a.destination); s.start(0); } catch (e) {}
+        if (a.state === 'running') ['pointerdown', 'touchend', 'keydown'].forEach(function (x) { document.removeEventListener(x, abrir, true); });
+      }, true);
+    });
     // Una nota: frecuencia, cuándo empieza (s), cuánto dura, forma de onda, volumen y a qué frecuencia se desliza
     function nota(f, t, dur, tipo, vol, hasta) {
       const a = audio(); if (!a) return;
@@ -620,7 +637,7 @@
       g.gain.setValueAtTime(0.0001, t0);
       g.gain.exponentialRampToValueAtTime(vol || 0.2, t0 + 0.012);
       g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-      o.connect(g); g.connect(a.destination); o.start(t0); o.stop(t0 + dur + 0.02);
+      o.connect(g); g.connect(salida); o.start(t0); o.stop(t0 + dur + 0.02);
     }
     // Un "fsss" corto, como papel que gira
     function soplo(dur, vol, desde, hasta) {
@@ -631,21 +648,21 @@
       src.buffer = b; fl.type = 'bandpass'; fl.Q.value = 1.2;
       fl.frequency.setValueAtTime(desde, t0); fl.frequency.exponentialRampToValueAtTime(hasta, t0 + dur);
       g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol, t0 + dur * 0.3); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-      src.connect(fl); fl.connect(g); g.connect(a.destination); src.start(t0); src.stop(t0 + dur);
+      src.connect(fl); fl.connect(g); g.connect(salida); src.start(t0); src.stop(t0 + dur);
     }
     const DO = 523.25, MI = 659.25, SOL = 783.99, DO2 = 1046.5, MI2 = 1318.5, SOL2 = 1568;
     return {
       get activo() { return activo; },
       cambiar() { activo = !activo; try { localStorage.setItem('mc_sonido', activo ? '1' : '0'); } catch (e) {} if (activo) this.toque(); return activo; },
       // Un "pop" corto para chips y botones
-      toque() { nota(620, 0, 0.07, 'triangle', 0.22, 940); nota(1880, 0.005, 0.04, 'sine', 0.05); },
-      marcar(on) { on ? (nota(700, 0, 0.06, 'triangle', 0.2), nota(1050, 0.05, 0.08, 'triangle', 0.2)) : nota(620, 0, 0.09, 'triangle', 0.16, 420); },
-      empezar() { soplo(0.25, 0.14, 600, 2600); [DO, MI, SOL].forEach((f, i) => nota(f * 2, 0.05 + i * 0.06, 0.12, 'triangle', 0.16)); },
+      toque() { soplo(0.07, 0.16, 1800, 4000); nota(660, 0, 0.13, 'triangle', 0.32, 990); nota(1320, 0.01, 0.09, 'sine', 0.1); },
+      marcar(on) { on ? (nota(700, 0, 0.1, 'triangle', 0.3), nota(1050, 0.07, 0.15, 'triangle', 0.32)) : nota(620, 0, 0.15, 'triangle', 0.28, 420); },
+      empezar() { soplo(0.3, 0.26, 600, 2600); [DO, MI, SOL].forEach((f, i) => nota(f * 2, 0.05 + i * 0.07, 0.18, 'triangle', 0.26)); },
       abrir() { nota(880, 0, 0.08, 'triangle', 0.18); [DO2, MI2, SOL2].forEach((f, i) => nota(f, 0.1 + i * 0.07, 0.22, 'sine', 0.16)); },
       error() { nota(220, 0, 0.12, 'square', 0.06); nota(185, 0.13, 0.18, 'square', 0.06); },
       voltear() { soplo(0.16, 0.22, 900, 3200); nota(420, 0.02, 0.09, 'sine', 0.05, 640); },
       bien() { nota(DO2, 0, 0.11, 'triangle', 0.22); nota(MI2, 0.09, 0.28, 'triangle', 0.24); nota(MI2 * 2, 0.09, 0.2, 'sine', 0.04); },
-      repasar() { nota(392, 0, 0.12, 'sine', 0.16, 330); nota(294, 0.1, 0.22, 'sine', 0.13, 262); },
+      repasar() { nota(392, 0, 0.12, 'triangle', 0.18, 330); nota(294, 0.1, 0.24, 'triangle', 0.16, 262); },
       racha(n) {
         const notas = n >= 9 ? [DO, MI, SOL, DO2, MI2, SOL2] : n >= 6 ? [DO, MI, SOL, DO2, MI2] : [DO, MI, SOL, DO2];
         notas.forEach((f, i) => nota(f, i * 0.07, 0.16, 'square', 0.06));
