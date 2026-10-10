@@ -624,13 +624,13 @@
         <h3>Simulacro</h3>
         <div class="rule"></div>
         <p>80 preguntas con tiempo y el puntaje de tu bloque, como el examen de admisión de la UNJFSC.</p>
-        <a class="btn" href="simulacro.html">Crear simulacro</a>
+        <a class="btn" href="simulacro.html" data-mc-nav="practicar">Crear simulacro</a>
       </div>
 
       <script>try { if (localStorage.getItem('mc_sim_visto')) document.getElementById('simNuevo').remove(); } catch (e) {}</script>
     </section>
 
-    <a class="duelo-banner" href="duelo.html">
+    <a class="duelo-banner" href="duelo.html" data-mc-nav="practicar">
       <span class="tag-nuevo">Nuevo</span>
       <span class="duelo-vs" aria-hidden="true"><i>Tú</i><b>VS</b><i class="r">?</i></span>
       <span class="duelo-txt">
@@ -752,17 +752,20 @@ function jsonpRequest(url) {
     async function activar() {
       var codigo = input.value.trim().toUpperCase();
       msg.className = 'cod-msg';
-      if (!codigo) { msg.textContent = 'Escribe tu código.'; msg.className = 'cod-msg show error'; return; }
+      if (!codigo) { msg.textContent = 'Escribe tu código.'; msg.className = 'cod-msg show error'; if (window.MCSonido) MCSonido.error(); return; }
       btn.disabled = true; btn.textContent = 'Verificando…';
+      if (window.MCSonido) MCSonido.toque();
       try {
         var r = await MCAcceso.activar(codigo, '');
         if (r.ok) {
           msg.textContent = r.mensaje || '¡Código activado!'; msg.className = 'cod-msg show ok';
           pintarAccesos();
+          if (window.MCSonido) MCSonido.abrir();
           setTimeout(cerrarCodigo, 1400);
-        } else { msg.textContent = r.mensaje || 'Código inválido.'; msg.className = 'cod-msg show error'; }
+        } else { msg.textContent = r.mensaje || 'Código inválido.'; msg.className = 'cod-msg show error'; if (window.MCSonido) MCSonido.error(); }
       } catch (e) {
         msg.textContent = 'No se pudo verificar. Revisa tu conexión.'; msg.className = 'cod-msg show error';
+        if (window.MCSonido) MCSonido.error();
       }
       btn.disabled = false; btn.textContent = 'Activar código';
     }

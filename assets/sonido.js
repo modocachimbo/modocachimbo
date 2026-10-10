@@ -83,6 +83,11 @@
     seccion: function () { blup(0.17, 0.07, 340, 1000); },
     tema: function () { blup(0.22, 0.06, 380, 1200); },
     practicar: function () { blup(0.24, 0.08); [DO, MI, SOL].forEach(function (f, i) { nota(f * 2, 0.09 + i * 0.06, 0.12, 'sine', 0.16); }); },
+    // Retroceder o ir al inicio: la burbuja al revés, bajando
+    volver: function () { nota(1000, 0, 0.09, 'sine', 0.2, 340); },
+    // Código: aceptado (campanitas que suben) o rechazado (dos notas graves cortas)
+    abrir: function () { nota(880, 0, 0.08, 'triangle', 0.18); [DO2, MI2, SOL2].forEach(function (f, i) { nota(f, 0.1 + i * 0.07, 0.22, 'sine', 0.16); }); },
+    error: function () { nota(220, 0, 0.12, 'square', 0.06); nota(185, 0.13, 0.18, 'square', 0.06); },
     // Se acabaron las vidas: tres notas que caen
     perder: function () { [SOL, MI, DO].forEach(function (f, i) { nota(f / 2, i * 0.16, 0.24, 'triangle', 0.16); }); nota(DO / 2, 0.5, 0.5, 'sine', 0.12, DO / 2.4); },
     // Fin de ronda: fanfarria desde 70%, si no dos notas tranquilas
@@ -112,6 +117,13 @@
     var b = e.target.closest && e.target.closest('[data-mc-son]');
     if (b) { e.preventDefault(); S.cambiar(); }
   });
+  // En prueba (inicio, áreas y Biología): retroceder, la casita, perfil y la barra de abajo suenan solos
+  var NAV = PRUEBA || /(^|\/)(index\.html)?$|\/areas\//.test(location.pathname);
+  if (NAV) document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a.back, a.home-btn, a[href$="perfil.html"], a[href^="perfil.html#"], .barra a, #barCodigo, #vipToggle');
+    if (!a || a.hasAttribute('data-mc-nav')) return;
+    a.setAttribute('data-mc-nav', a.matches('a.back, a.home-btn') ? 'volver' : a.matches('#barCodigo, #vipToggle, .barra a[href^="#"]') ? 'toque' : 'tema');
+  }, true);
   // Enlaces con data-mc-nav: suena y se espera un instante antes de cambiar de página para que no se corte
   document.addEventListener('click', function (e) {
     var el = e.target.closest && e.target.closest('[data-mc-nav]');
@@ -119,7 +131,7 @@
     if (!fn || !activo || e.defaultPrevented) return;
     fn();
     var href = el.tagName === 'A' && el.getAttribute('href');
-    if (!href || href === '#' || el.target === '_blank' || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button) return;
+    if (!href || href.charAt(0) === '#' || el.target === '_blank' || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button) return;
     e.preventDefault();
     setTimeout(function () { location.href = el.href; }, el.getAttribute('data-mc-nav') === 'practicar' ? 220 : 130);
   });
