@@ -142,11 +142,11 @@
     if (!a || a.hasAttribute('data-mc-nav')) return;
     var t = tipoDe(a); if (t) a.setAttribute('data-mc-nav', t);
   }, true);
-  // Casillas y listas para elegir (exámenes, ciclos y bloque del simulacro): la burbuja suave
+  // Casillas para elegir (exámenes y ciclos del simulacro): la burbuja suave; listas desplegables (duelo, simulacro): la burbuja
   document.addEventListener('change', function (e) {
     if (!activo || EN_TARJETAS || !e.target.matches) return;
     if (e.target.matches('.pick input[type="checkbox"], #ciclos input')) S.seccion();
-    else if (e.target.matches('#selBloque, #selCarrera')) S.toque();
+    else if (e.target.matches('select')) S.toque();
   });
   // Enlaces con data-mc-nav: suena y se espera un instante antes de cambiar de página para que no se corte
   document.addEventListener('click', function (e) {
