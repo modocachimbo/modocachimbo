@@ -63,7 +63,7 @@
       if (activo) S.toque();
       return activo;
     },
-    toque: function () { nota(620, 0, 0.07, 'triangle', 0.22, 940); nota(1880, 0.005, 0.04, 'sine', 0.05); },
+    toque: function () { nota(320, 0, 0.09, 'sine', 0.26, 1100); },
     // Acierto: dos notas alegres que suben
     bien: function () { nota(DO2, 0, 0.11, 'triangle', 0.22); nota(MI2, 0.09, 0.28, 'triangle', 0.24); nota(MI2 * 2, 0.09, 0.2, 'sine', 0.04); },
     // Fallo: dos notas suaves que bajan, sin sonar a castigo
