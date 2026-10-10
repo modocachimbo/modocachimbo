@@ -15,7 +15,7 @@
 <script src="../assets/app.js" defer></script>
 <title>Historia del Perú · Modo Cachimbo</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&family=Nunito:wght@600;700;800;900&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
@@ -166,6 +166,10 @@
   .vip-popover button { border: 2px solid var(--accent); border-radius: 13px; box-shadow: 0 4px 0 #8fa300; margin-bottom: 4px;
     font-family: 'Nunito', 'Sora', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: .5px; transition: transform .08s ease, box-shadow .08s ease; }
   .vip-popover button:not(:disabled):active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
+
+  /* Letra gruesita en toda la web (Nunito); las fórmulas y el código conservan su letra */
+  body, body :not(.katex):not(.katex *):not(code):not(pre):not(kbd):not(samp):not(.formato):not(.ta.big):not(.cdnuevos code) { font-family: 'Nunito', 'Inter', system-ui, sans-serif !important; }
+  body { font-weight: 600; }
 </style>
 <script src="../assets/mc-config.js"></script>
 <script src="../assets/acceso.js"></script>

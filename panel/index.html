@@ -467,6 +467,10 @@
   .state-msg { border: 2px dashed #262626; font-weight: 700; }
   .toast { border: 2px solid #333; border-radius: 14px; font-family: 'Nunito', 'Inter', sans-serif; font-weight: 800; }
   .cdcode { border: 2px solid #2a2a2a; border-bottom-width: 3px; border-radius: 10px; }
+
+  /* Letra gruesita en toda la web (Nunito); las fórmulas y el código conservan su letra */
+  body, body :not(.katex):not(.katex *):not(code):not(pre):not(kbd):not(samp):not(.formato):not(.ta.big):not(.cdnuevos code) { font-family: 'Nunito', 'Inter', system-ui, sans-serif !important; }
+  body { font-weight: 600; }
 </style>
 </head>
 <body>
