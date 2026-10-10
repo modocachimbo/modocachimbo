@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prueba de sonidos · Modo Cachimbo</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap">
+<style>
+  body{margin:0;background:#0f0f0f;color:#e6e6e6;font:700 15px Nunito,system-ui,sans-serif;padding:20px 16px 40px}
+  h1{font-weight:900;font-size:22px;margin:0 0 4px}
+  p.sub{color:#9a9a9a;margin:0 0 20px;max-width:520px}
+  .op{border:2px solid #2e2e2e;border-bottom-width:5px;border-radius:18px;background:#161616;padding:16px;margin-bottom:16px;max-width:520px}
+  .op h2{margin:0 0 2px;font-size:18px;font-weight:900}
+  .op h2 b{color:#c6e000}
+  .op p{margin:0 0 12px;color:#9a9a9a;font-size:13px}
+  .fila{display:flex;gap:10px;flex-wrap:wrap}
+  button{flex:1;min-width:90px;font:900 14px Nunito,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.6px;padding:13px 10px;border-radius:14px;border:2px solid #2e2e2e;background:#1a1a1a;color:#e6e6e6;box-shadow:0 5px 0 #2e2e2e;cursor:pointer}
+  button:active{transform:translateY(5px);box-shadow:none}
+  button small{display:block;font:800 11px Nunito,system-ui,sans-serif;text-transform:none;letter-spacing:0;color:#9a9a9a;margin-top:3px}
+  button.ok{background:#c6e000;color:#2b3300;border-color:#8fa300;box-shadow:0 5px 0 #8fa300}
+  button.ok small{color:#4a5500}
+</style></head><body>
+<h1>Sonidos de la web</h1>
+<p class="sub">Toca cada opción varias veces y dime la letra que más te guste en cada momento. Por ejemplo: "1A, 2B, 3A...". Nivel 1 = botones grandes; nivel 2 = opciones pequeñas, más suaves.</p>
+<div id="ops"></div>
+<script>
+let ctx = null;
+function audio(){ try{ if(!ctx){ const AC = window.AudioContext||window.webkitAudioContext; try{ if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(e){} ctx = new AC(); } if(ctx.state==='suspended') ctx.resume(); }catch(e){ return null; } return ctx; }
+function nota(f,t,dur,tipo,vol,hasta){ const a=audio(); if(!a) return; const o=a.createOscillator(), g=a.createGain(), t0=a.currentTime+(t||0);
+  o.type=tipo||'sine'; o.frequency.setValueAtTime(f,t0); if(hasta) o.frequency.exponentialRampToValueAtTime(hasta,t0+dur);
+  g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(vol||0.2,t0+0.012); g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+  o.connect(g); g.connect(a.destination); o.start(t0); o.stop(t0+dur+0.02); }
+function soplo(dur,vol,desde,hasta){ const a=audio(); if(!a) return; const n=Math.floor(a.sampleRate*dur), b=a.createBuffer(1,n,a.sampleRate), d=b.getChannelData(0);
+  for(let i=0;i<n;i++) d[i]=Math.random()*2-1; const src=a.createBufferSource(), fl=a.createBiquadFilter(), g=a.createGain(), t0=a.currentTime;
+  src.buffer=b; fl.type='bandpass'; fl.Q.value=1.2; fl.frequency.setValueAtTime(desde,t0); fl.frequency.exponentialRampToValueAtTime(hasta,t0+dur);
+  g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(vol,t0+dur*0.3); g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+  src.connect(fl); fl.connect(g); g.connect(a.destination); src.start(t0); src.stop(t0+dur); }
+const DO=523.25, MI=659.25, SOL=783.99, DO2=1046.5, MI2=1318.5, SOL2=1568;
+const blup = (vol=0.26, dur=0.09, desde=320, hasta=1100, t=0) => nota(desde,t,dur,'sine',vol,hasta);
+
+const MOMENTOS = [
+  { n:'1 · Entrar a un área', d:'Ej: Ciencias y Tecnología. Nivel 1.', ops:[
+    ['A','Blup grande', () => blup(0.28, 0.12, 280, 1000)],
+    ['B','Doble blup', () => { blup(0.24, 0.08, 300, 900); blup(0.22, 0.1, 420, 1400, 0.08); }],
+    ['C','Soplo + blup', () => { soplo(0.16, 0.12, 700, 2400); blup(0.26, 0.1, 320, 1100, 0.05); }],
+  ]},
+  { n:'2 · Entrar a un curso', d:'Ej: Biología. Nivel 1.', ops:[
+    ['A','Blup', () => blup()],
+    ['B','Blup con brillo', () => { blup(); nota(1760, 0.06, 0.12, 'sine', 0.05); }],
+    ['C','Pluck', () => { nota(660, 0, 0.12, 'triangle', 0.22); nota(990, 0.05, 0.14, 'triangle', 0.16); }],
+  ]},
+  { n:'3 · Elegir Libro / Repaso / Fijas', d:'Las pestañas de cada curso. Nivel 2, más suave.', ops:[
+    ['A','Blup suave', () => blup(0.17, 0.07, 340, 1000)],
+    ['B','Pop', () => { nota(620, 0, 0.07, 'triangle', 0.18, 940); }],
+    ['C','Gotita', () => nota(1500, 0, 0.07, 'sine', 0.16, 700)],
+  ]},
+  { n:'4 · Entrar a un tema', d:'La lista de temas. Nivel 1.', ops:[
+    ['A','Blup', () => blup()],
+    ['B','Blup corto', () => blup(0.22, 0.06, 380, 1200)],
+    ['C','Toc de madera', () => { nota(1250, 0, 0.05, 'sine', 0.24, 900); nota(2500, 0, 0.02, 'sine', 0.05); }],
+  ]},
+  { n:'5 · Practicar / Flashcards', d:'Botones para empezar. Nivel 1, con más energía.', ops:[
+    ['A','El actual de Empezar', () => { soplo(0.25, 0.14, 600, 2600); [DO,MI,SOL].forEach((f,i) => nota(f*2, 0.05+i*0.06, 0.12, 'triangle', 0.16)); }],
+    ['B','Blup + escalera', () => { blup(0.24, 0.08); [DO,MI,SOL].forEach((f,i) => nota(f*2, 0.09+i*0.06, 0.12, 'sine', 0.16)); }],
+    ['C','Impulso', () => { nota(260, 0, 0.22, 'sine', 0.22, 1040); nota(DO2, 0.2, 0.18, 'triangle', 0.14); }],
+  ]},
+  { n:'6 · Respuesta correcta', d:'En quiz y práctica.', ops:[
+    ['A','El actual', () => { nota(DO2,0,0.11,'triangle',0.22); nota(MI2,0.09,0.28,'triangle',0.24); nota(MI2*2,0.09,0.2,'sine',0.04); }],
+    ['B','Dos burbujas', () => { blup(0.24, 0.08, 400, 1000); blup(0.26, 0.14, 600, 1600, 0.09); }],
+    ['C','Escalera alegre', () => { [DO2, MI2, SOL2].forEach((f,i) => nota(f, i*0.07, 0.14 + i*0.06, 'triangle', 0.18)); }],
+  ]},
+  { n:'7 · Respuesta incorrecta', d:'En quiz y práctica. Suave, sin sonar a castigo.', ops:[
+    ['A','El actual', () => { nota(392,0,0.12,'sine',0.16,330); nota(294,0.1,0.22,'sine',0.13,262); }],
+    ['B','Burbuja que baja', () => { nota(700, 0, 0.1, 'sine', 0.2, 450); nota(450, 0.1, 0.16, 'sine', 0.18, 250); }],
+    ['C','Bonk', () => { nota(220, 0, 0.16, 'triangle', 0.22, 160); nota(165, 0.12, 0.2, 'triangle', 0.16, 130); }],
+  ]},
+];
+const cont = document.getElementById('ops');
+MOMENTOS.forEach(m => {
+  const div = document.createElement('div'); div.className = 'op';
+  div.innerHTML = `<h2>${m.n}</h2><p>${m.d}</p><div class="fila"></div>`;
+  m.ops.forEach(([l, nombre, fn]) => {
+    const b = document.createElement('button'); if (m.ok) b.className = 'ok';
+    b.innerHTML = `${l}<small>${nombre}</small>`;
+    b.addEventListener('pointerdown', fn);
+    div.querySelector('.fila').appendChild(b);
+  });
+  cont.appendChild(div);
+});
+</script>
+</body></html>
