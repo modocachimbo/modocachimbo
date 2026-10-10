@@ -90,6 +90,23 @@
   .state-msg { text-align: center; color: var(--text-dim); font-size: 13.5px; padding: 60px 20px; }
   .q-graphic { margin: 4px 0 14px; display: flex; justify-content: center; background: #fff; border-radius: 12px; padding: 12px; }
   .q-graphic svg { max-width: 100%; height: auto; display: block; }
+  /* Estilo grueso tipo Duolingo con sombrita verde */
+  .quiz-cta { border: 2px solid #2e2e2e; border-bottom-width: 5px; border-radius: 20px; background: #101010; }
+  .quiz-cta span { font: 700 14px 'Nunito', 'Inter', sans-serif; }
+  .quiz-cta a { border: 2px solid var(--accent); border-radius: 14px; padding: 11px 18px; color: #2b3300; box-shadow: 0 5px 0 #8fa300; margin-bottom: 5px;
+    font: 900 14px 'Nunito', 'Inter', sans-serif; text-transform: uppercase; letter-spacing: .6px;
+    transition: transform .08s ease, box-shadow .08s ease; -webkit-tap-highlight-color: transparent; }
+  .quiz-cta a.alt { background: #161616; color: var(--accent); border: 2px solid #3a4a00; box-shadow: 0 5px 0 #3a4a00; }
+  .quiz-cta a:active { transform: translateY(5px); box-shadow: 0 0 0 transparent; }
+  .qcard { border: 2px solid #262626; border-bottom-width: 5px; border-radius: 22px; background: #0f0f0f; }
+  .qcard .qnum { width: 34px; height: 34px; border-radius: 11px; border: 2px solid rgba(198,224,0,.35); font: 900 15px 'Nunito', 'Sora', sans-serif; }
+  .qcard .qtext { font-size: 15px; }
+  .opt-row, .opt-row:first-of-type { border: 2px solid #2a2a2a; border-bottom-width: 4px; border-radius: 14px; background: #151515; padding: 9px 12px; margin-bottom: 8px;
+    font: 700 14.5px 'Nunito', 'Inter', sans-serif; color: #cfcfcf; }
+  .mcq-cortas .opt-row { margin-bottom: 0; }
+  .opt-row .letter { width: 26px; height: 26px; border-radius: 8px; border: 2px solid #3a3a3a; background: transparent; font: 900 12px 'Nunito', sans-serif; }
+  .opt-row.correct { background: rgba(198,224,0,.1); border-color: var(--accent); border-bottom-color: #8fa300; color: #f5ffcc; font-weight: 900; box-shadow: 0 0 18px rgba(198,224,0,.08); }
+  .opt-row.correct .letter { border-color: var(--accent); }
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" media="print" onload="this.media='all'">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
