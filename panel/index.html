@@ -18,7 +18,7 @@
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Nunito:wght@600;700;800;900&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --bg: #050505; --surface: #0e0e0e; --surface-2: #141414;
@@ -424,6 +424,49 @@
     .mfoot .btn-main { width: 100%; }
     .hide-m { display: none; }
   }
+
+  /* Estilo grueso tipo Duolingo: bordes gruesos con borde inferior más ancho; la sombrita verde solo en el botón principal */
+  body, .tab, .chip, .rbtn, .btn-main, .btn-ghost, .inp, .search, .ta, .opt-in, .pill, .ck { font-family: 'Nunito', 'Inter', sans-serif; }
+  .page-head h1, .card-hero h1, .mcard h3, .setup h2, .altit, .acc-ttl, .cu-atit, .rf-tit, .an-row b, .barra-movil b { font-family: 'Nunito', 'Sora', sans-serif; font-weight: 900; }
+  .page-head p, .rq, .almsg, .ptext, .card-hero p { font-weight: 600; }
+  .big-count .n { font-family: 'Nunito', 'Sora', sans-serif; font-weight: 900; }
+  .tab { font-weight: 800; font-size: 14.5px; border: 2px solid transparent; border-radius: 14px; padding: 9px 12px; transition: transform .08s ease, background .15s ease; }
+  .tab:hover { background: #121212; border-color: #222; }
+  .tab.on { background: rgba(198,224,0,.08); border-color: #3a4a00; border-bottom-width: 4px; padding-bottom: 7px; }
+  .tab.on::before { display: none; }
+  .tab:active { transform: translateY(2px); }
+  .tab .badge, .barra-movil .badge { font-family: 'Nunito', sans-serif; font-weight: 900; }
+  .menu-grupo, .menu-sub { font-family: 'Nunito', 'Inter', sans-serif; font-weight: 900; }
+  .btn-main { font-weight: 900; text-transform: uppercase; letter-spacing: .5px; border-radius: 14px; box-shadow: 0 4px 0 #8fa300; margin-bottom: 4px; transition: transform .08s ease, box-shadow .08s ease; -webkit-tap-highlight-color: transparent; }
+  .btn-main:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
+  .btn-main.btn-amber { box-shadow: 0 4px 0 #b8860b; }
+  .btn-ghost, .rbtn, .mx, .barra-movil button { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 12px; background: #141414; color: #d6d6d6; font-weight: 800; transition: transform .08s ease, border-color .15s ease; -webkit-tap-highlight-color: transparent; }
+  .btn-ghost:active:not(:disabled), .rbtn:active:not(:disabled), .mx:active, .barra-movil button:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
+  .rbtn.primary { border-color: var(--accent); border-bottom-color: #8fa300; color: #2b3300; }
+  .rbtn.link { border-color: #3a4a00; color: var(--accent); }
+  .rbtn.danger { border-color: rgba(224,60,60,.45); border-bottom-color: rgba(160,40,40,.8); background: #141414; }
+  .chip { border: 2px solid #2a2a2a; border-bottom-width: 4px; border-radius: 14px; background: #141414; font-weight: 800; color: #cfcfcf; transition: transform .08s ease; }
+  .chip:active:not(:disabled) { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
+  .chip.on { border-color: var(--accent); border-bottom-color: #8fa300; color: #2b3300; }
+  .chip.st.on { border-bottom-color: #9a9a9a; }
+  .rcard, .pcard, .picker, .acc-box, .setup, .cu-row, .qrow, .modo-op, .fmt-ayuda { border: 2px solid #262626; border-bottom-width: 4px; }
+  .rcard, .pcard, .picker, .acc-box, .setup { border-radius: 20px; }
+  .cu-row, .qrow, .modo-op { border-radius: 16px; }
+  .pcard.bad { border-color: rgba(224,60,60,.45); }
+  .pcard.en-texto { border-left-color: #c6e000; }
+  .alcard { border-left: 4px solid var(--c); }
+  .qrow .num, .qnum2, .tu-num { border: 2px solid rgba(198,224,0,.3); border-radius: 10px; font-family: 'Nunito', 'Sora', sans-serif; font-weight: 900; }
+  .search, .inp, .ta, .opt-in, .pass { border: 2px solid #2a2a2a; border-radius: 12px; font-weight: 700; }
+  .search:focus, .inp:focus, .ta:focus, .opt-in:focus, .pass:focus { border-color: var(--accent); }
+  .opt-radio { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 12px; font-family: 'Nunito', 'Sora', sans-serif; font-weight: 900; }
+  .opt.sel .opt-radio { border-bottom-color: #8fa300; }
+  .pill { font-weight: 800; }
+  .ck { border: 2px solid #262626; border-radius: 12px; font-weight: 700; }
+  .card-hero, .mcard { border: 2px solid #2c2c2c; border-bottom-width: 5px; }
+  .banner { border-width: 2px !important; border-radius: 16px; font-weight: 600; }
+  .state-msg { border: 2px dashed #262626; font-weight: 700; }
+  .toast { border: 2px solid #333; border-radius: 14px; font-family: 'Nunito', 'Inter', sans-serif; font-weight: 800; }
+  .cdcode { border: 2px solid #2a2a2a; border-bottom-width: 3px; border-radius: 10px; }
 </style>
 </head>
 <body>
