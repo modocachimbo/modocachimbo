@@ -55,8 +55,6 @@
   var DO = 523.25, MI = 659.25, SOL = 783.99, DO2 = 1046.5, MI2 = 1318.5, SOL2 = 1568;
   // La burbuja: una nota redonda que sube
   function blup(vol, dur, desde, hasta, t) { nota(desde || 320, t || 0, dur || 0.09, 'sine', vol || 0.26, hasta || 1100); }
-  // En prueba solo en Biología: los nuevos sonidos de acierto y fallo
-  var PRUEBA = /\/biologia\//.test(location.pathname);
 
   var S = {
     get activo() { return activo; },
@@ -69,13 +67,9 @@
     },
     toque: function () { nota(320, 0, 0.09, 'sine', 0.26, 1100); },
     // Acierto: dos notas alegres que suben
-    bien: function () {
-      if (PRUEBA) { [DO2, MI2, SOL2].forEach(function (f, i) { nota(f, i * 0.07, 0.14 + i * 0.06, 'triangle', 0.18); }); return; }
-      nota(DO2, 0, 0.11, 'triangle', 0.22); nota(MI2, 0.09, 0.28, 'triangle', 0.24); nota(MI2 * 2, 0.09, 0.2, 'sine', 0.04); },
+    bien: function () { [DO2, MI2, SOL2].forEach(function (f, i) { nota(f, i * 0.07, 0.14 + i * 0.06, 'triangle', 0.18); }); },
     // Fallo: dos notas suaves que bajan, sin sonar a castigo
-    mal: function () {
-      if (PRUEBA) { nota(700, 0, 0.1, 'sine', 0.2, 450); nota(450, 0.1, 0.16, 'sine', 0.18, 250); return; }
-      nota(392, 0, 0.12, 'sine', 0.16, 330); nota(294, 0.1, 0.22, 'sine', 0.13, 262); },
+    mal: function () { nota(700, 0, 0.1, 'sine', 0.2, 450); nota(450, 0.1, 0.16, 'sine', 0.18, 250); },
     empezar: function () { soplo(0.25, 0.14, 600, 2600); [DO, MI, SOL].forEach(function (f, i) { nota(f * 2, 0.05 + i * 0.06, 0.12, 'triangle', 0.16); }); },
     // Al navegar (data-mc-nav): entrar a un área, a un curso, a Libro/Repaso/Fijas, a un tema y a Practicar/Flashcards
     area: function () { blup(0.28, 0.12, 280, 1000); },
@@ -117,13 +111,31 @@
     var b = e.target.closest && e.target.closest('[data-mc-son]');
     if (b) { e.preventDefault(); S.cambiar(); }
   });
-  // En prueba (inicio, áreas y Biología): retroceder, la casita, perfil y la barra de abajo suenan solos
-  var NAV = PRUEBA || /(^|\/)(index\.html)?$|\/areas\//.test(location.pathname);
-  if (NAV) document.addEventListener('click', function (e) {
-    var a = e.target.closest && e.target.closest('a.back, a.home-btn, a[href$="perfil.html"], a[href^="perfil.html#"], .barra a, #barCodigo, #vipToggle');
+  // Qué suena al tocar cada cosa de la web (si el enlace no trae su propio data-mc-nav)
+  var EN_AREA = /\/areas\//.test(location.pathname);
+  function tipoDe(a) {
+    if (a.matches('a.back, a.home-btn, a.volver, a.logo')) return 'volver';
+    if (a.matches('#practicarLink, #tarjetasLink, #btnStartSim')) return 'practicar';
+    if (a.matches('a.year-card.active, .year-card.multi, a.tema-card, .exam-sublist a')) return 'tema';
+    if (a.matches('a[href$="perfil.html"], a[href*="perfil.html#"]')) return 'tema';
+    if (a.matches('.barra a, #barCodigo, #vipToggle')) return 'toque';
+    if (a.matches('a.btn')) {
+      var h = a.getAttribute('href') || '';
+      if (/^(areas|examenes)\//.test(h)) return 'area';
+      if (EN_AREA) return 'curso';
+      if (/(libros|seminarios|banqueo)\/|repaso\.html|fijas\.html|tarjetas\.html/.test(h)) return 'seccion';
+    }
+    return '';
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a, button, .year-card');
     if (!a || a.hasAttribute('data-mc-nav')) return;
-    a.setAttribute('data-mc-nav', a.matches('a.back, a.home-btn') ? 'volver' : a.matches('#barCodigo, #vipToggle, .barra a[href^="#"]') ? 'toque' : 'tema');
+    var t = tipoDe(a); if (t) a.setAttribute('data-mc-nav', t);
   }, true);
+  // Casillas para elegir (exámenes del simulacro): la burbuja suave
+  document.addEventListener('change', function (e) {
+    if (e.target.matches && e.target.matches('.pick input[type="checkbox"]') && activo) S.seccion();
+  });
   // Enlaces con data-mc-nav: suena y se espera un instante antes de cambiar de página para que no se corte
   document.addEventListener('click', function (e) {
     var el = e.target.closest && e.target.closest('[data-mc-nav]');
