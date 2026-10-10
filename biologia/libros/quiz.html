@@ -15,7 +15,7 @@
 <script src="../../assets/app.js" defer></script>
 <title>Practicar tema · Biología · Modo Cachimbo</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&family=Nunito:wght@700;800;900&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
@@ -202,6 +202,52 @@
     transition: transform .08s ease, border-color .15s ease, color .15s ease; -webkit-tap-highlight-color: transparent; }
   .home-btn:hover { border-color: var(--accent, #C6E000); border-bottom-color: #8fa300; color: var(--accent, #C6E000); }
   .home-btn:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
+
+  /* Práctica con estilo grueso tipo Duolingo: claves y botones que se hunden al tocarlos */
+  .card { border: 2px solid #232323; }
+  .startscreen h1, .lockscreen h1, .title { font-family: 'Nunito', 'Sora', sans-serif; font-weight: 900; letter-spacing: -.2px; }
+  .startscreen h1 { font-size: 26px; }
+  .startscreen p, .lockscreen p, .endscreen p { font: 700 14px/1.6 'Nunito', 'Inter', sans-serif; }
+  .start-badge, .badge { font: 800 12px 'Nunito', 'Inter', sans-serif; border: 2px solid rgba(198,224,0,.25); }
+  .start-info { gap: 10px; flex-wrap: wrap; }
+  .start-stat { font: 800 14px 'Nunito', 'Inter', sans-serif; border: 2px solid #2a2a2a; border-bottom-width: 4px; border-radius: 14px; background: #141414; padding: 8px 14px; }
+  .stat { font: 900 14px 'Nunito', 'Inter', sans-serif; }
+  .progress-track { height: 12px; border-radius: 100px; background: #222; margin-top: 16px; }
+  .progress-fill { position: relative; min-width: 12px; }
+  .progress-fill::after { content: ''; position: absolute; left: 6px; right: 6px; top: 3px; height: 3px; border-radius: 100px; background: rgba(255,255,255,.35); }
+  .progress-label { font: 800 12px 'Nunito', 'Inter', sans-serif; color: #7a7a7a; }
+  .question { border: 2px solid #262626; border-bottom-width: 5px; border-radius: 20px; background: #101010; }
+  .question p { font-family: 'Nunito', 'Inter', sans-serif; font-weight: 700; font-size: 15px; color: #ededed; }
+  .options { gap: 11px; padding-bottom: 8px; }
+  .option { border: 2px solid #2a2a2a; border-bottom-width: 5px; border-radius: 16px; background: #151515; -webkit-tap-highlight-color: transparent;
+    transition: transform .08s ease, border-color .15s ease, background .15s ease; }
+  .option:hover:not(.locked) { border-color: #3d3d3d; background: #181818; }
+  .option:active:not(.locked) { transform: translateY(3px); border-bottom-width: 2px; margin-bottom: 3px; }
+  .option span.text { font: 800 15px 'Nunito', 'Inter', sans-serif; color: #dcdcdc; }
+  .letter { width: 30px; height: 30px; border-radius: 10px; border: 2px solid #3a3a3a; background: transparent; color: #cfcfcf; font: 900 13px 'Nunito', sans-serif; }
+  .option.correct { background: rgba(198,224,0,.12); border-color: var(--accent); border-bottom-color: #8fa300; }
+  .option.correct span.text { color: #f5ffcc; font-weight: 900; }
+  .option.wrong { background: rgba(224,60,60,.1); border-color: var(--red); border-bottom-color: #9e2525; }
+  .option.wrong span.text { font-weight: 900; }
+  .option.locked:not(.correct):not(.wrong) { opacity: .55; }
+  .feedback { border: 2px solid transparent; border-radius: 14px; font: 800 13.5px/1.5 'Nunito', 'Inter', sans-serif; padding: 12px 14px; }
+  .feedback.ok { border-color: rgba(198,224,0,.35); }
+  .feedback.bad { border-color: rgba(224,60,60,.4); }
+  .navrow { gap: 12px; padding-bottom: 6px; }
+  .btn { border: 2px solid #2e2e2e; border-bottom-width: 5px; border-radius: 16px; background: #161616; color: #cfcfcf; padding: 13px 12px;
+    font: 900 14px 'Nunito', 'Inter', sans-serif; text-transform: uppercase; letter-spacing: .6px; -webkit-tap-highlight-color: transparent;
+    transition: transform .08s ease, box-shadow .08s ease, opacity .15s ease; }
+  .btn:active:not(:disabled) { transform: translateY(3px); border-bottom-width: 2px; margin-bottom: 3px; }
+  .btn.primary { border: 2px solid var(--accent); color: #2b3300; box-shadow: 0 5px 0 #8fa300; margin-bottom: 5px; }
+  .btn.primary:active:not(:disabled) { transform: translateY(5px); box-shadow: 0 0 0 transparent; border-bottom-width: 2px; margin-bottom: 5px; }
+  .btn:disabled { opacity: .4; }
+  .endscreen h2 { font: 900 24px 'Nunito', 'Sora', sans-serif; }
+  .endscreen .score { font-family: 'Nunito', 'Sora', sans-serif; font-weight: 900; font-size: 48px; }
+  #lockInput { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 14px; font: 800 15px 'Nunito', 'Inter', sans-serif; letter-spacing: 1px; }
+  .lock-error, .lock-whatsapp { border-radius: 14px; font-family: 'Nunito', 'Inter', sans-serif; font-weight: 800; }
+  .footer .label { font: 800 12px 'Nunito', 'Inter', sans-serif; }
+  .footer .mark { font-family: 'Nunito', 'Sora', sans-serif; font-weight: 900; }
+  @media (min-width: 900px) { .feedback { margin: 14px 28px 0; } }
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" media="print" onload="this.media='all'">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
