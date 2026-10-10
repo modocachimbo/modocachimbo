@@ -466,6 +466,7 @@
   }
   function enlace(cod) { return new URL('duelo.html?d=' + cod, location.href).href; }
   function irA(cod) { history.replaceState(null, '', 'duelo.html' + (cod ? '?d=' + cod : '')); }
+  function son(n, x) { try { if (window.MCSonido && MCSonido.activo && MCSonido[n]) MCSonido[n](x); } catch (e) {} }
   function pararSondeo() { if (sondeo) { clearInterval(sondeo); sondeo = null; } if (reloj1s) { clearInterval(reloj1s); reloj1s = null; } }
   function cuentaRacha() {
     // Cada respuesta cuenta para la racha de estudio (assets/racha.js)
@@ -877,10 +878,10 @@
     $('cuenta').hidden = false;
     const paso = () => {
       const q = fin - Date.now();
-      if (q <= 0) { $('cuenta').hidden = true; empezar(); return; }
+      if (q <= 0) { $('cuenta').hidden = true; son('cuenta', 0); empezar(); return; }
       const s = Math.ceil(q / 1000);
       const txt = s > 3 ? '¡Prepárate!' : String(s);
-      if ($('cuentaNum').textContent !== txt) { $('cuentaNum').textContent = txt; const b = $('cuentaNum'); b.style.animation = 'none'; void b.offsetWidth; b.style.animation = ''; }
+      if ($('cuentaNum').textContent !== txt) { $('cuentaNum').textContent = txt; if (s <= 3) son('cuenta', s); const b = $('cuentaNum'); b.style.animation = 'none'; void b.offsetWidth; b.style.animation = ''; }
       $('cuentaTxt').textContent = 'Empieza el duelo · ' + V.jugadores.length + ' jugadores';
       setTimeout(paso, 100);
     };
@@ -953,6 +954,7 @@
     $('arco').style.strokeDashoffset = (138.2 * (1 - quedan / (SEG * 1000))).toFixed(1);
     $('reloj').classList.toggle('poco', s <= 15 && s > 5);
     $('reloj').classList.toggle('nada', s <= 5);
+    if (s <= 5 && s > 0 && s !== G.ticVisto && !G.ocupado) { G.ticVisto = s; son('tic', s); }
     if (quedan <= 0 && !G.ocupado) responder(-1);
   }
   $('pAlts').addEventListener('click', e => {
@@ -960,7 +962,7 @@
     if (b && !b.disabled && G && !G.ocupado) responder(+b.dataset.k, b);
   });
   async function responder(op, boton) {
-    G.ocupado = true; clearInterval(tic);
+    G.ocupado = true; G.ticVisto = 0; clearInterval(tic);
     const botones = $('pAlts').querySelectorAll('button');
     botones.forEach(x => { x.disabled = true; });
     if (boton) boton.classList.add('on');
@@ -982,6 +984,7 @@
       botones.forEach((x, k) => { if (k === vc) x.classList.add('ok'); else if (k === vo) x.classList.add('mal'); x.classList.remove('on'); });
       $('veredicto').textContent = r.ok ? '¡Correcta! +1' : r.op < 0 ? 'Se acabó el tiempo. Era la ' + (q.options[vc].letter || LETRAS[vc]) + '.' : 'Incorrecta. Era la ' + (q.options[vc].letter || LETRAS[vc]) + '.';
       $('veredicto').className = 'veredicto ' + (r.ok ? 'ok' : 'mal');
+      son(r.ok ? 'bien' : 'mal');
     }
     pintarCarriles();
     setTimeout(async () => {
@@ -1059,6 +1062,7 @@
     $('resTabla').innerHTML = (res && res.jugadores >= 2 ? podioHtml(d) : tablaHtml(d)) +
       (!res && !d.cerrado ? '<div class="cierre" id="resCierre"><i></i><span></span></div>' : '');
     if (res && res.gane && vistoRes !== d.codigo) confeti($('resCard'));
+    if (res && res.jugadores >= 2 && vistoRes !== d.codigo) son('fin', res.gane || (res.empate && res.puesto === 1) ? 100 : 0);
     if (res) vistoRes = d.codigo;
 
     const bts = [];
