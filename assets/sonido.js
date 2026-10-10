@@ -82,6 +82,17 @@
     // Código: aceptado (campanitas que suben) o rechazado (dos notas graves cortas)
     abrir: function () { nota(880, 0, 0.08, 'triangle', 0.18); [DO2, MI2, SOL2].forEach(function (f, i) { nota(f, 0.1 + i * 0.07, 0.22, 'sine', 0.16); }); },
     error: function () { nota(220, 0, 0.12, 'square', 0.06); nota(185, 0.13, 0.18, 'square', 0.06); },
+    // El búho del inicio: un "hu-hu" según su ánimo
+    buho: function (animo) {
+      function hu(f, t, dur, hasta, vol) { nota(f, t, dur, 'sine', vol || 0.22, hasta || f * 0.94); nota(f * 2, t, dur * 0.7, 'sine', (vol || 0.22) * 0.12, (hasta || f * 0.94) * 2); }
+      if (animo === 'feliz' || animo === 'celebrando') {
+        hu(440, 0, 0.15, 480); hu(620, 0.18, 0.3, 700);
+        if (animo === 'celebrando') [DO2, MI2, SOL2].forEach(function (f, i) { nota(f, 0.5 + i * 0.06, 0.18, 'triangle', 0.1); });
+      } else if (animo === 'preocupado') { hu(420, 0, 0.16); hu(440, 0.2, 0.32, 600); }
+      else if (animo === 'triste') hu(460, 0, 0.55, 300, 0.18);
+      else if (animo === 'dormido') { soplo(0.55, 0.09, 250, 520); setTimeout(function () { soplo(0.6, 0.07, 520, 240); }, 650); }
+      else { hu(440, 0, 0.18); hu(440, 0.24, 0.3, 400); }
+    },
     // Se acabaron las vidas: tres notas que caen
     perder: function () { [SOL, MI, DO].forEach(function (f, i) { nota(f / 2, i * 0.16, 0.24, 'triangle', 0.16); }); nota(DO / 2, 0.5, 0.5, 'sine', 0.12, DO / 2.4); },
     // Fin de ronda: fanfarria desde 70%, si no dos notas tranquilas
