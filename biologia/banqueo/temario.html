@@ -108,7 +108,7 @@
       .then(temas => {
         temas.forEach(t => {
           const a = document.createElement('a');
-          a.className = 'tema-card';
+          a.className = 'tema-card'; a.dataset.mcNav = 'tema';
           a.href = `tema.html?year=${encodeURIComponent(year)}&tema=${t.num}`;
           a.innerHTML = `
             <div class="tema-num">${t.num}</div>
@@ -128,5 +128,6 @@
 </script>
 <script src="../../assets/alertas.js" defer></script>
 <script src="../../assets/tutorial.js" defer></script>
+<script src="../../assets/sonido.js"></script>
 </body>
 </html>

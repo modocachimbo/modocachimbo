@@ -200,6 +200,9 @@
 
   /* ---------- Ventana de reporte ---------- */
   var overlay = null;
+  // Sonidos (assets/sonido.js), solo si la página lo carga
+  function son(n) { try { if (window.MCSonido && MCSonido[n]) MCSonido[n](); } catch (e) {} }
+
   function cerrar() {
     if (!overlay) return;
     overlay.remove(); overlay = null;
@@ -262,11 +265,13 @@
       b.addEventListener('click', function () {
         overlay.querySelectorAll('.rep-letter').forEach(function (x) { x.classList.remove('sel'); });
         b.classList.add('sel');
+        son('seccion');
         sugerida = b.getAttribute('data-l');
       });
     });
 
     send.addEventListener('click', function () {
+      son('toque');
       var comentario = txt.value.trim();
       var sugTexto = '';
       if (sugerida && sugerida !== 'No sé') {
@@ -316,7 +321,7 @@
             '<button type="button" class="rep-close2">Cerrar</button>' +
           '</div>';
         body.querySelector('.rep-close2').addEventListener('click', cerrar);
-        if (guardado) marcarBoton();
+        if (guardado) { marcarBoton(); son('bien'); }
         else body.querySelector('.rep-wa').addEventListener('click', marcarBoton);
       }
 
@@ -343,7 +348,7 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') cerrar(); });
   document.addEventListener('click', function (e) {
     var b = e.target.closest && e.target.closest('.rep-btn');
-    if (b) abrirReporte(parseInt(b.getAttribute('data-idx'), 10));
+    if (b) { son('tema'); abrirReporte(parseInt(b.getAttribute('data-idx'), 10)); }
   });
 
   /* ---------- Cuando el tema terminó de cargar ---------- */
