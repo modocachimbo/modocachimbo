@@ -16,7 +16,7 @@
 <title>Duelos · Modo Cachimbo</title>
 <meta name="description" content="Reta hasta a 3 amigos: las mismas preguntas, 60 segundos cada una. Gana quien acierta más.">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Nunito:wght@700;800;900&display=swap');
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -257,6 +257,34 @@
   @media (prefers-reduced-motion: reduce) { .flash, .pod, .pod .mc-medalla, .puesto-sala.entra .avatar, .cierre i, .cuenta b { animation: none; } .carril .pista i { transition: none; } .confeti { display: none; } }
   /* El botón "?" del tutorial solo en la pantalla de crear */
   body:has(#crear[hidden]) .mct-ayuda { display: none; }
+
+  /* Botones gruesos estilo Duolingo (como en Flashcards): se hunden al tocarlos */
+  .btn { border: 2px solid var(--accent); border-radius: 16px; box-shadow: 0 5px 0 #8fa300; color: #2b3300;
+    font: 900 15px Nunito, 'Inter', sans-serif; text-transform: uppercase; letter-spacing: .7px;
+    transition: transform .08s ease, box-shadow .08s ease; -webkit-tap-highlight-color: transparent; }
+  .btn:not(:disabled):active { transform: translateY(5px); box-shadow: 0 0 0 transparent; }
+  .btn.sec { background: #1a1a1a; color: #e6e6e6; border: 2px solid #2e2e2e; box-shadow: 0 5px 0 #2e2e2e; }
+  .btn.wa { border-color: #25D366; box-shadow: 0 5px 0 #1a9e4b; }
+  .btn.mini { font-size: 12.5px; padding: 8px 14px; border-radius: 12px; box-shadow: 0 3px 0 #8fa300; }
+  .btn.mini.sec { box-shadow: 0 3px 0 #2e2e2e; }
+  .btn.mini:not(:disabled):active { transform: translateY(3px); }
+  .chips button { border: 2px solid #2e2e2e; border-bottom-width: 4px; background: #161616; color: #e6e6e6; border-radius: 14px;
+    font: 800 15px Nunito, 'Inter', sans-serif; transition: transform .08s ease; -webkit-tap-highlight-color: transparent; }
+  .chips button:not(:disabled):active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
+  .chips button.on { border-color: var(--accent); border-bottom-color: #8fa300; color: var(--accent); background: var(--accent-soft); }
+  select, .campo input[type=text] { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 14px; background-color: #161616;
+    font: 800 15px Nunito, 'Inter', sans-serif; }
+  #codUnirse { background: #161616 !important; border: 2px solid #2e2e2e !important; border-bottom-width: 4px !important; border-radius: 14px !important;
+    font: 900 17px Nunito, 'Inter', sans-serif !important; letter-spacing: 3px; text-align: center; text-transform: uppercase; }
+  .alts button { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 16px; font: 700 15px Nunito, 'Inter', sans-serif;
+    transition: transform .08s ease, border-color .15s, background .15s; -webkit-tap-highlight-color: transparent; }
+  .alts button:not(:disabled):active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
+  .alts button i { font: 900 14px Nunito, sans-serif; border: 2px solid #3a3a3a; background: transparent; }
+  .alts button.on { border-bottom-color: #8fa300; }
+  .alts button.ok { border-bottom-color: #22a356; }
+  .alts button.ok i, .alts button.mal i { border-color: transparent; }
+  .alts button.mal { border-bottom-color: #c94a4a; }
+  .check input { width: 22px; height: 22px; }
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" media="print" onload="this.media='all'">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
