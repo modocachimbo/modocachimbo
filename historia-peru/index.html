@@ -151,6 +151,21 @@
     flex-shrink: 0; overflow: hidden; padding: 8px;
   }
   .qr-box img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
+
+  /* Barra superior con estilo grueso tipo Duolingo */
+  .back { font-family: 'Nunito', 'Sora', sans-serif; font-weight: 900; }
+  .home-btn { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 13px; background: #141414; height: 42px; width: 42px;
+    transition: transform .08s ease, border-color .15s ease, color .15s ease; -webkit-tap-highlight-color: transparent; }
+  .home-btn:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
+  #vipToggle { display: inline-flex; align-items: center; border: 2px solid #2e2e2e !important; border-bottom-width: 4px !important; border-radius: 14px; background: #141414 !important; height: 42px; padding: 0 14px;
+    font-family: 'Nunito', 'Inter', sans-serif !important; font-weight: 900; font-size: 14px; transition: transform .08s ease; -webkit-tap-highlight-color: transparent; }
+  #vipToggle:active { transform: translateY(2px); border-bottom-width: 2px !important; margin-bottom: 2px; }
+  #vipToggle.vip-active { border-color: rgba(198,224,0,.45) !important; border-bottom-color: #8fa300 !important; background: rgba(198,224,0,.08) !important; }
+  .vip-popover { border: 2px solid #2e2e2e; border-bottom-width: 5px; border-radius: 18px; }
+  .vip-popover input { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 13px; font-family: 'Nunito', 'Inter', sans-serif; font-weight: 800; }
+  .vip-popover button { border: 2px solid var(--accent); border-radius: 13px; box-shadow: 0 4px 0 #8fa300; margin-bottom: 4px;
+    font-family: 'Nunito', 'Sora', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: .5px; transition: transform .08s ease, box-shadow .08s ease; }
+  .vip-popover button:not(:disabled):active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
 </style>
 <script src="../assets/mc-config.js"></script>
 <script src="../assets/acceso.js"></script>
