@@ -120,6 +120,7 @@
         const active = !!info && info.temas > 0; // año sin temas = Próximamente
         const a = document.createElement(active ? 'a' : 'div');
         a.className = 'year-card ' + (active ? 'active' : 'disabled');
+        if (active) a.dataset.mcNav = 'tema';
         if (active) a.href = 'temario.html?year=' + encodeURIComponent(id);
         a.innerHTML = `<div class="yr">${id}</div><div class="count">${active ? info.temas + (info.temas === 1 ? ' tema' : ' temas') : 'Próximamente'}</div>`;
         grid.appendChild(a);
@@ -131,5 +132,6 @@
 </script>
 <script src="../../assets/alertas.js" defer></script>
 <script src="../../assets/tutorial.js" defer></script>
+<script src="../../assets/sonido.js"></script>
 </body>
 </html>

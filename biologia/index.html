@@ -293,24 +293,29 @@ function jsonpRequest(url) {
       if (!codigo) {
         msg.textContent = 'Ingresa un código.';
         msg.classList.add('show', 'error');
+        if (window.MCSonido) MCSonido.error();
         return;
       }
       submit.disabled = true;
       submit.textContent = 'Verificando…';
+      if (window.MCSonido) MCSonido.toque();
       try {
         var r = await MCAcceso.activar(codigo, '');
         if (r.ok) {
           msg.textContent = r.mensaje;
           msg.classList.add('show', 'ok');
+          if (window.MCSonido) MCSonido.abrir();
           actualizarEstadoBoton();
           input.value = '';
         } else {
           msg.textContent = r.mensaje || 'Código inválido.';
           msg.classList.add('show', 'error');
+          if (window.MCSonido) MCSonido.error();
         }
       } catch (err) {
         msg.textContent = 'No se pudo verificar. Revisa tu conexión.';
         msg.classList.add('show', 'error');
+        if (window.MCSonido) MCSonido.error();
       }
       submit.disabled = false;
       submit.textContent = 'Activar';
@@ -324,6 +329,11 @@ function jsonpRequest(url) {
 <script src="../assets/alertas.js" defer></script>
 <script src="../assets/cursos.js"></script>
 <script>MCCursos.pintarCurso('biologia');</script>
+<script>
+  // Prueba de sonidos: Libro, Repaso, Fijas, Seminarios, Banqueo y Flashcards suenan al entrar
+  document.addEventListener('click', function (e) { var a = e.target.closest && e.target.closest('a.btn'); if (a && !a.dataset.mcNav) a.dataset.mcNav = 'seccion'; }, true);
+</script>
 <script src="../assets/tutorial.js" defer></script>
+<script src="../assets/sonido.js"></script>
 </body>
 </html>
