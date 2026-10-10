@@ -52,6 +52,27 @@
     g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol, t0 + dur * 0.3); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
     src.connect(fl); fl.connect(g); g.connect(salida); src.start(t0); src.stop(t0 + dur);
   }
+  // El "hu" del búho: entra suave y tiembla un poquito, como una voz
+  function hoot(f, t, dur, vol, hasta) {
+    var a = audio(); if (!a) return;
+    var t0 = a.currentTime + t, o = a.createOscillator(), g = a.createGain(), lf = a.createOscillator(), lg = a.createGain(), fl = a.createBiquadFilter();
+    o.type = 'sine'; o.frequency.setValueAtTime(f, t0); o.frequency.linearRampToValueAtTime(hasta || f, t0 + dur);
+    lf.frequency.value = 5.5; lg.gain.value = f * 0.012; lf.connect(lg); lg.connect(o.frequency);
+    fl.type = 'lowpass'; fl.frequency.value = 1400;
+    g.gain.setValueAtTime(0.0001, t0); g.gain.linearRampToValueAtTime(vol, t0 + Math.min(0.06, dur * 0.3));
+    g.gain.setValueAtTime(vol, t0 + dur * 0.6); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(fl); fl.connect(g); g.connect(salida); o.start(t0); lf.start(t0); o.stop(t0 + dur + 0.05); lf.stop(t0 + dur + 0.05);
+  }
+  // El aire que acompaña al "hu"
+  function aire(t, dur, vol, f) {
+    var a = audio(); if (!a) return;
+    var n = Math.floor(a.sampleRate * dur), b = a.createBuffer(1, n, a.sampleRate), d = b.getChannelData(0);
+    for (var i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+    var src = a.createBufferSource(), bp = a.createBiquadFilter(), g = a.createGain(), t0 = a.currentTime + t;
+    src.buffer = b; bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = 1.5;
+    g.gain.setValueAtTime(0.0001, t0); g.gain.linearRampToValueAtTime(vol, t0 + dur * 0.3); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    src.connect(bp); bp.connect(g); g.connect(salida); src.start(t0);
+  }
   var DO = 523.25, MI = 659.25, SOL = 783.99, DO2 = 1046.5, MI2 = 1318.5, SOL2 = 1568;
   // La burbuja: una nota redonda que sube
   function blup(vol, dur, desde, hasta, t) { nota(desde || 320, t || 0, dur || 0.09, 'sine', vol || 0.26, hasta || 1100); }
@@ -82,6 +103,18 @@
     // Código: aceptado (campanitas que suben) o rechazado (dos notas graves cortas)
     abrir: function () { nota(880, 0, 0.08, 'triangle', 0.18); [DO2, MI2, SOL2].forEach(function (f, i) { nota(f, 0.1 + i * 0.07, 0.22, 'sine', 0.16); }); },
     error: function () { nota(220, 0, 0.12, 'square', 0.06); nota(185, 0.13, 0.18, 'square', 0.06); },
+    // El búho del inicio: un "hu-hu" según su ánimo
+    buho: function (animo) {
+      var A = { // [frecuencia, empieza, dura, volumen, hasta] por "hu"; el aire acompaña cada uno
+        feliz: [[440, 0, .18, .32, 460], [500, .26, .5, .32, 560]],
+        celebrando: [[440, 0, .14, .3, 450], [494, .2, .14, .3, 505], [587, .4, .6, .32, 640]],
+        preocupado: [[392, 0, .22, .3, 380], [400, .36, .55, .3, 500]],
+        triste: [[380, 0, .9, .26, 290]],
+        dormido: [[300, .05, .6, .07, 285]]
+      }[animo] || [[392, 0, .22, .32, 370], [415, .32, .6, .32, 360]];
+      A.forEach(function (h) { hoot(h[0], h[1], h[2], h[3], h[4]); if (animo !== 'dormido') aire(h[1], h[2] * .85, animo === 'triste' ? .06 : .05, h[0] + 60); });
+      if (animo === 'dormido') { aire(0, .7, .07, 300); aire(.95, .8, .06, 240); }
+    },
     // Se acabaron las vidas: tres notas que caen
     perder: function () { [SOL, MI, DO].forEach(function (f, i) { nota(f / 2, i * 0.16, 0.24, 'triangle', 0.16); }); nota(DO / 2, 0.5, 0.5, 'sine', 0.12, DO / 2.4); },
     // Fin de ronda: fanfarria desde 70%, si no dos notas tranquilas
@@ -118,6 +151,10 @@
   var EN_SIMULACRO = /\/simulacro\.html$/.test(location.pathname);
   function tipoDe(a) {
     if (a.matches('a.back, a.home-btn, a.volver, a.logo')) return 'volver';
+    // Tutorial: Siguiente con la burbuja, Atrás y Saltar como retroceder, ¡Listo! con campanitas
+    if (a.matches('.mct-sig')) return /listo/i.test(a.textContent) ? 'abrir' : 'toque';
+    if (a.matches('.mct-atr, .mct-saltar')) return 'volver';
+    if (a.matches('.mct-ayuda')) return 'toque';
     if (EN_TARJETAS) return '';
     if (a.matches('#mcPopulares a')) return 'curso';
     // Inicio: "Nuevo para ti", Top del simulacro

@@ -171,6 +171,8 @@
       '[data-animo=preocupado] .buho-globo{border-color:rgba(251,191,36,.45)}[data-animo=preocupado] .buho-globo::before{border-color:rgba(251,191,36,.45)}' +
       '[data-animo=preocupado] .buho-globo b{color:#fbbf24}' +
       '[data-animo=celebrando] .buho-globo b,[data-animo=feliz] .buho-globo b{color:var(--accent,#C6E000)}' +
+      '.buho-dibujo{cursor:pointer;-webkit-tap-highlight-color:transparent}.buho-dibujo.salta{animation:bSalto .5s ease-out}@media (prefers-reduced-motion:reduce){.buho-dibujo.salta{animation:none}}' +
+      '@keyframes bSalto{0%,100%{transform:translateY(0) scale(1)}25%{transform:translateY(2px) scale(1.06,.94)}55%{transform:translateY(-14px) scale(.97,1.04)}80%{transform:translateY(0) scale(1.04,.96)}}' +
       '@media (max-width:520px){.buho-dibujo{width:74px;height:74px}.buho-dibujo svg{width:74px;height:74px}.buho-globo{font-size:13px}}';
     document.head.appendChild(st);
     caja = document.createElement('div');
@@ -178,6 +180,13 @@
     caja.innerHTML = '<div class="buho-dibujo"></div><div class="buho-globo" role="status"></div>';
     var h1 = texto.querySelector('h1');
     texto.insertBefore(caja, h1 ? h1.nextSibling : texto.firstChild);
+    // Al tocarlo: un saltito y su "hu-hu" según el ánimo (assets/sonido.js)
+    var dibujo = caja.querySelector('.buho-dibujo');
+    dibujo.setAttribute('role', 'button'); dibujo.setAttribute('aria-label', 'Búho');
+    dibujo.addEventListener('click', function () {
+      dibujo.classList.remove('salta'); void dibujo.offsetWidth; dibujo.classList.add('salta');
+      if (window.MCSonido && MCSonido.activo) MCSonido.buho(caja.dataset.animo);
+    });
     pintar();
     (function esperarRacha(i) {
       if (window.MCRacha) MCRacha.alCambiar(function (r) { racha = r; pintar(); });
