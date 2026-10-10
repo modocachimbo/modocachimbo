@@ -196,6 +196,12 @@
   }
   .lock-whatsapp svg { width: 16px; height: 16px; }
   .lock-whatsapp.show { display: flex; }
+
+  /* Casita con estilo grueso: se hunde al tocarla */
+  .home-btn { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 12px; background: #141414; width: 36px; height: 36px; color: #e6e6e6;
+    transition: transform .08s ease, border-color .15s ease, color .15s ease; -webkit-tap-highlight-color: transparent; }
+  .home-btn:hover { border-color: var(--accent, #C6E000); border-bottom-color: #8fa300; color: var(--accent, #C6E000); }
+  .home-btn:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" media="print" onload="this.media='all'">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>

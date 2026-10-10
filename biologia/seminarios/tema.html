@@ -108,6 +108,12 @@
   .opt-row .letter { width: 26px; height: 26px; border-radius: 8px; border: 2px solid #3a3a3a; background: transparent; font: 900 12px 'Nunito', sans-serif; }
   .opt-row.correct { background: rgba(198,224,0,.1); border-color: var(--accent); border-bottom-color: #8fa300; color: #f5ffcc; font-weight: 900; box-shadow: 0 0 18px rgba(198,224,0,.08); }
   .opt-row.correct .letter { border-color: var(--accent); }
+
+  /* Casita con estilo grueso: se hunde al tocarla */
+  .home-btn { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 12px; background: #141414; width: 36px; height: 36px; color: #e6e6e6;
+    transition: transform .08s ease, border-color .15s ease, color .15s ease; -webkit-tap-highlight-color: transparent; }
+  .home-btn:hover { border-color: var(--accent, #C6E000); border-bottom-color: #8fa300; color: var(--accent, #C6E000); }
+  .home-btn:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" media="print" onload="this.media='all'">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>

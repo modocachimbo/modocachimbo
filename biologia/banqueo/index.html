@@ -69,6 +69,12 @@
   .year-card .count { font: 800 13px 'Nunito', 'Inter', sans-serif; }
   .year-card.active .count { display: inline-block; align-self: flex-start; background: var(--accent-soft); border-radius: 10px; padding: 3px 9px; }
   .year-card.disabled { opacity: .45; border-style: dashed; border-color: #262626; background: transparent; }
+
+  /* Casita con estilo grueso: se hunde al tocarla */
+  .home-btn { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 12px; background: #141414; width: 36px; height: 36px; color: #e6e6e6;
+    transition: transform .08s ease, border-color .15s ease, color .15s ease; -webkit-tap-highlight-color: transparent; }
+  .home-btn:hover { border-color: var(--accent, #C6E000); border-bottom-color: #8fa300; color: var(--accent, #C6E000); }
+  .home-btn:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
 </style>
 <script src="../../assets/mc-config.js"></script>
 <script src="../../assets/auth.js"></script>
