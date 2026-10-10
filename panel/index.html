@@ -401,6 +401,28 @@
   .rf-temas .ck { justify-content: flex-start; }
   .rf-temas em { color: var(--text-faint); font-style: normal; margin-left: auto; font-size: 12px; }
   .chip:disabled { opacity: .35; cursor: not-allowed; }
+  /* Orden de tarjetas y Armar Fijas (fijas-panel.js) */
+  .ot-lista { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+  .ot-row { display: flex; align-items: center; gap: 10px; background: #0b0b0b; border: 2px solid #232323; border-bottom-width: 4px; border-radius: 14px; padding: 8px 10px 8px 12px; }
+  .ot-row b { flex: 1; font-weight: 800; }
+  .ot-n { width: 26px; height: 26px; border-radius: 8px; background: rgba(198,224,0,.12); color: var(--accent); display: grid; place-items: center; font-weight: 900; font-size: 13px; }
+  .af-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+  .af-lbl { display: flex; align-items: center; gap: 8px; font-weight: 800; }
+  .af-lbl .inp { width: auto; }
+  .af-total { margin-left: auto; color: var(--accent); font-weight: 900; }
+  .af-sel { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-top: 10px; }
+  .af-sel .inp { min-width: 0; }
+  .af-preg { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; max-height: 320px; overflow-y: auto; }
+  .af-ck { align-items: flex-start; line-height: 1.45; }
+  .af-ck input { margin-top: 3px; flex-shrink: 0; }
+  .af-ck.ya { opacity: .55; }
+  .af-ck em, .af-tt em { color: var(--accent); font-style: normal; font-weight: 800; font-size: 12px; }
+  .af-tema + .af-tema { margin-top: 14px; }
+  .af-tt { font-weight: 900; margin-bottom: 6px; display: flex; gap: 8px; }
+  .af-tt em { margin-left: auto; }
+  .af-q { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-top: 1px solid #1c1c1c; font-size: 13px; color: var(--text-dim); }
+  .af-q span { flex: 1; min-width: 0; }
+  @media (max-width: 560px) { .af-sel { grid-template-columns: 1fr; } }
   @media (max-width: 600px) { .cu-form { grid-template-columns: 1fr; } .cu-campos { grid-template-columns: 1fr; } }
   /* Tutorial */
   .tu-top { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
@@ -1509,6 +1531,7 @@ E) Alternativa"></textarea>
 <script src="mantenimiento.js"></script>
 <script src="../assets/cursos.js"></script>
 <script src="cursos-panel.js"></script>
+<script src="fijas-panel.js"></script>
 <script src="practica-panel.js"></script>
 <script src="tarjetas-panel.js"></script>
 <script src="../assets/tutorial.js" data-solo-lista></script>

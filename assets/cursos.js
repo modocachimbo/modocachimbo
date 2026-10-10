@@ -6,6 +6,7 @@
    - marcar Seminarios / Banqueo como Próximamente si aún no tienen temas
    - saber qué temas usa Fijas
    - agregar la tarjeta de Flashcards (tarjetas.html) en cada curso
+   - ordenar las tarjetas del curso (automático o el orden del panel)
    ========================================================= */
 (function () {
   var SCRIPT = document.currentScript;
@@ -77,10 +78,10 @@
   /* ---------- Página de un curso: Seminarios y Banqueo ---------- */
   // Sin temas publicados en ningún ciclo, la tarjeta dice "Próximamente"
   function pintarSecciones(id) {
-    ['seminarios', 'banqueo'].forEach(function (sec) {
+    return Promise.all(['seminarios', 'banqueo'].map(function (sec) {
       var a = document.querySelector('a[data-mc="' + sec + '"]');
       if (!a) return;
-      manifest(id, sec).then(function (man) {
+      return manifest(id, sec).then(function (man) {
         var total = (man || []).reduce(function (s, m) { return s + (m.temas || 0); }, 0);
         if (total > 0) return;
         estilosDisabled();
@@ -89,7 +90,7 @@
         a.textContent = 'Próximamente';
         if (card) { card.classList.remove('active'); card.classList.add('disabled'); }
       });
-    });
+    }));
   }
 
   /* ---------- Página de un curso: tarjeta de Flashcards ---------- */
@@ -113,12 +114,42 @@
   }
 
   /* ---------- Página de un curso: Repaso y Fijas ---------- */
+  // Preguntas del banco propio de Fijas ({año}-fijas.json)
+  function bancoFijas(id, anio) {
+    if (!anio) return Promise.resolve(0);
+    return fetch(new URL(id + '/libros/data/' + anio + '-fijas.json', ROOT).href, { cache: 'no-cache' })
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (t) { return (t || []).reduce(function (s, x) { return s + ((x && x.questions) || []).length; }, 0); })
+      .catch(function () { return 0; });
+  }
+
+  /* ---------- Orden de las tarjetas del curso ---------- */
+  // Automático: este orden, y las de "Próximamente" al final. El panel puede guardar otro (c.ordenTarjetas).
+  var ORDEN = ['libro', 'repaso', 'tarjetas', 'seminarios', 'banqueo', 'fijas'];
+  function claveTarjeta(card) {
+    var a = card.querySelector('a.btn'); if (!a) return '';
+    var mc = a.getAttribute('data-mc'); if (mc) return mc;
+    return /^libros\//.test(a.getAttribute('href') || '') ? 'libro' : '';
+  }
+  function ordenarTarjetas(c) {
+    var cont = document.querySelector('.courses'); if (!cont) return;
+    var manual = c && Array.isArray(c.ordenTarjetas) && c.ordenTarjetas.length ? c.ordenTarjetas : null;
+    var orden = manual ? manual.concat(ORDEN.filter(function (k) { return manual.indexOf(k) < 0; })) : ORDEN;
+    var cards = [].slice.call(cont.children).filter(function (el) { return el.classList.contains('course'); });
+    cards.map(function (el, i) {
+      var k = orden.indexOf(claveTarjeta(el));
+      return { el: el, peso: (!manual && el.classList.contains('disabled') ? 100 : 0) + (k < 0 ? 50 : k), i: i };
+    }).sort(function (a, b) { return a.peso - b.peso || a.i - b.i; })
+      .forEach(function (x) { cont.appendChild(x.el); });
+  }
+
   function pintarCurso(id) {
-    pintarSecciones(id);
     pintarTarjetas(id);
+    var secciones = pintarSecciones(id);
     return Promise.all([curso(id), manifest(id)]).then(function (r) {
       var c = r[0], man = r[1];
-      if (!c) return;
+      if (!c) return secciones.then(function () { ordenarTarjetas(null); });
+      return bancoFijas(id, c.fijas && c.fijas.modo === 'banco' && c.fijas.anio).then(function (nFijas) {
       estilosDisabled();
       var back = document.querySelector('a.back');
       if (back && c.area) back.setAttribute('href', '../areas/' + c.area + '.html');
@@ -128,7 +159,8 @@
         a.setAttribute('data-mc', x[0]);
         var card = a.closest('.course'), h = card && card.querySelector('h3');
         var cfg = x[2];
-        var listo = cfg && cfg.anio && (temasDe(man, cfg.anio) > 0 || (x[0] === 'fijas' && cfg.modo === 'banco'));
+        // Fijas solo se abre con su banco propio con preguntas (se arma en el panel: Cursos → Armar Fijas)
+        var listo = x[0] === 'fijas' ? nFijas > 0 : cfg && cfg.anio && temasDe(man, cfg.anio) > 0;
         if (listo) {
           a.setAttribute('href', x[0] + '.html?year=' + encodeURIComponent(cfg.anio));
           a.textContent = 'Entrar';
@@ -140,6 +172,8 @@
           if (h) h.textContent = x[1];
           card.classList.remove('active'); card.classList.add('disabled');
         }
+      });
+      return secciones.then(function () { ordenarTarjetas(c); });
       });
     });
   }

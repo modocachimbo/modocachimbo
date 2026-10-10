@@ -1,5 +1,6 @@
 /* =========================================================
    Panel · Cursos (crear, editar, ordenar, ocultar, años, Repaso y Fijas)
+   Armar Fijas y Orden de tarjetas: panel/fijas-panel.js
    ========================================================= */
 function slug(s) { return sinTildes(s).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 30); }
 function iconoHtml(ruta) {
@@ -7,6 +8,8 @@ function iconoHtml(ruta) {
 }
 function cfgTxt(tipo, cfg, man) {
   if (!cfg || !cfg.anio) return '<span class="cfg off">Próximamente</span>';
+  // En la web, Fijas solo se abre con banco propio (assets/cursos.js)
+  if (tipo === 'fijas' && cfg.modo !== 'banco') return '<span class="cfg off">Cerrado · falta Armar Fijas</span>';
   const m = (man || []).find(x => x.id === cfg.anio);
   const vacio = man ? (tipo === 'repaso' ? !(m && m.temas) : cfg.modo !== 'banco' && !(m && m.temas)) : false;
   const extra = tipo === 'fijas' ? (cfg.modo === 'banco' ? ' · banco propio' : Array.isArray(cfg.temas) ? ` · ${cfg.temas.length} tema${cfg.temas.length === 1 ? '' : 's'}` : ' · todos los temas') : '';
@@ -35,6 +38,8 @@ function renderCursos() {
           <button class="rbtn" type="button" data-down ${i === lista.length - 1 ? 'disabled' : ''} title="Bajar">↓</button>
           <button class="rbtn" type="button" data-anios>Años</button>
           <button class="rbtn" type="button" data-rf>Repaso y Fijas</button>
+          <button class="rbtn" type="button" data-af>Armar Fijas</button>
+          <button class="rbtn" type="button" data-ot>Orden de tarjetas</button>
           <button class="rbtn" type="button" data-ed>${ICON_EDIT} Editar</button>
           <button class="rbtn ${c.oculto ? 'link' : 'danger'}" type="button" data-oc>${c.oculto ? 'Mostrar' : 'Ocultar'}</button>
         </div></div>`).join('') : '<div class="hint" style="padding:10px 0;">Sin cursos en esta área.</div>'}
@@ -46,6 +51,8 @@ function renderCursos() {
   $('cuList').querySelectorAll('[data-ed]').forEach(b => b.addEventListener('click', () => formCurso(cursoDe(b))));
   $('cuList').querySelectorAll('[data-anios]').forEach(b => b.addEventListener('click', () => aniosCurso(cursoDe(b))));
   $('cuList').querySelectorAll('[data-rf]').forEach(b => b.addEventListener('click', () => repasoFijas(cursoDe(b))));
+  $('cuList').querySelectorAll('[data-af]').forEach(b => b.addEventListener('click', () => armarFijas(cursoDe(b))));
+  $('cuList').querySelectorAll('[data-ot]').forEach(b => b.addEventListener('click', () => ordenTarjetas(cursoDe(b))));
   $('cuList').querySelectorAll('[data-oc]').forEach(b => b.addEventListener('click', async () => {
     const c = cursoDe(b);
     if (!c.oculto && !b.classList.contains('confirm')) { b.classList.add('confirm'); b.textContent = '¿Ocultar? Toca otra vez'; setTimeout(() => { if (b.isConnected) { b.classList.remove('confirm'); b.textContent = 'Ocultar'; } }, 4000); return; }
@@ -197,6 +204,7 @@ async function repasoFijas(c) {
     <div class="rf-box"><div class="rf-tit">Repaso</div><p class="hint">Usa <b>todas las preguntas</b> del año elegido, mezcladas.</p>
       <select class="inp" id="rfRep">${opcAnios(c.repaso && c.repaso.anio)}</select></div>
     <div class="rf-box"><div class="rf-tit">Fijas</div>
+      <p class="hint">En la web, Fijas solo se abre con su <b>banco propio</b> con preguntas. Arma el banco con el botón <b>Armar Fijas</b> del curso.</p>
       <select class="inp" id="rfFij">${opcAnios(f.anio)}</select>
       <div id="rfFijOpc"></div></div>
     <div class="err" id="rfErr"></div>
