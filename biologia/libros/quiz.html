@@ -601,6 +601,8 @@
   const lockWhatsapp = document.getElementById('lockWhatsapp');
   lockWhatsapp.href = WHATSAPP_URL;
   let preguntasCargadas = false;
+  // TEMPORAL: sin candado solo en la vista de prueba de esta rama (se quita antes de subir)
+  const PRUEBA_SIN_CANDADO = location.hostname === 'claude-quiz-grueso.modocachimbo.pages.dev';
 
   function unlockAndStart() {
     if (accesoRetirado) { location.reload(); return; }
@@ -609,6 +611,7 @@
   }
   let accesoRetirado = false;
   function bloquear(mensaje) {
+    if (PRUEBA_SIN_CANDADO) return;
     if (preguntasCargadas) { // el acceso venció o se desactivó mientras la página estaba abierta
       accesoRetirado = true;
       ['startScreen', 'quizHeader', 'quizBody', 'endScreen'].forEach(function (id) { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
@@ -656,6 +659,7 @@
 
   verificarAcceso();
   // === Fin candado ===
+  if (PRUEBA_SIN_CANDADO) unlockAndStart();
 </script>
 <script src="../../assets/alertas.js" defer></script>
 <script src="../../assets/tutorial.js" defer></script>
