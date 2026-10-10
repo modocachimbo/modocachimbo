@@ -73,7 +73,7 @@
     g.gain.setValueAtTime(0.0001, t0); g.gain.linearRampToValueAtTime(vol, t0 + dur * 0.3); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
     src.connect(bp); bp.connect(g); g.connect(salida); src.start(t0);
   }
-  var DO = 523.25, MI = 659.25, SOL = 783.99, DO2 = 1046.5, MI2 = 1318.5, SOL2 = 1568;
+  var DO = 523.25, MI = 659.25, SOL = 783.99, DO2 = 1046.5, MI2 = 1318.5, SOL2 = 1568, DO3 = 2093;
   // La burbuja: una nota redonda que sube
   function blup(vol, dur, desde, hasta, t) { nota(desde || 320, t || 0, dur || 0.09, 'sine', vol || 0.26, hasta || 1100); }
 
@@ -115,6 +115,15 @@
       A.forEach(function (h) { hoot(h[0], h[1], h[2], h[3], h[4]); if (animo !== 'dormido') aire(h[1], h[2] * .85, animo === 'triste' ? .06 : .05, h[0] + 60); });
       if (animo === 'dormido') { aire(0, .7, .07, 300); aire(.95, .8, .06, 240); }
     },
+    // Racha +1: la burbuja con chispitas
+    racha: function () { blup(); [DO2, MI2, SOL2, DO3].forEach(function (f, i) { nota(f, 0.1 + i * 0.055, 0.2, 'sine', 0.08); }); },
+    // Cuenta del duelo: "tic" en 3, 2, 1 y "¡ding!" al empezar (n = 0)
+    cuenta: function (n) {
+      if (n > 0) return nota(660, 0, 0.12, 'sine', 0.18);
+      nota(1320, 0, 0.5, 'sine', 0.2); [DO2, MI2, SOL2].forEach(function (f, i) { nota(f, 0.05 + i * 0.06, 0.4, 'triangle', 0.08); });
+    },
+    // Últimos 5 segundos de una pregunta: un tic suave por segundo, el último más agudo
+    tic: function (s) { nota(s > 1 ? 880 : 1040, 0, 0.05, 'sine', 0.09); },
     // Se acabaron las vidas: tres notas que caen
     perder: function () { [SOL, MI, DO].forEach(function (f, i) { nota(f / 2, i * 0.16, 0.24, 'triangle', 0.16); }); nota(DO / 2, 0.5, 0.5, 'sine', 0.12, DO / 2.4); },
     // Fin de ronda: fanfarria desde 70%, si no dos notas tranquilas

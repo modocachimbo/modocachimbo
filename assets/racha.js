@@ -78,6 +78,7 @@
     t.innerHTML = ICONO + '<div><b>¡Racha +1!</b><span></span></div>';
     t.querySelector('span').textContent = n === 1 ? 'Empezaste tu racha. ¡Vuelve mañana!' : n + ' días seguidos estudiando. ¡Sigue así!';
     document.body.appendChild(t);
+    try { if (window.MCSonido && MCSonido.racha) MCSonido.racha(); } catch (e) {}
     requestAnimationFrame(function () { requestAnimationFrame(function () { t.classList.add('show'); }); });
     setTimeout(function () { t.classList.remove('show'); setTimeout(function () { t.remove(); }, 400); }, 4200);
   }
