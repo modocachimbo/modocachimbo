@@ -16,10 +16,7 @@
         // iPhone: que suene aunque el botón de silencio esté puesto
         try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
         ctx = new AC();
-        // Volumen general más fuerte, con un compresor para que no se distorsione
-        var comp = ctx.createDynamicsCompressor();
-        comp.threshold.value = -12; comp.knee.value = 6; comp.ratio.value = 10; comp.attack.value = 0.002; comp.release.value = 0.15;
-        salida = ctx.createGain(); salida.gain.value = 3; salida.connect(comp); comp.connect(ctx.destination);
+        salida = ctx.destination;
       }
       if (ctx.state === 'suspended') ctx.resume();
     } catch (e) { return null; }
@@ -66,12 +63,12 @@
       if (activo) S.toque();
       return activo;
     },
-    toque: function () { soplo(0.07, 0.16, 1800, 4000); nota(660, 0, 0.13, 'triangle', 0.32, 990); nota(1320, 0.01, 0.09, 'sine', 0.1); },
+    toque: function () { nota(620, 0, 0.07, 'triangle', 0.22, 940); nota(1880, 0.005, 0.04, 'sine', 0.05); },
     // Acierto: dos notas alegres que suben
     bien: function () { nota(DO2, 0, 0.11, 'triangle', 0.22); nota(MI2, 0.09, 0.28, 'triangle', 0.24); nota(MI2 * 2, 0.09, 0.2, 'sine', 0.04); },
     // Fallo: dos notas suaves que bajan, sin sonar a castigo
-    mal: function () { nota(392, 0, 0.12, 'triangle', 0.18, 330); nota(294, 0.1, 0.24, 'triangle', 0.16, 262); },
-    empezar: function () { soplo(0.3, 0.26, 600, 2600); [DO, MI, SOL].forEach(function (f, i) { nota(f * 2, 0.05 + i * 0.07, 0.18, 'triangle', 0.26); }); },
+    mal: function () { nota(392, 0, 0.12, 'sine', 0.16, 330); nota(294, 0.1, 0.22, 'sine', 0.13, 262); },
+    empezar: function () { soplo(0.25, 0.14, 600, 2600); [DO, MI, SOL].forEach(function (f, i) { nota(f * 2, 0.05 + i * 0.06, 0.12, 'triangle', 0.16); }); },
     // Se acabaron las vidas: tres notas que caen
     perder: function () { [SOL, MI, DO].forEach(function (f, i) { nota(f / 2, i * 0.16, 0.24, 'triangle', 0.16); }); nota(DO / 2, 0.5, 0.5, 'sine', 0.12, DO / 2.4); },
     // Fin de ronda: fanfarria desde 70%, si no dos notas tranquilas
