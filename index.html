@@ -365,13 +365,14 @@
     }
     .barra svg { width: 22px; height: 22px; }
     .barra .activo { color: var(--accent); }
-    html.mc-app body .mct-ayuda { bottom: calc(80px + env(safe-area-inset-bottom)); }
+    html.mc-app body .mce-btn { bottom: calc(80px + env(safe-area-inset-bottom)); }
+    html.mc-app body .mce-tip { bottom: calc(92px + env(safe-area-inset-bottom)); }
   }
 
   /* ===== Bienvenida (sin sesión) ===== */
   html.mc-fuera .wrap { display: none; }
   html:not(.mc-fuera) .bienvenida { display: none; }
-  html.mc-fuera .mct-ayuda, html.mc-fuera .mct-capa, html.mc-fuera .mct-foco, html.mc-fuera .mct-burbuja,
+  html.mc-fuera .mce-btn, html.mc-fuera .mce-tip, html.mc-fuera .mct-capa, html.mc-fuera .mct-foco, html.mc-fuera .mct-burbuja,
   html.mc-fuera .mca-franja, html.mc-fuera .mca-ov { display: none !important; }
 
   .bienvenida {

@@ -256,7 +256,7 @@
   }
   @media (prefers-reduced-motion: reduce) { .flash, .pod, .pod .mc-medalla, .puesto-sala.entra .avatar, .cierre i, .cuenta b { animation: none; } .carril .pista i { transition: none; } .confeti { display: none; } }
   /* El botón "?" del tutorial solo en la pantalla de crear */
-  body:has(#crear[hidden]) .mct-ayuda { display: none; }
+  body:has(#crear[hidden]) .mce-btn, body:has(#crear[hidden]) .mce-tip { display: none; }
 
   /* Botones gruesos estilo Duolingo (como en Flashcards): se hunden al tocarlos */
   .btn { border: 2px solid var(--accent); border-radius: 16px; box-shadow: 0 5px 0 #8fa300; color: #2b3300;

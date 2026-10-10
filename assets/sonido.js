@@ -163,7 +163,7 @@
     // Tutorial: Siguiente con la burbuja, Atrás y Saltar como retroceder, ¡Listo! con campanitas
     if (a.matches('.mct-sig')) return /listo/i.test(a.textContent) ? 'abrir' : 'toque';
     if (a.matches('.mct-atr, .mct-saltar')) return 'volver';
-    if (a.matches('.mct-ayuda')) return 'toque';
+    if (a.matches('.mce-btn')) return 'toque';
     if (EN_TARJETAS) return '';
     // Práctica, Repaso y Fijas: Siguiente con la burbuja, Atrás como retroceder
     if (a.matches('#btnNext')) return 'toque';

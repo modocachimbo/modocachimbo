@@ -52,6 +52,23 @@
   .racha-hoy { height: 6px; border-radius: 6px; background: #262626; overflow: hidden; margin-top: 14px; }
   .racha-hoy i { display: block; height: 100%; width: 0; background: var(--accent); }
 
+  /* Errores de hoy */
+  .err-top { display: flex; align-items: center; gap: 12px; }
+  .err-top h2 { margin: 0; }
+  .err-top .nota { margin: 2px 0 0; font-weight: 700; }
+  .err-ic { width: 44px; height: 44px; flex-shrink: 0; border-radius: 14px; background: rgba(255,75,75,.12); border: 2px solid rgba(255,75,75,.35); color: #ff6b6b; display: grid; place-items: center; }
+  .err-ic svg { width: 24px; height: 24px; }
+  #errores.cero .err-ic { background: rgba(198,224,0,.08); border-color: #3a4a00; color: var(--accent); }
+  .err-lista { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+  .err-lista:empty { display: none; }
+  .err-fila { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 2px solid #262626; border-bottom-width: 4px; border-radius: 14px; background: var(--surface-2); min-width: 0; }
+  .err-fila .c { flex: 1; min-width: 0; font-weight: 800; font-size: 15px; }
+  .err-fila .t { display: block; color: var(--text-dim); font-size: 12.5px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .err-fila .k { min-width: 26px; height: 26px; padding: 0 6px; box-sizing: border-box; border-radius: 9px; background: rgba(255,75,75,.14); color: #ff6b6b; font-weight: 900; font-size: 13px; display: grid; place-items: center; }
+  .err-btn { display: block; margin-top: 14px; text-align: center; text-decoration: none; border: 2px solid #C6E000; background: #C6E000; color: #2b3300; border-radius: 14px; padding: 13px; font-weight: 900; font-size: 14px; text-transform: uppercase; letter-spacing: .6px; box-shadow: 0 5px 0 #8fa300; }
+  .err-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #8fa300; }
+  .err-btn[hidden] { display: none; }
+  .err-reloj { margin: 12px 0 0; text-align: center; color: #7a7a7a; font-weight: 800; font-size: 12.5px; }
   .prog-repasar { display: block; text-align: center; margin-top: 14px; }
   .prog-repasar[hidden] { display: none; }
   .prog-cursos { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
@@ -160,6 +177,16 @@
           </div>
         </div>
         <div class="cuenta" id="cuenta"></div>
+      </section>
+
+      <section class="panel" id="errores">
+        <div class="err-top">
+          <div class="err-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 0 1 14.8-5.7L21 9"/><polyline points="21 3.5 21 9 15.5 9"/><path d="M20.5 12a8.5 8.5 0 0 1-14.8 5.7L3 15"/><polyline points="3 20.5 3 15 8.5 15"/></svg></div>
+          <div><h2>Errores de hoy</h2><p class="nota" id="eSub">Cargando…</p></div>
+        </div>
+        <div class="err-lista" id="eLista"></div>
+        <a class="err-btn" id="eBtn" href="falladas.html?hoy=1" hidden>Practicar mis errores</a>
+        <p class="err-reloj" id="eReloj"></p>
       </section>
 
       <section class="panel">
@@ -547,8 +574,48 @@
       caja.appendChild(div);
     });
   }
+  // Errores de hoy (se reinician a las 00:00, hora de Perú)
+  function pintarErrores(L) {
+    var sec = $('errores'), lista = $('eLista'); lista.textContent = '';
+    sec.classList.toggle('cero', !L.length);
+    $('eSub').textContent = L.length ? L.length + (L.length === 1 ? ' pregunta por repasar' : ' preguntas por repasar') : 'Sin errores hoy. ¡Bien!';
+    $('eBtn').hidden = !L.length;
+    // Agrupar por curso y tema
+    var g = {}, orden = [];
+    L.forEach(function (f) {
+      var curso = f.carpeta || String(f.ref || '').split('/')[0];
+      var tema = String(f.titulo || '').replace(/^.*? · /, '');
+      var k = curso + '|' + tema;
+      if (!g[k]) { g[k] = { curso: curso, tema: tema, n: 0, origen: {} }; orden.push(k); }
+      g[k].n++; g[k].origen[MCProgreso.origen(f.ref)] = 1;
+    });
+    orden.forEach(function (k) {
+      var x = g[k];
+      var fila = document.createElement('div'); fila.className = 'err-fila';
+      var c = document.createElement('span'); c.className = 'c'; c.textContent = NOMBRE_CURSO[x.curso] || x.curso;
+      var t = document.createElement('span'); t.className = 't'; t.textContent = [x.tema].concat(Object.keys(x.origen)).filter(Boolean).join(' · ');
+      c.appendChild(t);
+      var n = document.createElement('span'); n.className = 'k'; n.textContent = x.n;
+      fila.appendChild(c); fila.appendChild(n); lista.appendChild(fila);
+    });
+    reloj();
+  }
+  function reloj() {
+    var falta = MCProgreso.inicioHoy().getTime() + 86400000 - Date.now();
+    var h = Math.floor(falta / 3600000), m = Math.floor(falta % 3600000 / 60000);
+    $('eReloj').textContent = 'Se reinicia a las 00:00 · faltan ' + (h ? h + ' h ' : '') + (m < 10 && h ? '0' : '') + m + ' min';
+  }
+  function cargarErrores() {
+    MCProgreso.errores().then(function (L) { cursosListos.then(function () { pintarErrores(L); }); }, function () {
+      $('eSub').textContent = 'No se pudo cargar. Recarga la página.';
+    });
+  }
+  setInterval(function () { if (window.MCProgreso && $('eReloj').textContent) reloj(); }, 30000);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && window.MCProgreso) cargarErrores(); });
+
   (function esperarProgreso(n) {
     if (window.MCProgreso) {
+      cargarErrores();
       MCProgreso.cargar().then(pintarProgreso, function () {
         $('pCursos').innerHTML = '<p class="nota">No se pudo cargar tu progreso. Recarga la página.</p>';
       });

@@ -101,10 +101,6 @@
   .mct-atr { background: #222; color: #ccc; }
   .mct-saltar { position: absolute; top: 10px; right: 12px; background: none; border: none; color: #777; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
   .mct-saltar:hover { color: #fff; }
-  .mct-ayuda { position: fixed; left: 16px; bottom: 16px; z-index: 55; width: 40px; height: 40px; border-radius: 50%; border: 1px solid #2c2c2c;
-    background: #151515; color: #C6E000; font-family: 'Sora', sans-serif; font-weight: 800; font-size: 17px; cursor: pointer;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.5); }
-  .mct-ayuda:hover { border-color: #C6E000; }
   @keyframes mctIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
   `;
   function estilos() { if (!document.getElementById('mct-css')) { var s = document.createElement('style'); s.id = 'mct-css'; s.textContent = css; document.head.appendChild(s); } }
@@ -183,16 +179,12 @@
     })();
   }
 
-  function botonAyuda(pag, cfg) {
-    if (cfg.boton === false || document.querySelector('.mct-ayuda')) return;
-    estilos();
-    var b = document.createElement('button');
-    b.className = 'mct-ayuda'; b.type = 'button'; b.title = '¿Cómo funciona?'; b.setAttribute('aria-label', '¿Cómo funciona?'); b.textContent = '?';
-    b.onclick = function () { iniciar(pag, cfg); };
-    document.body.appendChild(b);
-  }
+  // El tutorial de esta página, para el menú de tu foto (assets/auth.js)
+  var actual = null;
+  function hay() { return !!actual; }
+  function abrir() { if (actual) iniciar(actual.pag, actual.cfg); }
 
-  window.MCTutorial = { objetivos: OBJETIVOS, iniciar: iniciar };
+  window.MCTutorial = { objetivos: OBJETIVOS, iniciar: iniciar, hay: hay, abrir: abrir };
   if (SCRIPT && SCRIPT.hasAttribute('data-solo-lista')) return;
 
   function arrancar() {
@@ -207,7 +199,7 @@
       var cfg = (t.paginas || {})[pag];
       if (!cfg || !cfg.activa || !(cfg.pasos || []).length) return;
       var clave = 'mc_tuto_' + pag, version = String(cfg.version || 1);
-      botonAyuda(pag, cfg);
+      actual = { pag: pag, cfg: cfg };
       if (q || leer(clave) !== version) cuandoListo(pag, cfg, function () { iniciar(pag, cfg, function () { if (!borrador) escribir(clave, version); }); });
     });
   }
