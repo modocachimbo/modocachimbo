@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prueba de sonidos · Modo Cachimbo</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap">
+<style>
+  body{margin:0;background:#0f0f0f;color:#e6e6e6;font:700 15px Nunito,system-ui,sans-serif;padding:20px 16px 40px}
+  h1{font-weight:900;font-size:22px;margin:0 0 4px}
+  p.sub{color:#9a9a9a;margin:0 0 20px}
+  .op{border:2px solid #2e2e2e;border-bottom-width:5px;border-radius:18px;background:#161616;padding:16px;margin-bottom:16px;max-width:520px}
+  .op h2{margin:0 0 4px;font-size:18px;font-weight:900}
+  .op h2 b{color:#c6e000}
+  .op p{margin:0 0 12px;color:#9a9a9a}
+  .fila{display:flex;gap:10px;flex-wrap:wrap}
+  button{font:900 14px Nunito,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.6px;padding:13px 16px;border-radius:14px;border:2px solid #2e2e2e;background:#1a1a1a;color:#e6e6e6;box-shadow:0 5px 0 #2e2e2e;cursor:pointer}
+  button:active{transform:translateY(5px);box-shadow:none}
+  button.on{background:#c6e000;color:#2b3300;border-color:#8fa300;box-shadow:0 5px 0 #8fa300}
+</style></head><body>
+<h1>Sonido de los selectores</h1>
+<p class="sub">Toca cada botón varias veces y dime la letra que más te guste. "Casilla" suena distinto al marcar y al desmarcar.</p>
+<div id="ops"></div>
+<script>
+let ctx = null;
+function audio(){ try{ if(!ctx){ const AC = window.AudioContext||window.webkitAudioContext; try{ if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(e){} ctx = new AC(); } if(ctx.state==='suspended') ctx.resume(); }catch(e){ return null; } return ctx; }
+function nota(f,t,dur,tipo,vol,hasta){ const a=audio(); if(!a) return; const o=a.createOscillator(), g=a.createGain(), t0=a.currentTime+(t||0);
+  o.type=tipo||'sine'; o.frequency.setValueAtTime(f,t0); if(hasta) o.frequency.exponentialRampToValueAtTime(hasta,t0+dur);
+  g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(vol||0.2,t0+0.008); g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+  o.connect(g); g.connect(a.destination); o.start(t0); o.stop(t0+dur+0.02); }
+function clic(dur,vol,fr){ const a=audio(); if(!a) return; const n=Math.floor(a.sampleRate*dur), b=a.createBuffer(1,n,a.sampleRate), d=b.getChannelData(0);
+  for(let i=0;i<n;i++) d[i]=(Math.random()*2-1)*(1-i/n); const s=a.createBufferSource(), fl=a.createBiquadFilter(), g=a.createGain();
+  s.buffer=b; fl.type='bandpass'; fl.frequency.value=fr; fl.Q.value=2; g.gain.value=vol; s.connect(fl); fl.connect(g); g.connect(a.destination); s.start(); }
+const OPS = [
+  { l:'A', n:'El actual', d:'El "pop" corto que tienes ahora.',
+    toque(){ nota(620,0,0.07,'triangle',0.22,940); nota(1880,0.005,0.04,'sine',0.05); },
+    marcar(on){ on ? (nota(700,0,0.06,'triangle',0.2), nota(1050,0.05,0.08,'triangle',0.2)) : nota(620,0,0.09,'triangle',0.16,420); } },
+  { l:'B', n:'Burbuja', d:'Un "blup" redondo que sube, como una burbuja.',
+    toque(){ nota(320,0,0.09,'sine',0.26,1100); },
+    marcar(on){ on ? (nota(380,0,0.07,'sine',0.24,900), nota(600,0.06,0.09,'sine',0.24,1400)) : nota(900,0,0.1,'sine',0.22,350); } },
+  { l:'C', n:'Madera', d:'Un "toc" seco y suave, como tocar una tecla de madera.',
+    toque(){ nota(1250,0,0.05,'sine',0.26,900); nota(2500,0,0.02,'sine',0.06); clic(0.012,0.12,3000); },
+    marcar(on){ on ? (nota(1100,0,0.05,'sine',0.24,850), nota(1500,0.07,0.06,'sine',0.24,1150)) : nota(950,0,0.06,'sine',0.22,650); } },
+  { l:'D', n:'Gotita', d:'Una gota de agua: brillante y corta.',
+    toque(){ nota(1500,0,0.08,'sine',0.2,650); },
+    marcar(on){ on ? (nota(1200,0,0.06,'sine',0.2,700), nota(1700,0.06,0.08,'sine',0.2,900)) : nota(1300,0,0.1,'sine',0.18,500); } },
+  { l:'E', n:'Clic suave', d:'Un clic con una notita encima, el más discreto.',
+    toque(){ clic(0.018,0.25,2400); nota(880,0.004,0.05,'triangle',0.12); },
+    marcar(on){ clic(0.018,0.22,2400); on ? nota(1175,0.004,0.07,'triangle',0.14) : nota(700,0.004,0.07,'triangle',0.12); } },
+];
+const cont = document.getElementById('ops');
+OPS.forEach(o => {
+  const div = document.createElement('div'); div.className='op';
+  div.innerHTML = `<h2><b>${o.l}</b> · ${o.n}</h2><p>${o.d}</p><div class="fila"><button class="t">Selector</button><button class="m">Casilla</button></div>`;
+  div.querySelector('.t').addEventListener('pointerdown', () => o.toque());
+  const m = div.querySelector('.m'); m.addEventListener('pointerdown', () => { m.classList.toggle('on'); o.marcar(m.classList.contains('on')); });
+  cont.appendChild(div);
+});
+</script>
+</body></html>
