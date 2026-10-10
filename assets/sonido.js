@@ -118,6 +118,10 @@
   var EN_SIMULACRO = /\/simulacro\.html$/.test(location.pathname);
   function tipoDe(a) {
     if (a.matches('a.back, a.home-btn, a.volver, a.logo')) return 'volver';
+    // Tutorial: Siguiente con la burbuja, Atrás y Saltar como retroceder, ¡Listo! con campanitas
+    if (a.matches('.mct-sig')) return /listo/i.test(a.textContent) ? 'abrir' : 'toque';
+    if (a.matches('.mct-atr, .mct-saltar')) return 'volver';
+    if (a.matches('.mct-ayuda')) return 'toque';
     if (EN_TARJETAS) return '';
     if (a.matches('#mcPopulares a')) return 'curso';
     // Inicio: "Nuevo para ti", Top del simulacro
