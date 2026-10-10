@@ -205,6 +205,7 @@
 <script src="../assets/acceso.js"></script>
 <script src="../assets/cursos.js"></script>
 <script src="../assets/pregunta.js"></script>
+<script src="../assets/sonido.js"></script>
 <script src="../assets/auth.js"></script>
 </head>
 <body>
@@ -469,7 +470,7 @@
       <div class="title">Fijas <span class="accent">Admisión</span></div>
       <div class="topbar">
         <div class="lives" id="lives"></div>
-        <div class="stat"><span id="score">0 pts</span></div>
+        <div class="stat"><span id="score">0 pts</span><button class="mc-son" type="button" data-mc-son></button></div>
       </div>
       <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
       <div class="progress-label" id="progress-label">Pregunta 1 de ${activeQuestions.length}</div>
@@ -597,6 +598,7 @@
     const q = activeQuestions[current];
     const isCorrect = index === q.correct;
     if (isCorrect) score += 10; else lives -= 1;
+    if (window.MCSonido) MCSonido[isCorrect ? 'bien' : 'mal']();
 
     lockOptions(index);
     renderLives();
@@ -615,6 +617,7 @@
     // Progreso del estudiante (assets/progreso.js), una sola vez por ronda
     if (showEnd.ronda === activeQuestions) return;
     showEnd.ronda = activeQuestions;
+    if (window.MCSonido) lives <= 0 ? MCSonido.perder() : MCSonido.fin(Math.round(answers.filter((a, i) => activeQuestions[i] && a === activeQuestions[i].correct).length / activeQuestions.length * 100));
     const prog = { tipo: 'fijas', carpeta: 'psicologia', anio: year, titulo: 'Psicología · Fijas ' + year, preguntas: activeQuestions, respuestas: answers };
     window.MCProgreso ? MCProgreso.terminar(prog) : (window.mcProgresoPend = (window.mcProgresoPend || []).concat([prog]));
   }
@@ -629,6 +632,7 @@
   });
 
   btnStart.addEventListener('click', () => {
+    if (window.MCSonido) MCSonido.empezar();
     startScreen.classList.remove('show');
     quizHeader.style.display = 'block';
     quizBody.style.display = 'block';
