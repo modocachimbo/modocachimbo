@@ -52,13 +52,6 @@
     g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol, t0 + dur * 0.3); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
     src.connect(fl); fl.connect(g); g.connect(salida); src.start(t0); src.stop(t0 + dur);
   }
-  // Timbre de campanita/marimba: la nota base más armónicos agudos que se apagan antes
-  function campana(f, t, dur, vol) {
-    nota(f, t, dur, 'sine', vol);
-    nota(f * 2, t, dur * 0.55, 'sine', vol * 0.32);
-    nota(f * 3.01, t, dur * 0.3, 'sine', vol * 0.16);
-    nota(f * 4.2, t, dur * 0.16, 'sine', vol * 0.07);
-  }
   var DO = 523.25, MI = 659.25, SOL = 783.99, DO2 = 1046.5, MI2 = 1318.5, SOL2 = 1568;
 
   var S = {
@@ -72,19 +65,19 @@
     },
     toque: function () { nota(620, 0, 0.07, 'triangle', 0.22, 940); nota(1880, 0.005, 0.04, 'sine', 0.05); },
     // Acierto: dos notas alegres que suben
-    bien: function () { campana(SOL, 0, 0.2, 0.2); campana(DO2, 0.08, 0.5, 0.22); nota(DO2 * 3, 0.09, 0.25, 'sine', 0.025); },
+    bien: function () { nota(DO2, 0, 0.11, 'triangle', 0.22); nota(MI2, 0.09, 0.28, 'triangle', 0.24); nota(MI2 * 2, 0.09, 0.2, 'sine', 0.04); },
     // Fallo: dos notas suaves que bajan, sin sonar a castigo
-    mal: function () { campana(330, 0, 0.2, 0.16); campana(247, 0.12, 0.4, 0.15); },
+    mal: function () { nota(392, 0, 0.12, 'sine', 0.16, 330); nota(294, 0.1, 0.22, 'sine', 0.13, 262); },
     empezar: function () { soplo(0.25, 0.14, 600, 2600); [DO, MI, SOL].forEach(function (f, i) { nota(f * 2, 0.05 + i * 0.06, 0.12, 'triangle', 0.16); }); },
     // Se acabaron las vidas: tres notas que caen
-    perder: function () { [SOL, MI, DO].forEach(function (f, i) { campana(f / 2, i * 0.16, 0.35, 0.16); }); campana(DO / 2.4, 0.5, 0.8, 0.13); },
+    perder: function () { [SOL, MI, DO].forEach(function (f, i) { nota(f / 2, i * 0.16, 0.24, 'triangle', 0.16); }); nota(DO / 2, 0.5, 0.5, 'sine', 0.12, DO / 2.4); },
     // Fin de ronda: fanfarria desde 70%, si no dos notas tranquilas
     fin: function (pct) {
       if (pct >= 70) {
-        [[DO, 0], [MI, .12], [SOL, .24], [DO2, .36]].forEach(function (x) { campana(x[0], x[1], .3, .18); });
-        [DO2, MI2, SOL2].forEach(function (f) { campana(f, .52, 1.1, .09); });
+        [[DO, 0], [MI, .13], [SOL, .26], [DO2, .39]].forEach(function (x) { nota(x[0], x[1], .2, 'triangle', .2); });
+        [DO2, MI2, SOL2].forEach(function (f) { nota(f, .55, .9, 'triangle', .12); });
       } else {
-        campana(SOL, 0, .3, .17); campana(DO2, .18, .7, .17);
+        nota(SOL, 0, .2, 'triangle', .18); nota(DO2, .18, .5, 'triangle', .18);
       }
     }
   };

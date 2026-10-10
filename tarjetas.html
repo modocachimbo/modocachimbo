@@ -647,13 +647,6 @@
       g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol, t0 + dur * 0.3); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
       src.connect(fl); fl.connect(g); g.connect(salida); src.start(t0); src.stop(t0 + dur);
     }
-    // Timbre de campanita/marimba: la nota base más armónicos agudos que se apagan antes
-    function campana(f, t, dur, vol) {
-      nota(f, t, dur, 'sine', vol);
-      nota(f * 2, t, dur * 0.55, 'sine', vol * 0.32);
-      nota(f * 3.01, t, dur * 0.3, 'sine', vol * 0.16);
-      nota(f * 4.2, t, dur * 0.16, 'sine', vol * 0.07);
-    }
     const DO = 523.25, MI = 659.25, SOL = 783.99, DO2 = 1046.5, MI2 = 1318.5, SOL2 = 1568;
     return {
       get activo() { return activo; },
@@ -662,26 +655,26 @@
       toque() { nota(620, 0, 0.07, 'triangle', 0.22, 940); nota(1880, 0.005, 0.04, 'sine', 0.05); },
       marcar(on) { on ? (nota(700, 0, 0.06, 'triangle', 0.2), nota(1050, 0.05, 0.08, 'triangle', 0.2)) : nota(620, 0, 0.09, 'triangle', 0.16, 420); },
       empezar() { soplo(0.25, 0.14, 600, 2600); [DO, MI, SOL].forEach((f, i) => nota(f * 2, 0.05 + i * 0.06, 0.12, 'triangle', 0.16)); },
-      abrir() { campana(SOL, 0, 0.2, 0.15); [DO2, MI2, SOL2].forEach((f, i) => campana(f, 0.1 + i * 0.07, 0.45, 0.12)); },
+      abrir() { nota(880, 0, 0.08, 'triangle', 0.18); [DO2, MI2, SOL2].forEach((f, i) => nota(f, 0.1 + i * 0.07, 0.22, 'sine', 0.16)); },
       error() { nota(220, 0, 0.12, 'square', 0.06); nota(185, 0.13, 0.18, 'square', 0.06); },
       voltear() { soplo(0.16, 0.22, 900, 3200); nota(420, 0.02, 0.09, 'sine', 0.05, 640); },
-      bien() { campana(SOL, 0, 0.2, 0.2); campana(DO2, 0.08, 0.5, 0.22); nota(DO2 * 3, 0.09, 0.25, 'sine', 0.025); },
-      repasar() { campana(330, 0, 0.2, 0.16); campana(247, 0.12, 0.4, 0.15); },
+      bien() { nota(DO2, 0, 0.11, 'triangle', 0.22); nota(MI2, 0.09, 0.28, 'triangle', 0.24); nota(MI2 * 2, 0.09, 0.2, 'sine', 0.04); },
+      repasar() { nota(392, 0, 0.12, 'sine', 0.16, 330); nota(294, 0.1, 0.22, 'sine', 0.13, 262); },
       racha(n) {
         const notas = n >= 9 ? [DO, MI, SOL, DO2, MI2, SOL2] : n >= 6 ? [DO, MI, SOL, DO2, MI2] : [DO, MI, SOL, DO2];
-        notas.forEach((f, i) => campana(f, i * 0.06, 0.35, 0.11));
+        notas.forEach((f, i) => nota(f, i * 0.07, 0.16, 'square', 0.06));
       },
       fin(pct) {
         if (pct >= 70) {
-          [[DO, 0], [MI, .12], [SOL, .24], [DO2, .36]].forEach(([f, t]) => campana(f, t, .3, .18));
-          [DO2, MI2, SOL2].forEach(f => campana(f, .52, 1.1, .09));
+          [[DO, 0], [MI, .13], [SOL, .26], [DO2, .39]].forEach(([f, t]) => nota(f, t, .2, 'triangle', .2));
+          [DO2, MI2, SOL2].forEach(f => nota(f, .55, .9, 'triangle', .12));
         } else if (pct >= 50) {
           // La flecha: un silbido mientras vuela y un "tac" al clavarse
           setTimeout(() => soplo(0.3, 0.18, 2500, 700), 600);
           nota(160, 0.9, 0.14, 'sine', 0.35, 70); nota(1800, 0.9, 0.05, 'triangle', 0.08);
-          campana(SOL, 1.05, .25, .16); campana(DO2, 1.2, .6, .17);
+          nota(SOL, 1.05, .16, 'triangle', .16); nota(DO2, 1.2, .45, 'triangle', .18);
         } else {
-          campana(SOL, 0, .3, .17); campana(DO2, .18, .7, .17);
+          nota(SOL, 0, .2, 'triangle', .18); nota(DO2, .18, .5, 'triangle', .18);
         }
       }
     };
