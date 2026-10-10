@@ -120,10 +120,13 @@
     if (a.matches('a.back, a.home-btn, a.volver, a.logo')) return 'volver';
     if (EN_TARJETAS) return '';
     if (a.matches('#mcPopulares a')) return 'curso';
+    // Inicio: "Nuevo para ti", Top del simulacro
+    if (a.matches('a.mcn-item')) return 'tema';
+    if (a.matches('a.mcr-bt')) return 'practicar';
     if (a.matches('#btnEmpezar, #btnCrear, #btnUnirse, #btnJugar, #btnRevancha')) return 'practicar';
     // Simulacro: marcar una alternativa no dice si está bien, así que suena la burbuja suave
     if (EN_SIMULACRO && a.matches('.alts:not(.ver) li button')) return 'seccion';
-    if (a.matches('.chips button, .tiempos button, #repMas, #btnCopiar, #btnAnt, #btnSig, #btnMarcar, #btnMapa, #mapaCerrar, #btnTerminar, #btnRevisar, button[data-i], button[data-f], #btnUnlock')) return 'toque';
+    if (a.matches('.chips button, .tiempos button, #repMas, .mcn-mas, #mcrVer, #btnCopiar, #btnAnt, #btnSig, #btnMarcar, #btnMapa, #mapaCerrar, #btnTerminar, #btnRevisar, button[data-i], button[data-f], #btnUnlock')) return 'toque';
     if (a.matches('#practicarLink, #tarjetasLink, #btnStartSim')) return 'practicar';
     if (a.matches('a.year-card.active, .year-card.multi, a.tema-card, .exam-sublist a')) return 'tema';
     if (a.matches('a[href$="perfil.html"], a[href*="perfil.html#"]')) return 'tema';
