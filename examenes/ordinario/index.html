@@ -132,6 +132,15 @@
   }
   .btn-start:hover { opacity: 0.88; }
   .btn-start:disabled { opacity: 0.35; cursor: default; }
+  /* Tarjetas gruesas estilo Duolingo con sombrita verde: se hunden al tocarlas */
+  .year-card { border: 2px solid #2e2e2e; border-radius: 18px; padding: 18px 18px 16px; -webkit-tap-highlight-color: transparent; }
+  .year-card.active { background: #121212; border-color: #3a4a00; box-shadow: 0 5px 0 #6f7f00; transition: transform .08s ease, box-shadow .08s ease, border-color .15s ease; }
+  .year-card.active:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 7px 0 #8fa300; }
+  .year-card.active:active { transform: translateY(5px); box-shadow: 0 0 0 transparent; }
+  .year-card .yr { font-family: 'Nunito', 'Sora', sans-serif; font-weight: 900; font-size: 22px; }
+  .year-card .count { font: 800 13px 'Nunito', 'Inter', sans-serif; }
+  .year-card.active .count { display: inline-block; align-self: flex-start; background: var(--accent-soft); border-radius: 10px; padding: 3px 9px; }
+  .year-card.disabled { opacity: .45; border-style: dashed; border-color: #262626; background: transparent; }
 </style>
 <script src="../../assets/mc-config.js"></script>
 <script src="../../assets/auth.js"></script>

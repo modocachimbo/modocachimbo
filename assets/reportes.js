@@ -117,6 +117,28 @@
   @keyframes repFade { from { opacity: 0; } to { opacity: 1; } }
   @keyframes repPop { from { opacity: 0; transform: translateY(14px) scale(.95); } to { opacity: 1; transform: none; } }
   @media (max-width: 480px) { .rep-card { padding: 26px 20px 20px; border-radius: 20px; } }
+  /* Estilo grueso tipo Duolingo: botones con borde inferior que se hunden al tocarlos */
+  .rep-btn, .rep-letter, .rep-send, .rep-wa, .rep-close2, .rep-x { transition: transform .08s ease, box-shadow .08s ease, border-color .15s; -webkit-tap-highlight-color: transparent; }
+  .rep-btn { border: 2px solid rgba(251,191,36,.35) !important; border-bottom-width: 4px !important; border-radius: 12px !important; color: #FBBF24 !important;
+    background: rgba(251,191,36,.06) !important; font-family: Nunito, Inter, sans-serif !important; font-weight: 800 !important; }
+  .rep-btn:active, .rep-letter:not(:disabled):active, .rep-close2:active, .rep-x:active { transform: translateY(2px); border-bottom-width: 2px !important; margin-bottom: 2px; }
+  .rep-btn.done { color: #25D366 !important; border-color: rgba(37,211,102,.35) !important; background: rgba(37,211,102,.08) !important; }
+  .rep-card { border-width: 2px; border-bottom-width: 6px; }
+  .rep-x { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 11px; background: #161616; }
+  .rep-info { border: 2px solid #262626; border-radius: 16px; }
+  .rep-label { font-family: Nunito, Inter, sans-serif; font-weight: 800; font-size: 14px; }
+  .rep-letter { border: 2px solid #2e2e2e !important; border-bottom-width: 4px !important; border-radius: 13px !important; background: #161616 !important;
+    font-family: Nunito, Inter, sans-serif !important; font-weight: 900 !important; }
+  .rep-letter.nose { font-weight: 800 !important; }
+  .rep-letter.sel { background: #FBBF24 !important; border-color: #FBBF24 !important; border-bottom-color: #b8860b !important; color: #2a1d00 !important; }
+  .rep-letter:disabled { border-style: dashed !important; border-bottom-width: 2px !important; }
+  .rep-text { border: 2px solid #2e2e2e !important; border-bottom-width: 4px !important; border-radius: 14px !important; background: #121212 !important; }
+  .rep-text:focus { border-color: #C6E000 !important; }
+  .rep-send { border: 2px solid #C6E000 !important; border-radius: 16px !important; box-shadow: 0 5px 0 #8fa300; margin-bottom: 5px; color: #2b3300 !important;
+    font-family: Nunito, Inter, sans-serif !important; font-weight: 900 !important; text-transform: uppercase; letter-spacing: .7px; }
+  .rep-send:not(:disabled):active { transform: translateY(5px); box-shadow: 0 0 0 transparent; }
+  .rep-wa { border-width: 2px !important; border-bottom-width: 4px !important; border-radius: 16px !important; font-family: Nunito, Inter, sans-serif !important; font-weight: 900 !important; }
+  .rep-close2 { border: 2px solid #2e2e2e; border-bottom-width: 4px; background: #161616; font-family: Nunito, Inter, sans-serif; font-weight: 800; }
   `;
   var styleEl = document.createElement('style');
   styleEl.textContent = css;
