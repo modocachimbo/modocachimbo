@@ -287,7 +287,9 @@
   // Alternativas cortas en columnas: si alguna no cabe (palabra larga, letra grande),
   // pasan a 2 columnas y, si tampoco, a una sola
   var st2 = document.createElement('style');
-  st2.textContent = '.mcq-cortas.mcq-c2{grid-template-columns:repeat(2,minmax(0,1fr))}.mcq-cortas.mcq-c1{grid-template-columns:minmax(0,1fr)}';
+  // La letra ya es gruesa (800): la negrita usa el peso más grueso de Nunito (1000) y blanco puro para que se note
+  st2.textContent = '.qtext :is(strong,b),.question :is(strong,b),.option :is(strong,b),.opt-row :is(strong,b),.mcq-p :is(strong,b),.cara :is(strong,b){font-weight:1000;color:#fff}' +
+    '.mcq-cortas.mcq-c2{grid-template-columns:repeat(2,minmax(0,1fr))}.mcq-cortas.mcq-c1{grid-template-columns:minmax(0,1fr)}';
   document.head.appendChild(st2);
   function noCabe(lista) {
     return [].some.call(lista.children, function (h) { return h.scrollWidth > h.clientWidth + 1; });
