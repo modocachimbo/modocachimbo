@@ -148,7 +148,8 @@ function parsearTexto(raw) {
 /* ---------- Vista previa (igual que la web del alumno) ---------- */
 function formatQText(str) {
   let e = esc(str);
-  e = e.replace(/&lt;u&gt;(.+?)&lt;\/u&gt;/g, '<u>$1</u>');
+  // Etiquetas permitidas: <u> <i> <b> <em> <strong> <sub> <sup> (también una dentro de otra)
+  for (var k = 0; k < 3; k++) e = e.replace(/&lt;(u|i|b|em|strong|sub|sup)&gt;([\s\S]*?)&lt;\/\1&gt;/gi, function (x, t, d) { t = t.toLowerCase(); return '<' + t + '>' + d + '</' + t + '>'; });
   e = e.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   e = e.replace(/\*(.+?)\*/g, '<em>$1</em>');
   return e;
