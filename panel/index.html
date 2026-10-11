@@ -640,11 +640,16 @@ E) Alternativa"></textarea>
               <code>TEXTO 03:<br>Hubo un tiempo en que…<br>PREGUNTA 9:<br>¿Cuál es el título del texto?<br>…<br>PREGUNTA 10:<br>…<br>FIN TEXTO</code><span>Lectura para varias preguntas (Raz. Verbal, comprensión). Escribe <code>TEXTO</code> (con su número) y pega la lectura; vale para todas las preguntas de abajo hasta otro <code>TEXTO</code> o <code>FIN TEXTO</code>. El alumno la ve arriba de cada pregunta ("pregunta 2 de 3") y al mezclar (Repaso, Fijas) las preguntas del mismo texto salen juntas y en orden. Deja una línea en blanco entre párrafos.</span>
               <code>A) VVV   B) FVV   C) VVF</code><span>Varias alternativas en una línea también valen. Si son cortas, se muestran en columnas solas.</span>
             </div>
-            <div class="fmt-tit">Texto y fórmulas</div>
+            <div class="fmt-tit">Texto y fórmulas · también con los botones B, I y U encima del cuadro (o Ctrl+B, Ctrl+I, Ctrl+U)</div>
             <div class="fmt-grid">
-              <code>*Homo sapiens*</code><span>Cursiva.</span>
-              <code>**importante**</code><span>Negrita.</span>
-              <code>&lt;u&gt;texto&lt;/u&gt;</code><span>Subrayado. También valen <code>&lt;i&gt;cursiva&lt;/i&gt;</code> y <code>&lt;b&gt;negrita&lt;/b&gt;</code>, y se pueden combinar: <code>*&lt;u&gt;Homo&lt;/u&gt; sapiens*</code>.</span>
+              <code>*Homo sapiens*</code><span>Cursiva. Para nombres científicos, títulos de obras y palabras en otro idioma.</span>
+              <code>**importante**</code><span>Negrita. Para resaltar la palabra clave de la pregunta (NO, EXCEPTO, INCORRECTO).</span>
+              <code>&lt;u&gt;texto&lt;/u&gt;</code><span>Subrayado. Para la palabra que se analiza en analogías, sinónimos o término excluido.</span>
+              <code>**&lt;i&gt;Homo sapiens&lt;/i&gt;**</code><span>Negrita y cursiva a la vez.</span>
+              <code>*&lt;u&gt;Homo&lt;/u&gt; sapiens*</code><span>Se pueden combinar: aquí todo en cursiva y solo "Homo" subrayado.</span>
+              <code>&lt;i&gt;texto&lt;/i&gt;  &lt;b&gt;texto&lt;/b&gt;</code><span>Otra forma de escribir cursiva y negrita (útil si copias de Word o de una web).</span>
+              <code>H&lt;sub&gt;2&lt;/sub&gt;O  x&lt;sup&gt;2&lt;/sup&gt;</code><span>Subíndice y superíndice sin usar fórmulas.</span>
+              <code>&lt;u&gt;ÁRBOL&lt;/u&gt; : BOSQUE</code><span>Cada etiqueta que abres se cierra con su barra: <code>&lt;u&gt;</code> … <code>&lt;/u&gt;</code>. Si falta el cierre, se ve tal cual como texto.</span>
               <code>$x^2$  $\frac{a}{b}$  $\sqrt{16}$</code><span>Fórmulas entre $…$: potencias, fracciones, raíces.</span>
               <code>$H_2SO_4$  $\Delta H$  $10^{-3}$</code><span>Subíndices, letras griegas, notación científica.</span>
               <code>$\overline{ab}$</code><span>Barra encima.</span>
@@ -1316,7 +1321,7 @@ E) Alternativa"></textarea>
       ${distinta ? `<div class="banner warn" style="margin-top:14px;">Ojo: la pregunta ${ctx.n} publicada no coincide con la del reporte. Es posible que el orden haya cambiado; revisa antes de guardar.</div>` : ''}
       <label class="fld">Pregunta</label>
       <textarea class="ta" id="edText">${esc(q.text)}</textarea>
-      <div class="hint">Puedes usar *cursiva*, **negrita** y ecuaciones entre $…$ (ej.: $x^2$). Los saltos de línea se respetan. Para una imagen nueva en medio del texto escribe <b>[IMAGEN]</b> (o <b>[IMAGEN DERECHA]</b>) en su propia línea; las ya publicadas se ven como [IMG:…], muévelas o bórralas como texto.</div>
+      <div class="hint">Puedes usar *cursiva*, **negrita**, &lt;u&gt;subrayado&lt;/u&gt; (y combinarlos: **&lt;i&gt;negrita cursiva&lt;/i&gt;**) y ecuaciones entre $…$ (ej.: $x^2$). Los saltos de línea se respetan. Para una imagen nueva en medio del texto escribe <b>[IMAGEN]</b> (o <b>[IMAGEN DERECHA]</b>) en su propia línea; las ya publicadas se ven como [IMG:…], muévelas o bórralas como texto.</div>
       <div id="edMarcas"></div>
       <label class="fld">Imagen o gráfico <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— debajo del enunciado</span></label>
       <div id="edImg"></div>
@@ -1532,6 +1537,7 @@ E) Alternativa"></textarea>
 <script src="../assets/cursos.js"></script>
 <script src="cursos-panel.js"></script>
 <script src="fijas-panel.js"></script>
+<script src="formato-barra.js"></script>
 <script src="practica-panel.js"></script>
 <script src="tarjetas-panel.js"></script>
 <script src="../assets/tutorial.js" data-solo-lista></script>
