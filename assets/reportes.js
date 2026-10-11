@@ -150,7 +150,7 @@
   }
   function limpio(s) { // quita marcas *cursiva*, **negrita**, <u>, $...$ para mensajes
     if (window.MCPregunta && MCPregunta.sinLectura) s = MCPregunta.sinLectura(s); // sin la lectura compartida
-    return String(s || '').replace(/<\/?u>/g, '').replace(/\*\*(.+?)\*\*/g, '$1').replace(/\*(.+?)\*/g, '$1').replace(/\s+/g, ' ').trim();
+    return String(s || '').replace(/<\/?(u|i|b|em|strong|sub|sup)>/gi, '').replace(/\*\*(.+?)\*\*/g, '$1').replace(/\*(.+?)\*/g, '$1').replace(/\s+/g, ' ').trim();
   }
   function corto(s, n) { s = limpio(s); return s.length > n ? s.slice(0, n - 1) + '…' : s; }
   function waLink(msg) { return 'https://wa.me/' + WA + '?text=' + encodeURIComponent(msg); }

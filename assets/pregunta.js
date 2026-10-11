@@ -6,6 +6,7 @@
      | a | b | c |            tabla (si la 2.ª fila es |---|, la 1.ª es título)
      I. CaO || p) cal viva    columnas sin bordes (separadas por ||)
      **negrita**, *cursiva*, <u>subrayado</u>, $fórmulas$
+     (también <i> <b> <em> <strong> <sub> <sup>)
      [TEXTO 03] … [/TEXTO]    lectura que comparten varias preguntas
                               (va al inicio; se ve en un recuadro plegable)
    En el panel, [IMAGEN] y [IMAGEN DERECHA] son las marcas que
@@ -19,7 +20,8 @@
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function formato(s) {
     var e = esc(s);
-    e = e.replace(/&lt;u&gt;(.+?)&lt;\/u&gt;/g, '<u>$1</u>');
+    // Etiquetas permitidas: <u> <i> <b> <em> <strong> <sub> <sup> (también una dentro de otra)
+    for (var k = 0; k < 3; k++) e = e.replace(/&lt;(u|i|b|em|strong|sub|sup)&gt;([\s\S]*?)&lt;\/\1&gt;/gi, function (x, t, d) { t = t.toLowerCase(); return '<' + t + '>' + d + '</' + t + '>'; });
     e = e.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     e = e.replace(/\*(.+?)\*/g, '<em>$1</em>');
     return ecuaciones(e);
@@ -230,7 +232,7 @@
   function cortas(options) {
     if (!options || options.length < 3) return false;
     return options.every(function (o) {
-      var t = String(o.text || '');
+      var t = String(o.text || '').replace(/<\/?(u|i|b|em|strong|sub|sup)>/gi, '').replace(/\*/g, '');
       if (/\$|\n|<|\[IMG/.test(t)) return t.replace(/\$[^$]*\$/g, 'xxxxx').length <= 12 && !/\n|<|\[IMG/.test(t);
       return t.length <= 14;
     });
@@ -281,6 +283,35 @@
     '@media (max-width:600px){.mcq-cortas{grid-template-columns:repeat(2,minmax(0,1fr))}' +
     '.mcq-con-der{grid-template-columns:minmax(0,1fr)}.mcq-con-der>.mcq-der{grid-column:1;grid-row:auto!important;order:-1}}';
   document.head.appendChild(st);
+
+  // Alternativas cortas en columnas: si alguna no cabe (palabra larga, letra grande),
+  // pasan a 2 columnas y, si tampoco, a una sola
+  var st2 = document.createElement('style');
+  st2.textContent = '.mcq-cortas.mcq-c2{grid-template-columns:repeat(2,minmax(0,1fr))}.mcq-cortas.mcq-c1{grid-template-columns:minmax(0,1fr)}';
+  document.head.appendChild(st2);
+  function noCabe(lista) {
+    return [].some.call(lista.children, function (h) { return h.scrollWidth > h.clientWidth + 1; });
+  }
+  function ajustarCols(lista) {
+    if (!lista.isConnected || !lista.clientWidth) return;
+    lista.classList.remove('mcq-c2', 'mcq-c1');
+    var tres = getComputedStyle(lista).gridTemplateColumns.split(' ').length >= 3;
+    if (tres && noCabe(lista)) lista.classList.add('mcq-c2');
+    if (noCabe(lista)) { lista.classList.remove('mcq-c2'); lista.classList.add('mcq-c1'); }
+  }
+  var vistas = window.ResizeObserver ? new ResizeObserver(function (es) { es.forEach(function (e) { ajustarCols(e.target); }); }) : null;
+  function revisar(raiz) {
+    var ls = raiz.classList && raiz.classList.contains('mcq-cortas') ? [raiz] : (raiz.querySelectorAll ? raiz.querySelectorAll('.mcq-cortas') : []);
+    [].forEach.call(ls, function (l) { if (l._mcqVista) return; l._mcqVista = true; if (vistas) vistas.observe(l); ajustarCols(l); });
+  }
+  if (window.MutationObserver) new MutationObserver(function (ms) {
+    ms.forEach(function (m) {
+      [].forEach.call(m.addedNodes, function (n) { if (n.nodeType === 1) revisar(n); });
+      if (m.type === 'attributes' && m.target.classList.contains('mcq-cortas')) revisar(m.target);
+    });
+  }).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+  // Cuando llega la letra Nunito el ancho cambia
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { [].forEach.call(document.querySelectorAll('.mcq-cortas'), ajustarCols); });
 
   window.MCPregunta = { armar: armar, pintar: pintar, alternativas: alternativas, cortas: cortas, formato: formato, sinLectura: sinLectura, mezclar: mezclar, rangos: rangos,
     ordenAlt: ordenAlt, conOrden: conOrden, mezclarAlt: mezclarAlt, sePuedeMezclar: sePuedeMezclar, raiz: RAIZ };
