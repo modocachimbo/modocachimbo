@@ -828,5 +828,281 @@
         "correct": 3
       }
     ]
+  },
+  {
+    "num": "04",
+    "name": "Divisibilidad",
+    "questions": [
+      {
+        "text": "Un mayorista textil empaqueta lotes de prendas asignándoles códigos correlativos de tres cifras (desde el 100 hasta el 999). Para la campaña de invierno, el sistema clasifica las telas de lana usando códigos que sean múltiplos de 3; sin embargo, descarta los códigos que también sean múltiplos de 5 porque corresponden a saldos de algodón. ¿Cuántos códigos de tres cifras calificarán exclusivamente para las prendas de lana?",
+        "topic": "Aritmética · Divisibilidad",
+        "options": [
+          {
+            "letter": "A",
+            "text": "300"
+          },
+          {
+            "letter": "B",
+            "text": "200"
+          },
+          {
+            "letter": "C",
+            "text": "270"
+          },
+          {
+            "letter": "D",
+            "text": "60"
+          },
+          {
+            "letter": "E",
+            "text": "240"
+          }
+        ],
+        "correct": 4
+      },
+      {
+        "text": "Una distribuidora autorizada de electrodomésticos despacha cajas de mercadería cuyos pesos netos son siempre múltiplos exactos de 12 kg. Por un tema de aforo logístico en las unidades de transporte de carga pesada, el almacenero solo aprueba despachos con pesos totales mayores a 800 kg pero menores a 1200 kg. Adicionalmente, el sistema rechaza de manera automatizada cualquier orden de salida cuyo peso termine en la cifra 6 debido a protocolos de estibaje. ¿Cuántas opciones de pesaje distintas se pueden aprobar para el transporte de los lotes?",
+        "topic": "Aritmética · Divisibilidad",
+        "options": [
+          {
+            "letter": "A",
+            "text": "33"
+          },
+          {
+            "letter": "B",
+            "text": "20"
+          },
+          {
+            "letter": "C",
+            "text": "26"
+          },
+          {
+            "letter": "D",
+            "text": "8"
+          },
+          {
+            "letter": "E",
+            "text": "13"
+          }
+        ],
+        "correct": 2
+      },
+      {
+        "text": "Una distribuidora de suministros agrícolas empaqueta semillas en cajas especiales identificadas con un código correlativo de tres dígitos (desde el 100 hasta el 999). Para la auditoría de inventario, el sistema automatizado selecciona únicamente aquellos códigos que cumplen una propiedad logística particular: al sumarles 10 unidades, el resultado se puede dividir exactamente entre 7. ¿Cuántas cajas del almacén serán seleccionadas para esta auditoría?",
+        "topic": "Aritmética · Divisibilidad",
+        "options": [
+          {
+            "letter": "A",
+            "text": "120"
+          },
+          {
+            "letter": "B",
+            "text": "129"
+          },
+          {
+            "letter": "C",
+            "text": "109"
+          },
+          {
+            "letter": "D",
+            "text": "135"
+          },
+          {
+            "letter": "E",
+            "text": "131"
+          }
+        ],
+        "correct": 1
+      },
+      {
+        "text": "El área de recursos humanos de una empresa textil analiza la composición de su personal en el turno noche. Se observa que la quinta parte de los trabajadores cuenta con certificación técnica avanzada y la novena parte del total son varones. Si el número total de empleados en este turno es mayor que 60 pero menor que 105, ¿Cuántas mujeres laboran en dicho horario?",
+        "topic": "Aritmética · Divisibilidad",
+        "options": [
+          {
+            "letter": "A",
+            "text": "85"
+          },
+          {
+            "letter": "B",
+            "text": "45"
+          },
+          {
+            "letter": "C",
+            "text": "90"
+          },
+          {
+            "letter": "D",
+            "text": "80"
+          },
+          {
+            "letter": "E",
+            "text": "95"
+          }
+        ],
+        "correct": 3
+      },
+      {
+        "text": "Una imprenta editorial numera de forma automatizada los cupones de un sorteo regional usando la secuencia aritmética 94, 101, 108, hasta el 4042. El departamento de control de calidad decide retirar aquellos cupones cuyo código numérico guarde la propiedad de generar un residuo igual a 7 al ser dividido entre 11, debido a una duplicidad detectada en el software de impresión. ¿Cuántos cupones permanecerán aptos para el sorteo final tras aplicar este filtro?",
+        "topic": "Aritmética · Divisibilidad",
+        "options": [
+          {
+            "letter": "A",
+            "text": "513"
+          },
+          {
+            "letter": "B",
+            "text": "514"
+          },
+          {
+            "letter": "C",
+            "text": "511"
+          },
+          {
+            "letter": "D",
+            "text": "541"
+          },
+          {
+            "letter": "E",
+            "text": "510"
+          }
+        ],
+        "correct": 1
+      },
+      {
+        "text": "El departamento de control de calidad de un viñedo utiliza un algoritmo automatizado para clasificar los lotes de botellas de vino según su volumen de producción. La alerta del sistema indica que si el quíntuplo de la cantidad de cajas de un lote (N) se incrementa en 3 unidades, el resultado se puede distribuir exactamente en parihuelas de 7 unidades cada una. Si el lote evaluado corresponde a la máxima capacidad de almacenamiento permitida de dos cifras para dicha zona, determine la suma de las cifras de esta cantidad de cajas.",
+        "topic": "Aritmética · Divisibilidad",
+        "options": [
+          {
+            "letter": "A",
+            "text": "15"
+          },
+          {
+            "letter": "B",
+            "text": "14"
+          },
+          {
+            "letter": "C",
+            "text": "13"
+          },
+          {
+            "letter": "D",
+            "text": "16"
+          },
+          {
+            "letter": "E",
+            "text": "11"
+          }
+        ],
+        "correct": 2
+      },
+      {
+        "text": "El sistema informático de una entidad aduanera procesa los códigos de lote de tres contenedores mediante la relación matemática $\\overline{abba} - \\overline{1nen} + \\overline{9men}$. Por motivos de seguridad y codificación digital, el sistema central solo valida el ingreso de la mercancía si el resultado final de dicha operación genera un código que sea perfectamente divisible entre 9. Determine el máximo valor que puede adoptar la suma de los componentes variables \"$m + n$\" para que el acceso sea autorizado.",
+        "topic": "Aritmética · Divisibilidad",
+        "options": [
+          {
+            "letter": "A",
+            "text": "6"
+          },
+          {
+            "letter": "B",
+            "text": "10"
+          },
+          {
+            "letter": "C",
+            "text": "14"
+          },
+          {
+            "letter": "D",
+            "text": "16"
+          },
+          {
+            "letter": "E",
+            "text": "18"
+          }
+        ],
+        "correct": 1
+      },
+      {
+        "text": "El sistema de auditoría automatizado de una empresa textil detectó un error de digitación inverso en los balances de dos lotes de producción. Al analizar el impacto financiero, el contador general nota que si al cuadrado del código de barras original de dos dígitos se le resta el cuadrado del código erróneo (que contiene los mismos dos dígitos pero en orden invertido), la pérdida resultante siempre se puede dividir exactamente por una de las características de los dígitos iniciales. ¿Por cuál de las siguientes opciones el resultado es siempre divisible?",
+        "topic": "Aritmética · Divisibilidad",
+        "options": [
+          {
+            "letter": "A",
+            "text": "7"
+          },
+          {
+            "letter": "B",
+            "text": "El producto de los dígitos."
+          },
+          {
+            "letter": "C",
+            "text": "La suma de los cuadrados de los dígitos."
+          },
+          {
+            "letter": "D",
+            "text": "La diferencia de los dígitos."
+          },
+          {
+            "letter": "E",
+            "text": "13"
+          }
+        ],
+        "correct": 3
+      },
+      {
+        "text": "El departamento de ciberseguridad de una central de telecomunicaciones utiliza un algoritmo de encriptación cíclica para proteger las frecuencias de transmisión móvil. La cantidad de solicitudes de acceso denegadas en un día se rige bajo la expresión matemática compleja $10^N + 3(4^{N+2}) + 5$, donde N representa el nivel de potencia del servidor asignado de forma entera. Para realizar una auditoría limpia, el sistema operativo requiere indexar los datos en grupos idénticos sin que sobre ninguna unidad. ¿Por cuál de los siguientes factores se puede dividir siempre y de forma exacta dicha cantidad de solicitudes?",
+        "topic": "Aritmética · Divisibilidad",
+        "options": [
+          {
+            "letter": "A",
+            "text": "7"
+          },
+          {
+            "letter": "B",
+            "text": "11"
+          },
+          {
+            "letter": "C",
+            "text": "9"
+          },
+          {
+            "letter": "D",
+            "text": "5"
+          },
+          {
+            "letter": "E",
+            "text": "4"
+          }
+        ],
+        "correct": 2
+      },
+      {
+        "text": "En una batalla han participado 4000 hombres. De los sobrevivientes se sabe que el $56{,}\\overgroup{56}\\%$ no fuma, el $56{,}\\overgroup{756}\\%$ no bebe. ¿Cuántos han muerto en la batalla?",
+        "topic": "Aritmética · Divisibilidad",
+        "options": [
+          {
+            "letter": "A",
+            "text": "337"
+          },
+          {
+            "letter": "B",
+            "text": "423"
+          },
+          {
+            "letter": "C",
+            "text": "294"
+          },
+          {
+            "letter": "D",
+            "text": "585"
+          },
+          {
+            "letter": "E",
+            "text": "197"
+          }
+        ],
+        "correct": 0
+      }
+    ]
   }
 ]
