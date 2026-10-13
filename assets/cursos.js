@@ -6,6 +6,7 @@
    - marcar Seminarios / Banqueo como Próximamente si aún no tienen temas
    - saber qué temas usa Fijas
    - agregar la tarjeta de Flashcards (tarjetas.html) en cada curso
+   - agregar la tarjeta de Vocabulario (vocabulario.html) en los cursos que elige el panel
    - ordenar las tarjetas del curso (automático o el orden del panel)
    ========================================================= */
 (function () {
@@ -113,6 +114,52 @@
     cont.classList.add('con-tarjetas');
   }
 
+  /* ---------- Página de un curso: tarjeta de Vocabulario ---------- */
+  // Diccionario con marcador y la Ñ (se puede cambiar aquí sin tocar nada más)
+  var ICONO_VOCABULARIO = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M24 4h56a8 8 0 0 1 8 8v66a8 8 0 0 1-8 8H76V12H24z" opacity=".55"/>' +
+    '<path fill-rule="evenodd" d="M18 12h52a8 8 0 0 1 8 8v68a8 8 0 0 1-8 8H18a8 8 0 0 1-8-8V20a8 8 0 0 1 8-8zm34 0v28l7-6 7 6V12zM26 81h9V63l14 18h9V51h-9v18L35 51h-9zm1-34c3-6 8-6 12-3.5s7 3 10-1l4 3.5c-3 6-8 6-12 3.5s-7-3-10 1z"/></svg>';
+  var CLAVE_VOC = 'mc_voc_cursos';
+  // El panel (Panel → Vocabulario) elige en qué cursos aparece: ajustes, clave 'vocabulario'
+  function cursosVocabulario() {
+    if (!window.MCAuth) return Promise.resolve(null);
+    return MCAuth.listo.then(function (c) { return c.from('ajustes').select('valor').eq('clave', 'vocabulario').maybeSingle(); })
+      .then(function (r) {
+        if (!r || r.error) return null;
+        var l = (r.data && r.data.valor && r.data.valor.cursos) || [];
+        try { localStorage.setItem(CLAVE_VOC, JSON.stringify(l)); } catch (e) {}
+        return l;
+      }, function () { return null; });
+  }
+  function pintarVocabulario(id) {
+    var cont = document.querySelector('.courses'); if (!cont) return Promise.resolve();
+    var poner = function (si) {
+      var card = cont.querySelector('[data-mc="vocabulario"]');
+      card = card && card.closest('.course');
+      if (!si) { if (card) card.remove(); return; }
+      if (card) return;
+      var d = document.createElement('div');
+      d.className = 'course active';
+      d.innerHTML = '<div class="icon">' + ICONO_VOCABULARIO + '</div><h3>Vocabulario</h3><div class="rule"></div>' +
+        '<a class="btn" data-mc="vocabulario" href="../vocabulario.html?curso=' + encodeURIComponent(id) + '">Entrar</a>';
+      cont.appendChild(d);
+    };
+    var guardados = null;
+    try { guardados = JSON.parse(localStorage.getItem(CLAVE_VOC) || 'null'); } catch (e) {}
+    if (Array.isArray(guardados)) poner(guardados.indexOf(id) >= 0);
+    return cursosVocabulario().then(function (l) { if (l) poner(l.indexOf(id) >= 0); });
+  }
+  // Con 7 u 8 tarjetas en pantallas anchas van de 4 en 4
+  function columnas() {
+    var cont = document.querySelector('.courses'); if (!cont) return;
+    if (!document.getElementById('mcc-css7')) {
+      var st = document.createElement('style'); st.id = 'mcc-css7';
+      st.textContent = '@media (min-width:1001px){.courses.con-7{grid-template-columns:repeat(4,1fr)}}';
+      document.head.appendChild(st);
+    }
+    var n = [].filter.call(cont.children, function (el) { return el.classList.contains('course'); }).length;
+    cont.classList.toggle('con-7', n >= 7);
+  }
+
   /* ---------- Página de un curso: Repaso y Fijas ---------- */
   // Preguntas del banco propio de Fijas ({año}-fijas.json)
   function bancoFijas(id, anio) {
@@ -125,7 +172,7 @@
 
   /* ---------- Orden de las tarjetas del curso ---------- */
   // Automático: este orden, y las de "Próximamente" al final. El panel puede guardar otro (c.ordenTarjetas).
-  var ORDEN = ['libro', 'repaso', 'tarjetas', 'seminarios', 'banqueo', 'fijas'];
+  var ORDEN = ['libro', 'repaso', 'tarjetas', 'vocabulario', 'seminarios', 'banqueo', 'fijas'];
   function claveTarjeta(card) {
     var a = card.querySelector('a.btn'); if (!a) return '';
     var mc = a.getAttribute('data-mc'); if (mc) return mc;
@@ -133,6 +180,7 @@
   }
   function ordenarTarjetas(c) {
     var cont = document.querySelector('.courses'); if (!cont) return;
+    columnas();
     var manual = c && Array.isArray(c.ordenTarjetas) && c.ordenTarjetas.length ? c.ordenTarjetas : null;
     var orden = manual ? manual.concat(ORDEN.filter(function (k) { return manual.indexOf(k) < 0; })) : ORDEN;
     var cards = [].slice.call(cont.children).filter(function (el) { return el.classList.contains('course'); });
@@ -145,9 +193,13 @@
 
   function pintarCurso(id) {
     pintarTarjetas(id);
+    var voc = pintarVocabulario(id);
     var secciones = pintarSecciones(id);
+    var ultimo = null;
+    voc.then(function () { ordenarTarjetas(ultimo); });
     return Promise.all([curso(id), manifest(id)]).then(function (r) {
       var c = r[0], man = r[1];
+      ultimo = c;
       if (!c) return secciones.then(function () { ordenarTarjetas(null); });
       return bancoFijas(id, c.fijas && c.fijas.modo === 'banco' && c.fijas.anio).then(function (nFijas) {
       estilosDisabled();
