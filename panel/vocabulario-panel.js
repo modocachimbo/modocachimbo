@@ -1,34 +1,33 @@
 /* =========================================================
    Panel · Vocabulario (Razonamiento Verbal)
-   El banco de palabras de Sinónimos y Antónimos. Es uno solo
-   y aparece en todos los cursos que tengan Vocabulario encendido.
-   - Se escribe una palabra por línea:
-       EFÍMERO: pasajero, fugaz, breve
+   El banco de palabras: uno solo para todos los cursos que tengan
+   Vocabulario encendido y para todos los ciclos.
+   - Cada palabra es una ficha:
+       EFÍMERO
+         Sin: pasajero, fugaz, breve
+         Ant: duradero, perenne
          Def: Que dura poco tiempo.
-         Ej: Su fama fue efímera; hoy nadie la recuerda.
-     Def y Ej son opcionales (sin Ej no sale en "Completar",
-     sin Def no sale en "Escribir").
-   - También se puede pegar desde Excel: palabra | lista | def | ej.
-   - Guardar reemplaza todo el tema (tabla vocabulario,
-     función guardar_vocabulario_tema de supabase/13-vocabulario.sql).
+         Ej: Fue una alegría efímera.
+     Necesita Sin o Ant (o los dos). Def y Ej son opcionales
+     (sin Ej no sale en "Completar", sin Def no sale en "Escribir").
+   - También se puede pegar desde Excel: palabra | sin | ant | def | ej.
+   - Al abrir la pestaña se cargan las palabras publicadas para
+     corregirlas; Guardar reemplaza todo el banco (tabla vocabulario,
+     función guardar_vocabulario de supabase/13-vocabulario.sql).
    - Los cursos van en ajustes, clave 'vocabulario'.
    ========================================================= */
-const VO_TEMAS = [
-  { id: 'sinonimos', nombre: 'Sinónimos', lista: 'sinónimos' },
-  { id: 'antonimos', nombre: 'Antónimos', lista: 'antónimos' }
-];
-const VO = { tema: 'sinonimos', textos: {}, publicados: {}, cambios: {}, cargado: false, cursos: null, borrar: false, busca: '' };
-const VO_EJEMPLO = 'EFÍMERO: pasajero, fugaz, breve\n  Def: Que dura poco tiempo.\n  Ej: Su fama fue efímera; hoy nadie la recuerda.\n\nLOCUAZ: hablador, parlanchín, charlatán\n  Def: Que habla mucho.';
+const VO = { texto: '', publicados: [], cambios: false, cargado: false, cursos: null, borrar: false, busca: '', filtro: 'todo' };
+const VO_EJEMPLO = 'EFÍMERO\n  Sin: pasajero, fugaz, breve\n  Ant: duradero, perenne\n  Def: Que dura poco tiempo.\n  Ej: Fue una alegría efímera.\n\n# Sin antónimo: no se escribe la línea Ant\nLOCUAZ\n  Sin: hablador, parlanchín\n\n# Sin sinónimo: no se escribe la línea Sin\nDIURNO\n  Ant: nocturno';
+const VO_CAMPOS = { sin: 'sinónimos', ant: 'antónimos', def: 'definición', ej: 'ejemplo' };
 
 (function estilosVocabulario() {
   const st = document.createElement('style');
   st.textContent = `
-  .vo-temas { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
-  .vo-tema { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 14px; background: var(--surface); color: var(--text-dim); border: 2px solid #262626; border-bottom-width: 4px; font: 800 14px Nunito, Inter, sans-serif; cursor: pointer; }
+  .vo-temas { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .vo-tema { font-size: 13px !important; padding: 7px 12px !important;  display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 14px; background: var(--surface); color: var(--text-dim); border: 2px solid #262626; border-bottom-width: 4px; font: 800 14px Nunito, Inter, sans-serif; cursor: pointer; }
   .vo-tema b { font-weight: 900; font-size: 12px; background: #1c1c1c; color: var(--text-dim); border-radius: 100px; padding: 2px 8px; }
-  .vo-tema.on { color: #0e0e0e; background: var(--accent); border-color: #8fa300; }
-  .vo-tema.on b { background: rgba(0,0,0,.18); color: #0e0e0e; }
-  .vo-tema i { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); }
+  .vo-tema.on { color: #1CB0F6; border-color: #1CB0F6; background: rgba(28,176,246,.08); }
+  .vo-tema.on b { background: rgba(28,176,246,.18); color: #1CB0F6; }
   .vo-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; align-items: start; }
   .vo-grid .pcard { margin-bottom: 0; }
   .vo-tit { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-faint); font-weight: 700; margin-bottom: 10px; }
@@ -57,11 +56,12 @@ const VO_EJEMPLO = 'EFÍMERO: pasajero, fugaz, breve\n  Def: Que dura poco tiemp
   .vo-rae { flex-shrink: 0; font-size: 11.5px; font-weight: 700; color: var(--text-dim); text-decoration: none; border: 1px solid #2a2a2a; border-radius: 8px; padding: 3px 8px; }
   .vo-rae:hover { color: var(--accent); border-color: #3a4a00; }
   .vo-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-  .vo-chips span { font: 800 12.5px Nunito, Inter, sans-serif; padding: 4px 10px; border-radius: 100px; background: rgba(28,176,246,.12); color: #6fcdf9; }
-  .vo-chips.ant span { background: rgba(255,150,0,.12); color: #ffb04d; }
-  .vo-def, .vo-ej { font-size: 13px; line-height: 1.5; margin-top: 8px; color: var(--text-dim); }
-  .vo-def b, .vo-ej b { color: var(--text-faint); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-right: 6px; }
-  .vo-ej { font-style: italic; }
+  .vo-et { font: 900 11px Nunito, Inter, sans-serif; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-faint); margin-top: 10px; }
+  .vo-chips span { font: 800 13px Nunito, Inter, sans-serif; padding: 4px 12px; border-radius: 100px; border: 2px solid #1586BD; background: rgba(28,176,246,.1); color: #1CB0F6; }
+  .vo-chips.ant span { border-color: #9A5BC4; background: rgba(206,130,255,.1); color: #CE82FF; }
+  .vo-def { color: var(--text); font-size: 13.5px; margin-top: 6px; }
+  .vo-def, .vo-ej { font-size: 13px; line-height: 1.5; margin-top: 8px; }
+  .vo-ej { font-style: italic; color: var(--text-dim); border-left: 3px solid #333; padding-left: 10px; margin-top: 10px; }
   .vo-ej mark { background: none; color: var(--accent); font-weight: 700; }
   .vo-falta { display: inline-block; margin-top: 8px; margin-right: 6px; font-size: 11px; font-weight: 700; color: var(--text-faint); border: 1px dashed #333; border-radius: 8px; padding: 2px 7px; }
   .vo-vacio { color: var(--text-faint); font-size: 13px; text-align: center; padding: 30px 10px; }
@@ -74,55 +74,73 @@ const VO_EJEMPLO = 'EFÍMERO: pasajero, fugaz, breve\n  Def: Que dura poco tiemp
 })();
 
 /* ---------- Leer el texto ---------- */
-const voNorm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+const voNorm = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
 // La palabra sin su última letra, para encontrar "efímera" en el ejemplo de "EFÍMERO"
 const voRaiz = p => { const n = voNorm(p); return n.length > 4 ? n.slice(0, -1) : n; };
-const voPartir = s => s.split(/[,;]/).map(x => x.trim().replace(/\.$/, '').trim()).filter(Boolean);
+const voPartir = s => String(s || '').split(/[,;]/).map(x => x.trim().replace(/\.$/, '').trim()).filter(Boolean);
+const VO_CLAVES = { sin: 'sin', sinonimo: 'sin', sinonimos: 'sin', ant: 'ant', antonimo: 'ant', antonimos: 'ant', def: 'def', definicion: 'def', ej: 'ej', ejemplo: 'ej' };
 
 function voLeer(texto) {
   const items = [], errores = [], avisos = [];
-  let ult = null;
+  let ult = null, campo = null;
+  const nueva = (palabra, n) => { ult = { palabra, sin: [], ant: [], def: '', ej: '', linea: n }; items.push(ult); campo = null; };
   texto.split('\n').forEach((crudo, i) => {
     const n = i + 1, linea = crudo.trim();
     if (!linea || linea.startsWith('#') || linea.startsWith('//')) return;
-    const extra = linea.match(/^(def|definici[oó]n|ej|ejemplo)\s*[:.]\s*(.*)$/i);
-    // Pegado desde Excel: palabra ⇥ lista ⇥ def ⇥ ej
-    if (!extra && linea.includes('\t')) {
+    const m = linea.match(/^([A-Za-zÁÉÍÓÚáéíóú]+)\s*:\s*(.*)$/);
+    const clave = m && VO_CLAVES[voNorm(m[1])];
+    // Pegado desde Excel: palabra ⇥ sin ⇥ ant ⇥ def ⇥ ej
+    if (!clave && linea.includes('\t')) {
       const c = linea.split('\t').map(x => x.trim());
-      ult = { palabra: c[0] || '', lista: voPartir(c[1] || ''), def: c[2] || '', ej: c[3] || '', linea: n };
-      items.push(ult); return;
-    }
-    if (extra) {
-      if (!ult) { errores.push({ n, t: `"${extra[1]}:" debe ir debajo de una palabra.` }); return; }
-      const campo = /^d/i.test(extra[1]) ? 'def' : 'ej';
-      if (ult[campo]) avisos.push({ n, t: `${ult.palabra} ya tenía ${campo === 'def' ? 'definición' : 'ejemplo'}; se usa este.` });
-      ult[campo] = extra[2].trim();
+      nueva(c[0] || '', n);
+      Object.assign(ult, { sin: voPartir(c[1]), ant: voPartir(c[2]), def: c[3] || '', ej: c[4] || '' });
       return;
     }
-    const k = linea.indexOf(':');
-    if (k < 0) {
-      // Línea con sangría sin "Def:" ni "Ej:" = continúa lo anterior
-      if (ult && /^\s/.test(crudo) && (ult.ej || ult.def)) { ult[ult.ej ? 'ej' : 'def'] += ' ' + linea; return; }
-      errores.push({ n, t: `Falta ":" entre la palabra y sus ${voTema().lista}.` }); return;
+    if (clave) {
+      if (!ult) { errores.push({ n, t: `"${m[1]}:" debe ir debajo de una palabra.` }); return; }
+      if (clave === 'sin' || clave === 'ant') {
+        if (ult[clave].length) avisos.push({ n, t: `${ult.palabra}: ya tenía ${VO_CAMPOS[clave]}; se juntan.` });
+        ult[clave] = ult[clave].concat(voPartir(m[2]));
+      } else {
+        if (ult[clave]) avisos.push({ n, t: `${ult.palabra} ya tenía ${VO_CAMPOS[clave]}; se usa este.` });
+        ult[clave] = m[2].trim();
+      }
+      campo = clave;
+      return;
     }
-    ult = { palabra: linea.slice(0, k).trim(), lista: voPartir(linea.slice(k + 1)), def: '', ej: '', linea: n };
-    items.push(ult);
+    // Línea con sangría que no empieza con Sin/Ant/Def/Ej = sigue lo de arriba
+    if (/^\s/.test(crudo) && ult) {
+      if (campo === 'def' || campo === 'ej') { ult[campo] += ' ' + linea; return; }
+      if (campo === 'sin' || campo === 'ant') { ult[campo] = ult[campo].concat(voPartir(linea)); return; }
+      errores.push({ n, t: 'Empieza la línea con Sin:, Ant:, Def: o Ej:.' }); return;
+    }
+    // "EFÍMERO: pasajero, fugaz" no dice si son sinónimos o antónimos
+    const dos = linea.indexOf(':');
+    if (dos > -1 && linea.slice(dos + 1).trim()) {
+      errores.push({ n, t: `Escribe la palabra sola y debajo "Sin:" o "Ant:" con su lista.` });
+      nueva(linea.slice(0, dos).trim(), n); ult.malForma = true; return;
+    }
+    nueva(linea.replace(/:$/, '').trim(), n);
   });
 
   const vistas = {};
   items.forEach(it => {
     const n = it.linea, p = voNorm(it.palabra);
-    it.mal = false;
-    if (!it.palabra) { errores.push({ n, t: 'Falta la palabra antes de ":".' }); it.mal = true; }
-    else if (it.palabra.length > 60) { errores.push({ n, t: `${it.palabra.slice(0, 20)}…: la palabra es muy larga (máximo 60 letras).` }); it.mal = true; }
-    if (!it.lista.length) { errores.push({ n, t: `${it.palabra || 'Esta palabra'}: escribe al menos un ${voTema().lista.slice(0, -1)} después de ":".` }); it.mal = true; }
-    if (it.lista.length > 12) avisos.push({ n, t: `${it.palabra}: tiene ${it.lista.length} ${voTema().lista}; solo se guardan los 12 primeros.` });
-    if (it.lista.some(x => x.length > 60)) avisos.push({ n, t: `${it.palabra}: hay un ${voTema().lista.slice(0, -1)} muy largo; ¿falta una coma?` });
+    it.mal = !!it.malForma;
+    if (!it.palabra) { errores.push({ n, t: 'Falta la palabra.' }); it.mal = true; }
+    else if (it.palabra.length > 60) { errores.push({ n, t: `${it.palabra.slice(0, 20)}…: es muy larga (máximo 60 letras). ¿Falta un "Sin:" o "Ant:"?` }); it.mal = true; }
+    if (!it.malForma && !it.sin.length && !it.ant.length) { errores.push({ n, t: `${it.palabra || 'Esta palabra'}: falta "Sin:" o "Ant:" con al menos una palabra.` }); it.mal = true; }
+    ['sin', 'ant'].forEach(k => {
+      if (it[k].length > 12) avisos.push({ n, t: `${it.palabra}: tiene ${it[k].length} ${VO_CAMPOS[k]}; solo se guardan los 12 primeros.` });
+      if (it[k].some(x => x.length > 60)) avisos.push({ n, t: `${it.palabra}: hay un ${VO_CAMPOS[k].slice(0, -1)} muy largo; ¿falta una coma?` });
+      if (p && it[k].some(x => voNorm(x) === p)) avisos.push({ n, t: `${it.palabra}: la palabra está dentro de sus ${VO_CAMPOS[k]}.` });
+      const dobles = it[k].filter((x, j) => it[k].findIndex(y => voNorm(y) === voNorm(x)) !== j);
+      if (dobles.length) avisos.push({ n, t: `${it.palabra}: "${dobles[0]}" está dos veces.` });
+    });
+    const cruce = it.sin.find(x => it.ant.some(y => voNorm(y) === voNorm(x)));
+    if (cruce) avisos.push({ n, t: `${it.palabra}: "${cruce}" está como sinónimo y como antónimo.` });
     if (p && vistas[p]) { errores.push({ n, t: `${it.palabra} está repetida (también en la línea ${vistas[p]}).` }); it.mal = true; }
     else if (p) vistas[p] = n;
-    if (p && it.lista.some(x => voNorm(x) === p)) avisos.push({ n, t: `${it.palabra}: la palabra está dentro de su propia lista.` });
-    const dobles = it.lista.filter((x, j) => it.lista.findIndex(y => voNorm(y) === voNorm(x)) !== j);
-    if (dobles.length) avisos.push({ n, t: `${it.palabra}: "${dobles[0]}" está dos veces en la lista.` });
     if (it.ej && p && !voNorm(it.ej).includes(voRaiz(it.palabra))) avisos.push({ n, t: `${it.palabra}: el ejemplo no usa la palabra, así que no saldrá en "Completar".` });
     if (it.def.length > 400 || it.ej.length > 400) avisos.push({ n, t: `${it.palabra}: la definición o el ejemplo pasa de 400 letras y se cortará.` });
   });
@@ -132,7 +150,9 @@ function voLeer(texto) {
 
 function voEscribir(filas) {
   return (filas || []).map(f => {
-    let s = `${f.palabra}: ${(f.lista || []).join(', ')}`;
+    let s = f.palabra;
+    if ((f.sin || []).length) s += `\n  Sin: ${f.sin.join(', ')}`;
+    if ((f.ant || []).length) s += `\n  Ant: ${f.ant.join(', ')}`;
     if (f.def) s += `\n  Def: ${f.def}`;
     if (f.ej) s += `\n  Ej: ${f.ej}`;
     return s;
@@ -140,8 +160,8 @@ function voEscribir(filas) {
 }
 
 /* ---------- Pantalla ---------- */
-const voTema = () => VO_TEMAS.find(t => t.id === VO.tema) || VO_TEMAS[0];
 function voEstado(txt) { $('voEstado').textContent = txt || ''; }
+const voError = m => /does not exist|could not find|schema cache/i.test(m || '');
 
 async function cargarVocabulario(forzar) {
   if (VO.cargado && !forzar) return;
@@ -158,21 +178,19 @@ async function cargarVocabulario(forzar) {
     return;
   }
   const [r, a, reg] = await Promise.all([
-    cliente.from('vocabulario').select('tema, orden, palabra, lista, def, ej').order('tema').order('orden').limit(5000),
+    cliente.from('vocabulario').select('orden, palabra, sin, ant, def, ej').order('orden').limit(5000),
     cliente.from('ajustes').select('valor').eq('clave', 'vocabulario').maybeSingle(),
     window.MCCursos ? MCCursos.registro() : Promise.resolve(null)
   ]);
   if (r.error) {
-    body.innerHTML = /does not exist|could not find|schema cache/i.test(r.error.message || '')
+    body.innerHTML = voError(r.error.message)
       ? '<div class="state-msg error">Falta crear la tabla. Corre <b>supabase/13-vocabulario.sql</b> en Supabase → SQL Editor y vuelve a abrir esta pestaña.</div>'
       : '<div class="state-msg error">No se pudo leer el vocabulario. Intenta de nuevo.</div>';
     return;
   }
-  VO_TEMAS.forEach(t => {
-    VO.publicados[t.id] = (r.data || []).filter(f => f.tema === t.id);
-    VO.textos[t.id] = voEscribir(VO.publicados[t.id]);
-    VO.cambios[t.id] = false;
-  });
+  VO.publicados = r.data || [];
+  VO.texto = voEscribir(VO.publicados);
+  VO.cambios = false;
   VO.cursos = ((a.data && a.data.valor && a.data.valor.cursos) || []).slice();
   VO.registro = reg;
   VO.cargado = true;
@@ -187,7 +205,7 @@ function pintarVoCursos() {
     .sort((x, y) => (y.id === 'raz-verbal') - (x.id === 'raz-verbal'));
   caja.innerHTML = `
     <div class="acc-box" style="margin-bottom:18px;">
-      <div class="acc-ttl">Cursos con Vocabulario <span>— todos usan este mismo banco de palabras</span></div>
+      <div class="acc-ttl">Cursos con Vocabulario <span>— todos usan este mismo banco de palabras, en todos los ciclos</span></div>
       <div class="vo-cursos">${lista.map(c => `
         <label class="vo-curso"><input type="checkbox" value="${esc(c.id)}" ${VO.cursos.includes(c.id) ? 'checked' : ''}>${esc(c.nombre || c.id)}</label>`).join('') || '<span class="hint">No hay cursos de Comunicación.</span>'}
       </div>
@@ -208,14 +226,10 @@ function pintarVoCursos() {
 }
 
 function renderVocabulario() {
-  const t = voTema();
   $('voBody').innerHTML = `
-    <div class="vo-temas" role="tablist">${VO_TEMAS.map(x => `
-      <button class="vo-tema${x.id === VO.tema ? ' on' : ''}" type="button" data-t="${x.id}">${x.nombre} <b>${VO.publicados[x.id].length}</b></button>`).join('')}
-    </div>
     <div class="vo-grid">
       <div class="pcard">
-        <div class="vo-tit">Escribe aquí <span>una palabra por línea</span></div>
+        <div class="vo-tit">Escribe aquí <span>una ficha por palabra</span></div>
         <textarea class="inp" id="voTexto" spellcheck="false" placeholder="${esc(VO_EJEMPLO)}"></textarea>
         <div class="vo-acc">
           <button class="btn-ghost" type="button" id="voDeshacer">Volver a lo publicado</button>
@@ -224,11 +238,11 @@ function renderVocabulario() {
           <summary>Cómo escribir las palabras</summary>
           <pre>${esc(VO_EJEMPLO)}</pre>
           <ul>
-            <li><b>PALABRA:</b> y después sus ${t.lista} separados por comas.</li>
-            <li><b>Def:</b> y <b>Ej:</b> van debajo, con o sin espacios al inicio. Son opcionales.</li>
-            <li>Sin <b>Ej</b> la palabra no sale en el juego <i>Completar</i>; sin <b>Def</b> no sale en <i>Escribir</i>. En los demás juegos sí.</li>
+            <li>La <b>palabra</b> va sola en su línea. Debajo, <b>Sin:</b> con sus sinónimos y <b>Ant:</b> con sus antónimos, separados por comas. Si la palabra no tiene antónimo, no escribas la línea <b>Ant:</b>; si no tiene sinónimo, no escribas <b>Sin:</b>. Pero necesita al menos una de las dos.</li>
+            <li><b>Def:</b> y <b>Ej:</b> son opcionales. Sin <b>Ej</b> la palabra no sale en el juego <i>Completar</i>; sin <b>Def</b> no sale en <i>Escribir</i>.</li>
             <li>El ejemplo debe usar la palabra (sirve "efímera" para EFÍMERO), porque ahí va el espacio en blanco.</li>
-            <li>Desde Excel: copia 4 columnas (palabra, ${t.lista}, definición, ejemplo) y pégalas aquí.</li>
+            <li>Para corregir una palabra ya publicada, cámbiala aquí y vuelve a guardar.</li>
+            <li>Desde Excel: copia 5 columnas (palabra, sinónimos, antónimos, definición, ejemplo) y pégalas aquí.</li>
             <li>Una línea que empieza con <b>#</b> es una nota y no se publica.</li>
           </ul>
         </details>
@@ -236,25 +250,23 @@ function renderVocabulario() {
       <div class="pcard">
         <div class="vo-tit">Así lo verán los alumnos <span id="voCuenta"></span></div>
         <div id="voRes"></div>
+        <div class="vo-temas" id="voFiltro"></div>
         <input class="inp vo-buscar" id="voBuscar" type="search" placeholder="Buscar palabra" value="${esc(VO.busca)}">
         <div class="vo-lista" id="voLista"></div>
       </div>
     </div>`;
   const ta = $('voTexto');
-  ta.value = VO.textos[t.id];
+  ta.value = VO.texto;
   ta.addEventListener('input', () => {
-    VO.textos[t.id] = ta.value;
-    VO.cambios[t.id] = ta.value !== voEscribir(VO.publicados[t.id]);
+    VO.texto = ta.value;
+    VO.cambios = ta.value !== voEscribir(VO.publicados);
     VO.borrar = false;
     voVista();
   });
   $('voBuscar').addEventListener('input', e => { VO.busca = e.target.value; voVista(); });
   $('voDeshacer').addEventListener('click', () => {
-    VO.textos[t.id] = voEscribir(VO.publicados[t.id]); VO.cambios[t.id] = false; VO.borrar = false; renderVocabulario();
+    VO.texto = voEscribir(VO.publicados); VO.cambios = false; VO.borrar = false; renderVocabulario();
   });
-  $('voBody').querySelectorAll('.vo-tema').forEach(b => b.addEventListener('click', () => {
-    VO.tema = b.dataset.t; VO.borrar = false; renderVocabulario();
-  }));
   voVista();
 }
 
@@ -268,9 +280,26 @@ function voIrLinea(n) {
   ta.scrollTop = Math.max(0, (n - 4) * alto);
 }
 
+function voFicha(x) {
+  let ej = esc(x.ej);
+  const raiz = voRaiz(x.palabra);
+  if (x.ej && raiz) ej = ej.replace(/[\p{L}]+/gu, w => voNorm(w).startsWith(raiz) ? `<mark>${w}</mark>` : w);
+  const chips = (k, nom) => x[k].length && VO.filtro !== (k === 'sin' ? 'ant' : 'sin')
+    ? `<div class="vo-et">${nom}</div><div class="vo-chips${k === 'ant' ? ' ant' : ''}">${x[k].slice(0, 12).map(y => `<span>${esc(y)}</span>`).join('')}</div>` : '';
+  return `
+    <div class="vo-card${x.mal ? ' mal' : ''}" data-n="${x.linea}">
+      <div class="vo-cab"><div class="vo-pal">${esc(x.palabra) || '—'}</div>
+        ${x.palabra ? `<a class="vo-rae" href="https://dle.rae.es/${encodeURIComponent(x.palabra.toLowerCase())}" target="_blank" rel="noopener">Ver en RAE</a>` : ''}</div>
+      ${x.def ? `<div class="vo-def">${esc(x.def)}</div>` : ''}
+      ${chips('sin', 'Sinónimos')}${chips('ant', 'Antónimos')}
+      ${x.ej ? `<div class="vo-ej">${ej}</div>` : ''}
+      ${!x.def ? '<span class="vo-falta">sin definición</span>' : ''}${!x.ej ? '<span class="vo-falta">sin ejemplo</span>' : ''}
+    </div>`;
+}
+
 function voVista() {
-  const t = voTema(), d = voLeer(VO.textos[t.id]);
-  VO.leido = d;
+  const d = voLeer(VO.texto);
+  const nSin = d.items.filter(x => x.sin.length).length, nAnt = d.items.filter(x => x.ant.length).length;
   const conDef = d.items.filter(x => x.def).length, conEj = d.items.filter(x => x.ej).length;
   $('voCuenta').textContent = d.items.length + ' palabra' + (d.items.length === 1 ? '' : 's');
   const avisos = [...d.errores.map(x => Object.assign({ mal: true }, x)), ...d.avisos].sort((a, b) => a.n - b.n);
@@ -286,65 +315,48 @@ function voVista() {
     </div>` : '');
   $('voRes').querySelectorAll('.vo-aviso').forEach(b => b.addEventListener('click', () => voIrLinea(+b.dataset.n)));
 
+  $('voFiltro').innerHTML = [['todo', 'Todo', d.items.length], ['sin', 'Sinónimos', nSin], ['ant', 'Antónimos', nAnt]].map(([k, nom, c]) =>
+    `<button class="vo-tema${VO.filtro === k ? ' on' : ''}" type="button" data-f="${k}">${nom} <b>${c}</b></button>`).join('');
+  $('voFiltro').querySelectorAll('[data-f]').forEach(b => b.addEventListener('click', () => { VO.filtro = b.dataset.f; voVista(); }));
+
   const q = voNorm(VO.busca);
-  const vis = q ? d.items.filter(x => voNorm(x.palabra).includes(q) || x.lista.some(y => voNorm(y).includes(q))) : d.items;
-  const ant = t.id === 'antonimos';
-  $('voLista').innerHTML = vis.length ? vis.slice(0, 300).map(x => {
-    let ej = esc(x.ej);
-    if (x.ej) {
-      const raiz = voRaiz(x.palabra);
-      ej = esc(x.ej).replace(/[\p{L}]+/gu, w => voNorm(w).startsWith(raiz) && raiz ? `<mark>${w}</mark>` : w);
-    }
-    return `
-    <div class="vo-card${x.mal ? ' mal' : ''}" data-n="${x.linea}">
-      <div class="vo-cab"><div class="vo-pal">${esc(x.palabra) || '—'}</div>
-        ${x.palabra ? `<a class="vo-rae" href="https://dle.rae.es/${encodeURIComponent(x.palabra.toLowerCase())}" target="_blank" rel="noopener">Ver en RAE</a>` : ''}</div>
-      <div class="vo-chips${ant ? ' ant' : ''}">${x.lista.slice(0, 12).map(y => `<span>${esc(y)}</span>`).join('')}</div>
-      ${x.def ? `<div class="vo-def"><b>Def</b>${esc(x.def)}</div>` : ''}
-      ${x.ej ? `<div class="vo-ej"><b>Ej</b>${ej}</div>` : ''}
-      ${!x.def ? '<span class="vo-falta">sin definición</span>' : ''}${!x.ej ? '<span class="vo-falta">sin ejemplo</span>' : ''}
-    </div>`;
-  }).join('') + (vis.length > 300 ? `<div class="hint">Se muestran 300 de ${vis.length}. Usa el buscador.</div>` : '')
-    : `<div class="vo-vacio">${q ? 'Ninguna palabra coincide.' : `Aún no hay ${t.lista}. Escribe a la izquierda o pega tu lista.`}</div>`;
+  let vis = VO.filtro === 'todo' ? d.items : d.items.filter(x => x[VO.filtro].length || x.mal);
+  if (q) vis = vis.filter(x => voNorm(x.palabra).includes(q) || x.sin.concat(x.ant).some(y => voNorm(y).includes(q)));
+  $('voLista').innerHTML = vis.length ? vis.slice(0, 300).map(voFicha).join('') + (vis.length > 300 ? `<div class="hint">Se muestran 300 de ${vis.length}. Usa el buscador.</div>` : '')
+    : `<div class="vo-vacio">${q ? 'Ninguna palabra coincide.' : 'Aún no hay palabras. Escribe a la izquierda o pega tu lista.'}</div>`;
   $('voLista').querySelectorAll('.vo-card').forEach(c => c.addEventListener('dblclick', () => voIrLinea(+c.dataset.n)));
 
-  const hay = Object.values(VO.cambios).some(Boolean);
-  $('voBody').querySelectorAll('.vo-tema').forEach(b => {
-    const i = b.querySelector('i');
-    if (VO.cambios[b.dataset.t] && !i) b.insertAdjacentHTML('beforeend', '<i title="Cambios sin guardar"></i>');
-    if (!VO.cambios[b.dataset.t] && i) i.remove();
-  });
-  $('voDeshacer').disabled = !VO.cambios[t.id];
-  $('voGuardar').disabled = !VO.cambios[t.id];
+  $('voDeshacer').disabled = !VO.cambios;
+  $('voGuardar').disabled = !VO.cambios;
   $('voGuardar').textContent = VO.borrar ? 'Toca otra vez para vaciar' : 'Guardar y publicar';
-  voEstado(VO.cambios[t.id] ? 'Cambios sin guardar' + (d.errores.length ? ` · ${d.errores.length} por corregir` : '') : (hay ? 'Hay cambios sin guardar en otro tema' : ''));
+  voEstado(VO.cambios ? 'Cambios sin guardar' + (d.errores.length ? ` · ${d.errores.length} por corregir` : '') : '');
 }
 
 async function guardarVocabulario() {
-  const t = voTema(), d = voLeer(VO.textos[t.id]);
+  const d = voLeer(VO.texto);
   if (d.errores.length) { voVista(); toast('Corrige lo marcado en rojo antes de publicar', true); voIrLinea(d.errores[0].n); return; }
-  if (!d.items.length && VO.publicados[t.id].length && !VO.borrar) {
-    VO.borrar = true; voVista(); toast(`Así se borran todos los ${t.lista} publicados. Toca otra vez para confirmar.`, true); return;
+  if (!d.items.length && VO.publicados.length && !VO.borrar) {
+    VO.borrar = true; voVista(); toast('Así se borran todas las palabras publicadas. Toca otra vez para confirmar.', true); return;
   }
   VO.borrar = false;
-  const lista = d.items.map(x => ({ palabra: x.palabra, lista: x.lista.slice(0, 12), def: x.def.slice(0, 400), ej: x.ej.slice(0, 400) }));
+  const lista = d.items.map(x => ({ palabra: x.palabra, sin: x.sin.slice(0, 12), ant: x.ant.slice(0, 12), def: x.def.slice(0, 400), ej: x.ej.slice(0, 400) }));
   const btn = $('voGuardar'); btn.disabled = true; voEstado('Guardando…');
-  const r = await (await MCAuth.listo).rpc('guardar_vocabulario_tema', { p_tema: t.id, p_lista: lista });
+  const r = await (await MCAuth.listo).rpc('guardar_vocabulario', { p_lista: lista });
   if (r.error) {
     btn.disabled = false; voEstado('');
     const m = r.error.message || '';
     toast(/no autorizado/i.test(m) ? 'Tu correo no es administrador'
-      : /could not find|does not exist|schema cache/i.test(m) ? 'Primero corre supabase/13-vocabulario.sql en Supabase'
+      : voError(m) ? 'Primero corre supabase/13-vocabulario.sql en Supabase'
       : (m || 'No se pudo guardar'), true);
     return;
   }
-  VO.publicados[t.id] = lista.map((x, i) => Object.assign({ tema: t.id, orden: i + 1 }, x));
-  VO.textos[t.id] = voEscribir(VO.publicados[t.id]);
-  VO.cambios[t.id] = false;
+  VO.publicados = lista.map((x, i) => Object.assign({ orden: i + 1 }, x));
+  VO.texto = voEscribir(VO.publicados);
+  VO.cambios = false;
   renderVocabulario();
-  voEstado(`✓ Publicado: ${r.data} ${t.lista}.`);
-  toast(`${t.nombre} guardados`);
+  voEstado(`✓ Publicado: ${r.data == null ? lista.length : r.data} palabras.`);
+  toast('Vocabulario guardado');
 }
 
 $('voGuardar').addEventListener('click', guardarVocabulario);
-window.addEventListener('beforeunload', e => { if (Object.values(VO.cambios).some(Boolean)) { e.preventDefault(); e.returnValue = ''; } });
+window.addEventListener('beforeunload', e => { if (VO.cambios) { e.preventDefault(); e.returnValue = ''; } });
