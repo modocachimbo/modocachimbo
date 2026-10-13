@@ -374,6 +374,127 @@
   .rej { text-align: center; font-size: 14px; font-style: italic; margin-top: 8px; opacity: .9; }
   @media (prefers-reduced-motion: reduce) { .rchs span { opacity: 1; transform: none; animation: none !important; } }
   .fin .botones .btn.cel { background: var(--cel); border-color: var(--cel); color: #fff; box-shadow: 0 5px 0 var(--cel-d); }
+
+  /* ===== Practicar y Reto ===== */
+  .reglas { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+  .regla { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; border: 2px solid #262626; background: #0e0e0e; font: 800 14px Nunito, sans-serif; color: #d6d6d6; }
+  .regla .ri { flex: none; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; }
+  .regla .ri svg { width: 20px; height: 20px; }
+  .regla small { display: block; color: #8a8a8a; font-weight: 700; font-size: 12.5px; }
+  .ri.cor { background: rgba(255,75,75,.14); color: #ff4b4b; } .ri.rel { background: rgba(255,150,0,.14); color: var(--nar); }
+  .ri.nvl { background: rgba(28,176,246,.14); color: var(--cel); } .ri.com { background: rgba(198,224,0,.12); color: var(--accent); }
+  .ri.jue { background: rgba(206,130,255,.14); color: var(--mor); }
+  .record { margin-top: 14px; text-align: center; color: #9a9a9a; font: 800 13px Nunito, sans-serif; }
+  .record b { color: var(--amb); }
+  .prep .btn.primary { margin-top: 22px; }
+
+  .qbar { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
+  .qx { flex: none; width: 34px; height: 34px; border: 0; background: none; color: #6b6b6b; display: grid; place-items: center; cursor: pointer; padding: 0; }
+  .qx svg { width: 22px; height: 22px; }
+  .qbar .track { flex: 1; }
+  .vidas { display: flex; gap: 3px; }
+  .vidas svg { width: 22px; height: 22px; color: #ff4b4b; transition: transform .3s ease, color .3s ease; }
+  .vidas svg.ida { color: #2a2a2a; transform: scale(.8); }
+  .vidas svg.pierde { animation: pierde .6s ease; }
+  @keyframes pierde { 30% { transform: scale(1.4); } 60% { transform: scale(.7) rotate(-12deg); } }
+  .qinfo { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font: 900 13px Nunito, sans-serif; font-variant-numeric: tabular-nums; }
+  .qinfo .pts { color: var(--amb); font-size: 16px; }
+  .qinfo .nv { color: var(--cel); background: rgba(28,176,246,.1); padding: 4px 10px; border-radius: 100px; }
+  .qinfo .mult { color: #ff6b00; background: rgba(255,107,0,.12); padding: 4px 10px; border-radius: 100px; }
+  .qreloj { flex: 1; height: 16px; border-radius: 100px; background: #1d1d1d; overflow: hidden; }
+  .qreloj i { display: block; height: 100%; width: 100%; border-radius: 100px; background: var(--cel); box-shadow: inset 0 4px 0 rgba(255,255,255,.25); transform-origin: left; }
+  .qreloj.poco i { background: #ff4b4b; }
+
+  .qcab { display: flex; align-items: flex-end; gap: 10px; margin-top: 22px; }
+  .qbuho { flex: none; width: 76px; height: 76px; }
+  .qbuho svg { width: 76px; height: 76px; }
+  .qglobo { position: relative; flex: 1; min-width: 0; margin-bottom: 14px; padding: 12px 14px; border-radius: 16px; border: 2px solid #2a2a2a; background: #111; font: 800 15px/1.35 Nunito, sans-serif; color: #e6e6e6; }
+  .qglobo::before { content: ''; position: absolute; left: -9px; bottom: 14px; width: 14px; height: 14px; background: #111; border-left: 2px solid #2a2a2a; border-bottom: 2px solid #2a2a2a; transform: rotate(45deg); }
+  .qglobo b.c { color: var(--cel); } .qglobo b.m { color: var(--mor); }
+  .qpal { margin-top: 16px; text-align: center; font: 900 clamp(30px, 9vw, 40px)/1.15 Nunito, sans-serif; letter-spacing: .5px; text-transform: uppercase; overflow-wrap: anywhere; }
+  .qpal.min { text-transform: none; }
+  .qfrase { margin-top: 16px; padding: 16px; border-radius: 18px; border: 2px solid #262626; background: #0e0e0e; font: 800 18px/1.6 Nunito, sans-serif; text-align: center; }
+  .hueco { display: inline-block; min-width: 92px; border-bottom: 3px solid var(--accent); margin: 0 4px; vertical-align: -2px; height: 1.1em; }
+  .hueco.lleno { min-width: 0; border: 0; height: auto; color: var(--accent); }
+  .qops { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+  .qop { display: flex; align-items: center; gap: 12px; width: 100%; padding: 13px 14px; border-radius: 16px; border: 2px solid #2e2e2e; border-bottom-width: 5px; background: #121212; color: #ececec; font: 900 17px Nunito, sans-serif; text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform .08s ease; }
+  .qop .k { flex: none; width: 28px; height: 28px; border-radius: 9px; border: 2px solid #333; display: grid; place-items: center; font-size: 13px; color: #8a8a8a; }
+  .qop:active:not(:disabled) { transform: translateY(3px); border-bottom-width: 2px; margin-bottom: 3px; }
+  .qop:disabled { cursor: default; }
+  .qop.bien { border-color: #8fa300; background: rgba(198,224,0,.12); color: var(--accent); }
+  .qop.bien .k { border-color: var(--accent); color: var(--accent); }
+  .qop.mal { border-color: #b33a3a; background: rgba(255,75,75,.1); color: #ff6b6b; animation: tiembla .35s ease; }
+  .qop.mal .k { border-color: #ff6b6b; color: #ff6b6b; }
+  .qop.apaga { opacity: .45; }
+  @keyframes tiembla { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+
+  .qrel { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+  .qrel .col { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .qrel .qop { justify-content: center; text-align: center; font-size: 15px; padding: 13px 8px; overflow-wrap: anywhere; }
+  .qrel .qop.izq { text-transform: uppercase; }
+  .qrel .qop.sel { border-color: var(--cel); background: rgba(28,176,246,.12); color: var(--cel); }
+  .qrel .qop.par { opacity: .35; border-color: #8fa300; color: var(--accent); }
+
+  .qesc { margin-top: 20px; }
+  .qesc input { width: 100%; padding: 15px 16px; border-radius: 16px; border: 2px solid #2e2e2e; background: #0e0e0e; color: #fff; font: 900 18px Nunito, sans-serif; outline: none; }
+  .qesc input:focus { border-color: var(--cel); }
+  .qesc input.bien { border-color: #8fa300; color: var(--accent); }
+  .qesc input.mal { border-color: #b33a3a; color: #ff6b6b; }
+  .qesc .btn { margin-top: 12px; }
+  .qesc .hint { margin-top: 10px; text-align: center; }
+
+  .qhoja { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; padding: 16px 16px calc(18px + env(safe-area-inset-bottom, 0px)); border-top: 2px solid; animation: sube .28s cubic-bezier(.34,1.3,.64,1); }
+  .qhoja .in { max-width: 560px; margin: 0 auto; }
+  .qhoja.bien { background: #1a2200; border-color: #3a4a00; }
+  .qhoja.mal { background: #2a0f0f; border-color: #5a1f1f; }
+  .qh-t { display: flex; align-items: center; gap: 10px; font: 900 20px Nunito, sans-serif; }
+  .qh-t .ico { width: 30px; height: 30px; padding: 5px; border-radius: 50%; }
+  .qhoja.bien .qh-t { color: var(--accent); } .qhoja.bien .qh-t .ico { background: var(--accent); color: #1a2200; }
+  .qhoja.mal .qh-t { color: #ff6b6b; } .qhoja.mal .qh-t .ico { background: #ff6b6b; color: #2a0f0f; }
+  .qh-x { margin-top: 6px; font-size: 14.5px; line-height: 1.5; color: #d6d6d6; font-weight: 700; }
+  .qh-x b { color: #fff; }
+  .qhoja .btn { margin-top: 14px; }
+  .qhoja.mal .btn { background: #ff4b4b; border-color: #ff4b4b; color: #fff; box-shadow: 0 5px 0 #b33a3a; }
+  @keyframes sube { from { transform: translateY(100%); } }
+  #quiz { padding-bottom: 190px; }
+
+  .finq .buhof { width: 120px; height: 120px; margin: 0 auto; }
+  .finq .buhof svg { width: 120px; height: 120px; }
+  .finq .grande { font: 900 52px/1 Nunito, sans-serif; color: var(--amb); margin-top: 12px; font-variant-numeric: tabular-nums; }
+  .finq .grande small { display: block; font-size: 13px; color: #9a9a9a; margin-top: 4px; letter-spacing: .5px; }
+  .finq .nuevo { display: inline-block; margin-top: 10px; padding: 5px 12px; border-radius: 100px; background: var(--amb); color: #3a2a00; font: 900 13px Nunito, sans-serif; animation: salta .6s cubic-bezier(.34,1.56,.64,1) .3s both; }
+  .medallaR { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 14px; font: 900 15px Nunito, sans-serif; }
+  .medallaR svg { width: 44px; height: 54px; }
+  .pill.ret { color: var(--cel); background: rgba(28,176,246,.1); }
+  .pill .ico { width: 15px; height: 15px; }
+  @media (prefers-reduced-motion: reduce) { .qhoja, .qop.mal, .vidas svg.pierde, .finq .nuevo { animation: none !important; } }
+  .qops.dos { flex-direction: row; }
+  .qops.dos .qop { justify-content: center; font-size: 19px; padding: 16px 10px; }
+  .qops.dos .qop .k { display: none; }
+  .qduo { margin-top: 18px; display: flex; flex-direction: column; align-items: center; gap: 6px; font: 900 clamp(26px, 8vw, 34px)/1.15 Nunito, sans-serif; text-align: center; overflow-wrap: anywhere; }
+  .qduo span:first-child { text-transform: uppercase; }
+  .qduo span:last-child { color: #e6e6e6; }
+  .qduo i { width: 34px; height: 4px; border-radius: 4px; background: #333; }
+  .qdef { font-size: 19px; font-style: italic; }
+  .qana { margin-top: 16px; padding: 16px; border-radius: 18px; border: 2px solid #262626; background: #0e0e0e; display: flex; flex-direction: column; gap: 10px; align-items: center; text-align: center; }
+  .qana div { display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 6px 8px; }
+  .qana b { font: 900 20px Nunito, sans-serif; text-transform: uppercase; }
+  .qana div:first-child b:last-child { color: var(--cel); }
+  .qana.m div:first-child b:last-child { color: var(--mor); }
+  .qana small { font: 800 14px Nunito, sans-serif; color: #8a8a8a; }
+  .qana .hueco { min-width: 80px; }
+  .qana .hueco.lleno { font: 900 20px Nunito, sans-serif; }
+  .qarm { min-height: 62px; margin-top: 18px; padding: 8px; border-bottom: 3px solid #2e2e2e; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; align-items: center; }
+  .qarm.bien { border-color: var(--accent); } .qarm.mal { border-color: #ff4b4b; animation: tiembla .35s ease; }
+  .vacioA { color: #555; font: 800 14px Nunito, sans-serif; }
+  .qfichas { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 18px; }
+  .ficha { width: 40px; height: 48px; border-radius: 12px; border: 2px solid #333; border-bottom-width: 5px; background: #161616; color: #fff; font: 900 21px Nunito, sans-serif; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .ficha:active:not(:disabled) { transform: translateY(3px); border-bottom-width: 2px; }
+  .ficha.usada { background: #0b0b0b; color: transparent; border-color: #1d1d1d; }
+  .qarm .ficha { border-color: var(--cel-d); color: var(--cel); background: rgba(28,176,246,.08); }
+  .qarm.bien .ficha { border-color: #8fa300; color: var(--accent); }
+  #qArmOk { margin-top: 20px; }
+  #qArmOk:disabled { opacity: .4; }
 </style>
 <script src="assets/mc-config.js"></script>
 <script src="assets/cursos.js"></script>
@@ -396,8 +517,8 @@
     <div class="avance" id="avance"><div class="f">Tu avance <span id="avTxt"></span></div><div class="bar"><i id="avBar"></i></div></div>
     <div class="modos">
       <button class="modo f" id="btnFlash" type="button"><span class="ic" id="icFlash"></span><span>Flashcards</span><small>Repasa rápido</small></button>
-      <button class="modo p" id="btnPracticar" type="button" disabled><span class="ic" id="icPrac"></span><span>Practicar</span><small>Muy pronto</small></button>
-      <button class="modo r" id="btnReto" type="button" disabled><span class="ic" id="icReto"></span><span>Reto</span><small>Muy pronto</small></button>
+      <button class="modo p" id="btnPracticar" type="button"><span class="ic" id="icPrac"></span><span>Practicar</span><small>Muy pronto</small></button>
+      <button class="modo r" id="btnReto" type="button"><span class="ic" id="icReto"></span><span>Reto</span><small>Muy pronto</small></button>
     </div>
     <div class="buscar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="busca" type="search" placeholder="Buscar palabra…" autocomplete="off" aria-label="Buscar palabra"></div>
     <div class="filtros" id="filtros"></div>
@@ -460,6 +581,45 @@
     </div>
   </div>
 
+  <!-- Preparar Practicar / Reto -->
+  <div id="prepQ" class="prep" hidden>
+    <div class="paso" id="pqPaso">
+      <div class="paso-ttl"><span class="n">1</span> ¿Qué quieres practicar?</div>
+      <div class="chips" id="pqMazo"></div>
+    </div>
+    <div class="reglas" id="pqReglas"></div>
+    <div class="record" id="pqRecord" hidden></div>
+    <button class="btn primary" id="pqEmpezar" type="button">Empezar</button>
+    <button class="btn volver-est" id="pqVolver" type="button">Volver al estudio</button>
+  </div>
+
+  <!-- Practicar / Reto -->
+  <div id="quiz" hidden>
+    <div class="qbar">
+      <button class="qx" id="qSalir" type="button" aria-label="Salir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      <div class="track" id="qTrack"><div class="fill" id="qFill"></div></div>
+      <div class="qreloj" id="qReloj" hidden><i id="qRelojBar"></i></div>
+      <div class="vidas" id="qVidas" hidden></div>
+      <button class="sonido" id="qSonido" type="button"></button>
+    </div>
+    <div class="qinfo" id="qInfo" hidden></div>
+    <div class="qcab"><div class="qbuho" id="qBuho"></div><div class="qglobo" id="qPide" aria-live="polite"></div></div>
+    <div id="qCuerpo"></div>
+  </div>
+  <div class="qhoja" id="qHoja" hidden><div class="in"><div class="qh-t" id="qhT"></div><div class="qh-x" id="qhX"></div><button class="btn primary" id="qSeguir" type="button">Continuar</button></div></div>
+
+  <div class="fin finq" id="finQ" hidden>
+    <div class="buhof" id="fqBuho"></div>
+    <h2 id="fqTitulo"></h2>
+    <div id="fqCentro"></div>
+    <div class="stats" id="fqStats"></div>
+    <p id="fqTexto"></p>
+    <div class="botones">
+      <button class="btn primary" id="fqOtra" type="button">Otra vez</button>
+      <button class="btn" id="fqEstudio" type="button">Volver al estudio</button>
+    </div>
+  </div>
+
   <div class="state-msg" id="estado" hidden></div>
 </div>
 
@@ -480,8 +640,9 @@
   const prep = { mazo: 'todo', cant: 20 };
 
   function mostrar(id) {
-    ['estudio', 'preparar', 'juego', 'fin', 'estado'].forEach(x => { $(x).hidden = x !== id; });
-    $('lead').hidden = id !== 'estudio' && id !== 'preparar';
+    ['estudio', 'preparar', 'juego', 'fin', 'prepQ', 'quiz', 'finQ', 'estado'].forEach(x => { $(x).hidden = x !== id; });
+    $('lead').hidden = !['estudio', 'preparar', 'prepQ'].includes(id);
+    if (id !== 'quiz') $('qHoja').hidden = true;
   }
   function aviso(t) { $('estado').textContent = t; mostrar('estado'); }
 
@@ -514,7 +675,12 @@
     return MCAuth.listo.then(c => MCAuth.usuario() ? c.from('vocabulario_estado').select('estado').maybeSingle() : null)
       .then(r => {
         const srv = (r && !r.error && r.data && r.data.estado) || {};
-        Object.keys(srv).forEach(k => { const a = srv[k], b = estado[k]; if (Array.isArray(a) && (!b || (a[2] || 0) > (b[2] || 0))) estado[k] = a; });
+        Object.keys(srv).forEach(k => {
+          const a = srv[k], b = estado[k]; if (!Array.isArray(a)) return;
+          // El récord del Reto: siempre el mejor de los dos
+          if (k === '_reto') estado[k] = b ? [Math.max(a[0], b[0]), Math.max(a[1], b[1]), Math.max(a[2], b[2])] : a;
+          else if (!b || (a[2] || 0) > (b[2] || 0)) estado[k] = a;
+        });
         guardarLocal();
       }, () => {});
   }
@@ -586,6 +752,9 @@
     flash: svg('<rect x="7" y="3" width="14" height="16" rx="2"/><path d="M3 7v12a2 2 0 0 0 2 2h11"/>'),
     rae: svg('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5V21h16"/>'),
     flecha: svg('<polyline points="6 9 12 15 18 9"/>'),
+    reloj: svg('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2"/><path d="M9 2h6"/>'),
+    subir: svg('<polyline points="4 15 12 7 20 15"/>'),
+    equis: svg('<path d="M6 6l12 12M18 6 6 18"/>'),
     estudio: svg('<path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/>')
   });
   /* ---------- Sonidos (hechos con código, sin archivos de audio) ---------- */
@@ -669,12 +838,14 @@
     };
   })();
   function pintarBtnSonido() {
-    const b = $('btnSonido'), on = Sonido.activo;
-    b.classList.toggle('mudo', !on);
-    b.innerHTML = on ? ICO.sonido : ICO.mudo;
-    b.setAttribute('aria-label', on ? 'Silenciar sonidos' : 'Activar sonidos'); b.title = b.getAttribute('aria-label');
+    const on = Sonido.activo;
+    [$('btnSonido'), $('qSonido')].forEach(b => {
+      b.classList.toggle('mudo', !on);
+      b.innerHTML = on ? ICO.sonido : ICO.mudo;
+      b.setAttribute('aria-label', on ? 'Silenciar sonidos' : 'Activar sonidos'); b.title = b.getAttribute('aria-label');
+    });
   }
-  $('btnSonido').addEventListener('click', () => { Sonido.cambiar(); pintarBtnSonido(); });
+  [$('btnSonido'), $('qSonido')].forEach(b => b.addEventListener('click', () => { Sonido.cambiar(); pintarBtnSonido(); }));
   pintarBtnSonido();
   const vibrar = ms => { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {} };
   function saltar(el) { el.classList.remove('salta'); void el.offsetWidth; el.classList.add('salta'); }
@@ -957,14 +1128,14 @@
     a.addEventListener('pointerup', soltar); a.addEventListener('pointercancel', soltar);
     $('carta').addEventListener('click', e => { if (ignorarClick || e.target.closest('summary, a')) return; voltear(); });
   })();
-  function confeti() {
+  function confeti(donde) {
     const colores = ['#C6E000', '#e9ff6a', '#FF9F43', '#ffffff', '#a78bfa'];
     for (let i = 0; i < 70; i++) {
       const d = document.createElement('i'); d.className = 'confeti';
       d.style.left = Math.random() * 100 + '%'; d.style.background = colores[i % colores.length];
       d.style.setProperty('--dx', (Math.random() * 160 - 80) + 'px'); d.style.setProperty('--r', (Math.random() * 720 - 360) + 'deg');
       d.style.animationDuration = (1.6 + Math.random() * 1.6) + 's'; d.style.animationDelay = (Math.random() * .5) + 's';
-      $('fin').appendChild(d); setTimeout(() => d.remove(), 4000);
+      (donde || $('fin')).appendChild(d); setTimeout(() => d.remove(), 4000);
     }
   }
   function terminar() {
@@ -1009,6 +1180,437 @@
   $('btnNueva').addEventListener('click', abrirPreparar);
   $('btnAlEstudio').addEventListener('click', abrirEstudio);
 
+  /* ---------- Practicar y Reto ---------- */
+  const RETO_SEG = 15;                       // segundos por pregunta en el Reto
+  const MEDALLAS = [[30, 'Oro', '#FFC800', '#c79a00'], [20, 'Plata', '#E3E3E3', '#9e9e9e'], [10, 'Bronce', '#E0965A', '#a0602c']];
+  const DIR = { sin: ['sinónimo', 'c'], ant: ['antónimo', 'm'] };
+  const CORAZON = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.1 5.3 3 1.7-1.9 3.2-3 5.3-3 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg>';
+  const al = a => a[Math.floor(Math.random() * a.length)];
+  const Q = { ultimo: '', modo: '', mazo: 'todo', cola: [], pos: 0, ok: 0, mal: 0, seguidas: 0, mejor: 0, vidas: 3, puntos: 0, nivel: 1, enNivel: 0, usadas: new Set(), p: null, listo: false, reloj: null, vence: 0, auto: null };
+  const buho = (animo, tam) => window.MCBuho ? MCBuho.svg(animo, tam) : '';
+  const record = () => { const r = estado._reto; return Array.isArray(r) ? r : [0, 0, 0]; };
+
+  // Opciones falsas para "¿cuál es el sinónimo/antónimo de w?". Una suele ser la trampa
+  // típica del examen: un antónimo cuando se pide sinónimo (y al revés).
+  function distractores(w, d, correcta, n) {
+    const fuera = new Set([w.palabra].concat(w.sin, w.ant).map(norm)), vistos = new Set([norm(correcta)]), out = [];
+    const trampa = w[d === 'sin' ? 'ant' : 'sin'];
+    if (trampa.length && Math.random() < .7) { const x = al(trampa); vistos.add(norm(x)); out.push(x); }
+    const meter = x => { const k = norm(x); if (out.length < n && k && !vistos.has(k) && !fuera.has(k)) { vistos.add(k); out.push(x); } };
+    const otros = banco.filter(x => x !== w), igual = otros.filter(x => w.tipo && x.tipo === w.tipo);
+    barajar(igual).concat(barajar(otros.filter(x => !igual.includes(x)))).forEach(x => barajar(x[d].concat(x[d === 'sin' ? 'ant' : 'sin'])).forEach(meter));
+    return out;
+  }
+  function otrasPalabras(w, n, valida) {
+    const otros = banco.filter(x => x !== w && (!valida || valida(x))), igual = otros.filter(x => w.tipo && x.tipo === w.tipo);
+    return barajar(igual).concat(barajar(otros.filter(x => !igual.includes(x)))).slice(0, n).map(x => x.palabra);
+  }
+  const conPalabra = w => { const r = raizDe(w.palabra); return w.ej.filter(e => (e.match(/[\p{L}]+/gu) || []).some(t => norm(t).startsWith(r))); };
+  const pide = (txt, d) => txt.replace('%', `<b class="${DIR[d][1]}">${DIR[d][0]}</b>`);
+
+  // Los juegos
+  function pMarcar(it) {
+    const ok = al(it.w[it.d]);
+    return { juego: 'marcar', it, pide: pide('¿Cuál es el % de…', it.d), grande: it.w.palabra, ops: barajar([ok].concat(distractores(it.w, it.d, ok, 3))), ok };
+  }
+  function pInversa(it) {
+    const pista = al(it.w[it.d]), k = norm(pista);
+    const ops = barajar([it.w.palabra].concat(otrasPalabras(it.w, 3, x => !x[it.d].some(y => norm(y) === k) && norm(x.palabra) !== k)));
+    if (ops.length < 2) return pMarcar(it);
+    return { juego: 'marcar', it, pide: pide('¿De qué palabra es %…', it.d), grande: pista, min: true, ops, ok: it.w.palabra };
+  }
+  function pCompletar(it) {
+    const ejs = conPalabra(it.w), otras = otrasPalabras(it.w, 3);
+    if (!ejs.length || !otras.length) return pMarcar(it);
+    const r = raizDe(it.w.palabra);
+    const frase = esc(al(ejs)).replace(/[\p{L}]+/gu, t => norm(t).startsWith(r) ? '<span class="hueco"></span>' : t);
+    return { juego: 'completar', it, pide: 'Completa la oración con la palabra correcta.', frase, ops: barajar([it.w.palabra].concat(otras)).map(x => x.toLowerCase()), ok: it.w.palabra.toLowerCase() };
+  }
+  function pEscribir(it) {
+    return { juego: 'escribir', it, pide: pide('Escribe un % de…', it.d), grande: it.w.palabra, ok: it.w[it.d][0] };
+  }
+  function pRelacionar(it) {
+    // 4 palabras con su sinónimo (o antónimo); sin respuestas que sirvan para dos palabras
+    const grupo = [it], usadas = new Set(it.w[it.d].map(norm));
+    barajar(cartas(it.d).filter(c => c.w !== it.w)).forEach(c => {
+      if (grupo.length < 4 && !c.w[c.d].some(x => usadas.has(norm(x))) && !grupo.some(g => g.w[g.d].map(norm).includes(norm(c.w.palabra)))) { grupo.push(c); c.w[c.d].forEach(x => usadas.add(norm(x))); }
+    });
+    if (grupo.length < 3) return pMarcar(it);
+    const pares = grupo.map(g => ({ it: g, izq: g.w.palabra, der: al(g.w[g.d]) }));
+    return { juego: 'relacionar', it, pide: pide('Une cada palabra con su %.', it.d), pares, der: barajar(pares.slice()), hechos: 0, errores: new Set() };
+  }
+  // ¿Es sinónimo? Sí / No
+  function pVerdad(it) {
+    const si = Math.random() < .5, otra = si ? al(it.w[it.d]) : distractores(it.w, it.d, '', 1)[0];
+    if (!otra) return pMarcar(it);
+    return { juego: 'marcar', dos: true, it, pide: pide('¿Son %s?', it.d).replace('</b>s?', 's</b>?'), duo: [it.w.palabra, otra], ops: ['Sí', 'No'], ok: si ? 'Sí' : 'No' };
+  }
+  // Término excluido, como en el examen: ¿cuál NO es sinónimo?
+  function pIntruso(it) {
+    if (it.w[it.d].length < 3) return pMarcar(it);
+    const buenas = barajar(it.w[it.d].slice()).slice(0, 3), ok = distractores(it.w, it.d, '', 1)[0];
+    if (!ok) return pMarcar(it);
+    return { juego: 'marcar', it, pide: pide('¿Cuál <b>NO</b> es % de…', it.d), grande: it.w.palabra, ops: barajar(buenas.concat(ok)), ok, intruso: true };
+  }
+  // ¿Sinónimos o antónimos?
+  function pClasificar(it) {
+    return { juego: 'marcar', dos: true, it, pide: 'Estas dos palabras son…', duo: [it.w.palabra, al(it.w[it.d])], ops: ['Sinónimos', 'Antónimos'], ok: it.d === 'sin' ? 'Sinónimos' : 'Antónimos' };
+  }
+  // ¿Qué palabra significa…?
+  function pDefinicion(it) {
+    const otras = otrasPalabras(it.w, 3);
+    if (!it.w.def || !otras.length) return pMarcar(it);
+    return { juego: 'marcar', sinMarca: true, it, pide: '¿Qué palabra significa esto?', def: it.w.def, ops: barajar([it.w.palabra].concat(otras)), ok: it.w.palabra };
+  }
+  // Analogía, como en el examen: EFÍMERO es a DURADERO como LOCUAZ es a…
+  function pAnalogia(it) {
+    const otra = barajar(cartas(it.d).filter(c => c.w !== it.w))[0];
+    if (!otra) return pMarcar(it);
+    const ok = al(otra.w[otra.d]), ops = [ok].concat(distractores(otra.w, otra.d, ok, 3));
+    if (ops.length < 2) return pMarcar(it);
+    return { juego: 'marcar', it: otra, pide: 'Completa la analogía.', analogia: [it.w.palabra, al(it.w[it.d]), otra.w.palabra], ops: barajar(ops), ok };
+  }
+  // Armar la palabra con letras
+  function pArmar(it) {
+    const op = barajar(it.w[it.d].filter(x => /^[\p{L}]{3,11}$/u.test(x)))[0];
+    if (!op) return pEscribir(it);
+    const letras = barajar(op.toUpperCase().split('').map((c, i) => ({ c, i })));
+    return { juego: 'armar', it, pide: pide('Arma un % de…', it.d), grande: it.w.palabra, ok: op, letras, armado: [] };
+  }
+  const JUEGOS = { marcar: pMarcar, inversa: pInversa, completar: pCompletar, escribir: pEscribir, relacionar: pRelacionar,
+    verdad: pVerdad, intruso: pIntruso, clasificar: pClasificar, definicion: pDefinicion, analogia: pAnalogia, armar: pArmar };
+  function crear(it, juego) { return (JUEGOS[juego] || pMarcar)(it); }
+
+  // Qué juegos sirven para esta palabra. Se decide con sus datos (así funciona solo con
+  // las palabras que se suban después) y con cuánto la domina el alumno:
+  // nueva → juegos de reconocer; vista → de relacionar; dominada → de escribir y armar.
+  function juegosPara(it, reto) {
+    const e = estado[it.id], caja = e ? e[0] : -1, w = it.w;
+    const j = [['marcar', 3], ['verdad', 2]];
+    if (w.sin.length && w.ant.length || caja >= 0) j.push(['clasificar', 1]);
+    if (w.def && banco.length >= 3) j.push(['definicion', 2]);
+    if (conPalabra(w).length && banco.length >= 3) j.push(['completar', 2]);
+    if (caja >= 0 || reto) {
+      j.push(['inversa', 2]);
+      if (w[it.d].length >= 3) j.push(['intruso', 2]);
+      if (cartas(it.d).length >= 2) j.push(['analogia', 1]);
+    }
+    if (caja >= 1 && !reto) j.push(['escribir', 2], ['armar', 2]);
+    return j;
+  }
+  function sortear(it, reto, ultimo) {
+    const j = juegosPara(it, reto).filter(x => x[0] !== ultimo);
+    let t = Math.random() * j.reduce((a, x) => a + x[1], 0);
+    for (const x of j) { t -= x[1]; if (t <= 0) return x[0]; }
+    return 'marcar';
+  }
+
+  // Practicar: 10 preguntas del mazo elegido, primero las que toca repasar y las nuevas (fáciles antes)
+  function planPracticar(mazo) {
+    const cs = cartas(mazo);
+    const grupo = c => { const e = estado[c.id]; return !e ? 1 : toca(c.id) ? 0 : 2; };
+    const orden = [0, 1, 2].flatMap(g => { const x = barajar(cs.filter(c => grupo(c) === g)); return g === 1 ? x.sort((a, b) => a.w.nivel - b.w.nivel) : x; }).slice(0, 10);
+    let ultimo = '', rel = false;
+    return orden.map((it, i) => {
+      // Una ronda de "une las parejas" a la mitad, si hay suficientes palabras
+      const juego = !rel && i === 4 && cartas(it.d).length >= 4 ? (rel = true, 'relacionar') : sortear(it, false, ultimo);
+      ultimo = juego;
+      return { it, juego };
+    });
+  }
+  // Reto: cualquier palabra al azar; empieza con las de nivel 1 y sube cada 5 aciertos
+  function siguienteReto() {
+    const todas = cartas('todo');
+    let pool = todas.filter(c => c.w.nivel <= Q.nivel && !Q.usadas.has(c.id));
+    const delNivel = pool.filter(c => c.w.nivel === Q.nivel);
+    if (delNivel.length && Math.random() < .65) pool = delNivel;
+    if (!pool.length) { Q.usadas.clear(); pool = todas.filter(c => c.w.nivel <= Q.nivel); }
+    if (!pool.length) pool = todas;
+    const it = al(pool); Q.usadas.add(it.id);
+    const juego = sortear(it, true, Q.ultimo); Q.ultimo = juego;
+    return { it, juego };
+  }
+
+  function abrirPrepQ(modo) {
+    Q.modo = modo;
+    mostrar('prepQ'); window.scrollTo(0, 0);
+    const reto = modo === 'reto';
+    $('titulo').textContent = reto ? 'Reto' : 'Practicar';
+    $('lead').textContent = reto ? 'Todas las palabras al azar. ¿Hasta dónde llegas?' : 'Juegos cortos para fijar las palabras. Sin tiempo y sin vidas: las que falles vuelven a salir al final.';
+    $('pqPaso').hidden = reto;
+    const regla = (c, ico, t, s) => `<div class="regla"><span class="ri ${c}">${ico}</span><span>${t}<small>${s}</small></span></div>`;
+    $('pqReglas').innerHTML = reto
+      ? regla('cor', CORAZON, '3 corazones', 'Pierdes uno si fallas o se acaba el tiempo.') +
+        regla('rel', ICO.reloj, RETO_SEG + ' segundos por pregunta', 'Responde antes de que se vacíe la barra.') +
+        regla('nvl', ICO.subir, 'Empieza fácil y sube', 'Cada 5 aciertos llegan palabras más difíciles.') +
+        regla('com', ICO.fuego, 'Combos', '3 seguidas: puntos x2. 6 seguidas: puntos x3.')
+      : regla('jue', ICO.diana, '10 preguntas, juegos distintos', 'Marca, une parejas, completa, arma la palabra y más.') +
+        regla('nvl', ICO.rep, 'Lo que más necesitas', 'Primero las que te tocan repasar y las nuevas.') +
+        regla('com', ICO.subir, 'Sube la dificultad', 'Primero reconoces la palabra; cuando ya la dominas, la escribes.');
+    const rc = record();
+    $('pqRecord').hidden = !reto || !rc[0];
+    $('pqRecord').innerHTML = `Tu récord: <b>${rc[0]} puntos</b>`;
+    if (!reto) {
+      const n = cuentas();
+      const mazos = [['todo', 'Todo', String(n.sin + n.ant)]].concat(n.sin ? [['sin', 'Sinónimos', String(n.sin), 'c']] : [], n.ant ? [['ant', 'Antónimos', String(n.ant), 'm']] : []);
+      if (!mazos.some(m => m[0] === Q.mazo)) Q.mazo = 'todo';
+      const elegir = v => { Q.mazo = v; chipsDe($('pqMazo'), mazos, v, elegir); };
+      elegir(Q.mazo);
+    }
+  }
+  $('btnPracticar').addEventListener('click', () => { Sonido.empezar(); abrirPrepQ('practicar'); });
+  $('btnReto').addEventListener('click', () => { Sonido.empezar(); abrirPrepQ('reto'); });
+  $('pqVolver').addEventListener('click', () => { Sonido.toque(); abrirEstudio(); });
+  $('pqEmpezar').addEventListener('click', () => { Sonido.empezar(); empezarQ(); });
+
+  function empezarQ() {
+    const reto = Q.modo === 'reto';
+    Object.assign(Q, { pos: 0, ok: 0, mal: 0, seguidas: 0, mejor: 0, vidas: 3, puntos: 0, nivel: 1, enNivel: 0, p: null, falladas: [] });
+    Q.usadas = new Set();
+    Q.cola = reto ? [] : planPracticar(Q.mazo);
+    if (!reto && !Q.cola.length) { aviso('No hay palabras para practicar.'); return; }
+    $('titulo').textContent = reto ? 'Reto' : 'Practicar';
+    $('qVidas').hidden = $('qInfo').hidden = $('qReloj').hidden = !reto;
+    $('qTrack').hidden = reto;
+    mostrar('quiz'); window.scrollTo(0, 0);
+    pintarVidas(); siguienteQ();
+  }
+  function pintarVidas(perdio) {
+    $('qVidas').innerHTML = [0, 1, 2].map(i => CORAZON.replace('<svg', `<svg class="${i >= Q.vidas ? 'ida' : ''} ${perdio && i === Q.vidas ? 'pierde' : ''}"`)).join('');
+  }
+  const mult = () => Q.seguidas >= 6 ? 3 : Q.seguidas >= 3 ? 2 : 1;
+  function pintarInfo() {
+    $('qInfo').innerHTML = `<span class="pts">${Q.puntos} pts</span>${mult() > 1 ? `<span class="mult">x${mult()}</span>` : ''}<span class="nv">Nivel ${Q.nivel}</span>`;
+  }
+  function siguienteQ() {
+    clearTimeout(Q.auto); pararReloj();
+    $('qHoja').hidden = true;
+    const reto = Q.modo === 'reto';
+    if (reto ? Q.vidas <= 0 : Q.pos >= Q.cola.length) { finQ(); return; }
+    const paso = reto ? siguienteReto() : Q.cola[Q.pos];
+    Q.p = crear(paso.it, paso.juego); Q.p.otraVez = paso.otraVez; Q.listo = false;
+    if (!reto) $('qFill').style.width = (Q.pos / Q.cola.length * 100) + '%';
+    else pintarInfo();
+    $('qBuho').innerHTML = buho('normal', 76);
+    $('qPide').innerHTML = Q.p.pide;
+    pintarPregunta();
+    if (reto) arrancarReloj();
+  }
+  function pintarPregunta() {
+    const p = Q.p, c = $('qCuerpo');
+    const tecla = i => `<span class="k">${i + 1}</span>`;
+    const ops = () => `<div class="qops ${p.dos ? 'dos' : ''}">${p.ops.map((o, i) => `<button class="qop" type="button" data-o="${i}">${tecla(i)}<span>${esc(o)}</span></button>`).join('')}</div>`;
+    if (p.juego === 'marcar') c.innerHTML = (p.duo ? `<div class="qduo"><span>${esc(p.duo[0])}</span><i></i><span>${esc(p.duo[1])}</span></div>`
+      : p.def ? `<div class="qfrase qdef">“${esc(p.def)}”</div>`
+      : p.analogia ? `<div class="qana ${DIR[p.it.d][1]}"><div><b>${esc(p.analogia[0])}</b><small>es a</small><b>${esc(p.analogia[1])}</b></div><div><small>como</small><b>${esc(p.analogia[2])}</b><small>es a</small><span class="hueco"></span></div></div>`
+      : `<div class="qpal ${p.min ? 'min' : ''}">${esc(p.grande)}</div>`) + ops();
+    else if (p.juego === 'armar') pintarArmar();
+    else if (p.juego === 'completar') c.innerHTML = `<div class="qfrase">${p.frase}</div>` + ops();
+    else if (p.juego === 'escribir') {
+      c.innerHTML = `<div class="qpal">${esc(p.grande)}</div><form class="qesc" id="qForm" autocomplete="off"><input id="qIn" type="text" placeholder="Escribe aquí…" autocapitalize="off" spellcheck="false" aria-label="Tu respuesta"><button class="btn primary" type="submit">Comprobar</button><div class="hint">No importan las tildes.</div></form>`;
+      $('qForm').addEventListener('submit', e => { e.preventDefault(); const v = $('qIn').value.trim(); if (v) responderEscribir(v); });
+      setTimeout(() => { try { $('qIn').focus({ preventScroll: true }); } catch (e) {} }, 80);
+    } else if (p.juego === 'relacionar') {
+      c.innerHTML = `<div class="qrel"><div class="col">${p.pares.map((x, i) => `<button class="qop izq" type="button" data-l="${i}">${esc(x.izq)}</button>`).join('')}</div>` +
+        `<div class="col">${p.der.map((x, i) => `<button class="qop" type="button" data-r="${i}">${esc(x.der)}</button>`).join('')}</div></div>`;
+      p.sel = null;
+    }
+  }
+  $('qCuerpo').addEventListener('click', e => {
+    const f = e.target.closest('.ficha, #qArmOk');
+    if (f && !f.disabled && !Q.listo) {
+      const p = Q.p;
+      if (f.id === 'qArmOk') {
+        const hecho = p.armado.map(k => p.letras[k].c).join(''), bien = norm(hecho) === norm(p.ok);
+        marcar(p.it.id, bien);
+        $('qArm').classList.add(bien ? 'bien' : 'mal');
+        $('qCuerpo').querySelectorAll('.ficha, #qArmOk').forEach(x => { x.disabled = true; });
+        resultado(bien);
+        return;
+      }
+      Sonido.toque();
+      if (f.dataset.f != null) p.armado.push(+f.dataset.f); else p.armado.splice(p.armado.indexOf(+f.dataset.u), 1);
+      pintarArmar(); return;
+    }
+    const b = e.target.closest('.qop'); if (!b || b.disabled || Q.listo) return;
+    const p = Q.p;
+    if (b.dataset.o != null) { elegirOp(+b.dataset.o); return; }
+    // Relacionar: primero una palabra de la izquierda, luego su pareja
+    if (b.dataset.l != null) {
+      Sonido.toque();
+      $('qCuerpo').querySelectorAll('.izq').forEach(x => x.classList.toggle('sel', x === b));
+      p.sel = +b.dataset.l; return;
+    }
+    if (b.dataset.r != null) {
+      if (p.sel == null) { const izq = $('qCuerpo').querySelector('.izq:not(:disabled)'); if (izq) saltar(izq); return; }
+      const par = p.pares[p.sel], der = p.der[+b.dataset.r], izq = $('qCuerpo').querySelector(`[data-l="${p.sel}"]`);
+      if (der === par) {
+        Sonido.marcar(true); vibrar(10);
+        [izq, b].forEach(x => { x.classList.remove('sel'); x.classList.add('par'); x.disabled = true; });
+        p.sel = null; p.hechos++;
+        if (p.hechos === p.pares.length) {
+          p.pares.forEach(x => marcar(x.it.id, !p.errores.has(x)));
+          resultado(p.errores.size === 0, p.errores.size ? `Tuviste ${p.errores.size === 1 ? 'un error' : p.errores.size + ' errores'}. Las parejas eran: ${p.pares.map(x => `<b>${esc(x.izq.toLowerCase())}</b> = ${esc(x.der)}`).join(', ')}.` : '', true);
+        }
+      } else {
+        p.errores.add(par); Sonido.error(); vibrar([10, 40, 10]);
+        b.classList.add('mal'); setTimeout(() => b.classList.remove('mal'), 400);
+      }
+    }
+  });
+  function pintarArmar() {
+    const p = Q.p;
+    $('qCuerpo').innerHTML = `<div class="qpal">${esc(p.grande)}</div>
+      <div class="qarm" id="qArm">${p.armado.length ? p.armado.map(k => `<button class="ficha" type="button" data-u="${k}">${esc(p.letras[k].c)}</button>`).join('') : '<span class="vacioA">Toca las letras en orden</span>'}</div>
+      <div class="qfichas">${p.letras.map((x, k) => `<button class="ficha ${p.armado.includes(k) ? 'usada' : ''}" type="button" data-f="${k}" ${p.armado.includes(k) ? 'disabled' : ''}>${esc(x.c)}</button>`).join('')}</div>
+      <button class="btn primary" id="qArmOk" type="button" ${p.armado.length === p.letras.length ? '' : 'disabled'}>Comprobar</button>`;
+  }
+  function elegirOp(i) {
+    if (Q.listo) return;
+    const p = Q.p, bien = norm(p.ops[i]) === norm(p.ok);
+    $('qCuerpo').querySelectorAll('.qop').forEach((b, j) => {
+      b.disabled = true;
+      if (norm(p.ops[j]) === norm(p.ok)) b.classList.add('bien'); else if (j === i) b.classList.add('mal'); else b.classList.add('apaga');
+    });
+    if (p.juego === 'completar' || p.analogia) { const h = $('qCuerpo').querySelector('.hueco'); if (h) { h.classList.add('lleno'); h.textContent = p.ok; } }
+    if (p.juego === 'completar' || p.sinMarca) racha1(); else marcar(p.it.id, bien);
+    resultado(bien);
+  }
+  // Acepta cualquiera de la lista, sin tildes y con un error de tipeo en palabras largas
+  function parecido(a, b) {
+    a = norm(a); b = norm(b);
+    if (a === b) return true;
+    if (b.length < 6 || Math.abs(a.length - b.length) > 1) return false;
+    let i = 0, j = 0, dif = 0;
+    while (i < a.length && j < b.length) {
+      if (a[i] === b[j]) { i++; j++; continue; }
+      if (++dif > 1) return false;
+      if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; }
+    }
+    return dif + (a.length - i) + (b.length - j) <= 1;
+  }
+  function responderEscribir(v) {
+    if (Q.listo) return;
+    const p = Q.p, lista = p.it.w[p.it.d], hit = lista.find(x => parecido(v, x));
+    $('qIn').disabled = true; $('qIn').classList.add(hit ? 'bien' : 'mal');
+    $('qForm').querySelector('button').hidden = true;
+    marcar(p.it.id, !!hit);
+    resultado(!!hit, hit && norm(hit) !== norm(v) ? `Casi perfecto: se escribe <b>${esc(hit)}</b>.` : '');
+  }
+  const racha1 = () => { window.MCRacha ? MCRacha.respondio() : (window.mcRachaPend = (window.mcRachaPend || 0) + 1); };
+
+  function resultado(bien, nota, rel) {
+    Q.listo = true; pararReloj();
+    const p = Q.p, w = p.it.w, reto = Q.modo === 'reto';
+    const cuenta = reto || !p.otraVez;   // en Practicar, el puntaje es del primer intento
+    if (bien) {
+      if (cuenta) Q.ok++;
+      Q.seguidas++; Q.mejor = Math.max(Q.mejor, Q.seguidas);
+      if (reto) {
+        Q.puntos += 10 * mult();
+        if (++Q.enNivel >= 5 && Q.nivel < 3) { Q.nivel++; Q.enNivel = 0; setTimeout(() => combo(ICO.subir + ' ¡Nivel ' + Q.nivel + '!'), 500); }
+        pintarInfo();
+      }
+      if (Q.seguidas >= 3 && Q.seguidas % 3 === 0) {
+        combo((Q.seguidas >= 9 ? ICO.estrella : Q.seguidas >= 6 ? ICO.rayo : ICO.fuego) + ` ${Q.seguidas} seguidas` + (reto ? ` · x${mult()}` : ''));
+        const n = Q.seguidas; setTimeout(() => Sonido.racha(n), 120);
+      }
+      Sonido.bien(); vibrar(15);
+    } else {
+      if (cuenta) Q.mal++;
+      Q.seguidas = 0;
+      if (reto) { Q.vidas--; pintarVidas(true); pintarInfo(); }
+      else if (!p.otraVez) Q.cola.push({ it: p.it, juego: p.juego === 'relacionar' ? 'marcar' : p.juego, otraVez: true });
+      if (!Q.falladas.includes(p.it)) Q.falladas.push(p.it);
+      Sonido[reto ? 'error' : 'repasar'](); vibrar([10, 40, 10]);
+    }
+    Q.pos++;
+    $('qBuho').innerHTML = buho(bien ? 'feliz' : 'preocupado', 76);
+    const frases = bien ? ['¡Excelente!', '¡Muy bien!', '¡Correcto!', '¡Así se hace!'] : ['Casi…', 'No era esa', '¡Ups!'];
+    $('qHoja').className = 'qhoja ' + (bien ? 'bien' : 'mal');
+    $('qhT').innerHTML = (bien ? ICO.si : ICO.equis) + ' ' + (p.timeout ? '¡Se acabó el tiempo!' : al(frases));
+    const extra = p.dos ? `<b>${esc(p.duo[0].toLowerCase())}</b> y <b>${esc(p.duo[1].toLowerCase())}</b> ${p.ok === 'Sí' ? 'sí son' : p.ok === 'No' ? 'no son' : 'son'} ${p.ok === 'Sinónimos' || p.ok === 'Antónimos' ? p.ok.toLowerCase() : DIR[p.it.d][0] + 's'}. ` : '';
+    const def = w.def ? `<b>${esc(w.palabra.toLowerCase())}</b>: ${esc(w.def)}` : '';
+    const resp = !bien && !rel && p.juego !== 'relacionar' && !p.dos ? `Respuesta correcta: <b>${esc(p.juego === 'escribir' ? p.it.w[p.it.d].join(', ') : p.ok)}</b>. ` : '';
+    $('qhX').innerHTML = (nota ? nota + ' ' : '') + resp + extra + (bien && !nota ? def : !bien ? def : '');
+    $('qhX').hidden = !$('qhX').innerHTML;
+    $('qSeguir').textContent = reto && Q.vidas <= 0 ? 'Ver resultado' : 'Continuar';
+    $('qHoja').hidden = false;
+    if (reto && bien) Q.auto = setTimeout(siguienteQ, 1400);
+  }
+  $('qSeguir').addEventListener('click', () => { Sonido.toque(); siguienteQ(); });
+
+  // Reloj del Reto
+  function arrancarReloj() {
+    const bar = $('qRelojBar'), caja = $('qReloj');
+    Q.vence = performance.now() + RETO_SEG * 1000;
+    caja.classList.remove('poco');
+    (function paso() {
+      const queda = Math.max(0, Q.vence - performance.now());
+      bar.style.transform = `scaleX(${queda / (RETO_SEG * 1000)})`;
+      caja.classList.toggle('poco', queda < 5000);
+      if (queda <= 0) { seAcabo(); return; }
+      Q.reloj = requestAnimationFrame(paso);
+    })();
+  }
+  function pararReloj() { cancelAnimationFrame(Q.reloj); Q.reloj = null; }
+  function seAcabo() {
+    if (Q.listo) return;
+    const p = Q.p; p.timeout = true;
+    $('qCuerpo').querySelectorAll('.qop').forEach(b => { b.disabled = true; const t = b.querySelector('span:last-child'); if (t && norm(t.textContent) === norm(p.ok)) b.classList.add('bien'); else b.classList.add('apaga'); });
+    if (p.juego === 'completar') racha1(); else marcar(p.it.id, false);
+    resultado(false);
+  }
+  $('qSalir').addEventListener('click', () => { Sonido.toque(); clearTimeout(Q.auto); pararReloj(); $('qHoja').hidden = true; subir(); abrirEstudio(); });
+
+  function medallaSvg(m) {
+    return `<svg viewBox="0 0 44 54" aria-hidden="true"><path d="M12 0h8l4 14-8 4zM32 0h-8l-4 14 8 4z" fill="#1CB0F6"/><circle cx="22" cy="34" r="18" fill="${m[3]}"/><circle cx="22" cy="32" r="18" fill="${m[2]}"/><circle cx="22" cy="32" r="12" fill="none" stroke="${m[3]}" stroke-width="2.5"/><path d="m22 24 2.4 5 5.4.6-4 3.7 1.1 5.4-4.9-2.7-4.9 2.7 1.1-5.4-4-3.7 5.4-.6z" fill="${m[3]}"/></svg>`;
+  }
+  function finQ() {
+    pararReloj(); clearTimeout(Q.auto); $('qHoja').hidden = true;
+    subir();
+    const reto = Q.modo === 'reto', total = Q.ok + Q.mal;
+    let animo, titulo, centro, texto;
+    if (reto) {
+      const rc = record(), nuevo = Q.puntos > rc[0];
+      estado._reto = cambios._reto = [Math.max(rc[0], Q.puntos), (rc[1] || 0) + 1, ahora()];
+      guardarLocal(); subir();
+      const m = MEDALLAS.find(x => Q.ok >= x[0]);
+      animo = nuevo && Q.puntos ? 'celebrando' : m ? 'feliz' : Q.ok >= 5 ? 'normal' : 'triste';
+      titulo = nuevo && Q.puntos ? '¡Nuevo récord!' : m ? '¡Medalla de ' + m[1].toLowerCase() + '!' : Q.ok >= 5 ? '¡Buen intento!' : '¡Se acabaron los corazones!';
+      centro = `<div class="grande">${Q.puntos}<small>PUNTOS</small></div>` + (nuevo && rc[0] ? `<div class="nuevo">Antes: ${rc[0]}</div>` : '') +
+        (m ? `<div class="medallaR">${medallaSvg(m)}Medalla de ${m[1].toLowerCase()}</div>` : '');
+      const sig = MEDALLAS.slice().reverse().find(x => Q.ok < x[0]);
+      texto = (sig ? `Con ${sig[0]} aciertos ganas la medalla de ${sig[1].toLowerCase()}. ` : '¡Llegaste a la medalla más alta! ') + `Tu récord es ${Math.max(rc[0], Q.puntos)} puntos.`;
+      $('fqStats').innerHTML = `<span class="pill ok">${ICO.si}${Q.ok} acierto${Q.ok === 1 ? '' : 's'}</span><span class="pill rep">${ICO.fuego}Mejor racha: ${Q.mejor}</span><span class="pill ret">${ICO.subir}Nivel ${Q.nivel}</span>`;
+      $('fqOtra').innerHTML = ICO.rep + ' Jugar de nuevo';
+    } else {
+      const pct = total ? Math.round(Q.ok / total * 100) : 0;
+      animo = pct >= 90 ? 'celebrando' : pct >= 60 ? 'feliz' : 'preocupado';
+      titulo = pct === 100 ? '¡Perfecto!' : pct >= 80 ? '¡Muy bien!' : pct >= 50 ? '¡Vas bien!' : '¡Sigue practicando!';
+      centro = `<div class="grande" style="color:var(--accent)">${pct}%<small>${Q.ok} DE ${total} CORRECTAS</small></div>`;
+      const nf = Q.falladas.length;
+      texto = nf ? (nf === 1 ? 'La palabra que fallaste' : 'Las ' + nf + ' palabras que fallaste') + ' te saldrán antes en Flashcards y en tu próxima práctica.' : 'No fallaste ninguna. ¡Esas palabras ya son tuyas!';
+      $('fqStats').innerHTML = `<span class="pill ok">${ICO.si}${Q.ok} correcta${Q.ok === 1 ? '' : 's'}</span>` + (Q.falladas.length ? `<span class="pill rep">${ICO.rep}${Q.falladas.length} por repasar</span>` : '');
+      $('fqOtra').innerHTML = ICO.jugar + ' Otra práctica';
+    }
+    $('fqBuho').innerHTML = buho(animo, 120);
+    $('fqTitulo').textContent = titulo; $('fqCentro').innerHTML = centro; $('fqTexto').textContent = texto;
+    mostrar('finQ'); window.scrollTo(0, 0);
+    if ((animo === 'celebrando' || animo === 'feliz') && !matchMedia('(prefers-reduced-motion: reduce)').matches) confeti($('finQ'));
+    vibrar([20, 60, 30]); Sonido.fin(animo === 'celebrando' ? 100 : animo === 'feliz' ? 70 : 40);
+  }
+  $('fqOtra').addEventListener('click', () => { Sonido.empezar(); empezarQ(); });
+  $('fqEstudio').addEventListener('click', () => { Sonido.toque(); abrirEstudio(); });
+  document.addEventListener('keydown', e => {
+    if ($('quiz').hidden || e.target.tagName === 'INPUT') return;
+    if (!$('qHoja').hidden && e.key === 'Enter') { e.preventDefault(); siguienteQ(); return; }
+    const n = +e.key; if (n >= 1 && n <= 4 && Q.p && Q.p.ops && n <= Q.p.ops.length) elegirOp(n - 1);
+  });
+  $('btnPracticar').innerHTML = $('btnPracticar').innerHTML.replace('Muy pronto', 'Juegos por tema');
+  $('btnReto').innerHTML = $('btnReto').innerHTML.replace('Muy pronto', '3 corazones');
+  $('pqEmpezar').innerHTML = ICO.jugar + ' Empezar';
+
   /* ---------- Inicio ---------- */
   async function iniciar() {
     const c = CURSO && window.MCCursos ? await MCCursos.curso(CURSO).catch(() => null) : null;
@@ -1030,6 +1632,7 @@
   iniciar();
 })();
 </script>
+<script src="assets/buho.js"></script>
 <script src="assets/alertas.js" defer></script>
 <script src="assets/sonido.js"></script>
 </body>
