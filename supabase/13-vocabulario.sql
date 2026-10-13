@@ -9,7 +9,11 @@
 --     Panel → Vocabulario. Un solo banco para todos los cursos
 --     de RV que tengan Vocabulario encendido y para todos los ciclos.
 --     Cada fila es la ficha de una palabra: sus sinónimos, sus
---     antónimos y, si hay, definición y ejemplo.
+--     antónimos y, si hay, definición y hasta 5 ejemplos.
+--     En "extra" van datos opcionales: tipo (adj., sust., verbo, adv.),
+--     nivel (1 a 3), examen (dónde salió), par (con qué se confunde),
+--     raiz (etimología) y tip (truco). Se pueden sumar otros datos ahí
+--     sin volver a correr SQL.
 --     Todos lo pueden leer; solo los administradores lo cambian.
 --   · vocabulario_estado: qué palabras ya domina cada alumno y
 --     cuándo le toca repasarlas (Flashcards, Practicar y Reto).
@@ -27,6 +31,17 @@ do $$ begin
   end if;
 end $$;
 drop function if exists public.guardar_vocabulario_tema(text, jsonb);
+-- Antes había un solo ejemplo (texto); ahora una lista de ejemplos
+do $$ begin
+  if exists (select 1 from information_schema.columns
+              where table_schema = 'public' and table_name = 'vocabulario' and column_name = 'ej' and data_type = 'text') then
+    alter table public.vocabulario drop constraint if exists vocabulario_ej_check;
+    alter table public.vocabulario alter column ej type text[] using case when ej is null then '{}'::text[] else array[ej] end;
+    alter table public.vocabulario alter column ej set default '{}';
+    alter table public.vocabulario alter column ej set not null;
+  end if;
+end $$;
+alter table if exists public.vocabulario add column if not exists extra jsonb not null default '{}'::jsonb;
 
 create table if not exists public.vocabulario (
   orden    integer primary key,
@@ -34,7 +49,8 @@ create table if not exists public.vocabulario (
   sin      text[] not null default '{}',     -- sinónimos
   ant      text[] not null default '{}',     -- antónimos
   def      text check (char_length(def) <= 400),
-  ej       text check (char_length(ej) <= 400),
+  ej       text[] not null default '{}',      -- ejemplos (hasta 5)
+  extra    jsonb not null default '{}'::jsonb, -- datos opcionales
   check (cardinality(sin) + cardinality(ant) > 0)
 );
 alter table public.vocabulario enable row level security;
@@ -42,17 +58,19 @@ drop policy if exists "vocabulario: ver" on public.vocabulario;
 create policy "vocabulario: ver" on public.vocabulario for select to anon, authenticated using (true);
 -- Nadie escribe directo: solo con guardar_vocabulario()
 
--- Limpia una lista: sin vacíos, máximo 12 de hasta 60 letras
-create or replace function public.vocabulario_lista(x jsonb)
+-- Limpia una lista: sin vacíos, máximo n de hasta l letras
+drop function if exists public.vocabulario_lista(jsonb);
+create or replace function public.vocabulario_lista(x jsonb, n integer default 12, l integer default 60)
 returns text[] language sql immutable set search_path = '' as $$
-  select coalesce(array_agg(left(btrim(e), 60) order by k), '{}')
+  select coalesce(array_agg(left(btrim(e), l) order by k), '{}')
     from jsonb_array_elements_text(case when jsonb_typeof(x) = 'array' then x else '[]'::jsonb end) with ordinality s(e, k)
-   where k <= 12 and btrim(e) <> '';
+   where k <= n and btrim(e) <> '';
 $$;
-revoke all on function public.vocabulario_lista(jsonb) from public, anon;
+revoke all on function public.vocabulario_lista(jsonb, integer, integer) from public, anon;
 
 -- Reemplaza todo el banco de palabras.
--- p_lista = [{ "palabra": "EFÍMERO", "sin": ["pasajero"], "ant": ["duradero"], "def": "...", "ej": "..." }, ...]
+-- p_lista = [{ "palabra": "EFÍMERO", "sin": ["pasajero"], "ant": ["duradero"], "def": "...", "ej": ["...", "..."],
+--             "extra": { "tipo": "adj.", "nivel": 2, "examen": ["UNMSM 2024-I"] } }, ...]
 -- Devuelve cuántas palabras quedaron. Si una palabra se repite, queda la primera.
 create or replace function public.guardar_vocabulario(p_lista jsonb)
 returns integer language plpgsql volatile security definer set search_path = '' as $$
@@ -69,10 +87,12 @@ begin
     if p <> '' and cardinality(s) + cardinality(a) > 0
        and not exists (select 1 from public.vocabulario v where v.palabra = p) then
       n := n + 1;
-      insert into public.vocabulario (orden, palabra, sin, ant, def, ej)
+      insert into public.vocabulario (orden, palabra, sin, ant, def, ej, extra)
       values (n, p, s, a,
               nullif(left(btrim(coalesce(x ->> 'def', '')), 400), ''),
-              nullif(left(btrim(coalesce(x ->> 'ej', '')), 400), ''));
+              public.vocabulario_lista(x -> 'ej', 5, 300),
+              case when jsonb_typeof(x -> 'extra') = 'object' and pg_column_size(x -> 'extra') <= 3000
+                   then x -> 'extra' else '{}'::jsonb end);
     end if;
   end loop;
   return n;

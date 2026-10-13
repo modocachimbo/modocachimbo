@@ -10,6 +10,7 @@
          Ej: Fue una alegría efímera.
      Necesita Sin o Ant (o los dos). Def y Ej son opcionales
      (sin Ej no sale en "Completar", sin Def no sale en "Escribir").
+     Puede llevar hasta 5 ejemplos: una línea Ej: por cada uno.
    - También se puede pegar desde Excel: palabra | sin | ant | def | ej.
    - Al abrir la pestaña se cargan las palabras publicadas para
      corregirlas; Guardar reemplaza todo el banco (tabla vocabulario,
@@ -17,7 +18,7 @@
    - Los cursos van en ajustes, clave 'vocabulario'.
    ========================================================= */
 const VO = { texto: '', publicados: [], cambios: false, cargado: false, cursos: null, borrar: false, busca: '', filtro: 'todo' };
-const VO_EJEMPLO = 'EFÍMERO\n  Sin: pasajero, fugaz, breve\n  Ant: duradero, perenne\n  Def: Que dura poco tiempo.\n  Ej: Fue una alegría efímera.\n\n# Sin antónimo: no se escribe la línea Ant\nLOCUAZ\n  Sin: hablador, parlanchín\n\n# Sin sinónimo: no se escribe la línea Sin\nDIURNO\n  Ant: nocturno';
+const VO_EJEMPLO = 'EFÍMERO\n  Sin: pasajero, fugaz, breve\n  Ant: duradero, perenne\n  Def: Que dura poco tiempo.\n  Ej: Fue una alegría efímera.\n  Ej: Las modas son efímeras.\n  Tipo: adj.\n  Nivel: 2\n  Examen: UNMSM 2024-I\n  Raíz: del griego ephémeros, "de un día"\n\n# Sin antónimo: no se escribe la línea Ant\nLOCUAZ\n  Sin: hablador, parlanchín\n\n# Sin sinónimo: no se escribe la línea Sin\nDIURNO\n  Ant: nocturno';
 const VO_CAMPOS = { sin: 'sinónimos', ant: 'antónimos', def: 'definición', ej: 'ejemplo' };
 
 (function estilosVocabulario() {
@@ -61,7 +62,13 @@ const VO_CAMPOS = { sin: 'sinónimos', ant: 'antónimos', def: 'definición', ej
   .vo-chips.ant span { border-color: #9A5BC4; background: rgba(206,130,255,.1); color: #CE82FF; }
   .vo-def { color: var(--text); font-size: 13.5px; margin-top: 6px; }
   .vo-def, .vo-ej { font-size: 13px; line-height: 1.5; margin-top: 8px; }
-  .vo-ej { font-style: italic; color: var(--text-dim); border-left: 3px solid #333; padding-left: 10px; margin-top: 10px; }
+  .vo-ej { font-style: italic; color: var(--text-dim); border-left: 3px solid #333; padding-left: 10px; margin-top: 8px; }
+  .vo-tipo { font: 700 12px Inter, sans-serif; text-transform: none; letter-spacing: 0; color: var(--text-faint); font-style: italic; }
+  .vo-niv { font-size: 10px; letter-spacing: 1px; color: #FF9600; vertical-align: 2px; }
+  .vo-mas { font-size: 12.5px; line-height: 1.5; color: var(--text-dim); margin-top: 8px; }
+  .vo-mas b { display: block; font: 900 11px Nunito, Inter, sans-serif; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-faint); }
+  .vo-exa { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .vo-exa span { font: 800 11.5px Nunito, Inter, sans-serif; color: #FFC800; background: rgba(255,200,0,.1); border-radius: 8px; padding: 3px 8px; }
   .vo-ej mark { background: none; color: var(--accent); font-weight: 700; }
   .vo-falta { display: inline-block; margin-top: 8px; margin-right: 6px; font-size: 11px; font-weight: 700; color: var(--text-faint); border: 1px dashed #333; border-radius: 8px; padding: 2px 7px; }
   .vo-vacio { color: var(--text-faint); font-size: 13px; text-align: center; padding: 30px 10px; }
@@ -78,12 +85,17 @@ const voNorm = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g,
 // La palabra sin su última letra, para encontrar "efímera" en el ejemplo de "EFÍMERO"
 const voRaiz = p => { const n = voNorm(p); return n.length > 4 ? n.slice(0, -1) : n; };
 const voPartir = s => String(s || '').split(/[,;]/).map(x => x.trim().replace(/\.$/, '').trim()).filter(Boolean);
-const VO_CLAVES = { sin: 'sin', sinonimo: 'sin', sinonimos: 'sin', ant: 'ant', antonimo: 'ant', antonimos: 'ant', def: 'def', definicion: 'def', ej: 'ej', ejemplo: 'ej' };
+const VO_CLAVES = { sin: 'sin', sinonimo: 'sin', sinonimos: 'sin', ant: 'ant', antonimo: 'ant', antonimos: 'ant', def: 'def', definicion: 'def', ej: 'ej', ejemplo: 'ej',
+  tipo: 'tipo', categoria: 'tipo', nivel: 'nivel', examen: 'examen', examenes: 'examen', par: 'par', paronimo: 'par', paronimos: 'par',
+  raiz: 'raiz', etimologia: 'raiz', origen: 'raiz', tip: 'tip', truco: 'tip' };
+// Datos opcionales que van en "extra" (no necesitan cambiar el SQL)
+const VO_EXTRA = { tipo: 'Tipo', nivel: 'Nivel', examen: 'Examen', par: 'Par', raiz: 'Raíz', tip: 'Tip' };
+const VO_TIPOS = { adj: 'adj.', adjetivo: 'adj.', sust: 'sust.', sustantivo: 'sust.', s: 'sust.', verbo: 'verbo', v: 'verbo', adv: 'adv.', adverbio: 'adv.' };
 
 function voLeer(texto) {
   const items = [], errores = [], avisos = [];
   let ult = null, campo = null;
-  const nueva = (palabra, n) => { ult = { palabra, sin: [], ant: [], def: '', ej: '', linea: n }; items.push(ult); campo = null; };
+  const nueva = (palabra, n) => { ult = { palabra, sin: [], ant: [], def: '', ej: [], extra: {}, linea: n }; items.push(ult); campo = null; };
   texto.split('\n').forEach((crudo, i) => {
     const n = i + 1, linea = crudo.trim();
     if (!linea || linea.startsWith('#') || linea.startsWith('//')) return;
@@ -93,7 +105,7 @@ function voLeer(texto) {
     if (!clave && linea.includes('\t')) {
       const c = linea.split('\t').map(x => x.trim());
       nueva(c[0] || '', n);
-      Object.assign(ult, { sin: voPartir(c[1]), ant: voPartir(c[2]), def: c[3] || '', ej: c[4] || '' });
+      Object.assign(ult, { sin: voPartir(c[1]), ant: voPartir(c[2]), def: c[3] || '', ej: c.slice(4).filter(Boolean) });
       return;
     }
     if (clave) {
@@ -101,6 +113,18 @@ function voLeer(texto) {
       if (clave === 'sin' || clave === 'ant') {
         if (ult[clave].length) avisos.push({ n, t: `${ult.palabra}: ya tenía ${VO_CAMPOS[clave]}; se juntan.` });
         ult[clave] = ult[clave].concat(voPartir(m[2]));
+      } else if (clave === 'ej') {
+        if (m[2].trim()) ult.ej.push(m[2].trim());
+      } else if (VO_EXTRA[clave]) {
+        const v = m[2].trim();
+        if (clave === 'tipo') {
+          const t = VO_TIPOS[voNorm(v).replace(/\.$/, '')];
+          if (t) ult.extra.tipo = t; else if (v) avisos.push({ n, t: `${ult.palabra}: el tipo "${v}" no se reconoce; usa adj., sust., verbo o adv.` });
+        } else if (clave === 'nivel') {
+          if (/^[123]$/.test(v)) ult.extra.nivel = +v; else if (v) avisos.push({ n, t: `${ult.palabra}: el nivel debe ser 1, 2 o 3.` });
+        } else if (clave === 'examen' || clave === 'par') {
+          ult.extra[clave] = (ult.extra[clave] || []).concat(voPartir(v)).slice(0, 8);
+        } else if (v) ult.extra[clave] = v.slice(0, 300);
       } else {
         if (ult[clave]) avisos.push({ n, t: `${ult.palabra} ya tenía ${VO_CAMPOS[clave]}; se usa este.` });
         ult[clave] = m[2].trim();
@@ -110,7 +134,8 @@ function voLeer(texto) {
     }
     // Línea con sangría que no empieza con Sin/Ant/Def/Ej = sigue lo de arriba
     if (/^\s/.test(crudo) && ult) {
-      if (campo === 'def' || campo === 'ej') { ult[campo] += ' ' + linea; return; }
+      if (campo === 'def') { ult.def += ' ' + linea; return; }
+      if (campo === 'ej' && ult.ej.length) { ult.ej[ult.ej.length - 1] += ' ' + linea; return; }
       if (campo === 'sin' || campo === 'ant') { ult[campo] = ult[campo].concat(voPartir(linea)); return; }
       errores.push({ n, t: 'Empieza la línea con Sin:, Ant:, Def: o Ej:.' }); return;
     }
@@ -141,8 +166,10 @@ function voLeer(texto) {
     if (cruce) avisos.push({ n, t: `${it.palabra}: "${cruce}" está como sinónimo y como antónimo.` });
     if (p && vistas[p]) { errores.push({ n, t: `${it.palabra} está repetida (también en la línea ${vistas[p]}).` }); it.mal = true; }
     else if (p) vistas[p] = n;
-    if (it.ej && p && !voNorm(it.ej).includes(voRaiz(it.palabra))) avisos.push({ n, t: `${it.palabra}: el ejemplo no usa la palabra, así que no saldrá en "Completar".` });
-    if (it.def.length > 400 || it.ej.length > 400) avisos.push({ n, t: `${it.palabra}: la definición o el ejemplo pasa de 400 letras y se cortará.` });
+    if (p) it.ej.forEach((e, j) => { if (!voNorm(e).includes(voRaiz(it.palabra))) avisos.push({ n, t: `${it.palabra}: ${it.ej.length > 1 ? 'el ejemplo ' + (j + 1) : 'el ejemplo'} no usa la palabra, así que no saldrá en "Completar".` }); });
+    if (it.ej.length > 5) avisos.push({ n, t: `${it.palabra}: tiene ${it.ej.length} ejemplos; solo se guardan los 5 primeros.` });
+    if (it.def.length > 400) avisos.push({ n, t: `${it.palabra}: la definición pasa de 400 letras y se cortará.` });
+    if (it.ej.some(e => e.length > 300)) avisos.push({ n, t: `${it.palabra}: un ejemplo pasa de 300 letras y se cortará.` });
   });
   errores.sort((a, b) => a.n - b.n); avisos.sort((a, b) => a.n - b.n);
   return { items, errores, avisos };
@@ -154,7 +181,12 @@ function voEscribir(filas) {
     if ((f.sin || []).length) s += `\n  Sin: ${f.sin.join(', ')}`;
     if ((f.ant || []).length) s += `\n  Ant: ${f.ant.join(', ')}`;
     if (f.def) s += `\n  Def: ${f.def}`;
-    if (f.ej) s += `\n  Ej: ${f.ej}`;
+    (f.ej || []).forEach(e => { s += `\n  Ej: ${e}`; });
+    const x = f.extra || {};
+    Object.keys(VO_EXTRA).forEach(k => {
+      if (x[k] == null || x[k] === '' || (Array.isArray(x[k]) && !x[k].length)) return;
+      s += `\n  ${VO_EXTRA[k]}: ${Array.isArray(x[k]) ? x[k].join(', ') : x[k]}`;
+    });
     return s;
   }).join('\n\n');
 }
@@ -178,7 +210,7 @@ async function cargarVocabulario(forzar) {
     return;
   }
   const [r, a, reg] = await Promise.all([
-    cliente.from('vocabulario').select('orden, palabra, sin, ant, def, ej').order('orden').limit(5000),
+    cliente.from('vocabulario').select('orden, palabra, sin, ant, def, ej, extra').order('orden').limit(5000),
     cliente.from('ajustes').select('valor').eq('clave', 'vocabulario').maybeSingle(),
     window.MCCursos ? MCCursos.registro() : Promise.resolve(null)
   ]);
@@ -239,10 +271,11 @@ function renderVocabulario() {
           <pre>${esc(VO_EJEMPLO)}</pre>
           <ul>
             <li>La <b>palabra</b> va sola en su línea. Debajo, <b>Sin:</b> con sus sinónimos y <b>Ant:</b> con sus antónimos, separados por comas. Si la palabra no tiene antónimo, no escribas la línea <b>Ant:</b>; si no tiene sinónimo, no escribas <b>Sin:</b>. Pero necesita al menos una de las dos.</li>
-            <li><b>Def:</b> y <b>Ej:</b> son opcionales. Sin <b>Ej</b> la palabra no sale en el juego <i>Completar</i>; sin <b>Def</b> no sale en <i>Escribir</i>.</li>
+            <li><b>Def:</b> y <b>Ej:</b> son opcionales. Puedes poner hasta 5 ejemplos, cada uno en su propia línea <b>Ej:</b>. Sin <b>Ej</b> la palabra no sale en el juego <i>Completar</i>; sin <b>Def</b> no sale en <i>Escribir</i>.</li>
             <li>El ejemplo debe usar la palabra (sirve "efímera" para EFÍMERO), porque ahí va el espacio en blanco.</li>
+            <li>También opcionales: <b>Tipo:</b> adj., sust., verbo o adv. · <b>Nivel:</b> 1, 2 o 3 · <b>Examen:</b> dónde salió (puedes poner varios con comas) · <b>Par:</b> la palabra con la que se confunde · <b>Raíz:</b> de dónde viene · <b>Tip:</b> un truco para recordarla.</li>
             <li>Para corregir una palabra ya publicada, cámbiala aquí y vuelve a guardar.</li>
-            <li>Desde Excel: copia 5 columnas (palabra, sinónimos, antónimos, definición, ejemplo) y pégalas aquí.</li>
+            <li>Desde Excel: copia las columnas palabra, sinónimos, antónimos, definición y ejemplo (para más ejemplos, más columnas a la derecha) y pégalas aquí.</li>
             <li>Una línea que empieza con <b>#</b> es una nota y no se publica.</li>
           </ul>
         </details>
@@ -281,26 +314,29 @@ function voIrLinea(n) {
 }
 
 function voFicha(x) {
-  let ej = esc(x.ej);
   const raiz = voRaiz(x.palabra);
-  if (x.ej && raiz) ej = ej.replace(/[\p{L}]+/gu, w => voNorm(w).startsWith(raiz) ? `<mark>${w}</mark>` : w);
+  const ejs = x.ej.slice(0, 5).map(e => raiz ? esc(e).replace(/[\p{L}]+/gu, w => voNorm(w).startsWith(raiz) ? `<mark>${w}</mark>` : w) : esc(e));
   const chips = (k, nom) => x[k].length && VO.filtro !== (k === 'sin' ? 'ant' : 'sin')
     ? `<div class="vo-et">${nom}</div><div class="vo-chips${k === 'ant' ? ' ant' : ''}">${x[k].slice(0, 12).map(y => `<span>${esc(y)}</span>`).join('')}</div>` : '';
   return `
     <div class="vo-card${x.mal ? ' mal' : ''}" data-n="${x.linea}">
-      <div class="vo-cab"><div class="vo-pal">${esc(x.palabra) || '—'}</div>
+      <div class="vo-cab"><div class="vo-pal">${esc(x.palabra) || '—'}${x.extra.tipo ? ` <small class="vo-tipo">${esc(x.extra.tipo)}</small>` : ''}${x.extra.nivel ? ` <small class="vo-niv" title="Nivel ${x.extra.nivel}">${'●'.repeat(x.extra.nivel)}${'○'.repeat(3 - x.extra.nivel)}</small>` : ''}</div>
         ${x.palabra ? `<a class="vo-rae" href="https://dle.rae.es/${encodeURIComponent(x.palabra.toLowerCase())}" target="_blank" rel="noopener">Ver en RAE</a>` : ''}</div>
       ${x.def ? `<div class="vo-def">${esc(x.def)}</div>` : ''}
       ${chips('sin', 'Sinónimos')}${chips('ant', 'Antónimos')}
-      ${x.ej ? `<div class="vo-ej">${ej}</div>` : ''}
-      ${!x.def ? '<span class="vo-falta">sin definición</span>' : ''}${!x.ej ? '<span class="vo-falta">sin ejemplo</span>' : ''}
+      ${ejs.map(e => `<div class="vo-ej">${e}</div>`).join('')}
+      ${x.extra.par && x.extra.par.length ? `<div class="vo-mas"><b>Se confunde con</b>${x.extra.par.map(esc).join(', ')}</div>` : ''}
+      ${x.extra.raiz ? `<div class="vo-mas"><b>Raíz</b>${esc(x.extra.raiz)}</div>` : ''}
+      ${x.extra.tip ? `<div class="vo-mas"><b>Truco</b>${esc(x.extra.tip)}</div>` : ''}
+      ${x.extra.examen && x.extra.examen.length ? `<div class="vo-exa">${x.extra.examen.map(e => `<span>Salió en ${esc(e)}</span>`).join('')}</div>` : ''}
+      ${!x.def ? '<span class="vo-falta">sin definición</span>' : ''}${!x.ej.length ? '<span class="vo-falta">sin ejemplo</span>' : ''}
     </div>`;
 }
 
 function voVista() {
   const d = voLeer(VO.texto);
   const nSin = d.items.filter(x => x.sin.length).length, nAnt = d.items.filter(x => x.ant.length).length;
-  const conDef = d.items.filter(x => x.def).length, conEj = d.items.filter(x => x.ej).length;
+  const conDef = d.items.filter(x => x.def).length, conEj = d.items.filter(x => x.ej.length).length;
   $('voCuenta').textContent = d.items.length + ' palabra' + (d.items.length === 1 ? '' : 's');
   const avisos = [...d.errores.map(x => Object.assign({ mal: true }, x)), ...d.avisos].sort((a, b) => a.n - b.n);
   $('voRes').innerHTML = (d.items.length ? `
@@ -339,7 +375,7 @@ async function guardarVocabulario() {
     VO.borrar = true; voVista(); toast('Así se borran todas las palabras publicadas. Toca otra vez para confirmar.', true); return;
   }
   VO.borrar = false;
-  const lista = d.items.map(x => ({ palabra: x.palabra, sin: x.sin.slice(0, 12), ant: x.ant.slice(0, 12), def: x.def.slice(0, 400), ej: x.ej.slice(0, 400) }));
+  const lista = d.items.map(x => ({ palabra: x.palabra, sin: x.sin.slice(0, 12), ant: x.ant.slice(0, 12), def: x.def.slice(0, 400), ej: x.ej.slice(0, 5).map(e => e.slice(0, 300)), extra: x.extra }));
   const btn = $('voGuardar'); btn.disabled = true; voEstado('Guardando…');
   const r = await (await MCAuth.listo).rpc('guardar_vocabulario', { p_lista: lista });
   if (r.error) {
