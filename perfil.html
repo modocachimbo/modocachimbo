@@ -141,6 +141,116 @@
   .volver:hover { color: var(--accent); }
   [hidden] { display: none !important; }
 
+  /* ===== Estilo Duolingo: celeste, morado y bordes gruesos ===== */
+  :root { --cel: #1CB0F6; --cel-d: #1586BD; --mor: #CE82FF; --mor-d: #9A5BC4; --nar: #FF9600; --amb: #FFC800; --roj: #FF4B4B; --borde: #262626; }
+  .panel { border: 2px solid var(--borde); border-bottom-width: 4px; }
+  .panel h2 { font-weight: 900; }
+  .sec-tit { font-size: 20px; font-weight: 1000; margin: 30px 2px 0; }
+  .sec-cab, .datos summary { display: flex; align-items: center; gap: 12px; }
+  .sec-cab h2, .datos summary h2 { margin: 0; }
+  .sec-cab .nota, .datos summary .nota { display: block; margin-top: 2px; }
+  .sec-ic { width: 44px; height: 44px; flex-shrink: 0; border-radius: 14px; display: grid; place-items: center; border: 2px solid; }
+  .sec-ic svg { width: 24px; height: 24px; }
+  .sec-ic.cel { color: var(--cel); background: rgba(28,176,246,.12); border-color: rgba(28,176,246,.4); }
+  .sec-ic.mor { color: var(--mor); background: rgba(206,130,255,.12); border-color: rgba(206,130,255,.4); }
+
+  /* Cabecera con franja de color */
+  .perfil-top { padding: 0; overflow: hidden; }
+  .banda { height: 96px; background:
+      radial-gradient(circle at 12% 120%, rgba(255,255,255,.18) 0 38px, transparent 39px),
+      radial-gradient(circle at 88% -20%, rgba(255,255,255,.14) 0 54px, transparent 55px),
+      linear-gradient(120deg, var(--cel) 0%, #4a7dff 55%, var(--mor) 100%); }
+  .perfil-cuerpo { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 22px 22px; }
+  .perfil-top .avatar { width: 104px; height: 104px; margin-top: -52px; border: 5px solid var(--surface); font-size: 40px; font-weight: 1000; }
+  .perfil-top h1 { font-size: 26px; font-weight: 1000; margin-top: 10px; line-height: 1.2; }
+  .perfil-top .correo { color: var(--text-dim); font-size: 13.5px; margin-top: 2px; word-break: break-all; }
+  .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 14px; }
+  .chips:empty { display: none; }
+  .chip { border-radius: 100px; padding: 6px 12px; font-size: 12.5px; font-weight: 900; border: 2px solid; line-height: 1.2; background: none; font-family: inherit; }
+  .chip.cel { color: var(--cel); border-color: rgba(28,176,246,.45); background: rgba(28,176,246,.1); }
+  .chip.mor { color: var(--mor); border-color: rgba(206,130,255,.45); background: rgba(206,130,255,.1); }
+  .chip.gris { color: var(--text-dim); border-color: #333; }
+  .perfil-top .cuenta { margin: 0 22px 22px; text-align: center; background: rgba(255,150,0,.1); color: var(--nar); border: 2px solid rgba(255,150,0,.35); font-weight: 800; }
+  .perfil-top .cuenta b { font-size: 24px; font-weight: 1000; }
+
+  /* Botones gruesos */
+  .btn-cel, .btn-mor, .btn-gris { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 14px; padding: 11px 20px; font: 900 14px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .5px; text-decoration: none; cursor: pointer; border: 2px solid; border-bottom-width: 5px; background: var(--surface-2); transition: transform .08s; }
+  .btn-cel:active, .btn-mor:active, .btn-gris:active { transform: translateY(3px); border-bottom-width: 2px; }
+  .btn-cel svg, .btn-mor svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .btn-cel { color: var(--cel); border-color: var(--cel-d); }
+  .btn-mor { color: var(--mor); border-color: var(--mor-d); }
+  .btn-gris { color: var(--text-dim); border-color: #333; }
+  #btnEditar { margin-top: 16px; }
+  #simulacros .btn-mor { margin-top: 14px; }
+  #btnSalir { margin-top: 22px; width: 100%; }
+  .btn-mor.chico { padding: 7px 12px; font-size: 12px; border-bottom-width: 4px; flex: none; }
+  .btn { border-radius: 14px; padding: 13px 26px; font: 900 14px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .6px; color: #2b3300; box-shadow: 0 5px 0 #8fa300; }
+  .btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #8fa300; }
+
+  /* Estadísticas */
+  .stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+  @media (min-width: 640px) { .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .st { display: flex; align-items: center; gap: 12px; padding: 13px 14px; border: 2px solid var(--borde); border-bottom-width: 4px; border-radius: 16px; background: var(--surface); min-width: 0; }
+  .st-ic { width: 30px; height: 30px; flex-shrink: 0; display: grid; place-items: center; }
+  .st-ic svg { width: 28px; height: 28px; }
+  .st > div { min-width: 0; }
+  .st b { display: block; font-size: 22px; font-weight: 1000; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .st span:not(.st-ic) { display: block; font-size: 12.5px; color: var(--text-dim); font-weight: 800; margin-top: 2px; }
+  .st.nar .st-ic { color: var(--nar); } .st.amb .st-ic { color: var(--amb); } .st.cel .st-ic { color: var(--cel); }
+  .st.ver .st-ic { color: var(--accent); } .st.mor .st-ic { color: var(--mor); } .st.roj .st-ic { color: var(--roj); }
+  .racha-card { margin-top: 12px; border-radius: 20px; padding: 16px 18px 14px; color: #fff; background: linear-gradient(135deg, #1CB0F6, #1588d0); border: 2px solid #1488c9; border-bottom: 5px solid #0f6fa6; }
+  .racha-card.apagada { background: linear-gradient(135deg, #2a3a47, #22303b); border-color: #2e4352; border-bottom-color: #1b2731; }
+  .rc-cab { display: flex; align-items: center; gap: 12px; }
+  .rc-fuego { width: 38px; height: 42px; flex-shrink: 0; }
+  .rc-fuego svg { width: 100%; height: 100%; display: block; }
+  .rc-fuego .f1 { fill: #FF9600; } .rc-fuego .f2 { fill: #FFC800; }
+  .racha-card.apagada .rc-fuego .f1 { fill: #4b6a80; } .racha-card.apagada .rc-fuego .f2 { fill: #6d8ea5; }
+  .racha-card.pendiente .rc-fuego .f1 { fill: #ffd29a; } .racha-card.pendiente .rc-fuego .f2 { fill: #fff1c2; }
+  .rc-num { flex: 1; min-width: 0; line-height: 1.1; }
+  .rc-num b { font-size: 26px; font-weight: 1000; font-variant-numeric: tabular-nums; }
+  .rc-num span { display: block; font-size: 13px; font-weight: 900; opacity: .92; }
+  .rc-mejor { flex-shrink: 0; font-size: 12px; font-weight: 900; background: rgba(0,0,0,.16); border-radius: 100px; padding: 5px 10px; }
+  .rc-dias { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin-top: 12px; text-align: center; }
+  .rc-dia { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .rc-dia > span { font-size: 12px; font-weight: 1000; opacity: .8; }
+  .rc-dia.es-hoy > span { opacity: 1; color: #FFE08A; }
+  .rc-dia i { width: 30px; height: 34px; display: block; }
+  .rc-dia i svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .rc-nota { margin-top: 10px; font-size: 13px; font-weight: 900; text-align: center; }
+  .rc-nota:empty { display: none; }
+  .rc-regla { margin: 8px 4px 0; font-size: 12px; color: var(--text-faint); font-weight: 700; line-height: 1.5; }
+
+  /* Progreso, listas */
+  .prog-repasar { display: flex; margin-top: 16px; }
+  .prog-curso, .lista li { border: 2px solid var(--borde); border-bottom-width: 4px; border-radius: 14px; }
+  .prog-cab b { font-weight: 900; }
+  .prog-cab span { color: var(--cel); font-weight: 1000; }
+  .prog-barra { height: 10px; border-radius: 8px; }
+  .prog-barra i { background: var(--cel); border-radius: 8px; }
+  .lista li { font-weight: 800; }
+  .rep-lista a.btn-mor { color: var(--mor); flex: none; min-width: 0; }
+  .rep-lista a b { font-weight: 900; }
+  .sec-cab { align-items: flex-start; }
+  .rep-est.Mejor { background: rgba(206,130,255,.12); color: var(--mor); }
+
+  /* Mis datos (plegable) */
+  .datos summary { cursor: pointer; list-style: none; }
+  .datos summary::-webkit-details-marker { display: none; }
+  .datos .sec-txt { flex: 1; min-width: 0; }
+  .datos .flecha { width: 22px; height: 22px; color: var(--cel); flex-shrink: 0; transition: transform .2s; }
+  .datos[open] .flecha { transform: rotate(180deg); }
+  .datos[open] summary { padding-bottom: 6px; border-bottom: 2px solid var(--borde); }
+  label { font-weight: 900; color: #c9c9c9; font-size: 13px; }
+  input, select { border: 2px solid #2c2c2c; border-radius: 14px; padding: 12px 14px; font-weight: 800; background-color: #161616; transition: border-color .15s; }
+  input:focus, select:focus { border-color: var(--cel); box-shadow: 0 0 0 3px rgba(28,176,246,.18); }
+  select { -webkit-appearance: none; appearance: none; padding-right: 42px; cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231CB0F6' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center; background-size: 18px; }
+  select:disabled { opacity: .55; cursor: default; }
+  select option { background: #161616; color: var(--text); font-weight: 700; }
+  .bloque-info { border: 2px solid rgba(206,130,255,.3); background: rgba(206,130,255,.06); }
+  .bloque-info .pt { background: rgba(206,130,255,.14); color: var(--mor); font-weight: 900; }
+
   /* Letra gruesita en toda la web (Nunito); las fórmulas y el código conservan su letra */
   body, body :not(.katex):not(.katex *):not(code):not(pre):not(kbd):not(samp):not(.formato):not(.ta.big):not(.cdnuevos code) { font-family: 'Nunito', 'Inter', system-ui, sans-serif !important; }
   body { font-weight: 600; }
@@ -168,30 +278,24 @@
 
     <!-- Con sesión -->
     <div id="conSesion" hidden>
-      <section class="panel">
-        <div class="cabecera">
+      <section class="panel perfil-top">
+        <div class="banda" aria-hidden="true"></div>
+        <div class="perfil-cuerpo">
           <div class="avatar" id="avatar"></div>
-          <div>
-            <h1 id="saludo">Hola</h1>
-            <div class="correo" id="correo"></div>
-          </div>
+          <h1 id="saludo">Hola</h1>
+          <div class="correo" id="correo"></div>
+          <div class="chips" id="chips"></div>
+          <button class="btn-cel" type="button" id="btnEditar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>Editar perfil</button>
         </div>
         <div class="cuenta" id="cuenta"></div>
       </section>
 
-      <section class="panel" id="errores">
-        <div class="err-top">
-          <div class="err-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 0 1 14.8-5.7L21 9"/><polyline points="21 3.5 21 9 15.5 9"/><path d="M20.5 12a8.5 8.5 0 0 1-14.8 5.7L3 15"/><polyline points="3 20.5 3 15 8.5 15"/></svg></div>
-          <div><h2>Errores de hoy</h2><p class="nota" id="eSub">Cargando…</p></div>
-        </div>
-        <div class="err-lista" id="eLista"></div>
-        <a class="err-btn" id="eBtn" href="falladas.html?hoy=1" hidden>Practicar mis errores</a>
-        <p class="err-reloj" id="eReloj"></p>
-      </section>
-
-      <section class="panel">
-        <h2>Mis datos</h2>
-        <p class="nota">Con esto personalizamos tu inicio. Solo tú puedes verlos.</p>
+      <details class="panel datos" id="datos">
+        <summary>
+          <span class="sec-ic cel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+          <span class="sec-txt"><h2>Mis datos</h2><span class="nota">Con esto personalizamos tu inicio. Solo tú puedes verlos.</span></span>
+          <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
         <form id="form" novalidate>
           <div class="campo">
             <label for="nombre">Nombre completo</label>
@@ -236,52 +340,71 @@
             <span class="estado" id="estado" role="status"></span>
           </div>
         </form>
-      </section>
+      </details>
 
-      <section class="panel">
-        <h2>Mis accesos</h2>
-        <p class="nota" id="accesosNota">Códigos activados en este equipo. Pronto quedarán guardados en tu cuenta para usarlos en cualquier equipo.</p>
-        <ul class="lista" id="accesos"></ul>
-      </section>
-
-      <section class="panel" id="racha">
-        <h2>Mi racha</h2>
-        <p class="nota">Responde 10 preguntas al día para sumar un día. Tienes 1 día de descanso por semana: si faltas 2 días, vuelve a 0.</p>
-        <div class="racha-fila">
-          <div class="racha-dato" id="rActual"><b>–</b><span>días de racha</span></div>
-          <div class="racha-dato"><b id="rMejor">–</b><span>mejor racha</span></div>
-          <div class="racha-dato"><b id="rHoy">–</b><span>preguntas hoy</span></div>
+      <h2 class="sec-tit">Estadísticas</h2>
+      <section class="racha-card" id="racha">
+        <div class="rc-cab">
+          <span class="rc-fuego" id="rFuego"><svg viewBox="0 0 32 36" aria-hidden="true"><path class="f1" d="M16 1.5c1.2 4.6 7.6 8.2 9.6 13.6 2.6 7-1.6 17.4-9.6 17.4S3.8 24.9 6.1 17.6c1-3.2 3.3-5.3 4.9-6.9.2 2.8 1.4 4.6 3 5.2C13.3 10.6 14 6 16 1.5z"/><path class="f2" d="M16.3 15.5c.6 2.4 4.5 4.4 4.5 8.6a4.8 4.8 0 0 1-9.6 0c0-2 1-3.4 2.1-4.4.2 1.4.8 2.3 1.6 2.6-.4-2.4 0-4.6 1.4-6.8z"/></svg></span>
+          <div class="rc-num"><b id="rActual">–</b><span id="rActualT">días de racha</span></div>
+          <span class="rc-mejor">Mejor <b id="rMejor">–</b></span>
         </div>
-        <div class="racha-hoy"><i id="rBarra"></i></div>
-        <p class="nota" id="rNota" style="margin-top:10px"></p>
+        <div class="rc-dias" id="rDias"></div>
+        <p class="rc-nota" id="rNota"></p>
+      </section>
+      <p class="rc-regla">Sumas un día al responder 10 preguntas. Tienes 1 día de descanso por semana (el día congelado); si faltas 2, vuelve a 0.</p>
+      <section class="stats">
+        <div class="st cel"><span class="st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg></span><div><b id="rHoy">–</b><span>preguntas hoy</span></div></div>
+        <div class="st ver"><span class="st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-6M12 20V5M19 20v-10"/></svg></span><div><b id="pPromedio">–</b><span>promedio</span></div></div>
+        <div class="st mor"><span class="st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M9 10l2.2 2.2L15.5 8"/></svg></span><div><b id="pPracticas">–</b><span>prácticas</span></div></div>
+        <div class="st roj"><span class="st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 0 1 14.8-5.7L21 9"/><polyline points="21 3.5 21 9 15.5 9"/><path d="M20.5 12a8.5 8.5 0 0 1-14.8 5.7L3 15"/><polyline points="3 20.5 3 15 8.5 15"/></svg></span><div><b id="pFalladas">–</b><span>por repasar</span></div></div>
+      </section>
+
+      <section class="panel" id="errores">
+        <div class="err-top">
+          <div class="err-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 0 1 14.8-5.7L21 9"/><polyline points="21 3.5 21 9 15.5 9"/><path d="M20.5 12a8.5 8.5 0 0 1-14.8 5.7L3 15"/><polyline points="3 20.5 3 15 8.5 15"/></svg></div>
+          <div><h2>Errores de hoy</h2><p class="nota" id="eSub">Cargando…</p></div>
+        </div>
+        <div class="err-lista" id="eLista"></div>
+        <a class="err-btn" id="eBtn" href="falladas.html?hoy=1" hidden>Practicar mis errores</a>
+        <p class="err-reloj" id="eReloj"></p>
       </section>
 
       <section class="panel" id="progreso">
-        <h2>Mi progreso</h2>
-        <p class="nota">Se guarda solo cada vez que terminas una práctica, un Repaso, unas Fijas o un examen.</p>
-        <div class="racha-fila">
-          <div class="racha-dato"><b id="pPracticas">–</b><span>prácticas</span></div>
-          <div class="racha-dato"><b id="pPromedio">–</b><span>promedio</span></div>
-          <div class="racha-dato"><b id="pFalladas">–</b><span>por repasar</span></div>
+        <div class="sec-cab">
+          <span class="sec-ic cel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-6M12 20V5M19 20v-10"/></svg></span>
+          <div><h2>Mi progreso por curso</h2><p class="nota">Se guarda cada vez que terminas una práctica, un Repaso, unas Fijas o un examen.</p></div>
         </div>
-        <a class="btn prog-repasar" id="pRepasar" href="falladas.html" hidden>🔁 Repasar mis preguntas falladas</a>
+        <a class="btn-cel prog-repasar" id="pRepasar" href="falladas.html" hidden></a>
         <div class="prog-cursos" id="pCursos"><p class="nota">Cargando tu progreso…</p></div>
       </section>
 
       <section class="panel" id="simulacros">
-        <h2>Mis simulacros</h2>
-        <p class="nota">Tus simulacros terminados. Con «Repetir» das las mismas preguntas otra vez.</p>
+        <div class="sec-cab">
+          <span class="sec-ic mor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6v3H9z"/><path d="M7 4.5H5V21h14V4.5h-2"/><path d="M9 11h6M9 15h4"/></svg></span>
+          <div><h2>Mis simulacros</h2><p class="nota">Tus simulacros terminados. Con «Repetir» das las mismas preguntas otra vez.</p></div>
+        </div>
         <ul class="lista rep-lista" id="simLista"><li><span>Cargando…</span></li></ul>
-        <a class="btn sec" href="simulacro.html" style="margin-top:14px">Crear un simulacro</a>
+        <a class="btn-mor" href="simulacro.html">Crear un simulacro</a>
+      </section>
+
+      <section class="panel">
+        <div class="sec-cab">
+          <span class="sec-ic mor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4.5"/><path d="M11.3 11.7L20 3M16.5 6.5l3 3M14 9l2 2"/></svg></span>
+          <div><h2>Mis accesos</h2><p class="nota" id="accesosNota">Códigos activados en este equipo. Pronto quedarán guardados en tu cuenta para usarlos en cualquier equipo.</p></div>
+        </div>
+        <ul class="lista" id="accesos"></ul>
       </section>
 
       <section class="panel" id="reportes" hidden>
-        <h2>Mis reportes de claves</h2>
-        <p class="nota">Cuando avisas de un posible error en una clave, aquí ves si el profe ya lo leyó y qué decidió.</p>
+        <div class="sec-cab">
+          <span class="sec-ic cel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h12l-2.5 4.5L17 13H5"/></svg></span>
+          <div><h2>Mis reportes de claves</h2><p class="nota">Cuando avisas de un posible error en una clave, aquí ves si el profe ya lo leyó y qué decidió.</p></div>
+        </div>
         <ul class="lista rep-lista" id="repLista"></ul>
       </section>
 
-      <button class="btn sec" type="button" id="btnSalir" style="margin-top:18px">Cerrar sesión</button>
+      <button class="btn-gris" type="button" id="btnSalir">Cerrar sesión</button>
     </div>
 
     <a class="volver" href="index.html">← Volver al inicio</a>
@@ -383,7 +506,7 @@
       caja.appendChild(document.createTextNode('Faltan '));
       caja.appendChild(b);
       caja.appendChild(document.createTextNode(n === 1 ? ' día para tu examen. ¡Tú puedes!' : ' días para tu examen. ¡Tú puedes!'));
-    } else if (n === 0) caja.textContent = '¡Hoy es tu examen! Mucha suerte 🍀';
+    } else if (n === 0) caja.textContent = '¡Hoy es tu examen! Mucha suerte';
     else caja.textContent = 'Tu fecha de examen ya pasó. Actualízala si vas a postular otra vez.';
     caja.style.display = 'block';
   }
@@ -399,8 +522,27 @@
       var img = document.createElement('img'); img.alt = ''; img.referrerPolicy = 'no-referrer'; img.src = foto;
       av.appendChild(img);
     } else av.textContent = nombre.charAt(0).toUpperCase();
+    pintarChips(p);
     cuentaRegresiva(p.fecha_examen);
   }
+
+  // Etiquetas bajo el nombre: carrera, bloque y modalidad
+  function pintarChips(p) {
+    var caja = $('chips'); caja.textContent = '';
+    var chip = function (txt, color) {
+      var c = document.createElement('span'); c.className = 'chip ' + color; c.textContent = txt; caja.appendChild(c);
+    };
+    if (p.carrera) chip(MCCarreras.oficial(p.carrera) || p.carrera, 'cel');
+    var bl = p.carrera && MCCarreras.bloqueDe(p.carrera);
+    if (bl) chip('Bloque ' + bl.id, 'mor');
+    if (p.modalidad) chip(p.modalidad, 'gris');
+  }
+  function abrirDatos() {
+    var d = $('datos'); d.open = true;
+    d.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(function () { $('nombre').focus({ preventScroll: true }); }, 350);
+  }
+  $('btnEditar').addEventListener('click', abrirDatos);
 
   function pintarAccesos() {
     var ul = $('accesos'); ul.textContent = '';
@@ -436,6 +578,8 @@
       CAMPOS.forEach(function (c) { if (c !== 'carrera') $(c).value = p[c] || ''; });
       ponerCarrera(p.carrera || '');
       pintarCabecera(u, p);
+      // Si aún no eligió carrera, Mis datos sale abierto
+      if (!p.carrera) $('datos').open = true;
     }).catch(function () {
       $('estado').textContent = 'No se pudo cargar tu perfil. Recarga la página.';
       $('estado').className = 'estado error';
@@ -518,6 +662,7 @@
   var cursosListos = fetch('assets/cursos.json').then(function (r) { return r.json(); }).then(function (d) {
     (d.cursos || []).forEach(function (c) { NOMBRE_CURSO[c.id] = c.nombre; });
   }).catch(function () {});
+  var ICONO_REP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 0 1 14.8-5.7L21 9"/><polyline points="21 3.5 21 9 15.5 9"/><path d="M20.5 12a8.5 8.5 0 0 1-14.8 5.7L3 15"/><polyline points="3 20.5 3 15 8.5 15"/></svg>';
   function pintarProgreso(d) {
     var P = d.practicas, F = d.falladas;
     var n = P.reduce(function (s, x) { return s + (x.intentos || 0); }, 0);
@@ -526,7 +671,8 @@
     $('pFalladas').textContent = F.length;
     var rep = $('pRepasar');
     rep.hidden = !F.length;
-    rep.textContent = '🔁 Repasar mis ' + F.length + ' pregunta' + (F.length === 1 ? '' : 's') + ' fallada' + (F.length === 1 ? '' : 's');
+    rep.innerHTML = ICONO_REP;
+    rep.appendChild(document.createTextNode('Repasar mis ' + F.length + ' pregunta' + (F.length === 1 ? '' : 's') + ' fallada' + (F.length === 1 ? '' : 's')));
     var caja = $('pCursos'); caja.textContent = '';
     if (!P.length) {
       var v = document.createElement('p'); v.className = 'nota';
@@ -642,8 +788,8 @@
         sm.textContent = (s.ciclos || []).join(', ') + ' · ' + s.intentos + (s.intentos === 1 ? ' intento' : ' intentos') + ' · último ' + dec(s.ultimo) + ' · ' +
           new Date(s.actualizado).toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' });
         d.appendChild(b); d.appendChild(sm);
-        var pt = document.createElement('span'); pt.className = 'rep-est Corregido'; pt.textContent = 'Mejor ' + dec(s.mejor);
-        var rep = document.createElement('a'); rep.className = 'btn sec'; rep.style.cssText = 'padding:7px 14px;font-size:12.5px;flex:none';
+        var pt = document.createElement('span'); pt.className = 'rep-est Mejor'; pt.textContent = 'Mejor ' + dec(s.mejor);
+        var rep = document.createElement('a'); rep.className = 'btn-mor chico';
         rep.href = d.href; rep.textContent = 'Repetir';
         li.appendChild(d); li.appendChild(pt); li.appendChild(rep);
         caja.appendChild(li);
@@ -653,18 +799,67 @@
   MCAuth.alCambiar(cargarSimulacros);
 
   // Racha de estudio (assets/racha.js la carga auth.js)
+  var DIAS = ['L', 'M', 'M', 'J', 'V', 'S', 'D'], ACT = null, RACHA = null;
+  var SVG_OK = '<svg viewBox="0 0 30 34"><circle cx="15" cy="15" r="14" fill="#FF9600"/><circle cx="15" cy="15" r="14" fill="none" stroke="#d97f00" stroke-width="2"/><path d="M9.5 15.5l3.6 3.6 7.4-7.6" fill="none" stroke="#3a2200" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var SVG_HIELO = '<svg viewBox="0 0 30 34"><path d="M15 1a14 14 0 0 1 12.4 20.5c-.9 1.8-2.2 2.2-2.6 4.3-.3 1.8-1.5 2.5-2.4 1.2-.6-.9-1.5-.9-2 .3l-.8 2.4c-.5 1.4-2 1.4-2.4 0l-.6-2c-.4-1.3-1.6-1.5-2.4-.4-1 1.3-2.4.6-2.6-.9C7.3 24.5 5.2 23.8 3.6 21A14 14 0 0 1 15 1z" fill="#9BDCFF" stroke="#5fb8ea" stroke-width="1.6"/><path d="M9.5 15.5l3.6 3.6 7.4-7.6" fill="none" stroke="#14445f" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var SVG_NADA = '<svg viewBox="0 0 30 34"><circle cx="15" cy="15" r="14" fill="rgba(0,0,0,.2)"/></svg>';
+  function svgHoy(f) {
+    // Anillo que se va llenando con las preguntas de hoy
+    var L = 2 * Math.PI * 12, k = Math.max(0, Math.min(f, 1));
+    return '<svg viewBox="0 0 30 34"><circle cx="15" cy="15" r="14" fill="rgba(0,0,0,.2)"/><circle cx="15" cy="15" r="12" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="3.2"/>' +
+      '<circle cx="15" cy="15" r="12" fill="none" stroke="#FF9600" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="' + (L * k).toFixed(1) + ' ' + L.toFixed(1) + '" transform="rotate(-90 15 15)"/></svg>';
+  }
+  // Fecha de Perú (UTC-5) como 'AAAA-MM-DD'
+  function fechaPeru(ms) { return new Date(ms - 5 * 3600000).toISOString().slice(0, 10); }
+  function lunesPeru() {
+    var hoy = new Date(fechaPeru(Date.now()) + 'T00:00:00Z');
+    return hoy.getTime() - ((hoy.getUTCDay() + 6) % 7) * 86400000;
+  }
+  function cargarSemana() {
+    MCAuth.listo.then(function (c) {
+      return c.from('actividad').select('fecha,preguntas').gte('fecha', fechaPeru(lunesPeru() + 5 * 3600000));
+    }).then(function (r) {
+      ACT = {};
+      ((!r.error && r.data) || []).forEach(function (x) { ACT[x.fecha] = x.preguntas; });
+      pintarSemana();
+    }).catch(function () { ACT = {}; pintarSemana(); });
+  }
+  function pintarSemana() {
+    var r = RACHA; if (!r || !ACT) return;
+    var meta = r.meta || 10, hoy = fechaPeru(Date.now()), lunes = lunesPeru(), caja = $('rDias'), hielo = false;
+    caja.textContent = '';
+    DIAS.forEach(function (letra, i) {
+      var f = new Date(lunes + i * 86400000).toISOString().slice(0, 10);
+      var n = f === hoy ? (r.hoy || 0) : (ACT[f] || 0), html;
+      if (n >= meta) html = SVG_OK;
+      else if (f === hoy) html = svgHoy(n / meta);
+      else if (f > hoy) html = SVG_NADA;
+      // Día que faltó esta semana sin romper la racha: el descanso (congelado)
+      else if (!hielo && r.descanso_usado && (r.actual || 0) > 0) { hielo = true; html = SVG_HIELO; }
+      else html = SVG_NADA;
+      var d = document.createElement('div'); d.className = 'rc-dia' + (f === hoy ? ' es-hoy' : '');
+      var s = document.createElement('span'); s.textContent = letra;
+      var ic = document.createElement('i'); ic.innerHTML = html;
+      d.appendChild(s); d.appendChild(ic); caja.appendChild(d);
+    });
+  }
   function pintarRacha(r) {
     if (!r) return;
-    var meta = r.meta || 10, n = r.actual || 0;
-    var b = $('rActual').querySelector('b'); b.innerHTML = MCRacha.icono; b.appendChild(document.createTextNode(n));
-    $('rActual').classList.toggle('on', !!r.cumplido_hoy);
-    $('rActual').querySelector('span').textContent = n === 1 ? 'día de racha' : 'días de racha';
+    RACHA = r;
+    var meta = r.meta || 10, n = r.actual || 0, hoyN = Math.min(r.hoy || 0, meta);
+    $('rActual').textContent = n;
+    $('rActualT').textContent = n === 1 ? 'día de racha' : 'días de racha';
     $('rMejor').textContent = Math.max(r.mejor || 0, n);
-    $('rHoy').textContent = Math.min(r.hoy || 0, meta) + '/' + meta;
-    $('rBarra').style.width = Math.min((r.hoy || 0) / meta, 1) * 100 + '%';
-    $('rNota').textContent = r.cumplido_hoy ? '¡Hoy ya sumaste tu día! Vuelve mañana para seguir.'
-      : 'Te faltan ' + (meta - Math.min(r.hoy || 0, meta)) + ' preguntas hoy para sumar tu día.' + (r.descanso_usado ? ' Ya usaste tu descanso de esta semana.' : '');
+    $('rHoy').textContent = hoyN + '/' + meta;
+    var card = $('racha');
+    card.classList.toggle('apagada', !n && !r.cumplido_hoy);
+    card.classList.toggle('pendiente', !!n && !r.cumplido_hoy);
+    $('rNota').textContent = r.cumplido_hoy ? '¡Hoy ya sumaste tu día! Vuelve mañana.'
+      : !n ? '¡Empieza tu racha hoy! Te faltan ' + (meta - hoyN) + ' preguntas.'
+      : 'Te faltan ' + (meta - hoyN) + ' preguntas hoy para sumar tu día.';
+    pintarSemana();
   }
+  MCAuth.alCambiar(function (u) { if (u) cargarSemana(); });
   (function esperarRacha(i) {
     if (window.MCRacha) MCRacha.alCambiar(pintarRacha);
     else if (i < 100) setTimeout(function () { esperarRacha(i + 1); }, 150);
