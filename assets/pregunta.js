@@ -9,6 +9,8 @@
      (también <i> <b> <em> <strong> <sub> <sup>)
      [TEXTO 03] … [/TEXTO]    lectura que comparten varias preguntas
                               (va al inicio; se ve en un recuadro plegable)
+   Fracciones: \frac dentro del texto se ve grande (como \dfrac); en
+   exponentes y subíndices sigue pequeña. Para una pequeña: \tfrac.
    Preguntas de respuesta abierta (Seminarios y Banqueo):
      { text, abierta: true, respuestas: ['Karl Ritter', 'Ritter'], options: [], correct: 0 }
      El alumno escribe; cuadroAbierto() compara sin tildes ni mayúsculas.
@@ -265,6 +267,64 @@
     }
   }
 
+  /* ---------- Fracciones grandes ----------
+     KaTeX achica \frac dentro del texto y se lee mal: pasa a \dfrac, salvo
+     dentro de un exponente, un subíndice u otra fracción.
+     Se engancha a renderMathInElement, que usan todas las páginas. */
+  function fraccionesGrandes(tex) {
+    var out = '', i = 0;
+    // Copia tal cual un argumento: {grupo}, \comando o un carácter
+    function argumento() {
+      var ini = i;
+      while (i < tex.length && /\s/.test(tex[i])) i++;
+      if (tex[i] === '{') {
+        for (var n = 0; i < tex.length; i++) {
+          if (tex[i] === '\\') { i++; continue; }
+          if (tex[i] === '{') n++;
+          else if (tex[i] === '}' && !--n) { i++; break; }
+        }
+      } else if (tex[i] === '\\') { var m = tex.slice(i).match(/^\\([a-zA-Z]+|.)/); i += m ? m[0].length : 1; }
+      else i++;
+      out += tex.slice(ini, i);
+    }
+    while (i < tex.length) {
+      var ch = tex[i];
+      if (ch === '\\') {
+        var m = tex.slice(i).match(/^\\([a-zA-Z]+|.)/), cmd = m ? m[0] : ch;
+        i += cmd.length;
+        if (/^\\[dt]?frac$|^\\[dt]?binom$/.test(cmd)) {
+          out += cmd === '\\frac' ? '\\dfrac' : cmd;
+          argumento(); argumento(); // lo de adentro queda como está
+        } else out += cmd;
+        continue;
+      }
+      out += ch; i++;
+      if (ch === '^' || ch === '_') argumento(); // exponentes y subíndices no se tocan
+    }
+    return out;
+  }
+  function conFracciones(fn) {
+    if (typeof fn !== 'function' || fn._mcFrac) return fn;
+    var w = function (el, op) {
+      op = Object.assign({}, op);
+      var antes = op.preProcess;
+      op.preProcess = function (t) { t = fraccionesGrandes(t); return antes ? antes(t) : t; };
+      return fn.call(this, el, op);
+    };
+    w._mcFrac = true;
+    return w;
+  }
+  (function () {
+    var actual = conFracciones(window.renderMathInElement);
+    try {
+      Object.defineProperty(window, 'renderMathInElement', {
+        configurable: true, enumerable: true,
+        get: function () { return actual; },
+        set: function (f) { actual = conFracciones(f); }
+      });
+    } catch (e) { if (actual) window.renderMathInElement = actual; }
+  })();
+
   var st = document.createElement('style');
   st.textContent =
     '.mcq-p{display:block;white-space:normal}.mcq-p+.mcq-p{margin-top:10px}' +
@@ -276,7 +336,9 @@
     '.mcq-cols{display:grid;gap:6px 28px;margin:10px 0;overflow-x:auto;justify-content:start}.mcq-cols span{white-space:nowrap}' +
     '.mcq-cortas{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))}' +
     '.mcq-con-der{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,42%);column-gap:16px;align-items:start}' +
-    '.mcq-con-der>*{grid-column:1}.mcq-con-der>.mcq-der{grid-column:2;align-self:center;background:#fff;border-radius:12px;padding:10px;display:flex;justify-content:center}' +
+    '.mcq-con-der>*{grid-column:1}.mcq-con-der>.mcq-der{grid-column:2;align-self:stretch;background:#fff;border-radius:12px;padding:10px;display:flex;justify-content:center;align-items:center;box-sizing:border-box}' +
+    // La imagen derecha toma el alto de las alternativas (no las estira ni las deja pegadas arriba)
+    '@media (min-width:601px){.mcq-con-der>.mcq-der{position:relative;min-height:140px;background:none;padding:0}.mcq-con-der>.mcq-der img{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:100%;max-height:100%;width:auto;height:auto;box-sizing:border-box;background:#fff;padding:10px;border-radius:12px}}' +
     '.katex-display{overflow-x:auto;overflow-y:hidden;max-width:100%}@media (max-width:600px){.mcq-ecs .katex-display{font-size:.85em}}' +
     '.mcq-ecs{display:flex;flex-wrap:wrap;justify-content:center;column-gap:2.5em}.mcq-ecs>span{max-width:100%;min-width:0}' +
     '.mcq-lec{margin:0 0 14px;padding:10px 14px;border-left:3px solid #c6e000;background:rgba(198,224,0,.07);border-radius:10px}' +
