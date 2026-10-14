@@ -17,6 +17,11 @@
      del enunciado, por ejemplo una lista para relacionar.
      TEXTO 03:          lectura que comparten las preguntas de abajo
      …                  (hasta el siguiente TEXTO o hasta FIN TEXTO)
+   Pregunta de respuesta abierta (solo Seminarios y Banqueo): sin
+   alternativas y con la respuesta escrita; con | van otras que también valen.
+     PREGUNTA 2:
+     Segundo padre de la geografía moderna
+     RESPUESTA: Karl Ritter | Ritter
    ========================================================= */
 const MARCA = /\s*(✅|✔️|✔|☑️|☑|✓)\s*/gu;
 const LETRAS = 'ABCDEF';
@@ -78,7 +83,7 @@ function parsearTexto(raw) {
     if (!cur && !enLectura && (m = l.match(/^(CICLO|AÑO|ANIO|PERIODO)\s*:\s*(.+)$/i))) { meta.ciclo = m[2].trim(); continue; }
     if (!cur && !enLectura && (m = l.match(/^TEMA\s*:?\s*N?[°º]?\s*(\d{1,3})\s*[-–—:.)]?\s*(.*)$/i))) { meta.tema = m[1]; meta.nombre = m[2].trim(); continue; }
     if ((m = l.match(/^PREGUNTA\s*N?[°º]?\s*(\d{1,3})\s*(?:[:.)]\s*(.*))?$/i))) {
-      cur = { num: +m[1], textLines: m[2] ? [m[2]] : [], options: [], marcas: [], clave: null, lec: lectura };
+      cur = { num: +m[1], textLines: m[2] ? [m[2]] : [], options: [], marcas: [], clave: null, resp: null, lec: lectura };
       if (lectura) lectura.n++;
       preguntas.push(cur); lastOpt = null; enLectura = false; continue;
     }
@@ -93,7 +98,9 @@ function parsearTexto(raw) {
       else cur.textLines.push(marca);
       continue;
     }
-    if ((m = l.match(/^(?:RESPUESTA|CLAVE|RPTA\.?)\s*(?:CORRECTA)?\s*[:=]?\s*\(?([A-Fa-f])\)?\s*$/i))) { cur.clave = m[1].toUpperCase(); continue; }
+    if ((m = l.match(/^(?:RESPUESTA|CLAVE|RPTA\.?)\s*(?:CORRECTA)?\s*[:=]?\s*\(?([A-Fa-f])\)?\s*$/i))) { cur.clave = m[1].toUpperCase(); cur.resp = m[1]; continue; }
+    // Respuesta escrita (pregunta abierta): "RESPUESTA: Karl Ritter | Ritter"
+    if ((m = l.match(/^(?:RESPUESTA|RPTA\.?)\s*(?:CORRECTA)?\s*[:=]\s*(.+)$/i))) { cur.resp = m[1].trim(); lastOpt = null; continue; }
     const esperada = LETRAS[cur.options.length];
     if (esperada && (m = l.match(/^\(?([A-Fa-f])\s*\)\s*(.*)$/)) && m[1].toUpperCase() === esperada) {
       partirAlternativas(m[2], cur.options.length).forEach((pt, j) => {
@@ -124,7 +131,18 @@ function parsearTexto(raw) {
     q.lectura = x && x.cuerpo ? '[' + x.titulo + ']\n' + x.cuerpo + '\n[/TEXTO]\n' : '';
     if (x && !x.cuerpo) q.errores.push('El ' + x.titulo + ' está vacío');
     if (x && x.malas) q.errores.push('Por ahora el ' + x.titulo + ' no puede llevar [IMAGEN]; ponla en la pregunta');
-    if (q.clave) {
+    // Sin alternativas y con RESPUESTA: pregunta abierta (el alumno escribe la respuesta)
+    const resp = q.resp; delete q.resp;
+    if (!q.options.length && resp) {
+      q.abierta = true;
+      q.respuestas = resp.split('|').map(r => r.replace(MARCA, ' ').trim()).filter(Boolean);
+      q.correct = 0;
+      delete q.clave; delete q.marcas;
+      if (!q.respuestas.length) q.errores.push('Falta la respuesta');
+      if (q.respuestas.length > 10) q.errores.push('Máximo 10 respuestas que valgan');
+    } else if (resp && !q.clave) q.errores.push('Esta pregunta tiene alternativas: en RESPUESTA va solo la letra (por ejemplo RESPUESTA: B)');
+    if (q.abierta) { /* la respuesta escrita es la clave */ }
+    else if (q.clave) {
       const idx = q.options.findIndex(o => o.letter === q.clave);
       if (idx < 0) q.errores.push('La clave ' + q.clave + ' no existe entre las alternativas');
       else if (q.marcas.length && !q.marcas.includes(idx)) q.errores.push('La ✅ y la CLAVE no coinciden');
@@ -132,7 +150,7 @@ function parsearTexto(raw) {
     } else if (q.marcas.length === 1) q.correct = q.marcas[0];
     else if (q.marcas.length > 1) q.errores.push('Tiene más de una ✅');
     if (!q.text) q.errores.push('Falta el enunciado');
-    if (q.options.length < 2) q.errores.push('Tiene menos de 2 alternativas');
+    if (!q.abierta && q.options.length < 2) q.errores.push(q.options.length ? 'Tiene menos de 2 alternativas' : 'No tiene alternativas. Si es de respuesta abierta, escribe debajo RESPUESTA: y la respuesta');
     q.options.forEach(o => { if (!o.text) q.errores.push('La alternativa ' + o.letter + ' está vacía'); });
     const marcas = (q.text.match(/^\[IMAGEN( DERECHA)?\]$/gm) || []);
     q.marcasImg = marcas.length;
@@ -247,7 +265,9 @@ function revisarTexto() {
     // La lectura va arriba; el número de la pregunta, debajo de ella (justo antes del enunciado)
     const lec = k === 1 ? MCPregunta.armar(q.lectura, { lecPos: txtRango(q.lectura) }).html : '';
     const v = MCPregunta.armar(q.text, { marca: (k, der) => `<div class="pimg" data-z="${i}|${k}"></div>` });
-    const opts = q.options.map((o, k) => `<div class="popt ${k === q.correct ? 'ok' : ''}"><span class="l">${esc(o.letter)}</span><span>${formatQText(o.text)}</span>${k === q.correct ? '<span class="chk">✓</span>' : ''}</div>`).join('');
+    const opts = q.abierta
+      ? `<div class="popt ok pab"><span class="l">R</span><span>${q.respuestas.map(formatQText).join('<i class="pab-o"> o </i>')}</span><span class="chk">✓</span></div><div class="hint">Respuesta abierta: el alumno la escribe. No importan tildes ni mayúsculas.</div>`
+      : q.options.map((o, k) => `<div class="popt ${k === q.correct ? 'ok' : ''}"><span class="l">${esc(o.letter)}</span><span>${formatQText(o.text)}</span>${k === q.correct ? '<span class="chk">✓</span>' : ''}</div>`).join('');
     return `
     <article class="pcard ${q.errores.length ? 'bad' : ''} ${k ? 'en-texto' : ''} ${sigue ? 'sigue' : ''}">
       ${lec}
@@ -256,7 +276,7 @@ function revisarTexto() {
       ${q.errores.length ? `<div class="perr">⚠ ${q.errores.map(esc).join(' · ')}</div>` : ''}
       <div class="ptext">${v.html}</div>
       ${q.marcasImg ? '' : `<div class="pimg" data-z="${i}|g"></div>`}
-      ${v.derecha ? `<div class="pder"><div>${opts}</div><div><div class="hint">Al lado de las alternativas</div>${v.derecha}</div></div>` : `<div class="${MCPregunta.cortas(q.options) ? 'popts-cortas' : ''}">${opts}</div>`}
+      ${v.derecha ? `<div class="pder"><div>${opts}</div><div><div class="hint">Al lado de las alternativas</div>${v.derecha}</div></div>` : `<div class="${!q.abierta && MCPregunta.cortas(q.options) ? 'popts-cortas' : ''}">${opts}</div>`}
     </article>`;
   }).join('');
   SUB.zonas = {};
@@ -282,6 +302,8 @@ function validarMeta() {
   if (!nombre) errs.push('pon el nombre del tema');
   const malas = SUB.parse.preguntas.filter(q => q.errores.length).length;
   if (malas) errs.push('corrige ' + malas + ' pregunta' + (malas > 1 ? 's' : ''));
+  const abiertas = SUB.parse.preguntas.filter(q => q.abierta).length;
+  if (abiertas && !conCredito()) errs.push('las preguntas de respuesta abierta solo van en Seminarios o Banqueo (elige el destino o ponles alternativas)');
   const sinImg = Object.keys(SUB.zonas).filter(k => !/\|g$/.test(k) && SUB.zonas[k].estado().cambio !== 'nueva').length;
   if (sinImg) errs.push('pega ' + (sinImg === 1 ? 'la imagen que falta' : 'las ' + sinImg + ' imágenes que faltan'));
   const n = SUB.parse.preguntas.length;
@@ -317,6 +339,7 @@ function armarConImagenes(ruta, base) {
       return st && st.cambio === 'nueva' ? '[IMG' + (der ? '-DER' : '') + ':' + subir(q, st) + ']' : '';
     });
     const out = Object.assign(base(q), { text: q.lectura + text, options: q.options.map(o => ({ letter: o.letter, text: o.text })), correct: q.correct });
+    if (q.abierta) Object.assign(out, { abierta: true, respuestas: q.respuestas.slice(), options: [], correct: 0 });
     const st = SUB.zonas[i + '|g'] && SUB.zonas[i + '|g'].estado();
     if (st && st.cambio === 'nueva') out.graphic = imgHtml(subir(q, st));
     return out;

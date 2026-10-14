@@ -55,6 +55,7 @@ function parsearExamen(raw) {
       q.area = id ? areaDeCurso(id) : '';
       q.tema = b.tema;
       if (!b.curso) q.errores.push('Falta la línea CURSO: arriba de esta pregunta');
+      if (q.abierta) q.errores.push('En los exámenes cada pregunta necesita sus alternativas');
       if (vistos[q.num]) avisos.push('La PREGUNTA ' + q.num + ' está repetida');
       vistos[q.num] = true;
       preguntas.push(q);
