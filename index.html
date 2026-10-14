@@ -86,9 +86,6 @@
   .mi.taza { color: var(--accent); margin-left: 4px; }
   .chip .mi { margin-right: 6px; }
 
-  /* Puntos de la semana (arriba, junto a la racha) */
-  .pill-pts { display: inline-flex; align-items: center; gap: 6px; height: 42px; padding: 0 13px 0 11px; border-radius: 14px; border: 2px solid #2e2e2e; border-bottom-width: 4px; background: #141414; color: var(--oro); font: 900 15px Nunito, sans-serif; text-decoration: none; font-variant-numeric: tabular-nums; transition: transform .08s ease; -webkit-tap-highlight-color: transparent; }
-  .pill-pts[hidden] { display: none; }
   /* Nuevo para ti: regalo con punto rojo que invita a entrar */
   .nov-btn { position: relative; display: grid; place-items: center; width: 42px; height: 42px; flex-shrink: 0; border-radius: 14px; border: 2px solid #2e2e2e; border-bottom-width: 4px; background: #141414; color: var(--azul); cursor: pointer; transition: transform .08s ease; -webkit-tap-highlight-color: transparent; }
   .nov-btn[hidden] { display: none; }
@@ -99,8 +96,6 @@
   @keyframes novLatido { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,75,75,.55); } 50% { box-shadow: 0 0 0 6px rgba(255,75,75,0); } }
   @media (prefers-reduced-motion: reduce) { .nov-btn svg, .nov-punto { animation: none; } }
   @media (max-width: 560px) { .nov-btn { width: 38px; height: 38px; } }
-  .pill-pts svg { width: 20px; height: 20px; }
-  .pill-pts:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
 
   /* ===== Saludo del alumno ===== */
   .saludo {
@@ -235,12 +230,11 @@
     header.top .logo img { height: 24px; }
     .auth-row { gap: 5px; }
     .nov-btn { width: 36px; }
-    .pill-pts, .auth-row .mcu-racha { padding: 0 7px; gap: 4px; }
-    .pill-pts svg { width: 17px; height: 17px; }
+    .auth-row .mcu-racha { padding: 0 7px; gap: 4px; }
     .auth-row { gap: 6px; min-width: 0; }
     .auth-row .mcu-nom { display: none; }
     .auth-row .mcu-chip { min-width: 0; width: auto; padding-right: 4px; }
-    .pill-pts, .auth-row .mcu-racha { height: 38px; padding: 0 9px; font-size: 14px; }
+    .auth-row .mcu-racha { height: 38px; padding: 0 9px; font-size: 14px; }
   }
   /* Top de la semana (assets/ranking.js) va después de Practica */
   #mcTopAncla + .mcr, .mcr { margin-top: 32px; }
@@ -503,7 +497,6 @@
       <a class="logo" href="index.html" aria-label="Modo Cachimbo · Inicio"><img src="assets/img/logo-modo-cachimbo-horizontal.svg" alt="Modo Cachimbo" width="160" height="34"></a>
       <div class="auth-row">
         <button type="button" class="nov-btn" id="novBtn" aria-label="Nuevo para ti" title="Nuevo para ti" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="10" width="17" height="10.5" rx="2"/><path d="M2.5 7h19v3h-19zM12 7v13.5"/><path d="M12 7c-1.2-2.6-4.6-4-5.6-2.3C5.5 6.3 8.6 7 12 7c3.4 0 6.5-.7 5.6-2.3C16.6 3 13.2 4.4 12 7z"/></svg><span class="nov-punto" id="novPunto"></span></button>
-        <a class="pill-pts" id="ptsPill" href="#mcRanking" title="Tus puntos del simulacro esta semana" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3h11l4 6L12 21 2.5 9z" fill="currentColor"/><path d="M2.5 9h19M8.5 3 12 9l3.5-6M12 21 8.5 9M12 21l3.5-12" fill="none" stroke="#3d2f00" stroke-width="1.3" stroke-linejoin="round"/></svg><b id="ptsNum">0</b></a>
         <div data-mc-auth></div>
       </div>
     </header>
@@ -810,22 +803,10 @@ function jsonpRequest(url) {
       else if (i < 100) setTimeout(function () { esperarProgreso(i + 1); }, 150);
     })(0);
 
-    // ===== Puntos del simulacro de esta semana (arriba, en dorado) =====
-    function pintarPuntos() {
-      MCAuth.listo.then(function (c) { return c.rpc('ranking_simulacro'); }).then(function (r) {
-        if (!r || r.error) return;
-        var yo = (r.data || []).filter(function (x) { return x.yo; })[0];
-        var n = yo ? Math.round(+yo.puntaje || 0) : 0;
-        document.getElementById('ptsNum').textContent = String(n);
-        document.getElementById('ptsPill').hidden = false;
-      }).catch(function () {});
-    }
-
     function alCambiar(u) {
       if (!u) { raiz.classList.add('mc-fuera'); bvGoogle.disabled = false; return; }
       raiz.classList.remove('mc-fuera');
       pintarSaludo(u, null);
-      pintarPuntos();
       MCAuth.perfil().then(function (p) { var a = MCAuth.usuario(); if (a && a.id === u.id) pintarSaludo(u, p); }).catch(function () {});
       if (primeraVez(u)) {
         var m = u.user_metadata || {};

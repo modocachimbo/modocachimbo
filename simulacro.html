@@ -768,6 +768,8 @@
     // Racha: cada pregunta respondida cuenta
     const n = Object.keys(S.resp).length;
     for (let k = 0; k < n; k++) window.MCRacha ? MCRacha.respondio() : (window.mcRachaPend = (window.mcRachaPend || 0) + 1);
+    // XP de las respuestas y el bonus de 5 corazones del primer simulacro del día (assets/corazones.js)
+    if (window.MCCorazones) { const R0 = calcular(); MCCorazones.sumar(R0.C, R0.I); }
     mostrarResultado();
     if (window.MCSonido) { const R = calcular(); MCSonido.fin(R.max ? Math.round(R.total / R.max * 100) : 0); }
   }
@@ -795,6 +797,8 @@
     const yaGuardado = S.guardado ? Promise.resolve(S.guardado) : rpc('guardar_simulacro', { p: p });
     yaGuardado.then(id => {
       S.guardado = id; S.simId = id;
+      // Bonus del primer simulacro del día: se revisa ya guardado (assets/corazones.js)
+      if (window.MCCorazones) MCCorazones.recargar();
       st.className = 'guardado ok'; st.textContent = '✓ Guardado en Mis simulacros';
       const rep = $('btnRepetir'); rep.href = 'simulacro.html?repetir=' + encodeURIComponent(id); rep.hidden = false;
       return guardarFalladas();

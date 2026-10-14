@@ -1041,6 +1041,8 @@
     }
     if (r.repetida) { pararSondeo(); empezar(); return; }  // otra pestaña avanzó: se sincroniza
     cuentaRacha();
+    // XP (assets/corazones.js); la misión del duelo se revisa al terminarlo
+    if (window.MCCorazones) MCCorazones.respuesta(!!r.ok);
     G.actual = r.actual; G.aciertos = r.aciertos;
     const q = G.qs[G.actual - 1];
     if (q) {
@@ -1102,6 +1104,8 @@
   let revPintada = '', vistoRes = '';
   async function mostrarResultado() {
     pararSondeo();
+    // Misión "termina un duelo" (assets/corazones.js)
+    if (window.MCCorazones) setTimeout(MCCorazones.recargar, 600);
     const d = V, yo = d.yo || { aciertos: 0, ms: 0 }, res = d.resultado;
     const otros = d.jugadores.filter(j => !j.yo);
     let eye = 'Duelo terminado', tit, sub = '', perdio = false;

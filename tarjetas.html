@@ -444,6 +444,8 @@
     guardarLocal();
     clearTimeout(envio); envio = setTimeout(subir, 4000);
     window.MCRacha ? MCRacha.respondio() : (window.mcRachaPend = (window.mcRachaPend || 0) + 1);
+    // XP y misión de flashcards (assets/corazones.js)
+    if (window.MCCorazones) MCCorazones.respuesta(sabe);
   }
   addEventListener('pagehide', subir);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') subir(); });

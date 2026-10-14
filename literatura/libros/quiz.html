@@ -552,6 +552,8 @@
     const q = activeQuestions[current];
     const isCorrect = index === q.correct;
     if (isCorrect) score += 10; else lives -= 1;
+    // XP y corazones del día (assets/corazones.js)
+    if (window.MCCorazones) MCCorazones.respuesta(isCorrect);
     if (window.MCSonido) MCSonido[isCorrect ? 'bien' : 'mal']();
 
     lockOptions(index);
@@ -578,7 +580,9 @@
 
   document.getElementById('btnRestart').addEventListener('click', () => {
     activeQuestions = (window.MCPregunta ? MCPregunta.mezclar : shuffle)(questions);
-    current = 0; score = 0; lives = MAX_LIVES; answers.length = 0;
+    current = 0; score = 0; answers.length = 0;
+    lives = window.MCCorazones ? MCCorazones.vidasInicio(MAX_LIVES) : MAX_LIVES;
+    if (!lives) return;
     quizHeader.style.display = 'block';
     quizBody.style.display = 'block';
     endScreen.classList.remove('show');
@@ -586,6 +590,9 @@
   });
 
   btnStart.addEventListener('click', () => {
+    // Sin corazones no se empieza (solo Repaso, Fijas, Seminarios y Banqueo los gastan)
+    lives = window.MCCorazones ? MCCorazones.vidasInicio(MAX_LIVES) : MAX_LIVES;
+    if (!lives) return;
     if (window.MCSonido) MCSonido.empezar();
     startScreen.classList.remove('show');
     quizHeader.style.display = 'block';

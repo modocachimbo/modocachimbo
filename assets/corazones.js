@@ -167,9 +167,16 @@
     else { buf.mal++; racha = 0; if (PAG.gasta) perder(); }
     if (buf.ok + buf.mal >= 10) enviar(); else if (!tEnvio) tEnvio = setTimeout(enviar, 4000);
   }
+  // Varias respuestas juntas (el simulacro las manda al terminar)
+  function sumar(ok, mal) {
+    if (!PAG) return;
+    buf.ok += Math.max(0, ok | 0); buf.mal += Math.max(0, mal | 0);
+    enviar();
+  }
+  // El servidor acepta hasta 50 de cada una por envío; lo demás queda para el siguiente
   function paquete() {
     var p = { fuente: PAG.fuente, curso: PAG.curso || '', ok: Math.min(buf.ok, 50), mal: Math.min(buf.mal, 50), seguidas: buf.seguidas };
-    buf = { ok: 0, mal: 0, seguidas: racha };
+    buf = { ok: buf.ok - p.ok, mal: buf.mal - p.mal, seguidas: racha };
     return p;
   }
   function enviar() {
@@ -229,11 +236,19 @@
       xp.setAttribute('aria-label', (estado.xp_semana || 0) + ' XP esta semana. Canjear');
       if (late) { cor.classList.remove('late'); void cor.offsetWidth; cor.classList.add('late'); }
     });
-    // Inicio de la práctica: "5 vidas" pasa a los corazones que quedan
-    if (PAG && PAG.gasta) Array.prototype.forEach.call(document.querySelectorAll('#startScreen .start-stat span'), function (s) {
-      if (/vidas|corazones/.test(s.textContent)) s.textContent = estado.quedan + (estado.quedan === 1 ? ' corazón' : ' corazones');
-    });
+    ajustarInicio();
     if (hoja && !hoja.hidden && hoja.dataset.vista === 'misiones') abrirMisiones();
+  }
+
+  // Inicio de la práctica: "5 vidas" pasa a los corazones que le quedan hoy
+  function ajustarInicio() {
+    if (!PAG || !PAG.gasta || !estado) return;
+    var n = estado.quedan, txt = n + (n === 1 ? ' corazón' : ' corazones');
+    Array.prototype.forEach.call(document.querySelectorAll('#startScreen .start-stat span'), function (s) {
+      if (/vidas|coraz/.test(s.textContent) && s.textContent !== txt) s.textContent = txt;
+    });
+    var d = document.getElementById('startDesc');
+    if (d && /Tienes \d vidas/.test(d.textContent)) d.textContent = d.textContent.replace(/Tienes \d vidas/, 'Tienes ' + txt + ' hoy');
   }
 
   /* ---------- Misiones ---------- */
@@ -377,13 +392,17 @@
   }
 
   window.MCCorazones = {
-    respuesta: respuesta, vidasInicio: vidasInicio, perder: perder, estado: function () { return estado; },
+    respuesta: respuesta, sumar: sumar, vidasInicio: vidasInicio, perder: perder, estado: function () { return estado; },
     alCambiar: function (fn) { oyentes.push(fn); if (estado) fn(estado); },
     abrirMisiones: abrirMisiones, abrirCanje: abrirCanje, recargar: cargar, gasta: !!(PAG && PAG.gasta)
   };
 
   // Las píldoras se vuelven a poner si el menú de la cuenta se redibuja
-  new MutationObserver(function () { if (estado && document.querySelector('.mcu-user:not(:has(.mcz-cor))')) pintar(); })
+  new MutationObserver(function () {
+    if (!estado) return;
+    if (Array.prototype.some.call(document.querySelectorAll('.mcu-user'), function (u) { return !u.querySelector('.mcz-cor'); })) pintar();
+    else ajustarInicio();
+  })
     .observe(document.body, { childList: true, subtree: true });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { pintar(); }); else pintar();
   cargar();
