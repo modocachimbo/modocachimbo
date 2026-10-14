@@ -220,6 +220,14 @@
   .opt .tag { flex-shrink: 0; font-size: 10.5px; font-weight: 700; border-radius: 100px; padding: 3px 8px; }
   .tag.sug { background: var(--amber-soft); color: var(--amber); border: 1px solid rgba(251,191,36,0.3); }
   .tag.old { background: #1a1a1a; color: var(--text-faint); }
+  .opt-x { flex-shrink: 0; width: 34px; height: 34px; border-radius: 10px; border: 2px solid #2e2e2e; background: #141414; color: var(--text-faint); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .opt-x svg { width: 15px; height: 15px; }
+  .opt-x:hover:not(:disabled) { border-color: var(--red, #E03C3C); color: #ff8a8a; }
+  .opt-x:disabled { opacity: .3; cursor: default; }
+  .ed-add { margin: 2px 0 6px; }
+  .ed-prev { margin-top: 4px; background: #0e0e0e; }
+  .ed-prev .pimg-ver { margin: 10px 0; text-align: center; }
+  .ed-prev .pimg-ver img, .ed-prev .ptext img { max-width: 100%; height: auto; background: #fff; border-radius: 10px; padding: 8px; }
   .hint { font-size: 12px; color: var(--text-faint); margin-top: 6px; line-height: 1.5; }
   .mfoot { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; flex-wrap: wrap; }
   .mfoot .btn-main { min-width: 190px; }
@@ -1458,14 +1466,10 @@ E) Alternativa"></textarea>
       <label class="ptoc"><span>Tamaño del círculo</span><input type="range" min="3" max="30" step="1" id="edTocR"></label>`
       : tipo ? '' : q.abierta ? `<label class="fld">Respuesta <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— pregunta abierta; con | separas otras que también valen</span></label>
       <input class="opt-in" id="edResp" style="width:100%;" value="${esc((q.respuestas || []).join(' | '))}">` : `<label class="fld">Alternativas <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— toca la letra para marcar la correcta</span></label>`}
-      <div id="edOpts">${q.options.map((o, i) => `
-        <div class="opt ${i === q.correct ? 'sel' : ''}" data-i="${i}">
-          <button type="button" class="opt-radio" title="Marcar como correcta">${esc(o.letter)}</button>
-          <input class="opt-in" value="${esc(o.text)}">
-          ${o.letter === ctx.sugerida ? '<span class="tag sug">Sugerida por el alumno</span>' : ''}
-          ${i === q.correct ? '<span class="tag old">Clave actual</span>' : ''}
-        </div>`).join('')}
-      </div>
+      <div id="edOpts"></div>
+      ${q.abierta ? '' : '<button type="button" class="rbtn ed-add" id="edAddOpt">＋ Agregar alternativa</button>'}
+      <label class="fld">Así lo verá el alumno <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— se actualiza mientras editas</span></label>
+      <article class="pcard ed-prev" id="edPrev"></article>
       <div class="err" id="edErr"></div>
       <div class="mfoot">
         <button type="button" class="rbtn danger izq" id="edBorrar">Borrar pregunta</button>
@@ -1498,7 +1502,7 @@ E) Alternativa"></textarea>
     function leer() {
       const v = {
         text: body.querySelector('#edText').value,
-        options: [...optsEl.querySelectorAll('.opt')].map((row, i) => ({ letter: q.options[i].letter, text: row.querySelector('.opt-in').value })),
+        options: ops.map((o, i) => ({ letter: LETRAS[i], text: o.text })),
         correct
       };
       if (respEl) v.respuestas = respuestas();
@@ -1508,17 +1512,72 @@ E) Alternativa"></textarea>
     const firma = x => JSON.stringify([x.huecos, x.afirmaciones, x.pares, x.orden, x.zona]);
     function cambio() {
       const v = leer();
-      const dif = v.correct !== q.correct || v.text !== q.text || v.options.some((o, i) => o.text !== q.options[i].text) ||
+      const dif = v.correct !== q.correct || v.text !== q.text || v.options.length !== q.options.length || v.options.some((o, i) => o.text !== q.options[i].text) ||
         (respEl && v.respuestas.join('|') !== (q.respuestas || []).join('|')) ||
         (tipo && firma(v) !== firma(q)) ||
         zonaImg.estado().cambio !== 'igual';
       save.disabled = !dif;
+      clearTimeout(tPrev); tPrev = setTimeout(pintarPrev, 250);
     }
-    optsEl.querySelectorAll('.opt').forEach(row => row.querySelector('.opt-radio').addEventListener('click', () => {
-      correct = +row.dataset.i;
-      optsEl.querySelectorAll('.opt').forEach(r => r.classList.toggle('sel', r === row));
-      cambio();
-    }));
+    // Alternativas: se pueden quitar (mínimo 2) y agregar (máximo 6); las letras se reordenan solas
+    let ops = q.options.map((o, i) => ({ text: o.text, orig: i, letra: o.letter })), tPrev = 0;
+    const ICO_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+    function pintarOpts() {
+      optsEl.innerHTML = ops.map((o, i) => `
+        <div class="opt ${i === correct ? 'sel' : ''}" data-i="${i}">
+          <button type="button" class="opt-radio" title="Marcar como correcta">${LETRAS[i]}</button>
+          <input class="opt-in" value="${esc(o.text)}">
+          ${o.letra === ctx.sugerida ? '<span class="tag sug">Sugerida por el alumno</span>' : ''}
+          ${o.orig === q.correct ? '<span class="tag old">Clave actual</span>' : ''}
+          <button type="button" class="opt-x" title="Quitar esta alternativa" aria-label="Quitar la alternativa ${LETRAS[i]}" ${ops.length <= 2 ? 'disabled' : ''}>${ICO_X}</button>
+        </div>`).join('');
+      optsEl.querySelectorAll('.opt').forEach(row => {
+        const i = +row.dataset.i;
+        row.querySelector('.opt-radio').addEventListener('click', () => { correct = i; body.querySelector('#edErr').classList.remove('show'); pintarOpts(); cambio(); });
+        row.querySelector('.opt-in').addEventListener('input', e => { ops[i].text = e.target.value; });
+        row.querySelector('.opt-x').addEventListener('click', () => {
+          if (ops.length <= 2) return;
+          ops.splice(i, 1);
+          if (correct === i) correct = null; else if (correct > i) correct--;
+          pintarOpts(); cambio();
+        });
+      });
+      const add = body.querySelector('#edAddOpt');
+      if (add) add.hidden = ops.length >= LETRAS.length;
+    }
+    const addOpt = body.querySelector('#edAddOpt');
+    if (addOpt) addOpt.addEventListener('click', () => {
+      if (ops.length >= LETRAS.length) return;
+      ops.push({ text: '', orig: -1, letra: '' });
+      pintarOpts(); cambio();
+      const ins = optsEl.querySelectorAll('.opt-in'); ins[ins.length - 1].focus();
+    });
+    pintarOpts();
+    // Vista del alumno: el mismo armado que la web (assets/pregunta.js)
+    function pintarPrev() {
+      const prev = body.querySelector('#edPrev'); if (!prev || !prev.isConnected) return;
+      const v = leer();
+      let k = 0;
+      const r = MCPregunta.armar(v.text, { marca: () => {
+        const z = zonasMarca[k++], st = z && z.zona.estado();
+        return st && st.cambio === 'nueva' ? `<img class="mc-img" src="${st.img.dataUrl}" alt="">` : '<div class="hint">(aquí va la imagen que pegues)</div>';
+      } });
+      const sg = zonaImg.estado();
+      const graf = sg.cambio === 'nueva' ? `<img class="mc-img" src="${sg.img.dataUrl}" alt="">` : sg.cambio === 'quitar' ? '' : (q.graphic || '');
+      prev.innerHTML = `<div class="ptext">${r.html}</div>${graf ? `<div class="pimg-ver">${graf}</div>` : ''}<div class="popts"></div>`;
+      const lista = prev.querySelector('.popts');
+      if (q.abierta) {
+        const pq = Object.assign({}, q, v, { options: [], correct: 0 });
+        if (!pq.respuestas || !pq.respuestas.length) pq.respuestas = ['…'];
+        try { MCPregunta.cuadroAbierto(lista, pq, {}, r); } catch (e) { lista.innerHTML = '<div class="hint">Revisa el formato para ver la vista previa.</div>'; }
+      } else {
+        lista.classList.toggle('popts-cortas', !r.derecha && MCPregunta.cortas(v.options));
+        lista.innerHTML = v.options.map((o, i) => `<div class="popt ${i === v.correct ? 'ok' : ''}"><span class="l">${esc(o.letter)}</span><span class="text">${formatQText(o.text)}</span>${i === v.correct ? '<span class="chk">✓</span>' : ''}</div>`).join('');
+        MCPregunta.analogias(lista, v);
+        if (r.derecha) lista.outerHTML = `<div class="pder"><div class="popts">${lista.innerHTML}</div><div>${r.derecha}</div></div>`;
+      }
+      renderMath(prev);
+    }
     const zonaImg = crearZonaImagen(body.querySelector('#edImg'), { actual: q.graphic || '', onChange: () => cambio() });
     if (tipo === 'tocar') {
       const toc = body.querySelector('#edToc'), c = toc.querySelector('.ptoc-c'), rr = body.querySelector('#edTocR');
@@ -1548,6 +1607,7 @@ E) Alternativa"></textarea>
     }
     body.querySelector('#edText').addEventListener('input', pintarMarcas);
     body.addEventListener('input', cambio);
+    pintarPrev();
     body.querySelector('#edCancel').addEventListener('click', cerrarModal);
 
     // Borrar pregunta: pide un segundo clic para confirmar
@@ -1574,6 +1634,7 @@ E) Alternativa"></textarea>
       const v = leer();
       const err = body.querySelector('#edErr');
       err.classList.remove('show');
+      if (!q.abierta && (correct == null || correct < 0)) { err.textContent = 'Toca la letra de la alternativa correcta.'; err.classList.add('show'); return; }
       if (!norm(v.text) || v.options.some(o => !norm(o.text))) { err.textContent = 'La pregunta y las alternativas no pueden quedar vacías.'; err.classList.add('show'); return; }
       if (respEl && !v.respuestas.length) { err.textContent = 'Falta la respuesta.'; err.classList.add('show'); return; }
       if (v.errorTipo) { err.textContent = v.errorTipo; err.classList.add('show'); return; }
