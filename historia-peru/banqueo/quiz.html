@@ -374,6 +374,7 @@
   let current = 0, score = 0, lives = 5, answered = false;
   const MAX_LIVES = 5;
   const answers = [];
+  const escritas = []; // preguntas abiertas: lo que escribió el alumno
 
   async function loadQuestions() {
     if (!year) {
@@ -464,7 +465,7 @@
     btnNext = document.getElementById('btnNext');
 
     btnNext.addEventListener('click', () => {
-      if (current === activeQuestions.length - 1) {
+      if (current === activeQuestions.length - 1 || lives <= 0) {
         progressFill.style.width = '100%';
         showEnd();
         return;
@@ -500,7 +501,11 @@
     feedback.className = 'feedback';
     feedback.textContent = '';
 
-    q.options.forEach((opt, i) => {
+    // Pregunta abierta: cuadro para escribir en lugar de alternativas (assets/pregunta.js)
+    const abierta = !!(window.MCPregunta && MCPregunta.esAbierta && MCPregunta.esAbierta(q));
+    optionsList.classList.toggle('mcq-abierta', abierta);
+    if (abierta) MCPregunta.cuadroAbierto(optionsList, q, { previo: escritas[current], responder: responderAbierta, vale: valeAbierta }, mcq);
+    else q.options.forEach((opt, i) => {
       const div = document.createElement('div');
       div.className = 'option';
       div.innerHTML = `<div class="letter">${opt.letter}</div><span class="text">${formatQText(opt.text)}</span>`;
@@ -508,12 +513,12 @@
       optionsList.appendChild(div);
     });
 
-    if (mcq) MCPregunta.alternativas(optionsList, q, mcq);
+    if (mcq && !abierta) MCPregunta.alternativas(optionsList, q, mcq);
 
     renderMath(quizBody);
 
     const prevAnswer = answers[current];
-    if (prevAnswer !== undefined) lockOptions(prevAnswer);
+    if (prevAnswer !== undefined && !abierta) lockOptions(prevAnswer);
 
     btnBack.disabled = current === 0;
     btnNext.disabled = prevAnswer === undefined;
@@ -543,6 +548,33 @@
     const correctLetter = q.options[q.correct].letter;
     feedback.textContent = wasCorrect ? '¡Correcto!' : `Incorrecto. La respuesta correcta era la ${correctLetter}.`;
     feedback.className = 'feedback show ' + (wasCorrect ? 'ok' : 'bad');
+  }
+
+  // Pregunta abierta: acertar se guarda como 0 (su correct) y fallar como -1
+  function responderAbierta(r) {
+    if (answered) return;
+    answered = true;
+    window.MCRacha ? MCRacha.respondio() : (window.mcRachaPend = (window.mcRachaPend || 0) + 1);
+    escritas[current] = r;
+    answers[current] = r.ok ? 0 : -1;
+    if (r.ok) score += 10; else lives -= 1;
+    if (window.MCSonido) MCSonido[r.ok ? 'bien' : 'mal']();
+    renderLives();
+    scoreEl.textContent = `${score} pts`;
+    btnNext.disabled = false;
+    // Sin vidas: no se cierra solo, para que pueda tocar "Mi respuesta también vale"
+    if (lives <= 0) btnNext.textContent = 'Ver resultado';
+  }
+  // "Mi respuesta también vale": cuenta como acierto y devuelve la vida
+  function valeAbierta() {
+    const e = escritas[current];
+    if (!e || answers[current] !== -1) return;
+    e.vale = true; answers[current] = 0;
+    score += 10; lives = Math.min(MAX_LIVES, lives + 1);
+    if (window.MCSonido) MCSonido.bien();
+    renderLives();
+    scoreEl.textContent = `${score} pts`;
+    btnNext.textContent = current === activeQuestions.length - 1 ? 'Finalizar' : 'Siguiente';
   }
 
   function selectAnswer(index, el) {
@@ -580,7 +612,7 @@
 
   document.getElementById('btnRestart').addEventListener('click', () => {
     activeQuestions = (window.MCPregunta ? MCPregunta.mezclar : shuffle)(questions);
-    current = 0; score = 0; lives = MAX_LIVES; answers.length = 0;
+    current = 0; score = 0; lives = MAX_LIVES; answers.length = 0; escritas.length = 0;
     quizHeader.style.display = 'block';
     quizBody.style.display = 'block';
     endScreen.classList.remove('show');

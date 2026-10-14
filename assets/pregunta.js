@@ -9,6 +9,10 @@
      (también <i> <b> <em> <strong> <sub> <sup>)
      [TEXTO 03] … [/TEXTO]    lectura que comparten varias preguntas
                               (va al inicio; se ve en un recuadro plegable)
+   Preguntas de respuesta abierta (Seminarios y Banqueo):
+     { text, abierta: true, respuestas: ['Karl Ritter', 'Ritter'], options: [], correct: 0 }
+     El alumno escribe; cuadroAbierto() compara sin tildes ni mayúsculas.
+     Acertar se guarda como la respuesta 0 (= correct), fallar como -1.
    En el panel, [IMAGEN] y [IMAGEN DERECHA] son las marcas que
    escribe el profesor; al publicar se cambian por [IMG:…].
    ========================================================= */
@@ -205,7 +209,7 @@
   }
   // Copia de la pregunta con las alternativas en ese orden (las letras quedan A, B, C…)
   function conOrden(q, orden) {
-    if (!q || !Array.isArray(q.options) || !orden || orden.length !== q.options.length) return q;
+    if (!q || esAbierta(q) || !Array.isArray(q.options) || !orden || orden.length !== q.options.length) return q;
     var c = Object.assign({}, q);
     c.options = orden.map(function (k, i) { return Object.assign({}, q.options[k], { letter: q.options[i].letter }); });
     c.correct = orden.indexOf(q.correct);
@@ -315,6 +319,102 @@
   // Cuando llega la letra Nunito el ancho cambia
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { [].forEach.call(document.querySelectorAll('.mcq-cortas'), ajustarCols); });
 
-  window.MCPregunta = { armar: armar, pintar: pintar, alternativas: alternativas, cortas: cortas, formato: formato, sinLectura: sinLectura, mezclar: mezclar, rangos: rangos,
+  /* ---------- Respuesta abierta ---------- */
+  function esAbierta(q) { return !!(q && q.abierta && Array.isArray(q.respuestas) && q.respuestas.length); }
+  // Sin tildes, mayúsculas, signos ni espacios de más: "  Eratóstenes." = "eratostenes"
+  function normal(s) {
+    return String(s == null ? '' : s).replace(/<[^>]*>|\*|\$/g, '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  }
+  function acierta(q, texto) {
+    var t = normal(texto);
+    return !!t && (q.respuestas || []).some(function (r) { return normal(r) === t; });
+  }
+  var ICO_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>';
+  var ICO_MAL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+  // Pinta el cuadro para escribir en lugar de las alternativas.
+  // o.previo = { texto, ok, vale, nose } si ya respondió (se ve bloqueado)
+  // o.responder({ texto, ok, nose }) al comprobar · o.vale() si dice que su respuesta también vale
+  // r = lo que devolvió pintar() (para la imagen derecha)
+  function cuadroAbierto(lista, q, o, r) {
+    o = o || {};
+    lista.classList.remove('mcq-cortas', 'mcq-con-der', 'mcq-c1', 'mcq-c2');
+    lista.classList.add('mcq-abierta');
+    var id = 'mcqAb' + Math.random().toString(36).slice(2, 7);
+    lista.innerHTML = (r && r.derecha ? '<div class="mcq-img">' + r.derecha + '</div>' : '') +
+      '<div class="mcq-ab">' +
+        '<label class="mcq-ab-lbl" for="' + id + '">Escribe tu respuesta</label>' +
+        '<input class="mcq-ab-in" id="' + id + '" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" maxlength="200" placeholder="Tu respuesta">' +
+        '<div class="mcq-ab-fila"><button type="button" class="mcq-ab-nose">No la sé</button><button type="button" class="mcq-ab-ok" disabled>Comprobar</button></div>' +
+        '<div class="mcq-ab-res" hidden></div>' +
+      '</div>';
+    var inp = lista.querySelector('.mcq-ab-in'), ok = lista.querySelector('.mcq-ab-ok'), nose = lista.querySelector('.mcq-ab-nose');
+    var res = lista.querySelector('.mcq-ab-res'), fila = lista.querySelector('.mcq-ab-fila');
+    var estado = o.previo ? Object.assign({}, o.previo) : null;
+    function correcta() { return q.respuestas.map(formato).join('<span class="mcq-ab-o"> o </span>'); }
+    function mostrar() {
+      if (!estado) return;
+      inp.value = estado.texto || ''; inp.disabled = true; fila.hidden = true;
+      var bien = estado.ok || estado.vale;
+      inp.classList.toggle('bien', !!bien); inp.classList.toggle('mal', !bien && !estado.nose);
+      var h;
+      if (estado.ok) h = '<div class="mcq-ab-tit">' + ICO_OK + '¡Correcto!</div>' +
+        (normal(estado.texto) !== normal(q.respuestas[0]) || q.respuestas.length > 1 ? '<div class="mcq-ab-sol">Respuesta: <b>' + correcta() + '</b></div>' : '');
+      else if (estado.vale) h = '<div class="mcq-ab-tit">' + ICO_OK + 'Contada como correcta</div><div class="mcq-ab-sol">Respuesta: <b>' + correcta() + '</b></div>';
+      else h = '<div class="mcq-ab-tit">' + ICO_MAL + (estado.nose ? 'La respuesta es' : 'No coincide. La respuesta es') + '</div><div class="mcq-ab-sol"><b>' + correcta() + '</b></div>' +
+        (!estado.nose && estado.texto ? '<button type="button" class="mcq-ab-vale">Mi respuesta también vale</button>' : '');
+      res.innerHTML = h; res.hidden = false;
+      res.className = 'mcq-ab-res ' + (bien ? 'ok' : 'bad');
+      var v = res.querySelector('.mcq-ab-vale');
+      if (v) v.addEventListener('click', function () {
+        estado.vale = true; mostrar();
+        if (o.vale) o.vale();
+      });
+      if (window.renderMathInElement) try { renderMathInElement(res, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false }); } catch (e) {}
+    }
+    function enviar(sinSaber) {
+      if (estado) return;
+      var t = sinSaber ? '' : inp.value.trim();
+      if (!sinSaber && !t) { inp.focus(); return; }
+      estado = { texto: t, ok: !sinSaber && acierta(q, t), nose: !!sinSaber };
+      mostrar();
+      if (o.responder) o.responder(Object.assign({}, estado));
+    }
+    inp.addEventListener('input', function () { ok.disabled = !inp.value.trim(); });
+    inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); enviar(false); } });
+    ok.addEventListener('click', function () { enviar(false); });
+    nose.addEventListener('click', function () { enviar(true); });
+    if (estado) mostrar();
+    return { foco: function () { if (!estado) inp.focus(); } };
+  }
+  var st3 = document.createElement('style');
+  st3.textContent =
+    '.mcq-abierta{display:block!important}' +
+    '.mcq-ab{display:flex;flex-direction:column;gap:10px}' +
+    '.mcq-ab-lbl{font:900 12px/1.2 Nunito,Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#9a9a9a}' +
+    '.mcq-ab-in{width:100%;font:800 17px/1.3 Nunito,Inter,sans-serif;color:#f2f2f2;background:#151515;border:2px solid #2a2a2a;border-bottom-width:5px;border-radius:16px;padding:14px 16px;outline:none;-webkit-appearance:none}' +
+    '.mcq-ab-in::placeholder{color:#555}' +
+    '.mcq-ab-in:focus{border-color:#C6E000}' +
+    '.mcq-ab-in:disabled{opacity:1;-webkit-text-fill-color:currentColor}' +
+    '.mcq-ab-in.bien{border-color:#C6E000;border-bottom-color:#8fa300;background:rgba(198,224,0,.1);color:#f5ffcc}' +
+    '.mcq-ab-in.mal{border-color:#E03C3C;border-bottom-color:#9e2525;background:rgba(224,60,60,.1);color:#ffd6d6}' +
+    '.mcq-ab-fila{display:flex;gap:10px}.mcq-ab-fila[hidden]{display:none}' +
+    '.mcq-ab-fila button{font:900 15px Nunito,Inter,sans-serif;border-radius:16px;padding:13px 14px;cursor:pointer;-webkit-tap-highlight-color:transparent}' +
+    '.mcq-ab-nose{flex:0 0 auto;background:#161616;color:#cfcfcf;border:2px solid #2e2e2e;border-bottom-width:5px}' +
+    '.mcq-ab-nose:active{transform:translateY(3px);border-bottom-width:2px;margin-bottom:3px}' +
+    '.mcq-ab-ok{flex:1;background:#C6E000;color:#2b3300;border:2px solid #C6E000;box-shadow:0 5px 0 #8fa300;margin-bottom:5px}' +
+    '.mcq-ab-ok:active:not(:disabled){transform:translateY(5px);box-shadow:none}' +
+    '.mcq-ab-ok:disabled{opacity:.4;cursor:default}' +
+    '.mcq-ab-res{border:2px solid transparent;border-radius:14px;padding:12px 14px;font:800 14px/1.5 Nunito,Inter,sans-serif;display:flex;flex-direction:column;gap:6px}' +
+    '.mcq-ab-res.ok{background:rgba(198,224,0,.08);border-color:rgba(198,224,0,.35);color:#D6F23A}' +
+    '.mcq-ab-res.bad{background:rgba(224,60,60,.08);border-color:rgba(224,60,60,.4);color:#ffb3b3}' +
+    '.mcq-ab-tit{display:flex;align-items:center;gap:8px;font-weight:900}.mcq-ab-tit svg{width:18px;height:18px;flex-shrink:0}' +
+    '.mcq-ab-sol{color:#f2f2f2;font-size:15px}.mcq-ab-sol b{font-weight:1000;color:#fff}.mcq-ab-o{font-weight:600;color:#9a9a9a}' +
+    '.mcq-ab-vale{align-self:flex-start;margin-top:4px;font:900 13.5px Nunito,Inter,sans-serif;color:#e6e6e6;background:#161616;border:2px solid #2e2e2e;border-bottom-width:4px;border-radius:12px;padding:9px 12px;cursor:pointer}' +
+    '.mcq-ab-vale:active{transform:translateY(2px);border-bottom-width:2px;margin-bottom:2px}';
+  document.head.appendChild(st3);
+
+  window.MCPregunta = {
+    esAbierta: esAbierta, acierta: acierta, normal: normal, cuadroAbierto: cuadroAbierto, armar: armar, pintar: pintar, alternativas: alternativas, cortas: cortas, formato: formato, sinLectura: sinLectura, mezclar: mezclar, rangos: rangos,
     ordenAlt: ordenAlt, conOrden: conOrden, mezclarAlt: mezclarAlt, sePuedeMezclar: sePuedeMezclar, raiz: RAIZ };
 })();

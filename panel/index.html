@@ -273,6 +273,7 @@
   .popt.ok { color: #f5ffcc; font-weight: 600; }
   .popt.ok .l { background: var(--accent); color: #0e0e0e; }
   .popt .chk { margin-left: auto; color: var(--accent); font-weight: 800; }
+  .popt .pab-o { font-style: normal; font-weight: 500; color: var(--text-faint); }
   .pimg { margin: 10px 0 12px; }
   .fmt-ayuda { margin-top: 14px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); padding: 12px 16px; font-size: 13px; color: var(--text-dim); }
   .fmt-ayuda summary { cursor: pointer; font-weight: 700; color: var(--text); }
@@ -646,6 +647,7 @@ E) Alternativa"></textarea>
               <code>TEXTO 03:<br>Hubo un tiempo en que…<br>PREGUNTA 9:<br>¿Cuál es el título del texto?<br>…<br>PREGUNTA 10:<br>…<br>FIN TEXTO</code><span>Lectura para varias preguntas (Raz. Verbal, comprensión). Escribe <code>TEXTO</code> (con su número) y pega la lectura; vale para todas las preguntas de abajo hasta otro <code>TEXTO</code> o <code>FIN TEXTO</code>. El alumno la ve arriba de cada pregunta ("pregunta 2 de 3") y al mezclar (Repaso, Fijas) las preguntas del mismo texto salen juntas y en orden. Deja una línea en blanco entre párrafos.</span>
               <code>A) VVV   B) FVV   C) VVF</code><span>Varias alternativas en una línea también valen. Si son cortas, se muestran en columnas solas.</span>
               <code>a. texto   b. texto</code><span>Con punto es texto del enunciado (por ejemplo, una lista para relacionar). Las alternativas siempre van con paréntesis: A) o a).</span>
+              <code>PREGUNTA 2:<br>Segundo padre de la geografía moderna<br>RESPUESTA: Karl Ritter | Ritter</code><span>Pregunta de respuesta abierta (solo Seminarios y Banqueo): sin alternativas, el alumno escribe la respuesta. Con <code>|</code> separas otras formas que también valen. No importan tildes ni mayúsculas. En un mismo tema puedes mezclar preguntas con alternativas y abiertas.</span>
             </div>
             <div class="fmt-tit">Texto y fórmulas · también con los botones B, I y U encima del cuadro (o Ctrl+B, Ctrl+I, Ctrl+U)</div>
             <div class="fmt-grid">
@@ -1319,7 +1321,7 @@ E) Alternativa"></textarea>
       const o = q.options[q.correct];
       return `<div class="qrow">
         <div class="num">${i + 1}</div>
-        <div class="body"><div class="t">${q.graphic ? '🖼 ' : ''}${esc(plano(q.text))}</div><div class="k">Clave: <b>${o ? esc(o.letter + ') ' + plano(o.text)) : '—'}</b></div></div>
+        <div class="body"><div class="t">${q.graphic ? '🖼 ' : ''}${esc(plano(q.text))}</div><div class="k">${q.abierta ? 'Respuesta: <b>' + esc((q.respuestas || []).join(' | ')) + '</b>' : 'Clave: <b>' + (o ? esc(o.letter + ') ' + plano(o.text)) : '—') + '</b>'}</div></div>
         <button class="rbtn" type="button" data-n="${i + 1}">${ICON_EDIT} Editar</button>
       </div>`;
     }).join('');
@@ -1421,7 +1423,8 @@ E) Alternativa"></textarea>
       <div id="edMarcas"></div>
       <label class="fld">Imagen o gráfico <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— debajo del enunciado</span></label>
       <div id="edImg"></div>
-      <label class="fld">Alternativas <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— toca la letra para marcar la correcta</span></label>
+      ${q.abierta ? `<label class="fld">Respuesta <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— pregunta abierta; con | separas otras que también valen</span></label>
+      <input class="opt-in" id="edResp" style="width:100%;" value="${esc((q.respuestas || []).join(' | '))}">` : `<label class="fld">Alternativas <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— toca la letra para marcar la correcta</span></label>`}
       <div id="edOpts">${q.options.map((o, i) => `
         <div class="opt ${i === q.correct ? 'sel' : ''}" data-i="${i}">
           <button type="button" class="opt-radio" title="Marcar como correcta">${esc(o.letter)}</button>
@@ -1439,16 +1442,21 @@ E) Alternativa"></textarea>
 
     const optsEl = body.querySelector('#edOpts');
     const save = body.querySelector('#edSave');
+    const respEl = body.querySelector('#edResp');
+    const respuestas = () => respEl ? respEl.value.split('|').map(norm).filter(Boolean) : null;
     function leer() {
-      return {
+      const v = {
         text: body.querySelector('#edText').value,
         options: [...optsEl.querySelectorAll('.opt')].map((row, i) => ({ letter: q.options[i].letter, text: row.querySelector('.opt-in').value })),
         correct
       };
+      if (respEl) v.respuestas = respuestas();
+      return v;
     }
     function cambio() {
       const v = leer();
       const dif = v.correct !== q.correct || v.text !== q.text || v.options.some((o, i) => o.text !== q.options[i].text) ||
+        (respEl && v.respuestas.join('|') !== (q.respuestas || []).join('|')) ||
         zonaImg.estado().cambio !== 'igual';
       save.disabled = !dif;
     }
@@ -1501,6 +1509,7 @@ E) Alternativa"></textarea>
       const err = body.querySelector('#edErr');
       err.classList.remove('show');
       if (!norm(v.text) || v.options.some(o => !norm(o.text))) { err.textContent = 'La pregunta y las alternativas no pueden quedar vacías.'; err.classList.add('show'); return; }
+      if (respEl && !v.respuestas.length) { err.textContent = 'Falta la respuesta.'; err.classList.add('show'); return; }
       const imagenes = [];
       if (zonasMarca.some(z => z.zona.estado().cambio !== 'nueva')) { err.textContent = 'Pega la imagen de cada [IMAGEN] que escribiste, o borra la marca.'; err.classList.add('show'); return; }
       let km = 0;
@@ -1524,12 +1533,12 @@ E) Alternativa"></textarea>
         delete cacheArchivos[ctx.carpeta + '|' + ctx.anio];
         if (r.sinCambios) { cerrarModal(); toast('No había cambios que guardar'); return; }
         if (window.MCRep) MCRep.estado({ carpeta: ctx.carpeta, anio: ctx.anio, tema: ctx.tema, pregunta: ctx.n }, 'Corregido');
-        const oNew = v.options[v.correct];
+        const oNew = v.options[v.correct] || { letter: 'Respuesta', text: (v.respuestas || []).join(' | ') };
         body.innerHTML = `<div class="done">
           <div class="ico">${ICON_OK}</div>
           <div class="eyebrow">Publicado</div>
           <h3>¡Pregunta corregida!</h3>
-          <p>Clave: <b style="color:#f5ffcc">${esc(oNew.letter + ') ' + plano(oNew.text))}</b><br>Los alumnos verán el cambio en 1 a 10 minutos.${r.marcados ? `<br>${r.marcados} reporte${r.marcados > 1 ? 's' : ''} marcado${r.marcados > 1 ? 's' : ''} como corregido${r.marcados > 1 ? 's' : ''}.` : ''}</p>
+          <p>${v.respuestas ? 'Respuesta' : 'Clave'}: <b style="color:#f5ffcc">${esc(v.respuestas ? oNew.text : oNew.letter + ') ' + plano(oNew.text))}</b><br>Los alumnos verán el cambio en 1 a 10 minutos.${r.marcados ? `<br>${r.marcados} reporte${r.marcados > 1 ? 's' : ''} marcado${r.marcados > 1 ? 's' : ''} como corregido${r.marcados > 1 ? 's' : ''}.` : ''}</p>
           <div class="mfoot" style="justify-content:center;"><button type="button" class="btn-main" id="edOk">Listo</button></div>
         </div>`;
         body.querySelector('#edOk').addEventListener('click', cerrarModal);
