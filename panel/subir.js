@@ -337,6 +337,10 @@ function revisarTexto() {
     $('subNombre').value = r.meta.nombre || $('subNombre').value;
   }
 
+  // Agregando a un tema publicado: la numeración sigue desde donde quedó el tema
+  const ini = !ex && SUB.agregar ? SUB.agregar.n : 0;
+  if (ini) r.avisos = r.avisos.filter(a => !/está en la posición/.test(a))
+    .concat(r.preguntas.map((q, i) => q.num && q.num !== ini + i + 1 ? 'La PREGUNTA ' + q.num + ' quedará como la ' + (ini + i + 1) + ' del tema' : null).filter(Boolean));
   const errores = r.preguntas.filter(q => q.errores.length).length;
   $('subAvisos').innerHTML =
     (errores ? `<div class="banner warn"><div><b>${errores} pregunta${errores > 1 ? 's tienen' : ' tiene'} errores.</b> Corrígelas en el texto y vuelve a revisar.</div></div>` : '') +
@@ -345,7 +349,7 @@ function revisarTexto() {
   // Vista previa: un recuadro por cada [IMAGEN]; sin marcas, uno debajo del enunciado (como antes)
   // Preguntas del mismo TEXTO: la lectura se muestra una vez, en la primera
   const rango = {};
-  r.preguntas.forEach((q, i) => { const n = ex ? q.num : i + 1; if (q.lectura) { const x = rango[q.lectura] = rango[q.lectura] || [n, n]; x[1] = n; } });
+  r.preguntas.forEach((q, i) => { const n = ex ? q.num : ini + i + 1; if (q.lectura) { const x = rango[q.lectura] = rango[q.lectura] || [n, n]; x[1] = n; } });
   const txtRango = l => { const x = rango[l]; return x[0] === x[1] ? 'pregunta ' + x[0] : 'preguntas ' + x[0] + ' a ' + x[1]; };
   const visto = {};
   $('subLista').innerHTML = r.preguntas.map((q, i) => {
@@ -363,7 +367,7 @@ function revisarTexto() {
     <article class="pcard ${q.errores.length ? 'bad' : ''} ${k ? 'en-texto' : ''} ${sigue ? 'sigue' : ''}">
       ${lec}
       ${sigue ? `<div class="plec-sig">${esc(q.lectura.split('\n')[0].replace(/[\[\]]/g, ''))} · ${txtRango(q.lectura)} (misma lectura de arriba)</div>` : ''}
-      <div class="qnum2">${ex ? esc(q.num) : i + 1}</div>${ex ? `<div class="hint" style="margin:-4px 0 8px;">${esc(q.asignatura || '¿curso?')}${q.tema ? ' · ' + esc(q.tema) : ''}</div>` : ''}
+      <div class="qnum2">${ex ? esc(q.num) : ini + i + 1}</div>${ex ? `<div class="hint" style="margin:-4px 0 8px;">${esc(q.asignatura || '¿curso?')}${q.tema ? ' · ' + esc(q.tema) : ''}</div>` : ''}
       ${q.errores.length ? `<div class="perr">⚠ ${q.errores.map(esc).join(' · ')}</div>` : ''}
       <div class="ptext">${v.html}</div>
       ${q.marcasImg ? '' : `<div class="pimg" data-z="${i}|g"></div>`}
@@ -463,6 +467,8 @@ function validarMeta() {
   const n = SUB.parse.preguntas.length;
   $('subResumen').innerHTML = errs.length
     ? `<span class="bad">Falta: ${errs.join(', ')}.</span>`
+    : (SUB.agregar && SUB.agregar.carpeta === carpetaDestino(curso, $('subDestino').value) && SUB.agregar.anio === ciclo && SUB.agregar.tema === pad2(num))
+    ? `<b>${n} pregunta${n > 1 ? 's' : ''} nueva${n > 1 ? 's' : ''}</b> (de la ${SUB.agregar.n + 1} a la ${SUB.agregar.n + n}) para ${esc(NOMBRE[curso])} · ${esc(ciclo)} · Tema ${esc(pad2(num))}${DESTINO_TXT[$('subDestino').value] ? ' · <b>' + DESTINO_TXT[$('subDestino').value].slice(3) + '</b>' : ''}`
     : `<b>${n} pregunta${n > 1 ? 's' : ''}</b> para ${esc(NOMBRE[curso])} · ${esc(ciclo)} · Tema ${esc(pad2(num))}${DESTINO_TXT[$('subDestino').value] ? ' · <b>' + DESTINO_TXT[$('subDestino').value].slice(3) + '</b>' : ''}`;
   $('subPublicar').disabled = !!errs.length;
 }
