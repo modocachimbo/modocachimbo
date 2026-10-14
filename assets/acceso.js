@@ -3,6 +3,10 @@
    - Cada dispositivo tiene un identificador propio
    - Los códigos activados se guardan en el navegador y se revisan al entrar
    - Si no hay internet, se respeta el último acceso válido (7 días)
+   - Si el alumno entró con Google, sus códigos se guardan en su cuenta
+     (supabase/15-codigos-cuenta.sql): en otro equipo, o si se borraron
+     los datos del navegador, vuelven solos sin escribirlos otra vez.
+     El servidor igual revisa cada código y cuenta cada dispositivo.
    Requiere assets/mc-config.js
    ========================================================= */
 (function () {
@@ -75,8 +79,72 @@
     return codigosPara(x).some(function (c) { return hoy - (a[c].ok || 0) < 3 * DIA; }) || antiguo(x);
   }
 
+  /* ---- Códigos guardados en la cuenta de Google ---- */
+  // Espera a auth.js (se carga después) y a que diga si hay sesión. null = sin cuenta
+  function cuenta() {
+    return new Promise(function (resolve) {
+      var n = 0;
+      (function esperar() {
+        if (window.MCAuth) {
+          var t = setTimeout(function () { resolve(null); }, 5000);
+          MCAuth.listo.then(function (c) { clearTimeout(t); resolve(MCAuth.usuario() ? c : null); }, function () { clearTimeout(t); resolve(null); });
+        } else if (++n < 20) setTimeout(esperar, 100);
+        else resolve(null);
+      })();
+    });
+  }
+  // Trae los códigos de la cuenta a este dispositivo. Devuelve los códigos que tiene la cuenta (null = no se pudo)
+  function traerDeCuenta() {
+    return cuenta().then(function (c) {
+      if (!c) return null;
+      return c.from('codigos_cuenta').select('codigo,producto,vence').then(function (r) {
+        if (r.error || !r.data) return null;
+        var a = accesos(), nuevos = 0;
+        r.data.forEach(function (f) { if (!a[f.codigo]) { a[f.codigo] = { producto: f.producto, ok: 0, vence: f.vence || '' }; nuevos++; } });
+        if (nuevos) guardar(a);
+        return r.data.map(function (f) { return f.codigo; });
+      });
+    }).catch(function () { return null; });
+  }
+  // Sube a la cuenta los códigos de este dispositivo (los activados antes de entrar con Google también)
+  function subirACuenta(cods) {
+    var a = accesos();
+    var lista = (cods || Object.keys(a)).filter(function (k) { return a[k]; })
+      .map(function (k) { return { codigo: k, producto: a[k].producto, vence: a[k].vence || '' }; });
+    if (!lista.length) return Promise.resolve();
+    return cuenta().then(function (c) { if (c) return c.rpc('guardar_codigos_cuenta', { p: lista }); }).catch(function () {});
+  }
+  function quitarDeCuenta(cod) {
+    return cuenta().then(function (c) { if (c) return c.rpc('quitar_codigo_cuenta', { p_codigo: cod }); }).catch(function () {});
+  }
+  // Al entrar o cambiar de cuenta: junta lo del dispositivo con lo de la cuenta
+  (function sincronizarAlEntrar() {
+    var n = 0, ultimo = null;
+    (function esperar() {
+      if (!window.MCAuth) { if (++n < 50) setTimeout(esperar, 200); return; }
+      function alEntrar(u) {
+        var id = u ? u.id : null;
+        if (!id || id === ultimo) return;
+        ultimo = id;
+        // Los que solo están en este dispositivo (activados antes de entrar con Google) suben a la cuenta
+        traerDeCuenta().then(function (enCuenta) {
+          if (!enCuenta) return;
+          var solo = Object.keys(accesos()).filter(function (k) { return enCuenta.indexOf(k) < 0; });
+          if (solo.length) return subirACuenta(solo);
+        });
+      }
+      MCAuth.alCambiar(alEntrar);
+      MCAuth.listo.then(function () { alEntrar(MCAuth.usuario()); }, function () {});
+    })();
+  })();
+
   // Revisa con el servidor. Resuelve { acceso, motivo, mensaje }
   function verificar(x) {
+    // Sin código en este dispositivo: buscar en la cuenta de Google antes de pedirlo
+    var previo = codigosPara(x).length ? Promise.resolve() : traerDeCuenta();
+    return previo.then(function () { return revisar(x); });
+  }
+  function revisar(x) {
     var cods = codigosPara(x);
     return jsonp({ action: 'acceso', producto: x, dispositivo: dispositivo(), codigos: cods.join(','), equipo: equipo() })
       .then(function (r) {
@@ -84,7 +152,11 @@
         var a = accesos(), mensaje = '';
         Object.keys(r.estados || {}).forEach(function (c) {
           if (r.estados[c] === 'ok') { if (a[c]) a[c].ok = Date.now(); }
-          else { mensaje = mensaje || r.estados[c]; delete a[c]; }
+          else {
+            mensaje = mensaje || r.estados[c]; delete a[c];
+            // Lleno en este equipo no es culpa del código: en la cuenta se queda para los otros
+            if (!/máximo de dispositivos/.test(r.estados[c])) quitarDeCuenta(c);
+          }
         });
         guardar(a);
         if (r.abierto) return { acceso: true, motivo: 'abierto' };
@@ -110,6 +182,7 @@
           var a = accesos();
           a[r.codigo] = { producto: r.producto, ok: Date.now(), vence: r.vence || '' };
           guardar(a);
+          subirACuenta([r.codigo]);
         }
         return r || { ok: false, mensaje: 'Respuesta inválida del servidor.' };
       });
