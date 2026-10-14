@@ -1105,7 +1105,7 @@ E) Alternativa"></textarea>
 
   /* ---------- ayudantes: solo ven sus pestañas ---------- */
   const TAB_PERMISO = { reportes: 'reportes', corr: 'corr', alumnos: 'alumnos', simulacro: 'simulacro', codigos: 'codigos', subir: 'subir', examen: 'examen',
-    editar: 'editar', vocab: 'vocab', cursos: 'cursos', ciclos: 'cursos', perfil: 'perfil', alertas: 'alertas', frases: 'frases', tutorial: 'tutorial' };
+    editar: 'editar', vocab: 'vocab', cursos: 'cursos', ciclos: 'ciclos', perfil: 'perfil', alertas: 'alertas', frases: 'frases', tutorial: 'tutorial' };
   function puedeTab(t) { return ROL.admin || (!!TAB_PERMISO[t] && ROL.permisos.includes(TAB_PERMISO[t])); }
   function aplicarPermisos() {
     document.body.classList.toggle('es-ayudante', !ROL.admin);

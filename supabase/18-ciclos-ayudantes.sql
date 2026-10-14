@@ -1,15 +1,21 @@
 -- =========================================================
--- 18 · Ayudantes con permiso de Cursos también pueden usar Ciclos
--- Antes la pestaña Ciclos se les mostraba pero al guardar decía
--- "Solo el administrador puede cambiar los ciclos".
+-- 18 · Permiso nuevo para ayudantes: Ciclos
+-- Agrega la casilla Ciclos en Ayudantes y deja que el ayudante que
+-- la tenga guarde en la pestaña Ciclos (antes solo el administrador).
 -- Correr una vez en Supabase → SQL Editor (se puede repetir sin problema).
 -- =========================================================
+create or replace function public.permisos_validos()
+returns text[] language sql immutable set search_path = '' as $$
+  select array['reportes','editar','borrar','corr','subir','examen','vocab','cursos',
+               'perfil','frases','alertas','tutorial','alumnos','simulacro','codigos','ciclos'];
+$$;
+
 create or replace function public.guardar_ajuste(p_clave text, p_valor jsonb)
 returns void language plpgsql volatile security definer set search_path = '' as $$
 declare per text; nom text;
 begin
   per := case p_clave when 'perfil' then 'perfil' when 'frases' then 'frases'
-                      when 'practica' then 'cursos' when 'ciclos' then 'cursos' when 'vocabulario' then 'vocab' end;
+                      when 'practica' then 'cursos' when 'ciclos' then 'ciclos' when 'vocabulario' then 'vocab' end;
   nom := case p_clave when 'perfil' then 'Perfil del alumno' when 'frases' then 'Frases del día'
                       when 'practica' then 'Cursos' when 'ciclos' then 'Ciclos' when 'vocabulario' then 'Vocabulario' else p_clave end;
   if not (public.es_admin() or (per is not null and public.puede(per))) then raise exception 'no autorizado'; end if;
