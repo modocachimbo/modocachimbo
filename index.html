@@ -73,54 +73,74 @@
 
   .auth-row { display: flex; align-items: center; gap: 14px; }
 
-  /* ===== Saludo del alumno ===== */
-  .saludo {
-    margin-top: 8px; padding: 28px 30px; border-radius: 24px; border: 1px solid var(--border);
-    background: radial-gradient(520px 220px at 0% 0%, rgba(198,224,0,0.09), transparent 70%), var(--surface);
-    display: grid; grid-template-columns: 1fr auto; gap: 18px 28px; align-items: center;
+  /* ===== Colores con significado (guía de marca) ===== */
+  :root {
+    --lima-osc: #8fa300; --rojo: #FF4B4B; --naranja: #FF9600; --oro: #FFC800; --azul: #1CB0F6; --morado: #CE82FF;
+    --borde-g: #262626;
   }
-  .sal-texto h1 { font-family: 'Sora', sans-serif; font-weight: 800; font-size: clamp(26px, 4.4vw, 36px); line-height: 1.15; letter-spacing: -0.5px; }
-  .sal-texto h1 .accent { color: var(--accent); }
   /* Íconos propios (en lugar de emojis) */
   .mi { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -0.14em; flex-shrink: 0; }
   .mi.mano { color: var(--accent); width: .92em; height: .92em; margin-left: .18em; vertical-align: -0.1em; stroke-width: 2.2; transform-origin: 70% 85%; animation: mc-saludo 2.2s ease-in-out .4s 1; }
   @keyframes mc-saludo { 0%, 60%, 100% { transform: rotate(0); } 10%, 30% { transform: rotate(14deg); } 20%, 40% { transform: rotate(-8deg); } 50% { transform: rotate(10deg); } }
   @media (prefers-reduced-motion: reduce) { .mi.mano { animation: none; } }
-  .sal-cajas > .sal-cuenta.vacia { align-items: center; gap: 8px; }
-  .sal-cuenta.vacia .mi { width: 22px; height: 22px; }
   .mi.taza { color: var(--accent); margin-left: 4px; }
   .chip .mi { margin-right: 6px; }
-  .sal-texto p { color: var(--text-dim); font-size: 14px; line-height: 1.6; margin-top: 6px; }
+
+  /* Puntos de la semana (arriba, junto a la racha) */
+  .pill-pts { display: inline-flex; align-items: center; gap: 6px; height: 42px; padding: 0 13px 0 11px; border-radius: 14px; border: 2px solid #2e2e2e; border-bottom-width: 4px; background: #141414; color: var(--oro); font: 900 15px Nunito, sans-serif; text-decoration: none; font-variant-numeric: tabular-nums; transition: transform .08s ease; -webkit-tap-highlight-color: transparent; }
+  .pill-pts[hidden] { display: none; }
+  .pill-pts svg { width: 20px; height: 20px; }
+  .pill-pts:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
+
+  /* ===== Saludo del alumno ===== */
+  .saludo {
+    margin-top: 4px; padding: 24px; border-radius: 26px; border: 2px solid var(--borde-g); border-bottom-width: 5px;
+    background: radial-gradient(520px 220px at 0% 0%, rgba(198,224,0,0.09), transparent 70%), var(--surface);
+    display: grid; grid-template-columns: 1fr; gap: 20px;
+  }
+  .sal-texto { min-width: 0; }
+  .sal-texto h1 { font-weight: 1000; font-size: clamp(28px, 5vw, 38px); line-height: 1.1; letter-spacing: -0.5px; }
+  .sal-texto h1 .accent { color: var(--accent); }
+  .sal-texto p { color: var(--text-dim); font-size: 14px; line-height: 1.6; margin-top: 10px; }
+  .sal-der { display: grid; gap: 14px; align-content: center; min-width: 0; }
+  .sal-meta { display: grid; gap: 8px; text-decoration: none; color: inherit; }
+  .meta-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 14px; color: var(--text-dim); }
+  .meta-top b { color: var(--text); font-weight: 900; font-variant-numeric: tabular-nums; }
+  .sal-meta.on .meta-top b { color: var(--accent); }
+  .barra-hoy { display: block; height: 16px; border-radius: 10px; background: var(--borde-g); overflow: hidden; }
+  .barra-hoy i { display: block; height: 100%; width: 0; border-radius: 10px; background: var(--accent); box-shadow: inset 0 4px 0 rgba(255,255,255,.28); transition: width .5s ease; }
+  /* El único botón verde de la pantalla */
+  .btn-prin {
+    display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 15px 14px; border-radius: 16px;
+    background: var(--accent); color: #2b3300; text-decoration: none; text-align: center;
+    font: 1000 16.5px Nunito, sans-serif; letter-spacing: .06em; text-transform: uppercase;
+    box-shadow: 0 5px 0 var(--lima-osc); transition: transform .08s ease, box-shadow .08s ease; -webkit-tap-highlight-color: transparent;
+  }
+  .btn-prin:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--lima-osc); }
+  .btn-prin small { display: block; font-size: 12px; letter-spacing: .02em; text-transform: none; font-weight: 800; opacity: .75; }
+  .sal-fila { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .sal-cuenta {
-    min-width: 150px; text-align: center; padding: 14px 18px; border-radius: 18px;
-    background: var(--accent-soft); border: 1px solid rgba(198,224,0,0.25); color: var(--accent); text-decoration: none;
+    display: flex; align-items: center; gap: 10px; min-width: 0; padding: 10px 12px; border-radius: 16px; text-decoration: none;
+    background: var(--surface-2); border: 2px solid var(--borde-g); color: var(--text-dim); font-size: 12.5px; line-height: 1.25;
   }
-  .sal-cuenta b { display: block; font: 800 38px/1 'Sora', sans-serif; }
-  .sal-cuenta span { display: block; font-size: 12px; font-weight: 600; margin-top: 6px; color: #d8e88a; }
-  .sal-cuenta.vacia { font-size: 13px; font-weight: 600; padding: 16px 18px; }
-  .sal-cuenta.vacia:hover { border-color: var(--accent); }
-  .sal-cajas { display: flex; gap: 12px; align-items: stretch; }
-  .sal-cajas > * { display: flex; flex-direction: column; justify-content: center; }
-  .sal-racha {
-    min-width: 150px; text-align: center; padding: 14px 18px 12px; border-radius: 18px; text-decoration: none;
-    background: var(--surface-2); border: 1px solid var(--border); color: var(--text); transition: border-color .15s;
+  .sal-cuenta .mi { width: 26px; height: 26px; color: var(--oro); }
+  .sal-cuenta b { display: block; color: var(--text); font-size: 17px; font-weight: 1000; font-variant-numeric: tabular-nums; }
+  .sal-cuenta:hover { border-color: #3a3a3a; }
+  .btn-sec {
+    display: flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; padding: 10px; border-radius: 16px; cursor: pointer;
+    background: transparent; color: var(--text); border: 2px solid #2e2e2e; border-bottom-width: 5px;
+    font: 1000 13.5px Nunito, sans-serif; letter-spacing: .04em; text-transform: uppercase; transition: transform .08s ease; -webkit-tap-highlight-color: transparent;
   }
-  .sal-racha:hover { border-color: var(--accent); }
-  .sal-racha .num { display: flex; align-items: center; justify-content: center; gap: 8px; font: 800 38px/1 'Sora', sans-serif; color: var(--text-dim); font-variant-numeric: tabular-nums; }
-  .sal-racha .num svg { width: 24px; height: 32px; }
-  .sal-racha.on .num { color: var(--accent); }
-  .sal-racha .lbl { display: block; font-size: 12px; font-weight: 600; margin-top: 6px; color: var(--text-dim); }
-  .sal-racha .barra-hoy { height: 5px; border-radius: 5px; background: #262626; margin-top: 10px; overflow: hidden; }
-  .sal-racha .barra-hoy i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 5px; transition: width .4s ease; }
-  .sal-racha .hoy { display: block; font-size: 11px; color: var(--text-faint); margin-top: 5px; font-variant-numeric: tabular-nums; }
-  .sal-accesos { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-top: 16px; border-top: 1px solid var(--border); }
-  .sal-accesos .rot { font-size: 12px; color: var(--text-faint); margin-right: 4px; }
+  .btn-sec .mi { width: 20px; height: 20px; color: var(--azul); }
+  .btn-sec:active { transform: translateY(3px); border-bottom-width: 2px; }
+  .sal-accesos { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-top: 16px; border-top: 2px solid var(--borde-g); }
+  .sal-accesos .rot { font-size: 12.5px; color: var(--text-faint); margin-right: 4px; }
   .chip {
-    display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--accent);
+    display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 800; color: var(--accent);
     background: var(--accent-soft); border: 1px solid rgba(198,224,0,0.22); border-radius: 100px; padding: 6px 12px;
   }
-  button.chip { cursor: pointer; font-family: 'Inter', sans-serif; background: var(--accent); color: #0e0e0e; border-color: var(--accent); }
-  button.chip:hover { opacity: .88; }
+  button.chip { cursor: pointer; background: transparent; color: var(--text-dim); border: 2px solid #2e2e2e; }
+  button.chip:hover { color: var(--text); }
   .sal-grupo { display: inline-flex; align-items: center; gap: 10px; margin-left: auto; color: var(--text-dim); font-size: 12.5px; text-decoration: none; }
   .sal-grupo .wa {
     width: 36px; height: 36px; border-radius: 50%; background: #25D366; color: #fff; flex-shrink: 0;
@@ -130,8 +150,61 @@
   .sal-grupo:hover .wa { transform: scale(1.08); }
   .sal-grupo:hover span { color: var(--text); }
   .sal-grupo b { color: var(--text); }
+  @media (min-width: 760px) {
+    .saludo { grid-template-columns: 1.15fr 1fr; gap: 22px 32px; padding: 30px; align-items: center; }
+    .sal-accesos { grid-column: 1 / -1; }
+  }
   @media (max-width: 720px) { .sal-grupo { margin-left: 0; width: 100%; padding-top: 6px; } }
+  @media (max-width: 380px) { .sal-fila { grid-template-columns: 1fr; } }
 
+  /* ===== Secciones: cursos y modos de práctica ===== */
+  .sec-tit { font-size: 21px; font-weight: 1000; margin: 32px 2px 12px; scroll-margin-top: 8px; }
+  .cards { display: grid; gap: 12px; }
+  .cursos { grid-template-columns: 1fr; }
+  .curso {
+    display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: 20px; text-decoration: none; color: inherit;
+    background: var(--surface); border: 2px solid var(--borde-g); border-bottom-width: 5px; transition: border-color .15s, transform .08s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .curso:hover { border-color: #3a3a3a; }
+  .curso:active { transform: translateY(3px); border-bottom-width: 2px; margin-bottom: 3px; }
+  .curso .ic { width: 58px; height: 58px; flex-shrink: 0; border-radius: 16px; display: flex; align-items: center; justify-content: center; color: var(--accent); background: rgba(198,224,0,.1); border: 2px solid rgba(198,224,0,.25); }
+  .curso .ic svg { width: 34px; height: 34px; display: block; }
+  .curso .tx { flex: 1; min-width: 0; display: grid; gap: 3px; }
+  .curso b { font-size: 17px; font-weight: 900; }
+  .curso small { font-size: 13px; color: var(--text-dim); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chev { width: 22px; height: 22px; flex-shrink: 0; fill: none; stroke: var(--text-faint); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+  .modos { grid-template-columns: 1fr 1fr; }
+  .modo {
+    position: relative; display: grid; gap: 8px; align-content: start; padding: 16px; border-radius: 20px; text-decoration: none; color: inherit;
+    background: var(--surface); border: 2px solid var(--borde-g); border-bottom-width: 5px; transition: border-color .15s, transform .08s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .modo:hover { border-color: #3a3a3a; }
+  .modo:active { transform: translateY(3px); border-bottom-width: 2px; margin-bottom: 3px; }
+  .modo .ic { width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; }
+  .modo .ic svg { width: 28px; height: 28px; display: block; }
+  .modo b { font-size: 17px; font-weight: 900; }
+  .modo small { font-size: 13px; color: var(--text-dim); line-height: 1.35; font-weight: 700; }
+  .c-azul .ic { background: rgba(28,176,246,.12); color: var(--azul); }
+  .c-oro .ic { background: rgba(255,200,0,.12); color: var(--oro); }
+  .c-naranja .ic { background: rgba(255,150,0,.12); color: var(--naranja); }
+  .c-morado .ic { background: rgba(206,130,255,.12); color: var(--morado); }
+  .modo .tag { position: absolute; top: 12px; right: 12px; font-size: 11px; font-weight: 1000; letter-spacing: .08em; text-transform: uppercase; padding: 3px 8px; border-radius: 8px; background: var(--naranja); color: #3d2400; }
+  /* Etiqueta "Nuevo" (se quita cuando el alumno ya entró) */
+  .tag-nuevo { position: absolute; top: 12px; right: 12px; background: var(--azul); color: #00314a; font: 1000 11px/1 Nunito, sans-serif; letter-spacing: .08em; text-transform: uppercase; padding: 4px 8px; border-radius: 8px; }
+  @media (min-width: 760px) { .cursos { grid-template-columns: 1fr 1fr; } .modos { grid-template-columns: repeat(3, 1fr); } }
+  /* Celular: logo, puntos, racha y foto caben en una línea */
+  @media (max-width: 560px) {
+    header.top { gap: 8px; }
+    header.top .logo img { height: 28px; }
+    .auth-row { gap: 6px; min-width: 0; }
+    .auth-row .mcu-nom { display: none; }
+    .auth-row .mcu-chip { min-width: 0; width: auto; padding-right: 4px; }
+    .pill-pts, .auth-row .mcu-racha { height: 38px; padding: 0 9px; font-size: 14px; }
+  }
+  /* Top de la semana (assets/ranking.js) va después de Practica */
+  #mcTopAncla + .mcr, .mcr { margin-top: 32px; }
   .app-aviso { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 14px; margin: 18px 0 22px; padding: 16px 44px 16px 16px; border: 1px solid var(--accent); border-radius: 18px; background: var(--accent-soft); }
   .app-aviso[hidden] { display: none; }
   .app-aviso img { width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0; }
@@ -142,112 +215,6 @@
   .app-x { position: absolute; top: 10px; right: 10px; background: none; border: 0; color: var(--text-faint); font-size: 16px; cursor: pointer; padding: 6px; line-height: 1; }
   @media (max-width: 520px) { .app-aviso { padding-right: 16px; } .app-txt { padding-right: 26px; } .app-btn { flex: 1 1 100%; padding: 12px; } }
   .app-aviso[data-modo="iphone"] .solo-boton, .app-aviso[data-modo="boton"] .solo-iphone { display: none; }
-  .section-title {
-    font-family: 'Sora', sans-serif;
-    font-weight: 800;
-    font-size: 22px;
-    padding: 36px 0 14px;
-    border-bottom: 1px solid var(--border);
-    scroll-margin-top: 8px;
-  }
-
-  .cards {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 18px;
-    padding: 26px 0 20px;
-    grid-auto-rows: 1fr;
-  align-items: stretch;
-}
-
-  @media (max-width: 900px) {
-    .cards { grid-template-columns: repeat(2, 1fr); }
-  }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 22px;
-    padding: 26px 24px;
-    display: flex;
-    flex-direction: column;
-    text-decoration: none;
-    transition: border-color .2s ease, transform .2s ease;
-  }
-
-  .card.active:hover { border-color: var(--accent); transform: translateY(-3px); }
-  .card.disabled { opacity: 0.55; }
-  /* Etiqueta "Nuevo" (se quita cuando el alumno ya entró) */
-  .tag-nuevo { position: absolute; top: 16px; right: 16px; background: var(--accent); color: #0e0e0e; font: 800 10px/1 'Sora', sans-serif; letter-spacing: .8px; text-transform: uppercase; padding: 6px 10px; border-radius: 100px; box-shadow: 0 0 18px rgba(198,224,0,.35); animation: tagLatido 2.4s ease-in-out infinite; }
-  @keyframes tagLatido { 0%, 100% { box-shadow: 0 0 10px rgba(198,224,0,.25); } 50% { box-shadow: 0 0 24px rgba(198,224,0,.6); } }
-  @media (prefers-reduced-motion: reduce) { .tag-nuevo { animation: none; } }
-  /* Entrada a los Duelos 1 vs 1 */
-  .duelo-banner { position: relative; display: flex; align-items: center; gap: 22px; margin: 0 0 20px; padding: 22px 24px; border-radius: 22px; border: 1px solid var(--border); background: radial-gradient(500px 160px at 0% 50%, rgba(198,224,0,.1), transparent 70%), var(--surface); color: inherit; text-decoration: none; transition: border-color .2s ease, transform .2s ease; }
-  .duelo-banner:hover { border-color: var(--accent); transform: translateY(-3px); }
-  .duelo-banner .tag-nuevo { top: -10px; right: 20px; }
-  .duelo-vs { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-  .duelo-vs i { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; font: 800 14px 'Sora', sans-serif; font-style: normal; background: var(--accent); color: #0e0e0e; }
-  .duelo-vs i.r { background: #f9a8d4; }
-  .duelo-vs b { font: 800 14px 'Sora', sans-serif; color: #5f5f5f; }
-  .duelo-txt { flex: 1; min-width: 0; display: grid; gap: 4px; }
-  .duelo-txt strong { font: 800 18px 'Sora', sans-serif; }
-  .duelo-txt span { color: #9a9a9a; font-size: 14px; line-height: 1.5; }
-  .duelo-banner .btn { flex-shrink: 0; background: var(--accent); color: #0e0e0e; font: 700 13.5px 'Sora', sans-serif; padding: 11px 22px; border-radius: 100px; }
-  @media (max-width: 700px) { .duelo-banner { flex-wrap: wrap; gap: 14px; padding: 20px; } .duelo-banner .btn { width: 100%; text-align: center; } }
-
-  .card .icon {
-    width: 68px; height: 68px;
-    color: var(--accent);
-    margin-bottom: 16px;
-  }
-  .card .icon svg { width: 100%; height: 100%; fill: currentColor; display: block; }
-  .card.disabled .icon { color: var(--text-faint); }
-
-  .card h3 {
-    font-family: 'Sora', sans-serif;
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--text);
-  }
-
-  .card .rule {
-    width: 26px;
-    height: 3px;
-    background: var(--accent);
-    border-radius: 2px;
-    margin: 9px 0 12px;
-  }
-  .card.disabled .rule { background: var(--text-faint); }
-
-  .card p {
-    color: var(--text-dim);
-    font-size: 13px;
-    line-height: 1.6;
-    flex: 1;
-  }
-
-  .card .btn {
-    margin-top: 18px;
-    align-self: flex-start;
-    background: var(--accent);
-    color: #0e0e0e;
-    text-decoration: none;
-    font-family: 'Sora', sans-serif;
-    font-size: 13.5px;
-    font-weight: 700;
-    text-align: center;
-    padding: 11px 22px;
-    border-radius: 100px;
-    transition: opacity .15s ease;
-  }
-  .card.active:hover .btn { opacity: 0.85; }
-
-  .card.disabled .btn {
-    background: var(--surface-2);
-    color: var(--text-faint);
-    pointer-events: none;
-  }
-
   .coffee {
     margin: 36px 0 60px;
     background: linear-gradient(135deg, var(--surface), var(--surface-2));
@@ -337,19 +304,7 @@
     body { -webkit-text-size-adjust: 100%; }
     header.top { padding: 18px 0; flex-wrap: nowrap; }
     .logo img { height: 32px; }
-    .cards { grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 18px 0 8px; }
-    .card { padding: 18px 16px; border-radius: 18px; }
-    .card .icon { width: 46px; height: 46px; margin-bottom: 12px; }
-    .card h3 { font-size: 14.5px; line-height: 1.3; }
-    .card .rule { margin: 8px 0 14px; }
-    .card p { display: none; }
-    .card .btn { margin-top: auto; align-self: stretch; font-size: 12.5px; padding: 9px 10px; }
     .coffee .qr-box { margin: 0 auto; }
-    .saludo { grid-template-columns: 1fr; padding: 22px 20px; }
-    .sal-cajas { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
-    .sal-cuenta, .sal-racha { min-width: 0; padding: 12px 10px; }
-    .sal-cuenta b, .sal-racha .num { font-size: 30px; }
-    .section-title { font-size: 19px; padding-top: 30px; }
     .coffee { padding: 24px 20px; }
     html.mc-app footer { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
     html.mc-app .barra {
@@ -508,24 +463,27 @@
     <header class="top">
       <a class="logo" href="index.html" aria-label="Modo Cachimbo · Inicio"><img src="assets/img/logo-modo-cachimbo-horizontal.svg" alt="Modo Cachimbo" width="160" height="34"></a>
       <div class="auth-row">
+        <a class="pill-pts" id="ptsPill" href="#mcRanking" title="Tus puntos del simulacro esta semana" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3h11l4 6L12 21 2.5 9z" fill="currentColor"/><path d="M2.5 9h19M8.5 3 12 9l3.5-6M12 21 8.5 9M12 21l3.5-12" fill="none" stroke="#3d2f00" stroke-width="1.3" stroke-linejoin="round"/></svg><b id="ptsNum">0</b></a>
         <div data-mc-auth></div>
       </div>
     </header>
 
     <section class="saludo" id="saludo">
       <div class="sal-texto">
-        <h1 id="salNombre">¡Hola!<svg class="mi mano" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 11V6a2 2 0 0 0-4 0"/><path d="M14 10V4a2 2 0 0 0-4 0v2"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-6-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></h1>
+        <h1 id="salNombre">¡Hola!</h1>
         <p id="salFrase">¿Qué estudiamos hoy? Elige un curso o practica con un examen pasado.</p>
         <script src="assets/frases.js"></script>
       </div>
-      <div class="sal-cajas">
-        <a class="sal-racha" id="salRacha" href="perfil.html#racha" hidden>
-          <span class="num" id="salRachaNum">0</span>
-          <span class="lbl" id="salRachaLbl">días de racha</span>
+      <div class="sal-der">
+        <a class="sal-meta" id="salRacha" href="perfil.html#racha">
+          <span class="meta-top"><span id="salRachaLbl">Meta de hoy</span><b id="salRachaHoy">0 / 10 preguntas</b></span>
           <span class="barra-hoy"><i id="salRachaBarra"></i></span>
-          <span class="hoy" id="salRachaHoy">Hoy 0/10 preguntas</span>
         </a>
-        <a class="sal-cuenta vacia" id="salCuenta" href="perfil.html"><svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>Pon la fecha de tu examen</a>
+        <a class="btn-prin" id="salSeguir" href="#cursos">Empezar a practicar</a>
+        <div class="sal-fila">
+          <a class="sal-cuenta vacia" id="salCuenta" href="perfil.html"><svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/></svg><span><b>¿Cuándo?</b>Pon la fecha de tu examen</span></a>
+          <button type="button" class="btn-sec" id="salCodigo"><svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="7.5" cy="15.5" r="5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>Activar código</button>
+        </div>
       </div>
       <div class="sal-accesos" id="salAccesos"></div>
     </section>
@@ -541,109 +499,40 @@
       <button type="button" class="app-x" data-app-cerrar aria-label="Cerrar">✕</button>
     </div>
 
-    <div class="section-title" id="cursos">Mis cursos</div>
+    <h2 class="sec-tit" id="cursos">Mis cursos</h2>
 
-    <section class="cards">
-
-      <div class="card active">
-        <div class="icon">
-          <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 92.78 96.22"><g id="Capa_2" data-name="Capa 2"><g id="PANTALLA_1" data-name="PANTALLA 1"><path d="M37.78,96.22a1.9,1.9,0,0,0-.3-.33c-4.17-2.74-3.41-8.09-1-10.81a14.8,14.8,0,0,1,5.24-3.73c3.71-1.67,7.47-3.23,11.16-4.93a17.63,17.63,0,0,0,3.65-2.26c2.21-1.78,2.11-3.64-.22-5.26a22.49,22.49,0,0,0-6.48-2.71c0,1.24,0,2.39,0,3.54a1.09,1.09,0,0,1-.41.81c-2,.94-4,1.82-6.2,2.79V66.18c-2.72.85-5.31,1.56-7.38,3.4a2.8,2.8,0,0,0-.07,4.18A19.1,19.1,0,0,0,38,75.49l-5.64,4a9.83,9.83,0,0,1-1.07-15.16,18.63,18.63,0,0,1,7.32-4.25c5.93-2,11.87-3.93,17.78-6a11,11,0,0,0,5.35-3.65,13.57,13.57,0,0,0,.79-1.34,9.91,9.91,0,0,1-6.29-4.6,8.27,8.27,0,0,1-1.14-3.31,4,4,0,0,1,4.8-4.55,11.31,11.31,0,0,1,9.29,9.42c.62,5.25-1.45,9.23-5.65,12.17-1.78,1.24-3.78,2.16-5.72,3.25l.93.58c2.69,1.68,4.83,3.82,5.62,7A9.46,9.46,0,0,1,61.19,79a21.75,21.75,0,0,1-6.92,3.92c.74.79,1.5,1.53,2.18,2.34a8,8,0,0,1,1.8,6.4,6,6,0,0,1-2.13,3.66l-1,.92h-.75a1.32,1.32,0,0,1-.27-1.9,3.61,3.61,0,0,0-.14-4.15,9.09,9.09,0,0,0-4.12-2.8c0,1.57-.07,3,0,4.51.12,2.08-.6,3.59-2.63,4.34h-1.5a3.94,3.94,0,0,1-2.55-4.38c.1-1.45,0-2.91,0-4.37l-.25-.18a33.15,33.15,0,0,0-3.31,2.18,3.32,3.32,0,0,0-1.11,3.64A9.75,9.75,0,0,0,39,94.52a1.18,1.18,0,0,1-.43,1.7ZM63,41.39a1.6,1.6,0,0,0-1.6-1.61,1.65,1.65,0,0,0,0,3.3A1.61,1.61,0,0,0,63,41.39Z"/><path d="M49.77,21.5a4.48,4.48,0,0,0,3.41-1.34,25.24,25.24,0,0,0,2.61-3.3c1.41-2.13,2.58-4.43,4.52-6.19A14.76,14.76,0,0,1,70.52,6.59c7.17,0,14.34,0,21.51,0,.25,0,.49,0,.73,0,.31,4-2.49,9.66-10.79,10.08l7.58,3.17A9.88,9.88,0,0,1,83,25.66c-3.06.92-5.85,0-8.62-1.17l5.33,5.24a10.13,10.13,0,0,1-7.59,3,10.48,10.48,0,0,1-7.43-2.86c-3,4.48-8.65,4.34-11.46.28C52.17,31,51.09,32,50.08,33a1.53,1.53,0,0,0-.3,1c0,4.92,0,9.83,0,14.75,0,.78-.19,1.15-1,1.37-1.89.53-3.74,1.17-5.71,1.81V50.64q0-18.66,0-37.31a1.7,1.7,0,0,0-.74-1.55,6.54,6.54,0,0,1-.76-9.71,6.65,6.65,0,0,1,9.64,0,6.54,6.54,0,0,1-.75,9.71,1.69,1.69,0,0,0-.75,1.55c0,2.38,0,4.76,0,7.14Z"/><path d="M3.37,19.86l7.49-3.11c-2.78-.3-5.41-.91-7.59-2.76A9.41,9.41,0,0,1,0,6.6H1.08c7,0,14,0,21,0,5.8,0,10.08,2.66,13.24,7.38,1.39,2.07,2.88,4.08,4.31,6.13a1.05,1.05,0,0,1,.21.58c0,2.29.08,4.58-.1,6.86A5.9,5.9,0,0,1,35.37,33a6.44,6.44,0,0,1-6.64-2.48l-.49-.68a11,11,0,0,1-9.4,2.74,9.6,9.6,0,0,1-5.5-2.63l5.32-5.29-.14-.32c-3.82,2-7.63,2.47-11.44.12A9.33,9.33,0,0,1,3.37,19.86Z"/><path d="M28.55,57.65a11.91,11.91,0,0,1-3.77-14.89,10.62,10.62,0,0,1,7.62-6,4.4,4.4,0,0,1,4.72,1.56,4.72,4.72,0,0,1,.25,4.91,9.93,9.93,0,0,1-6.1,5.6l-.85.28c1,2.51,3.22,3.59,5.3,4.72Zm3-14.58a1.59,1.59,0,0,0,1.63-1.58,1.61,1.61,0,0,0-1.61-1.71,1.65,1.65,0,0,0,0,3.29Z"/></g></g></svg>
-        </div>
-        <h3>Ciencia y Tecnología</h3>
-        <div class="rule"></div>
-        <p>Explora el mundo físico, químico, biológico y anatómico.</p>
-        <a class="btn" href="areas/ciencia-tecnologia.html" data-mc-nav="area">Ver Cursos</a>
-      </div>
-
-      <div class="card active">
-        <div class="icon">
-          <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90.92 90.98"><g id="Capa_2" data-name="Capa 2"><g id="PANTALLA_1" data-name="PANTALLA 1"><path d="M53.27,45.54c0-5.38,0-10.76,0-16.14a1.07,1.07,0,0,0-.76-1.18,18.71,18.71,0,1,0,0,34.55,1.08,1.08,0,0,0,.77-1.18C53.26,56.24,53.27,50.89,53.27,45.54Zm5.37-9.86h.85c4.11,0,8.22,0,12.33,0a3.59,3.59,0,0,0,2.51-.91c1.85-1.58,3.73-3.12,5.58-4.7a1.18,1.18,0,0,1,1.4-.25,7.05,7.05,0,0,0,9.59-6.31,6.82,6.82,0,0,0-3.82-6.63,6.63,6.63,0,0,0-7.51.62,6.75,6.75,0,0,0-2.67,7.16,1.22,1.22,0,0,1-.49,1.41c-1.53,1.22-3,2.52-4.52,3.74a2.44,2.44,0,0,1-1.34.49c-3.64,0-7.28,0-10.91,0h-1Zm0,25c4,0,8,0,11.89,0a2.4,2.4,0,0,1,1.34.48c1.26,1,2.43,2.09,3.71,3.05,1,.76,1.78,1.5,1.16,2.88a1.06,1.06,0,0,0,0,.26,7.15,7.15,0,0,0,4.77,7.18,7.12,7.12,0,0,0,7.94-11.08,7,7,0,0,0-8.18-2.27,1.12,1.12,0,0,1-1.33-.26c-1.85-1.57-3.73-3.11-5.57-4.69a3.69,3.69,0,0,0-2.51-.93c-4.14,0-8.28,0-12.42,0-.26,0-.51,0-.78.05Zm0-12.48H76.36a1.15,1.15,0,0,1,1.23.7,7,7,0,0,0,8,3.55,7.15,7.15,0,0,0,.06-13.82,7,7,0,0,0-8.05,3.56,1.11,1.11,0,0,1-1.15.68c-5.59,0-11.19,0-16.78,0h-1Zm0-37.46c1.81,0,3.56,0,5.3,0a1.14,1.14,0,0,1,1.22.7A6.76,6.76,0,0,0,71,15.14a7.05,7.05,0,0,0,7.32-5.72,7.15,7.15,0,0,0-4.57-8.11,7,7,0,0,0-8.63,3.38A1.09,1.09,0,0,1,64,5.37c-1.77,0-3.53,0-5.34,0Zm0,74.92c1.78,0,3.47,0,5.15,0a1.35,1.35,0,0,1,1.44.82,7,7,0,0,0,7.94,3.43,7.15,7.15,0,0,0,.06-13.8,7,7,0,0,0-8,3.36,1.48,1.48,0,0,1-1.58.87c-1.68,0-3.35,0-5,0Z"/><path d="M0,39.43a3.24,3.24,0,0,1,3.58-2c.82.07,1.65,0,2.54,0A40.86,40.86,0,0,1,12,23.3c-.73-.69-1.48-1.39-2.21-2.12-1.44-1.45-1.44-2.9,0-4.34q3.51-3.54,7-7.06a2.68,2.68,0,0,1,4.2,0c.73.73,1.43,1.5,2.19,2.29a40.68,40.68,0,0,1,14.1-5.87V3.1c0-2,1-3.09,3-3.1,3.38,0,6.75,0,10.12,0a2.66,2.66,0,0,1,2.82,2.78q0,9.77,0,19.52c0,.12,0,.24,0,.3C41.48,19.53,31.69,22.42,25,32.82c-5.4,8.42-5.28,17.47.28,25.78,6.73,10.07,16.41,12.82,28,9.75V87.83c0,2.13-1,3.15-3.17,3.15H40.34c-2,0-3-1.06-3.05-3.09V84.82a40.5,40.5,0,0,1-14.16-5.94c-.71.78-1.39,1.59-2.13,2.34a2.67,2.67,0,0,1-4.2,0q-3.53-3.51-7-7.06Q7.63,72,9.79,69.8c.71-.71,1.46-1.38,2.21-2.09A41.07,41.07,0,0,1,6.13,53.52c-.85,0-1.71-.06-2.55,0a3.25,3.25,0,0,1-3.58-2Z"/><path d="M53.27,45.54c0,5.35,0,10.7,0,16.05a1.08,1.08,0,0,1-.77,1.18,18.71,18.71,0,1,1,0-34.55,1.07,1.07,0,0,1,.76,1.18C53.26,34.78,53.27,40.16,53.27,45.54Z"/><path d="M58.64,35.68V30.33h1c3.63,0,7.27,0,10.91,0a2.44,2.44,0,0,0,1.34-.49c1.53-1.22,3-2.52,4.52-3.74a1.22,1.22,0,0,0,.49-1.41,6.75,6.75,0,0,1,2.67-7.16,6.63,6.63,0,0,1,7.51-.62,6.82,6.82,0,0,1,3.82,6.63,7.05,7.05,0,0,1-9.59,6.31,1.18,1.18,0,0,0-1.4.25c-1.85,1.58-3.73,3.12-5.58,4.7a3.59,3.59,0,0,1-2.51.91c-4.11,0-8.22,0-12.33,0Z"/><path d="M58.64,60.65v-5.3c.27,0,.52-.05.78-.05,4.14,0,8.28,0,12.42,0a3.69,3.69,0,0,1,2.51.93c1.84,1.58,3.72,3.12,5.57,4.69a1.12,1.12,0,0,0,1.33.26,7,7,0,0,1,8.18,2.27,7.11,7.11,0,1,1-12.71,3.9,1.06,1.06,0,0,1,0-.26c.62-1.38-.15-2.12-1.16-2.88-1.28-1-2.45-2.07-3.71-3.05a2.4,2.4,0,0,0-1.34-.48C66.6,60.64,62.67,60.65,58.64,60.65Z"/><path d="M58.64,48.17V42.82h1c5.59,0,11.19,0,16.78,0a1.11,1.11,0,0,0,1.15-.68,7,7,0,0,1,8.05-3.56,7.15,7.15,0,0,1-.06,13.82,7,7,0,0,1-8-3.55,1.15,1.15,0,0,0-1.23-.7H58.64Z"/><path d="M58.64,10.71V5.36c1.81,0,3.57,0,5.34,0a1.09,1.09,0,0,0,1.16-.68,7,7,0,0,1,8.63-3.38,7.15,7.15,0,0,1,4.57,8.11A7.05,7.05,0,0,1,71,15.14a6.76,6.76,0,0,1-5.86-3.74,1.14,1.14,0,0,0-1.22-.7C62.2,10.73,60.45,10.71,58.64,10.71Z"/><path d="M58.64,85.63V80.28c1.69,0,3.36,0,5,0a1.48,1.48,0,0,0,1.58-.87,7,7,0,0,1,8-3.36,7.15,7.15,0,0,1-.06,13.8,7,7,0,0,1-7.94-3.43,1.35,1.35,0,0,0-1.44-.82C62.11,85.66,60.42,85.63,58.64,85.63Z"/></g></g></svg>
-        </div>
-        <h3>Matemática</h3>
-        <div class="rule"></div>
-        <p>Desarrolla habilidades de razonamiento lógico y numérico.</p>
-        <a class="btn" href="areas/matematica.html">Ver Cursos</a>
-      </div>
-
-      <div class="card active">
-        <div class="icon">
-          <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 95.58 95.97"><g id="Capa_2" data-name="Capa 2"><g id="PANTALLA_1" data-name="PANTALLA 1"><path d="M25.14,11.62h14.8c0-1.25,0-2.46,0-3.67A8.43,8.43,0,0,1,45.35.44a7.72,7.72,0,0,1,8.39,2.25,7.5,7.5,0,0,1,1.94,4.9c0,1.31,0,2.62,0,4H70.11c.06-.24.14-.51.21-.78A6,6,0,0,1,81.51,9.66a5.83,5.83,0,0,1-1.05,6.75A1.19,1.19,0,0,0,80.17,18q5.88,13.2,11.69,26.44c.31.69.65,1,1.42.91a3.85,3.85,0,0,1,1,0,1.37,1.37,0,0,1,1.34,1.37,1.41,1.41,0,0,1-1.32,1.5,9.35,9.35,0,0,1-1.06,0h-1C90.51,58,82.74,62.37,76.5,62.52a16.25,16.25,0,0,1-11.27-3.88,16.42,16.42,0,0,1-5.68-10.45c-.54,0-1,0-1.49,0a1.47,1.47,0,0,1-1.37-1.48,1.32,1.32,0,0,1,1.43-1.36c1.64.27,2.15-.64,2.71-1.93C64.5,35,68.25,26.54,72,18.1c.14-.32.27-.64.37-.88-.57-.8-1.1-1.56-1.66-2.29a.9.9,0,0,0-.6-.34c-4.75,0-9.49,0-14.39,0,0,1.19,0,2.33,0,3.47,0,1.42-.47,1.88-1.91,1.89H51.5V75c.32,0,.65,0,1,0,3.27,0,6.54,0,9.81,0a8,8,0,0,1,8.09,6.35c.11.52.12,1.06.19,1.65H25.2c-.34-2.56,1.52-5.81,4.27-7a11.08,11.08,0,0,1,4.07-.92c3.17-.13,6.35,0,9.52,0h1.13V19.93c-.78,0-1.56,0-2.35,0-1.4,0-1.89-.5-1.9-1.93,0-1.11,0-2.22,0-3.38-.43,0-.75,0-1.06,0-4.43,0-8.85,0-13.28,0a1.21,1.21,0,0,0-1.28.72A12.62,12.62,0,0,1,23.07,17c.09.24.2.57.34.88Q29.26,31.08,35.08,44.3a1.38,1.38,0,0,0,1.54,1c1.55-.08,2.27.43,2.26,1.42s-.73,1.45-2.27,1.45h-1.2a16.36,16.36,0,0,1-7.13,11.55,16.11,16.11,0,0,1-10.69,2.71A16.44,16.44,0,0,1,2.83,48.2c-.44,0-.91,0-1.37,0A1.42,1.42,0,0,1,0,46.73a1.3,1.3,0,0,1,1.49-1.38c1.49.23,2-.54,2.52-1.75,3.71-8.52,7.48-17,11.24-25.49.23-.52.38-.88-.18-1.39a5.89,5.89,0,0,1-1.46-6.85A6.09,6.09,0,0,1,19.49,6.3,6,6,0,0,1,25,11C25,11.17,25.08,11.38,25.14,11.62ZM89,45.26c-.14-.36-.24-.65-.37-.94C85,35.92,81.22,27.53,77.58,19.1c-.52-1.2-1.36-.65-2.06-.73-.25,0-.67.46-.81.8Q69.1,31.75,63.54,44.36l-.36.9Zm-56.68,0c-4-9.09-8-18.08-11.95-27.06a2.36,2.36,0,0,1-.79.11c-1.18-.23-1.54.51-1.94,1.43Q12.33,32,6.91,44.17c-.15.34-.28.69-.45,1.1Z"/><path d="M77.63,96H18a61.56,61.56,0,0,1,.05-6.23,4.37,4.37,0,0,1,3.82-3.66A10.17,10.17,0,0,1,23.23,86H72.48a4.47,4.47,0,0,1,3.41,1,5.45,5.45,0,0,1,1.66,2.68A52.2,52.2,0,0,1,77.63,96Z"/></g></g></svg>
-        </div>
-        <h3>Comunicación</h3>
-        <div class="rule"></div>
-        <p>Potencia tu comprensión lectora y expresión escrita.</p>
-        <a class="btn" href="areas/comunicacion.html">Ver Cursos</a>
-      </div>
-
-      <div class="card active">
-        <div class="icon">
-          <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96.18 96.22"><g id="Capa_2" data-name="Capa 2"><g id="PANTALLA_1" data-name="PANTALLA 1"><path d="M96.18,68c-.22,1.29-.39,2.6-.69,3.87C93.76,79.18,89,83.37,81.87,85.09a28.67,28.67,0,0,1-6.59.77c-9.8.08-19.6,0-29.4,0H44.67V84.71c0-5.67,0-11.33,0-17a5.51,5.51,0,0,0-2.45-4.79,14.4,14.4,0,0,0-7.36-2.56c-1.82-.15-3.68,0-5.69,0v-1.2c0-8-.05-15.9,0-23.86a5.83,5.83,0,0,0-3-5.4,16.92,16.92,0,0,0-7.39-2.23l-1.54-.14V15.19a22.48,22.48,0,0,0,18.83,0v3.52c0,2.35,0,4.7,0,7a2.5,2.5,0,0,1-.67,1.84c-.89,1-1.72,2.08-2.53,3.15A1.72,1.72,0,0,0,33,33.29a1.75,1.75,0,0,0,2.6-.52,51.39,51.39,0,0,1,12.67-12c1.61-1.07,3-1.26,4.63-.21l-2.69,2.53c-1,.91-1.12,1.91-.42,2.69s1.73.76,2.72-.15l4.81-4.48a9.59,9.59,0,0,1,1.08-.69c0,2,0,3.64,0,5.31a1.7,1.7,0,0,0,3.37.37,5.82,5.82,0,0,0,0-.94V20.49a6.39,6.39,0,0,1,1.08.64c1.62,1.48,3.21,3,4.81,4.47,1,.91,2,1,2.72.15a1.79,1.79,0,0,0-.36-2.64c-.92-.88-1.86-1.75-2.85-2.67a21.15,21.15,0,0,1,2.19-.75,1.66,1.66,0,0,1,1.09.24A45.27,45.27,0,0,1,83.18,31,60.43,60.43,0,0,1,96,62.71a4.8,4.8,0,0,0,.15.63ZM58.36,58.35c-1.89,0-3.1-1.16-3.39-3.28-.16-1.2-.87-1.87-1.88-1.77a1.79,1.79,0,0,0-1.55,2.17,6.86,6.86,0,0,0,2,4.35,7.17,7.17,0,0,0,4.89,2.07c0,.59,0,1.14,0,1.7a1.7,1.7,0,0,0,3.39,0c0-.55,0-1.1,0-1.64,4.26-.64,6.68-3,6.87-6.66A6.61,6.61,0,0,0,67.38,51a7.09,7.09,0,0,0-5.51-2.88V41.36c1.85-.09,3.11,1.12,3.38,3.17.16,1.24.9,2,1.9,1.86s1.67-1,1.53-2.29a6.85,6.85,0,0,0-5.84-6.2l-1-.18c0-.59,0-1.12,0-1.65a1.7,1.7,0,1,0-3.39,0c0,.55,0,1.1,0,1.63-5,.49-6.8,4-6.89,6.78-.12,3.66,2.28,6.18,6.84,7.12Zm34.32,9.53c0-.28,0-.57,0-.85a1.68,1.68,0,0,0-1.54-1.71,1.72,1.72,0,0,0-1.85,1.49c-.06.34,0,.69-.06,1-.47,5-2.76,8.68-7.51,10.16a36.1,36.1,0,0,1-5.6,1c-1.27.19-2,.77-1.92,1.84s.85,1.68,2.12,1.61a32.47,32.47,0,0,0,3.26-.35C87.37,80.88,92.32,75.47,92.68,67.88Z"/><path d="M7.33,96.22c-.85-.18-1.71-.33-2.55-.53a18.69,18.69,0,0,1-2-.6C.35,94.15,0,93.63,0,91V89a22.48,22.48,0,0,0,18.83,0,30.29,30.29,0,0,1,0,3.94c-.07.49-.7,1-1.2,1.34A12.61,12.61,0,0,1,12.36,96c-.3,0-.6.12-.9.19Z"/><path d="M7,77.26v-38a22.45,22.45,0,0,0,18.75,0V60.75c-1.29.6-2.58,1.1-3.77,1.78a5.57,5.57,0,0,0-3.06,5.38c.12,3.44,0,6.89,0,10.33v.92A56.17,56.17,0,0,0,13,77.6,56.4,56.4,0,0,0,7,77.26Z"/><path d="M41.17,71.81c0,.45,0,.72,0,1,0,5.29,0,10.58,0,15.87A2.3,2.3,0,0,1,40,90.84a12.84,12.84,0,0,1-5.12,1.71,20.13,20.13,0,0,1-9.09-.65A13.6,13.6,0,0,1,24,91.14a2.77,2.77,0,0,1-1.72-2.81c.1-5.13,0-10.27,0-15.4V71.79a21.45,21.45,0,0,0,9.44,2.11A21.37,21.37,0,0,0,41.17,71.81Z"/><path d="M55.06,17.14a6.86,6.86,0,0,1-4.54-1.61c-3.16-2.59-4.66-6.1-5.44-10a4.51,4.51,0,0,1-.2-1.48c.08-.57.25-1.35.65-1.59a2.31,2.31,0,0,1,1.89-.1,8.92,8.92,0,0,0,4.31,1.08,7.69,7.69,0,0,0,4.89-1.88c2.44-2.06,4.44-2.08,6.85-.05a7.79,7.79,0,0,0,9,.94,2,2,0,0,1,2.2-.06,1.82,1.82,0,0,1,.62,2c-.61,3.74-1.8,7.22-4.47,10a7.15,7.15,0,0,1-5.56,2.63c.13-.27.25-.51.35-.75,1-2.3,2-4.58,2.91-6.9a1.72,1.72,0,0,0-1-2.45,1.76,1.76,0,0,0-2.26,1.41,31.68,31.68,0,0,1-3.8,8.12,1.58,1.58,0,0,1-2.67,0,32,32,0,0,1-3.67-7.67,7.46,7.46,0,0,0-.26-.8A1.7,1.7,0,0,0,52.73,7a1.61,1.61,0,0,0-1.09,2.09c.91,2.39,1.92,4.74,2.9,7.1C54.66,16.45,54.83,16.71,55.06,17.14Z"/><path d="M73,17.06c.29,0,.58,0,.87.05a8.53,8.53,0,0,0,5.67-1.19c3.27-2.1,3.12-6.1-.3-8-.32-.18-.66-.32-1-.5l.62-3.38A8.6,8.6,0,0,1,84.4,8.57c1.77,3.51.95,6.59-1.74,9.32,1.28.44,2.53.82,3.73,1.3a13.57,13.57,0,0,1,5.24,3.54A1.76,1.76,0,0,1,92,24.8a1.64,1.64,0,0,1-2.67.51c-2.87-3.07-6.63-3.95-10.56-4.48A4.4,4.4,0,0,1,77,20.15c-1.38-.91-2.7-1.9-4-2.86Z"/><path d="M31.31,63.54A20.49,20.49,0,0,1,39,64.8c1,.44,2.23.89,2.2,2.25S40,68.85,39,69.22a21,21,0,0,1-14.32,0,5,5,0,0,1-1.08-.55c-1.62-1-1.68-2.42,0-3.32a15.91,15.91,0,0,1,4-1.42A27.1,27.1,0,0,1,31.31,63.54Z"/><path d="M16.45,30.7c2.16.41,4.34.76,6.49,1.27a5.83,5.83,0,0,1,2.12,1.14,1.48,1.48,0,0,1,0,2.54,7.75,7.75,0,0,1-2.39,1.23,21.67,21.67,0,0,1-12.83,0A7.51,7.51,0,0,1,8,36c-1.47-1-1.53-2.35,0-3.15a20.21,20.21,0,0,1,4.57-1.56,27,27,0,0,1,3.82-.36Z"/><path d="M26.71,6.64c2.2.42,4.4.79,6.58,1.29a5.43,5.43,0,0,1,2,1,1.51,1.51,0,0,1,0,2.71,10.17,10.17,0,0,1-3.13,1.42A21.89,21.89,0,0,1,20.72,13,9.34,9.34,0,0,1,18,11.7c-1.16-.8-1.13-1.91,0-2.78a10,10,0,0,1,4.8-1.73C24.09,7,25.38,7,26.65,6.84Z"/><path d="M9.31,87.86C7.24,87.47,5,87.1,2.85,86.62A5.51,5.51,0,0,1,1,85.71c-1.37-.95-1.35-2.11,0-3.07a5.86,5.86,0,0,1,1.49-.77,21.76,21.76,0,0,1,13.54-.11,5.83,5.83,0,0,1,1.37.62c.7.42,1.42.89,1.41,1.83s-.74,1.43-1.45,1.82a7.09,7.09,0,0,1-1.9.77C13.52,87.19,11.52,87.49,9.31,87.86Z"/><path d="M61.88,58.38V51.62a3.3,3.3,0,0,1,3.37,3.31A3.36,3.36,0,0,1,61.88,58.38Z"/><path d="M58.36,41.34V48a3.35,3.35,0,1,1,0-6.69Z"/></g></g></svg>
-        </div>
-        <h3>Ciencias Sociales</h3>
-        <div class="rule"></div>
-        <p>Comprende la sociedad, la historia y la cultura.</p>
-        <a class="btn" href="areas/ciencias-sociales.html">Ver Cursos</a>
-      </div>
-
+    <section class="cards cursos">
+      <a class="curso" href="areas/ciencia-tecnologia.html" data-mc-nav="area" data-area="ciencia-tecnologia">
+        <span class="ic"><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 92.78 96.22"><g id="Capa_2" data-name="Capa 2"><g id="PANTALLA_1" data-name="PANTALLA 1"><path d="M37.78,96.22a1.9,1.9,0,0,0-.3-.33c-4.17-2.74-3.41-8.09-1-10.81a14.8,14.8,0,0,1,5.24-3.73c3.71-1.67,7.47-3.23,11.16-4.93a17.63,17.63,0,0,0,3.65-2.26c2.21-1.78,2.11-3.64-.22-5.26a22.49,22.49,0,0,0-6.48-2.71c0,1.24,0,2.39,0,3.54a1.09,1.09,0,0,1-.41.81c-2,.94-4,1.82-6.2,2.79V66.18c-2.72.85-5.31,1.56-7.38,3.4a2.8,2.8,0,0,0-.07,4.18A19.1,19.1,0,0,0,38,75.49l-5.64,4a9.83,9.83,0,0,1-1.07-15.16,18.63,18.63,0,0,1,7.32-4.25c5.93-2,11.87-3.93,17.78-6a11,11,0,0,0,5.35-3.65,13.57,13.57,0,0,0,.79-1.34,9.91,9.91,0,0,1-6.29-4.6,8.27,8.27,0,0,1-1.14-3.31,4,4,0,0,1,4.8-4.55,11.31,11.31,0,0,1,9.29,9.42c.62,5.25-1.45,9.23-5.65,12.17-1.78,1.24-3.78,2.16-5.72,3.25l.93.58c2.69,1.68,4.83,3.82,5.62,7A9.46,9.46,0,0,1,61.19,79a21.75,21.75,0,0,1-6.92,3.92c.74.79,1.5,1.53,2.18,2.34a8,8,0,0,1,1.8,6.4,6,6,0,0,1-2.13,3.66l-1,.92h-.75a1.32,1.32,0,0,1-.27-1.9,3.61,3.61,0,0,0-.14-4.15,9.09,9.09,0,0,0-4.12-2.8c0,1.57-.07,3,0,4.51.12,2.08-.6,3.59-2.63,4.34h-1.5a3.94,3.94,0,0,1-2.55-4.38c.1-1.45,0-2.91,0-4.37l-.25-.18a33.15,33.15,0,0,0-3.31,2.18,3.32,3.32,0,0,0-1.11,3.64A9.75,9.75,0,0,0,39,94.52a1.18,1.18,0,0,1-.43,1.7ZM63,41.39a1.6,1.6,0,0,0-1.6-1.61,1.65,1.65,0,0,0,0,3.3A1.61,1.61,0,0,0,63,41.39Z"/><path d="M49.77,21.5a4.48,4.48,0,0,0,3.41-1.34,25.24,25.24,0,0,0,2.61-3.3c1.41-2.13,2.58-4.43,4.52-6.19A14.76,14.76,0,0,1,70.52,6.59c7.17,0,14.34,0,21.51,0,.25,0,.49,0,.73,0,.31,4-2.49,9.66-10.79,10.08l7.58,3.17A9.88,9.88,0,0,1,83,25.66c-3.06.92-5.85,0-8.62-1.17l5.33,5.24a10.13,10.13,0,0,1-7.59,3,10.48,10.48,0,0,1-7.43-2.86c-3,4.48-8.65,4.34-11.46.28C52.17,31,51.09,32,50.08,33a1.53,1.53,0,0,0-.3,1c0,4.92,0,9.83,0,14.75,0,.78-.19,1.15-1,1.37-1.89.53-3.74,1.17-5.71,1.81V50.64q0-18.66,0-37.31a1.7,1.7,0,0,0-.74-1.55,6.54,6.54,0,0,1-.76-9.71,6.65,6.65,0,0,1,9.64,0,6.54,6.54,0,0,1-.75,9.71,1.69,1.69,0,0,0-.75,1.55c0,2.38,0,4.76,0,7.14Z"/><path d="M3.37,19.86l7.49-3.11c-2.78-.3-5.41-.91-7.59-2.76A9.41,9.41,0,0,1,0,6.6H1.08c7,0,14,0,21,0,5.8,0,10.08,2.66,13.24,7.38,1.39,2.07,2.88,4.08,4.31,6.13a1.05,1.05,0,0,1,.21.58c0,2.29.08,4.58-.1,6.86A5.9,5.9,0,0,1,35.37,33a6.44,6.44,0,0,1-6.64-2.48l-.49-.68a11,11,0,0,1-9.4,2.74,9.6,9.6,0,0,1-5.5-2.63l5.32-5.29-.14-.32c-3.82,2-7.63,2.47-11.44.12A9.33,9.33,0,0,1,3.37,19.86Z"/><path d="M28.55,57.65a11.91,11.91,0,0,1-3.77-14.89,10.62,10.62,0,0,1,7.62-6,4.4,4.4,0,0,1,4.72,1.56,4.72,4.72,0,0,1,.25,4.91,9.93,9.93,0,0,1-6.1,5.6l-.85.28c1,2.51,3.22,3.59,5.3,4.72Zm3-14.58a1.59,1.59,0,0,0,1.63-1.58,1.61,1.61,0,0,0-1.61-1.71,1.65,1.65,0,0,0,0,3.29Z"/></g></g></svg></span>
+        <span class="tx"><b>Ciencia y Tecnología</b><small>Biología, Química, Física, Anatomía</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+      </a>
+      <a class="curso" href="areas/matematica.html" data-area="matematica">
+        <span class="ic"><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90.92 90.98"><g id="Capa_2" data-name="Capa 2"><g id="PANTALLA_1" data-name="PANTALLA 1"><path d="M53.27,45.54c0-5.38,0-10.76,0-16.14a1.07,1.07,0,0,0-.76-1.18,18.71,18.71,0,1,0,0,34.55,1.08,1.08,0,0,0,.77-1.18C53.26,56.24,53.27,50.89,53.27,45.54Zm5.37-9.86h.85c4.11,0,8.22,0,12.33,0a3.59,3.59,0,0,0,2.51-.91c1.85-1.58,3.73-3.12,5.58-4.7a1.18,1.18,0,0,1,1.4-.25,7.05,7.05,0,0,0,9.59-6.31,6.82,6.82,0,0,0-3.82-6.63,6.63,6.63,0,0,0-7.51.62,6.75,6.75,0,0,0-2.67,7.16,1.22,1.22,0,0,1-.49,1.41c-1.53,1.22-3,2.52-4.52,3.74a2.44,2.44,0,0,1-1.34.49c-3.64,0-7.28,0-10.91,0h-1Zm0,25c4,0,8,0,11.89,0a2.4,2.4,0,0,1,1.34.48c1.26,1,2.43,2.09,3.71,3.05,1,.76,1.78,1.5,1.16,2.88a1.06,1.06,0,0,0,0,.26,7.15,7.15,0,0,0,4.77,7.18,7.12,7.12,0,0,0,7.94-11.08,7,7,0,0,0-8.18-2.27,1.12,1.12,0,0,1-1.33-.26c-1.85-1.57-3.73-3.11-5.57-4.69a3.69,3.69,0,0,0-2.51-.93c-4.14,0-8.28,0-12.42,0-.26,0-.51,0-.78.05Zm0-12.48H76.36a1.15,1.15,0,0,1,1.23.7,7,7,0,0,0,8,3.55,7.15,7.15,0,0,0,.06-13.82,7,7,0,0,0-8.05,3.56,1.11,1.11,0,0,1-1.15.68c-5.59,0-11.19,0-16.78,0h-1Zm0-37.46c1.81,0,3.56,0,5.3,0a1.14,1.14,0,0,1,1.22.7A6.76,6.76,0,0,0,71,15.14a7.05,7.05,0,0,0,7.32-5.72,7.15,7.15,0,0,0-4.57-8.11,7,7,0,0,0-8.63,3.38A1.09,1.09,0,0,1,64,5.37c-1.77,0-3.53,0-5.34,0Zm0,74.92c1.78,0,3.47,0,5.15,0a1.35,1.35,0,0,1,1.44.82,7,7,0,0,0,7.94,3.43,7.15,7.15,0,0,0,.06-13.8,7,7,0,0,0-8,3.36,1.48,1.48,0,0,1-1.58.87c-1.68,0-3.35,0-5,0Z"/><path d="M0,39.43a3.24,3.24,0,0,1,3.58-2c.82.07,1.65,0,2.54,0A40.86,40.86,0,0,1,12,23.3c-.73-.69-1.48-1.39-2.21-2.12-1.44-1.45-1.44-2.9,0-4.34q3.51-3.54,7-7.06a2.68,2.68,0,0,1,4.2,0c.73.73,1.43,1.5,2.19,2.29a40.68,40.68,0,0,1,14.1-5.87V3.1c0-2,1-3.09,3-3.1,3.38,0,6.75,0,10.12,0a2.66,2.66,0,0,1,2.82,2.78q0,9.77,0,19.52c0,.12,0,.24,0,.3C41.48,19.53,31.69,22.42,25,32.82c-5.4,8.42-5.28,17.47.28,25.78,6.73,10.07,16.41,12.82,28,9.75V87.83c0,2.13-1,3.15-3.17,3.15H40.34c-2,0-3-1.06-3.05-3.09V84.82a40.5,40.5,0,0,1-14.16-5.94c-.71.78-1.39,1.59-2.13,2.34a2.67,2.67,0,0,1-4.2,0q-3.53-3.51-7-7.06Q7.63,72,9.79,69.8c.71-.71,1.46-1.38,2.21-2.09A41.07,41.07,0,0,1,6.13,53.52c-.85,0-1.71-.06-2.55,0a3.25,3.25,0,0,1-3.58-2Z"/><path d="M53.27,45.54c0,5.35,0,10.7,0,16.05a1.08,1.08,0,0,1-.77,1.18,18.71,18.71,0,1,1,0-34.55,1.07,1.07,0,0,1,.76,1.18C53.26,34.78,53.27,40.16,53.27,45.54Z"/><path d="M58.64,35.68V30.33h1c3.63,0,7.27,0,10.91,0a2.44,2.44,0,0,0,1.34-.49c1.53-1.22,3-2.52,4.52-3.74a1.22,1.22,0,0,0,.49-1.41,6.75,6.75,0,0,1,2.67-7.16,6.63,6.63,0,0,1,7.51-.62,6.82,6.82,0,0,1,3.82,6.63,7.05,7.05,0,0,1-9.59,6.31,1.18,1.18,0,0,0-1.4.25c-1.85,1.58-3.73,3.12-5.58,4.7a3.59,3.59,0,0,1-2.51.91c-4.11,0-8.22,0-12.33,0Z"/><path d="M58.64,60.65v-5.3c.27,0,.52-.05.78-.05,4.14,0,8.28,0,12.42,0a3.69,3.69,0,0,1,2.51.93c1.84,1.58,3.72,3.12,5.57,4.69a1.12,1.12,0,0,0,1.33.26,7,7,0,0,1,8.18,2.27,7.11,7.11,0,1,1-12.71,3.9,1.06,1.06,0,0,1,0-.26c.62-1.38-.15-2.12-1.16-2.88-1.28-1-2.45-2.07-3.71-3.05a2.4,2.4,0,0,0-1.34-.48C66.6,60.64,62.67,60.65,58.64,60.65Z"/><path d="M58.64,48.17V42.82h1c5.59,0,11.19,0,16.78,0a1.11,1.11,0,0,0,1.15-.68,7,7,0,0,1,8.05-3.56,7.15,7.15,0,0,1-.06,13.82,7,7,0,0,1-8-3.55,1.15,1.15,0,0,0-1.23-.7H58.64Z"/><path d="M58.64,10.71V5.36c1.81,0,3.57,0,5.34,0a1.09,1.09,0,0,0,1.16-.68,7,7,0,0,1,8.63-3.38,7.15,7.15,0,0,1,4.57,8.11A7.05,7.05,0,0,1,71,15.14a6.76,6.76,0,0,1-5.86-3.74,1.14,1.14,0,0,0-1.22-.7C62.2,10.73,60.45,10.71,58.64,10.71Z"/><path d="M58.64,85.63V80.28c1.69,0,3.36,0,5,0a1.48,1.48,0,0,0,1.58-.87,7,7,0,0,1,8-3.36,7.15,7.15,0,0,1-.06,13.8,7,7,0,0,1-7.94-3.43,1.35,1.35,0,0,0-1.44-.82C62.11,85.66,60.42,85.63,58.64,85.63Z"/></g></g></svg></span>
+        <span class="tx"><b>Matemática</b><small>Aritmética, Álgebra, Geometría, Trigonometría</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+      </a>
+      <a class="curso" href="areas/comunicacion.html" data-area="comunicacion">
+        <span class="ic"><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 95.58 95.97"><g id="Capa_2" data-name="Capa 2"><g id="PANTALLA_1" data-name="PANTALLA 1"><path d="M25.14,11.62h14.8c0-1.25,0-2.46,0-3.67A8.43,8.43,0,0,1,45.35.44a7.72,7.72,0,0,1,8.39,2.25,7.5,7.5,0,0,1,1.94,4.9c0,1.31,0,2.62,0,4H70.11c.06-.24.14-.51.21-.78A6,6,0,0,1,81.51,9.66a5.83,5.83,0,0,1-1.05,6.75A1.19,1.19,0,0,0,80.17,18q5.88,13.2,11.69,26.44c.31.69.65,1,1.42.91a3.85,3.85,0,0,1,1,0,1.37,1.37,0,0,1,1.34,1.37,1.41,1.41,0,0,1-1.32,1.5,9.35,9.35,0,0,1-1.06,0h-1C90.51,58,82.74,62.37,76.5,62.52a16.25,16.25,0,0,1-11.27-3.88,16.42,16.42,0,0,1-5.68-10.45c-.54,0-1,0-1.49,0a1.47,1.47,0,0,1-1.37-1.48,1.32,1.32,0,0,1,1.43-1.36c1.64.27,2.15-.64,2.71-1.93C64.5,35,68.25,26.54,72,18.1c.14-.32.27-.64.37-.88-.57-.8-1.1-1.56-1.66-2.29a.9.9,0,0,0-.6-.34c-4.75,0-9.49,0-14.39,0,0,1.19,0,2.33,0,3.47,0,1.42-.47,1.88-1.91,1.89H51.5V75c.32,0,.65,0,1,0,3.27,0,6.54,0,9.81,0a8,8,0,0,1,8.09,6.35c.11.52.12,1.06.19,1.65H25.2c-.34-2.56,1.52-5.81,4.27-7a11.08,11.08,0,0,1,4.07-.92c3.17-.13,6.35,0,9.52,0h1.13V19.93c-.78,0-1.56,0-2.35,0-1.4,0-1.89-.5-1.9-1.93,0-1.11,0-2.22,0-3.38-.43,0-.75,0-1.06,0-4.43,0-8.85,0-13.28,0a1.21,1.21,0,0,0-1.28.72A12.62,12.62,0,0,1,23.07,17c.09.24.2.57.34.88Q29.26,31.08,35.08,44.3a1.38,1.38,0,0,0,1.54,1c1.55-.08,2.27.43,2.26,1.42s-.73,1.45-2.27,1.45h-1.2a16.36,16.36,0,0,1-7.13,11.55,16.11,16.11,0,0,1-10.69,2.71A16.44,16.44,0,0,1,2.83,48.2c-.44,0-.91,0-1.37,0A1.42,1.42,0,0,1,0,46.73a1.3,1.3,0,0,1,1.49-1.38c1.49.23,2-.54,2.52-1.75,3.71-8.52,7.48-17,11.24-25.49.23-.52.38-.88-.18-1.39a5.89,5.89,0,0,1-1.46-6.85A6.09,6.09,0,0,1,19.49,6.3,6,6,0,0,1,25,11C25,11.17,25.08,11.38,25.14,11.62ZM89,45.26c-.14-.36-.24-.65-.37-.94C85,35.92,81.22,27.53,77.58,19.1c-.52-1.2-1.36-.65-2.06-.73-.25,0-.67.46-.81.8Q69.1,31.75,63.54,44.36l-.36.9Zm-56.68,0c-4-9.09-8-18.08-11.95-27.06a2.36,2.36,0,0,1-.79.11c-1.18-.23-1.54.51-1.94,1.43Q12.33,32,6.91,44.17c-.15.34-.28.69-.45,1.1Z"/><path d="M77.63,96H18a61.56,61.56,0,0,1,.05-6.23,4.37,4.37,0,0,1,3.82-3.66A10.17,10.17,0,0,1,23.23,86H72.48a4.47,4.47,0,0,1,3.41,1,5.45,5.45,0,0,1,1.66,2.68A52.2,52.2,0,0,1,77.63,96Z"/></g></g></svg></span>
+        <span class="tx"><b>Comunicación</b><small>Lenguaje, Literatura, Razonamiento Verbal</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+      </a>
+      <a class="curso" href="areas/ciencias-sociales.html" data-area="ciencias-sociales">
+        <span class="ic"><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96.18 96.22"><g id="Capa_2" data-name="Capa 2"><g id="PANTALLA_1" data-name="PANTALLA 1"><path d="M96.18,68c-.22,1.29-.39,2.6-.69,3.87C93.76,79.18,89,83.37,81.87,85.09a28.67,28.67,0,0,1-6.59.77c-9.8.08-19.6,0-29.4,0H44.67V84.71c0-5.67,0-11.33,0-17a5.51,5.51,0,0,0-2.45-4.79,14.4,14.4,0,0,0-7.36-2.56c-1.82-.15-3.68,0-5.69,0v-1.2c0-8-.05-15.9,0-23.86a5.83,5.83,0,0,0-3-5.4,16.92,16.92,0,0,0-7.39-2.23l-1.54-.14V15.19a22.48,22.48,0,0,0,18.83,0v3.52c0,2.35,0,4.7,0,7a2.5,2.5,0,0,1-.67,1.84c-.89,1-1.72,2.08-2.53,3.15A1.72,1.72,0,0,0,33,33.29a1.75,1.75,0,0,0,2.6-.52,51.39,51.39,0,0,1,12.67-12c1.61-1.07,3-1.26,4.63-.21l-2.69,2.53c-1,.91-1.12,1.91-.42,2.69s1.73.76,2.72-.15l4.81-4.48a9.59,9.59,0,0,1,1.08-.69c0,2,0,3.64,0,5.31a1.7,1.7,0,0,0,3.37.37,5.82,5.82,0,0,0,0-.94V20.49a6.39,6.39,0,0,1,1.08.64c1.62,1.48,3.21,3,4.81,4.47,1,.91,2,1,2.72.15a1.79,1.79,0,0,0-.36-2.64c-.92-.88-1.86-1.75-2.85-2.67a21.15,21.15,0,0,1,2.19-.75,1.66,1.66,0,0,1,1.09.24A45.27,45.27,0,0,1,83.18,31,60.43,60.43,0,0,1,96,62.71a4.8,4.8,0,0,0,.15.63ZM58.36,58.35c-1.89,0-3.1-1.16-3.39-3.28-.16-1.2-.87-1.87-1.88-1.77a1.79,1.79,0,0,0-1.55,2.17,6.86,6.86,0,0,0,2,4.35,7.17,7.17,0,0,0,4.89,2.07c0,.59,0,1.14,0,1.7a1.7,1.7,0,0,0,3.39,0c0-.55,0-1.1,0-1.64,4.26-.64,6.68-3,6.87-6.66A6.61,6.61,0,0,0,67.38,51a7.09,7.09,0,0,0-5.51-2.88V41.36c1.85-.09,3.11,1.12,3.38,3.17.16,1.24.9,2,1.9,1.86s1.67-1,1.53-2.29a6.85,6.85,0,0,0-5.84-6.2l-1-.18c0-.59,0-1.12,0-1.65a1.7,1.7,0,1,0-3.39,0c0,.55,0,1.1,0,1.63-5,.49-6.8,4-6.89,6.78-.12,3.66,2.28,6.18,6.84,7.12Zm34.32,9.53c0-.28,0-.57,0-.85a1.68,1.68,0,0,0-1.54-1.71,1.72,1.72,0,0,0-1.85,1.49c-.06.34,0,.69-.06,1-.47,5-2.76,8.68-7.51,10.16a36.1,36.1,0,0,1-5.6,1c-1.27.19-2,.77-1.92,1.84s.85,1.68,2.12,1.61a32.47,32.47,0,0,0,3.26-.35C87.37,80.88,92.32,75.47,92.68,67.88Z"/><path d="M7.33,96.22c-.85-.18-1.71-.33-2.55-.53a18.69,18.69,0,0,1-2-.6C.35,94.15,0,93.63,0,91V89a22.48,22.48,0,0,0,18.83,0,30.29,30.29,0,0,1,0,3.94c-.07.49-.7,1-1.2,1.34A12.61,12.61,0,0,1,12.36,96c-.3,0-.6.12-.9.19Z"/><path d="M7,77.26v-38a22.45,22.45,0,0,0,18.75,0V60.75c-1.29.6-2.58,1.1-3.77,1.78a5.57,5.57,0,0,0-3.06,5.38c.12,3.44,0,6.89,0,10.33v.92A56.17,56.17,0,0,0,13,77.6,56.4,56.4,0,0,0,7,77.26Z"/><path d="M41.17,71.81c0,.45,0,.72,0,1,0,5.29,0,10.58,0,15.87A2.3,2.3,0,0,1,40,90.84a12.84,12.84,0,0,1-5.12,1.71,20.13,20.13,0,0,1-9.09-.65A13.6,13.6,0,0,1,24,91.14a2.77,2.77,0,0,1-1.72-2.81c.1-5.13,0-10.27,0-15.4V71.79a21.45,21.45,0,0,0,9.44,2.11A21.37,21.37,0,0,0,41.17,71.81Z"/><path d="M55.06,17.14a6.86,6.86,0,0,1-4.54-1.61c-3.16-2.59-4.66-6.1-5.44-10a4.51,4.51,0,0,1-.2-1.48c.08-.57.25-1.35.65-1.59a2.31,2.31,0,0,1,1.89-.1,8.92,8.92,0,0,0,4.31,1.08,7.69,7.69,0,0,0,4.89-1.88c2.44-2.06,4.44-2.08,6.85-.05a7.79,7.79,0,0,0,9,.94,2,2,0,0,1,2.2-.06,1.82,1.82,0,0,1,.62,2c-.61,3.74-1.8,7.22-4.47,10a7.15,7.15,0,0,1-5.56,2.63c.13-.27.25-.51.35-.75,1-2.3,2-4.58,2.91-6.9a1.72,1.72,0,0,0-1-2.45,1.76,1.76,0,0,0-2.26,1.41,31.68,31.68,0,0,1-3.8,8.12,1.58,1.58,0,0,1-2.67,0,32,32,0,0,1-3.67-7.67,7.46,7.46,0,0,0-.26-.8A1.7,1.7,0,0,0,52.73,7a1.61,1.61,0,0,0-1.09,2.09c.91,2.39,1.92,4.74,2.9,7.1C54.66,16.45,54.83,16.71,55.06,17.14Z"/><path d="M73,17.06c.29,0,.58,0,.87.05a8.53,8.53,0,0,0,5.67-1.19c3.27-2.1,3.12-6.1-.3-8-.32-.18-.66-.32-1-.5l.62-3.38A8.6,8.6,0,0,1,84.4,8.57c1.77,3.51.95,6.59-1.74,9.32,1.28.44,2.53.82,3.73,1.3a13.57,13.57,0,0,1,5.24,3.54A1.76,1.76,0,0,1,92,24.8a1.64,1.64,0,0,1-2.67.51c-2.87-3.07-6.63-3.95-10.56-4.48A4.4,4.4,0,0,1,77,20.15c-1.38-.91-2.7-1.9-4-2.86Z"/><path d="M31.31,63.54A20.49,20.49,0,0,1,39,64.8c1,.44,2.23.89,2.2,2.25S40,68.85,39,69.22a21,21,0,0,1-14.32,0,5,5,0,0,1-1.08-.55c-1.62-1-1.68-2.42,0-3.32a15.91,15.91,0,0,1,4-1.42A27.1,27.1,0,0,1,31.31,63.54Z"/><path d="M16.45,30.7c2.16.41,4.34.76,6.49,1.27a5.83,5.83,0,0,1,2.12,1.14,1.48,1.48,0,0,1,0,2.54,7.75,7.75,0,0,1-2.39,1.23,21.67,21.67,0,0,1-12.83,0A7.51,7.51,0,0,1,8,36c-1.47-1-1.53-2.35,0-3.15a20.21,20.21,0,0,1,4.57-1.56,27,27,0,0,1,3.82-.36Z"/><path d="M26.71,6.64c2.2.42,4.4.79,6.58,1.29a5.43,5.43,0,0,1,2,1,1.51,1.51,0,0,1,0,2.71,10.17,10.17,0,0,1-3.13,1.42A21.89,21.89,0,0,1,20.72,13,9.34,9.34,0,0,1,18,11.7c-1.16-.8-1.13-1.91,0-2.78a10,10,0,0,1,4.8-1.73C24.09,7,25.38,7,26.65,6.84Z"/><path d="M9.31,87.86C7.24,87.47,5,87.1,2.85,86.62A5.51,5.51,0,0,1,1,85.71c-1.37-.95-1.35-2.11,0-3.07a5.86,5.86,0,0,1,1.49-.77,21.76,21.76,0,0,1,13.54-.11,5.83,5.83,0,0,1,1.37.62c.7.42,1.42.89,1.41,1.83s-.74,1.43-1.45,1.82a7.09,7.09,0,0,1-1.9.77C13.52,87.19,11.52,87.49,9.31,87.86Z"/><path d="M61.88,58.38V51.62a3.3,3.3,0,0,1,3.37,3.31A3.36,3.36,0,0,1,61.88,58.38Z"/><path d="M58.36,41.34V48a3.35,3.35,0,1,1,0-6.69Z"/></g></g></svg></span>
+        <span class="tx"><b>Ciencias Sociales</b><small>Historia, Geografía, Economía, Filosofía</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+      </a>
     </section>
 
-    <div class="section-title" id="examenes" style="margin-top: 8px;">Exámenes de admisión</div>
+    <h2 class="sec-tit" id="examenes">Practica</h2>
 
-    <section class="cards">
-
-      <div class="card active">
-        <div class="icon">
-          <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 103 103"><g id="Capa_2" data-name="Capa 2"><g id="Capa_4" data-name="Capa 4"><path d="M51.4,103H4.17C1.28,103,0,101.72,0,98.81Q0,60,0,21.26a4.87,4.87,0,0,1,1.56-3.7q8-7.95,16-16A5,5,0,0,1,21.33,0Q60.11,0,98.88,0C101.71,0,103,1.31,103,4.13q0,47.34,0,94.68c0,2.94-1.22,4.18-4.14,4.18ZM68.57,51.54q0-21.63,0-43.27c0-.88-.17-1.27-1.17-1.26q-21,0-42.09,0c-1,0-1.19.34-1.18,1.24,0,4,0,8.07,0,12.11a3.45,3.45,0,0,1-3.77,3.8c-4,0-7.93,0-11.89,0C7,24.16,7,24.17,7,25.62V94.49C7,96,7,96,8.56,96H67c1.53,0,1.53,0,1.53-1.5Zm13.71,0V14.56c0-2.18,0-4.36,0-6.54,0-.73-.22-1-1-1-1.39,0-2.78,0-4.18,0s-1.55,0-1.55,1.58V94.4a4.87,4.87,0,0,1,0,.54c-.09.78.22,1.09,1,1.06,1.39,0,2.78,0,4.18,0s1.5,0,1.5-1.53Zm13.71,0V14.13c0-2,0-4.07,0-6.11,0-.73-.22-1-1-1-1.39,0-2.78,0-4.18,0-1.55,0-1.55,0-1.55,1.58V94.4a4.87,4.87,0,0,1,0,.54c-.09.78.22,1.09,1,1.06,1.39,0,2.78,0,4.18,0S96,96,96,94.46ZM17.15,12.62l-4.54,4.53h3.85c.42,0,.69-.16.69-.61Z"/><path d="M37.8,48.15H15.54a3.5,3.5,0,0,1-3.49-2.88,3.56,3.56,0,0,1,2.28-3.93,3.76,3.76,0,0,1,1.37-.19H59.9a3.51,3.51,0,1,1,0,7Z"/><path d="M32.62,58.44c-5.71,0-11.42,0-17.12,0a3.47,3.47,0,0,1-3.45-2.92,3.55,3.55,0,0,1,2.32-3.9,3.75,3.75,0,0,1,1.37-.18H49.56a3.5,3.5,0,1,1,0,7Z"/><path d="M34.21,91.63a3.6,3.6,0,0,1-2.69-1.13c-2.34-2.31-4.68-4.61-7-7a3.51,3.51,0,0,1-.07-5.17,3.58,3.58,0,0,1,5.17.24c1.12,1.09,2.22,2.22,3.33,3.33s1.17,1.16,2.37,0q5.27-5.26,10.52-10.53a3.67,3.67,0,0,1,3.48-1.2,3.49,3.49,0,0,1,2.25,5.35,5.48,5.48,0,0,1-.81,1Q44,83.37,37.1,90.21A4,4,0,0,1,34.21,91.63Z"/><path d="M51.46,19c-2.78,0-5.56,0-8.34,0a3.51,3.51,0,1,1,0-7H59.85a3.51,3.51,0,1,1,0,7C57,19,54.25,19,51.46,19Z"/><path d="M48.11,29.3c-1.71,0-3.42,0-5.13,0a3.5,3.5,0,1,1,0-7c3.42,0,6.84,0,10.26,0a3.5,3.5,0,0,1,0,7C51.53,29.32,49.82,29.3,48.11,29.3Z"/></g></g></svg>
-        </div>
-        <h3>Ordinario</h3>
-        <div class="rule"></div>
-        <p>Exámenes reales de la modalidad Ordinario de la UNJFSC, organizados por año.</p>
-        <a class="btn" href="examenes/ordinario/index.html">Ver Exámenes</a>
-      </div>
-
-      <div class="card active">
-        <div class="icon">
-          <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 103 103"><g id="Capa_2" data-name="Capa 2"><g id="Capa_4" data-name="Capa 4"><path d="M51.4,103H4.17C1.28,103,0,101.72,0,98.81Q0,60,0,21.26a4.87,4.87,0,0,1,1.56-3.7q8-7.95,16-16A5,5,0,0,1,21.33,0Q60.11,0,98.88,0C101.71,0,103,1.31,103,4.13q0,47.34,0,94.68c0,2.94-1.22,4.18-4.14,4.18ZM68.57,51.54q0-21.63,0-43.27c0-.88-.17-1.27-1.17-1.26q-21,0-42.09,0c-1,0-1.19.34-1.18,1.24,0,4,0,8.07,0,12.11a3.45,3.45,0,0,1-3.77,3.8c-4,0-7.93,0-11.89,0C7,24.16,7,24.17,7,25.62V94.49C7,96,7,96,8.56,96H67c1.53,0,1.53,0,1.53-1.5Zm13.71,0V14.56c0-2.18,0-4.36,0-6.54,0-.73-.22-1-1-1-1.39,0-2.78,0-4.18,0s-1.55,0-1.55,1.58V94.4a4.87,4.87,0,0,1,0,.54c-.09.78.22,1.09,1,1.06,1.39,0,2.78,0,4.18,0s1.5,0,1.5-1.53Zm13.71,0V14.13c0-2,0-4.07,0-6.11,0-.73-.22-1-1-1-1.39,0-2.78,0-4.18,0-1.55,0-1.55,0-1.55,1.58V94.4a4.87,4.87,0,0,1,0,.54c-.09.78.22,1.09,1,1.06,1.39,0,2.78,0,4.18,0S96,96,96,94.46ZM17.15,12.62l-4.54,4.53h3.85c.42,0,.69-.16.69-.61Z"/><path d="M37.8,48.15H15.54a3.5,3.5,0,0,1-3.49-2.88,3.56,3.56,0,0,1,2.28-3.93,3.76,3.76,0,0,1,1.37-.19H59.9a3.51,3.51,0,1,1,0,7Z"/><path d="M32.62,58.44c-5.71,0-11.42,0-17.12,0a3.47,3.47,0,0,1-3.45-2.92,3.55,3.55,0,0,1,2.32-3.9,3.75,3.75,0,0,1,1.37-.18H49.56a3.5,3.5,0,1,1,0,7Z"/><path d="M34.21,91.63a3.6,3.6,0,0,1-2.69-1.13c-2.34-2.31-4.68-4.61-7-7a3.51,3.51,0,0,1-.07-5.17,3.58,3.58,0,0,1,5.17.24c1.12,1.09,2.22,2.22,3.33,3.33s1.17,1.16,2.37,0q5.27-5.26,10.52-10.53a3.67,3.67,0,0,1,3.48-1.2,3.49,3.49,0,0,1,2.25,5.35,5.48,5.48,0,0,1-.81,1Q44,83.37,37.1,90.21A4,4,0,0,1,34.21,91.63Z"/><path d="M51.46,19c-2.78,0-5.56,0-8.34,0a3.51,3.51,0,1,1,0-7H59.85a3.51,3.51,0,1,1,0,7C57,19,54.25,19,51.46,19Z"/><path d="M48.11,29.3c-1.71,0-3.42,0-5.13,0a3.5,3.5,0,1,1,0-7c3.42,0,6.84,0,10.26,0a3.5,3.5,0,0,1,0,7C51.53,29.32,49.82,29.3,48.11,29.3Z"/></g></g></svg>
-        </div>
-        <h3>CPU</h3>
-        <div class="rule"></div>
-        <p>Exámenes reales del Centro Preuniversitario (CPU) de la UNJFSC, organizados por año.</p>
-        <a class="btn" href="examenes/cpu/index.html">Ver Exámenes</a>
-      </div>
-
-      <div class="card active">
-        <div class="icon">
-          <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 103 103"><g id="Capa_2" data-name="Capa 2"><g id="Capa_4" data-name="Capa 4"><path d="M51.4,103H4.17C1.28,103,0,101.72,0,98.81Q0,60,0,21.26a4.87,4.87,0,0,1,1.56-3.7q8-7.95,16-16A5,5,0,0,1,21.33,0Q60.11,0,98.88,0C101.71,0,103,1.31,103,4.13q0,47.34,0,94.68c0,2.94-1.22,4.18-4.14,4.18ZM68.57,51.54q0-21.63,0-43.27c0-.88-.17-1.27-1.17-1.26q-21,0-42.09,0c-1,0-1.19.34-1.18,1.24,0,4,0,8.07,0,12.11a3.45,3.45,0,0,1-3.77,3.8c-4,0-7.93,0-11.89,0C7,24.16,7,24.17,7,25.62V94.49C7,96,7,96,8.56,96H67c1.53,0,1.53,0,1.53-1.5Zm13.71,0V14.56c0-2.18,0-4.36,0-6.54,0-.73-.22-1-1-1-1.39,0-2.78,0-4.18,0s-1.55,0-1.55,1.58V94.4a4.87,4.87,0,0,1,0,.54c-.09.78.22,1.09,1,1.06,1.39,0,2.78,0,4.18,0s1.5,0,1.5-1.53Zm13.71,0V14.13c0-2,0-4.07,0-6.11,0-.73-.22-1-1-1-1.39,0-2.78,0-4.18,0-1.55,0-1.55,0-1.55,1.58V94.4a4.87,4.87,0,0,1,0,.54c-.09.78.22,1.09,1,1.06,1.39,0,2.78,0,4.18,0S96,96,96,94.46ZM17.15,12.62l-4.54,4.53h3.85c.42,0,.69-.16.69-.61Z"/><path d="M37.8,48.15H15.54a3.5,3.5,0,0,1-3.49-2.88,3.56,3.56,0,0,1,2.28-3.93,3.76,3.76,0,0,1,1.37-.19H59.9a3.51,3.51,0,1,1,0,7Z"/><path d="M32.62,58.44c-5.71,0-11.42,0-17.12,0a3.47,3.47,0,0,1-3.45-2.92,3.55,3.55,0,0,1,2.32-3.9,3.75,3.75,0,0,1,1.37-.18H49.56a3.5,3.5,0,1,1,0,7Z"/><path d="M34.21,91.63a3.6,3.6,0,0,1-2.69-1.13c-2.34-2.31-4.68-4.61-7-7a3.51,3.51,0,0,1-.07-5.17,3.58,3.58,0,0,1,5.17.24c1.12,1.09,2.22,2.22,3.33,3.33s1.17,1.16,2.37,0q5.27-5.26,10.52-10.53a3.67,3.67,0,0,1,3.48-1.2,3.49,3.49,0,0,1,2.25,5.35,5.48,5.48,0,0,1-.81,1Q44,83.37,37.1,90.21A4,4,0,0,1,34.21,91.63Z"/><path d="M51.46,19c-2.78,0-5.56,0-8.34,0a3.51,3.51,0,1,1,0-7H59.85a3.51,3.51,0,1,1,0,7C57,19,54.25,19,51.46,19Z"/><path d="M48.11,29.3c-1.71,0-3.42,0-5.13,0a3.5,3.5,0,1,1,0-7c3.42,0,6.84,0,10.26,0a3.5,3.5,0,0,1,0,7C51.53,29.32,49.82,29.3,48.11,29.3Z"/></g></g></svg>
-        </div>
-        <h3>Examen de control CPU</h3>
-        <div class="rule"></div>
-        <p>Exámenes de control tomados durante el ciclo CPU de la UNJFSC, organizados por año.</p>
-        <a class="btn" href="examenes/control-cpu/index.html">Ver Exámenes</a>
-      </div>
-
-      <div class="card active" style="position:relative">
-        <span class="tag-nuevo" id="simNuevo">Nuevo</span>
-        <div class="icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="fill:none"><circle cx="12" cy="13.5" r="8"/><path d="M12 9.5v4l2.5 2.5"/><path d="M9.5 2.5h5"/><path d="M12 2.5v3"/><path d="m19 6 1.5-1.5"/></svg>
-        </div>
-        <h3>Simulacro</h3>
-        <div class="rule"></div>
-        <p>80 preguntas con tiempo y el puntaje de tu bloque, como el examen de admisión de la UNJFSC.</p>
-        <a class="btn" href="simulacro.html" data-mc-nav="practicar">Crear simulacro</a>
-      </div>
-
-      <script>try { if (localStorage.getItem('mc_sim_visto')) document.getElementById('simNuevo').remove(); } catch (e) {}</script>
+    <section class="cards modos">
+      <a class="modo c-azul" href="examenes/ordinario/index.html"><span class="ic"><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 103 103"><g id="Capa_2" data-name="Capa 2"><g id="Capa_4" data-name="Capa 4"><path d="M51.4,103H4.17C1.28,103,0,101.72,0,98.81Q0,60,0,21.26a4.87,4.87,0,0,1,1.56-3.7q8-7.95,16-16A5,5,0,0,1,21.33,0Q60.11,0,98.88,0C101.71,0,103,1.31,103,4.13q0,47.34,0,94.68c0,2.94-1.22,4.18-4.14,4.18ZM68.57,51.54q0-21.63,0-43.27c0-.88-.17-1.27-1.17-1.26q-21,0-42.09,0c-1,0-1.19.34-1.18,1.24,0,4,0,8.07,0,12.11a3.45,3.45,0,0,1-3.77,3.8c-4,0-7.93,0-11.89,0C7,24.16,7,24.17,7,25.62V94.49C7,96,7,96,8.56,96H67c1.53,0,1.53,0,1.53-1.5Zm13.71,0V14.56c0-2.18,0-4.36,0-6.54,0-.73-.22-1-1-1-1.39,0-2.78,0-4.18,0s-1.55,0-1.55,1.58V94.4a4.87,4.87,0,0,1,0,.54c-.09.78.22,1.09,1,1.06,1.39,0,2.78,0,4.18,0s1.5,0,1.5-1.53Zm13.71,0V14.13c0-2,0-4.07,0-6.11,0-.73-.22-1-1-1-1.39,0-2.78,0-4.18,0-1.55,0-1.55,0-1.55,1.58V94.4a4.87,4.87,0,0,1,0,.54c-.09.78.22,1.09,1,1.06,1.39,0,2.78,0,4.18,0S96,96,96,94.46ZM17.15,12.62l-4.54,4.53h3.85c.42,0,.69-.16.69-.61Z"/><path d="M37.8,48.15H15.54a3.5,3.5,0,0,1-3.49-2.88,3.56,3.56,0,0,1,2.28-3.93,3.76,3.76,0,0,1,1.37-.19H59.9a3.51,3.51,0,1,1,0,7Z"/><path d="M32.62,58.44c-5.71,0-11.42,0-17.12,0a3.47,3.47,0,0,1-3.45-2.92,3.55,3.55,0,0,1,2.32-3.9,3.75,3.75,0,0,1,1.37-.18H49.56a3.5,3.5,0,1,1,0,7Z"/><path d="M34.21,91.63a3.6,3.6,0,0,1-2.69-1.13c-2.34-2.31-4.68-4.61-7-7a3.51,3.51,0,0,1-.07-5.17,3.58,3.58,0,0,1,5.17.24c1.12,1.09,2.22,2.22,3.33,3.33s1.17,1.16,2.37,0q5.27-5.26,10.52-10.53a3.67,3.67,0,0,1,3.48-1.2,3.49,3.49,0,0,1,2.25,5.35,5.48,5.48,0,0,1-.81,1Q44,83.37,37.1,90.21A4,4,0,0,1,34.21,91.63Z"/><path d="M51.46,19c-2.78,0-5.56,0-8.34,0a3.51,3.51,0,1,1,0-7H59.85a3.51,3.51,0,1,1,0,7C57,19,54.25,19,51.46,19Z"/><path d="M48.11,29.3c-1.71,0-3.42,0-5.13,0a3.5,3.5,0,1,1,0-7c3.42,0,6.84,0,10.26,0a3.5,3.5,0,0,1,0,7C51.53,29.32,49.82,29.3,48.11,29.3Z"/></g></g></svg></span><b>Ordinario</b><small>Exámenes reales de la UNJFSC por año</small></a>
+      <a class="modo c-azul" href="examenes/cpu/index.html"><span class="ic"><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 103 103"><g id="Capa_2" data-name="Capa 2"><g id="Capa_4" data-name="Capa 4"><path d="M51.4,103H4.17C1.28,103,0,101.72,0,98.81Q0,60,0,21.26a4.87,4.87,0,0,1,1.56-3.7q8-7.95,16-16A5,5,0,0,1,21.33,0Q60.11,0,98.88,0C101.71,0,103,1.31,103,4.13q0,47.34,0,94.68c0,2.94-1.22,4.18-4.14,4.18ZM68.57,51.54q0-21.63,0-43.27c0-.88-.17-1.27-1.17-1.26q-21,0-42.09,0c-1,0-1.19.34-1.18,1.24,0,4,0,8.07,0,12.11a3.45,3.45,0,0,1-3.77,3.8c-4,0-7.93,0-11.89,0C7,24.16,7,24.17,7,25.62V94.49C7,96,7,96,8.56,96H67c1.53,0,1.53,0,1.53-1.5Zm13.71,0V14.56c0-2.18,0-4.36,0-6.54,0-.73-.22-1-1-1-1.39,0-2.78,0-4.18,0s-1.55,0-1.55,1.58V94.4a4.87,4.87,0,0,1,0,.54c-.09.78.22,1.09,1,1.06,1.39,0,2.78,0,4.18,0s1.5,0,1.5-1.53Zm13.71,0V14.13c0-2,0-4.07,0-6.11,0-.73-.22-1-1-1-1.39,0-2.78,0-4.18,0-1.55,0-1.55,0-1.55,1.58V94.4a4.87,4.87,0,0,1,0,.54c-.09.78.22,1.09,1,1.06,1.39,0,2.78,0,4.18,0S96,96,96,94.46ZM17.15,12.62l-4.54,4.53h3.85c.42,0,.69-.16.69-.61Z"/><path d="M37.8,48.15H15.54a3.5,3.5,0,0,1-3.49-2.88,3.56,3.56,0,0,1,2.28-3.93,3.76,3.76,0,0,1,1.37-.19H59.9a3.51,3.51,0,1,1,0,7Z"/><path d="M32.62,58.44c-5.71,0-11.42,0-17.12,0a3.47,3.47,0,0,1-3.45-2.92,3.55,3.55,0,0,1,2.32-3.9,3.75,3.75,0,0,1,1.37-.18H49.56a3.5,3.5,0,1,1,0,7Z"/><path d="M34.21,91.63a3.6,3.6,0,0,1-2.69-1.13c-2.34-2.31-4.68-4.61-7-7a3.51,3.51,0,0,1-.07-5.17,3.58,3.58,0,0,1,5.17.24c1.12,1.09,2.22,2.22,3.33,3.33s1.17,1.16,2.37,0q5.27-5.26,10.52-10.53a3.67,3.67,0,0,1,3.48-1.2,3.49,3.49,0,0,1,2.25,5.35,5.48,5.48,0,0,1-.81,1Q44,83.37,37.1,90.21A4,4,0,0,1,34.21,91.63Z"/><path d="M51.46,19c-2.78,0-5.56,0-8.34,0a3.51,3.51,0,1,1,0-7H59.85a3.51,3.51,0,1,1,0,7C57,19,54.25,19,51.46,19Z"/><path d="M48.11,29.3c-1.71,0-3.42,0-5.13,0a3.5,3.5,0,1,1,0-7c3.42,0,6.84,0,10.26,0a3.5,3.5,0,0,1,0,7C51.53,29.32,49.82,29.3,48.11,29.3Z"/></g></g></svg></span><b>CPU</b><small>Exámenes del Centro Preuniversitario</small></a>
+      <a class="modo c-azul" href="examenes/control-cpu/index.html"><span class="ic"><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 103 103"><g id="Capa_2" data-name="Capa 2"><g id="Capa_4" data-name="Capa 4"><path d="M51.4,103H4.17C1.28,103,0,101.72,0,98.81Q0,60,0,21.26a4.87,4.87,0,0,1,1.56-3.7q8-7.95,16-16A5,5,0,0,1,21.33,0Q60.11,0,98.88,0C101.71,0,103,1.31,103,4.13q0,47.34,0,94.68c0,2.94-1.22,4.18-4.14,4.18ZM68.57,51.54q0-21.63,0-43.27c0-.88-.17-1.27-1.17-1.26q-21,0-42.09,0c-1,0-1.19.34-1.18,1.24,0,4,0,8.07,0,12.11a3.45,3.45,0,0,1-3.77,3.8c-4,0-7.93,0-11.89,0C7,24.16,7,24.17,7,25.62V94.49C7,96,7,96,8.56,96H67c1.53,0,1.53,0,1.53-1.5Zm13.71,0V14.56c0-2.18,0-4.36,0-6.54,0-.73-.22-1-1-1-1.39,0-2.78,0-4.18,0s-1.55,0-1.55,1.58V94.4a4.87,4.87,0,0,1,0,.54c-.09.78.22,1.09,1,1.06,1.39,0,2.78,0,4.18,0s1.5,0,1.5-1.53Zm13.71,0V14.13c0-2,0-4.07,0-6.11,0-.73-.22-1-1-1-1.39,0-2.78,0-4.18,0-1.55,0-1.55,0-1.55,1.58V94.4a4.87,4.87,0,0,1,0,.54c-.09.78.22,1.09,1,1.06,1.39,0,2.78,0,4.18,0S96,96,96,94.46ZM17.15,12.62l-4.54,4.53h3.85c.42,0,.69-.16.69-.61Z"/><path d="M37.8,48.15H15.54a3.5,3.5,0,0,1-3.49-2.88,3.56,3.56,0,0,1,2.28-3.93,3.76,3.76,0,0,1,1.37-.19H59.9a3.51,3.51,0,1,1,0,7Z"/><path d="M32.62,58.44c-5.71,0-11.42,0-17.12,0a3.47,3.47,0,0,1-3.45-2.92,3.55,3.55,0,0,1,2.32-3.9,3.75,3.75,0,0,1,1.37-.18H49.56a3.5,3.5,0,1,1,0,7Z"/><path d="M34.21,91.63a3.6,3.6,0,0,1-2.69-1.13c-2.34-2.31-4.68-4.61-7-7a3.51,3.51,0,0,1-.07-5.17,3.58,3.58,0,0,1,5.17.24c1.12,1.09,2.22,2.22,3.33,3.33s1.17,1.16,2.37,0q5.27-5.26,10.52-10.53a3.67,3.67,0,0,1,3.48-1.2,3.49,3.49,0,0,1,2.25,5.35,5.48,5.48,0,0,1-.81,1Q44,83.37,37.1,90.21A4,4,0,0,1,34.21,91.63Z"/><path d="M51.46,19c-2.78,0-5.56,0-8.34,0a3.51,3.51,0,1,1,0-7H59.85a3.51,3.51,0,1,1,0,7C57,19,54.25,19,51.46,19Z"/><path d="M48.11,29.3c-1.71,0-3.42,0-5.13,0a3.5,3.5,0,1,1,0-7c3.42,0,6.84,0,10.26,0a3.5,3.5,0,0,1,0,7C51.53,29.32,49.82,29.3,48.11,29.3Z"/></g></g></svg></span><b>Control CPU</b><small>Exámenes de control del ciclo</small></a>
+      <a class="modo c-oro" href="simulacro.html" data-mc-nav="practicar"><span class="tag-nuevo" id="simNuevo">Nuevo</span><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="fill:none"><circle cx="12" cy="13.5" r="8"/><path d="M12 9.5v4l2.5 2.5"/><path d="M9.5 2.5h5"/><path d="M12 2.5v3"/><path d="m19 6 1.5-1.5"/></svg></span><b>Simulacro</b><small>80 preguntas con tiempo, como el examen real</small></a>
+      <a class="modo c-naranja duelo-banner" href="duelo.html" data-mc-nav="practicar"><span class="tag">Reto</span><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 3.5 13 13M3.5 3.5h4l9 9M20.5 3.5 11 13M20.5 3.5h-4l-4.2 4.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="m6 15.5 2.5 2.5M18 15.5 15.5 18M4 20l3-3M20 20l-3-3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span><b>Duelos</b><small>Reta hasta a 3 amigos</small></a>
+      <a class="modo c-morado" href="falladas.html"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4v4.5h4.5"/><path d="m9.5 9.5 5 5M14.5 9.5l-5 5"/></svg></span><b>Mis falladas</b><small>Repasa las preguntas que fallaste</small></a>
     </section>
+    <script>try { if (localStorage.getItem('mc_sim_visto')) document.getElementById('simNuevo').remove(); } catch (e) {}</script>
 
-    <a class="duelo-banner" href="duelo.html" data-mc-nav="practicar">
-      <span class="tag-nuevo">Nuevo</span>
-      <span class="duelo-vs" aria-hidden="true"><i>Tú</i><b>VS</b><i class="r">?</i></span>
-      <span class="duelo-txt">
-        <strong>Duelos con amigos</strong>
-        <span>Reta hasta a 3 amigos: las mismas preguntas, 60 segundos cada una. El 1.º se lleva la medalla y sube al top de la semana.</span>
-      </span>
-      <span class="btn">Retar a alguien</span>
-    </a>
+    <div id="mcTopAncla"></div>
 
     <section class="coffee">
 
@@ -709,7 +598,7 @@ function jsonpRequest(url) {
   (function () {
     var ICONO = {
       mano: '<svg class="mi mano" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 11V6a2 2 0 0 0-4 0"/><path d="M14 10V4a2 2 0 0 0-4 0v2"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-6-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>',
-      cal: '<svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>',
+      cal: '<svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/></svg>',
       llave: '<svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="7.5" cy="15.5" r="5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>'
     };
     var raiz = document.documentElement;
@@ -754,6 +643,7 @@ function jsonpRequest(url) {
       setTimeout(function () { input.focus(); }, 50);
     }
     document.getElementById('barCodigo').addEventListener('click', abrirCodigo);
+    document.getElementById('salCodigo').addEventListener('click', abrirCodigo);
     async function activar() {
       var codigo = input.value.trim().toUpperCase();
       msg.className = 'cod-msg';
@@ -787,7 +677,7 @@ function jsonpRequest(url) {
     // ===== Saludo: nombre, cuenta regresiva y accesos activos =====
     var NOMBRES = { 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'seminario-VIP': 'Todos los Seminarios', 'banqueo-VIP': 'Todo el Banqueo', 'tarjetas-VIP': 'Todas las Flashcards', 'simulacro': 'Simulacro', 'TODO-VIP': 'Acceso total' };
     var cursos = {};
-    fetch('assets/cursos.json').then(function (r) { return r.json(); }).then(function (d) {
+    var cursosListos = fetch('assets/cursos.json').then(function (r) { return r.json(); }).then(function (d) {
       (d.cursos || []).forEach(function (c) { cursos[c.id] = c.nombre; });
       pintarAccesos();
     }).catch(function () {});
@@ -814,10 +704,7 @@ function jsonpRequest(url) {
         var c = document.createElement('span'); c.className = 'chip'; c.textContent = '✓ ' + nombreProducto(p);
         caja.appendChild(c);
       });
-      var b = document.createElement('button'); b.type = 'button'; b.className = 'chip';
-      if (prods.length) b.textContent = '+ Otro código'; else b.innerHTML = ICONO.llave + 'Activa tu código';
-      b.addEventListener('click', abrirCodigo);
-      caja.appendChild(b);
+      document.getElementById('salCodigo').lastChild.textContent = prods.length ? 'Otro código' : 'Activar código';
       var g = document.createElement('a'); g.className = 'sal-grupo'; g.target = '_blank'; g.rel = 'noopener noreferrer';
       g.href = CFG.WHATSAPP_GRUPO || 'https://chat.whatsapp.com/HlKvyK6HLXP02iIgGvj1Iz?mode=gi_t';
       g.innerHTML = '<span class="wa"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.19 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35zM12.05 21.5h-.01a9.4 9.4 0 0 1-4.79-1.31l-.34-.2-3.56.93.95-3.47-.22-.36a9.4 9.4 0 0 1-1.44-5.02c0-5.2 4.23-9.43 9.44-9.43 2.52 0 4.89.98 6.67 2.77a9.37 9.37 0 0 1 2.76 6.67c0 5.2-4.24 9.43-9.44 9.43zm8.03-17.46A11.27 11.27 0 0 0 12.05.72C5.8.72.7 5.8.7 12.06c0 2 .52 3.95 1.52 5.67L.6 23.28l5.69-1.49a11.33 11.33 0 0 0 5.75 1.47h.01c6.26 0 11.35-5.09 11.35-11.35 0-3.03-1.18-5.88-3.33-8.02z"/></svg></span><span>Pulsa el icono para unirte al grupo de <b>Modo Cachimbo</b></span>';
@@ -831,40 +718,69 @@ function jsonpRequest(url) {
       if (nombre) { var s = document.createElement('span'); s.className = 'accent'; s.textContent = nombre; h.appendChild(s); }
       h.appendChild(document.createTextNode('!')); h.insertAdjacentHTML('beforeend', ICONO.mano);
       var cta = document.getElementById('salCuenta'), f = p && p.fecha_examen;
-      if (!f) { cta.className = 'sal-cuenta vacia'; cta.innerHTML = ICONO.cal + 'Pon la fecha de tu examen'; return; }
+      function poner(grande, chico) {
+        cta.innerHTML = ICONO.cal + '<span><b></b></span>';
+        cta.querySelector('b').textContent = grande;
+        cta.lastChild.appendChild(document.createTextNode(chico));
+      }
+      if (!f) { cta.className = 'sal-cuenta vacia'; poner('¿Cuándo?', 'Pon la fecha de tu examen'); return; }
       var hoy = new Date(); hoy.setHours(0, 0, 0, 0);
       var q = f.split('-'), n = Math.round((new Date(+q[0], +q[1] - 1, +q[2]) - hoy) / 86400000);
-      if (n < 0) { cta.className = 'sal-cuenta vacia'; cta.innerHTML = ICONO.cal + 'Actualiza la fecha de tu examen'; return; }
-      cta.className = 'sal-cuenta'; cta.textContent = '';
-      var b = document.createElement('b'), t = document.createElement('span');
-      b.textContent = n === 0 ? '¡Hoy!' : n;
-      t.textContent = n === 0 ? 'es tu examen. ¡Éxitos!' : n === 1 ? 'día para tu examen' : 'días para tu examen';
-      cta.appendChild(b); cta.appendChild(t);
+      if (n < 0) { cta.className = 'sal-cuenta vacia'; poner('¿Cuándo?', 'Actualiza la fecha de tu examen'); return; }
+      cta.className = 'sal-cuenta';
+      if (n === 0) poner('¡Hoy!', 'es tu examen. ¡Éxitos!');
+      else poner(n === 1 ? '1 día' : n + ' días', 'para tu examen');
     }
     pintarAccesos();
 
     // ===== Racha de estudio (assets/racha.js la carga auth.js) =====
     function pintarRacha(r) {
       var caja = document.getElementById('salRacha');
-      if (!r) { caja.hidden = true; return; }
-      var meta = r.meta || 10, hoy = Math.min(r.hoy || 0, meta), n = r.actual || 0;
-      var num = document.getElementById('salRachaNum');
-      num.innerHTML = MCRacha.icono; num.appendChild(document.createTextNode(n));
-      document.getElementById('salRachaLbl').textContent = n === 1 ? 'día de racha' : 'días de racha';
+      var meta = (r && r.meta) || 10, hoy = Math.min((r && r.hoy) || 0, meta);
       document.getElementById('salRachaBarra').style.width = (hoy / meta * 100) + '%';
-      document.getElementById('salRachaHoy').textContent = r.cumplido_hoy ? '¡Hoy cumpliste! ✓' : 'Hoy ' + hoy + '/' + meta + ' preguntas';
-      caja.classList.toggle('on', !!r.cumplido_hoy);
-      caja.hidden = false;
+      document.getElementById('salRachaHoy').textContent = r && r.cumplido_hoy ? '¡Meta cumplida!' : hoy + ' / ' + meta + ' preguntas';
+      caja.classList.toggle('on', !!(r && r.cumplido_hoy));
     }
     (function esperarRacha(i) {
       if (window.MCRacha) MCRacha.alCambiar(pintarRacha);
       else if (i < 100) setTimeout(function () { esperarRacha(i + 1); }, 150);
     })(0);
 
+    // ===== "Seguir practicando": vuelve al último curso o examen que practicó =====
+    var EXAMENES = { ordinario: 'Ordinario', cpu: 'CPU', 'control-cpu': 'Control CPU' };
+    function pintarSeguir(practicas) {
+      var x = (practicas || []).filter(function (p) { return p.tipo === 'simulacro' || p.carpeta; })[0];
+      if (!x) return;
+      var a = document.getElementById('salSeguir'), href, nombre;
+      if (x.tipo === 'simulacro') { href = 'simulacro.html'; nombre = 'Simulacro'; }
+      else if (x.tipo === 'examen' && EXAMENES[x.carpeta]) { href = 'examenes/' + x.carpeta + '/index.html'; nombre = 'Examen ' + EXAMENES[x.carpeta]; }
+      else if (/^[a-z0-9-]+$/.test(x.carpeta)) { href = x.carpeta + '/index.html'; nombre = cursos[x.carpeta] || ''; }
+      if (!href) return;
+      a.href = href;
+      a.textContent = 'Seguir practicando';
+      if (nombre) { var sm = document.createElement('small'); sm.textContent = nombre; a.appendChild(sm); a.style.flexDirection = 'column'; a.style.gap = '2px'; }
+    }
+    (function esperarProgreso(i) {
+      if (window.MCProgreso) Promise.all([MCProgreso.cargar(), cursosListos]).then(function (d) { pintarSeguir(d[0].practicas); }).catch(function () {});
+      else if (i < 100) setTimeout(function () { esperarProgreso(i + 1); }, 150);
+    })(0);
+
+    // ===== Puntos del simulacro de esta semana (arriba, en dorado) =====
+    function pintarPuntos() {
+      MCAuth.listo.then(function (c) { return c.rpc('ranking_simulacro'); }).then(function (r) {
+        if (!r || r.error) return;
+        var yo = (r.data || []).filter(function (x) { return x.yo; })[0];
+        var n = yo ? Math.round(+yo.puntaje || 0) : 0;
+        document.getElementById('ptsNum').textContent = String(n);
+        document.getElementById('ptsPill').hidden = false;
+      }).catch(function () {});
+    }
+
     function alCambiar(u) {
       if (!u) { raiz.classList.add('mc-fuera'); bvGoogle.disabled = false; return; }
       raiz.classList.remove('mc-fuera');
       pintarSaludo(u, null);
+      pintarPuntos();
       MCAuth.perfil().then(function (p) { var a = MCAuth.usuario(); if (a && a.id === u.id) pintarSaludo(u, p); }).catch(function () {});
       if (primeraVez(u)) {
         var m = u.user_metadata || {};

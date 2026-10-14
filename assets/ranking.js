@@ -88,6 +88,7 @@
       '.mcr-p.yo{box-shadow:none;border-color:rgba(198,224,0,.6);border-bottom-color:#8fa300}.mcr-p b{font-weight:800}.mcr-p span{font-weight:900}' +
       '.mcr-bt{border:2px solid #2e2e2e;border-bottom-width:4px;border-radius:14px;font-weight:900;transition:transform .08s ease;-webkit-tap-highlight-color:transparent}' +
       '.mcr-bt:active{transform:translateY(2px);border-bottom-width:2px}.mcr-bt.on{border-bottom-color:#8fa300;color:#2b3300}' +
+      '.mcr-p span{color:#FFC800}.mcr-bt.on{background:transparent;border-color:rgba(255,200,0,.45);border-bottom-color:#a07c1c;color:#FFC800}' +
       '.mcr-lista[hidden]{display:none}.mcr-lista li{border:2px solid #232323;border-radius:14px}.mcr-lista li.yo{border:2px solid rgba(198,224,0,.4)}.mcr-lista .n{font-weight:800}';
     document.head.appendChild(st);
   }
@@ -114,7 +115,10 @@
       '<ol class="mcr-lista" id="mcrLista" hidden>' + L.map(function (x) {
         return '<li class="' + (x.yo ? 'yo' : '') + '"><span class="p">' + (medalla(x.puesto, 18) || x.puesto) + '</span><span class="n">' + esc(x.apodo) + (x.yo ? ' (tú)' : '') + '</span><b>' + dec(x.puntaje) + '</b></li>';
       }).join('') + '</ol>';
-    ancla.parentNode.insertBefore(caja, document.getElementById('mcPopulares') || ancla);
+    // En el inicio nuevo va después de Practica (#mcTopAncla)
+    var abajo = document.getElementById('mcTopAncla');
+    if (abajo) abajo.parentNode.insertBefore(caja, abajo.nextSibling);
+    else ancla.parentNode.insertBefore(caja, document.getElementById('mcPopulares') || ancla);
     var ver = document.getElementById('mcrVer');
     if (ver) ver.addEventListener('click', function () {
       var l = document.getElementById('mcrLista'); l.hidden = !l.hidden;
