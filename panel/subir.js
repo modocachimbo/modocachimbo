@@ -22,6 +22,10 @@
      PREGUNTA 2:
      Segundo padre de la geografía moderna
      RESPUESTA: Karl Ritter | Ritter
+   Si la respuesta es un número (RESPUESTA: 2,5 · 5/2 · 9,8 ± 0,1) se compara
+   como número. Otros tipos sin alternativas: ver tipoEspecial().
+   Analogías: CORDERO : OVEJA :: (dos puntos con espacios) en el enunciado y
+   en las alternativas; assets/pregunta.js alinea los dos puntos.
    ========================================================= */
 const MARCA = /\s*(✅|✔️|✔|☑️|☑|✓)\s*/gu;
 const LETRAS = 'ABCDEF';
@@ -29,8 +33,8 @@ const MAX_IMG = 6;
 
 // "[imagen]", "[ IMAGEN A LA DERECHA ]"… → '[IMAGEN]' | '[IMAGEN DERECHA]' | null
 function marcaImagen(l) {
-  const m = sinTildes(l).match(/^\[\s*imagen(?:\s+(?:a\s+la\s+)?(derecha))?\s*\]$/);
-  return m ? (m[1] ? '[IMAGEN DERECHA]' : '[IMAGEN]') : null;
+  const m = sinTildes(l).match(/^\[\s*imagen(?:\s+(?:a\s+la\s+)?(derecha)|\s+(?:para\s+)?(tocar))?\s*\]$/);
+  return m ? (m[1] ? '[IMAGEN DERECHA]' : m[2] ? '[IMAGEN TOCAR]' : '[IMAGEN]') : null;
 }
 // "A) VVV   B) FVV  C) VVF" → ['A) VVV', 'B) FVV', 'C) VVF'] (solo si las letras siguen en orden)
 function partirAlternativas(l, desde) {
@@ -59,6 +63,70 @@ function detectarCurso(txt) {
 function normalizarCiclo(s) {
   const m = String(s || '').toUpperCase().replace(/\s+/g, '').match(/^(\d{4})[-–_]?(III|II|I)$/);
   return m ? m[1] + '-' + m[2] : String(s || '').trim();
+}
+
+/* Tipos sin alternativas (solo Seminarios y Banqueo), leídos del texto de la pregunta:
+     completar    el enunciado lleva [[respuesta]] o [[una | otra que vale]] en cada espacio
+     vf           líneas que terminan en (V) o (F)
+     relacionar   líneas "izquierda -> derecha" (también → o =>)
+     ordenar      "ORDEN:" y debajo los pasos en el orden correcto
+     tocar        [IMAGEN TOCAR]: al revisar pegas la imagen y tocas dónde está la respuesta */
+const RX_NUM = /^(?:(?:[IVX]{1,4}|\d{1,2}|[a-hA-H])\s*[.)\-–]\s+)/;
+const RX_VF = /^(.+?)\s*\(\s*([VvFf])\s*\)\s*\.?$/;
+const RX_REL = /^(.+?)\s*(?:->|→|=>|⟶|⇒)\s*(.+)$/;
+function tipoEspecial(q) {
+  const L = q.textLines;
+  const resumen = t => { q.respuestas = [t]; q.abierta = true; q.correct = 0; delete q.clave; delete q.marcas; };
+  if (q.orden) {
+    q.tipo = 'ordenar';
+    q.orden = q.orden.map(x => x.replace(RX_NUM, '').trim()).filter(Boolean);
+    if (q.orden.length < 2) q.errores.push('Debajo de ORDEN: van al menos 2 pasos, uno por línea');
+    if (q.orden.length > 8) q.errores.push('Máximo 8 pasos para ordenar');
+    resumen(q.orden.join(' → '));
+    return;
+  }
+  if (q.tocar) {
+    q.tipo = 'tocar';
+    if (q.tocar > 1) q.errores.push('Solo puede haber una [IMAGEN TOCAR]');
+    if (L.some(l => /^\[IMAGEN( DERECHA)?\]$/.test(l))) q.errores.push('Con [IMAGEN TOCAR] no van otras imágenes');
+    resumen('Zona marcada en la imagen');
+    return;
+  }
+  const texto = L.join('\n');
+  if (/\[\[[^\]]+\]\]/.test(texto)) {
+    const huecos = [];
+    q.textLines = L.map(l => l.replace(/\[\[([^\[\]]+?)\]\]/g, (x, r) => {
+      huecos.push(r.split('|').map(t => t.trim()).filter(Boolean));
+      return '[[' + huecos.length + ']]';
+    }));
+    q.tipo = 'completar'; q.huecos = huecos;
+    if (huecos.some(h => !h.length)) q.errores.push('Hay un espacio [[ ]] vacío: escribe dentro la respuesta');
+    if (huecos.length > 10) q.errores.push('Máximo 10 espacios por pregunta');
+    resumen(huecos.map(h => h[0] || '').join(' · '));
+    return;
+  }
+  const vf = [], rel = [], resto = [];
+  L.forEach(l => {
+    let m;
+    if (!/\(\s*V\s*\)[\s\S]*\(\s*F\s*\)|\(\s*F\s*\)[\s\S]*\(\s*V\s*\)/i.test(l) && (m = l.match(RX_VF))) vf.push({ texto: m[1].replace(RX_NUM, '').trim(), v: m[2].toUpperCase() === 'V' });
+    else if (!/^\[IM|^\|/.test(l) && (m = l.match(RX_REL))) rel.push([m[1].replace(RX_NUM, '').trim(), m[2].trim()]);
+    else resto.push(l);
+  });
+  if (vf.length >= 2 && !rel.length) {
+    q.tipo = 'vf'; q.afirmaciones = vf; q.textLines = resto;
+    if (vf.length > 10) q.errores.push('Máximo 10 afirmaciones');
+    resumen(vf.map(a => a.v ? 'V' : 'F').join(''));
+    return;
+  }
+  if (rel.length >= 2 && !vf.length) {
+    q.tipo = 'relacionar'; q.pares = rel; q.textLines = resto;
+    if (rel.length > 8) q.errores.push('Máximo 8 parejas para relacionar');
+    const izq = rel.map(p => p[0].toLowerCase()), der = rel.map(p => p[1].toLowerCase());
+    if (new Set(izq).size < izq.length || new Set(der).size < der.length) q.errores.push('Hay parejas repetidas: cada lado debe ser distinto');
+    resumen(rel.map(p => p[0] + ' → ' + p[1]).join('; '));
+    return;
+  }
+  if (vf.length && rel.length) q.errores.push('Mezclaste afirmaciones (V)/(F) y parejas con ->: usa un solo tipo por pregunta');
 }
 
 // Lee el texto y devuelve { meta, preguntas: [{num, text, options, correct, errores[]}], avisos[] }
@@ -93,6 +161,10 @@ function parsearTexto(raw) {
     }
     if (!cur) { avisos.push('Línea ignorada (antes de la PREGUNTA 1): "' + l.slice(0, 60) + '"'); continue; }
     const marca = marcaImagen(l);
+    if (marca === '[IMAGEN TOCAR]') { cur.tocar = (cur.tocar || 0) + 1; if (cur.options.length) cur.tocarTarde = true; continue; }
+    // Ordenar: "ORDEN:" y debajo los pasos en el orden correcto (hasta la siguiente PREGUNTA)
+    if ((m = l.match(/^ORDEN\s*(?:CORRECTO)?\s*:\s*(.*)$/i))) { cur.orden = m[1] ? [m[1]] : []; lastOpt = null; continue; }
+    if (cur.orden && !/^(?:RESPUESTA|CLAVE|RPTA\.?)\b/i.test(l)) { cur.orden.push(l); continue; }
     if (marca) {
       if (lastOpt && marca === '[IMAGEN]') cur.malas = (cur.malas || 0) + 1;
       else cur.textLines.push(marca);
@@ -100,7 +172,12 @@ function parsearTexto(raw) {
     }
     if ((m = l.match(/^(?:RESPUESTA|CLAVE|RPTA\.?)\s*(?:CORRECTA)?\s*[:=]?\s*\(?([A-Fa-f])\)?\s*$/i))) { cur.clave = m[1].toUpperCase(); cur.resp = m[1]; continue; }
     // Respuesta escrita (pregunta abierta): "RESPUESTA: Karl Ritter | Ritter"
-    if ((m = l.match(/^(?:RESPUESTA|RPTA\.?)\s*(?:CORRECTA)?\s*[:=]\s*(.+)$/i))) { cur.resp = m[1].trim(); lastOpt = null; continue; }
+    // (si va antes de las alternativas puede ser parte del enunciado, como RESPUESTA : PREGUNTA en una analogía)
+    if ((m = l.match(/^(?:RESPUESTA|RPTA\.?)\s*(?:CORRECTA)?\s*[:=]\s*(.+)$/i))) {
+      cur.resp = m[1].trim(); lastOpt = null;
+      if (!cur.options.length) cur.respLinea = { l, pos: cur.textLines.length };
+      continue;
+    }
     const esperada = LETRAS[cur.options.length];
     if (esperada && (m = l.match(/^\(?([A-Fa-f])\s*\)\s*(.*)$/)) && m[1].toUpperCase() === esperada) {
       partirAlternativas(m[2], cur.options.length).forEach((pt, j) => {
@@ -124,16 +201,28 @@ function parsearTexto(raw) {
     if (!x.n) avisos.push('El ' + x.titulo + ' no tiene preguntas debajo (escribe PREGUNTA … después del texto)');
   });
   preguntas.forEach((q, i) => {
+    // RESPUESTA escrita antes de las alternativas: era una línea del enunciado
+    if (q.respLinea && q.options.length && !q.clave) { q.textLines.splice(q.respLinea.pos, 0, q.respLinea.l); q.resp = null; }
+    delete q.respLinea;
+    q.errores = [];
+    if (!q.options.length) tipoEspecial(q);
+    else {
+      if (q.orden) q.errores.push('Una pregunta de ORDEN no lleva alternativas');
+      if (q.tocar) q.errores.push('Una pregunta con [IMAGEN TOCAR] no lleva alternativas');
+      if (q.textLines.some(l => /\[\[[^\]]+\]\]/.test(l))) q.errores.push('Los espacios [[…]] son para completar sin alternativas; si tiene alternativas, escribe ____');
+    }
+    if (q.tipo !== 'ordenar') delete q.orden;
+    delete q.tocar; delete q.tocarTarde;
     q.text = q.textLines.join('\n').trim();
     delete q.textLines;
-    q.errores = [];
     const x = q.lec; delete q.lec;
     q.lectura = x && x.cuerpo ? '[' + x.titulo + ']\n' + x.cuerpo + '\n[/TEXTO]\n' : '';
     if (x && !x.cuerpo) q.errores.push('El ' + x.titulo + ' está vacío');
     if (x && x.malas) q.errores.push('Por ahora el ' + x.titulo + ' no puede llevar [IMAGEN]; ponla en la pregunta');
     // Sin alternativas y con RESPUESTA: pregunta abierta (el alumno escribe la respuesta)
     const resp = q.resp; delete q.resp;
-    if (!q.options.length && resp) {
+    if (q.tipo) { /* completar, vf, relacionar, ordenar o tocar: ya se leyó del texto */ }
+    else if (!q.options.length && resp) {
       q.abierta = true;
       q.respuestas = resp.split('|').map(r => r.replace(MARCA, ' ').trim()).filter(Boolean);
       q.correct = 0;
@@ -150,7 +239,7 @@ function parsearTexto(raw) {
     } else if (q.marcas.length === 1) q.correct = q.marcas[0];
     else if (q.marcas.length > 1) q.errores.push('Tiene más de una ✅');
     if (!q.text) q.errores.push('Falta el enunciado');
-    if (!q.abierta && q.options.length < 2) q.errores.push(q.options.length ? 'Tiene menos de 2 alternativas' : 'No tiene alternativas. Si es de respuesta abierta, escribe debajo RESPUESTA: y la respuesta');
+    if (!q.abierta && q.options.length < 2) q.errores.push(q.options.length ? 'Tiene menos de 2 alternativas' : 'No tiene alternativas. Si es de respuesta abierta, escribe debajo RESPUESTA: y la respuesta (o usa otro tipo: completar, V o F, relacionar, ORDEN)');
     q.options.forEach(o => { if (!o.text) q.errores.push('La alternativa ' + o.letter + ' está vacía'); });
     const marcas = (q.text.match(/^\[IMAGEN( DERECHA)?\]$/gm) || []);
     q.marcasImg = marcas.length;
@@ -265,9 +354,11 @@ function revisarTexto() {
     // La lectura va arriba; el número de la pregunta, debajo de ella (justo antes del enunciado)
     const lec = k === 1 ? MCPregunta.armar(q.lectura, { lecPos: txtRango(q.lectura) }).html : '';
     const v = MCPregunta.armar(q.text, { marca: (k, der) => `<div class="pimg" data-z="${i}|${k}"></div>` });
-    const opts = q.abierta
+    const opts = q.tipo
+      ? `<div class="popt ok pab ptipo"><span class="l">R</span><div>${q.tipo === 'tocar' ? `<div class="pimg" data-z="${i}|t"></div><div class="ptoc-ayuda hint">Pega la imagen y luego tócala donde está la respuesta.</div>` : MCPregunta.solucion(q)}</div></div><div class="hint">${esc(MCPregunta.nombreTipo(q))}: ${AYUDA_TIPO[q.tipo]}</div>`
+      : q.abierta
       ? `<div class="popt ok pab"><span class="l">R</span><span>${q.respuestas.map(formatQText).join('<i class="pab-o"> o </i>')}</span><span class="chk">✓</span></div><div class="hint">Respuesta abierta: el alumno la escribe. No importan tildes ni mayúsculas.</div>`
-      : q.options.map((o, k) => `<div class="popt ${k === q.correct ? 'ok' : ''}"><span class="l">${esc(o.letter)}</span><span>${formatQText(o.text)}</span>${k === q.correct ? '<span class="chk">✓</span>' : ''}</div>`).join('');
+      : q.options.map((o, k) => `<div class="popt ${k === q.correct ? 'ok' : ''}"><span class="l">${esc(o.letter)}</span><span class="text">${formatQText(o.text)}</span>${k === q.correct ? '<span class="chk">✓</span>' : ''}</div>`).join('');
     return `
     <article class="pcard ${q.errores.length ? 'bad' : ''} ${k ? 'en-texto' : ''} ${sigue ? 'sigue' : ''}">
       ${lec}
@@ -276,19 +367,79 @@ function revisarTexto() {
       ${q.errores.length ? `<div class="perr">⚠ ${q.errores.map(esc).join(' · ')}</div>` : ''}
       <div class="ptext">${v.html}</div>
       ${q.marcasImg ? '' : `<div class="pimg" data-z="${i}|g"></div>`}
-      ${v.derecha ? `<div class="pder"><div>${opts}</div><div><div class="hint">Al lado de las alternativas</div>${v.derecha}</div></div>` : `<div class="${!q.abierta && MCPregunta.cortas(q.options) ? 'popts-cortas' : ''}">${opts}</div>`}
+      ${v.derecha ? `<div class="pder"><div>${opts}</div><div><div class="hint">Al lado de las alternativas</div>${v.derecha}</div></div>` : `<div class="popts ${!q.abierta && MCPregunta.cortas(q.options) ? 'popts-cortas' : ''}">${opts}</div>`}
     </article>`;
   }).join('');
   SUB.zonas = {};
+  const tocarPrev = SUB.tocar || {};
+  SUB.tocar = {};
   $('subLista').querySelectorAll('.pimg').forEach(el => {
     const k = el.dataset.z;
-    const z = SUB.zonas[k] = crearZonaImagen(el, { actual: '', onChange: validarMeta });
-    if (previas[k] && previas[k].cambio === 'nueva') z.recibirPreparada(previas[k].img);
+    const toc = /\|t$/.test(k) ? +k.split('|')[0] : null;
+    const z = SUB.zonas[k] = crearZonaImagen(el, { actual: '', onChange: () => { if (toc != null) pintarTocar(toc); validarMeta(); } });
+    if (previas[k] && previas[k].cambio === 'nueva') {
+      z.recibirPreparada(previas[k].img);
+      if (toc != null && tocarPrev[toc]) SUB.tocar[toc] = tocarPrev[toc];
+    }
+    if (toc != null) pintarTocar(toc);
   });
+  $('subLista').querySelectorAll('.ptext').forEach((el, i) => MCPregunta.llenarHuecos(el, r.preguntas[i]));
+  $('subLista').querySelectorAll('.pcard').forEach((el, i) => { const q = r.preguntas[i]; if (q && !q.abierta) MCPregunta.analogias(el.querySelector('.popts'), q); });
   renderMath($('subLista'));
   $('subPaso1').hidden = true; $('subPaso2').hidden = false;
   validarMeta();
   window.scrollTo(0, 0);
+}
+
+const AYUDA_TIPO = {
+  completar: 'el alumno escribe en cada espacio. No importan tildes ni mayúsculas; con | van otras que también valen.',
+  vf: 'el alumno marca V o F en cada afirmación. Acierta si todas están bien.',
+  relacionar: 'la columna de la derecha sale mezclada y el alumno une cada pareja.',
+  ordenar: 'los pasos salen mezclados y el alumno los toca en orden.',
+  tocar: 'el alumno toca la imagen; acierta si toca dentro del círculo.'
+};
+// Pregunta de tocar: sobre la imagen pegada, toca para marcar la respuesta y ajusta el tamaño del círculo
+function pintarTocar(i) {
+  const z = SUB.zonas[i + '|t'];
+  if (!z) return;
+  const el = z.el, prev = el.querySelector('.iz-prev'), card = el.closest('.pcard');
+  const ayuda = card && card.querySelector('.ptoc-ayuda');
+  let ctrl = card && card.querySelector('.ptoc');
+  if (!prev) { if (ctrl) ctrl.remove(); if (ayuda) ayuda.textContent = 'Pega la imagen y luego tócala donde está la respuesta.'; delete SUB.tocar[i]; return; }
+  const zona = SUB.tocar[i];
+  prev.classList.add('ptoc-img');
+  let c = prev.querySelector('.ptoc-c');
+  if (!c) {
+    // el círculo va junto a la imagen (sin el borde blanco del recuadro)
+    const img = prev.querySelector('img'), w = document.createElement('span');
+    w.className = 'ptoc-w'; if (img) { img.before(w); w.appendChild(img); } else prev.appendChild(w);
+    c = document.createElement('span'); c.className = 'ptoc-c'; w.appendChild(c);
+  }
+  c.hidden = !zona;
+  if (zona) { c.style.left = zona.x * 100 + '%'; c.style.top = zona.y * 100 + '%'; c.style.width = zona.r * 200 + '%'; }
+  if (ayuda) ayuda.innerHTML = zona ? '<b>Listo.</b> Toca otra vez para mover el círculo.' : '<b>Ahora toca la imagen</b> donde está la respuesta.';
+  if (!prev.dataset.toc) {
+    prev.dataset.toc = '1';
+    prev.addEventListener('click', e => {
+      const img = prev.querySelector('img'); if (!img) return;
+      const b = img.getBoundingClientRect();
+      const x = (e.clientX - b.left) / b.width, y = (e.clientY - b.top) / b.height;
+      if (x < 0 || y < 0 || x > 1 || y > 1) return;
+      SUB.tocar[i] = { x: Math.round(x * 1000) / 1000, y: Math.round(y * 1000) / 1000, r: (SUB.tocar[i] && SUB.tocar[i].r) || 0.08 };
+      pintarTocar(i); validarMeta();
+    });
+  }
+  if (!ctrl) {
+    ctrl = document.createElement('label'); ctrl.className = 'ptoc';
+    ctrl.innerHTML = '<span>Tamaño del círculo</span><input type="range" min="3" max="30" step="1">';
+    el.after(ctrl);
+    ctrl.querySelector('input').addEventListener('input', e => {
+      if (!SUB.tocar[i]) return;
+      SUB.tocar[i].r = +e.target.value / 100; pintarTocar(i);
+    });
+  }
+  ctrl.hidden = !zona;
+  ctrl.querySelector('input').value = Math.round(((zona && zona.r) || 0.08) * 100);
 }
 
 function validarMeta() {
@@ -303,8 +454,10 @@ function validarMeta() {
   const malas = SUB.parse.preguntas.filter(q => q.errores.length).length;
   if (malas) errs.push('corrige ' + malas + ' pregunta' + (malas > 1 ? 's' : ''));
   const abiertas = SUB.parse.preguntas.filter(q => q.abierta).length;
-  if (abiertas && !conCredito()) errs.push('las preguntas de respuesta abierta solo van en Seminarios o Banqueo (elige el destino o ponles alternativas)');
+  if (abiertas && !conCredito()) errs.push('las preguntas sin alternativas (respuesta escrita, completar, V o F, relacionar, ordenar, tocar) solo van en Seminarios o Banqueo (elige el destino o ponles alternativas)');
   const sinImg = Object.keys(SUB.zonas).filter(k => !/\|g$/.test(k) && SUB.zonas[k].estado().cambio !== 'nueva').length;
+  const sinZona = SUB.parse.preguntas.filter((q, i) => q.tipo === 'tocar' && SUB.zonas[i + '|t'] && SUB.zonas[i + '|t'].estado().cambio === 'nueva' && !SUB.tocar[i]).length;
+  if (sinZona) errs.push('toca en la imagen dónde está la respuesta (' + sinZona + ' pregunta' + (sinZona > 1 ? 's' : '') + ' de tocar)');
   if (sinImg) errs.push('pega ' + (sinImg === 1 ? 'la imagen que falta' : 'las ' + sinImg + ' imágenes que faltan'));
   const n = SUB.parse.preguntas.length;
   $('subResumen').innerHTML = errs.length
@@ -340,6 +493,16 @@ function armarConImagenes(ruta, base) {
     });
     const out = Object.assign(base(q), { text: q.lectura + text, options: q.options.map(o => ({ letter: o.letter, text: o.text })), correct: q.correct });
     if (q.abierta) Object.assign(out, { abierta: true, respuestas: q.respuestas.slice(), options: [], correct: 0 });
+    if (q.tipo) out.tipo = q.tipo;
+    if (q.tipo === 'completar') out.huecos = q.huecos.map(h => h.slice());
+    if (q.tipo === 'vf') out.afirmaciones = q.afirmaciones.map(a => ({ texto: a.texto, v: a.v }));
+    if (q.tipo === 'relacionar') out.pares = q.pares.map(p => p.slice());
+    if (q.tipo === 'ordenar') out.orden = q.orden.slice();
+    if (q.tipo === 'tocar') {
+      const zt = SUB.zonas[i + '|t'] && SUB.zonas[i + '|t'].estado();
+      if (zt && zt.cambio === 'nueva') out.imagen = subir(q, zt);
+      out.zona = Object.assign({}, SUB.tocar[i]);
+    }
     const st = SUB.zonas[i + '|g'] && SUB.zonas[i + '|g'].estado();
     if (st && st.cambio === 'nueva') out.graphic = imgHtml(subir(q, st));
     return out;
