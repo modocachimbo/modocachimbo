@@ -454,7 +454,7 @@ function validarMeta() {
   const malas = SUB.parse.preguntas.filter(q => q.errores.length).length;
   if (malas) errs.push('corrige ' + malas + ' pregunta' + (malas > 1 ? 's' : ''));
   const abiertas = SUB.parse.preguntas.filter(q => q.abierta).length;
-  if (abiertas && !conCredito()) errs.push('las preguntas sin alternativas (respuesta escrita, completar, V o F, relacionar, ordenar, tocar) solo van en Seminarios o Banqueo (elige el destino o ponles alternativas)');
+  if (abiertas && ['seminario', 'banqueo'].indexOf($('subDestino').value) < 0) errs.push('las preguntas sin alternativas (respuesta escrita, completar, V o F, relacionar, ordenar, tocar) solo van en Seminarios o Banqueo (elige el destino o ponles alternativas)');
   const sinImg = Object.keys(SUB.zonas).filter(k => !/\|g$/.test(k) && SUB.zonas[k].estado().cambio !== 'nueva').length;
   const sinZona = SUB.parse.preguntas.filter((q, i) => q.tipo === 'tocar' && SUB.zonas[i + '|t'] && SUB.zonas[i + '|t'].estado().cambio === 'nueva' && !SUB.tocar[i]).length;
   if (sinZona) errs.push('toca en la imagen dónde está la respuesta (' + sinZona + ' pregunta' + (sinZona > 1 ? 's' : '') + ' de tocar)');
@@ -470,7 +470,7 @@ function validarMeta() {
 function carpetaDestino(curso, destino) {
   return destino === 'seminario' ? curso + '--seminarios' : destino === 'banqueo' ? curso + '--banqueo' : curso;
 }
-function conCredito() { return ['seminario', 'banqueo'].indexOf($('subDestino').value) >= 0; }
+function conCredito() { return ['libro', 'seminario', 'banqueo'].indexOf($('subDestino').value) >= 0; }
 const DESTINO_TXT = { fijas: ' · Banco de Fijas', seminario: ' · Seminarios', banqueo: ' · Banqueo' };
 
 // ruta(q, ext) → dónde va cada imagen; base(q) → campos de la pregunta además de text/options/correct

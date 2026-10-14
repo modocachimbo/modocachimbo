@@ -1349,7 +1349,7 @@ E) Alternativa"></textarea>
   function renderPreguntas(temas) {
     const t = temas.find(x => pad2(x.num) === sel.tema);
     if (!t) { $('qlist').innerHTML = '<div class="state-msg">Elige un tema.</div>'; return; }
-    const conCredito = /--(seminarios|banqueo)$/.test(sel.carpeta);
+    const conCredito = true; // Libros, Seminarios y Banqueo llevan crédito (el profesor sale en el temario)
     const url = SITE_ROOT + rutaWeb(sel.carpeta) + '/tema.html?year=' + encodeURIComponent(sel.anio) + '&tema=' + encodeURIComponent(t.num);
     $('qlist').innerHTML = `
       <div class="tema-acc">
