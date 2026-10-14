@@ -46,11 +46,32 @@
   .racha-fila { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
   .racha-dato { background: var(--surface-2); border: 1px solid var(--border); border-radius: 16px; padding: 14px 10px; text-align: center; }
   .racha-dato b { display: flex; align-items: center; justify-content: center; gap: 7px; font: 800 30px/1 'Sora', sans-serif; font-variant-numeric: tabular-nums; }
-  .racha-dato b svg { width: 19px; height: 25px; color: var(--accent); }
+  .racha-dato b svg { width: 26px; height: 26px; color: #FF9600; }
   .racha-dato span { display: block; margin-top: 7px; font-size: 12px; color: var(--text-dim); font-weight: 600; }
   .racha-dato.on b { color: var(--accent); }
   .racha-hoy { height: 6px; border-radius: 6px; background: #262626; overflow: hidden; margin-top: 14px; }
   .racha-hoy i { display: block; height: 100%; width: 0; background: var(--accent); }
+
+  /* Pestañas: Mi perfil / Ranking */
+  .tabs { display: flex; gap: 6px; margin-top: 18px; background: var(--surface); padding: 5px; border-radius: 16px; border: 2px solid var(--border); }
+  .tabs button { flex: 1; padding: 10px 0; border: 0; border-radius: 11px; background: transparent; color: var(--text-dim); font: 900 14.5px Nunito, Inter, sans-serif; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .tabs button.on { background: #1f1f1f; color: var(--text); box-shadow: inset 0 -3px 0 #FFC800; }
+  .mixp { display: flex; align-items: center; gap: 14px; margin-top: 18px; padding: 16px; border-radius: 22px; border: 2px solid rgba(255,200,0,.35); border-bottom-width: 5px; background: linear-gradient(135deg, rgba(255,200,0,.1), var(--surface) 60%); font-family: Nunito, Inter, sans-serif; }
+  .mixp svg { width: 46px; height: 46px; flex-shrink: 0; }
+  .mixp b { display: block; font-size: 26px; font-weight: 1000; color: #FFC800; font-variant-numeric: tabular-nums; }
+  .mixp small { font-size: 13px; color: var(--text-dim); font-weight: 700; }
+  .mixp .pos { margin-left: auto; text-align: right; }
+  .mixp .pos b { color: var(--text); font-size: 22px; }
+  .rk { display: grid; gap: 8px; }
+  .rk-fila { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 16px; background: var(--surface-2); border: 2px solid var(--border); font: 900 15px Nunito, Inter, sans-serif; font-variant-numeric: tabular-nums; }
+  .rk-fila .n { width: 28px; text-align: center; font-weight: 1000; color: var(--text-faint); flex-shrink: 0; }
+  .rk-fila .n svg { width: 26px; height: 30px; display: block; margin: 0 auto; }
+  .rk-fila .avt { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-weight: 1000; color: #111; flex-shrink: 0; }
+  .rk-fila .nom { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rk-fila .xp { color: #FFC800; font-weight: 1000; }
+  .rk-fila.yo { border-color: rgba(198,224,0,.45); background: rgba(198,224,0,.07); }
+  .rk-sep { text-align: center; color: var(--text-faint); font-weight: 900; letter-spacing: .2em; }
+  .rk-nota { text-align: center; font-size: 12.5px; color: var(--text-faint); margin-top: 14px; line-height: 1.5; }
 
   /* Errores de hoy */
   .err-top { display: flex; align-items: center; gap: 12px; }
@@ -290,6 +311,21 @@
         <div class="cuenta" id="cuenta"></div>
       </section>
 
+      <div class="tabs" role="tablist">
+        <button type="button" role="tab" class="on" id="tabBtnPerfil" aria-selected="true">Mi perfil</button>
+        <button type="button" role="tab" id="tabBtnRanking" aria-selected="false">Ranking</button>
+      </div>
+
+      <!-- Ranking de la semana: los que más estudian (XP de supabase/16-corazones.sql) -->
+      <div id="tabRanking" hidden>
+        <div class="mixp"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FFC800" d="M12 1.8 14.6 8l6.6.6-5 4.4 1.5 6.6L12 16.1l-5.7 3.5L7.8 13l-5-4.4L9.4 8z"/><path fill="#b88a00" opacity=".35" d="M12 16.1v-8l5.7 11.5z"/></svg><span><b id="rkXp">0 XP</b><small>esta semana</small></span><span class="pos"><b id="rkPuesto">–</b><small id="rkDe"></small></span></div>
+        <h2 class="sec-tit">Los que más estudian</h2>
+        <div class="rk" id="rkLista"><p class="nota">Cargando…</p></div>
+        <p class="rk-nota">Se reinicia cada lunes. Ganas +10 XP por respuesta correcta y +2 por incorrecta en todas las prácticas.</p>
+      </div>
+
+      <div id="tabPerfil">
+
       <details class="panel datos" id="datos">
         <summary>
           <span class="sec-ic cel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
@@ -403,6 +439,8 @@
         </div>
         <ul class="lista rep-lista" id="repLista"></ul>
       </section>
+
+      </div>
 
       <button class="btn-gris" type="button" id="btnSalir">Cerrar sesión</button>
     </div>
@@ -869,6 +907,55 @@
     $('cargando').innerHTML = '<p>No se pudo conectar. Revisa tu internet y recarga la página.</p>';
   });
 })();
+</script>
+<script>
+  /* ===== Pestañas y ranking de la semana (ranking_xp en supabase/16-corazones.sql) ===== */
+  (function () {
+    var bP = document.getElementById('tabBtnPerfil'), bR = document.getElementById('tabBtnRanking');
+    var cargado = false;
+    var COL = ['#1CB0F6', '#CE82FF', '#FF9600', '#FFC800', '#FF4B4B', '#C6E000'];
+    var MED = { 1: ['#f5c542', '#b8860b'], 2: ['#d9dee5', '#8a94a3'], 3: ['#e0995e', '#9a5a2a'] };
+    function esc(x) { return String(x == null ? '' : x).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+    function medalla(n) {
+      var c = MED[n];
+      return '<svg viewBox="0 0 24 28" aria-label="Puesto ' + n + '"><path d="M5 0h6l3.2 9.5H8.2z" fill="#C6E000"/><path d="M19 0h-6l-3.2 9.5h6z" fill="#8fa300"/><circle cx="12" cy="18.5" r="8.5" fill="' + c[0] + '" stroke="' + c[1] + '" stroke-width="1.6"/><text x="12" y="22.3" font-size="10" font-weight="900" text-anchor="middle" fill="#3a2a00" font-family="Nunito">' + n + '</text></svg>';
+    }
+    function fila(x) {
+      var nom = x.apodo || 'Cachimbo';
+      return '<div class="rk-fila' + (x.yo ? ' yo' : '') + '"><span class="n">' + (x.puesto <= 3 ? medalla(x.puesto) : x.puesto) + '</span>' +
+        '<span class="avt" style="background:' + COL[(x.puesto - 1) % COL.length] + '">' + esc(nom.charAt(0).toUpperCase()) + '</span>' +
+        '<span class="nom">' + esc(nom) + (x.yo ? ' (tú)' : '') + '</span><span class="xp">' + (x.xp || 0) + ' XP</span></div>';
+    }
+    function cargarRanking() {
+      if (cargado || !MCAuth.usuario()) return;
+      cargado = true;
+      MCAuth.listo.then(function (c) { return c.rpc('ranking_xp'); }).then(function (r) {
+        if (r.error) throw r.error;
+        var d = r.data || {}, top = d.top || [], yo = d.yo;
+        document.getElementById('rkXp').textContent = (yo ? yo.xp : 0) + ' XP';
+        document.getElementById('rkPuesto').textContent = yo ? yo.puesto + '.º' : '–';
+        document.getElementById('rkDe').textContent = yo ? 'de ' + d.total : 'responde para entrar';
+        var html = top.map(fila).join('');
+        if (yo && !top.some(function (x) { return x.yo; })) html += '<div class="rk-sep">···</div>' + fila({ puesto: yo.puesto, apodo: 'Tú', xp: yo.xp, yo: true }).replace(' (tú)', '');
+        document.getElementById('rkLista').innerHTML = html || '<p class="nota">Aún nadie suma XP esta semana. ¡Sé el primero!</p>';
+      }).catch(function () {
+        cargado = false;
+        document.getElementById('rkLista').innerHTML = '<p class="nota">No se pudo cargar el ranking. Revisa tu conexión.</p>';
+      });
+    }
+    function ver(rank) {
+      bP.classList.toggle('on', !rank); bR.classList.toggle('on', rank);
+      bP.setAttribute('aria-selected', String(!rank)); bR.setAttribute('aria-selected', String(rank));
+      document.getElementById('tabPerfil').hidden = rank;
+      document.getElementById('tabRanking').hidden = !rank;
+      if (rank) cargarRanking();
+      history.replaceState(null, '', rank ? '#ranking' : location.pathname + location.search);
+    }
+    bP.addEventListener('click', function () { ver(false); });
+    bR.addEventListener('click', function () { ver(true); });
+    if (location.hash === '#ranking') ver(true);
+    MCAuth.alCambiar(function (u) { if (u && !document.getElementById('tabRanking').hidden) cargarRanking(); });
+  })();
 </script>
 <script src="assets/sonido.js"></script>
 </body>

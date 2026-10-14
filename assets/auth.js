@@ -73,8 +73,17 @@
     var n = document.createElement('script');
     n.src = BASE + 'assets/novedades.js';
     document.head.appendChild(n);
-    // Cursos populares de la semana, solo en el inicio (assets/populares.js)
+    // Corazones, misiones del día y XP (assets/corazones.js) y el búho que usa
+    var cz = document.createElement('script');
+    cz.src = BASE + 'assets/corazones.js';
+    document.head.appendChild(cz);
     var pagina = location.href.replace(/[?#].*$/, '');
+    if (pagina !== BASE && pagina !== BASE + 'index.html') {
+      var bh = document.createElement('script');
+      bh.src = BASE + 'assets/buho.js';
+      document.head.appendChild(bh);
+    }
+    // Cursos populares de la semana, solo en el inicio (assets/populares.js)
     if (pagina === BASE || pagina === BASE + 'index.html') {
       var pp = document.createElement('script');
       pp.src = BASE + 'assets/populares.js';

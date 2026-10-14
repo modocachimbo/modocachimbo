@@ -10,7 +10,8 @@
 (function () {
   if (window.MCRacha || !window.MCAuth) return;
   var CFG = window.MC_CONFIG || {};
-  var ICONO = '<svg viewBox="0 0 120.29 157.64" aria-hidden="true" fill="currentColor"><path d="M120.18,101.71c-.51,10.3-2.67,20.23-7.85,29.28a52.44,52.44,0,0,1-8.71,11.41c-7.31,7.21-16.52,11.75-27.32,14-.66.14-1.31.31-2,.42a9.32,9.32,0,0,1-1.87.11.91.91,0,0,1,.16-.11,6.26,6.26,0,0,1,2.09-.88c7.59-2.72,13.9-7.07,17.82-14.3,4-7.44,3.73-15.16,1-22.94a52.09,52.09,0,0,0-6.61-12.46c-.67-1-1.08-1.25-2-.16a22.92,22.92,0,0,1-6.33,4.84c-.91.52-1.26.3-1.34-.74-.48-6.5-3.24-12.1-6.85-17.38C68.46,90,66.85,87,66.73,83.48a19.18,19.18,0,0,1,1.2-7.08c.15-.41.59-.9.22-1.28s-1,0-1.37.26c-10.56,5.32-17.41,13.75-21,24.93a61.53,61.53,0,0,0-2.43,14.83c-.15,2.18-1.72,3.07-3.76,2.21a11.55,11.55,0,0,1-4.18-3.55c-.41-.48-.64-1.16-1.43-1.45a39.73,39.73,0,0,0-1.33,7.87c-.42,5.69-.47,11.38,1.21,16.93C37,147.55,43.9,154,54.38,156.8l.08,0,1.85.47s.07.07.18.19a6.9,6.9,0,0,1-3.3-.17l-.11,0C41.33,155.6,30.62,151.75,21.41,145a61.25,61.25,0,0,1-8.48-7.57A46.86,46.86,0,0,1,.31,109.92c-1.19-10.8,1.14-21,5.33-30.86a107.65,107.65,0,0,1,12-20.72c.72-1,1.13-1,1.9-.06,3.73,4.64,8.54,7.94,13.67,10.81.54.31,1.21.9,1.29-.45C35.17,57.71,39,47.89,45,38.81a106.74,106.74,0,0,0,6.67-11.06c3.67-7.36,3.35-14.82.84-22.41A42.33,42.33,0,0,1,50.59,0h.62C77.84,11.93,92.53,33,97.8,61.16A89.26,89.26,0,0,1,99.15,72c.11,1.53.17,3.08.2,4.63.05,3.27,1.78,5.12,4.27,5a6.81,6.81,0,0,0,2.91-.87c3.73-2,6.25-5.25,8.77-8.5.43-.55.72-1.61,1.38-1.49s.66,1.25.81,2A111,111,0,0,1,120.18,101.71Z"/></svg>';
+  // Llama de dos capas: la de afuera y la de adentro titilan a distinto ritmo
+  var ICONO = '<svg class="mcl" viewBox="0 0 24 24" aria-hidden="true"><path class="mcl-ext" fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.7 1.6 2.6 1.9 5.4.8 8-1.2 2.9-3.9 4.7-6.6 4.7-3.2 0-6.1-2.2-6.8-5.5-.5-2.2.1-4.4 1.4-6.1.2 1.5.9 2.6 2 3.1-.5-4.4 1.4-8.6 4-11.9z"/><path class="mcl-int" fill="#FFD84D" d="M12.2 11.2c.4 1.7 2.2 2.6 2.7 4.5.6 2.4-1 4.6-3.1 4.6-2 0-3.4-1.6-3.2-3.5.1-1 .6-1.8 1.3-2.4.1.8.5 1.3 1 1.5-.2-1.7.4-3.3 1.3-4.7z"/></svg>';
 
   var estado = null, pendiente = 0, enviando = false, temporizador = null;
   var oyentes = [];
@@ -31,7 +32,8 @@
     st.textContent =
       '.mcu-racha{display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 14px 0 12px;border-radius:100px;border:1px solid var(--border,#232323);background:var(--surface,#0e0e0e);color:var(--text-dim,#9a9a9a);font:800 15px Sora,Inter,sans-serif;text-decoration:none;font-variant-numeric:tabular-nums}' +
       '.mcu-racha[hidden]{display:none}' +
-      '.mcu-racha svg{width:15px;height:20px}' +
+      '.mcu-racha svg{width:22px;height:22px}' +
+      '.mcu-racha:not(.on) .mcl-int{fill:#3a3a3a}' +
       '.mcu-racha.on{color:#FF9600;border-color:rgba(255,150,0,.35)}' +
       '.mcu-racha:hover{border-color:var(--accent,#C6E000)}' +
       // Estilo grueso: borde inferior que se hunde al tocarlo
@@ -42,13 +44,16 @@
       'background:#111;border:1px solid rgba(198,224,0,.45);color:#f2f2f2;border-radius:18px;padding:12px 18px 12px 14px;box-shadow:0 18px 40px rgba(0,0,0,.6),0 0 30px rgba(198,224,0,.15);' +
       'font:500 13.5px Inter,sans-serif;transition:transform .35s ease,opacity .35s ease;max-width:calc(100vw - 32px)}' +
       '.mcr-toast.show{transform:translate(-50%,0);opacity:1}' +
-      '.mcr-toast svg{width:26px;height:34px;color:#C6E000;flex-shrink:0;animation:mcrLlama 1s ease-in-out infinite alternate}' +
+      '.mcr-toast svg{width:32px;height:32px;color:#C6E000;flex-shrink:0;animation:mcrLlama 1s ease-in-out infinite alternate}' +
       '.mcr-toast b{display:block;font:800 16px Sora,Inter,sans-serif;color:#C6E000}' +
       '@keyframes mcrLlama{from{transform:scale(1)}to{transform:scale(1.12)}}' +
       // Fuego encendido (meta del día cumplida): la llama se mueve y brilla
-      '.mcu-racha.on svg,.sal-racha.on .num svg,.racha-dato.on b svg{transform-origin:50% 92%;animation:mcFuego 1.6s ease-in-out infinite;filter:drop-shadow(0 0 6px rgba(255,150,0,.55))}' +
-      '@keyframes mcFuego{0%,100%{transform:scale(1,1) skewX(0)}20%{transform:scale(.96,1.08) skewX(-3deg)}40%{transform:scale(1.04,.95) skewX(2deg)}60%{transform:scale(.97,1.1) skewX(3deg)}80%{transform:scale(1.02,.97) skewX(-2deg)}}' +
-      '@media (prefers-reduced-motion:reduce){.mcr-toast{transition:none}.mcr-toast svg,.mcu-racha.on svg,.sal-racha.on .num svg,.racha-dato.on b svg{animation:none}}' +
+      '.mcu-racha.on svg,.sal-racha.on .num svg,.racha-dato.on b svg{filter:drop-shadow(0 0 6px rgba(255,150,0,.55))}' +
+      '.mcu-racha.on .mcl-ext,.sal-racha.on .mcl-ext,.racha-dato.on .mcl-ext,.mcr-toast .mcl-ext{transform-box:fill-box;transform-origin:50% 95%;animation:mclExt 1.9s ease-in-out infinite}' +
+      '.mcu-racha.on .mcl-int,.sal-racha.on .mcl-int,.racha-dato.on .mcl-int,.mcr-toast .mcl-int{transform-box:fill-box;transform-origin:50% 95%;animation:mclInt 1.3s ease-in-out infinite}' +
+      '@keyframes mclExt{0%,100%{transform:scale(1,1) skewX(0)}30%{transform:scale(.97,1.05) skewX(-2deg)}60%{transform:scale(1.02,.97) skewX(2deg)}}' +
+      '@keyframes mclInt{0%,100%{transform:scale(1,1) translateY(0)}40%{transform:scale(.92,1.1) translateY(-1px)}70%{transform:scale(1.05,.94)}}' +
+      '@media (prefers-reduced-motion:reduce){.mcr-toast{transition:none}.mcr-toast svg,.mcl-ext,.mcl-int{animation:none!important}}' +
       '@media (max-width:520px){.mcu-racha{height:40px;padding:0 11px 0 9px;font-size:14px}}';
     document.head.appendChild(st);
   }

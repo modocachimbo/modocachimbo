@@ -714,6 +714,8 @@
     const e = estado[id];
     poner(id, sabe ? Math.min((e ? e[0] : 0) + 1, 5) : 0);
     window.MCRacha ? MCRacha.respondio() : (window.mcRachaPend = (window.mcRachaPend || 0) + 1);
+    // XP y misión de vocabulario (assets/corazones.js)
+    if (window.MCCorazones) MCCorazones.respuesta(sabe);
   }
   addEventListener('pagehide', subir);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') subir(); });
@@ -1487,7 +1489,7 @@
       if (norm(p.ops[j]) === norm(p.ok)) b.classList.add('bien'); else if (j === i) b.classList.add('mal'); else b.classList.add('apaga');
     });
     if (p.juego === 'completar' || p.analogia) { const h = $('qCuerpo').querySelector('.hueco'); if (h) { h.classList.add('lleno'); h.textContent = p.ok; } }
-    if (p.juego === 'completar' || p.sinMarca) racha1(); else marcar(p.it.id, bien);
+    if (p.juego === 'completar' || p.sinMarca) racha1(bien); else marcar(p.it.id, bien);
     resultado(bien);
   }
   // Debe estar bien escrita, con tildes; mayúsculas o minúsculas da igual
@@ -1500,7 +1502,7 @@
     marcar(p.it.id, !!hit);
     resultado(!!hit, tilde ? `¡Casi! Revisa las tildes: se escribe <b>${esc(tilde)}</b>.` : '');
   }
-  const racha1 = () => { window.MCRacha ? MCRacha.respondio() : (window.mcRachaPend = (window.mcRachaPend || 0) + 1); };
+  const racha1 = bien => { window.MCRacha ? MCRacha.respondio() : (window.mcRachaPend = (window.mcRachaPend || 0) + 1); if (window.MCCorazones) MCCorazones.respuesta(!!bien); };
 
   function resultado(bien, nota, rel) {
     Q.listo = true; pararReloj();
