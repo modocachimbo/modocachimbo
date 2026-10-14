@@ -305,6 +305,14 @@
   .ptext .mcq-img .pimg { width: 100%; margin: 0; }
   .pder { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 40%); gap: 14px; align-items: start; }
   .pder .hint { margin-bottom: 6px; }
+  /* Imagen derecha del alto de las alternativas (igual que la ve el alumno): no las separa ni deja espacio de más */
+  @media (min-width: 601px) {
+    .pder { align-items: stretch; }
+    .pder > div:last-child { display: flex; flex-direction: column; min-height: 0; }
+    .pder > div:last-child > .pimg { flex: 1; display: flex; flex-direction: column; margin: 0; min-height: 0; }
+    .pder .iz-prev { flex: 1; position: relative; min-height: 140px; padding: 0; background: none; }
+    .pder .iz-prev img, .pder .iz-prev svg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 100%; max-height: 100%; width: auto; height: auto; box-sizing: border-box; background: #fff; padding: 10px; border-radius: 12px; }
+  }
   .popts-cortas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 14px; }
   @media (max-width: 600px) { .pder { grid-template-columns: 1fr; } .popts-cortas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   .pubbar { position: sticky; bottom: 0; z-index: 15; margin-top: 16px; background: rgba(5,5,5,0.94); backdrop-filter: blur(6px); border-top: 1px solid #1a1a1a; padding: 14px 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
