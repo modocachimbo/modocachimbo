@@ -223,6 +223,10 @@ async function cargarVocabulario(forzar) {
   VO.publicados = r.data || [];
   VO.texto = voEscribir(VO.publicados);
   VO.cambios = false;
+  // Si se recargó la página sin guardar, recupera lo que estaba escrito
+  const borrador = voBorrador();
+  if (borrador != null && borrador !== VO.texto) { VO.texto = borrador; VO.cambios = true; VO.recuperado = true; }
+  else voBorrador(null);
   // "on" lo dejó guardado por error el interruptor del candado: no es un curso
   VO.cursos = ((a.data && a.data.valor && a.data.valor.cursos) || []).filter(c => c !== 'on');
   VO.candado = !(a.data && a.data.valor && a.data.valor.candado === false);
@@ -230,6 +234,18 @@ async function cargarVocabulario(forzar) {
   VO.cargado = true;
   pintarVoCursos();
   renderVocabulario();
+}
+
+// Borrador en este navegador: lo escrito y no publicado no se pierde al recargar
+function voBorrador(v) {
+  try {
+    if (v === undefined) return localStorage.getItem('mc_voc_borrador');
+    if (v === null) localStorage.removeItem('mc_voc_borrador'); else localStorage.setItem('mc_voc_borrador', v);
+  } catch (e) { return null; }
+}
+function voPublicadoTxt() {
+  const n = VO.publicados.length;
+  return n ? `Publicadas ahora: ${n} palabra${n > 1 ? 's' : ''}` : 'Aún no hay palabras publicadas';
 }
 
 function pintarVoCursos() {
@@ -297,12 +313,13 @@ function renderVocabulario() {
   ta.addEventListener('input', () => {
     VO.texto = ta.value;
     VO.cambios = ta.value !== voEscribir(VO.publicados);
+    voBorrador(VO.cambios ? ta.value : null);
     VO.borrar = false;
     voVista();
   });
   $('voBuscar').addEventListener('input', e => { VO.busca = e.target.value; voVista(); });
   $('voDeshacer').addEventListener('click', () => {
-    VO.texto = voEscribir(VO.publicados); VO.cambios = false; VO.borrar = false; renderVocabulario();
+    VO.texto = voEscribir(VO.publicados); VO.cambios = false; VO.borrar = false; voBorrador(null); VO.recuperado = false; renderVocabulario();
   });
   voVista();
 }
@@ -387,7 +404,9 @@ function voVista() {
   $('voDeshacer').disabled = !VO.cambios;
   $('voGuardar').disabled = !VO.cambios;
   $('voGuardar').textContent = VO.borrar ? 'Toca otra vez para vaciar' : 'Guardar y publicar';
-  voEstado(VO.cambios ? 'Cambios sin guardar' + (d.errores.length ? ` · ${d.errores.length} por corregir` : '') : '');
+  voEstado(VO.cambios
+    ? (VO.recuperado ? 'Recuperé lo que escribiste y no publicaste · ' : 'Cambios sin guardar · ') + (d.errores.length ? `${d.errores.length} por corregir` : 'toca Guardar y publicar')
+    : voPublicadoTxt());
 }
 
 async function guardarVocabulario() {
@@ -411,7 +430,9 @@ async function guardarVocabulario() {
   VO.publicados = lista.map((x, i) => Object.assign({ orden: i + 1 }, x));
   VO.texto = voEscribir(VO.publicados);
   VO.cambios = false;
+  voBorrador(null);
   renderVocabulario();
+  VO.recuperado = false;
   voEstado(`✓ Publicado: ${r.data == null ? lista.length : r.data} palabras.`);
   toast('Vocabulario guardado');
 }
