@@ -274,6 +274,14 @@
   .popt.ok .l { background: var(--accent); color: #0e0e0e; }
   .popt .chk { margin-left: auto; color: var(--accent); font-weight: 800; }
   .popt .pab-o { font-style: normal; font-weight: 500; color: var(--text-faint); }
+  .popt.ptipo { align-items: flex-start; }
+  .popt.ptipo > div { flex: 1; min-width: 0; }
+  .ptoc-img { cursor: crosshair; }
+  .ptoc-w { position: relative; display: inline-block; line-height: 0; max-width: 100%; }
+  .ptoc-c { position: absolute; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; border: 3px solid #2e9e00; background: rgba(198,224,0,.3); pointer-events: none; }
+  .ptoc { display: flex; align-items: center; gap: 10px; margin-top: 8px; font-size: 12.5px; color: var(--text-dim); }
+  .ptoc input { flex: 1; max-width: 240px; accent-color: var(--accent); }
+  .ptoc-ayuda b { color: var(--accent); }
   .pimg { margin: 10px 0 12px; }
   .fmt-ayuda { margin-top: 14px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); padding: 12px 16px; font-size: 13px; color: var(--text-dim); }
   .fmt-ayuda summary { cursor: pointer; font-weight: 700; color: var(--text); }
@@ -647,7 +655,17 @@ E) Alternativa"></textarea>
               <code>TEXTO 03:<br>Hubo un tiempo en que…<br>PREGUNTA 9:<br>¿Cuál es el título del texto?<br>…<br>PREGUNTA 10:<br>…<br>FIN TEXTO</code><span>Lectura para varias preguntas (Raz. Verbal, comprensión). Escribe <code>TEXTO</code> (con su número) y pega la lectura; vale para todas las preguntas de abajo hasta otro <code>TEXTO</code> o <code>FIN TEXTO</code>. El alumno la ve arriba de cada pregunta ("pregunta 2 de 3") y al mezclar (Repaso, Fijas) las preguntas del mismo texto salen juntas y en orden. Deja una línea en blanco entre párrafos.</span>
               <code>A) VVV   B) FVV   C) VVF</code><span>Varias alternativas en una línea también valen. Si son cortas, se muestran en columnas solas.</span>
               <code>a. texto   b. texto</code><span>Con punto es texto del enunciado (por ejemplo, una lista para relacionar). Las alternativas siempre van con paréntesis: A) o a).</span>
-              <code>PREGUNTA 2:<br>Segundo padre de la geografía moderna<br>RESPUESTA: Karl Ritter | Ritter</code><span>Pregunta de respuesta abierta (solo Seminarios y Banqueo): sin alternativas, el alumno escribe la respuesta. Con <code>|</code> separas otras formas que también valen. No importan tildes ni mayúsculas. En un mismo tema puedes mezclar preguntas con alternativas y abiertas.</span>
+              <code>PREGUNTA 4:<br>&lt;u&gt;CORDERO&lt;/u&gt; : OVEJA ::<br>A) potro : yegua<br>B) ternero : vaca ✅<br>C) pollo : gallo</code><span>Analogía: el par va con dos puntos y espacios a los lados (<code>CORDERO : OVEJA</code>); los <code>::</code> del final son opcionales. Las alternativas también con dos puntos. Al alumno le salen centradas y con los dos puntos uno debajo del otro.</span>
+            </div>
+            <div class="fmt-tit">Preguntas sin alternativas · solo Seminarios y Banqueo</div>
+            <div class="fmt-grid">
+              <code>PREGUNTA 2:<br>Segundo padre de la geografía moderna<br>RESPUESTA: Karl Ritter | Ritter</code><span><b>Respuesta escrita.</b> El alumno escribe la respuesta. Con <code>|</code> separas otras formas que también valen. No importan tildes ni mayúsculas. En un mismo tema puedes mezclar preguntas con alternativas y de estos tipos.</span>
+              <code>PREGUNTA 3:<br>Rapidez si recorre 10 m en 4 s (m/s)<br>RESPUESTA: 2,5</code><span><b>Respuesta numérica.</b> Si la respuesta es un número, vale escrito de cualquier forma: <code>2,5</code> = <code>2.5</code> = <code>5/2</code>, y la unidad no cuenta (<code>2,5 m/s</code>). Para aceptar un margen: <code>RESPUESTA: 9,8 ± 0,1</code>.</span>
+              <code>PREGUNTA 4:<br>La capital del [[Perú]] es<br>[[Lima | Lima Metropolitana]].</code><span><b>Completar espacios.</b> Cada espacio va entre <code>[[ ]]</code> con su respuesta adentro; con <code>|</code> otras que también valen. Puede haber varios espacios. No lleva RESPUESTA.</span>
+              <code>PREGUNTA 5:<br>Indica verdadero o falso:<br>I. La mitosis da 2 células. (V)<br>II. El ADN es simple. (F)<br>III. El ARN tiene uracilo. (V)</code><span><b>Verdadero o falso.</b> Cada afirmación en su línea, terminada en <code>(V)</code> o <code>(F)</code>. El alumno marca V o F en cada una y acierta si todas están bien. (Si le pones alternativas A) VFV… sigue siendo la pregunta de siempre.)</span>
+              <code>PREGUNTA 6:<br>Relaciona autor y obra:<br>Vallejo -> Trilce<br>Arguedas -> Los ríos profundos<br>Ribeyro -> Los gallinazos</code><span><b>Relacionar.</b> Una pareja por línea, con <code>-&gt;</code> (o →) en medio. La columna de la derecha le sale mezclada y el alumno une cada pareja. Hasta 8 parejas.</span>
+              <code>PREGUNTA 7:<br>Ordena las fases de la mitosis:<br>ORDEN:<br>Profase<br>Metafase<br>Anafase<br>Telofase</code><span><b>Ordenar.</b> Debajo de <code>ORDEN:</code> van los pasos en el orden correcto, uno por línea. Le salen mezclados y el alumno los toca en orden. Hasta 8 pasos.</span>
+              <code>PREGUNTA 8:<br>Toca la capital del Perú en el mapa.<br>[IMAGEN TOCAR]</code><span><b>Tocar en la imagen.</b> Al revisar pegas la imagen (Ctrl+V) y la tocas donde está la respuesta; con la barra ajustas el tamaño del círculo. El alumno acierta si toca dentro del círculo.</span>
             </div>
             <div class="fmt-tit">Texto y fórmulas · también con los botones B, I y U encima del cuadro (o Ctrl+B, Ctrl+I, Ctrl+U)</div>
             <div class="fmt-grid">
@@ -1323,7 +1341,7 @@ E) Alternativa"></textarea>
       const o = q.options[q.correct];
       return `<div class="qrow">
         <div class="num">${i + 1}</div>
-        <div class="body"><div class="t">${q.graphic ? '🖼 ' : ''}${esc(plano(q.text))}</div><div class="k">${q.abierta ? 'Respuesta: <b>' + esc((q.respuestas || []).join(' | ')) + '</b>' : 'Clave: <b>' + (o ? esc(o.letter + ') ' + plano(o.text)) : '—') + '</b>'}</div></div>
+        <div class="body"><div class="t">${q.graphic ? '🖼 ' : ''}${esc(plano(q.text))}</div><div class="k">${q.abierta ? (q.tipo ? esc(MCPregunta.nombreTipo(q)) + ': <b>' : 'Respuesta: <b>') + esc((q.respuestas || []).join(' | ')) + '</b>' : 'Clave: <b>' + (o ? esc(o.letter + ') ' + plano(o.text)) : '—') + '</b>'}</div></div>
         <button class="rbtn" type="button" data-n="${i + 1}">${ICON_EDIT} Editar</button>
       </div>`;
     }).join('');
@@ -1411,6 +1429,13 @@ E) Alternativa"></textarea>
     const q = t && t.questions[ctx.n - 1];
     if (!q) { body.innerHTML = `<div class="state-msg error">No encontré la pregunta ${ctx.n} del Tema ${esc(ctx.tema)} (${esc(ctx.anio)}). Quizá se movió o se borró.</div>`; return; }
 
+    // Tipos sin alternativas: se editan en el mismo formato con que se suben (subir.js)
+    const tipo = q.abierta && q.tipo && MCPregunta.tipoDe(q) === q.tipo ? q.tipo : '';
+    const textoEd = tipo === 'completar' ? q.text.replace(/\[\[(\d+)\]\]/g, (x, n) => '[[' + ((q.huecos || [])[n - 1] || []).join(' | ') + ']]') : q.text;
+    const lineasEsp = tipo === 'vf' ? q.afirmaciones.map(a => a.texto + ' (' + (a.v ? 'V' : 'F') + ')')
+      : tipo === 'relacionar' ? q.pares.map(x => x[0] + ' -> ' + x[1]) : tipo === 'ordenar' ? q.orden.slice() : null;
+    const AYUDA_ED = { vf: 'una afirmación por línea, terminada en (V) o (F)', relacionar: 'una pareja por línea: izquierda -> derecha', ordenar: 'un paso por línea, en el orden correcto' };
+    let zonaEd = tipo === 'tocar' ? Object.assign({}, q.zona) : null;
     const distinta = ctx.extracto && !plano(MCPregunta.sinLectura(q.text)).startsWith(norm(ctx.extracto).replace(/…$/, '').slice(0, 40));
     let correct = q.correct;
 
@@ -1420,12 +1445,18 @@ E) Alternativa"></textarea>
       <div class="sub">${esc(t.name)}</div>
       ${distinta ? `<div class="banner warn" style="margin-top:14px;">Ojo: la pregunta ${ctx.n} publicada no coincide con la del reporte. Es posible que el orden haya cambiado; revisa antes de guardar.</div>` : ''}
       <label class="fld">Pregunta</label>
-      <textarea class="ta" id="edText">${esc(q.text)}</textarea>
+      <textarea class="ta" id="edText">${esc(textoEd)}</textarea>
+      ${tipo === 'completar' ? '<div class="hint">Completar espacios: cada espacio va entre [[ ]] con su respuesta; con | separas otras que también valen.</div>' : ''}
       <div class="hint">Puedes usar *cursiva*, **negrita**, &lt;u&gt;subrayado&lt;/u&gt; (y combinarlos: **&lt;i&gt;negrita cursiva&lt;/i&gt;**) y ecuaciones entre $…$ (ej.: $x^2$). Los saltos de línea se respetan. Para una imagen nueva en medio del texto escribe <b>[IMAGEN]</b> (o <b>[IMAGEN DERECHA]</b>) en su propia línea; las ya publicadas se ven como [IMG:…], muévelas o bórralas como texto.</div>
       <div id="edMarcas"></div>
       <label class="fld">Imagen o gráfico <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— debajo del enunciado</span></label>
       <div id="edImg"></div>
-      ${q.abierta ? `<label class="fld">Respuesta <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— pregunta abierta; con | separas otras que también valen</span></label>
+      ${lineasEsp ? `<label class="fld">${esc(MCPregunta.nombreTipo(q))} <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— ${AYUDA_ED[tipo]}</span></label>
+      <textarea class="ta" id="edEsp" style="min-height:120px;">${esc(lineasEsp.join('\n'))}</textarea>`
+      : tipo === 'tocar' ? `<label class="fld">Tocar en la imagen <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— toca la imagen para mover el círculo</span></label>
+      <div class="iz-prev ptoc-img" id="edToc"><span class="ptoc-w"><img src="${esc(SITE_ROOT + q.imagen)}" alt=""><span class="ptoc-c"></span></span></div>
+      <label class="ptoc"><span>Tamaño del círculo</span><input type="range" min="3" max="30" step="1" id="edTocR"></label>`
+      : tipo ? '' : q.abierta ? `<label class="fld">Respuesta <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— pregunta abierta; con | separas otras que también valen</span></label>
       <input class="opt-in" id="edResp" style="width:100%;" value="${esc((q.respuestas || []).join(' | '))}">` : `<label class="fld">Alternativas <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— toca la letra para marcar la correcta</span></label>`}
       <div id="edOpts">${q.options.map((o, i) => `
         <div class="opt ${i === q.correct ? 'sel' : ''}" data-i="${i}">
@@ -1446,6 +1477,24 @@ E) Alternativa"></textarea>
     const save = body.querySelector('#edSave');
     const respEl = body.querySelector('#edResp');
     const respuestas = () => respEl ? respEl.value.split('|').map(norm).filter(Boolean) : null;
+    const espEl = body.querySelector('#edEsp');
+    // Lee el tipo como al subir: { campos, error }
+    function leerTipo(texto) {
+      const t = { textLines: texto.split('\n'), options: [], errores: [] };
+      if (tipo === 'ordenar') t.orden = espEl.value.split('\n').map(l => l.trim()).filter(Boolean);
+      if (tipo === 'vf' || tipo === 'relacionar') t.textLines = espEl.value.split('\n').map(l => l.trim()).filter(Boolean);
+      if (tipo === 'tocar') t.tocar = 1;
+      tipoEspecial(t);
+      if ((tipo === 'vf' || tipo === 'relacionar') && t.tipo === tipo && t.textLines.length) return { error: 'Esta línea no tiene ' + (tipo === 'vf' ? '(V) o (F) al final' : '-> en medio') + ': "' + t.textLines[0].slice(0, 50) + '"' };
+      if (t.tipo !== tipo) return { error: tipo === 'vf' ? 'Cada afirmación debe terminar en (V) o (F), y van al menos 2.' : tipo === 'relacionar' ? 'Cada pareja va en su línea con -> en medio, y van al menos 2.' : tipo === 'completar' ? 'Pon al menos un espacio [[respuesta]] en el texto.' : 'Revisa el formato.' };
+      const c = { tipo, respuestas: t.respuestas };
+      if (tipo === 'completar') { c.huecos = t.huecos; c.text = t.textLines.join('\n'); }
+      if (tipo === 'vf') c.afirmaciones = t.afirmaciones;
+      if (tipo === 'relacionar') c.pares = t.pares;
+      if (tipo === 'ordenar') c.orden = t.orden;
+      if (tipo === 'tocar') { c.zona = Object.assign({}, zonaEd); c.respuestas = q.respuestas; }
+      return { campos: c, error: t.errores[0] };
+    }
     function leer() {
       const v = {
         text: body.querySelector('#edText').value,
@@ -1453,12 +1502,15 @@ E) Alternativa"></textarea>
         correct
       };
       if (respEl) v.respuestas = respuestas();
+      if (tipo) { const r = leerTipo(v.text); if (r.campos) Object.assign(v, r.campos); v.errorTipo = r.error; }
       return v;
     }
+    const firma = x => JSON.stringify([x.huecos, x.afirmaciones, x.pares, x.orden, x.zona]);
     function cambio() {
       const v = leer();
       const dif = v.correct !== q.correct || v.text !== q.text || v.options.some((o, i) => o.text !== q.options[i].text) ||
         (respEl && v.respuestas.join('|') !== (q.respuestas || []).join('|')) ||
+        (tipo && firma(v) !== firma(q)) ||
         zonaImg.estado().cambio !== 'igual';
       save.disabled = !dif;
     }
@@ -1468,6 +1520,18 @@ E) Alternativa"></textarea>
       cambio();
     }));
     const zonaImg = crearZonaImagen(body.querySelector('#edImg'), { actual: q.graphic || '', onChange: () => cambio() });
+    if (tipo === 'tocar') {
+      const toc = body.querySelector('#edToc'), c = toc.querySelector('.ptoc-c'), rr = body.querySelector('#edTocR');
+      const dibujar = () => { c.style.left = zonaEd.x * 100 + '%'; c.style.top = zonaEd.y * 100 + '%'; c.style.width = zonaEd.r * 200 + '%'; rr.value = Math.round(zonaEd.r * 100); };
+      dibujar();
+      toc.addEventListener('click', e => {
+        const b = toc.querySelector('img').getBoundingClientRect();
+        const x = (e.clientX - b.left) / b.width, y = (e.clientY - b.top) / b.height;
+        if (x < 0 || y < 0 || x > 1 || y > 1) return;
+        zonaEd.x = Math.round(x * 1000) / 1000; zonaEd.y = Math.round(y * 1000) / 1000; dibujar(); cambio();
+      });
+      rr.addEventListener('input', () => { zonaEd.r = +rr.value / 100; dibujar(); cambio(); });
+    }
     // Un recuadro por cada [IMAGEN] escrita en el texto
     const marcasEl = body.querySelector('#edMarcas');
     let zonasMarca = [];
@@ -1512,6 +1576,8 @@ E) Alternativa"></textarea>
       err.classList.remove('show');
       if (!norm(v.text) || v.options.some(o => !norm(o.text))) { err.textContent = 'La pregunta y las alternativas no pueden quedar vacías.'; err.classList.add('show'); return; }
       if (respEl && !v.respuestas.length) { err.textContent = 'Falta la respuesta.'; err.classList.add('show'); return; }
+      if (v.errorTipo) { err.textContent = v.errorTipo; err.classList.add('show'); return; }
+      delete v.errorTipo;
       const imagenes = [];
       if (zonasMarca.some(z => z.zona.estado().cambio !== 'nueva')) { err.textContent = 'Pega la imagen de cada [IMAGEN] que escribiste, o borra la marca.'; err.classList.add('show'); return; }
       let km = 0;
@@ -1535,7 +1601,7 @@ E) Alternativa"></textarea>
         delete cacheArchivos[ctx.carpeta + '|' + ctx.anio];
         if (r.sinCambios) { cerrarModal(); toast('No había cambios que guardar'); return; }
         if (window.MCRep) MCRep.estado({ carpeta: ctx.carpeta, anio: ctx.anio, tema: ctx.tema, pregunta: ctx.n }, 'Corregido');
-        const oNew = v.options[v.correct] || { letter: 'Respuesta', text: (v.respuestas || []).join(' | ') };
+        const oNew = v.options[v.correct] || { letter: 'Respuesta', text: tipo === 'tocar' ? 'zona marcada en la imagen' : (v.respuestas || []).join(' | ') };
         body.innerHTML = `<div class="done">
           <div class="ico">${ICON_OK}</div>
           <div class="eyebrow">Publicado</div>

@@ -409,7 +409,7 @@
     const n = pad(tema.num), out = [];
     (tema.questions || []).forEach((q, i) => {
       // Pregunta abierta (Seminarios y Banqueo): ya es una tarjeta; el reverso es su respuesta
-      if (MCPregunta.esAbierta && MCPregunta.esAbierta(q)) { out.push({ id: n + '#' + (i + 1), tema: n, nombre: tema.name, q, ops: false }); return; }
+      if (MCPregunta.esAbierta && MCPregunta.esAbierta(q)) { if (!q.tipo || q.tipo === 'completar') out.push({ id: n + '#' + (i + 1), tema: n, nombre: tema.name, q, ops: false }); return; } // V o F, relacionar, ordenar y tocar no van en tarjetas
       if (!q || !Array.isArray(q.options) || !q.options[q.correct]) return;
       out.push({ id: n + '#' + (i + 1), tema: n, nombre: tema.name, q, ops: conAlternativas(q) });
     });
