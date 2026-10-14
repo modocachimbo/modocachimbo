@@ -384,7 +384,8 @@ function revisarTexto() {
     if (toc != null) pintarTocar(toc);
   });
   $('subLista').querySelectorAll('.ptext').forEach((el, i) => MCPregunta.llenarHuecos(el, r.preguntas[i]));
-  $('subLista').querySelectorAll('.pcard').forEach((el, i) => { const q = r.preguntas[i]; if (q && !q.abierta) MCPregunta.analogias(el.querySelector('.popts'), q); });
+  // Con [IMAGEN DERECHA] las alternativas van dentro de .pder, no de .popts
+  $('subLista').querySelectorAll('.pcard').forEach((el, i) => { const q = r.preguntas[i], l = el.querySelector('.popts') || el.querySelector('.pder > div'); if (q && !q.abierta && l) MCPregunta.analogias(l, q); });
   renderMath($('subLista'));
   $('subPaso1').hidden = true; $('subPaso2').hidden = false;
   validarMeta();
