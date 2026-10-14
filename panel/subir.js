@@ -13,6 +13,8 @@
      [IMAGEN DERECHA]   imagen al lado de las alternativas
      | a | b |          tabla        I. CaO || p) cal viva   columnas
      A) VVV   B) FVV   C) VVF       varias alternativas en una línea
+     Las alternativas van con paréntesis: A) o a). Con punto (A. a.) es texto
+     del enunciado, por ejemplo una lista para relacionar.
      TEXTO 03:          lectura que comparten las preguntas de abajo
      …                  (hasta el siguiente TEXTO o hasta FIN TEXTO)
    ========================================================= */
@@ -93,7 +95,7 @@ function parsearTexto(raw) {
     }
     if ((m = l.match(/^(?:RESPUESTA|CLAVE|RPTA\.?)\s*(?:CORRECTA)?\s*[:=]?\s*\(?([A-Fa-f])\)?\s*$/i))) { cur.clave = m[1].toUpperCase(); continue; }
     const esperada = LETRAS[cur.options.length];
-    if (esperada && (m = l.match(/^\(?([A-Fa-f])\s*[).]\s*(.*)$/)) && m[1].toUpperCase() === esperada) {
+    if (esperada && (m = l.match(/^\(?([A-Fa-f])\s*\)\s*(.*)$/)) && m[1].toUpperCase() === esperada) {
       partirAlternativas(m[2], cur.options.length).forEach((pt, j) => {
         let t = j ? pt.replace(/^\(?[A-F]\s*\)\s*/, '') : pt;
         MARCA.lastIndex = 0;
