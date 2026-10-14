@@ -11,7 +11,7 @@
   if (window.MCRacha || !window.MCAuth) return;
   var CFG = window.MC_CONFIG || {};
   // Llama de dos capas: la de afuera y la de adentro titilan a distinto ritmo
-  var ICONO = '<svg class="mcl" viewBox="0 0 24 24" aria-hidden="true"><path class="mcl-ext" fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.7 1.6 2.6 1.9 5.4.8 8-1.2 2.9-3.9 4.7-6.6 4.7-3.2 0-6.1-2.2-6.8-5.5-.5-2.2.1-4.4 1.4-6.1.2 1.5.9 2.6 2 3.1-.5-4.4 1.4-8.6 4-11.9z"/><path class="mcl-int" fill="#FFD84D" d="M12.2 11.2c.4 1.7 2.2 2.6 2.7 4.5.6 2.4-1 4.6-3.1 4.6-2 0-3.4-1.6-3.2-3.5.1-1 .6-1.8 1.3-2.4.1.8.5 1.3 1 1.5-.2-1.7.4-3.3 1.3-4.7z"/></svg>';
+  var ICONO = '<svg class="mcl" viewBox="0 0 24 24" aria-hidden="true"><g class="mcl-ext"><path fill="currentColor" d="M12.3 1.4c.6 3.3 3.5 5 5.4 8 1.7 2.7 2 5.6.8 8.3-1.2 3-4 4.9-6.9 4.9-3.3 0-6.3-2.3-7.1-5.7-.5-2.3.1-4.6 1.5-6.4.2 1.6.9 2.7 2.1 3.2-.5-4.6 1.5-9 4.2-12.3z"/><path class="mcl-sombra" fill="#E07000" d="M18.5 17.7c-1.2 3-4 4.9-6.9 4.9 3.6-1.4 6-4.5 5.9-8.8 0-1.6-.4-3.2-1.1-4.6.4.3.9.7 1.3 1.2 1.7 2.7 2 5.6.8 8.3z"/></g><g class="mcl-int"><path class="mcl-nucleo" fill="#FFD84D" d="M12.2 10.6c.5 1.8 2.4 2.8 2.9 4.8.6 2.6-1.1 5-3.3 5-2.1 0-3.6-1.7-3.4-3.7.1-1.1.7-2 1.4-2.6.1.8.5 1.4 1.1 1.6-.2-1.8.4-3.6 1.3-5.1z"/><path class="mcl-brillo" d="M11.4 17.2c.1.9.7 1.5 1.4 1.6" stroke="#fff" stroke-width="1.1" stroke-linecap="round" opacity=".8" fill="none"/></g></svg>';
 
   var estado = null, pendiente = 0, enviando = false, temporizador = null;
   var oyentes = [];
@@ -32,8 +32,8 @@
     st.textContent =
       '.mcu-racha{display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 14px 0 12px;border-radius:100px;border:1px solid var(--border,#232323);background:var(--surface,#0e0e0e);color:var(--text-dim,#9a9a9a);font:800 15px Sora,Inter,sans-serif;text-decoration:none;font-variant-numeric:tabular-nums}' +
       '.mcu-racha[hidden]{display:none}' +
-      '.mcu-racha svg{width:22px;height:22px}' +
-      '.mcu-racha:not(.on) .mcl-int{fill:#3a3a3a}' +
+      '.mcu-racha svg{width:24px;height:24px;overflow:visible}' +
+      '.mcu-racha:not(.on) .mcl-nucleo{fill:#3a3a3a}.mcu-racha:not(.on) .mcl-sombra{fill:rgba(0,0,0,.25)}.mcu-racha:not(.on) .mcl-brillo{display:none}' +
       '.mcu-racha.on{color:#FF9600;border-color:rgba(255,150,0,.35)}' +
       '.mcu-racha:hover{border-color:var(--accent,#C6E000)}' +
       // Estilo grueso: borde inferior que se hunde al tocarlo

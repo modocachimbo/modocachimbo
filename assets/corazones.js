@@ -43,9 +43,9 @@
 
   /* ---------- Íconos propios ---------- */
   var SVG = {
-    corazon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FF4B4B" d="M12 21.2s-8-4.9-10-9.9C.4 7.4 2.8 3.6 6.6 3.6c2.3 0 3.9 1.2 5.4 3.1 1.5-1.9 3.1-3.1 5.4-3.1 3.8 0 6.2 3.8 4.6 7.7-2 5-10 9.9-10 9.9z"/><path fill="#fff" opacity=".45" d="M6.4 6.3c-1.6.2-2.6 1.6-2.4 3.2.1.6.8.7 1-.1.3-1 .9-1.7 1.8-2 .7-.3.4-1.2-.4-1.1z"/></svg>',
-    vacio: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#2a2a2a" d="M12 21.2s-8-4.9-10-9.9C.4 7.4 2.8 3.6 6.6 3.6c2.3 0 3.9 1.2 5.4 3.1 1.5-1.9 3.1-3.1 5.4-3.1 3.8 0 6.2 3.8 4.6 7.7-2 5-10 9.9-10 9.9z"/></svg>',
-    xp: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FFC800" d="M12 1.8 14.6 8l6.6.6-5 4.4 1.5 6.6L12 16.1l-5.7 3.5L7.8 13l-5-4.4L9.4 8z"/><path fill="#b88a00" opacity=".35" d="M12 16.1v-8l5.7 11.5z"/><path fill="#fff" opacity=".4" d="M12 4.6 13.5 8.4l-1.5-.3z"/></svg>',
+    corazon: '<svg class="mcz-i-cor" viewBox="0 0 24 24" aria-hidden="true"><g class="mcz-late"><path fill="var(--c1,#FF4B4B)" d="M12 21.4s-8.2-4.9-10.1-10C.4 7.3 2.9 3.4 6.7 3.4c2.3 0 3.9 1.3 5.3 3.1 1.4-1.8 3-3.1 5.3-3.1 3.8 0 6.3 3.9 4.8 8-1.9 5.1-10.1 10-10.1 10z"/><path fill="var(--c2,#D93636)" d="M12 21.4s8.2-4.9 10.1-10c.6-1.6.6-3.2.1-4.5-.2 4.3-5 9.6-10.2 12.4-5.2-2.8-10-8.1-10.2-12.4-.5 1.3-.5 2.9.1 4.5C3.8 16.5 12 21.4 12 21.4z"/><path fill="#fff" opacity="var(--c3,.7)" d="M6.5 6.2c-1.7.1-2.8 1.6-2.6 3.3.1.7.9.8 1.1 0 .3-1.1 1-1.8 1.9-2.1.8-.3.5-1.3-.4-1.2z"/><circle fill="#fff" opacity="var(--c3,.7)" cx="8.6" cy="5.6" r=".9"/></g></svg>',
+    vacio: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#2a2a2a" d="M12 21.4s-8.2-4.9-10.1-10C.4 7.3 2.9 3.4 6.7 3.4c2.3 0 3.9 1.3 5.3 3.1 1.4-1.8 3-3.1 5.3-3.1 3.8 0 6.3 3.9 4.8 8-1.9 5.1-10.1 10-10.1 10z"/></svg>',
+    xp: '<svg class="mcz-i-xp" viewBox="0 0 24 24" aria-hidden="true"><g class="mcz-gema"><path fill="#FFC800" d="M12 1.6 21 6.8v10.4L12 22.4 3 17.2V6.8z"/><path fill="#FFDD4A" d="M12 1.6 21 6.8 12 12 3 6.8z"/><path fill="#E0A100" d="M21 6.8v10.4L12 22.4V12z"/><path class="mcz-destello" fill="#fff" d="M12 1.6 16 3.9 7 9.1 3 6.8z"/><path fill="#fff" opacity=".95" d="M13 5.6 8.2 12.6h3.2l-.9 5.8 5.3-7.4h-3.3z"/><path fill="#FFE98A" d="M13 5.6 8.2 12.6h3.2l-.9 5.8 1.4-6.8H9.9z"/></g></svg>',
     reloj: '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 2.5h5"/></svg>',
     x: '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
     check: '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>',
@@ -65,10 +65,20 @@
     st.textContent =
       // Píldoras de arriba (junto a la racha)
       '.mcz-pill{display:inline-flex;align-items:center;gap:5px;height:42px;padding:0 12px 0 10px;border-radius:14px;border:2px solid #2e2e2e;border-bottom-width:4px;background:#141414;font:900 15px Nunito,Sora,Inter,sans-serif;font-variant-numeric:tabular-nums;cursor:pointer;transition:transform .08s ease;-webkit-tap-highlight-color:transparent;text-decoration:none}' +
-      '.mcz-pill[hidden]{display:none}.mcz-pill svg{width:22px;height:22px}.mcz-pill:active{transform:translateY(2px);border-bottom-width:2px;margin-bottom:2px}' +
+      '.mcz-pill[hidden]{display:none}.mcz-pill svg{width:24px;height:24px;overflow:visible}.mcz-pill:active{transform:translateY(2px);border-bottom-width:2px;margin-bottom:2px}' +
       '.mcz-cor{color:#FF4B4B}.mcz-xp{color:#FFC800}' +
-      '.mcz-cor.late svg{animation:mczLatido .6s ease}' +
+      // El corazón late en bucle; sin corazones queda gris y quieto
+      '.mcz-late,.mcz-gema{transform-box:fill-box;transform-origin:50% 60%}' +
+      '.mcz-cor .mcz-late{animation:mczBum 1.4s ease-in-out infinite}' +
+      '@keyframes mczBum{0%,40%,100%{transform:scale(1)}10%{transform:scale(1.16)}20%{transform:scale(.96)}30%{transform:scale(1.1)}}' +
+      '.mcz-cor.cero{color:#9a9a9a;--c1:#5a5a5a;--c2:#444;--c3:0}.mcz-cor.cero .mcz-late{animation:none}' +
+      '.mcz-cor.late .mcz-late{animation:mczLatido .6s ease}' +
       '@keyframes mczLatido{0%,100%{transform:scale(1)}40%{transform:scale(1.3)}70%{transform:scale(.92)}}' +
+      // La gema del XP se inclina y destella de vez en cuando
+      '.mcz-xp .mcz-gema{transform-origin:50% 50%;animation:mczGema 2.8s ease-in-out infinite}' +
+      '@keyframes mczGema{0%,70%,100%{transform:scale(1) rotate(0)}80%{transform:scale(1.1) rotate(-8deg)}90%{transform:scale(1) rotate(4deg)}}' +
+      '.mcz-destello{opacity:0}.mcz-xp .mcz-destello{animation:mczDestello 2.8s ease-in-out infinite}' +
+      '@keyframes mczDestello{0%,68%,100%{opacity:0}80%{opacity:.55}}' +
       '@media (max-width:560px){.mcz-pill{height:38px;padding:0 9px;font-size:14px}.mcz-xp{display:none}}' +
       '@media (max-width:420px){.mcz-pill{padding:0 7px;gap:4px}.mcz-pill svg{width:19px;height:19px}}' +
       // Hoja que sube desde abajo
@@ -116,7 +126,7 @@
       // Aviso de corazón ganado
       '.mcz-toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;z-index:300;display:flex;align-items:center;gap:12px;background:#111;border:2px solid rgba(255,75,75,.45);color:#f2f2f2;border-radius:18px;padding:12px 18px 12px 14px;box-shadow:0 18px 40px rgba(0,0,0,.6);font:700 13.5px Nunito,Inter,sans-serif;transition:transform .35s ease,opacity .35s ease;max-width:calc(100vw - 32px)}' +
       '.mcz-toast.show{transform:translate(-50%,0);opacity:1}.mcz-toast svg{width:30px;height:30px;flex-shrink:0;animation:mczLatido .7s ease 2}.mcz-toast b{display:block;font-size:16px;font-weight:1000;color:#FF4B4B}' +
-      '@media (prefers-reduced-motion:reduce){.mcz-hoja,.mcz-toast svg,.mcz-cor.late svg{animation:none}}';
+      '@media (prefers-reduced-motion:reduce){.mcz-hoja,.mcz-toast svg,.mcz-late,.mcz-gema,.mcz-destello{animation:none!important}}';
     document.head.appendChild(st);
   }
 
@@ -234,7 +244,8 @@
       cor.setAttribute('aria-label', estado.quedan + ' corazones. Ver misiones');
       xp.innerHTML = SVG.xp + '<span>' + (estado.xp_semana || 0) + '</span>';
       xp.setAttribute('aria-label', (estado.xp_semana || 0) + ' XP esta semana. Canjear');
-      if (late) { cor.classList.remove('late'); void cor.offsetWidth; cor.classList.add('late'); }
+      cor.classList.toggle('cero', !estado.quedan);
+      if (late) { cor.classList.remove('late'); void cor.offsetWidth; cor.classList.add('late'); setTimeout(function () { cor.classList.remove('late'); }, 700); }
     });
     ajustarInicio();
     if (hoja && !hoja.hidden && hoja.dataset.vista === 'misiones') abrirMisiones();
