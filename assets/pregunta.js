@@ -293,6 +293,7 @@
   // Alternativas que son pares (potro : yegua): los dos puntos alineados en todas.
   // Sirve para cualquier lista cuyos hijos tengan .text (práctica, modo estudio).
   function analogias(lista, q) {
+    if (!lista) return;
     var ops = q && q.options || [];
     var es = ops.length >= 2 && ops.every(function (o) { return esPar(o && o.text); });
     lista.classList.toggle('mcq-analogia', es);
