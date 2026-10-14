@@ -1105,7 +1105,7 @@ E) Alternativa"></textarea>
 
   /* ---------- ayudantes: solo ven sus pestañas ---------- */
   const TAB_PERMISO = { reportes: 'reportes', corr: 'corr', alumnos: 'alumnos', simulacro: 'simulacro', codigos: 'codigos', subir: 'subir', examen: 'examen',
-    editar: 'editar', vocab: 'vocab', cursos: 'cursos', ciclos: 'cursos', perfil: 'perfil', alertas: 'alertas', frases: 'frases', tutorial: 'tutorial' };
+    editar: 'editar', vocab: 'vocab', cursos: 'cursos', ciclos: 'ciclos', perfil: 'perfil', alertas: 'alertas', frases: 'frases', tutorial: 'tutorial' };
   function puedeTab(t) { return ROL.admin || (!!TAB_PERMISO[t] && ROL.permisos.includes(TAB_PERMISO[t])); }
   function aplicarPermisos() {
     document.body.classList.toggle('es-ayudante', !ROL.admin);
@@ -1369,7 +1369,7 @@ E) Alternativa"></textarea>
         <span class="ttl"><b>Tema ${esc(t.num)} · ${esc(t.name)}</b> — ${t.questions.length} preguntas${conCredito ? `<br><small>Crédito: ${t.credito ? esc(t.credito) : '<i>sin crédito</i>'}</small>` : ''}</span>
         <a class="rbtn link" href="${esc(url)}" target="_blank" rel="noopener">Ver en la web ${ICON_EXT}</a>
         <button class="rbtn" type="button" id="btnRenombrar">${ICON_EDIT} Editar tema</button>
-        <button class="rbtn" type="button" id="btnAgregarQ">${ICON_MAS} Agregar preguntas</button>
+        ${puedeTab('subir') ? `<button class="rbtn" type="button" id="btnAgregarQ">${ICON_MAS} Agregar preguntas</button>` : ''}
         ${conCredito ? '<button class="rbtn" type="button" id="btnCredito">Crédito</button>' : ''}
         <button class="rbtn" type="button" id="btnTarjetas">Flashcards</button>
         <button class="rbtn danger" type="button" id="btnBorrarTema">Borrar tema</button>
@@ -1379,14 +1379,14 @@ E) Alternativa"></textarea>
         <div class="num">${i + 1}</div>
         <div class="body"><div class="t">${q.graphic ? '🖼 ' : ''}${esc(plano(q.text))}</div><div class="k">${q.abierta ? (q.tipo ? esc(MCPregunta.nombreTipo(q)) + ': <b>' : 'Respuesta: <b>') + esc((q.respuestas || []).join(' | ')) + '</b>' : 'Clave: <b>' + (o ? esc(o.letter + ') ' + plano(o.text)) : '—') + '</b>'}</div></div>
         <div class="qrow-acc"><button class="rbtn" type="button" data-n="${i + 1}">${ICON_EDIT} Editar</button>
-        <button class="rbtn" type="button" data-mv="${i}" title="Pasar a otro tema o a otro ciclo">${ICON_MOVER} Mover</button></div>
+        ${puedeTab('subir') ? `<button class="rbtn" type="button" data-mv="${i}" title="Pasar a otro tema o a otro ciclo">${ICON_MOVER} Mover</button>` : ''}</div>
       </div>`;
     }).join('');
     $('qlist').querySelectorAll('[data-n]').forEach(b => b.addEventListener('click', () =>
       abrirEditor({ carpeta: sel.carpeta, curso: NOMBRE[sel.carpeta], anio: sel.anio, tema: sel.tema, n: +b.dataset.n })));
     $('qlist').querySelectorAll('[data-mv]').forEach(b => b.addEventListener('click', () => moverPregunta(t, +b.dataset.mv)));
     $('btnRenombrar').addEventListener('click', () => editarTema(t, temas));
-    $('btnAgregarQ').addEventListener('click', () => agregarPreguntas(t));
+    if ($('btnAgregarQ')) $('btnAgregarQ').addEventListener('click', () => agregarPreguntas(t));
     if (conCredito) $('btnCredito').addEventListener('click', () => creditoTema(t));
     $('btnTarjetas').addEventListener('click', () => { const x = partesCarpeta(sel.carpeta); tarjetasTema({ curso: x.curso, seccion: x.seccion, anio: sel.anio, tema: pad2(t.num), nombre: t.name, preguntas: t.questions.length }); });
     $('btnBorrarTema').addEventListener('click', () => borrarTema(t));
@@ -1531,9 +1531,11 @@ E) Alternativa"></textarea>
     const nuevoNum = () => /^\d{1,2}$/.test(num.value.trim()) && +num.value.trim() > 0 ? pad2(num.value.trim()) : null;
     const check = () => {
       const n = nuevoNum(), cambiaNum = n && n !== pad2(t.num), ocupado = cambiaNum && temas.some(x => pad2(x.num) === n);
-      aviso.innerHTML = !n ? 'Escribe un número del 1 al 99.' : ocupado ? `Ya existe el Tema ${+n} en este ciclo. Elige otro número o borra ese tema primero.` : cambiaNum ? `Pasará de Tema ${+t.num} a Tema ${+n}. Si el enlace del tema viejo se compartió, dejará de abrir.` : '';
-      aviso.style.color = !n || ocupado ? '#ff6b6b' : '';
-      ok.disabled = !n || ocupado || !nom.value.trim() || (!cambiaNum && nom.value.trim() === t.name);
+      // Cambiar el número publica el tema de nuevo y borra el viejo: un ayudante necesita Subir tema y Borrar temas
+      const sinPermiso = cambiaNum && !(puedeTab('subir') && (ROL.admin || ROL.permisos.includes('borrar')));
+      aviso.innerHTML = !n ? 'Escribe un número del 1 al 99.' : sinPermiso ? 'Para cambiar el número necesitas los permisos de Subir tema y Borrar temas. Pídeselos al administrador.' : ocupado ? `Ya existe el Tema ${+n} en este ciclo. Elige otro número o borra ese tema primero.` : cambiaNum ? `Pasará de Tema ${+t.num} a Tema ${+n}. Si el enlace del tema viejo se compartió, dejará de abrir.` : '';
+      aviso.style.color = !n || ocupado || sinPermiso ? '#ff6b6b' : '';
+      ok.disabled = !n || ocupado || sinPermiso || !nom.value.trim() || (!cambiaNum && nom.value.trim() === t.name);
     };
     num.addEventListener('input', check); nom.addEventListener('input', check); check();
     num.focus(); num.select();
