@@ -21,7 +21,7 @@
     --bg: #050505; --surface: #0e0e0e; --surface-2: #141414;
     --border: #232323; --accent: #C6E000; --accent-soft: rgba(198,224,0,0.1);
     --text: #f2f2f2; --text-dim: #9a9a9a; --text-faint: #5f5f5f;
-    --red: #E03C3C; --orange: #FF9F43;
+    --red: #E03C3C; --orange: #FF9600;
   }
   body { min-height: 100vh; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 24px 16px 48px; }
   .wrap { width: 100%; max-width: 560px; margin: 0 auto; }
@@ -94,7 +94,7 @@
   .marcador { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font: 700 12px Sora, sans-serif; font-variant-numeric: tabular-nums; }
   .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 100px; }
   .pill.ok { color: var(--accent); background: rgba(198,224,0,.09); }
-  .pill.rep { color: var(--orange); background: rgba(255,159,67,.09); }
+  .pill.rep { color: var(--orange); background: rgba(255,150,0,.09); }
   .pill.salta { animation: salta .45s cubic-bezier(.34,1.56,.64,1); }
   @keyframes salta { 40% { transform: scale(1.22); } }
 
@@ -1129,7 +1129,7 @@
     $('carta').addEventListener('click', e => { if (ignorarClick || e.target.closest('summary, a')) return; voltear(); });
   })();
   function confeti(donde) {
-    const colores = ['#C6E000', '#e9ff6a', '#FF9F43', '#ffffff', '#a78bfa'];
+    const colores = ['#C6E000', '#e9ff6a', '#FF9600', '#ffffff', '#a78bfa'];
     for (let i = 0; i < 70; i++) {
       const d = document.createElement('i'); d.className = 'confeti';
       d.style.left = Math.random() * 100 + '%'; d.style.background = colores[i % colores.length];
