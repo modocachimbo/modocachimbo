@@ -13,6 +13,9 @@
      [IMAGEN DERECHA]   imagen al lado de las alternativas
      | a | b |          tabla        I. CaO || p) cal viva   columnas
      A) VVV   B) FVV   C) VVF       varias alternativas en una línea
+     Las alternativas van con MAYÚSCULA: A) o A. … Una lista con minúscula
+     (a. b. c.) dentro del enunciado se queda en el enunciado. Si la
+     pregunta no tiene ninguna A) en mayúscula, a) b) c) sí son alternativas.
      TEXTO 03:          lectura que comparten las preguntas de abajo
      …                  (hasta el siguiente TEXTO o hasta FIN TEXTO)
    ========================================================= */
@@ -61,8 +64,17 @@ function parsearTexto(raw) {
   let cur = null, lastOpt = null, lectura = null, enLectura = false;
   const lecturas = [];
   const lineas = String(raw || '').replace(/\r/g, '').split('\n');
-  for (const linea of lineas) {
-    const l = linea.trim();
+  // ¿Más abajo, en esta misma pregunta, hay una alternativa A) o A. en mayúscula?
+  const hayMayuscula = desde => {
+    for (let k = desde; k < lineas.length; k++) {
+      const x = lineas[k].trim();
+      if (/^PREGUNTA\s*N?[°º]?\s*\d/i.test(x) || /^(TEXTO|LECTURA)\s*(?:N?[°º]?\s*\d{1,3})?\s*[:.]?\s*$/i.test(x)) return false;
+      if (/^\(?A\s*[).]/.test(x)) return true;
+    }
+    return false;
+  };
+  for (let i = 0; i < lineas.length; i++) {
+    const l = lineas[i].trim();
     if (enLectura && !l) { lectura.lines.push(''); continue; }
     if (!l || /^[-=_*]{3,}$/.test(l)) continue;
     let m;
@@ -93,7 +105,8 @@ function parsearTexto(raw) {
     }
     if ((m = l.match(/^(?:RESPUESTA|CLAVE|RPTA\.?)\s*(?:CORRECTA)?\s*[:=]?\s*\(?([A-Fa-f])\)?\s*$/i))) { cur.clave = m[1].toUpperCase(); continue; }
     const esperada = LETRAS[cur.options.length];
-    if (esperada && (m = l.match(/^\(?([A-Fa-f])\s*[).]\s*(.*)$/)) && m[1].toUpperCase() === esperada) {
+    if (esperada && (m = l.match(/^\(?([A-Fa-f])\s*[).]\s*(.*)$/)) && m[1].toUpperCase() === esperada
+        && (m[1] === esperada || !hayMayuscula(i + 1))) {
       partirAlternativas(m[2], cur.options.length).forEach((pt, j) => {
         let t = j ? pt.replace(/^\(?[A-F]\s*\)\s*/, '') : pt;
         MARCA.lastIndex = 0;
