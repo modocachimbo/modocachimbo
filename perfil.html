@@ -250,9 +250,9 @@
   .mt-tx b { font-size: 17px; font-weight: 1000; }
   .mt-tx small { font-size: 13px; color: var(--text-dim); font-weight: 700; }
   .mt-n { font: 1000 15px Nunito, sans-serif; color: var(--text-dim); font-variant-numeric: tabular-nums; }
-  .mt.on { border-color: #FF9600; background: rgba(255,150,0,.08); }
-  .mt.on .mt-n { color: #FF9600; }
-  .mt.prox { border-style: dashed; border-bottom-style: solid; border-color: rgba(255,150,0,.55); }
+  .mt.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 8%, var(--surface-2)); }
+  .mt.on .mt-n { color: var(--c); }
+  .mt.prox { border-style: dashed; border-bottom-style: solid; border-color: color-mix(in srgb, var(--c) 60%, transparent); }
   .rc-regla { margin: 8px 4px 0; font-size: 12px; color: var(--text-faint); font-weight: 700; line-height: 1.5; }
 
   /* Progreso, listas */
@@ -406,9 +406,9 @@
 
       <h2 class="sec-tit">Tu meta diaria</h2>
       <section class="metas" id="metas">
-          <button type="button" class="mt" data-meta="20" aria-pressed="false"><span class="mt-ic" style="--c:#FF9600"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.7 1.6 2.6 1.9 5.4.8 8-1.2 2.9-3.9 4.7-6.6 4.7-3.2 0-6.1-2.2-6.8-5.5-.5-2.2.1-4.4 1.4-6.1.2 1.5.9 2.6 2 3.1-.5-4.4 1.4-8.6 4-11.9z"/><path fill="#FFD84D" d="M12.2 11.2c.4 1.7 2.2 2.6 2.7 4.5.6 2.4-1 4.6-3.1 4.6-2 0-3.4-1.6-3.2-3.5.1-1 .6-1.8 1.3-2.4.1.8.5 1.3 1 1.5-.2-1.7.4-3.3 1.3-4.7z"/></svg></span><span class="mt-tx"><b>Suave</b><small>unos 10 minutos al día</small></span><span class="mt-n">20 preg.</span></button>
-          <button type="button" class="mt" data-meta="30" aria-pressed="false"><span class="mt-ic" style="--c:#1CB0F6"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.7 1.6 2.6 1.9 5.4.8 8-1.2 2.9-3.9 4.7-6.6 4.7-3.2 0-6.1-2.2-6.8-5.5-.5-2.2.1-4.4 1.4-6.1.2 1.5.9 2.6 2 3.1-.5-4.4 1.4-8.6 4-11.9z"/></svg></span><span class="mt-tx"><b>Normal</b><small>unos 15 minutos al día</small></span><span class="mt-n">30 preg.</span></button>
-          <button type="button" class="mt" data-meta="50" aria-pressed="false"><span class="mt-ic" style="--c:#CE82FF"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.7 1.6 2.6 1.9 5.4.8 8-1.2 2.9-3.9 4.7-6.6 4.7-3.2 0-6.1-2.2-6.8-5.5-.5-2.2.1-4.4 1.4-6.1.2 1.5.9 2.6 2 3.1-.5-4.4 1.4-8.6 4-11.9z"/><path fill="#fff" opacity=".6" d="M12.2 11.2c.4 1.7 2.2 2.6 2.7 4.5.6 2.4-1 4.6-3.1 4.6-2 0-3.4-1.6-3.2-3.5.1-1 .6-1.8 1.3-2.4.1.8.5 1.3 1 1.5-.2-1.7.4-3.3 1.3-4.7z"/></svg></span><span class="mt-tx"><b>Intenso</b><small>unos 25 minutos al día</small></span><span class="mt-n">50 preg.</span></button>
+          <button type="button" class="mt" data-meta="20" aria-pressed="false" style="--c:#FF9600"><span class="mt-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.7 1.6 2.6 1.9 5.4.8 8-1.2 2.9-3.9 4.7-6.6 4.7-3.2 0-6.1-2.2-6.8-5.5-.5-2.2.1-4.4 1.4-6.1.2 1.5.9 2.6 2 3.1-.5-4.4 1.4-8.6 4-11.9z"/><path fill="#FFD84D" d="M12.2 11.2c.4 1.7 2.2 2.6 2.7 4.5.6 2.4-1 4.6-3.1 4.6-2 0-3.4-1.6-3.2-3.5.1-1 .6-1.8 1.3-2.4.1.8.5 1.3 1 1.5-.2-1.7.4-3.3 1.3-4.7z"/></svg></span><span class="mt-tx"><b>Suave</b><small>unos 10 minutos al día</small></span><span class="mt-n">20 preg.</span></button>
+          <button type="button" class="mt" data-meta="30" aria-pressed="false" style="--c:#1CB0F6"><span class="mt-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.7 1.6 2.6 1.9 5.4.8 8-1.2 2.9-3.9 4.7-6.6 4.7-3.2 0-6.1-2.2-6.8-5.5-.5-2.2.1-4.4 1.4-6.1.2 1.5.9 2.6 2 3.1-.5-4.4 1.4-8.6 4-11.9z"/></svg></span><span class="mt-tx"><b>Normal</b><small>unos 15 minutos al día</small></span><span class="mt-n">30 preg.</span></button>
+          <button type="button" class="mt" data-meta="50" aria-pressed="false" style="--c:#CE82FF"><span class="mt-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.7 1.6 2.6 1.9 5.4.8 8-1.2 2.9-3.9 4.7-6.6 4.7-3.2 0-6.1-2.2-6.8-5.5-.5-2.2.1-4.4 1.4-6.1.2 1.5.9 2.6 2 3.1-.5-4.4 1.4-8.6 4-11.9z"/><path fill="#fff" opacity=".6" d="M12.2 11.2c.4 1.7 2.2 2.6 2.7 4.5.6 2.4-1 4.6-3.1 4.6-2 0-3.4-1.6-3.2-3.5.1-1 .6-1.8 1.3-2.4.1.8.5 1.3 1 1.5-.2-1.7.4-3.3 1.3-4.7z"/></svg></span><span class="mt-tx"><b>Intenso</b><small>unos 25 minutos al día</small></span><span class="mt-n">50 preg.</span></button>
       </section>
       <p class="rc-regla" id="metaNota">Si la cambias, cuenta desde mañana para no romper tu racha. Los días pasados se quedan como estaban.</p>
       <section class="stats">
