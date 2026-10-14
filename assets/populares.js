@@ -33,6 +33,8 @@
       '.mcp-txt{min-width:0;flex:1}' +
       '.mcp-nom{display:block;font:700 14.5px Inter,sans-serif;color:var(--text,#f2f2f2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
       '.mcp-area{display:block;font-size:12px;color:var(--text-dim,#9a9a9a);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
+      // Un color por área (colores en assets/areas.css)
+      '.mcp-it[data-area] .mcp-ico{background:rgba(var(--ac-rgb),.12)}.mcp-it[data-area] .mcp-ico i{background:var(--ac)}.mcp-it[data-area]:hover{border-color:rgba(var(--ac-rgb),.5)}' +
       '.mcp-pos{position:absolute;top:-9px;right:12px;background:var(--accent,#C6E000);color:#0e0e0e;font:800 11px/1 Sora,Inter,sans-serif;padding:5px 8px;border-radius:100px;box-shadow:0 0 16px rgba(198,224,0,.3)}' +
       '@media (max-width:900px){.mcp-fila{grid-template-columns:repeat(2,minmax(0,1fr))}}' +
       '@media (max-width:520px){.mcp-fila{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px 2px 6px;margin:-10px -2px 0;scrollbar-width:none}' +
@@ -63,7 +65,7 @@
     }
     caja.innerHTML = '<h2><svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>Populares esta semana</h2><div class="mcp-fila">' +
       elegidos.map(function (c, i) {
-        return '<a class="mcp-it" href="' + esc(BASE + c.id + '/index.html') + '">' +
+        return '<a class="mcp-it" data-area="' + esc(c.area || '') + '" href="' + esc(BASE + c.id + '/index.html') + '">' +
           '<span class="mcp-pos">#' + (i + 1) + '</span>' +
           '<span class="mcp-ico">' + (c.icono ? '<i style="--ico:url(&quot;' + esc(BASE + c.icono) + '&quot;)"></i>' : '') + '</span>' +
           '<span class="mcp-txt"><span class="mcp-nom">' + esc(c.nombre) + '</span><span class="mcp-area">' + esc(areas[c.area] || '') + '</span></span></a>';

@@ -56,6 +56,7 @@
     return registro().then(function (reg) {
       if (!reg) return;
       var cont = document.querySelector('.courses'); if (!cont) return;
+      document.documentElement.setAttribute('data-area', areaId);
       var lista = (reg.cursos || []).filter(function (c) { return c.area === areaId && !c.oculto; })
         .sort(function (a, b) { return (a.orden || 0) - (b.orden || 0); });
       estilosDisabled();
@@ -203,6 +204,8 @@
       if (!c) return secciones.then(function () { ordenarTarjetas(null); });
       return bancoFijas(id, c.fijas && c.fijas.modo === 'banco' && c.fijas.anio).then(function (nFijas) {
       estilosDisabled();
+      // Color del área (assets/areas.css), por si el panel lo cambió de área
+      if (c.area) document.documentElement.setAttribute('data-area', c.area);
       var back = document.querySelector('a.back');
       if (back && c.area) back.setAttribute('href', '../areas/' + c.area + '.html');
       [['repaso', 'Repaso', c.repaso], ['fijas', 'Fijas', c.fijas]].forEach(function (x) {
