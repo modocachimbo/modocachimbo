@@ -89,6 +89,16 @@
   /* Puntos de la semana (arriba, junto a la racha) */
   .pill-pts { display: inline-flex; align-items: center; gap: 6px; height: 42px; padding: 0 13px 0 11px; border-radius: 14px; border: 2px solid #2e2e2e; border-bottom-width: 4px; background: #141414; color: var(--oro); font: 900 15px Nunito, sans-serif; text-decoration: none; font-variant-numeric: tabular-nums; transition: transform .08s ease; -webkit-tap-highlight-color: transparent; }
   .pill-pts[hidden] { display: none; }
+  /* Nuevo para ti: regalo con punto rojo que invita a entrar */
+  .nov-btn { position: relative; display: grid; place-items: center; width: 42px; height: 42px; flex-shrink: 0; border-radius: 14px; border: 2px solid #2e2e2e; border-bottom-width: 4px; background: #141414; color: var(--azul); cursor: pointer; transition: transform .08s ease; -webkit-tap-highlight-color: transparent; }
+  .nov-btn[hidden] { display: none; }
+  .nov-btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transform-origin: 50% 90%; animation: novMeneo 3.2s ease-in-out 1s infinite; }
+  .nov-btn:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
+  .nov-punto { position: absolute; top: -7px; right: -7px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px; background: var(--rojo); color: #fff; border: 2px solid var(--bg); font: 1000 11px/16px Nunito, sans-serif; text-align: center; font-variant-numeric: tabular-nums; animation: novLatido 1.8s ease-in-out infinite; }
+  @keyframes novMeneo { 0%, 82%, 100% { transform: rotate(0); } 86% { transform: rotate(-12deg); } 90% { transform: rotate(10deg); } 94% { transform: rotate(-6deg); } }
+  @keyframes novLatido { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,75,75,.55); } 50% { box-shadow: 0 0 0 6px rgba(255,75,75,0); } }
+  @media (prefers-reduced-motion: reduce) { .nov-btn svg, .nov-punto { animation: none; } }
+  @media (max-width: 560px) { .nov-btn { width: 38px; height: 38px; } }
   .pill-pts svg { width: 20px; height: 20px; }
   .pill-pts:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
 
@@ -213,11 +223,20 @@
   .hoja-lista .curso .ic { width: 44px; height: 44px; border-radius: 13px; }
   .hoja-lista .curso .ic svg, .hoja-lista .curso .ic .ic-m { width: 26px; height: 26px; }
   .ic-m { display: block; background: currentColor; -webkit-mask: center / contain no-repeat; mask: center / contain no-repeat; }
+  .hoja .mcn-hoja { margin: 0; padding: 2px; border: 0; background: none; }
+  .hoja .mcn-hoja .mcn-item:first-child { margin-top: 0; }
   .hoja-lista .c-azul .ic { background: rgba(28,176,246,.12); color: var(--azul); border-color: rgba(28,176,246,.3); }
   /* Celular: logo, puntos, racha y foto caben en una línea */
   @media (max-width: 560px) {
     header.top { gap: 8px; }
     header.top .logo img { height: 28px; }
+  }
+  @media (max-width: 420px) {
+    header.top .logo img { height: 24px; }
+    .auth-row { gap: 5px; }
+    .nov-btn { width: 36px; }
+    .pill-pts, .auth-row .mcu-racha { padding: 0 7px; gap: 4px; }
+    .pill-pts svg { width: 17px; height: 17px; }
     .auth-row { gap: 6px; min-width: 0; }
     .auth-row .mcu-nom { display: none; }
     .auth-row .mcu-chip { min-width: 0; width: auto; padding-right: 4px; }
@@ -483,6 +502,7 @@
     <header class="top">
       <a class="logo" href="index.html" aria-label="Modo Cachimbo · Inicio"><img src="assets/img/logo-modo-cachimbo-horizontal.svg" alt="Modo Cachimbo" width="160" height="34"></a>
       <div class="auth-row">
+        <button type="button" class="nov-btn" id="novBtn" aria-label="Nuevo para ti" title="Nuevo para ti" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="10" width="17" height="10.5" rx="2"/><path d="M2.5 7h19v3h-19zM12 7v13.5"/><path d="M12 7c-1.2-2.6-4.6-4-5.6-2.3C5.5 6.3 8.6 7 12 7c3.4 0 6.5-.7 5.6-2.3C16.6 3 13.2 4.4 12 7z"/></svg><span class="nov-punto" id="novPunto"></span></button>
         <a class="pill-pts" id="ptsPill" href="#mcRanking" title="Tus puntos del simulacro esta semana" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3h11l4 6L12 21 2.5 9z" fill="currentColor"/><path d="M2.5 9h19M8.5 3 12 9l3.5-6M12 21 8.5 9M12 21l3.5-12" fill="none" stroke="#3d2f00" stroke-width="1.3" stroke-linejoin="round"/></svg><b id="ptsNum">0</b></a>
         <div data-mc-auth></div>
       </div>
@@ -861,6 +881,8 @@ function jsonpRequest(url) {
       if (window.MCSonido && MCSonido.toque) MCSonido.toque();
     }
     function cerrar() { fondo.hidden = true; }
+    // Otras partes del inicio (Nuevo para ti) usan la misma hoja
+    window.MCHoja = { abrir: function (t, html) { tit.textContent = t; lista.innerHTML = html; fondo.hidden = false; }, cerrar: cerrar };
     Array.prototype.forEach.call(document.querySelectorAll('[data-hoja]'), function (b) { b.addEventListener('click', function () { abrir(b.getAttribute('data-hoja')); }); });
     document.getElementById('hojaX').addEventListener('click', cerrar);
     fondo.addEventListener('click', function (e) { if (e.target === fondo) cerrar(); });

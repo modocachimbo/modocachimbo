@@ -115,6 +115,21 @@
   var FLECHA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>';
   function pintarInicio() {
     if (aqui !== '') return;
+    // Inicio nuevo: un regalo arriba con un punto rojo; al tocarlo se abre la lista
+    var boton = document.getElementById('novBtn');
+    if (boton) {
+      boton.hidden = !lista.length;
+      document.getElementById('novPunto').textContent = lista.length > 9 ? '9+' : lista.length;
+      if (!boton.dataset.listo) {
+        boton.dataset.listo = '1';
+        boton.addEventListener('click', function () {
+          css();
+          if (window.MCHoja) MCHoja.abrir('Nuevo para ti', '<div class="mcn mcn-hoja">' + items(lista) + '</div>');
+          if (window.MCSonido && MCSonido.toque) MCSonido.toque();
+        });
+      }
+      return;
+    }
     var ancla = document.getElementById('cursos');
     if (!ancla) return;
     var caja = document.getElementById('mcNovedades');
@@ -128,17 +143,20 @@
     css();
     var ver = abierto ? lista : lista.slice(0, 3);
     caja.innerHTML = '<div class="mcn-cab"><h2><svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 13.9 8.6 19 10.5l-5.1 1.9L12 17.5l-1.9-5.1L5 10.5l5.1-1.9z"/><path d="M19 2.5v4M17 4.5h4M5 17.5v3M3.5 19h3"/></svg>Nuevo para ti</h2><span class="mcn-n">' + lista.length + (lista.length === 1 ? ' novedad' : ' novedades') + '</span></div>' +
-      ver.map(function (n) {
+      items(ver) +
+      (lista.length > 3 ? '<button type="button" class="mcn-mas">' + (abierto ? 'Ver menos' : 'Ver todos (' + lista.length + ')') + '</button>' : '');
+    caja.hidden = false;
+    var b = caja.querySelector('.mcn-mas');
+    if (b) b.addEventListener('click', function () { abierto = !abierto; pintarInicio(); });
+  }
+  function items(ver) {
+    return ver.map(function (n) {
         var esCurso = n.tipo === 'curso';
         var tit = esCurso ? 'Curso nuevo: ' + n.curso : n.curso + ' · ' + (n.nombre || 'Tema ' + pad2(n.tema));
         var sub = esCurso ? 'Ya puedes empezar a estudiarlo' : 'Tema ' + pad2(n.tema) + ' nuevo · ' + ({ seminarios: 'Seminario', banqueo: 'Banqueo' }[seccion(n)] || 'Libro') + ' ' + n.anio;
         return '<a class="mcn-item" href="' + esc(BASE + destino(n)) + '"><span class="mcn-ico">' + (esCurso ? '★' : esc(pad2(n.tema))) + '</span>' +
           '<span class="mcn-txt"><span class="mcn-tit">' + esc(tit) + '</span><span class="mcn-sub">' + esc(sub) + '</span></span>' + FLECHA + '</a>';
-      }).join('') +
-      (lista.length > 3 ? '<button type="button" class="mcn-mas">' + (abierto ? 'Ver menos' : 'Ver todos (' + lista.length + ')') + '</button>' : '');
-    caja.hidden = false;
-    var b = caja.querySelector('.mcn-mas');
-    if (b) b.addEventListener('click', function () { abierto = !abierto; pintarInicio(); });
+      }).join('');
   }
 
   function pintar() { decorar(); pintarInicio(); }
