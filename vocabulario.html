@@ -1619,10 +1619,20 @@
   // En el panel (Códigos → Acceso libre) se puede abrir para todos.
   const P_VOCAB = 'vocabulario-' + (CURSO || 'raz-verbal');
   let alDesbloquear = null;
-  function conAcceso() {
-    if (!window.MCAcceso) return Promise.resolve(true);
-    if (MCAcceso.accesoLocal(P_VOCAB)) { MCAcceso.verificar(P_VOCAB).then(v => { if (!v.acceso) pedirCodigo(v.mensaje, true); }); return Promise.resolve(true); }
+  // ¿El profe lo abrió para todos? Panel → Vocabulario → Candado (ajustes "vocabulario")
+  function vocabLibre() {
+    if (!window.MCAuth) return Promise.resolve(false);
+    const t = new Promise(res => setTimeout(() => res(false), 6000));
+    return Promise.race([t, MCAuth.listo
+      .then(c => c.from('ajustes').select('valor').eq('clave', 'vocabulario').maybeSingle())
+      .then(r => !!(r && r.data && r.data.valor && r.data.valor.candado === false), () => false)]);
+  }
+  async function conAcceso() {
+    if (!window.MCAcceso) return true;
+    const cerrar = (m, fondo) => vocabLibre().then(libre => libre || pedirCodigo(m, fondo));
+    if (MCAcceso.accesoLocal(P_VOCAB)) { MCAcceso.verificar(P_VOCAB).then(v => { if (!v.acceso) cerrar(v.mensaje, true); }); return true; }
     aviso('Revisando tu acceso…');
+    if (await vocabLibre()) return true;
     return MCAcceso.verificar(P_VOCAB).then(v => v.acceso || pedirCodigo(v.mensaje), () => pedirCodigo('No se pudo verificar tu acceso. Revisa tu conexión.'));
   }
   // fondo: ya se estaba usando y el servidor dijo que el código no vale
