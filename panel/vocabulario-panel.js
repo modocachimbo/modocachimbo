@@ -28,6 +28,7 @@ const VO_CAMPOS = { sin: 'sinónimos', ant: 'antónimos', def: 'definición', ej
   .vo-tema { font-size: 13px !important; padding: 7px 12px !important;  display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 14px; background: var(--surface); color: var(--text-dim); border: 2px solid #262626; border-bottom-width: 4px; font: 800 14px Nunito, Inter, sans-serif; cursor: pointer; }
   .vo-tema b { font-weight: 900; font-size: 12px; background: #1c1c1c; color: var(--text-dim); border-radius: 100px; padding: 2px 8px; }
   .vo-tema.on { color: #1CB0F6; border-color: #1CB0F6; background: rgba(28,176,246,.08); }
+  .vo-nuevo { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 100px; background: #CE82FF; color: #fff; font: 900 10px Nunito, sans-serif; letter-spacing: .5px; vertical-align: 3px; }
   .vo-tema.on b { background: rgba(28,176,246,.18); color: #1CB0F6; }
   .vo-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; align-items: start; }
   .vo-grid .pcard { margin-bottom: 0; }
@@ -393,7 +394,7 @@ function voFicha(f, i) {
     ? `<div class="vo-et">${nom}</div><div class="vo-chips${k === 'ant' ? ' ant' : ''}">${x[k].slice(0, 12).map(y => `<span>${esc(y)}</span>`).join('')}</div>` : '';
   return `
     <div class="vo-card" data-i="${i}" title="Toca para corregirla">
-      <div class="vo-cab"><div class="vo-pal">${esc(x.palabra) || '—'}${x.extra.tipo ? ` <small class="vo-tipo">${esc(x.extra.tipo)}</small>` : ''}${x.extra.nivel ? ` <small class="vo-niv" title="Nivel ${x.extra.nivel}">${'●'.repeat(x.extra.nivel)}${'○'.repeat(3 - x.extra.nivel)}</small>` : ''}</div>
+      <div class="vo-cab"><div class="vo-pal">${esc(x.palabra) || '—'}${x.extra.tipo ? ` <small class="vo-tipo">${esc(x.extra.tipo)}</small>` : ''}${voEsNueva(x.extra) ? ' <small class="vo-nuevo">NUEVO</small>' : ''}${x.extra.nivel ? ` <small class="vo-niv" title="Nivel ${x.extra.nivel}">${'●'.repeat(x.extra.nivel)}${'○'.repeat(3 - x.extra.nivel)}</small>` : ''}</div>
         ${x.palabra ? `<a class="vo-rae" href="https://dle.rae.es/${encodeURIComponent(x.palabra.toLowerCase())}" target="_blank" rel="noopener">Ver en RAE</a>` : ''}</div>
       ${x.def ? `<div class="vo-def">${esc(x.def)}</div>` : ''}
       ${chips('sin', 'Sinónimos')}${chips('ant', 'Antónimos')}
@@ -406,6 +407,10 @@ function voFicha(f, i) {
       <div class="vo-card-pie"><span class="vo-corr">Corregir</span><button type="button" class="vo-del">Borrar</button></div>
     </div>`;
 }
+
+// Fecha de hoy en Lima, AAAA-MM-DD
+const voEsNueva = x => !!(x && x.alta) && (Date.parse(voHoy()) - Date.parse(x.alta)) / 864e5 < 7;
+const voHoy = () => new Date(Date.now() - 5 * 3600e3).toISOString().slice(0, 10);
 
 // Junta lo publicado con lo del cuadro: lo corregido se reemplaza en su lugar, lo nuevo va al final
 function voMezclar(texto) {
@@ -420,8 +425,9 @@ function voMezclar(texto) {
     const fila = { palabra: x.palabra, sin: x.sin.slice(0, 12), ant: x.ant.slice(0, 12), def: x.def.slice(0, 400), ej: x.ej.slice(0, 5).map(e => e.slice(0, 300)), extra: x.extra };
     let j = lista.findIndex(f => voNorm(f.palabra) === orig);
     if (j < 0) j = lista.findIndex(f => voNorm(f.palabra) === voNorm(x.palabra));
-    if (j > -1) { lista[j] = fila; cambiadas++; }
-    else { lista.push(fila); nuevas++; }
+    // "alta": el día en que se agregó (la web la marca como NUEVO unos días); al corregir se mantiene
+    if (j > -1) { const alta = lista[j].extra && lista[j].extra.alta; if (alta) fila.extra = Object.assign({}, fila.extra, { alta }); lista[j] = fila; cambiadas++; }
+    else { fila.extra = Object.assign({}, fila.extra, { alta: voHoy() }); lista.push(fila); nuevas++; }
   });
   // Si al renombrar quedó repetida, se queda la primera
   const vistas = new Set();
