@@ -1355,7 +1355,7 @@ E) Alternativa"></textarea>
       <div class="tema-acc">
         <span class="ttl"><b>Tema ${esc(t.num)} · ${esc(t.name)}</b> — ${t.questions.length} preguntas${conCredito ? `<br><small>Crédito: ${t.credito ? esc(t.credito) : '<i>sin crédito</i>'}</small>` : ''}</span>
         <a class="rbtn link" href="${esc(url)}" target="_blank" rel="noopener">Ver en la web ${ICON_EXT}</a>
-        <button class="rbtn" type="button" id="btnRenombrar">Renombrar</button>
+        <button class="rbtn" type="button" id="btnRenombrar">${ICON_EDIT} Editar tema</button>
         ${conCredito ? '<button class="rbtn" type="button" id="btnCredito">Crédito</button>' : ''}
         <button class="rbtn" type="button" id="btnTarjetas">Flashcards</button>
         <button class="rbtn danger" type="button" id="btnBorrarTema">Borrar tema</button>
@@ -1369,7 +1369,7 @@ E) Alternativa"></textarea>
     }).join('');
     $('qlist').querySelectorAll('[data-n]').forEach(b => b.addEventListener('click', () =>
       abrirEditor({ carpeta: sel.carpeta, curso: NOMBRE[sel.carpeta], anio: sel.anio, tema: sel.tema, n: +b.dataset.n })));
-    $('btnRenombrar').addEventListener('click', () => renombrarTema(t));
+    $('btnRenombrar').addEventListener('click', () => editarTema(t, temas));
     if (conCredito) $('btnCredito').addEventListener('click', () => creditoTema(t));
     $('btnTarjetas').addEventListener('click', () => { const x = partesCarpeta(sel.carpeta); tarjetasTema({ curso: x.curso, seccion: x.seccion, anio: sel.anio, tema: pad2(t.num), nombre: t.name, preguntas: t.questions.length }); });
     $('btnBorrarTema').addEventListener('click', () => borrarTema(t));
@@ -1397,14 +1397,50 @@ E) Alternativa"></textarea>
     });
   }
 
-  async function renombrarTema(t) {
-    const nombre = await pedirTexto({ titulo: 'Renombrar tema ' + t.num, sub: 'El nuevo nombre se verá en el temario y en cada pregunta.', valor: t.name });
-    if (!nombre) return;
-    try {
-      await api('renombrarTema', { carpeta: sel.carpeta, curso: NOMBRE[sel.carpeta], anio: sel.anio, tema: t.num, nombre });
-      delete cacheArchivos[sel.carpeta + '|' + sel.anio];
-      toast('Tema renombrado'); renderPicker();
-    } catch (e) { toast(e.message, true); }
+  // Editar tema: número y nombre. Cambiar el número publica el tema con el número nuevo y luego borra el viejo.
+  function editarTema(t, temas) {
+    const o = document.createElement('div');
+    o.className = 'ov';
+    o.innerHTML = `<div class="mcard" style="max-width:480px;">
+      <h3>Editar tema</h3><p class="sub" style="margin-top:6px; line-height:1.55;">El número y el nombre se ven en el temario y en cada pregunta. Las preguntas no cambian.</p>
+      <div style="display:grid; grid-template-columns:96px 1fr; gap:10px; margin-top:16px;">
+        <label style="display:grid; gap:6px;"><span class="lbl" style="margin:0;">Número</span><input class="inp" id="etNum" inputmode="numeric" maxlength="2" value="${esc(String(+t.num))}" autocomplete="off"></label>
+        <label style="display:grid; gap:6px; min-width:0;"><span class="lbl" style="margin:0;">Nombre</span><input class="inp" id="etNom" value="${esc(t.name)}" autocomplete="off"></label>
+      </div>
+      <p class="sub" id="etAviso" style="margin-top:10px; line-height:1.5;"></p>
+      <div class="mfoot"><button type="button" class="btn-ghost" data-x>Cancelar</button>
+      <button type="button" class="btn-main" data-ok>Guardar</button></div></div>`;
+    document.body.appendChild(o);
+    const num = o.querySelector('#etNum'), nom = o.querySelector('#etNom'), ok = o.querySelector('[data-ok]'), aviso = o.querySelector('#etAviso');
+    const nuevoNum = () => /^\d{1,2}$/.test(num.value.trim()) && +num.value.trim() > 0 ? pad2(num.value.trim()) : null;
+    const check = () => {
+      const n = nuevoNum(), cambiaNum = n && n !== pad2(t.num), ocupado = cambiaNum && temas.some(x => pad2(x.num) === n);
+      aviso.innerHTML = !n ? 'Escribe un número del 1 al 99.' : ocupado ? `Ya existe el Tema ${+n} en este ciclo. Elige otro número o borra ese tema primero.` : cambiaNum ? `Pasará de Tema ${+t.num} a Tema ${+n}. Si el enlace del tema viejo se compartió, dejará de abrir.` : '';
+      aviso.style.color = !n || ocupado ? '#ff6b6b' : '';
+      ok.disabled = !n || ocupado || !nom.value.trim() || (!cambiaNum && nom.value.trim() === t.name);
+    };
+    num.addEventListener('input', check); nom.addEventListener('input', check); check();
+    num.focus(); num.select();
+    o.querySelector('[data-x]').addEventListener('click', () => o.remove());
+    o.addEventListener('keydown', e => { if (e.key === 'Escape') o.remove(); if (e.key === 'Enter' && !ok.disabled) ok.click(); });
+    ok.addEventListener('click', async () => {
+      const n = nuevoNum(), nombre = nom.value.trim(), base = { carpeta: sel.carpeta, curso: NOMBRE[sel.carpeta], anio: sel.anio };
+      ok.disabled = true; ok.innerHTML = '<span class="spin-s"></span> Guardando…';
+      try {
+        if (n === pad2(t.num)) {
+          await api('renombrarTema', Object.assign({}, base, { tema: t.num, nombre }));
+          toast('Tema guardado');
+        } else {
+          // Primero el tema con el número nuevo (mismas preguntas e imágenes), después se borra el viejo
+          await api('publicarTema', Object.assign({}, base, { tema: n, nombre, credito: t.credito || '', modo: 'nuevo', destino: 'libro', preguntas: JSON.stringify(t.questions), imagenes: '[]' }));
+          await api('borrarTema', Object.assign({}, base, { tema: t.num, confirmar: 'BORRAR' }));
+          sel.tema = n;
+          toast('Ahora es el Tema ' + (+n));
+        }
+        delete cacheArchivos[sel.carpeta + '|' + sel.anio]; delete cacheManifest[sel.carpeta];
+        o.remove(); renderPicker();
+      } catch (e) { toast(e.message, true); ok.disabled = false; ok.textContent = 'Guardar'; }
+    });
   }
 
   async function creditoTema(t) {
