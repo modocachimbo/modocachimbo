@@ -184,6 +184,10 @@
   .curso .ic svg { width: 34px; height: 34px; display: block; }
   .curso .tx { flex: 1; min-width: 0; display: grid; gap: 3px; }
   .curso b { font-size: 17px; font-weight: 900; }
+  /* Un color por área (colores en assets/areas.css): ícono y borde grueso de abajo */
+  .curso[data-area] .ic { color: var(--ac); background: rgba(var(--ac-rgb),.1); border-color: rgba(var(--ac-rgb),.3); }
+  .curso[data-area] { border-color: rgba(var(--ac-rgb),.3); border-bottom-color: var(--ac-d); }
+  .curso[data-area]:hover { border-color: rgba(var(--ac-rgb),.6); border-bottom-color: var(--ac-d); }
   .curso small { font-size: 13px; color: var(--text-dim); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .chev { width: 22px; height: 22px; flex-shrink: 0; fill: none; stroke: var(--text-faint); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
   .modos { grid-template-columns: 1fr 1fr; }
@@ -224,6 +228,7 @@
   .hoja-lista .curso { padding: 12px 14px; }
   .hoja-lista .curso .ic { width: 44px; height: 44px; border-radius: 13px; }
   .hoja-lista .curso .ic svg, .hoja-lista .curso .ic .ic-m { width: 26px; height: 26px; }
+  .hoja-lista .curso[data-area] .ic { color: var(--ac); background: rgba(var(--ac-rgb),.1); border-color: rgba(var(--ac-rgb),.3); }
   .ic-m { display: block; background: currentColor; -webkit-mask: center / contain no-repeat; mask: center / contain no-repeat; }
   .hoja .mcn-hoja { margin: 0; padding: 2px; border: 0; background: none; }
   .hoja .mcn-hoja .mcn-item:first-child { margin-top: 0; }
@@ -453,6 +458,7 @@
   body, body :not(.katex):not(.katex *):not(code):not(pre):not(kbd):not(samp):not(.formato):not(.ta.big):not(.cdnuevos code) { font-family: 'Nunito', 'Inter', system-ui, sans-serif !important; }
   body { font-weight: 600; }
 </style>
+<link rel="stylesheet" href="assets/areas.css">
 <script src="assets/mc-config.js"></script>
 <script src="assets/acceso.js"></script>
 <script src="assets/auth.js"></script>
@@ -832,8 +838,8 @@ function jsonpRequest(url) {
     var icoEx = document.querySelector('[data-hoja="examenes"] .ic').innerHTML;
     var icoFc = document.querySelector('[data-hoja="flashcards"] .ic').innerHTML;
     function esc(x) { return String(x == null ? '' : x).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
-    function fila(href, ic, nombre, sub, cls) {
-      return '<a class="curso ' + (cls || '') + '" href="' + esc(href) + '"><span class="ic">' + ic + '</span><span class="tx"><b>' + esc(nombre) + '</b>' +
+    function fila(href, ic, nombre, sub, cls, area) {
+      return '<a class="curso ' + (cls || '') + '"' + (area ? ' data-area="' + esc(area) + '"' : '') + ' href="' + esc(href) + '"><span class="ic">' + ic + '</span><span class="tx"><b>' + esc(nombre) + '</b>' +
         (sub ? '<small>' + esc(sub) + '</small>' : '') + '</span>' + CHEV + '</a>';
     }
     var datos = null;
@@ -853,7 +859,7 @@ function jsonpRequest(url) {
             var cs = (d.cursos || []).filter(function (c) { return c.area === a.id && !c.oculto; }).sort(function (x, y) { return (x.orden || 0) - (y.orden || 0); });
             if (!cs.length) return;
             html += '<div class="grupo">' + esc(a.nombre) + '</div>';
-            cs.forEach(function (c) { html += fila('tarjetas.html?curso=' + encodeURIComponent(c.id), c.icono ? '<i class="ic-m" style="-webkit-mask-image:url(' + esc(c.icono) + ');mask-image:url(' + esc(c.icono) + ')"></i>' : icoFc, c.nombre); });
+            cs.forEach(function (c) { html += fila('tarjetas.html?curso=' + encodeURIComponent(c.id), c.icono ? '<i class="ic-m" style="-webkit-mask-image:url(' + esc(c.icono) + ');mask-image:url(' + esc(c.icono) + ')"></i>' : icoFc, c.nombre, '', '', c.area); });
           });
           lista.innerHTML = html;
         }).catch(function () { lista.innerHTML = '<p class="grupo">No se pudo cargar la lista de cursos.</p>'; });
