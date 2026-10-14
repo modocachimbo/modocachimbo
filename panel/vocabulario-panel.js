@@ -52,6 +52,11 @@ const VO_CAMPOS = { sin: 'sinónimos', ant: 'antónimos', def: 'definición', ej
   .vo-lista { display: flex; flex-direction: column; gap: 10px; max-height: 620px; overflow-y: auto; padding-right: 4px; }
   .vo-card { background: #111; border: 2px solid #262626; border-bottom-width: 4px; border-radius: 16px; padding: 12px 14px; }
   .vo-card.mal { border-color: rgba(224,60,60,.45); }
+  .vo-card { cursor: pointer; transition: border-color .15s; } .vo-card:hover { border-color: #3a4a00; }
+  .vo-edit { width: 100%; min-height: 260px; font: 600 14px/1.6 Nunito, sans-serif; resize: vertical; }
+  .vo-edit-pie { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 14px; }
+  .vo-edit-pie .esp { flex: 1; }
+  .vo-borrar { color: var(--red); border-color: rgba(224,60,60,.4); }
   .vo-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .vo-pal { font: 900 16px Nunito, Inter, sans-serif; letter-spacing: .5px; text-transform: uppercase; color: var(--text); overflow-wrap: anywhere; }
   .vo-rae { flex-shrink: 0; font-size: 11.5px; font-weight: 700; color: var(--text-dim); text-decoration: none; border: 1px solid #2a2a2a; border-radius: 8px; padding: 3px 8px; }
@@ -223,6 +228,10 @@ async function cargarVocabulario(forzar) {
   VO.publicados = r.data || [];
   VO.texto = voEscribir(VO.publicados);
   VO.cambios = false;
+  // Si se recargó la página sin guardar, recupera lo que estaba escrito
+  const borrador = voBorrador();
+  if (borrador != null && borrador !== VO.texto) { VO.texto = borrador; VO.cambios = true; VO.recuperado = true; }
+  else voBorrador(null);
   // "on" lo dejó guardado por error el interruptor del candado: no es un curso
   VO.cursos = ((a.data && a.data.valor && a.data.valor.cursos) || []).filter(c => c !== 'on');
   VO.candado = !(a.data && a.data.valor && a.data.valor.candado === false);
@@ -230,6 +239,18 @@ async function cargarVocabulario(forzar) {
   VO.cargado = true;
   pintarVoCursos();
   renderVocabulario();
+}
+
+// Borrador en este navegador: lo escrito y no publicado no se pierde al recargar
+function voBorrador(v) {
+  try {
+    if (v === undefined) return localStorage.getItem('mc_voc_borrador');
+    if (v === null) localStorage.removeItem('mc_voc_borrador'); else localStorage.setItem('mc_voc_borrador', v);
+  } catch (e) { return null; }
+}
+function voPublicadoTxt() {
+  const n = VO.publicados.length;
+  return n ? `Publicadas ahora: ${n} palabra${n > 1 ? 's' : ''}` : 'Aún no hay palabras publicadas';
 }
 
 function pintarVoCursos() {
@@ -288,7 +309,7 @@ function renderVocabulario() {
         <div class="vo-tit">Así lo verán los alumnos <span id="voCuenta"></span></div>
         <div id="voRes"></div>
         <div class="vo-temas" id="voFiltro"></div>
-        <input class="inp vo-buscar" id="voBuscar" type="search" placeholder="Buscar palabra" value="${esc(VO.busca)}">
+        <input class="inp vo-buscar" id="voBuscar" type="search" placeholder="Buscar palabra · tócala para editarla" value="${esc(VO.busca)}">
         <div class="vo-lista" id="voLista"></div>
       </div>
     </div>`;
@@ -297,12 +318,13 @@ function renderVocabulario() {
   ta.addEventListener('input', () => {
     VO.texto = ta.value;
     VO.cambios = ta.value !== voEscribir(VO.publicados);
+    voBorrador(VO.cambios ? ta.value : null);
     VO.borrar = false;
     voVista();
   });
   $('voBuscar').addEventListener('input', e => { VO.busca = e.target.value; voVista(); });
   $('voDeshacer').addEventListener('click', () => {
-    VO.texto = voEscribir(VO.publicados); VO.cambios = false; VO.borrar = false; renderVocabulario();
+    VO.texto = voEscribir(VO.publicados); VO.cambios = false; VO.borrar = false; voBorrador(null); VO.recuperado = false; renderVocabulario();
   });
   voVista();
 }
@@ -322,6 +344,47 @@ function pintarVoCandado() {
     if (r.error) toast(/no autorizado/i.test(r.error.message || '') ? 'Tu correo no es administrador' : (r.error.message || 'No se pudo guardar'), true);
     else { VO.candado = nuevo; toast(nuevo ? 'Candado activado: ahora pide código' : 'Vocabulario abierto para todos'); }
     pintarVoCandado();
+  });
+}
+
+// Tocar una palabra en la vista previa: la edita en una ventanita y publica
+function voEditar(n) {
+  const lineas = VO.texto.split('\n');
+  const inicios = voLeer(VO.texto).items.map(x => x.linea).sort((a, b) => a - b);
+  const ini = n - 1; let fin = inicios.find(l => l > n); fin = fin ? fin - 1 : lineas.length;
+  while (fin > ini + 1 && /^\s*(#.*)?$/.test(lineas[fin - 1])) fin--;
+  const bloque = lineas.slice(ini, fin).join('\n');
+  const o = document.createElement('div');
+  o.className = 'ov';
+  o.innerHTML = `<div class="mcard"><button class="mx" type="button" aria-label="Cerrar">✕</button>
+    <div class="eyebrow">Editar palabra</div>
+    <h3>${esc((lineas[ini] || '').trim())}</h3>
+    <textarea class="inp vo-edit" id="voEdTxt" spellcheck="false"></textarea>
+    <div class="err" id="voEdErr"></div>
+    <div class="vo-edit-pie"><button type="button" class="btn-ghost vo-borrar" id="voEdBorrar">Borrar palabra</button><span class="esp"></span>
+      <button type="button" class="btn-ghost" data-x>Cancelar</button><button type="button" class="btn-main" id="voEdOk">Guardar y publicar</button></div>
+  </div>`;
+  document.body.appendChild(o); document.body.classList.add('modal-open');
+  const ta = o.querySelector('#voEdTxt'); ta.value = bloque; ta.focus();
+  const cerrar = () => { o.remove(); document.body.classList.remove('modal-open'); };
+  o.querySelector('.mx').addEventListener('click', cerrar); o.querySelector('[data-x]').addEventListener('click', cerrar);
+  const aplicar = nuevo => {
+    const t = lineas.slice(0, ini).concat(nuevo === '' ? [] : nuevo.split('\n'), lineas.slice(fin)).join('\n').replace(/\n{3,}/g, '\n\n').replace(/^\n+/, '');
+    VO.texto = t; VO.cambios = t !== voEscribir(VO.publicados); voBorrador(VO.cambios ? t : null);
+    cerrar(); renderVocabulario();
+    if (VO.cambios) guardarVocabulario();
+  };
+  o.querySelector('#voEdOk').addEventListener('click', () => {
+    const v = ta.value.replace(/\s+$/, '');
+    const d = voLeer(v);
+    if (d.errores.length) { const e = o.querySelector('#voEdErr'); e.textContent = d.errores[0].t; e.classList.add('show'); return; }
+    if (d.items.length !== 1) { const e = o.querySelector('#voEdErr'); e.textContent = 'Deja una sola palabra en esta ventana. Para agregar más, usa el cuadro grande.'; e.classList.add('show'); return; }
+    aplicar(v);
+  });
+  const bb = o.querySelector('#voEdBorrar');
+  bb.addEventListener('click', () => {
+    if (!bb.dataset.ok) { bb.dataset.ok = '1'; bb.textContent = 'Toca otra vez para borrarla'; return; }
+    aplicar('');
   });
 }
 
@@ -382,12 +445,14 @@ function voVista() {
   if (q) vis = vis.filter(x => voNorm(x.palabra).includes(q) || x.sin.concat(x.ant).some(y => voNorm(y).includes(q)));
   $('voLista').innerHTML = vis.length ? vis.slice(0, 300).map(voFicha).join('') + (vis.length > 300 ? `<div class="hint">Se muestran 300 de ${vis.length}. Usa el buscador.</div>` : '')
     : `<div class="vo-vacio">${q ? 'Ninguna palabra coincide.' : 'Aún no hay palabras. Escribe a la izquierda o pega tu lista.'}</div>`;
-  $('voLista').querySelectorAll('.vo-card').forEach(c => c.addEventListener('dblclick', () => voIrLinea(+c.dataset.n)));
+  $('voLista').querySelectorAll('.vo-card').forEach(c => c.addEventListener('click', e => { if (!e.target.closest('a')) voEditar(+c.dataset.n); }));
 
   $('voDeshacer').disabled = !VO.cambios;
   $('voGuardar').disabled = !VO.cambios;
   $('voGuardar').textContent = VO.borrar ? 'Toca otra vez para vaciar' : 'Guardar y publicar';
-  voEstado(VO.cambios ? 'Cambios sin guardar' + (d.errores.length ? ` · ${d.errores.length} por corregir` : '') : '');
+  voEstado(VO.cambios
+    ? (VO.recuperado ? 'Recuperé lo que escribiste y no publicaste · ' : 'Cambios sin guardar · ') + (d.errores.length ? `${d.errores.length} por corregir` : 'toca Guardar y publicar')
+    : voPublicadoTxt());
 }
 
 async function guardarVocabulario() {
@@ -411,7 +476,9 @@ async function guardarVocabulario() {
   VO.publicados = lista.map((x, i) => Object.assign({ orden: i + 1 }, x));
   VO.texto = voEscribir(VO.publicados);
   VO.cambios = false;
+  voBorrador(null);
   renderVocabulario();
+  VO.recuperado = false;
   voEstado(`✓ Publicado: ${r.data == null ? lista.length : r.data} palabras.`);
   toast('Vocabulario guardado');
 }
