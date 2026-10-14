@@ -50,17 +50,16 @@ function renderConfigAcceso() {
       ${ab[k] && ab[k].hasta ? `<span class="pill gray">hasta el ${esc(ab[k].hasta.split('-').reverse().join('/'))}</span>` : ''}
       <label class="sw"><input type="checkbox" data-abrir="${k}" ${ab[k] ? 'checked' : ''}><span></span>${ab[k] ? 'Abierto' : 'Con código'}</label>
     </div>`;
-  const extras = Object.keys(ab).filter(k => !['TODO', 'repaso', 'fijas', 'seminario', 'banqueo', 'tarjetas', 'vocabulario', 'simulacro'].includes(k));
+  const extras = Object.keys(ab).filter(k => !['TODO', 'repaso', 'fijas', 'seminario', 'banqueo', 'tarjetas', 'simulacro'].includes(k));
   $('cdConfig').innerHTML = `
     <div class="acc-box">
       <div class="acc-ttl">Acceso libre <span>— abre el contenido para todos, sin código</span></div>
-      ${fila('TODO', 'Todo', 'Repasos, Fijas, Seminarios, Banqueo, Flashcards, Vocabulario y Simulacro')}
+      ${fila('TODO', 'Todo', 'Repasos, Fijas, Seminarios, Banqueo, Flashcards y Simulacro')}
       ${fila('repaso', 'Todos los Repasos', 'también la práctica del Libro')}
       ${fila('fijas', 'Todas las Fijas', 'todos los cursos')}
       ${fila('seminario', 'Todos los Seminarios', 'todos los cursos')}
       ${fila('banqueo', 'Todo el Banqueo', 'todos los cursos')}
       ${fila('tarjetas', 'Todas las Flashcards', 'todos los cursos')}
-      ${fila('vocabulario', 'Vocabulario', 'Razonamiento Verbal')}
       ${fila('simulacro', 'Simulacro', 'Examen de 80 preguntas')}
       ${extras.map(k => `<div class="acc-row"><div><b>${esc(etiquetaProd(k))}</b><span>abierto para todos${ab[k].hasta ? ' hasta el ' + esc(ab[k].hasta.split('-').reverse().join('/')) : ''}</span></div>
         <button class="rbtn" type="button" data-cerrar="${esc(k)}">Cerrar</button></div>`).join('')}

@@ -223,7 +223,9 @@ async function cargarVocabulario(forzar) {
   VO.publicados = r.data || [];
   VO.texto = voEscribir(VO.publicados);
   VO.cambios = false;
-  VO.cursos = ((a.data && a.data.valor && a.data.valor.cursos) || []).slice();
+  // "on" lo dejó guardado por error el interruptor del candado: no es un curso
+  VO.cursos = ((a.data && a.data.valor && a.data.valor.cursos) || []).filter(c => c !== 'on');
+  VO.candado = !(a.data && a.data.valor && a.data.valor.candado === false);
   VO.registro = reg;
   VO.cargado = true;
   pintarVoCursos();
@@ -245,10 +247,10 @@ function pintarVoCursos() {
       <div class="acc-row" id="voCandado"><div><b>Candado</b><span>Cargando…</span></div></div>
     </div>`;
   pintarVoCandado();
-  caja.querySelectorAll('input').forEach(inp => inp.addEventListener('change', async () => {
-    const nuevos = [...caja.querySelectorAll('input:checked')].map(x => x.value);
+  caja.querySelectorAll('.vo-curso input').forEach(inp => inp.addEventListener('change', async () => {
+    const nuevos = [...caja.querySelectorAll('.vo-curso input:checked')].map(x => x.value);
     caja.querySelectorAll('input').forEach(x => { x.disabled = true; });
-    const r = await (await MCAuth.listo).rpc('guardar_ajuste', { p_clave: 'vocabulario', p_valor: { cursos: nuevos } });
+    const r = await (await MCAuth.listo).rpc('guardar_ajuste', { p_clave: 'vocabulario', p_valor: { cursos: nuevos, candado: VO.candado } });
     if (r.error) {
       toast(/no autorizado/i.test(r.error.message || '') ? 'Tu correo no es administrador' : (r.error.message || 'No se pudo guardar'), true);
     } else {
@@ -305,29 +307,20 @@ function renderVocabulario() {
   voVista();
 }
 
-// Candado de Vocabulario: usa el mismo "Acceso libre" de la pestaña Códigos (clave "vocabulario")
-async function pintarVoCandado(recargar) {
+// Candado de Vocabulario: se guarda en Supabase (ajustes "vocabulario" → candado: true | false)
+function pintarVoCandado() {
   const caja = $('voCandado'); if (!caja) return;
-  try { if (recargar || !VO.accCargado) { const r = await api('codigos'); CD.config = r.config || CD.config; VO.accCargado = true; } }
-  catch (e) { caja.innerHTML = `<div><b>Candado</b><span>No se pudo leer: ${esc(e.message)}</span></div>`; return; }
-  const ab = (CD.config.abiertos || {}), libre = ab.vocabulario || ab.TODO;
-  const hasta = libre && libre.hasta ? ' hasta el ' + libre.hasta.split('-').reverse().join('/') : '';
-  caja.innerHTML = `<div><b>Candado</b><span>${ab.TODO && !ab.vocabulario
-      ? 'Abierto para todos porque en Códigos está abierto «Todo»' + esc(hasta) + '.'
-      : libre ? 'Abierto para todos' + esc(hasta) + '. Actívalo para pedir código.'
-      : 'Pide código. Lo abren los códigos de Vocabulario, de Razonamiento Verbal completo o de Acceso total.'}</span></div>
-    <label class="sw"><input type="checkbox" id="voCandSw" ${libre ? '' : 'checked'} ${ab.TODO && !ab.vocabulario ? 'disabled' : ''}><span></span>${libre ? 'Abierto' : 'Con código'}</label>`;
+  const con = VO.candado !== false;
+  caja.innerHTML = `<div><b>Candado</b><span>${con
+      ? 'Pide código. Lo abren los códigos de Vocabulario, de Razonamiento Verbal completo o de Acceso total.'
+      : 'Abierto para todos, sin código. Actívalo para volver a pedir código.'}</span></div>
+    <label class="sw"><input type="checkbox" id="voCandSw" ${con ? 'checked' : ''}><span></span>${con ? 'Con código' : 'Abierto'}</label>`;
   $('voCandSw').addEventListener('change', async e => {
+    const nuevo = e.target.checked;
     e.target.disabled = true;
-    try {
-      const r0 = await api('codigos');
-      const cfg = JSON.parse(JSON.stringify(r0.config || CD.config)); cfg.abiertos = cfg.abiertos || {};
-      if (e.target.checked) delete cfg.abiertos.vocabulario; else cfg.abiertos.vocabulario = { hasta: '' };
-      const r = await api('guardarConfigAcceso', { config: JSON.stringify(cfg) });
-      CD.config = r.config;
-      toast(e.target.checked ? 'Candado activado: ahora pide código' : 'Vocabulario abierto para todos');
-      if (typeof renderConfigAcceso === 'function' && $('cdConfig')) renderConfigAcceso();
-    } catch (err) { toast(err.message, true); }
+    const r = await (await MCAuth.listo).rpc('guardar_ajuste', { p_clave: 'vocabulario', p_valor: { cursos: VO.cursos, candado: nuevo } });
+    if (r.error) toast(/no autorizado/i.test(r.error.message || '') ? 'Tu correo no es administrador' : (r.error.message || 'No se pudo guardar'), true);
+    else { VO.candado = nuevo; toast(nuevo ? 'Candado activado: ahora pide código' : 'Vocabulario abierto para todos'); }
     pintarVoCandado();
   });
 }
