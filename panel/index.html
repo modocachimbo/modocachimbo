@@ -305,6 +305,8 @@
   .tema-acc .ttl b { color: var(--text); }
   .rbtn.danger { color: var(--red); border-color: rgba(224,60,60,0.3); }
   .rbtn.danger:hover { background: rgba(224,60,60,0.1); color: #ffb3b3; }
+  body.no-borrar #btnBorrarTema, body.no-borrar .an-row [data-del] { display: none; }
+  .tab[hidden], .menu-grupo[hidden] { display: none; }
   .rbtn.danger.confirm { background: #c43d3d; border-color: #c43d3d; color: #fff; }
   .mfoot .izq { margin-right: auto; }
 
@@ -533,7 +535,7 @@
       </div>
       <aside class="menu" id="menu" aria-label="Menú del panel">
         <a class="menu-logo" href="../index.html" title="Ir a la web"><img src="../assets/img/logo-modo-cachimbo-horizontal.svg" alt="Modo Cachimbo"></a>
-        <div class="menu-sub">Panel admin</div>
+        <div class="menu-sub" id="menuRol">Panel admin</div>
         <nav class="tabs" role="tablist">
         <div class="menu-grupo">Alumnos</div>
         <button class="tab on" data-tab="reportes" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Reportes</span><span class="badge" id="badgePend" hidden>0</span></button>
@@ -552,6 +554,9 @@
         <button class="tab" data-tab="alertas" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Alertas</span></button>
         <button class="tab" data-tab="frases" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Frases del día</span></button>
         <button class="tab" data-tab="tutorial" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Tutorial</span></button>
+        <div class="menu-grupo">Equipo</div>
+        <button class="tab" data-tab="equipo" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg><span>Ayudantes</span></button>
+        <button class="tab" data-tab="historial" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><polyline points="3 3 3 8 8 8"/><polyline points="12 7 12 12 15 14"/></svg><span>Historial</span></button>
         </nav>
         <div class="menu-pie">
           <div class="menu-cuenta" id="menuCuenta"></div>
@@ -884,6 +889,32 @@ E) Alternativa"></textarea>
         <div id="corrBanner"></div>
         <div id="corrList"></div>
       </div>
+
+      <!-- Ayudantes (solo el administrador) -->
+      <div id="tab-equipo" hidden>
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Solo tú</div>
+            <h1>Ayudantes</h1>
+            <p>Personas que te ayudan con el panel. Cada una entra con su propia cuenta de Google, sin tu contraseña, y solo ve las pestañas que le marques. Lo que hacen queda en Historial.</p>
+          </div>
+        </div>
+        <div id="eqBody"></div>
+      </div>
+
+      <!-- Historial (solo el administrador) -->
+      <div id="tab-historial" hidden>
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Solo tú</div>
+            <h1>Historial</h1>
+            <p>Qué hizo cada uno en el panel y cuándo. Se guarda un año.</p>
+          </div>
+          <button class="btn-ghost" id="hiRecargar" type="button">Actualizar</button>
+        </div>
+        <div id="hiFiltro"></div>
+        <div id="hiBody"></div>
+      </div>
     </section>
   </div>
 
@@ -958,7 +989,8 @@ E) Alternativa"></textarea>
   class ApiError extends Error {}
   // POST simple (sin preflight); si el navegador lo bloquea, reintenta por JSONP
   async function api(action, data = {}, pass = PASS) {
-    const payload = Object.assign({ action, password: pass }, data);
+    const token = window.MCAuth && MCAuth.token ? MCAuth.token() : '';
+    const payload = Object.assign({ action, password: pass }, token ? { token } : {}, data);
     let j;
     try {
       const ctl = new AbortController();
@@ -970,8 +1002,9 @@ E) Alternativa"></textarea>
       j = await jsonp(CFG.REPORTES_URL, payload);
     }
     if (!j || !j.ok) {
-      const msg = (j && j.error) || 'Error desconocido';
+      let msg = (j && j.error) || 'Error desconocido';
       if (msg === 'Contraseña incorrecta' && PASS) { salir(); toast('Tu sesión expiró. Vuelve a entrar.', true); }
+      else if (msg === 'Contraseña incorrecta' && !ROL.admin) msg = 'El Apps Script todavía no acepta ayudantes. Falta pegar la versión 7.';
       throw new ApiError(msg);
     }
     return j;
@@ -983,39 +1016,80 @@ E) Alternativa"></textarea>
     $('panelView').hidden = view !== 'panel';
     $('btnLogout').hidden = view !== 'panel';
     document.body.classList.toggle('panel-on', view === 'panel');
+    if (view === 'panel') aplicarPermisos();
     if (view !== 'panel') document.body.classList.remove('menu-abierto');
   }
   function salir() { ss('del', 'mc_panel_pass'); PASS = ''; DATA = []; $('passInput').value = ''; show('login'); }
 
   /* ---------- cuenta de Google: solo correos en public.admins ---------- */
-  // 'ok' | 'sin-sesion' | 'denegado' | 'error' (Supabase no respondió: se permite la contraseña)
+  // 'ok' | 'ayudante' | 'inactivo' | 'sin-sesion' | 'denegado' | 'error' (Supabase no respondió: se permite la contraseña)
   let GATE = null;
+  // Qué puede hacer quien entró. El administrador (con contraseña) puede todo.
+  let ROL = { admin: true, permisos: [], nombre: '' };
   async function revisarCuenta() {
+    ROL = { admin: true, permisos: [], nombre: '' };
     if (!window.MCAuth) return 'error';
     let cliente;
     try { cliente = await MCAuth.listo; } catch (e) { return 'error'; }
     if (!MCAuth.usuario()) return 'sin-sesion';
     try {
-      const r = await cliente.rpc('es_admin');
-      if (r.error) return 'error';
-      return r.data ? 'ok' : 'denegado';
+      const r = await cliente.rpc('mi_rol');
+      if (r.error) { // todavía no se corrió supabase/14-equipo.sql
+        const a = await cliente.rpc('es_admin');
+        if (a.error) return 'error';
+        return a.data ? 'ok' : 'denegado';
+      }
+      const d = r.data || {};
+      if (d.admin) return 'ok';
+      ROL = { admin: false, permisos: d.permisos || [], nombre: d.nombre || '' };
+      return d.ayudante ? 'ayudante' : d.inactivo ? 'inactivo' : 'denegado';
     } catch (e) { return 'error'; }
+  }
+
+  /* ---------- ayudantes: solo ven sus pestañas ---------- */
+  const TAB_PERMISO = { reportes: 'reportes', corr: 'corr', alumnos: 'alumnos', simulacro: 'simulacro', codigos: 'codigos', subir: 'subir', examen: 'examen',
+    editar: 'editar', vocab: 'vocab', cursos: 'cursos', perfil: 'perfil', alertas: 'alertas', frases: 'frases', tutorial: 'tutorial' };
+  function puedeTab(t) { return ROL.admin || (!!TAB_PERMISO[t] && ROL.permisos.includes(TAB_PERMISO[t])); }
+  function aplicarPermisos() {
+    document.body.classList.toggle('es-ayudante', !ROL.admin);
+    document.body.classList.toggle('no-borrar', !ROL.admin && !ROL.permisos.includes('borrar'));
+    const tabs = [...document.querySelectorAll('.tab')];
+    tabs.forEach(t => { t.hidden = !puedeTab(t.dataset.tab); });
+    // Un título del menú se esconde si no le queda ninguna pestaña
+    document.querySelectorAll('.menu-grupo').forEach(g => {
+      let x = g.nextElementSibling, alguna = false;
+      while (x && !x.classList.contains('menu-grupo')) { if (x.classList.contains('tab') && !x.hidden) alguna = true; x = x.nextElementSibling; }
+      g.hidden = !alguna;
+    });
+    $('menuRol').textContent = ROL.admin ? 'Panel admin' : 'Ayudante' + (ROL.nombre ? ' · ' + ROL.nombre : '');
+    const on = tabs.find(t => t.classList.contains('on'));
+    if (!on || on.hidden) { const pri = tabs.find(t => !t.hidden); if (pri) pri.click(); }
+  }
+  function entrarAyudante() {
+    PASS = ''; ss('del', 'mc_panel_pass');
+    show('panel');
+    cargarRegistro();
+    if (puedeTab('reportes')) recargarReportes();
+    MCAuth.listo.then(c => c.rpc('registrar_ingreso')).then(() => {}, () => {});
   }
   function pintarCuenta() {
     const u = window.MCAuth && MCAuth.usuario();
     const g = $('gateCuenta');
     $('passZona').hidden = !(GATE === 'ok' || GATE === 'error');
-    if (GATE === 'ok') g.innerHTML = `<div class="gate-msg">Conectado como <b>${esc(u.email)}</b></div>`;
+    if (GATE === 'ayudante') g.innerHTML = `<div class="gate-msg">Hola <b>${esc(ROL.nombre || u.email)}</b>. Entras como ayudante con <b>${esc(u.email)}</b>.</div><button class="btn-main" type="button" id="gateAyudante">Entrar al panel</button><button class="btn-ghost" type="button" id="gateOtra">Usar otra cuenta</button>`;
+    else if (GATE === 'inactivo') g.innerHTML = `<div class="gate-msg mal"><b>Tu acceso está pausado.</b><br>${esc(u.email)} es ayudante, pero el administrador lo desactivó por ahora.</div><button class="btn-ghost" type="button" id="gateOtra">Usar otra cuenta</button>`;
+    else if (GATE === 'ok') g.innerHTML = `<div class="gate-msg">Conectado como <b>${esc(u.email)}</b></div>`;
     else if (GATE === 'error') g.innerHTML = '<div class="gate-msg">No se pudo revisar tu cuenta de Google. Por ahora entra solo con la contraseña.</div>';
     else if (GATE === 'sin-sesion') g.innerHTML = '<div class="gate-msg">Primero entra con la cuenta de Google de administrador.</div><button class="btn-main" type="button" id="gateGoogle">Entrar con Google</button>';
     else if (GATE === 'denegado') g.innerHTML = `<div class="gate-msg mal">⛔ <b>Acceso denegado.</b><br>${esc(u.email)} no es administrador de Modo Cachimbo.</div><button class="btn-ghost" type="button" id="gateOtra">Usar otra cuenta</button>`;
     const bg = $('gateGoogle'); if (bg) bg.addEventListener('click', () => MCAuth.entrarGoogle());
     const bo = $('gateOtra'); if (bo) bo.addEventListener('click', async () => { await MCAuth.salir(); MCAuth.entrarGoogle(); });
+    const ba = $('gateAyudante'); if (ba) ba.addEventListener('click', entrarAyudante);
   }
   async function exigirCuenta() {
     GATE = await revisarCuenta();
     pintarCuenta();
-    if (GATE !== 'ok' && GATE !== 'error') { salir(); return false; }
+    if (GATE !== 'ok' && GATE !== 'error' && GATE !== 'ayudante') { salir(); return false; }
     return true;
   }
 
@@ -1061,7 +1135,7 @@ E) Alternativa"></textarea>
     window.scrollTo(0, 0);
     document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
     const pestana = t.dataset.tab === 'examen' ? 'subir' : t.dataset.tab; // "Subir examen" usa la misma pantalla que "Subir tema"
-    ['reportes', 'subir', 'editar', 'cursos', 'vocab', 'perfil', 'frases', 'alertas', 'tutorial', 'codigos', 'alumnos', 'corr', 'simulacro'].forEach(id => { $('tab-' + id).hidden = id !== pestana; });
+    ['reportes', 'subir', 'editar', 'cursos', 'vocab', 'perfil', 'frases', 'alertas', 'tutorial', 'codigos', 'alumnos', 'corr', 'simulacro', 'equipo', 'historial'].forEach(id => { $('tab-' + id).hidden = id !== pestana; });
     if (t.dataset.tab === 'tutorial' && !TU.datos) cargarTutorial();
     if (t.dataset.tab === 'cursos') { cargarCursos(); cargarPractica(); }
     if (t.dataset.tab === 'perfil') cargarPerfilCfg();
@@ -1074,6 +1148,8 @@ E) Alternativa"></textarea>
     if (t.dataset.tab === 'subir' || t.dataset.tab === 'examen') initSubir(t.dataset.tab === 'examen' ? 'examen' : 'tema');
     if (t.dataset.tab === 'editar') renderPicker();
     if (t.dataset.tab === 'corr') cargarCorrecciones();
+    if (t.dataset.tab === 'equipo') cargarEquipo();
+    if (t.dataset.tab === 'historial') cargarHistorial();
   }));
 
   /* ---------- REPORTES ---------- */
@@ -1525,8 +1601,15 @@ E) Alternativa"></textarea>
     // auth.js se carga más abajo: esperar a que estén todos los scripts
     if (document.readyState === 'loading') await new Promise(r => document.addEventListener('DOMContentLoaded', r));
     show('login');
-    if (window.MCAuth) MCAuth.alCambiar(async () => { const antes = GATE; GATE = await revisarCuenta(); if (GATE !== antes) { pintarCuenta(); if (GATE !== 'ok' && GATE !== 'error' && PASS) salir(); } });
+    if (window.MCAuth) MCAuth.alCambiar(async () => {
+      const antes = GATE, dentro = !$('panelView').hidden;
+      GATE = await revisarCuenta();
+      if (GATE === antes) { if (dentro) aplicarPermisos(); return; }
+      pintarCuenta();
+      if (dentro && (PASS ? GATE !== 'ok' && GATE !== 'error' : true)) salir();
+    });
     if (!(await exigirCuenta())) return;
+    if (GATE === 'ayudante') { entrarAyudante(); return; }
     const saved = ss('get', 'mc_panel_pass');
     if (saved) {
       try { const r = await api('listar', {}, saved); PASS = saved; DATA = r.reportes || []; show('panel'); renderReportes(); cargarRegistro(); return; }
@@ -1559,6 +1642,7 @@ E) Alternativa"></textarea>
 <script src="formato-barra.js"></script>
 <script src="practica-panel.js"></script>
 <script src="tarjetas-panel.js"></script>
+<script src="equipo-panel.js"></script>
 <script src="vocabulario-panel.js"></script>
 <script src="../assets/tutorial.js" data-solo-lista></script>
 <script src="tutorial-panel.js"></script>

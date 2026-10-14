@@ -3,7 +3,7 @@
    Al publicar un tema nuevo (no Fijas) se guarda un aviso en
    Supabase para que los alumnos lo vean (supabase/03-novedades.sql).
    Para eso hay que haber entrado con la cuenta de Google que está
-   en public.admins.
+   en public.admins, o con la de un ayudante que pueda Subir tema.
    ========================================================= */
 const NOV = { admin: null };
 
@@ -27,7 +27,9 @@ async function novEstado() {
   try { cliente = await MCAuth.listo; } catch (e) { return 'error'; }
   if (!MCAuth.usuario()) return 'sin-sesion';
   if (NOV.admin === null) {
-    const r = await cliente.rpc('es_admin');
+    // Administrador o ayudante con permiso de Subir tema (sin supabase/14-equipo.sql, solo el administrador)
+    let r = await cliente.rpc('puede', { p: 'subir' });
+    if (r.error) r = await cliente.rpc('es_admin');
     if (r.error) return 'error';
     NOV.admin = !!r.data;
   }
@@ -42,7 +44,7 @@ async function pintarAvisoNovedades() {
   el.className = 'nv-aviso ' + (e === 'ok' ? 'ok' : 'mal');
   if (e === 'ok') el.innerHTML = `<span>🔔 Cuando publiques un tema nuevo, los alumnos verán el aviso <b>“Nuevo”</b>. Conectado como <b>${esc(u.email)}</b>.</span>`;
   else if (e === 'sin-sesion') el.innerHTML = `<span>🔔 Para que los alumnos vean el aviso de temas nuevos, entra con tu cuenta de Google de administrador.</span><button type="button" class="btn-main" id="nvEntrar">Entrar con Google</button>`;
-  else if (e === 'no-admin') el.innerHTML = `<span>🔔 Tu correo <b>${esc(u.email)}</b> no es administrador, así que los temas nuevos no avisarán a los alumnos. Entra con la cuenta de Modo Cachimbo.</span>`;
+  else if (e === 'no-admin') el.innerHTML = `<span>🔔 Tu correo <b>${esc(u.email)}</b> no tiene permiso de Subir tema, así que los temas nuevos no avisarán a los alumnos. Entra con la cuenta de Modo Cachimbo.</span>`;
   else el.innerHTML = `<span>🔔 No se pudo revisar los avisos. ¿Ya corriste el archivo <b>supabase/03-novedades.sql</b>?</span>`;
   el.hidden = false;
   const b = $('nvEntrar'); if (b) b.addEventListener('click', () => MCAuth.entrarGoogle());
