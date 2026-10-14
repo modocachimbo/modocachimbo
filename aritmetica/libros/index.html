@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-area="matematica">
 <head>
 <meta charset="UTF-8">
 <script src="../../assets/guardia.js"></script>
@@ -80,8 +80,10 @@
   body, body :not(.katex):not(.katex *):not(code):not(pre):not(kbd):not(samp):not(.formato):not(.ta.big):not(.cdnuevos code) { font-family: 'Nunito', 'Inter', system-ui, sans-serif !important; }
   body { font-weight: 600; }
 </style>
+<link rel="stylesheet" href="../../assets/areas.css">
 <script src="../../assets/mc-config.js"></script>
 <script src="../../assets/auth.js"></script>
+<script src="../../assets/ciclos.js"></script>
 </head>
 <body>
   <div class="wrap">
@@ -95,34 +97,21 @@
 
     <div class="page-title">
       <div class="eyebrow">Aritmética · Libros</div>
-      <h1>Elige un año</h1>
-      <p>Cada año trae un temario de 10 temas. Dentro de cada tema hay 10 preguntas con su respuesta marcada y un botón para practicar.</p>
+      <h1>Elige un ciclo</h1>
+      <p>Cada ciclo trae un temario de 10 temas. Dentro de cada tema hay 10 preguntas con su respuesta marcada y un botón para practicar.</p>
     </div>
 
     <div class="years-grid" id="yearsGrid"></div>
   </div>
 
 <script>
-  const allYears = [
-    "2027-III","2027-II","2027-I",
-    "2026-III","2026-II","2026-I",
-    "2025-III","2025-II","2025-I",
-    "2024-III","2024-II","2024-I",
-    "2023-III","2023-II","2023-I",
-    "2022-III","2022-II","2022-I",
-    "2021-III","2021-II","2021-I",
-    "2020-III","2020-II","2020-I",
-    "2019-III","2019-II","2019-I",
-    "2018-III","2018-II","2018-I",
-    "2017-III","2017-II","2017-I",
-    "2016-III","2016-II","2016-I",
-    "2015-III","2015-II","2015-I"
-  ];
+  const allYears = []; // solo los ciclos creados en el panel (assets/ciclos.js)
 
   const grid = document.getElementById('yearsGrid');
 
   fetch('data/manifest.json')
     .then(r => r.json())
+    .then(m => window.MCCiclos ? MCCiclos.filtrar(m) : m)
     .then(manifest => {
       const activeMap = {};
       manifest.forEach(m => { activeMap[m.id] = m; });
@@ -138,9 +127,10 @@
         const a = document.createElement(active ? 'a' : 'div');
         a.className = 'year-card ' + (active ? 'active' : 'disabled');
         if (active) a.href = 'temario.html?year=' + encodeURIComponent(id);
-        a.innerHTML = `<div class="yr">${id}</div><div class="count">${active ? info.temas + (info.temas === 1 ? ' tema' : ' temas') : 'Próximamente'}</div>`;
+        a.innerHTML = `<div class="yr">${String((info && info.label) || id).replace(/</g, '&lt;')}</div><div class="count">${active ? info.temas + (info.temas === 1 ? ' tema' : ' temas') : 'Próximamente'}</div>`;
         grid.appendChild(a);
       });
+      if (!grid.children.length) grid.innerHTML = '<div class="state-msg" style="grid-column:1/-1;">Aún no hay ciclos publicados. Vuelve pronto.</div>';
     })
     .catch(() => {
       grid.innerHTML = '<div class="state-msg" style="grid-column:1/-1;">No se pudo cargar la lista de libros.</div>';

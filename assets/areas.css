@@ -51,3 +51,29 @@ html[data-area] .course.disabled .btn { background: var(--surface-2, #141414); c
 
 /* Página de un área: el código ya está en el inicio */
 html.pagina-area .vip-widget { display: none; }
+
+/* =========================================================
+   Libros, Seminarios y Banqueo: el color del área en años, temario y tema.
+   "Practicar" sigue lima (acción principal) y la respuesta correcta sigue verde.
+   ========================================================= */
+html[data-area] .page-title .eyebrow, html[data-area] .page-head .eyebrow { color: var(--ac); }
+html[data-area] .logo .dot, html[data-area] .course-badge .dot { background: var(--ac); }
+html[data-area] header.top { background: #050505; -webkit-backdrop-filter: none; backdrop-filter: none; }
+
+/* Años / ciclos */
+html[data-area] .year-card.active { border-color: rgba(var(--ac-rgb), .45); box-shadow: 0 5px 0 var(--ac-d); }
+html[data-area] .year-card.active:hover { border-color: var(--ac); box-shadow: 0 7px 0 var(--ac-d); }
+html[data-area] .year-card.active:active { box-shadow: 0 0 0 transparent; }
+html[data-area] .year-card.active .count { background: rgba(var(--ac-rgb), .12); color: var(--ac); }
+
+/* Temario */
+html[data-area] .tema-card { border-color: rgba(var(--ac-rgb), .45); box-shadow: 0 5px 0 var(--ac-d); }
+html[data-area] .tema-card:hover { border-color: var(--ac); box-shadow: 0 7px 0 var(--ac-d); }
+html[data-area] .tema-card:active { box-shadow: 0 0 0 transparent; }
+html[data-area] .tema-num { border-color: rgba(var(--ac-rgb), .4); color: var(--ac); background: rgba(var(--ac-rgb), .1); }
+html[data-area] .tema-card svg.arrow { color: var(--ac); }
+
+/* Tema: número de pregunta y Flashcards del color del área */
+html[data-area] .qcard .qnum { border-color: rgba(var(--ac-rgb), .45); color: var(--ac); background: rgba(var(--ac-rgb), .12); }
+html[data-area] .quiz-cta a.alt { background: #161616; color: var(--ac); border-color: rgba(var(--ac-rgb), .5); box-shadow: 0 5px 0 var(--ac-d); }
+html[data-area] .quiz-cta a.alt:active { box-shadow: 0 0 0 transparent; }
