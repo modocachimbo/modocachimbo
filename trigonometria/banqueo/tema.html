@@ -220,6 +220,13 @@
           div.className = 'qcard';
           div.id = 'q' + (idx + 1);
           let optsHtml = '';
+          // Pregunta abierta: se ve la respuesta escrita (con | van otras que también valen)
+          const abierta = !!(q.abierta && Array.isArray(q.respuestas));
+          if (abierta) optsHtml = `<div class="opt-row correct">
+              <div class="letter" style="width:auto;padding:0 8px;">Respuesta</div>
+              <span>${q.respuestas.map(formatQText).join(' <i style="font-weight:600;opacity:.7;font-style:normal;">o</i> ')}</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>`;
           q.options.forEach((o, i) => {
             const isCorrect = i === q.correct;
             optsHtml += `<div class="opt-row ${isCorrect ? 'correct' : ''}">
@@ -230,10 +237,10 @@
           });
           // Imágenes en medio del texto, tablas y columnas: assets/pregunta.js
           const mcq = window.MCPregunta ? MCPregunta.armar(q.text, { lecPos: q.lecPos, lecSigue: q.lecSigue }) : { html: formatQText(q.text).replace(/\n/g,'<br>'), derecha: '' };
-          const cortas = window.MCPregunta && !mcq.derecha && MCPregunta.cortas(q.options);
+          const cortas = window.MCPregunta && !abierta && !mcq.derecha && MCPregunta.cortas(q.options);
           optsHtml = `<div class="${cortas ? 'mcq-cortas' : ''}" style="${cortas ? 'gap:8px;' : ''}">${optsHtml}</div>`;
           if (mcq.derecha) optsHtml = `<div class="mcq-con-der">${optsHtml}<div class="mcq-der" style="margin:0;">${mcq.derecha}</div></div>`;
-          div.innerHTML = `<div class="qnum">${idx + 1}</div><div class="qtext">${mcq.html}</div>${q.graphic ? `<div class="q-graphic">${q.graphic}</div>` : ''}${optsHtml}<div class="rep-row"><button class="rep-btn" type="button" data-idx="${idx}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg> ¿Error en la clave?</button></div>`;
+          div.innerHTML = `<div class="qnum">${idx + 1}</div><div class="qtext">${mcq.html}</div>${q.graphic ? `<div class="q-graphic">${q.graphic}</div>` : ''}${optsHtml}<div class="rep-row"><button class="rep-btn" type="button" data-idx="${idx}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg> ${abierta ? '¿Error en la respuesta?' : '¿Error en la clave?'}</button></div>`;
           renderMath(div);
           qlistEl.appendChild(div);
         });

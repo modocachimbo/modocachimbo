@@ -237,7 +237,8 @@
     var q = T.questions[idx];
     var n = idx + 1;
     var ok = q.options && q.options[q.correct];
-    var marcada = ok ? ok.letter + ') ' + limpio(ok.text) : '—';
+    var abierta = !!(q.abierta && q.respuestas && q.respuestas.length);
+    var marcada = abierta ? q.respuestas.map(limpio).join(' / ') : ok ? ok.letter + ') ' + limpio(ok.text) : '—';
     var letras = (q.options || []).map(function (o) { return o.letter; });
     if (!letras.length) letras = LETRAS;
 
@@ -256,17 +257,17 @@
           '<div class="rep-info">' +
             '<div class="meta">' + esc(T.curso) + ' · ' + esc(T.year) + ' · Tema ' + esc(T.num) + ' · Pregunta ' + n + '</div>' +
             '<div class="q">' + esc(limpio(q.text)) + '</div>' +
-            '<div class="marcada">Clave marcada: <b>' + esc(marcada) + '</b></div>' +
+            '<div class="marcada">' + (abierta ? 'Respuesta marcada' : 'Clave marcada') + ': <b>' + esc(marcada) + '</b></div>' +
           '</div>' +
-          '<label class="rep-label">¿Cuál crees que es la correcta?</label>' +
+          (abierta ? '' : '<label class="rep-label">¿Cuál crees que es la correcta?</label>' +
           '<div class="rep-letters">' +
             letras.map(function (L, i) {
               return '<button type="button" class="rep-letter" data-l="' + esc(L) + '"' + (i === q.correct ? ' disabled title="Es la clave actual"' : '') + '>' + esc(L) + '</button>';
             }).join('') +
             '<button type="button" class="rep-letter nose" data-l="No sé">No estoy seguro</button>' +
-          '</div>' +
+          '</div>') +
           '<label class="rep-label">Comentario <span>(opcional)</span></label>' +
-          '<textarea class="rep-text" maxlength="400" placeholder="Ej.: según el libro, la respuesta es C porque…"></textarea>' +
+          '<textarea class="rep-text" maxlength="400" placeholder="' + (abierta ? 'Ej.: según el libro, la respuesta es … porque…' : 'Ej.: según el libro, la respuesta es C porque…') + '"></textarea>' +
           '<div class="rep-count">0/400</div>' +
           '<button type="button" class="rep-send">Enviar reporte</button>' +
         '</div>' +
