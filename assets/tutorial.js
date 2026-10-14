@@ -19,9 +19,9 @@
   // Partes que se pueden iluminar en cada tipo de página
   var OBJETIVOS = {
     inicio: [['hero', 'Saludo y cuenta regresiva', '.saludo'], ['cursos', 'Tarjetas de áreas (Mis cursos)', nth('section.cards', 0)],
-      ['examenes', 'Exámenes de admisión', nth('section.cards', 1)], ['codigo', 'Botón "Ingresar código"', visible(['#vipToggle', '#barCodigo', '.sal-accesos button.chip'])],
+      ['examenes', 'Exámenes de admisión', nth('section.cards', 1)], ['codigo', 'Botón "Ingresar código"', visible(['#vipToggle', '#salCodigo', '#barCodigo', '.sal-accesos button.chip'])],
       ['menu', 'Barra de abajo (app instalada)', '.barra'], ['cafe', 'Invítame un café', '.coffee'],
-      ['racha', 'Racha de estudio', '#salRacha'], ['fecha', 'Fecha de tu examen', '#salCuenta'],
+      ['racha', 'Racha de estudio', visible(['#salRacha', '.mcu-racha'])], ['fecha', 'Fecha de tu examen', '#salCuenta'],
       ['nuevo', 'Lista "Nuevo para ti"', '#mcNovedades'], ['duelos', 'Banner de Duelos', '.duelo-banner']],
     area: [['cursos', 'Lista de cursos', '.courses'], ['primero', 'Primer curso', '.courses .course'], ['volver', 'Botón volver', 'a.back'], ['codigo', 'Botón "Ingresar código"', '#vipToggle']],
     curso: [['libro', 'Tarjeta Libro', cerca('a[href="libros/index.html"]')], ['repaso', 'Tarjeta Repaso', cerca('a[data-mc="repaso"], a[href^="repaso.html"]')],
