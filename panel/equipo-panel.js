@@ -24,7 +24,7 @@ const EQ_PERMISOS = [
     ['editar', 'Editar preguntas', 'Corregir y borrar preguntas, renombrar temas y flashcards'],
     ['borrar', 'Borrar temas y años', 'Borrar un tema o un año completo. Úsalo junto con Editar preguntas o Cursos'],
     ['vocab', 'Vocabulario', 'Agregar, corregir y borrar palabras'],
-    ['cursos', 'Cursos', 'Crear cursos y años, ordenarlos y armar Fijas'],
+    ['cursos', 'Cursos', 'Crear cursos y años, ordenarlos, armar Fijas y manejar Ciclos'],
     ['perfil', 'Perfil del alumno', 'Cambiar bloques, carreras y preguntas del perfil'],
   ]],
   ['Sitio', [
