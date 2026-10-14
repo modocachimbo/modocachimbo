@@ -315,6 +315,7 @@
       '<div class="mcz-sub">Misiones de hoy · +1 corazón cada una</div>' +
       (estado.misiones || []).map(function (m) { return filaMision(m); }).join('') + filaSimulacro() +
       '<button type="button" class="mcz-btn sec" data-canje>' + SVG.xp + 'Canjear XP por corazones</button>' +
+      '<a class="mcz-link" style="justify-self:center" href="' + esc(BASE + 'perfil.html#ranking') + '">Ver el ranking de la semana</a>' +
       '<p class="mcz-nota">Los corazones se gastan solo en Repaso, Fijas, Seminarios y Banqueo. Recuperas 1 cada 3 horas y a medianoche vuelven los 5.</p>');
     Array.prototype.forEach.call(hoja.querySelectorAll('[data-canje]'), function (b) { b.addEventListener('click', abrirCanje); });
   }
