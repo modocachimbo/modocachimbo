@@ -530,7 +530,9 @@ async function publicarTema() {
       }
     }
     let modo = 'nuevo';
-    if (existente) {
+    const ag = SUB.agregar;
+    if (existente && ag && ag.carpeta === carpeta && ag.anio === anio && ag.tema === tema) modo = 'agregar';
+    else if (existente) {
       modo = await elegirModo(existente, SUB.parse.preguntas.length);
       if (!modo) { btn.disabled = false; btn.textContent = 'Publicar tema'; return; }
     }
@@ -541,6 +543,7 @@ async function publicarTema() {
     const r = await api('publicarTema', { carpeta, curso: NOMBRE[carpeta], anio, tema, nombre, credito, modo, destino: destino === 'fijas' ? 'fijas' : 'libro', preguntas: JSON.stringify(preguntas), imagenes: JSON.stringify(imagenes) });
     delete cacheManifest[carpeta]; delete cacheArchivos[carpeta + '|' + anio];
     ss('del', SUB.borrador);
+    SUB.agregar = null; pintarAgregando();
     const url = SITE_ROOT + rutaWeb(carpeta) + '/tema.html?year=' + encodeURIComponent(anio) + '&tema=' + encodeURIComponent(tema);
     $('subPaso2').hidden = true;
     $('subListo').hidden = false;
@@ -572,6 +575,20 @@ async function publicarTema() {
   }
   btn.disabled = false; btn.textContent = 'Publicar tema';
   validarMeta();
+}
+
+// Franja "Agregando preguntas al Tema …" (viene de Editar preguntas → Agregar preguntas)
+function pintarAgregando() {
+  let el = $('subAgregando');
+  if (!el) {
+    el = document.createElement('div'); el.id = 'subAgregando'; el.className = 'banner info';
+    $('subPaso1').prepend(el);
+  }
+  const ag = SUB.agregar;
+  el.style.display = ag ? '' : 'none';
+  if (!ag) return;
+  el.innerHTML = `<div style="flex:1;">Agregando preguntas al <b>Tema ${+ag.tema} · ${esc(ag.nombre)}</b> (${esc(ag.titulo)}), que ya tiene ${ag.n} pregunta${ag.n === 1 ? '' : 's'}. Pega solo las nuevas: se agregarán al final.</div><button type="button" class="btn-ghost" id="subAgNo">Cancelar</button>`;
+  $('subAgNo').addEventListener('click', () => { SUB.agregar = null; pintarAgregando(); });
 }
 
 // Pregunta qué hacer si el tema ya existe → 'reemplazar' | 'agregar' | null

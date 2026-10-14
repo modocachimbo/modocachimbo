@@ -192,6 +192,9 @@
   .qrow .k { font-size: 12.5px; color: var(--text-dim); margin-top: 6px; }
   .qrow .k b { color: #f5ffcc; }
   .qrow .rbtn { flex-shrink: 0; }
+  .qrow-acc { display: flex; gap: 6px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+  .mv-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .mv-q { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: #0b0b0b; border: 1px solid var(--border); font-size: 13px; color: var(--text-dim); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
   /* Banner */
   .banner { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; border-radius: 16px; padding: 16px 18px; margin-bottom: 16px; font-size: 13.5px; line-height: 1.5; }
@@ -468,7 +471,7 @@
     .big-count { text-align: left; }
     .mcard { padding: 26px 16px 18px; border-radius: 20px; }
     .qrow { flex-wrap: wrap; }
-    .qrow .rbtn { margin-left: 44px; }
+    .qrow .qrow-acc { flex-basis: 100%; margin-left: 44px; justify-content: flex-start; }
     .opt .tag { display: none; }
     .mfoot .btn-main { width: 100%; }
     .hide-m { display: none; }
@@ -1005,6 +1008,8 @@ E) Alternativa"></textarea>
   }
   const ICON_EXT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>';
   const ICON_EDIT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>';
+  const ICON_MAS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+  const ICON_MOVER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><polyline points="13 6 19 12 13 18"/><path d="M5 5v14"/></svg>';
   const ICON_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
 
   let PASS = '';
@@ -1364,6 +1369,7 @@ E) Alternativa"></textarea>
         <span class="ttl"><b>Tema ${esc(t.num)} · ${esc(t.name)}</b> — ${t.questions.length} preguntas${conCredito ? `<br><small>Crédito: ${t.credito ? esc(t.credito) : '<i>sin crédito</i>'}</small>` : ''}</span>
         <a class="rbtn link" href="${esc(url)}" target="_blank" rel="noopener">Ver en la web ${ICON_EXT}</a>
         <button class="rbtn" type="button" id="btnRenombrar">${ICON_EDIT} Editar tema</button>
+        <button class="rbtn" type="button" id="btnAgregarQ">${ICON_MAS} Agregar preguntas</button>
         ${conCredito ? '<button class="rbtn" type="button" id="btnCredito">Crédito</button>' : ''}
         <button class="rbtn" type="button" id="btnTarjetas">Flashcards</button>
         <button class="rbtn danger" type="button" id="btnBorrarTema">Borrar tema</button>
@@ -1372,12 +1378,15 @@ E) Alternativa"></textarea>
       return `<div class="qrow">
         <div class="num">${i + 1}</div>
         <div class="body"><div class="t">${q.graphic ? '🖼 ' : ''}${esc(plano(q.text))}</div><div class="k">${q.abierta ? (q.tipo ? esc(MCPregunta.nombreTipo(q)) + ': <b>' : 'Respuesta: <b>') + esc((q.respuestas || []).join(' | ')) + '</b>' : 'Clave: <b>' + (o ? esc(o.letter + ') ' + plano(o.text)) : '—') + '</b>'}</div></div>
-        <button class="rbtn" type="button" data-n="${i + 1}">${ICON_EDIT} Editar</button>
+        <div class="qrow-acc"><button class="rbtn" type="button" data-n="${i + 1}">${ICON_EDIT} Editar</button>
+        <button class="rbtn" type="button" data-mv="${i}" title="Pasar a otro tema o a otro ciclo">${ICON_MOVER} Mover</button></div>
       </div>`;
     }).join('');
     $('qlist').querySelectorAll('[data-n]').forEach(b => b.addEventListener('click', () =>
       abrirEditor({ carpeta: sel.carpeta, curso: NOMBRE[sel.carpeta], anio: sel.anio, tema: sel.tema, n: +b.dataset.n })));
+    $('qlist').querySelectorAll('[data-mv]').forEach(b => b.addEventListener('click', () => moverPregunta(t, +b.dataset.mv)));
     $('btnRenombrar').addEventListener('click', () => editarTema(t, temas));
+    $('btnAgregarQ').addEventListener('click', () => agregarPreguntas(t));
     if (conCredito) $('btnCredito').addEventListener('click', () => creditoTema(t));
     $('btnTarjetas').addEventListener('click', () => { const x = partesCarpeta(sel.carpeta); tarjetasTema({ curso: x.curso, seccion: x.seccion, anio: sel.anio, tema: pad2(t.num), nombre: t.name, preguntas: t.questions.length }); });
     $('btnBorrarTema').addEventListener('click', () => borrarTema(t));
@@ -1402,6 +1411,105 @@ E) Alternativa"></textarea>
       o.querySelector('[data-x]').addEventListener('click', () => fin(null));
       ok.addEventListener('click', () => fin(inp.value.trim()));
       inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !ok.disabled) fin(inp.value.trim()); if (e.key === 'Escape') fin(null); });
+    });
+  }
+
+  // Agregar preguntas a un tema publicado: abre Subir tema con todo llenado; al publicar se agregan al final
+  function agregarPreguntas(t) {
+    const x = partesCarpeta(sel.carpeta);
+    document.querySelector('.tab[data-tab="subir"]').click();
+    $('subPaso2').hidden = true; $('subListo').hidden = true; $('subPaso1').hidden = false;
+    $('subCurso').value = x.curso;
+    $('subDestino').value = x.seccion === 'seminarios' ? 'seminario' : x.seccion === 'banqueo' ? 'banqueo' : 'libro';
+    $('subDestino').dispatchEvent(new Event('change'));
+    $('subCiclo').value = sel.anio; $('subNum').value = pad2(t.num); $('subNombre').value = t.name;
+    if (x.seccion !== 'libros') $('subCredito').value = t.credito || '';
+    SUB.agregar = { carpeta: sel.carpeta, anio: sel.anio, tema: pad2(t.num), nombre: t.name, n: t.questions.length, titulo: NOMBRE[sel.carpeta] + ' · ' + sel.anio };
+    pintarAgregando();
+    window.scrollTo(0, 0); $('subTexto').focus();
+  }
+
+  // Mover una pregunta a otro tema (del mismo ciclo o de otro ciclo) de esta misma sección
+  async function moverPregunta(t, i) {
+    const q = t.questions[i];
+    if (t.questions.length === 1) { toast('Es la única pregunta del tema. Para moverla, agrégala al otro tema y luego borra este.', true); return; }
+    const o = document.createElement('div');
+    o.className = 'ov';
+    o.innerHTML = `<div class="mcard" style="max-width:560px;">
+      <h3>Mover la pregunta ${i + 1}</h3>
+      <div class="mv-q">${esc(plano(q.text))}</div>
+      <span class="lbl" style="margin-top:16px;display:block;">¿A qué ciclo?</span><div class="mv-chips" id="mvAnio"><span class="hint">Cargando…</span></div>
+      <span class="lbl" style="margin-top:14px;display:block;">¿A qué tema?</span><div class="mv-chips" id="mvTema"><span class="hint">Elige el ciclo.</span></div>
+      <div id="mvNuevo" style="display:none; grid-template-columns:96px 1fr; gap:10px; margin-top:12px;">
+        <label style="display:grid; gap:6px;"><span class="lbl" style="margin:0;">Número</span><input class="inp" id="mvNum" inputmode="numeric" maxlength="2" autocomplete="off"></label>
+        <label style="display:grid; gap:6px; min-width:0;"><span class="lbl" style="margin:0;">Nombre</span><input class="inp" id="mvNom" value="${esc(t.name)}" autocomplete="off"></label>
+      </div>
+      <p class="sub" id="mvAviso" style="margin-top:12px; line-height:1.5;"></p>
+      <div class="mfoot"><button type="button" class="btn-ghost" data-x>Cancelar</button>
+      <button type="button" class="btn-main" data-ok disabled>Mover pregunta</button></div></div>`;
+    document.body.appendChild(o);
+    const ok = o.querySelector('[data-ok]'), aviso = o.querySelector('#mvAviso'), nuevo = o.querySelector('#mvNuevo');
+    const num = o.querySelector('#mvNum'), nom = o.querySelector('#mvNom');
+    const st = { anio: null, temas: [], tema: null };
+    o.querySelector('[data-x]').addEventListener('click', () => o.remove());
+    o.addEventListener('keydown', e => { if (e.key === 'Escape') o.remove(); });
+    const destino = () => {
+      if (!st.anio || !st.tema) return null;
+      if (st.tema !== 'nuevo') { const d = st.temas.find(x => pad2(x.num) === st.tema); return { tema: st.tema, nombre: d.name, credito: d.credito || '', existe: true }; }
+      const n = /^\d{1,2}$/.test(num.value.trim()) && +num.value.trim() > 0 ? pad2(num.value.trim()) : null;
+      return n && nom.value.trim() && !st.temas.some(x => pad2(x.num) === n) ? { tema: n, nombre: nom.value.trim(), credito: t.credito || '', existe: false } : null;
+    };
+    const check = () => {
+      const d = destino();
+      nuevo.style.display = st.tema === 'nuevo' ? 'grid' : 'none';
+      const ocupado = st.tema === 'nuevo' && /^\d{1,2}$/.test(num.value.trim()) && st.temas.some(x => pad2(x.num) === pad2(num.value.trim()));
+      aviso.style.color = ocupado ? '#ff6b6b' : '';
+      aviso.innerHTML = ocupado ? 'Ese número ya existe en ese ciclo: elígelo arriba en la lista de temas.'
+        : d ? `Pasará al final de <b>${esc(st.anio)} · Tema ${+d.tema} · ${esc(d.nombre)}</b>${d.existe ? '' : ' (tema nuevo)'} y se quitará de este tema.` : '';
+      ok.disabled = !d;
+    };
+    function pintarTemas() {
+      const lista = st.temas.filter(x => !(st.anio === sel.anio && pad2(x.num) === pad2(t.num)));
+      o.querySelector('#mvTema').innerHTML = chipsHtml(lista.map(x => [pad2(x.num), 'Tema ' + x.num + ' · ' + x.name]).concat([['nuevo', '+ Tema nuevo']]), st.tema);
+      o.querySelectorAll('#mvTema .chip').forEach(c => c.addEventListener('click', () => {
+        st.tema = c.dataset.v; pintarTemas();
+        if (st.tema === 'nuevo') { if (!num.value) num.value = String(st.temas.reduce((m, x) => Math.max(m, +x.num), 0) + 1); num.focus(); }
+      }));
+      check();
+    }
+    num.addEventListener('input', check); nom.addEventListener('input', check);
+    try {
+      const m = await getManifest(sel.carpeta);
+      const pintarAnios = () => {
+        o.querySelector('#mvAnio').innerHTML = chipsHtml(m.map(x => [x.id, x.label || x.id]), st.anio);
+        o.querySelectorAll('#mvAnio .chip').forEach(c => c.addEventListener('click', async () => {
+          st.anio = c.dataset.v; st.tema = null; pintarAnios();
+          o.querySelector('#mvTema').innerHTML = '<span class="hint">Cargando…</span>'; check();
+          st.temas = await getTemas(sel.carpeta, st.anio); pintarTemas();
+        }));
+      };
+      pintarAnios();
+    } catch (e) { aviso.textContent = e.message; aviso.style.color = '#ff6b6b'; }
+    ok.addEventListener('click', async () => {
+      const d = destino(); if (!d) return;
+      ok.disabled = true; ok.innerHTML = '<span class="spin-s"></span> Moviendo…';
+      const base = { carpeta: sel.carpeta, curso: NOMBRE[sel.carpeta] };
+      const copia = Object.assign({}, q);
+      if (copia.topic) copia.topic = NOMBRE[partesCarpeta(sel.carpeta).curso] + ' · ' + d.nombre;
+      let copiada = false;
+      try {
+        // Primero se agrega en el destino; recién después se quita de aquí
+        await api('publicarTema', Object.assign({}, base, { anio: st.anio, tema: d.tema, nombre: d.nombre, credito: d.credito, modo: d.existe ? 'agregar' : 'nuevo', destino: 'libro', preguntas: JSON.stringify([copia]), imagenes: '[]' }));
+        copiada = true;
+        await api('borrarPregunta', Object.assign({}, base, { anio: sel.anio, tema: pad2(t.num), n: i + 1, textoAntes: q.text }));
+        delete cacheArchivos[sel.carpeta + '|' + sel.anio]; delete cacheArchivos[sel.carpeta + '|' + st.anio]; delete cacheManifest[sel.carpeta];
+        o.remove(); toast('Pregunta movida a ' + st.anio + ' · Tema ' + (+d.tema)); renderPicker();
+      } catch (e) {
+        delete cacheArchivos[sel.carpeta + '|' + st.anio]; delete cacheManifest[sel.carpeta];
+        aviso.style.color = '#ff6b6b';
+        aviso.textContent = copiada ? 'Se copió al tema nuevo, pero no se pudo quitar de este: ' + e.message + '. Bórrala aquí con Editar → Borrar pregunta.' : e.message;
+        ok.disabled = false; ok.textContent = 'Mover pregunta';
+      }
     });
   }
 
