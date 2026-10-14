@@ -83,7 +83,6 @@
   .mi.mano { color: var(--accent); width: .92em; height: .92em; margin-left: .18em; vertical-align: -0.1em; stroke-width: 2.2; transform-origin: 70% 85%; animation: mc-saludo 2.2s ease-in-out .4s 1; }
   @keyframes mc-saludo { 0%, 60%, 100% { transform: rotate(0); } 10%, 30% { transform: rotate(14deg); } 20%, 40% { transform: rotate(-8deg); } 50% { transform: rotate(10deg); } }
   @media (prefers-reduced-motion: reduce) { .mi.mano { animation: none; } }
-  .mi.taza { color: var(--accent); margin-left: 4px; }
   .chip .mi { margin-right: 6px; }
 
   /* Nuevo para ti: regalo con punto rojo que invita a entrar */
@@ -136,8 +135,11 @@
     background: transparent; color: var(--text); border: 2px solid #2e2e2e; border-bottom-width: 5px;
     font: 1000 13.5px Nunito, sans-serif; letter-spacing: .04em; text-transform: uppercase; transition: transform .08s ease; -webkit-tap-highlight-color: transparent;
   }
-  .btn-sec .mi { width: 20px; height: 20px; color: var(--azul); }
+  .btn-sec svg { width: 22px; height: 22px; flex-shrink: 0; }
   .btn-sec:active { transform: translateY(3px); border-bottom-width: 2px; }
+  /* Activar código: azul (el lima queda solo para "Seguir practicando") */
+  .btn-azul { color: var(--azul); background: rgba(28,176,246,.1); border-color: rgba(28,176,246,.55); border-bottom-color: #1287bd; }
+  .btn-azul:hover { background: rgba(28,176,246,.16); }
   .sal-accesos { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-top: 16px; border-top: 2px solid var(--borde-g); }
   .sal-accesos .rot { font-size: 12.5px; color: var(--text-faint); margin-right: 4px; }
   .chip {
@@ -248,47 +250,34 @@
   .app-x { position: absolute; top: 10px; right: 10px; background: none; border: 0; color: var(--text-faint); font-size: 16px; cursor: pointer; padding: 6px; line-height: 1; }
   @media (max-width: 520px) { .app-aviso { padding-right: 16px; } .app-txt { padding-right: 26px; } .app-btn { flex: 1 1 100%; padding: 12px; } }
   .app-aviso[data-modo="iphone"] .solo-boton, .app-aviso[data-modo="boton"] .solo-iphone { display: none; }
+  /* Apoya el proyecto: cajón morado de Yape, taza con vapor y QR que flota */
   .coffee {
-    margin: 36px 0 60px;
-    background: linear-gradient(135deg, var(--surface), var(--surface-2));
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 34px;
-    display: flex;
-    align-items: center;
-    gap: 30px;
-    flex-wrap: wrap;
+    margin: 36px 0 60px; position: relative; overflow: hidden;
+    background: radial-gradient(120% 90% at 100% 0, rgba(206,130,255,.16), transparent 60%), var(--surface);
+    border: 2px solid rgba(206,130,255,.35); border-bottom-width: 6px; border-radius: 26px;
+    padding: 30px; display: flex; align-items: center; gap: 30px; flex-wrap: wrap;
   }
-
   .coffee-text { flex: 1; min-width: 240px; }
-
-  .coffee-text .tag {
-    font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
-    color: var(--accent); font-weight: 700; margin-bottom: 10px; display: block;
-  }
-
-  .coffee-text h3 {
-    font-family: 'Sora', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 10px;
-  }
-
-  .coffee-text p { color: var(--text-dim); font-size: 13.5px; line-height: 1.65; }
+  .coffee-text .tag { display: block; margin-bottom: 10px; font: 1000 12px Nunito, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--morado); }
+  .coffee-text h3 { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font: 1000 24px Nunito, sans-serif; }
+  .coffee-text p { color: var(--text-dim); font-size: 14px; font-weight: 700; line-height: 1.6; }
   .coffee-text p b { color: var(--text); }
-
+  .taza { width: 46px; height: 46px; flex-shrink: 0; overflow: visible; }
+  .taza .t-cuerpo { transform-box: fill-box; transform-origin: 50% 100%; animation: tazaMece 3.2s ease-in-out infinite; }
+  .taza .t-vapor path { opacity: 0; animation: tazaVapor 2.4s ease-in-out infinite; }
+  .taza .t-vapor path:nth-child(2) { animation-delay: .8s; }
+  .taza .t-vapor path:nth-child(3) { animation-delay: 1.6s; }
+  @keyframes tazaVapor { 0% { opacity: 0; transform: translateY(6px); } 35% { opacity: .9; } 100% { opacity: 0; transform: translateY(-7px); } }
+  @keyframes tazaMece { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-4deg); } 75% { transform: rotate(3deg); } }
   .qr-box {
-    width: 168px; height: 168px;
-    border-radius: 18px;
-    border: 1.5px solid var(--border);
-    background: #fff;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    overflow: hidden;
-    padding: 8px;
+    position: relative; width: 190px; flex-shrink: 0; padding: 10px; border-radius: 22px; background: #fff; overflow: hidden;
+    box-shadow: 0 7px 0 #c9b3dc, 0 18px 40px rgba(206,130,255,.25); animation: qrFlota 4s ease-in-out infinite;
   }
-
-  .qr-box img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
+  .qr-box img { width: 100%; height: auto; display: block; border-radius: 10px; }
+  .qr-box::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,.75) 50%, transparent 60%); transform: translateX(-120%); animation: qrBrillo 5s ease-in-out infinite 1s; }
+  @keyframes qrFlota { 0%, 100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-6px) rotate(1deg); } }
+  @keyframes qrBrillo { 0%, 70% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+  @media (prefers-reduced-motion: reduce) { .taza .t-cuerpo, .taza .t-vapor path, .qr-box, .qr-box::after { animation: none; } .taza .t-vapor path { opacity: .8; } }
 
   footer {
     border-top: 1px solid #161616;
@@ -431,19 +420,25 @@
   /* ===== Código al primer ingreso ===== */
   .cod-fondo { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none; align-items: center; justify-content: center; z-index: 210; padding: 16px; }
   .cod-fondo.show { display: flex; }
-  .cod-caja { width: 100%; max-width: 400px; background: var(--surface); border: 1px solid var(--border); border-radius: 22px; padding: 30px 24px 22px; text-align: center; }
-  .cod-caja h3 { font-family: 'Sora', sans-serif; font-size: 21px; font-weight: 800; margin-bottom: 8px; }
-  .cod-caja p { color: var(--text-dim); font-size: 13.5px; line-height: 1.6; margin-bottom: 18px; }
+  .cod-caja { width: 100%; max-width: 400px; background: var(--surface); border: 2px solid #262626; border-bottom-width: 5px; border-radius: 26px; padding: 26px 22px 16px; text-align: center; display: grid; justify-items: center; font-family: Nunito, Inter, sans-serif; animation: codSube .2s ease-out; }
+  @keyframes codSube { from { transform: translateY(24px); opacity: 0; } }
+  .cod-ico { width: 64px; height: 64px; border-radius: 20px; background: rgba(28,176,246,.13); color: var(--azul); display: grid; place-items: center; margin-bottom: 14px; }
+  .cod-ico svg { width: 36px; height: 36px; }
+  .cod-caja h3 { font: 1000 23px Nunito, sans-serif; margin-bottom: 8px; }
+  .cod-caja h3 .mi { width: 24px; height: 24px; vertical-align: -3px; margin-left: 6px; }
+  .cod-caja p { color: var(--text-dim); font-size: 14px; font-weight: 700; line-height: 1.55; margin-bottom: 18px; }
   .cod-caja input {
-    width: 100%; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 13px 14px;
-    color: var(--text); font: 600 15px 'Inter', sans-serif; text-align: center; letter-spacing: 1px; margin-bottom: 10px;
+    width: 100%; background: var(--surface-2); border: 2px solid #333; border-bottom-width: 4px; border-radius: 16px; padding: 14px;
+    color: var(--text); font: 900 17px Nunito, sans-serif; text-align: center; letter-spacing: .12em; margin-bottom: 14px;
   }
-  .cod-caja input:focus { outline: none; border-color: var(--accent); }
-  .cod-caja input::placeholder { color: var(--text-faint); font-weight: 400; letter-spacing: normal; }
-  .cod-activar { width: 100%; background: var(--accent); color: #0e0e0e; border: none; border-radius: 12px; padding: 13px; font: 700 14px 'Sora', sans-serif; cursor: pointer; }
+  .cod-caja input:focus { outline: none; border-color: var(--azul); }
+  .cod-caja input::placeholder { color: var(--text-faint); font-weight: 800; letter-spacing: .04em; }
+  .cod-activar { width: 100%; background: var(--accent); color: #2b3300; border: none; border-radius: 16px; padding: 15px; box-shadow: 0 5px 0 var(--lima-osc); font: 1000 15px Nunito, sans-serif; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; transition: transform .08s ease; -webkit-tap-highlight-color: transparent; }
+  .cod-activar:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--lima-osc); }
   .cod-activar:disabled { opacity: .6; cursor: default; }
-  .cod-luego { margin-top: 12px; background: none; border: none; color: var(--text-dim); font: 600 13.5px 'Inter', sans-serif; cursor: pointer; padding: 8px; }
+  .cod-luego { margin-top: 10px; background: none; border: none; color: var(--text-dim); font: 1000 14px Nunito, sans-serif; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; padding: 8px; }
   .cod-luego:hover { color: var(--text); }
+  @media (prefers-reduced-motion: reduce) { .cod-caja { animation: none; } }
   .cod-msg { display: none; margin-top: 12px; font-size: 12.5px; line-height: 1.5; padding: 9px 11px; border-radius: 9px; }
   .cod-msg.show { display: block; }
   .cod-msg.ok { background: rgba(198,224,0,0.1); color: var(--accent); }
@@ -483,6 +478,7 @@
 
   <div class="cod-fondo" id="codFondo">
     <div class="cod-caja" role="dialog" aria-modal="true" aria-labelledby="codTitulo">
+      <div class="cod-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="5" fill="currentColor"/><circle cx="8" cy="15" r="2" fill="#0b2a3a"/><path d="M11.5 11.5 20 3m-4 4 3 3m-5.5-.5 2 2" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></div>
       <h3 id="codTitulo">¡Hola!</h3>
       <p>¿Tienes tu código de alumno? Actívalo ahora para abrir Repasos, Fijas y la práctica de los libros.</p>
       <input type="text" id="codInput" placeholder="Ej: MC-7K3P-Q9XR" autocomplete="off" autocapitalize="characters">
@@ -509,13 +505,13 @@
       </div>
       <div class="sal-der">
         <a class="sal-meta" id="salRacha" href="perfil.html#racha">
-          <span class="meta-top"><span id="salRachaLbl">Meta de hoy</span><b id="salRachaHoy">0 / 10 preguntas</b></span>
+          <span class="meta-top"><span id="salRachaLbl">Meta de hoy</span><b id="salRachaHoy">0 / 20 preguntas</b></span>
           <span class="barra-hoy"><i id="salRachaBarra"></i></span>
         </a>
         <a class="btn-prin" id="salSeguir" href="#cursos">Empezar a practicar</a>
         <div class="sal-fila">
           <a class="sal-cuenta vacia" id="salCuenta" href="perfil.html"><svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/></svg><span><b>¿Cuándo?</b>Pon la fecha de tu examen</span></a>
-          <button type="button" class="btn-sec" id="salCodigo"><svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="7.5" cy="15.5" r="5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>Activar código</button>
+          <button type="button" class="btn-sec btn-azul" id="salCodigo"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="5" fill="currentColor"/><circle cx="8" cy="15" r="2" fill="#0b2a3a"/><path d="M11.5 11.5 20 3m-4 4 3 3m-5.5-.5 2 2" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>Activar código</button>
         </div>
       </div>
       <div class="sal-accesos" id="salAccesos"></div>
@@ -553,7 +549,7 @@
       </a>
     </section>
 
-    <h2 class="sec-tit" id="examenes">Practica</h2>
+    <h2 class="sec-tit" id="examenes">Práctica</h2>
 
     <section class="cards modos">
       <button type="button" class="modo c-azul" data-hoja="examenes"><span class="ic"><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 103 103"><g id="Capa_2" data-name="Capa 2"><g id="Capa_4" data-name="Capa 4"><path d="M51.4,103H4.17C1.28,103,0,101.72,0,98.81Q0,60,0,21.26a4.87,4.87,0,0,1,1.56-3.7q8-7.95,16-16A5,5,0,0,1,21.33,0Q60.11,0,98.88,0C101.71,0,103,1.31,103,4.13q0,47.34,0,94.68c0,2.94-1.22,4.18-4.14,4.18ZM68.57,51.54q0-21.63,0-43.27c0-.88-.17-1.27-1.17-1.26q-21,0-42.09,0c-1,0-1.19.34-1.18,1.24,0,4,0,8.07,0,12.11a3.45,3.45,0,0,1-3.77,3.8c-4,0-7.93,0-11.89,0C7,24.16,7,24.17,7,25.62V94.49C7,96,7,96,8.56,96H67c1.53,0,1.53,0,1.53-1.5Zm13.71,0V14.56c0-2.18,0-4.36,0-6.54,0-.73-.22-1-1-1-1.39,0-2.78,0-4.18,0s-1.55,0-1.55,1.58V94.4a4.87,4.87,0,0,1,0,.54c-.09.78.22,1.09,1,1.06,1.39,0,2.78,0,4.18,0s1.5,0,1.5-1.53Zm13.71,0V14.13c0-2,0-4.07,0-6.11,0-.73-.22-1-1-1-1.39,0-2.78,0-4.18,0-1.55,0-1.55,0-1.55,1.58V94.4a4.87,4.87,0,0,1,0,.54c-.09.78.22,1.09,1,1.06,1.39,0,2.78,0,4.18,0S96,96,96,94.46ZM17.15,12.62l-4.54,4.53h3.85c.42,0,.69-.16.69-.61Z"/><path d="M37.8,48.15H15.54a3.5,3.5,0,0,1-3.49-2.88,3.56,3.56,0,0,1,2.28-3.93,3.76,3.76,0,0,1,1.37-.19H59.9a3.51,3.51,0,1,1,0,7Z"/><path d="M32.62,58.44c-5.71,0-11.42,0-17.12,0a3.47,3.47,0,0,1-3.45-2.92,3.55,3.55,0,0,1,2.32-3.9,3.75,3.75,0,0,1,1.37-.18H49.56a3.5,3.5,0,1,1,0,7Z"/><path d="M34.21,91.63a3.6,3.6,0,0,1-2.69-1.13c-2.34-2.31-4.68-4.61-7-7a3.51,3.51,0,0,1-.07-5.17,3.58,3.58,0,0,1,5.17.24c1.12,1.09,2.22,2.22,3.33,3.33s1.17,1.16,2.37,0q5.27-5.26,10.52-10.53a3.67,3.67,0,0,1,3.48-1.2,3.49,3.49,0,0,1,2.25,5.35,5.48,5.48,0,0,1-.81,1Q44,83.37,37.1,90.21A4,4,0,0,1,34.21,91.63Z"/><path d="M51.46,19c-2.78,0-5.56,0-8.34,0a3.51,3.51,0,1,1,0-7H59.85a3.51,3.51,0,1,1,0,7C57,19,54.25,19,51.46,19Z"/><path d="M48.11,29.3c-1.71,0-3.42,0-5.13,0a3.5,3.5,0,1,1,0-7c3.42,0,6.84,0,10.26,0a3.5,3.5,0,0,1,0,7C51.53,29.32,49.82,29.3,48.11,29.3Z"/></g></g></svg></span><b>Exámenes</b><small>Ordinario, CPU y Examen de control</small></button>
@@ -576,7 +572,7 @@
 
       <div class="coffee-text">
         <span class="tag">Apoya el proyecto</span>
-        <h3>Invítame un café <svg class="mi taza" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z"/><path d="M6 2v2M10 2v2M14 2v2"/></svg></h3>
+        <h3>Invítame un café <svg class="taza" viewBox="0 0 48 48" aria-hidden="true"><g class="t-vapor" fill="none" stroke="#b9b9b9" stroke-width="2.4" stroke-linecap="round"><path d="M17 15c-2-3 2-5 0-8"/><path d="M24 15c-2-3 2-5 0-8"/><path d="M31 15c-2-3 2-5 0-8"/></g><g class="t-cuerpo"><path d="M36 22h3a6 6 0 0 1 0 12h-3" fill="none" stroke="#e9e3f0" stroke-width="3.4"/><path d="M9 19h29v14a10 10 0 0 1-10 10h-9A10 10 0 0 1 9 33z" fill="#F7F5FA"/><path d="M9 19h29v3.5H9z" fill="#6b3e1f"/><path d="M9.6 28h27.8v5H9.6z" fill="#CE82FF"/><path d="M13 31v2.5a6 6 0 0 0 4 5.6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".7"/><rect x="6" y="42" width="35" height="3.5" rx="1.75" fill="#8d5fb0"/></g></svg></h3>
         <p>Este espacio es y seguirá siendo gratuito. Si te sirvió, puedes apoyar con lo que quieras vía Yape escaneando el código QR. Ayuda a que <b>Modo Cachimbo</b> siga creciendo.</p>
       </div>
       <div class="qr-box">
@@ -636,8 +632,7 @@ function jsonpRequest(url) {
   (function () {
     var ICONO = {
       mano: '<svg class="mi mano" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 11V6a2 2 0 0 0-4 0"/><path d="M14 10V4a2 2 0 0 0-4 0v2"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-6-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>',
-      cal: '<svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/></svg>',
-      llave: '<svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="7.5" cy="15.5" r="5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>'
+      cal: '<svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/></svg>'
     };
     var raiz = document.documentElement;
     var CFG = window.MC_CONFIG || {};
@@ -674,7 +669,7 @@ function jsonpRequest(url) {
     fondo.addEventListener('click', function (e) { if (e.target === fondo && luego.textContent === 'Cerrar') cerrarCodigo(); });
     // Abrir la ventana del código desde la barra de abajo o desde "Activa tu código"
     function abrirCodigo() {
-      document.getElementById('codTitulo').innerHTML = 'Activa tu código ' + ICONO.llave;
+      document.getElementById('codTitulo').textContent = 'Activa tu código';
       luego.textContent = 'Cerrar';
       input.value = ''; msg.className = 'cod-msg';
       fondo.classList.add('show');
@@ -774,7 +769,7 @@ function jsonpRequest(url) {
     // ===== Racha de estudio (assets/racha.js la carga auth.js) =====
     function pintarRacha(r) {
       var caja = document.getElementById('salRacha');
-      var meta = (r && r.meta) || 10, hoy = Math.min((r && r.hoy) || 0, meta);
+      var meta = (r && r.meta) || 20, hoy = Math.min((r && r.hoy) || 0, meta);
       document.getElementById('salRachaBarra').style.width = (hoy / meta * 100) + '%';
       document.getElementById('salRachaHoy').textContent = r && r.cumplido_hoy ? '¡Meta cumplida!' : hoy + ' / ' + meta + ' preguntas';
       caja.classList.toggle('on', !!(r && r.cumplido_hoy));

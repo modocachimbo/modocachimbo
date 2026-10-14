@@ -122,7 +122,7 @@
   function animo(r, extra) {
     extra = extra || {};
     var h = new Date().getHours(), dia = new Date().getDate();
-    var n = (r && r.actual) || 0, meta = (r && r.meta) || 10, hoy = (r && r.hoy) || 0, falta = Math.max(0, meta - hoy);
+    var n = (r && r.actual) || 0, meta = (r && r.meta) || 20, hoy = (r && r.hoy) || 0, falta = Math.max(0, meta - hoy);
     if (extra.ganoDuelo) return { animo: 'celebrando', titulo: '¡Le ganaste a ' + extra.ganoDuelo + '!', texto: 'Ganaste un duelo. ¿Otro?', link: 'duelo.html', boton: 'Retar a alguien' };
     if (r && r.cumplido_hoy) {
       if (h >= 23 || h < 5) return { animo: 'dormido', titulo: 'Misión cumplida', texto: 'Ya estudiaste hoy. A descansar, mañana seguimos.' };
