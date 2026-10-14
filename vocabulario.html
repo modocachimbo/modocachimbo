@@ -497,6 +497,7 @@
   #qArmOk:disabled { opacity: .4; }
 </style>
 <script src="assets/mc-config.js"></script>
+<script src="assets/acceso.js"></script>
 <script src="assets/cursos.js"></script>
 <script src="assets/auth.js"></script>
 </head>
@@ -620,6 +621,16 @@
     </div>
   </div>
 
+  <!-- Candado: código de Vocabulario, del curso o de Acceso total -->
+  <div class="lock" id="lock" hidden>
+    <h2>Vocabulario <span class="accent">Premium</span></h2>
+    <p id="lockTexto">Ingresa tu código de alumno.</p>
+    <input type="text" id="lockInput" placeholder="Ej: MC-7K3P-Q9XR" autocomplete="off" autocapitalize="characters" aria-label="Código de acceso">
+    <button class="btn primary" id="btnUnlock" type="button">Desbloquear</button>
+    <div class="lock-error" id="lockError"></div>
+    <a class="lock-whatsapp" id="lockWhatsapp" href="#" target="_blank" rel="noopener noreferrer">Escríbeme por WhatsApp</a>
+  </div>
+
   <div class="state-msg" id="estado" hidden></div>
 </div>
 
@@ -640,7 +651,7 @@
   const prep = { mazo: 'todo', cant: 20 };
 
   function mostrar(id) {
-    ['estudio', 'preparar', 'juego', 'fin', 'prepQ', 'quiz', 'finQ', 'estado'].forEach(x => { $(x).hidden = x !== id; });
+    ['estudio', 'preparar', 'juego', 'fin', 'prepQ', 'quiz', 'finQ', 'estado', 'lock'].forEach(x => { $(x).hidden = x !== id; });
     $('lead').hidden = !['estudio', 'preparar', 'prepQ'].includes(id);
     if (id !== 'quiz') $('qHoja').hidden = true;
   }
@@ -1600,6 +1611,45 @@
   $('btnReto').innerHTML = $('btnReto').innerHTML.replace('Muy pronto', '3 corazones');
   $('pqEmpezar').innerHTML = ICO.jugar + ' Empezar';
 
+  /* ---------- Candado ---------- */
+  // Abre con un código de Vocabulario, del curso completo o de Acceso total.
+  // En el panel (Códigos → Acceso libre) se puede abrir para todos.
+  const P_VOCAB = 'vocabulario-' + (CURSO || 'raz-verbal');
+  let alDesbloquear = null;
+  function conAcceso() {
+    if (!window.MCAcceso) return Promise.resolve(true);
+    if (MCAcceso.accesoLocal(P_VOCAB)) { MCAcceso.verificar(P_VOCAB).then(v => { if (!v.acceso) pedirCodigo(v.mensaje, true); }); return Promise.resolve(true); }
+    aviso('Revisando tu acceso…');
+    return MCAcceso.verificar(P_VOCAB).then(v => v.acceso || pedirCodigo(v.mensaje), () => pedirCodigo('No se pudo verificar tu acceso. Revisa tu conexión.'));
+  }
+  // fondo: ya se estaba usando y el servidor dijo que el código no vale
+  function pedirCodigo(mensaje, fondo) {
+    $('lockTexto').innerHTML = 'Vocabulario se abre con tu código de <b>Vocabulario</b>, del <b>curso completo</b> o de <b>Acceso total</b>. Si ya lo tienes, ingrésalo abajo.';
+    $('lockWhatsapp').href = 'https://wa.me/51917797543?text=' + encodeURIComponent('Hola! Quiero el código de Vocabulario de Modo Cachimbo');
+    $('lockError').classList.toggle('show', !!mensaje); $('lockError').textContent = mensaje || '';
+    $('lockWhatsapp').classList.toggle('show', !!mensaje);
+    mostrar('lock'); window.scrollTo(0, 0);
+    return new Promise(res => { alDesbloquear = fondo ? null : res; });
+  }
+  async function desbloquear() {
+    const codigo = $('lockInput').value.trim().toUpperCase();
+    if (!codigo) { $('lockError').textContent = 'Ingresa tu código de acceso.'; $('lockError').classList.add('show'); return; }
+    $('btnUnlock').disabled = true; $('btnUnlock').textContent = 'Verificando…';
+    try {
+      const r = await MCAcceso.activar(codigo, P_VOCAB);
+      if (r.ok) {
+        Sonido.abrir();
+        const f = alDesbloquear; alDesbloquear = null;
+        if (f) f(true); else if (banco.length) abrirEstudio(); else iniciar();
+      } else { Sonido.error(); $('lockError').textContent = r.mensaje || 'Código inválido.'; $('lockError').classList.add('show'); $('lockWhatsapp').classList.add('show'); }
+    } catch (e) { $('lockError').textContent = 'No se pudo verificar el código. Revisa tu conexión.'; $('lockError').classList.add('show'); }
+    $('btnUnlock').disabled = false; $('btnUnlock').innerHTML = ICO.llave + ' Desbloquear';
+  }
+  $('btnUnlock').innerHTML = ICO.llave + ' Desbloquear';
+  $('btnUnlock').addEventListener('click', desbloquear);
+  $('btnUnlock').addEventListener('pointerdown', () => Sonido.toque());
+  $('lockInput').addEventListener('keydown', e => { if (e.key === 'Enter') desbloquear(); });
+
   /* ---------- Inicio ---------- */
   async function iniciar() {
     const c = CURSO && window.MCCursos ? await MCCursos.curso(CURSO).catch(() => null) : null;
@@ -1607,6 +1657,8 @@
     document.title = 'Vocabulario · ' + nombre + ' · Modo Cachimbo';
     $('eyebrow').textContent = 'Vocabulario · ' + nombre;
     if (CURSO) { $('backLink').href = CURSO + '/index.html'; $('backLabel').textContent = nombre; }
+    // El candado va primero: sin código no se cargan las palabras
+    if (!(await conAcceso())) return;
     // Primero lo guardado en el teléfono (abre al instante); luego lo nuevo del servidor
     const local = bancoLocal();
     if (local && local.length) { banco = local.map(limpiar).filter(w => w.palabra); estado = leerLocal(); abrirEstudio(); }

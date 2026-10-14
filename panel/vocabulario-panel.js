@@ -241,8 +241,10 @@ function pintarVoCursos() {
       <div class="vo-cursos">${lista.map(c => `
         <label class="vo-curso"><input type="checkbox" value="${esc(c.id)}" ${VO.cursos.includes(c.id) ? 'checked' : ''}>${esc(c.nombre || c.id)}</label>`).join('') || '<span class="hint">No hay cursos de Comunicación.</span>'}
       </div>
-      <p class="hint">La tarjeta Vocabulario aparece en los cursos marcados. Por ahora el acceso es libre.</p>
+      <p class="hint">La tarjeta Vocabulario aparece en los cursos marcados.</p>
+      <div class="acc-row" id="voCandado"><div><b>Candado</b><span>Cargando…</span></div></div>
     </div>`;
+  pintarVoCandado();
   caja.querySelectorAll('input').forEach(inp => inp.addEventListener('change', async () => {
     const nuevos = [...caja.querySelectorAll('input:checked')].map(x => x.value);
     caja.querySelectorAll('input').forEach(x => { x.disabled = true; });
@@ -301,6 +303,33 @@ function renderVocabulario() {
     VO.texto = voEscribir(VO.publicados); VO.cambios = false; VO.borrar = false; renderVocabulario();
   });
   voVista();
+}
+
+// Candado de Vocabulario: usa el mismo "Acceso libre" de la pestaña Códigos (clave "vocabulario")
+async function pintarVoCandado(recargar) {
+  const caja = $('voCandado'); if (!caja) return;
+  try { if (recargar || !VO.accCargado) { const r = await api('codigos'); CD.config = r.config || CD.config; VO.accCargado = true; } }
+  catch (e) { caja.innerHTML = `<div><b>Candado</b><span>No se pudo leer: ${esc(e.message)}</span></div>`; return; }
+  const ab = (CD.config.abiertos || {}), libre = ab.vocabulario || ab.TODO;
+  const hasta = libre && libre.hasta ? ' hasta el ' + libre.hasta.split('-').reverse().join('/') : '';
+  caja.innerHTML = `<div><b>Candado</b><span>${ab.TODO && !ab.vocabulario
+      ? 'Abierto para todos porque en Códigos está abierto «Todo»' + esc(hasta) + '.'
+      : libre ? 'Abierto para todos' + esc(hasta) + '. Actívalo para pedir código.'
+      : 'Pide código. Lo abren los códigos de Vocabulario, de Razonamiento Verbal completo o de Acceso total.'}</span></div>
+    <label class="sw"><input type="checkbox" id="voCandSw" ${libre ? '' : 'checked'} ${ab.TODO && !ab.vocabulario ? 'disabled' : ''}><span></span>${libre ? 'Abierto' : 'Con código'}</label>`;
+  $('voCandSw').addEventListener('change', async e => {
+    e.target.disabled = true;
+    try {
+      const r0 = await api('codigos');
+      const cfg = JSON.parse(JSON.stringify(r0.config || CD.config)); cfg.abiertos = cfg.abiertos || {};
+      if (e.target.checked) delete cfg.abiertos.vocabulario; else cfg.abiertos.vocabulario = { hasta: '' };
+      const r = await api('guardarConfigAcceso', { config: JSON.stringify(cfg) });
+      CD.config = r.config;
+      toast(e.target.checked ? 'Candado activado: ahora pide código' : 'Vocabulario abierto para todos');
+      if (typeof renderConfigAcceso === 'function' && $('cdConfig')) renderConfigAcceso();
+    } catch (err) { toast(err.message, true); }
+    pintarVoCandado();
+  });
 }
 
 // Lleva el cursor a una línea del cuadro de texto
