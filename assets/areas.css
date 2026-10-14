@@ -77,3 +77,20 @@ html[data-area] .tema-card svg.arrow { color: var(--ac); }
 html[data-area] .qcard .qnum { border-color: rgba(var(--ac-rgb), .45); color: var(--ac); background: rgba(var(--ac-rgb), .12); }
 html[data-area] .quiz-cta a.alt { background: #161616; color: var(--ac); border-color: rgba(var(--ac-rgb), .5); box-shadow: 0 5px 0 var(--ac-d); }
 html[data-area] .quiz-cta a.alt:active { box-shadow: 0 0 0 transparent; }
+
+/* Temario: burbuja con el profesor del tema (crédito), del color del área */
+.tema-prof {
+  display: inline-flex; align-items: center; gap: 7px; flex-shrink: 1; min-width: 0; max-width: 46%;
+  padding: 7px 14px 6px; border-radius: 999px; white-space: nowrap;
+  background: rgba(var(--ac-rgb, 198,224,0), .12); color: var(--ac, #C6E000);
+  border: 2px solid rgba(var(--ac-rgb, 198,224,0), .4); border-bottom-width: 3px;
+  font: 800 13px/1.1 'Nunito', 'Inter', sans-serif;
+}
+.tema-prof svg { width: 15px; height: 15px; flex-shrink: 0; }
+.tema-prof span { overflow: hidden; text-overflow: ellipsis; }
+.tema-card .tema-info { min-width: 0; }
+/* Celular: la burbuja baja debajo del nombre para dejar respirar */
+@media (max-width: 520px) {
+  .tema-card:has(.tema-prof) { flex-wrap: wrap; row-gap: 10px; }
+  .tema-prof { order: 5; max-width: calc(100% - 54px); margin-left: 54px; }
+}
