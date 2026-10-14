@@ -1407,7 +1407,7 @@
     else if (p.juego === 'armar') pintarArmar();
     else if (p.juego === 'completar') c.innerHTML = `<div class="qfrase">${p.frase}</div>` + ops();
     else if (p.juego === 'escribir') {
-      c.innerHTML = `<div class="qpal">${esc(p.grande)}</div><form class="qesc" id="qForm" autocomplete="off"><input id="qIn" type="text" placeholder="Escribe aquí…" autocapitalize="off" spellcheck="false" aria-label="Tu respuesta"><button class="btn primary" type="submit">Comprobar</button><div class="hint">No importan las tildes.</div></form>`;
+      c.innerHTML = `<div class="qpal">${esc(p.grande)}</div><form class="qesc" id="qForm" autocomplete="off"><input id="qIn" type="text" placeholder="Escribe aquí…" autocapitalize="off" spellcheck="false" aria-label="Tu respuesta"><button class="btn primary" type="submit">Comprobar</button><div class="hint">Escríbela bien, con sus tildes. Mayúsculas o minúsculas da igual.</div></form>`;
       $('qForm').addEventListener('submit', e => { e.preventDefault(); const v = $('qIn').value.trim(); if (v) responderEscribir(v); });
       setTimeout(() => { try { $('qIn').focus({ preventScroll: true }); } catch (e) {} }, 80);
     } else if (p.juego === 'relacionar') {
@@ -1421,7 +1421,7 @@
     if (f && !f.disabled && !Q.listo) {
       const p = Q.p;
       if (f.id === 'qArmOk') {
-        const hecho = p.armado.map(k => p.letras[k].c).join(''), bien = norm(hecho) === norm(p.ok);
+        const hecho = p.armado.map(k => p.letras[k].c).join(''), bien = exacta(hecho) === exacta(p.ok);
         marcar(p.it.id, bien);
         $('qArm').classList.add(bien ? 'bien' : 'mal');
         $('qCuerpo').querySelectorAll('.ficha, #qArmOk').forEach(x => { x.disabled = true; });
@@ -1476,26 +1476,15 @@
     if (p.juego === 'completar' || p.sinMarca) racha1(); else marcar(p.it.id, bien);
     resultado(bien);
   }
-  // Acepta cualquiera de la lista, sin tildes y con un error de tipeo en palabras largas
-  function parecido(a, b) {
-    a = norm(a); b = norm(b);
-    if (a === b) return true;
-    if (b.length < 6 || Math.abs(a.length - b.length) > 1) return false;
-    let i = 0, j = 0, dif = 0;
-    while (i < a.length && j < b.length) {
-      if (a[i] === b[j]) { i++; j++; continue; }
-      if (++dif > 1) return false;
-      if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; }
-    }
-    return dif + (a.length - i) + (b.length - j) <= 1;
-  }
+  // Debe estar bien escrita, con tildes; mayúsculas o minúsculas da igual
+  const exacta = x => String(x || '').normalize('NFC').toLocaleLowerCase('es').trim().replace(/\s+/g, ' ');
   function responderEscribir(v) {
     if (Q.listo) return;
-    const p = Q.p, lista = p.it.w[p.it.d], hit = lista.find(x => parecido(v, x));
+    const p = Q.p, lista = p.it.w[p.it.d], hit = lista.find(x => exacta(x) === exacta(v)), tilde = !hit && lista.find(x => norm(x) === norm(v));
     $('qIn').disabled = true; $('qIn').classList.add(hit ? 'bien' : 'mal');
     $('qForm').querySelector('button').hidden = true;
     marcar(p.it.id, !!hit);
-    resultado(!!hit, hit && norm(hit) !== norm(v) ? `Casi perfecto: se escribe <b>${esc(hit)}</b>.` : '');
+    resultado(!!hit, tilde ? `¡Casi! Revisa las tildes: se escribe <b>${esc(tilde)}</b>.` : '');
   }
   const racha1 = () => { window.MCRacha ? MCRacha.respondio() : (window.mcRachaPend = (window.mcRachaPend || 0) + 1); };
 
