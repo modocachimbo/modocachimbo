@@ -53,10 +53,11 @@ const VO_CAMPOS = { sin: 'sinónimos', ant: 'antónimos', def: 'definición', ej
   .vo-card { background: #111; border: 2px solid #262626; border-bottom-width: 4px; border-radius: 16px; padding: 12px 14px; }
   .vo-card.mal { border-color: rgba(224,60,60,.45); }
   .vo-card { cursor: pointer; transition: border-color .15s; } .vo-card:hover { border-color: #3a4a00; }
-  .vo-edit { width: 100%; min-height: 260px; font: 600 14px/1.6 Nunito, sans-serif; resize: vertical; }
-  .vo-edit-pie { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 14px; }
-  .vo-edit-pie .esp { flex: 1; }
-  .vo-borrar { color: var(--red); border-color: rgba(224,60,60,.4); }
+  .vo-card-pie { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px solid #1f1f1f; }
+  .vo-corr { font-size: 12px; font-weight: 800; color: var(--accent); }
+  .vo-del { background: none; border: 0; font: 700 12px Nunito, sans-serif; color: #777; cursor: pointer; padding: 4px 6px; border-radius: 8px; }
+  .vo-del:hover, .vo-del[data-ok] { color: var(--red); background: rgba(224,60,60,.08); }
+  #voRes { margin-top: 10px; }
   .vo-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .vo-pal { font: 900 16px Nunito, Inter, sans-serif; letter-spacing: .5px; text-transform: uppercase; color: var(--text); overflow-wrap: anywhere; }
   .vo-rae { flex-shrink: 0; font-size: 11.5px; font-weight: 700; color: var(--text-dim); text-decoration: none; border: 1px solid #2a2a2a; border-radius: 8px; padding: 3px 8px; }
@@ -226,12 +227,12 @@ async function cargarVocabulario(forzar) {
     return;
   }
   VO.publicados = r.data || [];
-  VO.texto = voEscribir(VO.publicados);
-  VO.cambios = false;
+  // El cuadro empieza vacío: solo lleva lo nuevo o lo que se corrige.
   // Si se recargó la página sin guardar, recupera lo que estaba escrito
   const borrador = voBorrador();
-  if (borrador != null && borrador !== VO.texto) { VO.texto = borrador; VO.cambios = true; VO.recuperado = true; }
-  else voBorrador(null);
+  VO.texto = borrador && borrador.trim() ? borrador : '';
+  VO.recuperado = !!VO.texto;
+  VO.cambios = !!VO.texto.trim();
   // "on" lo dejó guardado por error el interruptor del candado: no es un curso
   VO.cursos = ((a.data && a.data.valor && a.data.valor.cursos) || []).filter(c => c !== 'on');
   VO.candado = !(a.data && a.data.valor && a.data.valor.candado === false);
@@ -286,10 +287,11 @@ function renderVocabulario() {
   $('voBody').innerHTML = `
     <div class="vo-grid">
       <div class="pcard">
-        <div class="vo-tit">Escribe aquí <span>una ficha por palabra</span></div>
-        <textarea class="inp" id="voTexto" spellcheck="false" placeholder="${esc(VO_EJEMPLO)}"></textarea>
+        <div class="vo-tit">Agregar o corregir <span>se vacía al publicar</span></div>
+        <textarea class="inp" id="voTexto" spellcheck="false" placeholder="${esc('Pega aquí las palabras nuevas.\nPara corregir una ya publicada, tócala en la lista de la derecha y aparecerá aquí.\n\n' + VO_EJEMPLO)}"></textarea>
+        <div id="voRes"></div>
         <div class="vo-acc">
-          <button class="btn-ghost" type="button" id="voDeshacer">Volver a lo publicado</button>
+          <button class="btn-ghost" type="button" id="voDeshacer">Vaciar cuadro</button>
         </div>
         <details class="vo-ayuda">
           <summary>Cómo escribir las palabras</summary>
@@ -299,7 +301,8 @@ function renderVocabulario() {
             <li><b>Def:</b> y <b>Ej:</b> son opcionales. Puedes poner hasta 5 ejemplos, cada uno en su propia línea <b>Ej:</b>. Sin <b>Ej</b> la palabra no sale en el juego <i>Completar</i>; sin <b>Def</b> no sale en <i>Escribir</i>.</li>
             <li>El ejemplo debe usar la palabra (sirve "efímera" para EFÍMERO), porque ahí va el espacio en blanco.</li>
             <li>También opcionales: <b>Tipo:</b> adj., sust., verbo o adv. · <b>Nivel:</b> 1, 2 o 3 · <b>Examen:</b> dónde salió (puedes poner varios con comas) · <b>Par:</b> la palabra con la que se confunde · <b>Raíz:</b> de dónde viene · <b>Tip:</b> un truco para recordarla.</li>
-            <li>Para corregir una palabra ya publicada, cámbiala aquí y vuelve a guardar.</li>
+            <li>Las palabras nuevas se agregan al final de la lista. Si escribes una que ya está publicada, se reemplaza por esta versión.</li>
+            <li>Para corregir: búscala a la derecha, tócala, cámbiala aquí y toca <b>Guardar y publicar</b>.</li>
             <li>Desde Excel: copia las columnas palabra, sinónimos, antónimos, definición y ejemplo (para más ejemplos, más columnas a la derecha) y pégalas aquí.</li>
             <li>Una línea que empieza con <b>#</b> es una nota y no se publica.</li>
           </ul>
@@ -307,9 +310,8 @@ function renderVocabulario() {
       </div>
       <div class="pcard">
         <div class="vo-tit">Así lo verán los alumnos <span id="voCuenta"></span></div>
-        <div id="voRes"></div>
         <div class="vo-temas" id="voFiltro"></div>
-        <input class="inp vo-buscar" id="voBuscar" type="search" placeholder="Buscar palabra · tócala para editarla" value="${esc(VO.busca)}">
+        <input class="inp vo-buscar" id="voBuscar" type="search" placeholder="Buscar palabra · tócala para corregirla" value="${esc(VO.busca)}">
         <div class="vo-lista" id="voLista"></div>
       </div>
     </div>`;
@@ -317,14 +319,13 @@ function renderVocabulario() {
   ta.value = VO.texto;
   ta.addEventListener('input', () => {
     VO.texto = ta.value;
-    VO.cambios = ta.value !== voEscribir(VO.publicados);
+    VO.cambios = !!ta.value.trim();
     voBorrador(VO.cambios ? ta.value : null);
-    VO.borrar = false;
     voVista();
   });
   $('voBuscar').addEventListener('input', e => { VO.busca = e.target.value; voVista(); });
   $('voDeshacer').addEventListener('click', () => {
-    VO.texto = voEscribir(VO.publicados); VO.cambios = false; VO.borrar = false; voBorrador(null); VO.recuperado = false; renderVocabulario();
+    VO.texto = ''; VO.cambios = false; VO.recuperado = false; voBorrador(null); renderVocabulario();
   });
   voVista();
 }
@@ -347,45 +348,31 @@ function pintarVoCandado() {
   });
 }
 
-// Tocar una palabra en la vista previa: la edita en una ventanita y publica
-function voEditar(n) {
-  const lineas = VO.texto.split('\n');
-  const inicios = voLeer(VO.texto).items.map(x => x.linea).sort((a, b) => a - b);
-  const ini = n - 1; let fin = inicios.find(l => l > n); fin = fin ? fin - 1 : lineas.length;
-  while (fin > ini + 1 && /^\s*(#.*)?$/.test(lineas[fin - 1])) fin--;
-  const bloque = lineas.slice(ini, fin).join('\n');
-  const o = document.createElement('div');
-  o.className = 'ov';
-  o.innerHTML = `<div class="mcard"><button class="mx" type="button" aria-label="Cerrar">✕</button>
-    <div class="eyebrow">Editar palabra</div>
-    <h3>${esc((lineas[ini] || '').trim())}</h3>
-    <textarea class="inp vo-edit" id="voEdTxt" spellcheck="false"></textarea>
-    <div class="err" id="voEdErr"></div>
-    <div class="vo-edit-pie"><button type="button" class="btn-ghost vo-borrar" id="voEdBorrar">Borrar palabra</button><span class="esp"></span>
-      <button type="button" class="btn-ghost" data-x>Cancelar</button><button type="button" class="btn-main" id="voEdOk">Guardar y publicar</button></div>
-  </div>`;
-  document.body.appendChild(o); document.body.classList.add('modal-open');
-  const ta = o.querySelector('#voEdTxt'); ta.value = bloque; ta.focus();
-  const cerrar = () => { o.remove(); document.body.classList.remove('modal-open'); };
-  o.querySelector('.mx').addEventListener('click', cerrar); o.querySelector('[data-x]').addEventListener('click', cerrar);
-  const aplicar = nuevo => {
-    const t = lineas.slice(0, ini).concat(nuevo === '' ? [] : nuevo.split('\n'), lineas.slice(fin)).join('\n').replace(/\n{3,}/g, '\n\n').replace(/^\n+/, '');
-    VO.texto = t; VO.cambios = t !== voEscribir(VO.publicados); voBorrador(VO.cambios ? t : null);
-    cerrar(); renderVocabulario();
-    if (VO.cambios) guardarVocabulario();
-  };
-  o.querySelector('#voEdOk').addEventListener('click', () => {
-    const v = ta.value.replace(/\s+$/, '');
-    const d = voLeer(v);
-    if (d.errores.length) { const e = o.querySelector('#voEdErr'); e.textContent = d.errores[0].t; e.classList.add('show'); return; }
-    if (d.items.length !== 1) { const e = o.querySelector('#voEdErr'); e.textContent = 'Deja una sola palabra en esta ventana. Para agregar más, usa el cuadro grande.'; e.classList.add('show'); return; }
-    aplicar(v);
-  });
-  const bb = o.querySelector('#voEdBorrar');
-  bb.addEventListener('click', () => {
-    if (!bb.dataset.ok) { bb.dataset.ok = '1'; bb.textContent = 'Toca otra vez para borrarla'; return; }
-    aplicar('');
-  });
+// "# Corrigiendo: EFÍMERO" encima de una ficha = reemplaza a esa palabra (aunque le cambies el nombre)
+const VO_MARCA = /^#\s*Corrigiendo:\s*(.+)$/i;
+
+// Tocar una palabra publicada: baja al cuadro para corregirla
+function voCorregir(i) {
+  const f = VO.publicados[i]; if (!f) return;
+  const ya = voLeer(VO.texto).items.some(x => voNorm(x.palabra) === voNorm(f.palabra));
+  if (!ya) {
+    const bloque = `# Corrigiendo: ${f.palabra}\n` + voEscribir([f]);
+    VO.texto = VO.texto.trim() ? VO.texto.replace(/\s+$/, '') + '\n\n' + bloque : bloque;
+    VO.cambios = true; voBorrador(VO.texto);
+  }
+  renderVocabulario();
+  const n = VO.texto.split('\n').findIndex(l => VO_MARCA.test(l.trim()) && voNorm(l.trim().replace(VO_MARCA, '$1')) === voNorm(f.palabra));
+  $('voTexto').scrollIntoView({ block: 'center' });
+  if (n > -1) voIrLinea(n + 2);
+}
+
+// Borrar una palabra publicada (hay que tocar dos veces) y publicar
+async function voBorrarPub(i, btn) {
+  if (!btn.dataset.ok) { btn.dataset.ok = '1'; btn.textContent = '¿Borrar? Toca otra vez'; return; }
+  btn.disabled = true;
+  const p = VO.publicados[i];
+  if (await voPublicar(VO.publicados.filter((_, k) => k !== i))) toast(`${p.palabra} borrada`);
+  else btn.disabled = false;
 }
 
 // Lleva el cursor a una línea del cuadro de texto
@@ -398,13 +385,14 @@ function voIrLinea(n) {
   ta.scrollTop = Math.max(0, (n - 4) * alto);
 }
 
-function voFicha(x) {
+function voFicha(f, i) {
+  const x = { palabra: f.palabra, sin: f.sin || [], ant: f.ant || [], def: f.def || '', ej: f.ej || [], extra: f.extra || {} };
   const raiz = voRaiz(x.palabra);
   const ejs = x.ej.slice(0, 5).map(e => raiz ? esc(e).replace(/[\p{L}]+/gu, w => voNorm(w).startsWith(raiz) ? `<mark>${w}</mark>` : w) : esc(e));
   const chips = (k, nom) => x[k].length && VO.filtro !== (k === 'sin' ? 'ant' : 'sin')
     ? `<div class="vo-et">${nom}</div><div class="vo-chips${k === 'ant' ? ' ant' : ''}">${x[k].slice(0, 12).map(y => `<span>${esc(y)}</span>`).join('')}</div>` : '';
   return `
-    <div class="vo-card${x.mal ? ' mal' : ''}" data-n="${x.linea}">
+    <div class="vo-card" data-i="${i}" title="Toca para corregirla">
       <div class="vo-cab"><div class="vo-pal">${esc(x.palabra) || '—'}${x.extra.tipo ? ` <small class="vo-tipo">${esc(x.extra.tipo)}</small>` : ''}${x.extra.nivel ? ` <small class="vo-niv" title="Nivel ${x.extra.nivel}">${'●'.repeat(x.extra.nivel)}${'○'.repeat(3 - x.extra.nivel)}</small>` : ''}</div>
         ${x.palabra ? `<a class="vo-rae" href="https://dle.rae.es/${encodeURIComponent(x.palabra.toLowerCase())}" target="_blank" rel="noopener">Ver en RAE</a>` : ''}</div>
       ${x.def ? `<div class="vo-def">${esc(x.def)}</div>` : ''}
@@ -415,20 +403,40 @@ function voFicha(x) {
       ${x.extra.tip ? `<div class="vo-mas"><b>Truco</b>${esc(x.extra.tip)}</div>` : ''}
       ${x.extra.examen && x.extra.examen.length ? `<div class="vo-exa">${x.extra.examen.map(e => `<span>Salió en ${esc(e)}</span>`).join('')}</div>` : ''}
       ${!x.def ? '<span class="vo-falta">sin definición</span>' : ''}${!x.ej.length ? '<span class="vo-falta">sin ejemplo</span>' : ''}
+      <div class="vo-card-pie"><span class="vo-corr">Corregir</span><button type="button" class="vo-del">Borrar</button></div>
     </div>`;
+}
+
+// Junta lo publicado con lo del cuadro: lo corregido se reemplaza en su lugar, lo nuevo va al final
+function voMezclar(texto) {
+  const d = voLeer(texto), lineas = texto.split('\n');
+  const lista = VO.publicados.map(f => Object.assign({}, f));
+  let nuevas = 0, cambiadas = 0;
+  d.items.forEach(x => {
+    // ¿Viene de "Corrigiendo: …"? Mira la línea de arriba (saltando vacías)
+    let k = x.linea - 2; while (k >= 0 && !lineas[k].trim()) k--;
+    const marca = k >= 0 && lineas[k].trim().match(VO_MARCA);
+    const orig = voNorm(marca ? marca[1] : x.palabra);
+    const fila = { palabra: x.palabra, sin: x.sin.slice(0, 12), ant: x.ant.slice(0, 12), def: x.def.slice(0, 400), ej: x.ej.slice(0, 5).map(e => e.slice(0, 300)), extra: x.extra };
+    let j = lista.findIndex(f => voNorm(f.palabra) === orig);
+    if (j < 0) j = lista.findIndex(f => voNorm(f.palabra) === voNorm(x.palabra));
+    if (j > -1) { lista[j] = fila; cambiadas++; }
+    else { lista.push(fila); nuevas++; }
+  });
+  // Si al renombrar quedó repetida, se queda la primera
+  const vistas = new Set();
+  return { d, nuevas, cambiadas, lista: lista.filter(f => { const n = voNorm(f.palabra); if (vistas.has(n)) return false; vistas.add(n); return true; }) };
 }
 
 function voVista() {
   const d = voLeer(VO.texto);
-  const nSin = d.items.filter(x => x.sin.length).length, nAnt = d.items.filter(x => x.ant.length).length;
-  const conDef = d.items.filter(x => x.def).length, conEj = d.items.filter(x => x.ej.length).length;
-  $('voCuenta').textContent = d.items.length + ' palabra' + (d.items.length === 1 ? '' : 's');
+  // Cuadro: qué se va a publicar y qué hay que corregir
+  const m = voMezclar(VO.texto);
   const avisos = [...d.errores.map(x => Object.assign({ mal: true }, x)), ...d.avisos].sort((a, b) => a.n - b.n);
   $('voRes').innerHTML = (d.items.length ? `
     <div class="vo-res">
-      <span class="ok">${d.items.length} palabra${d.items.length === 1 ? '' : 's'}</span>
-      <span>${conDef} con definición</span>
-      <span>${conEj} con ejemplo</span>
+      ${m.nuevas ? `<span class="ok">${m.nuevas} nueva${m.nuevas === 1 ? '' : 's'}</span>` : ''}
+      ${m.cambiadas ? `<span class="ok">${m.cambiadas} corregida${m.cambiadas === 1 ? '' : 's'}</span>` : ''}
     </div>` : '') + (avisos.length ? `
     <div class="vo-avisos">${avisos.slice(0, 30).map(x => `
       <button class="vo-aviso${x.mal ? ' mal' : ''}" type="button" data-n="${x.n}"><b>Línea ${x.n}</b>${esc(x.t)}</button>`).join('')}
@@ -436,51 +444,61 @@ function voVista() {
     </div>` : '');
   $('voRes').querySelectorAll('.vo-aviso').forEach(b => b.addEventListener('click', () => voIrLinea(+b.dataset.n)));
 
-  $('voFiltro').innerHTML = [['todo', 'Todo', d.items.length], ['sin', 'Sinónimos', nSin], ['ant', 'Antónimos', nAnt]].map(([k, nom, c]) =>
+  // Lista: lo que ya está publicado
+  const P = VO.publicados;
+  const nSin = P.filter(x => (x.sin || []).length).length, nAnt = P.filter(x => (x.ant || []).length).length;
+  $('voCuenta').textContent = P.length + ' publicada' + (P.length === 1 ? '' : 's');
+  $('voFiltro').innerHTML = [['todo', 'Todo', P.length], ['sin', 'Sinónimos', nSin], ['ant', 'Antónimos', nAnt]].map(([k, nom, c]) =>
     `<button class="vo-tema${VO.filtro === k ? ' on' : ''}" type="button" data-f="${k}">${nom} <b>${c}</b></button>`).join('');
   $('voFiltro').querySelectorAll('[data-f]').forEach(b => b.addEventListener('click', () => { VO.filtro = b.dataset.f; voVista(); }));
-
   const q = voNorm(VO.busca);
-  let vis = VO.filtro === 'todo' ? d.items : d.items.filter(x => x[VO.filtro].length || x.mal);
-  if (q) vis = vis.filter(x => voNorm(x.palabra).includes(q) || x.sin.concat(x.ant).some(y => voNorm(y).includes(q)));
-  $('voLista').innerHTML = vis.length ? vis.slice(0, 300).map(voFicha).join('') + (vis.length > 300 ? `<div class="hint">Se muestran 300 de ${vis.length}. Usa el buscador.</div>` : '')
-    : `<div class="vo-vacio">${q ? 'Ninguna palabra coincide.' : 'Aún no hay palabras. Escribe a la izquierda o pega tu lista.'}</div>`;
-  $('voLista').querySelectorAll('.vo-card').forEach(c => c.addEventListener('click', e => { if (!e.target.closest('a')) voEditar(+c.dataset.n); }));
+  let vis = P.map((f, i) => [f, i]);
+  if (VO.filtro !== 'todo') vis = vis.filter(([f]) => (f[VO.filtro] || []).length);
+  if (q) vis = vis.filter(([f]) => voNorm(f.palabra).includes(q) || (f.sin || []).concat(f.ant || []).some(y => voNorm(y).includes(q)));
+  $('voLista').innerHTML = vis.length ? vis.slice(0, 300).map(([f, i]) => voFicha(f, i)).join('') + (vis.length > 300 ? `<div class="hint">Se muestran 300 de ${vis.length}. Usa el buscador.</div>` : '')
+    : `<div class="vo-vacio">${q ? 'Ninguna palabra coincide.' : 'Aún no hay palabras publicadas. Pega tu lista a la izquierda y toca Guardar y publicar.'}</div>`;
+  $('voLista').querySelectorAll('.vo-card').forEach(c => c.addEventListener('click', e => {
+    if (e.target.closest('a')) return;
+    const del = e.target.closest('.vo-del');
+    if (del) voBorrarPub(+c.dataset.i, del); else voCorregir(+c.dataset.i);
+  }));
 
   $('voDeshacer').disabled = !VO.cambios;
   $('voGuardar').disabled = !VO.cambios;
-  $('voGuardar').textContent = VO.borrar ? 'Toca otra vez para vaciar' : 'Guardar y publicar';
+  $('voGuardar').textContent = 'Guardar y publicar';
   voEstado(VO.cambios
-    ? (VO.recuperado ? 'Recuperé lo que escribiste y no publicaste · ' : 'Cambios sin guardar · ') + (d.errores.length ? `${d.errores.length} por corregir` : 'toca Guardar y publicar')
+    ? (VO.recuperado ? 'Recuperé lo que escribiste y no publicaste · ' : 'Sin publicar · ') + (d.errores.length ? `${d.errores.length} por corregir` : 'toca Guardar y publicar')
     : voPublicadoTxt());
 }
 
-async function guardarVocabulario() {
-  const d = voLeer(VO.texto);
-  if (d.errores.length) { voVista(); toast('Corrige lo marcado en rojo antes de publicar', true); voIrLinea(d.errores[0].n); return; }
-  if (!d.items.length && VO.publicados.length && !VO.borrar) {
-    VO.borrar = true; voVista(); toast('Así se borran todas las palabras publicadas. Toca otra vez para confirmar.', true); return;
-  }
-  VO.borrar = false;
-  const lista = d.items.map(x => ({ palabra: x.palabra, sin: x.sin.slice(0, 12), ant: x.ant.slice(0, 12), def: x.def.slice(0, 400), ej: x.ej.slice(0, 5).map(e => e.slice(0, 300)), extra: x.extra }));
+// Publica la lista completa. Devuelve true si salió bien
+async function voPublicar(lista) {
   const btn = $('voGuardar'); btn.disabled = true; voEstado('Guardando…');
   const r = await (await MCAuth.listo).rpc('guardar_vocabulario', { p_lista: lista });
   if (r.error) {
-    btn.disabled = false; voEstado('');
+    btn.disabled = !VO.cambios; voEstado('');
     const m = r.error.message || '';
     toast(/no autorizado/i.test(m) ? 'Tu correo no es administrador'
       : voError(m) ? 'Primero corre supabase/13-vocabulario.sql en Supabase'
       : (m || 'No se pudo guardar'), true);
-    return;
+    return false;
   }
   VO.publicados = lista.map((x, i) => Object.assign({ orden: i + 1 }, x));
-  VO.texto = voEscribir(VO.publicados);
-  VO.cambios = false;
-  voBorrador(null);
   renderVocabulario();
-  VO.recuperado = false;
-  voEstado(`✓ Publicado: ${r.data == null ? lista.length : r.data} palabras.`);
-  toast('Vocabulario guardado');
+  voEstado(`✓ Publicado · ${voPublicadoTxt().replace('Publicadas ahora: ', '')} en total`);
+  return true;
+}
+
+async function guardarVocabulario() {
+  const m = voMezclar(VO.texto);
+  if (m.d.errores.length) { voVista(); toast('Corrige lo marcado en rojo antes de publicar', true); voIrLinea(m.d.errores[0].n); return; }
+  if (!m.d.items.length) return;
+  const texto = VO.texto;
+  VO.texto = ''; VO.cambios = false;
+  if (await voPublicar(m.lista)) {
+    VO.recuperado = false; voBorrador(null);
+    toast(m.cambiadas && !m.nuevas ? 'Corrección publicada' : 'Vocabulario guardado');
+  } else { VO.texto = texto; VO.cambios = true; renderVocabulario(); }
 }
 
 $('voGuardar').addEventListener('click', guardarVocabulario);
