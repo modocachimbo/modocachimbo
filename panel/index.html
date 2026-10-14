@@ -725,7 +725,7 @@ E) Alternativa"></textarea>
             </label>
             <label class="dest" id="subCreditoBox" hidden>Crédito del tema (opcional)
               <input class="inp" id="subCredito" maxlength="80" placeholder="Prof. Javier Rojas Olortegui" autocomplete="off">
-              <span class="dest-nota">Se verá debajo del título: “Crédito: …”. Se recuerda para el próximo tema.</span>
+              <span class="dest-nota">Se verá en el temario como burbuja con el nombre del profesor y debajo del título del tema. Se recuerda para el próximo tema.</span>
             </label>
             </div>
           </div>
@@ -1444,7 +1444,7 @@ E) Alternativa"></textarea>
   }
 
   async function creditoTema(t) {
-    const credito = await pedirTexto({ titulo: 'Crédito del tema ' + t.num, sub: 'Se verá debajo del título, por ejemplo “Crédito: Prof. Javier Rojas Olortegui”. Déjalo vacío para quitarlo.', valor: t.credito || '', placeholder: 'Prof. Javier Rojas Olortegui', vacioOk: true });
+    const credito = await pedirTexto({ titulo: 'Crédito del tema ' + t.num, sub: 'Se verá en el temario como burbuja con el nombre del profesor y debajo del título del tema, por ejemplo “Prof. Javier Rojas Olortegui”. Déjalo vacío para quitarlo.', valor: t.credito || '', placeholder: 'Prof. Javier Rojas Olortegui', vacioOk: true });
     if (credito === null || credito === (t.credito || '')) return;
     try {
       await api('creditoTema', { carpeta: sel.carpeta, curso: NOMBRE[sel.carpeta], anio: sel.anio, tema: t.num, credito });
