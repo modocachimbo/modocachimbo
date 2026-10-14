@@ -3,7 +3,7 @@
    - Lo carga assets/auth.js cuando hay un alumno con sesión.
    - Las páginas de preguntas avisan cada respuesta con:
        window.MCRacha ? MCRacha.respondio() : (window.mcRachaPend = (window.mcRachaPend || 0) + 1);
-   - Las reglas (10 preguntas al día, 1 descanso por semana)
+   - Las reglas (meta del día 20, 30 o 50 preguntas; 1 descanso por semana)
      viven en Supabase: supabase/02-racha.sql
    - window.MCRacha.alCambiar(fn) avisa cada vez que cambia.
    ========================================================= */
@@ -65,7 +65,7 @@
       if (!r) { el.hidden = true; return; }
       el.innerHTML = ICONO + '<span>' + (r.actual || 0) + '</span>';
       el.classList.toggle('on', !!r.cumplido_hoy);
-      el.title = (r.actual || 0) + (r.actual === 1 ? ' día' : ' días') + ' de racha · Hoy ' + Math.min(r.hoy || 0, r.meta || 10) + '/' + (r.meta || 10) + ' preguntas';
+      el.title = (r.actual || 0) + (r.actual === 1 ? ' día' : ' días') + ' de racha · Hoy ' + Math.min(r.hoy || 0, r.meta || 20) + '/' + (r.meta || 20) + ' preguntas';
       el.setAttribute('aria-label', el.title);
       el.hidden = false;
     });
@@ -152,6 +152,7 @@
     estado: function () { return estado; },
     pintar: pintar,
     recargar: cargar,
+    fijar: cambiar,   // la usa el perfil al elegir otra meta
     alCambiar: function (fn) { oyentes.push(fn); if (estado) { try { fn(estado); } catch (e) {} } },
     icono: ICONO
   };
