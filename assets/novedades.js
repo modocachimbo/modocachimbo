@@ -56,7 +56,7 @@
     var st = document.createElement('style'); st.id = 'mcn-css';
     st.textContent =
       '.mcn-host{position:relative}' +
-      '.mcn-tag{display:inline-flex;align-items:center;background:var(--accent,#C6E000);color:#0e0e0e;font:800 10px/1 Sora,Inter,sans-serif;letter-spacing:.8px;text-transform:uppercase;padding:5px 8px;border-radius:100px;white-space:nowrap;pointer-events:none;box-shadow:0 0 18px rgba(198,224,0,.35)}' +
+      '.mcn-tag{display:inline-flex;align-items:center;background:var(--ac,var(--accent,#C6E000));color:#0e0e0e;font:800 10px/1 Sora,Inter,sans-serif;letter-spacing:.8px;text-transform:uppercase;padding:5px 8px;border-radius:100px;white-space:nowrap;pointer-events:none;box-shadow:0 0 18px rgba(var(--ac-rgb,198,224,0),.35)}' +
       '.mcn-tag.abs{position:absolute;top:10px;right:10px;z-index:2}' +
       '.mcn-tag.inl{margin-left:8px;vertical-align:2px}' +
       '.mcn{margin:26px 0 6px;border:1px solid rgba(198,224,0,.28);background:linear-gradient(180deg,rgba(198,224,0,.07),rgba(198,224,0,.015));border-radius:22px;padding:18px 18px 12px}' +

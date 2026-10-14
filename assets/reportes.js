@@ -205,8 +205,8 @@
       // se achica al bajar, se agranda al volver arriba
       var movil = window.matchMedia('(max-width: 600px)').matches;
       if (movil) {
-        // en celular se muestra el texto unos segundos y queda solo el ícono
-        setTimeout(function () { a.classList.add('mini'); }, 4500);
+        // en celular queda solo el ícono para no tapar las alternativas
+        a.classList.add('mini');
       } else {
         var lastY = window.scrollY;
         window.addEventListener('scroll', function () {
