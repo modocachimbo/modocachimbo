@@ -316,6 +316,10 @@
   .fi-cab .q { flex: 1; min-width: 0; }
   .fi-pal { font: 900 18px Nunito, sans-serif; letter-spacing: .5px; text-transform: uppercase; overflow-wrap: anywhere; }
   .fi-pal small { font-size: 12px; font-weight: 700; font-style: italic; color: #6f6f6f; text-transform: none; letter-spacing: 0; margin-left: 6px; }
+  .fi-nuevo { display: inline-block; margin-left: 8px; padding: 3px 9px; border-radius: 100px; background: var(--mor, #CE82FF); color: #fff; font: 900 10.5px Nunito, sans-serif; letter-spacing: .6px; vertical-align: 3px; box-shadow: 0 0 14px rgba(206,130,255,.35); }
+  .orden { display: inline-flex; margin-left: auto; border: 2px solid #262626; border-radius: 100px; padding: 2px; gap: 2px; }
+  .orden button { padding: 4px 11px; border: 0; border-radius: 100px; background: none; color: #8a8a8a; font: 800 12.5px Nunito, sans-serif; cursor: pointer; }
+  .orden button.on { background: #1a1a1a; color: #f2f2f2; box-shadow: inset 0 0 0 2px #4a4a4a; }
   .niv { font-size: 9px; letter-spacing: 1.5px; color: var(--nar); margin-left: 6px; vertical-align: 3px; }
   .fi-res { font-size: 13px; color: #8a8a8a; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 700; }
   .fi-res .c { color: #6fc8f3; } .fi-res .m { color: #d9a6ff; } .fi-res .s { color: #444; margin: 0 4px; }
@@ -650,7 +654,11 @@
   const MAZOS = { sin: ['Sinónimos', 'c'], ant: ['Antónimos', 'm'] };
 
   let banco = [], estado = {}, cambios = {};
-  const vista = { tab: 'todo', filtro: 'todas', busca: '', abiertas: new Set(), limite: 60 };
+  const vista = { tab: 'todo', filtro: 'todas', busca: '', abiertas: new Set(), limite: 60, orden: leerOrden() };
+  // Orden de la lista: A-Z (por defecto) o Recientes (lo último que se agregó primero)
+  function leerOrden() { try { return localStorage.getItem('mc_voc_orden') === 'rec' ? 'rec' : 'az'; } catch (e) { return 'az'; } }
+  // NUEVO: agregada en el panel hace menos de 7 días
+  const esNueva = w => w.alta != null && hoy() - w.alta < 7;
   const prep = { mazo: 'todo', cant: 20 };
 
   function mostrar(id) {
@@ -665,7 +673,8 @@
     const x = f.extra && typeof f.extra === 'object' ? f.extra : {};
     return { palabra: String(f.palabra || ''), sin: f.sin || [], ant: f.ant || [], def: f.def || '', ej: Array.isArray(f.ej) ? f.ej : (f.ej ? [f.ej] : []),
       tipo: x.tipo || '', nivel: [1, 2, 3].includes(+x.nivel) ? +x.nivel : 2, conNivel: [1, 2, 3].includes(+x.nivel), examen: Array.isArray(x.examen) ? x.examen : [],
-      par: Array.isArray(x.par) ? x.par : [], raiz: x.raiz || '', tip: x.tip || '' };
+      par: Array.isArray(x.par) ? x.par : [], raiz: x.raiz || '', tip: x.tip || '',
+      alta: /^\d{4}-\d{2}-\d{2}$/.test(x.alta || '') ? Math.floor(Date.parse(x.alta) / 864e5) : null };
   }
   function bancoLocal() { try { return JSON.parse(localStorage.getItem('mc_voc_banco') || 'null'); } catch (e) { return null; } }
   function cargarBanco() {
@@ -888,17 +897,26 @@
   function pintarFiltros() {
     const hayExamen = banco.some(w => w.examen.length);
     const fs = [['todas', 'Todas'], ['nuevas', 'Por aprender'], ['sabidas', 'Aprendidas']].concat(hayExamen ? [['examen', 'Salieron en examen']] : []);
-    $('filtros').innerHTML = fs.map(f => `<button class="filtro ${f[0] === vista.filtro ? 'on' : ''}" type="button" data-f="${f[0]}">${f[1]}</button>`).join('');
+    $('filtros').innerHTML = fs.map(f => `<button class="filtro ${f[0] === vista.filtro ? 'on' : ''}" type="button" data-f="${f[0]}">${f[1]}</button>`).join('') +
+      `<div class="orden" role="group" aria-label="Ordenar">${[['az', 'A-Z'], ['rec', 'Recientes']].map(o => `<button class="${o[0] === vista.orden ? 'on' : ''}" type="button" data-o="${o[0]}" aria-pressed="${o[0] === vista.orden}">${o[1]}</button>`).join('')}</div>`;
+    $('filtros').querySelectorAll('[data-o]').forEach(b => b.addEventListener('click', () => {
+      if (vista.orden === b.dataset.o) return;
+      Sonido.toque(); vista.orden = b.dataset.o; vista.limite = 60;
+      try { localStorage.setItem('mc_voc_orden', vista.orden); } catch (e) {}
+      pintarFiltros(); pintarLista();
+    }));
     $('filtros').querySelectorAll('.filtro').forEach(b => b.addEventListener('click', () => { Sonido.toque(); vista.filtro = b.dataset.f; vista.limite = 60; pintarFiltros(); pintarLista(); }));
   }
   function visibles() {
     const q = norm(vista.busca);
-    return delTab(vista.tab).filter(w => {
+    const ws = delTab(vista.tab).filter(w => {
       if (vista.filtro === 'nuevas' && aprendida(w, vista.tab)) return false;
       if (vista.filtro === 'sabidas' && !aprendida(w, vista.tab)) return false;
       if (vista.filtro === 'examen' && !w.examen.length) return false;
       return !q || norm(w.palabra).includes(q) || w.sin.concat(w.ant).some(x => norm(x).includes(q));
     });
+    // El banco viene en el orden en que se subió: lo último agregado está al final
+    return vista.orden === 'rec' ? ws.reverse() : ws.sort((a, b) => a.palabra.localeCompare(b.palabra, 'es', { sensitivity: 'base' }));
   }
   const raizDe = p => { const n = norm(p); return n.length > 4 ? n.slice(0, -1) : n; };
   function resaltar(texto, palabra) {
@@ -913,7 +931,7 @@
     const chips = (d, nom, cl) => ver(d) && w[d].length ? `<div class="et">${nom}</div><div class="chs">${w[d].map(x => `<span class="ch ${cl}">${esc(x)}</span>`).join('')}</div>` : '';
     return `<div class="fi ${abierta ? 'abierta' : ''}" data-i="${i}">
       <button class="fi-cab" type="button" aria-expanded="${abierta}">
-        <div class="q"><div class="fi-pal">${esc(w.palabra)}${w.tipo ? `<small>${esc(w.tipo)}</small>` : ''}${niveles(w)}</div>${abierta ? '' : `<div class="fi-res">${res}</div>`}</div>
+        <div class="q"><div class="fi-pal">${esc(w.palabra)}${w.tipo ? `<small>${esc(w.tipo)}</small>` : ''}${niveles(w)}${esNueva(w) ? '<span class="fi-nuevo">NUEVO</span>' : ''}</div>${abierta ? '' : `<div class="fi-res">${res}</div>`}</div>
         ${ok && !abierta ? `<span class="fi-ok" title="Aprendida">${ICO.si}</span>` : ''}<span class="fi-fle">${ICO.flecha}</span>
       </button>
       ${abierta ? `<a class="fi-rae" href="https://dle.rae.es/${encodeURIComponent(w.palabra.toLowerCase())}" target="_blank" rel="noopener">Ver en RAE</a>` : ''}
