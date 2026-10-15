@@ -673,8 +673,14 @@
       if (p) PERFIL = p;
       est.textContent = '✓ Guardado'; est.className = 'estado ok';
       pintarCabecera(MCAuth.usuario(), p);
-    }).catch(function () {
-      est.textContent = 'No se pudo guardar. Revisa tu conexión e inténtalo otra vez.'; est.className = 'estado error';
+    }).catch(function (err) {
+      var e = err || {}, msg = 'No se pudo guardar. Revisa tu conexión e inténtalo otra vez.';
+      if (e.code === 'sesion-vencida') msg = 'Tu sesión venció. Cierra sesión y vuelve a ingresar para guardar.';
+      else if (e.code === '23514') msg = 'Algún dato no es válido (' + (/perfiles_(\w+?)_check/.exec(e.message || '') || [, 'revisa los campos'])[1] + '). Corrígelo e inténtalo otra vez.';
+      else if (e.code === '42501') msg = 'No tienes permiso para guardar. Cierra sesión y vuelve a ingresar.';
+      else if (e.message && !/fetch|network|load failed/i.test(e.message)) msg = 'No se pudo guardar: ' + e.message;
+      est.textContent = msg; est.className = 'estado error';
+      if (window.console) console.warn('Perfil no guardado', e);
     }).then(function () { btn.disabled = false; });
   });
 

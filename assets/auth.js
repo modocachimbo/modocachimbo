@@ -123,9 +123,19 @@
     });
   }
 
+  // Si el servidor no responde (internet lento o sesión ya vencida),
+  // signOut devuelve un error y deja la sesión guardada. En ese caso se
+  // borra solo en este navegador para que igual quede cerrada.
   function salir() {
-    return listo.then(function (c) { return c.auth.signOut(); }).then(function () { perfilCache = null; });
+    return listo.then(function (c) {
+      return c.auth.signOut().then(function (r) {
+        if (r && r.error) return c.auth.signOut({ scope: 'local' });
+      }, function () { return c.auth.signOut({ scope: 'local' }); });
+    }).then(function () { perfilCache = null; });
   }
+
+  // Sesión vencida: la renueva una vez y repite el pedido
+  function vencida(e) { return e && (e.status === 401 || /^PGRST30[123]$/.test(e.code || '') || /jwt/i.test(e.message || '')); }
 
   function perfil(forzar) {
     if (!usuario()) return Promise.resolve(null);
@@ -142,10 +152,19 @@
   function guardarPerfil(datos) {
     if (!usuario()) return Promise.reject(new Error('sin-sesion'));
     var fila = Object.assign({}, datos, { id: usuario().id });
+    var cli;
+    function enviar() { return cli.from('perfiles').upsert(fila).select().single(); }
     return listo.then(function (c) {
-      return c.from('perfiles').upsert(fila).select().single();
+      cli = c;
+      return enviar();
     }).then(function (r) {
-      if (r.error) throw r.error;
+      if (!vencida(r.error)) return r;
+      return cli.auth.refreshSession().then(function (s) {
+        if (s.error || !s.data.session) { var e = new Error('sesion-vencida'); e.code = 'sesion-vencida'; throw e; }
+        return enviar();
+      });
+    }).then(function (r) {
+      if (r.error) { if (vencida(r.error)) r.error.code = 'sesion-vencida'; throw r.error; }
       perfilCache = r.data;
       pintarWidgets();
       return r.data;
