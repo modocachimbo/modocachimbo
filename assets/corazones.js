@@ -38,7 +38,7 @@
   function guardar(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 
-  var estado = null, oyentes = [], nombres = {}, cursosLista = null;
+  var estado = null, oyentes = [], nombres = {}, cursosLista = null, conRepaso = false;
   try { estado = JSON.parse(leer(CLAVE) || 'null'); } catch (e) {}
 
   /* ---------- Íconos propios ---------- */
@@ -55,9 +55,10 @@
     duelo: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 3.5 13 13M3.5 3.5h4l9 9M20.5 3.5 11 13M20.5 3.5h-4l-4.2 4.2M6 15.5 8.5 18M18 15.5 15.5 18M4 20l3-3M20 20l-3-3"/></svg>',
     tarjetas: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="13" height="14" rx="2.5"/><path d="M8 3h10a3 3 0 0 1 3 3v10M7 14h5"/></svg>',
     seguidas: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>',
+    repaso: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v4.5h-4.5"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg>',
     simulacro: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13.5" r="8"/><path d="M12 9.5v4l2.5 2.5M9.5 2.5h5M12 2.5v3"/></svg>'
   };
-  var COLOR = { explora: 'az', vocabulario: 'mo', duelo: 'na', tarjetas: 'li', seguidas: 'az', simulacro: 'or' };
+  var COLOR = { explora: 'az', vocabulario: 'mo', duelo: 'na', tarjetas: 'li', seguidas: 'az', repaso: 'ro', simulacro: 'or' };
 
   function css() {
     if (document.getElementById('mcz-css')) return;
@@ -108,7 +109,7 @@
       '.mcz-prem{display:flex;align-items:center;gap:3px;font:1000 14px Nunito,sans-serif;color:#FF4B4B;flex-shrink:0}.mcz-prem svg{width:18px;height:18px}' +
       '.mcz-mis.ok{border-color:rgba(198,224,0,.35)}.mcz-mis.ok .mcz-bar i{background:#C6E000}.mcz-mis.ok .mcz-prem{color:#C6E000}' +
       '.mcz-mis.az .ic{background:rgba(28,176,246,.13);color:#1CB0F6}.mcz-mis.mo .ic{background:rgba(206,130,255,.13);color:#CE82FF}.mcz-mis.na .ic{background:rgba(255,150,0,.13);color:#FF9600}' +
-      '.mcz-mis.or .ic{background:rgba(255,200,0,.13);color:#FFC800}.mcz-mis.li .ic{background:rgba(198,224,0,.1);color:#C6E000}' +
+      '.mcz-mis.or .ic{background:rgba(255,200,0,.13);color:#FFC800}.mcz-mis.li .ic{background:rgba(198,224,0,.1);color:#C6E000}.mcz-mis.ro .ic{background:rgba(255,75,75,.13);color:#FF4B4B}' +
       '.mcz-mis.bonus{border-color:rgba(255,200,0,.4);background:linear-gradient(90deg,rgba(255,200,0,.08),#141414 60%)}' +
       '.mcz-btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:14px;border-radius:16px;font:1000 15px Nunito,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:transform .08s ease}' +
       '.mcz-btn.prin{background:#C6E000;color:#2b3300;border:0;box-shadow:0 5px 0 #8fa300}.mcz-btn.prin:active{transform:translateY(4px);box-shadow:0 1px 0 #8fa300}' +
@@ -165,6 +166,7 @@
       todos.forEach(function (c) { nombres[c.id] = c.nombre; });
       var A = window.MCAcceso;
       var con = A && A.accesoLocal ? todos.filter(function (c) { try { return A.accesoLocal('repaso-' + c.id); } catch (e) { return false; } }) : [];
+      conRepaso = con.length > 0;
       cursosLista = (con.length ? con : todos).map(function (c) { return c.id; });
       return cursosLista;
     }).catch(function () { return []; });
@@ -172,7 +174,11 @@
 
   function cargar() {
     return cursosPracticables().then(function (lista) {
-      return rpc('mis_corazones', { p_cursos: lista });
+      // p_repaso: si tiene algún Repaso abierto (para la misión de Repaso).
+      // Si el SQL 20 aún no corrió, se pide como antes.
+      return rpc('mis_corazones', { p_cursos: lista, p_repaso: conRepaso }).catch(function () {
+        return rpc('mis_corazones', { p_cursos: lista });
+      });
     }).then(cambiar, function () { pintar(); });
   }
 
@@ -307,7 +313,8 @@
     var t = m.tipo, tit, link, sub = '';
     if (t === 'explora') { tit = 'Explora: responde 10 preguntas de ' + cursoNombre(m.curso); link = m.curso ? m.curso + '/libros/index.html' : 'index.html#cursos'; sub = 'en Práctica'; }
     else if (t === 'vocabulario') { tit = 'Practica 10 palabras en Vocabulario'; link = 'vocabulario.html'; }
-    else if (t === 'duelo') { tit = 'Termina un duelo'; link = 'duelo.html'; }
+    else if (t === 'duelo') { tit = 'Juega un duelo con un amigo'; link = 'duelo.html'; sub = 'termínalo'; }
+    else if (t === 'repaso') { tit = 'Acierta 10 en Repaso'; link = (explora().curso || 'biologia') + '/repaso.html'; sub = 'sin quedarte sin corazones'; }
     else if (t === 'tarjetas') { tit = 'Repasa 10 flashcards'; link = 'tarjetas.html?curso=' + encodeURIComponent(explora().curso || 'biologia'); sub = 'de ' + cursoNombre(explora().curso || 'biologia'); }
     else if (t === 'seguidas') { tit = 'Acierta 5 seguidas en Práctica'; link = (explora().curso || 'biologia') + '/libros/index.html'; }
     return { tit: tit, link: link, sub: sub };
@@ -367,7 +374,7 @@
     if (!estado) return;
     var quedan = estado.canjes_max - estado.canjes, lleno = estado.quedan >= 5, falta = estado.xp_saldo < estado.precio;
     var cupos = ''; for (var i = 0; i < estado.canjes_max; i++) cupos += '<span' + (i < estado.canjes ? ' class="usado"' : '') + '></span>';
-    var motivo = lleno ? 'Ya tienes tus 5 corazones.' : quedan <= 0 ? 'Ya usaste tus 2 canjes de hoy.' : falta ? 'Te faltan ' + (estado.precio - estado.xp_saldo) + ' XP. Gánalos respondiendo en Práctica, Vocabulario o Flashcards.' : '';
+    var motivo = lleno ? 'Ya tienes tus 5 corazones.' : quedan <= 0 ? 'Ya usaste tus ' + estado.canjes_max + ' canjes de hoy.' : falta ? 'Te faltan ' + (estado.precio - estado.xp_saldo) + ' XP. Gánalos respondiendo en Práctica, Vocabulario o Flashcards.' : '';
     abrirHoja('canje',
       '<div class="mcz-cab"><b>Canjear XP</b><button type="button" class="mcz-x" aria-label="Cerrar">' + SVG.x + '</button></div>' +
       '<div class="mcz-trueque"><span class="mcz-ficha">' + SVG.xp + estado.precio + '<small>XP</small></span><span class="mcz-flecha">' + SVG.flecha + '</span><span class="mcz-ficha">' + SVG.corazon + '1<small>corazón</small></span></div>' +
@@ -422,7 +429,7 @@
   function cerrarBloqueo() { if (capa) capa.hidden = true; clearInterval(tReloj); }
 
   /* ---------- Aviso: ganaste un corazón ---------- */
-  var TEXTO = { explora: 'Misión Explora cumplida', vocabulario: 'Misión de Vocabulario cumplida', duelo: 'Terminaste un duelo', tarjetas: 'Repasaste tus flashcards',
+  var TEXTO = { explora: 'Misión Explora cumplida', vocabulario: 'Misión de Vocabulario cumplida', duelo: 'Terminaste un duelo', tarjetas: 'Repasaste tus flashcards', repaso: 'Misión de Repaso cumplida',
     seguidas: '5 seguidas, ¡bien!', simulacro: 'Simulacro del día: vuelven los 5', canje: 'Canjeaste 150 XP' };
   function celebrar(t) {
     css();
