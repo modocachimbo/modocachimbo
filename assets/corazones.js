@@ -80,6 +80,13 @@
       '.mcz-destello{opacity:0}.mcz-xp .mcz-destello{animation:mczDestello 2.8s ease-in-out infinite}' +
       '@keyframes mczDestello{0%,68%,100%{opacity:0}80%{opacity:.55}}' +
       '@media (max-width:560px){.mcz-pill{height:38px;padding:0 9px;font-size:14px}.mcz-xp{display:none}}' +
+      // "+10 XP" que sube cada vez que responde (desde la gema de arriba; en celular, arriba a la derecha)
+      '.mcz-gana{position:fixed;z-index:230;display:inline-flex;white-space:nowrap;max-width:calc(100vw - 32px);align-items:center;gap:6px;padding:6px 12px 6px 8px;border-radius:999px;background:#1c1600;border:2px solid #FFC800;border-bottom-width:4px;color:#FFC800;font:1000 15px Nunito,Sora,Inter,sans-serif;font-variant-numeric:tabular-nums;pointer-events:none;box-shadow:0 0 18px rgba(255,200,0,.35);animation:mczGana 1.25s cubic-bezier(.2,.8,.3,1) forwards}' +
+      '.mcz-gana svg{width:20px;height:20px}.mcz-gana small{font:800 11.5px Nunito,sans-serif;color:#bfa24a;margin-left:2px}' +
+      '.mcz-gana.poco{border-color:#7a6620;color:#d9b84a;box-shadow:none}' +
+      '@keyframes mczGana{0%{opacity:0;transform:translate(-50%,8px) scale(.7)}15%{opacity:1;transform:translate(-50%,0) scale(1.08)}30%{transform:translate(-50%,0) scale(1)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-26px) scale(.96)}}' +
+      '.mcz-xp.sube{animation:mczSubeXp .45s ease}@keyframes mczSubeXp{40%{transform:scale(1.14)}}' +
+      '@media (prefers-reduced-motion:reduce){.mcz-gana{animation:mczGanaQuieto 1.2s forwards}@keyframes mczGanaQuieto{0%,80%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,0)}}}' +
       '@media (max-width:420px){.mcz-pill{padding:0 7px;gap:4px}.mcz-pill svg{width:19px;height:19px}}' +
       // Hoja que sube desde abajo
       '.mcz-fondo{position:fixed;inset:0;z-index:240;background:rgba(0,0,0,.72);display:flex;align-items:flex-end;justify-content:center}' +
@@ -170,17 +177,22 @@
   }
 
   /* ---------- Respuestas: XP y corazones ---------- */
-  var buf = { ok: 0, mal: 0, seguidas: 0 }, racha = 0, tEnvio = null, enviando = false;
+  var buf = { ok: 0, mal: 0, seguidas: 0 }, racha = 0, tEnvio = null, enviando = false, vuelo = 0;
+  // XP que ya ganó pero el servidor todavía no anotó (se ve al instante)
+  function pendiente() { return 10 * buf.ok + 2 * buf.mal + vuelo; }
+  function verXp() { return ((estado && estado.xp_semana) || 0) + pendiente(); }
   function respuesta(ok) {
     if (!PAG) return;
     if (ok) { buf.ok++; racha++; buf.seguidas = Math.max(buf.seguidas, racha); }
     else { buf.mal++; racha = 0; if (PAG.gasta) perder(); }
+    ganaXp(ok ? 10 : 2);
     if (buf.ok + buf.mal >= 10) enviar(); else if (!tEnvio) tEnvio = setTimeout(enviar, 4000);
   }
   // Varias respuestas juntas (el simulacro las manda al terminar)
   function sumar(ok, mal) {
     if (!PAG) return;
     buf.ok += Math.max(0, ok | 0); buf.mal += Math.max(0, mal | 0);
+    ganaXp(10 * Math.max(0, ok | 0) + 2 * Math.max(0, mal | 0));
     enviar();
   }
   // El servidor acepta hasta 50 de cada una por envío; lo demás queda para el siguiente
@@ -192,9 +204,9 @@
   function enviar() {
     clearTimeout(tEnvio); tEnvio = null;
     if (enviando || !PAG || buf.ok + buf.mal === 0) return;
-    var p = paquete(); enviando = true;
-    rpc('sumar_xp', { p: p }).then(function (e) { enviando = false; cambiar(e); if (buf.ok + buf.mal) enviar(); },
-      function () { enviando = false; buf.ok += p.ok; buf.mal += p.mal; });
+    var p = paquete(); enviando = true; vuelo = 10 * p.ok + 2 * p.mal;
+    rpc('sumar_xp', { p: p }).then(function (e) { enviando = false; vuelo = 0; cambiar(e); if (buf.ok + buf.mal) enviar(); },
+      function () { enviando = false; vuelo = 0; buf.ok += p.ok; buf.mal += p.mal; });
   }
   // Al cerrar la página se manda lo que falte
   window.addEventListener('pagehide', function () {
@@ -227,6 +239,26 @@
     return Math.min(max, estado.quedan);
   }
 
+  /* ---------- "+10 XP": que se note lo que gana ---------- */
+  var chipXp = null, tChip = null, sumaChip = 0;
+  function ganaXp(n) {
+    if (!n || !estado) return;
+    css();
+    // La gema de arriba sube al instante
+    Array.prototype.forEach.call(document.querySelectorAll('.mcz-xp span'), function (s) { s.textContent = verXp(); });
+    var gema = Array.prototype.filter.call(document.querySelectorAll('.mcu-user .mcz-xp'), function (x) { return x.offsetParent; })[0];
+    if (gema) { gema.classList.remove('sube'); void gema.offsetWidth; gema.classList.add('sube'); }
+    // Respuestas seguidas se juntan en el mismo globo: +10, +20, +30…
+    sumaChip = chipXp && chipXp.isConnected ? sumaChip + n : n;
+    if (!chipXp || !chipXp.isConnected) { chipXp = document.createElement('div'); chipXp.setAttribute('aria-hidden', 'true'); document.body.appendChild(chipXp); }
+    chipXp.className = 'mcz-gana' + (sumaChip < 10 ? ' poco' : '');
+    chipXp.innerHTML = SVG.xp + '+' + sumaChip + ' XP' + (gema ? '' : '<small>· ' + verXp() + ' esta semana</small>');
+    if (gema) { var b = gema.getBoundingClientRect(); chipXp.style.left = (b.left + b.width / 2) + 'px'; chipXp.style.top = (b.bottom + 8) + 'px'; chipXp.style.right = ''; }
+    else { chipXp.style.left = '50%'; chipXp.style.top = 'calc(env(safe-area-inset-top, 0px) + 74px)'; }
+    chipXp.style.animation = 'none'; void chipXp.offsetWidth; chipXp.style.animation = '';
+    clearTimeout(tChip); tChip = setTimeout(function () { if (chipXp) chipXp.remove(); chipXp = null; sumaChip = 0; }, 1300);
+  }
+
   /* ---------- Pintar las píldoras de arriba ---------- */
   function pintar(late) {
     if (!estado) return;
@@ -242,8 +274,8 @@
       }
       cor.innerHTML = SVG.corazon + '<span>' + estado.quedan + '</span>';
       cor.setAttribute('aria-label', estado.quedan + ' corazones. Ver misiones');
-      xp.innerHTML = SVG.xp + '<span>' + (estado.xp_semana || 0) + '</span>';
-      xp.setAttribute('aria-label', (estado.xp_semana || 0) + ' XP esta semana. Canjear');
+      xp.innerHTML = SVG.xp + '<span>' + verXp() + '</span>';
+      xp.setAttribute('aria-label', verXp() + ' XP esta semana. Canjear');
       cor.classList.toggle('cero', !estado.quedan);
       if (late) { cor.classList.remove('late'); void cor.offsetWidth; cor.classList.add('late'); setTimeout(function () { cor.classList.remove('late'); }, 700); }
     });
