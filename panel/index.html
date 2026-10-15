@@ -571,6 +571,7 @@
         <button class="tab" data-tab="alumnos" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Alumnos</span></button>
         <button class="tab" data-tab="simulacro" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg><span>Top simulacro</span></button>
         <button class="tab" data-tab="topxp" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 20.5 7v10L12 22l-8.5-5V7z"/><path d="M13 7l-3.5 5.5H12l-1 4.5 3.5-5.5H12z"/></svg><span>Top XP</span></button>
+        <button class="tab" data-tab="agenda" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/><path d="M8 14.5h3M8 18h6"/></svg><span>Agenda</span></button>
         <button class="tab" data-tab="codigos" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg><span>Códigos</span></button>
         <div class="menu-grupo">Contenido</div>
         <button class="tab" data-tab="subir" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span>Subir tema</span></button>
@@ -926,6 +927,23 @@ E) Alternativa"></textarea>
         <div id="txpList"></div>
       </div>
 
+      <!-- Agenda: fechas para todos los alumnos (agenda-panel.js) -->
+      <div id="tab-agenda" hidden>
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Agenda de los alumnos</div>
+            <h1>Fechas importantes</h1>
+            <p id="agpStats">Seminarios, simulacros y exámenes que ven todos en su agenda.</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn-main" id="agpNueva" type="button">＋ Nueva fecha</button>
+          </div>
+        </div>
+        <div class="agp-form" id="agpForm" hidden></div>
+        <div class="chips last" id="agpChips"></div>
+        <div id="agpList"></div>
+      </div>
+
       <!-- Alumnos (cuentas de Supabase) -->
       <div id="tab-alumnos" hidden>
         <div class="page-head">
@@ -1119,7 +1137,7 @@ E) Alternativa"></textarea>
   }
 
   /* ---------- ayudantes: solo ven sus pestañas ---------- */
-  const TAB_PERMISO = { reportes: 'reportes', corr: 'corr', alumnos: 'alumnos', simulacro: 'simulacro', topxp: 'topxp', codigos: 'codigos', subir: 'subir', examen: 'examen',
+  const TAB_PERMISO = { reportes: 'reportes', corr: 'corr', alumnos: 'alumnos', simulacro: 'simulacro', topxp: 'topxp', agenda: 'agenda', codigos: 'codigos', subir: 'subir', examen: 'examen',
     editar: 'editar', vocab: 'vocab', cursos: 'cursos', ciclos: 'ciclos', perfil: 'perfil', alertas: 'alertas', frases: 'frases', tutorial: 'tutorial' };
   function puedeTab(t) { return ROL.admin || (!!TAB_PERMISO[t] && ROL.permisos.includes(TAB_PERMISO[t])); }
   function aplicarPermisos() {
@@ -1207,7 +1225,7 @@ E) Alternativa"></textarea>
     window.scrollTo(0, 0);
     document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
     const pestana = t.dataset.tab === 'examen' ? 'subir' : t.dataset.tab; // "Subir examen" usa la misma pantalla que "Subir tema"
-    ['reportes', 'subir', 'editar', 'cursos', 'ciclos', 'vocab', 'perfil', 'frases', 'alertas', 'tutorial', 'codigos', 'alumnos', 'corr', 'simulacro', 'topxp', 'equipo', 'historial'].forEach(id => { $('tab-' + id).hidden = id !== pestana; });
+    ['reportes', 'subir', 'editar', 'cursos', 'ciclos', 'vocab', 'perfil', 'frases', 'alertas', 'tutorial', 'codigos', 'alumnos', 'corr', 'simulacro', 'topxp', 'agenda', 'equipo', 'historial'].forEach(id => { $('tab-' + id).hidden = id !== pestana; });
     if (t.dataset.tab === 'tutorial' && !TU.datos) cargarTutorial();
     if (t.dataset.tab === 'cursos') { cargarCursos(); cargarPractica(); }
     if (t.dataset.tab === 'perfil') cargarPerfilCfg();
@@ -1218,6 +1236,7 @@ E) Alternativa"></textarea>
     if (t.dataset.tab === 'alumnos') cargarAlumnos();
     if (t.dataset.tab === 'simulacro') cargarTopSimulacro();
     if (t.dataset.tab === 'topxp') cargarTopXp();
+    if (t.dataset.tab === 'agenda') cargarAgenda();
     if (t.dataset.tab === 'alertas') cargarAlertas();
     if (t.dataset.tab === 'subir' || t.dataset.tab === 'examen') initSubir(t.dataset.tab === 'examen' ? 'examen' : 'tema');
     if (t.dataset.tab === 'editar') renderPicker();
@@ -1959,6 +1978,7 @@ E) Alternativa"></textarea>
 <script src="../assets/ranking.js"></script>
 <script src="simulacro-panel.js"></script>
 <script src="topxp-panel.js"></script>
+<script src="agenda-panel.js"></script>
 <script src="reportes-alumno.js"></script>
 <script src="../assets/carreras.js"></script>
 <script src="perfil-panel.js"></script>
