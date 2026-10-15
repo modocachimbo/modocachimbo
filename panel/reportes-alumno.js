@@ -7,7 +7,7 @@
    - Descartar           → "Denegado"; Volver a pendiente → "Recibido"
    ========================================================= */
 window.MCRep = (() => {
-  let ultimo = 0, autores = null, pidiendo = null, cargado = 0;
+  let ultimo = 0, autores = null, pidiendo = null, cargado = 0, fallo = null;
   const asignado = new Map(), usados = new Set();
   const norm = t => String(t == null ? '' : t).replace(/^0+/, '');
   async function rpc(nombre, args) {
@@ -24,11 +24,13 @@ window.MCRep = (() => {
     },
     // Quién mandó cada reporte (supabase/08-reportes-autor.sql). alListo se llama una vez al tener la lista.
     cargarAutores(alListo) {
-      if (pidiendo || Date.now() - cargado < 120000 || !window.MCAuth || !MCAuth.usuario()) return;
+      if (!window.MCAuth || !MCAuth.usuario()) { if (fallo !== 'sin-sesion') { fallo = 'sin-sesion'; if (alListo) alListo(); } return; }
+      if (pidiendo || Date.now() - cargado < 120000) return;
       cargado = Date.now();
       pidiendo = rpc('reportes_autores').then(d => {
         pidiendo = null;
-        if (!Array.isArray(d)) return;
+        if (!Array.isArray(d)) { if (fallo !== 'error') { fallo = 'error'; if (alListo) alListo(); } return; }
+        fallo = null;
         autores = d.map(a => Object.assign({ t: new Date(a.creado).getTime() }, a));
         asignado.clear(); usados.clear();
         if (alListo) alListo();
@@ -36,6 +38,10 @@ window.MCRep = (() => {
     },
     // La hoja no guarda el alumno: se busca el reporte de la misma pregunta con la hora más cercana
     // (hasta 26 h, por si la hoja usa otra zona horaria que el navegador)
+    // Por qué no se puede mostrar quién reportó: 'sin-sesion', 'error' o null
+    fallo() { return fallo; },
+    // Ya se tiene la lista de quién reportó
+    conAutores() { return !!autores; },
     autor(r) {
       if (!autores || !r || !r.carpeta) return null;
       const clave = r.fila + '|' + r.fecha;

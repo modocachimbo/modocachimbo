@@ -1309,7 +1309,13 @@ E) Alternativa"></textarea>
 
   function autorHtml(r) {
     const a = window.MCRep && MCRep.autor(r);
-    if (!a) return '';
+    if (!a) {
+      if (!window.MCRep || !r.carpeta) return '';
+      const f = MCRep.fallo();
+      if (f === 'sin-sesion') return '<div class="rautor">👤 Para ver quién reportó, entra al panel con tu cuenta de Google.</div>';
+      if (f === 'error') return '<div class="rautor">👤 No se pudo ver quién reportó. Cierra sesión y vuelve a entrar al panel.</div>';
+      return MCRep.conAutores() ? '<div class="rautor">👤 Reportó sin iniciar sesión <span>(no dejó nombre ni correo)</span></div>' : '';
+    }
     const nom = a.apodo || a.nombre || (a.email || '').split('@')[0];
     return `<div class="rautor">👤 Reportado por <b>${esc(nom)}</b>${a.nombre && a.apodo ? ' · ' + esc(a.nombre) : ''} <span>${esc(a.email || '')}</span></div>`;
   }
