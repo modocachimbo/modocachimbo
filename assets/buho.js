@@ -118,12 +118,23 @@
   }
 
   function al(lista, semilla) { return lista[semilla % lista.length]; }
-  // Elige el ánimo. r = racha (mi_racha); extra = { ganoDuelo: 'apodo del rival' }
+  // Elige el ánimo. r = racha (mi_racha); extra = { ganoDuelo: 'apodo del rival', agenda: fecha a recordar }
   function animo(r, extra) {
     extra = extra || {};
     var h = new Date().getHours(), dia = new Date().getDate();
     var n = (r && r.actual) || 0, meta = (r && r.meta) || 20, hoy = (r && r.hoy) || 0, falta = Math.max(0, meta - hoy);
+    var ag = extra.agenda, agM = null;
+    if (ag) {
+      var NOM = { examen: 'examen', seminario: 'seminario', simulacro: 'simulacro', tarea: 'una tarea', otro: 'algo importante' };
+      var cual = NOM[ag.tipo] || NOM.otro, hora = ag.hora ? ', a las ' + ag.hora12 + ' ' : '. ';
+      if (ag.dias === 0) agM = { animo: 'feliz', titulo: '¡Hoy tienes ' + cual + '!', texto: ag.titulo + hora + '¡Tú puedes!' };
+      else if (ag.dias === 1) agM = { animo: 'preocupado', titulo: '¡Mañana tienes ' + cual + '!', texto: ag.titulo + hora + 'Repasa hoy y llega listo.' };
+      else agM = { animo: 'normal', titulo: 'Faltan ' + ag.dias + ' días', texto: 'para ' + ag.titulo + '. Ve preparándote.' };
+      agM.link = 'perfil.html#agenda'; agM.boton = 'Ver mi agenda';
+      if (ag.dias <= 1) return agM;
+    }
     if (extra.ganoDuelo) return { animo: 'celebrando', titulo: '¡Le ganaste a ' + extra.ganoDuelo + '!', texto: 'Ganaste un duelo. ¿Otro?', link: 'duelo.html', boton: 'Retar a alguien' };
+    if (agM) return agM;
     if (r && r.cumplido_hoy) {
       if (h >= 23 || h < 5) return { animo: 'dormido', titulo: 'Misión cumplida', texto: 'Ya estudiaste hoy. A descansar, mañana seguimos.' };
       if (n > 0 && n % 7 === 0) return { animo: 'celebrando', titulo: '¡' + n + ' días seguidos!', texto: 'Llevas ' + (n / 7 === 1 ? 'una semana' : n / 7 + ' semanas') + ' sin fallar. Eres imparable.' };
@@ -167,7 +178,7 @@
       '.buho-globo{position:relative;min-width:0;background:var(--surface-2,#141414);border:1px solid var(--border,#232323);border-radius:16px;padding:10px 14px;font-size:13.5px;line-height:1.45;color:var(--text-dim,#9a9a9a)}' +
       '.buho-globo::before{content:"";position:absolute;left:-7px;top:50%;width:12px;height:12px;background:inherit;border-left:1px solid var(--border,#232323);border-bottom:1px solid var(--border,#232323);transform:translateY(-50%) rotate(45deg)}' +
       '.buho-globo b{display:block;font:800 14.5px Sora,Inter,sans-serif;color:var(--text,#f2f2f2);margin-bottom:2px}' +
-      '.buho-globo a{display:inline-block;margin-top:4px;color:var(--accent,#C6E000);font-weight:700;text-decoration:none}' +
+      '.buho-globo a{display:table;margin-top:4px;color:var(--accent,#C6E000);font-weight:700;text-decoration:none}' +
       '[data-animo=preocupado] .buho-globo{border-color:rgba(251,191,36,.45)}[data-animo=preocupado] .buho-globo::before{border-color:rgba(251,191,36,.45)}' +
       '[data-animo=preocupado] .buho-globo b{color:#fbbf24}' +
       '[data-animo=celebrando] .buho-globo b,[data-animo=feliz] .buho-globo b{color:var(--accent,#C6E000)}' +
@@ -192,6 +203,15 @@
       if (window.MCRacha) MCRacha.alCambiar(function (r) { racha = r; pintar(); });
       else if (i < 100) setTimeout(function () { esperarRacha(i + 1); }, 150);
     })(0);
+    // ¿Hay una fecha de la agenda cerca? (assets/agenda.js)
+    function verAgenda() {
+      MCAgenda.cargar().then(function (l) {
+        var e = MCAgenda.recordatorio(l);
+        extra.agenda = e ? { tipo: e.tipo, titulo: e.titulo, hora: e.hora, hora12: MCAgenda.hora12(e.hora), dias: MCAgenda.dias(e.fecha) } : null;
+        pintar();
+      }).catch(function () {});
+    }
+    if (window.MCAgenda) { verAgenda(); MCAgenda.alCambiar(verAgenda); }
     // ¿Ganó un duelo en las últimas 24 horas?
     MCAuth.listo.then(function (c) { return c.rpc('mis_duelos'); }).then(function (r) {
       var g = (r && r.data || []).filter(function (d) { return d.estado === 'ganaste' && Date.now() - new Date(d.creado) < 864e5; })[0];

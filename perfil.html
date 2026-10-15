@@ -193,6 +193,7 @@
   .chip.gris { color: var(--text-dim); border-color: #333; }
   .perfil-top .cuenta { margin: 0 22px 22px; text-align: center; background: rgba(255,150,0,.1); color: var(--nar); border: 2px solid rgba(255,150,0,.35); font-weight: 800; }
   .perfil-top .cuenta b { font-size: 24px; font-weight: 1000; }
+  .perfil-top .cuenta { cursor: pointer; }
 
   /* Botones gruesos */
   .btn-cel, .btn-mor, .btn-gris { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 14px; padding: 11px 20px; font: 900 14px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .5px; text-decoration: none; cursor: pointer; border: 2px solid; border-bottom-width: 5px; background: var(--surface-2); transition: transform .08s; }
@@ -294,6 +295,7 @@
 <script src="assets/acceso.js"></script>
 <script src="assets/carreras.js"></script>
 <script src="assets/auth.js"></script>
+<script src="assets/agenda.js"></script>
 </head>
 <body>
   <div class="wrap">
@@ -327,6 +329,7 @@
 
       <div class="tabs" role="tablist">
         <button type="button" role="tab" class="on" id="tabBtnPerfil" aria-selected="true">Mi perfil</button>
+        <button type="button" role="tab" id="tabBtnAgenda" aria-selected="false">Agenda</button>
         <button type="button" role="tab" id="tabBtnRanking" aria-selected="false">Ranking</button>
       </div>
 
@@ -337,6 +340,9 @@
         <div class="rk" id="rkLista"><p class="nota">Cargando…</p></div>
         <p class="rk-nota">Se reinicia cada lunes. Ganas +10 XP por respuesta correcta y +2 por incorrecta en todas las prácticas.</p>
       </div>
+
+      <!-- Mi agenda: calendario con las fechas importantes (assets/agenda-perfil.js) -->
+      <div id="tabAgenda" hidden></div>
 
       <div id="tabPerfil">
 
@@ -375,10 +381,6 @@
               <option>Ordinario</option>
               <option>CPU</option>
             </select>
-          </div>
-          <div class="campo">
-            <label for="fecha_examen">Fecha de tu examen</label>
-            <input id="fecha_examen" name="fecha_examen" type="date">
           </div>
           <div class="campo ancho">
             <label for="celular">Celular <small>(opcional, para avisos por WhatsApp)</small></label>
@@ -473,7 +475,7 @@
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
-  var CAMPOS = ['nombre', 'apodo', 'carrera', 'modalidad', 'fecha_examen', 'celular'];
+  var CAMPOS = ['nombre', 'apodo', 'carrera', 'modalidad', 'celular'];
   var NOMBRES = { 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'seminario-VIP': 'Todos los Seminarios', 'banqueo-VIP': 'Todo el Banqueo', 'tarjetas-VIP': 'Todas las Flashcards', 'TODO-VIP': 'Acceso total', 'simulacro': 'Simulacro' };
   var TIPO_NOM = { curso: 'Curso: ', repaso: 'Repaso: ', fijas: 'Fijas: ', seminario: 'Seminarios: ', banqueo: 'Banqueo: ', tarjetas: 'Flashcards: ' };
 
@@ -554,22 +556,25 @@
     $('conSesion').hidden = cual !== 'con';
   }
 
-  function cuentaRegresiva(fecha) {
+  // Cuenta regresiva al examen más cercano de la agenda (assets/agenda.js)
+  function cuentaRegresiva() {
     var caja = $('cuenta');
-    if (!fecha) { caja.style.display = 'none'; return; }
-    var hoy = new Date(); hoy.setHours(0, 0, 0, 0);
-    var p = fecha.split('-'), dia = new Date(+p[0], +p[1] - 1, +p[2]);
-    var n = Math.round((dia - hoy) / 86400000);
-    caja.textContent = '';
-    if (n > 0) {
-      var b = document.createElement('b'); b.textContent = n;
-      caja.appendChild(document.createTextNode('Faltan '));
-      caja.appendChild(b);
-      caja.appendChild(document.createTextNode(n === 1 ? ' día para tu examen. ¡Tú puedes!' : ' días para tu examen. ¡Tú puedes!'));
-    } else if (n === 0) caja.textContent = '¡Hoy es tu examen! Mucha suerte';
-    else caja.textContent = 'Tu fecha de examen ya pasó. Actualízala si vas a postular otra vez.';
-    caja.style.display = 'block';
+    if (!window.MCAgenda) { caja.style.display = 'none'; return; }
+    MCAgenda.cargar().then(function (l) {
+      var e = MCAgenda.proximas(l).filter(function (x) { return x.tipo === 'examen'; })[0];
+      if (!e) { caja.style.display = 'none'; return; }
+      var n = MCAgenda.dias(e.fecha);
+      caja.textContent = '';
+      if (n > 0) {
+        var b = document.createElement('b'); b.textContent = n;
+        caja.appendChild(document.createTextNode('Faltan '));
+        caja.appendChild(b);
+        caja.appendChild(document.createTextNode((n === 1 ? ' día para ' : ' días para ') + e.titulo + '. ¡Tú puedes!'));
+      } else caja.textContent = '¡Hoy es tu ' + e.titulo + '! Mucha suerte';
+      caja.style.display = 'block';
+    }).catch(function () { caja.style.display = 'none'; });
   }
+  if (window.MCAgenda) MCAgenda.alCambiar(function () { cuentaRegresiva(); });
 
   function pintarCabecera(u, p) {
     var m = u.user_metadata || {};
@@ -583,7 +588,7 @@
       av.appendChild(img);
     } else av.textContent = nombre.charAt(0).toUpperCase();
     pintarChips(p);
-    cuentaRegresiva(p.fecha_examen);
+    cuentaRegresiva();
   }
 
   // Etiquetas bajo el nombre: carrera, bloque y modalidad
@@ -961,6 +966,7 @@
   });
 })();
 </script>
+<script src="assets/agenda-perfil.js"></script>
 <script>
   /* ===== Pestañas y ranking de la semana (ranking_xp en supabase/16-corazones.sql) ===== */
   (function () {
@@ -996,18 +1002,28 @@
         document.getElementById('rkLista').innerHTML = '<p class="nota">No se pudo cargar el ranking. Revisa tu conexión.</p>';
       });
     }
-    function ver(rank) {
-      bP.classList.toggle('on', !rank); bR.classList.toggle('on', rank);
-      bP.setAttribute('aria-selected', String(!rank)); bR.setAttribute('aria-selected', String(rank));
-      document.getElementById('tabPerfil').hidden = rank;
-      document.getElementById('tabRanking').hidden = !rank;
-      if (rank) cargarRanking();
-      history.replaceState(null, '', rank ? '#ranking' : location.pathname + location.search);
+    var bA = document.getElementById('tabBtnAgenda');
+    function ver(cual) {
+      [[bP, 'tabPerfil', 'perfil'], [bA, 'tabAgenda', 'agenda'], [bR, 'tabRanking', 'ranking']].forEach(function (t) {
+        var on = t[2] === cual;
+        t[0].classList.toggle('on', on); t[0].setAttribute('aria-selected', String(on));
+        document.getElementById(t[1]).hidden = !on;
+      });
+      if (cual === 'ranking') cargarRanking();
+      if (cual === 'agenda' && window.MCAgendaPerfil && MCAuth.usuario()) MCAgendaPerfil.cargar();
+      history.replaceState(null, '', cual === 'perfil' ? location.pathname + location.search : '#' + cual);
     }
-    bP.addEventListener('click', function () { ver(false); });
-    bR.addEventListener('click', function () { ver(true); });
-    if (location.hash === '#ranking') ver(true);
-    MCAuth.alCambiar(function (u) { if (u && !document.getElementById('tabRanking').hidden) cargarRanking(); });
+    bP.addEventListener('click', function () { ver('perfil'); });
+    bA.addEventListener('click', function () { ver('agenda'); });
+    bR.addEventListener('click', function () { ver('ranking'); });
+    document.getElementById('cuenta').addEventListener('click', function () { ver('agenda'); bA.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+    if (location.hash === '#ranking') ver('ranking');
+    if (location.hash === '#agenda') ver('agenda');
+    MCAuth.alCambiar(function (u) {
+      if (!u) return;
+      if (!document.getElementById('tabRanking').hidden) cargarRanking();
+      if (!document.getElementById('tabAgenda').hidden && window.MCAgendaPerfil) MCAgendaPerfil.cargar();
+    });
   })();
 </script>
 <script src="assets/sonido.js"></script>
