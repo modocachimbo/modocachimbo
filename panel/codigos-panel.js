@@ -70,6 +70,10 @@ function renderConfigAcceso() {
         <button class="rbtn" type="button" id="accAbrir">Abrir este curso</button>
       </div>
       <div class="acc-row legacy">
+        <div><b>Quitar códigos desde Perfil</b><span>Cuántas veces al mes cada equipo puede quitar un mismo código para usarlo en otro lado.</span></div>
+        <select class="inp" id="accQuitar">${[0, 1, 2, 3, 5, 10].map(n => `<option value="${n}" ${(CD.config.quitarMax || 0) === n ? 'selected' : ''}>${n ? n + (n === 1 ? ' vez' : ' veces') + ' al mes' : 'Sin límite'}</option>`).join('')}</select>
+      </div>
+      <div class="acc-row legacy">
         <div><b>Accesos del sistema anterior</b><span>Alumnos que desbloquearon antes de este panel (no tienen código guardado). Si los cierras, deberán ingresar su código otra vez.</span></div>
         <label class="sw"><input type="checkbox" id="accLegacy" ${CD.config.legacy !== false ? 'checked' : ''}><span></span>${CD.config.legacy !== false ? 'Permitidos' : 'Cerrados'}</label>
       </div>
@@ -96,6 +100,10 @@ function renderConfigAcceso() {
     const cfg = JSON.parse(JSON.stringify(CD.config));
     cfg.abiertos[$('accTipo').value + '-' + curso] = { hasta: $('accHasta').value || '' };
     guardar(cfg, 'Abierto para todos');
+  });
+  $('accQuitar').addEventListener('change', e => {
+    const cfg = JSON.parse(JSON.stringify(CD.config)); cfg.quitarMax = Number(e.target.value);
+    guardar(cfg, cfg.quitarMax ? 'Límite: ' + cfg.quitarMax + ' al mes' : 'Sin límite para quitar códigos');
   });
   $('accLegacy').addEventListener('change', e => {
     const cfg = JSON.parse(JSON.stringify(CD.config)); cfg.legacy = e.target.checked;
