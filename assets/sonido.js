@@ -1,6 +1,7 @@
 /* =========================================================
    Modo Cachimbo · Sonidos (hechos con código, sin archivos de audio)
    MCSonido.bien() · mal() · empezar() · fin(pct) · perder() · toque()
+   Duelo: comodin() · robado() · reaccion(cara)
    Se silencia con cualquier botón [data-mc-son]; la elección se guarda
    en el navegador (mc_sonido) y vale para toda la web, Flashcards incluidas.
    ========================================================= */
@@ -42,11 +43,11 @@
     o.connect(g); g.connect(salida); o.start(t0); o.stop(t0 + dur + 0.02);
   }
   // Un "fsss" corto de ruido filtrado
-  function soplo(dur, vol, desde, hasta) {
+  function soplo(dur, vol, desde, hasta, t) {
     var a = audio(); if (!a) return;
     var n = Math.floor(a.sampleRate * dur), b = a.createBuffer(1, n, a.sampleRate), d = b.getChannelData(0);
     for (var i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
-    var src = a.createBufferSource(), fl = a.createBiquadFilter(), g = a.createGain(), t0 = a.currentTime;
+    var src = a.createBufferSource(), fl = a.createBiquadFilter(), g = a.createGain(), t0 = a.currentTime + (t || 0);
     src.buffer = b; fl.type = 'bandpass'; fl.Q.value = 1.2;
     fl.frequency.setValueAtTime(desde, t0); fl.frequency.exponentialRampToValueAtTime(hasta, t0 + dur);
     g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol, t0 + dur * 0.3); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
@@ -124,6 +125,18 @@
     },
     // Últimos 5 segundos de una pregunta: un tic suave por segundo, el último más agudo
     tic: function (s) { nota(s > 1 ? 880 : 1040, 0, 0.05, 'sine', 0.09); },
+    // Duelo: usar un comodín (sube como un power-up) y que te roben tiempo (un "fiuu" que cae)
+    comodin: function () { blup(0.22, 0.08, 300, 900); [SOL, DO2, MI2, SOL2].forEach(function (f, i) { nota(f, 0.06 + i * 0.05, 0.14, 'triangle', 0.12); }); },
+    robado: function () { soplo(0.35, 0.16, 2600, 400); nota(520, 0.04, 0.4, 'sawtooth', 0.05, 140); },
+    // Reacciones del duelo: risa, llanto, enojo, susto, genial y aplauso
+    reaccion: function (cara) {
+      if (cara === 'risa') [0, 1, 2, 3].forEach(function (i) { nota(760 - i * 45, i * 0.11, 0.09, 'triangle', 0.2, 560 - i * 45); });
+      else if (cara === 'llanto') { hoot(560, 0, 0.32, 0.24, 470); hoot(520, 0.36, 0.75, 0.24, 300); }
+      else if (cara === 'enojo') { nota(150, 0, 0.38, 'sawtooth', 0.09, 105); nota(160, 0.03, 0.34, 'square', 0.05, 95); }
+      else if (cara === 'susto') { nota(320, 0, 0.16, 'sine', 0.26, 980); nota(1250, 0.15, 0.14, 'triangle', 0.12, 1050); }
+      else if (cara === 'genial') { [SOL, DO2, MI2, SOL2, DO3].forEach(function (f, i) { nota(f, i * 0.05, 0.18, 'sine', 0.12); }); soplo(0.2, 0.05, 3000, 6000, 0.2); }
+      else if (cara === 'aplauso') [0, 0.11, 0.2, 0.31, 0.4, 0.5].forEach(function (t) { soplo(0.06, 0.22, 1800, 1200, t); });
+    },
     // Se acabaron las vidas: tres notas que caen
     perder: function () { [SOL, MI, DO].forEach(function (f, i) { nota(f / 2, i * 0.16, 0.24, 'triangle', 0.16); }); nota(DO / 2, 0.5, 0.5, 'sine', 0.12, DO / 2.4); },
     // Fin de ronda: fanfarria desde 70%, si no dos notas tranquilas
