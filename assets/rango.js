@@ -2,7 +2,7 @@
    Modo Cachimbo · Rangos de la semana (escudo hexagonal facetado)
    El rango sale del XP de la semana (xp_semana de supabase/16-corazones.sql)
    y se reinicia cada lunes:
-     Caballero 0 · Campeón 800 · Realeza 2 000 · Rubí 4 000 · Leyenda 7 000
+     Bronce 0 · Plata 800 · Oro 2 000 · Diamante 4 000 · Leyenda 7 000
    - MCRango.svg(n, {mini}): el emblema del rango n (0 a 4).
    - En el inicio: tarjeta "Tu rango esta semana" antes de "Empezar a practicar"
      y la pantalla de subida cuando pasas a un rango nuevo.
@@ -12,18 +12,17 @@
 (function () {
   if (window.MCRango) return;
   var MIN = [0, 800, 2000, 4000, 7000];
-  var NOM = ['Caballero', 'Campeón', 'Realeza', 'Rubí', 'Leyenda'];
-  var TXT = ['#D8DBEA', '#5FDAFF', '#D79BFF', '#FF6E84', '#FFC800'];
+  var NOM = ['Bronce', 'Plata', 'Oro', 'Diamante', 'Leyenda'];
+  var TXT = ['#FFB070', '#E6EEF4', '#FFD23F', '#7FE0FF', '#D99BFF'];
   // b: cara de frente · l: cara a la luz · d: cara en sombra · h: fondo del hueco
   var PAL = [
-    { b: '#9196B8', l: '#D8DBEA', d: '#3F4170', h: '#1C1E3C' },
-    { b: '#1DA6E6', l: '#5FDAFF', d: '#123FC0', h: '#0B2150' },
-    { b: '#8C5BC9', l: '#BF90F4', d: '#45257E', h: '#241048' },
-    { b: '#E3263F', l: '#FF6E84', d: '#7E0C1E', h: '#36060E' },
-    { b: '#E3263F', l: '#FF6E84', d: '#7E0C1E', h: '#3A1A02' }
+    { b: '#C2733A', l: '#F5B07A', d: '#6A3010', h: '#2A1206' },
+    { b: '#A3B1C0', l: '#EEF3F8', d: '#4A5868', h: '#161E2A' },
+    { b: '#EBAE00', l: '#FFE680', d: '#8F5600', h: '#2E1C00' },
+    { b: '#26B6F2', l: '#B0EEFF', d: '#0A4E9C', h: '#062440' },
+    { b: '#9A4CE0', l: '#D9A6FF', d: '#4A1A86', h: '#22083E' }
   ];
   var ORO = { b: '#F5B400', l: '#FFF0A0', d: '#B05A00' };
-  var LLAMA = { b: '#FF9A2E', l: '#FFE27A', d: '#D0381A' };
   var LUZ = [-0.5, -0.86];
   var uid = 0;
 
@@ -76,41 +75,54 @@
       if (n === 2) s += placas([[40, 80], [12, 88], [28, 104], [12, 122], [42, 128]], p);
       return s + placas([[72, 50], [16, 34], [30, 56], [38, 94], [56, 92]], p) + placa(top, p);
     }
-    var arriba = n === 4 ? LLAMA : p;
+    var arriba = n === 4 ? ORO : p;
     s += placas([[44, 114], [12, 140], [34, 148], [34, 168], [74, 152]], p);
     s += placas([[42, 78], [4, 82], [20, 102], [2, 122], [42, 122]], p);
     if (n === 4) s += placas([[64, 50], [34, 2], [32, 32], [8, 26], [36, 70]], arriba);
     return s + placas([[70, 48], [22, 16], [30, 44], [8, 50], [42, 86]], arriba) + placa(top, n === 4 ? ORO : p);
   }
-  // Figura del centro: casco, copa, corona, rubí y gema en cruz
+  // Figura del centro: lápiz, libro, birrete, diamante y laurel con estrella
   function figura(n) {
     var s = '';
     if (n === 0) {
-      s += pua([92, 64], [108, 64], [100, 50], { b: '#FF9600', l: '#FFD27A', d: '#C25A00' });
-      s += pol([[84, 66], [100, 64], [100, 82], [76, 82]], '#F2F3FA') + pol([[100, 64], [116, 66], [124, 82], [100, 82]], '#C9CCE0');
-      s += pol([[74, 82], [100, 82], [100, 114], [76, 114]], '#F2F3FA') + pol([[100, 82], [126, 82], [124, 114], [100, 114]], '#C9CCE0');
-      [83, 96, 109].forEach(function (x) { s += pol([[x, 90], [x + 8, 90], [x + 8, 106], [x, 106]], '#1A1C36'); });
-      s += pol([[76, 114], [100, 114], [100, 136], [86, 130]], '#C9CCE0') + pol([[100, 114], [124, 114], [114, 130], [100, 136]], '#8D90B4');
+      s += '<g transform="rotate(38 100 100)">';
+      s += pol([[92, 60], [100, 60], [100, 70], [92, 70]], '#FF9A9A') + pol([[100, 60], [108, 60], [108, 70], [100, 70]], '#E06A6A');
+      s += pol([[92, 70], [100, 70], [100, 77], [92, 77]], '#E8EEF4') + pol([[100, 70], [108, 70], [108, 77], [100, 77]], '#A9B6C4');
+      s += pol([[92, 77], [100, 77], [100, 118], [92, 118]], '#FFC94A') + pol([[100, 77], [108, 77], [108, 118], [100, 118]], '#E39A1C');
+      s += pol([[92, 118], [100, 118], [100, 140]], '#FCE6C4') + pol([[100, 118], [108, 118], [100, 140]], '#DDB98A');
+      s += pol([[96.4, 130], [103.6, 130], [100, 140]], '#3A1A08') + '</g>';
     } else if (n === 1) {
-      s += '<path d="M80 76H68V88Q68 98 82 101M120 76H132V88Q132 98 118 101" fill="none" stroke="#1388D0" stroke-width="6" stroke-linejoin="round"/>';
-      s += pol([[78, 68], [100, 68], [100, 112], [90, 112], [82, 100]], '#5FE2FF') + pol([[100, 68], [122, 68], [118, 100], [110, 112], [100, 112]], '#22B8F0');
-      s += pol([[94, 112], [106, 112], [106, 122], [94, 122]], '#1388D0');
-      s += pol([[84, 122], [100, 122], [100, 134], [82, 134]], '#5FE2FF') + pol([[100, 122], [116, 122], [118, 134], [100, 134]], '#1388D0');
+      s += pol([[66, 82], [100, 89], [134, 82], [134, 126], [100, 134], [66, 126]], '#4A5868');
+      s += pol([[71, 78], [100, 85], [100, 128], [71, 121]], '#FFFFFF') + pol([[100, 85], [129, 78], [129, 121], [100, 128]], '#CFD9E4');
+      [92, 100, 108].forEach(function (y) {
+        s += '<path d="M77 ' + (y - 6) + 'L94 ' + (y - 2) + 'M106 ' + (y - 2) + 'L123 ' + (y - 6) + '" stroke="#8C9CAE" stroke-width="2.4" stroke-linecap="round"/>';
+      });
+      s += pol([[99, 85], [101, 85], [101, 128], [99, 128]], '#7A8A9C');
     } else if (n === 2) {
-      s += pol([[74, 122], [74, 82], [88, 98], [100, 66], [100, 122]], '#F07CFF') + pol([[100, 66], [112, 98], [126, 82], [126, 122], [100, 122]], '#D23CE6');
-      s += pol([[100, 66], [94, 82], [100, 78]], '#FFFFFF', ' opacity=".9"');
-      s += pol([[74, 112], [126, 112], [126, 124], [74, 124]], '#A21EB8') + pol([[74, 112], [100, 112], [100, 124], [74, 124]], '#D23CE6');
+      s += pol([[80, 94], [100, 94], [100, 124], [80, 116]], '#C98A00') + pol([[100, 94], [120, 94], [120, 116], [100, 124]], '#8F5600');
+      s += pol([[64, 86], [100, 102], [136, 86], [136, 91], [100, 107], [64, 91]], '#A86A00');
+      s += pol([[100, 70], [64, 86], [100, 102]], '#FFE680') + pol([[100, 70], [136, 86], [100, 102]], '#F5C21A');
+      s += '<path d="M100 86L127 94V112" fill="none" stroke="#FF9600" stroke-width="3" stroke-linejoin="round"/>';
+      s += pol([[123, 110], [131, 110], [132, 124], [122, 124]], '#FF9600') + '<circle cx="100" cy="86" r="3.5" fill="#FF9600"/>';
     } else if (n === 3) {
-      s += pol([[76, 90], [88, 72], [100, 72], [100, 90]], '#FF4A62') + pol([[100, 72], [112, 72], [124, 90], [100, 90]], '#E01E3A');
-      s += pol([[76, 90], [100, 90], [100, 132]], '#E01E3A') + pol([[100, 90], [124, 90], [100, 132]], '#7A0618');
-      s += pol([[86, 90], [100, 90], [100, 132]], '#FF4A62') + pol([[100, 90], [114, 90], [100, 132]], '#A80C24');
+      s += pol([[76, 90], [88, 72], [100, 72], [100, 90]], '#9FF0FF') + pol([[100, 72], [112, 72], [124, 90], [100, 90]], '#4CD2FF');
+      s += pol([[76, 90], [100, 90], [100, 132]], '#2EB8F5') + pol([[100, 90], [124, 90], [100, 132]], '#0A4E9C');
+      s += pol([[86, 90], [100, 90], [100, 132]], '#8BE6FF') + pol([[100, 90], [114, 90], [100, 132]], '#1A80D0');
       s += pol([[100, 74], [110, 90], [90, 90]], '#FFFFFF');
     } else {
-      s += anillo(hexa(48), hexa(37), ORO) + pol(hexa(37), '#5A1004');
-      s += '<g class="cgem">' + pol([[92, 80], [108, 80], [108, 96], [124, 96], [124, 112], [108, 112], [108, 128], [92, 128], [92, 112], [76, 112], [76, 96], [92, 96]], '#E01E3A');
-      s += pol([[92, 80], [108, 80], [100, 96]], '#FF5A6E') + pol([[76, 96], [92, 96], [100, 104], [76, 112]], '#FF5A6E');
-      s += pol([[124, 96], [124, 112], [100, 104], [108, 96]], '#A80C24') + pol([[92, 128], [108, 128], [100, 112]], '#A80C24');
-      s += pol([[92, 96], [108, 96], [108, 112], [92, 112]], '#FF3550') + pol([[92, 80], [100, 80], [94, 90]], '#FFFFFF', ' opacity=".85"') + '</g>';
+      s += anillo(hexa(48), hexa(37), ORO) + pol(hexa(37), '#3A0E66');
+      // laurel: hojas a lo largo de dos arcos
+      for (var i = 0; i < 6; i++) {
+        var a = (112 + i * 23) * Math.PI / 180, x = 100 + 29 * Math.cos(a), y = 105 + 29 * Math.sin(a), g = (112 + i * 23) + 90;
+        [[x, y, g, '#FFD84A'], [200 - x, y, 180 - g, '#E0A000']].forEach(function (h) {
+          s += '<ellipse cx="' + h[0].toFixed(1) + '" cy="' + h[1].toFixed(1) + '" rx="8" ry="3.6" transform="rotate(' + (h[2] + 20).toFixed(0) + ' ' + h[0].toFixed(1) + ' ' + h[1].toFixed(1) + ')" fill="' + h[3] + '"/>';
+        });
+      }
+      var e = [], m = [];
+      for (var k = 0; k < 10; k++) { var r = k % 2 ? 7.5 : 17, t = (-90 + 36 * k) * Math.PI / 180; e.push([100 + r * Math.cos(t), 103 + r * Math.sin(t)]); }
+      s += '<g class="cgem">';
+      for (k = 0; k < 10; k++) { var p1 = e[k], p2 = e[(k + 1) % 10]; s += pol([[100, 103], p1, p2], cara(ORO, (p1[0] + p2[0]) / 2 - 100, (p1[1] + p2[1]) / 2 - 103)); }
+      s += '</g>';
     }
     return s;
   }
@@ -125,7 +137,7 @@
     s += alas(n, p) + anillo(ext, med, p) + pol(med, p.h);
     s += pol([med[5], med[0], med[1], som[1], som[0], som[5]], '#000', ' opacity=".35"');
     if (n === 4) [22, 178].forEach(function (x) { s += pua([x, 88], [x + 8, 96], [x, 104], ORO) + pua([x, 88], [x - 8, 96], [x, 104], ORO); });
-    s += '<g transform="translate(100 104) scale(' + (n === 4 ? 1.05 : 1.22) + ') translate(-100 -103)">' + figura(n) + '</g>';
+    s += '<g transform="translate(100 104) scale(' + (n === 4 ? 1.05 : n === 1 ? 1.12 : 1.22) + ') translate(-100 -103)">' + figura(n) + '</g>';
     if (!o.mini) s += '<g clip-path="url(#' + id + 'c)"><g transform="skewX(-20)"><rect class="shine" x="-20" y="0" width="40" height="200" fill="url(#' + id + 'g)"/></g></g>';
     return '<svg class="mc-rgo-em' + (o.quieto ? ' quieto' : '') + '" viewBox="0 0 200 200" role="img" aria-label="Rango ' + NOM[n] + '">' + s + '</svg>';
   }
@@ -203,9 +215,9 @@
   }
 
   // Colores de fondo y borde de cada rango
-  var TINTE = ['#24263e', '#06304a', '#2a1050', '#3e0812', '#3e2400'];
-  var BORDE = ['#5C6090', '#1A6CC0', '#6A3BA8', '#B01A30', '#D08A00'];
-  var OSC = ['#7A7EA6', '#123FC0', '#6A3BA8', '#B01A30', '#E3263F'];
+  var TINTE = ['#3a1e08', '#22303c', '#3a2a00', '#06304a', '#2a1050'];
+  var BORDE = ['#8F4A1C', '#66798B', '#AE7600', '#1A6CC0', '#8A36E0'];
+  var OSC = ['#C26A2A', '#8A9AA8', '#C98F00', '#0A78B0', '#7B35BE'];
   function vars(n) { return '--rg-c:' + TXT[n] + ';--rg-t:' + TINTE[n] + ';--rg-b:' + BORDE[n] + ';--rg-o:' + OSC[n]; }
 
   /* ---------- Semanas ---------- */
