@@ -2,7 +2,7 @@
    Modo Cachimbo · Rangos de la semana (escudo hexagonal facetado)
    El rango sale del XP de la semana (xp_semana de supabase/16-corazones.sql)
    y se reinicia cada lunes:
-     Zafiro 0 · Esmeralda 800 · Amatista 2 000 · Rubí 4 000 · Leyenda 7 000
+     Zafiro 0 · Esmeralda 1 500 · Amatista 4 000 · Rubí 8 000 · Leyenda 12 000
    - MCRango.svg(n, {mini}): el emblema del rango n (0 a 4).
    - En el inicio: tarjeta "Tu rango esta semana" antes de "Empezar a practicar"
      y la pantalla de subida cuando pasas a un rango nuevo.
@@ -11,7 +11,7 @@
    ========================================================= */
 (function () {
   if (window.MCRango) return;
-  var MIN = [0, 800, 2000, 4000, 7000];
+  var MIN = [0, 1500, 4000, 8000, 12000];
   var NOM = ['Zafiro', 'Esmeralda', 'Amatista', 'Rubí', 'Leyenda'];
   var TXT = ['#5FDAFF', '#5FF59A', '#D79BFF', '#FF6E84', '#FFC800'];
   // b: cara de frente · l: cara a la luz · d: cara en sombra · h: fondo del hueco
