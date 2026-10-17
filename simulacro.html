@@ -158,6 +158,43 @@
   td:first-child { border-left: 3px solid var(--c); }
   td.r, th.r { text-align: right; }
   tfoot td { font-weight: 800; }
+  /* Tu avance: tus simulacros anteriores del mismo bloque */
+  .avance { margin-top: 16px; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 20px; }
+  .avance h3 { margin-bottom: 2px; }
+  .av-eb { font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: #1CB0F6; font-weight: 800; }
+  .av-graf svg { width: 100%; max-width: 460px; height: auto; display: block; margin: 8px auto 0; }
+  .av-graf .hint { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .av-meta { background: none; border: 0; color: #FFC800; font: inherit; font-weight: 700; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  .av-meta-f { display: flex; gap: 8px; margin-top: 8px; }
+  .av-meta-f input { flex: 1; min-width: 0; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; color: var(--text); padding: 8px 10px; font: inherit; }
+  .av-areas { list-style: none; display: grid; gap: 6px; padding: 0; margin: 0; }
+  .av-areas li { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1px solid var(--border); border-left: 3px solid var(--c); border-radius: 10px; font-size: 14px; }
+  .av-areas li span { flex: 1; min-width: 0; }
+  .av-areas em { font-style: normal; font-weight: 800; font-size: 13px; padding: 2px 9px; border-radius: 8px; font-variant-numeric: tabular-nums; }
+  .av-areas em.sube { color: #58CC02; background: rgba(88,204,2,.13); }
+  .av-areas em.baja { color: #FF4B4B; background: rgba(255,75,75,.13); }
+  .av-areas em.igual { color: var(--dim); background: var(--surface-2); }
+  .av-foco { margin-top: 12px; padding: 12px 14px; border: 1px solid #FF9600; border-radius: 12px; font-size: 14px; }
+  .av-foco small { display: block; color: var(--dim); margin-top: 2px; }
+  .av-foco .btn { margin-top: 10px; width: 100%; }
+  /* Tú frente a tu carrera (supabase/23-simulacro-comparar.sql) */
+  .comparar { margin-top: 16px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: center; }
+  .cmp-eb { font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: #CE82FF; font-weight: 800; }
+  .cmp-radar svg { width: 100%; max-width: 360px; height: auto; display: block; margin: 0 auto; overflow: visible; }
+  .cmp-radar .eje { font-size: 12px; font-weight: 800; fill: var(--dim); }
+  .cmp-radar .val { font-size: 12px; font-weight: 800; fill: var(--accent); }
+  .cmp-ley { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; font-size: 12.5px; color: var(--dim); margin-top: 8px; }
+  .cmp-ley span::before { content: ''; display: inline-block; width: 12px; height: 12px; border-radius: 4px; margin-right: 6px; vertical-align: -1px; background: var(--k); }
+  .cmp-puesto { font-family: 'Sora', sans-serif; font-size: 34px; font-weight: 800; line-height: 1.1; margin-top: 4px; }
+  .cmp-puesto small { font-size: 15px; color: var(--dim); font-weight: 600; }
+  .cmp-pista { position: relative; height: 14px; border-radius: 9px; margin: 18px 0 6px; background: linear-gradient(90deg, #FF4B4B, #FF9600 40%, #FFC800 70%, #58CC02); }
+  .cmp-pista i { position: absolute; top: 50%; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); border: 4px solid #0e0e0e; transform: translate(-50%, -50%); box-shadow: 0 0 0 2px var(--accent); }
+  .cmp-pista-tx { display: flex; justify-content: space-between; font-size: 12px; color: var(--faint); }
+  .cmp-filas { display: grid; gap: 6px; margin-top: 14px; font-size: 13.5px; }
+  .cmp-filas div { display: flex; justify-content: space-between; gap: 10px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 10px; font-variant-numeric: tabular-nums; }
+  .cmp-filas b { font-weight: 800; }
+  @media (max-width: 760px) { .avance, .comparar { grid-template-columns: minmax(0, 1fr); } .cmp-radar { order: 2; } }
+  .mcr.mcr-sim { margin: 0; }
   .res-bot { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; margin-top: 16px; }
   .filtros { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
   .filtros button { background: var(--surface-2); color: var(--dim); border: 1px solid var(--border); border-radius: 100px; padding: 7px 14px; font-weight: 600; font-size: 13px; }
@@ -353,6 +390,8 @@
         </table></div>
       </div>
     </div>
+    <div class="card avance" id="rAvance" hidden></div>
+    <div class="card comparar" id="rComparar" hidden></div>
     <div class="res-bot">
       <div class="card">
         <h3>Top 10 de la semana</h3>
@@ -596,6 +635,13 @@
     rpc('ranking_simulacro').then(L => {
       L = L || [];
       if (!L.length) { el.innerHTML = '<li class="vacia">Nadie ha terminado un simulacro esta semana. ¡Sé el primero!</li>'; return; }
+      // En el resultado, el mismo podio del inicio (assets/ranking.js)
+      if (el.id === 'rank' && window.MCRanking) {
+        MCRanking.css();
+        const card = el.closest('.card'); card.classList.add('mcr', 'mcr-sim');
+        card.innerHTML = MCRanking.html(L, { simulacro: true });
+        return;
+      }
       el.innerHTML = L.map(r => '<li class="' + (r.yo ? 'yo' : '') + '"><span class="p">' + ((window.MCMedalla && MCMedalla(r.puesto, 20)) || r.puesto) + '</span><span class="n">' + esc(r.apodo) + (r.yo ? ' (tú)' : '') + '</span><b>' + num1(+r.puntaje) + '</b></li>').join('');
     }).catch(() => { el.innerHTML = '<li class="vacia">No se pudo cargar el ranking.</li>'; });
   }
@@ -805,11 +851,131 @@
     }).then(() => {
       ls(null);
       pintarRanking($('rank'));
+      pintarAvance(R);
     }).catch(() => {
       guardarEstado();
       st.className = 'guardado error'; st.innerHTML = 'No se pudo guardar. <button type="button" class="btn sec mini" id="btnReintentar">Reintentar</button>';
       $('btnReintentar').addEventListener('click', () => guardarResultado(R));
       pintarRanking($('rank'));
+    });
+  }
+  /* ---------- Tu avance: este simulacro frente a los anteriores del mismo bloque ---------- */
+  const AREA_PAG = { com: 'comunicacion', mat: 'matematica', cta: 'ciencia-tecnologia', ccss: 'ciencias-sociales' };
+  // Tu meta de puntaje: en tu cuenta (supabase/23-simulacro-comparar.sql, se edita también en Mi perfil);
+  // sin esa columna, en este equipo
+  let META = 0, META_CUENTA = false;
+  function leerMeta() {
+    return MCAuth.perfil().then(p => {
+      META_CUENTA = !!p && 'meta_simulacro' in p;
+      if (META_CUENTA) META = +p.meta_simulacro || 0;
+      else try { META = +localStorage.getItem('mc_sim_meta') || 0; } catch (e) { META = 0; }
+    }).catch(() => {});
+  }
+  function guardarMeta(v) {
+    META = v;
+    if (META_CUENTA) return MCAuth.guardarPerfil({ meta_simulacro: v || null }).catch(() => {});
+    try { v ? localStorage.setItem('mc_sim_meta', String(v)) : localStorage.removeItem('mc_sim_meta'); } catch (e) {}
+    return Promise.resolve();
+  }
+  function pintarAvance(R) {
+    const caja = $('rAvance'), b = S.bloque || '';
+    Promise.all([cliente().then(c => c.from('simulacro_intentos').select('puntaje,maximo,areas,creado').eq('bloque', b).order('creado', { ascending: false }).limit(6)), leerMeta()])
+      .then(x => x[0])
+      .then(r => {
+        if (r.error) return;
+        const L = (r.data || []).slice().reverse();          // de más antiguo a este
+        if (!L.length) return;
+        const ant = L.length > 1 ? L[L.length - 2] : null;
+        const dif = ant ? Math.round((R.total - +ant.puntaje) * 10) / 10 : null;
+        // Curso con más incorrectas en este intento, dentro del área que más bajó (o la de menos puntos)
+        const delta = {};
+        AREAS.forEach(a => { const p = (ant && ant.areas && ant.areas[a.k]) ? +ant.areas[a.k].p : null; delta[a.k] = p == null ? null : Math.round((R.areas[a.k].p - p) * 10) / 10; });
+        const peor = AREAS.slice().sort((x, y) => (delta[x.k] == null || delta[y.k] == null) ? R.areas[x.k].p - R.areas[y.k].p : delta[x.k] - delta[y.k])[0];
+        const malas = {};
+        PREGS.forEach((q, i) => { if (AREA_DE[q._curso] === peor && S.resp[i] != null && S.resp[i] !== q.correct) malas[q._curso] = (malas[q._curso] || 0) + 1; });
+        const curso = Object.keys(malas).sort((x, y) => malas[y] - malas[x])[0];
+        caja.innerHTML =
+          '<div class="av-graf"><div class="av-eb">Tu avance · Bloque ' + esc(b) + '</div>' +
+          '<h3>' + (dif == null ? 'Tu primer simulacro de este bloque' : dif > 0 ? '+' + fmtNum(dif) + ' puntos vs. tu simulacro anterior' : dif < 0 ? '−' + fmtNum(-dif) + ' puntos vs. tu simulacro anterior' : 'Igual que tu simulacro anterior') + '</h3>' +
+          (L.length > 1 ? graf(L.map(x => +x.puntaje), +L[L.length - 1].maximo || R.max, META) : '<p class="hint" style="margin-top:6px">Cuando des otro simulacro del bloque ' + esc(b) + ' verás aquí tu curva y cuánto subiste por área.</p>') +
+          '<div class="hint" style="margin-top:6px"><span>' + (L.length > 1 ? 'Tus últimos ' + L.length + ' simulacros' : '') + '</span><span id="avMetaZona"></span></div></div>' +
+          '<div><ul class="av-areas">' + AREAS.map(a => { const d = delta[a.k]; return '<li style="--c:' + a.c + '"><span>' + a.nom + '</span>' + (d == null ? '<em class="igual">' + num1(R.areas[a.k].p) + ' pts</em>' : '<em class="' + (d > 0 ? 'sube' : d < 0 ? 'baja' : 'igual') + '">' + (d > 0 ? '+' : d < 0 ? '−' : '') + fmtNum(Math.abs(d)) + '</em>') + '</li>'; }).join('') + '</ul>' +
+          (curso ? '<div class="av-foco"><b>' + (ant && delta[peor.k] < 0 ? 'Lo que más te bajó: ' : 'Lo que más te cuesta: ') + peor.nom + '</b><small>Fallaste ' + malas[curso] + ' de ' + esc(NOMBRE[curso] || curso) + '</small>' +
+            '<a class="btn sec" href="' + curso + '/index.html">Practicar ' + esc(NOMBRE[curso] || curso) + '</a></div>' : '') + '</div>';
+        pintarMeta(b, L, R);
+        pintarComparar(R);
+        caja.hidden = false;
+      }).catch(() => {});
+  }
+  function graf(v, max, meta) {
+    const W = 320, H = 120, lo = Math.max(0, Math.min(...v, meta || Infinity) - 40), hi = Math.max(...v, meta || 0) + 40;
+    const y = n => H - 14 - (n - lo) / Math.max(1, hi - lo) * (H - 30), x = i => 16 + i * (W - 32) / Math.max(1, v.length - 1);
+    const linea = v.map((n, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(n).toFixed(1)).join(' ');
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Puntajes: ' + v.map(num1).join(', ') + '">' +
+      (meta ? '<line x1="8" x2="' + (W - 8) + '" y1="' + y(meta) + '" y2="' + y(meta) + '" stroke="#FFC800" stroke-width="2" stroke-dasharray="5 5"/><text x="10" y="' + (y(meta) - 6) + '" fill="#FFC800" font-size="11" font-weight="800">Meta ' + fmtNum(meta) + '</text>' : '') +
+      '<path d="' + linea + '" fill="none" stroke="#1CB0F6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>' +
+      v.map((n, i) => '<circle cx="' + x(i) + '" cy="' + y(n) + '" r="' + (i === v.length - 1 ? 7 : 5) + '" fill="' + (i === v.length - 1 ? '#C6E000' : '#1CB0F6') + '" stroke="#0e0e0e" stroke-width="2"/>').join('') +
+      '<text x="' + x(v.length - 1) + '" y="' + (y(v[v.length - 1]) + 22 > H ? y(v[v.length - 1]) - 12 : y(v[v.length - 1]) + 22) + '" fill="#C6E000" font-size="12" font-weight="800" text-anchor="end">' + fmtNum(v[v.length - 1]) + '</text></svg>';
+  }
+  function pintarComparar(R) {
+    const caja = $('rComparar');
+    rpc('comparar_simulacro', { p_bloque: S.bloque || '' }).then(d => {
+      if (!d || !d.n) return;
+      const nom = esc(d.nombre || '');
+      if (!d.prom || !d.yo) {
+        caja.innerHTML = '<div><div class="cmp-eb">Tú vs. ' + nom + '</div><h3>Aún somos pocos para comparar</h3><p class="hint" style="margin-top:6px">' +
+          (d.n === 1 ? 'Eres el primero' : 'Van ' + d.n + ' alumnos') + ' con simulacro en los últimos 90 días. Con 5 o más verás tu puesto y cómo vas frente al promedio y al top 10%.</p></div>';
+        caja.style.display = 'block'; caja.hidden = false; return;
+      }
+      const top = Math.max(1, Math.round((d.puesto / d.n) * 100));
+      const pos = d.n > 1 ? 100 - ((d.puesto - 1) / (d.n - 1)) * 100 : 100;
+      const E = [['com', 'Comunicación'], ['mat', 'Matemática'], ['cta', 'Ciencia'], ['ccss', 'Sociales'], ['rap', 'Rapidez']];
+      caja.innerHTML =
+        '<div class="cmp-radar">' + radar(E, d) +
+          '<div class="cmp-ley"><span style="--k:var(--accent)">Tú</span><span style="--k:#6b6b6b">Promedio</span>' + (d.top ? '<span style="--k:#FFC800">Top 10%</span>' : '') + '</div></div>' +
+        '<div><div class="cmp-eb">Tú vs. ' + nom + '</div>' +
+          '<div class="cmp-puesto">Puesto ' + d.puesto + ' <small>de ' + d.n + '</small></div>' +
+          '<p class="hint">' + (top <= 50 ? 'Estás en el top ' + top + '% de ' + (d.grupo === 'carrera' ? 'tu carrera' : 'tu bloque') + ' con tu último simulacro.' : 'Estás en la mitad de abajo de ' + (d.grupo === 'carrera' ? 'tu carrera' : 'tu bloque') + '. ¡A remontar!') + '</p>' +
+          '<div class="cmp-pista"><i style="left:' + pos.toFixed(1) + '%"></i></div><div class="cmp-pista-tx"><span>Último</span><span>Primero</span></div>' +
+          '<div class="cmp-filas"><div><span>Tu puntaje</span><b>' + fmtNum(+d.yo.puntaje) + '</b></div><div><span>Promedio</span><b>' + fmtNum(+d.prom.puntaje) + '</b></div>' +
+          (d.top ? '<div><span>Top 10%</span><b style="color:#FFC800">' + fmtNum(+d.top.puntaje) + '</b></div>' : '') + '</div>' +
+          (d.grupo === 'bloque' ? '<p class="hint" style="margin-top:8px">Cuando haya 5 alumnos de tu carrera, te comparamos solo con ellos.</p>' : '') +
+        '</div>';
+      caja.style.display = ''; caja.hidden = false;
+    }).catch(() => {});
+  }
+  function radar(E, d) {
+    const W = 340, C = W / 2, Rr = 110, n = E.length;
+    const pt = (i, v) => { const a = -Math.PI / 2 + i * 2 * Math.PI / n, r = Rr * Math.max(0, Math.min(100, +v || 0)) / 100; return [C + r * Math.cos(a), C + r * Math.sin(a)]; };
+    const poly = (o, st) => '<polygon points="' + E.map((e, i) => pt(i, o[e[0]]).map(z => z.toFixed(1)).join(',')).join(' ') + '" ' + st + '/>';
+    let g = '';
+    [25, 50, 75, 100].forEach(k => { g += poly(Object.fromEntries(E.map(e => [e[0], k])), 'fill="none" stroke="#262626" stroke-width="1.5"'); });
+    E.forEach((e, i) => { const p = pt(i, 100); g += '<line x1="' + C + '" y1="' + C + '" x2="' + p[0].toFixed(1) + '" y2="' + p[1].toFixed(1) + '" stroke="#262626" stroke-width="1.5"/>'; });
+    if (d.top) g += poly(d.top, 'fill="rgba(255,200,0,.10)" stroke="#FFC800" stroke-width="2" stroke-dasharray="5 4"');
+    g += poly(d.prom, 'fill="rgba(160,160,160,.12)" stroke="#6b6b6b" stroke-width="2"');
+    g += poly(d.yo, 'fill="rgba(198,224,0,.22)" stroke="#C6E000" stroke-width="3" stroke-linejoin="round"');
+    E.forEach((e, i) => { const p = pt(i, d.yo[e[0]]); g += '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="4.5" fill="#C6E000" stroke="#0e0e0e" stroke-width="2"/>'; });
+    E.forEach((e, i) => {
+      const p = pt(i, 128), anc = Math.abs(p[0] - C) < 8 ? 'middle' : p[0] > C ? 'start' : 'end';
+      g += '<text class="eje" x="' + p[0].toFixed(1) + '" y="' + (p[1] - 2).toFixed(1) + '" text-anchor="' + anc + '">' + e[1] + '</text>' +
+           '<text class="val" x="' + p[0].toFixed(1) + '" y="' + (p[1] + 13).toFixed(1) + '" text-anchor="' + anc + '">' + Math.round(+d.yo[e[0]] || 0) + '%</text>';
+    });
+    return '<svg viewBox="-60 10 ' + (W + 120) + ' ' + (W - 40) + '" role="img" aria-label="Tus aciertos por área frente al promedio">' + g + '</svg>';
+  }
+  // La meta es tuya: el puntaje que quieres para tu carrera (se guarda en este equipo)
+  function pintarMeta(b, L, R) {
+    const z = $('avMetaZona'); if (!z) return;
+    const m = META;
+    z.innerHTML = '<button type="button" class="av-meta">' + (m ? 'Meta ' + fmtNum(m) + ' · cambiar' : 'Poner mi meta') + '</button>';
+    z.querySelector('button').addEventListener('click', () => {
+      z.innerHTML = '<form class="av-meta-f"><input type="number" inputmode="numeric" min="1" max="' + (R.max || 2000) + '" placeholder="Ej.: ' + Math.round((R.max || 2000) * .45) + '" aria-label="Tu meta de puntaje" value="' + (m || '') + '"><button class="btn mini" type="submit">Guardar</button></form>';
+      const fm = z.querySelector('form'); fm.querySelector('input').focus();
+      fm.addEventListener('submit', e => {
+        e.preventDefault();
+        const v = Math.max(0, Math.min(+fm.querySelector('input').value || 0, R.max || 2000));
+        fm.querySelector('button').disabled = true;
+        guardarMeta(v).then(() => pintarAvance(R));
+      });
     });
   }
   // Incorrectas → "Repasar mis preguntas falladas"; correctas salen de esa lista

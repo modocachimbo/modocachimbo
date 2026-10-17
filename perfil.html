@@ -382,6 +382,10 @@
               <option>CPU</option>
             </select>
           </div>
+          <div class="campo" id="campoMeta" hidden>
+            <label for="metaSim">Meta en simulacro <small>(puntaje que quieres sacar)</small></label>
+            <input id="metaSim" type="number" inputmode="numeric" min="1" max="5000" placeholder="Ej.: 900">
+          </div>
           <div class="campo ancho">
             <label for="celular">Celular <small>(opcional, para avisos por WhatsApp)</small></label>
             <input id="celular" name="celular" inputmode="numeric" maxlength="9" placeholder="9 dígitos">
@@ -623,6 +627,9 @@
       llenarExtras(p.extra);
       CAMPOS.forEach(function (c) { if (c !== 'carrera') $(c).value = p[c] || ''; });
       ponerCarrera(p.carrera || '');
+      // Meta del simulacro: solo si ya existe la columna (supabase/23-simulacro-comparar.sql)
+      $('campoMeta').hidden = !('meta_simulacro' in p);
+      $('metaSim').value = p.meta_simulacro || '';
       pintarCabecera(u, p);
       // Si aún no eligió carrera, Mis datos sale abierto
       if (!p.carrera) $('datos').open = true;
@@ -653,6 +660,11 @@
       });
       if (falta) { est.textContent = 'Completa: ' + falta.etiqueta; est.className = 'estado error'; $('x_' + falta.id).focus(); return; }
       datos.extra = extra;
+    }
+    if ('meta_simulacro' in PERFIL) {
+      var mt = $('metaSim').value.trim();
+      if (mt !== '' && !(+mt >= 1 && +mt <= 5000)) { est.textContent = 'La meta del simulacro va de 1 a 5000 puntos.'; est.className = 'estado error'; $('metaSim').focus(); return; }
+      datos.meta_simulacro = mt === '' ? null : Math.round(+mt);
     }
     btn.disabled = true; est.textContent = 'Guardando…'; est.className = 'estado';
     MCAuth.guardarPerfil(datos).then(function (p) {
