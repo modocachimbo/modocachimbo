@@ -1,8 +1,8 @@
 /* =========================================================
-   Modo Cachimbo · Rangos de la semana (emblema heráldico)
+   Modo Cachimbo · Rangos de la semana (escudo hexagonal facetado)
    El rango sale del XP de la semana (xp_semana de supabase/16-corazones.sql)
    y se reinicia cada lunes:
-     Bronce 0 · Plata 800 · Oro 2 000 · Diamante 4 000 · Leyenda 7 000
+     Zafiro 0 · Esmeralda 800 · Amatista 2 000 · Rubí 4 000 · Leyenda 7 000
    - MCRango.svg(n, {mini}): el emblema del rango n (0 a 4).
    - En el inicio: tarjeta "Tu rango esta semana" antes de "Empezar a practicar"
      y la pantalla de subida cuando pasas a un rango nuevo.
@@ -12,138 +12,125 @@
 (function () {
   if (window.MCRango) return;
   var MIN = [0, 800, 2000, 4000, 7000];
-  var NOM = ['Bronce', 'Plata', 'Oro', 'Diamante', 'Leyenda'];
-  var TXT = ['#FFB070', '#E6EEF4', '#FFD23F', '#7FE0FF', '#D99BFF'];
-  // m: metal (brillo → sombra) · e: esmalte (centro → borde) · g: gema (claro → oscuro) · w: luz
+  var NOM = ['Zafiro', 'Esmeralda', 'Amatista', 'Rubí', 'Leyenda'];
+  var TXT = ['#5FDAFF', '#5FF59A', '#D79BFF', '#FF6E84', '#FFC800'];
+  // b: cara de frente · l: cara a la luz · d: cara en sombra · h: fondo del hueco
   var PAL = [
-    { m: ['#FFF3E6', '#FFC48E', '#DA8646', '#8F4A1C', '#3F1C06'], e: ['#9A5222', '#2E1104'], g: ['#FFF4DC', '#FFBE5C', '#FF8A00', '#9A4200'], w: '#FF9600' },
-    { m: ['#FFFFFF', '#EEF4F9', '#B4C2CE', '#66798B', '#232F3B'], e: ['#46698A', '#0E1824'], g: ['#FFFFFF', '#D2F1FF', '#7ECBF2', '#2A78A8'], w: '#CFEFFF' },
-    { m: ['#FFFEEC', '#FFE57A', '#F5B800', '#AE7600', '#4A2E00'], e: ['#C42222', '#300303'], g: ['#FFE6E6', '#FF8080', '#F01E1E', '#760606'], w: '#FFC800' },
-    { m: ['#FFFFFF', '#E6F7FF', '#A2D6EE', '#4A86A8', '#112B3C'], e: ['#1A6CC0', '#031634'], g: ['#F2FDFF', '#A6F2FF', '#2EC4FF', '#0858A0'], w: '#1CB0F6' },
-    { m: ['#FFFCE6', '#FFE27A', '#F2B200', '#A66A00', '#3E2400'], e: ['#8A36E0', '#1A0538'], g: ['#FFF2FF', '#EBADFF', '#B44CFF', '#540C98'], w: '#CE82FF' }
+    { b: '#14B4FF', l: '#7AE6FF', d: '#0A5CE0', h: '#062A66' },
+    { b: '#14D45A', l: '#8CFFB0', d: '#06873A', h: '#03361A' },
+    { b: '#A55CFF', l: '#D9A8FF', d: '#5A1FC4', h: '#2A0A66' },
+    { b: '#FF2D4A', l: '#FF8A9C', d: '#A3061E', h: '#4A0612' },
+    { b: '#FF2D4A', l: '#FF8A9C', d: '#A3061E', h: '#4A2004' }
   ];
-  // Piezas (lado izquierdo; se reflejan) y el rango desde el que aparecen
-  var ALAS = [
-    [4, 'M66 110 2 116 22 126 4 136 24 138 66 126Z'],
-    [2, 'M68 86 10 50 24 72 2 76 28 94 66 104Z'],
-    [3, 'M86 60 54 4 64 42 96 52Z'],
-    [1, 'M76 68 44 36 52 58 84 58Z'],
-    [0, 'M70 80 32 72 48 92 70 101Z'],
-    [1, 'M76 122 44 148 56 132 84 132Z']
-  ];
-  var ESC = 'M100 46 137 67 132 124 100 160 68 124 63 67Z';
-  var INT = 'M100 59 125.5 73.5 122 118 100 144 78 118 74.5 73.5Z';
+  var ORO = { b: '#F5B400', l: '#FFF0A0', d: '#B05A00' };
+  var LLAMA = { b: '#FF9A2E', l: '#FFE27A', d: '#D0381A' };
+  var LUZ = [-0.5, -0.86];
   var uid = 0;
 
   function nivel(xp) { var n = 0; for (var i = 1; i < MIN.length; i++) if ((+xp || 0) >= MIN[i]) n = i; return n; }
   function miles(n) { return String(Math.round(+n || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-  // Refleja un trazo de solo coordenadas (M x y x y … Z) sobre x = 100
-  function reflejar(d) { var k = 0; return d.replace(/-?\d+(\.\d+)?/g, function (v) { return k++ % 2 ? v : String(200 - parseFloat(v)); }); }
-  function lg(id, st, a) {
-    return '<linearGradient id="' + id + '" x1="' + a[0] + '" y1="' + a[1] + '" x2="' + a[2] + '" y2="' + a[3] + '">' +
-      st.map(function (s) { return '<stop offset="' + s[0] + '" stop-color="' + s[1] + '"' + (s[2] != null ? ' stop-opacity="' + s[2] + '"' : '') + '/>'; }).join('') + '</linearGradient>';
-  }
 
-  /* ---------- El emblema ---------- */
+  /* ---------- El emblema: escudo hexagonal facetado ---------- */
+  function hx(c) { return [1, 3, 5].map(function (i) { return parseInt(c.substr(i, 2), 16); }); }
+  function mezcla(a, b, t) { a = hx(a); b = hx(b); return '#' + a.map(function (v, i) { return ('0' + Math.round(v + (b[i] - v) * t).toString(16)).slice(-2); }).join(''); }
+  // Color de una cara según hacia dónde mira (la luz viene de arriba a la izquierda)
+  function cara(p, nx, ny) {
+    var b = (nx * LUZ[0] + ny * LUZ[1]) / (Math.hypot(nx, ny) || 1);
+    return b >= 0 ? mezcla(p.b, p.l, Math.min(1, b * 1.05)) : mezcla(p.b, p.d, Math.min(.85, -b * .9));
+  }
+  function pol(a, f, x) { return '<polygon points="' + a.map(function (q) { return q[0].toFixed(1) + ',' + q[1].toFixed(1); }).join(' ') + '" fill="' + f + '"' + (x || '') + '/>'; }
+  function hexa(r) { var o = []; for (var i = 0; i < 6; i++) { var a = (60 * i - 90) * Math.PI / 180; o.push([100 + r * Math.cos(a), 104 + r * Math.sin(a)]); } return o; }
+  function espejo(q) { return [200 - q[0], q[1]]; }
+  // Anillo entre dos hexágonos, una cara por lado
+  function anillo(ext, int, p) {
+    var s = '';
+    for (var i = 0; i < 6; i++) { var a = ext[i], b = ext[(i + 1) % 6]; s += pol([a, b, int[(i + 1) % 6], int[i]], cara(p, (a[0] + b[0]) / 2 - 100, (a[1] + b[1]) / 2 - 104)); }
+    return s;
+  }
+  // Placa de las alas: un bisel por lado y una cara interior
+  function placa(P, p) {
+    var cx = 0, cy = 0; P.forEach(function (q) { cx += q[0]; cy += q[1]; }); cx /= P.length; cy /= P.length;
+    var dx = cx - 100, dy = cy - 104;
+    var I = P.map(function (q) { return [cx + (q[0] - cx) * .62 + dx * .05, cy + (q[1] - cy) * .62 + dy * .05]; });
+    var s = '';
+    for (var i = 0; i < P.length; i++) {
+      var a = P[i], b = P[(i + 1) % P.length], nx = b[1] - a[1], ny = a[0] - b[0];
+      if (nx * ((a[0] + b[0]) / 2 - cx) + ny * ((a[1] + b[1]) / 2 - cy) < 0) { nx = -nx; ny = -ny; }
+      s += pol([a, b, I[(i + 1) % P.length], I[i]], cara(p, nx, ny));
+    }
+    return s + pol(I, mezcla(p.b, cara(p, dx * .35 - 30, dy * .35 - 52), .45));
+  }
+  function placas(P, p) { return placa(P, p) + placa(P.map(espejo).reverse(), p); }
+  // Púa de dos caras (gema de los costados en Leyenda)
+  function pua(A, B, T, p) {
+    var M = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2];
+    return pol([A, M, T], cara(p, A[0] - M[0], A[1] - M[1] - 4)) + pol([M, B, T], cara(p, B[0] - M[0], B[1] - M[1] - 4));
+  }
+  // Más alas mientras más alto el rango
+  function alas(n, p) {
+    var s = '', top = [[82, 46], [100, 12], [118, 46]];
+    if (n <= 2) {
+      s += placas([[46, 106], [36, 140], [66, 168], [80, 150]], p);
+      if (n >= 1) s += placas([[40, 80], [12, 88], [28, 104], [12, 122], [42, 128]], p);
+      return s + placas([[72, 50], [16, 34], [30, 56], [38, 94], [56, 92]], p) + placa(top, p);
+    }
+    var arriba = n === 4 ? LLAMA : p;
+    s += placas([[44, 114], [12, 140], [34, 148], [34, 168], [74, 152]], p);
+    s += placas([[42, 78], [4, 82], [20, 102], [2, 122], [42, 122]], p);
+    if (n === 4) s += placas([[64, 50], [34, 2], [32, 32], [8, 26], [36, 70]], arriba);
+    return s + placas([[70, 48], [22, 16], [30, 44], [8, 50], [42, 86]], arriba) + placa(top, n === 4 ? ORO : p);
+  }
+  // Figura del centro: copa, corona, corona grande, rubí y gema en cruz (claro, medio, oscuro)
+  var FIG = [['#7FF0FF', '#2CCBFF', '#0F8EF0'], ['#9DFFC0', '#2EE873', '#0FA845'], ['#FF8CFF', '#E040FB', '#B01ED8']];
+  function figura(n) {
+    var s = '', f = FIG[n];
+    if (n === 0) {
+      s += '<path d="M80 76H68V88Q68 98 82 101M120 76H132V88Q132 98 118 101" fill="none" stroke="' + f[2] + '" stroke-width="6" stroke-linejoin="round"/>';
+      s += pol([[78, 68], [100, 68], [100, 112], [90, 112], [82, 100]], f[0]) + pol([[100, 68], [122, 68], [118, 100], [110, 112], [100, 112]], f[1]);
+      s += pol([[94, 112], [106, 112], [106, 122], [94, 122]], f[2]);
+      s += pol([[84, 122], [100, 122], [100, 134], [82, 134]], f[0]) + pol([[100, 122], [116, 122], [118, 134], [100, 134]], f[2]);
+    } else if (n === 1) {
+      s += pol([[74, 122], [74, 82], [88, 98], [100, 66], [100, 122]], f[0]) + pol([[100, 66], [112, 98], [126, 82], [126, 122], [100, 122]], f[1]);
+      s += pol([[100, 66], [94, 82], [100, 78]], '#FFFFFF', ' opacity=".9"');
+      s += pol([[74, 112], [126, 112], [126, 124], [74, 124]], f[2]) + pol([[74, 112], [100, 112], [100, 124], [74, 124]], f[1]);
+    } else if (n === 2) {
+      s += pol([[76, 100], [84, 70], [94, 94]], f[2]) + pol([[106, 94], [116, 70], [124, 100]], f[2]);
+      s += pol([[70, 118], [70, 86], [86, 102], [100, 60], [100, 118]], f[0]) + pol([[100, 60], [114, 102], [130, 86], [130, 118], [100, 118]], f[1]);
+      [[100, 96, 8], [82, 108, 4.5], [118, 108, 4.5]].forEach(function (g) {
+        var x = g[0], y = g[1], r = g[2];
+        s += pol([[x, y - r], [x - r, y], [x, y]], '#FFFFFF') + pol([[x, y - r], [x + r, y], [x, y]], '#FFE6FF') + pol([[x - r, y], [x, y + r], [x, y]], f[1]) + pol([[x + r, y], [x, y + r], [x, y]], f[2]);
+      });
+      s += pol([[68, 116], [100, 116], [100, 132], [70, 132]], f[0]) + pol([[100, 116], [132, 116], [130, 132], [100, 132]], f[1]);
+      s += pol([[70, 128], [130, 128], [130, 133], [70, 133]], f[2]);
+    } else if (n === 3) {
+      s += pol([[76, 90], [88, 72], [100, 72], [100, 90]], '#FF4A62') + pol([[100, 72], [112, 72], [124, 90], [100, 90]], '#E01E3A');
+      s += pol([[76, 90], [100, 90], [100, 132]], '#E01E3A') + pol([[100, 90], [124, 90], [100, 132]], '#7A0618');
+      s += pol([[86, 90], [100, 90], [100, 132]], '#FF4A62') + pol([[100, 90], [114, 90], [100, 132]], '#A80C24');
+      s += pol([[100, 74], [110, 90], [90, 90]], '#FFFFFF');
+    } else {
+      s += anillo(hexa(48), hexa(37), ORO) + pol(hexa(37), '#5A1004');
+      s += '<g class="cgem">' + pol([[92, 80], [108, 80], [108, 96], [124, 96], [124, 112], [108, 112], [108, 128], [92, 128], [92, 112], [76, 112], [76, 96], [92, 96]], '#E01E3A');
+      s += pol([[92, 80], [108, 80], [100, 96]], '#FF5A6E') + pol([[76, 96], [92, 96], [100, 104], [76, 112]], '#FF5A6E');
+      s += pol([[124, 96], [124, 112], [100, 104], [108, 96]], '#A80C24') + pol([[92, 128], [108, 128], [100, 112]], '#A80C24');
+      s += pol([[92, 96], [108, 96], [108, 112], [92, 112]], '#FF3550') + pol([[92, 80], [100, 80], [94, 90]], '#FFFFFF', ' opacity=".85"') + '</g>';
+    }
+    return s;
+  }
   function svg(n, o) {
     o = o || {};
     n = Math.max(0, Math.min(4, n | 0));
-    var p = PAL[n], m = p.m, g = p.g, id = 'mcrg' + (++uid), mini = !!o.mini;
-    var izq = ALAS.filter(function (a) { return n >= a[0]; }).map(function (a) { return a[1]; });
-    var extra = [];
-    if (n >= 3) extra.push('M88 140 100 194 112 140Z');
-    if (n >= 4) extra.push('M80 62 77 22 92 38 100 10 108 38 123 22 120 62Z');
-    else if (n >= 1) extra.push('M87 58 100 32 113 58Z');
-
-    var defs = '<defs>' +
-      lg(id + 'm', [[0, m[0]], [.18, m[1]], [.44, m[2]], [.5, m[3]], [.56, m[2]], [.74, m[1]], [.88, m[0]], [1, m[2]]], [.15, 0, .85, 1]) +
-      lg(id + 'c', [[0, m[0]], [.3, m[1]], [.5, m[2]], [.52, m[3]], [.62, m[2]], [.85, m[1]], [1, m[2]]], [.1, 0, .9, 1]) +
-      lg(id + 'b', [[0, '#fff', .9], [.45, '#fff', 0], [.55, '#000', 0], [1, '#000', .55]], [0, 0, 0, 1]) +
-      lg(id + 's', [[0, '#fff', 0], [.5, '#fff', .9], [1, '#fff', 0]], [0, 0, 1, 0]) +
-      lg(id + 'gt', [[0, g[0]], [.55, g[1]], [1, g[2]]], [0, 0, 1, 1]) +
-      '<radialGradient id="' + id + 'e" cx=".5" cy=".38" r=".7"><stop offset="0" stop-color="' + p.e[0] + '"/><stop offset="1" stop-color="' + p.e[1] + '"/></radialGradient>' +
-      '<radialGradient id="' + id + 'w"><stop offset="0" stop-color="' + p.w + '" stop-opacity=".7"/><stop offset=".45" stop-color="' + p.w + '" stop-opacity=".22"/><stop offset="1" stop-color="' + p.w + '" stop-opacity="0"/></radialGradient>' +
-      '<radialGradient id="' + id + 't" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="' + m[1] + '"/><stop offset="1" stop-color="' + m[3] + '"/></radialGradient>' +
-      // Relieve: la luz de arriba a la izquierda marca el bisel de cada pieza
-      '<filter id="' + id + 'f" x="-20%" y="-20%" width="140%" height="140%">' +
-      '<feGaussianBlur in="SourceAlpha" stdDeviation="2.2" result="b"/>' +
-      '<feSpecularLighting in="b" surfaceScale="5" specularConstant="1.25" specularExponent="26" lighting-color="#fff" result="s"><fePointLight x="30" y="-40" z="140"/></feSpecularLighting>' +
-      '<feComposite in="s" in2="SourceAlpha" operator="in" result="s2"/>' +
-      '<feDiffuseLighting in="b" surfaceScale="4" diffuseConstant="1" lighting-color="#fff" result="d"><feDistantLight azimuth="235" elevation="52"/></feDiffuseLighting>' +
-      '<feComposite in="SourceGraphic" in2="d" operator="arithmetic" k1="1.15" k2="0" k3="0" k4="0" result="l"/>' +
-      '<feComposite in="l" in2="SourceAlpha" operator="in" result="l2"/>' +
-      '<feComposite in="l2" in2="s2" operator="arithmetic" k1="0" k2="1" k3=".85" k4="0"/></filter>' +
-      '<filter id="' + id + 'gl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"/></filter>' +
-      '<clipPath id="' + id + 'k"><path d="' + ESC + '"/></clipPath>' +
-      '<clipPath id="' + id + 'ki"><path d="' + INT + '"/></clipPath>' +
-      '<clipPath id="' + id + 'up"><rect x="-20" y="-20" width="240" height="120"/></clipPath></defs>';
-
-    // Fondo: aura y rayos (en tamaño chico no se dibujan)
-    var fondo = '';
-    if (!mini) {
-      if (n >= 1) fondo += '<circle class="aura" cx="100" cy="100" r="' + [0, 70, 86, 96, 104][n] + '" fill="url(#' + id + 'w)"/>';
-      if (n >= 2) {
-        var r = '', q;
-        for (q = 0; q < 16; q++) r += '<path d="M100 100 103.5 ' + (n >= 4 ? 0 : 10) + ' 96.5 ' + (n >= 4 ? 0 : 10) + 'Z" transform="rotate(' + q * 22.5 + ' 100 100)"/>';
-        fondo += '<g class="rays" fill="' + p.w + '" opacity="' + (n >= 3 ? .22 : .15) + '">' + r + '</g>';
-      }
-      if (n >= 4) {
-        var r2 = '';
-        for (q = 0; q < 8; q++) r2 += '<path d="M100 100 102 6 98 6Z" transform="rotate(' + (q * 45 + 11) + ' 100 100)"/>';
-        fondo += '<g class="rays2" fill="#FFE27A" opacity=".3">' + r2 + '</g>';
-      }
-    }
-
-    // Cada pieza con grosor: dos cantos, cara con relieve, contorno y filo de luz
-    function pieza(d, fill) {
-      return '<path d="' + d + '" fill="' + m[4] + '" transform="translate(0 6)"/>' +
-        '<path d="' + d + '" fill="' + m[3] + '" transform="translate(0 3)"/>' +
-        '<path d="' + d + '" fill="' + (fill || 'url(#' + id + 'm)') + '" filter="url(#' + id + 'f)"/>' +
-        '<path d="' + d + '" fill="none" stroke="' + m[4] + '" stroke-width="1.3" stroke-linejoin="round"/>' +
-        '<path d="' + d + '" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1" stroke-linejoin="round" transform="translate(0 -.7)" clip-path="url(#' + id + 'up)"/>';
-    }
-    var cuerpo = izq.map(function (d) { return pieza(d) + pieza(reflejar(d)); }).join('') +
-      extra.map(function (d) { return pieza(d); }).join('') + pieza(ESC, 'url(#' + id + 'c)');
-
-    // Gema tallada
-    var T = '100 72', R = '119 100', B = '100 131', L = '81 100', t = '100 87', rr = '108 100', b = '100 115', l = '92 100';
-    var gema = '<path d="M' + T + 'L' + R + 'L' + B + 'L' + L + 'Z" fill="' + g[2] + '" filter="url(#' + id + 'gl)" opacity=".9"/>' +
-      '<g class="gem">' +
-      '<path d="M' + T + 'L' + R + 'L' + rr + 'L' + t + 'Z" fill="' + g[1] + '"/>' +
-      '<path d="M' + R + 'L' + B + 'L' + b + 'L' + rr + 'Z" fill="' + g[3] + '"/>' +
-      '<path d="M' + B + 'L' + L + 'L' + l + 'L' + b + 'Z" fill="' + g[2] + '"/>' +
-      '<path d="M' + L + 'L' + T + 'L' + t + 'L' + l + 'Z" fill="' + g[0] + '"/>' +
-      '<path d="M' + t + 'L' + rr + 'L' + b + 'L' + l + 'Z" fill="url(#' + id + 'gt)"/>' +
-      '<path d="M' + T + 'L' + R + 'L' + B + 'L' + L + 'Z" fill="none" stroke="' + g[0] + '" stroke-width="1.3" stroke-linejoin="round"/>' +
-      '<path d="M' + T + 'L' + t + 'M' + R + 'L' + rr + 'M' + B + 'L' + b + 'M' + L + 'L' + l + '" stroke="#fff" stroke-opacity=".45" stroke-width=".9"/>' +
-      '<path d="M90 92 96 82 94 96Z" fill="#fff"/><circle cx="104" cy="94" r="1.6" fill="#fff"/></g>';
-    var interior = '<path d="' + INT + '" fill="' + m[4] + '" transform="translate(0 -1.6)" opacity=".9"/>' +
-      '<path d="' + INT + '" fill="url(#' + id + 'e)"/>' +
-      '<path d="' + INT + '" fill="none" stroke="url(#' + id + 'b)" stroke-width="3" clip-path="url(#' + id + 'ki)"/>' +
-      '<path d="M100 66 119 77 116 114 100 134 84 114 81 77Z" fill="none" stroke="' + m[1] + '" stroke-opacity=".6" stroke-width="1"/>' +
-      '<path d="M100 59 125.5 73.5 124.6 85C112 79 88 79 75.4 85L74.5 73.5Z" fill="#fff" opacity=".1"/>' + gema;
-    function remache(x, y) { return '<circle cx="' + x + '" cy="' + (y + 1.4) + '" r="3.6" fill="' + m[4] + '"/><circle cx="' + x + '" cy="' + y + '" r="3.6" fill="url(#' + id + 't)" stroke="' + m[4] + '" stroke-width=".8"/>'; }
-    var remaches = remache(70, 71) + remache(130, 71) + remache(100, 152) + (n >= 2 ? remache(76.5, 120) + remache(123.5, 120) : '');
-    var corona = n >= 4 ? '<g class="cgem"><circle cx="77" cy="22" r="4.4" fill="' + g[2] + '" stroke="' + m[4] + '"/><circle cx="76" cy="21" r="1.4" fill="#fff"/><circle cx="123" cy="22" r="4.4" fill="' + g[2] + '" stroke="' + m[4] + '"/><circle cx="122" cy="21" r="1.4" fill="#fff"/><path d="M100 0 107 9 100 19 93 9Z" fill="' + g[1] + '" stroke="' + m[4] + '"/><path d="M100 0 107 9 100 9Z" fill="#fff" opacity=".7"/></g>' : '';
-    var brillo = '<g clip-path="url(#' + id + 'k)"><g class="shine"><rect x="20" y="0" width="30" height="200" fill="url(#' + id + 's)" transform="skewX(-22)"/></g></g>';
-
-    // Destellos y chispas
-    var frente = '';
-    if (!mini) {
-      var est = function (x, y, s, d, c) { return '<path class="tw" style="animation-delay:' + d + 's" d="M' + x + ' ' + (y - s) + 'Q' + x + ' ' + y + ' ' + (x + s) + ' ' + y + 'Q' + x + ' ' + y + ' ' + x + ' ' + (y + s) + 'Q' + x + ' ' + y + ' ' + (x - s) + ' ' + y + 'Q' + x + ' ' + y + ' ' + x + ' ' + (y - s) + 'Z" fill="' + (c || '#fff') + '"/>'; };
-      frente += est(126, 60, 8, 0) + est(84, 90, 5, 2.5);
-      if (n >= 2) frente += est(40, 70, 6, 1.3, m[1]) + est(164, 118, 6, 3.6, m[1]);
-      if (n >= 3) {
-        var pc = [g[0], g[1], m[1]];
-        [[30, 150, 0], [170, 150, 1.5], [60, 176, 3], [140, 176, 4.5], [16, 110, 2.2], [184, 104, 3.8], [100, 196, 5.2]].forEach(function (c, k) {
-          frente += '<circle class="pt" style="animation-delay:' + c[2] + 's" cx="' + c[0] + '" cy="' + c[1] + '" r="' + (k % 2 ? 2.2 : 3) + '" fill="' + pc[k % 3] + '"/>';
-        });
-      }
-    }
+    var p = PAL[n], id = 'mcrg' + (++uid), ext = hexa(68), med = hexa(52), som = hexa(46);
     css();
-    return '<svg class="mc-rgo-em' + (o.quieto ? ' quieto' : '') + '" viewBox="-8 -10 216 214" role="img" aria-label="Rango ' + NOM[n] + '">' + defs + fondo +
-      '<g class="' + (n >= 3 && !mini ? 'flo' : '') + '">' + cuerpo + interior + remaches + corona + brillo + '</g>' + frente + '</svg>';
+    var s = '<defs><clipPath id="' + id + 'c">' + pol(ext, '#000') + '</clipPath>' +
+      '<linearGradient id="' + id + 'g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".5"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>';
+    s += '<g transform="translate(0 5)" opacity=".35">' + pol(ext, '#000') + '</g>';
+    s += alas(n, p) + anillo(ext, med, p) + pol(med, p.h);
+    s += pol([med[5], med[0], med[1], som[1], som[0], som[5]], '#000', ' opacity=".35"');
+    if (n === 4) [22, 178].forEach(function (x) { s += pua([x, 88], [x + 8, 96], [x, 104], ORO) + pua([x, 88], [x - 8, 96], [x, 104], ORO); });
+    s += '<g transform="translate(100 104) scale(' + (n === 4 ? 1.05 : n === 2 ? 1.12 : 1.22) + ') translate(-100 -103)">' + figura(n) + '</g>';
+    if (!o.mini) s += '<g clip-path="url(#' + id + 'c)"><g transform="skewX(-20)"><rect class="shine" x="-20" y="0" width="40" height="200" fill="url(#' + id + 'g)"/></g></g>';
+    return '<svg class="mc-rgo-em' + (o.quieto ? ' quieto' : '') + '" viewBox="0 0 200 200" role="img" aria-label="Rango ' + NOM[n] + '">' + s + '</svg>';
   }
 
   /* ---------- Estilos ---------- */
@@ -164,7 +151,7 @@
       '.mc-rgo-em .cgem{transform-origin:center;animation:mcRgoGema 3.6s ease-in-out infinite}' +
       '.mc-rgo-em.quieto *{animation:none!important}.mc-rgo-em.quieto .shine,.mc-rgo-em.quieto .tw,.mc-rgo-em.quieto .pt{display:none}' +
       '@keyframes mcRgoFlo{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}' +
-      '@keyframes mcRgoShine{0%{transform:translateX(-160px)}40%,100%{transform:translateX(200px)}}' +
+      '@keyframes mcRgoShine{0%,55%{transform:translateX(-40px)}100%{transform:translateX(320px)}}' +
       '@keyframes mcRgoAura{0%,100%{transform:scale(.9);opacity:.55}50%{transform:scale(1.06);opacity:1}}' +
       '@keyframes mcRgoGira{to{transform:rotate(360deg)}}' +
       '@keyframes mcRgoTw{0%,100%{transform:scale(0) rotate(0);opacity:0}40%{transform:scale(1) rotate(45deg);opacity:1}65%{opacity:0}}' +
@@ -219,9 +206,9 @@
   }
 
   // Colores de fondo y borde de cada rango
-  var TINTE = ['#3a1e08', '#22303c', '#3a2a00', '#06304a', '#2a1050'];
-  var BORDE = ['#8F4A1C', '#66798B', '#AE7600', '#1A6CC0', '#8A36E0'];
-  var OSC = ['#C26A2A', '#8A9AA8', '#C98F00', '#0A78B0', '#7B35BE'];
+  var TINTE = ['#06304a', '#06361a', '#2a1050', '#3e0812', '#3e2400'];
+  var BORDE = ['#1A6CC0', '#0FA845', '#8A36E0', '#B01A30', '#D08A00'];
+  var OSC = ['#123FC0', '#0FA845', '#8A36E0', '#B01A30', '#E3263F'];
   function vars(n) { return '--rg-c:' + TXT[n] + ';--rg-t:' + TINTE[n] + ';--rg-b:' + BORDE[n] + ';--rg-o:' + OSC[n]; }
 
   /* ---------- Semanas ---------- */
