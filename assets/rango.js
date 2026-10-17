@@ -2,7 +2,7 @@
    Modo Cachimbo · Rangos de la semana (escudo hexagonal facetado)
    El rango sale del XP de la semana (xp_semana de supabase/16-corazones.sql)
    y se reinicia cada lunes:
-     Bronce 0 · Plata 800 · Esmeralda 2 000 · Rubí 4 000 · Leyenda 7 000
+     Zafiro 0 · Amatista 800 · Amatista Real 2 000 · Rubí 4 000 · Leyenda 7 000
    - MCRango.svg(n, {mini}): el emblema del rango n (0 a 4).
    - En el inicio: tarjeta "Tu rango esta semana" antes de "Empezar a practicar"
      y la pantalla de subida cuando pasas a un rango nuevo.
@@ -12,13 +12,13 @@
 (function () {
   if (window.MCRango) return;
   var MIN = [0, 800, 2000, 4000, 7000];
-  var NOM = ['Bronce', 'Plata', 'Esmeralda', 'Rubí', 'Leyenda'];
-  var TXT = ['#FFB070', '#E6EEF4', '#5FE39A', '#FF6E84', '#FFC800'];
+  var NOM = ['Zafiro', 'Amatista', 'Amatista Real', 'Rubí', 'Leyenda'];
+  var TXT = ['#5FDAFF', '#D79BFF', '#E9B8FF', '#FF6E84', '#FFC800'];
   // b: cara de frente · l: cara a la luz · d: cara en sombra · h: fondo del hueco
   var PAL = [
-    { b: '#C2733A', l: '#F5B07A', d: '#6A3010', h: '#2A1206' },
-    { b: '#A3B1C0', l: '#EEF3F8', d: '#4A5868', h: '#161E2A' },
-    { b: '#1FAF5A', l: '#7CF0A6', d: '#0A5A2C', h: '#062A16' },
+    { b: '#1DA6E6', l: '#5FDAFF', d: '#123FC0', h: '#0B2150' },
+    { b: '#8C5BC9', l: '#BF90F4', d: '#45257E', h: '#241048' },
+    { b: '#8C5BC9', l: '#BF90F4', d: '#45257E', h: '#241048' },
     { b: '#E3263F', l: '#FF6E84', d: '#7E0C1E', h: '#36060E' },
     { b: '#E3263F', l: '#FF6E84', d: '#7E0C1E', h: '#3A1A02' }
   ];
@@ -82,7 +82,7 @@
     return s + placas([[70, 48], [22, 16], [30, 44], [8, 50], [42, 86]], arriba) + placa(top, n === 4 ? ORO : p);
   }
   // Figura del centro: copa, corona, corona grande, rubí y gema en cruz (claro, medio, oscuro)
-  var FIG = [['#FFC896', '#E08A4A', '#A0521E'], ['#FFFFFF', '#CDD8E4', '#8395A8'], ['#8CF5B4', '#2ECC6A', '#12803F']];
+  var FIG = [['#5FE2FF', '#22B8F0', '#1388D0'], ['#F07CFF', '#D23CE6', '#A21EB8'], ['#F07CFF', '#D23CE6', '#A21EB8']];
   function figura(n) {
     var s = '', f = FIG[n];
     if (n === 0) {
@@ -99,7 +99,7 @@
       s += pol([[70, 118], [70, 86], [86, 102], [100, 60], [100, 118]], f[0]) + pol([[100, 60], [114, 102], [130, 86], [130, 118], [100, 118]], f[1]);
       [[100, 96, 8], [82, 108, 4.5], [118, 108, 4.5]].forEach(function (g) {
         var x = g[0], y = g[1], r = g[2];
-        s += pol([[x, y - r], [x - r, y], [x, y]], '#FFFFFF') + pol([[x, y - r], [x + r, y], [x, y]], '#E6FFF0') + pol([[x - r, y], [x, y + r], [x, y]], f[1]) + pol([[x + r, y], [x, y + r], [x, y]], f[2]);
+        s += pol([[x, y - r], [x - r, y], [x, y]], '#FFFFFF') + pol([[x, y - r], [x + r, y], [x, y]], '#FFE6FF') + pol([[x - r, y], [x, y + r], [x, y]], f[1]) + pol([[x + r, y], [x, y + r], [x, y]], f[2]);
       });
       s += pol([[68, 116], [100, 116], [100, 132], [70, 132]], f[0]) + pol([[100, 116], [132, 116], [130, 132], [100, 132]], f[1]);
       s += pol([[70, 128], [130, 128], [130, 133], [70, 133]], f[2]);
@@ -206,9 +206,9 @@
   }
 
   // Colores de fondo y borde de cada rango
-  var TINTE = ['#3a1e08', '#22303c', '#06301a', '#3e0812', '#3e2400'];
-  var BORDE = ['#8F4A1C', '#66798B', '#138A44', '#B01A30', '#D08A00'];
-  var OSC = ['#C26A2A', '#8A9AA8', '#138A44', '#B01A30', '#E3263F'];
+  var TINTE = ['#06304a', '#2a1050', '#2a1050', '#3e0812', '#3e2400'];
+  var BORDE = ['#1A6CC0', '#6A3BA8', '#8A36E0', '#B01A30', '#D08A00'];
+  var OSC = ['#123FC0', '#6A3BA8', '#8A36E0', '#B01A30', '#E3263F'];
   function vars(n) { return '--rg-c:' + TXT[n] + ';--rg-t:' + TINTE[n] + ';--rg-b:' + BORDE[n] + ';--rg-o:' + OSC[n]; }
 
   /* ---------- Semanas ---------- */
