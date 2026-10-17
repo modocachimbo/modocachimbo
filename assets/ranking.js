@@ -53,8 +53,9 @@
   }
 
   function css() {
-    if (document.getElementById('mc-medalla-css')) return;
-    var st = document.createElement('style'); st.id = 'mc-medalla-css';
+    // Id propio: antes compartía el de las medallas y, si las medallas cargaban primero, la tabla salía sin estilos
+    if (document.getElementById('mc-ranking-css')) return;
+    var st = document.createElement('style'); st.id = 'mc-ranking-css';
     st.textContent =
       '.mcr{margin:26px 0 4px;border:1px solid rgba(255,255,255,.08);background:var(--surface,#0e0e0e);border-radius:22px;padding:20px}' +
       '.mcr-cab{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px}' +
