@@ -92,9 +92,9 @@
         'scrollbar-color:#3d2758 #0a0612;accent-color:' + NAR + '}',
       'html.tema-halloween body{background:transparent!important}',
       'html.tema-halloween ::selection{background:rgba(255,138,31,.35);color:#fff}',
-      // Todo pasa a colores de Halloween: cada área con su color (limo, morado, sangre y calabaza)
+      // Todo pasa a colores de Halloween: calabaza en Ciencias y Sociales, morado en Matemática y sangre en Comunicación
       'html.tema-halloween{--ac:' + NAR + ';--ac-rgb:255,138,31;--ac-d:' + NAR_D + ';--cel:' + MOR + ';--cel-d:#6B32C9;--azul:' + MOR + ';--mor:#D58BFF;--verde:' + LIMO + ';--ok:' + NAR + '}',
-      'html.tema-halloween[data-area="ciencia-tecnologia"],html.tema-halloween [data-area="ciencia-tecnologia"]{--ac:' + LIMO + ';--ac-rgb:155,255,60;--ac-d:#4FA80F}',
+      'html.tema-halloween[data-area="ciencia-tecnologia"],html.tema-halloween [data-area="ciencia-tecnologia"]{--ac:' + NAR + ';--ac-rgb:255,138,31;--ac-d:' + NAR_D + '}',
       'html.tema-halloween[data-area="matematica"],html.tema-halloween [data-area="matematica"]{--ac:' + MOR + ';--ac-rgb:157,92,255;--ac-d:#6B32C9}',
       'html.tema-halloween[data-area="comunicacion"],html.tema-halloween [data-area="comunicacion"]{--ac:#FF4F7B;--ac-rgb:255,79,123;--ac-d:#B3204A}',
       'html.tema-halloween[data-area="ciencias-sociales"],html.tema-halloween [data-area="ciencias-sociales"]{--ac:' + NAR + ';--ac-rgb:255,138,31;--ac-d:' + NAR_D + '}',
