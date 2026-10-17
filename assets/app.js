@@ -10,6 +10,12 @@
   var BASE = script && script.src ? script.src.replace(/assets\/app\.js(\?.*)?$/, '') : './';
   var CERRADO = 'mc_app_cerrado', DIAS = 14;
 
+  // Temáticas por fechas (Halloween, …): se ven en todas las páginas menos el panel
+  if (!/\/panel\//.test(location.pathname) && !document.getElementById('mcTemaJs')) {
+    var tema = document.createElement('script'); tema.id = 'mcTemaJs'; tema.src = BASE + 'assets/tema.js';
+    document.head.appendChild(tema);
+  }
+
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
     window.addEventListener('load', function () {
       navigator.serviceWorker.register(BASE + 'sw.js', { scope: BASE }).catch(function () {});

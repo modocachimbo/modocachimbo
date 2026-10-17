@@ -18,6 +18,7 @@ const EQ_PERMISOS = [
     ['simulacro', 'Top simulacro', 'Ver el ranking semanal'],
     ['topxp', 'Top de la semana', 'Ver quiénes ganaron más experiencia en la semana'],
     ['agenda', 'Agenda', 'Programar fechas (seminarios, simulacros, exámenes) para todos los alumnos'],
+    ['tematicas', 'Temáticas', 'Cambiar la temática de la web (Halloween…) y sus fechas'],
     ['codigos', 'Códigos', 'Crear, borrar y liberar códigos. Ojo: da acceso al contenido pagado'],
   ]],
   ['Contenido', [
