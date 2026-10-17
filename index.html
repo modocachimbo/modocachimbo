@@ -185,6 +185,20 @@
     .sal-accesos { grid-column: 1 / -1; }
   }
   @media (max-width: 720px) { .sal-grupo { margin-left: 0; width: 100%; padding-top: 6px; } }
+  /* PC: saludo a la izquierda y las tarjetas en mosaico de 2 columnas, sin huecos */
+  @media (min-width: 1000px) {
+    .saludo { grid-template-columns: minmax(0, .8fr) minmax(0, 1.3fr); gap: 20px 30px; padding: 26px 28px; }
+    .sal-der { grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; }
+    .sal-der > .sal-meta, .sal-der > .btn-prin, .sal-der > .sal-agenda, .sal-der > .sal-fila, .sal-der > .mc-rd.abierto, .sal-der > .mc-rd:has(+ .btn-prin), .sal-der > .mc-rd:has(+ .mc-rgo[hidden]),
+    .sal-der > .sal-meta + .mc-rgo, .sal-der > .mc-rd[hidden] + .mc-rgo, .sal-der > .mc-rd.abierto + .mc-rgo { grid-column: 1 / -1; }
+    .sal-der > .mc-rd, .sal-der > .mc-rgo { margin: 0; }
+    .sal-der > .mc-rgo { padding: 8px 12px 10px 6px; gap: 10px; }
+    .sal-der > .mc-rgo .mc-rgo-ic { width: 62px; }
+    .sal-der > .mc-rgo .mc-rgo-tx b { font-size: 18px; }
+    .sal-der > .mc-rgo .mc-rgo-tx span { font-size: 12px; }
+    .sal-der > .mc-rd .mc-rd-cab { padding: 14px; }
+    .sal-der > .mc-rd:not(.abierto) { display: grid; align-content: center; }
+  }
 
   /* ===== Secciones: cursos y modos de práctica ===== */
   .sec-tit { font-size: 21px; font-weight: 1000; margin: 32px 2px 12px; scroll-margin-top: 8px; }
