@@ -208,6 +208,7 @@
       '.hal-boo svg{display:block;width:100%}',
       '@keyframes halBoo{0%{transform:translateY(30px) scale(.6);opacity:0}25%{opacity:.95}100%{transform:translateY(-180px) scale(1.05) rotate(-8deg);opacity:0}}',
       '@media (prefers-reduced-motion:reduce){.hal-deco *,.hal-cal,.hal-banda *,.hal-banda::before,html.tema-halloween .btn-prin::after,.hal-camina,.hal-camina *{animation:none!important}.hal-bat,.hal-camina,.hal-espectro,.hal-rayo{display:none}}',
+      'html.tema-halloween [fill="#C6E000" i]{fill:var(--accent)}html.tema-halloween [stroke="#C6E000" i]{stroke:var(--accent)}',
       'html.tema-halloween .mcr-p,html.tema-halloween .mcr-bt{background:rgba(48,26,76,.45)!important;border-color:rgba(140,96,210,.3)!important}'
     ].join('\n');
     (document.head || raiz).appendChild(st);
@@ -318,21 +319,96 @@
         var b = document.createElement('div'); b.className = 'hal-banda';
         b.innerHTML = '<span class="ic">' + CALABAZA + '</span><span class="tx"><small>Semana de Halloween' + (dias() ? ' · ' + dias() : '') + '</small>' +
           '<b>Que no te asusten las preguntas</b><span class="m"></span></span>' +
-          '<button type="button" class="hal-amb" aria-pressed="false" title="Viento, búho, campanas y truenos de fondo mientras estudias"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg><span>Sonidos de fondo</span></button>';
+          '<button type="button" class="hal-amb" aria-pressed="false" title="Viento, búho, campanas y truenos de fondo mientras estudias"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5z"/></svg><span>Ambiente</span></button>';
         b.querySelector('.m').textContent = c.mensaje || 'Practica de noche o de día: cada acierto te deja un dulce y cada error se va con un fantasma.';
         sal.parentNode.insertBefore(b, sal);
         var bt = b.querySelector('.hal-amb');
-        function pintarAmb() { var on = ambiente.on(); bt.classList.toggle('on', on); bt.setAttribute('aria-pressed', on); bt.lastChild.textContent = on ? 'Sonidos de fondo: sí' : 'Sonidos de fondo'; }
+        function pintarAmb() { var on = ambiente.on(); bt.classList.toggle('on', on); bt.setAttribute('aria-pressed', on); bt.lastChild.textContent = on ? 'Ambiente on' : 'Ambiente'; }
         bt.addEventListener('click', function () { ambiente.cambiar(); pintarAmb(); });
         pintarAmb();
       }
     }
-    var vigia = null;
-    function revisar() { gorros(); if (EN_INICIO) inicio(); }
+    /* ---------- el verde limo escrito a mano en cada página pasa a los colores de Halloween ---------- */
+    // Muchas páginas traen #C6E000 / #8fa300 fijos (sombras de botones, bordes, aciertos). Se copian esas reglas
+    // con los colores cambiados en una hoja aparte, así funciona en todas las páginas sin tocarlas.
+    // El navegador devuelve los colores como rgb(), así que se buscan en ese formato además del hex
+    function rgb(r, g, b) { return 'rgba?\\(\\s*' + r + '\\s*,\\s*' + g + '\\s*,\\s*' + b + '\\s*(?:,\\s*([\\d.]+)\\s*)?\\)'; }
+    var OSC = new RegExp('#8fa300|#7a8f00|' + rgb(143, 163, 0) + '|' + rgb(122, 143, 0), 'gi'),
+        CLARO = new RegExp('#c6e000|' + rgb(198, 224, 0), 'gi'),
+        TEXTO = new RegExp('#2b3300|#1f2600|' + rgb(43, 51, 0) + '|' + rgb(31, 38, 0), 'gi'),
+        CREMA = new RegExp('#f5ffcc|' + rgb(245, 255, 204), 'gi'),
+        BRILLO = new RegExp('#d6f23a|' + rgb(214, 242, 58), 'gi'),
+        LIMA = new RegExp([OSC.source, CLARO.source, TEXTO.source, CREMA.source, BRILLO.source].join('|'), 'i');
+    function alfa(a) { return a == null ? 1 : +a; }
+    function cambiaColor(v, mezcla) {
+      return v.replace(OSC, function (m, a, b) { var x = alfa(a != null ? a : b); return mezcla ? 'color-mix(in srgb,color-mix(in srgb,var(--accent) 62%,#000) ' + Math.round(x * 100) + '%,transparent)' : 'rgba(185,71,10,' + x + ')'; })
+        .replace(CLARO, function (m, a) { var x = alfa(a); return mezcla ? 'color-mix(in srgb,var(--accent) ' + Math.round(x * 100) + '%,transparent)' : 'rgba(255,138,31,' + x + ')'; })
+        .replace(TEXTO, '#1f0a00')
+        .replace(CREMA, '#fff1e0')
+        .replace(BRILLO, '#FFB15A');
+    }
+    function prefijo(sel) {
+      var out = [], d = 0, ini = 0;
+      for (var i = 0; i <= sel.length; i++) {
+        var ch = sel[i];
+        if (ch === '(') d++; else if (ch === ')') d--;
+        else if ((ch === ',' && !d) || i === sel.length) {
+          var x = sel.slice(ini, i).trim(); ini = i + 1;
+          if (!x) continue;
+          if (/^(:root|html)\b/.test(x)) x = x.replace(/^(:root|html)/, 'html.tema-halloween');
+          else if (/^body\b/.test(x)) x = 'html.tema-halloween ' + x;
+          else x = 'html.tema-halloween ' + x;
+          out.push(x);
+        }
+      }
+      return out.join(',');
+    }
+    function copiaReglas(reglas) {
+      var txt = '';
+      for (var i = 0; i < reglas.length; i++) {
+        var r = reglas[i];
+        if (r.cssRules && r.media) { var dentro = copiaReglas(r.cssRules); if (dentro) txt += '@media ' + r.media.mediaText + '{' + dentro + '}'; continue; }
+        if (!r.selectorText || !r.style || !LIMA.test(r.style.cssText)) continue;
+        if (/correct|\.ok\b|bien|acierto|\.si\b/i.test(r.selectorText)) continue; // los aciertos siguen en verde limo
+        var a = '', b = '';
+        for (var k = 0; k < r.style.length; k++) {
+          var n = r.style[k], v = r.style.getPropertyValue(n);
+          if (!LIMA.test(v)) continue;
+          var esVar = n.indexOf('--') === 0;
+          if (esVar && /(^|,)\s*(:root|html)\b/.test(r.selectorText)) continue; // las variables globales ya las define el tema
+          a += n + ':' + cambiaColor(v, false) + '!important;';
+          if (!esVar && (v.match(OSC) || v.match(CLARO))) b += n + ':' + cambiaColor(v, true) + '!important;';
+        }
+        if (a) txt += prefijo(r.selectorText) + '{' + a + b + '}';
+      }
+      return txt;
+    }
+    var hojaColor = document.createElement('style'); hojaColor.id = 'mcTemaColor';
+    var vistas = typeof WeakSet === 'function' ? new WeakSet() : null, colorTxt = '';
+    function recolorear() {
+      var nuevo = '';
+      for (var i = 0; i < document.styleSheets.length; i++) {
+        var h = document.styleSheets[i], nodo = h.ownerNode;
+        if (nodo === st || nodo === hojaColor || (vistas && vistas.has(h))) continue;
+        var reglas; try { reglas = h.cssRules; } catch (e) { continue; } // hojas de otro dominio
+        if (vistas) vistas.add(h);
+        nuevo += copiaReglas(reglas);
+      }
+      if (nuevo) { colorTxt += nuevo; hojaColor.textContent = colorTxt; }
+      if (!hojaColor.parentNode && document.head) document.head.appendChild(hojaColor);
+    }
+    quitar.push(function () { hojaColor.remove(); });
+
+    var vigia = null, tColor = null;
+    function revisar() {
+      gorros(); if (EN_INICIO) inicio();
+      clearTimeout(tColor); tColor = setTimeout(recolorear, 60);
+    }
     function empezar() {
       revisar();
       vigia = new MutationObserver(function () { revisar(); });
-      vigia.observe(document.body, { childList: true, subtree: true });
+      vigia.observe(document.documentElement, { childList: true, subtree: true });
+      window.addEventListener('load', recolorear);
     }
     quitar.push(function () {
       if (vigia) vigia.disconnect();
