@@ -93,7 +93,7 @@
       'html.tema-halloween body{background:transparent!important}',
       'html.tema-halloween ::selection{background:rgba(255,138,31,.35);color:#fff}',
       // Todo pasa a colores de Halloween: cada área con su color (limo, morado, sangre y calabaza)
-      'html.tema-halloween{--ac:' + NAR + ';--ac-rgb:255,138,31;--ac-d:' + NAR_D + ';--cel:' + MOR + ';--cel-d:#6B32C9;--azul:' + MOR + ';--mor:#D58BFF;--verde:' + LIMO + ';--ok:' + LIMO + '}',
+      'html.tema-halloween{--ac:' + NAR + ';--ac-rgb:255,138,31;--ac-d:' + NAR_D + ';--cel:' + MOR + ';--cel-d:#6B32C9;--azul:' + MOR + ';--mor:#D58BFF;--verde:' + LIMO + ';--ok:' + NAR + '}',
       'html.tema-halloween[data-area="ciencia-tecnologia"],html.tema-halloween [data-area="ciencia-tecnologia"]{--ac:' + LIMO + ';--ac-rgb:155,255,60;--ac-d:#4FA80F}',
       'html.tema-halloween[data-area="matematica"],html.tema-halloween [data-area="matematica"]{--ac:' + MOR + ';--ac-rgb:157,92,255;--ac-d:#6B32C9}',
       'html.tema-halloween[data-area="comunicacion"],html.tema-halloween [data-area="comunicacion"]{--ac:#FF4F7B;--ac-rgb:255,79,123;--ac-d:#B3204A}',
@@ -112,12 +112,12 @@
       // Tarjetas: brillo morado suave
       'html.tema-halloween .saludo{background:radial-gradient(560px 240px at 0% 0%,rgba(255,138,31,.14),transparent 70%),radial-gradient(520px 260px at 100% 100%,rgba(157,92,255,.16),transparent 70%),rgba(22,12,36,.34)!important;border-color:rgba(120,80,180,.45)!important;box-shadow:0 0 0 1px rgba(157,92,255,.08),0 18px 50px -20px rgba(120,40,255,.45)}',
       'html.tema-halloween .course,html.tema-halloween .card,html.tema-halloween .year-card{box-shadow:0 14px 40px -24px rgba(140,60,255,.45)}',
-      // La respuesta correcta sigue verde (verde limo), así no se confunde con el naranja
-      'html.tema-halloween .option.correct,html.tema-halloween .opt-row.correct{background:rgba(155,255,60,.12)!important;border-color:' + LIMO + '!important;border-bottom-color:#4FA80F!important}',
-      'html.tema-halloween .option.correct .letter,html.tema-halloween .opt-row.correct .letter{background:' + LIMO + '!important;border-color:' + LIMO + '!important;color:#0e0e0e!important}',
-      'html.tema-halloween .option.correct span.text,html.tema-halloween .opt-row.correct{color:#e6ffcf!important}',
-      'html.tema-halloween .icon.ok,html.tema-halloween .option.correct .icon,html.tema-halloween .opt-row.correct svg{color:' + LIMO + '!important}',
-      'html.tema-halloween .feedback.ok{color:#C9FF96!important;border-color:rgba(155,255,60,.35)!important;background:rgba(155,255,60,.08)!important}',
+      // La respuesta correcta también va en naranja calabaza, con su sombra
+      'html.tema-halloween .option.correct,html.tema-halloween .opt-row.correct{background:rgba(255,138,31,.13)!important;border-color:' + NAR + '!important;border-bottom-color:' + NAR_D + '!important;box-shadow:0 0 18px rgba(255,138,31,.25)!important}',
+      'html.tema-halloween .option.correct .letter,html.tema-halloween .opt-row.correct .letter{background:' + NAR + '!important;border-color:' + NAR + '!important;color:#1f0a00!important}',
+      'html.tema-halloween .option.correct span.text,html.tema-halloween .opt-row.correct{color:#FFE3C7!important}',
+      'html.tema-halloween .icon.ok,html.tema-halloween .option.correct .icon,html.tema-halloween .opt-row.correct svg{color:' + NAR + '!important}',
+      'html.tema-halloween .feedback.ok{color:#FFC48A!important;border-color:rgba(255,138,31,.35)!important;background:rgba(255,138,31,.08)!important}',
       // Cabecera fija de las páginas de cursos
       'html.tema-halloween[data-area] header.top{background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important}',
       // Perfil: portada de noche con luna
@@ -363,7 +363,6 @@
         var r = reglas[i];
         if (r.cssRules && (r.media || r.conditionText)) { cambiaReglas(r.cssRules); continue; }
         if (!r.selectorText || !r.style || !LIMA.test(r.style.cssText)) continue;
-        if (/correct|\.ok\b|bien|acierto|\.si\b/i.test(r.selectorText)) continue; // los aciertos siguen en verde limo
         var esRaiz = /(^|,)\s*(:root|html)\b/.test(r.selectorText), props = [];
         for (var k = 0; k < r.style.length; k++) props.push(r.style[k]);
         props.forEach(function (n) {
