@@ -92,9 +92,9 @@
         'scrollbar-color:#3d2758 #0a0612;accent-color:' + NAR + '}',
       'html.tema-halloween body{background:transparent!important}',
       'html.tema-halloween ::selection{background:rgba(255,138,31,.35);color:#fff}',
-      // Todo pasa a colores de Halloween: cada área con su color (limo, morado, sangre y calabaza)
-      'html.tema-halloween{--ac:' + NAR + ';--ac-rgb:255,138,31;--ac-d:' + NAR_D + ';--cel:' + MOR + ';--cel-d:#6B32C9;--azul:' + MOR + ';--mor:#D58BFF;--verde:' + LIMO + ';--ok:' + LIMO + '}',
-      'html.tema-halloween[data-area="ciencia-tecnologia"],html.tema-halloween [data-area="ciencia-tecnologia"]{--ac:' + LIMO + ';--ac-rgb:155,255,60;--ac-d:#4FA80F}',
+      // Todo pasa a colores de Halloween: calabaza en Ciencias y Sociales, morado en Matemática y sangre en Comunicación
+      'html.tema-halloween{--ac:' + NAR + ';--ac-rgb:255,138,31;--ac-d:' + NAR_D + ';--cel:' + MOR + ';--cel-d:#6B32C9;--azul:' + MOR + ';--mor:#D58BFF;--verde:' + LIMO + ';--ok:' + NAR + '}',
+      'html.tema-halloween[data-area="ciencia-tecnologia"],html.tema-halloween [data-area="ciencia-tecnologia"]{--ac:' + NAR + ';--ac-rgb:255,138,31;--ac-d:' + NAR_D + '}',
       'html.tema-halloween[data-area="matematica"],html.tema-halloween [data-area="matematica"]{--ac:' + MOR + ';--ac-rgb:157,92,255;--ac-d:#6B32C9}',
       'html.tema-halloween[data-area="comunicacion"],html.tema-halloween [data-area="comunicacion"]{--ac:#FF4F7B;--ac-rgb:255,79,123;--ac-d:#B3204A}',
       'html.tema-halloween[data-area="ciencias-sociales"],html.tema-halloween [data-area="ciencias-sociales"]{--ac:' + NAR + ';--ac-rgb:255,138,31;--ac-d:' + NAR_D + '}',
@@ -112,12 +112,12 @@
       // Tarjetas: brillo morado suave
       'html.tema-halloween .saludo{background:radial-gradient(560px 240px at 0% 0%,rgba(255,138,31,.14),transparent 70%),radial-gradient(520px 260px at 100% 100%,rgba(157,92,255,.16),transparent 70%),rgba(22,12,36,.34)!important;border-color:rgba(120,80,180,.45)!important;box-shadow:0 0 0 1px rgba(157,92,255,.08),0 18px 50px -20px rgba(120,40,255,.45)}',
       'html.tema-halloween .course,html.tema-halloween .card,html.tema-halloween .year-card{box-shadow:0 14px 40px -24px rgba(140,60,255,.45)}',
-      // La respuesta correcta sigue verde (verde limo), así no se confunde con el naranja
-      'html.tema-halloween .option.correct{background:rgba(155,255,60,.12)!important;border-color:' + LIMO + '!important;border-bottom-color:#4FA80F!important}',
-      'html.tema-halloween .option.correct .letter{background:' + LIMO + '!important;border-color:' + LIMO + '!important;color:#0e0e0e!important}',
-      'html.tema-halloween .option.correct span.text{color:#e6ffcf!important}',
-      'html.tema-halloween .icon.ok,html.tema-halloween .option.correct .icon{color:' + LIMO + '!important}',
-      'html.tema-halloween .feedback.ok{color:#C9FF96!important;border-color:rgba(155,255,60,.35)!important;background:rgba(155,255,60,.08)!important}',
+      // La respuesta correcta también va en naranja calabaza, con su sombra
+      'html.tema-halloween .option.correct,html.tema-halloween .opt-row.correct{background:rgba(255,138,31,.13)!important;border-color:' + NAR + '!important;border-bottom-color:' + NAR_D + '!important;box-shadow:0 0 18px rgba(255,138,31,.25)!important}',
+      'html.tema-halloween .option.correct .letter,html.tema-halloween .opt-row.correct .letter{background:' + NAR + '!important;border-color:' + NAR + '!important;color:#1f0a00!important}',
+      'html.tema-halloween .option.correct span.text,html.tema-halloween .opt-row.correct{color:#FFE3C7!important}',
+      'html.tema-halloween .icon.ok,html.tema-halloween .option.correct .icon,html.tema-halloween .opt-row.correct svg{color:' + NAR + '!important}',
+      'html.tema-halloween .feedback.ok{color:#FFC48A!important;border-color:rgba(255,138,31,.35)!important;background:rgba(255,138,31,.08)!important}',
       // Cabecera fija de las páginas de cursos
       'html.tema-halloween[data-area] header.top{background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important}',
       // Perfil: portada de noche con luna
@@ -208,6 +208,13 @@
       '.hal-boo svg{display:block;width:100%}',
       '@keyframes halBoo{0%{transform:translateY(30px) scale(.6);opacity:0}25%{opacity:.95}100%{transform:translateY(-180px) scale(1.05) rotate(-8deg);opacity:0}}',
       '@media (prefers-reduced-motion:reduce){.hal-deco *,.hal-cal,.hal-banda *,.hal-banda::before,html.tema-halloween .btn-prin::after,.hal-camina,.hal-camina *{animation:none!important}.hal-bat,.hal-camina,.hal-espectro,.hal-rayo{display:none}}',
+      // Flashcards: reverso de calabaza sin el brillo limo, y cada cara se oculta a mitad del giro
+      // (en iPhone la cara de atrás se veía al revés a través de la otra)
+      'html.tema-halloween .carta .reverso{background:radial-gradient(90% 60% at 50% 40%,#FFC46B,transparent 70%),#FF8A1F!important;border-color:#E0700F!important;border-bottom-color:' + NAR_D + '!important;color:#2a1000!important}',
+      'html.tema-halloween .carta .reverso{visibility:hidden}html.tema-halloween .carta.vuelta .reverso{visibility:visible}html.tema-halloween .carta.vuelta .frente{visibility:hidden}',
+      'html.tema-halloween .carta.ida .frente,html.tema-halloween .carta.regreso .reverso{animation:halSale .8s linear forwards}',
+      'html.tema-halloween .carta.ida .reverso,html.tema-halloween .carta.regreso .frente{animation:halEntra .8s linear forwards}',
+      '@keyframes halSale{0%,44%{visibility:visible}45%,100%{visibility:hidden}}@keyframes halEntra{0%,44%{visibility:hidden}45%,100%{visibility:visible}}',
       'html.tema-halloween [fill="#C6E000" i]{fill:var(--accent)}html.tema-halloween [stroke="#C6E000" i]{stroke:var(--accent)}',
       'html.tema-halloween .mcr-p,html.tema-halloween .mcr-bt{background:rgba(48,26,76,.45)!important;border-color:rgba(140,96,210,.3)!important}'
     ].join('\n');
@@ -329,8 +336,8 @@
       }
     }
     /* ---------- el verde limo escrito a mano en cada página pasa a los colores de Halloween ---------- */
-    // Muchas páginas traen #C6E000 / #8fa300 fijos (sombras de botones, bordes, aciertos). Se copian esas reglas
-    // con los colores cambiados en una hoja aparte, así funciona en todas las páginas sin tocarlas.
+    // Muchas páginas traen #C6E000 / #8fa300 fijos (sombras de botones, bordes, íconos). Se cambian al vuelo,
+    // así funciona en todas las páginas sin tocarlas.
     // El navegador devuelve los colores como rgb(), así que se buscan en ese formato además del hex
     function rgb(r, g, b) { return 'rgba?\\(\\s*' + r + '\\s*,\\s*' + g + '\\s*,\\s*' + b + '\\s*(?:,\\s*([\\d.]+)\\s*)?\\)'; }
     var OSC = new RegExp('#8fa300|#7a8f00|' + rgb(143, 163, 0) + '|' + rgb(122, 143, 0), 'gi'),
@@ -347,57 +354,37 @@
         .replace(CREMA, '#fff1e0')
         .replace(BRILLO, '#FFB15A');
     }
-    function prefijo(sel) {
-      var out = [], d = 0, ini = 0;
-      for (var i = 0; i <= sel.length; i++) {
-        var ch = sel[i];
-        if (ch === '(') d++; else if (ch === ')') d--;
-        else if ((ch === ',' && !d) || i === sel.length) {
-          var x = sel.slice(ini, i).trim(); ini = i + 1;
-          if (!x) continue;
-          if (/^(:root|html)\b/.test(x)) x = x.replace(/^(:root|html)/, 'html.tema-halloween');
-          else if (/^body\b/.test(x)) x = 'html.tema-halloween ' + x;
-          else x = 'html.tema-halloween ' + x;
-          out.push(x);
-        }
-      }
-      return out.join(',');
-    }
-    function copiaReglas(reglas) {
-      var txt = '';
+    // Se cambia el valor dentro de la misma regla (no se copia encima), así el orden de las reglas
+    // de cada página se respeta y un estilo que la página ya pisaba no vuelve a aparecer.
+    var MEZCLA = !!(window.CSS && CSS.supports && CSS.supports('color', 'color-mix(in srgb, red 50%, transparent)'));
+    var cambiados = [], vistas = typeof WeakSet === 'function' ? new WeakSet() : null;
+    function cambiaReglas(reglas) {
       for (var i = 0; i < reglas.length; i++) {
         var r = reglas[i];
-        if (r.cssRules && r.media) { var dentro = copiaReglas(r.cssRules); if (dentro) txt += '@media ' + r.media.mediaText + '{' + dentro + '}'; continue; }
+        if (r.cssRules && (r.media || r.conditionText)) { cambiaReglas(r.cssRules); continue; }
         if (!r.selectorText || !r.style || !LIMA.test(r.style.cssText)) continue;
-        if (/correct|\.ok\b|bien|acierto|\.si\b/i.test(r.selectorText)) continue; // los aciertos siguen en verde limo
-        var a = '', b = '';
-        for (var k = 0; k < r.style.length; k++) {
-          var n = r.style[k], v = r.style.getPropertyValue(n);
-          if (!LIMA.test(v)) continue;
+        var esRaiz = /(^|,)\s*(:root|html)\b/.test(r.selectorText), props = [];
+        for (var k = 0; k < r.style.length; k++) props.push(r.style[k]);
+        props.forEach(function (n) {
+          var v = r.style.getPropertyValue(n), pr = r.style.getPropertyPriority(n);
+          if (!LIMA.test(v)) return;
           var esVar = n.indexOf('--') === 0;
-          if (esVar && /(^|,)\s*(:root|html)\b/.test(r.selectorText)) continue; // las variables globales ya las define el tema
-          a += n + ':' + cambiaColor(v, false) + '!important;';
-          if (!esVar && (v.match(OSC) || v.match(CLARO))) b += n + ':' + cambiaColor(v, true) + '!important;';
-        }
-        if (a) txt += prefijo(r.selectorText) + '{' + a + b + '}';
+          if (esVar && esRaiz) return; // las variables globales ya las define el tema
+          cambiados.push([r.style, n, v, pr]);
+          r.style.setProperty(n, cambiaColor(v, MEZCLA && !esVar), pr);
+        });
       }
-      return txt;
     }
-    var hojaColor = document.createElement('style'); hojaColor.id = 'mcTemaColor';
-    var vistas = typeof WeakSet === 'function' ? new WeakSet() : null, colorTxt = '';
     function recolorear() {
-      var nuevo = '';
       for (var i = 0; i < document.styleSheets.length; i++) {
-        var h = document.styleSheets[i], nodo = h.ownerNode;
-        if (nodo === st || nodo === hojaColor || (vistas && vistas.has(h))) continue;
+        var h = document.styleSheets[i];
+        if (h.ownerNode === st || (vistas && vistas.has(h))) continue;
         var reglas; try { reglas = h.cssRules; } catch (e) { continue; } // hojas de otro dominio
         if (vistas) vistas.add(h);
-        nuevo += copiaReglas(reglas);
+        cambiaReglas(reglas);
       }
-      if (nuevo) { colorTxt += nuevo; hojaColor.textContent = colorTxt; }
-      if (!hojaColor.parentNode && document.head) document.head.appendChild(hojaColor);
     }
-    quitar.push(function () { hojaColor.remove(); });
+    quitar.push(function () { cambiados.forEach(function (c) { try { c[0].setProperty(c[1], c[2], c[3]); } catch (e) {} }); cambiados = []; });
 
     var vigia = null, tColor = null;
     function revisar() {
