@@ -318,11 +318,11 @@
         var b = document.createElement('div'); b.className = 'hal-banda';
         b.innerHTML = '<span class="ic">' + CALABAZA + '</span><span class="tx"><small>Semana de Halloween' + (dias() ? ' · ' + dias() : '') + '</small>' +
           '<b>Que no te asusten las preguntas</b><span class="m"></span></span>' +
-          '<button type="button" class="hal-amb" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5z"/></svg><span>Ambiente</span></button>';
+          '<button type="button" class="hal-amb" aria-pressed="false" title="Viento, búho, campanas y truenos de fondo mientras estudias"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg><span>Sonidos de fondo</span></button>';
         b.querySelector('.m').textContent = c.mensaje || 'Practica de noche o de día: cada acierto te deja un dulce y cada error se va con un fantasma.';
         sal.parentNode.insertBefore(b, sal);
         var bt = b.querySelector('.hal-amb');
-        function pintarAmb() { var on = ambiente.on(); bt.classList.toggle('on', on); bt.setAttribute('aria-pressed', on); bt.lastChild.textContent = on ? 'Ambiente on' : 'Ambiente'; }
+        function pintarAmb() { var on = ambiente.on(); bt.classList.toggle('on', on); bt.setAttribute('aria-pressed', on); bt.lastChild.textContent = on ? 'Sonidos de fondo: sí' : 'Sonidos de fondo'; }
         bt.addEventListener('click', function () { ambiente.cambiar(); pintarAmb(); });
         pintarAmb();
       }
@@ -410,20 +410,35 @@
         dr1.connect(dg); dr2.connect(dg); dg.connect(out);
         [ruido, lfo, dr1, dr2].forEach(function (x) { x.start(); });
         nodos = { out: out, fuentes: [ruido, lfo, dr1, dr2] };
+        trueno();
         (function susto() {
           timer = setTimeout(function () {
             if (!nodos) return;
             var r = Math.random();
             if (r < 0.3) { if (S.buho) S.buho('normal'); }            // búho a lo lejos
             else if (r < 0.6) { nota(196, 0, 3, 'sine', 0.06); nota(196 * 2.76, 0, 2, 'sine', 0.015); } // campana lejana
-            else if (r < 0.85) { nota(95, 0, 0.6, 'sawtooth', 0.02, 70); soplo(0.6, 0.03, 300, 160); }      // puerta que cruje
-            else { soplo(2.6, 0.11, 220, 45); nota(42, 0.05, 2.2, 'sine', 0.05, 30); }            // trueno
+            else { nota(95, 0, 0.6, 'sawtooth', 0.02, 70); soplo(0.6, 0.03, 300, 160); }      // puerta que cruje
             susto();
           }, 14000 + Math.random() * 16000);
         })();
       }
+      // El trueno suena con cada relámpago del cielo (el destello va al 90.6% de un ciclo de 17 s)
+      var tTrueno = null;
+      function trueno() {
+        clearTimeout(tTrueno);
+        var r = document.querySelector('.hal-rayo'), an = r && r.getAnimations && r.getAnimations()[0];
+        if (!an || an.currentTime == null) return;
+        var falta = 15402 - an.currentTime % 17000; if (falta < 0) falta += 17000;
+        tTrueno = setTimeout(function () {
+          if (!nodos) return;
+          soplo(0.25, 0.09, 1800, 600);                                   // chasquido del rayo
+          setTimeout(function () { if (!nodos) return; soplo(2.8, 0.13, 240, 40); nota(41, 0, 2.4, 'sine', 0.06, 30); }, 350); // retumbo
+          trueno();
+        }, falta);
+      }
       function parar() {
         if (!nodos) return;
+        clearTimeout(tTrueno);
         var a = M.audio() || nodos.out.context, n = nodos; nodos = null; clearTimeout(timer);
         try { n.out.gain.cancelScheduledValues(a.currentTime); n.out.gain.setValueAtTime(n.out.gain.value || 1, a.currentTime); n.out.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + 0.6); } catch (e) {}
         setTimeout(function () { n.fuentes.forEach(function (x) { try { x.stop(); } catch (e) {} }); n.out.disconnect(); }, 700);
