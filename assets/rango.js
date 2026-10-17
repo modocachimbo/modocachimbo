@@ -2,7 +2,7 @@
    Modo Cachimbo · Rangos de la semana (escudo hexagonal facetado)
    El rango sale del XP de la semana (xp_semana de supabase/16-corazones.sql)
    y se reinicia cada lunes:
-     Zafiro 0 · Amatista 800 · Amatista Real 2 000 · Rubí 4 000 · Leyenda 7 000
+     Zafiro 0 · Esmeralda 800 · Amatista 2 000 · Rubí 4 000 · Leyenda 7 000
    - MCRango.svg(n, {mini}): el emblema del rango n (0 a 4).
    - En el inicio: tarjeta "Tu rango esta semana" antes de "Empezar a practicar"
      y la pantalla de subida cuando pasas a un rango nuevo.
@@ -12,15 +12,15 @@
 (function () {
   if (window.MCRango) return;
   var MIN = [0, 800, 2000, 4000, 7000];
-  var NOM = ['Zafiro', 'Amatista', 'Amatista Real', 'Rubí', 'Leyenda'];
-  var TXT = ['#5FDAFF', '#D79BFF', '#E9B8FF', '#FF6E84', '#FFC800'];
+  var NOM = ['Zafiro', 'Esmeralda', 'Amatista', 'Rubí', 'Leyenda'];
+  var TXT = ['#5FDAFF', '#5FF59A', '#D79BFF', '#FF6E84', '#FFC800'];
   // b: cara de frente · l: cara a la luz · d: cara en sombra · h: fondo del hueco
   var PAL = [
-    { b: '#1DA6E6', l: '#5FDAFF', d: '#123FC0', h: '#0B2150' },
-    { b: '#8C5BC9', l: '#BF90F4', d: '#45257E', h: '#241048' },
-    { b: '#8C5BC9', l: '#BF90F4', d: '#45257E', h: '#241048' },
-    { b: '#E3263F', l: '#FF6E84', d: '#7E0C1E', h: '#36060E' },
-    { b: '#E3263F', l: '#FF6E84', d: '#7E0C1E', h: '#3A1A02' }
+    { b: '#14B4FF', l: '#7AE6FF', d: '#0A5CE0', h: '#062A66' },
+    { b: '#14D45A', l: '#8CFFB0', d: '#06873A', h: '#03361A' },
+    { b: '#A55CFF', l: '#D9A8FF', d: '#5A1FC4', h: '#2A0A66' },
+    { b: '#FF2D4A', l: '#FF8A9C', d: '#A3061E', h: '#4A0612' },
+    { b: '#FF2D4A', l: '#FF8A9C', d: '#A3061E', h: '#4A2004' }
   ];
   var ORO = { b: '#F5B400', l: '#FFF0A0', d: '#B05A00' };
   var LLAMA = { b: '#FF9A2E', l: '#FFE27A', d: '#D0381A' };
@@ -37,7 +37,7 @@
   // Color de una cara según hacia dónde mira (la luz viene de arriba a la izquierda)
   function cara(p, nx, ny) {
     var b = (nx * LUZ[0] + ny * LUZ[1]) / (Math.hypot(nx, ny) || 1);
-    return b >= 0 ? mezcla(p.b, p.l, Math.min(1, b * 1.05)) : mezcla(p.b, p.d, Math.min(1, -b * 1.05));
+    return b >= 0 ? mezcla(p.b, p.l, Math.min(1, b * 1.05)) : mezcla(p.b, p.d, Math.min(.85, -b * .9));
   }
   function pol(a, f, x) { return '<polygon points="' + a.map(function (q) { return q[0].toFixed(1) + ',' + q[1].toFixed(1); }).join(' ') + '" fill="' + f + '"' + (x || '') + '/>'; }
   function hexa(r) { var o = []; for (var i = 0; i < 6; i++) { var a = (60 * i - 90) * Math.PI / 180; o.push([100 + r * Math.cos(a), 104 + r * Math.sin(a)]); } return o; }
@@ -82,7 +82,7 @@
     return s + placas([[70, 48], [22, 16], [30, 44], [8, 50], [42, 86]], arriba) + placa(top, n === 4 ? ORO : p);
   }
   // Figura del centro: copa, corona, corona grande, rubí y gema en cruz (claro, medio, oscuro)
-  var FIG = [['#5FE2FF', '#22B8F0', '#1388D0'], ['#F07CFF', '#D23CE6', '#A21EB8'], ['#F07CFF', '#D23CE6', '#A21EB8']];
+  var FIG = [['#7FF0FF', '#2CCBFF', '#0F8EF0'], ['#9DFFC0', '#2EE873', '#0FA845'], ['#FF8CFF', '#E040FB', '#B01ED8']];
   function figura(n) {
     var s = '', f = FIG[n];
     if (n === 0) {
@@ -206,9 +206,9 @@
   }
 
   // Colores de fondo y borde de cada rango
-  var TINTE = ['#06304a', '#2a1050', '#2a1050', '#3e0812', '#3e2400'];
-  var BORDE = ['#1A6CC0', '#6A3BA8', '#8A36E0', '#B01A30', '#D08A00'];
-  var OSC = ['#123FC0', '#6A3BA8', '#8A36E0', '#B01A30', '#E3263F'];
+  var TINTE = ['#06304a', '#06361a', '#2a1050', '#3e0812', '#3e2400'];
+  var BORDE = ['#1A6CC0', '#0FA845', '#8A36E0', '#B01A30', '#D08A00'];
+  var OSC = ['#123FC0', '#0FA845', '#8A36E0', '#B01A30', '#E3263F'];
   function vars(n) { return '--rg-c:' + TXT[n] + ';--rg-t:' + TINTE[n] + ';--rg-b:' + BORDE[n] + ';--rg-o:' + OSC[n]; }
 
   /* ---------- Semanas ---------- */
