@@ -237,5 +237,7 @@
   (document.head || document.documentElement).appendChild(css);
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', pintar); else pintar();
 
+  // Para las temáticas (assets/tema.js): sus propios sonidos con el mismo motor
+  S.motor = { audio: audio, nota: nota, soplo: soplo, hoot: hoot, aire: aire, salida: function () { return salida; } };
   window.MCSonido = S;
 })();

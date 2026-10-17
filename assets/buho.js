@@ -81,6 +81,8 @@
       '<g class="b-ojos">' + ojo(70, 104, animo, -1) + ojo(130, 104, animo, 1) + '</g>' +
       (rubor ? '<ellipse cx="54" cy="130" rx="9" ry="5.5" fill="' + C.rubor + '" opacity="' + rubor + '"/><ellipse cx="146" cy="130" rx="9" ry="5.5" fill="' + C.rubor + '" opacity="' + rubor + '"/>' : '') +
       pico(animo) + ceja(animo) + extras(animo) +
+      // Disfraz de la temática (sombrero, etc.): lo pone assets/tema.js
+      (window.MCBuho && MCBuho.accesorio || '') +
       '</g></svg>';
   }
 
