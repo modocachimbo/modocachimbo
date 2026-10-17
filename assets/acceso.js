@@ -151,11 +151,11 @@
         if (!r || !r.ok) throw new Error('respuesta');
         var a = accesos(), mensaje = '';
         Object.keys(r.estados || {}).forEach(function (c) {
-          if (r.estados[c] === 'ok') { if (a[c]) a[c].ok = Date.now(); }
+          if (r.estados[c] === 'ok') { if (a[c]) { a[c].ok = Date.now(); delete a[c].error; } }
           else {
-            mensaje = mensaje || r.estados[c]; delete a[c];
-            // Lleno en este equipo no es culpa del código: en la cuenta se queda para los otros
-            if (!/máximo de dispositivos/.test(r.estados[c])) quitarDeCuenta(c);
+            // Se queda en la lista con su aviso (Perfil · Mis accesos) para que el alumno sepa qué pasó
+            mensaje = mensaje || r.estados[c];
+            if (a[c]) { a[c].ok = 0; a[c].error = r.estados[c]; }
           }
         });
         guardar(a);
@@ -188,10 +188,38 @@
       });
   }
 
-  function activos() {
+  // Los que funcionan. todos() incluye los que el servidor rechazó, con su aviso
+  function todos() {
     var a = accesos();
-    return Object.keys(a).map(function (c) { return { codigo: c, producto: a[c].producto, vence: a[c].vence }; });
+    return Object.keys(a).map(function (c) { return { codigo: c, producto: a[c].producto, vence: a[c].vence, error: a[c].error || '' }; });
+  }
+  function activos() { return todos().filter(function (x) { return !x.error; }); }
+
+  // Cómo está cada código en el servidor: equipos usados, vencimiento, quitadas del mes
+  function estado() {
+    var cods = Object.keys(accesos());
+    if (!cods.length) return Promise.resolve({});
+    return jsonp({ action: 'misCodigos', codigos: cods.join(','), dispositivo: dispositivo() }).then(function (r) {
+      if (!r || !r.ok) return null;
+      var m = {};
+      (r.codigos || []).forEach(function (c) { m[c.codigo] = c; });
+      return m;
+    }).catch(function () { return null; });
   }
 
-  window.MCAcceso = { verificar: verificar, activar: activar, activos: activos, accesoLocal: accesoLocal, antiguo: antiguo, cubre: cubre };
+  // Quita un código de este equipo: libera su cupo en el servidor y lo borra de aquí y de la cuenta
+  function soltar(cod) {
+    function borrar() {
+      var a = accesos(); delete a[cod]; guardar(a);
+      quitarDeCuenta(cod);
+    }
+    return jsonp({ action: 'soltar', codigo: cod, dispositivo: dispositivo() }).then(function (r) {
+      if (r && r.ok) { borrar(); return r; }
+      // Apps Script sin actualizar: igual se quita de este equipo
+      if (r && /acci[oó]n no v[aá]lida/i.test(r.error || '')) { borrar(); return { ok: true, liberado: false }; }
+      return r || { ok: false, mensaje: 'Respuesta inválida del servidor.' };
+    });
+  }
+
+  window.MCAcceso = { verificar: verificar, activar: activar, activos: activos, todos: todos, estado: estado, soltar: soltar, accesoLocal: accesoLocal, antiguo: antiguo, cubre: cubre };
 })();
