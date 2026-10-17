@@ -92,8 +92,14 @@
         'scrollbar-color:#3d2758 #0a0612;accent-color:' + NAR + '}',
       'html.tema-halloween body{background:transparent!important}',
       'html.tema-halloween ::selection{background:rgba(255,138,31,.35);color:#fff}',
-      // El área de Ciencia y el color base usan el naranja de la temática
-      'html.tema-halloween:not([data-area]),html.tema-halloween [data-area="ciencia-tecnologia"],html.tema-halloween[data-area="ciencia-tecnologia"]{--ac:' + NAR + ';--ac-rgb:255,138,31;--ac-d:' + NAR_D + '}',
+      // Todo pasa a colores de Halloween: cada área con su color (limo, morado, sangre y calabaza)
+      'html.tema-halloween{--ac:' + NAR + ';--ac-rgb:255,138,31;--ac-d:' + NAR_D + ';--cel:' + MOR + ';--cel-d:#6B32C9;--azul:' + MOR + ';--mor:#D58BFF;--verde:' + LIMO + ';--ok:' + LIMO + '}',
+      'html.tema-halloween[data-area="ciencia-tecnologia"],html.tema-halloween [data-area="ciencia-tecnologia"]{--ac:' + LIMO + ';--ac-rgb:155,255,60;--ac-d:#4FA80F}',
+      'html.tema-halloween[data-area="matematica"],html.tema-halloween [data-area="matematica"]{--ac:' + MOR + ';--ac-rgb:157,92,255;--ac-d:#6B32C9}',
+      'html.tema-halloween[data-area="comunicacion"],html.tema-halloween [data-area="comunicacion"]{--ac:#FF4F7B;--ac-rgb:255,79,123;--ac-d:#B3204A}',
+      'html.tema-halloween[data-area="ciencias-sociales"],html.tema-halloween [data-area="ciencias-sociales"]{--ac:' + NAR + ';--ac-rgb:255,138,31;--ac-d:' + NAR_D + '}',
+      // Tarjetas de vidrio oscuro: se ve la escena detrás
+      'html.tema-halloween .saludo,html.tema-halloween .course,html.tema-halloween .card,html.tema-halloween .year-card,html.tema-halloween .sal-agenda,html.tema-halloween section.panel,html.tema-halloween .mcz-mis,html.tema-halloween .tema-card,html.tema-halloween .stats > div,html.tema-halloween .mcr{background:rgba(24,13,38,.5)!important;border-color:rgba(120,80,180,.35)!important;-webkit-backdrop-filter:blur(7px) saturate(1.2);backdrop-filter:blur(7px) saturate(1.2)}',
       // Logo: el verde pasa a naranja calabaza
       'html.tema-halloween img[src*="logo-modo-cachimbo"]{filter:hue-rotate(-48deg) saturate(1.35) brightness(1.08) drop-shadow(0 0 10px rgba(255,138,31,.35))}',
       // Botón principal: calabaza encendida
@@ -104,7 +110,7 @@
       // Avatar y chips de la cabecera
       'html.tema-halloween .mcu-av{background:' + NAR + '!important;color:#2a0d00!important}',
       // Tarjetas: brillo morado suave
-      'html.tema-halloween .saludo{background:radial-gradient(560px 240px at 0% 0%,rgba(255,138,31,.12),transparent 70%),radial-gradient(520px 260px at 100% 100%,rgba(157,92,255,.14),transparent 70%),linear-gradient(170deg,#1a0e2a,#110a1c)!important;border-color:#33224a!important;box-shadow:0 0 0 1px rgba(157,92,255,.06),0 18px 50px -20px rgba(120,40,255,.35)}',
+      'html.tema-halloween .saludo{background:radial-gradient(560px 240px at 0% 0%,rgba(255,138,31,.14),transparent 70%),radial-gradient(520px 260px at 100% 100%,rgba(157,92,255,.16),transparent 70%),rgba(22,12,36,.34)!important;border-color:rgba(120,80,180,.45)!important;box-shadow:0 0 0 1px rgba(157,92,255,.08),0 18px 50px -20px rgba(120,40,255,.45)}',
       'html.tema-halloween .course,html.tema-halloween .card,html.tema-halloween .year-card{box-shadow:0 14px 40px -24px rgba(140,60,255,.45)}',
       // La respuesta correcta sigue verde (verde limo), así no se confunde con el naranja
       'html.tema-halloween .option.correct{background:rgba(155,255,60,.12)!important;border-color:' + LIMO + '!important;border-bottom-color:#4FA80F!important}',
@@ -113,7 +119,7 @@
       'html.tema-halloween .icon.ok,html.tema-halloween .option.correct .icon{color:' + LIMO + '!important}',
       'html.tema-halloween .feedback.ok{color:#C9FF96!important;border-color:rgba(155,255,60,.35)!important;background:rgba(155,255,60,.08)!important}',
       // Cabecera fija de las páginas de cursos
-      'html.tema-halloween[data-area] header.top{background:rgba(14,7,25,.72)!important;-webkit-backdrop-filter:blur(12px)!important;backdrop-filter:blur(12px)!important}',
+      'html.tema-halloween[data-area] header.top{background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important}',
       // Perfil: portada de noche con luna
       'html.tema-halloween .banda{background:radial-gradient(60px 60px at 82% 30%,#FFF1C9 0 38%,rgba(255,220,140,.35) 39%,transparent 62%),linear-gradient(160deg,#2c1152,#1a0a33 55%,#3a1606)!important}',
       // Búho disfrazado
@@ -128,7 +134,8 @@
       '.hal-deco{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}',
       '.hal-estrellas{position:absolute;inset:0;background-image:radial-gradient(1.4px 1.4px at 12% 18%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 28% 8%,#fff 50%,transparent 51%),radial-gradient(1.2px 1.2px at 46% 22%,#e9dcff 50%,transparent 51%),radial-gradient(1px 1px at 63% 12%,#fff 50%,transparent 51%),radial-gradient(1.5px 1.5px at 74% 34%,#ffe9c9 50%,transparent 51%),radial-gradient(1px 1px at 91% 52%,#fff 50%,transparent 51%),radial-gradient(1.2px 1.2px at 6% 46%,#e9dcff 50%,transparent 51%),radial-gradient(1px 1px at 35% 40%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 55% 58%,#fff 50%,transparent 51%),radial-gradient(1.3px 1.3px at 84% 70%,#e9dcff 50%,transparent 51%),radial-gradient(1px 1px at 18% 72%,#fff 50%,transparent 51%);opacity:.55;animation:halCentella 6s ease-in-out infinite}',
       '@keyframes halCentella{0%,100%{opacity:.35}50%{opacity:.7}}',
-      '.hal-luna{position:absolute;right:max(4vw,24px);top:96px;width:clamp(90px,11vw,150px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 38% 36%,#FFF8E6 0%,#FFE7B0 48%,#F3C878 100%);box-shadow:0 0 40px 10px rgba(255,214,140,.28),0 0 140px 50px rgba(255,170,80,.12);opacity:.9}',
+      '.hal-luna{position:absolute;right:max(4vw,24px);top:96px;width:clamp(90px,11vw,150px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 38% 36%,#FFF8E6 0%,#FFE7B0 48%,#F3C878 100%);box-shadow:0 0 40px 10px rgba(255,214,140,.28);opacity:.9}',
+      '.hal-luna::before{content:"";position:absolute;inset:-110%;border-radius:50%;background:radial-gradient(circle,rgba(255,170,80,.14),transparent 62%)}',
       '.hal-luna::before,.hal-luna::after{content:"";position:absolute;border-radius:50%;background:rgba(200,150,80,.28)}',
       '.hal-luna::before{width:22%;height:22%;left:56%;top:26%}.hal-luna::after{width:14%;height:14%;left:30%;top:58%;box-shadow:42px -6px 0 -2px rgba(200,150,80,.22)}',
       '.hal-bat{position:absolute;left:0;top:0;width:44px;opacity:.9;animation:halVuela 24s linear infinite}',
@@ -140,12 +147,43 @@
       '.hal-hilo i{position:absolute;left:-8px;bottom:-14px;width:17px;height:15px;border-radius:50%;background:#12081d;box-shadow:0 0 0 2px #2a1640}',
       '.hal-hilo i::before{content:"";position:absolute;left:3px;top:4px;width:3px;height:3px;border-radius:50%;background:' + NAR + ';box-shadow:7px 0 0 ' + NAR + '}',
       '@keyframes halBaja{0%,100%{height:80px}50%{height:150px}}',
-      '.hal-niebla{position:absolute;left:-20%;right:-20%;bottom:-40px;height:220px;background:radial-gradient(40% 60% at 30% 70%,rgba(180,150,230,.13),transparent 70%),radial-gradient(35% 55% at 70% 80%,rgba(180,150,230,.11),transparent 70%);filter:blur(6px);animation:halNiebla 30s ease-in-out infinite alternate}',
-      '@keyframes halNiebla{to{transform:translateX(12%)}}',
-      '.hal-pueblo{position:absolute;left:0;right:0;bottom:0;height:clamp(90px,14vh,150px);opacity:.55}',
-      '.hal-pueblo svg{width:100%;height:100%;display:block}',
+      '.hal-niebla{position:absolute;left:-30%;right:-30%;bottom:-30px;height:34vh;background:radial-gradient(30% 50% at 25% 75%,rgba(190,160,240,.20),transparent 70%),radial-gradient(28% 45% at 60% 85%,rgba(190,160,240,.16),transparent 70%),radial-gradient(25% 40% at 90% 70%,rgba(190,160,240,.14),transparent 70%);filter:blur(10px);animation:halNiebla 34s ease-in-out infinite alternate}',
+      '.hal-niebla.dos{bottom:-60px;height:22vh;opacity:.8;animation-duration:22s;animation-direction:alternate-reverse}',
+      '@keyframes halNiebla{to{transform:translateX(14%)}}',
+      // Escena: iglesia, cementerio, árboles secos y fantasmas que salen de las tumbas
+      '.hal-escena{position:absolute;left:0;right:0;bottom:0;height:clamp(200px,44vh,430px)}',
+      '.hal-escena svg{position:absolute;left:50%;bottom:0;height:100%;width:auto;min-width:100%;transform:translateX(-50%)}',
+      '.hal-escena .vent{animation:halVentana 3.2s ease-in-out infinite}',
+      '.hal-escena .vent.b{animation-delay:-1.3s}.hal-escena .vent.c{animation-delay:-2.1s}',
+      '@keyframes halVentana{0%,100%{opacity:.95}30%{opacity:.55}45%{opacity:1}70%{opacity:.7}}',
+      '.hal-escena .vela{animation:halVela 1.6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}',
+      '.hal-escena .fan{transform-box:fill-box;transform-origin:50% 100%;opacity:0;animation:halFantasma 9s ease-in-out infinite}',
+      '.hal-escena .fan.b{animation-delay:-3s}.hal-escena .fan.c{animation-delay:-6s}',
+      '@keyframes halFantasma{0%{transform:translate(0,60px) scale(.5);opacity:0}12%{opacity:.85}45%{transform:translate(-14px,-70px) scale(1)}70%{transform:translate(12px,-140px) scale(1.05);opacity:.75}100%{transform:translate(-6px,-230px) scale(1.1);opacity:0}}',
+      '.hal-escena .cuervo{transform-box:fill-box;transform-origin:50% 100%;animation:halCuervo 6s ease-in-out infinite}',
+      '@keyframes halCuervo{0%,80%,100%{transform:rotate(0)}85%{transform:rotate(-10deg)}90%{transform:rotate(4deg)}}',
+      // Relámpago: el cielo se ilumina de golpe y aparece el rayo
+      '.hal-rayo{position:absolute;inset:0;background:radial-gradient(80% 60% at 30% 10%,rgba(210,190,255,.55),rgba(150,120,255,.15) 60%,transparent 80%);opacity:0;animation:halRayo 17s linear infinite}',
+      '.hal-rayo svg{position:absolute;left:24%;top:0;width:clamp(50px,6vw,90px);filter:drop-shadow(0 0 12px #c9b6ff)}',
+      '@keyframes halRayo{0%,90%,100%{opacity:0}90.6%{opacity:.9}91.2%{opacity:.1}91.8%{opacity:1}93.5%{opacity:0}}',
+      // Espectro grande que cruza el cielo
+      '.hal-espectro{position:absolute;top:18vh;left:0;width:clamp(70px,8vw,110px);opacity:0;animation:halEspectro 46s linear infinite;filter:drop-shadow(0 0 14px rgba(220,200,255,.45))}',
+      '.hal-espectro svg{display:block;width:100%;animation:halFlota 3s ease-in-out infinite}',
+      '@keyframes halEspectro{0%{transform:translateX(-15vw);opacity:0}5%{opacity:.35}45%{opacity:.35}50%{transform:translateX(110vw);opacity:0}100%{transform:translateX(110vw);opacity:0}}',
+      '@keyframes halFlota{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-14px) rotate(4deg)}}',
+      // Arañas que caminan por los bordes de la pantalla (encima de todo, sin estorbar)
+      '.hal-camina{position:fixed;z-index:60;pointer-events:none;width:26px;height:26px}',
+      '.hal-camina svg{display:block;width:100%;height:100%;overflow:visible}',
+      '.hal-camina .pa{animation:halPata .32s ease-in-out infinite alternate;transform-box:view-box;transform-origin:50% 50%}',
+      '.hal-camina .pb{animation:halPata .32s ease-in-out infinite alternate-reverse;transform-box:view-box;transform-origin:50% 50%}',
+      '@keyframes halPata{from{transform:rotate(-7deg)}to{transform:rotate(7deg)}}',
+      '.hal-camina.arriba{top:0;left:0;animation:halArriba 48s linear infinite}',
+      '@keyframes halArriba{0%{transform:translate(-40px,2px) rotate(90deg)}30%{transform:translate(38vw,2px) rotate(90deg)}36%{transform:translate(38vw,2px) rotate(90deg)}70%{transform:translate(72vw,2px) rotate(90deg)}74%{transform:translate(72vw,2px) rotate(90deg)}100%{transform:translate(105vw,2px) rotate(90deg)}}',
+      '.hal-camina.lado{left:2px;top:0;animation:halLado 38s linear infinite;animation-delay:-12s}',
+      '@keyframes halLado{0%{transform:translate(0,105vh) rotate(0deg)}40%{transform:translate(0,55vh) rotate(0deg)}46%{transform:translate(0,55vh) rotate(0deg)}100%{transform:translate(0,-40px) rotate(0deg)}}',
       '.hal-chispa{position:absolute;bottom:-10px;width:4px;height:4px;border-radius:50%;background:#FFB15A;box-shadow:0 0 8px 2px rgba(255,138,31,.7);animation:halSube 11s linear infinite;opacity:0}',
       '@keyframes halSube{0%{transform:translate(0,0);opacity:0}10%{opacity:.9}100%{transform:translate(40px,-80vh);opacity:0}}',
+      '@media (max-width:560px){.hal-escena{height:30vh}.hal-escena svg{transform:translateX(-64%)}.hal-camina.lado{display:none}}',
       // Aviso de la temática (inicio)
       '.hal-banda{position:relative;display:flex;align-items:center;gap:14px;margin:12px 0 14px;padding:14px 16px;border-radius:22px;overflow:hidden;' +
         'border:2px solid #45276a;border-bottom-width:5px;background:radial-gradient(260px 120px at 0% 50%,rgba(255,138,31,.28),transparent 70%),linear-gradient(100deg,#2a1146,#170b28 60%,#21102f);color:#f6efff;font-family:Nunito,sans-serif}',
@@ -169,7 +207,8 @@
       '.hal-boo{position:fixed;z-index:9999;pointer-events:none;width:64px;left:calc(50% - 32px);bottom:80px;animation:halBoo 1.6s ease-out forwards;filter:drop-shadow(0 0 16px rgba(220,200,255,.6))}',
       '.hal-boo svg{display:block;width:100%}',
       '@keyframes halBoo{0%{transform:translateY(30px) scale(.6);opacity:0}25%{opacity:.95}100%{transform:translateY(-180px) scale(1.05) rotate(-8deg);opacity:0}}',
-      '@media (prefers-reduced-motion:reduce){.hal-deco *,.hal-cal,.hal-banda *,.hal-banda::before,html.tema-halloween .btn-prin::after{animation:none!important}.hal-bat{display:none}}'
+      '@media (prefers-reduced-motion:reduce){.hal-deco *,.hal-cal,.hal-banda *,.hal-banda::before,html.tema-halloween .btn-prin::after,.hal-camina,.hal-camina *{animation:none!important}.hal-bat,.hal-camina,.hal-espectro,.hal-rayo{display:none}}',
+      'html.tema-halloween .mcr-p,html.tema-halloween .mcr-bt{background:rgba(48,26,76,.45)!important;border-color:rgba(140,96,210,.3)!important}'
     ].join('\n');
     (document.head || raiz).appendChild(st);
     quitar.push(function () { st.remove(); });
@@ -185,24 +224,73 @@
       '<div class="hal-bat">' + MURCIELAGO + '</div>' +
       '<div class="hal-bat" style="width:30px;animation-delay:-9s;animation-duration:30s;opacity:.6">' + MURCIELAGO + '</div>' +
       '<div class="hal-bat" style="width:22px;animation-delay:-17s;animation-duration:36s;opacity:.4">' + MURCIELAGO + '</div>' +
-      '<div class="hal-niebla"></div>' + chispas +
-      '<div class="hal-pueblo"><svg viewBox="0 0 1200 150" preserveAspectRatio="xMidYMax meet">' +
-        '<path d="M0 150V118q60-14 140-6t150-8 160 10 170-12 150 8 160-4 140 10 130-6v50z" fill="#120a1d"/>' +
-        // árbol seco
-        '<path d="M96 150l6-62q-14-12-30-14 16-2 30 8l-2-30q-10-10-22-12 14 0 22 8l4-24 6 26q8-12 22-14-12 6-18 18l2 30q12-12 28-12-16 6-26 18l6 68z" fill="#0d0716"/>' +
+      '<div class="hal-bat" style="width:26px;top:22vh;animation-delay:-4s;animation-duration:26s;opacity:.7">' + MURCIELAGO + '</div>' +
+      '<div class="hal-bat" style="width:18px;top:26vh;animation-delay:-4.6s;animation-duration:26s;opacity:.55">' + MURCIELAGO + '</div>' +
+      '<div class="hal-rayo"><svg viewBox="0 0 60 220" fill="none" stroke="#EDE4FF" stroke-width="3" stroke-linejoin="round"><path d="M34 0 22 70l14 4-20 66 12 4-16 76"/><path d="M22 70 6 104M28 144l14 30" stroke-width="1.6" opacity=".7"/></svg></div>' +
+      '<div class="hal-espectro">' + FANTASMA + '</div>' +
+      chispas +
+      '<div class="hal-escena"><svg viewBox="0 0 1600 420" preserveAspectRatio="xMidYMax slice">' +
+        '<defs><radialGradient id="halLuz" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFB347" stop-opacity=".55"/><stop offset="1" stop-color="#FF8A1F" stop-opacity="0"/></radialGradient>' +
+        '<radialGradient id="halAura"><stop offset="0" stop-color="#7a52c4" stop-opacity=".35"/><stop offset="1" stop-color="#7a52c4" stop-opacity="0"/></radialGradient><linearGradient id="halFan" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F4EEFF"/><stop offset="1" stop-color="#C9B6FF" stop-opacity="0"/></linearGradient></defs>' +
+        // colinas lejanas
+        '<path d="M0 420V290q120-50 260-30t260-20 280 30 240-40 300 20 260-10v180z" fill="#150a22"/>' +
+        // iglesia gótica
+        '<ellipse cx="1140" cy="270" rx="300" ry="220" fill="url(#halAura)"/>' +
+        '<g fill="#1c1131" stroke="#3a2560" stroke-width="1.5">' +
+          '<path d="M1010 420V196l34-30 34 30v224z"/><path d="M1044 30l-26 136h52z"/><path d="M1041 6h6v28h-6zM1033 14h22v6h-22z"/>' +
+          '<path d="M1078 420V250l92-74 92 74v170z"/><path d="M1240 420V300h60v120z"/><path d="M1240 300l30-26 30 26z"/>' +
+        '</g>' +
+        '<circle cx="1044" cy="220" r="34" fill="url(#halLuz)"/>' +
+        '<circle class="vent" cx="1044" cy="220" r="15" fill="#FF9A2E"/><path d="M1044 205v30M1029 220h30M1034 210l20 20M1054 210l-20 20" stroke="#5a2a08" stroke-width="2"/>' +
+        '<path class="vent b" d="M1112 330v-34q0-12 10-12t10 12v34z" fill="#FFB347"/><path class="vent c" d="M1208 330v-34q0-12 10-12t10 12v34z" fill="#FFB347"/>' +
+        '<path class="vent" d="M1034 300v-26q0-10 10-10t10 10v26z" fill="#E8761A" opacity=".85"/>' +
+        '<path d="M1146 420v-58q0-24 24-24t24 24v58z" fill="#2a1505"/><path class="vent b" d="M1152 420v-54q0-18 18-18t18 18v54z" fill="#C9500A" opacity=".75"/>' +
+        '<ellipse cx="1170" cy="406" rx="70" ry="10" fill="#FF8A1F" opacity=".12"/>' +
+        // árboles secos
+        '<path d="M140 420l10-150q-30-24-62-30 32 0 60 18l-4-62q-22-22-48-26 28 0 46 18l6-52 12 54q16-24 44-30-24 12-36 36l4 64q24-24 58-26-34 12-54 38l10 148z" fill="#0b0613"/>' +
+        '<g class="cuervo"><path d="M186 254q10-12 22-6l8-4-4 8q2 10-10 12l-4 8h-4l2-8q-10-2-10-10z" fill="#05030a"/><circle cx="208" cy="251" r="1.6" fill="#FF8A1F"/></g>' +
+        '<path d="M1480 420l8-118q-24-18-50-22 26 0 48 14l-2-48q-18-18-38-20 22 0 36 14l6-40 10 42q12-18 34-22-18 10-28 28l2 50q18-18 44-20-26 10-42 30l8 112z" fill="#0b0613"/>' +
+        // fantasmas que salen de las tumbas (detrás de las lápidas)
+        '<g transform="translate(452 300)"><g class="fan"><path d="M0 0q0-30 26-30t26 30v40l-9-8-8 8-9-8-8 8-9-8-9 8z" fill="url(#halFan)"/><circle cx="17" cy="-6" r="3.4" fill="#2a1840"/><circle cx="35" cy="-6" r="3.4" fill="#2a1840"/><ellipse cx="26" cy="8" rx="4" ry="5" fill="#2a1840"/></g></g>' +
+        '<g transform="translate(694 312)"><g class="fan b"><path d="M0 0q0-26 22-26t22 26v34l-7-7-7 7-8-7-7 7-7-7-6 7z" fill="url(#halFan)"/><circle cx="15" cy="-5" r="3" fill="#2a1840"/><circle cx="29" cy="-5" r="3" fill="#2a1840"/><path d="M15 6q7 5 14 0" stroke="#2a1840" stroke-width="2.4" fill="none"/></g></g>' +
+        '<g transform="translate(1338 320)"><g class="fan c"><path d="M0 0q0-28 24-28t24 28v38l-8-8-8 8-8-8-8 8-8-8-8 8z" fill="url(#halFan)"/><circle cx="16" cy="-6" r="3.2" fill="#2a1840"/><circle cx="32" cy="-6" r="3.2" fill="#2a1840"/><ellipse cx="24" cy="8" rx="3.5" ry="4.5" fill="#2a1840"/></g></g>' +
+        // reja de hierro
+        '<g stroke="#160c22" stroke-width="5" stroke-linecap="round"><path d="M290 352H960M290 380H960" stroke-width="4"/>' +
+          '<path d="M300 400v-74M330 400v-74M360 400v-74M390 400v-74M420 400v-74M540 400v-74M570 400v-74M600 400v-74M630 400v-74M780 400v-74M810 400v-74M840 400v-74M870 400v-74M900 400v-74M930 400v-74M960 400v-74"/></g>' +
+        '<g fill="#160c22"><path d="M295 330l5-12 5 12zM325 330l5-12 5 12zM355 330l5-12 5 12zM385 330l5-12 5 12zM415 330l5-12 5 12zM535 330l5-12 5 12zM565 330l5-12 5 12zM595 330l5-12 5 12zM625 330l5-12 5 12zM775 330l5-12 5 12zM805 330l5-12 5 12zM835 330l5-12 5 12zM865 330l5-12 5 12zM895 330l5-12 5 12zM925 330l5-12 5 12zM955 330l5-12 5 12z"/></g>' +
+        // suelo
+        '<path d="M0 420V372q140-14 300-8t320-6 300 8 320-10 360 6v58z" fill="#0a0511"/>' +
         // lápidas
-        '<path d="M250 150v-34q0-14 14-14t14 14v34z" fill="#1b1029"/><path d="M262 116h4v14h-4zM258 120h12v4h-12z" fill="#2d1c42"/>' +
-        '<path d="M300 150v-24q0-10 10-10t10 10v24z" fill="#170d24"/>' +
-        '<path d="M880 150v-30q0-12 12-12t12 12v30z" fill="#1b1029"/><path d="M890 118h4v12h-4zM886 122h12v4h-12z" fill="#2d1c42"/>' +
-        // casa embrujada
-        '<path d="M960 150V78l-14 6 46-46 46 46-14-6v72z" fill="#0f0819"/><path d="M1000 38l10-26 10 26" fill="#0f0819"/><path d="M984 92h12v16h-12zM1012 92h12v16h-12z" fill="#FFB347" opacity=".75"/><path d="M996 128h14v22h-14z" fill="#FF8A1F" opacity=".55"/>' +
-        // calabacitas con luz
-        '<g opacity=".95"><ellipse cx="180" cy="140" rx="16" ry="12" fill="#C9500A"/><path d="M172 137l4-4 4 4zM184 137l4-4 4 4zM172 143q8 5 16 0" fill="#FFD37A"/></g>' +
-        '<g opacity=".9"><ellipse cx="1110" cy="141" rx="13" ry="10" fill="#C9500A"/><path d="M1103 139l3-3 3 3zM1112 139l3-3 3 3zM1104 144q6 4 12 0" fill="#FFD37A"/></g>' +
-      '</svg></div>';
-    function ponerDeco() { if (document.body && !deco.parentNode) document.body.insertBefore(deco, document.body.firstChild); }
+        '<g fill="#22163a">' +
+          '<path d="M440 392v-54q0-24 30-24t30 24v54z"/><path d="M682 392v-44q0-20 26-20t26 20v44z"/>' +
+          '<path d="M1326 396v-48q0-22 28-22t28 22v48z"/>' +
+          '<path d="M584 392v-48h-14v-12h14v-14h12v14h14v12h-14v48z"/><path d="M816 392v-40q0-16 20-16t20 16v40z"/>' +
+          '<path d="M1416 398v-36q0-14 18-14t18 14v36z"/><path d="M372 394v-30q0-12 16-12t16 12v30z"/>' +
+        '</g>' +
+        '<g fill="#3a2a58" font-family="Nunito,sans-serif" font-weight="900" text-anchor="middle"><text x="470" y="360" font-size="15">RIP</text><text x="708" y="368" font-size="12">RIP</text><text x="1354" y="372" font-size="13">RIP</text></g>' +
+        '<path d="M440 392v-54q0-24 30-24" stroke="#4a3570" stroke-width="2" fill="none" opacity=".6"/><path d="M1326 396v-48q0-22 28-22" stroke="#4a3570" stroke-width="2" fill="none" opacity=".6"/>' +
+        // montoncitos de tierra de las tumbas abiertas
+        '<path d="M430 398q40-16 80 0zM674 398q34-12 68 0zM1318 402q36-14 72 0z" fill="#170c22"/>' +
+        // velas
+        '<g><rect x="520" y="378" width="7" height="16" rx="2" fill="#E9DCC0"/><path class="vela" d="M523.5 378q-5-7 0-14 5 7 0 14z" fill="#FFC14D"/><circle cx="523.5" cy="372" r="12" fill="url(#halLuz)"/></g>' +
+        '<g><rect x="1398" y="384" width="6" height="14" rx="2" fill="#E9DCC0"/><path class="vela" d="M1401 384q-4-6 0-12 4 6 0 12z" fill="#FFC14D" style="animation-delay:-.7s"/><circle cx="1401" cy="378" r="11" fill="url(#halLuz)"/></g>' +
+        // calabazas encendidas
+        '<g><circle cx="250" cy="390" r="40" fill="url(#halLuz)"/><ellipse cx="250" cy="394" rx="24" ry="18" fill="#D0560B"/><path d="M247 377q2-9 8-10" stroke="#3b5d12" stroke-width="4" fill="none"/>' +
+          '<path class="vent" d="M238 390l5-6 5 6zM253 390l5-6 5 6zM238 399q12 8 24 0l-4 4-4-3-4 3-4-3-4 3z" fill="#FFE08A"/></g>' +
+        '<g><circle cx="905" cy="396" r="30" fill="url(#halLuz)"/><ellipse cx="905" cy="399" rx="18" ry="14" fill="#C9500A"/><path class="vent c" d="M897 396l4-5 4 5zM907 396l4-5 4 5zM897 403q8 6 16 0" fill="#FFE08A"/></g>' +
+        '<g><circle cx="1290" cy="402" r="26" fill="url(#halLuz)"/><ellipse cx="1290" cy="405" rx="15" ry="11" fill="#C9500A"/><path class="vent b" d="M1284 403l3-4 3 4zM1292 403l3-4 3 4zM1284 408q6 4 12 0" fill="#FFE08A"/></g>' +
+      '</svg></div>' +
+      '<div class="hal-niebla"></div><div class="hal-niebla dos"></div>';
+
+    var ARANA = '<svg viewBox="0 0 26 26"><g stroke="#1a0f26" stroke-width="1.6" fill="none" stroke-linecap="round">' +
+      '<g class="pa"><path d="M11 11 4 5 2 9M11 13H3L1 15M15 15l7 6 1 3M15 13h8l2-2"/></g>' +
+      '<g class="pb"><path d="M15 11l7-6 2 4M15 13h8l2 2M11 15l-7 6-1 3M11 13H3L1 11"/></g></g>' +
+      '<ellipse cx="13" cy="16" rx="4.6" ry="5.6" fill="#1a0f26"/><circle cx="13" cy="9.6" r="3" fill="#1a0f26"/><circle cx="11.9" cy="9" r=".9" fill="#FF4F7B"/><circle cx="14.1" cy="9" r=".9" fill="#FF4F7B"/><path d="M11.4 15.4h3.2M13 14v3.4" stroke="#FF8A1F" stroke-width="1"/></svg>';
+    var aranas = [];
+    ['arriba', 'lado'].forEach(function (k) { var a = document.createElement('div'); a.className = 'hal-camina ' + k; a.setAttribute('aria-hidden', 'true'); a.innerHTML = ARANA; aranas.push(a); });
+    function ponerDeco() { if (document.body && !deco.parentNode) { document.body.insertBefore(deco, document.body.firstChild); aranas.forEach(function (a) { document.body.appendChild(a); }); } }
     if (document.body) ponerDeco(); else document.addEventListener('DOMContentLoaded', ponerDeco);
-    quitar.push(function () { deco.remove(); });
+    quitar.push(function () { deco.remove(); aranas.forEach(function (a) { a.remove(); }); });
 
     /* ---------- búho con sombrero de bruja ---------- */
     function gorros() {
@@ -326,9 +414,10 @@
           timer = setTimeout(function () {
             if (!nodos) return;
             var r = Math.random();
-            if (r < 0.35) { if (S.buho) S.buho('normal'); }            // búho a lo lejos
-            else if (r < 0.7) { nota(196, 0, 3, 'sine', 0.06); nota(196 * 2.76, 0, 2, 'sine', 0.015); } // campana lejana
-            else { nota(95, 0, 0.6, 'sawtooth', 0.02, 70); soplo(0.6, 0.03, 300, 160); }      // puerta que cruje
+            if (r < 0.3) { if (S.buho) S.buho('normal'); }            // búho a lo lejos
+            else if (r < 0.6) { nota(196, 0, 3, 'sine', 0.06); nota(196 * 2.76, 0, 2, 'sine', 0.015); } // campana lejana
+            else if (r < 0.85) { nota(95, 0, 0.6, 'sawtooth', 0.02, 70); soplo(0.6, 0.03, 300, 160); }      // puerta que cruje
+            else { soplo(2.6, 0.11, 220, 45); nota(42, 0.05, 2.2, 'sine', 0.05, 30); }            // trueno
             susto();
           }, 14000 + Math.random() * 16000);
         })();
