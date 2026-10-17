@@ -207,6 +207,11 @@
       '.mc-rgo-pz b{display:block;font:1000 13.5px Nunito,sans-serif;color:var(--rg-c)}' +
       '.mc-rgo-pz small{display:block;font:800 11.5px Nunito,sans-serif;color:#9a9a9a}' +
       '.mc-rgo-pz em{position:absolute;top:6px;right:6px;font:1000 11px Nunito,sans-serif;font-style:normal;color:#FFC800;background:rgba(255,200,0,.14);padding:2px 7px;border-radius:7px}' +
+      '.mc-rgo-pz{font:inherit;color:inherit;cursor:pointer;width:100%}.mc-rgo-pz.no{cursor:default}.mc-rgo-pz:focus-visible{outline:3px solid var(--rg-c);outline-offset:2px}' +
+      '.mc-rgo-sem ul{list-style:none;margin:14px 0 0;padding:0;max-height:240px;overflow:auto;text-align:left}' +
+      '.mc-rgo-sem li{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border:2px solid #262626;border-radius:12px;margin-top:6px;font:800 14.5px Nunito,sans-serif;background:#141416}' +
+      '.mc-rgo-sem li b{color:var(--rg-c);font-weight:1000;font-variant-numeric:tabular-nums}' +
+      '.mc-rgo-sem button{background:#1f1f22;color:#f2f2f2;box-shadow:0 5px 0 #000;border:2px solid #333}' +
       '.mc-rgo-pz.no>span{filter:grayscale(1) brightness(.3)}.mc-rgo-pz.no b{color:#5f5f5f}.mc-rgo-pz.no{background:#121214}' +
       '.mc-rgo-mini{display:inline-block;width:34px;vertical-align:middle;flex:none}' +
       '@media (prefers-reduced-motion:reduce){.mc-rgo-em *,.mc-rgo-bar i::after,.mc-rgo-cf{animation:none!important}.mc-rgo-cf{display:none}}';
@@ -288,16 +293,34 @@
 
   /* ---------- Perfil: insignia, vitrina y ranking ---------- */
   function vitrina(filas) {
-    var hoy = clave(), cuenta = [0, 0, 0, 0, 0], sem = {};
-    (filas || []).forEach(function (f) { if (f.semana && f.semana < hoy && (+f.xp || 0) > 0) { var n = nivel(f.xp); cuenta[n]++; (sem[n] = sem[n] || []).push(f.semana); } });
-    var total = cuenta.reduce(function (a, b) { return a + b; }, 0);
+    var hoy = clave(), sem = [[], [], [], [], []];
+    (filas || []).forEach(function (f) { if (f.semana && f.semana < hoy && (+f.xp || 0) > 0) sem[nivel(f.xp)].push({ semana: f.semana, xp: +f.xp }); });
+    sem.forEach(function (l) { l.sort(function (a, b) { return a.semana < b.semana ? 1 : -1; }); });
+    var total = sem.reduce(function (a, l) { return a + l.length; }, 0);
     var html = '';
     for (var n = 4; n >= 0; n--) {
-      var tiene = cuenta[n] > 0, ult = tiene ? sem[n].sort().pop() : null;
-      html += '<div class="mc-rgo-pz' + (tiene ? '' : ' no') + '" style="' + vars(n) + '">' + (cuenta[n] > 1 ? '<em>×' + cuenta[n] + '</em>' : '') +
-        '<span>' + svg(n, { mini: !tiene, quieto: !tiene }) + '</span><b>' + NOM[n] + '</b><small>' + (tiene ? rangoSemana(ult) : miles(MIN[n]) + ' XP') + '</small></div>';
+      var c = sem[n].length;
+      html += c
+        ? '<button type="button" class="mc-rgo-pz" data-n="' + n + '" style="' + vars(n) + '" aria-label="' + NOM[n] + ', ' + c + (c === 1 ? ' semana' : ' semanas') + '">' + (c > 1 ? '<em>×' + c + '</em>' : '') +
+          '<span>' + svg(n) + '</span><b>' + NOM[n] + '</b><small>' + rangoSemana(sem[n][0].semana) + '</small></button>'
+        : '<div class="mc-rgo-pz no" style="' + vars(n) + '"><span>' + svg(n, { mini: true, quieto: true }) + '</span><b>' + NOM[n] + '</b><small>' + miles(MIN[n]) + ' XP</small></div>';
     }
-    return { total: total, html: html };
+    return { total: total, html: html, semanas: sem };
+  }
+  // Al tocar un emblema: las semanas en que lo ganaste, con el XP de cada una
+  function semanas(n, lista) {
+    var d = document.createElement('div');
+    d.className = 'mc-rgo-up'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true'); d.setAttribute('aria-label', NOM[n] + ': semanas');
+    d.innerHTML = '<div class="mc-rgo-up-c mc-rgo-sem" style="' + vars(n) + '"><small>Mi vitrina</small>' +
+      '<div class="mc-rgo-up-em" style="width:150px">' + svg(n) + '</div><h2>' + NOM[n] + (lista.length > 1 ? ' ×' + lista.length : '') + '</h2>' +
+      '<p>' + (lista.length === 1 ? 'Lo ganaste 1 semana.' : 'Lo ganaste ' + lista.length + ' semanas.') + '</p>' +
+      '<ul>' + lista.map(function (x) { return '<li><span>' + rangoSemana(x.semana) + '</span><b>' + miles(x.xp) + ' XP</b></li>'; }).join('') + '</ul>' +
+      '<button type="button">Cerrar</button></div>';
+    function cerrar() { d.classList.remove('ver'); setTimeout(function () { d.remove(); }, 350); }
+    d.querySelector('button').addEventListener('click', cerrar);
+    d.addEventListener('click', function (e) { if (e.target === d) cerrar(); });
+    document.body.appendChild(d);
+    requestAnimationFrame(function () { requestAnimationFrame(function () { d.classList.add('ver'); }); });
   }
   function enPerfil() {
     var saludo = document.getElementById('saludo');
@@ -327,6 +350,10 @@
       sec.innerHTML = '<h2 class="sec-tit" style="margin-top:0">Mi vitrina de rangos</h2>' +
         '<p class="nota" style="margin:2px 0 0">' + (v.total ? v.total + (v.total === 1 ? ' semana cerrada' : ' semanas cerradas') + '. Cada lunes se guarda el rango que alcanzaste.' : 'Cada lunes se guarda aquí el rango que alcanzaste en la semana.') + '</p>' +
         '<div class="mc-rgo-vit">' + v.html + '</div>';
+      sec.querySelector('.mc-rgo-vit').addEventListener('click', function (e) {
+        var b = e.target.closest('button.mc-rgo-pz');
+        if (b) semanas(+b.dataset.n, v.semanas[+b.dataset.n]);
+      });
       sec.hidden = false;
       if (location.hash === '#rango') sec.scrollIntoView({ block: 'start' });
     }).catch(function () {});
