@@ -146,7 +146,7 @@
   }
   function revisar(x) {
     var cods = codigosPara(x);
-    return jsonp({ action: 'acceso', producto: x, dispositivo: dispositivo(), codigos: cods.join(','), equipo: equipo() })
+    return jsonp2({ action: 'acceso', producto: x, dispositivo: dispositivo(), codigos: cods.join(','), equipo: equipo() })
       .then(function (r) {
         if (!r || !r.ok) throw new Error('respuesta');
         var a = accesos(), mensaje = '';
@@ -176,7 +176,7 @@
   // Activa un código. producto = página actual (o '' desde el inicio)
   function activar(codigo, x) {
     codigo = String(codigo || '').toUpperCase().replace(/\s+/g, '');
-    return jsonp({ action: 'activar', codigo: codigo, producto: x || '', dispositivo: dispositivo(), equipo: equipo() })
+    return jsonp2({ action: 'activar', codigo: codigo, producto: x || '', dispositivo: dispositivo(), equipo: equipo() })
       .then(function (r) {
         if (r && r.ok) {
           var a = accesos();
