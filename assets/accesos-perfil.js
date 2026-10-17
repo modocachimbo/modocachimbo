@@ -52,6 +52,7 @@
     '.acc .rojo:disabled{opacity:.6}',
     '.acc .gris{padding:10px 16px;border-radius:12px;border:2px solid #2e2e2e;border-bottom-width:4px;background:transparent;color:#ddd;font:900 13.5px Nunito,sans-serif;cursor:pointer}',
     '.acc .err{color:#FF4B4B;font:800 13px Nunito,sans-serif;margin-top:10px}',
+    '.acc .local{margin-top:10px;padding:9px 14px;border-radius:12px;border:2px dashed #FF4B4B;background:transparent;color:#ff9b9b;font:900 13px Nunito,sans-serif;cursor:pointer}',
     '.acc-pie{display:flex;gap:10px 14px;margin-top:14px;align-items:center;flex-wrap:wrap}',
     '.acc-btn{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border-radius:14px;border:2px solid #1CB0F6;border-bottom-width:5px;background:rgba(28,176,246,.1);color:#1CB0F6;font:1000 13.5px Nunito,sans-serif;letter-spacing:.04em;text-transform:uppercase;text-decoration:none}',
     '.acc-btn svg{width:18px;height:18px}',
@@ -68,7 +69,7 @@
   var nota = document.getElementById('accesosNota');
   if (nota) nota.textContent = 'Tus códigos se guardan en tu cuenta. Si quitas uno de este equipo, deja libre su cupo y puedes activarlo otra vez.';
 
-  var cursos = {}, servidor = {}, elegido = null, error = '';
+  var cursos = {}, servidor = {}, elegido = null, error = '', sinRed = false;
   fetch('assets/cursos.json').then(function (r) { return r.json(); }).then(function (d) {
     (d.cursos || []).forEach(function (c) { cursos[c.id] = c.nombre; });
     pintar();
@@ -116,7 +117,8 @@
         (quedan !== null && s.registrado ? '<br>Te quedan <strong>' + quedan + ' de ' + s.limite + '</strong> quitadas este mes para este código.' : '');
     return '<li class="conf"><b>¿Quitar ' + esc(nombre(s.producto || a.producto)) + (mal ? ' de tu lista?' : ' de este equipo?') + '</b><p>' + texto + '</p>' +
       '<div class="bts"><button type="button" class="rojo" data-si="' + esc(a.codigo) + '">Sí, quitar</button><button type="button" class="gris" data-no="1">Cancelar</button></div>' +
-      (error ? '<div class="err" role="alert">' + esc(error) + '</div>' : '') + '</li>';
+      (error ? '<div class="err" role="alert">' + esc(error) + '</div>' : '') +
+      (sinRed ? '<button type="button" class="local" data-local="' + esc(a.codigo) + '">Quitarlo solo de este equipo</button>' : '') + '</li>';
   }
 
   function pintar() {
@@ -131,15 +133,19 @@
   }
 
   ul.addEventListener('click', function (e) {
-    var q = e.target.closest('[data-c]'), si = e.target.closest('[data-si]'), no = e.target.closest('[data-no]');
-    if (q) { elegido = elegido === q.dataset.c ? null : q.dataset.c; error = ''; pintar(); return; }
-    if (no) { elegido = null; error = ''; pintar(); return; }
+    var q = e.target.closest('[data-c]'), si = e.target.closest('[data-si]'), no = e.target.closest('[data-no]'), lo = e.target.closest('[data-local]');
+    if (q) { elegido = elegido === q.dataset.c ? null : q.dataset.c; error = ''; sinRed = false; pintar(); return; }
+    if (no) { elegido = null; error = ''; sinRed = false; pintar(); return; }
+    if (lo) { MCAcceso.soltar(lo.dataset.local, true).then(function () { elegido = null; error = ''; sinRed = false; revisar(); }); return; }
     if (!si) return;
     si.disabled = true; si.textContent = 'Quitando…';
     MCAcceso.soltar(si.dataset.si).then(function (r) {
-      if (r.ok) { elegido = null; error = ''; delete servidor[si.dataset.si]; revisar(); return; }
-      error = r.mensaje || r.error || 'No se pudo quitar. Inténtalo otra vez.'; pintar();
-    }, function () { error = 'No se pudo conectar. Revisa tu internet.'; pintar(); });
+      if (r.ok) { elegido = null; error = ''; sinRed = false; delete servidor[si.dataset.si]; revisar(); return; }
+      error = r.mensaje || r.error || 'No se pudo quitar. Inténtalo otra vez.'; sinRed = false; pintar();
+    }, function () {
+      error = 'No se pudo conectar con el servidor. Inténtalo otra vez o quítalo solo de este equipo (el cupo no se libera).';
+      sinRed = true; pintar();
+    });
   });
 
   window.MCMisAccesos = { pintar: revisar };
