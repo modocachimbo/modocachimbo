@@ -711,7 +711,7 @@
   const colorDe = j => 'c' + ((j && j.color) || 0) % 4;
   const nombreDe = j => j.yo ? 'Tú' : j.apodo;
   // Emblema del rango de la semana sobre la esquina del avatar (assets/rango.js; xp viene de ver_duelo, supabase/24)
-  const rangoDe = j => j && j.xp != null && window.MCRango ? '<span class="rgo" title="' + MCRango.nombre(MCRango.nivel(j.xp)) + '">' + MCRango.svg(MCRango.nivel(j.xp), { mini: true }) + '</span>' : '';
+  const rangoDe = j => j && j.xp != null && window.MCRango && MCRango.nivel(j.xp) >= 0 ? '<span class="rgo" title="' + MCRango.nombre(MCRango.nivel(j.xp)) + '">' + MCRango.svg(MCRango.nivel(j.xp), { mini: true }) + '</span>' : '';
   const avatar = (j, extra) => '<span class="av ' + colorDe(j) + (extra || '') + '">' + esc(inicial(j.yo ? 'Tú' : j.apodo)) + rangoDe(j) + '</span>';
   const cmdCard = k => '<div class="cmd" style="--c:' + CMD[k].c + '"><div class="ci">' + IC[k] + '</div><b>' + CMD[k].nom + '</b><small>' + CMD[k].que + '</small></div>';
   function toast(html, color, ic) {
@@ -1091,7 +1091,7 @@
     for (let i = 0; i < d.max; i++) {
       const j = js[i];
       if (!j) { html += '<div class="puesto-sala libre"><span class="av">+</span><b>Libre</b><small>Esperando</small></div>'; continue; }
-      html += '<div class="puesto-sala ' + colorDe(j) + (j.yo ? ' yo' : '') + (VISTOS[j.apodo] ? '' : ' entra') + '">' + avatar(j) + '<b>' + esc(nombreDe(j)) + '</b><small>' + (j.xp != null && window.MCRango ? '<i class="rgo-n r' + MCRango.nivel(j.xp) + '">' + MCRango.nombre(MCRango.nivel(j.xp)) + '</i> · ' : '') + (j.creador ? 'Creó el duelo' : 'Listo') + '</small></div>';
+      html += '<div class="puesto-sala ' + colorDe(j) + (j.yo ? ' yo' : '') + (VISTOS[j.apodo] ? '' : ' entra') + '">' + avatar(j) + '<b>' + esc(nombreDe(j)) + '</b><small>' + (j.xp != null && window.MCRango && MCRango.nivel(j.xp) >= 0 ? '<i class="rgo-n r' + MCRango.nivel(j.xp) + '">' + MCRango.nombre(MCRango.nivel(j.xp)) + '</i> · ' : '') + (j.creador ? 'Creó el duelo' : 'Listo') + '</small></div>';
       VISTOS[j.apodo] = 1;
     }
     return html;

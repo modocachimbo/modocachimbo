@@ -16,7 +16,7 @@ const EQ_PERMISOS = [
     ['corr', 'Correcciones', 'Ver, verificar y reaplicar correcciones'],
     ['alumnos', 'Alumnos', 'Ver la lista de alumnos con su racha y progreso'],
     ['simulacro', 'Top simulacro', 'Ver el ranking semanal'],
-    ['topxp', 'Top XP', 'Ver quiénes ganaron más experiencia en la semana'],
+    ['topxp', 'Top de la semana', 'Ver quiénes ganaron más experiencia en la semana'],
     ['agenda', 'Agenda', 'Programar fechas (seminarios, simulacros, exámenes) para todos los alumnos'],
     ['codigos', 'Códigos', 'Crear, borrar y liberar códigos. Ojo: da acceso al contenido pagado'],
   ]],
