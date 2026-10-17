@@ -472,12 +472,11 @@
     <a class="volver" href="index.html">← Volver al inicio</a>
   </div>
 
+<script src="assets/accesos-perfil.js"></script>
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var CAMPOS = ['nombre', 'apodo', 'carrera', 'modalidad', 'celular'];
-  var NOMBRES = { 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'seminario-VIP': 'Todos los Seminarios', 'banqueo-VIP': 'Todo el Banqueo', 'tarjetas-VIP': 'Todas las Flashcards', 'TODO-VIP': 'Acceso total', 'simulacro': 'Simulacro' };
-  var TIPO_NOM = { curso: 'Curso: ', repaso: 'Repaso: ', fijas: 'Fijas: ', seminario: 'Seminarios: ', banqueo: 'Banqueo: ', tarjetas: 'Flashcards: ' };
 
   // Bloque y carrera (lista en assets/carreras.js)
   // (se pueden cambiar desde el panel: MCCarreras.cargar() trae la versión guardada)
@@ -609,26 +608,8 @@
   }
   $('btnEditar').addEventListener('click', abrirDatos);
 
-  function pintarAccesos() {
-    var ul = $('accesos'); ul.textContent = '';
-    var lista = window.MCAcceso ? MCAcceso.activos() : [];
-    if (!lista.length) {
-      var li = document.createElement('li'); li.textContent = 'Aún no activaste ningún código en este equipo.';
-      ul.appendChild(li); return;
-    }
-    lista.forEach(function (a) {
-      var li = document.createElement('li');
-      var prod = a.producto || '';
-      var nom = prod.split(',').map(function (p) {
-        return NOMBRES[p] || p.replace(/^(curso|repaso|fijas|seminario|banqueo|tarjetas)-/, function (x, t) { return TIPO_NOM[t]; });
-      }).join(' + ');
-      li.appendChild(document.createTextNode(nom));
-      var s = document.createElement('span');
-      s.textContent = a.codigo + (a.vence ? ' · vence ' + new Date(a.vence).toLocaleDateString('es-PE') : '');
-      li.appendChild(s);
-      ul.appendChild(li);
-    });
-  }
+  // Mis accesos: assets/accesos-perfil.js
+  function pintarAccesos() { if (window.MCMisAccesos) MCMisAccesos.pintar(); }
 
   function cargar() {
     var u = MCAuth.usuario();

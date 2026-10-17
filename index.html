@@ -713,6 +713,8 @@ function jsonpRequest(url) {
     }
     document.getElementById('barCodigo').addEventListener('click', abrirCodigo);
     document.getElementById('salCodigo').addEventListener('click', abrirCodigo);
+    // Desde Perfil · Mis accesos: index.html#codigo abre la ventana directo
+    if (location.hash === '#codigo') { history.replaceState(null, '', location.pathname + location.search); abrirCodigo(); }
     async function activar() {
       var codigo = input.value.trim().toUpperCase();
       msg.className = 'cod-msg';
