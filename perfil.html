@@ -976,7 +976,7 @@
       var nom = x.apodo || 'Cachimbo';
       return '<div class="rk-fila' + (x.yo ? ' yo' : '') + '"><span class="n">' + (x.puesto <= 3 ? medalla(x.puesto) : x.puesto) + '</span>' +
         '<span class="avt" style="background:' + COL[(x.puesto - 1) % COL.length] + '">' + esc(nom.charAt(0).toUpperCase()) + '</span>' +
-        '<span class="nom">' + esc(nom) + (x.yo ? ' (tú)' : '') + '</span><span class="xp">' + (x.xp || 0) + ' XP</span></div>';
+        '<span class="nom">' + esc(nom) + (x.yo ? ' (tú)' : '') + '</span>' + (window.MCRango ? MCRango.mini(x.xp) : '') + '<span class="xp">' + (x.xp || 0) + ' XP</span></div>';
     }
     function cargarRanking() {
       if (cargado || !MCAuth.usuario()) return;

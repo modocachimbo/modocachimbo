@@ -78,6 +78,12 @@
     cz.src = BASE + 'assets/corazones.js';
     document.head.appendChild(cz);
     var pagina = location.href.replace(/[?#].*$/, '');
+    // Rangos de la semana: tarjeta en el inicio, vitrina en el perfil (assets/rango.js)
+    if (pagina === BASE || pagina === BASE + 'index.html' || pagina === BASE + 'perfil.html') {
+      var rg = document.createElement('script');
+      rg.src = BASE + 'assets/rango.js';
+      document.head.appendChild(rg);
+    }
     if (pagina !== BASE && pagina !== BASE + 'index.html') {
       var bh = document.createElement('script');
       bh.src = BASE + 'assets/buho.js';
