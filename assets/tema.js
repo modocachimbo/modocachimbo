@@ -192,6 +192,9 @@
       '.hal-banda .ic{position:relative;width:54px;flex:none;filter:drop-shadow(0 0 14px rgba(255,138,31,.6));animation:halBail 3s ease-in-out infinite;transform-origin:50% 90%}',
       '.hal-banda .ic svg{display:block;width:100%}',
       '.hal-banda .tx{position:relative;flex:1;min-width:0}',
+      'a.hal-banda{color:inherit;text-decoration:none;cursor:pointer;transition:transform .15s}a.hal-banda:active{transform:translateY(2px)}',
+      '.hal-ir{display:flex;align-items:center;gap:6px;margin-top:8px;font:900 12.5px Nunito,sans-serif;color:#FFD9B0}.hal-ir svg{width:18px;height:18px;flex:none}.hal-ir em{font-style:normal}',
+      '.hal-ir i{font-style:normal;margin-left:4px;padding:3px 10px;border-radius:99px;background:' + NAR + ';color:#1f0a00;box-shadow:0 2px 0 ' + NAR_D + '}',
       '.hal-banda small{display:block;font:1000 11px Nunito,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:' + NAR + '}',
       '.hal-banda b{display:block;font:1000 18px/1.2 Nunito,sans-serif;margin-top:2px}',
       '.hal-banda span.m{display:block;font:700 13px/1.4 Nunito,sans-serif;color:#c9b8e2;margin-top:3px}',
@@ -300,11 +303,32 @@
     if (document.body) ponerDeco(); else document.addEventListener('DOMContentLoaded', ponerDeco);
     quitar.push(function () { deco.remove(); aranas.forEach(function (a) { a.remove(); }); });
 
-    /* ---------- búho con sombrero de bruja ---------- */
+    /* ---------- búho disfrazado (sombrero de bruja o el disfraz que elegiste en el evento) ---------- */
+    var JS = document.getElementById('mcTemaJs'), RAIZ = JS && JS.src ? JS.src.replace(/assets\/tema\.js(\?.*)?$/, '') : './';
+    if (!window.MCEvento && !document.getElementById('mcEventoJs')) {
+      var ej = document.createElement('script'); ej.id = 'mcEventoJs'; ej.src = RAIZ + 'assets/evento.js';
+      ej.onload = function () {
+        if (!window.MCEvento) return;
+        MCEvento.alCambiar(function (e) { gorros(); pintarSaldo(e); });
+        gorros(); pintarSaldo(MCEvento.estado());
+        if (EN_INICIO) MCEvento.cargar().catch(function () {});
+      };
+      document.head.appendChild(ej);
+    }
+    function pintarSaldo(e) {
+      var x = document.querySelector('.hal-saldo');
+      if (x && e && e.saldo != null) x.textContent = 'Tienes ' + e.saldo + (e.saldo === 1 ? ' calabaza' : ' calabazas');
+    }
     function gorros() {
       if (!window.MCBuho) return;
-      MCBuho.accesorio = GORRO;
-      document.querySelectorAll('.mc-buho .b-cuerpo').forEach(function (g) { if (!g.querySelector('.acc-gorro')) g.insertAdjacentHTML('beforeend', GORRO); });
+      var acc = window.MCEvento ? MCEvento.disfrazPuesto() : GORRO, clave = (acc.match(/data-id="([^"]+)"/) || [0, acc ? 'disfraz-gorro' : 'ninguno'])[1];
+      MCBuho.accesorio = acc;
+      document.querySelectorAll('.mc-buho:not([data-fijo]) .b-cuerpo').forEach(function (g) {
+        if (g.getAttribute('data-acc') === clave) return;
+        g.querySelectorAll('.acc-gorro,.acc-disfraz').forEach(function (e) { e.remove(); });
+        g.setAttribute('data-acc', clave);
+        if (acc) g.insertAdjacentHTML('beforeend', acc);
+      });
     }
 
     /* ---------- inicio: saludo, aviso y ambiente ---------- */
@@ -323,15 +347,16 @@
       }
       var sal = document.getElementById('saludo');
       if (sal && !document.querySelector('.hal-banda')) {
-        var b = document.createElement('div'); b.className = 'hal-banda';
+        var b = document.createElement('a'); b.className = 'hal-banda'; b.href = RAIZ + 'evento.html';
         b.innerHTML = '<span class="ic">' + CALABAZA + '</span><span class="tx"><small>Semana de Halloween' + (dias() ? ' · ' + dias() : '') + '</small>' +
-          '<b>Que no te asusten las preguntas</b><span class="m"></span></span>' +
+          '<b>Evento Noche de Brujas</b><span class="m"></span><span class="hal-ir">' + CALABAZA + '<em class="hal-saldo">Cumple misiones y gana calabazas</em><i>Entrar</i></span></span>' +
           '<button type="button" class="hal-amb" aria-pressed="false" title="Viento, búho, campanas y truenos de fondo mientras estudias"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5z"/></svg><span>Ambiente</span></button>';
         b.querySelector('.m').textContent = c.mensaje || 'Practica de noche o de día: cada acierto te deja un dulce y cada error se va con un fantasma.';
         sal.parentNode.insertBefore(b, sal);
         var bt = b.querySelector('.hal-amb');
         function pintarAmb() { var on = ambiente.on(); bt.classList.toggle('on', on); bt.setAttribute('aria-pressed', on); bt.lastChild.textContent = on ? 'Ambiente on' : 'Ambiente'; }
-        bt.addEventListener('click', function () { ambiente.cambiar(); pintarAmb(); });
+        bt.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); ambiente.cambiar(); pintarAmb(); });
+        if (window.MCEvento) pintarSaldo(MCEvento.estado());
         pintarAmb();
       }
     }
@@ -400,7 +425,7 @@
     quitar.push(function () {
       if (vigia) vigia.disconnect();
       if (window.MCBuho) MCBuho.accesorio = '';
-      document.querySelectorAll('.acc-gorro,.hal-banda,.hal-eyebrow').forEach(function (e) { e.remove(); });
+      document.querySelectorAll('.acc-gorro,.acc-disfraz,.hal-banda,.hal-eyebrow').forEach(function (e) { e.remove(); });
       document.querySelectorAll('.hal-cal').forEach(function (e) { e.remove(); });
     });
 
