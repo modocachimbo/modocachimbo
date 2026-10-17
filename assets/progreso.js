@@ -72,6 +72,31 @@
       return c.from('falladas').select('ref,huella,carpeta,titulo,veces,ultima').gte('ultima', inicioHoy().toISOString()).order('ultima', { ascending: false }).limit(300);
     }).then(function (r) { if (r.error) throw r.error; return r.data || []; });
   }
+  // Repaso de hoy (assets/repaso-dia.js y falladas.html?dia=1): los 3 temas con más falladas
+  // y hasta 10 de sus preguntas. Con la misma lista sale lo mismo todo el día.
+  function repasoDia(lista, max) {
+    max = max || 10;
+    var g = {}, orden = [];
+    (lista || []).forEach(function (f) {
+      var k = (f.carpeta || '') + '|' + (f.titulo || '');
+      if (!g[k]) { g[k] = { carpeta: f.carpeta || '', titulo: f.titulo || '', falladas: [], peso: 0 }; orden.push(k); }
+      g[k].falladas.push(f); g[k].peso += 1 + (f.veces || 1);
+    });
+    var temas = orden.map(function (k) { return g[k]; }).sort(function (a, b) { return b.peso - a.peso; }).slice(0, 3);
+    // Mezcla fija del día: misma semilla de 00:00 a 23:59 (hora de Perú)
+    var semilla = Math.floor(inicioHoy().getTime() / 86400000);
+    function azar() { semilla = (semilla * 9301 + 49297) % 233280; return semilla / 233280; }
+    temas.forEach(function (t) {
+      t.falladas.sort(function (a, b) { return (b.veces || 1) - (a.veces || 1) || azar() - .5; });
+      t.n = t.falladas.length;
+    });
+    var refs = [], i = 0;
+    while (refs.length < max && temas.some(function (t) { return t.falladas[i]; })) {
+      temas.forEach(function (t) { if (t.falladas[i] && refs.length < max) refs.push(t.falladas[i].ref); });
+      i++;
+    }
+    return { temas: temas.map(function (t) { return { carpeta: t.carpeta, titulo: t.titulo, n: t.n }; }), refs: refs };
+  }
   // De dónde salió la pregunta, según su archivo
   function origen(ref) {
     var a = String(ref || '').split('#')[0];
@@ -92,7 +117,7 @@
   };
 
   window.MCProgreso = { terminar: terminar, cargar: cargar, armar: armar, huella: huella,
-                        inicioHoy: inicioHoy, deHoy: deHoy, errores: errores, origen: origen };
+                        inicioHoy: inicioHoy, deHoy: deHoy, errores: errores, origen: origen, repasoDia: repasoDia };
 
   // Prácticas que terminaron antes de que cargara este archivo
   var pend = window.mcProgresoPend || [];

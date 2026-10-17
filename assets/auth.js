@@ -92,6 +92,10 @@
       var rk = document.createElement('script');
       rk.src = BASE + 'assets/ranking.js';
       document.head.appendChild(rk);
+      // Tu repaso de hoy, debajo de la meta del día (assets/repaso-dia.js)
+      var rd = document.createElement('script');
+      rd.src = BASE + 'assets/repaso-dia.js';
+      document.head.appendChild(rd);
       // El búho con emociones junto al saludo (assets/buho.js)
       var bu = document.createElement('script');
       bu.src = BASE + 'assets/buho.js';
