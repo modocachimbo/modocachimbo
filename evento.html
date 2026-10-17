@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script src="assets/guardia.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0a0612">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="assets/app/icono-180.png">
+<meta name="apple-mobile-web-app-title" content="Modo Cachimbo">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<script src="assets/app.js" defer></script>
+<title>Noche de Brujas · Modo Cachimbo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900;1000&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0612; --surface: #140c1f; --surface-2: #1b1129; --border: #2d1f42;
+    --nar: #FF8A1F; --nar-d: #B9470A; --mor: #9D5CFF; --mor-d: #5B2BB0; --oro: #FFC93C; --oro-d: #9A5E00;
+    --text: #f4eeff; --text-dim: #a99bbd; --text-faint: #6c5c80;
+  }
+  body { background: var(--bg); color: var(--text); font-family: Nunito, sans-serif; min-height: 100vh; }
+  body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: radial-gradient(900px 420px at 50% -120px, rgba(157,92,255,.28), transparent 70%), radial-gradient(500px 300px at 90% 30%, rgba(255,138,31,.08), transparent 70%); }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 18px 70px; }
+  svg { display: block; }
+
+  .top { display: flex; align-items: center; justify-content: space-between; padding: 20px 0 6px; }
+  .volver { display: inline-flex; align-items: center; gap: 6px; color: var(--text-dim); text-decoration: none; font-weight: 900; font-size: 14px; }
+  .volver svg { width: 18px; height: 18px; }
+
+  /* Portada */
+  .hero { position: relative; display: flex; align-items: center; gap: 18px; padding: 20px 22px; margin-top: 8px; border-radius: 26px; overflow: hidden;
+    background: linear-gradient(160deg, #2a1146, #150a24 60%); border: 2px solid #3d2560; border-bottom-width: 6px; }
+  .hero::after { content: ""; position: absolute; right: -40px; top: -50px; width: 170px; height: 170px; border-radius: 50%;
+    background: radial-gradient(circle at 40% 40%, #FFF3C9, #F6C863 55%, transparent 56%); opacity: .16; }
+  .hero .buho { flex: none; width: 150px; height: 158px; position: relative; z-index: 1; }
+  .hero .buho svg { width: 100%; height: 100%; }
+  .hero .tx { position: relative; z-index: 1; flex: 1; min-width: 0; }
+  .hero small { display: block; font-weight: 1000; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--nar); }
+  .hero h1 { font-weight: 1000; font-size: 30px; line-height: 1.1; margin: 4px 0 6px; text-wrap: balance; }
+  .hero p { font-weight: 700; font-size: 14px; line-height: 1.45; color: #cbbde0; }
+  .saldo { display: inline-flex; align-items: center; gap: 8px; margin-top: 12px; padding: 7px 14px 7px 8px; border-radius: 99px;
+    background: rgba(255,138,31,.14); border: 2px solid rgba(255,138,31,.5); font-weight: 1000; font-size: 18px; color: #FFD9B0; }
+  .saldo svg { width: 30px; height: 30px; }
+  .saldo span { font-weight: 800; font-size: 13px; color: var(--text-dim); }
+
+  h2 { font-weight: 1000; font-size: 19px; margin: 28px 0 4px; }
+  .sub { font-weight: 700; font-size: 13.5px; color: var(--text-dim); line-height: 1.5; }
+  .caja { margin-top: 12px; background: var(--surface); border: 2px solid var(--border); border-bottom-width: 5px; border-radius: 22px; padding: 6px 16px; }
+
+  /* Misiones */
+  .mis { display: flex; align-items: center; gap: 12px; padding: 12px 0; text-decoration: none; color: inherit; border-bottom: 2px solid #1f1530; }
+  .mis:last-child { border-bottom: 0; }
+  .mis .ic { flex: none; width: 40px; height: 40px; border-radius: 13px; display: flex; align-items: center; justify-content: center; background: #24173a; color: var(--mor); }
+  .mis .ic svg { width: 22px; height: 22px; }
+  .mis.extra .ic { background: rgba(255,201,60,.13); color: var(--oro); }
+  .mis .tx { flex: 1; min-width: 0; }
+  .mis b { display: block; font-weight: 900; font-size: 14.5px; line-height: 1.3; }
+  .mis small { display: block; font-weight: 700; font-size: 12px; color: var(--text-dim); margin-top: 3px; }
+  .barra { height: 8px; border-radius: 9px; background: #24173a; margin-top: 6px; overflow: hidden; }
+  .barra i { display: block; height: 100%; border-radius: 9px; background: linear-gradient(90deg, var(--mor), #C49BFF); }
+  .prem { flex: none; display: flex; align-items: center; gap: 3px; font-weight: 1000; font-size: 14px; color: #FFD9B0; }
+  .prem svg { width: 24px; height: 24px; }
+  .mis.ok .ic { background: rgba(255,138,31,.16); color: var(--nar); }
+  .mis.ok .barra i { background: var(--nar); }
+  .mis.ok .prem { color: var(--nar); }
+  .vacio { padding: 16px 0; font-weight: 700; font-size: 14px; color: var(--text-dim); line-height: 1.5; }
+  .vacio a { color: var(--nar); font-weight: 900; }
+
+  /* Calendario */
+  .noches { display: grid; grid-template-columns: repeat(9, 1fr); gap: 8px; margin-top: 12px; }
+  .noche { text-align: center; padding: 9px 2px 8px; border-radius: 16px; background: var(--surface); border: 2px solid var(--border); border-bottom-width: 4px; }
+  .noche em { display: block; font-style: normal; font-weight: 900; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-faint); }
+  .noche b { display: block; font-weight: 1000; font-size: 18px; margin: 1px 0 5px; }
+  .noche .cal { width: 26px; height: 26px; margin: 0 auto; opacity: .18; filter: grayscale(1); }
+  .noche span { display: block; font-weight: 900; font-size: 11.5px; color: var(--text-faint); margin-top: 3px; }
+  .noche.algo .cal { opacity: 1; filter: none; }
+  .noche.algo span { color: #FFD9B0; }
+  .noche.perfecta { border-color: var(--nar); border-bottom-color: var(--nar-d); background: linear-gradient(180deg, rgba(255,138,31,.2), var(--surface)); }
+  .noche.hoy { box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--mor); }
+  .noche.luego { opacity: .5; }
+
+  /* Superviviente */
+  .super { display: flex; align-items: center; gap: 16px; margin-top: 14px; padding: 16px 18px; border-radius: 22px;
+    background: linear-gradient(135deg, rgba(255,201,60,.16), rgba(20,12,31,.9) 70%); border: 2px solid rgba(255,201,60,.45); border-bottom: 5px solid var(--oro-d); }
+  .super .pin { flex: none; width: 76px; height: 76px; }
+  .super .pin svg { width: 100%; height: 100%; filter: drop-shadow(0 6px 10px rgba(0,0,0,.45)); }
+  .super.falta .pin svg { filter: grayscale(.85) brightness(.7); }
+  .super .tx { flex: 1; min-width: 0; }
+  .super b { display: block; font-weight: 1000; font-size: 16px; color: #FFE08A; }
+  .super p { font-weight: 700; font-size: 13px; color: #d9cbb0; line-height: 1.45; margin-top: 2px; }
+  .super .barra { background: rgba(0,0,0,.35); height: 10px; }
+  .super .barra i { background: linear-gradient(90deg, #F2B520, #FFE08A); }
+  .super small { display: block; font-weight: 900; font-size: 12px; color: #FFE08A; margin-top: 5px; }
+
+  /* Tienda */
+  .grupo { font-weight: 1000; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-faint); margin: 18px 0 8px; }
+  .tienda { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+  .art { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 14px 12px 12px; border-radius: 22px;
+    background: var(--surface); border: 2px solid var(--border); border-bottom-width: 5px; }
+  .art .dib { width: 92px; height: 92px; display: flex; align-items: center; justify-content: center; }
+  .art .dib svg { width: 100%; height: 100%; }
+  .art .dib.pin svg { width: 78px; height: 78px; filter: drop-shadow(0 5px 9px rgba(0,0,0,.45)); }
+  .art .dib.buho { width: 104px; height: 110px; }
+  .art b { font-weight: 1000; font-size: 14.5px; margin-top: 8px; line-height: 1.25; }
+  .art .pr { display: flex; align-items: center; gap: 4px; font-weight: 1000; font-size: 13px; color: #FFD9B0; margin-top: 4px; }
+  .art .pr svg { width: 18px; height: 18px; }
+  .art.tuyo { border-color: rgba(255,138,31,.55); border-bottom-color: var(--nar-d); }
+  .bt { margin-top: 10px; width: 100%; border: 0; border-radius: 14px; padding: 10px 8px; font: 1000 13.5px Nunito, sans-serif; cursor: pointer;
+    background: var(--nar); color: #1f0a00; box-shadow: 0 4px 0 var(--nar-d); transition: transform .1s; }
+  .bt:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--nar-d); }
+  .bt.conf { background: #FFD34D; box-shadow: 0 4px 0 var(--oro-d); }
+  .bt.gris, .bt:disabled { background: #24173a; color: var(--text-faint); box-shadow: 0 4px 0 #120a1e; cursor: default; }
+  .bt.puesto { background: transparent; color: var(--nar); box-shadow: inset 0 0 0 2px var(--nar); cursor: default; }
+  .bt.mor { background: var(--mor); color: #fff; box-shadow: 0 4px 0 var(--mor-d); }
+
+  .marco-demo { position: relative; width: 74px; height: 74px; border-radius: 50%; background: var(--nar); color: #1f0a00; display: flex; align-items: center; justify-content: center;
+    font-weight: 1000; font-size: 26px; box-shadow: 0 0 0 4px #2b1d3f, 0 0 0 7px var(--nar), 0 0 18px rgba(255,138,31,.5); }
+  .marco-demo svg { position: absolute; inset: -14px; width: calc(100% + 28px); height: calc(100% + 28px); }
+
+  .aviso { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 140%); padding: 12px 18px; border-radius: 16px; background: #2a1146; border: 2px solid var(--mor);
+    font-weight: 900; font-size: 14px; transition: transform .25s, visibility .25s; visibility: hidden; z-index: 50; max-width: calc(100% - 32px); text-align: center; }
+  .aviso.ver { transform: translate(-50%, 0); visibility: visible; }
+  .fin { margin-top: 14px; padding: 14px 16px; border-radius: 18px; background: rgba(157,92,255,.12); border: 2px solid rgba(157,92,255,.4); font-weight: 800; font-size: 14px; line-height: 1.5; }
+
+  @media (max-width: 600px) {
+    .hero { flex-direction: column; text-align: center; padding: 18px 16px; }
+    .hero .buho { width: 128px; height: 135px; }
+    .hero h1 { font-size: 26px; }
+    .noches { grid-template-columns: repeat(5, 1fr); }
+    .tienda { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .art { padding: 12px 8px 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="volver" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Inicio</a>
+  </div>
+
+  <section class="hero">
+    <div class="buho" id="buho"></div>
+    <div class="tx">
+      <small id="cuando">Halloween 2026</small>
+      <h1>Noche de Brujas</h1>
+      <p>Cumple tus misiones del día y gana calabazas. Canjéalas por pines exclusivos y disfraces para tu búho.</p>
+      <div class="saldo" id="saldo"></div>
+    </div>
+  </section>
+  <div class="fin" id="fin" hidden></div>
+
+  <h2>Misiones de hoy</h2>
+  <p class="sub">Son las mismas misiones de tus corazones. Cada una que cumplas te da una calabaza.</p>
+  <div class="caja" id="misiones"><div class="vacio">Cargando…</div></div>
+
+  <h2>Tus noches</h2>
+  <p class="sub">Hasta 5 calabazas por noche. Las 3 misiones de un día hacen una noche perfecta.</p>
+  <div class="noches" id="noches"></div>
+  <div class="super" id="super"></div>
+
+  <h2>Tienda del evento</h2>
+  <p class="sub">Los premios son tuyos para siempre, aunque el evento termine.</p>
+  <div id="tienda"></div>
+</div>
+<div class="aviso" id="aviso" role="status"></div>
+
+<script src="assets/mc-config.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/sonido.js"></script>
+<script src="assets/buho.js"></script>
+<script src="assets/evento.js" id="mcEventoJs"></script>
+<script>
+(function () {
+  var E = window.MCEvento, $ = function (id) { return document.getElementById(id); };
+  var INI = '2026-10-24', FIN = '2026-11-01';
+  var DIAS = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
+  var ACENTO = { matematica: 'Matemática', comunicacion: 'Comunicación', biologia: 'Biología', quimica: 'Química', fisica: 'Física', 'ciencia-tecnologia': 'Ciencia y Tecnología',
+    'ciencias-sociales': 'Ciencias Sociales', geografia: 'Geografía', economia: 'Economía', filosofia: 'Filosofía', psicologia: 'Psicología', historia: 'Historia', ingles: 'Inglés', aritmetica: 'Aritmética', algebra: 'Álgebra', geometria: 'Geometría', trigonometria: 'Trigonometría', lenguaje: 'Lenguaje', literatura: 'Literatura', razonamiento: 'Razonamiento' };
+  var IC = {
+    explora: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg>',
+    duelo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2M9.5 17.5 21 6V3h-3L6.5 14.5M11 19l-6-6M8 16l-4 4M5 21l-2-2"/></svg>',
+    vocabulario: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M8 7h8M8 11h6"/></svg>',
+    tarjetas: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="14" height="14" rx="2"/><path d="M7 3h12a2 2 0 0 1 2 2v12"/></svg>',
+    seguidas: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
+    repaso: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>',
+    perfecta: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.5 7 .8-5.2 4.8 1.4 7L12 17.6 5.8 21.1l1.4-7L2 9.3l7-.8z"/></svg>',
+    simulacro: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>'
+  };
+  var TELA = '<svg viewBox="0 0 102 102" fill="none" stroke="#E9DCFF" stroke-width="1.4" stroke-linecap="round"><path d="M2 2l26 26M2 2v28M2 2h28M2 16q8-2 14-14M2 26q16-4 24-24"/><path d="M100 100 74 74M100 100V72M100 100H72M100 86q-8 2-14 14M100 76q-16 4-24 24"/><path d="M84 2v18" stroke-width="1"/><ellipse cx="84" cy="23" rx="4" ry="5" fill="#120a1e" stroke="none"/><circle cx="84" cy="18" r="2.6" fill="#120a1e" stroke="none"/></svg>';
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function curso(c) { return ACENTO[c] || (c ? c.replace(/-/g, ' ').replace(/^./, function (x) { return x.toUpperCase(); }) : 'un curso'); }
+  function cal(n) { return '<span class="prem">' + (n ? '+' + n : '') + E.CALABAZA + '</span>'; }
+  function buho(id, tam) {
+    var antes = MCBuho.accesorio;
+    MCBuho.accesorio = id === 'ninguno' ? '' : (E.DISFRACES[id] || '');
+    var s = MCBuho.svg('feliz', tam).replace('<svg class="mc-buho', '<svg data-fijo="1" class="mc-buho');
+    MCBuho.accesorio = antes;
+    return s;
+  }
+  function puesto(e) { return e && e.disfraz !== undefined ? (e.disfraz || 'ninguno') : 'disfraz-gorro'; }
+  function fecha(s) { return new Date(s + 'T12:00:00'); }
+  function sumar(s, n) { var d = fecha(s); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); }
+
+  function mision(m) {
+    var t = m.tipo, base = m.curso || 'biologia';
+    if (t === 'explora') return { tit: 'Explora: responde 10 preguntas de ' + curso(m.curso), link: m.curso ? m.curso + '/libros/index.html' : 'index.html#cursos' };
+    if (t === 'vocabulario') return { tit: 'Practica 10 palabras en Vocabulario', link: 'vocabulario.html' };
+    if (t === 'duelo') return { tit: 'Juega un duelo con un amigo', link: 'duelo.html' };
+    if (t === 'repaso') return { tit: 'Acierta 10 en Repaso', link: base + '/repaso.html' };
+    if (t === 'tarjetas') return { tit: 'Repasa 10 flashcards', link: 'tarjetas.html' };
+    if (t === 'seguidas') return { tit: 'Acierta 5 seguidas en Práctica', link: base + '/libros/index.html' };
+    return { tit: 'Misión del día', link: 'index.html' };
+  }
+
+  function pintar(e) {
+    e = e || {};
+    var ini = e.inicio || INI, fin = e.fin || FIN, hoy = e.hoy || new Date().toISOString().slice(0, 10);
+    var dias = e.dias || {}, saldo = e.saldo || 0, activo = !!e.activo;
+
+    // Portada
+    $('buho').innerHTML = buho(puesto(e), 150);
+    var n = Math.round((fecha(fin) - fecha(hoy)) / 864e5);
+    $('cuando').textContent = hoy < ini ? 'Halloween 2026 · Empieza el 24 de octubre' : hoy > fin ? 'Halloween 2026 · Terminó' : n <= 0 ? 'Halloween 2026 · Último día' : 'Halloween 2026 · Termina en ' + n + (n === 1 ? ' día' : ' días');
+    $('saldo').innerHTML = E.CALABAZA + saldo + ' <span>' + (saldo === 1 ? 'calabaza' : 'calabazas') + (e.ganadas ? ' · ganaste ' + e.ganadas : '') + '</span>';
+    var fn = $('fin');
+    fn.hidden = activo || !e.evento;
+    if (!activo && e.evento) fn.textContent = hoy < ini ? 'El evento empieza el 24 de octubre. Ya puedes ver los premios.' : 'El evento terminó. Tus premios se quedan contigo.';
+
+    // Misiones
+    var mis = e.misiones;
+    if (!activo) $('misiones').innerHTML = '<div class="vacio">Las misiones dan calabazas mientras dure el evento.</div>';
+    else if (!mis || !mis.length) $('misiones').innerHTML = '<div class="vacio">Todavía no tienes misiones hoy. <a href="index.html">Abre tus corazones en el inicio</a> para recibirlas.</div>';
+    else {
+      var listas = 0, h = '';
+      mis.forEach(function (m) {
+        var d = mision(m), ok = m.estado !== 'pend', pct = Math.round(Math.min(1, (m.hecho || 0) / (m.meta || 1)) * 100);
+        if (ok) listas++;
+        h += '<a class="mis' + (ok ? ' ok' : '') + '" href="' + esc(d.link) + '"><span class="ic">' + (ok ? IC.check : IC[m.tipo] || IC.explora) + '</span><span class="tx"><b>' + esc(d.tit) + '</b>' +
+          '<span class="barra"><i style="width:' + pct + '%"></i></span><small>' + (ok ? '¡Lista!' : (m.hecho || 0) + ' / ' + m.meta) + '</small></span>' + cal(1) + '</a>';
+      });
+      var perf = listas >= 3, sim = e.simulacro && e.simulacro !== 'pend';
+      h += '<div class="mis extra' + (perf ? ' ok' : '') + '"><span class="ic">' + IC.perfecta + '</span><span class="tx"><b>Noche perfecta</b><small>' + (perf ? '¡Cumpliste las 3!' : 'Cumple las 3 misiones (' + listas + ' / 3)') + '</small></span>' + cal(1) + '</div>';
+      h += '<a class="mis extra' + (sim ? ' ok' : '') + '" href="simulacro.html"><span class="ic">' + (sim ? IC.check : IC.simulacro) + '</span><span class="tx"><b>Tu primer simulacro del día</b><small>' + (sim ? '¡Hecho!' : 'Termina un simulacro') + '</small></span>' + cal(1) + '</a>';
+      $('misiones').innerHTML = h;
+    }
+
+    // Calendario
+    var h2 = '';
+    for (var d = ini, i = 0; d <= fin && i < 12; d = sumar(d, 1), i++) {
+      var v = dias[d] || {}, m2 = Math.min(+v.m || 0, 3), c = m2 + (m2 >= 3 ? 1 : 0) + (v.s ? 1 : 0), f = fecha(d);
+      h2 += '<div class="noche' + (c ? ' algo' : '') + (m2 >= 3 ? ' perfecta' : '') + (d === hoy ? ' hoy' : '') + (d > hoy ? ' luego' : '') + '">' +
+        '<em>' + (d === hoy ? 'hoy' : DIAS[f.getDay()]) + '</em><b>' + f.getDate() + '</b><span class="cal">' + E.CALABAZA + '</span><span>' + (d > hoy ? '—' : c + ' / 5') + '</span></div>';
+    }
+    $('noches').innerHTML = h2;
+
+    // Superviviente
+    var p = Math.min(e.perfectos || 0, 7), sup = E.tiene('pin-superviviente');
+    $('super').className = 'super' + (sup ? '' : ' falta');
+    $('super').innerHTML = '<span class="pin">' + E.PINES['pin-superviviente'] + '</span><span class="tx"><b>Pin dorado Superviviente</b>' +
+      '<p>' + (sup ? '¡Lo ganaste! Ya está en tu perfil.' : 'No se compra: sale solo con 7 noches perfectas.') + '</p>' +
+      '<span class="barra"><i style="width:' + Math.round(p / 7 * 100) + '%"></i></span><small>' + p + ' / 7 noches perfectas</small></span>';
+
+    // Tienda
+    var lleva = puesto(e);
+    function boton(a) {
+      var mio = a.id === 'disfraz-gorro' || E.tiene(a.id);
+      if (mio && a.tipo === 'disfraz') return lleva === a.id ? '<button class="bt puesto" disabled>Lo lleva puesto</button>' : '<button class="bt mor" data-poner="' + a.id + '">Ponérselo</button>';
+      if (mio) return '<button class="bt puesto" disabled>Es tuyo</button>';
+      if (!activo) return '<button class="bt gris" disabled>' + (hoy < ini ? 'Desde el 24 de octubre' : 'Evento terminado') + '</button>';
+      if (saldo < a.precio) return '<button class="bt gris" disabled>Te faltan ' + (a.precio - saldo) + '</button>';
+      return '<button class="bt" data-canjear="' + a.id + '">Canjear</button>';
+    }
+    function tarjeta(a) {
+      var mio = a.id === 'disfraz-gorro' || E.tiene(a.id), dib;
+      if (a.tipo === 'pin') dib = '<span class="dib pin">' + E.PINES[a.id] + '</span>';
+      else if (a.tipo === 'disfraz') dib = '<span class="dib buho">' + buho(a.id, 104) + '</span>';
+      else dib = '<span class="dib"><span class="marco-demo">' + TELA + 'Tú</span></span>';
+      return '<div class="art' + (mio ? ' tuyo' : '') + '">' + dib + '<b>' + esc(a.nombre) + '</b>' +
+        '<span class="pr">' + (a.precio ? E.CALABAZA + a.precio : 'Gratis') + '</span>' + boton(a) + '</div>';
+    }
+    var cat = E.CATALOGO;
+    $('tienda').innerHTML =
+      '<div class="grupo">Pines Halloween 2026</div><div class="tienda">' + cat.filter(function (a) { return a.tipo === 'pin'; }).map(tarjeta).join('') + '</div>' +
+      '<div class="grupo">Disfraces para tu búho</div><div class="tienda">' + [{ id: 'disfraz-gorro', tipo: 'disfraz', nombre: 'Sombrero de bruja', precio: 0 }].concat(cat.filter(function (a) { return a.tipo === 'disfraz'; })).map(tarjeta).join('') +
+        (lleva !== 'ninguno' ? '' : '') + '</div>' +
+      '<div class="grupo">Para tu foto de perfil</div><div class="tienda">' + cat.filter(function (a) { return a.tipo === 'marco'; }).map(tarjeta).join('') + '</div>';
+  }
+
+  var tAviso;
+  function aviso(t) { var a = $('aviso'); a.textContent = t; a.classList.add('ver'); clearTimeout(tAviso); tAviso = setTimeout(function () { a.classList.remove('ver'); }, 2600); }
+  function fallo(err) {
+    var m = (err && err.message) || '';
+    aviso(/faltan/.test(m) ? 'Te faltan calabazas' : /no está activo/.test(m) ? 'El evento no está activo' : 'No se pudo. Revisa tu conexión.');
+  }
+
+  $('tienda').addEventListener('click', function (ev) {
+    var b = ev.target.closest('button');
+    if (!b || b.disabled) return;
+    if (b.dataset.canjear) {
+      if (!b.classList.contains('conf')) {
+        document.querySelectorAll('.bt.conf').forEach(function (x) { x.classList.remove('conf'); x.textContent = 'Canjear'; });
+        b.classList.add('conf'); b.textContent = '¿Seguro? Toca otra vez';
+        return;
+      }
+      b.disabled = true; b.textContent = 'Canjeando…';
+      var id = b.dataset.canjear;
+      E.canjear(id).then(function () {
+        aviso('¡' + E.NOMBRE[id] + ' es tuyo!');
+        if (window.MCSonido && MCSonido.racha) try { MCSonido.racha(); } catch (x) {}
+      }, function (err) { fallo(err); pintar(E.estado()); });
+    } else if (b.dataset.poner) {
+      b.disabled = true;
+      var d = b.dataset.poner;
+      E.ponerDisfraz(d).then(function () { aviso('Tu búho ya lleva: ' + E.NOMBRE[d]); }, function (err) { fallo(err); pintar(E.estado()); });
+    }
+  });
+
+  E.alCambiar(pintar);
+  pintar(E.estado());
+  function cargar() {
+    E.cargar().catch(function () {
+      if (!window.MCAuth || !MCAuth.usuario || !MCAuth.usuario()) $('misiones').innerHTML = '<div class="vacio">Inicia sesión para juntar calabazas.</div>';
+    });
+  }
+  if (window.MCAuth && MCAuth.alCambiar) MCAuth.alCambiar(function (u) { if (u) cargar(); });
+  cargar();
+})();
+</script>
+</body>
+</html>
