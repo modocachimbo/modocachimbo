@@ -40,7 +40,19 @@
     return so + ' · ' + nav;
   }
 
+  // Primero fetch sin cookies: si el teléfono o el navegador tiene varias cuentas de Google abiertas,
+  // Google rechaza el pedido que lleva cookies (eso pasa con <script>). Si fetch falla, se usa <script> (JSONP).
   function jsonp(params) {
+    if (!API) return Promise.reject(new Error('sin-api'));
+    if (!window.fetch) return porScript(params);
+    var q = Object.keys(params).map(function (k) { return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]); }).join('&');
+    var ctl = window.AbortController ? new AbortController() : null;
+    var t = setTimeout(function () { if (ctl) ctl.abort(); }, 12000);
+    return fetch(API + (API.indexOf('?') < 0 ? '?' : '&') + q, { credentials: 'omit', cache: 'no-store', signal: ctl ? ctl.signal : undefined })
+      .then(function (r) { if (!r.ok) throw new Error('http'); return r.json(); })
+      .then(function (d) { clearTimeout(t); return d; }, function () { clearTimeout(t); return porScript(params); });
+  }
+  function porScript(params) {
     return new Promise(function (resolve, reject) {
       if (!API) { reject(new Error('sin-api')); return; }
       var cb = 'mc_acc_' + Math.random().toString(36).slice(2);
@@ -146,7 +158,7 @@
   }
   function revisar(x) {
     var cods = codigosPara(x);
-    return jsonp({ action: 'acceso', producto: x, dispositivo: dispositivo(), codigos: cods.join(','), equipo: equipo() })
+    return jsonp2({ action: 'acceso', producto: x, dispositivo: dispositivo(), codigos: cods.join(','), equipo: equipo() })
       .then(function (r) {
         if (!r || !r.ok) throw new Error('respuesta');
         var a = accesos(), mensaje = '';
@@ -176,7 +188,7 @@
   // Activa un código. producto = página actual (o '' desde el inicio)
   function activar(codigo, x) {
     codigo = String(codigo || '').toUpperCase().replace(/\s+/g, '');
-    return jsonp({ action: 'activar', codigo: codigo, producto: x || '', dispositivo: dispositivo(), equipo: equipo() })
+    return jsonp2({ action: 'activar', codigo: codigo, producto: x || '', dispositivo: dispositivo(), equipo: equipo() })
       .then(function (r) {
         if (r && r.ok) {
           var a = accesos();
