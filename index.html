@@ -83,7 +83,6 @@
   .mi.mano { color: var(--accent); width: .92em; height: .92em; margin-left: .18em; vertical-align: -0.1em; stroke-width: 2.2; transform-origin: 70% 85%; animation: mc-saludo 2.2s ease-in-out .4s 1; }
   @keyframes mc-saludo { 0%, 60%, 100% { transform: rotate(0); } 10%, 30% { transform: rotate(14deg); } 20%, 40% { transform: rotate(-8deg); } 50% { transform: rotate(10deg); } }
   @media (prefers-reduced-motion: reduce) { .mi.mano { animation: none; } }
-  .chip .mi { margin-right: 6px; }
 
   /* Nuevo para ti: regalo con punto rojo que invita a entrar */
   .nov-btn { position: relative; display: grid; place-items: center; width: 42px; height: 42px; flex-shrink: 0; border-radius: 14px; border: 2px solid #2e2e2e; border-bottom-width: 4px; background: #141414; color: var(--azul); cursor: pointer; transition: transform .08s ease; -webkit-tap-highlight-color: transparent; }
@@ -127,7 +126,6 @@
   }
   .btn-prin:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--lima-osc); }
   .btn-prin small { display: block; font-size: 12px; letter-spacing: .02em; text-transform: none; font-weight: 800; opacity: .75; }
-  .sal-fila { display: grid; grid-template-columns: 1fr; gap: 10px; }
   /* Agenda: la próxima fecha y las que siguen (assets/agenda.js) */
   .sal-agenda {
     position: relative; display: flex; align-items: center; gap: 14px; min-width: 0; margin-top: 8px; padding: 12px 14px; border-radius: 18px;
@@ -153,24 +151,17 @@
   .ag-sig:empty { display: none; }
   .sal-agenda.vacia .ag-tx b { white-space: normal; }
   .ag-sig i { font: normal 900 11.5px Nunito, sans-serif; border-radius: 8px; padding: 3px 7px; white-space: nowrap; }
-  .btn-sec {
-    display: flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; padding: 10px; border-radius: 16px; cursor: pointer;
-    background: transparent; color: var(--text); border: 2px solid #2e2e2e; border-bottom-width: 5px;
-    font: 1000 13.5px Nunito, sans-serif; letter-spacing: .04em; text-transform: uppercase; transition: transform .08s ease; -webkit-tap-highlight-color: transparent;
-  }
-  .btn-sec svg { width: 22px; height: 22px; flex-shrink: 0; }
-  .btn-sec:active { transform: translateY(3px); border-bottom-width: 2px; }
-  /* Activar código: azul (el lima queda solo para "Seguir practicando") */
-  .btn-azul { color: var(--azul); background: rgba(28,176,246,.1); border-color: rgba(28,176,246,.55); border-bottom-color: #1287bd; }
-  .btn-azul:hover { background: rgba(28,176,246,.16); }
   .sal-accesos { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-top: 16px; border-top: 2px solid var(--borde-g); }
-  .sal-accesos .rot { font-size: 12.5px; color: var(--text-faint); margin-right: 4px; }
-  .chip {
-    display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 800; color: var(--accent);
-    background: var(--accent-soft); border: 1px solid rgba(198,224,0,0.22); border-radius: 100px; padding: 6px 12px;
+  .sal-texto .btn-prin { margin-top: 18px; }
+  /* Activar código: enlace azul chico al pie del saludo, junto a WhatsApp */
+  .sal-cod {
+    display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px 8px 10px; border-radius: 100px; cursor: pointer;
+    background: rgba(28,176,246,.1); color: var(--azul); border: 2px solid rgba(28,176,246,.4);
+    font: 1000 12.5px Nunito, sans-serif; letter-spacing: .04em; text-transform: uppercase; -webkit-tap-highlight-color: transparent;
   }
-  button.chip { cursor: pointer; background: transparent; color: var(--text-dim); border: 2px solid #2e2e2e; }
-  button.chip:hover { color: var(--text); }
+  .sal-cod svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .sal-cod:hover { background: rgba(28,176,246,.16); }
+  .sal-cod:active { transform: translateY(2px); }
   .sal-grupo { display: inline-flex; align-items: center; gap: 10px; margin-left: auto; color: var(--text-dim); font-size: 12.5px; text-decoration: none; }
   .sal-grupo .wa {
     width: 36px; height: 36px; border-radius: 50%; background: #25D366; color: #fff; flex-shrink: 0;
@@ -185,11 +176,11 @@
     .sal-accesos { grid-column: 1 / -1; }
   }
   @media (max-width: 720px) { .sal-grupo { margin-left: 0; width: 100%; padding-top: 6px; } }
-  /* PC: saludo a la izquierda y las tarjetas en mosaico de 2 columnas, sin huecos */
+  /* PC: saludo y botón verde a la izquierda; meta, repaso, rango y agenda a la derecha */
   @media (min-width: 1000px) {
-    .saludo { grid-template-columns: minmax(0, .8fr) minmax(0, 1.3fr); gap: 20px 30px; padding: 26px 28px; }
+    .saludo { grid-template-columns: minmax(0, .9fr) minmax(0, 1.3fr); gap: 20px 30px; padding: 26px 28px; align-items: start; }
     .sal-der { grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; }
-    .sal-der > .sal-meta, .sal-der > .btn-prin, .sal-der > .sal-agenda, .sal-der > .sal-fila, .sal-der > .mc-rd.abierto, .sal-der > .mc-rd:has(+ .btn-prin), .sal-der > .mc-rd:has(+ .mc-rgo[hidden]),
+    .sal-der > .sal-meta, .sal-der > .sal-agenda, .sal-der > .mc-rd.abierto, .sal-der > .mc-rd:has(+ .mc-rgo[hidden]),
     .sal-der > .sal-meta + .mc-rgo, .sal-der > .mc-rd[hidden] + .mc-rgo, .sal-der > .mc-rd.abierto + .mc-rgo { grid-column: 1 / -1; }
     .sal-der > .mc-rd, .sal-der > .mc-rgo { margin: 0; }
     .sal-der > .mc-rgo { padding: 8px 12px 10px 6px; gap: 10px; }
@@ -199,6 +190,7 @@
     .sal-der > .mc-rd .mc-rd-cab { padding: 14px; }
     .sal-der > .mc-rd:not(.abierto) { display: grid; align-content: center; }
   }
+
 
   /* ===== Secciones: cursos y modos de práctica ===== */
   .sec-tit { font-size: 21px; font-weight: 1000; margin: 32px 2px 12px; scroll-margin-top: 8px; }
@@ -548,23 +540,22 @@
         <h1 id="salNombre">¡Hola!</h1>
         <p id="salFrase">¿Qué estudiamos hoy? Elige un curso o practica con un examen pasado.</p>
         <script src="assets/frases.js"></script>
+        <a class="btn-prin" id="salSeguir" href="#cursos">Empezar a practicar</a>
       </div>
       <div class="sal-der">
         <a class="sal-meta" id="salRacha" href="perfil.html#racha">
           <span class="meta-top"><span id="salRachaLbl">Meta de hoy</span><b id="salRachaHoy">0 / 20 preguntas</b></span>
           <span class="barra-hoy"><i id="salRachaBarra"></i></span>
         </a>
-        <a class="btn-prin" id="salSeguir" href="#cursos">Empezar a practicar</a>
         <a class="sal-agenda vacia" id="salAgenda" href="perfil.html#agenda">
           <span class="ag-hoy" id="agHoy"></span>
           <span class="ag-n" id="agN"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M12 6v12M6 12h12"/></svg></span>
           <span class="ag-tx"><span id="agLbl">Mi agenda</span><b id="agTit">Agrega tus fechas</b><span class="ag-sig" id="agSig"></span></span>
         </a>
-        <div class="sal-fila">
-          <button type="button" class="btn-sec btn-azul" id="salCodigo"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="5" fill="currentColor"/><circle cx="8" cy="15" r="2" fill="#0b2a3a"/><path d="M11.5 11.5 20 3m-4 4 3 3m-5.5-.5 2 2" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>Activar código</button>
-        </div>
       </div>
-      <div class="sal-accesos" id="salAccesos"></div>
+      <div class="sal-accesos" id="salAccesos">
+        <button type="button" class="sal-cod" id="salCodigo"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="5" fill="currentColor"/><circle cx="8" cy="15" r="2" fill="#0b2a3a"/><path d="M11.5 11.5 20 3m-4 4 3 3m-5.5-.5 2 2" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>Activar código</button>
+      </div>
     </section>
 
     <div class="app-aviso" id="appInstalar" hidden>
@@ -760,20 +751,11 @@ function jsonpRequest(url) {
     }
 
     // ===== Saludo: nombre, cuenta regresiva y accesos activos =====
-    var NOMBRES = { 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'seminario-VIP': 'Todos los Seminarios', 'banqueo-VIP': 'Todo el Banqueo', 'tarjetas-VIP': 'Todas las Flashcards', 'simulacro': 'Simulacro', 'TODO-VIP': 'Acceso total' };
     var cursos = {};
     var cursosListos = fetch('assets/cursos.json').then(function (r) { return r.json(); }).then(function (d) {
       (d.cursos || []).forEach(function (c) { cursos[c.id] = c.nombre; });
       pintarAccesos();
     }).catch(function () {});
-    function nombreProducto(p) {
-      if (NOMBRES[p]) return NOMBRES[p];
-      var m = /^(repaso|fijas|seminario|banqueo|tarjetas|curso)-(.+)$/.exec(p);
-      if (!m) return p;
-      var c = cursos[m[2]] || m[2];
-      var tipo = { repaso: 'Repaso ', fijas: 'Fijas ', seminario: 'Seminarios ', banqueo: 'Banqueo ', tarjetas: 'Flashcards ' }[m[1]];
-      return tipo ? tipo + c : c + ' completo';
-    }
     function pintarAccesos() {
       var caja = document.getElementById('salAccesos');
       var prods = (window.MCAcceso ? MCAcceso.activos() : []).map(function (a) { return a.producto; }).join(',').split(',');
@@ -781,15 +763,8 @@ function jsonpRequest(url) {
         try { if (localStorage.getItem('unlocked_' + p) === '1' && prods.indexOf(p) < 0) prods.push(p); } catch (e) {}
       });
       prods = prods.filter(function (p, i) { return p && prods.indexOf(p) === i; });
-      caja.textContent = '';
-      var rot = document.createElement('span'); rot.className = 'rot';
-      rot.textContent = prods.length ? 'Tus accesos:' : 'Aún no tienes Repasos ni Fijas activos.';
-      caja.appendChild(rot);
-      prods.forEach(function (p) {
-        var c = document.createElement('span'); c.className = 'chip'; c.textContent = '✓ ' + nombreProducto(p);
-        caja.appendChild(c);
-      });
       document.getElementById('salCodigo').lastChild.textContent = prods.length ? 'Otro código' : 'Activar código';
+      var viejo = caja.querySelector('.sal-grupo'); if (viejo) viejo.remove();
       var g = document.createElement('a'); g.className = 'sal-grupo'; g.target = '_blank'; g.rel = 'noopener noreferrer';
       g.href = CFG.WHATSAPP_GRUPO || 'https://chat.whatsapp.com/HlKvyK6HLXP02iIgGvj1Iz?mode=gi_t';
       g.innerHTML = '<span class="wa"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.19 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35zM12.05 21.5h-.01a9.4 9.4 0 0 1-4.79-1.31l-.34-.2-3.56.93.95-3.47-.22-.36a9.4 9.4 0 0 1-1.44-5.02c0-5.2 4.23-9.43 9.44-9.43 2.52 0 4.89.98 6.67 2.77a9.37 9.37 0 0 1 2.76 6.67c0 5.2-4.24 9.43-9.44 9.43zm8.03-17.46A11.27 11.27 0 0 0 12.05.72C5.8.72.7 5.8.7 12.06c0 2 .52 3.95 1.52 5.67L.6 23.28l5.69-1.49a11.33 11.33 0 0 0 5.75 1.47h.01c6.26 0 11.35-5.09 11.35-11.35 0-3.03-1.18-5.88-3.33-8.02z"/></svg></span><span>Pulsa el icono para unirte al grupo de <b>Modo Cachimbo</b></span>';

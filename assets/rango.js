@@ -260,12 +260,12 @@
   }
 
   function enInicio() {
-    var boton = document.getElementById('salSeguir');
-    if (!boton || !window.MCCorazones) return;
+    var agenda = document.getElementById('salAgenda');
+    if (!agenda || !window.MCCorazones) return;
     css();
     var caja = document.createElement('a');
     caja.className = 'mc-rgo'; caja.href = 'perfil.html#rango'; caja.hidden = true;
-    boton.insertAdjacentElement('beforebegin', caja);
+    agenda.insertAdjacentElement('beforebegin', caja);
     var ultimo = -1;
     MCCorazones.alCambiar(function (e) {
       if (!e) return;
