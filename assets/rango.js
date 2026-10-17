@@ -2,7 +2,7 @@
    Modo Cachimbo · Rangos de la semana (escudo hexagonal facetado)
    El rango sale del XP de la semana (xp_semana de supabase/16-corazones.sql)
    y se reinicia cada lunes:
-     Zafiro 0 · Esmeralda 800 · Amatista 2 000 · Rubí 4 000 · Leyenda 7 000
+     Zafiro 20 · Esmeralda 1 500 · Amatista 4 000 · Rubí 8 000 · Leyenda 12 000
    - MCRango.svg(n, {mini}): el emblema del rango n (0 a 4).
    - En el inicio: tarjeta "Tu rango esta semana" antes de "Empezar a practicar"
      y la pantalla de subida cuando pasas a un rango nuevo.
@@ -11,7 +11,7 @@
    ========================================================= */
 (function () {
   if (window.MCRango) return;
-  var MIN = [0, 800, 2000, 4000, 7000];
+  var MIN = [20, 1500, 4000, 8000, 12000];
   var NOM = ['Zafiro', 'Esmeralda', 'Amatista', 'Rubí', 'Leyenda'];
   var TXT = ['#5FDAFF', '#5FF59A', '#D79BFF', '#FF6E84', '#FFC800'];
   // b: cara de frente · l: cara a la luz · d: cara en sombra · h: fondo del hueco
@@ -27,7 +27,8 @@
   var LUZ = [-0.5, -0.86];
   var uid = 0;
 
-  function nivel(xp) { var n = 0; for (var i = 1; i < MIN.length; i++) if ((+xp || 0) >= MIN[i]) n = i; return n; }
+  // -1 = todavía sin rango (menos de 20 XP en la semana)
+  function nivel(xp) { var n = -1; for (var i = 0; i < MIN.length; i++) if ((+xp || 0) >= MIN[i]) n = i; return n; }
   function miles(n) { return String(Math.round(+n || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 
@@ -160,7 +161,7 @@
       // Tarjeta del inicio
       '.mc-rgo{display:flex;align-items:center;gap:14px;width:100%;margin:14px 0 2px;padding:10px 14px 12px 8px;border:2px solid #2a2a2a;border-bottom-width:5px;border-radius:18px;background:radial-gradient(120% 140% at 0% 50%,var(--rg-t) 0%,#111 55%);color:#f2f2f2;text-decoration:none;font-family:Nunito,sans-serif;box-sizing:border-box}' +
       '.mc-rgo:focus-visible{outline:3px solid var(--rg-c);outline-offset:2px}' +
-      '.mc-rgo-ic{width:84px;flex:none}' +
+      '.mc-rgo-ic{width:84px;flex:none}.mc-rgo-ic.bloq{filter:grayscale(1) brightness(.45)}.mc-rgo.sin .mc-rgo-tx b{color:#9a9a9a}' +
       '.mc-rgo-tx{flex:1;min-width:0}' +
       '.mc-rgo-tx small{display:block;font:900 11px Nunito,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#9a9a9a}' +
       '.mc-rgo-tx b{display:block;font:1000 21px Nunito,sans-serif;color:var(--rg-c);line-height:1.15}' +
@@ -223,12 +224,13 @@
 
   /* ---------- Inicio: tarjeta y subida ---------- */
   function tarjeta(xp) {
-    var n = nivel(xp), sig = n < 4 ? MIN[n + 1] : null;
-    var pct = sig ? Math.max(4, Math.min(100, Math.round(100 * (xp - MIN[n]) / (sig - MIN[n])))) : 100;
+    var n = nivel(xp), sig = n < 4 ? MIN[n + 1] : null, base = n < 0 ? 0 : MIN[n];
+    var pct = sig ? Math.max(4, Math.min(100, Math.round(100 * (xp - base) / (sig - base)))) : 100;
     var d = diasQuedan();
     var linea = sig ? 'Te faltan <em>' + miles(sig - xp) + ' XP</em> para ' + NOM[n + 1] + ' · ' + (d === 1 ? 'queda 1 día' : 'quedan ' + d + ' días')
       : '<em>' + miles(xp) + ' XP</em> · ¡Rango máximo de la semana!';
-    return '<span class="mc-rgo-ic">' + svg(n) + '</span><span class="mc-rgo-tx"><small>Tu rango esta semana</small><b>' + NOM[n] + '</b>' +
+    if (n < 0) linea = 'Gana <em>' + miles(sig - xp) + ' XP</em> para llegar a ' + NOM[0] + ' · ' + (d === 1 ? 'queda 1 día' : 'quedan ' + d + ' días');
+    return '<span class="mc-rgo-ic' + (n < 0 ? ' bloq' : '') + '">' + svg(Math.max(0, n), { quieto: n < 0 }) + '</span><span class="mc-rgo-tx"><small>Tu rango esta semana</small><b>' + (n < 0 ? 'Aún sin rango' : NOM[n]) + '</b>' +
       '<span class="mc-rgo-bar"><i style="width:' + pct + '%"></i></span><span>' + linea + '</span></span>';
   }
   function subida(n, xp) {
@@ -270,9 +272,11 @@
       var xp = +e.xp_semana || 0;
       if (xp === ultimo) return;
       ultimo = xp;
-      caja.setAttribute('style', vars(nivel(xp)));
+      var n = nivel(xp);
+      caja.setAttribute('style', vars(Math.max(0, n)));
+      caja.classList.toggle('sin', n < 0);
       caja.innerHTML = tarjeta(xp);
-      caja.setAttribute('aria-label', 'Tu rango esta semana: ' + NOM[nivel(xp)]);
+      caja.setAttribute('aria-label', n < 0 ? 'Aún sin rango esta semana' : 'Tu rango esta semana: ' + NOM[n]);
       caja.hidden = false;
       revisarSubida(xp);
     });
@@ -281,7 +285,7 @@
   /* ---------- Perfil: insignia, vitrina y ranking ---------- */
   function vitrina(filas) {
     var hoy = clave(), sem = [[], [], [], [], []];
-    (filas || []).forEach(function (f) { if (f.semana && f.semana < hoy && (+f.xp || 0) > 0) sem[nivel(f.xp)].push({ semana: f.semana, xp: +f.xp }); });
+    (filas || []).forEach(function (f) { if (f.semana && f.semana < hoy && nivel(f.xp) >= 0) sem[nivel(f.xp)].push({ semana: f.semana, xp: +f.xp }); });
     sem.forEach(function (l) { l.sort(function (a, b) { return a.semana < b.semana ? 1 : -1; }); });
     var total = sem.reduce(function (a, l) { return a + l.length; }, 0);
     var html = '';
@@ -320,6 +324,7 @@
     if (window.MCCorazones) MCCorazones.alCambiar(function (e) {
       if (!e) return;
       var n = nivel(e.xp_semana);
+      if (n < 0) { ins.hidden = true; return; }
       ins.innerHTML = '<a class="mc-rgo-ins" href="#rango" style="' + vars(n) + ';text-decoration:none"><span>' + svg(n, { mini: true }) + '</span>' + NOM[n] + ' <small>· ' + miles(e.xp_semana) + ' XP</small></a>';
       ins.hidden = false;
     });
@@ -346,7 +351,7 @@
     }).catch(function () {});
   }
 
-  window.MCRango = { svg: svg, nivel: nivel, nombre: function (n) { return NOM[n]; }, minimo: MIN, css: css, subida: subida, vitrina: vitrina, mini: function (xp) { return '<span class="mc-rgo-mini" title="' + NOM[nivel(xp)] + '">' + svg(nivel(xp), { mini: true }) + '</span>'; } };
+  window.MCRango = { svg: svg, nivel: nivel, nombre: function (n) { return NOM[n]; }, minimo: MIN, css: css, subida: subida, vitrina: vitrina, mini: function (xp) { return nivel(xp) < 0 ? '' : '<span class="mc-rgo-mini" title="' + NOM[nivel(xp)] + '">' + svg(nivel(xp), { mini: true }) + '</span>'; } };
 
   // corazones.js trae el XP de la semana; se espera a que cargue
   function iniciar(intento) {
