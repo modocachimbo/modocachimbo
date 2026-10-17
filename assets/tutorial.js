@@ -35,6 +35,7 @@
     falladas: [['inicio', 'Pantalla de inicio', '#startScreen'], ['cuantas', 'Cuántas preguntas tienes', '#startScreen .start-info'], ['empezar', 'Botón Empezar', '#btnStart']],
     duelo: [['filtros', 'Ciclo, curso y tema', '#crear .filtros'], ['fuentes', 'De dónde salen las preguntas', cercaDe('#fuentes', '.campo')],
       ['jugadores', 'Jugadores e inicio automático', cercaDe('#jugadores', '.campo')], ['cantidad', 'Número de preguntas', cercaDe('#cantidad', '.campo')],
+      ['tiempo', 'Tiempo por pregunta', cercaDe('#tiempo', '.campo')], ['comodines', 'Comodines', cercaDe('#cmdSw', '.campo')],
       ['reglas', 'Reglas del duelo', '#crear .reglas'], ['crear', 'Botón Crear duelo', '#btnCrear'], ['codigo', 'Entrar con un código', cercaDe('#codUnirse', '.card')],
       ['mis', 'Mis duelos', cercaDe('#misDuelos', '.card')], ['ranking', 'Top de la semana', cercaDe('#rank', '.card')]],
     repaso: [['candado', 'Candado (código)', '#lockScreen'], ['codigo', 'Casilla del código', '#lockInput'], ['empezar', 'Botón Empezar', '#btnStart']],

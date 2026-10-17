@@ -14,22 +14,24 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <script src="assets/app.js" defer></script>
 <title>Duelos · Modo Cachimbo</title>
-<meta name="description" content="Reta hasta a 3 amigos: las mismas preguntas, 60 segundos cada una. Gana quien acierta más.">
+<meta name="description" content="Reta hasta a 3 amigos: las mismas preguntas, con comodines, reacciones y la final Todo o nada. Gana quien suma más puntos.">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,600;1,700;1,800;1,900;1,1000&display=swap');
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #050505; --surface: #0e0e0e; --surface-2: #141414; --border: #232323;
+    --bg: #050505; --surface: #0e0e0e; --surface-2: #161616; --border: #2e2e2e;
     --accent: #C6E000; --accent-soft: rgba(198,224,0,.1); --on-accent: #0b0b0b;
     --text: #f2f2f2; --dim: #9a9a9a; --faint: #5f5f5f;
-    --ok: #4ade80; --bad: #f87171; --warn: #fbbf24; --rival: #f9a8d4;
+    /* Colores de Modo Cachimbo */
+    --lima: #C6E000; --rojo: #FF4B4B; --naranja: #FF9600; --oro: #FFC800; --azul: #1CB0F6; --morado: #CE82FF; --verde: #58CC02;
+    --ok: var(--verde); --bad: var(--rojo); --warn: var(--oro);
     color-scheme: dark;
   }
-  body { background: var(--bg); color: var(--text); font: 15px/1.5 'Inter', sans-serif; min-height: 100vh; }
+  body { background: var(--bg); color: var(--text); font: 600 15px/1.5 'Nunito', 'Inter', system-ui, sans-serif; min-height: 100vh; }
   .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px 70px; }
-  h1, h2, h3 { font-family: 'Sora', sans-serif; text-wrap: balance; }
-  button { font: inherit; cursor: pointer; }
+  h1, h2, h3 { font-family: 'Nunito', sans-serif; font-weight: 1000; text-wrap: balance; }
+  button { font: inherit; cursor: pointer; color: inherit; }
   button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   [hidden] { display: none !important; }
 
@@ -37,290 +39,386 @@
   .logo img { height: 34px; width: auto; display: block; }
   @media (max-width: 520px) { .logo img { height: 28px; } }
 
-  .eyebrow { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); font-weight: 700; }
-  .hint { color: var(--dim); font-size: 13.5px; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 22px; min-width: 0; }
-  .card h3 { font-size: 15px; margin-bottom: 10px; }
-  .btn { background: var(--accent); color: var(--on-accent); border: none; border-radius: 14px; padding: 13px 22px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-align: center; }
-  .btn:disabled { opacity: .45; cursor: default; }
-  .btn.sec { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
-  .btn.wa { background: #25D366; color: #06200f; }
-  .btn.mini { padding: 8px 14px; border-radius: 10px; font-size: 13px; }
-  .btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .eyebrow { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); font-weight: 900; }
+  .hint { color: var(--dim); font-size: 14px; }
+  .card { background: var(--surface); border: 2px solid #1e1e1e; border-radius: 20px; padding: 22px; min-width: 0; }
+  .card h3 { font-size: 16px; margin-bottom: 10px; }
   .nota { margin-top: 10px; font-size: 12.5px; color: var(--faint); line-height: 1.5; }
   .nota b { color: var(--dim); }
   .error { color: var(--bad); }
-  .volver { display: inline-flex; gap: 6px; color: var(--dim); font-size: 13.5px; text-decoration: none; }
+  .volver { display: inline-flex; gap: 6px; color: var(--dim); font-size: 14px; font-weight: 800; text-decoration: none; }
   .volver:hover { color: var(--accent); }
   .msg { text-align: center; padding: 50px 22px; }
   .msg p { color: var(--dim); max-width: 440px; margin: 10px auto 0; }
   .msg .btn { margin-top: 18px; }
   .vacia { color: var(--dim); font-size: 13px; }
 
+  /* Botones gruesos estilo Duolingo: se hunden al tocarlos. Un solo botón lima por pantalla */
+  .btn { --b: var(--lima); --bd: #8fa300; --bt: #2b3300; background: var(--b); color: var(--bt); border: 2px solid var(--b); border-radius: 16px; box-shadow: 0 5px 0 var(--bd);
+    padding: 13px 22px; font: 900 15px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .7px; text-decoration: none;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-align: center;
+    transition: transform .08s ease, box-shadow .08s ease; -webkit-tap-highlight-color: transparent; }
+  .btn:not(:disabled):active { transform: translateY(5px); box-shadow: 0 0 0 transparent; }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .btn.azul { --b: var(--azul); --bd: #1283b8; --bt: #fff; }
+  .btn.sec { background: #1a1a1a; color: #e6e6e6; border-color: #2e2e2e; box-shadow: 0 5px 0 #2e2e2e; }
+  .btn.wa { --b: #25D366; --bd: #1a9e4b; --bt: #06200f; }
+
+  /* Etiquetas de cada bloque, con su color */
+  .lbl { display: flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--faint); font-weight: 900; }
+  .lbl i { width: 10px; height: 10px; border-radius: 3px; background: var(--c, var(--accent)); }
+  .campo { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+  .campo > label:not(.check) { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--faint); font-weight: 900; }
+
+  /* Chips (jugadores, cantidad) */
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chips button { background: #161616; color: #e6e6e6; border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 14px; padding: 9px 15px;
+    font: 900 15px Nunito, sans-serif; transition: transform .08s ease; -webkit-tap-highlight-color: transparent; }
+  .chips button:not(:disabled):active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
+  .chips button.on { border-color: var(--c); border-bottom-color: color-mix(in srgb, var(--c) 60%, #000); color: var(--c); background: color-mix(in srgb, var(--c) 12%, #111); }
+  .chips button:disabled { opacity: .3; cursor: default; }
+  .check { display: flex; gap: 10px; align-items: flex-start; margin-top: 4px; font-size: 13.5px; color: var(--dim); cursor: pointer; }
+  .check b { color: var(--text); }
+  .check input { width: 22px; height: 22px; accent-color: var(--azul); margin-top: 1px; flex-shrink: 0; }
+
   /* Crear */
-  .hero h1 { font-size: clamp(28px, 4.4vw, 38px); margin-top: 6px; }
+  .hero h1 { font-size: clamp(28px, 4.4vw, 40px); margin-top: 6px; line-height: 1.15; }
   .hero h1 span { color: var(--accent); }
   .hero p { max-width: 60ch; margin-top: 6px; }
-  .crear { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 18px; margin-top: 18px; align-items: start; }
+  .crear { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 18px; margin-top: 18px; align-items: start; }
   .col { display: grid; gap: 18px; min-width: 0; }
-  .campo { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
-  .campo > label, .campo > .lbl { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--faint); font-weight: 700; }
-  select, .campo input[type=text] { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 12px; padding: 11px 12px; font: 500 14px 'Inter', sans-serif; width: 100%; }
-  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
-  .chips button { background: var(--surface-2); color: var(--dim); border: 1px solid var(--border); border-radius: 12px; padding: 9px 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
-  .chips button.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
-  .chips button.cerrado { opacity: .55; }
-  .chips button svg { width: 13px; height: 13px; }
+  .filtros { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .filtros .campo { margin-bottom: 0; }
+  .filtro-nota { font-size: 13px; color: var(--dim); margin: 10px 0 18px; min-height: 19px; }
+  .filtro-nota b { color: var(--text); }
+  @media (max-width: 560px) { .filtros { grid-template-columns: 1fr; } }
+  select { background: #161616; color: var(--text); border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 14px; padding: 11px 12px; font: 800 15px Nunito, sans-serif; width: 100%; }
+  /* Selector propio: la lista abierta también con botones gruesos */
+  .sel { position: relative; }
+  .sel select { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+  .sel-btn, .mt-btn { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; text-align: left;
+    background: #161616; color: var(--text); border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 14px; padding: 11px 12px;
+    font: 800 15px Nunito, sans-serif; transition: transform .08s ease; -webkit-tap-highlight-color: transparent; }
+  .sel-btn span, .mt-btn span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sel-btn svg, .mt-btn svg { width: 16px; height: 16px; flex-shrink: 0; transition: transform .15s; }
+  .sel-btn:not(:disabled):active, .mt-btn:not(:disabled):active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
+  .sel-btn:disabled, .mt-btn:disabled { opacity: .5; cursor: default; }
+  .sel.abierto .sel-btn { border-color: var(--accent); border-bottom-color: #8fa300; }
+  .sel.abierto .sel-btn svg, .mt-btn[aria-expanded="true"] svg { transform: rotate(180deg); }
+  .sel-lista { position: absolute; z-index: 40; left: 0; width: max(100%, 240px); max-width: calc(100vw - 32px); top: calc(100% + 6px); max-height: 300px; overflow-y: auto; list-style: none;
+    background: #0e0e0e; border: 2px solid #2e2e2e; border-radius: 16px; padding: 8px; display: grid; gap: 6px; box-shadow: 0 14px 30px rgba(0,0,0,.6); }
+  .sel-lista button { width: 100%; text-align: left; background: #161616; color: #e6e6e6; border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 12px;
+    padding: 9px 12px; font: 800 14.5px Nunito, sans-serif; }
+  .sel-lista button:hover { border-color: #3a3a3a; }
+  .sel-lista button.on { border-color: var(--accent); border-bottom-color: #8fa300; color: var(--accent); background: var(--accent-soft); }
+  /* Temas: varios a la vez */
+  .mt-btn { border-color: var(--naranja); border-bottom-color: #b36a00; }
+  .mt-btn b { color: var(--naranja); }
+  .mt-list { margin-top: 10px; background: #0e0e0e; border: 2px solid #2e2e2e; border-radius: 16px; padding: 8px; display: grid; gap: 6px; max-height: 340px; overflow-y: auto; }
+  .mt-list button { display: flex; align-items: center; gap: 10px; text-align: left; background: #161616; border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 12px; padding: 9px 12px; font: 800 14.5px Nunito, sans-serif; color: #e6e6e6; }
+  .mt-list button.on { border-color: var(--naranja); border-bottom-color: #b36a00; background: rgba(255,150,0,.08); }
+  .mt-list .cb { width: 22px; height: 22px; border-radius: 7px; border: 2px solid #3a3a3a; display: grid; place-items: center; flex-shrink: 0; color: #2b1a00; }
+  .mt-list button.on .cb { background: var(--naranja); border-color: var(--naranja); }
+  .mt-list .cb svg { width: 14px; height: 14px; }
+  .mt-list .tx { flex: 1; min-width: 0; }
+  .mt-list em { font-style: normal; color: var(--dim); font-size: 12.5px; }
+  .mt-list .todos { background: transparent; border-style: dashed; }
+  /* Fuentes */
+  .fte { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .fte button { display: flex; align-items: center; gap: 10px; text-align: left; background: #161616; color: #e6e6e6; border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 16px; padding: 10px 12px; font: 900 15px Nunito, sans-serif; min-width: 0; transition: transform .08s ease; -webkit-tap-highlight-color: transparent; }
+  .fte button:not(:disabled):active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
+  .fte .ic { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; background: color-mix(in srgb, var(--c) 16%, transparent); color: var(--c); flex-shrink: 0; }
+  .fte .ic svg { width: 20px; height: 20px; }
+  .fte .tx { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .fte small { display: block; font: 700 12px Nunito, sans-serif; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fte button.on { border-color: var(--c); border-bottom-color: color-mix(in srgb, var(--c) 60%, #000); background: color-mix(in srgb, var(--c) 10%, #111); color: var(--c); }
+  .fte button.on small { color: color-mix(in srgb, var(--c) 70%, #fff); }
+  .fte button.vip { border-style: dashed; }
+  .fte button.vip small { color: var(--oro); }
+  .fte button:disabled { opacity: .35; cursor: default; }
+  .fte .tag { font: 900 10.5px Nunito, sans-serif; letter-spacing: .5px; color: #2b2100; background: var(--oro); border-radius: 7px; padding: 2px 6px; flex-shrink: 0; }
+  @media (max-width: 440px) { .fte button { gap: 8px; padding: 9px 9px; font-size: 14.5px; } .fte .ic { width: 28px; height: 28px; border-radius: 9px; } .fte .ic svg { width: 17px; height: 17px; } .fte .tag { display: none; } }
+  /* Tiempo */
+  .tiempo { background: #161616; border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 16px; padding: 14px 14px 10px; }
+  .tiempo .val { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .tiempo .val b { font: 1000 30px Nunito, sans-serif; color: var(--morado); line-height: 1; }
+  .tiempo .val small { color: var(--dim); font-size: 12.5px; }
+  .rng { -webkit-appearance: none; appearance: none; width: 100%; height: 30px; margin: 12px 0 2px; background: transparent; cursor: pointer; --p: 20%; }
+  .rng::-webkit-slider-runnable-track { height: 10px; border-radius: 10px; background: linear-gradient(90deg, var(--azul), var(--morado)) 0 / var(--p) 100% no-repeat, #262626; }
+  .rng::-moz-range-track { height: 10px; border-radius: 10px; background: linear-gradient(90deg, var(--azul), var(--morado)) 0 / var(--p) 100% no-repeat, #262626; }
+  .rng::-webkit-slider-thumb { -webkit-appearance: none; width: 30px; height: 30px; margin-top: -10px; border-radius: 50%; background: #fff; border: 4px solid var(--morado); box-shadow: 0 3px 0 #7a3fb0; }
+  .rng::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 4px solid var(--morado); box-shadow: 0 3px 0 #7a3fb0; }
+  .ticks { display: flex; justify-content: space-between; font: 800 11.5px Nunito, sans-serif; color: var(--faint); }
+  .ticks button { background: none; border: 0; padding: 2px; font: inherit; color: inherit; }
+  .ticks button.on { color: var(--morado); }
+  /* Comodines */
+  .cmd-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .sw { width: 52px; height: 30px; border-radius: 30px; border: 0; background: #2e2e2e; position: relative; flex-shrink: 0; box-shadow: inset 0 -3px 0 rgba(0,0,0,.25); transition: background .15s; }
+  .sw::after { content: ''; position: absolute; left: 4px; top: 4px; width: 22px; height: 22px; border-radius: 50%; background: #fff; transition: left .15s; }
+  .sw[aria-checked="true"] { background: var(--oro); }
+  .sw[aria-checked="true"]::after { left: 26px; }
+  .cmds { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; transition: opacity .15s; }
+  .cmds.off { opacity: .3; }
+  .cmd { --c: var(--accent); background: #161616; border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 16px; padding: 12px 6px 10px; text-align: center; min-width: 0; }
+  .cmd .ci { width: 42px; height: 42px; margin: 0 auto 6px; border-radius: 14px; display: grid; place-items: center; background: var(--c); color: #111; box-shadow: 0 3px 0 color-mix(in srgb, var(--c) 55%, #000); }
+  .cmd .ci svg { width: 24px; height: 24px; }
+  .cmd b { display: block; font: 900 13.5px Nunito, sans-serif; color: var(--c); }
+  .cmd small { display: block; font: 700 11.5px/1.3 Nunito, sans-serif; color: var(--dim); margin-top: 2px; }
+  @media (max-width: 560px) { .cmds { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   .reglas { list-style: none; display: grid; gap: 7px; font-size: 13.5px; color: var(--dim); margin-top: 4px; }
   .reglas b { color: var(--text); }
   .reglas li { display: flex; gap: 10px; align-items: flex-start; }
-  .reglas li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-top: 8px; flex-shrink: 0; }
+  .reglas li::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--c, var(--accent)); margin-top: 7px; flex-shrink: 0; }
   .unirse { display: flex; gap: 8px; }
-  .unirse input { flex: 1; min-width: 0; text-transform: uppercase; letter-spacing: 2px; font-weight: 700 !important; text-align: center; }
+  #codUnirse { flex: 1; min-width: 0; background: #161616; color: var(--text); border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 14px; padding: 11px 12px;
+    font: 900 17px Nunito, sans-serif; letter-spacing: 3px; text-align: center; text-transform: uppercase; }
   .lista { list-style: none; display: grid; gap: 8px; }
-  .lista li a { display: flex; align-items: center; gap: 12px; background: var(--surface-2); border-radius: 12px; padding: 10px 12px; color: inherit; text-decoration: none; border: 1px solid transparent; }
-  .lista li a:hover { border-color: var(--border); }
+  .lista li a { display: flex; align-items: center; gap: 12px; border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 16px; background: #161616; padding: 12px 14px; color: inherit; text-decoration: none; }
+  .lista li a:hover { border-color: #3a3a3a; }
   .lista li a > div { flex: 1; min-width: 0; }
-  .lista li b { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lista li b { display: block; font: 900 15.5px Nunito, sans-serif; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .lista li small { color: var(--dim); font-size: 12px; font-variant-numeric: tabular-nums; }
-  .estado { font-size: 11.5px; font-weight: 700; border-radius: 100px; padding: 4px 10px; white-space: nowrap; background: rgba(255,255,255,.06); color: var(--dim); }
-  .estado.ganaste { background: rgba(74,222,128,.14); color: var(--ok); }
-  .estado.perdiste { background: rgba(248,113,113,.12); color: var(--bad); }
-  .estado.te-toca, .estado.a-medias, .estado.en-sala { background: var(--accent-soft); color: var(--accent); }
+  .estado { font: 900 12px Nunito, sans-serif; border-radius: 10px; padding: 5px 10px; white-space: nowrap; background: rgba(255,255,255,.06); color: var(--dim); border: 2px solid rgba(255,255,255,.08); }
+  .estado.ganaste { background: rgba(88,204,2,.14); color: var(--verde); border-color: rgba(88,204,2,.35); }
+  .estado.perdiste { background: rgba(255,75,75,.12); color: var(--rojo); border-color: rgba(255,75,75,.3); }
+  .estado.empate { background: rgba(255,200,0,.12); color: var(--oro); }
+  .estado.te-toca, .estado.a-medias, .estado.en-sala { background: rgba(28,176,246,.12); color: var(--azul); border-color: rgba(28,176,246,.3); }
   .rank { list-style: none; display: grid; gap: 6px; }
-  .rank li { display: flex; align-items: center; gap: 10px; background: var(--surface-2); border-radius: 12px; padding: 9px 12px; font-variant-numeric: tabular-nums; }
-  .rank li .p { width: 26px; display: grid; place-items: center; font-family: 'Sora', sans-serif; font-weight: 800; color: var(--faint); flex-shrink: 0; }
-  .rank li .n { flex: 1; min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .rank li.yo { background: var(--accent-soft); border: 1px solid rgba(198,224,0,.3); }
+  .rank li { display: flex; align-items: center; gap: 10px; border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 16px; background: #161616; padding: 10px 14px; font-variant-numeric: tabular-nums; }
+  .rank li .p { width: 26px; display: grid; place-items: center; font-weight: 1000; color: var(--faint); flex-shrink: 0; }
+  .rank li .n { flex: 1; min-width: 0; font-weight: 900; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rank li.yo { border-color: rgba(198,224,0,.45); border-bottom-color: #8fa300; }
 
-  /* Compartir y reto */
-  .centro { max-width: 560px; margin: 10px auto 0; text-align: center; }
+  /* Compartir y sala */
+  .centro { max-width: 580px; margin: 10px auto 0; text-align: center; }
   .centro h1 { font-size: clamp(24px, 4vw, 32px); margin-top: 8px; }
   .centro .hint { margin-top: 6px; }
-  .codigo { font-family: 'Sora', sans-serif; font-size: clamp(34px, 9vw, 48px); font-weight: 800; letter-spacing: 8px; color: var(--accent); margin: 18px 0 4px; font-variant-numeric: tabular-nums; user-select: all; }
-  .enlace { display: block; background: var(--surface-2); border: 1px dashed var(--border); border-radius: 12px; padding: 10px 12px; font-size: 13px; color: var(--dim); overflow-wrap: anywhere; user-select: all; margin-top: 10px; }
-  .botones { display: grid; gap: 10px; margin-top: 18px; }
+  .codigo { font: 1000 clamp(34px, 9vw, 48px) Nunito, sans-serif; letter-spacing: 8px; color: var(--accent); margin: 18px 0 4px; font-variant-numeric: tabular-nums; user-select: all; }
+  .enlace { display: block; background: #161616; border: 2px dashed #2e2e2e; border-radius: 12px; padding: 10px 12px; font-size: 13px; color: var(--dim); overflow-wrap: anywhere; user-select: all; margin-top: 10px; }
+  .botones { display: grid; gap: 12px; margin-top: 18px; }
   .botones.dos { grid-template-columns: 1fr 1fr; }
   @media (max-width: 480px) { .botones.dos { grid-template-columns: 1fr; } }
-  .ficha { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
-  .ficha span { background: var(--surface-2); border: 1px solid var(--border); border-radius: 100px; padding: 6px 12px; font-size: 13px; color: var(--dim); }
+  .ficha { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+  .ficha span { display: inline-flex; align-items: center; gap: 6px; background: #161616; border: 2px solid #2e2e2e; border-radius: 12px; padding: 5px 11px; font-size: 13px; color: var(--dim); }
   .ficha b { color: var(--text); }
-  .vs { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 12px; margin-top: 22px; }
-  .vs .jug { background: var(--surface-2); border: 1px solid var(--border); border-radius: 16px; padding: 14px 10px; min-width: 0; }
-  .vs .jug b { display: block; font-family: 'Sora', sans-serif; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .vs .jug small { color: var(--dim); font-size: 12px; }
-  .vs .jug.yo { border-color: rgba(198,224,0,.45); }
-  .vs .jug.otro { border-color: rgba(249,168,212,.35); }
-  .vs .x { font-family: 'Sora', sans-serif; font-weight: 800; color: var(--faint); font-size: 18px; }
-  .avatar { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; margin: 0 auto 8px; font: 800 18px 'Sora', sans-serif; background: var(--accent); color: var(--on-accent); }
-  .otro .avatar { background: var(--rival); }
-
-  /* Juego */
-  .barra { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 8px); z-index: 10; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 10px 14px; margin-bottom: 16px; box-shadow: 0 8px 24px rgba(0,0,0,.5); }
-  .reloj { position: relative; width: 52px; height: 52px; }
-  .reloj svg { width: 52px; height: 52px; transform: rotate(-90deg); }
-  .reloj circle { fill: none; stroke-width: 5; }
-  .reloj .fondo { stroke: var(--surface-2); }
-  .reloj .arco { stroke: var(--accent); stroke-linecap: round; transition: stroke .3s; }
-  .reloj.poco .arco { stroke: var(--warn); }
-  .reloj.nada .arco { stroke: var(--bad); }
-  .reloj span { position: absolute; inset: 0; display: grid; place-items: center; font: 800 16px 'Sora', sans-serif; font-variant-numeric: tabular-nums; }
-  .carriles { display: grid; gap: 6px; min-width: 0; }
-  .carril { display: grid; grid-template-columns: 74px minmax(0, 1fr) 44px; align-items: center; gap: 8px; font-size: 12px; color: var(--dim); }
-  .carril b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); font-weight: 600; }
-  .carril .pista { height: 8px; border-radius: 100px; background: var(--surface-2); overflow: hidden; }
-  .carril .pista i { display: block; height: 100%; width: 0; border-radius: 100px; background: var(--accent); transition: width .4s ease; }
-  .carril.otro .pista i { background: var(--rival); }
-  .carril em { font-style: normal; text-align: right; font-variant-numeric: tabular-nums; }
-  .marcador { text-align: right; font-size: 12px; color: var(--dim); }
-  .marcador strong { display: block; font: 800 22px 'Sora', sans-serif; color: var(--accent); font-variant-numeric: tabular-nums; line-height: 1.1; }
-  .preg-tag { display: inline-flex; gap: 6px; align-items: center; font-size: 12px; font-weight: 700; color: var(--accent); background: var(--accent-soft); border-radius: 100px; padding: 4px 10px; }
-  .preg-num { font-family: 'Sora', sans-serif; font-size: 13px; color: var(--faint); margin: 14px 0 6px; }
-  .preg-txt { font-size: 16.5px; line-height: 1.6; overflow-wrap: anywhere; }
-  .preg-graf { margin-top: 12px; background: #fff; border-radius: 12px; padding: 10px; display: flex; justify-content: center; }
-  .preg-graf svg { max-width: 100%; height: auto; }
-  .alts { list-style: none; margin: 18px 0 0; display: grid; gap: 9px; }
-  .alts button { width: 100%; text-align: left; display: flex; gap: 12px; align-items: center; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; transition: border-color .15s, background .15s; }
-  .alts button:not(:disabled):hover { border-color: #3a3a3a; }
-  .alts button i { font-style: normal; width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; background: rgba(255,255,255,.06); font-weight: 700; flex-shrink: 0; }
-  .alts button span { min-width: 0; overflow-wrap: anywhere; }
-  .alts button:disabled { cursor: default; }
-  .alts button.on { border-color: var(--accent); background: var(--accent-soft); }
-  .alts button.ok { border-color: var(--ok); background: rgba(74,222,128,.1); }
-  .alts button.ok i { background: var(--ok); color: var(--on-accent); }
-  .alts button.mal { border-color: var(--bad); background: rgba(248,113,113,.1); }
-  .alts button.mal i { background: var(--bad); color: var(--on-accent); }
-  .veredicto { margin-top: 14px; font-weight: 700; min-height: 22px; }
-  .veredicto.ok { color: var(--ok); } .veredicto.mal { color: var(--bad); }
-  .flash { animation: flash .5s ease; }
-  @keyframes flash { from { transform: scale(.98); opacity: .6; } to { transform: none; opacity: 1; } }
-
-  /* Resultado */
-  .res { position: relative; text-align: center; padding: 30px 22px; background: radial-gradient(420px 220px at 50% 0%, rgba(198,224,0,.13), transparent 70%), var(--surface); }
-  .res.perdio { background: radial-gradient(420px 220px at 50% 0%, rgba(249,168,212,.1), transparent 70%), var(--surface); }
-  .res h1 { font-size: clamp(28px, 5vw, 40px); margin-top: 6px; }
-  .res .trofeo { width: 64px; height: 64px; margin: 0 auto 6px; color: var(--accent); }
-  .res .vs .jug strong { display: block; font: 800 30px 'Sora', sans-serif; color: var(--accent); font-variant-numeric: tabular-nums; margin-top: 2px; }
-  .res .vs .otro strong { color: var(--rival); }
-  .res .vs .jug.gana { box-shadow: 0 0 0 2px var(--accent); }
-  .res .vs .otro.gana { box-shadow: 0 0 0 2px var(--rival); }
-  .res .botones { max-width: 460px; margin-left: auto; margin-right: auto; }
-  .rev-lista { display: grid; gap: 14px; margin-top: 18px; }
-  .rev-item .alts button { cursor: default; }
-  .rev-cab { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 12.5px; color: var(--dim); margin-bottom: 8px; }
-  .rev-cab b { font-weight: 700; }
-  .rev-cab .ok { color: var(--ok); } .rev-cab .mal { color: var(--bad); }
-
-  /* Filtros */
-  .filtros { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-  .filtros .campo { margin-bottom: 0; }
-  .filtros select:disabled { opacity: .5; }
-  .filtro-nota { font-size: 12.5px; color: var(--dim); margin: 10px 0 18px; min-height: 19px; }
-  .filtro-nota b { color: var(--text); }
-  .chips button:disabled { opacity: .35; cursor: default; }
-  @media (max-width: 560px) { .filtros { grid-template-columns: 1fr; } }
-
-  /* Sala */
-  .cierre { display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 13px; font-weight: 700; color: var(--accent); background: var(--accent-soft); border-radius: 100px; padding: 6px 14px; font-variant-numeric: tabular-nums; }
-  .cierre.poco { color: var(--warn); background: rgba(251,191,36,.12); }
+  .ficha .mini { width: 20px; height: 20px; border-radius: 7px; display: grid; place-items: center; background: var(--c); color: #111; }
+  .ficha .mini svg { width: 13px; height: 13px; }
+  .cierre { display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 13px; font-weight: 900; color: var(--azul); background: rgba(28,176,246,.12); border-radius: 100px; padding: 6px 14px; font-variant-numeric: tabular-nums; }
+  .cierre.poco { color: var(--oro); background: rgba(255,200,0,.12); }
   .cierre.fin { color: var(--dim); background: rgba(255,255,255,.06); }
   .cierre i { width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: latido 1.4s ease-in-out infinite; }
   .cierre.fin i { animation: none; }
   @keyframes latido { 50% { opacity: .25; } }
-  .sala { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
-  .puesto-sala { background: var(--surface-2); border: 1px solid var(--border); border-radius: 16px; padding: 14px 6px 12px; min-width: 0; }
-  .puesto-sala b { display: block; font: 700 14px 'Sora', sans-serif; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sala { display: grid; grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
+  .puesto-sala { background: #161616; border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 16px; padding: 14px 6px 12px; min-width: 0; }
+  .puesto-sala b { display: block; font: 900 14.5px Nunito, sans-serif; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .puesto-sala small { color: var(--dim); font-size: 11.5px; }
+  .puesto-sala .av { width: 46px; height: 46px; margin: 0 auto 8px; font-size: 18px; }
   .puesto-sala.libre { border-style: dashed; background: transparent; }
-  .puesto-sala.libre .avatar { background: var(--surface-2); color: var(--faint); border: 1px dashed var(--border); }
-  .puesto-sala.libre b { color: var(--faint); font-weight: 600; }
-  .puesto-sala.yo { border-color: rgba(198,224,0,.45); }
-  .puesto-sala.entra .avatar { animation: entra .5s cubic-bezier(.3,1.6,.5,1) both; }
+  .puesto-sala.libre .av { background: #161616; color: var(--faint); border: 2px dashed #2e2e2e; box-shadow: none; }
+  .puesto-sala.libre b { color: var(--faint); }
+  .puesto-sala.yo { border-color: var(--jc); border-bottom-color: var(--jd); }
+  .puesto-sala.entra .av { animation: entra .5s cubic-bezier(.3,1.6,.5,1) both; }
   @keyframes entra { from { transform: scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
-  @media (max-width: 480px) { .sala { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 480px) { .sala { grid-template-columns: repeat(min(var(--n, 4), 2), minmax(0, 1fr)); } }
 
-  .check { display: flex; gap: 10px; align-items: flex-start; margin-top: 4px; font-size: 13px !important; color: var(--dim) !important; cursor: pointer; text-transform: none !important; letter-spacing: 0 !important; font-weight: 400 !important; }
-  .check b { color: var(--text); }
-  .check input { width: 18px; height: 18px; accent-color: var(--accent); margin-top: 1px; flex-shrink: 0; }
-  .cuenta { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: rgba(5,5,5,.92); text-align: center; }
-  .cuenta b { display: block; font: 800 clamp(110px, 30vw, 180px) 'Sora', sans-serif; color: var(--accent); line-height: 1; animation: pulso 1s ease-out infinite; }
-  .cuenta span { display: block; margin-top: 10px; font: 700 18px 'Sora', sans-serif; color: var(--dim); }
+  /* Colores de cada jugador (por orden de llegada, iguales para todos) */
+  .c0 { --jc: var(--lima); --jd: #8fa300; } .c1 { --jc: var(--azul); --jd: #1283b8; } .c2 { --jc: var(--naranja); --jd: #b36a00; } .c3 { --jc: var(--morado); --jd: #8f4fc4; }
+  .av { width: 30px; height: 30px; border-radius: 50%; background: var(--jc, var(--lima)); color: #111; display: grid; place-items: center; font: 1000 14px Nunito, sans-serif; flex-shrink: 0; box-shadow: 0 3px 0 var(--jd, #8fa300); }
+
+  /* Cuenta 3, 2, 1 y ruleta de comodines */
+  .cuenta { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: rgba(5,5,5,.97); text-align: center; padding: 16px; }
+  .cuenta h2 { font-size: 26px; }
+  .cuenta p { color: var(--dim); margin-top: 4px; font-size: 14px; }
+  .cuenta .par { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+  .cuenta .cmd { width: 132px; padding: 16px 8px 12px; border-color: var(--c); border-bottom-color: color-mix(in srgb, var(--c) 55%, #000); background: color-mix(in srgb, var(--c) 10%, #111); }
+  .cuenta .cmd .ci { width: 56px; height: 56px; border-radius: 18px; }
+  .cuenta .cmd .ci svg { width: 32px; height: 32px; }
+  .cuenta .cmd b { font-size: 16px; }
+  .cuenta .cmd.gira { --c: #3a3a3a; }
+  .cuenta .cmd.cae { animation: cae1 .45s cubic-bezier(.3,1.6,.5,1) both; }
+  @keyframes cae1 { from { transform: scale(.6) rotate(-8deg); } to { transform: none; } }
+  .cuenta .num { display: block; font: 1000 clamp(110px, 30vw, 180px) Nunito, sans-serif; color: var(--accent); line-height: 1; animation: pulso 1s ease-out infinite; }
+  .cuenta .par + .num { font-size: 64px; margin-top: 18px; }
+  .cuenta .txt { display: block; margin-top: 10px; font: 900 17px Nunito, sans-serif; color: var(--dim); }
   @keyframes pulso { from { transform: scale(1.35); opacity: .3; } 30% { transform: scale(1); opacity: 1; } }
+  @media (max-width: 400px) { .cuenta .cmd { width: 104px; } }
 
-  /* Colores de cada jugador */
-  .c0 { --jc: var(--accent); } .c1 { --jc: #f9a8d4; } .c2 { --jc: #67e8f9; } .c3 { --jc: #fdba74; }
-  .avatar.c1, .avatar.c2, .avatar.c3 { background: var(--jc); }
-  .carril .pista i { background: var(--jc, var(--accent)); }
-  .carril b::before { content: ''; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--jc, var(--accent)); margin-right: 5px; vertical-align: 1px; }
+  /* Juego: marcador en vivo */
+  .barra { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 8px); z-index: 10; display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "r t" "r c"; gap: 4px 14px; align-items: center;
+    background: var(--surface); border: 2px solid #1e1e1e; border-radius: 18px; padding: 12px 14px 10px; margin-bottom: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.5); }
+  .reloj { grid-area: r; position: relative; width: 58px; height: 58px; }
+  .reloj svg { width: 58px; height: 58px; transform: rotate(-90deg); }
+  .reloj circle { fill: none; stroke-width: 5; }
+  .reloj .fondo { stroke: #262626; }
+  .reloj .arco { stroke: var(--lima); stroke-linecap: round; transition: stroke .3s; }
+  .reloj.poco .arco { stroke: var(--oro); }
+  .reloj.nada .arco, .reloj.robado .arco { stroke: var(--rojo); }
+  .reloj.hielo .arco { stroke: var(--morado); }
+  .reloj > span { position: absolute; inset: 0; display: grid; place-items: center; font: 1000 18px Nunito, sans-serif; font-variant-numeric: tabular-nums; }
+  .reloj.robado > span { color: var(--rojo); }
+  .reloj.hielo > span { color: var(--morado); }
+  .reloj.robado > .menos, .reloj > .menos { position: absolute; inset: auto; display: block; right: -12px; top: -6px; font: 1000 13px Nunito, sans-serif; color: #fff; background: var(--rojo); border-radius: 8px; padding: 1px 5px; animation: cae1 .4s both; }
+  .tiles { grid-area: t; display: grid; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr)); gap: 8px; margin-top: 8px; }
+  .tile { position: relative; text-align: center; background: #161616; border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 16px; padding: 8px 4px 6px; min-width: 0; }
+  .tile.yo { border-color: var(--jc); border-bottom-color: var(--jd); background: color-mix(in srgb, var(--jc) 8%, #141414); }
+  .tile.fuera { opacity: .5; }
+  .ring { width: 46px; height: 46px; margin: 0 auto; position: relative; }
+  .ring svg { width: 46px; height: 46px; transform: rotate(-90deg); }
+  .ring circle { fill: none; stroke-width: 4.5; }
+  .ring .f { stroke: #262626; } .ring .a { stroke: var(--jc); stroke-linecap: round; transition: stroke-dashoffset .4s ease; }
+  .ring .av { position: absolute; inset: 7px; width: auto; height: auto; box-shadow: none; font-size: 14px; }
+  .tile .nm { display: block; font: 900 12.5px Nunito, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 3px; }
+  .tile .pt { display: block; font: 1000 22px/1 Nunito, sans-serif; color: var(--jc); font-variant-numeric: tabular-nums; }
+  .tile .rs { display: block; font: 700 10.5px Nunito, sans-serif; color: var(--dim); margin-top: 2px; }
+  .tile .pos { position: absolute; top: -9px; left: 4px; font: 1000 11px Nunito, sans-serif; background: #2e2e2e; color: #e6e6e6; border-radius: 8px; padding: 2px 6px; }
+  .tile .pos.p1 { background: var(--oro); color: #2b2100; }
+  .tile .ev { position: absolute; top: -9px; right: 4px; display: flex; gap: 2px; }
+  .tile .ev span { width: 20px; height: 20px; border-radius: 7px; display: grid; place-items: center; background: var(--c); color: #111; }
+  .tile .ev svg { width: 13px; height: 13px; }
+  .tile .stk { position: absolute; left: 50%; top: 4px; width: 46px; height: 46px; margin-left: -23px; z-index: 3; pointer-events: none; filter: drop-shadow(0 4px 0 rgba(0,0,0,.45)); animation: stk 2.2s cubic-bezier(.3,1.6,.5,1) forwards; }
+  .tile .stk svg { width: 46px; height: 46px; }
+  @keyframes stk { 0% { transform: scale(.2) rotate(-25deg); opacity: 0; } 15% { transform: scale(1.25) rotate(8deg); opacity: 1; } 25% { transform: scale(1) rotate(-6deg); } 80% { transform: translateY(-6px) rotate(-6deg); opacity: 1; } 100% { transform: translateY(-26px) scale(.8); opacity: 0; } }
+  .cam { grid-area: c; min-width: 0; }
+  .camino { display: grid; grid-template-columns: repeat(var(--n, 10), minmax(0, 1fr)); gap: 3px; margin-top: 10px; }
+  .camino i { height: 8px; border-radius: 8px; background: #262626; }
+  .camino i.ok { background: var(--verde); } .camino i.mal { background: var(--rojo); } .camino i.ya { background: #fff; box-shadow: 0 0 0 2px rgba(255,255,255,.25); }
+  .camino i.fin { background: linear-gradient(90deg, var(--oro), var(--naranja)); opacity: .5; } .camino i.fin.ya { opacity: 1; }
+  .camino-l { display: flex; justify-content: space-between; gap: 10px; font: 800 11.5px Nunito, sans-serif; color: var(--dim); margin-top: 5px; }
+  @media (max-width: 560px) {
+    .barra { grid-template-areas: "t t" "r c"; padding: 12px 10px 8px; }
+    .reloj { transform: scale(.88); margin: -4px 0; }
+    .tiles { gap: 6px; }
+    .ring, .ring svg { width: 40px; height: 40px; } .ring .av { inset: 6px; font-size: 12.5px; }
+    .tile .pt { font-size: 19px; }
+  }
+  /* Comodines en el juego */
+  .cbar { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; align-items: center; }
+  .cbar .t { font: 900 12px Nunito, sans-serif; color: var(--dim); margin-right: 2px; }
+  .cbtn { white-space: nowrap; display: inline-flex; align-items: center; gap: 7px; border: 2px solid var(--c); border-bottom: 4px solid color-mix(in srgb, var(--c) 55%, #000); background: color-mix(in srgb, var(--c) 14%, #111); color: var(--c); border-radius: 14px; padding: 7px 12px; font: 900 13.5px Nunito, sans-serif; transition: transform .08s ease; -webkit-tap-highlight-color: transparent; }
+  .cbtn svg { width: 18px; height: 18px; }
+  .cbtn:not(:disabled):active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
+  .cbtn:disabled { opacity: .35; cursor: default; filter: grayscale(.6); }
+  .cbtn.usado { opacity: .3; border-style: dashed; filter: grayscale(.7); }
+  .cbtn.activo { box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 40%, transparent); opacity: 1; filter: none; }
+  @media (max-width: 560px) { .cbar .t, .reac > span { display: none; } .reac { gap: 6px; } .reac button { width: 44px; height: 44px; } }
+  .preg-cab { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .preg-tag { display: inline-flex; gap: 6px; align-items: center; font: 900 12px Nunito, sans-serif; color: var(--naranja); background: rgba(255,150,0,.12); border-radius: 100px; padding: 4px 10px; }
+  .x2 { display: inline-flex; align-items: center; gap: 5px; font: 1000 12px Nunito, sans-serif; color: #2b2100; background: var(--c); border-radius: 9px; padding: 3px 8px; }
+  .x2 svg { width: 14px; height: 14px; }
+  .preg-num { font: 900 13px Nunito, sans-serif; color: var(--faint); margin: 14px 0 6px; }
+  .preg-txt { font-size: 17px; line-height: 1.6; overflow-wrap: anywhere; }
+  .preg-graf { margin-top: 12px; background: #fff; border-radius: 12px; padding: 10px; display: flex; justify-content: center; }
+  .preg-graf svg { max-width: 100%; height: auto; }
+  .final { display: flex; align-items: center; gap: 12px; background: linear-gradient(90deg, var(--oro), var(--naranja)); color: #2b1a00; border-radius: 16px; padding: 10px 14px; margin-bottom: 14px; box-shadow: 0 4px 0 #b36a00; }
+  .final b { display: block; font: 1000 18px/1.1 Nunito, sans-serif; letter-spacing: .5px; }
+  .final small { font: 800 12.5px Nunito, sans-serif; }
+  .final .x3 { margin-left: auto; font: 1000 26px Nunito, sans-serif; background: #2b1a00; color: var(--oro); border-radius: 12px; padding: 2px 10px; }
+  .aviso-j { margin-top: 14px; display: flex; align-items: center; gap: 10px; background: color-mix(in srgb, var(--c) 10%, transparent); border: 2px solid var(--c); border-bottom: 4px solid color-mix(in srgb, var(--c) 60%, #000); border-radius: 16px; padding: 10px 12px; font: 900 14px Nunito, sans-serif; color: color-mix(in srgb, var(--c) 60%, #fff); }
+  .aviso-j .ci { width: 30px; height: 30px; border-radius: 10px; background: var(--c); color: #111; display: grid; place-items: center; flex-shrink: 0; }
+  .aviso-j .ci svg { width: 18px; height: 18px; }
+  .espia { display: block; }
+  .espia .fil { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .espia .fil div { display: flex; align-items: center; gap: 7px; background: #161616; border-radius: 12px; padding: 5px 10px 5px 5px; font: 800 13px Nunito, sans-serif; color: var(--text); }
+  .espia .fil .av { width: 24px; height: 24px; font-size: 11px; box-shadow: none; }
+  .espia .ok { color: var(--verde); } .espia .mal { color: var(--rojo); } .espia .pen { color: var(--dim); }
+  .espia .cab { display: flex; align-items: center; gap: 10px; }
+  .alts { list-style: none; margin: 18px 0 0; display: grid; gap: 9px; }
+  .alts button { width: 100%; text-align: left; display: flex; gap: 12px; align-items: center; background: #161616; color: var(--text); border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 16px; padding: 12px 14px;
+    font: 700 15.5px Nunito, sans-serif; transition: transform .08s ease, border-color .15s, background .15s, opacity .2s; -webkit-tap-highlight-color: transparent; }
+  .alts button:not(:disabled):hover { border-color: #3a3a3a; }
+  .alts button:not(:disabled):active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
+  .alts button i { font: 900 14px Nunito, sans-serif; font-style: normal; width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; border: 2px solid #3a3a3a; flex-shrink: 0; }
+  .alts button span { min-width: 0; overflow-wrap: anywhere; }
+  .alts button:disabled { cursor: default; }
+  .alts button.on { border-color: var(--azul); border-bottom-color: #1283b8; background: rgba(28,176,246,.1); }
+  .alts button.ok { border-color: var(--verde); border-bottom-color: #3d8f01; background: rgba(88,204,2,.12); }
+  .alts button.mal { border-color: var(--rojo); border-bottom-color: #b33434; background: rgba(255,75,75,.1); }
+  .alts button.ok i { background: var(--verde); border-color: transparent; color: #0b0b0b; }
+  .alts button.mal i { background: var(--rojo); border-color: transparent; color: #0b0b0b; }
+  .alts button.fuera { opacity: .25; text-decoration: line-through; }
+  .veredicto { margin-top: 14px; font-weight: 900; min-height: 22px; }
+  .veredicto.ok { color: var(--verde); } .veredicto.mal { color: var(--rojo); }
+  .flash { animation: flash .5s ease; }
+  @keyframes flash { from { transform: scale(.98); opacity: .6; } to { transform: none; opacity: 1; } }
+  /* Reacciones */
+  .reac { display: flex; gap: 8px; justify-content: center; align-items: center; margin-top: 14px; flex-wrap: wrap; }
+  .reac > span { font: 900 12px Nunito, sans-serif; color: var(--dim); margin-right: 2px; }
+  .reac button { width: 46px; height: 46px; border-radius: 14px; background: #161616; border: 2px solid #2e2e2e; border-bottom-width: 4px; display: grid; place-items: center; padding: 0; transition: transform .08s ease, opacity .2s; -webkit-tap-highlight-color: transparent; }
+  .reac button svg { width: 30px; height: 30px; }
+  .reac button:not(:disabled):active { transform: translateY(2px) scale(.94); border-bottom-width: 2px; }
+  .reac button:disabled { opacity: .35; }
+  /* Avisos flotantes (te robaron tiempo, alguien usó un comodín) */
+  .toasts { position: fixed; left: 0; right: 0; bottom: calc(env(safe-area-inset-bottom, 0px) + 18px); z-index: 30; display: grid; justify-items: center; gap: 8px; pointer-events: none; padding: 0 16px; }
+  .toast { display: flex; align-items: center; gap: 10px; max-width: 100%; background: color-mix(in srgb, var(--c) 18%, #0e0e0e); border: 2px solid var(--c); border-bottom-width: 4px; border-radius: 16px; padding: 9px 14px; font: 900 14.5px Nunito, sans-serif; color: color-mix(in srgb, var(--c) 45%, #fff); box-shadow: 0 12px 30px rgba(0,0,0,.6); animation: toast 2.6s ease forwards; }
+  .toast .ci { width: 28px; height: 28px; border-radius: 9px; background: var(--c); color: #111; display: grid; place-items: center; flex-shrink: 0; }
+  .toast .ci svg { width: 17px; height: 17px; }
+  @keyframes toast { 0% { transform: translateY(20px); opacity: 0; } 10%, 85% { transform: none; opacity: 1; } 100% { transform: translateY(8px); opacity: 0; } }
 
-  /* Podio (como el top de la semana del simulacro) */
-  .podio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; align-items: end; margin: 22px auto 0; max-width: 520px; }
-  .podio.dos { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 360px; }
-  .pod { display: flex; flex-direction: column; align-items: center; gap: 5px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 16px; padding: 14px 6px; min-width: 0; }
-  .pod.p1 { padding-top: 24px; border-color: rgba(245,197,66,.45); background: linear-gradient(180deg, rgba(245,197,66,.12), var(--surface-2) 70%); }
-  .pod.yo { box-shadow: inset 0 0 0 1px rgba(198,224,0,.6); }
-  .pod b { font: 700 14px 'Inter', sans-serif; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .pod strong { font: 800 22px 'Sora', sans-serif; color: var(--accent); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  /* Resultado */
+  .res { position: relative; text-align: center; padding: 30px 22px; overflow: hidden; background: radial-gradient(420px 220px at 50% 0%, rgba(255,200,0,.13), transparent 70%), var(--surface); }
+  .res.perdio { background: radial-gradient(420px 220px at 50% 0%, rgba(28,176,246,.1), transparent 70%), var(--surface); }
+  .res h1 { font-size: clamp(28px, 5vw, 40px); margin-top: 6px; }
+  .res .trofeo { width: 64px; height: 64px; margin: 0 auto 6px; color: var(--oro); }
+  .res .botones { max-width: 460px; margin-left: auto; margin-right: auto; }
+  .xpgana { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font: 1000 15px Nunito, sans-serif; color: #2b2100; background: var(--oro); border-radius: 12px; padding: 5px 12px; box-shadow: 0 3px 0 #b38c00; animation: cae1 .5s both; }
+  .podio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; align-items: end; margin: 22px auto 0; max-width: 540px; }
+  .podio.dos { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 380px; }
+  .pod { display: flex; flex-direction: column; align-items: center; gap: 3px; background: #161616; border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 16px; padding: 12px 6px; min-width: 0; animation: podSube .6s ease-out both; }
+  .pod.p1 { padding-top: 22px; border-color: var(--oro); border-bottom-color: #b38c00; background: linear-gradient(180deg, rgba(255,200,0,.14), #161616 70%); animation-delay: .1s; }
+  .pod.p3 { animation-delay: .2s; }
+  .pod.yo { box-shadow: inset 0 0 0 2px var(--jc); }
+  .pod .av { width: 44px; height: 44px; font-size: 18px; margin-bottom: 3px; }
+  .pod b { font: 900 15px Nunito, sans-serif; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pod strong { font: 1000 26px/1.1 Nunito, sans-serif; color: var(--jc); font-variant-numeric: tabular-nums; }
   .pod small { color: var(--dim); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+  .pod .xp { margin-top: 4px; font: 900 12px Nunito, sans-serif; color: #2b2100; background: var(--oro); border-radius: 8px; padding: 2px 8px; }
   .pod .mc-medalla { transform-origin: 50% 0; animation: medCae .7s cubic-bezier(.3,1.6,.5,1) both, medBalanceo 3.2s ease-in-out .7s infinite; }
-  .pod.p1 .mc-medalla { animation-delay: .15s, .85s; } .pod.p3 .mc-medalla { animation-delay: .3s, 1s; }
-  .pod { animation: podSube .6s ease-out both; } .pod.p1 { animation-delay: .1s; } .pod.p3 { animation-delay: .2s; }
   @keyframes medCae { from { transform: translateY(-14px) rotate(-12deg); opacity: 0; } to { transform: none; opacity: 1; } }
   @keyframes medBalanceo { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(5deg); } 75% { transform: rotate(-5deg); } }
   @keyframes podSube { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
-  .cuarto { display: flex; align-items: center; gap: 10px; max-width: 520px; margin: 10px auto 0; background: var(--surface-2); border-radius: 12px; padding: 9px 14px; font-size: 13.5px; text-align: left; font-variant-numeric: tabular-nums; }
-  .cuarto .p { font: 800 14px 'Sora', sans-serif; color: var(--faint); width: 26px; text-align: center; }
-  .cuarto .n { flex: 1; min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cuarto { display: flex; align-items: center; gap: 10px; max-width: 540px; margin: 10px auto 0; background: #161616; border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 14px; padding: 8px 12px; text-align: left; font-variant-numeric: tabular-nums; }
+  .cuarto .n { flex: 1; min-width: 0; font-weight: 900; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cuarto strong { font: 1000 18px Nunito, sans-serif; color: var(--jc); }
   .cuarto small { color: var(--dim); }
-  .cuarto.yo { background: var(--accent-soft); }
+  .cuarto.yo { border-color: var(--jc); }
+  .ttl { font: 900 12px Nunito, sans-serif; letter-spacing: 1px; text-transform: uppercase; color: var(--faint); margin: 22px auto 0; max-width: 540px; text-align: left; }
+  .meds { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 10px auto 0; max-width: 540px; }
+  .md { background: #161616; border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 16px; padding: 12px 6px; min-width: 0; }
+  .md .ci { width: 46px; height: 46px; margin: 0 auto 6px; border-radius: 50%; display: grid; place-items: center; background: var(--c); color: #111; box-shadow: 0 3px 0 color-mix(in srgb, var(--c) 55%, #000); }
+  .md .ci svg { width: 24px; height: 24px; }
+  .md b { display: block; font: 900 14px Nunito, sans-serif; color: var(--c); }
+  .md span { display: block; font: 900 13.5px Nunito, sans-serif; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .md small { display: block; font: 700 11.5px Nunito, sans-serif; color: var(--dim); }
+  .md.nadie { opacity: .4; }
+  @media (max-width: 560px) { .meds { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   .tabla { list-style: none; display: grid; gap: 8px; max-width: 460px; margin: 20px auto 0; text-align: left; }
-  .tabla li { display: flex; align-items: center; gap: 12px; background: var(--surface-2); border-radius: 12px; padding: 9px 12px; font-variant-numeric: tabular-nums; }
-  .tabla li .avatar { width: 34px; height: 34px; font-size: 14px; margin: 0; flex-shrink: 0; }
+  .tabla li { display: flex; align-items: center; gap: 12px; background: #161616; border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 14px; padding: 9px 12px; font-variant-numeric: tabular-nums; }
+  .tabla li .av { width: 34px; height: 34px; font-size: 14px; }
   .tabla li div { flex: 1; min-width: 0; }
   .tabla li b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .tabla li small { color: var(--dim); font-size: 12px; }
-  .tabla li strong { font: 800 16px 'Sora', sans-serif; color: var(--accent); }
+  .tabla li strong { font: 1000 17px Nunito, sans-serif; color: var(--jc); }
   .confeti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; border-radius: inherit; }
   .confeti i { position: absolute; top: -12px; width: 7px; height: 12px; border-radius: 2px; animation: cae 2.6s ease-in forwards; }
   @keyframes cae { to { transform: translateY(460px) rotate(540deg); opacity: 0; } }
+  .rev-lista { display: grid; gap: 14px; margin-top: 18px; }
+  .rev-item .alts button { cursor: default; }
+  .rev-cab { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 12.5px; color: var(--dim); margin-bottom: 8px; }
+  .rev-cab b { font-weight: 900; }
+  .rev-cab .ok { color: var(--verde); } .rev-cab .mal { color: var(--rojo); }
 
-  @media (max-width: 820px) {
-    .crear { grid-template-columns: 1fr; }
-    .barra { grid-template-columns: auto minmax(0, 1fr); }
-    .marcador { display: none; }
+  @media (max-width: 820px) { .crear { grid-template-columns: 1fr; } }
+  @media (max-width: 480px) { .card { padding: 18px; } }
+  @media (prefers-reduced-motion: reduce) {
+    .flash, .pod, .pod .mc-medalla, .puesto-sala.entra .av, .cierre i, .cuenta .num, .cuenta .cmd.cae, .tile .stk, .toast, .xpgana { animation: none; }
+    .tile .stk { opacity: 1; } .ring .a { transition: none; } .confeti { display: none; }
   }
-  @media (max-width: 480px) {
-    .card { padding: 18px; }
-    .carril { grid-template-columns: 58px minmax(0, 1fr) 40px; }
-    .vs { gap: 8px; }
-  }
-  @media (prefers-reduced-motion: reduce) { .flash, .pod, .pod .mc-medalla, .puesto-sala.entra .avatar, .cierre i, .cuenta b { animation: none; } .carril .pista i { transition: none; } .confeti { display: none; } }
   /* El botón "?" del tutorial solo en la pantalla de crear */
   body:has(#crear[hidden]) .mce-btn, body:has(#crear[hidden]) .mce-tip { display: none; }
-
-  /* Botones gruesos estilo Duolingo (como en Flashcards): se hunden al tocarlos */
-  .btn { border: 2px solid var(--accent); border-radius: 16px; box-shadow: 0 5px 0 #8fa300; color: #2b3300;
-    font: 900 15px Nunito, 'Inter', sans-serif; text-transform: uppercase; letter-spacing: .7px;
-    transition: transform .08s ease, box-shadow .08s ease; -webkit-tap-highlight-color: transparent; }
-  .btn:not(:disabled):active { transform: translateY(5px); box-shadow: 0 0 0 transparent; }
-  .btn.sec { background: #1a1a1a; color: #e6e6e6; border: 2px solid #2e2e2e; box-shadow: 0 5px 0 #2e2e2e; }
-  .btn.wa { border-color: #25D366; box-shadow: 0 5px 0 #1a9e4b; }
-  .btn.mini { font-size: 12.5px; padding: 8px 14px; border-radius: 12px; box-shadow: 0 3px 0 #8fa300; }
-  .btn.mini.sec { box-shadow: 0 3px 0 #2e2e2e; }
-  .btn.mini:not(:disabled):active { transform: translateY(3px); }
-  .chips button { border: 2px solid #2e2e2e; border-bottom-width: 4px; background: #161616; color: #e6e6e6; border-radius: 14px;
-    font: 800 15px Nunito, 'Inter', sans-serif; transition: transform .08s ease; -webkit-tap-highlight-color: transparent; }
-  .chips button:not(:disabled):active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
-  .chips button.on { border-color: var(--accent); border-bottom-color: #8fa300; color: var(--accent); background: var(--accent-soft); }
-  select, .campo input[type=text] { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 14px; background-color: #161616;
-    font: 800 15px Nunito, 'Inter', sans-serif; }
-  #codUnirse { background: #161616 !important; border: 2px solid #2e2e2e !important; border-bottom-width: 4px !important; border-radius: 14px !important;
-    font: 900 17px Nunito, 'Inter', sans-serif !important; letter-spacing: 3px; text-align: center; text-transform: uppercase; }
-  .alts button { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 16px; font: 700 15px Nunito, 'Inter', sans-serif;
-    transition: transform .08s ease, border-color .15s, background .15s; -webkit-tap-highlight-color: transparent; }
-  .alts button:not(:disabled):active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
-  .alts button i { font: 900 14px Nunito, sans-serif; border: 2px solid #3a3a3a; background: transparent; }
-  .alts button.on { border-bottom-color: #8fa300; }
-  .alts button.ok { border-bottom-color: #22a356; }
-  .alts button.ok i, .alts button.mal i { border-color: transparent; }
-  .alts button.mal { border-bottom-color: #c94a4a; }
-  .check input { width: 22px; height: 22px; }
-
-  /* Mis duelos y Top: tarjetas gruesas */
-  .lista li a { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 16px; background: #161616; padding: 12px 14px;
-    transition: transform .08s ease; -webkit-tap-highlight-color: transparent; }
-  .lista li a:hover { border-color: #3a3a3a; }
-  .lista li a:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
-  .lista li b, .rank li .n { font: 800 15.5px Nunito, 'Inter', sans-serif; }
-  .estado { font: 900 12px Nunito, 'Inter', sans-serif; border-radius: 10px; padding: 5px 10px; border: 2px solid rgba(255,255,255,.08); }
-  .estado.ganaste { border-color: rgba(74,222,128,.35); }
-  .estado.perdiste { border-color: rgba(248,113,113,.3); }
-  .rank li { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 16px; background: #161616; padding: 10px 14px; }
-  .rank li.yo { border-color: rgba(198,224,0,.45); border-bottom-color: #8fa300; }
-  /* Selector propio: la lista abierta también con botones gruesos */
-  .sel { position: relative; }
-  .sel select, .filtros .sel select:disabled { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
-  .sel-btn { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; text-align: left;
-    background: #161616; color: var(--text); border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 14px; padding: 11px 12px;
-    font: 800 15px Nunito, 'Inter', sans-serif; transition: transform .08s ease; -webkit-tap-highlight-color: transparent; }
-  .sel-btn span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .sel-btn svg { width: 16px; height: 16px; flex-shrink: 0; transition: transform .15s; }
-  .sel-btn:not(:disabled):active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
-  .sel-btn:disabled { opacity: .5; cursor: default; }
-  .sel.abierto .sel-btn { border-color: var(--accent); border-bottom-color: #8fa300; }
-  .sel.abierto .sel-btn svg { transform: rotate(180deg); }
-  .filtros .campo:last-child .sel-lista { left: auto; right: 0; }
-  .sel-lista { position: absolute; z-index: 40; left: 0; width: max(100%, 240px); max-width: calc(100vw - 32px); top: calc(100% + 6px); max-height: 300px; overflow-y: auto; list-style: none;
-    background: #0e0e0e; border: 2px solid #2e2e2e; border-radius: 16px; padding: 8px; display: grid; gap: 6px; box-shadow: 0 14px 30px rgba(0,0,0,.6); }
-  .sel-lista button { width: 100%; text-align: left; background: #161616; color: #e6e6e6; border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 12px;
-    padding: 9px 12px; font: 800 14.5px Nunito, 'Inter', sans-serif; transition: transform .08s ease; -webkit-tap-highlight-color: transparent; }
-  .sel-lista button:hover { border-color: #3a3a3a; }
-  .sel-lista button:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
-  .sel-lista button.on { border-color: var(--accent); border-bottom-color: #8fa300; color: var(--accent); background: var(--accent-soft); }
-
   /* Letra gruesita en toda la web (Nunito); las fórmulas y el código conservan su letra */
   body, body :not(.katex):not(.katex *):not(code):not(pre):not(kbd):not(samp):not(.formato):not(.ta.big):not(.cdnuevos code) { font-family: 'Nunito', 'Inter', system-ui, sans-serif !important; }
-  body { font-weight: 600; }
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" media="print" onload="this.media='all'">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
@@ -346,7 +444,7 @@
     <div class="hero">
       <div class="eyebrow" style="margin-top:14px">Duelos · hasta 4 jugadores</div>
       <h1>Reta a tus amigos y <span>demuestra quién sabe más</span></h1>
-      <p class="hint">Todos responden las mismas preguntas, cada uno desde su celular. Gana quien acierta más; si empatan, el más rápido.</p>
+      <p class="hint">Todos responden las mismas preguntas, cada uno desde su celular. Con comodines, reacciones y una final que vale triple.</p>
     </div>
     <div class="crear">
       <div class="card">
@@ -360,31 +458,40 @@
             <select id="selCurso"><option value="todos">Todos los cursos</option></select>
           </div>
           <div class="campo">
-            <label for="selTema">Tema</label>
-            <select id="selTema" disabled><option value="">Todos los temas</option></select>
+            <label for="mtBtn">Temas</label>
+            <button type="button" class="mt-btn" id="mtBtn" aria-expanded="false" aria-controls="mtList" disabled><span>Elige un curso primero</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>
           </div>
         </div>
+        <div class="mt-list" id="mtList" hidden></div>
         <p class="filtro-nota" id="filtroNota" role="status"></p>
         <div class="campo">
           <span class="lbl">De dónde salen las preguntas</span>
-          <div class="chips" id="fuentes"></div>
-          <p class="nota" id="fuenteNota"></p>
+          <div class="fte" id="fuentes"></div>
+          <p class="nota error" id="fuenteNota" hidden></p>
         </div>
-        <div class="campo">
-          <span class="lbl">Jugadores</span>
+        <div class="campo" style="--c:var(--azul)">
+          <span class="lbl"><i></i>Jugadores</span>
           <div class="chips" id="jugadores"><button type="button" data-j="2" class="on">2 · VS</button><button type="button" data-j="3">3</button><button type="button" data-j="4">4</button></div>
           <label class="check"><input type="checkbox" id="chkAuto" checked><span><b>Inicio automático:</b> empieza solo apenas se llena la sala. Si lo quitas, tú tocas <b>Iniciar</b>.</span></label>
         </div>
-        <div class="campo">
-          <span class="lbl">Preguntas</span>
-          <div class="chips" id="cantidad"><button type="button" data-n="5">5</button><button type="button" data-n="10" class="on">10</button><button type="button" data-n="15">15</button><button type="button" data-n="20">20</button></div>
+        <div class="campo" style="--c:var(--naranja)">
+          <span class="lbl"><i></i>Preguntas</span>
+          <div class="chips" id="cantidad"></div>
         </div>
-        <ul class="reglas">
-          <li><span><b>60 segundos</b> por pregunta. Si se acaba, cuenta como no respondida.</span></li>
-          <li><span>Ves al instante si acertaste, pero <b>no puedes volver</b> a una pregunta.</span></li>
-          <li><span>Todos empiezan <b>a la vez</b>, con una cuenta 3, 2, 1. Si nadie inicia en <b>5 minutos</b>, la sala se cierra.</span></li>
-          <li><span>Solo el <b>1.º puesto</b> suma al top de la semana.</span></li>
-        </ul>
+        <div class="campo" style="--c:var(--morado)">
+          <label class="lbl" for="rngSeg"><i></i>Tiempo por pregunta</label>
+          <div class="tiempo" id="tiempo">
+            <div class="val"><b id="segVal">30 s</b><small id="segTotal"></small></div>
+            <input type="range" class="rng" id="rngSeg" min="0" max="5" step="1" value="1" aria-valuetext="30 segundos">
+            <div class="ticks" id="segTicks"></div>
+          </div>
+        </div>
+        <div class="campo" style="--c:var(--oro)">
+          <div class="cmd-cab"><span class="lbl" id="cmdLbl"><i></i>Comodines al azar</span><button type="button" class="sw" id="cmdSw" role="switch" aria-checked="true" aria-labelledby="cmdLbl"></button></div>
+          <p class="nota" id="cmdNota" style="margin-top:0"></p>
+          <div class="cmds" id="cmdLista"></div>
+        </div>
+        <ul class="reglas" id="reglas"></ul>
         <button class="btn" type="button" id="btnCrear" style="width:100%;margin-top:20px">Crear duelo</button>
         <p class="nota error" id="crearError" hidden></p>
       </div>
@@ -392,8 +499,8 @@
         <div class="card">
           <h3>¿Te pasaron un código?</h3>
           <div class="unirse">
-            <input type="text" id="codUnirse" maxlength="6" placeholder="ABC123" autocomplete="off" autocapitalize="characters" aria-label="Código del duelo" style="background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:11px 12px;font:500 15px Inter,sans-serif;">
-            <button class="btn" type="button" id="btnUnirse">Entrar</button>
+            <input type="text" id="codUnirse" maxlength="6" placeholder="ABC123" autocomplete="off" autocapitalize="characters" aria-label="Código del duelo">
+            <button class="btn azul" type="button" id="btnUnirse">Entrar</button>
           </div>
         </div>
         <div class="card">
@@ -409,7 +516,7 @@
     </div>
   </section>
 
-  <!-- 2. Compartir / reto -->
+  <!-- 2. Compartir / sala -->
   <section id="reto" hidden>
     <a class="volver" href="duelo.html">‹ Duelos</a>
     <div class="card centro" style="margin-top:14px">
@@ -428,33 +535,37 @@
         </div>
       </div>
       <div class="botones">
-        <button class="btn" type="button" id="btnJugar">Jugar mi parte ahora</button>
+        <button class="btn" type="button" id="btnJugar">Entrar a la sala</button>
       </div>
       <p class="nota" id="retoNota"></p>
-      <div class="cuenta" id="cuenta" hidden aria-live="assertive"><div><b id="cuentaNum">3</b><span id="cuentaTxt">Prepárate</span></div></div>
       <p class="nota error" id="retoError" hidden></p>
     </div>
   </section>
+  <div class="cuenta" id="cuenta" hidden aria-live="assertive"></div>
 
   <!-- 3. Juego -->
   <section id="juego" hidden>
-    <div class="barra">
+    <div class="barra" id="barra">
+      <div class="tiles" id="tiles"></div>
       <div class="reloj" id="reloj" role="timer" aria-label="Tiempo de la pregunta">
-        <svg viewBox="0 0 52 52" aria-hidden="true"><circle class="fondo" cx="26" cy="26" r="22"/><circle class="arco" id="arco" cx="26" cy="26" r="22" stroke-dasharray="138.2" stroke-dashoffset="0"/></svg>
-        <span id="seg">60</span>
+        <svg viewBox="0 0 58 58" aria-hidden="true"><circle class="fondo" cx="29" cy="29" r="25"/><circle class="arco" id="arco" cx="29" cy="29" r="25" stroke-dasharray="157.1" stroke-dashoffset="0"/></svg>
+        <span id="seg">30</span>
       </div>
-      <div class="carriles" id="carriles"></div>
-      <div class="marcador">Aciertos<strong id="aciertos">0</strong></div>
+      <div class="cam"><div class="camino" id="camino"></div><div class="camino-l"><span id="camTxt"></span><span id="pNum"></span></div></div>
     </div>
+    <div class="cbar" id="cbar" hidden></div>
     <div class="card" id="pregCard">
-      <span class="preg-tag" id="pTag"></span>
-      <div class="preg-num" id="pNum"></div>
-      <div class="preg-txt" id="pTxt"></div>
+      <div id="pFinal"></div>
+      <div class="preg-cab"><span class="preg-tag" id="pTag"></span><span id="pExtra"></span></div>
+      <div class="preg-txt" id="pTxt" style="margin-top:12px"></div>
       <div class="preg-graf" id="pGraf" hidden></div>
+      <div id="pAviso"></div>
       <ul class="alts" id="pAlts"></ul>
       <div class="veredicto" id="veredicto" role="status"></div>
     </div>
+    <div class="reac" id="reac" role="group" aria-label="Reaccionar"></div>
   </section>
+  <div class="toasts" id="toasts" aria-live="polite"></div>
 
   <!-- 4. Resultado -->
   <section id="resultado" hidden>
@@ -464,6 +575,7 @@
       <div class="eyebrow" id="resEye"></div>
       <h1 id="resTit"></h1>
       <p class="hint" id="resSub"></p>
+      <div id="resXp"></div>
       <div id="resTabla"></div>
       <div class="botones dos" id="resBotones"></div>
       <p class="nota error" id="resError" hidden></p>
@@ -477,21 +589,68 @@
 (function () {
   'use strict';
   const $ = id => document.getElementById(id);
-  const SEG = 60;                       // segundos por pregunta (igual que en supabase/10-duelos.sql)
   const LETRAS = 'ABCDEFGH';
+  const TIEMPOS = [15, 30, 45, 60, 90, 120];   // segundos por pregunta (supabase/22-duelos-v2.sql: 15 a 120)
+  const CANTIDADES = [5, 10, 15, 20, 25, 30];
+  const XP_PUESTO = [40, 20, 10];
+
+  /* ---------- Íconos propios (SVG) ---------- */
+  const svg = (d, w) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' + (w || 2.8) + '" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + '</svg>';
+  const IC = {
+    mezcla: svg('<path d="M4 7h4l8 10h4M4 17h4l2.5-3M14 10l2-3h4M17 4l3 3-3 3M17 14l3 3-3 3"/>', 2.6),
+    libro: svg('<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5zM20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5z"/>', 2.6),
+    fijas: svg('<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".8" fill="currentColor"/>', 2.6),
+    seminarios: svg('<rect x="5" y="3.5" width="14" height="17" rx="2.5"/><path d="M9 8.5h6M9 12.5h6M9 16.5h3"/>', 2.6),
+    banqueo: svg('<ellipse cx="12" cy="6" rx="7" ry="2.8"/><path d="M5 6v6c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8V6M5 12v6c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-6"/>', 2.6),
+    check: svg('<path d="M5 12.5l4.5 4.5L19 7.5"/>', 4),
+    flecha: svg('<polyline points="6 9 12 15 18 9"/>', 3),
+    mitad: svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/>'),
+    hielo: svg('<path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.5 4.5L12 7l2.5-2.5M9.5 19.5L12 17l2.5 2.5"/>'),
+    doble: svg('<path d="M4 8l5 8M9 8l-5 8"/><path d="M13 9.5a3 3 0 0 1 6 0c0 2.5-6 4-6 6.5h6"/>'),
+    escudo: svg('<path d="M12 3l7.5 3v5.5c0 4.5-3.2 8-7.5 9.5-4.3-1.5-7.5-5-7.5-9.5V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>'),
+    robar: svg('<circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.5 1.5M10 3h4"/><path d="M19.5 4.5l-2 2"/>'),
+    espia: svg('<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/>'),
+    fuego: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5c.6 3.3 4.3 5.4 4.3 9.6a4.3 4.3 0 0 1-8.6.2c0-1.4.6-2.6 1.5-3.4.1 1.4.8 2.3 1.7 2.6C10.3 8.4 11 5.4 12 2.5zM6 13.5c0 3.9 2.7 7 6 7s6-3.1 6-7c0-1-.2-2-.6-2.9.9 5.4-2.3 7.9-5.4 7.9s-5.8-2.4-5.4-6.4C6.2 12.6 6 13 6 13.5z"/></svg>',
+    rayo: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 2L4.5 13.5h6L9.5 22l9-11.5h-6z"/></svg>',
+    mira: svg('<circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/>', 2.6),
+    sube: svg('<path d="M3 18l6-6 4 4 8-8"/><path d="M15 8h6v6"/>', 3),
+    reloj: svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>', 2.6)
+  };
+  // Caritas de las reacciones (estilo stickers)
+  const CARAS = {
+    risa: '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#FFC800"/><path d="M12 19q4-4.5 8 0M28 19q4-4.5 8 0" stroke="#5a3d00" stroke-width="3.2" fill="none" stroke-linecap="round"/><path d="M11.5 25h25a12.5 12.5 0 0 1-25 0z" fill="#5a3d00"/><path d="M16 31.5q8 5 16 0" stroke="#FF4B4B" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M7 21c-3 3-3.5 7-1 8.5s5-1.5 4-6z" fill="#7fd4fb"/><path d="M41 21c3 3 3.5 7 1 8.5s-5-1.5-4-6z" fill="#7fd4fb"/></svg>',
+    llanto: '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#1CB0F6"/><path d="M12 17.5l7 2.5M36 17.5l-7 2.5" stroke="#063a52" stroke-width="3" stroke-linecap="round"/><path d="M13 24q3.5-3 7 0M28 24q3.5-3 7 0" stroke="#063a52" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M16 37q8-8 16 0" stroke="#063a52" stroke-width="3.4" fill="none" stroke-linecap="round"/><path d="M14 26v14M34 26v14" stroke="#bfeaff" stroke-width="4.5" stroke-linecap="round"/></svg>',
+    enojo: '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#FF4B4B"/><path d="M11 15l10 5M37 15l-10 5" stroke="#4a0b0b" stroke-width="3.6" stroke-linecap="round"/><circle cx="17" cy="23" r="3" fill="#4a0b0b"/><circle cx="31" cy="23" r="3" fill="#4a0b0b"/><path d="M15 36q9-6 18 0" stroke="#4a0b0b" stroke-width="3.6" fill="none" stroke-linecap="round"/><path d="M37 6l2 4 4-1-3 3 3 3-4-1-2 4" fill="#FFC800"/></svg>',
+    susto: '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#CE82FF"/><circle cx="16.5" cy="20" r="5.2" fill="#fff"/><circle cx="31.5" cy="20" r="5.2" fill="#fff"/><circle cx="16.5" cy="20.5" r="2.4" fill="#3b1260"/><circle cx="31.5" cy="20.5" r="2.4" fill="#3b1260"/><ellipse cx="24" cy="34" rx="5" ry="6.2" fill="#3b1260"/><path d="M11 11.5q4-3 8-1M37 11.5q-4-3-8-1" stroke="#3b1260" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg>',
+    genial: '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#58CC02"/><path d="M7.5 18h33l-2 6.5a5 5 0 0 1-5 3.5h-3.5a4.5 4.5 0 0 1-4.3-3.2L24 22l-1.7 2.8A4.5 4.5 0 0 1 18 28h-3.5a5 5 0 0 1-5-3.5z" fill="#102a00"/><path d="M12.5 20.5l3 0M28.5 20.5l3 0" stroke="#7be03a" stroke-width="2" stroke-linecap="round"/><path d="M15 33q9 7 18 0" stroke="#102a00" stroke-width="3.4" fill="none" stroke-linecap="round"/><path d="M41 5l1.2 3 3 1.2-3 1.2L41 14l-1.2-3.6-3-1.2 3-1.2z" fill="#FFC800"/></svg>',
+    aplauso: '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#FF9600"/><path d="M15 31l7-14a2.4 2.4 0 0 1 4.4 2l-2 5 6.3-8.5a2.4 2.4 0 0 1 4 2.6l-7 12A7.5 7.5 0 0 1 15 31z" fill="#fff"/><path d="M19 28l5.5-11.5a2.2 2.2 0 0 0-4-1.8L15 26" fill="#ffe3bd"/><path d="M10 14l3 2.2M13.5 8.5l1.3 3.6M19 6.5v3.6" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>'
+  };
+  const ORDEN_CARAS = ['risa', 'llanto', 'enojo', 'susto', 'genial', 'aplauso'];
+  const NOM_CARA = { risa: 'Risa', llanto: 'Llanto', enojo: 'Enojo', susto: 'Susto', genial: 'Genial', aplauso: 'Aplauso' };
+  // Comodines: nombre, color, qué hace, cuándo
+  const CMD = {
+    mitad: { nom: '50/50', c: 'var(--azul)', que: 'Quita 2 alternativas malas', cuando: 'Antes de responder' },
+    hielo: { nom: 'Congelar', c: 'var(--morado)', que: 'Tu reloj se para 10 s', cuando: 'Mientras corre el tiempo' },
+    doble: { nom: 'Doble', c: 'var(--oro)', que: 'Si aciertas, vale 2', cuando: 'No en la final' },
+    escudo: { nom: 'Escudo', c: 'var(--naranja)', que: 'Si fallas, eliges otra vez', cuando: 'Antes de responder' },
+    robar: { nom: 'Robar tiempo', c: 'var(--rojo)', que: 'Les quita 5 s a tus rivales', cuando: 'En cualquier momento' },
+    espia: { nom: 'Espía', c: 'var(--verde)', que: 'Ves si tus rivales ya acertaron', cuando: 'En cualquier pregunta' }
+  };
+  const ORDEN_CMD = ['mitad', 'hielo', 'doble', 'escudo', 'robar', 'espia'];
+  const cuantosCmd = n => n <= 10 ? 2 : n <= 20 ? 3 : 4;
+
   const FUENTES = [
-    { id: 'mezcla', nom: 'De todo' },
-    { id: 'libro', nom: 'Libro' },
-    { id: 'fijas', nom: 'Fijas', prod: 'fijas' },
-    { id: 'seminarios', nom: 'Seminarios', prod: 'seminario' },
-    { id: 'banqueo', nom: 'Banqueo', prod: 'banqueo' }
+    { id: 'mezcla', nom: 'De todo', c: '#e6e6e6' },
+    { id: 'libro', nom: 'Libro', c: 'var(--morado)' },
+    { id: 'fijas', nom: 'Fijas', c: 'var(--oro)', prod: 'fijas' },
+    { id: 'seminarios', nom: 'Seminarios', c: 'var(--naranja)', prod: 'seminario' },
+    { id: 'banqueo', nom: 'Banqueo', c: 'var(--azul)', prod: 'banqueo' }
   ];
   const NOM_FUENTE = {}; FUENTES.forEach(f => { NOM_FUENTE[f.id] = f.nom; });
   const ESTADOS = { ganaste: 'Ganaste', perdiste: 'Perdiste', empate: 'Empate', 'sin-resultado': 'Sin rivales', 'te-toca': 'Te toca', 'a-medias': 'A medias', esperando: 'Esperando', 'no-jugaste': 'No jugaste', 'en-sala': 'En la sala', cancelado: 'No se inició' };
-  const CANDADO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
 
   let CURSOS = [], NOMBRE = {};
-  let sel = { ciclo: 'todos', curso: 'todos', tema: '', temaNom: '', fuente: 'mezcla', n: 10, jugadores: 2, auto: true };
+  let sel = { ciclo: 'todos', curso: 'todos', temas: [], fuente: 'mezcla', n: 10, jugadores: 2, auto: true, seg: 30, comodines: true };
   let V = null;          // estado del duelo (ver_duelo)
   let G = null;          // partida en curso
   let sondeo = null;     // intervalo que mira el avance de los demás
@@ -505,6 +664,8 @@
   const grafico = g => String(g || '').replace(/(src=["'])\/modocachimbo\//g, '$1');
   const normTema = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
   const lista = L => L.length > 1 ? L.slice(0, -1).join(', ') + ' y ' + L[L.length - 1] : (L[0] || '');
+  const tiempoTxt = s => s < 60 ? s + ' s' : (s % 60 ? String(s / 60).replace('.', ',') : s / 60) + ' min';
+  const plural = (n, a, b) => n + ' ' + (n === 1 ? a : b);
   function renderMath(el) {
     // KaTeX carga sin bloquear la página: si aún no llegó, se dibuja apenas llegue
     if (!window.renderMathInElement) { document.addEventListener('mc:katex', () => renderMath(el), { once: true }); return; }
@@ -543,12 +704,17 @@
   // Milisegundos que le quedan a la sala para cerrarse
   function quedaSala() { return V ? new Date(V.vence) - (Date.now() + desfase) : 0; }
   function mmss(ms) { const s = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
-  // Un color fijo por jugador (0 = tú)
-  const COLOR = {};
-  function colorDe(j) {
-    if (j.yo) return 'c0';
-    if (COLOR[j.apodo] == null) COLOR[j.apodo] = 1 + Object.keys(COLOR).length % 3;
-    return 'c' + COLOR[j.apodo];
+  // Color de cada jugador por orden de llegada (el mismo en todos los celulares)
+  const colorDe = j => 'c' + ((j && j.color) || 0) % 4;
+  const nombreDe = j => j.yo ? 'Tú' : j.apodo;
+  const avatar = (j, extra) => '<span class="av ' + colorDe(j) + (extra || '') + '">' + esc(inicial(j.yo ? 'Tú' : j.apodo)) + '</span>';
+  const cmdCard = k => '<div class="cmd" style="--c:' + CMD[k].c + '"><div class="ci">' + IC[k] + '</div><b>' + CMD[k].nom + '</b><small>' + CMD[k].que + '</small></div>';
+  function toast(html, color, ic) {
+    const t = document.createElement('div'); t.className = 'toast'; t.style.setProperty('--c', color || 'var(--rojo)');
+    t.innerHTML = (ic ? '<span class="ci">' + ic + '</span>' : '') + '<span>' + html + '</span>';
+    const caja = $('toasts'); caja.appendChild(t);
+    while (caja.children.length > 3) caja.firstChild.remove();
+    setTimeout(() => t.remove(), 2700);
   }
 
   /* ---------- Preguntas de la web ---------- */
@@ -561,7 +727,7 @@
     return q && typeof q.text === 'string' && Array.isArray(q.options) && q.options.length >= 2 && q.options.length <= 8 &&
       Number.isInteger(q.correct) && q.correct >= 0 && q.correct < q.options.length;
   }
-  // Todas las preguntas de un archivo: [{ref, q}]
+  // Todas las preguntas de un archivo: [{ref, tema, q}]
   function preguntasDe(ruta) {
     return archivo(ruta).then(temas => {
       const out = [];
@@ -598,9 +764,21 @@
       return curso + '/' + (fuente === 'libro' ? 'libros' : fuente) + '/data/' + id + '.json';
     }));
   }
+  // Acceso VIP: lo guardado en este equipo (últimos 3 días) o lo que el servidor confirmó al abrir la página
+  const VIP_OK = {}, VIP_REV = {};
   function tieneAcceso(curso, fuente) {
     const f = FUENTES.filter(x => x.id === fuente)[0];
-    return !f || !f.prod || MCAcceso.accesoLocal(f.prod + '-' + curso);
+    if (!f || !f.prod) return true;
+    const x = f.prod + '-' + curso;
+    return !!VIP_OK[x] || MCAcceso.accesoLocal(x);
+  }
+  // Revisa con el servidor los códigos de este curso (una vez por visita); si algo cambió, repinta
+  function revisarVip(curso) {
+    if (curso === 'todos' || !window.MCAcceso) return;
+    const pend = FUENTES.filter(f => f.prod).map(f => f.prod + '-' + curso).filter(x => !VIP_REV[x] && !MCAcceso.accesoLocal(x));
+    if (!pend.length) return;
+    Promise.all(pend.map(x => (VIP_REV[x] = MCAcceso.verificar(x).then(r => { if (r && r.acceso) { VIP_OK[x] = true; return true; } }).catch(() => null))))
+      .then(L => { if (L.some(Boolean) && sel.curso === curso) actualizarFiltros(); });
   }
   // Fuentes que se usan: "De todo" = el Libro y lo que el alumno tiene desbloqueado
   function fuentesPara(curso, fuente) {
@@ -610,24 +788,25 @@
   function fuenteAbierta(curso, fuente) {
     return curso === 'todos' ? fuente === 'mezcla' || CURSOS.some(c => tieneAcceso(c.id, fuente)) : tieneAcceso(curso, fuente);
   }
-  // Preguntas de un curso con el filtro (ciclo, tema), sin repetir
-  function poolDe(curso, fuente, ciclo, tema) {
-    return Promise.all(fuentesPara(curso, fuente).map(f => archivosDe(curso, f, ciclo)))
-      .then(L => Promise.all([].concat.apply([], L).map(preguntasDe)))
-      .then(L => {
-        const vistos = {}, out = [];
-        [].concat.apply([], L).forEach(x => {
-          if (vistos[x.ref] || (tema && x.tema !== tema)) return;
-          vistos[x.ref] = 1; x.curso = curso; out.push(x);
-        });
-        return out;
-      });
+  // Sin repetir: las preguntas de varias fuentes juntas
+  function unir(L, curso, temas) {
+    const vistos = {}, out = [];
+    [].concat.apply([], L).forEach(x => {
+      if (vistos[x.ref] || (temas && temas.length && temas.indexOf(x.tema) < 0)) return;
+      vistos[x.ref] = 1; x.curso = curso; out.push(x);
+    });
+    return out;
+  }
+  const deFuente = (curso, f, ciclo) => archivosDe(curso, f, ciclo).then(A => Promise.all(A.map(preguntasDe))).then(L => [].concat.apply([], L));
+  // Preguntas de un curso con el filtro (ciclo, temas)
+  function poolDe(curso, fuente, ciclo, temas) {
+    return Promise.all(fuentesPara(curso, fuente).map(f => deFuente(curso, f, ciclo))).then(L => unir(L, curso, temas));
   }
   function claveLec(t) {
     const m = String(t || '').match(/^\s*\[((?:TEXTO|LECTURA)[^\]]{0,20})\]\n([\s\S]*?)\n\[\/(?:TEXTO|LECTURA)\]/i);
     return m ? m[1] + '|' + m[2].trim() : '';
   }
-  // n preguntas al azar de un curso; las de un mismo TEXTO van juntas
+  // n preguntas al azar; las de un mismo TEXTO van juntas
   function elegir(pool, n) {
     const grupos = [], idx = {};
     pool.forEach(x => {
@@ -641,13 +820,11 @@
     return out;
   }
   async function armarPreguntas(o) {
-    if (o.curso !== 'todos') return elegir(await poolDe(o.curso, o.fuente, o.ciclo, o.tema), o.n);
+    if (o.curso !== 'todos') return elegir(await poolDe(o.curso, o.fuente, o.ciclo, o.temas), o.n);
     // Todos los cursos: una pregunta de cada curso al azar, dando vueltas
-    const pools = (await Promise.all(CURSOS.map(c => poolDe(c.id, o.fuente, o.ciclo, '')))).filter(p => p.length).map(barajar);
+    const pools = (await Promise.all(CURSOS.map(c => poolDe(c.id, o.fuente, o.ciclo, [])))).filter(p => p.length).map(barajar);
     const orden = barajar(pools), out = [];
-    for (let vuelta = 0; out.length < o.n && orden.some(p => p.length); vuelta++) {
-      orden.forEach(p => { if (out.length < o.n && p.length) out.push(p.pop()); });
-    }
+    while (out.length < o.n && orden.some(p => p.length)) orden.forEach(p => { if (out.length < o.n && p.length) out.push(p.pop()); });
     return barajar(out);
   }
   // Las preguntas guardadas en el duelo ("ruta#tema#i") → objetos pregunta
@@ -672,29 +849,41 @@
   }
   function aOriginal(q, k) { return q && q._orden && k >= 0 ? q._orden[k] : k; }
   function aVista(q, k) { return q && q._orden && k != null && k >= 0 ? q._orden.indexOf(k) : k; }
-  function etiqueta(q) {
-    return (NOMBRE[q._curso] || q._curso || '') + (q._tit ? ' · ' + q._tit : '');
-  }
+  function etiqueta(q) { return (NOMBRE[q._curso] || q._curso || '') + (q._tit ? ' · ' + q._tit : ''); }
 
   /* ---------- Pantalla: crear ---------- */
-  let turno = 0;   // descarta respuestas viejas cuando el alumno cambia rápido de filtro
+  let turno = 0;           // descarta respuestas viejas cuando el alumno cambia rápido de filtro
   let disponibles = null;  // cuántas preguntas hay con el filtro (null = aún no se sabe)
+  let conteo = {};         // preguntas por fuente en el curso elegido
+  let TEMAS = [];          // [{k, nom, n}] del curso y fuente elegidos
   function pintarFuentes() {
+    const todos = sel.curso === 'todos';
     $('fuentes').innerHTML = FUENTES.map(f => {
-      const abierto = fuenteAbierta(sel.curso, f.id);
-      return '<button type="button" data-f="' + f.id + '" class="' + (sel.fuente === f.id ? 'on ' : '') + (abierto ? '' : 'cerrado') + '"' + (abierto ? '' : ' aria-label="' + f.nom + ' (necesita código)"') + '>' + (abierto ? '' : CANDADO) + esc(f.nom) + '</button>';
+      const n = conteo[f.id], abierto = fuenteAbierta(sel.curso, f.id);
+      const vacio = !todos && n === 0, vip = !vacio && !abierto;
+      const sub = vacio ? 'Aún sin preguntas' : vip ? 'Con tu código VIP'
+        : n != null ? plural(n, 'pregunta', 'preguntas') : todos ? (f.id === 'libro' ? 'Todos los cursos' : f.id === 'mezcla' ? 'Libro y lo que tengas' : 'Tus cursos con código') : 'Contando…';
+      return '<button type="button" data-f="' + f.id + '" style="--c:' + f.c + '" class="' + (sel.fuente === f.id ? 'on' : '') + (vip ? ' vip' : '') + '"' + (vacio ? ' disabled' : '') + '>' +
+        '<span class="ic">' + IC[f.id] + '</span><span class="tx">' + esc(f.nom) + '<small>' + esc(sub) + '</small></span>' + (vip ? '<span class="tag">VIP</span>' : '') + '</button>';
     }).join('');
-    const extra = ['fijas', 'seminarios', 'banqueo'].filter(f => fuenteAbierta(sel.curso, f)).map(f => NOM_FUENTE[f]);
-    $('fuenteNota').innerHTML = sel.fuente === 'mezcla'
-      ? 'Mezcla el <b>Libro</b>' + (extra.length ? ' con <b>' + esc(lista(extra)) + '</b>' : '') + '. Las secciones con candado entran cuando actives tu código.'
-      : 'Solo de ' + esc(NOM_FUENTE[sel.fuente]) + (sel.curso === 'todos' ? ', de los cursos que tienes desbloqueados.' : '.');
   }
-  // Ciclo → Curso → Tema: cada lista muestra solo lo que existe con lo elegido
+  function pintarTemas() {
+    const b = $('mtBtn'), L = TEMAS, elegidos = sel.temas.filter(k => L.some(t => t.k === k));
+    sel.temas = elegidos;
+    b.disabled = sel.curso === 'todos' || !L.length;
+    b.firstChild.innerHTML = sel.curso === 'todos' ? 'Elige un curso primero' : !L.length ? 'Sin temas'
+      : !elegidos.length ? 'Todos los temas' : elegidos.length === 1 ? esc(L.filter(t => t.k === elegidos[0])[0].nom) : '<b>' + elegidos.length + '</b> de ' + L.length + ' temas';
+    if (b.disabled) { $('mtList').hidden = true; b.setAttribute('aria-expanded', 'false'); }
+    $('mtList').innerHTML = '<button type="button" class="todos' + (!elegidos.length ? ' on' : '') + '" data-tema=""><span class="cb">' + (!elegidos.length ? IC.check : '') + '</span><span class="tx">Todos los temas</span><em>' + L.length + '</em></button>' +
+      L.map(t => { const on = elegidos.indexOf(t.k) >= 0; return '<button type="button" data-tema="' + esc(t.k) + '" class="' + (on ? 'on' : '') + '" aria-pressed="' + on + '"><span class="cb">' + (on ? IC.check : '') + '</span><span class="tx">' + esc(t.nom) + '</span><em>' + t.n + '</em></button>'; }).join('');
+  }
+  // Ciclo → Curso → Temas: cada lista muestra solo lo que existe con lo elegido
   async function actualizarFiltros() {
-    const t = ++turno;
+    const t = ++turno, todos = sel.curso === 'todos';
+    conteo = {};
     pintarFuentes();
     $('filtroNota').textContent = 'Buscando preguntas…';
-    const cursos = sel.curso === 'todos' ? CURSOS.map(c => c.id) : [sel.curso];
+    const cursos = todos ? CURSOS.map(c => c.id) : [sel.curso];
     const L = await Promise.all(cursos.map(c => Promise.all(fuentesPara(c, sel.fuente).map(f => ciclosDe(c, f)))));
     if (t !== turno) return;
     const hay = {};
@@ -703,23 +892,27 @@
     if (sel.ciclo !== 'todos' && !hay[sel.ciclo]) sel.ciclo = 'todos';
     $('selCiclo').innerHTML = '<option value="todos">Todos los ciclos</option>' + ids.map(id => '<option value="' + esc(id) + '"' + (id === sel.ciclo ? ' selected' : '') + '>' + esc(id) + '</option>').join('');
 
-    const st = $('selTema');
-    if (sel.curso === 'todos') {
-      sel.tema = ''; sel.temaNom = '';
-      st.disabled = true; st.innerHTML = '<option value="">Elige un curso primero</option>';
-      disponibles = null;
+    if (todos) {
+      TEMAS = []; disponibles = null;
+      pintarTemas(); pintarFuentes();
       $('filtroNota').innerHTML = 'Preguntas de <b>todos los cursos</b>, mezcladas.';
       pintarCantidad();
       return;
     }
-    const pool = await poolDe(sel.curso, sel.fuente, sel.ciclo, '');
+    // Cuántas preguntas tiene cada fuente en este curso y ciclo
+    const por = {};
+    await Promise.all(['libro', 'fijas', 'seminarios', 'banqueo'].map(f => deFuente(sel.curso, f, sel.ciclo).then(x => { por[f] = x; })));
     if (t !== turno) return;
-    const temas = {}, orden = [];
-    pool.forEach(x => { if (!temas[x.tema]) { temas[x.tema] = { nom: x.q._tit, n: 0 }; orden.push(x.tema); } temas[x.tema].n++; });
-    if (sel.tema && !temas[sel.tema]) { sel.tema = ''; sel.temaNom = ''; }
-    st.disabled = !orden.length;
-    st.innerHTML = '<option value="">Todos los temas</option>' + orden.map(k => '<option value="' + esc(k) + '"' + (k === sel.tema ? ' selected' : '') + '>' + esc(temas[k].nom) + ' (' + temas[k].n + ')</option>').join('');
-    disponibles = sel.tema ? temas[sel.tema].n : pool.length;
+    Object.keys(por).forEach(f => { conteo[f] = por[f].length; });
+    conteo.mezcla = unir(fuentesPara(sel.curso, 'mezcla').map(f => por[f]), sel.curso).length;
+    if (conteo[sel.fuente] === 0 || !fuenteAbierta(sel.curso, sel.fuente)) sel.fuente = 'mezcla';
+    pintarFuentes();
+    const pool = unir(fuentesPara(sel.curso, sel.fuente).map(f => por[f]), sel.curso);
+    const temas = {};
+    TEMAS = [];
+    pool.forEach(x => { if (!temas[x.tema]) { temas[x.tema] = { k: x.tema, nom: x.q._tit, n: 0 }; TEMAS.push(temas[x.tema]); } temas[x.tema].n++; });
+    pintarTemas();
+    disponibles = sel.temas.length ? sel.temas.reduce((s, k) => s + temas[k].n, 0) : pool.length;
     $('filtroNota').innerHTML = disponibles
       ? 'Hay <b>' + disponibles + '</b> ' + (disponibles === 1 ? 'pregunta' : 'preguntas') + ' con este filtro.'
       : '<span class="error">No hay preguntas con este filtro. Prueba con otro ciclo o con "De todo".</span>';
@@ -727,36 +920,61 @@
   }
   // Las cantidades que no alcanzan se bloquean
   function pintarCantidad() {
-    $('cantidad').querySelectorAll('button').forEach(b => {
-      const n = +b.dataset.n;
-      b.disabled = disponibles != null && n > disponibles;
-      b.classList.toggle('on', n === sel.n);
-    });
-    if (disponibles != null && disponibles >= 3 && sel.n > disponibles) {
-      $('filtroNota').innerHTML += ' Alcanza para un duelo de <b>' + [5, 10, 15, 20].filter(n => n <= disponibles).pop() + '</b> como máximo.';
-    }
+    if (disponibles != null && disponibles >= 5 && sel.n > disponibles) sel.n = CANTIDADES.filter(n => n <= disponibles).pop();
+    $('cantidad').innerHTML = CANTIDADES.map(n => '<button type="button" data-n="' + n + '" class="' + (n === sel.n ? 'on' : '') + '"' + (disponibles != null && n > disponibles ? ' disabled' : '') + '>' + n + '</button>').join('');
+    pintarOpciones();
   }
+  // Tiempo, comodines y reglas: dependen de la cantidad y del tiempo elegido
+  function pintarOpciones() {
+    const s = sel.seg, i = TIEMPOS.indexOf(s), r = $('rngSeg');
+    r.value = i; r.style.setProperty('--p', (i / (TIEMPOS.length - 1) * 100) + '%');
+    r.setAttribute('aria-valuetext', s < 60 ? s + ' segundos' : tiempoTxt(s).replace('min', 'minutos'));
+    $('segVal').textContent = tiempoTxt(s);
+    $('segTotal').textContent = 'Total: hasta ' + Math.max(1, Math.round(sel.n * s / 60)) + ' min';
+    $('segTicks').innerHTML = TIEMPOS.map(x => '<button type="button" data-seg="' + x + '" class="' + (x === s ? 'on' : '') + '" tabindex="-1">' + tiempoTxt(x) + '</button>').join('');
+    const k = cuantosCmd(sel.n);
+    $('cmdSw').setAttribute('aria-checked', String(sel.comodines));
+    $('cmdNota').innerHTML = sel.comodines
+      ? 'Antes de empezar, la ruleta reparte <b>' + k + ' comodines</b> de estos 6. Todos reciben los mismos y cada uno decide cuándo usarlos.'
+      : 'Sin comodines: gana el que más sabe, sin ayudas.';
+    $('cmdLista').classList.toggle('off', !sel.comodines);
+    $('reglas').innerHTML = [
+      ['var(--morado)', '<b>' + (s < 60 ? s + ' segundos' : tiempoTxt(s)) + '</b> por pregunta. Si se acaba, cuenta como no respondida.'],
+      ['var(--oro)', 'La última es <b>Todo o nada</b>: si aciertas, vale 3 puntos.'],
+      ['var(--azul)', 'Gana quien suma <b>más puntos</b>; si empatan, el más rápido. Todos empiezan a la vez.'],
+      ['var(--verde)', 'XP por puesto: <b>+40</b> el 1.º, <b>+20</b> el 2.º y <b>+10</b> el 3.º. Solo el 1.º suma al top de la semana.']
+    ].map(x => '<li style="--c:' + x[0] + '"><span>' + x[1] + '</span></li>').join('');
+  }
+  function errorCrear(t) { $('crearError').textContent = t || ''; $('crearError').hidden = !t; }
   $('fuentes').addEventListener('click', e => {
-    const b = e.target.closest('[data-f]'); if (!b) return;
-    if (b.classList.contains('cerrado')) {
-      $('crearError').textContent = 'Para usar ' + NOM_FUENTE[b.dataset.f] + ' necesitas su código de acceso. Actívalo en esa sección del curso y vuelve.';
-      $('crearError').hidden = false; return;
-    }
-    $('crearError').hidden = true;
-    sel.fuente = b.dataset.f; actualizarFiltros();
+    const b = e.target.closest('[data-f]'); if (!b || b.disabled) return;
+    if (b.classList.contains('vip')) { errorCrear('Para usar ' + NOM_FUENTE[b.dataset.f] + ' necesitas su código VIP. Actívalo en esa sección del curso y vuelve.'); return; }
+    errorCrear(); sel.fuente = b.dataset.f; actualizarFiltros();
   });
-  $('selCiclo').addEventListener('change', () => { sel.ciclo = $('selCiclo').value; $('crearError').hidden = true; actualizarFiltros(); });
+  $('selCiclo').addEventListener('change', () => { sel.ciclo = $('selCiclo').value; errorCrear(); actualizarFiltros(); });
   $('selCurso').addEventListener('change', () => {
-    sel.curso = $('selCurso').value; sel.tema = ''; sel.temaNom = '';
+    sel.curso = $('selCurso').value; sel.temas = [];
     if (!fuenteAbierta(sel.curso, sel.fuente)) sel.fuente = 'mezcla';
-    $('crearError').hidden = true;
-    actualizarFiltros();
+    errorCrear(); actualizarFiltros(); revisarVip(sel.curso);
   });
-  $('selTema').addEventListener('change', () => {
-    const o = $('selTema').selectedOptions[0];
-    sel.tema = $('selTema').value; sel.temaNom = sel.tema && o ? o.textContent.replace(/\s\(\d+\)$/, '') : '';
-    $('crearError').hidden = true;
-    actualizarFiltros();
+  $('mtBtn').addEventListener('click', () => {
+    const abrir = $('mtList').hidden;
+    $('mtList').hidden = !abrir; $('mtBtn').setAttribute('aria-expanded', String(abrir));
+  });
+  $('mtList').addEventListener('click', e => {
+    const b = e.target.closest('[data-tema]'); if (!b) return;
+    const k = b.dataset.tema, i = sel.temas.indexOf(k);
+    if (!k) sel.temas = [];
+    else if (i >= 0) sel.temas.splice(i, 1);
+    else sel.temas.push(k);
+    if (sel.temas.length === TEMAS.length) sel.temas = [];   // todos marcados = "Todos los temas"
+    son('seccion'); errorCrear();
+    // Se repinta al toque con los números que ya se saben, sin volver a buscar
+    pintarTemas();
+    const n = sel.temas.length ? TEMAS.filter(t => sel.temas.indexOf(t.k) >= 0).reduce((s, t) => s + t.n, 0) : TEMAS.reduce((s, t) => s + t.n, 0);
+    disponibles = n;
+    $('filtroNota').innerHTML = 'Hay <b>' + n + '</b> ' + (n === 1 ? 'pregunta' : 'preguntas') + ' con este filtro.';
+    pintarCantidad();
   });
   $('jugadores').addEventListener('click', e => {
     const b = e.target.closest('[data-j]'); if (!b) return;
@@ -766,41 +984,46 @@
   $('chkAuto').addEventListener('change', () => { sel.auto = $('chkAuto').checked; });
   $('cantidad').addEventListener('click', e => {
     const b = e.target.closest('[data-n]'); if (!b || b.disabled) return;
-    sel.n = +b.dataset.n; $('crearError').hidden = true;
-    pintarCantidad();
+    sel.n = +b.dataset.n; errorCrear(); pintarCantidad();
   });
-  function tituloDe(o) {
+  $('rngSeg').addEventListener('input', () => { sel.seg = TIEMPOS[+$('rngSeg').value]; pintarOpciones(); });
+  $('segTicks').addEventListener('click', e => { const b = e.target.closest('[data-seg]'); if (b) { sel.seg = +b.dataset.seg; son('toque'); pintarOpciones(); } });
+  $('cmdSw').addEventListener('click', () => { sel.comodines = !sel.comodines; son(sel.comodines ? 'comodin' : 'toque'); pintarOpciones(); });
+  $('cmdLista').innerHTML = ORDEN_CMD.map(cmdCard).join('');
+  function temasNom(o) { return (o.temas || []).map(k => (TEMAS.filter(t => t.k === k)[0] || {}).nom || o.temasNom && o.temasNom[k]).filter(Boolean); }
+  function tituloDe(o, noms) {
     const partes = [o.curso === 'todos' ? 'Todos los cursos' : (NOMBRE[o.curso] || o.curso)];
-    if (o.temaNom) partes.push(o.temaNom);
+    if (noms.length === 1) partes.push(noms[0]); else if (noms.length > 1) partes.push(noms.length + ' temas');
     if (o.ciclo && o.ciclo !== 'todos') partes.push(o.ciclo);
     if (o.fuente !== 'mezcla') partes.push(NOM_FUENTE[o.fuente]);
     return partes.join(' · ').slice(0, 80);
   }
   async function crearDuelo(o) {
-    const lista = await armarPreguntas(o);
-    if (lista.length < o.n) {
-      throw new Error(lista.length
-        ? 'Con este filtro solo hay ' + lista.length + (lista.length === 1 ? ' pregunta' : ' preguntas') + ' y elegiste ' + o.n + '. Elige menos preguntas o cambia el filtro.'
+    const lst = await armarPreguntas(o);
+    if (lst.length < o.n) {
+      throw new Error(lst.length
+        ? 'Con este filtro solo hay ' + plural(lst.length, 'pregunta', 'preguntas') + ' y elegiste ' + o.n + '. Elige menos preguntas o cambia el filtro.'
         : 'No hay preguntas con este filtro. Prueba con otro ciclo, tema o con "De todo".');
     }
+    const noms = o.temasLista || temasNom(o);
     return rpc('crear_duelo', { p: {
-      titulo: tituloDe(o), curso: o.curso, fuente: o.fuente, ciclo: o.ciclo !== 'todos' ? o.ciclo : null, tema: o.temaNom || null,
+      titulo: tituloDe(o, noms), curso: o.curso, fuente: o.fuente, ciclo: o.ciclo !== 'todos' ? o.ciclo : null,
+      tema: noms.length ? noms.join(' | ').slice(0, 80) : null,
       jugadores: o.jugadores || 2, auto: !!o.auto, revancha_de: o.revancha || null,
-      preguntas: lista.map(x => ({ ref: x.ref, c: x.q.correct, k: x.q.options.length }))
+      seg: o.seg, comodines: !!o.comodines, final: true,
+      preguntas: lst.map(x => ({ ref: x.ref, c: x.q.correct, k: x.q.options.length }))
     } });
   }
   $('btnCrear').addEventListener('click', async () => {
     const b = $('btnCrear');
-    b.disabled = true; b.textContent = 'Armando preguntas…'; $('crearError').hidden = true;
-    try {
-      const cod = await crearDuelo(sel);
-      await abrirDuelo(cod);
-    } catch (e) { $('crearError').textContent = textoError(e); $('crearError').hidden = false; }
+    b.disabled = true; b.textContent = 'Armando preguntas…'; errorCrear();
+    try { await abrirDuelo(await crearDuelo(sel)); }
+    catch (e) { errorCrear(textoError(e)); }
     b.disabled = false; b.textContent = 'Crear duelo';
   });
   function unirse() {
     const cod = $('codUnirse').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
-    if (cod.length !== 6) { $('crearError').textContent = 'El código tiene 6 letras o números.'; $('crearError').hidden = false; return; }
+    if (cod.length !== 6) { errorCrear('El código tiene 6 letras o números.'); return; }
     abrirDuelo(cod);
   }
   $('btnUnirse').addEventListener('click', unirse);
@@ -808,9 +1031,11 @@
 
   function pintarMisDuelos(L) {
     $('misDuelos').innerHTML = L.length ? L.map(d => {
-      const marcador = d.mis_aciertos != null && !/en-sala|cancelado/.test(d.estado) ? d.mis_aciertos + ' de ' + d.n + (d.puesto && d.jugadores > 1 ? ' · ' + d.puesto + '.º de ' + d.jugadores : '') : d.n + ' preguntas';
+      const pts = d.mis_puntos != null ? d.mis_puntos : d.mis_aciertos;
+      const jugado = pts != null && !/en-sala|cancelado/.test(d.estado);
+      const linea = (jugado ? plural(pts, 'punto', 'puntos') + (d.puesto && d.jugadores > 1 ? ' · ' + d.puesto + '.º de ' + d.jugadores : '') : d.n + ' preguntas') + ' · ' + tiempoTxt(d.seg || 60);
       const est = d.estado === 'perdiste' && d.puesto ? d.puesto + '.º lugar' : (ESTADOS[d.estado] || d.estado);
-      return '<li><a href="duelo.html?d=' + esc(d.codigo) + '"><div><b>' + (d.rival ? 'vs ' + esc(d.rival) : /te-toca|a-medias|esperando|en-sala/.test(d.estado) ? 'Esperando rivales' : 'Nadie más jugó') + '</b><small>' + esc(d.titulo) + ' · ' + esc(marcador) + '</small></div>' +
+      return '<li><a href="duelo.html?d=' + esc(d.codigo) + '"><div><b>' + (d.rival ? 'vs ' + esc(d.rival) : /te-toca|a-medias|esperando|en-sala/.test(d.estado) ? 'Esperando rivales' : 'Nadie más jugó') + '</b><small>' + esc(d.titulo) + ' · ' + esc(linea) + '</small></div>' +
         '<span class="estado ' + esc(d.estado) + '">' + esc(est) + '</span></a></li>';
     }).join('') : '<li class="vacia">Aún no tienes duelos. ¡Crea el primero!</li>';
   }
@@ -854,19 +1079,18 @@
     if (libres(d) <= 0) { aviso('Este duelo ya está lleno (' + d.max + ' jugadores). Crea el tuyo y reta a quien quieras.', 'Crear mi duelo'); return; }
     pintarReto();
   }
+  const VISTOS = {};
   function salaHtml(d) {
-    const js = d.jugadores.slice().sort((a, b) => (b.creador ? 1 : 0) - (a.creador ? 1 : 0));
+    const js = d.jugadores;
     let html = '';
     for (let i = 0; i < d.max; i++) {
       const j = js[i];
-      if (!j) { html += '<div class="puesto-sala libre"><div class="avatar">+</div><b>Libre</b><small>Esperando</small></div>'; continue; }
-      const linea = j.creador ? 'Creó el duelo' : 'Listo';
-      html += '<div class="puesto-sala ' + colorDe(j) + (j.yo ? ' yo' : '') + (VISTOS[j.apodo] ? '' : ' entra') + '"><div class="avatar ' + colorDe(j) + '">' + esc(inicial(j.yo ? 'Tú' : j.apodo)) + '</div><b>' + esc(j.yo ? 'Tú' : j.apodo) + '</b><small>' + esc(linea) + '</small></div>';
+      if (!j) { html += '<div class="puesto-sala libre"><span class="av">+</span><b>Libre</b><small>Esperando</small></div>'; continue; }
+      html += '<div class="puesto-sala ' + colorDe(j) + (j.yo ? ' yo' : '') + (VISTOS[j.apodo] ? '' : ' entra') + '">' + avatar(j) + '<b>' + esc(nombreDe(j)) + '</b><small>' + (j.creador ? 'Creó el duelo' : 'Listo') + '</small></div>';
       VISTOS[j.apodo] = 1;
     }
     return html;
   }
-  const VISTOS = {};
   function libres(d) { return d.max - d.jugadores.length; }
   function pintarCierre(el) {
     const q = quedaSala(), libre = libres(V);
@@ -889,20 +1113,26 @@
       : d.auto ? 'Empieza solo apenas entren los ' + d.max + '.' + (d.soy_creador ? ' Si alguien no llega, puedes iniciarlo tú.' : ' ' + d.creador + ' también puede iniciarlo antes.')
       : d.soy_creador ? 'Toca Iniciar cuando estén todos.' : 'Esperando a que ' + d.creador + ' inicie el duelo.';
   }
+  function fichaHtml(d) {
+    const c = d.comodines || [];
+    return '<span><b>' + esc(d.titulo) + '</b></span><span><b>' + d.n + '</b> preguntas</span><span><b>' + tiempoTxt(d.seg || 60) + '</b> cada una</span>' +
+      (c.length ? '<span><b>' + c.length + '</b> comodines sorpresa</span>' : '') + (d.final ? '<span style="color:var(--oro)">Final <b style="color:var(--oro)">×3</b></span>' : '');
+  }
   function pintarReto() {
     const d = V, soyCreador = d.soy_creador;
     $('retoEye').textContent = d.max === 2 ? 'Duelo 1 vs 1' : 'Duelo de ' + d.max + ' jugadores';
     $('retoTit').textContent = soyCreador ? '¡Listo! Invita a tus amigos' : d.yo ? 'Estás en la sala' : '¡' + d.creador + ' te reta a un duelo!';
     $('retoSub').textContent = soyCreador
       ? 'Envíales el código o el enlace. Todos empiezan a la vez cuando la sala esté lista.'
-      : 'Las mismas ' + d.n + ' preguntas para todos. Gana quien acierta más.';
-    $('retoFicha').innerHTML = '<span><b>' + esc(d.titulo) + '</b></span><span><b>' + d.n + '</b> preguntas</span><span><b>60 s</b> cada una</span>';
+      : 'Las mismas ' + d.n + ' preguntas para todos. Gana quien suma más puntos.';
+    $('retoFicha').innerHTML = fichaHtml(d);
+    $('retoSala').style.setProperty('--n', d.max);
     $('retoSala').innerHTML = salaHtml(d);
     pintarCierre($('retoCierre'));
     $('retoCompartir').hidden = d.cerrado;
     $('retoCodigo').textContent = d.codigo;
     $('retoEnlace').textContent = enlace(d.codigo);
-    $('btnWa').href = 'https://wa.me/?text=' + encodeURIComponent('⚔️ Te reto a un duelo en Modo Cachimbo: ' + d.titulo + ', ' + d.n + ' preguntas de 60 segundos. Entra a la sala: ' + enlace(d.codigo));
+    $('btnWa').href = 'https://wa.me/?text=' + encodeURIComponent('⚔️ Te reto a un duelo en Modo Cachimbo: ' + d.titulo + ', ' + d.n + ' preguntas de ' + tiempoTxt(d.seg || 60) + ((d.comodines || []).length ? ', con comodines' : '') + '. Entra a la sala: ' + enlace(d.codigo));
     pintarBoton();
     $('retoError').hidden = true;
     ver('reto');
@@ -931,32 +1161,49 @@
       pararSondeo(); seguir();
     } catch (e) { b.disabled = false; $('retoError').textContent = textoError(e); $('retoError').hidden = false; }
   });
-  // Cuenta 3, 2, 1 igual para todos (según el reloj del servidor) y luego la 1.ª pregunta
-  let precarga = null;
-  function arrancar() {
-    pararSondeo();
-    const fin = new Date(V.empieza).getTime() - desfase;   // en el reloj de este celular
-    if (fin - Date.now() <= 0) { $('cuenta').hidden = true; empezar(); return; }
-    // las preguntas se van cargando durante la cuenta
-    precarga = rpc('empezar_duelo', { p_codigo: V.codigo }).then(r => cargarRefs(r.preguntas)).catch(() => null);
-    $('cuenta').hidden = false;
-    const paso = () => {
-      const q = fin - Date.now();
-      if (q <= 0) { $('cuenta').hidden = true; son('cuenta', 0); empezar(); return; }
-      const s = Math.ceil(q / 1000);
-      const txt = s > 3 ? '¡Prepárate!' : String(s);
-      if ($('cuentaNum').textContent !== txt) { $('cuentaNum').textContent = txt; if (s <= 3) son('cuenta', s); const b = $('cuentaNum'); b.style.animation = 'none'; void b.offsetWidth; b.style.animation = ''; }
-      $('cuentaTxt').textContent = 'Empieza el duelo · ' + V.jugadores.length + ' jugadores';
-      setTimeout(paso, 100);
-    };
-    paso();
-  }
   $('btnCopiar').addEventListener('click', () => {
     const t = enlace(V.codigo), b = $('btnCopiar');
     const listo = () => { b.lastChild.textContent = '¡Enlace copiado!'; setTimeout(() => { b.lastChild.textContent = 'Copiar enlace'; }, 2200); };
     const manual = () => { const r = document.createRange(); r.selectNodeContents($('retoEnlace')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.lastChild.textContent = 'Mantén presionado para copiar'; };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(listo, manual); else manual();
   });
+
+  // Cuenta 3, 2, 1 igual para todos (según el reloj del servidor). Antes, la ruleta muestra los comodines del duelo
+  let precarga = null;
+  function arrancar() {
+    pararSondeo();
+    const fin = new Date(V.empieza).getTime() - desfase;   // en el reloj de este celular
+    if (fin - Date.now() <= 0) { $('cuenta').hidden = true; empezar(); return; }
+    precarga = rpc('empezar_duelo', { p_codigo: V.codigo }).then(r => cargarRefs(r.preguntas)).catch(() => null);   // se cargan durante la cuenta
+    const cmds = V.comodines || [], c = $('cuenta');
+    c.innerHTML = '<div>' + (cmds.length ? '<h2>¡Comodines del duelo!</h2><p>Todos tienen los mismos. Úsalos cuando quieras, una vez cada uno.</p><div class="par" id="ruleta">' +
+      cmds.map(() => '<div class="cmd gira"><div class="ci"></div><b>&nbsp;</b><small>&nbsp;</small></div>').join('') + '</div>' : '') +
+      '<b class="num" id="cuentaNum"></b><span class="txt" id="cuentaTxt"></span></div>';
+    c.hidden = false;
+    const t0 = Date.now(), giro = cmds.length ? Math.min(1800, Math.max(600, fin - t0 - 3200)) : 0;
+    let caidos = 0;
+    const paso = () => {
+      const q = fin - Date.now();
+      if (q <= 0) { c.hidden = true; son('cuenta', 0); empezar(); return; }
+      // Ruleta: cambia de ícono hasta que cae cada comodín, uno tras otro
+      if (caidos < cmds.length) {
+        const slots = c.querySelectorAll('#ruleta .cmd');
+        const ya = Math.min(cmds.length, Math.floor((Date.now() - t0) / (giro / cmds.length)));
+        slots.forEach((s, i) => {
+          if (i < ya && s.classList.contains('gira')) {
+            const k = cmds[i]; s.className = 'cmd cae'; s.style.setProperty('--c', CMD[k].c);
+            s.innerHTML = '<div class="ci">' + IC[k] + '</div><b>' + CMD[k].nom + '</b><small>' + CMD[k].que + '</small>'; son('comodin'); caidos++;
+          } else if (i >= ya) s.firstChild.innerHTML = IC[ORDEN_CMD[Math.floor(Math.random() * 6)]];
+        });
+      }
+      const s = Math.ceil(q / 1000), txt = s > 3 ? (cmds.length ? '' : '¡Prepárate!') : String(s);
+      const b = $('cuentaNum');
+      if (b.textContent !== txt) { b.textContent = txt; if (s <= 3) { son('cuenta', s); b.style.animation = 'none'; void b.offsetWidth; b.style.animation = ''; } }
+      $('cuentaTxt').textContent = 'Empieza el duelo · ' + V.jugadores.length + ' jugadores';
+      setTimeout(paso, 90);
+    };
+    paso();
+  }
 
   /* ---------- Pantalla: juego ---------- */
   async function empezar() {
@@ -969,130 +1216,268 @@
     const pre = precarga && await precarga; precarga = null;
     if (!pre) aviso('Cargando preguntas…');
     const qs = mezclarDuelo(pre || await cargarRefs(r.preguntas), V.codigo);
-    G = { codigo: V.codigo, qs, n: qs.length, actual: r.actual, aciertos: r.aciertos, ocupado: false,
-          fin: Date.now() + Math.max(0, SEG * 1000 - (+r.lleva || 0)) };
-    pintarCarriles();
+    const seg = +r.seg || +V.seg || 60;
+    G = { codigo: V.codigo, qs, n: qs.length, seg, actual: r.actual, puntos: +r.puntos || 0, ok: (r.respuestas || []).map(x => !!x.ok),
+          cmd: r.comodines || V.comodines || [], usados: r.usados || [], activo: r.activo || null, final: !!r.final,
+          fin: Date.now() + seg * 1000 - (+r.lleva || 0), hielo: 0, ocupado: false, ultimo: null, jug: null, espia: null, reac: 0 };
+    $('barra').style.setProperty('--n', V.jugadores.length);
+    $('camino').style.setProperty('--n', G.n);
+    $('reac').innerHTML = '<span>Reaccionar</span>' + ORDEN_CARAS.map(k => '<button type="button" data-cara="' + k + '" aria-label="' + NOM_CARA[k] + '" title="' + NOM_CARA[k] + '">' + CARAS[k] + '</button>').join('');
+    $('reac').hidden = V.jugadores.length < 2;
+    pintarBarra();
     ver('juego');
     pintarPregunta();
-    const mirar = () => rpc('ver_duelo', { p_codigo: G.codigo }).then(n => { if (n && G) { guardar(n); pintarCarriles(); } }).catch(() => {});
-    mirar(); sondeo = setInterval(mirar, 4000);
+    vivo(); sondeo = setInterval(vivo, 2000);
   }
-  // Una barra por jugador: tú primero y luego los demás en el orden en que entraron
-  function pintarCarriles() {
-    const otros = ((V && V.jugadores) || []).filter(j => !j.yo);
-    const carril = (clase, nombre, ancho, texto) => '<div class="carril ' + clase + '"><b>' + esc(nombre) + '</b><div class="pista"><i style="width:' + ancho + '%"></i></div><em>' + esc(texto) + '</em></div>';
-    let html = carril('yo c0', 'Tú', G.actual / G.n * 100, G.actual + '/' + G.n);
-    otros.forEach(j => { html += carril(colorDe(j), j.apodo, Math.min(j.actual, G.n) / G.n * 100, j.abandono ? 'Fuera' : j.terminado ? 'Listo' : j.actual + '/' + G.n); });
-    if (!otros.length) html += carril('c1', V && V.cerrado ? 'Nadie más' : 'Esperando…', 0, '—');
-    $('carriles').innerHTML = html;
-    $('aciertos').textContent = G.aciertos;
+  // Marcador en vivo: un cuadro por jugador (puesto, puntos, anillo de avance, racha y comodines usados)
+  function jugadores() {
+    if (G.jug) return G.jug.map((j, i) => Object.assign({ color: i }, j));
+    return V.jugadores.map(j => ({ apodo: j.apodo, yo: j.yo, color: j.color, actual: j.yo ? G.actual : j.actual, puntos: j.yo ? G.puntos : j.puntos || 0, racha: 0, usados: [], terminado: j.terminado }));
+  }
+  function pintarBarra() {
+    const js = jugadores(), r = 2 * Math.PI * 19;
+    const pos = j => 1 + js.filter(x => x.puntos > j.puntos).length;
+    const stk = Array.prototype.map.call($('tiles').querySelectorAll('.stk'), x => [x.parentNode.dataset.apodo, x]);   // las reacciones en curso se quedan
+    $('tiles').innerHTML = js.map(j => {
+      const p = pos(j), hecho = Math.min(j.actual, G.n), ev = (j.racha >= 3 ? '<span style="--c:var(--naranja)" title="Racha de ' + j.racha + '">' + IC.fuego + '</span>' : '') +
+        (j.usados || []).map(k => '<span style="--c:' + CMD[k].c + '" title="Usó ' + CMD[k].nom + '">' + IC[k] + '</span>').join('');
+      return '<div class="tile ' + colorDe(j) + (j.yo ? ' yo' : '') + (j.terminado && hecho < G.n ? ' fuera' : '') + '" data-apodo="' + esc(j.yo ? '' : j.apodo) + '"><span class="pos' + (p === 1 ? ' p1' : '') + '">' + p + '.º</span>' +
+        (ev ? '<span class="ev">' + ev + '</span>' : '') +
+        '<div class="ring"><svg viewBox="0 0 46 46" aria-hidden="true"><circle class="f" cx="23" cy="23" r="19"/><circle class="a" cx="23" cy="23" r="19" stroke-dasharray="' + r.toFixed(1) + '" stroke-dashoffset="' + (r * (1 - hecho / G.n)).toFixed(1) + '"/></svg>' + avatar(j) + '</div>' +
+        '<span class="nm">' + esc(nombreDe(j)) + '</span><span class="pt">' + j.puntos + '</span><span class="rs">' + (j.terminado ? (hecho < G.n ? 'Fuera' : 'Terminó') : hecho + ' de ' + G.n) + '</span></div>';
+    }).join('');
+    stk.forEach(x => { const t = $('tiles').querySelector('.tile[data-apodo="' + CSS.escape(x[0]) + '"]'); if (t) t.appendChild(x[1]); });
+    const ultima = G.final ? G.n - 1 : -1;
+    $('camino').innerHTML = Array.from({ length: G.n }, (_, i) => '<i class="' + (i < G.ok.length ? (G.ok[i] ? 'ok' : 'mal') : i === G.actual ? 'ya' : '') + (i === ultima ? ' fin' : '') + '"></i>').join('');
+    $('camTxt').textContent = 'Tu camino · ' + G.ok.filter(Boolean).length + ' de ' + G.ok.length;
+    $('pNum').textContent = 'Pregunta ' + Math.min(G.actual + 1, G.n) + ' de ' + G.n;
+  }
+  // Barra de comodines: los que quedan, el activo y los ya usados
+  function pintarComodines() {
+    const usados = G.usados.map(u => u.k), aqui = G.usados.some(u => u.i === G.actual), ultima = G.final && G.actual === G.n - 1;
+    $('cbar').hidden = !G.cmd.length;
+    $('cbar').innerHTML = '<span class="t">Tus comodines</span>' + G.cmd.map(k => {
+      const usado = usados.indexOf(k) >= 0, activo = G.usados.some(u => u.k === k && u.i === G.actual);
+      const no = usado || aqui || G.ocupado || (k === 'doble' && ultima);
+      return '<button type="button" class="cbtn' + (usado && !activo ? ' usado' : '') + (activo ? ' activo' : '') + '" data-cmd="' + k + '" style="--c:' + CMD[k].c + '"' + (no ? ' disabled' : '') +
+        ' title="' + esc(CMD[k].que + (k === 'doble' && ultima ? ' (no en la final: ya vale 3)' : '')) + '">' + IC[k] + CMD[k].nom.replace(' tiempo', '') + '</button>';
+    }).join('');
+    // Lo que trae el comodín activo en esta pregunta
+    const k = (G.usados.filter(u => u.i === G.actual)[0] || {}).k;
+    $('pExtra').innerHTML = k === 'doble' && G.activo === 'doble' ? '<span class="x2" style="--c:var(--oro)">' + IC.doble + 'Vale 2</span>'
+      : k === 'escudo' && G.activo === 'escudo' ? '<span class="x2" style="--c:var(--naranja)">' + IC.escudo + 'Escudo activo</span>' : '';
+  }
+  function avisoJuego(html, color, ic) { $('pAviso').innerHTML = html ? '<div class="aviso-j" style="--c:' + color + '"><span class="ci">' + ic + '</span><div style="flex:1;min-width:0">' + html + '</div></div>' : ''; }
+  function pintarEspia() {
+    const e = G.espia;
+    if (!e) return;
+    const ya = e.filter(x => x.estado !== 'pensando'), ok = e.filter(x => x.estado === 'acerto').length;
+    const col = {}; jugadores().forEach(j => { col[j.apodo] = j.color; });
+    avisoJuego('<div class="espia"><div>' + ya.length + ' de ' + plural(e.length, 'rival', 'rivales') + ' ya ' + (ya.length === 1 ? 'respondió' : 'respondieron') + ' · ' + ok + ' ' + (ok === 1 ? 'acertó' : 'acertaron') + '</div><div class="fil">' +
+      e.map(x => '<div>' + avatar({ apodo: x.apodo, color: col[x.apodo] }) + '<span class="' + (x.estado === 'acerto' ? 'ok">Acertó' : x.estado === 'fallo' ? 'mal">Falló' : 'pen">Pensando…') + '</span></div>').join('') + '</div></div>', 'var(--verde)', IC.espia);
   }
   let tic = null;
   function pintarPregunta() {
     const i = G.actual, q = G.qs[i];
-    $('pNum').textContent = 'Pregunta ' + (i + 1) + ' de ' + G.n;
+    G.espia = null; avisoJuego('');
     $('veredicto').textContent = ''; $('veredicto').className = 'veredicto';
-    const lista = $('pAlts');
+    $('pFinal').innerHTML = G.final && i === G.n - 1 ? '<div class="final"><div><b>TODO O NADA</b><small>Última pregunta. Si aciertas, vale 3.</small></div><span class="x3">×3</span></div>' : '';
+    const lst = $('pAlts');
     if (!q) {
       // La pregunta cambió en la web desde que se creó el duelo
       $('pTag').textContent = 'Pregunta no disponible';
       $('pTxt').innerHTML = '<p class="hint">Esta pregunta ya no está en la web. Pasa a la siguiente; no cuenta en contra de nadie… ni a favor.</p>';
       $('pGraf').hidden = true;
-      lista.innerHTML = '<li><button type="button" data-k="-1"><i>›</i><span>Siguiente pregunta</span></button></li>';
+      lst.innerHTML = '<li><button type="button" data-k="-1"><i>›</i><span>Siguiente pregunta</span></button></li>';
     } else {
       $('pTag').textContent = etiqueta(q);
       const r = MCPregunta.armar(q.text, { lecPos: q.lecPos, lecSigue: q.lecSigue });
       $('pTxt').innerHTML = r.html;
       $('pGraf').hidden = !q.graphic; $('pGraf').innerHTML = grafico(q.graphic);
-      lista.innerHTML = q.options.map((o, k) => '<li><button type="button" data-k="' + k + '"><i>' + esc(o.letter || LETRAS[k]) + '</i><span>' + MCPregunta.formato(o.text) + '</span></button></li>').join('');
-      MCPregunta.alternativas(lista, q, r);
-      renderMath($('pTxt')); renderMath(lista);
+      lst.innerHTML = q.options.map((o, k) => '<li><button type="button" data-k="' + k + '"><i>' + esc(o.letter || LETRAS[k]) + '</i><span>' + MCPregunta.formato(o.text) + '</span></button></li>').join('');
+      MCPregunta.alternativas(lst, q, r);
+      renderMath($('pTxt')); renderMath(lst);
+      // Si ya usó 50/50 en esta pregunta (por ejemplo, volvió a entrar)
+      const m = G.usados.filter(u => u.i === i && u.k === 'mitad')[0];
+      if (m) quitarAlts(m.quita);
     }
     const card = $('pregCard'); card.classList.remove('flash'); void card.offsetWidth; card.classList.add('flash');
     G.ocupado = false;
+    pintarBarra(); pintarComodines();
     clearInterval(tic); tic = setInterval(reloj, 200); reloj();
   }
+  function quitarAlts(orig) {
+    const q = G.qs[G.actual], bs = $('pAlts').querySelectorAll('button[data-k]');
+    (orig || []).forEach(o => { const b = bs[aVista(q, o)]; if (b) { b.classList.add('fuera'); b.disabled = true; } });
+  }
+  const PERIM = 157.1;
   function reloj() {
-    const quedan = Math.max(0, G.fin - Date.now()), s = Math.ceil(quedan / 1000);
+    const ahora = Date.now(), congelado = ahora < G.hielo;
+    const quedan = Math.max(0, congelado ? G.fin - G.hielo : G.fin - ahora), s = Math.ceil(quedan / 1000);
     $('seg').textContent = s;
-    $('arco').style.strokeDashoffset = (138.2 * (1 - quedan / (SEG * 1000))).toFixed(1);
-    $('reloj').classList.toggle('poco', s <= 15 && s > 5);
-    $('reloj').classList.toggle('nada', s <= 5);
-    if (s <= 5 && s > 0 && s !== G.ticVisto && !G.ocupado) { G.ticVisto = s; son('tic', s); }
-    if (quedan <= 0 && !G.ocupado) responder(-1);
+    $('arco').style.strokeDashoffset = (PERIM * (1 - Math.min(1, quedan / (G.seg * 1000)))).toFixed(1);
+    $('reloj').classList.toggle('hielo', congelado);
+    $('reloj').classList.toggle('poco', !congelado && s <= Math.min(15, G.seg / 3) && s > 5);
+    $('reloj').classList.toggle('nada', !congelado && s <= 5);
+    if (!congelado && s <= 5 && s > 0 && s !== G.ticVisto && !G.ocupado) { G.ticVisto = s; son('tic', s); }
+    if (G.fin - ahora <= 0 && !G.ocupado) responder(-1);
   }
   $('pAlts').addEventListener('click', e => {
     const b = e.target.closest('button[data-k]');
     if (b && !b.disabled && G && !G.ocupado) responder(+b.dataset.k, b);
   });
   async function responder(op, boton) {
-    G.ocupado = true; G.ticVisto = 0; clearInterval(tic);
+    G.ocupado = true; G.ticVisto = 0;
     const botones = $('pAlts').querySelectorAll('button');
     botones.forEach(x => { x.disabled = true; });
     if (boton) boton.classList.add('on');
+    pintarComodines();
     let r;
     for (let intento = 0; intento < 3 && !r; intento++) {
       try { r = await rpc('responder_duelo', { p_codigo: G.codigo, p_i: G.actual, p_op: aOriginal(G.qs[G.actual], op) }); }
       catch (e) {
-        if (/terminaste/i.test(e.message || '')) { await recargar(); mostrarResultado(); return; }
-        if (intento === 2) { $('veredicto').textContent = textoError(e) + ' Toca para reintentar.'; $('veredicto').className = 'veredicto mal'; botones.forEach(x => { x.disabled = false; }); G.ocupado = false; return; }
+        if (/terminaste/i.test(e.message || '')) { clearInterval(tic); await recargar(); mostrarResultado(); return; }
+        if (intento === 2) { $('veredicto').textContent = textoError(e) + ' Toca para reintentar.'; $('veredicto').className = 'veredicto mal'; botones.forEach(x => { if (!x.classList.contains('fuera')) x.disabled = false; }); G.ocupado = false; return; }
         await new Promise(ok => setTimeout(ok, 800));
       }
     }
-    if (r.repetida) { pararSondeo(); empezar(); return; }  // otra pestaña avanzó: se sincroniza
+    const tR = Date.now();
+    if (r.repetida) { pararSondeo(); clearInterval(tic); empezar(); return; }  // otra pestaña avanzó: se sincroniza
+    // Escudo: falló pero elige otra vez (el reloj sigue)
+    if (r.reintenta) {
+      G.activo = null;
+      if (boton) { boton.classList.remove('on'); boton.classList.add('mal', 'fuera'); }
+      botones.forEach(x => { if (!x.classList.contains('fuera') && !x.classList.contains('mal')) x.disabled = false; });
+      avisoJuego('Tu escudo te salvó: esa no era. Elige otra.', 'var(--naranja)', IC.escudo);
+      son('mal'); G.ocupado = false; pintarComodines();
+      return;
+    }
+    clearInterval(tic);
     cuentaRacha();
-    // XP (assets/corazones.js); la misión del duelo se revisa al terminarlo
-    if (window.MCCorazones) MCCorazones.respuesta(!!r.ok);
-    G.actual = r.actual; G.aciertos = r.aciertos;
+    if (window.MCCorazones) MCCorazones.respuesta(!!r.ok);   // XP de cada respuesta (assets/corazones.js)
+    G.actual = r.actual; G.puntos = r.puntos; G.ok.push(!!r.ok); G.activo = null;
+    if (G.jug) G.jug.forEach(j => { if (j.yo) { j.actual = r.actual; j.puntos = r.puntos; j.racha = r.ok ? (j.racha || 0) + 1 : 0; } });
     const q = G.qs[G.actual - 1];
     if (q) {
       const vc = aVista(q, r.correcta), vo = aVista(q, r.op);
       botones.forEach((x, k) => { if (k === vc) x.classList.add('ok'); else if (k === vo) x.classList.add('mal'); x.classList.remove('on'); });
-      $('veredicto').textContent = r.ok ? '¡Correcta! +1' : r.op < 0 ? 'Se acabó el tiempo. Era la ' + (q.options[vc].letter || LETRAS[vc]) + '.' : 'Incorrecta. Era la ' + (q.options[vc].letter || LETRAS[vc]) + '.';
+      const letra = esc(q.options[vc].letter || LETRAS[vc]);
+      $('veredicto').innerHTML = r.ok ? '¡Correcta! +' + r.p + (r.p === 3 ? ' · Todo o nada' : r.p === 2 ? ' · Doble' : '') : r.op < 0 ? 'Se acabó el tiempo. Era la ' + letra + '.' : 'Incorrecta. Era la ' + letra + '.';
       $('veredicto').className = 'veredicto ' + (r.ok ? 'ok' : 'mal');
       son(r.ok ? 'bien' : 'mal');
     }
-    pintarCarriles();
+    pintarBarra();
     setTimeout(async () => {
       if (r.terminado) { pararSondeo(); await recargar(); mostrarResultado(); return; }
-      G.fin = Date.now() + SEG * 1000;
+      G.fin = tR + 1500 + G.seg * 1000; G.hielo = 0;   // el servidor no cuenta la pausa entre preguntas (1,5 s)
       pintarPregunta();
-    }, q ? 1300 : 0);  // misma pausa al acertar o fallar: el tiempo de la siguiente es justo para todos
+    }, q ? 1300 : 0);
+  }
+  // Comodines
+  $('cbar').addEventListener('click', async e => {
+    const b = e.target.closest('[data-cmd]'); if (!b || b.disabled || !G || G.ocupado) return;
+    const k = b.dataset.cmd, i = G.actual;
+    $('cbar').querySelectorAll('button').forEach(x => { x.disabled = true; });
+    let r;
+    try { r = await rpc('usar_comodin', { p_codigo: G.codigo, p_k: k, p_i: i }); }
+    catch (err) { toast(esc(textoError(err)), 'var(--rojo)', IC[k]); pintarComodines(); return; }
+    if (!G || G.actual !== i) return;
+    G.usados.push({ k, i, quita: r.quita });
+    son('comodin');
+    if (k === 'mitad') quitarAlts(r.quita);
+    else if (k === 'hielo') { const ahora = Date.now(); G.fin = ahora + G.seg * 1000 - (+r.lleva || 0); G.hielo = ahora + 10000; toast('Tu reloj se congeló 10 segundos', 'var(--morado)', IC.hielo); }
+    else if (k === 'doble' || k === 'escudo') G.activo = k;
+    else if (k === 'robar') toast(r.robados ? 'Les robaste 5 segundos a tus rivales' : 'Tus rivales ya terminaron: no había tiempo que robar', 'var(--rojo)', IC.robar);
+    else if (k === 'espia') { G.espia = r.espia || []; pintarEspia(); }
+    if (G.jug) G.jug.forEach(j => { if (j.yo) j.usados = (j.usados || []).concat(k); });
+    pintarComodines(); pintarBarra();
+  });
+  // Reacciones: se ven sobre tu cuadro en todos los celulares
+  function sticker(apodo, cara, yo) {
+    const t = Array.prototype.filter.call($('tiles').children, x => yo ? x.classList.contains('yo') : x.dataset.apodo === apodo)[0];
+    if (!t || !CARAS[cara]) return;
+    const s = document.createElement('span'); s.className = 'stk'; s.innerHTML = CARAS[cara];
+    t.querySelectorAll('.stk').forEach(x => x.remove());
+    t.appendChild(s);
+    setTimeout(() => s.remove(), 2300);
+  }
+  $('reac').addEventListener('click', async e => {
+    const b = e.target.closest('[data-cara]'); if (!b || b.disabled || !G) return;
+    const cara = b.dataset.cara;
+    sticker('', cara, true); son('reaccion', cara);
+    const bs = $('reac').querySelectorAll('button');
+    bs.forEach(x => { x.disabled = true; });
+    setTimeout(() => bs.forEach(x => { x.disabled = false; }), 2000);   // una cada 2 s, igual que el servidor
+    rpc('reaccionar_duelo', { p_codigo: G.codigo, p_cara: cara }).catch(() => {});
+  });
+  // Cada 2 s: marcador, robos, comodines y reacciones de los demás, y el reloj según el servidor
+  let enVivo = false;
+  async function vivo() {
+    if (!G || enVivo) return;
+    enVivo = true;
+    let r = null;
+    try { r = await rpc('duelo_vivo', { p_codigo: G.codigo, p_desde: G.ultimo == null ? 9e15 : G.ultimo }); } catch (e) {}
+    enVivo = false;
+    if (!r || !G) return;
+    G.jug = r.jugadores;
+    if (G.ultimo != null) (r.eventos || []).forEach(ev => {
+      if (ev.yo) return;
+      if (ev.tipo === 'reac') { sticker(ev.apodo, ev.dato, false); son('reaccion', ev.dato); }
+      else if (ev.tipo === 'robar' && G.actual < G.n) {
+        toast('<b>' + esc(ev.apodo) + '</b> te robó 5 segundos', 'var(--rojo)', IC.robar); son('robado');
+        const rl = $('reloj'); rl.classList.add('robado'); rl.insertAdjacentHTML('beforeend', '<span class="menos">−5</span>');
+        setTimeout(() => { rl.classList.remove('robado'); rl.querySelectorAll('.menos').forEach(x => x.remove()); }, 2200);
+      } else if (ev.tipo === 'comodin' && CMD[ev.dato]) toast('<b>' + esc(ev.apodo) + '</b> usó ' + CMD[ev.dato].nom, CMD[ev.dato].c, IC[ev.dato]);
+    });
+    G.ultimo = r.ultimo;
+    // Reloj: el servidor manda (Congelar y Robar tiempo ya vienen aplicados)
+    if (r.actual === G.actual && !G.ocupado) {
+      const fin = Date.now() + G.seg * 1000 - (+r.lleva || 0);
+      if (Math.abs(fin - G.fin) > 900) G.fin = fin;
+    }
+    if (r.espia && r.actual === G.actual) { G.espia = r.espia; pintarEspia(); }
+    pintarBarra();
   }
 
   /* ---------- Pantalla: resultado ---------- */
   async function recargar() {
     try { const n = await rpc('ver_duelo', { p_codigo: (V && V.codigo) || (G && G.codigo) }); if (n) guardar(n); } catch (e) {}
   }
-  function nombreDe(j) { return j.yo ? 'Tú' : j.apodo; }
   function lineaDe(j, n) {
     if (!j.terminado) return 'Jugando ' + Math.min(j.actual + 1, n) + '/' + n;
     if (j.aciertos == null) return 'Terminó';
-    return 'de ' + n + (j.abandono ? ' · no terminó' : ' · ' + segs(j.ms));
+    return plural(j.aciertos, 'acierto', 'aciertos') + (j.abandono ? ' · no terminó' : ' · ' + segs(j.ms));
   }
+  const puntosDe = j => j.puntos != null ? j.puntos : j.aciertos;
   // Podio con medallas para los 3 primeros; el 4.º va debajo
   function podioHtml(d) {
-    const js = d.jugadores;
-    const arriba = js.slice(0, 3), orden = arriba.length === 2 ? [0, 1] : [1, 0, 2];
+    const js = d.jugadores, arriba = js.slice(0, 3), orden = arriba.length === 2 ? [0, 1] : [1, 0, 2];
     const pods = orden.filter(i => arriba[i]).map(i => {
-      const j = arriba[i], p = 'p' + (i + 1);
-      return '<div class="pod ' + p + (j.yo ? ' yo' : '') + '">' + ((window.MCMedalla && MCMedalla(j.puesto, j.puesto === 1 ? 50 : 40)) || '') +
-        '<b>' + esc(nombreDe(j)) + '</b><strong>' + j.aciertos + '</strong><small>' + esc(lineaDe(j, d.n)) + '</small></div>';
+      const j = arriba[i], xp = XP_PUESTO[j.puesto - 1];
+      return '<div class="pod p' + (i + 1) + ' ' + colorDe(j) + (j.yo ? ' yo' : '') + '">' + ((window.MCMedalla && MCMedalla(j.puesto, j.puesto === 1 ? 46 : 36)) || '') + avatar(j) +
+        '<b>' + esc(nombreDe(j)) + '</b><strong>' + puntosDe(j) + '</strong><small>' + esc(lineaDe(j, d.n)) + '</small>' + (xp ? '<span class="xp">+' + xp + ' XP</span>' : '') + '</div>';
     }).join('');
-    const resto = js.slice(3).map(j => '<div class="cuarto' + (j.yo ? ' yo' : '') + '"><span class="p">' + j.puesto + '.º</span><span class="n">' + esc(nombreDe(j)) + '</span><small>' + j.aciertos + ' ' + esc(lineaDe(j, d.n)) + '</small></div>').join('');
+    const resto = js.slice(3).map(j => '<div class="cuarto ' + colorDe(j) + (j.yo ? ' yo' : '') + '">' + avatar(j) + '<span class="n">' + j.puesto + '.º ' + esc(nombreDe(j)) + '</span><small>' + esc(lineaDe(j, d.n)) + '</small><strong>' + puntosDe(j) + '</strong></div>').join('');
     return '<div class="podio' + (arriba.length === 2 ? ' dos' : '') + '">' + pods + '</div>' + resto;
   }
-  // Mientras no hay resultado: cómo van todos
-  function tablaHtml(d) {
-    return '<ul class="tabla">' + d.jugadores.map(j =>
-      '<li><span class="avatar ' + colorDe(j) + '">' + esc(inicial(nombreDe(j))) + '</span><div><b>' + esc(nombreDe(j)) + '</b><small>' + esc(lineaDe(j, d.n)) + '</small></div>' +
-      (j.aciertos != null && j.terminado ? '<strong>' + j.aciertos + '</strong>' : '') + '</li>').join('') + '</ul>';
+  // Medallas del duelo: Rayo, Racha, Remontada y Francotirador
+  function medallasHtml(m) {
+    if (!m) return '';
+    const yo = (V.jugadores.filter(j => j.yo)[0] || {}).apodo;
+    const quien = q => q === yo ? 'Tú' : q;
+    const md = (c, ic, nom, x, dato) => '<div class="md' + (x ? '' : ' nadie') + '" style="--c:' + c + '"><span class="ci">' + ic + '</span><b>' + nom + '</b><span>' + esc(x ? x : 'Nadie') + '</span><small>' + esc(dato) + '</small></div>';
+    const f = m.francotirador || [];
+    return '<div class="ttl">Medallas del duelo</div><div class="meds">' +
+      md('var(--azul)', IC.rayo, 'Rayo', m.rayo && quien(m.rayo.quien), m.rayo ? String(m.rayo.dato).replace('.', ',') + ' s por acierto' : 'El más rápido') +
+      md('var(--naranja)', IC.fuego, 'Racha', m.racha && quien(m.racha.quien), m.racha ? m.racha.dato + ' seguidas' : '3 o más seguidas') +
+      md('var(--morado)', IC.sube, 'Remontada', m.remontada && quien(m.remontada.quien), m.remontada ? 'De ' + m.remontada.dato + '.º a 1.º' : 'Ganar desde atrás') +
+      md('var(--verde)', IC.mira, 'Francotirador', f.length ? lista(f.map(quien)) : '', 'Sin fallar ninguna') + '</div>';
   }
   function confeti(el) {
     if (el.querySelector('.confeti') || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const c = document.createElement('div'); c.className = 'confeti';
-    const col = ['#C6E000', '#f5c542', '#f9a8d4', '#67e8f9', '#fdba74'];
-    for (let i = 0; i < 40; i++) {
+    const col = ['#C6E000', '#FFC800', '#1CB0F6', '#FF9600', '#CE82FF', '#58CC02', '#FF4B4B'];
+    for (let i = 0; i < 44; i++) {
       const p = document.createElement('i');
       p.style.left = Math.random() * 100 + '%'; p.style.background = col[i % col.length];
       p.style.animationDelay = (Math.random() * .8).toFixed(2) + 's'; p.style.animationDuration = (2 + Math.random() * 1.4).toFixed(2) + 's';
@@ -1101,24 +1486,38 @@
     el.appendChild(c);
     setTimeout(() => c.remove(), 4500);
   }
+  // XP por puesto: se cobra una vez cuando el resultado es final
+  let premioPedido = '';
+  function cobrarXp(d) {
+    if (premioPedido === d.codigo) return;
+    premioPedido = d.codigo;
+    const pintar = xp => { if (xp > 0) $('resXp').innerHTML = '<span class="xpgana">+' + xp + ' XP por tu puesto</span>'; };
+    if (d.yo && d.yo.xp != null) { pintar(d.yo.xp); return; }
+    rpc('premio_duelo', { p_codigo: d.codigo }).then(r => {
+      if (!r) return;
+      pintar(r.xp);
+      if (r.xp > 0 && !r.ya && window.MCCorazones) setTimeout(MCCorazones.recargar, 300);
+    }).catch(() => { premioPedido = ''; });
+  }
   let revPintada = '', vistoRes = '';
   async function mostrarResultado() {
-    pararSondeo();
+    pararSondeo(); clearInterval(tic);
     // Misión "termina un duelo" (assets/corazones.js)
     if (window.MCCorazones) setTimeout(MCCorazones.recargar, 600);
-    const d = V, yo = d.yo || { aciertos: 0, ms: 0 }, res = d.resultado;
-    const otros = d.jugadores.filter(j => !j.yo);
-    let eye = 'Duelo terminado', tit, sub = '', perdio = false;
+    const d = V, yo = d.yo || { aciertos: 0, puntos: 0, ms: 0 }, res = d.resultado;
+    const otros = d.jugadores.filter(j => !j.yo), misPts = yo.puntos != null ? yo.puntos : yo.aciertos;
+    let eye = 'Duelo terminado · ' + d.titulo, tit, sub = '', perdio = false;
     if (res && d.en_sala && !d.empieza) { tit = 'El duelo no se inició'; sub = 'Nadie lo inició en 5 minutos. Crea otro y avisa a tus amigos antes.'; }
-    else if (res && res.jugadores < 2) { tit = 'Nadie más entró al duelo'; sub = 'Acertaste ' + yo.aciertos + ' de ' + d.n + '. Crea otro y envíalo apenas lo crees: la sala dura 5 minutos.'; }
+    else if (res && res.jugadores < 2) { tit = 'Nadie más entró al duelo'; sub = 'Sumaste ' + plural(misPts, 'punto', 'puntos') + '. Crea otro y envíalo apenas lo crees: la sala dura 5 minutos.'; }
     else if (res) {
-      if (res.gane) { tit = '¡Ganaste el duelo!'; sub = 'Quedaste en el 1.º lugar' + (otros.length ? ' frente a ' + lista(otros.map(j => j.apodo)) : '') + '. Suma 1 al top de la semana.'; }
-      else if (res.empate && res.puesto === 1) { tit = '¡Empate en el 1.º lugar!'; sub = 'Mismos aciertos y mismo tiempo. Toca revancha para desempatar.'; }
+      const rem = res.medallas && res.medallas.remontada;
+      if (res.gane) { tit = '¡Ganaste!'; sub = (rem ? '¡Remontaste desde el ' + rem.dato + '.º lugar! ' : 'Quedaste en el 1.º lugar' + (otros.length ? ' frente a ' + lista(otros.map(j => j.apodo)) + '. ' : '. ')) + 'Suma 1 al top de la semana.'; }
+      else if (res.empate && res.puesto === 1) { tit = '¡Empate en el 1.º lugar!'; sub = 'Mismos puntos y mismo tiempo. Toca revancha para desempatar.'; }
       else if (res.empate) { tit = 'Quedaste en el ' + res.puesto + '.º lugar'; sub = 'Hubo empate en el 1.º lugar, así que esta vez nadie suma al top.'; perdio = true; }
       else { tit = res.jugadores > 2 ? 'Quedaste en el ' + res.puesto + '.º lugar' : 'Esta vez ganó ' + res.ganador; sub = (res.jugadores > 2 ? 'Ganó ' + res.ganador + '. ' : '') + 'Revisa en qué fallaste y pide la revancha.'; perdio = true; }
     } else {
       eye = 'Terminaste tu parte';
-      tit = 'Acertaste ' + yo.aciertos + ' de ' + d.n;
+      tit = 'Sumaste ' + plural(misPts, 'punto', 'puntos');
       const jugando = otros.filter(j => !j.terminado).map(j => j.apodo);
       sub = jugando.length ? 'Esperando a que ' + lista(jugando) + ' ' + (jugando.length > 1 ? 'terminen' : 'termine') + '. Esta página se actualiza sola.'
         : !d.cerrado ? 'La sala sigue abierta y alguien más puede entrar. El podio sale cuando se cierre.'
@@ -1127,16 +1526,19 @@
     $('resEye').textContent = eye; $('resTit').textContent = tit; $('resSub').textContent = sub;
     $('resTrofeo').hidden = !(res && res.gane);
     $('resCard').classList.toggle('perdio', perdio);
-    $('resTabla').innerHTML = (res && res.jugadores >= 2 ? podioHtml(d) : tablaHtml(d)) +
-      (!res && !d.cerrado ? '<div class="cierre" id="resCierre"><i></i><span></span></div>' : '');
+    const final = res && res.jugadores >= 2;
+    $('resTabla').innerHTML = final ? podioHtml(d) + medallasHtml(res.medallas)
+      : '<ul class="tabla">' + d.jugadores.map(j => '<li class="' + colorDe(j) + '">' + avatar(j) + '<div><b>' + esc(nombreDe(j)) + '</b><small>' + esc(lineaDe(j, d.n)) + '</small></div>' + (j.terminado ? '<strong>' + puntosDe(j) + '</strong>' : '') + '</li>').join('') + '</ul>' +
+        (!res && !d.cerrado ? '<div class="cierre" id="resCierre"><i></i><span></span></div>' : '');
+    if (final) cobrarXp(d); else $('resXp').innerHTML = '';
     if (res && res.gane && vistoRes !== d.codigo) confeti($('resCard'));
-    if (res && res.jugadores >= 2 && vistoRes !== d.codigo) son('fin', res.gane || (res.empate && res.puesto === 1) ? 100 : 0);
+    if (final && vistoRes !== d.codigo) son('fin', res.gane || (res.empate && res.puesto === 1) ? 100 : 0);
     if (res) vistoRes = d.codigo;
 
     const bts = [];
-    if (!d.cerrado) bts.push('<a class="btn wa" target="_blank" rel="noopener noreferrer" href="https://wa.me/?text=' + esc(encodeURIComponent('⚔️ Acerté ' + yo.aciertos + ' de ' + d.n + ' en un duelo de Modo Cachimbo (' + d.titulo + '). ¿Me ganas? Entra rápido, la sala se cierra pronto: ' + enlace(d.codigo))) + '">Invitar por WhatsApp</a>');
+    if (!d.cerrado) bts.push('<a class="btn wa" target="_blank" rel="noopener noreferrer" href="https://wa.me/?text=' + esc(encodeURIComponent('⚔️ Sumé ' + plural(misPts, 'punto', 'puntos') + ' en un duelo de Modo Cachimbo (' + d.titulo + '). ¿Me ganas? Entra rápido, la sala se cierra pronto: ' + enlace(d.codigo))) + '">Invitar por WhatsApp</a>');
     if (d.revancha) bts.push('<a class="btn" href="duelo.html?d=' + esc(d.revancha) + '">Ir a la revancha</a>');
-    else if (res && res.jugadores >= 2) bts.push('<button class="btn" type="button" id="btnRevancha">Pedir revancha</button>');
+    else if (final) bts.push('<button class="btn" type="button" id="btnRevancha">Pedir revancha</button>');
     bts.push('<a class="btn sec" href="duelo.html">Nuevo duelo</a>');
     $('resBotones').innerHTML = bts.join('');
     $('resBotones').classList.toggle('dos', bts.length > 1);
@@ -1145,8 +1547,9 @@
       rv.disabled = true; rv.textContent = 'Armando la revancha…'; $('resError').hidden = true;
       try {
         const fuente = fuenteAbierta(d.curso, d.fuente) ? d.fuente : 'mezcla';  // sin el código de esa sección, sale de "De todo"
-        const cod = await crearDuelo({ curso: d.curso, fuente, ciclo: d.ciclo || 'todos', tema: d.tema ? normTema(d.tema) : '', temaNom: d.tema || '', n: d.n,
-          jugadores: Math.min(Math.max(d.jugadores.length, 2), 4), auto: true, revancha: d.codigo });
+        const noms = d.tema ? d.tema.split(' | ') : [];
+        const cod = await crearDuelo({ curso: d.curso, fuente, ciclo: d.ciclo || 'todos', temas: noms.map(normTema), temasLista: noms, n: d.n, seg: d.seg || 60,
+          comodines: (d.comodines || []).length > 0, jugadores: Math.min(Math.max(d.jugadores.length, 2), 4), auto: true, revancha: d.codigo });
         await abrirDuelo(cod);
       } catch (e) { rv.disabled = false; rv.textContent = 'Pedir revancha'; $('resError').textContent = textoError(e); $('resError').hidden = false; }
     });
@@ -1171,7 +1574,7 @@
     $('revLista').innerHTML = qs.map((q, i) => {
       if (!q) return '<div class="card rev-item"><div class="rev-cab"><b>Pregunta ' + (i + 1) + '</b><span>Ya no está en la web</span></div></div>';
       const r0 = resp[i] || {}, r = Object.assign({}, r0, { op: aVista(q, r0.op) }), c = aVista(q, correctas[i]);
-      const estado = r.ok ? '<b class="ok">Acertaste · ' + segs(r.ms) + '</b>' : r.op < 0 ? '<b class="mal">Sin responder</b>' : r.op != null ? '<b class="mal">Fallaste · ' + segs(r.ms) + '</b>' : '';
+      const estado = r.ok ? '<b class="ok">Acertaste · +' + (r.p || 1) + ' · ' + segs(r.ms) + '</b>' : r.op < 0 ? '<b class="mal">Sin responder</b>' : r.op != null ? '<b class="mal">Fallaste · ' + segs(r.ms) + '</b>' : '';
       const m = MCPregunta.armar(q.text, { lecPos: q.lecPos });
       return '<div class="card rev-item" data-i="' + i + '"><div class="rev-cab"><span>Pregunta ' + (i + 1) + ' · ' + esc(etiqueta(q)) + '</span>' + estado + '</div>' +
         '<div class="preg-txt">' + m.html + '</div>' + (q.graphic ? '<div class="preg-graf">' + grafico(q.graphic) + '</div>' : '') +
@@ -1211,7 +1614,7 @@
     sel.parentNode.insertBefore(caja, sel); caja.appendChild(sel);
     sel.tabIndex = -1; sel.setAttribute('aria-hidden', 'true');
     var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'sel-btn'; btn.setAttribute('aria-haspopup', 'listbox'); btn.setAttribute('aria-expanded', 'false');
-    var lab = sel.parentNode.parentNode.querySelector('label[for="' + sel.id + '"]') || caja.parentNode.querySelector('label');
+    var lab = caja.parentNode.querySelector('label[for="' + sel.id + '"]');
     if (lab) btn.setAttribute('aria-label', lab.textContent.trim());
     caja.appendChild(btn);
     function pintar() {
