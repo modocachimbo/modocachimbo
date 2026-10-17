@@ -195,11 +195,16 @@
   }
   function activos() { return todos().filter(function (x) { return !x.error; }); }
 
+  // Si el navegador tiene varias cuentas de Google, a veces el Apps Script no responde a la primera
+  function jsonp2(params) {
+    return jsonp(params).catch(function () { return jsonp(params); });
+  }
+
   // Cómo está cada código en el servidor: equipos usados, vencimiento, quitadas del mes
   function estado() {
     var cods = Object.keys(accesos());
     if (!cods.length) return Promise.resolve({});
-    return jsonp({ action: 'misCodigos', codigos: cods.join(','), dispositivo: dispositivo() }).then(function (r) {
+    return jsonp2({ action: 'misCodigos', codigos: cods.join(','), dispositivo: dispositivo() }).then(function (r) {
       if (!r || !r.ok) return null;
       var m = {};
       (r.codigos || []).forEach(function (c) { m[c.codigo] = c; });
@@ -208,12 +213,14 @@
   }
 
   // Quita un código de este equipo: libera su cupo en el servidor y lo borra de aquí y de la cuenta
-  function soltar(cod) {
+  // soloAqui: sin conexión con el servidor, lo borra de este equipo sin liberar el cupo
+  function soltar(cod, soloAqui) {
     function borrar() {
       var a = accesos(); delete a[cod]; guardar(a);
       quitarDeCuenta(cod);
     }
-    return jsonp({ action: 'soltar', codigo: cod, dispositivo: dispositivo() }).then(function (r) {
+    if (soloAqui) { borrar(); return Promise.resolve({ ok: true, liberado: false }); }
+    return jsonp2({ action: 'soltar', codigo: cod, dispositivo: dispositivo() }).then(function (r) {
       if (r && r.ok) { borrar(); return r; }
       // Apps Script sin actualizar: igual se quita de este equipo
       if (r && /acci[oó]n no v[aá]lida/i.test(r.error || '')) { borrar(); return { ok: true, liberado: false }; }
