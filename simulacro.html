@@ -194,6 +194,7 @@
   .cmp-filas div { display: flex; justify-content: space-between; gap: 10px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 10px; font-variant-numeric: tabular-nums; }
   .cmp-filas b { font-weight: 800; }
   @media (max-width: 760px) { .avance, .comparar { grid-template-columns: minmax(0, 1fr); } .cmp-radar { order: 2; } }
+  .mcr.mcr-sim { margin: 0; }
   .res-bot { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; margin-top: 16px; }
   .filtros { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
   .filtros button { background: var(--surface-2); color: var(--dim); border: 1px solid var(--border); border-radius: 100px; padding: 7px 14px; font-weight: 600; font-size: 13px; }
@@ -634,6 +635,13 @@
     rpc('ranking_simulacro').then(L => {
       L = L || [];
       if (!L.length) { el.innerHTML = '<li class="vacia">Nadie ha terminado un simulacro esta semana. ¡Sé el primero!</li>'; return; }
+      // En el resultado, el mismo podio del inicio (assets/ranking.js)
+      if (el.id === 'rank' && window.MCRanking) {
+        MCRanking.css();
+        const card = el.closest('.card'); card.classList.add('mcr', 'mcr-sim');
+        card.innerHTML = MCRanking.html(L, { simulacro: true });
+        return;
+      }
       el.innerHTML = L.map(r => '<li class="' + (r.yo ? 'yo' : '') + '"><span class="p">' + ((window.MCMedalla && MCMedalla(r.puesto, 20)) || r.puesto) + '</span><span class="n">' + esc(r.apodo) + (r.yo ? ' (tú)' : '') + '</span><b>' + num1(+r.puntaje) + '</b></li>').join('');
     }).catch(() => { el.innerHTML = '<li class="vacia">No se pudo cargar el ranking.</li>'; });
   }

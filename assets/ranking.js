@@ -36,6 +36,9 @@
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function dec(n) { return (Math.round((+n || 0) * 10) / 10).toFixed(1).replace('.', ','); }
 
+  // El mismo podio y lista en el resultado del simulacro (simulacro.html)
+  window.MCRanking = { css: css, html: html };
+
   /* ---------- Tarjeta del inicio ---------- */
   if (window.MCRankingInicio || !window.MCAuth) return;
   function iniciar() {
@@ -50,7 +53,8 @@
   }
 
   function css() {
-    var st = document.createElement('style');
+    if (document.getElementById('mc-medalla-css')) return;
+    var st = document.createElement('style'); st.id = 'mc-medalla-css';
     st.textContent =
       '.mcr{margin:26px 0 4px;border:1px solid rgba(255,255,255,.08);background:var(--surface,#0e0e0e);border-radius:22px;padding:20px}' +
       '.mcr-cab{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px}' +
@@ -93,11 +97,9 @@
     document.head.appendChild(st);
   }
 
-  function pintar(L, BASE, ancla) {
-    css();
-    var caja = document.createElement('section');
-    caja.id = 'mcRanking'; caja.className = 'mcr';
-    caja.setAttribute('aria-label', 'Top de la semana del simulacro');
+  // Cabecera, podio, tu puesto y la lista. o.simulacro: lista abierta y sin botones
+  function html(L, o) {
+    o = o || {};
     var por = {}; L.forEach(function (x) { por[x.puesto] = x; });
     var yo = L.filter(function (x) { return x.yo; })[0];
     var podio = [2, 1, 3].map(function (n) {
@@ -107,14 +109,22 @@
     }).join('');
     var pie = yo ? 'Vas en el puesto <b>' + yo.puesto + '.º</b> con <b>' + dec(yo.puntaje) + '</b> puntos.'
       : L.length ? 'Aún no das un simulacro esta semana.' : 'Nadie ha dado el simulacro esta semana. ¡Sé el primero!';
-    caja.innerHTML = '<div class="mcr-cab"><h2>Top de la semana · Simulacro</h2><small>Se reinicia cada lunes</small></div>' +
+    return '<div class="mcr-cab"><h2>Top de la semana · Simulacro</h2><small>Se reinicia cada lunes</small></div>' +
       '<div class="mcr-podio">' + podio + '</div>' +
-      '<div class="mcr-pie"><span>' + pie + '</span><div class="mcr-bts">' +
+      '<div class="mcr-pie"><span>' + pie + '</span>' + (o.simulacro ? '' : '<div class="mcr-bts">' +
       (L.length > 3 ? '<button type="button" class="mcr-bt" id="mcrVer">Ver top 10</button>' : '') +
-      '<a class="mcr-bt on" href="' + esc(BASE + 'simulacro.html') + '">Dar simulacro</a></div></div>' +
-      '<ol class="mcr-lista" id="mcrLista" hidden>' + L.map(function (x) {
+      '<a class="mcr-bt on" href="' + esc(o.base + 'simulacro.html') + '">Dar simulacro</a></div>') + '</div>' +
+      '<ol class="mcr-lista" id="mcrLista"' + (o.simulacro ? '' : ' hidden') + '>' + L.filter(function (x) { return !o.simulacro || x.puesto > 3; }).map(function (x) {
         return '<li class="' + (x.yo ? 'yo' : '') + '"><span class="p">' + (medalla(x.puesto, 18) || x.puesto) + '</span><span class="n">' + esc(x.apodo) + (x.yo ? ' (tú)' : '') + '</span><b>' + dec(x.puntaje) + '</b></li>';
       }).join('') + '</ol>';
+  }
+
+  function pintar(L, BASE, ancla) {
+    css();
+    var caja = document.createElement('section');
+    caja.id = 'mcRanking'; caja.className = 'mcr';
+    caja.setAttribute('aria-label', 'Top de la semana del simulacro');
+    caja.innerHTML = html(L, { base: BASE });
     // En el inicio nuevo va después de Practica (#mcTopAncla)
     var abajo = document.getElementById('mcTopAncla');
     if (abajo) abajo.parentNode.insertBefore(caja, abajo.nextSibling);
