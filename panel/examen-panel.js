@@ -10,7 +10,9 @@
      CURSO: Literatura
      PREGUNTA 6:
      …
-   Se guarda en examenes/<tipo>/data/<ciclo>.json
+   Examen de control: un ciclo tiene varios. "EXAMEN: Examen de control II"
+   (o eliges I / II en el panel) y se guarda como <ciclo>-1.json, <ciclo>-2.json
+   Los demás se guardan en examenes/<tipo>/data/<ciclo>.json
    ========================================================= */
 const TIPOS_EXAMEN = { ordinario: 'Ordinario', cpu: 'CPU', 'control-cpu': 'Examen de control' };
 
@@ -21,6 +23,19 @@ function detectarTipoExamen(txt) {
   if (/ordinario|admision/.test(t)) return 'ordinario';
   return '';
 }
+// Examen de control I / II: número de examen dentro del ciclo ('' si no aplica)
+function detectarParteExamen(txt) {
+  const m = sinTildes(txt).match(/control\s*(?:n[°º.]?\s*)?(ii|i|2|1)\b/);
+  return m ? (/^(ii|2)$/.test(m[1]) ? '2' : '1') : '';
+}
+const ROMANO = { 1: 'I', 2: 'II' };
+// Examen elegido en el panel: tipo, ciclo, parte (solo control) e id del archivo
+function examenElegido() {
+  const tipo = $('exTipo').value, ciclo = normalizarCiclo($('exCiclo').value);
+  const parte = tipo === 'control-cpu' ? $('exParte').value : '';
+  return { tipo, ciclo, parte, id: parte ? ciclo + '-' + parte : ciclo,
+    nombre: (TIPOS_EXAMEN[tipo] || '') + (parte ? ' ' + ROMANO[parte] : '') + ' ' + ciclo };
+}
 function areaDeCurso(id) {
   const c = REG && (REG.cursos || []).find(x => x.id === id);
   const a = c && (REG.areas || []).find(x => x.id === c.area);
@@ -29,14 +44,14 @@ function areaDeCurso(id) {
 
 // Parte el examen en bloques por CURSO: / TEMA: y lee cada bloque con parsearTexto (subir.js)
 function parsearExamen(raw) {
-  const meta = { tipo: '', ciclo: '' };
+  const meta = { tipo: '', ciclo: '', parte: '' };
   const bloques = [];
   let cur = { curso: '', tema: '', lines: [] };
   const cerrar = () => { if (cur.lines.some(l => l.trim())) bloques.push(cur); };
   String(raw || '').replace(/\r/g, '').split('\n').forEach(linea => {
     const l = linea.trim();
     let m;
-    if ((m = l.match(/^(EXAMEN|TIPO)\s*:\s*(.+)$/i))) { meta.tipo = detectarTipoExamen(m[2]) || meta.tipo; return; }
+    if ((m = l.match(/^(EXAMEN|TIPO)\s*:\s*(.+)$/i))) { meta.tipo = detectarTipoExamen(m[2]) || meta.tipo; meta.parte = detectarParteExamen(m[2]) || meta.parte; return; }
     if ((m = l.match(/^(CICLO|AÑO|ANIO|PERIODO)\s*:\s*(.+)$/i))) { meta.ciclo = m[2].trim(); return; }
     if ((m = l.match(/^(CURSO|ASIGNATURA)\s*:\s*(.+)$/i))) { cerrar(); cur = { curso: m[2].trim(), tema: '', lines: [] }; return; }
     if ((m = l.match(/^TEMA\s*:\s*(.+)$/i))) { cerrar(); cur = { curso: cur.curso, tema: m[1].replace(/^N?[°º]?\s*\d{1,3}\s*[-–—:.)]\s*/, '').trim(), lines: [] }; return; }
@@ -65,9 +80,11 @@ function parsearExamen(raw) {
 }
 
 function validarMetaExamen() {
-  const tipo = $('exTipo').value, ciclo = normalizarCiclo($('exCiclo').value);
+  const { tipo, ciclo, parte, nombre } = examenElegido();
+  $('exParteL').hidden = tipo !== 'control-cpu';
   const errs = [];
   if (!TIPOS_EXAMEN[tipo]) errs.push('elige el examen');
+  if (tipo === 'control-cpu' && !parte) errs.push('elige si es el Examen de control I o II');
   if (!/^\d{4}-(I|II|III)$/.test(ciclo)) errs.push('el ciclo debe ser como 2027-I');
   const malas = SUB.parse.preguntas.filter(q => q.errores.length).length;
   if (malas) errs.push('corrige ' + malas + ' pregunta' + (malas > 1 ? 's' : ''));
@@ -77,7 +94,7 @@ function validarMetaExamen() {
   const cursos = new Set(SUB.parse.preguntas.map(q => q.asignatura).filter(Boolean)).size;
   $('subResumen').innerHTML = errs.length
     ? `<span class="bad">Falta: ${errs.join(', ')}.</span>`
-    : `<b>${n} pregunta${n > 1 ? 's' : ''}</b> de ${cursos} curso${cursos > 1 ? 's' : ''} · <b>${esc(TIPOS_EXAMEN[tipo])}</b> ${esc(ciclo)}`;
+    : `<b>${n} pregunta${n > 1 ? 's' : ''}</b> de ${cursos} curso${cursos > 1 ? 's' : ''} · <b>${esc(nombre)}</b>`;
   $('subPublicar').disabled = !!errs.length;
 }
 
@@ -104,24 +121,23 @@ function elegirModoExamen(nombre, actuales, nuevas) {
 }
 
 async function publicarExamen() {
-  const tipo = $('exTipo').value, ciclo = normalizarCiclo($('exCiclo').value);
-  const nombre = TIPOS_EXAMEN[tipo] + ' ' + ciclo;
+  const { tipo, ciclo, parte, id, nombre } = examenElegido();
   const btn = $('subPublicar');
   btn.disabled = true; btn.innerHTML = '<span class="spin-s"></span> Revisando…';
   try {
     let modo = 'nuevo';
-    const actual = (await api('examen', { tipo, ciclo })).preguntas || [];
+    const actual = (await api('examen', { tipo, ciclo, parte })).preguntas || [];
     if (actual.length) {
       modo = await elegirModoExamen(nombre, actual.length, SUB.parse.preguntas.length);
       if (!modo) { btn.disabled = false; btn.textContent = 'Publicar examen'; return; }
     }
     const { preguntas, imagenes } = armarConImagenes(
-      (q, ext) => imgRuta('examen-' + tipo, ciclo, q.num, ext),
-      q => ({ num: String(q.num), area: q.area, asignatura: q.asignatura, tema: q.tema, topic: q.asignatura + ' · ' + ciclo }));
+      (q, ext) => imgRuta('examen-' + tipo, id, q.num, ext),
+      q => ({ num: String(q.num), area: q.area, asignatura: q.asignatura, tema: q.tema, topic: q.asignatura + ' · ' + id }));
     btn.innerHTML = '<span class="spin-s"></span> ' + (imagenes.length ? `Subiendo ${imagenes.length} imagen${imagenes.length > 1 ? 'es' : ''} y publicando…` : 'Publicando…');
-    const r = await api('publicarExamen', { tipo, ciclo, modo, preguntas: JSON.stringify(preguntas), imagenes: JSON.stringify(imagenes) });
+    const r = await api('publicarExamen', { tipo, ciclo, parte, modo, preguntas: JSON.stringify(preguntas), imagenes: JSON.stringify(imagenes) });
     ss('del', SUB.borrador);
-    const url = SITE_ROOT + 'examenes/' + tipo + '/ver.html?year=' + encodeURIComponent(ciclo);
+    const url = SITE_ROOT + 'examenes/' + tipo + '/ver.html?year=' + encodeURIComponent(id);
     $('subPaso2').hidden = true;
     $('subListo').hidden = false;
     $('subListo').innerHTML = `<div class="done">

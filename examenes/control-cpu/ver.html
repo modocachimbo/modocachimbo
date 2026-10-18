@@ -255,6 +255,8 @@
   }
 
 
+  // "2027-I-2" = Examen de control II del ciclo 2027-I
+  const nombreEx = y => { const m = /^(\d{4}-(?:I|II|III))-([12])$/.exec(y); return m ? m[1] + ' · Examen ' + (m[2] === '2' ? 'II' : 'I') : y; };
   const params = new URLSearchParams(window.location.search);
   const year = params.get('year');
   const qlistEl = document.getElementById("qlist");
@@ -262,8 +264,8 @@
   if (!year) {
     qlistEl.innerHTML = '<div class="state-msg">No se indicó ningún año. Vuelve a la lista de exámenes.</div>';
   } else {
-    document.getElementById('badgeYear').textContent = 'Examen de control CPU · ' + year;
-    document.getElementById('pageTitleH1').textContent = 'Examen de control CPU — Examen ' + year;
+    document.getElementById('badgeYear').textContent = 'Examen de control CPU · ' + nombreEx(year);
+    document.getElementById('pageTitleH1').textContent = 'Examen de control CPU — ' + nombreEx(year);
     document.getElementById('practicarLink').href = 'quiz.html?years=' + encodeURIComponent(year);
 
     let allQuestions = [];
