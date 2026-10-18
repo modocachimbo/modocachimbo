@@ -308,7 +308,7 @@ function initSubir(modo) {
     $('subRevisar').addEventListener('click', revisarTexto);
     $('subVolver').addEventListener('click', () => { $('subPaso2').hidden = true; $('subPaso1').hidden = false; window.scrollTo(0, 0); });
     $('subPublicar').addEventListener('click', () => SUB.modo === 'examen' ? publicarExamen() : publicarTema());
-    ['subCurso', 'subCiclo', 'subNum', 'subNombre', 'subDestino', 'exTipo', 'exCiclo'].forEach(id => $(id).addEventListener('input', validarMeta));
+    ['subCurso', 'subCiclo', 'subNum', 'subNombre', 'subDestino', 'exTipo', 'exCiclo', 'exParte'].forEach(id => $(id).addEventListener('input', validarMeta));
     // Crédito: solo Seminarios y Banqueo; se recuerda el último
     try { $('subCredito').value = localStorage.getItem('mc_panel_credito') || ''; } catch (e) {}
     const verCredito = () => { $('subCreditoBox').hidden = !conCredito(); };
@@ -330,6 +330,7 @@ function revisarTexto() {
   if (ex) {
     $('exTipo').value = r.meta.tipo || $('exTipo').value;
     $('exCiclo').value = normalizarCiclo(r.meta.ciclo) || $('exCiclo').value;
+    $('exParte').value = r.meta.parte || $('exParte').value;
   } else {
     $('subCurso').value = detectarCurso(r.meta.curso) || $('subCurso').value;
     $('subCiclo').value = normalizarCiclo(r.meta.ciclo) || $('subCiclo').value;

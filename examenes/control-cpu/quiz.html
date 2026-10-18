@@ -295,6 +295,8 @@
   }
 
   const params = new URLSearchParams(window.location.search);
+  // "2027-I-2" = Examen de control II del ciclo 2027-I
+  const nombreEx = y => { const m = /^(\d{4}-(?:I|II|III))-([12])$/.exec(y); return m ? m[1] + ' · Examen ' + (m[2] === '2' ? 'II' : 'I') : y; };
   const requestedYears = (params.get('years') || '').split(',').map(s => s.trim()).filter(Boolean);
 
   const startScreen = document.getElementById('startScreen');
@@ -333,7 +335,7 @@
       return;
     }
 
-    const yearsLabel = requestedYears.join(', ');
+    const yearsLabel = requestedYears.map(nombreEx).join(', ');
     document.getElementById('startBadgeText').textContent = 'Examen de control CPU · ' + yearsLabel;
     document.getElementById('startDesc').textContent = `Preguntas de ${yearsLabel}, mezcladas al azar. Tienes 5 vidas, ¡a ver cuánto sabes!`;
     document.getElementById('startCount').textContent = `${questions.length} preguntas`;
