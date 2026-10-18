@@ -52,6 +52,7 @@ function parsearExamen(raw) {
     const l = linea.trim();
     let m;
     if ((m = l.match(/^(EXAMEN|TIPO)\s*:\s*(.+)$/i))) { meta.tipo = detectarTipoExamen(m[2]) || meta.tipo; meta.parte = detectarParteExamen(m[2]) || meta.parte; return; }
+    if (/^[AÁ]REA\s*:/i.test(l)) return; // el área sale sola del curso
     if ((m = l.match(/^(CICLO|AÑO|ANIO|PERIODO)\s*:\s*(.+)$/i))) { meta.ciclo = m[2].trim(); return; }
     if ((m = l.match(/^(CURSO|ASIGNATURA)\s*:\s*(.+)$/i))) { cerrar(); cur = { curso: m[2].trim(), tema: '', lines: [] }; return; }
     if ((m = l.match(/^TEMA\s*:\s*(.+)$/i))) { cerrar(); cur = { curso: cur.curso, tema: m[1].replace(/^N?[°º]?\s*\d{1,3}\s*[-–—:.)]\s*/, '').trim(), lines: [] }; return; }
