@@ -155,6 +155,20 @@
   .consejo svg { width: 22px; height: 22px; flex-shrink: 0; fill: none; stroke: #1CB0F6; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; margin-top: 1px; }
   .consejo b { color: #1CB0F6; }
   .etq { display: inline-block; font-size: 10.5px; font-weight: 800; letter-spacing: .4px; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); border-radius: 6px; padding: 1px 6px; margin-left: 6px; vertical-align: 1px; }
+  .fuentes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 14px 0 4px; }
+  .fuente { display: flex; flex-direction: column; align-items: center; gap: 6px; background: var(--surface-2); color: var(--dim); border: 2px solid var(--border); border-radius: 14px; padding: 10px 6px; font-weight: 800; font-size: 13.5px; box-shadow: 0 3px 0 var(--border); }
+  .fuente svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .fuente small { font-size: 11px; font-weight: 700; color: var(--faint); }
+  .fuente.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); box-shadow: 0 3px 0 #8a9c00; }
+  .lbl-t { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--faint); font-weight: 700; margin-top: 16px; }
+  .vocab { display: flex; gap: 12px; align-items: center; margin-top: 10px; padding: 10px 12px; border: 2px dashed color-mix(in srgb, var(--com) 50%, transparent); border-radius: 12px; font-size: 13px; }
+  .vocab.on { border-style: solid; border-color: var(--com); background: color-mix(in srgb, var(--com) 9%, transparent); }
+  .vocab > div { flex: 1; min-width: 0; }
+  .vocab small { display: block; color: var(--dim); font-size: 12px; }
+  .sw { width: 42px; height: 24px; border-radius: 100px; background: var(--border); position: relative; flex-shrink: 0; border: 0; }
+  .sw::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: left .15s; }
+  .vocab.on .sw { background: var(--com); }
+  .vocab.on .sw::after { left: 21px; }
   /* Resultado por tema (personalizado) */
   .por-tema { list-style: none; display: grid; gap: 8px; margin-top: 4px; }
   .por-tema li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; font-size: 13.5px; }
@@ -356,6 +370,13 @@
         <div><h3>Elige tus temas</h3><p class="temas-res" id="temasRes">Toca los temas que quieres practicar.</p></div>
         <div class="temas-acc"><button class="btn sec mini" type="button" id="temasTodos">Elegir todos</button><button class="btn sec mini" type="button" id="temasLimpiar">Limpiar</button></div>
       </div>
+      <div class="lbl-t">¿De dónde salen las preguntas?</div>
+      <div class="fuentes" id="fuentes">
+        <button type="button" class="fuente on" data-f="libros"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/></svg>Libros</button>
+        <button type="button" class="fuente on" data-f="banqueo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg>Banqueo</button>
+        <button type="button" class="fuente on" data-f="seminarios"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20a6 6 0 0 1 12 0M15 20a4.5 4.5 0 0 1 7-3.7"/></svg>Seminarios</button>
+      </div>
+      <div class="lbl-t">Temas</div>
       <div id="temasLista"><p class="vacia" style="margin-top:12px">Cargando temas…</p></div>
     </section>
     <div class="crear">
@@ -371,9 +392,9 @@
         </div>
         <div class="campo" id="campoCantidad" hidden><span class="lbl">Cantidad de preguntas</span>
           <div class="cantidad" id="cantidad">
-            <button type="button" data-n="20">20<small>preguntas</small></button><button type="button" data-n="40"><span class="rec">Recomendado</span>40<small>preguntas</small></button><button type="button" data-n="60">60<small>preguntas</small></button><button type="button" data-n="80">80<small>preguntas</small></button>
+            <button type="button" data-n="80" class="on"><span class="rec">Como el examen</span>80<small>preguntas</small></button><button type="button" data-n="60">60<small>preguntas</small></button><button type="button" data-n="40">40<small>preguntas</small></button><button type="button" data-n="20">20<small>preguntas</small></button>
           </div>
-          <p class="nota" id="cantidadNota">Se reparten entre tus temas con el mismo peso que tiene cada curso en el examen de admisión.</p>
+          <p class="nota" id="cantidadNota">Con menos preguntas, cada curso baja en la misma proporción del examen de admisión. Si de un curso no eliges temas, sus preguntas salen de todos sus temas.</p>
         </div>
         <div class="dos">
           <div class="campo"><label for="selBloque">Bloque</label><select id="selBloque"></select></div>
