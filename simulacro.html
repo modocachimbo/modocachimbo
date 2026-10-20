@@ -107,6 +107,80 @@
   .rank li.yo .p { color: var(--accent); }
   .vacia { color: var(--dim); font-size: 13px; }
 
+  /* Modo: simulacro rápido o personalizado */
+  .modos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+  .modo { display: flex; gap: 14px; align-items: center; text-align: left; background: var(--surface); color: var(--text); border: 2px solid var(--border); border-radius: 18px; padding: 14px 16px; box-shadow: 0 4px 0 var(--border); transition: transform .08s; }
+  .modo:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--border); }
+  .modo .mi { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: var(--surface-2); color: var(--dim); flex-shrink: 0; }
+  .modo .mi svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .modo b { display: block; font-size: 16px; font-weight: 800; }
+  .modo small { display: block; color: var(--dim); font-size: 12.5px; line-height: 1.4; margin-top: 2px; }
+  .modo.on { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 4px 0 #8a9c00; }
+  .modo.on .mi { background: var(--accent); color: var(--on-accent); }
+  .cantidad { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .cantidad button { position: relative; background: var(--surface-2); color: var(--text); border: 2px solid var(--border); border-radius: 14px; padding: 10px 4px 8px; font-weight: 800; font-size: 20px; line-height: 1.1; font-variant-numeric: tabular-nums; box-shadow: 0 3px 0 var(--border); }
+  .cantidad button small { display: block; font-size: 11px; color: var(--dim); font-weight: 700; }
+  .cantidad button.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); box-shadow: 0 3px 0 #8a9c00; }
+  .cantidad button:disabled { opacity: .4; cursor: default; }
+  .cantidad .rec { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); background: #FFC800; color: #0b0b0b; font-size: 9.5px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; border-radius: 6px; padding: 1px 6px; white-space: nowrap; }
+  /* Elegir temas */
+  .temas-card { margin-top: 18px; }
+  .temas-cab { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .temas-cab h3 { font-size: 17px; margin: 0; }
+  .temas-acc { display: flex; gap: 8px; flex-wrap: wrap; }
+  .temas-res { font-size: 13px; color: var(--dim); margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .temas-res b { color: var(--accent); }
+  .ta { border: 1px solid var(--border); border-left: 4px solid var(--c); border-radius: 14px; margin-top: 10px; background: var(--surface-2); }
+  .ta > summary { list-style: none; display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; font-weight: 800; font-size: 15px; }
+  .ta > summary::-webkit-details-marker { display: none; }
+  .ta > summary .cnt { margin-left: auto; font-size: 12px; font-weight: 800; color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent); border-radius: 100px; padding: 3px 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .ta > summary svg { width: 18px; height: 18px; fill: none; stroke: var(--dim); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: transform .15s; flex-shrink: 0; }
+  .ta[open] > summary svg { transform: rotate(180deg); }
+  .ta-body { padding: 0 14px 14px; display: grid; gap: 14px; }
+  .tc-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+  .tc-cab b { font-size: 14px; }
+  .tc-cab b small { color: var(--faint); font-weight: 700; font-size: 12px; margin-left: 6px; }
+  .tc-todos { background: none; border: 0; color: var(--c); font-weight: 800; font-size: 12.5px; padding: 4px 0; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { display: inline-flex; align-items: center; gap: 7px; max-width: 100%; background: var(--surface); color: var(--text); border: 2px solid var(--border); border-radius: 12px; padding: 7px 11px; font-size: 13px; font-weight: 700; text-align: left; box-shadow: 0 2px 0 var(--border); }
+  .chip span { min-width: 0; overflow-wrap: anywhere; }
+  .chip i { font-style: normal; width: 18px; height: 18px; border-radius: 6px; border: 2px solid var(--faint); display: grid; place-items: center; flex-shrink: 0; }
+  .chip i svg { width: 12px; height: 12px; fill: none; stroke: var(--on-accent); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+  .chip em { font-style: normal; color: var(--faint); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+  .chip.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 13%, var(--surface)); box-shadow: 0 2px 0 color-mix(in srgb, var(--c) 55%, #000); }
+  .chip.on i { background: var(--c); border-color: var(--c); }
+  .chip.on i svg { opacity: 1; }
+  .tc-vacio { color: var(--faint); font-size: 12.5px; }
+  .tc-est { margin-top: 7px; font-size: 12px; color: var(--faint); }
+  .tc-est.mal { color: var(--bad); font-weight: 800; }
+  .tc.falta .tc-cab b { color: var(--bad); }
+  .consejo { display: flex; gap: 12px; margin-top: 14px; padding: 12px 14px; border: 2px solid #1CB0F6; border-radius: 14px; background: rgba(28,176,246,.08); font-size: 13.5px; line-height: 1.5; }
+  .consejo svg { width: 22px; height: 22px; flex-shrink: 0; fill: none; stroke: #1CB0F6; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; margin-top: 1px; }
+  .consejo b { color: #1CB0F6; }
+  .etq { display: inline-block; font-size: 10.5px; font-weight: 800; letter-spacing: .4px; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); border-radius: 6px; padding: 1px 6px; margin-left: 6px; vertical-align: 1px; }
+  .fuentes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 14px 0 4px; }
+  .fuente { display: flex; flex-direction: column; align-items: center; gap: 6px; background: var(--surface-2); color: var(--dim); border: 2px solid var(--border); border-radius: 14px; padding: 10px 6px; font-weight: 800; font-size: 13.5px; box-shadow: 0 3px 0 var(--border); }
+  .fuente svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .fuente small { font-size: 11px; font-weight: 700; color: var(--faint); }
+  .fuente.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); box-shadow: 0 3px 0 #8a9c00; }
+  .lbl-t { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--faint); font-weight: 700; margin-top: 16px; }
+  .vocab { display: flex; gap: 12px; align-items: center; margin-top: 10px; padding: 10px 12px; border: 2px dashed color-mix(in srgb, var(--com) 50%, transparent); border-radius: 12px; font-size: 13px; }
+  .vocab.on { border-style: solid; border-color: var(--com); background: color-mix(in srgb, var(--com) 9%, transparent); }
+  .vocab > div { flex: 1; min-width: 0; }
+  .vocab small { display: block; color: var(--dim); font-size: 12px; }
+  .sw { width: 42px; height: 24px; border-radius: 100px; background: var(--border); position: relative; flex-shrink: 0; border: 0; }
+  .sw::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: left .15s; }
+  .vocab.on .sw { background: var(--com); }
+  .vocab.on .sw::after { left: 21px; }
+  /* Resultado por tema (personalizado) */
+  .por-tema { list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 28px; margin-top: 4px; }
+  @media (max-width: 760px) { .por-tema { grid-template-columns: minmax(0, 1fr); } }
+  .por-tema li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; font-size: 13.5px; }
+  .por-tema li small { color: var(--dim); font-size: 12px; }
+  .por-tema li b { font-variant-numeric: tabular-nums; }
+  .por-tema .bar { grid-column: 1 / -1; height: 8px; border-radius: 6px; background: var(--surface-2); overflow: hidden; }
+  .por-tema .bar i { display: block; height: 100%; background: var(--c); border-radius: 6px; }
+  @media (max-width: 560px) { .modos { grid-template-columns: minmax(0, 1fr); } .modo { padding: 12px 14px; } }
   /* Examen */
   .barra { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 8px); z-index: 10; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 10px 14px; margin-bottom: 16px; box-shadow: 0 8px 24px rgba(0,0,0,.5); }
   .reloj { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--accent); }
@@ -285,6 +359,30 @@
     <div class="eyebrow" style="margin-top:14px">Simulacro UNJFSC</div>
     <h1 style="font-size:clamp(26px,4vw,34px);margin-top:6px" id="crearTit">Crea tu simulacro</h1>
     <p class="hint" style="max-width:62ch" id="crearSub">80 preguntas al azar de los libros de cada curso, repartidas como en el examen de admisión.</p>
+    <div class="modos" id="modos" role="radiogroup" aria-label="Tipo de simulacro">
+      <button type="button" class="modo on" data-modo="rapido" role="radio" aria-checked="true">
+        <span class="mi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span>
+        <span><b>Simulacro rápido</b><small>80 preguntas al azar, como el examen de admisión</small></span>
+      </button>
+      <button type="button" class="modo" data-modo="pers" role="radio" aria-checked="false">
+        <span class="mi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg></span>
+        <span><b>Personaliza tu simulacro</b><small>Tú eliges los temas y cuántas preguntas</small></span>
+      </button>
+    </div>
+    <section class="card temas-card" id="temasCard" hidden>
+      <div class="temas-cab">
+        <div><h3>Elige tus temas</h3><p class="temas-res" id="temasRes">Toca los temas que quieres practicar.</p></div>
+        <div class="temas-acc"><button class="btn sec mini" type="button" id="temasTodos">Elegir todos</button><button class="btn sec mini" type="button" id="temasLimpiar">Limpiar</button></div>
+      </div>
+      <div class="lbl-t">¿De dónde salen las preguntas?</div>
+      <div class="fuentes" id="fuentes">
+        <button type="button" class="fuente on" data-f="libros"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/></svg>Libros</button>
+        <button type="button" class="fuente" data-f="banqueo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg>Banqueo</button>
+        <button type="button" class="fuente" data-f="seminarios"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20a6 6 0 0 1 12 0M15 20a4.5 4.5 0 0 1 7-3.7"/></svg>Seminarios</button>
+      </div>
+      <div class="lbl-t">Temas</div>
+      <div id="temasLista"><p class="vacia" style="margin-top:12px">Cargando temas…</p></div>
+    </section>
     <div class="crear">
       <div class="card">
         <div class="campo" id="campoNombre">
@@ -295,6 +393,12 @@
           <span class="lbl">Ciclo académico</span>
           <div class="ciclos" id="ciclos"></div>
           <p class="nota" id="ciclosNota">Con un ciclo, las preguntas salen solo de ese ciclo. Con dos o más, salen al azar de los ciclos que elijas, con la misma cantidad por curso.</p>
+        </div>
+        <div class="campo" id="campoCantidad" hidden><span class="lbl">Cantidad de preguntas</span>
+          <div class="cantidad" id="cantidad">
+            <button type="button" data-n="80" class="on"><span class="rec">Como el examen</span>80<small>preguntas</small></button><button type="button" data-n="60">60<small>preguntas</small></button><button type="button" data-n="40">40<small>preguntas</small></button><button type="button" data-n="20">20<small>preguntas</small></button>
+          </div>
+          <p class="nota" id="cantidadNota">Con menos preguntas, cada curso baja en la misma proporción del examen de admisión. Si de un curso no eliges temas, sus preguntas salen de todos sus temas.</p>
         </div>
         <div class="dos">
           <div class="campo"><label for="selBloque">Bloque</label><select id="selBloque"></select></div>
@@ -318,7 +422,7 @@
       </div>
       <div class="col">
         <div class="card">
-          <h3>Cómo se reparten las preguntas</h3>
+          <h3 id="distTit">Cómo se reparten las preguntas</h3>
           <div id="dist"></div>
           <p class="nota">Puntaje máximo de tu bloque: <b id="maxPts">200</b> puntos.</p>
         </div>
@@ -390,6 +494,7 @@
         </table></div>
       </div>
     </div>
+    <div class="card" id="rTemas" style="margin-top:16px" hidden></div>
     <div class="card avance" id="rAvance" hidden></div>
     <div class="card comparar" id="rComparar" hidden></div>
     <div class="res-bot">
@@ -495,23 +600,27 @@
     return m ? m[1] + '|' + m[2].trim() : '';
   }
   const cacheDatos = {};
-  function datos(curso, ciclo) {
-    const k = curso + '/' + ciclo;
-    if (!cacheDatos[k]) cacheDatos[k] = fetch(curso + '/libros/data/' + ciclo + '.json', { cache: 'no-cache' })
+  // f = libros, banqueo o seminarios. Las de libros guardan su id de siempre (4 partes);
+  // las de banqueo y seminarios llevan la carpeta al final (5 partes).
+  function datosF(f, curso, ciclo) {
+    const k = f + '/' + curso + '/' + ciclo;
+    if (!cacheDatos[k]) cacheDatos[k] = fetch(curso + '/' + f + '/data/' + ciclo + '.json', { cache: 'no-cache' })
       .then(r => r.ok ? r.json() : []).catch(() => [])
       .then(temas => {
         const out = [];
         (Array.isArray(temas) ? temas : []).forEach(t => (t.questions || []).forEach((q, i) => {
           if (!q || !Array.isArray(q.options) || !q.options.length) return;
+          const id = [curso, ciclo, t.num, i]; if (f !== 'libros') id.push(f);
           out.push(Object.assign({}, q, {
-            _ref: curso + '/libros/data/' + ciclo + '.json#' + t.num + '#' + i, _tit: t.name,
-            _id: [curso, ciclo, t.num, i].join('|'), _curso: curso
+            _ref: curso + '/' + f + '/data/' + ciclo + '.json#' + t.num + '#' + i, _tit: t.name,
+            _id: id.join('|'), _curso: curso, _f: f
           }));
         }));
         return out;
       });
     return cacheDatos[k];
   }
+  const datos = (curso, ciclo) => datosF('libros', curso, ciclo);
   // n preguntas al azar; las de un mismo TEXTO van juntas
   function elegir(pool, n) {
     const grupos = [], idx = {};
@@ -547,9 +656,18 @@
   }
   async function cargarRefs(refs) {
     const archivos = {};
-    refs.forEach(r => { const p = String(r).split('|'); if (p.length === 4 && AREA_DE[p[0]]) archivos[p[0] + '|' + p[1]] = 1; });
+    let conVocab = false;
+    refs.forEach(r => {
+      const p = String(r).split('|');
+      if (p[1] === 'vocab') conVocab = true;
+      else if ((p.length === 4 || (p.length === 5 && FUENTES.some(x => x[0] === p[4]))) && AREA_DE[p[0]]) archivos[(p[4] || 'libros') + '|' + p[0] + '|' + p[1]] = 1;
+    });
     const mapa = {};
-    await Promise.all(Object.keys(archivos).map(k => { const p = k.split('|'); return datos(p[0], p[1]).then(L => L.forEach(q => { mapa[q._id] = q; })); }));
+    await Promise.all(Object.keys(archivos).map(k => { const p = k.split('|'); return datosF(p[0], p[1], p[2]).then(L => L.forEach(q => { mapa[q._id] = q; })); }));
+    if (conVocab) {
+      const banco = await cargarVocab().catch(() => []);
+      refs.forEach(r => { const p = String(r).split('|'); if (p[1] === 'vocab') { const w = banco.filter(x => x.palabra === p[3])[0]; const q = w && vocabPregunta(w, p[2], banco); if (q) mapa[r] = q; } });
+    }
     return refs.map(r => mapa[r]).filter(Boolean);
   }
   // S.ord guarda el orden de las alternativas de cada pregunta (se mezclan al armar el examen)
@@ -576,6 +694,22 @@
   }
   function pintarPuntos() {
     const p = bloqueSel().puntos || {};
+    if (MODO === 'pers') {
+      const P = TEMAS ? plan() : null, Q = cuotas(CANT);
+      $('distTit').textContent = 'Así se reparten tus ' + CANT + ' preguntas';
+      $('pts').innerHTML = AREAS.map(a => '<div class="pt" style="--c:' + a.c + '"><small>' + a.nom + '</small><strong>' + fmtNum(+p[a.k] || 0) + '</strong></div>').join('');
+      $('dist').innerHTML = AREAS.map(a => {
+        const n = a.cursos.reduce((s, c) => s + Q[c[0]], 0);
+        if (!n) return '';
+        return '<div class="area" style="--c:' + a.c + '"><div class="area-tit">' + a.nom + '<span>' + n + ' preguntas · ' + fmtNum(+p[a.k] || 0) + ' pts c/u</span></div>' +
+          '<div class="area-cur">' + a.cursos.filter(c => Q[c[0]]).map(c => { const x = P && P[c[0]], el = x && x.elegidos.length; return (el ? '<b style="color:' + (x.falta ? 'var(--bad)' : 'var(--text)') + '">' : '') + esc(NOMBRE[c[0]] || c[0]) + ' ' + Q[c[0]] + (el ? '</b>' : ''); }).join(' · ') + '</div></div>';
+      }).join('') +
+        '<p class="nota" style="margin-top:0"><b>En negrita:</b> cursos con temas elegidos. Los demás salen de todos sus temas.' + (P && P['raz-verbal'].voc ? ' En Razonamiento Verbal, ' + P['raz-verbal'].voc + ' son de Vocabulario.' : '') + '</p>' +
+        '<div class="consejo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.8V16h5v-.3c0-.7.4-1.4 1-1.8A6 6 0 0 0 12 3z"/></svg><div><b>Recomendación:</b> elige los temas que más fallas. Si quieres más preguntas distintas, marca también Banqueo y Seminarios. Este simulacro es libre y no entra al ranking; para medirte con los demás da el <b>simulacro rápido</b>.</div></div>';
+      $('maxPts').textContent = fmtNum(AREAS.reduce((s, a) => s + a.cursos.reduce((t, c) => t + Q[c[0]], 0) * (+p[a.k] || 0), 0));
+      return;
+    }
+    $('distTit').textContent = 'Cómo se reparten las preguntas';
     $('pts').innerHTML = AREAS.map(a => '<div class="pt" style="--c:' + a.c + '"><small>' + a.nom + '</small><strong>' + fmtNum(+p[a.k] || 0) + '</strong></div>').join('');
     $('dist').innerHTML = AREAS.map(a => {
       const n = a.cursos.reduce((s, c) => s + c[1], 0);
@@ -592,17 +726,21 @@
   function pintarTiempo() { $('tiempos').querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.m === minutos)); }
   $('tiempos').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; minutos = +b.dataset.m; pintarTiempo(); });
 
-  function pintarCiclos() {
+  function pintarCiclos(conservar) {
     const caja = $('ciclos');
     if (!CICLOS.length) { caja.innerHTML = '<p class="vacia">Todavía no hay libros subidos.</p>'; return; }
-    const listos = CICLOS.filter(c => !c.falta.length || PRUEBA);
+    const antes = conservar ? ciclosSel() : [];
+    const pers = MODO === 'pers';
+    const listos = CICLOS.filter(c => !c.falta.length || PRUEBA || pers);
     const completos = CICLOS.filter(c => !c.falta.length);
-    const porDefecto = ((completos.length ? completos : listos)[(completos.length ? completos : listos).length - 1] || {}).id;
+    // Personalizado: el ciclo actual (el más nuevo); rápido: el último con todos los cursos listos
+    const porDefecto = pers ? CICLOS[CICLOS.length - 1].id : ((completos.length ? completos : listos)[(completos.length ? completos : listos).length - 1] || {}).id;
     caja.innerHTML = CICLOS.map(c => {
-      const ok = !c.falta.length || PRUEBA;
+      const ok = !c.falta.length || PRUEBA || pers;
       const det = !c.falta.length ? 'Todos los cursos listos'
+        : pers ? 'Algunos cursos todavía tienen pocos temas'
         : (PRUEBA ? 'Modo prueba · ' : '') + 'Falta completar: ' + c.falta.slice(0, 4).map(f => esc(NOMBRE[f.curso] || f.curso) + ' (' + f.temas + ' de ' + MIN_TEMAS + ' temas)').join(', ') + (c.falta.length > 4 ? ' y ' + (c.falta.length - 4) + ' más' : '');
-      const marcado = ok && c.id === porDefecto;
+      const marcado = ok && (antes.length ? antes.indexOf(c.id) >= 0 : c.id === porDefecto);
       return '<label class="ciclo ' + (ok ? (marcado ? 'on' : '') : 'off') + '"><input type="checkbox" value="' + esc(c.id) + '"' + (ok ? '' : ' disabled') + (marcado ? ' checked' : '') + '>' +
         '<div><b>Ciclo ' + esc(c.id) + '</b><small>' + det + '</small></div></label>';
     }).join('');
@@ -615,17 +753,23 @@
   $('ciclos').addEventListener('change', e => {
     const l = e.target.closest('.ciclo'); if (l) l.classList.toggle('on', e.target.checked);
     actualizarEmpezar();
+    recargarTemas();
   });
-  function actualizarEmpezar() { $('btnEmpezar').disabled = !REPETIR && !ciclosSel().length; }
+  function actualizarEmpezar() {
+    let no = !REPETIR && !ciclosSel().length;
+    if (!REPETIR && MODO === 'pers') { const P = TEMAS ? plan() : null; no = no || !P || Object.keys(P).some(c => P[c].falta); }
+    $('btnEmpezar').disabled = no;
+  }
 
   function pintarMisSimulacros() {
     const caja = $('misSim');
-    cliente().then(c => c.from('simulacros').select('id,nombre,ciclos,intentos,mejor,actualizado').order('actualizado', { ascending: false }).limit(30))
+    const leer = (c, cols) => c.from('simulacros').select(cols).order('actualizado', { ascending: false }).limit(30);
+    cliente().then(c => leer(c, 'id,nombre,ciclos,intentos,mejor,actualizado,personalizado').then(r => r.error ? leer(c, 'id,nombre,ciclos,intentos,mejor,actualizado') : r))
       .then(r => {
         if (r.error) throw r.error;
         const L = r.data || [];
         if (!L.length) { caja.innerHTML = '<li class="vacia">Aquí aparecerán los simulacros que termines, para repetirlos cuando quieras.</li>'; return; }
-        caja.innerHTML = L.map(s => '<li><div><b>' + esc(s.nombre) + '</b><small>' + esc((s.ciclos || []).join(', ')) + ' · ' +
+        caja.innerHTML = L.map(s => '<li><div><b>' + esc(s.nombre) + (s.personalizado ? '<span class="etq">Personalizado</span>' : '') + '</b><small>' + esc((s.ciclos || []).join(', ')) + ' · ' +
           s.intentos + (s.intentos === 1 ? ' intento' : ' intentos') + ' · mejor ' + num1(+s.mejor || 0) + ' · ' + fecha(s.actualizado) + '</small></div>' +
           '<a class="btn sec mini" href="simulacro.html?repetir=' + encodeURIComponent(s.id) + '">Repetir</a></li>').join('');
       })
@@ -652,16 +796,20 @@
     const perfil = await MCAuth.perfil().catch(() => null) || {};
     await MCCarreras.cargar();
     if (rep && /^[0-9a-f-]{36}$/i.test(rep)) {
-      const r = await cliente().then(c => c.from('simulacros').select('id,nombre,ciclos,bloque,carrera,minutos,preguntas').eq('id', rep).maybeSingle()).catch(() => null);
+      // "personalizado" existe desde supabase/27-simulacro-personalizado.sql; sin esa columna se lee como antes
+      const leer = cols => cliente().then(c => c.from('simulacros').select(cols).eq('id', rep).maybeSingle()).catch(() => null);
+      let r = await leer('id,nombre,ciclos,bloque,carrera,minutos,preguntas,personalizado');
+      if (!r || r.error) r = await leer('id,nombre,ciclos,bloque,carrera,minutos,preguntas');
       if (r && r.data) REPETIR = r.data;
     }
     const bAuto = MCCarreras.bloqueDe(perfil.carrera);
     if (REPETIR) {
       $('crearTit').textContent = 'Repetir: ' + REPETIR.nombre;
       $('crearSub').textContent = 'Las mismas ' + (REPETIR.preguntas || []).length + ' preguntas, en el mismo orden. Tu puntaje se suma a este simulacro.';
-      $('campoNombre').hidden = true; $('campoCiclos').hidden = true;
+      $('campoNombre').hidden = true; $('campoCiclos').hidden = true; $('modos').hidden = true;
       llenarBloques(REPETIR.bloque || (bAuto && bAuto.id), REPETIR.carrera || MCCarreras.oficial(perfil.carrera));
-      minutos = Math.min(180, Math.max(60, REPETIR.minutos || 120));
+      minutos = Math.min(180, Math.max(30, REPETIR.minutos || 120));
+      if (REPETIR.personalizado || TIEMPOS_RAPIDO.indexOf(minutos) < 0) { MODO = 'pers'; pintarTiempos(); MODO = 'rapido'; }
       $('btnEmpezar').textContent = 'Empezar de nuevo';
     } else {
       llenarBloques(bAuto && bAuto.id, MCCarreras.oficial(perfil.carrera));
@@ -675,6 +823,227 @@
     pintarRanking($('rankCrear'));
   }
 
+  /* ---------- Personaliza tu simulacro ---------- */
+  // El alumno elige temas (de libros, banqueo y seminarios) y cuántas preguntas. Los cursos y su
+  // proporción son siempre los del examen: con 40 preguntas, cada curso tiene la mitad que con 80.
+  // Si los temas que eligió de un curso no alcanzan, se le pide elegir más (no se completa con otros).
+  const FUENTES = [['libros', 'Libros'], ['banqueo', 'Banqueo'], ['seminarios', 'Seminario']];
+  const MANF = { libros: MAN, banqueo: {}, seminarios: {} };
+  const VOCAB_RV = 4;        // de las 14 de Razonamiento Verbal, hasta 4 de Vocabulario (en proporción)
+  const MIN_PERS = { 20: 30, 40: 60, 60: 90, 80: 120 };
+  const TIEMPOS_RAPIDO = [60, 90, 120, 150, 180], TIEMPOS_PERS = [30, 45, 60, 90, 120];
+  let MODO = 'rapido', CANT = 80;
+  const PERS = { fuentes: { libros: true, banqueo: false, seminarios: false }, sel: {}, vocab: false, abiertas: { com: true } };
+  let TEMAS = null;          // { curso: [{ k, f, nom, qs }] } de los ciclos elegidos
+  let cargandoTemas = null;
+  let VOCAB = null;
+  const ICO_CHK = '<i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></i>';
+  const ICO_FLECHA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+  const norm = t => String(t || '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ');
+  const TODOS_CURSOS = []; AREAS.forEach(a => a.cursos.forEach(c => TODOS_CURSOS.push(c)));
+
+  // Cuántas preguntas por curso para n en total (resto mayor; con 80 son las del examen)
+  function cuotas(n) {
+    const base = TODOS_CURSOS.map(c => c[1] * n / 80), q = base.map(Math.floor);
+    const falta = n - q.reduce((x, y) => x + y, 0);
+    base.map((v, i) => [v - Math.floor(v), i]).sort((x, y) => y[0] - x[0] || x[1] - y[1]).slice(0, falta).forEach(x => { q[x[1]]++; });
+    const Q = {}; TODOS_CURSOS.forEach((c, i) => { Q[c[0]] = q[i]; });
+    return Q;
+  }
+  function cargarManifiestos() {
+    return Promise.all(['banqueo', 'seminarios'].map(f => Promise.all(Object.keys(AREA_DE).map(id =>
+      fetch(id + '/' + f + '/data/manifest.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : []).catch(() => [])
+        .then(m => { MANF[f][id] = Array.isArray(m) ? m : []; })))));
+  }
+  // Temas de cada curso en los ciclos elegidos; un tema con el mismo nombre en dos ciclos se junta
+  async function cargarTemas() {
+    const ciclos = ciclosSel();
+    const T = {};
+    await Promise.all(TODOS_CURSOS.map(async ([curso]) => {
+      const lista = [], idx = {};
+      for (const [f] of FUENTES) {
+        const ids = (MANF[f][curso] || []).map(m => m.id).filter(c => ciclos.indexOf(c) >= 0);
+        const qs = [].concat.apply([], await Promise.all(ids.map(c => datosF(f, curso, c))));
+        qs.forEach(q => {
+          const k = f + '|' + norm(q._tit);
+          if (idx[k] == null) { idx[k] = lista.length; lista.push({ k, f, nom: String(q._tit || 'Tema').trim(), qs: [] }); }
+          lista[idx[k]].qs.push(q);
+        });
+      }
+      T[curso] = lista;
+    }));
+    TEMAS = T;
+  }
+  function recargarTemas() {
+    if (MODO !== 'pers') return;
+    TEMAS = null; pintarTemas();
+    const p = cargandoTemas = cargarTemas().then(() => { if (p === cargandoTemas) pintarTemas(); });
+  }
+  function cargarVocab() {
+    if (!VOCAB) VOCAB = cliente().then(c => c.from('vocabulario').select('palabra,sin,ant').order('orden').limit(5000))
+      .then(r => { if (r.error) throw r.error; return (r.data || []).filter(w => w && w.palabra); })
+      .catch(e => { VOCAB = null; throw e; });
+    return VOCAB;
+  }
+  // Pregunta de sinonimia o antonimia: siempre la misma para la misma palabra (sirve para Repetir)
+  function azarDe(txt) { let h = 2166136261; for (let i = 0; i < txt.length; i++) { h ^= txt.charCodeAt(i); h = Math.imul(h, 16777619); } return () => { h = Math.imul(h ^ (h >>> 15), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); h ^= h >>> 16; return (h >>> 0) / 4294967296; }; }
+  function vocabPregunta(w, tipo, banco) {
+    const lista = (w[tipo] || []).filter(Boolean);
+    if (!lista.length || (tipo !== 'sin' && tipo !== 'ant')) return null;
+    const r = azarDe(w.palabra + '#' + tipo);
+    const bien = lista[Math.floor(r() * lista.length)];
+    const fuera = {}; [w.palabra].concat(w.sin || [], w.ant || []).forEach(x => { fuera[norm(x)] = 1; });
+    const otras = [];
+    banco.forEach(x => { if (x !== w) [x.palabra].concat(x.sin || [], x.ant || []).forEach(y => { if (y && !fuera[norm(y)]) { fuera[norm(y)] = 1; otras.push(y); } }); });
+    if (otras.length < 4) return null;
+    const malas = [];
+    while (malas.length < 4) { const y = otras[Math.floor(r() * otras.length)]; if (malas.indexOf(y) < 0) malas.push(y); }
+    const opc = malas.concat([bien]).map(t => [t, r()]).sort((a, b) => a[1] - b[1]).map(x => x[0]);
+    const cap = t => String(t).toUpperCase();
+    return {
+      text: (tipo === 'sin' ? 'Señale el sinónimo de la palabra en mayúscula.' : 'Señale el antónimo de la palabra en mayúscula.') + '\n\n' + cap(w.palabra),
+      options: opc.map((t, k) => ({ letter: 'ABCDE'[k], text: cap(t) })), correct: opc.indexOf(bien),
+      _ref: '', _tit: tipo === 'sin' ? 'Vocabulario · Sinonimia' : 'Vocabulario · Antonimia',
+      _id: ['raz-verbal', 'vocab', tipo, w.palabra].join('|'), _curso: 'raz-verbal', _f: 'vocab'
+    };
+  }
+
+  // Qué saldrá de cada curso: temas usados, preguntas que necesita y si alcanzan
+  function plan() {
+    const Q = cuotas(CANT), P = {};
+    TODOS_CURSOS.forEach(([curso]) => {
+      const todos = (TEMAS && TEMAS[curso]) || [];
+      const activos = todos.filter(t => PERS.fuentes[t.f]);
+      const elegidos = activos.filter(t => PERS.sel[curso + '|' + t.k]);
+      let usar = elegidos, auto = false, sinFuente = '';
+      if (!elegidos.length) {
+        auto = true; usar = activos;
+        // Sin temas en las fuentes marcadas: sale de libros para que el curso no falte
+        if (!usar.length) { usar = todos.filter(t => t.f === 'libros'); if (usar.length) sinFuente = FUENTES.filter(x => PERS.fuentes[x[0]]).map(x => x[1].toLowerCase()).join(' ni ') ; }
+      }
+      const voc = curso === 'raz-verbal' && PERS.vocab ? Math.round(Q[curso] * VOCAB_RV / 14) : 0;
+      const necesita = Q[curso] - voc;
+      const hay = usar.reduce((s, t) => s + t.qs.length, 0);
+      P[curso] = { n: Q[curso], voc, necesita, hay, usar, elegidos, auto, sinFuente, falta: Math.max(0, necesita - hay) };
+    });
+    return P;
+  }
+  // Reparte n entre los temas por igual; si uno no alcanza, lo que sobra va a los otros temas elegidos
+  function repartir(temas, n) {
+    const r = temas.map(() => 0);
+    let quedan = n, abiertos = temas.map((t, i) => i);
+    while (quedan > 0 && abiertos.length) {
+      const c = Math.max(1, Math.floor(quedan / abiertos.length));
+      barajar(abiertos).forEach(i => { if (quedan <= 0) return; const d = Math.min(c, temas[i].qs.length - r[i], quedan); r[i] += d; quedan -= d; });
+      abiertos = abiertos.filter(i => r[i] < temas[i].qs.length);
+    }
+    return r;
+  }
+  async function armarPers() {
+    const P = plan(), lista = [];
+    let banco = [];
+    if (P['raz-verbal'].voc) banco = await cargarVocab();
+    for (const [curso] of TODOS_CURSOS) {
+      const x = P[curso];
+      if (x.falta) throw new Error((NOMBRE[curso] || curso) + ' necesita más temas.');
+      const r = repartir(x.usar, x.necesita);
+      x.usar.forEach((t, i) => { if (r[i]) lista.push.apply(lista, elegir(t.qs, r[i])); });
+      if (x.voc) {
+        const pv = barajar(banco).map((w, i) => vocabPregunta(w, i % 2 ? 'ant' : 'sin', banco) || vocabPregunta(w, i % 2 ? 'sin' : 'ant', banco)).filter(Boolean).slice(0, x.voc);
+        lista.push.apply(lista, pv);
+      }
+    }
+    return lista;
+  }
+
+  function pintarTemas() {
+    const caja = $('temasLista');
+    if (!TEMAS) { caja.innerHTML = '<p class="vacia" style="margin-top:12px">Cargando temas…</p>'; actualizarEmpezar(); return; }
+    const P = plan();
+    let nSel = 0, nErr = 0;
+    caja.innerHTML = AREAS.map(a => {
+      let sel = 0, tot = 0;
+      const cuerpo = a.cursos.map(([curso]) => {
+        const x = P[curso], temas = TEMAS[curso].filter(t => PERS.fuentes[t.f]);
+        sel += x.elegidos.length; tot += temas.length;
+        if (x.falta) nErr++;
+        const todos = temas.length && temas.every(t => PERS.sel[curso + '|' + t.k]);
+        const estado = x.falta
+          ? '<p class="tc-est mal">' + (x.auto ? 'Este curso aún no tiene preguntas en ' + (ciclosSel().length > 1 ? 'esos ciclos' : 'ese ciclo') + '.' : 'Necesita ' + x.necesita + ' preguntas y tus temas tienen ' + x.hay + '. Elige otro tema.') + '</p>'
+          : '<p class="tc-est">' + (x.auto ? (x.sinFuente ? 'Sin ' + x.sinFuente + ': sus ' + x.n + ' salen de libros.' : 'Sin temas elegidos: sus ' + x.n + ' salen de todos sus temas.') : 'Saldrán ' + x.necesita + ' de tus ' + x.elegidos.length + (x.elegidos.length === 1 ? ' tema.' : ' temas.')) + '</p>';
+        return '<div class="tc' + (x.falta ? ' falta' : '') + '"><div class="tc-cab"><b>' + esc(NOMBRE[curso] || curso) + '<small>' + x.n + (x.n === 1 ? ' pregunta' : ' preguntas') + '</small></b>' +
+          (temas.length ? '<button class="tc-todos" type="button" data-todos="' + curso + '">' + (todos ? 'Quitar' : 'Todos') + '</button>' : '') + '</div>' +
+          '<div class="chips">' + (temas.length ? temas.map(t => '<button type="button" class="chip' + (PERS.sel[curso + '|' + t.k] ? ' on' : '') + '" data-c="' + curso + '" data-k="' + esc(t.k) + '" aria-pressed="' + !!PERS.sel[curso + '|' + t.k] + '">' + ICO_CHK + '<span>' + esc(t.nom) + '</span><em>' + (t.f !== 'libros' ? (t.f === 'banqueo' ? 'Banqueo · ' : 'Seminario · ') : '') + t.qs.length + '</em></button>').join('') : '<span class="tc-vacio">No hay temas en las fuentes y ciclos elegidos.</span>') + '</div>' +
+          estado +
+          (curso === 'raz-verbal' ? '<div class="vocab' + (PERS.vocab ? ' on' : '') + '"><button class="sw" type="button" id="swVocab" role="switch" aria-checked="' + PERS.vocab + '" aria-label="Sinonimia y antonimia del Vocabulario"></button><div><b>Sinonimia y antonimia del Vocabulario</b><small>' +
+            (PERS.vocab ? x.voc + ' de sus ' + x.n + ' preguntas serán de sinónimos y antónimos de la sección Vocabulario' : 'Agrega preguntas de sinónimos y antónimos con las palabras de la sección Vocabulario') + '</small></div></div>' : '') + '</div>';
+      }).join('');
+      nSel += sel;
+      return '<details class="ta" data-a="' + a.k + '" style="--c:' + a.c + '"' + (PERS.abiertas[a.k] ? ' open' : '') + '><summary>' + a.nom + '<span class="cnt">' + sel + ' de ' + tot + ' temas</span>' + ICO_FLECHA + '</summary><div class="ta-body">' + cuerpo + '</div></details>';
+    }).join('');
+    $('temasRes').innerHTML = nErr
+      ? '<span style="color:var(--bad)">' + nErr + (nErr === 1 ? ' curso necesita' : ' cursos necesitan') + ' más temas</span> · <b>' + nSel + '</b> elegidos'
+      : nSel ? '<b>' + nSel + (nSel === 1 ? ' tema' : ' temas') + '</b> elegidos · los cursos sin temas salen de todos sus temas' : 'Toca los temas que quieres practicar. Los cursos sin temas elegidos salen de todos sus temas.';
+    $('fuentes').querySelectorAll('.fuente').forEach(b => { b.classList.toggle('on', !!PERS.fuentes[b.dataset.f]); b.setAttribute('aria-pressed', !!PERS.fuentes[b.dataset.f]); });
+    pintarPuntos();
+    actualizarEmpezar();
+  }
+  $('temasLista').addEventListener('click', e => {
+    const chip = e.target.closest('.chip'), todos = e.target.closest('[data-todos]'), sw = e.target.closest('#swVocab');
+    if (chip) { const k = chip.dataset.c + '|' + chip.dataset.k; if (PERS.sel[k]) delete PERS.sel[k]; else PERS.sel[k] = 1; }
+    else if (todos) {
+      const c = todos.dataset.todos, temas = TEMAS[c].filter(t => PERS.fuentes[t.f]);
+      const poner = !temas.every(t => PERS.sel[c + '|' + t.k]);
+      temas.forEach(t => { if (poner) PERS.sel[c + '|' + t.k] = 1; else delete PERS.sel[c + '|' + t.k]; });
+    } else if (sw) {
+      PERS.vocab = !PERS.vocab;
+      if (PERS.vocab) cargarVocab().catch(() => { PERS.vocab = false; pintarTemas(); $('crearError').textContent = 'No se pudo cargar el Vocabulario. Revisa tu internet.'; $('crearError').hidden = false; });
+    } else return;
+    pintarTemas();
+  });
+  $('temasLista').addEventListener('toggle', e => { const d = e.target.closest('details[data-a]'); if (d) PERS.abiertas[d.dataset.a] = d.open; }, true);
+  $('fuentes').addEventListener('click', e => {
+    const b = e.target.closest('.fuente'); if (!b) return;
+    const f = b.dataset.f;
+    if (PERS.fuentes[f] && FUENTES.filter(x => PERS.fuentes[x[0]]).length === 1) return; // al menos una
+    PERS.fuentes[f] = !PERS.fuentes[f];
+    pintarTemas();
+  });
+  $('temasTodos').addEventListener('click', () => { if (!TEMAS) return; TODOS_CURSOS.forEach(([c]) => TEMAS[c].forEach(t => { if (PERS.fuentes[t.f]) PERS.sel[c + '|' + t.k] = 1; })); pintarTemas(); });
+  $('temasLimpiar').addEventListener('click', () => { PERS.sel = {}; pintarTemas(); });
+  $('cantidad').addEventListener('click', e => {
+    const b = e.target.closest('button[data-n]'); if (!b) return;
+    CANT = +b.dataset.n; minutos = MIN_PERS[CANT] || 120;
+    $('cantidad').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    pintarTiempos(); pintarTemas();
+  });
+  function pintarTiempos() {
+    const L = MODO === 'pers' ? TIEMPOS_PERS : TIEMPOS_RAPIDO;
+    if (L.indexOf(minutos) < 0) minutos = MODO === 'pers' ? (MIN_PERS[CANT] || 120) : 120;
+    $('tiempos').innerHTML = L.map(m => '<button type="button" data-m="' + m + '">' + (m < 60 ? m + ' min' : Math.floor(m / 60) + ' h' + (m % 60 ? ' ' + (m % 60) : '')) + '</button>').join('');
+    pintarTiempo();
+  }
+  function ponerModo(m) {
+    MODO = m;
+    const pers = m === 'pers';
+    $('modos').querySelectorAll('.modo').forEach(b => { b.classList.toggle('on', b.dataset.modo === m); b.setAttribute('aria-checked', b.dataset.modo === m); });
+    $('temasCard').hidden = !pers; $('campoCantidad').hidden = !pers;
+    $('crearTit').textContent = pers ? 'Personaliza tu simulacro' : 'Crea tu simulacro';
+    $('crearSub').textContent = pers ? 'Elige los temas que quieres reforzar y cuántas preguntas. Los cursos y los puntos son los mismos del examen de admisión.' : '80 preguntas al azar de los libros de cada curso, repartidas como en el examen de admisión.';
+    $('ciclosNota').textContent = pers ? 'Los temas que ves abajo son de los ciclos que marques.' : 'Con un ciclo, las preguntas salen solo de ese ciclo. Con dos o más, salen al azar de los ciclos que elijas, con la misma cantidad por curso.';
+    const nom = $('nombre').value.trim(), fechaHoy = new Date().toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit' });
+    if (!nom || nom === 'Simulacro ' + fechaHoy || nom === 'Personalizado ' + fechaHoy) $('nombre').value = (pers ? 'Personalizado ' : 'Simulacro ') + fechaHoy;
+    $('btnEmpezar').textContent = pers ? 'Empezar mi simulacro' : 'Empezar simulacro';
+    if (pers) minutos = MIN_PERS[CANT] || 120; else minutos = 120;
+    pintarCiclos(); pintarTiempos(); pintarPuntos();
+    if (pers) {
+      if (!cargarManifiestos.listo) cargarManifiestos.listo = cargarManifiestos();
+      cargarManifiestos.listo.then(recargarTemas);
+    }
+    actualizarEmpezar();
+  }
+  $('modos').addEventListener('click', e => { const b = e.target.closest('.modo'); if (b && b.dataset.modo !== MODO) ponerModo(b.dataset.modo); });
+
   $('btnEmpezar').addEventListener('click', async () => {
     const btn = $('btnEmpezar'), err = $('crearError');
     err.hidden = true;
@@ -682,11 +1051,13 @@
     try {
       let lista, ciclos;
       if (REPETIR) { lista = await cargarRefs(REPETIR.preguntas || []); ciclos = REPETIR.ciclos || []; }
+      else if (MODO === 'pers') { ciclos = ciclosSel(); lista = await armarPers(); }
       else { ciclos = ciclosSel(); lista = await armarNuevo(ciclos); }
       if (lista.length < 10) throw new Error('No hay suficientes preguntas para armar el simulacro.');
       const b = bloqueSel();
       S = {
         v: 1, uid: uid(), simId: REPETIR ? REPETIR.id : null,
+        pers: REPETIR ? !!REPETIR.personalizado : MODO === 'pers',
         nombre: REPETIR ? REPETIR.nombre : ($('nombre').value.trim().slice(0, 60) || 'Simulacro'),
         ciclos: ciclos, bloque: b.id, carrera: $('selCarrera').value, puntos: b.puntos, minutos: minutos,
         refs: lista.map(q => q._id), ord: lista.map(q => window.MCPregunta ? MCPregunta.ordenAlt(q) : null), resp: {}, rev: {}, act: 0, inicio: Date.now(), fin: Date.now() + minutos * 60000
@@ -828,9 +1199,25 @@
     $('rPuntaje').textContent = num1(R.total);
     $('rDe').textContent = 'de ' + fmtNum(R.max) + ' · Bloque ' + S.bloque + ' · ' + S.nombre;
     $('rCuenta').innerHTML = '<span>' + ICO.ok + '<b>' + R.C + '</b> correctas</span><span>' + ICO.mal + '<b>' + R.I + '</b> incorrectas</span><span>' + ICO.bl + '<b>' + R.B + '</b> en blanco</span>';
-    $('rTabla').innerHTML = AREAS.map(a => { const x = R.areas[a.k]; return '<tr><td style="--c:' + a.c + '">' + a.nom + '</td><td class="r">' + x.c + '</td><td class="r">' + x.i + '</td><td class="r">' + x.b + '</td><td class="r"><b>' + num1(x.p) + '</b></td></tr>'; }).join('');
+    $('rTabla').innerHTML = AREAS.filter(a => !S.pers || PREGS.some(q => AREA_DE[q._curso] === a)).map(a => { const x = R.areas[a.k]; return '<tr><td style="--c:' + a.c + '">' + a.nom + '</td><td class="r">' + x.c + '</td><td class="r">' + x.i + '</td><td class="r">' + x.b + '</td><td class="r"><b>' + num1(x.p) + '</b></td></tr>'; }).join('');
     $('rTotal').innerHTML = '<tr><td style="--c:var(--accent)">Total</td><td class="r">' + R.C + '</td><td class="r">' + R.I + '</td><td class="r">' + R.B + '</td><td class="r">' + num1(R.total) + '</td></tr>';
+    // El personalizado es libre: sin ranking ni comparación; en su lugar, cómo te fue en cada tema
+    if ($('rank')) { $('rank').closest('.card').hidden = !!S.pers; $('rank').closest('.res-bot').style.gridTemplateColumns = S.pers ? 'minmax(0, 1fr)' : ''; }
+    $('rTemas').hidden = !S.pers;
+    if (S.pers) pintarPorTema();
     guardarResultado(R);
+  }
+  function pintarPorTema() {
+    const T = {}, orden = [];
+    PREGS.forEach((q, i) => {
+      const k = q._curso + '|' + (q._tit || '');
+      if (!T[k]) { T[k] = { q, c: 0, n: 0 }; orden.push(k); }
+      T[k].n++; if (S.resp[i] === q.correct) T[k].c++;
+    });
+    $('rTemas').innerHTML = '<h3>Cómo te fue en cada tema</h3><p class="hint" style="font-size:12.5px;margin-bottom:12px">Simulacro personalizado: es libre y no entra al ranking.</p><ul class="por-tema">' + orden.map(k => {
+      const x = T[k], a = AREA_DE[x.q._curso], pct = Math.round(x.c / x.n * 100);
+      return '<li style="--c:' + a.c + '"><div><b>' + esc(x.q._tit || 'Tema') + '</b><br><small>' + esc(NOMBRE[x.q._curso] || x.q._curso) + (x.q._f === 'banqueo' ? ' · Banqueo' : x.q._f === 'seminarios' ? ' · Seminario' : '') + '</small></div><b>' + x.c + ' de ' + x.n + '</b><div class="bar"><i style="width:' + pct + '%"></i></div></li>';
+    }).join('') + '</ul>';
   }
   function guardarResultado(R) {
     const st = $('rGuardado');
@@ -838,7 +1225,7 @@
     const p = {
       id: S.simId, nombre: S.nombre, ciclos: S.ciclos, bloque: S.bloque, carrera: S.carrera, minutos: S.minutos,
       preguntas: PREGS.map(q => q._id), puntaje: R.total, maximo: R.max, correctas: R.C, incorrectas: R.I, blancos: R.B,
-      segundos: S.segundos, areas: R.areas
+      segundos: S.segundos, areas: R.areas, personalizado: !!S.pers
     };
     const yaGuardado = S.guardado ? Promise.resolve(S.guardado) : rpc('guardar_simulacro', { p: p });
     yaGuardado.then(id => {
@@ -850,13 +1237,12 @@
       return guardarFalladas();
     }).then(() => {
       ls(null);
-      pintarRanking($('rank'));
-      pintarAvance(R);
+      if (!S.pers) { pintarRanking($('rank')); pintarAvance(R); }
     }).catch(() => {
       guardarEstado();
       st.className = 'guardado error'; st.innerHTML = 'No se pudo guardar. <button type="button" class="btn sec mini" id="btnReintentar">Reintentar</button>';
       $('btnReintentar').addEventListener('click', () => guardarResultado(R));
-      pintarRanking($('rank'));
+      if (!S.pers) pintarRanking($('rank'));
     });
   }
   /* ---------- Tu avance: este simulacro frente a los anteriores del mismo bloque ---------- */
@@ -879,7 +1265,10 @@
   }
   function pintarAvance(R) {
     const caja = $('rAvance'), b = S.bloque || '';
-    Promise.all([cliente().then(c => c.from('simulacro_intentos').select('puntaje,maximo,areas,creado').eq('bloque', b).order('creado', { ascending: false }).limit(6)), leerMeta()])
+    // Solo simulacros rápidos (los personalizados no se comparan); sin supabase/27 se leen todos
+    const intentos = c => c.from('simulacro_intentos').select('puntaje,maximo,areas,creado,simulacros!inner(personalizado)').eq('bloque', b).eq('simulacros.personalizado', false).order('creado', { ascending: false }).limit(6)
+      .then(r => r.error ? c.from('simulacro_intentos').select('puntaje,maximo,areas,creado').eq('bloque', b).order('creado', { ascending: false }).limit(6) : r);
+    Promise.all([cliente().then(intentos), leerMeta()])
       .then(x => x[0])
       .then(r => {
         if (r.error) return;
