@@ -191,6 +191,7 @@
   .qrow .t { font-size: 13.5px; line-height: 1.5; color: #e2e2e2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .qrow .k { font-size: 12.5px; color: var(--text-dim); margin-top: 6px; }
   .qrow .k b { color: #f5ffcc; }
+  .qrow .cur { font-size: 11.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
   .qrow .rbtn { flex-shrink: 0; }
   .qrow-acc { display: flex; gap: 6px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
   .mv-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
@@ -762,16 +763,16 @@ E) Alternativa"></textarea>
           <div>
             <div class="eyebrow">Tus libros en GitHub</div>
             <h1>Editar preguntas</h1>
-            <p>Elige sección, curso, año y tema. Los cambios se publican en la web en 1 a 10 minutos.</p>
+            <p>Elige sección, curso, año y tema (o un examen). Los cambios se publican en la web en 1 a 10 minutos.</p>
           </div>
         </div>
         <div class="picker">
           <div class="lbl">Sección</div>
           <div class="chips" id="pkSeccion"></div>
-          <div class="lbl">Curso</div>
+          <div class="lbl" id="pkCursoLbl">Curso</div>
           <div class="chips" id="pkCurso"></div>
-          <div id="pkAnioWrap" hidden><div class="lbl">Año</div><div class="chips" id="pkAnio"></div></div>
-          <div id="pkTemaWrap" hidden><div class="lbl">Tema</div><div class="chips" id="pkTema"></div></div>
+          <div id="pkAnioWrap" hidden><div class="lbl" id="pkAnioLbl">Año</div><div class="chips" id="pkAnio"></div></div>
+          <div id="pkTemaWrap" hidden><div class="lbl" id="pkTemaLbl">Tema</div><div class="chips" id="pkTema"></div></div>
         </div>
         <div id="qlist"></div>
       </div>
@@ -1065,7 +1066,8 @@ E) Alternativa"></textarea>
   let filtroEstado = 'Pendiente';
   const cacheArchivos = {};   // "carpeta|anio" -> temas
   const cacheManifest = {};   // carpeta -> manifest
-  const sel = { carpeta: null, anio: null, tema: null, seccion: 'libros' };
+  const sel = { carpeta: null, anio: null, tema: null, seccion: 'libros', exTipo: null, exId: null, exCurso: '' };
+  const cacheExamenes = { lista: null, preguntas: {} }; // tipo -> ciclos · "tipo|id" -> preguntas
 
   /* ---------- utilidades ---------- */
   function ss(action, k, v) { try { if (action === 'get') return sessionStorage.getItem(k); if (action === 'set') sessionStorage.setItem(k, v); if (action === 'del') sessionStorage.removeItem(k); } catch (e) {} return null; }
@@ -1382,11 +1384,15 @@ E) Alternativa"></textarea>
 
   async function renderPicker() {
     const cursoSel = sel.carpeta ? partesCarpeta(sel.carpeta).curso : null;
-    if (sel.carpeta) sel.seccion = partesCarpeta(sel.carpeta).seccion;
-    $('pkSeccion').innerHTML = chipsHtml(SECCIONES, sel.seccion);
+    if (sel.carpeta && sel.seccion !== 'examenes') sel.seccion = partesCarpeta(sel.carpeta).seccion;
+    $('pkSeccion').innerHTML = chipsHtml(SECCIONES.concat([['examenes', 'Exámenes']]), sel.seccion);
     $('pkSeccion').querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
-      sel.seccion = c.dataset.v; sel.carpeta = cursoSel ? claveSeccion(cursoSel, sel.seccion) : null; sel.anio = null; sel.tema = null; renderPicker();
+      sel.seccion = c.dataset.v; sel.carpeta = cursoSel && sel.seccion !== 'examenes' ? claveSeccion(cursoSel, sel.seccion) : null; sel.anio = null; sel.tema = null; renderPicker();
     }));
+    $('pkCursoLbl').textContent = sel.seccion === 'examenes' ? 'Examen' : 'Curso';
+    $('pkAnioLbl').textContent = sel.seccion === 'examenes' ? 'Ciclo' : 'Año';
+    $('pkTemaLbl').textContent = sel.seccion === 'examenes' ? 'Curso' : 'Tema';
+    if (sel.seccion === 'examenes') return renderPickerExamen();
     $('pkCurso').innerHTML = chipsHtml(CURSOS, cursoSel);
     $('pkCurso').querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => { sel.carpeta = claveSeccion(c.dataset.v, sel.seccion); sel.anio = null; sel.tema = null; renderPicker(); }));
     $('pkAnioWrap').hidden = !sel.carpeta;
@@ -1413,6 +1419,69 @@ E) Alternativa"></textarea>
       $('qlist').innerHTML = `<div class="state-msg error">${esc(e.message)}</div>`;
       $('pkAnio').innerHTML = '';
     }
+  }
+
+  /* ---------- EDITAR PREGUNTAS DE EXAMEN (Ordinario, CPU, Examen de control) ---------- */
+  // id del examen → { ciclo, parte }: 2027-I · 2027-I-2 (Examen de control II)
+  function partesExamen(id) { const m = String(id).match(/^(\d{4}-(?:I|II|III))(?:-(\d))?$/) || []; return { ciclo: m[1] || id, parte: m[2] || '' }; }
+  function nombreExamen(tipo, id) {
+    const x = partesExamen(id);
+    return (TIPOS_EXAMEN[tipo] || tipo) + (x.parte ? ' ' + ({ 1: 'I', 2: 'II' }[x.parte] || x.parte) : '') + ' ' + x.ciclo;
+  }
+  async function getExamen(tipo, id, fresco) {
+    const k = tipo + '|' + id;
+    if (fresco || !cacheExamenes.preguntas[k]) cacheExamenes.preguntas[k] = (await api('examen', Object.assign({ tipo }, partesExamen(id)))).preguntas || [];
+    return cacheExamenes.preguntas[k];
+  }
+  async function renderPickerExamen() {
+    $('pkAnioWrap').hidden = true; $('pkTemaWrap').hidden = true;
+    $('pkCurso').innerHTML = '<span class="hint">Cargando…</span>';
+    try {
+      if (!cacheExamenes.lista) cacheExamenes.lista = (await api('examenes')).examenes || {};
+      const L = cacheExamenes.lista;
+      const examenesDe = t => ((L[t] || {}).ciclos || []).flatMap(c => (c.exams || []).map(e => ({ id: e.id, count: e.count, label: e.label === 'Examen' ? c.label || c.id : e.label + ' · ' + c.id })));
+      $('pkCurso').innerHTML = chipsHtml(Object.keys(TIPOS_EXAMEN).map(t => [t, TIPOS_EXAMEN[t], examenesDe(t).length]), sel.exTipo);
+      $('pkCurso').querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => { sel.exTipo = c.dataset.v; sel.exId = null; sel.exCurso = ''; renderPicker(); }));
+      if (!sel.exTipo) { $('qlist').innerHTML = '<div class="state-msg">Elige el examen: Ordinario, CPU o Examen de control.</div>'; return; }
+      const lista = examenesDe(sel.exTipo);
+      $('pkAnioWrap').hidden = false;
+      if (!lista.length) { $('pkAnio').innerHTML = '<span class="hint">Aún no hay exámenes publicados aquí.</span>'; $('qlist').innerHTML = ''; return; }
+      if (!sel.exId && lista.length === 1) sel.exId = lista[0].id;
+      $('pkAnio').innerHTML = chipsHtml(lista.map(e => [e.id, e.label, e.count + ' preg.']), sel.exId);
+      $('pkAnio').querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => { sel.exId = c.dataset.v; sel.exCurso = ''; renderPicker(); }));
+      if (!sel.exId) { $('qlist').innerHTML = '<div class="state-msg">Elige un ciclo.</div>'; return; }
+
+      $('qlist').innerHTML = '<div class="loader">Cargando preguntas…</div>';
+      const preguntas = await getExamen(sel.exTipo, sel.exId);
+      const cursos = [...new Set(preguntas.map(q => q.asignatura).filter(Boolean))];
+      if (sel.exCurso && !cursos.includes(sel.exCurso)) sel.exCurso = '';
+      $('pkTemaWrap').hidden = cursos.length < 2;
+      $('pkTema').innerHTML = chipsHtml([['', 'Todos', preguntas.length]].concat(cursos.map(c => [c, c, preguntas.filter(q => q.asignatura === c).length])), sel.exCurso);
+      $('pkTema').querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => { sel.exCurso = c.dataset.v; renderPicker(); }));
+      renderPreguntasExamen(preguntas);
+    } catch (e) {
+      $('qlist').innerHTML = `<div class="state-msg error">${esc(e.message)}</div>`;
+      $('pkCurso').innerHTML = $('pkCurso').innerHTML.includes('Cargando') ? '' : $('pkCurso').innerHTML;
+    }
+  }
+  function renderPreguntasExamen(preguntas) {
+    const nombre = nombreExamen(sel.exTipo, sel.exId);
+    const url = SITE_ROOT + 'examenes/' + sel.exTipo + '/ver.html?year=' + encodeURIComponent(sel.exId);
+    const filas = preguntas.map((q, i) => ({ q, i })).filter(x => !sel.exCurso || x.q.asignatura === sel.exCurso);
+    $('qlist').innerHTML = `
+      <div class="tema-acc">
+        <span class="ttl"><b>${esc(nombre)}</b> — ${preguntas.length} preguntas${sel.exCurso ? ' · ' + filas.length + ' de ' + esc(sel.exCurso) : ''}</span>
+        <a class="rbtn link" href="${esc(url)}" target="_blank" rel="noopener">Ver en la web ${ICON_EXT}</a>
+      </div>` + (filas.length ? filas.map(({ q, i }) => {
+      const o = (q.options || [])[q.correct];
+      return `<div class="qrow">
+        <div class="num">${esc(q.num || i + 1)}</div>
+        <div class="body">${q.asignatura ? `<div class="cur">${esc(q.asignatura)}${q.tema ? ' · ' + esc(q.tema) : ''}</div>` : ''}<div class="t">${q.graphic ? '🖼 ' : ''}${esc(plano(q.text))}</div><div class="k">Clave: <b>${o ? esc(o.letter + ') ' + plano(o.text)) : '—'}</b></div></div>
+        <div class="qrow-acc"><button class="rbtn" type="button" data-n="${i + 1}">${ICON_EDIT} Editar</button></div>
+      </div>`;
+    }).join('') : '<div class="state-msg">Este examen no tiene preguntas.</div>');
+    $('qlist').querySelectorAll('[data-n]').forEach(b => b.addEventListener('click', () =>
+      abrirEditor({ examen: { tipo: sel.exTipo, id: sel.exId, nombre }, n: +b.dataset.n })));
   }
 
   function renderPreguntas(temas) {
@@ -1654,12 +1723,20 @@ E) Alternativa"></textarea>
     ov.addEventListener('mousedown', e => { if (e.target === ov) cerrarModal(); });
     const body = ov.querySelector('.mbody');
 
-    let temas;
-    try { temas = await getTemas(ctx.carpeta, ctx.anio, true); }
-    catch (e) { body.innerHTML = `<div class="state-msg error">${esc(e.message)}</div>`; return; }
-    const t = temas.find(x => pad2(x.num) === pad2(ctx.tema));
-    const q = t && t.questions[ctx.n - 1];
-    if (!q) { body.innerHTML = `<div class="state-msg error">No encontré la pregunta ${ctx.n} del Tema ${esc(ctx.tema)} (${esc(ctx.anio)}). Quizá se movió o se borró.</div>`; return; }
+    // ex: pregunta de examen (Ordinario, CPU, Examen de control). Se guarda con "corregirExamen".
+    const ex = ctx.examen || null;
+    let temas, t, q;
+    try {
+      if (ex) {
+        q = (await getExamen(ex.tipo, ex.id, true))[ctx.n - 1];
+        t = q && { num: q.num || ctx.n, name: [q.asignatura, q.tema].filter(Boolean).join(' · ') };
+      } else {
+        temas = await getTemas(ctx.carpeta, ctx.anio, true);
+        t = temas.find(x => pad2(x.num) === pad2(ctx.tema));
+        q = t && t.questions[ctx.n - 1];
+      }
+    } catch (e) { body.innerHTML = `<div class="state-msg error">${esc(e.message)}</div>`; return; }
+    if (!q) { body.innerHTML = `<div class="state-msg error">${ex ? `No encontré la pregunta ${ctx.n} de ${esc(ex.nombre)}` : `No encontré la pregunta ${ctx.n} del Tema ${esc(ctx.tema)} (${esc(ctx.anio)})`}. Quizá se movió o se borró.</div>`; return; }
 
     // Tipos sin alternativas: se editan en el mismo formato con que se suben (subir.js)
     const tipo = q.abierta && q.tipo && MCPregunta.tipoDe(q) === q.tipo ? q.tipo : '';
@@ -1672,7 +1749,7 @@ E) Alternativa"></textarea>
     let correct = q.correct;
 
     body.innerHTML = `
-      <div class="eyebrow">${esc(ctx.curso)} · ${esc(ctx.anio)} · Tema ${esc(t.num)} · Pregunta ${ctx.n}</div>
+      <div class="eyebrow">${ex ? `${esc(ex.nombre)} · Pregunta ${esc(t.num)}` : `${esc(ctx.curso)} · ${esc(ctx.anio)} · Tema ${esc(t.num)} · Pregunta ${ctx.n}`}</div>
       <h3>Editar pregunta</h3>
       <div class="sub">${esc(t.name)}</div>
       ${distinta ? `<div class="banner warn" style="margin-top:14px;">Ojo: la pregunta ${ctx.n} publicada no coincide con la del reporte. Es posible que el orden haya cambiado; revisa antes de guardar.</div>` : ''}
@@ -1696,7 +1773,7 @@ E) Alternativa"></textarea>
       <article class="pcard ed-prev" id="edPrev"></article>
       <div class="err" id="edErr"></div>
       <div class="mfoot">
-        <button type="button" class="rbtn danger izq" id="edBorrar">Borrar pregunta</button>
+        ${ex ? '' : '<button type="button" class="rbtn danger izq" id="edBorrar">Borrar pregunta</button>'}
         <button type="button" class="btn-ghost" id="edCancel">Cancelar</button>
         <button type="button" class="btn-main" id="edSave" disabled>Guardar y publicar</button>
       </div>`;
@@ -1836,7 +1913,7 @@ E) Alternativa"></textarea>
 
     // Borrar pregunta: pide un segundo clic para confirmar
     const bBorrar = body.querySelector('#edBorrar');
-    bBorrar.addEventListener('click', async () => {
+    if (bBorrar) bBorrar.addEventListener('click', async () => {
       if (!bBorrar.classList.contains('confirm')) {
         bBorrar.classList.add('confirm'); bBorrar.textContent = '¿Seguro? Toca otra vez';
         setTimeout(() => { if (bBorrar.isConnected) { bBorrar.classList.remove('confirm'); bBorrar.textContent = 'Borrar pregunta'; } }, 4000);
@@ -1869,23 +1946,25 @@ E) Alternativa"></textarea>
       v.text = v.text.split('\n').map(l => {
         const m = marcaImagen(l.trim()); if (!m) return l;
         const st = zonasMarca[km++].zona.estado();
-        const path = imgRuta(ctx.carpeta, ctx.anio, ctx.tema, st.img.ext);
+        const path = ex ? imgRuta('examen-' + ex.tipo, ex.id, t.num, st.img.ext) : imgRuta(ctx.carpeta, ctx.anio, ctx.tema, st.img.ext);
         imagenes.push({ path, data: st.img.dataUrl });
         return '[IMG' + (m === '[IMAGEN DERECHA]' ? '-DER' : '') + ':' + path + ']';
       }).join('\n');
       const st = zonaImg.estado();
       if (st.cambio === 'quitar') v.graphic = null;
       if (st.cambio === 'nueva') {
-        const path = imgRuta(ctx.carpeta, ctx.anio, ctx.tema, st.img.ext);
+        const path = ex ? imgRuta('examen-' + ex.tipo, ex.id, t.num, st.img.ext) : imgRuta(ctx.carpeta, ctx.anio, ctx.tema, st.img.ext);
         imagenes.push({ path, data: st.img.dataUrl });
         v.graphic = imgHtml(path);
       }
       save.disabled = true; save.innerHTML = '<span class="spin-s"></span> ' + (imagenes.length ? 'Subiendo imagen…' : 'Publicando…');
       try {
-        const r = await api('corregir', { carpeta: ctx.carpeta, curso: ctx.curso, anio: ctx.anio, tema: pad2(ctx.tema), n: ctx.n, textoAntes: q.text, pregunta: JSON.stringify(v), imagenes: JSON.stringify(imagenes) });
-        delete cacheArchivos[ctx.carpeta + '|' + ctx.anio];
+        const r = ex
+          ? await api('corregirExamen', Object.assign({ tipo: ex.tipo, curso: ex.nombre, n: ctx.n, textoAntes: q.text, pregunta: JSON.stringify(v), imagenes: JSON.stringify(imagenes) }, partesExamen(ex.id)))
+          : await api('corregir', { carpeta: ctx.carpeta, curso: ctx.curso, anio: ctx.anio, tema: pad2(ctx.tema), n: ctx.n, textoAntes: q.text, pregunta: JSON.stringify(v), imagenes: JSON.stringify(imagenes) });
+        if (ex) delete cacheExamenes.preguntas[ex.tipo + '|' + ex.id]; else delete cacheArchivos[ctx.carpeta + '|' + ctx.anio];
         if (r.sinCambios) { cerrarModal(); toast('No había cambios que guardar'); return; }
-        if (window.MCRep) MCRep.estado({ carpeta: ctx.carpeta, anio: ctx.anio, tema: ctx.tema, pregunta: ctx.n }, 'Corregido');
+        if (window.MCRep && !ex) MCRep.estado({ carpeta: ctx.carpeta, anio: ctx.anio, tema: ctx.tema, pregunta: ctx.n }, 'Corregido');
         const oNew = v.options[v.correct] || { letter: 'Respuesta', text: tipo === 'tocar' ? 'zona marcada en la imagen' : (v.respuestas || []).join(' | ') };
         body.innerHTML = `<div class="done">
           <div class="ico">${ICON_OK}</div>
@@ -1896,11 +1975,11 @@ E) Alternativa"></textarea>
         </div>`;
         body.querySelector('#edOk').addEventListener('click', cerrarModal);
         // refrescar vistas
-        api('listar').then(x => { DATA = x.reportes || []; renderReportes(); }).catch(() => {});
+        if (!ex) api('listar').then(x => { DATA = x.reportes || []; renderReportes(); }).catch(() => {});
         if (!$('tab-editar').hidden) renderPicker();
       } catch (e) {
         save.disabled = false; save.textContent = 'Guardar y publicar';
-        err.textContent = e.message; err.classList.add('show');
+        err.textContent = ex && /Acción no válida/i.test(e.message) ? 'Falta actualizar el Apps Script (versión 13) para editar exámenes.' : e.message; err.classList.add('show');
       }
     });
   }
