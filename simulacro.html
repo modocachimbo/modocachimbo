@@ -377,8 +377,8 @@
       <div class="lbl-t">¿De dónde salen las preguntas?</div>
       <div class="fuentes" id="fuentes">
         <button type="button" class="fuente on" data-f="libros"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/></svg>Libros</button>
-        <button type="button" class="fuente on" data-f="banqueo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg>Banqueo</button>
-        <button type="button" class="fuente on" data-f="seminarios"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20a6 6 0 0 1 12 0M15 20a4.5 4.5 0 0 1 7-3.7"/></svg>Seminarios</button>
+        <button type="button" class="fuente" data-f="banqueo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg>Banqueo</button>
+        <button type="button" class="fuente" data-f="seminarios"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20a6 6 0 0 1 12 0M15 20a4.5 4.5 0 0 1 7-3.7"/></svg>Seminarios</button>
       </div>
       <div class="lbl-t">Temas</div>
       <div id="temasLista"><p class="vacia" style="margin-top:12px">Cargando temas…</p></div>
@@ -705,7 +705,7 @@
           '<div class="area-cur">' + a.cursos.filter(c => Q[c[0]]).map(c => { const x = P && P[c[0]], el = x && x.elegidos.length; return (el ? '<b style="color:' + (x.falta ? 'var(--bad)' : 'var(--text)') + '">' : '') + esc(NOMBRE[c[0]] || c[0]) + ' ' + Q[c[0]] + (el ? '</b>' : ''); }).join(' · ') + '</div></div>';
       }).join('') +
         '<p class="nota" style="margin-top:0"><b>En negrita:</b> cursos con temas elegidos. Los demás salen de todos sus temas.' + (P && P['raz-verbal'].voc ? ' En Razonamiento Verbal, ' + P['raz-verbal'].voc + ' son de Vocabulario.' : '') + '</p>' +
-        '<div class="consejo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.8V16h5v-.3c0-.7.4-1.4 1-1.8A6 6 0 0 0 12 3z"/></svg><div><b>Recomendación:</b> elige los temas que más fallas y deja las 3 fuentes marcadas para tener más preguntas distintas. Este simulacro es libre y no entra al ranking; para medirte con los demás da el <b>simulacro rápido</b>.</div></div>';
+        '<div class="consejo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.8V16h5v-.3c0-.7.4-1.4 1-1.8A6 6 0 0 0 12 3z"/></svg><div><b>Recomendación:</b> elige los temas que más fallas. Si quieres más preguntas distintas, marca también Banqueo y Seminarios. Este simulacro es libre y no entra al ranking; para medirte con los demás da el <b>simulacro rápido</b>.</div></div>';
       $('maxPts').textContent = fmtNum(AREAS.reduce((s, a) => s + a.cursos.reduce((t, c) => t + Q[c[0]], 0) * (+p[a.k] || 0), 0));
       return;
     }
@@ -733,7 +733,8 @@
     const pers = MODO === 'pers';
     const listos = CICLOS.filter(c => !c.falta.length || PRUEBA || pers);
     const completos = CICLOS.filter(c => !c.falta.length);
-    const porDefecto = ((completos.length ? completos : listos)[(completos.length ? completos : listos).length - 1] || {}).id;
+    // Personalizado: el ciclo actual (el más nuevo); rápido: el último con todos los cursos listos
+    const porDefecto = pers ? CICLOS[CICLOS.length - 1].id : ((completos.length ? completos : listos)[(completos.length ? completos : listos).length - 1] || {}).id;
     caja.innerHTML = CICLOS.map(c => {
       const ok = !c.falta.length || PRUEBA || pers;
       const det = !c.falta.length ? 'Todos los cursos listos'
@@ -832,7 +833,7 @@
   const MIN_PERS = { 20: 30, 40: 60, 60: 90, 80: 120 };
   const TIEMPOS_RAPIDO = [60, 90, 120, 150, 180], TIEMPOS_PERS = [30, 45, 60, 90, 120];
   let MODO = 'rapido', CANT = 80;
-  const PERS = { fuentes: { libros: true, banqueo: true, seminarios: true }, sel: {}, vocab: false, abiertas: { com: true } };
+  const PERS = { fuentes: { libros: true, banqueo: false, seminarios: false }, sel: {}, vocab: false, abiertas: { com: true } };
   let TEMAS = null;          // { curso: [{ k, f, nom, qs }] } de los ciclos elegidos
   let cargandoTemas = null;
   let VOCAB = null;
@@ -1034,7 +1035,7 @@
     if (!nom || nom === 'Simulacro ' + fechaHoy || nom === 'Personalizado ' + fechaHoy) $('nombre').value = (pers ? 'Personalizado ' : 'Simulacro ') + fechaHoy;
     $('btnEmpezar').textContent = pers ? 'Empezar mi simulacro' : 'Empezar simulacro';
     if (pers) minutos = MIN_PERS[CANT] || 120; else minutos = 120;
-    pintarCiclos(true); pintarTiempos(); pintarPuntos();
+    pintarCiclos(); pintarTiempos(); pintarPuntos();
     if (pers) {
       if (!cargarManifiestos.listo) cargarManifiestos.listo = cargarManifiestos();
       cargarManifiestos.listo.then(recargarTemas);
