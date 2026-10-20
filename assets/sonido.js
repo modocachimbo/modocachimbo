@@ -1,12 +1,14 @@
 /* =========================================================
    Modo Cachimbo · Sonidos (hechos con código, sin archivos de audio)
    MCSonido.bien() · mal() · empezar() · fin(pct) · perder() · toque()
-   Duelo: comodin() · robado() · reaccion(cara)
+   Duelo: comodin() · robado() · reaccion(cara) (audios en assets/sonidos/)
    Se silencia con cualquier botón [data-mc-son]; la elección se guarda
    en el navegador (mc_sonido) y vale para toda la web, Flashcards incluidas.
    ========================================================= */
 (function () {
   var ctx = null, salida = null, activo = true;
+  // Carpeta de los audios (assets/sonidos/), sin importar desde qué página se cargue este archivo
+  var BASE_SON = (function () { try { return new URL('sonidos/', document.currentScript.src).href; } catch (e) { return 'assets/sonidos/'; } })();
   try { activo = localStorage.getItem('mc_sonido') !== '0'; } catch (e) {}
 
   function audio() {
@@ -74,6 +76,21 @@
     g.gain.setValueAtTime(0.0001, t0); g.gain.linearRampToValueAtTime(vol, t0 + dur * 0.3); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
     src.connect(bp); bp.connect(g); g.connect(salida); src.start(t0);
   }
+  // Un audio de assets/sonidos/: se baja una sola vez y queda listo; si falla, suena el respaldo
+  var buffers = {};
+  function archivo(nombre, vol, respaldo) {
+    var a = audio(); if (!a) return;
+    if (!buffers[nombre]) {
+      buffers[nombre] = fetch(BASE_SON + nombre).then(function (r) { if (!r.ok) throw 0; return r.arrayBuffer(); })
+        .then(function (b) { return new Promise(function (ok, mal) { a.decodeAudioData(b, ok, mal); }); })
+        .catch(function () { buffers[nombre] = null; return null; });
+    }
+    buffers[nombre].then(function (buf) {
+      if (!buf) { if (respaldo) respaldo(); return; }
+      var src = a.createBufferSource(), g = a.createGain();
+      src.buffer = buf; g.gain.value = vol || 0.8; src.connect(g); g.connect(salida); src.start();
+    });
+  }
   var DO = 523.25, MI = 659.25, SOL = 783.99, DO2 = 1046.5, MI2 = 1318.5, SOL2 = 1568, DO3 = 2093;
   // La burbuja: una nota redonda que sube
   function blup(vol, dur, desde, hasta, t) { nota(desde || 320, t || 0, dur || 0.09, 'sine', vol || 0.26, hasta || 1100); }
@@ -130,6 +147,11 @@
     robado: function () { soplo(0.35, 0.16, 2600, 400); nota(520, 0.04, 0.4, 'sawtooth', 0.05, 140); },
     // Reacciones del duelo: risa, llanto, enojo, susto, genial y aplauso
     reaccion: function (cara) {
+      if (['risa', 'llanto', 'enojo', 'aplauso'].indexOf(cara) >= 0) return archivo('reac-' + cara + '.mp3', 0.75, function () { S.reaccionSintetica(cara); });
+      S.reaccionSintetica(cara);
+    },
+    // Respaldo sin archivos (y las reacciones antiguas: susto y genial)
+    reaccionSintetica: function (cara) {
       if (cara === 'risa') [0, 1, 2, 3].forEach(function (i) { nota(760 - i * 45, i * 0.11, 0.09, 'triangle', 0.2, 560 - i * 45); });
       else if (cara === 'llanto') { hoot(560, 0, 0.32, 0.24, 470); hoot(520, 0.36, 0.75, 0.24, 300); }
       else if (cara === 'enojo') { nota(150, 0, 0.38, 'sawtooth', 0.09, 105); nota(160, 0.03, 0.34, 'square', 0.05, 95); }
