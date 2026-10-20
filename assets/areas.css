@@ -94,3 +94,22 @@ html[data-area] .quiz-cta a.alt:active { box-shadow: 0 0 0 transparent; }
   .tema-card:has(.tema-prof) { flex-wrap: wrap; row-gap: 10px; }
   .tema-prof { order: 5; max-width: calc(100% - 54px); margin-left: 54px; }
 }
+
+/* Repaso mixto: botón grande arriba de los cursos de cada área (repaso-mixto.html) */
+html[data-area] .mixto {
+  display: flex; align-items: center; gap: 16px; margin: 18px 0 22px; padding: 16px 18px; border-radius: 22px; text-decoration: none;
+  border: 2px solid rgba(var(--ac-rgb), .45); border-bottom: 5px solid var(--ac-d);
+  background: linear-gradient(135deg, rgba(var(--ac-rgb), .16), rgba(var(--ac-rgb), .04));
+  -webkit-tap-highlight-color: transparent; transition: transform .08s ease;
+}
+html[data-area] .mixto:active { transform: translateY(2px); }
+html[data-area] .mixto-ic { width: 54px; height: 54px; border-radius: 16px; background: var(--ac); display: grid; place-items: center; flex-shrink: 0; }
+html[data-area] .mixto-ic svg { width: 28px; height: 28px; fill: none; stroke: #0b0b0b; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+html[data-area] .mixto-tx { flex: 1 1 0; min-width: 0; }
+html[data-area] .mixto-tx b { display: block; font: 1000 19px 'Nunito', sans-serif; color: var(--ac); }
+html[data-area] .mixto-tx small { display: block; color: #9a9a9a; font: 700 13.5px/1.4 'Nunito', sans-serif; margin-top: 2px; }
+html[data-area] .mixto-go { margin-left: auto; background: var(--ac); color: #0b0b0b; font: 1000 14px 'Nunito', sans-serif; letter-spacing: .5px; text-transform: uppercase; padding: 11px 18px; border-radius: 14px; border-bottom: 4px solid var(--ac-d); white-space: nowrap; }
+@media (max-width: 560px) {
+  html[data-area] .mixto { flex-wrap: wrap; gap: 12px 14px; }
+  html[data-area] .mixto-go { width: 100%; text-align: center; margin-left: 0; }
+}

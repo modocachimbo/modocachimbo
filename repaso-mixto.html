@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script src="assets/guardia.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#050505">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="assets/app/icono-180.png">
+<meta name="apple-mobile-web-app-title" content="Modo Cachimbo">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<script src="assets/app.js" defer></script>
+<title>Repaso mixto · Modo Cachimbo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,600;1,700;1,800;1,900;1,1000&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #050505; --surface: #0e0e0e; --surface-2: #141414;
+    --border: #232323; --accent: #C6E000; --accent-soft: rgba(198,224,0,0.1);
+    --text: #f2f2f2; --text-dim: #9a9a9a; --text-faint: #5f5f5f;
+    --red: #E03C3C;
+  }
+
+  body {
+    min-height: 100vh; background: var(--bg); color: var(--text);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Inter', sans-serif; padding: 24px;
+  }
+
+  .card {
+    width: 100%; max-width: 400px;
+    background: var(--surface); border-radius: 24px; overflow: hidden;
+    border: 1px solid #1f1f1f; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    transition: max-width .2s ease;
+  }
+
+  @media (min-width: 640px) {
+    .card { max-width: 520px; }
+    .title { font-size: 23px !important; }
+    .question p { font-size: 15.5px !important; }
+    .option span.text { font-size: 15px !important; }
+    .option { padding: 14px 16px !important; }
+  }
+  @media (min-width: 900px) {
+    .card { max-width: 640px; }
+    body { padding: 48px 24px; }
+    .title { font-size: 27px !important; }
+    .question p { font-size: 17px !important; }
+    .option span.text { font-size: 16px !important; }
+    .option { padding: 17px 19px !important; }
+    .letter { width: 32px !important; height: 32px !important; font-size: 14px !important; }
+    .header { padding: 28px 28px 18px !important; }
+    .badge { margin: 16px 28px 0 !important; font-size: 12px !important; padding: 6px 12px !important; }
+    .question { margin: 12px 28px 22px !important; padding: 22px !important; }
+    .options { padding: 0 28px 8px !important; gap: 11px !important; }
+    .navrow { padding: 22px 28px 0 !important; }
+    .footer { padding: 20px 28px 26px !important; }
+  }
+  @media (min-width: 1280px) {
+    .card { max-width: 720px; }
+    .title { font-size: 30px !important; }
+    .question p { font-size: 18px !important; }
+    .option span.text { font-size: 17px !important; }
+    .option { padding: 19px 21px !important; }
+    .letter { width: 34px !important; height: 34px !important; font-size: 15px !important; }
+  }
+
+  .backlink { padding: 16px 22px 0; display: flex; align-items: center; }
+  .backlink a { display: inline-flex; align-items: center; gap: 6px; color: #777; text-decoration: none; font-size: 12.5px; font-weight: 500; }
+  .backlink svg { width: 14px; height: 14px; }
+  .home-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 8px;
+    border: 1px solid var(--border); color: #777;
+    text-decoration: none; margin-left: 10px; flex-shrink: 0;
+  }
+  .home-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .home-btn svg { width: 13px; height: 13px; }
+
+
+  .header { padding: 22px 22px 14px; }
+  .title { font-family: 'Sora', sans-serif; font-size: 19px; font-weight: 800; color: #f5f5f5; line-height: 1.25; }
+  .title .accent { color: var(--accent); }
+
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; }
+  .lives { display: flex; gap: 4px; }
+  .stat { display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--accent); }
+
+  .progress-track { height: 4px; background: #1c1c1c; border-radius: 100px; margin-top: 14px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 100px; transition: width .3s ease; }
+  .progress-label { margin-top: 8px; font-size: 11px; color: #666; letter-spacing: .5px; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 500;
+    padding: 5px 10px; border-radius: 100px; background: var(--accent-soft); color: #D6F23A;
+    margin: 14px 22px 0;
+  }
+  .badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  .question { margin: 10px 22px 18px; background: var(--surface-2); border-radius: 16px; padding: 17px; border-left: 3px solid var(--accent); }
+  .question p { color: #ececec; font-size: 13.5px; line-height: 1.65; white-space: pre-line; }
+
+  .options { padding: 0 22px 6px; display: flex; flex-direction: column; gap: 9px; }
+  .option {
+    display: flex; align-items: center; gap: 12px; background: #141414; border: 1px solid #232323;
+    border-radius: 13px; padding: 12px 14px; cursor: pointer; transition: border-color .15s ease, background .15s ease;
+  }
+  .option:hover:not(.locked) { border-color: #3a3a3a; }
+  .letter {
+    width: 25px; height: 25px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Sora', sans-serif; font-size: 11.5px; font-weight: 700; flex-shrink: 0;
+    background: rgba(198,224,0,0.08); border: 1px solid rgba(198,224,0,0.25); color: var(--accent);
+  }
+  .option span.text { color: #d8d8d8; font-size: 13px; font-weight: 400; }
+  .option.correct { background: rgba(198,224,0,0.1); border-color: var(--accent); }
+  .option.correct .letter { background: var(--accent); border-color: var(--accent); color: #0e0e0e; }
+  .option.correct span.text { color: #f5ffcc; font-weight: 500; }
+  .option.wrong { background: rgba(224,60,60,0.08); border-color: var(--red); }
+  .option.wrong .letter { background: var(--red); border-color: var(--red); color: #fff; }
+  .option.wrong span.text { color: #ffd6d6; }
+  .icon { margin-left: auto; width: 16px; height: 16px; flex-shrink: 0; }
+  .icon.ok { color: var(--accent); }
+  .icon.bad { color: var(--red); }
+
+  .feedback { margin: 12px 22px 0; font-size: 12px; line-height: 1.5; padding: 10px 12px; border-radius: 10px; display: none; }
+  .feedback.show { display: block; }
+  .feedback.ok { background: rgba(198,224,0,0.08); color: #D6F23A; }
+  .feedback.bad { background: rgba(224,60,60,0.08); color: #ffb3b3; }
+
+  .navrow { display: flex; gap: 10px; padding: 18px 22px 0; }
+  .btn {
+    flex: 1; padding: 12px; border-radius: 12px; border: 1px solid #262626; background: #141414; color: #aaa;
+    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity .15s ease;
+  }
+  .btn.primary { background: var(--accent); color: #0e0e0e; border-color: var(--accent); }
+  .btn:disabled { opacity: .35; cursor: default; }
+
+  .footer { padding: 16px 22px 22px; margin-top: 12px; border-top: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; }
+  .footer .label { font-size: 11px; color: #666; letter-spacing: .5px; }
+  .footer .mark { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 13px; color: var(--accent); }
+
+  .startscreen, .endscreen { display: none; padding: 34px 24px; text-align: center; }
+  .startscreen.show, .endscreen.show { display: block; }
+
+  .lockscreen { display: none; padding: 34px 24px; text-align: center; }
+  .lockscreen.show { display: block; }
+  .lock-icon {
+    width: 64px; height: 64px; margin: 0 auto 18px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent);
+  }
+  .lock-icon svg { width: 64px; height: 64px; display: block; }
+  .lockscreen h1 { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; color: #f5f5f5; margin-bottom: 8px; }
+  .lockscreen h1 .accent { color: var(--accent); }
+  .lockscreen p { font-size: 13px; color: #999; line-height: 1.6; margin-bottom: 20px; }
+  #lockInput {
+    width: 100%; background: #141414; border: 1px solid #262626; border-radius: 12px;
+    padding: 13px 14px; color: #f2f2f2; font-size: 14px; text-align: center;
+    letter-spacing: 1px; font-weight: 600; margin-bottom: 12px;
+    box-sizing: border-box;
+  }
+  #lockInput:focus { outline: none; border-color: var(--accent); }
+  #lockInput::placeholder { color: #555; font-weight: 400; letter-spacing: normal; }
+  .lock-error {
+    display: none; margin-top: 14px; font-size: 12.5px; color: #ff8a8a;
+    background: rgba(224,60,60,0.08); border-radius: 10px; padding: 10px 12px; line-height: 1.5;
+  }
+  .lock-error.show { display: block; }
+  .lock-whatsapp {
+    display: none; align-items: center; justify-content: center; gap: 8px;
+    margin-top: 12px; padding: 12px; border-radius: 12px;
+    background: rgba(37,211,102,0.1); color: #25D366;
+    text-decoration: none; font-size: 13px; font-weight: 700;
+  }
+  .lock-whatsapp svg { width: 16px; height: 16px; }
+  .lock-whatsapp.show { display: flex; }
+
+  .start-badge {
+    display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 500;
+    padding: 5px 10px; border-radius: 100px; background: var(--accent-soft); color: #D6F23A; margin-bottom: 16px;
+  }
+  .start-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .startscreen h1 { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; color: #f5f5f5; line-height: 1.3; margin-bottom: 10px; }
+  .startscreen h1 .accent { color: var(--accent); }
+  .startscreen p { font-size: 13px; color: #999; line-height: 1.6; margin-bottom: 20px; }
+  .start-info { display: flex; justify-content: center; gap: 20px; margin-bottom: 24px; }
+  .start-stat { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: #d8d8d8; font-weight: 500; }
+
+  .endscreen h2 { font-family: 'Sora', sans-serif; font-size: 20px; color: #f5f5f5; margin-bottom: 6px; }
+  .endscreen p { font-size: 13px; color: #999; margin-bottom: 20px; }
+  .endscreen .score { font-family: 'Sora', sans-serif; font-size: 40px; font-weight: 800; color: var(--accent); margin: 14px 0; }
+
+  .state-msg { text-align: center; color: var(--text-dim); font-size: 13px; padding: 40px 24px; }
+  .q-graphic { margin: 4px 0 16px; display: flex; justify-content: center; background: #fff; border-radius: 12px; padding: 12px; }
+  .q-graphic svg { max-width: 100%; height: auto; display: block; }
+
+  /* Casita con estilo grueso: se hunde al tocarla */
+  .home-btn { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 12px; background: #141414; width: 36px; height: 36px; color: #e6e6e6;
+    transition: transform .08s ease, border-color .15s ease, color .15s ease; -webkit-tap-highlight-color: transparent; }
+  .home-btn:hover { border-color: var(--accent, #C6E000); border-bottom-color: #8fa300; color: var(--accent, #C6E000); }
+  .home-btn:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
+  /* Práctica con estilo grueso tipo Duolingo: claves y botones que se hunden al tocarlos */
+  .card { border: 2px solid #232323; }
+  .startscreen h1, .lockscreen h1, .title { font-family: 'Nunito', 'Sora', sans-serif; font-weight: 900; letter-spacing: -.2px; }
+  .startscreen h1 { font-size: 26px; }
+  .startscreen p, .lockscreen p, .endscreen p { font: 700 14px/1.6 'Nunito', 'Inter', sans-serif; }
+  .start-badge, .badge { font: 800 12px 'Nunito', 'Inter', sans-serif; border: 2px solid rgba(198,224,0,.25); }
+  .start-info { gap: 10px; flex-wrap: wrap; }
+  .start-stat { font: 800 14px 'Nunito', 'Inter', sans-serif; border: 2px solid #2a2a2a; border-bottom-width: 4px; border-radius: 14px; background: #141414; padding: 8px 14px; }
+  .stat { font: 900 14px 'Nunito', 'Inter', sans-serif; }
+  .progress-track { height: 12px; border-radius: 100px; background: #222; margin-top: 16px; }
+  .progress-fill { position: relative; min-width: 12px; }
+  .progress-fill::after { content: ''; position: absolute; left: 6px; right: 6px; top: 3px; height: 3px; border-radius: 100px; background: rgba(255,255,255,.35); }
+  .progress-label { font: 800 12px 'Nunito', 'Inter', sans-serif; color: #7a7a7a; }
+  .question { border: 2px solid #262626; border-bottom-width: 5px; border-radius: 20px; background: #101010; }
+  .question p { font-family: 'Nunito', 'Inter', sans-serif; font-weight: 800; font-size: 17px !important; line-height: 1.55; color: #f2f2f2; }
+  @media (min-width: 900px) { .question p { font-size: 19px !important; } }
+  .options { gap: 11px; padding-bottom: 8px; }
+  .option { border: 2px solid #2a2a2a; border-bottom-width: 5px; border-radius: 16px; background: #151515; -webkit-tap-highlight-color: transparent;
+    transition: transform .08s ease, border-color .15s ease, background .15s ease; }
+  .option:hover:not(.locked) { border-color: #3d3d3d; background: #181818; }
+  .option:active:not(.locked) { transform: translateY(3px); border-bottom-width: 2px; margin-bottom: 3px; }
+  .option span.text { font: 800 15px 'Nunito', 'Inter', sans-serif; color: #dcdcdc; }
+  .letter { width: 30px; height: 30px; border-radius: 10px; border: 2px solid #3a3a3a; background: transparent; color: #cfcfcf; font: 900 13px 'Nunito', sans-serif; }
+  .option.correct { background: rgba(198,224,0,.12); border-color: var(--accent); border-bottom-color: #8fa300; }
+  .option.correct span.text { color: #f5ffcc; font-weight: 900; }
+  .option.wrong { background: rgba(224,60,60,.1); border-color: var(--red); border-bottom-color: #9e2525; }
+  .option.wrong span.text { font-weight: 900; }
+  .option.locked:not(.correct):not(.wrong) { opacity: .55; }
+  .feedback { border: 2px solid transparent; border-radius: 14px; font: 800 13.5px/1.5 'Nunito', 'Inter', sans-serif; padding: 12px 14px; }
+  .feedback.ok { border-color: rgba(198,224,0,.35); }
+  .feedback.bad { border-color: rgba(224,60,60,.4); }
+  .navrow { gap: 12px; padding-bottom: 6px; }
+  .btn { border: 2px solid #2e2e2e; border-bottom-width: 5px; border-radius: 16px; background: #161616; color: #cfcfcf; padding: 13px 12px;
+    font: 900 14px 'Nunito', 'Inter', sans-serif; text-transform: uppercase; letter-spacing: .6px; -webkit-tap-highlight-color: transparent;
+    transition: transform .08s ease, box-shadow .08s ease, opacity .15s ease; }
+  .btn:active:not(:disabled) { transform: translateY(3px); border-bottom-width: 2px; margin-bottom: 3px; }
+  .btn.primary { border: 2px solid var(--accent); color: #2b3300; box-shadow: 0 5px 0 #8fa300; margin-bottom: 5px; }
+  .btn.primary:active:not(:disabled) { transform: translateY(5px); box-shadow: 0 0 0 transparent; border-bottom-width: 2px; margin-bottom: 5px; }
+  .btn:disabled { opacity: .4; }
+  .endscreen h2 { font: 900 24px 'Nunito', 'Sora', sans-serif; }
+  .endscreen .score { font-family: 'Nunito', 'Sora', sans-serif; font-weight: 900; font-size: 48px; }
+  #lockInput { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 14px; font: 800 15px 'Nunito', 'Inter', sans-serif; letter-spacing: 1px; }
+  .lock-error, .lock-whatsapp { border-radius: 14px; font-family: 'Nunito', 'Inter', sans-serif; font-weight: 800; }
+  .footer .label { font: 800 12px 'Nunito', 'Inter', sans-serif; }
+  .footer .mark { font-family: 'Nunito', 'Sora', sans-serif; font-weight: 900; }
+  @media (min-width: 900px) { .feedback { margin: 14px 28px 0; } }
+
+  /* Letra gruesita en toda la web (Nunito); las fórmulas y el código conservan su letra */
+  body, body :not(.katex):not(.katex *):not(code):not(pre):not(kbd):not(samp):not(.formato):not(.ta.big):not(.cdnuevos code) { font-family: 'Nunito', 'Inter', system-ui, sans-serif !important; }
+  body { font-weight: 600; }
+
+  /* ---------- Repaso mixto: elegir cursos, temas y cantidad (color del área) ---------- */
+  :root { --ac: #C6E000; --ac-rgb: 198,224,0; --ac-d: #8fa300; }
+  .elegir { display: none; padding: 8px 22px 6px; }
+  .elegir.show { display: block; }
+  .el-eb { font: 900 12px 'Nunito', sans-serif; letter-spacing: 2px; text-transform: uppercase; color: var(--ac); margin-top: 10px; }
+  .el-tit { font: 1000 26px/1.2 'Nunito', sans-serif; color: #f5f5f5; margin-top: 4px; text-wrap: balance; }
+  .el-sub { font: 700 14px/1.5 'Nunito', sans-serif; color: #999; margin-top: 6px; }
+  .paso { margin-top: 18px; }
+  .paso-lbl { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font: 900 12px 'Nunito', sans-serif; letter-spacing: 1.2px; text-transform: uppercase; color: #6f6f6f; margin-bottom: 10px; }
+  .paso-lbl button { background: none; border: 0; color: var(--ac); font: 900 13px 'Nunito', sans-serif; letter-spacing: 0; text-transform: none; cursor: pointer; padding: 0; }
+  .paso-lbl small { font: 800 12.5px 'Nunito', sans-serif; letter-spacing: 0; text-transform: none; color: #7a7a7a; }
+  .cursos { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .cur { display: flex; align-items: center; gap: 10px; background: #141414; border: 2px solid #2a2a2a; border-bottom-width: 5px; border-radius: 16px; padding: 11px 12px; color: #f2f2f2; text-align: left; cursor: pointer; font: 900 15px 'Nunito', sans-serif; -webkit-tap-highlight-color: transparent; transition: transform .08s ease; min-width: 0; }
+  .cur:active { transform: translateY(2px); }
+  .cur > div { min-width: 0; }
+  .cur small { display: block; font: 800 12px 'Nunito', sans-serif; color: #8a8a8a; }
+  .cur i { width: 22px; height: 22px; border-radius: 7px; border: 2px solid #4a4a4a; flex-shrink: 0; display: grid; place-items: center; }
+  .cur i svg { width: 14px; height: 14px; fill: none; stroke: #0b0b0b; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+  .cur.on { border-color: var(--ac); border-bottom-color: var(--ac-d); background: rgba(var(--ac-rgb), .12); }
+  .cur.on i { background: var(--ac); border-color: var(--ac); }
+  .cur.on i svg { opacity: 1; }
+  .cur.bloq { opacity: .55; }
+  .cur.bloq i { border: 0; }
+  .cur.bloq i svg { opacity: 1; stroke: #9a9a9a; width: 18px; height: 18px; stroke-width: 2.2; }
+  .aviso { margin-top: 10px; font: 800 13px/1.5 'Nunito', sans-serif; color: #ffcf66; background: rgba(255,200,0,.08); border: 2px solid rgba(255,200,0,.25); border-radius: 12px; padding: 10px 12px; }
+  .aviso a { color: #FFC800; }
+  .filtros { display: flex; flex-wrap: wrap; gap: 8px; }
+  .fil { background: #141414; border: 2px solid #2a2a2a; border-bottom-width: 4px; border-radius: 12px; padding: 7px 12px; color: #bdbdbd; font: 900 13px 'Nunito', sans-serif; cursor: pointer; }
+  .fil.on { border-color: var(--ac); border-bottom-color: var(--ac-d); color: var(--ac); background: rgba(var(--ac-rgb), .1); }
+  .tc { border: 2px solid #262626; border-radius: 14px; background: #121212; margin-top: 8px; }
+  .tc > summary { list-style: none; display: flex; align-items: center; gap: 10px; padding: 11px 14px; cursor: pointer; font: 900 15px 'Nunito', sans-serif; }
+  .tc > summary::-webkit-details-marker { display: none; }
+  .tc > summary span { margin-left: auto; font: 900 12.5px 'Nunito', sans-serif; color: var(--ac); white-space: nowrap; }
+  .tc > summary svg { width: 16px; height: 16px; fill: none; stroke: #777; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; transition: transform .15s; }
+  .tc[open] > summary svg { transform: rotate(180deg); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 12px 12px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; text-align: left; border: 2px solid #2e2e2e; border-bottom-width: 3px; background: #171717; color: #e6e6e6; border-radius: 12px; padding: 7px 11px; font: 800 13px 'Nunito', sans-serif; cursor: pointer; }
+  .chip em { font-style: normal; color: #6f6f6f; font-size: 11.5px; }
+  .chip.on { border-color: var(--ac); background: rgba(var(--ac-rgb), .12); }
+  .cant { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .cant button { position: relative; background: #141414; color: #f2f2f2; border: 2px solid #2a2a2a; border-bottom-width: 5px; border-radius: 14px; padding: 10px 4px 8px; font: 1000 22px/1.1 'Nunito', sans-serif; cursor: pointer; }
+  .cant button small { display: block; font: 800 11px 'Nunito', sans-serif; color: #8a8a8a; }
+  .cant button.on { border-color: var(--ac); border-bottom-color: var(--ac-d); background: rgba(var(--ac-rgb), .12); color: var(--ac); }
+  .cant button:disabled { opacity: .35; cursor: default; }
+  .rec { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #FFC800; color: #111; font: 1000 9.5px 'Nunito', sans-serif; letter-spacing: .5px; text-transform: uppercase; border-radius: 6px; padding: 1px 6px; white-space: nowrap; }
+  .resumen { margin-top: 12px; font: 800 13.5px/1.5 'Nunito', sans-serif; color: #9a9a9a; }
+  .resumen b { color: #f2f2f2; }
+  .el-go { width: 100%; margin-top: 18px; }
+  .badge .curso { color: #f2f2f2; }
+  @media (min-width: 900px) { .elegir { padding: 8px 28px 6px; } }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" media="print" onload="this.media='all'">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="document.dispatchEvent(new Event('mc:katex'))"></script>
+<script src="assets/mc-config.js"></script>
+<script src="assets/acceso.js"></script>
+<script src="assets/pregunta.js"></script>
+<script src="assets/sonido.js"></script>
+<script src="assets/auth.js"></script>
+</head>
+<body>
+
+  <div class="card">
+    <div class="backlink">
+      <a href="index.html" id="volver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> <span id="volverTxt">Inicio</span></a>
+      <a class="home-btn" href="index.html" title="Ir al inicio" aria-label="Ir al inicio"><svg viewBox="0 0 24.66 24.65" fill="currentColor" aria-hidden="true"><path d="M11.88,0h.87a2.91,2.91,0,0,1,1.39.84l9.64,9.65a3.33,3.33,0,0,1,.36.39,2.2,2.2,0,0,1,.31,2.35,2.14,2.14,0,0,1-1.82,1.35c-.68.08-.6,0-.61.67,0,2.28,0,4.57,0,6.85a2.63,2.63,0,0,1-2.65,2.54H15.57c-.65,0-.92-.26-.92-.91V18.19a1.16,1.16,0,0,0-1.24-1.25c-.71,0-1.43,0-2.14,0A1.17,1.17,0,0,0,10,18.25v5.56a.74.74,0,0,1-.83.83H5.27A2.6,2.6,0,0,1,3,23.39a3,3,0,0,1-.42-1.71V14.86a.23.23,0,0,0-.23-.25,2.64,2.64,0,0,1-.74-.1A2.32,2.32,0,0,1,0,12.75v-.87a2.91,2.91,0,0,1,.86-1.42Q5.66,5.67,10.45.88A2.86,2.86,0,0,1,11.88,0Z"/></svg></a>
+    </div>
+
+    <section class="elegir show" id="elegir">
+      <div class="el-eb">Repaso mixto</div>
+      <h1 class="el-tit" id="elTit">Mezcla tus cursos</h1>
+      <p class="el-sub">Preguntas de los cursos y temas que elijas, todas mezcladas. Cada pregunta tiene la misma probabilidad de salir.</p>
+
+      <div class="paso">
+        <div class="paso-lbl">1. Cursos <button type="button" id="cursosTodos">Todos</button></div>
+        <div class="cursos" id="cursos"><p class="state-msg" style="padding:10px 0">Cargando cursos…</p></div>
+        <div class="aviso" id="aviso" hidden></div>
+      </div>
+
+      <div class="paso">
+        <div class="paso-lbl">Ciclo y fuente</div>
+        <div class="filtros" id="ciclos"></div>
+        <div class="filtros" id="fuentes" style="margin-top:8px"></div>
+      </div>
+
+      <div class="paso">
+        <div class="paso-lbl">2. Temas <small>Opcional</small></div>
+        <div id="temas"></div>
+      </div>
+
+      <div class="paso">
+        <div class="paso-lbl">3. Cantidad de preguntas</div>
+        <div class="cant" id="cant">
+          <button type="button" data-n="10">10<small>preguntas</small></button><button type="button" data-n="20" class="on"><span class="rec">Recomendado</span>20<small>preguntas</small></button><button type="button" data-n="30">30<small>preguntas</small></button><button type="button" data-n="40">40<small>preguntas</small></button>
+        </div>
+        <p class="resumen" id="resumen"></p>
+      </div>
+
+      <button class="btn primary el-go" id="btnStart" type="button" disabled>Empezar repaso</button>
+    </section>
+
+    <div class="header" id="quizHeader" style="display:none;"></div>
+    <div id="quizBody" style="display:none;"></div>
+
+    <div class="endscreen" id="endScreen">
+      <h2>Ronda terminada</h2>
+      <p id="endMessage">Así te fue en esta práctica</p>
+      <div class="score" id="finalScore">0 pts</div>
+      <button class="btn primary" id="btnRestart" style="width:100%;">Otra ronda con lo mismo</button>
+      <button class="btn" id="btnCambiar" style="width:100%;margin-top:12px">Cambiar cursos o temas</button>
+    </div>
+
+    <div class="footer">
+      <div class="label">@ProfeRojitas</div>
+      <div class="mark">RJ</div>
+    </div>
+  </div>
+
+<script>
+  function renderMath(el) {
+    // KaTeX carga sin bloquear la página: si aún no llegó, se dibuja apenas llegue
+    if (!window.renderMathInElement) { document.addEventListener('mc:katex', () => renderMath(el), { once: true }); return; }
+    if (window.renderMathInElement) {
+      renderMathInElement(el, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    }
+  }
+
+
+  // Escapa HTML y convierte *texto* en cursiva (para nombres científicos, etc.)
+  function formatQText(str) {
+    let esc = str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    // Etiquetas permitidas: <u> <i> <b> <em> <strong> <sub> <sup> (también una dentro de otra)
+    for (let k = 0; k < 3; k++) esc = esc.replace(/&lt;(u|i|b|em|strong|sub|sup)&gt;([\s\S]*?)&lt;\/\1&gt;/gi, (x, t, d) => '<' + t.toLowerCase() + '>' + d + '</' + t.toLowerCase() + '>');
+    esc = esc.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    esc = esc.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    return esc;
+  }
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  /* ---------- Repaso mixto ----------
+     Desde la página de cada área (areas/*.html → repaso-mixto.html?area=...).
+     El alumno elige cursos (solo los que tiene desbloqueados en Repaso), temas (opcional),
+     ciclo, fuente y cantidad. Todas las preguntas tienen la misma probabilidad de salir
+     y las alternativas se mezclan (assets/pregunta.js). Mismo juego que el repaso por curso. */
+  const AREAS = {
+    'matematica': { nom: 'Matemática', c: ['#1CB0F6', '28,176,246', '#1287bd'], cursos: ['algebra', 'aritmetica', 'geometria', 'trigonometria', 'estadistica'] },
+    'comunicacion': { nom: 'Comunicación', c: ['#CE82FF', '206,130,255', '#a35fd1'], cursos: ['raz-verbal', 'literatura', 'lenguaje'] },
+    'ciencia-tecnologia': { nom: 'Ciencia y Tecnología', c: ['#C6E000', '198,224,0', '#8fa300'], cursos: ['biologia', 'anatomia', 'quimica', 'fisica'] },
+    'ciencias-sociales': { nom: 'Ciencias Sociales', c: ['#FF9600', '255,150,0', '#c77400'], cursos: ['historia-peru', 'historia-universal', 'geografia', 'economia', 'ciudadania', 'psicologia', 'filosofia'] }
+  };
+  const FUENTES = [['libros', 'Libros'], ['banqueo', 'Banqueo'], ['seminarios', 'Seminarios']];
+  const params = new URLSearchParams(location.search);
+  const AREA_ID = AREAS[params.get('area')] ? params.get('area') : 'matematica';
+  const AREA = AREAS[AREA_ID];
+  const $ = id => document.getElementById(id);
+  const esc = t => String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const norm = t => String(t || '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ');
+  const ICO_CHK = '<i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></i>';
+  const ICO_CANDADO = '<i><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></i>';
+  const ICO_FLECHA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+
+  document.documentElement.style.setProperty('--ac', AREA.c[0]);
+  document.documentElement.style.setProperty('--ac-rgb', AREA.c[1]);
+  document.documentElement.style.setProperty('--ac-d', AREA.c[2]);
+  $('volver').href = 'areas/' + AREA_ID + '.html'; $('volverTxt').textContent = AREA.nom;
+  $('elTit').textContent = 'Mezcla tus cursos de ' + AREA.nom;
+  document.title = 'Repaso mixto · ' + AREA.nom + ' · Modo Cachimbo';
+
+  const NOMBRE = {}, MAN = {};          // MAN[fuente][curso] = manifest
+  const ACCESO = {};                    // curso → 'ok' | 'no' | 'revisando'
+  const SEL = { cursos: {}, temas: {}, ciclos: {}, fuentes: { libros: true }, n: 20, abiertos: {} };
+  let TEMAS = {};                       // curso → [{ k, f, nom, qs }]
+  let cargaTemas = 0;
+  const cacheDatos = {};
+
+  function datosF(f, curso, ciclo) {
+    const k = f + '/' + curso + '/' + ciclo;
+    if (!cacheDatos[k]) cacheDatos[k] = fetch(curso + '/' + f + '/data/' + ciclo + '.json', { cache: 'no-cache' })
+      .then(r => r.ok ? r.json() : []).catch(() => [])
+      .then(temas => {
+        const out = [];
+        (Array.isArray(temas) ? temas : []).forEach(t => (t.questions || []).forEach((q, i) => {
+          if (!q || !Array.isArray(q.options) || !q.options.length) return;
+          out.push(Object.assign({}, q, { _ref: curso + '/' + f + '/data/' + ciclo + '.json#' + t.num + '#' + i, _tit: t.name, _curso: curso, _f: f }));
+        }));
+        return out;
+      });
+    return cacheDatos[k];
+  }
+  const ordenCiclo = id => { const m = String(id).match(/^(\d{4})-([IVX]+)$/), R = { I: 1, II: 2, III: 3, IV: 4, V: 5 }; return m ? +m[1] * 10 + (R[m[2]] || 0) : 0; };
+  function ciclosTodos() {
+    const t = {};
+    FUENTES.forEach(([f]) => AREA.cursos.forEach(c => (MAN[f][c] || []).forEach(m => { if (m && m.id) t[m.id] = 1; })));
+    return Object.keys(t).sort((a, b) => ordenCiclo(a) - ordenCiclo(b));
+  }
+  const ciclosSel = () => Object.keys(SEL.ciclos).filter(c => SEL.ciclos[c]);
+
+  async function cargarTemas() {
+    const yo = ++cargaTemas, ciclos = ciclosSel(), T = {};
+    await Promise.all(AREA.cursos.map(async curso => {
+      const lista = [], idx = {};
+      for (const [f] of FUENTES) {
+        if (!SEL.fuentes[f]) continue;
+        const ids = (MAN[f][curso] || []).map(m => m.id).filter(c => ciclos.indexOf(c) >= 0);
+        const qs = [].concat.apply([], await Promise.all(ids.map(c => datosF(f, curso, c))));
+        qs.forEach(q => {
+          const k = f + '|' + norm(q._tit);
+          if (idx[k] == null) { idx[k] = lista.length; lista.push({ k, f, nom: String(q._tit || 'Tema').trim(), qs: [] }); }
+          lista[idx[k]].qs.push(q);
+        });
+      }
+      T[curso] = lista;
+    }));
+    if (yo !== cargaTemas) return;
+    TEMAS = T;
+    pintar();
+  }
+
+  // Preguntas que entran: de cada curso elegido, sus temas marcados o, si no marcó ninguno, todos
+  function pool() {
+    const out = [];
+    AREA.cursos.forEach(c => {
+      if (!SEL.cursos[c] || ACCESO[c] !== 'ok') return;
+      const temas = TEMAS[c] || [], marcados = temas.filter(t => SEL.temas[c + '|' + t.k]);
+      (marcados.length ? marcados : temas).forEach(t => out.push.apply(out, t.qs));
+    });
+    return out;
+  }
+
+  function pintar() {
+    // Cursos
+    $('cursos').innerHTML = AREA.cursos.map(c => {
+      const a = ACCESO[c], n = (TEMAS[c] || []).length;
+      if (a !== 'ok') return '<button type="button" class="cur bloq" data-c="' + c + '">' + ICO_CANDADO + '<div>' + esc(NOMBRE[c] || c) + '<small>' + (a === 'revisando' ? 'Revisando acceso…' : 'Necesita código') + '</small></div></button>';
+      return '<button type="button" class="cur' + (SEL.cursos[c] ? ' on' : '') + '" data-c="' + c + '" aria-pressed="' + !!SEL.cursos[c] + '">' + ICO_CHK + '<div>' + esc(NOMBRE[c] || c) + '<small>' + n + (n === 1 ? ' tema' : ' temas') + '</small></div></button>';
+    }).join('');
+    // Ciclos y fuentes
+    $('ciclos').innerHTML = ciclosTodos().map(c => '<button type="button" class="fil' + (SEL.ciclos[c] ? ' on' : '') + '" data-ciclo="' + esc(c) + '">Ciclo ' + esc(c) + '</button>').join('');
+    $('fuentes').innerHTML = FUENTES.map(([f, nom]) => '<button type="button" class="fil' + (SEL.fuentes[f] ? ' on' : '') + '" data-f="' + f + '">' + nom + '</button>').join('');
+    // Temas de los cursos elegidos
+    const elegidos = AREA.cursos.filter(c => SEL.cursos[c] && ACCESO[c] === 'ok');
+    $('temas').innerHTML = !elegidos.length ? '<p class="resumen" style="margin:0">Elige al menos un curso.</p>' : elegidos.map(c => {
+      const temas = TEMAS[c] || [], marc = temas.filter(t => SEL.temas[c + '|' + t.k]).length;
+      return '<details class="tc" data-c="' + c + '"' + (SEL.abiertos[c] ? ' open' : '') + '><summary>' + esc(NOMBRE[c] || c) + '<span>' + (marc ? marc + ' de ' + temas.length + ' temas' : 'Todos los temas') + '</span>' + ICO_FLECHA + '</summary><div class="chips">' +
+        (temas.length ? temas.map(t => '<button type="button" class="chip' + (SEL.temas[c + '|' + t.k] ? ' on' : '') + '" data-c="' + c + '" data-k="' + esc(t.k) + '">' + esc(t.nom) + ' <em>' + (t.f === 'banqueo' ? 'Banqueo · ' : t.f === 'seminarios' ? 'Seminario · ' : '') + t.qs.length + '</em></button>').join('') : '<span class="chip" style="cursor:default;opacity:.6">No hay temas en ese ciclo y fuente</span>') + '</div></details>';
+    }).join('');
+    // Cantidad y resumen
+    const P = pool().length;
+    $('cant').querySelectorAll('button').forEach(b => { b.classList.toggle('on', +b.dataset.n === SEL.n); });
+    const n = Math.min(SEL.n, P);
+    $('resumen').innerHTML = P ? 'Saldrán <b>' + n + '</b> preguntas al azar de <b>' + P + '</b> disponibles' + (n < SEL.n ? ' (no hay más con lo que elegiste)' : '') + ' · 5 vidas' : 'No hay preguntas con lo que elegiste.';
+    btnStart.disabled = !P;
+  }
+
+  $('cursos').addEventListener('click', e => {
+    const b = e.target.closest('.cur'); if (!b) return;
+    const c = b.dataset.c;
+    if (ACCESO[c] !== 'ok') {
+      $('aviso').innerHTML = 'Para <b>' + esc(NOMBRE[c] || c) + '</b> necesitas su código de Repaso. Actívalo en <a href="' + c + '/index.html">la página del curso</a> o en "Ingresar código" del inicio.';
+      $('aviso').hidden = false; return;
+    }
+    SEL.cursos[c] = !SEL.cursos[c]; pintar();
+  });
+  $('cursosTodos').addEventListener('click', () => {
+    const ok = AREA.cursos.filter(c => ACCESO[c] === 'ok'), todos = ok.every(c => SEL.cursos[c]);
+    ok.forEach(c => { SEL.cursos[c] = !todos; }); pintar();
+  });
+  $('ciclos').addEventListener('click', e => {
+    const b = e.target.closest('[data-ciclo]'); if (!b) return;
+    const c = b.dataset.ciclo;
+    if (SEL.ciclos[c] && ciclosSel().length === 1) return; // al menos uno
+    SEL.ciclos[c] = !SEL.ciclos[c]; pintar(); cargarTemas();
+  });
+  $('fuentes').addEventListener('click', e => {
+    const b = e.target.closest('[data-f]'); if (!b) return;
+    const f = b.dataset.f;
+    if (SEL.fuentes[f] && FUENTES.filter(x => SEL.fuentes[x[0]]).length === 1) return;
+    SEL.fuentes[f] = !SEL.fuentes[f]; pintar(); cargarTemas();
+  });
+  $('temas').addEventListener('click', e => {
+    const b = e.target.closest('.chip[data-k]'); if (!b) return;
+    const k = b.dataset.c + '|' + b.dataset.k;
+    if (SEL.temas[k]) delete SEL.temas[k]; else SEL.temas[k] = 1;
+    pintar();
+  });
+  $('temas').addEventListener('toggle', e => { const d = e.target.closest('details[data-c]'); if (d) SEL.abiertos[d.dataset.c] = d.open; }, true);
+  $('cant').addEventListener('click', e => { const b = e.target.closest('button[data-n]'); if (!b) return; SEL.n = +b.dataset.n; pintar(); });
+
+  // Acceso: el mismo código que abre el Repaso de cada curso (curso, VIP Repasos o VIP total)
+  function revisarAccesos() {
+    AREA.cursos.forEach(c => {
+      const prod = 'repaso-' + c;
+      if (MCAcceso.accesoLocal(prod)) ACCESO[c] = 'ok';
+      else ACCESO[c] = 'revisando';
+      MCAcceso.verificar(prod).then(v => {
+        const antes = ACCESO[c];
+        ACCESO[c] = v && v.acceso ? 'ok' : 'no';
+        if (ACCESO[c] === 'ok' && antes !== 'ok') SEL.cursos[c] = true;
+        if (ACCESO[c] !== 'ok') delete SEL.cursos[c];
+        pintar();
+      }).catch(() => { if (ACCESO[c] !== 'ok') { ACCESO[c] = 'no'; pintar(); } });
+      if (ACCESO[c] === 'ok') SEL.cursos[c] = true;
+    });
+  }
+
+  async function iniciar() {
+    const reg = await fetch('assets/cursos.json', { cache: 'no-cache' }).then(r => r.json()).catch(() => null);
+    ((reg && reg.cursos) || []).forEach(c => { NOMBRE[c.id] = c.nombre; });
+    await Promise.all(FUENTES.map(([f]) => { MAN[f] = {}; return Promise.all(AREA.cursos.map(c =>
+      fetch(c + '/' + f + '/data/manifest.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : []).catch(() => [])
+        .then(m => { MAN[f][c] = Array.isArray(m) ? m : []; }))); }));
+    // Por defecto: el ciclo actual (el más nuevo de libros) y solo Libros
+    const deLibros = {}; AREA.cursos.forEach(c => (MAN.libros[c] || []).forEach(m => { if (m && m.id) deLibros[m.id] = 1; }));
+    const L = Object.keys(deLibros).sort((a, b) => ordenCiclo(a) - ordenCiclo(b));
+    const actual = L[L.length - 1] || ciclosTodos().slice(-1)[0];
+    if (actual) SEL.ciclos[actual] = true;
+    revisarAccesos();
+    pintar();
+    cargarTemas();
+  }
+
+  /* ---------- El juego: igual que el Repaso de cada curso ---------- */
+  const elegir = $('elegir');
+  const quizHeader = $('quizHeader'), quizBody = $('quizBody'), endScreen = $('endScreen');
+  const finalScore = $('finalScore'), endMessage = $('endMessage'), btnStart = $('btnStart');
+  let activeQuestions = [], ultimoPool = [];
+  let current = 0, score = 0, lives = 5, answered = false;
+  const MAX_LIVES = 5;
+  const answers = [];
+
+  function armarRonda(lista) {
+    const mezcla = window.MCPregunta ? MCPregunta.mezclar : shuffle;
+    return mezcla(lista).slice(0, Math.min(SEL.n, lista.length));
+  }
+
+  function setupHeaderAndBody() {
+    quizHeader.innerHTML = `
+      <div class="title">Repaso <span class="accent">mixto</span></div>
+      <div class="topbar">
+        <div class="lives" id="lives"></div>
+        <div class="stat"><span id="score">0 pts</span><button class="mc-son" type="button" data-mc-son></button></div>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="progress-label" id="progress-label">Pregunta 1 de ${activeQuestions.length}</div>
+    `;
+    quizBody.innerHTML = `
+      <div class="badge" id="topicBadge"><span class="dot"></span><span id="topicText"></span></div>
+      <div class="question"><p id="questionText"></p></div>
+      <div class="q-graphic" id="qGraphic" style="display:none;"></div>
+      <div class="options" id="optionsList"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="navrow">
+        <button class="btn" id="btnBack">Atrás</button>
+        <button class="btn primary" id="btnNext" disabled>Siguiente</button>
+      </div>
+    `;
+    bindQuizEvents();
+  }
+
+  function heartSVG(filled) {
+    return `<svg width="16" height="16" viewBox="0 0 24 24" fill="${filled ? '#C6E000' : 'none'}" stroke="${filled ? '#C6E000' : '#3a3a3a'}" stroke-width="2"><path d="M12 21s-6.7-4.35-9.3-8.3C1.1 10.1 1.6 6.6 4.4 5.1c2.2-1.2 4.7-.4 6 1.4l1.6 2.1 1.6-2.1c1.3-1.8 3.8-2.6 6-1.4 2.8 1.5 3.3 5 1.7 7.6C18.7 16.65 12 21 12 21z"/></svg>`;
+  }
+
+  let livesEl, scoreEl, progressFill, progressLabel, topicText, questionText, optionsList, feedback, btnBack, btnNext;
+
+  function bindQuizEvents() {
+    livesEl = $('lives'); scoreEl = $('score'); progressFill = $('progress-fill'); progressLabel = $('progress-label');
+    topicText = $('topicText'); questionText = $('questionText'); optionsList = $('optionsList'); feedback = $('feedback');
+    btnBack = $('btnBack'); btnNext = $('btnNext');
+    btnNext.addEventListener('click', () => {
+      if (current === activeQuestions.length - 1) { progressFill.style.width = '100%'; showEnd(); return; }
+      current += 1; renderQuestion();
+    });
+    btnBack.addEventListener('click', () => { if (current === 0) return; current -= 1; renderQuestion(); });
+  }
+
+  function renderLives() { livesEl.innerHTML = Array.from({ length: MAX_LIVES }, (_, i) => heartSVG(i < lives)).join(''); }
+
+  function renderQuestion() {
+    answered = false;
+    const q = activeQuestions[current];
+    // En el mixto se ve de qué curso es cada pregunta
+    topicText.innerHTML = '<span class="curso">' + esc(NOMBRE[q._curso] || q._curso) + '</span> · ' + esc(q._tit || '');
+    const qGraphic = $('qGraphic');
+    const mcq = window.MCPregunta ? MCPregunta.pintar({ texto: questionText, grafico: qGraphic }, q) : null;
+    if (!mcq) {
+      questionText.innerHTML = formatQText(q.text);
+      if (q.graphic) { qGraphic.innerHTML = q.graphic; qGraphic.style.display = 'block'; }
+      else { qGraphic.innerHTML = ''; qGraphic.style.display = 'none'; }
+    }
+    optionsList.innerHTML = '';
+    feedback.className = 'feedback'; feedback.textContent = '';
+    q.options.forEach((opt, i) => {
+      const div = document.createElement('div');
+      div.className = 'option';
+      div.innerHTML = `<div class="letter">${opt.letter}</div><span class="text">${formatQText(opt.text)}</span>`;
+      div.addEventListener('click', () => selectAnswer(i, div));
+      optionsList.appendChild(div);
+    });
+    if (mcq) MCPregunta.alternativas(optionsList, q, mcq);
+    renderMath(quizBody);
+    const prevAnswer = answers[current];
+    if (prevAnswer !== undefined) lockOptions(prevAnswer);
+    btnBack.disabled = current === 0;
+    btnNext.disabled = prevAnswer === undefined;
+    btnNext.textContent = current === activeQuestions.length - 1 ? 'Finalizar' : 'Siguiente';
+    progressFill.style.width = (current / activeQuestions.length * 100) + '%';
+    progressLabel.textContent = `Pregunta ${current + 1} de ${activeQuestions.length}`;
+    scoreEl.textContent = `${score} pts`;
+    renderLives();
+  }
+
+  function lockOptions(selectedIndex) {
+    const q = activeQuestions[current];
+    optionsList.querySelectorAll('.option').forEach((div, i) => {
+      div.classList.add('locked'); div.style.cursor = 'default';
+      if (i === q.correct) {
+        div.classList.add('correct');
+        div.insertAdjacentHTML('beforeend', '<svg class="icon ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>');
+      } else if (i === selectedIndex) {
+        div.classList.add('wrong');
+        div.insertAdjacentHTML('beforeend', '<svg class="icon bad" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>');
+      }
+    });
+    const wasCorrect = selectedIndex === q.correct;
+    feedback.textContent = wasCorrect ? '¡Correcto!' : `Incorrecto. La respuesta correcta era la ${q.options[q.correct].letter}.`;
+    feedback.className = 'feedback show ' + (wasCorrect ? 'ok' : 'bad');
+  }
+
+  function selectAnswer(index) {
+    if (answered) return;
+    answered = true;
+    window.MCRacha ? MCRacha.respondio() : (window.mcRachaPend = (window.mcRachaPend || 0) + 1);
+    answers[current] = index;
+    const isCorrect = index === activeQuestions[current].correct;
+    if (isCorrect) score += 10; else lives -= 1;
+    if (window.MCCorazones) MCCorazones.respuesta(isCorrect);
+    if (window.MCSonido) MCSonido[isCorrect ? 'bien' : 'mal']();
+    lockOptions(index); renderLives();
+    scoreEl.textContent = `${score} pts`;
+    btnNext.disabled = false;
+    if (lives <= 0) setTimeout(showEnd, 900);
+  }
+
+  function showEnd() {
+    quizHeader.style.display = 'none'; quizBody.style.display = 'none';
+    endScreen.classList.add('show');
+    finalScore.textContent = `${score} pts`;
+    endMessage.textContent = lives <= 0 ? 'Se acabaron tus vidas. ¡Sigue practicando!' : 'Así te fue en esta práctica';
+    if (showEnd.ronda === activeQuestions) return;
+    showEnd.ronda = activeQuestions;
+    if (window.MCSonido) lives <= 0 ? MCSonido.perder() : MCSonido.fin(Math.round(answers.filter((a, i) => activeQuestions[i] && a === activeQuestions[i].correct).length / activeQuestions.length * 100));
+    // Progreso: una práctica "Repaso mixto" del área; cada fallada queda con su curso (Repasar mis falladas)
+    if (!window.MCProgreso || !window.MCAuth || !MCAuth.usuario()) return;
+    const d = MCProgreso.armar({ tipo: 'repaso', clave: 'repaso-mixto|' + AREA_ID, carpeta: '', anio: ciclosSel().join(','), titulo: 'Repaso mixto · ' + AREA.nom, preguntas: activeQuestions, respuestas: answers });
+    if (!d.total) return;
+    const porRef = {}; activeQuestions.forEach(q => { porRef[q._ref] = q._curso; });
+    d.falladas.forEach(f => { f.carpeta = porRef[f.ref] || ''; });
+    MCAuth.listo.then(c => c.rpc('guardar_practica', { p: d })).catch(() => {});
+  }
+
+  function empezar(lista) {
+    lives = window.MCCorazones ? MCCorazones.vidasInicio(MAX_LIVES) : MAX_LIVES;
+    if (!lives) return false;
+    activeQuestions = armarRonda(lista);
+    current = 0; score = 0; answers.length = 0;
+    elegir.classList.remove('show'); endScreen.classList.remove('show');
+    setupHeaderAndBody();
+    quizHeader.style.display = 'block'; quizBody.style.display = 'block';
+    renderQuestion();
+    window.scrollTo(0, 0);
+    return true;
+  }
+  btnStart.addEventListener('click', () => {
+    ultimoPool = pool();
+    if (!ultimoPool.length) return;
+    if (empezar(ultimoPool) && window.MCSonido) MCSonido.empezar();
+  });
+  $('btnRestart').addEventListener('click', () => { empezar(ultimoPool); });
+  $('btnCambiar').addEventListener('click', () => {
+    endScreen.classList.remove('show'); quizHeader.style.display = 'none'; quizBody.style.display = 'none';
+    elegir.classList.add('show'); pintar(); window.scrollTo(0, 0);
+  });
+
+  iniciar();
+</script>
+<script src="assets/alertas.js" defer></script>
+</body>
+</html>
