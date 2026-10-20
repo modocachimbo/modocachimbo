@@ -660,7 +660,7 @@
   const ESTADOS = { ganaste: 'Ganaste', perdiste: 'Perdiste', empate: 'Empate', 'sin-resultado': 'Sin rivales', 'te-toca': 'Te toca', 'a-medias': 'A medias', esperando: 'Esperando', 'no-jugaste': 'No jugaste', 'en-sala': 'En la sala', cancelado: 'No se inició' };
 
   let CURSOS = [], NOMBRE = {};
-  let sel = { ciclo: 'todos', curso: 'todos', cursos: [], temas: [], fuente: 'mezcla', n: 10, jugadores: 2, auto: true, seg: 30, comodines: true };
+  let sel = { ciclo: 'todos', cicloAuto: true, curso: 'todos', cursos: [], temas: [], fuente: 'mezcla', n: 10, jugadores: 2, auto: true, seg: 30, comodines: true };
   let V = null;          // estado del duelo (ver_duelo)
   let G = null;          // partida en curso
   let sondeo = null;     // intervalo que mira el avance de los demás
@@ -926,6 +926,7 @@
     const hay = {};
     L.forEach(x => x.forEach(y => y.forEach(id => { hay[id] = 1; })));
     const ids = Object.keys(hay).sort((a, b) => ordenCiclo(b) - ordenCiclo(a));
+    if (sel.cicloAuto && ids.length) sel.ciclo = ids[0];   // de entrada, el ciclo actual (el más reciente)
     if (sel.ciclo !== 'todos' && !hay[sel.ciclo]) sel.ciclo = 'todos';
     $('selCiclo').innerHTML = '<option value="todos">Todos los ciclos</option>' + ids.map(id => '<option value="' + esc(id) + '"' + (id === sel.ciclo ? ' selected' : '') + '>' + esc(id) + '</option>').join('');
 
@@ -992,7 +993,7 @@
     if (b.classList.contains('vip')) { errorCrear('Para usar ' + NOM_FUENTE[b.dataset.f] + ' necesitas su código VIP. Actívalo en esa sección del curso y vuelve.'); return; }
     errorCrear(); sel.fuente = b.dataset.f; actualizarFiltros();
   });
-  $('selCiclo').addEventListener('change', () => { sel.ciclo = $('selCiclo').value; errorCrear(); actualizarFiltros(); });
+  $('selCiclo').addEventListener('change', () => { sel.ciclo = $('selCiclo').value; sel.cicloAuto = false; errorCrear(); actualizarFiltros(); });
   $('cuBtn').addEventListener('click', () => {
     const abrir = $('cuList').hidden;
     $('cuList').hidden = !abrir; $('cuBtn').setAttribute('aria-expanded', String(abrir));
