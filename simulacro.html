@@ -107,6 +107,62 @@
   .rank li.yo .p { color: var(--accent); }
   .vacia { color: var(--dim); font-size: 13px; }
 
+  /* Modo: simulacro rápido o personalizado */
+  .modos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+  .modo { display: flex; gap: 14px; align-items: center; text-align: left; background: var(--surface); color: var(--text); border: 2px solid var(--border); border-radius: 18px; padding: 14px 16px; box-shadow: 0 4px 0 var(--border); transition: transform .08s; }
+  .modo:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--border); }
+  .modo .mi { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: var(--surface-2); color: var(--dim); flex-shrink: 0; }
+  .modo .mi svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .modo b { display: block; font-size: 16px; font-weight: 800; }
+  .modo small { display: block; color: var(--dim); font-size: 12.5px; line-height: 1.4; margin-top: 2px; }
+  .modo.on { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 4px 0 #8a9c00; }
+  .modo.on .mi { background: var(--accent); color: var(--on-accent); }
+  .cantidad { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .cantidad button { position: relative; background: var(--surface-2); color: var(--text); border: 2px solid var(--border); border-radius: 14px; padding: 10px 4px 8px; font-weight: 800; font-size: 20px; line-height: 1.1; font-variant-numeric: tabular-nums; box-shadow: 0 3px 0 var(--border); }
+  .cantidad button small { display: block; font-size: 11px; color: var(--dim); font-weight: 700; }
+  .cantidad button.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); box-shadow: 0 3px 0 #8a9c00; }
+  .cantidad button:disabled { opacity: .4; cursor: default; }
+  .cantidad .rec { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); background: #FFC800; color: #0b0b0b; font-size: 9.5px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; border-radius: 6px; padding: 1px 6px; white-space: nowrap; }
+  /* Elegir temas */
+  .temas-card { margin-top: 18px; }
+  .temas-cab { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .temas-cab h3 { font-size: 17px; margin: 0; }
+  .temas-acc { display: flex; gap: 8px; flex-wrap: wrap; }
+  .temas-res { font-size: 13px; color: var(--dim); margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .temas-res b { color: var(--accent); }
+  .ta { border: 1px solid var(--border); border-left: 4px solid var(--c); border-radius: 14px; margin-top: 10px; background: var(--surface-2); }
+  .ta > summary { list-style: none; display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; font-weight: 800; font-size: 15px; }
+  .ta > summary::-webkit-details-marker { display: none; }
+  .ta > summary .cnt { margin-left: auto; font-size: 12px; font-weight: 800; color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent); border-radius: 100px; padding: 3px 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .ta > summary svg { width: 18px; height: 18px; fill: none; stroke: var(--dim); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: transform .15s; flex-shrink: 0; }
+  .ta[open] > summary svg { transform: rotate(180deg); }
+  .ta-body { padding: 0 14px 14px; display: grid; gap: 14px; }
+  .tc-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+  .tc-cab b { font-size: 14px; }
+  .tc-cab b small { color: var(--faint); font-weight: 700; font-size: 12px; margin-left: 6px; }
+  .tc-todos { background: none; border: 0; color: var(--c); font-weight: 800; font-size: 12.5px; padding: 4px 0; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { display: inline-flex; align-items: center; gap: 7px; max-width: 100%; background: var(--surface); color: var(--text); border: 2px solid var(--border); border-radius: 12px; padding: 7px 11px; font-size: 13px; font-weight: 700; text-align: left; box-shadow: 0 2px 0 var(--border); }
+  .chip span { min-width: 0; overflow-wrap: anywhere; }
+  .chip i { font-style: normal; width: 18px; height: 18px; border-radius: 6px; border: 2px solid var(--faint); display: grid; place-items: center; flex-shrink: 0; }
+  .chip i svg { width: 12px; height: 12px; fill: none; stroke: var(--on-accent); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+  .chip em { font-style: normal; color: var(--faint); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+  .chip.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 13%, var(--surface)); box-shadow: 0 2px 0 color-mix(in srgb, var(--c) 55%, #000); }
+  .chip.on i { background: var(--c); border-color: var(--c); }
+  .chip.on i svg { opacity: 1; }
+  .tc-vacio { color: var(--faint); font-size: 12.5px; }
+  .consejo { display: flex; gap: 12px; margin-top: 14px; padding: 12px 14px; border: 2px solid #1CB0F6; border-radius: 14px; background: rgba(28,176,246,.08); font-size: 13.5px; line-height: 1.5; }
+  .consejo svg { width: 22px; height: 22px; flex-shrink: 0; fill: none; stroke: #1CB0F6; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; margin-top: 1px; }
+  .consejo b { color: #1CB0F6; }
+  .etq { display: inline-block; font-size: 10.5px; font-weight: 800; letter-spacing: .4px; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); border-radius: 6px; padding: 1px 6px; margin-left: 6px; vertical-align: 1px; }
+  /* Resultado por tema (personalizado) */
+  .por-tema { list-style: none; display: grid; gap: 8px; margin-top: 4px; }
+  .por-tema li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; font-size: 13.5px; }
+  .por-tema li small { color: var(--dim); font-size: 12px; }
+  .por-tema li b { font-variant-numeric: tabular-nums; }
+  .por-tema .bar { grid-column: 1 / -1; height: 8px; border-radius: 6px; background: var(--surface-2); overflow: hidden; }
+  .por-tema .bar i { display: block; height: 100%; background: var(--c); border-radius: 6px; }
+  @media (max-width: 560px) { .modos { grid-template-columns: minmax(0, 1fr); } .modo { padding: 12px 14px; } }
   /* Examen */
   .barra { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 8px); z-index: 10; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 10px 14px; margin-bottom: 16px; box-shadow: 0 8px 24px rgba(0,0,0,.5); }
   .reloj { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--accent); }
@@ -285,6 +341,23 @@
     <div class="eyebrow" style="margin-top:14px">Simulacro UNJFSC</div>
     <h1 style="font-size:clamp(26px,4vw,34px);margin-top:6px" id="crearTit">Crea tu simulacro</h1>
     <p class="hint" style="max-width:62ch" id="crearSub">80 preguntas al azar de los libros de cada curso, repartidas como en el examen de admisión.</p>
+    <div class="modos" id="modos" role="radiogroup" aria-label="Tipo de simulacro">
+      <button type="button" class="modo on" data-modo="rapido" role="radio" aria-checked="true">
+        <span class="mi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span>
+        <span><b>Simulacro rápido</b><small>80 preguntas al azar, como el examen de admisión</small></span>
+      </button>
+      <button type="button" class="modo" data-modo="pers" role="radio" aria-checked="false">
+        <span class="mi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg></span>
+        <span><b>Personaliza tu simulacro</b><small>Tú eliges los temas y cuántas preguntas</small></span>
+      </button>
+    </div>
+    <section class="card temas-card" id="temasCard" hidden>
+      <div class="temas-cab">
+        <div><h3>Elige tus temas</h3><p class="temas-res" id="temasRes">Toca los temas que quieres practicar.</p></div>
+        <div class="temas-acc"><button class="btn sec mini" type="button" id="temasTodos">Elegir todos</button><button class="btn sec mini" type="button" id="temasLimpiar">Limpiar</button></div>
+      </div>
+      <div id="temasLista"><p class="vacia" style="margin-top:12px">Cargando temas…</p></div>
+    </section>
     <div class="crear">
       <div class="card">
         <div class="campo" id="campoNombre">
@@ -295,6 +368,12 @@
           <span class="lbl">Ciclo académico</span>
           <div class="ciclos" id="ciclos"></div>
           <p class="nota" id="ciclosNota">Con un ciclo, las preguntas salen solo de ese ciclo. Con dos o más, salen al azar de los ciclos que elijas, con la misma cantidad por curso.</p>
+        </div>
+        <div class="campo" id="campoCantidad" hidden><span class="lbl">Cantidad de preguntas</span>
+          <div class="cantidad" id="cantidad">
+            <button type="button" data-n="20">20<small>preguntas</small></button><button type="button" data-n="40"><span class="rec">Recomendado</span>40<small>preguntas</small></button><button type="button" data-n="60">60<small>preguntas</small></button><button type="button" data-n="80">80<small>preguntas</small></button>
+          </div>
+          <p class="nota" id="cantidadNota">Se reparten entre tus temas con el mismo peso que tiene cada curso en el examen de admisión.</p>
         </div>
         <div class="dos">
           <div class="campo"><label for="selBloque">Bloque</label><select id="selBloque"></select></div>
@@ -318,7 +397,7 @@
       </div>
       <div class="col">
         <div class="card">
-          <h3>Cómo se reparten las preguntas</h3>
+          <h3 id="distTit">Cómo se reparten las preguntas</h3>
           <div id="dist"></div>
           <p class="nota">Puntaje máximo de tu bloque: <b id="maxPts">200</b> puntos.</p>
         </div>
@@ -390,6 +469,7 @@
         </table></div>
       </div>
     </div>
+    <div class="card" id="rTemas" style="margin-top:16px" hidden></div>
     <div class="card avance" id="rAvance" hidden></div>
     <div class="card comparar" id="rComparar" hidden></div>
     <div class="res-bot">
