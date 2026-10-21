@@ -189,7 +189,8 @@
   const qlistEl = document.getElementById("qlist");
 
   document.getElementById('backLink').href = 'temario.html?year=' + encodeURIComponent(year || '');
-  document.getElementById('backLabel').textContent = 'Temario ' + (year || '');
+  // Volver al temario: "Curso · 2027-I"
+  document.getElementById('backLabel').textContent = document.getElementById('badgeYear').textContent + (year ? ' · ' + year : '');
 
   if (!year || !temaNum) {
     qlistEl.innerHTML = '<div class="state-msg">Falta indicar año y tema. Vuelve al temario.</div>';

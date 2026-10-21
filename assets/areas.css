@@ -169,7 +169,12 @@ html[data-area]:has(.courses) .coffee { border-radius: 20px; }
    inicio solo va en los títulos grandes; lo demás sigue en Nunito.
    ========================================================= */
 html[data-area] { --display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif; }
-html[data-area]:not(:has(.courses)) .back:not(#z), html[data-area]:not(:has(.courses)) .backlink:not(#z) { color: #f2f2f2; }
+/* Volver: igual que "← Ciencia y Tecnología" en la página del curso */
+html[data-area]:not(:has(.courses)) .back:not(#z) { font: 900 22px/1.1 'Nunito', sans-serif !important; color: #f2f2f2; gap: 8px; }
+html[data-area]:not(:has(.courses)) .back svg { width: 20px; height: 20px; }
+html[data-area]:not(:has(.courses)) .backlink a:not(#z) { font: 900 16px/1.1 'Nunito', sans-serif !important; color: #f2f2f2; }
+html[data-area]:not(:has(.courses)) .backlink svg { width: 16px; height: 16px; }
+@media (max-width: 520px) { html[data-area]:not(:has(.courses)) .back:not(#z) { font-size: 19px !important; } }
 html[data-area]:not(:has(.courses)) .home-btn { border-radius: 12px !important; }
 html[data-area]:not(:has(.courses)) .page-title h1:not(#z), html[data-area]:not(:has(.courses)) .page-head h1:not(#z) { font: italic 900 50px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; }
 html[data-area]:not(:has(.courses)) .course-badge, html[data-area]:not(:has(.courses)) .logo { border-radius: 12px !important; }
