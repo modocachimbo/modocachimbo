@@ -513,6 +513,11 @@
   window.MCHoja = { abrir: function (t, html) { hFondo.classList.remove('full'); document.body.classList.remove('en-cursos'); hTit.textContent = t; hLista.innerHTML = html; hFondo.hidden = false; }, cerrar: cerrarHoja };
   Array.prototype.forEach.call(document.querySelectorAll('[data-hoja]'), function (b) { b.addEventListener('click', function () { abrirHoja(b.getAttribute('data-hoja')); }); });
   $('hojaX').addEventListener('click', cerrarHoja);
+  // Volver desde un área ("← Mis cursos"): el inicio abre "Mis cursos" de una vez
+  if (location.hash === '#mis-cursos') {
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+    abrirHoja('cursos');
+  }
   hFondo.addEventListener('click', function (e) { if (e.target === hFondo) cerrarHoja(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !hFondo.hidden) cerrarHoja(); });
   // Sin novedades, el regalo igual responde
