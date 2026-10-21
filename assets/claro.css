@@ -358,3 +358,5 @@ html[data-modo="claro"] .rep-btn.done { color: #2F7300 !important; border-color:
 
 /* Logo: "MODO" va en blanco en oscuro; en claro se usa la versión con letras oscuras */
 html[data-modo="claro"] img[src$="logo-modo-cachimbo-horizontal.svg"] { content: url("img/logo-modo-cachimbo-horizontal-claro.svg"); }
+/* Botón principal (Empezar, Desbloquear): lima como en oscuro, no gris */
+html[data-modo="claro"] .btn.primary { background: var(--accent, #C6E000) !important; border-color: #8FA300 !important; color: #1A1626 !important; }
