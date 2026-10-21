@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>/* Vuelve de un área ("← Mis cursos"): la hoja se ve desde el primer momento, sin mostrar antes el inicio */ if (location.hash === '#mis-cursos') document.documentElement.classList.add('mc-abre-cursos');</script>
 <script>/* Abierta como app instalada: muestra la barra de abajo */ try { if ((window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true) document.documentElement.classList.add('mc-app'); } catch (e) {}</script>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#050505">
@@ -973,6 +974,9 @@ footer { border-top: 1px solid var(--borde); padding: 26px 0 10px; }
 .hoja-x { border-radius: 12px; }
 .hoja .curso { border-radius: 16px; }
 .hoja .curso .ic { clip-path: none; border-radius: 14px; }
+html.mc-abre-cursos .hoja-fondo[hidden] { display: flex; }
+html.mc-abre-cursos .hoja { animation: none; }
+@media (min-width: 901px) { html.mc-abre-cursos .hoja-fondo { left: 300px; background: var(--fondo); } }
 @keyframes hojaEntra { from { opacity: 0; transform: translateY(10px); } }
 .hoja-sub { display: none; }
 .area-card { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 18px; padding: 24px; border-radius: 22px; background: var(--tarjeta); border: 1px solid var(--borde); border-bottom: 4px solid var(--ac); box-shadow: var(--sombra-tarjeta); transition: border-color .15s, transform .12s; }

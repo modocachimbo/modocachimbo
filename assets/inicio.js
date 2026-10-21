@@ -508,7 +508,7 @@
     hFondo.hidden = false;
     sonar('toque');
   }
-  function cerrarHoja() { hFondo.hidden = true; hFondo.classList.remove('full'); document.body.classList.remove('en-cursos'); }
+  function cerrarHoja() { document.documentElement.classList.remove('mc-abre-cursos'); hFondo.hidden = true; hFondo.classList.remove('full'); document.body.classList.remove('en-cursos'); }
   // "Nuevo para ti" (assets/novedades.js) usa la misma hoja
   window.MCHoja = { abrir: function (t, html) { hFondo.classList.remove('full'); document.body.classList.remove('en-cursos'); hTit.textContent = t; hLista.innerHTML = html; hFondo.hidden = false; }, cerrar: cerrarHoja };
   Array.prototype.forEach.call(document.querySelectorAll('[data-hoja]'), function (b) { b.addEventListener('click', function () { abrirHoja(b.getAttribute('data-hoja')); }); });
