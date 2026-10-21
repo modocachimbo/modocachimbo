@@ -4,7 +4,11 @@ html[data-modo="claro"] {
   --text: #1A1626; --text-dim: #6B6485; --text-faint: #A49DB8;
   color-scheme: light;
 }
-html[data-modo="claro"][data-area="ciencia-tecnologia"] { --ac: #7A8C00; --ac-rgb: 122,140,0; --ac-d: #5D6B00; }
+/* Ciencia y Tecnología: el mismo verde del botón Practicar; sobre ese verde el texto va oscuro */
+html[data-modo="claro"][data-area="ciencia-tecnologia"] { --ac: #C6E000; --ac-rgb: 198,224,0; --ac-d: #8FA300; }
+html[data-modo="claro"][data-area="ciencia-tecnologia"] .course.active .btn, html[data-modo="claro"][data-area="ciencia-tecnologia"] .mixto-go { background: var(--ac); color: #1A1626 !important; border-color: var(--ac-d); }
+html[data-modo="claro"][data-area="ciencia-tecnologia"] .mixto-ic svg { stroke: #1A1626 !important; }
+html[data-modo="claro"][data-area="ciencia-tecnologia"] .tema-num, html[data-modo="claro"][data-area="ciencia-tecnologia"] .qnum { background: var(--ac) !important; color: #1A1626 !important; border-color: var(--ac-d) !important; }
 html[data-modo="claro"][data-area="matematica"] { --ac: #0E8FD6; --ac-rgb: 14,143,214; --ac-d: #0A6EA6; }
 html[data-modo="claro"][data-area="comunicacion"] { --ac: #9B4FD9; --ac-rgb: 155,79,217; --ac-d: #7A35B3; }
 html[data-modo="claro"][data-area="ciencias-sociales"] { --ac: #E07B00; --ac-rgb: 224,123,0; --ac-d: #B06000; }
@@ -29,7 +33,8 @@ html[data-modo="claro"][data-area] .course.disabled .btn { background: #E9E6F1; 
 html[data-modo="claro"][data-area] .course .btn { background: rgba(var(--ac-rgb), .08); }
 html[data-modo="claro"][data-area] .mixto { background: linear-gradient(135deg, rgba(var(--ac-rgb), .14), rgba(var(--ac-rgb), .03)), #fff; }
 html[data-modo="claro"][data-area] .mixto-tx small { color: var(--text-dim); }
-html[data-modo="claro"][data-area] .mixto-go, html[data-modo="claro"][data-area] .mixto-ic svg { color: #fff; stroke: #fff; }
+html[data-modo="claro"][data-area] .mixto-go { color: #fff; }
+html[data-modo="claro"][data-area] .mixto-ic svg { stroke: #fff; }
 html[data-modo="claro"] .coffee { background: radial-gradient(120% 90% at 100% 0, rgba(155,79,217,.12), transparent 60%), #fff !important; border-color: rgba(155,79,217,.35) !important; }
 html[data-modo="claro"] .coffee-text h3 { color: var(--text); }
 
@@ -82,3 +87,8 @@ html[data-modo="claro"] .option.wrong .letter { background: #E5383B !important; 
 html[data-modo="claro"] .home-btn svg { fill: currentColor; }
 html[data-modo="claro"] .mc-avance .barra { background: #E4E1EC !important; border-color: var(--border) !important; }
 html[data-modo="claro"] .mc-avance small { color: var(--text-dim) !important; }
+
+/* "¿Error en la clave?": ámbar más oscuro para que se note sobre blanco */
+html[data-modo="claro"] .rep-btn { color: #9A6700 !important; border-color: rgba(179,134,0,.55) !important; background: rgba(251,191,36,.14) !important; }
+html[data-modo="claro"] .rep-btn:hover { background: rgba(251,191,36,.24) !important; }
+html[data-modo="claro"] .rep-btn.done { color: #2F7300 !important; border-color: rgba(63,154,0,.5) !important; background: rgba(63,154,0,.1) !important; }
