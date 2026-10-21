@@ -461,10 +461,31 @@
     return '<a class="curso ' + (cls || '') + '"' + (area ? ' data-area="' + esc(area) + '"' : '') + ' href="' + esc(href) + '"><span class="ic">' + ic + '</span><span class="tx"><b>' + esc(nombre) + '</b>' +
       (sub ? '<small>' + esc(sub) + '</small>' : '') + '</span>' + CHEV + '</a>';
   }
+  // En PC cada área es una tarjeta grande con sus cursos a la mano
+  var enPC = window.matchMedia('(min-width: 901px)');
+  function pintarCursosPC() {
+    cursosJson.then(function (d) {
+      Array.prototype.forEach.call(hLista.querySelectorAll('a.curso[data-area]'), function (a) {
+        var area = a.getAttribute('data-area');
+        var cs = (d.cursos || []).filter(function (c) { return c.area === area && !c.oculto; }).sort(function (x, y) { return (x.orden || 0) - (y.orden || 0); });
+        var card = document.createElement('div');
+        card.className = 'area-card'; card.setAttribute('data-area', area);
+        a.className = 'area-link';
+        a.querySelector('small').textContent = cs.length + (cs.length === 1 ? ' curso' : ' cursos');
+        a.parentNode.replaceChild(card, a);
+        card.appendChild(a);
+        card.insertAdjacentHTML('beforeend', '<div class="area-cursos">' + cs.map(function (c) {
+          return '<a href="' + esc(c.id) + '/index.html">' + (c.icono ? '<i class="ic-m" style="-webkit-mask-image:url(' + esc(c.icono) + ');mask-image:url(' + esc(c.icono) + ')"></i>' : '') + esc(c.nombre) + '</a>';
+        }).join('') + '</div>');
+      });
+    }).catch(function () {});
+  }
   function abrirHoja(cual) {
+    hFondo.classList.remove('full'); document.body.classList.remove('en-cursos');
     if (cual === 'cursos') {
       hTit.textContent = 'Mis cursos';
       hLista.innerHTML = $('tplAreas').innerHTML;
+      if (enPC.matches) { pintarCursosPC(); hFondo.classList.add('full'); document.body.classList.add('en-cursos'); }
     } else if (cual === 'examenes') {
       hTit.textContent = 'Exámenes de admisión';
       hLista.innerHTML = filaHoja('examenes/ordinario/index.html', ICO_EX, 'Ordinario', 'Exámenes reales de la UNJFSC por año', 'c-azul') +
@@ -487,9 +508,9 @@
     hFondo.hidden = false;
     sonar('toque');
   }
-  function cerrarHoja() { hFondo.hidden = true; }
+  function cerrarHoja() { hFondo.hidden = true; hFondo.classList.remove('full'); document.body.classList.remove('en-cursos'); }
   // "Nuevo para ti" (assets/novedades.js) usa la misma hoja
-  window.MCHoja = { abrir: function (t, html) { hTit.textContent = t; hLista.innerHTML = html; hFondo.hidden = false; }, cerrar: cerrarHoja };
+  window.MCHoja = { abrir: function (t, html) { hFondo.classList.remove('full'); document.body.classList.remove('en-cursos'); hTit.textContent = t; hLista.innerHTML = html; hFondo.hidden = false; }, cerrar: cerrarHoja };
   Array.prototype.forEach.call(document.querySelectorAll('[data-hoja]'), function (b) { b.addEventListener('click', function () { abrirHoja(b.getAttribute('data-hoja')); }); });
   $('hojaX').addEventListener('click', cerrarHoja);
   hFondo.addEventListener('click', function (e) { if (e.target === hFondo) cerrarHoja(); });
