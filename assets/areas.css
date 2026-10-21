@@ -125,14 +125,14 @@ html[data-area]:has(.courses) { --display: "Barlow Condensed", "Arial Narrow", I
 
 /* Cabecera */
 html[data-area]:has(.courses) .back:not(#z) { font: italic 900 26px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; }
-html[data-area]:has(.courses) .home-btn { border-radius: 0; background: var(--surface, #0e0e0e); border-color: var(--border, #262626); }
+html[data-area]:has(.courses) .home-btn { border-radius: 12px; background: var(--surface, #0e0e0e); border-color: var(--border, #262626); }
 html[data-area]:has(.courses) .auth-row .mcu-user .mcz-pill, html[data-area]:has(.courses) .auth-row .mcu-user .mcu-racha {
-  border-radius: 0 !important; border: 1px solid var(--border, #262626) !important; background: var(--surface, #0e0e0e) !important; height: 44px; padding: 0 14px 0 12px; }
+  border-radius: 12px !important; border: 1px solid var(--border, #262626) !important; background: var(--surface, #0e0e0e) !important; height: 44px; padding: 0 14px 0 12px; }
 html[data-area]:has(.courses) .auth-row .mcu-user .mcz-pill span:not(#z), html[data-area]:has(.courses) .auth-row .mcu-user .mcu-racha span:not(#z) { font: 800 22px/1 var(--display) !important; letter-spacing: .02em; }
-html[data-area]:has(.courses) .auth-row .mcu-chip { border-radius: 0 !important; border: 1px solid var(--border, #262626) !important; background: var(--surface, #0e0e0e) !important; height: 44px; padding: 4px 16px 4px 4px; }
+html[data-area]:has(.courses) .auth-row .mcu-chip { border-radius: 12px !important; border: 1px solid var(--border, #262626) !important; background: var(--surface, #0e0e0e) !important; height: 44px; padding: 4px 16px 4px 4px; }
 html[data-area]:has(.courses) .auth-row .mcu-chip .mcu-av { border-radius: 8px; }
 html[data-area]:has(.courses) .auth-row .mcu-chip .mcu-nom:not(#z) { font: 800 20px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .04em; }
-html[data-area]:has(.courses) #vipToggle.vip-active { border-radius: 0 !important; }
+html[data-area]:has(.courses) #vipToggle.vip-active { border-radius: 12px !important; }
 
 /* Título del área o del curso, con su raya al costado como "Cursos populares" */
 html[data-area]:has(.courses) .section-title:not(#z) {
@@ -140,83 +140,82 @@ html[data-area]:has(.courses) .section-title:not(#z) {
   font: italic 900 46px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; }
 html[data-area]:has(.courses) .section-title::after { content: ""; flex: 1; height: 2px; background: linear-gradient(90deg, rgba(var(--ac-rgb), .45), rgba(var(--ac-rgb), 0)); }
 
-/* Repaso mixto: franja recta con el botón en diagonal, como "¡A practicar!" */
-html[data-area]:has(.courses) .mixto { border-radius: 0; padding-right: 0; overflow: hidden; }
-html[data-area]:has(.courses) .mixto-ic { border-radius: 0; }
+/* Repaso mixto: franja redondeada con el botón grande a la derecha */
+html[data-area]:has(.courses) .mixto { border-radius: 20px; overflow: hidden; }
+html[data-area]:has(.courses) .mixto-ic { border-radius: 14px; }
 html[data-area]:has(.courses) .mixto-tx b:not(#z) { font: italic 900 28px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; margin-bottom: 4px; }
-html[data-area]:has(.courses) .mixto-go:not(#z) { border-radius: 0; border: 0; align-self: stretch; display: grid; place-items: center; padding: 0 34px 0 44px;
-  clip-path: polygon(22px 0, 100% 0, 100% 100%, 0 100%); font: italic 900 26px/1 var(--display) !important; letter-spacing: .02em; }
+html[data-area]:has(.courses) .mixto-go:not(#z) { border-radius: 14px; border: 0; display: grid; place-items: center; padding: 14px 28px 12px;
+  box-shadow: 0 4px 0 var(--ac-d); font: italic 900 26px/1 var(--display) !important; letter-spacing: .02em; }
 
-/* Tarjetas: ícono, nombre, raya y botón de siempre, con esquinas rectas */
-html[data-area]:has(.courses) .course { border-radius: 4px; position: relative; overflow: hidden; }
+/* Tarjetas: ícono, nombre, raya y botón de siempre, redondeadas como Duolingo */
+html[data-area]:has(.courses) .course { border-radius: 20px; position: relative; overflow: hidden; }
 html[data-area]:has(.courses) .course h3:not(#z) { font: italic 900 32px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; }
-html[data-area]:has(.courses) .course .btn:not(#z) { border-radius: 0; font: 800 19px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .05em; padding: 11px 20px 9px; }
+html[data-area]:has(.courses) .course .btn:not(#z) { border-radius: 14px; font: 800 19px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .05em; padding: 11px 20px 9px; }
 html[data-area]:has(.courses) .course.active:hover { background: linear-gradient(180deg, rgba(var(--ac-rgb), .07), transparent 60%), var(--surface); }
 
 /* Esquina de la tarjeta: un corte del color del área. Cada temática (assets/tema.js) la puede decorar */
 html[data-area]:has(.courses) .course.active::after { content: ""; position: absolute; top: 0; right: 0; width: 64px; height: 64px; pointer-events: none;
   background: linear-gradient(225deg, rgba(var(--ac-rgb), .22) 0 26%, transparent 26.5%); }
 
-/* Apoya el proyecto: igual, con esquinas rectas */
-html[data-area]:has(.courses) .coffee { border-radius: 4px; }
+/* Apoya el proyecto: igual, redondeada */
+html[data-area]:has(.courses) .coffee { border-radius: 20px; }
 html[data-area]:has(.courses) .coffee-text h3:not(#z) { font: italic 900 32px/1 var(--display) !important; text-transform: uppercase; }
 
 @media (max-width: 520px) {
   html[data-area]:has(.courses) .back:not(#z) { font-size: 22px !important; }
   html[data-area]:has(.courses) .section-title:not(#z) { font-size: 40px !important; padding: 10px 0 16px; }
-  html[data-area]:has(.courses) .course { border-radius: 4px; }
+  html[data-area]:has(.courses) .course { border-radius: 18px; }
   html[data-area]:has(.courses) .course h3:not(#z) { font-size: 21px !important; }
   html[data-area]:has(.courses) .course .btn:not(#z) { font-size: 17px !important; padding: 10px 14px 8px; }
-  html[data-area]:has(.courses) .mixto { padding-right: 18px; padding-bottom: 18px; }
-  html[data-area]:has(.courses) .mixto-go:not(#z) { clip-path: none; padding: 14px; font-size: 24px !important; }
+  html[data-area]:has(.courses) .mixto-go:not(#z) { padding: 14px; font-size: 24px !important; }
 }
 
 /* =========================================================
    Adentro del libro (ciclos, temario, tema y quiz de Libros,
-   Seminarios y Banqueo): misma letra del inicio y esquinas rectas.
+   Seminarios y Banqueo): misma letra del inicio y esquinas redondeadas.
    El texto de las preguntas sigue en Nunito para leer cómodo.
    ========================================================= */
 html[data-area] { --display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif; }
 html[data-area]:not(:has(.courses)) .back:not(#z), html[data-area]:not(:has(.courses)) .backlink:not(#z) { font: italic 900 22px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; color: #f2f2f2; }
-html[data-area]:not(:has(.courses)) .home-btn { border-radius: 0 !important; }
+html[data-area]:not(:has(.courses)) .home-btn { border-radius: 12px !important; }
 html[data-area]:not(:has(.courses)) .eyebrow:not(#z) { font: 800 15px/1 var(--display) !important; letter-spacing: .14em; }
 html[data-area]:not(:has(.courses)) .page-title h1:not(#z), html[data-area]:not(:has(.courses)) .page-head h1:not(#z) { font: italic 900 50px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; }
-html[data-area]:not(:has(.courses)) .course-badge, html[data-area]:not(:has(.courses)) .logo { border-radius: 0 !important; }
+html[data-area]:not(:has(.courses)) .course-badge, html[data-area]:not(:has(.courses)) .logo { border-radius: 12px !important; }
 
 /* Ciclos */
-html[data-area]:not(:has(.courses)) .year-card { border-radius: 4px !important; position: relative; overflow: hidden; }
+html[data-area]:not(:has(.courses)) .year-card { border-radius: 20px !important; position: relative; overflow: hidden; }
 html[data-area]:not(:has(.courses)) .year-card .yr:not(#z), html[data-area]:not(:has(.courses)) .year-card h3:not(#z) { font: italic 900 38px/1 var(--display) !important; }
-html[data-area]:not(:has(.courses)) .year-card .count { border-radius: 0 !important; }
+html[data-area]:not(:has(.courses)) .year-card .count { border-radius: 999px !important; }
 
 /* Temario */
-html[data-area]:not(:has(.courses)) .tema-card { border-radius: 4px !important; position: relative; overflow: hidden; }
-html[data-area]:not(:has(.courses)) .tema-num:not(#z) { border-radius: 0 !important; font: italic 900 22px/1 var(--display) !important; }
+html[data-area]:not(:has(.courses)) .tema-card { border-radius: 18px !important; position: relative; overflow: hidden; }
+html[data-area]:not(:has(.courses)) .tema-num:not(#z) { border-radius: 12px !important; font: italic 900 22px/1 var(--display) !important; }
 html[data-area]:not(:has(.courses)) .tema-card .name:not(#z) { font: 800 22px/1.05 var(--display) !important; text-transform: uppercase; letter-spacing: .02em; }
-html[data-area]:not(:has(.courses)) .progress-track, html[data-area]:not(:has(.courses)) [class*="progress"] { border-radius: 0 !important; }
+html[data-area]:not(:has(.courses)) .progress-track, html[data-area]:not(:has(.courses)) [class*="progress"] { border-radius: 999px !important; }
 
 /* Esquina para temáticas, igual que en las tarjetas de cursos */
 html[data-area]:not(:has(.courses)) .year-card.active::after, html[data-area]:not(:has(.courses)) .tema-card::after { content: ""; position: absolute; top: 0; right: 0; width: 48px; height: 48px; pointer-events: none;
   background: linear-gradient(225deg, rgba(var(--ac-rgb), .22) 0 26%, transparent 26.5%); }
 
 /* Tema */
-html[data-area]:not(:has(.courses)) .quiz-cta, html[data-area]:not(:has(.courses)) .qcard { border-radius: 4px !important; }
-html[data-area]:not(:has(.courses)) .quiz-cta a:not(#z) { border-radius: 0 !important; font: italic 900 22px/1 var(--display) !important; letter-spacing: .03em; }
-html[data-area]:not(:has(.courses)) .qnum:not(#z) { border-radius: 0 !important; font: italic 900 20px/1 var(--display) !important; }
-html[data-area]:not(:has(.courses)) .opt-row, html[data-area]:not(:has(.courses)) .opt-row .letter, html[data-area]:not(:has(.courses)) .rep-btn { border-radius: 2px !important; }
+html[data-area]:not(:has(.courses)) .quiz-cta, html[data-area]:not(:has(.courses)) .qcard { border-radius: 20px !important; }
+html[data-area]:not(:has(.courses)) .quiz-cta a:not(#z) { border-radius: 14px !important; font: italic 900 22px/1 var(--display) !important; letter-spacing: .03em; }
+html[data-area]:not(:has(.courses)) .qnum:not(#z) { border-radius: 12px !important; font: italic 900 20px/1 var(--display) !important; }
+html[data-area]:not(:has(.courses)) .opt-row, html[data-area]:not(:has(.courses)) .opt-row .letter, html[data-area]:not(:has(.courses)) .rep-btn { border-radius: 12px !important; }
 
 /* Quiz */
-html[data-area]:not(:has(.courses)) .card { border-radius: 4px !important; }
+html[data-area]:not(:has(.courses)) .card { border-radius: 22px !important; }
 html[data-area]:not(:has(.courses)) .startscreen h1:not(#z), html[data-area]:not(:has(.courses)) .lockscreen h1:not(#z) { font: italic 900 42px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; }
-html[data-area]:not(:has(.courses)) .start-badge, html[data-area]:not(:has(.courses)) .start-stat, html[data-area]:not(:has(.courses)) .stat, html[data-area]:not(:has(.courses)) .badge { border-radius: 0 !important; }
-html[data-area]:not(:has(.courses)) .btn:not(#z) { border-radius: 0 !important; font: italic 900 24px/1 var(--display) !important; letter-spacing: .03em; }
-html[data-area]:not(:has(.courses)) .option, html[data-area]:not(:has(.courses)) .option .letter, html[data-area]:not(:has(.courses)) .lockscreen input { border-radius: 2px !important; }
-html[data-area]:not(:has(.courses)) .progress-track, html[data-area]:not(:has(.courses)) .progress-fill { border-radius: 0 !important; }
+html[data-area]:not(:has(.courses)) .start-badge, html[data-area]:not(:has(.courses)) .start-stat, html[data-area]:not(:has(.courses)) .stat, html[data-area]:not(:has(.courses)) .badge { border-radius: 12px !important; }
+html[data-area]:not(:has(.courses)) .btn:not(#z) { border-radius: 16px !important; font: italic 900 24px/1 var(--display) !important; letter-spacing: .03em; }
+html[data-area]:not(:has(.courses)) .option, html[data-area]:not(:has(.courses)) .option .letter, html[data-area]:not(:has(.courses)) .lockscreen input { border-radius: 14px !important; }
+html[data-area]:not(:has(.courses)) .progress-track, html[data-area]:not(:has(.courses)) .progress-fill { border-radius: 999px !important; }
 
 @media (max-width: 520px) {
   html[data-area]:not(:has(.courses)) .page-title h1:not(#z), html[data-area]:not(:has(.courses)) .page-head h1:not(#z) { font-size: 38px !important; }
   html[data-area]:not(:has(.courses)) .startscreen h1:not(#z) { font-size: 34px !important; }
 }
-html[data-area]:not(:has(.courses)) .question { border-radius: 4px !important; }
+html[data-area]:not(:has(.courses)) .question { border-radius: 20px !important; }
 html[data-area]:not(:has(.courses)) .title:not(#z) { font: italic 900 34px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; }
 html[data-area]:not(:has(.courses)) .start-badge:not(#z) { font: 800 15px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .06em; }
 @media (max-width: 520px) {
