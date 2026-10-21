@@ -4,11 +4,13 @@ html[data-modo="claro"] {
   --text: #1A1626; --text-dim: #6B6485; --text-faint: #A49DB8;
   color-scheme: light;
 }
-/* Ciencia y Tecnología: el mismo verde del botón Practicar; sobre ese verde el texto va oscuro */
-html[data-modo="claro"][data-area="ciencia-tecnologia"] { --ac: #C6E000; --ac-rgb: 198,224,0; --ac-d: #8FA300; }
-html[data-modo="claro"][data-area="ciencia-tecnologia"] .course.active .btn, html[data-modo="claro"][data-area="ciencia-tecnologia"] .mixto-go { background: var(--ac); color: #1A1626 !important; border-color: var(--ac-d); }
+/* Ciencia y Tecnología: títulos e íconos en verde oscuro para leer bien sobre blanco;
+   botones con el mismo verde de Practicar y letra oscura */
+html[data-modo="claro"][data-area="ciencia-tecnologia"] { --ac: #6F8000; --ac-rgb: 122,140,0; --ac-d: #8FA300; --lima: #C6E000; }
+html[data-modo="claro"][data-area="ciencia-tecnologia"] .course.active .btn, html[data-modo="claro"][data-area="ciencia-tecnologia"] .mixto-go,
+html[data-modo="claro"][data-area="ciencia-tecnologia"] .mixto-ic { background: var(--lima) !important; color: #1A1626 !important; border-color: var(--ac-d) !important; }
 html[data-modo="claro"][data-area="ciencia-tecnologia"] .mixto-ic svg { stroke: #1A1626 !important; }
-html[data-modo="claro"][data-area="ciencia-tecnologia"] .tema-num, html[data-modo="claro"][data-area="ciencia-tecnologia"] .qnum { background: var(--ac) !important; color: #1A1626 !important; border-color: var(--ac-d) !important; }
+html[data-modo="claro"][data-area="ciencia-tecnologia"] .tema-num, html[data-modo="claro"][data-area="ciencia-tecnologia"] .qnum { background: var(--lima) !important; color: #1A1626 !important; border-color: var(--ac-d) !important; }
 html[data-modo="claro"][data-area="matematica"] { --ac: #0E8FD6; --ac-rgb: 14,143,214; --ac-d: #0A6EA6; }
 html[data-modo="claro"][data-area="comunicacion"] { --ac: #9B4FD9; --ac-rgb: 155,79,217; --ac-d: #7A35B3; }
 html[data-modo="claro"][data-area="ciencias-sociales"] { --ac: #E07B00; --ac-rgb: 224,123,0; --ac-d: #B06000; }
