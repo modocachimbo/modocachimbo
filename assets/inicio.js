@@ -458,12 +458,16 @@
     }).catch(function () { $('podio').innerHTML = '<p class="sim-vacio">No se pudo cargar el top. Revisa tu conexión.</p>'; });
   }
 
-  /* ---------- "Instala la app": debajo del Top de la semana (menú en PC, sección del top en celular) ---------- */
-  var appAviso = $('appInstalar');
-  if (appAviso) {
+  /* ---------- "Activar código", grupo de WhatsApp e "Instala la app": debajo del Top de la semana
+     (en el menú en PC; en celular, en la sección del top) ---------- */
+  var appAviso = $('appInstalar'), accesos = $('salAccesos');
+  if (appAviso && accesos) {
     var appMarca = document.createComment('app'), appCel = $('topCel').closest('.sec'), enCel = window.matchMedia('(max-width: 900px)');
     appAviso.parentNode.insertBefore(appMarca, appAviso);
-    var ubicarApp = function () { if (enCel.matches) appCel.appendChild(appAviso); else appMarca.parentNode.insertBefore(appAviso, appMarca); };
+    var ubicarApp = function () {
+      if (enCel.matches) { appCel.appendChild(accesos); appCel.appendChild(appAviso); }
+      else { appMarca.parentNode.insertBefore(accesos, appMarca); appMarca.parentNode.insertBefore(appAviso, appMarca); }
+    };
     ubicarApp();
     if (enCel.addEventListener) enCel.addEventListener('change', ubicarApp);
   }

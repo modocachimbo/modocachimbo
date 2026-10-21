@@ -939,6 +939,25 @@ button.juego { width: 100%; text-align: left; font: inherit; color: #fff; }
 .sal-grupo:hover .wa { transform: scale(1.08); }
 .sal-grupo b { color: var(--texto); }
 @media (max-width: 900px) { .sal-grupo { margin-left: 0; } }
+/* Junto a "Instala la app": tarjeta redondeada; en el menú de PC, el botón y el grupo uno debajo del otro */
+.sal-accesos { border-radius: 20px; }
+.sal-cod { border-radius: 12px; clip-path: none; }
+.lado .sal-accesos { margin: 0 18px; flex-direction: column; align-items: stretch; gap: 12px; }
+.lado .sal-cod { justify-content: center; }
+.lado .sal-grupo { margin-left: 0; }
+.solo-cel .sal-accesos { margin-top: 14px; }
+/* PC: el Top simulacro va al final a todo el ancho (podio a la izquierda, lista a la derecha), y el pie debajo */
+@media (min-width: 901px) {
+  .fila2 > #topSim, .fila2 > #apoya { grid-column: 1 / -1; grid-row: auto; }
+  #topSim .top { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: start; }
+  #topSim .top-cab { grid-column: 1 / -1; }
+  #topSim .podio { grid-column: 1; grid-row: 2 / span 2; }
+  #topSim .sim-lista { grid-column: 2; grid-row: 2; border-top: 0; border-left: 1px solid var(--borde); }
+  /* Con el ancho de sobra se ve el top 10 completo, sin "Ver top 10" */
+  #topSim .sim-lista li.extra { display: grid; }
+  #topSim .ver-mas { display: none; }
+  #topSim .podio:has(.sim-vacio) { grid-column: 1 / -1; }
+}
 
 /* Instalar la app */
 
