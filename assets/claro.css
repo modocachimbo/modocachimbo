@@ -1,0 +1,360 @@
+/* ===== Modo claro (mc-modo = claro, se elige en el inicio) ===== */
+html[data-modo="claro"] {
+  --bg: #F6F5FA; --surface: #FFFFFF; --surface-2: #EEECF5; --border: #DCD8E8;
+  --text: #1A1626; --text-dim: #6B6485; --text-faint: #A49DB8;
+  --dim: #6B6485; --faint: #A49DB8; --borde: #DCD8E8; --borde-g: #DCD8E8;
+  color-scheme: light;
+}
+/* Ciencia y Tecnología: títulos e íconos en verde oscuro para leer bien sobre blanco;
+   botones con el mismo verde de Practicar y letra oscura */
+html[data-modo="claro"][data-area="ciencia-tecnologia"] { --ac: #6F8000; --ac-rgb: 122,140,0; --ac-d: #8FA300; --lima: #C6E000; }
+html[data-modo="claro"][data-area="ciencia-tecnologia"] .course.active .btn, html[data-modo="claro"][data-area="ciencia-tecnologia"] .mixto-go,
+html[data-modo="claro"][data-area="ciencia-tecnologia"] .mixto-ic { background: var(--lima) !important; color: #1A1626 !important; border-color: var(--ac-d) !important; }
+html[data-modo="claro"][data-area="ciencia-tecnologia"] .mixto-ic svg { stroke: #1A1626 !important; }
+html[data-modo="claro"][data-area="ciencia-tecnologia"] .tema-num, html[data-modo="claro"][data-area="ciencia-tecnologia"] .qnum { background: var(--lima) !important; color: #1A1626 !important; border-color: var(--ac-d) !important; }
+html[data-modo="claro"][data-area="matematica"] { --ac: #0E8FD6; --ac-rgb: 14,143,214; --ac-d: #0A6EA6; }
+html[data-modo="claro"][data-area="comunicacion"] { --ac: #9B4FD9; --ac-rgb: 155,79,217; --ac-d: #7A35B3; }
+html[data-modo="claro"][data-area="ciencias-sociales"] { --ac: #E07B00; --ac-rgb: 224,123,0; --ac-d: #B06000; }
+html[data-modo="claro"] body { background: var(--bg) !important; color: var(--text); }
+
+/* ---------- Generado: los grises oscuros de las páginas de cursos y de los
+   scripts compartidos pasan a blanco / lila claro, y los textos claros a oscuro.
+   Las reglas escritas a mano de más abajo ajustan lo que haga falta. ---------- */
+html[data-modo="claro"] .back:hover { color: #6F8000 !important; }
+html[data-modo="claro"] .home-btn:hover { color: #6F8000 !important; }
+html[data-modo="claro"] .link-login { color: #1A1626 !important; }
+html[data-modo="claro"] .link-login:hover { color: #6F8000 !important; }
+html[data-modo="claro"] .vip-msg.ok { color: #6F8000 !important; }
+html[data-modo="claro"] .link-login.vip-active { color: #6F8000 !important; }
+html[data-modo="claro"] .course .icon { color: #6F8000 !important; }
+html[data-modo="claro"] .course h3 { color: #6F8000 !important; }
+html[data-modo="claro"] .home-btn { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; }
+html[data-modo="claro"] #vipToggle { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; }
+html[data-modo="claro"] .vip-popover { border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .vip-popover input { border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .page-title .eyebrow { color: #6F8000 !important; }
+html[data-modo="claro"] .year-card .count { color: #6F8000 !important; }
+html[data-modo="claro"] .year-card { border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .year-card.active { background: #F1EFF6 !important; }
+html[data-modo="claro"] .year-card.disabled { border-color: #DCD8E8 !important; }
+html[data-modo="claro"] .home-btn { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; color: #1A1626 !important; }
+html[data-modo="claro"] .tema-num { color: #6F8000 !important; }
+html[data-modo="claro"] .tema-card { background: #F1EFF6 !important; }
+html[data-modo="claro"] .tema-card svg.arrow { color: #6F8000 !important; }
+html[data-modo="claro"] header.top { background: rgba(246,245,250,0.9) !important; border-bottom: 1px solid #DCD8E8 !important; }
+html[data-modo="claro"] .page-head .eyebrow { color: #6F8000 !important; }
+html[data-modo="claro"] .quiz-cta a.alt { color: #6F8000 !important; }
+html[data-modo="claro"] .qcard .qnum { color: #6F8000 !important; }
+html[data-modo="claro"] .qcard .qtext { color: #1A1626 !important; }
+html[data-modo="claro"] .opt-row { border-top: 1px solid #DCD8E8 !important; }
+html[data-modo="claro"] .opt-row.correct svg { color: #6F8000 !important; }
+html[data-modo="claro"] .quiz-cta { border: 2px solid #DCD8E8 !important; background: #FFFFFF !important; }
+html[data-modo="claro"] .quiz-cta a.alt { background: #F1EFF6 !important; color: #6F8000 !important; }
+html[data-modo="claro"] .qcard { border: 2px solid #DCD8E8 !important; background: #FFFFFF !important; }
+html[data-modo="claro"] .opt-row, html[data-modo="claro"] .opt-row:first-of-type { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; color: #1A1626 !important; }
+html[data-modo="claro"] .card { border: 1px solid #DCD8E8 !important; }
+html[data-modo="claro"] .title { color: #1A1626 !important; }
+html[data-modo="claro"] .title .accent { color: #6F8000 !important; }
+html[data-modo="claro"] .stat { color: #6F8000 !important; }
+html[data-modo="claro"] .progress-track { background: #F1EFF6 !important; }
+html[data-modo="claro"] .question p { color: #1A1626 !important; }
+html[data-modo="claro"] .option { background: #F1EFF6 !important; border: 1px solid #DCD8E8 !important; }
+html[data-modo="claro"] .letter { color: #6F8000 !important; }
+html[data-modo="claro"] .option span.text { color: #1A1626 !important; }
+html[data-modo="claro"] .option.wrong .letter { color: #1A1626 !important; }
+html[data-modo="claro"] .icon.ok { color: #6F8000 !important; }
+html[data-modo="claro"] .btn { border: 1px solid #DCD8E8 !important; background: #F1EFF6 !important; color: #6B6485 !important; }
+html[data-modo="claro"] .footer { border-top: 1px solid #DCD8E8 !important; }
+html[data-modo="claro"] .footer .mark { color: #6F8000 !important; }
+html[data-modo="claro"] .startscreen h1 { color: #1A1626 !important; }
+html[data-modo="claro"] .startscreen h1 .accent { color: #6F8000 !important; }
+html[data-modo="claro"] .startscreen p { color: #6B6485 !important; }
+html[data-modo="claro"] .start-stat { color: #1A1626 !important; }
+html[data-modo="claro"] .endscreen h2 { color: #1A1626 !important; }
+html[data-modo="claro"] .endscreen p { color: #6B6485 !important; }
+html[data-modo="claro"] .endscreen .score { color: #6F8000 !important; }
+html[data-modo="claro"] .lock-icon { color: #6F8000 !important; }
+html[data-modo="claro"] .lockscreen h1 { color: #1A1626 !important; }
+html[data-modo="claro"] .lockscreen h1 .accent { color: #6F8000 !important; }
+html[data-modo="claro"] .lockscreen p { color: #6B6485 !important; }
+html[data-modo="claro"] #lockInput { background: #F1EFF6 !important; border: 1px solid #DCD8E8 !important; color: #1A1626 !important; }
+html[data-modo="claro"] .card { border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .start-stat { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; }
+html[data-modo="claro"] .question { border: 2px solid #DCD8E8 !important; background: #FFFFFF !important; }
+html[data-modo="claro"] .option { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; }
+html[data-modo="claro"] .option:hover:not(.locked) { background: #F1EFF6 !important; }
+html[data-modo="claro"] .letter { color: #1A1626 !important; }
+html[data-modo="claro"] .btn { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; color: #1A1626 !important; }
+html[data-modo="claro"] #lockInput { border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .exam-sublist a:hover { color: #6F8000 !important; }
+html[data-modo="claro"] .simulacro .tag { color: #6F8000 !important; }
+html[data-modo="claro"] .pick.checked { color: #6F8000 !important; }
+html[data-modo="claro"] .solution-toggle { color: #6F8000 !important; }
+html[data-modo="claro"] .solution-box { color: #1A1626 !important; }
+html[data-modo="claro"] table.punnett th { color: #6F8000 !important; }
+html[data-modo="claro"] table.punnett td { color: #1A1626 !important; }
+html[data-modo="claro"] .filter-pill.active { color: #6F8000 !important; }
+/* assets/auth.js */
+html[data-modo="claro"] .mcu-chip { background: var(--surface,#FFFFFF) !important; border: 1px solid var(--border,#DCD8E8) !important; color: var(--text,#1A1626) !important; }
+html[data-modo="claro"] .mcu-menu { background: var(--surface,#FFFFFF) !important; border: 1px solid var(--border,#DCD8E8) !important; }
+html[data-modo="claro"] .mcu-menu a, html[data-modo="claro"] .mcu-menu button { color: var(--text,#1A1626) !important; }
+html[data-modo="claro"] .mcu-menu a:hover, html[data-modo="claro"] .mcu-menu button:hover { background: var(--surface-2,#F1EFF6) !important; color: #6F8000 !important; }
+html[data-modo="claro"] .mcu-menu small { border-bottom: 1px solid var(--border,#DCD8E8) !important; }
+html[data-modo="claro"] .mcu-caja { background: var(--surface,#FFFFFF) !important; border: 1px solid var(--border,#DCD8E8) !important; color: var(--text,#1A1626) !important; }
+html[data-modo="claro"] .mcu-caja p.sub { color: var(--text-dim,#6B6485) !important; }
+html[data-modo="claro"] .mcu-x { color: var(--text-dim,#6B6485) !important; }
+html[data-modo="claro"] .mcu-o:before, html[data-modo="claro"] .mcu-o:after { background: var(--border,#F1EFF6) !important; }
+html[data-modo="claro"] .mcu-caja input { background: var(--surface-2,#F1EFF6) !important; border: 1px solid var(--border,#DCD8E8) !important; color: var(--text,#1A1626) !important; }
+html[data-modo="claro"] .mcu-msg.ok { color: #6F8000 !important; }
+html[data-modo="claro"] .mcu-chip { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; }
+html[data-modo="claro"] .mcu-menu { border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mcu-menu .mcu-tuto { color: #6F8000 !important; }
+/* assets/corazones.js */
+html[data-modo="claro"] .mcz-pill { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; }
+html[data-modo="claro"] .mcz-cor.cero { color: #6B6485 !important; }
+html[data-modo="claro"] .mcz-hoja { background: #FFFFFF !important; color: #1A1626 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mcz-hoja { border-bottom: 5px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mcz-x { border: 2px solid #DCD8E8 !important; color: #6B6485 !important; }
+html[data-modo="claro"] .mcz-rec { color: #6B6485 !important; }
+html[data-modo="claro"] .mcz-rec b { color: #1A1626 !important; }
+html[data-modo="claro"] .mcz-mis { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mcz-mis small { color: #6B6485 !important; }
+html[data-modo="claro"] .mcz-bar { background: #F1EFF6 !important; }
+html[data-modo="claro"] .mcz-mis.ok .mcz-prem { color: #6F8000 !important; }
+html[data-modo="claro"] .mcz-mis.li .ic { color: #6F8000 !important; }
+html[data-modo="claro"] .mcz-mis.bonus { background: linear-gradient(90deg,rgba(255,200,0,.08),#F1EFF6 60%) !important; }
+html[data-modo="claro"] .mcz-btn.prin:disabled { background: #F1EFF6 !important; box-shadow: 0 5px 0 #DCD8E8 !important; }
+html[data-modo="claro"] .mcz-btn.sec { color: #1A1626 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mcz-ficha { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mcz-ficha small { color: #6B6485 !important; }
+html[data-modo="claro"] .mcz-saldo { color: #6B6485 !important; }
+html[data-modo="claro"] .mcz-cupos span.usado { background: #F1EFF6 !important; }
+html[data-modo="claro"] .mcz-sin { background: #FFFFFF !important; color: #1A1626 !important; }
+html[data-modo="claro"] .mcz-sin p { color: #6B6485 !important; }
+html[data-modo="claro"] .mcz-sin p b { color: #1A1626 !important; }
+html[data-modo="claro"] .mcz-link { color: #6B6485 !important; }
+html[data-modo="claro"] .mcz-toast { background: #F1EFF6 !important; color: #1A1626 !important; }
+/* assets/racha.js */
+html[data-modo="claro"] .mcu-racha { border: 1px solid var(--border,#DCD8E8) !important; background: var(--surface,#FFFFFF) !important; color: var(--text-dim,#6B6485) !important; }
+html[data-modo="claro"] .mcu-racha { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; }
+html[data-modo="claro"] .mcr-toast { background: #F1EFF6 !important; color: #1A1626 !important; }
+html[data-modo="claro"] .mcr-toast svg { color: #6F8000 !important; }
+html[data-modo="claro"] .mcr-toast b { color: #6F8000 !important; }
+/* assets/rango.js */
+html[data-modo="claro"] .mc-rgo { border: 2px solid #DCD8E8 !important; background: radial-gradient(120% 140% at 0% 50%,var(--rg-t) 0%,#F1EFF6 55%) !important; color: #1A1626 !important; }
+html[data-modo="claro"] .mc-rgo.sin .mc-rgo-tx b { color: #6B6485 !important; }
+html[data-modo="claro"] .mc-rgo-tx small { color: #6B6485 !important; }
+html[data-modo="claro"] .mc-rgo-bar { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mc-rgo-tx span { color: #6B6485 !important; }
+html[data-modo="claro"] .mc-rgo-tx span em { color: #1A1626 !important; }
+html[data-modo="claro"] .mc-rgo-up-c { background: radial-gradient(90% 70% at 50% 34%,var(--rg-t) 0%,#FFFFFF 78%) !important; color: #1A1626 !important; }
+html[data-modo="claro"] .mc-rgo-up-c p { color: #6B6485 !important; }
+html[data-modo="claro"] .mc-rgo-ins { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; }
+html[data-modo="claro"] .mc-rgo-ins small { color: #6B6485 !important; }
+html[data-modo="claro"] .mc-rgo-pz { border: 2px solid #DCD8E8 !important; background: radial-gradient(80% 70% at 50% 40%,var(--rg-t) 0%,#F1EFF6 80%) !important; }
+html[data-modo="claro"] .mc-rgo-pz small { color: #6B6485 !important; }
+html[data-modo="claro"] .mc-rgo-sem li { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; }
+html[data-modo="claro"] .mc-rgo-sem button { background: #F1EFF6 !important; color: #1A1626 !important; box-shadow: 0 5px 0 #DCD8E8 !important; }
+html[data-modo="claro"] .mc-rgo-pz.no { background: #F1EFF6 !important; }
+/* assets/ranking.js */
+html[data-modo="claro"] .mcr { background: var(--surface,#FFFFFF) !important; }
+html[data-modo="claro"] .mcr-cab h2 { color: var(--text,#1A1626) !important; }
+html[data-modo="claro"] .mcr-cab small { color: var(--text-dim,#6B6485) !important; }
+html[data-modo="claro"] .mcr-p { background: #F1EFF6 !important; border: 1px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mcr-p.n1 { background: linear-gradient(180deg,rgba(245,197,66,.1),#F1EFF6 70%) !important; }
+html[data-modo="claro"] .mcr-p b { color: var(--text,#1A1626) !important; }
+html[data-modo="claro"] .mcr-p span { color: #6F8000 !important; }
+html[data-modo="claro"] .mcr-pie { color: var(--text-dim,#6B6485) !important; }
+html[data-modo="claro"] .mcr-pie b { color: var(--text,#1A1626) !important; }
+html[data-modo="claro"] .mcr-bt { border: 1px solid #DCD8E8 !important; background: #F1EFF6 !important; color: var(--text,#1A1626) !important; }
+html[data-modo="claro"] .mcr-lista li { background: #F1EFF6 !important; }
+html[data-modo="claro"] .mcr { border: 2px solid #DCD8E8 !important; background: linear-gradient(180deg,rgba(245,197,66,.06),#FFFFFF 55%) !important; }
+html[data-modo="claro"] .mcr-p { border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mcr-bt { border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mcr-lista li { border: 2px solid #DCD8E8 !important; }
+/* assets/reportes.js */
+html[data-modo="claro"] .rep-row { border-top: 1px dashed #DCD8E8 !important; }
+html[data-modo="claro"] .rep-card { background: linear-gradient(160deg, #F1EFF6 0%, #FFFFFF 60%) !important; border: 1px solid #DCD8E8 !important; color: #1A1626 !important; }
+html[data-modo="claro"] .rep-x { border: 1px solid #DCD8E8 !important; }
+html[data-modo="claro"] .rep-x:hover { color: #1A1626 !important; }
+html[data-modo="claro"] .rep-sub { color: #6B6485 !important; }
+html[data-modo="claro"] .rep-info { background: #FFFFFF !important; border: 1px solid #DCD8E8 !important; }
+html[data-modo="claro"] .rep-info .meta { color: #6F8000 !important; }
+html[data-modo="claro"] .rep-info .q { color: #1A1626 !important; }
+html[data-modo="claro"] .rep-info .marcada { color: #6B6485 !important; }
+html[data-modo="claro"] .rep-letter { border: 1px solid #DCD8E8 !important; background: #F1EFF6 !important; color: #1A1626 !important; }
+html[data-modo="claro"] .rep-text { border: 1px solid #DCD8E8 !important; background: #FFFFFF !important; color: #1A1626 !important; }
+html[data-modo="claro"] .rep-ok .ico { color: #6F8000 !important; }
+html[data-modo="claro"] .rep-close2 { border: 1px solid #DCD8E8 !important; color: #6B6485 !important; }
+html[data-modo="claro"] .rep-close2:hover { color: #1A1626 !important; }
+html[data-modo="claro"] .rep-spin { border-top-color: #DCD8E8 !important; }
+html[data-modo="claro"] .rep-x { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; }
+html[data-modo="claro"] .rep-info { border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .rep-letter { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; }
+html[data-modo="claro"] .rep-text { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; }
+html[data-modo="claro"] .rep-close2 { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; }
+/* assets/pregunta.js */
+html[data-modo="claro"] .mcq-par .c, html[data-modo="claro"] .mcq-an .c { color: #6F8000 !important; }
+html[data-modo="claro"] .mcq-par .d { color: #6F8000 !important; }
+html[data-modo="claro"] .qtext :is(strong, html[data-modo="claro"] b), html[data-modo="claro"] .question :is(strong, html[data-modo="claro"] b), html[data-modo="claro"] .option :is(strong, html[data-modo="claro"] b), html[data-modo="claro"] .opt-row :is(strong, html[data-modo="claro"] b), html[data-modo="claro"] .mcq-p :is(strong, html[data-modo="claro"] b), html[data-modo="claro"] .cara :is(strong, html[data-modo="claro"] b) { color: #1A1626 !important; }
+html[data-modo="claro"] .mcq-ab-lbl { color: #6B6485 !important; }
+html[data-modo="claro"] .mcq-ab-in { color: #1A1626 !important; background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mcq-ab-nose { background: #F1EFF6 !important; color: #1A1626 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mcq-ab-sol { color: #1A1626 !important; }
+html[data-modo="claro"] .mcq-ab-sol b { color: #1A1626 !important; }
+html[data-modo="claro"] .mcq-ab-o { color: #6B6485 !important; }
+html[data-modo="claro"] .mcq-ab-fl { color: #6F8000 !important; }
+html[data-modo="claro"] .mcq-ab-vale { color: #1A1626 !important; background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mcq-hueco-in { color: #1A1626 !important; background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mcq-hueco-sol { color: #6F8000 !important; }
+html[data-modo="claro"] .mcq-hlista { color: #6B6485 !important; }
+html[data-modo="claro"] .mcq-vf-fila { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mcq-vf-n { color: #6F8000 !important; }
+html[data-modo="claro"] .mcq-vf-t { color: #1A1626 !important; }
+html[data-modo="claro"] .mcq-vf-bt button { color: #1A1626 !important; background: #F1EFF6 !important; }
+html[data-modo="claro"] .mcq-vf-fila.mal button.on { color: #1A1626 !important; }
+html[data-modo="claro"] .mcq-rel button { color: #1A1626 !important; background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mcq-rel-n { background: #F1EFF6 !important; }
+html[data-modo="claro"] .mcq-ord-i { color: #1A1626 !important; background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mcq-ord-i.mal .mcq-ord-n { color: #1A1626 !important; }
+html[data-modo="claro"] .mcq-tocar-pin { border: 3px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mcq-sol-vf b.f { color: #1A1626 !important; }
+/* assets/agenda-perfil.js */
+html[data-modo="claro"] .ag-nav { border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .ag-d { background: #F1EFF6 !important; }
+html[data-modo="claro"] .ag-d.paso { background: #F1EFF6 !important; }
+html[data-modo="claro"] .ag-ev { background: #F1EFF6 !important; }
+html[data-modo="claro"] .ag-ev .ac:hover { background: #F1EFF6 !important; }
+html[data-modo="claro"] .ag-pr { border-top: 1px solid #DCD8E8 !important; }
+html[data-modo="claro"] .ag-aviso { border: 2px dashed #DCD8E8 !important; }
+html[data-modo="claro"] .ag-op { border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .ag-hoja input, html[data-modo="claro"] .ag-hoja textarea { border: 2px solid #DCD8E8 !important; background: #FFFFFF !important; }
+/* assets/accesos-perfil.js */
+html[data-modo="claro"] .acc li { border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .acc .meta i { background: #F1EFF6 !important; color: #1A1626 !important; }
+html[data-modo="claro"] .acc .meta i.ok { color: #6F8000 !important; }
+html[data-modo="claro"] .acc .quitar { border: 2px solid #DCD8E8 !important; color: #1A1626 !important; }
+html[data-modo="claro"] .acc .rojo { color: #1A1626 !important; }
+html[data-modo="claro"] .acc .gris { border: 2px solid #DCD8E8 !important; color: #1A1626 !important; }
+/* assets/avance.js */
+html[data-modo="claro"] .mc-avance .barra { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mc-avance small { color: #6B6485 !important; }
+/* assets/candado.js */
+html[data-modo="claro"] #mcCandado { background: #FFFFFF !important; }
+html[data-modo="claro"] #mcCandado .caja { background: #FFFFFF !important; border: 1px solid #DCD8E8 !important; }
+html[data-modo="claro"] #mcCandado .ico { color: #6F8000 !important; }
+html[data-modo="claro"] #mcCandado h1 { color: #1A1626 !important; }
+html[data-modo="claro"] #mcCandado h1 span { color: #6F8000 !important; }
+html[data-modo="claro"] #mcCandado p { color: #6B6485 !important; }
+html[data-modo="claro"] #mcCandado input { background: #F1EFF6 !important; border: 1px solid #DCD8E8 !important; color: #1A1626 !important; }
+html[data-modo="claro"] #mcCandado .volver { color: #6B6485 !important; }
+html[data-modo="claro"] #mcCandado .volver:hover { color: #6F8000 !important; }
+/* assets/errores.js */
+html[data-modo="claro"] .mce-btn { background: #F1EFF6 !important; color: #6F8000 !important; }
+html[data-modo="claro"] .mce-btn .n { color: #1A1626 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mce-btn.cero { border-color: #DCD8E8 !important; }
+html[data-modo="claro"] .mce-tip { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; color: #1A1626 !important; }
+html[data-modo="claro"] .mce-tip b { color: #6F8000 !important; }
+/* assets/tutorial.js */
+html[data-modo="claro"] .mct-burbuja { background: #F1EFF6 !important; color: #1A1626 !important; border: 1px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mct-paso { color: #6F8000 !important; }
+html[data-modo="claro"] .mct-burbuja p { color: #6B6485 !important; }
+html[data-modo="claro"] .mct-burbuja p b { color: #1A1626 !important; }
+html[data-modo="claro"] .mct-atr { background: #F1EFF6 !important; color: #1A1626 !important; }
+html[data-modo="claro"] .mct-saltar:hover { color: #1A1626 !important; }
+/* assets/sonido.js */
+html[data-modo="claro"] .mc-son { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; color: #1A1626 !important; }
+/* assets/cursos.js */
+html[data-modo="claro"] .course.disabled .btn { background: var(--surface-2,#F1EFF6) !important; }
+/* assets/alertas.js */
+html[data-modo="claro"] .mca-card { background: linear-gradient(160deg, #F1EFF6 0%, #FFFFFF 60%) !important; border: 1px solid #DCD8E8 !important; color: #1A1626 !important; }
+html[data-modo="claro"] .mca-card h2 { color: #1A1626 !important; }
+html[data-modo="claro"] .mca-msg { color: #6B6485 !important; }
+html[data-modo="claro"] .mca-msg b, html[data-modo="claro"] .mca-msg strong { color: #1A1626 !important; }
+html[data-modo="claro"] .mca-franja { background: linear-gradient(90deg, var(--mca-soft), rgba(246,245,250,0.95)) !important; color: #1A1626 !important; }
+html[data-modo="claro"] .mca-franja b.t { color: #1A1626 !important; }
+html[data-modo="claro"] .mca-franja .x:hover { color: #1A1626 !important; }
+/* ---------- Fin de lo generado ---------- */
+
+html[data-modo="claro"][data-area] header.top { background: var(--bg); }
+
+/* Cabecera */
+html[data-modo="claro"] .back, html[data-modo="claro"] .backlink { color: var(--text) !important; }
+html[data-modo="claro"] .home-btn { background: #fff !important; border-color: var(--border) !important; color: var(--text) !important; box-shadow: 0 1px 2px rgba(26,22,38,.06); }
+html[data-modo="claro"] .mcu-user .mcz-pill, html[data-modo="claro"] .mcu-user .mcu-racha,
+html[data-modo="claro"] .mcu-chip { background: #fff !important; border-color: var(--border) !important; color: var(--text) !important; box-shadow: 0 1px 2px rgba(26,22,38,.06); }
+html[data-modo="claro"] .mcu-menu { background: #fff !important; border-color: var(--border) !important; color: var(--text) !important; }
+html[data-modo="claro"] .mcu-menu a, html[data-modo="claro"] .mcu-menu button { color: var(--text) !important; }
+html[data-modo="claro"] #vipToggle.vip-active { color: #5D6B00 !important; border-color: #7A8C00 !important; background: rgba(122,140,0,.08) !important; }
+html[data-modo="claro"] .logo, html[data-modo="claro"] .course-badge { color: var(--text) !important; }
+
+/* Tarjetas de cursos */
+html[data-modo="claro"][data-area] .course { background: #fff; box-shadow: 0 1px 2px rgba(26,22,38,.06), 0 6px 18px rgba(26,22,38,.06); }
+html[data-modo="claro"][data-area] .course.active:hover { background: linear-gradient(180deg, rgba(var(--ac-rgb), .07), transparent 60%), #fff; }
+html[data-modo="claro"][data-area] .course.disabled { background: #F1EFF6; border-color: var(--border); border-bottom-color: var(--border); box-shadow: none; }
+html[data-modo="claro"][data-area] .course.disabled .btn { background: #E9E6F1; border-color: var(--border); color: var(--text-faint); }
+html[data-modo="claro"][data-area] .course .btn { background: rgba(var(--ac-rgb), .08); }
+html[data-modo="claro"][data-area] .mixto { background: linear-gradient(135deg, rgba(var(--ac-rgb), .14), rgba(var(--ac-rgb), .03)), #fff; }
+html[data-modo="claro"][data-area] .mixto-tx small { color: var(--text-dim); }
+html[data-modo="claro"][data-area] .mixto-go { color: #fff; }
+html[data-modo="claro"][data-area] .mixto-ic svg { stroke: #fff; }
+html[data-modo="claro"] .coffee { background: radial-gradient(120% 90% at 100% 0, rgba(155,79,217,.12), transparent 60%), #fff !important; border-color: rgba(155,79,217,.35) !important; }
+html[data-modo="claro"] .coffee-text h3 { color: var(--text); }
+
+/* Libros: ciclos, temario, tema */
+html[data-modo="claro"] .year-card, html[data-modo="claro"] .tema-card, html[data-modo="claro"] .qcard, html[data-modo="claro"] .quiz-cta {
+  background: #fff !important; box-shadow: 0 1px 2px rgba(26,22,38,.06), 0 6px 18px rgba(26,22,38,.06); }
+html[data-modo="claro"] .year-card { border-color: var(--border); }
+html[data-modo="claro"][data-area] .year-card.active { box-shadow: 0 5px 0 var(--ac-d); }
+html[data-modo="claro"][data-area] .tema-card { box-shadow: 0 5px 0 var(--ac-d); }
+html[data-modo="claro"] .qcard, html[data-modo="claro"] .quiz-cta { border-color: var(--border) !important; }
+html[data-modo="claro"] .opt-row { background: #F6F5FA !important; border-color: var(--border) !important; color: var(--text) !important; }
+html[data-modo="claro"] .opt-row .letter { background: #fff !important; border-color: var(--border) !important; color: var(--text-dim) !important; }
+html[data-modo="claro"] .opt-row.correct { background: rgba(63,154,0,.1) !important; border-color: #3F9A00 !important; border-bottom-color: #2F7300 !important; color: #1A1626 !important; }
+html[data-modo="claro"] .opt-row.correct .letter { background: #3F9A00 !important; border-color: #3F9A00 !important; color: #fff !important; }
+html[data-modo="claro"] .opt-row.correct svg { color: #3F9A00 !important; }
+html[data-modo="claro"] .qtext, html[data-modo="claro"] .opt-text { color: var(--text) !important; }
+html[data-modo="claro"] .quiz-cta a.alt { background: #fff !important; }
+html[data-modo="claro"] .progress-track, html[data-modo="claro"] [class*="progress"]:not([class*="fill"]):not([class*="label"]) { background-color: #E4E1EC; }
+
+/* Quiz */
+html[data-modo="claro"] .card { background: #fff !important; border-color: var(--border) !important; box-shadow: 0 1px 2px rgba(26,22,38,.06), 0 20px 50px rgba(26,22,38,.1) !important; }
+html[data-modo="claro"] .startscreen h1, html[data-modo="claro"] .lockscreen h1, html[data-modo="claro"] .title { color: var(--text) !important; }
+html[data-modo="claro"] .startscreen h1 .accent, html[data-modo="claro"] .title .accent { color: #7A8C00 !important; }
+html[data-modo="claro"] .start-badge, html[data-modo="claro"] .badge { color: #5D6B00 !important; background: rgba(122,140,0,.1) !important; border-color: rgba(122,140,0,.4) !important; }
+html[data-modo="claro"] .start-stat, html[data-modo="claro"] .stat { background: #F6F5FA !important; border-color: var(--border) !important; color: var(--text) !important; }
+html[data-modo="claro"] .question { background: #F6F5FA !important; border-color: var(--border) !important; color: var(--text) !important; }
+html[data-modo="claro"] .question .text { color: var(--text) !important; }
+html[data-modo="claro"] .option { background: #fff !important; border-color: var(--border) !important; color: var(--text) !important; }
+html[data-modo="claro"] .option .letter { background: #F6F5FA !important; border-color: var(--border) !important; color: var(--text-dim) !important; }
+html[data-modo="claro"] .option.correct { background: rgba(63,154,0,.1) !important; border-color: #3F9A00 !important; border-bottom-color: #2F7300 !important; }
+html[data-modo="claro"] .option.correct .letter { background: #3F9A00 !important; border-color: #3F9A00 !important; color: #fff !important; }
+html[data-modo="claro"] .option.wrong .letter, html[data-modo="claro"] .option.incorrect .letter { color: #fff !important; }
+html[data-modo="claro"] .card .btn:not(.primary) { background: #fff !important; border-color: var(--border) !important; color: var(--text) !important; }
+html[data-modo="claro"] .lives, html[data-modo="claro"] .score { color: #5D6B00 !important; }
+html[data-modo="claro"] .footer { border-color: var(--border) !important; }
+html[data-modo="claro"] .mc-son { background: #fff !important; border-color: var(--border) !important; color: var(--text) !important; }
+
+html[data-modo="claro"] .question p, html[data-modo="claro"] .option span.text, html[data-modo="claro"] .start-stat,
+html[data-modo="claro"] .endscreen h2, html[data-modo="claro"] .lockscreen input { color: var(--text) !important; }
+html[data-modo="claro"] .option.correct span.text { color: #1F4D00 !important; }
+html[data-modo="claro"] .option.wrong { background: rgba(229,56,59,.08) !important; border-color: #E5383B !important; }
+html[data-modo="claro"] .option.wrong span.text { color: #8F1D20 !important; }
+html[data-modo="claro"] .feedback.bad { background: rgba(229,56,59,.08) !important; color: #B3261E !important; }
+html[data-modo="claro"] .feedback.ok, html[data-modo="claro"] .feedback.good { background: rgba(63,154,0,.08) !important; color: #2F7300 !important; }
+html[data-modo="claro"] .letter { border-color: var(--border); color: var(--text-dim); }
+html[data-modo="claro"] .lockscreen input { background: #F6F5FA !important; border-color: var(--border) !important; }
+html[data-modo="claro"] header.top, html[data-modo="claro"] .topbar, html[data-modo="claro"] .header { border-color: var(--border) !important; }
+html[data-modo="claro"] .score { color: var(--text) !important; }
+html[data-modo="claro"] .option.wrong .letter { background: #E5383B !important; border-color: #E5383B !important; color: #fff !important; }
+html[data-modo="claro"] .home-btn svg { fill: currentColor; }
+html[data-modo="claro"] .mc-avance .barra { background: #E4E1EC !important; border-color: var(--border) !important; }
+html[data-modo="claro"] .mc-avance small { color: var(--text-dim) !important; }
+
+/* "¿Error en la clave?": ámbar más oscuro para que se note sobre blanco */
+html[data-modo="claro"] .rep-btn { color: #9A6700 !important; border-color: rgba(179,134,0,.55) !important; background: rgba(251,191,36,.14) !important; }
+html[data-modo="claro"] .rep-btn:hover { background: rgba(251,191,36,.24) !important; }
+html[data-modo="claro"] .rep-btn.done { color: #2F7300 !important; border-color: rgba(63,154,0,.5) !important; background: rgba(63,154,0,.1) !important; }
+
+/* Logo: "MODO" va en blanco en oscuro; en claro se usa la versión con letras oscuras */
+html[data-modo="claro"] img[src$="logo-modo-cachimbo-horizontal.svg"] { content: url("img/logo-modo-cachimbo-horizontal-claro.svg"); }

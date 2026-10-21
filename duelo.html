@@ -437,6 +437,62 @@
 <script src="assets/auth.js"></script>
 <script src="assets/ranking.js"></script>
 <script src="assets/rango.js"></script>
+<style id="mc-claro">
+/* Modo claro de esta página (assets/claro.css trae lo común) */
+html[data-modo="claro"] .eyebrow { color: #6F8000 !important; }
+html[data-modo="claro"] .card { border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .volver:hover { color: #6F8000 !important; }
+html[data-modo="claro"] .btn.sec { background: #F1EFF6 !important; color: #1A1626 !important; border-color: #DCD8E8 !important; box-shadow: 0 5px 0 #DCD8E8 !important; }
+html[data-modo="claro"] .chips button { background: #F1EFF6 !important; color: #1A1626 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .chips button.on { border-bottom-color: color-mix(in srgb, var(--c) 60%, #DCD8E8) !important; background: color-mix(in srgb, var(--c) 12%, #F1EFF6) !important; }
+html[data-modo="claro"] .hero h1 span { color: #6F8000 !important; }
+html[data-modo="claro"] select { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .sel-btn, html[data-modo="claro"] .mt-btn { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .sel-lista { background: #FFFFFF !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .sel-lista button { background: #F1EFF6 !important; color: #1A1626 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .sel-lista button.on { color: #6F8000 !important; }
+html[data-modo="claro"] .mt-list { background: #FFFFFF !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mt-list button { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; color: #1A1626 !important; }
+html[data-modo="claro"] .mt-btn.cu b { color: #6F8000 !important; }
+html[data-modo="claro"] .fte button { background: #F1EFF6 !important; color: #1A1626 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .fte button.on { border-bottom-color: color-mix(in srgb, var(--c) 60%, #DCD8E8) !important; background: color-mix(in srgb, var(--c) 10%, #F1EFF6) !important; }
+html[data-modo="claro"] .fte button.on small { color: color-mix(in srgb, var(--c) 70%, #1A1626) !important; }
+html[data-modo="claro"] .tiempo { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .rng::-webkit-slider-runnable-track { background: linear-gradient(90deg, var(--azul), var(--morado)) 0 / var(--p) 100% no-repeat, #F1EFF6 !important; }
+html[data-modo="claro"] .rng::-moz-range-track { background: linear-gradient(90deg, var(--azul), var(--morado)) 0 / var(--p) 100% no-repeat, #F1EFF6 !important; }
+html[data-modo="claro"] .sw { background: #F1EFF6 !important; }
+html[data-modo="claro"] .cmd { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .cmd .ci { box-shadow: 0 3px 0 color-mix(in srgb, var(--c) 55%, #DCD8E8) !important; }
+html[data-modo="claro"] #codUnirse { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .lista li a { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; }
+html[data-modo="claro"] .rank li { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; }
+html[data-modo="claro"] .codigo { color: #6F8000 !important; }
+html[data-modo="claro"] .enlace { background: #F1EFF6 !important; border: 2px dashed #DCD8E8 !important; }
+html[data-modo="claro"] .ficha span { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .puesto-sala { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .puesto-sala.libre .av { background: #F1EFF6 !important; border: 2px dashed #DCD8E8 !important; }
+html[data-modo="claro"] .cuenta { background: rgba(246,245,250,.97) !important; }
+html[data-modo="claro"] .cuenta .cmd { border-bottom-color: color-mix(in srgb, var(--c) 55%, #DCD8E8) !important; background: color-mix(in srgb, var(--c) 10%, #F1EFF6) !important; }
+html[data-modo="claro"] .cuenta .num { color: #6F8000 !important; }
+html[data-modo="claro"] .barra { border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .reloj.robado > .menos, html[data-modo="claro"] .reloj > .menos { color: #1A1626 !important; }
+html[data-modo="claro"] .tile { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .tile.yo { background: color-mix(in srgb, var(--jc) 8%, #F1EFF6) !important; }
+html[data-modo="claro"] .tile .pos { background: #F1EFF6 !important; color: #1A1626 !important; }
+html[data-modo="claro"] .camino i { background: #F1EFF6 !important; }
+html[data-modo="claro"] .cbtn { border-bottom: 4px solid color-mix(in srgb, var(--c) 55%, #DCD8E8) !important; background: color-mix(in srgb, var(--c) 14%, #F1EFF6) !important; }
+html[data-modo="claro"] .aviso-j { border-bottom: 4px solid color-mix(in srgb, var(--c) 60%, #DCD8E8) !important; color: color-mix(in srgb, var(--c) 60%, #1A1626) !important; }
+html[data-modo="claro"] .espia .fil div { background: #F1EFF6 !important; }
+html[data-modo="claro"] .alts button { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .reac button { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .toast { background: color-mix(in srgb, var(--c) 18%, #FFFFFF) !important; color: color-mix(in srgb, var(--c) 45%, #1A1626) !important; }
+html[data-modo="claro"] .pod { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .pod.p1 { background: linear-gradient(180deg, rgba(255,200,0,.14), #F1EFF6 70%) !important; }
+html[data-modo="claro"] .cuarto { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .md { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .md .ci { box-shadow: 0 3px 0 color-mix(in srgb, var(--c) 55%, #DCD8E8) !important; }
+html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+</style>
 </head>
 <body>
 <div class="wrap">

@@ -2,7 +2,6 @@
    Modo Cachimbo · Reporte de errores en claves
    - Botón "¿Error en la clave?" en cada pregunta (modo estudio)
    - Ventana para reportar: se guarda en el panel y ofrece WhatsApp
-   - Burbuja flotante de WhatsApp
    Requiere: assets/mc-config.js y window.MC_TEMA (lo define tema.html)
    ========================================================= */
 (function () {
@@ -28,26 +27,6 @@
   .rep-btn.done { color: #25D366; pointer-events: none; }
 
   .qcard.rep-highlight { border-color: #FBBF24; box-shadow: 0 0 0 3px rgba(251,191,36,0.15); transition: box-shadow .3s, border-color .3s; }
-
-  /* Burbuja */
-  .mc-bubble {
-    position: fixed; right: 22px; bottom: 22px; z-index: 60;
-    display: flex; align-items: center; gap: 10px;
-    background: #25D366; color: #06270f; text-decoration: none;
-    border-radius: 100px; padding: 12px 18px 12px 14px;
-    font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13.5px;
-    box-shadow: 0 10px 30px rgba(37,211,102,0.3), 0 4px 12px rgba(0,0,0,0.5);
-    transition: transform .15s ease, padding .25s ease;
-    animation: mcBubbleIn .5s cubic-bezier(.2,.9,.3,1.2) .6s both;
-  }
-  .mc-bubble:hover { transform: translateY(-2px); }
-  .mc-bubble svg { width: 24px; height: 24px; flex-shrink: 0; }
-  .mc-bubble .txt { display: flex; flex-direction: column; line-height: 1.2; white-space: nowrap; overflow: hidden; max-width: 260px; transition: max-width .3s ease, opacity .2s; }
-  .mc-bubble .txt small { font-weight: 500; font-size: 11.5px; opacity: .8; }
-  .mc-bubble.mini { padding: 13px; }
-  .mc-bubble.mini .txt { max-width: 0; opacity: 0; }
-  @keyframes mcBubbleIn { from { opacity: 0; transform: translateY(20px) scale(.9); } to { opacity: 1; transform: none; } }
-  @media (max-width: 560px) { .mc-bubble { right: 14px; bottom: 14px; } }
 
   /* Ventana de reporte */
   body.rep-open { overflow: hidden; }
@@ -185,40 +164,6 @@
   }
 
   function info() { return window.MC_TEMA || null; }
-
-  /* ---------- Burbuja flotante ---------- */
-  function crearBurbuja() {
-    var T = info() || {};
-    var msg = 'Hola! 👋 Te escribo desde Modo Cachimbo' +
-      (T.curso ? ' (' + T.curso + (T.year ? ' · ' + T.year : '') + (T.num ? ' · Tema ' + T.num + (T.name ? ' – ' + T.name : '') : '') + ')' : '') +
-      '. Encontré un error en una clave: ';
-    var a = document.getElementById('mcBubble');
-    if (!a) {
-      a = document.createElement('a');
-      a.id = 'mcBubble';
-      a.className = 'mc-bubble';
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.setAttribute('aria-label', 'Avisar un error por WhatsApp');
-      a.innerHTML = WA_ICON + '<span class="txt">¿Error en una clave?<small>Avísale al admin por WhatsApp</small></span>';
-      document.body.appendChild(a);
-      // se achica al bajar, se agranda al volver arriba
-      var movil = window.matchMedia('(max-width: 600px)').matches;
-      if (movil) {
-        // en celular queda solo el ícono para no tapar las alternativas
-        a.classList.add('mini');
-      } else {
-        var lastY = window.scrollY;
-        window.addEventListener('scroll', function () {
-          var y = window.scrollY;
-          if (y > 200 && y > lastY) a.classList.add('mini');
-          else if (y < lastY - 10 || y < 200) a.classList.remove('mini');
-          lastY = y;
-        }, { passive: true });
-      }
-    }
-    a.href = waLink(msg);
-  }
 
   /* ---------- Ventana de reporte ---------- */
   var overlay = null;
@@ -376,7 +321,6 @@
 
   /* ---------- Cuando el tema terminó de cargar ---------- */
   function listo() {
-    crearBurbuja();
     var h = location.hash.match(/^#q(\d+)$/);
     if (h) {
       var card = document.getElementById('q' + h[1]);
@@ -390,6 +334,4 @@
     }
   }
   document.addEventListener('mc:tema-listo', listo);
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', crearBurbuja);
-  else crearBurbuja();
 })();

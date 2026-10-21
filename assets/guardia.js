@@ -5,6 +5,16 @@
    que se dibuje la página. auth.js confirma después con Supabase.
    ========================================================= */
 (function () {
+  // Modo claro u oscuro elegido en el inicio (mc-modo), antes de que se dibuje la página
+  try {
+    var m = new URLSearchParams(location.search).get('modo') || localStorage.getItem('mc-modo');
+    if (m === 'claro' || m === 'oscuro') document.documentElement.setAttribute('data-modo', m);
+    // Los colores del modo claro viven en assets/claro.css; se piden aquí para que no parpadee en oscuro
+    var g = document.currentScript, raiz = g && g.src ? g.src.replace(/assets\/guardia\.js(\?.*)?$/, '') : '';
+    if (m === 'claro' && raiz) document.write('<link rel="stylesheet" href="' + g.src.replace(/guardia\.js(\?.*)?$/, 'claro.css') + '">');
+  } catch (e) {}
+})();
+(function () {
   window.MC_PRIVADA = true;
   var s = document.currentScript;
   var base = s && s.src ? s.src.replace(/assets\/guardia\.js(\?.*)?$/, '') : '';
