@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,800;1,900&family=Nunito:wght@600;700;800;900&display=swap">
 <link rel="stylesheet" href="assets/buho/buho.css">
 <script>
-  // Tema: ?tema=claro|oscuro, o lo guardado, o el del sistema
+  // Tema: oscuro por defecto; claro si se eligió (o ?tema=claro para probar)
   (function () {
     var t = new URLSearchParams(location.search).get('tema');
     try { t = t || localStorage.getItem('mc-tema'); } catch (e) {}
@@ -38,22 +38,6 @@
   --display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
   --cuerpo: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
   color-scheme: dark;
-}
-@media (prefers-color-scheme: light) {
-  :root:not([data-tema="oscuro"]) {
-    --fondo: #F6F5FA; --tarjeta: #FFFFFF; --tarjeta2: #EEECF5; --borde: #DCD8E8;
-    --texto: #1A1626; --suave: #6B6485;
-    --lima-tx: #7A8C00; --amarillo-tx: #B38600;
-    --correcto: #3F9A00; --error: #E5383B; --info: #0E8FD6; --racha: #E07B00;
-    --barra-fondo: #DCD8E8;
-    --a-cyt: #7A8C00; --a-mat: #0E8FD6; --a-com: #9B4FD9; --a-soc: #E07B00;
-    --esc-cielo: linear-gradient(#5fb4f2 0%, #9fd3f7 55%, #d9f0fb 100%);
-    --esc-foco: rgba(255, 255, 255, .28);
-    --plat-borde: #FFFFFF; --plat-a: #eaf6ff; --plat-b: #b9dcf3; --plat-brillo: rgba(255, 255, 255, .7);
-    --halo: rgba(255, 255, 255, .7);
-    --sombra-tarjeta: 0 1px 2px rgba(26, 22, 38, .06), 0 6px 18px rgba(26, 22, 38, .06);
-    color-scheme: light;
-  }
 }
 :root[data-tema="claro"] {
   --fondo: #F6F5FA; --tarjeta: #FFFFFF; --tarjeta2: #EEECF5; --borde: #DCD8E8;
@@ -114,6 +98,8 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
 
 .fila1 { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 26px; align-items: stretch; }
 .fila2 { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 26px; align-items: start; }
+.fila2 > .sec:first-child, .fila2 > .estilo-sec { grid-column: 1; }
+.fila2 > .sec:nth-of-type(n+3) { grid-column: 2; grid-row: 1 / span 2; }
 
 /* ---------- escenario ---------- */
 .escena { position: relative; min-height: 600px; overflow: hidden; border: 1px solid var(--borde); background: var(--esc-cielo); isolation: isolate; }
@@ -128,7 +114,6 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
 .nubes i:nth-child(2) { width: 14%; height: 5.5%; left: 72%; top: 52%; animation: nube 80s linear infinite reverse; }
 .nubes i:nth-child(3) { width: 12%; height: 4.5%; left: 6%; top: 70%; opacity: .7; }
 @keyframes nube { 50% { translate: 8% 0; } }
-@media (prefers-color-scheme: light) { :root:not([data-tema="oscuro"]) .nubes { display: block; } }
 :root[data-tema="claro"] .nubes { display: block; }
 .halo { position: absolute; left: 50%; top: 50%; width: 46%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; border: 2px dashed var(--halo); animation: girar 40s linear infinite; z-index: -1; }
 @keyframes girar { to { rotate: 360deg; } }
@@ -158,7 +143,8 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
 .acceso { position: relative; width: 68px; height: 68px; display: grid; place-items: center; align-content: center; gap: 6px; background: var(--tarjeta); border: 1px solid var(--borde); color: var(--texto); box-shadow: var(--sombra-tarjeta); }
 .acceso svg { font-size: 26px; }
 .acceso span { font-size: 11px; letter-spacing: .06em; }
-.acceso.punto::after { content: ""; position: absolute; right: -4px; top: -4px; width: 12px; height: 12px; border-radius: 50%; background: var(--error); }
+.acceso.punto::after { content: ""; position: absolute; right: 5px; top: 5px; width: 7px; height: 7px; rotate: 45deg; background: var(--error); box-shadow: 0 0 0 2px var(--tarjeta), 0 0 8px rgba(255, 75, 75, .8); animation: aviso 2s ease-in-out infinite; }
+@keyframes aviso { 50% { scale: 1.3; } }
 
 .rango { position: absolute; left: 50%; bottom: 0; translate: -50% 0; display: flex; align-items: center; gap: 12px; padding: 8px 20px 10px; background: linear-gradient(90deg, transparent, rgba(11, 8, 24, .82) 12%, rgba(11, 8, 24, .82) 88%, transparent); color: #EEEAF7; border-top: 2px solid #58CC02; white-space: nowrap; z-index: 2; }
 .rango .em { width: 44px; }
@@ -319,6 +305,214 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
   .practicar { font-size: 28px; }
 }
 @media (prefers-reduced-motion: reduce) { .halo, .nubes i { animation: none; } }
+/* ===== pulido ===== */
+/* Nunito en textos, nombres y números (igual que en las preguntas) */
+.nav a { font: 900 19px/1 var(--cuerpo); letter-spacing: .01em; }
+.tabbar a { font-family: var(--cuerpo); font-weight: 900; font-size: 12.5px; letter-spacing: 0; }
+.modo b { font: 900 19px/1.1 var(--cuerpo); text-transform: none; letter-spacing: 0; }
+.curso b { font: 900 19px/1.15 var(--cuerpo); text-transform: none; letter-spacing: 0; }
+.meta b { font: 900 17px/1 var(--cuerpo); }
+.evento b { letter-spacing: .03em; }
+.perfil b { font: 900 18px/1.1 var(--cuerpo); text-transform: none; }
+.perfil small { font: 800 12.5px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; }
+.top-cab { font-size: 17px; }
+
+/* Píldoras de arriba: como en la app web */
+.pill { display: inline-flex; align-items: center; gap: 6px; height: 42px; padding: 0 12px 0 10px; background: var(--tarjeta); border: 2px solid var(--borde); border-bottom-width: 4px; font: 900 16px/1 var(--cuerpo); color: var(--texto); font-variant-numeric: tabular-nums; transition: transform .08s; }
+.pill:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
+.pill svg { width: 24px; height: 24px; display: block; overflow: visible; }
+.pill.vida { color: #FF4B4B; border-color: rgba(255, 75, 75, .45); border-bottom-color: #a82a2a; }
+.pill.racha { color: var(--racha); border-color: rgba(255, 150, 0, .5); border-bottom-color: #b86b00; background: rgba(255, 150, 0, .08); }
+.pill.xp { color: var(--amarillo-tx); border-color: rgba(255, 200, 0, .45); border-bottom-color: #a07a00; }
+.pill svg g { transform-box: fill-box; transform-origin: 50% 60%; }
+.pill .late { animation: bum 1.4s ease-in-out infinite; }
+@keyframes bum { 0%, 40%, 100% { transform: scale(1); } 10% { transform: scale(1.16); } 20% { transform: scale(.96); } 30% { transform: scale(1.1); } }
+.pill.racha svg { filter: drop-shadow(0 0 6px rgba(255, 150, 0, .55)); }
+.pill .ext, .pill .int { transform-origin: 50% 95%; }
+.pill .ext { animation: ext 1.9s ease-in-out infinite; }
+.pill .int { animation: int 1.3s ease-in-out infinite; }
+@keyframes ext { 0%, 100% { transform: scale(1, 1) skewX(0); } 30% { transform: scale(.97, 1.05) skewX(-2deg); } 60% { transform: scale(1.02, .97) skewX(2deg); } }
+@keyframes int { 0%, 100% { transform: scale(1, 1) translateY(0); } 40% { transform: scale(.92, 1.1) translateY(-1px); } 70% { transform: scale(1.05, .94); } }
+.pill .gema { transform-origin: 50% 50%; animation: gema 2.8s ease-in-out infinite; }
+@keyframes gema { 0%, 70%, 100% { transform: scale(1) rotate(0); } 80% { transform: scale(1.1) rotate(-8deg); } 90% { transform: scale(1) rotate(4deg); } }
+.pill .destello { opacity: 0; animation: destello 2.8s ease-in-out infinite; }
+@keyframes destello { 0%, 68%, 100% { opacity: 0; } 80% { opacity: .55; } }
+
+/* Perfil: el fondo equipado va detrás, el marco rodea la foto y el pin va en la esquina */
+.perfil { position: relative; overflow: hidden; color: #fff; padding: 6px 34px 6px 8px;
+  background: radial-gradient(1.5px 1.5px at 20% 30%, #fff 50%, transparent), radial-gradient(1px 1px at 62% 20%, #fff 50%, transparent), radial-gradient(1.5px 1.5px at 80% 70%, #fff 50%, transparent), radial-gradient(1px 1px at 45% 80%, #fff 50%, transparent),
+    radial-gradient(120% 140% at 85% 0%, #5b34b8, #241452 55%, #120a2c); }
+.perfil small { color: #C6E000; }
+.marco { position: relative; display: grid; place-items: center; width: 54px; height: 54px; padding: 3px; flex: none;
+  background: conic-gradient(from 210deg, #FFF3B0, #FFC800, #B38600, #FFC800, #FFF3B0, #FFC800, #B38600, #FFF3B0); clip-path: polygon(14% 0, 86% 0, 100% 14%, 100% 86%, 86% 100%, 14% 100%, 0 86%, 0 14%); filter: drop-shadow(0 0 6px rgba(255, 200, 0, .6)); }
+.marco .avatar { width: 100%; height: 100%; border: 0; clip-path: inherit; font: 900 24px/1 var(--cuerpo); }
+.pin { position: absolute; right: -3px; bottom: -3px; width: 22px; height: 22px; display: grid; place-items: center; background: #1CB0F6; border: 2px solid #fff; border-radius: 50%; }
+.pin svg { width: 13px; height: 13px; fill: #FFE14D; }
+.marco { overflow: visible; }
+
+/* Top de la semana */
+.liga { display: grid; gap: 6px; padding: 8px; }
+.liga li { grid-template-columns: 30px 34px minmax(0, 1fr) 30px auto; gap: 9px; padding: 8px 12px 8px 8px; position: relative; border: 1px solid var(--borde) !important; background: var(--tarjeta2); clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%); }
+.liga .pos { display: grid; place-items: center; }
+.liga .copa, .liga .medalla { width: 30px; height: 34px; display: block; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .3)); }
+.liga .num { font: italic 900 22px/1 var(--display); color: var(--suave); }
+.liga li .em svg { width: 30px; display: block; }
+.liga .letra { width: 34px; height: 34px; color: #10131a; font: 900 16px/1 var(--cuerpo); clip-path: polygon(14% 0, 86% 0, 100% 14%, 100% 86%, 86% 100%, 14% 100%, 0 86%, 0 14%); }
+.liga .quien { min-width: 0; }
+.liga b { font: 800 16.5px/1.15 var(--cuerpo); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.liga .pinito { font-style: normal; font-size: 12px; color: var(--amarillo-tx); }
+.liga small { font-size: 12.5px; }
+.liga .xp { font: 900 15px/1 var(--cuerpo); color: var(--amarillo-tx); text-align: right; white-space: nowrap; }
+.liga .xp small { font: 800 11px/1 var(--display); color: var(--suave); }
+.liga li.oro { background: linear-gradient(90deg, rgba(255, 200, 0, .2), var(--tarjeta2) 70%); box-shadow: inset 3px 0 #FFC800; }
+.liga li.plata { background: linear-gradient(90deg, rgba(201, 198, 214, .16), var(--tarjeta2) 70%); box-shadow: inset 3px 0 #C9C6D6; }
+.liga li.bronce { background: linear-gradient(90deg, rgba(229, 138, 69, .18), var(--tarjeta2) 70%); box-shadow: inset 3px 0 #E58A45; }
+
+.liga li.bronce + li { margin-top: 6px; }
+.liga li.tu { background: linear-gradient(90deg, rgba(198, 224, 0, .16), var(--tarjeta2) 80%); box-shadow: inset 3px 0 var(--lima); }
+.liga li.tu .xp { color: var(--lima-tx); }
+
+/* Top simulacro: podio con foco, corona y bloques 3D */
+.top-cab .cierra { display: inline-flex; align-items: center; gap: 5px; color: var(--racha); }
+.podio { position: relative; isolation: isolate; grid-template-columns: 1fr 1.15fr 1fr; gap: 6px; padding: 30px 18px 0; overflow: hidden;
+  background: radial-gradient(70% 60% at 50% 30%, rgba(255, 200, 0, .14), transparent 70%), repeating-linear-gradient(115deg, transparent 0 22px, rgba(255, 255, 255, .02) 22px 44px); }
+.podio .foco { position: absolute; left: 35%; right: 35%; top: 0; bottom: 30%; z-index: -1; background: linear-gradient(rgba(255, 236, 190, .22), transparent); clip-path: polygon(30% 0, 70% 0, 100% 100%, 0 100%); }
+.lugar { display: grid; justify-items: center; gap: 4px; text-align: center; position: relative; }
+.corona { width: 40px; margin-bottom: -6px; filter: drop-shadow(0 0 8px rgba(255, 200, 0, .7)); animation: corona 2.4s ease-in-out infinite; }
+@keyframes corona { 50% { translate: 0 -3px; } }
+.hex { display: grid; place-items: center; width: 66px; height: 72px; padding: 4px; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
+.hex-in { width: 100%; height: 100%; display: grid; place-items: center; clip-path: inherit; font: 900 28px/1 var(--cuerpo); color: #1a1400; }
+.l1 .hex { width: 84px; height: 92px; background: linear-gradient(#FFF3B0, #FFC800 40%, #B38600); filter: drop-shadow(0 0 12px rgba(255, 200, 0, .55)); }
+.l1 .hex-in { font-size: 36px; }
+.l2 .hex { background: linear-gradient(#fff, #C9C6D6 50%, #6B6485); }
+.l3 .hex { background: linear-gradient(#FFD3AE, #E58A45 50%, #8A4A17); }
+.lugar b { font: 900 17px/1.1 var(--cuerpo); margin-top: 4px; }
+.pts { font: 900 14px/1 var(--cuerpo); padding: 4px 9px; background: var(--tarjeta2); border: 1px solid var(--borde); color: var(--amarillo-tx); }
+.l1 .pts { background: var(--amarillo); color: #2a1d00; border-color: transparent; }
+.bloque { position: relative; width: 100%; margin-top: 10px; display: grid; }
+.bloque .cara { height: 12px; clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%); }
+.bloque .frente { display: grid; place-items: center; font: italic 900 46px/1 var(--display); color: rgba(0, 0, 0, .45); text-shadow: 0 1px 0 rgba(255, 255, 255, .35); }
+.bloque .frente svg { width: 40px; height: 45px; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .35)); }
+.l1 .cara { background: #FFE27A; } .l1 .frente { height: 110px; background: linear-gradient(#FFC800, #9c7400); }
+.l2 .cara { background: #F2F0F8; } .l2 .frente { height: 80px; background: linear-gradient(#C9C6D6, #5c5675); }
+.l3 .cara { background: #FFC38F; } .l3 .frente { height: 62px; background: linear-gradient(#E58A45, #7a3f12); }
+.sim-lista { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--borde); }
+.sim-lista li { display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--borde); font: 800 16px/1.2 var(--cuerpo); }
+.sim-lista .num { font: italic 900 20px/1 var(--display); color: var(--suave); text-align: center; }
+.sim-lista b { font-weight: 900; color: var(--amarillo-tx); }
+.sim-lista li.tu { background: linear-gradient(90deg, rgba(198, 224, 0, .16), transparent 80%); box-shadow: inset 3px 0 var(--lima); }
+.sim-lista li.tu b { color: var(--lima-tx); }
+.ver-mas { border-top: 0; }
+
+@media (max-width: 900px) {
+  .pill { height: 36px; padding: 0 8px 0 7px; gap: 4px; font-size: 14px; }
+  .pill svg { width: 20px; height: 20px; }
+  .marco { width: 44px; height: 44px; }
+  .marco .avatar { font-size: 20px; }
+  .pin { width: 18px; height: 18px; }
+  .pin svg { width: 10px; height: 10px; }
+  .perfil b { font-size: 15px; }
+  .perfil { padding-right: 22px; }
+  .podio { padding: 26px 8px 0; }
+  .hex { width: 54px; height: 60px; }
+  .l1 .hex { width: 70px; height: 78px; }
+  .lugar b { font-size: 15px; }
+}
+
+@media (max-width: 360px) {
+  .perfil > span:last-child { display: none; }
+  .perfil { padding-right: 18px; }
+}
+.jugado { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.pop { position: relative; display: flex; align-items: center; gap: 12px; padding: 14px; min-width: 0; background: var(--tarjeta); border: 1px solid var(--borde); border-bottom: 3px solid var(--ac); box-shadow: var(--sombra-tarjeta); transition: transform .15s, border-color .15s; }
+.pop:hover { transform: translateY(-2px); border-color: var(--ac); }
+.pop-ico { flex: none; width: 46px; height: 46px; display: grid; place-items: center; background: color-mix(in srgb, var(--ac) 14%, transparent); clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%); }
+.pop-ico i { width: 27px; height: 27px; background: var(--ac); -webkit-mask: var(--ico) center/contain no-repeat; mask: var(--ico) center/contain no-repeat; }
+.pop-txt { min-width: 0; display: grid; gap: 2px; }
+.pop-txt b { font: 900 16px/1.15 var(--cuerpo); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pop-txt small { font: 700 12.5px/1.2 var(--cuerpo); color: var(--suave); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pop-pos { position: absolute; top: -9px; right: 10px; padding: 4px 8px; background: var(--ac); color: #0e0e0e; font: italic 900 14px/1 var(--display); clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%); box-shadow: 0 0 14px color-mix(in srgb, var(--ac) 40%, transparent); }
+@media (max-width: 900px) { .jugado { gap: 14px 10px; padding-top: 6px; } .pop { padding: 12px 10px; gap: 9px; } .pop-ico { width: 40px; height: 40px; } .pop-ico i { width: 23px; height: 23px; } .pop-txt b { font-size: 14px; } .pop-txt small { font-size: 11.5px; } }
+.estilo { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.pieza { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--tarjeta); border: 1px solid var(--borde); box-shadow: var(--sombra-tarjeta); min-width: 0; }
+.pieza > span:last-child { min-width: 0; display: grid; gap: 2px; }
+.pieza small { color: var(--suave); font-size: 13px; }
+.pieza b { font: 900 16px/1.15 var(--cuerpo); }
+.pieza em { font: 700 12.5px/1.25 var(--cuerpo); font-style: normal; color: var(--suave); }
+.vista { flex: none; width: 54px; height: 54px; display: grid; place-items: center; }
+.v-fondo { background: radial-gradient(1.5px 1.5px at 25% 30%, #fff 50%, transparent), radial-gradient(1px 1px at 70% 22%, #fff 50%, transparent), radial-gradient(1.5px 1.5px at 60% 70%, #fff 50%, transparent), radial-gradient(120% 140% at 85% 0%, #5b34b8, #241452 55%, #120a2c); }
+.v-marco .marco { width: 50px; height: 50px; }
+.v-pin .pin { position: static; width: 40px; height: 40px; border-width: 3px; }
+.v-pin .pin svg { width: 22px; height: 22px; }
+@media (max-width: 900px) {
+  .fila2 > .sec { grid-column: auto !important; grid-row: auto !important; }
+  .estilo { grid-template-columns: 1fr; }
+  .pieza em { display: none; }
+}
+
+/* barra lateral: más angosta */
+.lado .liga li { grid-template-columns: 26px 28px minmax(0, 1fr) 24px auto; gap: 7px; padding: 7px 8px 7px 6px; }
+.lado .liga .letra { width: 28px; height: 28px; font-size: 14px; }
+.lado .liga li .em svg { width: 24px; }
+.lado .liga .copa, .lado .liga .medalla { width: 24px; height: 28px; }
+.lado .liga b { font-size: 15px; }
+.lado .liga .xp { font-size: 14px; }
+.lado .liga .xp small { display: none; }
+.lado .liga { padding: 6px; gap: 5px; }
+.pill { white-space: nowrap; }
+.perfil small { white-space: nowrap; }
+@media (max-width: 900px) {
+  .perfil small { display: none; }
+  .estilo { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 8px; }
+  .pieza { flex-direction: column; text-align: center; gap: 8px; padding: 12px 6px; }
+  .pieza b { font-size: 13.5px; }
+  .vista { width: 46px; height: 46px; }
+  .v-marco .marco { width: 44px; height: 44px; }
+  .v-pin .pin { width: 36px; height: 36px; }
+}
+@media (max-width: 900px) { .tema-btn { display: none; } .cab .der { gap: 6px; min-width: 0; } .cont { overflow-x: clip; } }
+
+/* Íconos redondos flotantes: eventos a la izquierda, accesos a la derecha */
+.eventos, .accesos { display: none; }
+.flotan { position: absolute; top: 4%; display: grid; gap: 16px; z-index: 2; justify-items: center; }
+.flotan.izq { left: 3%; }
+.flotan.der { right: 3%; }
+.flot { position: relative; display: grid; justify-items: center; gap: 5px; color: #fff; }
+.flot .bola { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; border: 3px solid var(--amarillo); box-shadow: 0 4px 14px rgba(0, 0, 0, .35), inset 0 -6px 10px rgba(0, 0, 0, .25), inset 0 4px 8px rgba(255, 255, 255, .25); transition: transform .15s; }
+.flot:hover .bola { transform: scale(1.08); }
+.flot .bola svg { width: 34px; height: 34px; }
+.flot .bola svg.ic { width: 28px; height: 28px; stroke-width: 2.2; }
+.flot b { font-size: 13px; letter-spacing: .06em; text-shadow: 0 1px 3px rgba(0, 0, 0, .8); }
+.flot .cinta { position: absolute; top: 52px; left: 50%; translate: -50% 0; padding: 2px 6px; background: var(--error); color: #fff; font-size: 11px; white-space: nowrap; clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%); }
+.flot b { margin-top: 8px; }
+.f-hallo .bola { background: radial-gradient(circle at 35% 30%, #7a3fd0, #3a1680 70%); border-color: #FF9600; animation: flota 2.6s ease-in-out infinite; box-shadow: 0 0 0 4px rgba(255, 150, 0, .25), 0 0 18px rgba(255, 150, 0, .55); }
+.f-hallo .cinta { background: #FF9600; color: #2a1200; }
+.f-sim .bola { background: radial-gradient(circle at 35% 30%, #6a4bd6, #2d2064 75%); }
+.f-sim .cinta { background: var(--amarillo); color: #2a1d00; }
+.f-cal .bola { background: radial-gradient(circle at 35% 30%, #1d9bd0, #0f4a6a 75%); border-color: var(--info); }
+.f-cal .cinta { background: var(--info); }
+@keyframes flota { 50% { translate: 0 -5px; } }
+.f-chico .bola { width: 52px; height: 52px; background: var(--tarjeta); border: 2px solid var(--borde); color: var(--texto); }
+.f-chico .bola svg.ic { width: 24px; height: 24px; }
+.f-chico b { margin-top: 0; font-size: 11px; color: #fff; }
+.flot.punto::after { content: ""; position: absolute; right: 4px; top: 4px; width: 9px; height: 9px; rotate: 45deg; background: var(--error); box-shadow: 0 0 0 2px var(--tarjeta), 0 0 8px rgba(255, 75, 75, .8); animation: aviso 2s ease-in-out infinite; }
+.buho { width: 38%; }
+@media (max-width: 900px) {
+  .flotan { gap: 12px; top: 4%; }
+  .flot .bola { width: 50px; height: 50px; }
+  .flot .bola svg { width: 28px; height: 28px; }
+  .flot .bola svg.ic { width: 22px; height: 22px; }
+  .flot .cinta { top: 40px; font-size: 10px; }
+  .flot b { font-size: 11px; }
+  .f-chico .bola { width: 42px; height: 42px; }
+  .f-chico .bola svg.ic { width: 20px; height: 20px; }
+  .f-chico b { font-size: 9.5px; }
+  .buho { width: 46%; left: 50%; }
+  .globo { left: 50%; max-width: 46%; }
+}
+@media (prefers-reduced-motion: reduce) { .f-hallo .bola, .flot.punto::after { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .pill *, .corona, .acceso.punto::after { animation: none !important; } }
+
 </style>
 </head>
 <body>
@@ -353,7 +547,7 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
     </nav>
     <section class="top" aria-label="Top de la semana">
       <div class="top-cab disp">Top de la semana <a href="#">Ver todo ›</a></div>
-      <ol id="topLado"></ol>
+      <ol class="liga" id="topLado"></ol>
     </section>
     <a class="apoya" href="#"><b class="disp">Apoya el proyecto</b><small>Invítame un café por Yape</small></a>
   </aside>
@@ -362,11 +556,13 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
     <header class="cab">
       <h1 class="tit">¡Hola, Javier!</h1>
       <div class="der">
-        <span class="stat vida disp" title="Corazones"><svg class="ic"><use href="#i-corazon"/></svg>5</span>
-        <span class="stat fuego disp" title="Racha"><svg class="ic"><use href="#i-fuego"/></svg>5</span>
-        <span class="stat disp" title="Monedas"><span class="moneda">¢</span>310</span>
+        <a class="pill vida" href="#" title="Corazones"><span id="icCor"></span>5</a>
+        <a class="pill racha" href="perfil.html#racha" title="Racha de 5 días"><span id="icRacha"></span>5</a>
+        <a class="pill xp" href="#" title="XP de la semana"><span id="icXp"></span>2 480</a>
         <button class="tema-btn" id="temaBtn" type="button" aria-label="Cambiar a modo claro"><svg class="ic"><use href="#i-sol"/></svg></button>
-        <a class="perfil disp" href="perfil.html"><span class="avatar">J</span><span><b>Javier</b><small>Nvl. 12 · CPU</small></span></a>
+        <a class="perfil" href="perfil.html" title="Tu perfil: fondo Noche estrellada, marco Dorado, pin Rayo">
+          <span class="marco"><span class="avatar">J</span><span class="pin" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.5 2 5 13.5h5.5L9.5 22 19 9.5h-5.8z"/></svg></span></span>
+          <span><b>Javier</b><small>Nvl. 12 · CPU</small></span></a>
       </div>
     </header>
 
@@ -377,17 +573,14 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
         <div class="plat" aria-hidden="true"><i></i><i></i><i></i></div>
         <div class="buho" id="buho"></div>
         <p class="globo" id="globo">¡Vas <em>12 de 20</em> hoy! Tú puedes</p>
-        <div class="eventos">
-          <a class="evento ev-hallo" href="#"><b class="disp">Evento Halloween</b><small>Gana calabazas</small><span class="cinta disp">2 días</span></a>
-          <a class="evento ev-cal" href="#"><b class="disp">Mañana</b><small>Seminario 3 · Álgebra 8:00</small></a>
-          <a class="evento ev-sim" href="simulacro.html"><b class="disp">Simulacro</b><small>Sábado 9:00</small></a>
+        <div class="flotan izq">
+          <a class="flot f-hallo" href="#" title="Evento Halloween: gana calabazas (quedan 2 días)"><span class="bola"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 9c-2-3-1-6 2-7" fill="none" stroke="#3f8a1e" stroke-width="2.6" stroke-linecap="round"/><ellipse cx="11" cy="19" rx="7.5" ry="9" fill="#e86a10"/><ellipse cx="21" cy="19" rx="7.5" ry="9" fill="#e86a10"/><ellipse cx="16" cy="19" rx="7" ry="9.6" fill="#ff8a1f"/><path d="M10 16l3 2-3 1zM22 16l-3 2 3 1zM10.5 23q5.5 4 11 0l-2 1-1.5-1.5-2 1.5-2-1.5-1.5 1.5z" fill="#3a1500"/></svg></span><span class="cinta disp">2 días</span><b class="disp">Halloween</b></a>
+          <a class="flot f-sim" href="simulacro.html" title="Simulacro: sábado 9:00"><span class="bola"><svg class="ic"><use href="#i-reloj"/></svg></span><span class="cinta disp">Sáb</span><b class="disp">Simulacro</b></a>
+          <a class="flot f-cal" href="#" title="Mañana: Seminario 3 · Álgebra 8:00"><span class="bola"><svg class="ic"><use href="#i-agenda"/></svg></span><span class="cinta disp">Mañana</span><b class="disp">Seminario</b></a>
         </div>
-        <nav class="accesos disp" aria-label="Accesos">
-          <a class="acceso punto" href="#"><svg class="ic"><use href="#i-mision"/></svg><span>Misiones</span></a>
-          <a class="acceso" href="#"><svg class="ic"><use href="#i-cofre"/></svg><span>Colección</span></a>
-          <a class="acceso" href="#"><svg class="ic"><use href="#i-copa"/></svg><span>Ranking</span></a>
-          <a class="acceso" href="#"><svg class="ic"><use href="#i-agenda"/></svg><span>Agenda</span></a>
-          <a class="acceso punto" href="#"><svg class="ic"><use href="#i-regalo"/></svg><span>Nuevo</span></a>
+        <nav class="flotan der" aria-label="Accesos">
+          <a class="flot f-chico punto" href="#" title="Misiones"><span class="bola"><svg class="ic"><use href="#i-mision"/></svg></span><b class="disp">Misiones</b></a>
+          <a class="flot f-chico punto" href="#" title="Novedades"><span class="bola"><svg class="ic"><use href="#i-regalo"/></svg></span><b class="disp">Nuevo</b></a>
         </nav>
         <a class="rango" href="#"><span class="em" id="rangoEm"></span><b class="disp">Esmeralda</b><span><small>1520 XP<br>para Amatista</small><span class="bar"><i></i></span></span></a>
       </section>
@@ -401,7 +594,7 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
           <div class="meta disp"><span>Meta de hoy</span><span class="bar"><i></i></span><b>12/20</b></div>
         </div>
         <section class="sec">
-          <div class="sec-cab"><h2 class="tit">Modos de juego</h2></div>
+          <div class="sec-cab"><h2 class="tit">Modos de estudio</h2></div>
           <div class="modos">
             <a class="juego j-duelo" href="duelo.html"><span class="chip disp">Reto</span><b class="tit">Duelos</b><small>Reta hasta a 3 amigos en vivo</small><svg class="ic"><use href="#i-espadas"/></svg></a>
             <a class="juego j-sim" href="simulacro.html"><span class="chip disp">Nuevo</span><b class="tit">Simulacro</b><small>Como el real, con tiempo</small><svg class="ic"><use href="#i-reloj"/></svg></a>
@@ -414,28 +607,35 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
 
     <div class="fila2">
       <section class="sec">
-        <div class="sec-cab"><h2 class="tit">Lo más jugado</h2></div>
-        <div class="jugado">
-          <a class="curso" style="--ac:var(--a-cyt)" href="biologia/"><span class="n disp">#1</span><b class="disp">Biología</b><small>Ciencia y Tec.</small></a>
-          <a class="curso" style="--ac:var(--a-mat)" href="algebra/"><span class="n disp">#2</span><b class="disp">Álgebra</b><small>Matemática</small></a>
-          <a class="curso" style="--ac:var(--a-com)" href="raz-verbal/"><span class="n disp">#3</span><b class="disp">Raz. Verbal</b><small>Comunicación</small></a>
+        <div class="sec-cab"><h2 class="tit">Cursos populares</h2></div>
+        <div class="jugado" style="padding-top:6px">
+          <a class="pop" href="raz-verbal/" style="--ac:var(--a-com);--ico:url(assets/icons/raz-verbal.svg)"><span class="pop-pos">#1</span><span class="pop-ico"><i></i></span><span class="pop-txt"><b>Razonamiento Verbal</b><small>Comunicación</small></span></a>
+          <a class="pop" href="algebra/" style="--ac:var(--a-mat);--ico:url(assets/icons/algebra.svg)"><span class="pop-pos">#2</span><span class="pop-ico"><i></i></span><span class="pop-txt"><b>Álgebra</b><small>Matemática</small></span></a>
+          <a class="pop" href="literatura/" style="--ac:var(--a-com);--ico:url(assets/icons/literatura.svg)"><span class="pop-pos">#3</span><span class="pop-ico"><i></i></span><span class="pop-txt"><b>Literatura</b><small>Comunicación</small></span></a>
+          <a class="pop" href="anatomia/" style="--ac:var(--a-cyt);--ico:url(assets/icons/anatomia.svg)"><span class="pop-pos">#4</span><span class="pop-ico"><i></i></span><span class="pop-txt"><b>Anatomía</b><small>Ciencia y Tecnología</small></span></a>
+        </div>
+      </section>
+
+      <section class="sec estilo-sec">
+        <div class="sec-cab"><h2 class="tit">Tu estilo</h2><a class="disp" href="#">Colección ›</a></div>
+        <div class="estilo">
+          <a class="pieza" href="#"><span class="vista v-fondo" aria-hidden="true"></span><span><small class="disp">Fondo</small><b>Noche estrellada</b><em>Se ve detrás de tu perfil</em></span></a>
+          <a class="pieza" href="#"><span class="vista v-marco" aria-hidden="true"><span class="marco"><span class="avatar">J</span></span></span><span><small class="disp">Marco</small><b>Dorado</b><em>Rodea tu foto</em></span></a>
+          <a class="pieza" href="#"><span class="vista v-pin" aria-hidden="true"><span class="pin"><svg viewBox="0 0 24 24"><path d="M13.5 2 5 13.5h5.5L9.5 22 19 9.5h-5.8z"/></svg></span></span><span><small class="disp">Pin</small><b>Rayo</b><em>Junto a tu nombre en los tops</em></span></a>
         </div>
       </section>
 
       <section class="sec solo-cel">
         <div class="sec-cab"><h2 class="tit">Top de la semana</h2><a class="disp" href="#">Ranking ›</a></div>
-        <div class="top"><div class="top-cab disp">Liga Esmeralda <span>Se reinicia el lunes</span></div><ol id="topCel"></ol></div>
+        <div class="top"><div class="top-cab disp">Liga Esmeralda <span>Se reinicia el lunes</span></div><ol class="liga" id="topCel"></ol></div>
       </section>
 
       <section class="sec">
         <div class="sec-cab"><h2 class="tit">Top simulacro</h2><a class="disp" href="simulacro.html">Dar simulacro ›</a></div>
         <div class="top">
-          <div class="top-cab disp">Top simulacro · semana <span>Se reinicia el lunes</span></div>
-          <div class="podio">
-            <div class="p2"><span class="letra">D</span><b>Diego</b><small>17.0 pts</small><span class="esc">2</span></div>
-            <div class="p1"><span class="letra">L</span><b>Lucía</b><small>18.5 pts</small><span class="esc">1</span></div>
-            <div class="p3"><span class="letra">M</span><b>Mateo</b><small>16.5 pts</small><span class="esc">3</span></div>
-          </div>
+          <div class="top-cab disp">Top simulacro · semana <span class="cierra"><svg class="ic"><use href="#i-reloj"/></svg>Cierra en 2 d 14 h</span></div>
+          <div class="podio" id="podio"></div>
+          <ol class="sim-lista" id="simLista"></ol>
           <a class="ver-mas disp" href="#">Ver top 10 ▾</a>
         </div>
       </section>
@@ -458,25 +658,62 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
 <script src="assets/buho/buho-vivo.js"></script>
 <script>
   // Datos de ejemplo para la vista previa
-  var TOP = [['Lucía', 4, 7420], ['Diego', 3, 4610], ['Mateo', 2, 3020], ['Tú', 1, 2480, 1], ['Ana', 1, 1950], ['Rosa', 0, 1210], ['Kevin', 0, 860]];
+  var TOP = [['Lucía', 4, 7420, 0, '★'], ['Diego', 3, 4610], ['Mateo', 2, 3020], ['Tú', 1, 2480, 1, '⚡'], ['Ana', 1, 1950], ['Rosa', 0, 1210], ['Kevin', 0, 860]];
   var COLR = ['#1CB0F6', '#58CC02', '#B27BFF', '#FF4B4B', '#FFC800'];
   var miles = function (n) { return n.toLocaleString('es-PE').replace(/,/g, ' '); };
-  document.getElementById('topLado').innerHTML = TOP.map(function (t, i) {
-    return '<li' + (t[3] ? ' class="tu"' : '') + '><span class="pos">' + (i + 1) + '</span><span class="em">' + MCRango.svg(t[1], { mini: true, quieto: true }) + '</span>' +
-      '<span><b>' + t[0] + '</b><small style="color:' + COLR[t[1]] + '">' + MCRango.nombre(t[1]) + '</small></span><span class="xp">' + miles(t[2]) + ' XP</span></li>';
+  // Copa para el 1.º, medallas de plata y bronce para el 2.º y 3.º
+  var MED = [['#FFD84D', '#FFC800', '#B38600'], ['#F2F0F8', '#C9C6D6', '#6B6485'], ['#FFC38F', '#E58A45', '#8A4A17']];
+  function copa() {
+    return '<svg class="copa" viewBox="0 0 32 36" aria-label="1.º"><path d="M9 6H4.5a4.5 4.5 0 0 0 5 6M23 6h4.5a4.5 4.5 0 0 1-5 6" fill="none" stroke="#E0A100" stroke-width="2.6"/>' +
+      '<path d="M8 3h16v9a8 8 0 0 1-16 0z" fill="#FFC800"/><path d="M16 3h8v9a8 8 0 0 1-8 8z" fill="#E0A100"/><path d="M10.5 5h2.5v8c0 1.6.6 3 1.6 4-2.4-.6-4.1-2.6-4.1-5z" fill="#FFF3B0" opacity=".8"/>' +
+      '<path d="m16 6.5 1.4 2.9 3.1.4-2.3 2.2.6 3.1-2.8-1.5-2.8 1.5.6-3.1-2.3-2.2 3.1-.4z" fill="#fff"/>' +
+      '<rect x="14" y="20" width="4" height="6" fill="#B38600"/><path d="M9 26h14l2 6H7z" fill="#6b3fd0"/><path d="M9 26h14l.7 2H8.3z" fill="#8e63f0"/></svg>';
+  }
+  function medalla(n) {
+    var c = MED[n - 1];
+    return '<svg class="medalla" viewBox="0 0 32 36" aria-label="' + n + '.º"><path d="M8 0h6l4 12h-6z" fill="#3b6fd8"/><path d="M24 0h-6l-4 12h6z" fill="#e0453c"/>' +
+      '<circle cx="16" cy="23" r="12" fill="' + c[2] + '"/><circle cx="16" cy="23" r="9.5" fill="' + c[1] + '"/><path d="M8.5 19a9.5 9.5 0 0 1 12-5.5 10 10 0 0 0-10 9.5z" fill="' + c[0] + '"/>' +
+      '<text x="16" y="28" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-style="italic" font-size="14" fill="' + c[2] + '">' + n + '</text></svg>';
+  }
+  function puesto(i) { return i === 0 ? copa() : i < 3 ? medalla(i + 1) : '<span class="num">' + (i + 1) + '</span>'; }
+  var CLS = ['oro', 'plata', 'bronce'];
+  function fila(t, i) {
+    return '<li class="' + (CLS[i] || '') + (t[3] ? ' tu' : '') + '"><span class="pos">' + puesto(i) + '</span>' +
+      '<span class="letra" style="background:' + (t[3] ? '#C6E000' : AV[i % AV.length]) + '">' + (t[3] ? 'J' : t[0][0]) + '</span>' +
+      '<span class="quien"><b>' + t[0] + (t[4] ? ' <i class="pinito" title="Pin">' + t[4] + '</i>' : '') + '</b></span>' +
+      '<span class="em" title="' + MCRango.nombre(t[1]) + '">' + MCRango.svg(t[1], { mini: true, quieto: true }) + '</span><span class="xp">' + miles(t[2]) + ' <small>XP</small></span></li>';
+  }
+  var AV = ['#1CB0F6', '#CE82FF', '#FF9600', '#C6E000', '#FFC800', '#FF4B4B', '#58CC02'];
+  document.getElementById('topLado').innerHTML = TOP.map(function (t, i) { return fila(t, i); }).join('');
+  document.getElementById('topCel').innerHTML = TOP.slice(0, 5).map(function (t, i) { return fila(t, i); }).join('');
+  // Podio del simulacro
+  var SIM = [['Lucía', 18.5, '#FFC800'], ['Diego', 17.0, '#E9E6F2'], ['Mateo', 16.5, '#EF9D5C'], ['Ana', 16.0], ['Kevin', 15.5]];
+  var orden = [1, 0, 2];
+  document.getElementById('podio').innerHTML = '<div class="foco" aria-hidden="true"></div>' + orden.map(function (k) {
+    var t = SIM[k], n = k + 1;
+    return '<div class="lugar l' + n + '">' + (n === 1 ? '<svg class="corona" viewBox="0 0 40 22" aria-hidden="true"><path d="M2 20 4 4l9 8 7-11 7 11 9-8 2 16z" fill="#FFC800"/><path d="M2 20h36v2H2z" fill="#B38600"/><circle cx="20" cy="13" r="2.6" fill="#FF4B4B"/><circle cx="10" cy="15" r="1.8" fill="#1CB0F6"/><circle cx="30" cy="15" r="1.8" fill="#58CC02"/></svg>' : '') +
+      '<span class="hex"><span class="hex-in" style="background:' + t[2] + '">' + t[0][0] + '</span></span>' +
+      '<b>' + t[0] + '</b><span class="pts">' + t[1].toFixed(1) + ' pts</span>' +
+      '<span class="bloque"><i class="cara"></i><span class="frente">' + n + '</span></span></div>';
   }).join('');
-  var LET = ['#FFC800', '#E9E6F2', '#EF9D5C', '#C6E000'];
-  document.getElementById('topCel').innerHTML = TOP.slice(0, 4).map(function (t, i) {
-    return '<li' + (t[3] ? ' class="tu"' : '') + '><span class="pos">' + (i + 1) + '</span><span class="letra" style="background:' + LET[i] + '">' + (t[3] ? 'J' : t[0][0]) + '</span>' +
-      '<span><b>' + t[0] + '</b></span><span class="xp">' + miles(t[2]) + ' XP</span></li>';
-  }).join('');
+  document.getElementById('simLista').innerHTML = SIM.slice(3).map(function (t, i) {
+    return '<li><span class="num">' + (i + 4) + '</span><span>' + t[0] + '</span><b>' + t[1].toFixed(1) + ' pts</b></li>';
+  }).join('') + '<li class="tu"><span class="num">12</span><span>Tú</span><b>14.0 pts</b></li>';
+  // Íconos de la app: corazón que late, racha con fuego y gema de XP
+  document.getElementById('icCor').innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><g class="late"><path fill="#FF4B4B" d="M12 21.4s-8.2-4.9-10.1-10C.4 7.3 2.9 3.4 6.7 3.4c2.3 0 3.9 1.3 5.3 3.1 1.4-1.8 3-3.1 5.3-3.1 3.8 0 6.3 3.9 4.8 8-1.9 5.1-10.1 10-10.1 10z"/><path fill="#D93636" d="M12 21.4s8.2-4.9 10.1-10c.6-1.6.6-3.2.1-4.5-.2 4.3-5 9.6-10.2 12.4-5.2-2.8-10-8.1-10.2-12.4-.5 1.3-.5 2.9.1 4.5C3.8 16.5 12 21.4 12 21.4z"/><path fill="#fff" opacity=".7" d="M6.5 6.2c-1.7.1-2.8 1.6-2.6 3.3.1.7.9.8 1.1 0 .3-1.1 1-1.8 1.9-2.1.8-.3.5-1.3-.4-1.2z"/><circle fill="#fff" opacity=".7" cx="8.6" cy="5.6" r=".9"/></g></svg>';
+  document.getElementById('icRacha').innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" style="color:#FF9600"><g class="ext"><path fill="currentColor" d="M12.3 1.4c.6 3.3 3.5 5 5.4 8 1.7 2.7 2 5.6.8 8.3-1.2 3-4 4.9-6.9 4.9-3.3 0-6.3-2.3-7.1-5.7-.5-2.3.1-4.6 1.5-6.4.2 1.6.9 2.7 2.1 3.2-.5-4.6 1.5-9 4.2-12.3z"/><path fill="#E07000" d="M18.5 17.7c-1.2 3-4 4.9-6.9 4.9 3.6-1.4 6-4.5 5.9-8.8 0-1.6-.4-3.2-1.1-4.6.4.3.9.7 1.3 1.2 1.7 2.7 2 5.6.8 8.3z"/></g><g class="int"><path fill="#FFD84D" d="M12.2 10.6c.5 1.8 2.4 2.8 2.9 4.8.6 2.6-1.1 5-3.3 5-2.1 0-3.6-1.7-3.4-3.7.1-1.1.7-2 1.4-2.6.1.8.5 1.4 1.1 1.6-.2-1.8.4-3.6 1.3-5.1z"/><path d="M11.4 17.2c.1.9.7 1.5 1.4 1.6" stroke="#fff" stroke-width="1.1" stroke-linecap="round" opacity=".8" fill="none"/></g></svg>';
+  document.getElementById('icXp').innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><g class="gema"><path fill="#FFC800" d="M12 1.6 21 6.8v10.4L12 22.4 3 17.2V6.8z"/><path fill="#FFDD4A" d="M12 1.6 21 6.8 12 12 3 6.8z"/><path fill="#E0A100" d="M21 6.8v10.4L12 22.4V12z"/><path class="destello" fill="#fff" d="M12 1.6 16 3.9 7 9.1 3 6.8z"/><path fill="#fff" opacity=".95" d="M13 5.6 8.2 12.6h3.2l-.9 5.8 5.3-7.4h-3.3z"/><path fill="#FFE98A" d="M13 5.6 8.2 12.6h3.2l-.9 5.8 1.4-6.8H9.9z"/></g></svg>';
   document.getElementById('rangoEm').innerHTML = MCRango.svg(1, { mini: true });
 
   MCBuhoVivo.toques(document.getElementById('buho'), { pose: 'vivo', globo: document.getElementById('globo') });
+  // Saludo al entrar (también en celular, donde no hay título): primero "Hola", luego la meta del día
+  var globo = document.getElementById('globo'), meta = globo.innerHTML;
+  globo.innerHTML = '¡Hola, <em>Javier</em>! 👋';
+  setTimeout(function () { if (!globo.classList.contains('molesto')) globo.innerHTML = meta; }, 4000);
 
   // Tema claro / oscuro
   var root = document.documentElement, btn = document.getElementById('temaBtn');
-  function oscuro() { return root.dataset.tema ? root.dataset.tema === 'oscuro' : !matchMedia('(prefers-color-scheme: light)').matches; }
+  function oscuro() { return root.dataset.tema !== 'claro'; }
   function pintar() {
     var o = oscuro();
     btn.innerHTML = '<svg class="ic"><use href="#i-' + (o ? 'sol' : 'luna') + '"/></svg>';
