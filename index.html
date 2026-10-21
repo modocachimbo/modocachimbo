@@ -946,6 +946,13 @@ button.juego { width: 100%; text-align: left; font: inherit; color: #fff; }
 .lado .sal-accesos { margin: 0 18px; flex-direction: column; align-items: stretch; gap: 12px; }
 .lado .sal-cod { justify-content: center; }
 .lado .sal-grupo { margin-left: 0; }
+/* PC: la columna derecha llega hasta abajo y Flashcards crece para alinearse con los cursos populares */
+@media (min-width: 901px) {
+  .fila1 { align-items: stretch; }
+  .col-der { grid-template-rows: auto 1fr; }
+  #examenes { display: flex; flex-direction: column; }
+  #examenes .modos { flex: 1; grid-template-rows: auto auto 1fr; }
+}
 /* En celular: dos botones redondos junto al saludo */
 .cab .sal-accesos { order: 3; flex-wrap: nowrap; gap: 8px; padding: 0; background: none; border: 0; box-shadow: none; }
 .cab .sal-cod { width: 40px; height: 40px; padding: 0; justify-content: center; border-radius: 50%; font-size: 0; gap: 0; }
