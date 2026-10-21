@@ -920,7 +920,7 @@ button.juego { width: 100%; text-align: left; font: inherit; color: #fff; }
 /* Tops: estado vacío y tu fila */
 .liga .vacio, .sim-vacio { display: block; padding: 16px; color: var(--suave); font: 700 14.5px/1.4 var(--cuerpo); text-align: center; border: 0 !important; background: none; clip-path: none; }
 .liga .sep { display: block; text-align: center; color: var(--suave); letter-spacing: .3em; font-weight: 900; line-height: .6; padding: 0; border: 0 !important; background: none; clip-path: none; }
-.sim-lista li.extra { display: none; }
+.sim-lista li.extra, .liga:not(.abierta) li.extra { display: none; }
 .sim-lista.abierta li.extra { display: grid; }
 .ver-mas { width: 100%; cursor: pointer; }
 .ver-mas[hidden] { display: none; }
@@ -1228,7 +1228,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
     <div class="fila2">
       <section class="sec solo-cel">
         <div class="sec-cab"><h2 class="tit">Top de la semana</h2><a class="disp" href="perfil.html#ranking">Ranking ›</a></div>
-        <div class="top"><div class="top-cab disp"><span id="ligaNom" style="color:inherit">Liga de la semana</span> <span>Se reinicia el lunes</span></div><ol class="liga" id="topCel"></ol></div>
+        <div class="top"><div class="top-cab disp"><span id="ligaNom" style="color:inherit">Liga de la semana</span> <span>Se reinicia el lunes</span></div><ol class="liga" id="topCel"></ol><button class="ver-mas disp" type="button" id="topMas" hidden>Ver top 10 ▾</button></div>
       </section>
 
       <section class="sec" id="topSim">

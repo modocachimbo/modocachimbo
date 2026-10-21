@@ -384,24 +384,30 @@
 
   /* ---------- Top de la semana (ranking_xp en supabase/16-corazones.sql) ---------- */
   var CLS = ['', 'oro', 'plata', 'bronce'];
-  function filaXp(x) {
+  function filaXp(x, extra) {
     var nom = x.yo ? 'Tú' : (x.apodo || 'Cachimbo');
-    return '<li class="' + (CLS[x.puesto] || '') + (x.yo ? ' tu' : '') + '"><span class="pos">' + puesto(x.puesto) + '</span>' + foto({ puesto: x.puesto, apodo: x.yo ? (nombreAlumno || x.apodo) : x.apodo }) +
+    return '<li class="' + (CLS[x.puesto] || '') + (x.yo ? ' tu' : '') + (extra ? ' extra' : '') + '"><span class="pos">' + puesto(x.puesto) + '</span>' + foto({ puesto: x.puesto, apodo: x.yo ? (nombreAlumno || x.apodo) : x.apodo }) +
       '<span class="quien"><b>' + esc(nom) + '</b></span>' + emblema(x.xp) + '<span class="xp">' + miles(x.xp) + ' <small>XP</small></span></li>';
   }
-  function listaXp(top, yo, n) {
+  // corto: solo el podio y tu fila a la vista; el resto se abre con "Ver top 10"
+  function listaXp(top, yo, n, corto) {
     var t = top.slice(0, n);
     if (!t.length) return '<li class="vacio">Aún nadie suma XP esta semana. ¡Sé el primero!</li>';
-    var html = t.map(filaXp).join('');
+    var html = t.map(function (x) { return filaXp(x, corto && x.puesto > 3 && !x.yo); }).join('');
     if (yo && !t.some(function (x) { return x.yo; })) html += '<li class="sep">···</li>' + filaXp({ puesto: yo.puesto, apodo: 'Tú', xp: yo.xp, yo: true });
     return html;
   }
+  $('topMas').addEventListener('click', function () {
+    var abierta = $('topCel').classList.toggle('abierta');
+    this.textContent = abierta ? 'Ver menos ▴' : 'Ver top 10 ▾';
+  });
   function cargarTop() {
     MCAuth.listo.then(function (c) { return c.rpc('ranking_xp'); }).then(function (r) {
       if (r.error) throw r.error;
       var d = r.data || {}, top = (d.top || []).slice().sort(function (a, b) { return a.puesto - b.puesto; });
-      $('topLado').innerHTML = listaXp(top, d.yo, 7);
-      $('topCel').innerHTML = listaXp(top, d.yo, 5);
+      $('topLado').innerHTML = listaXp(top, d.yo, 10);
+      $('topCel').innerHTML = listaXp(top, d.yo, 10, true);
+      $('topMas').hidden = !$('topCel').querySelector('.extra');
     }).catch(function () {
       $('topLado').innerHTML = $('topCel').innerHTML = '<li class="vacio">No se pudo cargar el top. Revisa tu conexión.</li>';
     });
