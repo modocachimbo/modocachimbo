@@ -30,6 +30,10 @@
   var nombreAlumno = '';
   var cursosJson = fetch('assets/cursos.json').then(function (r) { return r.json(); });
   cursosJson.catch(function () {});
+  // Copia guardada de cursos.json para armar "Mis cursos" en PC sin esperar la red
+  var cursosGuardados = null;
+  try { cursosGuardados = JSON.parse(localStorage.getItem('mc-cursos-json') || 'null'); } catch (e) {}
+  cursosJson.then(function (d) { cursosGuardados = d; try { localStorage.setItem('mc-cursos-json', JSON.stringify(d)); } catch (e) {} }, function () {});
 
   /* ---------- Modo claro / oscuro ---------- */
   var temaBtn = $('temaBtn');
@@ -464,21 +468,25 @@
   // En PC cada área es una tarjeta grande con sus cursos a la mano
   var enPC = window.matchMedia('(min-width: 901px)');
   function pintarCursosPC() {
-    cursosJson.then(function (d) {
-      Array.prototype.forEach.call(hLista.querySelectorAll('a.curso[data-area]'), function (a) {
-        var area = a.getAttribute('data-area');
-        var cs = (d.cursos || []).filter(function (c) { return c.area === area && !c.oculto; }).sort(function (x, y) { return (x.orden || 0) - (y.orden || 0); });
-        var card = document.createElement('div');
-        card.className = 'area-card'; card.setAttribute('data-area', area);
-        a.className = 'area-link';
-        a.querySelector('small').textContent = cs.length + (cs.length === 1 ? ' curso' : ' cursos');
-        a.parentNode.replaceChild(card, a);
-        card.appendChild(a);
-        card.insertAdjacentHTML('beforeend', '<div class="area-cursos">' + cs.map(function (c) {
-          return '<a href="' + esc(c.id) + '/index.html">' + (c.icono ? '<i class="ic-m" style="-webkit-mask-image:url(' + esc(c.icono) + ');mask-image:url(' + esc(c.icono) + ')"></i>' : '') + esc(c.nombre) + '</a>';
-        }).join('') + '</div>');
-      });
-    }).catch(function () {});
+    // Con la copia guardada se arma al instante; si no hay, la lista espera oculta para no verse chica y luego crecer
+    if (cursosGuardados) return armarCursosPC(cursosGuardados);
+    hLista.style.visibility = 'hidden';
+    cursosJson.then(armarCursosPC, function () {}).then(function () { hLista.style.visibility = ''; });
+  }
+  function armarCursosPC(d) {
+    Array.prototype.forEach.call(hLista.querySelectorAll('a.curso[data-area]'), function (a) {
+      var area = a.getAttribute('data-area');
+      var cs = (d.cursos || []).filter(function (c) { return c.area === area && !c.oculto; }).sort(function (x, y) { return (x.orden || 0) - (y.orden || 0); });
+      var card = document.createElement('div');
+      card.className = 'area-card'; card.setAttribute('data-area', area);
+      a.className = 'area-link';
+      a.querySelector('small').textContent = cs.length + (cs.length === 1 ? ' curso' : ' cursos');
+      a.parentNode.replaceChild(card, a);
+      card.appendChild(a);
+      card.insertAdjacentHTML('beforeend', '<div class="area-cursos">' + cs.map(function (c) {
+        return '<a href="' + esc(c.id) + '/index.html">' + (c.icono ? '<i class="ic-m" style="-webkit-mask-image:url(' + esc(c.icono) + ');mask-image:url(' + esc(c.icono) + ')"></i>' : '') + esc(c.nombre) + '</a>';
+      }).join('') + '</div>');
+    });
   }
   function abrirHoja(cual) {
     hFondo.classList.remove('full'); document.body.classList.remove('en-cursos');
