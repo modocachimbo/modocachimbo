@@ -770,7 +770,8 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
 @keyframes saludo { 0%, 60%, 100% { transform: rotate(0); } 10%, 30% { transform: rotate(14deg); } 20%, 40% { transform: rotate(-8deg); } 50% { transform: rotate(10deg); } }
 @media (max-width: 900px) {
   .cab { flex-wrap: wrap; row-gap: 10px; }
-  .cab h1.hola { display: block; order: 2; width: 100%; font-size: 26px; margin: 0; }
+  .cab .der { flex: 1 1 100%; }
+  .cab h1.hola { display: block; order: 2; flex: 1; min-width: 0; font-size: 26px; margin: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .mano { animation: none; } }
 /* ===== barra de arriba (como el boceto) ===== */
@@ -860,7 +861,7 @@ html.mc-fuera body { background: var(--bg); }
 .cab .mcu-menu small { color: var(--suave); border-color: var(--borde); }
 .cab .mcu-menu .mcu-modo { display: none; }
 @media (max-width: 900px) {
-  .cab .der { flex: 1; min-width: 0; }
+  .cab .der { flex: 1 1 100%; min-width: 0; }
   .cab .der [data-mc-auth] { flex: 1; }
   .cab .mcu-user { flex: 1; min-width: 0; gap: 6px; }
   .cab .mcu-user .mcu-chip.perfil { order: 0; margin-right: auto; padding: 5px 26px 5px 5px; gap: 8px; }
@@ -945,7 +946,12 @@ button.juego { width: 100%; text-align: left; font: inherit; color: #fff; }
 .lado .sal-accesos { margin: 0 18px; flex-direction: column; align-items: stretch; gap: 12px; }
 .lado .sal-cod { justify-content: center; }
 .lado .sal-grupo { margin-left: 0; }
-.solo-cel .sal-accesos { margin-top: 14px; }
+/* En celular: dos botones redondos junto al saludo */
+.cab .sal-accesos { order: 3; flex-wrap: nowrap; gap: 8px; padding: 0; background: none; border: 0; box-shadow: none; }
+.cab .sal-cod { width: 40px; height: 40px; padding: 0; justify-content: center; border-radius: 50%; font-size: 0; gap: 0; }
+.cab .sal-cod svg { width: 20px; height: 20px; }
+.cab .sal-grupo .wa { width: 40px; height: 40px; }
+.cab .sal-grupo > span:last-child { display: none; }
 /* PC: el Top simulacro va al final a todo el ancho (podio a la izquierda, lista a la derecha), y el pie debajo */
 @media (min-width: 901px) {
   .fila2 > #topSim, .fila2 > #apoya { grid-column: 1 / -1; grid-row: auto; }
@@ -1220,7 +1226,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
           <script>try { if (localStorage.getItem('mc_sim_visto')) document.getElementById('simNuevo').remove(); } catch (e) {}</script>
         </section>
         <div class="sal-accesos" id="salAccesos">
-          <button type="button" class="sal-cod" id="salCodigo"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="5" fill="currentColor"/><circle cx="8" cy="15" r="2" fill="#0b2a3a"/><path d="M11.5 11.5 20 3m-4 4 3 3m-5.5-.5 2 2" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>Activar código</button>
+          <button type="button" class="sal-cod" id="salCodigo" title="Activar código"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="5" fill="currentColor"/><circle cx="8" cy="15" r="2" fill="#0b2a3a"/><path d="M11.5 11.5 20 3m-4 4 3 3m-5.5-.5 2 2" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>Activar código</button>
         </div>
       </div>
     </div>
