@@ -118,6 +118,8 @@
       'html.tema-halloween .option.correct span.text,html.tema-halloween .opt-row.correct{color:#FFE3C7!important}',
       'html.tema-halloween .icon.ok,html.tema-halloween .option.correct .icon,html.tema-halloween .opt-row.correct svg{color:' + NAR + '!important}',
       'html.tema-halloween .feedback.ok{color:#FFC48A!important;border-color:rgba(255,138,31,.35)!important;background:rgba(255,138,31,.08)!important}',
+      // Esquina de las tarjetas de cursos (assets/areas.css): una telaraña
+      'html.tema-halloween[data-area] .course.active::after{width:104px;height:104px;opacity:.5;background:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27 fill=%27none%27 stroke=%27%23e9defc%27 stroke-width=%271.3%27%3E%3Cpath d=%27M100 0 0 100M100 0 30 100M100 0 0 30M100 0 65 100M100 0 0 65%27/%3E%3Cpath d=%27M86 0q2 12 14 14M70 0q4 20 30 30M52 0q6 30 48 48M32 0q8 44 68 68M14 0q10 58 86 86%27/%3E%3C/svg%3E") no-repeat top right/contain}',
       // Cabecera fija de las páginas de cursos
       'html.tema-halloween[data-area] header.top{background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important}',
       // Perfil: portada de noche con luna

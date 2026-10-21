@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,800;1,900&display=swap');
 /* =========================================================
    Modo Cachimbo · Un color por área
    Cada página de área y de curso lleva <html data-area="...">.
@@ -112,4 +113,60 @@ html[data-area] .mixto-go { margin-left: auto; background: var(--ac); color: #0b
 @media (max-width: 560px) {
   html[data-area] .mixto { flex-wrap: wrap; gap: 12px 14px; }
   html[data-area] .mixto-go { width: 100%; text-align: center; margin-left: 0; }
+}
+
+/* =========================================================
+   Páginas de área y de curso con el estilo del inicio nuevo:
+   mismo diseño de siempre, con la letra del inicio (Barlow Condensed)
+   y esquinas rectas. Solo donde hay tarjetas de cursos (.courses).
+   Cada página fuerza Nunito con un selector muy fuerte: :not(#z) le gana.
+   ========================================================= */
+html[data-area]:has(.courses) { --display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif; }
+
+/* Cabecera */
+html[data-area]:has(.courses) .back:not(#z) { font: italic 900 26px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; }
+html[data-area]:has(.courses) .home-btn { border-radius: 0; background: #0e0e0e; border-color: #262626; }
+html[data-area]:has(.courses) .auth-row .mcu-user .mcz-pill, html[data-area]:has(.courses) .auth-row .mcu-user .mcu-racha {
+  border-radius: 0 !important; border: 1px solid #262626 !important; background: #0e0e0e !important; height: 44px; padding: 0 14px 0 12px; }
+html[data-area]:has(.courses) .auth-row .mcu-user .mcz-pill span:not(#z), html[data-area]:has(.courses) .auth-row .mcu-user .mcu-racha span:not(#z) { font: 800 22px/1 var(--display) !important; letter-spacing: .02em; }
+html[data-area]:has(.courses) .auth-row .mcu-chip { border-radius: 0 !important; border: 1px solid #262626 !important; background: #0e0e0e !important; height: 44px; padding: 4px 16px 4px 4px; }
+html[data-area]:has(.courses) .auth-row .mcu-chip .mcu-av { border-radius: 8px; }
+html[data-area]:has(.courses) .auth-row .mcu-chip .mcu-nom:not(#z) { font: 800 20px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .04em; }
+html[data-area]:has(.courses) #vipToggle.vip-active { border-radius: 0 !important; }
+
+/* Título del área o del curso, con su raya al costado como "Cursos populares" */
+html[data-area]:has(.courses) .section-title:not(#z) {
+  display: flex; align-items: center; gap: 18px; border: 0; padding: 18px 0 22px; margin-bottom: 4px;
+  font: italic 900 46px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; }
+html[data-area]:has(.courses) .section-title::after { content: ""; flex: 1; height: 2px; background: linear-gradient(90deg, rgba(var(--ac-rgb), .45), rgba(var(--ac-rgb), 0)); }
+
+/* Repaso mixto: franja recta con el botón en diagonal, como "¡A practicar!" */
+html[data-area]:has(.courses) .mixto { border-radius: 0; padding-right: 0; overflow: hidden; }
+html[data-area]:has(.courses) .mixto-ic { border-radius: 0; }
+html[data-area]:has(.courses) .mixto-tx b:not(#z) { font: italic 900 28px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; margin-bottom: 4px; }
+html[data-area]:has(.courses) .mixto-go:not(#z) { border-radius: 0; border: 0; align-self: stretch; display: grid; place-items: center; padding: 0 34px 0 44px;
+  clip-path: polygon(22px 0, 100% 0, 100% 100%, 0 100%); font: italic 900 26px/1 var(--display) !important; letter-spacing: .02em; }
+
+/* Tarjetas: ícono, nombre, raya y botón de siempre, con esquinas rectas */
+html[data-area]:has(.courses) .course { border-radius: 4px; position: relative; overflow: hidden; }
+html[data-area]:has(.courses) .course h3:not(#z) { font: italic 900 32px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; }
+html[data-area]:has(.courses) .course .btn:not(#z) { border-radius: 0; font: 800 19px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .05em; padding: 11px 20px 9px; }
+html[data-area]:has(.courses) .course.active:hover { background: linear-gradient(180deg, rgba(var(--ac-rgb), .07), transparent 60%), var(--surface); }
+
+/* Esquina de la tarjeta: un corte del color del área. Cada temática (assets/tema.js) la puede decorar */
+html[data-area]:has(.courses) .course.active::after { content: ""; position: absolute; top: 0; right: 0; width: 64px; height: 64px; pointer-events: none;
+  background: linear-gradient(225deg, rgba(var(--ac-rgb), .22) 0 26%, transparent 26.5%); }
+
+/* Apoya el proyecto: igual, con esquinas rectas */
+html[data-area]:has(.courses) .coffee { border-radius: 4px; }
+html[data-area]:has(.courses) .coffee-text h3:not(#z) { font: italic 900 32px/1 var(--display) !important; text-transform: uppercase; }
+
+@media (max-width: 520px) {
+  html[data-area]:has(.courses) .back:not(#z) { font-size: 22px !important; }
+  html[data-area]:has(.courses) .section-title:not(#z) { font-size: 40px !important; padding: 10px 0 16px; }
+  html[data-area]:has(.courses) .course { border-radius: 4px; }
+  html[data-area]:has(.courses) .course h3:not(#z) { font-size: 23px !important; overflow-wrap: anywhere; }
+  html[data-area]:has(.courses) .course .btn:not(#z) { font-size: 17px !important; padding: 10px 14px 8px; }
+  html[data-area]:has(.courses) .mixto { padding-right: 18px; padding-bottom: 18px; }
+  html[data-area]:has(.courses) .mixto-go:not(#z) { clip-path: none; padding: 14px; font-size: 24px !important; }
 }
