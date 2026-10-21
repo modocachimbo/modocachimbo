@@ -30,6 +30,10 @@
   var nombreAlumno = '';
   var cursosJson = fetch('assets/cursos.json').then(function (r) { return r.json(); });
   cursosJson.catch(function () {});
+  // Copia guardada de cursos.json para armar "Mis cursos" en PC sin esperar la red
+  var cursosGuardados = null;
+  try { cursosGuardados = JSON.parse(localStorage.getItem('mc-cursos-json') || 'null'); } catch (e) {}
+  cursosJson.then(function (d) { cursosGuardados = d; try { localStorage.setItem('mc-cursos-json', JSON.stringify(d)); } catch (e) {} }, function () {});
 
   /* ---------- Modo claro / oscuro ---------- */
   var temaBtn = $('temaBtn');
@@ -461,10 +465,34 @@
     return '<a class="curso ' + (cls || '') + '"' + (area ? ' data-area="' + esc(area) + '"' : '') + ' href="' + esc(href) + '"><span class="ic">' + ic + '</span><span class="tx"><b>' + esc(nombre) + '</b>' +
       (sub ? '<small>' + esc(sub) + '</small>' : '') + '</span>' + CHEV + '</a>';
   }
+  // "Mis cursos" es una pantalla propia: cada área es una tarjeta grande con sus cursos a la mano
+  function pintarAreas() {
+    // Con la copia guardada se arma al instante; si no hay, la lista espera oculta para no verse chica y luego crecer
+    if (cursosGuardados) return armarAreas(cursosGuardados);
+    hLista.style.visibility = 'hidden';
+    cursosJson.then(armarAreas, function () {}).then(function () { hLista.style.visibility = ''; });
+  }
+  function armarAreas(d) {
+    Array.prototype.forEach.call(hLista.querySelectorAll('a.curso[data-area]'), function (a) {
+      var area = a.getAttribute('data-area');
+      var cs = (d.cursos || []).filter(function (c) { return c.area === area && !c.oculto; }).sort(function (x, y) { return (x.orden || 0) - (y.orden || 0); });
+      var card = document.createElement('div');
+      card.className = 'area-card'; card.setAttribute('data-area', area);
+      a.className = 'area-link';
+      a.querySelector('small').textContent = cs.length + (cs.length === 1 ? ' curso' : ' cursos');
+      a.parentNode.replaceChild(card, a);
+      card.appendChild(a);
+      card.insertAdjacentHTML('beforeend', '<div class="area-cursos">' + cs.map(function (c) {
+        return '<a href="' + esc(c.id) + '/index.html">' + (c.icono ? '<i class="ic-m" style="-webkit-mask-image:url(' + esc(c.icono) + ');mask-image:url(' + esc(c.icono) + ')"></i>' : '') + esc(c.nombre) + '</a>';
+      }).join('') + '</div>');
+    });
+  }
   function abrirHoja(cual) {
+    hFondo.classList.remove('full'); document.body.classList.remove('en-cursos');
     if (cual === 'cursos') {
       hTit.textContent = 'Mis cursos';
       hLista.innerHTML = $('tplAreas').innerHTML;
+      pintarAreas(); hFondo.classList.add('full'); document.body.classList.add('en-cursos');
     } else if (cual === 'examenes') {
       hTit.textContent = 'Exámenes de admisión';
       hLista.innerHTML = filaHoja('examenes/ordinario/index.html', ICO_EX, 'Ordinario', 'Exámenes reales de la UNJFSC por año', 'c-azul') +
@@ -487,11 +515,16 @@
     hFondo.hidden = false;
     sonar('toque');
   }
-  function cerrarHoja() { hFondo.hidden = true; }
+  function cerrarHoja() { document.documentElement.classList.remove('mc-abre-cursos'); hFondo.hidden = true; hFondo.classList.remove('full'); document.body.classList.remove('en-cursos'); }
   // "Nuevo para ti" (assets/novedades.js) usa la misma hoja
-  window.MCHoja = { abrir: function (t, html) { hTit.textContent = t; hLista.innerHTML = html; hFondo.hidden = false; }, cerrar: cerrarHoja };
+  window.MCHoja = { abrir: function (t, html) { hFondo.classList.remove('full'); document.body.classList.remove('en-cursos'); hTit.textContent = t; hLista.innerHTML = html; hFondo.hidden = false; }, cerrar: cerrarHoja };
   Array.prototype.forEach.call(document.querySelectorAll('[data-hoja]'), function (b) { b.addEventListener('click', function () { abrirHoja(b.getAttribute('data-hoja')); }); });
   $('hojaX').addEventListener('click', cerrarHoja);
+  // Volver desde un área ("← Mis cursos"): el inicio abre "Mis cursos" de una vez
+  if (location.hash === '#mis-cursos') {
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+    abrirHoja('cursos');
+  }
   hFondo.addEventListener('click', function (e) { if (e.target === hFondo) cerrarHoja(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !hFondo.hidden) cerrarHoja(); });
   // Sin novedades, el regalo igual responde

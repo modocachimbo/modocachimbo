@@ -190,7 +190,7 @@
   const qlistEl = document.getElementById("qlist");
 
   document.getElementById('backLink').href = 'temario.html?year=' + encodeURIComponent(year || '');
-  document.getElementById('backLabel').textContent = 'Temario ' + (year || '');
+  document.getElementById('backLabel').textContent = 'Temas';
 
   if (!year || !temaNum) {
     qlistEl.innerHTML = '<div class="state-msg">Falta indicar año y tema. Vuelve al temario.</div>';

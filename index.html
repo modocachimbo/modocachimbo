@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>/* Vuelve de un área ("← Mis cursos"): la hoja se ve desde el primer momento, sin mostrar antes el inicio */ if (location.hash === '#mis-cursos') document.documentElement.classList.add('mc-abre-cursos');</script>
 <script>/* Abierta como app instalada: muestra la barra de abajo */ try { if ((window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true) document.documentElement.classList.add('mc-app'); } catch (e) {}</script>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#050505">
@@ -955,6 +956,64 @@ footer { border-top: 1px solid var(--borde); padding: 26px 0 10px; }
 @media (min-width: 560px) { .hoja-fondo { align-items: center; } .hoja { border-bottom: 1px solid var(--borde); } }
 @keyframes hojaSube { from { transform: translateY(40px); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .hoja { animation: none; } }
+/* "Mis cursos" es una pantalla propia: en PC ocupa toda la parte de contenido (el menú de la izquierda sigue a la vista);
+   en celular, toda la pantalla con la barra de abajo encima */
+@media (min-width: 901px) {
+  .hoja-fondo.full { left: 300px; background: var(--fondo); align-items: stretch; justify-content: stretch; }
+  .hoja-fondo.full .hoja { max-width: none; max-height: none; height: 100%; border: 0; border-radius: 0; padding: 30px 38px 40px; overflow-y: auto; animation: hojaEntra .18s ease-out; }
+  .hoja-fondo.full .hoja-cab { padding: 0 0 6px; }
+  .hoja-fondo.full .hoja-x { border-radius: 12px; }
+  .hoja-fondo.full .hoja-cab b { font-size: 50px; font-weight: 900; }
+  .hoja-fondo.full .hoja-sub { display: block; margin: 0 0 22px; color: var(--suave); font: 700 16px/1.3 var(--cuerpo); }
+  .hoja-fondo.full .hoja-lista { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; overflow: visible; align-content: start; }
+  .en-cursos .nav a[aria-current] { background: none; color: var(--suave); clip-path: none; }
+  .en-cursos .nav [data-hoja="cursos"] { background: var(--lima); color: var(--sobre-lima); clip-path: polygon(0 0, 100% 0, 96% 100%, 0 100%); }
+}
+/* Hoja y filas redondeadas, como Duolingo */
+.hoja { border-radius: 24px 24px 0 0; }
+@media (min-width: 560px) { .hoja { border-radius: 24px; } }
+.hoja-x { border-radius: 12px; }
+.hoja .curso { border-radius: 16px; }
+.hoja .curso .ic { clip-path: none; border-radius: 14px; }
+html.mc-abre-cursos .hoja-fondo[hidden] { display: flex; }
+html.mc-abre-cursos .hoja { animation: none; }
+html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
+@media (min-width: 901px) { html.mc-abre-cursos .hoja-fondo { left: 300px; } }
+@media (max-width: 900px) {
+  .hoja-fondo.full { background: var(--fondo); align-items: stretch; }
+  .hoja-fondo.full .hoja { max-width: none; max-height: none; height: 100%; border: 0; border-radius: 0; overflow-y: auto; animation: hojaEntra .18s ease-out;
+    padding: calc(20px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(120px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+  .hoja-fondo.full .hoja-cab { padding: 0 0 4px; }
+  .hoja-fondo.full .hoja-cab b { font-size: 38px; font-weight: 900; }
+  .hoja-fondo.full .hoja-x { border-radius: 12px; }
+  .hoja-fondo.full .hoja-sub { display: block; margin: 0 0 18px; color: var(--suave); font: 700 14px/1.3 var(--cuerpo); }
+  .hoja-fondo.full .hoja-lista { overflow: visible; gap: 14px; }
+  .en-cursos .tabbar { z-index: 230; }
+  .en-cursos .tabbar a[aria-current] { background: none; color: var(--suave); clip-path: none; }
+  .en-cursos .tabbar [data-hoja="cursos"] { background: var(--lima); color: var(--sobre-lima); clip-path: polygon(0 0, 100% 0, 88% 100%, 0 100%); }
+  .area-card { padding: 18px; gap: 14px; border-radius: 20px; }
+  .area-link { gap: 14px; }
+  .area-link .ic { width: 56px; height: 56px; border-radius: 16px; }
+  .area-link .ic svg { width: 32px; height: 32px; }
+  .area-cursos a { font-size: 13.5px; padding: 8px 12px; }
+}
+@keyframes hojaEntra { from { opacity: 0; transform: translateY(10px); } }
+.hoja-sub { display: none; }
+.area-card { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 18px; padding: 24px; border-radius: 22px; background: var(--tarjeta); border: 1px solid var(--borde); border-bottom: 4px solid var(--ac); box-shadow: var(--sombra-tarjeta); transition: border-color .15s, transform .12s; }
+.area-card::before { content: ""; position: absolute; top: 0; right: 0; width: 120px; height: 120px; background: linear-gradient(225deg, color-mix(in srgb, var(--ac) 22%, transparent), transparent 60%); pointer-events: none; }
+.area-card:hover { border-color: var(--ac); transform: translateY(-2px); }
+.area-link { display: flex; align-items: center; gap: 18px; color: inherit; }
+.area-link::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.area-link .ic { width: 72px; height: 72px; flex-shrink: 0; display: grid; place-items: center; color: var(--ac); background: color-mix(in srgb, var(--ac) 14%, transparent); border-radius: 18px; }
+.area-link .ic svg { width: 40px; height: 40px; }
+.area-link .tx { flex: 1; min-width: 0; display: grid; gap: 4px; }
+.area-link b { font: 900 22px/1.15 var(--cuerpo); }
+.area-link small { color: var(--suave); font: 700 14px/1.2 var(--cuerpo); }
+.area-link .chev { width: 26px; height: 26px; fill: none; stroke: var(--ac); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.area-cursos { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 8px; }
+.area-cursos a { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: var(--fondo); border: 1px solid var(--borde); color: var(--texto); font: 800 14px/1 var(--cuerpo); transition: border-color .15s, color .15s; }
+.area-cursos a:hover { border-color: var(--ac); color: var(--ac); }
+.area-cursos .ic-m { width: 18px; height: 18px; background: var(--ac); -webkit-mask: center/contain no-repeat; mask: center/contain no-repeat; }
 .hoja-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 4px 12px; }
 .hoja-cab b { font: 800 26px/1 var(--display); text-transform: uppercase; letter-spacing: .03em; font-style: italic; }
 .hoja-x { width: 40px; height: 40px; border: 1px solid var(--borde); background: var(--tarjeta); color: var(--suave); cursor: pointer; display: grid; place-items: center; }
@@ -1200,6 +1259,7 @@ footer { border-top: 1px solid var(--borde); padding: 26px 0 10px; }
 <div class="hoja-fondo" id="hojaFondo" hidden>
   <div class="hoja" role="dialog" aria-modal="true" aria-labelledby="hojaTit">
     <div class="hoja-cab"><b id="hojaTit"></b><button type="button" class="hoja-x" id="hojaX" aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <p class="hoja-sub" id="hojaSub">Elige un área o entra directo a un curso.</p>
     <div class="hoja-lista" id="hojaLista"></div>
   </div>
 </div>
