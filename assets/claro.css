@@ -1,0 +1,84 @@
+/* ===== Modo claro (mc-modo = claro, se elige en el inicio) ===== */
+html[data-modo="claro"] {
+  --bg: #F6F5FA; --surface: #FFFFFF; --surface-2: #EEECF5; --border: #DCD8E8;
+  --text: #1A1626; --text-dim: #6B6485; --text-faint: #A49DB8;
+  color-scheme: light;
+}
+html[data-modo="claro"][data-area="ciencia-tecnologia"] { --ac: #7A8C00; --ac-rgb: 122,140,0; --ac-d: #5D6B00; }
+html[data-modo="claro"][data-area="matematica"] { --ac: #0E8FD6; --ac-rgb: 14,143,214; --ac-d: #0A6EA6; }
+html[data-modo="claro"][data-area="comunicacion"] { --ac: #9B4FD9; --ac-rgb: 155,79,217; --ac-d: #7A35B3; }
+html[data-modo="claro"][data-area="ciencias-sociales"] { --ac: #E07B00; --ac-rgb: 224,123,0; --ac-d: #B06000; }
+html[data-modo="claro"] body { background: var(--bg) !important; color: var(--text); }
+html[data-modo="claro"][data-area] header.top { background: var(--bg); }
+
+/* Cabecera */
+html[data-modo="claro"] .back, html[data-modo="claro"] .backlink { color: var(--text) !important; }
+html[data-modo="claro"] .home-btn { background: #fff !important; border-color: var(--border) !important; color: var(--text) !important; box-shadow: 0 1px 2px rgba(26,22,38,.06); }
+html[data-modo="claro"] .auth-row .mcu-user .mcz-pill, html[data-modo="claro"] .auth-row .mcu-user .mcu-racha,
+html[data-modo="claro"] .auth-row .mcu-chip { background: #fff !important; border-color: var(--border) !important; color: var(--text) !important; box-shadow: 0 1px 2px rgba(26,22,38,.06); }
+html[data-modo="claro"] .mcu-menu { background: #fff !important; border-color: var(--border) !important; color: var(--text) !important; }
+html[data-modo="claro"] .mcu-menu a, html[data-modo="claro"] .mcu-menu button { color: var(--text) !important; }
+html[data-modo="claro"] #vipToggle.vip-active { color: #5D6B00 !important; border-color: #7A8C00 !important; background: rgba(122,140,0,.08) !important; }
+html[data-modo="claro"] .logo, html[data-modo="claro"] .course-badge { color: var(--text) !important; }
+
+/* Tarjetas de cursos */
+html[data-modo="claro"][data-area] .course { background: #fff; box-shadow: 0 1px 2px rgba(26,22,38,.06), 0 6px 18px rgba(26,22,38,.06); }
+html[data-modo="claro"][data-area] .course.active:hover { background: linear-gradient(180deg, rgba(var(--ac-rgb), .07), transparent 60%), #fff; }
+html[data-modo="claro"][data-area] .course.disabled { background: #F1EFF6; border-color: var(--border); border-bottom-color: var(--border); box-shadow: none; }
+html[data-modo="claro"][data-area] .course.disabled .btn { background: #E9E6F1; border-color: var(--border); color: var(--text-faint); }
+html[data-modo="claro"][data-area] .course .btn { background: rgba(var(--ac-rgb), .08); }
+html[data-modo="claro"][data-area] .mixto { background: linear-gradient(135deg, rgba(var(--ac-rgb), .14), rgba(var(--ac-rgb), .03)), #fff; }
+html[data-modo="claro"][data-area] .mixto-tx small { color: var(--text-dim); }
+html[data-modo="claro"][data-area] .mixto-go, html[data-modo="claro"][data-area] .mixto-ic svg { color: #fff; stroke: #fff; }
+html[data-modo="claro"] .coffee { background: radial-gradient(120% 90% at 100% 0, rgba(155,79,217,.12), transparent 60%), #fff !important; border-color: rgba(155,79,217,.35) !important; }
+html[data-modo="claro"] .coffee-text h3 { color: var(--text); }
+
+/* Libros: ciclos, temario, tema */
+html[data-modo="claro"] .year-card, html[data-modo="claro"] .tema-card, html[data-modo="claro"] .qcard, html[data-modo="claro"] .quiz-cta {
+  background: #fff !important; box-shadow: 0 1px 2px rgba(26,22,38,.06), 0 6px 18px rgba(26,22,38,.06); }
+html[data-modo="claro"] .year-card { border-color: var(--border); }
+html[data-modo="claro"][data-area] .year-card.active { box-shadow: 0 5px 0 var(--ac-d); }
+html[data-modo="claro"][data-area] .tema-card { box-shadow: 0 5px 0 var(--ac-d); }
+html[data-modo="claro"] .qcard, html[data-modo="claro"] .quiz-cta { border-color: var(--border) !important; }
+html[data-modo="claro"] .opt-row { background: #F6F5FA !important; border-color: var(--border) !important; color: var(--text) !important; }
+html[data-modo="claro"] .opt-row .letter { background: #fff !important; border-color: var(--border) !important; color: var(--text-dim) !important; }
+html[data-modo="claro"] .opt-row.correct { background: rgba(63,154,0,.1) !important; border-color: #3F9A00 !important; border-bottom-color: #2F7300 !important; color: #1A1626 !important; }
+html[data-modo="claro"] .opt-row.correct .letter { background: #3F9A00 !important; border-color: #3F9A00 !important; color: #fff !important; }
+html[data-modo="claro"] .opt-row.correct svg { color: #3F9A00 !important; }
+html[data-modo="claro"] .qtext, html[data-modo="claro"] .opt-text { color: var(--text) !important; }
+html[data-modo="claro"] .quiz-cta a.alt { background: #fff !important; }
+html[data-modo="claro"] .progress-track, html[data-modo="claro"] [class*="progress"]:not([class*="fill"]):not([class*="label"]) { background-color: #E4E1EC; }
+
+/* Quiz */
+html[data-modo="claro"] .card { background: #fff !important; border-color: var(--border) !important; box-shadow: 0 1px 2px rgba(26,22,38,.06), 0 20px 50px rgba(26,22,38,.1) !important; }
+html[data-modo="claro"] .startscreen h1, html[data-modo="claro"] .lockscreen h1, html[data-modo="claro"] .title { color: var(--text) !important; }
+html[data-modo="claro"] .startscreen h1 .accent, html[data-modo="claro"] .title .accent { color: #7A8C00 !important; }
+html[data-modo="claro"] .start-badge, html[data-modo="claro"] .badge { color: #5D6B00 !important; background: rgba(122,140,0,.1) !important; border-color: rgba(122,140,0,.4) !important; }
+html[data-modo="claro"] .start-stat, html[data-modo="claro"] .stat { background: #F6F5FA !important; border-color: var(--border) !important; color: var(--text) !important; }
+html[data-modo="claro"] .question { background: #F6F5FA !important; border-color: var(--border) !important; color: var(--text) !important; }
+html[data-modo="claro"] .question .text { color: var(--text) !important; }
+html[data-modo="claro"] .option { background: #fff !important; border-color: var(--border) !important; color: var(--text) !important; }
+html[data-modo="claro"] .option .letter { background: #F6F5FA !important; border-color: var(--border) !important; color: var(--text-dim) !important; }
+html[data-modo="claro"] .option.correct { background: rgba(63,154,0,.1) !important; border-color: #3F9A00 !important; border-bottom-color: #2F7300 !important; }
+html[data-modo="claro"] .option.correct .letter { background: #3F9A00 !important; border-color: #3F9A00 !important; color: #fff !important; }
+html[data-modo="claro"] .option.wrong .letter, html[data-modo="claro"] .option.incorrect .letter { color: #fff !important; }
+html[data-modo="claro"] .card .btn:not(.primary) { background: #fff !important; border-color: var(--border) !important; color: var(--text) !important; }
+html[data-modo="claro"] .lives, html[data-modo="claro"] .score { color: #5D6B00 !important; }
+html[data-modo="claro"] .footer { border-color: var(--border) !important; }
+html[data-modo="claro"] .mc-son { background: #fff !important; border-color: var(--border) !important; color: var(--text) !important; }
+
+html[data-modo="claro"] .question p, html[data-modo="claro"] .option span.text, html[data-modo="claro"] .start-stat,
+html[data-modo="claro"] .endscreen h2, html[data-modo="claro"] .lockscreen input { color: var(--text) !important; }
+html[data-modo="claro"] .option.correct span.text { color: #1F4D00 !important; }
+html[data-modo="claro"] .option.wrong { background: rgba(229,56,59,.08) !important; border-color: #E5383B !important; }
+html[data-modo="claro"] .option.wrong span.text { color: #8F1D20 !important; }
+html[data-modo="claro"] .feedback.bad { background: rgba(229,56,59,.08) !important; color: #B3261E !important; }
+html[data-modo="claro"] .feedback.ok, html[data-modo="claro"] .feedback.good { background: rgba(63,154,0,.08) !important; color: #2F7300 !important; }
+html[data-modo="claro"] .letter { border-color: var(--border); color: var(--text-dim); }
+html[data-modo="claro"] .lockscreen input { background: #F6F5FA !important; border-color: var(--border) !important; }
+html[data-modo="claro"] header.top, html[data-modo="claro"] .topbar, html[data-modo="claro"] .header { border-color: var(--border) !important; }
+html[data-modo="claro"] .score { color: var(--text) !important; }
+html[data-modo="claro"] .option.wrong .letter { background: #E5383B !important; border-color: #E5383B !important; color: #fff !important; }
+html[data-modo="claro"] .home-btn svg { fill: currentColor; }
+html[data-modo="claro"] .mc-avance .barra { background: #E4E1EC !important; border-color: var(--border) !important; }
+html[data-modo="claro"] .mc-avance small { color: var(--text-dim) !important; }
