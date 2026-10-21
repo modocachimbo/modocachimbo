@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Inicio · Modo Cachimbo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,800;1,900&family=Nunito:wght@600;700;800;900&display=swap">
+<link rel="stylesheet" href="assets/buho/buho.css">
+<script>
+  // Tema: ?tema=claro|oscuro, o lo guardado, o el del sistema
+  (function () {
+    var t = new URLSearchParams(location.search).get('tema');
+    try { t = t || localStorage.getItem('mc-tema'); } catch (e) {}
+    if (t === 'claro' || t === 'oscuro') document.documentElement.dataset.tema = t;
+  })();
+</script>
+<style>
+/* =========================================================
+   Inicio estilo juego (Free Fire). Paleta oficial: oscuro y claro.
+   ========================================================= */
+:root {
+  --fondo: #0B0818; --tarjeta: #151127; --tarjeta2: #1D1834; --borde: #2A2346;
+  --texto: #EEEAF7; --suave: #A99FC8;
+  --lima: #C6E000; --lima-tx: #C6E000; --amarillo: #FFC800; --amarillo-tx: #FFC800;
+  --correcto: #58CC02; --error: #FF4B4B; --info: #1CB0F6; --racha: #FF9600;
+  --sobre-lima: #151A03;
+  --barra-fondo: #2A2346;
+  /* las 4 áreas (mismos colores de siempre; en claro, letra más oscura) */
+  --a-cyt: #C6E000; --a-mat: #1CB0F6; --a-com: #CE82FF; --a-soc: #FF9600;
+  /* escenario 1: dorado de noche */
+  --esc-cielo: radial-gradient(120% 85% at 50% 30%, #3a1f73 0%, #22124a 38%, #110b26 78%);
+  --esc-foco: rgba(255, 236, 190, .16);
+  --plat-borde: #FFC800; --plat-a: #6b3fd0; --plat-b: #25145a; --plat-brillo: rgba(255, 220, 150, .35);
+  --halo: rgba(255, 200, 0, .34);
+  --sombra-tarjeta: none;
+  --display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
+  --cuerpo: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-tema="oscuro"]) {
+    --fondo: #F6F5FA; --tarjeta: #FFFFFF; --tarjeta2: #EEECF5; --borde: #DCD8E8;
+    --texto: #1A1626; --suave: #6B6485;
+    --lima-tx: #7A8C00; --amarillo-tx: #B38600;
+    --correcto: #3F9A00; --error: #E5383B; --info: #0E8FD6; --racha: #E07B00;
+    --barra-fondo: #DCD8E8;
+    --a-cyt: #7A8C00; --a-mat: #0E8FD6; --a-com: #9B4FD9; --a-soc: #E07B00;
+    --esc-cielo: linear-gradient(#5fb4f2 0%, #9fd3f7 55%, #d9f0fb 100%);
+    --esc-foco: rgba(255, 255, 255, .28);
+    --plat-borde: #FFFFFF; --plat-a: #eaf6ff; --plat-b: #b9dcf3; --plat-brillo: rgba(255, 255, 255, .7);
+    --halo: rgba(255, 255, 255, .7);
+    --sombra-tarjeta: 0 1px 2px rgba(26, 22, 38, .06), 0 6px 18px rgba(26, 22, 38, .06);
+    color-scheme: light;
+  }
+}
+:root[data-tema="claro"] {
+  --fondo: #F6F5FA; --tarjeta: #FFFFFF; --tarjeta2: #EEECF5; --borde: #DCD8E8;
+  --texto: #1A1626; --suave: #6B6485;
+  --lima-tx: #7A8C00; --amarillo-tx: #B38600;
+  --correcto: #3F9A00; --error: #E5383B; --info: #0E8FD6; --racha: #E07B00;
+  --barra-fondo: #DCD8E8;
+  --a-cyt: #7A8C00; --a-mat: #0E8FD6; --a-com: #9B4FD9; --a-soc: #E07B00;
+  --esc-cielo: linear-gradient(#5fb4f2 0%, #9fd3f7 55%, #d9f0fb 100%);
+  --esc-foco: rgba(255, 255, 255, .28);
+  --plat-borde: #FFFFFF; --plat-a: #eaf6ff; --plat-b: #b9dcf3; --plat-brillo: rgba(255, 255, 255, .7);
+  --halo: rgba(255, 255, 255, .7);
+  --sombra-tarjeta: 0 1px 2px rgba(26, 22, 38, .06), 0 6px 18px rgba(26, 22, 38, .06);
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--fondo); color: var(--texto); font: 600 15px/1.4 var(--cuerpo); }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.disp { font-family: var(--display); font-weight: 800; text-transform: uppercase; letter-spacing: .04em; line-height: 1; }
+.tit { font-family: var(--display); font-style: italic; font-weight: 900; text-transform: uppercase; letter-spacing: .01em; line-height: 1; }
+:focus-visible { outline: 2px solid var(--amarillo); outline-offset: 2px; }
+
+/* ---------- armazón ---------- */
+.app { display: grid; grid-template-columns: 300px minmax(0, 1fr); min-height: 100vh; }
+.lado { border-right: 1px solid var(--borde); display: flex; flex-direction: column; gap: 22px; padding: 26px 0 20px; background: var(--fondo); }
+.logo { padding: 0 26px; font-size: 32px; }
+.logo span { display: block; color: var(--lima-tx); }
+.nav { display: grid; gap: 4px; padding-right: 22px; }
+.nav a { display: flex; align-items: center; gap: 16px; padding: 14px 26px; font-size: 22px; color: var(--suave); }
+.nav a svg { font-size: 26px; }
+.nav a:hover { color: var(--texto); }
+.nav a[aria-current] { background: var(--lima); color: var(--sobre-lima); clip-path: polygon(0 0, 100% 0, 96% 100%, 0 100%); }
+.nav a.duelo { color: var(--texto); }
+.nav a.duelo svg { color: var(--error); }
+.lado .top { margin: 0 18px; }
+.apoya { margin: auto 18px 0; padding: 14px 18px; background: linear-gradient(90deg, rgba(150, 90, 255, .22), var(--tarjeta)); border-left: 4px solid #9b5cff; }
+.apoya b { display: block; font-size: 18px; }
+.apoya small { color: var(--suave); font-size: 14px; }
+
+.cont { padding: 22px 38px 40px; display: grid; gap: 26px; min-width: 0; }
+.cab { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.cab h1 { margin: 0; font-size: 46px; }
+.cab .der { display: flex; align-items: center; gap: 8px; }
+.stat { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; background: var(--tarjeta); border: 1px solid var(--borde); font-size: 20px; box-shadow: var(--sombra-tarjeta); }
+.stat .ic { font-size: 18px; }
+.stat.vida .ic { color: var(--error); fill: var(--error); stroke: none; }
+.stat.fuego .ic { color: var(--racha); fill: var(--racha); stroke: none; }
+.moneda { width: 18px; height: 18px; border-radius: 50%; background: var(--amarillo); color: #6b4a00; display: grid; place-items: center; font: 900 12px/1 var(--cuerpo); }
+.perfil { display: flex; align-items: center; gap: 10px; padding: 6px 30px 6px 6px; background: linear-gradient(90deg, var(--tarjeta2), var(--tarjeta)); clip-path: polygon(0 0, 100% 0, 88% 100%, 0 100%); }
+.avatar { width: 50px; height: 50px; display: grid; place-items: center; background: var(--lima); color: var(--sobre-lima); font-size: 26px; border: 3px solid var(--amarillo); }
+.perfil b { display: block; font-size: 22px; }
+.perfil small { color: var(--lima-tx); font-size: 15px; }
+.tema-btn { width: 40px; height: 40px; display: grid; place-items: center; background: var(--tarjeta); border: 1px solid var(--borde); font-size: 20px; }
+
+.fila1 { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 26px; align-items: stretch; }
+.fila2 { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 26px; align-items: start; }
+
+/* ---------- escenario ---------- */
+.escena { position: relative; min-height: 600px; overflow: hidden; border: 1px solid var(--borde); background: var(--esc-cielo); isolation: isolate; }
+.escena::before { content: ""; position: absolute; left: 30%; right: 30%; top: 0; bottom: 18%; z-index: -1;
+  background: linear-gradient(to bottom, var(--esc-foco), transparent); clip-path: polygon(38% 0, 62% 0, 100% 100%, 0 100%); }
+.nubes { position: absolute; inset: 0; z-index: -1; display: none; }
+.nubes i { position: absolute; background: #fff; border-radius: 99px; opacity: .9; }
+.nubes i::before, .nubes i::after { content: ""; position: absolute; background: #fff; border-radius: 50%; }
+.nubes i::before { width: 46%; aspect-ratio: 1; left: 16%; bottom: 30%; }
+.nubes i::after { width: 34%; aspect-ratio: 1; left: 50%; bottom: 40%; }
+.nubes i:nth-child(1) { width: 18%; height: 7%; left: 30%; top: 22%; animation: nube 60s linear infinite; }
+.nubes i:nth-child(2) { width: 14%; height: 5.5%; left: 72%; top: 52%; animation: nube 80s linear infinite reverse; }
+.nubes i:nth-child(3) { width: 12%; height: 4.5%; left: 6%; top: 70%; opacity: .7; }
+@keyframes nube { 50% { translate: 8% 0; } }
+@media (prefers-color-scheme: light) { :root:not([data-tema="oscuro"]) .nubes { display: block; } }
+:root[data-tema="claro"] .nubes { display: block; }
+.halo { position: absolute; left: 50%; top: 50%; width: 46%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; border: 2px dashed var(--halo); animation: girar 40s linear infinite; z-index: -1; }
+@keyframes girar { to { rotate: 360deg; } }
+.plat { position: absolute; left: 30%; right: 30%; bottom: 17%; height: 11%; z-index: -1; }
+.plat i { position: absolute; inset: 0; clip-path: polygon(9% 0, 91% 0, 100% 50%, 91% 100%, 9% 100%, 0 50%); }
+.plat i:nth-child(1) { background: var(--plat-borde); filter: drop-shadow(0 0 10px var(--plat-borde)); }
+.plat i:nth-child(2) { inset: 4px 5px; background: linear-gradient(var(--plat-a), var(--plat-b)); }
+.plat i:nth-child(3) { inset: 4px 5px; background: radial-gradient(60% 70% at 50% 35%, var(--plat-brillo), transparent 70%); }
+.buho { position: absolute; left: 50%; bottom: 24%; width: 34%; translate: -50% 0; }
+.buho .mcb { width: 100%; translate: 0 var(--drop); }
+.globo { position: absolute; left: 50%; top: 4%; translate: -50% 0; width: max-content; max-width: 34%; background: #fff; color: #1b1430; font: 800 17px/1.25 var(--cuerpo); padding: 9px 16px; text-align: center; z-index: 2; }
+.globo::after { content: ""; position: absolute; left: 50%; bottom: -10px; translate: -50% 0; border: 10px solid transparent; border-bottom: 0; border-top-color: #fff; }
+.globo em { font-style: normal; color: #7A8C00; font-weight: 900; }
+.globo.molesto { background: #FF4B4B; color: #fff; }
+.globo.molesto::after { border-top-color: #FF4B4B; }
+
+.eventos { position: absolute; left: 2.2%; top: 3%; width: 25%; display: grid; gap: 12px; z-index: 2; }
+.evento { position: relative; display: block; min-height: 106px; padding: 12px 16px; color: #fff; border-left: 4px solid var(--amarillo); clip-path: polygon(0 0, 100% 0, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0 100%); }
+.evento b { display: block; font-size: 19px; }
+.evento small { display: block; font: 600 15px/1.25 var(--cuerpo); opacity: .92; padding-bottom: 14px; }
+.evento .cinta { position: absolute; right: 30px; bottom: 6px; background: var(--error); color: #fff; padding: 2px 5px; font-size: 13px; }
+.ev-hallo { background: linear-gradient(120deg, #8c3d0d, #c35b12 60%, #6b2d06); }
+.ev-cal { background: linear-gradient(120deg, #0f4a6a, #13759b); }
+.ev-sim { background: linear-gradient(120deg, #2d2064, #4a2f99); }
+
+.accesos { position: absolute; right: 2%; top: 3%; display: grid; gap: 12px; z-index: 2; }
+.acceso { position: relative; width: 68px; height: 68px; display: grid; place-items: center; align-content: center; gap: 6px; background: var(--tarjeta); border: 1px solid var(--borde); color: var(--texto); box-shadow: var(--sombra-tarjeta); }
+.acceso svg { font-size: 26px; }
+.acceso span { font-size: 11px; letter-spacing: .06em; }
+.acceso.punto::after { content: ""; position: absolute; right: -4px; top: -4px; width: 12px; height: 12px; border-radius: 50%; background: var(--error); }
+
+.rango { position: absolute; left: 50%; bottom: 0; translate: -50% 0; display: flex; align-items: center; gap: 12px; padding: 8px 20px 10px; background: linear-gradient(90deg, transparent, rgba(11, 8, 24, .82) 12%, rgba(11, 8, 24, .82) 88%, transparent); color: #EEEAF7; border-top: 2px solid #58CC02; white-space: nowrap; z-index: 2; }
+.rango .em { width: 44px; }
+.rango .em svg { width: 100%; display: block; }
+.rango b { font-size: 24px; color: #58CC02; }
+.rango .bar { display: block; height: 6px; margin-top: 6px; background: rgba(255, 255, 255, .15); }
+.rango .bar i { display: block; height: 100%; width: 42%; background: #58CC02; }
+.rango small { font: 800 14px/1.15 var(--display); letter-spacing: .04em; text-transform: uppercase; color: #cfc8e6; }
+
+/* ---------- jugar ---------- */
+.jugar { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.2fr); gap: 10px; }
+.modo { padding: 14px 16px; background: var(--tarjeta); border: 1px solid var(--borde); box-shadow: var(--sombra-tarjeta); display: grid; align-content: center; gap: 4px; }
+.modo small { color: var(--suave); font-size: 13px; }
+.modo b { font-size: 22px; }
+.modo a { color: var(--lima-tx); font: 800 15px/1 var(--cuerpo); text-transform: none; letter-spacing: 0; white-space: nowrap; }
+.practicar { position: relative; display: grid; place-items: center; min-height: 126px; background: linear-gradient(100deg, #b4cc00, var(--lima) 40%, #d8f02a); color: var(--sobre-lima); font-size: clamp(30px, 3.3vw, 56px); white-space: nowrap; clip-path: polygon(0 0, 100% 0, 100% 80%, 94% 100%, 0 100%); padding-left: 22px; }
+.practicar::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 14px; background: repeating-linear-gradient(135deg, #151a03 0 6px, var(--amarillo) 6px 12px); }
+.practicar:hover { filter: brightness(1.06); }
+.meta { display: flex; align-items: center; gap: 14px; margin-top: 18px; color: var(--suave); font-size: 17px; }
+.meta .bar { flex: 1; height: 10px; background: var(--barra-fondo); clip-path: polygon(0 0, 100% 0, 98% 100%, 0 100%); }
+.meta .bar i { display: block; height: 100%; width: 60%; background: var(--lima); }
+.meta b { color: var(--texto); }
+
+.sec { display: grid; gap: 14px; }
+.sec-cab { display: flex; align-items: center; gap: 14px; }
+.sec-cab h2 { margin: 0; font-size: 30px; }
+.sec-cab::after { content: ""; order: 1; flex: 1; height: 2px; background: var(--borde); }
+.sec-cab a { order: 2; color: var(--amarillo-tx); font-size: 16px; white-space: nowrap; }
+
+.modos { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto auto; gap: 10px; }
+.juego { position: relative; display: block; overflow: hidden; padding: 16px 18px; color: #fff; min-height: 170px; border-bottom: 4px solid; }
+.juego b { display: block; font-size: 32px; }
+.juego small { display: block; max-width: 16ch; font: 700 16px/1.3 var(--cuerpo); opacity: .92; }
+.juego .ic { position: absolute; right: 16px; bottom: 12px; font-size: 64px; stroke-width: 1.8; }
+.juego .chip { position: absolute; right: 0; top: 0; padding: 4px 10px; font-size: 15px; }
+.j-duelo { grid-row: span 2; background: linear-gradient(160deg, #9b1426, #5e0d27 55%, #3b0b28); border-color: #ff4b4b; }
+.j-duelo .ic { font-size: 120px; right: 24px; bottom: 24px; }
+.j-duelo .chip { background: #ff4b4b; }
+.j-sim { background: linear-gradient(160deg, #8a5a00, #4d3200); border-color: var(--amarillo); }
+.j-sim .chip { background: var(--amarillo); color: #2a1d00; }
+.j-ex { background: linear-gradient(160deg, #0c5f8f, #123864); border-color: var(--info); }
+.j-flash { grid-column: span 2; min-height: 0; background: linear-gradient(90deg, #4d5c00, #2c3505); border-color: var(--lima); }
+.j-flash .ic { font-size: 56px; top: 50%; translate: 0 -50%; bottom: auto; }
+
+.jugado { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.curso { position: relative; padding: 46px 14px 16px; background: var(--tarjeta); border: 1px solid var(--borde); box-shadow: var(--sombra-tarjeta); }
+.curso { border-bottom: 4px solid var(--ac); }
+.curso b { display: block; font-size: 21px; color: var(--ac); }
+.curso small { color: var(--suave); }
+.curso small { color: var(--suave); font-size: 15px; }
+.curso .n { position: absolute; right: 6px; top: 6px; padding: 3px 7px; font-size: 16px; font-style: italic; color: #2a1d00; }
+.curso:nth-child(1) .n { background: var(--amarillo); }
+.curso:nth-child(2) .n { background: #c9c6d6; }
+.curso:nth-child(3) .n { background: #d98a4a; }
+
+.top { background: var(--tarjeta); border: 1px solid var(--borde); box-shadow: var(--sombra-tarjeta); }
+.top-cab { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: var(--tarjeta2); font-size: 18px; }
+.top-cab a, .top-cab span { color: var(--amarillo-tx); font-size: 15px; }
+.top-cab span { color: var(--suave); }
+.top ol { list-style: none; margin: 0; padding: 0; }
+.top li { display: grid; grid-template-columns: 22px 40px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 10px 16px; border-top: 1px solid var(--borde); }
+.top li .pos { font: italic 900 24px/1 var(--display); }
+.top li:nth-child(1) .pos { color: var(--amarillo-tx); }
+.top li:nth-child(3) .pos { color: #d98a4a; }
+.top li .em svg { width: 40px; display: block; }
+.top li b { display: block; font: 700 18px/1.15 var(--cuerpo); }
+.top li small { font: 800 14px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; }
+.top li .xp { font: 800 19px/1 var(--display); color: var(--lima-tx); }
+.top li.tu { background: linear-gradient(90deg, rgba(198, 224, 0, .14), transparent); box-shadow: inset 4px 0 var(--lima); }
+.letra { width: 36px; height: 36px; display: grid; place-items: center; font: 800 20px/1 var(--display); color: #1a1400; }
+
+.podio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: 14px; padding: 26px 18px 0; }
+.podio > div { display: grid; justify-items: center; gap: 4px; text-align: center; }
+.podio .letra { width: 70px; height: 70px; font-size: 34px; border: 4px solid; }
+.podio b { font: 700 19px/1.1 var(--cuerpo); }
+.podio small { color: var(--amarillo-tx); font: 800 16px/1 var(--display); }
+.podio .esc { width: 100%; margin-top: 8px; display: grid; place-items: center; font: italic 900 38px/1 var(--display); color: rgba(0, 0, 0, .55); clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%); }
+.p1 .letra { width: 88px; height: 88px; font-size: 40px; background: var(--amarillo); border-color: #a87a00; position: relative; }
+.p1 .letra::before { content: ""; position: absolute; top: -20px; left: 50%; translate: -50% 0; width: 32px; height: 18px; background: var(--amarillo); clip-path: polygon(0 100%, 0 20%, 25% 60%, 50% 0, 75% 60%, 100% 20%, 100% 100%); }
+.p1 .esc { height: 96px; background: linear-gradient(#ffd21f, #c79800); }
+.p2 .letra { background: #e9e6f2; border-color: #6b6485; }
+.p2 .esc { height: 70px; background: linear-gradient(#c7c3d6, #6b6485); }
+.p3 .letra { background: #ef9d5c; border-color: #8a4a17; }
+.p3 .esc { height: 56px; background: linear-gradient(#ef9d5c, #9a5320); }
+.ver-mas { display: block; text-align: center; padding: 14px; color: var(--amarillo-tx); font-size: 17px; border-top: 1px solid var(--borde); }
+
+.solo-cel { display: none; }
+.tabbar { display: none; }
+
+/* ---------- celular ---------- */
+@media (max-width: 900px) {
+  .app { grid-template-columns: 1fr; }
+  .lado { display: none; }
+  .solo-cel { display: block; }
+  .solo-pc { display: none; }
+  .cont { padding: 12px max(14px, env(safe-area-inset-right, 0px)) calc(110px + env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px)); gap: 22px; }
+  .cab h1 { display: none; }
+  .cab { order: -2; }
+  .cab .der { flex: 1; justify-content: space-between; }
+  .perfil { order: -1; margin-right: auto; padding-right: 26px; }
+  .avatar { width: 40px; height: 40px; font-size: 22px; }
+  .perfil b { font-size: 18px; }
+  .perfil small { font-size: 13px; }
+  .stat { padding: 6px 8px; font-size: 17px; }
+  .tema-btn { width: 34px; height: 34px; font-size: 17px; }
+  .fila1, .fila2 { grid-template-columns: 1fr; gap: 22px; }
+  .escena { min-height: 0; aspect-ratio: .98; margin: 0 calc(-1 * max(14px, env(safe-area-inset-left, 0px))); border-left: 0; border-right: 0; }
+  .eventos { width: 31%; gap: 10px; left: 3%; }
+  .evento { min-height: 76px; padding: 8px 10px; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%); }
+  .evento b { font-size: 15px; }
+  .evento small { font-size: 12.5px; }
+  .evento .cinta { right: 16px; bottom: 4px; font-size: 11px; }
+  .accesos { gap: 8px; right: 3%; }
+  .acceso { width: 50px; height: 56px; gap: 4px; }
+  .acceso svg { font-size: 22px; }
+  .acceso span { font-size: 9px; }
+  .buho { width: 36%; left: 53%; bottom: 25%; }
+  .plat { left: 22%; right: 22%; bottom: 17%; height: 10%; }
+  .halo { width: 66%; }
+  .globo { left: 53%; max-width: 34%; font-size: 13.5px; padding: 7px 10px; top: 3%; }
+  .rango { gap: 8px; padding: 6px 14px 8px; }
+  .rango .em { width: 34px; }
+  .rango b { font-size: 19px; }
+  .rango small { font-size: 12px; }
+  .practicar { font-size: 32px; min-height: 92px; }
+  .modo b { font-size: 18px; }
+  .meta { margin-top: 12px; font-size: 15px; }
+  .sec-cab h2 { font-size: 25px; }
+  .juego { min-height: 118px; padding: 12px 12px; }
+  .juego b { font-size: 25px; }
+  .juego small { font-size: 13.5px; }
+  .juego .ic { font-size: 54px; right: 10px; bottom: 8px; }
+  .j-duelo .ic { font-size: 96px; right: 18px; bottom: 26px; }
+  .j-flash .ic { font-size: 46px; }
+  .juego .chip { font-size: 13px; }
+  .curso { padding: 40px 10px 12px; }
+  .curso b { font-size: 17px; }
+  .curso small { font-size: 13px; }
+  .podio { padding: 22px 10px 0; gap: 8px; }
+  .podio .letra { width: 56px; height: 56px; font-size: 28px; }
+  .p1 .letra { width: 70px; height: 70px; }
+  .apoya { margin: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .apoya .btn { flex: none; padding: 8px 12px; background: #c58bff; color: #20093f; font-size: 15px; }
+
+  .tabbar { display: grid; grid-template-columns: repeat(5, 1fr); align-items: end; position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+    background: var(--tarjeta); border-top: 1px solid var(--borde); padding: 0 env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); box-shadow: 0 -6px 20px rgba(0, 0, 0, .12); }
+  .tabbar a { display: grid; justify-items: center; gap: 6px; padding: 14px 0 12px; color: var(--suave); font-size: 15px; }
+  .tabbar a svg { font-size: 26px; }
+  .tabbar a[aria-current] { background: var(--lima); color: var(--sobre-lima); clip-path: polygon(0 0, 100% 0, 88% 100%, 0 100%); }
+  .tabbar .duelo { position: relative; color: var(--texto); }
+  .tabbar .duelo i { position: absolute; left: 50%; top: -34px; translate: -50% 0; width: 70px; height: 76px; display: grid; place-items: center; background: #ff4b4b; color: #fff;
+    clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); filter: drop-shadow(0 6px 10px rgba(255, 75, 75, .4)); }
+  .tabbar .duelo i svg { font-size: 34px; }
+  .tabbar .duelo span { margin-top: 44px; }
+}
+@media (max-width: 400px) {
+  .stat { font-size: 15px; padding: 5px 6px; gap: 4px; }
+  .practicar { font-size: 28px; }
+}
+@media (prefers-reduced-motion: reduce) { .halo, .nubes i { animation: none; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-casa" viewBox="0 0 24 24"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></symbol>
+  <symbol id="i-libro" viewBox="0 0 24 24"><path d="M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z"/><path d="M5 18a2 2 0 0 1 2-2h12"/></symbol>
+  <symbol id="i-espadas" viewBox="0 0 24 24"><path d="M3 3h3l9 9-3 3-9-9z"/><path d="M21 3h-3l-9 9 3 3 9-9z"/><path d="M10 18l8-8M14 18l-8-8"/><path d="M16 16l4 4M8 16l-4 4"/></symbol>
+  <symbol id="i-cofre" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="12"/><path d="M3 12h18M8 8V5h8v3M8 12v8M16 12v8"/></symbol>
+  <symbol id="i-persona" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></symbol>
+  <symbol id="i-mision" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="1"/><path d="M9 4V2h6v2M9 13l2 2 4-4"/></symbol>
+  <symbol id="i-copa" viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v4M8 21h8M9 18h6"/></symbol>
+  <symbol id="i-agenda" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16"/><path d="M4 10h16M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-regalo" viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="12"/><path d="M3 9h18M12 9v12M12 9c-3 0-5-1-5-3s3-2 5 3c2-5 5-5 5-3s-2 3-5 3"/></symbol>
+  <symbol id="i-reloj" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M10 2h4M19 5l2 2"/></symbol>
+  <symbol id="i-examen" viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"/><path d="M9 8h6M9 12h6M9 17l2 2 4-4"/><path d="M18 6h3v15h-3"/></symbol>
+  <symbol id="i-tarjetas" viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="14" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v11"/><path d="M6 14h7"/></symbol>
+  <symbol id="i-corazon" viewBox="0 0 24 24"><path d="M12 21s-8-5-8-11a4.5 4.5 0 0 1 8-3 4.5 4.5 0 0 1 8 3c0 6-8 11-8 11z"/></symbol>
+  <symbol id="i-fuego" viewBox="0 0 24 24"><path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 2-5 3-6 0 2 1 3 2 3 0-4-1-6 1-9z"/></symbol>
+  <symbol id="i-sol" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5"/></symbol>
+  <symbol id="i-luna" viewBox="0 0 24 24"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></symbol>
+</svg>
+
+<div class="app">
+  <aside class="lado">
+    <div class="logo tit">Modo<span>Cachimbo</span></div>
+    <nav class="nav disp" aria-label="Principal">
+      <a href="#" aria-current="page"><svg class="ic"><use href="#i-casa"/></svg>Inicio</a>
+      <a href="#"><svg class="ic"><use href="#i-libro"/></svg>Cursos</a>
+      <a href="duelo.html" class="duelo"><svg class="ic"><use href="#i-espadas"/></svg>Duelo</a>
+      <a href="#"><svg class="ic"><use href="#i-cofre"/></svg>Colección</a>
+      <a href="perfil.html"><svg class="ic"><use href="#i-persona"/></svg>Perfil</a>
+    </nav>
+    <section class="top" aria-label="Top de la semana">
+      <div class="top-cab disp">Top de la semana <a href="#">Ver todo ›</a></div>
+      <ol id="topLado"></ol>
+    </section>
+    <a class="apoya" href="#"><b class="disp">Apoya el proyecto</b><small>Invítame un café por Yape</small></a>
+  </aside>
+
+  <main class="cont">
+    <header class="cab">
+      <h1 class="tit">¡Hola, Javier!</h1>
+      <div class="der">
+        <span class="stat vida disp" title="Corazones"><svg class="ic"><use href="#i-corazon"/></svg>5</span>
+        <span class="stat fuego disp" title="Racha"><svg class="ic"><use href="#i-fuego"/></svg>5</span>
+        <span class="stat disp" title="Monedas"><span class="moneda">¢</span>310</span>
+        <button class="tema-btn" id="temaBtn" type="button" aria-label="Cambiar a modo claro"><svg class="ic"><use href="#i-sol"/></svg></button>
+        <a class="perfil disp" href="perfil.html"><span class="avatar">J</span><span><b>Javier</b><small>Nvl. 12 · CPU</small></span></a>
+      </div>
+    </header>
+
+    <div class="fila1">
+      <section class="escena" id="escena" aria-label="Tu búho">
+        <div class="nubes" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="halo" aria-hidden="true"></div>
+        <div class="plat" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="buho" id="buho"></div>
+        <p class="globo" id="globo">¡Vas <em>12 de 20</em> hoy! Tú puedes</p>
+        <div class="eventos">
+          <a class="evento ev-hallo" href="#"><b class="disp">Evento Halloween</b><small>Gana calabazas</small><span class="cinta disp">2 días</span></a>
+          <a class="evento ev-cal" href="#"><b class="disp">Mañana</b><small>Seminario 3 · Álgebra 8:00</small></a>
+          <a class="evento ev-sim" href="simulacro.html"><b class="disp">Simulacro</b><small>Sábado 9:00</small></a>
+        </div>
+        <nav class="accesos disp" aria-label="Accesos">
+          <a class="acceso punto" href="#"><svg class="ic"><use href="#i-mision"/></svg><span>Misiones</span></a>
+          <a class="acceso" href="#"><svg class="ic"><use href="#i-cofre"/></svg><span>Colección</span></a>
+          <a class="acceso" href="#"><svg class="ic"><use href="#i-copa"/></svg><span>Ranking</span></a>
+          <a class="acceso" href="#"><svg class="ic"><use href="#i-agenda"/></svg><span>Agenda</span></a>
+          <a class="acceso punto" href="#"><svg class="ic"><use href="#i-regalo"/></svg><span>Nuevo</span></a>
+        </nav>
+        <a class="rango" href="#"><span class="em" id="rangoEm"></span><b class="disp">Esmeralda</b><span><small>1520 XP<br>para Amatista</small><span class="bar"><i></i></span></span></a>
+      </section>
+
+      <div style="display:grid;gap:22px;min-width:0">
+        <div>
+          <div class="jugar">
+            <div class="modo disp"><small>Modo</small><b>Práctica libre</b><a href="#">Cambiar ›</a></div>
+            <a class="practicar tit" href="#">¡A practicar!</a>
+          </div>
+          <div class="meta disp"><span>Meta de hoy</span><span class="bar"><i></i></span><b>12/20</b></div>
+        </div>
+        <section class="sec">
+          <div class="sec-cab"><h2 class="tit">Modos de juego</h2></div>
+          <div class="modos">
+            <a class="juego j-duelo" href="duelo.html"><span class="chip disp">Reto</span><b class="tit">Duelos</b><small>Reta hasta a 3 amigos en vivo</small><svg class="ic"><use href="#i-espadas"/></svg></a>
+            <a class="juego j-sim" href="simulacro.html"><span class="chip disp">Nuevo</span><b class="tit">Simulacro</b><small>Como el real, con tiempo</small><svg class="ic"><use href="#i-reloj"/></svg></a>
+            <a class="juego j-ex" href="#"><b class="tit">Exámenes</b><small>Ordinario, CPU, Control</small><svg class="ic"><use href="#i-examen"/></svg></a>
+            <a class="juego j-flash" href="tarjetas.html"><b class="tit">Flashcards</b><small style="max-width:none">Repasa con tarjetas por curso</small><svg class="ic"><use href="#i-tarjetas"/></svg></a>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="fila2">
+      <section class="sec">
+        <div class="sec-cab"><h2 class="tit">Lo más jugado</h2></div>
+        <div class="jugado">
+          <a class="curso" style="--ac:var(--a-cyt)" href="biologia/"><span class="n disp">#1</span><b class="disp">Biología</b><small>Ciencia y Tec.</small></a>
+          <a class="curso" style="--ac:var(--a-mat)" href="algebra/"><span class="n disp">#2</span><b class="disp">Álgebra</b><small>Matemática</small></a>
+          <a class="curso" style="--ac:var(--a-com)" href="raz-verbal/"><span class="n disp">#3</span><b class="disp">Raz. Verbal</b><small>Comunicación</small></a>
+        </div>
+      </section>
+
+      <section class="sec solo-cel">
+        <div class="sec-cab"><h2 class="tit">Top de la semana</h2><a class="disp" href="#">Ranking ›</a></div>
+        <div class="top"><div class="top-cab disp">Liga Esmeralda <span>Se reinicia el lunes</span></div><ol id="topCel"></ol></div>
+      </section>
+
+      <section class="sec">
+        <div class="sec-cab"><h2 class="tit">Top simulacro</h2><a class="disp" href="simulacro.html">Dar simulacro ›</a></div>
+        <div class="top">
+          <div class="top-cab disp">Top simulacro · semana <span>Se reinicia el lunes</span></div>
+          <div class="podio">
+            <div class="p2"><span class="letra">D</span><b>Diego</b><small>17.0 pts</small><span class="esc">2</span></div>
+            <div class="p1"><span class="letra">L</span><b>Lucía</b><small>18.5 pts</small><span class="esc">1</span></div>
+            <div class="p3"><span class="letra">M</span><b>Mateo</b><small>16.5 pts</small><span class="esc">3</span></div>
+          </div>
+          <a class="ver-mas disp" href="#">Ver top 10 ▾</a>
+        </div>
+      </section>
+
+      <a class="apoya solo-cel" href="#"><span><b class="disp">Apoya el proyecto</b><small>Gratis siempre. Yape si te sirvió.</small></span><span class="btn disp">Invítame un café</span></a>
+    </div>
+  </main>
+</div>
+
+<nav class="tabbar disp" aria-label="Principal">
+  <a href="#" aria-current="page"><svg class="ic"><use href="#i-casa"/></svg>Inicio</a>
+  <a href="#"><svg class="ic"><use href="#i-libro"/></svg>Cursos</a>
+  <a href="duelo.html" class="duelo"><i><svg class="ic"><use href="#i-espadas"/></svg></i><span>Duelo</span></a>
+  <a href="#"><svg class="ic"><use href="#i-cofre"/></svg>Colección</a>
+  <a href="perfil.html"><svg class="ic"><use href="#i-persona"/></svg>Perfil</a>
+</nav>
+
+<script src="assets/rango.js"></script>
+<script src="assets/buho/buho-datos.js"></script>
+<script src="assets/buho/buho-vivo.js"></script>
+<script>
+  // Datos de ejemplo para la vista previa
+  var TOP = [['Lucía', 4, 7420], ['Diego', 3, 4610], ['Mateo', 2, 3020], ['Tú', 1, 2480, 1], ['Ana', 1, 1950], ['Rosa', 0, 1210], ['Kevin', 0, 860]];
+  var COLR = ['#1CB0F6', '#58CC02', '#B27BFF', '#FF4B4B', '#FFC800'];
+  var miles = function (n) { return n.toLocaleString('es-PE').replace(/,/g, ' '); };
+  document.getElementById('topLado').innerHTML = TOP.map(function (t, i) {
+    return '<li' + (t[3] ? ' class="tu"' : '') + '><span class="pos">' + (i + 1) + '</span><span class="em">' + MCRango.svg(t[1], { mini: true, quieto: true }) + '</span>' +
+      '<span><b>' + t[0] + '</b><small style="color:' + COLR[t[1]] + '">' + MCRango.nombre(t[1]) + '</small></span><span class="xp">' + miles(t[2]) + ' XP</span></li>';
+  }).join('');
+  var LET = ['#FFC800', '#E9E6F2', '#EF9D5C', '#C6E000'];
+  document.getElementById('topCel').innerHTML = TOP.slice(0, 4).map(function (t, i) {
+    return '<li' + (t[3] ? ' class="tu"' : '') + '><span class="pos">' + (i + 1) + '</span><span class="letra" style="background:' + LET[i] + '">' + (t[3] ? 'J' : t[0][0]) + '</span>' +
+      '<span><b>' + t[0] + '</b></span><span class="xp">' + miles(t[2]) + ' XP</span></li>';
+  }).join('');
+  document.getElementById('rangoEm').innerHTML = MCRango.svg(1, { mini: true });
+
+  MCBuhoVivo.toques(document.getElementById('buho'), { pose: 'vivo', globo: document.getElementById('globo') });
+
+  // Tema claro / oscuro
+  var root = document.documentElement, btn = document.getElementById('temaBtn');
+  function oscuro() { return root.dataset.tema ? root.dataset.tema === 'oscuro' : !matchMedia('(prefers-color-scheme: light)').matches; }
+  function pintar() {
+    var o = oscuro();
+    btn.innerHTML = '<svg class="ic"><use href="#i-' + (o ? 'sol' : 'luna') + '"/></svg>';
+    btn.setAttribute('aria-label', o ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+  }
+  btn.onclick = function () {
+    root.dataset.tema = oscuro() ? 'claro' : 'oscuro';
+    try { localStorage.setItem('mc-tema', root.dataset.tema); } catch (e) {}
+    pintar();
+  };
+  pintar();
+</script>
+</body>
+</html>

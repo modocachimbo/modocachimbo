@@ -1,0 +1,160 @@
+/* Modo Cachimbo · búho animado por capas (generado desde mascota/animacion, no editar a mano) */
+/* ===== búho por capas ===== */
+.mcb{aspect-ratio:var(--ar);max-width:100%}
+.mcb .mcb-j,.mcb .mcb-r{position:absolute;inset:0}
+.mcb img,.mcb .mcb-ojo{position:absolute;display:block;max-width:none}
+.mcb-ojo{overflow:hidden;-webkit-mask-size:100% 100%;mask-size:100% 100%}
+.mcb-lid{position:absolute;left:-5%;right:-5%;top:0;height:105%;transform:translateY(-102%);background:var(--lc);
+  border-bottom:solid #1f3a1c;border-bottom-width:max(2px,9%);border-radius:0 0 45% 45%;animation:mcb-parpadeo 4.2s infinite}
+@keyframes mcb-parpadeo{0%,90%,100%{transform:translateY(-102%)}93.5%,95%{transform:translateY(0)}}
+
+@keyframes mcb-sombra{0%,100%{scale:1}50%{scale:.92}}
+@keyframes mcb-respirar{0%,100%{transform:scale(1,1)}50%{transform:scale(1.015,1.025)}}
+@keyframes mcb-cejas{0%,70%,100%{transform:translateY(0)}76%,86%{transform:translateY(-4%)}}
+
+/* en vivo, 30 s (generado por vivo_css.py) */
+@keyframes mcb-vivoCuerpo{0.00%,23.33%{transform:none} 25.00%{transform:rotate(3deg)} 28.33%{transform:rotate(-3deg)} 31.67%{transform:rotate(3deg)} 35.00%{transform:rotate(-3deg)} 38.33%{transform:rotate(3deg)} 41.67%{transform:rotate(-3deg)} 45.00%{transform:rotate(3deg)} 48.33%{transform:rotate(-3deg)} 51.67%{transform:rotate(3deg)} 55.00%{transform:rotate(-3deg)} 56.67%{transform:none} 58.00%{transform:scale(1.05,.95)} 59.67%{transform:translateY(-7%) scale(.98,1.03)} 61.33%{transform:scale(1.03,.97)} 62.67%{transform:scale(1.05,.95)} 64.33%{transform:translateY(-7%) scale(.98,1.03)} 66.00%{transform:scale(1.03,.97)} 67.00%{transform:none} 73.33%{transform:none} 75.00%{transform:translateX(-2%) rotate(-2deg)} 77.00%{transform:translateX(2%) rotate(2deg)} 79.00%{transform:translateX(-2%) rotate(-2deg)} 81.00%{transform:translateX(2%) rotate(2deg)} 83.00%{transform:translateX(-2%) rotate(-2deg)} 84.33%,100.00%{transform:none}}
+@keyframes mcb-vivoGafas{0.00%,13.00%{transform:translate(47%,39%) scale(.08) rotate(-25deg);opacity:0} 13.67%{transform:translate(47%,39%) scale(.15) rotate(-25deg);opacity:1} 15.33%{transform:translate(47%,36%) scale(.3) rotate(-18deg)} 17.00%{transform:translate(26%,-6%) scale(.72) rotate(8deg)} 18.67%{transform:none} 20.00%{transform:translateY(-3%)} 21.33%{transform:none} 68.00%{transform:none} 70.00%{transform:translateY(6%) rotate(2deg)} 71.67%{transform:translateY(6%) rotate(2deg)} 73.33%{transform:none} 85.33%{transform:none;opacity:1} 87.00%{transform:translate(26%,-6%) scale(.72) rotate(8deg)} 88.67%{transform:translate(47%,36%) scale(.3) rotate(-18deg);opacity:1} 90.33%{transform:translate(47%,39%) scale(.12) rotate(-25deg);opacity:0} 100.00%{transform:translate(47%,39%) scale(.08);opacity:0}}
+@keyframes mcb-vivoBrillo{0.00%,18.33%{opacity:0;transform:scale(.3) rotate(0)} 20.33%{opacity:1;transform:scale(1.2) rotate(45deg)} 24.33%,100.00%{opacity:0;transform:scale(.5) rotate(90deg)}}
+@keyframes mcb-vivoAlaD{0.00%,10.67%{transform:none} 12.00%,13.00%{transform:skewY(8deg) scaleX(.5)} 14.67%{transform:skewY(-22deg) scaleX(1.05)} 17.00%{transform:skewY(-26deg) scaleX(1.05)} 20.00%{transform:none} 25.00%{transform:skewY(-6deg)} 28.33%{transform:skewY(6deg)} 31.67%{transform:skewY(-6deg)} 35.00%{transform:skewY(6deg)} 38.33%{transform:skewY(-6deg)} 41.67%{transform:skewY(6deg)} 45.00%{transform:skewY(-6deg)} 48.33%{transform:skewY(6deg)} 51.67%{transform:skewY(-6deg)} 55.00%{transform:skewY(6deg)} 57.33%{transform:none} 59.00%{transform:skewY(-16deg) scaleX(.95)} 60.67%{transform:skewY(5deg)} 62.67%{transform:skewY(-16deg) scaleX(.95)} 64.67%{transform:skewY(5deg)} 66.67%{transform:none} 84.33%{transform:none} 85.67%,87.33%{transform:skewY(-26deg) scaleX(1.05)} 88.67%{transform:skewY(-22deg) scaleX(1.05)} 90.33%,91.33%{transform:skewY(8deg) scaleX(.5)} 93.33%,100.00%{transform:none}}
+@keyframes mcb-vivoAlaI{0.00%,23.33%{transform:none} 25.00%{transform:skewY(6deg)} 28.33%{transform:skewY(-6deg)} 31.67%{transform:skewY(6deg)} 35.00%{transform:skewY(-6deg)} 38.33%{transform:skewY(6deg)} 41.67%{transform:skewY(-6deg)} 45.00%{transform:skewY(6deg)} 48.33%{transform:skewY(-6deg)} 51.67%{transform:skewY(6deg)} 55.00%{transform:skewY(-6deg)} 57.33%{transform:none} 59.00%{transform:skewY(16deg) scaleX(.95)} 60.67%{transform:skewY(-5deg)} 62.67%{transform:skewY(16deg) scaleX(.95)} 64.67%{transform:skewY(-5deg)} 66.67%,100.00%{transform:none}}
+@keyframes mcb-vivoCejas{0.00%,18.00%{transform:none} 19.33%,22.00%{transform:translateY(-6%)} 23.33%{transform:none} 25.00%{transform:translateY(-3%)} 26.67%{transform:none} 28.33%{transform:translateY(-3%)} 30.00%{transform:none} 31.67%{transform:translateY(-3%)} 33.33%{transform:none} 35.00%{transform:translateY(-3%)} 36.67%{transform:none} 38.33%{transform:translateY(-3%)} 40.00%{transform:none} 41.67%{transform:translateY(-3%)} 43.33%{transform:none} 45.00%{transform:translateY(-3%)} 46.67%{transform:none} 48.33%{transform:translateY(-3%)} 50.00%{transform:none} 51.67%{transform:translateY(-3%)} 53.33%{transform:none} 55.00%{transform:translateY(-3%)} 56.67%{transform:none} 68.00%{transform:none} 69.67%,72.00%{transform:translateY(-4%)} 73.67%,100.00%{transform:none}}
+@keyframes mcb-vivoPico{0.00%,24.00%{opacity:0} 24.33%{opacity:1} 25.83%{opacity:0} 27.00%{opacity:1} 28.50%{opacity:0} 29.67%{opacity:1} 31.17%{opacity:0} 32.33%{opacity:1} 33.83%{opacity:0} 35.00%{opacity:1} 36.50%{opacity:0} 37.67%{opacity:1} 39.17%{opacity:0} 40.33%{opacity:1} 41.83%{opacity:0} 43.00%{opacity:1} 44.50%{opacity:0} 45.67%{opacity:1} 47.17%{opacity:0} 48.33%{opacity:1} 49.83%{opacity:0} 51.00%{opacity:1} 52.50%{opacity:0} 53.67%{opacity:1} 55.17%{opacity:0} 56.33%,100.00%{opacity:0}}
+@keyframes mcb-vivoNota0{0.00%,23.33%{opacity:0;transform:translate(0,0) scale(.5) rotate(0)} 23.37%{opacity:0;transform:translate(0,0) scale(.5) rotate(0)} 24.67%{opacity:1} 28.67%{opacity:1} 30.00%{opacity:0;transform:translate(380%,-330%) scale(1.2) rotate(20deg)} 31.37%{opacity:0;transform:translate(0,0) scale(.5) rotate(0)} 32.67%{opacity:1} 36.67%{opacity:1} 38.00%{opacity:0;transform:translate(380%,-330%) scale(1.2) rotate(20deg)} 39.37%{opacity:0;transform:translate(0,0) scale(.5) rotate(0)} 40.67%{opacity:1} 44.67%{opacity:1} 46.00%{opacity:0;transform:translate(380%,-330%) scale(1.2) rotate(20deg)} 47.37%{opacity:0;transform:translate(0,0) scale(.5) rotate(0)} 48.67%{opacity:1} 52.67%{opacity:1} 54.00%{opacity:0;transform:translate(380%,-330%) scale(1.2) rotate(20deg)} 55.40%,100.00%{opacity:0;transform:translate(0,0) scale(.5)}}
+@keyframes mcb-vivoNota1{0.00%,25.33%{opacity:0;transform:translate(0,0) scale(.5) rotate(0)} 25.37%{opacity:0;transform:translate(0,0) scale(.5) rotate(0)} 26.67%{opacity:1} 30.67%{opacity:1} 32.00%{opacity:0;transform:translate(-420%,-360%) scale(1.2) rotate(-20deg)} 33.37%{opacity:0;transform:translate(0,0) scale(.5) rotate(0)} 34.67%{opacity:1} 38.67%{opacity:1} 40.00%{opacity:0;transform:translate(-420%,-360%) scale(1.2) rotate(-20deg)} 41.37%{opacity:0;transform:translate(0,0) scale(.5) rotate(0)} 42.67%{opacity:1} 46.67%{opacity:1} 48.00%{opacity:0;transform:translate(-420%,-360%) scale(1.2) rotate(-20deg)} 49.37%{opacity:0;transform:translate(0,0) scale(.5) rotate(0)} 50.67%{opacity:1} 54.67%{opacity:1} 56.00%{opacity:0;transform:translate(-420%,-360%) scale(1.2) rotate(-20deg)} 57.40%,100.00%{opacity:0;transform:translate(0,0) scale(.5)}}
+@keyframes mcb-vivoNota2{0.00%,27.33%{opacity:0;transform:translate(0,0) scale(.5) rotate(0)} 27.37%{opacity:0;transform:translate(0,0) scale(.5) rotate(0)} 28.67%{opacity:1} 32.67%{opacity:1} 34.00%{opacity:0;transform:translate(460%,-390%) scale(1.2) rotate(20deg)} 35.37%{opacity:0;transform:translate(0,0) scale(.5) rotate(0)} 36.67%{opacity:1} 40.67%{opacity:1} 42.00%{opacity:0;transform:translate(460%,-390%) scale(1.2) rotate(20deg)} 43.37%{opacity:0;transform:translate(0,0) scale(.5) rotate(0)} 44.67%{opacity:1} 48.67%{opacity:1} 50.00%{opacity:0;transform:translate(460%,-390%) scale(1.2) rotate(20deg)} 51.40%,100.00%{opacity:0;transform:translate(0,0) scale(.5)}}
+@keyframes mcb-vivoNota3{0.00%,29.33%{opacity:0;transform:translate(0,0) scale(.5) rotate(0)} 29.37%{opacity:0;transform:translate(0,0) scale(.5) rotate(0)} 30.67%{opacity:1} 34.67%{opacity:1} 36.00%{opacity:0;transform:translate(-500%,-420%) scale(1.2) rotate(-20deg)} 37.37%{opacity:0;transform:translate(0,0) scale(.5) rotate(0)} 38.67%{opacity:1} 42.67%{opacity:1} 44.00%{opacity:0;transform:translate(-500%,-420%) scale(1.2) rotate(-20deg)} 45.37%{opacity:0;transform:translate(0,0) scale(.5) rotate(0)} 46.67%{opacity:1} 50.67%{opacity:1} 52.00%{opacity:0;transform:translate(-500%,-420%) scale(1.2) rotate(-20deg)} 53.40%,100.00%{opacity:0;transform:translate(0,0) scale(.5)}}
+.mcb-vivo .mcb-r{animation:mcb-respirar 3s ease-in-out infinite;transform-origin:50% var(--base)}
+.mcb-vivo .mcb-j{animation:mcb-vivoCuerpo 30s ease-in-out infinite;transform-origin:50% var(--base)}
+.mcb-vivo .mcb-gafas{position:absolute;inset:0;pointer-events:none;transform-origin:50% 33.2%;animation:mcb-vivoGafas 30s cubic-bezier(.3,.8,.4,1) infinite}
+.mcb-vivo .mcb-gafas svg{width:100%;height:100%;display:block}
+.mcb-vivo .mcb-brillo{position:absolute;left:66%;top:16%;font-size:clamp(10px,4vw,34px);color:#fff7c2;text-shadow:0 0 8px #f6c21c;opacity:0;animation:mcb-vivoBrillo 30s ease-out infinite}
+.mcb-vivo .mcb-l-cejas{animation:mcb-vivoCejas 30s ease-in-out infinite}
+.mcb-vivo .mcb-l-alaI{animation:mcb-vivoAlaI 30s ease-in-out infinite}
+.mcb-vivo .mcb-l-alaD{animation:mcb-vivoAlaD 30s ease-in-out infinite}
+.mcb-vivo .mcb-k-mouth{animation:mcb-vivoPico 30s steps(1,end) infinite;opacity:0}
+.mcb-oficial .mcb-k-mouth{display:none}
+.mcb-nota{position:absolute;left:46%;top:44%;width:9%;opacity:0;pointer-events:none;filter:drop-shadow(0 0 6px rgba(246,194,28,.85))}
+.mcb-nota svg{display:block;width:100%;height:auto;fill:#fff}
+.mcb-nota.mcb-n1 svg,.mcb-nota.mcb-n3 svg{fill:#c6e520}
+.mcb-vivo{--sd:3s}
+.mcb-vivo .mcb-n0{animation:mcb-vivoNota0 30s ease-out infinite}
+.mcb-vivo .mcb-n1{animation:mcb-vivoNota1 30s ease-out infinite}
+.mcb-vivo .mcb-n2{animation:mcb-vivoNota2 30s ease-out infinite}
+.mcb-vivo .mcb-n3{animation:mcb-vivoNota3 30s ease-out infinite}
+
+/* principal (inicio) */
+.mcb-oficial .mcb-r{animation:mcb-respirar 3s ease-in-out infinite;transform-origin:50% var(--base)}
+.mcb-oficial .mcb-j{animation:mcb-saltito 6s ease-in-out infinite}
+@keyframes mcb-saltito{0%,76%,96%,100%{transform:none}80%{transform:scale(1.04,.96)}85%{transform:translateY(-5%) scale(.98,1.03)}90%{transform:translateY(0) scale(1.02,.98)}}
+.mcb-oficial .mcb-l-alaI{animation:mcb-holaI 6s ease-in-out infinite}
+.mcb-oficial .mcb-l-alaD{animation:mcb-holaD 6s ease-in-out infinite}
+@keyframes mcb-holaI{0%,78%,96%,100%{transform:skewY(0)}82%,90%{transform:skewY(14deg) scaleX(.96)}86%,94%{transform:skewY(-4deg)}}
+@keyframes mcb-holaD{0%,78%,96%,100%{transform:skewY(0)}82%,90%{transform:skewY(-14deg) scaleX(.96)}86%,94%{transform:skewY(4deg)}}
+.mcb-oficial .mcb-l-cejas{animation:mcb-cejas 6s ease-in-out infinite}
+.mcb-oficial{--sd:3s}
+
+/* saludando */
+.mcb-saludando .mcb-r{animation:mcb-respirar 3s ease-in-out infinite}
+.mcb-saludando .mcb-l-alaD{animation:mcb-saludo 2.4s ease-in-out infinite}
+@keyframes mcb-saludo{0%,62%,100%{transform:skewY(0) scaleX(1)}10%,34%{transform:skewY(-14deg) scaleX(1.05)}22%,46%{transform:skewY(8deg) scaleX(.95)}}
+.mcb-saludando .mcb-l-alaI{animation:mcb-mecer 3s ease-in-out infinite}
+@keyframes mcb-mecer{0%,100%{transform:skewY(0)}50%{transform:skewY(4deg)}}
+.mcb-saludando .mcb-l-cejas{animation:mcb-cejas 2.4s ease-in-out infinite}
+.mcb-saludando .mcb-r{transform-origin:50% var(--base)}
+
+/* logro */
+.mcb-logro .mcb-j{animation:mcb-salto 1.1s cubic-bezier(.3,.7,.4,1) infinite}
+@keyframes mcb-salto{0%,100%{transform:translateY(0) scale(1.04,.96)}12%{transform:translateY(0) scale(.97,1.04)}45%{transform:translateY(-10%) scale(1,1)}80%{transform:translateY(0) scale(1.03,.97)}}
+.mcb-logro .mcb-l-alaI{animation:mcb-aleteoI .55s ease-in-out infinite alternate}
+.mcb-logro .mcb-l-alaD{animation:mcb-aleteoD .55s ease-in-out infinite alternate}
+@keyframes mcb-aleteoI{from{transform:skewY(-10deg) scaleX(1)}to{transform:skewY(18deg) scaleX(.95)}}
+@keyframes mcb-aleteoD{from{transform:skewY(10deg) scaleX(1)}to{transform:skewY(-18deg) scaleX(.95)}}
+.mcb-logro .mcb-k-star{animation:mcb-brillo 1.4s ease-in-out infinite}
+@keyframes mcb-brillo{0%,100%{transform:scale(.6) rotate(0);opacity:.5}50%{transform:scale(1.15) rotate(20deg);opacity:1}}
+.mcb-logro .mcb-k-feet{animation:mcb-colgar 1.1s ease-in-out infinite}
+@keyframes mcb-colgar{0%,20%,80%,100%{transform:rotate(0)}45%{transform:rotate(8deg)}}
+.mcb-logro .mcb-l-pataD{animation-name:colgarD}
+@keyframes mcb-colgarD{0%,20%,80%,100%{transform:rotate(0)}45%{transform:rotate(-8deg)}}
+.mcb-logro .mcb-l-cejas{animation:mcb-cejas 1.1s ease-in-out infinite}
+.mcb-logro{--sd:1.1s}
+
+/* estudiando */
+.mcb-estudiando .mcb-r{animation:mcb-leer 4s ease-in-out infinite;transform-origin:50% var(--base)}
+@keyframes mcb-leer{0%,100%{transform:rotate(-1.6deg)}50%{transform:rotate(1.6deg)}}
+.mcb-estudiando .mcb-l-cejas{animation:mcb-cejas 4s ease-in-out infinite}
+
+/* pensativo */
+.mcb-pensativo .mcb-r{animation:mcb-pensar 5s ease-in-out infinite;transform-origin:50% var(--base)}
+@keyframes mcb-pensar{0%,100%{transform:rotate(0)}40%,70%{transform:rotate(-2.5deg)}}
+.mcb-pensativo .mcb-l-alaD{animation:mcb-tamborilear 1.2s ease-in-out infinite}
+@keyframes mcb-tamborilear{0%,100%{transform:skewY(0) scaleX(1)}30%{transform:skewY(-6deg) scaleX(1.04)}60%{transform:skewY(2deg) scaleX(1)}}
+.mcb-pensativo .mcb-k-q{filter:brightness(0) invert(.93) drop-shadow(0 0 6px rgba(246,194,28,.6));animation:mcb-duda 2.5s ease-in-out infinite;transform-origin:30% 90%}
+@keyframes mcb-duda{0%,100%{transform:translateY(0) rotate(0) scale(1)}25%{transform:translateY(-8%) rotate(-10deg) scale(1.08)}50%{transform:translateY(0) rotate(6deg)}}
+.mcb-pensativo .mcb-l-cejas{animation:mcb-pensarCejas 5s ease-in-out infinite}
+@keyframes mcb-pensarCejas{0%,100%{transform:translateY(0) rotate(0)}40%,70%{transform:translateY(-3%) rotate(-2deg)}}
+
+/* caminando */
+.mcb-caminando .mcb-r{animation:mcb-paso .8s ease-in-out infinite;transform-origin:50% var(--base)}
+@keyframes mcb-paso{0%,50%,100%{transform:translateY(0) rotate(-1.5deg)}25%{transform:translateY(-2.2%) rotate(0)}75%{transform:translateY(-2.2%) rotate(1.5deg)}}
+.mcb-caminando .mcb-l-pataI{animation:mcb-pieI .8s ease-in-out infinite}
+.mcb-caminando .mcb-l-pataD{animation:mcb-pieD .8s ease-in-out infinite}
+@keyframes mcb-pieI{0%,50%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-18%) rotate(-10deg)}}
+@keyframes mcb-pieD{0%,50%,100%{transform:translateY(0) rotate(0)}75%{transform:translateY(-18%) rotate(10deg)}}
+.mcb-caminando .mcb-l-alaI{animation:mcb-brazoI .8s ease-in-out infinite}
+.mcb-caminando .mcb-l-alaD{animation:mcb-brazoD .8s ease-in-out infinite}
+@keyframes mcb-brazoI{0%,100%{transform:skewY(6deg)}50%{transform:skewY(-6deg)}}
+@keyframes mcb-brazoD{0%,100%{transform:skewY(6deg)}50%{transform:skewY(-6deg)}}
+.mcb-caminando{--sd:.4s}
+
+/* sorprendido */
+.mcb-sorprendido .mcb-j{animation:mcb-susto 2.2s ease-out infinite}
+@keyframes mcb-susto{0%,100%{transform:translateY(0) scale(1)}6%{transform:translateY(0) scale(1.05,.94)}14%{transform:translateY(-7%) scale(.97,1.05)}24%{transform:translateY(0) scale(1.03,.97)}30%{transform:scale(1)}}
+.mcb-sorprendido .mcb-l-alaI{animation:mcb-alboroto .16s linear infinite alternate}
+.mcb-sorprendido .mcb-l-alaD{animation:mcb-alborotoD .16s linear infinite alternate}
+@keyframes mcb-alboroto{from{transform:skewY(-8deg)}to{transform:skewY(10deg)}}
+@keyframes mcb-alborotoD{from{transform:skewY(8deg)}to{transform:skewY(-10deg)}}
+.mcb-sorprendido .mcb-l-cejas{animation:mcb-cejasArriba 2.2s ease-out infinite}
+@keyframes mcb-cejasArriba{0%,100%{transform:translateY(0)}10%,60%{transform:translateY(-7%)}}
+
+/* triste */
+.mcb-triste .mcb-r{animation:mcb-suspiro 4s ease-in-out infinite;transform-origin:50% var(--base)}
+@keyframes mcb-suspiro{0%,100%{transform:scale(1,1)}45%{transform:scale(1.01,1.03)}70%{transform:scale(1.015,.985)}}
+.mcb-triste .mcb-l-alaI{animation:mcb-tristeI 4s ease-in-out infinite}
+.mcb-triste .mcb-l-alaD{animation:mcb-tristeD 4s ease-in-out infinite}
+@keyframes mcb-tristeI{0%,100%{transform:skewY(0)}45%{transform:skewY(-5deg)}}
+@keyframes mcb-tristeD{0%,100%{transform:skewY(0)}45%{transform:skewY(5deg)}}
+@keyframes mcb-caidaI{0%,100%{transform:rotate(0)}45%{transform:rotate(6deg)}}
+@keyframes mcb-caidaD{0%,100%{transform:rotate(0)}45%{transform:rotate(-6deg)}}
+.mcb-triste .mcb-k-tear{animation:mcb-lagrima 2.6s ease-in infinite}
+@keyframes mcb-lagrima{0%{transform:translateY(-30%) scale(.4);opacity:0}15%{transform:translateY(0) scale(1);opacity:1}55%{transform:translateY(0)}90%{transform:translateY(220%);opacity:1}100%{transform:translateY(260%);opacity:0}}
+.mcb-triste .mcb-l-cejas{animation:mcb-cejasTriste 4s ease-in-out infinite}
+@keyframes mcb-cejasTriste{0%,100%{transform:translateY(0)}45%{transform:translateY(2.5%)}}
+
+/* enojado */
+.mcb-enojado .mcb-j{animation:mcb-temblor 1.6s linear infinite}
+@keyframes mcb-temblor{0%,55%,100%{transform:translateX(0)}60%,70%,80%,90%{transform:translateX(-1.4%)}65%,75%,85%,95%{transform:translateX(1.4%)}}
+.mcb-enojado .mcb-l-pataD{animation:mcb-pisoton 1.6s ease-in infinite}
+@keyframes mcb-pisoton{0%,10%,45%,100%{transform:translateY(0) rotate(0)}25%,35%{transform:translateY(-16%) rotate(-12deg)}}
+.mcb-enojado .mcb-r{animation:mcb-inflar 1.6s ease-in-out infinite;transform-origin:50% var(--base)}
+@keyframes mcb-inflar{0%,100%{transform:scale(1)}50%{transform:scale(1.03,1.02)}}
+.mcb-enojado .mcb-l-cejas{animation:mcb-cejasEnojo 1.6s ease-in-out infinite}
+@keyframes mcb-cejasEnojo{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(4%) scaleY(.94)}}
+.mcb-enojado .mcb-lid{animation-duration:3.2s}
+
+/* dormido */
+.mcb-dormido .mcb-r{animation:mcb-dormir 3.8s ease-in-out infinite;transform-origin:50% var(--base)}
+@keyframes mcb-dormir{0%,100%{transform:scale(1,1)}50%{transform:scale(1.03,1.04)}}
+.mcb-dormido .mcb-l-alaI{animation:mcb-tristeI 3.8s ease-in-out infinite}
+.mcb-dormido .mcb-l-alaD{animation:mcb-tristeD 3.8s ease-in-out infinite}
+.mcb-dormido .mcb-k-z{animation:mcb-zeta 3.8s ease-out infinite;opacity:0}
+.mcb-dormido .mcb-l-z1{animation-delay:.6s}.mcb-dormido .mcb-l-z2{animation-delay:1.2s}
+@keyframes mcb-zeta{0%{transform:translate(-30%,40%) scale(.5);opacity:0}20%{opacity:1}70%{opacity:1}100%{transform:translate(40%,-80%) scale(1.15);opacity:0}}
+.mcb-dormido{--sd:3.8s}
+
+.mcb{position:relative}
+.mcb img{pointer-events:none;user-select:none;-webkit-user-drag:none}
+@media (prefers-reduced-motion:reduce){.mcb *{animation-play-state:paused!important}}
+.mcb{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mcb.mcb-toque{animation:mcb-toque .28s ease-out}
+@keyframes mcb-toque{0%{scale:1 1}35%{scale:1.06 .92}70%{scale:.97 1.04}100%{scale:1 1}}
