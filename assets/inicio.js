@@ -242,7 +242,7 @@
     } else if (A) html += '<a class="fecha f-vacia" href="perfil.html#agenda"><span class="fi"><svg class="ic"><use href="#i-agenda"/></svg></span><span class="ft"><b class="disp">Mi agenda</b><small>Agrega tus fechas</small></span></a>';
     $('fechas').innerHTML = html;
     var ev = $('fechas').querySelector('[data-ev]');
-    if (ev) ev.addEventListener('click', function (e) { e.preventDefault(); decir(avisoEvento()); });
+    if (ev) ev.addEventListener('click', function (e) { e.preventDefault(); decir(avisoEvento(), 6500); });
     avisos();
   }
   function cargarAgenda() {
@@ -252,45 +252,76 @@
   }
   if (window.MCAgenda) MCAgenda.alCambiar(function (l) { fechas = MCAgenda.proximas(l); pintarFechas(); });
 
-  /* ---------- El búho: saluda y cada 7 s recuerda la meta, tus fechas y el evento ---------- */
-  var globo = $('globo'), lista = [], turno = 0, racha = null;
-  MCBuhoVivo.toques($('buho'), { pose: 'vivo', globo: globo });
-  function libre() { return !/Jiji|basta/.test(globo.textContent); }
-  function decir(h) { if (h && libre()) globo.innerHTML = h; }
+  /* ---------- El búho: su globo sale solo por momentos ----------
+     Saluda al entrar, recuerda tus fechas, el evento y la meta (cada aviso una
+     vez por visita, uno cada 90 s) y contesta cuando lo tocas. Se va solo. */
+  var globo = $('globo'), avisosCola = [], vistos = {}, racha = null, metaAntes = null, tGlobo = null, ocupadoGlobo = false, toqueN = 0;
+  var GLOBO_ICO = { fecha: 'agenda', meta: 'fuego', feliz: 'corazon' };
+  // fijo: el búho está reaccionando a los toques y nada lo interrumpe
+  function decir(m, ms, fijo) {
+    if (!m || (ocupadoGlobo && !fijo)) return;
+    ms = ms || 5500;
+    if (fijo) { ocupadoGlobo = true; setTimeout(function () { ocupadoGlobo = false; }, ms); }
+    if (typeof m === 'string') m = { t: m };
+    var ico = m.ico ? '<span class="gi">' + m.ico + '</span>' : GLOBO_ICO[m.tipo] ? '<span class="gi"><svg class="ic"><use href="#i-' + GLOBO_ICO[m.tipo] + '"/></svg></span>' : '';
+    globo.className = 'globo' + (m.tipo ? ' g-' + m.tipo : '');
+    globo.innerHTML = ico + '<span class="gt">' + (m.k ? '<small class="disp">' + m.k + '</small>' : '') + m.t + '</span>';
+    void globo.offsetWidth; globo.classList.add('ver');
+    clearTimeout(tGlobo); tGlobo = setTimeout(callar, ms);
+  }
+  function callar() { clearTimeout(tGlobo); globo.classList.remove('ver'); }
+  globo.addEventListener('click', callar);
+  MCBuhoVivo.toques($('buho'), {
+    pose: 'vivo',
+    decir: function (t, tono, ms) { decir({ t: t, tipo: tono }, ms, true); },
+    alTocar: function () { decir(frasesToque()[toqueN++ % frasesToque().length], 4500); }
+  });
+  function saludo() {
+    var h = new Date().getHours(), s = h < 12 ? '¡Buenos días' : h < 19 ? '¡Buenas tardes' : '¡Buenas noches';
+    return { t: s + (nombreAlumno ? ', <em>' + esc(nombreAlumno) + '</em>' : '') + '! ¿Qué estudiamos hoy?' };
+  }
   function avisoMeta() {
-    if (!racha) return '';
+    if (!racha) return null;
     var meta = racha.meta || 20, hoy = Math.min(racha.hoy || 0, meta);
-    if (racha.cumplido_hoy) return '¡Meta de hoy <em>cumplida</em>! Eres una máquina';
-    if (!hoy) return '¿Empezamos? Tu meta de hoy es <em>' + meta + ' preguntas</em>';
-    return '¡Vas <em>' + hoy + ' de ' + meta + '</em> hoy! Tú puedes';
+    if (racha.cumplido_hoy) return { tipo: 'meta', k: 'Meta del día', t: '¡Meta <em>cumplida</em>! Eres una máquina' };
+    if (!hoy) return { tipo: 'meta', k: 'Meta del día', t: '¿Empezamos? Hoy son <em>' + meta + ' preguntas</em>' };
+    return { tipo: 'meta', k: 'Meta del día', t: '¡Vas <em>' + hoy + ' de ' + meta + '</em>! Tú puedes' };
   }
   function avisoEvento() {
-    if (!evento) return '';
-    return evento.dias == null ? '¡Es semana de <em>' + esc(evento.nombre) + '</em>! ' + evento.emoji
+    if (!evento) return null;
+    return { tipo: 'evento', ico: evento.ico, k: 'Evento', t: evento.dias == null ? '¡Es semana de <em>' + esc(evento.nombre) + '</em>! ' + evento.emoji
       : evento.dias <= 0 ? '¡Hoy es el último día de <em>' + esc(evento.nombre) + '</em>! ' + evento.emoji
-      : '¡' + esc(evento.nombre) + ' termina en <em>' + evento.dias + (evento.dias === 1 ? ' día' : ' días') + '</em>! ' + evento.emoji;
+      : '¡' + esc(evento.nombre) + ' termina en <em>' + evento.dias + (evento.dias === 1 ? ' día' : ' días') + '</em>! ' + evento.emoji };
+  }
+  function avisosFechas() {
+    var A = window.MCAgenda;
+    if (!A) return [];
+    return fechas.filter(function (e) { return A.dias(e.fecha) <= 7; }).slice(0, 3).map(function (e) {
+      var d = A.dias(e.fecha), k = A.TIPOS[e.tipo] || A.TIPOS.otro;
+      return { id: 'f' + e.fecha + (e.titulo || ''), tipo: 'fecha', k: d === 0 ? 'Hoy' : d === 1 ? 'Mañana' : 'En ' + d + ' días',
+        t: '<em>' + esc(e.titulo || k.n) + '</em>' + (e.hora ? ' a las ' + esc(A.hora12(e.hora)) : '') + (d <= 1 ? '. ¡Tú puedes!' : '') };
+    });
+  }
+  function frasesToque() {
+    var l = [saludo()];
+    l = l.concat(avisosFechas().slice(0, 1));
+    var m = avisoMeta(); if (m && !racha.cumplido_hoy) l.push(m);
+    return l.concat([{ t: '¿Un repasito de <em>5 minutos</em>? Yo te acompaño' }, { t: 'Tócame 3 veces rápido… <em>si te atreves</em>' }]);
   }
   function avisos() {
-    var A = window.MCAgenda, l = [];
-    var hola = '¡Hola' + (nombreAlumno ? ', <em>' + esc(nombreAlumno) + '</em>' : '') + '! ¿Qué estudiamos hoy?';
-    var meta = avisoMeta();
-    l.push(hola);
-    if (A) fechas.filter(function (e) { return A.dias(e.fecha) <= 7; }).slice(0, 3).forEach(function (e) {
-      var d = A.dias(e.fecha), k = A.TIPOS[e.tipo] || A.TIPOS.otro;
-      var cuando = d === 0 ? '¡Hoy' : d === 1 ? '¡Mañana' : '¡En ' + d + ' días';
-      l.push(cuando + ' tienes <em>' + esc(e.titulo || k.n) + '</em>' + (e.hora ? ' a las ' + esc(A.hora12(e.hora)) : '') + '!');
-    });
-    if (evento) l.push(avisoEvento());
-    // La meta va entre aviso y aviso
-    lista = [];
-    l.forEach(function (x, i) { lista.push(x); if (meta && (i < l.length - 1 || l.length === 1)) lista.push(meta); });
-    if (turno === 0 && libre()) globo.innerHTML = lista[0];
+    var ev = avisoEvento(), m = avisoMeta();
+    avisosCola = avisosFechas().concat(ev ? [Object.assign({ id: 'ev' }, ev)] : [], m && !racha.cumplido_hoy ? [Object.assign({ id: 'meta' }, m)] : [])
+      .filter(function (x) { return !vistos[x.id]; });
   }
-  setInterval(function () {
-    if (!libre() || lista.length < 2) return;
-    turno = (turno + 1) % lista.length;
-    globo.innerHTML = lista[turno];
-  }, 7000);
+  function siguienteAviso() {
+    if (document.hidden || globo.classList.contains('ver')) return;
+    var x = avisosCola.shift();
+    if (x) { vistos[x.id] = 1; decir(x, 6500); }
+  }
+  // Al entrar: saludo, y después el aviso más importante
+  setTimeout(function () { decir(saludo(), 3800); }, 900);
+  setTimeout(siguienteAviso, 6200);
+  setInterval(siguienteAviso, 90000);
 
   /* ---------- Meta del día (assets/racha.js la carga auth.js) ---------- */
   function pintarRacha(r) {
@@ -299,6 +330,9 @@
     $('salRachaBarra').style.width = (hoy / meta * 100) + '%';
     $('salRachaHoy').textContent = r && r.cumplido_hoy ? '¡Cumplida!' : hoy + '/' + meta;
     $('salRacha').classList.toggle('on', !!(r && r.cumplido_hoy));
+    // Recién cumplió la meta: el búho lo celebra
+    if (metaAntes === false && r && r.cumplido_hoy) decir({ tipo: 'feliz', k: 'Meta del día', t: '¡Meta <em>cumplida</em>! Eres una máquina' }, 6000);
+    metaAntes = !!(r && r.cumplido_hoy);
     avisos();
   }
   (function esperarRacha(i) {

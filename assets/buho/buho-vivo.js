@@ -4,8 +4,9 @@
    - MCBuhoVivo.crear(pose): el búho armado por capas. Poses: vivo (30 s en
      bucle: lentes, canta, baila), oficial, saludando, logro, estudiando,
      pensativo, caminando, sorprendido, triste, enojado, dormido.
-   - MCBuhoVivo.toques(escena, {pose, globo}): pone el búho en la escena;
-     3 toques lo alegran y 7 seguidos lo molestan (con globo y sonido).
+   - MCBuhoVivo.toques(escena, {pose, decir, alTocar}): pone el búho en la
+     escena; 1 o 2 toques llaman a alTocar, 3 lo alegran y 7 seguidos lo
+     molestan (con sonido y decir(texto, tono, ms) para su globo).
    ========================================================= */
 (function () {
   if (window.MCBuhoVivo) return;
@@ -70,7 +71,7 @@
   // Toques: 3 lo alegran, 7 seguidos (en 2,5 s) lo molestan
   function toques(escena, o) {
     o = o || {};
-    var pose = o.pose || 'vivo', globo = o.globo, taps = [], timer = null, ocupado = false;
+    var pose = o.pose || 'vivo', decir = o.decir || function () {}, taps = [], timer = null, ocupado = false;
     var sonido = o.sonido !== false;
     function poner(p) { var v = escena.querySelector('.mcb'); if (v) v.remove(); escena.append(crear(p)); }
     function tocar(k) {
@@ -80,12 +81,10 @@
     function reaccion(feliz) {
       ocupado = true; taps = []; clearTimeout(timer);
       poner(feliz ? 'logro' : 'enojado');
-      var antes = globo && globo.innerHTML;
-      if (globo) { globo.textContent = feliz ? '¡Jiji, me haces cosquillas!' : '¡Oye, ya basta!'; globo.classList.toggle('molesto', !feliz); }
+      decir(feliz ? '¡Jiji, me haces cosquillas!' : '¡Oye, ya basta!', feliz ? 'feliz' : 'molesto', feliz ? 2800 : 3400);
       tocar(feliz ? 'risa' : 'enojo');
       setTimeout(function () {
         ocupado = false; poner(pose);
-        if (globo) { globo.innerHTML = antes; globo.classList.remove('molesto'); }
       }, feliz ? 2800 : 3400);
     }
     poner(pose);
@@ -95,7 +94,7 @@
       var now = performance.now(); taps = taps.filter(function (x) { return now - x < 2500; }); taps.push(now);
       clearTimeout(timer);
       if (taps.length >= 7) return reaccion(false);
-      timer = setTimeout(function () { if (taps.length >= 3) reaccion(true); taps = []; }, 550);
+      timer = setTimeout(function () { if (taps.length >= 3) reaccion(true); else if (o.alTocar) o.alTocar(); taps = []; }, 550);
     });
     return { sonido: function (v) { sonido = v; } };
   }
