@@ -465,15 +465,14 @@
     return '<a class="curso ' + (cls || '') + '"' + (area ? ' data-area="' + esc(area) + '"' : '') + ' href="' + esc(href) + '"><span class="ic">' + ic + '</span><span class="tx"><b>' + esc(nombre) + '</b>' +
       (sub ? '<small>' + esc(sub) + '</small>' : '') + '</span>' + CHEV + '</a>';
   }
-  // En PC cada área es una tarjeta grande con sus cursos a la mano
-  var enPC = window.matchMedia('(min-width: 901px)');
-  function pintarCursosPC() {
+  // "Mis cursos" es una pantalla propia: cada área es una tarjeta grande con sus cursos a la mano
+  function pintarAreas() {
     // Con la copia guardada se arma al instante; si no hay, la lista espera oculta para no verse chica y luego crecer
-    if (cursosGuardados) return armarCursosPC(cursosGuardados);
+    if (cursosGuardados) return armarAreas(cursosGuardados);
     hLista.style.visibility = 'hidden';
-    cursosJson.then(armarCursosPC, function () {}).then(function () { hLista.style.visibility = ''; });
+    cursosJson.then(armarAreas, function () {}).then(function () { hLista.style.visibility = ''; });
   }
-  function armarCursosPC(d) {
+  function armarAreas(d) {
     Array.prototype.forEach.call(hLista.querySelectorAll('a.curso[data-area]'), function (a) {
       var area = a.getAttribute('data-area');
       var cs = (d.cursos || []).filter(function (c) { return c.area === area && !c.oculto; }).sort(function (x, y) { return (x.orden || 0) - (y.orden || 0); });
@@ -493,7 +492,7 @@
     if (cual === 'cursos') {
       hTit.textContent = 'Mis cursos';
       hLista.innerHTML = $('tplAreas').innerHTML;
-      if (enPC.matches) { pintarCursosPC(); hFondo.classList.add('full'); document.body.classList.add('en-cursos'); }
+      pintarAreas(); hFondo.classList.add('full'); document.body.classList.add('en-cursos');
     } else if (cual === 'examenes') {
       hTit.textContent = 'Exámenes de admisión';
       hLista.innerHTML = filaHoja('examenes/ordinario/index.html', ICO_EX, 'Ordinario', 'Exámenes reales de la UNJFSC por año', 'c-azul') +
