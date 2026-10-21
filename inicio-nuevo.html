@@ -526,6 +526,30 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
 .logo .cls-1 { fill: #c5f209; }
 .logo .cls-2 { fill: var(--texto); }
 :root[data-tema="claro"] .logo .cls-1 { fill: var(--lima-tx); }
+.col-izq { display: grid; gap: 22px; min-width: 0; align-content: start; }
+.fila1 { align-items: start; }
+.escena { min-height: 0; aspect-ratio: 1.08; }
+.escena .buho { width: 32%; bottom: 25%; }
+.accesos { gap: 8px; }
+.acceso { width: 62px; height: 62px; }
+.acceso svg { font-size: 23px; }
+.acceso span { font-size: 10px; }
+.plat { left: 33%; right: 33%; }
+.halo { width: 40%; }
+.fechas { width: 31%; }
+/* Nombre y nivel siempre legibles, sobre cualquier fondo */
+.perfil > span:last-child { background: rgba(255, 255, 255, .86); color: #1A1626; padding: 5px 10px; backdrop-filter: blur(4px); clip-path: polygon(0 0, 100% 0, 92% 100%, 0 100%); padding-right: 16px; }
+.perfil > span:last-child small { color: #5f7000; }
+@media (max-width: 900px) {
+  .col-izq { display: contents; }
+  .cursos-sec { order: 3; }
+  .fila1 > div:last-child { order: 2; }
+  .escena { aspect-ratio: .98; }
+  .escena .buho { width: 40%; bottom: 25%; }
+  .plat { left: 22%; right: 22%; }
+  .halo { width: 66%; }
+  .fechas { width: 32%; }
+}
 @media (prefers-reduced-motion: reduce) { .pill *, .corona, .acceso.punto::after { animation: none !important; } }
 
 </style>
@@ -582,6 +606,7 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
     </header>
 
     <div class="fila1">
+      <div class="col-izq">
       <section class="escena" id="escena" aria-label="Tu búho">
         <div class="nubes" aria-hidden="true"><i></i><i></i><i></i></div>
         <div class="halo" aria-hidden="true"></div>
@@ -602,6 +627,16 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
         </nav>
         <a class="rango" href="#"><span class="em" id="rangoEm"></span><b class="disp">Esmeralda</b><span><small>1520 XP<br>para Amatista</small><span class="bar"><i></i></span></span></a>
       </section>
+      <section class="sec cursos-sec">
+        <div class="sec-cab"><h2 class="tit">Cursos populares</h2></div>
+        <div class="jugado" style="padding-top:6px">
+          <a class="pop" href="raz-verbal/" style="--ac:var(--a-com);--ico:url(assets/icons/raz-verbal.svg)"><span class="pop-pos">#1</span><span class="pop-ico"><i></i></span><span class="pop-txt"><b>Razonamiento Verbal</b><small>Comunicación</small></span></a>
+          <a class="pop" href="algebra/" style="--ac:var(--a-mat);--ico:url(assets/icons/algebra.svg)"><span class="pop-pos">#2</span><span class="pop-ico"><i></i></span><span class="pop-txt"><b>Álgebra</b><small>Matemática</small></span></a>
+          <a class="pop" href="literatura/" style="--ac:var(--a-com);--ico:url(assets/icons/literatura.svg)"><span class="pop-pos">#3</span><span class="pop-ico"><i></i></span><span class="pop-txt"><b>Literatura</b><small>Comunicación</small></span></a>
+          <a class="pop" href="anatomia/" style="--ac:var(--a-cyt);--ico:url(assets/icons/anatomia.svg)"><span class="pop-pos">#4</span><span class="pop-ico"><i></i></span><span class="pop-txt"><b>Anatomía</b><small>Ciencia y Tecnología</small></span></a>
+        </div>
+      </section>
+      </div>
 
       <div style="display:grid;gap:22px;min-width:0">
         <div>
@@ -624,15 +659,6 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
     </div>
 
     <div class="fila2">
-      <section class="sec">
-        <div class="sec-cab"><h2 class="tit">Cursos populares</h2></div>
-        <div class="jugado" style="padding-top:6px">
-          <a class="pop" href="raz-verbal/" style="--ac:var(--a-com);--ico:url(assets/icons/raz-verbal.svg)"><span class="pop-pos">#1</span><span class="pop-ico"><i></i></span><span class="pop-txt"><b>Razonamiento Verbal</b><small>Comunicación</small></span></a>
-          <a class="pop" href="algebra/" style="--ac:var(--a-mat);--ico:url(assets/icons/algebra.svg)"><span class="pop-pos">#2</span><span class="pop-ico"><i></i></span><span class="pop-txt"><b>Álgebra</b><small>Matemática</small></span></a>
-          <a class="pop" href="literatura/" style="--ac:var(--a-com);--ico:url(assets/icons/literatura.svg)"><span class="pop-pos">#3</span><span class="pop-ico"><i></i></span><span class="pop-txt"><b>Literatura</b><small>Comunicación</small></span></a>
-          <a class="pop" href="anatomia/" style="--ac:var(--a-cyt);--ico:url(assets/icons/anatomia.svg)"><span class="pop-pos">#4</span><span class="pop-ico"><i></i></span><span class="pop-txt"><b>Anatomía</b><small>Ciencia y Tecnología</small></span></a>
-        </div>
-      </section>
 
       <section class="sec estilo-sec">
         <div class="sec-cab"><h2 class="tit">Tu estilo</h2><a class="disp" href="#">Colección ›</a></div>
