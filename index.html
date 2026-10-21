@@ -70,8 +70,18 @@
   .app-txt svg { width: 15px; height: 15px; vertical-align: -2px; fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
   .app-btn { flex-shrink: 0; font: inherit; font-weight: 800; font-size: 13px; background: var(--accent); color: #050505; border: 0; border-radius: 12px; padding: 10px 16px; cursor: pointer; }
   .app-x { position: absolute; top: 10px; right: 10px; background: none; border: 0; color: var(--text-faint); font-size: 16px; cursor: pointer; padding: 6px; line-height: 1; }
-  @media (max-width: 520px) { .app-aviso { padding-right: 16px; } .app-txt { padding-right: 26px; } .app-btn { flex: 1 1 100%; padding: 12px; } }
   .app-aviso[data-modo="iphone"] .solo-boton, .app-aviso[data-modo="boton"] .solo-iphone { display: none; }
+  /* Instalar la app: tarjeta debajo del Top de la semana (en el menú en PC; en celular, debajo del top) */
+  .app-aviso { display: grid; grid-template-columns: 58px minmax(0, 1fr); align-items: center; gap: 12px 14px; margin: 0; padding: 16px 16px 18px; border: 1px solid var(--borde); border-bottom: 4px solid var(--lima-tx, var(--accent)); border-radius: 20px; background: var(--tarjeta); box-shadow: var(--sombra-tarjeta); }
+  .lado .app-aviso { margin: 0 18px; }
+  .solo-cel .app-aviso { margin-top: 14px; }
+  .app-aviso img { width: 58px; height: 58px; border-radius: 15px; box-shadow: 0 4px 0 rgba(0, 0, 0, .25); }
+  .app-txt { flex: none; padding-right: 18px; font-size: 13px; font-weight: 700; color: var(--suave, var(--text-dim)); line-height: 1.35; }
+  .app-txt > b { color: var(--texto, var(--text)); font: 900 17px/1.15 var(--cuerpo, Nunito, sans-serif); }
+  .app-btn { grid-column: 1 / -1; width: 100%; padding: 12px; border-radius: 14px; font: 900 15px/1 var(--cuerpo, Nunito, sans-serif); text-transform: uppercase; letter-spacing: .04em; background: var(--lima, var(--accent)); color: var(--sobre-lima, #050505); box-shadow: 0 4px 0 #8fa300; }
+  .app-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #8fa300; }
+  .app-x { top: 8px; right: 8px; }
+  .app-aviso[data-modo="iphone"] .app-txt { padding-right: 18px; }
   /* Apoya el proyecto: cajón morado de Yape, taza con vapor y QR que flota */
   .coffee {
     margin: 36px 0 60px; position: relative; overflow: hidden;
@@ -931,10 +941,6 @@ button.juego { width: 100%; text-align: left; font: inherit; color: #fff; }
 @media (max-width: 900px) { .sal-grupo { margin-left: 0; } }
 
 /* Instalar la app */
-.app-aviso { margin: 0; border-radius: 0; color: var(--texto); border-color: var(--lima-tx); background: color-mix(in srgb, var(--lima) 10%, var(--tarjeta)); }
-.app-txt { color: var(--suave); }
-.app-txt > b { color: var(--texto); }
-.app-btn { border-radius: 0; font-family: var(--cuerpo); font-weight: 900; }
 
 /* Apoya el proyecto y pie de página con la paleta del inicio */
 .coffee { margin: 0; border-radius: 0; background: radial-gradient(120% 90% at 100% 0, rgba(206, 130, 255, .16), transparent 60%), var(--tarjeta); scroll-margin-top: 16px; }
@@ -1130,7 +1136,16 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
       <div class="top-cab disp">Top de la semana <a href="perfil.html#ranking">Ver todo ›</a></div>
       <ol class="liga" id="topLado"></ol>
     </section>
-    <a class="apoya" href="#apoya"><b class="disp">Apoya el proyecto</b><small>Invítame un café por Yape</small></a>
+    <div class="app-aviso" id="appInstalar" hidden>
+      <img src="assets/app/buho-inca.webp" alt="" width="64" height="64">
+      <div class="app-txt">
+        <b>Instala la app</b>
+        <span class="solo-boton">Ábrela como app y repasa aunque no tengas internet.</span>
+        <span class="solo-iphone">En Safari toca <svg viewBox="0 0 24 24" aria-label="Compartir"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> <b>Compartir</b> y luego <b>Agregar a inicio</b>.</span>
+      </div>
+      <button type="button" class="app-btn solo-boton" data-app-instalar>Instalar</button>
+      <button type="button" class="app-x" data-app-cerrar aria-label="Cerrar">✕</button>
+    </div>
   </aside>
 
   <main class="cont">
@@ -1142,16 +1157,6 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
       </div>
     </header>
 
-<div class="app-aviso" id="appInstalar" hidden>
-      <img src="assets/app/icono-192.png" alt="" width="48" height="48">
-      <div class="app-txt">
-        <b>Instala Modo Cachimbo en tu celular</b>
-        <span class="solo-boton">Ábrelo como una app y repasa lo que ya viste aunque no tengas internet.</span>
-        <span class="solo-iphone">En Safari toca <svg viewBox="0 0 24 24" aria-label="Compartir"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> <b>Compartir</b> y luego <b>Agregar a inicio</b>.</span>
-      </div>
-      <button type="button" class="app-btn solo-boton" data-app-instalar>Instalar</button>
-      <button type="button" class="app-x" data-app-cerrar aria-label="Cerrar">✕</button>
-    </div>
 
     <div class="fila1">
       <div class="col-izq">
@@ -1218,17 +1223,6 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
       </section>
 
       <div class="sec" id="apoya">
-<section class="coffee">
-
-      <div class="coffee-text">
-        <span class="tag">Apoya el proyecto</span>
-        <h3>Invítame un café <svg class="taza" viewBox="0 0 48 48" aria-hidden="true"><g class="t-vapor" fill="none" stroke="#b9b9b9" stroke-width="2.4" stroke-linecap="round"><path d="M17 15c-2-3 2-5 0-8"/><path d="M24 15c-2-3 2-5 0-8"/><path d="M31 15c-2-3 2-5 0-8"/></g><g class="t-cuerpo"><path d="M36 22h3a6 6 0 0 1 0 12h-3" fill="none" stroke="#e9e3f0" stroke-width="3.4"/><path d="M9 19h29v14a10 10 0 0 1-10 10h-9A10 10 0 0 1 9 33z" fill="#F7F5FA"/><path d="M9 19h29v3.5H9z" fill="#6b3e1f"/><path d="M9.6 28h27.8v5H9.6z" fill="#CE82FF"/><path d="M13 31v2.5a6 6 0 0 0 4 5.6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".7"/><rect x="6" y="42" width="35" height="3.5" rx="1.75" fill="#8d5fb0"/></g></svg></h3>
-        <p>Este espacio es y seguirá siendo gratuito. Si te sirvió, puedes apoyar con lo que quieras vía Yape escaneando el código QR. Ayuda a que <b>Modo Cachimbo</b> siga creciendo.</p>
-      </div>
-      <div class="qr-box">
-        <img src="assets/qr-yape.webp" alt="QR Yape" width="480" height="437" loading="lazy" decoding="async">
-      </div>
-    </section>
 <footer>
       <div class="footer-row">
         <div class="footer-brand"><div class="dot"></div><span>@ProfeRojitas</span></div>
