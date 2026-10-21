@@ -129,9 +129,9 @@
       try { if (localStorage.getItem('unlocked_' + p) === '1' && prods.indexOf(p) < 0) prods.push(p); } catch (e) {}
     });
     prods = prods.filter(function (p, i) { return p && prods.indexOf(p) === i; });
-    $('salCodigo').lastChild.textContent = prods.length ? 'Otro código' : 'Activar código';
+    $('salCodigo').lastChild.textContent = $('salCodigo').title = prods.length ? 'Otro código' : 'Activar código';
     var viejo = caja.querySelector('.sal-grupo'); if (viejo) viejo.remove();
-    var g = document.createElement('a'); g.className = 'sal-grupo'; g.target = '_blank'; g.rel = 'noopener noreferrer';
+    var g = document.createElement('a'); g.className = 'sal-grupo'; g.title = 'Grupo de WhatsApp'; g.target = '_blank'; g.rel = 'noopener noreferrer';
     g.href = CFG.WHATSAPP_GRUPO || 'https://chat.whatsapp.com/HlKvyK6HLXP02iIgGvj1Iz?mode=gi_t';
     g.innerHTML = '<span class="wa"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.19 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35zM12.05 21.5h-.01a9.4 9.4 0 0 1-4.79-1.31l-.34-.2-3.56.93.95-3.47-.22-.36a9.4 9.4 0 0 1-1.44-5.02c0-5.2 4.23-9.43 9.44-9.43 2.52 0 4.89.98 6.67 2.77a9.37 9.37 0 0 1 2.76 6.67c0 5.2-4.24 9.43-9.44 9.43zm8.03-17.46A11.27 11.27 0 0 0 12.05.72C5.8.72.7 5.8.7 12.06c0 2 .52 3.95 1.52 5.67L.6 23.28l5.69-1.49a11.33 11.33 0 0 0 5.75 1.47h.01c6.26 0 11.35-5.09 11.35-11.35 0-3.03-1.18-5.88-3.33-8.02z"/></svg></span><span>Únete al grupo de <b>Modo Cachimbo</b></span>';
     caja.appendChild(g);
@@ -384,24 +384,30 @@
 
   /* ---------- Top de la semana (ranking_xp en supabase/16-corazones.sql) ---------- */
   var CLS = ['', 'oro', 'plata', 'bronce'];
-  function filaXp(x) {
+  function filaXp(x, extra) {
     var nom = x.yo ? 'Tú' : (x.apodo || 'Cachimbo');
-    return '<li class="' + (CLS[x.puesto] || '') + (x.yo ? ' tu' : '') + '"><span class="pos">' + puesto(x.puesto) + '</span>' + foto({ puesto: x.puesto, apodo: x.yo ? (nombreAlumno || x.apodo) : x.apodo }) +
+    return '<li class="' + (CLS[x.puesto] || '') + (x.yo ? ' tu' : '') + (extra ? ' extra' : '') + '"><span class="pos">' + puesto(x.puesto) + '</span>' + foto({ puesto: x.puesto, apodo: x.yo ? (nombreAlumno || x.apodo) : x.apodo }) +
       '<span class="quien"><b>' + esc(nom) + '</b></span>' + emblema(x.xp) + '<span class="xp">' + miles(x.xp) + ' <small>XP</small></span></li>';
   }
-  function listaXp(top, yo, n) {
+  // corto: solo el podio y tu fila a la vista; el resto se abre con "Ver top 10"
+  function listaXp(top, yo, n, corto) {
     var t = top.slice(0, n);
     if (!t.length) return '<li class="vacio">Aún nadie suma XP esta semana. ¡Sé el primero!</li>';
-    var html = t.map(filaXp).join('');
+    var html = t.map(function (x) { return filaXp(x, corto && x.puesto > 3 && !x.yo); }).join('');
     if (yo && !t.some(function (x) { return x.yo; })) html += '<li class="sep">···</li>' + filaXp({ puesto: yo.puesto, apodo: 'Tú', xp: yo.xp, yo: true });
     return html;
   }
+  $('topMas').addEventListener('click', function () {
+    var abierta = $('topCel').classList.toggle('abierta');
+    this.textContent = abierta ? 'Ver menos ▴' : 'Ver top 10 ▾';
+  });
   function cargarTop() {
     MCAuth.listo.then(function (c) { return c.rpc('ranking_xp'); }).then(function (r) {
       if (r.error) throw r.error;
       var d = r.data || {}, top = (d.top || []).slice().sort(function (a, b) { return a.puesto - b.puesto; });
-      $('topLado').innerHTML = listaXp(top, d.yo, 7);
-      $('topCel').innerHTML = listaXp(top, d.yo, 5);
+      $('topLado').innerHTML = listaXp(top, d.yo, 10);
+      $('topCel').innerHTML = listaXp(top, d.yo, 10, true);
+      $('topMas').hidden = !$('topCel').querySelector('.extra');
     }).catch(function () {
       $('topLado').innerHTML = $('topCel').innerHTML = '<li class="vacio">No se pudo cargar el top. Revisa tu conexión.</li>';
     });
@@ -456,6 +462,20 @@
       if (r.error) throw r.error;
       pintarSim(r.data || []);
     }).catch(function () { $('podio').innerHTML = '<p class="sim-vacio">No se pudo cargar el top. Revisa tu conexión.</p>'; });
+  }
+
+  /* ---------- "Activar código", grupo de WhatsApp e "Instala la app": debajo del Top de la semana
+     (en el menú en PC). En celular el código y el grupo van junto al saludo y la app debajo del top ---------- */
+  var appAviso = $('appInstalar'), accesos = $('salAccesos');
+  if (appAviso && accesos) {
+    var appMarca = document.createComment('app'), appCel = $('topCel').closest('.sec'), enCel = window.matchMedia('(max-width: 900px)');
+    appAviso.parentNode.insertBefore(appMarca, appAviso);
+    var ubicarApp = function () {
+      if (enCel.matches) { $('salNombre').after(accesos); appCel.appendChild(appAviso); }
+      else { appMarca.parentNode.insertBefore(accesos, appMarca); appMarca.parentNode.insertBefore(appAviso, appMarca); }
+    };
+    ubicarApp();
+    if (enCel.addEventListener) enCel.addEventListener('change', ubicarApp);
   }
 
   /* ---------- Hoja que sube desde abajo: cursos, exámenes y flashcards ---------- */

@@ -97,8 +97,11 @@
       if (!mapa[t.getAttribute('data-k')]) t.remove();
     });
     if (!lista.length) return;
+    var enInicio = !!document.getElementById('hojaFondo');
     Array.prototype.forEach.call(document.querySelectorAll('a[href]'), function (a) {
       if (a.closest('.mcn, .mcp, .barra, header, .mcu, [data-mc-auth], .back, .home-btn, .logo')) return;
+      // En el inicio no se marca nada (ocupa mucho): solo el rombo dentro de "Mis cursos"
+      if (enInicio && !a.closest('.hoja')) return;
       var k = rel(a.getAttribute('href'));
       if (k == null || !mapa[k] || k === aqui) return;
       var tag = document.createElement('span');
