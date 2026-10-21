@@ -842,8 +842,10 @@
     const cursos = o.cursos && o.cursos.length ? o.cursos : o.curso !== 'todos' ? [o.curso] : [];
     if (cursos.length === 1) return elegir(await poolDe(cursos[0], o.fuente, o.ciclo, o.temas), o.n);
     // Varios cursos (o todos): una pregunta de cada curso al azar, dando vueltas
-    const lista = cursos.length ? cursos : CURSOS.map(c => c.id);
-    const pools = (await Promise.all(lista.map(c => poolDe(c, o.fuente, o.ciclo, cursos.length ? o.temas : [])))).filter(p => p.length).map(barajar);
+    // Con "Todos los cursos" y temas marcados, solo entran los cursos de esos temas
+    const deTemas = (o.temas || []).map(k => k.split('|')[0]).filter((c, i, A) => NOMBRE[c] && A.indexOf(c) === i);
+    const lista = cursos.length ? cursos : deTemas.length ? deTemas : CURSOS.map(c => c.id);
+    const pools = (await Promise.all(lista.map(c => poolDe(c, o.fuente, o.ciclo, o.temas)))).filter(p => p.length).map(barajar);
     const orden = barajar(pools), out = [];
     while (out.length < o.n && orden.some(p => p.length)) orden.forEach(p => { if (out.length < o.n && p.length) out.push(p.pop()); });
     return barajar(out);
@@ -889,10 +891,10 @@
     }).join('');
   }
   function pintarTemas() {
-    const b = $('mtBtn'), L = TEMAS, elegidos = sel.temas.filter(k => L.some(t => t.k === k)), varios = sel.cursos.length > 1;
+    const b = $('mtBtn'), L = TEMAS, elegidos = sel.temas.filter(k => L.some(t => t.k === k)), varios = sel.cursos.length !== 1;
     sel.temas = elegidos;
-    b.disabled = !sel.cursos.length || !L.length;
-    b.firstChild.innerHTML = !sel.cursos.length ? 'Elige tus cursos primero' : !L.length ? 'Sin temas'
+    b.disabled = !L.length;
+    b.firstChild.innerHTML = !L.length ? (disponibles == null ? 'Buscando temas…' : 'Sin temas')
       : !elegidos.length ? 'Todos los temas' : elegidos.length === 1 ? esc(L.filter(t => t.k === elegidos[0])[0].nom) : '<b>' + elegidos.length + '</b> de ' + L.length + ' temas';
     if (b.disabled) { $('mtList').hidden = true; b.setAttribute('aria-expanded', 'false'); }
     $('mtList').innerHTML = '<button type="button" class="todos' + (!elegidos.length ? ' on' : '') + '" data-tema=""><span class="cb">' + (!elegidos.length ? IC.check : '') + '</span><span class="tx">Todos los temas</span><em>' + L.length + '</em></button>' +
@@ -910,6 +912,8 @@
   function contarTemas() {
     return TEMAS.reduce((s, t) => {
       const delCurso = sel.temas.some(k => k.indexOf(t.curso + '|') === 0);
+      // Con "Todos los cursos", un curso sin temas marcados no entra si hay otros temas marcados
+      if (!delCurso && !sel.cursos.length && sel.temas.length) return s;
       return s + (!delCurso || sel.temas.indexOf(t.k) >= 0 ? t.n : 0);
     }, 0);
   }
@@ -917,8 +921,8 @@
   async function actualizarFiltros() {
     const t = ++turno, todos = !sel.cursos.length;
     sel.curso = todos ? 'todos' : sel.cursos.length === 1 ? sel.cursos[0] : 'varios';
-    conteo = {};
-    pintarFuentes();
+    conteo = {}; TEMAS = []; disponibles = null;
+    pintarFuentes(); pintarTemas();
     $('filtroNota').textContent = 'Buscando preguntas…';
     const cursos = todos ? CURSOS.map(c => c.id) : sel.cursos.slice();
     const L = await Promise.all(cursos.map(c => Promise.all(fuentesPara(c, sel.fuente).map(f => ciclosDe(c, f)))));
@@ -930,13 +934,6 @@
     if (sel.ciclo !== 'todos' && !hay[sel.ciclo]) sel.ciclo = 'todos';
     $('selCiclo').innerHTML = '<option value="todos">Todos los ciclos</option>' + ids.map(id => '<option value="' + esc(id) + '"' + (id === sel.ciclo ? ' selected' : '') + '>' + esc(id) + '</option>').join('');
 
-    if (todos) {
-      TEMAS = []; disponibles = null;
-      pintarTemas(); pintarFuentes();
-      $('filtroNota').innerHTML = 'Preguntas de <b>todos los cursos</b>, mezcladas.';
-      pintarCantidad();
-      return;
-    }
     // Cuántas preguntas tiene cada fuente en estos cursos y ciclo (por[f][i] = las del curso i)
     const por = {};
     await Promise.all(['libro', 'fijas', 'seminarios', 'banqueo'].map(f => Promise.all(cursos.map(c => deFuente(c, f, sel.ciclo))).then(x => { por[f] = x; })));
@@ -1006,7 +1003,7 @@
     else if (i >= 0) sel.cursos.splice(i, 1);
     else sel.cursos.push(c);
     if (sel.cursos.length === CURSOS.length) sel.cursos = [];   // todos marcados = "Todos los cursos"
-    sel.temas = sel.temas.filter(k => sel.cursos.indexOf(k.split('|')[0]) >= 0);
+    if (sel.cursos.length) sel.temas = sel.temas.filter(k => sel.cursos.indexOf(k.split('|')[0]) >= 0);
     if (!fuenteAbierta(sel.cursos, sel.fuente)) sel.fuente = 'mezcla';
     son('seccion'); errorCrear(); pintarCursos(); actualizarFiltros();
     if (c && i < 0) revisarVip(c);
