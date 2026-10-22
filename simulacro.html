@@ -5,7 +5,7 @@
 <script src="assets/guardia.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#050505">
+<meta name="theme-color" content="#0B0818">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
 <link rel="apple-touch-icon" href="assets/app/icono-180.png">
 <meta name="apple-mobile-web-app-title" content="Modo Cachimbo">
@@ -15,7 +15,7 @@
 <script src="assets/app.js" defer></script>
 <title>Simulacro · Modo Cachimbo</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,600;1,700;1,800;1,900;1,1000&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;1,800;1,900&family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,600;1,700;1,800;1,900;1,1000&display=swap');
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -332,9 +332,280 @@
 <script src="assets/pregunta.js"></script>
 <script src="assets/auth.js"></script>
 <script src="assets/ranking.js"></script>
+<script src="assets/rango.js"></script>
 <style id="mc-claro">
+
+  /* =========================================================
+     Estilo del inicio: Nunito en todo, letra cuadrada (Barlow Condensed)
+     solo en el título grande, tarjetas redondeadas tipo Duolingo con borde
+     grueso abajo y la esquina de color para las temáticas.
+     ========================================================= */
+  :root { --display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
+    --com: #CE82FF; --mat: #1CB0F6; --cta: #C6E000; --ccss: #FF9600; --borde-g: #2e2e2e; --acc-d: #8fa300; }
+  html[data-modo="claro"] { --com: #9B4FD9; --mat: #0E8FD6; --cta: #7A8C00; --ccss: #E07B00; --borde-g: #DCD8E8; --acc-d: #8fa300; }
+  body, body :not(.katex):not(.katex *):not(code):not(pre):not(.sim-tit) { font-family: 'Nunito', 'Inter', system-ui, sans-serif; }
+  body { font-weight: 600; }
+  h1, h2, h3 { font-family: 'Nunito', sans-serif; font-weight: 900; }
+
+  /* Cabecera: ← Inicio y la casita, como en los cursos */
+  header.top { padding: 22px 0 14px; }
+  .back-row { display: flex; align-items: center; gap: 12px; }
+  .back { display: flex; align-items: center; gap: 8px; color: var(--text); text-decoration: none; font: 900 22px/1.1 'Nunito', sans-serif; }
+  .back svg { width: 20px; height: 20px; }
+  .back:hover { color: var(--accent); }
+  .home-btn { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; border: 2px solid var(--borde-g); border-bottom-width: 4px; background: var(--surface-2); color: var(--text); }
+  .home-btn svg { width: 18px; height: 18px; }
+  .home-btn:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
+
+  /* Título grande con su raya, como "Ciencia y Tecnología" */
+  .sim-tit { display: flex; align-items: center; gap: 18px; margin-top: 4px; font: italic 900 46px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; color: var(--accent); }
+  .sim-tit::after { content: ""; flex: 1; height: 2px; background: linear-gradient(90deg, rgba(198,224,0,.45), rgba(198,224,0,0)); }
+  .sim-sub { color: var(--dim); font-size: 14.5px; margin-top: 8px; max-width: 62ch; }
+  @media (max-width: 520px) { .sim-tit { font-size: 36px !important; gap: 12px; } .sim-sub { font-size: 13.5px; } }
+
+  /* Tarjetas */
+  .card { border: 2px solid var(--borde-g); border-bottom-width: 5px; border-radius: 22px; position: relative; }
+  .card > h3 { display: flex; align-items: center; gap: 10px; font-size: 17px; margin-bottom: 14px; }
+  .h-ic { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); flex-shrink: 0; }
+  .h-ic svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .btn { border-radius: 16px; font-weight: 900; }
+  .btn:not(.sec) { box-shadow: 0 4px 0 var(--acc-d); }
+  .btn:not(.sec):not(:disabled):active { transform: translateY(4px); box-shadow: none; }
+  .btn.sec { border: 2px solid var(--borde-g); border-bottom-width: 4px; }
+
+  /* Rápido / Personalizado: dos fichas grandes, también lado a lado en el celular */
+  .modos { margin-top: 18px; }
+  .modo { position: relative; overflow: hidden; border-radius: 20px; border-bottom-width: 5px; box-shadow: none; padding: 16px 18px; }
+  .modo.on { box-shadow: none; border-bottom-color: var(--acc-d); }
+  .modo.on::after { content: ""; position: absolute; top: 0; right: 0; width: 56px; height: 56px; pointer-events: none; background: linear-gradient(225deg, rgba(198,224,0,.25) 0 26%, transparent 26.5%); }
+  .modo b { font-size: 17px; font-weight: 900; }
+  @media (max-width: 560px) {
+    .modos:not(#z) { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .modo:not(#z) { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px; }
+    .modo .mi { width: 40px; height: 40px; border-radius: 12px; }
+    .modo .mi svg { width: 22px; height: 22px; }
+    .modo b { font-size: 15.5px; }
+    .modo small { font-size: 12px; }
+  }
+
+  /* Ajustes: etiquetas con ícono */
+  .crear { margin-top: 16px; }
+  @media (min-width: 821px) { .crear { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); } }
+  .campo { margin-bottom: 18px; }
+  .campo > label, .campo > .lbl { display: flex; align-items: center; gap: 8px; font-size: 12px; letter-spacing: .6px; color: var(--dim); font-weight: 900; }
+  .li { width: 24px; height: 24px; border-radius: 8px; display: grid; place-items: center; background: var(--surface-2); color: var(--accent); flex-shrink: 0; }
+  .li svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .campo input[type=text], select { border: 2px solid var(--borde-g); border-radius: 14px; font: 800 14.5px 'Nunito', sans-serif; padding: 11px 13px; }
+
+  /* Ciclos: fichas cortas; el detalle de lo que falta va al tocar/pasar el mouse */
+  .ciclos:not(#z) { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .ciclo { border: 2px solid var(--borde-g); border-bottom-width: 4px; border-radius: 14px; padding: 10px 12px; align-items: center; gap: 10px; }
+  .ciclo b { font: 900 16px 'Nunito', sans-serif; }
+  .ciclo small { font-size: 11.5px; font-weight: 700; margin-top: 0; }
+  .ciclo.on { border-bottom-color: var(--acc-d); }
+  .ciclo.off { opacity: .5; }
+  .ciclo.off small { color: var(--dim); }
+
+  /* Tiempo: una sola fila de botones iguales */
+  .tiempos:not(#z) { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+  .tiempos button { border: 2px solid var(--borde-g); border-bottom-width: 4px; border-radius: 12px; padding: 9px 2px 7px; font-weight: 900; white-space: nowrap; font-size: 14px; }
+  .tiempos button.on { border-bottom-color: var(--acc-d); }
+  @media (max-width: 380px) { .tiempos button { font-size: 12.5px; } }
+
+  /* Reglas: cuatro cuadritos en vez de la lista larga */
+  .ajustes .reglas { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .ajustes .reglas li { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; background: var(--surface-2); border-radius: 14px; padding: 10px 4px; font-size: 11.5px; line-height: 1.2; }
+  .ajustes .reglas li .ins { margin: 0; }
+  .ajustes .reglas li b { display: block; font-size: 14px; margin-top: 2px; }
+  @media (max-width: 560px) { .ajustes .reglas li { font-size: 11px; } .ajustes .reglas li b { font-size: 13px; } }
+
+  /* Arranque: resumen + botón grande. En el celular se queda pegado abajo mientras ajustas */
+  .arranque { margin-top: 18px; display: grid; gap: 10px; }
+  .resumen { display: flex; justify-content: center; gap: 4px 10px; flex-wrap: wrap; font-size: 13px; color: var(--dim); }
+  .resumen b { color: var(--text); font-weight: 900; }
+  .resumen span + span::before { content: "·"; margin-right: 10px; color: var(--faint); }
+  #btnEmpezar { width: 100%; padding: 16px; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; }
+  @media (max-width: 820px) {
+    body.sim-crear .mce-btn { bottom: calc(124px + env(safe-area-inset-bottom, 0px)) !important; }
+    body.sim-crear .mce-tip { bottom: calc(136px + env(safe-area-inset-bottom, 0px)) !important; }
+    .arranque { position: sticky; bottom: 0; z-index: 5; margin: 18px -22px -22px; padding: 12px 16px calc(14px + env(safe-area-inset-bottom, 0px)); background: var(--surface); border-top: 2px solid var(--borde-g); border-radius: 0 0 18px 18px; }
+  }
+
+  /* Cómo se reparten: una ficha por área con su ícono, preguntas y puntos */
+  #dist { display: grid; gap: 10px; }
+  .area:not(#z) { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto auto; align-items: center; gap: 12px; border: 2px solid color-mix(in srgb, var(--c) 35%, transparent); border-bottom: 4px solid color-mix(in srgb, var(--c) 70%, #000); border-radius: 16px; padding: 10px 12px; margin: 0; background: color-mix(in srgb, var(--c) 6%, var(--surface)); }
+  .a-ic { width: 44px; height: 44px; border-radius: 12px; background: color-mix(in srgb, var(--c) 14%, transparent); position: relative; }
+  .a-ic::after { content: ""; position: absolute; inset: 8px; background: var(--c); -webkit-mask: var(--ico) center / contain no-repeat; mask: var(--ico) center / contain no-repeat; }
+  .a-tx b { display: block; font-size: 14.5px; font-weight: 900; color: var(--c); }
+  .a-tx small { display: block; color: var(--dim); font-size: 11.5px; line-height: 1.35; margin-top: 2px; }
+  .a-num, .a-pts { text-align: center; font-weight: 900; font-size: 20px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .a-num small, .a-pts small { display: block; font-size: 10.5px; color: var(--dim); font-weight: 800; margin-top: 3px; }
+  .a-pts { color: var(--c); min-width: 40px; }
+  @media (max-width: 420px) { .area:not(#z) { grid-template-columns: 38px minmax(0, 1fr) auto auto; gap: 9px; } .a-ic { width: 38px; height: 38px; } .a-ic::after { inset: 7px; } }
+
+  /* Mis simulacros: el mejor puntaje como insignia y Repetir con ícono */
+  .lista, .rank { grid-template-columns: minmax(0, 1fr); }
+  .lista li { border-radius: 14px; gap: 12px; }
+  .lista .mejor { width: 54px; flex-shrink: 0; text-align: center; background: var(--accent-soft); color: var(--accent); border-radius: 12px; padding: 6px 2px; line-height: 1; }
+  .lista .mejor b { font-size: 16px; font-weight: 900; font-variant-numeric: tabular-nums; }
+  .lista .mejor small { display: block; color: var(--dim); font-size: 10px; margin-top: 2px; }
+  .rep { display: inline-flex; align-items: center; gap: 6px; }
+  .rep svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+  @media (max-width: 420px) { .rep span { display: none; } .rep { padding: 9px; } }
+  .rank li { border-radius: 14px; font-weight: 800; }
+
+
+  /* ===== Toque Free Fire del inicio (letra cuadrada, fichas con degradé, etiquetas inclinadas,
+     franja de peligro en el botón) sobre las formas redondeadas tipo Duolingo ===== */
+  :root { --oro: #FFC800; --oro-tx: #FFC800; }
+  /* Fondo del inicio: azul morado muy oscuro, no negro */
+  html:not([data-modo="claro"]) { --bg: #0B0818; --surface: #151127; --surface-2: #1D1834; --border: #2A2346; --borde-g: #2A2346;
+    --text: #EEEAF7; --dim: #A99FC8; --faint: #6F6690; }
+  html:not([data-modo="claro"]) body { background: var(--bg); }
+  html:not([data-modo="claro"]) .home-btn { background: var(--surface-2); }
+  html:not([data-modo="claro"]) .ins.n { background: #3A3360; }
+  html[data-modo="claro"] { --oro-tx: #B38600; }
+  html body .sim-tit:not(#z) { font-family: var(--display) !important; font-style: italic; font-weight: 900; color: var(--oro-tx); letter-spacing: .01em; }
+  .sim-tit::after { background: linear-gradient(90deg, rgba(255,200,0,.5), rgba(255,200,0,0)) !important; }
+  html body .card > h3:not(#z), html body .temas-cab h3:not(#z) { font-family: var(--display) !important; font-style: italic; font-weight: 900; text-transform: uppercase; font-size: 24px; letter-spacing: .01em; line-height: 1; }
+  html body .card > h3 span:not(#z) { font-family: inherit !important; }
+  html body .campo > label:not(#z), html body .campo > .lbl:not(#z), html body .lbl-t:not(#z) { font-family: var(--display) !important; font-weight: 800; font-size: 15px; letter-spacing: .06em; text-transform: uppercase; }
+  html body .ciclo b:not(#z) { font-family: var(--display) !important; font-style: italic; font-weight: 900; font-size: 22px; line-height: 1; }
+  html body .tiempos button:not(#z), html body .cantidad button:not(#z) { font-family: var(--display) !important; font-weight: 800; font-size: 18px; }
+  html body .cantidad button small:not(#z) { font-family: 'Nunito', sans-serif !important; font-size: 11px; }
+  html body .ajustes .reglas li b:not(#z) { font-family: var(--display) !important; font-weight: 800; font-size: 18px; letter-spacing: .03em; text-transform: uppercase; }
+
+  /* Rápido / Personalizado como las fichas de "Modos de estudio" */
+  .modo { min-height: 96px; }
+  html body .modo b:not(#z) { font-family: var(--display) !important; font-style: italic; font-weight: 900; font-size: 27px; line-height: 1; text-transform: uppercase; letter-spacing: .01em; }
+  .modo small { margin-top: 4px; }
+  .modo.on:not(#z) { background: linear-gradient(160deg, #8a5a00, #4d3200); border-color: var(--oro); border-bottom-color: var(--oro); color: #fff; }
+  .modo.on small { color: rgba(255,255,255,.85); }
+  .modo.on .mi { background: var(--oro); color: #2a1d00; }
+  .modo.on::after { display: none; }
+  .chip-ff { position: absolute; top: 0; right: 0; padding: 4px 12px 4px 14px; background: var(--surface-2); color: var(--dim); font: 800 13px/1 var(--display) !important; letter-spacing: .06em; text-transform: uppercase; clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 100%); border-bottom-left-radius: 4px; }
+  .modo.on .chip-ff { background: var(--oro); color: #2a1d00; }
+  @media (max-width: 560px) { html body .modo b:not(#z) { font-size: 22px; } .modo { min-height: 0; } .chip-ff { font-size: 11px !important; padding: 3px 9px 3px 11px; } }
+
+  /* Botón Empezar como "¡A practicar!": degradé lima y franja de peligro */
+  html body #btnEmpezar:not(#z) { position: relative; overflow: hidden; background: linear-gradient(100deg, #b4cc00, #C6E000 40%, #d8f02a) !important; color: #151A03 !important;
+    font-family: var(--display) !important; font-style: italic; font-weight: 900; font-size: 30px; letter-spacing: .02em; padding: 14px 16px 12px 30px; line-height: 1; }
+  #btnEmpezar::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 14px; background: repeating-linear-gradient(135deg, #151a03 0 6px, #FFC800 6px 12px); }
+  #btnEmpezar:disabled::before { opacity: .4; }
+  @media (max-width: 560px) { html body #btnEmpezar:not(#z) { font-size: 26px; } }
+  html body .resumen:not(#z), html body .resumen *:not(#z) { font-family: var(--display) !important; font-weight: 800; font-size: 16px; letter-spacing: .05em; text-transform: uppercase; }
+  .resumen b { color: var(--oro-tx); }
+
+  /* Áreas: números con letra cuadrada y los puntos en etiqueta inclinada */
+  html body .a-num b:not(#z) { font: italic 900 28px/1 var(--display) !important; }
+  html body .a-num:not(#z) { font: italic 900 28px/1 var(--display) !important; }
+  html body .a-pts:not(#z) { font: italic 900 20px/1 var(--display) !important; background: var(--c); color: #111; padding: 6px 10px 5px 12px; clip-path: polygon(12% 0, 100% 0, 88% 100%, 0 100%); min-width: 52px; }
+  html body .a-pts small:not(#z) { font: 800 10px/1 var(--display) !important; color: #111; opacity: .75; letter-spacing: .06em; text-transform: uppercase; }
+  html body .a-num small:not(#z) { font: 800 11px/1 var(--display) !important; letter-spacing: .06em; text-transform: uppercase; }
+
+  /* Mis simulacros: mejor puntaje con letra cuadrada, etiqueta inclinada */
+  html body .lista .mejor b:not(#z) { font: italic 900 22px/1 var(--display) !important; }
+  html body .lista .mejor small:not(#z) { font: 800 10.5px/1 var(--display) !important; letter-spacing: .06em; text-transform: uppercase; }
+  html body .etq:not(#z) { font: 800 12px/1 var(--display) !important; letter-spacing: .06em; padding: 3px 10px 3px 9px; border-radius: 0; clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%); }
+
+  /* Top 10 como la liga del inicio: puesto inclinado, letra en ficha cortada, oro/plata/bronce */
+  .rank li { gap: 10px; padding: 8px 12px 8px 8px; background: var(--surface-2); }
+  html body .rank li .p:not(#z) { font: italic 900 22px/1 var(--display) !important; width: 24px; text-align: center; color: var(--faint); }
+  .rank .letra { width: 32px; height: 32px; display: grid; place-items: center; flex-shrink: 0; background: var(--border); color: var(--text); font-weight: 900; clip-path: polygon(14% 0, 86% 0, 100% 14%, 100% 86%, 86% 100%, 14% 100%, 0 86%, 0 14%); }
+  html body .rank li b:not(#z) { font: 800 19px/1 var(--display) !important; color: var(--accent); }
+  html body .rank li b small:not(#z) { font: inherit !important; font-size: 13px !important; margin-left: 3px; color: var(--dim); }
+  .rank li.p1 { background: linear-gradient(90deg, rgba(255,200,0,.2), var(--surface-2) 70%); box-shadow: inset 3px 0 #FFC800; }
+  .rank li.p1 .p { color: #FFC800 !important; } .rank li.p1 .letra { background: linear-gradient(#FFF3B0, #FFC800 40%, #B38600); color: #1a1400; }
+  .rank li.p2 .p { color: #c9ced6 !important; } .rank li.p2 .letra { background: linear-gradient(#f4f6f8, #c9ced6 50%, #8a94a3); color: #1a1a1a; }
+  .rank li.p3 .p { color: #E58A45 !important; } .rank li.p3 .letra { background: linear-gradient(#FFD3AE, #E58A45 50%, #8A4A17); color: #1a1400; }
+  .rank li.yo { box-shadow: inset 0 0 0 2px var(--accent); }
+
+
+  /* ===== Cabecera: tu mejor puntaje (en lugar del perfil) ===== */
+  .mejor-top { display: flex; align-items: center; gap: 10px; height: 46px; padding: 0 22px 0 12px; background: linear-gradient(90deg, #4d3200, #8a5a00); color: #fff;
+    clip-path: polygon(0 0, 100% 0, 92% 100%, 0 100%); border-left: 4px solid var(--oro); }
+  .mejor-top svg { width: 24px; height: 24px; fill: none; stroke: var(--oro); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .mejor-top span { display: grid; line-height: 1; }
+  html body .mejor-top small:not(#z) { font: 800 12px/1 var(--display) !important; letter-spacing: .08em; text-transform: uppercase; color: #ffe58a; }
+  html body .mejor-top b:not(#z) { font: italic 900 22px/1 var(--display) !important; margin-top: 2px; }
+  html body .mejor-top em:not(#z) { font: italic 900 22px/1 var(--display) !important; color: #2a1d00; background: var(--oro); padding: 4px 10px 3px 9px; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); }
+  @media (max-width: 380px) { .mejor-top { padding-right: 16px; } html body .mejor-top b:not(#z) { font-size: 19px !important; } }
+
+  /* ===== Top simulacro: copia del inicio (index.html), con sus mismos colores ===== */
+  #topSim { --tarjeta: var(--surface); --tarjeta2: var(--surface-2); --borde: var(--border); --suave: var(--dim); --amarillo: #FFC800; --amarillo-tx: var(--oro-tx);
+    --lima: #C6E000; --lima-tx: #C6E000; --racha: #FF9600; --cuerpo: 'Nunito', system-ui, sans-serif; margin-top: 30px; display: grid; gap: 14px; }
+  html[data-modo="claro"] #topSim { --lima-tx: #7A8C00; --racha: #E07B00; }
+  #topSim .disp { font-family: var(--display) !important; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; line-height: 1; }
+  #topSim .tit:not(#z) { font-family: var(--display) !important; font-style: italic; font-weight: 900; text-transform: uppercase; letter-spacing: .01em; line-height: 1; }
+  #topSim .sec-cab { display: flex; align-items: center; gap: 14px; }
+  #topSim .sec-cab h2 { margin: 0; font-size: 30px; }
+  #topSim .sec-cab::after { content: ""; order: 1; flex: 1; height: 2px; background: var(--borde); }
+  #topSim .top { background: var(--tarjeta); border: 1px solid var(--borde); }
+  #topSim .top-cab { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 16px; background: var(--tarjeta2); font-size: 17px; }
+  #topSim .top-cab .cierra { white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; color: var(--racha); font-size: 15px; }
+  #topSim .top-cab .cierra svg { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  #topSim .podio { position: relative; isolation: isolate; display: grid; grid-template-columns: 1fr 1.15fr 1fr; align-items: end; gap: 6px; padding: 30px 18px 0; overflow: hidden;
+    background: radial-gradient(70% 60% at 50% 30%, rgba(255, 200, 0, .14), transparent 70%), repeating-linear-gradient(115deg, transparent 0 22px, rgba(255, 255, 255, .02) 22px 44px); }
+  #topSim .podio .foco { position: absolute; left: 35%; right: 35%; top: 0; bottom: 30%; z-index: -1; background: linear-gradient(rgba(255, 236, 190, .22), transparent); clip-path: polygon(30% 0, 70% 0, 100% 100%, 0 100%); }
+  #topSim .lugar { display: grid; justify-items: center; gap: 4px; text-align: center; position: relative; }
+  #topSim .lugar.vacio { opacity: .45; }
+  #topSim .corona { width: 40px; margin-bottom: -6px; filter: drop-shadow(0 0 8px rgba(255, 200, 0, .7)); animation: coronaSim 2.4s ease-in-out infinite; }
+  @keyframes coronaSim { 50% { translate: 0 -3px; } }
+  #topSim .aro { display: grid; place-items: center; padding: 3px; border-radius: 13px; background: var(--tarjeta2); }
+  #topSim .aro .letra { width: 52px; height: 52px; border-radius: 10px; font: 900 24px/1 var(--cuerpo) !important; color: #10131a; display: grid; place-items: center; overflow: hidden; }
+  #topSim .l1 .aro { background: linear-gradient(#FFF3B0, #FFC800 45%, #B38600); box-shadow: 0 0 16px rgba(255, 200, 0, .55); }
+  #topSim .l1 .aro .letra { width: 64px; height: 64px; }
+  #topSim .l2 .aro { background: linear-gradient(#fff, #C9C6D6 50%, #6B6485); }
+  #topSim .l3 .aro { background: linear-gradient(#FFD3AE, #E58A45 50%, #8A4A17); }
+  #topSim .lugar b { font: 800 16.5px/1.15 var(--cuerpo) !important; margin-top: 4px; }
+  #topSim .pts { display: inline-block; grid-template-columns: none; gap: 0; border-radius: 0; font: 900 15px/1 var(--cuerpo) !important; padding: 4px 9px; background: var(--tarjeta2); border: 1px solid var(--borde); color: var(--amarillo-tx); }
+  #topSim .l1 .pts { background: var(--amarillo); color: #2a1d00; border-color: transparent; }
+  #topSim .rg { display: inline-flex; align-items: center; gap: 4px; }
+  #topSim .rg svg { width: 22px; display: block; }
+  #topSim .rg small { font: 800 12px/1 var(--display) !important; letter-spacing: .06em; text-transform: uppercase; }
+  #topSim .bloque { position: relative; width: 100%; margin-top: 10px; display: grid; }
+  #topSim .bloque .cara { height: 12px; clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%); }
+  #topSim .bloque .frente { display: grid; place-items: center; font: italic 900 46px/1 var(--display) !important; color: rgba(0, 0, 0, .45); text-shadow: 0 1px 0 rgba(255, 255, 255, .35); }
+  #topSim .l1 .cara { background: #FFE27A; } #topSim .l1 .frente { height: 110px; background: linear-gradient(#FFC800, #9c7400); }
+  #topSim .l2 .cara { background: #F2F0F8; } #topSim .l2 .frente { height: 80px; background: linear-gradient(#C9C6D6, #5c5675); }
+  #topSim .l3 .cara { background: #FFC38F; } #topSim .l3 .frente { height: 62px; background: linear-gradient(#E58A45, #7a3f12); }
+  #topSim .sim-lista { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--borde); }
+  #topSim .sim-lista li { display: grid; grid-template-columns: 30px 30px minmax(0, 1fr) 24px auto; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--borde); font: 800 16.5px/1.15 var(--cuerpo) !important; }
+  #topSim .sim-lista li > * { font-family: var(--cuerpo); }
+  #topSim .sim-lista .num { font: italic 900 20px/1 var(--display) !important; color: var(--suave); text-align: center; }
+  #topSim .sim-lista .letra { width: 30px; height: 30px; border-radius: 8px; font: 900 14px/1 var(--cuerpo) !important; color: #10131a; display: grid; place-items: center; }
+  #topSim .sim-lista li .em svg { width: 24px; display: block; }
+  #topSim .sim-lista li b { font: 900 15px/1 var(--cuerpo) !important; color: var(--amarillo-tx); }
+  #topSim .sim-lista li.tu { background: linear-gradient(90deg, rgba(198, 224, 0, .16), transparent 80%); box-shadow: inset 3px 0 var(--lima); }
+  #topSim .sim-lista li.extra { display: none; }
+  #topSim .sim-lista.abierta li.extra { display: grid; }
+  #topSim .sim-vacio { grid-column: 1 / -1; display: block; padding: 20px 16px 34px; color: var(--suave); font: 700 14.5px/1.4 var(--cuerpo); text-align: center; }
+  #topSim .ver-mas { display: block; width: 100%; text-align: center; padding: 14px; color: var(--amarillo-tx); font-size: 17px; background: none; border: 0; cursor: pointer; letter-spacing: .06em; }
+  #topSim .ver-mas[hidden] { display: none; }
+  @media (max-width: 900px) {
+    #topSim .podio { padding: 26px 8px 0; }
+    #topSim .lugar b { font-size: 15px !important; }
+    #topSim .aro .letra { width: 44px; height: 44px; } #topSim .l1 .aro .letra { width: 54px; height: 54px; } #topSim .rg small { display: none; }
+  }
+  @media (max-width: 520px) { #topSim .sec-cab h2 { font-size: 25px; } }
+  /* PC: podio a la izquierda y lista a la derecha, con el top 10 completo */
+  @media (min-width: 901px) {
+    #topSim .top { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: start; }
+    #topSim .top-cab { grid-column: 1 / -1; }
+    #topSim .podio { grid-column: 1; grid-row: 2 / span 2; }
+    #topSim .sim-lista { grid-column: 2; grid-row: 2; border-top: 0; border-left: 1px solid var(--borde); }
+    #topSim .sim-lista li.extra { display: grid; }
+    #topSim .ver-mas { display: none; }
+    #topSim .podio:has(.sim-vacio) { grid-column: 1 / -1; }
+  }
+  @media (prefers-reduced-motion: reduce) { #topSim .corona { animation: none; } }
+
 /* Modo claro de esta página (assets/claro.css trae lo común) */
 html[data-modo="claro"] .eyebrow { color: #6F8000 !important; }
+html[data-modo="claro"] .rank li b { color: #6F8000 !important; }
+html[data-modo="claro"] .card .btn:not(.sec):not(#z) { background: var(--accent) !important; border: 0 !important; color: #1A1626 !important; }
+
+html[data-modo="claro"] .h-ic, html[data-modo="claro"] .li, html[data-modo="claro"] .lista .mejor { color: #6F8000 !important; }
 html[data-modo="claro"] .volver:hover { color: #6F8000 !important; }
 html[data-modo="claro"] .lock-icon { color: #6F8000 !important; }
 html[data-modo="claro"] .lock h1 { color: #1A1626 !important; }
@@ -359,8 +630,11 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
 <body>
 <div class="wrap">
   <header class="top">
-    <a class="logo" href="index.html" aria-label="Modo Cachimbo · Inicio"><img src="assets/img/logo-modo-cachimbo-horizontal.svg" alt="Modo Cachimbo" width="160" height="34"></a>
-    <div data-mc-auth></div>
+    <div class="back-row">
+      <a class="back" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Inicio</a>
+      <a class="home-btn" href="index.html" title="Ir al inicio" aria-label="Ir al inicio"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.9 1.2a1.5 1.5 0 0 1 .2 0l.2.1 9.6 9.6a1.3 1.3 0 0 1-.9 2.2H20v7.4a2.5 2.5 0 0 1-2.5 2.5H15v-5.3a1.2 1.2 0 0 0-1.2-1.2h-3.6A1.2 1.2 0 0 0 9 17.7V23H6.5A2.5 2.5 0 0 1 4 20.5v-7.4h-1a1.3 1.3 0 0 1-.9-2.2l9.6-9.6z"/></svg></a>
+    </div>
+    <div class="mejor-top" id="mejorTop" hidden></div>
   </header>
 
   <div id="cargando" class="card msg"><p>Cargando…</p></div>
@@ -378,18 +652,16 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
 
   <!-- 1. Crear -->
   <section id="crear" hidden>
-    <a class="volver" href="index.html">‹ Inicio</a>
-    <div class="eyebrow" style="margin-top:14px">Simulacro UNJFSC</div>
-    <h1 style="font-size:clamp(26px,4vw,34px);margin-top:6px" id="crearTit">Crea tu simulacro</h1>
-    <p class="hint" style="max-width:62ch" id="crearSub">80 preguntas al azar de los libros de cada curso, repartidas como en el examen de admisión.</p>
+    <h1 class="sim-tit" id="crearTit">Crea tu simulacro</h1>
+    <p class="sim-sub" id="crearSub">80 preguntas al azar de los libros de cada curso, repartidas como en el examen de admisión.</p>
     <div class="modos" id="modos" role="radiogroup" aria-label="Tipo de simulacro">
       <button type="button" class="modo on" data-modo="rapido" role="radio" aria-checked="true">
         <span class="mi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span>
-        <span><b>Simulacro rápido</b><small>80 preguntas al azar, como el examen de admisión</small></span>
+        <span><b>Simulacro rápido</b><small>80 preguntas como el examen</small></span><span class="chip-ff">Ranking</span>
       </button>
       <button type="button" class="modo" data-modo="pers" role="radio" aria-checked="false">
         <span class="mi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg></span>
-        <span><b>Personaliza tu simulacro</b><small>Tú eliges los temas y cuántas preguntas</small></span>
+        <span><b>Personalizado</b><small>Tú eliges los temas y cuántas preguntas</small></span><span class="chip-ff">Libre</span>
       </button>
     </div>
     <section class="card temas-card" id="temasCard" hidden>
@@ -407,58 +679,67 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
       <div id="temasLista"><p class="vacia" style="margin-top:12px">Cargando temas…</p></div>
     </section>
     <div class="crear">
-      <div class="card">
-        <div class="campo" id="campoNombre">
-          <label for="nombre">Nombre del simulacro</label>
-          <input type="text" id="nombre" maxlength="60" placeholder="Ej.: Simulacro 1">
-        </div>
+      <div class="card ajustes">
         <div class="campo" id="campoCiclos">
-          <span class="lbl">Ciclo académico</span>
+          <span class="lbl"><i class="li"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></i>Ciclo académico</span>
           <div class="ciclos" id="ciclos"></div>
           <p class="nota" id="ciclosNota">Con un ciclo, las preguntas salen solo de ese ciclo. Con dos o más, salen al azar de los ciclos que elijas, con la misma cantidad por curso.</p>
         </div>
-        <div class="campo" id="campoCantidad" hidden><span class="lbl">Cantidad de preguntas</span>
+        <div class="campo" id="campoCantidad" hidden><span class="lbl"><i class="li"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg></i>Cantidad de preguntas</span>
           <div class="cantidad" id="cantidad">
             <button type="button" data-n="80" class="on"><span class="rec">Como el examen</span>80<small>preguntas</small></button><button type="button" data-n="60">60<small>preguntas</small></button><button type="button" data-n="40">40<small>preguntas</small></button><button type="button" data-n="20">20<small>preguntas</small></button>
           </div>
           <p class="nota" id="cantidadNota">Con menos preguntas, cada curso baja en la misma proporción del examen de admisión. Si de un curso no eliges temas, sus preguntas salen de todos sus temas.</p>
         </div>
         <div class="dos">
-          <div class="campo"><label for="selBloque">Bloque</label><select id="selBloque"></select></div>
-          <div class="campo"><label for="selCarrera">Carrera</label><select id="selCarrera"></select></div>
+          <div class="campo"><label for="selBloque"><i class="li"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 8l10 5 10-5z"/><path d="M6 10.5V16c3 2.5 9 2.5 12 0v-5.5"/></svg></i>Bloque</label><select id="selBloque"></select></div>
+          <div class="campo"><label for="selCarrera"><i class="li"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v12H4z"/><path d="M9 7V5h6v2"/></svg></i>Carrera</label><select id="selCarrera"></select></div>
         </div>
-        <div class="campo"><span class="lbl">Puntos por pregunta correcta</span><div class="pts" id="pts"></div></div>
-        <div class="campo"><span class="lbl">Tiempo</span>
+        <div class="campo"><span class="lbl"><i class="li"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M10 2h4"/></svg></i>Tiempo</span>
           <div class="tiempos" id="tiempos">
             <button type="button" data-m="60">1 h</button><button type="button" data-m="90">1 h 30</button><button type="button" data-m="120">2 h</button><button type="button" data-m="150">2 h 30</button><button type="button" data-m="180">3 h</button>
           </div>
         </div>
+        <div class="campo" id="campoNombre">
+          <label for="nombre"><i class="li"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg></i>Nombre del simulacro</label>
+          <input type="text" id="nombre" maxlength="60" placeholder="Ej.: Simulacro 1">
+        </div>
         <ul class="reglas">
-          <li><span class="ins g"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>Correcta: <b>suma los puntos de tu bloque</b></li>
-          <li><span class="ins r"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></span>Incorrecta: <b>−0,1</b></li>
-          <li><span class="ins n"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12"/></svg></span>En blanco: <b>0</b></li>
-          <li><span class="ins l"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/></svg></span>Puedes terminar antes; al acabarse el tiempo se entrega solo</li>
+          <li><span class="ins g"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span><span>Correcta<b>+ puntos</b></span></li>
+          <li><span class="ins r"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></span><span>Incorrecta<b>−0,1</b></span></li>
+          <li><span class="ins n"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12"/></svg></span><span>En blanco<b>0</b></span></li>
+          <li><span class="ins l"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/></svg></span><span>Sin tiempo<b>se entrega</b></span></li>
         </ul>
-        <button class="btn" type="button" id="btnEmpezar" style="width:100%;margin-top:18px">Empezar simulacro</button>
+        <div class="arranque">
+          <div class="resumen" id="resumen"></div>
+          <button class="btn" type="button" id="btnEmpezar">Empezar simulacro</button>
+        </div>
         <p class="nota" id="crearError" style="color:var(--bad)" hidden></p>
-        <p class="nota">Bloque y carrera vienen de tu perfil; si los cambias aquí, solo cuentan para este simulacro. Si se cierra la página, al volver sigues donde te quedaste.</p>
+        <p class="nota">Bloque y carrera vienen de tu perfil; aquí solo cambian para este simulacro. Si se cierra la página, sigues donde te quedaste.</p>
       </div>
       <div class="col">
         <div class="card">
-          <h3 id="distTit">Cómo se reparten las preguntas</h3>
+          <h3><i class="h-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v9l7.8 4.5A9 9 0 1 1 12 3z"/><path d="M15 3.5A9 9 0 0 1 21 12h-6z"/></svg></i><span id="distTit">Cómo se reparten las preguntas</span></h3>
+          <div class="pts" id="pts" hidden></div>
           <div id="dist"></div>
           <p class="nota">Puntaje máximo de tu bloque: <b id="maxPts">200</b> puntos.</p>
         </div>
         <div class="card">
-          <h3>Mis simulacros</h3>
+          <h3><i class="h-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 14-5.3L20 9M20 4v5h-5"/><path d="M20 12a8 8 0 0 1-14 5.3L4 15M4 20v-5h5"/></svg></i>Mis simulacros</h3>
           <ul class="lista" id="misSim"><li class="vacia">Cargando…</li></ul>
-        </div>
-        <div class="card">
-          <h3>Top 10 de la semana</h3>
-          <ol class="rank" id="rankCrear"><li class="vacia">Cargando…</li></ol>
         </div>
       </div>
     </div>
+    <!-- Top simulacro: igual al del inicio, a todo el ancho al final -->
+    <section class="sec" id="topSim">
+      <div class="sec-cab"><h2 class="tit">Top simulacro</h2></div>
+      <div class="top">
+        <div class="top-cab disp">Top simulacro · semana <span class="cierra" id="simCierra"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M10 2h4"/></svg><span></span></span></div>
+        <div class="podio" id="podio"><p class="sim-vacio">Cargando…</p></div>
+        <ol class="sim-lista" id="simLista"></ol>
+        <button class="ver-mas disp" type="button" id="simMas" hidden>Ver top 10 ▾</button>
+      </div>
+    </section>
   </section>
 
   <!-- 2. Examen -->
@@ -565,10 +846,10 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
   const ICO = {"ok": "<span class=\"ins g\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m5 12.5 4.5 4.5L19 7.5\"/></svg></span>", "mal": "<span class=\"ins r\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m6 6 12 12M18 6 6 18\"/></svg></span>", "bl": "<span class=\"ins n\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M6 12h12\"/></svg></span>"};
   // Reparto de las 80 preguntas (orden del examen). Carpeta del curso y cantidad.
   const AREAS = [
-    { k: 'com', nom: 'Comunicación', c: 'var(--com)', cursos: [['lenguaje', 4], ['literatura', 2], ['raz-verbal', 14]] },
-    { k: 'mat', nom: 'Matemática', c: 'var(--mat)', cursos: [['algebra', 6], ['aritmetica', 4], ['geometria', 4], ['trigonometria', 2], ['estadistica', 4]] },
-    { k: 'cta', nom: 'Ciencia y Tecnología', c: 'var(--cta)', cursos: [['biologia', 6], ['quimica', 6], ['fisica', 4], ['anatomia', 4]] },
-    { k: 'ccss', nom: 'Ciencias Sociales', c: 'var(--ccss)', cursos: [['historia-universal', 2], ['historia-peru', 2], ['geografia', 4], ['psicologia', 4], ['filosofia', 2], ['economia', 2], ['ciudadania', 4]] }
+    { k: 'com', nom: 'Comunicación', c: 'var(--com)', ico: 'comunicacion', cursos: [['lenguaje', 4], ['literatura', 2], ['raz-verbal', 14]] },
+    { k: 'mat', nom: 'Matemática', c: 'var(--mat)', ico: 'matematica', cursos: [['algebra', 6], ['aritmetica', 4], ['geometria', 4], ['trigonometria', 2], ['estadistica', 4]] },
+    { k: 'cta', nom: 'Ciencia y Tecnología', c: 'var(--cta)', ico: 'ciencia-tecnologia', cursos: [['biologia', 6], ['quimica', 6], ['fisica', 4], ['anatomia', 4]] },
+    { k: 'ccss', nom: 'Ciencias Sociales', c: 'var(--ccss)', ico: 'ciencias-sociales', cursos: [['historia-universal', 2], ['historia-peru', 2], ['geografia', 4], ['psicologia', 4], ['filosofia', 2], ['economia', 2], ['ciudadania', 4]] }
   ];
   const AREA_DE = {}; AREAS.forEach(a => a.cursos.forEach(c => { AREA_DE[c[0]] = a; }));
   const NOMBRE = {};
@@ -724,29 +1005,40 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
       $('dist').innerHTML = AREAS.map(a => {
         const n = a.cursos.reduce((s, c) => s + Q[c[0]], 0);
         if (!n) return '';
-        return '<div class="area" style="--c:' + a.c + '"><div class="area-tit">' + a.nom + '<span>' + n + ' preguntas · ' + fmtNum(+p[a.k] || 0) + ' pts c/u</span></div>' +
-          '<div class="area-cur">' + a.cursos.filter(c => Q[c[0]]).map(c => { const x = P && P[c[0]], el = x && x.elegidos.length; return (el ? '<b style="color:' + (x.falta ? 'var(--bad)' : 'var(--text)') + '">' : '') + esc(NOMBRE[c[0]] || c[0]) + ' ' + Q[c[0]] + (el ? '</b>' : ''); }).join(' · ') + '</div></div>';
+        return areaHTML(a, n, +p[a.k] || 0, a.cursos.filter(c => Q[c[0]]).map(c => { const x = P && P[c[0]], el = x && x.elegidos.length; return (el ? '<b style="color:' + (x.falta ? 'var(--bad)' : 'var(--text)') + '">' : '') + esc(NOMBRE[c[0]] || c[0]) + ' ' + Q[c[0]] + (el ? '</b>' : ''); }).join(' · '));
       }).join('') +
         '<p class="nota" style="margin-top:0"><b>En negrita:</b> cursos con temas elegidos. Los demás salen de todos sus temas.' + (P && P['raz-verbal'].voc ? ' En Razonamiento Verbal, ' + P['raz-verbal'].voc + ' son de Vocabulario.' : '') + '</p>' +
         '<div class="consejo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.8V16h5v-.3c0-.7.4-1.4 1-1.8A6 6 0 0 0 12 3z"/></svg><div><b>Recomendación:</b> elige los temas que más fallas. Si quieres más preguntas distintas, marca también Banqueo y Seminarios. Este simulacro es libre y no entra al ranking; para medirte con los demás da el <b>simulacro rápido</b>.</div></div>';
       $('maxPts').textContent = fmtNum(AREAS.reduce((s, a) => s + a.cursos.reduce((t, c) => t + Q[c[0]], 0) * (+p[a.k] || 0), 0));
+      pintarResumen();
       return;
     }
     $('distTit').textContent = 'Cómo se reparten las preguntas';
     $('pts').innerHTML = AREAS.map(a => '<div class="pt" style="--c:' + a.c + '"><small>' + a.nom + '</small><strong>' + fmtNum(+p[a.k] || 0) + '</strong></div>').join('');
     $('dist').innerHTML = AREAS.map(a => {
       const n = a.cursos.reduce((s, c) => s + c[1], 0);
-      return '<div class="area" style="--c:' + a.c + '"><div class="area-tit">' + a.nom + '<span>' + n + ' preguntas · ' + fmtNum(+p[a.k] || 0) + ' pts c/u</span></div>' +
-        '<div class="area-cur">' + a.cursos.map(c => esc(NOMBRE[c[0]] || c[0]) + ' ' + c[1]).join(' · ') + '</div></div>';
+      return areaHTML(a, n, +p[a.k] || 0, a.cursos.map(c => esc(NOMBRE[c[0]] || c[0]) + ' ' + c[1]).join(' · '));
     }).join('');
     $('maxPts').textContent = fmtNum(AREAS.reduce((s, a) => s + a.cursos.reduce((t, c) => t + c[1], 0) * (+p[a.k] || 0), 0));
+    pintarResumen();
+  }
+  // Tarjeta de un área en "Cómo se reparten": ícono, preguntas y puntos por correcta
+  function areaHTML(a, n, pts, cursos) {
+    return '<div class="area" style="--c:' + a.c + ';--ico:url(assets/icons/' + a.ico + '.svg)"><i class="a-ic"></i>' +
+      '<div class="a-tx"><b>' + a.nom + '</b><small>' + cursos + '</small></div>' +
+      '<div class="a-num"><b>' + n + '</b><small>preguntas</small></div><div class="a-pts">×' + fmtNum(pts) + '<small>pts</small></div></div>';
+  }
+  // Resumen junto al botón Empezar: preguntas, tiempo y puntaje máximo
+  function pintarResumen() {
+    const n = REPETIR ? (REPETIR.preguntas || []).length : MODO === 'pers' ? CANT : 80;
+    $('resumen').innerHTML = '<span><b>' + n + '</b> preguntas</span><span><b>' + durTxt(minutos).trim() + '</b></span><span>máx. <b>' + $('maxPts').textContent + '</b> pts</span>';
   }
   $('selBloque').addEventListener('change', () => llenarCarreras(''));
   $('selCarrera').addEventListener('change', () => {
     const b = MCCarreras.bloqueDe($('selCarrera').value);
     if (b && b.id !== $('selBloque').value) { $('selBloque').value = b.id; llenarCarreras($('selCarrera').value); }
   });
-  function pintarTiempo() { $('tiempos').querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.m === minutos)); }
+  function pintarTiempo() { $('tiempos').querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.m === minutos)); pintarResumen(); }
   $('tiempos').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; minutos = +b.dataset.m; pintarTiempo(); });
 
   function pintarCiclos(conservar) {
@@ -761,11 +1053,12 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
     caja.innerHTML = CICLOS.map(c => {
       const ok = !c.falta.length || PRUEBA || pers;
       const det = !c.falta.length ? 'Todos los cursos listos'
-        : pers ? 'Algunos cursos todavía tienen pocos temas'
-        : (PRUEBA ? 'Modo prueba · ' : '') + 'Falta completar: ' + c.falta.slice(0, 4).map(f => esc(NOMBRE[f.curso] || f.curso) + ' (' + f.temas + ' de ' + MIN_TEMAS + ' temas)').join(', ') + (c.falta.length > 4 ? ' y ' + (c.falta.length - 4) + ' más' : '');
+        : pers ? 'Algunos cursos con pocos temas'
+        : (PRUEBA ? 'Modo prueba · ' : '') + 'Faltan temas en ' + c.falta.length + (c.falta.length === 1 ? ' curso' : ' cursos');
+      const falta = c.falta.map(f => (NOMBRE[f.curso] || f.curso) + ' (' + f.temas + ' de ' + MIN_TEMAS + ' temas)').join(', ');
       const marcado = ok && (antes.length ? antes.indexOf(c.id) >= 0 : c.id === porDefecto);
-      return '<label class="ciclo ' + (ok ? (marcado ? 'on' : '') : 'off') + '"><input type="checkbox" value="' + esc(c.id) + '"' + (ok ? '' : ' disabled') + (marcado ? ' checked' : '') + '>' +
-        '<div><b>Ciclo ' + esc(c.id) + '</b><small>' + det + '</small></div></label>';
+      return '<label class="ciclo ' + (ok ? (marcado ? 'on' : '') : 'off') + '"' + (falta ? ' title="Falta completar: ' + esc(falta) + '"' : '') + '><input type="checkbox" value="' + esc(c.id) + '"' + (ok ? '' : ' disabled') + (marcado ? ' checked' : '') + '>' +
+        '<div><b>' + esc(c.id) + '</b><small>' + det + '</small></div></label>';
     }).join('');
     if (!listos.length) {
       $('ciclosNota').textContent = 'Un ciclo se habilita cuando todos los cursos del simulacro tienen al menos ' + MIN_TEMAS + ' temas subidos.';
@@ -792,9 +1085,11 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
         if (r.error) throw r.error;
         const L = r.data || [];
         if (!L.length) { caja.innerHTML = '<li class="vacia">Aquí aparecerán los simulacros que termines, para repetirlos cuando quieras.</li>'; return; }
-        caja.innerHTML = L.map(s => '<li><div><b>' + esc(s.nombre) + (s.personalizado ? '<span class="etq">Personalizado</span>' : '') + '</b><small>' + esc((s.ciclos || []).join(', ')) + ' · ' +
-          s.intentos + (s.intentos === 1 ? ' intento' : ' intentos') + ' · mejor ' + num1(+s.mejor || 0) + ' · ' + fecha(s.actualizado) + '</small></div>' +
-          '<a class="btn sec mini" href="simulacro.html?repetir=' + encodeURIComponent(s.id) + '">Repetir</a></li>').join('');
+        const rap = L.filter(x => !x.personalizado).map(x => +x.mejor || 0);
+        if (rap.length) { MEJOR = Math.max.apply(null, rap); pintarMejor(); }
+        caja.innerHTML = L.map(s => '<li><span class="mejor"><b>' + num1(+s.mejor || 0) + '</b><small>mejor</small></span><div><b>' + esc(s.nombre) + (s.personalizado ? '<span class="etq">Personalizado</span>' : '') + '</b><small>' + esc((s.ciclos || []).join(', ')) + ' · ' +
+          s.intentos + (s.intentos === 1 ? ' intento' : ' intentos') + ' · ' + fecha(s.actualizado) + '</small></div>' +
+          '<a class="btn sec mini rep" href="simulacro.html?repetir=' + encodeURIComponent(s.id) + '" aria-label="Repetir ' + esc(s.nombre) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 14-5.3L20 9M20 4v5h-5"/></svg><span>Repetir</span></a></li>').join('');
       })
       .catch(() => { caja.innerHTML = '<li class="vacia">No se pudo cargar tu lista.</li>'; });
   }
@@ -809,8 +1104,79 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
         card.innerHTML = MCRanking.html(L, { simulacro: true });
         return;
       }
-      el.innerHTML = L.map(r => '<li class="' + (r.yo ? 'yo' : '') + '"><span class="p">' + ((window.MCMedalla && MCMedalla(r.puesto, 20)) || r.puesto) + '</span><span class="n">' + esc(r.apodo) + (r.yo ? ' (tú)' : '') + '</span><b>' + num1(+r.puntaje) + '</b></li>').join('');
+      el.innerHTML = L.map(r => '<li class="' + (r.yo ? 'yo ' : '') + (r.puesto <= 3 ? 'p' + r.puesto : '') + '"><span class="p">' + r.puesto + '</span><span class="letra">' + esc(String(r.apodo || '?').trim().charAt(0).toUpperCase()) + '</span><span class="n">' + esc(r.apodo) + (r.yo ? ' (tú)' : '') + '</span><b>' + num1(+r.puntaje) + '<small>pts</small></b></li>').join('');
     }).catch(() => { el.innerHTML = '<li class="vacia">No se pudo cargar el ranking.</li>'; });
+  }
+
+
+  /* ---------- Cabecera: tu mejor puntaje y tu puesto de la semana ---------- */
+  let MEJOR = null, PUESTO = null;
+  function pintarMejor() {
+    const c = $('mejorTop');
+    if (MEJOR == null && PUESTO == null) { c.hidden = true; return; }
+    c.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>' +
+      '<span><small>Tu mejor</small><b>' + (MEJOR == null ? '—' : num1(MEJOR)) + ' pts</b></span>' + (PUESTO ? '<em>#' + PUESTO + '</em>' : '');
+    c.title = PUESTO ? 'Vas en el puesto ' + PUESTO + ' del top de esta semana' : 'Tu mejor puntaje en el simulacro rápido';
+    c.hidden = false;
+  }
+
+  /* ---------- Top simulacro: el mismo podio y lista del inicio (assets/inicio.js) ---------- */
+  const AV = ['#FFC800', '#C9C6D6', '#E58A45', '#1CB0F6', '#CE82FF', '#FF9600', '#58CC02', '#FF4B4B', '#5FDAFF', '#C6E000'];
+  const RC = ['#5FDAFF', '#5FF59A', '#D79BFF', '#FF6E84', '#FFC800'];
+  const CORONA = '<svg class="corona" viewBox="0 0 40 22" aria-hidden="true"><path d="M2 20 4 4l9 8 7-11 7 11 9-8 2 16z" fill="#FFC800"/><path d="M2 20h36v2H2z" fill="#B38600"/><circle cx="20" cy="13" r="2.6" fill="#FF4B4B"/><circle cx="10" cy="15" r="1.8" fill="#1CB0F6"/><circle cx="30" cy="15" r="1.8" fill="#58CC02"/></svg>';
+  const decP = n => (Math.round((+n || 0) * 10) / 10).toFixed(1);
+  const inicial = nom => esc((String(nom || '?').trim()[0] || '?').toUpperCase());
+  const foto = x => '<span class="letra" style="background:' + AV[(x.puesto - 1) % AV.length] + '">' + inicial(x.apodo) + '</span>';
+  function emblema(xp) {
+    if (xp == null || !window.MCRango) return '<span class="em"></span>';
+    const n = MCRango.nivel(xp);
+    return '<span class="em"' + (n < 0 ? '' : ' title="' + MCRango.nombre(n) + '"') + '>' + (n < 0 ? '' : MCRango.svg(n, { mini: true, quieto: true })) + '</span>';
+  }
+  function rangoSim(xp) {
+    if (xp == null || !window.MCRango) return '';
+    const n = MCRango.nivel(xp);
+    return n < 0 ? '' : '<span class="rg">' + MCRango.svg(n, { mini: true, quieto: true }) + '<small style="color:' + RC[n] + '">' + MCRango.nombre(n) + '</small></span>';
+  }
+  function filaSim(x, extra) {
+    return '<li class="' + (x.yo ? 'tu' : '') + (extra ? ' extra' : '') + '"><span class="num">' + x.puesto + '</span>' + foto(x) + '<span class="quien">' + esc(x.yo ? 'Tú' : x.apodo) + '</span>' +
+      emblema(x.xp) + '<b>' + decP(x.puntaje) + ' pts</b></li>';
+  }
+  function pintarSim(filas) {
+    filas = (filas || []).slice().sort((a, b) => a.puesto - b.puesto);
+    const top = filas.filter(x => x.puesto <= 10), yo = filas.filter(x => x.yo)[0];
+    const podio = $('podio'), lista = $('simLista'), mas = $('simMas');
+    if (yo) { PUESTO = yo.puesto; pintarMejor(); }
+    if (!top.length) {
+      podio.innerHTML = '<p class="sim-vacio">Aún nadie dio el simulacro esta semana. ¡Sé el primero!</p>';
+      lista.innerHTML = ''; mas.hidden = true; return;
+    }
+    podio.innerHTML = '<div class="foco" aria-hidden="true"></div>' + [2, 1, 3].map(p => {
+      const x = top.filter(t => t.puesto === p)[0];
+      if (!x) return '<div class="lugar l' + p + ' vacio"><span class="aro"><span class="letra" style="background:var(--tarjeta2);color:var(--suave)">?</span></span><b>Libre</b><span class="pts">—</span><span class="bloque"><i class="cara"></i><span class="frente">' + p + '</span></span></div>';
+      return '<div class="lugar l' + p + '">' + (p === 1 ? CORONA : '') + '<span class="aro">' + foto(x) + '</span><b>' + esc(x.yo ? 'Tú' : x.apodo) + '</b>' + rangoSim(x.xp) +
+        '<span class="pts">' + decP(x.puntaje) + ' pts</span><span class="bloque"><i class="cara"></i><span class="frente">' + p + '</span></span></div>';
+    }).join('');
+    const resto = top.filter(x => x.puesto > 3);
+    let html = resto.map(x => filaSim(x, x.puesto > 5 && !x.yo)).join('');
+    if (yo && yo.puesto > 10) html += filaSim(yo, false);
+    lista.innerHTML = html;
+    mas.hidden = !resto.some(x => x.puesto > 5 && !x.yo);
+  }
+  $('simMas').addEventListener('click', function () {
+    const abierta = $('simLista').classList.toggle('abierta');
+    this.textContent = abierta ? 'Ver menos ▴' : 'Ver top 10 ▾';
+  });
+  // Cierra el lunes a las 00:00 (hora de Lima)
+  function pintarCierre() {
+    const ahora = Date.now(), lima = new Date(ahora - 5 * 3600000);
+    const faltan = (8 - lima.getUTCDay()) % 7 || 7;
+    const lunes = Date.UTC(lima.getUTCFullYear(), lima.getUTCMonth(), lima.getUTCDate() + faltan) + 5 * 3600000;
+    const h = Math.max(0, Math.floor((lunes - ahora) / 3600000)), d = Math.floor(h / 24);
+    $('simCierra').lastChild.textContent = 'Cierra en ' + (d ? d + ' d ' + (h % 24) + ' h' : h + ' h');
+  }
+  function pintarTopSim() {
+    pintarCierre();
+    rpc('ranking_simulacro').then(pintarSim).catch(() => { $('podio').innerHTML = '<p class="sim-vacio">No se pudo cargar el top. Revisa tu conexión.</p>'; });
   }
 
   async function abrirCrear() {
@@ -843,7 +1209,7 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
     actualizarEmpezar();
     ver('crear');
     pintarMisSimulacros();
-    pintarRanking($('rankCrear'));
+    pintarTopSim();
   }
 
   /* ---------- Personaliza tu simulacro ---------- */
@@ -1051,6 +1417,7 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
     const pers = m === 'pers';
     $('modos').querySelectorAll('.modo').forEach(b => { b.classList.toggle('on', b.dataset.modo === m); b.setAttribute('aria-checked', b.dataset.modo === m); });
     $('temasCard').hidden = !pers; $('campoCantidad').hidden = !pers;
+    $('topSim').hidden = pers; // el personalizado es libre y no entra al ranking
     $('crearTit').textContent = pers ? 'Personaliza tu simulacro' : 'Crea tu simulacro';
     $('crearSub').textContent = pers ? 'Elige los temas que quieres reforzar y cuántas preguntas. Los cursos y los puntos son los mismos del examen de admisión.' : '80 preguntas al azar de los libros de cada curso, repartidas como en el examen de admisión.';
     $('ciclosNota').textContent = pers ? 'Los temas que ves abajo son de los ciclos que marques.' : 'Con un ciclo, las preguntas salen solo de ese ciclo. Con dos o más, salen al azar de los ciclos que elijas, con la misma cantidad por curso.';
