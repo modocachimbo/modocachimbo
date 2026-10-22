@@ -266,11 +266,17 @@
   .rp-buho .piso svg { display: block; width: 100%; height: auto; }
   .rp-buho .escena { bottom: 17px; z-index: 1; }
   .rp-buho .mcb { translate: 0 var(--drop); }
-  .rp-globo { position: relative; flex: 1; min-height: 98px; display: flex; align-items: center; margin-bottom: 40px; padding: 10px 14px; text-align: left; background: #fff; color: #1A1626; border-radius: 16px; box-shadow: 0 4px 0 #D3DCE8;
-    font: 800 14px/1.35 'Nunito', sans-serif; }
-  .rp-globo b { color: #5E8A00; font-weight: 900; }
+  /* Cada vez que cambia de pose da un saltito */
+  .rp-buho .mcb { transform-origin: 50% 100%; animation: rp-salto .55s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes rp-salto { 0% { transform: translateY(0) scale(1.06,.92); } 40% { transform: translateY(-16%) scale(.95,1.06); } 75% { transform: translateY(0) scale(1.04,.96); } 100% { transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .rp-buho .mcb { animation: none; } }
+  .rp-globo { --gc: var(--accent); position: relative; flex: 1; min-height: 98px; display: flex; align-items: center; margin-bottom: 40px; padding: 10px 14px; text-align: left;
+    background: #1D1834; color: #EEEAF7; border: 2px solid #2F284E; border-bottom: 4px solid var(--gc); border-radius: 16px; font: 800 14px/1.35 'Nunito', sans-serif; }
+  .rp-globo b { color: var(--gc); font-weight: 900; }
   .rp-globo > span { display: block; }
-  .rp-globo::before { content: ''; position: absolute; left: -7px; bottom: 14px; width: 14px; height: 14px; background: #fff; rotate: 45deg; border-radius: 0 0 0 4px; }
+  .rp-globo::before { content: ''; position: absolute; left: -9px; bottom: 16px; width: 14px; height: 14px; background: #1D1834; border: solid #2F284E; border-width: 0 0 2px 2px; rotate: 45deg; border-radius: 0 0 0 4px; }
+  .rp-matematica .rp-globo { --gc: #1CB0F6; } .rp-ciencia-tecnologia .rp-globo { --gc: #C6E000; }
+  .rp-comunicacion .rp-globo { --gc: #CE82FF; } .rp-ciencias-sociales .rp-globo { --gc: #FF9600; }
   .startscreen .start-badge { margin-bottom: 8px; padding: 5px 11px; font: 800 14px/1 'Barlow Condensed', sans-serif !important; letter-spacing: .06em; text-transform: uppercase; }
   .startscreen h1.rp-tit { font: italic 900 40px/1 'Barlow Condensed', sans-serif; letter-spacing: .01em; margin-bottom: 8px; }
   .startscreen p { margin-bottom: 18px; }
@@ -316,6 +322,7 @@
 <script src="../assets/auth.js"></script>
 <script src="../assets/buho/buho-datos.js"></script>
 <script src="../assets/buho/buho-vivo.js"></script>
+<script src="../assets/buho/disfraces.js"></script>
 <link rel="stylesheet" href="../assets/buho/buho.css">
 </head>
 <body>
@@ -489,23 +496,33 @@
   // === Fin candado ===
 
   // Búho: saluda en el inicio y reacciona al resultado al final (assets/buho/buho-vivo.js)
-  // Frases de ánimo: una al azar al entrar y otra cada vez que tocan al búho
+  // Frases de ánimo, cada una con su pose: una al azar al entrar y otra cada vez que tocan al búho
   const RP_ANIMO = [
-    '¿Listo para el repaso de <b>Biología</b>? ¡Tú puedes!',
-    'Cada pregunta que practicas hoy es <b>un punto más</b> en tu examen.',
-    'Si fallas, no pasa nada: <b>equivocarse aquí</b> es aprender para el examen.',
-    'Tu vacante se construye <b>un repaso a la vez</b>. ¡A darle!',
-    'Respira, lee con calma y <b>confía en lo que sabes</b>.',
-    'Solo por estar aquí ya vas <b>un paso adelante</b>. ¡Sigue así!',
-    'Ingresan los que <b>no se rinden</b>, no los que nunca fallan.',
-    '¡Yo creo en ti! <b>Vamos juntos</b> pregunta por pregunta.'
+    ['saludando', '¿Listo para el repaso de <b>Biología</b>? ¡Tú puedes!'],
+    ['logro', 'Cada pregunta que practicas hoy es <b>un punto más</b> en tu examen.'],
+    ['pensativo', 'Si fallas, no pasa nada: <b>equivocarse aquí</b> es aprender para el examen.'],
+    ['caminando', 'Tu vacante se construye <b>un repaso a la vez</b>. ¡A darle!'],
+    ['estudiando', 'Respira, lee con calma y <b>confía en lo que sabes</b>.'],
+    ['sorprendido', '¡Wow! Solo por estar aquí ya vas <b>un paso adelante</b>.'],
+    ['oficial', 'Ingresan los que <b>no se rinden</b>, no los que nunca fallan.'],
+    ['vivo', '¡Yo creo en ti! <b>Vamos juntos</b> pregunta por pregunta.']
   ];
-  const rpGlobo = document.getElementById('rpGlobo');
-  let rpI = Math.floor(Math.random() * RP_ANIMO.length), rpGloboT;
-  rpGlobo.innerHTML = '<span>' + RP_ANIMO[rpI] + '</span>';
-  function rpDecir(t, tono, ms) { rpGlobo.innerHTML = '<span></span>'; rpGlobo.firstChild.textContent = t; clearTimeout(rpGloboT); rpGloboT = setTimeout(() => { rpGlobo.innerHTML = '<span>' + RP_ANIMO[rpI] + '</span>'; }, ms || 2800); }
-  function rpOtra() { clearTimeout(rpGloboT); rpI = (rpI + 1) % RP_ANIMO.length; rpGlobo.innerHTML = '<span>' + RP_ANIMO[rpI] + '</span>'; }
-  if (window.MCBuhoVivo) MCBuhoVivo.toques(document.getElementById('rpEscena'), { pose: 'saludando', sonido: !window.MCSonido || MCSonido.activo, decir: rpDecir, alTocar: rpOtra });
+  // El búho se disfraza según el área del curso (assets/buho/disfraces.js)
+  const RP_AREA = ({'biologia':'ciencia-tecnologia','anatomia':'ciencia-tecnologia','quimica':'ciencia-tecnologia','fisica':'ciencia-tecnologia','algebra':'matematica','aritmetica':'matematica','geometria':'matematica','trigonometria':'matematica','estadistica':'matematica','raz-verbal':'comunicacion','literatura':'comunicacion','lenguaje':'comunicacion','historia-peru':'ciencias-sociales','historia-universal':'ciencias-sociales','geografia':'ciencias-sociales','economia':'ciencias-sociales','ciudadania':'ciencias-sociales','psicologia':'ciencias-sociales','filosofia':'ciencias-sociales'})['biologia'];
+  const rpGlobo = document.getElementById('rpGlobo'), rpEscena = document.getElementById('rpEscena');
+  let rpI = Math.floor(Math.random() * RP_ANIMO.length), rpGloboT, rpOcupado = false;
+  function rpFrase() { rpGlobo.innerHTML = '<span>' + RP_ANIMO[rpI][1] + '</span>'; }
+  rpFrase();
+  if (window.MCDisfraz) MCDisfraz.vestir(rpEscena, RP_AREA);
+  if (RP_AREA) document.getElementById('startScreen').classList.add('rp-' + RP_AREA);
+  function rpDecir(t, tono, ms) { rpOcupado = true; rpGlobo.innerHTML = '<span></span>'; rpGlobo.firstChild.textContent = t; clearTimeout(rpGloboT); rpGloboT = setTimeout(() => { rpOcupado = false; rpFrase(); }, ms || 2800); }
+  function rpOtra() {
+    if (rpOcupado) return;
+    rpI = (rpI + 1) % RP_ANIMO.length; rpFrase();
+    const v = rpEscena.querySelector('.mcb'); if (v) v.remove();
+    rpEscena.append(MCBuhoVivo.crear(RP_ANIMO[rpI][0]));
+  }
+  if (window.MCBuhoVivo) MCBuhoVivo.toques(rpEscena, { pose: () => RP_ANIMO[rpI][0], sonido: !window.MCSonido || MCSonido.activo, decir: rpDecir, alTocar: rpOtra });
 
   const startScreen = document.getElementById('startScreen');
   const quizHeader = document.getElementById('quizHeader');
@@ -548,7 +565,7 @@
       return;
     }
 
-    document.getElementById('startBadgeText').textContent = 'Biología · Ciclo ' + year;
+    document.getElementById('startBadgeText').textContent = 'Biología · ' + year;
     document.getElementById('startDesc').textContent = `Todas las preguntas del ciclo, mezcladas al azar. ¡A ver cuánto sabes!`;
     document.getElementById('startPregN').textContent = questions.length;
     document.getElementById('startTemN').textContent = temas.length;
@@ -714,6 +731,7 @@
     finalScore.textContent = `${score} pts`;
     const aciertos = answers.filter((a, i) => activeQuestions[i] && a === activeQuestions[i].correct).length, pct = aciertos / Math.max(1, answers.length);
     const fin = document.getElementById('finEscena'); fin.innerHTML = '';
+    if (window.MCDisfraz && !fin.dataset.vestido) { fin.dataset.vestido = 1; MCDisfraz.vestir(fin, RP_AREA); }
     if (window.MCBuhoVivo) fin.append(MCBuhoVivo.crear(lives <= 0 ? 'triste' : pct >= .8 ? 'logro' : pct >= .5 ? 'saludando' : 'estudiando'));
     endMessage.textContent = lives <= 0 ? 'Se acabaron tus corazones. ¡Sigue practicando!' : 'Así te fue en esta práctica';
     // Progreso del estudiante (assets/progreso.js), una sola vez por ronda

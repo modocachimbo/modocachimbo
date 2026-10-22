@@ -71,7 +71,8 @@
   // Toques: 3 lo alegran, 7 seguidos (en 2,5 s) lo molestan
   function toques(escena, o) {
     o = o || {};
-    var pose = o.pose || 'vivo', decir = o.decir || function () {}, taps = [], timer = null, ocupado = false;
+    // pose puede ser una función: la pose cambia y el búho vuelve a la que toque después de reír o enojarse
+    var poseDe = function () { return (typeof o.pose === 'function' ? o.pose() : o.pose) || 'vivo'; }, decir = o.decir || function () {}, taps = [], timer = null, ocupado = false;
     var sonido = o.sonido !== false;
     function poner(p) { var v = escena.querySelector('.mcb'); if (v) v.remove(); escena.append(crear(p)); }
     function tocar(k) {
@@ -84,10 +85,10 @@
       decir(feliz ? '¡Jiji, me haces cosquillas!' : '¡Oye, ya basta!', feliz ? 'feliz' : 'molesto', feliz ? 2800 : 3400);
       tocar(feliz ? 'risa' : 'enojo');
       setTimeout(function () {
-        ocupado = false; poner(pose);
+        ocupado = false; poner(poseDe());
       }, feliz ? 2800 : 3400);
     }
-    poner(pose);
+    poner(poseDe());
     escena.addEventListener('pointerdown', function (e) {
       var b = e.target.closest('.mcb'); if (!b || ocupado) return;
       b.classList.remove('mcb-toque'); void b.offsetWidth; b.classList.add('mcb-toque');
