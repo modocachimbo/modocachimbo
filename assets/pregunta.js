@@ -384,7 +384,7 @@
     '.mcq-img{margin:12px 0;display:flex;justify-content:center;background:#fff;border-radius:12px;padding:10px}' +
     '.mcq-img img,.mcq-der img{max-width:100%;height:auto;display:block;border-radius:6px}' +
     '.mcq-tabla{overflow-x:auto;margin:12px 0}.mcq-tabla table{border-collapse:collapse;margin:0 auto;font-size:.95em;font-variant-numeric:tabular-nums}' +
-    '.mcq-tabla th,.mcq-tabla td{border:1px solid #3a3a3a;padding:6px 12px;text-align:center;white-space:nowrap}' +
+    '.mcq-tabla th,.mcq-tabla td{border:1px solid #3A3360;padding:6px 12px;text-align:center;white-space:nowrap}' +
     '.mcq-tabla th{background:rgba(198,224,0,.12);color:#f5ffcc;font-weight:700}' +
     '.mcq-cols{display:grid;gap:6px 28px;margin:10px 0;overflow-x:auto;justify-content:start}.mcq-cols span{white-space:nowrap}' +
     '.mcq-cortas{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))}' +
@@ -876,7 +876,7 @@
     '.mcq-abierta{display:block!important}' +
     '.mcq-ab{display:flex;flex-direction:column;gap:10px}' +
     '.mcq-ab-lbl{font:900 12px/1.3 Nunito,Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#9a9a9a}' +
-    '.mcq-ab-in{width:100%;font:800 17px/1.3 Nunito,Inter,sans-serif;color:#f2f2f2;background:#151515;border:2px solid #2a2a2a;border-bottom-width:5px;border-radius:16px;padding:14px 16px;outline:none;-webkit-appearance:none}' +
+    '.mcq-ab-in{width:100%;font:800 17px/1.3 Nunito,Inter,sans-serif;color:#f2f2f2;background:#1E1935;border:2px solid #2F284E;border-bottom-width:5px;border-radius:16px;padding:14px 16px;outline:none;-webkit-appearance:none}' +
     '.mcq-ab-in::placeholder{color:#555}' +
     '.mcq-ab-in:focus,.mcq-hueco-in:focus{border-color:#C6E000}' +
     '.mcq-ab-in:disabled,.mcq-hueco-in:disabled{opacity:1;-webkit-text-fill-color:currentColor}' +
@@ -884,7 +884,7 @@
     '.mcq-ab-in.mal,.mcq-hueco-in.mal{border-color:#E03C3C;border-bottom-color:#9e2525;background:rgba(224,60,60,.1);color:#ffd6d6}' +
     '.mcq-ab-fila{display:flex;gap:10px}.mcq-ab-fila[hidden]{display:none}' +
     '.mcq-ab-fila button{font:900 15px Nunito,Inter,sans-serif;border-radius:16px;padding:13px 14px;cursor:pointer;-webkit-tap-highlight-color:transparent}' +
-    '.mcq-ab-nose{flex:0 0 auto;background:#161616;color:#cfcfcf;border:2px solid #2e2e2e;border-bottom-width:5px}' +
+    '.mcq-ab-nose{flex:0 0 auto;background:#1F1936;color:#cfcfcf;border:2px solid #322B52;border-bottom-width:5px}' +
     '.mcq-ab-nose:active{transform:translateY(3px);border-bottom-width:2px;margin-bottom:3px}' +
     '.mcq-ab-ok{flex:1;background:#C6E000;color:#2b3300;border:2px solid #C6E000;box-shadow:0 5px 0 #8fa300;margin-bottom:5px}' +
     '.mcq-ab-ok:active:not(:disabled){transform:translateY(5px);box-shadow:none}' +
@@ -896,23 +896,23 @@
     '.mcq-ab-sol{color:#f2f2f2;font-size:15px}.mcq-ab-sol b{font-weight:1000;color:#fff}.mcq-ab-o{font-weight:600;color:#9a9a9a}' +
     '.mcq-ab-ol{margin:4px 0 0 1.4em;padding:0;display:flex;flex-direction:column;gap:3px}' +
     '.mcq-ab-pares{display:flex;flex-direction:column;gap:5px;margin-top:2px}.mcq-ab-fl{color:#C6E000}' +
-    '.mcq-ab-vale{align-self:flex-start;margin-top:4px;font:900 13.5px Nunito,Inter,sans-serif;color:#e6e6e6;background:#161616;border:2px solid #2e2e2e;border-bottom-width:4px;border-radius:12px;padding:9px 12px;cursor:pointer}' +
+    '.mcq-ab-vale{align-self:flex-start;margin-top:4px;font:900 13.5px Nunito,Inter,sans-serif;color:#e6e6e6;background:#1F1936;border:2px solid #322B52;border-bottom-width:4px;border-radius:12px;padding:9px 12px;cursor:pointer}' +
     '.mcq-ab-vale:active{transform:translateY(2px);border-bottom-width:2px;margin-bottom:2px}' +
     // Completar: espacios dentro del enunciado
     '.mcq-hueco{display:inline-block;min-width:4.5em;border-bottom:2px solid #C6E000;margin:0 2px;line-height:1.2;vertical-align:baseline}' +
     '.mcq-hueco:empty::before{content:"\\00a0"}' +
     '.mcq-hueco.lleno{color:#f5ffcc;font-weight:1000;padding:0 4px;background:rgba(198,224,0,.1);border-radius:4px 4px 0 0}' +
     '.mcq-hueco:has(input){border:0;min-width:0;display:inline;margin:0}' +
-    '.mcq-hueco-in{display:inline-block;vertical-align:middle;font:800 max(16px,.9em)/1.2 Nunito,Inter,sans-serif;color:#f2f2f2;background:#151515;border:2px solid #2a2a2a;border-bottom-width:4px;border-radius:10px;padding:5px 8px;margin:2px 0;outline:none;max-width:100%;-webkit-appearance:none}' +
+    '.mcq-hueco-in{display:inline-block;vertical-align:middle;font:800 max(16px,.9em)/1.2 Nunito,Inter,sans-serif;color:#f2f2f2;background:#1E1935;border:2px solid #2F284E;border-bottom-width:4px;border-radius:10px;padding:5px 8px;margin:2px 0;outline:none;max-width:100%;-webkit-appearance:none}' +
     '.mcq-hueco-sol{margin-left:6px;font-weight:1000;color:#58CC02;white-space:nowrap}' +
     '.mcq-hlista{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 10px;align-items:center;font:800 15px Nunito,Inter,sans-serif;color:#9a9a9a}' +
     // V o F
     '.mcq-vf{display:flex;flex-direction:column;gap:9px}' +
-    '.mcq-vf-fila{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;background:#151515;border:2px solid #2a2a2a;border-bottom-width:5px;border-radius:16px;padding:10px 10px 10px 12px}' +
+    '.mcq-vf-fila{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;background:#1E1935;border:2px solid #2F284E;border-bottom-width:5px;border-radius:16px;padding:10px 10px 10px 12px}' +
     '.mcq-vf-n{font:900 13px Nunito,Inter,sans-serif;color:#C6E000;min-width:1.6em}' +
     '.mcq-vf-t{font:800 15px/1.45 Nunito,Inter,sans-serif;color:#dcdcdc;min-width:0}' +
     '.mcq-vf-bt{display:flex;gap:6px}' +
-    '.mcq-vf-bt button{width:42px;height:42px;border-radius:12px;font:1000 16px Nunito,Inter,sans-serif;color:#cfcfcf;background:#1b1b1b;border:2px solid #333;border-bottom-width:4px;cursor:pointer;-webkit-tap-highlight-color:transparent}' +
+    '.mcq-vf-bt button{width:42px;height:42px;border-radius:12px;font:1000 16px Nunito,Inter,sans-serif;color:#cfcfcf;background:#231D3C;border:2px solid #352E58;border-bottom-width:4px;cursor:pointer;-webkit-tap-highlight-color:transparent}' +
     '.mcq-vf-bt button.on{background:#2c3400;border-color:#C6E000;color:#f5ffcc}' +
     '.mcq-vf-bt button:disabled{cursor:default}' +
     '.mcq-vf-fila.bien{border-color:#58CC02;border-bottom-color:#3f9a00;background:rgba(88,204,2,.08)}' +
@@ -922,9 +922,9 @@
     // Relacionar
     '.mcq-rel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}' +
     '.mcq-rel-col{display:flex;flex-direction:column;gap:9px}' +
-    '.mcq-rel button{display:flex;align-items:center;gap:8px;text-align:left;width:100%;min-height:52px;font:800 14.5px/1.35 Nunito,Inter,sans-serif;color:#dcdcdc;background:#151515;border:2px solid #2a2a2a;border-bottom-width:5px;border-radius:14px;padding:9px 10px;cursor:pointer;-webkit-tap-highlight-color:transparent}' +
+    '.mcq-rel button{display:flex;align-items:center;gap:8px;text-align:left;width:100%;min-height:52px;font:800 14.5px/1.35 Nunito,Inter,sans-serif;color:#dcdcdc;background:#1E1935;border:2px solid #2F284E;border-bottom-width:5px;border-radius:14px;padding:9px 10px;cursor:pointer;-webkit-tap-highlight-color:transparent}' +
     '.mcq-rel button:disabled{cursor:default}' +
-    '.mcq-rel-n{flex:0 0 auto;width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font:1000 13px Nunito,Inter,sans-serif;background:#222;color:#888;border:2px solid #333}' +
+    '.mcq-rel-n{flex:0 0 auto;width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font:1000 13px Nunito,Inter,sans-serif;background:#292245;color:#888;border:2px solid #352E58}' +
     '.mcq-rel-d .mcq-rel-n:empty{background:transparent;border-style:dashed}' +
     '.mcq-rel button.sel{border-color:#C6E000;background:#1f2400}' +
     '.mcq-rel button[data-c="0"] .mcq-rel-n{background:#C6E000;border-color:#C6E000;color:#2b3300}' +
@@ -933,14 +933,14 @@
     '.mcq-rel button[data-c="3"] .mcq-rel-n{background:#CE93D8;border-color:#CE93D8;color:#2e0a36}' +
     '.mcq-rel button[data-c="4"] .mcq-rel-n{background:#80CBC4;border-color:#80CBC4;color:#05302c}' +
     '.mcq-rel button[data-c="5"] .mcq-rel-n{background:#F48FB1;border-color:#F48FB1;color:#3d0618}' +
-    '.mcq-rel button.unido{border-color:#3a3a3a}' +
+    '.mcq-rel button.unido{border-color:#3A3360}' +
     '.mcq-rel-i.bien{border-color:#58CC02!important;border-bottom-color:#3f9a00!important}' +
     '.mcq-rel-i.mal{border-color:#E03C3C!important;border-bottom-color:#9e2525!important}' +
     // Ordenar
     '.mcq-ord{display:flex;flex-direction:column;gap:9px}' +
-    '.mcq-ord-i{display:flex;align-items:center;gap:10px;text-align:left;width:100%;font:800 15px/1.4 Nunito,Inter,sans-serif;color:#dcdcdc;background:#151515;border:2px solid #2a2a2a;border-bottom-width:5px;border-radius:14px;padding:11px 12px;cursor:pointer;-webkit-tap-highlight-color:transparent}' +
+    '.mcq-ord-i{display:flex;align-items:center;gap:10px;text-align:left;width:100%;font:800 15px/1.4 Nunito,Inter,sans-serif;color:#dcdcdc;background:#1E1935;border:2px solid #2F284E;border-bottom-width:5px;border-radius:14px;padding:11px 12px;cursor:pointer;-webkit-tap-highlight-color:transparent}' +
     '.mcq-ord-i:disabled{cursor:default}' +
-    '.mcq-ord-n{flex:0 0 auto;width:28px;height:28px;border-radius:9px;display:flex;align-items:center;justify-content:center;font:1000 14px Nunito,Inter,sans-serif;border:2px dashed #3a3a3a;color:#2b3300}' +
+    '.mcq-ord-n{flex:0 0 auto;width:28px;height:28px;border-radius:9px;display:flex;align-items:center;justify-content:center;font:1000 14px Nunito,Inter,sans-serif;border:2px dashed #3A3360;color:#2b3300}' +
     '.mcq-ord-i.on{border-color:#3d4a00}.mcq-ord-i.on .mcq-ord-n{background:#C6E000;border:2px solid #C6E000}' +
     '.mcq-ord-i.bien{border-color:#58CC02;border-bottom-color:#3f9a00;background:rgba(88,204,2,.08)}' +
     '.mcq-ord-i.mal{border-color:#E03C3C;border-bottom-color:#9e2525;background:rgba(224,60,60,.08)}.mcq-ord-i.mal .mcq-ord-n{background:#E03C3C;border-color:#E03C3C;color:#fff}' +
@@ -948,7 +948,7 @@
     '.mcq-tocar{position:relative;background:#fff;border-radius:14px;padding:0;overflow:hidden;cursor:crosshair;line-height:0;align-self:center;max-width:100%}' +
     '.mcq-tocar.cerrado{cursor:default}' +
     '.mcq-tocar img{display:block;max-width:100%;max-height:70vh;width:auto;height:auto;user-select:none;-webkit-user-select:none}' +
-    '.mcq-tocar-pin{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:#C6E000;border:3px solid #111;box-shadow:0 0 0 3px #C6E000;pointer-events:none}' +
+    '.mcq-tocar-pin{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:#C6E000;border:3px solid #19142E;box-shadow:0 0 0 3px #C6E000;pointer-events:none}' +
     '.mcq-tocar-pin.mal{background:#E03C3C;box-shadow:0 0 0 3px #E03C3C}' +
     '.mcq-tocar-zona{position:absolute;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:3px solid #2e9e00;background:rgba(198,224,0,.25);pointer-events:none}' +
     // Modo estudio y panel

@@ -65,7 +65,7 @@
     var st = document.createElement('style'); st.id = 'mcz-css';
     st.textContent =
       // Píldoras de arriba (junto a la racha)
-      '.mcz-pill{display:inline-flex;align-items:center;gap:5px;height:42px;padding:0 12px 0 10px;border-radius:14px;border:2px solid #2e2e2e;border-bottom-width:4px;background:#141414;font:900 15px Nunito,Sora,Inter,sans-serif;font-variant-numeric:tabular-nums;cursor:pointer;transition:transform .08s ease;-webkit-tap-highlight-color:transparent;text-decoration:none}' +
+      '.mcz-pill{display:inline-flex;align-items:center;gap:5px;height:42px;padding:0 12px 0 10px;border-radius:14px;border:2px solid #322B52;border-bottom-width:4px;background:#1D1834;font:900 15px Nunito,Sora,Inter,sans-serif;font-variant-numeric:tabular-nums;cursor:pointer;transition:transform .08s ease;-webkit-tap-highlight-color:transparent;text-decoration:none}' +
       '.mcz-pill[hidden]{display:none}.mcz-pill svg{width:24px;height:24px;overflow:visible}.mcz-pill:active{transform:translateY(2px);border-bottom-width:2px;margin-bottom:2px}' +
       '.mcz-cor{color:#FF4B4B}.mcz-xp{color:#FFC800}' +
       // El corazón late en bucle; sin corazones queda gris y quieto
@@ -92,39 +92,39 @@
       // Hoja que sube desde abajo
       '.mcz-fondo{position:fixed;inset:0;z-index:240;background:rgba(0,0,0,.72);display:flex;align-items:flex-end;justify-content:center}' +
       '.mcz-fondo[hidden]{display:none}' +
-      '.mcz-hoja{width:100%;max-width:520px;max-height:88vh;overflow-y:auto;display:grid;gap:14px;background:#0e0e0e;color:#f2f2f2;border:2px solid #262626;border-bottom:0;border-radius:26px 26px 0 0;padding:18px 16px calc(20px + env(safe-area-inset-bottom));font-family:Nunito,Inter,sans-serif;animation:mczSube .22s ease-out}' +
-      '@media (min-width:560px){.mcz-fondo{align-items:center}.mcz-hoja{border-radius:26px;border-bottom:5px solid #262626}}' +
+      '.mcz-hoja{width:100%;max-width:520px;max-height:88vh;overflow-y:auto;display:grid;gap:14px;background:#151127;color:#f2f2f2;border:2px solid #2C2549;border-bottom:0;border-radius:26px 26px 0 0;padding:18px 16px calc(20px + env(safe-area-inset-bottom));font-family:Nunito,Inter,sans-serif;animation:mczSube .22s ease-out}' +
+      '@media (min-width:560px){.mcz-fondo{align-items:center}.mcz-hoja{border-radius:26px;border-bottom:5px solid #2C2549}}' +
       '@keyframes mczSube{from{transform:translateY(40px);opacity:0}}' +
       '.mcz-cab{display:flex;align-items:center;gap:8px}.mcz-cab b{flex:1;font-size:20px;font-weight:1000}' +
-      '.mcz-x{width:40px;height:40px;border-radius:12px;border:2px solid #2e2e2e;background:transparent;color:#9a9a9a;cursor:pointer;display:grid;place-items:center}.mcz-x svg{width:18px;height:18px}' +
+      '.mcz-x{width:40px;height:40px;border-radius:12px;border:2px solid #322B52;background:transparent;color:#9a9a9a;cursor:pointer;display:grid;place-items:center}.mcz-x svg{width:18px;height:18px}' +
       '.mcz-vidas{display:flex;justify-content:center;gap:8px}.mcz-vidas svg{width:40px;height:40px}' +
       '.mcz-rec{display:flex;align-items:center;justify-content:center;gap:6px;font-size:14px;color:#9a9a9a;font-weight:700}.mcz-rec svg{width:17px;height:17px;color:#1CB0F6}.mcz-rec b{color:#f2f2f2}' +
       '.mcz-sub{font-size:12.5px;font-weight:1000;letter-spacing:.08em;color:#5f5f5f;text-transform:uppercase;margin:2px 2px -4px}' +
-      '.mcz-mis{display:flex;align-items:center;gap:12px;padding:12px;border-radius:18px;background:#141414;border:2px solid #262626;border-bottom-width:4px;color:inherit;text-decoration:none;transition:transform .08s ease}' +
+      '.mcz-mis{display:flex;align-items:center;gap:12px;padding:12px;border-radius:18px;background:#1D1834;border:2px solid #2C2549;border-bottom-width:4px;color:inherit;text-decoration:none;transition:transform .08s ease}' +
       'a.mcz-mis:active{transform:translateY(2px);border-bottom-width:2px;margin-bottom:2px}' +
       '.mcz-mis .ic{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;flex-shrink:0}' +
       '.mcz-mis .ic svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}' +
       '.mcz-mis .tx{flex:1;min-width:0;display:grid;gap:5px}.mcz-mis .tx b{font-size:15px;font-weight:900;line-height:1.25}.mcz-mis small{font-size:12px;color:#9a9a9a;font-weight:700}' +
-      '.mcz-bar{height:9px;border-radius:6px;background:#262626;overflow:hidden}.mcz-bar i{display:block;height:100%;border-radius:6px;background:#1CB0F6}' +
+      '.mcz-bar{height:9px;border-radius:6px;background:#2C2549;overflow:hidden}.mcz-bar i{display:block;height:100%;border-radius:6px;background:#1CB0F6}' +
       '.mcz-prem{display:flex;align-items:center;gap:3px;font:1000 14px Nunito,sans-serif;color:#FF4B4B;flex-shrink:0}.mcz-prem svg{width:18px;height:18px}' +
       '.mcz-mis.ok{border-color:rgba(198,224,0,.35)}.mcz-mis.ok .mcz-bar i{background:#C6E000}.mcz-mis.ok .mcz-prem{color:#C6E000}' +
       '.mcz-mis.az .ic{background:rgba(28,176,246,.13);color:#1CB0F6}.mcz-mis.mo .ic{background:rgba(206,130,255,.13);color:#CE82FF}.mcz-mis.na .ic{background:rgba(255,150,0,.13);color:#FF9600}' +
       '.mcz-mis.or .ic{background:rgba(255,200,0,.13);color:#FFC800}.mcz-mis.li .ic{background:rgba(198,224,0,.1);color:#C6E000}.mcz-mis.ro .ic{background:rgba(255,75,75,.13);color:#FF4B4B}' +
-      '.mcz-mis.bonus{border-color:rgba(255,200,0,.4);background:linear-gradient(90deg,rgba(255,200,0,.08),#141414 60%)}' +
+      '.mcz-mis.bonus{border-color:rgba(255,200,0,.4);background:linear-gradient(90deg,rgba(255,200,0,.08),#1D1834 60%)}' +
       '.mcz-btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:14px;border-radius:16px;font:1000 15px Nunito,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:transform .08s ease}' +
       '.mcz-btn.prin{background:#C6E000;color:#2b3300;border:0;box-shadow:0 5px 0 #8fa300}.mcz-btn.prin:active{transform:translateY(4px);box-shadow:0 1px 0 #8fa300}' +
-      '.mcz-btn.prin:disabled{background:#2a2a2a;color:#5f5f5f;box-shadow:0 5px 0 #1c1c1c;cursor:default}' +
-      '.mcz-btn.sec{background:transparent;color:#f2f2f2;border:2px solid #2e2e2e;border-bottom-width:5px}.mcz-btn.sec svg{width:20px;height:20px}.mcz-btn.sec:active{transform:translateY(3px);border-bottom-width:2px}' +
+      '.mcz-btn.prin:disabled{background:#2F284E;color:#5f5f5f;box-shadow:0 5px 0 #241E3E;cursor:default}' +
+      '.mcz-btn.sec{background:transparent;color:#f2f2f2;border:2px solid #322B52;border-bottom-width:5px}.mcz-btn.sec svg{width:20px;height:20px}.mcz-btn.sec:active{transform:translateY(3px);border-bottom-width:2px}' +
       '.mcz-msg{text-align:center;font-size:13px;color:#ff8a8a;min-height:1em}' +
       // Canje
       '.mcz-trueque{display:flex;align-items:center;justify-content:center;gap:14px}' +
-      '.mcz-ficha{display:grid;justify-items:center;gap:4px;width:110px;padding:14px 8px;border-radius:20px;background:#141414;border:2px solid #262626;border-bottom-width:5px;font:1000 22px Nunito,sans-serif}' +
+      '.mcz-ficha{display:grid;justify-items:center;gap:4px;width:110px;padding:14px 8px;border-radius:20px;background:#1D1834;border:2px solid #2C2549;border-bottom-width:5px;font:1000 22px Nunito,sans-serif}' +
       '.mcz-ficha svg{width:44px;height:44px}.mcz-ficha small{font:800 12px Nunito,sans-serif;color:#9a9a9a}.mcz-flecha{width:28px;height:28px;color:#5f5f5f}' +
       '.mcz-saldo{text-align:center;font-size:14px;color:#9a9a9a;font-weight:700}.mcz-saldo b{color:#FFC800}' +
-      '.mcz-cupos{display:flex;gap:6px;justify-content:center}.mcz-cupos span{width:34px;height:8px;border-radius:5px;background:#FFC800}.mcz-cupos span.usado{background:#2a2a2a}' +
+      '.mcz-cupos{display:flex;gap:6px;justify-content:center}.mcz-cupos span{width:34px;height:8px;border-radius:5px;background:#FFC800}.mcz-cupos span.usado{background:#2F284E}' +
       '.mcz-nota{text-align:center;font-size:12.5px;color:#5f5f5f;line-height:1.5}' +
       // Sin corazones (pantalla completa)
-      '.mcz-sin{position:fixed;inset:0;z-index:230;background:#050505;color:#f2f2f2;overflow-y:auto;font-family:Nunito,Inter,sans-serif;padding:24px 16px calc(24px + env(safe-area-inset-bottom))}' +
+      '.mcz-sin{position:fixed;inset:0;z-index:230;background:#0B0818;color:#f2f2f2;overflow-y:auto;font-family:Nunito,Inter,sans-serif;padding:24px 16px calc(24px + env(safe-area-inset-bottom))}' +
       '.mcz-sin[hidden]{display:none}' +
       '.mcz-sin-in{max-width:440px;margin:0 auto;display:grid;gap:14px;justify-items:center;text-align:center}' +
       '.mcz-sin h2{font-size:26px;font-weight:1000;line-height:1.15}.mcz-sin p{font-size:14.5px;color:#9a9a9a;line-height:1.5;font-weight:700}.mcz-sin p b{color:#f2f2f2}' +
@@ -132,7 +132,7 @@
       '.mcz-link{font:900 14px Nunito,sans-serif;color:#9a9a9a;text-decoration:underline;text-underline-offset:3px;background:none;border:0;cursor:pointer}' +
       '.mcz-buho svg{width:110px;height:110px}' +
       // Aviso de corazón ganado
-      '.mcz-toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;z-index:300;display:flex;align-items:center;gap:12px;background:#111;border:2px solid rgba(255,75,75,.45);color:#f2f2f2;border-radius:18px;padding:12px 18px 12px 14px;box-shadow:0 18px 40px rgba(0,0,0,.6);font:700 13.5px Nunito,Inter,sans-serif;transition:transform .35s ease,opacity .35s ease;max-width:calc(100vw - 32px)}' +
+      '.mcz-toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;z-index:300;display:flex;align-items:center;gap:12px;background:#19142E;border:2px solid rgba(255,75,75,.45);color:#f2f2f2;border-radius:18px;padding:12px 18px 12px 14px;box-shadow:0 18px 40px rgba(0,0,0,.6);font:700 13.5px Nunito,Inter,sans-serif;transition:transform .35s ease,opacity .35s ease;max-width:calc(100vw - 32px)}' +
       '.mcz-toast.show{transform:translate(-50%,0);opacity:1}.mcz-toast svg{width:30px;height:30px;flex-shrink:0;animation:mczLatido .7s ease 2}.mcz-toast b{display:block;font-size:16px;font-weight:1000;color:#FF4B4B}' +
       '@media (prefers-reduced-motion:reduce){.mcz-hoja,.mcz-toast svg,.mcz-late,.mcz-gema,.mcz-destello{animation:none!important}}';
     document.head.appendChild(st);

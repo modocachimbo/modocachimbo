@@ -50,7 +50,7 @@ const EQ_NOMBRE = Object.fromEntries(EQ_PERMISOS.flatMap(g => g[1]).map(p => [p[
   .eq-campos label { display: grid; gap: 6px; font-size: 12.5px; font-weight: 700; color: var(--text-dim); }
   .eq-grupo { font-size: 10.5px; letter-spacing: 1.4px; text-transform: uppercase; font-weight: 800; color: var(--text-faint); margin: 14px 0 8px; }
   .eq-pers { display: grid; gap: 6px; }
-  .eq-per { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 12px; border: 2px solid #232323; background: #111; cursor: pointer; }
+  .eq-per { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 12px; border: 2px solid #2A2346; background: #19142E; cursor: pointer; }
   .eq-per input { margin-top: 3px; accent-color: var(--accent); width: 16px; height: 16px; flex-shrink: 0; }
   .eq-per b { display: block; font: 800 14px Nunito, Inter, sans-serif; color: var(--text); }
   .eq-per small { display: block; font-size: 12px; color: var(--text-dim); line-height: 1.4; margin-top: 2px; }
@@ -58,10 +58,10 @@ const EQ_NOMBRE = Object.fromEntries(EQ_PERMISOS.flatMap(g => g[1]).map(p => [p[
   .eq-rapido { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
   .eq-acc { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
   .eq-err { color: var(--red); font-size: 12.5px; font-weight: 700; }
-  .eq-yo { border: 2px dashed #262626; border-radius: 14px; padding: 12px 14px; font-size: 13px; color: var(--text-dim); line-height: 1.55; margin-bottom: 12px; }
+  .eq-yo { border: 2px dashed #2C2549; border-radius: 14px; padding: 12px 14px; font-size: 13px; color: var(--text-dim); line-height: 1.55; margin-bottom: 12px; }
   .eq-yo b { color: var(--text); }
   .eq-mi { display: grid; gap: 10px; }
-  .eq-card { border: 2px solid #232323; border-bottom-width: 4px; border-radius: 16px; padding: 14px 16px; background: #111; }
+  .eq-card { border: 2px solid #2A2346; border-bottom-width: 4px; border-radius: 16px; padding: 14px 16px; background: #19142E; }
   .eq-card.off { opacity: .6; }
   .eq-cab { display: flex; align-items: center; gap: 12px; }
   .eq-av { width: 38px; height: 38px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font: 900 16px Nunito, Inter, sans-serif; flex-shrink: 0; }
@@ -69,11 +69,11 @@ const EQ_NOMBRE = Object.fromEntries(EQ_PERMISOS.flatMap(g => g[1]).map(p => [p[
   .eq-quien b { display: block; font: 800 15px Nunito, Inter, sans-serif; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .eq-quien span { display: block; font-size: 12.5px; color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .eq-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
-  .eq-chips span { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 100px; background: #1a1a1a; color: var(--text-dim); }
+  .eq-chips span { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 100px; background: #221C3B; color: var(--text-dim); }
   .eq-chips span.ojo { background: var(--amber-soft); color: var(--amber); }
   .eq-pie { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12px; color: var(--text-faint); }
   .eq-pie .sp { flex: 1; }
-  .eq-vacio { border: 2px dashed #262626; border-radius: 16px; padding: 28px 18px; text-align: center; color: var(--text-dim); font-size: 13.5px; line-height: 1.6; }
+  .eq-vacio { border: 2px dashed #2C2549; border-radius: 16px; padding: 28px 18px; text-align: center; color: var(--text-dim); font-size: 13.5px; line-height: 1.6; }
   .hi-filtro { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
   .hi-dia { font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; font-weight: 800; color: var(--text-faint); margin: 18px 0 8px; }
   .hi-fila { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 12px; padding: 12px 14px; border-radius: 14px; background: var(--surface); border: 1px solid var(--border); margin-bottom: 6px; }
@@ -81,7 +81,7 @@ const EQ_NOMBRE = Object.fromEntries(EQ_PERMISOS.flatMap(g => g[1]).map(p => [p[
   .hi-cab { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
   .hi-quien { font: 800 13.5px Nunito, Inter, sans-serif; color: var(--text); }
   .hi-quien.yo { color: var(--text-dim); }
-  .hi-donde { font-size: 11.5px; font-weight: 700; padding: 2px 9px; border-radius: 100px; background: #1a1a1a; color: var(--text-dim); }
+  .hi-donde { font-size: 11.5px; font-weight: 700; padding: 2px 9px; border-radius: 100px; background: #221C3B; color: var(--text-dim); }
   .hi-txt { font-size: 13.5px; color: var(--text); line-height: 1.5; overflow-wrap: anywhere; }
   .hi-det { font-size: 12.5px; color: var(--text-dim); line-height: 1.5; margin-top: 4px; overflow-wrap: anywhere; }
   .hi-det b { color: var(--text); font-weight: 700; }

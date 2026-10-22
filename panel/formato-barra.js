@@ -18,7 +18,7 @@
   const css = document.createElement('style');
   css.textContent =
     '.fmt-barra{display:flex;align-items:center;gap:6px;margin:0 0 8px;flex-wrap:wrap}' +
-    '.fmt-barra button{min-width:38px;height:36px;padding:0 10px;border-radius:10px;background:#141414;color:var(--text);border:2px solid #2a2a2a;border-bottom-width:4px;cursor:pointer;font:900 15px Nunito,Inter,sans-serif;line-height:1}' +
+    '.fmt-barra button{min-width:38px;height:36px;padding:0 10px;border-radius:10px;background:#1D1834;color:var(--text);border:2px solid #2F284E;border-bottom-width:4px;cursor:pointer;font:900 15px Nunito,Inter,sans-serif;line-height:1}' +
     '.fmt-barra button:hover{border-color:#3a4a00;color:var(--accent)}' +
     '.fmt-barra button:active{transform:translateY(2px);border-bottom-width:2px}' +
     '.fmt-barra [data-f=i]{font-style:italic;font-weight:800}.fmt-barra [data-f=u]{text-decoration:underline;text-underline-offset:3px}' +

@@ -11,7 +11,7 @@ const ALU = { lista: [], cargado: false, extras: [] };
   .al-tabla-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 18px; background: var(--surface); }
   .al-tabla { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 860px; }
   .al-tabla th { text-align: left; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-faint); font-weight: 700; padding: 14px 16px; border-bottom: 1px solid var(--border); white-space: nowrap; }
-  .al-tabla td { padding: 12px 16px; border-bottom: 1px solid #191919; vertical-align: middle; }
+  .al-tabla td { padding: 12px 16px; border-bottom: 1px solid #211C3A; vertical-align: middle; }
   .al-tabla tr:last-child td { border-bottom: none; }
   .al-tabla .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .al-quien { display: flex; align-items: center; gap: 12px; min-width: 0; }

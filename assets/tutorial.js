@@ -85,8 +85,8 @@
     box-shadow: 0 0 0 3px #C6E000, 0 0 0 9999px rgba(0,0,0,0.74); transition: all .3s ease; }
   .mct-foco.centro { box-shadow: 0 0 0 9999px rgba(0,0,0,0.74); }
   .mct-capa { position: fixed; inset: 0; z-index: 149; }
-  .mct-burbuja { position: fixed; z-index: 151; width: min(360px, calc(100vw - 24px)); background: #151515; color: #f2f2f2;
-    border: 1px solid #2c2c2c; border-radius: 18px; padding: 18px 18px 14px; box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  .mct-burbuja { position: fixed; z-index: 151; width: min(360px, calc(100vw - 24px)); background: #1E1935; color: #f2f2f2;
+    border: 1px solid #302950; border-radius: 18px; padding: 18px 18px 14px; box-shadow: 0 20px 60px rgba(0,0,0,0.6);
     font-family: 'Inter', system-ui, sans-serif; animation: mctIn .25s ease; transition: top .3s ease, left .3s ease; }
   .mct-burbuja::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; border-radius: 18px 18px 0 0; background: linear-gradient(90deg, #FBBF24, #C6E000); }
   .mct-paso { font-size: 10.5px; letter-spacing: 2.5px; text-transform: uppercase; color: #C6E000; font-weight: 700; margin-bottom: 6px; }
@@ -95,11 +95,11 @@
   .mct-burbuja p b { color: #fff; }
   .mct-pie { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
   .mct-puntos { display: flex; gap: 5px; margin-right: auto; }
-  .mct-puntos i { width: 7px; height: 7px; border-radius: 50%; background: #333; }
+  .mct-puntos i { width: 7px; height: 7px; border-radius: 50%; background: #352E58; }
   .mct-puntos i.on { background: #C6E000; width: 18px; border-radius: 4px; }
   .mct-btn { border: none; border-radius: 10px; padding: 9px 14px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; }
   .mct-sig { background: #C6E000; color: #0e0e0e; }
-  .mct-atr { background: #222; color: #ccc; }
+  .mct-atr { background: #292245; color: #ccc; }
   .mct-saltar { position: absolute; top: 10px; right: 12px; background: none; border: none; color: #777; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
   .mct-saltar:hover { color: #fff; }
   @keyframes mctIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }

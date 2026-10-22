@@ -5,7 +5,7 @@
 <script src="../assets/guardia.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="manifest" href="../manifest.webmanifest">
-<meta name="theme-color" content="#050505">
+<meta name="theme-color" content="#0B0818">
 <link rel="icon" type="image/png" sizes="32x32" href="../assets/app/icono-32.png">
 <link rel="apple-touch-icon" href="../assets/app/icono-180.png">
 <meta name="apple-mobile-web-app-title" content="Modo Cachimbo">
@@ -19,9 +19,9 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #050505; --surface: #0e0e0e; --surface-2: #141414;
-    --border: #232323; --accent: #C6E000; --accent-soft: rgba(198,224,0,0.1);
-    --text: #f2f2f2; --text-dim: #9a9a9a; --text-faint: #5f5f5f;
+    --bg: #0B0818; --surface: #151127; --surface-2: #1D1834;
+    --border: #2A2346; --accent: #C6E000; --accent-soft: rgba(198,224,0,0.1);
+    --text: #EEEAF7; --text-dim: #A99FC8; --text-faint: #6F6690;
     --red: #E03C3C;
   }
 
@@ -34,7 +34,7 @@
   .card {
     width: 100%; max-width: 400px;
     background: var(--surface); border-radius: 24px; overflow: hidden;
-    border: 1px solid #1f1f1f; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    border: 1px solid #272041; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
     transition: max-width .2s ease;
   }
 
@@ -90,7 +90,7 @@
   .lives { display: flex; gap: 4px; }
   .stat { display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--accent); }
 
-  .progress-track { height: 4px; background: #1c1c1c; border-radius: 100px; margin-top: 14px; overflow: hidden; }
+  .progress-track { height: 4px; background: #241E3E; border-radius: 100px; margin-top: 14px; overflow: hidden; }
   .progress-fill { height: 100%; background: var(--accent); border-radius: 100px; transition: width .3s ease; }
   .progress-label { margin-top: 8px; font-size: 11px; color: #666; letter-spacing: .5px; }
 
@@ -106,10 +106,10 @@
 
   .options { padding: 0 22px 6px; display: flex; flex-direction: column; gap: 9px; }
   .option {
-    display: flex; align-items: center; gap: 12px; background: #141414; border: 1px solid #232323;
+    display: flex; align-items: center; gap: 12px; background: #1D1834; border: 1px solid #2A2346;
     border-radius: 13px; padding: 12px 14px; cursor: pointer; transition: border-color .15s ease, background .15s ease;
   }
-  .option:hover:not(.locked) { border-color: #3a3a3a; }
+  .option:hover:not(.locked) { border-color: #3A3360; }
   .letter {
     width: 25px; height: 25px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
     font-family: 'Sora', sans-serif; font-size: 11.5px; font-weight: 700; flex-shrink: 0;
@@ -133,13 +133,13 @@
 
   .navrow { display: flex; gap: 10px; padding: 18px 22px 0; }
   .btn {
-    flex: 1; padding: 12px; border-radius: 12px; border: 1px solid #262626; background: #141414; color: #aaa;
+    flex: 1; padding: 12px; border-radius: 12px; border: 1px solid #2C2549; background: #1D1834; color: #aaa;
     font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity .15s ease;
   }
   .btn.primary { background: var(--accent); color: #0e0e0e; border-color: var(--accent); }
   .btn:disabled { opacity: .35; cursor: default; }
 
-  .footer { padding: 16px 22px 22px; margin-top: 12px; border-top: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; }
+  .footer { padding: 16px 22px 22px; margin-top: 12px; border-top: 1px solid #221C3B; display: flex; justify-content: space-between; align-items: center; }
   .footer .label { font-size: 11px; color: #666; letter-spacing: .5px; }
   .footer .mark { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 13px; color: var(--accent); }
 
@@ -158,7 +158,7 @@
   .lockscreen h1 .accent { color: var(--accent); }
   .lockscreen p { font-size: 13px; color: #999; line-height: 1.6; margin-bottom: 20px; }
   #lockInput {
-    width: 100%; background: #141414; border: 1px solid #262626; border-radius: 12px;
+    width: 100%; background: #1D1834; border: 1px solid #2C2549; border-radius: 12px;
     padding: 13px 14px; color: #f2f2f2; font-size: 14px; text-align: center;
     letter-spacing: 1px; font-weight: 600; margin-bottom: 12px;
     box-sizing: border-box;
@@ -199,33 +199,33 @@
   .q-graphic svg { max-width: 100%; height: auto; display: block; }
 
   /* Casita con estilo grueso: se hunde al tocarla */
-  .home-btn { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 12px; background: #141414; width: 36px; height: 36px; color: #e6e6e6;
+  .home-btn { border: 2px solid #322B52; border-bottom-width: 4px; border-radius: 12px; background: #1D1834; width: 36px; height: 36px; color: #e6e6e6;
     transition: transform .08s ease, border-color .15s ease, color .15s ease; -webkit-tap-highlight-color: transparent; }
   .home-btn:hover { border-color: var(--accent, #C6E000); border-bottom-color: #8fa300; color: var(--accent, #C6E000); }
   .home-btn:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
   /* Práctica con estilo grueso tipo Duolingo: claves y botones que se hunden al tocarlos */
-  .card { border: 2px solid #232323; }
+  .card { border: 2px solid #2A2346; }
   .startscreen h1, .lockscreen h1, .title { font-family: 'Nunito', 'Sora', sans-serif; font-weight: 900; letter-spacing: -.2px; }
   .startscreen h1 { font-size: 26px; }
   .startscreen p, .lockscreen p, .endscreen p { font: 700 14px/1.6 'Nunito', 'Inter', sans-serif; }
   .start-badge, .badge { font: 800 12px 'Nunito', 'Inter', sans-serif; border: 2px solid rgba(198,224,0,.25); }
   .start-info { gap: 10px; flex-wrap: wrap; }
-  .start-stat { font: 800 14px 'Nunito', 'Inter', sans-serif; border: 2px solid #2a2a2a; border-bottom-width: 4px; border-radius: 14px; background: #141414; padding: 8px 14px; }
+  .start-stat { font: 800 14px 'Nunito', 'Inter', sans-serif; border: 2px solid #2F284E; border-bottom-width: 4px; border-radius: 14px; background: #1D1834; padding: 8px 14px; }
   .stat { font: 900 14px 'Nunito', 'Inter', sans-serif; }
-  .progress-track { height: 12px; border-radius: 100px; background: #222; margin-top: 16px; }
+  .progress-track { height: 12px; border-radius: 100px; background: #292245; margin-top: 16px; }
   .progress-fill { position: relative; min-width: 12px; }
   .progress-fill::after { content: ''; position: absolute; left: 6px; right: 6px; top: 3px; height: 3px; border-radius: 100px; background: rgba(255,255,255,.35); }
   .progress-label { font: 800 12px 'Nunito', 'Inter', sans-serif; color: #7a7a7a; }
-  .question { border: 2px solid #262626; border-bottom-width: 5px; border-radius: 20px; background: #101010; }
+  .question { border: 2px solid #2C2549; border-bottom-width: 5px; border-radius: 20px; background: #18132B; }
   .question p { font-family: 'Nunito', 'Inter', sans-serif; font-weight: 800; font-size: 17px !important; line-height: 1.55; color: #f2f2f2; }
   @media (min-width: 900px) { .question p { font-size: 19px !important; } }
   .options { gap: 11px; padding-bottom: 8px; }
-  .option { border: 2px solid #2a2a2a; border-bottom-width: 5px; border-radius: 16px; background: #151515; -webkit-tap-highlight-color: transparent;
+  .option { border: 2px solid #2F284E; border-bottom-width: 5px; border-radius: 16px; background: #1E1935; -webkit-tap-highlight-color: transparent;
     transition: transform .08s ease, border-color .15s ease, background .15s ease; }
-  .option:hover:not(.locked) { border-color: #3d3d3d; background: #181818; }
+  .option:hover:not(.locked) { border-color: #3d3d3d; background: #201B39; }
   .option:active:not(.locked) { transform: translateY(3px); border-bottom-width: 2px; margin-bottom: 3px; }
   .option span.text { font: 800 15px 'Nunito', 'Inter', sans-serif; color: #dcdcdc; }
-  .letter { width: 30px; height: 30px; border-radius: 10px; border: 2px solid #3a3a3a; background: transparent; color: #cfcfcf; font: 900 13px 'Nunito', sans-serif; }
+  .letter { width: 30px; height: 30px; border-radius: 10px; border: 2px solid #3A3360; background: transparent; color: #cfcfcf; font: 900 13px 'Nunito', sans-serif; }
   .option.correct { background: rgba(88,204,2,.12); border-color: #58CC02; border-bottom-color: #3f9a00; }
   .option.correct span.text { color: #E3FFD0; font-weight: 900; }
   .option.wrong { background: rgba(224,60,60,.1); border-color: var(--red); border-bottom-color: #9e2525; }
@@ -235,7 +235,7 @@
   .feedback.ok { border-color: rgba(88,204,2,.35); }
   .feedback.bad { border-color: rgba(224,60,60,.4); }
   .navrow { gap: 12px; padding-bottom: 6px; }
-  .btn { border: 2px solid #2e2e2e; border-bottom-width: 5px; border-radius: 16px; background: #161616; color: #cfcfcf; padding: 13px 12px;
+  .btn { border: 2px solid #322B52; border-bottom-width: 5px; border-radius: 16px; background: #1F1936; color: #cfcfcf; padding: 13px 12px;
     font: 900 14px 'Nunito', 'Inter', sans-serif; text-transform: uppercase; letter-spacing: .6px; -webkit-tap-highlight-color: transparent;
     transition: transform .08s ease, box-shadow .08s ease, opacity .15s ease; }
   .btn:active:not(:disabled) { transform: translateY(3px); border-bottom-width: 2px; margin-bottom: 3px; }
@@ -244,7 +244,7 @@
   .btn:disabled { opacity: .4; }
   .endscreen h2 { font: 900 24px 'Nunito', 'Sora', sans-serif; }
   .endscreen .score { font-family: 'Nunito', 'Sora', sans-serif; font-weight: 900; font-size: 48px; }
-  #lockInput { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 14px; font: 800 15px 'Nunito', 'Inter', sans-serif; letter-spacing: 1px; }
+  #lockInput { border: 2px solid #322B52; border-bottom-width: 4px; border-radius: 14px; font: 800 15px 'Nunito', 'Inter', sans-serif; letter-spacing: 1px; }
   .lock-error, .lock-whatsapp { border-radius: 14px; font-family: 'Nunito', 'Inter', sans-serif; font-weight: 800; }
   .footer .label { font: 800 12px 'Nunito', 'Inter', sans-serif; }
   .footer .mark { font-family: 'Nunito', 'Sora', sans-serif; font-weight: 900; }

@@ -25,8 +25,8 @@ const VO_CAMPOS = { sin: 'sinónimos', ant: 'antónimos', def: 'definición', ej
   const st = document.createElement('style');
   st.textContent = `
   .vo-temas { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
-  .vo-tema { font-size: 13px !important; padding: 7px 12px !important;  display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 14px; background: var(--surface); color: var(--text-dim); border: 2px solid #262626; border-bottom-width: 4px; font: 800 14px Nunito, Inter, sans-serif; cursor: pointer; }
-  .vo-tema b { font-weight: 900; font-size: 12px; background: #1c1c1c; color: var(--text-dim); border-radius: 100px; padding: 2px 8px; }
+  .vo-tema { font-size: 13px !important; padding: 7px 12px !important;  display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 14px; background: var(--surface); color: var(--text-dim); border: 2px solid #2C2549; border-bottom-width: 4px; font: 800 14px Nunito, Inter, sans-serif; cursor: pointer; }
+  .vo-tema b { font-weight: 900; font-size: 12px; background: #241E3E; color: var(--text-dim); border-radius: 100px; padding: 2px 8px; }
   .vo-tema.on { color: #1CB0F6; border-color: #1CB0F6; background: rgba(28,176,246,.08); }
   .vo-nuevo { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 100px; background: #CE82FF; color: #fff; font: 900 10px Nunito, sans-serif; letter-spacing: .5px; vertical-align: 3px; }
   .vo-tema.on b { background: rgba(28,176,246,.18); color: #1CB0F6; }
@@ -38,11 +38,11 @@ const VO_CAMPOS = { sin: 'sinónimos', ant: 'antónimos', def: 'definición', ej
   .vo-acc { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
   .vo-ayuda { margin-top: 12px; font-size: 12.5px; color: var(--text-dim); line-height: 1.55; }
   .vo-ayuda summary { cursor: pointer; font-weight: 700; color: var(--text); }
-  .vo-ayuda pre { background: #0a0a0a; border: 1px solid #2a2a2a; border-radius: 10px; padding: 10px 12px; margin: 8px 0; font-size: 12.5px; overflow-x: auto; color: var(--text); }
+  .vo-ayuda pre { background: #110D20; border: 1px solid #2F284E; border-radius: 10px; padding: 10px 12px; margin: 8px 0; font-size: 12.5px; overflow-x: auto; color: var(--text); }
   .vo-ayuda ul { margin: 6px 0 0 18px; }
   .vo-ayuda li { margin-bottom: 4px; }
   .vo-res { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
-  .vo-res span { font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 100px; background: #1a1a1a; color: var(--text-dim); }
+  .vo-res span { font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 100px; background: #221C3B; color: var(--text-dim); }
   .vo-res span.ok { background: var(--accent-soft); color: var(--accent); }
   .vo-avisos { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
   .vo-aviso { text-align: left; border: none; cursor: pointer; font-size: 12.5px; line-height: 1.45; border-radius: 10px; padding: 8px 12px; background: var(--amber-soft); color: var(--amber); }
@@ -51,17 +51,17 @@ const VO_CAMPOS = { sin: 'sinónimos', ant: 'antónimos', def: 'definición', ej
   .vo-aviso:hover { filter: brightness(1.2); }
   .vo-buscar { margin-bottom: 10px; }
   .vo-lista { display: flex; flex-direction: column; gap: 10px; max-height: 620px; overflow-y: auto; padding-right: 4px; }
-  .vo-card { background: #111; border: 2px solid #262626; border-bottom-width: 4px; border-radius: 16px; padding: 12px 14px; }
+  .vo-card { background: #19142E; border: 2px solid #2C2549; border-bottom-width: 4px; border-radius: 16px; padding: 12px 14px; }
   .vo-card.mal { border-color: rgba(224,60,60,.45); }
   .vo-card { cursor: pointer; transition: border-color .15s; } .vo-card:hover { border-color: #3a4a00; }
-  .vo-card-pie { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px solid #1f1f1f; }
+  .vo-card-pie { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px solid #272041; }
   .vo-corr { font-size: 12px; font-weight: 800; color: var(--accent); }
   .vo-del { background: none; border: 0; font: 700 12px Nunito, sans-serif; color: #777; cursor: pointer; padding: 4px 6px; border-radius: 8px; }
   .vo-del:hover, .vo-del[data-ok] { color: var(--red); background: rgba(224,60,60,.08); }
   #voRes { margin-top: 10px; }
   .vo-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .vo-pal { font: 900 16px Nunito, Inter, sans-serif; letter-spacing: .5px; text-transform: uppercase; color: var(--text); overflow-wrap: anywhere; }
-  .vo-rae { flex-shrink: 0; font-size: 11.5px; font-weight: 700; color: var(--text-dim); text-decoration: none; border: 1px solid #2a2a2a; border-radius: 8px; padding: 3px 8px; }
+  .vo-rae { flex-shrink: 0; font-size: 11.5px; font-weight: 700; color: var(--text-dim); text-decoration: none; border: 1px solid #2F284E; border-radius: 8px; padding: 3px 8px; }
   .vo-rae:hover { color: var(--accent); border-color: #3a4a00; }
   .vo-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
   .vo-et { font: 900 11px Nunito, Inter, sans-serif; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-faint); margin-top: 10px; }
@@ -69,7 +69,7 @@ const VO_CAMPOS = { sin: 'sinónimos', ant: 'antónimos', def: 'definición', ej
   .vo-chips.ant span { border-color: #9A5BC4; background: rgba(206,130,255,.1); color: #CE82FF; }
   .vo-def { color: var(--text); font-size: 13.5px; margin-top: 6px; }
   .vo-def, .vo-ej { font-size: 13px; line-height: 1.5; margin-top: 8px; }
-  .vo-ej { font-style: italic; color: var(--text-dim); border-left: 3px solid #333; padding-left: 10px; margin-top: 8px; }
+  .vo-ej { font-style: italic; color: var(--text-dim); border-left: 3px solid #352E58; padding-left: 10px; margin-top: 8px; }
   .vo-tipo { font: 700 12px Inter, sans-serif; text-transform: none; letter-spacing: 0; color: var(--text-faint); font-style: italic; }
   .vo-niv { font-size: 10px; letter-spacing: 1px; color: #FF9600; vertical-align: 2px; }
   .vo-mas { font-size: 12.5px; line-height: 1.5; color: var(--text-dim); margin-top: 8px; }
@@ -77,10 +77,10 @@ const VO_CAMPOS = { sin: 'sinónimos', ant: 'antónimos', def: 'definición', ej
   .vo-exa { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
   .vo-exa span { font: 800 11.5px Nunito, Inter, sans-serif; color: #FFC800; background: rgba(255,200,0,.1); border-radius: 8px; padding: 3px 8px; }
   .vo-ej mark { background: none; color: var(--accent); font-weight: 700; }
-  .vo-falta { display: inline-block; margin-top: 8px; margin-right: 6px; font-size: 11px; font-weight: 700; color: var(--text-faint); border: 1px dashed #333; border-radius: 8px; padding: 2px 7px; }
+  .vo-falta { display: inline-block; margin-top: 8px; margin-right: 6px; font-size: 11px; font-weight: 700; color: var(--text-faint); border: 1px dashed #352E58; border-radius: 8px; padding: 2px 7px; }
   .vo-vacio { color: var(--text-faint); font-size: 13px; text-align: center; padding: 30px 10px; }
   .vo-cursos { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
-  .vo-curso { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 2px solid #262626; border-radius: 12px; font-size: 13.5px; font-weight: 600; cursor: pointer; color: var(--text-dim); }
+  .vo-curso { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 2px solid #2C2549; border-radius: 12px; font-size: 13.5px; font-weight: 600; cursor: pointer; color: var(--text-dim); }
   .vo-curso:has(input:checked) { border-color: #3a4a00; color: var(--text); background: var(--accent-soft); }
   .vo-curso input { accent-color: #C6E000; width: 16px; height: 16px; }
   @media (max-width: 860px) { .vo-grid { grid-template-columns: minmax(0, 1fr); } #voTexto { min-height: 320px; } .vo-lista { max-height: none; } }`;

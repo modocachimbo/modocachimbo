@@ -177,8 +177,8 @@
     st.textContent =
       '.buho-fila{display:flex;align-items:center;gap:12px;margin-top:14px}' +
       '.buho-dibujo{flex-shrink:0;width:92px;height:92px}' +
-      '.buho-globo{position:relative;min-width:0;background:var(--surface-2,#141414);border:1px solid var(--border,#232323);border-radius:16px;padding:10px 14px;font-size:13.5px;line-height:1.45;color:var(--text-dim,#9a9a9a)}' +
-      '.buho-globo::before{content:"";position:absolute;left:-7px;top:50%;width:12px;height:12px;background:inherit;border-left:1px solid var(--border,#232323);border-bottom:1px solid var(--border,#232323);transform:translateY(-50%) rotate(45deg)}' +
+      '.buho-globo{position:relative;min-width:0;background:var(--surface-2,#1D1834);border:1px solid var(--border,#2A2346);border-radius:16px;padding:10px 14px;font-size:13.5px;line-height:1.45;color:var(--text-dim,#9a9a9a)}' +
+      '.buho-globo::before{content:"";position:absolute;left:-7px;top:50%;width:12px;height:12px;background:inherit;border-left:1px solid var(--border,#2A2346);border-bottom:1px solid var(--border,#2A2346);transform:translateY(-50%) rotate(45deg)}' +
       '.buho-globo b{display:block;font:800 14.5px Sora,Inter,sans-serif;color:var(--text,#f2f2f2);margin-bottom:2px}' +
       '.buho-globo a{display:table;margin-top:4px;color:var(--accent,#C6E000);font-weight:700;text-decoration:none}' +
       '[data-animo=preocupado] .buho-globo{border-color:rgba(251,191,36,.45)}[data-animo=preocupado] .buho-globo::before{border-color:rgba(251,191,36,.45)}' +

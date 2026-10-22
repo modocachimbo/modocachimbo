@@ -33,10 +33,10 @@ html[data-area] .course .btn {
 html[data-area] .course .btn:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
 
 /* Próximamente: gris, sin color */
-html[data-area] .course.disabled { border-color: #262626; border-bottom-color: #262626; }
+html[data-area] .course.disabled { border-color: #2C2549; border-bottom-color: #2C2549; }
 html[data-area] .course.disabled .icon, html[data-area] .course.disabled h3 { color: var(--text-faint, #5f5f5f); }
 html[data-area] .course.disabled .rule { background: var(--text-faint, #5f5f5f); }
-html[data-area] .course.disabled .btn { background: var(--surface-2, #141414); color: var(--text-faint, #5f5f5f); border-color: #262626; }
+html[data-area] .course.disabled .btn { background: var(--surface-2, #1D1834); color: var(--text-faint, #5f5f5f); border-color: #2C2549; }
 
 /* Celular: dos tarjetas por fila para que no ocupen tanto */
 @media (max-width: 520px) {
@@ -59,7 +59,7 @@ html.pagina-area .vip-widget { display: none; }
    ========================================================= */
 html[data-area] .page-title .eyebrow, html[data-area] .page-head .eyebrow { color: var(--ac); }
 html[data-area] .logo .dot, html[data-area] .course-badge .dot { background: var(--ac); }
-html[data-area] header.top { background: #050505; -webkit-backdrop-filter: none; backdrop-filter: none; }
+html[data-area] header.top { background: #0B0818; -webkit-backdrop-filter: none; backdrop-filter: none; }
 
 /* Años / ciclos */
 html[data-area] .year-card.active { border-color: rgba(var(--ac-rgb), .45); box-shadow: 0 5px 0 var(--ac-d); }
@@ -76,7 +76,7 @@ html[data-area] .tema-card svg.arrow { color: var(--ac); }
 
 /* Tema: número de pregunta y Flashcards del color del área */
 html[data-area] .qcard .qnum { border-color: rgba(var(--ac-rgb), .45); color: var(--ac); background: rgba(var(--ac-rgb), .12); }
-html[data-area] .quiz-cta a.alt { background: #161616; color: var(--ac); border-color: rgba(var(--ac-rgb), .5); box-shadow: 0 5px 0 var(--ac-d); }
+html[data-area] .quiz-cta a.alt { background: #1F1936; color: var(--ac); border-color: rgba(var(--ac-rgb), .5); box-shadow: 0 5px 0 var(--ac-d); }
 html[data-area] .quiz-cta a.alt:active { box-shadow: 0 0 0 transparent; }
 
 /* Temario: burbuja con el profesor del tema (crédito), del color del área */
@@ -124,10 +124,10 @@ html[data-area] .mixto-go { margin-left: auto; background: var(--ac); color: #0b
 html[data-area]:has(.courses) { --display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif; }
 
 /* Cabecera */
-html[data-area]:has(.courses) .home-btn { border-radius: 12px; background: var(--surface, #0e0e0e); border-color: var(--border, #262626); }
+html[data-area]:has(.courses) .home-btn { border-radius: 12px; background: var(--surface, #151127); border-color: var(--border, #2C2549); }
 html[data-area]:has(.courses) .auth-row .mcu-user .mcz-pill, html[data-area]:has(.courses) .auth-row .mcu-user .mcu-racha {
-  border-radius: 12px !important; border: 1px solid var(--border, #262626) !important; background: var(--surface, #0e0e0e) !important; height: 44px; padding: 0 14px 0 12px; }
-html[data-area]:has(.courses) .auth-row .mcu-chip { border-radius: 12px !important; border: 1px solid var(--border, #262626) !important; background: var(--surface, #0e0e0e) !important; height: 44px; padding: 4px 16px 4px 4px; }
+  border-radius: 12px !important; border: 1px solid var(--border, #2C2549) !important; background: var(--surface, #151127) !important; height: 44px; padding: 0 14px 0 12px; }
+html[data-area]:has(.courses) .auth-row .mcu-chip { border-radius: 12px !important; border: 1px solid var(--border, #2C2549) !important; background: var(--surface, #151127) !important; height: 44px; padding: 4px 16px 4px 4px; }
 html[data-area]:has(.courses) .auth-row .mcu-chip .mcu-av { border-radius: 8px; }
 html[data-area]:has(.courses) #vipToggle.vip-active { border-radius: 12px !important; }
 

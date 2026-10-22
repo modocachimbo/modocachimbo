@@ -22,7 +22,7 @@
     background: rgba(0,0,0,0.72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); animation: mcaFade .25s ease; }
   .mca-ov.cerrando { animation: mcaFadeOut .2s ease forwards; }
   .mca-card { position: relative; overflow: hidden; width: 100%; max-width: 480px; max-height: calc(100vh - 40px); overflow-y: auto;
-    background: linear-gradient(160deg, #1a1a1a 0%, #0e0e0e 60%); border: 1px solid #2c2c2c; border-radius: 26px;
+    background: linear-gradient(160deg, #221C3B 0%, #151127 60%); border: 1px solid #302950; border-radius: 26px;
     padding: 40px 34px 30px; text-align: center; box-shadow: 0 30px 80px rgba(0,0,0,0.6);
     font-family: 'Inter', system-ui, sans-serif; color: #f2f2f2; animation: mcaPop .35s cubic-bezier(.2,.9,.3,1.2); }
   .mca-ov.cerrando .mca-card { animation: mcaPopOut .2s ease forwards; }
@@ -39,7 +39,7 @@
     padding: 15px 20px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 15px; transition: transform .12s, box-shadow .12s; }
   .mca-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(198,224,0,0.25); }
   .mca-franja { position: relative; z-index: 30; display: flex; align-items: center; gap: 12px; padding: 12px 48px 12px 18px;
-    background: linear-gradient(90deg, var(--mca-soft), rgba(20,20,20,0.95)); border-bottom: 1px solid var(--mca-borde);
+    background: linear-gradient(90deg, var(--mca-soft), rgba(29,24,52,0.95)); border-bottom: 1px solid var(--mca-borde);
     font-family: 'Inter', system-ui, sans-serif; font-size: 13.5px; line-height: 1.5; color: #d8d8d8; animation: mcaDown .3s ease; }
   .mca-franja .ico { flex-shrink: 0; width: 20px; height: 20px; color: var(--mca-c); }
   .mca-franja .ico svg { width: 20px; height: 20px; display: block; }

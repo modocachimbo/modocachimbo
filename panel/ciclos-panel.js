@@ -14,24 +14,24 @@ const CI_COLOR = { 'ciencia-tecnologia': ['#C6E000', '198,224,0', '#8fa300'], ma
   const st = document.createElement('style');
   st.textContent = `
   .ci-areas { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
-  .ci-ar { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 14px; border: 2px solid #2a2a2a; border-bottom-width: 4px;
-    background: #121212; color: var(--text-dim); font: 900 13.5px 'Nunito', sans-serif; cursor: pointer; }
+  .ci-ar { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 14px; border: 2px solid #2F284E; border-bottom-width: 4px;
+    background: #1A1630; color: var(--text-dim); font: 900 13.5px 'Nunito', sans-serif; cursor: pointer; }
   .ci-ar i { width: 11px; height: 11px; border-radius: 50%; background: var(--c); }
   .ci-ar.on { border-color: var(--c); border-bottom-color: var(--d); background: rgba(var(--r), .12); color: var(--c); }
-  .ci-nuevo { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; padding: 16px; border-radius: 18px; border: 2px solid #262626; border-bottom-width: 5px; background: #0e0e0e; margin-bottom: 16px; }
+  .ci-nuevo { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; padding: 16px; border-radius: 18px; border: 2px solid #2C2549; border-bottom-width: 5px; background: #151127; margin-bottom: 16px; }
   .ci-nuevo b { flex-basis: 100%; font-weight: 900; }
   .ci-nuevo .inp { flex: 1; min-width: 140px; }
   .ci-nuevo .hint { flex-basis: 100%; }
   .ci-lista { display: grid; gap: 10px; }
   .ci-fila { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 14px 16px; border-radius: 18px;
-    border: 2px solid #262626; border-bottom-width: 5px; background: #101010; }
+    border: 2px solid #2C2549; border-bottom-width: 5px; background: #18132B; }
   .ci-fila.oculto .ci-nom, .ci-fila.oculto .ci-info { opacity: .5; }
   .ci-nom { font: 900 19px 'Nunito', sans-serif; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .ci-nom small { font: 800 11px 'Nunito', sans-serif; padding: 3px 8px; border-radius: 8px; background: #1d1d1d; color: var(--text-dim); letter-spacing: .04em; }
+  .ci-nom small { font: 800 11px 'Nunito', sans-serif; padding: 3px 8px; border-radius: 8px; background: #251F3F; color: var(--text-dim); letter-spacing: .04em; }
   .ci-info { color: var(--text-dim); font-size: 13px; margin-top: 3px; }
   .ci-info b { color: var(--c); }
   .ci-acc { display: flex; gap: 10px; align-items: center; }
-  .ci-sw { width: 50px; height: 30px; border-radius: 20px; background: #2a2a2a; position: relative; border: 2px solid #333; cursor: pointer; flex-shrink: 0; padding: 0; }
+  .ci-sw { width: 50px; height: 30px; border-radius: 20px; background: #2F284E; position: relative; border: 2px solid #352E58; cursor: pointer; flex-shrink: 0; padding: 0; }
   .ci-sw::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #777; transition: left .2s, background .2s; }
   .ci-sw.on { background: var(--c); border-color: var(--d); }
   .ci-sw.on::after { left: 23px; background: #fff; }

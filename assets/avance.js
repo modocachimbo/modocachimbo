@@ -14,7 +14,7 @@
   var st = document.createElement('style');
   st.textContent =
     '.mc-avance{margin-top:22px}' +
-    '.mc-avance .barra{height:14px;border-radius:10px;background:#1b1b1b;border:2px solid #262626;overflow:hidden}' +
+    '.mc-avance .barra{height:14px;border-radius:10px;background:#231D3C;border:2px solid #2C2549;overflow:hidden}' +
     '.mc-avance .barra i{display:block;height:100%;width:0;border-radius:8px;background:var(--ac,#C6E000);box-shadow:inset 0 -3px 0 var(--ac-d,#8fa300);transition:width .8s cubic-bezier(.2,.8,.3,1)}' +
     '.mc-avance small{display:block;margin-top:8px;font:800 13px Nunito,Inter,sans-serif;color:#9a9a9a}' +
     '.mc-avance + .tema-list{margin-top:18px}';
