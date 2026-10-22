@@ -656,7 +656,11 @@
   .res-hero .cuenta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0; }
   .ct { display: grid; justify-items: center; gap: 6px; padding: 14px 6px 12px; background: var(--surface-2); border: 2px solid var(--borde-g); border-bottom-width: 4px; border-radius: 16px; text-align: center; }
   .ct.ok { border-bottom-color: #2f9e5a; } .ct.mal { border-bottom-color: #c24848; }
-  .ct .ins { margin: 0; width: 26px; height: 26px; border-radius: 8px; }
+  .ct-ic { display: block; width: 30px; height: 30px; flex-shrink: 0; }
+  .ct-ic rect { fill: var(--k); }
+  .ct-ic path { fill: none; stroke: #10131a; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  .ct.ok { --k: var(--ok); } .ct.mal { --k: var(--bad); } .ct.bl { --k: var(--surface); }
+  .ct.bl .ct-ic rect { stroke: var(--borde-g); stroke-width: 1.5; } .ct.bl .ct-ic path { stroke: var(--dim); }
   html body .ct b:not(#z) { font: italic 900 36px/1 var(--display) !important; color: var(--text); }
   html body .ct small:not(#z) { font: 800 12.5px/1 var(--display) !important; letter-spacing: .07em; text-transform: uppercase; color: var(--dim); }
   .res-acc { grid-column: 1 / -1; display: flex; gap: 10px; flex-wrap: wrap; }
@@ -1333,7 +1337,7 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
     if (busca) busca.addEventListener('input', () => pintarOpciones(caja));
     caja.querySelector('.sel-ops').addEventListener('click', e => {
       const op = e.target.closest('.sel-op'); if (!op) return;
-      elegir(id, op.dataset.v, op.dataset.b);
+      elegirOpcion(id, op.dataset.v, op.dataset.b);
       abrirSelector(caja, false); btn.focus();
     });
     caja.addEventListener('keydown', e => {
@@ -1346,7 +1350,7 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
       ops[Math.max(0, Math.min(ops.length - 1, i < 0 ? 0 : i + (e.key === 'ArrowDown' ? 1 : -1)))].focus();
     });
   }
-  function elegir(id, v, bid) {
+  function elegirOpcion(id, v, bid) {
     if (id === 'selBloque') { if (v !== $('selBloque').value) { $('selBloque').value = v; llenarCarreras(''); } return; }
     // Una carrera de otro bloque (al buscar) cambia también el bloque
     if (bid && bid !== $('selBloque').value) { $('selBloque').value = bid; llenarCarreras(v); return; }
@@ -1964,8 +1968,14 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
     $('rDe').textContent = 'de ' + fmtNum(R.max) + ' · Bloque ' + S.bloque + ' · ' + S.nombre;
     const pct = R.max ? Math.max(0, Math.min(100, R.total / R.max * 100)) : 0;
     $('rPuntaje').closest('.res-hero').style.setProperty('--pct', pct.toFixed(1) + '%');
-    $('rCuenta').innerHTML = [['ok', 'g', R.C, 'Correctas'], ['mal', 'r', R.I, 'Incorrectas'], ['bl', 'n', R.B, 'En blanco']]
-      .map(x => '<div class="ct ' + x[0] + '">' + ICO[x[0]] + '<b>' + x[2] + '</b><small>' + x[3] + '</small></div>').join('');
+    // Cada ícono es un solo SVG (fondo y trazo juntos) para que no se descuadre en ningún navegador
+    const CT_ICO = {
+      ok: '<path d="m7.5 12.5 3 3 6-6.5"/>',
+      mal: '<path d="m8.5 8.5 7 7M15.5 8.5l-7 7"/>',
+      bl: '<path d="M8 12h8"/>'
+    };
+    $('rCuenta').innerHTML = [['ok', R.C, 'Correctas'], ['mal', R.I, 'Incorrectas'], ['bl', R.B, 'En blanco']]
+      .map(x => '<div class="ct ' + x[0] + '"><svg class="ct-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="1" y="1" width="22" height="22" rx="7"/>' + CT_ICO[x[0]] + '</svg><b>' + x[1] + '</b><small>' + x[2] + '</small></div>').join('');
     $('rAreas').innerHTML = AREAS.filter(a => !S.pers || PREGS.some(q => AREA_DE[q._curso] === a)).map(a => {
       const x = R.areas[a.k], n = x.c + x.i + x.b || 1;
       return '<div class="area ra" data-k="' + a.k + '" style="--c:' + a.c + ';--ico:url(assets/icons/' + a.ico + '.svg)"><i class="a-ic"></i>' +
