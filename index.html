@@ -1196,6 +1196,13 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
 .acceso, .ver-mas, .sec-cab button { text-transform: uppercase; letter-spacing: .06em; }
 .podio .sim-vacio { grid-column: 1 / -1; padding: 20px 16px 34px; }
 :root[data-modo="claro"] .rg small { filter: brightness(.6) saturate(1.4); }
+
+/* Modos de estudio y cursos populares: esquinas suaves, mismo estilo (borde de color abajo, chips y #puesto) */
+.juego { border-radius: 16px; }
+.juego .chip { border-radius: 0 0 0 10px; }
+.pop { border-radius: 14px; }
+.pop-ico { border-radius: 10px; clip-path: none; }
+@media (max-width: 900px) { .juego { border-radius: 14px; } .pop { border-radius: 12px; } .pop-ico { border-radius: 9px; } }
 </style>
 <link rel="stylesheet" href="assets/areas.css">
 <script src="assets/mc-config.js"></script>
