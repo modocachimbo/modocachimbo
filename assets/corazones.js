@@ -298,8 +298,9 @@
     });
     // Inicio del repaso con cuadros: el número y la palabra van por separado
     var vn = document.getElementById('startVidasN'), vt = document.getElementById('startVidasTx');
-    if (vn) vn.textContent = n;
-    if (vt) vt.textContent = n === 1 ? 'Corazón' : 'Corazones';
+    // Solo si cambia: el MutationObserver de abajo llama aquí en cada cambio del DOM
+    if (vn && vn.textContent !== String(n)) vn.textContent = n;
+    if (vt && vt.textContent !== (n === 1 ? 'Corazón' : 'Corazones')) vt.textContent = n === 1 ? 'Corazón' : 'Corazones';
     var d = document.getElementById('startDesc');
     if (d && /Tienes \d vidas/.test(d.textContent)) d.textContent = d.textContent.replace(/Tienes \d vidas/, 'Tienes ' + txt + ' hoy');
   }
