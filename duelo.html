@@ -810,9 +810,16 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   .tile .ring { grid-row: 1 / span 2; margin: 0; }
   /* El emblema del rango derecho y pequeño en la esquina de la letra (antes giraba con el anillo) */
   .ring svg { transform: none; }
-  .ring > svg { transform: rotate(-90deg); }
+  .ring path { fill: none; stroke-width: 4.5; stroke-linejoin: round; }
+  .ring .a { stroke-linecap: round; }
+  html body .ring .av:not(#z) { border-radius: 9px; overflow: visible; }
+  .av { border-radius: 30%; }
   .ring .av .rgo { right: -10px; bottom: -8px; width: 22px; }
   .ring .av .rgo svg { width: 100%; height: auto; display: block; }
+  /* Foto de perfil dentro del círculo: tapa la inicial, el emblema de rango queda encima */
+  .av .foto { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+  .av.con-foto { color: transparent; }
+  .av .rgo { z-index: 1; }
   html body .tile .nm:not(#z) { grid-column: 2; margin: 0; font: 800 18px/1 var(--display) !important; letter-spacing: .04em; text-transform: uppercase; }
   html body .tile .rs:not(#z) { grid-column: 2; margin: 0; font: 700 11.5px/1.2 'Nunito', sans-serif !important; }
   html body .tile .pt:not(#z) { grid-column: 3; grid-row: 1 / span 2; font: italic 900 34px/1 var(--display) !important; }
@@ -876,6 +883,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   html[data-modo="claro"] .tile .pos:not(.p1) { background: #DCD8E8 !important; color: #1A1626 !important; }
   html[data-modo="claro"] .tile .pos.p1 { background: var(--oro) !important; color: #2b2100 !important; }
   html[data-modo="claro"] .camino i { background: #DCD8E8 !important; }
+  html[data-modo="claro"] .ring .f { stroke: #DCD8E8 !important; }
   html[data-modo="claro"] .camino i.ok { background: var(--verde) !important; }
   html[data-modo="claro"] .camino i.mal { background: var(--rojo) !important; }
   html[data-modo="claro"] .camino i.ya { background: #1A1626 !important; }
@@ -1182,7 +1190,11 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   const nombreDe = j => j.yo ? 'Tú' : j.apodo;
   // Emblema del rango de la semana sobre la esquina del avatar (assets/rango.js; xp viene de ver_duelo, supabase/24)
   const rangoDe = j => j && j.xp != null && window.MCRango && MCRango.nivel(j.xp) >= 0 ? '<span class="rgo" title="' + MCRango.nombre(MCRango.nivel(j.xp)) + '">' + MCRango.svg(MCRango.nivel(j.xp), { mini: true }) + '</span>' : '';
-  const avatar = (j, extra) => '<span class="av ' + colorDe(j) + (extra || '') + '">' + esc(inicial(j.yo ? 'Tú' : j.apodo)) + rangoDe(j) + '</span>';
+  // Marco cuadrado con esquinas redondeadas del avance (empieza arriba al medio, en sentido horario)
+  const MARCO = 'M23 4H32A10 10 0 0 1 42 14V32A10 10 0 0 1 32 42H14A10 10 0 0 1 4 32V14A10 10 0 0 1 14 4Z';
+  // Foto de perfil (ver_duelo la manda desde 30-duelo-fotos.sql); la tuya también sale de la tarjeta de arriba
+  const fotoDe = j => { const f = (j && j.foto) || (j && j.yo && (document.querySelector('header .mcu-av img') || {}).src) || ''; return /^https:\/\//.test(f) ? f : ''; };
+  const avatar = (j, extra) => { const f = fotoDe(j); return '<span class="av ' + colorDe(j) + (f ? ' con-foto' : '') + (extra || '') + '">' + esc(inicial(j.yo ? 'Tú' : j.apodo)) + (f ? '<img class="foto" src="' + esc(f) + '" alt="" referrerpolicy="no-referrer" onerror="this.parentNode.classList.remove(\'con-foto\');this.remove()">' : '') + rangoDe(j) + '</span>'; };
   const cmdCard = k => '<div class="cmd" style="--c:' + CMD[k].c + '"><div class="ci">' + IC[k] + '</div><b>' + CMD[k].nom + '</b><small>' + CMD[k].que + '</small></div>';
   function toast(html, color, ic) {
     const t = document.createElement('div'); t.className = 'toast'; t.style.setProperty('--c', color || 'var(--rojo)');
@@ -1810,19 +1822,19 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   }
   // Marcador en vivo: un cuadro por jugador (puesto, puntos, anillo de avance, racha y comodines usados)
   function jugadores() {
-    const xp = {}; ((V && V.jugadores) || []).forEach(j => { xp[j.yo ? '' : j.apodo] = j.xp; });
-    if (G.jug) return G.jug.map((j, i) => Object.assign({ color: i, xp: xp[j.yo ? '' : j.apodo] }, j));
-    return V.jugadores.map(j => ({ apodo: j.apodo, yo: j.yo, color: j.color, xp: j.xp, actual: j.yo ? G.actual : j.actual, puntos: j.yo ? G.puntos : j.puntos || 0, racha: 0, usados: [], terminado: j.terminado }));
+    const xp = {}, foto = {}; ((V && V.jugadores) || []).forEach(j => { xp[j.yo ? '' : j.apodo] = j.xp; foto[j.yo ? '' : j.apodo] = j.foto; });
+    if (G.jug) return G.jug.map((j, i) => Object.assign({ color: i, xp: xp[j.yo ? '' : j.apodo], foto: foto[j.yo ? '' : j.apodo] }, j));
+    return V.jugadores.map(j => ({ apodo: j.apodo, yo: j.yo, color: j.color, xp: j.xp, foto: j.foto, actual: j.yo ? G.actual : j.actual, puntos: j.yo ? G.puntos : j.puntos || 0, racha: 0, usados: [], terminado: j.terminado }));
   }
   function pintarBarra() {
-    const js = jugadores(), r = 2 * Math.PI * 19;
+    const js = jugadores();
     const pos = j => 1 + js.filter(x => x.puntos > j.puntos).length;
     $('tiles').innerHTML = js.map(j => {
       const p = pos(j), hecho = Math.min(j.actual, G.n), ev = (j.racha >= 3 ? '<span style="--c:var(--naranja)" title="Racha de ' + j.racha + '">' + IC.fuego + '</span>' : '') +
         (j.usados || []).map(k => '<span style="--c:' + CMD[k].c + '" title="Usó ' + CMD[k].nom + '">' + IC[k] + '</span>').join('');
       return '<div class="tile ' + colorDe(j) + (j.yo ? ' yo' : '') + (j.terminado && hecho < G.n ? ' fuera' : '') + '" data-apodo="' + esc(j.yo ? '' : j.apodo) + '"><span class="pos' + (p === 1 ? ' p1' : '') + '">' + p + '.º</span>' +
         (ev ? '<span class="ev">' + ev + '</span>' : '') +
-        '<div class="ring"><svg viewBox="0 0 46 46" aria-hidden="true"><circle class="f" cx="23" cy="23" r="19"/><circle class="a" cx="23" cy="23" r="19" stroke-dasharray="' + r.toFixed(1) + '" stroke-dashoffset="' + (r * (1 - hecho / G.n)).toFixed(1) + '"/></svg>' + avatar(j) + '</div>' +
+        '<div class="ring"><svg viewBox="0 0 46 46" aria-hidden="true"><path class="f" d="' + MARCO + '"/><path class="a" d="' + MARCO + '" pathLength="100" stroke-dasharray="100" stroke-dashoffset="' + (100 * (1 - hecho / G.n)).toFixed(1) + '"/></svg>' + avatar(j) + '</div>' +
         '<span class="nm">' + esc(nombreDe(j)) + '</span><span class="pt">' + j.puntos + '</span><span class="rs">' + (j.terminado ? (hecho < G.n ? 'Fuera' : 'Terminó') : hecho + ' de ' + G.n) + '</span></div>';
     }).join('');
     const ultima = G.final ? G.n - 1 : -1;
