@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-examen="control-cpu">
 <head>
 <meta charset="UTF-8">
 <script src="../../assets/guardia.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="manifest" href="../../manifest.webmanifest">
-<meta name="theme-color" content="#050505">
+<meta name="theme-color" content="#0B0818">
 <link rel="icon" type="image/png" sizes="32x32" href="../../assets/app/icono-32.png">
 <link rel="apple-touch-icon" href="../../assets/app/icono-180.png">
 <meta name="apple-mobile-web-app-title" content="Modo Cachimbo">
@@ -207,6 +207,7 @@
   body, body :not(.katex):not(.katex *):not(code):not(pre):not(kbd):not(samp):not(.formato):not(.ta.big):not(.cdnuevos code) { font-family: 'Nunito', 'Inter', system-ui, sans-serif !important; }
   body { font-weight: 600; }
 </style>
+<link rel="stylesheet" href="../../assets/examenes.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" media="print" onload="this.media='all'">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="document.dispatchEvent(new Event('mc:katex'))"></script>
@@ -218,26 +219,26 @@
   <div class="wrap">
     <header class="top">
       <div class="back-row">
-        <a class="back" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Exámenes</a>
+        <a class="back" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Control CPU</a>
         <a class="home-btn" href="../../index.html" title="Ir al inicio" aria-label="Ir al inicio"><svg viewBox="0 0 24.66 24.65" fill="currentColor" aria-hidden="true"><path d="M11.88,0h.87a2.91,2.91,0,0,1,1.39.84l9.64,9.65a3.33,3.33,0,0,1,.36.39,2.2,2.2,0,0,1,.31,2.35,2.14,2.14,0,0,1-1.82,1.35c-.68.08-.6,0-.61.67,0,2.28,0,4.57,0,6.85a2.63,2.63,0,0,1-2.65,2.54H15.57c-.65,0-.92-.26-.92-.91V18.19a1.16,1.16,0,0,0-1.24-1.25c-.71,0-1.43,0-2.14,0A1.17,1.17,0,0,0,10,18.25v5.56a.74.74,0,0,1-.83.83H5.27A2.6,2.6,0,0,1,3,23.39a3,3,0,0,1-.42-1.71V14.86a.23.23,0,0,0-.23-.25,2.64,2.64,0,0,1-.74-.1A2.32,2.32,0,0,1,0,12.75v-.87a2.91,2.91,0,0,1,.86-1.42Q5.66,5.67,10.45.88A2.86,2.86,0,0,1,11.88,0Z"/></svg></a>
       </div>
-      <div class="course-badge"><div class="dot"></div><span id="badgeYear">Examen de control CPU</span></div>
+      <div class="ex-badge"><i class="ex-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.6" width="14" height="18" rx="2.6" fill="currentColor" opacity=".45"/><rect x="7.4" y="2" width="6.2" height="3.6" rx="1.3" fill="currentColor"/><path d="m7 12.3 2.3 2.3 4.2-4.6" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="17.6" cy="17.4" r="4.9" fill="currentColor"/><path d="M17.6 15.2v2.4l1.6 1" fill="none" stroke="#10131a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".6"/></svg></i><span>Modo estudio</span></div>
     </header>
 
     <div class="page-head">
-      <div class="eyebrow">Modo estudio</div>
-      <h1 id="pageTitleH1">Examen de control CPU</h1>
-      <p id="countLabel">Cargando…</p>
+      <h1 class="ex-tit" id="pageTitleH1">Control CPU</h1>
+      <div class="ex-meta"><span>Examen de control</span><span id="countLabel">Cargando…</span></div>
     </div>
 
     <div class="quiz-cta">
-      <span>¿Ya las repasaste? Practícalas en modo quiz.</span>
+      <span>¿Ya las repasaste?<small>Practícalas en modo quiz, mezcladas y con 5 vidas.</small></span>
       <a id="practicarLink" href="#">Practicar <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
     </div>
 
-    <div class="filter-row" id="filterRow"></div>
+    <div class="ex-filtros" id="filterRow"></div>
     <div id="qlist"></div>
   </div>
+  <button class="ex-arriba" id="exArriba" type="button" aria-label="Volver arriba"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg></button>
 
 <script>
   function renderMath(el) {
@@ -264,20 +265,41 @@
   if (!year) {
     qlistEl.innerHTML = '<div class="state-msg">No se indicó ningún año. Vuelve a la lista de exámenes.</div>';
   } else {
-    document.getElementById('badgeYear').textContent = 'Examen de control CPU · ' + nombreEx(year);
-    document.getElementById('pageTitleH1').textContent = 'Examen de control CPU — ' + nombreEx(year);
+    const mc = /^(\d{4}-(?:I|II|III))-([12])$/.exec(year); document.getElementById('pageTitleH1').textContent = mc ? 'Control ' + (mc[2] === '2' ? 'II' : 'I') + ' · ' + mc[1] : 'Control ' + year;
+    document.title = document.getElementById('pageTitleH1').textContent + ' · Modo Cachimbo';
     document.getElementById('practicarLink').href = 'quiz.html?years=' + encodeURIComponent(year);
 
     let allQuestions = [];
-    let activeFilter = 'Todas';
+    // Filtro: primero el área (con su color) y luego un curso de esa área
+    let filtroArea = '', filtroCurso = '';
+    const COLOR_AREA = { 'Ciencia y Tecnología': 'var(--a-cyt)', 'Matemática': 'var(--a-mat)', 'Comunicación': 'var(--a-com)', 'Ciencias Sociales': 'var(--a-soc)' };
+    const areaDe = q => q.area || 'General';
+    const cursoDe = q => q.asignatura || 'General';
+
+    function pintarFiltros() {
+      const filterRow = document.getElementById('filterRow');
+      const areas = [...new Set(allQuestions.map(areaDe))];
+      if (areas.length < 2 && new Set(allQuestions.map(cursoDe)).size < 2) { filterRow.innerHTML = ''; return; }
+      const cuenta = f => allQuestions.filter(f).length;
+      const pill = (cls, attr, txt, n, on, color) => `<button type="button" class="ex-f ${cls}${on ? ' on' : ''}" ${attr}${color ? ` style="--c:${color}"` : ''}>${txt}<span class="n">${n}</span></button>`;
+      let html = '<div class="ex-fila">' + pill('todas', 'data-area=""', 'Todas', allQuestions.length, !filtroArea, '') +
+        (areas.length > 1 ? areas.map(a => pill('', `data-area="${a}"`, a, cuenta(q => areaDe(q) === a), filtroArea === a, COLOR_AREA[a])).join('') : '') + '</div>';
+      const cursos = [...new Set(allQuestions.filter(q => !filtroArea || areaDe(q) === filtroArea).map(cursoDe))];
+      if ((filtroArea || areas.length < 2) && cursos.length > 1) {
+        const color = COLOR_AREA[filtroArea] || '';
+        html += '<div class="ex-fila cursos">' + cursos.map(c => pill('', `data-curso="${c}"`, c, cuenta(q => (!filtroArea || areaDe(q) === filtroArea) && cursoDe(q) === c), filtroCurso === c, color || COLOR_AREA[areaDe(allQuestions.find(q => cursoDe(q) === c))])).join('') + '</div>';
+      }
+      filterRow.innerHTML = html;
+      filterRow.querySelectorAll('[data-area]').forEach(b => b.addEventListener('click', () => { filtroArea = b.dataset.area; filtroCurso = ''; renderQuestions(); }));
+      filterRow.querySelectorAll('[data-curso]').forEach(b => b.addEventListener('click', () => { filtroCurso = filtroCurso === b.dataset.curso ? '' : b.dataset.curso; renderQuestions(); }));
+    }
 
     function renderQuestions() {
       qlistEl.innerHTML = '';
-      const questions = activeFilter === 'Todas'
-        ? allQuestions
-        : allQuestions.filter(q => (q.asignatura || 'General') === activeFilter);
+      const questions = allQuestions.filter(q => (!filtroArea || areaDe(q) === filtroArea) && (!filtroCurso || cursoDe(q) === filtroCurso));
 
-      document.getElementById('countLabel').textContent = `${questions.length} preguntas con clave marcada`;
+      document.getElementById('countLabel').innerHTML = `<b>${questions.length}</b> ${questions.length === 1 ? 'pregunta' : 'preguntas'} con clave`;
+      pintarFiltros();
 
       // Preguntas seguidas del mismo TEXTO: la lectura se abre en la primera ("preguntas 41 a 43")
       if (window.MCPregunta && MCPregunta.rangos) {
@@ -292,6 +314,7 @@
       questions.forEach((q) => {
           const div = document.createElement('div');
           div.className = 'qcard';
+          if (COLOR_AREA[q.area]) div.style.setProperty('--c', COLOR_AREA[q.area]);
           let optsHtml = '';
           q.options.forEach((o, i) => {
             const isCorrect = i === q.correct;
@@ -336,30 +359,20 @@
       .then(questions => {
         allQuestions = questions;
 
-        const asignaturas = [...new Set(questions.map(q => q.asignatura || 'General'))];
-        const filterRow = document.getElementById('filterRow');
-        if (asignaturas.length > 1) {
-          const labels = ['Todas', ...asignaturas];
-          labels.forEach(label => {
-            const pill = document.createElement('div');
-            pill.className = 'filter-pill' + (label === 'Todas' ? ' active' : '');
-            pill.textContent = label;
-            pill.addEventListener('click', () => {
-              activeFilter = label;
-              filterRow.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-              pill.classList.add('active');
-              renderQuestions();
-            });
-            filterRow.appendChild(pill);
-          });
-        }
-
         renderQuestions();
       })
       .catch(() => {
         qlistEl.innerHTML = '<div class="state-msg">Todavía no hay preguntas cargadas para ' + year + '.</div>';
       });
   }
+</script>
+<script>
+  // Volver arriba: aparece cuando ya bajaste un buen tramo de preguntas
+  (function () {
+    const b = document.getElementById('exArriba');
+    addEventListener('scroll', () => b.classList.toggle('ver', scrollY > 900), { passive: true });
+    b.addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
+  })();
 </script>
 <script src="../../assets/sonido.js"></script>
 </body>

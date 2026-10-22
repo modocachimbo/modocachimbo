@@ -1,0 +1,256 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;1,800;1,900&display=swap');
+/* =========================================================
+   Modo Cachimbo · Exámenes (Ordinario, CPU y Control CPU)
+   Lista de exámenes, Modo estudio (ver.html) y Práctica (quiz.html)
+   con el estilo del inicio: fondo azul morado, letra cuadrada
+   (Barlow Condensed) en los títulos y Nunito gruesa en el texto.
+   Cada página lleva <html data-examen="..."> y toma su color.
+   ========================================================= */
+:root { --display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
+  --ex: #1CB0F6; --ex-rgb: 28,176,246; --ex-d: #1287bd;
+  --lima: #C6E000; --lima-d: #8fa300; --oro: #FFC800;
+  --a-cyt: #C6E000; --a-mat: #1CB0F6; --a-com: #CE82FF; --a-soc: #FF9600; }
+html[data-examen="cpu"] { --ex: #FF9600; --ex-rgb: 255,150,0; --ex-d: #c77400; }
+html[data-examen="control-cpu"] { --ex: #CE82FF; --ex-rgb: 206,130,255; --ex-d: #a35fd1; }
+html:not([data-modo="claro"]) { --bg: #0B0818; --surface: #151127; --surface-2: #1D1834; --border: #2A2346; --borde-g: #2A2346;
+  --text: #EEEAF7; --text-dim: #A99FC8; --text-faint: #6F6690; color-scheme: dark; }
+html[data-modo="claro"] { --borde-g: #DCD8E8; --a-cyt: #7A8C00; --a-mat: #0E8FD6; --a-com: #9B4FD9; --a-soc: #E07B00; }
+html[data-modo="claro"][data-examen="ordinario"] { --ex: #0E8FD6; --ex-rgb: 14,143,214; --ex-d: #0A6EA6; }
+html[data-modo="claro"][data-examen="cpu"] { --ex: #E07B00; --ex-rgb: 224,123,0; --ex-d: #B06000; }
+html[data-modo="claro"][data-examen="control-cpu"] { --ex: #9B4FD9; --ex-rgb: 155,79,217; --ex-d: #7A35B3; }
+html[data-examen] body { background: var(--bg); color: var(--text); }
+[hidden] { display: none !important; }
+
+/* ---------- Cabecera: ← Exámenes y la casita, como en el simulacro ---------- */
+html[data-examen] header.top { position: static; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; border: 0; padding: 22px 0 10px; gap: 12px; }
+html[data-examen] .back-row { display: flex; align-items: center; gap: 12px; }
+html[data-examen] .back { display: flex; align-items: center; gap: 8px; color: var(--text); text-decoration: none; font: 900 22px/1.1 'Nunito', sans-serif; }
+html[data-examen] .back svg { width: 20px; height: 20px; }
+html[data-examen] .back:hover { color: var(--ex); }
+html[data-examen] .home-btn { display: grid; place-items: center; width: 42px; height: 42px; margin: 0; border-radius: 12px; border: 2px solid var(--borde-g); border-bottom-width: 4px; background: var(--surface-2); color: var(--text); }
+html[data-examen] .home-btn svg { width: 18px; height: 18px; }
+html[data-examen] .home-btn:hover { border-color: var(--ex); color: var(--ex); }
+.ex-badge { display: inline-flex; align-items: center; gap: 8px; font: italic 900 20px/1 var(--display); text-transform: uppercase; letter-spacing: .02em; color: var(--ex); white-space: nowrap; }
+.ex-ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: rgba(var(--ex-rgb), .15); color: var(--ex); flex-shrink: 0; }
+.ex-ic svg { width: 22px; height: 22px; display: block; }
+@media (max-width: 520px) { .ex-badge span { display: none; } }
+
+/* ---------- Título grande con su raya, como "Crea tu simulacro" ---------- */
+html body .ex-tit:not(#z) { display: flex; align-items: center; gap: 18px; margin-top: 8px; font: italic 900 52px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; color: var(--ex); }
+.ex-tit::after { content: ""; flex: 1; height: 2px; background: linear-gradient(90deg, rgba(var(--ex-rgb), .5), rgba(var(--ex-rgb), 0)); }
+.ex-sub { color: var(--text-dim); font: 700 15px/1.5 'Nunito', sans-serif; margin-top: 10px; max-width: 62ch; }
+@media (max-width: 520px) { html body .ex-tit:not(#z) { font-size: 40px !important; gap: 12px; } .ex-sub { font-size: 13.5px; } }
+
+/* Subtítulos de sección con ícono */
+html body .ex-h:not(#z) { display: flex; align-items: center; gap: 10px; margin: 30px 0 14px; font: italic 900 26px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; color: var(--text); }
+.ex-h .h-ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: rgba(var(--ex-rgb), .15); color: var(--ex); flex-shrink: 0; }
+.ex-h .h-ic svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+html body .ex-h small:not(#z) { margin-left: auto; font: 800 14px/1 var(--display) !important; letter-spacing: .08em; color: var(--text-dim); }
+
+/* ---------- Lista: una tarjeta por examen, con Estudiar y Practicar ---------- */
+.exs { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+.exc { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 4px; padding: 18px 18px 16px; border-radius: 20px; background: var(--surface);
+  border: 2px solid rgba(var(--ex-rgb), .35); border-bottom: 5px solid var(--ex-d); }
+.exc::before { content: ""; position: absolute; top: 0; right: 0; width: 84px; height: 84px; pointer-events: none; background: linear-gradient(225deg, rgba(var(--ex-rgb), .22), transparent 60%); }
+.exc-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+html body .exc-yr:not(#z) { font: italic 900 38px/1 var(--display) !important; color: var(--text); letter-spacing: .01em; }
+html body .exc-n:not(#z) { position: relative; font: italic 900 17px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .03em; background: var(--ex); color: #12101c; padding: 6px 12px 5px 13px; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); white-space: nowrap; }
+.exc-lbl { color: var(--text-dim); font: 800 14px/1.3 'Nunito', sans-serif; }
+html body .exc-flag:not(#z) { position: absolute; top: 0; left: 18px; font: 800 11px/1 var(--display) !important; letter-spacing: .08em; text-transform: uppercase; background: var(--oro); color: #2a1d00; padding: 3px 8px 3px; border-radius: 0 0 6px 6px; }
+.exc.nuevo { padding-top: 24px; }
+.exc-acc { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+.exc-b { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 8px 8px; border-radius: 14px; text-decoration: none;
+  font: 900 14px/1 'Nunito', sans-serif; text-transform: uppercase; letter-spacing: .5px; -webkit-tap-highlight-color: transparent; transition: transform .08s ease, box-shadow .08s ease; }
+.exc-b svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.exc-b.est { background: rgba(var(--ex-rgb), .12); color: var(--ex); border: 2px solid rgba(var(--ex-rgb), .45); border-bottom-width: 4px; }
+.exc-b.pra { background: var(--lima); color: #151A03; border: 2px solid var(--lima); box-shadow: 0 4px 0 var(--lima-d); margin-bottom: 4px; }
+.exc-b.est:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
+.exc-b.pra:active { transform: translateY(4px); box-shadow: none; }
+.exs-vacio { grid-column: 1 / -1; color: var(--text-dim); font: 700 14px/1.5 'Nunito', sans-serif; padding: 20px; text-align: center; background: var(--surface); border: 2px dashed var(--borde-g); border-radius: 18px; }
+
+/* Llegan pronto: los ciclos que faltan, en fichas chicas dentro de un desplegable */
+.exp { margin-top: 18px; border: 2px dashed var(--borde-g); border-radius: 16px; background: transparent; }
+.exp > summary { list-style: none; display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; font: 800 15px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); }
+.exp > summary::-webkit-details-marker { display: none; }
+.exp > summary svg { width: 18px; height: 18px; margin-left: auto; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: transform .15s; }
+.exp[open] > summary svg { transform: rotate(180deg); }
+.exp-lista { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 14px 14px; }
+.exp-lista span { font: 800 14px/1 var(--display); letter-spacing: .04em; color: var(--text-faint); background: var(--surface); border-radius: 8px; padding: 6px 9px 5px; }
+
+/* ---------- Arma tu simulacro ---------- */
+.exa { margin-top: 30px; position: relative; overflow: hidden; padding: 22px; border-radius: 22px; background: var(--surface); border: 2px solid var(--borde-g); border-bottom-width: 5px; }
+.exa::before { content: ""; position: absolute; top: 0; right: 0; width: 140px; height: 140px; pointer-events: none; background: linear-gradient(225deg, rgba(255,200,0,.18), transparent 60%); }
+html body .exa h2:not(#z) { display: flex; align-items: center; gap: 10px; font: italic 900 28px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; color: var(--text); }
+.exa h2 .h-ic { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: rgba(255,200,0,.16); color: var(--oro); flex-shrink: 0; }
+.exa h2 .h-ic svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.exa p { color: var(--text-dim); font: 700 14px/1.55 'Nunito', sans-serif; margin: 10px 0 16px; max-width: 60ch; }
+.exa-picks { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.exa-pick { display: inline-flex; align-items: center; gap: 9px; padding: 9px 13px 8px 10px; border-radius: 14px; cursor: pointer; user-select: none; background: var(--surface-2); color: var(--text);
+  border: 2px solid var(--borde-g); border-bottom-width: 4px; font: 800 15px/1 var(--display); letter-spacing: .04em; -webkit-tap-highlight-color: transparent; }
+.exa-pick input { position: absolute; opacity: 0; pointer-events: none; }
+.exa-pick i { width: 20px; height: 20px; border-radius: 7px; border: 2px solid var(--borde-g); background: var(--surface); display: grid; place-items: center; flex-shrink: 0; }
+.exa-pick i svg { width: 13px; height: 13px; fill: none; stroke: #12101c; stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+.exa-pick small { font: 700 12px/1 'Nunito', sans-serif; color: var(--text-dim); letter-spacing: 0; }
+.exa-pick.on { border-color: var(--ex); border-bottom-color: var(--ex-d); background: rgba(var(--ex-rgb), .14); }
+.exa-pick.on i { background: var(--ex); border-color: var(--ex); }
+.exa-pick.on i svg { opacity: 1; }
+.exa-pick:has(input:focus-visible) { outline: 2px solid var(--ex); outline-offset: 2px; }
+.exa-pie { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.exa-res { font: 800 16px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; color: var(--text-dim); }
+.exa-res b { color: var(--oro); }
+html body .ex-go:not(#z) { position: relative; overflow: hidden; border: 0; border-radius: 16px; cursor: pointer; padding: 14px 22px 12px 34px; margin-bottom: 4px;
+  background: linear-gradient(100deg, #b4cc00, #C6E000 40%, #d8f02a); color: #151A03; box-shadow: 0 4px 0 var(--lima-d);
+  font: italic 900 26px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .02em; transition: transform .08s ease, box-shadow .08s ease; }
+.ex-go::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 14px; background: repeating-linear-gradient(135deg, #151a03 0 6px, #FFC800 6px 12px); }
+.ex-go:not(:disabled):active { transform: translateY(4px); box-shadow: none; }
+.ex-go:disabled { opacity: .45; cursor: default; }
+@media (max-width: 560px) {
+  .exa { padding: 18px 16px; }
+  html body .exa h2:not(#z) { font-size: 25px !important; }
+  .exa-pie { flex-direction: column-reverse; align-items: stretch; }
+  .exa-res { text-align: center; }
+  html body .ex-go:not(#z) { width: 100%; font-size: 24px !important; }
+}
+@media (max-width: 520px) {
+  .exs { grid-template-columns: 1fr; gap: 12px; }
+  html body .exc-yr:not(#z) { font-size: 34px !important; }
+}
+
+/* =========================================================
+   Modo estudio (ver.html)
+   ========================================================= */
+html[data-examen] .page-head { padding: 6px 0 4px; }
+.ex-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+html body .ex-meta span:not(#z) { font: 800 14px/1 var(--display) !important; letter-spacing: .06em; text-transform: uppercase; color: var(--text-dim); background: var(--surface-2); padding: 7px 11px 6px; clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%); }
+html body .ex-meta b:not(#z) { font: inherit !important; font-size: 16px !important; color: var(--text); }
+/* "¿Ya las repasaste?": tira con el botón grande de Practicar */
+html[data-examen] .quiz-cta:not(#z) { margin: 18px 0 22px; padding: 14px 14px 14px 20px; background: linear-gradient(100deg, rgba(var(--ex-rgb), .14), var(--surface) 70%); border: 2px solid rgba(var(--ex-rgb), .35); border-bottom: 5px solid var(--ex-d); border-radius: 20px; }
+html[data-examen] .quiz-cta span:not(#z) { color: var(--text); font: 900 15px/1.35 'Nunito', sans-serif; }
+html[data-examen] .quiz-cta span small { display: block; color: var(--text-dim); font: 700 13px/1.35 'Nunito', sans-serif; }
+html[data-examen] .quiz-cta a:not(#z) { position: relative; overflow: hidden; border: 0; border-radius: 14px; padding: 12px 20px 10px 30px; color: #151A03; background: linear-gradient(100deg, #b4cc00, #C6E000 40%, #d8f02a); box-shadow: 0 4px 0 var(--lima-d); margin-bottom: 4px;
+  font: italic 900 22px/1 var(--display) !important; letter-spacing: .03em; }
+html[data-examen] .quiz-cta a::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 12px; background: repeating-linear-gradient(135deg, #151a03 0 6px, #FFC800 6px 12px); }
+html[data-examen] .quiz-cta a svg { width: 16px; height: 16px; }
+@media (max-width: 520px) { html[data-examen] .quiz-cta a:not(#z) { width: 100%; justify-content: center; } }
+
+/* Filtros: primero el área (con su color) y luego sus cursos */
+.ex-filtros { display: grid; gap: 8px; margin-bottom: 18px; }
+.ex-fila { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 2px 2px 4px; }
+.ex-fila::-webkit-scrollbar { display: none; }
+.ex-f { --c: var(--ex); flex-shrink: 0; display: inline-flex; align-items: center; gap: 7px; padding: 8px 13px 7px; border-radius: 12px; cursor: pointer; white-space: nowrap; background: var(--surface); color: var(--text);
+  border: 2px solid var(--borde-g); border-bottom-width: 4px; font: 800 14px/1 'Nunito', sans-serif; -webkit-tap-highlight-color: transparent; }
+.ex-f .n { font: 800 13px/1 var(--display); letter-spacing: .04em; color: var(--text-dim); }
+.ex-f::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
+.ex-f.todas::before { display: none; }
+.ex-f.on { border-color: var(--c); border-bottom-color: color-mix(in srgb, var(--c) 65%, #000); background: color-mix(in srgb, var(--c) 15%, var(--surface)); color: var(--c); }
+.ex-f.on .n { color: inherit; }
+.ex-fila.cursos .ex-f { padding: 6px 11px 5px; border-radius: 999px; border-bottom-width: 2px; font-size: 13px; }
+
+/* Tarjeta de pregunta: el número y el curso con el color de su área */
+html[data-examen] .qcard:not(#z) { --c: var(--ex); background: var(--surface); border: 2px solid var(--borde-g); border-bottom-width: 5px; border-radius: 22px; }
+html[data-examen] .qcard .qnum:not(#z) { width: auto; min-width: 42px; height: 34px; padding: 0 10px 0 11px; border: 0; border-radius: 0; background: var(--c); color: #12101c; clip-path: polygon(12% 0, 100% 0, 88% 100%, 0 100%);
+  font: italic 900 22px/1 var(--display) !important; }
+html[data-examen] .qcard .qtema:not(#z) { display: inline-flex; align-items: center; gap: 7px; background: color-mix(in srgb, var(--c) 13%, transparent); border: 0; color: var(--c); font: 900 13px/1 'Nunito', sans-serif; padding: 7px 12px; border-radius: 999px; }
+html[data-examen] .qcard .qtext:not(#z) { color: var(--text); }
+html[data-examen] .opt-row:not(#z) { background: var(--surface-2); border-color: var(--borde-g); color: var(--text); }
+html[data-examen] .opt-row .letter:not(#z) { border-color: var(--borde-g); color: var(--text-dim); }
+html[data-examen] .opt-row.correct:not(#z) { background: rgba(88,204,2,.12); border-color: #58CC02; border-bottom-color: #3f9a00; color: var(--text); box-shadow: none; }
+html[data-examen] .opt-row.correct .letter:not(#z) { background: #58CC02; border-color: #58CC02; color: #fff; }
+html[data-examen] .opt-row.correct svg:not(#z) { color: #58CC02; }
+html[data-examen] .solution-toggle:not(#z) { border: 2px solid rgba(var(--ex-rgb), .45); border-bottom-width: 4px; border-radius: 12px; color: var(--ex); background: rgba(var(--ex-rgb), .08); font: 900 13px/1 'Nunito', sans-serif; text-transform: uppercase; letter-spacing: .4px; padding: 9px 14px 8px; margin-top: 10px; }
+html[data-examen] .solution-box:not(#z) { background: var(--surface-2); border: 2px solid var(--borde-g); border-left: 4px solid var(--ex); border-radius: 14px; color: var(--text); font: 700 14px/1.65 'Nunito', sans-serif; }
+html[data-examen] .state-msg { color: var(--text-dim); }
+/* Volver arriba en la lista larga */
+.ex-arriba { position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 20; width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; cursor: pointer;
+  background: var(--surface-2); color: var(--text); border: 2px solid var(--borde-g); border-bottom-width: 4px; opacity: 0; pointer-events: none; transition: opacity .2s; }
+.ex-arriba.ver { opacity: 1; pointer-events: auto; }
+.ex-arriba svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+
+/* =========================================================
+   Práctica (quiz.html)
+   ========================================================= */
+html[data-examen] body.ex-quiz { align-items: flex-start; padding-top: 28px; }
+html[data-examen] .ex-quiz .card:not(#z) { background: var(--surface); border: 2px solid var(--borde-g); border-bottom-width: 6px; border-radius: 26px; box-shadow: 0 30px 60px rgba(0,0,0,.35); }
+html[data-examen] .ex-quiz .backlink { padding: 18px 22px 0; gap: 12px; }
+html[data-examen] .ex-quiz .backlink a.back:not(#z) { color: var(--text); font: 900 19px/1 'Nunito', sans-serif; }
+html[data-examen] .ex-quiz .backlink a.back svg { width: 18px; height: 18px; }
+html[data-examen] .ex-quiz .backlink .home-btn { width: 38px; height: 38px; }
+html[data-examen] .ex-quiz .backlink .ex-badge { margin-left: auto; font-size: 17px; }
+html[data-examen] .ex-quiz .backlink .ex-ic { width: 30px; height: 30px; }
+html[data-examen] .ex-quiz .backlink .ex-ic svg { width: 19px; height: 19px; }
+/* Inicio de la práctica */
+html[data-examen] .start-badge:not(#z) { background: rgba(var(--ex-rgb), .14); border-color: rgba(var(--ex-rgb), .4); color: var(--ex); }
+html body.ex-quiz .startscreen h1:not(#z), html body.ex-quiz .title:not(#z) { font: italic 900 44px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; color: var(--text); }
+html body.ex-quiz .title:not(#z) { font-size: 30px !important; }
+html body.ex-quiz .startscreen h1 .accent:not(#z), html body.ex-quiz .title .accent:not(#z) { color: var(--ex); }
+html[data-examen] .ex-quiz .startscreen p:not(#z) { color: var(--text-dim); }
+html[data-examen] .start-stat:not(#z) { background: var(--surface-2); border-color: var(--borde-g); color: var(--text); }
+html body.ex-quiz #btnStart:not(#z), html body.ex-quiz #btnRestart:not(#z) { position: relative; overflow: hidden; border: 0; border-radius: 16px; padding: 15px 16px 13px 30px; color: #151A03;
+  background: linear-gradient(100deg, #b4cc00, #C6E000 40%, #d8f02a); box-shadow: 0 4px 0 var(--lima-d); font: italic 900 28px/1 var(--display) !important; letter-spacing: .03em; }
+.ex-quiz #btnStart::before, .ex-quiz #btnRestart::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 14px; background: repeating-linear-gradient(135deg, #151a03 0 6px, #FFC800 6px 12px); }
+html[data-examen] .ex-quiz .btn:not(.primary):not(#z) { background: var(--surface-2); border-color: var(--borde-g); color: var(--text); }
+html[data-examen] .ex-quiz .btn.primary:not(#z) { color: #151A03; }
+/* Durante la práctica */
+html[data-examen] .ex-quiz .progress-track:not(#z) { background: var(--surface-2); }
+html[data-examen] .ex-quiz .progress-label:not(#z) { color: var(--text-dim); }
+html body.ex-quiz .stat:not(#z) { font: italic 900 22px/1 var(--display) !important; color: var(--oro); letter-spacing: .02em; }
+html[data-examen] .ex-quiz .badge:not(#z) { --c: var(--ex); background: color-mix(in srgb, var(--c) 14%, transparent); border-color: color-mix(in srgb, var(--c) 40%, transparent); color: var(--c); }
+html[data-examen] .ex-quiz .question:not(#z) { background: var(--surface-2); border-color: var(--borde-g); }
+html[data-examen] .ex-quiz .question p:not(#z) { color: var(--text); }
+html[data-examen] .ex-quiz .option:not(#z) { background: var(--surface-2); border-color: var(--borde-g); }
+html[data-examen] .ex-quiz .option span.text:not(#z) { color: var(--text); }
+html[data-examen] .ex-quiz .letter:not(#z) { border-color: var(--borde-g); color: var(--text-dim); background: transparent; }
+html[data-examen] .ex-quiz .option.correct:not(#z) { background: rgba(88,204,2,.13); border-color: #58CC02; border-bottom-color: #3f9a00; }
+html[data-examen] .ex-quiz .option.correct .letter:not(#z) { background: #58CC02; border-color: #58CC02; color: #fff; }
+html[data-examen] .ex-quiz .icon.ok:not(#z) { color: #58CC02; }
+html[data-examen] .ex-quiz .option.wrong:not(#z) { background: rgba(255,75,75,.12); border-color: #FF4B4B; border-bottom-color: #c73232; }
+html[data-examen] .ex-quiz .option.wrong .letter:not(#z) { background: #FF4B4B; border-color: #FF4B4B; color: #fff; }
+html[data-examen] .ex-quiz .feedback.ok:not(#z) { background: rgba(88,204,2,.12); border-color: rgba(88,204,2,.45); color: #58CC02; }
+html[data-examen] .ex-quiz .feedback.bad:not(#z) { background: rgba(255,75,75,.1); border-color: rgba(255,75,75,.45); color: #FF6B6B; }
+html body.ex-quiz .endscreen h2:not(#z) { font: italic 900 38px/1 var(--display) !important; text-transform: uppercase; color: var(--text); }
+html body.ex-quiz .endscreen .score:not(#z) { font: italic 900 72px/1 var(--display) !important; color: var(--oro); }
+html[data-examen] .ex-quiz .footer:not(#z) { border-top: 2px solid var(--borde-g); }
+html[data-examen] .ex-quiz .footer .label:not(#z) { color: var(--text-faint); }
+html[data-examen] .ex-quiz .footer .mark:not(#z) { color: var(--ex); }
+@media (max-width: 520px) {
+  html[data-examen] body.ex-quiz { padding: 12px 10px 24px; }
+  html[data-examen] .ex-quiz .backlink .ex-badge span { display: none; }
+  html body.ex-quiz .startscreen h1:not(#z) { font-size: 38px !important; }
+}
+
+/* ---------- Modo claro: assets/claro.css pone lo común; aquí los colores de cada modalidad ---------- */
+html[data-modo="claro"][data-examen] body .home-btn:not(#z) { background: var(--surface) !important; border: 2px solid var(--border) !important; border-bottom-width: 4px !important; color: var(--text) !important; }
+html[data-modo="claro"][data-examen] body .back:hover { color: var(--ex) !important; }
+html[data-modo="claro"] .exc-n, html[data-modo="claro"] .qcard .qnum { color: #fff !important; }
+html[data-modo="claro"] body .exc-b.pra, html[data-modo="claro"] body .ex-go, html[data-modo="claro"] body .quiz-cta a, html[data-modo="claro"] body #btnStart, html[data-modo="claro"] body #btnRestart { color: #151A03 !important; }
+html[data-modo="claro"][data-examen] body .quiz-cta:not(#z) { background: linear-gradient(100deg, rgba(var(--ex-rgb), .1), #fff 70%) !important; border: 2px solid rgba(var(--ex-rgb), .35) !important; border-bottom: 5px solid var(--ex-d) !important; }
+html[data-modo="claro"][data-examen] body .qcard:not(#z) { background: #fff !important; border: 2px solid var(--border) !important; border-bottom-width: 5px !important; }
+html[data-modo="claro"][data-examen] body .qcard .qnum:not(#z) { color: #fff !important; }
+html[data-modo="claro"][data-examen] body .opt-row:not(#z) { background: #F1EFF6 !important; border: 2px solid var(--border) !important; border-bottom-width: 4px !important; color: var(--text) !important; }
+html[data-modo="claro"][data-examen] body .opt-row.correct:not(#z) { background: rgba(63,154,0,.1) !important; border-color: #3F9A00 !important; }
+html[data-modo="claro"][data-examen] body .opt-row.correct svg:not(#z) { color: #3F9A00 !important; }
+html[data-modo="claro"][data-examen] body.ex-quiz .card:not(#z) { border: 2px solid var(--border) !important; border-bottom-width: 6px !important; box-shadow: 0 1px 2px rgba(26,22,38,.06), 0 10px 30px rgba(26,22,38,.08); }
+html[data-modo="claro"][data-examen] body.ex-quiz .title:not(#z), html[data-modo="claro"][data-examen] body.ex-quiz .startscreen h1:not(#z), html[data-modo="claro"][data-examen] body.ex-quiz .endscreen h2:not(#z) { color: var(--text) !important; }
+html[data-modo="claro"][data-examen] body.ex-quiz .title .accent:not(#z), html[data-modo="claro"][data-examen] body.ex-quiz .startscreen h1 .accent:not(#z) { color: var(--ex) !important; }
+html[data-modo="claro"][data-examen] body.ex-quiz .stat:not(#z), html[data-modo="claro"][data-examen] body.ex-quiz .endscreen .score:not(#z) { color: #B38600 !important; }
+html[data-modo="claro"][data-examen] body.ex-quiz .btn:not(.primary):not(#z) { background: #F1EFF6 !important; border: 2px solid var(--border) !important; border-bottom-width: 5px !important; color: var(--text) !important; }
+html[data-modo="claro"][data-examen] body.ex-quiz .btn.primary:not(#z) { background: var(--lima) !important; border: 2px solid var(--lima) !important; color: #151A03 !important; }
+html[data-modo="claro"][data-examen] body.ex-quiz .option:not(#z) { background: #F1EFF6 !important; border: 2px solid var(--border) !important; border-bottom-width: 5px !important; }
+html[data-modo="claro"][data-examen] body.ex-quiz .option.correct:not(#z) { background: rgba(63,154,0,.1) !important; border-color: #3F9A00 !important; }
+html[data-modo="claro"][data-examen] body.ex-quiz .option.wrong:not(#z) { background: rgba(229,56,59,.08) !important; border-color: #E5383B !important; }
+html[data-modo="claro"][data-examen] body.ex-quiz .letter:not(#z) { color: var(--text-dim) !important; }
+html[data-modo="claro"][data-examen] body.ex-quiz .option.correct .letter:not(#z), html[data-modo="claro"][data-examen] body.ex-quiz .option.wrong .letter:not(#z) { color: #fff !important; }
+html[data-modo="claro"][data-examen] body.ex-quiz .icon.ok:not(#z) { color: #3F9A00 !important; }
+html[data-modo="claro"][data-examen] body.ex-quiz .feedback.ok:not(#z) { color: #3F9A00; }
+html[data-modo="claro"][data-examen] body.ex-quiz .footer .mark:not(#z) { color: var(--ex) !important; }
+html[data-modo="claro"][data-examen] body.ex-quiz .start-stat:not(#z) { background: #F1EFF6 !important; }
+html[data-modo="claro"] .exa h2 .h-ic, html[data-modo="claro"] .exa-res b { color: #B38600; }
+html[data-modo="claro"] .exa-pick.on i svg { stroke: #fff; }
+@media (max-width: 520px) { html body .ex-h small:not(#z) { display: none; } }
+@media (min-width: 700px) { .ex-fila { flex-wrap: wrap; overflow: visible; } }
+html[data-modo="claro"][data-examen] body header.top:not(#z) { background: none !important; border-bottom: 0 !important; }
+html[data-modo="claro"][data-examen] body.ex-quiz .badge:not(#z) { color: var(--c) !important; background: color-mix(in srgb, var(--c) 12%, #fff) !important; border-color: color-mix(in srgb, var(--c) 40%, transparent) !important; }
+html[data-modo="claro"][data-examen] body.ex-quiz .start-badge:not(#z) { color: var(--ex) !important; background: rgba(var(--ex-rgb), .1) !important; border-color: rgba(var(--ex-rgb), .35) !important; }
+/* La letra Nunito de toda la web va con !important: aquí la letra cuadrada le gana */
+html body .ex-badge:not(#z), html body .ex-badge span:not(#z), html body .ex-f .n:not(#z), html body .exp > summary:not(#z), html body .exp-lista span:not(#z),
+html body .exa-pick:not(#z), html body .exa-res:not(#z), html body .exa-res b:not(#z), html body.ex-quiz .title .accent:not(#z), html body.ex-quiz .startscreen h1 .accent:not(#z) { font-family: var(--display) !important; }

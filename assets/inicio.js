@@ -513,7 +513,7 @@
   }
 
   /* ---------- Hoja que sube desde abajo: cursos, exámenes y flashcards ---------- */
-  var hFondo = $('hojaFondo'), hLista = $('hojaLista'), hTit = $('hojaTit');
+  var hFondo = $('hojaFondo'), hLista = $('hojaLista'), hTit = $('hojaTit'), hSub = $('hojaSub');
   var ICO_EX = '<svg class="ic" style="font-size:26px"><use href="#i-examen"/></svg>', ICO_FC = '<svg class="ic" style="font-size:26px"><use href="#i-tarjetas"/></svg>';
   function filaHoja(href, ic, nombre, sub, cls, area) {
     return '<a class="curso ' + (cls || '') + '"' + (area ? ' data-area="' + esc(area) + '"' : '') + ' href="' + esc(href) + '"><span class="ic">' + ic + '</span><span class="tx"><b>' + esc(nombre) + '</b>' +
@@ -541,17 +541,56 @@
       }).join('') + '</div>');
     });
   }
+  // "Exámenes" también es una pantalla propia: una tarjeta por modalidad con sus exámenes a la mano
+  var EXAMENES = [
+    { id: 'ordinario', nombre: 'Ordinario', sub: 'Exámenes de admisión de la UNJFSC',
+      ico: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2 1.8 8.1 12 13l10.2-4.9z" fill="currentColor"/><path d="M5.6 10.6v4.3c0 1.9 2.9 3.5 6.4 3.5s6.4-1.6 6.4-3.5v-4.3L12 13.7z" fill="currentColor" opacity=".45"/><path d="M20.6 8.8v6.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="20.6" cy="16.3" r="1.6" fill="currentColor"/></svg>' },
+    { id: 'cpu', nombre: 'CPU', sub: 'Exámenes del Centro Preuniversitario',
+      ico: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.2 5.6c3.4-1 6.7-.6 9.3 1.3v13.6c-2.6-1.9-5.9-2.3-9.3-1.3z" fill="currentColor" opacity=".45"/><path d="M21.8 5.6c-3.4-1-6.7-.6-9.3 1.3v13.6c2.6-1.9 5.9-2.3 9.3-1.3z" fill="currentColor"/><path d="M15.6 6.1v5.6l1.7-1.2 1.7 1.2V5.6" fill="#10131a" opacity=".55"/></svg>' },
+    { id: 'control-cpu', nombre: 'Control CPU', sub: 'Exámenes de control del ciclo',
+      ico: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.6" width="14" height="18" rx="2.6" fill="currentColor" opacity=".45"/><rect x="7.4" y="2" width="6.2" height="3.6" rx="1.3" fill="currentColor"/><path d="m7 12.3 2.3 2.3 4.2-4.6" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="17.6" cy="17.4" r="4.9" fill="currentColor"/><path d="M17.6 15.2v2.4l1.6 1" fill="none" stroke="#10131a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".6"/></svg>' }
+  ];
+  var SIM_TIRA = '<a class="ex-sim" href="simulacro.html"><svg class="ic"><use href="#i-reloj"/></svg><span class="tx"><b>¿Examen completo con tiempo?</b><small>Simulacro: 80 preguntas, cronómetro y ranking de la semana</small></span><span class="ir">Ir al simulacro</span></a>';
+  function tarjetaExamen(e) {
+    return '<div class="ex-mod" data-ex="' + e.id + '"><a class="ex-mod-link" href="examenes/' + e.id + '/index.html"><span class="ic">' + e.ico + '</span>' +
+      '<span class="tx"><b>' + esc(e.nombre) + '</b><small>' + esc(e.sub) + '</small></span>' + CHEV + '</a>' +
+      '<div class="ex-mod-dat" data-dat></div><div class="ex-mod-anios" data-anios></div></div>';
+  }
+  // Ciclo y número de examen: "2027-I-2" = Examen de control II del ciclo 2027-I
+  function nombreExamen(id) { var m = /^(\d{4}-(?:I|II|III))-([12])$/.exec(id); return m ? m[1] + ' · ' + (m[2] === '2' ? 'II' : 'I') : id; }
+  var manifiestos = {};
+  function pintarExamenes() {
+    EXAMENES.forEach(function (e) {
+      var pide = manifiestos[e.id] || (manifiestos[e.id] = fetch('examenes/' + e.id + '/data/manifest.json').then(function (r) { if (!r.ok) throw 0; return r.json(); }));
+      pide.then(function (lista) {
+        var card = hLista.querySelector('.ex-mod[data-ex="' + e.id + '"]');
+        if (!card) return;
+        var ex = [];
+        (lista || []).forEach(function (c) { (c.exams || [{ id: c.id, count: c.count }]).forEach(function (x) { ex.push({ id: x.id, n: x.count || 0 }); }); });
+        // Lo más nuevo primero: por año, luego por ciclo (III, II, I) y por número de examen
+        var rom = { I: 1, II: 2, III: 3 };
+        function clave(id) { var m = /^(\d{4})-(I{1,3})(?:-(\d))?/.exec(id) || []; return (+m[1] || 0) * 100 + (rom[m[2]] || 0) * 10 + (+m[3] || 0); }
+        ex.sort(function (a, b) { return clave(b.id) - clave(a.id); });
+        var preg = ex.reduce(function (s, x) { return s + x.n; }, 0);
+        card.querySelector('[data-dat]').innerHTML = '<span><b>' + ex.length + '</b>' + (ex.length === 1 ? ' examen' : ' exámenes') + '</span><span><b>' + preg + '</b> preguntas</span>';
+        var ver = ex.slice(0, 4).map(function (x) { return '<a href="examenes/' + e.id + '/ver.html?year=' + encodeURIComponent(x.id) + '">' + esc(nombreExamen(x.id)) + '</a>'; }).join('');
+        if (ex.length > 4) ver += '<a class="mas" href="examenes/' + e.id + '/index.html">+' + (ex.length - 4) + '</a>';
+        card.querySelector('[data-anios]').innerHTML = ver || '<span class="pronto">Muy pronto</span>';
+      }).catch(function () { delete manifiestos[e.id]; });
+    });
+  }
   function abrirHoja(cual) {
     hFondo.classList.remove('full'); document.body.classList.remove('en-cursos');
+    hFondo.classList.remove('ex'); document.body.classList.remove('en-examenes');
     if (cual === 'cursos') {
-      hTit.textContent = 'Mis cursos';
+      hTit.textContent = 'Mis cursos'; hSub.textContent = 'Elige un área o entra directo a un curso.';
       hLista.innerHTML = $('tplAreas').innerHTML;
       pintarAreas(); hFondo.classList.add('full'); document.body.classList.add('en-cursos');
     } else if (cual === 'examenes') {
-      hTit.textContent = 'Exámenes de admisión';
-      hLista.innerHTML = filaHoja('examenes/ordinario/index.html', ICO_EX, 'Ordinario', 'Exámenes reales de la UNJFSC por año', 'c-azul') +
-        filaHoja('examenes/cpu/index.html', ICO_EX, 'CPU', 'Exámenes del Centro Preuniversitario', 'c-azul') +
-        filaHoja('examenes/control-cpu/index.html', ICO_EX, 'Examen de control CPU', 'Exámenes de control del ciclo', 'c-azul');
+      hTit.textContent = 'Exámenes';
+      hSub.textContent = 'Exámenes reales con su clave: estúdialos o practícalos.';
+      hLista.innerHTML = EXAMENES.map(tarjetaExamen).join('') + SIM_TIRA;
+      pintarExamenes(); hFondo.classList.add('full', 'ex'); document.body.classList.add('en-examenes');
     } else {
       hTit.textContent = 'Flashcards: elige el curso';
       hLista.innerHTML = '';
@@ -569,15 +608,16 @@
     hFondo.hidden = false;
     sonar('toque');
   }
-  function cerrarHoja() { document.documentElement.classList.remove('mc-abre-cursos'); hFondo.hidden = true; hFondo.classList.remove('full'); document.body.classList.remove('en-cursos'); }
+  function cerrarHoja() { document.documentElement.classList.remove('mc-abre-cursos'); hFondo.hidden = true; hFondo.classList.remove('full', 'ex'); document.body.classList.remove('en-cursos', 'en-examenes'); }
   // "Nuevo para ti" (assets/novedades.js) usa la misma hoja
-  window.MCHoja = { abrir: function (t, html) { hFondo.classList.remove('full'); document.body.classList.remove('en-cursos'); hTit.textContent = t; hLista.innerHTML = html; hFondo.hidden = false; }, cerrar: cerrarHoja };
+  window.MCHoja = { abrir: function (t, html) { hFondo.classList.remove('full', 'ex'); document.body.classList.remove('en-cursos', 'en-examenes'); hTit.textContent = t; hLista.innerHTML = html; hFondo.hidden = false; }, cerrar: cerrarHoja };
   Array.prototype.forEach.call(document.querySelectorAll('[data-hoja]'), function (b) { b.addEventListener('click', function () { abrirHoja(b.getAttribute('data-hoja')); }); });
   $('hojaX').addEventListener('click', cerrarHoja);
-  // Volver desde un área ("← Mis cursos"): el inicio abre "Mis cursos" de una vez
-  if (location.hash === '#mis-cursos') {
+  // Volver desde un área ("← Mis cursos") o desde un examen ("← Exámenes"): el inicio abre esa pantalla de una vez
+  if (location.hash === '#mis-cursos' || location.hash === '#examenes') {
+    var hojaVuelta = location.hash === '#examenes' ? 'examenes' : 'cursos';
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
-    abrirHoja('cursos');
+    abrirHoja(hojaVuelta);
   }
   hFondo.addEventListener('click', function (e) { if (e.target === hFondo) cerrarHoja(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !hFondo.hidden) cerrarHoja(); });
