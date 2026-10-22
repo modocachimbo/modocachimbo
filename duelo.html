@@ -757,6 +757,17 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   html:not([data-modo="claro"]) .puesto-sala.yo { background: color-mix(in srgb, var(--jc) 12%, var(--surface)); }
   html:not([data-modo="claro"]) #btnCopiar { background: var(--surface-2); border-color: var(--borde-g); box-shadow: 0 5px 0 var(--borde-g); color: var(--text); }
   .puesto-sala.libre { background: transparent; }
+  /* Con 3 jugadores, en el celular también van los 3 en fila (sin hueco) */
+  @media (max-width: 480px) {
+    .sala[style*="--n: 3"] { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+    .sala[style*="--n: 3"] .puesto-sala { padding: 12px 3px 10px; }
+    .sala[style*="--n: 3"] .puesto-sala .av:not(#z) { width: 46px; height: 46px; font-size: 21px; border-radius: 13px; }
+    html body .sala[style*="--n: 3"] .puesto-sala b:not(#z) { font-size: 17px !important; }
+    .sala[style*="--n: 3"] .puesto-sala small { font-size: 10.5px; line-height: 1.3; }
+  }
+  /* Cada jugador con el borde de su color */
+  .puesto-sala:not(.libre) { border-color: color-mix(in srgb, var(--jc) 35%, var(--borde-g)) !important; border-bottom-color: var(--jd) !important; }
+  .puesto-sala.yo { border-color: var(--jc) !important; }
   .puesto-sala.libre .av:not(#z) { background: transparent; box-shadow: none; font-size: 30px; animation: libreLate 1.6s ease-in-out infinite; }
   @keyframes libreLate { 50% { border-color: var(--azul); color: var(--azul); } }
   .pts3 i { font-style: normal; animation: pts3 1.2s infinite; opacity: .2; } .pts3 i:nth-child(2) { animation-delay: .2s; } .pts3 i:nth-child(3) { animation-delay: .4s; }
@@ -1569,7 +1580,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       const j = js[i];
       if (i === 1 && d.max === 2) html += '<div class="vs" aria-hidden="true">VS</div>';
       if (!j) { html += '<div class="puesto-sala libre"><span class="av">+</span><b>Libre</b><small>Esperando<i class="pts3"><i>.</i><i>.</i><i>.</i></i></small></div>'; continue; }
-      html += '<div class="puesto-sala ' + colorDe(j) + (j.yo ? ' yo' : '') + (VISTOS[j.apodo] ? '' : ' entra') + '">' + avatar(j) + '<b>' + esc(nombreDe(j)) + '</b><small>' + (j.xp != null && window.MCRango && MCRango.nivel(j.xp) >= 0 ? '<i class="rgo-n r' + MCRango.nivel(j.xp) + '">' + MCRango.nombre(MCRango.nivel(j.xp)) + '</i> · ' : '') + (j.creador ? 'Creó el duelo' : 'Listo') + '</small></div>';
+      html += '<div class="puesto-sala ' + colorDe(j) + (j.yo ? ' yo' : '') + (VISTOS[j.apodo] ? '' : ' entra') + '">' + avatar(j) + '<b>' + esc(nombreDe(j)) + '</b><small>' + (j.xp != null && window.MCRango && MCRango.nivel(j.xp) >= 0 ? '<i class="rgo-n r' + MCRango.nivel(j.xp) + '">' + MCRango.nombre(MCRango.nivel(j.xp)) + '</i> · ' : '') + (j.creador ? 'Anfitrión' : 'Listo') + '</small></div>';
       VISTOS[j.apodo] = 1;
     }
     return html;
