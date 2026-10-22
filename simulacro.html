@@ -630,6 +630,103 @@
     .alts button { font-size: 15px; }
   }
 
+  /* =========================================================
+     Resultado estilo Free Fire: puntaje grande inclinado, fichas por área,
+     la estrella de 5 picos y tu avance. Lima es tuyo; celeste, naranja y
+     amarillo acompañan.
+     ========================================================= */
+  #resultado { --cel: #1CB0F6; --nar: #FF9600; --yo: #C6E000; --yo-tx: #C6E000; }
+  html[data-modo="claro"] #resultado { --yo-tx: #6F8000; --nar: #E07B00; --cel: #0E8FD6; }
+  #resultado > .card { margin-top: 16px; }
+  html body .res-tit:not(#z) { font: italic 900 clamp(34px, 6vw, 48px)/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; margin-top: 6px; text-wrap: balance; }
+  html body #resultado .card > h3:not(#z) { margin-bottom: 14px; }
+
+  /* Tu puntaje */
+  .res-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 18px 24px; align-items: center; overflow: hidden; padding: 22px 24px;
+    background: linear-gradient(115deg, rgba(198,224,0,.13), transparent 45%), repeating-linear-gradient(135deg, transparent 0 22px, rgba(255,255,255,.018) 22px 44px), var(--surface); }
+  .res-hero::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 8px; background: repeating-linear-gradient(135deg, #151a03 0 6px, var(--oro) 6px 12px); }
+  .rh-pts { display: grid; justify-items: start; gap: 2px; padding-left: 6px; }
+  html body .rh-lbl:not(#z) { font: 800 15px/1 var(--display) !important; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
+  html body .res-hero .num:not(#z) { font: italic 900 clamp(72px, 12vw, 104px)/.95 var(--display) !important; color: var(--yo-tx); letter-spacing: .01em; text-shadow: 0 0 34px rgba(198,224,0,.25); margin-top: 4px; }
+  .rh-de { font-weight: 800; color: var(--dim); font-size: 14px; }
+  .rh-de::before { content: ""; display: block; width: min(260px, 100%); height: 8px; margin: 6px 0 8px; border-radius: 0; clip-path: polygon(0 0, 100% 0, 97% 100%, 0 100%);
+    background: linear-gradient(90deg, var(--yo) var(--pct, 0%), var(--surface-2) var(--pct, 0%)); }
+  .res-hero .guardado { margin-top: 4px; font-weight: 800; }
+  .res-hero .cuenta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0; }
+  .ct { display: grid; justify-items: center; gap: 6px; padding: 14px 6px 12px; background: var(--surface-2); border: 2px solid var(--borde-g); border-bottom-width: 4px; border-radius: 16px; text-align: center; }
+  .ct.ok { border-bottom-color: #2f9e5a; } .ct.mal { border-bottom-color: #c24848; }
+  .ct .ins { margin: 0; width: 26px; height: 26px; border-radius: 8px; }
+  html body .ct b:not(#z) { font: italic 900 36px/1 var(--display) !important; color: var(--text); }
+  html body .ct small:not(#z) { font: 800 12.5px/1 var(--display) !important; letter-spacing: .07em; text-transform: uppercase; color: var(--dim); }
+  .res-acc { grid-column: 1 / -1; display: flex; gap: 10px; flex-wrap: wrap; }
+  .res-acc .btn { flex: 1 1 130px; text-align: center; justify-content: center; display: inline-flex; align-items: center; padding: 13px 16px; font-size: 15.5px; }
+  .res-acc .btn:not(.sec) { flex-basis: 220px; text-transform: uppercase; letter-spacing: .04em; }
+  .res-nota { grid-column: 1 / -1; color: var(--dim); font-size: 13px; margin-top: -6px; }
+  .res-nota b { color: var(--text); font-weight: 900; }
+  @media (max-width: 760px) { .res-hero { grid-template-columns: minmax(0, 1fr); padding: 18px 16px 18px 22px; } .rh-pts { justify-items: center; text-align: center; padding: 0; } .rh-de::before { margin-inline: auto; } }
+
+  /* Por área: fichas como en "Cómo se reparten" */
+  .ra-lista { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .ra.area:not(#z) { grid-template-columns: 44px minmax(0, 1fr) auto; }
+  .ra-cab { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .ra-cab b { min-width: 0; }
+  .ra-bar { display: flex; height: 7px; margin: 7px 0 6px; background: var(--surface-2); overflow: hidden; clip-path: polygon(0 0, 100% 0, 98% 100%, 0 100%); }
+  .ra-bar i { display: block; height: 100%; } .ra-bar .c { background: var(--ok); } .ra-bar .i { background: var(--bad); }
+  .ra .a-tx small .v { color: var(--ok); font-weight: 900; } .ra .a-tx small .m { color: var(--bad); font-weight: 900; }
+  html body .ra-dif:not(#z) { font: italic 900 15px/1 var(--display) !important; font-style: italic; padding: 5px 8px 4px; white-space: nowrap; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); }
+  .ra-dif.sube { color: #58CC02; background: rgba(88,204,2,.14); } .ra-dif.baja { color: #FF4B4B; background: rgba(255,75,75,.14); } .ra-dif.igual { color: var(--dim); background: var(--surface-2); }
+  @media (max-width: 820px) { .ra-lista { grid-template-columns: minmax(0, 1fr); } }
+  @media (max-width: 420px) { .ra.area:not(#z) { grid-template-columns: 38px minmax(0, 1fr) auto; gap: 9px; } html body .ra-dif:not(#z) { font-size: 13px !important; padding: 4px 6px 3px; } }
+
+  /* Tu estrella frente a tu carrera */
+  .comparar { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 6px 24px; align-items: center; }
+  .cmp-cab { grid-column: 1 / -1; }
+  .cmp-cab h3 { margin: 4px 0 2px; }
+  .cmp-eb, .av-eb, .av-foco-eb { font: 800 13px/1 var(--display) !important; letter-spacing: .1em; text-transform: uppercase; }
+  .cmp-eb { color: var(--com); } .av-eb { color: var(--cel); }
+  html body .cmp-cab h3:not(#z), html body .avance h3:not(#z) { font: italic 900 28px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; }
+  .cmp-radar svg { max-width: 460px; }
+  .rd-anillo { fill: var(--surface-2); stroke: var(--borde-g); stroke-width: 1.5; } .rd-anillo.par { fill: var(--surface); }
+  .rd-eje { stroke: var(--borde-g); stroke-width: 1.5; }
+  .rd-top { fill: rgba(255,150,0,.08); stroke: var(--nar); stroke-width: 2.5; stroke-dasharray: 7 5; stroke-linejoin: round; }
+  .rd-prom { fill: rgba(28,176,246,.12); stroke: var(--cel); stroke-width: 2.5; stroke-linejoin: round; }
+  .rd-yo { fill: url(#rdYo); stroke: var(--yo); stroke-width: 3.5; stroke-linejoin: round; filter: drop-shadow(0 0 8px rgba(198,224,0,.45)); }
+  .rd-yo-a { stop-color: #C6E000; stop-opacity: .15; } .rd-yo-b { stop-color: #C6E000; stop-opacity: .45; }
+  .rd-pto { stroke: var(--surface); stroke-width: 3; }
+  html body .rd-nom:not(#z) { font: 800 15px var(--cuerpo, 'Nunito'), sans-serif !important; fill: var(--dim); }
+  html body .rd-val:not(#z) { font: italic 900 24px var(--display) !important; }
+  .cmp-ley { gap: 16px; font-weight: 800; font-size: 13px; }
+  .cmp-ley span::before { width: 16px; height: 4px; border-radius: 0; vertical-align: 3px; }
+  .cmp-ley .yo::before { background: var(--yo); height: 6px; } .cmp-ley .prom::before { background: var(--cel); } .cmp-ley .top::before { background: repeating-linear-gradient(90deg, var(--nar) 0 5px, transparent 5px 8px); }
+  .cmp-puesto { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin: 0 0 4px; }
+  html body .cmp-puesto span:not(#z) { font: 800 16px/1 var(--display) !important; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
+  html body .cmp-puesto b:not(#z) { font: italic 900 64px/.9 var(--display) !important; color: var(--oro-tx); }
+  html body .cmp-puesto small:not(#z) { font: 800 18px/1 var(--display) !important; color: var(--dim); text-transform: uppercase; }
+  html body .cmp-puesto em:not(#z) { font: italic 900 17px/1 var(--display) !important; text-transform: uppercase; background: var(--oro); color: #2a1d00; padding: 5px 12px 4px 10px; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); align-self: center; }
+  .cmp-pista { height: 12px; border-radius: 0; clip-path: polygon(0 0, 100% 0, 99% 100%, 0 100%); overflow: visible; }
+  .cmp-pista i { background: var(--yo); border-color: var(--surface); box-shadow: 0 0 0 2px var(--yo), 0 0 14px rgba(198,224,0,.6); }
+  .cmp-filas div { display: grid; grid-template-columns: 78px minmax(0, 1fr) auto; align-items: center; gap: 10px; border: 0; border-radius: 0; padding: 4px 0; font-weight: 800; }
+  .cmp-filas i { display: block; height: 12px; background: var(--surface-2); clip-path: polygon(0 0, 100% 0, 98% 100%, 0 100%); }
+  .cmp-filas s { display: block; height: 100%; text-decoration: none; }
+  .cmp-filas .yo s { background: var(--yo); } .cmp-filas .prom s { background: var(--cel); } .cmp-filas .top s { background: linear-gradient(90deg, var(--nar), var(--oro)); }
+  html body .cmp-filas b:not(#z) { font: italic 900 22px/1 var(--display) !important; min-width: 44px; text-align: right; }
+  .cmp-filas .yo b { color: var(--yo-tx); } .cmp-filas .prom b { color: var(--cel); } .cmp-filas .top b { color: var(--nar); }
+  @media (max-width: 760px) { .comparar { grid-template-columns: minmax(0, 1fr); } .cmp-radar { order: 0; } html body .cmp-puesto b:not(#z) { font-size: 54px !important; } }
+
+  /* Tu avance */
+  .avance { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: center; }
+  .avance.solo { grid-template-columns: minmax(0, 1fr); }
+  .av-graf h3 { margin-top: 6px; }
+  .av-pie { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .av-meta { color: var(--oro-tx); }
+  .av-foco { margin: 0; padding: 16px; border: 2px solid var(--nar); border-bottom-width: 5px; border-radius: 18px; background: linear-gradient(160deg, rgba(255,150,0,.14), transparent 60%); display: grid; gap: 4px; }
+  .av-foco-eb { color: var(--nar); }
+  html body .av-foco b:not(#z) { font: italic 900 26px/1.05 var(--display) !important; text-transform: uppercase; margin-top: 4px; }
+  .av-foco .btn { margin-top: 10px; width: 100%; background: var(--nar); color: #1a0f00; box-shadow: 0 4px 0 #a35f00; }
+  @media (max-width: 760px) { .avance { grid-template-columns: minmax(0, 1fr); } }
+  html[data-modo="claro"] #resultado .av-foco .btn:not(.sec):not(#z) { background: var(--nar) !important; color: #1a0f00 !important; }
+  @media (max-width: 420px) { .res-acc .btn { padding: 12px 8px; font-size: 14.5px; } .res-acc .btn.sec .ico-btn { display: none; } }
+
 /* Modo claro de esta página (assets/claro.css trae lo común) */
 html[data-modo="claro"] .eyebrow { color: #6F8000 !important; }
 html[data-modo="claro"] .rank li b { color: #6F8000 !important; }
@@ -810,46 +907,31 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
   <!-- 3. Resultado -->
   <section id="resultado" hidden>
     <div class="eyebrow" id="rTiempo">Simulacro terminado</div>
-    <h1 style="font-size:clamp(24px,4vw,32px);margin-top:6px" id="rTit">¡Buen trabajo!</h1>
-    <div class="res-top">
-      <div class="card puntaje">
-        <span class="hint">Tu puntaje</span>
+    <h1 class="res-tit" id="rTit">¡Buen trabajo!</h1>
+    <!-- Tu puntaje: lo primero que ves, con lo que puedes hacer ahora -->
+    <div class="card res-hero">
+      <div class="rh-pts">
+        <span class="rh-lbl">Tu puntaje</span>
         <span class="num" id="rPuntaje">0</span>
-        <span class="hint" id="rDe"></span>
-        <div class="cuenta" id="rCuenta"></div>
+        <span class="rh-de" id="rDe"></span>
         <div class="guardado" id="rGuardado" role="status"></div>
       </div>
-      <div class="card">
-        <h3>Por área</h3>
-        <div class="t-wrap"><table>
-          <thead><tr><th>Área</th><th class="r"><span class="ins g"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></th><th class="r"><span class="ins r"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></span></th><th class="r"><span class="ins n"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12"/></svg></span></th><th class="r">Puntos</th></tr></thead>
-          <tbody id="rTabla"></tbody>
-          <tfoot id="rTotal"></tfoot>
-        </table></div>
+      <div class="cuenta" id="rCuenta"></div>
+      <div class="res-acc">
+        <button class="btn sec" type="button" id="btnRevisar"><svg class="ico-btn" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h11M8 12h11M8 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>Revisar respuestas</button>
+        <a class="btn sec" id="btnRepetir" href="#" hidden><svg class="ico-btn" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 14-5.3L20 9M20 4v5h-5"/></svg>Repetir</a>
+        <a class="btn" href="simulacro.html">Otro simulacro</a>
       </div>
+      <p class="res-nota">Tus incorrectas ya están en <b>Repasar mis preguntas falladas</b> y tu puntaje en <b>Mis simulacros</b>.</p>
     </div>
-    <div class="card" id="rTemas" style="margin-top:16px" hidden></div>
-    <div class="card avance" id="rAvance" hidden></div>
+    <!-- Por área: una ficha por área con sus aciertos, puntos y cuánto cambió -->
+    <div class="card res-areas">
+      <h3>Por área</h3>
+      <div id="rAreas" class="ra-lista"></div>
+    </div>
+    <div class="card" id="rTemas" hidden></div>
     <div class="card comparar" id="rComparar" hidden></div>
-    <div class="res-bot">
-      <div class="card">
-        <h3>Top 10 de la semana</h3>
-        <ol class="rank" id="rank"><li class="vacia">Cargando…</li></ol>
-      </div>
-      <div class="card">
-        <h3>Y ahora</h3>
-        <ul class="reglas">
-          <li><span class="ins l"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h11M8 12h11M8 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg></span><b>Revisa tus respuestas</b> con la clave correcta</li>
-          <li><span class="ins l"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 14-5.3L20 9M20 4v5h-5"/></svg></span>Las incorrectas pasan a <b>Repasar mis preguntas falladas</b></li>
-          <li><span class="ins l"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 17 6-6 4 4 6-7"/></svg></span>Tu puntaje queda en <b>Mis simulacros</b>, con el botón Repetir</li>
-        </ul>
-        <div class="nav-preg">
-          <button class="btn sec" type="button" id="btnRevisar">Revisar mis respuestas</button>
-          <a class="btn sec" id="btnRepetir" href="#" hidden>Repetir este simulacro</a>
-          <a class="btn" href="simulacro.html">Otro simulacro</a>
-        </div>
-      </div>
-    </div>
+    <div class="card avance" id="rAvance" hidden></div>
     <div class="card" id="revision" style="margin-top:16px" hidden>
       <h3>Tus respuestas</h3>
       <div class="filtros" id="filtros">
@@ -1123,21 +1205,6 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
       })
       .catch(() => { caja.innerHTML = '<li class="vacia">No se pudo cargar tu lista.</li>'; });
   }
-  function pintarRanking(el) {
-    rpc('ranking_simulacro').then(L => {
-      L = L || [];
-      if (!L.length) { el.innerHTML = '<li class="vacia">Nadie ha terminado un simulacro esta semana. ¡Sé el primero!</li>'; return; }
-      // En el resultado, el mismo podio del inicio (assets/ranking.js)
-      if (el.id === 'rank' && window.MCRanking) {
-        MCRanking.css();
-        const card = el.closest('.card'); card.classList.add('mcr', 'mcr-sim');
-        card.innerHTML = MCRanking.html(L, { simulacro: true });
-        return;
-      }
-      el.innerHTML = L.map(r => '<li class="' + (r.yo ? 'yo ' : '') + (r.puesto <= 3 ? 'p' + r.puesto : '') + '"><span class="p">' + r.puesto + '</span><span class="letra">' + esc(String(r.apodo || '?').trim().charAt(0).toUpperCase()) + '</span><span class="n">' + esc(r.apodo) + (r.yo ? ' (tú)' : '') + '</span><b>' + num1(+r.puntaje) + '<small>pts</small></b></li>').join('');
-    }).catch(() => { el.innerHTML = '<li class="vacia">No se pudo cargar el ranking.</li>'; });
-  }
-
 
   /* ---------- Cabecera: tu mejor puntaje y tu puesto de la semana ---------- */
   let MEJOR = null, PUESTO = null;
@@ -1626,11 +1693,18 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
     MCAuth.perfil().then(p => { const nom = ((p && (p.apodo || p.nombre)) || '').trim().split(' ')[0]; $('rTit').textContent = (R.total >= R.max / 2 ? '¡Buen trabajo' : '¡Sigue practicando') + (nom ? ', ' + nom : '') + '!'; }).catch(() => {});
     $('rPuntaje').textContent = num1(R.total);
     $('rDe').textContent = 'de ' + fmtNum(R.max) + ' · Bloque ' + S.bloque + ' · ' + S.nombre;
-    $('rCuenta').innerHTML = '<span>' + ICO.ok + '<b>' + R.C + '</b> correctas</span><span>' + ICO.mal + '<b>' + R.I + '</b> incorrectas</span><span>' + ICO.bl + '<b>' + R.B + '</b> en blanco</span>';
-    $('rTabla').innerHTML = AREAS.filter(a => !S.pers || PREGS.some(q => AREA_DE[q._curso] === a)).map(a => { const x = R.areas[a.k]; return '<tr><td style="--c:' + a.c + '">' + a.nom + '</td><td class="r">' + x.c + '</td><td class="r">' + x.i + '</td><td class="r">' + x.b + '</td><td class="r"><b>' + num1(x.p) + '</b></td></tr>'; }).join('');
-    $('rTotal').innerHTML = '<tr><td style="--c:var(--accent)">Total</td><td class="r">' + R.C + '</td><td class="r">' + R.I + '</td><td class="r">' + R.B + '</td><td class="r">' + num1(R.total) + '</td></tr>';
-    // El personalizado es libre: sin ranking ni comparación; en su lugar, cómo te fue en cada tema
-    if ($('rank')) { $('rank').closest('.card').hidden = !!S.pers; $('rank').closest('.res-bot').style.gridTemplateColumns = S.pers ? 'minmax(0, 1fr)' : ''; }
+    const pct = R.max ? Math.max(0, Math.min(100, R.total / R.max * 100)) : 0;
+    $('rPuntaje').closest('.res-hero').style.setProperty('--pct', pct.toFixed(1) + '%');
+    $('rCuenta').innerHTML = [['ok', 'g', R.C, 'Correctas'], ['mal', 'r', R.I, 'Incorrectas'], ['bl', 'n', R.B, 'En blanco']]
+      .map(x => '<div class="ct ' + x[0] + '">' + ICO[x[0]] + '<b>' + x[2] + '</b><small>' + x[3] + '</small></div>').join('');
+    $('rAreas').innerHTML = AREAS.filter(a => !S.pers || PREGS.some(q => AREA_DE[q._curso] === a)).map(a => {
+      const x = R.areas[a.k], n = x.c + x.i + x.b || 1;
+      return '<div class="area ra" data-k="' + a.k + '" style="--c:' + a.c + ';--ico:url(assets/icons/' + a.ico + '.svg)"><i class="a-ic"></i>' +
+        '<div class="a-tx"><div class="ra-cab"><b>' + a.nom + '</b><em class="ra-dif" hidden></em></div><div class="ra-bar" aria-hidden="true"><i class="c" style="width:' + (x.c / n * 100) + '%"></i><i class="i" style="width:' + (x.i / n * 100) + '%"></i></div>' +
+        '<small><span class="v">' + x.c + ' bien</span> · <span class="m">' + x.i + ' mal</span> · ' + x.b + ' en blanco</small></div>' +
+        '<div class="a-pts">' + num1(x.p) + '<small>pts</small></div></div>';
+    }).join('');
+    // El personalizado es libre: sin comparación; en su lugar, cómo te fue en cada tema
     $('rTemas').hidden = !S.pers;
     if (S.pers) pintarPorTema();
     guardarResultado(R);
@@ -1665,12 +1739,11 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
       return guardarFalladas();
     }).then(() => {
       ls(null);
-      if (!S.pers) { pintarRanking($('rank')); pintarAvance(R); }
+      if (!S.pers) pintarAvance(R);
     }).catch(() => {
       guardarEstado();
       st.className = 'guardado error'; st.innerHTML = 'No se pudo guardar. <button type="button" class="btn sec mini" id="btnReintentar">Reintentar</button>';
       $('btnReintentar').addEventListener('click', () => guardarResultado(R));
-      if (!S.pers) pintarRanking($('rank'));
     });
   }
   /* ---------- Tu avance: este simulacro frente a los anteriores del mismo bloque ---------- */
@@ -1711,14 +1784,20 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
         const malas = {};
         PREGS.forEach((q, i) => { if (AREA_DE[q._curso] === peor && S.resp[i] != null && S.resp[i] !== q.correct) malas[q._curso] = (malas[q._curso] || 0) + 1; });
         const curso = Object.keys(malas).sort((x, y) => malas[y] - malas[x])[0];
+        // Cuánto subió o bajó cada área frente al anterior: va en su ficha de "Por área"
+        AREAS.forEach(a => {
+          const d = delta[a.k], em = document.querySelector('.ra[data-k="' + a.k + '"] .ra-dif'); if (!em || d == null) return;
+          em.className = 'ra-dif ' + (d > 0 ? 'sube' : d < 0 ? 'baja' : 'igual');
+          em.textContent = (d > 0 ? '▲ +' : d < 0 ? '▼ −' : '= ') + fmtNum(Math.abs(d)); em.title = 'Frente a tu simulacro anterior'; em.hidden = false;
+        });
         caja.innerHTML =
           '<div class="av-graf"><div class="av-eb">Tu avance · Bloque ' + esc(b) + '</div>' +
-          '<h3>' + (dif == null ? 'Tu primer simulacro de este bloque' : dif > 0 ? '+' + fmtNum(dif) + ' puntos vs. tu simulacro anterior' : dif < 0 ? '−' + fmtNum(-dif) + ' puntos vs. tu simulacro anterior' : 'Igual que tu simulacro anterior') + '</h3>' +
+          '<h3>' + (dif == null ? 'Tu primer simulacro de este bloque' : dif > 0 ? '+' + fmtNum(dif) + ' puntos vs. tu anterior' : dif < 0 ? '−' + fmtNum(-dif) + ' puntos vs. tu anterior' : 'Igual que tu anterior') + '</h3>' +
           (L.length > 1 ? graf(L.map(x => +x.puntaje), +L[L.length - 1].maximo || R.max, META) : '<p class="hint" style="margin-top:6px">Cuando des otro simulacro del bloque ' + esc(b) + ' verás aquí tu curva y cuánto subiste por área.</p>') +
-          '<div class="hint" style="margin-top:6px"><span>' + (L.length > 1 ? 'Tus últimos ' + L.length + ' simulacros' : '') + '</span><span id="avMetaZona"></span></div></div>' +
-          '<div><ul class="av-areas">' + AREAS.map(a => { const d = delta[a.k]; return '<li style="--c:' + a.c + '"><span>' + a.nom + '</span>' + (d == null ? '<em class="igual">' + num1(R.areas[a.k].p) + ' pts</em>' : '<em class="' + (d > 0 ? 'sube' : d < 0 ? 'baja' : 'igual') + '">' + (d > 0 ? '+' : d < 0 ? '−' : '') + fmtNum(Math.abs(d)) + '</em>') + '</li>'; }).join('') + '</ul>' +
-          (curso ? '<div class="av-foco"><b>' + (ant && delta[peor.k] < 0 ? 'Lo que más te bajó: ' : 'Lo que más te cuesta: ') + peor.nom + '</b><small>Fallaste ' + malas[curso] + ' de ' + esc(NOMBRE[curso] || curso) + '</small>' +
-            '<a class="btn sec" href="' + curso + '/index.html">Practicar ' + esc(NOMBRE[curso] || curso) + '</a></div>' : '') + '</div>';
+          '<div class="hint av-pie"><span>' + (L.length > 1 ? 'Tus últimos ' + L.length + ' simulacros' : '') + '</span><span id="avMetaZona"></span></div></div>' +
+          (curso ? '<div class="av-foco"><span class="av-foco-eb">' + (ant && delta[peor.k] < 0 ? 'Lo que más te bajó' : 'Lo que más te cuesta') + '</span><b>' + peor.nom + '</b><small>Fallaste ' + malas[curso] + ' de ' + esc(NOMBRE[curso] || curso) + '</small>' +
+            '<a class="btn" href="' + curso + '/index.html">Practicar ' + esc(NOMBRE[curso] || curso) + '</a></div>' : '');
+        caja.classList.toggle('solo', !curso);
         pintarMeta(b, L, R);
         pintarComparar(R);
         caja.hidden = false;
@@ -1730,6 +1809,7 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
     const linea = v.map((n, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(n).toFixed(1)).join(' ');
     return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Puntajes: ' + v.map(num1).join(', ') + '">' +
       (meta ? '<line x1="8" x2="' + (W - 8) + '" y1="' + y(meta) + '" y2="' + y(meta) + '" stroke="#FFC800" stroke-width="2" stroke-dasharray="5 5"/><text x="10" y="' + (y(meta) - 6) + '" fill="#FFC800" font-size="11" font-weight="800">Meta ' + fmtNum(meta) + '</text>' : '') +
+      '<path d="' + linea + ' L' + x(v.length - 1).toFixed(1) + ' ' + (H - 4) + ' L' + x(0).toFixed(1) + ' ' + (H - 4) + 'Z" fill="rgba(28,176,246,.14)"/>' +
       '<path d="' + linea + '" fill="none" stroke="#1CB0F6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>' +
       v.map((n, i) => '<circle cx="' + x(i) + '" cy="' + y(n) + '" r="' + (i === v.length - 1 ? 7 : 5) + '" fill="' + (i === v.length - 1 ? '#C6E000' : '#1CB0F6') + '" stroke="#0e0e0e" stroke-width="2"/>').join('') +
       '<text x="' + x(v.length - 1) + '" y="' + (y(v[v.length - 1]) + 22 > H ? y(v[v.length - 1]) - 12 : y(v[v.length - 1]) + 22) + '" fill="#C6E000" font-size="12" font-weight="800" text-anchor="end">' + fmtNum(v[v.length - 1]) + '</text></svg>';
@@ -1746,38 +1826,44 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
       }
       const top = Math.max(1, Math.round((d.puesto / d.n) * 100));
       const pos = d.n > 1 ? 100 - ((d.puesto - 1) / (d.n - 1)) * 100 : 100;
-      const E = [['com', 'Comunicación'], ['mat', 'Matemática'], ['cta', 'Ciencia'], ['ccss', 'Sociales'], ['rap', 'Rapidez']];
+      const E = [['com', 'Comunicación', 'var(--com)'], ['mat', 'Matemática', 'var(--mat)'], ['cta', 'Ciencia', 'var(--cta)'], ['ccss', 'Sociales', 'var(--ccss)'], ['rap', 'Rapidez', 'var(--oro)']];
+      const grupo = d.grupo === 'carrera' ? 'tu carrera' : 'tu bloque';
+      const filas = [['yo', 'Tú', +d.yo.puntaje], ['prom', 'Promedio', +d.prom.puntaje]].concat(d.top ? [['top', 'Top 10%', +d.top.puntaje]] : []);
+      const tope = Math.max(1, ...filas.map(f => f[2]));
       caja.innerHTML =
+        '<div class="cmp-cab"><div class="cmp-eb">Tú vs. ' + nom + '</div><h3>Tu estrella</h3><p class="hint">Tus aciertos por área y tu rapidez, frente al promedio' + (d.top ? ' y al top 10%' : '') + ' de ' + grupo + '.</p></div>' +
         '<div class="cmp-radar">' + radar(E, d) +
-          '<div class="cmp-ley"><span style="--k:var(--accent)">Tú</span><span style="--k:#6b6b6b">Promedio</span>' + (d.top ? '<span style="--k:#FFC800">Top 10%</span>' : '') + '</div></div>' +
-        '<div><div class="cmp-eb">Tú vs. ' + nom + '</div>' +
-          '<div class="cmp-puesto">Puesto ' + d.puesto + ' <small>de ' + d.n + '</small></div>' +
-          '<p class="hint">' + (top <= 50 ? 'Estás en el top ' + top + '% de ' + (d.grupo === 'carrera' ? 'tu carrera' : 'tu bloque') + ' con tu último simulacro.' : 'Estás en la mitad de abajo de ' + (d.grupo === 'carrera' ? 'tu carrera' : 'tu bloque') + '. ¡A remontar!') + '</p>' +
+          '<div class="cmp-ley"><span class="yo">Tú</span><span class="prom">Promedio</span>' + (d.top ? '<span class="top">Top 10%</span>' : '') + '</div></div>' +
+        '<div class="cmp-lado">' +
+          '<div class="cmp-puesto"><span>Puesto</span><b>' + d.puesto + '</b><small>de ' + d.n + '</small>' + (top <= 50 ? '<em>Top ' + top + '%</em>' : '') + '</div>' +
+          '<p class="hint">' + (top <= 50 ? 'Estás en el top ' + top + '% de ' + grupo + ' con tu último simulacro.' : 'Estás en la mitad de abajo de ' + grupo + '. ¡A remontar!') + '</p>' +
           '<div class="cmp-pista"><i style="left:' + pos.toFixed(1) + '%"></i></div><div class="cmp-pista-tx"><span>Último</span><span>Primero</span></div>' +
-          '<div class="cmp-filas"><div><span>Tu puntaje</span><b>' + fmtNum(+d.yo.puntaje) + '</b></div><div><span>Promedio</span><b>' + fmtNum(+d.prom.puntaje) + '</b></div>' +
-          (d.top ? '<div><span>Top 10%</span><b style="color:#FFC800">' + fmtNum(+d.top.puntaje) + '</b></div>' : '') + '</div>' +
+          '<div class="cmp-filas">' + filas.map(f => '<div class="' + f[0] + '"><span>' + f[1] + '</span><i><s style="width:' + Math.max(2, Math.max(0, f[2]) / tope * 100).toFixed(1) + '%"></s></i><b>' + fmtNum(f[2]) + '</b></div>').join('') + '</div>' +
           (d.grupo === 'bloque' ? '<p class="hint" style="margin-top:8px">Cuando haya 5 alumnos de tu carrera, te comparamos solo con ellos.</p>' : '') +
         '</div>';
       caja.style.display = ''; caja.hidden = false;
     }).catch(() => {});
   }
+  // Estrella de 5 picos: anillos rellenos, promedio en celeste, top 10% en naranja y tú en lima encima
   function radar(E, d) {
-    const W = 340, C = W / 2, Rr = 110, n = E.length;
+    const W = 340, C = W / 2, Rr = 112, n = E.length;
     const pt = (i, v) => { const a = -Math.PI / 2 + i * 2 * Math.PI / n, r = Rr * Math.max(0, Math.min(100, +v || 0)) / 100; return [C + r * Math.cos(a), C + r * Math.sin(a)]; };
-    const poly = (o, st) => '<polygon points="' + E.map((e, i) => pt(i, o[e[0]]).map(z => z.toFixed(1)).join(',')).join(' ') + '" ' + st + '/>';
-    let g = '';
-    [25, 50, 75, 100].forEach(k => { g += poly(Object.fromEntries(E.map(e => [e[0], k])), 'fill="none" stroke="#262626" stroke-width="1.5"'); });
-    E.forEach((e, i) => { const p = pt(i, 100); g += '<line x1="' + C + '" y1="' + C + '" x2="' + p[0].toFixed(1) + '" y2="' + p[1].toFixed(1) + '" stroke="#262626" stroke-width="1.5"/>'; });
-    if (d.top) g += poly(d.top, 'fill="rgba(255,200,0,.10)" stroke="#FFC800" stroke-width="2" stroke-dasharray="5 4"');
-    g += poly(d.prom, 'fill="rgba(160,160,160,.12)" stroke="#6b6b6b" stroke-width="2"');
-    g += poly(d.yo, 'fill="rgba(198,224,0,.22)" stroke="#C6E000" stroke-width="3" stroke-linejoin="round"');
-    E.forEach((e, i) => { const p = pt(i, d.yo[e[0]]); g += '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="4.5" fill="#C6E000" stroke="#0e0e0e" stroke-width="2"/>'; });
+    const pts = o => E.map((e, i) => pt(i, o[e[0]]).map(z => z.toFixed(1)).join(',')).join(' ');
+    const lleno = k => Object.fromEntries(E.map(e => [e[0], k]));
+    let g = '<defs><radialGradient id="rdYo" cx="50%" cy="50%" r="60%"><stop offset="0" class="rd-yo-a"/><stop offset="1" class="rd-yo-b"/></radialGradient></defs>';
+    [100, 75, 50, 25].forEach((k, j) => { g += '<polygon class="rd-anillo' + (j % 2 ? ' par' : '') + '" points="' + pts(lleno(k)) + '"/>'; });
+    E.forEach((e, i) => { const p = pt(i, 100); g += '<line class="rd-eje" x1="' + C + '" y1="' + C + '" x2="' + p[0].toFixed(1) + '" y2="' + p[1].toFixed(1) + '"/>'; });
+    if (d.top) g += '<polygon class="rd-top" points="' + pts(d.top) + '"/>';
+    g += '<polygon class="rd-prom" points="' + pts(d.prom) + '"/>';
+    g += '<polygon class="rd-yo" points="' + pts(d.yo) + '"/>';
+    E.forEach((e, i) => { const p = pt(i, d.yo[e[0]]); g += '<circle class="rd-pto" cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="5.5" style="fill:' + e[2] + '"/>'; });
     E.forEach((e, i) => {
-      const p = pt(i, 128), anc = Math.abs(p[0] - C) < 8 ? 'middle' : p[0] > C ? 'start' : 'end';
-      g += '<text class="eje" x="' + p[0].toFixed(1) + '" y="' + (p[1] - 2).toFixed(1) + '" text-anchor="' + anc + '">' + e[1] + '</text>' +
-           '<text class="val" x="' + p[0].toFixed(1) + '" y="' + (p[1] + 13).toFixed(1) + '" text-anchor="' + anc + '">' + Math.round(+d.yo[e[0]] || 0) + '%</text>';
+      const p = pt(i, 124), anc = Math.abs(p[0] - C) < 8 ? 'middle' : p[0] > C ? 'start' : 'end', arriba = p[1] < C - 40;
+      const y = arriba ? p[1] - 22 : p[1] + 4;
+      g += '<text class="rd-nom" x="' + p[0].toFixed(1) + '" y="' + y.toFixed(1) + '" text-anchor="' + anc + '">' + e[1] + '</text>' +
+           '<text class="rd-val" x="' + p[0].toFixed(1) + '" y="' + (y + 21).toFixed(1) + '" text-anchor="' + anc + '" style="fill:' + e[2] + '">' + Math.round(+d.yo[e[0]] || 0) + '%</text>';
     });
-    return '<svg viewBox="-60 10 ' + (W + 120) + ' ' + (W - 40) + '" role="img" aria-label="Tus aciertos por área frente al promedio">' + g + '</svg>';
+    return '<svg viewBox="-70 -6 ' + (W + 140) + ' ' + (W + 4) + '" role="img" aria-label="Tus aciertos por área frente al promedio">' + g + '</svg>';
   }
   // La meta es tuya: el puntaje que quieres para tu carrera (se guarda en este equipo)
   function pintarMeta(b, L, R) {
