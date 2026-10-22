@@ -732,6 +732,61 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   html[data-modo="claro"] .sw[aria-checked="true"] { background: var(--oro) !important; }
   html[data-modo="claro"] .fte button:not(.on), html[data-modo="claro"] .cmd { border-bottom: 4px solid color-mix(in srgb, var(--c) 45%, #DCD8E8) !important; }
   html[data-modo="claro"] .cmd b, html[data-modo="claro"] .fte button.on .tx { color: color-mix(in srgb, var(--c) 70%, #1A1626) !important; }
+  /* ===== Sala de espera: lobby estilo FF ===== */
+  #reto .centro { max-width: 660px; margin-top: 4px; padding: 26px 24px 22px; }
+  html body #retoEye:not(#z) { display: inline-block; font: 800 15px/1 var(--display) !important; letter-spacing: .08em; text-transform: uppercase; color: #151A03; background: var(--lima); padding: 5px 16px 4px 14px; clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%); }
+  html body #retoTit:not(#z) { font: italic 900 40px/1.02 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; color: var(--oro-tx); margin-top: 12px; }
+  #retoSub { font-size: 14px; }
+  @media (max-width: 520px) { html body #retoTit:not(#z) { font-size: 32px !important; } #reto .centro { padding: 22px 16px 18px; } }
+  /* Datos del duelo: fichas con ícono de color */
+  .ficha { gap: 6px; }
+  .ficha span { gap: 7px; border-radius: 12px; padding: 5px 11px 5px 6px; font-size: 13px; border-bottom-width: 3px !important; }
+  .ficha .fi { width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; background: color-mix(in srgb, var(--c) 16%, transparent); color: var(--c); flex-shrink: 0; }
+  .ficha .fi svg { width: 14px; height: 14px; }
+  /* Arena: jugadores con "VS" al medio sobre franjas */
+  .sala { position: relative; align-items: stretch; padding: 16px 12px; border-radius: 18px; margin-top: 16px;
+    background: radial-gradient(60% 80% at 50% 50%, rgba(255,200,0,.10), transparent 70%), repeating-linear-gradient(115deg, transparent 0 22px, rgba(255,255,255,.025) 22px 44px), var(--bg); border: 2px solid var(--borde-g); }
+  .sala:has(.vs) { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important; }
+  .vs { align-self: center; font: italic 900 46px/1 var(--display) !important; color: var(--oro-tx); text-shadow: 0 3px 0 rgba(0,0,0,.35); padding: 0 4px; animation: vsLate 1.6s ease-in-out infinite; }
+  @keyframes vsLate { 50% { transform: scale(1.08) rotate(-3deg); } }
+  .puesto-sala { display: grid; justify-items: center; align-content: start; gap: 3px; border-radius: 16px; padding: 16px 6px 12px; }
+  .puesto-sala .av:not(#z) { width: 64px; height: 64px; margin: 0 auto 6px; border-radius: 16px; font-size: 28px; box-shadow: 0 4px 0 var(--jd, #8fa300); }
+  .puesto-sala .av .rgo { right: -26%; bottom: -22%; width: 56%; }
+  html body .puesto-sala b:not(#z) { font: 800 22px/1.05 var(--display) !important; letter-spacing: .04em; text-transform: uppercase; max-width: 100%; }
+  .puesto-sala small { font-size: 12px; }
+  html:not([data-modo="claro"]) .puesto-sala.yo { background: color-mix(in srgb, var(--jc) 12%, var(--surface)); }
+  html:not([data-modo="claro"]) #btnCopiar { background: var(--surface-2); border-color: var(--borde-g); box-shadow: 0 5px 0 var(--borde-g); color: var(--text); }
+  .puesto-sala.libre { background: transparent; }
+  .puesto-sala.libre .av:not(#z) { background: transparent; box-shadow: none; font-size: 30px; animation: libreLate 1.6s ease-in-out infinite; }
+  @keyframes libreLate { 50% { border-color: var(--azul); color: var(--azul); } }
+  .pts3 i { font-style: normal; animation: pts3 1.2s infinite; opacity: .2; } .pts3 i:nth-child(2) { animation-delay: .2s; } .pts3 i:nth-child(3) { animation-delay: .4s; }
+  @keyframes pts3 { 30% { opacity: 1; } }
+  @media (max-width: 480px) { .vs { font-size: 34px !important; } .puesto-sala .av:not(#z) { width: 54px; height: 54px; font-size: 24px; } html body .puesto-sala b:not(#z) { font-size: 19px !important; } .sala { padding: 12px 8px; gap: 6px; } }
+  /* Cuánto falta: etiqueta con letra cuadrada */
+  html body .cierre:not(#z), html body .cierre span:not(#z) { font: 800 15px/1 var(--display) !important; letter-spacing: .05em; text-transform: uppercase; }
+  .cierre { padding: 7px 14px 6px; }
+  /* Código como boleto */
+  .ticket { position: relative; margin-top: 16px; padding: 12px 14px 12px; border: 2px dashed color-mix(in srgb, var(--lima) 45%, var(--borde-g)); border-radius: 18px; background: color-mix(in srgb, var(--lima) 5%, var(--surface)); }
+  html body .ticket small:not(#z) { font: 800 13px/1 var(--display) !important; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
+  html body .ticket .codigo:not(#z) { font: italic 900 clamp(44px, 12vw, 62px)/1 var(--display) !important; letter-spacing: 10px; margin: 6px 0 4px; color: var(--lima-tx); }
+  .ticket .enlace { border: 0 !important; background: none !important; padding: 0; margin-top: 2px; font-size: 12px; }
+  /* Botones de compartir e iniciar */
+  html body #reto .botones .btn:not(#z) { font: italic 900 21px/1 var(--display) !important; letter-spacing: .03em; padding: 14px 16px 12px; }
+  html body #btnJugar:not(#z) { position: relative; overflow: hidden; background: linear-gradient(100deg, #b4cc00, #C6E000 40%, #d8f02a) !important; color: #151A03 !important; border-color: #C6E000;
+    font: italic 900 26px/1 var(--display) !important; padding: 15px 16px 13px 30px; box-shadow: 0 4px 0 #8fa300; }
+  #btnJugar::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 14px; background: repeating-linear-gradient(135deg, #151a03 0 6px, #FFC800 6px 12px); }
+  #btnJugar:disabled { opacity: .5; }
+  @media (max-width: 480px) { html body #btnJugar:not(#z) { font-size: 22px !important; } }
+  #retoNota { text-align: center; font-size: 12.5px; }
+  html[data-modo="claro"] .sala { background: radial-gradient(60% 80% at 50% 50%, rgba(255,200,0,.14), transparent 70%), #F6F5FA; }
+  html[data-modo="claro"] .puesto-sala.yo { background: color-mix(in srgb, var(--jc) 10%, #F1EFF6) !important; border-color: var(--jc) !important; border-bottom: 4px solid var(--jd) !important; }
+  html[data-modo="claro"] .ficha span { border-bottom: 3px solid color-mix(in srgb, var(--c) 40%, #DCD8E8) !important; }
+  html[data-modo="claro"] .ticket .codigo { color: #6F8000 !important; }
+  html[data-modo="claro"] #btnWa { background: #25D366 !important; color: #06200f !important; border-color: #25D366 !important; box-shadow: 0 5px 0 #1a9e4b !important; }
+  html[data-modo="claro"] .puesto-sala.libre { border-style: dashed !important; background: transparent !important; }
+  html[data-modo="claro"] .rgo-n { filter: brightness(.62) saturate(1.3); }
+  html[data-modo="claro"] .enlace { background: none !important; border: 0 !important; }
+  @media (prefers-reduced-motion: reduce) { .vs, .puesto-sala.libre .av, .pts3 i { animation: none; } .pts3 i { opacity: 1; } }
 </style>
 </head>
 <body>
@@ -829,7 +884,6 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
 
   <!-- 2. Compartir / sala -->
   <section id="reto" hidden>
-    <a class="volver" href="duelo.html">‹ Duelos</a>
     <div class="card centro" style="margin-top:14px">
       <div class="eyebrow" id="retoEye">Duelo creado</div>
       <h1 id="retoTit"></h1>
@@ -838,8 +892,11 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       <div class="cierre" id="retoCierre"><i></i><span></span></div>
       <div class="sala" id="retoSala"></div>
       <div id="retoCompartir">
-        <div class="codigo" id="retoCodigo"></div>
-        <span class="enlace" id="retoEnlace"></span>
+        <div class="ticket">
+          <small>Código de la sala</small>
+          <div class="codigo" id="retoCodigo"></div>
+          <span class="enlace" id="retoEnlace"></span>
+        </div>
         <div class="botones dos">
           <a class="btn wa" id="btnWa" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.62 15.03L2 22l5.1-1.34A10 10 0 1 0 12 2zm0 18.1a8.07 8.07 0 0 1-4.13-1.13l-.3-.18-3.03.8.81-2.95-.2-.3A8.1 8.1 0 1 1 12 20.1zm4.44-6.07c-.24-.12-1.44-.71-1.66-.79-.22-.08-.39-.12-.55.12-.16.24-.63.79-.78.95-.14.16-.29.18-.53.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.43-1.34-1.67-.14-.24-.02-.37.11-.49.11-.11.24-.29.36-.43.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.55-1.33-.76-1.82-.2-.48-.4-.42-.55-.42-.14-.01-.3-.01-.46-.01a.9.9 0 0 0-.65.3c-.22.24-.85.83-.85 2.03s.87 2.36 1 2.52c.12.16 1.71 2.61 4.14 3.66.58.25 1.03.4 1.38.51.58.18 1.11.16 1.53.1.47-.07 1.44-.59 1.64-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28z"/></svg>Enviar por WhatsApp</a>
           <button class="btn sec" type="button" id="btnCopiar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Copiar enlace</button>
@@ -880,7 +937,6 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
 
   <!-- 4. Resultado -->
   <section id="resultado" hidden>
-    <a class="volver" href="duelo.html">‹ Duelos</a>
     <div class="card res" id="resCard" style="margin-top:14px">
       <div class="trofeo" id="resTrofeo" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/><path d="M12 14v4M8 21h8M9 18h6"/></svg></div>
       <div class="eyebrow" id="resEye"></div>
@@ -991,6 +1047,9 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   }
   function ver(id) {
     ['cargando', 'crear', 'reto', 'juego', 'resultado'].forEach(x => { $(x).hidden = x !== id; });
+    // La flecha de arriba vuelve al inicio desde Crear, y a Duelos desde la sala o el resultado
+    const atras = document.querySelector('header.top .back'), aDuelos = id !== 'crear' && id !== 'cargando';
+    atras.href = aDuelos ? 'duelo.html' : 'index.html'; atras.lastChild.textContent = aDuelos ? ' Duelos' : ' Inicio';
     window.scrollTo(0, 0);
   }
   function aviso(texto, boton) {
@@ -1508,7 +1567,8 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     let html = '';
     for (let i = 0; i < d.max; i++) {
       const j = js[i];
-      if (!j) { html += '<div class="puesto-sala libre"><span class="av">+</span><b>Libre</b><small>Esperando</small></div>'; continue; }
+      if (i === 1 && d.max === 2) html += '<div class="vs" aria-hidden="true">VS</div>';
+      if (!j) { html += '<div class="puesto-sala libre"><span class="av">+</span><b>Libre</b><small>Esperando<i class="pts3"><i>.</i><i>.</i><i>.</i></i></small></div>'; continue; }
       html += '<div class="puesto-sala ' + colorDe(j) + (j.yo ? ' yo' : '') + (VISTOS[j.apodo] ? '' : ' entra') + '">' + avatar(j) + '<b>' + esc(nombreDe(j)) + '</b><small>' + (j.xp != null && window.MCRango && MCRango.nivel(j.xp) >= 0 ? '<i class="rgo-n r' + MCRango.nivel(j.xp) + '">' + MCRango.nombre(MCRango.nivel(j.xp)) + '</i> · ' : '') + (j.creador ? 'Creó el duelo' : 'Listo') + '</small></div>';
       VISTOS[j.apodo] = 1;
     }
@@ -1537,9 +1597,9 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       : d.soy_creador ? 'Toca Iniciar cuando estén todos.' : 'Esperando a que ' + d.creador + ' inicie el duelo.';
   }
   function fichaHtml(d) {
-    const c = d.comodines || [];
-    return '<span><b>' + esc(d.titulo) + '</b></span><span><b>' + d.n + '</b> preguntas</span><span><b>' + tiempoTxt(d.seg || 60) + '</b> cada una</span>' +
-      (c.length ? '<span><b>' + c.length + '</b> comodines sorpresa</span>' : '') + (d.final ? '<span style="color:var(--oro)">Final <b style="color:var(--oro)">×3</b></span>' : '');
+    const c = d.comodines || [], f = (color, ic, txt) => '<span style="--c:' + color + '"><i class="fi">' + ic + '</i>' + txt + '</span>';
+    return f('var(--lima)', IC.libro, '<b>' + esc(d.titulo) + '</b>') + f('var(--naranja)', IC.fijas, '<b>' + d.n + '</b> preguntas') + f('var(--morado)', IC.reloj, '<b>' + tiempoTxt(d.seg || 60) + '</b> cada una') +
+      (c.length ? f('var(--azul)', IC.mitad, '<b>' + c.length + '</b> comodines sorpresa') : '') + (d.final ? f('var(--oro)', IC.final, 'Final <b>×3</b>') : '');
   }
   function pintarReto() {
     const d = V, soyCreador = d.soy_creador;
