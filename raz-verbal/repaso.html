@@ -266,9 +266,10 @@
   .rp-buho .piso svg { display: block; width: 100%; height: auto; }
   .rp-buho .escena { bottom: 17px; z-index: 1; }
   .rp-buho .mcb { translate: 0 var(--drop); }
-  .rp-globo { position: relative; flex: 1; min-height: 64px; margin-bottom: 52px; padding: 10px 14px; text-align: left; background: #fff; color: #1A1626; border-radius: 16px; box-shadow: 0 4px 0 #D3DCE8;
+  .rp-globo { position: relative; flex: 1; min-height: 98px; display: flex; align-items: center; margin-bottom: 40px; padding: 10px 14px; text-align: left; background: #fff; color: #1A1626; border-radius: 16px; box-shadow: 0 4px 0 #D3DCE8;
     font: 800 14px/1.35 'Nunito', sans-serif; }
   .rp-globo b { color: #5E8A00; font-weight: 900; }
+  .rp-globo > span { display: block; }
   .rp-globo::before { content: ''; position: absolute; left: -7px; bottom: 14px; width: 14px; height: 14px; background: #fff; rotate: 45deg; border-radius: 0 0 0 4px; }
   .startscreen .start-badge { margin-bottom: 8px; padding: 5px 11px; font: 800 14px/1 'Barlow Condensed', sans-serif !important; letter-spacing: .06em; text-transform: uppercase; }
   .startscreen h1.rp-tit { font: italic 900 40px/1 'Barlow Condensed', sans-serif; letter-spacing: .01em; margin-bottom: 8px; }
@@ -295,7 +296,7 @@
   .startscreen .btn.primary { font: italic 900 22px/1 'Barlow Condensed', sans-serif; letter-spacing: .06em; padding: 14px 12px; }
   @media (min-width: 640px) {
     .rp-buho { width: 144px; height: 152px; } .rp-buho .mcb { width: 114px; }
-    .rp-globo { font-size: 15px; margin-bottom: 62px; }
+    .rp-globo { font-size: 15px; min-height: 84px; margin-bottom: 52px; }
     .startscreen h1.rp-tit { font-size: 48px; }
     .rp-stat b { font-size: 38px; } .rp-stat small { font-size: 14px; }
   }
@@ -488,10 +489,23 @@
   // === Fin candado ===
 
   // Búho: saluda en el inicio y reacciona al resultado al final (assets/buho/buho-vivo.js)
-  const rpGlobo = document.getElementById('rpGlobo'), rpTexto = rpGlobo.innerHTML;
-  let rpGloboT;
-  function rpDecir(t, tono, ms) { rpGlobo.textContent = t; clearTimeout(rpGloboT); rpGloboT = setTimeout(() => { rpGlobo.innerHTML = rpTexto; }, ms || 2800); }
-  if (window.MCBuhoVivo) MCBuhoVivo.toques(document.getElementById('rpEscena'), { pose: 'saludando', sonido: !window.MCSonido || MCSonido.activo, decir: rpDecir, alTocar: () => rpDecir('¡Dale a Empezar cuando estés listo!', 'feliz', 2400) });
+  // Frases de ánimo: una al azar al entrar y otra cada vez que tocan al búho
+  const RP_ANIMO = [
+    '¿Listo para el repaso de <b>Razonamiento Verbal</b>? ¡Tú puedes!',
+    'Cada pregunta que practicas hoy es <b>un punto más</b> en tu examen.',
+    'Si fallas, no pasa nada: <b>equivocarse aquí</b> es aprender para el examen.',
+    'Tu vacante se construye <b>un repaso a la vez</b>. ¡A darle!',
+    'Respira, lee con calma y <b>confía en lo que sabes</b>.',
+    'Solo por estar aquí ya vas <b>un paso adelante</b>. ¡Sigue así!',
+    'Ingresan los que <b>no se rinden</b>, no los que nunca fallan.',
+    '¡Yo creo en ti! <b>Vamos juntos</b> pregunta por pregunta.'
+  ];
+  const rpGlobo = document.getElementById('rpGlobo');
+  let rpI = Math.floor(Math.random() * RP_ANIMO.length), rpGloboT;
+  rpGlobo.innerHTML = '<span>' + RP_ANIMO[rpI] + '</span>';
+  function rpDecir(t, tono, ms) { rpGlobo.innerHTML = '<span></span>'; rpGlobo.firstChild.textContent = t; clearTimeout(rpGloboT); rpGloboT = setTimeout(() => { rpGlobo.innerHTML = '<span>' + RP_ANIMO[rpI] + '</span>'; }, ms || 2800); }
+  function rpOtra() { clearTimeout(rpGloboT); rpI = (rpI + 1) % RP_ANIMO.length; rpGlobo.innerHTML = '<span>' + RP_ANIMO[rpI] + '</span>'; }
+  if (window.MCBuhoVivo) MCBuhoVivo.toques(document.getElementById('rpEscena'), { pose: 'saludando', sonido: !window.MCSonido || MCSonido.activo, decir: rpDecir, alTocar: rpOtra });
 
   const startScreen = document.getElementById('startScreen');
   const quizHeader = document.getElementById('quizHeader');
