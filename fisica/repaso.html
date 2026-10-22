@@ -269,6 +269,14 @@
   /* Cada vez que cambia de pose da un saltito */
   .rp-buho .mcb { transform-origin: 50% 100%; animation: rp-salto .55s cubic-bezier(.34,1.56,.64,1); }
   @keyframes rp-salto { 0% { transform: translateY(0) scale(1.06,.92); } 40% { transform: translateY(-16%) scale(.95,1.06); } 75% { transform: translateY(0) scale(1.04,.96); } 100% { transform: none; } }
+  /* Con disfraz del área: la imagen ya trae su tronco; se mueve con un brinquito y se sacude si lo molestan */
+  .rp-buho.rp-disf { width: 138px; height: auto; }
+  .rp-disf .piso { display: none; }
+  .rp-disf .escena { position: relative; bottom: 0; }
+  .rp-buho .mcb-disfraz { display: block; width: 100%; height: auto; aspect-ratio: auto; translate: none; user-select: none; -webkit-user-drag: none; filter: drop-shadow(0 5px 4px rgba(0,0,0,.4)); animation-name: rp-brinco; }
+  .rp-buho .mcb-disfraz.rp-molesto { animation: rp-sacude .5s ease-in-out 2; }
+  @keyframes rp-brinco { 0% { transform: scale(1.05,.93); } 40% { transform: translateY(-7%) scale(.97,1.04) rotate(-2deg); } 75% { transform: scale(1.02,.98) rotate(1deg); } 100% { transform: none; } }
+  @keyframes rp-sacude { 0%, 100% { transform: none; } 20% { transform: translateX(-5%) rotate(-3deg); } 50% { transform: translateX(5%) rotate(3deg); } 80% { transform: translateX(-3%); } }
   @media (prefers-reduced-motion: reduce) { .rp-buho .mcb { animation: none; } }
   .rp-globo { --gc: var(--accent); position: relative; flex: 1; min-height: 98px; display: flex; align-items: center; margin-bottom: 40px; padding: 10px 14px; text-align: left;
     background: #1D1834; color: #EEEAF7; border: 2px solid #2F284E; border-bottom: 4px solid var(--gc); border-radius: 16px; font: 800 14px/1.35 'Nunito', sans-serif; }
@@ -302,6 +310,7 @@
   .startscreen .btn.primary { font: italic 900 22px/1 'Barlow Condensed', sans-serif; letter-spacing: .06em; padding: 14px 12px; }
   @media (min-width: 640px) {
     .rp-buho { width: 144px; height: 152px; } .rp-buho .mcb { width: 114px; }
+    .rp-buho.rp-disf { width: 160px; height: auto; } .rp-buho .mcb-disfraz { width: 100%; }
     .rp-globo { font-size: 15px; min-height: 84px; margin-bottom: 52px; }
     .startscreen h1.rp-tit { font-size: 48px; }
     .rp-stat b { font-size: 38px; } .rp-stat small { font-size: 14px; }
@@ -322,7 +331,6 @@
 <script src="../assets/auth.js"></script>
 <script src="../assets/buho/buho-datos.js"></script>
 <script src="../assets/buho/buho-vivo.js"></script>
-<script src="../assets/buho/disfraces.js"></script>
 <link rel="stylesheet" href="../assets/buho/buho.css">
 </head>
 <body>
@@ -507,22 +515,30 @@
     ['oficial', 'Ingresan los que <b>no se rinden</b>, no los que nunca fallan.'],
     ['vivo', '¡Yo creo en ti! <b>Vamos juntos</b> pregunta por pregunta.']
   ];
-  // El búho se disfraza según el área del curso (assets/buho/disfraces.js)
+  // El búho se disfraza según el área del curso (assets/buho/disfraces/<area>-1 de frente, -2 saludando)
   const RP_AREA = ({'biologia':'ciencia-tecnologia','anatomia':'ciencia-tecnologia','quimica':'ciencia-tecnologia','fisica':'ciencia-tecnologia','algebra':'matematica','aritmetica':'matematica','geometria':'matematica','trigonometria':'matematica','estadistica':'matematica','raz-verbal':'comunicacion','literatura':'comunicacion','lenguaje':'comunicacion','historia-peru':'ciencias-sociales','historia-universal':'ciencias-sociales','geografia':'ciencias-sociales','economia':'ciencias-sociales','ciudadania':'ciencias-sociales','psicologia':'ciencias-sociales','filosofia':'ciencias-sociales'})['fisica'];
   const rpGlobo = document.getElementById('rpGlobo'), rpEscena = document.getElementById('rpEscena');
   let rpI = Math.floor(Math.random() * RP_ANIMO.length), rpGloboT, rpOcupado = false;
   function rpFrase() { rpGlobo.innerHTML = '<span>' + RP_ANIMO[rpI][1] + '</span>'; }
   rpFrase();
-  if (window.MCDisfraz) MCDisfraz.vestir(rpEscena, RP_AREA);
-  if (RP_AREA) document.getElementById('startScreen').classList.add('rp-' + RP_AREA);
+  if (RP_AREA) { document.getElementById('startScreen').classList.add('rp-' + RP_AREA); rpEscena.parentNode.classList.add('rp-disf'); }
+  // Con disfraz alterna de frente y saludando en cada frase; al reír saluda y al enojarse se sacude
+  function rpCrear(p) {
+    if (!RP_AREA) return MCBuhoVivo.crear(p);
+    const i = new Image();
+    i.className = 'mcb mcb-disfraz' + (p === 'enojado' ? ' rp-molesto' : '');
+    i.src = '../assets/buho/disfraces/' + RP_AREA + '-' + (p === 'logro' ? 2 : p === 'enojado' ? 1 : rpI % 2 + 1) + '.webp';
+    i.alt = 'Búho de Modo Cachimbo disfrazado'; i.draggable = false;
+    return i;
+  }
   function rpDecir(t, tono, ms) { rpOcupado = true; rpGlobo.innerHTML = '<span></span>'; rpGlobo.firstChild.textContent = t; clearTimeout(rpGloboT); rpGloboT = setTimeout(() => { rpOcupado = false; rpFrase(); }, ms || 2800); }
   function rpOtra() {
     if (rpOcupado) return;
     rpI = (rpI + 1) % RP_ANIMO.length; rpFrase();
     const v = rpEscena.querySelector('.mcb'); if (v) v.remove();
-    rpEscena.append(MCBuhoVivo.crear(RP_ANIMO[rpI][0]));
+    rpEscena.append(rpCrear(RP_ANIMO[rpI][0]));
   }
-  if (window.MCBuhoVivo) MCBuhoVivo.toques(rpEscena, { pose: () => RP_ANIMO[rpI][0], sonido: !window.MCSonido || MCSonido.activo, decir: rpDecir, alTocar: rpOtra });
+  if (window.MCBuhoVivo) MCBuhoVivo.toques(rpEscena, { pose: () => RP_ANIMO[rpI][0], sonido: !window.MCSonido || MCSonido.activo, decir: rpDecir, alTocar: rpOtra, crear: rpCrear });
 
   const startScreen = document.getElementById('startScreen');
   const quizHeader = document.getElementById('quizHeader');
@@ -731,7 +747,6 @@
     finalScore.textContent = `${score} pts`;
     const aciertos = answers.filter((a, i) => activeQuestions[i] && a === activeQuestions[i].correct).length, pct = aciertos / Math.max(1, answers.length);
     const fin = document.getElementById('finEscena'); fin.innerHTML = '';
-    if (window.MCDisfraz && !fin.dataset.vestido) { fin.dataset.vestido = 1; MCDisfraz.vestir(fin, RP_AREA); }
     if (window.MCBuhoVivo) fin.append(MCBuhoVivo.crear(lives <= 0 ? 'triste' : pct >= .8 ? 'logro' : pct >= .5 ? 'saludando' : 'estudiando'));
     endMessage.textContent = lives <= 0 ? 'Se acabaron tus corazones. ¡Sigue practicando!' : 'Así te fue en esta práctica';
     // Progreso del estudiante (assets/progreso.js), una sola vez por ronda

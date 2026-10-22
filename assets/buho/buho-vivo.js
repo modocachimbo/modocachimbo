@@ -4,7 +4,7 @@
    - MCBuhoVivo.crear(pose): el búho armado por capas. Poses: vivo (30 s en
      bucle: lentes, canta, baila), oficial, saludando, logro, estudiando,
      pensativo, caminando, sorprendido, triste, enojado, dormido.
-   - MCBuhoVivo.toques(escena, {pose, decir, alTocar}): pone el búho en la
+   - MCBuhoVivo.toques(escena, {pose, decir, alTocar, crear}): pone el búho en la
      escena; 1 o 2 toques llaman a alTocar, 3 lo alegran y 7 seguidos lo
      molestan (con sonido y decir(texto, tono, ms) para su globo).
    ========================================================= */
@@ -73,8 +73,8 @@
     o = o || {};
     // pose puede ser una función: la pose cambia y el búho vuelve a la que toque después de reír o enojarse
     var poseDe = function () { return (typeof o.pose === 'function' ? o.pose() : o.pose) || 'vivo'; }, decir = o.decir || function () {}, taps = [], timer = null, ocupado = false;
-    var sonido = o.sonido !== false;
-    function poner(p) { var v = escena.querySelector('.mcb'); if (v) v.remove(); escena.append(crear(p)); }
+    var sonido = o.sonido !== false, hacer = o.crear || crear;
+    function poner(p) { var v = escena.querySelector('.mcb'); if (v) v.remove(); escena.append(hacer(p)); }
     function tocar(k) {
       if (!sonido) return;
       try { var a = new Audio(BASE + k + '.mp3'); a.volume = .7; a.play().catch(function () {}); } catch (e) {}
