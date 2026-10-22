@@ -15,7 +15,7 @@
 <script src="assets/app.js" defer></script>
 <title>Simulacro · Modo Cachimbo</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,900&family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,600;1,700;1,800;1,900;1,1000&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;1,800;1,900&family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,600;1,700;1,800;1,900;1,1000&display=swap');
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -453,11 +453,71 @@
   @media (max-width: 420px) { .rep span { display: none; } .rep { padding: 9px; } }
   .rank li { border-radius: 14px; font-weight: 800; }
 
+
+  /* ===== Toque Free Fire del inicio (letra cuadrada, fichas con degradé, etiquetas inclinadas,
+     franja de peligro en el botón) sobre las formas redondeadas tipo Duolingo ===== */
+  :root { --oro: #FFC800; --oro-tx: #FFC800; }
+  html[data-modo="claro"] { --oro-tx: #B38600; }
+  html body .sim-tit:not(#z) { font-family: var(--display) !important; font-style: italic; font-weight: 900; color: var(--oro-tx); letter-spacing: .01em; }
+  .sim-tit::after { background: linear-gradient(90deg, rgba(255,200,0,.5), rgba(255,200,0,0)) !important; }
+  html body .card > h3:not(#z), html body .temas-cab h3:not(#z) { font-family: var(--display) !important; font-style: italic; font-weight: 900; text-transform: uppercase; font-size: 24px; letter-spacing: .01em; line-height: 1; }
+  html body .card > h3 span:not(#z) { font-family: inherit !important; }
+  html body .campo > label:not(#z), html body .campo > .lbl:not(#z), html body .lbl-t:not(#z) { font-family: var(--display) !important; font-weight: 800; font-size: 15px; letter-spacing: .06em; text-transform: uppercase; }
+  html body .ciclo b:not(#z) { font-family: var(--display) !important; font-style: italic; font-weight: 900; font-size: 22px; line-height: 1; }
+  html body .tiempos button:not(#z), html body .cantidad button:not(#z) { font-family: var(--display) !important; font-weight: 800; font-size: 18px; }
+  html body .cantidad button small:not(#z) { font-family: 'Nunito', sans-serif !important; font-size: 11px; }
+  html body .ajustes .reglas li b:not(#z) { font-family: var(--display) !important; font-weight: 800; font-size: 18px; letter-spacing: .03em; text-transform: uppercase; }
+
+  /* Rápido / Personalizado como las fichas de "Modos de estudio" */
+  .modo { min-height: 96px; }
+  html body .modo b:not(#z) { font-family: var(--display) !important; font-style: italic; font-weight: 900; font-size: 27px; line-height: 1; text-transform: uppercase; letter-spacing: .01em; }
+  .modo small { margin-top: 4px; }
+  .modo.on:not(#z) { background: linear-gradient(160deg, #8a5a00, #4d3200); border-color: var(--oro); border-bottom-color: var(--oro); color: #fff; }
+  .modo.on small { color: rgba(255,255,255,.85); }
+  .modo.on .mi { background: var(--oro); color: #2a1d00; }
+  .modo.on::after { display: none; }
+  .chip-ff { position: absolute; top: 0; right: 0; padding: 4px 12px 4px 14px; background: var(--surface-2); color: var(--dim); font: 800 13px/1 var(--display) !important; letter-spacing: .06em; text-transform: uppercase; clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 100%); border-bottom-left-radius: 4px; }
+  .modo.on .chip-ff { background: var(--oro); color: #2a1d00; }
+  @media (max-width: 560px) { html body .modo b:not(#z) { font-size: 22px; } .modo { min-height: 0; } .chip-ff { font-size: 11px !important; padding: 3px 9px 3px 11px; } }
+
+  /* Botón Empezar como "¡A practicar!": degradé lima y franja de peligro */
+  html body #btnEmpezar:not(#z) { position: relative; overflow: hidden; background: linear-gradient(100deg, #b4cc00, #C6E000 40%, #d8f02a) !important; color: #151A03 !important;
+    font-family: var(--display) !important; font-style: italic; font-weight: 900; font-size: 30px; letter-spacing: .02em; padding: 14px 16px 12px 30px; line-height: 1; }
+  #btnEmpezar::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 14px; background: repeating-linear-gradient(135deg, #151a03 0 6px, #FFC800 6px 12px); }
+  #btnEmpezar:disabled::before { opacity: .4; }
+  @media (max-width: 560px) { html body #btnEmpezar:not(#z) { font-size: 26px; } }
+  html body .resumen:not(#z), html body .resumen *:not(#z) { font-family: var(--display) !important; font-weight: 800; font-size: 16px; letter-spacing: .05em; text-transform: uppercase; }
+  .resumen b { color: var(--oro-tx); }
+
+  /* Áreas: números con letra cuadrada y los puntos en etiqueta inclinada */
+  html body .a-num b:not(#z) { font: italic 900 28px/1 var(--display) !important; }
+  html body .a-num:not(#z) { font: italic 900 28px/1 var(--display) !important; }
+  html body .a-pts:not(#z) { font: italic 900 20px/1 var(--display) !important; background: var(--c); color: #111; padding: 6px 10px 5px 12px; clip-path: polygon(12% 0, 100% 0, 88% 100%, 0 100%); min-width: 52px; }
+  html body .a-pts small:not(#z) { font: 800 10px/1 var(--display) !important; color: #111; opacity: .75; letter-spacing: .06em; text-transform: uppercase; }
+  html body .a-num small:not(#z) { font: 800 11px/1 var(--display) !important; letter-spacing: .06em; text-transform: uppercase; }
+
+  /* Mis simulacros: mejor puntaje con letra cuadrada, etiqueta inclinada */
+  html body .lista .mejor b:not(#z) { font: italic 900 22px/1 var(--display) !important; }
+  html body .lista .mejor small:not(#z) { font: 800 10.5px/1 var(--display) !important; letter-spacing: .06em; text-transform: uppercase; }
+  html body .etq:not(#z) { font: 800 12px/1 var(--display) !important; letter-spacing: .06em; padding: 3px 10px 3px 9px; border-radius: 0; clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%); }
+
+  /* Top 10 como la liga del inicio: puesto inclinado, letra en ficha cortada, oro/plata/bronce */
+  .rank li { gap: 10px; padding: 8px 12px 8px 8px; background: var(--surface-2); }
+  html body .rank li .p:not(#z) { font: italic 900 22px/1 var(--display) !important; width: 24px; text-align: center; color: var(--faint); }
+  .rank .letra { width: 32px; height: 32px; display: grid; place-items: center; flex-shrink: 0; background: var(--border); color: var(--text); font-weight: 900; clip-path: polygon(14% 0, 86% 0, 100% 14%, 100% 86%, 86% 100%, 14% 100%, 0 86%, 0 14%); }
+  html body .rank li b:not(#z) { font: 800 19px/1 var(--display) !important; color: var(--accent); }
+  html body .rank li b small:not(#z) { font: inherit !important; font-size: 13px !important; margin-left: 3px; color: var(--dim); }
+  .rank li.p1 { background: linear-gradient(90deg, rgba(255,200,0,.2), var(--surface-2) 70%); box-shadow: inset 3px 0 #FFC800; }
+  .rank li.p1 .p { color: #FFC800 !important; } .rank li.p1 .letra { background: linear-gradient(#FFF3B0, #FFC800 40%, #B38600); color: #1a1400; }
+  .rank li.p2 .p { color: #c9ced6 !important; } .rank li.p2 .letra { background: linear-gradient(#f4f6f8, #c9ced6 50%, #8a94a3); color: #1a1a1a; }
+  .rank li.p3 .p { color: #E58A45 !important; } .rank li.p3 .letra { background: linear-gradient(#FFD3AE, #E58A45 50%, #8A4A17); color: #1a1400; }
+  .rank li.yo { box-shadow: inset 0 0 0 2px var(--accent); }
+
 /* Modo claro de esta página (assets/claro.css trae lo común) */
 html[data-modo="claro"] .eyebrow { color: #6F8000 !important; }
-html[data-modo="claro"] .sim-tit { color: #6F8000 !important; }
+html[data-modo="claro"] .rank li b { color: #6F8000 !important; }
 html[data-modo="claro"] .card .btn:not(.sec):not(#z) { background: var(--accent) !important; border: 0 !important; color: #1A1626 !important; }
-html[data-modo="claro"] .sim-tit::after { background: linear-gradient(90deg, rgba(111,128,0,.4), rgba(111,128,0,0)) !important; }
+
 html[data-modo="claro"] .h-ic, html[data-modo="claro"] .li, html[data-modo="claro"] .lista .mejor { color: #6F8000 !important; }
 html[data-modo="claro"] .volver:hover { color: #6F8000 !important; }
 html[data-modo="claro"] .lock-icon { color: #6F8000 !important; }
@@ -510,11 +570,11 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
     <div class="modos" id="modos" role="radiogroup" aria-label="Tipo de simulacro">
       <button type="button" class="modo on" data-modo="rapido" role="radio" aria-checked="true">
         <span class="mi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span>
-        <span><b>Simulacro rápido</b><small>80 preguntas como el examen. Entra al ranking</small></span>
+        <span><b>Simulacro rápido</b><small>80 preguntas como el examen</small></span><span class="chip-ff">Ranking</span>
       </button>
       <button type="button" class="modo" data-modo="pers" role="radio" aria-checked="false">
         <span class="mi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg></span>
-        <span><b>Personalizado</b><small>Tú eliges los temas y cuántas preguntas</small></span>
+        <span><b>Personalizado</b><small>Tú eliges los temas y cuántas preguntas</small></span><span class="chip-ff">Libre</span>
       </button>
     </div>
     <section class="card temas-card" id="temasCard" hidden>
@@ -949,7 +1009,7 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
         card.innerHTML = MCRanking.html(L, { simulacro: true });
         return;
       }
-      el.innerHTML = L.map(r => '<li class="' + (r.yo ? 'yo' : '') + '"><span class="p">' + ((window.MCMedalla && MCMedalla(r.puesto, 20)) || r.puesto) + '</span><span class="n">' + esc(r.apodo) + (r.yo ? ' (tú)' : '') + '</span><b>' + num1(+r.puntaje) + '</b></li>').join('');
+      el.innerHTML = L.map(r => '<li class="' + (r.yo ? 'yo ' : '') + (r.puesto <= 3 ? 'p' + r.puesto : '') + '"><span class="p">' + r.puesto + '</span><span class="letra">' + esc(String(r.apodo || '?').trim().charAt(0).toUpperCase()) + '</span><span class="n">' + esc(r.apodo) + (r.yo ? ' (tú)' : '') + '</span><b>' + num1(+r.puntaje) + '<small>pts</small></b></li>').join('');
     }).catch(() => { el.innerHTML = '<li class="vacia">No se pudo cargar el ranking.</li>'; });
   }
 
