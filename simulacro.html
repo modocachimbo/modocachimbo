@@ -727,6 +727,73 @@
   html[data-modo="claro"] #resultado .av-foco .btn:not(.sec):not(#z) { background: var(--nar) !important; color: #1a0f00 !important; }
   @media (max-width: 420px) { .res-acc .btn { padding: 12px 8px; font-size: 14.5px; } .res-acc .btn.sec .ico-btn { display: none; } }
 
+  /* =========================================================
+     Mis simulacros: los 2 últimos y "Ver más"; selectores de bloque y
+     carrera estilo FF (lista propia en lugar de la del navegador).
+     ========================================================= */
+  #misSim li.extra { display: none; }
+  #misSim.abierta li.extra { display: flex; }
+  .ver-mas-sim { display: block; width: 100%; margin-top: 10px; padding: 11px; background: none; border: 2px dashed var(--borde-g); border-radius: 14px; color: var(--oro-tx); font: 800 16px/1 var(--display) !important; letter-spacing: .08em; text-transform: uppercase; }
+  .ver-mas-sim:hover { border-color: var(--oro); }
+  .ver-mas-sim[hidden] { display: none; }
+
+  .sel-nativo { position: absolute !important; width: 1px !important; height: 1px !important; opacity: 0; pointer-events: none; overflow: hidden; clip-path: inset(50%); }
+  .sel-ff { position: relative; }
+  .sel-btn { width: 100%; display: flex; align-items: center; gap: 10px; min-height: 50px; padding: 7px 12px 7px 8px; text-align: left; color: var(--text);
+    background: var(--surface-2); border: 2px solid var(--borde-g); border-bottom-width: 4px; border-radius: 14px; transition: border-color .15s ease, transform .08s ease; }
+  .sel-btn:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--borde-g)); }
+  .sel-btn:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
+  .sel-ff.abierto .sel-btn { border-color: var(--accent); border-bottom-color: var(--acc-d); }
+  .sel-btn > svg { width: 20px; height: 20px; flex-shrink: 0; margin-left: auto; fill: none; stroke: var(--dim); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; transition: transform .2s ease; }
+  .sel-ff.abierto .sel-btn > svg { transform: rotate(180deg); stroke: var(--accent); }
+  .sel-val { display: flex; align-items: center; gap: 10px; min-width: 0; font-weight: 900; font-size: 15px; }
+  .sel-val span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sel-ff[data-para="selCarrera"] .sel-val { padding-left: 6px; }
+  .sel-val .nada { color: var(--dim); font-weight: 800; }
+  html body .sel-letra:not(#z) { display: grid; place-items: center; width: 32px; height: 32px; flex-shrink: 0; font: italic 900 22px/1 var(--display) !important; color: #1a1400; background: var(--oro);
+    clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%); padding-right: 2px; }
+  .sel-fondo { display: none; }
+  .sel-pop { position: absolute; z-index: 40; top: calc(100% + 6px); left: 0; width: max(100%, 320px); max-width: calc(100vw - 32px); background: var(--surface); border: 2px solid var(--borde-g); border-bottom-width: 5px; border-radius: 18px;
+    box-shadow: 0 18px 40px rgba(0,0,0,.45); padding: 10px; display: grid; gap: 8px; animation: selIn .14s ease-out; }
+  .sel-ff[data-para="selCarrera"] .sel-pop { left: auto; right: 0; }
+  .sel-ff[data-para="selBloque"] .sel-pop { width: max(100%, 370px); }
+  @keyframes selIn { from { opacity: 0; transform: translateY(-6px); } }
+  .sel-cab { display: none; align-items: center; justify-content: space-between; padding: 4px 4px 2px 6px; }
+  html body .sel-cab b:not(#z) { font: italic 900 24px/1 var(--display) !important; text-transform: uppercase; }
+  .sel-x { width: 36px; height: 36px; border-radius: 10px; border: 2px solid var(--borde-g); background: var(--surface-2); color: var(--text); font-size: 22px; line-height: 1; }
+  .sel-busca { display: flex; align-items: center; gap: 8px; padding: 0 12px; background: var(--surface-2); border: 2px solid var(--borde-g); border-radius: 12px; }
+  .sel-busca:focus-within { border-color: var(--accent); }
+  .sel-busca svg { width: 18px; height: 18px; flex-shrink: 0; fill: none; stroke: var(--dim); stroke-width: 2.4; stroke-linecap: round; }
+  .sel-busca input { flex: 1; min-width: 0; background: none; border: 0; outline: 0; color: var(--text); font: 800 15px 'Nunito', sans-serif; padding: 11px 0; }
+  .sel-ops { display: grid; gap: 4px; max-height: 330px; overflow-y: auto; overscroll-behavior: contain; padding-right: 2px; }
+  .sel-grupo { font: 800 12.5px/1 var(--display) !important; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); padding: 8px 8px 4px; }
+  .sel-op { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 9px 10px; border: 2px solid transparent; border-radius: 12px; background: none; color: var(--text); }
+  .sel-op:hover, .sel-op:focus-visible { background: var(--surface-2); outline: 0; border-color: var(--borde-g); }
+  .sel-op > span { flex: 1; min-width: 0; }
+  .sel-op b { display: block; font-weight: 800; font-size: 14.5px; line-height: 1.25; }
+  .sel-op small { display: block; color: var(--dim); font-size: 12.5px; font-weight: 700; margin-top: 2px; }
+  .sel-op.blq { padding: 10px; }
+  html body .sel-op.blq b:not(#z) { font: italic 900 20px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .02em; }
+  .sel-op.nada b { color: var(--dim); }
+  .sel-op > svg { width: 20px; height: 20px; flex-shrink: 0; fill: none; stroke: var(--accent); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; visibility: hidden; }
+  .sel-op.on { background: var(--accent-soft); border-color: var(--accent); }
+  .sel-op.on > svg { visibility: visible; }
+  html[data-modo="claro"] .sel-op.on > svg { stroke: #6F8000; }
+  html body .sel-tag:not(#z) { font: italic 900 14px/1 var(--display) !important; color: #1a1400; background: var(--oro); padding: 3px 8px 2px 7px; clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%); }
+  .sel-vacio { color: var(--dim); font-size: 14px; padding: 14px 8px; text-align: center; }
+  /* Celular: hoja que sube desde abajo */
+  @media (max-width: 560px) {
+    .sel-fondo:not([hidden]) { display: block; position: fixed; inset: 0; z-index: 60; background: rgba(5,3,14,.6); }
+    .sel-pop, .sel-ff[data-para="selCarrera"] .sel-pop { position: fixed; z-index: 61; left: 0; right: 0; top: auto; bottom: 0; width: auto; max-width: none; border-radius: 22px 22px 0 0; border-bottom-width: 2px;
+      padding: 12px max(14px, env(safe-area-inset-left, 0px)) calc(14px + env(safe-area-inset-bottom, 0px)); max-height: 82vh; grid-template-rows: auto auto minmax(0, 1fr); animation: selSube .2s ease-out; }
+    .sel-cab { display: flex; }
+    .sel-ops { max-height: none; }
+    .sel-op { padding: 12px 10px; }
+    body.sel-hoja { overflow: hidden; }
+  }
+  @keyframes selSube { from { transform: translateY(40%); opacity: .4; } }
+  @media (prefers-reduced-motion: reduce) { .sel-pop { animation: none; } }
+
 /* Modo claro de esta página (assets/claro.css trae lo común) */
 html[data-modo="claro"] .eyebrow { color: #6F8000 !important; }
 html[data-modo="claro"] .rank li b { color: #6F8000 !important; }
@@ -854,6 +921,7 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
         <div class="card">
           <h3><i class="h-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 14-5.3L20 9M20 4v5h-5"/><path d="M20 12a8 8 0 0 1-14 5.3L4 15M4 20v-5h5"/></svg></i>Mis simulacros</h3>
           <ul class="lista" id="misSim"><li class="vacia">Cargando…</li></ul>
+          <button type="button" class="ver-mas-sim" id="misSimMas" aria-controls="misSim" hidden></button>
         </div>
       </div>
     </div>
@@ -1107,6 +1175,7 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
     $('selCarrera').innerHTML = '<option value="">Sin elegir</option>' + b.carreras.map(c => '<option>' + esc(c) + '</option>').join('');
     $('selCarrera').value = carrera && b.carreras.indexOf(carrera) >= 0 ? carrera : '';
     pintarPuntos();
+    pintarSelectores();
   }
   function pintarPuntos() {
     const p = bloqueSel().puntos || {};
@@ -1149,7 +1218,105 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
   $('selCarrera').addEventListener('change', () => {
     const b = MCCarreras.bloqueDe($('selCarrera').value);
     if (b && b.id !== $('selBloque').value) { $('selBloque').value = b.id; llenarCarreras($('selCarrera').value); }
+    pintarSelectores();
   });
+
+  /* ---------- Selectores de bloque y carrera estilo FF ----------
+     El <select> sigue guardando el valor (queda oculto); encima va un botón
+     que abre una lista: debajo en PC y como hoja desde abajo en el celular. */
+  const CHEV = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+  const CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
+  const sinTilde = t => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  let SEL_ABIERTO = null;
+  function armarSelector(id) {
+    const sel = $(id), caja = document.createElement('div');
+    caja.className = 'sel-ff'; caja.dataset.para = id;
+    caja.innerHTML = '<button type="button" class="sel-btn" aria-haspopup="listbox" aria-expanded="false"><span class="sel-val"></span>' + CHEV + '</button>' +
+      '<div class="sel-fondo" hidden></div><div class="sel-pop" hidden><div class="sel-cab"><b>' + (id === 'selBloque' ? 'Elige tu bloque' : 'Elige tu carrera') + '</b><button type="button" class="sel-x" aria-label="Cerrar">×</button></div>' +
+      (id === 'selCarrera' ? '<label class="sel-busca"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="selCarreraBusca" placeholder="Busca tu carrera" autocomplete="off" aria-label="Busca tu carrera"></label>' : '') +
+      '<div class="sel-ops" role="listbox"></div></div>';
+    sel.classList.add('sel-nativo'); sel.tabIndex = -1; sel.setAttribute('aria-hidden', 'true');
+    sel.after(caja);
+    const btn = caja.querySelector('.sel-btn');
+    sel.closest('.campo').querySelector('label').addEventListener('click', e => { e.preventDefault(); btn.focus(); });
+    btn.addEventListener('click', () => abrirSelector(caja, caja.querySelector('.sel-pop').hidden));
+    caja.querySelector('.sel-x').addEventListener('click', () => abrirSelector(caja, false));
+    caja.querySelector('.sel-fondo').addEventListener('click', () => abrirSelector(caja, false));
+    const busca = caja.querySelector('input');
+    if (busca) busca.addEventListener('input', () => pintarOpciones(caja));
+    caja.querySelector('.sel-ops').addEventListener('click', e => {
+      const op = e.target.closest('.sel-op'); if (!op) return;
+      elegir(id, op.dataset.v, op.dataset.b);
+      abrirSelector(caja, false); btn.focus();
+    });
+    caja.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && !caja.querySelector('.sel-pop').hidden) { e.preventDefault(); abrirSelector(caja, false); btn.focus(); return; }
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      const ops = [...caja.querySelectorAll('.sel-op')]; if (!ops.length) return;
+      e.preventDefault();
+      if (caja.querySelector('.sel-pop').hidden) { abrirSelector(caja, true); return; }
+      const i = ops.indexOf(document.activeElement);
+      ops[Math.max(0, Math.min(ops.length - 1, i < 0 ? 0 : i + (e.key === 'ArrowDown' ? 1 : -1)))].focus();
+    });
+  }
+  function elegir(id, v, bid) {
+    if (id === 'selBloque') { if (v !== $('selBloque').value) { $('selBloque').value = v; llenarCarreras(''); } return; }
+    // Una carrera de otro bloque (al buscar) cambia también el bloque
+    if (bid && bid !== $('selBloque').value) { $('selBloque').value = bid; llenarCarreras(v); return; }
+    $('selCarrera').value = v; pintarSelectores();
+  }
+  function abrirSelector(caja, abrir) {
+    if (abrir && SEL_ABIERTO && SEL_ABIERTO !== caja) abrirSelector(SEL_ABIERTO, false);
+    const pop = caja.querySelector('.sel-pop'), busca = caja.querySelector('input');
+    pop.hidden = !abrir; caja.querySelector('.sel-fondo').hidden = !abrir;
+    caja.classList.toggle('abierto', abrir);
+    caja.querySelector('.sel-btn').setAttribute('aria-expanded', String(abrir));
+    document.body.classList.toggle('sel-hoja', abrir && matchMedia('(max-width: 560px)').matches);
+    SEL_ABIERTO = abrir ? caja : null;
+    if (!abrir) return;
+    if (busca) busca.value = '';
+    pintarOpciones(caja);
+    const on = caja.querySelector('.sel-op.on');
+    if (busca && !matchMedia('(pointer: coarse)').matches) busca.focus();
+    else (on || caja.querySelector('.sel-op')).focus();
+    if (on) on.scrollIntoView({ block: 'nearest' });
+  }
+  function pintarOpciones(caja) {
+    const id = caja.dataset.para, ops = caja.querySelector('.sel-ops');
+    if (id === 'selBloque') {
+      const v = $('selBloque').value;
+      ops.innerHTML = BLOQ.map(b => '<button type="button" role="option" class="sel-op blq' + (b.id === v ? ' on' : '') + '" aria-selected="' + (b.id === v) + '" data-v="' + esc(b.id) + '">' +
+        '<i class="sel-letra">' + esc(b.id) + '</i><span><b>Bloque ' + esc(b.id) + '</b><small>' + esc(b.nombre) + ' · ' + b.carreras.length + ' carreras</small></span>' + CHECK + '</button>').join('');
+      return;
+    }
+    const q = sinTilde(caja.querySelector('input').value.trim()), v = $('selCarrera').value, b = bloqueSel();
+    let html = '';
+    if (!q) {
+      html = '<div class="sel-grupo">Carreras del bloque ' + esc(b.id) + ' · ' + esc(b.nombre) + '</div>' +
+        '<button type="button" role="option" class="sel-op nada' + (!v ? ' on' : '') + '" aria-selected="' + !v + '" data-v=""><span><b>Sin elegir</b></span>' + CHECK + '</button>' +
+        b.carreras.map(c => '<button type="button" role="option" class="sel-op' + (c === v ? ' on' : '') + '" aria-selected="' + (c === v) + '" data-v="' + esc(c) + '"><span><b>' + esc(c) + '</b></span>' + CHECK + '</button>').join('');
+    } else {
+      // Al buscar se ven las carreras de todos los bloques
+      BLOQ.forEach(x => {
+        const L = x.carreras.filter(c => sinTilde(c).indexOf(q) >= 0);
+        if (!L.length) return;
+        html += '<div class="sel-grupo">Bloque ' + esc(x.id) + ' · ' + esc(x.nombre) + '</div>' +
+          L.map(c => '<button type="button" role="option" class="sel-op' + (c === v ? ' on' : '') + '" aria-selected="' + (c === v) + '" data-v="' + esc(c) + '" data-b="' + esc(x.id) + '"><span><b>' + esc(c) + '</b></span><i class="sel-tag">' + esc(x.id) + '</i>' + CHECK + '</button>').join('');
+      });
+      if (!html) html = '<p class="sel-vacio">No encontramos esa carrera. Prueba con otra palabra.</p>';
+    }
+    ops.innerHTML = html;
+  }
+  function pintarSelectores() {
+    document.querySelectorAll('.sel-ff').forEach(caja => {
+      const id = caja.dataset.para, val = caja.querySelector('.sel-val');
+      if (id === 'selBloque') { const b = bloqueSel(); val.innerHTML = '<i class="sel-letra">' + esc(b.id) + '</i><span>' + esc(b.nombre) + '</span>'; }
+      else { const c = $('selCarrera').value; val.innerHTML = c ? '<span>' + esc(c) + '</span>' : '<span class="nada">Sin elegir</span>'; caja.classList.toggle('vacio', !c); }
+      if (!caja.querySelector('.sel-pop').hidden) pintarOpciones(caja);
+    });
+  }
+  armarSelector('selBloque'); armarSelector('selCarrera');
+  document.addEventListener('click', e => { if (SEL_ABIERTO && !SEL_ABIERTO.contains(e.target)) abrirSelector(SEL_ABIERTO, false); });
   function pintarTiempo() { $('tiempos').querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.m === minutos)); pintarResumen(); }
   $('tiempos').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; minutos = +b.dataset.m; pintarTiempo(); });
 
@@ -1189,6 +1356,11 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
     $('btnEmpezar').disabled = no;
   }
 
+  $('misSimMas').addEventListener('click', () => {
+    const caja = $('misSim'), abierta = caja.classList.toggle('abierta'), n = caja.querySelectorAll('li.extra').length;
+    $('misSimMas').textContent = abierta ? 'Ver menos' : 'Ver ' + n + ' más';
+    $('misSimMas').setAttribute('aria-expanded', String(abierta));
+  });
   function pintarMisSimulacros() {
     const caja = $('misSim');
     const leer = (c, cols) => c.from('simulacros').select(cols).order('actualizado', { ascending: false }).limit(30);
@@ -1202,6 +1374,11 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
         caja.innerHTML = L.map(s => '<li><span class="mejor"><b>' + num1(+s.mejor || 0) + '</b><small>mejor</small></span><div><b>' + esc(s.nombre) + (s.personalizado ? '<span class="etq">Personalizado</span>' : '') + '</b><small>' + esc((s.ciclos || []).join(', ')) + ' · ' +
           s.intentos + (s.intentos === 1 ? ' intento' : ' intentos') + ' · ' + fecha(s.actualizado) + '</small></div>' +
           '<a class="btn sec mini rep" href="simulacro.html?repetir=' + encodeURIComponent(s.id) + '" aria-label="Repetir ' + esc(s.nombre) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 14-5.3L20 9M20 4v5h-5"/></svg><span>Repetir</span></a></li>').join('');
+        // Solo los 2 últimos a la vista; el resto con "Ver más"
+        caja.querySelectorAll('li').forEach((li, i) => li.classList.toggle('extra', i >= 2));
+        const mas = $('misSimMas'), resto = L.length - 2;
+        mas.hidden = resto <= 0; caja.classList.remove('abierta');
+        mas.textContent = 'Ver ' + resto + ' más'; mas.setAttribute('aria-expanded', 'false');
       })
       .catch(() => { caja.innerHTML = '<li class="vacia">No se pudo cargar tu lista.</li>'; });
   }
