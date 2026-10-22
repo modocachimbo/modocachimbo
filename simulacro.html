@@ -332,6 +332,7 @@
 <script src="assets/pregunta.js"></script>
 <script src="assets/auth.js"></script>
 <script src="assets/ranking.js"></script>
+<script src="assets/rango.js"></script>
 <style id="mc-claro">
 
   /* =========================================================
@@ -519,6 +520,86 @@
   .rank li.p3 .p { color: #E58A45 !important; } .rank li.p3 .letra { background: linear-gradient(#FFD3AE, #E58A45 50%, #8A4A17); color: #1a1400; }
   .rank li.yo { box-shadow: inset 0 0 0 2px var(--accent); }
 
+
+  /* ===== Cabecera: tu mejor puntaje (en lugar del perfil) ===== */
+  .mejor-top { display: flex; align-items: center; gap: 10px; height: 46px; padding: 0 22px 0 12px; background: linear-gradient(90deg, #4d3200, #8a5a00); color: #fff;
+    clip-path: polygon(0 0, 100% 0, 92% 100%, 0 100%); border-left: 4px solid var(--oro); }
+  .mejor-top svg { width: 24px; height: 24px; fill: none; stroke: var(--oro); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .mejor-top span { display: grid; line-height: 1; }
+  html body .mejor-top small:not(#z) { font: 800 12px/1 var(--display) !important; letter-spacing: .08em; text-transform: uppercase; color: #ffe58a; }
+  html body .mejor-top b:not(#z) { font: italic 900 22px/1 var(--display) !important; margin-top: 2px; }
+  html body .mejor-top em:not(#z) { font: italic 900 22px/1 var(--display) !important; color: #2a1d00; background: var(--oro); padding: 4px 10px 3px 9px; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); }
+  @media (max-width: 380px) { .mejor-top { padding-right: 16px; } html body .mejor-top b:not(#z) { font-size: 19px !important; } }
+
+  /* ===== Top simulacro: copia del inicio (index.html), con sus mismos colores ===== */
+  #topSim { --tarjeta: var(--surface); --tarjeta2: var(--surface-2); --borde: var(--border); --suave: var(--dim); --amarillo: #FFC800; --amarillo-tx: var(--oro-tx);
+    --lima: #C6E000; --lima-tx: #C6E000; --racha: #FF9600; --cuerpo: 'Nunito', system-ui, sans-serif; margin-top: 30px; display: grid; gap: 14px; }
+  html[data-modo="claro"] #topSim { --lima-tx: #7A8C00; --racha: #E07B00; }
+  #topSim .disp { font-family: var(--display) !important; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; line-height: 1; }
+  #topSim .tit:not(#z) { font-family: var(--display) !important; font-style: italic; font-weight: 900; text-transform: uppercase; letter-spacing: .01em; line-height: 1; }
+  #topSim .sec-cab { display: flex; align-items: center; gap: 14px; }
+  #topSim .sec-cab h2 { margin: 0; font-size: 30px; }
+  #topSim .sec-cab::after { content: ""; order: 1; flex: 1; height: 2px; background: var(--borde); }
+  #topSim .top { background: var(--tarjeta); border: 1px solid var(--borde); }
+  #topSim .top-cab { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 16px; background: var(--tarjeta2); font-size: 17px; }
+  #topSim .top-cab .cierra { white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; color: var(--racha); font-size: 15px; }
+  #topSim .top-cab .cierra svg { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  #topSim .podio { position: relative; isolation: isolate; display: grid; grid-template-columns: 1fr 1.15fr 1fr; align-items: end; gap: 6px; padding: 30px 18px 0; overflow: hidden;
+    background: radial-gradient(70% 60% at 50% 30%, rgba(255, 200, 0, .14), transparent 70%), repeating-linear-gradient(115deg, transparent 0 22px, rgba(255, 255, 255, .02) 22px 44px); }
+  #topSim .podio .foco { position: absolute; left: 35%; right: 35%; top: 0; bottom: 30%; z-index: -1; background: linear-gradient(rgba(255, 236, 190, .22), transparent); clip-path: polygon(30% 0, 70% 0, 100% 100%, 0 100%); }
+  #topSim .lugar { display: grid; justify-items: center; gap: 4px; text-align: center; position: relative; }
+  #topSim .lugar.vacio { opacity: .45; }
+  #topSim .corona { width: 40px; margin-bottom: -6px; filter: drop-shadow(0 0 8px rgba(255, 200, 0, .7)); animation: coronaSim 2.4s ease-in-out infinite; }
+  @keyframes coronaSim { 50% { translate: 0 -3px; } }
+  #topSim .aro { display: grid; place-items: center; padding: 3px; border-radius: 13px; background: var(--tarjeta2); }
+  #topSim .aro .letra { width: 52px; height: 52px; border-radius: 10px; font: 900 24px/1 var(--cuerpo) !important; color: #10131a; display: grid; place-items: center; overflow: hidden; }
+  #topSim .l1 .aro { background: linear-gradient(#FFF3B0, #FFC800 45%, #B38600); box-shadow: 0 0 16px rgba(255, 200, 0, .55); }
+  #topSim .l1 .aro .letra { width: 64px; height: 64px; }
+  #topSim .l2 .aro { background: linear-gradient(#fff, #C9C6D6 50%, #6B6485); }
+  #topSim .l3 .aro { background: linear-gradient(#FFD3AE, #E58A45 50%, #8A4A17); }
+  #topSim .lugar b { font: 800 16.5px/1.15 var(--cuerpo) !important; margin-top: 4px; }
+  #topSim .pts { display: inline-block; grid-template-columns: none; gap: 0; border-radius: 0; font: 900 15px/1 var(--cuerpo) !important; padding: 4px 9px; background: var(--tarjeta2); border: 1px solid var(--borde); color: var(--amarillo-tx); }
+  #topSim .l1 .pts { background: var(--amarillo); color: #2a1d00; border-color: transparent; }
+  #topSim .rg { display: inline-flex; align-items: center; gap: 4px; }
+  #topSim .rg svg { width: 22px; display: block; }
+  #topSim .rg small { font: 800 12px/1 var(--display) !important; letter-spacing: .06em; text-transform: uppercase; }
+  #topSim .bloque { position: relative; width: 100%; margin-top: 10px; display: grid; }
+  #topSim .bloque .cara { height: 12px; clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%); }
+  #topSim .bloque .frente { display: grid; place-items: center; font: italic 900 46px/1 var(--display) !important; color: rgba(0, 0, 0, .45); text-shadow: 0 1px 0 rgba(255, 255, 255, .35); }
+  #topSim .l1 .cara { background: #FFE27A; } #topSim .l1 .frente { height: 110px; background: linear-gradient(#FFC800, #9c7400); }
+  #topSim .l2 .cara { background: #F2F0F8; } #topSim .l2 .frente { height: 80px; background: linear-gradient(#C9C6D6, #5c5675); }
+  #topSim .l3 .cara { background: #FFC38F; } #topSim .l3 .frente { height: 62px; background: linear-gradient(#E58A45, #7a3f12); }
+  #topSim .sim-lista { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--borde); }
+  #topSim .sim-lista li { display: grid; grid-template-columns: 30px 30px minmax(0, 1fr) 24px auto; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--borde); font: 800 16.5px/1.15 var(--cuerpo) !important; }
+  #topSim .sim-lista li > * { font-family: var(--cuerpo); }
+  #topSim .sim-lista .num { font: italic 900 20px/1 var(--display) !important; color: var(--suave); text-align: center; }
+  #topSim .sim-lista .letra { width: 30px; height: 30px; border-radius: 8px; font: 900 14px/1 var(--cuerpo) !important; color: #10131a; display: grid; place-items: center; }
+  #topSim .sim-lista li .em svg { width: 24px; display: block; }
+  #topSim .sim-lista li b { font: 900 15px/1 var(--cuerpo) !important; color: var(--amarillo-tx); }
+  #topSim .sim-lista li.tu { background: linear-gradient(90deg, rgba(198, 224, 0, .16), transparent 80%); box-shadow: inset 3px 0 var(--lima); }
+  #topSim .sim-lista li.extra { display: none; }
+  #topSim .sim-lista.abierta li.extra { display: grid; }
+  #topSim .sim-vacio { grid-column: 1 / -1; display: block; padding: 20px 16px 34px; color: var(--suave); font: 700 14.5px/1.4 var(--cuerpo); text-align: center; }
+  #topSim .ver-mas { display: block; width: 100%; text-align: center; padding: 14px; color: var(--amarillo-tx); font-size: 17px; background: none; border: 0; cursor: pointer; letter-spacing: .06em; }
+  #topSim .ver-mas[hidden] { display: none; }
+  @media (max-width: 900px) {
+    #topSim .podio { padding: 26px 8px 0; }
+    #topSim .lugar b { font-size: 15px !important; }
+    #topSim .aro .letra { width: 44px; height: 44px; } #topSim .l1 .aro .letra { width: 54px; height: 54px; } #topSim .rg small { display: none; }
+  }
+  @media (max-width: 520px) { #topSim .sec-cab h2 { font-size: 25px; } }
+  /* PC: podio a la izquierda y lista a la derecha, con el top 10 completo */
+  @media (min-width: 901px) {
+    #topSim .top { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: start; }
+    #topSim .top-cab { grid-column: 1 / -1; }
+    #topSim .podio { grid-column: 1; grid-row: 2 / span 2; }
+    #topSim .sim-lista { grid-column: 2; grid-row: 2; border-top: 0; border-left: 1px solid var(--borde); }
+    #topSim .sim-lista li.extra { display: grid; }
+    #topSim .ver-mas { display: none; }
+    #topSim .podio:has(.sim-vacio) { grid-column: 1 / -1; }
+  }
+  @media (prefers-reduced-motion: reduce) { #topSim .corona { animation: none; } }
+
 /* Modo claro de esta página (assets/claro.css trae lo común) */
 html[data-modo="claro"] .eyebrow { color: #6F8000 !important; }
 html[data-modo="claro"] .rank li b { color: #6F8000 !important; }
@@ -553,7 +634,7 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
       <a class="back" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Inicio</a>
       <a class="home-btn" href="index.html" title="Ir al inicio" aria-label="Ir al inicio"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.9 1.2a1.5 1.5 0 0 1 .2 0l.2.1 9.6 9.6a1.3 1.3 0 0 1-.9 2.2H20v7.4a2.5 2.5 0 0 1-2.5 2.5H15v-5.3a1.2 1.2 0 0 0-1.2-1.2h-3.6A1.2 1.2 0 0 0 9 17.7V23H6.5A2.5 2.5 0 0 1 4 20.5v-7.4h-1a1.3 1.3 0 0 1-.9-2.2l9.6-9.6z"/></svg></a>
     </div>
-    <div data-mc-auth></div>
+    <div class="mejor-top" id="mejorTop" hidden></div>
   </header>
 
   <div id="cargando" class="card msg"><p>Cargando…</p></div>
@@ -647,12 +728,18 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
           <h3><i class="h-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 14-5.3L20 9M20 4v5h-5"/><path d="M20 12a8 8 0 0 1-14 5.3L4 15M4 20v-5h5"/></svg></i>Mis simulacros</h3>
           <ul class="lista" id="misSim"><li class="vacia">Cargando…</li></ul>
         </div>
-        <div class="card">
-          <h3><i class="h-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></i>Top 10 de la semana</h3>
-          <ol class="rank" id="rankCrear"><li class="vacia">Cargando…</li></ol>
-        </div>
       </div>
     </div>
+    <!-- Top simulacro: igual al del inicio, a todo el ancho al final -->
+    <section class="sec" id="topSim">
+      <div class="sec-cab"><h2 class="tit">Top simulacro</h2></div>
+      <div class="top">
+        <div class="top-cab disp">Top simulacro · semana <span class="cierra" id="simCierra"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M10 2h4"/></svg><span></span></span></div>
+        <div class="podio" id="podio"><p class="sim-vacio">Cargando…</p></div>
+        <ol class="sim-lista" id="simLista"></ol>
+        <button class="ver-mas disp" type="button" id="simMas" hidden>Ver top 10 ▾</button>
+      </div>
+    </section>
   </section>
 
   <!-- 2. Examen -->
@@ -998,6 +1085,8 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
         if (r.error) throw r.error;
         const L = r.data || [];
         if (!L.length) { caja.innerHTML = '<li class="vacia">Aquí aparecerán los simulacros que termines, para repetirlos cuando quieras.</li>'; return; }
+        const rap = L.filter(x => !x.personalizado).map(x => +x.mejor || 0);
+        if (rap.length) { MEJOR = Math.max.apply(null, rap); pintarMejor(); }
         caja.innerHTML = L.map(s => '<li><span class="mejor"><b>' + num1(+s.mejor || 0) + '</b><small>mejor</small></span><div><b>' + esc(s.nombre) + (s.personalizado ? '<span class="etq">Personalizado</span>' : '') + '</b><small>' + esc((s.ciclos || []).join(', ')) + ' · ' +
           s.intentos + (s.intentos === 1 ? ' intento' : ' intentos') + ' · ' + fecha(s.actualizado) + '</small></div>' +
           '<a class="btn sec mini rep" href="simulacro.html?repetir=' + encodeURIComponent(s.id) + '" aria-label="Repetir ' + esc(s.nombre) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 14-5.3L20 9M20 4v5h-5"/></svg><span>Repetir</span></a></li>').join('');
@@ -1017,6 +1106,77 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
       }
       el.innerHTML = L.map(r => '<li class="' + (r.yo ? 'yo ' : '') + (r.puesto <= 3 ? 'p' + r.puesto : '') + '"><span class="p">' + r.puesto + '</span><span class="letra">' + esc(String(r.apodo || '?').trim().charAt(0).toUpperCase()) + '</span><span class="n">' + esc(r.apodo) + (r.yo ? ' (tú)' : '') + '</span><b>' + num1(+r.puntaje) + '<small>pts</small></b></li>').join('');
     }).catch(() => { el.innerHTML = '<li class="vacia">No se pudo cargar el ranking.</li>'; });
+  }
+
+
+  /* ---------- Cabecera: tu mejor puntaje y tu puesto de la semana ---------- */
+  let MEJOR = null, PUESTO = null;
+  function pintarMejor() {
+    const c = $('mejorTop');
+    if (MEJOR == null && PUESTO == null) { c.hidden = true; return; }
+    c.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>' +
+      '<span><small>Tu mejor</small><b>' + (MEJOR == null ? '—' : num1(MEJOR)) + ' pts</b></span>' + (PUESTO ? '<em>#' + PUESTO + '</em>' : '');
+    c.title = PUESTO ? 'Vas en el puesto ' + PUESTO + ' del top de esta semana' : 'Tu mejor puntaje en el simulacro rápido';
+    c.hidden = false;
+  }
+
+  /* ---------- Top simulacro: el mismo podio y lista del inicio (assets/inicio.js) ---------- */
+  const AV = ['#FFC800', '#C9C6D6', '#E58A45', '#1CB0F6', '#CE82FF', '#FF9600', '#58CC02', '#FF4B4B', '#5FDAFF', '#C6E000'];
+  const RC = ['#5FDAFF', '#5FF59A', '#D79BFF', '#FF6E84', '#FFC800'];
+  const CORONA = '<svg class="corona" viewBox="0 0 40 22" aria-hidden="true"><path d="M2 20 4 4l9 8 7-11 7 11 9-8 2 16z" fill="#FFC800"/><path d="M2 20h36v2H2z" fill="#B38600"/><circle cx="20" cy="13" r="2.6" fill="#FF4B4B"/><circle cx="10" cy="15" r="1.8" fill="#1CB0F6"/><circle cx="30" cy="15" r="1.8" fill="#58CC02"/></svg>';
+  const decP = n => (Math.round((+n || 0) * 10) / 10).toFixed(1);
+  const inicial = nom => esc((String(nom || '?').trim()[0] || '?').toUpperCase());
+  const foto = x => '<span class="letra" style="background:' + AV[(x.puesto - 1) % AV.length] + '">' + inicial(x.apodo) + '</span>';
+  function emblema(xp) {
+    if (xp == null || !window.MCRango) return '<span class="em"></span>';
+    const n = MCRango.nivel(xp);
+    return '<span class="em"' + (n < 0 ? '' : ' title="' + MCRango.nombre(n) + '"') + '>' + (n < 0 ? '' : MCRango.svg(n, { mini: true, quieto: true })) + '</span>';
+  }
+  function rangoSim(xp) {
+    if (xp == null || !window.MCRango) return '';
+    const n = MCRango.nivel(xp);
+    return n < 0 ? '' : '<span class="rg">' + MCRango.svg(n, { mini: true, quieto: true }) + '<small style="color:' + RC[n] + '">' + MCRango.nombre(n) + '</small></span>';
+  }
+  function filaSim(x, extra) {
+    return '<li class="' + (x.yo ? 'tu' : '') + (extra ? ' extra' : '') + '"><span class="num">' + x.puesto + '</span>' + foto(x) + '<span class="quien">' + esc(x.yo ? 'Tú' : x.apodo) + '</span>' +
+      emblema(x.xp) + '<b>' + decP(x.puntaje) + ' pts</b></li>';
+  }
+  function pintarSim(filas) {
+    filas = (filas || []).slice().sort((a, b) => a.puesto - b.puesto);
+    const top = filas.filter(x => x.puesto <= 10), yo = filas.filter(x => x.yo)[0];
+    const podio = $('podio'), lista = $('simLista'), mas = $('simMas');
+    if (yo) { PUESTO = yo.puesto; pintarMejor(); }
+    if (!top.length) {
+      podio.innerHTML = '<p class="sim-vacio">Aún nadie dio el simulacro esta semana. ¡Sé el primero!</p>';
+      lista.innerHTML = ''; mas.hidden = true; return;
+    }
+    podio.innerHTML = '<div class="foco" aria-hidden="true"></div>' + [2, 1, 3].map(p => {
+      const x = top.filter(t => t.puesto === p)[0];
+      if (!x) return '<div class="lugar l' + p + ' vacio"><span class="aro"><span class="letra" style="background:var(--tarjeta2);color:var(--suave)">?</span></span><b>Libre</b><span class="pts">—</span><span class="bloque"><i class="cara"></i><span class="frente">' + p + '</span></span></div>';
+      return '<div class="lugar l' + p + '">' + (p === 1 ? CORONA : '') + '<span class="aro">' + foto(x) + '</span><b>' + esc(x.yo ? 'Tú' : x.apodo) + '</b>' + rangoSim(x.xp) +
+        '<span class="pts">' + decP(x.puntaje) + ' pts</span><span class="bloque"><i class="cara"></i><span class="frente">' + p + '</span></span></div>';
+    }).join('');
+    const resto = top.filter(x => x.puesto > 3);
+    let html = resto.map(x => filaSim(x, x.puesto > 5 && !x.yo)).join('');
+    if (yo && yo.puesto > 10) html += filaSim(yo, false);
+    lista.innerHTML = html;
+    mas.hidden = !resto.some(x => x.puesto > 5 && !x.yo);
+  }
+  $('simMas').addEventListener('click', function () {
+    const abierta = $('simLista').classList.toggle('abierta');
+    this.textContent = abierta ? 'Ver menos ▴' : 'Ver top 10 ▾';
+  });
+  // Cierra el lunes a las 00:00 (hora de Lima)
+  function pintarCierre() {
+    const ahora = Date.now(), lima = new Date(ahora - 5 * 3600000);
+    const faltan = (8 - lima.getUTCDay()) % 7 || 7;
+    const lunes = Date.UTC(lima.getUTCFullYear(), lima.getUTCMonth(), lima.getUTCDate() + faltan) + 5 * 3600000;
+    const h = Math.max(0, Math.floor((lunes - ahora) / 3600000)), d = Math.floor(h / 24);
+    $('simCierra').lastChild.textContent = 'Cierra en ' + (d ? d + ' d ' + (h % 24) + ' h' : h + ' h');
+  }
+  function pintarTopSim() {
+    pintarCierre();
+    rpc('ranking_simulacro').then(pintarSim).catch(() => { $('podio').innerHTML = '<p class="sim-vacio">No se pudo cargar el top. Revisa tu conexión.</p>'; });
   }
 
   async function abrirCrear() {
@@ -1049,7 +1209,7 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
     actualizarEmpezar();
     ver('crear');
     pintarMisSimulacros();
-    pintarRanking($('rankCrear'));
+    pintarTopSim();
   }
 
   /* ---------- Personaliza tu simulacro ---------- */
