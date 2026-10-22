@@ -181,6 +181,9 @@
     if (!T || !T.questions || !T.questions[idx]) return;
     var q = T.questions[idx];
     var n = idx + 1;
+    // En los exámenes la pregunta lleva su número del examen (41, 42…); n sigue siendo su lugar en el archivo, para el panel
+    var nVer = T.examen ? (q.num || n) : n;
+    var donde = T.examen ? T.curso + ' · ' + T.year + ' · Pregunta ' + nVer : T.curso + ' · ' + T.year + ' · Tema ' + T.num + ' · Pregunta ' + n;
     var ok = q.options && q.options[q.correct];
     var abierta = !!(q.abierta && q.respuestas && q.respuestas.length);
     var marcada = abierta ? q.respuestas.map(limpio).join(' / ') : ok ? ok.letter + ') ' + limpio(ok.text) : '—';
@@ -200,7 +203,7 @@
           '<h3>¿Encontraste un error?</h3>' +
           '<p class="rep-sub">Avísale al admin para que actualice la clave. ¡Gracias por ayudar a que Modo Cachimbo mejore!</p>' +
           '<div class="rep-info">' +
-            '<div class="meta">' + esc(T.curso) + ' · ' + esc(T.year) + ' · Tema ' + esc(T.num) + ' · Pregunta ' + n + '</div>' +
+            '<div class="meta">' + esc(donde) + '</div>' +
             '<div class="q">' + esc(limpio(q.text)) + '</div>' +
             '<div class="marcada">' + (abierta ? 'Respuesta marcada' : 'Clave marcada') + ': <b>' + esc(marcada) + '</b></div>' +
           '</div>' +
@@ -249,8 +252,8 @@
 
       var waMsg =
         'Hola! 👀 Encontré un posible error en una clave de Modo Cachimbo\n\n' +
-        '📚 ' + T.curso + ' · ' + T.year + ' · Tema ' + T.num + (T.name ? ' (' + T.name + ')' : '') + '\n' +
-        '❓ Pregunta ' + n + ': "' + corto(q.text, 140) + '"\n' +
+        '📚 ' + (T.examen ? T.curso + ' · ' + T.year : T.curso + ' · ' + T.year + ' · Tema ' + T.num + (T.name ? ' (' + T.name + ')' : '')) + '\n' +
+        '❓ Pregunta ' + nVer + ': "' + corto(q.text, 140) + '"\n' +
         '✅ Clave marcada: ' + marcada + '\n' +
         '💡 Creo que es: ' + (sugTexto || '—') +
         (comentario ? '\n📝 ' + comentario : '') +

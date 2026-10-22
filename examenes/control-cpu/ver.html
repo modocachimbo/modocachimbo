@@ -113,9 +113,9 @@
     background: var(--surface-2); font-size: 11px; font-weight: 700; color: var(--text-dim);
     flex-shrink: 0;
   }
-  .opt-row.correct { color: #f5ffcc; font-weight: 600; }
-  .opt-row.correct .letter { background: var(--accent); color: #0e0e0e; }
-  .opt-row.correct svg { margin-left: auto; width: 16px; height: 16px; color: var(--accent); flex-shrink: 0; }
+  .opt-row.correct { color: #E3FFD0; font-weight: 600; }
+  .opt-row.correct .letter { background: #58CC02; color: #fff; }
+  .opt-row.correct svg { margin-left: auto; width: 16px; height: 16px; color: #58CC02; flex-shrink: 0; }
 
   .state-msg { text-align: center; color: var(--text-dim); font-size: 13.5px; padding: 60px 20px; }
 
@@ -194,8 +194,8 @@
     font: 800 15px 'Nunito', 'Inter', sans-serif; color: #dcdcdc; }
   .mcq-cortas .opt-row { margin-bottom: 0; }
   .opt-row .letter { width: 26px; height: 26px; border-radius: 8px; border: 2px solid #3a3a3a; background: transparent; font: 900 12px 'Nunito', sans-serif; }
-  .opt-row.correct { background: rgba(198,224,0,.1); border-color: var(--accent); border-bottom-color: #8fa300; color: #f5ffcc; font-weight: 900; box-shadow: 0 0 18px rgba(198,224,0,.08); }
-  .opt-row.correct .letter { border-color: var(--accent); }
+  .opt-row.correct { background: rgba(88,204,2,.1); border-color: #58CC02; border-bottom-color: #3f9a00; color: #E3FFD0; font-weight: 900; box-shadow: 0 0 18px rgba(88,204,2,.08); }
+  .opt-row.correct .letter { border-color: #58CC02; }
 
   /* Casita con estilo grueso: se hunde al tocarla */
   .home-btn { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 12px; background: #141414; width: 36px; height: 36px; color: #e6e6e6;
@@ -275,6 +275,11 @@
     const COLOR_AREA = { 'Ciencia y Tecnología': 'var(--a-cyt)', 'Matemática': 'var(--a-mat)', 'Comunicación': 'var(--a-com)', 'Ciencias Sociales': 'var(--a-soc)' };
     const areaDe = q => q.area || 'General';
     const cursoDe = q => q.asignatura || 'General';
+    // Ícono de cada curso (assets/cursos.json); algunos exámenes usan otro nombre para el mismo curso
+    const ALIAS = { 'Raz. Verbal': 'Razonamiento Verbal', 'Geografía': 'Espacio Geográfico' };
+    let iconos = {};
+    const iconoCurso = n => iconos[ALIAS[n] || n] || '';
+    const cursosListos = fetch('../../assets/cursos.json').then(r => r.json()).then(d => { (d.cursos || []).forEach(c => { if (c.icono) iconos[c.nombre] = '../../' + c.icono; }); }).catch(() => {});
 
     function pintarFiltros() {
       const filterRow = document.getElementById('filterRow');
@@ -314,6 +319,7 @@
       questions.forEach((q) => {
           const div = document.createElement('div');
           div.className = 'qcard';
+          div.id = 'q' + (allQuestions.indexOf(q) + 1);
           if (COLOR_AREA[q.area]) div.style.setProperty('--c', COLOR_AREA[q.area]);
           let optsHtml = '';
           q.options.forEach((o, i) => {
@@ -324,30 +330,14 @@
               ${isCorrect ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
             </div>`;
           });
-          const temaTag = q.asignatura ? `<div class="qtema">${q.asignatura}</div>` : (q.tema ? `<div class="qtema">${q.tema}</div>` : '');
+          const ico = iconoCurso(q.asignatura);
+          const temaTag = q.asignatura ? `<div class="qtema">${ico ? `<i class="ic-m" style="-webkit-mask-image:url(${ico});mask-image:url(${ico})"></i>` : ''}${q.asignatura}</div>` : (q.tema ? `<div class="qtema">${q.tema}</div>` : '');
+          const idx = allQuestions.indexOf(q);
           const mcq = window.MCPregunta ? MCPregunta.armar(q.text, { lecPos: q.lecPos, lecSigue: q.lecSigue }) : { html: q.text.replace(/\n/g,'<br>'), derecha: '' };
           const cortas = window.MCPregunta && !mcq.derecha && MCPregunta.cortas(q.options);
           optsHtml = `<div class="${cortas ? 'mcq-cortas' : ''}" style="${cortas ? 'gap:8px;' : ''}">${optsHtml}</div>`;
           if (mcq.derecha) optsHtml = `<div class="mcq-con-der">${optsHtml}<div class="mcq-der" style="margin:0;">${mcq.derecha}</div></div>`;
-          div.innerHTML = `<div class="qnum-row"><div class="qnum">${q.num || ''}</div>${temaTag}</div><div class="qtext">${mcq.html}</div>${q.graphic ? `<div class="q-graphic">${q.graphic}</div>` : ''}${optsHtml}`;
-
-          if (q.solution_html) {
-            const btn = document.createElement('button');
-            btn.className = 'solution-toggle';
-            btn.innerHTML = 'Ver resolución <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
-
-            const box = document.createElement('div');
-            box.className = 'solution-box';
-            box.innerHTML = q.solution_html;
-
-            btn.addEventListener('click', () => {
-              box.classList.toggle('show');
-              btn.classList.toggle('open');
-            });
-
-            div.appendChild(btn);
-            div.appendChild(box);
-          }
+          div.innerHTML = `<div class="qnum-row"><div class="qnum">${q.num || ''}</div>${temaTag}</div><div class="qtext">${mcq.html}</div>${q.graphic ? `<div class="q-graphic">${q.graphic}</div>` : ''}${optsHtml}<div class="rep-row"><button class="rep-btn" type="button" data-idx="${idx}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg> ¿Error en la clave?</button></div>`;
 
           qlistEl.appendChild(div);
           renderMath(div);
@@ -358,8 +348,11 @@
       .then(r => { if (!r.ok) throw new Error('no data'); return r.json(); })
       .then(questions => {
         allQuestions = questions;
+        // Datos para "¿Error en la clave?" (assets/reportes.js): el número de pregunta es su lugar en el examen
+        window.MC_TEMA = { curso: 'Control CPU', carpeta: 'examenes/control-cpu', year: year, num: '', name: '', questions: allQuestions, examen: true };
 
-        renderQuestions();
+        cursosListos.then(renderQuestions);
+        document.dispatchEvent(new Event('mc:tema-listo'));
       })
       .catch(() => {
         qlistEl.innerHTML = '<div class="state-msg">Todavía no hay preguntas cargadas para ' + year + '.</div>';
@@ -374,6 +367,7 @@
     b.addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
   })();
 </script>
+<script src="../../assets/reportes.js"></script>
 <script src="../../assets/sonido.js"></script>
 </body>
 </html>
