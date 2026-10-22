@@ -15,6 +15,9 @@
   var K_DISP = 'mc_dispositivo', K_ACC = 'mc_accesos';
   var DIA = 24 * 3600 * 1000;
   var memoria = {};
+  // Sin candados: todas las páginas se abren sin código. Los códigos siguen
+  // funcionando (activar, Mis accesos) para usarlos en otra parte; false los vuelve a pedir.
+  var LIBRE = true;
 
   function leer(k) { try { return localStorage.getItem(k); } catch (e) { return memoria[k] || null; } }
   function escribir(k, v) { try { localStorage.setItem(k, v); } catch (e) { memoria[k] = v; } }
@@ -87,6 +90,7 @@
 
   // Sin esperar al servidor: ¿hay un acceso reciente en este dispositivo?
   function accesoLocal(x) {
+    if (LIBRE) return true;
     var a = accesos(), hoy = Date.now();
     return codigosPara(x).some(function (c) { return hoy - (a[c].ok || 0) < 3 * DIA; }) || antiguo(x);
   }
@@ -152,6 +156,7 @@
 
   // Revisa con el servidor. Resuelve { acceso, motivo, mensaje }
   function verificar(x) {
+    if (LIBRE) return Promise.resolve({ acceso: true });
     // Sin código en este dispositivo: buscar en la cuenta de Google antes de pedirlo
     var previo = codigosPara(x).length ? Promise.resolve() : traerDeCuenta();
     return previo.then(function () { return revisar(x); });

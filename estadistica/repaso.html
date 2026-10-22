@@ -15,7 +15,7 @@
 <script src="../assets/app.js" defer></script>
 <title>Repaso · Modo Cachimbo</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,600;1,700;1,800;1,900;1,1000&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;1,800;1,900&family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,600;1,700;1,800;1,900;1,1000&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
@@ -251,8 +251,55 @@
   @media (min-width: 900px) { .feedback { margin: 14px 28px 0; } }
 
   /* Letra gruesita en toda la web (Nunito); las fórmulas y el código conservan su letra */
-  body, body :not(.katex):not(.katex *):not(code):not(pre):not(kbd):not(samp):not(.formato):not(.ta.big):not(.cdnuevos code) { font-family: 'Nunito', 'Inter', system-ui, sans-serif !important; }
+  body, body :not(.katex):not(.katex *):not(code):not(pre):not(kbd):not(samp):not(.formato):not(.ta.big):not(.cdnuevos code):not(.bc):not(.bc *) { font-family: 'Nunito', 'Inter', system-ui, sans-serif !important; }
   body { font-weight: 600; }
+
+  /* Inicio del repaso con el estilo del inicio: búho que saluda, títulos Barlow cursiva y cuadros con borde de color */
+  .bc { font-family: 'Barlow Condensed', 'Nunito', sans-serif; text-transform: uppercase; }
+  .startscreen { padding: 22px 22px 26px; }
+  .rp-hero { display: flex; align-items: flex-end; justify-content: center; gap: 4px; margin: 0 auto 10px; }
+  .rp-buho { position: relative; flex: none; width: 108px; height: 112px; }
+  .rp-buho .escena { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; cursor: pointer; }
+  .rp-buho .mcb { width: 96px; }
+  .rp-buho .piso { position: absolute; left: 50%; bottom: 0; width: 70px; height: 9px; translate: -50% 30%; border-radius: 50%; background: rgba(0,0,0,.45); filter: blur(2px); }
+  .rp-globo { position: relative; max-width: 230px; margin-bottom: 52px; padding: 10px 14px; text-align: left; background: #fff; color: #1A1626; border-radius: 16px; box-shadow: 0 4px 0 #D3DCE8;
+    font: 800 14px/1.35 'Nunito', sans-serif; }
+  .rp-globo b { color: #5E8A00; font-weight: 900; }
+  .rp-globo::before { content: ''; position: absolute; left: -7px; bottom: 14px; width: 14px; height: 14px; background: #fff; rotate: 45deg; border-radius: 0 0 0 4px; }
+  .startscreen .start-badge { margin-bottom: 8px; padding: 5px 11px; font: 800 14px/1 'Barlow Condensed', sans-serif !important; letter-spacing: .06em; text-transform: uppercase; }
+  .startscreen h1.rp-tit { font: italic 900 40px/1 'Barlow Condensed', sans-serif; letter-spacing: .01em; margin-bottom: 8px; }
+  .startscreen p { margin-bottom: 18px; }
+  .rp-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 16px; }
+  .startscreen #btnStart { margin-bottom: 26px; }
+  .rp-stat { display: grid; justify-items: center; gap: 2px; padding: 12px 6px 10px; background: #1D1834; border: 1px solid #2A2346; border-bottom: 4px solid var(--c); border-radius: 14px; }
+  .rp-stat svg { width: 22px; height: 22px; color: var(--c); margin-bottom: 2px; }
+  .rp-stat b { font: italic 900 32px/1 'Barlow Condensed', sans-serif; color: #fff; }
+  .rp-stat small { font: 800 13px/1.1 'Barlow Condensed', sans-serif; letter-spacing: .06em; color: var(--text-dim); }
+  .rp-cor { --c: #FF4B4B; } .rp-cor svg { fill: currentColor; }
+  .rp-preg { --c: var(--accent); }
+  .rp-tem { --c: #1CB0F6; }
+  .rp-sec { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; font: italic 900 20px/1 'Barlow Condensed', sans-serif; color: #fff; text-align: left; }
+  .rp-sec::after { content: ''; flex: 1; height: 2px; background: #2A2346; }
+  .rp-temas { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+  .rp-temas span { padding: 6px 10px; border-radius: 10px; background: rgba(28,176,246,.1); border: 1px solid rgba(28,176,246,.35); color: #bfe8ff; font: 800 12.5px/1.2 'Nunito', sans-serif; text-align: left; }
+  .rp-temas span.mas { background: none; border-style: dashed; color: var(--text-dim); }
+  .rp-reglas { list-style: none; display: grid; gap: 8px; text-align: left; }
+  .rp-reglas li { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: #1D1834; border: 1px solid #2A2346; border-left: 4px solid var(--c); border-radius: 12px; font: 800 14px/1.3 'Nunito', sans-serif; color: #dcd7ee; }
+  .rp-reglas li i { flex: none; width: 32px; height: 32px; display: grid; place-items: center; border-radius: 9px; background: color-mix(in srgb, var(--c) 16%, transparent); color: var(--c); font: italic 900 17px/1 'Barlow Condensed', sans-serif; }
+  .rp-reglas li i svg { width: 18px; height: 18px; }
+  .rp-reglas li b { color: #fff; font-weight: 900; }
+  .startscreen .btn.primary { font: italic 900 22px/1 'Barlow Condensed', sans-serif; letter-spacing: .06em; padding: 14px 12px; }
+  @media (min-width: 640px) {
+    .rp-buho { width: 128px; height: 132px; } .rp-buho .mcb { width: 114px; }
+    .rp-globo { max-width: 280px; font-size: 15px; margin-bottom: 62px; }
+    .startscreen h1.rp-tit { font-size: 48px; }
+    .rp-stat b { font-size: 38px; } .rp-stat small { font-size: 14px; }
+  }
+  @media (min-width: 900px) { .startscreen { padding: 26px 30px 30px; } }
+  /* Pantalla final: el búho reacciona al resultado */
+  .endscreen .rp-buho { margin: -10px auto 6px; }
+  .endscreen h2 { font: italic 900 38px/1 'Barlow Condensed', sans-serif; margin-bottom: 8px; }
+  .endscreen .score { font: italic 900 56px/1 'Barlow Condensed', sans-serif; text-transform: none; }
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" media="print" onload="this.media='all'">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
@@ -262,6 +309,9 @@
 <script src="../assets/pregunta.js"></script>
 <script src="../assets/sonido.js"></script>
 <script src="../assets/auth.js"></script>
+<script src="../assets/buho/buho-datos.js"></script>
+<script src="../assets/buho/buho-vivo.js"></script>
+<link rel="stylesheet" href="../assets/buho/buho.css">
 </head>
 <body>
 
@@ -287,29 +337,37 @@
     </div>
 
     <div class="startscreen" id="startScreen">
-      <div class="start-badge"><span class="dot"></span><span id="startBadgeText">Estadística</span></div>
-      <h1>Repaso <span class="accent">Admisión</span></h1>
-      <p id="startDesc">Cargando preguntas…</p>
-      <div class="start-info">
-        <div class="start-stat">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="#C6E000" stroke="#C6E000" stroke-width="2"><path d="M12 21s-6.7-4.35-9.3-8.3C1.1 10.1 1.6 6.6 4.4 5.1c2.2-1.2 4.7-.4 6 1.4l1.6 2.1 1.6-2.1c1.3-1.8 3.8-2.6 6-1.4 2.8 1.5 3.3 5 1.7 7.6C18.7 16.65 12 21 12 21z"/></svg>
-          <span>5 vidas</span>
-        </div>
-        <div class="start-stat">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C6E000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-          <span id="startCount">— preguntas</span>
-        </div>
+      <div class="rp-hero">
+        <div class="rp-buho"><i class="piso" aria-hidden="true"></i><div class="escena" id="rpEscena"></div></div>
+        <div class="rp-globo" id="rpGlobo">¿Listo para el repaso de <b>Estadística</b>? ¡Tú puedes!</div>
       </div>
-      <button class="btn primary" id="btnStart" style="width:100%;" disabled>Empezar</button>
+      <div class="start-badge"><span class="dot"></span><span id="startBadgeText">Estadística</span></div>
+      <h1 class="rp-tit bc">Repaso <span class="accent">Admisión</span></h1>
+      <p id="startDesc">Cargando preguntas…</p>
+      <div class="rp-stats">
+        <div class="rp-stat rp-cor"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.7-4.35-9.3-8.3C1.1 10.1 1.6 6.6 4.4 5.1c2.2-1.2 4.7-.4 6 1.4l1.6 2.1 1.6-2.1c1.3-1.8 3.8-2.6 6-1.4 2.8 1.5 3.3 5 1.7 7.6C18.7 16.65 12 21 12 21z"/></svg><b class="bc" id="startVidasN">5</b><small class="bc" id="startVidasTx">Corazones</small></div>
+        <div class="rp-stat rp-preg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg><b class="bc" id="startPregN">—</b><small class="bc">Preguntas</small></div>
+        <div class="rp-stat rp-tem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg><b class="bc" id="startTemN">—</b><small class="bc">Temas</small></div>
+      </div>
+      <button class="btn primary bc" id="btnStart" style="width:100%;" disabled>Empezar</button>
+      <div class="rp-sec bc">Temas que entran</div>
+      <div class="rp-temas" id="startTemas"></div>
+      <div class="rp-sec bc">Cómo funciona</div>
+      <ul class="rp-reglas">
+        <li style="--c:var(--accent)"><i>+10</i><span><b>10 puntos</b> por cada respuesta correcta</span></li>
+        <li style="--c:#FF4B4B"><i><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-6.7-4.35-9.3-8.3C1.1 10.1 1.6 6.6 4.4 5.1c2.2-1.2 4.7-.4 6 1.4l1.6 2.1 1.6-2.1c1.3-1.8 3.8-2.6 6-1.4 2.8 1.5 3.3 5 1.7 7.6C18.7 16.65 12 21 12 21z"/></svg></i><span>Cada error te quita <b>un corazón</b></span></li>
+        <li style="--c:#FF9600"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></i><span>Las que falles se guardan para <b>repasarlas después</b></span></li>
+      </ul>
     </div>
 
     <div class="header" id="quizHeader" style="display:none;"></div>
     <div id="quizBody" style="display:none;"></div>
 
     <div class="endscreen" id="endScreen">
-      <h2>Ronda terminada</h2>
+      <div class="rp-buho"><i class="piso" aria-hidden="true"></i><div class="escena" id="finEscena"></div></div>
+      <h2 class="bc">Ronda terminada</h2>
       <p id="endMessage">Así te fue en esta práctica</p>
-      <div class="score" id="finalScore">0 pts</div>
+      <div class="score bc" id="finalScore">0 pts</div>
       <button class="btn primary" id="btnRestart" style="width:100%;">Repetir ronda</button>
     </div>
 
@@ -425,6 +483,12 @@
   verificarAcceso();
   // === Fin candado ===
 
+  // Búho: saluda en el inicio y reacciona al resultado al final (assets/buho/buho-vivo.js)
+  const rpGlobo = document.getElementById('rpGlobo'), rpTexto = rpGlobo.innerHTML;
+  let rpGloboT;
+  function rpDecir(t, tono, ms) { rpGlobo.textContent = t; clearTimeout(rpGloboT); rpGloboT = setTimeout(() => { rpGlobo.innerHTML = rpTexto; }, ms || 2800); }
+  if (window.MCBuhoVivo) MCBuhoVivo.toques(document.getElementById('rpEscena'), { pose: 'saludando', decir: rpDecir, alTocar: () => rpDecir('¡Dale a Empezar cuando estés listo!', 'feliz', 2400) });
+
   const startScreen = document.getElementById('startScreen');
   const quizHeader = document.getElementById('quizHeader');
   const quizBody = document.getElementById('quizBody');
@@ -466,9 +530,13 @@
       return;
     }
 
-    document.getElementById('startBadgeText').textContent = 'Estadística · Repaso ' + year;
-    document.getElementById('startDesc').textContent = `Las ${questions.length} preguntas del ciclo ${year}, mezcladas al azar. Tienes 5 vidas, ¡a ver cuánto sabes!`;
-    document.getElementById('startCount').textContent = `${questions.length} preguntas · ${temas.length} temas`;
+    document.getElementById('startBadgeText').textContent = 'Estadística · Ciclo ' + year;
+    document.getElementById('startDesc').textContent = `Todas las preguntas del ciclo, mezcladas al azar. ¡A ver cuánto sabes!`;
+    document.getElementById('startPregN').textContent = questions.length;
+    document.getElementById('startTemN').textContent = temas.length;
+    const conPreg = temas.filter(t => (t.questions || []).length), MAX_TEMAS = 6;
+    document.getElementById('startTemas').innerHTML = conPreg.slice(0, MAX_TEMAS).map(t => '<span>' + formatQText(String(t.name || '')) + '</span>').join('') +
+      (conPreg.length > MAX_TEMAS ? '<span class="mas">+' + (conPreg.length - MAX_TEMAS) + ' más</span>' : '');
     btnStart.disabled = false;
     startScreen.classList.add('show');
 
@@ -626,7 +694,10 @@
     quizBody.style.display = 'none';
     endScreen.classList.add('show');
     finalScore.textContent = `${score} pts`;
-    endMessage.textContent = lives <= 0 ? 'Se acabaron tus vidas. ¡Sigue practicando!' : 'Así te fue en esta práctica';
+    const aciertos = answers.filter((a, i) => activeQuestions[i] && a === activeQuestions[i].correct).length, pct = aciertos / Math.max(1, answers.length);
+    const fin = document.getElementById('finEscena'); fin.innerHTML = '';
+    if (window.MCBuhoVivo) fin.append(MCBuhoVivo.crear(lives <= 0 ? 'triste' : pct >= .8 ? 'logro' : pct >= .5 ? 'saludando' : 'estudiando'));
+    endMessage.textContent = lives <= 0 ? 'Se acabaron tus corazones. ¡Sigue practicando!' : 'Así te fue en esta práctica';
     // Progreso del estudiante (assets/progreso.js), una sola vez por ronda
     if (showEnd.ronda === activeQuestions) return;
     showEnd.ronda = activeQuestions;

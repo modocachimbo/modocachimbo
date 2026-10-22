@@ -296,6 +296,10 @@
     Array.prototype.forEach.call(document.querySelectorAll('#startScreen .start-stat span'), function (s) {
       if (/vidas|coraz/.test(s.textContent) && s.textContent !== txt) s.textContent = txt;
     });
+    // Inicio del repaso con cuadros: el número y la palabra van por separado
+    var vn = document.getElementById('startVidasN'), vt = document.getElementById('startVidasTx');
+    if (vn) vn.textContent = n;
+    if (vt) vt.textContent = n === 1 ? 'Corazón' : 'Corazones';
     var d = document.getElementById('startDesc');
     if (d && /Tienes \d vidas/.test(d.textContent)) d.textContent = d.textContent.replace(/Tienes \d vidas/, 'Tienes ' + txt + ' hoy');
   }
