@@ -5,7 +5,7 @@
 <script src="assets/guardia.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#050505">
+<meta name="theme-color" content="#0B0818">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
 <link rel="apple-touch-icon" href="assets/app/icono-180.png">
 <meta name="apple-mobile-web-app-title" content="Modo Cachimbo">
@@ -457,6 +457,12 @@
   /* ===== Toque Free Fire del inicio (letra cuadrada, fichas con degradé, etiquetas inclinadas,
      franja de peligro en el botón) sobre las formas redondeadas tipo Duolingo ===== */
   :root { --oro: #FFC800; --oro-tx: #FFC800; }
+  /* Fondo del inicio: azul morado muy oscuro, no negro */
+  html:not([data-modo="claro"]) { --bg: #0B0818; --surface: #151127; --surface-2: #1D1834; --border: #2A2346; --borde-g: #2A2346;
+    --text: #EEEAF7; --dim: #A99FC8; --faint: #6F6690; }
+  html:not([data-modo="claro"]) body { background: var(--bg); }
+  html:not([data-modo="claro"]) .home-btn { background: var(--surface-2); }
+  html:not([data-modo="claro"]) .ins.n { background: #3A3360; }
   html[data-modo="claro"] { --oro-tx: #B38600; }
   html body .sim-tit:not(#z) { font-family: var(--display) !important; font-style: italic; font-weight: 900; color: var(--oro-tx); letter-spacing: .01em; }
   .sim-tit::after { background: linear-gradient(90deg, rgba(255,200,0,.5), rgba(255,200,0,0)) !important; }
