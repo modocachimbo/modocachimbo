@@ -798,6 +798,91 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   html[data-modo="claro"] .rgo-n { filter: brightness(.62) saturate(1.3); }
   html[data-modo="claro"] .enlace { background: none !important; border: 0 !important; }
   @media (prefers-reduced-motion: reduce) { .vs, .puesto-sala.libre .av, .pts3 i { animation: none; } .pts3 i { opacity: 1; } }
+
+  /* ===== Juego: marcador FF, pregunta con la letra de Modo Práctica y reacciones al centro ===== */
+  /* Marcador */
+  .barra { border: 2px solid var(--borde-g); border-bottom-width: 5px; border-radius: 20px; padding: 12px 14px 10px; gap: 6px 14px; }
+  html body .reloj > span:not(#z) { font: italic 900 26px/1 var(--display) !important; }
+  .reloj > svg { transform: rotate(-90deg); }
+  .tiles { margin-top: 10px; }
+  .tile { display: grid; grid-template-columns: 46px minmax(0, 1fr) auto; align-items: center; gap: 4px 10px; text-align: left; padding: 8px 12px 7px 8px; border-radius: 14px; }
+  .tile:not(.yo) { border-bottom-color: color-mix(in srgb, var(--jc) 55%, var(--borde-g)); }
+  .tile .ring { grid-row: 1 / span 2; margin: 0; }
+  /* El emblema del rango derecho y pequeño en la esquina de la letra (antes giraba con el anillo) */
+  .ring svg { transform: none; }
+  .ring > svg { transform: rotate(-90deg); }
+  .ring .av .rgo { right: -10px; bottom: -8px; width: 22px; }
+  .ring .av .rgo svg { width: 100%; height: auto; display: block; }
+  html body .tile .nm:not(#z) { grid-column: 2; margin: 0; font: 800 18px/1 var(--display) !important; letter-spacing: .04em; text-transform: uppercase; }
+  html body .tile .rs:not(#z) { grid-column: 2; margin: 0; font: 700 11.5px/1.2 'Nunito', sans-serif !important; }
+  html body .tile .pt:not(#z) { grid-column: 3; grid-row: 1 / span 2; font: italic 900 34px/1 var(--display) !important; }
+  html body .tile .pos:not(#z) { top: -10px; left: 10px; border-radius: 0; padding: 3px 9px 2px 8px; font: 800 13px/1 var(--display) !important; letter-spacing: .04em; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); background: var(--border); color: var(--text); }
+  html body .tile .pos.p1:not(#z) { background: var(--oro); color: #2b2100; }
+  .tile .ev { top: -11px; right: 8px; }
+  /* Camino: tramos inclinados */
+  .camino { gap: 4px; margin-top: 2px; }
+  .camino i { height: 10px; border-radius: 0; clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%); }
+  html body .camino-l:not(#z), html body .camino-l span:not(#z) { font: 800 13px/1 var(--display) !important; letter-spacing: .06em; text-transform: uppercase; }
+  .camino-l { margin-top: 7px; }
+  @media (max-width: 560px) {
+    .tile { grid-template-columns: 40px minmax(0, 1fr); padding: 8px 8px 6px 6px; gap: 2px 7px; }
+    html body .tile .pt:not(#z) { grid-column: 2; grid-row: auto; font-size: 24px !important; }
+    .tile .ring { grid-row: 1 / span 3; }
+    html body .tile .nm:not(#z) { font-size: 15px !important; }
+    html body .tile .rs:not(#z) { display: none; }
+  }
+  /* Con 3 o 4 jugadores en el celular: cuadritos verticales */
+  @media (max-width: 560px) {
+    .tiles[style*="--n: 3"] .tile, .tiles[style*="--n: 4"] .tile, .barra[style*="--n: 3"] .tile, .barra[style*="--n: 4"] .tile { grid-template-columns: 1fr; justify-items: center; text-align: center; padding: 10px 4px 6px; }
+    .barra[style*="--n: 3"] .tile .ring, .barra[style*="--n: 4"] .tile .ring { grid-row: auto; }
+    .barra[style*="--n: 3"] .tile > *, .barra[style*="--n: 4"] .tile > * { grid-column: 1 !important; }
+    html body .barra[style*="--n: 4"] .tile .nm:not(#z) { font-size: 13px !important; max-width: 100%; }
+  }
+  /* Comodines */
+  .cbar { gap: 8px; }
+  html body .cbar .t:not(#z) { font: 800 15px/1 var(--display) !important; letter-spacing: .06em; text-transform: uppercase; color: var(--dim); }
+  html body .cbtn:not(#z) { font: 800 18px/1 var(--display) !important; letter-spacing: .04em; text-transform: uppercase; padding: 6px 13px 5px 6px; gap: 8px; border-radius: 14px; }
+  .cbtn svg { width: 26px; height: 26px; padding: 4px; border-radius: 8px; background: var(--c); color: #111; box-sizing: border-box; }
+  html:not([data-modo="claro"]) .cbtn { background: color-mix(in srgb, var(--c) 12%, var(--surface)); }
+  /* Pregunta: la letra gruesa de Modo Práctica y alternativas tipo Duolingo */
+  #pregCard { border-radius: 22px; }
+  html body .preg-tag:not(#z) { border-radius: 0; padding: 5px 13px 4px 11px; clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%); font: 800 14px/1 var(--display) !important; letter-spacing: .05em; text-transform: uppercase; background: rgba(255,150,0,.16); }
+  html body .x2:not(#z) { font: 800 14px/1 var(--display) !important; letter-spacing: .05em; text-transform: uppercase; border-radius: 0; padding: 4px 11px 3px 9px; clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%); }
+  html body .preg-txt:not(#z), html body .preg-txt *:not(.katex):not(.katex *):not(#z) { font-weight: 800; }
+  .preg-txt { font-size: 17px; line-height: 1.55; }
+  .preg-txt :is(strong, b) { font-weight: 1000 !important; }
+  .alts { gap: 10px; }
+  html body .alts button:not(#z) { font-weight: 800; font-size: 15.5px; line-height: 1.4; border-width: 2px; border-bottom-width: 4px; border-radius: 16px; padding: 11px 14px; }
+  .alts:not(.ver) button:not(:disabled):hover { border-color: color-mix(in srgb, var(--azul) 45%, var(--borde-g)); }
+  html body .alts button i:not(#z) { width: 32px; height: 32px; border-radius: 10px; font: 900 15px/1 'Nunito', sans-serif !important; }
+  .alts button.on i { background: var(--azul); border-color: transparent; color: #fff; }
+  html body .veredicto:not(#z) { font: italic 900 24px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .02em; }
+  html body .final b:not(#z) { font: italic 900 24px/1 var(--display) !important; letter-spacing: .03em; }
+  html body .final .x3:not(#z) { font: italic 900 30px/1 var(--display) !important; padding: 5px 12px 3px; border-radius: 0; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); }
+  @media (max-width: 520px) { .preg-txt { font-size: 16.5px; } html body .alts button:not(#z) { font-size: 15px; } }
+  /* Reacciones: barra con sus caritas */
+  .reac { margin: 14px auto 0; width: fit-content; max-width: 100%; padding: 8px 12px; border: 2px solid var(--borde-g); border-bottom-width: 4px; border-radius: 18px; background: var(--surface); }
+  html body .reac > span:not(#z) { font: 800 15px/1 var(--display) !important; letter-spacing: .06em; text-transform: uppercase; color: var(--dim); }
+  .reac button { border-radius: 14px; }
+  .reac button:not(:disabled):hover { transform: translateY(-2px) scale(1.06); }
+  /* Las reacciones de todos salen grandes al centro de la pantalla, con el nombre de quien la mandó */
+  .reac-centro { position: fixed; inset: 0; z-index: 60; pointer-events: none; display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap; padding: 16px; }
+  .rc { display: grid; justify-items: center; gap: 6px; animation: rcVuela 2.3s cubic-bezier(.3,1.5,.5,1) forwards; }
+  .rc svg { width: min(30vw, 130px); height: auto; filter: drop-shadow(0 8px 0 rgba(0,0,0,.35)) drop-shadow(0 0 24px rgba(0,0,0,.4)); }
+  html body .rc b:not(#z) { font: 800 20px/1 var(--display) !important; letter-spacing: .05em; text-transform: uppercase; color: #111; background: var(--jc, var(--lima)); padding: 5px 14px 4px 12px; clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%); }
+  @keyframes rcVuela { 0% { transform: scale(.2) rotate(-20deg); opacity: 0; } 14% { transform: scale(1.15) rotate(6deg); opacity: 1; } 24% { transform: scale(1) rotate(-4deg); } 78% { transform: translateY(-10px) rotate(-4deg); opacity: 1; } 100% { transform: translateY(-60px) scale(.85); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .rc { animation: none; } }
+  html[data-modo="claro"] .barra { border-bottom: 5px solid #DCD8E8 !important; }
+  html[data-modo="claro"] .tile .pos:not(.p1) { background: #DCD8E8 !important; color: #1A1626 !important; }
+  html[data-modo="claro"] .tile .pos.p1 { background: var(--oro) !important; color: #2b2100 !important; }
+  html[data-modo="claro"] .camino i { background: #DCD8E8 !important; }
+  html[data-modo="claro"] .camino i.ok { background: var(--verde) !important; }
+  html[data-modo="claro"] .camino i.mal { background: var(--rojo) !important; }
+  html[data-modo="claro"] .camino i.ya { background: #1A1626 !important; }
+  html[data-modo="claro"] .camino i.fin { background: linear-gradient(90deg, var(--oro), var(--naranja)) !important; }
+  html[data-modo="claro"] .cbtn { background: color-mix(in srgb, var(--c) 12%, #FFFFFF) !important; }
+  html[data-modo="claro"] .reac { background: #FFFFFF; }
+  html[data-modo="claro"] .alts button.on { background: rgba(28,176,246,.1) !important; border-color: var(--azul) !important; }
 </style>
 </head>
 <body>
@@ -1732,7 +1817,6 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   function pintarBarra() {
     const js = jugadores(), r = 2 * Math.PI * 19;
     const pos = j => 1 + js.filter(x => x.puntos > j.puntos).length;
-    const stk = Array.prototype.map.call($('tiles').querySelectorAll('.stk'), x => [x.parentNode.dataset.apodo, x]);   // las reacciones en curso se quedan
     $('tiles').innerHTML = js.map(j => {
       const p = pos(j), hecho = Math.min(j.actual, G.n), ev = (j.racha >= 3 ? '<span style="--c:var(--naranja)" title="Racha de ' + j.racha + '">' + IC.fuego + '</span>' : '') +
         (j.usados || []).map(k => '<span style="--c:' + CMD[k].c + '" title="Usó ' + CMD[k].nom + '">' + IC[k] + '</span>').join('');
@@ -1741,7 +1825,6 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
         '<div class="ring"><svg viewBox="0 0 46 46" aria-hidden="true"><circle class="f" cx="23" cy="23" r="19"/><circle class="a" cx="23" cy="23" r="19" stroke-dasharray="' + r.toFixed(1) + '" stroke-dashoffset="' + (r * (1 - hecho / G.n)).toFixed(1) + '"/></svg>' + avatar(j) + '</div>' +
         '<span class="nm">' + esc(nombreDe(j)) + '</span><span class="pt">' + j.puntos + '</span><span class="rs">' + (j.terminado ? (hecho < G.n ? 'Fuera' : 'Terminó') : hecho + ' de ' + G.n) + '</span></div>';
     }).join('');
-    stk.forEach(x => { const t = $('tiles').querySelector('.tile[data-apodo="' + CSS.escape(x[0]) + '"]'); if (t) t.appendChild(x[1]); });
     const ultima = G.final ? G.n - 1 : -1;
     $('camino').innerHTML = Array.from({ length: G.n }, (_, i) => '<i class="' + (i < G.ok.length ? (G.ok[i] ? 'ok' : 'mal') : i === G.actual ? 'ya' : '') + (i === ultima ? ' fin' : '') + '"></i>').join('');
     $('camTxt').textContent = 'Tu camino · ' + G.ok.filter(Boolean).length + ' de ' + G.ok.length;
@@ -1888,12 +1971,16 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     pintarComodines(); pintarBarra();
   });
   // Reacciones: se ven sobre tu cuadro en todos los celulares
+  // Reacción de cualquier jugador: carita grande al centro de la pantalla con su nombre y su color
   function sticker(apodo, cara, yo) {
-    const t = Array.prototype.filter.call($('tiles').children, x => yo ? x.classList.contains('yo') : x.dataset.apodo === apodo)[0];
-    if (!t || !CARAS[cara]) return;
-    const s = document.createElement('span'); s.className = 'stk'; s.innerHTML = CARAS[cara];
-    t.querySelectorAll('.stk').forEach(x => x.remove());
-    t.appendChild(s);
+    if (!CARAS[cara]) return;
+    let caja = document.querySelector('.reac-centro');
+    if (!caja) { caja = document.createElement('div'); caja.className = 'reac-centro'; caja.setAttribute('aria-hidden', 'true'); document.body.appendChild(caja); }
+    const j = jugadores().filter(x => yo ? x.yo : !x.yo && x.apodo === apodo)[0];
+    caja.querySelectorAll('.rc[data-quien="' + CSS.escape(yo ? '' : apodo) + '"]').forEach(x => x.remove());   // una a la vez por jugador
+    const s = document.createElement('div'); s.className = 'rc ' + (j ? colorDe(j) : 'c0'); s.dataset.quien = yo ? '' : apodo;
+    s.innerHTML = CARAS[cara] + '<b>' + esc(yo ? 'Tú' : apodo) + '</b>';
+    caja.appendChild(s);
     setTimeout(() => s.remove(), 2300);
   }
   $('reac').addEventListener('click', async e => {
