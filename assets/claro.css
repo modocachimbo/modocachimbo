@@ -117,15 +117,15 @@ html[data-modo="claro"] .mcz-hoja { border-bottom: 5px solid #DCD8E8 !important;
 html[data-modo="claro"] .mcz-x { border: 2px solid #DCD8E8 !important; color: #6B6485 !important; }
 html[data-modo="claro"] .mcz-rec { color: #6B6485 !important; }
 html[data-modo="claro"] .mcz-rec b { color: #1A1626 !important; }
-html[data-modo="claro"] .mcz-mis { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mcz-mis { background: #FFFFFF !important; border-color: #DCD8E8 !important; border-bottom-color: var(--mc) !important; }
 html[data-modo="claro"] .mcz-mis small { color: #6B6485 !important; }
-html[data-modo="claro"] .mcz-bar { background: #F1EFF6 !important; }
+html[data-modo="claro"] .mcz-bar { background: #ECE9F4 !important; }
 html[data-modo="claro"] .mcz-mis.ok .mcz-prem { color: #6F8000 !important; }
 html[data-modo="claro"] .mcz-mis.li .ic { color: #6F8000 !important; }
-html[data-modo="claro"] .mcz-mis.bonus { background: linear-gradient(90deg,rgba(255,200,0,.08),#F1EFF6 60%) !important; }
+html[data-modo="claro"] .mcz-mis.bonus { background: linear-gradient(90deg,rgba(255,200,0,.1),#FFFFFF 60%) !important; }
 html[data-modo="claro"] .mcz-btn.prin:disabled { background: #F1EFF6 !important; box-shadow: 0 5px 0 #DCD8E8 !important; }
 html[data-modo="claro"] .mcz-btn.sec { color: #1A1626 !important; border: 2px solid #DCD8E8 !important; }
-html[data-modo="claro"] .mcz-ficha { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
+html[data-modo="claro"] .mcz-ficha { background: #FFFFFF !important; border-color: #DCD8E8 !important; border-bottom-color: var(--fc) !important; }
 html[data-modo="claro"] .mcz-ficha small { color: #6B6485 !important; }
 html[data-modo="claro"] .mcz-saldo { color: #6B6485 !important; }
 html[data-modo="claro"] .mcz-cupos span.usado { background: #F1EFF6 !important; }
@@ -133,6 +133,14 @@ html[data-modo="claro"] .mcz-sin { background: #FFFFFF !important; color: #1A162
 html[data-modo="claro"] .mcz-sin p { color: #6B6485 !important; }
 html[data-modo="claro"] .mcz-sin p b { color: #1A1626 !important; }
 html[data-modo="claro"] .mcz-link { color: #6B6485 !important; }
+html[data-modo="claro"] .mcz-rec { background: #FFFFFF !important; border-color: #DCD8E8 !important; border-bottom-color: #1CB0F6 !important; }
+html[data-modo="claro"] .mcz-rec.lleno { border-bottom-color: #C6E000 !important; }
+html[data-modo="claro"] .mcz-sub b, html[data-modo="claro"] .mcz-ficha b, html[data-modo="claro"] .mcz-saldo b.mcz-n { color: #1A1626 !important; }
+html[data-modo="claro"] .mcz-sub::after { background: #DCD8E8 !important; }
+html[data-modo="claro"] .mcz-vidas .vacio { --c1: #DCD8E8; --c2: #CFCAE0; }
+html[data-modo="claro"] .mcz-globo, html[data-modo="claro"] .mcz-globo::before { background: #FFFFFF !important; border-color: #DCD8E8 !important; }
+html[data-modo="claro"] .mcz-globo { color: #1A1626 !important; border-bottom-color: #FF4B4B !important; }
+html[data-modo="claro"] .mcz-buho img { filter: drop-shadow(0 5px 4px rgba(26,22,38,.18)); }
 html[data-modo="claro"] .mcz-toast { background: #F1EFF6 !important; color: #1A1626 !important; }
 /* assets/racha.js */
 html[data-modo="claro"] .mcu-racha { border: 1px solid var(--border,#DCD8E8) !important; background: var(--surface,#FFFFFF) !important; color: var(--text-dim,#6B6485) !important; }
