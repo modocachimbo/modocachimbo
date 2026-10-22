@@ -364,43 +364,101 @@
   .toast .ci svg { width: 17px; height: 17px; }
   @keyframes toast { 0% { transform: translateY(20px); opacity: 0; } 10%, 85% { transform: none; opacity: 1; } 100% { transform: translateY(8px); opacity: 0; } }
 
-  /* Resultado */
-  .res { position: relative; text-align: center; padding: 30px 22px; overflow: hidden; background: radial-gradient(420px 220px at 50% 0%, rgba(255,200,0,.13), transparent 70%), var(--surface); }
-  .res.perdio { background: radial-gradient(420px 220px at 50% 0%, rgba(28,176,246,.1), transparent 70%), var(--surface); }
-  .res h1 { font-size: clamp(28px, 5vw, 40px); margin-top: 6px; }
-  .res .trofeo { width: 64px; height: 64px; margin: 0 auto 6px; color: var(--oro); }
+  /* Resultado: escenario FF con podio de escalones (2, 3 o 4 jugadores) */
+  .res { position: relative; text-align: center; padding: 26px 22px 28px; overflow: hidden; border: 2px solid var(--borde-g, #2A2346); border-bottom-width: 5px; border-radius: 22px;
+    background: radial-gradient(460px 240px at 50% 0%, rgba(255,200,0,.14), transparent 70%), var(--surface); }
+  .res.perdio { background: radial-gradient(460px 240px at 50% 0%, rgba(28,176,246,.12), transparent 70%), var(--surface); }
+  .res .trofeo { width: 56px; height: 56px; margin: 0 auto 8px; color: var(--oro); filter: drop-shadow(0 0 14px rgba(255,200,0,.45)); }
+  html body .res .eyebrow:not(#z) { display: inline-block; font: 800 14px/1 var(--display) !important; letter-spacing: .08em; color: #151A03 !important; background: var(--lima); padding: 5px 14px 4px 12px; clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%); }
+  .res.perdio .eyebrow { background: var(--azul) !important; color: #fff !important; }
+  .res .tema { display: block; margin-top: 8px; color: var(--dim); font: 800 13px/1.3 Nunito, sans-serif; }
+  html body .res h1:not(#z) { font: italic 900 clamp(40px, 7vw, 58px)/.95 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; margin-top: 10px; color: var(--oro-tx); text-shadow: 0 3px 0 rgba(0,0,0,.35); }
+  html body .res.perdio h1:not(#z) { color: var(--text); }
+  .res .hint { max-width: 460px; margin: 8px auto 0; }
   .res .botones { max-width: 460px; margin-left: auto; margin-right: auto; }
-  .xpgana { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font: 1000 15px Nunito, sans-serif; color: #2b2100; background: var(--oro); border-radius: 12px; padding: 5px 12px; box-shadow: 0 3px 0 #b38c00; animation: cae1 .5s both; }
-  .podio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; align-items: end; margin: 22px auto 0; max-width: 540px; }
-  .podio.dos { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 380px; }
-  .pod { display: flex; flex-direction: column; align-items: center; gap: 3px; background: #161616; border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 16px; padding: 12px 6px; min-width: 0; animation: podSube .6s ease-out both; }
-  .pod.p1 { padding-top: 22px; border-color: var(--oro); border-bottom-color: #b38c00; background: linear-gradient(180deg, rgba(255,200,0,.14), #161616 70%); animation-delay: .1s; }
-  .pod.p3 { animation-delay: .2s; }
-  .pod.yo { box-shadow: inset 0 0 0 2px var(--jc); }
-  .pod .av { width: 44px; height: 44px; font-size: 18px; margin-bottom: 3px; }
-  .pod b { font: 900 15px Nunito, sans-serif; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .pod strong { font: 1000 26px/1.1 Nunito, sans-serif; color: var(--jc); font-variant-numeric: tabular-nums; }
-  .pod small { color: var(--dim); font-size: 11.5px; font-variant-numeric: tabular-nums; }
-  .pod .xp { margin-top: 4px; font: 900 12px Nunito, sans-serif; color: #2b2100; background: var(--oro); border-radius: 8px; padding: 2px 8px; }
-  .pod .mc-medalla { transform-origin: 50% 0; animation: medCae .7s cubic-bezier(.3,1.6,.5,1) both, medBalanceo 3.2s ease-in-out .7s infinite; }
-  @keyframes medCae { from { transform: translateY(-14px) rotate(-12deg); opacity: 0; } to { transform: none; opacity: 1; } }
-  @keyframes medBalanceo { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(5deg); } 75% { transform: rotate(-5deg); } }
+  html body .xpgana:not(#z) { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; font: italic 900 20px/1 var(--display) !important; letter-spacing: .03em; text-transform: uppercase; color: #2b2100; background: linear-gradient(100deg, #FFC800, #FFDA4D 50%, #FFB000); padding: 7px 18px 6px; clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%); animation: cae1 .5s both; }
+
+  /* Podio: escalones con foto, rango y puntos; solo salen los que jugaron */
+  .res .podio { position: relative; isolation: isolate; display: grid; grid-template-columns: 1fr 1.15fr 1fr; align-items: end; gap: 6px; max-width: 560px; margin: 22px auto 0; padding: 30px 12px 0; overflow: hidden;
+    border: 2px solid var(--borde-g, #2A2346); border-radius: 18px; background: radial-gradient(70% 60% at 50% 30%, rgba(255,200,0,.14), transparent 70%), repeating-linear-gradient(115deg, transparent 0 22px, rgba(255,255,255,.02) 22px 44px), #0b0916; }
+  .res .podio.dos { grid-template-columns: 1fr 1.15fr; max-width: 400px; }
+  .res .podio.cuatro { grid-template-columns: 1fr 1fr 1.15fr 1fr; max-width: 640px; }
+  .res .podio .foco { position: absolute; top: 0; bottom: 30%; z-index: -1; width: 30%; left: 35%; background: linear-gradient(rgba(255,236,190,.22), transparent); clip-path: polygon(30% 0, 70% 0, 100% 100%, 0 100%); }
+  .res .podio.dos .foco { left: 50%; width: 46%; } .res .podio.cuatro .foco { left: 50%; width: 24%; }
+  .res .lugar { display: grid; justify-items: center; gap: 3px; min-width: 0; text-align: center; animation: podSube .6s ease-out both; }
+  .res .lugar.l1 { animation-delay: .15s; } .res .lugar.l3 { animation-delay: .3s; } .res .lugar.l4 { animation-delay: .4s; }
+  .res .lugar .corona { width: 40px; margin-bottom: -4px; filter: drop-shadow(0 0 8px rgba(255,200,0,.7)); animation: coronaD 2.4s ease-in-out infinite; }
+  .res .lugar .aro { position: relative; display: grid; place-items: center; padding: 3px; border-radius: 15px; background: linear-gradient(#5a5470, #2e2a48); }
+  .res .lugar.l1 .aro { background: linear-gradient(#FFF3B0, #FFC800 45%, #B38600); box-shadow: 0 0 18px rgba(255,200,0,.55); }
+  .res .lugar.l2 .aro { background: linear-gradient(#fff, #C9C6D6 50%, #6B6485); }
+  .res .lugar.l3 .aro { background: linear-gradient(#FFD3AE, #E58A45 50%, #8A4A17); }
+  html body .res .lugar .av:not(#z) { width: 52px; height: 52px; border-radius: 12px; font-size: 21px; box-shadow: none; overflow: visible; }
+  html body .res .lugar.l1 .av:not(#z) { width: 62px; height: 62px; border-radius: 13px; font-size: 25px; }
+  .res .lugar .av .rgo { right: -11px; bottom: -9px; width: 26px; }
+  .res .lugar .av .rgo svg { width: 100%; height: auto; display: block; }
+  .res .lugar.yo .aro { outline: 3px solid var(--lima); outline-offset: 2px; }
+  html body .res .lugar.yo > b:not(#z) { color: var(--lima-tx); }
+  .res .lugar > small span { display: inline-block; white-space: nowrap; }
+  .res .lugar > small span + span::before { content: "· "; }
+  @media (max-width: 560px) { .res .lugar > small span { display: block; } .res .lugar > small span + span::before { content: none; } }
+  html body .res .lugar > b:not(#z) { margin-top: 6px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 800 17px/1.05 var(--display) !important; letter-spacing: .04em; text-transform: uppercase; }
+  html body .res .lugar > strong:not(#z) { font: italic 900 34px/1 var(--display) !important; color: var(--jc); font-variant-numeric: tabular-nums; }
+  html body .res .lugar.l1 > strong:not(#z) { font-size: 42px !important; }
+  .res .lugar > small { color: var(--dim); font: 700 11.5px/1.25 Nunito, sans-serif; font-variant-numeric: tabular-nums; }
+  .res .lugar .bloque { position: relative; width: 100%; margin-top: 8px; display: grid; }
+  .res .lugar .cara { height: 12px; clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%); }
+  .res .lugar .frente { display: grid; place-items: center; align-content: center; gap: 6px; }
+  html body .res .lugar .frente > i:not(#z) { font: italic 900 40px/1 var(--display) !important; color: rgba(0,0,0,.45); text-shadow: 0 1px 0 rgba(255,255,255,.35); }
+  html body .res .lugar .xp:not(#z) { font: 800 13px/1 var(--display) !important; letter-spacing: .05em; color: #2b2100; background: #FFE27A; padding: 3px 8px 2px; border-radius: 6px; }
+  .res .lugar.l1 .cara { background: #FFE27A; } .res .lugar.l1 .frente { height: 104px; background: linear-gradient(#FFC800, #9c7400); }
+  .res .lugar.l1 .xp { background: #2b2100 !important; color: #FFC800 !important; }
+  .res .lugar.l2 .cara { background: #F2F0F8; } .res .lugar.l2 .frente { height: 78px; background: linear-gradient(#C9C6D6, #5c5675); }
+  .res .lugar.l3 .cara { background: #FFC38F; } .res .lugar.l3 .frente { height: 60px; background: linear-gradient(#E58A45, #7a3f12); }
+  .res .lugar.l4 .cara { background: #6B6485; } .res .lugar.l4 .frente { height: 44px; background: linear-gradient(#4a4466, #25213a); }
+  html body .res .lugar.l4 .frente > i:not(#z) { font-size: 30px !important; color: rgba(255,255,255,.35); text-shadow: none; }
+  @keyframes coronaD { 50% { translate: 0 -3px; } }
   @keyframes podSube { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
-  .cuarto { display: flex; align-items: center; gap: 10px; max-width: 540px; margin: 10px auto 0; background: #161616; border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 14px; padding: 8px 12px; text-align: left; font-variant-numeric: tabular-nums; }
-  .cuarto .n { flex: 1; min-width: 0; font-weight: 900; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .cuarto strong { font: 1000 18px Nunito, sans-serif; color: var(--jc); }
-  .cuarto small { color: var(--dim); }
-  .cuarto.yo { border-color: var(--jc); }
-  .ttl { font: 900 12px Nunito, sans-serif; letter-spacing: 1px; text-transform: uppercase; color: var(--faint); margin: 22px auto 0; max-width: 540px; text-align: left; }
-  .meds { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 10px auto 0; max-width: 540px; }
-  .md { background: #161616; border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 16px; padding: 12px 6px; min-width: 0; }
-  .md .ci { width: 46px; height: 46px; margin: 0 auto 6px; border-radius: 50%; display: grid; place-items: center; background: var(--c); color: #111; box-shadow: 0 3px 0 color-mix(in srgb, var(--c) 55%, #000); }
+  @media (max-width: 560px) {
+    .res { padding: 22px 14px 22px; }
+    .res .podio { padding: 26px 6px 0; gap: 4px; }
+    html body .res .lugar > b:not(#z) { font-size: 15px !important; }
+    html body .res .lugar > strong:not(#z) { font-size: 28px !important; } html body .res .lugar.l1 > strong:not(#z) { font-size: 34px !important; }
+    .res .lugar > small { font-size: 10.5px; }
+    html body .res .lugar .av:not(#z) { width: 44px; height: 44px; border-radius: 11px; font-size: 18px; }
+    html body .res .lugar.l1 .av:not(#z) { width: 52px; height: 52px; }
+    .res .lugar .av .rgo { width: 22px; right: -9px; bottom: -8px; }
+    html body .res .podio.cuatro .lugar .av:not(#z) { width: 40px; height: 40px; }
+    html body .res .podio.cuatro .lugar > b:not(#z) { font-size: 13.5px !important; }
+    html body .res .podio.cuatro .lugar > strong:not(#z) { font-size: 24px !important; } html body .res .podio.cuatro .lugar.l1 > strong:not(#z) { font-size: 30px !important; }
+    html body .res .podio.cuatro .lugar .xp:not(#z) { font-size: 11px !important; padding: 2px 5px 1px; }
+  }
+
+  /* Medallas del duelo: ícono en cuadrado redondeado y nombre FF */
+  html body .ttl:not(#z) { font: 800 18px/1 var(--display) !important; letter-spacing: .06em; text-transform: uppercase; color: var(--text); margin: 24px auto 0; max-width: 560px; text-align: left; display: flex; align-items: center; gap: 10px; }
+  .ttl::after { content: ""; flex: 1; height: 2px; background: var(--borde-g, #2A2346); }
+  .meds { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 12px auto 0; max-width: 560px; }
+  .md { background: color-mix(in srgb, var(--c) 9%, var(--surface-2)); border: 2px solid color-mix(in srgb, var(--c) 45%, var(--borde-g, #2A2346)); border-bottom-width: 5px; border-radius: 16px; padding: 12px 6px 10px; min-width: 0; }
+  .md .ci { width: 46px; height: 46px; margin: 0 auto 7px; border-radius: 14px; display: grid; place-items: center; background: var(--c); color: #111; box-shadow: 0 3px 0 color-mix(in srgb, var(--c) 55%, #000); }
   .md .ci svg { width: 24px; height: 24px; }
-  .md b { display: block; font: 900 14px Nunito, sans-serif; color: var(--c); }
-  .md span { display: block; font: 900 13.5px Nunito, sans-serif; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  html body .md b:not(#z) { display: block; font: 800 17px/1 var(--display) !important; letter-spacing: .05em; text-transform: uppercase; color: var(--c); }
+  .md span { display: block; font: 900 14px Nunito, sans-serif; margin-top: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .md small { display: block; font: 700 11.5px Nunito, sans-serif; color: var(--dim); }
-  .md.nadie { opacity: .4; }
+  .md.nadie { background: var(--surface-2); border-color: var(--borde-g, #2A2346); opacity: .5; }
+  .md.nadie .ci { background: color-mix(in srgb, var(--c) 30%, var(--surface-2)); color: var(--c); box-shadow: none; }
   @media (max-width: 560px) { .meds { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  /* Botones: revancha como "¡A practicar!" (lima con franja de peligro) */
+  html body #btnRevancha:not(#z), html body .res .btn.ir:not(#z) { position: relative; overflow: hidden; background: linear-gradient(100deg, #b4cc00, #C6E000 40%, #d8f02a) !important; color: #151A03 !important; border-color: #C6E000 !important;
+    font: italic 900 24px/1 var(--display) !important; letter-spacing: .02em; text-transform: uppercase; padding-left: 26px; box-shadow: 0 4px 0 #8fa300 !important; }
+  #btnRevancha::before, .res .btn.ir::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 12px; background: repeating-linear-gradient(135deg, #151a03 0 6px, #FFC800 6px 12px); }
+  html body .res .btn.sec:not(#z) { font: italic 900 24px/1 var(--display) !important; letter-spacing: .02em; text-transform: uppercase; }
+  html[data-modo="claro"] .res .podio { background: radial-gradient(70% 60% at 50% 30%, rgba(255,200,0,.2), transparent 70%), #F1EFF6; border-color: #DCD8E8; }
+  html[data-modo="claro"] .res .lugar.l4 .aro { background: linear-gradient(#C9C6D6, #8a84a3); }
+  html[data-modo="claro"] .res .lugar.l4 .cara { background: #DCD8E8; } html[data-modo="claro"] .res .lugar.l4 .frente { background: linear-gradient(#C9C6D6, #9e98b6); }
+  html[data-modo="claro"] .res { border-color: #DCD8E8 !important; }
+  html[data-modo="claro"] .res h1 { text-shadow: 0 3px 0 rgba(0,0,0,.08) !important; }
+  html[data-modo="claro"] .res .lugar > strong { color: color-mix(in srgb, var(--jc) 75%, #000) !important; }
+  html[data-modo="claro"] .res .lugar.yo .aro { outline-color: #A8BF00; }
   .tabla { list-style: none; display: grid; gap: 8px; max-width: 460px; margin: 20px auto 0; text-align: left; }
   .tabla li { display: flex; align-items: center; gap: 12px; background: #161616; border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 14px; padding: 9px 12px; font-variant-numeric: tabular-nums; }
   .tabla li .av { width: 34px; height: 34px; font-size: 14px; }
@@ -1044,6 +1102,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     <div class="card res" id="resCard" style="margin-top:14px">
       <div class="trofeo" id="resTrofeo" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/><path d="M12 14v4M8 21h8M9 18h6"/></svg></div>
       <div class="eyebrow" id="resEye"></div>
+      <span class="tema" id="resTema"></span>
       <h1 id="resTit"></h1>
       <p class="hint" id="resSub"></p>
       <div id="resXp"></div>
@@ -2043,16 +2102,17 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     return plural(j.aciertos, 'acierto', 'aciertos') + (j.abandono ? ' · no terminó' : ' · ' + segs(j.ms));
   }
   const puntosDe = j => j.puntos != null ? j.puntos : j.aciertos;
-  // Podio con medallas para los 3 primeros; el 4.º va debajo
+  // Podio de escalones: solo salen los que jugaron (2: 2·1, 3: 2·1·3, 4: 4·2·1·3)
   function podioHtml(d) {
-    const js = d.jugadores, arriba = js.slice(0, 3), orden = arriba.length === 2 ? [0, 1] : [1, 0, 2];
-    const pods = orden.filter(i => arriba[i]).map(i => {
-      const j = arriba[i], xp = XP_PUESTO[j.puesto - 1];
-      return '<div class="pod p' + (i + 1) + ' ' + colorDe(j) + (j.yo ? ' yo' : '') + '">' + ((window.MCMedalla && MCMedalla(j.puesto, j.puesto === 1 ? 46 : 36)) || '') + avatar(j) +
-        '<b>' + esc(nombreDe(j)) + '</b><strong>' + puntosDe(j) + '</strong><small>' + esc(lineaDe(j, d.n)) + '</small>' + (xp ? '<span class="xp">+' + xp + ' XP</span>' : '') + '</div>';
+    const js = d.jugadores.slice(0, 4), n = js.length, orden = n === 2 ? [2, 1] : n === 3 ? [2, 1, 3] : [4, 2, 1, 3];
+    const lugares = orden.map(p => {
+      const j = js[p - 1], xp = XP_PUESTO[j.puesto - 1];   // con empate el escalón sigue el orden y el número, el puesto
+      return '<div class="lugar l' + p + ' ' + colorDe(j) + (j.yo ? ' yo' : '') + '">' + (p === 1 ? CORONA : '') +
+        '<span class="aro">' + avatar(j) + '</span>' +
+        '<b>' + esc(j.yo ? 'Tú' : j.apodo) + '</b><strong>' + puntosDe(j) + '</strong><small>' + lineaDe(j, d.n).split(' · ').map(t => '<span>' + esc(t) + '</span>').join(' ') + '</small>' +
+        '<span class="bloque"><i class="cara"></i><span class="frente"><i>' + j.puesto + '</i>' + (xp ? '<span class="xp">+' + xp + ' XP</span>' : '') + '</span></span></div>';
     }).join('');
-    const resto = js.slice(3).map(j => '<div class="cuarto ' + colorDe(j) + (j.yo ? ' yo' : '') + '">' + avatar(j) + '<span class="n">' + j.puesto + '.º ' + esc(nombreDe(j)) + '</span><small>' + esc(lineaDe(j, d.n)) + '</small><strong>' + puntosDe(j) + '</strong></div>').join('');
-    return '<div class="podio' + (arriba.length === 2 ? ' dos' : '') + '">' + pods + '</div>' + resto;
+    return '<div class="podio' + (n === 2 ? ' dos' : n === 4 ? ' cuatro' : '') + '"><div class="foco" aria-hidden="true"></div>' + lugares + '</div>';
   }
   // Medallas del duelo: Rayo, Racha, Remontada y Francotirador
   function medallasHtml(m) {
@@ -2100,7 +2160,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     if (window.MCCorazones) setTimeout(MCCorazones.recargar, 600);
     const d = V, yo = d.yo || { aciertos: 0, puntos: 0, ms: 0 }, res = d.resultado;
     const otros = d.jugadores.filter(j => !j.yo), misPts = yo.puntos != null ? yo.puntos : yo.aciertos;
-    let eye = 'Duelo terminado · ' + d.titulo, tit, sub = '', perdio = false;
+    let eye = 'Duelo terminado', tit, sub = '', perdio = false;
     if (res && d.en_sala && !d.empieza) { tit = 'El duelo no se inició'; sub = 'Nadie lo inició en 5 minutos. Crea otro y avisa a tus amigos antes.'; }
     else if (res && res.jugadores < 2) { tit = 'Nadie más entró al duelo'; sub = 'Sumaste ' + plural(misPts, 'punto', 'puntos') + '. Crea otro y envíalo apenas lo crees: la sala dura 5 minutos.'; }
     else if (res) {
@@ -2117,7 +2177,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
         : !d.cerrado ? 'La sala sigue abierta y alguien más puede entrar. El podio sale cuando se cierre.'
         : 'Calculando el podio…';
     }
-    $('resEye').textContent = eye; $('resTit').textContent = tit; $('resSub').textContent = sub;
+    $('resEye').textContent = eye; $('resTema').textContent = d.titulo || ''; $('resTit').textContent = tit; $('resSub').textContent = sub;
     $('resTrofeo').hidden = !(res && res.gane);
     $('resCard').classList.toggle('perdio', perdio);
     const final = res && res.jugadores >= 2;
@@ -2131,7 +2191,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
 
     const bts = [];
     if (!d.cerrado) bts.push('<a class="btn wa" target="_blank" rel="noopener noreferrer" href="https://wa.me/?text=' + esc(encodeURIComponent('⚔️ Sumé ' + plural(misPts, 'punto', 'puntos') + ' en un duelo de Modo Cachimbo (' + d.titulo + '). ¿Me ganas? Entra rápido, la sala se cierra pronto: ' + enlace(d.codigo))) + '">Invitar por WhatsApp</a>');
-    if (d.revancha) bts.push('<a class="btn" href="duelo.html?d=' + esc(d.revancha) + '">Ir a la revancha</a>');
+    if (d.revancha) bts.push('<a class="btn ir" href="duelo.html?d=' + esc(d.revancha) + '">Ir a la revancha</a>');
     else if (final) bts.push('<button class="btn" type="button" id="btnRevancha">Pedir revancha</button>');
     bts.push('<a class="btn sec" href="duelo.html">Nuevo duelo</a>');
     $('resBotones').innerHTML = bts.join('');
