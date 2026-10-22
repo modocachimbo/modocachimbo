@@ -15,13 +15,13 @@
   var css = document.createElement('style');
   css.textContent =
     'html.mc-cerrado body > *:not(#mcCandado) { visibility: hidden; }' +
-    '#mcCandado { position: fixed; inset: 0; z-index: 9000; background: #050505; overflow-y: auto; display: flex; align-items: flex-start; justify-content: center; padding: 70px 20px 40px; font-family: Inter, sans-serif; }' +
-    '#mcCandado .caja { width: 100%; max-width: 420px; background: #0e0e0e; border: 1px solid #232323; border-radius: 20px; padding: 34px 24px; text-align: center; }' +
+    '#mcCandado { position: fixed; inset: 0; z-index: 9000; background: #0B0818; overflow-y: auto; display: flex; align-items: flex-start; justify-content: center; padding: 70px 20px 40px; font-family: Inter, sans-serif; }' +
+    '#mcCandado .caja { width: 100%; max-width: 420px; background: #151127; border: 1px solid #2A2346; border-radius: 20px; padding: 34px 24px; text-align: center; }' +
     '#mcCandado .ico { width: 64px; height: 64px; margin: 0 auto 18px; color: #C6E000; }' +
     '#mcCandado h1 { font-family: Sora, sans-serif; font-size: 22px; font-weight: 800; color: #f5f5f5; margin: 0 0 8px; }' +
     '#mcCandado h1 span { color: #C6E000; }' +
     '#mcCandado p { font-size: 13px; color: #999; line-height: 1.6; margin: 0 0 20px; }' +
-    '#mcCandado input { width: 100%; box-sizing: border-box; background: #141414; border: 1px solid #262626; border-radius: 12px; padding: 13px 14px; color: #f2f2f2; font-size: 14px; text-align: center; letter-spacing: 1px; font-weight: 600; margin-bottom: 12px; text-transform: uppercase; }' +
+    '#mcCandado input { width: 100%; box-sizing: border-box; background: #1D1834; border: 1px solid #2C2549; border-radius: 12px; padding: 13px 14px; color: #f2f2f2; font-size: 14px; text-align: center; letter-spacing: 1px; font-weight: 600; margin-bottom: 12px; text-transform: uppercase; }' +
     '#mcCandado input:focus { outline: none; border-color: #C6E000; }' +
     '#mcCandado input::placeholder { color: #555; font-weight: 400; letter-spacing: normal; text-transform: none; }' +
     '#mcCandado button { width: 100%; background: #C6E000; color: #0b0b0b; border: none; border-radius: 14px; padding: 13px 22px; font-weight: 700; font-size: 15px; cursor: pointer; }' +

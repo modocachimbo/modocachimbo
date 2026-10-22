@@ -17,17 +17,17 @@ const AGP_DIA = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
 (function estilosAgenda() {
   const st = document.createElement('style');
   st.textContent = `
-  .agp-form { border: 2px solid #262626; border-bottom-width: 5px; border-radius: 18px; background: var(--surface); padding: 18px; margin-bottom: 18px; }
+  .agp-form { border: 2px solid #2C2549; border-bottom-width: 5px; border-radius: 18px; background: var(--surface); padding: 18px; margin-bottom: 18px; }
   .agp-form h3 { font: 900 17px Nunito, sans-serif; margin-bottom: 4px; }
   .agp-form label, .agp-form .agp-l { display: block; font: 800 12.5px Nunito, sans-serif; color: var(--text-dim); margin: 14px 0 6px; }
   .agp-ops { display: flex; flex-wrap: wrap; gap: 8px; }
-  .agp-op { padding: 8px 13px; border-radius: 12px; border: 2px solid #2a2a2a; background: transparent; color: var(--text); font: 900 13.5px Nunito, sans-serif; cursor: pointer; }
+  .agp-op { padding: 8px 13px; border-radius: 12px; border: 2px solid #2F284E; background: transparent; color: var(--text); font: 900 13.5px Nunito, sans-serif; cursor: pointer; }
   .agp-op.on { border-color: var(--c, var(--accent)); color: var(--c, var(--accent)); background: color-mix(in srgb, var(--c, #C6E000) 14%, transparent); }
   .agp-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .agp-2 > div { min-width: 0; }
   .agp-form .inp { color-scheme: dark; }
   .agp-acc { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 16px; }
-  .agp-fila { display: flex; align-items: center; gap: 14px; padding: 12px 14px; border: 2px solid #232323; border-radius: 16px; background: var(--surface); margin-bottom: 8px; }
+  .agp-fila { display: flex; align-items: center; gap: 14px; padding: 12px 14px; border: 2px solid #2A2346; border-radius: 16px; background: var(--surface); margin-bottom: 8px; }
   .agp-fila.paso { opacity: .55; }
   .agp-n { flex-shrink: 0; width: 54px; height: 54px; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; font: 1000 20px/1 Nunito, sans-serif; }
   .agp-n small { font: 900 10px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .05em; margin-top: 3px; }
@@ -82,7 +82,7 @@ function pintarAgendaPanel() {
     return `<div class="agp-fila${n < 0 ? ' paso' : ''}">
       <span class="agp-n" style="background:${t[1]}26;color:${t[1]}">${num}</span>
       <div class="agp-tx"><b>${esc(e.titulo)}</b><small>${t[0]} · ${agpFecha(e.fecha)}${e.hora ? ' · ' + esc(e.hora) : ''}${e.nota ? ' · ' + esc(e.nota) : ''}</small>
-        <span class="agp-tag" style="background:#1f1f1f;color:${e.para === 'todos' ? 'var(--accent)' : '#1CB0F6'}">${AGP_PARA[e.para] || e.para}</span></div>
+        <span class="agp-tag" style="background:#272041;color:${e.para === 'todos' ? 'var(--accent)' : '#1CB0F6'}">${AGP_PARA[e.para] || e.para}</span></div>
       <div class="agp-bts">
         <button class="btn-ghost" type="button" data-ed="${e.id}">Editar</button>
         <button class="btn-ghost rojo" type="button" data-bo="${e.id}">${seguro ? '¿Borrar? Toca otra vez' : 'Borrar'}</button>

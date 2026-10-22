@@ -15,7 +15,7 @@
 
   /* ---------- Estilos ---------- */
   var css = `
-  .rep-row { display: flex; justify-content: flex-end; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #1f1f1f; }
+  .rep-row { display: flex; justify-content: flex-end; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #272041; }
   .rep-btn {
     display: inline-flex; align-items: center; gap: 6px;
     background: none; border: 1px solid transparent; border-radius: 9px;
@@ -38,19 +38,19 @@
   }
   .rep-card {
     position: relative; width: 100%; max-width: 480px; max-height: calc(100vh - 40px); overflow-y: auto;
-    background: linear-gradient(160deg, #1a1a1a 0%, #0e0e0e 60%);
-    border: 1px solid #2c2c2c; border-radius: 24px; padding: 30px 28px 24px;
+    background: linear-gradient(160deg, #221C3B 0%, #151127 60%);
+    border: 1px solid #302950; border-radius: 24px; padding: 30px 28px 24px;
     box-shadow: 0 30px 80px rgba(0,0,0,0.6);
     font-family: 'Inter', sans-serif; color: #f2f2f2;
     animation: repPop .3s cubic-bezier(.2,.9,.3,1.2);
   }
   .rep-card::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: linear-gradient(90deg, #FBBF24, #C6E000); }
-  .rep-x { position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; border-radius: 9px; border: 1px solid #262626; background: none; color: #8a8a8a; cursor: pointer; font-size: 15px; }
+  .rep-x { position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; border-radius: 9px; border: 1px solid #2C2549; background: none; color: #8a8a8a; cursor: pointer; font-size: 15px; }
   .rep-x:hover { color: #fff; border-color: #444; }
   .rep-tag { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #FBBF24; font-weight: 700; }
   .rep-card h3 { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 22px; margin: 8px 0 6px; }
   .rep-sub { font-size: 13.5px; color: #9a9a9a; line-height: 1.55; }
-  .rep-info { margin: 18px 0; background: #0a0a0a; border: 1px solid #222; border-radius: 14px; padding: 14px 16px; font-size: 13px; line-height: 1.55; }
+  .rep-info { margin: 18px 0; background: #110D20; border: 1px solid #292245; border-radius: 14px; padding: 14px 16px; font-size: 13px; line-height: 1.55; }
   .rep-info .meta { color: #C6E000; font-weight: 700; font-size: 11.5px; letter-spacing: .5px; text-transform: uppercase; margin-bottom: 6px; }
   .rep-info .q { color: #cfcfcf; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
   .rep-info .marcada { margin-top: 10px; color: #9a9a9a; }
@@ -59,7 +59,7 @@
   .rep-label span { color: #6a6a6a; font-weight: 500; }
   .rep-letters { display: flex; gap: 8px; flex-wrap: wrap; }
   .rep-letter {
-    min-width: 44px; height: 44px; padding: 0 12px; border-radius: 12px; border: 1px solid #2a2a2a; background: #141414;
+    min-width: 44px; height: 44px; padding: 0 12px; border-radius: 12px; border: 1px solid #2F284E; background: #1D1834;
     color: #d0d0d0; font-family: 'Sora', sans-serif; font-weight: 800; font-size: 15px; cursor: pointer; transition: all .12s;
   }
   .rep-letter.nose { font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 600; }
@@ -67,7 +67,7 @@
   .rep-letter.sel { background: #FBBF24; border-color: #FBBF24; color: #111; }
   .rep-letter:disabled { opacity: .3; cursor: not-allowed; }
   .rep-text {
-    width: 100%; min-height: 80px; resize: vertical; border-radius: 12px; border: 1px solid #2a2a2a; background: #0a0a0a;
+    width: 100%; min-height: 80px; resize: vertical; border-radius: 12px; border: 1px solid #2F284E; background: #110D20;
     color: #f2f2f2; font-family: 'Inter', sans-serif; font-size: 13.5px; padding: 12px 14px; line-height: 1.5;
   }
   .rep-text:focus { outline: none; border-color: #C6E000; }
@@ -89,9 +89,9 @@
   .rep-ok .ico { width: 70px; height: 70px; border-radius: 20px; margin: 4px auto 16px; display: flex; align-items: center; justify-content: center; background: rgba(198,224,0,0.12); border: 1px solid rgba(198,224,0,0.3); color: #C6E000; }
   .rep-ok .ico.warn { background: rgba(251,191,36,0.12); border-color: rgba(251,191,36,0.3); color: #FBBF24; }
   .rep-ok .ico svg { width: 34px; height: 34px; }
-  .rep-close2 { margin-top: 10px; width: 100%; background: none; border: 1px solid #2a2a2a; color: #9a9a9a; border-radius: 14px; padding: 13px; font-weight: 600; font-size: 14px; cursor: pointer; font-family: 'Inter', sans-serif; }
+  .rep-close2 { margin-top: 10px; width: 100%; background: none; border: 1px solid #2F284E; color: #9a9a9a; border-radius: 14px; padding: 13px; font-weight: 600; font-size: 14px; cursor: pointer; font-family: 'Inter', sans-serif; }
   .rep-close2:hover { color: #fff; border-color: #444; }
-  .rep-spin { width: 16px; height: 16px; border: 2px solid rgba(0,0,0,.25); border-top-color: #0e0e0e; border-radius: 50%; animation: repSpin .7s linear infinite; }
+  .rep-spin { width: 16px; height: 16px; border: 2px solid rgba(0,0,0,.25); border-top-color: #151127; border-radius: 50%; animation: repSpin .7s linear infinite; }
   @keyframes repSpin { to { transform: rotate(360deg); } }
   @keyframes repFade { from { opacity: 0; } to { opacity: 1; } }
   @keyframes repPop { from { opacity: 0; transform: translateY(14px) scale(.95); } to { opacity: 1; transform: none; } }
@@ -103,21 +103,21 @@
   .rep-btn:active, .rep-letter:not(:disabled):active, .rep-close2:active, .rep-x:active { transform: translateY(2px); border-bottom-width: 2px !important; margin-bottom: 2px; }
   .rep-btn.done { color: #25D366 !important; border-color: rgba(37,211,102,.35) !important; background: rgba(37,211,102,.08) !important; }
   .rep-card { border-width: 2px; border-bottom-width: 6px; }
-  .rep-x { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 11px; background: #161616; }
-  .rep-info { border: 2px solid #262626; border-radius: 16px; }
+  .rep-x { border: 2px solid #322B52; border-bottom-width: 4px; border-radius: 11px; background: #1F1936; }
+  .rep-info { border: 2px solid #2C2549; border-radius: 16px; }
   .rep-label { font-family: Nunito, Inter, sans-serif; font-weight: 800; font-size: 14px; }
-  .rep-letter { border: 2px solid #2e2e2e !important; border-bottom-width: 4px !important; border-radius: 13px !important; background: #161616 !important;
+  .rep-letter { border: 2px solid #322B52 !important; border-bottom-width: 4px !important; border-radius: 13px !important; background: #1F1936 !important;
     font-family: Nunito, Inter, sans-serif !important; font-weight: 900 !important; }
   .rep-letter.nose { font-weight: 800 !important; }
   .rep-letter.sel { background: #FBBF24 !important; border-color: #FBBF24 !important; border-bottom-color: #b8860b !important; color: #2a1d00 !important; }
   .rep-letter:disabled { border-style: dashed !important; border-bottom-width: 2px !important; }
-  .rep-text { border: 2px solid #2e2e2e !important; border-bottom-width: 4px !important; border-radius: 14px !important; background: #121212 !important; }
+  .rep-text { border: 2px solid #322B52 !important; border-bottom-width: 4px !important; border-radius: 14px !important; background: #1A1630 !important; }
   .rep-text:focus { border-color: #C6E000 !important; }
   .rep-send { border: 2px solid #C6E000 !important; border-radius: 16px !important; box-shadow: 0 5px 0 #8fa300; margin-bottom: 5px; color: #2b3300 !important;
     font-family: Nunito, Inter, sans-serif !important; font-weight: 900 !important; text-transform: uppercase; letter-spacing: .7px; }
   .rep-send:not(:disabled):active { transform: translateY(5px); box-shadow: 0 0 0 transparent; }
   .rep-wa { border-width: 2px !important; border-bottom-width: 4px !important; border-radius: 16px !important; font-family: Nunito, Inter, sans-serif !important; font-weight: 900 !important; }
-  .rep-close2 { border: 2px solid #2e2e2e; border-bottom-width: 4px; background: #161616; font-family: Nunito, Inter, sans-serif; font-weight: 800; }
+  .rep-close2 { border: 2px solid #322B52; border-bottom-width: 4px; background: #1F1936; font-family: Nunito, Inter, sans-serif; font-weight: 800; }
   `;
   var styleEl = document.createElement('style');
   styleEl.textContent = css;

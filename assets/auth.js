@@ -199,19 +199,19 @@
     '.mcu-btn{background:var(--accent,#C6E000);color:#0e0e0e;font-family:Sora,sans-serif;font-weight:700;font-size:13.5px;padding:9px 20px;border-radius:100px;border:none;cursor:pointer}' +
     '.mcu-btn:hover{opacity:.88}' +
     '.mcu-user{position:relative;display:flex;align-items:center;gap:8px}' +
-    '.mcu-chip{display:flex;align-items:center;gap:10px;min-width:132px;max-width:220px;background:var(--surface,#0e0e0e);border:1px solid var(--border,#232323);color:var(--text,#f2f2f2);border-radius:100px;padding:5px 20px 5px 5px;cursor:pointer;font:600 14.5px Inter,sans-serif}' +
+    '.mcu-chip{display:flex;align-items:center;gap:10px;min-width:132px;max-width:220px;background:var(--surface,#151127);border:1px solid var(--border,#2A2346);color:var(--text,#f2f2f2);border-radius:100px;padding:5px 20px 5px 5px;cursor:pointer;font:600 14.5px Inter,sans-serif}' +
     '.mcu-chip .mcu-nom{flex:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
     '.mcu-chip:hover{border-color:var(--accent,#C6E000)}' +
     '.mcu-av{width:34px;height:34px;border-radius:50%;background:var(--accent,#C6E000);color:#0e0e0e;display:flex;align-items:center;justify-content:center;font:800 13px Sora,sans-serif;overflow:hidden;flex-shrink:0}' +
     '.mcu-av img{width:100%;height:100%;object-fit:cover}' +
-    '.mcu-menu{display:none;position:absolute;top:calc(100% + 8px);right:0;min-width:190px;background:var(--surface,#0e0e0e);border:1px solid var(--border,#232323);border-radius:14px;padding:6px;z-index:60;box-shadow:0 20px 40px rgba(0,0,0,.5)}' +
+    '.mcu-menu{display:none;position:absolute;top:calc(100% + 8px);right:0;min-width:190px;background:var(--surface,#151127);border:1px solid var(--border,#2A2346);border-radius:14px;padding:6px;z-index:60;box-shadow:0 20px 40px rgba(0,0,0,.5)}' +
     '.mcu-menu.show{display:block}' +
     '.mcu-menu a,.mcu-menu button{display:block;width:100%;text-align:left;background:none;border:none;color:var(--text,#f2f2f2);font:500 13.5px Inter,sans-serif;padding:10px 12px;border-radius:9px;text-decoration:none;cursor:pointer}' +
-    '.mcu-menu a:hover,.mcu-menu button:hover{background:var(--surface-2,#141414);color:var(--accent,#C6E000)}' +
-    '.mcu-menu small{display:block;color:var(--text-faint,#5f5f5f);font-size:11.5px;padding:6px 12px 8px;border-bottom:1px solid var(--border,#232323);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
+    '.mcu-menu a:hover,.mcu-menu button:hover{background:var(--surface-2,#1D1834);color:var(--accent,#C6E000)}' +
+    '.mcu-menu small{display:block;color:var(--text-faint,#5f5f5f);font-size:11.5px;padding:6px 12px 8px;border-bottom:1px solid var(--border,#2A2346);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
     '.mcu-fondo{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;z-index:200;padding:16px}' +
     '.mcu-fondo.show{display:flex}' +
-    '.mcu-caja{background:var(--surface,#0e0e0e);border:1px solid var(--border,#232323);border-radius:22px;padding:28px 24px;width:100%;max-width:380px;position:relative;color:var(--text,#f2f2f2);font-family:Inter,sans-serif}' +
+    '.mcu-caja{background:var(--surface,#151127);border:1px solid var(--border,#2A2346);border-radius:22px;padding:28px 24px;width:100%;max-width:380px;position:relative;color:var(--text,#f2f2f2);font-family:Inter,sans-serif}' +
     '.mcu-caja h3{font:800 21px Sora,sans-serif;margin:0 0 6px}' +
     '.mcu-caja p.sub{color:var(--text-dim,#9a9a9a);font-size:13px;line-height:1.55;margin:0 0 20px}' +
     '.mcu-x{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--text-dim,#9a9a9a);font-size:22px;cursor:pointer;line-height:1}' +
@@ -219,8 +219,8 @@
     '.mcu-google:hover{background:#ececec}' +
     '.mcu-google svg{width:18px;height:18px}' +
     '.mcu-o{display:flex;align-items:center;gap:10px;color:var(--text-faint,#5f5f5f);font-size:12px;margin:18px 0}' +
-    '.mcu-o:before,.mcu-o:after{content:"";flex:1;height:1px;background:var(--border,#232323)}' +
-    '.mcu-caja input{width:100%;box-sizing:border-box;background:var(--surface-2,#141414);border:1px solid var(--border,#232323);border-radius:12px;padding:12px;color:var(--text,#f2f2f2);font:500 14px Inter,sans-serif;margin-bottom:10px}' +
+    '.mcu-o:before,.mcu-o:after{content:"";flex:1;height:1px;background:var(--border,#2A2346)}' +
+    '.mcu-caja input{width:100%;box-sizing:border-box;background:var(--surface-2,#1D1834);border:1px solid var(--border,#2A2346);border-radius:12px;padding:12px;color:var(--text,#f2f2f2);font:500 14px Inter,sans-serif;margin-bottom:10px}' +
     '.mcu-caja input:focus{outline:none;border-color:var(--accent,#C6E000)}' +
     '.mcu-enviar{width:100%;background:var(--accent,#C6E000);color:#0e0e0e;border:none;border-radius:12px;padding:12px;font:700 14px Sora,sans-serif;cursor:pointer}' +
     '.mcu-enviar:disabled,.mcu-google:disabled{opacity:.6;cursor:default}' +
@@ -230,12 +230,12 @@
     '.mcu-msg.error{background:rgba(224,60,60,.08);color:#ff8a8a}' +
     '.mcu-legal{color:var(--text-faint,#5f5f5f);font-size:11px;line-height:1.5;margin-top:16px;text-align:center}' +
     // Estilo grueso: borde inferior que se hunde al tocarlo
-    '.mcu-chip{border:2px solid #2e2e2e;border-bottom-width:4px;border-radius:16px;background:#141414;padding:4px 18px 4px 4px;font-family:Nunito,Inter,sans-serif;font-weight:800;font-size:14.5px;transition:transform .08s ease;-webkit-tap-highlight-color:transparent}' +
+    '.mcu-chip{border:2px solid #322B52;border-bottom-width:4px;border-radius:16px;background:#1D1834;padding:4px 18px 4px 4px;font-family:Nunito,Inter,sans-serif;font-weight:800;font-size:14.5px;transition:transform .08s ease;-webkit-tap-highlight-color:transparent}' +
     '.mcu-chip:active{transform:translateY(2px);border-bottom-width:2px;margin-bottom:2px}' +
     '.mcu-av{width:32px;height:32px;font-family:Nunito,Sora,sans-serif;font-weight:900}' +
     '.mcu-btn{border:2px solid var(--accent,#C6E000);border-radius:14px;box-shadow:0 4px 0 #8fa300;font-family:Nunito,Sora,sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:.5px;transition:transform .08s ease,box-shadow .08s ease;margin-bottom:4px}' +
     '.mcu-btn:active{transform:translateY(4px);box-shadow:0 0 0 transparent}' +
-    '.mcu-menu{border:2px solid #2e2e2e;border-bottom-width:5px;border-radius:16px;padding:8px}' +
+    '.mcu-menu{border:2px solid #322B52;border-bottom-width:5px;border-radius:16px;padding:8px}' +
     '.mcu-menu a,.mcu-menu button{font-family:Nunito,Inter,sans-serif;font-weight:800;font-size:14.5px;border-radius:11px}' +
     '.mcu-menu .mcu-tuto{color:var(--accent,#C6E000);white-space:nowrap}' +
     '.mcu-menu [hidden]{display:none}';

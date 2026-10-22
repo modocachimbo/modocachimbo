@@ -20,13 +20,13 @@ const TMP_MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'set', 
 (function estilosTematicas() {
   const st = document.createElement('style');
   st.textContent = `
-  .tmp-estado { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 16px; border: 2px solid #262626; background: var(--surface); margin-bottom: 18px; font: 800 14px/1.4 Nunito, sans-serif; }
+  .tmp-estado { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 16px; border: 2px solid #2C2549; background: var(--surface); margin-bottom: 18px; font: 800 14px/1.4 Nunito, sans-serif; }
   .tmp-estado i { flex-shrink: 0; width: 12px; height: 12px; border-radius: 50%; background: #5f5f5f; }
   .tmp-estado.on { border-color: rgba(255,138,31,.5); } .tmp-estado.on i { background: #FF8A1F; box-shadow: 0 0 12px #FF8A1F; }
   .tmp-estado.prog { border-color: rgba(28,176,246,.45); } .tmp-estado.prog i { background: #1CB0F6; }
   .tmp-estado small { display: block; font-weight: 700; color: var(--text-dim); font-size: 12.5px; }
   .tmp-temas { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
-  .tmp-tema { text-align: left; padding: 0; border-radius: 18px; border: 2px solid #2a2a2a; border-bottom-width: 5px; background: var(--surface); color: var(--text); cursor: pointer; overflow: hidden; font-family: Nunito, sans-serif; }
+  .tmp-tema { text-align: left; padding: 0; border-radius: 18px; border: 2px solid #2F284E; border-bottom-width: 5px; background: var(--surface); color: var(--text); cursor: pointer; overflow: hidden; font-family: Nunito, sans-serif; }
   .tmp-tema:disabled { cursor: default; opacity: .5; }
   .tmp-tema.on { border-color: var(--c); box-shadow: 0 0 0 1px var(--c), 0 8px 26px -12px var(--c); }
   .tmp-tema .vista { position: relative; display: block; height: 84px; }

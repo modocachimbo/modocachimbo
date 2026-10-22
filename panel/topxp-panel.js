@@ -12,7 +12,7 @@ const TXP = { dia: null }; // un día de la semana que se ve (null = esta semana
   .txp-pts { display: inline-flex; align-items: center; gap: 6px; font: 900 15px Nunito, 'Sora', sans-serif; color: #FFC800; }
   .txp-pts svg { width: 18px; height: 18px; }
   .txp-res { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
-  .txp-res div { border: 2px solid #262626; border-bottom-width: 4px; border-radius: 14px; padding: 10px 14px; background: var(--surface); font-size: 12.5px; color: var(--text-dim); }
+  .txp-res div { border: 2px solid #2C2549; border-bottom-width: 4px; border-radius: 14px; padding: 10px 14px; background: var(--surface); font-size: 12.5px; color: var(--text-dim); }
   .txp-rgo { display: inline-flex; align-items: center; gap: 8px; font: 900 13.5px Nunito, sans-serif; white-space: nowrap; }
   .txp-rgo .mc-rgo-mini { width: 30px; }
   .txp-rgo.sin { color: var(--text-faint); }

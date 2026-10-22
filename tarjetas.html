@@ -18,9 +18,9 @@
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,600;1,700;1,800;1,900;1,1000&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #050505; --surface: #0e0e0e; --surface-2: #141414;
-    --border: #232323; --accent: #C6E000; --accent-soft: rgba(198,224,0,0.1);
-    --text: #f2f2f2; --text-dim: #9a9a9a; --text-faint: #5f5f5f;
+    --bg: #0B0818; --surface: #151127; --surface-2: #1D1834;
+    --border: #2A2346; --accent: #C6E000; --accent-soft: rgba(198,224,0,0.1);
+    --text: #EEEAF7; --text-dim: #A99FC8; --text-faint: #6F6690;
     --red: #E03C3C; --orange: #FF9600;
   }
   body { min-height: 100vh; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 24px 16px 48px; }
@@ -41,7 +41,7 @@
   .paso-ttl { font-size: 12px; font-weight: 700; color: #cfcfcf; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
   .paso-ttl .n { width: 20px; height: 20px; border-radius: 6px; background: var(--accent-soft); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; font: 800 11px Sora, sans-serif; }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip { border: 2px solid #2e2e2e; border-bottom-width: 4px; background: #161616; color: #e6e6e6; border-radius: 14px; padding: 9px 16px; font: 800 14px Nunito, 'Inter', sans-serif; cursor: pointer; transition: transform .08s ease; }
+  .chip { border: 2px solid #322B52; border-bottom-width: 4px; background: #1F1936; color: #e6e6e6; border-radius: 14px; padding: 9px 16px; font: 800 14px Nunito, 'Inter', sans-serif; cursor: pointer; transition: transform .08s ease; }
   .chip:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
   .chip small { color: var(--text-faint); font-weight: 500; margin-left: 4px; }
   .chip.on { background: var(--accent); border-color: #8fa300; color: #2b3300; }
@@ -58,7 +58,7 @@
 
   /* Botones gruesos estilo Duolingo: se hunden al tocarlos */
   .btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 9px; padding: 15px 16px; border-radius: 16px;
-    border: 2px solid #2e2e2e; background: #1a1a1a; color: #e6e6e6; box-shadow: 0 5px 0 #2e2e2e;
+    border: 2px solid #322B52; background: #221C3B; color: #e6e6e6; box-shadow: 0 5px 0 #322B52;
     font: 900 15px Nunito, 'Inter', sans-serif; text-transform: uppercase; letter-spacing: .7px; cursor: pointer;
     transition: transform .08s ease, box-shadow .08s ease; -webkit-tap-highlight-color: transparent; }
   .btn .ico { width: 19px; height: 19px; }
@@ -70,13 +70,13 @@
 
   /* Juego */
   .barra { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
-  .track { flex: 1; height: 8px; background: #161616; border-radius: 100px; overflow: hidden; position: relative; }
+  .track { flex: 1; height: 8px; background: #1F1936; border-radius: 100px; overflow: hidden; position: relative; }
   .fill { height: 100%; width: 0; border-radius: 100px; transition: width .5s cubic-bezier(.34,1.56,.64,1);
     background: linear-gradient(90deg, #9fbf00, var(--accent) 60%, #e9ff6a); box-shadow: 0 0 14px rgba(198,224,0,.55); position: relative; overflow: hidden; }
   .fill::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent); transform: translateX(-100%); animation: brillo 2.4s ease-in-out infinite; }
   @keyframes brillo { 60%, 100% { transform: translateX(100%); } }
   .cuenta { font: 800 13px Sora, sans-serif; color: #e6e6e6; font-variant-numeric: tabular-nums; }
-  .sonido { flex: none; width: 34px; height: 34px; border-radius: 10px; border: 2px solid #2a2a2a; border-bottom-width: 4px; background: #161616; color: #e6e6e6; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
+  .sonido { flex: none; width: 34px; height: 34px; border-radius: 10px; border: 2px solid #2F284E; border-bottom-width: 4px; background: #1F1936; color: #e6e6e6; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
   .sonido:active { transform: translateY(2px); border-bottom-width: 2px; }
   .sonido .ico { width: 18px; height: 18px; }
   .sonido.mudo { color: #6b6b6b; }
@@ -89,7 +89,7 @@
 
   .escena { position: relative; perspective: 1200px; margin-top: 20px; padding-bottom: 34px; }
   /* Mazo: las tarjetas que faltan, asomando detrás */
-  .mazo { position: absolute; left: 0; right: 0; top: 0; bottom: 34px; border-radius: 28px; background: linear-gradient(160deg, #1c1d17, #111); border: 1px solid #2c2d25; transition: transform .45s ease, opacity .45s ease; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+  .mazo { position: absolute; left: 0; right: 0; top: 0; bottom: 34px; border-radius: 28px; background: linear-gradient(160deg, #251F3F, #19142E); border: 1px solid #2c2d25; transition: transform .45s ease, opacity .45s ease; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
   .mazo.m1 { transform: translateY(12px) scale(.95) rotate(-1.5deg); opacity: .95; }
   .mazo.m2 { transform: translateY(24px) scale(.9) rotate(2deg); opacity: .6; }
   /* Sombra en el piso: se encoge cuando la tarjeta se levanta al girar */
@@ -241,7 +241,7 @@
   [hidden] { display: none !important; }
 
   /* Casita con estilo grueso: se hunde al tocarla */
-  .home-btn { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 12px; background: #141414; width: 36px; height: 36px; color: #e6e6e6;
+  .home-btn { border: 2px solid #322B52; border-bottom-width: 4px; border-radius: 12px; background: #1D1834; width: 36px; height: 36px; color: #e6e6e6;
     transition: transform .08s ease, border-color .15s ease, color .15s ease; -webkit-tap-highlight-color: transparent; }
   .home-btn:hover { border-color: var(--accent, #C6E000); border-bottom-color: #8fa300; color: var(--accent, #C6E000); }
   .home-btn:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }

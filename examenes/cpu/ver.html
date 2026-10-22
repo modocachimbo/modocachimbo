@@ -19,9 +19,9 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #050505; --surface: #0e0e0e; --surface-2: #141414;
-    --border: #232323; --accent: #C6E000; --accent-soft: rgba(198,224,0,0.1);
-    --text: #f2f2f2; --text-dim: #9a9a9a; --text-faint: #5f5f5f;
+    --bg: #0B0818; --surface: #151127; --surface-2: #1D1834;
+    --border: #2A2346; --accent: #C6E000; --accent-soft: rgba(198,224,0,0.1);
+    --text: #EEEAF7; --text-dim: #A99FC8; --text-faint: #6F6690;
   }
 
   body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; padding-bottom: 60px; }
@@ -30,9 +30,9 @@
 
   header.top {
     position: sticky; top: 0; z-index: 5;
-    background: rgba(5,5,5,0.9); backdrop-filter: blur(6px);
+    background: rgba(11,8,24,0.9); backdrop-filter: blur(6px);
     display: flex; align-items: center; justify-content: space-between;
-    padding: 20px 0; border-bottom: 1px solid #161616;
+    padding: 20px 0; border-bottom: 1px solid #1F1936;
   }
   .back { display: flex; align-items: center; gap: 8px; color: var(--text-dim); text-decoration: none; font-size: 14px; font-weight: 500; }
   .home-btn {
@@ -104,7 +104,7 @@
     display: flex; align-items: center; gap: 12px;
     padding: 10px 4px;
     font-size: 13.5px; color: var(--text-dim);
-    border-top: 1px solid #1a1a1a;
+    border-top: 1px solid #221C3B;
   }
   .opt-row:first-of-type { border-top: none; }
   .opt-row .letter {
@@ -179,26 +179,26 @@
   .q-graphic { margin: 12px 0; display: flex; justify-content: center; background: #fff; border-radius: 12px; padding: 12px; }
   .q-graphic svg { max-width: 100%; height: auto; display: block; }
   /* Estilo grueso tipo Duolingo con sombrita verde */
-  .quiz-cta { border: 2px solid #2e2e2e; border-bottom-width: 5px; border-radius: 20px; background: #101010; }
+  .quiz-cta { border: 2px solid #322B52; border-bottom-width: 5px; border-radius: 20px; background: #18132B; }
   .quiz-cta span { font: 700 14px 'Nunito', 'Inter', sans-serif; }
   .quiz-cta a { border: 2px solid var(--accent); border-radius: 14px; padding: 11px 18px; color: #2b3300; box-shadow: 0 5px 0 #8fa300; margin-bottom: 5px;
     font: 900 14px 'Nunito', 'Inter', sans-serif; text-transform: uppercase; letter-spacing: .6px;
     transition: transform .08s ease, box-shadow .08s ease; -webkit-tap-highlight-color: transparent; }
-  .quiz-cta a.alt { background: #161616; color: var(--accent); border: 2px solid #3a4a00; box-shadow: 0 5px 0 #3a4a00; }
+  .quiz-cta a.alt { background: #1F1936; color: var(--accent); border: 2px solid #3a4a00; box-shadow: 0 5px 0 #3a4a00; }
   .quiz-cta a:active { transform: translateY(5px); box-shadow: 0 0 0 transparent; }
-  .qcard { border: 2px solid #262626; border-bottom-width: 5px; border-radius: 22px; background: #0f0f0f; }
+  .qcard { border: 2px solid #2C2549; border-bottom-width: 5px; border-radius: 22px; background: #161229; }
   .qcard .qnum { width: 34px; height: 34px; border-radius: 11px; border: 2px solid rgba(198,224,0,.35); font: 900 15px 'Nunito', 'Sora', sans-serif; }
   .qcard .qtext { font: 800 17px/1.55 'Nunito', 'Inter', sans-serif; color: #f2f2f2; }
   .qcard .qtext .katex { font-size: 1.07em; }
-  .opt-row, .opt-row:first-of-type { border: 2px solid #2a2a2a; border-bottom-width: 4px; border-radius: 14px; background: #151515; padding: 9px 12px; margin-bottom: 8px;
+  .opt-row, .opt-row:first-of-type { border: 2px solid #2F284E; border-bottom-width: 4px; border-radius: 14px; background: #1E1935; padding: 9px 12px; margin-bottom: 8px;
     font: 800 15px 'Nunito', 'Inter', sans-serif; color: #dcdcdc; }
   .mcq-cortas .opt-row { margin-bottom: 0; }
-  .opt-row .letter { width: 26px; height: 26px; border-radius: 8px; border: 2px solid #3a3a3a; background: transparent; font: 900 12px 'Nunito', sans-serif; }
+  .opt-row .letter { width: 26px; height: 26px; border-radius: 8px; border: 2px solid #3A3360; background: transparent; font: 900 12px 'Nunito', sans-serif; }
   .opt-row.correct { background: rgba(88,204,2,.1); border-color: #58CC02; border-bottom-color: #3f9a00; color: #E3FFD0; font-weight: 900; box-shadow: 0 0 18px rgba(88,204,2,.08); }
   .opt-row.correct .letter { border-color: #58CC02; }
 
   /* Casita con estilo grueso: se hunde al tocarla */
-  .home-btn { border: 2px solid #2e2e2e; border-bottom-width: 4px; border-radius: 12px; background: #141414; width: 36px; height: 36px; color: #e6e6e6;
+  .home-btn { border: 2px solid #322B52; border-bottom-width: 4px; border-radius: 12px; background: #1D1834; width: 36px; height: 36px; color: #e6e6e6;
     transition: transform .08s ease, border-color .15s ease, color .15s ease; -webkit-tap-highlight-color: transparent; }
   .home-btn:hover { border-color: var(--accent, #C6E000); border-bottom-color: #8fa300; color: var(--accent, #C6E000); }
   .home-btn:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }

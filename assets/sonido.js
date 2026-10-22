@@ -232,7 +232,7 @@
     }).observe(document.documentElement, { childList: true, subtree: true });
   }
   var css = document.createElement('style');
-  css.textContent = '.mc-son{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;margin-left:10px;border-radius:9px;border:2px solid #2e2e2e;border-bottom-width:3px;background:#161616;color:#e6e6e6;cursor:pointer;padding:0;vertical-align:middle}' +
+  css.textContent = '.mc-son{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;margin-left:10px;border-radius:9px;border:2px solid #322B52;border-bottom-width:3px;background:#1F1936;color:#e6e6e6;cursor:pointer;padding:0;vertical-align:middle}' +
     '.mc-son:active{transform:translateY(1px);border-bottom-width:2px}.mc-son svg{width:16px;height:16px}.mc-son.mudo{color:#6b6b6b}';
   (document.head || document.documentElement).appendChild(css);
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', pintar); else pintar();

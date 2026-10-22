@@ -31,7 +31,7 @@
     if (document.getElementById('mcc-css')) return;
     var st = document.createElement('style'); st.id = 'mcc-css';
     st.textContent = '.course.disabled{opacity:.5}.course.disabled .icon{color:var(--text-faint,#5f5f5f)}.course.disabled h3{color:var(--text-faint,#5f5f5f)}' +
-      '.course.disabled .rule{background:var(--text-faint,#5f5f5f)}.course.disabled .btn{background:var(--surface-2,#141414);color:var(--text-faint,#5f5f5f);pointer-events:none;cursor:default}' +
+      '.course.disabled .rule{background:var(--text-faint,#5f5f5f)}.course.disabled .btn{background:var(--surface-2,#1D1834);color:var(--text-faint,#5f5f5f);pointer-events:none;cursor:default}' +
       '.course .icon img{width:100%;height:100%;object-fit:contain;display:block}';
     document.head.appendChild(st);
   }
