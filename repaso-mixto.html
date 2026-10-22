@@ -15,7 +15,7 @@
 <script src="assets/app.js" defer></script>
 <title>Repaso mixto · Modo Cachimbo</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,600;1,700;1,800;1,900;1,1000&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;1,800;1,900&family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,600;1,700;1,800;1,900;1,1000&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
@@ -251,7 +251,7 @@
   @media (min-width: 900px) { .feedback { margin: 14px 28px 0; } }
 
   /* Letra gruesita en toda la web (Nunito); las fórmulas y el código conservan su letra */
-  body, body :not(.katex):not(.katex *):not(code):not(pre):not(kbd):not(samp):not(.formato):not(.ta.big):not(.cdnuevos code) { font-family: 'Nunito', 'Inter', system-ui, sans-serif !important; }
+  body, body :not(.katex):not(.katex *):not(code):not(pre):not(kbd):not(samp):not(.formato):not(.ta.big):not(.cdnuevos code):not(.bc):not(.bc *) { font-family: 'Nunito', 'Inter', system-ui, sans-serif !important; }
   body { font-weight: 600; }
 
   /* ---------- Repaso mixto: elegir cursos, temas y cantidad (color del área) ---------- */
@@ -313,6 +313,21 @@
 <script src="assets/pregunta.js"></script>
 <script src="assets/sonido.js"></script>
 <script src="assets/auth.js"></script>
+<script src="assets/buho/buho-datos.js"></script>
+<script src="assets/buho/buho-vivo.js"></script>
+<script src="assets/buho/escena.js"></script>
+<link rel="stylesheet" href="assets/buho/buho.css">
+<link rel="stylesheet" href="assets/buho/escena.css">
+<style>
+  /* Inicio con el búho disfrazado del área y título Barlow cursiva (assets/buho/escena.css) */
+  .elegir .rp-hero { margin: 6px auto 4px; }
+  .elegir .el-eb, .elegir .el-tit { text-align: center; }
+  .elegir .el-eb { font: 800 14px/1 'Barlow Condensed', sans-serif; letter-spacing: .08em; }
+  .elegir .el-tit { font: italic 900 34px/1 'Barlow Condensed', sans-serif; text-transform: uppercase; color: #fff; }
+  .elegir .el-tit span { color: var(--ac); }
+  .elegir .el-sub { text-align: center; }
+  @media (min-width: 640px) { .elegir .el-tit { font-size: 42px; } }
+</style>
 <style id="mc-claro">
 /* Modo claro de esta página (assets/claro.css trae lo común) */
 html[data-modo="claro"] .card { border: 1px solid #DCD8E8 !important; }
@@ -356,6 +371,7 @@ html[data-modo="claro"] .letter { color: #1A1626 !important; }
 html[data-modo="claro"] .btn { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; color: #1A1626 !important; }
 html[data-modo="claro"] #lockInput { border: 2px solid #DCD8E8 !important; }
 html[data-modo="claro"] .el-tit { color: #1A1626 !important; }
+html[data-modo="claro"] .el-tit span { color: var(--ac-d) !important; }
 html[data-modo="claro"] .el-sub { color: #6B6485 !important; }
 html[data-modo="claro"] .cur { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; color: #1A1626 !important; }
 html[data-modo="claro"] .cur.bloq i svg { stroke: #6B6485 !important; }
@@ -377,8 +393,12 @@ html[data-modo="claro"] .badge .curso { color: #1A1626 !important; }
     </div>
 
     <section class="elegir show" id="elegir">
-      <div class="el-eb">Repaso mixto</div>
-      <h1 class="el-tit" id="elTit">Mezcla tus cursos</h1>
+      <div class="rp-hero">
+        <div class="rp-buho"><div class="escena" id="rpEscena"></div></div>
+        <div class="rp-globo" id="rpGlobo"></div>
+      </div>
+      <div class="el-eb bc">Repaso mixto</div>
+      <h1 class="el-tit bc" id="elTit">Mezcla tus cursos</h1>
       <p class="el-sub">Preguntas de los cursos y temas que elijas, todas mezcladas. Cada pregunta tiene la misma probabilidad de salir.</p>
 
       <div class="paso">
@@ -413,9 +433,10 @@ html[data-modo="claro"] .badge .curso { color: #1A1626 !important; }
     <div id="quizBody" style="display:none;"></div>
 
     <div class="endscreen" id="endScreen">
-      <h2>Ronda terminada</h2>
+      <div class="rp-buho"><div class="escena" id="finEscena"></div></div>
+      <h2 class="bc">Ronda terminada</h2>
       <p id="endMessage">Así te fue en esta práctica</p>
-      <div class="score" id="finalScore">0 pts</div>
+      <div class="score bc" id="finalScore">0 pts</div>
       <button class="btn primary" id="btnRestart" style="width:100%;">Otra ronda con lo mismo</button>
       <button class="btn" id="btnCambiar" style="width:100%;margin-top:12px">Cambiar cursos o temas</button>
     </div>
@@ -487,7 +508,17 @@ html[data-modo="claro"] .badge .curso { color: #1A1626 !important; }
   document.documentElement.style.setProperty('--ac-rgb', AREA.c[1]);
   document.documentElement.style.setProperty('--ac-d', AREA.c[2]);
   $('volver').href = 'areas/' + AREA_ID + '.html'; $('volverTxt').textContent = AREA.nom;
-  $('elTit').textContent = 'Mezcla tus cursos de ' + AREA.nom;
+  $('elTit').innerHTML = 'Mezcla tus cursos de <span>' + esc(AREA.nom) + '</span>';
+  // Búho disfrazado del área con frases de ánimo (assets/buho/escena.js)
+  if (window.MCEscena) MCEscena.inicio({ escena: $('rpEscena'), globo: $('rpGlobo'), area: AREA_ID, frases: [
+    ['saludando', 'feliz', '¿Listo para repasar <b>' + esc(AREA.nom) + '</b>? ¡Tú puedes!'],
+    ['pensativo', 'pensativo', 'Elige tus cursos y temas: <b>tú armas</b> tu propio repaso.'],
+    ['logro', 'asombrado', 'Mezclar cursos es <b>como el examen</b> de verdad. ¡A practicar!'],
+    ['estudiando', 'pensativo', 'Si fallas, no pasa nada: <b>equivocarse aquí</b> es aprender para el examen.'],
+    ['caminando', 'feliz', 'Tu vacante se construye <b>un repaso a la vez</b>. ¡A darle!'],
+    ['sorprendido', 'asombrado', '¡Wow! Solo por estar aquí ya vas <b>un paso adelante</b>.'],
+    ['vivo', 'feliz', '¡Yo creo en ti! <b>Vamos juntos</b> pregunta por pregunta.']
+  ] });
   document.title = 'Repaso mixto · ' + AREA.nom + ' · Modo Cachimbo';
 
   const NOMBRE = {}, MAN = {};          // MAN[fuente][curso] = manifest
@@ -770,6 +801,9 @@ html[data-modo="claro"] .badge .curso { color: #1A1626 !important; }
     quizHeader.style.display = 'none'; quizBody.style.display = 'none';
     endScreen.classList.add('show');
     finalScore.textContent = `${score} pts`;
+    // El búho reacciona al resultado (assets/buho/escena.js)
+    const aciertos = answers.filter((a, i) => activeQuestions[i] && a === activeQuestions[i].correct).length;
+    if (window.MCEscena) MCEscena.fin($('finEscena'), AREA_ID, { vidas: lives, pct: aciertos / Math.max(1, answers.length) });
     endMessage.textContent = lives <= 0 ? 'Se acabaron tus vidas. ¡Sigue practicando!' : 'Así te fue en esta práctica';
     if (showEnd.ronda === activeQuestions) return;
     showEnd.ronda = activeQuestions;
