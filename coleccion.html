@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script src="assets/guardia.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0B0818">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="assets/app/icono-180.png">
+<meta name="apple-mobile-web-app-title" content="Modo Cachimbo">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<script src="assets/app.js" defer></script>
+<title>Mi colección · Modo Cachimbo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,800;1,800;1,900&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,900&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0B0818; --surface: #151127; --surface-2: #1D1834; --border: #2A2346; --borde: #2C2549;
+    --accent: #C6E000; --text: #EEEAF7; --text-dim: #A99FC8; --text-faint: #6F6690;
+    --display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Nunito', system-ui, sans-serif; font-weight: 700; min-height: 100vh; }
+  [hidden] { display: none !important; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px 60px; }
+  @media (min-width: 900px) { .wrap { padding: 0 32px 60px; } }
+  header.top { display: flex; align-items: center; justify-content: space-between; padding: 24px 0 18px; gap: 14px; flex-wrap: wrap; }
+  .logo img { height: 34px; width: auto; display: block; }
+  @media (max-width: 520px) { .logo img { height: 28px; } }
+
+  .panel { background: var(--surface); border: 2px solid var(--borde); border-bottom-width: 5px; border-radius: 22px; padding: 22px; }
+  .vacio { text-align: center; padding: 50px 24px; }
+  .vacio h1 { font: italic 900 30px/1 var(--display); text-transform: uppercase; margin-bottom: 10px; }
+  .vacio p { color: var(--text-dim); font-size: 14px; line-height: 1.6; max-width: 420px; margin: 0 auto 20px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: var(--accent); color: #1a1f00; border: 2px solid #8fa300; border-bottom-width: 5px; border-radius: 14px; padding: 12px 22px; font: 1000 14px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .5px; cursor: pointer; text-decoration: none; }
+  .btn:active { transform: translateY(3px); border-bottom-width: 2px; }
+  .btn.gris { background: var(--surface-2); color: var(--text-dim); border-color: #352E58; }
+
+  /* Cabecera */
+  .cab { display: flex; align-items: center; gap: 12px; }
+  .cab h1 { font: italic 900 40px/1 var(--display); text-transform: uppercase; letter-spacing: .3px; }
+  .cuenta { margin-left: auto; background: var(--surface); border: 2px solid var(--borde); border-radius: 14px; padding: 7px 13px; font-weight: 1000; color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .barra { height: 8px; border-radius: 9px; background: var(--surface-2); margin: 12px 0 18px; overflow: hidden; }
+  .barra i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 9px; transition: width .8s cubic-bezier(.2,.9,.3,1); }
+
+  .vault { display: grid; gap: 16px; }
+  .vault > div { min-width: 0; }
+  @media (min-width: 900px) { .vault { grid-template-columns: 330px minmax(0, 1fr); align-items: start; } .puesto { position: sticky; top: 16px; } }
+
+  /* Lo que llevas puesto */
+  .puesto { position: relative; overflow: hidden; text-align: center; padding: 16px; border-radius: 22px; border: 2px solid #5a3b10; border-bottom-width: 5px;
+    background: radial-gradient(circle at 50% 34%, rgba(255,150,0,.24), transparent 62%), var(--surface); animation: entra .5s ease-out both; }
+  .puesto .k { font-size: 12px; color: var(--text-dim); font-weight: 1000; text-transform: uppercase; letter-spacing: 1.5px; }
+  .p-buho { width: 190px; height: 190px; margin: 4px auto 0; display: grid; place-items: center; animation: flota 3.2s ease-in-out infinite; }
+  .p-buho img, .p-buho svg { width: 100%; height: 100%; object-fit: contain; }
+  .p-buho.pop { animation: pop .5s cubic-bezier(.2,1.6,.4,1); }
+  .p-nom { font: italic 900 28px/1 var(--display); text-transform: uppercase; margin-top: 2px; }
+  .p-tit { display: inline-flex; gap: 6px; align-items: center; margin-top: 8px; font-size: 13px; font-weight: 1000; color: var(--c, #FFC800); background: rgba(var(--cr, '255,200,0'), .1); border: 1.5px solid rgba(var(--cr), .5); border-radius: 999px; padding: 4px 11px; }
+  .slots { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+  .slot { background: var(--surface-2); border: 2px solid var(--borde); border-bottom-width: 4px; border-radius: 14px; padding: 8px 4px 7px; font-size: 11px; color: var(--text-dim); cursor: pointer; font-family: inherit; font-weight: 800; min-width: 0; }
+  .slot .v { height: 34px; display: grid; place-items: center; margin-bottom: 3px; }
+  .slot .v > * { max-height: 34px; }
+  .slot .v img, .slot .v svg { width: 34px; height: 34px; object-fit: contain; display: block; }
+  .slot b { display: block; color: var(--text); font-size: 11.5px; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .slot .mini-tema { width: 38px; height: 26px; border-radius: 8px; }
+  .slot .mini-marco { width: 30px; height: 30px; border-radius: 10px; padding: 3px; }
+  .slot .mini-marco i { display: block; width: 100%; height: 100%; border-radius: 7px; background: var(--surface-2); }
+  .vit { display: flex; justify-content: center; gap: 6px; margin-top: 12px; }
+  .vit .mcc-pin { width: 44px; border-width: 3px; }
+  .vit .mcc-pin span { font-size: 22px; }
+  .vit .hueco { width: 44px; height: 44px; border-radius: 50%; border: 2px dashed #352E58; }
+
+  /* Pestañas y filtros */
+  .ctabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+  .ctabs::-webkit-scrollbar { display: none; }
+  .ctabs button { flex: none; padding: 9px 14px; border-radius: 14px; background: var(--surface); border: 2px solid var(--borde); border-bottom-width: 4px; color: var(--text-dim); font: 900 14.5px Nunito, sans-serif; cursor: pointer; position: relative; }
+  .ctabs button small { opacity: .7; margin-left: 4px; font-weight: 900; }
+  .ctabs button.on { background: var(--accent); color: #1a1f00; border-color: #8fa300; }
+  .ctabs button .pto { position: absolute; right: -2px; top: -2px; width: 11px; height: 11px; border-radius: 50%; background: #FF4B4B; box-shadow: 0 0 0 2px var(--bg); }
+  .filt { display: flex; gap: 6px; margin: 10px 0 12px; flex-wrap: wrap; }
+  .filt button { padding: 5px 12px; border-radius: 999px; border: 2px solid var(--borde); background: none; font: 900 12.5px Nunito, sans-serif; color: var(--text-dim); cursor: pointer; }
+  .filt button.on { border-color: #FF9600; color: #FF9600; }
+  .intro { color: var(--text-dim); font-size: 13px; margin: -4px 2px 12px; line-height: 1.5; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  @media (min-width: 560px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (min-width: 1100px) { .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .nada { grid-column: 1 / -1; text-align: center; color: var(--text-faint); padding: 30px 10px; font-weight: 800; }
+  .leyenda { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; font-size: 12px; color: var(--text-dim); }
+  .leyenda i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+  /* Rangos (vitrina de assets/rango.js) */
+  .rangos .mc-rgo-vit { margin-top: 0; }
+
+  /* Detalle de un objeto */
+  .hoja { position: fixed; inset: 0; z-index: 50; background: rgba(8,6,18,.7); display: flex; align-items: flex-end; justify-content: center; opacity: 0; transition: opacity .25s; }
+  .hoja.ver { opacity: 1; }
+  .hoja-c { position: relative; width: min(460px, 100%); background: radial-gradient(circle at 50% 30%, rgba(var(--c), .3), transparent 65%), var(--surface); border: 2.5px solid rgba(var(--c), .8); border-bottom: 0; border-radius: 26px 26px 0 0; padding: 18px 20px 26px; text-align: center; transform: translateY(40px); transition: transform .3s cubic-bezier(.2,1.2,.4,1); }
+  .hoja.ver .hoja-c { transform: none; }
+  @media (min-width: 700px) { .hoja { align-items: center; } .hoja-c { border-radius: 26px; border-bottom: 6px solid rgba(var(--c), .8); } }
+  .hoja-c .x { position: absolute; right: 12px; top: 12px; width: 36px; height: 36px; border-radius: 12px; border: 2px solid var(--borde); background: var(--surface-2); color: var(--text-dim); font-size: 18px; cursor: pointer; }
+  .hoja-c .dib { width: 180px; height: 180px; margin: 0 auto; display: grid; place-items: center; }
+  .hoja-c .dib .mcc-dib { width: 100%; height: 100%; }
+  .hoja-c .dib.lock { filter: grayscale(1) brightness(.45); }
+  .hoja-c .dib .mcc-titulo span { font-size: 18px; }
+  .hoja-c small { display: block; font-size: 12px; font-weight: 1000; letter-spacing: 1.6px; text-transform: uppercase; color: rgb(var(--c)); margin-top: 6px; }
+  .hoja-c h2 { font: italic 900 32px/1 var(--display); text-transform: uppercase; margin-top: 2px; }
+  .hoja-c p { color: var(--text-dim); font-size: 14px; line-height: 1.5; margin: 8px auto 0; max-width: 340px; }
+  .hoja-c .bar { height: 10px; border-radius: 9px; background: rgba(255,255,255,.08); margin: 12px auto 0; max-width: 260px; overflow: hidden; }
+  .hoja-c .bar i { display: block; height: 100%; background: rgb(var(--c)); border-radius: 9px; }
+  .hoja-c .acc { margin-top: 16px; display: flex; justify-content: center; gap: 8px; }
+  .hoja-c .estado { margin-top: 10px; font-size: 12.5px; color: #ff8a8a; min-height: 1em; }
+
+  .aviso { margin-top: 14px; font-size: 12.5px; color: var(--text-faint); text-align: center; line-height: 1.5; }
+  .volver { display: inline-block; margin-top: 26px; color: var(--text-dim); font-size: 13.5px; text-decoration: none; }
+  .volver:hover { color: var(--accent); }
+
+  @keyframes entra { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @keyframes flota { 50% { transform: translateY(-6px); } }
+  @keyframes pop { 0% { transform: scale(.6) rotate(-8deg); } 100% { transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .p-buho, .puesto { animation: none; } }
+</style>
+<script src="assets/mc-config.js"></script>
+<script src="assets/acceso.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/buho.js"></script>
+<script src="assets/rango.js"></script>
+<script src="assets/coleccion.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <a class="logo" href="index.html" aria-label="Modo Cachimbo · Inicio"><img src="assets/img/logo-modo-cachimbo-horizontal.svg" alt="Modo Cachimbo" width="160" height="34"></a>
+      <div data-mc-auth></div>
+    </header>
+
+    <div id="cargando" class="panel vacio"><p>Cargando…</p></div>
+    <div id="sinSesion" class="panel vacio" hidden>
+      <h1>Tu colección</h1>
+      <p>Ingresa para ver los búhos, temas de racha, marcos, títulos y pines que vas ganando.</p>
+      <button class="btn" type="button" id="btnIngresar">Ingresar</button>
+    </div>
+
+    <div id="conSesion" hidden>
+      <div class="cab"><h1>Mi colección</h1><span class="cuenta" id="cuenta">–</span></div>
+      <div class="barra"><i id="barra"></i></div>
+
+      <div class="vault">
+        <section class="puesto" id="puesto" aria-label="Lo que llevas puesto">
+          <span class="k">Lo que llevas puesto</span>
+          <div class="p-buho" id="pBuho"></div>
+          <div class="p-nom" id="pNom"></div>
+          <span class="p-tit" id="pTit"></span>
+          <div class="slots" id="slots"></div>
+          <div class="vit" id="pVit" aria-label="Mi vitrina de pines"></div>
+        </section>
+
+        <div>
+          <div class="ctabs" id="tabs" role="tablist"></div>
+          <div class="filt" id="filt">
+            <button type="button" class="on" data-f="todos">Todos</button>
+            <button type="button" data-f="tengo">Tengo</button>
+            <button type="button" data-f="falta">Me falta</button>
+          </div>
+          <p class="intro" id="intro"></p>
+          <div class="grid" id="grid"></div>
+          <div class="leyenda" id="leyenda"></div>
+          <p class="aviso" id="aviso" hidden>Lo que te pones se guarda en este equipo. Muy pronto quedará en tu cuenta.</p>
+        </div>
+      </div>
+    </div>
+
+    <a class="volver" href="perfil.html">← Volver a mi perfil</a>
+  </div>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var C = window.MCColeccion, R = C.rareza;
+  var TAB = (location.hash || '').slice(1) || 'buho', FIL = 'todos';
+  var INTRO = {
+    buho: 'El búho que te acompaña en tu perfil. Los disfraces de cada área también salen en sus cursos.',
+    racha: 'El color de tu cuadro de racha en el perfil. Cielo es el de siempre.',
+    marco: 'El borde de tu foto en el perfil.',
+    titulo: 'La frase que sale bajo tu nombre.',
+    pines: 'Elige hasta 3 pines para tu vitrina. Se ganan en los eventos.',
+    rangos: 'Cada lunes se guarda aquí el rango que alcanzaste en la semana. Toca uno para ver tus semanas.'
+  };
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+  function ver(cual) {
+    $('cargando').hidden = cual !== 'cargando';
+    $('sinSesion').hidden = cual !== 'sin';
+    $('conSesion').hidden = cual !== 'con';
+  }
+
+  /* ---------- Lo que llevas puesto ---------- */
+  function pintarPuesto(pop) {
+    var b = C.item(C.puesto('buho')), t = C.item(C.puesto('titulo')), tr = R[t.rareza];
+    var pb = $('pBuho');
+    pb.innerHTML = C.buho(b);
+    if (pop) { pb.classList.remove('pop'); void pb.offsetWidth; pb.classList.add('pop'); }
+    $('pNom').textContent = 'Búho ' + b.nom;
+    $('pNom').style.color = 'rgb(' + R[b.rareza].c + ')';
+    var pt = $('pTit'); pt.textContent = '★ ' + t.nom;
+    pt.style.setProperty('--cr', tr.c); pt.style.color = 'rgb(' + tr.c + ')';
+    var tema = C.tema(), marco = C.marco();
+    var slots = [
+      ['buho', b.nom, 'Búho', '<span style="width:34px;height:34px;display:block">' + C.buho(b) + '</span>'],
+      ['racha', C.item(C.puesto('racha')).nom, 'Racha', '<span class="mini-tema" style="display:block;background:linear-gradient(135deg,' + tema[0] + ',' + tema[1] + ')"></span>'],
+      ['marco', C.item(C.puesto('marco')).nom, 'Marco', '<span class="mini-marco" style="display:block;background:' + (marco || '#2A2346') + '"><i></i></span>'],
+      ['titulo', t.nom, 'Título', '<span style="font-size:22px;color:rgb(' + tr.c + ')">★</span>']
+    ];
+    $('slots').innerHTML = slots.map(function (s) {
+      return '<button type="button" class="slot" data-tab="' + s[0] + '"><span class="v">' + s[3] + '</span><b>' + esc(s[1]) + '</b>' + s[2] + '</button>';
+    }).join('');
+    var pines = C.puesto('pines'), h = '';
+    for (var i = 0; i < 3; i++) h += pines[i] ? C.pin(C.item(pines[i])) : '<span class="hueco" title="Espacio libre para un pin"></span>';
+    $('pVit').innerHTML = h;
+    var n = C.contar();
+    $('cuenta').textContent = n.tengo + ' / ' + n.total;
+    $('barra').style.width = Math.round(n.tengo / n.total * 100) + '%';
+  }
+  $('slots').addEventListener('click', function (e) { var b = e.target.closest('[data-tab]'); if (b) elegirTab(b.dataset.tab); });
+  $('pVit').addEventListener('click', function () { elegirTab('pines'); });
+
+  /* ---------- Pestañas ---------- */
+  function pintarTabs() {
+    var v = C.estado();
+    var tabs = C.espacios.map(function (e) {
+      var L = C.items(e.id), n = L.filter(function (x) { return C.tiene(x.id); }).length;
+      var nuevo = L.some(function (x) { return C.tiene(x.id) && C.nuevos().indexOf(x.id) >= 0; });
+      return '<button type="button" role="tab" data-tab="' + e.id + '" class="' + (TAB === e.id ? 'on' : '') + '" aria-selected="' + (TAB === e.id) + '">' + e.nom + '<small>' + n + '/' + L.length + '</small>' + (nuevo ? '<span class="pto"></span>' : '') + '</button>';
+    });
+    tabs.push('<button type="button" role="tab" data-tab="rangos" class="' + (TAB === 'rangos' ? 'on' : '') + '">Rangos' + (v.maxRango >= 0 ? '<small>' + (v.maxRango + 1) + '/5</small>' : '') + '</button>');
+    $('tabs').innerHTML = tabs.join('');
+  }
+  $('tabs').addEventListener('click', function (e) { var b = e.target.closest('[data-tab]'); if (b) elegirTab(b.dataset.tab); });
+  function elegirTab(t) {
+    TAB = t;
+    history.replaceState(null, '', '#' + t);
+    pintarTabs(); pintarGrid();
+    var b = $('tabs').querySelector('.on'); if (b && b.scrollIntoView) b.scrollIntoView({ block: 'nearest', inline: 'center' });
+    if (innerWidth < 900) $('tabs').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  $('filt').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-f]'); if (!b) return;
+    FIL = b.dataset.f;
+    Array.prototype.forEach.call($('filt').children, function (x) { x.classList.toggle('on', x === b); });
+    pintarGrid();
+  });
+
+  /* ---------- La grilla ---------- */
+  var rangosHtml = null;
+  function pintarGrid() {
+    $('intro').textContent = INTRO[TAB] || '';
+    $('filt').hidden = TAB === 'rangos';
+    var g = $('grid');
+    if (TAB === 'rangos') { pintarRangos(); return; }
+    g.className = 'grid';
+    var L = C.items(TAB).filter(function (x) { var ok = C.tiene(x.id); return FIL === 'todos' || (FIL === 'tengo' ? ok : !ok); });
+    g.innerHTML = L.length ? L.map(function (x, i) { return C.tarjeta(x, i); }).join('') : '<p class="nada">' + (FIL === 'tengo' ? 'Todavía no tienes nada aquí.' : '¡Ya tienes todo lo de esta pestaña!') + '</p>';
+    var usadas = {}; C.items(TAB).forEach(function (x) { usadas[x.rareza] = 1; });
+    $('leyenda').innerHTML = Object.keys(R).filter(function (k) { return usadas[k]; }).map(function (k) { return '<span><i style="background:rgb(' + R[k].c + ')"></i>' + R[k].nom + '</span>'; }).join('');
+  }
+  function pintarRangos() {
+    var g = $('grid'); g.className = 'rangos'; $('leyenda').innerHTML = '';
+    if (!window.MCRango) { g.innerHTML = '<p class="nada">No se pudo cargar tus rangos.</p>'; return; }
+    MCRango.css();
+    if (rangosHtml) { g.innerHTML = rangosHtml.html; return; }
+    g.innerHTML = '<p class="nada">Cargando tus rangos…</p>';
+    MCAuth.listo.then(function (c) {
+      return c.from('xp_semana').select('semana,xp').eq('usuario', MCAuth.usuario().id).order('semana', { ascending: false }).limit(60);
+    }).then(function (r) {
+      rangosHtml = MCRango.vitrina((r && r.data) || []);
+      rangosHtml.html = '<div class="mc-rgo-vit">' + rangosHtml.html + '</div>';
+      if (TAB === 'rangos') g.innerHTML = rangosHtml.html;
+    }).catch(function () { g.innerHTML = '<p class="nada">No se pudo cargar tus rangos.</p>'; });
+  }
+  $('grid').addEventListener('click', function (e) {
+    var b = e.target.closest('.mcc-it');
+    if (b) { abrir(b.dataset.id); return; }
+    var r = e.target.closest('button.mc-rgo-pz');
+    if (r && rangosHtml && MCRango.semanas) MCRango.semanas(+r.dataset.n, rangosHtml.semanas[+r.dataset.n]);
+  });
+
+  /* ---------- Detalle ---------- */
+  function abrir(id) {
+    var x = C.item(id), ok = C.tiene(id), rz = R[x.rareza], av = C.avance(id);
+    var lleva = x.espacio === 'pines' ? C.puesto('pines').indexOf(id) >= 0 : C.puesto(x.espacio) === id;
+    var esp = C.espacios.filter(function (e) { return e.id === x.espacio; })[0];
+    var d = document.createElement('div'); d.className = 'hoja'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true'); d.setAttribute('aria-label', x.nom);
+    var boton = !ok ? '' : x.espacio === 'pines'
+      ? '<button type="button" class="btn' + (lleva ? ' gris' : '') + '" data-poner>' + (lleva ? 'Quitar de mi vitrina' : 'Poner en mi vitrina') + '</button>'
+      : lleva ? '<button type="button" class="btn gris" disabled>Ya lo llevas puesto</button>' : '<button type="button" class="btn" data-poner>Ponérmelo</button>';
+    d.innerHTML = '<div class="hoja-c" style="--c:' + rz.c + '"><button type="button" class="x" aria-label="Cerrar">✕</button>' +
+      '<div class="dib' + (ok ? '' : ' lock') + '"><span class="mcc-dib" style="--c:' + rz.c + '">' + C.dibujo(x) + '</span></div>' +
+      '<small>' + rz.nom + ' · ' + esp.uno + (x.area ? ' · ' + esc(x.area) : '') + '</small><h2>' + esc(x.nom) + '</h2>' +
+      (x.desc ? '<p>' + esc(x.desc) + '</p>' : '') + '<p>' + esc(C.como(x)) + '</p>' +
+      (!ok && av != null ? '<div class="bar"><i style="width:' + Math.round(av * 100) + '%"></i></div>' : '') +
+      '<div class="acc">' + boton + '</div><p class="estado" role="status"></p></div>';
+    function cerrar() { d.classList.remove('ver'); setTimeout(function () { d.remove(); }, 260); }
+    d.addEventListener('click', function (e) { if (e.target === d || e.target.closest('.x')) cerrar(); });
+    document.addEventListener('keydown', function k(e) { if (e.key === 'Escape') { cerrar(); document.removeEventListener('keydown', k); } });
+    var p = d.querySelector('[data-poner]');
+    if (p) p.addEventListener('click', function () {
+      p.disabled = true;
+      C.poner(x.espacio, id).then(function () {
+        if (window.MCSonido && MCSonido.bien) try { MCSonido.bien(); } catch (e) {}
+        cerrar(); todo(x.espacio === 'buho');
+      }, function () { p.disabled = false; d.querySelector('.estado').textContent = 'No se pudo guardar. Revisa tu conexión e intenta otra vez.'; });
+    });
+    document.body.appendChild(d);
+    C.marcarVistos([id]);
+    requestAnimationFrame(function () { requestAnimationFrame(function () { d.classList.add('ver'); }); });
+  }
+
+  function todo(pop) { pintarPuesto(pop); pintarTabs(); if (TAB !== 'rangos') pintarGrid(); $('aviso').hidden = C.estado().sql; }
+
+  var primera = true;
+  C.alCambiar(function () {
+    if ($('conSesion').hidden) return;
+    todo(false);
+    // Lo nuevo que ganaste desde la última vez: sale el cofre
+    if (primera && C.estado().listo && C.estado().rachaOk) { primera = false; var n = C.nuevos(); if (n.length) setTimeout(function () { C.celebrar(n, function () { todo(true); }); }, 700); }
+  });
+  function cargar(u) {
+    if (!u) { ver('sin'); return; }
+    ver('con'); C.css(); todo(false);
+    C.cargar();
+  }
+  $('btnIngresar').addEventListener('click', function () { MCAuth.abrirIngreso(); });
+  MCAuth.alCambiar(cargar);
+  MCAuth.listo.catch(function () { ver('cargando'); $('cargando').innerHTML = '<p>No se pudo conectar. Revisa tu internet y recarga la página.</p>'; });
+})();
+</script>
+<script src="assets/sonido.js"></script>
+</body>
+</html>

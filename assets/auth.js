@@ -364,12 +364,13 @@
       var menu = el('div', 'mcu-menu');
       menu.appendChild(el('small', '', u.email || ''));
       var aPerfil = el('a', '', 'Mi perfil'); aPerfil.href = BASE + 'perfil.html';
+      var aCol = el('a', '', 'Mi colección'); aCol.href = BASE + 'coleccion.html';
       var bSalir = el('button', '', 'Cerrar sesión'); bSalir.type = 'button';
       bSalir.addEventListener('click', function () { salir(); });
       // El tutorial de la página (assets/tutorial.js) se vuelve a ver desde aquí
       var bTuto = el('button', 'mcu-tuto', 'Ver tutorial de esta página'); bTuto.type = 'button'; bTuto.hidden = true;
       bTuto.addEventListener('click', function () { menu.classList.remove('show'); window.MCTutorial.abrir(); });
-      menu.appendChild(aPerfil); menu.appendChild(bTuto); menu.appendChild(bSalir);
+      menu.appendChild(aPerfil); menu.appendChild(aCol); menu.appendChild(bTuto); menu.appendChild(bSalir);
 
       chip.addEventListener('click', function (e) {
         e.stopPropagation();
