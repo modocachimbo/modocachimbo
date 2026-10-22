@@ -275,9 +275,30 @@
   .rp-disf .escena { position: relative; bottom: 0; }
   .rp-buho .mcb-disfraz { display: block; width: 100%; height: auto; aspect-ratio: auto; translate: none; user-select: none; -webkit-user-drag: none; filter: drop-shadow(0 5px 4px rgba(0,0,0,.4)); animation-name: rp-brinco; }
   .rp-buho .mcb-disfraz.rp-molesto { animation: rp-sacude .5s ease-in-out 2; }
+  /* Después del brinquito, cada emoción se queda con su propio movimiento */
+  .rp-buho .rp-e-feliz { animation: rp-brinco .55s, rp-mece 2.6s ease-in-out .55s infinite; }
+  .rp-buho .rp-e-asombrado { animation: rp-brinco .55s, rp-flota 1.1s ease-in-out .55s infinite alternate; }
+  .rp-buho .rp-e-pensativo { animation: rp-brinco .55s, rp-duda 3.2s ease-in-out .55s infinite; }
+  .rp-buho .rp-e-triste { animation: rp-brinco .55s, rp-suspiro 3s ease-in-out .55s infinite; }
+  .rp-buho .rp-e-triste.rp-molesto { animation: rp-sacude .5s ease-in-out 2; }
+  @keyframes rp-mece { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-2deg); } 75% { transform: rotate(2deg); } }
+  @keyframes rp-flota { to { transform: translateY(-3%) scale(1.01); } }
+  @keyframes rp-duda { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-3deg) translateX(-1%); } }
+  @keyframes rp-suspiro { 0%, 100% { transform: none; } 50% { transform: scale(1.015, .975); } }
+  /* Efectos sobre la cabeza: destellos si está feliz, signos si duda o se asombra, gotitas si está triste */
+  .rp-fx { --k: 0; position: absolute; z-index: 2; top: 4%; right: calc(4% + var(--k) * 15%); width: 18px; color: #F6C21C; pointer-events: none; opacity: 0;
+    animation: rp-fx-sube 1.6s ease-out calc(var(--k) * .18s) forwards; }
+  .rp-fx svg { display: block; width: 100%; fill: currentColor; }
+  .rp-fx b { display: block; font: italic 900 30px/1 'Barlow Condensed', sans-serif; text-shadow: 0 2px 0 rgba(0,0,0,.35); }
+  .rp-fx-feliz:nth-of-type(2n) { width: 12px; top: 16%; }
+  .rp-fx-asombrado { color: #FF9600; right: calc(6% + var(--k) * 10%); } .rp-fx-asombrado:nth-of-type(2n) { top: 12%; rotate: 14deg; }
+  .rp-fx-pensativo { color: #1CB0F6; } .rp-fx-pensativo:nth-of-type(2n) b { font-size: 22px; }
+  .rp-fx-triste { width: 10px; color: #7ED3FF; top: 34%; left: calc(31% + var(--k) * 34%); right: auto; animation-name: rp-fx-cae; }
+  @keyframes rp-fx-sube { 0% { opacity: 0; transform: translateY(8px) scale(.4); } 25% { opacity: 1; transform: translateY(0) scale(1.1); } 70% { opacity: 1; } 100% { opacity: 0; transform: translateY(-16px) scale(.9); } }
+  @keyframes rp-fx-cae { 0% { opacity: 0; transform: translateY(0); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(26px); } }
   @keyframes rp-brinco { 0% { transform: scale(1.05,.93); } 40% { transform: translateY(-7%) scale(.97,1.04) rotate(-2deg); } 75% { transform: scale(1.02,.98) rotate(1deg); } 100% { transform: none; } }
   @keyframes rp-sacude { 0%, 100% { transform: none; } 20% { transform: translateX(-5%) rotate(-3deg); } 50% { transform: translateX(5%) rotate(3deg); } 80% { transform: translateX(-3%); } }
-  @media (prefers-reduced-motion: reduce) { .rp-buho .mcb { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .rp-buho .mcb { animation: none !important; } .rp-fx { display: none; } }
   .rp-globo { --gc: var(--accent); position: relative; flex: 1; min-height: 98px; display: flex; align-items: center; margin-bottom: 40px; padding: 10px 14px; text-align: left;
     background: #1D1834; color: #EEEAF7; border: 2px solid #2F284E; border-bottom: 4px solid var(--gc); border-radius: 16px; font: 800 14px/1.35 'Nunito', sans-serif; }
   .rp-globo b { color: var(--gc); font-weight: 900; }
@@ -506,39 +527,65 @@
   // Búho: saluda en el inicio y reacciona al resultado al final (assets/buho/buho-vivo.js)
   // Frases de ánimo, cada una con su pose: una al azar al entrar y otra cada vez que tocan al búho
   const RP_ANIMO = [
-    ['saludando', '¿Listo para el repaso de <b>Filosofía</b>? ¡Tú puedes!'],
-    ['logro', 'Cada pregunta que practicas hoy es <b>un punto más</b> en tu examen.'],
-    ['pensativo', 'Si fallas, no pasa nada: <b>equivocarse aquí</b> es aprender para el examen.'],
-    ['caminando', 'Tu vacante se construye <b>un repaso a la vez</b>. ¡A darle!'],
-    ['estudiando', 'Respira, lee con calma y <b>confía en lo que sabes</b>.'],
-    ['sorprendido', '¡Wow! Solo por estar aquí ya vas <b>un paso adelante</b>.'],
-    ['oficial', 'Ingresan los que <b>no se rinden</b>, no los que nunca fallan.'],
-    ['vivo', '¡Yo creo en ti! <b>Vamos juntos</b> pregunta por pregunta.']
+    ['saludando', 'feliz', '¿Listo para el repaso de <b>Filosofía</b>? ¡Tú puedes!'],
+    ['logro', 'asombrado', 'Cada pregunta que practicas hoy es <b>un punto más</b> en tu examen.'],
+    ['pensativo', 'pensativo', 'Si fallas, no pasa nada: <b>equivocarse aquí</b> es aprender para el examen.'],
+    ['caminando', 'feliz', 'Tu vacante se construye <b>un repaso a la vez</b>. ¡A darle!'],
+    ['estudiando', 'pensativo', 'Respira, lee con calma y <b>confía en lo que sabes</b>.'],
+    ['sorprendido', 'asombrado', '¡Wow! Solo por estar aquí ya vas <b>un paso adelante</b>.'],
+    ['oficial', 'pensativo', 'Ingresan los que <b>no se rinden</b>, no los que nunca fallan.'],
+    ['vivo', 'feliz', '¡Yo creo en ti! <b>Vamos juntos</b> pregunta por pregunta.']
   ];
-  // El búho se disfraza según el área del curso (assets/buho/disfraces/<area>-1 de frente, -2 saludando)
+  // El búho se disfraza según el área del curso (assets/buho/disfraces/<area>-<emoción>.webp)
   const RP_AREA = ({'biologia':'ciencia-tecnologia','anatomia':'ciencia-tecnologia','quimica':'ciencia-tecnologia','fisica':'ciencia-tecnologia','algebra':'matematica','aritmetica':'matematica','geometria':'matematica','trigonometria':'matematica','estadistica':'matematica','raz-verbal':'comunicacion','literatura':'comunicacion','lenguaje':'comunicacion','historia-peru':'ciencias-sociales','historia-universal':'ciencias-sociales','geografia':'ciencias-sociales','economia':'ciencias-sociales','ciudadania':'ciencias-sociales','psicologia':'ciencias-sociales','filosofia':'ciencias-sociales'})['filosofia'];
   const rpGlobo = document.getElementById('rpGlobo'), rpEscena = document.getElementById('rpEscena');
   let rpI = Math.floor(Math.random() * RP_ANIMO.length), rpGloboT, rpOcupado = false;
-  function rpFrase() { rpGlobo.innerHTML = '<span>' + RP_ANIMO[rpI][1] + '</span>'; }
+  function rpFrase() { rpGlobo.innerHTML = '<span>' + RP_ANIMO[rpI][2] + '</span>'; }
   rpFrase();
   if (RP_AREA) { document.getElementById('startScreen').classList.add('rp-' + RP_AREA); rpEscena.parentNode.classList.add('rp-disf'); }
-  // Con disfraz alterna de frente y saludando en cada frase; al reír saluda y al enojarse se sacude
-  function rpCrear(p) {
-    if (!RP_AREA) return MCBuhoVivo.crear(p);
+  // Con disfraz cada frase trae su emoción (feliz, asombrado, pensativo, triste) con su propio movimiento y efecto
+  const RP_FX = {
+    feliz: ['<svg viewBox="0 0 20 20"><path d="M10 0l2.4 7.6L20 10l-7.6 2.4L10 20l-2.4-7.6L0 10l7.6-2.4z"/></svg>', 3],
+    asombrado: ['<b>!</b>', 2],
+    pensativo: ['<b>?</b>', 3],
+    triste: ['<svg viewBox="0 0 14 20"><path d="M7 0C5 6 0 10 0 13.4a7 7 0 0 0 14 0C14 10 9 6 7 0z"/></svg>', 2]
+  };
+  function rpFx(esc, emo) {
+    const caja = esc.parentNode, fx = RP_FX[emo];
+    caja.querySelectorAll('.rp-fx').forEach(e => e.remove());
+    for (let k = 0; k < fx[1]; k++) {
+      const e = document.createElement('i');
+      e.className = 'rp-fx rp-fx-' + emo; e.setAttribute('aria-hidden', 'true');
+      e.innerHTML = fx[0]; e.style.setProperty('--k', k);
+      caja.append(e); setTimeout(() => e.remove(), 1900);
+    }
+  }
+  function rpImg(esc, emo, extra) {
     const i = new Image();
-    i.className = 'mcb mcb-disfraz' + (p === 'enojado' ? ' rp-molesto' : '');
-    i.src = '../assets/buho/disfraces/' + RP_AREA + '-' + (p === 'logro' ? 2 : p === 'enojado' ? 1 : rpI % 2 + 1) + '.webp';
-    i.alt = 'Búho de Modo Cachimbo disfrazado'; i.draggable = false;
+    i.className = 'mcb mcb-disfraz rp-e-' + emo + (extra ? ' ' + extra : '');
+    i.src = '../assets/buho/disfraces/' + RP_AREA + '-' + emo + '.webp';
+    i.alt = 'Búho de Modo Cachimbo ' + emo; i.draggable = false;
+    setTimeout(() => rpFx(esc, emo), 120);
     return i;
   }
+  // 'frase' es la emoción de la frase actual; 'logro' y 'enojado' llegan cuando le hacen cosquillas o lo molestan
+  const rpPose = () => RP_AREA ? 'frase' : RP_ANIMO[rpI][0];
+  function rpCrear(p) {
+    if (!RP_AREA) return MCBuhoVivo.crear(p);
+    // Cosquillas: feliz. Si lo molestan: llora y se sacude
+    if (p === 'enojado') return rpImg(rpEscena, 'triste', 'rp-molesto');
+    return rpImg(rpEscena, p === 'logro' ? 'feliz' : RP_ANIMO[rpI][1]);
+  }
+  // Precarga las 4 emociones para que no parpadee al cambiar
+  if (RP_AREA) ['feliz', 'asombrado', 'pensativo', 'triste'].forEach(e => { new Image().src = '../assets/buho/disfraces/' + RP_AREA + '-' + e + '.webp'; });
   function rpDecir(t, tono, ms) { rpOcupado = true; rpGlobo.innerHTML = '<span></span>'; rpGlobo.firstChild.textContent = t; clearTimeout(rpGloboT); rpGloboT = setTimeout(() => { rpOcupado = false; rpFrase(); }, ms || 2800); }
   function rpOtra() {
     if (rpOcupado) return;
     rpI = (rpI + 1) % RP_ANIMO.length; rpFrase();
     const v = rpEscena.querySelector('.mcb'); if (v) v.remove();
-    rpEscena.append(rpCrear(RP_ANIMO[rpI][0]));
+    rpEscena.append(rpCrear(rpPose()));
   }
-  if (window.MCBuhoVivo) MCBuhoVivo.toques(rpEscena, { pose: () => RP_ANIMO[rpI][0], sonido: !window.MCSonido || MCSonido.activo, decir: rpDecir, alTocar: rpOtra, crear: rpCrear });
+  if (window.MCBuhoVivo) MCBuhoVivo.toques(rpEscena, { pose: rpPose, sonido: !window.MCSonido || MCSonido.activo, decir: rpDecir, alTocar: rpOtra, crear: rpCrear });
 
   const startScreen = document.getElementById('startScreen');
   const quizHeader = document.getElementById('quizHeader');
@@ -747,7 +794,8 @@
     finalScore.textContent = `${score} pts`;
     const aciertos = answers.filter((a, i) => activeQuestions[i] && a === activeQuestions[i].correct).length, pct = aciertos / Math.max(1, answers.length);
     const fin = document.getElementById('finEscena'); fin.innerHTML = '';
-    if (window.MCBuhoVivo) fin.append(MCBuhoVivo.crear(lives <= 0 ? 'triste' : pct >= .8 ? 'logro' : pct >= .5 ? 'saludando' : 'estudiando'));
+    if (RP_AREA) { fin.parentNode.classList.add('rp-disf'); fin.append(rpImg(fin, lives <= 0 ? 'triste' : pct >= .8 ? 'asombrado' : pct >= .5 ? 'feliz' : 'pensativo')); }
+    else if (window.MCBuhoVivo) fin.append(MCBuhoVivo.crear(lives <= 0 ? 'triste' : pct >= .8 ? 'logro' : pct >= .5 ? 'saludando' : 'estudiando'));
     endMessage.textContent = lives <= 0 ? 'Se acabaron tus corazones. ¡Sigue practicando!' : 'Así te fue en esta práctica';
     // Progreso del estudiante (assets/progreso.js), una sola vez por ronda
     if (showEnd.ronda === activeQuestions) return;
