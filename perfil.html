@@ -183,6 +183,25 @@
       linear-gradient(120deg, var(--cel) 0%, #4a7dff 55%, var(--mor) 100%); }
   .perfil-cuerpo { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 22px 22px; }
   .perfil-top .avatar { width: 104px; height: 104px; margin-top: -52px; border: 5px solid var(--surface); font-size: 40px; font-weight: 1000; }
+  /* Marco y búho que llevas puestos (Mi colección) */
+  .av-caja { position: relative; margin-top: -56px; }
+  .av-caja .avatar { margin-top: 0; }
+  .av-caja.con-marco { padding: 5px; border-radius: 50%; background: var(--marco); box-shadow: 0 0 22px rgba(255,150,0,.25); }
+  .av-caja.con-marco .avatar { border-width: 4px; }
+  .av-buho { position: absolute; right: -34px; bottom: -6px; width: 62px; height: 62px; display: grid; place-items: center; filter: drop-shadow(0 3px 6px rgba(0,0,0,.45)); text-decoration: none; }
+  .av-buho img, .av-buho svg { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .p-titulo { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 13px; font-weight: 1000; border-radius: 999px; padding: 4px 12px; border: 1.5px solid; text-decoration: none; }
+  /* Mi colección: tus pines y un botón a la colección */
+  .col-strip { display: flex; align-items: center; gap: 14px; margin-top: 18px; padding: 14px 16px; border-radius: 22px; border: 2px solid #5a3b10; border-bottom-width: 5px; background: linear-gradient(100deg, #231527, var(--surface) 70%); text-decoration: none; color: var(--text); flex-wrap: wrap; }
+  .col-strip .pins { display: flex; gap: 6px; }
+  .col-strip .mcc-pin { width: 46px; border-width: 3px; }
+  .col-strip .mcc-pin span { font-size: 22px; }
+  .col-strip .hueco { width: 46px; height: 46px; border-radius: 50%; border: 2px dashed #3a3160; display: grid; place-items: center; color: #4a4170; font-size: 22px; font-weight: 1000; }
+  .col-strip .tx { flex: 1 1 150px; min-width: 0; }
+  .col-strip .tx b { display: block; font-size: 16px; font-weight: 1000; }
+  .col-strip .tx span { font-size: 12.5px; color: var(--text-dim); font-weight: 700; }
+  .col-strip .ir { flex-shrink: 0; background: var(--accent); color: #1a1f00; border: 2px solid #8fa300; border-bottom-width: 4px; border-radius: 14px; padding: 9px 14px; font: 1000 13px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .4px; }
+  @media (max-width: 480px) { .col-strip .ir { width: 100%; text-align: center; } }
   .perfil-top h1 { font-size: 26px; font-weight: 1000; margin-top: 10px; line-height: 1.2; }
   .perfil-top .correo { color: var(--text-dim); font-size: 13.5px; margin-top: 2px; word-break: break-all; }
   .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 14px; }
@@ -220,7 +239,9 @@
   .st span:not(.st-ic) { display: block; font-size: 12.5px; color: var(--text-dim); font-weight: 800; margin-top: 2px; }
   .st.nar .st-ic { color: var(--nar); } .st.amb .st-ic { color: var(--amb); } .st.cel .st-ic { color: var(--cel); }
   .st.ver .st-ic { color: var(--accent); } .st.mor .st-ic { color: var(--mor); } .st.roj .st-ic { color: var(--roj); }
-  .racha-card { margin-top: 12px; border-radius: 20px; padding: 16px 18px 14px; color: #fff; background: linear-gradient(135deg, #1CB0F6, #1588d0); border: 2px solid #1488c9; border-bottom: 5px solid #0f6fa6; }
+  /* Colores del tema de racha que llevas puesto (Mi colección); Cielo por defecto */
+  .racha-card { --rc1: #1CB0F6; --rc2: #1588d0; --rcb: #1488c9; --rcd: #0f6fa6; position: relative; overflow: hidden; margin-top: 12px; border-radius: 20px; padding: 16px 18px 14px; color: #fff; background: linear-gradient(135deg, var(--rc1), var(--rc2)); border: 2px solid var(--rcb); border-bottom: 5px solid var(--rcd); transition: background .4s; }
+  .racha-card::before { content: ''; position: absolute; right: -40px; top: -40px; width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(rgba(255,255,255,.16), transparent 70%); pointer-events: none; }
   .racha-card.apagada { background: linear-gradient(135deg, #2a3a47, #22303b); border-color: #2e4352; border-bottom-color: #1b2731; }
   .rc-cab { display: flex; align-items: center; gap: 12px; }
   .rc-fuego { width: 38px; height: 42px; flex-shrink: 0; }
@@ -230,13 +251,41 @@
   .racha-card.pendiente .rc-fuego .f1 { fill: #ffd29a; } .racha-card.pendiente .rc-fuego .f2 { fill: #fff1c2; }
   .rc-num { flex: 1; min-width: 0; line-height: 1.1; }
   .rc-num b { font-size: 26px; font-weight: 1000; font-variant-numeric: tabular-nums; }
-  .rc-num span { display: block; font-size: 13px; font-weight: 900; opacity: .92; }
+  .rc-num span { display: block; font-size: 12.5px; font-weight: 900; opacity: .92; }
+  .rc-num em { font-style: normal; }
   .rc-mejor { flex-shrink: 0; font-size: 12px; font-weight: 900; background: rgba(0,0,0,.16); border-radius: 100px; padding: 5px 10px; }
+  .rc-vista { position: relative; flex-shrink: 0; display: flex; gap: 2px; background: rgba(0,0,0,.2); border-radius: 100px; padding: 3px; }
+  .rc-vista button { border: 0; background: none; color: #fff; font: 1000 11.5px Nunito, sans-serif; padding: 5px 10px; border-radius: 100px; cursor: pointer; opacity: .85; }
+  .rc-vista button.on { background: #fff; color: var(--rcd); opacity: 1; }
   .rc-dias { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin-top: 12px; text-align: center; }
   .rc-dia { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-  .rc-dia > span { font-size: 12px; font-weight: 1000; opacity: .8; }
-  .rc-dia.es-hoy > span { opacity: 1; color: #FFE08A; }
-  .rc-dia i { width: 30px; height: 34px; display: block; }
+  .rc-dia { position: relative; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; padding: 0; -webkit-tap-highlight-color: transparent; }
+  .rc-dia > span { font-size: 12px; font-weight: 1000; opacity: .85; width: 26px; height: 22px; line-height: 22px; border-radius: 8px; transition: background .15s; }
+  .rc-dia.es-hoy > span { opacity: 1; background: #fff; color: var(--rcd); box-shadow: 0 2px 0 rgba(0,0,0,.22); }
+  .rc-dia.sel > span { opacity: 1; box-shadow: inset 0 0 0 2px #fff; }
+  .rc-dia.es-hoy.sel > span { box-shadow: 0 0 0 2px #fff; }
+  .rc-dia i { width: 30px; height: 34px; display: block; transition: transform .15s; }
+  .rc-dia.sel i { transform: scale(1.12); }
+  .rc-tip { font-style: normal; position: absolute; z-index: 3; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: #0B0818; color: #fff; font-size: 12px; font-weight: 900; padding: 6px 10px; border-radius: 10px; white-space: nowrap; border: 1.5px solid rgba(255,255,255,.2); pointer-events: none; animation: rcTip .18s ease-out; }
+  .rc-tip::after { content: ''; position: absolute; left: 50%; top: -6px; margin-left: -5px; border: 5px solid transparent; border-bottom-color: #0B0818; border-top: 0; }
+  .rc-dia:first-child .rc-tip { left: 0; transform: none; } .rc-dia:first-child .rc-tip::after { left: 15px; }
+  .rc-dia:last-child .rc-tip { left: auto; right: 0; transform: none; } .rc-dia:last-child .rc-tip::after { left: auto; right: 10px; }
+  @keyframes rcTip { from { opacity: 0; margin-top: -4px; } }
+  .rc-barra { height: 8px; border-radius: 9px; background: rgba(0,0,0,.22); margin-top: 12px; overflow: hidden; }
+  .rc-barra i { display: block; height: 100%; width: 0; background: #FFC800; border-radius: 9px; transition: width .6s; }
+  .rc-mes { margin-top: 12px; background: rgba(0,0,0,.16); border-radius: 16px; padding: 10px; }
+  .rc-mes-cab { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 1000; margin-bottom: 8px; }
+  .rc-mes-cab span { margin-left: auto; font-size: 12px; opacity: .9; }
+  .rc-mes-cab button { border: 0; background: rgba(0,0,0,.2); color: #fff; width: 28px; height: 28px; border-radius: 9px; font: 1000 15px Nunito, sans-serif; cursor: pointer; }
+  .rc-mes-cab button:disabled { opacity: .3; cursor: default; }
+  .rc-sem, .rc-cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; text-align: center; }
+  .rc-sem { font-size: 11px; font-weight: 1000; opacity: .8; margin-bottom: 4px; }
+  .rc-cal b { aspect-ratio: 1; border-radius: 9px; display: grid; place-items: center; font-size: 12px; font-weight: 1000; background: rgba(0,0,0,.18); color: rgba(255,255,255,.65); }
+  .rc-cal b.ok { background: #FF9600; color: #3a1d00; box-shadow: inset 0 -3px 0 #c76a00; }
+  .rc-cal b.medio { background: rgba(255,200,0,.25); color: #fff; }
+  .rc-cal b.hoy { background: #fff; color: var(--rcd); box-shadow: 0 2px 0 rgba(0,0,0,.25); }
+  .rc-cal b.fut { background: transparent; color: rgba(255,255,255,.4); }
+  .rc-cal b.no { visibility: hidden; }
   .rc-dia i svg { width: 100%; height: 100%; display: block; overflow: visible; }
   .rc-nota { margin-top: 10px; font-size: 13px; font-weight: 900; text-align: center; }
   .rc-nota:empty { display: none; }
@@ -296,6 +345,8 @@
 <script src="assets/carreras.js"></script>
 <script src="assets/auth.js"></script>
 <script src="assets/agenda.js"></script>
+<script src="assets/buho.js"></script>
+<script src="assets/coleccion.js"></script>
 <style id="mc-claro">
 /* Modo claro de esta página (assets/claro.css trae lo común) */
 html[data-modo="claro"] .racha-dato.on b { color: #6F8000 !important; }
@@ -339,8 +390,9 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       <section class="panel perfil-top">
         <div class="banda" aria-hidden="true"></div>
         <div class="perfil-cuerpo">
-          <div class="avatar" id="avatar"></div>
+          <div class="av-caja" id="avCaja"><div class="avatar" id="avatar"></div><a class="av-buho" id="avBuho" href="coleccion.html#buho" aria-label="Cambiar mi búho" hidden></a></div>
           <h1 id="saludo">Hola</h1>
+          <a class="p-titulo" id="pTitulo" href="coleccion.html#titulo" hidden></a>
           <div class="correo" id="correo"></div>
           <div class="chips" id="chips"></div>
           <button class="btn-cel" type="button" id="btnEditar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>Editar perfil</button>
@@ -367,6 +419,70 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
 
       <div id="tabPerfil">
 
+      <!-- Mi colección (coleccion.html): tus pines y lo que tienes -->
+      <a class="col-strip" id="colStrip" href="coleccion.html">
+        <span class="pins" id="colPins"></span>
+        <span class="tx"><b>Mi colección <small id="colN" style="color:var(--accent);font-weight:1000"></small></b><span>Búhos, temas de racha, marcos, títulos y pines.</span></span>
+        <span class="ir">Ver colección ›</span>
+      </a>
+
+      <h2 class="sec-tit">Estadísticas</h2>
+      <section class="racha-card" id="racha">
+        <div class="rc-cab">
+          <span class="rc-fuego" id="rFuego"><svg viewBox="0 0 32 36" aria-hidden="true"><path class="f1" d="M16 1.5c1.2 4.6 7.6 8.2 9.6 13.6 2.6 7-1.6 17.4-9.6 17.4S3.8 24.9 6.1 17.6c1-3.2 3.3-5.3 4.9-6.9.2 2.8 1.4 4.6 3 5.2C13.3 10.6 14 6 16 1.5z"/><path class="f2" d="M16.3 15.5c.6 2.4 4.5 4.4 4.5 8.6a4.8 4.8 0 0 1-9.6 0c0-2 1-3.4 2.1-4.4.2 1.4.8 2.3 1.6 2.6-.4-2.4 0-4.6 1.4-6.8z"/></svg></span>
+          <div class="rc-num"><b id="rActual">–</b><span><em id="rActualT">días de racha</em> <em style="white-space:nowrap">· mejor <em id="rMejor">–</em></em></span></div>
+          <div class="rc-vista" role="group" aria-label="Ver la racha por"><button type="button" class="on" data-vista="semana" aria-pressed="true">Semana</button><button type="button" data-vista="mes" aria-pressed="false">Mes</button></div>
+        </div>
+        <div class="rc-dias" id="rDias"></div>
+        <div class="rc-mes" id="rMes" hidden></div>
+        <div class="rc-barra" aria-hidden="true"><i id="rBarra"></i></div>
+        <p class="rc-nota" id="rNota"></p>
+      </section>
+      <p class="rc-regla" id="rRegla">Sumas un día al cumplir tu meta. Tienes 1 día de descanso por semana (el día congelado); si faltas 2, vuelve a 0.</p>
+
+      <h2 class="sec-tit">Tu meta diaria</h2>
+      <section class="metas" id="metas">
+          <button type="button" class="mt" data-meta="20" aria-pressed="false" style="--c:#FF9600"><span class="mt-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.7 1.6 2.6 1.9 5.4.8 8-1.2 2.9-3.9 4.7-6.6 4.7-3.2 0-6.1-2.2-6.8-5.5-.5-2.2.1-4.4 1.4-6.1.2 1.5.9 2.6 2 3.1-.5-4.4 1.4-8.6 4-11.9z"/><path fill="#FFD84D" d="M12.2 11.2c.4 1.7 2.2 2.6 2.7 4.5.6 2.4-1 4.6-3.1 4.6-2 0-3.4-1.6-3.2-3.5.1-1 .6-1.8 1.3-2.4.1.8.5 1.3 1 1.5-.2-1.7.4-3.3 1.3-4.7z"/></svg></span><span class="mt-tx"><b>Suave</b><small>unos 10 minutos al día</small></span><span class="mt-n">20 preg.</span></button>
+          <button type="button" class="mt" data-meta="30" aria-pressed="false" style="--c:#1CB0F6"><span class="mt-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.7 1.6 2.6 1.9 5.4.8 8-1.2 2.9-3.9 4.7-6.6 4.7-3.2 0-6.1-2.2-6.8-5.5-.5-2.2.1-4.4 1.4-6.1.2 1.5.9 2.6 2 3.1-.5-4.4 1.4-8.6 4-11.9z"/></svg></span><span class="mt-tx"><b>Normal</b><small>unos 15 minutos al día</small></span><span class="mt-n">30 preg.</span></button>
+          <button type="button" class="mt" data-meta="50" aria-pressed="false" style="--c:#CE82FF"><span class="mt-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.7 1.6 2.6 1.9 5.4.8 8-1.2 2.9-3.9 4.7-6.6 4.7-3.2 0-6.1-2.2-6.8-5.5-.5-2.2.1-4.4 1.4-6.1.2 1.5.9 2.6 2 3.1-.5-4.4 1.4-8.6 4-11.9z"/><path fill="#fff" opacity=".6" d="M12.2 11.2c.4 1.7 2.2 2.6 2.7 4.5.6 2.4-1 4.6-3.1 4.6-2 0-3.4-1.6-3.2-3.5.1-1 .6-1.8 1.3-2.4.1.8.5 1.3 1 1.5-.2-1.7.4-3.3 1.3-4.7z"/></svg></span><span class="mt-tx"><b>Intenso</b><small>unos 25 minutos al día</small></span><span class="mt-n">50 preg.</span></button>
+      </section>
+      <p class="rc-regla" id="metaNota">Si la cambias, cuenta desde mañana para no romper tu racha. Los días pasados se quedan como estaban.</p>
+      <section class="stats">
+        <div class="st cel"><span class="st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg></span><div><b id="rHoy">–</b><span>preguntas hoy</span></div></div>
+        <div class="st ver"><span class="st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-6M12 20V5M19 20v-10"/></svg></span><div><b id="pPromedio">–</b><span>promedio</span></div></div>
+        <div class="st mor"><span class="st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M9 10l2.2 2.2L15.5 8"/></svg></span><div><b id="pPracticas">–</b><span>prácticas</span></div></div>
+        <div class="st roj"><span class="st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 0 1 14.8-5.7L21 9"/><polyline points="21 3.5 21 9 15.5 9"/><path d="M20.5 12a8.5 8.5 0 0 1-14.8 5.7L3 15"/><polyline points="3 20.5 3 15 8.5 15"/></svg></span><div><b id="pFalladas">–</b><span>por repasar</span></div></div>
+      </section>
+
+      <section class="panel" id="errores">
+        <div class="err-top">
+          <div class="err-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 0 1 14.8-5.7L21 9"/><polyline points="21 3.5 21 9 15.5 9"/><path d="M20.5 12a8.5 8.5 0 0 1-14.8 5.7L3 15"/><polyline points="3 20.5 3 15 8.5 15"/></svg></div>
+          <div><h2>Errores de hoy</h2><p class="nota" id="eSub">Cargando…</p></div>
+        </div>
+        <div class="err-lista" id="eLista"></div>
+        <a class="err-btn" id="eBtn" href="falladas.html?hoy=1" hidden>Practicar mis errores</a>
+        <p class="err-reloj" id="eReloj"></p>
+      </section>
+
+      <section class="panel" id="progreso">
+        <div class="sec-cab">
+          <span class="sec-ic cel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-6M12 20V5M19 20v-10"/></svg></span>
+          <div><h2>Mi progreso por curso</h2><p class="nota">Se guarda cada vez que terminas una práctica, un Repaso, unas Fijas o un examen.</p></div>
+        </div>
+        <a class="btn-cel prog-repasar" id="pRepasar" href="falladas.html" hidden></a>
+        <div class="prog-cursos" id="pCursos"><p class="nota">Cargando tu progreso…</p></div>
+      </section>
+
+      <section class="panel" id="simulacros">
+        <div class="sec-cab">
+          <span class="sec-ic mor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6v3H9z"/><path d="M7 4.5H5V21h14V4.5h-2"/><path d="M9 11h6M9 15h4"/></svg></span>
+          <div><h2>Mis simulacros</h2><p class="nota">Tus simulacros terminados. Con «Repetir» das las mismas preguntas otra vez.</p></div>
+        </div>
+        <ul class="lista rep-lista" id="simLista"><li><span>Cargando…</span></li></ul>
+        <a class="btn-mor" href="simulacro.html">Crear un simulacro</a>
+      </section>
+
+      <h2 class="sec-tit">Mi cuenta</h2>
       <details class="panel datos" id="datos">
         <summary>
           <span class="sec-ic cel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
@@ -418,60 +534,6 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
           </div>
         </form>
       </details>
-
-      <h2 class="sec-tit">Estadísticas</h2>
-      <section class="racha-card" id="racha">
-        <div class="rc-cab">
-          <span class="rc-fuego" id="rFuego"><svg viewBox="0 0 32 36" aria-hidden="true"><path class="f1" d="M16 1.5c1.2 4.6 7.6 8.2 9.6 13.6 2.6 7-1.6 17.4-9.6 17.4S3.8 24.9 6.1 17.6c1-3.2 3.3-5.3 4.9-6.9.2 2.8 1.4 4.6 3 5.2C13.3 10.6 14 6 16 1.5z"/><path class="f2" d="M16.3 15.5c.6 2.4 4.5 4.4 4.5 8.6a4.8 4.8 0 0 1-9.6 0c0-2 1-3.4 2.1-4.4.2 1.4.8 2.3 1.6 2.6-.4-2.4 0-4.6 1.4-6.8z"/></svg></span>
-          <div class="rc-num"><b id="rActual">–</b><span id="rActualT">días de racha</span></div>
-          <span class="rc-mejor">Mejor <b id="rMejor">–</b></span>
-        </div>
-        <div class="rc-dias" id="rDias"></div>
-        <p class="rc-nota" id="rNota"></p>
-      </section>
-      <p class="rc-regla" id="rRegla">Sumas un día al cumplir tu meta. Tienes 1 día de descanso por semana (el día congelado); si faltas 2, vuelve a 0.</p>
-
-      <h2 class="sec-tit">Tu meta diaria</h2>
-      <section class="metas" id="metas">
-          <button type="button" class="mt" data-meta="20" aria-pressed="false" style="--c:#FF9600"><span class="mt-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.7 1.6 2.6 1.9 5.4.8 8-1.2 2.9-3.9 4.7-6.6 4.7-3.2 0-6.1-2.2-6.8-5.5-.5-2.2.1-4.4 1.4-6.1.2 1.5.9 2.6 2 3.1-.5-4.4 1.4-8.6 4-11.9z"/><path fill="#FFD84D" d="M12.2 11.2c.4 1.7 2.2 2.6 2.7 4.5.6 2.4-1 4.6-3.1 4.6-2 0-3.4-1.6-3.2-3.5.1-1 .6-1.8 1.3-2.4.1.8.5 1.3 1 1.5-.2-1.7.4-3.3 1.3-4.7z"/></svg></span><span class="mt-tx"><b>Suave</b><small>unos 10 minutos al día</small></span><span class="mt-n">20 preg.</span></button>
-          <button type="button" class="mt" data-meta="30" aria-pressed="false" style="--c:#1CB0F6"><span class="mt-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.7 1.6 2.6 1.9 5.4.8 8-1.2 2.9-3.9 4.7-6.6 4.7-3.2 0-6.1-2.2-6.8-5.5-.5-2.2.1-4.4 1.4-6.1.2 1.5.9 2.6 2 3.1-.5-4.4 1.4-8.6 4-11.9z"/></svg></span><span class="mt-tx"><b>Normal</b><small>unos 15 minutos al día</small></span><span class="mt-n">30 preg.</span></button>
-          <button type="button" class="mt" data-meta="50" aria-pressed="false" style="--c:#CE82FF"><span class="mt-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.7 1.6 2.6 1.9 5.4.8 8-1.2 2.9-3.9 4.7-6.6 4.7-3.2 0-6.1-2.2-6.8-5.5-.5-2.2.1-4.4 1.4-6.1.2 1.5.9 2.6 2 3.1-.5-4.4 1.4-8.6 4-11.9z"/><path fill="#fff" opacity=".6" d="M12.2 11.2c.4 1.7 2.2 2.6 2.7 4.5.6 2.4-1 4.6-3.1 4.6-2 0-3.4-1.6-3.2-3.5.1-1 .6-1.8 1.3-2.4.1.8.5 1.3 1 1.5-.2-1.7.4-3.3 1.3-4.7z"/></svg></span><span class="mt-tx"><b>Intenso</b><small>unos 25 minutos al día</small></span><span class="mt-n">50 preg.</span></button>
-      </section>
-      <p class="rc-regla" id="metaNota">Si la cambias, cuenta desde mañana para no romper tu racha. Los días pasados se quedan como estaban.</p>
-      <section class="stats">
-        <div class="st cel"><span class="st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg></span><div><b id="rHoy">–</b><span>preguntas hoy</span></div></div>
-        <div class="st ver"><span class="st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-6M12 20V5M19 20v-10"/></svg></span><div><b id="pPromedio">–</b><span>promedio</span></div></div>
-        <div class="st mor"><span class="st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M9 10l2.2 2.2L15.5 8"/></svg></span><div><b id="pPracticas">–</b><span>prácticas</span></div></div>
-        <div class="st roj"><span class="st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 0 1 14.8-5.7L21 9"/><polyline points="21 3.5 21 9 15.5 9"/><path d="M20.5 12a8.5 8.5 0 0 1-14.8 5.7L3 15"/><polyline points="3 20.5 3 15 8.5 15"/></svg></span><div><b id="pFalladas">–</b><span>por repasar</span></div></div>
-      </section>
-
-      <section class="panel" id="errores">
-        <div class="err-top">
-          <div class="err-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 0 1 14.8-5.7L21 9"/><polyline points="21 3.5 21 9 15.5 9"/><path d="M20.5 12a8.5 8.5 0 0 1-14.8 5.7L3 15"/><polyline points="3 20.5 3 15 8.5 15"/></svg></div>
-          <div><h2>Errores de hoy</h2><p class="nota" id="eSub">Cargando…</p></div>
-        </div>
-        <div class="err-lista" id="eLista"></div>
-        <a class="err-btn" id="eBtn" href="falladas.html?hoy=1" hidden>Practicar mis errores</a>
-        <p class="err-reloj" id="eReloj"></p>
-      </section>
-
-      <section class="panel" id="progreso">
-        <div class="sec-cab">
-          <span class="sec-ic cel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-6M12 20V5M19 20v-10"/></svg></span>
-          <div><h2>Mi progreso por curso</h2><p class="nota">Se guarda cada vez que terminas una práctica, un Repaso, unas Fijas o un examen.</p></div>
-        </div>
-        <a class="btn-cel prog-repasar" id="pRepasar" href="falladas.html" hidden></a>
-        <div class="prog-cursos" id="pCursos"><p class="nota">Cargando tu progreso…</p></div>
-      </section>
-
-      <section class="panel" id="simulacros">
-        <div class="sec-cab">
-          <span class="sec-ic mor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6v3H9z"/><path d="M7 4.5H5V21h14V4.5h-2"/><path d="M9 11h6M9 15h4"/></svg></span>
-          <div><h2>Mis simulacros</h2><p class="nota">Tus simulacros terminados. Con «Repetir» das las mismas preguntas otra vez.</p></div>
-        </div>
-        <ul class="lista rep-lista" id="simLista"><li><span>Cargando…</span></li></ul>
-        <a class="btn-mor" href="simulacro.html">Crear un simulacro</a>
-      </section>
 
       <section class="panel">
         <div class="sec-cab">
@@ -900,14 +962,22 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
     var hoy = new Date(fechaPeru(Date.now()) + 'T00:00:00Z');
     return hoy.getTime() - ((hoy.getUTCDay() + 6) % 7) * 86400000;
   }
+  // Días de la racha: desde el lunes de esta semana o desde el primero del mes (el que sea antes)
+  var VISTA = 'semana', MES = 0, SEL = null, DESDE = null;
+  function primeroMes(k) { var h = new Date(fechaPeru(Date.now()) + 'T00:00:00Z'); return Date.UTC(h.getUTCFullYear(), h.getUTCMonth() - k, 1); }
   function cargarSemana() {
+    var desde = fechaPeru(Math.min(lunesPeru(), primeroMes(MES)) + 5 * 3600000);
+    if (DESDE && desde >= DESDE) { pintarSemana(); return; }
     MCAuth.listo.then(function (c) {
-      return c.from('actividad').select('*').gte('fecha', fechaPeru(lunesPeru() + 5 * 3600000));
+      return c.from('actividad').select('*').gte('fecha', desde);
     }).then(function (r) {
-      ACT = {};
+      ACT = ACT || {}; DESDE = desde;
       ((!r.error && r.data) || []).forEach(function (x) { ACT[x.fecha] = x.preguntas; METAS[x.fecha] = x.meta || 10; });
       pintarSemana();
-    }).catch(function () { ACT = {}; pintarSemana(); });
+    }).catch(function () { ACT = ACT || {}; pintarSemana(); });
+  }
+  function nombreDia(f) {
+    return new Date(f + 'T12:00:00Z').toLocaleDateString('es-PE', { weekday: 'short', day: 'numeric', timeZone: 'UTC' }).replace('.', '').replace(/^\w/, function (c) { return c.toUpperCase(); });
   }
   function pintarSemana() {
     var r = RACHA; if (!r || !ACT) return;
@@ -915,18 +985,87 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
     caja.textContent = '';
     DIAS.forEach(function (letra, i) {
       var f = new Date(lunes + i * 86400000).toISOString().slice(0, 10);
-      var n = f === hoy ? (r.hoy || 0) : (ACT[f] || 0), html;
+      var n = f === hoy ? (r.hoy || 0) : (ACT[f] || 0), html, txt;
       if (n >= (f === hoy ? meta : METAS[f] || 10)) html = SVG_OK;
       else if (f === hoy) html = svgHoy(n / meta);
       else if (f > hoy) html = SVG_NADA;
       // Día que faltó esta semana sin romper la racha: el descanso (congelado)
       else if (!hielo && r.descanso_usado && (r.actual || 0) > 0) { hielo = true; html = SVG_HIELO; }
       else html = SVG_NADA;
-      var d = document.createElement('div'); d.className = 'rc-dia' + (f === hoy ? ' es-hoy' : '');
+      txt = f === hoy ? 'Hoy · ' + Math.min(n, meta) + '/' + meta + ' preguntas'
+        : f > hoy ? nombreDia(f) + ' · todavía no llega'
+        : nombreDia(f) + ' · ' + (html === SVG_HIELO ? 'día congelado' : n + (n === 1 ? ' pregunta' : ' preguntas'));
+      var d = document.createElement('button'); d.type = 'button';
+      d.className = 'rc-dia' + (f === hoy ? ' es-hoy' : '') + (SEL === f ? ' sel' : '');
+      d.setAttribute('aria-label', txt);
       var s = document.createElement('span'); s.textContent = letra;
       var ic = document.createElement('i'); ic.innerHTML = html;
-      d.appendChild(s); d.appendChild(ic); caja.appendChild(d);
+      d.appendChild(s); d.appendChild(ic);
+      if (SEL === f) { var t = document.createElement('em'); t.className = 'rc-tip'; t.textContent = txt; d.appendChild(t); }
+      d.addEventListener('click', function (e) { e.stopPropagation(); SEL = SEL === f ? null : f; pintarSemana(); });
+      caja.appendChild(d);
     });
+    pintarMes();
+  }
+  // Calendario del mes: naranja = cumpliste la meta, amarillo suave = estudiaste algo
+  function pintarMes() {
+    var caja = $('rMes'), r = RACHA;
+    caja.hidden = VISTA !== 'mes';
+    if (VISTA !== 'mes' || !r) return;
+    var hoy = fechaPeru(Date.now()), ini = new Date(primeroMes(MES)), y = ini.getUTCFullYear(), m = ini.getUTCMonth();
+    var dias = new Date(Date.UTC(y, m + 1, 0)).getUTCDate(), hueco = (ini.getUTCDay() + 6) % 7, ok = 0, celdas = '';
+    for (var i = 0; i < hueco; i++) celdas += '<b class="no"></b>';
+    for (var d = 1; d <= dias; d++) {
+      var f = y + '-' + ('0' + (m + 1)).slice(-2) + '-' + ('0' + d).slice(-2);
+      var n = f === hoy ? (r.hoy || 0) : (ACT[f] || 0), meta = f === hoy ? (r.meta || 20) : (METAS[f] || 10), c;
+      if (n >= meta) { c = 'ok'; ok++; } else if (f === hoy) c = 'hoy'; else if (f > hoy) c = 'fut'; else if (n > 0) c = 'medio'; else c = '';
+      celdas += '<b class="' + c + '" title="' + nombreDia(f) + ' · ' + n + (n === 1 ? ' pregunta' : ' preguntas') + '">' + d + '</b>';
+    }
+    var nom = ini.toLocaleDateString('es-PE', { month: 'long', year: 'numeric', timeZone: 'UTC' }).replace(/^\w/, function (c) { return c.toUpperCase(); });
+    caja.innerHTML = '<div class="rc-mes-cab"><button type="button" data-mes="1" aria-label="Mes anterior"' + (MES >= 5 ? ' disabled' : '') + '>‹</button>' + nom.replace(' de ', ' ') +
+      '<button type="button" data-mes="-1" aria-label="Mes siguiente"' + (MES === 0 ? ' disabled' : '') + '>›</button><span>' + ok + (ok === 1 ? ' día cumplido' : ' días cumplidos') + '</span></div>' +
+      '<div class="rc-sem">' + DIAS.map(function (l) { return '<span>' + l + '</span>'; }).join('') + '</div><div class="rc-cal">' + celdas + '</div>';
+  }
+  $('rMes').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-mes]'); if (!b || b.disabled) return;
+    MES = Math.max(0, Math.min(5, MES + +b.dataset.mes)); cargarSemana();
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('.rc-vista button'), function (b) {
+    b.addEventListener('click', function () {
+      VISTA = b.dataset.vista; MES = 0;
+      Array.prototype.forEach.call(document.querySelectorAll('.rc-vista button'), function (x) { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', String(x === b)); });
+      if (VISTA === 'mes') cargarSemana(); else pintarMes();
+    });
+  });
+  document.addEventListener('click', function () { if (SEL) { SEL = null; pintarSemana(); } });
+  // Color del cuadro: el tema de racha que llevas puesto en Mi colección
+  function pintarTema() {
+    if (!window.MCColeccion) return;
+    var t = MCColeccion.tema(), card = $('racha');
+    ['--rc1', '--rc2', '--rcb', '--rcd'].forEach(function (v, i) { card.style.setProperty(v, t[i]); });
+  }
+  // Mi colección (assets/coleccion.js): marco, búho y título que llevas, y tus pines
+  function pintarColeccion() {
+    var C = window.MCColeccion; if (!C) return;
+    var marco = C.marco(), caja = $('avCaja');
+    caja.classList.toggle('con-marco', !!marco);
+    caja.style.setProperty('--marco', marco || 'none');
+    var b = C.item(C.puesto('buho')), av = $('avBuho');
+    av.innerHTML = C.buho(b); av.hidden = false; av.title = 'Búho ' + b.nom;
+    var t = C.item(C.puesto('titulo')), c = C.rareza[t.rareza].c, pt = $('pTitulo');
+    pt.textContent = '★ ' + t.nom; pt.hidden = false;
+    pt.style.color = 'rgb(' + c + ')'; pt.style.borderColor = 'rgba(' + c + ',.5)'; pt.style.background = 'rgba(' + c + ',.1)';
+    var pines = C.puesto('pines'), h = '';
+    for (var i = 0; i < 3; i++) h += pines[i] ? C.pin(C.item(pines[i])) : '<span class="hueco">+</span>';
+    $('colPins').innerHTML = h;
+    var n = C.contar(); $('colN').textContent = n.tengo + '/' + n.total;
+    pintarTema();
+  }
+  if (window.MCColeccion) {
+    MCColeccion.css();
+    MCColeccion.alCambiar(pintarColeccion);
+    pintarColeccion();
+    MCAuth.alCambiar(function (u) { if (u) MCColeccion.cargar(); });
   }
   function pintarRacha(r) {
     if (!r) return;
@@ -936,6 +1075,8 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
     $('rActualT').textContent = n === 1 ? 'día de racha' : 'días de racha';
     $('rMejor').textContent = Math.max(r.mejor || 0, n);
     $('rHoy').textContent = hoyN + '/' + meta;
+    $('rBarra').style.width = (r.cumplido_hoy ? 100 : Math.round(hoyN / meta * 100)) + '%';
+    pintarTema();
     var card = $('racha');
     card.classList.toggle('apagada', !n && !r.cumplido_hoy);
     card.classList.toggle('pendiente', !!n && !r.cumplido_hoy);

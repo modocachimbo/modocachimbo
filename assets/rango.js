@@ -6,8 +6,8 @@
    - MCRango.svg(n, {mini}): el emblema del rango n (0 a 4).
    - En el inicio: tarjeta "Tu rango esta semana" antes de "Empezar a practicar"
      y la pantalla de subida cuando pasas a un rango nuevo.
-   - En el perfil: el emblema junto a tu nombre, tu vitrina de semanas
-     (tus filas de xp_semana) y un emblema chico en cada fila del ranking.
+   - En el perfil: el emblema junto a tu nombre y un emblema chico en cada fila
+     del ranking. La vitrina de semanas (tus filas de xp_semana) está en coleccion.html.
    ========================================================= */
 (function () {
   if (window.MCRango) return;
@@ -264,7 +264,7 @@
     if (!agenda || !window.MCCorazones) return;
     css();
     var caja = document.createElement('a');
-    caja.className = 'mc-rgo'; caja.href = 'perfil.html#rango'; caja.hidden = true;
+    caja.className = 'mc-rgo'; caja.href = 'coleccion.html#rangos'; caja.hidden = true;
     agenda.insertAdjacentElement('beforebegin', caja);
     var ultimo = -1;
     MCCorazones.alCambiar(function (e) {
@@ -325,33 +325,13 @@
       if (!e) return;
       var n = nivel(e.xp_semana);
       if (n < 0) { ins.hidden = true; return; }
-      ins.innerHTML = '<a class="mc-rgo-ins" href="#rango" style="' + vars(n) + ';text-decoration:none"><span>' + svg(n, { mini: true }) + '</span>' + NOM[n] + ' <small>· ' + miles(e.xp_semana) + ' XP</small></a>';
+      ins.innerHTML = '<a class="mc-rgo-ins" href="coleccion.html#rangos" style="' + vars(n) + ';text-decoration:none"><span>' + svg(n, { mini: true }) + '</span>' + NOM[n] + ' <small>· ' + miles(e.xp_semana) + ' XP</small></a>';
       ins.hidden = false;
     });
-    // Vitrina con las semanas pasadas
-    var tab = document.getElementById('tabPerfil');
-    if (!tab || !window.MCAuth) return;
-    var sec = document.createElement('section');
-    sec.className = 'panel'; sec.id = 'rango'; sec.hidden = true;
-    tab.insertBefore(sec, tab.firstChild);
-    MCAuth.listo.then(function (c) {
-      var u = MCAuth.usuario();
-      return u ? c.from('xp_semana').select('semana,xp').eq('usuario', u.id).order('semana', { ascending: false }).limit(60) : { data: [] };
-    }).then(function (r) {
-      var v = vitrina((r && r.data) || []);
-      sec.innerHTML = '<h2 class="sec-tit" style="margin-top:0">Mi vitrina de rangos</h2>' +
-        '<p class="nota" style="margin:2px 0 0">' + (v.total ? v.total + (v.total === 1 ? ' semana cerrada' : ' semanas cerradas') + '. Cada lunes se guarda el rango que alcanzaste.' : 'Cada lunes se guarda aquí el rango que alcanzaste en la semana.') + '</p>' +
-        '<div class="mc-rgo-vit">' + v.html + '</div>';
-      sec.querySelector('.mc-rgo-vit').addEventListener('click', function (e) {
-        var b = e.target.closest('button.mc-rgo-pz');
-        if (b) semanas(+b.dataset.n, v.semanas[+b.dataset.n]);
-      });
-      sec.hidden = false;
-      if (location.hash === '#rango') sec.scrollIntoView({ block: 'start' });
-    }).catch(function () {});
+    // La vitrina de semanas pasadas vive en Mi colección (coleccion.html#rangos)
   }
 
-  window.MCRango = { svg: svg, nivel: nivel, nombre: function (n) { return NOM[n]; }, minimo: MIN, css: css, subida: subida, vitrina: vitrina, mini: function (xp) { return nivel(xp) < 0 ? '' : '<span class="mc-rgo-mini" title="' + NOM[nivel(xp)] + '">' + svg(nivel(xp), { mini: true }) + '</span>'; } };
+  window.MCRango = { svg: svg, nivel: nivel, nombre: function (n) { return NOM[n]; }, minimo: MIN, css: css, subida: subida, vitrina: vitrina, semanas: semanas, mini: function (xp) { return nivel(xp) < 0 ? '' : '<span class="mc-rgo-mini" title="' + NOM[nivel(xp)] + '">' + svg(nivel(xp), { mini: true }) + '</span>'; } };
 
   // corazones.js trae el XP de la semana; se espera a que cargue
   function iniciar(intento) {
