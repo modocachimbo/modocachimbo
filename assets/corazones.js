@@ -38,7 +38,7 @@
   function guardar(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 
-  var estado = null, oyentes = [], nombres = {}, cursosLista = null, conRepaso = false;
+  var estado = null, oyentes = [], nombres = {}, areas = {}, cursosLista = null, conRepaso = false;
   try { estado = JSON.parse(leer(CLAVE) || 'null'); } catch (e) {}
 
   /* ---------- Íconos propios ---------- */
@@ -62,6 +62,10 @@
 
   function css() {
     if (document.getElementById('mcz-css')) return;
+    // Barlow Condensed para los títulos (las páginas que no la traen)
+    var fu = document.createElement('link'); fu.rel = 'stylesheet';
+    fu.href = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,800;1,900&display=swap';
+    document.head.appendChild(fu);
     var st = document.createElement('style'); st.id = 'mcz-css';
     st.textContent =
       // Píldoras de arriba (junto a la racha)
@@ -95,42 +99,48 @@
       '.mcz-hoja{width:100%;max-width:520px;max-height:88vh;overflow-y:auto;display:grid;gap:14px;background:#151127;color:#f2f2f2;border:2px solid #2C2549;border-bottom:0;border-radius:26px 26px 0 0;padding:18px 16px calc(20px + env(safe-area-inset-bottom));font-family:Nunito,Inter,sans-serif;animation:mczSube .22s ease-out}' +
       '@media (min-width:560px){.mcz-fondo{align-items:center}.mcz-hoja{border-radius:26px;border-bottom:5px solid #2C2549}}' +
       '@keyframes mczSube{from{transform:translateY(40px);opacity:0}}' +
-      '.mcz-cab{display:flex;align-items:center;gap:8px}.mcz-cab b{flex:1;font-size:20px;font-weight:1000}' +
+      // Títulos en Barlow cursiva y cuadros con borde de color abajo, como el inicio del repaso
+      '.mcz-hoja .bc,.mcz-sin .bc{font-family:"Barlow Condensed",Nunito,sans-serif;text-transform:uppercase}' +
+      '.mcz-cab{display:flex;align-items:center;gap:8px}.mcz-cab b{flex:1;font:italic 900 28px/1 "Barlow Condensed",Nunito,sans-serif;letter-spacing:.01em}.mcz-cab .mcz-pill{height:38px}' +
       '.mcz-x{width:40px;height:40px;border-radius:12px;border:2px solid #322B52;background:transparent;color:#9a9a9a;cursor:pointer;display:grid;place-items:center}.mcz-x svg{width:18px;height:18px}' +
-      '.mcz-vidas{display:flex;justify-content:center;gap:8px}.mcz-vidas svg{width:40px;height:40px}' +
-      '.mcz-rec{display:flex;align-items:center;justify-content:center;gap:6px;font-size:14px;color:#9a9a9a;font-weight:700}.mcz-rec svg{width:17px;height:17px;color:#1CB0F6}.mcz-rec b{color:#f2f2f2}' +
-      '.mcz-sub{font-size:12.5px;font-weight:1000;letter-spacing:.08em;color:#5f5f5f;text-transform:uppercase;margin:2px 2px -4px}' +
-      '.mcz-mis{display:flex;align-items:center;gap:12px;padding:12px;border-radius:18px;background:#1D1834;border:2px solid #2C2549;border-bottom-width:4px;color:inherit;text-decoration:none;transition:transform .08s ease}' +
-      'a.mcz-mis:active{transform:translateY(2px);border-bottom-width:2px;margin-bottom:2px}' +
+      '.mcz-vidas{display:flex;justify-content:center;gap:8px}.mcz-vidas svg{width:42px;height:42px}.mcz-vidas .vacio{--c1:#2F284E;--c2:#241E3E;--c3:0}.mcz-vidas .vacio .mcz-late{animation:none}' +
+      '.mcz-rec{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 12px;border-radius:14px;background:#1D1834;border:1px solid #2A2346;border-bottom:4px solid #1CB0F6;font:800 14px Nunito,sans-serif;color:#A99FC8}' +
+      '.mcz-rec svg{width:18px;height:18px;color:#1CB0F6;flex-shrink:0}.mcz-rec b{color:#fff;font:italic 900 20px/1 "Barlow Condensed",Nunito,sans-serif;letter-spacing:.02em}.mcz-rec.lleno{border-bottom-color:#C6E000}.mcz-rec.lleno svg{color:#C6E000}' +
+      '.mcz-sub{display:flex;align-items:center;gap:8px;margin:4px 0 -4px}.mcz-sub b{font:italic 900 21px/1 "Barlow Condensed",Nunito,sans-serif;color:#fff}.mcz-sub small{font:900 12px Nunito,sans-serif;color:#FF6B6B}.mcz-sub::after{content:"";flex:1;height:2px;background:#2A2346}' +
+      '.mcz-mis{--mc:#2A2346;display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:#1D1834;border:1px solid #2A2346;border-bottom:4px solid var(--mc);color:inherit;text-decoration:none;text-align:left;transition:transform .08s ease}' +
+      'a.mcz-mis:active{transform:translateY(2px)}' +
       '.mcz-mis .ic{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;flex-shrink:0}' +
       '.mcz-mis .ic svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}' +
-      '.mcz-mis .tx{flex:1;min-width:0;display:grid;gap:5px}.mcz-mis .tx b{font-size:15px;font-weight:900;line-height:1.25}.mcz-mis small{font-size:12px;color:#9a9a9a;font-weight:700}' +
-      '.mcz-bar{height:9px;border-radius:6px;background:#2C2549;overflow:hidden}.mcz-bar i{display:block;height:100%;border-radius:6px;background:#1CB0F6}' +
-      '.mcz-prem{display:flex;align-items:center;gap:3px;font:1000 14px Nunito,sans-serif;color:#FF4B4B;flex-shrink:0}.mcz-prem svg{width:18px;height:18px}' +
-      '.mcz-mis.ok{border-color:rgba(198,224,0,.35)}.mcz-mis.ok .mcz-bar i{background:#C6E000}.mcz-mis.ok .mcz-prem{color:#C6E000}' +
-      '.mcz-mis.az .ic{background:rgba(28,176,246,.13);color:#1CB0F6}.mcz-mis.mo .ic{background:rgba(206,130,255,.13);color:#CE82FF}.mcz-mis.na .ic{background:rgba(255,150,0,.13);color:#FF9600}' +
-      '.mcz-mis.or .ic{background:rgba(255,200,0,.13);color:#FFC800}.mcz-mis.li .ic{background:rgba(198,224,0,.1);color:#C6E000}.mcz-mis.ro .ic{background:rgba(255,75,75,.13);color:#FF4B4B}' +
-      '.mcz-mis.bonus{border-color:rgba(255,200,0,.4);background:linear-gradient(90deg,rgba(255,200,0,.08),#1D1834 60%)}' +
-      '.mcz-btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:14px;border-radius:16px;font:1000 15px Nunito,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:transform .08s ease}' +
+      '.mcz-mis .tx{flex:1;min-width:0;display:grid;gap:6px}.mcz-mis .tx b{font-size:15px;font-weight:900;line-height:1.25}.mcz-mis small{font-size:12px;color:#A99FC8;font-weight:700}' +
+      '.mcz-bar{height:9px;border-radius:6px;background:#2C2549;overflow:hidden}.mcz-bar i{display:block;height:100%;border-radius:6px;background:var(--mc)}' +
+      '.mcz-prem{display:flex;align-items:center;gap:3px;padding:5px 8px;border-radius:10px;background:rgba(255,75,75,.12);font:italic 900 17px/1 "Barlow Condensed",Nunito,sans-serif;color:#FF4B4B;flex-shrink:0}.mcz-prem svg{width:18px;height:18px}' +
+      '.mcz-mis.az{--mc:#1CB0F6}.mcz-mis.mo{--mc:#CE82FF}.mcz-mis.na{--mc:#FF9600}.mcz-mis.or{--mc:#FFC800}.mcz-mis.li{--mc:#C6E000}.mcz-mis.ro{--mc:#FF4B4B}' +
+      '.mcz-mis .ic{background:color-mix(in srgb,var(--mc) 14%,transparent);color:var(--mc)}' +
+      '.mcz-mis.ok{--mc:#C6E000}.mcz-mis.ok .mcz-prem{color:#C6E000;background:rgba(198,224,0,.12)}' +
+      '.mcz-mis.bonus{background:linear-gradient(90deg,rgba(255,200,0,.1),#1D1834 60%)}' +
+      '.mcz-btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:14px;border-radius:16px;font:italic 900 21px/1 "Barlow Condensed",Nunito,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:transform .08s ease}' +
       '.mcz-btn.prin{background:#C6E000;color:#2b3300;border:0;box-shadow:0 5px 0 #8fa300}.mcz-btn.prin:active{transform:translateY(4px);box-shadow:0 1px 0 #8fa300}' +
-      '.mcz-btn.prin:disabled{background:#2F284E;color:#5f5f5f;box-shadow:0 5px 0 #241E3E;cursor:default}' +
-      '.mcz-btn.sec{background:transparent;color:#f2f2f2;border:2px solid #322B52;border-bottom-width:5px}.mcz-btn.sec svg{width:20px;height:20px}.mcz-btn.sec:active{transform:translateY(3px);border-bottom-width:2px}' +
-      '.mcz-msg{text-align:center;font-size:13px;color:#ff8a8a;min-height:1em}' +
+      '.mcz-btn.prin:disabled{background:#2F284E;color:#6F6690;box-shadow:0 5px 0 #241E3E;cursor:default}' +
+      '.mcz-btn.sec{background:transparent;color:#f2f2f2;border:2px solid #322B52;border-bottom-width:5px}.mcz-btn.sec svg{width:22px;height:22px}.mcz-btn.sec:active{transform:translateY(3px);border-bottom-width:2px}' +
+      '.mcz-msg{text-align:center;font-size:13px;font-weight:700;color:#ff8a8a;min-height:1em}' +
       // Canje
-      '.mcz-trueque{display:flex;align-items:center;justify-content:center;gap:14px}' +
-      '.mcz-ficha{display:grid;justify-items:center;gap:4px;width:110px;padding:14px 8px;border-radius:20px;background:#1D1834;border:2px solid #2C2549;border-bottom-width:5px;font:1000 22px Nunito,sans-serif}' +
-      '.mcz-ficha svg{width:44px;height:44px}.mcz-ficha small{font:800 12px Nunito,sans-serif;color:#9a9a9a}.mcz-flecha{width:28px;height:28px;color:#5f5f5f}' +
-      '.mcz-saldo{text-align:center;font-size:14px;color:#9a9a9a;font-weight:700}.mcz-saldo b{color:#FFC800}' +
+      '.mcz-trueque{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:4px}' +
+      '.mcz-ficha{--fc:#FFC800;display:grid;justify-items:center;gap:4px;width:118px;padding:14px 8px 12px;border-radius:18px;background:#1D1834;border:1px solid #2A2346;border-bottom:5px solid var(--fc)}.mcz-ficha.cor{--fc:#FF4B4B}' +
+      '.mcz-ficha svg{width:44px;height:44px}.mcz-ficha b{font:italic 900 36px/1 "Barlow Condensed",Nunito,sans-serif;color:#fff}.mcz-ficha small{font:800 13px/1 "Barlow Condensed",Nunito,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#A99FC8}.mcz-flecha{width:28px;height:28px;color:#6F6690}' +
+      '.mcz-saldo{text-align:center;font-size:14px;color:#A99FC8;font-weight:700}.mcz-saldo b{color:#FFC800}.mcz-saldo b.mcz-n{color:#fff}' +
       '.mcz-cupos{display:flex;gap:6px;justify-content:center}.mcz-cupos span{width:34px;height:8px;border-radius:5px;background:#FFC800}.mcz-cupos span.usado{background:#2F284E}' +
-      '.mcz-nota{text-align:center;font-size:12.5px;color:#5f5f5f;line-height:1.5}' +
-      // Sin corazones (pantalla completa)
+      '.mcz-nota{text-align:center;font-size:12.5px;color:#6F6690;line-height:1.5;font-weight:700}' +
+      // Sin corazones (pantalla completa) con el búho triste disfrazado del área
       '.mcz-sin{position:fixed;inset:0;z-index:230;background:#0B0818;color:#f2f2f2;overflow-y:auto;font-family:Nunito,Inter,sans-serif;padding:24px 16px calc(24px + env(safe-area-inset-bottom))}' +
       '.mcz-sin[hidden]{display:none}' +
       '.mcz-sin-in{max-width:440px;margin:0 auto;display:grid;gap:14px;justify-items:center;text-align:center}' +
-      '.mcz-sin h2{font-size:26px;font-weight:1000;line-height:1.15}.mcz-sin p{font-size:14.5px;color:#9a9a9a;line-height:1.5;font-weight:700}.mcz-sin p b{color:#f2f2f2}' +
-      '.mcz-sin .mcz-lista{display:grid;gap:10px;width:100%;text-align:left}' +
+      '.mcz-sin h2{font:italic 900 36px/1 "Barlow Condensed",Nunito,sans-serif;letter-spacing:.01em}.mcz-sin h2 span{color:#FF4B4B}.mcz-sin .mcz-vidas{margin-top:-4px}.mcz-sin .mcz-rec{width:100%}' +
+      '.mcz-sin .mcz-lista{display:grid;gap:10px;width:100%;text-align:left}.mcz-sin .mcz-sub{width:100%}' +
       '.mcz-link{font:900 14px Nunito,sans-serif;color:#9a9a9a;text-decoration:underline;text-underline-offset:3px;background:none;border:0;cursor:pointer}' +
-      '.mcz-buho svg{width:110px;height:110px}' +
+      '.mcz-buho{display:flex;align-items:flex-end;justify-content:center;gap:4px;width:100%}.mcz-buho img{width:140px;height:auto;flex:none;transform-origin:50% 100%;filter:drop-shadow(0 5px 4px rgba(0,0,0,.4));animation:mczSuspiro 3s ease-in-out infinite}' +
+      '@keyframes mczSuspiro{0%,100%{transform:none}50%{transform:scale(1.015,.975)}}' +
+      '.mcz-globo{position:relative;flex:1;max-width:240px;margin-bottom:36px;padding:10px 14px;text-align:left;background:#1D1834;color:#EEEAF7;border:2px solid #2F284E;border-bottom:4px solid #FF4B4B;border-radius:16px;font:800 14px/1.35 Nunito,sans-serif}' +
+      '.mcz-globo b{color:#FF6B6B;font-weight:900}.mcz-globo::before{content:"";position:absolute;left:-9px;bottom:16px;width:14px;height:14px;background:#1D1834;border:solid #2F284E;border-width:0 0 2px 2px;rotate:45deg;border-radius:0 0 0 4px}' +
       // Aviso de corazón ganado
       '.mcz-toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;z-index:300;display:flex;align-items:center;gap:12px;background:#19142E;border:2px solid rgba(255,75,75,.45);color:#f2f2f2;border-radius:18px;padding:12px 18px 12px 14px;box-shadow:0 18px 40px rgba(0,0,0,.6);font:700 13.5px Nunito,Inter,sans-serif;transition:transform .35s ease,opacity .35s ease;max-width:calc(100vw - 32px)}' +
       '.mcz-toast.show{transform:translate(-50%,0);opacity:1}.mcz-toast svg{width:30px;height:30px;flex-shrink:0;animation:mczLatido .7s ease 2}.mcz-toast b{display:block;font-size:16px;font-weight:1000;color:#FF4B4B}' +
@@ -164,6 +174,7 @@
     return fetch(BASE + 'assets/cursos.json').then(function (r) { return r.json(); }).then(function (d) {
       var todos = (d.cursos || []).filter(function (c) { return !c.oculto; });
       todos.forEach(function (c) { nombres[c.id] = c.nombre; });
+      (d.cursos || []).forEach(function (c) { if (c.area) areas[c.id] = c.area; });
       var A = window.MCAcceso;
       var con = A && A.accesoLocal ? todos.filter(function (c) { try { return A.accesoLocal('repaso-' + c.id); } catch (e) { return false; } }) : [];
       conRepaso = con.length > 0;
@@ -331,19 +342,27 @@
     var bajo = cobrada ? '¡Cobrada!' : m.estado === 'lista' ? 'Lista: se cobra cuando te falte un corazón' : (m.hecho || 0) + ' / ' + m.meta + (d.sub ? ' · ' + d.sub : '');
     return '<a class="mcz-mis ' + COLOR[m.tipo] + (hecho ? ' ok' : '') + '" href="' + esc(BASE + d.link) + '"><span class="ic">' + SVG[m.tipo] + '</span>' +
       '<span class="tx"><b>' + esc(d.tit) + '</b><span class="mcz-bar"><i style="width:' + pct + '%"></i></span>' + (corta ? '' : '<small>' + esc(bajo) + '</small>') + '</span>' +
-      '<span class="mcz-prem">' + (cobrada ? SVG.check : SVG.corazon + '+1') + '</span></a>';
+      '<span class="mcz-prem bc">' + (cobrada ? SVG.check : SVG.corazon + '+1') + '</span></a>';
   }
   function filaSimulacro(corta) {
     var s = estado.simulacro, cobrada = s === 'cobrada';
     return '<a class="mcz-mis or bonus' + (cobrada ? ' ok' : '') + '" href="' + esc(BASE + 'simulacro.html') + '"><span class="ic">' + SVG.simulacro + '</span>' +
       '<span class="tx"><b>' + (corta ? 'Haz tu primer simulacro del día' : 'Bonus: tu primer simulacro del día') + '</b>' +
       (corta ? '' : '<small>' + (cobrada ? '¡Cobrado!' : s === 'lista' ? 'Listo: te devuelve los 5 cuando te falten' : 'Te devuelve los 5 corazones') + '</small>') + '</span>' +
-      '<span class="mcz-prem">' + (cobrada ? SVG.check : SVG.corazon + '+5') + '</span></a>';
+      '<span class="mcz-prem bc">' + (cobrada ? SVG.check : SVG.corazon + '+5') + '</span></a>';
   }
   function filaVidas() {
     var h = '';
-    for (var i = 0; i < 5; i++) h += i < estado.quedan ? SVG.corazon : SVG.vacio;
+    for (var i = 0; i < 5; i++) h += i < estado.quedan ? SVG.corazon : '<span class="vacio">' + SVG.corazon + '</span>';
     return '<div class="mcz-vidas">' + h + '</div>';
+  }
+
+  // Muchas páginas fijan Nunito con !important en todo; los títulos Barlow lo pisan en línea
+  function barlow(raiz) {
+    Array.prototype.forEach.call(raiz.querySelectorAll('.bc'), function (e) { e.style.setProperty('font-family', "'Barlow Condensed', Nunito, sans-serif", 'important'); });
+  }
+  function reloj() {
+    return estado.quedan < 5 ? '<div class="mcz-rec">' + SVG.reloj + 'Próximo corazón en <b class="bc" id="mczReloj">' + tiempo(estado.proximo) + '</b></div>' : '<div class="mcz-rec lleno">' + SVG.check + 'Tienes tus 5 corazones</div>';
   }
 
   var hoja = null;
@@ -357,19 +376,19 @@
     }
     hoja.dataset.vista = vista;
     hoja.innerHTML = '<div class="mcz-hoja" role="dialog" aria-modal="true">' + html + '</div>';
+    barlow(hoja);
     hoja.hidden = false;
   }
   function cerrarHoja() { if (hoja) hoja.hidden = true; }
 
   function abrirMisiones() {
     if (!estado) return;
-    var pend = estado.quedan < 5 ? '<div class="mcz-rec">' + SVG.reloj + 'Próximo corazón en <b>' + tiempo(estado.proximo) + '</b></div>' : '<div class="mcz-rec">Tienes tus 5 corazones</div>';
     abrirHoja('misiones',
-      '<div class="mcz-cab"><b>Tus corazones</b><button type="button" class="mcz-pill mcz-xp" data-canje style="display:inline-flex">' + SVG.xp + (estado.xp_semana || 0) + '</button><button type="button" class="mcz-x" aria-label="Cerrar">' + SVG.x + '</button></div>' +
-      filaVidas() + pend +
-      '<div class="mcz-sub">Misiones de hoy · +1 corazón cada una</div>' +
+      '<div class="mcz-cab"><b class="bc">Tus corazones</b><button type="button" class="mcz-pill mcz-xp" data-canje style="display:inline-flex">' + SVG.xp + (estado.xp_semana || 0) + '</button><button type="button" class="mcz-x" aria-label="Cerrar">' + SVG.x + '</button></div>' +
+      filaVidas() + reloj() +
+      '<div class="mcz-sub"><b class="bc">Misiones de hoy</b><small>+1 corazón c/u</small></div>' +
       (estado.misiones || []).map(function (m) { return filaMision(m); }).join('') + filaSimulacro() +
-      '<button type="button" class="mcz-btn sec" data-canje>' + SVG.xp + 'Canjear XP por corazones</button>' +
+      '<button type="button" class="mcz-btn sec bc" data-canje>' + SVG.xp + 'Canjear XP por corazones</button>' +
       '<a class="mcz-link" style="justify-self:center" href="' + esc(BASE + 'perfil.html#ranking') + '">Ver el ranking de la semana</a>' +
       '<p class="mcz-nota">Los corazones se gastan solo en Repaso, Fijas, Seminarios y Banqueo. Recuperas 1 cada 3 horas y a medianoche vuelven los 5.</p>');
     Array.prototype.forEach.call(hoja.querySelectorAll('[data-canje]'), function (b) { b.addEventListener('click', abrirCanje); });
@@ -381,12 +400,12 @@
     var cupos = ''; for (var i = 0; i < estado.canjes_max; i++) cupos += '<span' + (i < estado.canjes ? ' class="usado"' : '') + '></span>';
     var motivo = lleno ? 'Ya tienes tus 5 corazones.' : quedan <= 0 ? 'Ya usaste tus ' + estado.canjes_max + ' canjes de hoy.' : falta ? 'Te faltan ' + (estado.precio - estado.xp_saldo) + ' XP. Gánalos respondiendo en Práctica, Vocabulario o Flashcards.' : '';
     abrirHoja('canje',
-      '<div class="mcz-cab"><b>Canjear XP</b><button type="button" class="mcz-x" aria-label="Cerrar">' + SVG.x + '</button></div>' +
-      '<div class="mcz-trueque"><span class="mcz-ficha">' + SVG.xp + estado.precio + '<small>XP</small></span><span class="mcz-flecha">' + SVG.flecha + '</span><span class="mcz-ficha">' + SVG.corazon + '1<small>corazón</small></span></div>' +
+      '<div class="mcz-cab"><b class="bc">Canjear XP</b><button type="button" class="mcz-x" aria-label="Cerrar">' + SVG.x + '</button></div>' +
+      '<div class="mcz-trueque"><span class="mcz-ficha">' + SVG.xp + '<b class="bc">' + estado.precio + '</b><small class="bc">XP</small></span><span class="mcz-flecha">' + SVG.flecha + '</span><span class="mcz-ficha cor">' + SVG.corazon + '<b class="bc">1</b><small class="bc">Corazón</small></span></div>' +
       '<div class="mcz-saldo">Tienes <b>' + estado.xp_saldo + ' XP</b> para canjear</div>' +
       '<div class="mcz-cupos">' + cupos + '</div>' +
-      '<div class="mcz-saldo">Te ' + (quedan === 1 ? 'queda <b style="color:#f2f2f2">1 canje</b>' : 'quedan <b style="color:#f2f2f2">' + Math.max(0, quedan) + ' canjes</b>') + ' hoy</div>' +
-      '<button type="button" class="mcz-btn prin" id="mczCanjear"' + (motivo ? ' disabled' : '') + '>Canjear ' + estado.precio + ' XP</button>' +
+      '<div class="mcz-saldo">Te ' + (quedan === 1 ? 'queda <b class="mcz-n">1 canje</b>' : 'quedan <b class="mcz-n">' + Math.max(0, quedan) + ' canjes</b>') + ' hoy</div>' +
+      '<button type="button" class="mcz-btn prin bc" id="mczCanjear"' + (motivo ? ' disabled' : '') + '>Canjear ' + estado.precio + ' XP</button>' +
       '<div class="mcz-msg" id="mczMsg">' + esc(motivo) + '</div>' +
       '<p class="mcz-nota">Canjear no te baja en el ranking: ahí se cuenta todo el XP que ganaste en la semana.</p>');
     var b = document.getElementById('mczCanjear');
@@ -411,21 +430,26 @@
     }
     var pend = (estado.misiones || []).filter(function (m) { return m.estado === 'pend'; });
     var primera = pend[0] ? BASE + mision(pend[0]).link : BASE + 'simulacro.html';
-    var buho = window.MCBuho ? MCBuho.svg('triste', 110) : '';
+    // El búho triste disfrazado del área del curso (assets/buho/disfraces), con un globo de ánimo
+    var area = areas[PAG.curso] || document.documentElement.getAttribute('data-area');
+    var buho = area ? '<img src="' + esc(BASE + 'assets/buho/disfraces/' + area + '-triste.webp') + '" alt="Búho de Modo Cachimbo triste">' : window.MCBuho ? MCBuho.svg('triste', 110) : '';
+    var animo = ['¡Tranqui! <b>Hasta los mejores</b> se quedan sin corazones.', 'Equivocarse también es aprender. <b>Recupéralos</b> con una misión.', 'Respira y vuelve más fuerte. <b>¡Yo te espero!</b>'];
     capa.innerHTML = '<div class="mcz-sin-in">' +
-      '<span class="mcz-buho">' + buho + '</span>' +
-      '<h2>Te quedaste sin corazones</h2>' +
-      '<p>Vuelve en <b id="mczReloj">' + tiempo(estado.proximo) + '</b> por uno nuevo, o gánatelos ahora con tus misiones.</p>' +
+      '<div class="mcz-buho">' + buho + '<div class="mcz-globo">' + animo[Math.floor(Math.random() * animo.length)] + '</div></div>' +
+      '<h2 class="bc">Te quedaste sin <span>corazones</span></h2>' +
+      filaVidas() + reloj() +
+      '<div class="mcz-sub"><b class="bc">Gánalos ahora</b><small>con tus misiones</small></div>' +
       '<div class="mcz-lista">' + pend.map(function (m) { return filaMision(m, true); }).join('') + (estado.simulacro !== 'cobrada' ? filaSimulacro(true) : '') + '</div>' +
-      '<a class="mcz-btn prin" href="' + esc(primera) + '">Ir a una misión</a>' +
-      '<button type="button" class="mcz-btn sec" data-canje>' + SVG.xp + 'Canjear ' + estado.precio + ' XP</button>' +
+      '<a class="mcz-btn prin bc" href="' + esc(primera) + '">Ir a una misión</a>' +
+      '<button type="button" class="mcz-btn sec bc" data-canje>' + SVG.xp + 'Canjear ' + estado.precio + ' XP</button>' +
       '<a class="mcz-link" href="' + esc(BASE + 'index.html') + '">Volver al inicio</a></div>';
+    barlow(capa);
     capa.querySelector('[data-canje]').addEventListener('click', abrirCanje);
     capa.hidden = false;
     if (window.MCSonido && MCSonido.perder) try { MCSonido.perder(); } catch (e) {}
     clearInterval(tReloj);
     tReloj = setInterval(function () {
-      var r = document.getElementById('mczReloj');
+      var r = capa.querySelector('#mczReloj');
       if (!r || capa.hidden) { clearInterval(tReloj); return; }
       r.textContent = tiempo(estado.proximo);
       if (estado.proximo != null && estado.proximo - (Date.now() - recibido) / 1000 <= 0) { clearInterval(tReloj); cargar(); }
