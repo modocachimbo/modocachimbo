@@ -438,6 +438,7 @@
   .a-ic::after { content: ""; position: absolute; inset: 8px; background: var(--c); -webkit-mask: var(--ico) center / contain no-repeat; mask: var(--ico) center / contain no-repeat; }
   .a-tx b { display: block; font-size: 14.5px; font-weight: 900; color: var(--c); }
   .a-tx small { display: block; color: var(--dim); font-size: 11.5px; line-height: 1.35; margin-top: 2px; }
+  .a-tx small b { display: inline; font-size: inherit; }
   .a-num, .a-pts { text-align: center; font-weight: 900; font-size: 20px; line-height: 1; font-variant-numeric: tabular-nums; }
   .a-num small, .a-pts small { display: block; font-size: 10.5px; color: var(--dim); font-weight: 800; margin-top: 3px; }
   .a-pts { color: var(--c); min-width: 40px; }
@@ -798,6 +799,82 @@
   @keyframes selSube { from { transform: translateY(40%); opacity: .4; } }
   @media (prefers-reduced-motion: reduce) { .sel-pop { animation: none; } }
 
+  /* =========================================================
+     Personalizado: "Elige tus temas" estilo FF + Duolingo
+     ========================================================= */
+  .temas-card { padding: 22px; }
+  .tcab-tit { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .tcab-ic { width: 46px; height: 46px; flex-shrink: 0; display: grid; place-items: center; background: var(--oro); color: #2a1d00; clip-path: polygon(12% 0, 100% 0, 88% 100%, 0 100%); }
+  .tcab-ic svg { width: 28px; height: 28px; }
+  html body .temas-cab h3:not(#z) { font-size: 30px; }
+  .temas-res { font-weight: 800; margin-top: 5px; }
+  .temas-res b { color: var(--yo-tx, var(--accent)); font-weight: 900; }
+  html[data-modo="claro"] .temas-res b { color: #6F8000; }
+  .temas-acc .btn { display: inline-flex; align-items: center; }
+  .temas-acc .ico-btn { width: 15px; height: 15px; }
+  html body .temas-card .lbl-t:not(#z) { margin: 20px 0 10px; font-size: 15px; color: var(--dim); }
+  /* Fuentes: tres fichas con su ícono y color */
+  .fuentes { gap: 10px; margin: 0; }
+  .fuente { position: relative; display: grid; justify-items: center; gap: 4px; padding: 14px 8px 12px; color: var(--text); background: var(--surface-2); border: 2px solid var(--borde-g); border-bottom-width: 5px; border-radius: 18px; box-shadow: none;
+    transition: transform .08s ease, border-color .15s ease, background .15s ease; -webkit-tap-highlight-color: transparent; }
+  .fuente:hover { border-color: color-mix(in srgb, var(--f) 50%, var(--borde-g)); }
+  .fuente:active { transform: translateY(3px); border-bottom-width: 2px; margin-bottom: 3px; }
+  .f-ic { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; color: var(--f); background: color-mix(in srgb, var(--f) 15%, transparent); filter: grayscale(.6); opacity: .75; transition: filter .15s, opacity .15s; }
+  .f-ic svg { width: 28px; height: 28px; }
+  html body .fuente b:not(#z) { font: italic 900 21px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .02em; margin-top: 4px; }
+  .fuente small { font-size: 12px; font-weight: 800; color: var(--dim); }
+  .fuente.on { background: color-mix(in srgb, var(--f) 10%, var(--surface-2)); border-color: var(--f); border-bottom-color: color-mix(in srgb, var(--f) 65%, #000); box-shadow: none; color: var(--text); }
+  .fuente.on .f-ic { filter: none; opacity: 1; }
+  .fuente.on::after { content: ""; position: absolute; top: -2px; right: -2px; width: 26px; height: 26px; border-radius: 0 16px 0 10px; background: var(--f) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310131a' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / 15px no-repeat; }
+  /* Áreas: acordeón con ícono, barra de avance y contador */
+  .ta { border: 2px solid color-mix(in srgb, var(--c) 30%, var(--borde-g)); border-bottom: 5px solid color-mix(in srgb, var(--c) 60%, #000); border-radius: 18px; margin-top: 10px; background: color-mix(in srgb, var(--c) 5%, var(--surface)); }
+  .ta > summary { gap: 12px; padding: 10px 12px; }
+  .ta > summary:focus-visible { outline: 2px solid var(--c); outline-offset: 2px; border-radius: 14px; }
+  .ta .a-ic { width: 42px; height: 42px; flex-shrink: 0; }
+  .ta-tx { flex: 1; min-width: 0; display: grid; gap: 7px; }
+  .ta-tx b { font-size: 16px; font-weight: 900; color: var(--c); }
+  .ta-bar { display: block; height: 8px; max-width: 320px; background: color-mix(in srgb, var(--c) 18%, var(--surface-2)); overflow: hidden; clip-path: polygon(0 0, 100% 0, 98% 100%, 0 100%); }
+  .ta-bar i { display: block; height: 100%; background: var(--c); transition: width .25s ease; }
+  html body .ta > summary .cnt:not(#z) { margin-left: auto; display: inline-flex; align-items: baseline; gap: 1px; padding: 6px 12px 5px 13px; border-radius: 0; background: var(--surface-2); color: var(--dim); font: italic 900 15px/1 var(--display) !important; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); }
+  html body .ta > summary .cnt b:not(#z) { font: italic 900 22px/1 var(--display) !important; color: var(--text); }
+  html body .ta > summary .cnt small:not(#z) { font: 800 11px/1 var(--display) !important; letter-spacing: .06em; text-transform: uppercase; margin-left: 4px; }
+  html body .ta > summary .cnt.on:not(#z) { background: var(--c); color: #111; }
+  html body .ta > summary .cnt.on b:not(#z) { color: #111; }
+  .ta-fl { width: 32px; height: 32px; flex-shrink: 0; border-radius: 10px; display: grid; place-items: center; background: var(--surface-2); border: 2px solid var(--borde-g); }
+  .ta > summary .ta-fl svg { width: 18px; height: 18px; stroke: var(--text); }
+  .ta-body { padding: 4px 14px 16px; gap: 10px; }
+  .tc { padding: 14px; border-radius: 14px; background: var(--surface); border: 2px solid var(--borde-g); }
+  .tc-cab b { font-size: 15.5px; font-weight: 900; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  html body .tc-cab b small:not(#z) { margin: 0; padding: 3px 9px 2px; background: color-mix(in srgb, var(--c) 16%, transparent); color: var(--c); font: 800 13px/1.1 var(--display) !important; letter-spacing: .05em; text-transform: uppercase; clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%); }
+  .tc-todos { flex-shrink: 0; border: 2px solid var(--borde-g); border-bottom-width: 3px; border-radius: 10px; padding: 5px 10px; background: var(--surface-2); color: var(--text); font-weight: 900; font-size: 12.5px; }
+  .tc-todos.on { color: var(--dim); }
+  .chips { gap: 8px; }
+  .chip { border: 2px solid var(--borde-g); border-bottom-width: 4px; border-radius: 14px; padding: 8px 12px 7px 9px; font-size: 13.5px; font-weight: 800; background: var(--surface-2); box-shadow: none;
+    transition: transform .08s ease, border-color .15s ease, background .15s ease; -webkit-tap-highlight-color: transparent; }
+  .chip:hover { border-color: color-mix(in srgb, var(--c) 50%, var(--borde-g)); }
+  .chip:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
+  .chip i { width: 20px; height: 20px; border-radius: 7px; border: 2px solid var(--borde-g); background: var(--surface); }
+  html body .chip em:not(#z) { font: 800 12.5px/1 var(--display) !important; letter-spacing: .04em; color: var(--dim); padding-left: 2px; }
+  .chip.on { border-color: var(--c); border-bottom-color: color-mix(in srgb, var(--c) 65%, #000); background: color-mix(in srgb, var(--c) 14%, var(--surface)); box-shadow: none; }
+  .chip.on i { background: var(--c); border-color: var(--c); }
+  .tc-est { font-weight: 700; margin-top: 10px; }
+  .vocab { border-radius: 14px; border-width: 2px; }
+  html[data-modo="claro"] .fuente.on:not(#z) { color: var(--text) !important; }
+  @media (max-width: 560px) {
+    .temas-card { padding: 16px 14px; }
+    html body .temas-cab h3:not(#z) { font-size: 25px; }
+    .tcab-ic { width: 40px; height: 40px; } .tcab-ic svg { width: 24px; height: 24px; }
+    .temas-acc { width: 100%; } .temas-acc .btn { flex: 1; justify-content: center; }
+    .fuentes { gap: 7px; }
+    .fuente { padding: 12px 4px 10px; } .f-ic { width: 40px; height: 40px; } .f-ic svg { width: 24px; height: 24px; }
+    html body .fuente b:not(#z) { font-size: 17px; }
+    .ta > summary { gap: 10px; padding: 9px 10px; } .ta .a-ic { width: 36px; height: 36px; }
+    .ta-fl { width: 28px; height: 28px; }
+    html body .ta > summary .cnt small:not(#z) { display: none; }
+    .ta-bar { max-width: none; }
+    .ta-body { padding: 2px 8px 10px; } .tc { padding: 12px 10px; }
+  }
+
 /* Modo claro de esta página (assets/claro.css trae lo común) */
 html[data-modo="claro"] .eyebrow { color: #6F8000 !important; }
 html[data-modo="claro"] .rank li b { color: #6F8000 !important; }
@@ -864,16 +941,22 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
     </div>
     <section class="card temas-card" id="temasCard" hidden>
       <div class="temas-cab">
-        <div><h3>Elige tus temas</h3><p class="temas-res" id="temasRes">Toca los temas que quieres practicar.</p></div>
-        <div class="temas-acc"><button class="btn sec mini" type="button" id="temasTodos">Elegir todos</button><button class="btn sec mini" type="button" id="temasLimpiar">Limpiar</button></div>
+        <div class="tcab-tit">
+          <i class="tcab-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="currentColor" opacity=".25"/><circle cx="12" cy="12" r="5.5" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="12" cy="12" r="2" fill="currentColor"/><path d="M14 10 21 3M17 3h4v4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></i>
+          <div><h3>Elige tus temas</h3><p class="temas-res" id="temasRes">Toca los temas que quieres practicar.</p></div>
+        </div>
+        <div class="temas-acc">
+          <button class="btn sec mini" type="button" id="temasTodos"><svg class="ico-btn" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 12.5 3.5 3.5L13 9.5M11 16l1 1 8-8.5"/></svg>Elegir todos</button>
+          <button class="btn sec mini" type="button" id="temasLimpiar"><svg class="ico-btn" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>Limpiar</button>
+        </div>
       </div>
       <div class="lbl-t">¿De dónde salen las preguntas?</div>
       <div class="fuentes" id="fuentes">
-        <button type="button" class="fuente on" data-f="libros"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/></svg>Libros</button>
-        <button type="button" class="fuente" data-f="banqueo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg>Banqueo</button>
-        <button type="button" class="fuente" data-f="seminarios"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20a6 6 0 0 1 12 0M15 20a4.5 4.5 0 0 1 7-3.7"/></svg>Seminarios</button>
+        <button type="button" class="fuente on" data-f="libros" style="--f:var(--mat)"><span class="f-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2.5h11.5A2.5 2.5 0 0 1 20 5v13H7a2 2 0 0 0-2 2V3.5a1 1 0 0 1 1-1z" fill="currentColor"/><path d="M5 20a2 2 0 0 1 2-2h13v3.5H7A2 2 0 0 1 5 20z" fill="currentColor" opacity=".45"/><path d="M9 7h7M9 10.5h5" stroke="#10131a" stroke-width="2" stroke-linecap="round" opacity=".55"/></svg></span><b>Libros</b><small id="fnLibros"></small></button>
+        <button type="button" class="fuente" data-f="banqueo" style="--f:var(--ccss)"><span class="f-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2.5" width="14" height="15" rx="2.5" fill="currentColor" opacity=".45"/><rect x="3" y="6" width="14" height="15.5" rx="2.5" fill="currentColor"/><path d="M8 11a2 2 0 1 1 3 1.7c-.6.4-1 .8-1 1.5M10 17.3h.01" stroke="#10131a" stroke-width="2.1" stroke-linecap="round" fill="none" opacity=".6"/></svg></span><b>Banqueo</b><small id="fnBanqueo"></small></button>
+        <button type="button" class="fuente" data-f="seminarios" style="--f:var(--com)"><span class="f-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="3" width="19" height="12.5" rx="2" fill="currentColor" opacity=".45"/><path d="M6 12.5 9.5 9l2.5 2.5L17 6.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="8" cy="18.5" r="2.5" fill="currentColor"/><circle cx="16" cy="18.5" r="2.5" fill="currentColor"/></svg></span><b>Seminarios</b><small id="fnSeminarios"></small></button>
       </div>
-      <div class="lbl-t">Temas</div>
+      <div class="lbl-t">Temas por área</div>
       <div id="temasLista"><p class="vacia" style="margin-top:12px">Cargando temas…</p></div>
     </section>
     <div class="crear">
@@ -1639,19 +1722,24 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
           ? '<p class="tc-est mal">' + (x.auto ? 'Este curso aún no tiene preguntas en ' + (ciclosSel().length > 1 ? 'esos ciclos' : 'ese ciclo') + '.' : 'Necesita ' + x.necesita + ' preguntas y tus temas tienen ' + x.hay + '. Elige otro tema.') + '</p>'
           : '<p class="tc-est">' + (x.auto ? (x.sinFuente ? 'Sin ' + x.sinFuente + ': sus ' + x.n + ' salen de libros.' : 'Sin temas elegidos: sus ' + x.n + ' salen de todos sus temas.') : 'Saldrán ' + x.necesita + ' de tus ' + x.elegidos.length + (x.elegidos.length === 1 ? ' tema.' : ' temas.')) + '</p>';
         return '<div class="tc' + (x.falta ? ' falta' : '') + '"><div class="tc-cab"><b>' + esc(NOMBRE[curso] || curso) + '<small>' + x.n + (x.n === 1 ? ' pregunta' : ' preguntas') + '</small></b>' +
-          (temas.length ? '<button class="tc-todos" type="button" data-todos="' + curso + '">' + (todos ? 'Quitar' : 'Todos') + '</button>' : '') + '</div>' +
+          (temas.length ? '<button class="tc-todos' + (todos ? ' on' : '') + '" type="button" data-todos="' + curso + '">' + (todos ? 'Quitar todos' : 'Elegir todos') + '</button>' : '') + '</div>' +
           '<div class="chips">' + (temas.length ? temas.map(t => '<button type="button" class="chip' + (PERS.sel[curso + '|' + t.k] ? ' on' : '') + '" data-c="' + curso + '" data-k="' + esc(t.k) + '" aria-pressed="' + !!PERS.sel[curso + '|' + t.k] + '">' + ICO_CHK + '<span>' + esc(t.nom) + '</span><em>' + (t.f !== 'libros' ? (t.f === 'banqueo' ? 'Banqueo · ' : 'Seminario · ') : '') + t.qs.length + '</em></button>').join('') : '<span class="tc-vacio">No hay temas en las fuentes y ciclos elegidos.</span>') + '</div>' +
           estado +
           (curso === 'raz-verbal' ? '<div class="vocab' + (PERS.vocab ? ' on' : '') + '"><button class="sw" type="button" id="swVocab" role="switch" aria-checked="' + PERS.vocab + '" aria-label="Sinonimia y antonimia del Vocabulario"></button><div><b>Sinonimia y antonimia del Vocabulario</b><small>' +
             (PERS.vocab ? x.voc + ' de sus ' + x.n + ' preguntas serán de sinónimos y antónimos de la sección Vocabulario' : 'Agrega preguntas de sinónimos y antónimos con las palabras de la sección Vocabulario') + '</small></div></div>' : '') + '</div>';
       }).join('');
       nSel += sel;
-      return '<details class="ta" data-a="' + a.k + '" style="--c:' + a.c + '"' + (PERS.abiertas[a.k] ? ' open' : '') + '><summary>' + a.nom + '<span class="cnt">' + sel + ' de ' + tot + ' temas</span>' + ICO_FLECHA + '</summary><div class="ta-body">' + cuerpo + '</div></details>';
+      return '<details class="ta" data-a="' + a.k + '" style="--c:' + a.c + ';--ico:url(assets/icons/' + a.ico + '.svg)"' + (PERS.abiertas[a.k] ? ' open' : '') + '><summary><i class="a-ic"></i><span class="ta-tx"><b>' + a.nom + '</b>' +
+        '<span class="ta-bar" aria-hidden="true"><i style="width:' + (tot ? sel / tot * 100 : 0).toFixed(1) + '%"></i></span></span><span class="cnt' + (sel ? ' on' : '') + '"><b>' + sel + '</b>/' + tot + '<small>temas</small></span><span class="ta-fl">' + ICO_FLECHA + '</span></summary><div class="ta-body">' + cuerpo + '</div></details>';
     }).join('');
     $('temasRes').innerHTML = nErr
       ? '<span style="color:var(--bad)">' + nErr + (nErr === 1 ? ' curso necesita' : ' cursos necesitan') + ' más temas</span> · <b>' + nSel + '</b> elegidos'
-      : nSel ? '<b>' + nSel + (nSel === 1 ? ' tema' : ' temas') + '</b> elegidos · los cursos sin temas salen de todos sus temas' : 'Toca los temas que quieres practicar. Los cursos sin temas elegidos salen de todos sus temas.';
-    $('fuentes').querySelectorAll('.fuente').forEach(b => { b.classList.toggle('on', !!PERS.fuentes[b.dataset.f]); b.setAttribute('aria-pressed', !!PERS.fuentes[b.dataset.f]); });
+      : nSel ? '<b>' + nSel + (nSel === 1 ? ' tema</b> elegido' : ' temas</b> elegidos') + ' · los cursos sin temas salen de todos sus temas' : 'Toca los temas que quieres practicar. Los cursos sin temas elegidos salen de todos sus temas.';
+    $('fuentes').querySelectorAll('.fuente').forEach(b => {
+      const f = b.dataset.f, n = TODOS_CURSOS.reduce((t, [c]) => t + TEMAS[c].filter(x => x.f === f).length, 0);
+      b.classList.toggle('on', !!PERS.fuentes[f]); b.setAttribute('aria-pressed', !!PERS.fuentes[f]);
+      b.querySelector('small').textContent = n + (n === 1 ? ' tema' : ' temas');
+    });
     pintarPuntos();
     actualizarEmpezar();
   }
