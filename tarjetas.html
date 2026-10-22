@@ -67,17 +67,6 @@
   .btn:disabled { opacity: .35; cursor: default; transform: none; }
   .resumen { text-align: center; color: var(--text-dim); font-size: 12.5px; margin: 22px 0 10px; font-variant-numeric: tabular-nums; }
 
-  /* Candado */
-  .lock { margin-top: 26px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 28px 22px; text-align: center; }
-  .lock h2 { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 8px; }
-  .lock h2 .accent { color: var(--accent); }
-  .lock p { color: #999; font-size: 13px; line-height: 1.6; margin-bottom: 18px; }
-  .lock input { width: 100%; background: #141414; border: 2px solid #2e2e2e; border-radius: 14px; font-family: Nunito, 'Inter', sans-serif; font-size: 16px !important; font-weight: 800 !important; padding: 13px 14px; color: #f2f2f2; font-size: 14px; text-align: center; letter-spacing: 1px; font-weight: 600; margin-bottom: 12px; }
-  .lock input:focus { outline: none; border-color: var(--accent); }
-  .lock-error { display: none; margin-top: 14px; font-size: 12.5px; color: #ff8a8a; background: rgba(224,60,60,0.08); border-radius: 10px; padding: 10px 12px; line-height: 1.5; }
-  .lock-error.show { display: block; }
-  .lock-whatsapp { display: none; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; padding: 12px; border-radius: 12px; background: rgba(37,211,102,0.1); color: #25D366; text-decoration: none; font-size: 13px; font-weight: 700; }
-  .lock-whatsapp.show { display: flex; }
 
   /* Juego */
   .barra { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
@@ -280,9 +269,6 @@ html[data-modo="claro"] .paso-ttl { color: #1A1626 !important; }
 html[data-modo="claro"] .paso-ttl .n { color: #6F8000 !important; }
 html[data-modo="claro"] .chip { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; color: #1A1626 !important; }
 html[data-modo="claro"] .btn { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; color: #1A1626 !important; box-shadow: 0 5px 0 #DCD8E8 !important; }
-html[data-modo="claro"] .lock h2 .accent { color: #6F8000 !important; }
-html[data-modo="claro"] .lock p { color: #6B6485 !important; }
-html[data-modo="claro"] .lock input { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; color: #1A1626 !important; }
 html[data-modo="claro"] .track { background: #F1EFF6 !important; }
 html[data-modo="claro"] .cuenta { color: #1A1626 !important; }
 html[data-modo="claro"] .sonido { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; color: #1A1626 !important; }
@@ -337,16 +323,6 @@ html[data-modo="claro"] .home-btn:hover { color: #6F8000 !important; }
       <div class="resumen" id="resumen"></div>
       <button class="btn primary" id="btnEmpezar" type="button">Empezar</button>
     </div>
-  </div>
-
-  <!-- Candado: el mismo código de la sección -->
-  <div class="lock" id="lock" hidden>
-    <h2>Flashcards <span class="accent">Premium</span></h2>
-    <p id="lockTexto">Ingresa tu código de alumno.</p>
-    <input type="text" id="lockInput" placeholder="Ej: MC-7K3P-Q9XR" autocomplete="off" autocapitalize="characters">
-    <button class="btn primary" id="btnUnlock" type="button">Desbloquear</button>
-    <div class="lock-error" id="lockError"></div>
-    <a class="lock-whatsapp" id="lockWhatsapp" href="#" target="_blank" rel="noopener noreferrer">Escríbeme por WhatsApp</a>
   </div>
 
   <!-- Repaso con tarjetas -->
@@ -414,7 +390,7 @@ html[data-modo="claro"] .home-btn:hover { color: #6F8000 !important; }
     if (!window.renderMathInElement) { document.addEventListener('mc:katex', () => renderMath(el), { once: true }); return; }
     renderMathInElement(el, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false });
   }
-  function mostrar(id) { ['elegir', 'lock', 'juego', 'fin', 'estado'].forEach(x => { $(x).hidden = x !== id; }); document.body.classList.toggle('jugando', id === 'juego'); $('lead').hidden = id === 'juego' || id === 'fin' || id === 'lock'; }
+  function mostrar(id) { ['elegir', 'juego', 'fin', 'estado'].forEach(x => { $(x).hidden = x !== id; }); document.body.classList.toggle('jugando', id === 'juego'); $('lead').hidden = id === 'juego' || id === 'fin'; }
   function aviso(t) { $('estado').textContent = t; mostrar('estado'); }
   function chips(cont, lista, actual, alElegir) {
     cont.innerHTML = lista.map(x => `<button type="button" class="chip ${x[0] === actual ? 'on' : ''}" data-v="${esc(x[0])}" ${x[3] ? 'disabled' : ''}>${esc(x[1])}${x[2] ? ` <small>${esc(x[2])}</small>` : ''}</button>`).join('');
@@ -482,38 +458,6 @@ html[data-modo="claro"] .home-btn:hover { color: #6F8000 !important; }
   addEventListener('pagehide', subir);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') subir(); });
   const toca = c => { const e = estado[c.id]; return !e || e[1] <= hoy(); };
-
-  /* ---------- Acceso: el mismo código de la sección ---------- */
-  // Un solo código para las Flashcards de todos los cursos (tarjetas-VIP); también las abre Acceso total
-  const P_TARJETAS = 'tarjetas-' + CURSO;
-  function conAcceso(sec) {
-    const P = P_TARJETAS;
-    if (MCAcceso.accesoLocal(P)) { MCAcceso.verificar(P).then(v => { if (!v.acceso) pedirCodigo(sec, v.mensaje); }); return Promise.resolve(true); }
-    return MCAcceso.verificar(P).then(v => v.acceso || pedirCodigo(sec, v.mensaje), () => pedirCodigo(sec, 'No se pudo verificar tu acceso. Revisa tu conexión.'));
-  }
-  let alDesbloquear = null;
-  function pedirCodigo(sec, mensaje) {
-    $('lockTexto').innerHTML = `Las flashcards se abren con tu código de <b>Flashcards</b> (sirve para todos los cursos) o con uno de <b>Acceso total</b>. Si ya lo tienes, ingrésalo abajo.`;
-    $('lockWhatsapp').href = 'https://wa.me/51917797543?text=' + encodeURIComponent('Hola! Quiero el código de Flashcards de Modo Cachimbo 🎓');
-    $('lockError').classList.toggle('show', !!mensaje); $('lockError').textContent = mensaje || '';
-    $('lockWhatsapp').classList.toggle('show', !!mensaje);
-    $('btnUnlock').dataset.sec = sec;
-    mostrar('lock');
-    return new Promise(res => { alDesbloquear = res; });
-  }
-  async function desbloquear() {
-    const sec = $('btnUnlock').dataset.sec, codigo = $('lockInput').value.trim().toUpperCase();
-    if (!codigo) { $('lockError').textContent = 'Ingresa tu código de acceso.'; $('lockError').classList.add('show'); return; }
-    $('btnUnlock').disabled = true; $('btnUnlock').textContent = 'Verificando…';
-    try {
-      const r = await MCAcceso.activar(codigo, P_TARJETAS);
-      if (r.ok) { Sonido.abrir(); const f = alDesbloquear; alDesbloquear = null; if (f) f(true); }
-      else { Sonido.error(); $('lockError').textContent = r.mensaje || 'Código inválido.'; $('lockError').classList.add('show'); $('lockWhatsapp').classList.add('show'); }
-    } catch (e) { $('lockError').textContent = 'No se pudo verificar el código. Revisa tu conexión.'; $('lockError').classList.add('show'); }
-    $('btnUnlock').disabled = false; $('btnUnlock').innerHTML = ICO.llave + ' Desbloquear';
-  }
-  $('btnUnlock').addEventListener('click', desbloquear);
-  $('lockInput').addEventListener('keydown', e => { if (e.key === 'Enter') desbloquear(); });
 
   /* ---------- Elegir sección, año y temas ---------- */
   async function pintarSecciones() {
@@ -612,7 +556,6 @@ html[data-modo="claro"] .home-btn:hover { color: #6F8000 !important; }
     si: svg('<polyline points="20 6 9 17 4 12"/>'),
     mazo: svg('<rect x="7" y="3" width="14" height="16" rx="2"/><path d="M3 7v12a2 2 0 0 0 2 2h11"/>'),
     jugar: svg('<path d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/>', true),
-    llave: svg('<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>'),
     sonido: svg('<path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'),
     mudo: svg('<path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><line x1="22" y1="9" x2="16" y2="15"/><line x1="16" y1="9" x2="22" y2="15"/>'),
     rep: svg('<path d="M3 12a9 9 0 0 1 15.4-6.4L21 8"/><polyline points="21 3 21 8 16 8"/><path d="M21 12a9 9 0 0 1-15.4 6.4L3 16"/><polyline points="3 21 3 16 8 16"/>'),
@@ -898,10 +841,10 @@ html[data-modo="claro"] .home-btn:hover { color: #6F8000 !important; }
   });
   $('btnSe').innerHTML = ICO.si + ' Ya me la sé'; $('btnRep').innerHTML = ICO.rep + ' Repasar';
   $('btnOtra').innerHTML = ICO.rep + ' Repasar las que fallé'; $('btnNueva').innerHTML = ICO.mazo + ' Elegir otras tarjetas';
-  $('btnEmpezar').innerHTML = ICO.jugar + ' Empezar'; $('btnUnlock').innerHTML = ICO.llave + ' Desbloquear';
+  $('btnEmpezar').innerHTML = ICO.jugar + ' Empezar';
   $('btnSe').addEventListener('click', () => salir(true));
   $('btnRep').addEventListener('click', () => salir(false));
-  ['btnOtra', 'btnNueva', 'btnUnlock'].forEach(id => $(id).addEventListener('pointerdown', () => Sonido.toque()));
+  ['btnOtra', 'btnNueva'].forEach(id => $(id).addEventListener('pointerdown', () => Sonido.toque()));
   $('btnOtra').addEventListener('click', () => empezar(falladas.map(c => Object.assign({}, c, { otraVez: false })), 0));
   $('btnNueva').addEventListener('click', () => { if (DIRECTO) location.href = CURSO + '/index.html'; else { mostrar('elegir'); pintarTemas(); } });
 
@@ -921,7 +864,6 @@ html[data-modo="claro"] .home-btn:hover { color: #6F8000 !important; }
       $('eyebrow').textContent = nombreCurso + ' · ' + NOMBRE_SEC[sec] + ' ' + anio;
       $('titulo').textContent = 'Tema ' + num;
       aviso('Cargando tarjetas…');
-      if (!(await conAcceso(sec))) return;
       try {
         const [temas, prof] = await Promise.all([cargarTemas(sec, anio), cargarProf(sec, anio), cargarEstado(CURSO + '|' + sec + '|' + anio)]);
         const t = temas.find(x => pad(x.num) === num);
@@ -940,8 +882,6 @@ html[data-modo="claro"] .home-btn:hover { color: #6F8000 !important; }
     $('eyebrow').textContent = 'Repasa con tarjetas';
     $('titulo').textContent = nombreCurso;
     $('lead').textContent = 'Elige de dónde sacar las tarjetas. En cada una ves la pregunta, la volteas y marcas si ya te la sabes; las que fallas vuelven a salir.';
-    // El candado va primero, antes de elegir
-    if (!(await conAcceso(null))) return;
     mostrar('elegir');
     pintarSecciones();
   }
