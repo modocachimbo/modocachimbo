@@ -1417,6 +1417,7 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
     const pers = m === 'pers';
     $('modos').querySelectorAll('.modo').forEach(b => { b.classList.toggle('on', b.dataset.modo === m); b.setAttribute('aria-checked', b.dataset.modo === m); });
     $('temasCard').hidden = !pers; $('campoCantidad').hidden = !pers;
+    $('topSim').hidden = pers; // el personalizado es libre y no entra al ranking
     $('crearTit').textContent = pers ? 'Personaliza tu simulacro' : 'Crea tu simulacro';
     $('crearSub').textContent = pers ? 'Elige los temas que quieres reforzar y cuántas preguntas. Los cursos y los puntos son los mismos del examen de admisión.' : '80 preguntas al azar de los libros de cada curso, repartidas como en el examen de admisión.';
     $('ciclosNota').textContent = pers ? 'Los temas que ves abajo son de los ciclos que marques.' : 'Con un ciclo, las preguntas salen solo de ese ciclo. Con dos o más, salen al azar de los ciclos que elijas, con la misma cantidad por curso.';
