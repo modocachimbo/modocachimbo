@@ -16,7 +16,7 @@
 <title>Duelos · Modo Cachimbo</title>
 <meta name="description" content="Reta hasta a 3 amigos: las mismas preguntas, con comodines, reacciones y la final Todo o nada. Gana quien suma más puntos.">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,600;1,700;1,800;1,900;1,1000&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;1,800;1,900&family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,600;1,700;1,800;1,900;1,1000&display=swap');
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -493,11 +493,254 @@ html[data-modo="claro"] .md { background: #F1EFF6 !important; border: 2px solid 
 html[data-modo="claro"] .md .ci { box-shadow: 0 3px 0 color-mix(in srgb, var(--c) 55%, #DCD8E8) !important; }
 html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px solid #DCD8E8 !important; }
 </style>
+<style id="duelo-ff">
+  /* =========================================================
+     Duelos estilo Free Fire + Duolingo, igual que el simulacro:
+     fondo morado oscuro del inicio, letra cuadrada (Barlow Condensed)
+     en títulos y etiquetas, tarjetas con borde grueso abajo
+     ========================================================= */
+  :root { --display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif; --oro-tx: #FFC800; --lima-tx: #C6E000; --borde-g: #2A2346; }
+  html[data-modo="claro"] { --oro-tx: #B38600; --lima-tx: #6F8000; --borde-g: #DCD8E8; }
+  html:not([data-modo="claro"]) { --bg: #0B0818; --surface: #151127; --surface-2: #1D1834; --border: #2A2346; --text: #EEEAF7; --dim: #A99FC8; --faint: #6F6690; }
+  html:not([data-modo="claro"]) body { background: var(--bg); }
+  /* Las piezas que traían gris fijo pasan a los morados del inicio */
+  html:not([data-modo="claro"]) :where(.card) { background: var(--surface); border-color: var(--borde-g); }
+  html:not([data-modo="claro"]) :where(.chips button, .sel-btn, .fte button, .tiempo, .cmd, .lista li a, .puesto-sala, .tile, .alts button, .reac button, .pod, .cuarto, .md, .tabla li, .ficha span, .enlace, .sel-lista button, .mt-list button, select, .unirse input, .espia .fil div) { background-color: var(--surface-2); border-color: var(--borde-g); }
+  html:not([data-modo="claro"]) :where(.mt-btn) { background-color: var(--surface-2); }
+  html:not([data-modo="claro"]) :where(.sel-lista, .mt-list, .barra) { background-color: var(--surface); border-color: var(--borde-g); }
+  html:not([data-modo="claro"]) :where(.camino i, .reloj .fondo, .ring .f) { background: #2A2346; stroke: #2A2346; }
+  html:not([data-modo="claro"]) .cuenta { background: rgba(11,8,24,.97); }
+  html body .due-tit:not(#z), html body .card > h3:not(#z), html body .campo > label:not(#z), html body .lbl:not(#z), html body .campo > label.lbl:not(#z) { font-family: var(--display) !important; }
+
+  /* Cabecera: ← Inicio y la casita, como en el simulacro; a la derecha la tarjeta del perfil */
+  header.top { padding: 18px 0 12px; flex-wrap: nowrap; }
+  .back-row { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+  .back { display: flex; align-items: center; gap: 8px; color: var(--text); text-decoration: none; font: 900 22px/1.1 'Nunito', sans-serif; }
+  .back svg { width: 20px; height: 20px; }
+  .back:hover { color: var(--accent); }
+  .home-btn { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; border: 2px solid var(--borde-g); border-bottom-width: 4px; background: var(--surface-2); color: var(--text); }
+  .home-btn svg { width: 18px; height: 18px; }
+  .home-btn:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
+  @media (max-width: 420px) { .back { font-size: 19px; gap: 6px; } .back-row { gap: 8px; } .home-btn { width: 38px; height: 38px; } }
+
+  /* Tarjeta del perfil (la misma del inicio): foto con marco dorado, nombre y rango sobre el fondo de estrellas */
+  header.top [data-mc-auth] { display: flex; min-width: 0; }
+  header.top .mcu-user { display: flex; align-items: center; min-width: 0; }
+  header.top .mcu-user .mcu-racha, header.top .mcu-user .mcz-pill { display: none !important; }
+  html body header.top .mcu-user .mcu-chip.perfil:not(#z) {
+    position: relative; display: flex; align-items: center; gap: 10px; min-width: 0; max-width: none; margin: 0;
+    padding: 5px 38px 5px 6px; border: 0; border-radius: 0; color: #fff; font: inherit; box-shadow: none;
+    clip-path: polygon(0 0, 100% 0, 90% 100%, 0 100%);
+    background: linear-gradient(90deg, rgba(11, 8, 24, .82), rgba(11, 8, 24, .45) 65%, rgba(11, 8, 24, .1)),
+      radial-gradient(1.5px 1.5px at 20% 30%, #fff 50%, transparent), radial-gradient(1px 1px at 62% 20%, #fff 50%, transparent),
+      radial-gradient(1.5px 1.5px at 80% 70%, #fff 50%, transparent), radial-gradient(1px 1px at 45% 80%, #fff 50%, transparent),
+      radial-gradient(120% 140% at 85% 0%, #5b34b8, #241452 55%, #120a2c) !important;
+  }
+  header.top .mcu-chip.perfil:hover { filter: brightness(1.08); }
+  header.top .mcu-chip.perfil:active { transform: translateY(1px); }
+  header.top .mcu-chip .marco { position: relative; display: grid; place-items: center; width: 50px; height: 50px; padding: 3px; flex: none; border-radius: 12px;
+    background: linear-gradient(135deg, #FFF3B0, #FFC800 40%, #B38600 75%, #FFE27A); filter: drop-shadow(0 0 6px rgba(255, 200, 0, .5)); }
+  html body header.top .mcu-chip .mcu-av:not(#z) { width: 100%; height: 100%; border-radius: 9px; background: var(--lima); color: #151A03; font: 900 22px/1 'Nunito', sans-serif !important; display: grid; place-items: center; overflow: hidden; margin: 0; border: 0; }
+  header.top .mcu-chip .mcu-av img { width: 100%; height: 100%; object-fit: cover; }
+  header.top .mcu-chip .pf-tx { display: grid; gap: 4px; min-width: 0; text-align: left; }
+  html body header.top .mcu-chip .mcu-nom:not(#z) { display: block; flex: none; text-align: left; font: 800 23px/1 var(--display) !important; letter-spacing: .04em; text-transform: uppercase; color: #fff;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, .55), 0 0 10px rgba(0, 0, 0, .6); max-width: 8em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  html body header.top .mcu-chip .pf-rg:not(#z) { display: flex; align-items: center; gap: 5px; font: 800 15px/1 var(--display) !important; letter-spacing: .06em; text-transform: uppercase; color: var(--rc, #cfc8e6);
+    text-shadow: 0 2px 0 rgba(0, 0, 0, .6), 0 0 8px rgba(0, 0, 0, .55); white-space: nowrap; }
+  header.top .mcu-chip .pf-rg:empty { display: none; }
+  header.top .mcu-chip .pf-rg i { width: 19px; display: block; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .6)); }
+  header.top .mcu-chip .pf-rg i svg { width: 100%; display: block; }
+  @media (max-width: 560px) {
+    html body header.top .mcu-user .mcu-chip.perfil:not(#z) { padding: 4px 24px 4px 4px; gap: 7px; }
+    header.top .mcu-chip .marco { width: 42px; height: 42px; }
+    html body header.top .mcu-chip .mcu-nom:not(#z) { font-size: 18px !important; max-width: 6em; }
+    html body header.top .mcu-chip .pf-rg:not(#z) { font-size: 12.5px !important; }
+    header.top .mcu-chip .pf-rg i { width: 15px; }
+  }
+  @media (max-width: 350px) { header.top .mcu-chip .pf-tx { display: none; } html body header.top .mcu-user .mcu-chip.perfil:not(#z) { padding-right: 16px; } }
+
+  /* Título corto con su raya, como en el simulacro */
+  .hero { margin-top: 4px; }
+  html body .due-tit:not(#z) { display: flex; align-items: center; gap: 18px; margin: 0; font: italic 900 52px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; color: var(--oro-tx); }
+  .due-tit::after { content: ""; flex: 1; height: 2px; background: linear-gradient(90deg, rgba(255,200,0,.5), rgba(255,200,0,0)); }
+  .due-sub { color: var(--dim); font-size: 14.5px; margin-top: 6px; }
+  @media (max-width: 520px) { html body .due-tit:not(#z) { font-size: 40px !important; gap: 12px; } .due-sub { font-size: 13.5px; } }
+
+  /* Tarjetas y títulos con ícono */
+  .card { border: 2px solid var(--borde-g); border-bottom-width: 5px; border-radius: 22px; }
+  .crear { margin-top: 16px; }
+  html body .card > h3:not(#z) { display: flex; align-items: center; gap: 10px; font-style: italic; font-weight: 900; text-transform: uppercase; font-size: 24px; letter-spacing: .01em; line-height: 1; margin-bottom: 16px; }
+  .h-ic { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; background: var(--accent-soft); color: var(--lima-tx); flex-shrink: 0; }
+  .h-ic.az { background: rgba(28,176,246,.14); color: var(--azul); }
+  .h-ic svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* Etiquetas de cada bloque: letra cuadrada con su ícono de color */
+  html body .campo > label:not(.check):not(#z), html body .lbl:not(#z) { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 15px; letter-spacing: .06em; text-transform: uppercase; color: var(--dim); }
+  .campo { margin-bottom: 18px; }
+  .li { width: 24px; height: 24px; border-radius: 8px; display: grid; place-items: center; background: color-mix(in srgb, var(--c, var(--lima)) 14%, transparent); color: var(--c, var(--lima-tx)); flex-shrink: 0; }
+  .lbl i.li { width: 24px; height: 24px; border-radius: 8px; background: color-mix(in srgb, var(--c, var(--lima)) 14%, transparent); }
+  .li svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .filtros .campo:nth-child(2) { --c: var(--lima-tx); } .filtros .campo:nth-child(3) { --c: var(--naranja); } .filtros .campo:nth-child(1) { --c: var(--azul); }
+  .campo:has(#fuentes) { --c: var(--morado); }
+  .filtro-nota { margin: 8px 0 16px; }
+  .filtro-nota b { color: var(--oro-tx); }
+
+  /* Fuentes: fichas con la raya de su color abajo */
+  .fte button { border-radius: 16px; border-bottom-color: color-mix(in srgb, var(--c) 45%, var(--borde-g)); }
+  .fte button[data-f="mezcla"] { --c: var(--lima) !important; }
+  html body .fte .tx:not(#z) { font: 800 19px/1.05 var(--display) !important; letter-spacing: .03em; text-transform: uppercase; }
+  html body .fte small:not(#z) { font: 700 12px/1.2 'Nunito', sans-serif !important; letter-spacing: 0; text-transform: none; margin-top: 3px; }
+  html:not([data-modo="claro"]) .fte button.on { background: color-mix(in srgb, var(--c) 14%, var(--surface-2)); }
+  .fte button.on .ic { background: var(--c); color: #151A03; }
+
+  /* Jugadores: cada opción muestra a los jugadores con sus colores */
+  .chips button { border-radius: 14px; }
+  html body .chips button:not(#z) { font: 800 19px/1 var(--display) !important; letter-spacing: .03em; text-transform: uppercase; padding: 9px 15px 8px; }
+  .chips.jug { display: grid; grid-template-columns: 1.3fr 1fr 1fr; }
+  .chips.jug button { display: flex; align-items: center; justify-content: center; gap: 9px; }
+  .pj { display: flex; }
+  .pj i { width: 16px; height: 16px; border-radius: 50%; background: var(--jc); border: 2px solid var(--surface-2); margin-left: -6px; }
+  .pj i:first-child { margin-left: 0; }
+  .chips button.on .pj i { border-color: color-mix(in srgb, var(--c) 12%, var(--surface-2)); }
+  #cantidad { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  #cantidad button { padding-left: 4px; padding-right: 4px; }
+  /* Inicio automático como interruptor */
+  .check.auto { align-items: center; gap: 12px; margin-top: 8px; background: var(--surface-2); border: 2px solid var(--borde-g); border-radius: 14px; padding: 9px 12px; }
+  .check.auto span { display: grid; gap: 1px; }
+  .check.auto b { font-weight: 900; font-size: 14px; }
+  .check.auto small { font-size: 12px; color: var(--dim); line-height: 1.35; }
+  html body .check.auto input:not(#z) { appearance: none; -webkit-appearance: none; order: 2; margin: 0 0 0 auto; width: 46px; height: 27px; border-radius: 27px; background: var(--border); position: relative; cursor: pointer; flex-shrink: 0; transition: background .15s; }
+  .check.auto input::after { content: ""; position: absolute; left: 3px; top: 3px; width: 21px; height: 21px; border-radius: 50%; background: #fff; transition: left .15s; }
+  .check.auto input:checked { background: var(--azul) !important; }
+  .check.auto input:checked::after { left: 22px; }
+
+  /* Tiempo y comodines */
+  html body .tiempo .val b:not(#z) { font: italic 900 34px/1 var(--display) !important; }
+  html body .ticks button:not(#z) { font: 800 13px/1 var(--display) !important; letter-spacing: .03em; }
+  .cmd { border-radius: 16px; border-bottom-color: color-mix(in srgb, var(--c) 45%, var(--borde-g)); }
+  html body .cmd b:not(#z) { font: 800 17px/1.1 var(--display) !important; letter-spacing: .03em; text-transform: uppercase; margin-top: 2px; }
+
+  /* Reglas: cuatro cuadritos con ícono */
+  .reglas:not(#z) { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 2px; }
+  .reglas li:not(#z) { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 3px; background: var(--surface-2); border-radius: 14px; padding: 10px 4px 9px; line-height: 1.15; }
+  .reglas li::before { display: none; }
+  .reglas .ri { width: 30px; height: 30px; border-radius: 10px; display: grid; place-items: center; background: color-mix(in srgb, var(--c) 16%, transparent); color: var(--c); margin-bottom: 3px; }
+  .reglas .ri svg { width: 18px; height: 18px; }
+  html body .reglas li b:not(#z) { font: 800 18px/1 var(--display) !important; letter-spacing: .03em; text-transform: uppercase; color: var(--text); }
+  .reglas li small { font-size: 11.5px; color: var(--dim); font-weight: 700; }
+  @media (max-width: 440px) { .reglas:not(#z) { gap: 6px; } .reglas li:not(#z) { padding: 9px 2px 8px; } html body .reglas li b:not(#z) { font-size: 15px !important; } .reglas li small { font-size: 10.5px; } }
+  /* Celular: filtros en dos columnas (Temas a lo ancho) y comodines de a tres */
+  @media (max-width: 560px) {
+    .filtros:not(#z) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .filtros .campo:nth-child(3) { grid-column: 1 / -1; }
+    .cmds:not(#z) { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+    .cmd { padding: 10px 3px 8px; }
+    .cmd .ci { width: 36px; height: 36px; border-radius: 12px; }
+    .cmd .ci svg { width: 20px; height: 20px; }
+    html body .cmd b:not(#z) { font-size: 15px !important; }
+    .cmd small { font-size: 10.5px; }
+  }
+
+  /* Crear duelo como "¡A practicar!": degradé lima y franja de peligro */
+  html body #btnCrear:not(#z) { position: relative; overflow: hidden; width: 100%; margin-top: 18px; background: linear-gradient(100deg, #b4cc00, #C6E000 40%, #d8f02a) !important; color: #151A03 !important; border-color: #C6E000;
+    font: italic 900 30px/1 var(--display) !important; letter-spacing: .02em; text-transform: uppercase; padding: 14px 16px 12px 30px; box-shadow: 0 4px 0 #8fa300; }
+  #btnCrear::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 14px; background: repeating-linear-gradient(135deg, #151a03 0 6px, #FFC800 6px 12px); }
+  #btnCrear:not(:disabled):active { transform: translateY(4px); box-shadow: none; }
+  @media (max-width: 560px) { html body #btnCrear:not(#z) { font-size: 26px !important; } }
+
+  /* Código */
+  .unirse input { border-radius: 14px; }
+  html body #codUnirse:not(#z) { font: 800 22px/1 var(--display) !important; letter-spacing: 6px; }
+  html body #btnUnirse:not(#z) { font: italic 900 22px/1 var(--display) !important; letter-spacing: .03em; padding: 12px 20px; box-shadow: 0 4px 0 #1283b8; }
+
+  /* Mis duelos: ícono del resultado, etiqueta inclinada y "Ver más" */
+  .lista li a { gap: 12px; padding: 10px 12px; border-radius: 14px; border-bottom-color: color-mix(in srgb, var(--c) 40%, var(--borde-g)); }
+  .ed-ic { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: color-mix(in srgb, var(--c) 16%, transparent); color: var(--c); flex-shrink: 0; }
+  .ed-ic svg { width: 21px; height: 21px; }
+  html body .lista li b:not(#z) { font: 800 19px/1.1 var(--display) !important; letter-spacing: .03em; text-transform: uppercase; }
+  .lista li small { display: block; line-height: 1.35; margin-top: 2px; }
+  html body .estado:not(#z) { font: 800 13px/1 var(--display) !important; letter-spacing: .06em; text-transform: uppercase; border: 0; border-radius: 0; padding: 5px 12px 4px 11px; clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%); }
+  .lista li.extra { display: none; }
+  .lista.abierta li.extra { display: block; }
+  .ver-mas-d { display: block; width: 100%; margin-top: 10px; padding: 11px; background: none; border: 2px dashed var(--borde-g); border-radius: 14px; color: var(--oro-tx); font: 800 16px/1 var(--display) !important; letter-spacing: .08em; text-transform: uppercase; }
+  .ver-mas-d:hover { border-color: var(--oro); }
+  .ver-mas-d[hidden] { display: none; }
+
+  /* ===== Top duelos: el mismo podio del Top simulacro ===== */
+  .top-d { background: var(--surface); border: 2px solid var(--borde-g); border-bottom-width: 5px; border-radius: 22px; overflow: hidden; }
+  html body .top-d .top-cab:not(#z) { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 16px; background: var(--surface-2); font: 800 17px/1 var(--display) !important; letter-spacing: .04em; text-transform: uppercase; }
+  html body .top-d .cierra span:not(#z) { font: inherit !important; }
+  html body .top-d .cierra:not(#z) { white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; color: var(--naranja); font: inherit !important; font-size: 15px !important; }
+  @media (max-width: 420px) { html body .top-d .top-cab:not(#z) { font-size: 15px !important; padding: 13px 14px; white-space: nowrap; } html body .top-d .cierra:not(#z) { font-size: 13.5px !important; } }
+  .top-d .cierra svg { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .top-d .podio { position: relative; isolation: isolate; display: grid; grid-template-columns: 1fr 1.15fr 1fr; align-items: end; gap: 6px; padding: 28px 14px 0; overflow: hidden; margin: 0; max-width: none;
+    background: radial-gradient(70% 60% at 50% 30%, rgba(255, 200, 0, .14), transparent 70%), repeating-linear-gradient(115deg, transparent 0 22px, rgba(255, 255, 255, .02) 22px 44px); }
+  .top-d .podio .foco { position: absolute; left: 35%; right: 35%; top: 0; bottom: 30%; z-index: -1; background: linear-gradient(rgba(255, 236, 190, .22), transparent); clip-path: polygon(30% 0, 70% 0, 100% 100%, 0 100%); }
+  .top-d .lugar { display: grid; justify-items: center; gap: 4px; text-align: center; position: relative; min-width: 0; }
+  .top-d .lugar.vacio { opacity: .45; }
+  .top-d .corona { width: 40px; margin-bottom: -6px; filter: drop-shadow(0 0 8px rgba(255, 200, 0, .7)); animation: coronaD 2.4s ease-in-out infinite; }
+  @keyframes coronaD { 50% { translate: 0 -3px; } }
+  .top-d .aro { display: grid; place-items: center; padding: 3px; border-radius: 13px; background: var(--surface-2); }
+  html body .top-d .aro .letra:not(#z) { width: 48px; height: 48px; border-radius: 10px; font: 900 22px/1 'Nunito', sans-serif !important; color: #10131a; display: grid; place-items: center; }
+  .top-d .l1 .aro { background: linear-gradient(#FFF3B0, #FFC800 45%, #B38600); box-shadow: 0 0 16px rgba(255, 200, 0, .55); }
+  html body .top-d .l1 .aro .letra:not(#z) { width: 58px; height: 58px; }
+  .top-d .l2 .aro { background: linear-gradient(#fff, #C9C6D6 50%, #6B6485); }
+  .top-d .l3 .aro { background: linear-gradient(#FFD3AE, #E58A45 50%, #8A4A17); }
+  .top-d .lugar > b { font: 800 16px/1.15 'Nunito', sans-serif !important; margin-top: 4px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .top-d .pts { display: inline-block; font: 900 14px/1 'Nunito', sans-serif !important; padding: 4px 9px; background: var(--surface-2); border: 1px solid var(--borde-g); color: var(--oro-tx); white-space: nowrap; }
+  .top-d .pts small, .top-d .sim-lista b small { font: inherit !important; font-size: .85em !important; }
+  .top-d .l1 .pts { background: #FFC800; color: #2a1d00; border-color: transparent; }
+  .top-d .rg { display: inline-flex; align-items: center; gap: 4px; }
+  .top-d .rg svg { width: 20px; display: block; }
+  html body .top-d .rg small:not(#z) { font: 800 12px/1 var(--display) !important; letter-spacing: .06em; text-transform: uppercase; }
+  .top-d .bloque { position: relative; width: 100%; margin-top: 10px; display: grid; }
+  .top-d .bloque .cara { height: 12px; clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%); }
+  html body .top-d .bloque .frente:not(#z) { display: grid; place-items: center; font: italic 900 42px/1 var(--display) !important; color: rgba(0, 0, 0, .45); text-shadow: 0 1px 0 rgba(255, 255, 255, .35); }
+  .top-d .l1 .cara { background: #FFE27A; } .top-d .l1 .frente { height: 96px; background: linear-gradient(#FFC800, #9c7400); }
+  .top-d .l2 .cara { background: #F2F0F8; } .top-d .l2 .frente { height: 70px; background: linear-gradient(#C9C6D6, #5c5675); }
+  .top-d .l3 .cara { background: #FFC38F; } .top-d .l3 .frente { height: 54px; background: linear-gradient(#E58A45, #7a3f12); }
+  .top-d .sim-lista { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--borde-g); }
+  .top-d .sim-lista li { display: grid; grid-template-columns: 26px 30px minmax(0, 1fr) 24px auto; align-items: center; gap: 10px; padding: 9px 16px; border-bottom: 1px solid var(--borde-g); font: 800 16px/1.15 'Nunito', sans-serif; }
+  html body .top-d .sim-lista .num:not(#z) { font: italic 900 20px/1 var(--display) !important; color: var(--dim); text-align: center; }
+  html body .top-d .sim-lista .letra:not(#z) { width: 30px; height: 30px; border-radius: 8px; font: 900 14px/1 'Nunito', sans-serif !important; color: #10131a; display: grid; place-items: center; }
+  .top-d .sim-lista .quien { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .top-d .sim-lista .em svg { width: 24px; display: block; }
+  .top-d .sim-lista li b { font: 900 14.5px/1 'Nunito', sans-serif !important; color: var(--oro-tx); white-space: nowrap; }
+  .top-d .sim-lista li.tu { background: linear-gradient(90deg, rgba(198, 224, 0, .16), transparent 80%); box-shadow: inset 3px 0 var(--lima); }
+  .top-d .sim-lista li.extra { display: none; }
+  .top-d .sim-lista.abierta li.extra { display: grid; }
+  .top-d .sim-vacio { grid-column: 1 / -1; display: block; padding: 20px 16px 30px; color: var(--dim); font: 700 14.5px/1.4 'Nunito', sans-serif; text-align: center; }
+  html body .top-d .ver-mas:not(#z) { display: block; width: 100%; text-align: center; padding: 13px; color: var(--oro-tx); background: none; border: 0; cursor: pointer; font: 800 16px/1 var(--display) !important; letter-spacing: .06em; text-transform: uppercase; }
+  html body .top-d .ver-mas[hidden]:not(#z) { display: none; }
+  /* En PC (dos columnas) el top 10 se ve completo y llena la columna */
+  @media (min-width: 821px) { .top-d .sim-lista li.extra { display: grid; } html body .top-d .ver-mas:not(#z) { display: none; } }
+  html[data-modo="claro"] .top-d .podio { background: radial-gradient(70% 60% at 50% 30%, rgba(255, 200, 0, .18), transparent 70%), var(--surface-2); }
+  html[data-modo="claro"] .top-d .sim-lista li.tu { background: linear-gradient(90deg, rgba(122, 140, 0, .14), transparent 80%); box-shadow: inset 3px 0 #7A8C00; }
+
+  /* Modo claro: lo que cambió de forma en esta ronda */
+  html[data-modo="claro"] .chips button.on, html[data-modo="claro"] .fte button.on { background: color-mix(in srgb, var(--c) 12%, #FFFFFF) !important; border-color: var(--c) !important; border-bottom-color: color-mix(in srgb, var(--c) 60%, #DCD8E8) !important; }
+  html[data-modo="claro"] .lista li a { border-bottom: 4px solid color-mix(in srgb, var(--c) 40%, #DCD8E8) !important; }
+  html[data-modo="claro"] .pj i { border-color: #F1EFF6; }
+  html[data-modo="claro"] .reglas li { background: #F1EFF6; }
+  html[data-modo="claro"] .check.auto { background: #F1EFF6; border-color: #DCD8E8; }
+  html[data-modo="claro"] .card { border-bottom-width: 5px !important; }
+  html[data-modo="claro"] .h-ic { color: #6F8000; }
+  html[data-modo="claro"] #btnUnirse { background: var(--azul) !important; color: #fff !important; border-color: var(--azul) !important; }
+  html[data-modo="claro"] .mt-btn { border-color: var(--naranja) !important; border-bottom: 4px solid #b36a00 !important; }
+  html[data-modo="claro"] .mt-btn.cu { border-color: #A8BF00 !important; border-bottom-color: #7A8C00 !important; }
+  html[data-modo="claro"] .mt-btn:disabled { border-color: #DCD8E8 !important; }
+  html[data-modo="claro"] .sw[aria-checked="true"] { background: var(--oro) !important; }
+  html[data-modo="claro"] .fte button:not(.on), html[data-modo="claro"] .cmd { border-bottom: 4px solid color-mix(in srgb, var(--c) 45%, #DCD8E8) !important; }
+  html[data-modo="claro"] .cmd b, html[data-modo="claro"] .fte button.on .tx { color: color-mix(in srgb, var(--c) 70%, #1A1626) !important; }
+</style>
 </head>
 <body>
 <div class="wrap">
   <header class="top">
-    <a class="logo" href="index.html" aria-label="Modo Cachimbo · Inicio"><img src="assets/img/logo-modo-cachimbo-horizontal.svg" alt="Modo Cachimbo" width="160" height="34"></a>
+    <div class="back-row">
+      <a class="back" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Inicio</a>
+      <a class="home-btn" href="index.html" title="Ir al inicio" aria-label="Ir al inicio"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.9 1.2a1.5 1.5 0 0 1 .2 0l.2.1 9.6 9.6a1.3 1.3 0 0 1-.9 2.2H20v7.4a2.5 2.5 0 0 1-2.5 2.5H15v-5.3a1.2 1.2 0 0 0-1.2-1.2h-3.6A1.2 1.2 0 0 0 9 17.7V23H6.5A2.5 2.5 0 0 1 4 20.5v-7.4h-1a1.3 1.3 0 0 1-.9-2.2l9.6-9.6z"/></svg></a>
+    </div>
     <div data-mc-auth></div>
   </header>
 
@@ -505,25 +748,24 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
 
   <!-- 1. Crear -->
   <section id="crear" hidden>
-    <a class="volver" href="index.html">‹ Inicio</a>
     <div class="hero">
-      <div class="eyebrow" style="margin-top:14px">Duelos · hasta 4 jugadores</div>
-      <h1>Reta a tus amigos y <span>demuestra quién sabe más</span></h1>
-      <p class="hint">Todos responden las mismas preguntas, cada uno desde su celular. Con comodines, reacciones y una final que vale triple.</p>
+      <h1 class="due-tit">Duelos</h1>
+      <p class="due-sub">Reta hasta a 3 amigos: las mismas preguntas, comodines y una final que vale triple.</p>
     </div>
     <div class="crear">
-      <div class="card">
+      <div class="card crea">
+        <h3><i class="h-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 3.5 13 13M3.5 3.5h4l9 9M20.5 3.5 11 13M20.5 3.5h-4l-4.2 4.2M6 15.5 8.5 18M18 15.5 15.5 18M4 20l3-3M20 20l-3-3"/></svg></i>Crea tu duelo</h3>
         <div class="filtros">
           <div class="campo">
-            <label for="selCiclo">Ciclo</label>
+            <label for="selCiclo"><i class="li"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></i>Ciclo</label>
             <select id="selCiclo"><option value="todos">Todos los ciclos</option></select>
           </div>
           <div class="campo">
-            <label for="cuBtn">Cursos</label>
+            <label for="cuBtn"><i class="li"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5zM20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5z"/></svg></i>Cursos</label>
             <button type="button" class="mt-btn cu" id="cuBtn" aria-expanded="false" aria-controls="cuList"><span>Todos los cursos</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>
           </div>
           <div class="campo">
-            <label for="mtBtn">Temas</label>
+            <label for="mtBtn"><i class="li"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg></i>Temas</label>
             <button type="button" class="mt-btn" id="mtBtn" aria-expanded="false" aria-controls="mtList" disabled><span>Elige un curso primero</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>
           </div>
         </div>
@@ -531,21 +773,21 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
         <div class="mt-list" id="mtList" hidden></div>
         <p class="filtro-nota" id="filtroNota" role="status"></p>
         <div class="campo">
-          <span class="lbl">De dónde salen las preguntas</span>
+          <span class="lbl"><i class="li"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3z"/><path d="M4 7v10c0 1.7 3.6 3 8 3s8-1.3 8-3V7M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></i>De dónde salen</span>
           <div class="fte" id="fuentes"></div>
           <p class="nota error" id="fuenteNota" hidden></p>
         </div>
         <div class="campo" style="--c:var(--azul)">
-          <span class="lbl"><i></i>Jugadores</span>
-          <div class="chips" id="jugadores"><button type="button" data-j="2" class="on">2 · VS</button><button type="button" data-j="3">3</button><button type="button" data-j="4">4</button></div>
-          <label class="check"><input type="checkbox" id="chkAuto" checked><span><b>Inicio automático:</b> empieza solo apenas se llena la sala. Si lo quitas, tú tocas <b>Iniciar</b>.</span></label>
+          <span class="lbl"><i class="li"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.2a6.5 6.5 0 0 1 3.5 5.8"/></svg></i>Jugadores</span>
+          <div class="chips jug" id="jugadores"><button type="button" data-j="2" class="on"><span class="pj"><i class="c0"></i><i class="c1"></i></span>1 vs 1</button><button type="button" data-j="3"><span class="pj"><i class="c0"></i><i class="c1"></i><i class="c2"></i></span>3</button><button type="button" data-j="4"><span class="pj"><i class="c0"></i><i class="c1"></i><i class="c2"></i><i class="c3"></i></span>4</button></div>
+          <label class="check auto"><input type="checkbox" id="chkAuto" checked role="switch"><span><b>Inicio automático</b><small>Empieza solo cuando se llena la sala. Si lo quitas, tú tocas Iniciar.</small></span></label>
         </div>
         <div class="campo" style="--c:var(--naranja)">
-          <span class="lbl"><i></i>Preguntas</span>
+          <span class="lbl"><i class="li"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg></i>Preguntas</span>
           <div class="chips" id="cantidad"></div>
         </div>
         <div class="campo" style="--c:var(--morado)">
-          <label class="lbl" for="rngSeg"><i></i>Tiempo por pregunta</label>
+          <label class="lbl" for="rngSeg"><i class="li"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.5 1.5M10 3h4"/></svg></i>Tiempo por pregunta</label>
           <div class="tiempo" id="tiempo">
             <div class="val"><b id="segVal">30 s</b><small id="segTotal"></small></div>
             <input type="range" class="rng" id="rngSeg" min="0" max="5" step="1" value="1" aria-valuetext="30 segundos">
@@ -553,31 +795,34 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
           </div>
         </div>
         <div class="campo" style="--c:var(--oro)">
-          <div class="cmd-cab"><span class="lbl" id="cmdLbl"><i></i>Comodines al azar</span><button type="button" class="sw" id="cmdSw" role="switch" aria-checked="true" aria-labelledby="cmdLbl"></button></div>
+          <div class="cmd-cab"><span class="lbl" id="cmdLbl"><i class="li"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3.5" width="12" height="17" rx="2.5" transform="rotate(-8 10 12)"/><path d="M14.5 4.5 19 5.5a2 2 0 0 1 1.5 2.4L18 19"/><path d="m9 10 1.5 2L9 14l-1.5-2z"/></svg></i>Comodines al azar</span><button type="button" class="sw" id="cmdSw" role="switch" aria-checked="true" aria-labelledby="cmdLbl"></button></div>
           <p class="nota" id="cmdNota" style="margin-top:0"></p>
           <div class="cmds" id="cmdLista"></div>
         </div>
         <ul class="reglas" id="reglas"></ul>
-        <button class="btn" type="button" id="btnCrear" style="width:100%;margin-top:20px">Crear duelo</button>
+        <button class="btn" type="button" id="btnCrear">Crear duelo</button>
         <p class="nota error" id="crearError" hidden></p>
       </div>
       <div class="col">
         <div class="card">
-          <h3>¿Te pasaron un código?</h3>
+          <h3><i class="h-ic az"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="4.5"/><path d="m11.5 11.5 8-8M16.5 6.5l2.5 2.5M14 9l2 2"/></svg></i>¿Tienes un código?</h3>
           <div class="unirse">
             <input type="text" id="codUnirse" maxlength="6" placeholder="ABC123" autocomplete="off" autocapitalize="characters" aria-label="Código del duelo">
             <button class="btn azul" type="button" id="btnUnirse">Entrar</button>
           </div>
         </div>
         <div class="card">
-          <h3>Mis duelos</h3>
+          <h3><i class="h-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 14-5.3L20 9M20 4v5h-5"/><path d="M20 12a8 8 0 0 1-14 5.3L4 15M4 20v-5h5"/></svg></i>Mis duelos</h3>
           <ul class="lista" id="misDuelos"><li class="vacia">Cargando…</li></ul>
+          <button type="button" class="ver-mas-d" id="misDuelosMas" aria-controls="misDuelos" hidden></button>
         </div>
-        <div class="card">
-          <h3>Top de la semana · Duelos ganados</h3>
-          <ol class="rank" id="rank"><li class="vacia">Cargando…</li></ol>
-          <p class="nota">Se reinicia cada lunes.</p>
-        </div>
+        <!-- Top de duelos: el mismo podio del Top simulacro -->
+        <section class="top-d" id="topDuelo">
+          <div class="top-cab">Top duelos · semana <span class="cierra" id="dueCierra"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M10 2h4"/></svg><span></span></span></div>
+          <div class="podio" id="podio"><p class="sim-vacio">Cargando…</p></div>
+          <ol class="sim-lista" id="rank"></ol>
+          <button class="ver-mas" type="button" id="rankMas" hidden>Ver top 10 ▾</button>
+        </section>
       </div>
     </div>
   </section>
@@ -680,7 +925,14 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     rayo: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 2L4.5 13.5h6L9.5 22l9-11.5h-6z"/></svg>',
     mira: svg('<circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/>', 2.6),
     sube: svg('<path d="M3 18l6-6 4 4 8-8"/><path d="M15 8h6v6"/>', 3),
-    reloj: svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>', 2.6)
+    reloj: svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>', 2.6),
+    final: svg('<path d="M12 2.5 14.6 8l6 .7-4.4 4.1 1.2 5.9L12 15.8l-5.4 2.9 1.2-5.9L3.4 8.7l6-.7z"/>', 2.4),
+    copa: svg('<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v4M8 21h8M9 18h6"/>', 2.4),
+    gema: svg('<path d="M12 2.5 20 7v10l-8 4.5L4 17V7z"/><path d="M13 7l-3.5 5h3l-.8 4.5L16 11h-3z" fill="currentColor" stroke-width="1"/>', 2.2),
+    igual: svg('<path d="M6 9.5h12M6 14.5h12"/>', 3),
+    espera: svg('<path d="M7 3h10M7 21h10M8 3v3.5a4 4 0 0 0 1.6 3.2L12 12l-2.4 2.3A4 4 0 0 0 8 17.5V21M16 3v3.5a4 4 0 0 1-1.6 3.2L12 12l2.4 2.3a4 4 0 0 1 1.6 3.2V21"/>', 2.4),
+    raya: svg('<path d="M7 12h10"/>', 3),
+    medalla: svg('<circle cx="12" cy="14.5" r="5.5"/><path d="M8.5 10 6 3h4l2 4 2-4h4l-2.5 7"/>', 2.4)
   };
   // Caritas de las reacciones (estilo stickers)
   const CARAS = {
@@ -1033,12 +1285,13 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       ? 'Antes de empezar, la ruleta reparte <b>' + k + ' comodines</b> de estos 6. Todos reciben los mismos y cada uno decide cuándo usarlos.'
       : 'Sin comodines: gana el que más sabe, sin ayudas.';
     $('cmdLista').classList.toggle('off', !sel.comodines);
+    // Reglas en cuatro cuadritos; el detalle va al pasar el mouse
     $('reglas').innerHTML = [
-      ['var(--morado)', '<b>' + (s < 60 ? s + ' segundos' : tiempoTxt(s)) + '</b> por pregunta. Si se acaba, cuenta como no respondida.'],
-      ['var(--oro)', 'La última es <b>Todo o nada</b>: si aciertas, vale 3 puntos.'],
-      ['var(--azul)', 'Gana quien suma <b>más puntos</b>; si empatan, el más rápido. Todos empiezan a la vez.'],
-      ['var(--verde)', 'XP por puesto: <b>+40</b> el 1.º, <b>+20</b> el 2.º y <b>+10</b> el 3.º. Solo el 1.º suma al top de la semana.']
-    ].map(x => '<li style="--c:' + x[0] + '"><span>' + x[1] + '</span></li>').join('');
+      ['var(--morado)', IC.reloj, tiempoTxt(s), 'por pregunta', 'Si se acaba el tiempo, cuenta como no respondida.'],
+      ['var(--oro)', IC.final, 'Final x3', 'todo o nada', 'La última pregunta vale 3 puntos si aciertas.'],
+      ['var(--azul)', IC.copa, 'Más puntos', 'gana el duelo', 'Si empatan, gana el más rápido. Todos empiezan a la vez.'],
+      ['var(--lima)', IC.gema, '+40 XP', 'al 1.º lugar', '+40 XP el 1.º, +20 el 2.º y +10 el 3.º. Solo el 1.º suma al top de la semana.']
+    ].map(x => '<li style="--c:' + x[0] + '" title="' + x[4] + '"><span class="ri">' + x[1] + '</span><b>' + x[2] + '</b><small>' + x[3] + '</small></li>').join('');
   }
   function errorCrear(t) { $('crearError').textContent = t || ''; $('crearError').hidden = !t; }
   $('fuentes').addEventListener('click', e => {
@@ -1137,27 +1390,89 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   $('btnUnirse').addEventListener('click', unirse);
   $('codUnirse').addEventListener('keydown', e => { if (e.key === 'Enter') unirse(); });
 
+  // Ícono y color de cada estado en "Mis duelos"
+  const ICO_EST = { ganaste: ['copa', 'var(--verde)'], perdiste: ['medalla', 'var(--rojo)'], empate: ['igual', 'var(--oro)'],
+    'te-toca': ['espera', 'var(--azul)'], 'a-medias': ['espera', 'var(--azul)'], 'en-sala': ['espera', 'var(--azul)'], esperando: ['espera', 'var(--azul)'] };
+  const VISIBLES = 3;   // los demás duelos van en "Ver más"
+  $('misDuelosMas').addEventListener('click', () => {
+    const abierta = $('misDuelos').classList.toggle('abierta'), n = $('misDuelos').querySelectorAll('li.extra').length;
+    $('misDuelosMas').textContent = abierta ? 'Ver menos' : 'Ver ' + n + ' más';
+    $('misDuelosMas').setAttribute('aria-expanded', String(abierta));
+  });
   function pintarMisDuelos(L) {
-    $('misDuelos').innerHTML = L.length ? L.map(d => {
+    const mas = $('misDuelosMas');
+    mas.hidden = L.length <= VISIBLES; mas.textContent = 'Ver ' + (L.length - VISIBLES) + ' más'; mas.setAttribute('aria-expanded', 'false');
+    $('misDuelos').classList.remove('abierta');
+    $('misDuelos').innerHTML = L.length ? L.map((d, i) => {
       const pts = d.mis_puntos != null ? d.mis_puntos : d.mis_aciertos;
       const jugado = pts != null && !/en-sala|cancelado/.test(d.estado);
       const linea = (jugado ? plural(pts, 'punto', 'puntos') + (d.puesto && d.jugadores > 1 ? ' · ' + d.puesto + '.º de ' + d.jugadores : '') : d.n + ' preguntas') + ' · ' + tiempoTxt(d.seg || 60);
       const est = d.estado === 'perdiste' && d.puesto ? d.puesto + '.º lugar' : (ESTADOS[d.estado] || d.estado);
-      return '<li><a href="duelo.html?d=' + esc(d.codigo) + '"><div><b>' + (d.rival ? 'vs ' + esc(d.rival) : /te-toca|a-medias|esperando|en-sala/.test(d.estado) ? 'Esperando rivales' : 'Nadie más jugó') + '</b><small>' + esc(d.titulo) + ' · ' + esc(linea) + '</small></div>' +
+      const ic = ICO_EST[d.estado] || ['raya', 'var(--faint)'];
+      return '<li' + (i >= VISIBLES ? ' class="extra"' : '') + '><a href="duelo.html?d=' + esc(d.codigo) + '" style="--c:' + ic[1] + '"><span class="ed-ic">' + IC[ic[0]] + '</span><div><b>' + (d.rival ? 'vs ' + esc(d.rival) : /te-toca|a-medias|esperando|en-sala/.test(d.estado) ? 'Esperando rivales' : 'Nadie más jugó') + '</b><small>' + esc(d.titulo) + ' · ' + esc(linea) + '</small></div>' +
         '<span class="estado ' + esc(d.estado) + '">' + esc(est) + '</span></a></li>';
     }).join('') : '<li class="vacia">Aún no tienes duelos. ¡Crea el primero!</li>';
   }
-  function pintarRanking(L) {
-    $('rank').innerHTML = L.length ? L.map(x =>
-      '<li class="' + (x.yo ? 'yo' : '') + '"><span class="p">' + ((window.MCMedalla && MCMedalla(x.puesto, 20)) || x.puesto) + '</span><span class="n">' + esc(x.apodo) + (x.yo ? ' (tú)' : '') + '</span><b>' + (+x.puntaje) + ' ' + (+x.puntaje === 1 ? 'ganado' : 'ganados') + '</b></li>'
-    ).join('') : '<li class="vacia">Nadie ha ganado un duelo esta semana. ¡Sé el primero!</li>';
+  /* ---------- Top duelos: el mismo podio y lista del Top simulacro ---------- */
+  const AV = ['#FFC800', '#C9C6D6', '#E58A45', '#1CB0F6', '#CE82FF', '#FF9600', '#58CC02', '#FF4B4B', '#5FDAFF', '#C6E000'];
+  const RC = ['#5FDAFF', '#5FF59A', '#D79BFF', '#FF6E84', '#FFC800'];
+  const CORONA = '<svg class="corona" viewBox="0 0 40 22" aria-hidden="true"><path d="M2 20 4 4l9 8 7-11 7 11 9-8 2 16z" fill="#FFC800"/><path d="M2 20h36v2H2z" fill="#B38600"/><circle cx="20" cy="13" r="2.6" fill="#FF4B4B"/><circle cx="10" cy="15" r="1.8" fill="#1CB0F6"/><circle cx="30" cy="15" r="1.8" fill="#58CC02"/></svg>';
+  const ganados = n => (+n || 0) + ' <small>' + (+n === 1 ? 'ganado' : 'ganados') + '</small>';
+  const foto = x => '<span class="letra" style="background:' + AV[(x.puesto - 1) % AV.length] + '">' + esc(inicial(x.apodo)) + '</span>';
+  function emblema(xp) {
+    if (xp == null || !window.MCRango) return '<span class="em"></span>';
+    const n = MCRango.nivel(xp);
+    return '<span class="em"' + (n < 0 ? '' : ' title="' + MCRango.nombre(n) + '"') + '>' + (n < 0 ? '' : MCRango.svg(n, { mini: true, quieto: true })) + '</span>';
+  }
+  function rangoTop(xp) {
+    if (xp == null || !window.MCRango) return '';
+    const n = MCRango.nivel(xp);
+    return n < 0 ? '' : '<span class="rg">' + MCRango.svg(n, { mini: true, quieto: true }) + '<small style="color:' + RC[n] + '">' + MCRango.nombre(n) + '</small></span>';
+  }
+  function filaTop(x, extra) {
+    return '<li class="' + (x.yo ? 'tu' : '') + (extra ? ' extra' : '') + '"><span class="num">' + x.puesto + '</span>' + foto(x) + '<span class="quien">' + esc(x.yo ? 'Tú' : x.apodo) + '</span>' +
+      emblema(x.xp) + '<b>' + ganados(x.puntaje) + '</b></li>';
+  }
+  function pintarRanking(filas) {
+    filas = (filas || []).slice().sort((a, b) => a.puesto - b.puesto);
+    const top = filas.filter(x => x.puesto <= 10), yo = filas.filter(x => x.yo)[0];
+    const podio = $('podio'), lista = $('rank'), mas = $('rankMas');
+    if (!top.length) {
+      podio.innerHTML = '<p class="sim-vacio">Nadie ha ganado un duelo esta semana. ¡Sé el primero!</p>';
+      lista.innerHTML = ''; mas.hidden = true; return;
+    }
+    podio.innerHTML = '<div class="foco" aria-hidden="true"></div>' + [2, 1, 3].map(p => {
+      const x = top.filter(t => t.puesto === p)[0];
+      if (!x) return '<div class="lugar l' + p + ' vacio"><span class="aro"><span class="letra" style="background:var(--surface-2);color:var(--dim)">?</span></span><b>Libre</b><span class="pts">—</span><span class="bloque"><i class="cara"></i><span class="frente">' + p + '</span></span></div>';
+      return '<div class="lugar l' + p + '">' + (p === 1 ? CORONA : '') + '<span class="aro">' + foto(x) + '</span><b>' + esc(x.yo ? 'Tú' : x.apodo) + '</b>' + rangoTop(x.xp) +
+        '<span class="pts">' + ganados(x.puntaje) + '</span><span class="bloque"><i class="cara"></i><span class="frente">' + p + '</span></span></div>';
+    }).join('');
+    const resto = top.filter(x => x.puesto > 3);
+    let html = resto.map(x => filaTop(x, x.puesto > 6 && !x.yo)).join('');
+    if (yo && yo.puesto > 10) html += filaTop(yo, false);
+    lista.innerHTML = html;
+    lista.classList.remove('abierta'); mas.textContent = 'Ver top 10 ▾';
+    mas.hidden = !resto.some(x => x.puesto > 6 && !x.yo);
+  }
+  $('rankMas').addEventListener('click', function () {
+    const abierta = $('rank').classList.toggle('abierta');
+    this.textContent = abierta ? 'Ver menos ▴' : 'Ver top 10 ▾';
+  });
+  // Cierra el lunes a las 00:00 (hora de Lima)
+  function pintarCierreTop() {
+    const ahora = Date.now(), lima = new Date(ahora - 5 * 3600000);
+    const faltan = (8 - lima.getUTCDay()) % 7 || 7;
+    const lunes = Date.UTC(lima.getUTCFullYear(), lima.getUTCMonth(), lima.getUTCDate() + faltan) + 5 * 3600000;
+    const h = Math.max(0, Math.floor((lunes - ahora) / 3600000)), d = Math.floor(h / 24);
+    $('dueCierra').lastChild.textContent = 'Cierra en ' + (d ? d + ' d ' + (h % 24) + ' h' : h + ' h');
   }
   function abrirCrear() {
     pararSondeo(); irA(''); V = null; G = null;
     actualizarFiltros();
     ver('crear');
     rpc('mis_duelos').then(pintarMisDuelos).catch(e => { $('misDuelos').innerHTML = '<li class="vacia">' + esc(textoError(e)) + '</li>'; });
-    rpc('ranking_duelos').then(pintarRanking).catch(() => { $('rank').innerHTML = '<li class="vacia">El ranking aparecerá pronto.</li>'; });
+    pintarCierreTop();
+    rpc('ranking_duelos').then(pintarRanking).catch(() => { $('podio').innerHTML = '<p class="sim-vacio">El top aparecerá pronto.</p>'; });
   }
 
   /* ---------- Pantalla: sala (compartir y entrar) ---------- */
@@ -1759,6 +2074,43 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   });
   document.addEventListener('click', function (e) { if (abierto && !abierto.contains(e.target)) cerrar(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && abierto) { var b = abierto.querySelector('.sel-btn'); cerrar(); b.focus(); } });
+})();
+</script>
+<script>
+// Tarjeta del perfil como en el inicio (assets/inicio.js): foto con marco dorado, nombre y rango de la semana
+(function () {
+  var RC = ['#5FDAFF', '#5FF59A', '#D79BFF', '#FF6E84', '#FFC800'], miXp = null;
+  function rangoHtml(xp) {
+    if (!window.MCRango || xp == null) return '';
+    var n = MCRango.nivel(xp);
+    return n < 0 ? 'Sin rango' : '<i>' + MCRango.svg(n, { mini: true, quieto: true }) + '</i>' + MCRango.nombre(n);
+  }
+  function arreglar() {
+    Array.prototype.forEach.call(document.querySelectorAll('header.top .mcu-chip'), function (chip) {
+      if (!chip.querySelector('.pf-tx')) {
+        chip.classList.add('perfil');
+        var av = chip.querySelector('.mcu-av'), nom = chip.querySelector('.mcu-nom');
+        var marco = document.createElement('span'); marco.className = 'marco';
+        if (av) { chip.insertBefore(marco, av); marco.appendChild(av); }
+        var tx = document.createElement('span'); tx.className = 'pf-tx';
+        if (nom) tx.appendChild(nom);
+        var rg = document.createElement('small'); rg.className = 'pf-rg';
+        tx.appendChild(rg); chip.appendChild(tx);
+      }
+      // Solo si cambió: el observador vuelve a llamar aquí con cada cambio
+      var r = chip.querySelector('.pf-rg'), n = miXp == null || !window.MCRango ? -1 : MCRango.nivel(miXp);
+      var k = miXp == null ? 'x' : String(n), c = n < 0 ? '#cfc8e6' : RC[n];
+      if (r.getAttribute('data-n') !== k) { r.setAttribute('data-n', k); r.innerHTML = rangoHtml(miXp); }
+      if (r.style.getPropertyValue('--rc') !== c) r.style.setProperty('--rc', c);
+    });
+  }
+  var caja = document.querySelector('header.top [data-mc-auth]');
+  if (caja) new MutationObserver(arreglar).observe(caja, { childList: true, subtree: true });
+  // El XP de la semana llega con los corazones (assets/corazones.js, lo carga auth.js)
+  (function esperar(k) {
+    if (window.MCCorazones) MCCorazones.alCambiar(function (e) { if (e) { miXp = +e.xp_semana || 0; arreglar(); } });
+    else if (k < 40) setTimeout(function () { esperar(k + 1); }, 250);
+  })(0);
 })();
 </script>
 </body>
