@@ -427,8 +427,8 @@
   .qop .k { flex: none; width: 28px; height: 28px; border-radius: 9px; border: 2px solid #333; display: grid; place-items: center; font-size: 13px; color: #8a8a8a; }
   .qop:active:not(:disabled) { transform: translateY(3px); border-bottom-width: 2px; margin-bottom: 3px; }
   .qop:disabled { cursor: default; }
-  .qop.bien { border-color: #8fa300; background: rgba(198,224,0,.12); color: var(--accent); }
-  .qop.bien .k { border-color: var(--accent); color: var(--accent); }
+  .qop.bien { border-color: #3f9a00; background: rgba(88,204,2,.12); color: #58CC02; }
+  .qop.bien .k { border-color: #58CC02; color: #58CC02; }
   .qop.mal { border-color: #b33a3a; background: rgba(255,75,75,.1); color: #ff6b6b; animation: tiembla .35s ease; }
   .qop.mal .k { border-color: #ff6b6b; color: #ff6b6b; }
   .qop.apaga { opacity: .45; }
@@ -444,18 +444,18 @@
   .qesc { margin-top: 20px; }
   .qesc input { width: 100%; padding: 15px 16px; border-radius: 16px; border: 2px solid #2e2e2e; background: #0e0e0e; color: #fff; font: 900 18px Nunito, sans-serif; outline: none; }
   .qesc input:focus { border-color: var(--cel); }
-  .qesc input.bien { border-color: #8fa300; color: var(--accent); }
+  .qesc input.bien { border-color: #3f9a00; color: #58CC02; }
   .qesc input.mal { border-color: #b33a3a; color: #ff6b6b; }
   .qesc .btn { margin-top: 12px; }
   .qesc .hint { margin-top: 10px; text-align: center; }
 
   .qhoja { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; padding: 16px 16px calc(18px + env(safe-area-inset-bottom, 0px)); border-top: 2px solid; animation: sube .28s cubic-bezier(.34,1.3,.64,1); }
   .qhoja .in { max-width: 560px; margin: 0 auto; }
-  .qhoja.bien { background: #1a2200; border-color: #3a4a00; }
+  .qhoja.bien { background: #fff; border-color: #3a4a00; }
   .qhoja.mal { background: #2a0f0f; border-color: #5a1f1f; }
   .qh-t { display: flex; align-items: center; gap: 10px; font: 900 20px Nunito, sans-serif; }
   .qh-t .ico { width: 30px; height: 30px; padding: 5px; border-radius: 50%; }
-  .qhoja.bien .qh-t { color: var(--accent); } .qhoja.bien .qh-t .ico { background: var(--accent); color: #1a2200; }
+  .qhoja.bien .qh-t { color: #58CC02; } .qhoja.bien .qh-t .ico { background: #58CC02; color: #fff; }
   .qhoja.mal .qh-t { color: #ff6b6b; } .qhoja.mal .qh-t .ico { background: #ff6b6b; color: #2a0f0f; }
   .qh-x { margin-top: 6px; font-size: 14.5px; line-height: 1.5; color: #d6d6d6; font-weight: 700; }
   .qh-x b { color: #fff; }
@@ -491,14 +491,14 @@
   .qana .hueco { min-width: 80px; }
   .qana .hueco.lleno { font: 900 20px Nunito, sans-serif; }
   .qarm { min-height: 62px; margin-top: 18px; padding: 8px; border-bottom: 3px solid #2e2e2e; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; align-items: center; }
-  .qarm.bien { border-color: var(--accent); } .qarm.mal { border-color: #ff4b4b; animation: tiembla .35s ease; }
+  .qarm.bien { border-color: #58CC02; } .qarm.mal { border-color: #ff4b4b; animation: tiembla .35s ease; }
   .vacioA { color: #555; font: 800 14px Nunito, sans-serif; }
   .qfichas { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 18px; }
   .ficha { width: 40px; height: 48px; border-radius: 12px; border: 2px solid #333; border-bottom-width: 5px; background: #161616; color: #fff; font: 900 21px Nunito, sans-serif; cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .ficha:active:not(:disabled) { transform: translateY(3px); border-bottom-width: 2px; }
   .ficha.usada { background: #0b0b0b; color: transparent; border-color: #1d1d1d; }
   .qarm .ficha { border-color: var(--cel-d); color: var(--cel); background: rgba(28,176,246,.08); }
-  .qarm.bien .ficha { border-color: #8fa300; color: var(--accent); }
+  .qarm.bien .ficha { border-color: #3f9a00; color: #58CC02; }
   #qArmOk { margin-top: 20px; }
   #qArmOk:disabled { opacity: .4; }
 </style>
@@ -570,12 +570,12 @@ html[data-modo="claro"] .qglobo::before { background: #F1EFF6 !important; border
 html[data-modo="claro"] .qfrase { border: 2px solid #DCD8E8 !important; background: #FFFFFF !important; }
 html[data-modo="claro"] .hueco.lleno { color: #6F8000 !important; }
 html[data-modo="claro"] .qop { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; color: #1A1626 !important; }
-html[data-modo="claro"] .qop.bien { color: #6F8000 !important; }
-html[data-modo="claro"] .qop.bien .k { color: #6F8000 !important; }
+html[data-modo="claro"] .qop.bien { color: #3F9A00 !important; }
+html[data-modo="claro"] .qop.bien .k { color: #3F9A00 !important; }
 html[data-modo="claro"] .qrel .qop.par { color: #6F8000 !important; }
 html[data-modo="claro"] .qesc input { border: 2px solid #DCD8E8 !important; background: #FFFFFF !important; color: #1A1626 !important; }
-html[data-modo="claro"] .qesc input.bien { color: #6F8000 !important; }
-html[data-modo="claro"] .qhoja.bien .qh-t { color: #6F8000 !important; }
+html[data-modo="claro"] .qesc input.bien { color: #3F9A00 !important; }
+html[data-modo="claro"] .qhoja.bien .qh-t { color: #3F9A00 !important; }
 html[data-modo="claro"] .qh-x { color: #1A1626 !important; }
 html[data-modo="claro"] .qh-x b { color: #1A1626 !important; }
 html[data-modo="claro"] .qhoja.mal .btn { color: #1A1626 !important; }
@@ -585,7 +585,7 @@ html[data-modo="claro"] .qana { border: 2px solid #DCD8E8 !important; background
 html[data-modo="claro"] .qarm { border-bottom: 3px solid #DCD8E8 !important; }
 html[data-modo="claro"] .ficha { background: #F1EFF6 !important; color: #1A1626 !important; }
 html[data-modo="claro"] .ficha.usada { background: #FFFFFF !important; border-color: #DCD8E8 !important; }
-html[data-modo="claro"] .qarm.bien .ficha { color: #6F8000 !important; }
+html[data-modo="claro"] .qarm.bien .ficha { color: #3F9A00 !important; }
 </style>
 </head>
 <body>

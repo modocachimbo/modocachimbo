@@ -1,0 +1,168 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;1,800;1,900&display=swap');
+/* =========================================================
+   Modo Cachimbo · Flashcards (tarjetas.html)
+   Mismo estilo que Exámenes: fondo azul morado, letra cuadrada
+   (Barlow Condensed) en títulos y números, Nunito gruesa en el texto.
+   La página lleva <html data-fc data-area="..."> y toma el color del
+   área del curso. El reverso de la tarjeta (la respuesta) va en el
+   verde de "correcto".
+   ========================================================= */
+:root { --display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
+  --ac: #C6E000; --ac-rgb: 198,224,0; --ac-d: #8fa300; --ac-tx: #151A03;
+  --lima: #C6E000; --lima-d: #8fa300; --verde: #58CC02; --verde-d: #3f9a00; --verde-c: #89E219; }
+html[data-fc][data-area="matematica"]:not([data-modo="claro"]) { --ac: #1CB0F6; --ac-rgb: 28,176,246; --ac-d: #1287bd; --ac-tx: #fff; }
+html[data-fc][data-area="comunicacion"]:not([data-modo="claro"]) { --ac: #CE82FF; --ac-rgb: 206,130,255; --ac-d: #a35fd1; --ac-tx: #fff; }
+html[data-fc][data-area="ciencias-sociales"]:not([data-modo="claro"]) { --ac: #FF9600; --ac-rgb: 255,150,0; --ac-d: #c77400; --ac-tx: #fff; }
+html[data-fc]:not([data-modo="claro"]) { --bg: #0B0818; --surface: #151127; --surface-2: #1D1834; --border: #2A2346; --borde-g: #2A2346;
+  --text: #EEEAF7; --text-dim: #A99FC8; --text-faint: #6F6690; color-scheme: dark; }
+html[data-modo="claro"][data-fc] { --borde-g: #DCD8E8; --ac-tx: #fff; }
+html[data-modo="claro"][data-fc]:not([data-area]), html[data-modo="claro"][data-fc][data-area="ciencia-tecnologia"] { --ac: #6F8000; --ac-rgb: 122,140,0; --ac-d: #8FA300; --ac-tx: #1A1626; }
+html[data-fc] body { background: var(--bg); color: var(--text); padding: 0 0 56px; }
+html[data-fc] .wrap { max-width: 640px; padding: 0 24px; }
+@media (max-width: 520px) { html[data-fc] .wrap { padding: 0 16px; } }
+
+/* ---------- Cabecera: ← Volver y la casita, y la insignia de Flashcards ---------- */
+html[data-fc] .backlink { justify-content: space-between; gap: 12px; padding: 22px 0 10px; margin: 0; }
+html[data-fc] .back-row { display: flex; align-items: center; gap: 12px; min-width: 0; }
+html[data-fc] .backlink a.back:not(#z) { gap: 8px; color: var(--text); font: 900 22px/1.1 'Nunito', sans-serif !important; min-width: 0; }
+html[data-fc] .backlink a.back span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html[data-fc] .backlink a.back svg { width: 20px; height: 20px; flex-shrink: 0; }
+html[data-fc] .backlink a.back:hover { color: var(--ac); }
+html[data-fc] .home-btn:not(#z) { display: grid; place-items: center; width: 42px; height: 42px; margin: 0; flex-shrink: 0; border-radius: 12px; border: 2px solid var(--borde-g); border-bottom-width: 4px; background: var(--surface-2); color: var(--text); }
+html[data-fc] .home-btn svg { width: 18px; height: 18px; }
+html[data-fc] .home-btn:hover:not(#z) { border-color: var(--ac); color: var(--ac); }
+.fc-badge { display: inline-flex; align-items: center; gap: 8px; color: var(--ac); white-space: nowrap; }
+html body .fc-badge span:not(#z) { font: italic 900 20px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .02em; }
+.fc-badge i { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: rgba(var(--ac-rgb), .15); flex-shrink: 0; }
+.fc-badge svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+@media (max-width: 520px) { .fc-badge span { display: none; } }
+
+/* ---------- Título grande con su raya, como en Exámenes ---------- */
+html body .eyebrow:not(#z) { margin-top: 6px; font: 800 14px/1.2 var(--display) !important; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); }
+html body h1#titulo:not(#z) { display: flex; align-items: center; gap: 16px; margin-top: 4px; font: italic 900 50px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; color: var(--ac); text-wrap: balance; }
+h1#titulo::after { content: ""; flex: 1; min-width: 24px; height: 2px; background: linear-gradient(90deg, rgba(var(--ac-rgb), .5), rgba(var(--ac-rgb), 0)); }
+html[data-fc] .lead:not(#z) { color: var(--text-dim); font: 700 15px/1.5 'Nunito', sans-serif !important; margin-top: 10px; max-width: 60ch; }
+@media (max-width: 520px) { html body h1#titulo:not(#z) { font-size: 38px !important; gap: 12px; } html[data-fc] .lead:not(#z) { font-size: 13.5px !important; } }
+/* Jugando: el título se achica para dejar sitio a la tarjeta */
+html body.jugando h1#titulo:not(#z) { font-size: 32px !important; }
+@media (max-width: 520px) { html body.jugando h1#titulo:not(#z) { font-size: 26px !important; } html body.jugando .eyebrow:not(#z) { font-size: 12.5px !important; } }
+
+/* ---------- Elegir: cada paso es una tarjeta con su número ---------- */
+html[data-fc] .paso { margin-top: 14px; padding: 16px 16px 18px; background: var(--surface); border: 2px solid var(--borde-g); border-radius: 20px; }
+html[data-fc] #elegir > .paso:first-child { margin-top: 24px; }
+html[data-fc] .paso-ttl:not(#z) { margin-bottom: 12px; gap: 10px; color: var(--text); font: italic 900 22px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; }
+html[data-fc] .paso-ttl .n:not(#z) { width: 30px; height: 28px; border-radius: 0; background: var(--ac); color: var(--ac-tx); font: italic 900 19px/1 var(--display) !important; clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%); }
+html[data-fc] .chip:not(#z) { border: 2px solid var(--borde-g); border-bottom-width: 4px; background: var(--surface-2); color: var(--text); border-radius: 14px; padding: 9px 16px; font: 900 15px 'Nunito', sans-serif !important; }
+html[data-fc] .chip small:not(#z) { color: var(--text-faint); font-weight: 800; }
+html[data-fc] .chip.on:not(#z) { background: rgba(var(--ac-rgb), .14); border-color: var(--ac); border-bottom-color: var(--ac-d); color: var(--ac); }
+html[data-fc] .chip.on small:not(#z) { color: var(--ac); opacity: .75; }
+html[data-fc] .hint { color: var(--text-dim); font-weight: 700; }
+
+/* Temas: filas con casilla propia en el color del área */
+html[data-fc] .temas { gap: 8px; }
+html[data-fc] .tema:not(#z) { gap: 12px; padding: 12px 14px; background: var(--surface-2); border: 2px solid var(--borde-g); border-radius: 14px; font: 800 14.5px/1.3 'Nunito', sans-serif !important; color: var(--text); transition: border-color .15s; }
+html[data-fc] .tema:has(input:checked):not(#z) { border-color: rgba(var(--ac-rgb), .55); }
+html[data-fc] .tema.todo:not(#z) { border-style: dashed; font-weight: 900; }
+html[data-fc] .tema input { appearance: none; -webkit-appearance: none; width: 22px; height: 22px; margin: 0; border-radius: 7px; border: 2px solid var(--borde-g); background: var(--bg); display: grid; place-items: center; cursor: pointer; }
+html[data-fc] .tema input:checked { background: var(--ac); border-color: var(--ac-d); }
+html[data-fc] .tema input:checked::after { content: ""; width: 11px; height: 6px; margin-top: -3px; border: solid var(--ac-tx); border-width: 0 0 3px 3px; transform: rotate(-45deg); }
+html[data-fc] .tema input:focus-visible { outline: 2px solid var(--ac); outline-offset: 2px; }
+html[data-fc] .tema .ct:not(#z) { color: var(--text-dim); font: 800 14px/1 var(--display) !important; letter-spacing: .05em; text-transform: uppercase; }
+
+/* Resumen y botón Empezar (lima, como Practicar) */
+html[data-fc] .resumen:not(#z) { margin: 18px 0 12px; color: var(--text-dim); font: 800 15px/1.2 var(--display) !important; letter-spacing: .06em; text-transform: uppercase; }
+html[data-fc] .btn.primary:not(#z) { background: var(--lima); color: #151A03; border: 2px solid var(--lima); box-shadow: 0 5px 0 var(--lima-d); font: italic 900 24px/1 var(--display) !important; letter-spacing: .03em; padding: 14px 16px 12px; }
+html[data-fc] .btn.primary .ico { width: 20px; height: 20px; }
+html[data-fc] .btn:not(.primary):not(.rep):not(#z) { background: var(--surface-2); color: var(--text); border: 2px solid var(--borde-g); box-shadow: 0 5px 0 var(--borde-g); }
+
+/* ---------- Candado ---------- */
+html[data-fc] .lock:not(#z) { position: relative; overflow: hidden; margin-top: 24px; background: var(--surface); border: 2px solid rgba(var(--ac-rgb), .35); border-bottom: 5px solid var(--ac-d); border-radius: 22px; padding: 30px 22px 24px; }
+html[data-fc] .lock::before { content: ""; position: absolute; top: 0; right: 0; width: 110px; height: 110px; pointer-events: none; background: linear-gradient(225deg, rgba(var(--ac-rgb), .22), transparent 60%); }
+html[data-fc] .lock h2:not(#z) { font: italic 900 34px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; color: var(--text); margin-bottom: 10px; }
+html[data-fc] .lock h2 .accent:not(#z) { color: var(--ac); font: inherit !important; }
+html[data-fc] .lock p:not(#z) { color: var(--text-dim); font-size: 14px; }
+html[data-fc] .lock input:not(#z) { background: var(--bg); border: 2px solid var(--borde-g); color: var(--text); }
+html[data-fc] .lock input:focus:not(#z) { border-color: var(--ac); }
+
+/* ---------- Juego: barra, contadores y botones ---------- */
+html[data-fc] .track:not(#z) { height: 12px; background: var(--surface-2); }
+html[data-fc] .fill { background: linear-gradient(90deg, var(--ac-d), var(--ac) 60%); box-shadow: 0 0 14px rgba(var(--ac-rgb), .45); }
+html[data-fc] .cuenta:not(#z) { font: italic 900 22px/1 var(--display) !important; color: var(--text); }
+html[data-fc] .sonido:not(#z) { border: 2px solid var(--borde-g); border-bottom-width: 4px; background: var(--surface-2); color: var(--text); width: 40px; height: 40px; border-radius: 12px; }
+html[data-fc] .pill:not(#z) { font: 900 14px/1 'Nunito', sans-serif !important; padding: 7px 12px; }
+html[data-fc] .pill.ok:not(#z) { color: var(--verde); background: rgba(88,204,2,.12); }
+html[data-fc] .pill.rep:not(#z) { color: #FF9600; background: rgba(255,150,0,.12); }
+html[data-fc] .mazo:not(#z) { background: var(--surface-2); border: 2px solid var(--borde-g); }
+html[data-fc] .piso { background: radial-gradient(closest-side, rgba(var(--ac-rgb), .3), transparent); }
+
+/* Frente: blanco, con la etiqueta del tema en el color del área */
+html[data-fc] .cara .tag .num:not(#z) { font: italic 900 16px/1 var(--display) !important; letter-spacing: .04em; border: 0; border-radius: 0; padding: 6px 12px 5px 13px; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); }
+html[data-fc] .frente .tag .num:not(#z) { background: var(--ac); color: var(--ac-tx); }
+html[data-fc] .frente { border-bottom-color: #d9d6e3; }
+html[data-fc] .frente .mcq-lec { border-left-color: var(--ac); }
+html[data-fc] .cara .pie .dedo .ico:not(#z) { color: var(--ac); }
+
+/* Reverso: la respuesta, en el verde de "correcto" */
+html[data-fc] .reverso:not(#z) { color: #fff; background: radial-gradient(90% 60% at 50% 40%, var(--verde-c), transparent 70%), var(--verde); border: 2px solid #4fb802; border-bottom: 7px solid var(--verde-d); }
+html[data-fc] .reverso .tag:not(#z) { color: rgba(255,255,255,.85); }
+html[data-fc] .reverso .tag .num:not(#z) { background: #fff; color: var(--verde-d); }
+html[data-fc] .reverso .txt.resp:not(#z) { color: #fff; text-shadow: 0 2px 0 rgba(0,0,0,.12); }
+html[data-fc] .chek:not(#z) { color: var(--verde); box-shadow: 0 5px 0 var(--verde-d); }
+html[data-fc] .reverso .op:not(#z) { background: rgba(255,255,255,.18); color: rgba(255,255,255,.75); border-color: rgba(255,255,255,.12); }
+html[data-fc] .reverso .op b:not(#z) { color: rgba(255,255,255,.8); border-color: rgba(255,255,255,.3); }
+html[data-fc] .reverso .op.si:not(#z) { background: #fff; color: #1d4a00; border-color: #fff; border-bottom-color: var(--verde-d); }
+html[data-fc] .reverso .op.si b:not(#z) { background: var(--verde); color: #fff; border-color: var(--verde-d); }
+html[data-fc] .sello { font: italic 900 24px/1 var(--display) !important; }
+html[data-fc] .sello.si:not(#z) { color: var(--verde); border-color: var(--verde); }
+
+/* Botones de respuesta: Repasar (naranja) y Ya me la sé (verde) */
+html[data-fc] .acciones .btn:not(#z) { font: italic 900 22px/1 var(--display) !important; letter-spacing: .03em; padding: 15px 12px 13px; }
+html[data-fc] #btnSe:not(#z) { color: #fff; background: var(--verde); border: 0; box-shadow: 0 5px 0 var(--verde-d); }
+html[data-fc] .btn.rep:not(#z) { color: #fff; background: #FF9600; box-shadow: 0 5px 0 #cc7800; border: 0; }
+html[data-fc] .voltear-hint:not(#z) { color: var(--text-faint); font-weight: 700; }
+html[data-fc] .voltear-hint b:not(#z) { color: var(--text-dim); }
+html[data-fc] .combo:not(#z) { font: italic 900 26px/1 var(--display) !important; text-transform: uppercase; background: var(--lima); color: #151A03; border-radius: 0; clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%); padding: 12px 26px 10px; box-shadow: none; }
+
+/* ---------- Final de la ronda ---------- */
+html[data-fc] .fin:not(#z) { background: radial-gradient(120% 60% at 50% 0%, rgba(var(--ac-rgb), .16), transparent 60%), var(--surface); border: 2px solid var(--borde-g); border-bottom: 5px solid var(--ac-d); }
+html[data-fc] .fin h2:not(#z) { font: italic 900 40px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; color: var(--text); }
+html[data-fc] .fin .medalla:not(.tiro):not(#z) { background: var(--ac); color: var(--ac-tx); box-shadow: 0 6px 0 var(--ac-d); }
+html[data-fc] .anillo .base:not(#z) { stroke: var(--surface-2); }
+html[data-fc] .anillo .arco:not(#z) { stroke: var(--verde); filter: drop-shadow(0 0 6px rgba(88,204,2,.5)); }
+html[data-fc] .anillo .pct:not(#z) { font: italic 900 52px/1 var(--display) !important; color: var(--verde); }
+html[data-fc] .anillo .de:not(#z) { font: 800 14px/1.2 var(--display) !important; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); margin-top: 2px; }
+html[data-fc] .fin p:not(#z) { color: var(--text-dim); font-size: 14px; }
+html[data-fc] .state-msg:not(#z) { color: var(--text-dim); font-weight: 700; }
+
+/* ---------- Modo claro ---------- */
+html[data-modo="claro"][data-fc] body .home-btn:not(#z) { background: #fff !important; border: 2px solid var(--borde-g) !important; border-bottom-width: 4px !important; color: var(--text) !important; }
+html[data-modo="claro"][data-fc] body .home-btn:hover:not(#z), html[data-modo="claro"][data-fc] body .backlink a.back:hover:not(#z) { color: var(--ac) !important; }
+html[data-modo="claro"][data-fc] body .eyebrow:not(#z) { color: var(--text-dim) !important; }
+html[data-modo="claro"][data-fc] body .paso:not(#z) { background: #fff; }
+html[data-modo="claro"][data-fc] body .paso-ttl:not(#z) { color: var(--text) !important; }
+html[data-modo="claro"][data-fc] body .paso-ttl .n:not(#z) { color: var(--ac-tx) !important; }
+html[data-modo="claro"][data-fc] body .chip:not(#z) { background: #F1EFF6 !important; border: 2px solid var(--borde-g) !important; border-bottom-width: 4px !important; color: var(--text) !important; }
+html[data-modo="claro"][data-fc] body .chip.on:not(#z) { background: rgba(var(--ac-rgb), .1) !important; border-color: var(--ac) !important; border-bottom-color: var(--ac-d) !important; color: var(--ac) !important; }
+html[data-modo="claro"][data-fc] body .tema:not(#z) { background: #F1EFF6 !important; }
+html[data-modo="claro"][data-fc] body .tema input:not(:checked) { background: #fff; }
+html[data-modo="claro"][data-fc] body .btn.primary:not(#z) { background: var(--lima) !important; border-color: var(--lima) !important; color: #1A1626 !important; box-shadow: 0 5px 0 var(--lima-d) !important; }
+html[data-modo="claro"][data-fc] body .btn:not(.primary):not(.rep):not(#z) { background: #fff !important; border: 2px solid var(--borde-g) !important; color: var(--text) !important; box-shadow: 0 5px 0 var(--borde-g) !important; }
+html[data-modo="claro"][data-fc] body .lock:not(#z) { background: #fff !important; }
+html[data-modo="claro"][data-fc] body .lock h2 .accent:not(#z) { color: var(--ac) !important; }
+html[data-modo="claro"][data-fc] body .lock p:not(#z) { color: var(--text-dim) !important; }
+html[data-modo="claro"][data-fc] body .lock input:not(#z) { background: #F1EFF6 !important; border: 2px solid var(--borde-g) !important; color: var(--text) !important; }
+html[data-modo="claro"][data-fc] body .track:not(#z) { background: #E6E3EE !important; }
+html[data-modo="claro"][data-fc] body .cuenta:not(#z) { color: var(--text) !important; }
+html[data-modo="claro"][data-fc] body .sonido:not(#z) { background: #fff !important; border: 2px solid var(--borde-g) !important; border-bottom-width: 4px !important; color: var(--text) !important; }
+html[data-modo="claro"][data-fc] body .pill.ok:not(#z) { color: var(--verde-d) !important; background: rgba(88,204,2,.12) !important; }
+html[data-modo="claro"][data-fc] body .pill.rep:not(#z) { color: #C25E00 !important; }
+html[data-modo="claro"][data-fc] body .mazo:not(#z) { background: #EEECF5 !important; border: 2px solid var(--borde-g) !important; }
+html[data-modo="claro"][data-fc] body .frente:not(#z) { border-color: var(--borde-g); box-shadow: 0 10px 30px rgba(40,30,80,.08); }
+html[data-modo="claro"][data-fc] body .frente .tag .num:not(#z) { color: var(--ac-tx) !important; }
+html[data-modo="claro"][data-fc] body .cara .pie .dedo .ico:not(#z) { color: var(--ac) !important; }
+html[data-modo="claro"][data-fc] body .sello.si:not(#z) { color: var(--verde) !important; }
+html[data-modo="claro"][data-fc] body .btn.rep:not(#z) { color: #fff !important; background: #FF9600 !important; border: 0 !important; }
+html[data-modo="claro"][data-fc] body #btnSe:not(#z) { color: #fff !important; background: var(--verde) !important; border: 0 !important; box-shadow: 0 5px 0 var(--verde-d) !important; }
+html[data-modo="claro"][data-fc] body .fin:not(#z) { background: radial-gradient(120% 60% at 50% 0%, rgba(var(--ac-rgb), .12), transparent 60%), #fff !important; }
+html[data-modo="claro"][data-fc] body .anillo .base:not(#z) { stroke: #E6E3EE; }
+html[data-modo="claro"][data-fc] body .anillo .pct:not(#z) { color: var(--verde-d) !important; }

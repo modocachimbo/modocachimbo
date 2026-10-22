@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-fc>
 <head>
 <meta charset="UTF-8">
 <script src="assets/guardia.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#050505">
+<meta name="theme-color" content="#0B0818">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
 <link rel="apple-touch-icon" href="assets/app/icono-180.png">
 <meta name="apple-mobile-web-app-title" content="Modo Cachimbo">
@@ -299,12 +299,16 @@ html[data-modo="claro"] .anillo .pct { color: #6F8000 !important; }
 html[data-modo="claro"] .home-btn { border: 2px solid #DCD8E8 !important; background: #F1EFF6 !important; color: #1A1626 !important; }
 html[data-modo="claro"] .home-btn:hover { color: #6F8000 !important; }
 </style>
+<link rel="stylesheet" href="assets/tarjetas.css">
 </head>
 <body>
 <div class="wrap">
   <div class="backlink">
-    <a class="back" id="backLink" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> <span id="backLabel">Volver</span></a>
-    <a class="home-btn" href="index.html" title="Ir al inicio" aria-label="Ir al inicio"><svg width="14" height="14" viewBox="0 0 24.66 24.65" fill="currentColor" aria-hidden="true"><path d="M11.88,0h.87a2.91,2.91,0,0,1,1.39.84l9.64,9.65a3.33,3.33,0,0,1,.36.39,2.2,2.2,0,0,1,.31,2.35,2.14,2.14,0,0,1-1.82,1.35c-.68.08-.6,0-.61.67,0,2.28,0,4.57,0,6.85a2.63,2.63,0,0,1-2.65,2.54H15.57c-.65,0-.92-.26-.92-.91V18.19a1.16,1.16,0,0,0-1.24-1.25c-.71,0-1.43,0-2.14,0A1.17,1.17,0,0,0,10,18.25v5.56a.74.74,0,0,1-.83.83H5.27A2.6,2.6,0,0,1,3,23.39a3,3,0,0,1-.42-1.71V14.86a.23.23,0,0,0-.23-.25,2.64,2.64,0,0,1-.74-.1A2.32,2.32,0,0,1,0,12.75v-.87a2.91,2.91,0,0,1,.86-1.42Q5.66,5.67,10.45.88A2.86,2.86,0,0,1,11.88,0Z"/></svg></a>
+    <div class="back-row">
+      <a class="back" id="backLink" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> <span id="backLabel">Volver</span></a>
+      <a class="home-btn" href="index.html" title="Ir al inicio" aria-label="Ir al inicio"><svg width="14" height="14" viewBox="0 0 24.66 24.65" fill="currentColor" aria-hidden="true"><path d="M11.88,0h.87a2.91,2.91,0,0,1,1.39.84l9.64,9.65a3.33,3.33,0,0,1,.36.39,2.2,2.2,0,0,1,.31,2.35,2.14,2.14,0,0,1-1.82,1.35c-.68.08-.6,0-.61.67,0,2.28,0,4.57,0,6.85a2.63,2.63,0,0,1-2.65,2.54H15.57c-.65,0-.92-.26-.92-.91V18.19a1.16,1.16,0,0,0-1.24-1.25c-.71,0-1.43,0-2.14,0A1.17,1.17,0,0,0,10,18.25v5.56a.74.74,0,0,1-.83.83H5.27A2.6,2.6,0,0,1,3,23.39a3,3,0,0,1-.42-1.71V14.86a.23.23,0,0,0-.23-.25,2.64,2.64,0,0,1-.74-.1A2.32,2.32,0,0,1,0,12.75v-.87a2.91,2.91,0,0,1,.86-1.42Q5.66,5.67,10.45.88A2.86,2.86,0,0,1,11.88,0Z"/></svg></a>
+    </div>
+    <div class="fc-badge"><i><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="13" height="14" rx="2.5"/><path d="M8 3h11a2 2 0 0 1 2 2v11"/><path d="M6.5 14h6"/></svg></i><span>Flashcards</span></div>
   </div>
 
   <div class="eyebrow" id="eyebrow">Flashcards</div>
@@ -410,7 +414,7 @@ html[data-modo="claro"] .home-btn:hover { color: #6F8000 !important; }
     if (!window.renderMathInElement) { document.addEventListener('mc:katex', () => renderMath(el), { once: true }); return; }
     renderMathInElement(el, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false });
   }
-  function mostrar(id) { ['elegir', 'lock', 'juego', 'fin', 'estado'].forEach(x => { $(x).hidden = x !== id; }); $('lead').hidden = id === 'juego' || id === 'fin' || id === 'lock'; }
+  function mostrar(id) { ['elegir', 'lock', 'juego', 'fin', 'estado'].forEach(x => { $(x).hidden = x !== id; }); document.body.classList.toggle('jugando', id === 'juego'); $('lead').hidden = id === 'juego' || id === 'fin' || id === 'lock'; }
   function aviso(t) { $('estado').textContent = t; mostrar('estado'); }
   function chips(cont, lista, actual, alElegir) {
     cont.innerHTML = lista.map(x => `<button type="button" class="chip ${x[0] === actual ? 'on' : ''}" data-v="${esc(x[0])}" ${x[3] ? 'disabled' : ''}>${esc(x[1])}${x[2] ? ` <small>${esc(x[2])}</small>` : ''}</button>`).join('');
@@ -906,13 +910,15 @@ html[data-modo="claro"] .home-btn:hover { color: #6F8000 !important; }
     if (!CURSO) { aviso('Falta indicar el curso.'); return; }
     const c = await MCCursos.curso(CURSO).catch(() => null);
     nombreCurso = (c && c.nombre) || CURSO;
+    // El color de la página es el del área del curso (assets/tarjetas.css)
+    if (c && c.area) document.documentElement.setAttribute('data-area', c.area);
     document.title = 'Flashcards · ' + nombreCurso + ' · Modo Cachimbo';
     if (DIRECTO) {
       const sec = params.get('sec'), anio = params.get('year'), num = pad(params.get('tema'));
       if (!PRODUCTO[sec]) { aviso('Sección no válida.'); return; }
       $('backLink').href = CURSO + '/' + sec + '/tema.html?year=' + encodeURIComponent(anio) + '&tema=' + encodeURIComponent(params.get('tema'));
       $('backLabel').textContent = 'Tema ' + num;
-      $('eyebrow').textContent = 'Flashcards · ' + nombreCurso + ' · ' + NOMBRE_SEC[sec] + ' ' + anio;
+      $('eyebrow').textContent = nombreCurso + ' · ' + NOMBRE_SEC[sec] + ' ' + anio;
       $('titulo').textContent = 'Tema ' + num;
       aviso('Cargando tarjetas…');
       if (!(await conAcceso(sec))) return;
@@ -927,10 +933,12 @@ html[data-modo="claro"] .home-btn:hover { color: #6F8000 !important; }
       } catch (e) { aviso('No se pudo cargar este tema.'); }
       return;
     }
-    $('backLink').href = CURSO + '/index.html';
-    $('backLabel').textContent = nombreCurso;
-    $('eyebrow').textContent = 'Flashcards · ' + nombreCurso;
-    $('titulo').textContent = 'Repasa con tarjetas';
+    // Desde la pantalla de Flashcards del inicio se vuelve a ella; desde el curso, al curso
+    const deInicio = params.get('de') === 'inicio';
+    $('backLink').href = deInicio ? 'index.html#flashcards' : CURSO + '/index.html';
+    $('backLabel').textContent = deInicio ? 'Flashcards' : nombreCurso;
+    $('eyebrow').textContent = 'Repasa con tarjetas';
+    $('titulo').textContent = nombreCurso;
     $('lead').textContent = 'Elige de dónde sacar las tarjetas. En cada una ves la pregunta, la volteas y marcas si ya te la sabes; las que fallas vuelven a salir.';
     // El candado va primero, antes de elegir
     if (!(await conAcceso(null))) return;

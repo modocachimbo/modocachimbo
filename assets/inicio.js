@@ -579,9 +579,11 @@
       }).catch(function () { delete manifiestos[e.id]; });
     });
   }
+  // Flashcards: cómo se juega, en tres pasos, arriba de los cursos
+  var FC_COMO = '<ol class="fc-como"><li><b>1</b><span>Lee la pregunta y <em>voltea</em> la tarjeta</span></li><li><b>2</b><span>Marca si <em>ya te la sabes</em> o si toca repasar</span></li><li><b>3</b><span>Las que fallas <em>vuelven a salir</em> hasta que las domines</span></li></ol>';
   function abrirHoja(cual) {
     hFondo.classList.remove('full'); document.body.classList.remove('en-cursos');
-    hFondo.classList.remove('ex'); document.body.classList.remove('en-examenes');
+    hFondo.classList.remove('ex', 'fc'); document.body.classList.remove('en-examenes', 'en-flashcards');
     if (cual === 'cursos') {
       hTit.textContent = 'Mis cursos'; hSub.textContent = 'Elige un área o entra directo a un curso.';
       hLista.innerHTML = $('tplAreas').innerHTML;
@@ -592,30 +594,36 @@
       hLista.innerHTML = EXAMENES.map(tarjetaExamen).join('') + SIM_TIRA;
       pintarExamenes(); hFondo.classList.add('full', 'ex'); document.body.classList.add('en-examenes');
     } else {
-      hTit.textContent = 'Flashcards: elige el curso';
-      hLista.innerHTML = '';
+      hTit.textContent = 'Flashcards';
+      hSub.textContent = 'Elige un curso y repasa con tarjetas que se voltean.';
+      hLista.innerHTML = FC_COMO;
+      hFondo.classList.add('full', 'fc'); document.body.classList.add('en-flashcards');
       cursosJson.then(function (d) {
-        var html = '';
+        var html = FC_COMO;
         (d.areas || []).forEach(function (a) {
           var cs = (d.cursos || []).filter(function (c) { return c.area === a.id && !c.oculto; }).sort(function (x, y) { return (x.orden || 0) - (y.orden || 0); });
           if (!cs.length) return;
-          html += '<div class="grupo">' + esc(a.nombre) + '</div>';
-          cs.forEach(function (c) { html += filaHoja('tarjetas.html?curso=' + encodeURIComponent(c.id), c.icono ? '<i class="ic-m" style="-webkit-mask-image:url(' + esc(c.icono) + ');mask-image:url(' + esc(c.icono) + ')"></i>' : ICO_FC, c.nombre, '', '', c.area); });
+          html += '<section class="fc-area" data-area="' + esc(a.id) + '"><h3 class="fc-area-t">' + esc(a.nombre) + '<small>' + cs.length + (cs.length === 1 ? ' curso' : ' cursos') + '</small></h3><div class="fc-cursos">' +
+            cs.map(function (c) {
+              return '<a class="fc-c" href="tarjetas.html?curso=' + encodeURIComponent(c.id) + '&de=inicio"><span class="ic">' +
+                (c.icono ? '<i class="ic-m" style="-webkit-mask-image:url(' + esc(c.icono) + ');mask-image:url(' + esc(c.icono) + ')"></i>' : ICO_FC) +
+                '</span><b>' + esc(c.nombre) + '</b>' + CHEV + '</a>';
+            }).join('') + '</div></section>';
         });
         hLista.innerHTML = html;
-      }).catch(function () { hLista.innerHTML = '<p class="grupo">No se pudo cargar la lista de cursos.</p>'; });
+      }).catch(function () { hLista.innerHTML = FC_COMO + '<p class="grupo">No se pudo cargar la lista de cursos.</p>'; });
     }
     hFondo.hidden = false;
     sonar('toque');
   }
-  function cerrarHoja() { document.documentElement.classList.remove('mc-abre-cursos'); hFondo.hidden = true; hFondo.classList.remove('full', 'ex'); document.body.classList.remove('en-cursos', 'en-examenes'); }
+  function cerrarHoja() { document.documentElement.classList.remove('mc-abre-cursos'); hFondo.hidden = true; hFondo.classList.remove('full', 'ex', 'fc'); document.body.classList.remove('en-cursos', 'en-examenes', 'en-flashcards'); }
   // "Nuevo para ti" (assets/novedades.js) usa la misma hoja
-  window.MCHoja = { abrir: function (t, html) { hFondo.classList.remove('full', 'ex'); document.body.classList.remove('en-cursos', 'en-examenes'); hTit.textContent = t; hLista.innerHTML = html; hFondo.hidden = false; }, cerrar: cerrarHoja };
+  window.MCHoja = { abrir: function (t, html) { hFondo.classList.remove('full', 'ex', 'fc'); document.body.classList.remove('en-cursos', 'en-examenes', 'en-flashcards'); hTit.textContent = t; hLista.innerHTML = html; hFondo.hidden = false; }, cerrar: cerrarHoja };
   Array.prototype.forEach.call(document.querySelectorAll('[data-hoja]'), function (b) { b.addEventListener('click', function () { abrirHoja(b.getAttribute('data-hoja')); }); });
   $('hojaX').addEventListener('click', cerrarHoja);
-  // Volver desde un área ("← Mis cursos") o desde un examen ("← Exámenes"): el inicio abre esa pantalla de una vez
-  if (location.hash === '#mis-cursos' || location.hash === '#examenes') {
-    var hojaVuelta = location.hash === '#examenes' ? 'examenes' : 'cursos';
+  // Volver desde un área ("← Mis cursos"), un examen ("← Exámenes") o las flashcards: el inicio abre esa pantalla de una vez
+  if (location.hash === '#mis-cursos' || location.hash === '#examenes' || location.hash === '#flashcards') {
+    var hojaVuelta = location.hash === '#examenes' ? 'examenes' : location.hash === '#flashcards' ? 'flashcards' : 'cursos';
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
     abrirHoja(hojaVuelta);
   }
