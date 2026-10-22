@@ -119,7 +119,6 @@ html[data-fc] .combo:not(#z) { font: italic 900 26px/1 var(--display) !important
 /* ---------- Final de la ronda ---------- */
 html[data-fc] .fin:not(#z) { background: radial-gradient(120% 60% at 50% 0%, rgba(var(--ac-rgb), .16), transparent 60%), var(--surface); border: 2px solid var(--borde-g); border-bottom: 5px solid var(--ac-d); }
 html[data-fc] .fin h2:not(#z) { font: italic 900 40px/1 var(--display) !important; text-transform: uppercase; letter-spacing: .01em; color: var(--text); }
-html[data-fc] .fin .medalla:not(.tiro):not(#z) { background: var(--ac); color: var(--ac-tx); box-shadow: 0 6px 0 var(--ac-d); }
 html[data-fc] .anillo .base:not(#z) { stroke: var(--surface-2); }
 html[data-fc] .anillo .arco:not(#z) { stroke: var(--verde); filter: drop-shadow(0 0 6px rgba(88,204,2,.5)); }
 html[data-fc] .anillo .pct:not(#z) { font: italic 900 52px/1 var(--display) !important; color: var(--verde); }
