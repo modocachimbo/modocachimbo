@@ -91,6 +91,34 @@
   ];
   // Tu foto (o inicial) para dibujar «Mi foto»; la pone la página con fijarFoto
   var miFoto = { src: '', letra: '' };
+  // Piso de cada fondo: la superficie donde se para el búho en el escenario del inicio.
+  // Va con el fondo (viewBox 300×70, se estira al ancho del piso).
+  var S = '<svg viewBox="0 0 300 70" preserveAspectRatio="none" aria-hidden="true">';
+  var PISOS = {
+    'racha-galaxia': S + '<path d="M27 2h246l25 33-25 33H27L2 35z" fill="#FFC800"/><path d="M31 7h238l21 28-21 28H31L10 35z" fill="url(#mcp-g)"/>' +
+      '<defs><linearGradient id="mcp-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b3fd0"/><stop offset="1" stop-color="#25145a"/></linearGradient></defs>' +
+      '<ellipse cx="150" cy="26" rx="95" ry="16" fill="rgba(255,220,150,.3)"/></svg>',
+    'racha-cielo': S + '<g fill="#cfe9fb"><ellipse cx="150" cy="44" rx="146" ry="22"/></g>' +
+      '<g fill="#fff"><ellipse cx="150" cy="32" rx="140" ry="20"/><circle cx="52" cy="24" r="22"/><circle cx="98" cy="14" r="24"/><circle cx="150" cy="12" r="26"/><circle cx="204" cy="15" r="24"/><circle cx="250" cy="25" r="21"/></g>' +
+      '<ellipse cx="150" cy="22" rx="90" ry="7" fill="#eaf6ff"/></svg>',
+    'racha-menta': S + '<path d="M10 28 Q150 60 290 28 L270 58 Q150 74 30 58z" fill="#7a4a24"/><path d="M30 50 Q150 66 270 50" stroke="#5c3518" stroke-width="5" fill="none"/>' +
+      '<ellipse cx="150" cy="26" rx="142" ry="20" fill="#3fb24a"/><ellipse cx="150" cy="22" rx="128" ry="14" fill="#5fd35a"/>' +
+      '<g fill="#3fb24a"><path d="M40 14l4-10 3 10z"/><path d="M70 9l3-8 3 8z"/><path d="M226 9l3-8 3 8z"/><path d="M256 14l4-10 3 10z"/></g>' +
+      '<g fill="#fff"><circle cx="64" cy="26" r="3"/><circle cx="236" cy="27" r="3"/></g><g fill="#FFC800"><circle cx="64" cy="26" r="1.3"/><circle cx="236" cy="27" r="1.3"/></g></svg>',
+    'racha-noche': S + '<path d="M8 30 Q150 70 292 30 L278 52 Q150 76 22 52z" fill="#3b3f63"/>' +
+      '<ellipse cx="150" cy="28" rx="142" ry="20" fill="#9aa3c7"/><ellipse cx="150" cy="24" rx="126" ry="13" fill="#c3c9e6"/>' +
+      '<g fill="#8a92b8"><ellipse cx="80" cy="26" rx="14" ry="5"/><ellipse cx="214" cy="22" rx="10" ry="4"/><ellipse cx="250" cy="31" rx="7" ry="3"/><ellipse cx="46" cy="32" rx="6" ry="2.5"/></g></svg>',
+    'racha-volcan': S + '<path d="M8 30 Q150 70 292 30 L276 56 Q150 78 24 56z" fill="#1d0f0c"/>' +
+      '<ellipse cx="150" cy="28" rx="143" ry="21" fill="#FF6a10" opacity=".55"/><ellipse cx="150" cy="27" rx="138" ry="18" fill="#3a1c14"/><ellipse cx="150" cy="24" rx="120" ry="12" fill="#4d2618"/>' +
+      '<g stroke="#FF9a1f" stroke-width="2.6" fill="none" stroke-linecap="round"><path d="M60 26l18 4 14-6 16 5"/><path d="M190 22l16 6 14-3 22 6"/><path d="M130 33l14-4 12 5"/><path d="M60 50l10 6M230 50l-8 7M150 58v8"/></g></svg>',
+    'racha-aurora': S + '<path d="M30 6h240l26 26-26 30H30L4 32z" fill="#bff3ff"/><path d="M34 11h232l20 21-20 24H34L14 32z" fill="url(#mcp-h)"/>' +
+      '<defs><linearGradient id="mcp-h" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9fdff"/><stop offset="1" stop-color="#5ec4e0"/></linearGradient></defs>' +
+      '<g fill="#fff" opacity=".8"><path d="M60 14h40l-22 10z"/><path d="M180 14h30l-14 8z"/></g><path d="M34 56l232 0" stroke="#3aa0c4" stroke-width="3"/></svg>',
+    'racha-calabaza': S + '<path d="M8 30 Q150 70 292 30 L276 56 Q150 76 24 56z" fill="#2a1240"/>' +
+      '<ellipse cx="150" cy="27" rx="142" ry="20" fill="#4b2a14"/><ellipse cx="150" cy="24" rx="126" ry="13" fill="#6b3d1c"/>' +
+      '<g><ellipse cx="40" cy="22" rx="16" ry="12" fill="#FF8A00"/><ellipse cx="40" cy="22" rx="6" ry="12" fill="#ffa53a"/><path d="M40 10l2-7" stroke="#3f8a1e" stroke-width="3"/>' +
+      '<ellipse cx="262" cy="24" rx="13" ry="10" fill="#FF8A00"/><ellipse cx="262" cy="24" rx="5" ry="10" fill="#ffa53a"/><path d="M262 14l2-6" stroke="#3f8a1e" stroke-width="3"/></g></svg>'
+  };
   var POR_ID = {};
   CATALOGO.forEach(function (x) { POR_ID[x.id] = x; });
 
@@ -206,6 +234,8 @@
   }
   function dibujo(x) {
     if (x.espacio === 'buho') return buhoImg(x);
+    // Fondo: un mini escenario con su piso
+    if (x.espacio === 'racha' && PISOS[x.id]) return '<span class="mcc-esc" style="--r1:' + x.tema[0] + ';--r2:' + x.tema[3] + '">' + PISOS[x.id].replace(/mcp-([gh])/g, 'mcp-$1-' + x.id) + '<img class="mcc-esc-b" src="' + esc(D.replace(/disfraces\/$/, 'avatar/') + 'clasico-cuerpo.webp') + '" alt="" loading="lazy"></span>';
     if (x.espacio === 'racha') return '<span class="mcc-tema" style="--r1:' + x.tema[0] + ';--r2:' + x.tema[1] + '"><svg viewBox="0 0 32 36" aria-hidden="true"><path fill="#FF9600" d="M16 1.5c1.2 4.6 7.6 8.2 9.6 13.6 2.6 7-1.6 17.4-9.6 17.4S3.8 24.9 6.1 17.6c1-3.2 3.3-5.3 4.9-6.9.2 2.8 1.4 4.6 3 5.2C13.3 10.6 14 6 16 1.5z"/><path fill="#FFC800" d="M16.3 15.5c.6 2.4 4.5 4.4 4.5 8.6a4.8 4.8 0 0 1-9.6 0c0-2 1-3.4 2.1-4.4.2 1.4.8 2.3 1.6 2.6-.4-2.4 0-4.6 1.4-6.8z"/></svg><i></i><i></i><i></i><i></i></span>';
     if (x.espacio === 'avatar') return avatarSvg(x, miFoto.src, miFoto.letra);
     if (x.espacio === 'marco') return '<span class="mcc-marco" style="--m:' + (x.marco === 'none' ? 'transparent' : x.marco) + '"><span>' + (window.MCBuho ? MCBuho.svg('normal', 80) : '') + '</span></span>';
@@ -283,6 +313,9 @@
       '.mcc-usar.on{background:none;color:#C6E000;box-shadow:inset 0 0 0 2px #C6E000}' +
       '.mcc-usar.gris{background:#2A2346;color:#EEEAF7;box-shadow:0 3px 0 #1a1530}' +
       '.mcc-usar.no{background:none;color:#6F6690;box-shadow:none}' +
+      '.mcc-esc{position:relative;width:92%;aspect-ratio:1.15;border-radius:16px;overflow:hidden;display:block;background:radial-gradient(120% 90% at 50% 25%,var(--r1),var(--r2) 50%,#0b0818 92%);box-shadow:inset 0 -4px 0 rgba(0,0,0,.25)}' +
+      '.mcc-esc svg{position:absolute;left:14%;right:14%;bottom:12%;width:72%;height:24%}' +
+      '.mcc-it .mcc-esc img.mcc-esc-b,.mcc-esc img.mcc-esc-b{position:absolute;left:50%;bottom:27%;width:34%;height:auto;translate:-50% 0;object-fit:contain;filter:drop-shadow(0 3px 3px rgba(0,0,0,.35))}' +
       '.mcc-av{width:72%;aspect-ratio:1;border-radius:22%;display:grid;place-items:center;overflow:hidden;background:radial-gradient(120% 120% at 80% 0%,var(--f1),var(--f2) 70%,#0d0820);box-shadow:inset 0 -5px 0 rgba(0,0,0,.25)}' +
       '.mcc-av img{width:100%;height:100%;object-fit:cover;display:block}' +
       '.mcc-av b{font:900 min(48px,12vw)/1 Nunito,sans-serif;color:#fff}' +
@@ -370,6 +403,7 @@
     alCambiar: function (fn) { oyentes.push(fn); },
     tarjeta: tarjeta, dibujo: dibujo, buho: buhoImg, pin: pinSvg, css: css,
     avatar: avatarSrc, avatarHtml: avatarSvg,
+    piso: function (id) { return PISOS[id || puesto('racha')] || ''; },
     fijarFoto: function (src, letra) { miFoto = { src: /^https:\/\//.test(src || '') ? src : '', letra: letra || '' }; },
     tema: function (id) { var x = POR_ID[id || puesto('racha')]; return x && x.tema || POR_ID['racha-galaxia'].tema; },
     marco: function (id) { var x = POR_ID[id || puesto('marco')]; return x && x.marco !== 'none' ? x.marco : ''; },

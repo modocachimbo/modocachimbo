@@ -274,6 +274,12 @@
   function pintarEscenario() {
     var C = window.MCColeccion, e = $('escena'); if (!C || !e) return;
     var id = C.puesto('racha'), t = C.tema(id), v = ['--esc-cielo', '--plat-a', '--plat-b', '--esc-foco'];
+    // El piso va con el fondo: Galaxia trae el de siempre (con su modo claro), los demás su propia superficie
+    var plat = e.querySelector('.plat');
+    if (plat.getAttribute('data-fondo') !== id) {
+      plat.setAttribute('data-fondo', id);
+      plat.innerHTML = id === 'racha-galaxia' ? '<i></i><i></i><i></i>' : C.piso(id);
+    }
     if (id === 'racha-galaxia') { v.forEach(function (k) { e.style.removeProperty(k); }); return; }
     e.style.setProperty('--esc-cielo', 'radial-gradient(120% 85% at 50% 30%, ' + t[0] + ' 0%, ' + t[3] + ' 42%, #0b0818 85%)');
     e.style.setProperty('--plat-a', t[0]); e.style.setProperty('--plat-b', t[3]);
