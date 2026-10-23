@@ -167,13 +167,23 @@
   .panel { border: 2px solid var(--borde); border-bottom-width: 4px; }
   .panel h2 { font-weight: 900; }
   /* Títulos de sección estilo juego: letra gruesa inclinada con su color y una línea */
-  .sec-tit { --tc: var(--accent); display: flex; align-items: center; gap: 10px; margin: 30px 2px 0; font: italic 900 26px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; text-transform: uppercase; letter-spacing: .02em; color: #fff; }
-  .sec-tit::before { content: ""; flex: none; width: 8px; height: 22px; border-radius: 3px; transform: skewX(-12deg); background: var(--tc); box-shadow: 0 0 12px var(--tc); }
-  .sec-tit::after { content: ""; flex: 1; height: 3px; border-radius: 3px; background: linear-gradient(90deg, var(--tc), transparent); opacity: .5; }
+  .sec-tit { --tc: var(--accent); display: flex; align-items: center; gap: 10px; margin: 30px 2px 0; font: italic 900 30px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; text-transform: uppercase; letter-spacing: .01em; color: #fff; gap: 16px; }
+  .sec-tit::after { content: ""; flex: 1; height: 2px; background: linear-gradient(90deg, var(--tc), transparent); opacity: .55; }
   #tabPerfil > .sec-tit:first-child { margin-top: 22px; }
   .panel { background: linear-gradient(180deg, #1b1532, #141027); }
   /* Datos del estudiante */
   .datos summary { display: block !important; }
+  /* El formulario: una caja más oscura, con sus grupos marcados */
+  .datos form { margin-top: 14px; padding: 16px; border-radius: 16px; background: #0f0b1e; border: 2px solid #241e3e; gap: 12px 14px; }
+  .g-tit { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 12px; font-weight: 1000; letter-spacing: .1em; text-transform: uppercase; color: var(--gc); }
+  .g-tit:first-child { margin-top: 0; }
+  .g-tit::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--gc), transparent); opacity: .4; }
+  .datos label { font-size: 13px; color: var(--text-dim); }
+  .datos input, .datos select { background-color: #1d1834; border-color: #322b54; }
+  .datos input:not(:placeholder-shown), .datos select:valid { background-color: #241d40; color: #fff; }
+  .vm-oculto { display: none !important; }
+  .ver-mas { display: block; width: 100%; margin-top: 10px; padding: 10px; border-radius: 12px; border: 2px solid #302950; background: #1a1530; color: var(--text); font: inherit; font-weight: 900; font-size: 14px; cursor: pointer; }
+  .ver-mas:hover { background: #231c40; }
   .d-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
   .d { display: grid; gap: 3px; min-width: 0; padding: 10px 12px; border-radius: 12px; background: #120e22; border: 2px solid #2a2346; }
   .d.ancho { grid-column: span 2; }
@@ -186,7 +196,7 @@
   .datos[open] .d-edit .d-ce { display: inline; }
   .datos[open] .d-edit { color: var(--text-dim); border-color: #352E58; background: none; }
   .datos[open] summary { border-bottom: 0 !important; }
-  @media (max-width: 560px) { .d-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sec-tit { font-size: 22px; white-space: nowrap; } }
+  @media (max-width: 560px) { .d-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sec-tit { font-size: 25px; white-space: nowrap; } }
   /* Arriba: volver al inicio y el título, como en Mi colección */
   header.top .c-volver { flex: none; display: inline-flex; align-items: center; gap: 4px; height: 44px; padding: 0 16px 0 10px; transform: skewX(-10deg); border-radius: 10px; background: var(--surface-2); border: 2px solid #352E58; border-bottom-width: 5px; color: var(--text); font: 900 15px Nunito, sans-serif; text-decoration: none; text-transform: uppercase; letter-spacing: .04em; }
   header.top .c-volver > * { transform: skewX(10deg); }
@@ -407,7 +417,7 @@
   .bloque-info .pt { background: rgba(206,130,255,.14); color: var(--mor); font-weight: 900; }
 
   /* Letra gruesita en toda la web (Nunito); las fórmulas y el código conservan su letra */
-  body, body :not(.katex):not(.katex *):not(code):not(pre):not(kbd):not(samp):not(.formato):not(.ta.big):not(.cdnuevos code) { font-family: 'Nunito', 'Inter', system-ui, sans-serif !important; }
+  body, body :not(.bc):not(.bc *):not(.katex):not(.katex *):not(code):not(pre):not(kbd):not(samp):not(.formato):not(.ta.big):not(.cdnuevos code) { font-family: 'Nunito', 'Inter', system-ui, sans-serif !important; }
   body { font-weight: 600; }
 </style>
 <script src="assets/mc-config.js"></script>
@@ -444,7 +454,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
   <div class="wrap">
     <header class="top">
       <a class="c-volver" href="index.html" aria-label="Volver al inicio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Inicio</span></a>
-      <h1 class="top-tit">Mi perfil</h1>
+      <h1 class="top-tit bc">Mi perfil</h1>
       <div data-mc-auth data-mc-tarjeta></div>
     </header>
 
@@ -462,25 +472,25 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       <!-- Tu tarjeta de jugador: fondo, foto con marco, nombre, título, rango y tus números -->
       <section class="panel perfil-top">
         <div class="banda" id="banda">
-          <a class="lapiz l-fondo" href="coleccion.html#racha" aria-label="Cambiar mi fondo en Mi colección"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span>Fondo</span></a>
+          <a class="lapiz bc l-fondo" href="coleccion.html#racha" aria-label="Cambiar mi fondo en Mi colección"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span>Fondo</span></a>
         </div>
         <div class="perfil-cuerpo">
           <div class="av-col">
             <div class="av-caja" id="avCaja"><div class="avatar" id="avatar"></div></div>
-            <a class="lapiz l-foto" href="coleccion.html#avatar" aria-label="Cambiar mi foto de perfil en Mi colección"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></a>
+            <a class="lapiz bc l-foto" href="coleccion.html#avatar" aria-label="Cambiar mi foto de perfil en Mi colección"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></a>
           </div>
           <div class="p-info">
-            <h1 id="saludo">Hola</h1>
+            <h1 id="saludo" class="bc">Hola</h1>
             <a class="p-titulo" id="pTitulo" href="coleccion.html#titulo" hidden></a>
             <div class="correo" id="correo"></div>
           </div>
           <button class="btn-cel" type="button" id="btnEditar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span>Editar datos</span></button>
         </div>
         <div class="p-nums">
-          <a class="pn nar" href="#racha"><b id="pnRacha">–</b><small>días de racha</small></a>
-          <span class="pn ama"><b id="pnXp">–</b><small>XP esta semana</small></span>
-          <span class="pn mor"><b id="pnMejor">–</b><small>mejor racha</small></span>
-          <a class="pn lim" href="coleccion.html"><b id="pnCol">–</b><small>colección</small></a>
+          <a class="pn nar" href="#racha"><b id="pnRacha" class="bc">–</b><small>días de racha</small></a>
+          <span class="pn ama"><b id="pnXp" class="bc">–</b><small>XP esta semana</small></span>
+          <span class="pn mor"><b id="pnMejor" class="bc">–</b><small>mejor racha</small></span>
+          <a class="pn lim" href="coleccion.html"><b id="pnCol" class="bc">–</b><small>colección</small></a>
         </div>
         <div class="cuenta" id="cuenta"></div>
       </section>
@@ -494,7 +504,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       <!-- Ranking de la semana: los que más estudian (XP de supabase/16-corazones.sql) -->
       <div id="tabRanking" hidden>
         <div class="mixp"><svg class="mcz-i-xp" viewBox="0 0 24 24" aria-hidden="true"><g class="mcz-gema"><path fill="#FFC800" d="M12 1.6 21 6.8v10.4L12 22.4 3 17.2V6.8z"/><path fill="#FFDD4A" d="M12 1.6 21 6.8 12 12 3 6.8z"/><path fill="#E0A100" d="M21 6.8v10.4L12 22.4V12z"/><path class="mcz-destello" fill="#fff" d="M12 1.6 16 3.9 7 9.1 3 6.8z"/><path fill="#fff" opacity=".95" d="M13 5.6 8.2 12.6h3.2l-.9 5.8 5.3-7.4h-3.3z"/><path fill="#FFE98A" d="M13 5.6 8.2 12.6h3.2l-.9 5.8 1.4-6.8H9.9z"/></g></svg><span><b id="rkXp">0 XP</b><small>esta semana</small></span><span class="pos"><b id="rkPuesto">–</b><small id="rkDe"></small></span></div>
-        <h2 class="sec-tit">Top de la semana</h2>
+        <h2 class="sec-tit bc">Top de la semana</h2>
         <div class="rk" id="rkLista"><p class="nota">Cargando…</p></div>
         <p class="rk-nota">Se reinicia cada lunes. Ganas +10 XP por respuesta correcta y +2 por incorrecta en todas las prácticas.</p>
       </div>
@@ -505,7 +515,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       <div id="tabPerfil">
 
       <!-- 1. Quién eres: tus datos (se editan aquí mismo) -->
-      <h2 class="sec-tit" style="--tc:var(--cel)">Datos del estudiante</h2>
+      <h2 class="sec-tit bc" style="--tc:var(--cel)">Datos del estudiante</h2>
       <details class="panel datos" id="datos">
         <summary>
           <span class="d-grid">
@@ -519,6 +529,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
           <span class="d-edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span class="d-ab">Editar mis datos</span><span class="d-ce">Cerrar</span></span>
         </summary>
         <form id="form" novalidate>
+          <p class="g-tit ancho" style="--gc:var(--cel)">Sobre ti</p>
           <div class="campo">
             <label for="nombre">Nombre completo</label>
             <input id="nombre" name="nombre" maxlength="80" autocomplete="name">
@@ -527,6 +538,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
             <label for="apodo">Apodo <small>(cómo te saludamos)</small></label>
             <input id="apodo" name="apodo" maxlength="30">
           </div>
+          <p class="g-tit ancho" style="--gc:var(--mor)">Tu postulación</p>
           <div class="campo">
             <label for="bloque">Bloque</label>
             <select id="bloque">
@@ -552,6 +564,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
             <label for="metaSim">Meta en simulacro <small>(puntaje que quieres sacar)</small></label>
             <input id="metaSim" type="number" inputmode="numeric" min="1" max="5000" placeholder="Ej.: 900">
           </div>
+          <p class="g-tit ancho" style="--gc:var(--accent)">Avisos</p>
           <div class="campo ancho">
             <label for="celular">Celular <small>(opcional, para avisos por WhatsApp)</small></label>
             <input id="celular" name="celular" inputmode="numeric" maxlength="9" placeholder="9 dígitos">
@@ -566,7 +579,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
 
       <!-- 2. Cómo vas: racha, meta y números -->
 
-      <h2 class="sec-tit" style="--tc:var(--nar)">Estadísticas</h2>
+      <h2 class="sec-tit bc" style="--tc:var(--nar)">Estadísticas</h2>
       <section class="racha-card" id="racha">
         <div class="rc-cab">
           <span class="rc-fuego" id="rFuego"><svg viewBox="0 0 32 36" aria-hidden="true"><path class="f1" d="M16 1.5c1.2 4.6 7.6 8.2 9.6 13.6 2.6 7-1.6 17.4-9.6 17.4S3.8 24.9 6.1 17.6c1-3.2 3.3-5.3 4.9-6.9.2 2.8 1.4 4.6 3 5.2C13.3 10.6 14 6 16 1.5z"/><path class="f2" d="M16.3 15.5c.6 2.4 4.5 4.4 4.5 8.6a4.8 4.8 0 0 1-9.6 0c0-2 1-3.4 2.1-4.4.2 1.4.8 2.3 1.6 2.6-.4-2.4 0-4.6 1.4-6.8z"/></svg></span>
@@ -580,7 +593,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       </section>
       <p class="rc-regla" id="rRegla">Sumas un día al cumplir tu meta. Tienes 1 día de descanso por semana (el día congelado); si faltas 2, vuelve a 0.</p>
 
-      <h2 class="sec-tit" style="--tc:var(--amb)">Tu meta diaria</h2>
+      <h2 class="sec-tit bc" style="--tc:var(--amb)">Tu meta diaria</h2>
       <section class="metas" id="metas">
           <button type="button" class="mt" data-meta="20" aria-pressed="false" style="--c:#FF9600"><span class="mt-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.7 1.6 2.6 1.9 5.4.8 8-1.2 2.9-3.9 4.7-6.6 4.7-3.2 0-6.1-2.2-6.8-5.5-.5-2.2.1-4.4 1.4-6.1.2 1.5.9 2.6 2 3.1-.5-4.4 1.4-8.6 4-11.9z"/><path fill="#FFD84D" d="M12.2 11.2c.4 1.7 2.2 2.6 2.7 4.5.6 2.4-1 4.6-3.1 4.6-2 0-3.4-1.6-3.2-3.5.1-1 .6-1.8 1.3-2.4.1.8.5 1.3 1 1.5-.2-1.7.4-3.3 1.3-4.7z"/></svg></span><span class="mt-tx"><b>Suave</b><small>unos 10 minutos al día</small></span><span class="mt-n">20 preg.</span></button>
           <button type="button" class="mt" data-meta="30" aria-pressed="false" style="--c:#1CB0F6"><span class="mt-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.7 1.6 2.6 1.9 5.4.8 8-1.2 2.9-3.9 4.7-6.6 4.7-3.2 0-6.1-2.2-6.8-5.5-.5-2.2.1-4.4 1.4-6.1.2 1.5.9 2.6 2 3.1-.5-4.4 1.4-8.6 4-11.9z"/></svg></span><span class="mt-tx"><b>Normal</b><small>unos 15 minutos al día</small></span><span class="mt-n">30 preg.</span></button>
@@ -595,7 +608,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       </section>
 
       <!-- 3. Tu estudio: errores, progreso y simulacros -->
-      <h2 class="sec-tit" style="--tc:var(--roj)">Tu estudio</h2>
+      <h2 class="sec-tit bc" style="--tc:var(--roj)">Tu estudio</h2>
       <section class="panel" id="errores">
         <div class="err-top">
           <div class="err-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 0 1 14.8-5.7L21 9"/><polyline points="21 3.5 21 9 15.5 9"/><path d="M20.5 12a8.5 8.5 0 0 1-14.8 5.7L3 15"/><polyline points="3 20.5 3 15 8.5 15"/></svg></div>
@@ -626,7 +639,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
 
 
       <!-- 4. Tu colección y tu cuenta -->
-      <h2 class="sec-tit" style="--tc:var(--accent)">Mi colección</h2>
+      <h2 class="sec-tit bc" style="--tc:var(--accent)">Mi colección</h2>
       <!-- Mi colección (coleccion.html): tus pines y lo que tienes -->
       <a class="col-strip" id="colStrip" href="coleccion.html">
         <span class="pins" id="colPins"></span>
@@ -634,7 +647,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
         <span class="ir">Ver<span class="ir-l"> colección</span> ›</span>
       </a>
 
-      <h2 class="sec-tit" style="--tc:var(--mor)">Mi cuenta</h2>
+      <h2 class="sec-tit bc" style="--tc:var(--mor)">Mi cuenta</h2>
       <section class="panel">
         <div class="sec-cab">
           <span class="sec-ic mor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4.5"/><path d="M11.3 11.7L20 3M16.5 6.5l3 3M14 9l2 2"/></svg></span>
@@ -851,6 +864,8 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       if (p) PERFIL = p;
       est.textContent = '✓ Guardado'; est.className = 'estado ok';
       pintarCabecera(MCAuth.usuario(), p);
+      // Guardado: se cierra el formulario y queda el resumen de tus datos
+      setTimeout(function () { $('datos').open = false; $('datos').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 700);
     }).catch(function (err) {
       var e = err || {}, msg = 'No se pudo guardar. Revisa tu conexión e inténtalo otra vez.';
       if (e.code === 'sesion-vencida') msg = 'Tu sesión venció. Cierra sesión y vuelve a ingresar para guardar.';
@@ -1292,5 +1307,27 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
   })();
 </script>
 <script src="assets/sonido.js"></script>
+<script>
+  /* Listas largas: muestran 3 y el resto con «Ver más» */
+  (function () {
+    var N = 3;
+    ['simLista', 'pCursos', 'eLista', 'accesos', 'repLista'].forEach(function (id) {
+      var l = document.getElementById(id); if (!l) return;
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'ver-mas'; b.hidden = true;
+      l.parentNode.insertBefore(b, l.nextSibling);
+      var abierta = false;
+      function ajustar() {
+        var hijos = Array.prototype.filter.call(l.children, function (h) { return !h.classList.contains('nota'); });
+        var sobran = hijos.length - N;
+        hijos.forEach(function (h, i) { h.classList.toggle('vm-oculto', !abierta && i >= N); });
+        b.hidden = sobran <= 0;
+        b.textContent = abierta ? 'Ver menos' : 'Ver más (' + sobran + ')';
+      }
+      b.addEventListener('click', function () { abierta = !abierta; ajustar(); });
+      new MutationObserver(ajustar).observe(l, { childList: true });
+      ajustar();
+    });
+  })();
+</script>
 </body>
 </html>
