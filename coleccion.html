@@ -33,6 +33,23 @@
   header.top h1 { flex: 1; display: flex; align-items: center; gap: 18px; min-width: 0; font: italic 900 46px/1 var(--display); text-transform: uppercase; letter-spacing: .01em; color: var(--accent); padding-top: 4px; text-shadow: 0 3px 0 rgba(0,0,0,.45); white-space: nowrap; }
   header.top h1::after { content: ""; flex: 1; height: 2px; min-width: 20px; background: linear-gradient(90deg, rgba(198,224,0,.45), rgba(198,224,0,0)); }
   .top-tarj { flex: none; }
+  /* Canjear regalo: botón dorado con relieve, como en los juegos */
+  .c-regalo { flex: none; display: inline-flex; align-items: center; gap: 7px; height: 46px; padding: 0 16px 0 12px; transform: skewX(-10deg); border-radius: 10px; cursor: pointer; background: linear-gradient(180deg, #FFD84D, #FFB300); border: 2px solid #c98a00; border-bottom-width: 5px; color: #3a2300; font: italic 900 17px/1 var(--display); text-transform: uppercase; letter-spacing: .04em; box-shadow: 0 0 18px rgba(255,200,0,.3); -webkit-tap-highlight-color: transparent; }
+  .c-regalo > * { transform: skewX(10deg); }
+  .c-regalo svg { width: 22px; height: 22px; fill: none; stroke: #3a2300; stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; animation: regaloLate 2.4s ease-in-out infinite; }
+  .c-regalo:hover { filter: brightness(1.06); }
+  .c-regalo:active { transform: skewX(-10deg) translateY(3px); border-bottom-width: 2px; }
+  @keyframes regaloLate { 0%, 80%, 100% { rotate: 0deg; } 85% { rotate: -12deg; } 90% { rotate: 10deg; } 95% { rotate: -6deg; } }
+  @media (max-width: 700px) { .c-regalo { width: 46px; padding: 0; justify-content: center; } .c-regalo span { display: none; } }
+  /* La hoja de canjear */
+  .canje .dib svg { width: 120px; height: 120px; fill: none; stroke: #FFC800; stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; filter: drop-shadow(0 0 18px rgba(255,200,0,.45)); }
+  .canje .dib { height: 140px; }
+  .canje form { display: flex; gap: 8px; margin: 16px auto 0; max-width: 360px; }
+  .canje input { flex: 1; min-width: 0; height: 50px; padding: 0 14px; border-radius: 14px; border: 2px solid #352E58; border-bottom-width: 4px; background: #0f0b1e; color: #fff; font: 900 18px/1 Nunito, sans-serif; letter-spacing: .18em; text-transform: uppercase; text-align: center; }
+  .canje input::placeholder { color: #5a5180; letter-spacing: .12em; }
+  .canje input:focus { outline: none; border-color: #FFC800; }
+  .canje .btn { background: linear-gradient(180deg, #FFD84D, #FFB300); border-color: #c98a00; color: #3a2300; }
+  .canje .estado { color: var(--text-dim) !important; }
   @media (max-width: 700px) {
     header.top { gap: 10px; padding: 16px 0 14px; }
     header.top h1 { font-size: 32px; gap: 10px; }
@@ -205,6 +222,7 @@
     <header class="top">
       <a class="c-volver" href="index.html" aria-label="Volver al inicio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Inicio</span></a>
       <h1>Mi colección</h1>
+      <button type="button" class="c-regalo" id="btnRegalo" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="9" width="17" height="11.5" rx="2"/><path d="M2.5 9h19v-.5a1.5 1.5 0 0 0-1.5-1.5H4a1.5 1.5 0 0 0-1.5 1.5zM12 7v13.5"/><path d="M12 7c-1.5-3.5-5.5-4-5.5-1.5S10 7 12 7zm0 0c1.5-3.5 5.5-4 5.5-1.5S14 7 12 7z"/></svg><span>Canjear</span></button>
       <div class="top-tarj" data-mc-auth data-mc-tarjeta="sola"></div>
     </header>
 
@@ -267,6 +285,7 @@
     $('cargando').hidden = cual !== 'cargando';
     $('sinSesion').hidden = cual !== 'sin';
     $('conSesion').hidden = cual !== 'con';
+    $('btnRegalo').hidden = cual !== 'con';
   }
 
   /* ---------- Lo que llevas puesto ---------- */
@@ -454,6 +473,29 @@
   // Tu foto de Google o tu inicial (de la tarjeta de arriba), para «Mi foto»
   function miFoto() { var i = document.querySelector('[data-mc-auth] .mcu-av'); var o = i && i.getAttribute('data-orig'); var m = o && /src="([^"]+)"/.exec(o); return m ? m[1].replace(/&amp;/g, '&') : ''; }
   function miLetra() { var i = document.querySelector('[data-mc-auth] .mcu-av'); var o = i && i.getAttribute('data-orig'); return o && !/</.test(o) ? o : ''; }
+
+  /* ---------- Canjear regalo ----------
+     Un código que el equipo le da a un solo alumno. Por ahora solo el diseño:
+     más adelante se conecta con el panel de administración. */
+  $('btnRegalo').addEventListener('click', function () {
+    var d = document.createElement('div'); d.className = 'hoja'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true'); d.setAttribute('aria-label', 'Canjear regalo');
+    d.innerHTML = '<div class="hoja-c canje" style="--c:255,200,0"><button type="button" class="x" aria-label="Cerrar">✕</button>' +
+      '<div class="dib"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"3.5\" y=\"9\" width=\"17\" height=\"11.5\" rx=\"2\"/><path d=\"M2.5 9h19v-.5a1.5 1.5 0 0 0-1.5-1.5H4a1.5 1.5 0 0 0-1.5 1.5zM12 7v13.5\"/><path d=\"M12 7c-1.5-3.5-5.5-4-5.5-1.5S10 7 12 7zm0 0c1.5-3.5 5.5-4 5.5-1.5S14 7 12 7z\"/></svg></div>' +
+      '<small>Solo para ti</small><h2>Canjear regalo</h2>' +
+      '<p>Si el equipo de Modo Cachimbo te dio un código, escríbelo aquí. El regalo será solo tuyo.</p>' +
+      '<form><input type="text" maxlength="16" autocomplete="off" spellcheck="false" placeholder="TU CÓDIGO" aria-label="Código de regalo"><button type="submit" class="btn">Canjear</button></form>' +
+      '<p class="estado" role="status"></p></div>';
+    function cerrar() { d.classList.remove('ver'); setTimeout(function () { d.remove(); }, 260); }
+    d.addEventListener('click', function (e) { if (e.target === d || e.target.closest('.x')) cerrar(); });
+    document.addEventListener('keydown', function k(e) { if (e.key === 'Escape') { cerrar(); document.removeEventListener('keydown', k); } });
+    d.querySelector('form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = d.querySelector('input').value.trim();
+      d.querySelector('.estado').textContent = v ? 'Muy pronto podrás canjear tus códigos aquí. ¡Guárdalo!' : 'Escribe tu código.';
+    });
+    document.body.appendChild(d);
+    requestAnimationFrame(function () { requestAnimationFrame(function () { d.classList.add('ver'); setTimeout(function () { d.querySelector('input').focus(); }, 250); }); });
+  });
 
   /* ---------- Detalle ---------- */
   function abrir(id) {
