@@ -85,7 +85,7 @@
         if (av.getAttribute('data-orig') == null) {
           av.setAttribute('data-orig', av.innerHTML);
           var im = av.querySelector('img');
-          if (C) C.fijarFoto(im ? im.src : '', av.textContent);
+          if (C) C.fijarFoto(im ? im.src : '', av.textContent, (chip.querySelector('.mcu-nom') || {}).textContent);
         }
         var src = C ? C.avatar() : '', ka = src + '|' + (tema ? tema[0] : '');
         if (av.getAttribute('data-a') !== ka) {
