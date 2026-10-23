@@ -15,7 +15,7 @@
 <script src="assets/app.js" defer></script>
 <title>Mi perfil · Modo Cachimbo</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,600;1,700;1,800;1,900;1,1000&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,800;1,800;1,900&family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,600;1,700;1,800;1,900;1,1000&display=swap');
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -175,20 +175,66 @@
   .sec-ic.cel { color: var(--cel); background: rgba(28,176,246,.12); border-color: rgba(28,176,246,.4); }
   .sec-ic.mor { color: var(--mor); background: rgba(206,130,255,.12); border-color: rgba(206,130,255,.4); }
 
-  /* Cabecera con franja de color */
-  .perfil-top { padding: 0; overflow: hidden; }
-  .banda { height: 96px; background:
-      radial-gradient(circle at 12% 120%, rgba(255,255,255,.18) 0 38px, transparent 39px),
-      radial-gradient(circle at 88% -20%, rgba(255,255,255,.14) 0 54px, transparent 55px),
-      linear-gradient(120deg, var(--cel) 0%, #4a7dff 55%, var(--mor) 100%); }
-  .perfil-cuerpo { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 22px 22px; }
-  .perfil-top .avatar { width: 104px; height: 104px; margin-top: -52px; border: 5px solid var(--surface); font-size: 40px; font-weight: 1000; }
-  /* Marco y búho que llevas puestos (Mi colección) */
-  .av-caja { position: relative; margin-top: -56px; }
-  .av-caja .avatar { margin-top: 0; }
-  .av-caja.con-marco { padding: 5px; border-radius: 50%; background: var(--marco); box-shadow: 0 0 22px rgba(255,150,0,.25); }
-  .av-caja.con-marco .avatar { border-width: 4px; }
-  .p-titulo { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 13px; font-weight: 1000; border-radius: 999px; padding: 4px 12px; border: 1.5px solid; text-decoration: none; }
+  /* En tu perfil ya está tu tarjeta grande: arriba solo quedan corazones, XP y racha */
+  header.top [data-mc-auth] .mcu-chip { display: none !important; }
+  /* Tarjeta de jugador (estilo juego): franja con tu fondo, foto con marco al costado y tus números */
+  .perfil-top { --f1: #5b34b8; --f2: #241452; padding: 0; overflow: hidden; border-color: #3a2a6e; background: linear-gradient(180deg, #1b1532, #120e22); }
+  .banda { position: relative; height: 92px; background:
+      repeating-linear-gradient(135deg, rgba(255,255,255,.05) 0 12px, transparent 12px 24px),
+      radial-gradient(1.5px 1.5px at 20% 30%, #fff 50%, transparent), radial-gradient(1px 1px at 62% 20%, #fff 50%, transparent), radial-gradient(1.5px 1.5px at 80% 70%, #fff 50%, transparent),
+      radial-gradient(120% 160% at 85% 0%, var(--f1), var(--f2) 60%, #0d0820); transition: background .4s; }
+  .banda::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 40px; background: linear-gradient(transparent, rgba(18,14,34,.6)); }
+  /* Lápices: llevan a Mi colección */
+  .lapiz { display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: #14101f; background: linear-gradient(180deg, #E4FF3A, var(--accent)); border: 2px solid #8fa300; border-bottom-width: 4px; text-decoration: none; font: italic 900 14px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; text-transform: uppercase; letter-spacing: .05em; transition: transform .08s; }
+  .lapiz svg { width: 16px; height: 16px; flex: none; }
+  .lapiz:active { transform: translateY(2px); border-bottom-width: 2px; }
+  .l-fondo { position: absolute; right: 12px; top: 12px; z-index: 1; height: 34px; padding: 0 12px; border-radius: 10px; transform: skewX(-10deg); }
+  .l-fondo > * { transform: skewX(10deg); }
+  .l-foto { position: absolute; right: -6px; bottom: -4px; width: 34px; height: 34px; border-radius: 50%; z-index: 2; box-shadow: 0 0 0 3px #17122b; }
+  .perfil-cuerpo { display: flex; align-items: flex-end; gap: 16px; padding: 0 20px; margin-top: -46px; position: relative; }
+  .av-col { position: relative; flex: none; }
+  .perfil-top .avatar { width: 108px; height: 108px; border-radius: 26px; border: 4px solid #17122b; font-size: 42px; font-weight: 1000; background: radial-gradient(120% 120% at 80% 0%, var(--f1), var(--f2) 70%, #0d0820); color: #fff; }
+  /* Marco y foto que llevas puestos (Mi colección) */
+  .av-caja { position: relative; }
+  .av-caja.con-marco { padding: 4px; border-radius: 30px; background: var(--marco); box-shadow: 0 0 22px rgba(255,255,255,.18); }
+  .av-caja.con-marco .avatar { border-width: 3px; }
+  .p-info { flex: 1; min-width: 0; padding-bottom: 4px; }
+  .perfil-top h1 { font: italic 900 34px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; text-transform: uppercase; letter-spacing: .02em; color: #fff; text-shadow: 0 3px 0 rgba(0,0,0,.4); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .p-info .mc-rgo-ins { margin: 6px 0 0 !important; padding: 2px 12px 2px 2px; font-size: 14px; }
+  .p-info .mc-rgo-ins span:first-child { width: 30px; }
+  .p-info > div[style] { text-align: left !important; display: inline-block; margin-right: 6px; }
+  .p-titulo { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 12.5px; font-weight: 1000; border-radius: 999px; padding: 4px 11px; border: 1.5px solid; text-decoration: none; vertical-align: top; }
+  .perfil-top .correo { color: var(--text-faint, #6F6690); font-size: 12.5px; margin-top: 6px; word-break: break-all; }
+  #btnEditar { flex: none; margin: 0 0 6px; padding: 9px 14px; font-size: 12.5px; border-bottom-width: 4px; }
+  #btnEditar svg { width: 16px; height: 16px; }
+  /* Tus números */
+  .p-nums { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; padding: 16px 20px 0; }
+  .pn { display: grid; gap: 3px; padding: 10px 8px; border-radius: 14px; background: #1d1834; border: 2px solid #2c2549; border-bottom-width: 4px; text-align: center; text-decoration: none; color: var(--text); }
+  .pn b { font: italic 900 26px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; color: var(--pc); }
+  .pn small { font-size: 11px; font-weight: 800; color: var(--text-dim); line-height: 1.2; }
+  .pn.nar { --pc: var(--nar); } .pn.ama { --pc: var(--amb); } .pn.mor { --pc: var(--mor); } .pn.lim { --pc: var(--accent); }
+  a.pn:hover { border-color: var(--pc); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 20px 0; }
+  .chips:empty { display: none; }
+  .chip { border-radius: 100px; padding: 6px 12px; font-size: 12.5px; font-weight: 900; border: 2px solid; line-height: 1.2; background: none; font-family: inherit; }
+  .chip.cel { color: var(--cel); border-color: rgba(28,176,246,.45); background: rgba(28,176,246,.1); }
+  .chip.mor { color: var(--mor); border-color: rgba(206,130,255,.45); background: rgba(206,130,255,.1); }
+  .chip.gris { color: var(--text-dim); border-color: #352E58; }
+  .perfil-top .cuenta { margin: 14px 20px 18px; padding: 10px 14px; text-align: left; background: linear-gradient(90deg, rgba(255,150,0,.16), rgba(255,150,0,.04)); color: var(--nar); border: 2px solid rgba(255,150,0,.35); border-radius: 14px; font-weight: 800; font-size: 14px; cursor: pointer; }
+  .perfil-top .cuenta b { font: italic 900 24px/1 'Barlow Condensed', sans-serif; margin: 0 2px; }
+  .perfil-top .cuenta[style*="none"] + * { }
+  .perfil-top > :last-child:not(.cuenta) { margin-bottom: 18px; }
+  @media (max-width: 560px) {
+    .banda { height: 78px; }
+    .perfil-cuerpo { gap: 12px; padding: 0 14px; margin-top: -38px; flex-wrap: wrap; }
+    .perfil-top .avatar { width: 84px; height: 84px; border-radius: 22px; font-size: 34px; }
+    .perfil-top h1 { font-size: 28px; }
+    #btnEditar { order: 3; width: 100%; margin: 4px 0 0; }
+    .p-nums { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 14px 14px 0; }
+    .chips { padding: 12px 14px 0; }
+    .perfil-top .cuenta { margin: 12px 14px 14px; }
+  }
+
   /* Mi colección: tus pines y un botón a la colección */
   .col-strip { display: flex; align-items: center; gap: 14px; margin-top: 18px; padding: 14px 16px; border-radius: 22px; border: 2px solid #5a3b10; border-bottom-width: 5px; background: linear-gradient(100deg, #231527, var(--surface) 70%); text-decoration: none; color: var(--text); flex-wrap: wrap; }
   .col-strip .pins { display: flex; gap: 6px; }
@@ -199,7 +245,7 @@
   .col-strip .tx b { display: block; font-size: 16px; font-weight: 1000; }
   .col-strip .tx span { font-size: 12.5px; color: var(--text-dim); font-weight: 700; }
   .col-strip .ir { flex-shrink: 0; background: var(--accent); color: #1a1f00; border: 2px solid #8fa300; border-bottom-width: 4px; border-radius: 14px; padding: 9px 14px; font: 1000 13px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .4px; }
-  @media (max-width: 480px) { .col-strip .ir { width: 100%; text-align: center; } }
+  @media (max-width: 480px) { .col-strip { flex-wrap: nowrap; gap: 10px; padding: 12px; } .col-strip .tx span { display: none; } .col-strip .mcc-pin, .col-strip .hueco { width: 36px; height: 36px; font-size: 16px; } .col-strip .pins { gap: 4px; } .col-strip .ir { padding: 7px 9px; font-size: 11px; } .col-strip .tx b { font-size: 14px; white-space: nowrap; } .col-strip .ir-l { display: none; } .col-strip .tx { flex: 1 1 auto; } }
   .perfil-top h1 { font-size: 26px; font-weight: 1000; margin-top: 10px; line-height: 1.2; }
   .perfil-top .correo { color: var(--text-dim); font-size: 13.5px; margin-top: 2px; word-break: break-all; }
   .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 14px; }
@@ -219,7 +265,6 @@
   .btn-cel { color: var(--cel); border-color: var(--cel-d); }
   .btn-mor { color: var(--mor); border-color: var(--mor-d); }
   .btn-gris { color: var(--text-dim); border-color: #352E58; }
-  #btnEditar { margin-top: 16px; }
   #simulacros .btn-mor { margin-top: 14px; }
   #btnSalir { margin-top: 22px; width: 100%; }
   .btn-mor.chico { padding: 7px 12px; font-size: 12px; border-bottom-width: 4px; flex: none; }
@@ -344,8 +389,8 @@
 <script src="assets/auth.js"></script>
 <script src="assets/agenda.js"></script>
 <script src="assets/buho.js"></script>
-<script src="assets/coleccion.js?v=156"></script>
-<script src="assets/tarjeta-perfil.js?v=156"></script>
+<script src="assets/coleccion.js?v=157"></script>
+<script src="assets/tarjeta-perfil.js?v=157"></script>
 <style id="mc-claro">
 /* Modo claro de esta página (assets/claro.css trae lo común) */
 html[data-modo="claro"] .racha-dato.on b { color: #6F8000 !important; }
@@ -386,16 +431,30 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
 
     <!-- Con sesión -->
     <div id="conSesion" hidden>
+      <!-- Tu tarjeta de jugador: fondo, foto con marco, nombre, título, rango y tus números -->
       <section class="panel perfil-top">
-        <div class="banda" aria-hidden="true"></div>
-        <div class="perfil-cuerpo">
-          <div class="av-caja" id="avCaja"><div class="avatar" id="avatar"></div></div>
-          <h1 id="saludo">Hola</h1>
-          <a class="p-titulo" id="pTitulo" href="coleccion.html#titulo" hidden></a>
-          <div class="correo" id="correo"></div>
-          <div class="chips" id="chips"></div>
-          <button class="btn-cel" type="button" id="btnEditar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>Editar perfil</button>
+        <div class="banda" id="banda">
+          <a class="lapiz l-fondo" href="coleccion.html#racha" aria-label="Cambiar mi fondo en Mi colección"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span>Fondo</span></a>
         </div>
+        <div class="perfil-cuerpo">
+          <div class="av-col">
+            <div class="av-caja" id="avCaja"><div class="avatar" id="avatar"></div></div>
+            <a class="lapiz l-foto" href="coleccion.html#avatar" aria-label="Cambiar mi foto de perfil en Mi colección"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></a>
+          </div>
+          <div class="p-info">
+            <h1 id="saludo">Hola</h1>
+            <a class="p-titulo" id="pTitulo" href="coleccion.html#titulo" hidden></a>
+            <div class="correo" id="correo"></div>
+          </div>
+          <button class="btn-cel" type="button" id="btnEditar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span>Editar datos</span></button>
+        </div>
+        <div class="p-nums">
+          <a class="pn nar" href="#racha"><b id="pnRacha">–</b><small>días de racha</small></a>
+          <span class="pn ama"><b id="pnXp">–</b><small>XP esta semana</small></span>
+          <span class="pn mor"><b id="pnMejor">–</b><small>mejor racha</small></span>
+          <a class="pn lim" href="coleccion.html"><b id="pnCol">–</b><small>colección</small></a>
+        </div>
+        <div class="chips" id="chips"></div>
         <div class="cuenta" id="cuenta"></div>
       </section>
 
@@ -422,7 +481,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       <a class="col-strip" id="colStrip" href="coleccion.html">
         <span class="pins" id="colPins"></span>
         <span class="tx"><b>Mi colección <small id="colN" style="color:var(--accent);font-weight:1000"></small></b><span>Búhos, fotos de perfil, fondos, marcos, títulos y pines.</span></span>
-        <span class="ir">Ver colección ›</span>
+        <span class="ir">Ver<span class="ir-l"> colección</span> ›</span>
       </a>
 
       <h2 class="sec-tit">Estadísticas</h2>
@@ -1040,6 +1099,12 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
   });
   document.addEventListener('click', function () { if (SEL) { SEL = null; pintarSemana(); } });
   // Color del cuadro y de su fuego: el skin de racha que llevas puesto en Mi colección
+  // Tus números de la tarjeta: racha (assets/racha.js), XP (assets/corazones.js) y colección
+  (function numTop(i, ra, co) {
+    if (!ra && window.MCRacha) { ra = 1; MCRacha.alCambiar(function (r) { if (!r) return; $('pnRacha').textContent = r.actual || 0; $('pnMejor').textContent = Math.max(r.mejor || 0, r.actual || 0); }); }
+    if (!co && window.MCCorazones) { co = 1; MCCorazones.alCambiar(function (e) { if (e) $('pnXp').textContent = (+e.xp_semana || 0).toLocaleString('es-PE'); }); }
+    if ((!ra || !co) && i < 100) setTimeout(function () { numTop(i + 1, ra, co); }, 250);
+  })(0);
   function pintarTema() {
     if (!window.MCColeccion || !MCColeccion.cuadro) return;
     var k = MCColeccion.cuadro(), t = k.tema, card = $('racha');
@@ -1063,7 +1128,10 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
     var pines = C.puesto('pines'), h = '';
     for (var i = 0; i < 3; i++) h += pines[i] ? C.pin(C.item(pines[i])) : '<span class="hueco">+</span>';
     $('colPins').innerHTML = h;
-    var n = C.contar(); $('colN').textContent = n.tengo + '/' + n.total;
+    var n = C.contar(); $('colN').textContent = n.tengo + '/' + n.total; $('pnCol').textContent = n.tengo + '/' + n.total;
+    // La franja de arriba lleva tu fondo de perfil
+    var ft = C.tema(), pt = document.querySelector('.perfil-top');
+    pt.style.setProperty('--f1', ft[0]); pt.style.setProperty('--f2', ft[3]);
     pintarTema();
   }
   if (window.MCColeccion) {
