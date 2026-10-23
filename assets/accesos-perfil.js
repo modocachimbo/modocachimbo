@@ -9,7 +9,7 @@
   var ul = document.getElementById('accesos');
   if (!ul || !window.MCAcceso) return;
 
-  var NOMBRES = { 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'seminario-VIP': 'Todos los Seminarios', 'banqueo-VIP': 'Todo el Banqueo', 'tarjetas-VIP': 'Todas las Flashcards', 'TODO-VIP': 'Acceso total', 'simulacro': 'Simulacro' };
+  var NOMBRES = { 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'seminario-VIP': 'Seminarios + Banqueo', 'general': 'Acceso general', 'vocabulario-VIP': 'Vocabulario', 'area-matematica': 'Área Matemática', 'area-ciencia-tecnologia': 'Área Ciencia y Tecnología', 'area-comunicacion': 'Área Comunicación', 'area-ciencias-sociales': 'Área Ciencias Sociales', 'banqueo-VIP': 'Todo el Banqueo', 'tarjetas-VIP': 'Todas las Flashcards', 'TODO-VIP': 'Acceso total', 'simulacro': 'Simulacro' };
   var TIPO = { repaso: 'Repaso de ', fijas: 'Fijas de ', seminario: 'Seminarios de ', banqueo: 'Banqueo de ', tarjetas: 'Flashcards de ' };
   var MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'set', 'oct', 'nov', 'dic'];
   var COLOR = { repaso: '#CE82FF', fijas: '#FFC800', seminario: '#FF9600', banqueo: '#FF4B4B', tarjetas: '#C6E000', simulacro: '#1CB0F6', curso: '#1CB0F6', TODO: '#C6E000' };
@@ -87,7 +87,8 @@
   }
   function tipo(prod) {
     var p = String(prod || '').split(',')[0];
-    if (p === 'TODO-VIP') return 'TODO';
+    if (p === 'TODO-VIP' || p === 'general') return 'TODO';
+    if (/^area-/.test(p)) return 'curso';
     return p === 'simulacro' ? 'simulacro' : p.split('-')[0];
   }
   function fecha(s) { var p = String(s).split('-'); return +p[2] + ' ' + MESES[+p[1] - 1] + ' ' + p[0]; }

@@ -2,12 +2,18 @@
    Panel · Códigos de acceso
    ========================================================= */
 const CD = { lista: [], config: { abiertos: {}, legacy: true }, hoy: '', filtro: 'Todos' };
-// Un código puede abrir varias cosas a la vez: el producto se guarda como "fijas-VIP,simulacro"
+// Paquetes. Un código puede abrir varios a la vez: el producto se guarda como "general,vocabulario-VIP"
+// (la misma regla que cubre() de assets/acceso.js y cubre_ del Apps Script v14)
 const PROD_TODOS = [
-  ['TODO-VIP', 'Acceso total'], ['repaso-VIP', 'Repasos y práctica'], ['fijas-VIP', 'Fijas'],
-  ['seminario-VIP', 'Seminarios'], ['banqueo-VIP', 'Banqueo'], ['tarjetas-VIP', 'Flashcards'], ['vocabulario-VIP', 'Vocabulario'], ['simulacro', 'Simulacro']
+  ['TODO-VIP', 'Acceso total'], ['general', 'Acceso general'], ['seminario-VIP', 'Seminarios + Banqueo'], ['vocabulario-VIP', 'Vocabulario']
 ];
-const PROD_CURSO = [['curso', 'Todo el curso'], ['repaso', 'Repaso y práctica'], ['fijas', 'Fijas'], ['seminario', 'Seminarios'], ['banqueo', 'Banqueo']];
+const PROD_AYUDA = {
+  'TODO-VIP': 'Todo: el acceso general, Seminarios, Banqueo y Vocabulario',
+  general: 'Las 4 áreas con todo lo de adentro (práctica, Repaso, Fijas, Libros, Flashcards), Simulacro, Duelos y Exámenes',
+  'seminario-VIP': 'Seminarios y Banqueo de todos los cursos',
+  'vocabulario-VIP': 'Vocabulario de todos los cursos'
+};
+const AREAS_COD = [['matematica', 'Matemática'], ['ciencia-tecnologia', 'Ciencia y Tecnología'], ['comunicacion', 'Comunicación'], ['ciencias-sociales', 'Ciencias Sociales']];
 // Link oficial fijo: así el mensaje no muestra el link de una vista previa.
 const SITE_URL = 'https://modocachimbo.github.io/modocachimbo/';
 
@@ -24,8 +30,9 @@ function mensajeCodigo(c) {
     `\nActívalo aquí: ${SITE_URL} → «Ingresar código»`;
 }
 function etiquetaUno(p) {
-  const fijos = { 'TODO-VIP': 'Acceso total', 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'seminario-VIP': 'Todos los Seminarios', 'banqueo-VIP': 'Todo el Banqueo', 'tarjetas-VIP': 'Todas las Flashcards', 'vocabulario-VIP': 'Vocabulario', simulacro: 'Simulacro' };
+  const fijos = { 'TODO-VIP': 'Acceso total', general: 'Acceso general', 'seminario-VIP': 'Seminarios + Banqueo', duelo: 'Duelos', examenes: 'Exámenes', 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'banqueo-VIP': 'Todo el Banqueo', 'tarjetas-VIP': 'Todas las Flashcards', 'vocabulario-VIP': 'Vocabulario', simulacro: 'Simulacro' };
   if (fijos[p]) return fijos[p];
+  const ar = AREAS_COD.find(([id]) => 'area-' + id === p); if (ar) return 'Área ' + ar[1];
   const m = String(p).match(/^(curso|repaso|fijas|seminario|banqueo|tarjetas|vocabulario)-(.+)$/); if (!m) return p;
   const n = NOMBRE[m[2]] || m[2];
   return { curso: n + ' completo', repaso: 'Repaso de ' + n, fijas: 'Fijas de ' + n, seminario: 'Seminarios de ' + n, banqueo: 'Banqueo de ' + n, tarjetas: 'Flashcards de ' + n, vocabulario: 'Vocabulario de ' + n }[m[1]];
@@ -50,24 +57,25 @@ function renderConfigAcceso() {
       ${ab[k] && ab[k].hasta ? `<span class="pill gray">hasta el ${esc(ab[k].hasta.split('-').reverse().join('/'))}</span>` : ''}
       <label class="sw"><input type="checkbox" data-abrir="${k}" ${ab[k] ? 'checked' : ''}><span></span>${ab[k] ? 'Abierto' : 'Con código'}</label>
     </div>`;
-  const extras = Object.keys(ab).filter(k => !['TODO', 'repaso', 'fijas', 'seminario', 'banqueo', 'tarjetas', 'simulacro'].includes(k));
+  const extras = Object.keys(ab).filter(k => !['TODO', 'general', 'seminario', 'vocabulario'].includes(k));
   $('cdConfig').innerHTML = `
     <div class="acc-box">
       <div class="acc-ttl">Acceso libre <span>— abre el contenido para todos, sin código</span></div>
-      ${fila('TODO', 'Todo', 'Repasos, Fijas, Seminarios, Banqueo, Flashcards y Simulacro')}
-      ${fila('repaso', 'Todos los Repasos', 'también la práctica del Libro')}
-      ${fila('fijas', 'Todas las Fijas', 'todos los cursos')}
-      ${fila('seminario', 'Todos los Seminarios', 'todos los cursos')}
-      ${fila('banqueo', 'Todo el Banqueo', 'todos los cursos')}
-      ${fila('tarjetas', 'Todas las Flashcards', 'todos los cursos')}
-      ${fila('simulacro', 'Simulacro', 'Examen de 80 preguntas')}
+      ${fila('TODO', 'Todo', 'Áreas, Simulacro, Duelos, Exámenes, Seminarios, Banqueo y Vocabulario')}
+      ${fila('general', 'Acceso general', 'Las 4 áreas, Simulacro, Duelos y Exámenes')}
+      ${fila('seminario', 'Seminarios + Banqueo', 'todos los cursos')}
+      ${fila('vocabulario', 'Vocabulario', 'todos los cursos')}
       ${extras.map(k => `<div class="acc-row"><div><b>${esc(etiquetaProd(k))}</b><span>abierto para todos${ab[k].hasta ? ' hasta el ' + esc(ab[k].hasta.split('-').reverse().join('/')) : ''}</span></div>
         <button class="rbtn" type="button" data-cerrar="${esc(k)}">Cerrar</button></div>`).join('')}
       <div class="acc-add">
-        <select class="inp" id="accTipo"><option value="repaso">Repaso de…</option><option value="fijas">Fijas de…</option><option value="seminario">Seminarios de…</option><option value="banqueo">Banqueo de…</option></select>
-        <select class="inp" id="accCurso"><option value="">— Curso —</option>${CURSOS.map(([id, n]) => `<option value="${id}">${esc(n)}</option>`).join('')}</select>
+        <select class="inp" id="accQue"><option value="">— Qué abrir —</option>
+          <optgroup label="Un área">${AREAS_COD.map(([id, n]) => `<option value="area-${id}">${esc(n)}</option>`).join('')}</optgroup>
+          <option value="simulacro">Simulacro</option><option value="duelo">Duelos</option><option value="examenes">Exámenes</option>
+          <optgroup label="Seminarios de…">${CURSOS.map(([id, n]) => `<option value="seminario-${id}">${esc(n)}</option>`).join('')}</optgroup>
+          <optgroup label="Banqueo de…">${CURSOS.map(([id, n]) => `<option value="banqueo-${id}">${esc(n)}</option>`).join('')}</optgroup>
+        </select>
         <input class="inp" id="accHasta" type="date" title="Opcional: se cierra solo después de esta fecha">
-        <button class="rbtn" type="button" id="accAbrir">Abrir este curso</button>
+        <button class="rbtn" type="button" id="accAbrir">Abrir</button>
       </div>
       <div class="acc-row legacy">
         <div><b>Quitar códigos desde Perfil</b><span>Cuántas veces al mes cada equipo puede quitar un mismo código para usarlo en otro lado.</span></div>
@@ -96,9 +104,9 @@ function renderConfigAcceso() {
     const cfg = JSON.parse(JSON.stringify(CD.config)); delete cfg.abiertos[b.dataset.cerrar]; guardar(cfg, 'Cerrado');
   }));
   $('accAbrir').addEventListener('click', () => {
-    const curso = $('accCurso').value; if (!curso) { toast('Elige el curso', true); return; }
+    const que = $('accQue').value; if (!que) { toast('Elige qué abrir', true); return; }
     const cfg = JSON.parse(JSON.stringify(CD.config));
-    cfg.abiertos[$('accTipo').value + '-' + curso] = { hasta: $('accHasta').value || '' };
+    cfg.abiertos[que] = { hasta: $('accHasta').value || '' };
     guardar(cfg, 'Abierto para todos');
   });
   $('accQuitar').addEventListener('change', e => {
@@ -178,12 +186,12 @@ function renderCodigos() {
 
 /* ---------- Crear / editar ---------- */
 function editarCodigo(orig) {
-  // st.todos: productos para todos los cursos · st.curso + st.deCurso: productos de un curso
-  const st = { todos: [], curso: '', deCurso: [] };
-  String(orig ? orig.producto : 'TODO-VIP').split(',').filter(Boolean).forEach(p => {
-    const m = p.match(/^(curso|repaso|fijas|seminario|banqueo|tarjetas|vocabulario)-(.+)$/);
-    if (m && m[2] !== 'VIP') { st.curso = st.curso || m[2]; if (m[2] === st.curso) st.deCurso.push(m[1]); }
-    else st.todos.push(p);
+  // st.todos: paquetes · st.areas: áreas sueltas · st.antes: productos de antes (curso-x, repaso-VIP…), se conservan
+  const st = { todos: [], areas: [], antes: [] };
+  String(orig ? orig.producto : 'general').split(',').filter(Boolean).forEach(p => {
+    if (PROD_TODOS.some(([v]) => v === p)) st.todos.push(p);
+    else if (/^area-/.test(p)) st.areas.push(p.slice(5));
+    else st.antes.push(p);
   });
   const multi = (g, ops, sel) => `<div class="chips" data-g="${g}">` + ops.map(([v, l]) =>
     `<button type="button" class="chip ${sel.includes(v) ? 'on' : ''}" data-v="${esc(v)}">${l}</button>`).join('') + '</div>';
@@ -192,11 +200,11 @@ function editarCodigo(orig) {
   o.innerHTML = `<div class="mcard" style="max-width:620px;"><button class="mx" type="button" aria-label="Cerrar">✕</button>
     <div class="eyebrow">${orig ? 'Editar código' : 'Nuevos códigos'}</div>
     <h3>${orig ? esc(orig.codigo) : 'Crear códigos'}</h3>
-    <label class="fld">¿Qué abre? <span class="hint">Puedes marcar varias cosas</span></label>
-    <div class="hint" style="margin:2px 0 6px;">Para todos los cursos</div>${multi('todos', PROD_TODOS, st.todos)}
-    <div class="hint" style="margin:12px 0 6px;">Solo de un curso</div>
-    <select class="inp" id="cdCurso"><option value="">— Ninguno —</option>${CURSOS.map(([id, n]) => `<option value="${id}" ${id === st.curso ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select>
-    <div id="cdCursoBox" style="margin-top:8px;"></div>
+    <label class="fld">¿Qué abre? <span class="hint">Puedes marcar varios paquetes</span></label>
+    ${multi('todos', PROD_TODOS, st.todos)}
+    <div class="hint" id="cdAyuda" style="margin:6px 0 0;"></div>
+    <div class="hint" style="margin:12px 0 6px;">O solo un área (sin Simulacro ni Duelos)</div>${multi('areas', AREAS_COD, st.areas)}
+    ${st.antes.length ? `<div class="hint" style="margin:10px 0 0;">Además abre (de antes): <b>${esc(etiquetaProd(st.antes.join(',')))}</b></div>` : ''}
     <div class="hint" id="cdResumen" style="margin-top:10px;"></div>
     <div class="cdgrid">
       <label>Dispositivos<input class="inp" id="cdMax" type="number" min="1" max="10000" value="${orig ? (orig.max || 2) : 2}"></label>
@@ -217,39 +225,37 @@ function editarCodigo(orig) {
   o.querySelector('.mx').addEventListener('click', cerrar); o.querySelector('[data-x]').addEventListener('click', cerrar);
   const producto = () => {
     if (st.todos.includes('TODO-VIP')) return 'TODO-VIP';
-    const deCurso = st.curso ? (st.deCurso.includes('curso') ? ['curso'] : st.deCurso).map(t => t + '-' + st.curso) : [];
-    return st.todos.concat(deCurso).join(',');
+    const areas = st.todos.includes('general') ? [] : st.areas.map(a => 'area-' + a);
+    return st.todos.concat(areas, st.antes).join(',');
   };
-  const resumen = () => { const p = producto(); o.querySelector('#cdResumen').innerHTML = p ? 'Abrirá: <b style="color:#f5ffcc">' + esc(etiquetaProd(p)) + '</b>' : ''; };
-  const pintarCurso = () => {
-    const box = o.querySelector('#cdCursoBox');
-    box.innerHTML = st.curso ? multi('decurso', PROD_CURSO, st.deCurso) : '';
-    const g = box.querySelector('[data-g="decurso"]');
-    if (g) g.addEventListener('click', e => {
-      const b = e.target.closest('.chip'); if (!b) return;
-      const v = b.dataset.v, i = st.deCurso.indexOf(v);
-      if (i >= 0) st.deCurso.splice(i, 1); else st.deCurso.push(v);
-      if (v === 'curso' && i < 0) st.deCurso = ['curso']; else if (v !== 'curso') st.deCurso = st.deCurso.filter(x => x !== 'curso');
-      pintarCurso();
-    });
-    resumen();
+  const pintar = () => {
+    o.querySelectorAll('[data-g="todos"] .chip').forEach(x => x.classList.toggle('on', st.todos.includes(x.dataset.v)));
+    o.querySelectorAll('[data-g="areas"] .chip').forEach(x => x.classList.toggle('on', st.areas.includes(x.dataset.v)));
+    o.querySelector('#cdAyuda').textContent = st.todos.map(v => PROD_AYUDA[v]).filter(Boolean).join(' · ');
+    const p = producto(); o.querySelector('#cdResumen').innerHTML = p ? 'Abrirá: <b style="color:#f5ffcc">' + esc(etiquetaProd(p)) + '</b>' : '';
   };
-  o.querySelector('#cdCurso').addEventListener('change', e => { st.curso = e.target.value; if (st.curso && !st.deCurso.length) st.deCurso = ['curso']; pintarCurso(); });
   o.querySelector('[data-g="todos"]').addEventListener('click', e => {
     const b = e.target.closest('.chip'); if (!b) return;
     const v = b.dataset.v, i = st.todos.indexOf(v);
     if (i >= 0) st.todos.splice(i, 1); else st.todos.push(v);
-    if (v === 'TODO-VIP' && i < 0) st.todos = ['TODO-VIP']; else if (v !== 'TODO-VIP') st.todos = st.todos.filter(x => x !== 'TODO-VIP');
-    o.querySelectorAll('[data-g="todos"] .chip').forEach(x => x.classList.toggle('on', st.todos.includes(x.dataset.v)));
-    resumen();
+    if (v === 'TODO-VIP' && i < 0) { st.todos = ['TODO-VIP']; st.areas = []; }
+    else if (v !== 'TODO-VIP') st.todos = st.todos.filter(x => x !== 'TODO-VIP');
+    if (v === 'general' && i < 0) st.areas = [];
+    pintar();
+  });
+  o.querySelector('[data-g="areas"]').addEventListener('click', e => {
+    const b = e.target.closest('.chip'); if (!b) return;
+    const v = b.dataset.v, i = st.areas.indexOf(v);
+    if (i >= 0) st.areas.splice(i, 1); else { st.areas.push(v); st.todos = st.todos.filter(x => x !== 'TODO-VIP' && x !== 'general'); }
+    pintar();
   });
   const sinLim = o.querySelector('#cdSinLim'), max = o.querySelector('#cdMax');
   const syncLim = () => { max.disabled = sinLim.checked; }; sinLim.addEventListener('change', syncLim); syncLim();
-  pintarCurso();
+  pintar();
 
   o.querySelector('#cdSave').addEventListener('click', async () => {
     const err = o.querySelector('#cdErr'); err.classList.remove('show');
-    if (!producto()) { err.textContent = st.curso ? 'Marca qué abre del curso.' : 'Marca qué abre el código.'; err.classList.add('show'); return; }
+    if (!producto()) { err.textContent = 'Marca qué abre el código.'; err.classList.add('show'); return; }
     const datos = {
       producto: producto(),
       max: sinLim.checked ? 0 : Math.max(1, parseInt(max.value, 10) || 1),
@@ -297,7 +303,7 @@ function importarCodigos() {
   o.querySelector('#impTxt').addEventListener('input', e => {
     filas = e.target.value.split(/\r?\n/).map(l => l.split(/\t|;|,(?=\S)/).map(x => x.trim())).filter(c => c[0] && !/^c[óo]digo$/i.test(c[0]))
       .map(c => ({ codigo: c[0].toUpperCase(), producto: c[1] || '', max: parseFloat(c[2]) || 0, usos: parseFloat(c[3]) || 0, nota: c[4] || '' }));
-    const malos = filas.filter(f => !f.producto.split(',').every(x => /^(TODO-VIP|repaso-VIP|fijas-VIP|seminario-VIP|banqueo-VIP|tarjetas-VIP|vocabulario-VIP|simulacro|(curso|repaso|fijas|seminario|banqueo|tarjetas|vocabulario)-[a-z0-9-]+)$/.test(x)));
+    const malos = filas.filter(f => !f.producto.split(',').every(x => /^(TODO-VIP|general|repaso-VIP|fijas-VIP|seminario-VIP|banqueo-VIP|tarjetas-VIP|vocabulario-VIP|simulacro|(area|curso|repaso|fijas|seminario|banqueo|tarjetas|vocabulario)-[a-z0-9-]+)$/.test(x)));
     o.querySelector('#impPrev').innerHTML = filas.length
       ? `<b style="color:var(--text)">${filas.length} código${filas.length > 1 ? 's' : ''} detectado${filas.length > 1 ? 's' : ''}:</b> ` + filas.slice(0, 6).map(f => `${esc(f.codigo)} (${esc(etiquetaProd(f.producto))}, ${f.usos}/${f.max || '∞'})`).join(' · ') + (filas.length > 6 ? ' …' : '') +
         (malos.length ? `<br><span style="color:var(--red)">${malos.length} con producto no reconocido se saltarán.</span>` : '')

@@ -1195,7 +1195,8 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
 </style>
 <link rel="stylesheet" href="assets/areas.css">
 <script src="assets/mc-config.js"></script>
-<script src="assets/acceso.js"></script>
+<script src="assets/acceso.js?v=158"></script>
+<script src="assets/candado.js?v=158"></script>
 <script src="assets/auth.js"></script>
 <script src="assets/agenda.js"></script>
 </head>
@@ -1327,7 +1328,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
           <div class="modos">
             <a class="juego j-duelo duelo-banner" href="duelo.html" data-mc-nav="practicar"><span class="chip disp">Reto</span><b class="tit">Duelos</b><small>Reta hasta a 3 amigos en vivo</small><svg class="ic"><use href="#i-espadas"/></svg></a>
             <a class="juego j-sim" href="simulacro.html" data-mc-nav="practicar"><span class="chip disp" id="simNuevo">Nuevo</span><b class="tit">Simulacro</b><small>Como el real, con tiempo</small><svg class="ic"><use href="#i-reloj"/></svg></a>
-            <button class="juego j-ex" type="button" data-hoja="examenes"><b class="tit">Exámenes</b><small>Ordinario, CPU, Control</small><svg class="ic"><use href="#i-examen"/></svg></button>
+            <button class="juego j-ex" type="button" data-hoja="examenes" data-candado="examenes" data-candado-nombre="Exámenes"><b class="tit">Exámenes</b><small>Ordinario, CPU, Control</small><svg class="ic"><use href="#i-examen"/></svg></button>
             <button class="juego j-flash" type="button" data-hoja="flashcards"><b class="tit">Flashcards</b><small style="max-width:none">Repasa con tarjetas por curso</small><svg class="ic"><use href="#i-tarjetas"/></svg></button>
           </div>
           <script>try { if (localStorage.getItem('mc_sim_visto')) document.getElementById('simNuevo').remove(); } catch (e) {}</script>
@@ -1416,6 +1417,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
 <script src="assets/buho/buho-vivo.js"></script>
 <script src="assets/buho.js"></script>
 <script src="assets/inicio.js?v=156"></script>
+<script>if (window.MCCandado) MCCandado.vigilar({ cintas: '.juego, .area-card, .fc-c, .ex-mod-link', chicas: '.fc-c, .ex-mod-link' });</script>
 <script src="assets/alertas.js" defer></script>
 <script src="assets/tutorial.js" defer></script>
 <script src="assets/sonido.js"></script>

@@ -15,9 +15,29 @@
   var K_DISP = 'mc_dispositivo', K_ACC = 'mc_accesos';
   var DIA = 24 * 3600 * 1000;
   var memoria = {};
-  // Sin candados: todas las páginas se abren sin código. Los códigos siguen
-  // funcionando (activar, Mis accesos) para usarlos en otra parte; false los vuelve a pedir.
-  var LIBRE = true;
+  // true abre todas las páginas sin código (los códigos siguen activables)
+  var LIBRE = false;
+
+  /* ---- Paquetes ----
+     general        → las 4 áreas (todo lo de adentro), Simulacro, Duelos y Exámenes
+     area-<área>    → solo esa área
+     seminario-VIP  → Seminarios y Banqueo de todos los cursos
+     vocabulario-VIP→ Vocabulario
+     TODO-VIP       → todo
+     Los códigos de antes (curso-x, repaso-VIP, fijas-x…) siguen abriendo lo suyo. */
+  var AREAS = {
+    'matematica': ['algebra', 'aritmetica', 'estadistica', 'geometria', 'trigonometria'],
+    'ciencia-tecnologia': ['anatomia', 'biologia', 'fisica', 'quimica'],
+    'comunicacion': ['lenguaje', 'literatura', 'raz-verbal'],
+    'ciencias-sociales': ['ciudadania', 'economia', 'filosofia', 'geografia', 'historia-peru', 'historia-universal', 'psicologia']
+  };
+  var AREA_DE = {};
+  Object.keys(AREAS).forEach(function (a) { AREAS[a].forEach(function (c) { AREA_DE[c] = a; }); });
+  // Qué candado tiene la página: el Repaso, las Fijas o las Flashcards de un curso van con su área
+  function puerta(x) {
+    var m = /^(repaso|fijas|tarjetas|curso)-(.+)$/.exec(x || '');
+    return m && AREA_DE[m[2]] ? 'area-' + AREA_DE[m[2]] : x;
+  }
 
   function leer(k) { try { return localStorage.getItem(k); } catch (e) { return memoria[k] || null; } }
   function escribir(k, v) { try { localStorage.setItem(k, v); } catch (e) { memoria[k] = v; } }
@@ -70,16 +90,28 @@
     });
   }
 
-  // ¿El producto del código "pc" abre la página "x"? Un código puede tener varios: "fijas-VIP,simulacro"
+  // ¿El producto del código "pc" abre la página "x"? Un código puede tener varios: "general,vocabulario-VIP"
+  // (la misma regla que cubre_ en el Apps Script)
   function cubre(pc, x) {
     if (!pc || !x) return false;
-    var cat = x.split('-')[0], curso = x.slice(cat.length + 1);
+    x = puerta(x);
+    var cat = x.split('-')[0], resto = x.slice(cat.length + 1);
     return String(pc).split(',').some(function (u) {
-      return u === x || u === 'TODO-VIP' || u === cat + '-VIP' || (!!curso && u === 'curso-' + curso);
+      if (u === x || u === 'TODO-VIP') return true;
+      if (cat === 'area') {
+        if (u === 'general' || /^(repaso|fijas|tarjetas)-VIP$/.test(u)) return true;
+        var m = /^(curso|repaso|fijas|tarjetas)-(.+)$/.exec(u);
+        return !!m && AREA_DE[m[2]] === resto;
+      }
+      if (cat === 'simulacro' || cat === 'duelo' || cat === 'examenes') return u === 'general';
+      if (cat === 'seminario' || cat === 'banqueo') return u === 'seminario-VIP' || u === cat + '-VIP' || (!!resto && u === 'curso-' + resto);
+      if (cat === 'vocabulario') return u === 'vocabulario-VIP';
+      return false;
     });
   }
   // Accesos del sistema anterior (antes de los códigos del panel)
   function antiguo(x) {
+    if (/^(area|duelo|examenes)/.test(puerta(x))) return false;
     var cat = x.split('-')[0];
     return leer('unlocked_' + x) === '1' || leer('unlocked_' + cat + '-VIP') === '1';
   }
@@ -91,6 +123,7 @@
   // Sin esperar al servidor: ¿hay un acceso reciente en este dispositivo?
   function accesoLocal(x) {
     if (LIBRE) return true;
+    x = puerta(x);
     var a = accesos(), hoy = Date.now();
     return codigosPara(x).some(function (c) { return hoy - (a[c].ok || 0) < 3 * DIA; }) || antiguo(x);
   }
@@ -157,6 +190,7 @@
   // Revisa con el servidor. Resuelve { acceso, motivo, mensaje }
   function verificar(x) {
     if (LIBRE) return Promise.resolve({ acceso: true });
+    x = puerta(x);
     // Sin código en este dispositivo: buscar en la cuenta de Google antes de pedirlo
     var previo = codigosPara(x).length ? Promise.resolve() : traerDeCuenta();
     return previo.then(function () { return revisar(x); });
@@ -165,6 +199,8 @@
     var cods = codigosPara(x);
     return jsonp2({ action: 'acceso', producto: x, dispositivo: dispositivo(), codigos: cods.join(','), equipo: equipo() })
       .then(function (r) {
+        // Apps Script sin los paquetes nuevos: no deja a nadie afuera mientras se actualiza
+        if (r && !r.ok && /producto no v[aá]lido/i.test(r.error || '')) return { acceso: true, motivo: 'servidor-antiguo' };
         if (!r || !r.ok) throw new Error('respuesta');
         var a = accesos(), mensaje = '';
         Object.keys(r.estados || {}).forEach(function (c) {
@@ -193,7 +229,7 @@
   // Activa un código. producto = página actual (o '' desde el inicio)
   function activar(codigo, x) {
     codigo = String(codigo || '').toUpperCase().replace(/\s+/g, '');
-    return jsonp2({ action: 'activar', codigo: codigo, producto: x || '', dispositivo: dispositivo(), equipo: equipo() })
+    return jsonp2({ action: 'activar', codigo: codigo, producto: puerta(x || ''), dispositivo: dispositivo(), equipo: equipo() })
       .then(function (r) {
         if (r && r.ok) {
           var a = accesos();
@@ -245,5 +281,5 @@
     });
   }
 
-  window.MCAcceso = { verificar: verificar, activar: activar, activos: activos, todos: todos, estado: estado, soltar: soltar, accesoLocal: accesoLocal, antiguo: antiguo, cubre: cubre };
+  window.MCAcceso = { verificar: verificar, activar: activar, activos: activos, todos: todos, estado: estado, soltar: soltar, accesoLocal: accesoLocal, antiguo: antiguo, cubre: cubre, puerta: puerta, AREAS: AREAS };
 })();
