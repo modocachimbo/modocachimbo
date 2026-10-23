@@ -113,6 +113,12 @@
   function iniciar() {
     Array.prototype.forEach.call(document.querySelectorAll('[data-mc-auth][data-mc-tarjeta]'), function (caja) {
       new MutationObserver(pintar).observe(caja, { childList: true, subtree: true });
+      // Tocar tu tarjeta te lleva directo a tu perfil (en tu perfil sigue abriendo el menú)
+      caja.addEventListener('click', function (e) {
+        var chip = e.target.closest('.mcu-chip'), a = caja.querySelector('.mcu-menu a[href*="perfil.html"]');
+        if (!chip || !a || /perfil\.html$/.test(location.pathname)) return;
+        e.stopPropagation(); e.preventDefault(); location.href = a.href;
+      }, true);
     });
     pintar();
     if (window.MCColeccion) {

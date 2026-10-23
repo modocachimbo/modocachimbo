@@ -41,13 +41,19 @@
   .btn.gris { background: var(--surface-2); color: var(--text-dim); border-color: #352E58; }
 
   /* Cabecera */
-  .cab { display: flex; align-items: center; gap: 12px; }
+  .cab { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  /* Volver al inicio: botón con relieve, como los de la grilla */
+  .c-volver { flex: none; display: inline-flex; align-items: center; gap: 4px; height: 46px; padding: 0 16px 0 10px; border-radius: 14px; background: var(--surface-2); border: 2px solid #352E58; border-bottom-width: 5px; color: var(--text); font-weight: 900; font-size: 15px; text-decoration: none; text-transform: uppercase; letter-spacing: .04em; transition: transform .08s, border-color .15s, color .15s; -webkit-tap-highlight-color: transparent; }
+  .c-volver svg { display: block; flex: none; width: 22px; height: 22px; fill: none; stroke: var(--accent); stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; transition: transform .15s; }
+  .c-volver:hover { border-color: var(--accent); color: var(--accent); }
+  .c-volver:hover svg { transform: translateX(-3px); }
+  .c-volver:active { transform: translateY(3px); border-bottom-width: 2px; margin-bottom: 3px; }
+  @media (max-width: 520px) { .cab { gap: 10px; } .cab h1 { font-size: 30px; gap: 10px; white-space: nowrap; } }
+  @media (max-width: 700px) { .c-volver { width: 46px; height: 46px; padding: 0; justify-content: center; } .c-volver span { display: none; } .c-volver svg { width: 24px; height: 24px; } }
   .cab h1 { flex: 1; display: flex; align-items: center; gap: 18px; min-width: 0; font: italic 900 46px/1 var(--display); text-transform: uppercase; letter-spacing: .01em; color: var(--accent); padding: 10px 0 6px; }
   .cab h1::after { content: ""; flex: 1; height: 2px; background: linear-gradient(90deg, rgba(198,224,0,.45), rgba(198,224,0,0)); }
   @media (max-width: 700px) { .cab h1 { font-size: 40px; } }
   .cuenta { margin-left: 4px; background: var(--surface); border: 2px solid var(--borde); border-radius: 14px; padding: 7px 13px; font-weight: 1000; color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .barra { height: 8px; border-radius: 9px; background: var(--surface-2); margin: 12px 0 18px; overflow: hidden; }
-  .barra i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 9px; transition: width .8s cubic-bezier(.2,.9,.3,1); }
 
   .vault { display: grid; gap: 16px; }
   .vault > div { min-width: 0; }
@@ -67,6 +73,16 @@
   .p-buho { position: absolute; left: 50%; bottom: 19%; width: 46%; translate: -50% 0; }
   .p-buho .mcb { width: 100%; translate: 0 var(--drop); }
   .p-buho > img { display: block; width: 118%; margin-left: -9%; height: auto; translate: 0 6%; filter: drop-shadow(0 6px 5px rgba(0,0,0,.4)); animation: flota 3.2s ease-in-out infinite; }
+  .p-racha { --rc1: #5b34b8; --rc2: #241452; --rcb: #3a2380; --rcd: #1a0f40; position: relative; overflow: hidden; display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 10px 14px; border-radius: 16px; color: #fff; text-align: left; background: linear-gradient(135deg, var(--rc1), var(--rc2)); border: 2px solid var(--rcb); border-bottom: 5px solid var(--rcd); transition: background .4s, border-color .4s; }
+  .p-racha::before { content: ''; position: absolute; right: -30px; top: -30px; width: 110px; height: 110px; border-radius: 50%; background: radial-gradient(rgba(255,255,255,.16), transparent 70%); pointer-events: none; }
+  .pr-fuego svg { width: 28px; height: 32px; display: block; filter: drop-shadow(0 2px 0 rgba(0,0,0,.25)); }
+  .pr-fuego .f1 { fill: #FF9600; } .pr-fuego .f2 { fill: #FFD84D; }
+  .pr-n { display: grid; line-height: 1; }
+  .pr-n b { font: 900 26px/1 var(--display); }
+  .pr-n small { font-size: 11px; font-weight: 800; opacity: .85; margin-top: 2px; }
+  .pr-dias { margin-left: auto; display: flex; gap: 4px; }
+  .pr-dias i { width: 16px; height: 16px; border-radius: 50%; background: rgba(0,0,0,.25); border: 2px solid rgba(255,255,255,.25); }
+  .pr-dias i.on { background: #FF9600; border-color: #FFD84D; }
   .puesto.probando { border-color: var(--accent); }
   .p-prueba { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: space-between; margin-top: 12px; padding: 10px 12px; border-radius: 14px; background: rgba(198,224,0,.08); border: 1.5px solid rgba(198,224,0,.45); text-align: left; animation: entra .3s ease-out both; }
   .p-prueba .pp-t { font-size: 14px; color: var(--text); min-width: 0; }
@@ -171,8 +187,7 @@
     </div>
 
     <div id="conSesion" hidden>
-      <div class="cab"><h1>Mi colección</h1><span class="cuenta" id="cuenta">–</span></div>
-      <div class="barra"><i id="barra"></i></div>
+      <div class="cab"><a class="c-volver" href="index.html" aria-label="Volver al inicio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Inicio</span></a><h1>Mi colección</h1><span class="cuenta" id="cuenta">–</span></div>
 
       <div class="vault">
         <section class="puesto" id="puesto" aria-label="Lo que llevas puesto">
@@ -180,6 +195,12 @@
           <!-- Así se ve en tu inicio: tu tarjeta de perfil y tu búho en su escenario -->
           <div class="p-tarj" data-mc-tarjeta id="pTarj" aria-hidden="true"></div>
           <div class="p-esc" id="pEsc"><div class="p-piso" id="pPiso"></div><div class="p-buho" id="pBuho"></div></div>
+          <!-- Tu cuadro de racha (en tu perfil) con el fondo que llevas o pruebas -->
+          <div class="p-racha" id="pRacha" aria-hidden="true">
+            <span class="pr-fuego"><svg viewBox="0 0 32 36"><path class="f1" d="M16 1.5c1.2 4.6 7.6 8.2 9.6 13.6 2.6 7-1.6 17.4-9.6 17.4S3.8 24.9 6.1 17.6c1-3.2 3.3-5.3 4.9-6.9.2 2.8 1.4 4.6 3 5.2C13.3 10.6 14 6 16 1.5z"/><path class="f2" d="M16.3 15.5c.6 2.4 4.5 4.4 4.5 8.6a4.8 4.8 0 0 1-9.6 0c0-2 1-3.4 2.1-4.4.2 1.4.8 2.3 1.6 2.6-.4-2.4 0-4.6 1.4-6.8z"/></svg></span>
+            <span class="pr-n"><b id="pRachaN">0</b><small>días de racha</small></span>
+            <span class="pr-dias" id="pRachaD"></span>
+          </div>
           <span class="p-tit" id="pTit"></span>
           <div class="p-prueba" id="pPrueba" role="status" hidden></div>
           <div class="slots" id="slots"></div>
@@ -242,6 +263,7 @@
     else $('pEsc').style.setProperty('--esc', 'radial-gradient(120% 85% at 50% 30%, ' + et[0] + ' 0%, ' + et[3] + ' 42%, #0b0818 85%)');
     $('pPiso').innerHTML = C.piso(eid);
     pintarTarjeta();
+    pintarRacha();
     pintarPrueba();
     // ¿Llevas algo distinto a lo de siempre?
     $('pReset').hidden = !!PREV || !['buho', 'avatar', 'escena', 'racha', 'marco', 'titulo'].some(function (e) { return C.puesto(e) !== C.defecto[e]; });
@@ -265,7 +287,6 @@
     $('pVit').innerHTML = h;
     var n = C.contar();
     $('cuenta').textContent = n.tengo + ' / ' + n.total;
-    $('barra').style.width = Math.round(n.tengo / n.total * 100) + '%';
   }
   $('slots').addEventListener('click', function (e) { var b = e.target.closest('[data-tab]'); if (b) elegirTab(b.dataset.tab); });
   $('pVit').addEventListener('click', function () { elegirTab('pines'); });
@@ -282,6 +303,20 @@
     if ($('pTarj').innerHTML !== h) $('pTarj').innerHTML = h;
   }
   new MutationObserver(function () { setTimeout(pintarTarjeta, 0); }).observe(document.querySelector('header [data-mc-auth]'), { childList: true, subtree: true, attributes: true });
+  // El cuadro de racha con el fondo que llevas (o pruebas) y tus días de esta semana
+  var miRacha = null;
+  function pintarRacha() {
+    var t = C.tema(P('racha')), c = $('pRacha');
+    ['--rc1', '--rc2', '--rcb', '--rcd'].forEach(function (v, i) { c.style.setProperty(v, t[i]); });
+    var n = miRacha ? +miRacha.actual || 0 : 0, h = '';
+    $('pRachaN').textContent = n;
+    for (var i = 0; i < 7; i++) h += '<i' + (i >= 7 - Math.min(n, 7) ? ' class="on"' : '') + '></i>';
+    $('pRachaD').innerHTML = h;
+  }
+  (function esperar(i) {
+    if (window.MCRacha) MCRacha.alCambiar(function (r) { miRacha = r; pintarRacha(); });
+    else if (i < 100) setTimeout(function () { esperar(i + 1); }, 200);
+  })(0);
   // La barra de «Probando…»: Usar lo guarda, Quitar vuelve a lo que llevas
   function pintarPrueba() {
     var bar = $('pPrueba');
