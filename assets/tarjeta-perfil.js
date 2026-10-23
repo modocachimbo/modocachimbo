@@ -4,7 +4,8 @@
      inicio: tu foto de perfil (el búho o la tuya) con el marco que llevas,
      nombre y rango de la semana, sobre tu fondo (Mi colección, assets/coleccion.js).
    - Se activa en el elemento con data-mc-auth que también tenga
-     data-mc-tarjeta. Con data-mc-tarjeta="sola" no salen corazones,
+     data-mc-tarjeta (otro data-mc-tarjeta solo toma los estilos: así lo usa
+     la vista previa de Mi colección con lo que estás probando). Con data-mc-tarjeta="sola" no salen corazones,
      racha ni XP al lado.
    - El rango sale del XP de la semana de assets/corazones.js.
    ========================================================= */
@@ -68,7 +69,7 @@
     css();
     var C = window.MCColeccion;
     var marco = C ? C.marco() : '', tema = C ? C.tema() : null;
-    Array.prototype.forEach.call(document.querySelectorAll('[data-mc-tarjeta] .mcu-chip'), function (chip) {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-mc-auth][data-mc-tarjeta] .mcu-chip'), function (chip) {
       if (!chip.querySelector('.mct-tx')) {
         chip.classList.add('mct');
         var av = chip.querySelector('.mcu-av'), nom = chip.querySelector('.mcu-nom');
@@ -110,7 +111,7 @@
   }
 
   function iniciar() {
-    Array.prototype.forEach.call(document.querySelectorAll('[data-mc-tarjeta]'), function (caja) {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-mc-auth][data-mc-tarjeta]'), function (caja) {
       new MutationObserver(pintar).observe(caja, { childList: true, subtree: true });
     });
     pintar();
