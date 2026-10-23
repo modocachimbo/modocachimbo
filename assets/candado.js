@@ -1,84 +1,309 @@
 /* =========================================================
-   Modo Cachimbo · Candado de página completa (Seminarios y Banqueo)
-   Uso: <script src="../../assets/candado.js" data-producto="seminario-quimica" data-nombre="Seminarios"></script>
-   Tapa la página hasta que el alumno tenga un código que la abra.
+   Modo Cachimbo · Candados de los paquetes
+   - Página completa: <script src="../assets/candado.js" data-producto="area-matematica" data-nombre="Matemática"></script>
+     Tapa la página hasta que el alumno tenga un código que la abra
+     (por si entra con un link directo: afuera la tarjeta ya lleva el candado).
+   - Sin data-producto solo deja window.MCCandado para poner candados afuera:
+       MCCandado.marcar(tarjeta, 'simulacro', { nombre: 'Simulacro' })
+     La tarjeta lleva la cinta «CON CÓDIGO» y al tocarla sube la hoja para poner el código.
+   Paquetes (assets/acceso.js): general · area-<área> · seminario-VIP · vocabulario-VIP · TODO-VIP
    Requiere assets/mc-config.js y assets/acceso.js
    ========================================================= */
 (function () {
   var yo = document.currentScript;
-  var PRODUCTO = yo && yo.getAttribute('data-producto');
-  var NOMBRE = (yo && yo.getAttribute('data-nombre')) || 'Contenido';
-  var CURSO = (yo && yo.getAttribute('data-curso')) || '';
-  if (!PRODUCTO || !window.MCAcceso) return;
+  // Sin assets/acceso.js nuevo (caché vieja) no hace nada
+  if (!window.MCAcceso || !MCAcceso.puerta) return;
 
-  var WA = 'https://wa.me/51917797543?text=' + encodeURIComponent('Hola! Quiero acceso a ' + NOMBRE + (CURSO ? ' de ' + CURSO : '') + ' en Modo Cachimbo');
-  var css = document.createElement('style');
-  css.textContent =
-    'html.mc-cerrado body > *:not(#mcCandado) { visibility: hidden; }' +
-    '#mcCandado { position: fixed; inset: 0; z-index: 9000; background: #0B0818; overflow-y: auto; display: flex; align-items: flex-start; justify-content: center; padding: 70px 20px 40px; font-family: Inter, sans-serif; }' +
-    '#mcCandado .caja { width: 100%; max-width: 420px; background: #151127; border: 1px solid #2A2346; border-radius: 20px; padding: 34px 24px; text-align: center; }' +
-    '#mcCandado .ico { width: 64px; height: 64px; margin: 0 auto 18px; color: #C6E000; }' +
-    '#mcCandado h1 { font-family: Sora, sans-serif; font-size: 22px; font-weight: 800; color: #f5f5f5; margin: 0 0 8px; }' +
-    '#mcCandado h1 span { color: #C6E000; }' +
-    '#mcCandado p { font-size: 13px; color: #999; line-height: 1.6; margin: 0 0 20px; }' +
-    '#mcCandado input { width: 100%; box-sizing: border-box; background: #1D1834; border: 1px solid #2C2549; border-radius: 12px; padding: 13px 14px; color: #f2f2f2; font-size: 14px; text-align: center; letter-spacing: 1px; font-weight: 600; margin-bottom: 12px; text-transform: uppercase; }' +
-    '#mcCandado input:focus { outline: none; border-color: #C6E000; }' +
-    '#mcCandado input::placeholder { color: #555; font-weight: 400; letter-spacing: normal; text-transform: none; }' +
-    '#mcCandado button { width: 100%; background: #C6E000; color: #0b0b0b; border: none; border-radius: 14px; padding: 13px 22px; font-weight: 700; font-size: 15px; cursor: pointer; }' +
-    '#mcCandado button:disabled { opacity: .6; }' +
-    '#mcCandado .err { display: none; margin-top: 14px; font-size: 12.5px; color: #ff8a8a; background: rgba(224,60,60,0.08); border-radius: 10px; padding: 10px 12px; line-height: 1.5; }' +
-    '#mcCandado .wa { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; padding: 12px; border-radius: 12px; background: rgba(37,211,102,0.1); color: #25D366; text-decoration: none; font-size: 13px; font-weight: 700; }' +
-    '#mcCandado .volver { display: inline-block; margin-top: 18px; color: #9a9a9a; font-size: 13px; text-decoration: none; }' +
-    '#mcCandado .volver:hover { color: #C6E000; }';
-  document.head.appendChild(css);
+  var WA_NUM = '51917797543';
+  var CANDADO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="mck-arco" d="M7.5 10.5V7.8a4.5 4.5 0 0 1 9 0v2.7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><rect x="4" y="10" width="16" height="11.5" rx="3" fill="currentColor"/><circle cx="12" cy="15.2" r="1.7" fill="#2a1a00"/><path d="M12 15.8v2.4" stroke="#2a1a00" stroke-width="1.8" stroke-linecap="round"/></svg>';
+  var CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-  var raiz = document.documentElement;
-  var abierto = false;
-  function abrir() {
-    abierto = true;
-    raiz.classList.remove('mc-cerrado');
-    var c = document.getElementById('mcCandado'); if (c) c.remove();
+  // Qué paquete abre cada candado y qué trae
+  function paquete(x) {
+    x = MCAcceso.puerta(x);
+    var cat = x.split('-')[0];
+    if (cat === 'seminario' || cat === 'banqueo') return {
+      nombre: 'Seminarios + Banqueo', color: '#FF9600',
+      incluye: ['Seminarios de todos los cursos', 'Banqueo de preguntas por tema', 'Se suma a tu acceso general']
+    };
+    if (cat === 'vocabulario') return {
+      nombre: 'Vocabulario', color: '#CE82FF',
+      incluye: ['Vocabulario de todos los cursos', 'Práctica con tarjetas y sonido']
+    };
+    return {
+      nombre: 'Acceso general', color: '#FFC800',
+      incluye: ['Las 4 áreas: práctica, Repaso, Fijas, Libros y Flashcards', 'Simulacro con ranking', 'Duelos en vivo', 'Exámenes de admisión']
+    };
   }
+
+  function fuente() {
+    if (document.getElementById('mck-fuente')) return;
+    var l = document.createElement('link'); l.id = 'mck-fuente'; l.rel = 'stylesheet';
+    l.href = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,800;1,900&family=Nunito:wght@700;800;900&display=swap';
+    document.head.appendChild(l);
+  }
+  var BC = "'Barlow Condensed','Arial Narrow',sans-serif", NU = "Nunito,Inter,system-ui,sans-serif";
+  function css() {
+    if (document.getElementById('mck-css')) return;
+    fuente();
+    var st = document.createElement('style'); st.id = 'mck-css';
+    st.textContent =
+      /* Tarjeta con candado */
+      '.mck-cerrado{position:relative!important}' +
+      '.mck-cerrado::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;border-radius:inherit;' +
+        'background:repeating-linear-gradient(-45deg,rgba(11,8,24,.5) 0 10px,rgba(11,8,24,.62) 10px 20px)}' +
+      '.mck-cerrado>*:not(.mck-cinta){filter:saturate(.45)}' +
+      '.mck-cinta{position:absolute;z-index:4;top:8px;right:-4px;display:flex;align-items:center;gap:5px;padding:5px 12px 5px 9px;' +
+        'transform:skewX(-12deg);background:linear-gradient(90deg,#FFC800,#FF9600);color:#2a1a00!important;' +
+        'font:italic 900 13px/1 ' + BC + '!important;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;' +
+        'box-shadow:0 3px 0 #b36200,0 6px 14px rgba(0,0,0,.45);pointer-events:none}' +
+      '.mck-cinta>*{transform:skewX(12deg)}' +
+      // :is(#…) le gana a la regla de Nunito con !important de cada página
+      ':is(#mck-z,.mck-cinta),:is(#mck-z,.mck-cinta) *{font-family:' + BC + '!important;font-style:italic!important;font-weight:900!important}' +
+      ':is(#mck-z,.mck-btxt){font-family:' + BC + '!important;font-style:italic;font-weight:900;font-size:1.15em;letter-spacing:.04em;text-transform:uppercase}' +
+      ':is(#mck-z,.mck-cinta) svg{position:static!important;inset:auto!important;width:14px!important;height:14px!important;display:block!important;opacity:1!important;margin:0!important;transform:none!important}' +
+      ':is(#mck-z,.mck-cinta){display:flex!important;flex-direction:row!important;align-items:center!important;width:auto!important;max-width:none!important;margin:0!important}' +
+      ':is(#mck-z,.mck-cinta)>span{display:block;margin:0!important}' +
+      /* En las tarjetas grandes del inicio la cinta va abajo, donde no tapa el título */
+      '.juego.mck-cerrado .mck-cinta{top:auto;bottom:14px;right:auto;left:-4px;padding:6px 13px 6px 11px;font-size:15px!important}' +
+      ':is(#mck-z,.juego) .mck-cinta svg{width:17px!important;height:17px!important}' +
+      '.mck-cerrado .chip{visibility:hidden}' +
+      '.mck-cinta.ok{background:linear-gradient(90deg,#58CC02,#2FA84F);color:#06260a!important;box-shadow:0 3px 0 #1f7a2e,0 6px 14px rgba(0,0,0,.45)}' +
+      '.mck-cinta.ok .mck-arco{transform:translateY(-3px) rotate(-18deg);transform-origin:16.5px 10px}' +
+      '.mck-cinta.chica{top:6px;right:6px;padding:4px 7px;font-size:11px!important}' +
+      '.mck-cinta.chica span{display:none}' +
+      '.mck-btxt{display:inline-flex;align-items:center;gap:6px}.mck-btxt svg{width:15px;height:15px}' +
+      '.mck-cerrado .btn{background:linear-gradient(90deg,#FFC800,#FF9600)!important;color:#2a1a00!important;border-color:#b36200!important;position:relative;z-index:5}' +
+      '.mck-cerrado>.btn,.mck-cerrado .btn{filter:none!important}' +
+      /* Hoja para poner el código */
+      '#mckFondo{position:fixed;inset:0;z-index:9500;display:flex;align-items:flex-end;justify-content:center;background:rgba(5,3,14,.72);' +
+        'backdrop-filter:blur(3px);opacity:0;transition:opacity .2s}' +
+      '#mckFondo.show{opacity:1}' +
+      '#mckFondo.pagina{position:fixed;align-items:flex-start;background:#0B0818;overflow-y:auto;padding:60px 16px 30px;backdrop-filter:none}' +
+      '#mckFondo *{box-sizing:border-box;font-family:' + NU + '!important}' +
+      '#mckHoja{position:relative;width:100%;max-width:440px;margin:0 auto;padding:30px 22px 22px;border-radius:24px 24px 0 0;background:#151127;' +
+        'border:2px solid #2A2346;border-bottom:0;color:#f2f0ff;text-align:center;transform:translateY(40px);transition:transform .25s cubic-bezier(.2,1.3,.4,1);overflow:hidden}' +
+      '#mckFondo.show #mckHoja{transform:none}' +
+      '#mckFondo.pagina #mckHoja{border-radius:24px;border-bottom:2px solid #2A2346}' +
+      '#mckHoja::before{content:"";position:absolute;left:0;right:0;top:0;height:8px;background:repeating-linear-gradient(-45deg,var(--kc) 0 12px,#1b1300 12px 24px)}' +
+      '@media (min-width:700px){#mckFondo{align-items:center}#mckHoja{border-radius:24px;border-bottom:2px solid #2A2346}}' +
+      '#mckHoja .mck-x{position:absolute;top:16px;right:14px;width:34px;height:34px;border:0;border-radius:10px;background:#221c3c;color:#a59fc4;font-size:18px;cursor:pointer}' +
+      '#mckHoja .mck-ico{width:84px;height:84px;margin:6px auto 14px;display:grid;place-items:center;border-radius:24px;color:var(--kc);' +
+        'background:radial-gradient(circle at 50% 35%,rgba(255,200,0,.22),rgba(255,200,0,.05) 70%);border:2px solid rgba(255,200,0,.25);animation:mck-bote 2.4s ease-in-out infinite}' +
+      '#mckHoja .mck-ico svg{width:46px;height:46px;filter:drop-shadow(0 4px 0 rgba(0,0,0,.35))}' +
+      '#mckHoja .mck-arco{transition:transform .35s cubic-bezier(.2,1.6,.4,1)}' +
+      '#mckHoja.abierto .mck-ico{color:#58CC02;border-color:rgba(88,204,2,.4);background:radial-gradient(circle at 50% 35%,rgba(88,204,2,.25),rgba(88,204,2,.05) 70%);animation:none}' +
+      '#mckHoja.abierto .mck-arco{transform:translateY(-4px) rotate(-22deg);transform-origin:16.5px 10px}' +
+      '@keyframes mck-bote{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}' +
+      '#mckHoja .mck-paq{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:rgba(255,255,255,.06);' +
+        'color:var(--kc);font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}' +
+      '#mckHoja h2{margin:10px 0 4px;font:italic 900 32px/1 ' + BC + '!important;text-transform:uppercase;letter-spacing:.01em;color:#fff}' +
+      '#mckHoja h2 span{color:var(--kc)}' +
+      '#mckHoja h2 *,#mckHoja .mck-btn *{font-family:' + BC + '!important;font-style:italic!important;font-weight:900!important}' +
+      '#mckHoja .mck-sub{margin:0 0 16px;color:#a59fc4;font-size:14px;font-weight:700;line-height:1.45}' +
+      '#mckHoja ul{list-style:none;margin:0 0 18px;padding:12px 14px;border-radius:16px;background:#0f0b1e;border:2px solid #241e3e;text-align:left;display:grid;gap:8px}' +
+      '#mckHoja li{display:flex;gap:9px;align-items:flex-start;font-size:14px;font-weight:800;color:#dcd8f0;line-height:1.35}' +
+      '#mckHoja li svg{flex:none;width:18px;height:18px;margin-top:1px;color:#58CC02}' +
+      '#mckHoja input{width:100%;padding:14px;border-radius:14px;border:2px solid #322b54;background:#1d1834;color:#fff;font-size:17px;font-weight:900;' +
+        'text-align:center;letter-spacing:.12em;text-transform:uppercase;outline:none}' +
+      '#mckHoja input::placeholder{color:#6b6490;letter-spacing:.04em;text-transform:none;font-weight:700}' +
+      '#mckHoja input:focus{border-color:var(--kc)}' +
+      '#mckHoja .mck-btn{width:100%;margin-top:12px;padding:14px;border:0;border-radius:14px;background:var(--kc);color:#1b1300;cursor:pointer;' +
+        'font:italic 900 22px/1 ' + BC + '!important;text-transform:uppercase;letter-spacing:.04em;box-shadow:0 4px 0 rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;gap:8px}' +
+      '#mckHoja .mck-btn svg{width:20px;height:20px}' +
+      '#mckHoja .mck-btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.35)}' +
+      '#mckHoja .mck-btn:disabled{opacity:.6}' +
+      '#mckHoja .mck-err{display:none;margin-top:12px;padding:10px 12px;border-radius:12px;background:rgba(255,75,75,.1);color:#ff8a8a;font-size:13px;font-weight:800;line-height:1.45}' +
+      '#mckHoja .mck-err.ok{background:rgba(88,204,2,.12);color:#7be03a}' +
+      '#mckHoja .mck-wa{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;padding:12px;border-radius:14px;' +
+        'background:rgba(37,211,102,.1);border:2px solid rgba(37,211,102,.25);color:#25D366;text-decoration:none;font-size:14px;font-weight:900}' +
+      '#mckHoja .mck-wa svg{width:18px;height:18px}' +
+      '#mckHoja .mck-luego{display:inline-block;margin-top:14px;padding:6px;border:0;background:none;color:#8a84ad;font-size:14px;font-weight:800;text-decoration:none;cursor:pointer}' +
+      'html.mc-cerrado body>*:not(#mckFondo){visibility:hidden}';
+    document.head.appendChild(st);
+  }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  var WA_ICO = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.05 2a9.9 9.9 0 0 0-8.5 15l-1.4 5 5.1-1.3A9.9 9.9 0 1 0 12.05 2zm5.8 14.1c-.25.7-1.44 1.33-2 1.41-.52.08-1.16.11-1.87-.12a17 17 0 0 1-1.69-.63c-2.98-1.29-4.93-4.29-5.08-4.49-.14-.2-1.21-1.62-1.21-3.08s.77-2.18 1.04-2.48c.27-.3.59-.37.79-.37h.57c.18 0 .43-.07.67.51.25.6.85 2.07.92 2.22.07.15.12.32.02.52-.1.2-.15.33-.3.5-.15.17-.32.39-.45.52-.15.15-.3.31-.13.61.17.3.77 1.28 1.66 2.07 1.14 1.02 2.1 1.33 2.4 1.48.3.15.48.13.65-.07.17-.2.74-.87.94-1.17.2-.3.4-.25.67-.15.27.1 1.73.82 2.03.97.3.15.5.22.57.35.08.12.08.71-.17 1.41z"/></svg>';
+
+  /* ---- La hoja: el candado, lo que trae el paquete y la cajita del código ----
+     op: { nombre, pagina (página completa, sin «Ahora no»), volver, alAbrir } */
+  function hoja(producto, op) {
+    op = op || {};
+    css();
+    var p = paquete(producto), viejo = document.getElementById('mckFondo');
+    if (viejo) viejo.remove();
+    var wa = 'https://wa.me/' + WA_NUM + '?text=' + encodeURIComponent('¡Hola! Quiero el paquete ' + p.nombre + ' de Modo Cachimbo' + (op.nombre ? ' (para ' + op.nombre + ')' : '') + ' 🎓');
+    var f = document.createElement('div'); f.id = 'mckFondo'; if (op.pagina) f.className = 'pagina';
+    f.innerHTML = '<div id="mckHoja" role="dialog" aria-modal="true" aria-labelledby="mckTit" style="--kc:' + p.color + '">' +
+      (op.pagina ? '' : '<button class="mck-x" type="button" aria-label="Cerrar">✕</button>') +
+      '<div class="mck-ico">' + CANDADO + '</div>' +
+      '<span class="mck-paq">Incluido en ' + esc(p.nombre) + '</span>' +
+      '<h2 id="mckTit">Desbloquea <span>' + esc(op.nombre || p.nombre) + '</span></h2>' +
+      '<p class="mck-sub">Ingresa tu código de alumno para entrar.</p>' +
+      '<ul>' + p.incluye.map(function (t) { return '<li>' + CHECK + '<span>' + esc(t) + '</span></li>'; }).join('') + '</ul>' +
+      '<input type="text" id="mckCod" placeholder="Ej.: MC-7K3P-Q9XR" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Código de acceso">' +
+      '<button class="mck-btn" type="button" id="mckBtn">' + CANDADO + '<span>Desbloquear</span></button>' +
+      '<div class="mck-err" id="mckErr" role="status"></div>' +
+      '<a class="mck-wa" href="' + wa + '" target="_blank" rel="noopener noreferrer">' + WA_ICO + 'Pide tu código por WhatsApp</a>' +
+      (op.pagina ? '<a class="mck-luego" href="' + esc(op.volver || '../index.html') + '">Volver</a>' : '<button class="mck-luego" type="button" data-x>Ahora no</button>') +
+      '</div>';
+    document.body.appendChild(f);
+    requestAnimationFrame(function () { f.classList.add('show'); });
+    var caja = f.querySelector('#mckHoja'), inp = f.querySelector('#mckCod'), btn = f.querySelector('#mckBtn'), err = f.querySelector('#mckErr');
+    function cerrar() { f.classList.remove('show'); setTimeout(function () { f.remove(); }, 200); }
+    if (!op.pagina) {
+      f.addEventListener('click', function (e) { if (e.target === f || e.target.closest('.mck-x,[data-x]')) cerrar(); });
+      setTimeout(function () { inp.focus(); }, 80);
+    }
+    function aviso(t, ok) { err.textContent = t; err.className = 'mck-err' + (ok ? ' ok' : ''); err.style.display = 'block'; }
+    function probar() {
+      var cod = inp.value.trim().toUpperCase();
+      if (!cod) { aviso('Escribe tu código.'); inp.focus(); return; }
+      btn.disabled = true; btn.lastChild.textContent = 'Verificando…';
+      if (window.MCSonido && MCSonido.toque) try { MCSonido.toque(); } catch (e) {}
+      MCAcceso.activar(cod, producto).then(function (r) {
+        if (!r.ok) { aviso(r.mensaje || 'Código inválido.'); return; }
+        caja.classList.add('abierto');
+        aviso(r.mensaje || '¡Listo! Ya puedes entrar.', true);
+        btn.lastChild.textContent = '¡Desbloqueado!';
+        setTimeout(function () { cerrar(); if (op.alAbrir) op.alAbrir(); }, 1100);
+      }).catch(function () { aviso('No se pudo verificar el código. Revisa tu conexión e inténtalo otra vez.'); })
+        .then(function () { if (!caja.classList.contains('abierto')) { btn.disabled = false; btn.lastChild.textContent = 'Desbloquear'; } });
+    }
+    btn.addEventListener('click', probar);
+    inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') probar(); });
+    return { aviso: aviso, cerrar: cerrar };
+  }
+
+  /* ---- Candado afuera, en la tarjeta que lleva a la página ----
+     op: { nombre, chica (cinta solo con el candado), alAbrir } */
+  var revisados = {};
+  function marcar(el, producto, op) {
+    if (!el) return;
+    op = op || {};
+    css();
+    var x = MCAcceso.puerta(producto);
+    var cinta = el.querySelector(':scope > .mck-cinta');
+    var link = op.link || (el.matches('a[href]') ? el : null);
+    // El botón «Entrar» de la tarjeta dice «Desbloquear» mientras tenga candado
+    var boton = link && link !== el && link.classList.contains('btn') ? link : null;
+    if (boton && boton.__txt == null) boton.__txt = boton.innerHTML;
+    function pintar(cerrado) {
+      el.classList.toggle('mck-cerrado', cerrado);
+      if (boton) { boton.innerHTML = cerrado ? '<span class="mck-btxt">' + CANDADO + 'Desbloquear</span>' : boton.__txt; }
+      if (cerrado && !cinta) {
+        cinta = document.createElement('b'); cinta.className = 'mck-cinta' + (op.chica ? ' chica' : '');
+        cinta.innerHTML = CANDADO + '<span>Con código</span>';
+        el.appendChild(cinta);
+      } else if (!cerrado && cinta && !cinta.classList.contains('ok')) { cinta.remove(); cinta = null; }
+    }
+    function abierto() {
+      if (!cinta) return;
+      el.classList.remove('mck-cerrado');
+      cinta.classList.add('ok'); cinta.lastChild.textContent = '✓ Activo';
+      setTimeout(function () { if (cinta) { cinta.remove(); cinta = null; } }, 2200);
+    }
+    pintar(!MCAcceso.accesoLocal(x));
+    // Con códigos en el equipo (o recién traídos de la cuenta): se confirma con el servidor una vez por página
+    if (el.classList.contains('mck-cerrado') && MCAcceso.activos().length) {
+      (revisados[x] = revisados[x] || MCAcceso.verificar(x)).then(function (v) { if (v && v.acceso) pintar(false); });
+    }
+    if (el.__mck) return;
+    el.__mck = true;
+    el.addEventListener('click', function (e) {
+      if (!el.classList.contains('mck-cerrado')) return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      // Puede estar abierto para todos desde el panel, o el código vino de la cuenta
+      var h = hoja(producto, { nombre: op.nombre, alAbrir: function () { abierto(); if (boton) boton.innerHTML = boton.__txt; if (op.alAbrir) op.alAbrir(); } });
+      MCAcceso.verificar(x).then(function (v) {
+        if (v && v.acceso) { h.cerrar(); pintar(false); if (op.alAbrir) op.alAbrir(); else if (link) location.href = link.href; else el.click(); }
+      });
+    }, true);
+  }
+
+  /* ---- Qué candado tiene cada link del sitio ---- */
+  var RAIZ = '';
+  try { RAIZ = new URL('..', yo.src).pathname; } catch (e) {}
+  var CURSOS = {};
+  Object.keys(MCAcceso.AREAS).forEach(function (a) { MCAcceso.AREAS[a].forEach(function (c) { CURSOS[c] = 1; }); });
+  function destino(href) {
+    var u; try { u = new URL(href, location.href); } catch (e) { return null; }
+    if (u.origin !== location.origin || !RAIZ || u.pathname.indexOf(RAIZ) !== 0) return null;
+    var r = u.pathname.slice(RAIZ.length), q = function (k) { return u.searchParams.get(k) || ''; }, m;
+    if ((m = /^areas\/([a-z-]+)\.html$/.exec(r)) && MCAcceso.AREAS[m[1]]) return 'area-' + m[1];
+    if (r === 'simulacro.html') return 'simulacro';
+    if (r === 'duelo.html') return 'duelo';
+    if (/^examenes\//.test(r)) return 'examenes';
+    if (r === 'tarjetas.html') return CURSOS[q('curso')] ? 'tarjetas-' + q('curso') : null;
+    if (r === 'repaso-mixto.html') return MCAcceso.AREAS[q('area')] ? 'area-' + q('area') : 'area-matematica';
+    if (r === 'vocabulario.html') return 'vocabulario-' + (q('curso') || 'raz-verbal');
+    if ((m = /^([a-z-]+)\/(seminarios|banqueo)\//.exec(r)) && CURSOS[m[1]]) return (m[2] === 'banqueo' ? 'banqueo-' : 'seminario-') + m[1];
+    if ((m = /^([a-z-]+)\//.exec(r)) && CURSOS[m[1]]) return 'curso-' + m[1];
+    return null;
+  }
+  // Pone la cinta en las tarjetas (selector) y cuida todos los links con candado de la página
+  function vigilar(op) {
+    op = op || {};
+    css();
+    function decorar() {
+      if (!op.cintas) return;
+      // Tarjetas que dejaron de llevar a una página (p. ej. «Próximamente»): sin candado
+      Array.prototype.forEach.call(document.querySelectorAll('.mck-cerrado'), function (el) {
+        var a = el.matches('a[href]') ? el : el.querySelector('a[href]');
+        if (el.matches(op.cintas) && (a || el.getAttribute('data-candado'))) return;
+        el.classList.remove('mck-cerrado');
+        var c = el.querySelector(':scope > .mck-cinta'); if (c) c.remove();
+      });
+      Array.prototype.forEach.call(document.querySelectorAll(op.cintas), function (el) {
+        var a = el.matches('a[href]') ? el : el.querySelector('a[href]');
+        var x = el.getAttribute('data-candado') || (a && destino(a.href));
+        if (!x || (el.__mck && el.__mckX === x)) return;
+        el.__mckX = x;
+        var b = el.querySelector('b, h3');
+        marcar(el, x, { nombre: el.getAttribute('data-candado-nombre') || (b ? b.textContent.trim() : ''), chica: el.matches(op.chicas || '_'), link: a });
+      });
+    }
+    decorar();
+    var t = 0;
+    new MutationObserver(function () { clearTimeout(t); t = setTimeout(decorar, 60); }).observe(document.body, { childList: true, subtree: true });
+    // Cualquier otro link con candado (los de texto, «¡A practicar!»…) también pide el código
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href]');
+      if (!a || a.closest('.mck-cerrado') || e.defaultPrevented) return;
+      var x = destino(a.href);
+      if (!x || MCAcceso.accesoLocal(x)) return;
+      e.preventDefault();
+      var nom = a.querySelector('b'), ir = function () { location.href = a.href; };
+      var h = hoja(x, { nombre: nom ? nom.textContent.trim() : '', alAbrir: ir });
+      MCAcceso.verificar(x).then(function (v) { if (v && v.acceso) { h.cerrar(); ir(); } });
+    }, true);
+  }
+
+  window.MCCandado = { marcar: marcar, hoja: hoja, paquete: paquete, vigilar: vigilar, destino: destino, svg: CANDADO };
+
+  /* ---- Página completa ---- */
+  var PRODUCTO = yo && yo.getAttribute('data-producto');
+  if (!PRODUCTO) return;
+  var NOMBRE = (yo.getAttribute('data-nombre') || '') + (yo.getAttribute('data-curso') ? ' de ' + yo.getAttribute('data-curso') : '');
+  var VOLVER = yo.getAttribute('data-volver') || '../index.html';
+  var raiz = document.documentElement, listo = false;
+  function abrir() {
+    listo = true; raiz.classList.remove('mc-cerrado');
+    var f = document.getElementById('mckFondo'); if (f) f.remove();
+  }
+  var pantalla = null;
   function cerrar(msg) {
     raiz.classList.add('mc-cerrado');
-    var c = document.getElementById('mcCandado');
-    if (!c) {
-      c = document.createElement('div'); c.id = 'mcCandado';
-      c.innerHTML = '<div class="caja">' +
-        '<div class="ico"><svg width="64" height="64" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 383.52 383.7"><g id="Capa_2" data-name="Capa 2"><g id="Capa_5" data-name="Capa 5"><path d="M0,225.76c4.06-10.67,10.43-15.06,21.9-15.08,8.11,0,16.22-.13,24.32.06,3.34.08,4.61-.87,4.54-4.42-.2-11-.12-21.95-.06-32.92.09-17.06,11.63-30.18,28.63-32.46,2.71-.37,3.52-1.58,3.5-4.17-.09-9.72,0-19.45,0-29.18C82.59,65.39,109.66,23.4,153.25,7c61.42-23.11,129.43,13.14,144.49,77a117.9,117.9,0,0,1,2.75,29c-.12,8,.05,16-.07,23.95,0,2.67,1,3.72,3.61,4.06a32.05,32.05,0,0,1,28.52,32.19c.07,11.1.12,22.2-.05,33.3-.05,3.26,1,4.39,4.26,4.31,8.35-.19,16.71-.09,25.07-.05,13.72.05,21.67,8,21.68,21.57q0,30.5,0,61c0,11.66-6.85,19.31-18.42,20.41-9.33.89-18.7.3-28,.31-3.34,0-4.62.94-4.55,4.47.21,10.35.08,20.71.07,31.06,0,17.12-8.05,28.23-24.29,33.62-.47.15-.91.38-1.37.57H76.35c-.46-.19-.9-.42-1.37-.57-16.28-5.46-24.27-16.48-24.29-33.55q0-15.13,0-30.27c0-5.24,0-5.25-5.09-5.26-7.73,0-15.45-.08-23.17,0-10.91.12-18.72-4.3-22.42-14.94Zm191.91-1.3H22.42c-7.57,0-9.38,1.82-9.39,9.54q0,28.25,0,56.49c0,8,1.86,9.87,9.93,9.87H360.45c7.83,0,9.77-1.9,9.77-9.66q0-28.06,0-56.13c0-8.47-1.62-10.11-9.94-10.11ZM191.66,314h-37.8q-42.27,0-84.56,0c-2.64,0-5-.11-4.9,3.73.16,11.73,0,23.45.12,35.17a16.83,16.83,0,0,0,4.78,11.46c4.7,5.2,10.79,6.29,17.34,6.29H296.55c.75,0,1.5,0,2.24,0,12.75-.45,20-7.88,20-20.66q0-15.15,0-30.31c0-5.63,0-5.64-5.54-5.65Zm-.06-103.36q61.18,0,122.35.07c3.72,0,5-1,4.93-4.84-.23-10.85,0-21.7-.11-32.55-.09-11.45-7.88-19.21-19.38-19.21q-107.74-.06-215.5,0c-11.65,0-19.35,7.8-19.42,19.54-.07,10.6,0,21.2,0,31.8,0,5.17,0,5.19,5.19,5.19Zm-.16-70.3h53.14c2,0,3.91,0,3.89-2.76-.08-12.35,1.15-24.79-.5-37C244.25,73.07,219.29,49,185.26,52.36c-28.51,2.82-51.08,28.05-50.54,56.46q.25,13.46-.05,26.94c-.08,3.63,1.22,4.71,4.76,4.68C156.77,140.3,174.11,140.38,191.44,140.38ZM121,120.21h.16c0-6-.51-12,.09-17.95C125.3,62.09,161,34,201,39.07a70.35,70.35,0,0,1,61.18,69c.06,9.48.11,19,0,28.44,0,2.94,1,4,3.89,3.91,5.86-.15,11.73-.11,17.59,0,2.51,0,3.66-.81,3.55-3.47-.15-3.49,0-7,0-10.48,0-11.84.42-23.72-1.93-35.41C275.33,41.6,231,9,180.88,14.21c-37.89,3.93-70.95,32.14-81.13,69-5,18-3.38,36.38-3.65,54.67,0,2,1.26,2.47,3,2.47,6.24,0,12.47-.05,18.71,0,2.4,0,3.33-.94,3.29-3.35C121,131.44,121,125.83,121,120.21Z"/><path d="M217.34,275.05a6.46,6.46,0,0,1-9,6.23c-2.26-1-4.24-2.59-6.39-3.84-.91-.54-1.73-1.85-2.91-1.17-.94.55-.43,1.83-.51,2.79s0,1.75-.1,2.61c-.53,4-3.23,6.5-6.94,6.44-3.54-.06-6-2.52-6.73-6.31-.38-1.9,1.38-4.81-1.18-5.46-1.33-.34-3.31,1.84-5,2.88-.32.2-.62.42-.94.62-4.5,2.87-8.57,2.47-10.79-1.08s-.87-7.51,3.48-10.36c1.77-1.16,3.54-2.32,5.3-3.51,3.68-2.47,3.68-2.56.14-5-2.16-1.47-4.39-2.84-6.49-4.4-3.62-2.68-4.49-6.54-2.33-9.75s6-3.85,9.89-1.48c1.49.9,2.88,2,4.37,2.87.93.56,1.81,1.84,2.9,1.37s.46-2,.61-3c.11-.86,0-1.75.12-2.61.52-3.75,3.23-6.38,6.61-6.48s6.27,2.64,7,6.5c.38,1.91-1.3,4.79,1.09,5.5,1.27.38,3.3-1.85,5-2.9l.62-.41c4.81-3.16,8.79-2.9,11.13.74s1,7.43-3.63,10.65c-1.74,1.2-3.53,2.34-5.28,3.53-3.34,2.27-3.33,2.37.14,4.72,2.17,1.47,4.36,2.9,6.53,4.37A6.76,6.76,0,0,1,217.34,275.05Z"/><path d="M236,275.06a7.21,7.21,0,0,1,3.36-5.85c2.47-1.68,4.92-3.4,7.47-5s2.11-2.59-.12-3.93c-2.46-1.47-4.83-3.09-7.17-4.75-3.63-2.59-4.55-6.5-2.41-9.72s6-3.89,9.86-1.57c.32.19.63.42.95.6,2.15,1.23,4.31,4.21,6.24,3.56,2.18-.73.41-4.22,1-6.44.9-3.26,2.94-5.29,6.28-5.48a6.33,6.33,0,0,1,6.79,4.74,10.74,10.74,0,0,1,.48,2.18c.66,5.69.65,5.69,5.64,2.37,1-.69,2.05-1.44,3.14-2,3.37-1.79,7-1,9,1.89a6.62,6.62,0,0,1-1.32,9,83.56,83.56,0,0,1-8.58,6c-2.06,1.28-2,2.11,0,3.34,2.65,1.62,5.25,3.36,7.76,5.2,3.47,2.53,4.33,6.34,2.29,9.46-2.19,3.36-5.94,4.06-9.81,1.74-1.92-1.15-3.77-2.43-5.62-3.7s-2.41-.56-2.4,1.37a24.35,24.35,0,0,1-.14,3.73c-.58,3.95-3.41,6.41-7.09,6.28s-5.94-2.6-6.51-6.48c-.28-1.86,1-4.63-1-5.35-1.6-.58-3.33,1.79-5,2.8-2.43,1.46-4.67,3.48-7.86,2.57S236.29,278.5,236,275.06Z"/><path d="M114.49,249.52c0-2.74-.14-4.48,0-6.18.42-4.23,3.25-7,7-6.9s6.41,3,6.68,7.16c.37,5.78.37,5.78,5.36,2.47,1.14-.76,2.25-1.58,3.44-2.23,3.35-1.84,6.94-1.07,9,1.84a6.75,6.75,0,0,1-1.51,9.33c-2.67,2-5.53,3.83-8.35,5.66-1.74,1.13-1.93,2.06,0,3.25,2.63,1.67,5.23,3.38,7.75,5.21,3.68,2.68,4.51,6.46,2.27,9.73s-6,3.85-9.89,1.51c-1.71-1-3.38-2.12-5-3.31-2.55-1.89-3.17-.81-3,1.79a17.64,17.64,0,0,1-.05,2.62c-.42,4.08-3,6.61-6.71,6.64s-6.28-2.5-7-6.48c-.31-1.84,1-4.63-1-5.32-1.61-.54-3.31,1.84-5,2.82-.87.5-1.66,1.12-2.53,1.59-3.55,1.93-7.11,1.19-9.23-1.88a6.68,6.68,0,0,1,1.78-9.26c2.68-2,5.52-3.85,8.36-5.64,1.78-1.13,2-2,.07-3.17-2.33-1.44-4.59-3-6.85-4.55-4.47-3-5.71-6.79-3.44-10.34s6.32-4,11.11-.84C109.66,246.32,111.61,247.62,114.49,249.52Z"/><path d="M31.65,242.8c3.39,0,5.54,2.33,8.11,3.79,1.26.71,2.39,2.53,3.81,1.82,1.21-.61.44-2.52.56-3.84.28-2.95.83-5.73,3.76-7.28,4.65-2.47,9.59.64,10,6.22.11,1.7-.84,4.18.52,4.92,1.7.93,3.12-1.46,4.71-2.3,1.43-.75,2.7-1.82,4.15-2.52a6.49,6.49,0,0,1,8.56,2.25,6.35,6.35,0,0,1-1.25,8.75,76.9,76.9,0,0,1-8.3,5.73c-2.21,1.37-2.58,2.41-.12,3.89s5,3.23,7.47,5c3.55,2.57,4.36,6.16,2.28,9.43s-6,4.09-9.81,1.78c-2-1.22-4-2.59-5.94-3.91-1.51-1-2.28-.7-2.27,1.2a40.21,40.21,0,0,1-.07,4.11,6.7,6.7,0,0,1-13.18,1.25,11.34,11.34,0,0,1-.39-1.82c-.76-5.69-.75-5.68-5.52-2.52a38.18,38.18,0,0,1-3.48,2.18,6.61,6.61,0,0,1-8.88-2.13,6.51,6.51,0,0,1,1.55-9,84.55,84.55,0,0,1,8.36-5.66c2.3-1.4,2-2.35-.07-3.63-2.85-1.79-5.68-3.63-8.35-5.68a6.23,6.23,0,0,1-2.24-7.36A6.63,6.63,0,0,1,31.65,242.8Z"/><path d="M332.21,288.14c-6.22,0-12.44.05-18.66,0-4.32-.05-7.45-3-7.37-6.74s3.09-6.46,7.25-6.48q18.65-.11,37.31,0c4.54,0,7.32,2.74,7.25,6.73s-2.87,6.45-7.5,6.5C344.39,288.19,338.3,288.14,332.21,288.14Z"/><path d="M76.2,182.45c0-3-.11-6,0-9,.21-4.41,2.21-6.73,6.56-7.19a96.05,96.05,0,0,1,19.77,0c4.23.43,6.4,3.14,6.22,7s-2.74,6.18-6.92,6.33c-3,.1-6,.09-9,0-2.06-.05-3,.81-2.93,2.88.05,2.74.06,5.48,0,8.22-.16,5-2.89,8.2-6.9,8.18s-6.75-3.28-6.84-8.2c-.06-2.74,0-5.48,0-8.22Z"/></g></g></svg></div>' +
-        '<h1>' + NOMBRE.replace(/</g, '&lt;') + ' <span>Premium</span></h1>' +
-        '<p>Esta sección se abre con tu código de alumno. Si ya tienes uno, ingrésalo abajo.</p>' +
-        '<input type="text" id="mcCandCod" placeholder="Ej: RVB-4X9K" autocomplete="off" autocapitalize="characters" aria-label="Código de acceso">' +
-        '<button type="button" id="mcCandBtn">Desbloquear</button>' +
-        '<div class="err" id="mcCandErr"></div>' +
-        '<a class="wa" href="' + WA + '" target="_blank" rel="noopener noreferrer">Pide tu código por WhatsApp</a>' +
-        '<a class="volver" href="' + (yo.getAttribute('data-volver') || '../index.html') + '">Volver al curso</a>' +
-        '</div>';
-      document.body.appendChild(c);
-      var inp = c.querySelector('#mcCandCod'), btn = c.querySelector('#mcCandBtn');
-      var probar = function () {
-        var cod = inp.value.trim().toUpperCase();
-        if (!cod) { error('Ingresa tu código de acceso.'); return; }
-        btn.disabled = true; btn.textContent = 'Verificando…';
-        MCAcceso.activar(cod, PRODUCTO).then(function (r) {
-          if (r.ok) abrir(); else error(r.mensaje || 'Código inválido.');
-        }).catch(function () { error('No se pudo verificar el código. Revisa tu conexión e intenta de nuevo.'); })
-          .then(function () { btn.disabled = false; btn.textContent = 'Desbloquear'; });
-      };
-      btn.addEventListener('click', probar);
-      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') probar(); });
-    }
-    if (msg) error(msg);
+    if (!document.getElementById('mckFondo')) pantalla = hoja(PRODUCTO, { nombre: NOMBRE, pagina: true, volver: VOLVER, alAbrir: abrir });
+    if (msg && pantalla) pantalla.aviso(msg);
   }
-  function error(m) { var e = document.getElementById('mcCandErr'); if (e) { e.textContent = m; e.style.display = 'block'; } }
-
   // Sin esperar al servidor: si este dispositivo ya tenía acceso, la página se ve al toque
   var local = MCAcceso.accesoLocal(PRODUCTO);
-  if (!local) raiz.classList.add('mc-cerrado');
+  if (!local) { css(); raiz.classList.add('mc-cerrado'); }
   function iniciar() {
     if (!local) cerrar();
     MCAcceso.verificar(PRODUCTO).then(function (v) {
-      if (v.acceso) { if (!abierto) abrir(); }
+      if (v.acceso) { if (!listo) abrir(); }
       else cerrar(v.mensaje || (v.error === 'conexion' ? 'No se pudo verificar tu acceso. Revisa tu conexión.' : ''));
     });
   }

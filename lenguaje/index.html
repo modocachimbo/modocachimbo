@@ -178,6 +178,7 @@
 <link rel="stylesheet" href="../assets/areas.css">
 <script src="../assets/mc-config.js"></script>
 <script src="../assets/acceso.js"></script>
+<script src="../assets/candado.js"></script>
 <script src="../assets/auth.js"></script>
 </head>
 <body>
@@ -355,5 +356,6 @@ function jsonpRequest(url) {
 <script>MCCursos.pintarCurso('lenguaje');</script>
 <script src="../assets/tutorial.js" defer></script>
 <script src="../assets/sonido.js"></script>
+<script>if (window.MCCandado) MCCandado.vigilar({ cintas: '.course.active' });</script>
 </body>
 </html>
