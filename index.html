@@ -360,6 +360,8 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
 .buho { position: absolute; left: 50%; bottom: 24%; width: 34%; translate: -50% 0; }
 .buho .mcb { width: 100%; translate: 0 var(--drop); }
 .buho .mcb-disfraz { display: block; width: 118%; margin-left: -9%; height: auto; aspect-ratio: auto; translate: 0 6%; user-select: none; -webkit-user-drag: none; filter: drop-shadow(0 6px 5px rgba(0, 0, 0, .4)); transform-origin: 50% 100%; animation: buhoFlota 3.2s ease-in-out infinite; }
+.buho .mcb-antiguo { width: 100%; margin-left: 0; translate: 0 2%; }
+.buho .mcb-antiguo svg { display: block; width: 100%; height: auto; }
 .buho .mcb-disfraz.mcb-toque { animation: buhoBrinco .45s cubic-bezier(.34, 1.56, .64, 1); }
 .buho .mcb-disfraz.molesto { animation: buhoSacude .5s ease-in-out 2; }
 @keyframes buhoFlota { 50% { transform: translateY(-4%); } }
@@ -1408,11 +1410,12 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
 </template>
 
 <script src="assets/rango.js"></script>
-<script src="assets/coleccion.js?v=155"></script>
-<script src="assets/tarjeta-perfil.js?v=155"></script>
+<script src="assets/coleccion.js?v=156"></script>
+<script src="assets/tarjeta-perfil.js?v=156"></script>
 <script src="assets/buho/buho-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
-<script src="assets/inicio.js?v=155"></script>
+<script src="assets/buho.js"></script>
+<script src="assets/inicio.js?v=156"></script>
 <script src="assets/alertas.js" defer></script>
 <script src="assets/tutorial.js" defer></script>
 <script src="assets/sonido.js"></script>
