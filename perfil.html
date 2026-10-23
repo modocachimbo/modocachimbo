@@ -244,7 +244,7 @@
   .rc-cab { display: flex; align-items: center; gap: 12px; }
   .rc-fuego { width: 38px; height: 42px; flex-shrink: 0; }
   .rc-fuego svg { width: 100%; height: 100%; display: block; }
-  .rc-fuego .f1 { fill: #FF9600; } .rc-fuego .f2 { fill: #FFC800; }
+  .rc-fuego .f1 { fill: var(--fl1, #FF9600); } .rc-fuego .f2 { fill: var(--fl2, #FFC800); }
   .racha-card.apagada .rc-fuego .f1 { fill: #4b6a80; } .racha-card.apagada .rc-fuego .f2 { fill: #6d8ea5; }
   .racha-card.pendiente .rc-fuego .f1 { fill: #ffd29a; } .racha-card.pendiente .rc-fuego .f2 { fill: #fff1c2; }
   .rc-num { flex: 1; min-width: 0; line-height: 1.1; }
@@ -1039,11 +1039,12 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
     });
   });
   document.addEventListener('click', function () { if (SEL) { SEL = null; pintarSemana(); } });
-  // Color del cuadro: el tema de racha que llevas puesto en Mi colección
+  // Color del cuadro y de su fuego: el skin de racha que llevas puesto en Mi colección
   function pintarTema() {
-    if (!window.MCColeccion) return;
-    var t = MCColeccion.tema(), card = $('racha');
+    if (!window.MCColeccion || !MCColeccion.cuadro) return;
+    var k = MCColeccion.cuadro(), t = k.tema, card = $('racha');
     ['--rc1', '--rc2', '--rcb', '--rcd'].forEach(function (v, i) { card.style.setProperty(v, t[i]); });
+    card.style.setProperty('--fl1', k.llama[0]); card.style.setProperty('--fl2', k.llama[1]);
   }
   // Mi colección (assets/coleccion.js): marco y título que llevas, y tus pines (el búho sale en el inicio)
   function pintarColeccion() {
