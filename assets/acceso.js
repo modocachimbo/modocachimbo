@@ -16,7 +16,7 @@
   var DIA = 24 * 3600 * 1000;
   var memoria = {};
   // true abre todas las páginas sin código (los códigos siguen activables)
-  var LIBRE = false;
+  var LIBRE = true;
 
   /* ---- Paquetes ----
      general        → las 4 áreas (todo lo de adentro), Simulacro, Duelos y Exámenes
