@@ -266,9 +266,15 @@ function editarCodigo(orig) {
     const btn = o.querySelector('#cdSave'); btn.disabled = true; btn.innerHTML = '<span class="spin-s"></span> Guardando…';
     try {
       const r = await api('guardarCodigo', { datos: JSON.stringify(datos) });
-      await cargarCodigos();
-      if (orig) { cerrar(); toast('Código actualizado'); return; }
-      const nuevos = r.creados.map(cod => CD.lista.find(x => x.codigo === cod) || { codigo: cod, etiqueta: r.etiqueta, max: datos.max, vence: datos.vence });
+      // Sin volver a pedir toda la lista: se actualiza aquí y se refresca de fondo
+      if (orig) {
+        Object.assign(orig, { producto: datos.producto, max: datos.max, vence: datos.vence, nota: datos.nota, activo: datos.activo, etiqueta: etiquetaProd(datos.producto) });
+        orig.estado = !orig.activo ? 'Desactivado' : (orig.vence && CD.hoy && CD.hoy > orig.vence) ? 'Vencido' : (orig.max > 0 && orig.usosAnt + orig.dispositivos.length >= orig.max) ? 'Lleno' : 'Activo';
+        renderCodigos(); cerrar(); toast('Código actualizado'); return;
+      }
+      const nuevos = r.creados.map(cod => ({ codigo: cod, producto: datos.producto, etiqueta: r.etiqueta || etiquetaProd(datos.producto), max: datos.max, usosAnt: 0,
+        nota: datos.nota, vence: datos.vence, activo: true, dispositivos: [], estado: 'Activo', creado: new Date().toISOString() }));
+      CD.lista = nuevos.concat(CD.lista); renderCodigos();
       o.querySelector('.mcard').innerHTML = `<button class="mx" type="button">✕</button>
         <div class="done" style="text-align:left;padding-top:0;">
           <div class="eyebrow">Listo</div><h3>${nuevos.length} código${nuevos.length > 1 ? 's creados' : ' creado'}</h3>
