@@ -270,17 +270,17 @@
     alTocar: function () { decir(frasesToque()[toqueN++ % frasesToque().length], 4500); }
   });
   var buhoPuesto = disfraz();
-  // El fondo que llevas puesto pinta todo el escenario (Galaxia es el de siempre, con su modo claro)
+  // El escenario que llevas puesto en Mi colección: su cielo y su piso (Galaxia es el de siempre, con su modo claro)
   function pintarEscenario() {
     var C = window.MCColeccion, e = $('escena'); if (!C || !e) return;
-    var id = C.puesto('racha'), t = C.tema(id), v = ['--esc-cielo', '--plat-a', '--plat-b', '--esc-foco'];
-    // El piso va con el fondo: Galaxia trae el de siempre (con su modo claro), los demás su propia superficie
+    var id = C.puesto('escena'), t = C.escena(id), v = ['--esc-cielo', '--plat-a', '--plat-b', '--esc-foco'];
+    // El piso va con el escenario: Galaxia trae el de siempre (con su modo claro), los demás su propia superficie
     var plat = e.querySelector('.plat');
     if (plat.getAttribute('data-fondo') !== id) {
       plat.setAttribute('data-fondo', id);
-      plat.innerHTML = id === 'racha-galaxia' ? '<i></i><i></i><i></i>' : C.piso(id);
+      plat.innerHTML = id === 'escena-galaxia' ? '<i></i><i></i><i></i>' : C.piso(id);
     }
-    if (id === 'racha-galaxia') { v.forEach(function (k) { e.style.removeProperty(k); }); return; }
+    if (id === 'escena-galaxia') { v.forEach(function (k) { e.style.removeProperty(k); }); return; }
     e.style.setProperty('--esc-cielo', 'radial-gradient(120% 85% at 50% 30%, ' + t[0] + ' 0%, ' + t[3] + ' 42%, #0b0818 85%)');
     e.style.setProperty('--plat-a', t[0]); e.style.setProperty('--plat-b', t[3]);
     e.style.setProperty('--esc-foco', 'rgba(255, 255, 255, .12)');

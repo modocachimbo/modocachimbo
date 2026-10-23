@@ -64,7 +64,7 @@
   .p-buho.pop { animation: pop .5s cubic-bezier(.2,1.6,.4,1); }
   .p-nom { font: italic 900 28px/1 var(--display); text-transform: uppercase; margin-top: 2px; }
   .p-tit { display: inline-flex; gap: 6px; align-items: center; margin-top: 8px; font-size: 13px; font-weight: 1000; color: var(--c, #FFC800); background: rgba(var(--cr, '255,200,0'), .1); border: 1.5px solid rgba(var(--cr), .5); border-radius: 999px; padding: 4px 11px; }
-  .slots { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-top: 14px; }
+  .slots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
   .slot .mcc-av { width: 34px; border-radius: 9px; box-shadow: none; }
   .slot .mcc-av b { font-size: 16px; }
   .slot { background: var(--surface-2); border: 2px solid var(--borde); border-bottom-width: 4px; border-radius: 14px; padding: 8px 4px 7px; font-size: 11px; color: var(--text-dim); cursor: pointer; font-family: inherit; font-weight: 800; min-width: 0; }
@@ -191,7 +191,8 @@
   var INTRO = {
     buho: 'El búho que sale en tu inicio. Los disfraces de cada área también salen en sus cursos.',
     avatar: 'Tu foto de perfil: sale en tu tarjeta de arriba, en tu perfil y en los tops.',
-    racha: 'Pinta todo el escenario del búho en tu inicio, tu tarjeta de perfil y tu cuadro de racha. Galaxia es el de siempre.',
+    escena: 'Donde se para tu búho en el inicio: cada escenario trae su cielo y su piso. Galaxia es el de siempre.',
+    racha: 'El fondo de tu tarjeta de perfil (arriba, junto a tu nombre) y de tu cuadro de racha. Galaxia es el de siempre.',
     marco: 'El borde de tu foto en tu tarjeta de perfil y en tu perfil.',
     titulo: 'La frase que sale bajo tu nombre.',
     pines: 'Elige hasta 3 pines para tu vitrina. Se ganan en los eventos.',
@@ -217,6 +218,7 @@
     var slots = [
       ['buho', b.nom, 'Búho', '<span style="width:34px;height:34px;display:block">' + C.buho(b) + '</span>'],
       ['avatar', C.item(C.puesto('avatar')).nom, 'Perfil', '<span style="width:34px;height:34px;display:block">' + C.avatarHtml(C.item(C.puesto('avatar')), C.item(C.puesto('avatar')).av ? '' : miFoto(), miLetra()) + '</span>'],
+      ['escena', C.item(C.puesto('escena')).nom, 'Escenario', '<span class="mini-tema" style="display:block;background:radial-gradient(120% 90% at 50% 20%,' + C.escena()[0] + ',' + C.escena()[3] + ')"></span>'],
       ['racha', C.item(C.puesto('racha')).nom, 'Fondo', '<span class="mini-tema" style="display:block;background:linear-gradient(135deg,' + tema[0] + ',' + tema[1] + ')"></span>'],
       ['marco', C.item(C.puesto('marco')).nom, 'Marco', '<span class="mini-marco" style="display:block;background:' + (marco || '#2A2346') + '"><i></i></span>'],
       ['titulo', t.nom, 'Título', '<span style="font-size:22px;color:rgb(' + tr.c + ')">★</span>']
