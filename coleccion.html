@@ -14,6 +14,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <script src="assets/app.js" defer></script>
 <title>Mi colección · Modo Cachimbo</title>
+<link rel="stylesheet" href="assets/buho/buho.css">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,800;1,800;1,900&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,900&display=swap');
 
@@ -41,8 +42,10 @@
 
   /* Cabecera */
   .cab { display: flex; align-items: center; gap: 12px; }
-  .cab h1 { font: italic 900 40px/1 var(--display); text-transform: uppercase; letter-spacing: .3px; }
-  .cuenta { margin-left: auto; background: var(--surface); border: 2px solid var(--borde); border-radius: 14px; padding: 7px 13px; font-weight: 1000; color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .cab h1 { flex: 1; display: flex; align-items: center; gap: 18px; min-width: 0; font: italic 900 46px/1 var(--display); text-transform: uppercase; letter-spacing: .01em; color: var(--accent); padding: 10px 0 6px; }
+  .cab h1::after { content: ""; flex: 1; height: 2px; background: linear-gradient(90deg, rgba(198,224,0,.45), rgba(198,224,0,0)); }
+  @media (max-width: 700px) { .cab h1 { font-size: 40px; } }
+  .cuenta { margin-left: 4px; background: var(--surface); border: 2px solid var(--borde); border-radius: 14px; padding: 7px 13px; font-weight: 1000; color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .barra { height: 8px; border-radius: 9px; background: var(--surface-2); margin: 12px 0 18px; overflow: hidden; }
   .barra i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 9px; transition: width .8s cubic-bezier(.2,.9,.3,1); }
 
@@ -56,10 +59,14 @@
   .puesto .k { font-size: 12px; color: var(--text-dim); font-weight: 1000; text-transform: uppercase; letter-spacing: 1.5px; }
   .p-buho { width: 190px; height: 190px; margin: 4px auto 0; display: grid; place-items: center; animation: flota 3.2s ease-in-out infinite; }
   .p-buho img, .p-buho svg { width: 100%; height: 100%; object-fit: contain; }
+  .p-buho .mcb, .mcc-dib .mcb, .slot .v .mcb { width: 78%; height: auto; }
+  .p-buho .mcb img, .mcc-dib .mcb img, .slot .v .mcb img { width: auto; height: auto; object-fit: initial; }
   .p-buho.pop { animation: pop .5s cubic-bezier(.2,1.6,.4,1); }
   .p-nom { font: italic 900 28px/1 var(--display); text-transform: uppercase; margin-top: 2px; }
   .p-tit { display: inline-flex; gap: 6px; align-items: center; margin-top: 8px; font-size: 13px; font-weight: 1000; color: var(--c, #FFC800); background: rgba(var(--cr, '255,200,0'), .1); border: 1.5px solid rgba(var(--cr), .5); border-radius: 999px; padding: 4px 11px; }
-  .slots { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+  .slots { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-top: 14px; }
+  .slot .mcc-av { width: 34px; border-radius: 9px; box-shadow: none; }
+  .slot .mcc-av b { font-size: 16px; }
   .slot { background: var(--surface-2); border: 2px solid var(--borde); border-bottom-width: 4px; border-radius: 14px; padding: 8px 4px 7px; font-size: 11px; color: var(--text-dim); cursor: pointer; font-family: inherit; font-weight: 800; min-width: 0; }
   .slot .v { height: 34px; display: grid; place-items: center; margin-bottom: 3px; }
   .slot .v > * { max-height: 34px; }
@@ -76,7 +83,7 @@
   /* Pestañas y filtros */
   .ctabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
   .ctabs::-webkit-scrollbar { display: none; }
-  .ctabs button { flex: none; padding: 9px 14px; border-radius: 14px; background: var(--surface); border: 2px solid var(--borde); border-bottom-width: 4px; color: var(--text-dim); font: 900 14.5px Nunito, sans-serif; cursor: pointer; position: relative; }
+  .ctabs button { flex: none; padding: 9px 12px; border-radius: 14px; background: var(--surface); border: 2px solid var(--borde); border-bottom-width: 4px; color: var(--text-dim); font: 900 14px Nunito, sans-serif; cursor: pointer; position: relative; }
   .ctabs button small { opacity: .7; margin-left: 4px; font-weight: 900; }
   .ctabs button.on { background: var(--accent); color: #1a1f00; border-color: #8fa300; }
   .ctabs button .pto { position: absolute; right: -2px; top: -2px; width: 11px; height: 11px; border-radius: 50%; background: #FF4B4B; box-shadow: 0 0 0 2px var(--bg); }
@@ -127,18 +134,21 @@
 <script src="assets/buho.js"></script>
 <script src="assets/rango.js"></script>
 <script src="assets/coleccion.js"></script>
+<script src="assets/tarjeta-perfil.js"></script>
+<script src="assets/buho/buho-datos.js"></script>
+<script src="assets/buho/buho-vivo.js"></script>
 </head>
 <body>
   <div class="wrap">
     <header class="top">
       <a class="logo" href="index.html" aria-label="Modo Cachimbo · Inicio"><img src="assets/img/logo-modo-cachimbo-horizontal.svg" alt="Modo Cachimbo" width="160" height="34"></a>
-      <div data-mc-auth></div>
+      <div data-mc-auth data-mc-tarjeta="sola"></div>
     </header>
 
     <div id="cargando" class="panel vacio"><p>Cargando…</p></div>
     <div id="sinSesion" class="panel vacio" hidden>
       <h1>Tu colección</h1>
-      <p>Ingresa para ver los búhos, temas de racha, marcos, títulos y pines que vas ganando.</p>
+      <p>Ingresa para ver los búhos, fondos, marcos, títulos y pines que vas ganando.</p>
       <button class="btn" type="button" id="btnIngresar">Ingresar</button>
     </div>
 
@@ -150,7 +160,6 @@
         <section class="puesto" id="puesto" aria-label="Lo que llevas puesto">
           <span class="k">Lo que llevas puesto</span>
           <div class="p-buho" id="pBuho"></div>
-          <div class="p-nom" id="pNom"></div>
           <span class="p-tit" id="pTit"></span>
           <div class="slots" id="slots"></div>
           <div class="vit" id="pVit" aria-label="Mi vitrina de pines"></div>
@@ -180,9 +189,10 @@
   var C = window.MCColeccion, R = C.rareza;
   var TAB = (location.hash || '').slice(1) || 'buho', FIL = 'todos';
   var INTRO = {
-    buho: 'El búho que te acompaña en tu perfil. Los disfraces de cada área también salen en sus cursos.',
-    racha: 'El color de tu cuadro de racha en el perfil. Cielo es el de siempre.',
-    marco: 'El borde de tu foto en el perfil.',
+    buho: 'El búho que sale en tu inicio. Los disfraces de cada área también salen en sus cursos.',
+    avatar: 'Tu foto de perfil: sale en tu tarjeta de arriba, en tu perfil y en los tops.',
+    racha: 'Pinta todo el escenario del búho en tu inicio, tu tarjeta de perfil y tu cuadro de racha. Galaxia es el de siempre.',
+    marco: 'El borde de tu foto en tu tarjeta de perfil y en tu perfil.',
     titulo: 'La frase que sale bajo tu nombre.',
     pines: 'Elige hasta 3 pines para tu vitrina. Se ganan en los eventos.',
     rangos: 'Cada lunes se guarda aquí el rango que alcanzaste en la semana. Toca uno para ver tus semanas.'
@@ -201,14 +211,13 @@
     var pb = $('pBuho');
     pb.innerHTML = C.buho(b);
     if (pop) { pb.classList.remove('pop'); void pb.offsetWidth; pb.classList.add('pop'); }
-    $('pNom').textContent = 'Búho ' + b.nom;
-    $('pNom').style.color = 'rgb(' + R[b.rareza].c + ')';
     var pt = $('pTit'); pt.textContent = '★ ' + t.nom;
     pt.style.setProperty('--cr', tr.c); pt.style.color = 'rgb(' + tr.c + ')';
     var tema = C.tema(), marco = C.marco();
     var slots = [
       ['buho', b.nom, 'Búho', '<span style="width:34px;height:34px;display:block">' + C.buho(b) + '</span>'],
-      ['racha', C.item(C.puesto('racha')).nom, 'Racha', '<span class="mini-tema" style="display:block;background:linear-gradient(135deg,' + tema[0] + ',' + tema[1] + ')"></span>'],
+      ['avatar', C.item(C.puesto('avatar')).nom, 'Perfil', '<span style="width:34px;height:34px;display:block">' + C.avatarHtml(C.item(C.puesto('avatar')), C.item(C.puesto('avatar')).av ? '' : miFoto(), miLetra()) + '</span>'],
+      ['racha', C.item(C.puesto('racha')).nom, 'Fondo', '<span class="mini-tema" style="display:block;background:linear-gradient(135deg,' + tema[0] + ',' + tema[1] + ')"></span>'],
       ['marco', C.item(C.puesto('marco')).nom, 'Marco', '<span class="mini-marco" style="display:block;background:' + (marco || '#2A2346') + '"><i></i></span>'],
       ['titulo', t.nom, 'Título', '<span style="font-size:22px;color:rgb(' + tr.c + ')">★</span>']
     ];
@@ -280,10 +289,23 @@
   }
   $('grid').addEventListener('click', function (e) {
     var b = e.target.closest('.mcc-it');
+    if (b && e.target.closest('[data-usar]')) { usar(b.dataset.id); return; }
     if (b) { abrir(b.dataset.id); return; }
     var r = e.target.closest('button.mc-rgo-pz');
     if (r && rangosHtml && MCRango.semanas) MCRango.semanas(+r.dataset.n, rangosHtml.semanas[+r.dataset.n]);
   });
+
+  // Botón «Usar» de cada cuadro: se lo pone sin abrir el detalle
+  function usar(id) {
+    var x = C.item(id);
+    C.poner(x.espacio, id).then(function () {
+      if (window.MCSonido && MCSonido.bien) try { MCSonido.bien(); } catch (e) {}
+      C.marcarVistos([id]); todo(x.espacio === 'buho');
+    }, function () { abrir(id); });
+  }
+  // Tu foto de Google o tu inicial (de la tarjeta de arriba), para «Mi foto»
+  function miFoto() { var i = document.querySelector('[data-mc-auth] .mcu-av'); var o = i && i.getAttribute('data-orig'); var m = o && /src="([^"]+)"/.exec(o); return m ? m[1].replace(/&amp;/g, '&') : ''; }
+  function miLetra() { var i = document.querySelector('[data-mc-auth] .mcu-av'); var o = i && i.getAttribute('data-orig'); return o && !/</.test(o) ? o : ''; }
 
   /* ---------- Detalle ---------- */
   function abrir(id) {

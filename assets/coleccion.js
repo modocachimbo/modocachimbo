@@ -1,6 +1,6 @@
 /* =========================================================
    Modo Cachimbo · Mi colección (lo que tienes y te pones)
-   - CATALOGO: búhos, temas de racha, marcos, títulos y pines.
+   - CATALOGO: búhos, fotos de perfil, fondos, marcos, títulos y pines.
      Cada objeto dice cómo se consigue (regla):
        gratis · racha (mejor racha de N días) · rango (cerrar una semana
        en ese rango) · evento / regalo (te lo entregan por SQL en coleccion_mia)
@@ -30,24 +30,34 @@
   // Espacios: dónde se pone cada cosa (pines: hasta 3 en tu vitrina)
   var ESPACIOS = [
     { id: 'buho', nom: 'Búho', uno: 'Búho' },
-    { id: 'racha', nom: 'Racha', uno: 'Tema de racha' },
+    { id: 'avatar', nom: 'Perfil', uno: 'Foto de perfil' },
+    { id: 'racha', nom: 'Fondos', uno: 'Fondo' },
     { id: 'marco', nom: 'Marcos', uno: 'Marco' },
     { id: 'titulo', nom: 'Títulos', uno: 'Título' },
     { id: 'pines', nom: 'Pines', uno: 'Pin' }
   ];
-  var DEFECTO = { buho: 'buho-clasico', racha: 'racha-cielo', marco: 'marco-ninguno', titulo: 'titulo-cachimbo', pines: [] };
+  var DEFECTO = { buho: 'buho-clasico', avatar: 'avatar-buho', racha: 'racha-galaxia', marco: 'marco-ninguno', titulo: 'titulo-cachimbo', pines: [] };
 
   var CATALOGO = [
     // Búho: los disfraces de cada área ya acompañan en sus páginas, así que vienen con tu cuenta
-    { id: 'buho-clasico', espacio: 'buho', nom: 'Clásico', rareza: 'comun', regla: { tipo: 'gratis' }, desc: 'El búho de siempre, con los colores del logo.' },
+    { id: 'buho-clasico', espacio: 'buho', nom: 'Clásico', rareza: 'comun', regla: { tipo: 'gratis' }, desc: 'El búho de siempre, con sus lentes de sol.' },
     { id: 'buho-al-juarismi', espacio: 'buho', nom: 'Al-Juarismi', rareza: 'raro', regla: { tipo: 'gratis' }, img: 'matematica', area: 'Matemática', desc: 'El padre del álgebra. Te acompaña en Matemática.' },
     { id: 'buho-cervantes', espacio: 'buho', nom: 'Cervantes', rareza: 'raro', regla: { tipo: 'gratis' }, img: 'comunicacion', area: 'Comunicación', desc: 'El autor del Quijote. Te acompaña en Comunicación.' },
     { id: 'buho-einstein', espacio: 'buho', nom: 'Einstein', rareza: 'raro', regla: { tipo: 'gratis' }, img: 'ciencia-tecnologia', area: 'Ciencia y Tecnología', desc: 'El genio de la relatividad. Te acompaña en Ciencia y Tecnología.' },
     { id: 'buho-inca', espacio: 'buho', nom: 'Inca', rareza: 'epico', regla: { tipo: 'gratis' }, img: 'ciencias-sociales', area: 'Ciencias Sociales', desc: 'Con mascaipacha y unku. Te acompaña en Ciencias Sociales.' },
     { id: 'buho-birrete', espacio: 'buho', nom: 'Birrete de ingresante', rareza: 'legendario', regla: { tipo: 'regalo' }, desc: 'Para quien ya ingresó a la universidad. Te lo entregamos cuando nos cuentes que ingresaste.' },
 
-    // Temas del cuadro de racha (Cielo es el de siempre)
-    { id: 'racha-cielo', espacio: 'racha', nom: 'Cielo', rareza: 'comun', regla: { tipo: 'gratis' }, tema: ['#1CB0F6', '#1588d0', '#1488c9', '#0f6fa6'], desc: 'El celeste de siempre.' },
+    // Foto de perfil: la de tu tarjeta, tu perfil y los tops (el búho es la de siempre)
+    { id: 'avatar-buho', espacio: 'avatar', nom: 'Búho', rareza: 'comun', regla: { tipo: 'gratis' }, av: 'clasico', desc: 'La cara del búho de Modo Cachimbo.' },
+    { id: 'avatar-foto', espacio: 'avatar', nom: 'Mi foto', rareza: 'comun', regla: { tipo: 'gratis' }, desc: 'Tu foto de Google. Si no tienes, sale tu inicial.' },
+    { id: 'avatar-al-juarismi', espacio: 'avatar', nom: 'Al-Juarismi', rareza: 'raro', regla: { tipo: 'gratis' }, av: 'matematica', area: 'Matemática' },
+    { id: 'avatar-cervantes', espacio: 'avatar', nom: 'Cervantes', rareza: 'raro', regla: { tipo: 'gratis' }, av: 'comunicacion', area: 'Comunicación' },
+    { id: 'avatar-einstein', espacio: 'avatar', nom: 'Einstein', rareza: 'raro', regla: { tipo: 'gratis' }, av: 'ciencia-tecnologia', area: 'Ciencia y Tecnología' },
+    { id: 'avatar-inca', espacio: 'avatar', nom: 'Inca', rareza: 'epico', regla: { tipo: 'gratis' }, av: 'ciencias-sociales', area: 'Ciencias Sociales' },
+
+    // Fondos: el escenario del búho en el inicio, tu tarjeta de perfil y tu cuadro de racha (Galaxia es el de siempre)
+    { id: 'racha-galaxia', espacio: 'racha', nom: 'Galaxia', rareza: 'comun', regla: { tipo: 'gratis' }, tema: ['#5b34b8', '#241452', '#4a2a9a', '#1a0f40'], desc: 'El morado de siempre del inicio.' },
+    { id: 'racha-cielo', espacio: 'racha', nom: 'Cielo', rareza: 'comun', regla: { tipo: 'gratis' }, tema: ['#1CB0F6', '#1588d0', '#1488c9', '#0f6fa6'], desc: 'Celeste como el cielo.' },
     { id: 'racha-menta', espacio: 'racha', nom: 'Menta', rareza: 'raro', regla: { tipo: 'racha', n: 7 }, tema: ['#14C46A', '#0e9a8a', '#12a96a', '#08705a'] },
     { id: 'racha-noche', espacio: 'racha', nom: 'Noche', rareza: 'epico', regla: { tipo: 'rango', n: 2 }, tema: ['#4a3bc4', '#1b1458', '#3d30a8', '#130e40'] },
     { id: 'racha-volcan', espacio: 'racha', nom: 'Volcán', rareza: 'epico', regla: { tipo: 'racha', n: 30 }, tema: ['#FF7A1A', '#c2271a', '#e05a12', '#8a1a0e'] },
@@ -79,6 +89,36 @@
     { id: 'pin-fantasma', espacio: 'pines', nom: 'Fantasma', rareza: 'evento', regla: { tipo: 'evento', evento: HALLOWEEN }, pin: ['👻', '#14213f', '#A99FC8'] },
     { id: 'pin-telarana', espacio: 'pines', nom: 'Telaraña', rareza: 'evento', regla: { tipo: 'evento', evento: HALLOWEEN }, pin: ['🕸️', '#1d1a2e', '#6F6690'] }
   ];
+  // Tu foto (o inicial) para dibujar «Mi foto»; la pone la página con fijarFoto
+  var miFoto = { src: '', letra: '' };
+  // Piso de cada fondo: la superficie donde se para el búho en el escenario del inicio.
+  // Va con el fondo (viewBox 300×70, se estira al ancho del piso).
+  var S = '<svg viewBox="0 0 300 70" preserveAspectRatio="none" aria-hidden="true">';
+  var PISOS = {
+    'racha-galaxia': S + '<path d="M27 2h246l25 33-25 33H27L2 35z" fill="#FFC800"/><path d="M31 7h238l21 28-21 28H31L10 35z" fill="url(#mcp-g)"/>' +
+      '<defs><linearGradient id="mcp-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b3fd0"/><stop offset="1" stop-color="#25145a"/></linearGradient></defs>' +
+      '<ellipse cx="150" cy="26" rx="95" ry="16" fill="rgba(255,220,150,.3)"/></svg>',
+    'racha-cielo': S + '<g fill="#cfe9fb"><ellipse cx="150" cy="44" rx="146" ry="22"/></g>' +
+      '<g fill="#fff"><ellipse cx="150" cy="32" rx="140" ry="20"/><circle cx="52" cy="24" r="22"/><circle cx="98" cy="14" r="24"/><circle cx="150" cy="12" r="26"/><circle cx="204" cy="15" r="24"/><circle cx="250" cy="25" r="21"/></g>' +
+      '<ellipse cx="150" cy="22" rx="90" ry="7" fill="#eaf6ff"/></svg>',
+    'racha-menta': S + '<path d="M10 28 Q150 60 290 28 L270 58 Q150 74 30 58z" fill="#7a4a24"/><path d="M30 50 Q150 66 270 50" stroke="#5c3518" stroke-width="5" fill="none"/>' +
+      '<ellipse cx="150" cy="26" rx="142" ry="20" fill="#3fb24a"/><ellipse cx="150" cy="22" rx="128" ry="14" fill="#5fd35a"/>' +
+      '<g fill="#3fb24a"><path d="M40 14l4-10 3 10z"/><path d="M70 9l3-8 3 8z"/><path d="M226 9l3-8 3 8z"/><path d="M256 14l4-10 3 10z"/></g>' +
+      '<g fill="#fff"><circle cx="64" cy="26" r="3"/><circle cx="236" cy="27" r="3"/></g><g fill="#FFC800"><circle cx="64" cy="26" r="1.3"/><circle cx="236" cy="27" r="1.3"/></g></svg>',
+    'racha-noche': S + '<path d="M8 30 Q150 70 292 30 L278 52 Q150 76 22 52z" fill="#3b3f63"/>' +
+      '<ellipse cx="150" cy="28" rx="142" ry="20" fill="#9aa3c7"/><ellipse cx="150" cy="24" rx="126" ry="13" fill="#c3c9e6"/>' +
+      '<g fill="#8a92b8"><ellipse cx="80" cy="26" rx="14" ry="5"/><ellipse cx="214" cy="22" rx="10" ry="4"/><ellipse cx="250" cy="31" rx="7" ry="3"/><ellipse cx="46" cy="32" rx="6" ry="2.5"/></g></svg>',
+    'racha-volcan': S + '<path d="M8 30 Q150 70 292 30 L276 56 Q150 78 24 56z" fill="#1d0f0c"/>' +
+      '<ellipse cx="150" cy="28" rx="143" ry="21" fill="#FF6a10" opacity=".55"/><ellipse cx="150" cy="27" rx="138" ry="18" fill="#3a1c14"/><ellipse cx="150" cy="24" rx="120" ry="12" fill="#4d2618"/>' +
+      '<g stroke="#FF9a1f" stroke-width="2.6" fill="none" stroke-linecap="round"><path d="M60 26l18 4 14-6 16 5"/><path d="M190 22l16 6 14-3 22 6"/><path d="M130 33l14-4 12 5"/><path d="M60 50l10 6M230 50l-8 7M150 58v8"/></g></svg>',
+    'racha-aurora': S + '<path d="M30 6h240l26 26-26 30H30L4 32z" fill="#bff3ff"/><path d="M34 11h232l20 21-20 24H34L14 32z" fill="url(#mcp-h)"/>' +
+      '<defs><linearGradient id="mcp-h" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9fdff"/><stop offset="1" stop-color="#5ec4e0"/></linearGradient></defs>' +
+      '<g fill="#fff" opacity=".8"><path d="M60 14h40l-22 10z"/><path d="M180 14h30l-14 8z"/></g><path d="M34 56l232 0" stroke="#3aa0c4" stroke-width="3"/></svg>',
+    'racha-calabaza': S + '<path d="M8 30 Q150 70 292 30 L276 56 Q150 76 24 56z" fill="#2a1240"/>' +
+      '<ellipse cx="150" cy="27" rx="142" ry="20" fill="#4b2a14"/><ellipse cx="150" cy="24" rx="126" ry="13" fill="#6b3d1c"/>' +
+      '<g><ellipse cx="40" cy="22" rx="16" ry="12" fill="#FF8A00"/><ellipse cx="40" cy="22" rx="6" ry="12" fill="#ffa53a"/><path d="M40 10l2-7" stroke="#3f8a1e" stroke-width="3"/>' +
+      '<ellipse cx="262" cy="24" rx="13" ry="10" fill="#FF8A00"/><ellipse cx="262" cy="24" rx="5" ry="10" fill="#ffa53a"/><path d="M262 14l2-6" stroke="#3f8a1e" stroke-width="3"/></g></svg>'
+  };
   var POR_ID = {};
   CATALOGO.forEach(function (x) { POR_ID[x.id] = x; });
 
@@ -187,16 +227,28 @@
   /* ---------- Dibujos ---------- */
   function buhoImg(x, animo) {
     if (x.img) return '<img src="' + esc(D + x.img + '-' + (animo || 'feliz') + '.webp') + '" alt="" loading="lazy">';
+    // El clásico es el mismo búho animado del inicio (si la página trae assets/buho/buho-vivo.js)
+    if (x.id === 'buho-clasico' && window.MCBuhoVivo && window.MCBuhoDatos) return MCBuhoVivo.crear(animo === 'triste' ? 'triste' : 'vivo').outerHTML;
     if (window.MCBuho) return MCBuho.svg(animo === 'triste' ? 'triste' : 'feliz', 160);
     return '<img src="' + esc(BASE + 'assets/app/icono-192.png') + '" alt="">';
   }
   function dibujo(x) {
     if (x.espacio === 'buho') return buhoImg(x);
+    // Fondo: un mini escenario con su piso
+    if (x.espacio === 'racha' && PISOS[x.id]) return '<span class="mcc-esc" style="--r1:' + x.tema[0] + ';--r2:' + x.tema[3] + '">' + PISOS[x.id].replace(/mcp-([gh])/g, 'mcp-$1-' + x.id) + '<img class="mcc-esc-b" src="' + esc(D.replace(/disfraces\/$/, 'avatar/') + 'clasico-cuerpo.webp') + '" alt="" loading="lazy"></span>';
     if (x.espacio === 'racha') return '<span class="mcc-tema" style="--r1:' + x.tema[0] + ';--r2:' + x.tema[1] + '"><svg viewBox="0 0 32 36" aria-hidden="true"><path fill="#FF9600" d="M16 1.5c1.2 4.6 7.6 8.2 9.6 13.6 2.6 7-1.6 17.4-9.6 17.4S3.8 24.9 6.1 17.6c1-3.2 3.3-5.3 4.9-6.9.2 2.8 1.4 4.6 3 5.2C13.3 10.6 14 6 16 1.5z"/><path fill="#FFC800" d="M16.3 15.5c.6 2.4 4.5 4.4 4.5 8.6a4.8 4.8 0 0 1-9.6 0c0-2 1-3.4 2.1-4.4.2 1.4.8 2.3 1.6 2.6-.4-2.4 0-4.6 1.4-6.8z"/></svg><i></i><i></i><i></i><i></i></span>';
+    if (x.espacio === 'avatar') return avatarSvg(x, miFoto.src, miFoto.letra);
     if (x.espacio === 'marco') return '<span class="mcc-marco" style="--m:' + (x.marco === 'none' ? 'transparent' : x.marco) + '"><span>' + (window.MCBuho ? MCBuho.svg('normal', 80) : '') + '</span></span>';
     if (x.espacio === 'titulo') return '<span class="mcc-titulo"><span>★ ' + esc(x.nom) + '</span></span>';
     if (x.espacio === 'pines') return pinSvg(x);
     return '';
+  }
+  // Foto de perfil: el dibujo del búho o tu foto (o tu inicial) sobre tu fondo
+  function avatarSrc(id) { var x = POR_ID[id || puesto('avatar')]; return x && x.av ? D.replace(/disfraces\/$/, 'avatar/') + x.av + '.webp' : ''; }
+  function avatarSvg(x, foto, letra) {
+    var t = (POR_ID[puesto('racha')] || POR_ID['racha-galaxia']).tema;
+    var src = x.av ? avatarSrc(x.id) : foto;
+    return '<span class="mcc-av" style="--f1:' + t[0] + ';--f2:' + t[3] + '">' + (src ? '<img src="' + esc(src) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : '<b>' + esc(letra || '?') + '</b>') + '</span>';
   }
   function pinSvg(x) {
     return '<span class="mcc-pin" style="--pf:' + x.pin[1] + ';--pb:' + x.pin[2] + '"><span>' + x.pin[0] + '</span></span>';
@@ -205,13 +257,16 @@
     var ok = tiene(x.id), R = RAREZA[x.rareza] || RAREZA.comun, av = ok ? null : avance(x.id);
     var lleva = x.espacio === 'pines' ? puesto('pines').indexOf(x.id) >= 0 : puesto(x.espacio) === x.id;
     var nuevo = ok && !vistos()[x.id] && vistosIniciado();
-    return '<button type="button" class="mcc-it' + (ok ? '' : ' lock') + (lleva ? ' puesto' : '') + ' e-' + x.espacio + '" data-id="' + x.id + '" style="--c:' + R.c + ';--i:' + (i || 0) + '">' +
+    return '<button type="button" class="mcc-it' + (ok ? '' : ' lock') + (lleva ? ' mcc-on' : '') + ' e-' + x.espacio + '" data-id="' + x.id + '" style="--c:' + R.c + ';--i:' + (i || 0) + '">' +
       (x.regla.tipo === 'evento' ? '<span class="mcc-cinta">' + esc(x.regla.cinta || (x.regla.evento === HALLOWEEN ? 'Halloween' : 'Evento')) + '</span>' : '') +
-      (lleva ? '<span class="mcc-etq">Puesto</span>' : nuevo ? '<span class="mcc-etq nuevo">Nuevo</span>' : '') +
+      (nuevo && !lleva ? '<span class="mcc-etq nuevo">Nuevo</span>' : '') +
       '<span class="mcc-dib">' + dibujo(x) + '</span>' +
       (ok ? '' : '<span class="mcc-cand"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>') +
       '<b>' + esc(x.nom) + '</b><small>' + R.nom + (x.area ? ' · ' + esc(x.area.replace('Ciencia y Tecnología', 'CyT').replace('Ciencias Sociales', 'Sociales')) : '') + '</small>' +
-      (av != null ? '<span class="mcc-prog"><i style="width:' + Math.round(av * 100) + '%"></i></span>' : '') +
+      // Abajo siempre la misma fila, para que todos los cuadros midan igual
+      '<span class="mcc-pie">' + (!ok ? (av != null ? '<span class="mcc-prog"><i style="width:' + Math.round(av * 100) + '%"></i></span>' : '<span class="mcc-usar no">Bloqueado</span>')
+        : lleva ? (x.espacio === 'pines' ? '<span class="mcc-usar gris" data-usar>Quitar</span>' : '<span class="mcc-usar on">En uso</span>')
+        : '<span class="mcc-usar" data-usar>Usar</span>') + '</span>' +
       '</button>';
   }
 
@@ -237,11 +292,11 @@
       '.mcc-it{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:10px 8px 12px;border-radius:18px;cursor:pointer;font:inherit;color:#EEEAF7;' +
       'background:linear-gradient(180deg,rgba(var(--c),.22),rgba(var(--c),.03) 70%),#151127;border:2.5px solid rgba(var(--c),.85);border-bottom-width:5px;overflow:hidden;-webkit-tap-highlight-color:transparent;' +
       'animation:mccEntra .45s cubic-bezier(.2,1.3,.4,1) both;animation-delay:calc(var(--i) * 40ms);transition:transform .1s}' +
-      '.mcc-it:active{transform:translateY(3px);border-bottom-width:2.5px;margin-bottom:2.5px}' +
+      '.mcc-it:active{transform:translateY(2px)}' +
       '.mcc-it:focus-visible{outline:3px solid #fff;outline-offset:2px}' +
       '.mcc-it b{font-size:14.5px;font-weight:900;line-height:1.15;margin-top:4px}' +
       '.mcc-it small{font-size:10.5px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;color:rgb(var(--c))}' +
-      '.mcc-it.puesto{box-shadow:0 0 0 3px #C6E000,0 0 22px rgba(198,224,0,.35)}' +
+      '.mcc-it.mcc-on{border-color:#C6E000;box-shadow:0 0 22px rgba(198,224,0,.3)}' +
       '.mcc-dib{width:100%;aspect-ratio:1;display:grid;place-items:center}' +
       '.mcc-dib img,.mcc-dib>svg{width:100%;height:100%;object-fit:contain;display:block}' +
       '.mcc-it.lock .mcc-dib{filter:grayscale(1) brightness(.4)}' +
@@ -251,6 +306,19 @@
       '.mcc-etq{position:absolute;left:8px;top:8px;z-index:2;font-size:10.5px;font-weight:1000;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:8px;background:#C6E000;color:#1a1f00}' +
       '.mcc-etq.nuevo{background:#FF4B4B;color:#fff;animation:mccLate 1.4s ease-in-out infinite}' +
       '.mcc-cinta{position:absolute;right:-32px;top:13px;z-index:2;transform:rotate(40deg);background:rgb(var(--c));color:#fff;font-size:9px;font-weight:1000;padding:3px 32px;text-transform:uppercase;letter-spacing:.5px}' +
+      '.mcc-it .mcc-dib{flex:none}' +
+      '.mcc-pie{margin-top:auto;padding-top:8px;width:100%;height:38px;display:flex;align-items:flex-end;justify-content:center}' +
+      '.mcc-usar{display:block;width:88%;padding:6px 0 5px;border-radius:11px;font-size:12.5px;font-weight:1000;text-transform:uppercase;letter-spacing:.6px;background:#C6E000;color:#1a1f00;box-shadow:0 3px 0 #8fa300}' +
+      '.mcc-usar:hover{filter:brightness(1.08)}' +
+      '.mcc-usar.on{background:none;color:#C6E000;box-shadow:inset 0 0 0 2px #C6E000}' +
+      '.mcc-usar.gris{background:#2A2346;color:#EEEAF7;box-shadow:0 3px 0 #1a1530}' +
+      '.mcc-usar.no{background:none;color:#6F6690;box-shadow:none}' +
+      '.mcc-esc{position:relative;width:92%;aspect-ratio:1.15;border-radius:16px;overflow:hidden;display:block;background:radial-gradient(120% 90% at 50% 25%,var(--r1),var(--r2) 50%,#0b0818 92%);box-shadow:inset 0 -4px 0 rgba(0,0,0,.25)}' +
+      '.mcc-esc svg{position:absolute;left:14%;right:14%;bottom:12%;width:72%;height:24%}' +
+      '.mcc-it .mcc-esc img.mcc-esc-b,.mcc-esc img.mcc-esc-b{position:absolute;left:50%;bottom:27%;width:34%;height:auto;translate:-50% 0;object-fit:contain;filter:drop-shadow(0 3px 3px rgba(0,0,0,.35))}' +
+      '.mcc-av{width:72%;aspect-ratio:1;border-radius:22%;display:grid;place-items:center;overflow:hidden;background:radial-gradient(120% 120% at 80% 0%,var(--f1),var(--f2) 70%,#0d0820);box-shadow:inset 0 -5px 0 rgba(0,0,0,.25)}' +
+      '.mcc-av img{width:100%;height:100%;object-fit:cover;display:block}' +
+      '.mcc-av b{font:900 min(48px,12vw)/1 Nunito,sans-serif;color:#fff}' +
       '.mcc-prog{display:block;width:84%;height:6px;border-radius:9px;background:rgba(255,255,255,.1);margin-top:6px;overflow:hidden}.mcc-prog i{display:block;height:100%;background:rgb(var(--c));border-radius:9px}' +
       '.mcc-tema{position:relative;width:86%;aspect-ratio:1.25;border-radius:18px;background:linear-gradient(135deg,var(--r1),var(--r2));display:flex;flex-wrap:wrap;align-content:flex-end;justify-content:center;gap:5px;padding:10px;box-shadow:inset 0 -5px 0 rgba(0,0,0,.2)}' +
       '.mcc-tema svg{position:absolute;left:12px;top:10px;width:26px;height:30px}' +
@@ -334,7 +402,10 @@
     cargar: cargar, tiene: tiene, avance: avance, como: como, puesto: puesto, poner: poner,
     alCambiar: function (fn) { oyentes.push(fn); },
     tarjeta: tarjeta, dibujo: dibujo, buho: buhoImg, pin: pinSvg, css: css,
-    tema: function (id) { var x = POR_ID[id || puesto('racha')]; return x && x.tema || POR_ID['racha-cielo'].tema; },
+    avatar: avatarSrc, avatarHtml: avatarSvg,
+    piso: function (id) { return PISOS[id || puesto('racha')] || ''; },
+    fijarFoto: function (src, letra) { miFoto = { src: /^https:\/\//.test(src || '') ? src : '', letra: letra || '' }; },
+    tema: function (id) { var x = POR_ID[id || puesto('racha')]; return x && x.tema || POR_ID['racha-galaxia'].tema; },
     marco: function (id) { var x = POR_ID[id || puesto('marco')]; return x && x.marco !== 'none' ? x.marco : ''; },
     nuevos: nuevos, marcarVistos: marcarVistos, celebrar: celebrar,
     contar: function () { var n = 0; CATALOGO.forEach(function (x) { if (tiene(x.id)) n++; }); return { tengo: n, total: CATALOGO.length }; }

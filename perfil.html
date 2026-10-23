@@ -188,8 +188,6 @@
   .av-caja .avatar { margin-top: 0; }
   .av-caja.con-marco { padding: 5px; border-radius: 50%; background: var(--marco); box-shadow: 0 0 22px rgba(255,150,0,.25); }
   .av-caja.con-marco .avatar { border-width: 4px; }
-  .av-buho { position: absolute; right: -34px; bottom: -6px; width: 62px; height: 62px; display: grid; place-items: center; filter: drop-shadow(0 3px 6px rgba(0,0,0,.45)); text-decoration: none; }
-  .av-buho img, .av-buho svg { width: 100%; height: 100%; object-fit: contain; display: block; }
   .p-titulo { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 13px; font-weight: 1000; border-radius: 999px; padding: 4px 12px; border: 1.5px solid; text-decoration: none; }
   /* Mi colección: tus pines y un botón a la colección */
   .col-strip { display: flex; align-items: center; gap: 14px; margin-top: 18px; padding: 14px 16px; border-radius: 22px; border: 2px solid #5a3b10; border-bottom-width: 5px; background: linear-gradient(100deg, #231527, var(--surface) 70%); text-decoration: none; color: var(--text); flex-wrap: wrap; }
@@ -347,6 +345,7 @@
 <script src="assets/agenda.js"></script>
 <script src="assets/buho.js"></script>
 <script src="assets/coleccion.js"></script>
+<script src="assets/tarjeta-perfil.js"></script>
 <style id="mc-claro">
 /* Modo claro de esta página (assets/claro.css trae lo común) */
 html[data-modo="claro"] .racha-dato.on b { color: #6F8000 !important; }
@@ -373,7 +372,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
   <div class="wrap">
     <header class="top">
       <a class="logo" href="index.html" aria-label="Modo Cachimbo · Inicio"><img src="assets/img/logo-modo-cachimbo-horizontal.svg" alt="Modo Cachimbo" width="160" height="34"></a>
-      <div data-mc-auth></div>
+      <div data-mc-auth data-mc-tarjeta></div>
     </header>
 
     <div id="cargando" class="panel vacio"><p>Cargando…</p></div>
@@ -390,7 +389,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       <section class="panel perfil-top">
         <div class="banda" aria-hidden="true"></div>
         <div class="perfil-cuerpo">
-          <div class="av-caja" id="avCaja"><div class="avatar" id="avatar"></div><a class="av-buho" id="avBuho" href="coleccion.html#buho" aria-label="Cambiar mi búho" hidden></a></div>
+          <div class="av-caja" id="avCaja"><div class="avatar" id="avatar"></div></div>
           <h1 id="saludo">Hola</h1>
           <a class="p-titulo" id="pTitulo" href="coleccion.html#titulo" hidden></a>
           <div class="correo" id="correo"></div>
@@ -422,7 +421,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       <!-- Mi colección (coleccion.html): tus pines y lo que tienes -->
       <a class="col-strip" id="colStrip" href="coleccion.html">
         <span class="pins" id="colPins"></span>
-        <span class="tx"><b>Mi colección <small id="colN" style="color:var(--accent);font-weight:1000"></small></b><span>Búhos, temas de racha, marcos, títulos y pines.</span></span>
+        <span class="tx"><b>Mi colección <small id="colN" style="color:var(--accent);font-weight:1000"></small></b><span>Búhos, fotos de perfil, fondos, marcos, títulos y pines.</span></span>
         <span class="ir">Ver colección ›</span>
       </a>
 
@@ -673,6 +672,8 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       var img = document.createElement('img'); img.alt = ''; img.referrerPolicy = 'no-referrer'; img.src = foto;
       av.appendChild(img);
     } else av.textContent = nombre.charAt(0).toUpperCase();
+    av.setAttribute('data-orig', av.innerHTML);
+    if (window.MCColeccion) pintarColeccion();
     pintarChips(p);
     cuentaRegresiva();
   }
@@ -1044,14 +1045,17 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
     var t = MCColeccion.tema(), card = $('racha');
     ['--rc1', '--rc2', '--rcb', '--rcd'].forEach(function (v, i) { card.style.setProperty(v, t[i]); });
   }
-  // Mi colección (assets/coleccion.js): marco, búho y título que llevas, y tus pines
+  // Mi colección (assets/coleccion.js): marco y título que llevas, y tus pines (el búho sale en el inicio)
   function pintarColeccion() {
     var C = window.MCColeccion; if (!C) return;
-    var marco = C.marco(), caja = $('avCaja');
+    var marco = C.marco(), caja = $('avCaja'), av = $('avatar');
+    // Foto de perfil: el búho (o un disfraz) sobre tu fondo; «Mi foto» deja tu foto o inicial
+    if (av.getAttribute('data-orig') == null && av.innerHTML) av.setAttribute('data-orig', av.innerHTML);
+    var src = C.avatar(), t = C.tema();
+    if (src) { av.innerHTML = '<img src="' + src + '" alt="">'; av.style.background = 'radial-gradient(120% 120% at 80% 0%,' + t[0] + ',' + t[3] + ' 70%,#0d0820)'; }
+    else if (av.getAttribute('data-orig') != null) { av.innerHTML = av.getAttribute('data-orig'); av.style.background = ''; }
     caja.classList.toggle('con-marco', !!marco);
     caja.style.setProperty('--marco', marco || 'none');
-    var b = C.item(C.puesto('buho')), av = $('avBuho');
-    av.innerHTML = C.buho(b); av.hidden = false; av.title = 'Búho ' + b.nom;
     var t = C.item(C.puesto('titulo')), c = C.rareza[t.rareza].c, pt = $('pTitulo');
     pt.textContent = '★ ' + t.nom; pt.hidden = false;
     pt.style.color = 'rgb(' + c + ')'; pt.style.borderColor = 'rgba(' + c + ',.5)'; pt.style.background = 'rgba(' + c + ',.1)';

@@ -2,8 +2,9 @@
    Modo Cachimbo · Inicio (index.html)
    - Bienvenida sin sesión, código al primer ingreso y regreso a la página pedida.
    - Barra de arriba: corazones, racha y XP (corazones.js y racha.js) y la
-     tarjeta del perfil con su rango de la semana (rango.js).
-   - Escena del búho (assets/buho/buho-vivo.js): saluda, recuerda la meta del
+     tarjeta del perfil (tarjeta-perfil.js).
+   - Escena del búho (assets/buho/buho-vivo.js), el que llevas puesto en Mi
+     colección (assets/coleccion.js): saluda, recuerda la meta del
      día, las fechas de la agenda y el evento de la temática.
    - Cursos populares (cursos_populares), Top de la semana (ranking_xp) y
      Top simulacro (ranking_simulacro).
@@ -149,32 +150,9 @@
     avisos();
   }
 
-  /* ---------- Tarjeta del perfil: se arma sobre el botón de la cuenta (assets/auth.js) ---------- */
+  /* ---------- Barra de la cuenta: la tarjeta del perfil la arma assets/tarjeta-perfil.js ---------- */
   var miXp = null;
-  function rangoHtml(xp) {
-    if (!window.MCRango || xp == null) return '';
-    var n = MCRango.nivel(xp);
-    return n < 0 ? 'Sin rango' : '<i>' + MCRango.svg(n, { mini: true, quieto: true }) + '</i>' + esc(MCRango.nombre(n));
-  }
   function arreglarCuenta() {
-    Array.prototype.forEach.call(document.querySelectorAll('.cab .mcu-chip'), function (chip) {
-      if (!chip.querySelector('.pf-tx')) {
-        chip.classList.add('perfil');
-        var av = chip.querySelector('.mcu-av'), nom = chip.querySelector('.mcu-nom');
-        var marco = document.createElement('span'); marco.className = 'marco';
-        if (av) { chip.insertBefore(marco, av); marco.appendChild(av); }
-        var tx = document.createElement('span'); tx.className = 'pf-tx';
-        if (nom) tx.appendChild(nom);
-        var rg = document.createElement('small'); rg.className = 'pf-rg';
-        tx.appendChild(rg); chip.appendChild(tx);
-      }
-      var r = chip.querySelector('.pf-rg'), n = miXp == null || !window.MCRango ? -1 : MCRango.nivel(miXp);
-      // Solo si cambió: el observador vuelve a llamar aquí con cada cambio
-      // (el emblema trae ids nuevos cada vez, por eso se compara el nivel)
-      var k = miXp == null ? 'x' : String(n), c = n < 0 ? '#cfc8e6' : RC[n];
-      if (r.getAttribute('data-n') !== k) { r.setAttribute('data-n', k); r.innerHTML = rangoHtml(miXp); }
-      if (r.style.getPropertyValue('--rc') !== c) r.style.setProperty('--rc', c);
-    });
     // En celular el cambio de modo va en el menú de la cuenta
     Array.prototype.forEach.call(document.querySelectorAll('.cab .mcu-menu'), function (menu) {
       if (menu.querySelector('.mcu-modo')) return;
@@ -271,10 +249,49 @@
   }
   function callar() { clearTimeout(tGlobo); globo.classList.remove('ver'); }
   globo.addEventListener('click', callar);
+  // El búho que llevas puesto en Mi colección: el clásico es el animado por capas y
+  // los disfraces de área salen con sus caras (assets/buho/disfraces)
+  function disfraz() {
+    var C = window.MCColeccion, b = C && C.item(C.puesto('buho'));
+    return b && b.img ? b.img : null;
+  }
+  function crearBuho(p) {
+    var ar = disfraz();
+    if (!ar) return MCBuhoVivo.crear(p);
+    var i = new Image();
+    i.className = 'mcb mcb-disfraz' + (p === 'enojado' ? ' molesto' : '');
+    i.src = 'assets/buho/disfraces/' + ar + '-' + (p === 'enojado' ? 'triste' : p === 'logro' ? 'asombrado' : 'feliz') + '.webp';
+    i.alt = 'Tu búho de Modo Cachimbo'; i.draggable = false;
+    return i;
+  }
   MCBuhoVivo.toques($('buho'), {
-    pose: 'vivo',
+    pose: 'vivo', crear: crearBuho,
     decir: function (t, tono, ms) { decir({ t: t, tipo: tono }, ms, true); },
     alTocar: function () { decir(frasesToque()[toqueN++ % frasesToque().length], 4500); }
+  });
+  var buhoPuesto = disfraz();
+  // El fondo que llevas puesto pinta todo el escenario (Galaxia es el de siempre, con su modo claro)
+  function pintarEscenario() {
+    var C = window.MCColeccion, e = $('escena'); if (!C || !e) return;
+    var id = C.puesto('racha'), t = C.tema(id), v = ['--esc-cielo', '--plat-a', '--plat-b', '--esc-foco'];
+    // El piso va con el fondo: Galaxia trae el de siempre (con su modo claro), los demás su propia superficie
+    var plat = e.querySelector('.plat');
+    if (plat.getAttribute('data-fondo') !== id) {
+      plat.setAttribute('data-fondo', id);
+      plat.innerHTML = id === 'racha-galaxia' ? '<i></i><i></i><i></i>' : C.piso(id);
+    }
+    if (id === 'racha-galaxia') { v.forEach(function (k) { e.style.removeProperty(k); }); return; }
+    e.style.setProperty('--esc-cielo', 'radial-gradient(120% 85% at 50% 30%, ' + t[0] + ' 0%, ' + t[3] + ' 42%, #0b0818 85%)');
+    e.style.setProperty('--plat-a', t[0]); e.style.setProperty('--plat-b', t[3]);
+    e.style.setProperty('--esc-foco', 'rgba(255, 255, 255, .12)');
+  }
+  pintarEscenario();
+  if (window.MCColeccion) MCColeccion.alCambiar(pintarEscenario);
+  if (window.MCColeccion) MCColeccion.alCambiar(function () {
+    var ar = disfraz(); if (ar === buhoPuesto) return;
+    buhoPuesto = ar;
+    var v = $('buho').querySelector('.mcb'); if (v) v.remove();
+    $('buho').append(crearBuho('vivo'));
   });
   function saludo() {
     var h = new Date().getHours(), s = h < 12 ? '¡Buenos días' : h < 19 ? '¡Buenas tardes' : '¡Buenas noches';
@@ -409,7 +426,24 @@
   }
   function puesto(p) { return p === 1 ? copa() : p <= 3 ? medalla(p) : '<span class="num">' + p + '</span>'; }
   function inicial(nom) { return esc((String(nom || '?').trim()[0] || '?').toUpperCase()); }
-  function foto(x) { return '<span class="letra" style="background:' + AV[(x.puesto - 1) % AV.length] + '">' + inicial(x.apodo) + '</span>'; }
+  // Foto (o inicial) con el marco y el fondo que cada alumno lleva en Mi colección
+  // (supabase/32-tops-perfil.sql). Tu fila usa lo tuyo aunque ese SQL aún no corra.
+  function foto(x) {
+    var C = window.MCColeccion, marco = '', tema = null, img = x.foto;
+    if (C && x.yo) {
+      marco = C.marco(); tema = C.tema();
+      var mia = document.querySelector('[data-mc-tarjeta] .mcu-av img'); if (mia) img = mia.src;
+    } else if (C && 'avatar' in x) {
+      // Sin nada puesto lleva lo predeterminado: la cara del búho sobre Galaxia
+      var ma = x.marco && C.item(x.marco), fo = x.fondo && C.item(x.fondo), at = C.item(x.avatar) || C.item(C.defecto.avatar);
+      if (ma) marco = C.marco(x.marco);
+      tema = C.tema(fo ? x.fondo : C.defecto.racha);
+      if (at.av) img = C.avatar(at.id);
+    }
+    var dentro = /^https:\/\//.test(img || '') || /assets\/buho\/avatar\//.test(img || '') ? '<img src="' + esc(img) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : inicial(x.apodo);
+    var fondo = tema ? 'linear-gradient(135deg,' + tema[0] + ',' + tema[3] + ')' : AV[(x.puesto - 1) % AV.length];
+    return '<span class="letra' + (marco ? ' con-m' : '') + (tema ? ' con-f' : '') + '" style="' + (marco ? '--m:' + marco + ';' : '') + '--lf:' + fondo + '"><span>' + dentro + '</span></span>';
+  }
   function emblema(xp) {
     if (xp == null || !window.MCRango) return '<span class="em"></span>';
     var n = MCRango.nivel(xp);
@@ -420,7 +454,7 @@
   var CLS = ['', 'oro', 'plata', 'bronce'];
   function filaXp(x, extra) {
     var nom = x.yo ? 'Tú' : (x.apodo || 'Cachimbo');
-    return '<li class="' + (CLS[x.puesto] || '') + (x.yo ? ' tu' : '') + (extra ? ' extra' : '') + '"><span class="pos">' + puesto(x.puesto) + '</span>' + foto({ puesto: x.puesto, apodo: x.yo ? (nombreAlumno || x.apodo) : x.apodo }) +
+    return '<li class="' + (CLS[x.puesto] || '') + (x.yo ? ' tu' : '') + (extra ? ' extra' : '') + '"><span class="pos">' + puesto(x.puesto) + '</span>' + foto(x.yo ? { puesto: x.puesto, apodo: nombreAlumno || x.apodo, yo: true } : x) +
       '<span class="quien"><b>' + esc(nom) + '</b></span>' + emblema(x.xp) + '<span class="xp">' + miles(x.xp) + ' <small>XP</small></span></li>';
   }
   // corto: solo el podio y tu fila a la vista; el resto se abre con "Ver top 10"
@@ -435,13 +469,30 @@
     var abierta = $('topCel').classList.toggle('abierta');
     this.textContent = abierta ? 'Ver menos ▴' : 'Ver top 10 ▾';
   });
+  // Tu fila de los tops usa la foto de tu tarjeta: se vuelven a dibujar cuando cambia
+  var ultTop = null, ultSim = null, tuFoto = '';
+  function repintarTops() {
+    var i = document.querySelector('[data-mc-tarjeta] .mcu-av img'), f = (i ? i.src : '') + '|' + (window.MCColeccion ? MCColeccion.marco() + MCColeccion.tema()[0] : '');
+    if (f === tuFoto) return;
+    tuFoto = f;
+    if (ultTop) pintarTop(ultTop);
+    if (ultSim) pintarSim(ultSim);
+  }
+  new MutationObserver(repintarTops).observe(cuenta, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-a'] });
+  if (window.MCColeccion) MCColeccion.alCambiar(repintarTops);
+  function pintarTop(d) {
+    ultTop = d;
+    var top = (d.top || []).slice().sort(function (a, b) { return a.puesto - b.puesto; });
+    $('topLado').innerHTML = listaXp(top, d.yo, 10);
+    var abierta = $('topCel').classList.contains('abierta');
+    $('topCel').innerHTML = listaXp(top, d.yo, 10, true);
+    $('topMas').hidden = !$('topCel').querySelector('.extra');
+    if (abierta) $('topCel').classList.add('abierta');
+  }
   function cargarTop() {
     MCAuth.listo.then(function (c) { return c.rpc('ranking_xp'); }).then(function (r) {
       if (r.error) throw r.error;
-      var d = r.data || {}, top = (d.top || []).slice().sort(function (a, b) { return a.puesto - b.puesto; });
-      $('topLado').innerHTML = listaXp(top, d.yo, 10);
-      $('topCel').innerHTML = listaXp(top, d.yo, 10, true);
-      $('topMas').hidden = !$('topCel').querySelector('.extra');
+      pintarTop(r.data || {});
     }).catch(function () {
       $('topLado').innerHTML = $('topCel').innerHTML = '<li class="vacio">No se pudo cargar el top. Revisa tu conexión.</li>';
     });
@@ -459,6 +510,7 @@
       emblema(x.xp) + '<b>' + dec(x.puntaje) + ' pts</b></li>';
   }
   function pintarSim(filas) {
+    ultSim = filas;
     filas = (filas || []).slice().sort(function (a, b) { return a.puesto - b.puesto; });
     var top = filas.filter(function (x) { return x.puesto <= 10; }), yo = filas.filter(function (x) { return x.yo; })[0];
     var podio = $('podio'), lista = $('simLista'), mas = $('simMas');
@@ -468,7 +520,7 @@
     }
     podio.innerHTML = '<div class="foco" aria-hidden="true"></div>' + [2, 1, 3].map(function (p) {
       var x = top.filter(function (t) { return t.puesto === p; })[0];
-      if (!x) return '<div class="lugar l' + p + ' vacio"><span class="aro"><span class="letra" style="background:var(--tarjeta2);color:var(--suave)">?</span></span><b>Libre</b><span class="pts">—</span><span class="bloque"><i class="cara"></i><span class="frente">' + p + '</span></span></div>';
+      if (!x) return '<div class="lugar l' + p + ' vacio"><span class="aro"><span class="letra" style="--lf:var(--tarjeta2);color:var(--suave)"><span>?</span></span></span><b>Libre</b><span class="pts">—</span><span class="bloque"><i class="cara"></i><span class="frente">' + p + '</span></span></div>';
       return '<div class="lugar l' + p + '">' + (p === 1 ? CORONA : '') + '<span class="aro">' + foto(x) + '</span><b>' + esc(x.yo ? 'Tú' : x.apodo) + '</b>' + rangoSim(x.xp) +
         '<span class="pts">' + dec(x.puntaje) + ' pts</span><span class="bloque"><i class="cara"></i><span class="frente">' + p + '</span></span></div>';
     }).join('');
