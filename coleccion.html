@@ -57,9 +57,27 @@
   .puesto { position: relative; overflow: hidden; text-align: center; padding: 16px; border-radius: 22px; border: 2px solid #5a3b10; border-bottom-width: 5px;
     background: radial-gradient(circle at 50% 34%, rgba(255,150,0,.24), transparent 62%), var(--surface); animation: entra .5s ease-out both; }
   .puesto .k { font-size: 12px; color: var(--text-dim); font-weight: 1000; text-transform: uppercase; letter-spacing: 1.5px; }
-  .p-buho { width: 190px; height: 190px; margin: 4px auto 0; display: grid; place-items: center; animation: flota 3.2s ease-in-out infinite; }
-  .p-buho img, .p-buho svg { width: 100%; height: 100%; object-fit: contain; }
-  .p-buho .mcb, .mcc-dib .mcb, .slot .v .mcb { width: 78%; height: auto; }
+  .p-tarj { justify-content: center; margin: 10px 0 10px; pointer-events: none; }
+  .p-tarj .mcu-chip { transform: scale(.92); }
+  .p-esc { position: relative; aspect-ratio: 1.05; border-radius: 18px; overflow: hidden; isolation: isolate; border: 1px solid var(--borde);
+    background: var(--esc, radial-gradient(120% 85% at 50% 30%, #3a1f73 0%, #22124a 38%, #110b26 78%)); }
+  .p-esc::before { content: ""; position: absolute; left: 28%; right: 28%; top: 0; bottom: 18%; z-index: -1; background: linear-gradient(to bottom, rgba(255,236,190,.16), transparent); clip-path: polygon(38% 0, 62% 0, 100% 100%, 0 100%); }
+  .p-piso { position: absolute; left: 24%; right: 24%; bottom: 12%; height: 13%; z-index: -1; }
+  .p-piso svg { position: absolute; inset: -6% -4%; width: 108%; height: 112%; overflow: visible; filter: drop-shadow(0 8px 10px rgba(0,0,0,.35)); }
+  .p-buho { position: absolute; left: 50%; bottom: 19%; width: 46%; translate: -50% 0; }
+  .p-buho .mcb { width: 100%; translate: 0 var(--drop); }
+  .p-buho > img { display: block; width: 118%; margin-left: -9%; height: auto; translate: 0 6%; filter: drop-shadow(0 6px 5px rgba(0,0,0,.4)); animation: flota 3.2s ease-in-out infinite; }
+  .puesto.probando { border-color: var(--accent); }
+  .p-prueba { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: space-between; margin-top: 12px; padding: 10px 12px; border-radius: 14px; background: rgba(198,224,0,.08); border: 1.5px solid rgba(198,224,0,.45); text-align: left; animation: entra .3s ease-out both; }
+  .p-prueba .pp-t { font-size: 14px; color: var(--text); min-width: 0; }
+  .p-prueba .pp-t b { color: var(--accent); }
+  .p-prueba .pp-t small { display: block; color: var(--text-dim); font-size: 12px; margin-top: 2px; font-weight: 700; }
+  .p-prueba .pp-b { display: flex; gap: 6px; }
+  .p-prueba .btn { padding: 8px 14px; font-size: 12.5px; border-bottom-width: 4px; }
+  .slot.prueba { border-color: var(--accent); }
+  .p-reset { display: block; margin: 12px auto 0; background: none; border: 0; color: var(--text-dim); font: 800 13px Nunito, sans-serif; text-decoration: underline; cursor: pointer; }
+  .p-reset:hover { color: var(--accent); }
+  .mcc-dib .mcb, .slot .v .mcb { width: 78%; height: auto; }
   .p-buho .mcb img, .mcc-dib .mcb img, .slot .v .mcb img { width: auto; height: auto; object-fit: initial; }
   .p-buho.pop { animation: pop .5s cubic-bezier(.2,1.6,.4,1); }
   .p-nom { font: italic 900 28px/1 var(--display); text-transform: uppercase; margin-top: 2px; }
@@ -159,10 +177,14 @@
       <div class="vault">
         <section class="puesto" id="puesto" aria-label="Lo que llevas puesto">
           <span class="k">Lo que llevas puesto</span>
-          <div class="p-buho" id="pBuho"></div>
+          <!-- Así se ve en tu inicio: tu tarjeta de perfil y tu búho en su escenario -->
+          <div class="p-tarj" data-mc-tarjeta id="pTarj" aria-hidden="true"></div>
+          <div class="p-esc" id="pEsc"><div class="p-piso" id="pPiso"></div><div class="p-buho" id="pBuho"></div></div>
           <span class="p-tit" id="pTit"></span>
+          <div class="p-prueba" id="pPrueba" role="status" hidden></div>
           <div class="slots" id="slots"></div>
           <div class="vit" id="pVit" aria-label="Mi vitrina de pines"></div>
+          <button type="button" class="p-reset" id="pReset" hidden>Volver a lo predeterminado</button>
         </section>
 
         <div>
@@ -189,7 +211,7 @@
   var C = window.MCColeccion, R = C.rareza;
   var TAB = (location.hash || '').slice(1) || 'buho', FIL = 'todos';
   var INTRO = {
-    buho: 'El búho que sale en tu inicio. Los disfraces de cada área también salen en sus cursos.',
+    buho: 'El búho que sale en tu inicio. Toca uno para probarlo y dale «Usar» si te gusta.',
     avatar: 'Tu foto de perfil: sale en tu tarjeta de arriba, en tu perfil y en los tops.',
     escena: 'Donde se para tu búho en el inicio: cada escenario trae su cielo y su piso. Galaxia es el de siempre.',
     racha: 'El fondo de tu tarjeta de perfil (arriba, junto a tu nombre) y de tu cuadro de racha. Galaxia es el de siempre.',
@@ -207,24 +229,36 @@
   }
 
   /* ---------- Lo que llevas puesto ---------- */
+  // Vista previa: lo que tocas en la grilla se prueba aquí y solo se guarda con «Usar»
+  var PREV = null;
+  function P(e) { return PREV && PREV.espacio === e ? PREV.id : C.puesto(e); }
   function pintarPuesto(pop) {
-    var b = C.item(C.puesto('buho')), t = C.item(C.puesto('titulo')), tr = R[t.rareza];
+    var b = C.item(P('buho')), t = C.item(P('titulo')), tr = R[t.rareza];
     var pb = $('pBuho');
     pb.innerHTML = C.buho(b);
+    // El escenario: su cielo y su piso, como en el inicio
+    var eid = P('escena'), et = C.escena(eid);
+    if (eid === 'escena-galaxia') $('pEsc').style.removeProperty('--esc');
+    else $('pEsc').style.setProperty('--esc', 'radial-gradient(120% 85% at 50% 30%, ' + et[0] + ' 0%, ' + et[3] + ' 42%, #0b0818 85%)');
+    $('pPiso').innerHTML = C.piso(eid);
+    pintarTarjeta();
+    pintarPrueba();
+    // ¿Llevas algo distinto a lo de siempre?
+    $('pReset').hidden = !!PREV || !['buho', 'avatar', 'escena', 'racha', 'marco', 'titulo'].some(function (e) { return C.puesto(e) !== C.defecto[e]; });
     if (pop) { pb.classList.remove('pop'); void pb.offsetWidth; pb.classList.add('pop'); }
     var pt = $('pTit'); pt.textContent = '★ ' + t.nom;
     pt.style.setProperty('--cr', tr.c); pt.style.color = 'rgb(' + tr.c + ')';
-    var tema = C.tema(), marco = C.marco();
+    var tema = C.tema(P('racha')), marco = C.marco(P('marco')), av = C.item(P('avatar')), es = C.escena(P('escena'));
     var slots = [
       ['buho', b.nom, 'Búho', '<span style="width:34px;height:34px;display:block">' + C.buho(b) + '</span>'],
-      ['avatar', C.item(C.puesto('avatar')).nom, 'Perfil', '<span style="width:34px;height:34px;display:block">' + C.avatarHtml(C.item(C.puesto('avatar')), C.item(C.puesto('avatar')).av ? '' : miFoto(), miLetra()) + '</span>'],
-      ['escena', C.item(C.puesto('escena')).nom, 'Escenario', '<span class="mini-tema" style="display:block;background:radial-gradient(120% 90% at 50% 20%,' + C.escena()[0] + ',' + C.escena()[3] + ')"></span>'],
-      ['racha', C.item(C.puesto('racha')).nom, 'Fondo', '<span class="mini-tema" style="display:block;background:linear-gradient(135deg,' + tema[0] + ',' + tema[1] + ')"></span>'],
-      ['marco', C.item(C.puesto('marco')).nom, 'Marco', '<span class="mini-marco" style="display:block;background:' + (marco || '#2A2346') + '"><i></i></span>'],
+      ['avatar', av.nom, 'Perfil', '<span style="width:34px;height:34px;display:block">' + C.avatarHtml(av, av.av ? '' : miFoto(), miLetra()) + '</span>'],
+      ['escena', C.item(P('escena')).nom, 'Escenario', '<span class="mini-tema" style="display:block;background:radial-gradient(120% 90% at 50% 20%,' + es[0] + ',' + es[3] + ')"></span>'],
+      ['racha', C.item(P('racha')).nom, 'Fondo', '<span class="mini-tema" style="display:block;background:linear-gradient(135deg,' + tema[0] + ',' + tema[1] + ')"></span>'],
+      ['marco', C.item(P('marco')).nom, 'Marco', '<span class="mini-marco" style="display:block;background:' + (marco || '#2A2346') + '"><i></i></span>'],
       ['titulo', t.nom, 'Título', '<span style="font-size:22px;color:rgb(' + tr.c + ')">★</span>']
     ];
     $('slots').innerHTML = slots.map(function (s) {
-      return '<button type="button" class="slot" data-tab="' + s[0] + '"><span class="v">' + s[3] + '</span><b>' + esc(s[1]) + '</b>' + s[2] + '</button>';
+      return '<button type="button" class="slot' + (PREV && PREV.espacio === s[0] ? ' prueba' : '') + '" data-tab="' + s[0] + '"><span class="v">' + s[3] + '</span><b>' + esc(s[1]) + '</b>' + s[2] + '</button>';
     }).join('');
     var pines = C.puesto('pines'), h = '';
     for (var i = 0; i < 3; i++) h += pines[i] ? C.pin(C.item(pines[i])) : '<span class="hueco" title="Espacio libre para un pin"></span>';
@@ -235,6 +269,53 @@
   }
   $('slots').addEventListener('click', function (e) { var b = e.target.closest('[data-tab]'); if (b) elegirTab(b.dataset.tab); });
   $('pVit').addEventListener('click', function () { elegirTab('pines'); });
+
+  // Tu tarjeta de perfil como la de arriba (assets/tarjeta-perfil.js), con lo que estás probando
+  function pintarTarjeta() {
+    var c = document.querySelector('header [data-mc-auth] .mcu-chip.mct');
+    var nom = c && c.querySelector('.mcu-nom') ? c.querySelector('.mcu-nom').textContent : '';
+    var rg = c && c.querySelector('.mct-rg'), t = C.tema(P('racha')), m = C.marco(P('marco')), src = C.avatar(P('avatar')) || miFoto();
+    var h = '<div class="mcu-chip mct" style="--f1:' + t[0] + ';--f2:' + t[3] + '">' +
+      '<span class="mct-marco' + (m ? ' con' : '') + '"' + (m ? ' style="--m:' + m + '"' : '') + '>' +
+      '<span class="mcu-av' + (C.avatar(P('avatar')) ? ' mct-buho' : '') + '" style="--f1:' + t[0] + ';--f2:' + t[3] + '">' + (src ? '<img src="' + esc(src) + '" alt="">' : esc(miLetra())) + '</span></span>' +
+      '<span class="mct-tx"><span class="mcu-nom">' + esc(nom) + '</span><small class="mct-rg"' + (rg ? ' style="' + esc(rg.getAttribute('style') || '') + '"' : '') + '>' + (rg ? rg.innerHTML : '') + '</small></span></div>';
+    if ($('pTarj').innerHTML !== h) $('pTarj').innerHTML = h;
+  }
+  new MutationObserver(function () { setTimeout(pintarTarjeta, 0); }).observe(document.querySelector('header [data-mc-auth]'), { childList: true, subtree: true, attributes: true });
+  // La barra de «Probando…»: Usar lo guarda, Quitar vuelve a lo que llevas
+  function pintarPrueba() {
+    var bar = $('pPrueba');
+    if (!PREV) { bar.hidden = true; $('puesto').classList.remove('probando'); return; }
+    var x = C.item(PREV.id), ok = C.tiene(x.id);
+    $('puesto').classList.add('probando');
+    bar.hidden = false;
+    bar.innerHTML = '<span class="pp-t">Probando <b>' + esc(x.nom) + '</b>' + (ok ? '' : '<small>' + esc(C.como(x)) + '</small>') + '</span>' +
+      '<span class="pp-b">' + (ok ? '<button type="button" class="btn" data-p="usar">Usar</button>' : '<button type="button" class="btn gris" data-p="ver">Cómo se consigue</button>') +
+      '<button type="button" class="btn gris" data-p="quitar">Quitar</button></span>';
+  }
+  $('pPrueba').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-p]'); if (!b || !PREV) return;
+    var id = PREV.id;
+    if (b.dataset.p === 'usar') { PREV = null; usar(id); }
+    else if (b.dataset.p === 'ver') abrir(id);
+    else { PREV = null; todo(false); }
+  });
+  function probar(id) {
+    var x = C.item(id);
+    if (x.espacio === 'pines' || C.puesto(x.espacio) === id) { PREV = null; abrir(id); return; }
+    PREV = { espacio: x.espacio, id: id };
+    C.marcarVistos([id]);
+    todo(x.espacio === 'buho');
+    if (innerWidth < 900) $('puesto').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // Volver a lo de siempre: búho clásico, foto de búho, Galaxia, sin marco y el título de siempre
+  $('pReset').addEventListener('click', function () {
+    var b = this; b.disabled = true;
+    ['buho', 'avatar', 'escena', 'racha', 'marco', 'titulo'].filter(function (e) { return C.puesto(e) !== C.defecto[e]; })
+      .reduce(function (p, e) { return p.then(function () { return C.poner(e, C.defecto[e]); }); }, Promise.resolve())
+      .then(function () { b.disabled = false; todo(true); }, function () { b.disabled = false; todo(false); });
+  });
 
   /* ---------- Pestañas ---------- */
   function pintarTabs() {
@@ -292,14 +373,14 @@
   $('grid').addEventListener('click', function (e) {
     var b = e.target.closest('.mcc-it');
     if (b && e.target.closest('[data-usar]')) { usar(b.dataset.id); return; }
-    if (b) { abrir(b.dataset.id); return; }
+    if (b) { probar(b.dataset.id); return; }
     var r = e.target.closest('button.mc-rgo-pz');
     if (r && rangosHtml && MCRango.semanas) MCRango.semanas(+r.dataset.n, rangosHtml.semanas[+r.dataset.n]);
   });
 
   // Botón «Usar» de cada cuadro: se lo pone sin abrir el detalle
   function usar(id) {
-    var x = C.item(id);
+    var x = C.item(id); PREV = null;
     C.poner(x.espacio, id).then(function () {
       if (window.MCSonido && MCSonido.bien) try { MCSonido.bien(); } catch (e) {}
       C.marcarVistos([id]); todo(x.espacio === 'buho');
