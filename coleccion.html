@@ -53,7 +53,6 @@
   .cab h1 { flex: 1; display: flex; align-items: center; gap: 18px; min-width: 0; font: italic 900 46px/1 var(--display); text-transform: uppercase; letter-spacing: .01em; color: var(--accent); padding: 10px 0 6px; }
   .cab h1::after { content: ""; flex: 1; height: 2px; background: linear-gradient(90deg, rgba(198,224,0,.45), rgba(198,224,0,0)); }
   @media (max-width: 700px) { .cab h1 { font-size: 40px; } }
-  .cuenta { margin-left: 4px; background: var(--surface); border: 2px solid var(--borde); border-radius: 14px; padding: 7px 13px; font-weight: 1000; color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
   .vault { display: grid; gap: 16px; }
   .vault > div { min-width: 0; }
@@ -171,8 +170,8 @@
 <script src="assets/auth.js"></script>
 <script src="assets/buho.js"></script>
 <script src="assets/rango.js"></script>
-<script src="assets/coleccion.js"></script>
-<script src="assets/tarjeta-perfil.js"></script>
+<script src="assets/coleccion.js?v=155"></script>
+<script src="assets/tarjeta-perfil.js?v=155"></script>
 <script src="assets/buho/buho-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
 </head>
@@ -191,7 +190,7 @@
     </div>
 
     <div id="conSesion" hidden>
-      <div class="cab"><a class="c-volver" href="index.html" aria-label="Volver al inicio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Inicio</span></a><h1>Mi colección</h1><span class="cuenta" id="cuenta">–</span></div>
+      <div class="cab"><a class="c-volver" href="index.html" aria-label="Volver al inicio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Inicio</span></a><h1>Mi colección</h1></div>
 
       <div class="vault">
         <section class="puesto" id="puesto" aria-label="Lo que llevas puesto">
@@ -291,8 +290,6 @@
     var pines = C.puesto('pines'), h = '';
     for (var i = 0; i < 3; i++) h += pines[i] ? C.pin(C.item(pines[i])) : '<span class="hueco" title="Espacio libre para un pin"></span>';
     $('pVit').innerHTML = h;
-    var n = C.contar();
-    $('cuenta').textContent = n.tengo + ' / ' + n.total;
   }
   $('slots').addEventListener('click', function (e) { var b = e.target.closest('[data-tab]'); if (b) elegirTab(b.dataset.tab); });
   $('pVit').addEventListener('click', function () { elegirTab('pines'); });
