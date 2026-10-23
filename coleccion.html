@@ -76,7 +76,7 @@
   .p-racha { --rc1: #5b34b8; --rc2: #241452; --rcb: #3a2380; --rcd: #1a0f40; position: relative; overflow: hidden; display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 10px 14px; border-radius: 16px; color: #fff; text-align: left; background: linear-gradient(135deg, var(--rc1), var(--rc2)); border: 2px solid var(--rcb); border-bottom: 5px solid var(--rcd); transition: background .4s, border-color .4s; }
   .p-racha::before { content: ''; position: absolute; right: -30px; top: -30px; width: 110px; height: 110px; border-radius: 50%; background: radial-gradient(rgba(255,255,255,.16), transparent 70%); pointer-events: none; }
   .pr-fuego svg { width: 28px; height: 32px; display: block; filter: drop-shadow(0 2px 0 rgba(0,0,0,.25)); }
-  .pr-fuego .f1 { fill: #FF9600; } .pr-fuego .f2 { fill: #FFD84D; }
+  .pr-fuego .f1 { fill: var(--fl1, #FF9600); } .pr-fuego .f2 { fill: var(--fl2, #FFD84D); }
   .pr-n { display: grid; line-height: 1; }
   .pr-n b { font: 900 26px/1 var(--display); }
   .pr-n small { font-size: 11px; font-weight: 800; opacity: .85; margin-top: 2px; }
@@ -100,6 +100,10 @@
   .p-tit { display: inline-flex; gap: 6px; align-items: center; margin-top: 8px; font-size: 13px; font-weight: 1000; color: var(--c, #FFC800); background: rgba(var(--cr, '255,200,0'), .1); border: 1.5px solid rgba(var(--cr), .5); border-radius: 999px; padding: 4px 11px; }
   .slots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
   .slot .mcc-av { width: 34px; border-radius: 9px; box-shadow: none; }
+  /* El título va solo en su fila: el ícono a la izquierda y el nombre al lado */
+  .slot[data-tab="titulo"] { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; padding: 8px 14px; text-align: left; }
+  .slot[data-tab="titulo"] .v { margin: 0; flex: none; }
+  .slot[data-tab="titulo"] b { flex: 1; font-size: 13px; }
   .slot .mcc-av b { font-size: 16px; }
   .slot { background: var(--surface-2); border: 2px solid var(--borde); border-bottom-width: 4px; border-radius: 14px; padding: 8px 4px 7px; font-size: 11px; color: var(--text-dim); cursor: pointer; font-family: inherit; font-weight: 800; min-width: 0; }
   .slot .v { height: 34px; display: grid; place-items: center; margin-bottom: 3px; }
@@ -195,7 +199,7 @@
           <!-- Así se ve en tu inicio: tu tarjeta de perfil y tu búho en su escenario -->
           <div class="p-tarj" data-mc-tarjeta id="pTarj" aria-hidden="true"></div>
           <div class="p-esc" id="pEsc"><div class="p-piso" id="pPiso"></div><div class="p-buho" id="pBuho"></div></div>
-          <!-- Tu cuadro de racha (en tu perfil) con el fondo que llevas o pruebas -->
+          <!-- Tu cuadro de racha (en tu perfil) con el skin que llevas o pruebas -->
           <div class="p-racha" id="pRacha" aria-hidden="true">
             <span class="pr-fuego"><svg viewBox="0 0 32 36"><path class="f1" d="M16 1.5c1.2 4.6 7.6 8.2 9.6 13.6 2.6 7-1.6 17.4-9.6 17.4S3.8 24.9 6.1 17.6c1-3.2 3.3-5.3 4.9-6.9.2 2.8 1.4 4.6 3 5.2C13.3 10.6 14 6 16 1.5z"/><path class="f2" d="M16.3 15.5c.6 2.4 4.5 4.4 4.5 8.6a4.8 4.8 0 0 1-9.6 0c0-2 1-3.4 2.1-4.4.2 1.4.8 2.3 1.6 2.6-.4-2.4 0-4.6 1.4-6.8z"/></svg></span>
             <span class="pr-n"><b id="pRachaN">0</b><small>días de racha</small></span>
@@ -235,7 +239,8 @@
     buho: 'El búho que sale en tu inicio. Toca uno para probarlo y dale «Usar» si te gusta.',
     avatar: 'Tu foto de perfil: sale en tu tarjeta de arriba, en tu perfil y en los tops.',
     escena: 'Donde se para tu búho en el inicio: cada escenario trae su cielo y su piso. Galaxia es el de siempre.',
-    racha: 'El fondo de tu tarjeta de perfil (arriba, junto a tu nombre) y de tu cuadro de racha. Galaxia es el de siempre.',
+    racha: 'El fondo de tu tarjeta de perfil (arriba, junto a tu nombre) y en los tops. Galaxia es el de siempre.',
+    cuadro: 'Tu cuadro de racha en tu perfil: su color y el de su fuego. Galaxia es el de siempre.',
     marco: 'El borde de tu foto en tu tarjeta de perfil y en tu perfil.',
     titulo: 'La frase que sale bajo tu nombre.',
     pines: 'Elige hasta 3 pines para tu vitrina. Se ganan en los eventos.',
@@ -266,7 +271,7 @@
     pintarRacha();
     pintarPrueba();
     // ¿Llevas algo distinto a lo de siempre?
-    $('pReset').hidden = !!PREV || !['buho', 'avatar', 'escena', 'racha', 'marco', 'titulo'].some(function (e) { return C.puesto(e) !== C.defecto[e]; });
+    $('pReset').hidden = !!PREV || !['buho', 'avatar', 'escena', 'racha', 'cuadro', 'marco', 'titulo'].some(function (e) { return C.puesto(e) !== C.defecto[e]; });
     if (pop) { pb.classList.remove('pop'); void pb.offsetWidth; pb.classList.add('pop'); }
     var pt = $('pTit'); pt.textContent = '★ ' + t.nom;
     pt.style.setProperty('--cr', tr.c); pt.style.color = 'rgb(' + tr.c + ')';
@@ -276,6 +281,7 @@
       ['avatar', av.nom, 'Perfil', '<span style="width:34px;height:34px;display:block">' + C.avatarHtml(av, av.av ? '' : miFoto(), miLetra()) + '</span>'],
       ['escena', C.item(P('escena')).nom, 'Escenario', '<span class="mini-tema" style="display:block;background:radial-gradient(120% 90% at 50% 20%,' + es[0] + ',' + es[3] + ')"></span>'],
       ['racha', C.item(P('racha')).nom, 'Fondo', '<span class="mini-tema" style="display:block;background:linear-gradient(135deg,' + tema[0] + ',' + tema[1] + ')"></span>'],
+      ['cuadro', C.item(P('cuadro')).nom, 'Racha', '<span style="width:30px;height:34px;display:block">' + C.llama(C.cuadro(P('cuadro')).llama) + '</span>'],
       ['marco', C.item(P('marco')).nom, 'Marco', '<span class="mini-marco" style="display:block;background:' + (marco || '#2A2346') + '"><i></i></span>'],
       ['titulo', t.nom, 'Título', '<span style="font-size:22px;color:rgb(' + tr.c + ')">★</span>']
     ];
@@ -306,8 +312,9 @@
   // El cuadro de racha con el fondo que llevas (o pruebas) y tus días de esta semana
   var miRacha = null;
   function pintarRacha() {
-    var t = C.tema(P('racha')), c = $('pRacha');
+    var k = C.cuadro(P('cuadro')), t = k.tema, c = $('pRacha');
     ['--rc1', '--rc2', '--rcb', '--rcd'].forEach(function (v, i) { c.style.setProperty(v, t[i]); });
+    c.style.setProperty('--fl1', k.llama[0]); c.style.setProperty('--fl2', k.llama[1]);
     var n = miRacha ? +miRacha.actual || 0 : 0, h = '';
     $('pRachaN').textContent = n;
     for (var i = 0; i < 7; i++) h += '<i' + (i >= 7 - Math.min(n, 7) ? ' class="on"' : '') + '></i>';
@@ -347,7 +354,7 @@
   // Volver a lo de siempre: búho clásico, foto de búho, Galaxia, sin marco y el título de siempre
   $('pReset').addEventListener('click', function () {
     var b = this; b.disabled = true;
-    ['buho', 'avatar', 'escena', 'racha', 'marco', 'titulo'].filter(function (e) { return C.puesto(e) !== C.defecto[e]; })
+    ['buho', 'avatar', 'escena', 'racha', 'cuadro', 'marco', 'titulo'].filter(function (e) { return C.puesto(e) !== C.defecto[e]; })
       .reduce(function (p, e) { return p.then(function () { return C.poner(e, C.defecto[e]); }); }, Promise.resolve())
       .then(function () { b.disabled = false; todo(true); }, function () { b.disabled = false; todo(false); });
   });

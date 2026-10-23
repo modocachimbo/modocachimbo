@@ -33,11 +33,12 @@
     { id: 'avatar', nom: 'Perfil', uno: 'Foto de perfil' },
     { id: 'escena', nom: 'Escenarios', uno: 'Escenario' },
     { id: 'racha', nom: 'Fondos', uno: 'Fondo de perfil' },
+    { id: 'cuadro', nom: 'Racha', uno: 'Cuadro de racha' },
     { id: 'marco', nom: 'Marcos', uno: 'Marco' },
     { id: 'titulo', nom: 'Títulos', uno: 'Título' },
     { id: 'pines', nom: 'Pines', uno: 'Pin' }
   ];
-  var DEFECTO = { buho: 'buho-clasico', avatar: 'avatar-buho', escena: 'escena-galaxia', racha: 'racha-galaxia', marco: 'marco-ninguno', titulo: 'titulo-cachimbo', pines: [] };
+  var DEFECTO = { buho: 'buho-clasico', avatar: 'avatar-buho', escena: 'escena-galaxia', racha: 'racha-galaxia', cuadro: 'cuadro-galaxia', marco: 'marco-ninguno', titulo: 'titulo-cachimbo', pines: [] };
 
   var CATALOGO = [
     // Búho: los disfraces de cada área ya acompañan en sus páginas, así que vienen con tu cuenta
@@ -65,7 +66,7 @@
     { id: 'escena-hielo', espacio: 'escena', nom: 'Hielo', rareza: 'legendario', regla: { tipo: 'racha', n: 100 }, tema: ['#7b3cff', '#1d9b8a', '#6a35d8', '#3b1d86'], desc: 'Un bloque de hielo bajo la aurora.' },
     { id: 'escena-calabaza', espacio: 'escena', nom: 'Calabazas', rareza: 'evento', regla: { tipo: 'evento', evento: HALLOWEEN }, tema: ['#FF8A00', '#5b1f8a', '#d9700a', '#3b145c'], desc: 'Tierra de Halloween con calabazas.' },
 
-    // Fondos de perfil: tu tarjeta de arriba (rectangular) y tu cuadro de racha (Galaxia es el de siempre)
+    // Fondos de perfil: tu tarjeta de arriba, rectangular (Galaxia es el de siempre)
     { id: 'racha-galaxia', espacio: 'racha', nom: 'Galaxia', rareza: 'comun', regla: { tipo: 'gratis' }, tema: ['#5b34b8', '#241452', '#4a2a9a', '#1a0f40'], desc: 'El morado de siempre del inicio.' },
     { id: 'racha-cielo', espacio: 'racha', nom: 'Cielo', rareza: 'comun', regla: { tipo: 'gratis' }, tema: ['#1CB0F6', '#1588d0', '#1488c9', '#0f6fa6'], desc: 'Celeste como el cielo.' },
     { id: 'racha-menta', espacio: 'racha', nom: 'Menta', rareza: 'raro', regla: { tipo: 'racha', n: 7 }, tema: ['#14C46A', '#0e9a8a', '#12a96a', '#08705a'] },
@@ -73,6 +74,15 @@
     { id: 'racha-volcan', espacio: 'racha', nom: 'Volcán', rareza: 'epico', regla: { tipo: 'racha', n: 30 }, tema: ['#FF7A1A', '#c2271a', '#e05a12', '#8a1a0e'] },
     { id: 'racha-aurora', espacio: 'racha', nom: 'Aurora', rareza: 'legendario', regla: { tipo: 'racha', n: 100 }, tema: ['#7b3cff', '#1d9b8a', '#6a35d8', '#3b1d86'] },
     { id: 'racha-calabaza', espacio: 'racha', nom: 'Calabaza', rareza: 'evento', regla: { tipo: 'evento', evento: HALLOWEEN }, tema: ['#FF8A00', '#5b1f8a', '#d9700a', '#3b145c'] },
+
+    // Cuadro de racha (en tu perfil): su color y el de su fuego
+    { id: 'cuadro-galaxia', espacio: 'cuadro', nom: 'Galaxia', rareza: 'comun', regla: { tipo: 'gratis' }, tema: ['#5b34b8', '#241452', '#4a2a9a', '#1a0f40'], llama: ['#FF9600', '#FFD84D'], desc: 'El morado de siempre con su fuego naranja.' },
+    { id: 'cuadro-cielo', espacio: 'cuadro', nom: 'Cielo', rareza: 'comun', regla: { tipo: 'gratis' }, tema: ['#1CB0F6', '#1588d0', '#1488c9', '#0f6fa6'], llama: ['#FF9600', '#FFD84D'], desc: 'Celeste con fuego naranja.' },
+    { id: 'cuadro-menta', espacio: 'cuadro', nom: 'Menta', rareza: 'raro', regla: { tipo: 'racha', n: 7 }, tema: ['#14C46A', '#0e9a8a', '#12a96a', '#08705a'], llama: ['#FFC800', '#FFF3B0'], desc: 'Verde con un fuego dorado.' },
+    { id: 'cuadro-hielo', espacio: 'cuadro', nom: 'Fuego azul', rareza: 'epico', regla: { tipo: 'racha', n: 30 }, tema: ['#1d3f8f', '#0b1a45', '#2a56b8', '#08123a'], llama: ['#3DB8FF', '#D6F4FF'], desc: 'El fuego más caliente es el azul.' },
+    { id: 'cuadro-volcan', espacio: 'cuadro', nom: 'Volcán', rareza: 'epico', regla: { tipo: 'rango', n: 2 }, tema: ['#FF7A1A', '#c2271a', '#e05a12', '#8a1a0e'], llama: ['#FFE14D', '#FFFBE0'], desc: 'Lava con un fuego amarillo.' },
+    { id: 'cuadro-aurora', espacio: 'cuadro', nom: 'Aurora', rareza: 'legendario', regla: { tipo: 'racha', n: 100 }, tema: ['#7b3cff', '#1d9b8a', '#6a35d8', '#3b1d86'], llama: ['#E27BFF', '#FFE0FF'], desc: 'Aurora con un fuego mágico.' },
+    { id: 'cuadro-calabaza', espacio: 'cuadro', nom: 'Calabaza', rareza: 'evento', regla: { tipo: 'evento', evento: HALLOWEEN }, tema: ['#FF8A00', '#5b1f8a', '#d9700a', '#3b145c'], llama: ['#7CFF4D', '#E6FFB3'], desc: 'Halloween con fuego de bruja.' },
 
     // Marcos de la foto
     { id: 'marco-ninguno', espacio: 'marco', nom: 'Sin marco', rareza: 'comun', regla: { tipo: 'gratis' }, marco: 'none' },
@@ -248,12 +258,15 @@
     if (x.espacio === 'escena') return '<span class="mcc-esc" style="--r1:' + x.tema[0] + ';--r2:' + x.tema[3] + '">' + PISOS[x.id].replace(/mcp-([gh])/g, 'mcp-$1-' + x.id) + '<img class="mcc-esc-b" src="' + esc(D.replace(/disfraces\/$/, 'avatar/') + 'clasico-cuerpo.webp') + '" alt="" loading="lazy"></span>';
     // Fondo de perfil: una mini tarjeta como la de arriba
     if (x.espacio === 'racha') return '<span class="mcc-fp" style="--r1:' + x.tema[0] + ';--r2:' + x.tema[3] + '"><span class="mcc-fp-c"><i' + (avatarSrc() || miFoto.src ? ' style="background-image:url(&quot;' + esc(avatarSrc() || miFoto.src) + '&quot;)"' : '') + '>' + (avatarSrc() || miFoto.src ? '' : esc(miFoto.letra)) + '</i><b>' + esc(miFoto.nombre || 'Tu nombre') + '</b><small>Tu rango</small></span></span>';
+    // Cuadro de racha: uno chiquito con su fuego
+    if (x.espacio === 'cuadro') { var l = x.llama; return '<span class="mcc-cr" style="--r1:' + x.tema[0] + ';--r2:' + x.tema[1] + ';--rb:' + x.tema[2] + ';--rd:' + x.tema[3] + '"><span class="mcc-cr-c">' + llama(l) + '<b>7</b><i></i><i></i><i></i></span></span>'; }
     if (x.espacio === 'avatar') return avatarSvg(x, miFoto.src, miFoto.letra);
     if (x.espacio === 'marco') return '<span class="mcc-marco" style="--m:' + (x.marco === 'none' ? 'transparent' : x.marco) + '"><span>' + (window.MCBuho ? MCBuho.svg('normal', 80) : '') + '</span></span>';
     if (x.espacio === 'titulo') return '<span class="mcc-titulo"><span>★ ' + esc(x.nom) + '</span></span>';
     if (x.espacio === 'pines') return pinSvg(x);
     return '';
   }
+  function llama(l) { return '<svg viewBox="0 0 32 36" aria-hidden="true"><path fill="' + l[0] + '" d="M16 1.5c1.2 4.6 7.6 8.2 9.6 13.6 2.6 7-1.6 17.4-9.6 17.4S3.8 24.9 6.1 17.6c1-3.2 3.3-5.3 4.9-6.9.2 2.8 1.4 4.6 3 5.2C13.3 10.6 14 6 16 1.5z"/><path fill="' + l[1] + '" d="M16.3 15.5c.6 2.4 4.5 4.4 4.5 8.6a4.8 4.8 0 0 1-9.6 0c0-2 1-3.4 2.1-4.4.2 1.4.8 2.3 1.6 2.6-.4-2.4 0-4.6 1.4-6.8z"/></svg>'; }
   // Foto de perfil: el dibujo del búho o tu foto (o tu inicial) sobre tu fondo
   function avatarSrc(id) { var x = POR_ID[id || puesto('avatar')]; return x && x.av ? D.replace(/disfraces\/$/, 'avatar/') + x.av + '.webp' : ''; }
   function avatarSvg(x, foto, letra) {
@@ -328,6 +341,11 @@
       '.mcc-esc svg{position:absolute;left:14%;right:14%;bottom:12%;width:72%;height:24%}' +
       '.mcc-it .mcc-esc img.mcc-esc-b,.mcc-esc img.mcc-esc-b{position:absolute;left:50%;bottom:27%;width:34%;height:auto;translate:-50% 0;object-fit:contain;filter:drop-shadow(0 3px 3px rgba(0,0,0,.35))}' +
       '.mcc-fp{width:100%;aspect-ratio:1.25;display:grid;place-items:center}' +
+      '.mcc-cr{width:100%;aspect-ratio:1.25;display:grid;place-items:center}' +
+      '.mcc-cr-c{position:relative;overflow:hidden;display:flex;align-items:center;gap:6px;width:90%;padding:14px 12px;border-radius:14px;color:#fff;background:linear-gradient(135deg,var(--r1),var(--r2));border:2px solid var(--rb);border-bottom:4px solid var(--rd)}' +
+      '.mcc-cr-c svg{width:26px;height:30px;flex:none;filter:drop-shadow(0 1px 0 rgba(0,0,0,.25))}' +
+      '.mcc-cr-c b{font:900 28px/1 "Barlow Condensed","Arial Narrow",sans-serif;margin-right:auto}' +
+      '.mcc-cr-c i{width:11px;height:11px;border-radius:50%;background:rgba(0,0,0,.25);border:2px solid rgba(255,255,255,.3)}' +
       '.mcc-fp-c{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:7px;align-items:center;width:94%;padding:8px 22px 8px 8px;text-align:left;clip-path:polygon(0 0,100% 0,88% 100%,0 100%);' +
         'background:linear-gradient(90deg,rgba(11,8,24,.7),rgba(11,8,24,.3) 65%,rgba(11,8,24,0)),radial-gradient(1.5px 1.5px at 30% 30%,#fff 50%,transparent),radial-gradient(1px 1px at 70% 70%,#fff 50%,transparent),radial-gradient(120% 140% at 85% 0%,var(--r1),var(--r2) 60%,#0d0820)}' +
       '.mcc-fp-c i{grid-row:1/3;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font:900 16px/1 Nunito,sans-serif;font-style:normal;color:#151A03;background:#C6E000 center/cover}' +
@@ -424,6 +442,9 @@
     escena: function (id) { var x = POR_ID[id || puesto('escena')]; return x && x.tema || POR_ID['escena-galaxia'].tema; },
     fijarFoto: function (src, letra, nombre) { miFoto = { src: /^https:\/\//.test(src || '') ? src : '', letra: letra || '', nombre: nombre || miFoto.nombre || '' }; },
     tema: function (id) { var x = POR_ID[id || puesto('racha')]; return x && x.tema || POR_ID['racha-galaxia'].tema; },
+    // Cuadro de racha: { tema: [4 colores], llama: [2 colores] }
+    cuadro: function (id) { var x = POR_ID[id || puesto('cuadro')]; if (!x || x.espacio !== 'cuadro') x = POR_ID['cuadro-galaxia']; return { tema: x.tema, llama: x.llama }; },
+    llama: llama,
     marco: function (id) { var x = POR_ID[id || puesto('marco')]; return x && x.marco !== 'none' ? x.marco : ''; },
     nuevos: nuevos, marcarVistos: marcarVistos, celebrar: celebrar,
     contar: function () { var n = 0; CATALOGO.forEach(function (x) { if (tiene(x.id)) n++; }); return { tengo: n, total: CATALOGO.length }; }
