@@ -253,11 +253,18 @@
   // los disfraces de área salen con sus caras (assets/buho/disfraces)
   function disfraz() {
     var C = window.MCColeccion, b = C && C.item(C.puesto('buho'));
-    return b && b.img ? b.img : null;
+    return b && b.img ? b.img : b && b.id === 'buho-antiguo' && window.MCBuho ? 'antiguo' : null;
   }
   function crearBuho(p) {
     var ar = disfraz();
     if (!ar) return MCBuhoVivo.crear(p);
+    // El antiguo: el búho del logo (assets/buho.js), con su cara según el momento
+    if (ar === 'antiguo') {
+      var s = document.createElement('span');
+      s.className = 'mcb mcb-disfraz mcb-antiguo' + (p === 'enojado' ? ' molesto' : '');
+      s.innerHTML = MCBuho.svg(p === 'enojado' ? 'triste' : p === 'logro' ? 'celebrando' : 'feliz', 220);
+      return s;
+    }
     var i = new Image();
     i.className = 'mcb mcb-disfraz' + (p === 'enojado' ? ' molesto' : '');
     i.src = 'assets/buho/disfraces/' + ar + '-' + (p === 'enojado' ? 'triste' : p === 'logro' ? 'asombrado' : 'feliz') + '.webp';

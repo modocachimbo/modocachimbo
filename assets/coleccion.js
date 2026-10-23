@@ -43,6 +43,7 @@
   var CATALOGO = [
     // Búho: los disfraces de cada área ya acompañan en sus páginas, así que vienen con tu cuenta
     { id: 'buho-clasico', espacio: 'buho', nom: 'Clásico', rareza: 'comun', regla: { tipo: 'gratis' }, desc: 'El búho de siempre, con sus lentes de sol.' },
+    { id: 'buho-antiguo', espacio: 'buho', nom: 'Antiguo', rareza: 'comun', regla: { tipo: 'gratis' }, desc: 'El primer búho de Modo Cachimbo, el del logo.' },
     { id: 'buho-al-juarismi', espacio: 'buho', nom: 'Al-Juarismi', rareza: 'raro', regla: { tipo: 'gratis' }, img: 'matematica', area: 'Matemática', desc: 'El padre del álgebra. Te acompaña en Matemática.' },
     { id: 'buho-cervantes', espacio: 'buho', nom: 'Cervantes', rareza: 'raro', regla: { tipo: 'gratis' }, img: 'comunicacion', area: 'Comunicación', desc: 'El autor del Quijote. Te acompaña en Comunicación.' },
     { id: 'buho-einstein', espacio: 'buho', nom: 'Einstein', rareza: 'raro', regla: { tipo: 'gratis' }, img: 'ciencia-tecnologia', area: 'Ciencia y Tecnología', desc: 'El genio de la relatividad. Te acompaña en Ciencia y Tecnología.' },
@@ -139,6 +140,11 @@
       '<g><ellipse cx="40" cy="22" rx="16" ry="12" fill="#FF8A00"/><ellipse cx="40" cy="22" rx="6" ry="12" fill="#ffa53a"/><path d="M40 10l2-7" stroke="#3f8a1e" stroke-width="3"/>' +
       '<ellipse cx="262" cy="24" rx="13" ry="10" fill="#FF8A00"/><ellipse cx="262" cy="24" rx="5" ry="10" fill="#ffa53a"/><path d="M262 14l2-6" stroke="#3f8a1e" stroke-width="3"/></g></svg>'
   };
+  // Por ahora salen solo estos (los pines, todos). Los demás quedan guardados para más adelante:
+  // si alguien llevaba uno de ellos, vuelve a lo de siempre.
+  var VISIBLES = ['buho-clasico', 'buho-antiguo', 'avatar-buho', 'avatar-foto', 'escena-galaxia', 'escena-nube',
+    'racha-galaxia', 'racha-cielo', 'cuadro-galaxia', 'cuadro-cielo', 'marco-ninguno', 'marco-lima', 'titulo-cachimbo', 'titulo-constante'];
+  CATALOGO = CATALOGO.filter(function (x) { return x.espacio === 'pines' || VISIBLES.indexOf(x.id) >= 0; });
   var POR_ID = {};
   CATALOGO.forEach(function (x) { POR_ID[x.id] = x; });
 
@@ -247,6 +253,8 @@
   /* ---------- Dibujos ---------- */
   function buhoImg(x, animo) {
     if (x.img) return '<img src="' + esc(D + x.img + '-' + (animo || 'feliz') + '.webp') + '" alt="" loading="lazy">';
+    // El antiguo: el búho del logo (assets/buho.js)
+    if (x.id === 'buho-antiguo' && window.MCBuho) return '<span class="mcc-antiguo">' + MCBuho.svg(animo === 'triste' ? 'triste' : 'feliz', 160) + '</span>';
     // El clásico es el mismo búho animado del inicio (si la página trae assets/buho/buho-vivo.js)
     if (x.id === 'buho-clasico' && window.MCBuhoVivo && window.MCBuhoDatos) return MCBuhoVivo.crear(animo === 'triste' ? 'triste' : 'vivo').outerHTML;
     if (window.MCBuho) return MCBuho.svg(animo === 'triste' ? 'triste' : 'feliz', 160);
@@ -323,6 +331,7 @@
       '.mcc-it.mcc-on{border-color:#C6E000;box-shadow:0 0 22px rgba(198,224,0,.3)}' +
       '.mcc-dib{width:100%;aspect-ratio:1;display:grid;place-items:center}' +
       '.mcc-dib img,.mcc-dib>svg{width:100%;height:100%;object-fit:contain;display:block}' +
+      '.mcc-antiguo{display:block;width:84%;margin:0 auto}.mcc-antiguo svg{width:100%;height:auto;display:block}' +
       '.mcc-it.lock .mcc-dib{filter:grayscale(1) brightness(.4)}' +
       '.mcc-it.lock b{color:#A99FC8}' +
       '.mcc-cand{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);width:38px;height:38px;border-radius:50%;background:rgba(11,8,24,.82);display:grid;place-items:center;border:2px solid rgba(255,255,255,.25)}' +
