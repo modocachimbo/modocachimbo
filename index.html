@@ -358,6 +358,13 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
 .plat i:nth-child(3) { inset: 4px 5px; background: radial-gradient(60% 70% at 50% 35%, var(--plat-brillo), transparent 70%); }
 .buho { position: absolute; left: 50%; bottom: 24%; width: 34%; translate: -50% 0; }
 .buho .mcb { width: 100%; translate: 0 var(--drop); }
+.buho .mcb-disfraz { display: block; width: 118%; margin-left: -9%; height: auto; aspect-ratio: auto; translate: 0 6%; user-select: none; -webkit-user-drag: none; filter: drop-shadow(0 6px 5px rgba(0, 0, 0, .4)); transform-origin: 50% 100%; animation: buhoFlota 3.2s ease-in-out infinite; }
+.buho .mcb-disfraz.mcb-toque { animation: buhoBrinco .45s cubic-bezier(.34, 1.56, .64, 1); }
+.buho .mcb-disfraz.molesto { animation: buhoSacude .5s ease-in-out 2; }
+@keyframes buhoFlota { 50% { transform: translateY(-4%); } }
+@keyframes buhoBrinco { 40% { transform: scale(1.08, .92); } 70% { transform: translateY(-8%); } }
+@keyframes buhoSacude { 25% { transform: rotate(-6deg); } 75% { transform: rotate(6deg); } }
+@media (prefers-reduced-motion: reduce) { .buho .mcb-disfraz { animation: none; } }
 .globo { position: absolute; left: 50%; top: 12%; translate: -50% 0; width: max-content; max-width: min(48%, 340px); margin: 0; z-index: 3;
   display: flex; align-items: center; gap: 10px; padding: 11px 16px 12px; border-radius: 20px; cursor: pointer;
   background: var(--globo); color: var(--globo-tx); border: 2px solid var(--globo-borde); box-shadow: 0 4px 0 var(--globo-borde);
@@ -740,6 +747,12 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
 /* Fotos de perfil: cuadrado redondeado */
 .liga .letra, .sim-lista .letra, .aro .letra { border-radius: 10px; clip-path: none; overflow: hidden; }
 .letra img { width: 100%; height: 100%; display: block; object-fit: cover; }
+/* Foto de cada alumno en los tops: su fondo y su marco de Mi colección (assets/inicio.js → foto) */
+.letra > span { display: grid; place-items: center; width: 100%; height: 100%; background: var(--lf); border-radius: inherit; overflow: hidden; }
+.letra.con-m { padding: 2px; background: var(--m) !important; }
+.letra.con-m > span { border-radius: 8px; }
+.aro .letra.con-m { padding: 3px; }
+.letra.con-f, .aro .letra.con-f, .liga .letra.con-f, .sim-lista .letra.con-f { color: #fff; text-shadow: 0 1px 0 rgba(0, 0, 0, .45); }
 .marco .avatar img { width: 100%; height: 100%; display: block; }
 .marco .avatar { overflow: hidden; background: #1a5fd1; }
 .v-marco .marco .avatar { background: #1a5fd1; }
@@ -853,28 +866,7 @@ html.mc-fuera body { background: var(--bg); }
 .cab .mcu-user .mcu-racha.on svg { filter: none; }
 .cab .mcu-user .mcz-cor.cero { color: var(--suave); }
 .cab .mcu-btn { font-family: var(--cuerpo); border-radius: 0; }
-/* Tarjeta del perfil: foto en cuadrado redondeado con marco dorado, nombre y rango encima del fondo */
-.cab .mcu-user .mcu-chip.perfil {
-  position: relative; display: flex; align-items: center; gap: 12px; min-width: 0; max-width: none; margin: 0;
-  padding: 7px 46px 7px 8px; border: 0; border-radius: 0; color: #fff; font: inherit;
-  clip-path: polygon(0 0, 100% 0, 90% 100%, 0 100%);
-  background: linear-gradient(90deg, rgba(11, 8, 24, .82), rgba(11, 8, 24, .45) 65%, rgba(11, 8, 24, .1)),
-    radial-gradient(1.5px 1.5px at 20% 30%, #fff 50%, transparent), radial-gradient(1px 1px at 62% 20%, #fff 50%, transparent),
-    radial-gradient(1.5px 1.5px at 80% 70%, #fff 50%, transparent), radial-gradient(1px 1px at 45% 80%, #fff 50%, transparent),
-    radial-gradient(120% 140% at 85% 0%, #5b34b8, #241452 55%, #120a2c);
-}
-.cab .mcu-user .mcu-chip.perfil:hover { filter: brightness(1.08); }
-.cab .mcu-user .mcu-chip.perfil:active { transform: translateY(1px); }
-.cab .mcu-chip .marco { width: 58px; height: 58px; }
-.cab .mcu-chip .mcu-av { width: 100%; height: 100%; border-radius: 10px; background: var(--lima); color: var(--sobre-lima); font: 900 26px/1 var(--cuerpo); display: grid; place-items: center; }
-.cab .mcu-chip .pf-tx { display: grid; gap: 4px; min-width: 0; text-align: left; }
-.cab .mcu-chip .mcu-nom { display: block; flex: none; text-align: left; font: 800 26px/1 var(--display); letter-spacing: .04em; text-transform: uppercase; color: #fff;
-  text-shadow: 0 2px 0 rgba(0, 0, 0, .55), 0 0 10px rgba(0, 0, 0, .6); max-width: 9em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.cab .mcu-chip .pf-rg { display: flex; align-items: center; gap: 5px; font: 800 17px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; color: var(--rc, #cfc8e6);
-  text-shadow: 0 2px 0 rgba(0, 0, 0, .6), 0 0 8px rgba(0, 0, 0, .55); white-space: nowrap; }
-.cab .mcu-chip .pf-rg:empty { display: none; }
-.cab .mcu-chip .pf-rg i { width: 22px; display: block; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .6)); }
-.cab .mcu-chip .pf-rg i svg { width: 100%; display: block; }
+/* La tarjeta del perfil (marco, fondo y rango) la arma assets/tarjeta-perfil.js */
 .cab .mcu-menu { border-radius: 0; background: var(--tarjeta); border: 1px solid var(--borde); color: var(--texto); }
 .cab .mcu-menu a, .cab .mcu-menu button { color: var(--texto); border-radius: 0; }
 .cab .mcu-menu a:hover, .cab .mcu-menu button:hover { background: var(--tarjeta2); color: var(--lima-tx); }
@@ -884,12 +876,7 @@ html.mc-fuera body { background: var(--bg); }
   .cab .der { flex: 1 1 100%; min-width: 0; }
   .cab .der [data-mc-auth] { flex: 1; }
   .cab .mcu-user { flex: 1; min-width: 0; gap: 6px; }
-  .cab .mcu-user .mcu-chip.perfil { order: 0; margin-right: auto; padding: 5px 26px 5px 5px; gap: 8px; }
-  .cab .mcu-chip .marco { width: 46px; height: 46px; }
-  .cab .mcu-chip .mcu-av { font-size: 20px; }
-  .cab .mcu-chip .mcu-nom { font-size: 19px; max-width: 6.5em; }
-  .cab .mcu-chip .pf-rg { font-size: 13px; }
-  .cab .mcu-chip .pf-rg i { width: 16px; }
+  .cab .mcu-user .mcu-chip.mct { order: 0; margin-right: auto; }
   .cab .mcu-user .mcz-pill, .cab .mcu-user .mcu-racha { height: 40px; padding: 0 9px 0 8px; gap: 5px; font-size: 18px; }
   .cab .mcu-user .mcz-xp:not([hidden]) { display: inline-flex; }
   .cab .mcu-user .mcz-pill svg, .cab .mcu-user .mcu-racha svg { width: 20px; height: 20px; }
@@ -897,11 +884,10 @@ html.mc-fuera body { background: var(--bg); }
 }
 @media (max-width: 400px) {
   .cab .mcu-user .mcz-pill, .cab .mcu-user .mcu-racha { padding: 0 6px; gap: 4px; font-size: 16px; }
-  .cab .mcu-chip .mcu-nom { font-size: 17px; max-width: 5.5em; }
 }
 @media (max-width: 360px) {
-  .cab .mcu-chip .pf-tx { display: none; }
-  .cab .mcu-user .mcu-chip.perfil { padding-right: 18px; }
+  .cab .mcu-chip .mct-tx { display: none; }
+  .cab .mcu-user .mcu-chip.mct { padding-right: 18px; }
 }
 
 /* Botones que antes eran enlaces */
@@ -1296,7 +1282,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
       <h1 class="hola" id="salNombre">¡Hola!</h1>
       <div class="der">
         <button class="tema-btn" id="temaBtn" type="button" aria-label="Cambiar a modo claro"><svg class="ic"><use href="#i-sol"/></svg></button>
-        <div data-mc-auth></div>
+        <div data-mc-auth data-mc-tarjeta></div>
       </div>
     </header>
 
@@ -1421,6 +1407,8 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
 </template>
 
 <script src="assets/rango.js"></script>
+<script src="assets/coleccion.js"></script>
+<script src="assets/tarjeta-perfil.js"></script>
 <script src="assets/buho/buho-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
 <script src="assets/inicio.js"></script>

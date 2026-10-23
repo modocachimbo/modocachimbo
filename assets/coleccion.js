@@ -1,6 +1,6 @@
 /* =========================================================
    Modo Cachimbo · Mi colección (lo que tienes y te pones)
-   - CATALOGO: búhos, temas de racha, marcos, títulos y pines.
+   - CATALOGO: búhos, fondos, marcos, títulos y pines.
      Cada objeto dice cómo se consigue (regla):
        gratis · racha (mejor racha de N días) · rango (cerrar una semana
        en ese rango) · evento / regalo (te lo entregan por SQL en coleccion_mia)
@@ -30,7 +30,7 @@
   // Espacios: dónde se pone cada cosa (pines: hasta 3 en tu vitrina)
   var ESPACIOS = [
     { id: 'buho', nom: 'Búho', uno: 'Búho' },
-    { id: 'racha', nom: 'Racha', uno: 'Tema de racha' },
+    { id: 'racha', nom: 'Fondos', uno: 'Fondo' },
     { id: 'marco', nom: 'Marcos', uno: 'Marco' },
     { id: 'titulo', nom: 'Títulos', uno: 'Título' },
     { id: 'pines', nom: 'Pines', uno: 'Pin' }
@@ -39,14 +39,14 @@
 
   var CATALOGO = [
     // Búho: los disfraces de cada área ya acompañan en sus páginas, así que vienen con tu cuenta
-    { id: 'buho-clasico', espacio: 'buho', nom: 'Clásico', rareza: 'comun', regla: { tipo: 'gratis' }, desc: 'El búho de siempre, con los colores del logo.' },
+    { id: 'buho-clasico', espacio: 'buho', nom: 'Clásico', rareza: 'comun', regla: { tipo: 'gratis' }, desc: 'El búho de siempre, con sus lentes de sol.' },
     { id: 'buho-al-juarismi', espacio: 'buho', nom: 'Al-Juarismi', rareza: 'raro', regla: { tipo: 'gratis' }, img: 'matematica', area: 'Matemática', desc: 'El padre del álgebra. Te acompaña en Matemática.' },
     { id: 'buho-cervantes', espacio: 'buho', nom: 'Cervantes', rareza: 'raro', regla: { tipo: 'gratis' }, img: 'comunicacion', area: 'Comunicación', desc: 'El autor del Quijote. Te acompaña en Comunicación.' },
     { id: 'buho-einstein', espacio: 'buho', nom: 'Einstein', rareza: 'raro', regla: { tipo: 'gratis' }, img: 'ciencia-tecnologia', area: 'Ciencia y Tecnología', desc: 'El genio de la relatividad. Te acompaña en Ciencia y Tecnología.' },
     { id: 'buho-inca', espacio: 'buho', nom: 'Inca', rareza: 'epico', regla: { tipo: 'gratis' }, img: 'ciencias-sociales', area: 'Ciencias Sociales', desc: 'Con mascaipacha y unku. Te acompaña en Ciencias Sociales.' },
     { id: 'buho-birrete', espacio: 'buho', nom: 'Birrete de ingresante', rareza: 'legendario', regla: { tipo: 'regalo' }, desc: 'Para quien ya ingresó a la universidad. Te lo entregamos cuando nos cuentes que ingresaste.' },
 
-    // Temas del cuadro de racha (Cielo es el de siempre)
+    // Fondos: el de tu tarjeta de perfil y tu cuadro de racha (Cielo es el de siempre)
     { id: 'racha-cielo', espacio: 'racha', nom: 'Cielo', rareza: 'comun', regla: { tipo: 'gratis' }, tema: ['#1CB0F6', '#1588d0', '#1488c9', '#0f6fa6'], desc: 'El celeste de siempre.' },
     { id: 'racha-menta', espacio: 'racha', nom: 'Menta', rareza: 'raro', regla: { tipo: 'racha', n: 7 }, tema: ['#14C46A', '#0e9a8a', '#12a96a', '#08705a'] },
     { id: 'racha-noche', espacio: 'racha', nom: 'Noche', rareza: 'epico', regla: { tipo: 'rango', n: 2 }, tema: ['#4a3bc4', '#1b1458', '#3d30a8', '#130e40'] },
@@ -187,6 +187,8 @@
   /* ---------- Dibujos ---------- */
   function buhoImg(x, animo) {
     if (x.img) return '<img src="' + esc(D + x.img + '-' + (animo || 'feliz') + '.webp') + '" alt="" loading="lazy">';
+    // El clásico es el mismo búho animado del inicio (si la página trae assets/buho/buho-vivo.js)
+    if (x.id === 'buho-clasico' && window.MCBuhoVivo && window.MCBuhoDatos) return MCBuhoVivo.crear(animo === 'triste' ? 'triste' : 'vivo').outerHTML;
     if (window.MCBuho) return MCBuho.svg(animo === 'triste' ? 'triste' : 'feliz', 160);
     return '<img src="' + esc(BASE + 'assets/app/icono-192.png') + '" alt="">';
   }

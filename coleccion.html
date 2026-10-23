@@ -14,6 +14,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <script src="assets/app.js" defer></script>
 <title>Mi colección · Modo Cachimbo</title>
+<link rel="stylesheet" href="assets/buho/buho.css">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,800;1,800;1,900&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,900&display=swap');
 
@@ -56,6 +57,8 @@
   .puesto .k { font-size: 12px; color: var(--text-dim); font-weight: 1000; text-transform: uppercase; letter-spacing: 1.5px; }
   .p-buho { width: 190px; height: 190px; margin: 4px auto 0; display: grid; place-items: center; animation: flota 3.2s ease-in-out infinite; }
   .p-buho img, .p-buho svg { width: 100%; height: 100%; object-fit: contain; }
+  .p-buho .mcb, .mcc-dib .mcb, .slot .v .mcb { width: 78%; height: auto; }
+  .p-buho .mcb img, .mcc-dib .mcb img, .slot .v .mcb img { width: auto; height: auto; object-fit: initial; }
   .p-buho.pop { animation: pop .5s cubic-bezier(.2,1.6,.4,1); }
   .p-nom { font: italic 900 28px/1 var(--display); text-transform: uppercase; margin-top: 2px; }
   .p-tit { display: inline-flex; gap: 6px; align-items: center; margin-top: 8px; font-size: 13px; font-weight: 1000; color: var(--c, #FFC800); background: rgba(var(--cr, '255,200,0'), .1); border: 1.5px solid rgba(var(--cr), .5); border-radius: 999px; padding: 4px 11px; }
@@ -127,18 +130,21 @@
 <script src="assets/buho.js"></script>
 <script src="assets/rango.js"></script>
 <script src="assets/coleccion.js"></script>
+<script src="assets/tarjeta-perfil.js"></script>
+<script src="assets/buho/buho-datos.js"></script>
+<script src="assets/buho/buho-vivo.js"></script>
 </head>
 <body>
   <div class="wrap">
     <header class="top">
       <a class="logo" href="index.html" aria-label="Modo Cachimbo · Inicio"><img src="assets/img/logo-modo-cachimbo-horizontal.svg" alt="Modo Cachimbo" width="160" height="34"></a>
-      <div data-mc-auth></div>
+      <div data-mc-auth data-mc-tarjeta="sola"></div>
     </header>
 
     <div id="cargando" class="panel vacio"><p>Cargando…</p></div>
     <div id="sinSesion" class="panel vacio" hidden>
       <h1>Tu colección</h1>
-      <p>Ingresa para ver los búhos, temas de racha, marcos, títulos y pines que vas ganando.</p>
+      <p>Ingresa para ver los búhos, fondos, marcos, títulos y pines que vas ganando.</p>
       <button class="btn" type="button" id="btnIngresar">Ingresar</button>
     </div>
 
@@ -180,9 +186,9 @@
   var C = window.MCColeccion, R = C.rareza;
   var TAB = (location.hash || '').slice(1) || 'buho', FIL = 'todos';
   var INTRO = {
-    buho: 'El búho que te acompaña en tu perfil. Los disfraces de cada área también salen en sus cursos.',
-    racha: 'El color de tu cuadro de racha en el perfil. Cielo es el de siempre.',
-    marco: 'El borde de tu foto en el perfil.',
+    buho: 'El búho que sale en tu inicio. Los disfraces de cada área también salen en sus cursos.',
+    racha: 'El fondo de tu tarjeta de perfil (arriba, junto a tu nombre) y de tu cuadro de racha. Cielo es el de siempre.',
+    marco: 'El borde de tu foto en tu tarjeta de perfil y en tu perfil.',
     titulo: 'La frase que sale bajo tu nombre.',
     pines: 'Elige hasta 3 pines para tu vitrina. Se ganan en los eventos.',
     rangos: 'Cada lunes se guarda aquí el rango que alcanzaste en la semana. Toca uno para ver tus semanas.'
@@ -208,7 +214,7 @@
     var tema = C.tema(), marco = C.marco();
     var slots = [
       ['buho', b.nom, 'Búho', '<span style="width:34px;height:34px;display:block">' + C.buho(b) + '</span>'],
-      ['racha', C.item(C.puesto('racha')).nom, 'Racha', '<span class="mini-tema" style="display:block;background:linear-gradient(135deg,' + tema[0] + ',' + tema[1] + ')"></span>'],
+      ['racha', C.item(C.puesto('racha')).nom, 'Fondo', '<span class="mini-tema" style="display:block;background:linear-gradient(135deg,' + tema[0] + ',' + tema[1] + ')"></span>'],
       ['marco', C.item(C.puesto('marco')).nom, 'Marco', '<span class="mini-marco" style="display:block;background:' + (marco || '#2A2346') + '"><i></i></span>'],
       ['titulo', t.nom, 'Título', '<span style="font-size:22px;color:rgb(' + tr.c + ')">★</span>']
     ];
