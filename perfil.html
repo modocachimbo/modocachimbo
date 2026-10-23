@@ -35,7 +35,7 @@
 
   .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px 60px; }
 
-  header.top { display: flex; align-items: center; justify-content: space-between; padding: 28px 0; gap: 14px; flex-wrap: wrap; }
+  header.top { display: flex; align-items: center; justify-content: space-between; padding: 22px 0 6px; gap: 12px; flex-wrap: wrap; }
   .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
   .logo img { height: 34px; width: auto; display: block; }
   @media (max-width: 520px) { .logo img { height: 28px; } }
@@ -166,7 +166,34 @@
   :root { --cel: #1CB0F6; --cel-d: #1586BD; --mor: #CE82FF; --mor-d: #9A5BC4; --nar: #FF9600; --amb: #FFC800; --roj: #FF4B4B; --borde: #2C2549; }
   .panel { border: 2px solid var(--borde); border-bottom-width: 4px; }
   .panel h2 { font-weight: 900; }
-  .sec-tit { font-size: 20px; font-weight: 1000; margin: 30px 2px 0; }
+  /* Títulos de sección estilo juego: letra gruesa inclinada con su color y una línea */
+  .sec-tit { --tc: var(--accent); display: flex; align-items: center; gap: 10px; margin: 30px 2px 0; font: italic 900 26px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; text-transform: uppercase; letter-spacing: .02em; color: #fff; }
+  .sec-tit::before { content: ""; flex: none; width: 8px; height: 22px; border-radius: 3px; transform: skewX(-12deg); background: var(--tc); box-shadow: 0 0 12px var(--tc); }
+  .sec-tit::after { content: ""; flex: 1; height: 3px; border-radius: 3px; background: linear-gradient(90deg, var(--tc), transparent); opacity: .5; }
+  #tabPerfil > .sec-tit:first-child { margin-top: 22px; }
+  .panel { background: linear-gradient(180deg, #1b1532, #141027); }
+  /* Datos del estudiante */
+  .datos summary { display: block !important; }
+  .d-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .d { display: grid; gap: 3px; min-width: 0; padding: 10px 12px; border-radius: 12px; background: #120e22; border: 2px solid #2a2346; }
+  .d.ancho { grid-column: span 2; }
+  .d small { font-size: 11px; font-weight: 900; color: var(--text-dim); text-transform: uppercase; letter-spacing: .06em; }
+  .d b { font-size: 15px; font-weight: 900; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .d b.vacio-d { color: #5e5585; font-weight: 800; font-style: italic; }
+  .d-edit { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; height: 44px; border-radius: 12px; border: 2px solid var(--cel-d); border-bottom-width: 4px; color: var(--cel); background: rgba(28,176,246,.08); font: 900 14px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .5px; }
+  .d-edit svg { width: 18px; height: 18px; }
+  .d-edit .d-ce, .datos[open] .d-edit .d-ab { display: none; }
+  .datos[open] .d-edit .d-ce { display: inline; }
+  .datos[open] .d-edit { color: var(--text-dim); border-color: #352E58; background: none; }
+  .datos[open] summary { border-bottom: 0 !important; }
+  @media (max-width: 560px) { .d-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sec-tit { font-size: 22px; white-space: nowrap; } }
+  /* Arriba: volver al inicio y el título, como en Mi colección */
+  header.top .c-volver { flex: none; display: inline-flex; align-items: center; gap: 4px; height: 44px; padding: 0 16px 0 10px; transform: skewX(-10deg); border-radius: 10px; background: var(--surface-2); border: 2px solid #352E58; border-bottom-width: 5px; color: var(--text); font: 900 15px Nunito, sans-serif; text-decoration: none; text-transform: uppercase; letter-spacing: .04em; }
+  header.top .c-volver > * { transform: skewX(10deg); }
+  header.top .c-volver svg { width: 22px; height: 22px; fill: none; stroke: var(--accent); stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
+  header.top .c-volver:hover { border-color: var(--accent); color: var(--accent); }
+  .top-tit { flex: 1; min-width: 0; font: italic 900 40px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; text-transform: uppercase; color: var(--accent); text-shadow: 0 3px 0 rgba(0,0,0,.45); white-space: nowrap; }
+  @media (max-width: 560px) { header.top .c-volver { width: 44px; padding: 0; justify-content: center; } header.top .c-volver span { display: none; } .top-tit { font-size: 30px; } }
   .sec-cab, .datos summary { display: flex; align-items: center; gap: 12px; }
   .sec-cab h2, .datos summary h2 { margin: 0; }
   .sec-cab .nota, .datos summary .nota { display: block; margin-top: 2px; }
@@ -416,7 +443,8 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
 <body>
   <div class="wrap">
     <header class="top">
-      <a class="logo" href="index.html" aria-label="Modo Cachimbo · Inicio"><img src="assets/img/logo-modo-cachimbo-horizontal.svg" alt="Modo Cachimbo" width="160" height="34"></a>
+      <a class="c-volver" href="index.html" aria-label="Volver al inicio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Inicio</span></a>
+      <h1 class="top-tit">Mi perfil</h1>
       <div data-mc-auth data-mc-tarjeta></div>
     </header>
 
@@ -454,7 +482,6 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
           <span class="pn mor"><b id="pnMejor">–</b><small>mejor racha</small></span>
           <a class="pn lim" href="coleccion.html"><b id="pnCol">–</b><small>colección</small></a>
         </div>
-        <div class="chips" id="chips"></div>
         <div class="cuenta" id="cuenta"></div>
       </section>
 
@@ -477,75 +504,19 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
 
       <div id="tabPerfil">
 
-      <!-- Mi colección (coleccion.html): tus pines y lo que tienes -->
-      <a class="col-strip" id="colStrip" href="coleccion.html">
-        <span class="pins" id="colPins"></span>
-        <span class="tx"><b>Mi colección <small id="colN" style="color:var(--accent);font-weight:1000"></small></b><span>Búhos, fotos de perfil, fondos, marcos, títulos y pines.</span></span>
-        <span class="ir">Ver<span class="ir-l"> colección</span> ›</span>
-      </a>
-
-      <h2 class="sec-tit">Estadísticas</h2>
-      <section class="racha-card" id="racha">
-        <div class="rc-cab">
-          <span class="rc-fuego" id="rFuego"><svg viewBox="0 0 32 36" aria-hidden="true"><path class="f1" d="M16 1.5c1.2 4.6 7.6 8.2 9.6 13.6 2.6 7-1.6 17.4-9.6 17.4S3.8 24.9 6.1 17.6c1-3.2 3.3-5.3 4.9-6.9.2 2.8 1.4 4.6 3 5.2C13.3 10.6 14 6 16 1.5z"/><path class="f2" d="M16.3 15.5c.6 2.4 4.5 4.4 4.5 8.6a4.8 4.8 0 0 1-9.6 0c0-2 1-3.4 2.1-4.4.2 1.4.8 2.3 1.6 2.6-.4-2.4 0-4.6 1.4-6.8z"/></svg></span>
-          <div class="rc-num"><b id="rActual">–</b><span><em id="rActualT">días de racha</em> <em style="white-space:nowrap">· mejor <em id="rMejor">–</em></em></span></div>
-          <div class="rc-vista" role="group" aria-label="Ver la racha por"><button type="button" class="on" data-vista="semana" aria-pressed="true">Semana</button><button type="button" data-vista="mes" aria-pressed="false">Mes</button></div>
-        </div>
-        <div class="rc-dias" id="rDias"></div>
-        <div class="rc-mes" id="rMes" hidden></div>
-        <div class="rc-barra" aria-hidden="true"><i id="rBarra"></i></div>
-        <p class="rc-nota" id="rNota"></p>
-      </section>
-      <p class="rc-regla" id="rRegla">Sumas un día al cumplir tu meta. Tienes 1 día de descanso por semana (el día congelado); si faltas 2, vuelve a 0.</p>
-
-      <h2 class="sec-tit">Tu meta diaria</h2>
-      <section class="metas" id="metas">
-          <button type="button" class="mt" data-meta="20" aria-pressed="false" style="--c:#FF9600"><span class="mt-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.7 1.6 2.6 1.9 5.4.8 8-1.2 2.9-3.9 4.7-6.6 4.7-3.2 0-6.1-2.2-6.8-5.5-.5-2.2.1-4.4 1.4-6.1.2 1.5.9 2.6 2 3.1-.5-4.4 1.4-8.6 4-11.9z"/><path fill="#FFD84D" d="M12.2 11.2c.4 1.7 2.2 2.6 2.7 4.5.6 2.4-1 4.6-3.1 4.6-2 0-3.4-1.6-3.2-3.5.1-1 .6-1.8 1.3-2.4.1.8.5 1.3 1 1.5-.2-1.7.4-3.3 1.3-4.7z"/></svg></span><span class="mt-tx"><b>Suave</b><small>unos 10 minutos al día</small></span><span class="mt-n">20 preg.</span></button>
-          <button type="button" class="mt" data-meta="30" aria-pressed="false" style="--c:#1CB0F6"><span class="mt-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.7 1.6 2.6 1.9 5.4.8 8-1.2 2.9-3.9 4.7-6.6 4.7-3.2 0-6.1-2.2-6.8-5.5-.5-2.2.1-4.4 1.4-6.1.2 1.5.9 2.6 2 3.1-.5-4.4 1.4-8.6 4-11.9z"/></svg></span><span class="mt-tx"><b>Normal</b><small>unos 15 minutos al día</small></span><span class="mt-n">30 preg.</span></button>
-          <button type="button" class="mt" data-meta="50" aria-pressed="false" style="--c:#CE82FF"><span class="mt-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.7 1.6 2.6 1.9 5.4.8 8-1.2 2.9-3.9 4.7-6.6 4.7-3.2 0-6.1-2.2-6.8-5.5-.5-2.2.1-4.4 1.4-6.1.2 1.5.9 2.6 2 3.1-.5-4.4 1.4-8.6 4-11.9z"/><path fill="#fff" opacity=".6" d="M12.2 11.2c.4 1.7 2.2 2.6 2.7 4.5.6 2.4-1 4.6-3.1 4.6-2 0-3.4-1.6-3.2-3.5.1-1 .6-1.8 1.3-2.4.1.8.5 1.3 1 1.5-.2-1.7.4-3.3 1.3-4.7z"/></svg></span><span class="mt-tx"><b>Intenso</b><small>unos 25 minutos al día</small></span><span class="mt-n">50 preg.</span></button>
-      </section>
-      <p class="rc-regla" id="metaNota">Si la cambias, cuenta desde mañana para no romper tu racha. Los días pasados se quedan como estaban.</p>
-      <section class="stats">
-        <div class="st cel"><span class="st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg></span><div><b id="rHoy">–</b><span>preguntas hoy</span></div></div>
-        <div class="st ver"><span class="st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-6M12 20V5M19 20v-10"/></svg></span><div><b id="pPromedio">–</b><span>promedio</span></div></div>
-        <div class="st mor"><span class="st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M9 10l2.2 2.2L15.5 8"/></svg></span><div><b id="pPracticas">–</b><span>prácticas</span></div></div>
-        <div class="st roj"><span class="st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 0 1 14.8-5.7L21 9"/><polyline points="21 3.5 21 9 15.5 9"/><path d="M20.5 12a8.5 8.5 0 0 1-14.8 5.7L3 15"/><polyline points="3 20.5 3 15 8.5 15"/></svg></span><div><b id="pFalladas">–</b><span>por repasar</span></div></div>
-      </section>
-
-      <section class="panel" id="errores">
-        <div class="err-top">
-          <div class="err-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 0 1 14.8-5.7L21 9"/><polyline points="21 3.5 21 9 15.5 9"/><path d="M20.5 12a8.5 8.5 0 0 1-14.8 5.7L3 15"/><polyline points="3 20.5 3 15 8.5 15"/></svg></div>
-          <div><h2>Errores de hoy</h2><p class="nota" id="eSub">Cargando…</p></div>
-        </div>
-        <div class="err-lista" id="eLista"></div>
-        <a class="err-btn" id="eBtn" href="falladas.html?hoy=1" hidden>Practicar mis errores</a>
-        <p class="err-reloj" id="eReloj"></p>
-      </section>
-
-      <section class="panel" id="progreso">
-        <div class="sec-cab">
-          <span class="sec-ic cel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-6M12 20V5M19 20v-10"/></svg></span>
-          <div><h2>Mi progreso por curso</h2><p class="nota">Se guarda cada vez que terminas una práctica, un Repaso, unas Fijas o un examen.</p></div>
-        </div>
-        <a class="btn-cel prog-repasar" id="pRepasar" href="falladas.html" hidden></a>
-        <div class="prog-cursos" id="pCursos"><p class="nota">Cargando tu progreso…</p></div>
-      </section>
-
-      <section class="panel" id="simulacros">
-        <div class="sec-cab">
-          <span class="sec-ic mor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6v3H9z"/><path d="M7 4.5H5V21h14V4.5h-2"/><path d="M9 11h6M9 15h4"/></svg></span>
-          <div><h2>Mis simulacros</h2><p class="nota">Tus simulacros terminados. Con «Repetir» das las mismas preguntas otra vez.</p></div>
-        </div>
-        <ul class="lista rep-lista" id="simLista"><li><span>Cargando…</span></li></ul>
-        <a class="btn-mor" href="simulacro.html">Crear un simulacro</a>
-      </section>
-
-      <h2 class="sec-tit">Mi cuenta</h2>
+      <!-- 1. Quién eres: tus datos (se editan aquí mismo) -->
+      <h2 class="sec-tit" style="--tc:var(--cel)">Datos del estudiante</h2>
       <details class="panel datos" id="datos">
         <summary>
-          <span class="sec-ic cel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
-          <span class="sec-txt"><h2>Mis datos</h2><span class="nota">Con esto personalizamos tu inicio. Solo tú puedes verlos.</span></span>
-          <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          <span class="d-grid">
+            <span class="d ancho"><small>Nombre</small><b id="dNombre">–</b></span>
+            <span class="d"><small>Apodo</small><b id="dApodo">–</b></span>
+            <span class="d"><small>Modalidad</small><b id="dModalidad">–</b></span>
+            <span class="d ancho"><small>Carrera</small><b id="dCarrera">–</b></span>
+            <span class="d"><small>Bloque</small><b id="dBloque">–</b></span>
+            <span class="d"><small>Meta simulacro</small><b id="dMeta">–</b></span>
+          </span>
+          <span class="d-edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span class="d-ab">Editar mis datos</span><span class="d-ce">Cerrar</span></span>
         </summary>
         <form id="form" novalidate>
           <div class="campo">
@@ -593,6 +564,77 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
         </form>
       </details>
 
+      <!-- 2. Cómo vas: racha, meta y números -->
+
+      <h2 class="sec-tit" style="--tc:var(--nar)">Estadísticas</h2>
+      <section class="racha-card" id="racha">
+        <div class="rc-cab">
+          <span class="rc-fuego" id="rFuego"><svg viewBox="0 0 32 36" aria-hidden="true"><path class="f1" d="M16 1.5c1.2 4.6 7.6 8.2 9.6 13.6 2.6 7-1.6 17.4-9.6 17.4S3.8 24.9 6.1 17.6c1-3.2 3.3-5.3 4.9-6.9.2 2.8 1.4 4.6 3 5.2C13.3 10.6 14 6 16 1.5z"/><path class="f2" d="M16.3 15.5c.6 2.4 4.5 4.4 4.5 8.6a4.8 4.8 0 0 1-9.6 0c0-2 1-3.4 2.1-4.4.2 1.4.8 2.3 1.6 2.6-.4-2.4 0-4.6 1.4-6.8z"/></svg></span>
+          <div class="rc-num"><b id="rActual">–</b><span><em id="rActualT">días de racha</em> <em style="white-space:nowrap">· mejor <em id="rMejor">–</em></em></span></div>
+          <div class="rc-vista" role="group" aria-label="Ver la racha por"><button type="button" class="on" data-vista="semana" aria-pressed="true">Semana</button><button type="button" data-vista="mes" aria-pressed="false">Mes</button></div>
+        </div>
+        <div class="rc-dias" id="rDias"></div>
+        <div class="rc-mes" id="rMes" hidden></div>
+        <div class="rc-barra" aria-hidden="true"><i id="rBarra"></i></div>
+        <p class="rc-nota" id="rNota"></p>
+      </section>
+      <p class="rc-regla" id="rRegla">Sumas un día al cumplir tu meta. Tienes 1 día de descanso por semana (el día congelado); si faltas 2, vuelve a 0.</p>
+
+      <h2 class="sec-tit" style="--tc:var(--amb)">Tu meta diaria</h2>
+      <section class="metas" id="metas">
+          <button type="button" class="mt" data-meta="20" aria-pressed="false" style="--c:#FF9600"><span class="mt-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.7 1.6 2.6 1.9 5.4.8 8-1.2 2.9-3.9 4.7-6.6 4.7-3.2 0-6.1-2.2-6.8-5.5-.5-2.2.1-4.4 1.4-6.1.2 1.5.9 2.6 2 3.1-.5-4.4 1.4-8.6 4-11.9z"/><path fill="#FFD84D" d="M12.2 11.2c.4 1.7 2.2 2.6 2.7 4.5.6 2.4-1 4.6-3.1 4.6-2 0-3.4-1.6-3.2-3.5.1-1 .6-1.8 1.3-2.4.1.8.5 1.3 1 1.5-.2-1.7.4-3.3 1.3-4.7z"/></svg></span><span class="mt-tx"><b>Suave</b><small>unos 10 minutos al día</small></span><span class="mt-n">20 preg.</span></button>
+          <button type="button" class="mt" data-meta="30" aria-pressed="false" style="--c:#1CB0F6"><span class="mt-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.7 1.6 2.6 1.9 5.4.8 8-1.2 2.9-3.9 4.7-6.6 4.7-3.2 0-6.1-2.2-6.8-5.5-.5-2.2.1-4.4 1.4-6.1.2 1.5.9 2.6 2 3.1-.5-4.4 1.4-8.6 4-11.9z"/></svg></span><span class="mt-tx"><b>Normal</b><small>unos 15 minutos al día</small></span><span class="mt-n">30 preg.</span></button>
+          <button type="button" class="mt" data-meta="50" aria-pressed="false" style="--c:#CE82FF"><span class="mt-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.7 1.6 2.6 1.9 5.4.8 8-1.2 2.9-3.9 4.7-6.6 4.7-3.2 0-6.1-2.2-6.8-5.5-.5-2.2.1-4.4 1.4-6.1.2 1.5.9 2.6 2 3.1-.5-4.4 1.4-8.6 4-11.9z"/><path fill="#fff" opacity=".6" d="M12.2 11.2c.4 1.7 2.2 2.6 2.7 4.5.6 2.4-1 4.6-3.1 4.6-2 0-3.4-1.6-3.2-3.5.1-1 .6-1.8 1.3-2.4.1.8.5 1.3 1 1.5-.2-1.7.4-3.3 1.3-4.7z"/></svg></span><span class="mt-tx"><b>Intenso</b><small>unos 25 minutos al día</small></span><span class="mt-n">50 preg.</span></button>
+      </section>
+      <p class="rc-regla" id="metaNota">Si la cambias, cuenta desde mañana para no romper tu racha. Los días pasados se quedan como estaban.</p>
+      <section class="stats">
+        <div class="st cel"><span class="st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg></span><div><b id="rHoy">–</b><span>preguntas hoy</span></div></div>
+        <div class="st ver"><span class="st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-6M12 20V5M19 20v-10"/></svg></span><div><b id="pPromedio">–</b><span>promedio</span></div></div>
+        <div class="st mor"><span class="st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M9 10l2.2 2.2L15.5 8"/></svg></span><div><b id="pPracticas">–</b><span>prácticas</span></div></div>
+        <div class="st roj"><span class="st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 0 1 14.8-5.7L21 9"/><polyline points="21 3.5 21 9 15.5 9"/><path d="M20.5 12a8.5 8.5 0 0 1-14.8 5.7L3 15"/><polyline points="3 20.5 3 15 8.5 15"/></svg></span><div><b id="pFalladas">–</b><span>por repasar</span></div></div>
+      </section>
+
+      <!-- 3. Tu estudio: errores, progreso y simulacros -->
+      <h2 class="sec-tit" style="--tc:var(--roj)">Tu estudio</h2>
+      <section class="panel" id="errores">
+        <div class="err-top">
+          <div class="err-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 0 1 14.8-5.7L21 9"/><polyline points="21 3.5 21 9 15.5 9"/><path d="M20.5 12a8.5 8.5 0 0 1-14.8 5.7L3 15"/><polyline points="3 20.5 3 15 8.5 15"/></svg></div>
+          <div><h2>Errores de hoy</h2><p class="nota" id="eSub">Cargando…</p></div>
+        </div>
+        <div class="err-lista" id="eLista"></div>
+        <a class="err-btn" id="eBtn" href="falladas.html?hoy=1" hidden>Practicar mis errores</a>
+        <p class="err-reloj" id="eReloj"></p>
+      </section>
+
+      <section class="panel" id="progreso">
+        <div class="sec-cab">
+          <span class="sec-ic cel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-6M12 20V5M19 20v-10"/></svg></span>
+          <div><h2>Mi progreso por curso</h2><p class="nota">Se guarda cada vez que terminas una práctica, un Repaso, unas Fijas o un examen.</p></div>
+        </div>
+        <a class="btn-cel prog-repasar" id="pRepasar" href="falladas.html" hidden></a>
+        <div class="prog-cursos" id="pCursos"><p class="nota">Cargando tu progreso…</p></div>
+      </section>
+
+      <section class="panel" id="simulacros">
+        <div class="sec-cab">
+          <span class="sec-ic mor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6v3H9z"/><path d="M7 4.5H5V21h14V4.5h-2"/><path d="M9 11h6M9 15h4"/></svg></span>
+          <div><h2>Mis simulacros</h2><p class="nota">Tus simulacros terminados. Con «Repetir» das las mismas preguntas otra vez.</p></div>
+        </div>
+        <ul class="lista rep-lista" id="simLista"><li><span>Cargando…</span></li></ul>
+        <a class="btn-mor" href="simulacro.html">Crear un simulacro</a>
+      </section>
+
+
+      <!-- 4. Tu colección y tu cuenta -->
+      <h2 class="sec-tit" style="--tc:var(--accent)">Mi colección</h2>
+      <!-- Mi colección (coleccion.html): tus pines y lo que tienes -->
+      <a class="col-strip" id="colStrip" href="coleccion.html">
+        <span class="pins" id="colPins"></span>
+        <span class="tx"><b>Mi colección <small id="colN" style="color:var(--accent);font-weight:1000"></small></b><span>Búhos, fotos de perfil, fondos, marcos, títulos y pines.</span></span>
+        <span class="ir">Ver<span class="ir-l"> colección</span> ›</span>
+      </a>
+
+      <h2 class="sec-tit" style="--tc:var(--mor)">Mi cuenta</h2>
       <section class="panel">
         <div class="sec-cab">
           <span class="sec-ic mor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4.5"/><path d="M11.3 11.7L20 3M16.5 6.5l3 3M14 9l2 2"/></svg></span>
@@ -614,7 +656,6 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       <button class="btn-gris" type="button" id="btnSalir">Cerrar sesión</button>
     </div>
 
-    <a class="volver" href="index.html">← Volver al inicio</a>
   </div>
 
 <script src="assets/accesos-perfil.js"></script>
@@ -733,20 +774,16 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
     } else av.textContent = nombre.charAt(0).toUpperCase();
     av.setAttribute('data-orig', av.innerHTML);
     if (window.MCColeccion) pintarColeccion();
-    pintarChips(p);
+    pintarDatos(p, nombre);
     cuentaRegresiva();
   }
 
-  // Etiquetas bajo el nombre: carrera, bloque y modalidad
-  function pintarChips(p) {
-    var caja = $('chips'); caja.textContent = '';
-    var chip = function (txt, color) {
-      var c = document.createElement('span'); c.className = 'chip ' + color; c.textContent = txt; caja.appendChild(c);
-    };
-    if (p.carrera) chip(MCCarreras.oficial(p.carrera) || p.carrera, 'cel');
+  // Datos del estudiante: lo que guardaste en el formulario, a la vista
+  function pintarDatos(p, nombre) {
     var bl = p.carrera && MCCarreras.bloqueDe(p.carrera);
-    if (bl) chip('Bloque ' + bl.id, 'mor');
-    if (p.modalidad) chip(p.modalidad, 'gris');
+    var v = { dNombre: p.nombre || nombre, dApodo: p.apodo, dModalidad: p.modalidad, dCarrera: p.carrera && (MCCarreras.oficial(p.carrera) || p.carrera),
+      dBloque: bl && ('Bloque ' + bl.id), dMeta: p.meta_simulacro ? p.meta_simulacro + ' pts' : '' };
+    Object.keys(v).forEach(function (k) { var e = $(k); e.textContent = v[k] || 'Sin completar'; e.classList.toggle('vacio-d', !v[k]); });
   }
   function abrirDatos() {
     var d = $('datos'); d.open = true;
