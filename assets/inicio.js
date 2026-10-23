@@ -270,6 +270,17 @@
     alTocar: function () { decir(frasesToque()[toqueN++ % frasesToque().length], 4500); }
   });
   var buhoPuesto = disfraz();
+  // El fondo que llevas puesto pinta todo el escenario (Galaxia es el de siempre, con su modo claro)
+  function pintarEscenario() {
+    var C = window.MCColeccion, e = $('escena'); if (!C || !e) return;
+    var id = C.puesto('racha'), t = C.tema(id), v = ['--esc-cielo', '--plat-a', '--plat-b', '--esc-foco'];
+    if (id === 'racha-galaxia') { v.forEach(function (k) { e.style.removeProperty(k); }); return; }
+    e.style.setProperty('--esc-cielo', 'radial-gradient(120% 85% at 50% 30%, ' + t[0] + ' 0%, ' + t[3] + ' 42%, #0b0818 85%)');
+    e.style.setProperty('--plat-a', t[0]); e.style.setProperty('--plat-b', t[3]);
+    e.style.setProperty('--esc-foco', 'rgba(255, 255, 255, .12)');
+  }
+  pintarEscenario();
+  if (window.MCColeccion) MCColeccion.alCambiar(pintarEscenario);
   if (window.MCColeccion) MCColeccion.alCambiar(function () {
     var ar = disfraz(); if (ar === buhoPuesto) return;
     buhoPuesto = ar;
@@ -416,11 +427,14 @@
     if (C && x.yo) {
       marco = C.marco(); tema = C.tema();
       var mia = document.querySelector('[data-mc-tarjeta] .mcu-av img'); if (mia) img = mia.src;
-    } else if (C) {
-      if (x.marco && C.item(x.marco)) marco = C.marco(x.marco);
-      if (x.fondo && C.item(x.fondo)) tema = C.tema(x.fondo);
+    } else if (C && 'avatar' in x) {
+      // Sin nada puesto lleva lo predeterminado: la cara del búho sobre Galaxia
+      var ma = x.marco && C.item(x.marco), fo = x.fondo && C.item(x.fondo), at = C.item(x.avatar) || C.item(C.defecto.avatar);
+      if (ma) marco = C.marco(x.marco);
+      tema = C.tema(fo ? x.fondo : C.defecto.racha);
+      if (at.av) img = C.avatar(at.id);
     }
-    var dentro = /^https:\/\//.test(img || '') ? '<img src="' + esc(img) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : inicial(x.apodo);
+    var dentro = /^https:\/\//.test(img || '') || /assets\/buho\/avatar\//.test(img || '') ? '<img src="' + esc(img) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : inicial(x.apodo);
     var fondo = tema ? 'linear-gradient(135deg,' + tema[0] + ',' + tema[3] + ')' : AV[(x.puesto - 1) % AV.length];
     return '<span class="letra' + (marco ? ' con-m' : '') + (tema ? ' con-f' : '') + '" style="' + (marco ? '--m:' + marco + ';' : '') + '--lf:' + fondo + '"><span>' + dentro + '</span></span>';
   }
@@ -434,7 +448,7 @@
   var CLS = ['', 'oro', 'plata', 'bronce'];
   function filaXp(x, extra) {
     var nom = x.yo ? 'Tú' : (x.apodo || 'Cachimbo');
-    return '<li class="' + (CLS[x.puesto] || '') + (x.yo ? ' tu' : '') + (extra ? ' extra' : '') + '"><span class="pos">' + puesto(x.puesto) + '</span>' + foto({ puesto: x.puesto, apodo: x.yo ? (nombreAlumno || x.apodo) : x.apodo, yo: x.yo, foto: x.foto, marco: x.marco, fondo: x.fondo }) +
+    return '<li class="' + (CLS[x.puesto] || '') + (x.yo ? ' tu' : '') + (extra ? ' extra' : '') + '"><span class="pos">' + puesto(x.puesto) + '</span>' + foto(x.yo ? { puesto: x.puesto, apodo: nombreAlumno || x.apodo, yo: true } : x) +
       '<span class="quien"><b>' + esc(nom) + '</b></span>' + emblema(x.xp) + '<span class="xp">' + miles(x.xp) + ' <small>XP</small></span></li>';
   }
   // corto: solo el podio y tu fila a la vista; el resto se abre con "Ver top 10"
@@ -449,13 +463,30 @@
     var abierta = $('topCel').classList.toggle('abierta');
     this.textContent = abierta ? 'Ver menos ▴' : 'Ver top 10 ▾';
   });
+  // Tu fila de los tops usa la foto de tu tarjeta: se vuelven a dibujar cuando cambia
+  var ultTop = null, ultSim = null, tuFoto = '';
+  function repintarTops() {
+    var i = document.querySelector('[data-mc-tarjeta] .mcu-av img'), f = (i ? i.src : '') + '|' + (window.MCColeccion ? MCColeccion.marco() + MCColeccion.tema()[0] : '');
+    if (f === tuFoto) return;
+    tuFoto = f;
+    if (ultTop) pintarTop(ultTop);
+    if (ultSim) pintarSim(ultSim);
+  }
+  new MutationObserver(repintarTops).observe(cuenta, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-a'] });
+  if (window.MCColeccion) MCColeccion.alCambiar(repintarTops);
+  function pintarTop(d) {
+    ultTop = d;
+    var top = (d.top || []).slice().sort(function (a, b) { return a.puesto - b.puesto; });
+    $('topLado').innerHTML = listaXp(top, d.yo, 10);
+    var abierta = $('topCel').classList.contains('abierta');
+    $('topCel').innerHTML = listaXp(top, d.yo, 10, true);
+    $('topMas').hidden = !$('topCel').querySelector('.extra');
+    if (abierta) $('topCel').classList.add('abierta');
+  }
   function cargarTop() {
     MCAuth.listo.then(function (c) { return c.rpc('ranking_xp'); }).then(function (r) {
       if (r.error) throw r.error;
-      var d = r.data || {}, top = (d.top || []).slice().sort(function (a, b) { return a.puesto - b.puesto; });
-      $('topLado').innerHTML = listaXp(top, d.yo, 10);
-      $('topCel').innerHTML = listaXp(top, d.yo, 10, true);
-      $('topMas').hidden = !$('topCel').querySelector('.extra');
+      pintarTop(r.data || {});
     }).catch(function () {
       $('topLado').innerHTML = $('topCel').innerHTML = '<li class="vacio">No se pudo cargar el top. Revisa tu conexión.</li>';
     });
@@ -473,6 +504,7 @@
       emblema(x.xp) + '<b>' + dec(x.puntaje) + ' pts</b></li>';
   }
   function pintarSim(filas) {
+    ultSim = filas;
     filas = (filas || []).slice().sort(function (a, b) { return a.puesto - b.puesto; });
     var top = filas.filter(function (x) { return x.puesto <= 10; }), yo = filas.filter(function (x) { return x.yo; })[0];
     var podio = $('podio'), lista = $('simLista'), mas = $('simMas');

@@ -1,15 +1,28 @@
 -- =========================================================
--- Modo Cachimbo · Tu perfil en los tops del inicio
+-- Modo Cachimbo · Foto de perfil, fondo Galaxia y tu perfil en los tops
 -- Cómo usarlo: Supabase → SQL Editor → New query → pega todo
 -- este archivo → Run. Se puede volver a correr sin problema.
 -- Necesita 16-corazones.sql, 28-ranking-simulacro-rango.sql y 31-coleccion.sql.
 --
+--   · Mi colección tiene un espacio nuevo, 'avatar' (foto de perfil):
+--     la cara del búho (la de siempre), tu foto, y los disfraces de área.
+--   · Fondo nuevo 'racha-galaxia' (el morado del inicio, el de siempre).
 --   · ranking_xp() (Top de la semana) y ranking_simulacro() (Top simulacro)
---     ahora devuelven también, de cada alumno, su foto de perfil ('foto'),
---     el marco ('marco') y el fondo ('fondo') que lleva puestos en
---     Mi colección. El inicio los dibuja igual que su tarjeta de perfil.
---     Si no tiene foto sale su inicial; sin nada puesto, lo de siempre.
+--     ahora devuelven también, de cada alumno, su foto ('foto') y lo que
+--     lleva puesto: foto de perfil ('avatar'), marco ('marco') y fondo
+--     ('fondo'). El inicio los dibuja igual que su tarjeta de perfil.
 -- =========================================================
+
+alter table public.coleccion_item drop constraint if exists coleccion_item_espacio_check;
+alter table public.coleccion_item add constraint coleccion_item_espacio_check
+  check (espacio in ('buho','avatar','racha','marco','titulo','pines'));
+
+insert into public.coleccion_item (id, espacio, regla) values
+  ('avatar-buho','avatar','{"tipo":"gratis"}'), ('avatar-foto','avatar','{"tipo":"gratis"}'),
+  ('avatar-al-juarismi','avatar','{"tipo":"gratis"}'), ('avatar-cervantes','avatar','{"tipo":"gratis"}'),
+  ('avatar-einstein','avatar','{"tipo":"gratis"}'), ('avatar-inca','avatar','{"tipo":"gratis"}'),
+  ('racha-galaxia','racha','{"tipo":"gratis"}')
+on conflict (id) do update set espacio = excluded.espacio, regla = excluded.regla;
 
 -- Top 10 de la semana por XP, más el puesto del alumno
 create or replace function public.ranking_xp()
@@ -21,7 +34,7 @@ begin
   select coalesce(jsonb_agg(t order by t.puesto), '[]'::jsonb) into top from (
     select row_number() over (order by x.xp desc, x.usuario) as puesto, public.duelo_apodo(x.usuario) as apodo, x.xp, x.usuario = uid as yo,
            (select p.foto_url from public.perfiles p where p.id = x.usuario and p.foto_url like 'https://%') as foto,
-           c.puesto ->> 'marco' as marco, c.puesto ->> 'racha' as fondo
+           c.puesto ->> 'avatar' as avatar, c.puesto ->> 'marco' as marco, c.puesto ->> 'racha' as fondo
     from public.xp_semana x
     left join public.coleccion_puesto c on c.usuario = x.usuario
     where x.semana = lunes and x.xp > 0 order by x.xp desc, x.usuario limit 10
@@ -37,7 +50,7 @@ grant execute on function public.ranking_xp() to authenticated;
 drop function if exists public.ranking_simulacro();
 
 create function public.ranking_simulacro()
-returns table (puesto integer, apodo text, puntaje numeric, yo boolean, xp integer, foto text, marco text, fondo text)
+returns table (puesto integer, apodo text, puntaje numeric, yo boolean, xp integer, foto text, avatar text, marco text, fondo text)
 language sql stable security definer set search_path = '' as $$
   with semana as (
     select (date_trunc('week', now() at time zone 'America/Lima')) at time zone 'America/Lima' as desde
@@ -58,6 +71,7 @@ language sql stable security definer set search_path = '' as $$
          o.usuario = auth.uid(),
          coalesce(xs.xp, 0)::integer,
          case when p.foto_url like 'https://%' then p.foto_url end,
+         c.puesto ->> 'avatar',
          c.puesto ->> 'marco',
          c.puesto ->> 'racha'
   from orden o

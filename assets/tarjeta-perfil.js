@@ -1,8 +1,8 @@
 /* =========================================================
    Modo Cachimbo · Tarjeta del perfil de la barra de arriba
    - Convierte el botón de la cuenta (assets/auth.js) en la tarjeta del
-     inicio: foto con el marco que llevas, nombre y rango de la semana,
-     sobre el fondo del tema que llevas (Mi colección, assets/coleccion.js).
+     inicio: tu foto de perfil (el búho o la tuya) con el marco que llevas,
+     nombre y rango de la semana, sobre tu fondo (Mi colección, assets/coleccion.js).
    - Se activa en el elemento con data-mc-auth que también tenga
      data-mc-tarjeta. Con data-mc-tarjeta="sola" no salen corazones,
      racha ni XP al lado.
@@ -32,6 +32,7 @@
     T + '.mct-marco.con{filter:drop-shadow(0 0 6px rgba(255,255,255,.25))}' +
     T + '.mct .mcu-av{width:100%;height:100%;border-radius:10px;overflow:hidden;background:var(--lima,#C6E000);color:var(--sobre-lima,#151A03);font:900 26px/1 var(--cuerpo,Nunito,sans-serif);display:grid;place-items:center}' +
     T + '.mct .mcu-av img{width:100%;height:100%;display:block;object-fit:cover}' +
+    T + '.mct .mcu-av.mct-buho{background:radial-gradient(120% 120% at 80% 0%,var(--f1,#5b34b8),var(--f2,#1a0f40) 70%,#0d0820)}' +
     T + '.mct-tx{display:grid;gap:4px;min-width:0;text-align:left}' +
     T + '.mct .mcu-nom{display:block;flex:none;text-align:left;font:800 26px/1 var(--display,"Barlow Condensed","Arial Narrow",sans-serif);letter-spacing:.04em;text-transform:uppercase;color:#fff;' +
       'text-shadow:0 2px 0 rgba(0,0,0,.55),0 0 10px rgba(0,0,0,.6);max-width:9em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
@@ -77,6 +78,22 @@
         if (nom) tx.appendChild(nom);
         var rg = document.createElement('small'); rg.className = 'mct-rg';
         tx.appendChild(rg); chip.appendChild(tx);
+      }
+      // Foto de perfil: el búho (o un disfraz) sobre tu fondo, o tu foto de Google / inicial
+      var av = chip.querySelector('.mcu-av');
+      if (av) {
+        if (av.getAttribute('data-orig') == null) {
+          av.setAttribute('data-orig', av.innerHTML);
+          var im = av.querySelector('img');
+          if (C) C.fijarFoto(im ? im.src : '', av.textContent);
+        }
+        var src = C ? C.avatar() : '', ka = src + '|' + (tema ? tema[0] : '');
+        if (av.getAttribute('data-a') !== ka) {
+          av.setAttribute('data-a', ka);
+          av.innerHTML = src ? '<img src="' + esc(src) + '" alt="">' : av.getAttribute('data-orig');
+          av.classList.toggle('mct-buho', !!src);
+          if (tema) { av.style.setProperty('--f1', tema[0]); av.style.setProperty('--f2', tema[3]); }
+        }
       }
       var caja = chip.querySelector('.mct-marco'), mv = marco || '';
       if (caja.getAttribute('data-m') !== mv) {

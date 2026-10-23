@@ -421,7 +421,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       <!-- Mi colección (coleccion.html): tus pines y lo que tienes -->
       <a class="col-strip" id="colStrip" href="coleccion.html">
         <span class="pins" id="colPins"></span>
-        <span class="tx"><b>Mi colección <small id="colN" style="color:var(--accent);font-weight:1000"></small></b><span>Búhos, fondos, marcos, títulos y pines.</span></span>
+        <span class="tx"><b>Mi colección <small id="colN" style="color:var(--accent);font-weight:1000"></small></b><span>Búhos, fotos de perfil, fondos, marcos, títulos y pines.</span></span>
         <span class="ir">Ver colección ›</span>
       </a>
 
@@ -672,6 +672,8 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       var img = document.createElement('img'); img.alt = ''; img.referrerPolicy = 'no-referrer'; img.src = foto;
       av.appendChild(img);
     } else av.textContent = nombre.charAt(0).toUpperCase();
+    av.setAttribute('data-orig', av.innerHTML);
+    if (window.MCColeccion) pintarColeccion();
     pintarChips(p);
     cuentaRegresiva();
   }
@@ -1046,7 +1048,12 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
   // Mi colección (assets/coleccion.js): marco y título que llevas, y tus pines (el búho sale en el inicio)
   function pintarColeccion() {
     var C = window.MCColeccion; if (!C) return;
-    var marco = C.marco(), caja = $('avCaja');
+    var marco = C.marco(), caja = $('avCaja'), av = $('avatar');
+    // Foto de perfil: el búho (o un disfraz) sobre tu fondo; «Mi foto» deja tu foto o inicial
+    if (av.getAttribute('data-orig') == null && av.innerHTML) av.setAttribute('data-orig', av.innerHTML);
+    var src = C.avatar(), t = C.tema();
+    if (src) { av.innerHTML = '<img src="' + src + '" alt="">'; av.style.background = 'radial-gradient(120% 120% at 80% 0%,' + t[0] + ',' + t[3] + ' 70%,#0d0820)'; }
+    else if (av.getAttribute('data-orig') != null) { av.innerHTML = av.getAttribute('data-orig'); av.style.background = ''; }
     caja.classList.toggle('con-marco', !!marco);
     caja.style.setProperty('--marco', marco || 'none');
     var t = C.item(C.puesto('titulo')), c = C.rareza[t.rareza].c, pt = $('pTitulo');
