@@ -388,9 +388,155 @@
     }
     quitar.push(function () { cambiados.forEach(function (c) { try { c[0].setProperty(c[1], c[2], c[3]); } catch (e) {} }); cambiados = []; });
 
+    /* ---------- inicio: el búho se viste de Señor de las Almas, su cripta y los íconos disfrazados ---------- */
+    var SENOR = 'assets/buho/disfraces/senor-almas-';
+    var GORRITO = 'url("data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 30"><ellipse cx="20" cy="26" rx="18" ry="3.6" fill="#1a0a2c"/><path d="M8 25C12 18 16 9 20 3c2-3 7-4 10-2-4 1-6 4-6 7 0 7 5 12 8 17z" fill="#3a1766"/><path d="M10 21q10 3 21 0l1 4q-11 3-23 0z" fill="#FF8A1F"/></svg>') + '")';
+    var TELA = 'url("data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" fill="none" stroke="#fff" stroke-width="1"><path d="M0 0L60 60M0 0L30 60M0 0L60 30M0 0L0 60M0 0L60 0"/><path d="M0 14q8-2 14 0q2-6 0-14M0 28q16-4 28 0q4-14 0-28M0 44q24-6 42 0q6-22 0-44"/></svg>') + '")';
+    var stS = document.createElement('style');
+    stS.textContent = [
+      // Cripta: cielo morado con niebla verde de almas
+      'html.tema-halloween .escena{background:radial-gradient(38% 30% at 50% 60%,rgba(157,92,255,.38),transparent 72%),radial-gradient(90% 26% at 50% 100%,rgba(110,255,160,.14),transparent 70%),radial-gradient(1.2px 1.2px at 14% 12%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 33% 22%,#e9dcff 50%,transparent 51%),radial-gradient(1.4px 1.4px at 61% 8%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 78% 30%,#e9dcff 50%,transparent 51%),radial-gradient(1.2px 1.2px at 46% 34%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 8% 40%,#e9dcff 50%,transparent 51%),linear-gradient(#0b0516,#1c0c34 52%,#24113f 70%,#0c0617)!important}',
+      // Bruma delante de la roca: el búho queda dentro de la escena
+      '.hal-bruma{position:absolute;left:-10%;right:-10%;bottom:5%;height:16%;z-index:1;pointer-events:none;background:radial-gradient(40% 55% at 30% 60%,rgba(170,140,230,.28),transparent 70%),radial-gradient(38% 50% at 70% 70%,rgba(140,230,170,.16),transparent 70%);filter:blur(6px);animation:halNiebla 14s ease-in-out infinite alternate}',
+      '.hal-cripta svg .vent{animation:halVentana 3.2s ease-in-out infinite}.hal-cripta svg .vent.b{animation-delay:-1.3s}.hal-cripta svg .vent.c{animation-delay:-2.1s}.hal-cripta svg .vela{animation:halVela 1.6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}.hal-cripta svg .cuervo{transform-box:fill-box;transform-origin:50% 100%;animation:halCuervo 6s ease-in-out infinite}',
+      '#buho::after{content:"";position:absolute;left:14%;right:14%;bottom:-2%;height:9%;border-radius:50%;background:radial-gradient(closest-side,rgba(5,2,10,.85),transparent);z-index:-1}',
+      'html.tema-halloween .escena .nubes,html.tema-halloween .escena .plat{display:none}',
+      'html.tema-halloween .escena::before{opacity:.35;filter:hue-rotate(60deg)}',
+      'html.tema-halloween .escena .halo{border:0!important;background:radial-gradient(circle,rgba(157,92,255,.45),transparent 65%)!important;animation:halLatido 3.4s ease-in-out infinite}',
+      '@keyframes halLatido{50%{opacity:.55;transform:scale(1.08)}}',
+      '.hal-cripta{position:absolute;inset:0;z-index:-1;pointer-events:none}',
+      '.hal-cripta svg{position:absolute;left:0;bottom:0;width:100%;height:100%}',
+      // Almas que suben del suelo
+      '.hal-alma{position:absolute;bottom:14%;width:5.5%;opacity:0;animation:halAlma 7s ease-in infinite;filter:drop-shadow(0 0 10px rgba(190,140,255,.8))}',
+      '.hal-alma svg{display:block;width:100%}',
+      '@keyframes halAlma{0%{transform:translate(0,0) scale(.5);opacity:0}15%{opacity:.85}60%{transform:translate(18px,-160%) scale(1)}100%{transform:translate(-14px,-420%) scale(.8);opacity:0}}',
+      // El Señor de las Almas: flota con aura morada y su báculo echa llamas
+      'html.tema-halloween .buho{width:44%!important;bottom:15%!important}',
+      'html.tema-halloween #buho>:not(.hal-senor):not(.hal-llama){display:none!important}',
+      '#buho .hal-senor{position:relative;display:block;width:100%;aspect-ratio:720/662;user-select:none;filter:drop-shadow(0 0 2px rgba(190,150,255,.7)) drop-shadow(0 0 18px rgba(157,92,255,.5));animation:halSenor 4s ease-in-out infinite}',
+      '@keyframes halSenor{0%,100%{transform:translateY(0)}50%{transform:translateY(-3.5%);filter:drop-shadow(0 0 3px rgba(200,165,255,.85)) drop-shadow(0 0 28px rgba(157,92,255,.75))}}',
+      '#buho .hal-senor img{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}',
+      '#buho .hal-senor .capa{transform-origin:20% 34%;animation:halCapa 3.2s ease-in-out infinite}',
+      '@keyframes halCapa{0%,100%{transform:skewY(0) scaleX(1)}35%{transform:skewY(5deg) scaleX(1.04)}70%{transform:skewY(-3deg) scaleX(.97)}}',
+      '#buho .hal-senor .fuego{animation:halFuego 2.2s ease-in-out infinite}',
+      '@keyframes halFuego{0%,100%{transform:translateY(0);opacity:1;filter:brightness(1)}30%{opacity:.75}50%{transform:translateY(-2.5%);filter:brightness(1.35) hue-rotate(-15deg)}75%{opacity:.9}}',
+      '#buho .hal-senor .ojo{position:absolute;top:27.5%;width:7%;aspect-ratio:1;translate:-50% -50%;border-radius:50%;background:radial-gradient(circle,rgba(255,170,255,.75),rgba(190,90,255,.35) 45%,transparent 70%);animation:halOjo 2.6s ease-in-out infinite}',
+      '#buho .hal-senor .ojo::after{content:"";position:absolute;inset:6%;border-radius:50%;background:#2a1744;transform:scaleY(0);transform-origin:50% 0;animation:halParpadeo 5s infinite}',
+      '@keyframes halOjo{50%{transform:scale(1.35);opacity:.6}}',
+      '@keyframes halParpadeo{0%,92%,100%{transform:scaleY(0)}95%{transform:scaleY(1)}}',
+      'html.tema-halloween .globo .gi{background:#2a1150!important;box-shadow:inset 0 0 0 2px #FF8A1F,0 3px 0 rgba(0,0,0,.25)!important}',
+      'html.tema-halloween .globo .gi.hal-gi svg{width:24px;height:24px}',
+      '#buho .hal-senor.conjuro{animation:halConjuro .7s ease-out}',
+      '@keyframes halConjuro{30%{transform:scale(1.07) rotate(-2deg);filter:drop-shadow(0 0 34px #b98cff) brightness(1.25)}}',
+      '.hal-llama{position:absolute;left:var(--x);top:var(--y);width:7%;aspect-ratio:.7;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(circle at 50% 70%,#E6FFD9,#7CFF8A 40%,rgba(80,220,120,0) 72%);mix-blend-mode:screen;animation:halLlama 1.8s ease-in-out infinite;pointer-events:none}',
+      '.hal-llama.m{background:radial-gradient(circle at 50% 70%,#F3E6FF,#B47CFF 40%,rgba(150,80,255,0) 72%)}',
+      '@keyframes halLlama{0%{transform:translateY(0) scale(.6);opacity:0}30%{opacity:1}100%{transform:translateY(-120%) scale(1.1);opacity:0}}',
+      '.hal-nombre{position:absolute;left:50%;bottom:4.5%;translate:-50% 0;z-index:2;padding:5px 14px;border-radius:999px;background:rgba(20,8,36,.85);border:1.5px solid #5d3a92;color:#e8d9ff;font:900 italic 13px/1.2 "Barlow Condensed",sans-serif;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;box-shadow:0 0 18px rgba(157,92,255,.35)}',
+      '.hal-nombre b{color:#9BFF3C}',
+      '.hal-boom{position:absolute;left:50%;top:45%;width:9%;pointer-events:none;z-index:3;animation:halBoom 1.4s ease-out forwards;filter:drop-shadow(0 0 10px #b98cff)}',
+      '.hal-boom svg{display:block;width:100%}',
+      '@keyframes halBoom{from{transform:translate(-50%,0) scale(.4);opacity:1}to{transform:translate(calc(-50% + var(--dx)),var(--dy)) scale(1);opacity:0}}',
+      // Íconos disfrazados: sombrerito de bruja, telaraña y brillo de almas
+      'html.tema-halloween .acceso{border-color:#4a2b78!important;box-shadow:0 0 16px -4px rgba(157,92,255,.6),var(--sombra-tarjeta)}',
+      'html.tema-halloween .acceso::before{content:"";position:absolute;left:-7px;top:-13px;width:30px;height:23px;background:' + GORRITO + ' center/contain no-repeat;rotate:-18deg;pointer-events:none}',
+      'html.tema-halloween .acceso svg{color:#FF8A1F;filter:drop-shadow(0 0 6px rgba(255,138,31,.55))}',
+      'html.tema-halloween .juego::before{content:"";position:absolute;left:0;top:0;width:72px;height:72px;background:' + TELA + ' 0 0/100% no-repeat;opacity:.28;pointer-events:none}',
+      'html.tema-halloween .juego .ic{filter:drop-shadow(0 0 10px rgba(155,255,60,.55))}',
+      'html.tema-halloween .juego{box-shadow:inset 0 -40px 60px -30px rgba(80,20,140,.55)}',
+      'html.tema-halloween .curso .ic{position:relative;overflow:visible;clip-path:none!important;border-radius:12px}',
+      'html.tema-halloween .curso .ic::after{content:"";position:absolute;left:50%;top:-14px;width:30px;height:22px;translate:-50% 0;rotate:-10deg;background:' + GORRITO + ' center/contain no-repeat}',
+      '@media (max-width:900px){.hal-nombre{font-size:11px;padding:4px 10px}html.tema-halloween .buho{width:50%!important}html.tema-halloween .acceso::before{width:24px;height:18px;left:-6px;top:-10px}}',
+      '@media (prefers-reduced-motion:reduce){.hal-alma,.hal-llama,#buho .hal-senor,#buho .hal-senor *,#buho .hal-senor .ojo::after{animation:none}}'
+    ].join('\n');
+    (document.head || raiz).appendChild(stS);
+    quitar.push(function () { stS.remove(); });
+
+    var ALMA = '<svg viewBox="0 0 30 40"><path d="M15 2C7 2 3 8 3 16v20l4-4 4 4 4-4 4 4 4-4 4 4V16C27 8 23 2 15 2z" fill="#E9DDFF" opacity=".9"/><ellipse cx="11" cy="15" rx="2" ry="3" fill="#3b1d66"/><ellipse cx="19" cy="15" rx="2" ry="3" fill="#3b1d66"/></svg>';
+    // Cementerio completo: el suelo queda a la altura de la piedra del búho (85% de la escena)
+    var CRIPTA = '<svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMax slice">' +
+      '<defs><radialGradient id="hcLuz"><stop offset="0" stop-color="#FFB347" stop-opacity=".7"/><stop offset="1" stop-color="#FF8A1F" stop-opacity="0"/></radialGradient>' +
+        '<linearGradient id="hcSuelo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1747"/><stop offset="1" stop-color="#0c0617"/></linearGradient></defs>' +
+      // luna detrás de la iglesia
+      '<circle cx="300" cy="96" r="30" fill="#EADFFF" opacity=".9"/><circle cx="300" cy="96" r="60" fill="#b99cff" opacity=".12"/><circle cx="312" cy="88" r="5" fill="#cbb8f5"/><circle cx="291" cy="106" r="4" fill="#cbb8f5"/>' +
+      // colinas
+      '<path d="M0 280q60-40 130-30t140-20 130 25v145H0z" fill="#170b29"/>' +
+      // iglesia tenebrosa
+      '<g fill="#1a0e2e" stroke="#3b2563" stroke-width="1.2">' +
+        '<path d="M262 300V150l22-20 22 20v150z"/><path d="M284 60l-16 72h32z"/><path d="M282.5 44h3v18h-3zM277 50h14v3h-14z"/>' +
+        '<path d="M306 300V200l40-32 40 32v100z"/><path d="M228 300v-70l17-15 17 15v70z"/><path d="M245 168l-12 48h24z"/>' +
+      '</g>' +
+      '<circle cx="284" cy="172" r="18" fill="url(#hcLuz)"/><circle class="vent" cx="284" cy="172" r="7" fill="#FF9A2E"/><path d="M284 165v14M277 172h14" stroke="#4a2208" stroke-width="1.4"/>' +
+      '<path class="vent b" d="M322 250v-20q0-8 7-8t7 8v20z" fill="#FFB347"/><path class="vent c" d="M356 250v-20q0-8 7-8t7 8v20z" fill="#9BFF3C" opacity=".7"/>' +
+      '<path d="M273 300v-30q0-11 11-11t11 11v30z" fill="#2a1505"/><path class="vent b" d="M276 300v-28q0-8 8-8t8 8v28z" fill="#C9500A" opacity=".7"/>' +
+      '<path class="vent" d="M240 250v-14q0-5 5-5t5 5v14z" fill="#E8761A" opacity=".8"/>' +
+      // árboles secos
+      '<path d="M40 318l4-80q-16-12-34-15 18 0 33 9l-2-34q-12-12-26-14 15 0 25 10l4-28 6 30q9-13 24-16-13 7-20 20l2 36q13-13 31-14-19 7-29 21l4 95z" fill="#0b0613"/>' +
+      '<g class="cuervo"><path d="M66 224q6-7 13-4l5-2-2 5q1 6-6 7l-2 5h-3l1-5q-6-1-6-6z" fill="#05030a"/><circle cx="79" cy="222" r="1.1" fill="#FF8A1F"/></g>' +
+      '<path d="M380 320l3-60q-11-9-24-11 13 0 23 7l1-26 5 24q7-9 17-10" stroke="#0b0613" stroke-width="5" fill="none"/>' +
+      // reja de hierro
+      '<g stroke="#120a1e" stroke-width="2.4" stroke-linecap="round"><path d="M100 296H222M100 310H222" stroke-width="2"/>' +
+        '<path d="M104 322v-38M116 322v-38M128 322v-38M140 322v-38M152 322v-38M164 322v-38M176 322v-38M188 322v-38M200 322v-38M212 322v-38"/></g>' +
+      // suelo: empieza donde se apoya la piedra
+      '<path d="M0 318q100-12 200-6t200-8v96H0z" fill="url(#hcSuelo)"/>' +
+      // tumbas
+      '<g fill="#2b1b47" stroke="#4a3474" stroke-width="1.2">' +
+        '<path d="M14 352v-30q0-13 15-13t15 13v30z"/><path d="M60 344v-20h-7v-6h7v-7h6v7h7v6h-7v20z"/>' +
+        '<path d="M336 350v-26q0-12 14-12t14 12v26z"/><path d="M372 344v-18q0-8 9-8t9 8v18z"/>' +
+      '</g>' +
+      '<g fill="#4a3474" font-family="Nunito,sans-serif" font-weight="900" text-anchor="middle" font-size="7"><text x="29" y="333">RIP</text><text x="350" y="334">RIP</text></g>' +
+      '<path d="M8 356q22-8 44 0zM330 354q22-8 44 0z" fill="#150b24"/>' +
+      // calabazas encendidas y velas
+      '<g><circle cx="98" cy="350" r="18" fill="url(#hcLuz)"/><ellipse cx="98" cy="352" rx="11" ry="8.5" fill="#D0560B"/><path d="M97 344q1-4 4-5" stroke="#3b5d12" stroke-width="2" fill="none"/><path class="vent" d="M92 351l2.5-3 2.5 3zM99 351l2.5-3 2.5 3zM92 355q6 4 12 0l-2 2-2-1.5-2 1.5-2-1.5-2 1.5z" fill="#FFE08A"/></g>' +
+      '<g><circle cx="312" cy="356" r="14" fill="url(#hcLuz)"/><ellipse cx="312" cy="357" rx="8" ry="6.5" fill="#C9500A"/><path class="vent c" d="M308 356l2-2.5 2 2.5zM313 356l2-2.5 2 2.5zM308 359q4 3 9 0z" fill="#FFE08A"/></g>' +
+      '<g><rect x="128" y="344" width="3.5" height="8" rx="1" fill="#E9DCC0"/><path class="vela" d="M129.7 344q-2.5-3.5 0-7 2.5 3.5 0 7z" fill="#FFC14D"/><circle cx="129.7" cy="341" r="7" fill="url(#hcLuz)"/></g>' +
+      '</svg>';
+
+    function senor() {
+      var esc = document.getElementById('escena'), bu = document.getElementById('buho');
+      if (!esc || !bu) return;
+      if (!esc.querySelector('.hal-cripta')) {
+        var c2 = document.createElement('div'); c2.className = 'hal-cripta'; c2.setAttribute('aria-hidden', 'true');
+        var almas = '';
+        [12, 26, 70, 84].forEach(function (x, i) { almas += '<i class="hal-alma" style="left:' + x + '%;animation-delay:-' + (i * 1.8) + 's">' + ALMA + '</i>'; });
+        c2.innerHTML = CRIPTA + almas;
+        esc.insertBefore(c2, esc.firstChild);
+        var n = document.createElement('div'); n.className = 'hal-nombre'; n.setAttribute('aria-hidden', 'true');
+        n.innerHTML = 'Señor de las <b>Almas</b>';
+        esc.appendChild(n);
+        var br = document.createElement('div'); br.className = 'hal-bruma'; br.setAttribute('aria-hidden', 'true'); esc.appendChild(br);
+        bu.insertAdjacentHTML('beforeend', '<i class="hal-llama" style="--x:85%;--y:2%"></i><i class="hal-llama m" style="--x:79%;--y:8%;animation-delay:-.6s"></i><i class="hal-llama" style="--x:90%;--y:12%;animation-delay:-1.2s"></i>');
+        // Al tocarlo lanza almas con un lamento
+        bu.addEventListener('click', function () {
+          var im2 = bu.querySelector('.hal-senor'); if (im2) { im2.classList.remove('conjuro'); void im2.offsetWidth; im2.classList.add('conjuro'); }
+          var M2 = window.MCSonido && MCSonido.activo && MCSonido.motor;
+          if (M2) { M2.hoot(380, 0, 1.1, 0.16, 520); M2.soplo(0.9, 0.05, 600, 200); M2.nota(98, 0, 1.2, 'sine', 0.1, 70); }
+          for (var k = 0; k < 5; k++) {
+            var e = document.createElement('i'); e.className = 'hal-boom'; e.innerHTML = ALMA;
+            e.style.setProperty('--dx', (k * 50 - 100) + '%'); e.style.setProperty('--dy', (-140 - (k % 2) * 60) + '%');
+            esc.appendChild(e); setTimeout(e.remove.bind(e), 1500);
+          }
+        });
+      }
+      // Cada mensaje del búho lleva un ícono de Halloween (dibujado, no emoji)
+      var gl = document.getElementById('globo');
+      if (gl && gl.querySelector('.gt') && !gl.querySelector('.gi')) {
+        var ICOS = [CALABAZA, FANTASMA, ALMA, MURCIELAGO];
+        var gi = document.createElement('span'); gi.className = 'gi hal-gi'; gi.innerHTML = ICOS[(gl.textContent.length) % ICOS.length];
+        gl.insertBefore(gi, gl.firstChild);
+      }
+      if (!bu.querySelector('.hal-senor')) {
+        // Por capas: la capa ondea, el fuego del báculo titila y los ojos brillan y parpadean
+        var w = document.createElement('div'); w.className = 'hal-senor'; w.setAttribute('role', 'img'); w.setAttribute('aria-label', 'Búho disfrazado de Señor de las Almas');
+        w.innerHTML = '<img class="capa" src="' + SENOR + 'capa.webp" alt="" draggable="false"><img class="base" src="' + SENOR + 'base.webp" alt="" draggable="false">' +
+          '<i class="ojo" style="left:49%"></i><i class="ojo" style="left:60.5%"></i><img class="fuego" src="' + SENOR + 'fuego.webp" alt="" draggable="false">';
+        bu.appendChild(w);
+      }
+    }
+    quitar.push(function () { document.querySelectorAll('.hal-cripta,.hal-nombre,.hal-bruma,.hal-llama,#buho .hal-senor').forEach(function (e) { e.remove(); }); });
+
     var vigia = null, tColor = null;
     function revisar() {
-      gorros(); if (EN_INICIO) inicio();
+      gorros(); if (EN_INICIO) { inicio(); senor(); }
       clearTimeout(tColor); tColor = setTimeout(recolorear, 60);
     }
     function empezar() {
