@@ -389,7 +389,7 @@
     quitar.push(function () { cambiados.forEach(function (c) { try { c[0].setProperty(c[1], c[2], c[3]); } catch (e) {} }); cambiados = []; });
 
     /* ---------- inicio: el búho se viste de Señor de las Almas, su cripta y los íconos disfrazados ---------- */
-    var SENOR = 'assets/buho/disfraces/senor-almas.webp';
+    var SENOR = 'assets/buho/disfraces/senor-almas-';
     var GORRITO = 'url("data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 30"><ellipse cx="20" cy="26" rx="18" ry="3.6" fill="#1a0a2c"/><path d="M8 25C12 18 16 9 20 3c2-3 7-4 10-2-4 1-6 4-6 7 0 7 5 12 8 17z" fill="#3a1766"/><path d="M10 21q10 3 21 0l1 4q-11 3-23 0z" fill="#FF8A1F"/></svg>') + '")';
     var TELA = 'url("data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" fill="none" stroke="#fff" stroke-width="1"><path d="M0 0L60 60M0 0L30 60M0 0L60 30M0 0L0 60M0 0L60 0"/><path d="M0 14q8-2 14 0q2-6 0-14M0 28q16-4 28 0q4-14 0-28M0 44q24-6 42 0q6-22 0-44"/></svg>') + '")';
     var stS = document.createElement('style');
@@ -412,8 +412,17 @@
       // El Señor de las Almas: flota con aura morada y su báculo echa llamas
       'html.tema-halloween .buho{width:44%!important;bottom:15%!important}',
       'html.tema-halloween #buho>:not(.hal-senor):not(.hal-llama){display:none!important}',
-      '#buho .hal-senor{display:block;width:100%;height:auto;user-select:none;filter:drop-shadow(0 0 2px rgba(190,150,255,.7)) drop-shadow(0 0 18px rgba(157,92,255,.5));animation:halSenor 4s ease-in-out infinite}',
+      '#buho .hal-senor{position:relative;display:block;width:100%;aspect-ratio:720/662;user-select:none;filter:drop-shadow(0 0 2px rgba(190,150,255,.7)) drop-shadow(0 0 18px rgba(157,92,255,.5));animation:halSenor 4s ease-in-out infinite}',
       '@keyframes halSenor{0%,100%{transform:translateY(0)}50%{transform:translateY(-3.5%);filter:drop-shadow(0 0 3px rgba(200,165,255,.85)) drop-shadow(0 0 28px rgba(157,92,255,.75))}}',
+      '#buho .hal-senor img{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}',
+      '#buho .hal-senor .capa{transform-origin:27% 30%;animation:halCapa 3.2s ease-in-out infinite}',
+      '@keyframes halCapa{0%,100%{transform:rotate(0) skewY(0)}35%{transform:rotate(-4deg) skewY(2deg)}70%{transform:rotate(2deg) skewY(-1.5deg)}}',
+      '#buho .hal-senor .fuego{animation:halFuego 2.2s ease-in-out infinite}',
+      '@keyframes halFuego{0%,100%{transform:translateY(0);opacity:1;filter:brightness(1)}30%{opacity:.75}50%{transform:translateY(-2.5%);filter:brightness(1.35) hue-rotate(-15deg)}75%{opacity:.9}}',
+      '#buho .hal-senor .ojo{position:absolute;top:27.5%;width:7%;aspect-ratio:1;translate:-50% -50%;border-radius:50%;background:radial-gradient(circle,rgba(255,170,255,.75),rgba(190,90,255,.35) 45%,transparent 70%);animation:halOjo 2.6s ease-in-out infinite}',
+      '#buho .hal-senor .ojo::after{content:"";position:absolute;inset:6%;border-radius:50%;background:#2a1744;transform:scaleY(0);transform-origin:50% 0;animation:halParpadeo 5s infinite}',
+      '@keyframes halOjo{50%{transform:scale(1.35);opacity:.6}}',
+      '@keyframes halParpadeo{0%,92%,100%{transform:scaleY(0)}95%{transform:scaleY(1)}}',
       '#buho .hal-senor.conjuro{animation:halConjuro .7s ease-out}',
       '@keyframes halConjuro{30%{transform:scale(1.07) rotate(-2deg);filter:drop-shadow(0 0 34px #b98cff) brightness(1.25)}}',
       '.hal-llama{position:absolute;left:var(--x);top:var(--y);width:7%;aspect-ratio:.7;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(circle at 50% 70%,#E6FFD9,#7CFF8A 40%,rgba(80,220,120,0) 72%);mix-blend-mode:screen;animation:halLlama 1.8s ease-in-out infinite;pointer-events:none}',
@@ -434,7 +443,7 @@
       'html.tema-halloween .curso .ic{position:relative;overflow:visible;clip-path:none!important;border-radius:12px}',
       'html.tema-halloween .curso .ic::after{content:"";position:absolute;left:50%;top:-14px;width:30px;height:22px;translate:-50% 0;rotate:-10deg;background:' + GORRITO + ' center/contain no-repeat}',
       '@media (max-width:900px){.hal-nombre{font-size:11px;padding:4px 10px}html.tema-halloween .buho{width:50%!important}html.tema-halloween .acceso::before{width:24px;height:18px;left:-6px;top:-10px}}',
-      '@media (prefers-reduced-motion:reduce){.hal-alma,.hal-llama,#buho .hal-senor{animation:none}}'
+      '@media (prefers-reduced-motion:reduce){.hal-alma,.hal-llama,#buho .hal-senor,#buho .hal-senor *,#buho .hal-senor .ojo::after{animation:none}}'
     ].join('\n');
     (document.head || raiz).appendChild(stS);
     quitar.push(function () { stS.remove(); });
@@ -476,8 +485,11 @@
         });
       }
       if (!bu.querySelector('.hal-senor')) {
-        var im = new Image(); im.className = 'hal-senor'; im.src = SENOR; im.alt = 'Búho disfrazado de Señor de las Almas'; im.draggable = false;
-        bu.appendChild(im);
+        // Por capas: la capa ondea, el fuego del báculo titila y los ojos brillan y parpadean
+        var w = document.createElement('div'); w.className = 'hal-senor'; w.setAttribute('role', 'img'); w.setAttribute('aria-label', 'Búho disfrazado de Señor de las Almas');
+        w.innerHTML = '<img class="capa" src="' + SENOR + 'capa.webp" alt="" draggable="false"><img class="base" src="' + SENOR + 'base.webp" alt="" draggable="false">' +
+          '<i class="ojo" style="left:49%"></i><i class="ojo" style="left:60.5%"></i><img class="fuego" src="' + SENOR + 'fuego.webp" alt="" draggable="false">';
+        bu.appendChild(w);
       }
     }
     quitar.push(function () { document.querySelectorAll('.hal-cripta,.hal-nombre,.hal-bruma,.hal-llama,#buho .hal-senor').forEach(function (e) { e.remove(); }); });
