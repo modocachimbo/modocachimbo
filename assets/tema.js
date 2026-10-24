@@ -395,7 +395,10 @@
     var stS = document.createElement('style');
     stS.textContent = [
       // Cripta: cielo morado con niebla verde de almas
-      'html.tema-halloween .escena{background:radial-gradient(42% 34% at 50% 58%,rgba(157,92,255,.34),transparent 72%),radial-gradient(70% 30% at 50% 100%,rgba(110,255,140,.16),transparent 70%),linear-gradient(#0e0619,#1b0c31 58%,#0a0512)!important}',
+      'html.tema-halloween .escena{background:radial-gradient(38% 30% at 50% 60%,rgba(157,92,255,.38),transparent 72%),radial-gradient(90% 26% at 50% 100%,rgba(110,255,160,.14),transparent 70%),radial-gradient(1.2px 1.2px at 14% 12%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 33% 22%,#e9dcff 50%,transparent 51%),radial-gradient(1.4px 1.4px at 61% 8%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 78% 30%,#e9dcff 50%,transparent 51%),radial-gradient(1.2px 1.2px at 46% 34%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 8% 40%,#e9dcff 50%,transparent 51%),linear-gradient(#0b0516,#1c0c34 52%,#24113f 70%,#0c0617)!important}',
+      // Bruma delante de la roca: el búho queda dentro de la escena
+      '.hal-bruma{position:absolute;left:-10%;right:-10%;bottom:6%;height:24%;z-index:1;pointer-events:none;background:radial-gradient(40% 55% at 30% 60%,rgba(170,140,230,.28),transparent 70%),radial-gradient(38% 50% at 70% 70%,rgba(140,230,170,.16),transparent 70%),radial-gradient(60% 40% at 50% 90%,rgba(30,14,52,.9),transparent 75%);filter:blur(6px);animation:halNiebla 14s ease-in-out infinite alternate}',
+      '.hal-cripta .castillo{opacity:.85}',
       'html.tema-halloween .escena .nubes,html.tema-halloween .escena .plat{display:none}',
       'html.tema-halloween .escena::before{opacity:.35;filter:hue-rotate(60deg)}',
       'html.tema-halloween .escena .halo{background:radial-gradient(circle,rgba(157,92,255,.45),transparent 65%)!important;animation:halLatido 3.4s ease-in-out infinite}',
@@ -409,8 +412,8 @@
       // El Señor de las Almas: flota con aura morada y su báculo echa llamas
       'html.tema-halloween .buho{width:44%!important;bottom:15%!important}',
       'html.tema-halloween #buho>:not(.hal-senor):not(.hal-llama){display:none!important}',
-      '#buho .hal-senor{display:block;width:100%;height:auto;user-select:none;filter:drop-shadow(0 0 14px rgba(157,92,255,.55)) drop-shadow(0 8px 6px rgba(0,0,0,.5));animation:halSenor 4s ease-in-out infinite}',
-      '@keyframes halSenor{0%,100%{transform:translateY(0)}50%{transform:translateY(-3.5%);filter:drop-shadow(0 0 26px rgba(157,92,255,.85)) drop-shadow(0 14px 8px rgba(0,0,0,.4))}}',
+      '#buho .hal-senor{display:block;width:100%;height:auto;user-select:none;filter:drop-shadow(0 0 2px rgba(190,150,255,.7)) drop-shadow(0 0 18px rgba(157,92,255,.5));animation:halSenor 4s ease-in-out infinite}',
+      '@keyframes halSenor{0%,100%{transform:translateY(0)}50%{transform:translateY(-3.5%);filter:drop-shadow(0 0 3px rgba(200,165,255,.85)) drop-shadow(0 0 28px rgba(157,92,255,.75))}}',
       '#buho .hal-senor.conjuro{animation:halConjuro .7s ease-out}',
       '@keyframes halConjuro{30%{transform:scale(1.07) rotate(-2deg);filter:drop-shadow(0 0 34px #b98cff) brightness(1.25)}}',
       '.hal-llama{position:absolute;left:var(--x);top:var(--y);width:7%;aspect-ratio:.7;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(circle at 50% 70%,#E6FFD9,#7CFF8A 40%,rgba(80,220,120,0) 72%);mix-blend-mode:screen;animation:halLlama 1.8s ease-in-out infinite;pointer-events:none}',
@@ -438,6 +441,7 @@
 
     var ALMA = '<svg viewBox="0 0 30 40"><path d="M15 2C7 2 3 8 3 16v20l4-4 4 4 4-4 4 4 4-4 4 4V16C27 8 23 2 15 2z" fill="#E9DDFF" opacity=".9"/><ellipse cx="11" cy="15" rx="2" ry="3" fill="#3b1d66"/><ellipse cx="19" cy="15" rx="2" ry="3" fill="#3b1d66"/></svg>';
     var CRIPTA = '<svg viewBox="0 0 400 140" preserveAspectRatio="xMidYMax slice">' +
+      '<g class="castillo" fill="#1d0f33"><path d="M150 100V66h6v-8h4v8h6v-14l7-10 7 10v14h10V56l9-14 9 14v24h8V62h6v-8h4v8h6v38z"/><rect x="176" y="62" width="3" height="5" fill="#FFB347" opacity=".8"/><rect x="202" y="64" width="3" height="5" fill="#9BFF3C" opacity=".6"/><rect x="224" y="72" width="3" height="4" fill="#FFB347" opacity=".7"/></g>' +
       '<path d="M0 140V92q50-18 100-8t100-10 100 12 100-8v62z" fill="#160a26"/>' +
       '<path d="M30 140l5-70q-14-10-28-12 15 0 27 8l-2-30 6 26q8-12 20-14-12 8-16 20l2 72z" fill="#0b0613"/>' +
       '<path d="M352 140l4-56q-12-8-24-10 13 0 23 6l1-24 5 22q7-10 18-12-10 6-14 16l2 58z" fill="#0b0613"/>' +
@@ -457,6 +461,7 @@
         var n = document.createElement('div'); n.className = 'hal-nombre'; n.setAttribute('aria-hidden', 'true');
         n.innerHTML = 'Señor de las <b>Almas</b>';
         esc.appendChild(n);
+        var br = document.createElement('div'); br.className = 'hal-bruma'; br.setAttribute('aria-hidden', 'true'); esc.appendChild(br);
         bu.insertAdjacentHTML('beforeend', '<i class="hal-llama" style="--x:85%;--y:2%"></i><i class="hal-llama m" style="--x:79%;--y:8%;animation-delay:-.6s"></i><i class="hal-llama" style="--x:90%;--y:12%;animation-delay:-1.2s"></i>');
         // Al tocarlo lanza almas con un lamento
         bu.addEventListener('click', function () {
@@ -475,7 +480,7 @@
         bu.appendChild(im);
       }
     }
-    quitar.push(function () { document.querySelectorAll('.hal-cripta,.hal-nombre,.hal-llama,#buho .hal-senor').forEach(function (e) { e.remove(); }); });
+    quitar.push(function () { document.querySelectorAll('.hal-cripta,.hal-nombre,.hal-bruma,.hal-llama,#buho .hal-senor').forEach(function (e) { e.remove(); }); });
 
     var vigia = null, tColor = null;
     function revisar() {
