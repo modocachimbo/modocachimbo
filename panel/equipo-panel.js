@@ -115,7 +115,7 @@ async function cargarEquipo() {
   const body = $('eqBody');
   if (!EQ.lista) body.innerHTML = '<div class="state-msg"><span class="spin-s"></span> Cargando…</div>';
   try { EQ.lista = await eqRpc('equipo_lista'); renderEquipo(); }
-  catch (e) { body.innerHTML = `<div class="state-msg error">${esc(e.message)}</div>`; }
+  catch (e) { body.innerHTML = `<div class="state-msg error">${esc(e.message === 'sin-sdk' ? 'No se pudo conectar con Supabase. Revisa tu internet.' : e.message)}</div>`; }
 }
 
 function renderEquipo() {
@@ -229,7 +229,7 @@ async function cargarHistorial(mas) {
     HI.filas = HI.filas.concat(nuevas || []);
     HI.fin = !nuevas || nuevas.length < 100;
     renderHistorial();
-  } catch (e) { $('hiBody').innerHTML = `<div class="state-msg error">${esc(e.message)}</div>`; }
+  } catch (e) { $('hiBody').innerHTML = `<div class="state-msg error">${esc(e.message === 'sin-sdk' ? 'No se pudo conectar con Supabase. Revisa tu internet.' : e.message)}</div>`; }
   HI.cargando = false;
 }
 
