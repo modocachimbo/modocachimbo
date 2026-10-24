@@ -38,7 +38,7 @@
     { id: 'titulo', nom: 'Títulos', uno: 'Título' },
     { id: 'pines', nom: 'Pines', uno: 'Pin' }
   ];
-  var DEFECTO = { buho: 'buho-clasico', avatar: 'avatar-buho', escena: 'escena-galaxia', racha: 'racha-galaxia', cuadro: 'cuadro-galaxia', marco: 'marco-ninguno', titulo: 'titulo-cachimbo', pines: [] };
+  var DEFECTO = { buho: 'buho-clasico', avatar: 'avatar-foto', escena: 'escena-galaxia', racha: 'racha-galaxia', cuadro: 'cuadro-galaxia', marco: 'marco-ninguno', titulo: 'titulo-cachimbo', pines: [] };
 
   var CATALOGO = [
     // Búho: los disfraces de cada área ya acompañan en sus páginas, así que vienen con tu cuenta
