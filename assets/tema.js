@@ -401,7 +401,7 @@
       '.hal-cripta .castillo{opacity:.85}',
       'html.tema-halloween .escena .nubes,html.tema-halloween .escena .plat{display:none}',
       'html.tema-halloween .escena::before{opacity:.35;filter:hue-rotate(60deg)}',
-      'html.tema-halloween .escena .halo{background:radial-gradient(circle,rgba(157,92,255,.45),transparent 65%)!important;animation:halLatido 3.4s ease-in-out infinite}',
+      'html.tema-halloween .escena .halo{border:0!important;background:radial-gradient(circle,rgba(157,92,255,.45),transparent 65%)!important;animation:halLatido 3.4s ease-in-out infinite}',
       '@keyframes halLatido{50%{opacity:.55;transform:scale(1.08)}}',
       '.hal-cripta{position:absolute;inset:0;z-index:-1;pointer-events:none}',
       '.hal-cripta svg{position:absolute;left:0;bottom:0;width:100%;height:auto}',
@@ -415,14 +415,16 @@
       '#buho .hal-senor{position:relative;display:block;width:100%;aspect-ratio:720/662;user-select:none;filter:drop-shadow(0 0 2px rgba(190,150,255,.7)) drop-shadow(0 0 18px rgba(157,92,255,.5));animation:halSenor 4s ease-in-out infinite}',
       '@keyframes halSenor{0%,100%{transform:translateY(0)}50%{transform:translateY(-3.5%);filter:drop-shadow(0 0 3px rgba(200,165,255,.85)) drop-shadow(0 0 28px rgba(157,92,255,.75))}}',
       '#buho .hal-senor img{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}',
-      '#buho .hal-senor .capa{transform-origin:27% 30%;animation:halCapa 3.2s ease-in-out infinite}',
-      '@keyframes halCapa{0%,100%{transform:rotate(0) skewY(0)}35%{transform:rotate(-4deg) skewY(2deg)}70%{transform:rotate(2deg) skewY(-1.5deg)}}',
+      '#buho .hal-senor .capa{transform-origin:20% 34%;animation:halCapa 3.2s ease-in-out infinite}',
+      '@keyframes halCapa{0%,100%{transform:skewY(0) scaleX(1)}35%{transform:skewY(5deg) scaleX(1.04)}70%{transform:skewY(-3deg) scaleX(.97)}}',
       '#buho .hal-senor .fuego{animation:halFuego 2.2s ease-in-out infinite}',
       '@keyframes halFuego{0%,100%{transform:translateY(0);opacity:1;filter:brightness(1)}30%{opacity:.75}50%{transform:translateY(-2.5%);filter:brightness(1.35) hue-rotate(-15deg)}75%{opacity:.9}}',
       '#buho .hal-senor .ojo{position:absolute;top:27.5%;width:7%;aspect-ratio:1;translate:-50% -50%;border-radius:50%;background:radial-gradient(circle,rgba(255,170,255,.75),rgba(190,90,255,.35) 45%,transparent 70%);animation:halOjo 2.6s ease-in-out infinite}',
       '#buho .hal-senor .ojo::after{content:"";position:absolute;inset:6%;border-radius:50%;background:#2a1744;transform:scaleY(0);transform-origin:50% 0;animation:halParpadeo 5s infinite}',
       '@keyframes halOjo{50%{transform:scale(1.35);opacity:.6}}',
       '@keyframes halParpadeo{0%,92%,100%{transform:scaleY(0)}95%{transform:scaleY(1)}}',
+      'html.tema-halloween .globo .gi{background:#2a1150!important;box-shadow:inset 0 0 0 2px #FF8A1F,0 3px 0 rgba(0,0,0,.25)!important}',
+      'html.tema-halloween .globo .gi.hal-gi svg{width:24px;height:24px}',
       '#buho .hal-senor.conjuro{animation:halConjuro .7s ease-out}',
       '@keyframes halConjuro{30%{transform:scale(1.07) rotate(-2deg);filter:drop-shadow(0 0 34px #b98cff) brightness(1.25)}}',
       '.hal-llama{position:absolute;left:var(--x);top:var(--y);width:7%;aspect-ratio:.7;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(circle at 50% 70%,#E6FFD9,#7CFF8A 40%,rgba(80,220,120,0) 72%);mix-blend-mode:screen;animation:halLlama 1.8s ease-in-out infinite;pointer-events:none}',
@@ -483,6 +485,13 @@
             esc.appendChild(e); setTimeout(e.remove.bind(e), 1500);
           }
         });
+      }
+      // Cada mensaje del búho lleva un ícono de Halloween (dibujado, no emoji)
+      var gl = document.getElementById('globo');
+      if (gl && gl.querySelector('.gt') && !gl.querySelector('.gi')) {
+        var ICOS = [CALABAZA, FANTASMA, ALMA, MURCIELAGO];
+        var gi = document.createElement('span'); gi.className = 'gi hal-gi'; gi.innerHTML = ICOS[(gl.textContent.length) % ICOS.length];
+        gl.insertBefore(gi, gl.firstChild);
       }
       if (!bu.querySelector('.hal-senor')) {
         // Por capas: la capa ondea, el fuego del báculo titila y los ojos brillan y parpadean

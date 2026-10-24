@@ -189,7 +189,7 @@
   /* ---------- Escena: fechas importantes (temática + tu agenda) ---------- */
   var fechas = [], evento = null;
   var CALABAZA = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 9c-2-3-1-6 2-7" fill="none" stroke="#3f8a1e" stroke-width="2.6" stroke-linecap="round"/><ellipse cx="11" cy="19" rx="7.5" ry="9" fill="#e86a10"/><ellipse cx="21" cy="19" rx="7.5" ry="9" fill="#e86a10"/><ellipse cx="16" cy="19" rx="7" ry="9.6" fill="#ff8a1f"/><path d="M10 16l3 2-3 1zM22 16l-3 2 3 1zM10.5 23q5.5 4 11 0l-2 1-1.5-1.5-2 1.5-2-1.5-1.5 1.5z" fill="#3a1500"/></svg>';
-  var EVENTOS = { halloween: { nombre: 'Halloween', ico: CALABAZA, cls: 'f-hallo', emoji: '🎃' } };
+  var EVENTOS = { halloween: { nombre: 'Halloween', ico: CALABAZA, cls: 'f-hallo', emoji: '' } };
   function hoyLima() {
     try { return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Lima' }).format(new Date()); } catch (e) { return new Date().toISOString().slice(0, 10); }
   }
