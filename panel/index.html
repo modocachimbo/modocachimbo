@@ -14,11 +14,14 @@
 <script src="../assets/app.js" defer></script>
 <meta name="robots" content="noindex, nofollow">
 <title>Panel admin · Modo Cachimbo</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://script.google.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,800;1,900&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,600;1,700;1,800;1,900&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" media="print" onload="this.media='all'">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,800;1,900&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,600;1,700;1,800;1,900;1,1000&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --bg: #0B0818; --surface: #151127; --surface-2: #1D1834;
@@ -32,16 +35,6 @@
   button, input, textarea, select { font-family: inherit; }
   [hidden] { display: none !important; }
 
-  header.top {
-    position: sticky; top: 0; z-index: 20; background: rgba(11,8,24,0.92); backdrop-filter: blur(6px);
-    display: flex; align-items: center; justify-content: space-between; gap: 12px;
-    padding: 18px 0; border-bottom: 1px solid #1F1936;
-  }
-  .back { display: flex; align-items: center; gap: 8px; color: var(--text-dim); text-decoration: none; font-size: 14px; font-weight: 500; }
-  .back:hover { color: var(--accent); }
-  .back svg { width: 16px; height: 16px; }
-  .logo { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; }
-  .logo .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
   .btn-ghost {
     display: inline-flex; align-items: center; gap: 6px; background: none; border: 1px solid var(--border);
     color: var(--text-dim); border-radius: 10px; padding: 8px 12px; font-size: 12.5px; font-weight: 600; cursor: pointer;
@@ -83,8 +76,6 @@
   /* Menú lateral */
   :root { --menu-w: 240px; }
   body.panel-on { padding-left: var(--menu-w); }
-  body.panel-on header.top .back, body.panel-on header.top .logo, body.panel-on #btnLogout { display: none; }
-  body.panel-on header.top { display: none; }
   .menu { position: fixed; top: 0; left: 0; bottom: 0; width: var(--menu-w); z-index: 40; background: #0E0B1D; border-right: 1px solid #1F1936; display: flex; flex-direction: column; padding: 22px 14px 16px; overflow-y: auto; }
   .menu-logo { display: block; padding: 0 10px; }
   .menu-logo img { height: 34px; width: auto; display: block; }
@@ -112,7 +103,6 @@
   .barra-movil { display: none; }
   @media (max-width: 900px) {
     body.panel-on { padding-left: 0; }
-    body.panel-on header.top { display: none; }
     .menu { transform: translateX(-100%); transition: transform .25s ease; box-shadow: 20px 0 60px rgba(0,0,0,.6); }
     body.menu-abierto .menu { transform: none; }
     body.menu-abierto .menu-fondo { display: block; position: fixed; inset: 0; z-index: 39; background: rgba(0,0,0,.6); }
@@ -522,7 +512,7 @@
   .cdcode { border: 2px solid #2F284E; border-bottom-width: 3px; border-radius: 10px; }
 
   /* Letra gruesita en toda la web (Nunito); las fórmulas y el código conservan su letra */
-  body, body :not(.katex):not(.katex *):not(.disp):not(.disp *):not(code):not(pre):not(kbd):not(samp):not(.formato):not(.ta.big):not(.cdnuevos code) { font-family: 'Nunito', 'Inter', system-ui, sans-serif !important; }
+  body, body :not(.katex):not(.katex *):not(.disp):not(.disp *):not(.mcard h3):not(code):not(pre):not(kbd):not(samp):not(.formato):not(.ta.big):not(.cdnuevos code) { font-family: 'Nunito', 'Inter', system-ui, sans-serif !important; }
   body { font-weight: 600; }
 
   /* ===== Estilo 2.0: el mismo de la web (inicio, perfil, colección) =====
@@ -611,11 +601,51 @@
     .page-head > div:last-child:not(:first-child) { width: 100%; }
     #tab-reportes .page-head > div:last-child { flex-direction: row-reverse; justify-content: space-between; align-items: center !important; }
     .big-count .n.disp { font-size: 40px; }
-    .chips { flex-wrap: nowrap; overflow-x: auto; margin-left: -16px; margin-right: -16px; padding: 0 16px 4px; scrollbar-width: none; }
-    .chips::-webkit-scrollbar { display: none; }
-    .chip { flex-shrink: 0; }
+    #chipsEstado, #chips, #cdChips, #agpChips { flex-wrap: nowrap; overflow-x: auto; margin-left: -16px; margin-right: -16px; padding: 0 16px 4px; scrollbar-width: none; }
+    #chipsEstado::-webkit-scrollbar, #chips::-webkit-scrollbar, #cdChips::-webkit-scrollbar, #agpChips::-webkit-scrollbar { display: none; }
+    #chipsEstado .chip, #chips .chip, #cdChips .chip, #agpChips .chip { flex-shrink: 0; }
+    /* Barra de publicar: resumen arriba, Volver y Publicar en una fila */
+    .pubbar { display: grid; grid-template-columns: auto 1fr; gap: 8px 10px; padding: 10px 0; }
+    .pubbar #subResumen { grid-column: 1 / -1; grid-row: 1; font-size: 12.5px; }
+    .pubbar .btn-main { margin-bottom: 4px; }
     .cd-libre { align-items: flex-start; }
   }
+
+  /* Vista previa (Subir tema, Subir examen, Editar): igual que la pregunta que ve el alumno en el quiz */
+  .ptext { background: #18132B; border: 2px solid #2C2549; border-bottom-width: 5px; border-radius: 20px; padding: 16px 18px; margin-bottom: 14px;
+    font-family: 'Nunito', 'Inter', sans-serif !important; font-weight: 800; font-size: 17px; line-height: 1.55; color: #f2f2f2; }
+  .ptext * { font-family: inherit; }
+  .popts { display: flex; flex-direction: column; gap: 10px; }
+  .popts.popts-cortas { display: grid; gap: 10px; }
+  .popt { gap: 12px; padding: 12px 14px; border: 2px solid #2F284E; border-bottom-width: 5px; border-radius: 16px; background: #1E1935;
+    font: 800 15px/1.4 'Nunito', 'Inter', sans-serif; color: #dcdcdc; }
+  .pder .popt + .popt { margin-top: 10px; }
+  .popt .l { width: 30px; height: 30px; border-radius: 10px; border: 2px solid #3A3360; background: transparent; color: #cfcfcf; font: 900 13px 'Nunito', sans-serif; }
+  .popt.ok { background: rgba(88,204,2,.12); border-color: #58CC02; border-bottom-color: #3f9a00; color: #E3FFD0; font-weight: 900; }
+  .popt.ok .l { background: #58CC02; border-color: #58CC02; color: #fff; }
+  .popt .chk { color: #58CC02; font-size: 17px; }
+  .qnum2 { width: auto; padding: 0 10px; font: 900 12px/28px 'Nunito', sans-serif; letter-spacing: .06em; text-transform: uppercase; }
+  .qnum2::before { content: "Pregunta\00a0"; }
+  @media (min-width: 900px) { .ptext { font-size: 18px; padding: 20px 22px; } .popt { font-size: 16px; padding: 14px 16px; } .popt .l { width: 32px; height: 32px; font-size: 14px; } }
+  @media (max-width: 600px) { .ptext { font-size: 16px; padding: 14px 15px; } .popt { font-size: 14.5px; padding: 11px 12px; } }
+
+  /* Ventanas (editar, crear, confirmar): mismo estilo de tarjeta */
+  .mcard { background: var(--surface); border: 1px solid var(--border); border-bottom: 5px solid var(--accent); border-radius: 20px; }
+  .mcard::before { display: none; }
+  .mcard h3 { font-family: var(--display) !important; font-style: italic; font-weight: 900; text-transform: uppercase; font-size: 30px; letter-spacing: .01em; line-height: 1; }
+  .mx { border-radius: 10px; }
+  .mbody .opt-in { font-size: 15px; font-weight: 800; }
+  #edText { font: 800 16px/1.55 'Nunito', 'Inter', sans-serif !important; color: #f2f2f2; }
+  .ed-prev { background: transparent; border: 0; padding: 0; }
+  /* En PC: a la izquierda editas, a la derecha ves la pregunta como el alumno (se queda fija al bajar) */
+  @media (min-width: 1100px) {
+    .mcard:has(#edPrev) { max-width: 1180px; }
+    .mbody:has(> #edPrev) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 460px); column-gap: 30px; }
+    .mbody:has(> #edPrev) > * { grid-column: 1; }
+    .mbody > label.fld:has(+ #edPrev) { grid-column: 2; grid-row: 1; margin-top: 0; }
+    .mbody > #edPrev { grid-column: 2; grid-row: 2 / span 40; align-self: start; position: sticky; top: 0; max-height: calc(100vh - 120px); overflow-y: auto; }
+  }
+  .ed-ayuda { margin-top: 6px; } .ed-ayuda summary { cursor: pointer; color: var(--text-dim); font-weight: 800; } .ed-ayuda[open] summary { margin-bottom: 4px; }
 </style>
 </head>
 <body>
@@ -1198,6 +1228,8 @@ E) Alternativa"></textarea>
     } catch (e) {
       j = await jsonp(CFG.REPORTES_URL, payload);
     }
+    // Un cambio (corregir, publicar, borrar…) deja vieja la lista de Correcciones: se vuelve a traer al abrirla
+    if (j && j.ok && !/^(listar|archivo|codigos|cursos|correcciones|examenes|examen|alertas|tutorial|verificar|revisarArchivos)$/.test(action)) delete traido.corr;
     if (!j || !j.ok) {
       let msg = (j && j.error) || 'Error desconocido';
       if (msg === 'Contraseña incorrecta' && PASS) { salir(); toast('Tu sesión expiró. Vuelve a entrar.', true); }
@@ -1325,7 +1357,24 @@ E) Alternativa"></textarea>
   }
   document.addEventListener('DOMContentLoaded', () => { if (window.MCAuth) { MCAuth.alCambiar(pintarCuentaMenu); pintarCuentaMenu(); } });
 
+  // Cada sección se trae del servidor una vez y se guarda unos minutos: al volver a ella se ve al instante
+  // y no se pierde lo que estabas escribiendo. Tocar la sección en la que ya estás la actualiza.
+  const VIGENCIA = 5 * 60 * 1000;
+  const traido = {};
+  const CARGAR = {
+    cursos: f => { cargarCursos(); cargarPractica(); }, perfil: f => cargarPerfilCfg(), frases: f => cargarFrases(), vocab: f => cargarVocabulario(),
+    ciclos: f => cargarCiclos(f), alumnos: f => cargarAlumnos(f), codigos: () => cargarCodigos(), simulacro: () => cargarTopSimulacro(), topxp: () => cargarTopXp(),
+    agenda: () => cargarAgenda(), tematicas: () => cargarTematicas(), alertas: () => cargarAlertas(), corr: () => cargarCorrecciones(),
+    equipo: () => cargarEquipo(), historial: () => cargarHistorial()
+  };
+  function cargarSeccion(tab, forzar) {
+    const fn = CARGAR[tab]; if (!fn) return;
+    if (!forzar && traido[tab] && Date.now() - traido[tab] < VIGENCIA) return;
+    traido[tab] = Date.now();
+    fn(!!forzar);
+  }
   document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+    const yaEstaba = t.classList.contains('on') && !$('panelView').hidden;
     document.body.classList.remove('menu-abierto');
     ss('set', 'mc_panel_tab', t.dataset.tab);
     $('barraTitulo').textContent = t.querySelector('span').textContent;
@@ -1334,23 +1383,10 @@ E) Alternativa"></textarea>
     const pestana = t.dataset.tab === 'examen' ? 'subir' : t.dataset.tab; // "Subir examen" usa la misma pantalla que "Subir tema"
     ['reportes', 'subir', 'editar', 'cursos', 'ciclos', 'vocab', 'perfil', 'frases', 'alertas', 'tutorial', 'codigos', 'alumnos', 'corr', 'simulacro', 'topxp', 'agenda', 'tematicas', 'equipo', 'historial'].forEach(id => { $('tab-' + id).hidden = id !== pestana; });
     if (t.dataset.tab === 'tutorial' && !TU.datos) cargarTutorial();
-    if (t.dataset.tab === 'cursos') { cargarCursos(); cargarPractica(); }
-    if (t.dataset.tab === 'perfil') cargarPerfilCfg();
-    if (t.dataset.tab === 'frases') cargarFrases();
-    if (t.dataset.tab === 'ciclos') cargarCiclos();
-    if (t.dataset.tab === 'vocab') cargarVocabulario();
-    if (t.dataset.tab === 'codigos') cargarCodigos();
-    if (t.dataset.tab === 'alumnos') cargarAlumnos();
-    if (t.dataset.tab === 'simulacro') cargarTopSimulacro();
-    if (t.dataset.tab === 'topxp') cargarTopXp();
-    if (t.dataset.tab === 'agenda') cargarAgenda();
-    if (t.dataset.tab === 'tematicas') cargarTematicas();
-    if (t.dataset.tab === 'alertas') cargarAlertas();
+    // Las que tienen textos por guardar (Perfil, Frases, Vocabulario) no se recargan solas al tocarlas otra vez
+    cargarSeccion(t.dataset.tab, yaEstaba && !['perfil', 'frases', 'vocab'].includes(t.dataset.tab));
     if (t.dataset.tab === 'subir' || t.dataset.tab === 'examen') initSubir(t.dataset.tab === 'examen' ? 'examen' : 'tema');
     if (t.dataset.tab === 'editar') renderPicker();
-    if (t.dataset.tab === 'corr') cargarCorrecciones();
-    if (t.dataset.tab === 'equipo') cargarEquipo();
-    if (t.dataset.tab === 'historial') cargarHistorial();
   }));
 
   // Al recargar la página vuelves a la misma sección (solo una vez, al entrar)
@@ -1877,7 +1913,7 @@ E) Alternativa"></textarea>
       <label class="fld">Pregunta</label>
       <textarea class="ta" id="edText">${esc(textoEd)}</textarea>
       ${tipo === 'completar' ? '<div class="hint">Completar espacios: cada espacio va entre [[ ]] con su respuesta; con | separas otras que también valen.</div>' : ''}
-      <div class="hint">Puedes usar *cursiva*, **negrita**, &lt;u&gt;subrayado&lt;/u&gt; (y combinarlos: **&lt;i&gt;negrita cursiva&lt;/i&gt;**) y ecuaciones entre $…$ (ej.: $x^2$). Los saltos de línea se respetan. Para una imagen nueva en medio del texto escribe <b>[IMAGEN]</b> (o <b>[IMAGEN DERECHA]</b>) en su propia línea; las ya publicadas se ven como [IMG:…], muévelas o bórralas como texto.</div>
+      <details class="hint ed-ayuda"><summary>Cómo dar formato (negrita, ecuaciones, imágenes)</summary>Puedes usar *cursiva*, **negrita**, &lt;u&gt;subrayado&lt;/u&gt; (y combinarlos: **&lt;i&gt;negrita cursiva&lt;/i&gt;**) y ecuaciones entre $…$ (ej.: $x^2$). Los saltos de línea se respetan. Para una imagen nueva en medio del texto escribe <b>[IMAGEN]</b> (o <b>[IMAGEN DERECHA]</b>) en su propia línea; las ya publicadas se ven como [IMG:…], muévelas o bórralas como texto.</details>
       <div id="edMarcas"></div>
       <label class="fld">Imagen o gráfico <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— debajo del enunciado</span></label>
       <div id="edImg"></div>
