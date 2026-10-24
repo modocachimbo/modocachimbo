@@ -40,7 +40,18 @@ function etiquetaUno(p) {
 function etiquetaProd(p) { return String(p || '').split(',').filter(Boolean).map(etiquetaUno).join(' + '); }
 function fechaCorta(iso) { const d = new Date(iso); return isNaN(d) ? '—' : d.toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' }); }
 
+// ¿Están apagados los candados? (interruptor LIBRE de assets/acceso.js; el panel solo lo lee)
+function revisarLibre() {
+  if (CD.libre !== undefined) return;
+  CD.libre = false;
+  fetch('../assets/acceso.js', { cache: 'no-store' }).then(r => r.text()).then(t => {
+    CD.libre = /var\s+LIBRE\s*=\s*true/.test(t);
+    if (CD.libre && $('cdConfig').innerHTML) renderConfigAcceso();
+  }).catch(() => {});
+}
+
 async function cargarCodigos() {
+  revisarLibre();
   $('cdList').innerHTML = '<div class="loader">Cargando códigos…</div>';
   try {
     const r = await api('codigos');
@@ -58,9 +69,10 @@ function renderConfigAcceso() {
       <label class="sw"><input type="checkbox" data-abrir="${k}" ${ab[k] ? 'checked' : ''}><span></span>${ab[k] ? 'Abierto' : 'Con código'}</label>
     </div>`;
   const extras = Object.keys(ab).filter(k => !['TODO', 'general', 'seminario', 'vocabulario'].includes(k));
-  $('cdConfig').innerHTML = `
-    <div class="acc-box">
-      <div class="acc-ttl">Acceso libre <span>— abre el contenido para todos, sin código</span></div>
+  const nAb = Object.keys(ab).length;
+  $('cdConfig').innerHTML = `${CD.libre ? `<div class="cd-libre"><img src="../assets/buho/avatar/clasico-cuerpo.webp" alt=""><div><b>Candados apagados en toda la web</b><span>Ahora todo se abre sin código (interruptor <code>LIBRE = true</code> en <code>assets/acceso.js</code>). Los códigos que crees se guardan y valdrán cuando se vuelvan a prender.</span></div></div>` : ''}
+    <details class="acc-box cd-ajustes" id="cdAjustes" ${CD.ajustesAbiertos ? 'open' : ''}>
+      <summary class="acc-ttl">Acceso libre y ajustes <span>— ${nAb ? nAb + ' abierto' + (nAb > 1 ? 's' : '') + ' para todos' : 'todo pide código'}</span></summary>
       ${fila('TODO', 'Todo', 'Áreas, Simulacro, Duelos, Exámenes, Seminarios, Banqueo y Vocabulario')}
       ${fila('general', 'Acceso general', 'Las 4 áreas, Simulacro, Duelos y Exámenes')}
       ${fila('seminario', 'Seminarios + Banqueo', 'todos los cursos')}
@@ -85,7 +97,8 @@ function renderConfigAcceso() {
         <div><b>Accesos del sistema anterior</b><span>Alumnos que desbloquearon antes de este panel (no tienen código guardado). Si los cierras, deberán ingresar su código otra vez.</span></div>
         <label class="sw"><input type="checkbox" id="accLegacy" ${CD.config.legacy !== false ? 'checked' : ''}><span></span>${CD.config.legacy !== false ? 'Permitidos' : 'Cerrados'}</label>
       </div>
-    </div>`;
+    </details>`;
+  $('cdAjustes').addEventListener('toggle', e => { CD.ajustesAbiertos = e.target.open; });
   const guardar = async (cfg, msg) => {
     try { const r = await api('guardarConfigAcceso', { config: JSON.stringify(cfg) }); CD.config = r.config; toast(msg); }
     catch (e) { toast(e.message, true); }
@@ -136,7 +149,7 @@ function renderCodigos() {
   $('cdList').innerHTML = rows.map(c => {
     const usados = c.usosAnt + c.dispositivos.length;
     const pct = c.max ? Math.min(100, Math.round(usados / c.max * 100)) : 0;
-    return `<article class="rcard cdcard ${['Vencido', 'Desactivado'].includes(c.estado) ? 'dim' : ''}">
+    return `<article class="rcard cdcard est-${esc(c.estado)} ${['Vencido', 'Desactivado'].includes(c.estado) ? 'dim' : ''}">
       <div class="rtop">
         <div class="rmeta">
           <button class="cdcode" type="button" data-copy="${esc(c.codigo)}" title="Copiar código">${esc(c.codigo)} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
