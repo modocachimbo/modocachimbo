@@ -397,14 +397,15 @@
       // Cripta: cielo morado con niebla verde de almas
       'html.tema-halloween .escena{background:radial-gradient(38% 30% at 50% 60%,rgba(157,92,255,.38),transparent 72%),radial-gradient(90% 26% at 50% 100%,rgba(110,255,160,.14),transparent 70%),radial-gradient(1.2px 1.2px at 14% 12%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 33% 22%,#e9dcff 50%,transparent 51%),radial-gradient(1.4px 1.4px at 61% 8%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 78% 30%,#e9dcff 50%,transparent 51%),radial-gradient(1.2px 1.2px at 46% 34%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 8% 40%,#e9dcff 50%,transparent 51%),linear-gradient(#0b0516,#1c0c34 52%,#24113f 70%,#0c0617)!important}',
       // Bruma delante de la roca: el búho queda dentro de la escena
-      '.hal-bruma{position:absolute;left:-10%;right:-10%;bottom:6%;height:24%;z-index:1;pointer-events:none;background:radial-gradient(40% 55% at 30% 60%,rgba(170,140,230,.28),transparent 70%),radial-gradient(38% 50% at 70% 70%,rgba(140,230,170,.16),transparent 70%),radial-gradient(60% 40% at 50% 90%,rgba(30,14,52,.9),transparent 75%);filter:blur(6px);animation:halNiebla 14s ease-in-out infinite alternate}',
-      '.hal-cripta .castillo{opacity:.85}',
+      '.hal-bruma{position:absolute;left:-10%;right:-10%;bottom:5%;height:16%;z-index:1;pointer-events:none;background:radial-gradient(40% 55% at 30% 60%,rgba(170,140,230,.28),transparent 70%),radial-gradient(38% 50% at 70% 70%,rgba(140,230,170,.16),transparent 70%);filter:blur(6px);animation:halNiebla 14s ease-in-out infinite alternate}',
+      '.hal-cripta svg .vent{animation:halVentana 3.2s ease-in-out infinite}.hal-cripta svg .vent.b{animation-delay:-1.3s}.hal-cripta svg .vent.c{animation-delay:-2.1s}.hal-cripta svg .vela{animation:halVela 1.6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}.hal-cripta svg .cuervo{transform-box:fill-box;transform-origin:50% 100%;animation:halCuervo 6s ease-in-out infinite}',
+      '#buho::after{content:"";position:absolute;left:14%;right:14%;bottom:-2%;height:9%;border-radius:50%;background:radial-gradient(closest-side,rgba(5,2,10,.85),transparent);z-index:-1}',
       'html.tema-halloween .escena .nubes,html.tema-halloween .escena .plat{display:none}',
       'html.tema-halloween .escena::before{opacity:.35;filter:hue-rotate(60deg)}',
       'html.tema-halloween .escena .halo{border:0!important;background:radial-gradient(circle,rgba(157,92,255,.45),transparent 65%)!important;animation:halLatido 3.4s ease-in-out infinite}',
       '@keyframes halLatido{50%{opacity:.55;transform:scale(1.08)}}',
       '.hal-cripta{position:absolute;inset:0;z-index:-1;pointer-events:none}',
-      '.hal-cripta svg{position:absolute;left:0;bottom:0;width:100%;height:auto}',
+      '.hal-cripta svg{position:absolute;left:0;bottom:0;width:100%;height:100%}',
       // Almas que suben del suelo
       '.hal-alma{position:absolute;bottom:14%;width:5.5%;opacity:0;animation:halAlma 7s ease-in infinite;filter:drop-shadow(0 0 10px rgba(190,140,255,.8))}',
       '.hal-alma svg{display:block;width:100%}',
@@ -451,14 +452,44 @@
     quitar.push(function () { stS.remove(); });
 
     var ALMA = '<svg viewBox="0 0 30 40"><path d="M15 2C7 2 3 8 3 16v20l4-4 4 4 4-4 4 4 4-4 4 4V16C27 8 23 2 15 2z" fill="#E9DDFF" opacity=".9"/><ellipse cx="11" cy="15" rx="2" ry="3" fill="#3b1d66"/><ellipse cx="19" cy="15" rx="2" ry="3" fill="#3b1d66"/></svg>';
-    var CRIPTA = '<svg viewBox="0 0 400 140" preserveAspectRatio="xMidYMax slice">' +
-      '<g class="castillo" fill="#1d0f33"><path d="M150 100V66h6v-8h4v8h6v-14l7-10 7 10v14h10V56l9-14 9 14v24h8V62h6v-8h4v8h6v38z"/><rect x="176" y="62" width="3" height="5" fill="#FFB347" opacity=".8"/><rect x="202" y="64" width="3" height="5" fill="#9BFF3C" opacity=".6"/><rect x="224" y="72" width="3" height="4" fill="#FFB347" opacity=".7"/></g>' +
-      '<path d="M0 140V92q50-18 100-8t100-10 100 12 100-8v62z" fill="#160a26"/>' +
-      '<path d="M30 140l5-70q-14-10-28-12 15 0 27 8l-2-30 6 26q8-12 20-14-12 8-16 20l2 72z" fill="#0b0613"/>' +
-      '<path d="M352 140l4-56q-12-8-24-10 13 0 23 6l1-24 5 22q7-10 18-12-10 6-14 16l2 58z" fill="#0b0613"/>' +
-      '<g fill="#241640"><path d="M70 128v-22q0-10 12-10t12 10v22z"/><path d="M300 130v-26q0-12 14-12t14 12v26z"/><path d="M118 130v-18h-6v-5h6v-6h5v6h6v5h-6v18z"/><path d="M262 132v-16q0-7 9-7t9 7v16z"/></g>' +
-      '<path d="M0 140v-14q100-8 200-2t200-4v20z" fill="#0a0511"/>' +
-      '<ellipse cx="200" cy="134" rx="120" ry="8" fill="#7CFF8A" opacity=".08"/></svg>';
+    // Cementerio completo: el suelo queda a la altura de la piedra del búho (85% de la escena)
+    var CRIPTA = '<svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMax slice">' +
+      '<defs><radialGradient id="hcLuz"><stop offset="0" stop-color="#FFB347" stop-opacity=".7"/><stop offset="1" stop-color="#FF8A1F" stop-opacity="0"/></radialGradient>' +
+        '<linearGradient id="hcSuelo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1747"/><stop offset="1" stop-color="#0c0617"/></linearGradient></defs>' +
+      // luna detrás de la iglesia
+      '<circle cx="300" cy="96" r="30" fill="#EADFFF" opacity=".9"/><circle cx="300" cy="96" r="60" fill="#b99cff" opacity=".12"/><circle cx="312" cy="88" r="5" fill="#cbb8f5"/><circle cx="291" cy="106" r="4" fill="#cbb8f5"/>' +
+      // colinas
+      '<path d="M0 280q60-40 130-30t140-20 130 25v145H0z" fill="#170b29"/>' +
+      // iglesia tenebrosa
+      '<g fill="#1a0e2e" stroke="#3b2563" stroke-width="1.2">' +
+        '<path d="M262 300V150l22-20 22 20v150z"/><path d="M284 60l-16 72h32z"/><path d="M282.5 44h3v18h-3zM277 50h14v3h-14z"/>' +
+        '<path d="M306 300V200l40-32 40 32v100z"/><path d="M228 300v-70l17-15 17 15v70z"/><path d="M245 168l-12 48h24z"/>' +
+      '</g>' +
+      '<circle cx="284" cy="172" r="18" fill="url(#hcLuz)"/><circle class="vent" cx="284" cy="172" r="7" fill="#FF9A2E"/><path d="M284 165v14M277 172h14" stroke="#4a2208" stroke-width="1.4"/>' +
+      '<path class="vent b" d="M322 250v-20q0-8 7-8t7 8v20z" fill="#FFB347"/><path class="vent c" d="M356 250v-20q0-8 7-8t7 8v20z" fill="#9BFF3C" opacity=".7"/>' +
+      '<path d="M273 300v-30q0-11 11-11t11 11v30z" fill="#2a1505"/><path class="vent b" d="M276 300v-28q0-8 8-8t8 8v28z" fill="#C9500A" opacity=".7"/>' +
+      '<path class="vent" d="M240 250v-14q0-5 5-5t5 5v14z" fill="#E8761A" opacity=".8"/>' +
+      // árboles secos
+      '<path d="M40 318l4-80q-16-12-34-15 18 0 33 9l-2-34q-12-12-26-14 15 0 25 10l4-28 6 30q9-13 24-16-13 7-20 20l2 36q13-13 31-14-19 7-29 21l4 95z" fill="#0b0613"/>' +
+      '<g class="cuervo"><path d="M66 224q6-7 13-4l5-2-2 5q1 6-6 7l-2 5h-3l1-5q-6-1-6-6z" fill="#05030a"/><circle cx="79" cy="222" r="1.1" fill="#FF8A1F"/></g>' +
+      '<path d="M380 320l3-60q-11-9-24-11 13 0 23 7l1-26 5 24q7-9 17-10" stroke="#0b0613" stroke-width="5" fill="none"/>' +
+      // reja de hierro
+      '<g stroke="#120a1e" stroke-width="2.4" stroke-linecap="round"><path d="M100 296H222M100 310H222" stroke-width="2"/>' +
+        '<path d="M104 322v-38M116 322v-38M128 322v-38M140 322v-38M152 322v-38M164 322v-38M176 322v-38M188 322v-38M200 322v-38M212 322v-38"/></g>' +
+      // suelo: empieza donde se apoya la piedra
+      '<path d="M0 318q100-12 200-6t200-8v96H0z" fill="url(#hcSuelo)"/>' +
+      // tumbas
+      '<g fill="#2b1b47" stroke="#4a3474" stroke-width="1.2">' +
+        '<path d="M14 352v-30q0-13 15-13t15 13v30z"/><path d="M60 344v-20h-7v-6h7v-7h6v7h7v6h-7v20z"/>' +
+        '<path d="M336 350v-26q0-12 14-12t14 12v26z"/><path d="M372 344v-18q0-8 9-8t9 8v18z"/>' +
+      '</g>' +
+      '<g fill="#4a3474" font-family="Nunito,sans-serif" font-weight="900" text-anchor="middle" font-size="7"><text x="29" y="333">RIP</text><text x="350" y="334">RIP</text></g>' +
+      '<path d="M8 356q22-8 44 0zM330 354q22-8 44 0z" fill="#150b24"/>' +
+      // calabazas encendidas y velas
+      '<g><circle cx="98" cy="350" r="18" fill="url(#hcLuz)"/><ellipse cx="98" cy="352" rx="11" ry="8.5" fill="#D0560B"/><path d="M97 344q1-4 4-5" stroke="#3b5d12" stroke-width="2" fill="none"/><path class="vent" d="M92 351l2.5-3 2.5 3zM99 351l2.5-3 2.5 3zM92 355q6 4 12 0l-2 2-2-1.5-2 1.5-2-1.5-2 1.5z" fill="#FFE08A"/></g>' +
+      '<g><circle cx="312" cy="356" r="14" fill="url(#hcLuz)"/><ellipse cx="312" cy="357" rx="8" ry="6.5" fill="#C9500A"/><path class="vent c" d="M308 356l2-2.5 2 2.5zM313 356l2-2.5 2 2.5zM308 359q4 3 9 0z" fill="#FFE08A"/></g>' +
+      '<g><rect x="128" y="344" width="3.5" height="8" rx="1" fill="#E9DCC0"/><path class="vela" d="M129.7 344q-2.5-3.5 0-7 2.5 3.5 0 7z" fill="#FFC14D"/><circle cx="129.7" cy="341" r="7" fill="url(#hcLuz)"/></g>' +
+      '</svg>';
 
     function senor() {
       var esc = document.getElementById('escena'), bu = document.getElementById('buho');
