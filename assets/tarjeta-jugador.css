@@ -35,14 +35,15 @@
 .pj-st:first-child { padding-left: 0; border-left: 0; }
 .pj-st svg { grid-row: 1 / 3; width: 30px; height: 30px; flex: none; filter: drop-shadow(0 2px 2px rgba(0,0,0,.55)); }
 .pj-st b { font: 800 22px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; }
-.pj-st small { font: 800 11px/1 Nunito, sans-serif; color: rgba(255,255,255,.78); text-transform: uppercase; letter-spacing: .05em; }
+.pj-st small { font: 800 11px/1 Nunito, sans-serif; color: rgba(255,255,255,.85); text-shadow: 0 1px 2px rgba(0,0,0,.8); text-transform: uppercase; letter-spacing: .05em; }
 .pj-st:hover b { color: #FFE58A; }
 .pj-rk { position: relative; z-index: 1; display: grid; justify-items: center; text-decoration: none; }
-.pj-rk > span { width: 96px; display: block; filter: drop-shadow(0 6px 14px rgba(0,0,0,.55)); }
+.pj-rk::before { content: ""; position: absolute; z-index: -1; inset: -14px -18px -10px; border-radius: 50%; background: radial-gradient(closest-side, rgba(6,3,16,.82), rgba(6,3,16,.5) 60%, transparent); }
+.pj-rk > span { width: 96px; display: block; filter: drop-shadow(0 0 2px rgba(0,0,0,.9)) drop-shadow(0 6px 14px rgba(0,0,0,.6)); }
 .pj-rk > span svg { width: 100%; display: block; }
 .pj-rk.sin > span { filter: grayscale(1) brightness(.7); opacity: .6; }
-.pj-rk b { margin-top: -4px; font: italic 900 21px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--rc); }
-.pj-rk small { font: 800 10px/1.2 Nunito, sans-serif; color: rgba(255,255,255,.78); text-transform: uppercase; letter-spacing: .08em; }
+.pj-rk b { margin-top: -4px; padding: 3px 10px 2px; border-radius: 5px; background: rgba(8,5,20,.85); border: 1.5px solid var(--rc); font: italic 900 21px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--rc); text-shadow: 0 1px 0 #000; box-shadow: 0 3px 8px rgba(0,0,0,.5); }
+.pj-rk small { margin-top: 3px; font: 800 10px/1.2 Nunito, sans-serif; color: #fff; text-transform: uppercase; letter-spacing: .08em; text-shadow: 0 1px 2px #000, 0 0 6px rgba(0,0,0,.9); }
 .pj-edit { position: absolute; z-index: 2; bottom: 8px; left: 172px; display: flex; gap: 6px; }
 .pj-edit > * { display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border-radius: 8px; background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.3); color: #fff; cursor: pointer; }
 .pj-edit > *:hover { border-color: #FFC800; }
@@ -67,7 +68,8 @@
   .pj-nom, .pj-tit, .pj-stats { position: relative; z-index: 1; }
   .pj-rk { position: absolute; top: 12px; right: 14px; }
   .pj-rk > span { width: 58px; }
-  .pj-rk b { font-size: 14px; }
+  .pj-rk b { font-size: 13px; padding: 2px 6px 1px; }
+  .pj-rk::before { inset: -8px -10px -6px; }
   .pj-rk small { display: none; }
   .pj-stats { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 10px; padding-top: 10px; border-top: 1.5px solid rgba(255,255,255,.2); }
   .pj-st, .pj-st:first-child { padding: 0 4px; display: flex; flex-direction: column; align-items: center; gap: 3px; border-left: 1.5px solid rgba(255,255,255,.2); }
