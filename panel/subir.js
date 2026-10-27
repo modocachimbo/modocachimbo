@@ -133,7 +133,7 @@ function tipoEspecial(q) {
 function parsearTexto(raw) {
   const meta = { curso: '', ciclo: '', tema: '', nombre: '' };
   const preguntas = [], avisos = [];
-  let cur = null, lastOpt = null, lectura = null, enLectura = false;
+  let cur = null, lastOpt = null, lectura = null, enLectura = false, etiqueta = '';
   const lecturas = [];
   const lineas = String(raw || '').replace(/\r/g, '').split('\n');
   for (const linea of lineas) {
@@ -147,11 +147,17 @@ function parsearTexto(raw) {
       lecturas.push(lectura); enLectura = true; cur = null; lastOpt = null; continue;
     }
     if (/^(FIN\s+(DEL\s+)?(TEXTO|LECTURA)|\[\/(TEXTO|LECTURA)\])$/i.test(l)) { lectura = null; enLectura = false; continue; }
+    // Etiqueta opcional (Sinónimos, Antónimos…): vale para las preguntas de abajo hasta otra ETIQUETA; "ETIQUETA:" vacía la quita
+    if ((m = l.match(/^\[?\s*ETIQUETA\s*:\s*([^\]]*?)\s*\]?$/i))) {
+      etiqueta = /^(ninguna|no|-)$/i.test(m[1]) ? '' : m[1].replace(/\s+/g, ' ').slice(0, 40);
+      if (cur && !cur.textLines.length && !cur.options.length) cur.etiqueta = etiqueta;
+      continue;
+    }
     if (!cur && !enLectura && (m = l.match(/^(CURSO|ASIGNATURA)\s*:\s*(.+)$/i))) { meta.curso = m[2].trim(); continue; }
     if (!cur && !enLectura && (m = l.match(/^(CICLO|AÑO|ANIO|PERIODO)\s*:\s*(.+)$/i))) { meta.ciclo = m[2].trim(); continue; }
     if (!cur && !enLectura && (m = l.match(/^TEMA\s*:?\s*N?[°º]?\s*(\d{1,3})\s*[-–—:.)]?\s*(.*)$/i))) { meta.tema = m[1]; meta.nombre = m[2].trim(); continue; }
     if ((m = l.match(/^PREGUNTA\s*N?[°º]?\s*(\d{1,3})\s*(?:[:.)]\s*(.*))?$/i))) {
-      cur = { num: +m[1], textLines: m[2] ? [m[2]] : [], options: [], marcas: [], clave: null, resp: null, lec: lectura };
+      cur = { num: +m[1], textLines: m[2] ? [m[2]] : [], options: [], marcas: [], clave: null, resp: null, lec: lectura, etiqueta };
       if (lectura) lectura.n++;
       preguntas.push(cur); lastOpt = null; enLectura = false; continue;
     }
@@ -368,7 +374,7 @@ function revisarTexto() {
     <article class="pcard ${q.errores.length ? 'bad' : ''} ${k ? 'en-texto' : ''} ${sigue ? 'sigue' : ''}">
       ${lec}
       ${sigue ? `<div class="plec-sig">${esc(q.lectura.split('\n')[0].replace(/[\[\]]/g, ''))} · ${txtRango(q.lectura)} (misma lectura de arriba)</div>` : ''}
-      <div class="qnum2">${ex ? esc(q.num) : ini + i + 1}</div>${ex ? `<div class="hint" style="margin:-4px 0 8px;">${esc(q.asignatura || '¿curso?')}${q.tema ? ' · ' + esc(q.tema) : ''}</div>` : ''}
+      <div class="qnum2">${ex ? esc(q.num) : ini + i + 1}</div>${q.etiqueta ? `<span class="qetq">${esc(q.etiqueta)}</span>` : ''}${ex ? `<div class="hint" style="margin:-4px 0 8px;">${esc(q.asignatura || '¿curso?')}${q.tema ? ' · ' + esc(q.tema) : ''}</div>` : ''}
       ${q.errores.length ? `<div class="perr">⚠ ${q.errores.map(esc).join(' · ')}</div>` : ''}
       <div class="ptext">${v.html}</div>
       ${q.marcasImg ? '' : `<div class="pimg" data-z="${i}|g"></div>`}
@@ -499,7 +505,7 @@ function armarConImagenes(ruta, base) {
       const z = SUB.zonas[i + '|' + (k++)], st = z && z.estado();
       return st && st.cambio === 'nueva' ? '[IMG' + (der ? '-DER' : '') + ':' + subir(q, st) + ']' : '';
     });
-    const out = Object.assign(base(q), { text: q.lectura + text, options: q.options.map(o => ({ letter: o.letter, text: o.text })), correct: q.correct });
+    const out = Object.assign(base(q), { text: q.lectura + text + (q.etiqueta ? '\n[ETIQUETA: ' + q.etiqueta + ']' : ''), options: q.options.map(o => ({ letter: o.letter, text: o.text })), correct: q.correct });
     if (q.abierta) Object.assign(out, { abierta: true, respuestas: q.respuestas.slice(), options: [], correct: 0 });
     if (q.tipo) out.tipo = q.tipo;
     if (q.tipo === 'completar') out.huecos = q.huecos.map(h => h.slice());

@@ -9,6 +9,8 @@
      (también <i> <b> <em> <strong> <sub> <sup>)
      [TEXTO 03] … [/TEXTO]    lectura que comparten varias preguntas
                               (va al inicio; se ve en un recuadro plegable)
+     [ETIQUETA: Sinónimos]    burbuja opcional arriba a la derecha que dice qué
+                              tipo de pregunta es (va al final del texto)
    Fracciones: \frac dentro del texto se ve grande (como \dfrac); en
    exponentes y subíndices sigue pequeña. Para una pequeña: \tfrac.
    Preguntas de respuesta abierta (Seminarios y Banqueo):
@@ -58,6 +60,7 @@
   var RX_IMG = /^\[IMG(-DER)?:\s*([^\]\s]+)\s*\]$/i;
   var RX_MARCA = /^\[IMAGEN(\s+DERECHA)?\]$/i;
   var RX_LEC = /^\[((?:TEXTO|LECTURA)[^\]]{0,20})\]$/i, RX_LEC_FIN = /^\[\/(?:TEXTO|LECTURA)\]$/i;
+  var RX_ETQ = /^\[ETIQUETA\s*:\s*([^\]]{0,40})\]$/i;
   function esTabla(l) { return /^\|.*\|$/.test(l); }
   function esColumnas(l) { return !esTabla(l) && /\s\|\|\s/.test(l); }
   // "CORDERO : OVEJA" o "<u>ÁRBOL</u> : BOSQUE ::" (dos puntos con espacios a los lados, una sola vez)
@@ -77,7 +80,7 @@
   function armar(texto, opts) {
     opts = opts || {};
     var lineas = String(texto || '').replace(/\r/g, '').split('\n');
-    var partes = [], parrafo = [], derecha = '', nMarca = 0;
+    var partes = [], parrafo = [], derecha = '', nMarca = 0, etiqueta = '';
     function cerrarParrafo() {
       if (!parrafo.length) return;
       partes.push('<span class="mcq-p">' + parrafo.map(formato).join('<br>') + '</span>');
@@ -85,6 +88,7 @@
     }
     for (var i = 0; i < lineas.length; i++) {
       var l = lineas[i].trim(), m;
+      if ((m = l.match(RX_ETQ))) { etiqueta = m[1].trim(); continue; }
       if ((m = l.match(RX_LEC))) {
         // Lectura: las líneas seguidas forman un párrafo (vienen cortadas del PDF); línea en blanco = párrafo nuevo
         cerrarParrafo();
@@ -149,7 +153,7 @@
       parrafo.push(l);
     }
     cerrarParrafo();
-    return { html: partes.join(''), derecha: derecha };
+    return { html: partes.join(''), derecha: derecha, etiqueta: etiqueta };
   }
 
   // Texto sin la lectura compartida (para extractos y mensajes)
@@ -157,6 +161,7 @@
     var lineas = String(texto || '').replace(/\r/g, '').split('\n'), out = [], dentro = false;
     lineas.forEach(function (l) {
       var t = l.trim();
+      if (RX_ETQ.test(t)) return;
       if (!dentro && RX_LEC.test(t)) dentro = true;
       else if (dentro) { if (RX_LEC_FIN.test(t)) dentro = false; }
       else out.push(l);
@@ -271,12 +276,23 @@
   function pintar(el, q) {
     var r = armar(q.text, { lecPos: q.lecPos });
     el.texto.innerHTML = r.html;
+    burbuja(el.texto.closest('.question') || el.texto.parentNode, r.etiqueta);
     if (el.grafico) {
       if (q.graphic) { el.grafico.innerHTML = q.graphic; el.grafico.style.display = 'block'; }
       else { el.grafico.innerHTML = ''; el.grafico.style.display = 'none'; }
     }
     return r;
   }
+  // Burbuja con el tipo de pregunta ([ETIQUETA: Sinónimos]); sin etiqueta no sale nada
+  function burbuja(caja, texto) {
+    if (!caja) return;
+    var b = caja.querySelector(':scope > .mcq-etq');
+    if (!texto) { if (b) b.remove(); caja.classList.remove('mcq-con-etq'); return; }
+    if (!b) { b = document.createElement('span'); b.className = 'mcq-etq'; caja.insertBefore(b, caja.firstChild); }
+    b.textContent = texto;
+    caja.classList.add('mcq-con-etq');
+  }
+
   // Después de crear las alternativas: columnas e imagen al lado (va dentro de la misma lista)
   function alternativas(lista, q, r) {
     var der = !!(r && r.derecha);
@@ -377,6 +393,10 @@
   var st = document.createElement('style');
   st.textContent =
     '.mcq-p{display:block;white-space:normal}.mcq-p+.mcq-p{margin-top:10px}' +
+    '.mcq-con-etq{position:relative}' +
+    '.mcq-etq{position:absolute;top:-13px;right:16px;z-index:1;max-width:60%;padding:4px 11px;border-radius:999px;background:#2A2052;border:2px solid #5B47A6;color:#EDE6FF;font:900 11.5px/1.2 Nunito,sans-serif;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 3px 0 rgba(0,0,0,.25);pointer-events:none}' +
+    '.mcq-etq::after{content:"";position:absolute;left:16px;bottom:-6px;width:8px;height:8px;background:#2A2052;border:solid #5B47A6;border-width:0 2px 2px 0;transform:rotate(45deg)}' +
+    'html[data-modo="claro"] .mcq-etq,html[data-modo="claro"] .mcq-etq::after{background:#EFEAFF;border-color:#B9A8F0;color:#3B2A80}' +
     '.mcq-par{display:grid;grid-template-columns:auto auto auto auto;justify-content:center;gap:4px 10px;margin:10px auto;font-weight:900;letter-spacing:.02em}' +
     '.mcq-par .a{text-align:right}.mcq-par .c,.mcq-an .c{color:#C6E000;font-weight:1000}.mcq-par .d{color:#C6E000;font-weight:1000;min-width:1em}' +
     '.mcq-an{display:inline-flex;align-items:baseline;gap:9px;flex-wrap:nowrap}.mcq-an .a{display:inline-block;text-align:right}' +
@@ -961,6 +981,6 @@
   document.head.appendChild(st3);
 
   window.MCPregunta = {
-    esAbierta: esAbierta, acierta: acierta, normal: normal, numero: numero, cuadroAbierto: cuadroAbierto, solucion: solucion, llenarHuecos: llenarHuecos, nombreTipo: nombreTipo, tipoDe: tipoDe, analogias: analogias, esPar: esPar, armar: armar, pintar: pintar, alternativas: alternativas, cortas: cortas, formato: formato, sinLectura: sinLectura, mezclar: mezclar, rangos: rangos,
+    esAbierta: esAbierta, acierta: acierta, burbuja: burbuja, normal: normal, numero: numero, cuadroAbierto: cuadroAbierto, solucion: solucion, llenarHuecos: llenarHuecos, nombreTipo: nombreTipo, tipoDe: tipoDe, analogias: analogias, esPar: esPar, armar: armar, pintar: pintar, alternativas: alternativas, cortas: cortas, formato: formato, sinLectura: sinLectura, mezclar: mezclar, rangos: rangos,
     ordenAlt: ordenAlt, conOrden: conOrden, mezclarAlt: mezclarAlt, sePuedeMezclar: sePuedeMezclar, raiz: RAIZ };
 })();
