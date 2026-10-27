@@ -22,6 +22,8 @@ const ALU = { lista: [], cargado: false, extras: [] };
   .al-racha { display: inline-flex; align-items: center; gap: 6px; font: 800 15px 'Sora', sans-serif; color: var(--text-dim); }
   .al-racha.on { color: var(--accent); }
   .al-racha svg { width: 12px; height: 16px; }
+  .al-nv { display: inline-flex; align-items: baseline; gap: 3px; padding: 3px 9px 2px 6px; background: linear-gradient(90deg, #FFE14D, #FFC800); color: #2a1d00; font: italic 900 11px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; text-transform: uppercase; clip-path: polygon(0 0, 100% 0, 88% 100%, 0 100%); }
+  .al-nv b { font-size: 16px; }
   .al-login { display: grid; justify-items: center; gap: 14px; }`;
   document.head.appendChild(st);
 })();
@@ -31,6 +33,9 @@ function alFecha(f) {
   const p = String(f).split('-');
   return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : esc(f);
 }
+
+// El mismo nivel de la tarjeta (assets/tarjeta-perfil.js): sin tope, cada nivel pide más XP
+function alNivel(xp) { return 1 + Math.floor(Math.sqrt(Math.max(0, +xp || 0) / 100)); }
 
 async function cargarAlumnos(forzar) {
   if (ALU.cargado && !forzar) return renderAlumnos();
@@ -62,6 +67,13 @@ async function cargarAlumnos(forzar) {
     const por = {}; (Array.isArray(g.data) ? g.data : []).forEach(x => { por[x.email] = x; });
     ALU.lista.forEach(a => { const x = por[a.email] || {}; a.practicas = x.practicas || 0; a.promedio = x.promedio || 0; a.falladas = x.falladas || 0; });
   }
+  // Nivel (de todo su XP) e ID de 5 dígitos (supabase/37-nivel-alumnos.sql); si aún no existe, salen sin esas columnas
+  const nv = await cliente.rpc('nivel_alumnos');
+  ALU.nivel = !nv.error;
+  if (!nv.error) {
+    const por = {}; (Array.isArray(nv.data) ? nv.data : []).forEach(x => { por[x.email] = x; });
+    ALU.lista.forEach(a => { const x = por[a.email] || {}; a.codigo = x.codigo || null; a.xp_total = +x.xp_total || 0; a.nivel = alNivel(a.xp_total); });
+  }
   // Respuestas a las preguntas extra del perfil (supabase/05-perfil-config.sql)
   ALU.extras = [];
   if (window.MCCarreras) {
@@ -81,18 +93,19 @@ function renderAlumnos() {
   const hoy = L.filter(a => a.hoy >= 10).length;
   $('aluStats').innerHTML = `<b>${L.length}</b> alumno${L.length === 1 ? '' : 's'} · <b>${activos}</b> con racha · <b>${hoy}</b> cumplieron hoy`;
   const q = $('aluBuscar').value.trim().toLowerCase();
-  const rows = L.filter(a => !q || [a.nombre, a.apodo, a.email, a.carrera].concat(Object.values(a.extra || {})).join(' ').toLowerCase().includes(q));
+  const rows = L.filter(a => !q || [a.nombre, a.apodo, a.email, a.carrera, a.codigo].concat(Object.values(a.extra || {})).join(' ').toLowerCase().includes(q));
   if (!L.length) { $('aluList').innerHTML = '<div class="state-msg">Todavía no hay alumnos registrados.</div>'; return; }
   if (!rows.length) { $('aluList').innerHTML = '<div class="state-msg">Ningún alumno coincide con la búsqueda.</div>'; return; }
   const icono = window.MCRacha ? MCRacha.icono : '🔥';
   $('aluList').innerHTML = `<div class="al-tabla-wrap"><table class="al-tabla">
-    <thead><tr><th>Alumno</th><th>Carrera</th><th class="num">Racha</th><th class="num">Mejor</th><th class="num">Preguntas hoy</th><th class="num">Último día cumplido</th>${ALU.progreso ? '<th class="num">Prácticas</th><th class="num">Promedio</th><th class="num">Por repasar</th>' : ''}${ALU.extras.map(x => `<th>${esc(x.etiqueta)}</th>`).join('')}</tr></thead>
+    <thead><tr><th>Alumno</th>${ALU.nivel ? '<th class="num">Nivel</th><th class="num">ID</th>' : ''}<th>Carrera</th><th class="num">Racha</th><th class="num">Mejor</th><th class="num">Preguntas hoy</th><th class="num">Último día cumplido</th>${ALU.progreso ? '<th class="num">Prácticas</th><th class="num">Promedio</th><th class="num">Por repasar</th>' : ''}${ALU.extras.map(x => `<th>${esc(x.etiqueta)}</th>`).join('')}</tr></thead>
     <tbody>${rows.map(a => {
       const nom = a.apodo || a.nombre || (a.email || '').split('@')[0];
       const ini = esc((nom || '?').charAt(0).toUpperCase());
       return `<tr>
         <td><div class="al-quien"><span class="al-av">${a.foto_url ? `<img src="${esc(a.foto_url)}" alt="" referrerpolicy="no-referrer">` : ini}</span>
           <div><b>${esc(nom)}</b><small>${esc(a.email || '')}</small></div></div></td>
+        ${ALU.nivel ? `<td class="num"><span class="al-nv" title="${a.xp_total.toLocaleString('es-PE')} XP en total">Nvl <b>${a.nivel}</b></span></td><td class="num">${a.codigo || '—'}</td>` : ''}
         <td>${esc(a.carrera || '—')}</td>
         <td class="num"><span class="al-racha ${a.hoy >= 10 ? 'on' : ''}">${icono}${a.actual}</span></td>
         <td class="num">${a.mejor}</td>
