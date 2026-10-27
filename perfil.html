@@ -356,7 +356,7 @@
   .bloque-info .pt { background: rgba(206,130,255,.14); color: var(--mor); font-weight: 900; }
 
   /* Letra gruesita en toda la web (Nunito); las fórmulas y el código conservan su letra */
-  body, body :not(.bc):not(.bc *):not(.katex):not(.katex *):not(code):not(pre):not(kbd):not(samp):not(.formato):not(.ta.big):not(.cdnuevos code) { font-family: 'Nunito', 'Inter', system-ui, sans-serif !important; }
+  body, body :not(.pj):not(.pj *):not(.mct):not(.mct *):not(.bc):not(.bc *):not(.katex):not(.katex *):not(code):not(pre):not(kbd):not(samp):not(.formato):not(.ta.big):not(.cdnuevos code) { font-family: 'Nunito', 'Inter', system-ui, sans-serif !important; }
   body { font-weight: 600; }
 </style>
 <script src="assets/mc-config.js"></script>
@@ -365,9 +365,9 @@
 <script src="assets/auth.js"></script>
 <script src="assets/agenda.js"></script>
 <script src="assets/buho.js"></script>
-<script src="assets/coleccion.js?v=165"></script>
-<link rel="stylesheet" href="assets/tarjeta-jugador.css?v=1">
-<script src="assets/tarjeta-perfil.js?v=161"></script>
+<script src="assets/coleccion.js?v=166"></script>
+<link rel="stylesheet" href="assets/tarjeta-jugador.css?v=3">
+<script src="assets/tarjeta-perfil.js?v=163"></script>
 <style id="mc-claro">
 /* Modo claro de esta página (assets/claro.css trae lo común) */
 html[data-modo="claro"] .racha-dato.on b { color: #6F8000 !important; }
@@ -1115,7 +1115,8 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
     if (src) { av.innerHTML = '<img src="' + src + '" alt="">'; av.style.background = 'radial-gradient(120% 120% at 80% 0%,' + t[0] + ',' + t[3] + ' 70%,#0d0820)'; }
     else if (av.getAttribute('data-orig') != null) { av.innerHTML = av.getAttribute('data-orig'); av.style.background = ''; }
     if (marco) caja.style.setProperty('--m', marco); else caja.style.removeProperty('--m');
-    $('pTitulo').textContent = C.item(C.puesto('titulo')).nom;
+    var ti = C.item(C.puesto('titulo'));
+    $('pTitulo').innerHTML = C.titulo(ti); $('pTitulo').classList.toggle('con-svg', !!ti.svg);
     var pines = C.puesto('pines'), h = '';
     for (var i = 0; i < 3; i++) h += pines[i] ? C.pin(C.item(pines[i])) : '<span class="hueco">+</span>';
     $('colPins').innerHTML = h;

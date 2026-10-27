@@ -58,10 +58,11 @@
     '<linearGradient id="mct-mor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F0D2FF"/><stop offset=".5" stop-color="#B46CFF"/><stop offset="1" stop-color="#6A24C8"/></linearGradient>' +
     '<linearGradient id="mct-lim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EEFF7A"/><stop offset=".55" stop-color="#C6E000"/><stop offset="1" stop-color="#6E8400"/></linearGradient>' +
     '<symbol id="mct-ver" viewBox="0 0 48 48"><path d="M24 2 43 13v22L24 46 5 35V13z" fill="url(#mct-oro)" stroke="#5a2a00" stroke-width="1.5"/><path d="M24 7 39 15.5v17L24 41 9 32.5v-17z" fill="url(#mct-vino)"/><path d="M14 15h6.5L24 28l3.5-13H34l-7 19h-6z" fill="url(#mct-oro)" stroke="#5a2a00" stroke-width="1"/></symbol>' +
-    '<symbol id="mct-racha" viewBox="0 0 32 32"><path d="M16 2c2 6 10 9.5 10 18.5a10 10 0 0 1-20 0c0-5.2 3.2-8 5.4-10 .3 3.4 1.8 5.2 3.6 5.8C14 11 14.6 6.5 16 2z" fill="url(#mct-fue)" stroke="#5a1400" stroke-width="1.3"/><path d="M16.4 16c.8 3 5 4.8 5 9a5.4 5.4 0 0 1-10.8 0c0-2.3 1.2-3.7 2.3-4.8.2 1.6.9 2.5 1.8 2.8-.4-2.6.2-5 1.7-7z" fill="#FFF0A0"/></symbol>' +
-    '<symbol id="mct-xp" viewBox="0 0 32 32"><path d="M18.5 2 6 18h8l-2.5 12L26 13h-8.5z" fill="url(#mct-ray)" stroke="#6b3a00" stroke-width="1.4" stroke-linejoin="round"/><path d="M17 6 10 15h4" stroke="#fff" stroke-width="1.6" fill="none" opacity=".7" stroke-linecap="round"/></symbol>' +
-    '<symbol id="mct-mejor" viewBox="0 0 32 32"><path d="M9 4h14v6a7 7 0 0 1-14 0z" fill="url(#mct-mor)" stroke="#3a0f6e" stroke-width="1.4"/><path d="M9 6H4c0 4 2.5 6 5.5 6M23 6h5c0 4-2.5 6-5.5 6" fill="none" stroke="url(#mct-mor)" stroke-width="2.2"/><path d="M14 17h4v4h-4z" fill="#8a46e0"/><path d="M10 21h12l1.5 6h-15z" fill="url(#mct-mor)" stroke="#3a0f6e" stroke-width="1.4"/><path d="M12 7v4" stroke="#fff" stroke-width="1.6" opacity=".7" stroke-linecap="round"/></symbol>' +
-    '<symbol id="mct-cofre" viewBox="0 0 32 32"><path d="M4 13h24v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" fill="url(#mct-lim)" stroke="#2f3a00" stroke-width="1.4"/><path d="M4 13c0-5 4-8 12-8s12 3 12 8z" fill="#9db800" stroke="#2f3a00" stroke-width="1.4"/><rect x="13" y="11" width="6" height="8" rx="1.5" fill="#FFC800" stroke="#5a3a00" stroke-width="1.2"/><path d="M4 18h24" stroke="#2f3a00" stroke-width="1.2" opacity=".5"/></symbol>' +
+    '<linearGradient id="mct-hfue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF9A2E"/><stop offset="1" stop-color="#B3200B"/></linearGradient><linearGradient id="mct-hray" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD24D"/><stop offset="1" stop-color="#C26A00"/></linearGradient><linearGradient id="mct-hmor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B983FF"/><stop offset="1" stop-color="#4A1A96"/></linearGradient><linearGradient id="mct-hlim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B8D400"/><stop offset="1" stop-color="#3F5200"/></linearGradient>' +
+    '<symbol id="mct-racha" viewBox="0 0 32 32"><path d="M16 1.5 29 9v14L16 30.5 3 23V9z" fill="url(#mct-hfue)" stroke="#fff" stroke-opacity=".6" stroke-width="1.3"/><path d="M16 4.5 26.5 10.5" stroke="#fff" stroke-opacity=".35" stroke-width="1.2" fill="none"/><g fill="#fff"><path d="M16.5 6.5c.8 3.4 5.8 5.4 5.8 10.6a6.3 6.3 0 0 1-12.6 0c0-3 1.8-4.6 3.1-5.7.2 2 1 3 2.1 3.3-.6-3.2.1-6 1.6-8.2z"/><path d="M16.3 17.2c.4 1.6 2.6 2.5 2.6 4.6a2.9 2.9 0 0 1-5.8 0c0-1.2.6-1.9 1.2-2.4.1.8.5 1.2 1 1.4-.2-1.3 0-2.5 1-3.6z" fill="#C2360E"/></g></symbol>' +
+    '<symbol id="mct-xp" viewBox="0 0 32 32"><path d="M16 1.5 29 9v14L16 30.5 3 23V9z" fill="url(#mct-hray)" stroke="#fff" stroke-opacity=".6" stroke-width="1.3"/><path d="M16 4.5 26.5 10.5" stroke="#fff" stroke-opacity=".35" stroke-width="1.2" fill="none"/><g fill="#fff"><path d="M18 6 9.8 17.4h5.4L13.6 26 22.2 14.3h-5.5z"/></g></symbol>' +
+    '<symbol id="mct-mejor" viewBox="0 0 32 32"><path d="M16 1.5 29 9v14L16 30.5 3 23V9z" fill="url(#mct-hmor)" stroke="#fff" stroke-opacity=".6" stroke-width="1.3"/><path d="M16 4.5 26.5 10.5" stroke="#fff" stroke-opacity=".35" stroke-width="1.2" fill="none"/><g fill="#fff"><path d="M11 8h10v4.6a5 5 0 0 1-10 0z"/><path d="M11 9.6H8.6c0 2.7 1.5 3.9 3.2 3.9M21 9.6h2.4c0 2.7-1.5 3.9-3.2 3.9" fill="none" stroke="#fff" stroke-width="1.7"/><path d="M15 17.4h2v3.2h-2zM11.4 21h9.2v3.4h-9.2z"/></g></symbol>' +
+    '<symbol id="mct-cofre" viewBox="0 0 32 32"><path d="M16 1.5 29 9v14L16 30.5 3 23V9z" fill="url(#mct-hlim)" stroke="#fff" stroke-opacity=".6" stroke-width="1.3"/><path d="M16 4.5 26.5 10.5" stroke="#fff" stroke-opacity=".35" stroke-width="1.2" fill="none"/><g fill="#fff"><path d="M8.5 15.2h15v7.6a1.2 1.2 0 0 1-1.2 1.2H9.7a1.2 1.2 0 0 1-1.2-1.2zM8.5 14c0-3.6 3-5.6 7.5-5.6s7.5 2 7.5 5.6z"/><path d="M14.5 12.6h3v4.6h-3z" fill="#4F6600"/></g></symbol>' +
     '</defs></svg>';
   function defs() {
     if (document.getElementById('mct-defs') || !document.body) return;
@@ -121,7 +122,7 @@
     T + '.mct .mcu-nom{display:block;flex:none;text-align:left;font:italic 900 28px/.95 var(--display,"Barlow Condensed","Arial Narrow",sans-serif);letter-spacing:.02em;text-transform:uppercase;color:#fff;' +
       'text-shadow:0 2px 0 rgba(0,0,0,.55),0 0 12px rgba(0,0,0,.55);max-width:9em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
     T + '.mct-rg{display:flex;align-items:center;gap:6px;font:800 15px/1 var(--display,"Barlow Condensed","Arial Narrow",sans-serif);letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.8);' +
-      'text-shadow:0 2px 0 rgba(0,0,0,.6),0 0 8px rgba(0,0,0,.55);white-space:nowrap}' +
+      'text-shadow:0 1px 0 #000,0 0 3px #000,0 0 8px rgba(0,0,0,.7);white-space:nowrap}' +
     T + '.mct-rg:empty{display:none}' +
     T + '.mct-rg b{color:var(--rc,#cfc8e6)}' +
     T + '.mct-rg i{width:22px;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}' +
@@ -215,7 +216,7 @@
   // Los estilos de la tarjeta grande y de las fotos: assets/tarjeta-jugador.css
   function hoja() {
     if (document.querySelector('link[href*="tarjeta-jugador.css"]')) return;
-    var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = BASE + 'assets/tarjeta-jugador.css?v=1';
+    var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = BASE + 'assets/tarjeta-jugador.css?v=3';
     document.head.appendChild(l);
   }
   var GALAXIA = ['#5b34b8', '#241452', '#4a2a9a', '#1a0f40'];
@@ -264,7 +265,7 @@
         '<span class="pj-nv">Nvl <b>' + nivel(d.xp_total) + '</b></span>' +
         (pin ? '<span class="pj-pin" title="' + esc(pin.nom) + '">' + pin.html + '</span>' : '') + '</div>' +
       '<div class="pj-mid pj-sh"><div class="pj-nom">' + esc(d.apodo || 'Cachimbo') + '</div>' +
-        (tit ? '<span class="pj-tit">' + esc(tit.nom) + '</span>' : '') +
+        (tit ? '<span class="pj-tit' + (tit.svg ? ' con-svg' : '') + '">' + C.titulo(tit) + '</span>' : '') +
         '<div class="pj-stats">' + st('racha', d.racha || 0, 'racha') + st('xp', (+d.xp_semana || 0).toLocaleString('es-PE'), 'XP') + st('mejor', d.mejor || 0, 'mejor') +
           st('cofre', (d.coleccion || 0) + (total ? '/' + total : ''), 'colección') + '</div></div>' +
       '<span class="pj-rk pj-sh' + (n < 0 ? ' sin' : '') + '"><span>' + (window.MCRango ? MCRango.svg(Math.max(n, 0), { quieto: true }) : '') + '</span><b>' + (n < 0 ? 'Sin rango' : MCRango.nombre(n)) + '</b><small>Rango semanal</small></span>' +
