@@ -24,7 +24,9 @@
     legendario: { nom: 'Legendario', c: '255,200,0' },
     evento: { nom: 'Evento', c: '255,75,75' }
   };
-  var RANGO = ['Zafiro', 'Esmeralda', 'Amatista', 'Rubí', 'Leyenda'];
+  // Premios por rango: n es un tope de XP en una semana (el mismo de supabase/31-coleccion.sql)
+  var RANGO_XP = [20, 1500, 4000, 8000, 12000];
+  function rangoDe(n) { return window.MCRango ? MCRango.nombre(MCRango.nivel(RANGO_XP[n])) : ''; }
   var HALLOWEEN = 'Noche de Brujas 2026';  // en la cinta de la tarjeta sale «Halloween»
 
   // Espacios: dónde se pone cada cosa (pines: hasta 3 en tu vitrina)
@@ -186,7 +188,7 @@
     var r = x.regla, ok = tiene(x.id);
     if (r.tipo === 'gratis') return 'Viene con tu cuenta.';
     if (r.tipo === 'racha') return ok ? 'Lo ganaste al llegar a ' + r.n + ' días de racha.' : 'Llega a una racha de ' + r.n + ' días (tu mejor: ' + E.mejorRacha + ').';
-    if (r.tipo === 'rango') return ok ? 'Lo ganaste al llegar a ' + RANGO[r.n] + ' en una semana.' : 'Llega a ' + RANGO[r.n] + ' en una semana (' + (window.MCRango ? String(MCRango.minimo[r.n]).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' XP' : '') + ').';
+    if (r.tipo === 'rango') return ok ? 'Lo ganaste al llegar a ' + rangoDe(r.n) + ' en una semana.' : 'Llega a ' + rangoDe(r.n) + ' en una semana (' + (window.MCRango ? String(RANGO_XP[r.n]).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' XP' : '') + ').';
     if (r.tipo === 'evento') return ok ? 'Lo ganaste en ' + r.evento + '. Es tuyo para siempre.' : 'Se ganaba en ' + r.evento + '.';
     return ok ? 'Un regalo de Modo Cachimbo.' : 'Es un regalo especial: no se puede conseguir solo.';
   }
@@ -213,7 +215,7 @@
           if (d.puesto) E.puesto = mezclar(d.puesto);
         }).catch(function () { E.sql = false; }),
         c.from('xp_semana').select('semana,xp').eq('usuario', u.id).limit(200).then(function (r) {
-          var max = -1, MIN = window.MCRango ? MCRango.minimo : [20, 1500, 4000, 8000, 12000];
+          var max = -1, MIN = RANGO_XP;
           ((!r.error && r.data) || []).forEach(function (f) { for (var i = MIN.length - 1; i >= 0; i--) if (+f.xp >= MIN[i]) { max = Math.max(max, i); break; } });
           E.maxRango = max;
         }).catch(function () {})
