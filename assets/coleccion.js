@@ -151,6 +151,33 @@
   var POR_ID = {};
   CATALOGO.forEach(function (x) { POR_ID[x.id] = x; });
 
+  // Recursos: fondos con imagen que se suben desde el panel (supabase/40-recursos.sql).
+  // Se suman al catálogo al llegar; se recuerdan en este equipo para no esperar la próxima vez.
+  var CLAVE_REC = 'mc_recursos';
+  function sumarRecursos(lista) {
+    for (var i = CATALOGO.length - 1; i >= 0; i--) if (CATALOGO[i].recurso) { delete POR_ID[CATALOGO[i].id]; CATALOGO.splice(i, 1); }
+    (lista || []).forEach(function (r) {
+      if (!r || POR_ID[r.id] || r.espacio !== 'racha' || !/^https:\/\//.test(r.img || '') || !Array.isArray(r.tema) || r.tema.length !== 4) return;
+      var x = { id: r.id, espacio: r.espacio, nom: r.nom || 'Fondo', rareza: RAREZA[r.rareza] ? r.rareza : 'comun', regla: r.regla || { tipo: 'gratis' }, tema: r.tema, img: r.img, recurso: true };
+      if (r.descr) x.desc = r.descr;
+      CATALOGO.push(x); POR_ID[x.id] = x;
+    });
+  }
+  sumarRecursos(leer(CLAVE_REC));
+  var pedidoRec = null;
+  function cargarRecursos() {
+    if (pedidoRec || !window.MCAuth) return pedidoRec;
+    pedidoRec = MCAuth.listo.then(function (c) {
+      return c.from('coleccion_item').select('id,espacio,regla,nom,rareza,img,tema,descr').eq('recurso', true).eq('visible', true).order('creado').then(function (r) {
+        if (r.error) return; // todavía no se corrió supabase/40-recursos.sql
+        var antes = JSON.stringify(leer(CLAVE_REC) || []), ahora = JSON.stringify(r.data || []);
+        guardar(CLAVE_REC, r.data || []);
+        if (antes !== ahora) { sumarRecursos(r.data); avisar(); }
+      });
+    }).catch(function () {});
+    return pedidoRec;
+  }
+
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function leer(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function guardar(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
@@ -201,6 +228,7 @@
   /* ---------- Carga: SQL de la colección, racha y rangos ---------- */
   var pedido = null;
   function cargar() {
+    cargarRecursos();
     if (pedido) return pedido;
     if (!window.MCAuth) return Promise.resolve(E);
     pedido = MCAuth.listo.then(function (c) {
@@ -268,7 +296,7 @@
     // Escenario: un mini escenario con su piso
     if (x.espacio === 'escena') return '<span class="mcc-esc" style="--r1:' + x.tema[0] + ';--r2:' + x.tema[3] + '">' + PISOS[x.id].replace(/mcp-([gh])/g, 'mcp-$1-' + x.id) + '<img class="mcc-esc-b" src="' + esc(D.replace(/disfraces\/$/, 'avatar/') + 'clasico-cuerpo.webp') + '" alt="" loading="lazy"></span>';
     // Fondo de perfil: una mini tarjeta como la de arriba
-    if (x.espacio === 'racha') return '<span class="mcc-fp" style="--r1:' + x.tema[0] + ';--r2:' + x.tema[3] + '"><span class="mcc-fp-c"><i' + (avatarSrc() || miFoto.src ? ' style="background-image:url(&quot;' + esc(avatarSrc() || miFoto.src) + '&quot;)"' : '') + '>' + (avatarSrc() || miFoto.src ? '' : esc(miFoto.letra)) + '</i><b>' + esc(miFoto.nombre || 'Tu nombre') + '</b><small>Tu rango</small></span></span>';
+    if (x.espacio === 'racha') return '<span class="mcc-fp" style="--r1:' + x.tema[0] + ';--r2:' + x.tema[3] + '"><span class="mcc-fp-c"' + (x.img ? ' style="background:linear-gradient(90deg,rgba(11,8,24,.62),rgba(11,8,24,.2) 65%,rgba(11,8,24,0)),url(&quot;' + esc(x.img) + '&quot;) center/cover"' : '') + '><i' + (avatarSrc() || miFoto.src ? ' style="background-image:url(&quot;' + esc(avatarSrc() || miFoto.src) + '&quot;)"' : '') + '>' + (avatarSrc() || miFoto.src ? '' : esc(miFoto.letra)) + '</i><b>' + esc(miFoto.nombre || 'Tu nombre') + '</b><small>Tu rango</small></span></span>';
     // Cuadro de racha: uno chiquito con su fuego
     if (x.espacio === 'cuadro') { var l = x.llama; return '<span class="mcc-cr" style="--r1:' + x.tema[0] + ';--r2:' + x.tema[1] + ';--rb:' + x.tema[2] + ';--rd:' + x.tema[3] + '"><span class="mcc-cr-c">' + llama(l) + '<b>7</b><i></i><i></i><i></i></span></span>'; }
     if (x.espacio === 'avatar') return avatarSvg(x, miFoto.src, miFoto.letra);
@@ -460,6 +488,8 @@
     escena: function (id) { var x = POR_ID[id || puesto('escena')]; return x && x.tema || POR_ID['escena-galaxia'].tema; },
     fijarFoto: function (src, letra, nombre) { miFoto = { src: /^https:\/\//.test(src || '') ? src : '', letra: letra || '', nombre: nombre || miFoto.nombre || '' }; },
     tema: function (id) { var x = POR_ID[id || puesto('racha')]; return x && x.tema || POR_ID['racha-galaxia'].tema; },
+    // Imagen del fondo de perfil (solo los recursos subidos desde el panel la tienen)
+    fondo: function (id) { var x = POR_ID[id || puesto('racha')]; return x && x.img || ''; },
     // Cuadro de racha: { tema: [4 colores], llama: [2 colores] }
     cuadro: function (id) { var x = POR_ID[id || puesto('cuadro')]; if (!x || x.espacio !== 'cuadro') x = POR_ID['cuadro-galaxia']; return { tema: x.tema, llama: x.llama }; },
     llama: llama, titulo: tituloHtml,
