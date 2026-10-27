@@ -29,6 +29,8 @@
 .pj-mid { position: relative; z-index: 1; min-width: 0; display: grid; gap: 9px; }
 .pj-nom { margin: 0; font: italic 900 44px/.9 'Barlow Condensed', 'Arial Narrow', sans-serif; text-transform: uppercase; letter-spacing: .02em; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pj-tit { display: flex; align-items: center; gap: 8px; font: italic 800 17px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; letter-spacing: .06em; text-transform: uppercase; color: #FFE58A; text-decoration: none; }
+.pj-tit.con-svg::before { display: none; }
+.pj-tit .mc-tsvg { display: block; height: 30px; width: auto; max-width: 100%; }
 .pj-tit::before { content: ""; width: 18px; height: 3px; background: #FFC800; transform: skewX(-30deg); }
 .pj-stats { display: flex; align-items: center; }
 .pj-st { display: grid; grid-template-columns: auto auto; grid-template-rows: auto auto; column-gap: 7px; row-gap: 3px; align-items: center; padding: 0 10px; white-space: nowrap; border-left: 1.5px solid rgba(255,255,255,.28); color: #fff; text-decoration: none; }
@@ -63,6 +65,7 @@
   .pj-pin .mcc-pin span { font-size: 14px; }
   .pj-burbuja { left: 70px; top: 26px; }
   .pj-nom { font-size: 30px; padding-right: 62px; }
+  .pj-tit .mc-tsvg { height: 22px; }
   .pj-tit { font-size: 13.5px; align-self: start; padding-right: 62px; }
   .pj-mid { display: contents; }
   .pj-nom, .pj-tit, .pj-stats { position: relative; z-index: 1; }

@@ -94,7 +94,8 @@
     { id: 'marco-leyenda', espacio: 'marco', nom: 'Leyenda', rareza: 'legendario', regla: { tipo: 'rango', n: 4 }, marco: 'conic-gradient(from 200deg,#FFF0A0,#F5B400,#B05A00,#FFE27A,#FFF0A0)' },
     { id: 'marco-calabaza', espacio: 'marco', nom: 'Calabaza', rareza: 'evento', regla: { tipo: 'evento', evento: HALLOWEEN }, marco: 'conic-gradient(from 200deg,#FF9600,#7b2fbf,#FF9600,#2a0f3d,#FF9600)' },
 
-    // Títulos bajo tu nombre
+    // Títulos bajo tu nombre. Para uno con diseño agrega svg: 'nombre' y sube
+    // assets/titulos/nombre.svg (con o sin fondo, puede ir animado; el texto en trazos)
     { id: 'titulo-cachimbo', espacio: 'titulo', nom: 'Cachimbo en camino', rareza: 'comun', regla: { tipo: 'gratis' } },
     { id: 'titulo-constante', espacio: 'titulo', nom: 'Constante', rareza: 'raro', regla: { tipo: 'racha', n: 7 } },
     { id: 'titulo-gemas', espacio: 'titulo', nom: 'Cazador de gemas', rareza: 'epico', regla: { tipo: 'rango', n: 2 } },
@@ -270,9 +271,14 @@
     if (x.espacio === 'cuadro') { var l = x.llama; return '<span class="mcc-cr" style="--r1:' + x.tema[0] + ';--r2:' + x.tema[1] + ';--rb:' + x.tema[2] + ';--rd:' + x.tema[3] + '"><span class="mcc-cr-c">' + llama(l) + '<b>7</b><i></i><i></i><i></i></span></span>'; }
     if (x.espacio === 'avatar') return avatarSvg(x, miFoto.src, miFoto.letra);
     if (x.espacio === 'marco') return '<span class="mcc-marco" style="--m:' + (x.marco === 'none' ? 'transparent' : x.marco) + '"><span>' + (window.MCBuho ? MCBuho.svg('normal', 80) : '') + '</span></span>';
-    if (x.espacio === 'titulo') return '<span class="mcc-titulo"><span>★ ' + esc(x.nom) + '</span></span>';
+    if (x.espacio === 'titulo') return '<span class="mcc-titulo">' + (x.svg ? tituloHtml(x) : '<span>★ ' + esc(x.nom) + '</span>') + '</span>';
     if (x.espacio === 'pines') return pinSvg(x);
     return '';
+  }
+  // El título como texto, o su dibujo si tiene svg
+  function tituloHtml(x) {
+    if (!x) return '';
+    return x.svg ? '<img class="mc-tsvg" src="' + esc(BASE + 'assets/titulos/' + x.svg + '.svg') + '" alt="' + esc(x.nom) + '" title="' + esc(x.nom) + '">' : esc(x.nom);
   }
   function llama(l) { return '<svg viewBox="0 0 32 36" aria-hidden="true"><path fill="' + l[0] + '" d="M16 1.5c1.2 4.6 7.6 8.2 9.6 13.6 2.6 7-1.6 17.4-9.6 17.4S3.8 24.9 6.1 17.6c1-3.2 3.3-5.3 4.9-6.9.2 2.8 1.4 4.6 3 5.2C13.3 10.6 14 6 16 1.5z"/><path fill="' + l[1] + '" d="M16.3 15.5c.6 2.4 4.5 4.4 4.5 8.6a4.8 4.8 0 0 1-9.6 0c0-2 1-3.4 2.1-4.4.2 1.4.8 2.3 1.6 2.6-.4-2.4 0-4.6 1.4-6.8z"/></svg>'; }
   // Foto de perfil: el dibujo del búho o tu foto (o tu inicial) sobre tu fondo
@@ -371,6 +377,7 @@
       '.mcc-marco>span{display:grid;place-items:center;width:100%;height:100%;border-radius:26%;background:#1D1834;overflow:hidden;border:2px dashed rgba(255,255,255,.12)}' +
       '.mcc-marco svg{width:80%;height:80%}' +
       '.mcc-titulo{width:100%;height:100%;display:grid;place-items:center}' +
+      '.mcc-titulo .mc-tsvg{display:block;max-width:94%;max-height:60%}' +
       '.mcc-titulo span{font-size:12.5px;font-weight:1000;color:rgb(var(--c));background:rgba(var(--c),.12);border:1.5px solid rgba(var(--c),.55);border-radius:999px;padding:5px 10px;max-width:96%}' +
       '.mcc-pin{width:74%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.25),transparent 45%),var(--pf);border:5px solid var(--pb);box-shadow:inset 0 -6px 0 rgba(0,0,0,.25),0 4px 0 rgba(0,0,0,.3)}' +
       '.mcc-pin span{font-size:min(44px,11vw);line-height:1}' +
@@ -453,7 +460,7 @@
     tema: function (id) { var x = POR_ID[id || puesto('racha')]; return x && x.tema || POR_ID['racha-galaxia'].tema; },
     // Cuadro de racha: { tema: [4 colores], llama: [2 colores] }
     cuadro: function (id) { var x = POR_ID[id || puesto('cuadro')]; if (!x || x.espacio !== 'cuadro') x = POR_ID['cuadro-galaxia']; return { tema: x.tema, llama: x.llama }; },
-    llama: llama,
+    llama: llama, titulo: tituloHtml,
     marco: function (id) { var x = POR_ID[id || puesto('marco')]; return x && x.marco !== 'none' ? x.marco : ''; },
     nuevos: nuevos, marcarVistos: marcarVistos, celebrar: celebrar,
     contar: function () { var n = 0; CATALOGO.forEach(function (x) { if (tiene(x.id)) n++; }); return { tengo: n, total: CATALOGO.length }; }

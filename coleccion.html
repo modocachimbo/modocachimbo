@@ -120,6 +120,8 @@
   .p-buho.pop { animation: pop .5s cubic-bezier(.2,1.6,.4,1); }
   .p-nom { font: italic 900 28px/1 var(--display); text-transform: uppercase; margin-top: 2px; }
   .p-tit { display: inline-flex; gap: 6px; align-items: center; margin-top: 8px; font-size: 13px; font-weight: 1000; color: var(--c, #FFC800); background: rgba(var(--cr, '255,200,0'), .1); border: 1.5px solid rgba(var(--cr), .5); border-radius: 999px; padding: 4px 11px; }
+  .p-tit:has(.mc-tsvg) { background: none; border: 0; padding: 0; }
+  .p-tit .mc-tsvg { display: block; height: 26px; width: auto; max-width: 100%; }
   .slots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
   .slot .mcc-av { width: 34px; border-radius: 9px; box-shadow: none; }
   /* El título va solo en su fila: el ícono a la izquierda y el nombre al lado */
@@ -212,8 +214,8 @@
 <script src="assets/auth.js"></script>
 <script src="assets/buho.js"></script>
 <script src="assets/rango.js"></script>
-<script src="assets/coleccion.js?v=165"></script>
-<script src="assets/tarjeta-perfil.js?v=162"></script>
+<script src="assets/coleccion.js?v=166"></script>
+<script src="assets/tarjeta-perfil.js?v=163"></script>
 <script src="assets/buho/buho-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
 </head>
@@ -307,7 +309,7 @@
     // ¿Llevas algo distinto a lo de siempre?
     $('pReset').hidden = !!PREV || !['buho', 'avatar', 'escena', 'racha', 'cuadro', 'marco', 'titulo'].some(function (e) { return C.puesto(e) !== C.defecto[e]; });
     if (pop) { pb.classList.remove('pop'); void pb.offsetWidth; pb.classList.add('pop'); }
-    var pt = $('pTit'); pt.textContent = '★ ' + t.nom;
+    var pt = $('pTit'); if (t.svg) pt.innerHTML = C.titulo(t); else pt.textContent = '★ ' + t.nom;
     pt.style.setProperty('--cr', tr.c); pt.style.color = 'rgb(' + tr.c + ')';
     var tema = C.tema(P('racha')), marco = C.marco(P('marco')), av = C.item(P('avatar')), es = C.escena(P('escena'));
     var slots = [

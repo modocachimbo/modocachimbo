@@ -216,7 +216,7 @@
   // Los estilos de la tarjeta grande y de las fotos: assets/tarjeta-jugador.css
   function hoja() {
     if (document.querySelector('link[href*="tarjeta-jugador.css"]')) return;
-    var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = BASE + 'assets/tarjeta-jugador.css?v=2';
+    var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = BASE + 'assets/tarjeta-jugador.css?v=3';
     document.head.appendChild(l);
   }
   var GALAXIA = ['#5b34b8', '#241452', '#4a2a9a', '#1a0f40'];
@@ -265,7 +265,7 @@
         '<span class="pj-nv">Nvl <b>' + nivel(d.xp_total) + '</b></span>' +
         (pin ? '<span class="pj-pin" title="' + esc(pin.nom) + '">' + pin.html + '</span>' : '') + '</div>' +
       '<div class="pj-mid pj-sh"><div class="pj-nom">' + esc(d.apodo || 'Cachimbo') + '</div>' +
-        (tit ? '<span class="pj-tit">' + esc(tit.nom) + '</span>' : '') +
+        (tit ? '<span class="pj-tit' + (tit.svg ? ' con-svg' : '') + '">' + C.titulo(tit) + '</span>' : '') +
         '<div class="pj-stats">' + st('racha', d.racha || 0, 'racha') + st('xp', (+d.xp_semana || 0).toLocaleString('es-PE'), 'XP') + st('mejor', d.mejor || 0, 'mejor') +
           st('cofre', (d.coleccion || 0) + (total ? '/' + total : ''), 'colección') + '</div></div>' +
       '<span class="pj-rk pj-sh' + (n < 0 ? ' sin' : '') + '"><span>' + (window.MCRango ? MCRango.svg(Math.max(n, 0), { quieto: true }) : '') + '</span><b>' + (n < 0 ? 'Sin rango' : MCRango.nombre(n)) + '</b><small>Rango semanal</small></span>' +
