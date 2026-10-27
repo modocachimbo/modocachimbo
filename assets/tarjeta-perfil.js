@@ -126,7 +126,7 @@
     T + '.mct-rg:empty{display:none}' +
     T + '.mct-rg b{color:var(--rc,#cfc8e6)}' +
     T + '.mct-rg i{width:22px;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}' +
-    T + '.mct-rg i svg{width:100%;display:block}' +
+    T + '.mct-rg i svg, .mct-rg i .mc-rgo-em{width:100%;display:block}' +
     '@media (max-width:900px){' +
       T + '.mcu-chip.mct{height:60px;padding:0 30px 0 6px;gap:9px;clip-path:polygon(0 0,100% 0,calc(100% - 18px) 100%,0 100%)}' +
       T + '.mcu-chip.mct{--bi:52px}' + T + '.mct-caja{width:46px;height:46px}' + T + '.mct-marco{padding:2px}' +
