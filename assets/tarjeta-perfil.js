@@ -15,6 +15,7 @@
    ========================================================= */
 (function () {
   if (window.MCTarjeta) return;
+  var BASE = document.currentScript && document.currentScript.src ? document.currentScript.src.replace(/assets\/tarjeta-perfil\.js(\?.*)?$/, '') : '';
   // Color del texto de cada rango (el mismo de assets/rango.js)
   var RC = ['#5FDAFF', '#5FF59A', '#D79BFF', '#FF6E84', '#FFC800'];
   var miXp = null, yo = null, oyentes = [];
@@ -210,6 +211,95 @@
     });
   }
 
+  /* ---------- Fotos de otros alumnos (tops, simulacro, perfil) y su tarjeta ---------- */
+  // Los estilos de la tarjeta grande y de las fotos: assets/tarjeta-jugador.css
+  function hoja() {
+    if (document.querySelector('link[href*="tarjeta-jugador.css"]')) return;
+    var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = BASE + 'assets/tarjeta-jugador.css?v=1';
+    document.head.appendChild(l);
+  }
+  var GALAXIA = ['#5b34b8', '#241452', '#4a2a9a', '#1a0f40'];
+  // Lo que lleva puesto un alumno: de los tops ({avatar, marco, fondo}) o de ver_jugador ({puesto: {...}})
+  function vista(x) {
+    var C = window.MCColeccion, img = x.foto || '', marco = '', tema = GALAXIA;
+    if (C && x.yo) {
+      marco = C.marco(); tema = C.tema();
+      var mia = document.querySelector('[data-mc-tarjeta] .mcu-av img');
+      img = C.avatar() || (mia ? mia.src : img);
+    } else if (C) {
+      var p = x.puesto && typeof x.puesto === 'object' ? x.puesto : { avatar: x.avatar, marco: x.marco, racha: x.fondo };
+      // Sin nada puesto lleva lo predeterminado: la cara del búho sobre Galaxia
+      var at = C.item(p.avatar) || C.item(C.defecto.avatar), fo = p.racha && C.item(p.racha);
+      if (p.marco && C.item(p.marco)) marco = C.marco(p.marco);
+      tema = C.tema(fo ? p.racha : C.defecto.racha);
+      if (at && at.av) img = C.avatar(at.id);
+    }
+    return { img: /^https:\/\//.test(img) || /assets\/buho\/avatar\//.test(img) ? img : '', marco: marco, tema: tema };
+  }
+  function inicial(nom) { return esc((String(nom || '?').trim()[0] || '?').toUpperCase()); }
+  // Foto con marco y nivel; cls son las clases de cada página (le dan el tamaño).
+  // Con ID se puede tocar para ver su tarjeta.
+  function foto(x, cls) {
+    hoja();
+    var v = vista(x), xt = x.xp_total != null ? x.xp_total : x.yo && yo ? yo.xp_total : null;
+    var cod = x.codigo || (x.yo && yo ? yo.codigo : ''), nom = x.yo ? 'tu perfil' : 'el perfil de ' + (x.apodo || 'este alumno');
+    return '<span class="' + (cls || '') + ' mcj-f"' + (cod ? ' data-jug="' + esc(cod) + '" role="button" tabindex="0" aria-label="Ver ' + esc(nom) + '"' : '') +
+      ' style="--f1:' + v.tema[0] + ';--f2:' + v.tema[3] + (v.marco ? ';--m:' + v.marco : '') + '"><i class="mcj-fr"><i class="mcj-av">' +
+      (v.img ? '<img src="' + esc(v.img) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : inicial(x.apodo)) + '</i></i>' +
+      (xt != null ? '<i class="mcj-nv">' + nivel(xt) + '</i>' : '') + '</span>';
+  }
+
+  // La tarjeta grande de otro alumno (lo que devuelve ver_jugador en supabase/38-ver-jugador.sql)
+  function tarjetaHtml(d) {
+    var C = window.MCColeccion, v = vista(d), p = d.puesto || {};
+    var tit = C && (C.item(p.titulo) || C.item('titulo-cachimbo')), pin = null;
+    if (d.admin) pin = { html: icono('ver'), nom: 'Verificado' };
+    else if (C && p.pines && p.pines[0] && C.item(p.pines[0])) { var px = C.item(p.pines[0]); pin = { html: C.pin(px), nom: px.nom }; }
+    var n = window.MCRango ? MCRango.nivel(d.xp_semana) : -1;
+    var st = function (ic, val, lab) { return '<span class="pj-st">' + icono(ic) + '<b>' + val + '</b><small>' + lab + '</small></span>'; };
+    var total = C ? C.contar().total : '';
+    return '<section class="pj" style="--rc:' + (n < 0 ? '#cfc8e6' : RC[n]) + '"><div class="pj-card" style="--f1:' + v.tema[0] + ';--f2:' + v.tema[3] + '">' + arte(v.tema) +
+      '<div class="pj-av"><span class="pj-fr"' + (v.marco ? ' style="--m:' + v.marco + '"' : '') + '><span class="pj-foto">' +
+        (v.img ? '<img src="' + esc(v.img) + '" alt="" referrerpolicy="no-referrer">' : inicial(d.apodo)) + '</span></span>' +
+        '<span class="pj-nv">Nvl <b>' + nivel(d.xp_total) + '</b></span>' +
+        (pin ? '<span class="pj-pin" title="' + esc(pin.nom) + '">' + pin.html + '</span>' : '') + '</div>' +
+      '<div class="pj-mid pj-sh"><div class="pj-nom">' + esc(d.apodo || 'Cachimbo') + '</div>' +
+        (tit ? '<span class="pj-tit">' + esc(tit.nom) + '</span>' : '') +
+        '<div class="pj-stats">' + st('racha', d.racha || 0, 'racha') + st('xp', (+d.xp_semana || 0).toLocaleString('es-PE'), 'XP') + st('mejor', d.mejor || 0, 'mejor') +
+          st('cofre', (d.coleccion || 0) + (total ? '/' + total : ''), 'colección') + '</div></div>' +
+      '<span class="pj-rk pj-sh' + (n < 0 ? ' sin' : '') + '"><span>' + (window.MCRango ? MCRango.svg(Math.max(n, 0), { quieto: true }) : '') + '</span><b>' + (n < 0 ? 'Sin rango' : MCRango.nombre(n)) + '</b><small>Rango semanal</small></span>' +
+      '<span class="pj-uid pj-sh">ID <b>' + esc(d.codigo) + '</b></span></div></section>';
+  }
+  function ver(cod) {
+    hoja(); css(); defs(); if (window.MCColeccion) MCColeccion.css();
+    var ov = document.createElement('div'); ov.className = 'mcj-ov'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+    ov.innerHTML = '<div class="mcj-caja"><button type="button" class="mcj-x" aria-label="Cerrar">×</button><div class="mcj-in"><p class="mcj-msg">Cargando su tarjeta…</p></div></div>';
+    function cerrar() { ov.classList.remove('ver'); document.removeEventListener('keydown', tecla); setTimeout(function () { ov.remove(); }, 250); }
+    function tecla(e) { if (e.key === 'Escape') cerrar(); }
+    ov.addEventListener('click', function (e) { if (e.target === ov || e.target.closest('.mcj-x')) cerrar(); });
+    document.addEventListener('keydown', tecla);
+    document.body.appendChild(ov);
+    requestAnimationFrame(function () { requestAnimationFrame(function () { ov.classList.add('ver'); }); });
+    var caja = ov.querySelector('.mcj-in');
+    if (!window.MCAuth) { caja.innerHTML = '<p class="mcj-msg">Ingresa para ver su tarjeta.</p>'; return; }
+    MCAuth.listo.then(function (sb) { return sb.rpc('ver_jugador', { p_codigo: +cod }); }).then(function (r) {
+      if (!r || r.error || !r.data) throw new Error('sin datos');
+      var d = r.data;
+      caja.innerHTML = tarjetaHtml(d) + '<div class="mcj-acc">' + (d.yo
+        ? '<a class="si" href="' + BASE + 'perfil.html"><span>Ir a mi perfil</span></a>'
+        : '<button type="button" class="no" disabled><span>Agregar amigo <small>· muy pronto</small></span></button>') + '</div>';
+    }).catch(function () { caja.innerHTML = '<p class="mcj-msg">No se pudo cargar su tarjeta. Intenta otra vez.</p>'; });
+  }
+  // Tocar (o Enter) cualquier foto con data-jug abre su tarjeta
+  document.addEventListener('click', function (e) {
+    var f = e.target.closest && e.target.closest('[data-jug]');
+    if (!f) return;
+    e.preventDefault(); e.stopPropagation(); ver(f.getAttribute('data-jug'));
+  }, true);
+  document.addEventListener('keydown', function (e) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.getAttribute && e.target.getAttribute('data-jug')) { e.preventDefault(); ver(e.target.getAttribute('data-jug')); }
+  });
+
   function iniciar() {
     defs();
     Array.prototype.forEach.call(document.querySelectorAll('[data-mc-auth][data-mc-tarjeta]'), function (caja) {
@@ -237,7 +327,7 @@
   else iniciar();
 
   window.MCTarjeta = {
-    pintar: pintar, arte: arte, icono: icono, nivel: nivel, avance: avance, pin: pin, colores: RC,
+    pintar: pintar, arte: arte, icono: icono, nivel: nivel, avance: avance, foto: foto, ver: ver, pin: pin, colores: RC,
     jugador: function () { return yo; },
     alJugador: function (fn) { oyentes.push(fn); if (yo) fn(yo); }
   };

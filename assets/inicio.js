@@ -436,6 +436,8 @@
   // Foto (o inicial) con el marco y el fondo que cada alumno lleva en Mi colección
   // (supabase/32-tops-perfil.sql). Tu fila usa lo tuyo aunque ese SQL aún no corra.
   function foto(x) {
+    // Con la tarjeta de jugador (assets/tarjeta-perfil.js): marco dorado, nivel y se toca para ver su perfil
+    if (window.MCTarjeta && MCTarjeta.foto) return MCTarjeta.foto(x, 'letra');
     var C = window.MCColeccion, marco = '', tema = null, img = x.foto;
     if (C && x.yo) {
       marco = C.marco(); tema = C.tema();
