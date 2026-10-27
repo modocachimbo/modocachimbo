@@ -932,7 +932,7 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
   <!-- 1. Crear -->
   <section id="crear" hidden>
     <h1 class="sim-tit" id="crearTit">Crea tu simulacro</h1>
-    <p class="sim-sub" id="crearSub">80 preguntas al azar de los libros de cada curso, repartidas como en el examen de admisión.</p>
+    <p class="sim-sub" id="crearSub">80 preguntas al azar de cada curso, repartidas como en el examen de admisión: 75% de los libros y 25% de banqueo y seminarios.</p>
     <div class="modos" id="modos" role="radiogroup" aria-label="Tipo de simulacro">
       <button type="button" class="modo on" data-modo="rapido" role="radio" aria-checked="true">
         <span class="mi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span>
@@ -1217,8 +1217,11 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
     const lista = [];
     for (const a of AREAS) {
       for (const [curso, n] of a.cursos) {
+        // 75% de libros y 25% de banqueo y seminarios de esos ciclos; si no hay, todo sale de libros
+        const extras = [].concat.apply([], await Promise.all(ciclos.map(c => datosF('banqueo', curso, c)).concat(ciclos.map(c => datosF('seminarios', curso, c)))));
+        let sel = elegir(extras, Math.round(n * 0.25));
         const pool = [].concat.apply([], await Promise.all(ciclos.filter(c => temasDe(curso, c) > 0).map(c => datos(curso, c))));
-        let sel = elegir(pool, n);
+        sel = sel.concat(elegir(pool, n - sel.length));
         if (sel.length < n) { // si faltan preguntas, se completa con otros ciclos de ese curso
           const otros = (MAN[curso] || []).map(m => m.id).filter(c => ciclos.indexOf(c) < 0);
           const extra = [].concat.apply([], await Promise.all(otros.map(c => datos(curso, c))));
@@ -1789,7 +1792,7 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
     $('temasCard').hidden = !pers; $('campoCantidad').hidden = !pers;
     $('topSim').hidden = pers; // el personalizado es libre y no entra al ranking
     $('crearTit').textContent = pers ? 'Personaliza tu simulacro' : 'Crea tu simulacro';
-    $('crearSub').textContent = pers ? 'Elige los temas que quieres reforzar y cuántas preguntas. Los cursos y los puntos son los mismos del examen de admisión.' : '80 preguntas al azar de los libros de cada curso, repartidas como en el examen de admisión.';
+    $('crearSub').textContent = pers ? 'Elige los temas que quieres reforzar y cuántas preguntas. Los cursos y los puntos son los mismos del examen de admisión.' : '80 preguntas al azar de cada curso, repartidas como en el examen de admisión: 75% de los libros y 25% de banqueo y seminarios.';
     $('ciclosNota').textContent = pers ? 'Los temas que ves abajo son de los ciclos que marques.' : 'Con un ciclo, las preguntas salen solo de ese ciclo. Con dos o más, salen al azar de los ciclos que elijas, con la misma cantidad por curso.';
     const nom = $('nombre').value.trim(), fechaHoy = new Date().toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit' });
     if (!nom || nom === 'Simulacro ' + fechaHoy || nom === 'Personalizado ' + fechaHoy) $('nombre').value = (pers ? 'Personalizado ' : 'Simulacro ') + fechaHoy;
