@@ -67,7 +67,6 @@
   .btn:disabled { opacity: .35; cursor: default; transform: none; }
   .resumen { text-align: center; color: var(--text-dim); font-size: 12.5px; margin: 22px 0 10px; font-variant-numeric: tabular-nums; }
 
-
   /* Juego */
   .barra { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
   .track { flex: 1; height: 8px; background: #1F1936; border-radius: 100px; overflow: hidden; position: relative; }
@@ -209,9 +208,7 @@
   .fin-buho .piso { position: absolute; left: 50%; bottom: 0; width: 84px; height: 10px; translate: -50% 30%; border-radius: 50%; background: rgba(0,0,0,.45); filter: blur(2px); }
   .fin-buho .rayos { position: absolute; inset: -34px; border-radius: 50%; opacity: .55; pointer-events: none;
     background: radial-gradient(closest-side, rgba(var(--ac-rgb, 198,224,0), .35), transparent 75%); }
-  .fin-buho.b-copa .rayos { opacity: 1; background: radial-gradient(closest-side, rgba(255,214,60,.45), rgba(255,214,60,.12) 55%, transparent 72%),
-    repeating-conic-gradient(rgba(255,214,60,.22) 0 10deg, transparent 10deg 30deg);
-    -webkit-mask: radial-gradient(closest-side, #000 45%, transparent 100%); mask: radial-gradient(closest-side, #000 45%, transparent 100%); animation: girar 16s linear infinite; }
+
   @keyframes girar { to { rotate: 360deg; } }
   .fin-copa { position: absolute; width: 32%; right: -13%; top: 13%; transform-origin: 30% 95%; rotate: 16deg; filter: drop-shadow(0 0 10px rgba(255,214,60,.75)); animation: copa .55s ease-in-out infinite alternate; }
   @keyframes copa { from { transform: translateY(6%) rotate(-4deg); } to { transform: translateY(-8%) rotate(6deg); } }

@@ -37,7 +37,7 @@
   }
 
   function fuente() {
-    if (document.getElementById('mck-fuente')) return;
+    if (document.getElementById('mck-fuente') || document.querySelector('link[href*="Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,800;1,900"]')) return;
     var l = document.createElement('link'); l.id = 'mck-fuente'; l.rel = 'stylesheet';
     l.href = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,800;1,900&family=Nunito:wght@700;800;900&display=swap';
     document.head.appendChild(l);

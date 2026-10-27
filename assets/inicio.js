@@ -575,10 +575,6 @@
   /* ---------- Hoja que sube desde abajo: cursos, exámenes y flashcards ---------- */
   var hFondo = $('hojaFondo'), hLista = $('hojaLista'), hTit = $('hojaTit'), hSub = $('hojaSub');
   var ICO_EX = '<svg class="ic" style="font-size:26px"><use href="#i-examen"/></svg>', ICO_FC = '<svg class="ic" style="font-size:26px"><use href="#i-tarjetas"/></svg>';
-  function filaHoja(href, ic, nombre, sub, cls, area) {
-    return '<a class="curso ' + (cls || '') + '"' + (area ? ' data-area="' + esc(area) + '"' : '') + ' href="' + esc(href) + '"><span class="ic">' + ic + '</span><span class="tx"><b>' + esc(nombre) + '</b>' +
-      (sub ? '<small>' + esc(sub) + '</small>' : '') + '</span>' + CHEV + '</a>';
-  }
   // "Mis cursos" es una pantalla propia: cada área es una tarjeta grande con sus cursos a la mano
   function pintarAreas() {
     // Con la copia guardada se arma al instante; si no hay, la lista espera oculta para no verse chica y luego crecer
