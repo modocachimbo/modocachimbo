@@ -518,6 +518,8 @@
 <script src="assets/auth.js"></script>
 <script src="assets/ranking.js"></script>
 <script src="assets/rango.js"></script>
+<script src="assets/coleccion.js?v=165"></script>
+<script src="assets/tarjeta-perfil.js?v=161"></script>
 <style id="mc-claro">
 /* Modo claro de esta página (assets/claro.css trae lo común) */
 html[data-modo="claro"] .eyebrow { color: #6F8000 !important; }
@@ -1667,7 +1669,8 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   const RC = ['#5FDAFF', '#5FF59A', '#D79BFF', '#FF6E84', '#FFC800'];
   const CORONA = '<svg class="corona" viewBox="0 0 40 22" aria-hidden="true"><path d="M2 20 4 4l9 8 7-11 7 11 9-8 2 16z" fill="#FFC800"/><path d="M2 20h36v2H2z" fill="#B38600"/><circle cx="20" cy="13" r="2.6" fill="#FF4B4B"/><circle cx="10" cy="15" r="1.8" fill="#1CB0F6"/><circle cx="30" cy="15" r="1.8" fill="#58CC02"/></svg>';
   const ganados = n => (+n || 0) + ' <small>' + (+n === 1 ? 'ganado' : 'ganados') + '</small>';
-  const foto = x => '<span class="letra" style="background:' + AV[(x.puesto - 1) % AV.length] + '">' + esc(inicial(x.apodo)) + '</span>';
+  // Foto con marco dorado y nivel: se toca para ver su tarjeta (assets/tarjeta-perfil.js)
+  const foto = x => window.MCTarjeta ? MCTarjeta.foto(x, 'letra') : '<span class="letra" style="background:' + AV[(x.puesto - 1) % AV.length] + '">' + esc(inicial(x.apodo)) + '</span>';
   function emblema(xp) {
     if (xp == null || !window.MCRango) return '<span class="em"></span>';
     const n = MCRango.nivel(xp);
