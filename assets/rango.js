@@ -46,8 +46,15 @@
   /* ---------- El emblema ---------- */
   function svg(n, o) {
     n = Math.max(0, Math.min(TOP, n | 0));
+    o = o || {};
     css();
-    return '<img class="mc-rgo-em" src="' + BASE + IMG[n] + '" alt="Rango ' + NOM[n] + '" decoding="async"' + (o && o.mini ? ' loading="lazy"' : '') + '>';
+    // Brillo del color del rango: más fuerte cuanto más alto el grupo
+    var g = 0; GRUPOS.forEach(function (x, i) { if (n >= x.desde) g = i; });
+    var luz = '--rg-g:' + TXT[n] + ';--rg-r:' + (o.mini ? 2 + g * 0.6 : 4 + g * 1.6).toFixed(1) + 'px';
+    var img = '<img class="mc-rgo-em" src="' + BASE + IMG[n] + '" alt="Rango ' + NOM[n] + '" decoding="async"' + (o.mini ? ' loading="lazy"' : '') + (o.quieto ? ' style="' + luz + '"' : '') + '>';
+    if (o.quieto) return img;
+    // Con animación: un destello que cruza el emblema, recortado a su silueta
+    return '<span class="mc-rgo-em vivo' + (g >= 5 ? ' top' : '') + '" style="' + luz + ';--rg-src:url(\'' + BASE + IMG[n] + '\')">' + img + '</span>';
   }
 
   /* ---------- Estilos ---------- */
@@ -56,7 +63,14 @@
     var st = document.createElement('style'); st.id = 'mc-rango-css';
     st.textContent =
       '.mc-rgo-em{display:block;width:100%;height:auto;overflow:visible}' +
-      '.mc-rgo-em{aspect-ratio:1;object-fit:contain;filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))}' +
+      'img.mc-rgo-em{aspect-ratio:1;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(0,0,0,.4)) drop-shadow(0 0 var(--rg-r,4px) var(--rg-g,transparent))}' +
+      'span.mc-rgo-em{position:relative}' +
+      'span.mc-rgo-em>img.mc-rgo-em{animation:mcRgoLuz 3.2s ease-in-out infinite}' +
+      'span.mc-rgo-em::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 45%,rgba(255,255,255,.7) 50%,transparent 55%) 100% 0/300% 100% no-repeat;-webkit-mask:var(--rg-src) center/contain no-repeat;mask:var(--rg-src) center/contain no-repeat;mix-blend-mode:screen;animation:mcRgoDestello 4.5s ease-in-out infinite}' +
+      'span.mc-rgo-em.top::after{mix-blend-mode:screen;animation-duration:3.2s}' +
+      '@keyframes mcRgoDestello{0%,55%{background-position:100% 0}100%{background-position:0% 0}}' +
+      '@keyframes mcRgoLuz{0%,100%{filter:drop-shadow(0 2px 3px rgba(0,0,0,.4)) drop-shadow(0 0 var(--rg-r) var(--rg-g))}50%{filter:drop-shadow(0 2px 3px rgba(0,0,0,.4)) drop-shadow(0 0 calc(var(--rg-r) * 1.8) var(--rg-g))}}' +
+      '@media (prefers-reduced-motion:reduce){span.mc-rgo-em::after,span.mc-rgo-em>img.mc-rgo-em{animation:none}}' +
       // Tarjeta del inicio
       '.mc-rgo{display:flex;align-items:center;gap:14px;width:100%;margin:14px 0 2px;padding:10px 14px 12px 8px;border:2px solid #2F284E;border-bottom-width:5px;border-radius:18px;background:radial-gradient(120% 140% at 0% 50%,var(--rg-t) 0%,#19142E 55%);color:#f2f2f2;text-decoration:none;font-family:Nunito,sans-serif;box-sizing:border-box}' +
       '.mc-rgo:focus-visible{outline:3px solid var(--rg-c);outline-offset:2px}' +
