@@ -213,7 +213,7 @@
 <script src="assets/buho.js"></script>
 <script src="assets/rango.js"></script>
 <script src="assets/coleccion.js?v=165"></script>
-<script src="assets/tarjeta-perfil.js?v=156"></script>
+<script src="assets/tarjeta-perfil.js?v=160"></script>
 <script src="assets/buho/buho-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
 </head>
@@ -334,11 +334,18 @@
     var c = document.querySelector('header [data-mc-auth] .mcu-chip.mct');
     var nom = c && c.querySelector('.mcu-nom') ? c.querySelector('.mcu-nom').textContent : '';
     var rg = c && c.querySelector('.mct-rg'), t = C.tema(P('racha')), m = C.marco(P('marco')), src = C.avatar(P('avatar')) || miFoto();
-    var h = '<div class="mcu-chip mct" style="--f1:' + t[0] + ';--f2:' + t[3] + '">' +
-      '<span class="mct-marco' + (m ? ' con' : '') + '"' + (m ? ' style="--m:' + m + '"' : '') + '>' +
+    var nv = c && c.querySelector('.mct-nv'), pn = c && c.querySelector('.mct-pin');
+    var h = '<div class="mcu-chip mct" style="' + esc(c ? c.getAttribute('style') || '' : '') + '">' +
+      '<span class="mct-caja"><span class="mct-marco"' + (m ? ' style="--m:' + m + '"' : '') + '>' +
       '<span class="mcu-av' + (C.avatar(P('avatar')) ? ' mct-buho' : '') + '" style="--f1:' + t[0] + ';--f2:' + t[3] + '">' + (src ? '<img src="' + esc(src) + '" alt="">' : esc(miLetra())) + '</span></span>' +
-      '<span class="mct-tx"><span class="mcu-nom">' + esc(nom) + '</span><small class="mct-rg"' + (rg ? ' style="' + esc(rg.getAttribute('style') || '') + '"' : '') + '>' + (rg ? rg.innerHTML : '') + '</small></span></div>';
-    if ($('pTarj').innerHTML !== h) $('pTarj').innerHTML = h;
+      '<span class="mct-nv">' + (nv ? nv.innerHTML : '') + '</span><span class="mct-pin">' + (pn ? pn.innerHTML : '') + '</span></span>' +
+      '<span class="mct-tx"><span class="mcu-nom">' + esc(nom) + '</span><small class="mct-rg">' + (rg ? rg.innerHTML : '') + '</small></span></div>';
+    // El paisaje se arma solo cuando cambia el fondo que pruebas
+    if ($('pTarj').getAttribute('data-h') !== h + t[0]) {
+      $('pTarj').setAttribute('data-h', h + t[0]);
+      $('pTarj').innerHTML = h;
+      if (window.MCTarjeta) $('pTarj').firstChild.insertAdjacentHTML('afterbegin', MCTarjeta.arte(t));
+    }
   }
   new MutationObserver(function () { setTimeout(pintarTarjeta, 0); }).observe(document.querySelector('header [data-mc-auth]'), { childList: true, subtree: true, attributes: true });
   // El cuadro de racha con el fondo que llevas (o pruebas) y tus días de esta semana
