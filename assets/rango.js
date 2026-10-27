@@ -331,7 +331,7 @@
     // La vitrina de semanas pasadas vive en Mi colección (coleccion.html#rangos)
   }
 
-  window.MCRango = { svg: svg, nivel: nivel, nombre: function (n) { return NOM[n]; }, minimo: MIN, css: css, subida: subida, vitrina: vitrina, semanas: semanas, mini: function (xp) { return nivel(xp) < 0 ? '' : '<span class="mc-rgo-mini" title="' + NOM[nivel(xp)] + '">' + svg(nivel(xp), { mini: true }) + '</span>'; } };
+  window.MCRango = { svg: svg, nivel: nivel, nombre: function (n) { return NOM[n]; }, minimo: MIN, css: css, subida: subida, vitrina: vitrina, semanas: semanas, color: function (n) { return { c: TXT[n], t: TINTE[n], b: BORDE[n] }; }, clave: clave, fechas: rangoSemana, diasQuedan: diasQuedan, mini: function (xp) { return nivel(xp) < 0 ? '' : '<span class="mc-rgo-mini" title="' + NOM[nivel(xp)] + '">' + svg(nivel(xp), { mini: true }) + '</span>'; } };
 
   // corazones.js trae el XP de la semana; se espera a que cargue
   function iniciar(intento) {
