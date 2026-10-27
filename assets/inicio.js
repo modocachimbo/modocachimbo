@@ -23,7 +23,6 @@
   var MANO = '<svg class="mi mano" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 11V6a2 2 0 0 0-4 0"/><path d="M14 10V4a2 2 0 0 0-4 0v2"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-6-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>';
   var CHEV = '<svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>';
   // Color del texto de cada rango (el mismo de assets/rango.js)
-  var RC = ['#5FDAFF', '#5FF59A', '#D79BFF', '#FF6E84', '#FFC800'];
   // Fondo de la inicial en los tops
   var AV = ['#FFC800', '#C9C6D6', '#E58A45', '#1CB0F6', '#CE82FF', '#FF9600', '#58CC02', '#FF4B4B', '#5FDAFF', '#C6E000'];
   var AREA = { 'ciencia-tecnologia': 'var(--a-cyt)', matematica: 'var(--a-mat)', comunicacion: 'var(--a-com)', 'ciencias-sociales': 'var(--a-soc)' };
@@ -175,7 +174,7 @@
     if (n < 0) { tx = miles(MIN[0] - miXp) + ' XP<br>para Zafiro'; pct = miXp / MIN[0]; }
     else if (sig < MIN.length) { tx = miles(MIN[sig] - miXp) + ' XP<br>para ' + MCRango.nombre(sig); pct = (miXp - MIN[n]) / (MIN[sig] - MIN[n]); }
     else { tx = miles(miXp) + ' XP<br>rango máximo'; pct = 1; }
-    barra.style.setProperty('--rc', n < 0 ? '#A99FC8' : RC[n]);
+    barra.style.setProperty('--rc', n < 0 ? '#A99FC8' : MCRango.color(n).c);
     $('rangoEm').innerHTML = MCRango.svg(Math.max(n, 0), { mini: true });
     $('rangoEm').style.opacity = n < 0 ? '.4' : '';
     $('rangoNom').textContent = n < 0 ? 'Sin rango' : MCRango.nombre(n);
@@ -512,7 +511,7 @@
   function rangoSim(xp) {
     if (xp == null || !window.MCRango) return '';
     var n = MCRango.nivel(xp);
-    return n < 0 ? '' : '<span class="rg">' + MCRango.svg(n, { mini: true, quieto: true }) + '<small style="color:' + RC[n] + '">' + MCRango.nombre(n) + '</small></span>';
+    return n < 0 ? '' : '<span class="rg">' + MCRango.svg(n, { mini: true, quieto: true }) + '<small style="color:' + MCRango.color(n).c + '">' + MCRango.nombre(n) + '</small></span>';
   }
   function filaSim(x, extra) {
     return '<li class="' + (x.yo ? 'tu' : '') + (extra ? ' extra' : '') + '"><span class="num">' + x.puesto + '</span>' + foto(x) + '<span class="quien">' + esc(x.yo ? 'Tú' : x.apodo) + '</span>' +

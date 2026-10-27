@@ -1666,7 +1666,6 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   }
   /* ---------- Top duelos: el mismo podio y lista del Top simulacro ---------- */
   const AV = ['#FFC800', '#C9C6D6', '#E58A45', '#1CB0F6', '#CE82FF', '#FF9600', '#58CC02', '#FF4B4B', '#5FDAFF', '#C6E000'];
-  const RC = ['#5FDAFF', '#5FF59A', '#D79BFF', '#FF6E84', '#FFC800'];
   const CORONA = '<svg class="corona" viewBox="0 0 40 22" aria-hidden="true"><path d="M2 20 4 4l9 8 7-11 7 11 9-8 2 16z" fill="#FFC800"/><path d="M2 20h36v2H2z" fill="#B38600"/><circle cx="20" cy="13" r="2.6" fill="#FF4B4B"/><circle cx="10" cy="15" r="1.8" fill="#1CB0F6"/><circle cx="30" cy="15" r="1.8" fill="#58CC02"/></svg>';
   const ganados = n => (+n || 0) + ' <small>' + (+n === 1 ? 'ganado' : 'ganados') + '</small>';
   // Foto con marco dorado y nivel: se toca para ver su tarjeta (assets/tarjeta-perfil.js)
@@ -1679,7 +1678,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   function rangoTop(xp) {
     if (xp == null || !window.MCRango) return '';
     const n = MCRango.nivel(xp);
-    return n < 0 ? '' : '<span class="rg">' + MCRango.svg(n, { mini: true, quieto: true }) + '<small style="color:' + RC[n] + '">' + MCRango.nombre(n) + '</small></span>';
+    return n < 0 ? '' : '<span class="rg">' + MCRango.svg(n, { mini: true, quieto: true }) + '<small style="color:' + MCRango.color(n).c + '">' + MCRango.nombre(n) + '</small></span>';
   }
   function filaTop(x, extra) {
     return '<li class="' + (x.yo ? 'tu' : '') + (extra ? ' extra' : '') + '"><span class="num">' + x.puesto + '</span>' + foto(x) + '<span class="quien">' + esc(x.yo ? 'Tú' : x.apodo) + '</span>' +
@@ -2364,7 +2363,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
 <script>
 // Tarjeta del perfil como en el inicio (assets/inicio.js): foto con marco dorado, nombre y rango de la semana
 (function () {
-  var RC = ['#5FDAFF', '#5FF59A', '#D79BFF', '#FF6E84', '#FFC800'], miXp = null;
+  var miXp = null;
   function rangoHtml(xp) {
     if (!window.MCRango || xp == null) return '';
     var n = MCRango.nivel(xp);
@@ -2384,7 +2383,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       }
       // Solo si cambió: el observador vuelve a llamar aquí con cada cambio
       var r = chip.querySelector('.pf-rg'), n = miXp == null || !window.MCRango ? -1 : MCRango.nivel(miXp);
-      var k = miXp == null ? 'x' : String(n), c = n < 0 ? '#cfc8e6' : RC[n];
+      var k = miXp == null ? 'x' : String(n), c = n < 0 ? '#cfc8e6' : MCRango.color(n).c;
       if (r.getAttribute('data-n') !== k) { r.setAttribute('data-n', k); r.innerHTML = rangoHtml(miXp); }
       if (r.style.getPropertyValue('--rc') !== c) r.style.setProperty('--rc', c);
     });

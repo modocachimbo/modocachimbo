@@ -263,6 +263,9 @@
   .rg-pel.no b { color: #7a7298; }
   .rg-pel i { position: absolute; left: 50%; bottom: 15px; width: 13px; height: 13px; translate: -50% 0; rotate: 45deg; border: 2px solid var(--c); background: color-mix(in srgb, var(--c) 50%, transparent); }
   .rg-pel.no i { border-color: #4a4370; background: none; }
+  .rg-pel .pts { display: flex; justify-content: center; gap: 3px; margin-top: 6px; }
+  .rg-pel .pts u { width: 8px; height: 8px; border-radius: 2px; rotate: 45deg; background: rgba(255,255,255,.12); }
+  .rg-pel .pts u.on { background: var(--c); }
   /* El historial: una tarjeta por semana */
   .rg-hist { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; }
   .rg-sem { --c: #5FDAFF; flex: none; width: 150px; border-radius: 12px; border: 2px solid #4a3a20; background: linear-gradient(180deg, #1a1430, #120e22); text-align: center; overflow: hidden; }
@@ -302,7 +305,7 @@
 <script src="assets/acceso.js"></script>
 <script src="assets/auth.js"></script>
 <script src="assets/buho.js"></script>
-<script src="assets/rango.js?v=176"></script>
+<script src="assets/rango.js?v=180"></script>
 <script src="assets/coleccion.js?v=166"></script>
 <script src="assets/tarjeta-perfil.js?v=163"></script>
 <script src="assets/buho/buho-datos.js"></script>
@@ -610,13 +613,14 @@
       '<div class="ln"><span>' + miles(xp) + ' XP</span><span>' + (sig ? 'Te faltan <em>' + miles(sig - xp) + ' XP</em> para ' + esc(MCRango.nombre(n + 1)) : '¡Rango máximo de la semana!') + '</span></div></div>' +
       '<div class="rg-reloj">Se cierra en<b>' + (d === 1 ? '1 día' : d + ' días') + '</b></div>';
     $('mEm').innerHTML = MCRango.svg(Math.max(0, n), { mini: true, quieto: true });
-    // La escalera
+    // La escalera: un estandarte por rango, con un punto por cada nivel (I, II, III…)
     var h = '';
-    for (var i = 0; i < N; i++) {
-      var c = MCRango.color(i);
-      h += '<div class="rg-pel' + (i === n ? ' yo' : i > n ? ' no' : '') + '" style="--c:' + c.c + ';--t:' + c.t + '">' + emb(i) +
-        '<b>' + esc(MCRango.nombre(i)) + '</b><small>' + miles(MIN[i]) + ' XP</small><i></i></div>';
-    }
+    MCRango.grupos().forEach(function (g) {
+      var yo = n >= g.desde && n <= g.hasta, pasado = n > g.hasta, pts = '';
+      for (var i = g.desde; i <= g.hasta; i++) pts += '<u' + (i <= n ? ' class="on"' : '') + '></u>';
+      h += '<div class="rg-pel' + (yo ? ' yo' : pasado ? '' : ' no') + '" style="--c:' + g.c + ';--t:' + g.t + '">' + emb(yo ? n : pasado ? g.hasta : g.desde) +
+        '<b>' + esc(yo ? MCRango.nombre(n) : g.nom) + '</b><small>' + miles(MIN[g.desde]) + ' XP</small><span class="pts">' + pts + '</span><i></i></div>';
+    });
     $('rgEsca').innerHTML = h;
     // El historial: de la semana pasada hacia atrás, hasta tu primera semana (máximo 12)
     var claves = Object.keys(pas).sort(), prim = claves[0];

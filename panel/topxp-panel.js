@@ -16,7 +16,6 @@ const TXP = { dia: null }; // un día de la semana que se ve (null = esta semana
   .txp-rgo { display: inline-flex; align-items: center; gap: 8px; font: 900 13.5px Nunito, sans-serif; white-space: nowrap; }
   .txp-rgo .mc-rgo-mini { width: 30px; }
   .txp-rgo.sin { color: var(--text-faint); }
-  .txp-rgo.r0 { color: #5FDAFF; } .txp-rgo.r1 { color: #5FF59A; } .txp-rgo.r2 { color: #D79BFF; } .txp-rgo.r3 { color: #FF6E84; } .txp-rgo.r4 { color: #FFC800; }
   .txp-res b { display: block; font: 900 20px Nunito, sans-serif; color: var(--text); }`;
   document.head.appendChild(st);
 })();
@@ -25,7 +24,7 @@ const TXP = { dia: null }; // un día de la semana que se ve (null = esta semana
 const txpRango = xp => {
   if (!window.MCRango || MCRango.nivel(xp) < 0) return '<span class="txp-rgo sin">Sin rango</span>';
   const n = MCRango.nivel(xp);
-  return `<span class="txp-rgo r${n}">${MCRango.mini(xp)}${esc(MCRango.nombre(n))}</span>`;
+  return `<span class="txp-rgo" style="color:${MCRango.color(n).c}">${MCRango.mini(xp)}${esc(MCRango.nombre(n))}</span>`;
 };
 
 const TXP_GEMA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FFC800" d="M12 1.6 21 6.8v10.4L12 22.4 3 17.2V6.8z"/><path fill="#FFDD4A" d="M12 1.6 21 6.8 12 12 3 6.8z"/><path fill="#E0A100" d="M21 6.8v10.4L12 22.4V12z"/><path fill="#fff" opacity=".95" d="M13 5.6 8.2 12.6h3.2l-.9 5.8 5.3-7.4h-3.3z"/></svg>';

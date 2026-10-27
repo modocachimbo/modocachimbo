@@ -1,137 +1,53 @@
 /* =========================================================
-   Modo Cachimbo · Rangos de la semana (escudo hexagonal facetado)
+   Modo Cachimbo · Rangos de la semana
    El rango sale del XP de la semana (xp_semana de supabase/16-corazones.sql)
-   y se reinicia cada lunes:
-     Zafiro 20 · Esmeralda 1 500 · Amatista 4 000 · Rubí 8 000 · Leyenda 12 000
-   - MCRango.svg(n, {mini}): el emblema del rango n (0 a 4).
+   y se reinicia cada lunes. Cada rango tiene sus niveles (I, II, III…):
+     Bronce · Plata · Esmeralda · Zafiro · Amatista · Leyenda · Mítico
+   El XP mínimo de cada nivel y sus colores están en RANGOS; los emblemas
+   son las imágenes de assets/rangos/<rango>-<nivel>.webp.
+   - MCRango.svg(n, {mini}): el emblema del nivel n (0 = Bronce I).
+   - MCRango.grupos(): los rangos con el primer y último nivel de cada uno.
    - En el inicio: tarjeta "Tu rango esta semana" antes de "Empezar a practicar"
-     y la pantalla de subida cuando pasas a un rango nuevo.
+     y la pantalla de subida cuando pasas a un nivel nuevo.
    - En el perfil: el emblema junto a tu nombre y un emblema chico en cada fila
      del ranking. La vitrina de semanas (tus filas de xp_semana) está en coleccion.html.
    ========================================================= */
 (function () {
   if (window.MCRango) return;
-  var MIN = [20, 1500, 4000, 8000, 12000];
-  var NOM = ['Zafiro', 'Esmeralda', 'Amatista', 'Rubí', 'Leyenda'];
-  var TXT = ['#5FDAFF', '#5FF59A', '#D79BFF', '#FF6E84', '#FFC800'];
-  // b: cara de frente · l: cara a la luz · d: cara en sombra · h: fondo del hueco
-  var PAL = [
-    { b: '#14B4FF', l: '#7AE6FF', d: '#0A5CE0', h: '#062A66' },
-    { b: '#14D45A', l: '#8CFFB0', d: '#06873A', h: '#03361A' },
-    { b: '#A55CFF', l: '#D9A8FF', d: '#5A1FC4', h: '#2A0A66' },
-    { b: '#FF2D4A', l: '#FF8A9C', d: '#A3061E', h: '#4A0612' },
-    { b: '#FF2D4A', l: '#FF8A9C', d: '#A3061E', h: '#4A2004' }
+  // c: texto · t: fondo · b: borde · o: barra; min: XP de la semana para cada nivel
+  var RANGOS = [
+    { id: 'bronce', nom: 'Bronce', c: '#E8A878', t: '#3a1e0e', b: '#9A5A30', o: '#7A3A1C', min: [20, 150, 300] },
+    { id: 'plata', nom: 'Plata', c: '#D6DEEA', t: '#262c3a', b: '#8A96AA', o: '#5A6478', min: [500, 750, 1000] },
+    { id: 'esmeralda', nom: 'Esmeralda', c: '#5FF59A', t: '#06361a', b: '#0FA845', o: '#0FA845', min: [1300, 1600, 1900, 2200] },
+    { id: 'zafiro', nom: 'Zafiro', c: '#5FDAFF', t: '#06304a', b: '#1A6CC0', o: '#123FC0', min: [2600, 3000, 3500, 4000, 4500] },
+    { id: 'amatista', nom: 'Amatista', c: '#D79BFF', t: '#2a1050', b: '#8A36E0', o: '#8A36E0', min: [5000, 5600, 6200, 6900, 7600] },
+    { id: 'leyenda', nom: 'Leyenda', c: '#FF7AD9', t: '#3e0a34', b: '#C0399E', o: '#E3263F', min: [9000, 11000, 13500, 16500, 20000] },
+    { id: 'mitico', nom: 'Mítico', c: '#FFC800', t: '#3e2400', b: '#D08A00', o: '#E3263F', min: [25000, 32000, 40000] }
   ];
-  var ORO = { b: '#F5B400', l: '#FFF0A0', d: '#B05A00' };
-  var LLAMA = { b: '#FF9A2E', l: '#FFE27A', d: '#D0381A' };
-  var LUZ = [-0.5, -0.86];
-  var uid = 0;
+  var ROM = ['I', 'II', 'III', 'IV', 'V', 'VI'];
+  // Todo en una lista de niveles: n = 0 es Bronce I, el último es Mítico III
+  var MIN = [], NOM = [], TXT = [], TINTE = [], BORDE = [], OSC = [], IMG = [], GRUPOS = [];
+  RANGOS.forEach(function (r) {
+    GRUPOS.push({ nom: r.nom, desde: MIN.length, hasta: MIN.length + r.min.length - 1, c: r.c, t: r.t, b: r.b });
+    r.min.forEach(function (m, k) {
+      MIN.push(m); NOM.push(r.nom + ' ' + ROM[k]); IMG.push(r.id + '-' + (k + 1) + '.webp');
+      TXT.push(r.c); TINTE.push(r.t); BORDE.push(r.b); OSC.push(r.o);
+    });
+  });
+  var TOP = MIN.length - 1;
+  // Las imágenes están junto a este archivo (sirve igual desde panel/)
+  var BASE = (function () { var s = document.currentScript && document.currentScript.src; return s ? s.replace(/[^\/]*$/, '') + 'rangos/' : 'assets/rangos/'; })();
 
   // -1 = todavía sin rango (menos de 20 XP en la semana)
   function nivel(xp) { var n = -1; for (var i = 0; i < MIN.length; i++) if ((+xp || 0) >= MIN[i]) n = i; return n; }
   function miles(n) { return String(Math.round(+n || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 
-  /* ---------- El emblema: escudo hexagonal facetado ---------- */
-  function hx(c) { return [1, 3, 5].map(function (i) { return parseInt(c.substr(i, 2), 16); }); }
-  function mezcla(a, b, t) { a = hx(a); b = hx(b); return '#' + a.map(function (v, i) { return ('0' + Math.round(v + (b[i] - v) * t).toString(16)).slice(-2); }).join(''); }
-  // Color de una cara según hacia dónde mira (la luz viene de arriba a la izquierda)
-  function cara(p, nx, ny) {
-    var b = (nx * LUZ[0] + ny * LUZ[1]) / (Math.hypot(nx, ny) || 1);
-    return b >= 0 ? mezcla(p.b, p.l, Math.min(1, b * 1.05)) : mezcla(p.b, p.d, Math.min(.85, -b * .9));
-  }
-  function pol(a, f, x) { return '<polygon points="' + a.map(function (q) { return q[0].toFixed(1) + ',' + q[1].toFixed(1); }).join(' ') + '" fill="' + f + '"' + (x || '') + '/>'; }
-  function hexa(r) { var o = []; for (var i = 0; i < 6; i++) { var a = (60 * i - 90) * Math.PI / 180; o.push([100 + r * Math.cos(a), 104 + r * Math.sin(a)]); } return o; }
-  function espejo(q) { return [200 - q[0], q[1]]; }
-  // Anillo entre dos hexágonos, una cara por lado
-  function anillo(ext, int, p) {
-    var s = '';
-    for (var i = 0; i < 6; i++) { var a = ext[i], b = ext[(i + 1) % 6]; s += pol([a, b, int[(i + 1) % 6], int[i]], cara(p, (a[0] + b[0]) / 2 - 100, (a[1] + b[1]) / 2 - 104)); }
-    return s;
-  }
-  // Placa de las alas: un bisel por lado y una cara interior
-  function placa(P, p) {
-    var cx = 0, cy = 0; P.forEach(function (q) { cx += q[0]; cy += q[1]; }); cx /= P.length; cy /= P.length;
-    var dx = cx - 100, dy = cy - 104;
-    var I = P.map(function (q) { return [cx + (q[0] - cx) * .62 + dx * .05, cy + (q[1] - cy) * .62 + dy * .05]; });
-    var s = '';
-    for (var i = 0; i < P.length; i++) {
-      var a = P[i], b = P[(i + 1) % P.length], nx = b[1] - a[1], ny = a[0] - b[0];
-      if (nx * ((a[0] + b[0]) / 2 - cx) + ny * ((a[1] + b[1]) / 2 - cy) < 0) { nx = -nx; ny = -ny; }
-      s += pol([a, b, I[(i + 1) % P.length], I[i]], cara(p, nx, ny));
-    }
-    return s + pol(I, mezcla(p.b, cara(p, dx * .35 - 30, dy * .35 - 52), .45));
-  }
-  function placas(P, p) { return placa(P, p) + placa(P.map(espejo).reverse(), p); }
-  // Púa de dos caras (gema de los costados en Leyenda)
-  function pua(A, B, T, p) {
-    var M = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2];
-    return pol([A, M, T], cara(p, A[0] - M[0], A[1] - M[1] - 4)) + pol([M, B, T], cara(p, B[0] - M[0], B[1] - M[1] - 4));
-  }
-  // Más alas mientras más alto el rango
-  function alas(n, p) {
-    var s = '', top = [[82, 46], [100, 12], [118, 46]];
-    if (n <= 2) {
-      s += placas([[46, 106], [36, 140], [66, 168], [80, 150]], p);
-      if (n >= 1) s += placas([[40, 80], [12, 88], [28, 104], [12, 122], [42, 128]], p);
-      return s + placas([[72, 50], [16, 34], [30, 56], [38, 94], [56, 92]], p) + placa(top, p);
-    }
-    var arriba = n === 4 ? LLAMA : p;
-    s += placas([[44, 114], [12, 140], [34, 148], [34, 168], [74, 152]], p);
-    s += placas([[42, 78], [4, 82], [20, 102], [2, 122], [42, 122]], p);
-    if (n === 4) s += placas([[64, 50], [34, 2], [32, 32], [8, 26], [36, 70]], arriba);
-    return s + placas([[70, 48], [22, 16], [30, 44], [8, 50], [42, 86]], arriba) + placa(top, n === 4 ? ORO : p);
-  }
-  // Figura del centro: copa, corona, corona grande, rubí y gema en cruz (claro, medio, oscuro)
-  var FIG = [['#7FF0FF', '#2CCBFF', '#0F8EF0'], ['#9DFFC0', '#2EE873', '#0FA845'], ['#FF8CFF', '#E040FB', '#B01ED8']];
-  function figura(n) {
-    var s = '', f = FIG[n];
-    if (n === 0) {
-      s += '<path d="M80 76H68V88Q68 98 82 101M120 76H132V88Q132 98 118 101" fill="none" stroke="' + f[2] + '" stroke-width="6" stroke-linejoin="round"/>';
-      s += pol([[78, 68], [100, 68], [100, 112], [90, 112], [82, 100]], f[0]) + pol([[100, 68], [122, 68], [118, 100], [110, 112], [100, 112]], f[1]);
-      s += pol([[94, 112], [106, 112], [106, 122], [94, 122]], f[2]);
-      s += pol([[84, 122], [100, 122], [100, 134], [82, 134]], f[0]) + pol([[100, 122], [116, 122], [118, 134], [100, 134]], f[2]);
-    } else if (n === 1) {
-      s += pol([[74, 122], [74, 82], [88, 98], [100, 66], [100, 122]], f[0]) + pol([[100, 66], [112, 98], [126, 82], [126, 122], [100, 122]], f[1]);
-      s += pol([[100, 66], [94, 82], [100, 78]], '#FFFFFF', ' opacity=".9"');
-      s += pol([[74, 112], [126, 112], [126, 124], [74, 124]], f[2]) + pol([[74, 112], [100, 112], [100, 124], [74, 124]], f[1]);
-    } else if (n === 2) {
-      s += pol([[76, 100], [84, 70], [94, 94]], f[2]) + pol([[106, 94], [116, 70], [124, 100]], f[2]);
-      s += pol([[70, 118], [70, 86], [86, 102], [100, 60], [100, 118]], f[0]) + pol([[100, 60], [114, 102], [130, 86], [130, 118], [100, 118]], f[1]);
-      [[100, 96, 8], [82, 108, 4.5], [118, 108, 4.5]].forEach(function (g) {
-        var x = g[0], y = g[1], r = g[2];
-        s += pol([[x, y - r], [x - r, y], [x, y]], '#FFFFFF') + pol([[x, y - r], [x + r, y], [x, y]], '#FFE6FF') + pol([[x - r, y], [x, y + r], [x, y]], f[1]) + pol([[x + r, y], [x, y + r], [x, y]], f[2]);
-      });
-      s += pol([[68, 116], [100, 116], [100, 132], [70, 132]], f[0]) + pol([[100, 116], [132, 116], [130, 132], [100, 132]], f[1]);
-      s += pol([[70, 128], [130, 128], [130, 133], [70, 133]], f[2]);
-    } else if (n === 3) {
-      s += pol([[76, 90], [88, 72], [100, 72], [100, 90]], '#FF4A62') + pol([[100, 72], [112, 72], [124, 90], [100, 90]], '#E01E3A');
-      s += pol([[76, 90], [100, 90], [100, 132]], '#E01E3A') + pol([[100, 90], [124, 90], [100, 132]], '#7A0618');
-      s += pol([[86, 90], [100, 90], [100, 132]], '#FF4A62') + pol([[100, 90], [114, 90], [100, 132]], '#A80C24');
-      s += pol([[100, 74], [110, 90], [90, 90]], '#FFFFFF');
-    } else {
-      s += anillo(hexa(48), hexa(37), ORO) + pol(hexa(37), '#5A1004');
-      s += '<g class="cgem">' + pol([[92, 80], [108, 80], [108, 96], [124, 96], [124, 112], [108, 112], [108, 128], [92, 128], [92, 112], [76, 112], [76, 96], [92, 96]], '#E01E3A');
-      s += pol([[92, 80], [108, 80], [100, 96]], '#FF5A6E') + pol([[76, 96], [92, 96], [100, 104], [76, 112]], '#FF5A6E');
-      s += pol([[124, 96], [124, 112], [100, 104], [108, 96]], '#A80C24') + pol([[92, 128], [108, 128], [100, 112]], '#A80C24');
-      s += pol([[92, 96], [108, 96], [108, 112], [92, 112]], '#FF3550') + pol([[92, 80], [100, 80], [94, 90]], '#FFFFFF', ' opacity=".85"') + '</g>';
-    }
-    return s;
-  }
+  /* ---------- El emblema ---------- */
   function svg(n, o) {
-    o = o || {};
-    n = Math.max(0, Math.min(4, n | 0));
-    var p = PAL[n], id = 'mcrg' + (++uid), ext = hexa(68), med = hexa(52), som = hexa(46);
+    n = Math.max(0, Math.min(TOP, n | 0));
     css();
-    var s = '<defs><clipPath id="' + id + 'c">' + pol(ext, '#000') + '</clipPath>' +
-      '<linearGradient id="' + id + 'g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".5"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>';
-    s += '<g transform="translate(0 5)" opacity=".35">' + pol(ext, '#000') + '</g>';
-    s += alas(n, p) + anillo(ext, med, p) + pol(med, p.h);
-    s += pol([med[5], med[0], med[1], som[1], som[0], som[5]], '#000', ' opacity=".35"');
-    if (n === 4) [22, 178].forEach(function (x) { s += pua([x, 88], [x + 8, 96], [x, 104], ORO) + pua([x, 88], [x - 8, 96], [x, 104], ORO); });
-    s += '<g transform="translate(100 104) scale(' + (n === 4 ? 1.05 : n === 2 ? 1.12 : 1.22) + ') translate(-100 -103)">' + figura(n) + '</g>';
-    if (!o.mini) s += '<g clip-path="url(#' + id + 'c)"><g transform="skewX(-20)"><rect class="shine" x="-20" y="0" width="40" height="200" fill="url(#' + id + 'g)"/></g></g>';
-    return '<svg class="mc-rgo-em' + (o.quieto ? ' quieto' : '') + '" viewBox="0 0 200 200" role="img" aria-label="Rango ' + NOM[n] + '">' + s + '</svg>';
+    return '<img class="mc-rgo-em" src="' + BASE + IMG[n] + '" alt="Rango ' + NOM[n] + '" decoding="async"' + (o && o.mini ? ' loading="lazy"' : '') + '>';
   }
 
   /* ---------- Estilos ---------- */
@@ -140,24 +56,7 @@
     var st = document.createElement('style'); st.id = 'mc-rango-css';
     st.textContent =
       '.mc-rgo-em{display:block;width:100%;height:auto;overflow:visible}' +
-      '.mc-rgo-em .aura,.mc-rgo-em .rays,.mc-rgo-em .rays2,.mc-rgo-em .tw,.mc-rgo-em .pt,.mc-rgo-em .gem,.mc-rgo-em .flo,.mc-rgo-em .shine,.mc-rgo-em .cgem{transform-box:fill-box}' +
-      '.mc-rgo-em .flo{transform-origin:center;animation:mcRgoFlo 6s ease-in-out infinite}' +
-      '.mc-rgo-em .shine{animation:mcRgoShine 7s cubic-bezier(.45,0,.25,1) infinite}' +
-      '.mc-rgo-em .aura{transform-origin:center;animation:mcRgoAura 5s ease-in-out infinite}' +
-      '.mc-rgo-em .rays{transform-origin:center;animation:mcRgoGira 45s linear infinite}' +
-      '.mc-rgo-em .rays2{transform-origin:center;animation:mcRgoGira 70s linear infinite reverse}' +
-      '.mc-rgo-em .tw{transform-origin:center;animation:mcRgoTw 5s ease-in-out infinite;opacity:0}' +
-      '.mc-rgo-em .pt{animation:mcRgoSube 6s ease-in infinite;opacity:0}' +
-      '.mc-rgo-em .gem{transform-origin:center;animation:mcRgoGema 4.5s ease-in-out infinite}' +
-      '.mc-rgo-em .cgem{transform-origin:center;animation:mcRgoGema 3.6s ease-in-out infinite}' +
-      '.mc-rgo-em.quieto *{animation:none!important}.mc-rgo-em.quieto .shine,.mc-rgo-em.quieto .tw,.mc-rgo-em.quieto .pt{display:none}' +
-      '@keyframes mcRgoFlo{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}' +
-      '@keyframes mcRgoShine{0%,55%{transform:translateX(-40px)}100%{transform:translateX(320px)}}' +
-      '@keyframes mcRgoAura{0%,100%{transform:scale(.9);opacity:.55}50%{transform:scale(1.06);opacity:1}}' +
-      '@keyframes mcRgoGira{to{transform:rotate(360deg)}}' +
-      '@keyframes mcRgoTw{0%,100%{transform:scale(0) rotate(0);opacity:0}40%{transform:scale(1) rotate(45deg);opacity:1}65%{opacity:0}}' +
-      '@keyframes mcRgoSube{0%{transform:translateY(0) scale(1);opacity:0}15%{opacity:1}100%{transform:translateY(-70px) scale(.3);opacity:0}}' +
-      '@keyframes mcRgoGema{0%,100%{filter:brightness(1) saturate(1)}50%{filter:brightness(1.35) saturate(1.2)}}' +
+      '.mc-rgo-em{aspect-ratio:1;object-fit:contain;filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))}' +
       // Tarjeta del inicio
       '.mc-rgo{display:flex;align-items:center;gap:14px;width:100%;margin:14px 0 2px;padding:10px 14px 12px 8px;border:2px solid #2F284E;border-bottom-width:5px;border-radius:18px;background:radial-gradient(120% 140% at 0% 50%,var(--rg-t) 0%,#19142E 55%);color:#f2f2f2;text-decoration:none;font-family:Nunito,sans-serif;box-sizing:border-box}' +
       '.mc-rgo:focus-visible{outline:3px solid var(--rg-c);outline-offset:2px}' +
@@ -202,14 +101,10 @@
       '.mc-rgo-sem button{background:#292245;color:#f2f2f2;box-shadow:0 5px 0 #070512;border:2px solid #352E58}' +
       '.mc-rgo-pz.no>span{filter:grayscale(1) brightness(.3)}.mc-rgo-pz.no b{color:#5f5f5f}.mc-rgo-pz.no{background:#1D1834}' +
       '.mc-rgo-mini{display:inline-block;width:34px;vertical-align:middle;flex:none}' +
-      '@media (prefers-reduced-motion:reduce){.mc-rgo-em *,.mc-rgo-bar i::after,.mc-rgo-cf{animation:none!important}.mc-rgo-cf{display:none}}';
+      '@media (prefers-reduced-motion:reduce){.mc-rgo-bar i::after,.mc-rgo-cf{animation:none!important}.mc-rgo-cf{display:none}}';
     document.head.appendChild(st);
   }
 
-  // Colores de fondo y borde de cada rango
-  var TINTE = ['#06304a', '#06361a', '#2a1050', '#3e0812', '#3e2400'];
-  var BORDE = ['#1A6CC0', '#0FA845', '#8A36E0', '#B01A30', '#D08A00'];
-  var OSC = ['#123FC0', '#0FA845', '#8A36E0', '#B01A30', '#E3263F'];
   function vars(n) { return '--rg-c:' + TXT[n] + ';--rg-t:' + TINTE[n] + ';--rg-b:' + BORDE[n] + ';--rg-o:' + OSC[n]; }
 
   /* ---------- Semanas ---------- */
@@ -224,7 +119,7 @@
 
   /* ---------- Inicio: tarjeta y subida ---------- */
   function tarjeta(xp) {
-    var n = nivel(xp), sig = n < 4 ? MIN[n + 1] : null, base = n < 0 ? 0 : MIN[n];
+    var n = nivel(xp), sig = n < TOP ? MIN[n + 1] : null, base = n < 0 ? 0 : MIN[n];
     var pct = sig ? Math.max(4, Math.min(100, Math.round(100 * (xp - base) / (sig - base)))) : 100;
     var d = diasQuedan();
     var linea = sig ? 'Te faltan <em>' + miles(sig - xp) + ' XP</em> para ' + NOM[n + 1] + ' · ' + (d === 1 ? 'queda 1 día' : 'quedan ' + d + ' días')
@@ -241,7 +136,7 @@
     d.className = 'mc-rgo-up'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true'); d.setAttribute('aria-label', 'Subiste a ' + NOM[n]);
     d.innerHTML = '<div class="mc-rgo-up-c" style="' + vars(n) + '"><div class="mc-rgo-cf">' + cf + '</div><small>Nuevo rango</small>' +
       '<div class="mc-rgo-up-em">' + svg(n) + '</div><h2>¡Llegaste a ' + NOM[n] + '!</h2>' +
-      '<p>Llevas ' + miles(xp) + ' XP esta semana.' + (n < 4 ? ' Siguiente: ' + NOM[n + 1] + ' con ' + miles(MIN[n + 1]) + ' XP.' : ' Es el rango más alto.') + '</p>' +
+      '<p>Llevas ' + miles(xp) + ' XP esta semana.' + (n < TOP ? ' Siguiente: ' + NOM[n + 1] + ' con ' + miles(MIN[n + 1]) + ' XP.' : ' Es el rango más alto.') + '</p>' +
       '<button type="button">Seguir</button></div>';
     function cerrar() { d.classList.remove('ver'); setTimeout(function () { d.remove(); }, 350); }
     d.querySelector('button').addEventListener('click', cerrar);
@@ -284,12 +179,12 @@
 
   /* ---------- Perfil: insignia, vitrina y ranking ---------- */
   function vitrina(filas) {
-    var hoy = clave(), sem = [[], [], [], [], []];
+    var hoy = clave(), sem = MIN.map(function () { return []; });
     (filas || []).forEach(function (f) { if (f.semana && f.semana < hoy && nivel(f.xp) >= 0) sem[nivel(f.xp)].push({ semana: f.semana, xp: +f.xp }); });
     sem.forEach(function (l) { l.sort(function (a, b) { return a.semana < b.semana ? 1 : -1; }); });
     var total = sem.reduce(function (a, l) { return a + l.length; }, 0);
     var html = '';
-    for (var n = 4; n >= 0; n--) {
+    for (var n = TOP; n >= 0; n--) {
       var c = sem[n].length;
       html += c
         ? '<button type="button" class="mc-rgo-pz" data-n="' + n + '" style="' + vars(n) + '" aria-label="' + NOM[n] + ', ' + c + (c === 1 ? ' semana' : ' semanas') + '">' + (c > 1 ? '<em>×' + c + '</em>' : '') +
@@ -331,7 +226,7 @@
     // La vitrina de semanas pasadas vive en Mi colección (coleccion.html#rangos)
   }
 
-  window.MCRango = { svg: svg, nivel: nivel, nombre: function (n) { return NOM[n]; }, minimo: MIN, css: css, subida: subida, vitrina: vitrina, semanas: semanas, color: function (n) { return { c: TXT[n], t: TINTE[n], b: BORDE[n] }; }, clave: clave, fechas: rangoSemana, diasQuedan: diasQuedan, mini: function (xp) { return nivel(xp) < 0 ? '' : '<span class="mc-rgo-mini" title="' + NOM[nivel(xp)] + '">' + svg(nivel(xp), { mini: true }) + '</span>'; } };
+  window.MCRango = { svg: svg, nivel: nivel, nombre: function (n) { return NOM[n]; }, minimo: MIN, css: css, subida: subida, vitrina: vitrina, semanas: semanas, color: function (n) { return { c: TXT[n], t: TINTE[n], b: BORDE[n] }; }, grupos: function () { return GRUPOS; }, clave: clave, fechas: rangoSemana, diasQuedan: diasQuedan, mini: function (xp) { return nivel(xp) < 0 ? '' : '<span class="mc-rgo-mini" title="' + NOM[nivel(xp)] + '">' + svg(nivel(xp), { mini: true }) + '</span>'; } };
 
   // corazones.js trae el XP de la semana; se espera a que cargue
   function iniciar(intento) {
