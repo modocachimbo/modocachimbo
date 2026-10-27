@@ -1231,10 +1231,24 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
           const extra = [].concat.apply([], await Promise.all(otros.map(c => datos(curso, c))));
           sel = sel.concat(elegir(extra, n - sel.length));
         }
+        if (curso === 'raz-verbal') sel = conTexto(sel, pool);
         lista.push.apply(lista, sel);
       }
     }
     return lista;
+  }
+  // RV siempre trae al menos un texto: si al azar no salió ninguno, uno de los libros
+  // (con hasta 4 de sus preguntas) toma el lugar de las últimas preguntas de libros sin texto
+  function conTexto(sel, pool) {
+    if (sel.some(q => claveLec(q.text))) return sel;
+    const grupos = {};
+    pool.forEach(q => { const k = claveLec(q.text); if (k) (grupos[k] = grupos[k] || []).push(q); });
+    const g = barajar(Object.keys(grupos))[0];
+    if (!g) return sel;
+    const nuevas = grupos[g].slice(0, 4), fuera = [];
+    for (let i = sel.length - 1; i >= 0 && fuera.length < nuevas.length; i--) if (sel[i]._f === 'libros') fuera.push(i);
+    const quedan = sel.filter((q, i) => fuera.indexOf(i) < 0);
+    return quedan.concat(nuevas.slice(0, fuera.length));
   }
   // Una de sinonimia y otra de antonimia con palabras al azar del Vocabulario
   async function vocabRapido(n) {
