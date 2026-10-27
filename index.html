@@ -407,7 +407,7 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
 
 .rango { position: absolute; left: 50%; bottom: 0; translate: -50% 0; display: flex; align-items: center; gap: 12px; padding: 8px 20px 10px; background: linear-gradient(90deg, transparent, rgba(11, 8, 24, .82) 12%, rgba(11, 8, 24, .82) 88%, transparent); color: #EEEAF7; border-top: 2px solid #58CC02; white-space: nowrap; z-index: 2; }
 .rango .em { width: 44px; }
-.rango .em svg { width: 100%; display: block; }
+.rango .em svg, .rango .em .mc-rgo-em { width: 100%; display: block; }
 .rango b { font-size: 24px; color: #58CC02; }
 .rango .bar { display: block; height: 6px; margin-top: 6px; background: rgba(255, 255, 255, .15); }
 .rango .bar i { display: block; height: 100%; width: 42%; background: #58CC02; }
@@ -604,7 +604,7 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
 .liga .pos { display: grid; place-items: center; }
 .liga .copa, .liga .medalla { width: 30px; height: 34px; display: block; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .3)); }
 .liga .num { font: italic 900 22px/1 var(--display); color: var(--suave); }
-.liga li .em svg { width: 30px; display: block; }
+.liga li .em svg, .liga li .em .mc-rgo-em { width: 34px; display: block; }
 .liga .letra { width: 34px; height: 34px; color: #10131a; font: 900 16px/1 var(--cuerpo); clip-path: polygon(14% 0, 86% 0, 100% 14%, 100% 86%, 86% 100%, 14% 100%, 0 86%, 0 14%); }
 .liga .quien { min-width: 0; }
 .liga b { font: 800 16.5px/1.15 var(--cuerpo); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -701,7 +701,7 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
 /* barra lateral: más angosta */
 .lado .liga li { grid-template-columns: 26px 28px minmax(0, 1fr) 24px auto; gap: 7px; padding: 7px 8px 7px 6px; }
 .lado .liga .letra { width: 28px; height: 28px; font-size: 14px; }
-.lado .liga li .em svg { width: 24px; }
+.lado .liga li .em svg, .lado .liga li .em .mc-rgo-em { width: 30px; }
 .lado .liga .copa, .lado .liga .medalla { width: 24px; height: 28px; }
 .lado .liga b { font-size: 15px; }
 .lado .liga .xp { font-size: 14px; }
@@ -767,11 +767,11 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
 .l2 .aro { background: linear-gradient(#fff, #C9C6D6 50%, #6B6485); }
 .l3 .aro { background: linear-gradient(#FFD3AE, #E58A45 50%, #8A4A17); }
 .rg { display: inline-flex; align-items: center; gap: 4px; }
-.rg svg { width: 22px; display: block; }
+.rg svg, .rg .mc-rgo-em { width: 28px; display: block; }
 .rg small { font: 800 12px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; }
 .sim-lista li { grid-template-columns: 30px 30px minmax(0, 1fr) 24px auto; }
 .sim-lista .letra { width: 30px; height: 30px; border-radius: 8px; font: 900 14px/1 var(--cuerpo); color: #10131a; display: grid; place-items: center; }
-.sim-lista li .em svg { width: 24px; display: block; }
+.sim-lista li .em svg, .sim-lista li .em .mc-rgo-em { width: 30px; display: block; }
 @media (max-width: 900px) { .aro .letra { width: 44px; height: 44px; } .l1 .aro .letra { width: 54px; height: 54px; } .rg small { display: none; } }
 .logo { display: block; padding: 0 26px; }
 .logo svg { width: 100%; max-width: 230px; height: auto; display: block; }
@@ -820,7 +820,7 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
 .perfil .pf-tx b { font: 800 26px/1 var(--display); letter-spacing: .04em; text-transform: uppercase; color: #fff; text-shadow: 0 2px 0 rgba(0, 0, 0, .55), 0 0 10px rgba(0, 0, 0, .6); }
 .perfil .pf-tx small { display: flex; align-items: center; gap: 5px; font: 800 17px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; color: #6BE21B; text-shadow: 0 2px 0 rgba(0, 0, 0, .6), 0 0 8px rgba(0, 0, 0, .55); }
 .pf-tx small i { width: 22px; display: block; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .6)); }
-.pf-tx small i svg { width: 100%; display: block; }
+.pf-tx small i svg, .pf-tx small i .mc-rgo-em { width: 100%; display: block; }
 /* Cuadros de corazones, racha y XP: iguales al boceto, con los íconos animados de la app */
 .pill, .pill.vida, .pill.racha, .pill.xp { height: 50px; gap: 10px; padding: 0 16px 0 14px; background: var(--tarjeta); border: 1px solid var(--borde); color: var(--texto); font: 800 24px/1 var(--display); letter-spacing: .02em; box-shadow: var(--sombra-tarjeta); }
 .pill:active { transform: translateY(1px); border-bottom-width: 1px; margin-bottom: 0; }
