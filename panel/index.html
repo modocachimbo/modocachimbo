@@ -626,6 +626,9 @@
   .popt .chk { color: #58CC02; font-size: 17px; }
   .qnum2 { width: auto; padding: 0 10px; font: 900 12px/28px 'Nunito', sans-serif; letter-spacing: .06em; text-transform: uppercase; }
   .qnum2::before { content: "Pregunta\00a0"; }
+  .pcard { position: relative; }
+  .qetq { position: absolute; top: 16px; right: 18px; max-width: 55%; padding: 5px 12px; border-radius: 999px; background: #2A2052; border: 2px solid #5B47A6; color: #EDE6FF; font: 900 11.5px/1.2 'Nunito', sans-serif; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 3px 0 rgba(0,0,0,.25); }
+  .ed-prev .qetq { position: static; display: inline-block; margin-bottom: 10px; }
   @media (min-width: 900px) { .ptext { font-size: 18px; padding: 20px 22px; } .popt { font-size: 16px; padding: 14px 16px; } .popt .l { width: 32px; height: 32px; font-size: 14px; } }
   @media (max-width: 600px) { .ptext { font-size: 16px; padding: 14px 15px; } .popt { font-size: 14.5px; padding: 11px 12px; } }
 
@@ -798,6 +801,7 @@ E) Alternativa"></textarea>
               <code>A) 18 g<br>B) 36 g ✅<br>C) 9 g</code><span>Una alternativa por línea. La ✅ marca la correcta (también vale ✔ o ✓).</span>
               <code>CLAVE: C</code><span>Opcional: en lugar de la ✅, al final de la pregunta.</span>
               <code>TEXTO 03:<br>Hubo un tiempo en que…<br>PREGUNTA 9:<br>¿Cuál es el título del texto?<br>…<br>PREGUNTA 10:<br>…<br>FIN TEXTO</code><span>Lectura para varias preguntas (Raz. Verbal, comprensión). Escribe <code>TEXTO</code> (con su número) y pega la lectura; vale para todas las preguntas de abajo hasta otro <code>TEXTO</code> o <code>FIN TEXTO</code>. El alumno la ve arriba de cada pregunta ("pregunta 2 de 3") y al mezclar (Repaso, Fijas) las preguntas del mismo texto salen juntas y en orden. Deja una línea en blanco entre párrafos.</span>
+              <code>ETIQUETA: Sinónimos<br>PREGUNTA 1:<br>…<br>ETIQUETA: Antónimos<br>PREGUNTA 11:<br>…</code><span><b>Etiqueta (opcional).</b> Sale como burbuja arriba a la derecha de la pregunta y le dice al alumno qué tipo es (Sinónimos, Antónimos, Analogías…). Vale para todas las preguntas de abajo hasta otra <code>ETIQUETA:</code>; escribe <code>ETIQUETA: ninguna</code> para quitarla. Si no la pones, no sale nada. En Editar se ve al final del texto como <code>[ETIQUETA: Sinónimos]</code>.</span>
               <code>A) VVV   B) FVV   C) VVF</code><span>Varias alternativas en una línea también valen. Si son cortas, se muestran en columnas solas.</span>
               <code>a. texto   b. texto</code><span>Con punto es texto del enunciado (por ejemplo, una lista para relacionar). Las alternativas siempre van con paréntesis: A) o a).</span>
               <code>PREGUNTA 4:<br>&lt;u&gt;CORDERO&lt;/u&gt; : OVEJA ::<br>A) potro : yegua<br>B) ternero : vaca ✅<br>C) pollo : gallo</code><span>Analogía: el par va con dos puntos y espacios a los lados (<code>CORDERO : OVEJA</code>); los <code>::</code> del final son opcionales. Las alternativas también con dos puntos. Al alumno le salen centradas y con los dos puntos uno debajo del otro.</span>
@@ -2022,7 +2026,7 @@ E) Alternativa"></textarea>
       } });
       const sg = zonaImg.estado();
       const graf = sg.cambio === 'nueva' ? `<img class="mc-img" src="${sg.img.dataUrl}" alt="">` : sg.cambio === 'quitar' ? '' : (q.graphic || '');
-      prev.innerHTML = `<div class="ptext">${r.html}</div>${graf ? `<div class="pimg-ver">${graf}</div>` : ''}<div class="popts"></div>`;
+      prev.innerHTML = `${r.etiqueta ? `<span class="qetq">${esc(r.etiqueta)}</span>` : ''}<div class="ptext">${r.html}</div>${graf ? `<div class="pimg-ver">${graf}</div>` : ''}<div class="popts"></div>`;
       const lista = prev.querySelector('.popts');
       if (q.abierta) {
         const pq = Object.assign({}, q, v, { options: [], correct: 0 });
