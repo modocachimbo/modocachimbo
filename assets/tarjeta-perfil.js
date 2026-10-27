@@ -102,7 +102,7 @@
     T + '.mct-arte{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}' +
     T + '.mct-caja{position:relative;z-index:1;flex:none;width:60px;height:60px}' +
     T + '.mct-marco{position:absolute;inset:0;padding:3px;background:var(--m,linear-gradient(135deg,#FFE58A,#FFC800 40%,#B07800));clip-path:polygon(0 0,100% 0,100% 82%,82% 100%,0 100%)}' +
-    T + '.mct .mcu-av{width:100%;height:100%;border-radius:0;overflow:hidden;background:var(--lima,#C6E000);color:var(--sobre-lima,#151A03);font:900 26px/1 var(--cuerpo,Nunito,sans-serif);display:grid;place-items:center;clip-path:polygon(0 0,100% 0,100% 82%,82% 100%,0 100%)}' +
+    T + '.mct .mcu-av{width:100%;height:100%;border-radius:0;overflow:hidden;background:radial-gradient(120% 120% at 80% 0%,var(--f1,#5b34b8),var(--f2,#1a0f40) 70%,#0d0820);color:#fff;font:900 26px/1 var(--cuerpo,Nunito,sans-serif);display:grid;place-items:center;clip-path:polygon(0 0,100% 0,100% 82%,82% 100%,0 100%)}' +
     T + '.mct .mcu-av img{width:100%;height:100%;display:block;object-fit:cover}' +
     T + '.mct .mcu-av.mct-buho{background:radial-gradient(120% 120% at 80% 0%,var(--f1,#5b34b8),var(--f2,#1a0f40) 70%,#0d0820)}' +
     T + '.mct-nv{position:absolute;left:-2px;bottom:-4px;display:flex;align-items:baseline;gap:2px;padding:2px 8px 1px 5px;background:linear-gradient(90deg,#FFE14D,#FFC800);color:#2a1d00;font:900 italic 10px/1 var(--display,"Barlow Condensed","Arial Narrow",sans-serif);text-transform:uppercase;clip-path:polygon(0 0,100% 0,88% 100%,0 100%)}' +
@@ -122,7 +122,7 @@
     T + '.mct-rg i svg{width:100%;display:block}' +
     '@media (max-width:900px){' +
       T + '.mcu-chip.mct{height:60px;padding:0 30px 0 6px;gap:9px;clip-path:polygon(0 0,100% 0,calc(100% - 18px) 100%,0 100%)}' +
-      T + '.mct-caja{width:46px;height:46px}' +
+      T + '.mct-caja{width:46px;height:46px}' + T + '.mct-marco{padding:2px}' +
       T + '.mct .mcu-av{font-size:20px}' +
       T + '.mct-nv{padding:1px 6px 0 4px;font-size:8px}' + T + '.mct-nv b{font-size:12px}' +
       T + '.mct-pin{width:19px;height:19px;right:-6px}' +
