@@ -63,9 +63,11 @@
   function css() {
     if (document.getElementById('mcz-css')) return;
     // Barlow Condensed para los títulos (las páginas que no la traen)
-    var fu = document.createElement('link'); fu.rel = 'stylesheet';
-    fu.href = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,800;1,900&display=swap';
-    document.head.appendChild(fu);
+    if (!document.querySelector('link[href*="Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,800;1,900"]')) {
+      var fu = document.createElement('link'); fu.rel = 'stylesheet';
+      fu.href = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,800;1,900&display=swap';
+      document.head.appendChild(fu);
+    }
     var st = document.createElement('style'); st.id = 'mcz-css';
     st.textContent =
       // Píldoras de arriba (junto a la racha)

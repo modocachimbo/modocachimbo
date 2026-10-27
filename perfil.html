@@ -43,14 +43,12 @@
   .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 22px; padding: 26px 24px; margin-top: 18px; }
   .panel h2 { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; margin-bottom: 4px; }
   .panel .nota { color: var(--text-dim); font-size: 13px; line-height: 1.6; }
-  .racha-fila { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+
   .racha-dato { background: var(--surface-2); border: 1px solid var(--border); border-radius: 16px; padding: 14px 10px; text-align: center; }
   .racha-dato b { display: flex; align-items: center; justify-content: center; gap: 7px; font: 800 30px/1 'Sora', sans-serif; font-variant-numeric: tabular-nums; }
   .racha-dato b svg { width: 26px; height: 26px; color: #FF9600; }
   .racha-dato span { display: block; margin-top: 7px; font-size: 12px; color: var(--text-dim); font-weight: 600; }
   .racha-dato.on b { color: var(--accent); }
-  .racha-hoy { height: 6px; border-radius: 6px; background: #2C2549; overflow: hidden; margin-top: 14px; }
-  .racha-hoy i { display: block; height: 100%; width: 0; background: var(--accent); }
 
   /* Pestañas: Mi perfil / Ranking */
   .tabs { display: flex; gap: 6px; margin-top: 18px; background: var(--surface); padding: 5px; border-radius: 16px; border: 2px solid var(--border); }
@@ -256,7 +254,7 @@
   .st > div { min-width: 0; }
   .st b { display: block; font-size: 22px; font-weight: 1000; line-height: 1.1; font-variant-numeric: tabular-nums; }
   .st span:not(.st-ic) { display: block; font-size: 12.5px; color: var(--text-dim); font-weight: 800; margin-top: 2px; }
-  .st.nar .st-ic { color: var(--nar); } .st.amb .st-ic { color: var(--amb); } .st.cel .st-ic { color: var(--cel); }
+ .st.cel .st-ic { color: var(--cel); }
   .st.ver .st-ic { color: var(--accent); } .st.mor .st-ic { color: var(--mor); } .st.roj .st-ic { color: var(--roj); }
   /* Colores del tema de racha que llevas puesto (Mi colección); Cielo por defecto */
   .racha-card { --rc1: #1CB0F6; --rc2: #1588d0; --rcb: #1488c9; --rcd: #0f6fa6; position: relative; overflow: hidden; margin-top: 12px; border-radius: 20px; padding: 16px 18px 14px; color: #fff; background: linear-gradient(135deg, var(--rc1), var(--rc2)); border: 2px solid var(--rcb); border-bottom: 5px solid var(--rcd); transition: background .4s; }
@@ -272,7 +270,7 @@
   .rc-num b { font-size: 26px; font-weight: 1000; font-variant-numeric: tabular-nums; }
   .rc-num span { display: block; font-size: 12.5px; font-weight: 900; opacity: .92; }
   .rc-num em { font-style: normal; }
-  .rc-mejor { flex-shrink: 0; font-size: 12px; font-weight: 900; background: rgba(0,0,0,.16); border-radius: 100px; padding: 5px 10px; }
+
   .rc-vista { position: relative; flex-shrink: 0; display: flex; gap: 2px; background: rgba(0,0,0,.2); border-radius: 100px; padding: 3px; }
   .rc-vista button { border: 0; background: none; color: #fff; font: 1000 11.5px Nunito, sans-serif; padding: 5px 10px; border-radius: 100px; cursor: pointer; opacity: .85; }
   .rc-vista button.on { background: #fff; color: var(--rcd); opacity: 1; }
@@ -340,7 +338,7 @@
   /* Mis datos (plegable) */
   .datos summary { cursor: pointer; list-style: none; }
   .datos summary::-webkit-details-marker { display: none; }
-  .datos .sec-txt { flex: 1; min-width: 0; }
+
   .datos .flecha { width: 22px; height: 22px; color: var(--cel); flex-shrink: 0; transition: transform .2s; }
   .datos[open] .flecha { transform: rotate(180deg); }
   .datos[open] summary { padding-bottom: 6px; border-bottom: 2px solid var(--borde); }
@@ -371,7 +369,7 @@
 <style id="mc-claro">
 /* Modo claro de esta página (assets/claro.css trae lo común) */
 html[data-modo="claro"] .racha-dato.on b { color: #6F8000 !important; }
-html[data-modo="claro"] .racha-hoy { background: #F1EFF6 !important; }
+
 html[data-modo="claro"] .tabs button.on { background: #F1EFF6 !important; }
 html[data-modo="claro"] #errores.cero .err-ic { color: #6F8000 !important; }
 html[data-modo="claro"] .err-fila { border: 2px solid #DCD8E8 !important; }
@@ -579,7 +577,6 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
         <ul class="lista rep-lista" id="simLista"><li><span>Cargando…</span></li></ul>
         <a class="btn-mor" href="simulacro.html">Crear un simulacro</a>
       </section>
-
 
       <!-- 4. Tu colección y tu cuenta -->
       <h2 class="sec-tit bc" style="--tc:var(--accent)">Mi colección</h2>
