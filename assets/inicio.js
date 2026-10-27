@@ -446,7 +446,7 @@
       var ma = x.marco && C.item(x.marco), fo = x.fondo && C.item(x.fondo), at = C.item(x.avatar) || C.item(C.defecto.avatar);
       if (ma) marco = C.marco(x.marco);
       tema = C.tema(fo ? x.fondo : C.defecto.racha);
-      if (at.av) img = C.avatar(at.id);
+      if (at.av || at.img) img = C.avatar(at.id);
     }
     var dentro = /^https:\/\//.test(img || '') || /assets\/buho\/avatar\//.test(img || '') ? '<img src="' + esc(img) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : inicial(x.apodo);
     var fondo = tema ? 'linear-gradient(135deg,' + tema[0] + ',' + tema[3] + ')' : AV[(x.puesto - 1) % AV.length];
