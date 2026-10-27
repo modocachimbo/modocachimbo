@@ -17,12 +17,12 @@
   // c: texto · t: fondo · b: borde · o: barra; min: XP de la semana para cada nivel
   var RANGOS = [
     { id: 'bronce', nom: 'Bronce', c: '#E8A878', t: '#3a1e0e', b: '#9A5A30', o: '#7A3A1C', min: [20, 150, 300] },
-    { id: 'plata', nom: 'Plata', c: '#D6DEEA', t: '#262c3a', b: '#8A96AA', o: '#5A6478', min: [500, 700, 900] },
-    { id: 'esmeralda', nom: 'Esmeralda', c: '#5FF59A', t: '#06361a', b: '#0FA845', o: '#0FA845', min: [1200, 1500, 1800, 2100] },
-    { id: 'zafiro', nom: 'Zafiro', c: '#5FDAFF', t: '#06304a', b: '#1A6CC0', o: '#123FC0', min: [2500, 2900, 3300, 3700, 4100] },
-    { id: 'amatista', nom: 'Amatista', c: '#D79BFF', t: '#2a1050', b: '#8A36E0', o: '#8A36E0', min: [4600, 5200, 5800, 6500, 7200] },
-    { id: 'leyenda', nom: 'Leyenda', c: '#FF7AD9', t: '#3e0a34', b: '#C0399E', o: '#E3263F', min: [8000, 9000, 10000, 11000, 12000] },
-    { id: 'mitico', nom: 'Mítico', c: '#FFC800', t: '#3e2400', b: '#D08A00', o: '#E3263F', min: [14000, 16000, 18000] }
+    { id: 'plata', nom: 'Plata', c: '#D6DEEA', t: '#262c3a', b: '#8A96AA', o: '#5A6478', min: [500, 750, 1000] },
+    { id: 'esmeralda', nom: 'Esmeralda', c: '#5FF59A', t: '#06361a', b: '#0FA845', o: '#0FA845', min: [1300, 1600, 1900, 2200] },
+    { id: 'zafiro', nom: 'Zafiro', c: '#5FDAFF', t: '#06304a', b: '#1A6CC0', o: '#123FC0', min: [2600, 3000, 3500, 4000, 4500] },
+    { id: 'amatista', nom: 'Amatista', c: '#D79BFF', t: '#2a1050', b: '#8A36E0', o: '#8A36E0', min: [5000, 5600, 6200, 6900, 7600] },
+    { id: 'leyenda', nom: 'Leyenda', c: '#FF7AD9', t: '#3e0a34', b: '#C0399E', o: '#E3263F', min: [8500, 9500, 10500, 11500, 13000] },
+    { id: 'mitico', nom: 'Mítico', c: '#FFC800', t: '#3e2400', b: '#D08A00', o: '#E3263F', min: [16000, 25000, 40000] }
   ];
   var ROM = ['I', 'II', 'III', 'IV', 'V', 'VI'];
   // Todo en una lista de niveles: n = 0 es Bronce I, el último es Mítico III
