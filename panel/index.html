@@ -706,6 +706,7 @@
         <div class="menu-grupo">Web</div>
         <button class="tab disp" data-tab="agenda" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/><path d="M8 14.5h3M8 18h6"/></svg><span>Agenda</span></button>
         <button class="tab disp" data-tab="tematicas" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6c0-2 1.2-3.2 3-3.5-1 .9-1.4 2-1.4 3.5"/><path d="M12 6c-4.5 0-8 3.4-8 7.5S7.5 21 12 21s8-3.4 8-7.5S16.5 6 12 6z"/><path d="M8.5 12.5l1.5-1.5 1.5 1.5M12.5 12.5l1.5-1.5 1.5 1.5M9 16.5q3 2 6 0"/></svg><span>Temáticas</span></button>
+        <button class="tab disp" data-tab="recursos" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.8"/><path d="m21 15-5-5L5 21"/></svg><span>Recursos</span></button>
         <button class="tab disp" data-tab="alertas" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Alertas</span></button>
         <button class="tab disp" data-tab="frases" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Frases del día</span></button>
         <button class="tab disp" data-tab="tutorial" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Tutorial</span></button>
@@ -1084,6 +1085,18 @@ E) Alternativa"></textarea>
         <div id="tmpCuerpo"><div class="loader">Cargando…</div></div>
       </div>
 
+      <!-- Recursos: fondos con imagen para Mi colección (recursos-panel.js) -->
+      <div id="tab-recursos" hidden>
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Mi colección</div>
+            <h1 class="disp">Recursos</h1>
+            <p>Sube fondos de perfil con imagen. Elige si son para todos, un premio por racha o rango, o un regalo. Salen al toque, sin publicar código.</p>
+          </div>
+        </div>
+        <div id="recCuerpo"><div class="loader">Cargando…</div></div>
+      </div>
+
       <!-- Alumnos (cuentas de Supabase) -->
       <div id="tab-alumnos" hidden>
         <div class="page-head">
@@ -1368,7 +1381,7 @@ E) Alternativa"></textarea>
   const CARGAR = {
     cursos: f => { cargarCursos(); cargarPractica(); }, perfil: f => cargarPerfilCfg(), frases: f => cargarFrases(), vocab: f => cargarVocabulario(),
     ciclos: f => cargarCiclos(f), alumnos: f => cargarAlumnos(f), codigos: () => cargarCodigos(), simulacro: () => cargarTopSimulacro(), topxp: () => cargarTopXp(),
-    agenda: () => cargarAgenda(), tematicas: () => cargarTematicas(), alertas: () => cargarAlertas(), corr: () => cargarCorrecciones(),
+    agenda: () => cargarAgenda(), tematicas: () => cargarTematicas(), recursos: () => cargarRecursos(), alertas: () => cargarAlertas(), corr: () => cargarCorrecciones(),
     equipo: () => cargarEquipo(), historial: () => cargarHistorial()
   };
   function cargarSeccion(tab, forzar) {
@@ -1385,7 +1398,7 @@ E) Alternativa"></textarea>
     window.scrollTo(0, 0);
     document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
     const pestana = t.dataset.tab === 'examen' ? 'subir' : t.dataset.tab; // "Subir examen" usa la misma pantalla que "Subir tema"
-    ['reportes', 'subir', 'editar', 'cursos', 'ciclos', 'vocab', 'perfil', 'frases', 'alertas', 'tutorial', 'codigos', 'alumnos', 'corr', 'simulacro', 'topxp', 'agenda', 'tematicas', 'equipo', 'historial'].forEach(id => { $('tab-' + id).hidden = id !== pestana; });
+    ['reportes', 'subir', 'editar', 'cursos', 'ciclos', 'vocab', 'perfil', 'frases', 'alertas', 'tutorial', 'codigos', 'alumnos', 'corr', 'simulacro', 'topxp', 'agenda', 'tematicas', 'recursos', 'equipo', 'historial'].forEach(id => { $('tab-' + id).hidden = id !== pestana; });
     if (t.dataset.tab === 'tutorial' && !TU.datos) cargarTutorial();
     // Las que tienen textos por guardar (Perfil, Frases, Vocabulario) no se recargan solas al tocarlas otra vez
     cargarSeccion(t.dataset.tab, yaEstaba && !['perfil', 'frases', 'vocab'].includes(t.dataset.tab));
@@ -2236,6 +2249,7 @@ E) Alternativa"></textarea>
 <script src="topxp-panel.js"></script>
 <script src="agenda-panel.js"></script>
 <script src="tematicas-panel.js"></script>
+<script src="recursos-panel.js"></script>
 <script src="reportes-alumno.js"></script>
 <script src="../assets/carreras.js"></script>
 <script src="perfil-panel.js"></script>

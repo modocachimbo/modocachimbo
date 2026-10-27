@@ -35,7 +35,9 @@
   }
   // Paisaje de la tarjeta con los 4 colores de tu fondo: cielo, sol, estrellas, cerros y rayos de luz
   var nArte = 0;
-  function arte(t) {
+  function arte(t, img) {
+    // Fondo con imagen (recursos del panel): la foto con la misma sombra a la izquierda
+    if (img) return '<span class="mct-arte" aria-hidden="true" style="background:linear-gradient(90deg,rgba(0,0,0,.38),rgba(0,0,0,0) 60%),url(&quot;' + esc(img) + '&quot;) center/cover no-repeat"></span>';
     var id = 'mcta' + (++nArte), sol = mezcla(t[0], '#ffffff', .55);
     return '<svg class="mct-arte" viewBox="0 0 800 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>' +
       '<linearGradient id="' + id + 'c" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + mezcla(t[3], '#000000', .55) + '"/><stop offset=".55" stop-color="' + mezcla(t[1], '#000000', .15) + '"/><stop offset="1" stop-color="' + t[0] + '"/></linearGradient>' +
@@ -157,7 +159,7 @@
   function pintar() {
     css();
     var C = window.MCColeccion;
-    var marco = C ? C.marco() : '', tema = C ? C.tema() : ['#5b34b8', '#241452', '#4a2a9a', '#1a0f40'];
+    var marco = C ? C.marco() : '', tema = C ? C.tema() : ['#5b34b8', '#241452', '#4a2a9a', '#1a0f40'], fondo = C && C.fondo ? C.fondo() : '';
     Array.prototype.forEach.call(document.querySelectorAll('[data-mc-auth][data-mc-tarjeta] .mcu-chip'), function (chip) {
       if (!chip.querySelector('.mct-tx')) {
         chip.classList.add('mct');
@@ -171,10 +173,10 @@
         tx.appendChild(rg); chip.appendChild(tx);
       }
       // Paisaje con tu fondo
-      if (chip.getAttribute('data-t') !== tema[0]) {
-        chip.setAttribute('data-t', tema[0]);
+      if (chip.getAttribute('data-t') !== tema[0] + fondo) {
+        chip.setAttribute('data-t', tema[0] + fondo);
         var viejo = chip.querySelector('.mct-arte'); if (viejo) viejo.remove();
-        chip.insertAdjacentHTML('afterbegin', arte(tema));
+        chip.insertAdjacentHTML('afterbegin', arte(tema, fondo));
       }
       // Foto de perfil: el búho (o un disfraz) sobre tu fondo, o tu foto de Google / inicial
       var av = chip.querySelector('.mcu-av');
@@ -222,9 +224,9 @@
   var GALAXIA = ['#5b34b8', '#241452', '#4a2a9a', '#1a0f40'];
   // Lo que lleva puesto un alumno: de los tops ({avatar, marco, fondo}) o de ver_jugador ({puesto: {...}})
   function vista(x) {
-    var C = window.MCColeccion, img = x.foto || '', marco = '', tema = GALAXIA;
+    var C = window.MCColeccion, img = x.foto || '', marco = '', tema = GALAXIA, fondo = '';
     if (C && x.yo) {
-      marco = C.marco(); tema = C.tema();
+      marco = C.marco(); tema = C.tema(); fondo = C.fondo ? C.fondo() : '';
       var mia = document.querySelector('[data-mc-tarjeta] .mcu-av img');
       img = C.avatar() || (mia ? mia.src : img);
     } else if (C) {
@@ -233,9 +235,10 @@
       var at = C.item(p.avatar) || C.item(C.defecto.avatar), fo = p.racha && C.item(p.racha);
       if (p.marco && C.item(p.marco)) marco = C.marco(p.marco);
       tema = C.tema(fo ? p.racha : C.defecto.racha);
+      fondo = fo && C.fondo ? C.fondo(p.racha) : '';
       if (at && at.av) img = C.avatar(at.id);
     }
-    return { img: /^https:\/\//.test(img) || /assets\/buho\/avatar\//.test(img) ? img : '', marco: marco, tema: tema };
+    return { img: /^https:\/\//.test(img) || /assets\/buho\/avatar\//.test(img) ? img : '', marco: marco, tema: tema, fondo: fondo };
   }
   function inicial(nom) { return esc((String(nom || '?').trim()[0] || '?').toUpperCase()); }
   // Foto con marco y nivel; cls son las clases de cada página (le dan el tamaño).
@@ -259,7 +262,7 @@
     var n = window.MCRango ? MCRango.nivel(d.xp_semana) : -1;
     var st = function (ic, val, lab) { return '<span class="pj-st">' + icono(ic) + '<b>' + val + '</b><small>' + lab + '</small></span>'; };
     var total = C ? C.contar().total : '';
-    return '<section class="pj" style="--rc:' + (n < 0 ? '#cfc8e6' : RC[n]) + '"><div class="pj-card" style="--f1:' + v.tema[0] + ';--f2:' + v.tema[3] + '">' + arte(v.tema) +
+    return '<section class="pj" style="--rc:' + (n < 0 ? '#cfc8e6' : RC[n]) + '"><div class="pj-card" style="--f1:' + v.tema[0] + ';--f2:' + v.tema[3] + '">' + arte(v.tema, v.fondo) +
       '<div class="pj-av"><span class="pj-fr"' + (v.marco ? ' style="--m:' + v.marco + '"' : '') + '><span class="pj-foto">' +
         (v.img ? '<img src="' + esc(v.img) + '" alt="" referrerpolicy="no-referrer">' : inicial(d.apodo)) + '</span></span>' +
         '<span class="pj-nv">Nvl <b>' + nivel(d.xp_total) + '</b></span>' +

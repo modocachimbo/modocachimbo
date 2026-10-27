@@ -363,9 +363,9 @@
 <script src="assets/auth.js"></script>
 <script src="assets/agenda.js"></script>
 <script src="assets/buho.js"></script>
-<script src="assets/coleccion.js?v=166"></script>
+<script src="assets/coleccion.js?v=167"></script>
 <link rel="stylesheet" href="assets/tarjeta-jugador.css?v=3">
-<script src="assets/tarjeta-perfil.js?v=163"></script>
+<script src="assets/tarjeta-perfil.js?v=164"></script>
 <style id="mc-claro">
 /* Modo claro de esta página (assets/claro.css trae lo común) */
 html[data-modo="claro"] .racha-dato.on b { color: #6F8000 !important; }
@@ -1119,12 +1119,12 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
     $('colPins').innerHTML = h;
     var n = C.contar(); $('colN').textContent = n.tengo + '/' + n.total; $('pnCol').textContent = n.tengo + '/' + n.total;
     // La tarjeta lleva un paisaje con tu fondo de perfil
-    var ft = C.tema(), card = $('pjCard');
+    var ft = C.tema(), fi = C.fondo ? C.fondo() : '', card = $('pjCard');
     card.style.setProperty('--f1', ft[0]); card.style.setProperty('--f2', ft[3]);
-    if (window.MCTarjeta && card.getAttribute('data-t') !== ft[0]) {
-      card.setAttribute('data-t', ft[0]);
+    if (window.MCTarjeta && card.getAttribute('data-t') !== ft[0] + fi) {
+      card.setAttribute('data-t', ft[0] + fi);
       var viejo = card.querySelector('.mct-arte'); if (viejo) viejo.remove();
-      card.insertAdjacentHTML('afterbegin', MCTarjeta.arte(ft));
+      card.insertAdjacentHTML('afterbegin', MCTarjeta.arte(ft, fi));
     }
     pintarJugador();
     pintarTema();
