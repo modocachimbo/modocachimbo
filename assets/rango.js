@@ -21,8 +21,8 @@
     { id: 'esmeralda', nom: 'Esmeralda', c: '#5FF59A', t: '#06361a', b: '#0FA845', o: '#0FA845', min: [1300, 1600, 1900, 2200] },
     { id: 'zafiro', nom: 'Zafiro', c: '#5FDAFF', t: '#06304a', b: '#1A6CC0', o: '#123FC0', min: [2600, 3000, 3500, 4000, 4500] },
     { id: 'amatista', nom: 'Amatista', c: '#D79BFF', t: '#2a1050', b: '#8A36E0', o: '#8A36E0', min: [5000, 5600, 6200, 6900, 7600] },
-    { id: 'leyenda', nom: 'Leyenda', c: '#FF7AD9', t: '#3e0a34', b: '#C0399E', o: '#E3263F', min: [8500, 9500, 10500, 11500, 13000] },
-    { id: 'mitico', nom: 'Mítico', c: '#FFC800', t: '#3e2400', b: '#D08A00', o: '#E3263F', min: [16000, 25000, 40000] }
+    { id: 'leyenda', nom: 'Leyenda', c: '#FF7AD9', t: '#3e0a34', b: '#C0399E', o: '#E3263F', min: [9000, 11000, 13500, 16500, 20000] },
+    { id: 'mitico', nom: 'Mítico', c: '#FFC800', t: '#3e2400', b: '#D08A00', o: '#E3263F', min: [25000, 26500, 28000] }
   ];
   var ROM = ['I', 'II', 'III', 'IV', 'V', 'VI'];
   // Todo en una lista de niveles: n = 0 es Bronce I, el último es Mítico III
