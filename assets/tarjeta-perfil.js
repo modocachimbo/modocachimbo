@@ -23,6 +23,8 @@
   // Nivel de jugador: sale de todo tu XP, sin tope. Cada nivel pide más XP
   // que el anterior (nivel 2 con 100 XP, 11 con 10 000, 101 con un millón).
   function nivel(xp) { return 1 + Math.floor(Math.sqrt(Math.max(0, +xp || 0) / 100)); }
+  // Cuánto llevas del nivel actual (0 a 1): el nivel n va de 100·(n-1)² a 100·n² XP
+  function avance(xp) { var n = nivel(xp), a = 100 * (n - 1) * (n - 1), b = 100 * n * n; return (Math.max(0, +xp || 0) - a) / (b - a); }
 
   // Mezcla dos colores #rrggbb (p = cuánto del segundo)
   function mezcla(a, b, p) {
@@ -96,7 +98,10 @@
     '[data-mc-tarjeta="sola"] .mcz-pill,[data-mc-tarjeta="sola"] .mcu-racha{display:none!important}' +
     T + '.mcu-chip.mct{order:4;position:relative;overflow:hidden;display:flex;align-items:center;gap:12px;min-width:0;max-width:none;height:76px;margin:0;padding:0 54px 0 8px;border:0;border-radius:0;color:#fff;font:inherit;cursor:pointer;background:#140a33;' +
       'clip-path:polygon(0 0,100% 0,calc(100% - 30px) 100%,0 100%)}' +
-    T + '.mcu-chip.mct::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,#FFC800,var(--rc,#FFC800) 60%,transparent)}' +
+    // Abajo, la barra de XP que falta para el siguiente nivel: sale del borde derecho de la foto (no tapa el nivel)
+    T + '.mcu-chip.mct{--bi:68px}' +
+    T + '.mcu-chip.mct::after{content:"";position:absolute;left:var(--bi);right:0;bottom:0;height:4px;background:rgba(0,0,0,.45)}' +
+    T + '.mcu-chip.mct::before{content:"";position:absolute;z-index:2;left:var(--bi);bottom:0;height:4px;width:calc((100% - var(--bi)) * var(--pv,0));background:linear-gradient(90deg,#FFE14D,#FFC800);box-shadow:0 0 8px rgba(255,200,0,.7);transition:width .6s}' +
     T + '.mcu-chip.mct:hover{filter:brightness(1.08)}' +
     T + '.mcu-chip.mct:active{transform:translateY(1px);border-bottom-width:0;margin-bottom:0}' +
     T + '.mct-arte{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}' +
@@ -122,7 +127,7 @@
     T + '.mct-rg i svg{width:100%;display:block}' +
     '@media (max-width:900px){' +
       T + '.mcu-chip.mct{height:60px;padding:0 30px 0 6px;gap:9px;clip-path:polygon(0 0,100% 0,calc(100% - 18px) 100%,0 100%)}' +
-      T + '.mct-caja{width:46px;height:46px}' + T + '.mct-marco{padding:2px}' +
+      T + '.mcu-chip.mct{--bi:52px}' + T + '.mct-caja{width:46px;height:46px}' + T + '.mct-marco{padding:2px}' +
       T + '.mct .mcu-av{font-size:20px}' +
       T + '.mct-nv{padding:1px 6px 0 4px;font-size:8px}' + T + '.mct-nv b{font-size:12px}' +
       T + '.mct-pin{width:19px;height:19px;right:-6px}' +
@@ -191,6 +196,8 @@
         if (mv) m.style.setProperty('--m', mv); else m.style.removeProperty('--m');
       }
       // Nivel y pin personal
+      var pv = yo ? avance(yo.xp_total).toFixed(3) : '0';
+      if (chip.style.getPropertyValue('--pv') !== pv) chip.style.setProperty('--pv', pv);
       var nv = chip.querySelector('.mct-nv'), hn = yo ? 'Nvl <b>' + nivel(yo.xp_total) + '</b>' : '';
       if (nv.innerHTML !== hn) nv.innerHTML = hn;
       var p = pin(), ph = p ? p.html : '', pe = chip.querySelector('.mct-pin');
@@ -230,7 +237,7 @@
   else iniciar();
 
   window.MCTarjeta = {
-    pintar: pintar, arte: arte, icono: icono, nivel: nivel, pin: pin, colores: RC,
+    pintar: pintar, arte: arte, icono: icono, nivel: nivel, avance: avance, pin: pin, colores: RC,
     jugador: function () { return yo; },
     alJugador: function (fn) { oyentes.push(fn); if (yo) fn(yo); }
   };
