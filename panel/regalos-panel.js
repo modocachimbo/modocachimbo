@@ -4,7 +4,7 @@
    por su ID de 5 dígitos (el de su tarjeta de jugador):
    - Corazones extra: se suman a sus 5, no se pierden a medianoche.
    - Corazones infinitos por un tiempo.
-   - XP: sube su nivel y su saldo para canjear (no cuenta en el Top de la semana).
+   - XP: se suma a su XP de la semana (sube rango y nivel) y a su saldo para canjear.
    - Un ítem de Mi colección subido en Recursos.
    El alumno ve un aviso con la nota la próxima vez que entra.
    Datos: supabase/43-ayudantes-regalos.sql (regalo_buscar, regalar).
