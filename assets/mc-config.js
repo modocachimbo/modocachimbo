@@ -17,5 +17,5 @@ window.MC_CONFIG = {
   // Biblioteca (biblioteca.html): clave de la API de Google Drive para abrir los PDF
   // en el visor de la web. Es pública, pero en Google Cloud limítala a la API de Drive
   // y a la dirección de la web. Vacía: los libros se abren con la vista previa de Drive.
-  DRIVE_KEY: ''
+  DRIVE_KEY: 'AIzaSyCi0BW_ViiqLtA_6ulMhz_pXzGy2G7Nz6A'
 };
