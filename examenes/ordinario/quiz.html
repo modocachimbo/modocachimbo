@@ -483,7 +483,7 @@
     answers[current] = index;
     const q = activeQuestions[current];
     const isCorrect = index === q.correct;
-    if (isCorrect) score += 10; else lives -= 1;
+    if (isCorrect) score += 10; else if (!(window.MCCorazones && MCCorazones.infinito())) lives -= 1;
     // XP y corazones del día (assets/corazones.js)
     if (window.MCCorazones) MCCorazones.respuesta(isCorrect);
     if (window.MCSonido) MCSonido[isCorrect ? 'bien' : 'mal']();

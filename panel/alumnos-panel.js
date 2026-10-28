@@ -23,6 +23,8 @@ const ALU = { lista: [], cargado: false, extras: [] };
   .al-racha.on { color: var(--accent); }
   .al-racha svg { width: 12px; height: 16px; }
   .al-nv { display: inline-flex; align-items: baseline; gap: 3px; padding: 3px 9px 2px 6px; background: linear-gradient(90deg, #FFE14D, #FFC800); color: #2a1d00; font: italic 900 11px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; text-transform: uppercase; clip-path: polygon(0 0, 100% 0, 88% 100%, 0 100%); }
+  .al-rg { margin-left: 4px; padding: 2px 5px; border-radius: 8px; border: 1px solid #2F284E; background: none; cursor: pointer; font-size: 13px; line-height: 1; }
+  .al-rg:hover { border-color: var(--accent); }
   .al-nv b { font-size: 16px; }
   .al-login { display: grid; justify-items: center; gap: 14px; }`;
   document.head.appendChild(st);
@@ -105,7 +107,7 @@ function renderAlumnos() {
       return `<tr>
         <td><div class="al-quien"><span class="al-av">${a.foto_url ? `<img src="${esc(a.foto_url)}" alt="" referrerpolicy="no-referrer">` : ini}</span>
           <div><b>${esc(nom)}</b><small>${esc(a.email || '')}</small></div></div></td>
-        ${ALU.nivel ? `<td class="num"><span class="al-nv" title="${a.xp_total.toLocaleString('es-PE')} XP en total">Nvl <b>${a.nivel}</b></span></td><td class="num">${a.codigo || '—'}</td>` : ''}
+        ${ALU.nivel ? `<td class="num"><span class="al-nv" title="${a.xp_total.toLocaleString('es-PE')} XP en total">Nvl <b>${a.nivel}</b></span></td><td class="num">${a.codigo || '—'}${a.codigo && puedeTab('regalos') ? ` <button class="al-rg" type="button" data-rg="${a.codigo}" title="Darle un regalo" aria-label="Darle un regalo">🎁</button>` : ''}</td>` : ''}
         <td>${esc(a.carrera || '—')}</td>
         <td class="num"><span class="al-racha ${a.hoy >= 10 ? 'on' : ''}">${icono}${a.actual}</span></td>
         <td class="num">${a.mejor}</td>
@@ -118,4 +120,11 @@ function renderAlumnos() {
 }
 
 $('aluBuscar').addEventListener('input', renderAlumnos);
+// 🎁 junto al ID: abre Regalos con ese alumno
+$('aluList').addEventListener('click', e => {
+  const b = e.target.closest('[data-rg]');
+  if (!b) return;
+  location.hash = 'regalos=' + b.dataset.rg;
+  document.querySelector('.tab[data-tab="regalos"]').click();
+});
 $('aluRecargar').addEventListener('click', () => cargarAlumnos(true));

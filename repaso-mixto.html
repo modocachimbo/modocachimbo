@@ -749,7 +749,7 @@ html[data-modo="claro"] .badge .curso { color: #1A1626 !important; }
     window.MCRacha ? MCRacha.respondio() : (window.mcRachaPend = (window.mcRachaPend || 0) + 1);
     answers[current] = index;
     const isCorrect = index === activeQuestions[current].correct;
-    if (isCorrect) score += 10; else lives -= 1;
+    if (isCorrect) score += 10; else if (!(window.MCCorazones && MCCorazones.infinito())) lives -= 1;
     if (window.MCCorazones) MCCorazones.respuesta(isCorrect);
     if (window.MCSonido) MCSonido[isCorrect ? 'bien' : 'mal']();
     lockOptions(index); renderLives();
