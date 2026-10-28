@@ -33,7 +33,7 @@ declare
   v_tipo text := v_reg ->> 'tipo';
   v_n    int;
 begin
-  if not public.es_admin() then raise exception 'no autorizado'; end if;
+  if not public.puede('recursos') then raise exception 'no autorizado'; end if;
   if v_id !~ '^rec-[a-z0-9-]{1,40}$' then raise exception 'id no válido'; end if;
   if exists (select 1 from public.coleccion_item i where i.id = v_id and not i.recurso) then raise exception 'ese id es de la colección fija'; end if;
   if exists (select 1 from public.coleccion_item i where i.id = v_id and i.espacio <> v_esp) then raise exception 'no se puede cambiar el tipo'; end if;
@@ -52,7 +52,7 @@ begin
 
   -- Colores: fondos, pines y cuadros llevan 4; un marco sin imagen lleva 3
   if v_esp in ('racha', 'pines', 'cuadro') or (v_esp = 'marco' and v_img is null) then
-    if v_tema is null or jsonb_array_length(v_tema) <> case when v_esp = 'marco' then 3 else 4 end
+    if v_tema is null or jsonb_array_length(v_tema) <> (case when v_esp = 'marco' then 3 else 4 end)
        or exists (select 1 from jsonb_array_elements_text(v_tema) c where c !~ '^#[0-9a-fA-F]{6}$') then
       raise exception 'faltan los colores';
     end if;
@@ -91,7 +91,7 @@ grant execute on function public.guardar_recurso(jsonb) to authenticated;
 create or replace function public.recursos_admin()
 returns jsonb language plpgsql stable security definer set search_path = '' as $$
 begin
-  if not public.es_admin() then raise exception 'no autorizado'; end if;
+  if not public.puede('recursos') then raise exception 'no autorizado'; end if;
   return coalesce((select jsonb_agg(jsonb_build_object(
       'id', i.id, 'espacio', i.espacio, 'regla', i.regla, 'visible', i.visible, 'nom', i.nom, 'rareza', i.rareza,
       'img', i.img, 'tema', i.tema, 'llama', i.llama, 'descr', i.descr, 'creado', i.creado,
@@ -108,7 +108,7 @@ grant execute on function public.recursos_admin() to authenticated;
 create or replace function public.borrar_recurso(p_id text)
 returns void language plpgsql volatile security definer set search_path = '' as $$
 begin
-  if not public.es_admin() then raise exception 'no autorizado'; end if;
+  if not public.puede('recursos') then raise exception 'no autorizado'; end if;
   update public.coleccion_puesto c
      set puesto = jsonb_set(c.puesto, '{pines}', (select coalesce(jsonb_agg(x), '[]') from jsonb_array_elements_text(c.puesto -> 'pines') x where x <> p_id))
    where jsonb_typeof(c.puesto -> 'pines') = 'array' and c.puesto -> 'pines' ? p_id;

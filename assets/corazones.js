@@ -161,12 +161,14 @@
   var recibido = 0;  // cuándo llegó el estado (para la cuenta regresiva)
   function cambiar(e) {
     if (!e || typeof e !== 'object') return;
-    var antes = estado;
+    var antes = estado, regs = e.regalos || [];
+    delete e.regalos;
     estado = e; recibido = Date.now();
     guardar(CLAVE, JSON.stringify(e));
     pintar();
     oyentes.forEach(function (fn) { try { fn(estado); } catch (x) {} });
     (e.nuevas || []).forEach(function (t) { celebrar(t); });
+    regs.forEach(function (g, i) { setTimeout(function () { regalo(g); }, 600 + i * 4300); });
     if (antes && antes.quedan === 0 && e.quedan > 0) cerrarBloqueo();
   }
 
@@ -241,7 +243,7 @@
 
   var cola = Promise.resolve();
   function perder() {
-    if (estado) {
+    if (estado && !estado.infinito) {
       var e = {}; for (var k in estado) e[k] = estado[k];
       if (e.quedan === 5) e.proximo = 10800;
       e.quedan = Math.max(0, (e.quedan || 0) - 1);
@@ -291,8 +293,8 @@
         cor.addEventListener('click', function () { abrirMisiones(); });
         cont.insertBefore(xp, cont.firstChild); cont.insertBefore(cor, cont.firstChild);
       }
-      cor.innerHTML = SVG.corazon + '<span>' + estado.quedan + '</span>';
-      cor.setAttribute('aria-label', estado.quedan + ' corazones. Ver misiones');
+      cor.innerHTML = SVG.corazon + '<span>' + (estado.infinito ? '∞' : estado.quedan) + '</span>';
+      cor.setAttribute('aria-label', (estado.infinito ? 'Corazones infinitos' : estado.quedan + ' corazones') + '. Ver misiones');
       xp.innerHTML = SVG.xp + '<span>' + verXp() + '</span>';
       xp.setAttribute('aria-label', verXp() + ' XP esta semana. Canjear');
       cor.classList.toggle('cero', !estado.quedan);
@@ -364,6 +366,8 @@
     Array.prototype.forEach.call(raiz.querySelectorAll('.bc'), function (e) { e.style.setProperty('font-family', "'Barlow Condensed', Nunito, sans-serif", 'important'); });
   }
   function reloj() {
+    if (estado.infinito) return '<div class="mcz-rec lleno">' + SVG.check + 'Corazones infinitos hasta el <b class="bc">' + esc(new Date(estado.infinito_hasta).toLocaleString('es-PE', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })) + '</b></div>';
+    if (estado.extra) return '<div class="mcz-rec lleno">' + SVG.check + 'Tienes <b class="bc">' + estado.extra + (estado.extra === 1 ? ' corazón extra' : ' corazones extra') + '</b>: se gastan primero y no se pierden a medianoche</div>';
     return estado.quedan < 5 ? '<div class="mcz-rec">' + SVG.reloj + 'Próximo corazón en <b class="bc" id="mczReloj">' + tiempo(estado.proximo) + '</b></div>' : '<div class="mcz-rec lleno">' + SVG.check + 'Tienes tus 5 corazones</div>';
   }
 
@@ -473,8 +477,25 @@
     setTimeout(function () { d.classList.remove('show'); setTimeout(function () { d.remove(); }, 400); }, 3800);
   }
 
+  // Un regalo del equipo (Panel → Regalos)
+  function regalo(g) {
+    css();
+    var t = g.tipo === 'corazones' ? '¡Te regalaron ' + g.cantidad + (g.cantidad === 1 ? ' corazón!' : ' corazones!')
+      : g.tipo === 'infinito' ? '¡Corazones infinitos por ' + (g.cantidad % 24 ? g.cantidad + (g.cantidad === 1 ? ' hora!' : ' horas!') : g.cantidad / 24 + (g.cantidad === 24 ? ' día!' : ' días!'))
+      : g.tipo === 'xp' ? '¡Te regalaron ' + g.cantidad + ' XP!' : '¡Te regalaron algo para tu colección!';
+    var d = document.createElement('div'); d.className = 'mcz-toast'; d.setAttribute('role', 'status');
+    d.innerHTML = (g.tipo === 'xp' ? SVG.xp : SVG.corazon) + '<div><b></b><span></span></div>';
+    d.querySelector('b').textContent = '🎁 ' + t;
+    d.querySelector('span').textContent = g.nota ? '«' + g.nota + '»' + (g.de ? ' — ' + g.de : '') : 'Un regalo de ' + (g.de || 'Modo Cachimbo');
+    document.body.appendChild(d);
+    try { if (window.MCSonido && MCSonido.racha) MCSonido.racha(); } catch (e) {}
+    requestAnimationFrame(function () { requestAnimationFrame(function () { d.classList.add('show'); }); });
+    setTimeout(function () { d.classList.remove('show'); setTimeout(function () { d.remove(); }, 400); }, 4000);
+  }
+
   window.MCCorazones = {
     respuesta: respuesta, sumar: sumar, vidasInicio: vidasInicio, perder: perder, estado: function () { return estado; },
+    infinito: function () { return !!(estado && estado.infinito && new Date(estado.infinito_hasta) > new Date()); },
     alCambiar: function (fn) { oyentes.push(fn); if (estado) fn(estado); },
     abrirMisiones: abrirMisiones, abrirCanje: abrirCanje, recargar: cargar, gasta: !!(PAG && PAG.gasta)
   };

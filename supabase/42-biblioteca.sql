@@ -30,7 +30,7 @@ create table if not exists public.biblioteca_coleccion (
 );
 alter table public.biblioteca_coleccion enable row level security;
 drop policy if exists "colecciones: ver" on public.biblioteca_coleccion;
-create policy "colecciones: ver" on public.biblioteca_coleccion for select to authenticated using (visible or public.es_admin());
+create policy "colecciones: ver" on public.biblioteca_coleccion for select to authenticated using (visible or public.puede('biblioteca'));
 
 create table if not exists public.biblioteca_libro (
   id        text primary key default 'lib-' || substr(md5(random()::text || clock_timestamp()::text), 1, 8),
@@ -55,7 +55,7 @@ alter table public.biblioteca_libro add column if not exists acceso    text not 
 alter table public.biblioteca_libro enable row level security;
 -- Los alumnos con sesión ven los visibles; los admins ven todos
 drop policy if exists "libros: ver" on public.biblioteca_libro;
-create policy "libros: ver" on public.biblioteca_libro for select to authenticated using (visible or public.es_admin());
+create policy "libros: ver" on public.biblioteca_libro for select to authenticated using (visible or public.puede('biblioteca'));
 
 -- Dónde se quedó cada alumno en cada libro, y sus marcadores
 create table if not exists public.biblioteca_lectura (
@@ -87,7 +87,7 @@ declare
   v_acc   text := coalesce(nullif(p ->> 'acceso', ''), 'libre');
   v_etq   text[] := coalesce((select array_agg(distinct left(lower(trim(e)), 30)) from jsonb_array_elements_text(coalesce(p -> 'etiquetas', '[]')) e where trim(e) <> ''), '{}');
 begin
-  if not public.es_admin() then raise exception 'no autorizado'; end if;
+  if not public.puede('biblioteca') then raise exception 'no autorizado'; end if;
   if v_tit = '' then raise exception 'falta el título'; end if;
   if v_curso !~ '^[a-z0-9-]{2,40}$' then raise exception 'curso no válido'; end if;
   if v_drive !~ '^[A-Za-z0-9_-]{20,80}$' then raise exception 'link de Drive no válido'; end if;
@@ -116,7 +116,7 @@ grant execute on function public.guardar_libro(jsonb) to authenticated;
 create or replace function public.libros_admin()
 returns jsonb language plpgsql stable security definer set search_path = '' as $$
 begin
-  if not public.es_admin() then raise exception 'no autorizado'; end if;
+  if not public.puede('biblioteca') then raise exception 'no autorizado'; end if;
   return coalesce((select jsonb_agg(jsonb_build_object(
       'id', l.id, 'titulo', l.titulo, 'subtitulo', l.subtitulo, 'curso', l.curso, 'drive', l.drive,
       'paginas', l.paginas, 'orden', l.orden, 'visible', l.visible, 'creado', l.creado,
@@ -132,7 +132,7 @@ grant execute on function public.libros_admin() to authenticated;
 create or replace function public.borrar_libro(p_id text)
 returns void language plpgsql volatile security definer set search_path = '' as $$
 begin
-  if not public.es_admin() then raise exception 'no autorizado'; end if;
+  if not public.puede('biblioteca') then raise exception 'no autorizado'; end if;
   delete from public.biblioteca_libro l where l.id = p_id;
 end $$;
 revoke all on function public.borrar_libro(text) from public, anon;
@@ -147,7 +147,7 @@ declare
   v_nom text := left(trim(coalesce(p ->> 'nombre', '')), 60);
   v_col text := coalesce(nullif(p ->> 'color', ''), '#CE82FF');
 begin
-  if not public.es_admin() then raise exception 'no autorizado'; end if;
+  if not public.puede('biblioteca') then raise exception 'no autorizado'; end if;
   if v_id !~ '^col-[a-z0-9-]{1,40}$' then raise exception 'id no válido'; end if;
   if v_nom = '' then raise exception 'falta el nombre'; end if;
   if v_col !~ '^#[0-9a-fA-F]{6}$' then raise exception 'color no válido'; end if;
@@ -165,7 +165,7 @@ grant execute on function public.guardar_coleccion_libros(jsonb) to authenticate
 create or replace function public.borrar_coleccion_libros(p_id text)
 returns void language plpgsql volatile security definer set search_path = '' as $$
 begin
-  if not public.es_admin() then raise exception 'no autorizado'; end if;
+  if not public.puede('biblioteca') then raise exception 'no autorizado'; end if;
   delete from public.biblioteca_coleccion c where c.id = p_id;
 end $$;
 revoke all on function public.borrar_coleccion_libros(text) from public, anon;

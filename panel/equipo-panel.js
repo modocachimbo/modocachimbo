@@ -20,6 +20,7 @@ const EQ_PERMISOS = [
     ['agenda', 'Agenda', 'Programar fechas (seminarios, simulacros, exámenes) para todos los alumnos'],
     ['tematicas', 'Temáticas', 'Cambiar la temática de la web (Halloween…) y sus fechas'],
     ['codigos', 'Códigos', 'Crear, borrar y liberar códigos. Ojo: da acceso al contenido pagado'],
+    ['regalos', 'Regalos', 'Dar corazones, corazones infinitos, XP o ítems a un alumno por su ID'],
   ]],
   ['Contenido', [
     ['subir', 'Subir tema', 'Publicar temas nuevos o agregarles preguntas'],
@@ -35,6 +36,8 @@ const EQ_PERMISOS = [
     ['alertas', 'Alertas', 'Crear y quitar avisos de la web'],
     ['frases', 'Frases del día', 'Editar las frases'],
     ['tutorial', 'Tutorial', 'Editar el tutorial'],
+    ['recursos', 'Recursos', 'Subir y editar fondos, fotos, pines, marcos y títulos de Mi colección'],
+    ['biblioteca', 'Biblioteca', 'Agregar, editar y borrar libros de la biblioteca y sus colecciones'],
   ]],
 ];
 const EQ_NOMBRE = Object.fromEntries(EQ_PERMISOS.flatMap(g => g[1]).map(p => [p[0], p[1]]));

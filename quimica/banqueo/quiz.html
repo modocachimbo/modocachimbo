@@ -585,7 +585,7 @@
     window.MCRacha ? MCRacha.respondio() : (window.mcRachaPend = (window.mcRachaPend || 0) + 1);
     escritas[current] = r;
     answers[current] = r.ok ? 0 : -1;
-    if (r.ok) score += 10; else lives -= 1;
+    if (r.ok) score += 10; else if (!(window.MCCorazones && MCCorazones.infinito())) lives -= 1;
     if (window.MCSonido) MCSonido[r.ok ? 'bien' : 'mal']();
     renderLives();
     scoreEl.textContent = `${score} pts`;
@@ -613,7 +613,7 @@
     answers[current] = index;
     const q = activeQuestions[current];
     const isCorrect = index === q.correct;
-    if (isCorrect) score += 10; else lives -= 1;
+    if (isCorrect) score += 10; else if (!(window.MCCorazones && MCCorazones.infinito())) lives -= 1;
     // XP y corazones del día (assets/corazones.js)
     if (window.MCCorazones) MCCorazones.respuesta(isCorrect);
     if (window.MCSonido) MCSonido[isCorrect ? 'bien' : 'mal']();
