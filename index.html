@@ -858,6 +858,13 @@ button.juego { width: 100%; text-align: left; font: inherit; color: #fff; }
 .rango { --rc: #58CC02; border-top-color: var(--rc); }
 .rango b { color: var(--rc); }
 .rango .bar i { background: var(--rc); transition: width .5s ease; }
+/* Celular: la barra termina antes de la columna de botones (con «Nuevo» llega hasta abajo) y el texto baja a 2 líneas */
+@media (max-width: 560px) {
+  .rango { left: 0; right: calc(3% + 70px); translate: none; justify-content: center; white-space: normal; padding: 6px 10px 8px 12px;
+    background: linear-gradient(90deg, transparent, rgba(11, 8, 24, .82) 10%, rgba(11, 8, 24, .82)); }
+  .rango b { white-space: nowrap; }
+  .rango > span:last-child { min-width: 0; }
+}
 
 /* Tops: estado vacío y tu fila */
 .liga .vacio, .sim-vacio { display: block; padding: 16px; color: var(--suave); font: 700 14.5px/1.4 var(--cuerpo); text-align: center; border: 0 !important; background: none; clip-path: none; }
