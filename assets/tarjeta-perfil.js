@@ -236,7 +236,7 @@
       if (p.marco && C.item(p.marco)) marco = C.marco(p.marco);
       tema = C.tema(fo ? p.racha : C.defecto.racha);
       fondo = fo && C.fondo ? C.fondo(p.racha) : '';
-      if (at && at.av) img = C.avatar(at.id);
+      if (at && (at.av || at.img)) img = C.avatar(at.id);
     }
     return { img: /^https:\/\//.test(img) || /assets\/buho\/avatar\//.test(img) ? img : '', marco: marco, tema: tema, fondo: fondo };
   }

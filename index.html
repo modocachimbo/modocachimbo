@@ -419,6 +419,14 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
 .j-ex { background: linear-gradient(160deg, #0c5f8f, #123864); border-color: var(--info); }
 .j-flash { grid-column: span 2; min-height: 0; background: linear-gradient(90deg, #4d5c00, #2c3505); border-color: var(--lima); }
 .j-flash .ic { font-size: 56px; top: 50%; translate: 0 -50%; bottom: auto; }
+.j-bib { grid-column: span 2; min-height: 0; padding-left: 92px; background: linear-gradient(90deg, #4a1f6e, #261538); border-color: #CE82FF; }
+.j-bib .chip { background: #CE82FF; color: #2a0f3d; }
+.j-bib .lomos { position: absolute; left: 16px; top: 50%; translate: 0 -50%; display: flex; align-items: flex-end; gap: 3px; height: 58px; }
+.j-bib .lomos i { width: 13px; border-radius: 3px; box-shadow: inset -3px 0 0 rgba(0,0,0,.18); }
+.j-bib .lomos i:nth-child(1) { height: 46px; background: #1CB0F6; }
+.j-bib .lomos i:nth-child(2) { height: 58px; background: #C6E000; }
+.j-bib .lomos i:nth-child(3) { height: 42px; background: #CE82FF; transform: rotate(-8deg); }
+.j-bib .lomos i:nth-child(4) { height: 52px; background: #FF9600; transform: rotate(10deg) translateX(4px); }
 
 .jugado { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
 
@@ -497,6 +505,7 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
   .juego .ic { font-size: 54px; right: 10px; bottom: 8px; }
   .j-duelo .ic { font-size: 96px; right: 18px; bottom: 26px; }
   .j-flash .ic { font-size: 46px; }
+  .j-bib { min-height: 0; padding-left: 78px; } .j-bib .lomos { left: 12px; height: 48px; } .j-bib .lomos i { width: 11px; }
   .juego .chip { font-size: 13px; }
   .podio { padding: 22px 10px 0; gap: 8px; }
   .podio .letra { width: 56px; height: 56px; font-size: 28px; }
@@ -1247,8 +1256,9 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
             <a class="juego j-sim" href="simulacro.html" data-mc-nav="practicar"><span class="chip disp" id="simNuevo">Nuevo</span><b class="tit">Simulacro</b><small>Como el real, con tiempo</small><svg class="ic"><use href="#i-reloj"/></svg></a>
             <button class="juego j-ex" type="button" data-hoja="examenes" data-candado="examenes" data-candado-nombre="Exámenes"><b class="tit">Exámenes</b><small>Ordinario, CPU, Control</small><svg class="ic"><use href="#i-examen"/></svg></button>
             <button class="juego j-flash" type="button" data-hoja="flashcards"><b class="tit">Flashcards</b><small style="max-width:none">Repasa con tarjetas por curso</small><svg class="ic"><use href="#i-tarjetas"/></svg></button>
+            <a class="juego j-bib" href="biblioteca.html"><span class="chip disp" id="bibNuevo">Nuevo</span><span class="lomos" aria-hidden="true"><i></i><i></i><i></i><i></i></span><b class="tit">Biblioteca</b><small style="max-width:none">Libros en PDF para leer aquí mismo</small></a>
           </div>
-          <script>try { if (localStorage.getItem('mc_sim_visto')) document.getElementById('simNuevo').remove(); } catch (e) {}</script>
+          <script>try { if (localStorage.getItem('mc_sim_visto')) document.getElementById('simNuevo').remove(); if (localStorage.getItem('mc_biblioteca_lectura')) document.getElementById('bibNuevo').remove(); } catch (e) {}</script>
         </section>
         <div class="sal-accesos" id="salAccesos">
           <button type="button" class="sal-cod" id="salCodigo" title="Activar código"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="5" fill="currentColor"/><circle cx="8" cy="15" r="2" fill="#0b2a3a"/><path d="M11.5 11.5 20 3m-4 4 3 3m-5.5-.5 2 2" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>Activar código</button>
@@ -1328,12 +1338,12 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
 </template>
 
 <script src="assets/rango.js"></script>
-<script src="assets/coleccion.js?v=167"></script>
-<script src="assets/tarjeta-perfil.js?v=164"></script>
+<script src="assets/coleccion.js?v=181"></script>
+<script src="assets/tarjeta-perfil.js?v=181"></script>
 <script src="assets/buho/buho-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
 <script src="assets/buho.js"></script>
-<script src="assets/inicio.js?v=157"></script>
+<script src="assets/inicio.js?v=181"></script>
 <script>if (window.MCCandado) MCCandado.vigilar({ cintas: '.juego, .area-card, .fc-c, .ex-mod-link', chicas: '.fc-c, .ex-mod-link' });</script>
 <script src="assets/alertas.js" defer></script>
 <script src="assets/tutorial.js" defer></script>

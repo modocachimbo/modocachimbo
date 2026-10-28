@@ -151,16 +151,34 @@
   var POR_ID = {};
   CATALOGO.forEach(function (x) { POR_ID[x.id] = x; });
 
-  // Recursos: fondos con imagen que se suben desde el panel (supabase/40-recursos.sql).
+  // Recursos: lo que se sube desde el panel (supabase/40-recursos.sql y 41-recursos-coleccion.sql):
+  // fondos, fotos de perfil, pines, marcos, cuadros de racha y títulos.
   // Se suman al catálogo al llegar; se recuerdan en este equipo para no esperar la próxima vez.
   var CLAVE_REC = 'mc_recursos';
+  var IMG_REC = /^https:\/\/[a-z0-9.-]+\/storage\/v1\/object\/public\/recursos\/[A-Za-z0-9\/_.-]+$/;
+  function colores(l, n) { return Array.isArray(l) && l.length === n && l.every(function (c) { return /^#[0-9a-fA-F]{6}$/.test(c); }); }
+  function recurso(r) {
+    if (!r || POR_ID[r.id] || !/^rec-/.test(r.id || '')) return null;
+    var img = IMG_REC.test(r.img || '') ? r.img : '', e = r.espacio;
+    var x = { id: r.id, espacio: e, nom: r.nom || 'Recurso', rareza: RAREZA[r.rareza] ? r.rareza : 'comun', regla: r.regla || { tipo: 'gratis' }, recurso: true };
+    if (r.descr) x.desc = r.descr;
+    if (e === 'racha') { if (!img || !colores(r.tema, 4)) return null; x.tema = r.tema; x.img = img; }
+    else if (e === 'avatar') { if (!img) return null; x.img = img; }
+    else if (e === 'pines') { if (!img || !colores(r.tema, 4)) return null; x.img = img; x.pin = ['', r.tema[3], r.tema[0]]; }
+    else if (e === 'marco') {
+      if (img) x.marco = 'url(' + img + ') center/cover';
+      else if (colores(r.tema, 3)) x.marco = 'conic-gradient(from 200deg,' + r.tema[0] + ',' + r.tema[1] + ',' + r.tema[2] + ',' + r.tema[0] + ')';
+      else return null;
+    }
+    else if (e === 'cuadro') { if (!colores(r.tema, 4) || !colores(r.llama, 2)) return null; x.tema = r.tema; x.llama = r.llama; }
+    else if (e !== 'titulo') return null;
+    return x;
+  }
   function sumarRecursos(lista) {
     for (var i = CATALOGO.length - 1; i >= 0; i--) if (CATALOGO[i].recurso) { delete POR_ID[CATALOGO[i].id]; CATALOGO.splice(i, 1); }
     (lista || []).forEach(function (r) {
-      if (!r || POR_ID[r.id] || r.espacio !== 'racha' || !/^https:\/\//.test(r.img || '') || !Array.isArray(r.tema) || r.tema.length !== 4) return;
-      var x = { id: r.id, espacio: r.espacio, nom: r.nom || 'Fondo', rareza: RAREZA[r.rareza] ? r.rareza : 'comun', regla: r.regla || { tipo: 'gratis' }, tema: r.tema, img: r.img, recurso: true };
-      if (r.descr) x.desc = r.descr;
-      CATALOGO.push(x); POR_ID[x.id] = x;
+      var x = recurso(r);
+      if (x) { CATALOGO.push(x); POR_ID[x.id] = x; }
     });
   }
   sumarRecursos(leer(CLAVE_REC));
@@ -168,7 +186,7 @@
   function cargarRecursos() {
     if (pedidoRec || !window.MCAuth) return pedidoRec;
     pedidoRec = MCAuth.listo.then(function (c) {
-      return c.from('coleccion_item').select('id,espacio,regla,nom,rareza,img,tema,descr').eq('recurso', true).eq('visible', true).order('creado').then(function (r) {
+      return c.from('coleccion_item').select('id,espacio,regla,nom,rareza,img,tema,llama,descr').eq('recurso', true).eq('visible', true).order('creado').then(function (r) {
         if (r.error) return; // todavía no se corrió supabase/40-recursos.sql
         var antes = JSON.stringify(leer(CLAVE_REC) || []), ahora = JSON.stringify(r.data || []);
         guardar(CLAVE_REC, r.data || []);
@@ -312,14 +330,14 @@
   }
   function llama(l) { return '<svg viewBox="0 0 32 36" aria-hidden="true"><path fill="' + l[0] + '" d="M16 1.5c1.2 4.6 7.6 8.2 9.6 13.6 2.6 7-1.6 17.4-9.6 17.4S3.8 24.9 6.1 17.6c1-3.2 3.3-5.3 4.9-6.9.2 2.8 1.4 4.6 3 5.2C13.3 10.6 14 6 16 1.5z"/><path fill="' + l[1] + '" d="M16.3 15.5c.6 2.4 4.5 4.4 4.5 8.6a4.8 4.8 0 0 1-9.6 0c0-2 1-3.4 2.1-4.4.2 1.4.8 2.3 1.6 2.6-.4-2.4 0-4.6 1.4-6.8z"/></svg>'; }
   // Foto de perfil: el dibujo del búho o tu foto (o tu inicial) sobre tu fondo
-  function avatarSrc(id) { var x = POR_ID[id || puesto('avatar')]; return x && x.av ? D.replace(/disfraces\/$/, 'avatar/') + x.av + '.webp' : ''; }
+  function avatarSrc(id) { var x = POR_ID[id || puesto('avatar')]; return !x ? '' : x.img || (x.av ? D.replace(/disfraces\/$/, 'avatar/') + x.av + '.webp' : ''); }
   function avatarSvg(x, foto, letra) {
     var t = (POR_ID[puesto('racha')] || POR_ID['racha-galaxia']).tema;
-    var src = x.av ? avatarSrc(x.id) : foto;
+    var src = x.av || x.img ? avatarSrc(x.id) : foto;
     return '<span class="mcc-av" style="--f1:' + t[0] + ';--f2:' + t[3] + '">' + (src ? '<img src="' + esc(src) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : '<b>' + esc(letra || '?') + '</b>') + '</span>';
   }
   function pinSvg(x) {
-    return '<span class="mcc-pin" style="--pf:' + x.pin[1] + ';--pb:' + x.pin[2] + '"><span>' + x.pin[0] + '</span></span>';
+    return '<span class="mcc-pin" style="--pf:' + x.pin[1] + ';--pb:' + x.pin[2] + '">' + (x.img ? '<img src="' + esc(x.img) + '" alt="" loading="lazy">' : '<span>' + x.pin[0] + '</span>') + '</span>';
   }
   function tarjeta(x, i) {
     var ok = tiene(x.id), R = RAREZA[x.rareza] || RAREZA.comun, av = ok ? null : avance(x.id);
@@ -411,6 +429,7 @@
       '.mcc-titulo span{font-size:12.5px;font-weight:1000;color:rgb(var(--c));background:rgba(var(--c),.12);border:1.5px solid rgba(var(--c),.55);border-radius:999px;padding:5px 10px;max-width:96%}' +
       '.mcc-pin{width:74%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.25),transparent 45%),var(--pf);border:5px solid var(--pb);box-shadow:inset 0 -6px 0 rgba(0,0,0,.25),0 4px 0 rgba(0,0,0,.3)}' +
       '.mcc-pin span{font-size:min(44px,11vw);line-height:1}' +
+      '.mcc-pin img,.mcc-dib .mcc-pin img{width:68%;height:68%;object-fit:contain;display:block}' +
       '@keyframes mccEntra{from{opacity:0;transform:translateY(16px) scale(.92)}to{opacity:1;transform:none}}' +
       '@keyframes mccLate{50%{transform:scale(1.1)}}' +
       '@media (prefers-reduced-motion:reduce){.mcc-it,.mcc-etq.nuevo{animation:none}}';
