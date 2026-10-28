@@ -894,8 +894,20 @@ button.juego { width: 100%; text-align: left; font: inherit; color: #fff; }
   .col-der { grid-template-rows: auto 1fr; }
   #examenes { display: flex; flex-direction: column; }
   #examenes .modos { flex: 1; grid-template-rows: 1fr 1fr auto auto; }
-  #examenes .juego { min-height: 96px; }
+  #examenes .juego { min-height: 124px; }
+  #examenes .j-sim .ic, #examenes .j-ex .ic { font-size: 50px; right: 12px; bottom: 10px; }
   #examenes .j-flash, #examenes .j-bib { min-height: 0; padding-top: 12px; padding-bottom: 12px; }
+  /* «¡A practicar!» más bajo para dejar espacio a los modos */
+  .practicar { min-height: 92px; font-size: clamp(26px, 2.6vw, 44px); }
+  .modo-box { padding: 10px 14px; gap: 2px; }
+  .meta { margin-top: 12px; }
+}
+/* PC angosta (laptop con zoom): las tarjetas chicas no caben con ícono, así que va solo el texto */
+@media (min-width: 901px) and (max-width: 1250px) {
+  #examenes .j-sim .ic, #examenes .j-ex .ic { display: none; }
+  #examenes .juego b { font-size: 27px; }
+  #examenes .juego small { font-size: 14.5px; }
+  .modo-box b { font-size: 16px; overflow-wrap: normal; }
 }
 /* En celular: dos botones redondos junto al saludo */
 .cab .sal-accesos { order: 3; flex-wrap: nowrap; gap: 8px; padding: 0; background: none; border: 0; box-shadow: none; }
