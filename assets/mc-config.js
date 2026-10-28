@@ -13,5 +13,9 @@ window.MC_CONFIG = {
   // Login de alumnos (Supabase). La clave "publishable" es pública:
   // puede ir aquí. La "secret" / service_role NUNCA va en el sitio.
   SUPABASE_URL: 'https://tvcrhogybfxphpzpjnis.supabase.co',
-  SUPABASE_KEY: 'sb_publishable_clm6obUTs_391NA7FGG1YA_-eNuj7dU'
+  SUPABASE_KEY: 'sb_publishable_clm6obUTs_391NA7FGG1YA_-eNuj7dU',
+  // Biblioteca (biblioteca.html): clave de la API de Google Drive para abrir los PDF
+  // en el visor de la web. Es pública, pero en Google Cloud limítala a la API de Drive
+  // y a la dirección de la web. Vacía: los libros se abren con la vista previa de Drive.
+  DRIVE_KEY: ''
 };
