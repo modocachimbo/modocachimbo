@@ -141,12 +141,12 @@
     '@media (max-width:400px){' + T + '.mct .mcu-nom{font-size:18px;max-width:5.5em}' + T + '.mct-rg{font-size:11px;letter-spacing:.04em}}' +
     // Celular: corazones, racha y XP solo con el ícono, para que la tarjeta se vea completa.
     // Al tocar uno se abre su número; el segundo toque hace lo de siempre.
-    '@media (max-width:480px){' +
+    '@media (max-width:360px){' +
       T + '.mcz-pill,' + T + '.mcu-racha{gap:0!important;padding:0 8px!important}' +
       T + '.mcz-pill>span,' + T + '.mcu-racha>span{display:inline-block;max-width:0;overflow:hidden;opacity:0;transition:max-width .25s ease,opacity .2s ease,margin .25s ease}' +
       T + '.mc-ver>span{max-width:4.5em;opacity:1;margin-left:5px}' +
     '}';
-  var SOLO_ICONO = window.matchMedia ? window.matchMedia('(max-width:480px)') : { matches: false };
+  var SOLO_ICONO = window.matchMedia ? window.matchMedia('(max-width:360px)') : { matches: false };
   var tVer = null;
   document.addEventListener('click', function (e) {
     if (!SOLO_ICONO.matches) return;
