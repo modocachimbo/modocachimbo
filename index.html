@@ -887,12 +887,15 @@ button.juego { width: 100%; text-align: left; font: inherit; color: #fff; }
 .lado .sal-accesos { margin: 0 18px; flex-direction: column; align-items: stretch; gap: 12px; }
 .lado .sal-cod { justify-content: center; }
 .lado .sal-grupo { margin-left: 0; }
-/* PC: la columna derecha llega hasta abajo y Flashcards crece para alinearse con los cursos populares */
+/* PC: la columna derecha llega hasta abajo, alineada con los cursos populares.
+   Simulacro y Exámenes parten bajas y crecen; Flashcards y Biblioteca quedan compactas. */
 @media (min-width: 901px) {
   .fila1 { align-items: stretch; }
   .col-der { grid-template-rows: auto 1fr; }
   #examenes { display: flex; flex-direction: column; }
-  #examenes .modos { flex: 1; grid-template-rows: auto auto 1fr; }
+  #examenes .modos { flex: 1; grid-template-rows: 1fr 1fr auto auto; }
+  #examenes .juego { min-height: 96px; }
+  #examenes .j-flash, #examenes .j-bib { min-height: 0; padding-top: 12px; padding-bottom: 12px; }
 }
 /* En celular: dos botones redondos junto al saludo */
 .cab .sal-accesos { order: 3; flex-wrap: nowrap; gap: 8px; padding: 0; background: none; border: 0; box-shadow: none; }
