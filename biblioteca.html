@@ -31,74 +31,162 @@
   body { min-height: 100vh; background: var(--bg); color: var(--text); font-family: Nunito, sans-serif; }
   button { font: inherit; color: inherit; }
   [hidden] { display: none !important; }
-  .wrap { width: 100%; max-width: 1080px; margin: 0 auto; padding: 22px 16px 60px; }
+  .wrap { width: 100%; max-width: 1180px; margin: 0 auto; padding: 22px 20px 70px; }
 
   .back { display: inline-flex; align-items: center; gap: 6px; color: var(--text-dim); text-decoration: none; font-weight: 800; font-size: 14px; }
   .back:hover { color: var(--accent); }
   .back svg { width: 16px; height: 16px; }
-  .cab { display: flex; align-items: center; gap: 14px; margin: 16px 0 18px; }
-  .cab .ic { width: 56px; height: 56px; flex: none; border-radius: 16px; display: grid; place-items: center; background: rgba(206,130,255,.14); color: #CE82FF; }
-  .cab .ic svg { width: 28px; height: 28px; }
+  .cab { display: flex; align-items: center; gap: 14px; margin: 14px 0 16px; flex-wrap: wrap; }
+  .cab .ic { width: 52px; height: 52px; flex: none; border-radius: 16px; display: grid; place-items: center; background: rgba(206,130,255,.14); color: #CE82FF; }
+  .cab .ic svg { width: 26px; height: 26px; }
+  .cab .tt { flex: 1; min-width: 160px; }
   .cab h1 { font: 1000 clamp(26px, 6vw, 34px)/1.05 Nunito, sans-serif; }
   .cab p { color: var(--text-dim); font-weight: 800; font-size: 14.5px; margin-top: 3px; }
-
-  .buscar { position: relative; }
+  .buscar { position: relative; flex: 0 1 420px; min-width: 0; }
   .buscar svg { position: absolute; left: 16px; top: 50%; translate: 0 -50%; width: 19px; height: 19px; color: var(--text-faint); }
-  .buscar input { width: 100%; padding: 15px 16px 15px 46px; border-radius: 16px; border: 2px solid var(--border); background: var(--surface); color: var(--text); font: 800 15px Nunito, sans-serif; outline: none; }
+  .buscar input { width: 100%; padding: 14px 16px 14px 46px; border-radius: 16px; border: 2px solid var(--border); background: var(--surface); color: var(--text); font: 800 15px Nunito, sans-serif; outline: none; }
   .buscar input:focus { border-color: #CE82FF; }
-  .chips { display: flex; gap: 8px; overflow-x: auto; padding: 14px 0 4px; scrollbar-width: none; }
+  .chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 6px; scrollbar-width: none; }
   .chips::-webkit-scrollbar { display: none; }
-  .chip { flex: none; display: inline-flex; align-items: center; gap: 7px; padding: 9px 14px; border-radius: 14px; border: 2px solid var(--border); border-bottom-width: 4px; background: var(--surface); font-weight: 900; font-size: 14px; cursor: pointer; }
+  .chip { flex: none; display: inline-flex; align-items: center; gap: 7px; padding: 8px 13px; border-radius: 13px; border: 2px solid var(--border); border-bottom-width: 4px; background: var(--surface); font-weight: 900; font-size: 13.5px; cursor: pointer; }
   .chip i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
   .chip small { color: var(--text-faint); font-weight: 900; }
   .chip.on { background: #EEEAF7; color: #151127; border-color: #A99FC8; }
+  .chip.on small { color: #6F6690; }
 
-  .seguir { display: flex; align-items: center; gap: 14px; margin-top: 16px; padding: 14px; border-radius: 20px; border: 2px solid var(--border); border-bottom-width: 5px; background: var(--surface); cursor: pointer; text-align: left; width: 100%; }
-  .seguir .mini { flex: none; width: 58px; }
-  .seguir .tx { flex: 1; min-width: 0; }
-  .seguir small { display: block; font-size: 11.5px; font-weight: 1000; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); }
-  .seguir b { display: block; font-size: 17px; font-weight: 1000; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .seguir span.pg { display: block; color: var(--text-dim); font-size: 13.5px; font-weight: 800; margin-top: 2px; }
-  .seguir .bar { display: block; height: 6px; border-radius: 6px; background: rgba(255,255,255,.08); margin-top: 7px; overflow: hidden; }
-  .seguir .bar i { display: block; height: 100%; background: var(--accent); border-radius: 6px; }
-  .seguir .ir { flex: none; padding: 11px 18px; border-radius: 14px; background: var(--accent); color: #1a1f00; font-weight: 1000; text-transform: uppercase; letter-spacing: .5px; font-size: 14px; box-shadow: 0 4px 0 #8fa300; }
+  /* Estantes: una fila que se desliza de costado */
+  .estante { margin-top: 30px; }
+  .est-cab { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .est-cab h2 { font: 1000 21px Nunito, sans-serif; display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .est-cab h2 small { color: var(--text-dim); font-size: 14px; font-weight: 800; white-space: nowrap; }
+  .est-cab .gi { flex: none; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: color-mix(in srgb, var(--c) 15%, transparent); }
+  .est-cab .gi i { width: 20px; height: 20px; background: var(--c); -webkit-mask: var(--ico) center / contain no-repeat; mask: var(--ico) center / contain no-repeat; }
+  .est-cab .ver { margin-left: auto; flex: none; background: none; border: 0; color: #CE82FF; font-weight: 900; font-size: 14px; cursor: pointer; white-space: nowrap; }
+  .est-cab .fl { flex: none; width: 34px; height: 34px; border-radius: 10px; border: 2px solid var(--border); background: var(--surface); cursor: pointer; display: grid; place-items: center; }
+  .est-cab .fl svg { width: 16px; height: 16px; }
+  .fila { display: grid; grid-auto-flow: column; grid-auto-columns: 152px; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 20px; padding: 4px 20px 10px; margin: 0 -20px; scrollbar-width: none; }
+  .fila::-webkit-scrollbar { display: none; }
+  .fila > * { scroll-snap-align: start; }
+  .rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 22px 16px; margin-top: 18px; }
 
-  .grupos { display: grid; grid-template-columns: 1fr 1fr; gap: 26px 34px; margin-top: 26px; }
-  .grupo h2 { display: flex; align-items: center; gap: 10px; font: 1000 22px Nunito, sans-serif; margin-bottom: 12px; }
-  .grupo h2 .gi { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: color-mix(in srgb, var(--c) 14%, transparent); }
-  .grupo h2 .gi i { width: 20px; height: 20px; background: var(--c); -webkit-mask: var(--ico) center / contain no-repeat; mask: var(--ico) center / contain no-repeat; }
-  .grupo h2 small { color: var(--text-dim); font-size: 14.5px; font-weight: 800; }
-  .libros { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-  .libro { display: block; align-self: start; text-align: left; background: none; border: 0; cursor: pointer; min-width: 0; }
-  .libro > b { display: block; font-size: 14.5px; font-weight: 1000; margin-top: 8px; line-height: 1.25; }
-  .libro > small { display: block; color: var(--text-dim); font-size: 12.5px; font-weight: 800; margin-top: 2px; }
-  .libro > .lp { display: block; height: 4px; border-radius: 4px; background: rgba(255,255,255,.08); margin-top: 6px; overflow: hidden; }
+  /* Libro: portada + título */
+  .libro { display: block; text-align: left; background: none; border: 0; cursor: pointer; min-width: 0; }
+  .libro > b { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 14px; font-weight: 1000; margin-top: 9px; line-height: 1.25; }
+  .libro > small { display: block; color: var(--text-dim); font-size: 12.5px; font-weight: 800; margin-top: 3px; }
+  .libro > .lp { display: block; height: 4px; border-radius: 4px; background: rgba(255,255,255,.1); margin-top: 7px; overflow: hidden; }
   .libro > .lp i { display: block; height: 100%; background: var(--c); }
+  .portada { position: relative; display: block; aspect-ratio: 5 / 7; border-radius: 6px 12px 12px 6px; overflow: hidden; background: #1D1834; box-shadow: 0 8px 18px rgba(0,0,0,.4), inset 5px 0 0 rgba(0,0,0,.2); transition: transform .14s, box-shadow .14s; }
+  .portada::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,.22), rgba(255,255,255,.08) 4%, transparent 9%); pointer-events: none; }
+  .libro:hover .portada, .libro:focus-visible .portada { transform: translateY(-4px); box-shadow: 0 14px 24px rgba(0,0,0,.5); }
+  .portada img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .portada .et { position: absolute; z-index: 1; left: 8px; bottom: 8px; padding: 3px 7px; border-radius: 7px; background: rgba(11,8,24,.82); color: #fff; font: 1000 9.5px Nunito, sans-serif; letter-spacing: .08em; text-transform: uppercase; }
+  .portada .nuevo { position: absolute; z-index: 1; right: 8px; top: 8px; padding: 3px 7px; border-radius: 7px; background: #FF4B4B; color: #fff; font: 1000 9.5px Nunito, sans-serif; letter-spacing: .08em; }
+  .portada .cand { position: absolute; z-index: 1; right: 8px; bottom: 8px; width: 24px; height: 24px; border-radius: 7px; background: rgba(11,8,24,.82); display: grid; place-items: center; }
+  .portada .cand svg { width: 13px; height: 13px; color: #FFC800; }
+  /* Portada dibujada (cuando no subiste foto): color del curso, título grande e ícono */
+  .gen { position: absolute; inset: 0; padding: 16% 11% 0 15%; color: #0b0818; background: linear-gradient(160deg, color-mix(in srgb, var(--c) 88%, #fff), var(--c) 45%, color-mix(in srgb, var(--c) 72%, #000)); }
+  .gen b { display: block; font: 1000 17px/1.1 Nunito, sans-serif; text-transform: uppercase; overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; }
+  .gen em { display: block; font: 900 10.5px/1.2 Nunito, sans-serif; font-style: normal; text-transform: uppercase; letter-spacing: .08em; opacity: .62; margin-top: 7px; }
+  .gen i { position: absolute; right: -14%; bottom: 6%; width: 64%; aspect-ratio: 1; background: rgba(0,0,0,.2); -webkit-mask: var(--ico) center / contain no-repeat; mask: var(--ico) center / contain no-repeat; }
+  .gen u { position: absolute; left: 15%; top: 7%; text-decoration: none; font: 1000 8px Nunito, sans-serif; letter-spacing: .2em; opacity: .5; }
 
-  /* Portada: se dibuja con el color del área y el ícono del curso */
-  .tapa { position: relative; display: block; aspect-ratio: 5 / 7; border-radius: 6px 12px 12px 6px; overflow: hidden; padding: 14% 10% 0 14%;
-    background: linear-gradient(160deg, color-mix(in srgb, var(--c) 92%, #fff), var(--c) 45%, color-mix(in srgb, var(--c) 78%, #000));
-    color: #0b0818; box-shadow: inset 6px 0 0 rgba(0,0,0,.18), 0 6px 14px rgba(0,0,0,.35); transition: transform .12s; }
-  .libro:hover .tapa { transform: translateY(-3px); }
-  .tapa b { display: block; font: 1000 clamp(11px, 1.45vw, 16px)/1.12 Nunito, sans-serif; text-transform: uppercase; letter-spacing: .01em; overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; }
-  .tapa em { display: block; font: 900 clamp(9px, 1.1vw, 11.5px)/1.2 Nunito, sans-serif; font-style: normal; text-transform: uppercase; letter-spacing: .08em; opacity: .62; margin-top: 6px; }
-  .tapa i.fi { position: absolute; right: -14%; bottom: 4%; width: 62%; aspect-ratio: 1; background: rgba(0,0,0,.2); -webkit-mask: var(--ico) center / contain no-repeat; mask: var(--ico) center / contain no-repeat; }
-  .tapa u { position: absolute; left: 14%; bottom: 7%; text-decoration: none; font: 1000 clamp(7px, .8vw, 9px) Nunito, sans-serif; letter-spacing: .18em; opacity: .55; }
-  .tapa.con-nuevo { padding-top: 24%; }
-  .tapa .nuevo { position: absolute; right: 8px; top: 8px; padding: 3px 8px; border-radius: 8px; background: #0b0818; color: var(--c); font: 1000 9.5px Nunito, sans-serif; letter-spacing: .1em; }
-  .mini .tapa { padding: 12% 8% 0 14%; border-radius: 4px 8px 8px 4px; }
-  .mini .tapa b { font-size: 7px; }
-  .mini .tapa em, .mini .tapa u { display: none; }
+  /* Destacados: banner grande arriba */
+  .heroes { display: grid; grid-auto-flow: column; grid-auto-columns: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; border-radius: 24px; margin-top: 18px; }
+  .heroes::-webkit-scrollbar { display: none; }
+  .hero { position: relative; scroll-snap-align: start; display: flex; align-items: center; gap: 28px; padding: 28px 32px; min-height: 280px; border-radius: 24px; overflow: hidden; border: 2px solid var(--border); background: #151127; text-align: left; cursor: pointer; }
+  .hero .fx { position: absolute; inset: -40px; background: var(--fondo) center / cover; filter: blur(40px) saturate(1.3); opacity: .55; }
+  .hero .fx2 { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(11,8,24,.25), rgba(11,8,24,.85) 55%); }
+  .hero .portada { position: relative; flex: none; width: 168px; }
+  .hero .tx { position: relative; min-width: 0; max-width: 560px; }
+  .hero .tag { display: inline-block; padding: 4px 9px; border-radius: 8px; background: var(--accent); color: #1a1f00; font: 1000 11px Nunito, sans-serif; letter-spacing: .1em; }
+  .hero h2 { font: 1000 clamp(24px, 3.4vw, 36px)/1.08 Nunito, sans-serif; margin-top: 10px; }
+  .hero .meta { color: var(--text-dim); font-weight: 800; font-size: 14px; margin-top: 6px; }
+  .hero p { color: #d6d0ea; font-weight: 700; font-size: 14.5px; line-height: 1.5; margin-top: 10px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .hero .bt { display: inline-block; margin-top: 16px; padding: 12px 22px; border-radius: 14px; background: var(--accent); color: #1a1f00; font-weight: 1000; text-transform: uppercase; letter-spacing: .5px; font-size: 14px; box-shadow: 0 4px 0 #8fa300; }
+  .puntos { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
+  .puntos i { width: 8px; height: 8px; border-radius: 50%; background: #3A3260; transition: width .2s; }
+  .puntos i.on { width: 22px; border-radius: 6px; background: var(--accent); }
+
+  /* Seguir leyendo: tarjetas anchas con avance */
+  .fila.anchas { grid-auto-columns: 300px; }
+  .lee { display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: 18px; border: 2px solid var(--border); border-bottom-width: 4px; background: var(--surface); text-align: left; cursor: pointer; min-width: 0; }
+  .lee .portada { flex: none; width: 58px; border-radius: 4px 8px 8px 4px; }
+  .lee .portada .gen b { font-size: 7.5px; } .lee .portada .gen em, .lee .portada .gen u, .lee .portada .et, .lee .portada .nuevo { display: none; }
+  .lee .tx { flex: 1; min-width: 0; }
+  .lee b { display: block; font-size: 14.5px; font-weight: 1000; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lee small { display: block; color: var(--text-dim); font-size: 12.5px; font-weight: 800; margin-top: 2px; }
+  .lee .bar { display: block; height: 6px; border-radius: 6px; background: rgba(255,255,255,.08); margin-top: 8px; overflow: hidden; }
+  .lee .bar i { display: block; height: 100%; background: var(--c); border-radius: 6px; }
+
+  /* Colecciones: tres portadas en abanico */
+  .fila.cols { grid-auto-columns: 250px; }
+  .col { position: relative; display: block; padding: 16px 16px 14px; border-radius: 20px; border: 2px solid color-mix(in srgb, var(--c) 45%, transparent); border-bottom-width: 5px; background: linear-gradient(160deg, color-mix(in srgb, var(--c) 22%, #151127), #151127 70%); text-align: left; cursor: pointer; overflow: hidden; }
+  .col .abanico { position: relative; display: block; height: 128px; margin-bottom: 12px; }
+  .col .abanico .portada { position: absolute; bottom: 0; width: 82px; border-radius: 4px 8px 8px 4px; }
+  .col .abanico .portada .gen b { font-size: 9px; } .col .abanico .portada .gen em, .col .abanico .portada .gen u, .col .abanico .portada .et, .col .abanico .portada .nuevo { display: none; }
+  .col .abanico .portada:nth-child(1) { left: 50%; translate: -50% 0; z-index: 3; }
+  .col .abanico .portada:nth-child(2) { left: 50%; translate: -105% 6px; rotate: -10deg; z-index: 2; filter: brightness(.8); }
+  .col .abanico .portada:nth-child(3) { left: 50%; translate: 5% 6px; rotate: 10deg; z-index: 1; filter: brightness(.7); }
+  .col b { display: block; font-size: 16px; font-weight: 1000; }
+  .col small { display: block; color: var(--text-dim); font-weight: 800; font-size: 12.5px; margin-top: 2px; }
+
+  /* Cabecera al filtrar (un curso o una colección) */
+  .filtro-cab { display: flex; align-items: center; gap: 12px; margin-top: 18px; padding: 16px 18px; border-radius: 20px; background: linear-gradient(120deg, color-mix(in srgb, var(--c) 20%, #151127), #151127 70%); border: 2px solid var(--border); }
+  .filtro-cab b { display: block; font-size: 20px; font-weight: 1000; }
+  .filtro-cab small { display: block; color: var(--text-dim); font-weight: 800; font-size: 13.5px; margin-top: 2px; }
+  .filtro-cab button { margin-left: auto; flex: none; padding: 9px 14px; border-radius: 12px; border: 2px solid var(--border); background: var(--surface); font-weight: 900; cursor: pointer; }
 
   .vacio { margin-top: 26px; padding: 26px 18px; border-radius: 20px; border: 2px dashed var(--border); text-align: center; color: var(--text-dim); font-weight: 800; line-height: 1.5; }
   .vacio b { display: block; color: var(--text); font-size: 18px; font-weight: 1000; margin-bottom: 4px; }
 
+  /* Ficha del libro */
+  .ficha-fondo { position: fixed; inset: 0; z-index: 40; background: rgba(6,4,14,.72); display: grid; place-items: center; padding: 20px; opacity: 0; transition: opacity .2s; }
+  .ficha-fondo.ver { opacity: 1; }
+  .ficha { position: relative; width: min(720px, 100%); max-height: calc(100vh - 40px); overflow: auto; border-radius: 26px; background: #151127; border: 2px solid var(--border); padding: 26px; display: grid; grid-template-columns: 200px 1fr; grid-template-areas: 'por info' 'por cuerpo' 'mas mas'; gap: 0 24px; align-content: start; transform: translateY(14px); transition: transform .2s; }
+  .ficha-fondo.ver .ficha { transform: none; }
+  .ficha .x { position: absolute; right: 12px; top: 12px; width: 38px; height: 38px; border-radius: 12px; border: 2px solid var(--border); background: #0b0818; cursor: pointer; display: grid; place-items: center; }
+  .ficha .x svg { width: 16px; height: 16px; }
+  .ficha .chs { display: flex; gap: 6px; flex-wrap: wrap; }
+  .ficha .ch { padding: 4px 9px; border-radius: 8px; font: 1000 11px Nunito, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--c); background: color-mix(in srgb, var(--c) 15%, transparent); }
+  .ficha h2 { font: 1000 26px/1.1 Nunito, sans-serif; margin-top: 10px; padding-right: 36px; }
+  .ficha .sub { color: var(--text-dim); font-weight: 800; font-size: 15px; margin-top: 4px; }
+  .ficha .datos { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 14px; }
+  .ficha .datos span { color: var(--text-dim); font-weight: 800; font-size: 12.5px; }
+  .ficha .datos b { display: block; color: var(--text); font-size: 16px; font-weight: 1000; }
+  .ficha p.d { color: #d6d0ea; font-weight: 700; font-size: 14.5px; line-height: 1.55; margin-top: 14px; }
+  .ficha .etq { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+  .ficha .etq span { padding: 4px 9px; border-radius: 999px; border: 1.5px solid #3A3260; color: var(--text-dim); font-weight: 800; font-size: 12px; }
+  .ficha .bts { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  .ficha .leer { padding: 13px 24px; border-radius: 15px; border: 0; background: var(--accent); color: #1a1f00; font-weight: 1000; text-transform: uppercase; letter-spacing: .5px; font-size: 15px; box-shadow: 0 4px 0 #8fa300; cursor: pointer; }
+  .ficha .sec { padding: 12px 18px; border-radius: 15px; border: 2px solid var(--border); background: none; color: var(--text); font-weight: 900; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+  .ficha .bar { height: 6px; border-radius: 6px; background: rgba(255,255,255,.08); margin-top: 14px; overflow: hidden; }
+  .ficha .bar i { display: block; height: 100%; background: var(--c); }
+  .ficha > .portada { grid-area: por; align-self: start; }
+  .ficha .info { grid-area: info; }
+  .ficha .cuerpo { grid-area: cuerpo; }
+  .ficha .mas { grid-area: mas; margin-top: 22px; }
+  .ficha .mas h3 { font: 1000 15px Nunito, sans-serif; color: var(--text-dim); margin-bottom: 10px; }
+  .ficha .mas .fila { grid-auto-columns: 104px; margin: 0; padding: 4px 0 6px; gap: 12px; }
+  .ficha .mas .gen b { font-size: 11px; } .ficha .mas .gen em, .ficha .mas .gen u { display: none; }
+  .ficha .mas .libro > b { font-size: 12.5px; }
+
   @media (max-width: 760px) {
-    .grupos { grid-template-columns: 1fr; gap: 24px; }
-    .libros { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-    .tapa b { font-size: 11px; } .tapa em { font-size: 8px; } .tapa u { display: none; }
+    .wrap { padding: 18px 16px 60px; }
+    .buscar { flex-basis: 100%; }
+    .fila { grid-auto-columns: 116px; gap: 12px; scroll-padding: 0 16px; padding: 4px 16px 10px; margin: 0 -16px; }
+    .fila.anchas { grid-auto-columns: 270px; } .fila.cols { grid-auto-columns: 210px; }
+    .rejilla { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 12px; }
+    .gen b { font-size: 12px; } .gen em { font-size: 8.5px; } .gen u { display: none; }
     .libro > b { font-size: 13px; } .libro > small { font-size: 11.5px; }
-    .seguir { flex-wrap: wrap; } .seguir .ir { width: 100%; text-align: center; }
+    .est-cab h2 { font-size: 18px; } .est-cab .fl { display: none; }
+    .hero { gap: 16px; padding: 20px; min-height: 0; }
+    .hero .portada { width: 112px; } .hero p { -webkit-line-clamp: 2; }
+    .hero { display: grid; grid-template-columns: 104px 1fr; align-items: center; }
+    .hero .tx h2 { font-size: 21px; } .hero .bt { padding: 10px 16px; font-size: 13px; }
+    .ficha-fondo { place-items: end center; padding: 0; }
+    .ficha { grid-template-columns: 104px 1fr; grid-template-areas: 'por info' 'cuerpo cuerpo' 'mas mas'; gap: 0 16px; padding: 20px 16px calc(20px + env(safe-area-inset-bottom)); border-radius: 26px 26px 0 0; max-height: 92vh; }
+    .ficha h2 { font-size: 20px; } .ficha .info { align-self: center; }
+    .ficha .bts .leer { flex: 1; white-space: nowrap; }
   }
 
   /* ---------- Visor ---------- */
@@ -149,13 +237,12 @@
 <div class="wrap" id="lista">
   <a class="back" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Inicio</a>
   <div class="cab">
-    <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18H6z"/><path d="M9 7h6M9 11h6"/></svg></span>
-    <div><h1>Biblioteca</h1><p id="cuenta">Libros en PDF para estudiar</p></div>
+    <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
+    <div class="tt"><h1>Biblioteca</h1><p id="cuenta">Libros en PDF para estudiar</p></div>
+    <label class="buscar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+      <input id="q" type="search" placeholder="Buscar libro, curso o tema…" autocomplete="off"></label>
   </div>
-  <label class="buscar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
-    <input id="q" type="search" placeholder="Buscar un libro o tema…" autocomplete="off"></label>
   <div class="chips" id="chips"></div>
-  <div id="seguirC"></div>
   <div id="grupos"><div class="vacio">Cargando la biblioteca…</div></div>
 </div>
 
@@ -185,6 +272,8 @@
 
 <script src="assets/mc-config.js"></script>
 <script src="assets/auth.js"></script>
+<script src="assets/acceso.js"></script>
+<script src="assets/candado.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
 (function () {
@@ -192,83 +281,216 @@
   var PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
   if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS + 'pdf.worker.min.js';
   var COLOR = { 'ciencia-tecnologia': '#C6E000', matematica: '#1CB0F6', comunicacion: '#CE82FF', 'ciencias-sociales': '#FF9600' };
-  var S = { libros: [], lectura: {}, cursos: {}, orden: [], filtro: '', q: '' };
+  var TIPOS = { libro: 'Libro', formulario: 'Formulario', solucionario: 'Solucionario', fichas: 'Fichas', resumen: 'Resumen', examenes: 'Exámenes', separata: 'Separata' };
+  var S = { libros: [], colecciones: [], lectura: {}, cursos: {}, areas: [], orden: [], filtro: null, q: '' };
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function sinAcento(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
   function leer(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function guardar(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   var CLAVE_LEC = 'mc_biblioteca_lectura';
+  var CANDADO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+  var FLECHA = function (d) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="' + (d < 0 ? '15 18 9 12 15 6' : '9 18 15 12 9 6') + '"/></svg>'; };
 
   function curso(id) { return S.cursos[id] || { nombre: id, area: '', icono: '' }; }
   function color(id) { return COLOR[curso(id).area] || '#C6E000'; }
   function ico(id) { var c = curso(id); return c.icono ? 'url(' + c.icono + ')' : 'none'; }
+  function libro(id) { return S.libros.filter(function (x) { return x.id === id; })[0]; }
+  function coleccion(id) { return S.colecciones.filter(function (x) { return x.id === id; })[0]; }
+  function nombre(l) { return l.titulo + (l.subtitulo ? ' · ' + l.subtitulo : ''); }
+  function esNuevo(l) { return Date.now() - new Date(l.creado) < 21 * 864e5 && !S.lectura[l.id]; }
+  function porOrden(a, b) { return (S.orden.indexOf(a.curso) + 1 || 99) - (S.orden.indexOf(b.curso) + 1 || 99) || (a.orden || 0) - (b.orden || 0); }
   function hace(iso) {
     var d = (Date.now() - new Date(iso)) / 864e5;
     return d < 1 ? 'hoy' : d < 2 ? 'ayer' : 'hace ' + Math.floor(d) + ' días';
   }
+  function avance(l) { var r = S.lectura[l.id]; return r && l.paginas ? Math.min(1, r.pagina / l.paginas) : 0; }
+
+  /* ---------- Piezas ---------- */
+  // Portada: la foto que subiste o, si no hay, una dibujada con el color y el ícono del curso
+  function portada(l, op) {
+    op = op || {};
+    var dentro = l.portada ? '<img src="' + esc(l.portada) + '" alt="" loading="lazy">'
+      : '<span class="gen" style="--ico:' + ico(l.curso) + '"><u>MODO CACHIMBO</u><b>' + esc(l.titulo) + '</b>' + (l.subtitulo ? '<em>' + esc(l.subtitulo) + '</em>' : '') + '<i></i></span>';
+    return '<span class="portada" style="--c:' + color(l.curso) + '">' + dentro +
+      (!op.limpia && l.tipo && l.tipo !== 'libro' ? '<span class="et">' + esc(TIPOS[l.tipo] || l.tipo) + '</span>' : '') +
+      (!op.limpia && esNuevo(l) ? '<span class="nuevo">NUEVO</span>' : '') +
+      (!op.limpia && l.acceso === 'codigo' ? '<span class="cand" title="Con código de alumno">' + CANDADO + '</span>' : '') + '</span>';
+  }
+  function tarjeta(l) {
+    var r = S.lectura[l.id], p = avance(l);
+    return '<button class="libro" type="button" data-libro="' + esc(l.id) + '" style="--c:' + color(l.curso) + '">' + portada(l) +
+      '<b>' + esc(nombre(l)) + '</b><small>' + esc(curso(l.curso).nombre) + (l.paginas ? ' · ' + l.paginas + ' págs' : '') + '</small>' +
+      (p ? '<span class="lp"><i style="width:' + Math.max(4, Math.round(p * 100)) + '%"></i></span>' : '') + '</button>';
+  }
+  function estante(titulo, n, libros, op) {
+    op = op || {};
+    if (!libros.length) return '';
+    return '<section class="estante"' + (op.c ? ' style="--c:' + op.c + ';--ico:' + (op.ico || 'none') + '"' : '') + '><div class="est-cab"><h2>' + (op.ico ? '<span class="gi"><i></i></span>' : '') + esc(titulo) +
+      (n != null ? ' <small>' + n + (n === 1 ? ' libro' : ' libros') + '</small>' : '') + '</h2>' +
+      (op.ver ? '<button class="ver" type="button" data-ver="' + esc(op.ver) + '">Ver todo ›</button>' : '<span style="margin-left:auto"></span>') +
+      '<button class="fl" type="button" data-fl="-1" aria-label="Anterior">' + FLECHA(-1) + '</button><button class="fl" type="button" data-fl="1" aria-label="Siguiente">' + FLECHA(1) + '</button></div>' +
+      '<div class="fila' + (op.cls ? ' ' + op.cls : '') + '">' + (op.html || libros.map(tarjeta).join('')) + '</div></section>';
+  }
+  function heroes(lista) {
+    if (!lista.length) return '';
+    return '<div class="heroes" id="heroes">' + lista.map(function (l) {
+      var r = S.lectura[l.id];
+      return '<button class="hero" type="button" data-libro="' + esc(l.id) + '" style="--c:' + color(l.curso) + ';--fondo:' + (l.portada ? 'url(&quot;' + esc(l.portada) + '&quot;)' : color(l.curso)) + '">' +
+        '<span class="fx"></span><span class="fx2"></span>' + portada(l, { limpia: true }) +
+        '<span class="tx"><span class="tag">DESTACADO</span><h2>' + esc(nombre(l)) + '</h2>' +
+        '<div class="meta">' + [curso(l.curso).nombre, l.autor, l.paginas ? l.paginas + ' págs' : ''].filter(Boolean).map(esc).join(' · ') + '</div>' +
+        (l.descr ? '<p>' + esc(l.descr) + '</p>' : '') +
+        '<span class="bt">' + (r ? 'Seguir en la pág. ' + r.pagina : 'Leer ahora') + '</span></span></button>';
+    }).join('') + '</div>' + (lista.length > 1 ? '<div class="puntos" id="puntos">' + lista.map(function (x, i) { return '<i' + (i ? '' : ' class="on"') + '></i>'; }).join('') + '</div>' : '');
+  }
+  function seguir() {
+    var l = Object.keys(S.lectura).map(function (id) { var x = libro(id); return x && { l: x, r: S.lectura[id] }; }).filter(Boolean)
+      .filter(function (x) { return !x.l.paginas || x.r.pagina < x.l.paginas; })
+      .sort(function (a, b) { return new Date(b.r.leido) - new Date(a.r.leido); }).slice(0, 8);
+    return estante('Seguir leyendo', null, l, { cls: 'anchas', html: l.map(function (x) {
+      var p = avance(x.l);
+      return '<button class="lee" type="button" data-libro="' + esc(x.l.id) + '" style="--c:' + color(x.l.curso) + '">' + portada(x.l) +
+        '<span class="tx"><b>' + esc(nombre(x.l)) + '</b><small>Pág. ' + x.r.pagina + (x.l.paginas ? ' de ' + x.l.paginas : '') + ' · ' + hace(x.r.leido) + '</small>' +
+        '<span class="bar"><i style="width:' + Math.max(4, Math.round(p * 100)) + '%"></i></span></span></button>';
+    }).join('') });
+  }
+  function colecciones() {
+    var cs = S.colecciones.map(function (c) { return { c: c, l: S.libros.filter(function (l) { return l.coleccion === c.id; }).sort(porOrden) }; }).filter(function (x) { return x.l.length; });
+    return estante('Colecciones', null, cs, { cls: 'cols', html: cs.map(function (x) {
+      return '<button class="col" type="button" data-ver="col:' + esc(x.c.id) + '" style="--c:' + esc(x.c.color || '#CE82FF') + '"><span class="abanico">' +
+        x.l.slice(0, 3).map(function (l) { return portada(l, { limpia: true }); }).join('') + '</span>' +
+        '<b>' + esc(x.c.nombre) + '</b><small>' + x.l.length + (x.l.length === 1 ? ' libro' : ' libros') + (x.c.descripcion ? ' · ' + esc(x.c.descripcion) : '') + '</small></button>';
+    }).join('') });
+  }
 
   /* ---------- Lista ---------- */
-  function tapa(l) {
-    var nuevo = Date.now() - new Date(l.creado) < 14 * 864e5 && !S.lectura[l.id];
-    return '<span class="tapa' + (nuevo ? ' con-nuevo' : '') + '" style="--c:' + color(l.curso) + ';--ico:' + ico(l.curso) + '">' + (nuevo ? '<span class="nuevo">NUEVO</span>' : '') +
-      '<b>' + esc(l.titulo) + '</b>' + (l.subtitulo ? '<em>' + esc(l.subtitulo) + '</em>' : '') + '<i class="fi"></i><u>MODO CACHIMBO</u></span>';
-  }
-  function libroHtml(l) {
-    var r = S.lectura[l.id], p = r && l.paginas ? Math.min(1, r.pagina / l.paginas) : 0;
-    return '<button class="libro" type="button" data-id="' + esc(l.id) + '" style="--c:' + color(l.curso) + '">' + tapa(l) +
-      '<b>' + esc(l.titulo) + (l.subtitulo ? ' · ' + esc(l.subtitulo) : '') + '</b><small>' + (l.paginas ? l.paginas + ' págs' : 'PDF') + (r ? ' · vas en la ' + r.pagina : '') + '</small>' +
-      (p ? '<span class="lp"><i style="width:' + Math.round(p * 100) + '%"></i></span>' : '') + '</button>';
-  }
   function pintar() {
-    var q = sinAcento(S.q);
-    var lista = S.libros.filter(function (l) {
-      if (S.filtro && l.curso !== S.filtro) return false;
-      return !q || sinAcento(l.titulo + ' ' + (l.subtitulo || '') + ' ' + curso(l.curso).nombre).indexOf(q) >= 0;
-    });
-    // Cursos en el orden de assets/cursos.json
-    var grupos = {}; lista.forEach(function (l) { (grupos[l.curso] = grupos[l.curso] || []).push(l); });
-    var ids = Object.keys(grupos).sort(function (a, b) { return (S.orden.indexOf(a) + 1 || 99) - (S.orden.indexOf(b) + 1 || 99); });
-    $('grupos').innerHTML = !S.libros.length ? '<div class="vacio"><b>Muy pronto</b>Estamos subiendo los primeros libros.</div>'
-      : !lista.length ? '<div class="vacio"><b>No encontramos ese libro</b>Prueba con otra palabra o elige «Todos».</div>'
-      : '<div class="grupos">' + ids.map(function (id) {
-        var n = grupos[id].length;
-        return '<section class="grupo" style="--c:' + color(id) + ';--ico:' + ico(id) + '"><h2><span class="gi"><i></i></span>' + esc(curso(id).nombre) + ' <small>' + n + (n === 1 ? ' libro' : ' libros') + '</small></h2>' +
-          '<div class="libros">' + grupos[id].map(libroHtml).join('') + '</div></section>';
-      }).join('') + '</div>';
-    // Chips
+    var q = sinAcento(S.q), html = '';
+    if (!S.libros.length) html = '<div class="vacio"><b>Muy pronto</b>Estamos subiendo los primeros libros.</div>';
+    else if (q || S.filtro) {
+      // Un curso, una colección o lo que buscas: todo en rejilla
+      var f = S.filtro || '', col = /^col:/.test(f) ? coleccion(f.slice(4)) : null, area = /^area:/.test(f) ? f.slice(5) : '';
+      var areaNom = area ? (S.areas.filter(function (a) { return a.id === area; })[0] || { nombre: area }).nombre : '';
+      var lista = S.libros.filter(function (l) {
+        if (col && l.coleccion !== col.id) return false;
+        if (area && curso(l.curso).area !== area) return false;
+        if (f && !col && !area && l.curso !== f) return false;
+        return !q || sinAcento([l.titulo, l.subtitulo, l.autor, curso(l.curso).nombre, TIPOS[l.tipo], (l.etiquetas || []).join(' '), (coleccion(l.coleccion) || {}).nombre].join(' ')).indexOf(q) >= 0;
+      }).sort(porOrden);
+      if (f) html += '<div class="filtro-cab" style="--c:' + (col ? esc(col.color) : area ? (COLOR[area] || '#C6E000') : color(f)) + '"><div><b>' + esc(col ? col.nombre : area ? areaNom : curso(f).nombre) + '</b><small>' +
+        (col && col.descripcion ? esc(col.descripcion) + ' · ' : '') + lista.length + (lista.length === 1 ? ' libro' : ' libros') + '</small></div><button type="button" data-ver="">‹ Todo</button></div>';
+      html += lista.length ? '<div class="rejilla">' + lista.map(tarjeta).join('') + '</div>'
+        : '<div class="vacio"><b>No encontramos ese libro</b>Prueba con otra palabra' + (f ? ' o mira toda la biblioteca' : '') + '.</div>';
+    } else {
+      // Inicio de la biblioteca: destacados, seguir leyendo, colecciones, nuevos y un estante por curso
+      var dest = S.libros.filter(function (l) { return l.destacado; }).sort(porOrden);
+      var nuevos = S.libros.filter(esNuevo).sort(function (a, b) { return new Date(b.creado) - new Date(a.creado); });
+      html += heroes(dest) + seguir() + colecciones();
+      if (nuevos.length >= 2) html += estante('Nuevos en la biblioteca', null, nuevos.slice(0, 12));
+      // Un estante por área (Matemática, Ciencia y Tecnología…), con sus cursos en orden
+      var grupos = {}; S.libros.forEach(function (l) { var a = curso(l.curso).area || 'otros'; (grupos[a] = grupos[a] || []).push(l); });
+      var areas = S.areas.map(function (a) { return a.id; }).filter(function (a) { return grupos[a]; }).concat(grupos.otros ? ['otros'] : []);
+      areas.forEach(function (a) {
+        var nom = (S.areas.filter(function (x) { return x.id === a; })[0] || { nombre: 'Otros' }).nombre;
+        html += estante(nom, grupos[a].length, grupos[a].sort(porOrden), { c: COLOR[a] || '#C6E000', ico: a === 'otros' ? '' : 'url(assets/icons/' + a + '.svg)', ver: 'area:' + a });
+      });
+    }
+    $('grupos').innerHTML = html;
+    // Chips: Todo y un chip por curso que tiene libros
     var porCurso = {}; S.libros.forEach(function (l) { porCurso[l.curso] = (porCurso[l.curso] || 0) + 1; });
     var cs = Object.keys(porCurso).sort(function (a, b) { return (S.orden.indexOf(a) + 1 || 99) - (S.orden.indexOf(b) + 1 || 99); });
     $('chips').hidden = cs.length < 2;
-    $('chips').innerHTML = '<button class="chip' + (S.filtro ? '' : ' on') + '" type="button" data-f="">Todos <small>' + S.libros.length + '</small></button>' +
-      cs.map(function (id) { return '<button class="chip' + (S.filtro === id ? ' on' : '') + '" type="button" data-f="' + id + '" style="--c:' + color(id) + '"><i></i>' + esc(curso(id).nombre) + ' <small>' + porCurso[id] + '</small></button>'; }).join('');
-    $('cuenta').textContent = S.libros.length ? S.libros.length + (S.libros.length === 1 ? ' libro' : ' libros') + ' en PDF para estudiar' : 'Libros en PDF para estudiar';
-    // Seguir leyendo: el último que abriste
-    var ult = Object.keys(S.lectura).map(function (id) { return Object.assign({ id: id }, S.lectura[id]); })
-      .filter(function (r) { return S.libros.some(function (l) { return l.id === r.id; }); })
-      .sort(function (a, b) { return new Date(b.leido) - new Date(a.leido); })[0];
-    var l = ult && S.libros.filter(function (x) { return x.id === ult.id; })[0];
-    $('seguirC').innerHTML = l && !S.q && !S.filtro ? '<button class="seguir" type="button" data-id="' + esc(l.id) + '" style="--c:' + color(l.curso) + '"><span class="mini">' + tapa(l) + '</span>' +
-      '<span class="tx"><small>Seguir leyendo</small><b>' + esc(l.titulo) + (l.subtitulo ? ' · ' + esc(l.subtitulo) : ' · ' + esc(curso(l.curso).nombre)) + '</b><span class="pg">Página ' + ult.pagina + (l.paginas ? ' de ' + l.paginas : '') + ' · ' + hace(ult.leido) + '</span>' +
-      (l.paginas ? '<span class="bar"><i style="width:' + Math.round(Math.min(1, ult.pagina / l.paginas) * 100) + '%"></i></span>' : '') + '</span><span class="ir">Seguir</span></button>' : '';
+    $('chips').innerHTML = '<button class="chip' + (S.filtro ? '' : ' on') + '" type="button" data-ver="">Todo <small>' + S.libros.length + '</small></button>' +
+      cs.map(function (id) { return '<button class="chip' + (S.filtro === id ? ' on' : '') + '" type="button" data-ver="' + id + '" style="--c:' + color(id) + '"><i></i>' + esc(curso(id).nombre) + ' <small>' + porCurso[id] + '</small></button>'; }).join('');
+    $('cuenta').textContent = S.libros.length ? S.libros.length + (S.libros.length === 1 ? ' libro' : ' libros') + ' para leer aquí mismo' : 'Libros en PDF para estudiar';
+    // Las flechas solo salen si el estante tiene más libros de los que caben
+    document.querySelectorAll('#grupos .estante').forEach(function (e) {
+      var f = e.querySelector('.fila'), sobra = f.scrollWidth > f.clientWidth + 4;
+      e.querySelectorAll('.fl').forEach(function (b) { b.hidden = !sobra; });
+    });
+    var h = $('heroes');
+    if (h && $('puntos')) h.addEventListener('scroll', function () {
+      var i = Math.round(h.scrollLeft / h.clientWidth);
+      $('puntos').querySelectorAll('i').forEach(function (p, k) { p.classList.toggle('on', k === i); });
+    }, { passive: true });
   }
-  $('chips').addEventListener('click', function (e) { var b = e.target.closest('[data-f]'); if (b) { S.filtro = b.dataset.f; pintar(); } });
+  // Los destacados pasan solos cada 7 segundos (si no estás leyendo ni con la ficha abierta)
+  setInterval(function () {
+    var h = $('heroes'); if (!h || V || $('ficha') || h.matches(':hover')) return;
+    var n = h.children.length; if (n < 2) return;
+    var i = (Math.round(h.scrollLeft / h.clientWidth) + 1) % n;
+    h.scrollTo({ left: i * h.clientWidth, behavior: 'smooth' });
+  }, 7000);
+
   $('q').addEventListener('input', function () { S.q = this.value.trim(); pintar(); });
-  document.addEventListener('click', function (e) { var b = e.target.closest('#lista [data-id]'); if (b) abrir(b.dataset.id); });
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    var fl = t.closest('#lista [data-fl]');
+    if (fl) { var f = fl.closest('.estante').querySelector('.fila'); f.scrollBy({ left: +fl.dataset.fl * f.clientWidth * .85, behavior: 'smooth' }); return; }
+    var v = t.closest('[data-ver]');
+    if (v && !t.closest('#visor')) { S.filtro = v.dataset.ver || null; cerrarFicha(); pintar(); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+    var b = t.closest('[data-libro]');
+    if (b && !t.closest('#visor')) ficha(b.dataset.libro);
+  });
+
+  /* ---------- Ficha del libro ---------- */
+  function ficha(id) {
+    var l = libro(id); if (!l) return;
+    cerrarFicha(true);
+    var r = S.lectura[id], p = avance(l), col = coleccion(l.coleccion);
+    var mas = S.libros.filter(function (x) { return x.id !== l.id && (col ? x.coleccion === col.id : x.curso === l.curso); }).sort(porOrden).slice(0, 10);
+    var d = document.createElement('div'); d.className = 'ficha-fondo'; d.id = 'ficha';
+    d.innerHTML = '<div class="ficha" role="dialog" aria-modal="true" aria-label="' + esc(nombre(l)) + '" style="--c:' + color(l.curso) + '">' +
+      '<button class="x" type="button" data-cerrar aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>' +
+      portada(l) +
+      '<div class="info"><div class="chs"><span class="ch">' + esc(curso(l.curso).nombre) + '</span><span class="ch" style="--c:#A99FC8">' + esc(TIPOS[l.tipo] || 'Libro') + '</span>' +
+        (col ? '<span class="ch" style="--c:' + esc(col.color) + '">' + esc(col.nombre) + '</span>' : '') + '</div>' +
+        '<h2>' + esc(l.titulo) + '</h2>' + (l.subtitulo ? '<div class="sub">' + esc(l.subtitulo) + '</div>' : '') + '</div>' +
+      '<div class="cuerpo"><div class="datos">' + (l.paginas ? '<span><b>' + l.paginas + '</b>páginas</span>' : '') + (l.autor ? '<span><b>' + esc(l.autor) + '</b>autor</span>' : '') +
+        (r ? '<span><b>Pág. ' + r.pagina + '</b>' + hace(r.leido) + '</span>' : '') + (r && r.marcas && r.marcas.length ? '<span><b>' + r.marcas.length + '</b>marcadores</span>' : '') + '</div>' +
+        (p ? '<div class="bar"><i style="width:' + Math.max(4, Math.round(p * 100)) + '%"></i></div>' : '') +
+        (l.descr ? '<p class="d">' + esc(l.descr) + '</p>' : '') +
+        (l.etiquetas && l.etiquetas.length ? '<div class="etq">' + l.etiquetas.map(function (e) { return '<span>#' + esc(e) + '</span>'; }).join('') + '</div>' : '') +
+        '<div class="bts"><button class="leer" type="button" id="fLeer">' + (r ? 'Seguir · pág. ' + r.pagina : 'Leer') + '</button>' +
+        (r && r.pagina > 1 ? '<button class="sec" type="button" id="fInicio">Desde el inicio</button>' : '') +
+        (l.descarga ? '<a class="sec" href="https://drive.google.com/uc?export=download&id=' + encodeURIComponent(l.drive) + '" target="_blank" rel="noopener">Descargar</a>' : '') + '</div></div>' +
+      (mas.length ? '<div class="mas"><h3>' + (col ? 'Más de ' + esc(col.nombre) : 'Más de ' + esc(curso(l.curso).nombre)) + '</h3><div class="fila">' + mas.map(tarjeta).join('') + '</div></div>' : '') +
+      '</div>';
+    document.body.appendChild(d);
+    requestAnimationFrame(function () { d.classList.add('ver'); });
+    d.addEventListener('click', function (e) { if (e.target === d || e.target.closest('[data-cerrar]')) cerrarFicha(); });
+    var leer = function (desde) { if (desde) { S.lectura[id] = Object.assign({}, S.lectura[id] || {}, { pagina: 1 }); } cerrarFicha(true); abrir(id); };
+    $('fLeer').addEventListener('click', function () { leer(false); });
+    if ($('fInicio')) $('fInicio').addEventListener('click', function () { leer(true); });
+    // Con código de alumno: el botón Leer lleva el candado del curso (assets/candado.js)
+    if (l.acceso === 'codigo' && window.MCCandado) MCCandado.marcar($('fLeer'), 'curso-' + l.curso, { nombre: curso(l.curso).nombre });
+    $('fLeer').focus();
+  }
+  function cerrarFicha(ya) {
+    var d = $('ficha'); if (!d) return;
+    d.id = '';
+    if (ya) { d.remove(); return; }
+    d.classList.remove('ver'); setTimeout(function () { d.remove(); }, 200);
+  }
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('ficha')) cerrarFicha(); });
 
   function cargar() {
     S.lectura = leer(CLAVE_LEC) || {};
     var reg = fetch('assets/cursos.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (d) {
       (d.cursos || []).forEach(function (c) { S.cursos[c.id] = { nombre: c.nombre, area: c.area, icono: c.icono || '' }; S.orden.push(c.id); });
+      S.areas = d.areas || [];
     }).catch(function () {});
     MCAuth.listo.then(function (c) {
       var u = MCAuth.usuario();
       return Promise.all([reg,
-        c.from('biblioteca_libro').select('id,titulo,subtitulo,curso,drive,paginas,orden,creado').eq('visible', true).order('orden').order('creado'),
-        u ? c.from('biblioteca_lectura').select('libro,pagina,marcas,leido').eq('usuario', u.id) : Promise.resolve({ data: [] })
+        c.from('biblioteca_libro').select('id,titulo,subtitulo,curso,drive,paginas,orden,creado,portada,tipo,autor,descr,coleccion,destacado,etiquetas,descarga,acceso').eq('visible', true).order('orden').order('creado'),
+        u ? c.from('biblioteca_lectura').select('libro,pagina,marcas,leido').eq('usuario', u.id) : Promise.resolve({ data: [] }),
+        c.from('biblioteca_coleccion').select('id,nombre,descripcion,color,orden').eq('visible', true).order('orden')
       ]);
     }).then(function (r) {
       if (r[1].error) throw r[1].error;
       S.libros = r[1].data || [];
+      S.colecciones = (r[3] && !r[3].error && r[3].data) || [];
       (r[2].data || []).forEach(function (x) {
         var loc = S.lectura[x.libro];
         if (!loc || new Date(x.leido) > new Date(loc.leido)) S.lectura[x.libro] = { pagina: x.pagina, marcas: x.marcas || [], leido: x.leido };
