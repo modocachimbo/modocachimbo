@@ -120,7 +120,7 @@
   .cantidad button small { display: block; font-size: 11px; color: var(--dim); font-weight: 700; }
   .cantidad button.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); box-shadow: 0 3px 0 #8a9c00; }
   .cantidad button:disabled { opacity: .4; cursor: default; }
-  .cantidad .rec { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); background: #FFC800; color: #0b0b0b; font-size: 9.5px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; border-radius: 6px; padding: 1px 6px; white-space: nowrap; }
+  .cantidad .rec, .tiempos .rec { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); background: #FFC800; color: #0b0b0b; font-size: 9.5px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; border-radius: 6px; padding: 1px 6px; white-space: nowrap; }
   /* Elegir temas */
   .temas-card { margin-top: 18px; }
   .temas-cab { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
@@ -893,6 +893,44 @@ html[data-modo="claro"] .guardado.ok { color: #6F8000 !important; }
 html[data-modo="claro"] .cmp-pista i { border: 4px solid #DCD8E8 !important; }
 html[data-modo="claro"] .filtros button.on { color: #6F8000 !important; }
 html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
+
+/* =========================================================
+   Libre: tres fichas de modo y "Elige áreas y cursos"
+   ========================================================= */
+.modos:not(#z) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 560px) {
+  .modos:not(#z) { grid-template-columns: 1fr 1fr; }
+  .modo[data-modo="libre"]:not(#z) { grid-column: 1 / -1; flex-direction: row; align-items: center; }
+}
+.cursos-card { margin-top: 18px; padding: 22px; }
+html body .cursos-card h3:not(#z) { font-family: var(--display) !important; font-style: italic; font-weight: 900; text-transform: uppercase; font-size: 30px; letter-spacing: .01em; line-height: 1; margin: 0; }
+.la-lista { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
+.la { border: 2px solid color-mix(in srgb, var(--c) 30%, var(--borde-g)); border-bottom: 5px solid color-mix(in srgb, var(--c) 60%, #070512); border-radius: 18px; padding: 10px 12px 14px; background: color-mix(in srgb, var(--c) 5%, var(--surface)); }
+.la.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 11%, var(--surface)); }
+.la-cab { display: flex; align-items: center; gap: 12px; width: 100%; background: none; border: 0; padding: 0 0 10px; color: var(--text); text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.la-cab .a-ic { width: 42px; height: 42px; flex-shrink: 0; }
+.la-cab .la-tx { flex: 1; min-width: 0; }
+.la-cab .la-tx b { display: block; font-size: 16px; font-weight: 900; color: var(--c); }
+.la-cab .la-tx small { display: block; font-size: 12.5px; font-weight: 800; color: var(--dim); margin-top: 2px; }
+.la-ck { width: 28px; height: 28px; flex-shrink: 0; border-radius: 9px; border: 2px solid var(--borde-g); background: var(--surface); display: grid; place-items: center; }
+.la-ck svg { width: 16px; height: 16px; fill: none; stroke: #10131a; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+.la.on .la-ck { background: var(--c); border-color: var(--c); }
+.la.on .la-ck svg { opacity: 1; }
+.la.medio .la-ck { border-color: var(--c); }
+.la.medio .la-ck::after { content: ""; width: 12px; height: 3px; border-radius: 2px; background: var(--c); }
+.la.medio .la-ck svg { display: none; }
+.la .chip { font-size: 13px; }
+.cant-otra { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.cant-otra[hidden] { display: none; }
+.cant-otra input { width: 110px; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--borde-g); background: var(--surface-2); color: var(--text); font: 800 18px/1 var(--display); }
+.cant-otra span { font-size: 13px; color: var(--dim); font-weight: 700; }
+.cantidad.libre, .tiempos.libre:not(#z) { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.cantidad.libre button, .tiempos.libre button { position: relative; padding-left: 2px; padding-right: 2px; }
+@media (max-width: 560px) {
+  .la-lista { grid-template-columns: minmax(0, 1fr); }
+  .cantidad.libre, .tiempos.libre:not(#z) { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 14px; }
+  html body .cursos-card h3:not(#z) { font-size: 24px; }
+}
 </style>
 </head>
 <body>
@@ -929,9 +967,20 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
       </button>
       <button type="button" class="modo" data-modo="pers" role="radio" aria-checked="false">
         <span class="mi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg></span>
-        <span><b>Personalizado</b><small>Tú eliges los temas y cuántas preguntas</small></span><span class="chip-ff">Libre</span>
+        <span><b>Personalizado</b><small>Formato examen: todos los cursos, tú eliges los temas</small></span><span class="chip-ff">Examen</span>
+      </button>
+      <button type="button" class="modo" data-modo="libre" role="radio" aria-checked="false">
+        <span class="mi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 14.6 9l5.9.6-4.4 4 1.3 5.9L12 16.5l-5.4 3 1.3-5.9-4.4-4L9.4 9z"/></svg></span>
+        <span><b>Libre</b><small>Tú eliges áreas, cursos, temas, preguntas y tiempo</small></span><span class="chip-ff">A tu gusto</span>
       </button>
     </div>
+    <section class="card cursos-card" id="cursosCard" hidden>
+      <div class="tcab-tit">
+        <i class="tcab-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2" fill="currentColor"/><rect x="13" y="3" width="8" height="8" rx="2" fill="currentColor" opacity=".4"/><rect x="3" y="13" width="8" height="8" rx="2" fill="currentColor" opacity=".4"/><rect x="13" y="13" width="8" height="8" rx="2" fill="currentColor"/></svg></i>
+        <div><h3>Elige áreas y cursos</h3><p class="temas-res" id="cursosRes">Toca un área para marcar todos sus cursos, o elige curso por curso.</p></div>
+      </div>
+      <div id="cursosLista" class="la-lista"></div>
+    </section>
     <section class="card temas-card" id="temasCard" hidden>
       <div class="temas-cab">
         <div class="tcab-tit">
@@ -963,6 +1012,7 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
           <div class="cantidad" id="cantidad">
             <button type="button" data-n="80" class="on"><span class="rec">Como el examen</span>80<small>preguntas</small></button><button type="button" data-n="60">60<small>preguntas</small></button><button type="button" data-n="40">40<small>preguntas</small></button><button type="button" data-n="20">20<small>preguntas</small></button>
           </div>
+          <div class="cant-otra" id="cantOtra" hidden><input type="number" id="cantOtraIn" inputmode="numeric" min="10" max="100" step="1" aria-label="Cuántas preguntas"><span id="cantOtraTx">De 10 a 100 preguntas</span></div>
           <p class="nota" id="cantidadNota">Con menos preguntas, cada curso baja en la misma proporción del examen de admisión. Si de un curso no eliges temas, sus preguntas salen de todos sus temas.</p>
         </div>
         <div class="dos">
@@ -973,6 +1023,7 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
           <div class="tiempos" id="tiempos">
             <button type="button" data-m="60">1 h</button><button type="button" data-m="90">1 h 30</button><button type="button" data-m="120">2 h</button><button type="button" data-m="150">2 h 30</button><button type="button" data-m="180">3 h</button>
           </div>
+          <div class="cant-otra" id="minOtro" hidden><input type="number" id="minOtroIn" inputmode="numeric" min="10" max="180" step="5" aria-label="Cuántos minutos"><span>De 10 a 180 minutos</span></div>
         </div>
         <div class="campo" id="campoNombre">
           <label for="nombre"><i class="li"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg></i>Nombre del simulacro</label>
@@ -1287,8 +1338,16 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
   }
   function pintarPuntos() {
     const p = bloqueSel().puntos || {};
-    if (MODO === 'pers') {
-      const P = TEMAS ? plan() : null, Q = cuotas(CANT);
+    if (esPers()) {
+      const P = TEMAS ? plan() : null, Q = cuotas(CANT), libre = MODO === 'libre';
+      if (libre && !cursosLibre().length) {
+        $('distTit').textContent = 'Así se reparten tus preguntas';
+        $('pts').innerHTML = '';
+        $('dist').innerHTML = '<p class="vacia">Elige al menos un curso para ver cómo se reparten tus preguntas.</p>';
+        $('maxPts').textContent = '0';
+        pintarResumen();
+        return;
+      }
       $('distTit').textContent = 'Así se reparten tus ' + CANT + ' preguntas';
       $('pts').innerHTML = AREAS.map(a => '<div class="pt" style="--c:' + a.c + '"><small>' + a.nom + '</small><strong>' + fmtNum(+p[a.k] || 0) + '</strong></div>').join('');
       $('dist').innerHTML = AREAS.map(a => {
@@ -1297,7 +1356,7 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
         return areaHTML(a, n, +p[a.k] || 0, a.cursos.filter(c => Q[c[0]]).map(c => { const x = P && P[c[0]], el = x && x.elegidos.length; return (el ? '<b style="color:' + (x.falta ? 'var(--bad)' : 'var(--text)') + '">' : '') + esc(NOMBRE[c[0]] || c[0]) + ' ' + Q[c[0]] + (el ? '</b>' : ''); }).join(' · '));
       }).join('') +
         '<p class="nota" style="margin-top:0"><b>En negrita:</b> cursos con temas elegidos. Los demás salen de todos sus temas.' + (P && P['raz-verbal'].voc ? ' En Razonamiento Verbal, ' + P['raz-verbal'].voc + ' son de Vocabulario.' : '') + '</p>' +
-        '<div class="consejo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.8V16h5v-.3c0-.7.4-1.4 1-1.8A6 6 0 0 0 12 3z"/></svg><div><b>Recomendación:</b> elige los temas que más fallas. Si quieres más preguntas distintas, marca también Banqueo y Seminarios. Este simulacro es libre y no entra al ranking; para medirte con los demás da el <b>simulacro rápido</b>.</div></div>';
+        '<div class="consejo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.8V16h5v-.3c0-.7.4-1.4 1-1.8A6 6 0 0 0 12 3z"/></svg><div><b>Recomendación:</b> elige los temas que más fallas. Si quieres más preguntas distintas, marca también Banqueo y Seminarios. ' + (libre ? 'El simulacro libre no entra al ranking y sus puntos son los de tu carrera.' : 'Este simulacro no entra al ranking;') + ' Para medirte con los demás da el <b>simulacro rápido</b>.</div></div>';
       $('maxPts').textContent = fmtNum(AREAS.reduce((s, a) => s + a.cursos.reduce((t, c) => t + Q[c[0]], 0) * (+p[a.k] || 0), 0));
       pintarResumen();
       return;
@@ -1319,7 +1378,7 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
   }
   // Resumen junto al botón Empezar: preguntas, tiempo y puntaje máximo
   function pintarResumen() {
-    const n = REPETIR ? (REPETIR.preguntas || []).length : MODO === 'pers' ? CANT : 80;
+    const n = REPETIR ? (REPETIR.preguntas || []).length : esPers() ? CANT : 80;
     $('resumen').innerHTML = '<span><b>' + n + '</b> preguntas</span><span><b>' + durTxt(minutos).trim() + '</b></span><span>máx. <b>' + $('maxPts').textContent + '</b> pts</span>';
   }
   $('selBloque').addEventListener('change', () => llenarCarreras(''));
@@ -1425,14 +1484,28 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
   }
   armarSelector('selBloque'); armarSelector('selCarrera');
   document.addEventListener('click', e => { if (SEL_ABIERTO && !SEL_ABIERTO.contains(e.target)) abrirSelector(SEL_ABIERTO, false); });
-  function pintarTiempo() { $('tiempos').querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.m === minutos)); pintarResumen(); }
-  $('tiempos').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; minutos = +b.dataset.m; pintarTiempo(); });
+  function pintarTiempo() {
+    const otro = MODO === 'libre' && !REPETIR && LIBRE.minOtro;
+    $('tiempos').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.m === 'otro' ? otro : !otro && +b.dataset.m === minutos));
+    $('minOtro').hidden = !otro;
+    pintarResumen();
+  }
+  $('tiempos').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.m === 'otro') { LIBRE.minAuto = false; LIBRE.minOtro = true; $('minOtroIn').value = minutos; pintarTiempo(); $('minOtroIn').focus(); return; }
+    minutos = +b.dataset.m;
+    // Libre: el primero es el sugerido y sigue a la cantidad de preguntas
+    if (MODO === 'libre') { LIBRE.minOtro = false; LIBRE.minAuto = b === $('tiempos').firstElementChild; }
+    pintarTiempo();
+  });
+  $('minOtroIn').addEventListener('input', () => { const v = Math.round(+$('minOtroIn').value); if (v >= LIM_MIN[0] && v <= LIM_MIN[1]) { minutos = v; pintarResumen(); } });
+  $('minOtroIn').addEventListener('change', () => { $('minOtroIn').value = minutos; });
 
   function pintarCiclos(conservar) {
     const caja = $('ciclos');
     if (!CICLOS.length) { caja.innerHTML = '<p class="vacia">Todavía no hay libros subidos.</p>'; return; }
     const antes = conservar ? ciclosSel() : [];
-    const pers = MODO === 'pers';
+    const pers = esPers();
     const listos = CICLOS.filter(c => !c.falta.length || PRUEBA || pers);
     const completos = CICLOS.filter(c => !c.falta.length);
     // Personalizado: el ciclo actual (el más nuevo); rápido: el último con todos los cursos listos
@@ -1460,7 +1533,8 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
   });
   function actualizarEmpezar() {
     let no = !REPETIR && !ciclosSel().length;
-    if (!REPETIR && MODO === 'pers') { const P = TEMAS ? plan() : null; no = no || !P || Object.keys(P).some(c => P[c].falta); }
+    if (!REPETIR && esPers()) { const P = TEMAS ? plan() : null; no = no || !P || Object.keys(P).some(c => P[c].falta); }
+    if (!REPETIR && MODO === 'libre') no = no || !cursosLibre().length || CANT < LIM_CANT[0] || CANT > LIM_CANT[1];
     $('btnEmpezar').disabled = no;
   }
 
@@ -1472,14 +1546,17 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
   function pintarMisSimulacros() {
     const caja = $('misSim');
     const leer = (c, cols) => c.from('simulacros').select(cols).order('actualizado', { ascending: false }).limit(30);
-    cliente().then(c => leer(c, 'id,nombre,ciclos,intentos,mejor,actualizado,personalizado').then(r => r.error ? leer(c, 'id,nombre,ciclos,intentos,mejor,actualizado') : r))
+    // "libre" existe desde supabase/45-simulacro-libre.sql; sin esa columna se lee como antes
+    cliente().then(c => leer(c, 'id,nombre,ciclos,intentos,mejor,actualizado,personalizado,libre')
+      .then(r => r.error ? leer(c, 'id,nombre,ciclos,intentos,mejor,actualizado,personalizado') : r)
+      .then(r => r.error ? leer(c, 'id,nombre,ciclos,intentos,mejor,actualizado') : r))
       .then(r => {
         if (r.error) throw r.error;
         const L = r.data || [];
         if (!L.length) { caja.innerHTML = '<li class="vacia">Aquí aparecerán los simulacros que termines, para repetirlos cuando quieras.</li>'; return; }
         const rap = L.filter(x => !x.personalizado).map(x => +x.mejor || 0);
         if (rap.length) { MEJOR = Math.max.apply(null, rap); pintarMejor(); }
-        caja.innerHTML = L.map(s => '<li><span class="mejor"><b>' + num1(+s.mejor || 0) + '</b><small>mejor</small></span><div><b>' + esc(s.nombre) + (s.personalizado ? '<span class="etq">Personalizado</span>' : '') + '</b><small>' + esc((s.ciclos || []).join(', ')) + ' · ' +
+        caja.innerHTML = L.map(s => '<li><span class="mejor"><b>' + num1(+s.mejor || 0) + '</b><small>mejor</small></span><div><b>' + esc(s.nombre) + (s.libre ? '<span class="etq">Libre</span>' : s.personalizado ? '<span class="etq">Personalizado</span>' : '') + '</b><small>' + esc((s.ciclos || []).join(', ')) + ' · ' +
           s.intentos + (s.intentos === 1 ? ' intento' : ' intentos') + ' · ' + fecha(s.actualizado) + '</small></div>' +
           '<a class="btn sec mini rep" href="simulacro.html?repetir=' + encodeURIComponent(s.id) + '" aria-label="Repetir ' + esc(s.nombre) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 14-5.3L20 9M20 4v5h-5"/></svg><span>Repetir</span></a></li>').join('');
         // Solo los 2 últimos a la vista; el resto con "Ver más"
@@ -1569,7 +1646,8 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
     if (rep && /^[0-9a-f-]{36}$/i.test(rep)) {
       // "personalizado" existe desde supabase/27-simulacro-personalizado.sql; sin esa columna se lee como antes
       const leer = cols => cliente().then(c => c.from('simulacros').select(cols).eq('id', rep).maybeSingle()).catch(() => null);
-      let r = await leer('id,nombre,ciclos,bloque,carrera,minutos,preguntas,personalizado');
+      let r = await leer('id,nombre,ciclos,bloque,carrera,minutos,preguntas,personalizado,libre');
+      if (!r || r.error) r = await leer('id,nombre,ciclos,bloque,carrera,minutos,preguntas,personalizado');
       if (!r || r.error) r = await leer('id,nombre,ciclos,bloque,carrera,minutos,preguntas');
       if (r && r.data) REPETIR = r.data;
     }
@@ -1579,7 +1657,7 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
       $('crearSub').textContent = 'Las mismas ' + (REPETIR.preguntas || []).length + ' preguntas, en el mismo orden. Tu puntaje se suma a este simulacro.';
       $('campoNombre').hidden = true; $('campoCiclos').hidden = true; $('modos').hidden = true;
       llenarBloques(REPETIR.bloque || (bAuto && bAuto.id), REPETIR.carrera || MCCarreras.oficial(perfil.carrera));
-      minutos = Math.min(180, Math.max(30, REPETIR.minutos || 120));
+      minutos = Math.min(LIM_MIN[1], Math.max(LIM_MIN[0], REPETIR.minutos || 120));
       if (REPETIR.personalizado || TIEMPOS_RAPIDO.indexOf(minutos) < 0) { MODO = 'pers'; pintarTiempos(); MODO = 'rapido'; }
       $('btnEmpezar').textContent = 'Empezar de nuevo';
     } else {
@@ -1612,13 +1690,23 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
   const ICO_FLECHA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
   const norm = t => String(t || '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ');
   const TODOS_CURSOS = []; AREAS.forEach(a => a.cursos.forEach(c => TODOS_CURSOS.push(c)));
+  // Libre: el alumno elige áreas y cursos; la cantidad y el tiempo se sugieren y se pueden cambiar
+  const LIBRE = { cursos: {}, cantAuto: true, cantOtra: false, minAuto: true, minOtro: false };
+  const LIM_CANT = [10, 100], LIM_MIN = [10, 180];
+  const esPers = () => MODO !== 'rapido';   // personalizado y libre se arman con temas
+  const cursosLibre = () => TODOS_CURSOS.filter(c => MODO !== 'libre' || LIBRE.cursos[c[0]]);
+  // Sugerencia: lo que pesan esos cursos en el examen, y 1,5 minutos por pregunta (80 en 2 horas)
+  const sugCant = () => Math.min(LIM_CANT[1], Math.max(LIM_CANT[0], cursosLibre().reduce((t, c) => t + c[1], 0)));
+  const sugMin = n => Math.min(LIM_MIN[1], Math.max(LIM_MIN[0], Math.round(n * 1.5 / 5) * 5));
 
-  // Cuántas preguntas por curso para n en total (resto mayor; con 80 son las del examen)
+  // Cuántas preguntas por curso para n en total (resto mayor; con 80 son las del examen).
+  // En el libre se reparten solo entre los cursos elegidos, en la misma proporción del examen.
   function cuotas(n) {
-    const base = TODOS_CURSOS.map(c => c[1] * n / 80), q = base.map(Math.floor);
+    const L = cursosLibre(), W = L.reduce((t, c) => t + c[1], 0) || 1;
+    const base = L.map(c => c[1] * n / W), q = base.map(Math.floor);
     const falta = n - q.reduce((x, y) => x + y, 0);
     base.map((v, i) => [v - Math.floor(v), i]).sort((x, y) => y[0] - x[0] || x[1] - y[1]).slice(0, falta).forEach(x => { q[x[1]]++; });
-    const Q = {}; TODOS_CURSOS.forEach((c, i) => { Q[c[0]] = q[i]; });
+    const Q = {}; TODOS_CURSOS.forEach(c => { Q[c[0]] = 0; }); L.forEach((c, i) => { Q[c[0]] = q[i]; });
     return Q;
   }
   function cargarManifiestos() {
@@ -1646,7 +1734,7 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
     TEMAS = T;
   }
   function recargarTemas() {
-    if (MODO !== 'pers') return;
+    if (!esPers()) return;
     TEMAS = null; pintarTemas();
     const p = cargandoTemas = cargarTemas().then(() => { if (p === cargandoTemas) pintarTemas(); });
   }
@@ -1730,11 +1818,13 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
   function pintarTemas() {
     const caja = $('temasLista');
     if (!TEMAS) { caja.innerHTML = '<p class="vacia" style="margin-top:12px">Cargando temas…</p>'; actualizarEmpezar(); return; }
-    const P = plan();
+    const P = plan(), libre = MODO === 'libre';
     let nSel = 0, nErr = 0;
-    caja.innerHTML = AREAS.map(a => {
+    caja.innerHTML = libre && !cursosLibre().length ? '<p class="vacia" style="margin-top:12px">Primero elige al menos un curso en «Elige áreas y cursos».</p>' : AREAS.map(a => {
+      const cursos = a.cursos.filter(c => !libre || LIBRE.cursos[c[0]]);
+      if (!cursos.length) return '';
       let sel = 0, tot = 0;
-      const cuerpo = a.cursos.map(([curso]) => {
+      const cuerpo = cursos.map(([curso]) => {
         const x = P[curso], temas = TEMAS[curso].filter(t => PERS.fuentes[t.f]);
         sel += x.elegidos.length; tot += temas.length;
         if (x.falta) nErr++;
@@ -1757,10 +1847,15 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
       ? '<span style="color:var(--bad)">' + nErr + (nErr === 1 ? ' curso necesita' : ' cursos necesitan') + ' más temas</span> · <b>' + nSel + '</b> elegidos'
       : nSel ? '<b>' + nSel + (nSel === 1 ? ' tema</b> elegido' : ' temas</b> elegidos') + ' · los cursos sin temas salen de todos sus temas' : 'Toca los temas que quieres practicar. Los cursos sin temas elegidos salen de todos sus temas.';
     $('fuentes').querySelectorAll('.fuente').forEach(b => {
-      const f = b.dataset.f, n = TODOS_CURSOS.reduce((t, [c]) => t + TEMAS[c].filter(x => x.f === f).length, 0);
+      const f = b.dataset.f, n = cursosLibre().reduce((t, [c]) => t + TEMAS[c].filter(x => x.f === f).length, 0);
       b.classList.toggle('on', !!PERS.fuentes[f]); b.setAttribute('aria-pressed', !!PERS.fuentes[f]);
       b.querySelector('small').textContent = n + (n === 1 ? ' tema' : ' temas');
     });
+    if (libre) {
+      // Cuántas preguntas hay con lo que eligió (sin contar Vocabulario)
+      const hay = cursosLibre().reduce((t, [c]) => t + P[c].hay, 0);
+      $('cantidadNota').textContent = 'Sugerimos lo que pesan esos cursos en el examen de admisión y se reparten en esa misma proporción. Con lo que elegiste hay ' + hay + (hay === 1 ? ' pregunta.' : ' preguntas.');
+    }
     pintarPuntos();
     actualizarEmpezar();
   }
@@ -1785,34 +1880,100 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
     PERS.fuentes[f] = !PERS.fuentes[f];
     pintarTemas();
   });
-  $('temasTodos').addEventListener('click', () => { if (!TEMAS) return; TODOS_CURSOS.forEach(([c]) => TEMAS[c].forEach(t => { if (PERS.fuentes[t.f]) PERS.sel[c + '|' + t.k] = 1; })); pintarTemas(); });
+  $('temasTodos').addEventListener('click', () => { if (!TEMAS) return; cursosLibre().forEach(([c]) => TEMAS[c].forEach(t => { if (PERS.fuentes[t.f]) PERS.sel[c + '|' + t.k] = 1; })); pintarTemas(); });
   $('temasLimpiar').addEventListener('click', () => { PERS.sel = {}; pintarTemas(); });
+  // Botones de cantidad: en el libre, el sugerido primero, otras cantidades y "Otra" para escribir
+  function pintarCantidad() {
+    const libre = MODO === 'libre', caja = $('cantidad');
+    caja.classList.toggle('libre', libre);
+    if (libre) {
+      const sug = sugCant();
+      if (LIBRE.cantAuto) CANT = sug;
+      const L = [sug].concat([10, 20, 40, 60, 80].filter(n => n !== sug)).slice(0, 5);
+      caja.innerHTML = L.map((n, i) => '<button type="button" data-n="' + n + '">' + (i ? '' : '<span class="rec">Sugerida</span>') + n + '<small>preguntas</small></button>').join('') +
+        '<button type="button" data-n="otra">Otra<small>tú eliges</small></button>';
+    } else {
+      caja.innerHTML = [80, 60, 40, 20].map(n => '<button type="button" data-n="' + n + '">' + (n === 80 ? '<span class="rec">Como el examen</span>' : '') + n + '<small>preguntas</small></button>').join('');
+      $('cantidadNota').textContent = 'Con menos preguntas, cada curso baja en la misma proporción del examen de admisión. Si de un curso no eliges temas, sus preguntas salen de todos sus temas.';
+    }
+    const otra = libre && LIBRE.cantOtra;
+    caja.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.n === 'otra' ? otra : !otra && +b.dataset.n === CANT));
+    $('cantOtra').hidden = !otra;
+  }
   $('cantidad').addEventListener('click', e => {
     const b = e.target.closest('button[data-n]'); if (!b) return;
-    CANT = +b.dataset.n; minutos = MIN_PERS[CANT] || 120;
-    $('cantidad').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    const otra = b.dataset.n === 'otra';
+    if (otra) { LIBRE.cantAuto = false; LIBRE.cantOtra = true; $('cantOtraIn').value = CANT; }
+    else {
+      CANT = +b.dataset.n;
+      if (MODO === 'libre') { LIBRE.cantOtra = false; LIBRE.cantAuto = b === $('cantidad').firstElementChild; }
+    }
+    if (MODO !== 'libre') minutos = MIN_PERS[CANT] || 120;
+    else if (LIBRE.minAuto) minutos = sugMin(CANT);
+    pintarCantidad(); pintarTiempos(); pintarTemas();
+    if (otra) $('cantOtraIn').focus();
+  });
+  $('cantOtraIn').addEventListener('input', () => {
+    const v = Math.round(+$('cantOtraIn').value);
+    if (v < LIM_CANT[0] || v > LIM_CANT[1] || v === CANT) return;
+    CANT = v;
+    if (LIBRE.minAuto) minutos = sugMin(CANT);
     pintarTiempos(); pintarTemas();
   });
+  $('cantOtraIn').addEventListener('change', () => { $('cantOtraIn').value = CANT; });
   function pintarTiempos() {
-    const L = MODO === 'pers' ? TIEMPOS_PERS : TIEMPOS_RAPIDO;
-    if (L.indexOf(minutos) < 0) minutos = MODO === 'pers' ? (MIN_PERS[CANT] || 120) : 120;
-    $('tiempos').innerHTML = L.map(m => '<button type="button" data-m="' + m + '">' + (m < 60 ? m + ' min' : Math.floor(m / 60) + ' h' + (m % 60 ? ' ' + (m % 60) : '')) + '</button>').join('');
+    const libre = MODO === 'libre' && !REPETIR;
+    let L = libre ? [sugMin(CANT)].concat([15, 30, 60, 90, 120].filter(m => m !== sugMin(CANT))).slice(0, 5) : (esPers() ? TIEMPOS_PERS : TIEMPOS_RAPIDO).slice();
+    if (REPETIR && L.indexOf(minutos) < 0) L = L.concat(minutos).sort((x, y) => x - y);
+    if (!REPETIR && !libre && L.indexOf(minutos) < 0) minutos = esPers() ? (MIN_PERS[CANT] || 120) : 120;
+    const txt = m => m < 60 ? m + ' min' : Math.floor(m / 60) + ' h' + (m % 60 ? ' ' + (m % 60) : '');
+    $('tiempos').classList.toggle('libre', libre);
+    $('tiempos').innerHTML = L.map((m, i) => '<button type="button" data-m="' + m + '">' + (libre && !i ? '<span class="rec">Sugerido</span>' : '') + txt(m) + '</button>').join('') +
+      (libre ? '<button type="button" data-m="otro">Otro</button>' : '');
     pintarTiempo();
   }
+  // Libre: tarjeta de áreas (marca todos sus cursos) y cursos sueltos
+  function pintarCursos() {
+    if (MODO !== 'libre') return;
+    const n = cursosLibre().length;
+    $('cursosLista').innerHTML = AREAS.map(a => {
+      const el = a.cursos.filter(c => LIBRE.cursos[c[0]]).length, todos = el === a.cursos.length;
+      return '<div class="la' + (todos ? ' on' : el ? ' medio' : '') + '" style="--c:' + a.c + ';--ico:url(assets/icons/' + a.ico + '.svg)">' +
+        '<button type="button" class="la-cab" data-area="' + a.k + '" aria-pressed="' + todos + '"><i class="a-ic"></i><span class="la-tx"><b>' + a.nom + '</b><small>' +
+        (el ? el + ' de ' + a.cursos.length + ' cursos' : a.cursos.length + ' cursos') + '</small></span><span class="la-ck">' + CHECK + '</span></button>' +
+        '<div class="chips">' + a.cursos.map(([c]) => '<button type="button" class="chip' + (LIBRE.cursos[c] ? ' on' : '') + '" data-curso="' + c + '" aria-pressed="' + !!LIBRE.cursos[c] + '">' + ICO_CHK + '<span>' + esc(NOMBRE[c] || c) + '</span></button>').join('') + '</div></div>';
+    }).join('');
+    $('cursosRes').innerHTML = n ? '<b>' + n + (n === 1 ? ' curso</b> elegido' : ' cursos</b> elegidos') + ' · sugerimos ' + sugCant() + ' preguntas' : 'Toca un área para marcar todos sus cursos, o elige curso por curso.';
+  }
+  $('cursosLista').addEventListener('click', e => {
+    const ar = e.target.closest('[data-area]'), cu = e.target.closest('[data-curso]');
+    if (ar) {
+      const a = AREAS.filter(x => x.k === ar.dataset.area)[0], todos = a.cursos.every(c => LIBRE.cursos[c[0]]);
+      a.cursos.forEach(([c]) => { if (todos) delete LIBRE.cursos[c]; else LIBRE.cursos[c] = 1; });
+    } else if (cu) { const c = cu.dataset.curso; if (LIBRE.cursos[c]) delete LIBRE.cursos[c]; else LIBRE.cursos[c] = 1; }
+    else return;
+    pintarCantidad();
+    if (LIBRE.minAuto) minutos = sugMin(CANT);
+    pintarCursos(); pintarTiempos(); pintarTemas();
+  });
   function ponerModo(m) {
     MODO = m;
-    const pers = m === 'pers';
+    const pers = esPers(), libre = m === 'libre';
     $('modos').querySelectorAll('.modo').forEach(b => { b.classList.toggle('on', b.dataset.modo === m); b.setAttribute('aria-checked', b.dataset.modo === m); });
+    $('cursosCard').hidden = !libre;
     $('temasCard').hidden = !pers; $('campoCantidad').hidden = !pers;
-    $('topSim').hidden = pers; // el personalizado es libre y no entra al ranking
-    $('crearTit').textContent = pers ? 'Personaliza tu simulacro' : 'Crea tu simulacro';
-    $('crearSub').textContent = pers ? 'Elige los temas que quieres reforzar y cuántas preguntas. Los cursos y los puntos son los mismos del examen de admisión.' : '80 preguntas al azar de cada curso, repartidas como en el examen de admisión: 80% de los libros y 20% de banqueo, seminarios y Vocabulario.';
+    $('topSim').hidden = pers; // el personalizado y el libre no entran al ranking
+    $('crearTit').textContent = libre ? 'Arma tu simulacro libre' : pers ? 'Personaliza tu simulacro' : 'Crea tu simulacro';
+    $('crearSub').textContent = libre ? 'Elige las áreas, cursos y temas que quieras. Te sugerimos cuántas preguntas y cuánto tiempo, y tú decides. Los puntos son los de tu carrera.'
+      : pers ? 'Elige los temas que quieres reforzar y cuántas preguntas. Los cursos y los puntos son los mismos del examen de admisión.' : '80 preguntas al azar de cada curso, repartidas como en el examen de admisión: 80% de los libros y 20% de banqueo, seminarios y Vocabulario.';
     $('ciclosNota').textContent = pers ? 'Los temas que ves abajo son de los ciclos que marques.' : 'Con un ciclo, las preguntas salen solo de ese ciclo. Con dos o más, salen al azar de los ciclos que elijas, con la misma cantidad por curso.';
     const nom = $('nombre').value.trim(), fechaHoy = new Date().toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit' });
-    if (!nom || nom === 'Simulacro ' + fechaHoy || nom === 'Personalizado ' + fechaHoy) $('nombre').value = (pers ? 'Personalizado ' : 'Simulacro ') + fechaHoy;
+    if (!nom || ['Simulacro ', 'Personalizado ', 'Libre '].some(x => nom === x + fechaHoy)) $('nombre').value = (libre ? 'Libre ' : pers ? 'Personalizado ' : 'Simulacro ') + fechaHoy;
     $('btnEmpezar').textContent = pers ? 'Empezar mi simulacro' : 'Empezar simulacro';
-    if (pers) minutos = MIN_PERS[CANT] || 120; else minutos = 120;
-    pintarCiclos(); pintarTiempos(); pintarPuntos();
+    if (libre) { if (LIBRE.cantAuto) CANT = sugCant(); if (LIBRE.minAuto) minutos = sugMin(CANT); }
+    else if (pers) { if ([80, 60, 40, 20].indexOf(CANT) < 0) CANT = 80; minutos = MIN_PERS[CANT] || 120; }
+    else minutos = 120;
+    pintarCursos(); pintarCantidad(); pintarCiclos(); pintarTiempos(); pintarPuntos();
     if (pers) {
       if (!cargarManifiestos.listo) cargarManifiestos.listo = cargarManifiestos();
       cargarManifiestos.listo.then(recargarTemas);
@@ -1828,13 +1989,14 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
     try {
       let lista, ciclos;
       if (REPETIR) { lista = await cargarRefs(REPETIR.preguntas || []); ciclos = REPETIR.ciclos || []; }
-      else if (MODO === 'pers') { ciclos = ciclosSel(); lista = await armarPers(); }
+      else if (esPers()) { ciclos = ciclosSel(); lista = await armarPers(); }
       else { ciclos = ciclosSel(); lista = await armarNuevo(ciclos); }
       if (lista.length < 10) throw new Error('No hay suficientes preguntas para armar el simulacro.');
       const b = bloqueSel();
       S = {
         v: 1, uid: uid(), simId: REPETIR ? REPETIR.id : null,
-        pers: REPETIR ? !!REPETIR.personalizado : MODO === 'pers',
+        pers: REPETIR ? !!REPETIR.personalizado : esPers(),
+        libre: REPETIR ? !!REPETIR.libre : MODO === 'libre',
         nombre: REPETIR ? REPETIR.nombre : ($('nombre').value.trim().slice(0, 60) || 'Simulacro'),
         ciclos: ciclos, bloque: b.id, carrera: $('selCarrera').value, puntos: b.puntos, minutos: minutos,
         refs: lista.map(q => q._id), ord: lista.map(q => window.MCPregunta ? MCPregunta.ordenAlt(q) : null), resp: {}, rev: {}, act: 0, inicio: Date.now(), fin: Date.now() + minutos * 60000
@@ -2012,7 +2174,7 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
       if (!T[k]) { T[k] = { q, c: 0, n: 0 }; orden.push(k); }
       T[k].n++; if (S.resp[i] === q.correct) T[k].c++;
     });
-    $('rTemas').innerHTML = '<h3>Cómo te fue en cada tema</h3><p class="hint" style="font-size:12.5px;margin-bottom:12px">Simulacro personalizado: es libre y no entra al ranking.</p><ul class="por-tema">' + orden.map(k => {
+    $('rTemas').innerHTML = '<h3>Cómo te fue en cada tema</h3><p class="hint" style="font-size:12.5px;margin-bottom:12px">' + (S.libre ? 'Simulacro libre' : 'Simulacro personalizado') + ': no entra al ranking.</p><ul class="por-tema">' + orden.map(k => {
       const x = T[k], a = AREA_DE[x.q._curso], pct = Math.round(x.c / x.n * 100);
       return '<li style="--c:' + a.c + '"><div><b>' + esc(x.q._tit || 'Tema') + '</b><br><small>' + esc(NOMBRE[x.q._curso] || x.q._curso) + (x.q._f === 'banqueo' ? ' · Banqueo' : x.q._f === 'seminarios' ? ' · Seminario' : '') + '</small></div><b>' + x.c + ' de ' + x.n + '</b><div class="bar"><i style="width:' + pct + '%"></i></div></li>';
     }).join('') + '</ul>';
@@ -2023,7 +2185,7 @@ html[data-modo="claro"] .ins.n svg { stroke: #6B6485 !important; }
     const p = {
       id: S.simId, nombre: S.nombre, ciclos: S.ciclos, bloque: S.bloque, carrera: S.carrera, minutos: S.minutos,
       preguntas: PREGS.map(q => q._id), puntaje: R.total, maximo: R.max, correctas: R.C, incorrectas: R.I, blancos: R.B,
-      segundos: S.segundos, areas: R.areas, personalizado: !!S.pers
+      segundos: S.segundos, areas: R.areas, personalizado: !!S.pers, libre: !!S.libre
     };
     const yaGuardado = S.guardado ? Promise.resolve(S.guardado) : rpc('guardar_simulacro', { p: p });
     yaGuardado.then(id => {
