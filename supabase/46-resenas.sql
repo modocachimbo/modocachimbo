@@ -11,7 +11,9 @@
 --     permiso «Reseñas») la publica desde el panel → Reseñas.
 --   · resenas_publicas(): las publicadas, para el slider de la bienvenida
 --     (sin sesión) y del inicio. Solo manda apodo, foto, lo que lleva
---     puesto, rango de la semana e ID. Nunca el correo ni el nombre.
+--     puesto, el rango que tenía al enviarla e ID. Nunca el correo ni el nombre.
+--   · El rango se guarda al enviar (o editar) la reseña: el mejor entre esta
+--     semana y la anterior. Así no baja cuando el alumno deja de entrar.
 -- =========================================================
 
 create table if not exists public.resenas (
@@ -27,6 +29,9 @@ create table if not exists public.resenas (
   revisada   timestamptz,
   revisor    text
 );
+-- El rango al enviarla: XP de esa semana y su lunes (la tabla de rangos depende de la semana)
+alter table public.resenas add column if not exists rango_xp     int;
+alter table public.resenas add column if not exists rango_semana date;
 -- Sin políticas: todo pasa por las funciones de abajo
 alter table public.resenas enable row level security;
 
@@ -52,7 +57,7 @@ grant execute on function public.mi_resena() to authenticated;
 -- Escribir o editar mi reseña: queda pendiente hasta que la revisen
 create or replace function public.guardar_resena(p_estrellas integer, p_texto text, p_acepto boolean)
 returns jsonb language plpgsql volatile security definer set search_path = '' as $$
-declare uid uuid := auth.uid(); tx text := regexp_replace(btrim(coalesce(p_texto, '')), '\s+', ' ', 'g'); antes public.resenas;
+declare uid uuid := auth.uid(); tx text := regexp_replace(btrim(coalesce(p_texto, '')), '\s+', ' ', 'g'); antes public.resenas; rx int; rs date;
 begin
   if uid is null then raise exception 'sin sesión'; end if;
   if not coalesce(p_acepto, false) then raise exception 'falta aceptar'; end if;
@@ -65,9 +70,14 @@ begin
   -- Un respiro entre cambios (doble toque en Enviar)
   if antes.id is not null and antes.editada > now() - interval '8 seconds' then raise exception 'espera un momento'; end if;
   perform public.jugador_codigo(uid);  -- su ID de 5 dígitos, para mostrarlo en la tarjeta
-  insert into public.resenas (usuario, estrellas, texto)
-  values (uid, p_estrellas, tx)
+  -- Su rango ahora: el mejor entre esta semana y la anterior (un lunes recién empieza en cero)
+  select x.xp, x.semana into rx, rs from public.xp_semana x
+   where x.usuario = uid and x.semana in (public.cz_lunes(), public.cz_lunes() - 7)
+   order by x.xp desc limit 1;
+  insert into public.resenas (usuario, estrellas, texto, rango_xp, rango_semana)
+  values (uid, p_estrellas, tx, coalesce(rx, 0), coalesce(rs, public.cz_lunes()))
   on conflict (usuario) do update set estrellas = excluded.estrellas, texto = excluded.texto,
+    rango_xp = excluded.rango_xp, rango_semana = excluded.rango_semana,
     estado = 'pendiente', destacada = false, editada = now(), revisada = null, revisor = null;
   return public.mi_resena();
 end $$;
@@ -98,7 +108,7 @@ returns jsonb language sql stable security definer set search_path = '' as $$
         'foto', (select p.foto_url from public.perfiles p where p.id = r.usuario and p.foto_url like 'https://%'),
         'avatar', c.puesto ->> 'avatar', 'marco', c.puesto ->> 'marco', 'fondo', c.puesto ->> 'racha',
         'codigo', j.codigo,
-        'xp_semana', coalesce((select x.xp from public.xp_semana x where x.usuario = r.usuario and x.semana = public.cz_lunes()), 0)
+        'rango_xp', coalesce(r.rango_xp, 0), 'rango_semana', r.rango_semana
       ) as x
       from public.resenas r
       left join public.coleccion_puesto c on c.usuario = r.usuario
@@ -131,6 +141,7 @@ begin
         'avatar', c.puesto ->> 'avatar', 'marco', c.puesto ->> 'marco', 'fondo', c.puesto ->> 'racha',
         'xp_total', public.jugador_xp_total(r.usuario),
         'xp_semana', coalesce((select x.xp from public.xp_semana x where x.usuario = r.usuario and x.semana = public.cz_lunes()), 0),
+        'rango_xp', coalesce(r.rango_xp, 0), 'rango_semana', r.rango_semana,
         'alta', (select a.created_at from auth.users a where a.id = r.usuario)
       ) order by case r.estado when 'pendiente' then 0 when 'publicada' then 1 else 2 end,
                  case when r.estado = 'publicada' then r.destacada end desc nulls last,

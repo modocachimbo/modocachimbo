@@ -21,9 +21,10 @@
     for (var i = 1; i <= 5; i++) s += '<i class="' + (i <= n ? 'on' : '') + '">★</i>';
     return '<span class="rs-est' + (cls ? ' ' + cls : '') + '" role="img" aria-label="' + n + ' de 5 estrellas">' + s + '</span>';
   }
-  // Color de la tarjeta: el del rango de la semana (assets/rango.js); sin rango, lima
-  function rango(xp) {
-    var R = window.MCRango, n = R ? R.nivel(xp) : -1;
+  // Color de la tarjeta: el del rango que tenía al enviarla (assets/rango.js; la tabla
+  // depende de esa semana); sin rango, lima
+  function rango(xp, semana) {
+    var R = window.MCRango, n = R ? R.nivel(xp, semana || undefined) : -1;
     return n < 0 ? null : { n: n, nom: R.nombre(n), c: R.color(n).c, img: R.svg(n, { mini: true }) };
   }
   // Foto con su marco (assets/tarjeta-perfil.js). Con sesión se toca para ver su tarjeta.
@@ -34,7 +35,7 @@
     return '<span class="rs-av rs-av-sola">' + (/^https:\/\//.test(r.foto || '') ? '<img src="' + esc(r.foto) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : ini) + '</span>';
   }
   function tarjeta(r, estilo, conSesion) {
-    var rg = rango(r.xp_semana);
+    var rg = rango(r.rango_xp, r.rango_semana);
     return '<article class="rs-card" style="--c:' + (rg ? rg.c : '#C6E000') + '">' + estrellas(r.estrellas) +
       '<p class="rs-tx">“' + esc(r.texto) + '”</p>' +
       '<div class="rs-yo">' + foto(r, conSesion) +

@@ -156,7 +156,7 @@ async function rspMover(id, dir) {
 function rspVerAlumno(id) {
   const x = RSP.lista.find(r => r.id === id); if (!x) return;
   const mil = n => Number(n || 0).toLocaleString('es-PE');
-  const rg = window.MCRango && MCRango.nivel(x.xp_semana) >= 0 ? MCRango.nombre(MCRango.nivel(x.xp_semana)) : 'Sin rango';
+  const rgo = (xp, sem) => window.MCRango && MCRango.nivel(xp, sem || undefined) >= 0 ? MCRango.nombre(MCRango.nivel(xp, sem || undefined)) : 'Sin rango';
   const o = document.createElement('div'); o.className = 'ov';
   o.innerHTML = `<div class="mcard" style="max-width:560px"><button class="mx" type="button" aria-label="Cerrar">✕</button>
     <div class="eyebrow">Reseña #${x.id} · ${esc(x.estado)}</div><h3>${esc(x.apodo || 'Sin apodo')}</h3>
@@ -165,7 +165,8 @@ function rspVerAlumno(id) {
       <div><b>${x.codigo || '—'}</b>ID de alumno</div>
       <div><b>${esc(x.nombre || '—')}</b>Nombre</div>
       <div><b>${esc(x.carrera || '—')}</b>Carrera${x.modalidad ? ' · ' + esc(x.modalidad) : ''}</div>
-      <div><b>${esc(rg)}</b>Rango de la semana (${mil(x.xp_semana)} XP)</div>
+      <div><b>${esc(rgo(x.rango_xp, x.rango_semana))}</b>Rango al enviarla (sale en su tarjeta)</div>
+      <div><b>${esc(rgo(x.xp_semana))}</b>Rango esta semana (${mil(x.xp_semana)} XP)</div>
       <div><b>${mil(x.xp_total)} XP</b>En total</div>
       <div><b>${rspFecha(x.alta) || '—'}</b>Se registró</div>
     </div>
