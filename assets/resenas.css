@@ -96,8 +96,8 @@
 .rsf-cont { display: flex; justify-content: flex-end; margin-top: 4px; }
 .rsf-n { font-size: 12px; font-weight: 800; color: var(--text-faint); }
 .rsf-n.falta { color: #FF9600; }
-.rsf-ok { display: flex; gap: 10px; align-items: flex-start; margin: 10px 0 14px; font-size: 13px; font-weight: 700; color: var(--text-dim); line-height: 1.45; cursor: pointer; }
-.rsf-ok input { width: 18px; height: 18px; margin-top: 1px; flex-shrink: 0; accent-color: #C6E000; }
+.rsf-ok { display: flex; gap: 8px; align-items: flex-start; margin: 10px 0 14px; font-size: 13px; font-weight: 700; color: var(--text-dim); line-height: 1.45; }
+.rsf-ok svg { width: 17px; height: 17px; margin-top: 1px; flex-shrink: 0; color: var(--text-faint); }
 .rsf-acc { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .rsf-borrar { background: none; border: 0; color: var(--text-dim); font: 900 13px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .5px; cursor: pointer; padding: 8px; }
 .rsf-borrar:hover, .rsf-borrar[data-seguro="1"] { color: #FF6E6E; }
