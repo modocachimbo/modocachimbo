@@ -7,7 +7,7 @@
        MCResenas.slider(el, { estilo: 'bv' | 'juego', pie: html junto a las flechas })
      el lleva dentro .rs-prom (promedio, opcional) y .rs-cuerpo (tarjetas).
    - Formulario «Tu reseña» del perfil: estrellas, texto (20 a 280 letras)
-     y el permiso para mostrar apodo y foto. Queda pendiente hasta que un
+     y un aviso de que salen su apodo, foto e ID. Queda pendiente hasta que un
      admin la publica desde el panel → Reseñas.
        MCResenas.formulario(el)
    - MCResenas.tarjeta(r, estilo): una tarjeta suelta (la vista previa del panel).
@@ -48,7 +48,7 @@
     if (document.querySelector('link[href*="resenas.css"]')) return;
     var s = document.currentScript || document.querySelector('script[src*="resenas.js"]');
     var l = document.createElement('link'); l.rel = 'stylesheet';
-    l.href = (s && s.src ? s.src.replace(/resenas\.js(\?.*)?$/, '') : 'assets/') + 'resenas.css?v=1';
+    l.href = (s && s.src ? s.src.replace(/resenas\.js(\?.*)?$/, '') : 'assets/') + 'resenas.css?v=2';
     document.head.appendChild(l);
   }
 
@@ -146,7 +146,7 @@
         }).join('') + '</div>' +
         '<textarea class="rsf-tx" maxlength="' + MAX + '" rows="4" placeholder="¿Qué es lo que más te sirve de Modo Cachimbo? ¿Qué mejorarías?">' + esc(mia ? mia.texto : '') + '</textarea>' +
         '<div class="rsf-cont"><span class="rsf-n"></span></div>' +
-        '<label class="rsf-ok"><input type="checkbox"' + (mia ? ' checked' : '') + '> <span>Acepto que mi apodo, mi foto de perfil y mi ID aparezcan junto a mi reseña.</span></label>' +
+        '<p class="rsf-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.5"/></svg><span>Tu apodo, tu foto de perfil y tu ID aparecerán junto a tu reseña.</span></p>' +
         '<div class="rsf-acc"><button type="button" class="btn-cel rsf-enviar">' + (mia ? 'Guardar cambios' : 'Enviar reseña') + '</button>' +
         (mia ? '<button type="button" class="rsf-borrar">Borrar</button>' : '') + '<span class="rsf-msg" role="status"></span></div>';
       contar();
@@ -168,10 +168,9 @@
       if (e.target.closest('.rsf-borrar')) borrar(e.target.closest('.rsf-borrar'));
     });
     function enviar(btn) {
-      var tx = el.querySelector('.rsf-tx').value.trim(), ok = el.querySelector('.rsf-ok input').checked;
+      var tx = el.querySelector('.rsf-tx').value.trim();
       if (!est) return msg('Elige de 1 a 5 estrellas.', true);
       if (tx.length < MIN) return msg('Escribe al menos ' + MIN + ' letras.', true);
-      if (!ok) return msg('Marca la casilla para poder mostrarla.', true);
       btn.disabled = true; msg('Enviando…');
       MCAuth.listo.then(function (c) { return c.rpc('guardar_resena', { p_estrellas: est, p_texto: tx, p_acepto: true }); }).then(function (r) {
         if (r.error) throw r.error;
