@@ -21,6 +21,7 @@ const EQ_PERMISOS = [
     ['tematicas', 'Temáticas', 'Cambiar la temática de la web (Halloween…) y sus fechas'],
     ['codigos', 'Códigos', 'Crear, borrar y liberar códigos. Ojo: da acceso al contenido pagado'],
     ['regalos', 'Regalos', 'Dar corazones, corazones infinitos, XP o ítems a un alumno por su ID'],
+    ['resenas', 'Reseñas', 'Publicar, ocultar, destacar y ordenar las reseñas de la app que dejan los alumnos'],
   ]],
   ['Contenido', [
     ['subir', 'Subir tema', 'Publicar temas nuevos o agregarles preguntas'],
