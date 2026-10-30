@@ -637,14 +637,14 @@
       sem.push({ semana: key, xp: pas[key] || 0, num: Math.round((dd - f0) / 6048e5) + 1 });
     }
     $('rgHist').innerHTML = sem.map(function (x) {
-      var r = MCRango.nivel(x.xp), cab = '<div class="cab"><b>Semana ' + x.num + '</b><small>' + MCRango.fechas(x.semana) + '</small></div>';
+      var r = MCRango.nivel(x.xp, x.semana), cab = '<div class="cab"><b>Semana ' + x.num + '</b><small>' + MCRango.fechas(x.semana) + '</small></div>';
       return r < 0
         ? '<div class="rg-sem sin">' + cab + '<div class="nm">Sin rango</div><span class="em vacio">—</span><div class="xp">' + (x.xp ? miles(x.xp) + ' XP' : 'Sin jugar') + '</div></div>'
         : '<div class="rg-sem" style="--c:' + MCRango.color(r).c + '">' + cab + '<div class="nm">' + esc(MCRango.nombre(r)) + '</div>' + emb(r) + '<div class="xp">' + miles(x.xp) + ' XP</div></div>';
     }).join('');
     // Cuántas veces llegaste a cada rango (toca uno para ver esas semanas)
     var porRango = [];
-    claves.forEach(function (key) { var r = MCRango.nivel(pas[key]); if (r >= 0) (porRango[r] = porRango[r] || []).unshift({ semana: key, xp: pas[key] }); });
+    claves.forEach(function (key) { var r = MCRango.nivel(pas[key], key); if (r >= 0) (porRango[r] = porRango[r] || []).unshift({ semana: key, xp: pas[key] }); });
     h = '';
     for (var r = N - 1; r >= 0; r--) if (porRango[r]) h += '<button type="button" data-n="' + r + '" style="--c:' + MCRango.color(r).c + '">' + emb(r) + esc(MCRango.nombre(r)) + ' ×' + porRango[r].length + '</button>';
     $('rgRes').innerHTML = h;
