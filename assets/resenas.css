@@ -1,0 +1,106 @@
+/* =========================================================
+   Modo Cachimbo · Reseñas (assets/resenas.js)
+   .rs-bv: bienvenida (redondeado) · .rs-juego: inicio (estilo juego)
+   .rsf-*: formulario «Tu reseña» del perfil
+   ========================================================= */
+.rs[hidden] { display: none !important; }
+.rs-pista { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
+.rs-pista::-webkit-scrollbar { display: none; }
+.rs-pista:focus-visible { outline: 2px solid var(--accent, #C6E000); outline-offset: 4px; }
+.rs-card { flex: 0 0 calc((100% - 28px) / 3); scroll-snap-align: start; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.rs-est { display: inline-flex; gap: 2px; line-height: 1; }
+.rs-est i { font-style: normal; font-size: 17px; color: #3a3260; }
+.rs-est i.on { color: #FFC800; }
+.rs-tx { flex: 1; margin: 0; overflow-wrap: anywhere; }
+.rs-yo { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding-top: 12px; border-top: 1px solid var(--borde, var(--border, #2A2346)); }
+.rs-yo .rs-av { width: 42px; height: 42px; }
+.rs-av-sola { display: grid; place-items: center; border-radius: 50%; overflow: hidden; background: #2A2346; color: #C6E000; font: 900 18px Nunito, sans-serif; }
+.rs-av-sola img { width: 100%; height: 100%; object-fit: cover; }
+.rs-nom { display: grid; gap: 3px; min-width: 0; }
+.rs-nom b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rs-nom small { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+.rs-nom small .mc-rgo-em { width: 18px; height: 18px; object-fit: contain; }
+.rs-pie { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 12px; }
+.rs-nav { display: flex; align-items: center; justify-content: center; gap: 14px; }
+.rs-nav[hidden] { display: none; }
+.rs-flecha { width: 36px; height: 36px; display: grid; place-items: center; cursor: pointer; font-size: 20px; line-height: 1; }
+.rs-puntos { display: flex; gap: 6px; }
+.rs-puntos i { width: 7px; height: 7px; transition: width .2s; }
+.rs-puntos i.on { width: 22px; }
+.rs-vacio { margin: 0; padding: 18px; }
+
+/* ---------- Bienvenida ---------- */
+.rs-bv { width: 100%; max-width: 920px; margin-top: 26px; }
+.rs-bv .rs-cab { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 14px; padding: 0 4px; }
+.rs-bv .rs-cab h2 { margin: 0; font: 800 20px/1.2 'Sora', sans-serif; color: var(--text); }
+.rs-bv .rs-cab h2 span { color: var(--accent); }
+.rs-bv .rs-prom { display: flex; align-items: center; gap: 8px; color: var(--text-dim); font-size: 13px; font-weight: 700; white-space: nowrap; }
+.rs-bv .rs-prom b { color: var(--text); font: 800 22px 'Sora', sans-serif; }
+.rs-bv .rs-prom .rs-est i { font-size: 15px; }
+.rs-bv .rs-pista { padding: 4px 4px 8px; }
+.rs-bv .rs-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 18px 18px 16px; }
+.rs-bv .rs-tx { color: var(--text); font-size: 14px; line-height: 1.55; font-weight: 600; }
+.rs-bv .rs-nom b { color: var(--text); font-size: 14px; font-weight: 900; }
+.rs-bv .rs-nom small { color: var(--text-dim); font-size: 12px; font-weight: 700; }
+.rs-bv .rs-id { color: var(--text-faint); font-size: 12px; font-weight: 800; }
+.rs-bv .rs-flecha { border-radius: 50%; border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+.rs-bv .rs-flecha:hover { border-color: var(--accent); color: var(--accent); }
+.rs-bv .rs-puntos i { border-radius: 99px; background: #3a3260; }
+.rs-bv .rs-puntos i.on { background: var(--accent); }
+@media (max-width: 760px) {
+  .rs-bv .rs-card { flex-basis: 86%; }
+  .rs-bv .rs-cab { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .rs-bv .rs-flecha { display: none; }
+}
+
+/* ---------- Inicio (estilo juego) ---------- */
+.rs-juego .rs-prom { display: flex; align-items: center; gap: 6px; color: var(--suave); font: 700 15px var(--display); text-transform: uppercase; letter-spacing: .03em; white-space: nowrap; }
+.rs-juego .rs-prom b { color: var(--amarillo-tx); font-size: 22px; }
+.rs-juego .rs-prom .rs-est i { font-size: 14px; }
+.rs-juego .rs-pista { gap: 12px; padding-bottom: 6px; }
+.rs-juego .rs-card { flex-basis: calc((100% - 36px) / 4); position: relative; background: var(--tarjeta); border: 1px solid var(--borde); border-bottom: 4px solid var(--c); padding: 16px 16px 14px; box-shadow: var(--sombra-tarjeta); }
+.rs-juego .rs-card::before { content: "”"; position: absolute; right: 12px; top: -6px; font: italic 900 70px/1 var(--display); color: var(--c); opacity: .35; pointer-events: none; }
+.rs-juego .rs-tx { font: 700 15px/1.45 var(--cuerpo); color: var(--texto); }
+.rs-juego .rs-nom b { font: 800 18px/1 var(--display); text-transform: uppercase; letter-spacing: .03em; color: var(--texto); }
+.rs-juego .rs-nom small { color: var(--suave); font: 700 14px/1 var(--display); text-transform: uppercase; letter-spacing: .03em; }
+.rs-juego .rs-id { font: 800 15px var(--display); color: var(--suave); }
+.rs-juego .rs-flecha { background: var(--tarjeta); border: 1px solid var(--borde); color: var(--texto); }
+.rs-juego .rs-flecha:hover { border-color: var(--lima); color: var(--lima-tx); }
+.rs-juego .rs-puntos i { background: var(--borde); }
+.rs-juego .rs-puntos i.on { background: var(--lima); }
+.rs-juego .rs-pie { justify-content: flex-start; }
+.rs-juego .rs-deja { margin-left: auto; padding: 10px 18px; background: var(--lima); color: var(--sobre-lima); font: 800 16px/1 var(--display); text-transform: uppercase; letter-spacing: .04em; text-decoration: none; clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%); white-space: nowrap; }
+.rs-juego .rs-deja:hover { filter: brightness(1.06); }
+.rs-juego .rs-vacio { background: var(--tarjeta); border: 1px solid var(--borde); color: var(--suave); font: 700 15px/1.45 var(--cuerpo); }
+@media (max-width: 900px) {
+  .rs-juego .rs-card { flex-basis: 82%; }
+  .rs-juego .rs-flecha { display: none; }
+}
+@media (min-width: 901px) and (max-width: 1250px) { .rs-juego .rs-card { flex-basis: calc((100% - 24px) / 3); } }
+@media (prefers-reduced-motion: reduce) { .rs-pista { scroll-behavior: auto; } .rs-puntos i { transition: none; } }
+
+/* ---------- Formulario del perfil ---------- */
+.rsf-estado { display: grid; gap: 2px; margin: 14px 0 4px; padding: 10px 14px; border-radius: 14px; border: 2px solid; font-size: 13px; line-height: 1.45; }
+.rsf-estado b { font: 1000 13px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .5px; }
+.rsf-estado span { color: var(--text-dim); font-weight: 700; }
+.rsf-estado.pend { border-color: rgba(255,200,0,.4); background: rgba(255,200,0,.08); color: #FFC800; }
+.rsf-estado.pub { border-color: rgba(88,204,2,.45); background: rgba(88,204,2,.08); color: #58CC02; }
+.rsf-estado.ocu { border-color: #352E58; color: var(--text-dim); }
+.rsf-est { display: flex; gap: 6px; margin: 14px 0 10px; }
+.rsf-est button { width: 46px; height: 46px; border-radius: 14px; border: 2px solid #352E58; border-bottom-width: 4px; background: var(--surface-2); color: #3a3260; font-size: 26px; line-height: 1; cursor: pointer; transition: transform .08s; }
+.rsf-est button.on { color: #FFC800; border-color: #8a6a00; background: rgba(255,200,0,.1); }
+.rsf-est button:active { transform: translateY(2px); }
+.rsf-tx { width: 100%; box-sizing: border-box; resize: vertical; min-height: 96px; background: var(--surface-2); border: 2px solid #352E58; border-bottom-width: 4px; border-radius: 14px; padding: 12px 14px; color: var(--text); font: 700 15px/1.5 Nunito, sans-serif; }
+.rsf-tx:focus { outline: none; border-color: var(--cel, #1CB0F6); }
+.rsf-tx::placeholder { color: var(--text-faint); }
+.rsf-cont { display: flex; justify-content: flex-end; margin-top: 4px; }
+.rsf-n { font-size: 12px; font-weight: 800; color: var(--text-faint); }
+.rsf-n.falta { color: #FF9600; }
+.rsf-ok { display: flex; gap: 10px; align-items: flex-start; margin: 10px 0 14px; font-size: 13px; font-weight: 700; color: var(--text-dim); line-height: 1.45; cursor: pointer; }
+.rsf-ok input { width: 18px; height: 18px; margin-top: 1px; flex-shrink: 0; accent-color: #C6E000; }
+.rsf-acc { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.rsf-borrar { background: none; border: 0; color: var(--text-dim); font: 900 13px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .5px; cursor: pointer; padding: 8px; }
+.rsf-borrar:hover, .rsf-borrar[data-seguro="1"] { color: #FF6E6E; }
+.rsf-msg { font-size: 13px; font-weight: 800; color: var(--text-dim); }
+.rsf-msg.ok { color: #58CC02; }
+.rsf-msg.mal { color: #FF6E6E; }

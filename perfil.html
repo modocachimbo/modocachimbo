@@ -578,6 +578,16 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
         <a class="btn-mor" href="simulacro.html">Crear un simulacro</a>
       </section>
 
+      <!-- Tu reseña de la app: sale en la bienvenida y el inicio cuando el profe la publica (assets/resenas.js) -->
+      <h2 class="sec-tit bc" style="--tc:var(--amb)">Tu reseña</h2>
+      <section class="panel" id="resena">
+        <div class="sec-cab">
+          <span class="sec-ic" style="color:#FFC800;background:rgba(255,200,0,.12);border-color:rgba(255,200,0,.4)"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5L2.5 9.3l6.6-.8z"/></svg></span>
+          <div><h2>¿Qué te parece Modo Cachimbo?</h2><p class="nota">Cuéntales a otros cachimbos cómo te ayuda. Si el profe la aprueba, sale en la página de inicio.</p></div>
+        </div>
+        <div id="resenaForm"></div>
+      </section>
+
       <!-- 4. Tu colección y tu cuenta -->
       <h2 class="sec-tit bc" style="--tc:var(--accent)">Mi colección</h2>
       <!-- Mi colección (coleccion.html): tus pines y lo que tienes -->
@@ -1300,6 +1310,20 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
   })();
 </script>
 <script src="assets/sonido.js"></script>
+<script src="assets/resenas.js?v=1"></script>
+<script>
+  // Tu reseña (assets/resenas.js): se carga con la sesión; perfil.html#resena baja hasta ella
+  if (window.MCAuth && window.MCResenas) MCAuth.listo.then(function () {
+    var hecho = false;
+    function ver(u) {
+      if (!u || hecho) return;
+      hecho = true;
+      MCResenas.formulario(document.getElementById('resenaForm'));
+      if (location.hash === '#resena') setTimeout(function () { document.getElementById('resena').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 400);
+    }
+    ver(MCAuth.usuario()); MCAuth.alCambiar(ver);
+  }, function () {});
+</script>
 <script>
   /* Listas largas: muestran 3 y el resto con «Ver más» */
   (function () {

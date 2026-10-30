@@ -920,7 +920,7 @@ button.juego { width: 100%; text-align: left; font: inherit; color: #fff; }
 .cab .sal-grupo > span:last-child { display: none; }
 /* PC: el Top simulacro va al final a todo el ancho (podio a la izquierda, lista a la derecha), y el pie debajo */
 @media (min-width: 901px) {
-  .fila2 > #topSim, .fila2 > #apoya { grid-column: 1 / -1; grid-row: auto; }
+  .fila2 > #topSim, .fila2 > #resenas, .fila2 > #apoya { grid-column: 1 / -1; grid-row: auto; }
   #topSim .top { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: start; }
   #topSim .top-cab { grid-column: 1 / -1; }
   #topSim .podio { grid-column: 1; grid-row: 2 / span 2; }
@@ -1166,6 +1166,10 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
         <p class="bv-ayuda">¿Problemas para entrar? <a id="bvWhatsapp" href="#" target="_blank" rel="noopener noreferrer">Escríbeme por WhatsApp</a></p>
       </div>
     </div>
+    <section class="rs" id="resenasBv" hidden aria-label="Reseñas de alumnos">
+      <div class="rs-cab"><h2>Lo que dicen los <span>cachimbos</span></h2><span class="rs-prom"></span></div>
+      <div class="rs-cuerpo"></div>
+    </section>
     <div class="bv-pie">@ProfeRojitas</div>
   </section>
 
@@ -1300,6 +1304,11 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
         </div>
       </section>
 
+      <section class="sec rs" id="resenas" hidden>
+        <div class="sec-cab"><h2 class="tit">Reseñas</h2><span class="rs-prom" style="order:2"></span></div>
+        <div class="rs-cuerpo"></div>
+      </section>
+
       <div class="sec" id="apoya">
 <footer>
       <div class="footer-row">
@@ -1362,6 +1371,18 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
 <script src="assets/buho/buho-vivo.js"></script>
 <script src="assets/buho.js"></script>
 <script src="assets/inicio.js?v=181"></script>
+<script src="assets/resenas.js?v=1"></script>
+<script>
+  // Reseñas: en la bienvenida sin sesión y en el inicio con sesión (assets/resenas.js)
+  if (window.MCAuth && window.MCResenas) MCAuth.listo.then(function () {
+    var bv = false, ini = false;
+    function ver(u) {
+      if (u && !ini) { ini = true; MCResenas.slider(document.getElementById('resenas'), { estilo: 'juego', pie: '<a class="rs-deja" href="perfil.html#resena">Deja tu reseña</a>' }); }
+      if (!u && !bv) { bv = true; MCResenas.slider(document.getElementById('resenasBv'), { estilo: 'bv' }); }
+    }
+    ver(MCAuth.usuario()); MCAuth.alCambiar(ver);
+  }, function () {});
+</script>
 <script>if (window.MCCandado) MCCandado.vigilar({ cintas: '.juego, .area-card, .fc-c, .ex-mod-link', chicas: '.fc-c, .ex-mod-link' });</script>
 <script src="assets/alertas.js" defer></script>
 <script src="assets/tutorial.js" defer></script>
