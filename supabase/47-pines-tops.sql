@@ -6,8 +6,8 @@
 --
 --   · Los tops (ranking_xp, ranking_simulacro y ranking_duelos) mandan
 --     además el primer pin de la vitrina de cada alumno (pin) y si es
---     del equipo (admin). Al lado del nombre sale el mismo pin de su
---     tarjeta: el de verificado si es admin; si no, su primer pin.
+--     del equipo (admin). En la esquina de su foto sale el mismo pin de
+--     su tarjeta: el de admin verificado si es admin; si no, su primer pin.
 --   · Nunca se manda el correo.
 -- =========================================================
 

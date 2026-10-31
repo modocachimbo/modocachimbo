@@ -519,7 +519,7 @@
 <script src="assets/ranking.js"></script>
 <script src="assets/rango.js"></script>
 <script src="assets/coleccion.js?v=181"></script>
-<script src="assets/tarjeta-perfil.js?v=194"></script>
+<script src="assets/tarjeta-perfil.js?v=195"></script>
 <style id="mc-claro">
 /* Modo claro de esta página (assets/claro.css trae lo común) */
 html[data-modo="claro"] .eyebrow { color: #6F8000 !important; }
@@ -1670,8 +1670,6 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   const ganados = n => (+n || 0) + ' <small>' + (+n === 1 ? 'ganado' : 'ganados') + '</small>';
   // Foto con marco dorado y nivel: se toca para ver su tarjeta (assets/tarjeta-perfil.js)
   const foto = x => window.MCTarjeta ? MCTarjeta.foto(x, 'letra') : '<span class="letra" style="background:' + AV[(x.puesto - 1) % AV.length] + '">' + esc(inicial(x.apodo)) + '</span>';
-  // Nombre con el pin que lleva (assets/tarjeta-perfil.js)
-  const nom = (x, txt) => window.MCTarjeta && MCTarjeta.nombre ? MCTarjeta.nombre(x, txt) : esc(txt);
   function emblema(xp) {
     if (xp == null || !window.MCRango) return '<span class="em"></span>';
     const n = MCRango.nivel(xp);
@@ -1683,7 +1681,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     return n < 0 ? '' : '<span class="rg">' + MCRango.svg(n, { mini: true, quieto: true }) + '<small style="color:' + MCRango.color(n).c + '">' + MCRango.nombre(n) + '</small></span>';
   }
   function filaTop(x, extra) {
-    return '<li class="' + (x.yo ? 'tu' : '') + (extra ? ' extra' : '') + '"><span class="num">' + x.puesto + '</span>' + foto(x) + '<span class="quien">' + nom(x, x.yo ? 'Tú' : x.apodo) + '</span>' +
+    return '<li class="' + (x.yo ? 'tu' : '') + (extra ? ' extra' : '') + '"><span class="num">' + x.puesto + '</span>' + foto(x) + '<span class="quien">' + esc(x.yo ? 'Tú' : x.apodo) + '</span>' +
       emblema(x.xp) + '<b>' + ganados(x.puntaje) + '</b></li>';
   }
   function pintarRanking(filas) {
@@ -1697,7 +1695,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     podio.innerHTML = '<div class="foco" aria-hidden="true"></div>' + [2, 1, 3].map(p => {
       const x = top.filter(t => t.puesto === p)[0];
       if (!x) return '<div class="lugar l' + p + ' vacio"><span class="aro"><span class="letra" style="background:var(--surface-2);color:var(--dim)">?</span></span><b>Libre</b><span class="pts">—</span><span class="bloque"><i class="cara"></i><span class="frente">' + p + '</span></span></div>';
-      return '<div class="lugar l' + p + '">' + (p === 1 ? CORONA : '') + '<span class="aro">' + foto(x) + '</span><b>' + nom(x, x.yo ? 'Tú' : x.apodo) + '</b>' + rangoTop(x.xp) +
+      return '<div class="lugar l' + p + '">' + (p === 1 ? CORONA : '') + '<span class="aro">' + foto(x) + '</span><b>' + esc(x.yo ? 'Tú' : x.apodo) + '</b>' + rangoTop(x.xp) +
         '<span class="pts">' + ganados(x.puntaje) + '</span><span class="bloque"><i class="cara"></i><span class="frente">' + p + '</span></span></div>';
     }).join('');
     const resto = top.filter(x => x.puesto > 3);

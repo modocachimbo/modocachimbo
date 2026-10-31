@@ -11,7 +11,7 @@
      total (para el nivel) y el pin de verificado salen de mi_tarjeta()
      (supabase/36-tarjeta-jugador.sql).
    - La tarjeta grande de perfil.html usa lo mismo: MCTarjeta.arte, .icono,
-     .nivel, .pin, .jugador y .alJugador. Los tops usan .foto y .nombre (nombre con su pin).
+     .nivel, .pin, .jugador y .alJugador.
    ========================================================= */
 (function () {
   if (window.MCTarjeta) return;
@@ -76,7 +76,7 @@
   // Tu pin personal: el verificado si eres del equipo; si no, el primero de tu vitrina
   function pin() {
     var C = window.MCColeccion;
-    if (yo && yo.admin) return { html: icono('ver'), nom: 'Verificado', como: 'Solo lo llevan los administradores de Modo Cachimbo.' };
+    if (yo && yo.admin) return { html: icono('ver'), nom: 'Admin verificado', como: 'Solo lo llevan los administradores de Modo Cachimbo.' };
     var id = C && C.puesto('pines')[0], x = id && C.item(id);
     return x ? { html: C.pin(x), nom: x.nom, como: C.como(x) } : null;
   }
@@ -264,35 +264,32 @@
   function foto(x, cls) {
     hoja();
     var v = vista(x), xt = x.xp_total != null ? x.xp_total : x.yo && yo ? yo.xp_total : null;
+    var p = pinDe(x);
+    if (p && window.MCColeccion) MCColeccion.css();
     var cod = x.codigo || (x.yo && yo ? yo.codigo : ''), nom = x.yo ? 'tu perfil' : 'el perfil de ' + (x.apodo || 'este alumno');
     return '<span class="' + (cls || '') + ' mcj-f"' + (cod ? ' data-jug="' + esc(cod) + '" role="button" tabindex="0" aria-label="Ver ' + esc(nom) + '"' : '') +
       ' style="--f1:' + v.tema[0] + ';--f2:' + v.tema[3] + (v.marco ? ';--m:' + v.marco : '') + '"><i class="mcj-fr"><i class="mcj-av">' +
       (v.img ? '<img src="' + esc(v.img) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : inicial(x.apodo)) + '</i></i>' +
-      (xt != null ? '<i class="mcj-nv">' + nivel(xt) + '</i>' : '') + '</span>';
+      (xt != null ? '<i class="mcj-nv">' + nivel(xt) + '</i>' : '') +
+      (p ? '<i class="mcj-pin" title="' + esc(p.nom) + '">' + p.html + '</i>' : '') + '</span>';
   }
 
-  // Pin al lado del nombre en los tops (supabase/47-pines-tops.sql): el mismo de su tarjeta,
-  // el de verificado si es del equipo; si no, el primero de su vitrina. Tu fila usa el tuyo (si aún no carga, lo del top).
+  // Pin en la esquina de la foto de los tops (supabase/47-pines-tops.sql), como en tu tarjeta:
+  // el de admin verificado si es del equipo; si no, el primero de su vitrina.
+  // Tu fila usa el tuyo (si aún no carga, lo del top).
   function pinDe(x) {
     var mio = x.yo && pin();
     if (mio) return mio;
-    if (x.admin) return { html: icono('ver'), nom: 'Verificado' };
+    if (x.admin) return { html: icono('ver'), nom: 'Admin verificado' };
     var C = window.MCColeccion, px = C && x.pin && C.item(x.pin);
     return px ? { html: C.pin(px), nom: px.nom } : null;
-  }
-  // Nombre (txt) con su pin; sin pin queda el texto solo
-  function nombre(x, txt) {
-    var p = pinDe(x);
-    if (!p) return esc(txt);
-    hoja(); if (window.MCColeccion) MCColeccion.css();
-    return '<span class="mcj-n"><span class="mcj-nt">' + esc(txt) + '</span><i class="mcj-pin" title="' + esc(p.nom) + '" aria-label="' + esc(p.nom) + '">' + p.html + '</i></span>';
   }
 
   // La tarjeta grande de otro alumno (lo que devuelve ver_jugador en supabase/38-ver-jugador.sql)
   function tarjetaHtml(d) {
     var C = window.MCColeccion, v = vista(d), p = d.puesto || {};
     var tit = C && (C.item(p.titulo) || C.item('titulo-cachimbo')), pin = null;
-    if (d.admin) pin = { html: icono('ver'), nom: 'Verificado' };
+    if (d.admin) pin = { html: icono('ver'), nom: 'Admin verificado' };
     else if (C && p.pines && p.pines[0] && C.item(p.pines[0])) { var px = C.item(p.pines[0]); pin = { html: C.pin(px), nom: px.nom }; }
     var n = window.MCRango ? MCRango.nivel(d.xp_semana) : -1;
     var st = function (ic, val, lab) { return '<span class="pj-st">' + icono(ic) + '<b>' + val + '</b><small>' + lab + '</small></span>'; };
@@ -366,7 +363,7 @@
   else iniciar();
 
   window.MCTarjeta = {
-    pintar: pintar, arte: arte, icono: icono, nivel: nivel, avance: avance, foto: foto, nombre: nombre, ver: ver, pin: pin, colores: RC,
+    pintar: pintar, arte: arte, icono: icono, nivel: nivel, avance: avance, foto: foto, ver: ver, pin: pin, colores: RC,
     jugador: function () { return yo; },
     alJugador: function (fn) { oyentes.push(fn); if (yo) fn(yo); }
   };
