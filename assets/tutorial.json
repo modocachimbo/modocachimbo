@@ -4,70 +4,96 @@
   "paginas": {
     "inicio": {
       "activa": true,
-      "version": 3,
+      "version": 4,
       "boton": true,
       "pasos": [
         {
           "objetivo": "centro",
           "titulo": "¡Hola, cachimbo! 👋",
-          "texto": "Bienvenido a **Modo Cachimbo**: libros, seminarios, banqueo, repasos, simulacros y duelos para que llegues listo a tu examen de admisión. Te muestro rápido cómo funciona."
+          "texto": "Bienvenido a **Modo Cachimbo**: libros, seminarios, banqueo, repasos, simulacros, duelos y una biblioteca de PDFs para que llegues listo a tu examen de admisión. Te muestro rápido cómo funciona."
         },
         {
-          "objetivo": "racha",
-          "titulo": "Tu racha 🔥",
-          "texto": "Responde **10 preguntas al día** para que tu racha suba. Tienes **1 descanso por semana**; si faltas más, vuelve a cero."
+          "objetivo": "hero",
+          "titulo": "Tu búho 🦉",
+          "texto": "Te acompaña en cada curso. Arriba está **Mi agenda** con tus fechas importantes. Puedes cambiar el búho, el escenario y el fondo en **Mi colección**."
         },
         {
-          "objetivo": "fecha",
-          "titulo": "Tu examen",
-          "texto": "Pon la **fecha de tu examen** en tu perfil y aquí verás cuántos días te quedan."
+          "objetivo": "accesos",
+          "titulo": "Tus accesos",
+          "texto": "**Misiones** del día (XP y corazones), **Colección**, **Ranking**, **Agenda** y **Nuevo**, donde aparecen los temas y cursos que acabamos de subir."
         },
         {
-          "objetivo": "nuevo",
-          "titulo": "Nuevo para ti ✨",
-          "texto": "Cuando subimos un tema o curso nuevo, aparece aquí. Al abrirlo, el aviso desaparece."
+          "objetivo": "rango",
+          "titulo": "Tu rango de la semana 🏆",
+          "texto": "Cada respuesta te da **XP** y tu XP de la semana decide tu rango: **Bronce, Plata, Esmeralda, Zafiro, Amatista, Mítico y Leyenda**. **Leyenda** es el rango máximo, desde **50 000 XP**. Se reinicia cada lunes. Tócalo para ver la escalera completa."
         },
         {
-          "objetivo": "cursos",
-          "titulo": "Elige tu área",
-          "texto": "Aquí están las áreas. Entra a una para ver sus cursos: Biología, Álgebra, Lenguaje y más."
-        },
-        {
-          "objetivo": "duelos",
-          "titulo": "Duelos con amigos ⚔️",
-          "texto": "Reta **hasta a 3 amigos** con las mismas preguntas, cada uno desde su celular. Gana quien acierta más; si empatan, el más rápido."
+          "objetivo": "practicar",
+          "titulo": "¡A practicar! 🔥",
+          "texto": "Toca **¡A practicar!** para seguir donde te quedaste; con **Cambiar** eliges el modo. La barra **Meta de hoy** cuenta tus preguntas: cúmplela para que tu **racha** suba. Tienes **1 descanso por semana**."
         },
         {
           "objetivo": "examenes",
-          "titulo": "Exámenes de admisión",
-          "texto": "Practica con exámenes reales de años anteriores, organizados por modalidad."
+          "titulo": "Modos de estudio",
+          "texto": "**Duelos** en vivo, **Simulacro** (Rápido, Personalizado o Libre), **Exámenes** de admisión pasados, **Flashcards** y la **Biblioteca**. Los que dicen **Con código** se abren con tu código de alumno."
+        },
+        {
+          "objetivo": "biblioteca",
+          "titulo": "Biblioteca 📚 Nuevo",
+          "texto": "Libros, formularios, solucionarios y más en **PDF** para leer aquí mismo, por área y curso, con buscador y filtros. Guarda la página donde te quedaste. Se abre con el código **Biblioteca** (o **Acceso total**)."
         },
         {
           "objetivo": "codigo",
-          "titulo": "¿Tienes un código?",
-          "texto": "Si te dieron un código de acceso, actívalo aquí para desbloquear **Repasos, Fijas, Seminarios, Banqueo** o el **Simulacro**."
+          "titulo": "¿Tienes un código? 🔑",
+          "texto": "Actívalo aquí. Cada código abre su **paquete**: **Acceso general** (las 4 áreas, Simulacro, Duelos y Exámenes), un **área** sola, **Seminarios + Banqueo**, **Vocabulario** o **Biblioteca**. Se guardan en tu cuenta y los ves en **Perfil · Mis accesos**."
+        },
+        {
+          "objetivo": "top",
+          "titulo": "Top de la semana",
+          "texto": "Los que más XP ganan esta semana. Toca una foto para ver la **tarjeta** del alumno; el **pin** de la esquina es el que eligió en su vitrina (tócalo para ver qué es). El tuyo lo eliges en **Colección · Pines**."
+        },
+        {
+          "objetivo": "resenas",
+          "titulo": "Reseñas ⭐",
+          "texto": "Lo que dicen otros cachimbos. Deja la tuya en tu **Perfil**: cuando el profe la aprueba, sale aquí con tu apodo, tu foto y tu rango."
         },
         {
           "objetivo": "menu",
-          "titulo": "Barra de abajo",
-          "texto": "En la app tienes todo a un toque: **Inicio**, tus cursos, los exámenes, el código y tu **Perfil**."
+          "titulo": "Menú",
+          "texto": "Desde aquí llegas a **Inicio**, tus **Cursos**, **Duelo**, **Colección** y tu **Perfil**. En el celular está en la barra de abajo."
         },
         {
           "objetivo": "centro",
           "titulo": "¡Listo! 🎓",
-          "texto": "Puedes volver a ver esta guía cuando quieras con el botón **?**. ¡Éxitos en tu preparación!"
+          "texto": "Cada sección tiene su propia guía. Para verla otra vez, toca **tu foto** arriba y elige **Ver tutorial de esta página**. ¡Éxitos en tu preparación!"
         }
       ]
     },
     "area": {
-      "activa": false,
-      "version": 1,
+      "activa": true,
+      "version": 2,
       "boton": true,
-      "pasos": []
+      "pasos": [
+        {
+          "objetivo": "mixto",
+          "titulo": "Repaso mixto 🔀",
+          "texto": "Mezcla preguntas de **varios cursos y temas** de esta área, los que tú elijas. Ideal para repasar como en el examen."
+        },
+        {
+          "objetivo": "primero",
+          "titulo": "Elige tu curso",
+          "texto": "Entra a un curso para ver su **Libro, Repaso, Fijas, Flashcards, Seminarios y Banqueo**. Toda el área se abre con **Acceso general** o con el código de esta área."
+        },
+        {
+          "objetivo": "volver",
+          "titulo": "Volver",
+          "texto": "Con esta flecha regresas a **Mis cursos** para cambiar de área."
+        }
+      ]
     },
     "curso": {
       "activa": true,
-      "version": 3,
+      "version": 4,
       "boton": true,
       "pasos": [
         {
@@ -78,7 +104,7 @@
         {
           "objetivo": "repaso",
           "titulo": "Repaso 🔁",
-          "texto": "Todas las preguntas del ciclo mezcladas y con **5 vidas**. Perfecto para medir cuánto sabes."
+          "texto": "Todas las preguntas del ciclo mezcladas. Cada error gasta uno de tus **5 corazones**. Perfecto para medir cuánto sabes."
         },
         {
           "objetivo": "fijas",
@@ -86,31 +112,64 @@
           "texto": "Las preguntas más probables, seleccionadas para el examen. ¡No te las pierdas!"
         },
         {
+          "objetivo": "tarjetas",
+          "titulo": "Flashcards",
+          "texto": "Repasa con tarjetas: eliges **Libro, Seminarios o Banqueo**, el ciclo y los temas. Volteas cada tarjeta y marcas si ya te la sabes; las que fallas vuelven a salir."
+        },
+        {
           "objetivo": "seminarios",
           "titulo": "Seminarios 📝",
-          "texto": "Las preguntas de los seminarios del ciclo, tema por tema, con su respuesta marcada."
+          "texto": "Las preguntas de los seminarios del ciclo, tema por tema, con su respuesta marcada y el **profesor** que las preparó."
         },
         {
           "objetivo": "banqueo",
           "titulo": "Banqueo 🏦",
-          "texto": "Un banco grande de preguntas por tema para practicar a fondo antes del examen."
+          "texto": "Un banco grande de preguntas por tema para practicar a fondo. **Seminarios y Banqueo** van juntos en su propio código."
         },
         {
-          "objetivo": "tarjetas",
-          "titulo": "Flashcards",
-          "texto": "Repasa con tarjetas: eliges **Libro, Seminarios o Banqueo**, el año y los temas que quieras. Volteas cada tarjeta y marcas si ya te la sabes; las que fallas vuelven a salir."
+          "objetivo": "centro",
+          "titulo": "Candados 🔒",
+          "texto": "Las tarjetas con la cinta **Con código** piden tu código: Libro, Repaso, Fijas y Flashcards se abren con el código de tu **área** o con **Acceso general**. Tócala y escríbelo ahí mismo."
         }
       ]
     },
     "libros": {
-      "activa": false,
+      "activa": true,
       "version": 1,
       "boton": true,
-      "pasos": []
+      "pasos": [
+        {
+          "objetivo": "anios",
+          "titulo": "Elige un ciclo",
+          "texto": "Cada ciclo trae su propio **temario**. Elige el de tu academia o el más nuevo."
+        },
+        {
+          "objetivo": "anio",
+          "titulo": "Entra al ciclo",
+          "texto": "Toca un ciclo para ver la lista de sus temas."
+        }
+      ]
+    },
+    "temario": {
+      "activa": true,
+      "version": 1,
+      "boton": true,
+      "pasos": [
+        {
+          "objetivo": "temas",
+          "titulo": "Temario",
+          "texto": "Cada tema tiene sus preguntas con la **respuesta marcada**. La barra de arriba te dice cuántos temas ya se publicaron."
+        },
+        {
+          "objetivo": "tema",
+          "titulo": "Abre un tema",
+          "texto": "Toca un tema para estudiarlo con las respuestas, y luego **Practicar** para resolverlo en modo quiz."
+        }
+      ]
     },
     "estudio": {
       "activa": true,
-      "version": 3,
+      "version": 4,
       "boton": true,
       "pasos": [
         {
@@ -126,7 +185,7 @@
         {
           "objetivo": "practicar",
           "titulo": "Ponte a prueba",
-          "texto": "Cuando termines de repasar, toca **Practicar** para resolver el tema en modo quiz."
+          "texto": "Cuando termines de repasar, toca **Practicar** para resolver el tema en modo quiz y ganar **XP**."
         },
         {
           "objetivo": "tarjetas",
@@ -142,7 +201,7 @@
     },
     "quiz": {
       "activa": true,
-      "version": 1,
+      "version": 2,
       "boton": true,
       "pasos": [
         {
@@ -151,9 +210,14 @@
           "texto": "Las preguntas del tema salen **mezcladas**, y también **sus alternativas**: la correcta cambia de letra en cada intento. ¡Así aprendes, no memorizas la clave!"
         },
         {
-          "objetivo": "vidas",
-          "titulo": "5 vidas ❤️",
-          "texto": "Cada error te quita una vida. Al final ves tu puntaje y tus fallas pasan a **Repasar mis falladas** en tu perfil."
+          "objetivo": "stats",
+          "titulo": "Corazones ❤️",
+          "texto": "Tienes **5 vidas** en la ronda. En **Seminarios y Banqueo** cada error también gasta uno de tus corazones del día; en el Libro no. Recuperas 1 cada 3 horas y a medianoche vuelven los 5."
+        },
+        {
+          "objetivo": "reglas",
+          "titulo": "XP y falladas",
+          "texto": "Cada correcta suma **10 puntos** de XP para tu rango. Las que falles se guardan para que las repases en **Repasar mis falladas**."
         },
         {
           "objetivo": "empezar",
@@ -163,26 +227,73 @@
       ]
     },
     "repaso": {
-      "activa": false,
-      "version": 1,
+      "activa": true,
+      "version": 2,
       "boton": true,
-      "pasos": []
+      "pasos": [
+        {
+          "objetivo": "inicio",
+          "titulo": "Repaso del ciclo 🔁",
+          "texto": "Todas las preguntas del ciclo, **mezcladas al azar**. ¡A ver cuánto sabes!"
+        },
+        {
+          "objetivo": "stats",
+          "titulo": "Corazones ❤️",
+          "texto": "Cada error te quita **un corazón**. Si te quedas sin corazones, recuperas 1 cada 3 horas, con las **misiones** o canjeando XP."
+        },
+        {
+          "objetivo": "temas",
+          "titulo": "Temas que entran",
+          "texto": "Estos son los temas del ciclo que salen en este repaso."
+        },
+        {
+          "objetivo": "reglas",
+          "titulo": "Cómo funciona",
+          "texto": "**10 puntos** de XP por cada correcta. Las que falles se guardan para repasarlas después."
+        },
+        {
+          "objetivo": "empezar",
+          "titulo": "¡Vamos!",
+          "texto": "Toca **Empezar** cuando estés listo."
+        }
+      ]
     },
     "fijas": {
-      "activa": false,
-      "version": 1,
+      "activa": true,
+      "version": 2,
       "boton": true,
-      "pasos": []
+      "pasos": [
+        {
+          "objetivo": "inicio",
+          "titulo": "Fijas 🎯",
+          "texto": "Las preguntas **más probables** para el examen, seleccionadas por el profe."
+        },
+        {
+          "objetivo": "stats",
+          "titulo": "Corazones ❤️",
+          "texto": "Igual que en el Repaso, cada error gasta **un corazón** y las fallas pasan a **Repasar mis falladas**."
+        },
+        {
+          "objetivo": "empezar",
+          "titulo": "¡Vamos!",
+          "texto": "Toca **Empezar** cuando estés listo."
+        }
+      ]
     },
     "simulacro": {
       "activa": true,
-      "version": 1,
+      "version": 2,
       "boton": true,
       "pasos": [
         {
           "objetivo": "centro",
           "titulo": "Tu simulacro de admisión",
-          "texto": "**80 preguntas** como el examen de la UNJFSC, con tiempo y el puntaje de tu bloque. Te muestro cómo armar el tuyo."
+          "texto": "Practica como en el examen de la UNJFSC, con tiempo y el puntaje de tu bloque. Te muestro cómo armar el tuyo."
+        },
+        {
+          "objetivo": "modos",
+          "titulo": "Elige el tipo",
+          "texto": "**Rápido**: 80 preguntas como el examen y entra al **ranking**. **Personalizado**: formato examen con los temas que tú eliges. **Libre**: tú eliges áreas, cursos, temas, de **10 a 100** preguntas y el tiempo (te sugerimos 1,5 min por pregunta). El Personalizado y el Libre no entran al ranking."
         },
         {
           "objetivo": "ciclos",
@@ -197,12 +308,12 @@
         {
           "objetivo": "tiempo",
           "titulo": "El tiempo",
-          "texto": "Son **2 horas**, como el examen real. Puedes cambiarlo de 1 a 3 horas y terminar antes si ya acabaste."
+          "texto": "Son **2 horas**, como el examen real. Puedes cambiarlo y terminar antes si ya acabaste."
         },
         {
           "objetivo": "reglas",
           "titulo": "Cómo se califica",
-          "texto": "20 preguntas por área. Correcta: suma los puntos de tu bloque. Incorrecta: **resta 0,1**. En blanco: 0."
+          "texto": "Correcta: suma los puntos de tu bloque. Incorrecta: **resta 0,1**. En blanco: 0. Si se acaba el tiempo, se entrega solo."
         },
         {
           "objetivo": "empezar",
@@ -216,45 +327,50 @@
         },
         {
           "objetivo": "ranking",
-          "titulo": "Top de la semana",
-          "texto": "Los 10 mejores puntajes de la semana. Solo cuenta el **primer intento** de cada simulacro y se reinicia cada lunes. ¡A por el podio!"
+          "titulo": "Top simulacro",
+          "texto": "Los mejores puntajes del **Simulacro rápido** de la semana. Solo cuenta el **primer intento** de cada simulacro y se reinicia cada lunes. ¡A por el podio!"
         }
       ]
     },
     "duelo": {
       "activa": true,
-      "version": 1,
+      "version": 2,
       "boton": true,
       "pasos": [
         {
           "objetivo": "centro",
           "titulo": "Duelos ⚔️",
-          "texto": "Reta a tus amigos: todos responden **las mismas preguntas** a la vez, cada uno desde su celular."
+          "texto": "Reta **hasta a 3 amigos**: todos responden **las mismas preguntas** a la vez, cada uno desde su celular."
         },
         {
           "objetivo": "filtros",
           "titulo": "¿De qué será el duelo?",
-          "texto": "Elige el **ciclo**, el **curso** y el **tema**, o deja \"Todos\" para mezclar de todo."
+          "texto": "Elige el **ciclo**, los **cursos** y los **temas**, o deja \"Todos\" para mezclar de todo."
+        },
+        {
+          "objetivo": "fuentes",
+          "titulo": "De dónde salen",
+          "texto": "**De todo**, o solo de **Libros, Fijas, Seminarios** o **Banqueo**. Debajo ves cuántas preguntas hay con tus filtros."
         },
         {
           "objetivo": "jugadores",
           "titulo": "¿Cuántos juegan?",
-          "texto": "De **2 a 4 jugadores**. Con **Inicio automático** empieza solo cuando se llena la sala; si lo quitas, tú tocas **Iniciar** (con al menos 2)."
+          "texto": "**1 vs 1**, 3 o 4 jugadores. Con **Inicio automático** empieza solo cuando se llena la sala; si lo quitas, tú tocas **Iniciar**."
         },
         {
           "objetivo": "cantidad",
-          "titulo": "Número de preguntas",
-          "texto": "5, 10, 15 o 20. Si no hay suficientes preguntas con tus filtros, esa opción se apaga."
+          "titulo": "Preguntas y tiempo",
+          "texto": "De **5 a 30** preguntas y de **15 segundos a 2 minutos** por pregunta. No puedes volver atrás."
         },
         {
-          "objetivo": "reglas",
-          "titulo": "Reglas",
-          "texto": "**60 segundos** por pregunta y no puedes volver atrás. Cada jugador ve las alternativas en **otro orden**, así que no sirve soplar la letra 😉."
+          "objetivo": "comodines",
+          "titulo": "Comodines 🃏",
+          "texto": "Antes de empezar, la ruleta reparte **2 comodines** al azar: 50/50, Congelar, Doble, Escudo, Robar tiempo y Espía. La **última pregunta vale triple**."
         },
         {
           "objetivo": "crear",
           "titulo": "Crea y comparte",
-          "texto": "Toca **Crear duelo** y comparte el enlace o el código. Todos empiezan juntos con una cuenta **3, 2, 1**."
+          "texto": "Toca **Crear duelo** y comparte el enlace o el código. Todos empiezan juntos con una cuenta **3, 2, 1**. El 1.º puesto gana **+40 XP**."
         },
         {
           "objetivo": "codigo",
@@ -263,25 +379,151 @@
         },
         {
           "objetivo": "ranking",
-          "titulo": "Top de la semana",
-          "texto": "Solo el **1.º puesto** de cada duelo suma aquí. Se reinicia cada lunes."
+          "titulo": "Top duelos",
+          "texto": "Cuenta los **duelos que ganas** en la semana y se reinicia cada lunes. Toca una foto para ver la tarjeta del alumno y su **pin**."
         }
       ]
     },
     "falladas": {
       "activa": true,
-      "version": 1,
+      "version": 2,
       "boton": true,
       "pasos": [
         {
           "objetivo": "inicio",
           "titulo": "Repasa tus falladas 🔁",
-          "texto": "Aquí vuelven las preguntas que **fallaste** en tus prácticas, repasos y simulacros."
+          "texto": "Aquí vuelven las preguntas que **fallaste** en tus prácticas, repasos, duelos y simulacros."
         },
         {
           "objetivo": "cuantas",
           "titulo": "Rondas cortas",
           "texto": "Practícalas en rondas; cuando aciertes una, deja de aparecer. ¡La meta es dejar la lista en cero!"
+        }
+      ]
+    },
+    "biblioteca": {
+      "activa": true,
+      "version": 1,
+      "boton": true,
+      "pasos": [
+        {
+          "objetivo": "centro",
+          "titulo": "Biblioteca 📚",
+          "texto": "Libros, formularios, solucionarios, fichas, resúmenes y exámenes en **PDF** para leer aquí mismo, sin descargar nada. Te muestro cómo encontrar lo tuyo."
+        },
+        {
+          "objetivo": "buscar",
+          "titulo": "Busca lo que necesitas",
+          "texto": "Escribe un libro, curso o tema. No importan las tildes y puedes poner **varias palabras**."
+        },
+        {
+          "objetivo": "areas",
+          "titulo": "Por área",
+          "texto": "Toca un área para ver solo sus libros y elegir el **curso**."
+        },
+        {
+          "objetivo": "filtros",
+          "titulo": "Filtros y orden",
+          "texto": "Filtra por **tipo de material**, tu **avance** (leyendo, terminados), **colección** y acceso. Ordena por recomendados, nuevos, A–Z, menos páginas o leídos, y cambia entre **portadas** y **lista**."
+        },
+        {
+          "objetivo": "seguir",
+          "titulo": "Seguir leyendo",
+          "texto": "Cada libro guarda **la página donde te quedaste**. Desde aquí sigues justo ahí."
+        },
+        {
+          "objetivo": "colecciones",
+          "titulo": "Colecciones",
+          "texto": "Libros agrupados por el profe, como los libros del ciclo o los bancos de preguntas."
+        },
+        {
+          "objetivo": "libro",
+          "titulo": "Abre un libro",
+          "texto": "Toca una portada para ver su **ficha** y luego **Leer**. En el visor tienes zoom, **ir a página**, marcadores y pantalla completa."
+        }
+      ]
+    },
+    "coleccion": {
+      "activa": true,
+      "version": 1,
+      "boton": true,
+      "pasos": [
+        {
+          "objetivo": "modos",
+          "titulo": "Mi colección",
+          "texto": "Dos partes: **Mi estilo**, para cambiar cómo te ves, y **Rangos**, para ver tu rango de la semana."
+        },
+        {
+          "objetivo": "tabs",
+          "titulo": "Personaliza todo",
+          "texto": "**Búho, foto de perfil, escenarios, fondos, racha, marcos, títulos y pines**. Toca uno para **probarlo** y dale **Usar** si te gusta."
+        },
+        {
+          "objetivo": "puesto",
+          "titulo": "Así te ves",
+          "texto": "Así te ven los demás en los **tops**, los **duelos** y tu tarjeta de jugador."
+        },
+        {
+          "objetivo": "grid",
+          "titulo": "Cómo se consiguen",
+          "texto": "Algunos son gratis; otros se ganan con tu **racha**, tu **rango**, en **eventos** o como **regalo**. Los **pines** salen en la esquina de tu foto en todos los tops."
+        },
+        {
+          "objetivo": "canjear",
+          "titulo": "Canjear 🎁",
+          "texto": "Si te dieron un **código de regalo**, canjéalo aquí."
+        },
+        {
+          "objetivo": "rangos",
+          "titulo": "Rangos 🏆",
+          "texto": "Tu rango de la semana con su barra, la escalera de **Bronce a Leyenda** (Leyenda desde **50 000 XP**) y tu historial semanal."
+        }
+      ]
+    },
+    "perfil": {
+      "activa": true,
+      "version": 1,
+      "boton": true,
+      "pasos": [
+        {
+          "objetivo": "tarjeta",
+          "titulo": "Tu tarjeta de jugador",
+          "texto": "Tu foto, título, **racha**, **XP** de la semana y tu rango. Tócala para cambiar tu foto y tu estilo en **Mi colección**."
+        },
+        {
+          "objetivo": "tabs",
+          "titulo": "Perfil, Agenda y Ranking",
+          "texto": "En **Agenda** anotas tus fechas importantes y en **Ranking** ves el top de la semana completo."
+        },
+        {
+          "objetivo": "datos",
+          "titulo": "Tus datos",
+          "texto": "Tu **carrera** y tu **bloque** deciden cuántos puntos vale cada área en el **Simulacro**. Mantenlos al día."
+        },
+        {
+          "objetivo": "racha",
+          "titulo": "Tu racha 🔥",
+          "texto": "Sumas un día al cumplir tu meta. Tienes **1 día de descanso** por semana; si faltas 2, vuelve a 0."
+        },
+        {
+          "objetivo": "metas",
+          "titulo": "Meta diaria",
+          "texto": "**Suave** (20), **Normal** (30) o **Intenso** (50 preguntas). Si la cambias, cuenta desde mañana."
+        },
+        {
+          "objetivo": "errores",
+          "titulo": "Tu estudio",
+          "texto": "Tus **errores de hoy**, tu avance por curso y tus simulacros, para saber qué repasar."
+        },
+        {
+          "objetivo": "resena",
+          "titulo": "Tu reseña ⭐",
+          "texto": "Cuéntanos qué te parece Modo Cachimbo. Si el profe la aprueba, sale en el inicio."
+        },
+        {
+          "objetivo": "accesos",
+          "titulo": "Mis accesos 🔑",
+          "texto": "Tus códigos activos y qué paquete abre cada uno. Se guardan en tu cuenta: si cambias de celular, vuelven solos."
         }
       ]
     }

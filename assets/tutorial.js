@@ -16,36 +16,59 @@
     return null;
   }; };
 
+  // El estante de la Biblioteca cuyo título empieza con este texto
+  var estante = function (tit) { return function () {
+    var e = [].filter.call(document.querySelectorAll('#grupos .estante'), function (x) { var h = x.querySelector('h2'); return h && h.textContent.trim().indexOf(tit) === 0; })[0];
+    return e || null;
+  }; };
+
   // Partes que se pueden iluminar en cada tipo de página
   var OBJETIVOS = {
-    inicio: [['hero', 'Búho y fechas importantes', '#escena'], ['cursos', 'Cursos populares', '.cursos-sec'],
-      ['examenes', 'Modos de estudio', '.modos'], ['codigo', 'Botón "Activar código"', visible(['#salCodigo', '#vipToggle'])],
-      ['menu', 'Barra de abajo (celular)', visible(['.tabbar', '.lado .nav'])], ['cafe', 'Invítame un café', '.coffee'],
-      ['racha', 'Racha de estudio', visible(['.mcu-racha', '#salRacha'])], ['fecha', 'Fechas importantes', '#fechas'],
-      ['nuevo', 'Botón "Nuevo"', '#novBtn'], ['duelos', 'Duelos', '.duelo-banner']],
-    area: [['cursos', 'Lista de cursos', '.courses'], ['primero', 'Primer curso', '.courses .course'], ['volver', 'Botón volver', 'a.back'], ['codigo', 'Botón "Ingresar código"', '#vipToggle']],
+    inicio: [['hero', 'Búho y fechas importantes', '#escena'], ['fecha', 'Mi agenda', '#fechas'],
+      ['accesos', 'Misiones, Colección, Ranking, Agenda y Nuevo', '.escena .accesos'], ['rango', 'Tu rango de la semana', '#rangoBar'],
+      ['practicar', 'Botón "¡A practicar!" y modo', '.col-der .jugar'], ['racha', 'Meta de hoy (racha)', visible(['#salRacha', '.mcu-racha'])],
+      ['examenes', 'Modos de estudio', '.modos'], ['duelos', 'Duelos', '.duelo-banner'], ['simulacro', 'Simulacro', '.modos .j-sim'],
+      ['flashcards', 'Flashcards', '.modos .j-flash'], ['biblioteca', 'Biblioteca', '.modos .j-bib'],
+      ['cursos', 'Cursos populares', '.cursos-sec'], ['codigo', 'Botón "Activar código"', visible(['#salCodigo', '#vipToggle'])],
+      ['top', 'Top de la semana', visible(['.lado .top', '.fila2 .solo-cel'])], ['topsim', 'Top simulacro', '#topSim'],
+      ['resenas', 'Reseñas', '#resenas'], ['menu', 'Menú (barra de abajo en celular)', visible(['.tabbar', '.lado .nav'])],
+      ['nuevo', 'Botón "Nuevo"', '#novBtn'], ['cafe', 'Invítame un café', '.coffee']],
+    area: [['mixto', 'Repaso mixto', '.mixto'], ['cursos', 'Lista de cursos', '.courses'], ['primero', 'Primer curso', '.courses .course'], ['volver', 'Botón volver', 'a.back'], ['codigo', 'Botón "Ingresar código"', '#vipToggle']],
     curso: [['libro', 'Tarjeta Libro', cerca('a[href="libros/index.html"]')], ['repaso', 'Tarjeta Repaso', cerca('a[data-mc="repaso"], a[href^="repaso.html"]')],
       ['fijas', 'Tarjeta Fijas', cerca('a[data-mc="fijas"], a[href^="fijas.html"]')],
       ['seminarios', 'Tarjeta Seminarios', cerca('a[data-mc="seminarios"]')], ['banqueo', 'Tarjeta Banqueo', cerca('a[data-mc="banqueo"]')], ['tarjetas', 'Tarjeta Flashcards', cerca('a[data-mc="tarjetas"]')], ['codigo', 'Botón "Ingresar código"', '#vipToggle'], ['volver', 'Botón volver', 'a.back']],
-    libros: [['anios', 'Lista de años', '#yearsGrid'], ['anio', 'Primer año disponible', '#yearsGrid .year-card.active'],
-      ['temas', 'Lista de temas', '#temaList'], ['tema', 'Primer tema', '#temaList > *']],
+    libros: [['anios', 'Lista de ciclos', '#yearsGrid'], ['anio', 'Primer ciclo disponible', '#yearsGrid .year-card.active']],
+    temario: [['temas', 'Lista de temas', '#temaList'], ['tema', 'Primer tema', '#temaList > *']],
     estudio: [['pregunta', 'Primera pregunta', '.qcard'], ['correcta', 'Respuesta marcada', '.qcard .opt-row.correct'],
       ['practicar', 'Botón Practicar', '.quiz-cta'], ['tarjetas', 'Botón Flashcards', '#tarjetasLink'], ['credito', 'Crédito del profesor', '#creditoLabel'], ['error', 'Botón "¿Error en la clave?"', '.qcard .rep-btn']],
-    quiz: [['inicio', 'Pantalla de inicio', '#startScreen'], ['vidas', 'Vidas y número de preguntas', '#startScreen .start-info'], ['empezar', 'Botón Empezar', '#btnStart']],
-    falladas: [['inicio', 'Pantalla de inicio', '#startScreen'], ['cuantas', 'Cuántas preguntas tienes', '#startScreen .start-info'], ['empezar', 'Botón Empezar', '#btnStart']],
+    quiz: [['inicio', 'Pantalla de inicio', '#startScreen'], ['stats', 'Corazones, preguntas y tema', '#startScreen .rp-stats'], ['reglas', 'Cómo funciona', '#startScreen .rp-reglas'],
+      ['vidas', 'Vidas y número de preguntas', '#startScreen .start-info'], ['empezar', 'Botón Empezar', '#btnStart']],
+    falladas: [['inicio', 'Pantalla de inicio', '#startScreen'], ['cuantas', 'Cuántas preguntas tienes', visible(['#startScreen .rp-stats', '#startScreen .start-info'])], ['empezar', 'Botón Empezar', '#btnStart']],
     duelo: [['filtros', 'Ciclo, curso y tema', '#crear .filtros'], ['fuentes', 'De dónde salen las preguntas', cercaDe('#fuentes', '.campo')],
       ['jugadores', 'Jugadores e inicio automático', cercaDe('#jugadores', '.campo')], ['cantidad', 'Número de preguntas', cercaDe('#cantidad', '.campo')],
       ['tiempo', 'Tiempo por pregunta', cercaDe('#tiempo', '.campo')], ['comodines', 'Comodines', cercaDe('#cmdSw', '.campo')],
       ['reglas', 'Reglas del duelo', '#crear .reglas'], ['crear', 'Botón Crear duelo', '#btnCrear'], ['codigo', 'Entrar con un código', cercaDe('#codUnirse', '.card')],
       ['mis', 'Mis duelos', cercaDe('#misDuelos', '.card')], ['ranking', 'Top de la semana', cercaDe('#rank', '.card')]],
-    repaso: [['candado', 'Candado (código)', '#lockScreen'], ['codigo', 'Casilla del código', '#lockInput'], ['empezar', 'Botón Empezar', '#btnStart']],
-    fijas: [['candado', 'Candado (código)', '#lockScreen'], ['codigo', 'Casilla del código', '#lockInput'], ['empezar', 'Botón Empezar', '#btnStart']],
-    simulacro: [['nombre', 'Nombre del simulacro', '#campoNombre'], ['ciclos', 'Elegir ciclos', '#campoCiclos'], ['bloque', 'Bloque y carrera', cercaDe('#selBloque', '.dos')],
-      ['tiempo', 'Tiempo', cercaDe('#tiempos', '.campo')], ['reglas', 'Reglas del puntaje', '.reglas'], ['reparto', 'Preguntas por área', cercaDe('#dist', '.card')],
-      ['empezar', 'Botón Empezar', '#btnEmpezar'], ['mis', 'Mis simulacros', cercaDe('#misSim', '.card')], ['ranking', 'Top de la semana', cercaDe('#rankCrear', '.card')]]
+    repaso: [['inicio', 'Pantalla de inicio', '#startScreen'], ['stats', 'Corazones, preguntas y temas', visible(['#startScreen .rp-stats', '#startScreen .start-info'])],
+      ['temas', 'Temas que entran', '#startScreen .rp-temas'], ['reglas', 'Cómo funciona', '#startScreen .rp-reglas'], ['empezar', 'Botón Empezar', '#btnStart']],
+    fijas: [['inicio', 'Pantalla de inicio', '#startScreen'], ['stats', 'Vidas y preguntas', visible(['#startScreen .rp-stats', '#startScreen .start-info'])],
+      ['reglas', 'Cómo funciona', '#startScreen .rp-reglas'], ['empezar', 'Botón Empezar', '#btnStart']],
+    simulacro: [['modos', 'Rápido, Personalizado o Libre', '#modos'], ['nombre', 'Nombre del simulacro', '#campoNombre'], ['ciclos', 'Elegir ciclos', '#campoCiclos'],
+      ['bloque', 'Bloque y carrera', cercaDe('#selBloque', '.dos')], ['tiempo', 'Tiempo', cercaDe('#tiempos', '.campo')], ['reglas', 'Reglas del puntaje', '.reglas'],
+      ['reparto', 'Preguntas por área', cercaDe('#dist', '.card')], ['empezar', 'Botón Empezar', '#btnEmpezar'], ['mis', 'Mis simulacros', cercaDe('#misSim', '.card')],
+      ['ranking', 'Top simulacro', '#topSim']],
+    biblioteca: [['buscar', 'Buscador', '.buscar'], ['filtros', 'Botón Filtros', '#bFiltros'], ['areas', 'Áreas', '#tabs'], ['stats', 'Tus números', '#stats'],
+      ['destacado', 'Libro destacado', '#heroes'], ['seguir', 'Seguir leyendo', estante('Seguir leyendo')], ['colecciones', 'Colecciones', estante('Colecciones')],
+      ['libro', 'Primer libro de un estante', '#grupos .fila:not(.anchas):not(.cols) > *']],
+    coleccion: [['modos', 'Mi estilo y Rangos', '.modos'], ['puesto', 'Así te ves', visible(['#puesto', '#tira'])], ['tabs', 'Pestañas (búho, marcos, pines…)', '#tabs'],
+      ['grid', 'Lo que puedes ponerte', '#grid'], ['canjear', 'Botón Canjear', '#btnRegalo'], ['rangos', 'Botón Rangos', '.modo[data-modo="rangos"]']],
+    perfil: [['tarjeta', 'Tu tarjeta de jugador', '#pjCard'], ['tabs', 'Mi perfil, Agenda y Ranking', cercaDe('#tabBtnPerfil', '[role="tablist"]')],
+      ['datos', 'Datos del estudiante', '#datos'], ['racha', 'Racha', '#racha'], ['metas', 'Meta diaria', '#metas'], ['errores', 'Errores de hoy', '#errores'],
+      ['simulacros', 'Mis simulacros', '#simulacros'], ['resena', 'Tu reseña', '#resena'], ['accesos', 'Mis accesos (códigos)', cercaDe('#accesos', '.panel')]]
   };
   // Páginas donde el tutorial espera a que se vea esta parte (por ejemplo, después del candado)
-  var ESPERA = { simulacro: '#crear', duelo: '#crear', quiz: '#startScreen', falladas: '#startScreen' };
+  var ESPERA = { simulacro: '#crear', duelo: '#crear', quiz: '#startScreen', falladas: '#startScreen', repaso: '#startScreen', fijas: '#startScreen',
+    biblioteca: '#grupos .estante', coleccion: '#conSesion', perfil: '#conSesion' };
 
   function pagina() {
     var rel = location.pathname.slice(ROOT.pathname.length).replace(/^\/+/, '');
@@ -54,11 +77,15 @@
     if (rel === 'simulacro.html') return 'simulacro';
     if (rel === 'duelo.html') return /[?&]d=/.test(location.search) ? null : 'duelo'; // solo en la pantalla de crear
     if (rel === 'falladas.html') return 'falladas';
+    if (rel === 'biblioteca.html') return /#libro=/.test(location.hash) ? null : 'biblioteca'; // no encima del visor
+    if (rel === 'coleccion.html') return 'coleccion';
+    if (rel === 'perfil.html') return 'perfil';
     if (seg[0] === 'areas') return 'area';
     if (['panel', 'assets', 'examenes'].indexOf(seg[0]) >= 0) return null;
     if (resto === '' || resto === 'index.html') return 'curso';
     resto = resto.replace(/^(seminarios|banqueo)\//, 'libros/'); // Seminarios y Banqueo funcionan como el Libro
-    if (resto === 'libros/' || resto === 'libros/index.html' || resto === 'libros/temario.html') return 'libros';
+    if (resto === 'libros/' || resto === 'libros/index.html') return 'libros';
+    if (resto === 'libros/temario.html') return 'temario';
     if (resto === 'libros/tema.html') return 'estudio';
     if (resto === 'libros/quiz.html') return 'quiz';
     if (resto === 'repaso.html') return 'repaso';
@@ -104,7 +131,7 @@
   .mct-saltar:hover { color: #fff; }
   @keyframes mctIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
   `;
-  function estilos() { if (!document.getElementById('mct-css')) { var s = document.createElement('style'); s.id = 'mct-css'; s.textContent = css; document.head.appendChild(s); } }
+  function estilos() { if (!document.getElementById('mctuto-css')) { var s = document.createElement('style'); s.id = 'mctuto-css'; s.textContent = css; document.head.appendChild(s); } }
 
   /* ---------- Recorrido ---------- */
   var activo = null;
@@ -171,11 +198,15 @@
   function cuandoListo(pag, cfg, fn) {
     var t0 = Date.now();
     (function revisar() {
-      var hayModal = document.querySelector('.mca-ov, .rep-overlay, .aviso-overlay');
+      // Alertas abiertas o el candado tapando la página (assets/candado.js)
+      var hayModal = document.querySelector('.mca-ov, .rep-overlay, .aviso-overlay, #mckFondo') || document.documentElement.classList.contains('mc-cerrado');
       var falta = ESPERA[pag] && document.querySelector(ESPERA[pag]);
       if (ESPERA[pag] && (!falta || falta.hidden || !falta.getBoundingClientRect().width)) { t0 = Date.now(); setTimeout(revisar, 500); return; }
-      var algunObjetivo = (cfg.pasos || []).some(function (p) { return p.objetivo && p.objetivo !== 'centro' && buscar(pag, p.objetivo); });
-      if (!hayModal && (algunObjetivo || Date.now() - t0 > 4000)) setTimeout(fn, 400);
+      // Espera a que aparezcan todas las partes (algunas llegan después, como el rango);
+      // si alguna no está en esta página, sigue con las que hay
+      var obj = (cfg.pasos || []).filter(function (p) { return p.objetivo && p.objetivo !== 'centro'; });
+      var vistos = obj.filter(function (p) { return buscar(pag, p.objetivo); }).length;
+      if (!hayModal && (vistos === obj.length || (vistos && Date.now() - t0 > 2500) || Date.now() - t0 > 4000)) setTimeout(fn, 400);
       else if (Date.now() - t0 < 20000) setTimeout(revisar, 300);
     })();
   }

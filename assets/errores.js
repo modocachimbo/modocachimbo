@@ -80,7 +80,8 @@
   // Mientras la consulta llega, el último número conocido de hoy
   function arrancar() {
     // Solo donde antes estaba el botón "?" del tutorial; no en el propio repaso de errores
-    if (!document.querySelector('script[src*="assets/tutorial.js"]:not([data-solo-lista])') || /\/falladas\.html$/.test(aqui)) return;
+    // ni en la Biblioteca, la Colección y el Perfil (el Perfil ya tiene "Errores de hoy")
+    if (!document.querySelector('script[src*="assets/tutorial.js"]:not([data-solo-lista])') || /\/(falladas|biblioteca|coleccion|perfil)\.html$/.test(aqui)) return;
     if (!window.MCProgreso) { if ((arrancar.k = (arrancar.k || 0) + 1) < 100) setTimeout(arrancar, 150); return; }
     try {
       var g = (sessionStorage.getItem('mc_err_hoy') || '').split('|');

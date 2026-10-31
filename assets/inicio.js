@@ -171,7 +171,7 @@
     miXp = +e.xp_semana || 0;
     var n = MCRango.nivel(miXp), MIN = MCRango.minimo, barra = $('rangoBar');
     var sig = n + 1, tx, pct;
-    if (n < 0) { tx = miles(MIN[0] - miXp) + ' XP<br>para Zafiro'; pct = miXp / MIN[0]; }
+    if (n < 0) { tx = miles(MIN[0] - miXp) + ' XP<br>para ' + MCRango.nombre(0); pct = miXp / MIN[0]; }
     else if (sig < MIN.length) { tx = miles(MIN[sig] - miXp) + ' XP<br>para ' + MCRango.nombre(sig); pct = (miXp - MIN[n]) / (MIN[sig] - MIN[n]); }
     else { tx = miles(miXp) + ' XP<br>rango máximo'; pct = 1; }
     barra.style.setProperty('--rc', n < 0 ? '#A99FC8' : MCRango.color(n).c);
