@@ -10,6 +10,8 @@
    - Si el profesor libera este equipo (o desactiva o borra el código),
      la página abierta se recarga sola y el candado pide el código otra vez.
      Un código liberado se borra de este equipo y de la cuenta (Perfil · Mis accesos).
+   - Un código quitado queda marcado en la cuenta (supabase/48-codigos-quitados.sql):
+     otro equipo ya no lo vuelve a subir y, si lo tiene con su aviso, lo borra.
    Requiere assets/mc-config.js
    ========================================================= */
 (function () {
@@ -147,24 +149,31 @@
       })();
     });
   }
-  // Trae los códigos de la cuenta a este dispositivo. Devuelve los códigos que tiene la cuenta (null = no se pudo)
+  // Trae los códigos de la cuenta a este dispositivo. Devuelve los códigos que tiene la cuenta,
+  // también los quitados (null = no se pudo). Uno quitado no se trae, y si aquí está con su aviso, se borra
   function traerDeCuenta() {
     return cuenta().then(function (c) {
       if (!c) return null;
-      return c.from('codigos_cuenta').select('codigo,producto,vence').then(function (r) {
+      var leer = function (cols) { return c.from('codigos_cuenta').select(cols); };
+      // Sin supabase/48 todavía no existe la columna quitado
+      return leer('codigo,producto,vence,quitado').then(function (r) { return r.error ? leer('codigo,producto,vence') : r; }).then(function (r) {
         if (r.error || !r.data) return null;
-        var a = accesos(), nuevos = 0;
-        r.data.forEach(function (f) { if (!a[f.codigo]) { a[f.codigo] = { producto: f.producto, ok: 0, vence: f.vence || '' }; nuevos++; } });
-        if (nuevos) guardar(a);
+        var a = accesos(), cambios = 0;
+        r.data.forEach(function (f) {
+          if (f.quitado) { if (a[f.codigo] && a[f.codigo].error) { delete a[f.codigo]; cambios++; } }
+          else if (!a[f.codigo]) { a[f.codigo] = { producto: f.producto, ok: 0, vence: f.vence || '' }; cambios++; }
+        });
+        if (cambios) guardar(a);
         return r.data.map(function (f) { return f.codigo; });
       });
     }).catch(function () { return null; });
   }
   // Sube a la cuenta los códigos de este dispositivo (los activados antes de entrar con Google también)
-  function subirACuenta(cods) {
+  // nuevo: recién escrito por el alumno, vuelve a la cuenta aunque antes lo haya quitado
+  function subirACuenta(cods, nuevo) {
     var a = accesos();
     var lista = (cods || Object.keys(a)).filter(function (k) { return a[k]; })
-      .map(function (k) { return { codigo: k, producto: a[k].producto, vence: a[k].vence || '' }; });
+      .map(function (k) { var x = { codigo: k, producto: a[k].producto, vence: a[k].vence || '' }; if (nuevo) x.nuevo = true; return x; });
     if (!lista.length) return Promise.resolve();
     return cuenta().then(function (c) { if (c) return c.rpc('guardar_codigos_cuenta', { p: lista }); }).catch(function () {});
   }
@@ -183,7 +192,8 @@
         // Los que solo están en este dispositivo (activados antes de entrar con Google) suben a la cuenta
         traerDeCuenta().then(function (enCuenta) {
           if (!enCuenta) return;
-          var solo = Object.keys(accesos()).filter(function (k) { return enCuenta.indexOf(k) < 0; });
+          // Los que ya no sirven aquí no se suben
+          var a = accesos(), solo = Object.keys(a).filter(function (k) { return enCuenta.indexOf(k) < 0 && !a[k].error; });
           if (solo.length) return subirACuenta(solo);
         });
       }
@@ -245,7 +255,7 @@
           var a = accesos();
           a[r.codigo] = { producto: r.producto, ok: Date.now(), vence: r.vence || '' };
           guardar(a);
-          subirACuenta([r.codigo]);
+          subirACuenta([r.codigo], true);
         }
         return r || { ok: false, mensaje: 'Respuesta inválida del servidor.' };
       });
@@ -269,24 +279,30 @@
     if (!cods.length) return Promise.resolve({});
     return jsonp2({ action: 'misCodigos', codigos: cods.join(','), dispositivo: dispositivo() }).then(function (r) {
       if (!r || !r.ok) return null;
-      var m = {};
-      (r.codigos || []).forEach(function (c) { m[c.codigo] = c; });
+      var m = {}, a = accesos(), cambios = 0;
+      (r.codigos || []).forEach(function (c) {
+        m[c.codigo] = c;
+        // Queda anotado aquí que ya no sirve: así no se sube a la cuenta y la limpieza lo reconoce
+        if (MALOS[c.estado] && a[c.codigo] && !a[c.codigo].error) { a[c.codigo].ok = 0; a[c.codigo].error = c.mensaje || 'Este código ya no funciona en este equipo.'; cambios++; }
+      });
+      if (cambios) guardar(a);
       return m;
     }).catch(function () { return null; });
   }
 
   // Quita un código de este equipo: libera su cupo en el servidor y lo borra de aquí y de la cuenta
   // soloAqui: sin conexión con el servidor, lo borra de este equipo sin liberar el cupo
+  // Resuelve cuando ya se marcó también en la cuenta (así una recarga no lo trae de vuelta)
   function soltar(cod, soloAqui) {
-    function borrar() {
+    function borrar(r) {
       var a = accesos(); delete a[cod]; guardar(a);
-      quitarDeCuenta(cod);
+      return quitarDeCuenta(cod).then(function () { return r; });
     }
-    if (soloAqui) { borrar(); return Promise.resolve({ ok: true, liberado: false }); }
+    if (soloAqui) return borrar({ ok: true, liberado: false });
     return jsonp2({ action: 'soltar', codigo: cod, dispositivo: dispositivo() }).then(function (r) {
-      if (r && r.ok) { borrar(); return r; }
+      if (r && r.ok) return borrar(r);
       // Apps Script sin actualizar: igual se quita de este equipo
-      if (r && /acci[oó]n no v[aá]lida/i.test(r.error || '')) { borrar(); return { ok: true, liberado: false }; }
+      if (r && /acci[oó]n no v[aá]lida/i.test(r.error || '')) return borrar({ ok: true, liberado: false });
       return r || { ok: false, mensaje: 'Respuesta inválida del servidor.' };
     });
   }
@@ -299,6 +315,7 @@
      El avance y la XP viven en Supabase y no se tocan. */
   var LIBERADO = /fue liberado/i;
   var CORTADO = { liberado: 1, desactivado: 1, 'no-existe': 1 };
+  var MALOS = { vencido: 1, desactivado: 1, 'no-existe': 1, lleno: 1 };
   var ultimaRevision = 0;
   function vigilar() {
     if (LIBRE || document.visibilityState === 'hidden' || Date.now() - ultimaRevision < 60 * 1000) return;

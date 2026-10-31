@@ -199,6 +199,46 @@ function renderCodigos() {
   }));
 }
 
+/* ---------- Limpiar cuentas ----------
+   Los alumnos guardan sus códigos en su cuenta (Perfil · Mis accesos). Este botón marca como
+   quitados, en todas las cuentas, los que ya no sirven: borrados de aquí, vencidos o desactivados
+   (supabase/48-codigos-quitados.sql). Los llenos se quedan: siguen sirviendo en sus equipos. */
+async function limpiarCuentas() {
+  if (!CD.lista.length) { toast('Primero deben cargar los códigos', true); return; }
+  const validos = CD.lista.filter(c => c.estado === 'Activo' || c.estado === 'Lleno').map(c => c.codigo);
+  const o = document.createElement('div');
+  o.className = 'ov';
+  o.innerHTML = `<div class="mcard" style="max-width:520px;"><button class="mx" type="button" aria-label="Cerrar">✕</button>
+    <div class="eyebrow">Mis accesos de los alumnos</div>
+    <h3>Limpiar cuentas</h3>
+    <p class="sub" style="margin-top:6px;line-height:1.55;">Quita de la lista de cada alumno los códigos que ya no existen, vencieron o están desactivados. Los activos y los llenos no se tocan, y no cambia nada aquí en Códigos.</p>
+    <div class="cdlimp" id="clRes"><div class="loader">Revisando cuentas…</div></div>
+    <div class="mfoot"><button type="button" class="btn-ghost" data-x>Cancelar</button>
+      <button type="button" class="btn-main" id="clOk" style="background:#c43d3d;color:#fff;" disabled>Limpiar</button></div></div>`;
+  document.body.appendChild(o);
+  const cerrar = () => o.remove();
+  o.querySelector('.mx').addEventListener('click', cerrar);
+  o.querySelector('[data-x]').addEventListener('click', cerrar);
+  let c;
+  try {
+    c = await MCAuth.listo;
+    const r = await c.rpc('limpiar_codigos_cuentas', { p_validos: validos, p_probar: true });
+    if (r.error) throw new Error(/limpiar_codigos_cuentas/.test(r.error.message) ? 'Falta correr supabase/48-codigos-quitados.sql en Supabase.' : r.error.message);
+    const d = r.data;
+    if (!d.filas) { $('clRes').innerHTML = '<div class="state-msg">Todo limpio: ninguna cuenta tiene códigos que ya no sirven.</div>'; return; }
+    $('clRes').innerHTML = `<p style="margin:14px 0 8px;"><b>${d.codigos}</b> código${d.codigos === 1 ? '' : 's'} que ya no sirve${d.codigos === 1 ? '' : 'n'}, en <b>${d.cuentas}</b> cuenta${d.cuentas === 1 ? '' : 's'}.</p>
+      <div class="cdlimp-lista">${d.lista.map(x => `<code>${esc(x)}</code>`).join('')}${d.codigos > d.lista.length ? ` <span class="hint">y ${d.codigos - d.lista.length} más</span>` : ''}</div>`;
+    const ok = $('clOk'); ok.disabled = false;
+    ok.addEventListener('click', async () => {
+      ok.disabled = true; ok.textContent = 'Limpiando…';
+      const r2 = await c.rpc('limpiar_codigos_cuentas', { p_validos: validos, p_probar: false });
+      if (r2.error) { toast(r2.error.message, true); ok.disabled = false; ok.textContent = 'Limpiar'; return; }
+      cerrar();
+      toast(`Listo: ${r2.data.filas} código${r2.data.filas === 1 ? '' : 's'} quitado${r2.data.filas === 1 ? '' : 's'} de ${r2.data.cuentas} cuenta${r2.data.cuentas === 1 ? '' : 's'}`);
+    });
+  } catch (e) { $('clRes').innerHTML = `<div class="state-msg error">${esc(e.message)}</div>`; }
+}
+
 /* ---------- Crear / editar ---------- */
 function editarCodigo(orig) {
   // st.todos: paquetes · st.areas: áreas sueltas · st.antes: productos de antes (curso-x, repaso-VIP…), se conservan
