@@ -485,7 +485,7 @@
 <script src="assets/mc-config.js"></script>
 <script src="assets/auth.js"></script>
 <script src="assets/acceso.js"></script>
-<script src="assets/candado.js"></script>
+<script src="assets/candado.js" data-producto="biblioteca" data-nombre="Biblioteca" data-volver="index.html"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
 <script>
 (function () {
@@ -859,8 +859,6 @@
       if (navigator.share) navigator.share({ title: nombre(l), text: nombre(l) + ' · Biblioteca de Modo Cachimbo', url: url }).catch(function () {});
       else if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { avisar('Link copiado'); });
     });
-    // Con código de alumno: el botón Leer lleva el candado del curso (assets/candado.js)
-    if (l.acceso === 'codigo' && window.MCCandado) MCCandado.marcar($('fLeer'), 'curso-' + l.curso, { nombre: curso(l.curso).nombre });
     $('fLeer').focus({ preventScroll: true });
   }
   function cerrarFicha(ya) {
@@ -890,6 +888,8 @@
       S.colecciones = (r[3] && !r[3].error && r[3].data) || [];
       // Índice para buscar rápido: todo el texto del libro, sin tildes, una sola vez
       S.libros.forEach(function (l) {
+        // La llave es de toda la Biblioteca (candado.js data-producto): adentro se abren todos los libros
+        l.acceso = 'libre';
         S.porId[l.id] = l;
         l._q = sinAcento([l.titulo, l.subtitulo, l.autor, l.descr, curso(l.curso).nombre, area(curso(l.curso).area).nombre, TIPOS[l.tipo], (l.etiquetas || []).join(' '), (coleccion(l.coleccion) || {}).nombre].join(' '));
       });
