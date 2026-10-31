@@ -2,6 +2,8 @@
    Modo Cachimbo · "Mis accesos" en el perfil
    Cada código con su estado (activo, vencido…), cuántos equipos usa
    y el botón para quitarlo de este equipo (libera su cupo).
+   Arriba, «Quitar los que no sirven» borra de una vez los que ya no existen,
+   vencieron, se desactivaron o no tienen cupo.
    Usa window.MCAcceso (assets/acceso.js) y las acciones misCodigos
    y soltar del Apps Script.
    ========================================================= */
@@ -56,10 +58,24 @@
     '.acc-pie{display:flex;gap:10px 14px;margin-top:14px;align-items:center;flex-wrap:wrap}',
     '.acc-btn{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border-radius:14px;border:2px solid #1CB0F6;border-bottom-width:5px;background:rgba(28,176,246,.1);color:#1CB0F6;font:1000 13.5px Nunito,sans-serif;letter-spacing:.04em;text-transform:uppercase;text-decoration:none}',
     '.acc-btn svg{width:18px;height:18px}',
+    '.acc-limpiar{display:flex;align-items:center;gap:10px 12px;flex-wrap:wrap;margin-top:16px;padding:12px 14px;border-radius:16px;background:rgba(255,75,75,.07);border:2px solid rgba(255,75,75,.3);font-family:Nunito,Inter,sans-serif}',
+    '.acc-limpiar[hidden]{display:none}',
+    '.acc-limpiar span{flex:1;min-width:180px;color:#ff9b9b;font:800 13px/1.4 Nunito,sans-serif}',
+    '.acc-limpiar span strong{color:#fff}',
+    '.acc-limpiar .bts{display:flex;gap:8px;flex-wrap:wrap}',
+    '.acc-limpiar button{padding:9px 14px;border-radius:12px;font:1000 13px Nunito,sans-serif;cursor:pointer;-webkit-tap-highlight-color:transparent}',
+    '.acc-limpiar .rojo{border:0;background:#FF4B4B;color:#fff;text-transform:uppercase;letter-spacing:.04em;box-shadow:0 4px 0 #c43434}',
+    '.acc-limpiar .rojo:disabled{opacity:.6}',
+    '.acc-limpiar .gris{border:2px solid #322B52;border-bottom-width:4px;background:transparent;color:#ddd}',
     '.acc-pie small{color:var(--text-dim);font:800 12.5px Nunito,sans-serif;flex:1;min-width:180px}'
   ].join('\n');
   document.head.appendChild(st);
   ul.className = 'acc';
+
+  var limpiar = document.createElement('div');
+  limpiar.className = 'acc-limpiar';
+  limpiar.hidden = true;
+  ul.before(limpiar);
 
   var pie = document.createElement('div');
   pie.className = 'acc-pie';
@@ -69,7 +85,7 @@
   var nota = document.getElementById('accesosNota');
   if (nota) nota.textContent = 'Tus códigos se guardan en tu cuenta. Si quitas uno de este equipo, deja libre su cupo y puedes activarlo otra vez.';
 
-  var cursos = {}, servidor = {}, elegido = null, error = '', sinRed = false;
+  var cursos = {}, servidor = {}, elegido = null, error = '', sinRed = false, confLimpiar = false, limpiando = false;
   fetch('assets/cursos.json').then(function (r) { return r.json(); }).then(function (d) {
     (d.cursos || []).forEach(function (c) { cursos[c.id] = c.nombre; });
     pintar();
@@ -93,11 +109,12 @@
   }
   function fecha(s) { var p = String(s).split('-'); return +p[2] + ' ' + MESES[+p[1] - 1] + ' ' + p[0]; }
 
+  function aviso(a) { var s = servidor[a.codigo] || {}; return s.estado && s.estado !== 'activo' ? s.mensaje : a.error; }
+
   function fila(a) {
     var s = servidor[a.codigo] || {}, t = tipo(a.producto), col = COLOR[t] || '#1CB0F6';
     var vence = s.vence !== undefined ? s.vence : a.vence;
-    var aviso = s.estado && s.estado !== 'activo' ? s.mensaje : a.error;
-    var mal = !!aviso;
+    var mal = !!aviso(a);
     var chips = [];
     if (mal) chips.push('<i class="mal">' + (s.estado === 'vencido' ? 'Venció' : s.estado === 'desactivado' ? 'Desactivado' : s.estado === 'no-existe' ? 'Ya no existe' : s.estado === 'lleno' ? 'Sin cupo' : s.estado === 'liberado' ? 'Liberado' : 'No funciona') + '</i>');
     else chips.push('<i class="ok">Activo</i>');
@@ -106,7 +123,7 @@
     if (!mal && s.max > 0) chips.push('<i>' + s.usados + ' de ' + s.max + (s.max === 1 ? ' equipo' : ' equipos') + '</i>');
     return '<li class="' + (mal ? 'mal' : '') + (elegido === a.codigo ? ' elegido' : '') + '"><span class="ic" style="background:' + col + '22;color:' + col + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' + (ICO[t] || ICO.curso) + '</svg></span>' +
       '<div class="tx"><b>' + esc(nombre(s.producto || a.producto)) + '</b><code>' + esc(a.codigo) + '</code><div class="meta">' + chips.join('') + '</div>' +
-      (mal ? '<span class="aviso">' + esc(aviso) + '</span>' : '') +
+      (mal ? '<span class="aviso">' + esc(aviso(a)) + '</span>' : '') +
       '<button type="button" class="quitar" data-c="' + esc(a.codigo) + '">' + (mal ? 'Quitar de la lista' : 'Quitar de este equipo') + '</button></div></li>' +
       (elegido === a.codigo ? confirmar(a, s, mal) : '');
   }
@@ -122,8 +139,20 @@
       (sinRed ? '<button type="button" class="local" data-local="' + esc(a.codigo) + '">Quitarlo solo de este equipo</button>' : '') + '</li>';
   }
 
+  function pintarLimpiar(malos) {
+    limpiar.hidden = malos.length < 2 && !limpiando;
+    if (limpiar.hidden) { confLimpiar = false; return; }
+    var n = malos.length, cods = n === 1 ? 'código' : 'códigos';
+    limpiar.innerHTML = limpiando ? '<span>Quitando ' + n + ' ' + cods + '…</span>'
+      : confLimpiar ? '<span>Se borran <strong>' + n + ' ' + cods + '</strong> de tu lista y de tu cuenta. Los que funcionan no se tocan.</span>' +
+        '<div class="bts"><button type="button" class="rojo" data-limpiar-si="1">Sí, quitar</button><button type="button" class="gris" data-limpiar-no="1">Cancelar</button></div>'
+      : '<span>Tienes <strong>' + n + ' ' + cods + '</strong> que ya no sirven.</span>' +
+        '<div class="bts"><button type="button" class="rojo" data-limpiar="1">Quitar los que no sirven</button></div>';
+  }
+
   function pintar() {
     var lista = MCAcceso.todos();
+    pintarLimpiar(lista.filter(function (a) { return aviso(a); }));
     if (!lista.length) { ul.innerHTML = '<li class="vacio">Aún no activaste ningún código. Tócalo abajo para activar el tuyo.</li>'; return; }
     ul.innerHTML = lista.map(fila).join('');
   }
@@ -132,6 +161,21 @@
     pintar();
     MCAcceso.estado().then(function (m) { if (m) { servidor = m; pintar(); } });
   }
+
+  // Uno por uno: el servidor libera el cupo si este equipo lo tenía; sin conexión, solo de aquí
+  limpiar.addEventListener('click', function (e) {
+    if (e.target.closest('[data-limpiar]')) { confLimpiar = true; pintar(); return; }
+    if (e.target.closest('[data-limpiar-no]')) { confLimpiar = false; pintar(); return; }
+    if (!e.target.closest('[data-limpiar-si]') || limpiando) return;
+    var malos = MCAcceso.todos().filter(function (a) { return aviso(a); }).map(function (a) { return a.codigo; });
+    limpiando = true; confLimpiar = false; elegido = null; pintar();
+    malos.reduce(function (p, c) {
+      return p.then(function () {
+        return MCAcceso.soltar(c).then(function (r) { if (!r.ok) return MCAcceso.soltar(c, true); }, function () { return MCAcceso.soltar(c, true); })
+          .then(function () { delete servidor[c]; });
+      });
+    }, Promise.resolve()).then(function () { limpiando = false; revisar(); });
+  });
 
   ul.addEventListener('click', function (e) {
     var q = e.target.closest('[data-c]'), si = e.target.closest('[data-si]'), no = e.target.closest('[data-no]'), lo = e.target.closest('[data-local]');
