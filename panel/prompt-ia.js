@@ -27,7 +27,8 @@ function nombresCursosIA() {
 
 // Reglas comunes de salida (lo más importante: un solo bloque de código, así no se pierden ** ni $)
 const IA_SALIDA = `REGLAS DE SALIDA (muy importantes)
-- Devuelve TODO el resultado dentro de UN SOLO bloque de código (\`\`\`text … \`\`\`), sin explicaciones antes ni después. Así lo copio tal cual, con sus asteriscos, signos $ y ✅.
+- Devuelve TODO el resultado dentro de UN SOLO bloque de código Markdown (\`\`\`markdown … \`\`\`), sin explicaciones antes ni después. Así me sale el botón de copiar y lo copio tal cual, con sus asteriscos, signos $ y ✅.
+- NUNCA agregues citas ni referencias a la fuente: nada de [cite: 1], [cite_start], [1], [fuente], notas al pie ni enlaces. Solo el texto de las preguntas.
 - No cambies el contenido: copia enunciados y alternativas palabra por palabra. Solo arregla errores evidentes de escaneo o de copiado (letras raras, palabras cortadas, saltos de línea en medio de una oración).
 - No resumas ni te saltes preguntas. Si son muchas y no entran en una respuesta, para en una pregunta completa y dime "continúo", y sigue cuando te escriba "sigue".`;
 
