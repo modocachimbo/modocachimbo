@@ -473,7 +473,7 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
   .perfil small { font-size: 13px; }
   .stat { padding: 6px 8px; font-size: 17px; }
   .tema-btn { width: 34px; height: 34px; font-size: 17px; }
-  .fila1, .fila2 { grid-template-columns: 1fr; gap: 22px; }
+  .fila1, .fila2 { grid-template-columns: minmax(0, 1fr); gap: 22px; }
   .escena { min-height: 0; aspect-ratio: .98; margin: 0 calc(-1 * max(14px, env(safe-area-inset-left, 0px))); border-left: 0; border-right: 0; }
   .eventos { width: 31%; gap: 10px; left: 3%; }
   .evento { min-height: 76px; padding: 8px 10px; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%); }
@@ -1371,7 +1371,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
 <script src="assets/buho/buho-vivo.js"></script>
 <script src="assets/buho.js"></script>
 <script src="assets/inicio.js?v=181"></script>
-<script src="assets/resenas.js?v=2"></script>
+<script src="assets/resenas.js?v=3"></script>
 <script>
   // Reseñas: en la bienvenida sin sesión y en el inicio con sesión (assets/resenas.js)
   if (window.MCAuth && window.MCResenas) MCAuth.listo.then(function () {

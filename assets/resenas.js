@@ -48,7 +48,7 @@
     if (document.querySelector('link[href*="resenas.css"]')) return;
     var s = document.currentScript || document.querySelector('script[src*="resenas.js"]');
     var l = document.createElement('link'); l.rel = 'stylesheet';
-    l.href = (s && s.src ? s.src.replace(/resenas\.js(\?.*)?$/, '') : 'assets/') + 'resenas.css?v=2';
+    l.href = (s && s.src ? s.src.replace(/resenas\.js(\?.*)?$/, '') : 'assets/') + 'resenas.css?v=3';
     document.head.appendChild(l);
   }
 
