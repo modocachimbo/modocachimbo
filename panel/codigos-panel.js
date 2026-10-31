@@ -12,7 +12,7 @@ const PROD_AYUDA = {
   general: 'Las 4 áreas con todo lo de adentro (práctica, Repaso, Fijas, Libros, Flashcards), Simulacro, Duelos y Exámenes',
   'seminario-VIP': 'Seminarios y Banqueo de todos los cursos',
   'vocabulario-VIP': 'Vocabulario de todos los cursos',
-  'biblioteca-VIP': 'Solo la Biblioteca: los libros marcados «Con código»'
+  'biblioteca-VIP': 'Solo la Biblioteca: entrar y leer todos sus libros'
 };
 const AREAS_COD = [['matematica', 'Matemática'], ['ciencia-tecnologia', 'Ciencia y Tecnología'], ['comunicacion', 'Comunicación'], ['ciencias-sociales', 'Ciencias Sociales']];
 // Link oficial fijo: así el mensaje no muestra el link de una vista previa.
@@ -78,7 +78,7 @@ function renderConfigAcceso() {
       ${fila('general', 'Acceso general', 'Las 4 áreas, Simulacro, Duelos y Exámenes')}
       ${fila('seminario', 'Seminarios + Banqueo', 'todos los cursos')}
       ${fila('vocabulario', 'Vocabulario', 'todos los cursos')}
-      ${fila('biblioteca', 'Biblioteca', 'los libros «Con código»')}
+      ${fila('biblioteca', 'Biblioteca', 'todos los libros')}
       ${extras.map(k => `<div class="acc-row"><div><b>${esc(etiquetaProd(k))}</b><span>abierto para todos${ab[k].hasta ? ' hasta el ' + esc(ab[k].hasta.split('-').reverse().join('/')) : ''}</span></div>
         <button class="rbtn" type="button" data-cerrar="${esc(k)}">Cerrar</button></div>`).join('')}
       <div class="acc-add">

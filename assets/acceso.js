@@ -23,7 +23,7 @@
      area-<área>    → solo esa área
      seminario-VIP  → Seminarios y Banqueo de todos los cursos
      vocabulario-VIP→ Vocabulario
-     biblioteca-VIP → los libros «Con código» de la Biblioteca
+     biblioteca-VIP → la Biblioteca (todos sus libros)
      TODO-VIP       → todo
      Los códigos de antes (curso-x, repaso-VIP, fijas-x…) siguen abriendo lo suyo. */
   var AREAS = {

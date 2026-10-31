@@ -28,7 +28,7 @@
     };
     if (cat === 'biblioteca') return {
       nombre: 'Biblioteca', color: '#C6E000',
-      incluye: ['Todos los libros «Con código» de la Biblioteca', 'Léelos aquí mismo y sigue donde te quedaste', 'Se suma a los otros códigos que tengas']
+      incluye: ['Todos los libros de la Biblioteca', 'Léelos aquí mismo y sigue donde te quedaste', 'Se suma a los otros códigos que tengas']
     };
     if (cat === 'vocabulario') return {
       nombre: 'Vocabulario', color: '#CE82FF',
@@ -71,6 +71,8 @@
       /* En las tarjetas grandes del inicio la cinta va abajo, donde no tapa el título */
       '.juego.mck-cerrado .mck-cinta{top:auto;bottom:14px;right:auto;left:-4px;padding:6px 13px 6px 11px;font-size:15px!important}' +
       ':is(#mck-z,.juego) .mck-cinta svg{width:17px!important;height:17px!important}' +
+      // La de la Biblioteca es baja: solo el candado, arriba a la derecha, sin tapar el título
+      '.juego.j-bib.mck-cerrado .mck-cinta{top:8px;bottom:auto;left:auto;right:-4px;padding:6px 10px}.juego.j-bib .mck-cinta>span{display:none!important}' +
       '.mck-cerrado .chip{visibility:hidden}' +
       '.mck-cinta.ok{background:linear-gradient(90deg,#58CC02,#2FA84F);color:#06260a!important;box-shadow:0 3px 0 #1f7a2e,0 6px 14px rgba(0,0,0,.45)}' +
       '.mck-cinta.ok .mck-arco{transform:translateY(-3px) rotate(-18deg);transform-origin:16.5px 10px}' +
@@ -237,6 +239,7 @@
     if ((m = /^areas\/([a-z-]+)\.html$/.exec(r)) && MCAcceso.AREAS[m[1]]) return 'area-' + m[1];
     if (r === 'simulacro.html') return 'simulacro';
     if (r === 'duelo.html') return 'duelo';
+    if (r === 'biblioteca.html') return 'biblioteca';
     if (/^examenes\//.test(r)) return 'examenes';
     if (r === 'tarjetas.html') return CURSOS[q('curso')] ? 'tarjetas-' + q('curso') : null;
     if (r === 'repaso-mixto.html') return MCAcceso.AREAS[q('area')] ? 'area-' + q('area') : 'area-matematica';

@@ -155,7 +155,7 @@ function pintarBiblioteca() {
           <div class="bib-sws">
             <label class="bib-sw"><input type="checkbox" id="bibDest"><span>Destacado<small>Sale grande arriba de la biblioteca.</small></span></label>
             <label class="bib-sw"><input type="checkbox" id="bibDesc"><span>Se puede descargar<small>Muestra el botón Descargar (de Drive).</small></span></label>
-            <label class="bib-sw"><input type="checkbox" id="bibAcc"><span>Pide código de alumno<small>Con la llave de la Biblioteca: lo abren los códigos «Biblioteca» y «Acceso total».</small></span></label>
+            <label class="bib-sw" hidden><input type="checkbox" id="bibAcc"><span>Pide código de alumno</span></label>
             <label class="bib-sw"><input type="checkbox" id="bibVisible"><span>Que se vea en la biblioteca<small>Apágalo para prepararlo antes.</small></span></label>
           </div>
         </div>
@@ -302,7 +302,7 @@ function bibPintarLista() {
       ${bibTapa(x)}
       <div class="tx"><b>${esc(x.titulo)}${x.subtitulo ? ' · ' + esc(x.subtitulo) : ''}</b>
         <small>${esc(bibNombre(x.curso))} · ${x.paginas ? x.paginas + ' págs' : 'páginas sin contar'} · ${x.lectores} lo abrieron</small>
-        <span class="tag" style="--c:#A99FC8">${esc(BIB_TIPOS[x.tipo] || 'Libro')}</span>${x.coleccion ? `<span class="tag" style="--c:${esc((BIB.cols.find(c => c.id === x.coleccion) || {}).color || '#CE82FF')}">${esc(bibColNombre(x.coleccion))}</span>` : ''}${x.destacado ? '<span class="tag" style="--c:#C6E000">Destacado</span>' : ''}${x.acceso === 'codigo' ? '<span class="tag" style="--c:#FFC800">Con código</span>' : ''}${x.portada ? '' : '<span class="tag" style="--c:#6F6690">Sin foto</span>'}${x.visible ? '' : '<span class="tag" style="--c:#8a83a8">Oculto</span>'}</div>
+        <span class="tag" style="--c:#A99FC8">${esc(BIB_TIPOS[x.tipo] || 'Libro')}</span>${x.coleccion ? `<span class="tag" style="--c:${esc((BIB.cols.find(c => c.id === x.coleccion) || {}).color || '#CE82FF')}">${esc(bibColNombre(x.coleccion))}</span>` : ''}${x.destacado ? '<span class="tag" style="--c:#C6E000">Destacado</span>' : ''}${x.portada ? '' : '<span class="tag" style="--c:#6F6690">Sin foto</span>'}${x.visible ? '' : '<span class="tag" style="--c:#8a83a8">Oculto</span>'}</div>
       <div class="bts">
         <button class="btn-ghost" type="button" data-sube="${esc(x.id)}" title="Subir en su curso">↑</button>
         <button class="btn-ghost" type="button" data-baja="${esc(x.id)}" title="Bajar en su curso">↓</button>
