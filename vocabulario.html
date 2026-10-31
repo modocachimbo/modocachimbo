@@ -504,6 +504,7 @@
 </style>
 <script src="assets/mc-config.js"></script>
 <script src="assets/acceso.js"></script>
+<script src="assets/candado.js"></script>
 <script src="assets/cursos.js"></script>
 <script src="assets/auth.js"></script>
 <style id="mc-claro">
@@ -1738,12 +1739,23 @@ html[data-modo="claro"] .qarm.bien .ficha { color: #3F9A00 !important; }
   }
   // fondo: ya se estaba usando y el servidor dijo que el código no vale
   function pedirCodigo(mensaje, fondo) {
+    // La misma pantalla del candado que las áreas (assets/candado.js); sin ella, la de antes
+    if (window.MCCandado) {
+      const h = MCCandado.hoja(P_VOCAB, { nombre: 'Vocabulario', pagina: true, volver: $('backLink').getAttribute('href') || 'index.html', alAbrir: alAbrirCandado });
+      if (mensaje) h.aviso(mensaje);
+      return new Promise(res => { alDesbloquear = fondo ? null : res; });
+    }
     $('lockTexto').innerHTML = 'Vocabulario se abre con tu código de <b>Vocabulario</b>, del <b>curso completo</b> o de <b>Acceso total</b>. Si ya lo tienes, ingrésalo abajo.';
     $('lockWhatsapp').href = 'https://wa.me/51917797543?text=' + encodeURIComponent('Hola! Quiero el código de Vocabulario de Modo Cachimbo');
     $('lockError').classList.toggle('show', !!mensaje); $('lockError').textContent = mensaje || '';
     $('lockWhatsapp').classList.toggle('show', !!mensaje);
     mostrar('lock'); window.scrollTo(0, 0);
     return new Promise(res => { alDesbloquear = fondo ? null : res; });
+  }
+  function alAbrirCandado() {
+    Sonido.abrir();
+    const f = alDesbloquear; alDesbloquear = null;
+    if (f) f(true); else if (banco.length) abrirEstudio(); else iniciar();
   }
   async function desbloquear() {
     const codigo = $('lockInput').value.trim().toUpperCase();

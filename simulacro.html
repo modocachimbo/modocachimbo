@@ -317,6 +317,7 @@
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="document.dispatchEvent(new Event('mc:katex'))"></script>
 <script src="assets/mc-config.js"></script>
 <script src="assets/acceso.js"></script>
+<script src="assets/candado.js"></script>
 <script src="assets/carreras.js"></script>
 <script src="assets/pregunta.js"></script>
 <script src="assets/auth.js"></script>
@@ -2377,9 +2378,19 @@ html body .cursos-card h3:not(#z) { font-family: var(--display) !important; font
 
   /* ---------- Candado ---------- */
   let abierto = false;
-  function abrir() { if (abierto) return; abierto = true; iniciar(); }
+  let pantallaCandado = null;
+  function abrir() {
+    const f = document.getElementById('mckFondo'); if (f) f.remove();
+    if (abierto) return; abierto = true; iniciar();
+  }
   function bloquear(msg) {
     if (abierto) return; // ya entró con el acceso guardado; se respeta para no cortar un examen
+    // La misma pantalla del candado que las áreas (assets/candado.js); sin ella, la de antes
+    if (window.MCCandado) {
+      if (!document.getElementById('mckFondo')) pantallaCandado = MCCandado.hoja(PRODUCTO, { nombre: 'Simulacro', pagina: true, volver: 'index.html', alAbrir: abrir });
+      if (msg && pantallaCandado) pantallaCandado.aviso(msg);
+      return;
+    }
     ver('lock');
     if (msg) { $('lockError').textContent = msg; $('lockError').hidden = false; $('lockWa').hidden = false; }
   }
