@@ -325,6 +325,7 @@ function renderVocabulario() {
     voVista();
   });
   $('voBuscar').addEventListener('input', e => { VO.busca = e.target.value; voVista(); });
+  $('voDeshacer').after(botonPromptIA('vocabulario'));
   $('voDeshacer').addEventListener('click', () => {
     VO.texto = ''; VO.cambios = false; VO.recuperado = false; voBorrador(null); renderVocabulario();
   });
