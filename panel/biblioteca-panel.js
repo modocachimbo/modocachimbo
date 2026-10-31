@@ -155,7 +155,7 @@ function pintarBiblioteca() {
           <div class="bib-sws">
             <label class="bib-sw"><input type="checkbox" id="bibDest"><span>Destacado<small>Sale grande arriba de la biblioteca.</small></span></label>
             <label class="bib-sw"><input type="checkbox" id="bibDesc"><span>Se puede descargar<small>Muestra el botón Descargar (de Drive).</small></span></label>
-            <label class="bib-sw"><input type="checkbox" id="bibAcc"><span>Pide código de alumno<small>Con el candado del curso, como Repaso y Fijas.</small></span></label>
+            <label class="bib-sw"><input type="checkbox" id="bibAcc"><span>Pide código de alumno<small>Con la llave de la Biblioteca: lo abren los códigos «Biblioteca» y «Acceso total».</small></span></label>
             <label class="bib-sw"><input type="checkbox" id="bibVisible"><span>Que se vea en la biblioteca<small>Apágalo para prepararlo antes.</small></span></label>
           </div>
         </div>

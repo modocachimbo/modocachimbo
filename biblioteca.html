@@ -290,6 +290,7 @@
   .ficha .etq button { padding: 4px 10px; border-radius: 999px; border: 1.5px solid var(--border); background: none; color: var(--text-dim); font-weight: 800; font-size: 12px; cursor: pointer; }
   .ficha .etq button:hover { border-color: var(--bib); color: var(--text); }
   .ficha .bts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+  .ficha .leer.cand { background: linear-gradient(90deg, #FFC800, #FF9600); color: #2a1a00; box-shadow: 0 4px 0 #b36200; }
   .ficha .leer { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 13px 24px 13px 20px; border-radius: 16px; border: 0; background: var(--accent); color: #1a1f00; font-weight: 1000; text-transform: uppercase; letter-spacing: .5px; font-size: 15px; box-shadow: 0 4px 0 #8fa300; cursor: pointer; }
   .ficha .leer .i { font-size: 20px; }
   .ficha .sec { width: 50px; height: 50px; border-radius: 16px; border: 1.5px solid var(--border); border-bottom-width: 4px; background: none; color: var(--text); cursor: pointer; text-decoration: none; display: inline-grid; place-items: center; font-size: 20px; }
@@ -838,7 +839,7 @@
         (p ? '<div class="bar"><span><i style="width:' + pct(p) + '%"></i></span>' + Math.round(p * 100) + '%</div>' : '') +
         (l.descr ? '<p class="d">' + esc(l.descr) + '</p>' : '') +
         (l.etiquetas && l.etiquetas.length ? '<div class="etq">' + l.etiquetas.map(function (e) { return '<button type="button" data-etq="' + esc(e) + '">#' + esc(e) + '</button>'; }).join('') + '</div>' : '') +
-        '<div class="bts"><button class="leer" type="button" id="fLeer">' + svg(r ? 'i-play' : 'i-leer') + (r && est !== 'terminado' ? 'Seguir · pág. ' + r.pagina : 'Leer') + '</button>' +
+        '<div class="bts"><button class="leer" type="button" id="fLeer"></button>' +
         (r && r.pagina > 1 ? '<button class="sec" type="button" id="fInicio" aria-label="Leer desde el inicio" title="Desde el inicio">' + svg('i-reiniciar') + '</button>' : '') +
         (l.descarga ? '<a class="sec" href="https://drive.google.com/uc?export=download&id=' + encodeURIComponent(l.drive) + '" target="_blank" rel="noopener" aria-label="Descargar" title="Descargar">' + svg('i-descargar') + '</a>' : '') +
         '<button class="sec" type="button" id="fCompartir" aria-label="Compartir" title="Compartir">' + svg('i-compartir') + '</button></div></div>' +
@@ -850,7 +851,20 @@
       if (e.target === d || e.target.closest('[data-cerrar]')) cerrarFicha();
       var et = e.target.closest('[data-etq]'); if (et) { limpiar(); $('q').value = F.q = et.dataset.etq; $('qX').hidden = false; $('qKbd').hidden = true; aUrl(); pintar(); cerrarFicha(); }
     });
-    var leer = function (desde) { if (desde || est === 'terminado') { S.lectura[id] = Object.assign({}, S.lectura[id] || {}, { pagina: 1 }); } cerrarFicha(true); abrir(id); };
+    var leer = function (desde) {
+      // Con código: primero la llave de la Biblioteca, sin cerrar la ficha
+      if (!conLlave(l, function () { leer(desde); })) return;
+      if (desde || est === 'terminado') { S.lectura[id] = Object.assign({}, S.lectura[id] || {}, { pagina: 1 }); } cerrarFicha(true); abrir(id);
+    };
+    // El botón dice «Desbloquear» mientras el libro tenga candado
+    var botonLeer = function () {
+      var c = cerrado(l);
+      $('fLeer').classList.toggle('cand', c);
+      $('fLeer').innerHTML = c ? svg('i-candado') + 'Desbloquear' : svg(r ? 'i-play' : 'i-leer') + (r && est !== 'terminado' ? 'Seguir · pág. ' + r.pagina : 'Leer');
+    };
+    botonLeer();
+    // Con códigos en el equipo (o en la cuenta): se confirma con el servidor
+    if (cerrado(l) && MCAcceso.activos().length) MCAcceso.verificar('biblioteca').then(function (v) { if (v && v.acceso) { llave = true; if ($('fLeer')) botonLeer(); } });
     $('fLeer').addEventListener('click', function () { leer(false); });
     if ($('fInicio')) $('fInicio').addEventListener('click', function () { leer(true); });
     // Compartir: el link abre este libro directo en el visor
@@ -859,8 +873,6 @@
       if (navigator.share) navigator.share({ title: nombre(l), text: nombre(l) + ' · Biblioteca de Modo Cachimbo', url: url }).catch(function () {});
       else if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { avisar('Link copiado'); });
     });
-    // Con código de alumno: el botón Leer lleva el candado del curso (assets/candado.js)
-    if (l.acceso === 'codigo' && window.MCCandado) MCCandado.marcar($('fLeer'), 'curso-' + l.curso, { nombre: curso(l.curso).nombre });
     $('fLeer').focus({ preventScroll: true });
   }
   function cerrarFicha(ya) {
@@ -907,8 +919,19 @@
 
   /* ---------- Visor ---------- */
   var V = null;
+  // Libros «Con código»: piden la llave de la Biblioteca (biblioteca-VIP o Acceso total) también al entrar con un link #libro=…
+  var llave = false;
+  function cerrado(l) { return l.acceso === 'codigo' && !llave && !!window.MCCandado && !MCAcceso.accesoLocal('biblioteca'); }
+  function conLlave(l, seguir) {
+    if (!cerrado(l)) return true;
+    var ok = function () { llave = true; seguir(); };
+    var h = MCCandado.hoja('biblioteca', { nombre: 'Biblioteca', alAbrir: ok });
+    MCAcceso.verificar('biblioteca').then(function (v) { if (v && v.acceso) { h.cerrar(); ok(); } });
+    return false;
+  }
   function abrir(id, sinHistorial) {
     var l = S.libros.filter(function (x) { return x.id === id; })[0]; if (!l) return;
+    if (!conLlave(l, function () { abrir(id, sinHistorial); })) return;
     cerrarVisor(true);
     var r = S.lectura[id] || { pagina: 1, marcas: [] };
     V = { libro: l, pdf: null, zoom: 1, pagina: r.pagina || 1, marcas: (r.marcas || []).slice(), hojas: [], obs: null, guardo: null, tarea: null };

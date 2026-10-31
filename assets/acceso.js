@@ -16,13 +16,14 @@
   var DIA = 24 * 3600 * 1000;
   var memoria = {};
   // true abre todas las páginas sin código (los códigos siguen activables)
-  var LIBRE = true;
+  var LIBRE = false;
 
   /* ---- Paquetes ----
      general        → las 4 áreas (todo lo de adentro), Simulacro, Duelos y Exámenes
      area-<área>    → solo esa área
      seminario-VIP  → Seminarios y Banqueo de todos los cursos
      vocabulario-VIP→ Vocabulario
+     biblioteca-VIP → los libros «Con código» de la Biblioteca
      TODO-VIP       → todo
      Los códigos de antes (curso-x, repaso-VIP, fijas-x…) siguen abriendo lo suyo. */
   var AREAS = {
@@ -106,12 +107,13 @@
       if (cat === 'simulacro' || cat === 'duelo' || cat === 'examenes') return u === 'general';
       if (cat === 'seminario' || cat === 'banqueo') return u === 'seminario-VIP' || u === cat + '-VIP' || (!!resto && u === 'curso-' + resto);
       if (cat === 'vocabulario') return u === 'vocabulario-VIP';
+      if (cat === 'biblioteca') return u === 'biblioteca-VIP';
       return false;
     });
   }
   // Accesos del sistema anterior (antes de los códigos del panel)
   function antiguo(x) {
-    if (/^(area|duelo|examenes)/.test(puerta(x))) return false;
+    if (/^(area|duelo|examenes|biblioteca)/.test(puerta(x))) return false;
     var cat = x.split('-')[0];
     return leer('unlocked_' + x) === '1' || leer('unlocked_' + cat + '-VIP') === '1';
   }

@@ -6,7 +6,7 @@
    - Sin data-producto solo deja window.MCCandado para poner candados afuera:
        MCCandado.marcar(tarjeta, 'simulacro', { nombre: 'Simulacro' })
      La tarjeta lleva la cinta «CON CÓDIGO» y al tocarla sube la hoja para poner el código.
-   Paquetes (assets/acceso.js): general · area-<área> · seminario-VIP · vocabulario-VIP · TODO-VIP
+   Paquetes (assets/acceso.js): general · area-<área> · seminario-VIP · vocabulario-VIP · biblioteca-VIP · TODO-VIP
    Requiere assets/mc-config.js y assets/acceso.js
    ========================================================= */
 (function () {
@@ -25,6 +25,10 @@
     if (cat === 'seminario' || cat === 'banqueo') return {
       nombre: 'Seminarios + Banqueo', color: '#FF9600',
       incluye: ['Seminarios de todos los cursos', 'Banqueo de preguntas por tema', 'Se suma a tu acceso general']
+    };
+    if (cat === 'biblioteca') return {
+      nombre: 'Biblioteca', color: '#C6E000',
+      incluye: ['Todos los libros «Con código» de la Biblioteca', 'Léelos aquí mismo y sigue donde te quedaste', 'Se suma a los otros códigos que tengas']
     };
     if (cat === 'vocabulario') return {
       nombre: 'Vocabulario', color: '#CE82FF',
