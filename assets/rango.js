@@ -2,7 +2,9 @@
    Modo Cachimbo · Rangos de la semana
    El rango sale del XP de la semana (xp_semana de supabase/16-corazones.sql)
    y se reinicia cada lunes. Cada rango tiene sus niveles (I, II, III…):
-     Bronce · Plata · Esmeralda · Zafiro · Amatista · Leyenda · Mítico
+     Bronce · Plata · Esmeralda · Zafiro · Amatista · Mítico · Leyenda
+     (hasta el 1 nov los dos últimos se llamaban al revés: Leyenda · Mítico;
+     los emblemas no cambian, solo el nombre)
    El XP mínimo de cada nivel y sus colores están en RANGOS; los emblemas
    son las imágenes de assets/rangos/<rango>-<nivel>.webp.
    - MCRango.svg(n, {mini}): el emblema del nivel n (0 = Bronce I).
@@ -16,18 +18,19 @@
   if (window.MCRango) return;
   // c: texto · t: fondo · b: borde · o: barra; min: XP de la semana para cada nivel
   // antes: la tabla que regía hasta la semana del 26 oct 2026 (esas semanas se siguen viendo con ella)
+  var DESDE = '2026-11-02';  // primer lunes con la tabla min y los nombres nuevos
+  var NUEVO = clave() >= DESDE;
   var RANGOS = [
     { id: 'bronce', nom: 'Bronce', c: '#E8A878', t: '#3a1e0e', b: '#9A5A30', o: '#7A3A1C', min: [20, 250, 500], antes: [20, 150, 300] },
     { id: 'plata', nom: 'Plata', c: '#D6DEEA', t: '#262c3a', b: '#8A96AA', o: '#5A6478', min: [900, 1350, 1800], antes: [500, 750, 1000] },
     { id: 'esmeralda', nom: 'Esmeralda', c: '#5FF59A', t: '#06361a', b: '#0FA845', o: '#0FA845', min: [2300, 2900, 3400, 4000], antes: [1300, 1600, 1900, 2200] },
     { id: 'zafiro', nom: 'Zafiro', c: '#5FDAFF', t: '#06304a', b: '#1A6CC0', o: '#123FC0', min: [4700, 5400, 6300, 7200, 8100], antes: [2600, 3000, 3500, 4000, 4500] },
     { id: 'amatista', nom: 'Amatista', c: '#D79BFF', t: '#2a1050', b: '#8A36E0', o: '#8A36E0', min: [9000, 10000, 11200, 12400, 13700], antes: [5000, 5600, 6200, 6900, 7600] },
-    { id: 'leyenda', nom: 'Leyenda', c: '#FF7AD9', t: '#3e0a34', b: '#C0399E', o: '#E3263F', min: [16000, 20000, 24000, 30000, 36000], antes: [9000, 11000, 13500, 16500, 20000] },
-    { id: 'mitico', nom: 'Mítico', c: '#FFC800', t: '#3e2400', b: '#D08A00', o: '#E3263F', min: [45000, 58000, 72000], antes: [25000, 32000, 40000] }
+    { id: 'leyenda', nom: NUEVO ? 'Mítico' : 'Leyenda', c: '#FF7AD9', t: '#3e0a34', b: '#C0399E', o: '#E3263F', min: [16000, 20000, 24000, 30000, 36000], antes: [9000, 11000, 13500, 16500, 20000] },
+    { id: 'mitico', nom: NUEVO ? 'Leyenda' : 'Mítico', c: '#FFC800', t: '#3e2400', b: '#D08A00', o: '#E3263F', min: [50000, 62000, 75000], antes: [25000, 32000, 40000] }
   ];
-  var DESDE = '2026-11-02';  // primer lunes con la tabla min
   var ROM = ['I', 'II', 'III', 'IV', 'V', 'VI'];
-  // Todo en una lista de niveles: n = 0 es Bronce I, el último es Mítico III
+  // Todo en una lista de niveles: n = 0 es Bronce I, el último es el rango máximo III
   var MIN = [], ANTES = [], NOM = [], TXT = [], TINTE = [], BORDE = [], OSC = [], IMG = [], GRUPOS = [];
   RANGOS.forEach(function (r) {
     GRUPOS.push({ nom: r.nom, desde: MIN.length, hasta: MIN.length + r.min.length - 1, c: r.c, t: r.t, b: r.b });
