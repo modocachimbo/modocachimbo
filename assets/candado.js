@@ -136,13 +136,14 @@
 
   // El color de la página: el de su área (la de la página o la del curso) o, si no tiene, su color propio (--accent)
   var COLOR_AREA = { 'matematica': '#1CB0F6', 'ciencia-tecnologia': '#C6E000', 'comunicacion': '#CE82FF', 'ciencias-sociales': '#FF9600' };
-  function colorPagina(producto, def) {
+  // Afuera (la hoja que sube en el inicio) solo cuenta el área del producto
+  function colorPagina(producto, def, afuera) {
     var cs = getComputedStyle(document.documentElement);
-    var ac = document.documentElement.hasAttribute('data-area') && cs.getPropertyValue('--ac').trim();
+    var ac = !afuera && document.documentElement.hasAttribute('data-area') && cs.getPropertyValue('--ac').trim();
     if (ac) return ac;
     var curso = /^[a-z]+-(.+)$/.exec(producto || ''), area = null;
     if (curso) Object.keys(MCAcceso.AREAS).forEach(function (a) { if (a === curso[1] || MCAcceso.AREAS[a].indexOf(curso[1]) >= 0) area = a; });
-    return COLOR_AREA[area] || cs.getPropertyValue('--accent').trim() || def;
+    return COLOR_AREA[area] || (!afuera && cs.getPropertyValue('--accent').trim()) || def;
   }
 
   /* ---- La hoja: el candado, lo que trae el paquete y la cajita del código ----
@@ -151,7 +152,7 @@
     op = op || {};
     css();
     var p = paquete(producto), viejo = document.getElementById('mckFondo');
-    var color = op.pagina ? colorPagina(producto, p.color) : p.color;
+    var color = colorPagina(producto, p.color, !op.pagina);
     if (viejo) viejo.remove();
     var wa = 'https://wa.me/' + WA_NUM + '?text=' + encodeURIComponent('¡Hola! Quiero el paquete ' + p.nombre + ' de Modo Cachimbo' + (op.nombre ? ' (para ' + op.nombre + ')' : '') + ' 🎓');
     var f = document.createElement('div'); f.id = 'mckFondo'; if (op.pagina) f.className = 'pagina';
