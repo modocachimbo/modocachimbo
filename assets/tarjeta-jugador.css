@@ -94,6 +94,17 @@
 .mcj-av img { width: 100%; height: 100%; display: block; object-fit: cover; }
 .mcj-nv { position: absolute; z-index: 1; left: -3px; bottom: -3px; padding: 1px 5px 0 2px; background: linear-gradient(90deg, #FFE14D, #FFC800); color: #2a1d00; text-shadow: none; font: italic 900 9px/1.05 'Barlow Condensed', 'Arial Narrow', sans-serif; clip-path: polygon(0 0, 100% 0, 84% 100%, 0 100%); pointer-events: none; }
 
+/* Pin al lado del nombre en los tops (MCTarjeta.nombre): el nombre se corta con «…», el pin siempre se ve */
+.mcj-n { display: inline-flex !important; align-items: center; gap: 4px; max-width: 100%; min-width: 0; vertical-align: middle; }
+.mcj-nt { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mcj-pin { flex: none; display: inline-grid; place-items: center; width: 1.3em; height: 1.3em; min-width: 18px; min-height: 18px; font-style: normal; filter: drop-shadow(0 1px 2px rgba(0,0,0,.5)); }
+.mcj-pin svg { width: 100%; height: 100%; display: block; }
+.mcj-pin .mcc-pin { width: 100%; border-width: 2px; box-shadow: none; }
+.mcj-pin .mcc-pin span { font-size: 10px; }
+.mcj-pin .mcc-pin img { width: 70%; height: 70%; }
+/* En el podio el nombre va centrado */
+.lugar .mcj-n, .mcr-p .mcj-n { justify-content: center; }
+
 /* Ventana con la tarjeta de un alumno */
 .mcj-ov { position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center; padding: 16px; background: rgba(5,3,14,.72); backdrop-filter: blur(3px); opacity: 0; transition: opacity .2s; }
 .mcj-ov.ver { opacity: 1; }

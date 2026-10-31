@@ -452,6 +452,8 @@
     var fondo = tema ? 'linear-gradient(135deg,' + tema[0] + ',' + tema[3] + ')' : AV[(x.puesto - 1) % AV.length];
     return '<span class="letra' + (marco ? ' con-m' : '') + (tema ? ' con-f' : '') + '" style="' + (marco ? '--m:' + marco + ';' : '') + '--lf:' + fondo + '"><span>' + dentro + '</span></span>';
   }
+  // Nombre con el pin que lleva (assets/tarjeta-perfil.js)
+  function nom(x, txt) { return window.MCTarjeta && MCTarjeta.nombre ? MCTarjeta.nombre(x, txt) : esc(txt); }
   function emblema(xp) {
     if (xp == null || !window.MCRango) return '<span class="em"></span>';
     var n = MCRango.nivel(xp);
@@ -461,9 +463,9 @@
   /* ---------- Top de la semana (ranking_xp en supabase/16-corazones.sql) ---------- */
   var CLS = ['', 'oro', 'plata', 'bronce'];
   function filaXp(x, extra) {
-    var nom = x.yo ? 'Tú' : (x.apodo || 'Cachimbo');
+    var n = x.yo ? 'Tú' : (x.apodo || 'Cachimbo');
     return '<li class="' + (CLS[x.puesto] || '') + (x.yo ? ' tu' : '') + (extra ? ' extra' : '') + '"><span class="pos">' + puesto(x.puesto) + '</span>' + foto(x.yo ? { puesto: x.puesto, apodo: nombreAlumno || x.apodo, yo: true } : x) +
-      '<span class="quien"><b>' + esc(nom) + '</b></span>' + emblema(x.xp) + '<span class="xp">' + miles(x.xp) + ' <small>XP</small></span></li>';
+      '<span class="quien"><b>' + nom(x, n) + '</b></span>' + emblema(x.xp) + '<span class="xp">' + miles(x.xp) + ' <small>XP</small></span></li>';
   }
   // corto: solo el podio y tu fila a la vista; el resto se abre con "Ver top 10"
   function listaXp(top, yo, n, corto) {
@@ -514,7 +516,7 @@
     return n < 0 ? '' : '<span class="rg">' + MCRango.svg(n, { mini: true, quieto: true }) + '<small style="color:' + MCRango.color(n).c + '">' + MCRango.nombre(n) + '</small></span>';
   }
   function filaSim(x, extra) {
-    return '<li class="' + (x.yo ? 'tu' : '') + (extra ? ' extra' : '') + '"><span class="num">' + x.puesto + '</span>' + foto(x) + '<span class="quien">' + esc(x.yo ? 'Tú' : x.apodo) + '</span>' +
+    return '<li class="' + (x.yo ? 'tu' : '') + (extra ? ' extra' : '') + '"><span class="num">' + x.puesto + '</span>' + foto(x) + '<span class="quien">' + nom(x, x.yo ? 'Tú' : x.apodo) + '</span>' +
       emblema(x.xp) + '<b>' + dec(x.puntaje) + ' pts</b></li>';
   }
   function pintarSim(filas) {
@@ -529,7 +531,7 @@
     podio.innerHTML = '<div class="foco" aria-hidden="true"></div>' + [2, 1, 3].map(function (p) {
       var x = top.filter(function (t) { return t.puesto === p; })[0];
       if (!x) return '<div class="lugar l' + p + ' vacio"><span class="aro"><span class="letra" style="--lf:var(--tarjeta2);color:var(--suave)"><span>?</span></span></span><b>Libre</b><span class="pts">—</span><span class="bloque"><i class="cara"></i><span class="frente">' + p + '</span></span></div>';
-      return '<div class="lugar l' + p + '">' + (p === 1 ? CORONA : '') + '<span class="aro">' + foto(x) + '</span><b>' + esc(x.yo ? 'Tú' : x.apodo) + '</b>' + rangoSim(x.xp) +
+      return '<div class="lugar l' + p + '">' + (p === 1 ? CORONA : '') + '<span class="aro">' + foto(x) + '</span><b>' + nom(x, x.yo ? 'Tú' : x.apodo) + '</b>' + rangoSim(x.xp) +
         '<span class="pts">' + dec(x.puntaje) + ' pts</span><span class="bloque"><i class="cara"></i><span class="frente">' + p + '</span></span></div>';
     }).join('');
     var resto = top.filter(function (x) { return x.puesto > 3; });

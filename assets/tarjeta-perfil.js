@@ -11,7 +11,7 @@
      total (para el nivel) y el pin de verificado salen de mi_tarjeta()
      (supabase/36-tarjeta-jugador.sql).
    - La tarjeta grande de perfil.html usa lo mismo: MCTarjeta.arte, .icono,
-     .nivel, .pin, .jugador y .alJugador.
+     .nivel, .pin, .jugador y .alJugador. Los tops usan .foto y .nombre (nombre con su pin).
    ========================================================= */
 (function () {
   if (window.MCTarjeta) return;
@@ -236,7 +236,7 @@
   // Los estilos de la tarjeta grande y de las fotos: assets/tarjeta-jugador.css
   function hoja() {
     if (document.querySelector('link[href*="tarjeta-jugador.css"]')) return;
-    var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = BASE + 'assets/tarjeta-jugador.css?v=3';
+    var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = BASE + 'assets/tarjeta-jugador.css?v=4';
     document.head.appendChild(l);
   }
   var GALAXIA = ['#5b34b8', '#241452', '#4a2a9a', '#1a0f40'];
@@ -269,6 +269,23 @@
       ' style="--f1:' + v.tema[0] + ';--f2:' + v.tema[3] + (v.marco ? ';--m:' + v.marco : '') + '"><i class="mcj-fr"><i class="mcj-av">' +
       (v.img ? '<img src="' + esc(v.img) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : inicial(x.apodo)) + '</i></i>' +
       (xt != null ? '<i class="mcj-nv">' + nivel(xt) + '</i>' : '') + '</span>';
+  }
+
+  // Pin al lado del nombre en los tops (supabase/47-pines-tops.sql): el mismo de su tarjeta,
+  // el de verificado si es del equipo; si no, el primero de su vitrina. Tu fila usa el tuyo (si aún no carga, lo del top).
+  function pinDe(x) {
+    var mio = x.yo && pin();
+    if (mio) return mio;
+    if (x.admin) return { html: icono('ver'), nom: 'Verificado' };
+    var C = window.MCColeccion, px = C && x.pin && C.item(x.pin);
+    return px ? { html: C.pin(px), nom: px.nom } : null;
+  }
+  // Nombre (txt) con su pin; sin pin queda el texto solo
+  function nombre(x, txt) {
+    var p = pinDe(x);
+    if (!p) return esc(txt);
+    hoja(); if (window.MCColeccion) MCColeccion.css();
+    return '<span class="mcj-n"><span class="mcj-nt">' + esc(txt) + '</span><i class="mcj-pin" title="' + esc(p.nom) + '" aria-label="' + esc(p.nom) + '">' + p.html + '</i></span>';
   }
 
   // La tarjeta grande de otro alumno (lo que devuelve ver_jugador en supabase/38-ver-jugador.sql)
@@ -349,7 +366,7 @@
   else iniciar();
 
   window.MCTarjeta = {
-    pintar: pintar, arte: arte, icono: icono, nivel: nivel, avance: avance, foto: foto, ver: ver, pin: pin, colores: RC,
+    pintar: pintar, arte: arte, icono: icono, nivel: nivel, avance: avance, foto: foto, nombre: nombre, ver: ver, pin: pin, colores: RC,
     jugador: function () { return yo; },
     alJugador: function (fn) { oyentes.push(fn); if (yo) fn(yo); }
   };
