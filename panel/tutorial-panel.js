@@ -2,9 +2,9 @@
    Panel · Tutorial de primera visita
    ========================================================= */
 const TU = { datos: null, pag: 'inicio', cambios: false };
-const TU_PAGS = [['inicio', 'Inicio'], ['area', 'Área'], ['curso', 'Página del curso'], ['libros', 'Años y temario'],
+const TU_PAGS = [['inicio', 'Inicio'], ['area', 'Área'], ['curso', 'Página del curso'], ['libros', 'Ciclos del libro'], ['temario', 'Temario'],
   ['estudio', 'Modo estudio (tema)'], ['quiz', 'Modo quiz'], ['repaso', 'Repaso'], ['fijas', 'Fijas'], ['simulacro', 'Simulacro'],
-  ['duelo', 'Duelos'], ['falladas', 'Repasar mis falladas']];
+  ['duelo', 'Duelos'], ['falladas', 'Repasar mis falladas'], ['biblioteca', 'Biblioteca'], ['coleccion', 'Mi colección'], ['perfil', 'Perfil']];
 
 function tuPagina(k) {
   const p = TU.datos.paginas[k] = TU.datos.paginas[k] || { activa: false, version: 1, boton: true, pasos: [] };
@@ -26,9 +26,10 @@ async function cargarTutorial() {
 function tuUrlEjemplo(k) {
   const c = (REG && REG.cursos || []).find(x => !x.oculto && x.repaso && x.repaso.anio) || { id: 'biologia', area: 'ciencia-tecnologia', repaso: { anio: '2027-I' } };
   const y = encodeURIComponent(c.repaso.anio);
-  const rutas = { inicio: '', area: 'areas/' + c.area + '.html', curso: c.id + '/index.html', libros: c.id + '/libros/index.html',
+  const rutas = { inicio: '', area: 'areas/' + c.area + '.html', curso: c.id + '/index.html', libros: c.id + '/libros/index.html', temario: c.id + '/libros/temario.html?year=' + y,
     estudio: c.id + '/libros/tema.html?year=' + y + '&tema=01', quiz: c.id + '/libros/quiz.html?year=' + y + '&tema=01',
-    repaso: c.id + '/repaso.html?year=' + y, fijas: c.id + '/fijas.html?year=' + y, simulacro: 'simulacro.html', duelo: 'duelo.html', falladas: 'falladas.html' };
+    repaso: c.id + '/repaso.html?year=' + y, fijas: c.id + '/fijas.html?year=' + y, simulacro: 'simulacro.html', duelo: 'duelo.html', falladas: 'falladas.html',
+    biblioteca: 'biblioteca.html', coleccion: 'coleccion.html', perfil: 'perfil.html' };
   const r = rutas[k];
   return SITE_ROOT + r + (r.includes('?') ? '&' : '?') + 'tutorial=borrador';
 }
