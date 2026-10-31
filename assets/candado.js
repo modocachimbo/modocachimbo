@@ -96,6 +96,9 @@
       '#mckHoja .mck-x{position:absolute;top:16px;right:14px;width:34px;height:34px;border:0;border-radius:10px;background:#221c3c;color:#a59fc4;font-size:18px;cursor:pointer}' +
       '#mckHoja .mck-ico{width:84px;height:84px;margin:6px auto 14px;display:grid;place-items:center;border-radius:24px;color:var(--kc);' +
         'background:radial-gradient(circle at 50% 35%,rgba(255,200,0,.22),rgba(255,200,0,.05) 70%);border:2px solid rgba(255,200,0,.25);animation:mck-bote 2.4s ease-in-out infinite}' +
+      '#mckHoja .mck-ico{background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--kc) 22%,transparent),color-mix(in srgb,var(--kc) 5%,transparent) 70%);border-color:color-mix(in srgb,var(--kc) 25%,transparent)}' +
+      // En su página el candado lleva el color del área (assets/areas.css), aunque llegue después
+      'html[data-area] #mckFondo.pagina #mckHoja{--kc:var(--ac)!important}' +
       '#mckHoja .mck-ico svg{width:46px;height:46px;filter:drop-shadow(0 4px 0 rgba(0,0,0,.35))}' +
       '#mckHoja .mck-arco{transition:transform .35s cubic-bezier(.2,1.6,.4,1)}' +
       '#mckHoja.abierto .mck-ico{color:#58CC02;border-color:rgba(88,204,2,.4);background:radial-gradient(circle at 50% 35%,rgba(88,204,2,.25),rgba(88,204,2,.05) 70%);animation:none}' +
@@ -131,16 +134,28 @@
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   var WA_ICO = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.05 2a9.9 9.9 0 0 0-8.5 15l-1.4 5 5.1-1.3A9.9 9.9 0 1 0 12.05 2zm5.8 14.1c-.25.7-1.44 1.33-2 1.41-.52.08-1.16.11-1.87-.12a17 17 0 0 1-1.69-.63c-2.98-1.29-4.93-4.29-5.08-4.49-.14-.2-1.21-1.62-1.21-3.08s.77-2.18 1.04-2.48c.27-.3.59-.37.79-.37h.57c.18 0 .43-.07.67.51.25.6.85 2.07.92 2.22.07.15.12.32.02.52-.1.2-.15.33-.3.5-.15.17-.32.39-.45.52-.15.15-.3.31-.13.61.17.3.77 1.28 1.66 2.07 1.14 1.02 2.1 1.33 2.4 1.48.3.15.48.13.65-.07.17-.2.74-.87.94-1.17.2-.3.4-.25.67-.15.27.1 1.73.82 2.03.97.3.15.5.22.57.35.08.12.08.71-.17 1.41z"/></svg>';
 
+  // El color de la página: el de su área (la de la página o la del curso) o, si no tiene, su color propio (--accent)
+  var COLOR_AREA = { 'matematica': '#1CB0F6', 'ciencia-tecnologia': '#C6E000', 'comunicacion': '#CE82FF', 'ciencias-sociales': '#FF9600' };
+  function colorPagina(producto, def) {
+    var cs = getComputedStyle(document.documentElement);
+    var ac = document.documentElement.hasAttribute('data-area') && cs.getPropertyValue('--ac').trim();
+    if (ac) return ac;
+    var curso = /^[a-z]+-(.+)$/.exec(producto || ''), area = null;
+    if (curso) Object.keys(MCAcceso.AREAS).forEach(function (a) { if (a === curso[1] || MCAcceso.AREAS[a].indexOf(curso[1]) >= 0) area = a; });
+    return COLOR_AREA[area] || cs.getPropertyValue('--accent').trim() || def;
+  }
+
   /* ---- La hoja: el candado, lo que trae el paquete y la cajita del código ----
      op: { nombre, pagina (página completa, sin «Ahora no»), volver, alAbrir } */
   function hoja(producto, op) {
     op = op || {};
     css();
     var p = paquete(producto), viejo = document.getElementById('mckFondo');
+    var color = op.pagina ? colorPagina(producto, p.color) : p.color;
     if (viejo) viejo.remove();
     var wa = 'https://wa.me/' + WA_NUM + '?text=' + encodeURIComponent('¡Hola! Quiero el paquete ' + p.nombre + ' de Modo Cachimbo' + (op.nombre ? ' (para ' + op.nombre + ')' : '') + ' 🎓');
     var f = document.createElement('div'); f.id = 'mckFondo'; if (op.pagina) f.className = 'pagina';
-    f.innerHTML = '<div id="mckHoja" role="dialog" aria-modal="true" aria-labelledby="mckTit" style="--kc:' + p.color + '">' +
+    f.innerHTML = '<div id="mckHoja" role="dialog" aria-modal="true" aria-labelledby="mckTit" style="--kc:' + esc(color) + '">' +
       (op.pagina ? '' : '<button class="mck-x" type="button" aria-label="Cerrar">✕</button>') +
       '<div class="mck-ico">' + CANDADO + '</div>' +
       '<span class="mck-paq">Incluido en ' + esc(p.nombre) + '</span>' +
