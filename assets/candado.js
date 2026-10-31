@@ -199,7 +199,11 @@
 
   /* ---- Candado afuera, en la tarjeta que lleva a la página ----
      op: { nombre, chica (cinta solo con el candado), alAbrir } */
-  var revisados = {};
+  var revisados = {}, marcados = [];
+  // Si en el panel se abrió (o cerró) algo para todos, las tarjetas se vuelven a pintar
+  if (MCAcceso.alAbiertos) MCAcceso.alAbiertos(function () {
+    marcados.forEach(function (el) { if (el.isConnected && el.__mckPintar) el.__mckPintar(); });
+  });
   function marcar(el, producto, op) {
     if (!el) return;
     op = op || {};
@@ -226,6 +230,8 @@
       setTimeout(function () { if (cinta) { cinta.remove(); cinta = null; } }, 2200);
     }
     pintar(!MCAcceso.accesoLocal(x));
+    el.__mckPintar = function () { pintar(!MCAcceso.accesoLocal(x)); };
+    if (marcados.indexOf(el) < 0) marcados.push(el);
     // Con códigos en el equipo (o recién traídos de la cuenta): se confirma con el servidor una vez por página
     if (el.classList.contains('mck-cerrado') && MCAcceso.activos().length) {
       (revisados[x] = revisados[x] || MCAcceso.verificar(x)).then(function (v) { if (v && v.acceso) pintar(false); });

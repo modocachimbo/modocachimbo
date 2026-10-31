@@ -12,12 +12,15 @@
      Un código liberado se borra de este equipo y de la cuenta (Perfil · Mis accesos).
    - Un código quitado queda marcado en la cuenta (supabase/48-codigos-quitados.sql):
      otro equipo ya no lo vuelve a subir y, si lo tiene con su aviso, lo borra.
+   - Lo abierto para todos (Panel → Códigos → Acceso libre) se pregunta al servidor
+     al cargar cada página (como mucho una vez cada 2 minutos) y se guarda aquí:
+     así los candados de las tarjetas se quitan aunque el alumno no tenga códigos.
    Requiere assets/mc-config.js
    ========================================================= */
 (function () {
   var CFG = window.MC_CONFIG || {};
   var API = CFG.API_URL || CFG.REPORTES_URL || '';
-  var K_DISP = 'mc_dispositivo', K_ACC = 'mc_accesos', K_AVISO = 'mc_acceso_aviso';
+  var K_DISP = 'mc_dispositivo', K_ACC = 'mc_accesos', K_AVISO = 'mc_acceso_aviso', K_ABIERTOS = 'mc_abiertos';
   var DIA = 24 * 3600 * 1000;
   var memoria = {};
   // true abre todas las páginas sin código (los códigos siguen activables)
@@ -127,10 +130,50 @@
     return Object.keys(a).filter(function (c) { return cubre(a[c].producto, x); });
   }
 
+  /* ---- Abierto para todos desde el panel ----
+     Las mismas claves que abiertoPara_ en el Apps Script: TODO, general, seminario,
+     vocabulario, biblioteca o la página misma (area-x, simulacro, seminario-x…) */
+  function hoyLima() { return new Date(Date.now() - 5 * 3600 * 1000).toISOString().slice(0, 10); }
+  function abiertos() { try { return JSON.parse(leer(K_ABIERTOS) || 'null') || { t: 0, abiertos: {} }; } catch (e) { return { t: 0, abiertos: {} }; } }
+  function clavesAbierto(x) {
+    x = puerta(x);
+    var cat = x.split('-')[0], claves = ['TODO', cat, x];
+    if (['area', 'simulacro', 'duelo', 'examenes'].indexOf(cat) >= 0) claves.push('general');
+    if (cat === 'banqueo') claves.push('seminario');
+    return claves;
+  }
+  function abiertoLocal(x) {
+    var ab = abiertos().abiertos || {}, hoy = hoyLima();
+    return clavesAbierto(x).some(function (k) { var a = ab[k]; return !!a && (!a.hasta || hoy <= a.hasta); });
+  }
+  // Pregunta al servidor qué está abierto. Si cambió, avisa (candado.js vuelve a pintar las tarjetas)
+  var alAbiertos = [];
+  function revisarAbiertos() {
+    var antes = abiertos();
+    if (LIBRE || Date.now() - (antes.t || 0) < 2 * 60 * 1000) return;
+    jsonp2({ action: 'abiertos' }).then(function (r) {
+      // Apps Script sin la acción (antes de v18): no se toca nada
+      if (!r || !r.ok || !r.abiertos) return;
+      var cambio = JSON.stringify(r.abiertos) !== JSON.stringify(antes.abiertos || {});
+      escribir(K_ABIERTOS, JSON.stringify({ t: Date.now(), abiertos: r.abiertos }));
+      if (cambio) alAbiertos.forEach(function (fn) { try { fn(); } catch (e) {} });
+    }).catch(function () {});
+  }
+  // La respuesta de cada página revisada también dice si está abierta
+  function anotarAbierto(x, si) {
+    if (abiertoLocal(x) === si) return;
+    var a = abiertos();
+    a.abiertos = a.abiertos || {};
+    if (si) a.abiertos[puerta(x)] = { hasta: '' };
+    else { clavesAbierto(x).forEach(function (k) { delete a.abiertos[k]; }); a.t = 0; } // se cerró algo: la próxima página vuelve a preguntar todo
+    escribir(K_ABIERTOS, JSON.stringify(a));
+  }
+
   // Sin esperar al servidor: ¿hay un acceso reciente en este dispositivo?
   function accesoLocal(x) {
     if (LIBRE) return true;
     x = puerta(x);
+    if (abiertoLocal(x)) return true;
     var a = accesos(), hoy = Date.now();
     return codigosPara(x).some(function (c) { return hoy - (a[c].ok || 0) < 3 * DIA; }) || antiguo(x);
   }
@@ -218,6 +261,7 @@
         // Apps Script sin los paquetes nuevos: no deja a nadie afuera mientras se actualiza
         if (r && !r.ok && /producto no v[aá]lido/i.test(r.error || '')) return { acceso: true, motivo: 'servidor-antiguo' };
         if (!r || !r.ok) throw new Error('respuesta');
+        anotarAbierto(x, !!r.abierto);
         var a = accesos(), mensaje = '';
         Object.keys(r.estados || {}).forEach(function (c) {
           if (r.estados[c] === 'ok') { if (a[c]) { a[c].ok = Date.now(); delete a[c].error; } }
@@ -342,6 +386,7 @@
   document.addEventListener('visibilitychange', vigilar);
   window.addEventListener('focus', vigilar);
   setTimeout(vigilar, 4000);
+  revisarAbiertos();
 
-  window.MCAcceso = { verificar: verificar, activar: activar, activos: activos, todos: todos, estado: estado, soltar: soltar, accesoLocal: accesoLocal, antiguo: antiguo, cubre: cubre, puerta: puerta, AREAS: AREAS };
+  window.MCAcceso = { verificar: verificar, activar: activar, activos: activos, todos: todos, estado: estado, soltar: soltar, accesoLocal: accesoLocal, alAbiertos: function (fn) { alAbiertos.push(fn); }, antiguo: antiguo, cubre: cubre, puerta: puerta, AREAS: AREAS };
 })();
