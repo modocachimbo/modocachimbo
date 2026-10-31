@@ -76,7 +76,7 @@
   // Tu pin personal: el verificado si eres del equipo; si no, el primero de tu vitrina
   function pin() {
     var C = window.MCColeccion;
-    if (yo && yo.admin) return { html: icono('ver'), nom: 'Verificado', como: 'Solo lo llevan los administradores de Modo Cachimbo.' };
+    if (yo && yo.admin) return { html: icono('ver'), nom: 'Admin verificado', como: 'Solo lo llevan los administradores de Modo Cachimbo.' };
     var id = C && C.puesto('pines')[0], x = id && C.item(id);
     return x ? { html: C.pin(x), nom: x.nom, como: C.como(x) } : null;
   }
@@ -236,7 +236,7 @@
   // Los estilos de la tarjeta grande y de las fotos: assets/tarjeta-jugador.css
   function hoja() {
     if (document.querySelector('link[href*="tarjeta-jugador.css"]')) return;
-    var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = BASE + 'assets/tarjeta-jugador.css?v=3';
+    var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = BASE + 'assets/tarjeta-jugador.css?v=5';
     document.head.appendChild(l);
   }
   var GALAXIA = ['#5b34b8', '#241452', '#4a2a9a', '#1a0f40'];
@@ -264,19 +264,61 @@
   function foto(x, cls) {
     hoja();
     var v = vista(x), xt = x.xp_total != null ? x.xp_total : x.yo && yo ? yo.xp_total : null;
+    var p = pinDe(x);
+    if (p && window.MCColeccion) MCColeccion.css();
     var cod = x.codigo || (x.yo && yo ? yo.codigo : ''), nom = x.yo ? 'tu perfil' : 'el perfil de ' + (x.apodo || 'este alumno');
     return '<span class="' + (cls || '') + ' mcj-f"' + (cod ? ' data-jug="' + esc(cod) + '" role="button" tabindex="0" aria-label="Ver ' + esc(nom) + '"' : '') +
       ' style="--f1:' + v.tema[0] + ';--f2:' + v.tema[3] + (v.marco ? ';--m:' + v.marco : '') + '"><i class="mcj-fr"><i class="mcj-av">' +
       (v.img ? '<img src="' + esc(v.img) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : inicial(x.apodo)) + '</i></i>' +
-      (xt != null ? '<i class="mcj-nv">' + nivel(xt) + '</i>' : '') + '</span>';
+      (xt != null ? '<i class="mcj-nv">' + nivel(xt) + '</i>' : '') +
+      (p ? pinHtml(p, 'mcj-pin') : '') + '</span>';
   }
+
+  // Pin en la esquina de la foto de los tops (supabase/47-pines-tops.sql), como en tu tarjeta:
+  // el de admin verificado si es del equipo; si no, el primero de su vitrina.
+  // Tu fila usa el tuyo (si aún no carga, lo del top).
+  function pinDe(x) {
+    var mio = x.yo && pin();
+    if (mio) return mio;
+    if (x.admin) return { html: icono('ver'), nom: 'Admin verificado', como: 'Solo lo llevan los administradores de Modo Cachimbo.' };
+    var C = window.MCColeccion, px = C && x.pin && C.item(x.pin);
+    return px ? { html: C.pin(px), nom: px.nom, como: comoDe(px) } : null;
+  }
+  // Cómo se consigue un pin de otro alumno (MCColeccion.como habla de los tuyos)
+  function comoDe(px) {
+    var r = px.regla || {};
+    if (r.tipo === 'evento') return 'Se ganaba en ' + r.evento + '.';
+    if (r.tipo === 'racha') return 'Se gana con ' + r.n + ' días de racha.';
+    return 'Un pin de su colección (Mi colección → Pines).';
+  }
+  // Pin que se toca: al tocarlo sale un globito con su nombre y cómo se consigue
+  function pinHtml(p, cls) {
+    return '<i class="' + cls + '" role="button" tabindex="0" aria-label="' + esc(p.nom) + '" data-pn="' + esc(p.nom) + '" data-pc="' + esc(p.como || '') + '">' + p.html + '</i>';
+  }
+  var burb = null;
+  function cerrarBurb() { if (burb) { burb.remove(); burb = null; } }
+  function globo(el) {
+    var otro = burb && burb._el === el;
+    cerrarBurb();
+    if (otro) return;
+    hoja();
+    burb = document.createElement('div'); burb.className = 'mcj-burb'; burb.setAttribute('role', 'status'); burb._el = el;
+    var t = document.createElement('b'); t.textContent = el.getAttribute('data-pn'); burb.appendChild(t);
+    burb.appendChild(document.createTextNode(el.getAttribute('data-pc') || ''));
+    document.body.appendChild(burb);
+    var r = el.getBoundingClientRect(), w = burb.offsetWidth, h = burb.offsetHeight;
+    var x = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), innerWidth - w - 8), y = r.bottom + 8;
+    if (y + h > innerHeight - 8) y = Math.max(8, r.top - h - 8);
+    burb.style.left = x + 'px'; burb.style.top = y + 'px';
+  }
+  addEventListener('scroll', cerrarBurb, true);
 
   // La tarjeta grande de otro alumno (lo que devuelve ver_jugador en supabase/38-ver-jugador.sql)
   function tarjetaHtml(d) {
     var C = window.MCColeccion, v = vista(d), p = d.puesto || {};
     var tit = C && (C.item(p.titulo) || C.item('titulo-cachimbo')), pin = null;
-    if (d.admin) pin = { html: icono('ver'), nom: 'Verificado' };
-    else if (C && p.pines && p.pines[0] && C.item(p.pines[0])) { var px = C.item(p.pines[0]); pin = { html: C.pin(px), nom: px.nom }; }
+    if (d.admin) pin = { html: icono('ver'), nom: 'Admin verificado', como: 'Solo lo llevan los administradores de Modo Cachimbo.' };
+    else if (C && p.pines && p.pines[0] && C.item(p.pines[0])) { var px = C.item(p.pines[0]); pin = { html: C.pin(px), nom: px.nom, como: d.yo ? C.como(px) : comoDe(px) }; }
     var n = window.MCRango ? MCRango.nivel(d.xp_semana) : -1;
     var st = function (ic, val, lab) { return '<span class="pj-st">' + icono(ic) + '<b>' + val + '</b><small>' + lab + '</small></span>'; };
     var total = C ? C.contar().total : '';
@@ -284,7 +326,7 @@
       '<div class="pj-av"><span class="pj-fr"' + (v.marco ? ' style="--m:' + v.marco + '"' : '') + '><span class="pj-foto">' +
         (v.img ? '<img src="' + esc(v.img) + '" alt="" referrerpolicy="no-referrer">' : inicial(d.apodo)) + '</span></span>' +
         '<span class="pj-nv">Nvl <b>' + nivel(d.xp_total) + '</b></span>' +
-        (pin ? '<span class="pj-pin" title="' + esc(pin.nom) + '">' + pin.html + '</span>' : '') + '</div>' +
+        (pin ? pinHtml(pin, 'pj-pin') : '') + '</div>' +
       '<div class="pj-mid pj-sh"><div class="pj-nom">' + esc(d.apodo || 'Cachimbo') + '</div>' +
         (tit ? '<span class="pj-tit' + (tit.svg ? ' con-svg' : '') + '">' + C.titulo(tit) + '</span>' : '') +
         '<div class="pj-stats">' + st('racha', d.racha || 0, 'racha') + st('xp', (+d.xp_semana || 0).toLocaleString('es-PE'), 'XP') + st('mejor', d.mejor || 0, 'mejor') +
@@ -312,13 +354,18 @@
         : '<button type="button" class="no" disabled><span>Agregar amigo <small>· muy pronto</small></span></button>') + '</div>';
     }).catch(function () { caja.innerHTML = '<p class="mcj-msg">No se pudo cargar su tarjeta. Intenta otra vez.</p>'; });
   }
-  // Tocar (o Enter) cualquier foto con data-jug abre su tarjeta
+  // Tocar (o Enter) cualquier foto con data-jug abre su tarjeta; tocar su pin, el globito
   document.addEventListener('click', function (e) {
+    var g = e.target.closest && e.target.closest('[data-pn]');
+    if (g) { e.preventDefault(); e.stopPropagation(); globo(g); return; }
+    cerrarBurb();
     var f = e.target.closest && e.target.closest('[data-jug]');
     if (!f) return;
     e.preventDefault(); e.stopPropagation(); ver(f.getAttribute('data-jug'));
   }, true);
   document.addEventListener('keydown', function (e) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.getAttribute && e.target.getAttribute('data-pn')) { e.preventDefault(); e.stopPropagation(); globo(e.target); return; }
+    if (e.key === 'Escape') cerrarBurb();
     if ((e.key === 'Enter' || e.key === ' ') && e.target.getAttribute && e.target.getAttribute('data-jug')) { e.preventDefault(); ver(e.target.getAttribute('data-jug')); }
   });
 
