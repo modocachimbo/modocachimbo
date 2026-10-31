@@ -191,6 +191,25 @@
   .bv-ayuda a { color: var(--text-dim); }
   .bv-ayuda a:hover { color: var(--accent); }
   .bv-pie { margin-top: 22px; color: var(--text-faint); font-size: 12px; font-family: 'Sora', sans-serif; font-weight: 700; }
+  /* Lo que hay adentro: debajo del ingreso */
+  .bv-dentro { width: 100%; max-width: 920px; margin-top: 34px; }
+  .bv-dentro > h2 { margin: 0 0 14px; padding: 0 4px; font: 800 20px/1.2 'Sora', sans-serif; color: var(--text); }
+  .bv-dentro > h2 span { color: var(--accent); }
+  .bv-mods { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  .bv-mod { display: flex; flex-direction: column; gap: 8px; padding: 18px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; }
+  .bv-mod .bv-ico { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; background: var(--c-soft); color: var(--c); margin-bottom: 4px; }
+  .bv-mod .bv-ico svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .bv-mod .bv-ico img { width: 64px; height: 64px; margin-top: -10px; object-fit: contain; }
+  .bv-mod b { font: 800 15px/1.25 'Sora', sans-serif; color: var(--text); }
+  .bv-mod p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--text-dim); }
+  .bv-rangos { display: flex; align-items: center; gap: 18px; margin-top: 12px; padding: 16px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; }
+  .bv-rangos-tx { flex: 1; min-width: 0; }
+  .bv-rangos-tx b { display: block; font: 800 15px/1.25 'Sora', sans-serif; color: var(--text); }
+  .bv-rangos-tx span { font-size: 13px; line-height: 1.5; color: var(--text-dim); }
+  .bv-emblemas { display: flex; align-items: center; }
+  .bv-emblemas img { width: 54px; height: 54px; margin-left: -8px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,.45)); }
+  .bv-emblemas img:first-child { margin-left: 0; }
+  .bv-emblemas img:last-child { width: 66px; height: 66px; }
 
   @media (max-width: 760px) {
     .bv-card { grid-template-columns: 1fr; border-radius: 22px; }
@@ -199,6 +218,11 @@
     .bv-arte::after { width: 260px; height: 260px; }
     .bv-form { padding: 30px 22px 28px; }
     .bv-form > p { margin: 10px 0 22px; }
+    .bv-mods { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .bv-mod { padding: 16px 14px; }
+    .bv-rangos { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .bv-emblemas img { width: 42px; height: 42px; }
+    .bv-emblemas img:last-child { width: 52px; height: 52px; }
   }
 
   /* ===== Código al primer ingreso ===== */
@@ -1166,6 +1190,21 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
         <p class="bv-ayuda">¿Problemas para entrar? <a id="bvWhatsapp" href="#" target="_blank" rel="noopener noreferrer">Escríbeme por WhatsApp</a></p>
       </div>
     </div>
+    <section class="bv-dentro" aria-label="Lo que hay adentro">
+      <h2>Lo que te espera <span>adentro</span></h2>
+      <div class="bv-mods">
+        <div class="bv-mod" style="--c:#C6E000;--c-soft:rgba(198,224,0,.12)"><span class="bv-ico"><img src="assets/buho/disfraces/matematica-feliz.webp" alt="" width="64" height="64" loading="lazy"></span><b>Tu búho</b><p>Te acompaña en cada curso, cambia de traje y reacciona a tus respuestas.</p></div>
+        <div class="bv-mod" style="--c:#FF4B4B;--c-soft:rgba(255,75,75,.13)"><span class="bv-ico"><svg viewBox="0 0 24 24"><path d="M3 3h3l9 9-3 3-9-9z"/><path d="M21 3h-3l-9 9 3 3 9-9z"/><path d="M16 16l4 4M8 16l-4 4"/></svg></span><b>Duelos en vivo</b><p>Reta hasta a 3 amigos con las mismas preguntas y al mismo tiempo.</p></div>
+        <div class="bv-mod" style="--c:#1CB0F6;--c-soft:rgba(28,176,246,.13)"><span class="bv-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M10 2h4"/></svg></span><b>Simulacro</b><p>Como el examen real, con tiempo y un top de la semana.</p></div>
+        <div class="bv-mod" style="--c:#FF9600;--c-soft:rgba(255,150,0,.13)"><span class="bv-ico"><svg viewBox="0 0 24 24"><path d="M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z"/><path d="M5 18a2 2 0 0 1 2-2h12"/></svg></span><b>Libros y exámenes</b><p>Ordinario, CPU y Control de la UNJFSC, con sus respuestas.</p></div>
+      </div>
+      <div class="bv-rangos">
+        <div class="bv-rangos-tx"><b>Sube de Bronce a Leyenda</b><span>Cada pregunta te da XP. Compite en la liga de la semana y desbloquea marcos y fondos para tu tarjeta.</span></div>
+        <div class="bv-emblemas" aria-hidden="true">
+          <img src="assets/rangos/bronce-1.webp" alt="" loading="lazy"><img src="assets/rangos/plata-1.webp" alt="" loading="lazy"><img src="assets/rangos/esmeralda-1.webp" alt="" loading="lazy"><img src="assets/rangos/zafiro-1.webp" alt="" loading="lazy"><img src="assets/rangos/amatista-1.webp" alt="" loading="lazy"><img src="assets/rangos/leyenda-1.webp" alt="" loading="lazy"><img src="assets/rangos/mitico-1.webp" alt="" loading="lazy">
+        </div>
+      </div>
+    </section>
     <section class="rs" id="resenasBv" hidden aria-label="Reseñas de alumnos">
       <div class="rs-cab"><h2>Lo que dicen los <span>cachimbos</span></h2><span class="rs-prom"></span></div>
       <div class="rs-cuerpo"></div>
