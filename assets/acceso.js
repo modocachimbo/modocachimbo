@@ -7,12 +7,15 @@
      (supabase/15-codigos-cuenta.sql): en otro equipo, o si se borraron
      los datos del navegador, vuelven solos sin escribirlos otra vez.
      El servidor igual revisa cada código y cuenta cada dispositivo.
+   - Si el profesor libera este equipo (o desactiva o borra el código),
+     la página abierta se recarga sola y el candado pide el código otra vez.
+     Un código liberado se borra de este equipo y de la cuenta (Perfil · Mis accesos).
    Requiere assets/mc-config.js
    ========================================================= */
 (function () {
   var CFG = window.MC_CONFIG || {};
   var API = CFG.API_URL || CFG.REPORTES_URL || '';
-  var K_DISP = 'mc_dispositivo', K_ACC = 'mc_accesos';
+  var K_DISP = 'mc_dispositivo', K_ACC = 'mc_accesos', K_AVISO = 'mc_acceso_aviso';
   var DIA = 24 * 3600 * 1000;
   var memoria = {};
   // true abre todas las páginas sin código (los códigos siguen activables)
@@ -201,12 +204,14 @@
     var cods = codigosPara(x);
     return jsonp2({ action: 'acceso', producto: x, dispositivo: dispositivo(), codigos: cods.join(','), equipo: equipo() })
       .then(function (r) {
+        if (r && r.ok) ultimaRevision = Date.now();
         // Apps Script sin los paquetes nuevos: no deja a nadie afuera mientras se actualiza
         if (r && !r.ok && /producto no v[aá]lido/i.test(r.error || '')) return { acceso: true, motivo: 'servidor-antiguo' };
         if (!r || !r.ok) throw new Error('respuesta');
         var a = accesos(), mensaje = '';
         Object.keys(r.estados || {}).forEach(function (c) {
           if (r.estados[c] === 'ok') { if (a[c]) { a[c].ok = Date.now(); delete a[c].error; } }
+          else if (LIBERADO.test(r.estados[c])) { mensaje = mensaje || r.estados[c]; delete a[c]; quitarDeCuenta(c); }
           else {
             // Se queda en la lista con su aviso (Perfil · Mis accesos) para que el alumno sepa qué pasó
             mensaje = mensaje || r.estados[c];
@@ -217,7 +222,10 @@
         if (r.abierto) return { acceso: true, motivo: 'abierto' };
         if (r.valido) return { acceso: true, motivo: 'codigo', codigo: r.valido };
         if (r.legacy && antiguo(x)) return { acceso: true, motivo: 'antiguo' };
-        return { acceso: false, mensaje: mensaje };
+        // El código ya se borró (equipo liberado): el candado igual dice por qué lo pide otra vez
+        var av = leer(K_AVISO);
+        if (av) escribir(K_AVISO, '');
+        return { acceso: false, mensaje: mensaje || av || '' };
       })
       .catch(function () {
         var a = accesos();
@@ -282,6 +290,41 @@
       return r || { ok: false, mensaje: 'Respuesta inválida del servidor.' };
     });
   }
+
+  /* ---- Acceso cortado desde el panel ----
+     Con la página abierta se pregunta al servidor cada 5 minutos y al volver a la pestaña o a la app
+     (como mucho una vez por minuto). Si el profesor liberó este equipo, desactivó o borró el código,
+     la página se recarga y los candados vuelven a pedirlo. Si fue liberado, el código se borra de
+     este equipo y de la cuenta (para que no se junten códigos que ya no sirven); si no, queda con su aviso.
+     El avance y la XP viven en Supabase y no se tocan. */
+  var LIBERADO = /fue liberado/i;
+  var CORTADO = { liberado: 1, desactivado: 1, 'no-existe': 1 };
+  var ultimaRevision = 0;
+  function vigilar() {
+    if (LIBRE || document.visibilityState === 'hidden' || Date.now() - ultimaRevision < 60 * 1000) return;
+    var a = accesos(), cods = Object.keys(a).filter(function (c) { return !a[c].error; });
+    if (!cods.length) return;
+    ultimaRevision = Date.now();
+    jsonp2({ action: 'misCodigos', codigos: cods.join(','), dispositivo: dispositivo() }).then(function (r) {
+      if (!r || !r.ok) return;
+      var a = accesos(), cortados = 0, borrando = [];
+      (r.codigos || []).forEach(function (c) {
+        if (!CORTADO[c.estado] || !a[c.codigo] || a[c.codigo].error) return;
+        if (c.estado === 'liberado') { delete a[c.codigo]; borrando.push(quitarDeCuenta(c.codigo)); escribir(K_AVISO, c.mensaje || ''); }
+        else { a[c.codigo].ok = 0; a[c.codigo].error = c.mensaje || 'Este código ya no funciona en este equipo.'; }
+        cortados++;
+      });
+      if (!cortados) return;
+      guardar(a);
+      // Recarga cuando ya se borró también de la cuenta (o a los 6 s, si la cuenta no responde)
+      var recargar = function () { location.reload(); }, t = setTimeout(recargar, 6000);
+      Promise.all(borrando).then(function () { clearTimeout(t); recargar(); });
+    }).catch(function () {});
+  }
+  setInterval(vigilar, 5 * 60 * 1000);
+  document.addEventListener('visibilitychange', vigilar);
+  window.addEventListener('focus', vigilar);
+  setTimeout(vigilar, 4000);
 
   window.MCAcceso = { verificar: verificar, activar: activar, activos: activos, todos: todos, estado: estado, soltar: soltar, accesoLocal: accesoLocal, antiguo: antiguo, cubre: cubre, puerta: puerta, AREAS: AREAS };
 })();

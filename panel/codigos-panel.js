@@ -188,7 +188,7 @@ function renderCodigos() {
     const todos = b.dataset.id === 'todos';
     if (todos && !b.classList.contains('confirm')) { b.classList.add('confirm'); b.textContent = '¿Seguro? Toca otra vez'; return; }
     b.disabled = true;
-    try { await api('liberar', { codigo: b.dataset.lib, id: b.dataset.id }); toast(todos ? 'Todos los dispositivos liberados' : b.dataset.id === 'anteriores' ? 'Usos anteriores reiniciados' : 'Dispositivo liberado'); await cargarCodigos(); const el = document.getElementById('devs-' + b.dataset.lib); if (el) el.hidden = false; }
+    try { await api('liberar', { codigo: b.dataset.lib, id: b.dataset.id }); toast(todos ? 'Todos los dispositivos liberados: pedirán el código otra vez' : b.dataset.id === 'anteriores' ? 'Usos anteriores reiniciados' : 'Dispositivo liberado: pedirá el código otra vez'); await cargarCodigos(); const el = document.getElementById('devs-' + b.dataset.lib); if (el) el.hidden = false; }
     catch (e) { toast(e.message, true); b.disabled = false; }
   }));
   $('cdList').querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', async () => {

@@ -99,7 +99,7 @@
     var aviso = s.estado && s.estado !== 'activo' ? s.mensaje : a.error;
     var mal = !!aviso;
     var chips = [];
-    if (mal) chips.push('<i class="mal">' + (s.estado === 'vencido' ? 'Venció' : s.estado === 'desactivado' ? 'Desactivado' : s.estado === 'no-existe' ? 'Ya no existe' : s.estado === 'lleno' ? 'Sin cupo' : 'No funciona') + '</i>');
+    if (mal) chips.push('<i class="mal">' + (s.estado === 'vencido' ? 'Venció' : s.estado === 'desactivado' ? 'Desactivado' : s.estado === 'no-existe' ? 'Ya no existe' : s.estado === 'lleno' ? 'Sin cupo' : s.estado === 'liberado' ? 'Liberado' : 'No funciona') + '</i>');
     else chips.push('<i class="ok">Activo</i>');
     if (vence) chips.push('<i>' + (s.estado === 'vencido' ? '' : 'Vence ') + fecha(vence) + '</i>');
     else if (!mal) chips.push('<i>Sin vencimiento</i>');
