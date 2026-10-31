@@ -4,7 +4,7 @@
    .rsf-*: formulario «Tu reseña» del perfil
    ========================================================= */
 .rs[hidden] { display: none !important; }
-.rs-pista { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
+.rs-pista { display: flex; gap: 14px; contain: inline-size; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
 .rs-pista::-webkit-scrollbar { display: none; }
 .rs-pista:focus-visible { outline: 2px solid var(--accent, #C6E000); outline-offset: 4px; }
 .rs-card { flex: 0 0 calc((100% - 28px) / 3); scroll-snap-align: start; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
