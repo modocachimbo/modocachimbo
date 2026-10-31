@@ -21,11 +21,12 @@ async function tarjetasTema(ctx) {
     <p class="sub" style="margin-top:6px; line-height:1.55;">Las ${ctx.preguntas} preguntas de este tema ya salen solas como tarjetas (la pregunta al frente y la respuesta correcta atrás). Aquí agregas las tuyas: <b>una por línea</b>, el frente y el reverso separados por <b>||</b>. Puedes usar *cursiva*, **negrita** y $fórmulas$.</p>
     <textarea class="ta" id="tjTexto" style="margin-top:14px; min-height:220px;" placeholder="Mitocondria || Organelo que produce la energía (ATP) de la célula&#10;¿Qué organelo sintetiza proteínas? || El ribosoma">Cargando…</textarea>
     <div class="hint" id="tjCuenta" style="margin-top:8px;"></div>
-    <div class="mfoot"><button type="button" class="btn-ghost" data-x>Cancelar</button>
+    <div class="mfoot"><span class="izq" data-ia></span><button type="button" class="btn-ghost" data-x>Cancelar</button>
     <button type="button" class="btn-main" data-ok disabled>Guardar tarjetas</button></div></div>`;
   document.body.appendChild(o);
   const ta = o.querySelector('#tjTexto'), ok = o.querySelector('[data-ok]'), cuenta = o.querySelector('#tjCuenta');
   const cerrar = () => o.remove();
+  o.querySelector('[data-ia]').appendChild(botonPromptIA('tarjetas'));
   o.querySelector('[data-x]').addEventListener('click', cerrar);
   o.addEventListener('mousedown', e => { if (e.target === o) cerrar(); });
 
