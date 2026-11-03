@@ -2017,6 +2017,9 @@ html body .cursos-card h3:not(#z) { font-family: var(--display) !important; font
   /* ---------- Pantalla: examen ---------- */
   function empezarExamen() {
     ver('examen');
+    // Para «Descargar PDF» (assets/descarga-pdf.js): este mismo simulacro, en el mismo orden
+    window.MC_SIM = { id: S.simId || S.uid, nombre: S.nombre, tipo: S.libre ? 'libre' : S.pers ? 'personalizado' : 'rapido', bloque: S.bloque, minutos: Math.round((S.fin - S.inicio) / 60000), preguntas: PREGS };
+    document.dispatchEvent(new CustomEvent('mc:sim-listo'));
     $('mapaTit').textContent = 'Tus ' + PREGS.length + ' preguntas';
     pintarPregunta();
     clearInterval(reloj);
@@ -2452,5 +2455,6 @@ html body .cursos-card h3:not(#z) { font-family: var(--display) !important; font
 </script>
 <script src="assets/tutorial.js" defer></script>
 <script src="assets/sonido.js"></script>
+<script src="assets/descarga-pdf.js" defer></script>
 </body>
 </html>

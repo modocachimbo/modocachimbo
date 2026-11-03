@@ -32,6 +32,7 @@
      seminario-VIP  → Seminarios y Banqueo de todos los cursos
      vocabulario-VIP→ Vocabulario
      biblioteca-VIP → la Biblioteca (todos sus libros)
+     descarga-VIP   → Descargas en PDF (assets/descarga-pdf.js, supabase/53-descargas-pdf.sql)
      TODO-VIP       → todo
      Los códigos de antes (curso-x, repaso-VIP, fijas-x…) siguen abriendo lo suyo. */
   var AREAS = {
@@ -116,6 +117,7 @@
       if (cat === 'seminario' || cat === 'banqueo') return u === 'seminario-VIP' || u === cat + '-VIP' || (!!resto && u === 'curso-' + resto);
       if (cat === 'vocabulario') return u === 'vocabulario-VIP';
       if (cat === 'biblioteca') return u === 'biblioteca-VIP';
+      if (cat === 'descarga') return u === 'descarga-VIP';
       return false;
     });
   }

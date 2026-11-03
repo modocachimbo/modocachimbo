@@ -5,14 +5,15 @@ const CD = { lista: [], config: { abiertos: {}, legacy: true }, hoy: '', filtro:
 // Paquetes. Un código puede abrir varios a la vez: el producto se guarda como "general,vocabulario-VIP"
 // (la misma regla que cubre() de assets/acceso.js y cubre_ del Apps Script v16)
 const PROD_TODOS = [
-  ['TODO-VIP', 'Acceso total'], ['general', 'Acceso general'], ['seminario-VIP', 'Seminarios + Banqueo'], ['vocabulario-VIP', 'Vocabulario'], ['biblioteca-VIP', 'Biblioteca']
+  ['TODO-VIP', 'Acceso total'], ['general', 'Acceso general'], ['seminario-VIP', 'Seminarios + Banqueo'], ['vocabulario-VIP', 'Vocabulario'], ['biblioteca-VIP', 'Biblioteca'], ['descarga-VIP', 'Descargas PDF']
 ];
 const PROD_AYUDA = {
-  'TODO-VIP': 'Todo: el acceso general, Seminarios, Banqueo, Vocabulario y Biblioteca',
+  'TODO-VIP': 'Todo: el acceso general, Seminarios, Banqueo, Vocabulario, Biblioteca y Descargas PDF',
   general: 'Las 4 áreas con todo lo de adentro (práctica, Repaso, Fijas, Libros, Flashcards), Simulacro, Duelos y Exámenes',
   'seminario-VIP': 'Seminarios y Banqueo de todos los cursos',
   'vocabulario-VIP': 'Vocabulario de todos los cursos',
-  'biblioteca-VIP': 'Solo la Biblioteca: entrar y leer todos sus libros'
+  'biblioteca-VIP': 'Solo la Biblioteca: entrar y leer todos sus libros',
+  'descarga-VIP': 'Descargar en PDF (con marca de agua y N.º único) lo que permitas en Panel → Descargas PDF'
 };
 const AREAS_COD = [['matematica', 'Matemática'], ['ciencia-tecnologia', 'Ciencia y Tecnología'], ['comunicacion', 'Comunicación'], ['ciencias-sociales', 'Ciencias Sociales']];
 // Link oficial fijo: así el mensaje no muestra el link de una vista previa.

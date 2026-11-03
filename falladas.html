@@ -411,6 +411,9 @@ html[data-modo="claro"] #lockInput { border: 2px solid #DCD8E8 !important; }
       });
     }));
     if (!questions.length) { aviso('Tus preguntas falladas ya no están disponibles. ¡Sigue practicando!'); return; }
+    // Para «Descargar PDF» (assets/descarga-pdf.js)
+    window.MC_SET = { tipo: 'falladas', preguntas: questions.slice() };
+    document.dispatchEvent(new CustomEvent('mc:set-listo'));
 
     document.getElementById('startDesc').textContent = HOY
       ? `Fallaste ${questions.length} pregunta${questions.length === 1 ? '' : 's'} hoy en tus cursos, mezcladas aquí. Cuando respondas bien una, sale de tu lista.`
@@ -633,5 +636,6 @@ html[data-modo="claro"] #lockInput { border: 2px solid #DCD8E8 !important; }
   loadQuestions();
 </script>
 <script src="assets/tutorial.js" defer></script>
+<script src="assets/descarga-pdf.js" defer></script>
 </body>
 </html>

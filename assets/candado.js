@@ -30,6 +30,10 @@
       nombre: 'Biblioteca', color: '#C6E000',
       incluye: ['Todos los libros de la Biblioteca', 'Léelos aquí mismo y sigue donde te quedaste', 'Se suma a los otros códigos que tengas']
     };
+    if (cat === 'descarga') return {
+      nombre: 'Descargas PDF', color: '#1CB0F6',
+      incluye: ['Descarga en PDF tus temas, Fijas, simulacros y exámenes', 'Con hoja de respuestas, claves y ficha óptica para OptiCheck', 'Se suma a los otros códigos que tengas']
+    };
     if (cat === 'vocabulario') return {
       nombre: 'Vocabulario', color: '#CE82FF',
       incluye: ['Vocabulario de todos los cursos', 'Práctica con tarjetas y sonido']

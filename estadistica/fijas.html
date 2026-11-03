@@ -514,6 +514,9 @@
     }
 
     questions = fixedMode ? pickAllFromTemas(temasData) : pickOnePerTema(temasData);
+    // Para «Descargar PDF» (assets/descarga-pdf.js): todo el banco de Fijas, por tema
+    window.MC_SET = { tipo: 'fijas', carpeta: PRODUCTO.replace(/^fijas-/, ''), year: year, temas: temasData.map(t => ({ nombre: t.name, preguntas: t.questions || [] })) };
+    document.dispatchEvent(new CustomEvent('mc:set-listo'));
 
     if (questions.length === 0) {
       startScreen.innerHTML = '<div class="state-msg">No hay preguntas para ' + year + '.</div>';
@@ -721,5 +724,6 @@
 </script>
 <script src="../assets/alertas.js" defer></script>
 <script src="../assets/tutorial.js" defer></script>
+<script src="../assets/descarga-pdf.js" defer></script>
 </body>
 </html>

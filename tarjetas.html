@@ -860,6 +860,9 @@ html[data-modo="claro"] .home-btn:hover { color: #6F8000 !important; }
         $('titulo').textContent = t.name;
         const cartas = cartasDe(t, prof);
         $('lead').textContent = cartas.length + ' tarjetas. Voltea cada una y marca si ya te la sabes.';
+        // Para «Descargar PDF» (assets/descarga-pdf.js)
+        window.MC_TARJETAS = { curso: CURSO, num: num, titulo: t.name, sub: nombreCurso + ' · ' + NOMBRE_SEC[sec] + ' ' + anio, ref: CURSO + '/' + sec + '/' + anio + '#' + num, cartas: cartas };
+        document.dispatchEvent(new CustomEvent('mc:tarjetas-listo'));
         empezar(cartas, 0);
       } catch (e) { aviso('No se pudo cargar este tema.'); }
       return;
@@ -879,5 +882,6 @@ html[data-modo="claro"] .home-btn:hover { color: #6F8000 !important; }
 </script>
 <script src="assets/alertas.js" defer></script>
 <script src="assets/sonido.js"></script>
+<script src="assets/descarga-pdf.js" defer></script>
 </body>
 </html>
