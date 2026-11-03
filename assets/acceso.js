@@ -232,6 +232,9 @@
         var id = u ? u.id : null;
         if (!id || id === ultimo) return;
         ultimo = id;
+        // Una vez cada 30 min por sesión basta (antes se hacía en cada página)
+        var kSync = 'mc_cod_sync_' + id;
+        try { if (Date.now() - (+sessionStorage.getItem(kSync) || 0) < 30 * 60000) return; sessionStorage.setItem(kSync, String(Date.now())); } catch (e) {}
         // Los que solo están en este dispositivo (activados antes de entrar con Google) suben a la cuenta
         traerDeCuenta().then(function (enCuenta) {
           if (!enCuenta) return;

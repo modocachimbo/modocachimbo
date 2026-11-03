@@ -321,6 +321,7 @@
 <script src="assets/carreras.js"></script>
 <script src="assets/pregunta.js"></script>
 <script src="assets/auth.js"></script>
+<script src="assets/vocab-banco.js"></script>
 <script src="assets/ranking.js"></script>
 <script src="assets/rango.js"></script>
 <script src="assets/coleccion.js?v=181"></script>
@@ -1740,8 +1741,9 @@ html body .cursos-card h3:not(#z) { font-family: var(--display) !important; font
     const p = cargandoTemas = cargarTemas().then(() => { if (p === cargandoTemas) pintarTemas(); });
   }
   function cargarVocab() {
-    if (!VOCAB) VOCAB = cliente().then(c => c.from('vocabulario').select('palabra,sin,ant').order('orden').limit(5000))
-      .then(r => { if (r.error) throw r.error; return (r.data || []).filter(w => w && w.palabra); })
+    // Mismo banco guardado que Vocabulario: solo se baja si cambió (assets/vocab-banco.js)
+    if (!VOCAB) VOCAB = (window.MCVocab ? MCVocab.banco() : Promise.reject(new Error('sin conexión')))
+      .then(l => (l || []).filter(w => w && w.palabra))
       .catch(e => { VOCAB = null; throw e; });
     return VOCAB;
   }

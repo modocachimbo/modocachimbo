@@ -159,13 +159,13 @@
     });
   }
 
-  var recibido = 0;  // cuándo llegó el estado (para la cuenta regresiva)
+  var recibido = estado ? (+leer(CLAVE + '_t') || 0) : 0;  // cuándo llegó el estado (para la cuenta regresiva)
   function cambiar(e) {
     if (!e || typeof e !== 'object') return;
     var antes = estado, regs = e.regalos || [];
     delete e.regalos;
     estado = e; recibido = Date.now();
-    guardar(CLAVE, JSON.stringify(e));
+    guardar(CLAVE, JSON.stringify(e)); guardar(CLAVE + '_t', String(recibido));
     pintar();
     oyentes.forEach(function (fn) { try { fn(estado); } catch (x) {} });
     (e.nuevas || []).forEach(function (t) { celebrar(t); });
@@ -188,7 +188,10 @@
     }).catch(function () { return []; });
   }
 
-  function cargar() {
+  // Al abrir otra página o volver a la pestaña: si el estado llegó hace menos de 2 min, sirve
+  // ese (sumar_xp y perder_corazon ya lo mantienen al día). forzar = pedirlo igual.
+  function cargar(forzar) {
+    if (forzar !== true && estado && Date.now() - recibido < 2 * 60000) { pintar(); return Promise.resolve(); }
     return cursosPracticables().then(function (lista) {
       // p_repaso: si tiene algún Repaso abierto (para la misión de Repaso).
       // Si el SQL 20 aún no corrió, se pide como antes.
@@ -473,7 +476,7 @@
       var r = capa.querySelector('#mczReloj');
       if (!r || capa.hidden) { clearInterval(tReloj); return; }
       r.textContent = tiempo(estado.proximo);
-      if (estado.proximo != null && estado.proximo - (Date.now() - recibido) / 1000 <= 0) { clearInterval(tReloj); cargar(); }
+      if (estado.proximo != null && estado.proximo - (Date.now() - recibido) / 1000 <= 0) { clearInterval(tReloj); cargar(true); }
     }, 30000);
   }
   function cerrarBloqueo() { if (capa) capa.hidden = true; clearInterval(tReloj); }
@@ -512,7 +515,7 @@
     respuesta: respuesta, sumar: sumar, vidasInicio: vidasInicio, perder: perder, estado: function () { return estado; },
     infinito: function () { return !!(estado && estado.infinito && new Date(estado.infinito_hasta) > new Date()); },
     alCambiar: function (fn) { oyentes.push(fn); if (estado) fn(estado); },
-    abrirMisiones: abrirMisiones, abrirCanje: abrirCanje, recargar: cargar, gasta: !!(PAG && PAG.gasta)
+    abrirMisiones: abrirMisiones, abrirCanje: abrirCanje, recargar: function () { return cargar(true); }, gasta: !!(PAG && PAG.gasta)
   };
 
   // Las píldoras se vuelven a poner si el menú de la cuenta se redibuja

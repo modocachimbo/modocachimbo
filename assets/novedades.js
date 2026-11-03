@@ -197,7 +197,11 @@
   }
 
   function cargar() {
+    var t = 0; try { t = +sessionStorage.getItem(CLAVE + '_t') || 0; } catch (e) {}
+    // Se pidió hace poco en otra página: sirve lo guardado
+    if (Date.now() - t < 15 * 60000) { marcar(vistosAqui()); guardar(); pintar(); return Promise.resolve(); }
     return rpc('mis_novedades').then(function (r) {
+      try { sessionStorage.setItem(CLAVE + '_t', String(Date.now())); } catch (e) {}
       lista = Array.isArray(r) ? r : [];
       marcar(vistosAqui());
       guardar(); pintar();

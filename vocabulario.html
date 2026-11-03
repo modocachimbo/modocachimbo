@@ -507,6 +507,7 @@
 <script src="assets/candado.js"></script>
 <script src="assets/cursos.js"></script>
 <script src="assets/auth.js"></script>
+<script src="assets/vocab-banco.js"></script>
 <style id="mc-claro">
 /* Modo claro de esta página (assets/claro.css trae lo común) */
 html[data-modo="claro"] .backlink a.back:hover { color: #6F8000 !important; }
@@ -758,16 +759,11 @@ html[data-modo="claro"] .qarm.bien .ficha { color: #3F9A00 !important; }
       par: Array.isArray(x.par) ? x.par : [], raiz: x.raiz || '', tip: x.tip || '',
       alta: /^\d{4}-\d{2}-\d{2}$/.test(x.alta || '') ? Math.floor(Date.parse(x.alta) / 864e5) : null };
   }
-  function bancoLocal() { try { return JSON.parse(localStorage.getItem('mc_voc_banco') || 'null'); } catch (e) { return null; } }
+  // Las palabras se guardan en el teléfono y solo se bajan de nuevo si cambiaron (assets/vocab-banco.js)
+  function bancoLocal() { return window.MCVocab ? MCVocab.local() : null; }
   function cargarBanco() {
-    if (!window.MCAuth) return Promise.reject(new Error('sin conexión'));
-    return MCAuth.listo
-      .then(c => c.from('vocabulario').select('palabra, sin, ant, def, ej, extra').order('orden').limit(5000))
-      .then(r => {
-        if (!r || r.error) throw new Error((r && r.error && r.error.message) || 'error');
-        try { localStorage.setItem('mc_voc_banco', JSON.stringify(r.data || [])); } catch (e) {}
-        return r.data || [];
-      });
+    if (!window.MCVocab) return Promise.reject(new Error('sin conexión'));
+    return MCVocab.banco();
   }
 
   /* ---------- Avance: qué palabras ya domina ---------- */

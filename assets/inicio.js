@@ -497,8 +497,17 @@
     $('topMas').hidden = !$('topCel').querySelector('.extra');
     if (abierta) $('topCel').classList.add('abierta');
   }
+  // Los tops se guardan 3 min en la sesión: volver al inicio no los pide otra vez
+  function rpcGuardado(nombre, min) {
+    var k = 'mc_' + nombre + '_' + (((MCAuth.usuario && MCAuth.usuario()) || {}).id || '');
+    try { var g = JSON.parse(sessionStorage.getItem(k) || 'null'); if (g && Date.now() - g.t < min * 60000) return Promise.resolve({ data: g.d }); } catch (e) {}
+    return MCAuth.listo.then(function (c) { return c.rpc(nombre); }).then(function (r) {
+      if (!r.error) try { sessionStorage.setItem(k, JSON.stringify({ t: Date.now(), d: r.data })); } catch (e) {}
+      return r;
+    });
+  }
   function cargarTop() {
-    MCAuth.listo.then(function (c) { return c.rpc('ranking_xp'); }).then(function (r) {
+    rpcGuardado('ranking_xp', 3).then(function (r) {
       if (r.error) throw r.error;
       pintarTop(r.data || {});
     }).catch(function () {
@@ -552,7 +561,7 @@
   }
   pintarCierre(); setInterval(pintarCierre, 600000);
   function cargarSim() {
-    MCAuth.listo.then(function (c) { return c.rpc('ranking_simulacro'); }).then(function (r) {
+    rpcGuardado('ranking_simulacro', 3).then(function (r) {
       if (r.error) throw r.error;
       pintarSim(r.data || []);
     }).catch(function () { $('podio').innerHTML = '<p class="sim-vacio">No se pudo cargar el top. Revisa tu conexión.</p>'; });

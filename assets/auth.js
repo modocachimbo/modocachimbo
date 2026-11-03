@@ -35,7 +35,7 @@
       cliente.auth.onAuthStateChange(function (evento, s) {
         var antes = sesion && sesion.user.id, ahora = s && s.user.id;
         sesion = s;
-        if (antes !== ahora) { perfilCache = null; if (iniciado) avisar(); }
+        if (antes !== ahora) { perfilCache = null; recordarPerfil(null); if (iniciado) avisar(); }
       });
       return cliente.auth.getSession();
     })
@@ -141,20 +141,31 @@
       return c.auth.signOut().then(function (r) {
         if (r && r.error) return c.auth.signOut({ scope: 'local' });
       }, function () { return c.auth.signOut({ scope: 'local' }); });
-    }).then(function () { perfilCache = null; });
+    }).then(function () { perfilCache = null; recordarPerfil(null); });
   }
 
   // Sesión vencida: la renueva una vez y repite el pedido
   function vencida(e) { return e && (e.status === 401 || /^PGRST30[123]$/.test(e.code || '') || /jwt/i.test(e.message || '')); }
 
+  // El perfil se guarda 10 min en la sesión del navegador: no se pide en cada página
+  function perfilGuardado() {
+    try {
+      var g = JSON.parse(sessionStorage.getItem('mc_perfil') || 'null');
+      return g && g.d && g.d.id === usuario().id && Date.now() - g.t < 10 * 60000 ? g.d : null;
+    } catch (e) { return null; }
+  }
+  function recordarPerfil(p) { try { if (p) sessionStorage.setItem('mc_perfil', JSON.stringify({ t: Date.now(), d: p })); else sessionStorage.removeItem('mc_perfil'); } catch (e) {} }
   function perfil(forzar) {
     if (!usuario()) return Promise.resolve(null);
     if (perfilCache && !forzar) return Promise.resolve(perfilCache);
+    var g = !forzar && perfilGuardado();
+    if (g) { perfilCache = g; return Promise.resolve(g); }
     return listo.then(function (c) {
       return c.from('perfiles').select('*').eq('id', usuario().id).maybeSingle();
     }).then(function (r) {
       if (r.error) throw r.error;
       perfilCache = r.data || { id: usuario().id };
+      recordarPerfil(perfilCache);
       return perfilCache;
     });
   }
@@ -176,6 +187,7 @@
     }).then(function (r) {
       if (r.error) { if (vencida(r.error)) r.error.code = 'sesion-vencida'; throw r.error; }
       perfilCache = r.data;
+      recordarPerfil(perfilCache);
       pintarWidgets();
       return r.data;
     });

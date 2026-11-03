@@ -1257,6 +1257,8 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   function enlace(cod) { return new URL('duelo.html?d=' + cod, location.href).href; }
   function irA(cod) { history.replaceState(null, '', 'duelo.html' + (cod ? '?d=' + cod : '')); }
   function son(n, x) { try { if (window.MCSonido && MCSonido.activo && MCSonido[n]) MCSonido[n](x); } catch (e) {} }
+  // Sondeo: con la pestaña oculta no se pregunta nada (ahorra tráfico de Supabase)
+  const siVisible = fn => () => { if (!document.hidden) return fn(); };
   function pararSondeo() { if (sondeo) { clearInterval(sondeo); sondeo = null; } if (reloj1s) { clearInterval(reloj1s); reloj1s = null; } }
   function cuentaRacha() {
     // Cada respuesta cuenta para la racha de estudio (assets/racha.js)
@@ -1816,7 +1818,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       pintarCierre($('retoCierre'));
       if (quedaSala() <= 0 && !V.empieza) { pararSondeo(); aviso('La sala se cerró porque nadie inició el duelo en 5 minutos.', 'Crear otro duelo'); }
     }, 1000);
-    sondeo = setInterval(() => rpc('ver_duelo', { p_codigo: d.codigo }).then(n => {
+    sondeo = setInterval(siVisible(() => rpc('ver_duelo', { p_codigo: d.codigo }).then(n => {
       if (!n || $('reto').hidden) return;
       guardar(n);
       if (n.empieza && n.yo) { arrancar(); return; }
@@ -1825,7 +1827,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       $('retoCompartir').hidden = n.cerrado;
       pintarBoton();
       pintarCierre($('retoCierre'));
-    }).catch(() => {}), 2000);
+    }).catch(() => {})), 3000);
   }
   $('btnJugar').addEventListener('click', async () => {
     const b = $('btnJugar'), accion = b.dataset.accion;
@@ -1902,7 +1904,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     pintarBarra();
     ver('juego');
     pintarPregunta();
-    vivo(); sondeo = setInterval(vivo, 2000);
+    vivo(); sondeo = setInterval(siVisible(vivo), 3000);
   }
   // Marcador en vivo: un cuadro por jugador (puesto, puntos, anillo de avance, racha y comodines usados)
   function jugadores() {
@@ -2088,7 +2090,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     setTimeout(() => bs.forEach(x => { x.disabled = false; }), 2000);   // una cada 2 s, igual que el servidor
     rpc('reaccionar_duelo', { p_codigo: G.codigo, p_cara: cara }).catch(() => {});
   });
-  // Cada 2 s: marcador, robos, comodines y reacciones de los demás, y el reloj según el servidor
+  // Cada 3 s (solo con la pestaña visible): marcador, robos, comodines y reacciones de los demás, y el reloj según el servidor
   let enVivo = false;
   async function vivo() {
     if (!G || enVivo) return;
@@ -2245,11 +2247,11 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       pintarRevision(qs, d.correctas, (d.yo && d.yo.respuestas) || []);
     }
     // Se actualiza solo hasta que haya resultado, y después un rato por si alguien pide la revancha
-    if (!res || (!d.revancha && Date.now() + desfase - new Date(d.vence) < 20 * 60000)) sondeo = setInterval(async () => {
+    if (!res || (!d.revancha && Date.now() + desfase - new Date(d.vence) < 20 * 60000)) sondeo = setInterval(siVisible(async () => {
       const antes = JSON.stringify([V.jugadores, V.resultado, V.revancha, V.cerrado]);
       await recargar();
       if (JSON.stringify([V.jugadores, V.resultado, V.revancha, V.cerrado]) !== antes) mostrarResultado();
-    }, res ? 8000 : 4000);
+    }), res ? 15000 : 5000);
   }
   // Cuando otro jugador pide la revancha: aviso grande al centro con su foto y el botón para entrar
   let revAvisada = '';

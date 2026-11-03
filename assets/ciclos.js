@@ -18,12 +18,15 @@
   function ajustes() {
     if (pedido) return pedido;
     var guardado = leer();
+    // Pedido hace menos de 15 min: sirve lo guardado (no se pide en cada página)
+    var t = 0; try { t = +localStorage.getItem(CLAVE + '_t') || 0; } catch (e) {}
+    if (guardado && Date.now() - t < 15 * 60000) return (pedido = Promise.resolve(guardado));
     var red = !window.MCAuth ? Promise.resolve(null) : MCAuth.listo
       .then(function (c) { return c.from('ajustes').select('valor').eq('clave', 'ciclos').maybeSingle(); })
       .then(function (r) {
         if (!r || r.error) return null;
         var v = (r.data && r.data.valor) || {};
-        try { localStorage.setItem(CLAVE, JSON.stringify(v)); } catch (e) {}
+        try { localStorage.setItem(CLAVE, JSON.stringify(v)); localStorage.setItem(CLAVE + '_t', String(Date.now())); } catch (e) {}
         return v;
       }, function () { return null; });
     var espera = new Promise(function (res) { setTimeout(function () { res(null); }, guardado ? 800 : 3000); });

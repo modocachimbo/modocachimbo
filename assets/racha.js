@@ -74,7 +74,7 @@
   function cambiar(nuevo) {
     var antes = estado;
     estado = nuevo;
-    guardar(CLAVE, JSON.stringify(nuevo));
+    guardar(CLAVE, JSON.stringify(nuevo)); guardar(CLAVE + '_t', String(Date.now()));
     pintar();
     oyentes.forEach(function (fn) { try { fn(estado); } catch (e) {} });
     if (antes && nuevo && !antes.cumplido_hoy && nuevo.cumplido_hoy) celebrar(nuevo);
@@ -101,6 +101,8 @@
 
   function cargar() {
     if (pendiente > 0) return enviar();
+    // Se pidió hace poco en otra página: sirve lo guardado
+    if (estado && Date.now() - (+leer(CLAVE + '_t') || 0) < 10 * 60000) { pintar(); return Promise.resolve(); }
     return rpc('mi_racha').then(function (r) { if (r) cambiar(r); }, function () { pintar(); });
   }
 

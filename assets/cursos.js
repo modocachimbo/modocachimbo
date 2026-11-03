@@ -127,7 +127,7 @@
       .then(function (r) {
         if (!r || r.error) return null;
         var l = (r.data && r.data.valor && r.data.valor.cursos) || [];
-        try { localStorage.setItem(CLAVE_VOC, JSON.stringify(l)); } catch (e) {}
+        try { localStorage.setItem(CLAVE_VOC, JSON.stringify(l)); localStorage.setItem(CLAVE_VOC + '_t', String(Date.now())); } catch (e) {}
         return l;
       }, function () { return null; });
   }
@@ -147,6 +147,9 @@
     var guardados = null;
     try { guardados = JSON.parse(localStorage.getItem(CLAVE_VOC) || 'null'); } catch (e) {}
     if (Array.isArray(guardados)) poner(guardados.indexOf(id) >= 0);
+    // Pedido hace menos de 15 min: no se vuelve a pedir
+    var t = 0; try { t = +localStorage.getItem(CLAVE_VOC + '_t') || 0; } catch (e) {}
+    if (Array.isArray(guardados) && Date.now() - t < 15 * 60000) return Promise.resolve();
     return cursosVocabulario().then(function (l) { if (l) poner(l.indexOf(id) >= 0); });
   }
   // Con 7 u 8 tarjetas en pantallas anchas van de 4 en 4

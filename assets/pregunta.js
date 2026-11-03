@@ -199,13 +199,15 @@
   var K_ALT = 'mc_mezclar_alt';
   function altActivo() { try { return localStorage.getItem(K_ALT) !== '0'; } catch (e) { return true; } }
   // Se lee el ajuste en segundo plano; vale desde la siguiente página que se abra
+  // (como máximo una vez cada 30 min: casi nunca cambia)
   setTimeout(function () {
     if (!window.MCAuth || !MCAuth.listo) return;
+    try { if (Date.now() - (+localStorage.getItem(K_ALT + '_t') || 0) < 30 * 60000) return; } catch (e) {}
     MCAuth.listo.then(function (c) { return c.from('ajustes').select('valor').eq('clave', 'practica').maybeSingle(); })
       .then(function (r) {
         if (!r || r.error) return;
         var v = r.data && r.data.valor;
-        try { localStorage.setItem(K_ALT, v && v.mezclar === false ? '0' : '1'); } catch (e) {}
+        try { localStorage.setItem(K_ALT, v && v.mezclar === false ? '0' : '1'); localStorage.setItem(K_ALT + '_t', String(Date.now())); } catch (e) {}
       }, function () {});
   }, 1500);
   var SIN_MEZCLA = /anteriores|\b(todas|ninguna|ambas)\b|^\s*(solo\s+)?[a-e]\s*(,|y|e|o|u)\s*[a-e]\b|\b(alternativas?|opci[oó]n(es)?|claves?)\s+[a-e]\b/i;
