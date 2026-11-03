@@ -347,6 +347,34 @@
   };
   Armador.prototype.vars = function (el, pal) { el.style.setProperty('--c', pal.c); el.style.setProperty('--o', pal.o); el.style.setProperty('--s', pal.s); el.style.setProperty('--l', pal.l); };
   // Pone el html en el medidor con el ancho dado y devuelve el elemento listo (fórmulas dibujadas, alternativas acomodadas)
+  // Dónde se puede cortar un bloque para seguirlo en la otra columna u hoja:
+  // entre líneas de texto, nunca en medio de una línea, fórmula, imagen, fila de tabla o grupo de alternativas
+  function puntosDeCorte(b) {
+    var D = b.ownerDocument, top = b.getBoundingClientRect().top, cajas = [];
+    var atom = b.querySelectorAll('img,svg,.katex-display,.katex,tr,summary,.qn,.mcq-par,.mcq-an,.mcq-img,.g,.abierta,.mcq-etq,.hr,.vf');
+    Array.prototype.forEach.call(atom, function (e) { var r = e.getBoundingClientRect(); if (r.height) cajas.push([r.top - top, r.bottom - top]); });
+    Array.prototype.forEach.call(b.querySelectorAll('.ops'), function (o) {
+      var r = o.getBoundingClientRect();
+      // Las alternativas van juntas (solo si ocupan casi media columna se pueden cortar entre filas)
+      // y nunca se separan del enunciado: van pegadas a la última línea de arriba (unos 26 px)
+      if (r.height < 320) cajas.push([r.top - top - 26, r.bottom - top]);
+      else {
+        Array.prototype.forEach.call(o.children, function (c) { var q = c.getBoundingClientRect(); cajas.push([q.top - top, q.bottom - top]); });
+        var p1 = o.children[0] && o.children[0].getBoundingClientRect(); if (p1) cajas.push([r.top - top - 26, p1.bottom - top]);
+      }
+    });
+    var tw = D.createTreeWalker(b, NodeFilter.SHOW_TEXT, null), t, rg = D.createRange();
+    while ((t = tw.nextNode())) {
+      if (!t.nodeValue.trim()) continue;
+      rg.selectNodeContents(t);
+      Array.prototype.forEach.call(rg.getClientRects(), function (r) { if (r.height) cajas.push([r.top - top, r.bottom - top]); });
+    }
+    var fines = cajas.map(function (c) { return Math.ceil(c[1]) + 1; }).sort(function (a, c) { return a - c; });
+    return fines.filter(function (y, i) {
+      if (i && y === fines[i - 1]) return false;
+      return !cajas.some(function (c) { return c[0] < y - 1 && c[1] > y + 1; });
+    });
+  }
   Armador.prototype.medir = function (html, ancho, pal) {
     var b = this.D.createElement('div'); b.className = 'bl'; b.style.position = 'relative'; b.style.width = ancho + 'px'; b.innerHTML = html;
     this.medidas(b);
@@ -364,16 +392,16 @@
       var cols = ['c3', 'c2', 'c1'];
       for (var i = 0; i < cols.length; i++) {
         ops.className = 'ops ' + cols[i];
-        var partida = Array.prototype.some.call(ops.querySelectorAll('.ot'), function (t) {
-          var rs = t.getClientRects(); if (rs.length < 2) return false;
-          var top = rs[0].top; return Array.prototype.some.call(rs, function (x) { return Math.abs(x.top - top) > 4; });
+        // Cada alternativa debe entrar en una sola línea (letra incluida): se prueba sin saltos de línea
+        var partida = Array.prototype.some.call(ops.children, function (c) {
+          c.style.whiteSpace = 'nowrap'; var no = c.scrollWidth > c.clientWidth + 1; c.style.whiteSpace = ''; return no;
         });
         if (!partida) break;
       }
     });
-    var h = b.offsetHeight;
+    var h = b.offsetHeight, cortes = puntosDeCorte(b);
     this.med.removeChild(b);
-    return { el: b, h: h };
+    return { el: b, h: h, cortes: cortes };
   };
   Armador.prototype.nuevaPagina = function (horizontal) {
     var H = ESTILO.hoja, p = this.D.createElement('div');
@@ -405,26 +433,52 @@
   // Bloque en columna: primero se llena la izquierda, luego la derecha, luego hoja nueva.
   // conSiguiente: alto del bloque que debe ir pegado (la asignatura no queda sola al final)
   Armador.prototype.columna = function (html, op) {
-    op = op || {}; var G = ESTILO.hoja.gap, sep = ESTILO.hoja.sep, self = this;
+    op = op || {}; var G = ESTILO.hoja.gap, sep = ESTILO.hoja.sep, self = this, MIN = 60;
     var m = op.medido || this.medir(html, this.colW, op.pal);
     var pg = this.pg || this.nuevaPagina();
-    var need = m.h + (op.conSiguiente || 0), h = m.h;
-    // Cabe si entra en lo que queda; arriba de una columna casi vacía se acepta aunque haya que achicarlo
-    function cabe() { var libre = pg.h - pg.y[pg.col]; return need <= libre || (pg.y[pg.col] <= pg.base && libre >= pg.h * 0.6); }
-    if (!cabe()) { if (pg.col === 0) pg.col = 1; if (!cabe()) pg = self.nuevaPagina(); }
-    // Más alto que una columna entera (lectura muy larga): se achica para que entre
-    var disponible = pg.h - pg.y[pg.col];
-    var ancho = this.colW;
-    if (h > disponible) {
-      var z = Math.max(0.55, disponible / h);
-      ancho = this.colW / z; h = h * z;
-      m.el.style.transformOrigin = '0 0'; m.el.style.transform = 'scale(' + z.toFixed(3) + ')';
+    function siguiente() { if (pg.col === 0) pg.col = 1; else pg = self.nuevaPagina(); }
+    function anotar(y, h) {
+      var fila = pg.filas[pg.base] || (pg.filas[pg.base] = { top: pg.base, fin: 0, dos: false });
+      fila.fin = Math.max(fila.fin, y + h); if (pg.col === 1) fila.dos = true;
     }
-    var y = pg.y[pg.col];
-    this.poner(pg, m.el, pg.col ? this.colW + sep : 0, y, ancho);
-    pg.y[pg.col] += h + (op.gap != null ? op.gap : G);
-    var fila = pg.filas[pg.base] || (pg.filas[pg.base] = { top: pg.base, fin: 0, dos: false });
-    fila.fin = Math.max(fila.fin, y + h); if (pg.col === 1) fila.dos = true;
+    // Títulos (asignatura) no se quedan solos al final: necesitan algo de lo que sigue
+    var junto = Math.min(op.conSiguiente || 0, 140);
+    if (m.h < 70 && junto && pg.h - pg.y[pg.col] < m.h + junto && pg.y[pg.col] > pg.base) siguiente();
+    var desde = 0, primero = true;
+    while (desde < m.h - 1) {
+      var libre = pg.h - pg.y[pg.col], resta = m.h - desde, x = pg.col ? this.colW + sep : 0, y = pg.y[pg.col];
+      if (resta <= libre) {
+        // Entra lo que falta
+        var el = primero ? m.el : m.el.cloneNode(true);
+        if (primero) this.poner(pg, el, x, y, this.colW);
+        else { var c = this.D.createElement('div'); c.style.cssText = 'position:absolute;overflow:hidden;left:' + x + 'px;top:' + y + 'px;width:' + this.colW + 'px;height:' + Math.ceil(resta) + 'px'; el.style.position = 'absolute'; el.style.left = '0'; el.style.top = (-desde) + 'px'; el.style.width = this.colW + 'px'; c.appendChild(el); pg.c.appendChild(c); }
+        anotar(y, resta);
+        pg.y[pg.col] += resta + (op.gap != null ? op.gap : G);
+        return m;
+      }
+      // No entra: se busca el último corte que quepa y se sigue en la otra columna u hoja
+      var corte = 0;
+      (m.cortes || []).forEach(function (cy) { if (cy > desde + 1 && cy - desde <= libre && m.h - cy >= 48) corte = cy; });
+      if (op.noDividir || !corte || corte - desde < MIN) {
+        if (y <= pg.base && libre >= pg.h * 0.9) {
+          // Ni en una columna vacía entra hasta el primer corte (imagen enorme): se achica
+          var z = Math.max(0.55, libre / resta), e2 = primero ? m.el : m.el.cloneNode(true);
+          e2.style.transformOrigin = '0 0'; e2.style.transform = 'scale(' + z.toFixed(3) + ')';
+          if (primero) this.poner(pg, e2, x, y, this.colW / z);
+          else { var c2 = this.D.createElement('div'); c2.style.cssText = 'position:absolute;overflow:hidden;left:' + x + 'px;top:' + y + 'px;width:' + this.colW + 'px;height:' + Math.ceil(resta * z) + 'px'; e2.style.position = 'absolute'; e2.style.left = '0'; e2.style.top = (-desde * z) + 'px'; e2.style.width = (this.colW / z) + 'px'; c2.appendChild(e2); pg.c.appendChild(c2); }
+          anotar(y, resta * z); pg.y[pg.col] += resta * z + G; return m;
+        }
+        siguiente(); continue;
+      }
+      var pieza = primero ? m.el : m.el.cloneNode(true), caja = this.D.createElement('div');
+      caja.style.cssText = 'position:absolute;overflow:hidden;left:' + x + 'px;top:' + y + 'px;width:' + this.colW + 'px;height:' + Math.ceil(corte - desde) + 'px';
+      pieza.style.position = 'absolute'; pieza.style.left = '0'; pieza.style.top = (-desde) + 'px'; pieza.style.width = this.colW + 'px';
+      caja.appendChild(pieza); pg.c.appendChild(caja);
+      anotar(y, corte - desde);
+      pg.y[pg.col] = pg.h;
+      desde = corte; primero = false;
+      siguiente();
+    }
     return m;
   };
   // Línea entre las dos columnas, en cada tramo que usa las dos
@@ -474,7 +528,7 @@
       if (conBandas && s.area !== areaAct) {
         areaAct = s.area;
         var prim0 = s.preguntas[0] ? A.medir(preguntaHtml(s.preguntas[0], n + 1), A.colW, pal).h : 0;
-        A.ancho('<div class="bandaa"><span>Área de ' + esc((AREAS[s.area] || {}).nom || s.areaNom || 'Preguntas') + '</span></div>', { pal: pal, gap: 12, conSiguiente: Math.min(prim0 + 40, A.Hc * 0.5) });
+        A.ancho('<div class="bandaa"><span>Área de ' + esc((AREAS[s.area] || {}).nom || s.areaNom || 'Preguntas') + '</span></div>', { pal: pal, gap: 12, conSiguiente: Math.min(prim0 + 20, 170) });
       }
       var prim = true, lecAct = null;
       s.preguntas.forEach(function (q, k) {
@@ -497,12 +551,10 @@
         prim = false;
         if (cab) {
           // La lectura va pegada a su primera pregunta; si es más alta que una columna, a todo el ancho
-          if (cab.h > A.Hc * 0.85) A.ancho(cab.el.innerHTML, { pal: pal, gap: 10 });
-          else A.columna(null, { medido: cab, gap: 10, conSiguiente: m.h + 10 });
+          A.columna(null, { medido: cab, gap: 10 });
         }
         // Lectura más alta que una columna: va a todo el ancho, con letra normal
-        if (m.h > A.Hc * 0.85) A.ancho(preguntaHtml(q, n), { pal: pal });
-        else A.columna(null, { medido: m });
+        A.columna(null, { medido: m });
       });
     });
     return n;
