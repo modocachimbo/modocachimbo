@@ -910,11 +910,7 @@
         return;
       }
       if (e.bloqueado) { caja.innerHTML = cab(doc) + '<div class="mcd-err">Tu cuenta no puede descargar PDF por ahora. Si crees que es un error, escríbele a tu profe.</div>'; return; }
-      if (!e.acceso) {
-        caja.innerHTML = '<div class="mcd-lock"><div class="ico">' + IC.lock + '</div><h3>Descarga tus temas en PDF</h3><p>Imprime las preguntas con hoja de respuestas, claves y ficha óptica para OptiCheck. Las descargas se activan con su propio código, <b style="color:#EEEAF7">Descargas PDF</b>: no vienen en los packs.</p><button class="mcd-go" type="button">' + IC.lock + 'Activar código</button></div>';
-        caja.querySelector('.mcd-go').addEventListener('click', function () { ocupado = false; cerrar(); hojaCodigo(); });
-        return;
-      }
+      if (!e.acceso) { ov.remove(); hojaCodigo(reg); return; }
       var ops = opcionesPara(doc, e);
       var cupo = e.quedan_dia == null ? '' : '<div class="mcd-cupo"><span>' + Array.from({ length: Math.min(e.limite_dia, 20) }, function (_, i) { return '<i' + (i < e.usadas_dia ? ' class="usado"' : '') + '></i>'; }).join('') + '</span>Te quedan ' + e.quedan_dia + ' de ' + e.limite_dia + ' hoy</div>';
       caja.innerHTML = cab(doc) + '<div class="mcd-sec">¿Qué incluye?</div>' +
@@ -953,9 +949,15 @@
       caja.innerHTML = '<div class="mcd-err">' + esc(err && err.message || 'No se pudo preparar la descarga.') + '</div>';
     });
   }
-  // Pantalla para activar el código (la misma de los candados del sitio)
-  function hojaCodigo() {
-    var abrirHoja = function () { if (window.MCCandado && MCCandado.hoja) MCCandado.hoja('descarga', { nombre: 'Descargas PDF' }); };
+  // Pantalla para activar el código (la misma de los candados del sitio).
+  // Al activarlo, el botón pierde el candado y se abre la descarga
+  function hojaCodigo(reg) {
+    var alAbrir = function () {
+      pedidoAcc = null;
+      botones.forEach(function (b) { pintarCandado(b[0], b[1]); });
+      if (reg) abrir(reg);
+    };
+    var abrirHoja = function () { if (window.MCCandado && MCCandado.hoja) MCCandado.hoja('descarga', { nombre: 'Descargas PDF', alAbrir: alAbrir }); };
     if (window.MCCandado) return abrirHoja();
     (window.MCAcceso ? Promise.resolve() : cargarJs(RAIZ + 'assets/acceso.js')).then(function () { return cargarJs(RAIZ + 'assets/candado.js'); }).then(abrirHoja, function () {});
   }
@@ -963,11 +965,12 @@
   /* ---------- ¿Puede descargar? (para pintar el botón con candado) ----------
      Sin sesión o sin el paquete descarga-VIP el botón sale con candado y, al tocarlo,
      pide el código. Se pregunta una vez por página y otra vez si cambia la sesión. */
+  // Resuelve true (puede), false (tiene sesión pero no el código), 'sesion' (sin sesión) o null (sin internet)
   var pedidoAcc = null, botones = [];
   function accesoDescarga() {
     if (pedidoAcc) return pedidoAcc;
-    pedidoAcc = !window.MCAuth ? Promise.resolve(false) : MCAuth.listo.then(function () {
-      if (!MCAuth.usuario()) return false;
+    pedidoAcc = !window.MCAuth ? Promise.resolve('sesion') : MCAuth.listo.then(function () {
+      if (!MCAuth.usuario()) return 'sesion';
       return rpc('descargas_estado').then(function (e) { return !!(e && e.acceso && !e.bloqueado); });
     }).catch(function () { return null; });
     return pedidoAcc;
@@ -975,6 +978,8 @@
   function pintarCandado(a, texto) {
     accesoDescarga().then(function (ok) {
       if (ok === null) return;   // sin internet: se decide al tocarlo
+      a.dataset.acc = ok === true ? 'si' : ok === false ? 'no' : 'sesion';
+      ok = ok === true;
       a.classList.toggle('mcd-cerrado', !ok);
       a.innerHTML = (ok ? IC.pdf : IC.lock) + texto;
       a.setAttribute('aria-label', ok ? 'Descargar en PDF' : 'Descargar en PDF (necesitas el código de Descargas PDF)');
@@ -1000,7 +1005,8 @@
       if (l.solo) a.style.setProperty('--mcd-ac', ESTILO.pantalla[reg.area || areaDePagina()] || ESTILO.pantalla.general);
       a.innerHTML = IC.pdf + (l.texto || 'PDF');
       a.setAttribute('aria-label', 'Descargar en PDF');
-      a.addEventListener('click', function (e) { e.preventDefault(); abrir(reg); });
+      // Con sesión pero sin el código: directo a la pantalla del código (sin ventana previa)
+      a.addEventListener('click', function (e) { e.preventDefault(); if (a.dataset.acc === 'no') hojaCodigo(reg); else abrir(reg); });
       botones.push([a, l.texto || 'PDF']); pintarCandado(a, l.texto || 'PDF');
       if (l.envolver) { var f = document.createElement('div'); f.className = 'mcd-fila'; f.appendChild(a); a = f; }
       l.padre.insertBefore(a, l.antes || null);
