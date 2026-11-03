@@ -1654,5 +1654,281 @@
         "correct": 2
       }
     ]
+  },
+  {
+    "num": "07",
+    "name": "Números Complejos",
+    "questions": [
+      {
+        "text": "El número de integrantes de una familia está representado por el valor de $N = 2|4+z| - 3\\text{ Re}(z) + \\text{Im}(z)$, donde $z$ es un número complejo no real tal que $3|z-z^2| = 3|z-|z|^2|$.",
+        "topic": "Álgebra · Números Complejos",
+        "options": [
+          {
+            "letter": "A",
+            "text": "7"
+          },
+          {
+            "letter": "B",
+            "text": "9"
+          },
+          {
+            "letter": "C",
+            "text": "10"
+          },
+          {
+            "letter": "D",
+            "text": "5"
+          },
+          {
+            "letter": "E",
+            "text": "13"
+          }
+        ],
+        "correct": 4
+      },
+      {
+        "text": "Sea $z \\in \\mathbb{C}$, tal que $z = (1+i) + (1+i)^2 + (1+i)^3 + (1+i)^4$. Si las dimensiones (en metros) de un campo deportivo de forma rectangular, están dados por los valores de $|\\text{Re}(z)|$ y $|\\text{Im}(z)| + 4$, calcule el área de dicho campo deportivo.",
+        "topic": "Álgebra · Números Complejos",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$55\\text{ m}^2$"
+          },
+          {
+            "letter": "B",
+            "text": "$60\\text{ m}^2$"
+          },
+          {
+            "letter": "C",
+            "text": "$45\\text{ m}^2$"
+          },
+          {
+            "letter": "D",
+            "text": "$30\\text{ m}^2$"
+          },
+          {
+            "letter": "E",
+            "text": "$35\\text{ m}^2$"
+          }
+        ],
+        "correct": 2
+      },
+      {
+        "text": "Con respecto a dos números complejos se sabe lo siguiente: la parte imaginaria de la suma de ellos es 5 y la parte real de su diferencia es nula. Además el producto de ambos es $-5 + 5i$. ¿Cuáles son estos números? Dé como respuesta la suma de sus módulos.",
+        "topic": "Álgebra · Números Complejos",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$\\sqrt{15 + 2\\sqrt{50}}$"
+          },
+          {
+            "letter": "B",
+            "text": "$\\sqrt{15 + 2\\sqrt{10}}$"
+          },
+          {
+            "letter": "C",
+            "text": "$\\sqrt{15 + 2\\sqrt{5}}$"
+          },
+          {
+            "letter": "D",
+            "text": "$\\sqrt{50 + 2\\sqrt{15}}$"
+          },
+          {
+            "letter": "E",
+            "text": "$\\sqrt{15 + 2\\sqrt{20}}$"
+          }
+        ],
+        "correct": 0
+      },
+      {
+        "text": "Si la longitud (en metros) de la diagonal de un cuadrado está dado por el módulo del número complejo:\n$$z = (1+i) \\left[ \\left( \\frac{\\sqrt{2} + \\sqrt{6}i}{\\sqrt{3} - i} \\right)^3 \\cdot \\left( \\frac{2 + \\sqrt{2}i}{\\sqrt{6} + i} \\right) \\right]$$\ndetermine el área de dicho cuadrado.",
+        "topic": "Álgebra · Números Complejos",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$25\\text{ m}^2$"
+          },
+          {
+            "letter": "B",
+            "text": "$12\\text{ m}^2$"
+          },
+          {
+            "letter": "C",
+            "text": "$16\\text{ m}^2$"
+          },
+          {
+            "letter": "D",
+            "text": "$36\\text{ m}^2$"
+          },
+          {
+            "letter": "E",
+            "text": "$24\\text{ m}^2$"
+          }
+        ],
+        "correct": 2
+      },
+      {
+        "text": "Tres embarcaciones pesqueras A, B, C, salieron del puerto a la misma hora y en diferentes direcciones. Para indicar su posición exacta las embarcaciones emplean números complejos en el plano complejo, considerando que cada unidad de eje real e imaginario es equivalente a una milla, y que el puerto está ubicado en el origen de coordenadas. Transcurrida una hora de su partida se les solicitó por radio indicar su posición a lo que respondieron:\nEmbarcación A: $-3 + 4i$\nEmbarcación B: $4 + 4\\sqrt{2}i$\nEmbarcación C: $\\sqrt{11} + 5i$\n¿Cuál de las tres embarcaciones se encuentra más distante del puerto?",
+        "topic": "Álgebra · Números Complejos",
+        "options": [
+          {
+            "letter": "A",
+            "text": "La embarcación C"
+          },
+          {
+            "letter": "B",
+            "text": "La embarcación A"
+          },
+          {
+            "letter": "C",
+            "text": "La embarcación B"
+          },
+          {
+            "letter": "D",
+            "text": "Las tres están a la misma distancia del puerto"
+          },
+          {
+            "letter": "E",
+            "text": "Las embarcaciones A y C"
+          }
+        ],
+        "correct": 2
+      },
+      {
+        "text": "Mario, en una reunión comenta que le falta \"$p+1$\" ciclos para terminar la carrera de Matemática Aplicada en la UNJFSC, donde $p$ es aquel número para el cual el complejo\n$$z = \\frac{1 + 2p(1 + 3i)}{-2p(1 + i) + 1}$$\nes real, con \"$p \\neq 0$\". ¿Cuántos ciclos le faltan a Mario para terminar su carrera?",
+        "topic": "Álgebra · Números Complejos",
+        "options": [
+          {
+            "letter": "A",
+            "text": "5"
+          },
+          {
+            "letter": "B",
+            "text": "2"
+          },
+          {
+            "letter": "C",
+            "text": "3"
+          },
+          {
+            "letter": "D",
+            "text": "4"
+          },
+          {
+            "letter": "E",
+            "text": "6"
+          }
+        ],
+        "correct": 1
+      },
+      {
+        "text": "En un supermercado, se observa que el precio de un kilógramo de arroz es igual a $\\text{Re}(z)$ soles, mientras que el kilógramo de azúcar tiene un costo de $\\text{Im}(z)$ soles; si la Sra. Rachel decide comprar 2 kilógramos más de arroz que de azúcar, determine el costo total, sabiendo que el número de kilógramos de arroz a comprar es igual a $|z|$, donde\n$$z = \\frac{(2 - i)^2 \\cdot (1 + i)^{134} \\cdot (1 - i)^{82}}{(8 + 8i)^{28} \\cdot (2 - 2i)^5 \\cdot (i)^{10}}$$",
+        "topic": "Álgebra · Números Complejos",
+        "options": [
+          {
+            "letter": "A",
+            "text": "128 soles"
+          },
+          {
+            "letter": "B",
+            "text": "124 soles"
+          },
+          {
+            "letter": "C",
+            "text": "140 soles"
+          },
+          {
+            "letter": "D",
+            "text": "154 soles"
+          },
+          {
+            "letter": "E",
+            "text": "132 soles"
+          }
+        ],
+        "correct": 0
+      },
+      {
+        "text": "Sea $z$ un número complejo, donde la parte real es un valor entero; la parte real y la parte imaginaria de $z$ están en relación de 1 a 3 (en ese orden); además, al sumar la parte real de $z$ con la parte imaginaria de $z^2$ resulta 26. Determine el valor de $|z - 2i|$.",
+        "topic": "Álgebra · Números Complejos",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$2\\sqrt{5}$"
+          },
+          {
+            "letter": "B",
+            "text": "$1/2$"
+          },
+          {
+            "letter": "C",
+            "text": "1"
+          },
+          {
+            "letter": "D",
+            "text": "$3/2$"
+          },
+          {
+            "letter": "E",
+            "text": "2"
+          }
+        ],
+        "correct": 0
+      },
+      {
+        "text": "Sean los números complejos $z = (a+bi)^2$ y $w = -46i$ con $a, b \\in \\mathbb{Z}^+$. Se tiene que el número de canicas que tiene Sebastián es igual a $(z + w + 20)$. Si Sebastián pierde 5 canicas, ¿Cuántas canicas le queda a Sebastián?",
+        "topic": "Álgebra · Números Complejos",
+        "options": [
+          {
+            "letter": "A",
+            "text": "7"
+          },
+          {
+            "letter": "B",
+            "text": "4"
+          },
+          {
+            "letter": "C",
+            "text": "23"
+          },
+          {
+            "letter": "D",
+            "text": "5"
+          },
+          {
+            "letter": "E",
+            "text": "6"
+          }
+        ],
+        "correct": 4
+      },
+      {
+        "text": "Hace 6 años la suma de edades de los padres de Rocío era $6L$, donde $L$ es la parte real de:\n$$M = \\left[ \\frac{16 + 20i}{|z|^2} + \\frac{W}{|24 - 30i|} \\right]^2 \\cdot \\left| \\frac{W - 12i}{5 \\cdot |z + 8i|} \\right| \\cdot W z$$\nDetermine la edad actual de la madre de Rocío si es menor por dos años con respecto a la edad del padre y $z = 16 - 20i$, $W = 24 + 30i$.",
+        "topic": "Álgebra · Números Complejos",
+        "options": [
+          {
+            "letter": "A",
+            "text": "50 años"
+          },
+          {
+            "letter": "B",
+            "text": "56 años"
+          },
+          {
+            "letter": "C",
+            "text": "58 años"
+          },
+          {
+            "letter": "D",
+            "text": "41 años"
+          },
+          {
+            "letter": "E",
+            "text": "48 años"
+          }
+        ],
+        "correct": 3
+      }
+    ]
   }
 ]
