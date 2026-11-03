@@ -5,8 +5,7 @@
    - Qué se puede descargar, ficha óptica y límites por día y por mes
    - Historial con buscador por N.º, correo, apodo o título
    - Bloquear o desbloquear a un alumno
-   - Códigos de descarga: se crean y se ven aquí, aparte de los packs
-     (usa editarCodigo, mensajeCodigo y copiar de codigos-panel.js)
+   Los códigos de descarga se crean en Panel → Códigos (botón «Código Descargas PDF»).
    Datos: supabase/53-descargas-pdf.sql y 54-descarga-aparte.sql
    ========================================================= */
 const DSC = { datos: null, q: '' };
@@ -44,10 +43,6 @@ const DSC_TIPOS = [
   .dsc-top li { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid var(--border); font-size: 13px; } .dsc-top li:first-child { border-top: 0; }
   .dsc-top ul { list-style: none; margin: 0; padding: 0; }
   .dsc-dos { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .dsc-cods { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-  .dsc-cod { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 12px; border: 1px solid var(--border); border-radius: 14px; font-size: 13px; }
-  .dsc-cod .dsc-num { cursor: pointer; } .dsc-cod .tx { flex: 1; min-width: 140px; color: var(--text-dim); }
-  .dsc-cod.dim { opacity: .55; }
   @media (max-width: 760px) {
     .dsc-res { grid-template-columns: 1fr 1fr; } .dsc-dos { grid-template-columns: 1fr; } .dsc-lim { grid-template-columns: 1fr; }
     .dsc-tabla thead { display: none; }
@@ -79,29 +74,6 @@ async function cargarDescargas() {
   }
   DSC.datos = r.data;
   pintarDescargas(h.data || []);
-  cargarCodigosDescarga();
-}
-
-/* ---------- Códigos de descarga (aparte de los packs) ---------- */
-async function cargarCodigosDescarga() {
-  const caja = $('dscCods'); if (!caja) return;
-  caja.innerHTML = '<div class="loader">Cargando códigos…</div>';
-  try {
-    const r = await api('codigos');
-    DSC.codigos = (r.codigos || []).filter(esDescarga);
-    pintarCodigosDescarga();
-  } catch (e) { caja.innerHTML = `<div class="state-msg error">${esc(e.message)}</div>`; }
-}
-function pintarCodigosDescarga() {
-  const L = DSC.codigos || [], caja = $('dscCods'); if (!caja) return;
-  caja.innerHTML = L.length ? L.map(c => `<div class="dsc-cod ${['Vencido', 'Desactivado'].includes(c.estado) ? 'dim' : ''}">
-      <span class="dsc-num" data-c="${esc(c.codigo)}" title="Copiar código">${esc(c.codigo)}</span>
-      <span class="tx">${esc(c.nota || 'Sin nota')} · ${c.usosAnt + c.dispositivos.length} de ${c.max || '∞'} dispositivos${c.vence ? ' · vence el ' + esc(c.vence.split('-').reverse().join('/')) : ''}${c.producto !== PROD_DESCARGA ? ' · también ' + esc(etiquetaProd(c.producto.split(',').filter(p => p !== PROD_DESCARGA).join(','))) : ''}</span>
-      <span class="pill ${c.estado === 'Activo' ? 'Vigente' : c.estado === 'Lleno' ? 'Pendiente' : 'Revertida'}">${esc(c.estado)}</span>
-      <button class="btn-ghost" type="button" data-m="${esc(c.codigo)}">Mensaje</button>
-    </div>`).join('') : '<div class="hint">Aún no hay códigos de descarga.</div>';
-  caja.querySelectorAll('[data-c]').forEach(b => b.addEventListener('click', () => copiar(b.dataset.c)));
-  caja.querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', () => copiar(mensajeCodigo(L.find(x => x.codigo === b.dataset.m)))));
 }
 
 function pintarDescargas(filas) {
@@ -131,12 +103,6 @@ function pintarDescargas(filas) {
         <span class="dsc-estado ${c.activo ? 'on' : 'off'}"><i></i>${c.activo ? (c.abierto ? 'Prendido · abierto para todos' : 'Prendido · con código') : 'Apagado'}</span></div>
     </div>
     <div class="dsc-card">
-      <h3>Códigos de descarga</h3>
-      <p>Un código aparte, solo para descargar en PDF: no viene en ningún pack ni en el Acceso total. Sin él, el alumno ve el botón PDF con candado y se le pide este código.</p>
-      <button class="btn-main" type="button" id="dscNuevoCod">Crear código de descargas</button>
-      <div class="dsc-cods" id="dscCods"></div>
-    </div>
-    <div class="dsc-card">
       <h3>Buscar una descarga</h3>
       <p>Si encuentras un PDF compartido, busca el N.º que sale al pie de cada hoja (MC-XXXX-XXXX) y sabrás quién lo descargó. También puedes buscar por correo, apodo o título.</p>
       <div class="dsc-buscar"><input class="inp" id="dscQ" placeholder="MC-7F3K-29QD, correo, apodo o título" value="${esc(DSC.q)}"><button class="btn-ghost" type="button" id="dscIr">Buscar</button></div>
@@ -157,9 +123,7 @@ function pintarDescargas(filas) {
     </div>`;
 
   $('dscCuerpo').querySelectorAll('[data-t]').forEach(b => b.addEventListener('click', () => b.classList.toggle('on')));
-  $('dscGuardar').addEventListener('click', guardarDescargas);
-  $('dscNuevoCod').addEventListener('click', () => editarCodigo(null, { descarga: true }));
-  const buscar = () => { DSC.q = $('dscQ').value.trim(); cargarDescargas(); };
+  $('dscGuardar').addEventListener('click', guardarDescargas);  const buscar = () => { DSC.q = $('dscQ').value.trim(); cargarDescargas(); };
   $('dscIr').addEventListener('click', buscar);
   $('dscQ').addEventListener('keydown', e => { if (e.key === 'Enter') buscar(); });
   $('dscCuerpo').querySelectorAll('[data-b]').forEach(b => b.addEventListener('click', () => { const x = filas[+b.dataset.b]; bloquearDescargas(x.usuario, x.email, !x.bloqueado); }));

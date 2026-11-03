@@ -5,7 +5,7 @@ const CD = { lista: [], config: { abiertos: {}, legacy: true }, hoy: '', filtro:
 // Paquetes. Un código puede abrir varios a la vez: el producto se guarda como "general,vocabulario-VIP"
 // (la misma regla que cubre() de assets/acceso.js y cubre_ del Apps Script v16).
 // descarga-VIP no es un pack: es un código aparte, solo para descargar (ni TODO-VIP lo incluye).
-// Se crea con el tipo «Descargas PDF» de la ventana o desde Panel → Descargas PDF.
+// Se crea con el botón «Código Descargas PDF» de esta pestaña (o el tipo «Descargas PDF» de la ventana).
 const PROD_TODOS = [
   ['TODO-VIP', 'Acceso total'], ['general', 'Acceso general'], ['seminario-VIP', 'Seminarios + Banqueo'], ['vocabulario-VIP', 'Vocabulario'], ['biblioteca-VIP', 'Biblioteca']
 ];
@@ -141,14 +141,16 @@ function renderConfigAcceso() {
 /* ---------- Lista ---------- */
 function renderCodigos() {
   const L = CD.lista;
-  const cuenta = e => L.filter(c => e === 'Todos' || c.estado === e).length;
+  // 'Descargas' no es un estado: muestra solo los códigos de descarga (descarga-VIP)
+  const pasa = (c, e) => e === 'Todos' || (e === 'Descargas' ? esDescarga(c) : c.estado === e);
+  const cuenta = e => L.filter(c => pasa(c, e)).length;
   const disp = L.reduce((s, c) => s + c.dispositivos.length, 0);
   $('cdStats').innerHTML = `<b>${L.length}</b> código${L.length === 1 ? '' : 's'} · <b>${cuenta('Activo')}</b> activos · <b>${disp}</b> dispositivo${disp === 1 ? '' : 's'} registrados`;
-  $('cdChips').innerHTML = ['Todos', 'Activo', 'Lleno', 'Vencido', 'Desactivado'].map(e =>
-    `<button type="button" class="chip st ${e === CD.filtro ? 'on' : ''}" data-e="${e}">${e === 'Todos' ? 'Todos' : e + 's'} <span class="c">${cuenta(e)}</span></button>`).join('');
+  $('cdChips').innerHTML = ['Todos', 'Activo', 'Lleno', 'Vencido', 'Desactivado', 'Descargas'].map(e =>
+    `<button type="button" class="chip st ${e === CD.filtro ? 'on' : ''}" data-e="${e}">${e === 'Todos' ? 'Todos' : e === 'Descargas' ? 'Descargas PDF' : e + 's'} <span class="c">${cuenta(e)}</span></button>`).join('');
   $('cdChips').querySelectorAll('.chip').forEach(ch => ch.addEventListener('click', () => { CD.filtro = ch.dataset.e; renderCodigos(); }));
   const q = $('cdBuscar').value.trim().toLowerCase();
-  const rows = L.filter(c => (CD.filtro === 'Todos' || c.estado === CD.filtro) &&
+  const rows = L.filter(c => pasa(c, CD.filtro) &&
     (!q || [c.codigo, c.nota, etiquetaProd(c.producto)].join(' ').toLowerCase().includes(q)));
   if (!L.length) { $('cdList').innerHTML = '<div class="state-msg">Aún no hay códigos. Crea uno con <b>Crear códigos</b> o trae los antiguos con <b>Importar</b>.</div>'; return; }
   if (!rows.length) { $('cdList').innerHTML = '<div class="state-msg">No hay códigos con ese filtro.</div>'; return; }
@@ -349,15 +351,11 @@ function editarCodigo(orig, op = {}) {
       if (orig) {
         Object.assign(orig, { producto: datos.producto, max: datos.max, vence: datos.vence, nota: datos.nota, activo: datos.activo, etiqueta: etiquetaProd(datos.producto) });
         orig.estado = !orig.activo ? 'Desactivado' : (orig.vence && CD.hoy && CD.hoy > orig.vence) ? 'Vencido' : (orig.max > 0 && orig.usosAnt + orig.dispositivos.length >= orig.max) ? 'Lleno' : 'Activo';
-        renderCodigos(); cerrar(); toast('Código actualizado');
-        if (typeof pintarCodigosDescarga === 'function' && DSC.codigos) cargarCodigosDescarga();
-        return;
+        renderCodigos(); cerrar(); toast('Código actualizado'); return;
       }
       const nuevos = r.creados.map(cod => ({ codigo: cod, producto: datos.producto, etiqueta: r.etiqueta || etiquetaProd(datos.producto), max: datos.max, usosAnt: 0,
         nota: datos.nota, vence: datos.vence, activo: true, dispositivos: [], estado: 'Activo', creado: new Date().toISOString() }));
       CD.lista = nuevos.concat(CD.lista); renderCodigos();
-      // También en la lista de Panel → Descargas PDF (descargas-panel.js)
-      if (typeof pintarCodigosDescarga === 'function' && DSC.codigos) { DSC.codigos = nuevos.filter(esDescarga).concat(DSC.codigos); pintarCodigosDescarga(); }
       o.querySelector('.mcard').innerHTML = `<button class="mx" type="button">✕</button>
         <div class="done" style="text-align:left;padding-top:0;">
           <div class="eyebrow">Listo</div><h3>${nuevos.length} código${nuevos.length > 1 ? 's creados' : ' creado'}</h3>
