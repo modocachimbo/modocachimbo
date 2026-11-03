@@ -13,7 +13,7 @@
   // Carpeta raíz del sitio, para que los enlaces funcionen desde cualquier página
   var BASE = script && script.src ? script.src.replace(/assets\/auth\.js(\?.*)?$/, '') : './';
 
-  var cliente = null, sesion = null, perfilCache = null, iniciado = false;
+  var cliente = null, sesion = null, perfilCache = null, perfilPedido = null, iniciado = false;
   var oyentes = [];
 
   function cargarSDK() {
@@ -160,7 +160,9 @@
     if (perfilCache && !forzar) return Promise.resolve(perfilCache);
     var g = !forzar && perfilGuardado();
     if (g) { perfilCache = g; return Promise.resolve(g); }
-    return listo.then(function (c) {
+    // Si ya se está pidiendo, las demás partes de la página esperan esa misma respuesta
+    if (perfilPedido && !forzar) return perfilPedido;
+    var p = perfilPedido = listo.then(function (c) {
       return c.from('perfiles').select('*').eq('id', usuario().id).maybeSingle();
     }).then(function (r) {
       if (r.error) throw r.error;
@@ -168,6 +170,8 @@
       recordarPerfil(perfilCache);
       return perfilCache;
     });
+    p.then(function () { if (perfilPedido === p) perfilPedido = null; }, function () { if (perfilPedido === p) perfilPedido = null; });
+    return p;
   }
 
   function guardarPerfil(datos) {
