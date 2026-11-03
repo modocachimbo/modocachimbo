@@ -153,12 +153,26 @@
     return e.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>').replace(/\n/g, '<br>');
   }
   function textoHtml(q) {
-    var t = partirFormulas(q.text);
+    var t = partirFormulas(q._sinLectura != null ? q._sinLectura : q.text);
     if (window.MCPregunta && MCPregunta.armar) {
       var r = MCPregunta.armar(t, { lecPos: q.lecPos, lecSigue: false });
       return r.html + (q.graphic ? '<div class="g">' + q.graphic + '</div>' : '') + (r.derecha ? '<div class="g">' + r.derecha + '</div>' : '');
     }
     return formatoSimple(t) + (q.graphic ? '<div class="g">' + q.graphic + '</div>' : '');
+  }
+  // Lectura compartida ([TEXTO 1] … [/TEXTO]): se separa del enunciado para ponerla una sola vez
+  var RX_LEC = /^\[((?:TEXTO|LECTURA)[^\]]{0,20})\]$/i, RX_LEC_FIN = /^\[\/(?:TEXTO|LECTURA)\]$/i;
+  function separarLectura(texto) {
+    var l = String(texto || '').replace(/\r/g, '').split('\n'), ini = -1, fin = -1;
+    for (var i = 0; i < l.length; i++) { if (ini < 0 && RX_LEC.test(l[i].trim())) ini = i; else if (ini >= 0 && RX_LEC_FIN.test(l[i].trim())) { fin = i; break; } }
+    if (ini < 0) return null;
+    if (fin < 0) fin = l.length - 1;
+    return { lectura: l.slice(ini, fin + 1).join('\n'), titulo: l[ini].trim().replace(/^\[|\]$/g, ''), resto: l.slice(0, ini).concat(l.slice(fin + 1)).join('\n').trim() };
+  }
+  function lecturaHtml(lec, pos) {
+    var t = partirFormulas(lec.lectura);
+    if (window.MCPregunta && MCPregunta.armar) return '<div class="lect">' + MCPregunta.armar(t, { lecPos: pos, lecSigue: false }).html + '</div>';
+    return '<div class="lect"><details open><summary>' + esc(lec.titulo.toUpperCase()) + ' · ' + esc(pos) + '</summary><p>' + formatoSimple(t.split('\n').slice(1, -1).join(' ')) + '</p></details></div>';
   }
   function opcionHtml(o) { return formatoSimple(partirFormulas(o && o.text != null ? o.text : o)); }
   function esAbierta(q) { return !!(q && (q.abierta || !Array.isArray(q.options) || !q.options.length)); }
@@ -224,6 +238,7 @@
       '.mcpdf .qt img,.mcpdf .g img{max-width:100%;height:auto;display:block;margin:6px auto}.mcpdf .g{margin:6px 0}.mcpdf .g svg{max-width:100%;height:auto}' +
       '.mcpdf table{border-collapse:collapse;margin:6px auto;font-size:.95em}.mcpdf th,.mcpdf td{border:1px solid #9aa3b5!important;padding:2px 6px!important;background:#fff!important;color:' + t + '!important}' +
       '.mcpdf details{margin:4px 0 8px;border:1px solid #c9cfda;border-radius:6px;padding:6px 9px;background:#fff!important;color:' + t + '!important}.mcpdf summary{font:800 12px Barlow Condensed,Arial;letter-spacing:.08em;list-style:none;color:var(--o)}.mcpdf summary::-webkit-details-marker{display:none}' +
+      '.mcpdf .lect details{margin:0;border:1.4px solid var(--c);border-left-width:5px;border-radius:8px;padding:8px 11px;background:var(--s)!important}.mcpdf .lect summary{font-size:13px;margin-bottom:4px}.mcpdf .lect p{margin:0 0 5px;text-align:justify}.mcpdf .lect .mcq-lec-pos{color:#4a5468;font-weight:700;letter-spacing:.02em;text-transform:none}' +
       '.mcpdf .mcq-etq{position:static;display:inline-block;margin:0 0 4px;background:var(--s)!important;border:1px solid var(--c)!important;color:var(--o)!important;font-size:10.5px;padding:1px 8px;border-radius:99px}.mcpdf .mcq-etq:after{display:none}' +
       '.mcpdf .mcq-par .c,.mcpdf .mcq-par .d,.mcpdf .mcq-an .c{color:var(--o)!important}' +
       '.mcpdf .katex{font-size:1.04em}.mcpdf .ops .katex{font-size:1em}.mcpdf .katex-display{margin:.3em 0!important;overflow:visible!important}' +
@@ -461,14 +476,30 @@
         var prim0 = s.preguntas[0] ? A.medir(preguntaHtml(s.preguntas[0], n + 1), A.colW, pal).h : 0;
         A.ancho('<div class="bandaa"><span>Área de ' + esc((AREAS[s.area] || {}).nom || s.areaNom || 'Preguntas') + '</span></div>', { pal: pal, gap: 12, conSiguiente: Math.min(prim0 + 40, A.Hc * 0.5) });
       }
-      var prim = true;
-      s.preguntas.forEach(function (q) {
+      var prim = true, lecAct = null;
+      s.preguntas.forEach(function (q, k) {
         n++;
+        // ¿Empieza aquí una lectura? Se cuentan las preguntas seguidas que la comparten
+        var lec = separarLectura(q.text), cab = null;
+        if (lec) {
+          q = Object.assign({}, q, { _sinLectura: lec.resto });
+          if (lec.lectura !== lecAct) {
+            lecAct = lec.lectura;
+            var j = k + 1; while (j < s.preguntas.length) { var l2 = separarLectura(s.preguntas[j].text); if (!l2 || l2.lectura !== lecAct) break; j++; }
+            var cuantas = j - k, pos = cuantas > 1 ? 'preguntas ' + n + ' a ' + (n + cuantas - 1) : 'pregunta ' + n;
+            cab = A.medir(lecturaHtml(lec, pos), A.colW, pal);
+          }
+        } else lecAct = null;
         var m = A.medir(preguntaHtml(q, n), A.colW, pal);
         if (prim && s.titulo) {
-          A.columna('<div class="asig"><span>' + esc(s.titulo) + '</span></div>', { pal: pal, gap: 10, conSiguiente: m.h + 10 });
+          A.columna('<div class="asig"><span>' + esc(s.titulo) + '</span></div>', { pal: pal, gap: 10, conSiguiente: (cab ? Math.min(cab.h, A.Hc * 0.5) + 10 : 0) + m.h + 10 });
         }
         prim = false;
+        if (cab) {
+          // La lectura va pegada a su primera pregunta; si es más alta que una columna, a todo el ancho
+          if (cab.h > A.Hc * 0.85) A.ancho(cab.el.innerHTML, { pal: pal, gap: 10 });
+          else A.columna(null, { medido: cab, gap: 10, conSiguiente: m.h + 10 });
+        }
         // Lectura más alta que una columna: va a todo el ancho, con letra normal
         if (m.h > A.Hc * 0.85) A.ancho(preguntaHtml(q, n), { pal: pal });
         else A.columna(null, { medido: m });
