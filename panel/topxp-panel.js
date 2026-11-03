@@ -4,6 +4,7 @@
    Flashcards, Duelos y Simulacro (lunes a domingo).
    Datos: supabase/19-top-xp.sql (ranking_xp_admin).
    «Revisar trampas»: supabase/50-revisar-trampas-xp.sql (xp_revision, xp_ajustar).
+   «Verificar Top 10»: supabase/57-verificar-top10.sql (xp_verificar_top) y «Volver a rango cero».
    ========================================================= */
 const TXP = { dia: null, revisar: false }; // dia: un día de la semana que se ve (null = esta semana)
 
@@ -46,7 +47,23 @@ const TXP = { dia: null, revisar: false }; // dia: un día de la semana que se v
     .txp-rev .txp-hizo, .txp-rev .txp-sen { min-width: 0; }
     .txp-rev .txp-quitar { width: 100%; justify-content: center; }
   }
-  .txp-leyenda { font-size: 12.5px; color: var(--text-dim); line-height: 1.55; margin: 0 0 14px; }`;
+  .txp-leyenda { font-size: 12.5px; color: var(--text-dim); line-height: 1.55; margin: 0 0 14px; }
+  .txp-ver { background: var(--surface); border: 2px solid #2C2549; border-bottom-width: 4px; border-radius: 18px; padding: 16px 18px; margin-bottom: 18px; }
+  .txp-ver-cab { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+  .txp-ver h3 { margin: 0; font: 800 16px 'Sora', sans-serif; }
+  .txp-ver > p { margin: 0 0 12px; font-size: 12.5px; color: var(--text-dim); line-height: 1.5; }
+  .txp-ver-fila { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 6px 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--border); }
+  .txp-ver-fila .pos { font: 900 15px Nunito, sans-serif; color: var(--text-dim); text-align: center; }
+  .txp-ver-fila b { font-size: 14px; } .txp-ver-fila small { display: block; font-size: 12px; color: var(--text-dim); margin-top: 2px; line-height: 1.45; }
+  .txp-ver-fila .why { grid-column: 2 / 4; display: flex; flex-wrap: wrap; gap: 4px; }
+  .txp-ver-fila .why span { background: rgba(224,60,60,.12); color: var(--red); border-radius: 8px; padding: 2px 8px; font-size: 11.5px; font-weight: 800; }
+  .txp-ver-der { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .txp-vd { display: inline-block; font: 900 12px Nunito, sans-serif; padding: 4px 10px; border-radius: 99px; white-space: nowrap; }
+  .txp-vd.trampa { background: rgba(224,60,60,.16); color: var(--red); }
+  .txp-vd.revisar { background: rgba(255,200,0,.14); color: var(--amber); }
+  .txp-vd.limpio { background: rgba(88,204,2,.13); color: var(--green); }
+  .txp-cero { white-space: nowrap; }
+  @media (max-width: 760px) { .txp-ver-fila { grid-template-columns: 28px minmax(0, 1fr); } .txp-ver-der { grid-column: 2; justify-content: flex-start; } .txp-ver-fila .why { grid-column: 2; } }`;
   document.head.appendChild(st);
 })();
 
@@ -129,7 +146,8 @@ async function cargarRevision() {
   if (!L.length) { caja.innerHTML = '<div class="state-msg">Nadie ganó XP esa semana.</div>'; return; }
   const alertas = L.filter(x => (x.senales || []).length).length;
   const dash = '<span style="color:var(--text-faint)">—</span>';
-  caja.innerHTML = `<div class="txp-res">
+  caja.innerHTML = `<div id="txpVer"><div class="txp-ver"><div class="loader">Verificando el Top 10…</div></div></div>
+    <div class="txp-res">
       <div><b style="color:${alertas ? 'var(--red)' : 'var(--green)'}">${alertas}</b>${alertas === 1 ? 'alumno para revisar' : 'alumnos para revisar'}</div>
       <div><b>${txpMil(L.length)}</b>revisados (los 50 primeros)</div>
     </div>
@@ -155,6 +173,71 @@ async function cargarRevision() {
       <td><button type="button" class="btn-ghost txp-quitar" data-i="${i}">Quitar XP</button></td>
     </tr>`; }).join('')}</tbody></table></div>`;
   caja.querySelectorAll('.txp-quitar').forEach(b => b.addEventListener('click', () => txpQuitar(L[+b.dataset.i], lunes)));
+  txpVerificar(cliente, lunes);
+}
+
+/* ---------- Verificar Top 10: lo que dicen que respondieron frente a lo registrado ---------- */
+const TXP_VD = { trampa: 'Trampa probable', revisar: 'Revisar', limpio: 'Limpio', cero: 'En rango cero' };
+async function txpVerificar(cliente, lunes) {
+  const caja = $('txpVer'); if (!caja) return;
+  const r = await cliente.rpc('xp_verificar_top', { p_dia: lunes, p_n: 10 });
+  if (!caja.isConnected) return;
+  if (r.error) {
+    caja.innerHTML = `<div class="txp-ver"><h3>Verificar Top 10</h3><p style="margin:6px 0 0">${/xp_verificar_top/.test(r.error.message || '')
+      ? 'Falta correr el archivo <b>supabase/57-verificar-top10.sql</b> en Supabase.' : esc(r.error.message || 'No se pudo verificar.')}</p></div>`;
+    return;
+  }
+  const V = r.data || [];
+  if (!V.length) { caja.innerHTML = ''; return; }
+  const trampas = V.filter(x => x.veredicto === 'trampa');
+  const nombre = x => x.nombre || x.apodo || x.email || '—';
+  caja.innerHTML = `<div class="txp-ver">
+    <div class="txp-ver-cab"><h3>Verificar Top 10</h3>
+      ${trampas.length ? `<button type="button" class="btn-main txp-cero" id="txpCeroTodos" style="background:var(--red);color:#fff">Volver a rango cero ${trampas.length === 1 ? 'al alumno' : 'a los ' + trampas.length} con trampa probable</button>` : '<span class="txp-vd limpio">Ninguna trampa probable</span>'}</div>
+    <p>Compara las preguntas que la web <b>dice</b> que respondieron en Práctica, Repaso, Fijas, Exámenes y Simulacro con las que <b>de verdad quedaron registradas</b>. «Volver a rango cero» le deja 0 XP esta semana (sin rango) y queda anotado.</p>
+    ${V.map((x, i) => `<div class="txp-ver-fila">
+      <span class="pos">${x.puesto}</span>
+      <div><b>${esc(nombre(x))}</b><small>${txpMil(x.xp)} XP · dice ${txpMil(x.resp_registrables)} respondidas, hay ${txpMil(x.preguntas)} registradas${x.resp_otras ? ' · ' + txpMil(x.resp_otras) + ' en Seminarios, Banqueo, Duelo y Flashcards' : ''}</small></div>
+      <div class="txp-ver-der"><span class="txp-vd ${x.veredicto}">${TXP_VD[x.veredicto] || x.veredicto}</span>
+        ${x.veredicto === 'trampa' || x.veredicto === 'revisar' ? `<button type="button" class="btn-ghost txp-cero" data-v="${i}">Volver a rango cero</button>` : ''}</div>
+      ${(x.senales || []).length ? `<div class="why">${x.senales.map(t => '<span>' + esc(t) + '</span>').join('')}</div>` : ''}
+    </div>`).join('')}
+  </div>`;
+  caja.querySelectorAll('[data-v]').forEach(b => b.addEventListener('click', () => txpRangoCero([V[+b.dataset.v]], lunes)));
+  const todos = $('txpCeroTodos'); if (todos) todos.addEventListener('click', () => txpRangoCero(trampas, lunes));
+}
+
+// Deja en 0 XP la semana de uno o varios alumnos (rango cero), con motivo
+function txpRangoCero(lista, lunes) {
+  const varios = lista.length > 1;
+  const quien = varios ? lista.length + ' alumnos' : (lista[0].nombre || lista[0].apodo || lista[0].email || 'este alumno');
+  const o = document.createElement('div');
+  o.className = 'ov';
+  o.innerHTML = `<div class="mcard" style="max-width:480px;"><button class="mx" type="button" aria-label="Cerrar">✕</button>
+    <div class="eyebrow">Verificar Top 10</div>
+    <h3>Volver a rango cero a ${esc(quien)}</h3>
+    <p class="hint" style="margin:0 0 12px;">${varios ? lista.map(x => '<b>' + esc(x.nombre || x.apodo || x.email) + '</b> (' + txpMil(x.xp) + ' XP)').join(', ') + '.' : 'Tiene <b>' + txpMil(lista[0].xp) + ' XP</b> esta semana.'} Quedará${varios ? 'n' : ''} con 0 XP esta semana, sin rango, y se le${varios ? 's' : ''} baja también el XP para canjear. Queda anotado quién lo hizo y por qué.</p>
+    <label class="fld">Motivo</label>
+    <input class="inp" id="txpCeroMot" maxlength="300" value="Trampa en el Top 10: lo que respondió no cuadra con lo registrado">
+    <div class="err" id="txpCeroErr"></div>
+    <div class="mfoot"><button type="button" class="btn-ghost" data-x>Cancelar</button><button type="button" class="btn-main" id="txpCeroOk" style="background:var(--red);color:#fff">Volver a rango cero</button></div>
+  </div>`;
+  document.body.appendChild(o); document.body.classList.add('modal-open');
+  const cerrar = () => { o.remove(); document.body.classList.remove('modal-open'); };
+  o.querySelector('.mx').addEventListener('click', cerrar); o.querySelector('[data-x]').addEventListener('click', cerrar);
+  o.querySelector('#txpCeroOk').addEventListener('click', async () => {
+    const btn = o.querySelector('#txpCeroOk'), err = o.querySelector('#txpCeroErr');
+    btn.disabled = true; btn.textContent = 'Aplicando…'; err.style.display = 'none';
+    const cliente = await MCAuth.listo, motivo = o.querySelector('#txpCeroMot').value.trim() || null, fallos = [];
+    for (const x of lista) {
+      const r = await cliente.rpc('xp_ajustar', { p_usuario: x.usuario, p_dia: lunes, p_xp: 0, p_motivo: motivo });
+      if (r.error) fallos.push((x.nombre || x.apodo || x.email) + ': ' + (r.error.message || 'no se pudo'));
+    }
+    if (fallos.length) { err.textContent = fallos.join(' · '); err.style.display = 'block'; btn.disabled = false; btn.textContent = 'Volver a rango cero'; return; }
+    cerrar();
+    toast(varios ? lista.length + ' alumnos volvieron a rango cero' : quien + ' volvió a rango cero');
+    cargarRevision();
+  });
 }
 
 // Deja el XP de la semana de un alumno en un valor (0 = todo)
