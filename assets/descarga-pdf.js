@@ -8,7 +8,8 @@
      window.MC_SIM = { nombre, tipo, minutos, preguntas }  + evento 'mc:sim-listo'
      window.MC_TARJETAS = { titulo, sub, cartas }           + evento 'mc:tarjetas-listo'
    El botón solo aparece si el panel tiene las descargas prendidas y ese tipo
-   permitido (ajustes 'descargas', supabase/53-descargas-pdf.sql).
+   permitido (ajustes 'descargas', supabase/53-descargas-pdf.sql). Si el alumno
+   no tiene el paquete descarga-VIP, sale con candado y al tocarlo pide el código.
    Al descargar:
      1) pedir_descarga revisa sesión, código, bloqueo y límite, y da el N.º.
      2) El PDF se arma aquí mismo: cada hoja es una página A4 armada a mano
@@ -818,6 +819,7 @@
     s.textContent =
       '.mcd-btn svg{width:15px;height:15px;vertical-align:-2px;margin-right:4px}' +
       '.mcd-btn[hidden]{display:none!important}' +
+      '.mcd-btn.mcd-cerrado{opacity:.75}' +
       '.mcd-solo{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;border-radius:14px;border:2px solid var(--mcd-ac,#1CB0F6);border-bottom-width:4px;background:transparent;color:var(--mcd-ac,#1CB0F6);font:900 14px Nunito,Inter,sans-serif;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;text-decoration:none}' +
       '.mcd-solo svg{width:17px;height:17px;margin:0}.mcd-fila{display:flex;justify-content:center;margin:4px 0 18px}' +
       '.mcd-ov{position:fixed;inset:0;z-index:300;background:rgba(5,3,14,.72);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity .25s}' +
@@ -909,7 +911,7 @@
       }
       if (e.bloqueado) { caja.innerHTML = cab(doc) + '<div class="mcd-err">Tu cuenta no puede descargar PDF por ahora. Si crees que es un error, escríbele a tu profe.</div>'; return; }
       if (!e.acceso) {
-        caja.innerHTML = '<div class="mcd-lock"><div class="ico">' + IC.lock + '</div><h3>Descarga tus temas en PDF</h3><p>Imprime las preguntas con hoja de respuestas, claves y ficha óptica para OptiCheck. Las descargas son parte del paquete <b style="color:#EEEAF7">Descargas PDF</b>.</p><button class="mcd-go" type="button">' + IC.lock + 'Activar código</button></div>';
+        caja.innerHTML = '<div class="mcd-lock"><div class="ico">' + IC.lock + '</div><h3>Descarga tus temas en PDF</h3><p>Imprime las preguntas con hoja de respuestas, claves y ficha óptica para OptiCheck. Las descargas se activan con su propio código, <b style="color:#EEEAF7">Descargas PDF</b>: no vienen en los packs.</p><button class="mcd-go" type="button">' + IC.lock + 'Activar código</button></div>';
         caja.querySelector('.mcd-go').addEventListener('click', function () { ocupado = false; cerrar(); hojaCodigo(); });
         return;
       }
@@ -958,6 +960,32 @@
     (window.MCAcceso ? Promise.resolve() : cargarJs(RAIZ + 'assets/acceso.js')).then(function () { return cargarJs(RAIZ + 'assets/candado.js'); }).then(abrirHoja, function () {});
   }
 
+  /* ---------- ¿Puede descargar? (para pintar el botón con candado) ----------
+     Sin sesión o sin el paquete descarga-VIP el botón sale con candado y, al tocarlo,
+     pide el código. Se pregunta una vez por página y otra vez si cambia la sesión. */
+  var pedidoAcc = null, botones = [];
+  function accesoDescarga() {
+    if (pedidoAcc) return pedidoAcc;
+    pedidoAcc = !window.MCAuth ? Promise.resolve(false) : MCAuth.listo.then(function () {
+      if (!MCAuth.usuario()) return false;
+      return rpc('descargas_estado').then(function (e) { return !!(e && e.acceso && !e.bloqueado); });
+    }).catch(function () { return null; });
+    return pedidoAcc;
+  }
+  function pintarCandado(a, texto) {
+    accesoDescarga().then(function (ok) {
+      if (ok === null) return;   // sin internet: se decide al tocarlo
+      a.classList.toggle('mcd-cerrado', !ok);
+      a.innerHTML = (ok ? IC.pdf : IC.lock) + texto;
+      a.setAttribute('aria-label', ok ? 'Descargar en PDF' : 'Descargar en PDF (necesitas el código de Descargas PDF)');
+      a.title = ok ? '' : 'Necesitas el código de Descargas PDF';
+    });
+  }
+  if (window.MCAuth && MCAuth.alCambiar) MCAuth.alCambiar(function () {
+    pedidoAcc = null;
+    botones.forEach(function (b) { pintarCandado(b[0], b[1]); });
+  });
+
   /* ---------- Registrar un botón ---------- */
   // reg = { tipo, area, lugar: () => { padre, antes, solo }, datos: () => Promise<doc> }
   function registrar(reg) {
@@ -973,6 +1001,7 @@
       a.innerHTML = IC.pdf + (l.texto || 'PDF');
       a.setAttribute('aria-label', 'Descargar en PDF');
       a.addEventListener('click', function (e) { e.preventDefault(); abrir(reg); });
+      botones.push([a, l.texto || 'PDF']); pintarCandado(a, l.texto || 'PDF');
       if (l.envolver) { var f = document.createElement('div'); f.className = 'mcd-fila'; f.appendChild(a); a = f; }
       l.padre.insertBefore(a, l.antes || null);
     });
