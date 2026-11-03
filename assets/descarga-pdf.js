@@ -459,7 +459,10 @@
       // No entra: se busca el último corte que quepa y se sigue en la otra columna u hoja
       var corte = 0;
       (m.cortes || []).forEach(function (cy) { if (cy > desde + 1 && cy - desde <= libre && m.h - cy >= 48) corte = cy; });
-      if (op.noDividir || !corte || corte - desde < MIN) {
+      // El primer pedazo tiene que ser al menos unas 5 líneas (o un tercio si la pregunta es corta);
+      // si solo entraría el título y una o dos líneas, la pregunta entera pasa a la otra columna u hoja
+      var minimo = primero ? Math.min(160, Math.max(110, m.h * 0.34)) : MIN;
+      if (op.noDividir || !corte || corte - desde < minimo) {
         if (y <= pg.base && libre >= pg.h * 0.9) {
           // Ni en una columna vacía entra hasta el primer corte (imagen enorme): se achica
           var z = Math.max(0.55, libre / resta), e2 = primero ? m.el : m.el.cloneNode(true);
