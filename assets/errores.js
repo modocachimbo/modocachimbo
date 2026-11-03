@@ -72,9 +72,16 @@
     if (n && (leer('mc_err_tip') !== dia() || (antes !== null && n > antes))) { escribir('mc_err_tip', dia()); mostrarTip(4000); }
   }
 
-  function actualizar() {
+  // Menos tráfico: pide solo el número (no la lista) y, al volver a la pestaña o abrir
+  // otra página, no más de una vez cada 3 min. Al terminar una práctica (mc:errores) va al momento.
+  var K_T = 'mc_err_hoy_t';
+  function actualizar(forzar) {
     if (!window.MCProgreso || !MCProgreso.errores) return;
-    MCProgreso.errores().then(function (L) { pintar(L.length); }, function () {});
+    var t = 0; try { t = +sessionStorage.getItem(K_T) || 0; } catch (e) {}
+    if (forzar !== true && n !== null && Date.now() - t < 3 * 60000) return;
+    try { sessionStorage.setItem(K_T, String(Date.now())); } catch (e) {}
+    var pedir = MCProgreso.contarErrores ? MCProgreso.contarErrores() : MCProgreso.errores().then(function (L) { return L.length; });
+    pedir.then(pintar, function () { try { sessionStorage.removeItem(K_T); } catch (e) {} });
   }
 
   // Mientras la consulta llega, el último número conocido de hoy
@@ -90,7 +97,7 @@
     actualizar();
   }
 
-  document.addEventListener('mc:errores', function () { if (btn) actualizar(); });
+  document.addEventListener('mc:errores', function () { if (btn) actualizar(true); });
   // Al volver a la pestaña (o pasada la medianoche) se vuelve a contar
   document.addEventListener('visibilitychange', function () { if (!document.hidden && btn) actualizar(); });
   MCAuth.alCambiar(function (u) { if (!u && btn) { btn.hidden = true; tip.classList.remove('show'); } });

@@ -84,13 +84,16 @@
   // ID, XP total y verificado: se guardan para que la tarjeta salga al toque la próxima vez
   var KJ = 'mc_jugador';
   function avisarJ() { oyentes.forEach(function (f) { try { f(yo); } catch (e) {} }); pintar(); }
+  // Menos tráfico: si lo guardado tiene menos de 10 min, no se vuelve a pedir
   function cargarJugador(u) {
     if (!u || !window.MCAuth) return;
-    if (!yo) { try { var c = JSON.parse(localStorage.getItem(KJ)); if (c && c.u === u.id) { yo = c.d; avisarJ(); } } catch (e) {} }
+    var c = null; try { c = JSON.parse(localStorage.getItem(KJ)); } catch (e) {}
+    if (!yo && c && c.u === u.id) { yo = c.d; avisarJ(); }
+    if (c && c.u === u.id && Date.now() - (+c.t || 0) < 10 * 60000) return;
     MCAuth.listo.then(function (sb) { return sb.rpc('mi_tarjeta'); }).then(function (r) {
       if (!r || r.error || !r.data) return;
       yo = r.data;
-      try { localStorage.setItem(KJ, JSON.stringify({ u: u.id, d: yo })); } catch (e) {}
+      try { localStorage.setItem(KJ, JSON.stringify({ u: u.id, d: yo, t: Date.now() })); } catch (e) {}
       avisarJ();
     }).catch(function () {});
   }

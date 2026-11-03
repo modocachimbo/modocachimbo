@@ -52,13 +52,17 @@
     document.head.appendChild(l);
   }
 
-  var datos = null;
+  // Menos tráfico: las reseñas publicadas se guardan 30 min en el equipo
+  var datos = null, K_RS = 'mc_resenas';
   function traer() {
     if (datos) return datos;
+    try { var g = JSON.parse(localStorage.getItem(K_RS) || 'null'); if (g && Date.now() - g.t < 30 * 60000) return (datos = Promise.resolve(g.d)); } catch (e) {}
     if (!window.MCAuth) return Promise.reject(new Error('sin auth'));
     datos = MCAuth.listo.then(function (c) { return c.rpc('resenas_publicas'); }).then(function (r) {
       if (r.error) throw r.error;
-      return r.data || { lista: [] };
+      var d = r.data || { lista: [] };
+      try { localStorage.setItem(K_RS, JSON.stringify({ t: Date.now(), d: d })); } catch (e) {}
+      return d;
     });
     datos.catch(function () { datos = null; });
     return datos;
@@ -189,6 +193,7 @@
       MCAuth.listo.then(function (c) { return c.rpc('borrar_mi_resena'); }).then(function (r) {
         if (r.error) throw r.error;
         mia = null; est = 0; pintar(); msg('Tu reseña se borró.');
+        try { localStorage.removeItem(K_RS); } catch (e) {}   // que deje de salir en el inicio al momento
       }).catch(function () { btn.disabled = false; msg('No se pudo borrar.', true); });
     }
     MCAuth.listo.then(function (c) { return c.rpc('mi_resena'); }).then(function (r) {

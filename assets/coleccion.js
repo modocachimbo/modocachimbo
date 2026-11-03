@@ -182,14 +182,16 @@
     });
   }
   sumarRecursos(leer(CLAVE_REC));
+  // Menos tráfico: el catálogo de recursos se vuelve a pedir como mucho cada 6 horas
   var pedidoRec = null;
   function cargarRecursos() {
     if (pedidoRec || !window.MCAuth) return pedidoRec;
+    if (leer(CLAVE_REC) && Date.now() - (+leer(CLAVE_REC + '_t') || 0) < 6 * 3600000) return (pedidoRec = Promise.resolve());
     pedidoRec = MCAuth.listo.then(function (c) {
       return c.from('coleccion_item').select('id,espacio,regla,nom,rareza,img,tema,llama,descr').eq('recurso', true).eq('visible', true).order('creado').then(function (r) {
         if (r.error) return; // todavía no se corrió supabase/40-recursos.sql
         var antes = JSON.stringify(leer(CLAVE_REC) || []), ahora = JSON.stringify(r.data || []);
-        guardar(CLAVE_REC, r.data || []);
+        guardar(CLAVE_REC, r.data || []); guardar(CLAVE_REC + '_t', Date.now());
         if (antes !== ahora) { sumarRecursos(r.data); avisar(); }
       });
     }).catch(function () {});
@@ -199,17 +201,17 @@
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function leer(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function guardar(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
-  var CLAVE = 'mc_coleccion';
+  var CLAVE = 'mc_coleccion', CLAVE_T = 'mc_coleccion_t';   // _t: cuándo se pidió cada cosa { u, col, rgo }
 
   // Estado: lo que tienes (mias), lo que llevas (puesto) y los datos para las reglas
   var E = { mias: {}, puesto: copiar(DEFECTO), mejorRacha: 0, maxRango: -1, sql: false, listo: false, rachaOk: false };
   var cache = leer(CLAVE);
-  if (cache) { E.mias = cache.mias || {}; E.puesto = mezclar(cache.puesto); E.mejorRacha = cache.mejorRacha || 0; E.maxRango = cache.maxRango == null ? -1 : cache.maxRango; }
+  if (cache) { E.mias = cache.mias || {}; E.puesto = mezclar(cache.puesto); E.mejorRacha = cache.mejorRacha || 0; E.maxRango = cache.maxRango == null ? -1 : cache.maxRango; E.sql = !!cache.sql; }
   function copiar(o) { return JSON.parse(JSON.stringify(o)); }
   function mezclar(p) { var r = copiar(DEFECTO); Object.keys(p || {}).forEach(function (k) { if (k in r) r[k] = p[k]; }); if (!Array.isArray(r.pines)) r.pines = []; return r; }
   var oyentes = [];
   function avisar() {
-    guardar(CLAVE, { mias: E.mias, puesto: E.puesto, mejorRacha: E.mejorRacha, maxRango: E.maxRango });
+    guardar(CLAVE, { mias: E.mias, puesto: E.puesto, mejorRacha: E.mejorRacha, maxRango: E.maxRango, sql: E.sql });
     oyentes.forEach(function (fn) { try { fn(E); } catch (e) {} });
   }
 
@@ -249,24 +251,33 @@
     cargarRecursos();
     if (pedido) return pedido;
     if (!window.MCAuth) return Promise.resolve(E);
+    // Menos tráfico: lo que tienes y llevas, cada 10 min; el mejor rango (historial de XP), una vez al día.
+    // Lo que te pones lo guarda poner() al momento, así que no hace falta pedirlo de nuevo.
+    var T = leer(CLAVE_T) || {};
     pedido = MCAuth.listo.then(function (c) {
       var u = MCAuth.usuario();
       if (!u) return;
+      var mismo = T.u === u.id, ahora = Date.now();
+      var pedirCol = !(mismo && E.sql && ahora - (+T.col || 0) < 10 * 60000);
+      var pedirRgo = !(mismo && ahora - (+T.rgo || 0) < 24 * 3600000);
+      if (!mismo) T = { u: u.id };
       return Promise.all([
-        c.rpc('mi_coleccion').then(function (r) {
+        !pedirCol ? null : c.rpc('mi_coleccion').then(function (r) {
           if (r.error) throw r.error;
           var d = r.data || {};
           E.sql = true; E.mias = {};
           (d.mias || []).forEach(function (m) { E.mias[m.item] = m.origen || 'regalo'; });
           if (d.puesto) E.puesto = mezclar(d.puesto);
+          T.col = Date.now();
         }).catch(function () { E.sql = false; }),
-        c.from('xp_semana').select('semana,xp').eq('usuario', u.id).limit(200).then(function (r) {
+        !pedirRgo ? null : c.from('xp_semana').select('semana,xp').eq('usuario', u.id).limit(200).then(function (r) {
+          if (r.error) return;
           var max = -1, MIN = RANGO_XP;
-          ((!r.error && r.data) || []).forEach(function (f) { for (var i = MIN.length - 1; i >= 0; i--) if (+f.xp >= MIN[i]) { max = Math.max(max, i); break; } });
-          E.maxRango = max;
+          (r.data || []).forEach(function (f) { for (var i = MIN.length - 1; i >= 0; i--) if (+f.xp >= MIN[i]) { max = Math.max(max, i); break; } });
+          E.maxRango = max; T.rgo = Date.now();
         }).catch(function () {})
       ]);
-    }).then(function () { E.listo = true; avisar(); return E; }, function () { E.listo = true; avisar(); return E; });
+    }).then(function () { guardar(CLAVE_T, T); E.listo = true; avisar(); return E; }, function () { E.listo = true; avisar(); return E; });
     // La mejor racha llega con assets/racha.js
     (function esperar(i) {
       if (window.MCRacha) MCRacha.alCambiar(function (r) {

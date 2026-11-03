@@ -41,19 +41,42 @@
     return rpc('guardar_practica', { p: p }).then(function () { return p; }, function () { return null; });
   }
 
-  // Lo que se ve en "Mi progreso"
+  // Lo que se ve en "Mi progreso". Menos tráfico: se pide una vez y se guarda 3 min en la
+  // pestaña (el inicio lo usaba dos veces: «Seguir con…» y «Tu repaso de hoy»). Al terminar
+  // una práctica se borra, así que lo nuevo se ve al momento.
+  var K_PROG = 'mc_prog_', pedidoProg = null;
+  function olvidar() {
+    pedidoProg = null;
+    try { Object.keys(sessionStorage).forEach(function (k) { if (k.indexOf(K_PROG) === 0) sessionStorage.removeItem(k); }); } catch (e) {}
+  }
   function cargar() {
     var u = MCAuth.usuario();
     if (!u) return Promise.resolve({ practicas: [], falladas: [] });
-    return MCAuth.listo.then(function (c) {
+    var k = K_PROG + u.id;
+    if (pedidoProg && pedidoProg.u === u.id) return pedidoProg.p;
+    try { var g = JSON.parse(sessionStorage.getItem(k) || 'null'); if (g && Date.now() - g.t < 3 * 60000) return Promise.resolve(g.d); } catch (e) {}
+    var p = MCAuth.listo.then(function (c) {
       return Promise.all([
         c.from('progreso').select('clave,tipo,carpeta,anio,tema,titulo,intentos,mejor,ultimo,correctas,total,actualizado').order('actualizado', { ascending: false }),
         c.from('falladas').select('ref,huella,carpeta,titulo,veces,ultima').order('ultima', { ascending: false }).limit(300)
       ]);
     }).then(function (rs) {
       if (rs[0].error) throw rs[0].error;
-      return { practicas: rs[0].data || [], falladas: (rs[1] && rs[1].data) || [] };
+      var d = { practicas: rs[0].data || [], falladas: (rs[1] && rs[1].data) || [] };
+      try { sessionStorage.setItem(k, JSON.stringify({ t: Date.now(), d: d })); } catch (e) {}
+      return d;
     });
+    pedidoProg = { u: u.id, p: p };
+    p.catch(function () { pedidoProg = null; });
+    return p;
+  }
+
+  // Solo cuántos errores lleva hoy (el botón de abajo): no baja la lista, solo el número
+  function contarErrores() {
+    if (!MCAuth.usuario()) return Promise.resolve(0);
+    return MCAuth.listo.then(function (c) {
+      return c.from('falladas').select('ref', { count: 'exact', head: true }).gte('ultima', inicioHoy().toISOString());
+    }).then(function (r) { if (r.error) throw r.error; return r.count || 0; });
   }
 
   // Errores de hoy: las falladas desde las 00:00 de Perú (UTC-5, sin horario de verano)
@@ -111,13 +134,17 @@
   var terminarBase = terminar;
   terminar = function (d) {
     return terminarBase(d).then(function (p) {
+      olvidar();
       try { document.dispatchEvent(new CustomEvent('mc:errores')); } catch (e) {}
       return p;
     });
   };
 
   window.MCProgreso = { terminar: terminar, cargar: cargar, armar: armar, huella: huella,
-                        inicioHoy: inicioHoy, deHoy: deHoy, errores: errores, origen: origen, repasoDia: repasoDia };
+                        inicioHoy: inicioHoy, deHoy: deHoy, errores: errores, contarErrores: contarErrores, origen: origen, repasoDia: repasoDia };
+  // Si cambia la cuenta, lo guardado de la otra no sirve
+  var uidAntes = MCAuth.usuario() && MCAuth.usuario().id;
+  if (MCAuth.alCambiar) MCAuth.alCambiar(function (u) { var id = u && u.id; if (id !== uidAntes) { uidAntes = id; olvidar(); } });
 
   // Prácticas que terminaron antes de que cargara este archivo
   var pend = window.mcProgresoPend || [];

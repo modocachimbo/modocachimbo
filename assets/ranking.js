@@ -46,8 +46,13 @@
     if (!ancla || !document.querySelector('.saludo') || !MCAuth.usuario()) return;
     window.MCRankingInicio = true;
     var BASE = new URL(MCAuth.base || './', location.href).href;
+    // Menos tráfico: el top del simulacro se guarda 10 min en el equipo (por cuenta)
+    var k = 'mc_rk_sim_' + MCAuth.usuario().id, g = null;
+    try { g = JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) {}
+    if (g && Date.now() - g.t < 10 * 60000) { pintar(g.d, BASE, ancla); return; }
     MCAuth.listo.then(function (c) { return c.rpc('ranking_simulacro'); }).then(function (r) {
       if (r.error) return; // aún no existe la tabla del simulacro
+      try { localStorage.setItem(k, JSON.stringify({ t: Date.now(), d: r.data || [] })); } catch (e) {}
       pintar(r.data || [], BASE, ancla);
     }).catch(function () {});
   }
