@@ -151,16 +151,21 @@ async function cargarRevision() {
       <div><b style="color:${alertas ? 'var(--red)' : 'var(--green)'}">${alertas}</b>${alertas === 1 ? 'alumno para revisar' : 'alumnos para revisar'}</div>
       <div><b>${txpMil(L.length)}</b>revisados (los 50 primeros)</div>
     </div>
-    <p class="txp-leyenda"><b>Preguntas</b>: las que quedaron registradas en Práctica, Repaso, Fijas, Exámenes y Simulacro. Seminarios, Banqueo, Duelo, Vocabulario y Tarjetas no se registran ahí, así que el número real es mayor. Un alumno normal saca entre 15 y 40 <b>XP por pregunta</b>; muy por encima, algo no cuadra. Las <b>respuestas, aciertos y horas</b> salen del registro de envíos, que empieza cuando corres el archivo 50. Las alertas son para revisar, no son prueba.</p>
+    <p class="txp-leyenda"><b>Preguntas</b>: las que quedaron registradas en Práctica, Repaso, Fijas, Exámenes y Simulacro. Seminarios, Banqueo, Duelo, Vocabulario y Tarjetas no se registran ahí, así que el número real es mayor. <b>XP por pregunta</b> divide solo el XP ganado en esos mismos modos registrados (lo de Seminarios, Banqueo y demás no cuenta): un alumno normal saca entre 15 y 40; muy por encima, algo no cuadra. Las <b>respuestas, aciertos y horas</b> salen del registro de envíos, que empieza cuando corres el archivo 50. Las alertas son para revisar, no son prueba.</p>
     <div class="al-tabla-wrap"><table class="al-tabla sim-tabla txp-rev">
     <thead><tr><th>#</th><th>Alumno</th><th class="num">XP</th><th>Lo que hizo</th><th>Alertas</th><th></th></tr></thead>
     <tbody>${L.map((x, i) => {
       const sen = x.senales || [];
       const xpp = x.xp_por_pregunta;
       const extra = x.regalado || x.premios ? '<small>' + (x.regalado ? txpMil(x.regalado) + ' regalado' : '') + (x.regalado && x.premios ? ' · ' : '') + (x.premios ? txpMil(x.premios) + ' de duelos' : '') + '</small>' : '';
+      // XP por pregunta: solo el XP de Práctica, Repaso, Fijas, Exámenes y Simulacro (archivo 58).
+      // Sin el archivo 58 no llega xp_registrable y se usa todo el XP, como antes.
+      const xreg = x.xp_registrable != null ? x.xp_registrable : x.xp;
       const preg = xpp == null
-        ? (x.xp > 5000 ? '<span class="txp-num-mal">Ninguna pregunta registrada</span>' : 'Sin preguntas registradas')
+        ? (xreg > 5000 ? '<span class="txp-num-mal">Ninguna pregunta registrada</span>' : 'Sin preguntas registradas')
         : txpMil(x.preguntas) + ' preguntas registradas</span><span class="' + (xpp > 60 ? 'txp-num-mal' : '') + '">' + txpMil(xpp) + ' XP por pregunta';
+      const deOtros = x.xp_registrable != null && x.xp - x.xp_registrable > 0
+        ? '</span><span>' + txpMil(x.xp_registrable) + ' XP en modos registrados · ' + txpMil(x.xp - x.xp_registrable) + ' en otros' : '';
       const env = x.envios
         ? txpMil(x.respuestas) + ' respuestas</span><span>' + x.aciertos + '\u00a0%\u00a0de aciertos</span><span>' + txpMil(x.horas) + (x.horas === 1 ? ' hora' : ' horas') + ' activo</span><span class="' + (x.max_hora > 6000 ? 'txp-num-mal' : '') + '">Máx. ' + txpMil(x.max_hora) + ' XP en 1 hora'
         : 'Sin envíos registrados';
@@ -168,7 +173,7 @@ async function cargarRevision() {
       <td class="pos">${x.puesto}</td>
       <td><div class="al-quien"><div><b>${esc(x.nombre || x.apodo || '—')}${x.apodo && x.nombre ? ' · ' + esc(x.apodo) : ''}</b><small>${esc(x.email || '')}</small>${x.ajustado ? '<span class="txp-aj">XP ajustado esta semana</span>' : ''}</div></div></td>
       <td class="num"><span class="txp-pts">${TXP_GEMA}${txpMil(x.xp)}</span>${extra}</td>
-      <td class="txp-hizo"><span>${preg}</span><span>${env}</span></td>
+      <td class="txp-hizo"><span>${preg}${deOtros}</span><span>${env}</span></td>
       <td>${sen.length ? '<div class="txp-sen">' + sen.map(t => '<span>' + esc(t) + '</span>').join('') + '</div>' : '<span class="txp-ok">Todo normal</span>'}</td>
       <td><button type="button" class="btn-ghost txp-quitar" data-i="${i}">Quitar XP</button></td>
     </tr>`; }).join('')}</tbody></table></div>`;
