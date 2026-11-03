@@ -96,7 +96,7 @@ function pintarDescargas(filas) {
       <div class="dsc-sw" style="display:block"><b>Qué se puede descargar</b><small>Toca para prender o apagar cada sección.</small>
         <div class="dsc-tipos">${DSC_TIPOS.map(([k, n]) => `<button type="button" class="chip ${tipos[k] !== false ? 'on' : ''}" data-t="${k}">${n}${porTipo[k] ? ` <span class="c">${dscMil(porTipo[k])}</span>` : ''}</button>`).join('')}</div>
         <small style="margin-top:6px">El número es cuántas veces se descargó en los últimos 30 días.</small></div>
-      <div class="dsc-sw" style="display:block"><b>Límites por alumno</b><small>0 = sin límite. El equipo no tiene límite.</small>
+      <div class="dsc-sw" style="display:block"><b>Límites por alumno</b><small>0 = sin límite. El equipo no tiene límite. Cada código de descargas puede tener su propio límite por día (Panel → Códigos); este es el de los códigos sin límite propio.</small>
         <div class="dsc-lim"><label>Por día<input class="inp" type="number" min="0" max="500" id="dscDia" value="${Number(c.limite_dia ?? 10)}"></label>
         <label>Por mes<input class="inp" type="number" min="0" max="5000" id="dscMes" value="${Number(c.limite_mes ?? 0)}"></label></div></div>
       <div class="dsc-pie"><button class="btn-main" type="button" id="dscGuardar">Guardar ajustes</button>

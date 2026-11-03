@@ -1,7 +1,7 @@
 /* =========================================================
    Panel · Códigos de acceso
    ========================================================= */
-const CD = { lista: [], config: { abiertos: {}, legacy: true }, hoy: '', filtro: 'Todos' };
+const CD = { lista: [], config: { abiertos: {}, legacy: true }, hoy: '', filtro: 'Todos', limites: {}, limErr: '' };
 // Paquetes. Un código puede abrir varios a la vez: el producto se guarda como "general,vocabulario-VIP"
 // (la misma regla que cubre() de assets/acceso.js y cubre_ del Apps Script v16).
 // descarga-VIP va aparte: ni TODO-VIP lo incluye. Se marca solo (código solo de descargas)
@@ -56,11 +56,33 @@ function revisarLibre() {
   }).catch(() => {});
 }
 
+/* ---------- Límite de descargas por código (supabase/55-limite-por-codigo.sql) ----------
+   { "MC-AAAA-1111": 20 }. Sin fila = el código usa el límite de Panel → Descargas PDF */
+async function cargarLimites() {
+  try {
+    const r = await (await MCAuth.listo).rpc('descarga_limites_lista');
+    if (r.error) throw r.error;
+    CD.limites = r.data || {}; CD.limErr = '';
+  } catch (e) {
+    CD.limErr = /descarga_limites_lista/.test(e.message || '') ? 'Falta correr supabase/55-limite-por-codigo.sql en Supabase.'
+      : 'Para ver y poner límites de descarga, entra al panel con tu cuenta de Google.';
+  }
+}
+// cods: códigos a los que se pone el mismo límite (0 o vacío = límite general)
+async function guardarLimites(cods, limite) {
+  const c = await MCAuth.listo;
+  for (const cod of cods) {
+    const r = await c.rpc('descarga_limite_guardar', { p_codigo: cod, p_limite: limite || 0 });
+    if (r.error) throw new Error(/descarga_limite_guardar/.test(r.error.message) ? 'Falta correr supabase/55-limite-por-codigo.sql en Supabase.' : r.error.message);
+    if (limite > 0) CD.limites[cod] = limite; else delete CD.limites[cod];
+  }
+}
+
 async function cargarCodigos() {
   revisarLibre();
   $('cdList').innerHTML = '<div class="loader">Cargando códigos…</div>';
   try {
-    const r = await api('codigos');
+    const [r] = await Promise.all([api('codigos'), cargarLimites()]);
     CD.lista = r.codigos || []; CD.config = r.config || CD.config; CD.hoy = r.hoy;
     renderConfigAcceso(); renderCodigos();
   } catch (e) { $('cdList').innerHTML = `<div class="state-msg error">${esc(e.message)}</div>`; }
@@ -163,6 +185,7 @@ function renderCodigos() {
         <div class="rmeta">
           <button class="cdcode" type="button" data-copy="${esc(c.codigo)}" title="Copiar código">${esc(c.codigo)} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
           <span class="pill">${esc(etiquetaProd(c.producto))}</span>
+          ${esDescarga(c) ? `<span class="pill gray" title="Descargas PDF por alumno al día">${CD.limites[c.codigo] ? CD.limites[c.codigo] + ' descargas/día' : 'límite general'}</span>` : ''}
           <span class="pill ${c.estado === 'Activo' ? 'Vigente' : c.estado === 'Lleno' ? 'Pendiente' : 'Revertida'}">${esc(c.estado)}</span>
         </div>
         <span class="rdate">${c.vence ? 'vence el ' + esc(c.vence.split('-').reverse().join('/')) : 'sin vencimiento'}</span>
@@ -268,6 +291,11 @@ function editarCodigo(orig) {
     <div class="hint" style="margin:12px 0 6px;">O solo un área (sin Simulacro ni Duelos)</div>${multi('areas', AREAS_COD, st.areas)}
     ${st.antes.length ? `<div class="hint" style="margin:10px 0 0;">Además abre (de antes): <b>${esc(etiquetaProd(st.antes.join(',')))}</b></div>` : ''}
     <div class="hint" id="cdResumen" style="margin-top:10px;"></div>
+    <div id="cdLimBox">
+      <label class="fld">Descargas PDF por día <span class="hint">por alumno · vacío = el límite general de Panel → Descargas PDF</span></label>
+      <input class="inp" id="cdLimDia" type="number" min="1" max="500" placeholder="Ej.: 20" value="${orig && CD.limites[orig.codigo] ? CD.limites[orig.codigo] : ''}">
+      ${CD.limErr ? `<div class="hint" style="color:var(--red);margin-top:6px;">${esc(CD.limErr)}</div>` : ''}
+    </div>
     <div class="cdgrid">
       <label>Dispositivos<input class="inp" id="cdMax" type="number" min="1" max="10000" value="${orig ? (orig.max || 2) : 2}"></label>
       <label class="ck" style="align-self:end;"><input type="checkbox" id="cdSinLim" ${orig && !orig.max ? 'checked' : ''}>Sin límite</label>
@@ -295,6 +323,7 @@ function editarCodigo(orig) {
     o.querySelectorAll('[data-g="areas"] .chip').forEach(x => x.classList.toggle('on', st.areas.includes(x.dataset.v)));
     o.querySelector('#cdAyuda').textContent = st.todos.map(v => PROD_AYUDA[v]).filter(Boolean).join(' · ');
     const p = producto(); o.querySelector('#cdResumen').innerHTML = p ? 'Abrirá: <b style="color:#f5ffcc">' + esc(etiquetaProd(p)) + '</b>' : '';
+    o.querySelector('#cdLimBox').hidden = !esDescarga({ producto: p });
   };
   o.querySelector('[data-g="todos"]').addEventListener('click', e => {
     const b = e.target.closest('.chip'); if (!b) return;
@@ -326,22 +355,32 @@ function editarCodigo(orig) {
     };
     if (orig) { datos.editar = orig.codigo; datos.activo = o.querySelector('#cdAct').checked; }
     else { datos.cantidad = parseInt(o.querySelector('#cdCant').value, 10) || 1; datos.propio = o.querySelector('#cdPropio').value.trim(); }
+    // Límite de descargas al día: solo cuenta si el código lleva Descargas PDF
+    const conDescarga = esDescarga(datos), limite = conDescarga ? Math.min(500, Math.max(0, parseInt(o.querySelector('#cdLimDia').value, 10) || 0)) : 0;
     const btn = o.querySelector('#cdSave'); btn.disabled = true; btn.innerHTML = '<span class="spin-s"></span> Guardando…';
     try {
       const r = await api('guardarCodigo', { datos: JSON.stringify(datos) });
+      // El código ya quedó guardado; si el límite falla se avisa sin perder el código
+      let avisoLim = '';
+      const cods = orig ? [orig.codigo] : r.creados;
+      if (limite > 0 || (orig && CD.limites[orig.codigo])) {
+        try { await guardarLimites(cods, limite); } catch (e) { avisoLim = e.message; }
+      }
       // Sin volver a pedir toda la lista: se actualiza aquí y se refresca de fondo
       if (orig) {
         Object.assign(orig, { producto: datos.producto, max: datos.max, vence: datos.vence, nota: datos.nota, activo: datos.activo, etiqueta: etiquetaProd(datos.producto) });
         orig.estado = !orig.activo ? 'Desactivado' : (orig.vence && CD.hoy && CD.hoy > orig.vence) ? 'Vencido' : (orig.max > 0 && orig.usosAnt + orig.dispositivos.length >= orig.max) ? 'Lleno' : 'Activo';
-        renderCodigos(); cerrar(); toast('Código actualizado'); return;
+        renderCodigos(); cerrar();
+        toast(avisoLim ? 'Código guardado, pero no el límite de descargas: ' + avisoLim : 'Código actualizado', !!avisoLim); return;
       }
       const nuevos = r.creados.map(cod => ({ codigo: cod, producto: datos.producto, etiqueta: r.etiqueta || etiquetaProd(datos.producto), max: datos.max, usosAnt: 0,
         nota: datos.nota, vence: datos.vence, activo: true, dispositivos: [], estado: 'Activo', creado: new Date().toISOString() }));
       CD.lista = nuevos.concat(CD.lista); renderCodigos();
+      if (avisoLim) toast('Códigos creados, pero no el límite de descargas: ' + avisoLim, true);
       o.querySelector('.mcard').innerHTML = `<button class="mx" type="button">✕</button>
         <div class="done" style="text-align:left;padding-top:0;">
           <div class="eyebrow">Listo</div><h3>${nuevos.length} código${nuevos.length > 1 ? 's creados' : ' creado'}</h3>
-          <p style="margin:6px 0 14px;max-width:none;">Para: <b style="color:#f5ffcc">${esc(etiquetaProd(datos.producto))}</b> · ${datos.max ? datos.max + ' dispositivo' + (datos.max > 1 ? 's' : '') : 'sin límite'}${datos.vence ? ' · vence el ' + esc(datos.vence.split('-').reverse().join('/')) : ''}</p>
+          <p style="margin:6px 0 14px;max-width:none;">Para: <b style="color:#f5ffcc">${esc(etiquetaProd(datos.producto))}</b> · ${datos.max ? datos.max + ' dispositivo' + (datos.max > 1 ? 's' : '') : 'sin límite'}${datos.vence ? ' · vence el ' + esc(datos.vence.split('-').reverse().join('/')) : ''}${conDescarga ? ' · ' + (limite && !avisoLim ? limite + ' descargas al día' : 'límite general de descargas') : ''}</p>
           <div class="cdnuevos">${nuevos.map(c => `<div><code>${esc(c.codigo)}</code><button class="rbtn" type="button" data-c="${esc(c.codigo)}">Copiar</button><button class="rbtn link" type="button" data-m="${esc(c.codigo)}">Mensaje</button></div>`).join('')}</div>
           <div class="mfoot"><button type="button" class="btn-ghost" id="cdCopTodos">Copiar todos</button><button type="button" class="btn-main" id="cdOk">Listo</button></div>
         </div>`;
