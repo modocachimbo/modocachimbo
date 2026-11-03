@@ -5,7 +5,7 @@
    - Qué se puede descargar, ficha óptica y límites por día y por mes
    - Historial con buscador por N.º, correo, apodo o título
    - Bloquear o desbloquear a un alumno
-   Los códigos de descarga se crean en Panel → Códigos (botón «Código Descargas PDF»).
+   Los códigos de descarga se crean en Panel → Códigos (paquete «Descargas PDF»).
    Datos: supabase/53-descargas-pdf.sql y 54-descarga-aparte.sql
    ========================================================= */
 const DSC = { datos: null, q: '' };

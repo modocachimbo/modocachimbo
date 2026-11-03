@@ -4,10 +4,10 @@
 const CD = { lista: [], config: { abiertos: {}, legacy: true }, hoy: '', filtro: 'Todos' };
 // Paquetes. Un código puede abrir varios a la vez: el producto se guarda como "general,vocabulario-VIP"
 // (la misma regla que cubre() de assets/acceso.js y cubre_ del Apps Script v16).
-// descarga-VIP no es un pack: es un código aparte, solo para descargar (ni TODO-VIP lo incluye).
-// Se crea con el botón «Código Descargas PDF» de esta pestaña (o el tipo «Descargas PDF» de la ventana).
+// descarga-VIP va aparte: ni TODO-VIP lo incluye. Se marca solo (código solo de descargas)
+// o junto a otros paquetes, incluso junto al Acceso total ("TODO-VIP,descarga-VIP").
 const PROD_TODOS = [
-  ['TODO-VIP', 'Acceso total'], ['general', 'Acceso general'], ['seminario-VIP', 'Seminarios + Banqueo'], ['vocabulario-VIP', 'Vocabulario'], ['biblioteca-VIP', 'Biblioteca']
+  ['TODO-VIP', 'Acceso total'], ['general', 'Acceso general'], ['seminario-VIP', 'Seminarios + Banqueo'], ['vocabulario-VIP', 'Vocabulario'], ['biblioteca-VIP', 'Biblioteca'], ['descarga-VIP', 'Descargas PDF']
 ];
 const PROD_DESCARGA = 'descarga-VIP';
 const esDescarga = c => String(c && c.producto || '').split(',').includes(PROD_DESCARGA);
@@ -16,7 +16,8 @@ const PROD_AYUDA = {
   general: 'Las 4 áreas con todo lo de adentro (práctica, Repaso, Fijas, Libros, Flashcards), Simulacro, Duelos y Exámenes',
   'seminario-VIP': 'Seminarios y Banqueo de todos los cursos',
   'vocabulario-VIP': 'Vocabulario de todos los cursos',
-  'biblioteca-VIP': 'Solo la Biblioteca: entrar y leer todos sus libros'
+  'biblioteca-VIP': 'Solo la Biblioteca: entrar y leer todos sus libros',
+  'descarga-VIP': 'Descargar en PDF (con marca de agua y N.º único) lo que permitas en Panel → Descargas PDF. Va aparte: no viene en el Acceso total ni abre los temas'
 };
 const AREAS_COD = [['matematica', 'Matemática'], ['ciencia-tecnologia', 'Ciencia y Tecnología'], ['comunicacion', 'Comunicación'], ['ciencias-sociales', 'Ciencias Sociales']];
 // Link oficial fijo: así el mensaje no muestra el link de una vista previa.
@@ -246,17 +247,14 @@ async function limpiarCuentas() {
 }
 
 /* ---------- Crear / editar ---------- */
-// op.descarga: abre la ventana ya en el tipo «Descargas PDF» (desde Panel → Descargas PDF)
-function editarCodigo(orig, op = {}) {
-  // st.modo: 'pack' o 'descarga' · st.todos: paquetes · st.areas: áreas sueltas
-  // st.antes: productos de antes (curso-x, repaso-VIP… o un descarga-VIP junto a un pack), se conservan
-  const st = { modo: (orig ? orig.producto === PROD_DESCARGA : op.descarga) ? 'descarga' : 'pack', todos: [], areas: [], antes: [] };
+function editarCodigo(orig) {
+  // st.todos: paquetes · st.areas: áreas sueltas · st.antes: productos de antes (curso-x, repaso-VIP…), se conservan
+  const st = { todos: [], areas: [], antes: [] };
   String(orig ? orig.producto : 'general').split(',').filter(Boolean).forEach(p => {
     if (PROD_TODOS.some(([v]) => v === p)) st.todos.push(p);
     else if (/^area-/.test(p)) st.areas.push(p.slice(5));
-    else if (p !== PROD_DESCARGA || st.modo === 'pack') st.antes.push(p);
+    else st.antes.push(p);
   });
-  if (st.modo === 'descarga' && !orig) st.todos = [];
   const multi = (g, ops, sel) => `<div class="chips" data-g="${g}">` + ops.map(([v, l]) =>
     `<button type="button" class="chip ${sel.includes(v) ? 'on' : ''}" data-v="${esc(v)}">${l}</button>`).join('') + '</div>';
   const o = document.createElement('div');
@@ -264,19 +262,11 @@ function editarCodigo(orig, op = {}) {
   o.innerHTML = `<div class="mcard" style="max-width:620px;"><button class="mx" type="button" aria-label="Cerrar">✕</button>
     <div class="eyebrow">${orig ? 'Editar código' : 'Nuevos códigos'}</div>
     <h3>${orig ? esc(orig.codigo) : 'Crear códigos'}</h3>
-    <label class="fld">Tipo de código</label>
-    <div class="chips" data-g="modo">
-      <button type="button" class="chip" data-v="pack">Packs (áreas, seminarios…)</button>
-      <button type="button" class="chip" data-v="descarga">Descargas PDF · aparte</button>
-    </div>
-    <div data-modo="pack">
-      <label class="fld">¿Qué abre? <span class="hint">Puedes marcar varios paquetes</span></label>
-      ${multi('todos', PROD_TODOS, st.todos)}
-      <div class="hint" id="cdAyuda" style="margin:6px 0 0;"></div>
-      <div class="hint" style="margin:12px 0 6px;">O solo un área (sin Simulacro ni Duelos)</div>${multi('areas', AREAS_COD, st.areas)}
-      ${st.antes.length ? `<div class="hint" style="margin:10px 0 0;">Además abre (de antes): <b>${esc(etiquetaProd(st.antes.join(',')))}</b></div>` : ''}
-    </div>
-    <div data-modo="descarga" class="hint" style="margin:8px 0 0;line-height:1.55;">Solo sirve para <b>descargar en PDF</b> (con marca de agua y N.º único) lo que permitas en Panel → Descargas PDF. Es un código independiente: no viene en ningún pack, ni en el Acceso total, y no abre los temas.</div>
+    <label class="fld">¿Qué abre? <span class="hint">Puedes marcar varios paquetes</span></label>
+    ${multi('todos', PROD_TODOS, st.todos)}
+    <div class="hint" id="cdAyuda" style="margin:6px 0 0;"></div>
+    <div class="hint" style="margin:12px 0 6px;">O solo un área (sin Simulacro ni Duelos)</div>${multi('areas', AREAS_COD, st.areas)}
+    ${st.antes.length ? `<div class="hint" style="margin:10px 0 0;">Además abre (de antes): <b>${esc(etiquetaProd(st.antes.join(',')))}</b></div>` : ''}
     <div class="hint" id="cdResumen" style="margin-top:10px;"></div>
     <div class="cdgrid">
       <label>Dispositivos<input class="inp" id="cdMax" type="number" min="1" max="10000" value="${orig ? (orig.max || 2) : 2}"></label>
@@ -296,14 +286,11 @@ function editarCodigo(orig, op = {}) {
   const cerrar = () => { o.remove(); document.body.classList.remove('modal-open'); };
   o.querySelector('.mx').addEventListener('click', cerrar); o.querySelector('[data-x]').addEventListener('click', cerrar);
   const producto = () => {
-    if (st.modo === 'descarga') return PROD_DESCARGA;
-    if (st.todos.includes('TODO-VIP')) return ['TODO-VIP'].concat(st.antes.filter(p => p === PROD_DESCARGA)).join(',');
+    if (st.todos.includes('TODO-VIP')) return st.todos.includes(PROD_DESCARGA) ? 'TODO-VIP,' + PROD_DESCARGA : 'TODO-VIP';
     const areas = st.todos.includes('general') ? [] : st.areas.map(a => 'area-' + a);
     return st.todos.concat(areas, st.antes).join(',');
   };
   const pintar = () => {
-    o.querySelectorAll('[data-g="modo"] .chip').forEach(x => x.classList.toggle('on', x.dataset.v === st.modo));
-    o.querySelectorAll('[data-modo]').forEach(x => { x.hidden = x.dataset.modo !== st.modo; });
     o.querySelectorAll('[data-g="todos"] .chip').forEach(x => x.classList.toggle('on', st.todos.includes(x.dataset.v)));
     o.querySelectorAll('[data-g="areas"] .chip').forEach(x => x.classList.toggle('on', st.areas.includes(x.dataset.v)));
     o.querySelector('#cdAyuda').textContent = st.todos.map(v => PROD_AYUDA[v]).filter(Boolean).join(' · ');
@@ -313,15 +300,10 @@ function editarCodigo(orig, op = {}) {
     const b = e.target.closest('.chip'); if (!b) return;
     const v = b.dataset.v, i = st.todos.indexOf(v);
     if (i >= 0) st.todos.splice(i, 1); else st.todos.push(v);
-    if (v === 'TODO-VIP' && i < 0) { st.todos = ['TODO-VIP']; st.areas = []; }
-    else if (v !== 'TODO-VIP') st.todos = st.todos.filter(x => x !== 'TODO-VIP');
+    // El Acceso total ya trae todos los paquetes menos Descargas PDF: solo se le puede sumar esa
+    if (v === 'TODO-VIP' && i < 0) { st.todos = st.todos.filter(x => x === 'TODO-VIP' || x === PROD_DESCARGA); st.areas = []; }
+    else if (v !== 'TODO-VIP' && v !== PROD_DESCARGA) st.todos = st.todos.filter(x => x !== 'TODO-VIP');
     if (v === 'general' && i < 0) st.areas = [];
-    pintar();
-  });
-  o.querySelector('[data-g="modo"]').addEventListener('click', e => {
-    const b = e.target.closest('.chip'); if (!b) return;
-    st.modo = b.dataset.v;
-    if (st.modo === 'pack' && !st.todos.length && !st.areas.length && !st.antes.length) st.todos = ['general'];
     pintar();
   });
   o.querySelector('[data-g="areas"]').addEventListener('click', e => {

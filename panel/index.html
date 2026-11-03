@@ -1024,7 +1024,6 @@ E) Alternativa"></textarea>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <button class="btn-ghost" id="btnLimpiarCuentas" type="button" title="Quita de Perfil · Mis accesos de los alumnos los códigos que ya no sirven">Limpiar cuentas</button>
             <button class="btn-ghost" id="btnImportar" type="button">Importar</button>
-            <button class="btn-main" id="btnCodDescarga" type="button" title="Código aparte, solo para descargar en PDF: no viene en ningún pack">＋ Código Descargas PDF</button>
             <button class="btn-main" id="btnCrearCod" type="button">＋ Crear códigos</button>
           </div>
         </div>
@@ -2301,7 +2300,7 @@ E) Alternativa"></textarea>
 <script src="examen-panel.js"></script>
 <script src="../assets/alertas.js" data-solo-previa></script>
 <script src="alertas-panel.js"></script>
-<script src="codigos-panel.js?v=165"></script>
+<script src="codigos-panel.js?v=166"></script>
 <script src="../assets/auth.js"></script>
 <script src="alumnos-panel.js?v=3"></script>
 <script src="../assets/ranking.js"></script>
@@ -2315,7 +2314,7 @@ E) Alternativa"></textarea>
 <script src="regalos-panel.js"></script>
 <script src="../assets/resenas.js?v=3"></script>
 <script src="resenas-panel.js"></script>
-<script src="descargas-panel.js?v=165"></script>
+<script src="descargas-panel.js?v=166"></script>
 <script src="reportes-alumno.js"></script>
 <script src="../assets/carreras.js"></script>
 <script src="perfil-panel.js"></script>
@@ -2336,9 +2335,7 @@ E) Alternativa"></textarea>
 <script src="tutorial-panel.js"></script>
 <script>
   $('btnNuevaAlerta').addEventListener('click', () => editarAlerta(null));
-  $('btnCrearCod').addEventListener('click', () => editarCodigo(null));
-  $('btnCodDescarga').addEventListener('click', () => editarCodigo(null, { descarga: true }));
-  $('btnImportar').addEventListener('click', importarCodigos);
+  $('btnCrearCod').addEventListener('click', () => editarCodigo(null));  $('btnImportar').addEventListener('click', importarCodigos);
   $('btnLimpiarCuentas').addEventListener('click', limpiarCuentas);
   $('cdBuscar').addEventListener('input', renderCodigos);
   $('btnRevArch').addEventListener('click', revisarArchivos);
