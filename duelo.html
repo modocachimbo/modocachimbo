@@ -1541,7 +1541,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       ['var(--morado)', IC.reloj, tiempoTxt(s), 'por pregunta', 'Si se acaba el tiempo, cuenta como no respondida.'],
       ['var(--oro)', IC.final, 'Final x3', 'todo o nada', 'La última pregunta vale 3 puntos si aciertas.'],
       ['var(--azul)', IC.copa, 'Más puntos', 'gana el duelo', 'Si empatan, gana el más rápido. Todos empiezan a la vez.'],
-      ['var(--lima)', IC.gema, '+40 XP', 'al 1.º lugar', '+40 XP el 1.º, +20 el 2.º y +10 el 3.º. Solo el 1.º suma al top de la semana.']
+      ['var(--lima)', IC.gema, '+80 XP', 'al 1.º lugar', '+80 XP el 1.º, +40 el 2.º y +20 el 3.º. Solo el 1.º suma al top de la semana.']
     ].map(x => '<li style="--c:' + x[0] + '" title="' + x[4] + '"><span class="ri">' + x[1] + '</span><b>' + x[2] + '</b><small>' + x[3] + '</small></li>').join('');
   }
   function errorCrear(t) { $('crearError').textContent = t || ''; $('crearError').hidden = !t; }

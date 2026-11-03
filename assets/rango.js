@@ -17,25 +17,27 @@
 (function () {
   if (window.MCRango) return;
   // c: texto · t: fondo · b: borde · o: barra; min: XP de la semana para cada nivel
+  // mu: cuánto vale la respuesta correcta en ese rango, en % (estilo Free Fire: más arriba,
+  //     menos XP). Debe coincidir con public.xp_mult de supabase/49-xp-por-modo-y-rango.sql.
   // antes: la tabla que regía hasta la semana del 26 oct 2026 (esas semanas se siguen viendo con ella)
   var DESDE = '2026-11-02';  // primer lunes con la tabla min y los nombres nuevos
   var NUEVO = clave() >= DESDE;
   var RANGOS = [
-    { id: 'bronce', nom: 'Bronce', c: '#E8A878', t: '#3a1e0e', b: '#9A5A30', o: '#7A3A1C', min: [20, 250, 500], antes: [20, 150, 300] },
-    { id: 'plata', nom: 'Plata', c: '#D6DEEA', t: '#262c3a', b: '#8A96AA', o: '#5A6478', min: [900, 1350, 1800], antes: [500, 750, 1000] },
-    { id: 'esmeralda', nom: 'Esmeralda', c: '#5FF59A', t: '#06361a', b: '#0FA845', o: '#0FA845', min: [2300, 2900, 3400, 4000], antes: [1300, 1600, 1900, 2200] },
-    { id: 'zafiro', nom: 'Zafiro', c: '#5FDAFF', t: '#06304a', b: '#1A6CC0', o: '#123FC0', min: [4700, 5400, 6300, 7200, 8100], antes: [2600, 3000, 3500, 4000, 4500] },
-    { id: 'amatista', nom: 'Amatista', c: '#D79BFF', t: '#2a1050', b: '#8A36E0', o: '#8A36E0', min: [9000, 10000, 11200, 12400, 13700], antes: [5000, 5600, 6200, 6900, 7600] },
-    { id: 'leyenda', nom: NUEVO ? 'Mítico' : 'Leyenda', c: '#FF7AD9', t: '#3e0a34', b: '#C0399E', o: '#E3263F', min: [16000, 20000, 24000, 30000, 36000], antes: [9000, 11000, 13500, 16500, 20000] },
-    { id: 'mitico', nom: NUEVO ? 'Leyenda' : 'Mítico', c: '#FFC800', t: '#3e2400', b: '#D08A00', o: '#E3263F', min: [50000, 62000, 75000], antes: [25000, 32000, 40000] }
+    { id: 'bronce', nom: 'Bronce', c: '#E8A878', t: '#3a1e0e', b: '#9A5A30', o: '#7A3A1C', mu: 100, min: [20, 250, 500], antes: [20, 150, 300] },
+    { id: 'plata', nom: 'Plata', c: '#D6DEEA', t: '#262c3a', b: '#8A96AA', o: '#5A6478', mu: 100, min: [900, 1350, 1800], antes: [500, 750, 1000] },
+    { id: 'esmeralda', nom: 'Esmeralda', c: '#5FF59A', t: '#06361a', b: '#0FA845', o: '#0FA845', mu: 90, min: [2300, 2900, 3400, 4000], antes: [1300, 1600, 1900, 2200] },
+    { id: 'zafiro', nom: 'Zafiro', c: '#5FDAFF', t: '#06304a', b: '#1A6CC0', o: '#123FC0', mu: 85, min: [4700, 5400, 6300, 7200, 8100], antes: [2600, 3000, 3500, 4000, 4500] },
+    { id: 'amatista', nom: 'Amatista', c: '#D79BFF', t: '#2a1050', b: '#8A36E0', o: '#8A36E0', mu: 80, min: [9000, 10000, 11200, 12400, 13700], antes: [5000, 5600, 6200, 6900, 7600] },
+    { id: 'leyenda', nom: NUEVO ? 'Mítico' : 'Leyenda', c: '#FF7AD9', t: '#3e0a34', b: '#C0399E', o: '#E3263F', mu: 70, min: [16000, 20000, 24000, 30000, 36000], antes: [9000, 11000, 13500, 16500, 20000] },
+    { id: 'mitico', nom: NUEVO ? 'Leyenda' : 'Mítico', c: '#FFC800', t: '#3e2400', b: '#D08A00', o: '#E3263F', mu: 60, min: [50000, 62000, 75000], antes: [25000, 32000, 40000] }
   ];
   var ROM = ['I', 'II', 'III', 'IV', 'V', 'VI'];
   // Todo en una lista de niveles: n = 0 es Bronce I, el último es el rango máximo III
-  var MIN = [], ANTES = [], NOM = [], TXT = [], TINTE = [], BORDE = [], OSC = [], IMG = [], GRUPOS = [];
+  var MIN = [], ANTES = [], MU = [], NOM = [], TXT = [], TINTE = [], BORDE = [], OSC = [], IMG = [], GRUPOS = [];
   RANGOS.forEach(function (r) {
     GRUPOS.push({ nom: r.nom, desde: MIN.length, hasta: MIN.length + r.min.length - 1, c: r.c, t: r.t, b: r.b });
     r.min.forEach(function (m, k) {
-      MIN.push(m); ANTES.push(r.antes[k]); NOM.push(r.nom + ' ' + ROM[k]); IMG.push(r.id + '-' + (k + 1) + '.webp');
+      MIN.push(m); ANTES.push(r.antes[k]); MU.push(r.mu); NOM.push(r.nom + ' ' + ROM[k]); IMG.push(r.id + '-' + (k + 1) + '.webp');
       TXT.push(r.c); TINTE.push(r.t); BORDE.push(r.b); OSC.push(r.o);
     });
   });
@@ -47,6 +49,9 @@
   function tabla(semana) { return (semana || clave()) < DESDE ? ANTES : MIN; }
   // -1 = todavía sin rango (menos de 20 XP en la semana)
   function nivel(xp, semana) { var t = tabla(semana), n = -1; for (var i = 0; i < t.length; i++) if ((+xp || 0) >= t[i]) n = i; return n; }
+  // Multiplicador de la correcta con ese XP de la semana (en %; sin rango = 100)
+  function mult(xp) { var n = nivel(xp); return n < 0 ? 100 : MU[n]; }
+  function xMult(mu) { return '×' + String(mu / 100).replace('.', ','); }
   function miles(n) { return String(Math.round(+n || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 
@@ -132,6 +137,7 @@
     var linea = sig ? 'Te faltan <em>' + miles(sig - xp) + ' XP</em> para ' + NOM[n + 1] + ' · ' + (d === 1 ? 'queda 1 día' : 'quedan ' + d + ' días')
       : '<em>' + miles(xp) + ' XP</em> · ¡Rango máximo de la semana!';
     if (n < 0) linea = 'Gana <em>' + miles(sig - xp) + ' XP</em> para llegar a ' + NOM[0] + ' · ' + (d === 1 ? 'queda 1 día' : 'quedan ' + d + ' días');
+    if (n >= 0 && MU[n] < 100) linea += ' · tus correctas valen <em>' + xMult(MU[n]) + '</em>';
     return '<span class="mc-rgo-ic' + (n < 0 ? ' bloq' : '') + '">' + svg(Math.max(0, n), { quieto: n < 0 }) + '</span><span class="mc-rgo-tx"><small>Tu rango esta semana</small><b>' + (n < 0 ? 'Aún sin rango' : NOM[n]) + '</b>' +
       '<span class="mc-rgo-bar"><i style="width:' + pct + '%"></i></span><span>' + linea + '</span></span>';
   }
@@ -143,7 +149,8 @@
     d.className = 'mc-rgo-up'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true'); d.setAttribute('aria-label', 'Subiste a ' + NOM[n]);
     d.innerHTML = '<div class="mc-rgo-up-c" style="' + vars(n) + '"><div class="mc-rgo-cf">' + cf + '</div><small>Nuevo rango</small>' +
       '<div class="mc-rgo-up-em">' + svg(n) + '</div><h2>¡Llegaste a ' + NOM[n] + '!</h2>' +
-      '<p>Llevas ' + miles(xp) + ' XP esta semana.' + (n < TOP ? ' Siguiente: ' + NOM[n + 1] + ' con ' + miles(tabla()[n + 1]) + ' XP.' : ' Es el rango más alto.') + '</p>' +
+      '<p>Llevas ' + miles(xp) + ' XP esta semana.' + (n < TOP ? ' Siguiente: ' + NOM[n + 1] + ' con ' + miles(tabla()[n + 1]) + ' XP.' : ' Es el rango más alto.') +
+      (MU[n] < 100 && (n === 0 || MU[n - 1] !== MU[n]) ? ' Desde ahora tus correctas valen ' + xMult(MU[n]) + ' XP: en los rangos altos cuesta más subir.' : '') + '</p>' +
       '<button type="button">Seguir</button></div>';
     function cerrar() { d.classList.remove('ver'); setTimeout(function () { d.remove(); }, 350); }
     d.querySelector('button').addEventListener('click', cerrar);
@@ -233,7 +240,7 @@
     // La vitrina de semanas pasadas vive en Mi colección (coleccion.html#rangos)
   }
 
-  window.MCRango = { svg: svg, nivel: nivel, nombre: function (n) { return NOM[n]; }, minimo: tabla(), css: css, subida: subida, vitrina: vitrina, semanas: semanas, color: function (n) { return { c: TXT[n], t: TINTE[n], b: BORDE[n] }; }, grupos: function () { return GRUPOS; }, clave: clave, fechas: rangoSemana, diasQuedan: diasQuedan, mini: function (xp) { return nivel(xp) < 0 ? '' : '<span class="mc-rgo-mini" title="' + NOM[nivel(xp)] + '">' + svg(nivel(xp), { mini: true }) + '</span>'; } };
+  window.MCRango = { svg: svg, nivel: nivel, mult: mult, nombre: function (n) { return NOM[n]; }, minimo: tabla(), css: css, subida: subida, vitrina: vitrina, semanas: semanas, color: function (n) { return { c: TXT[n], t: TINTE[n], b: BORDE[n] }; }, grupos: function () { return GRUPOS; }, clave: clave, fechas: rangoSemana, diasQuedan: diasQuedan, mini: function (xp) { return nivel(xp) < 0 ? '' : '<span class="mc-rgo-mini" title="' + NOM[nivel(xp)] + '">' + svg(nivel(xp), { mini: true }) + '</span>'; } };
 
   // corazones.js trae el XP de la semana; se espera a que cargue
   function iniciar(intento) {

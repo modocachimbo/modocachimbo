@@ -25,6 +25,7 @@
     if ((m = /^([a-z0-9-]+)\/libros\/quiz\.html$/.exec(rel))) return { fuente: 'libro', curso: m[1] };
     if ((m = /^([a-z0-9-]+)\/(seminarios|banqueo)\/quiz\.html$/.exec(rel))) return { fuente: m[2], curso: m[1], gasta: true };
     if ((m = /^([a-z0-9-]+)\/(repaso|fijas)\.html$/.exec(rel)) && m[1] !== 'examenes') return { fuente: m[2], curso: m[1], gasta: true };
+    if (rel === 'repaso-mixto.html') return { fuente: 'repaso', curso: '', gasta: true };
     if (/^examenes\/[^/]+\/quiz\.html$/.test(rel)) return { fuente: 'examen', curso: '' };
     if (rel === 'falladas.html') return { fuente: 'falladas', curso: '' };
     if (rel === 'vocabulario.html') return { fuente: 'vocabulario', curso: '' };
@@ -199,21 +200,35 @@
 
   /* ---------- Respuestas: XP y corazones ---------- */
   var buf = { ok: 0, mal: 0, seguidas: 0 }, racha = 0, tEnvio = null, enviando = false, vuelo = 0;
+  // XP por respuesta: el mismo cálculo que sumar_xp en supabase/49-xp-por-modo-y-rango.sql.
+  // [correcta, incorrecta] según el modo; la correcta se multiplica por el
+  // rango de la semana (xp_mult, en %, lo manda el servidor).
+  var XP_MODO = { repaso: [30, 2], fijas: [30, 2], seminarios: [30, 2], banqueo: [30, 2], simulacro: [30, 2],
+    duelo: [16, 1], libro: [14, 1], examen: [14, 1], falladas: [14, 1], tarjetas: [8, 1], vocabulario: [8, 1] };
+  function multXp(xp) {  // respaldo si el servidor aún no manda xp_mult (mismos cortes que rango.js)
+    return xp >= 50000 ? 60 : xp >= 16000 ? 70 : xp >= 9000 ? 80 : xp >= 4700 ? 85 : xp >= 2300 ? 90 : 100;
+  }
+  function valor(ok, mal) {
+    var b = (PAG && XP_MODO[PAG.fuente]) || [14, 1];
+    var mu = estado && estado.xp_mult != null ? +estado.xp_mult : multXp((estado && estado.xp_semana) || 0);
+    return ok * Math.round(b[0] * mu / 100) + mal * b[1];
+  }
   // XP que ya ganó pero el servidor todavía no anotó (se ve al instante)
-  function pendiente() { return 10 * buf.ok + 2 * buf.mal + vuelo; }
+  function pendiente() { return valor(buf.ok, buf.mal) + vuelo; }
   function verXp() { return ((estado && estado.xp_semana) || 0) + pendiente(); }
   function respuesta(ok) {
     if (!PAG) return;
     if (ok) { buf.ok++; racha++; buf.seguidas = Math.max(buf.seguidas, racha); }
     else { buf.mal++; racha = 0; if (PAG.gasta) perder(); }
-    ganaXp(ok ? 10 : 2);
+    ganaXp(ok ? valor(1, 0) : valor(0, 1));
     if (buf.ok + buf.mal >= 10) enviar(); else if (!tEnvio) tEnvio = setTimeout(enviar, 4000);
   }
   // Varias respuestas juntas (el simulacro las manda al terminar)
   function sumar(ok, mal) {
     if (!PAG) return;
-    buf.ok += Math.max(0, ok | 0); buf.mal += Math.max(0, mal | 0);
-    ganaXp(10 * Math.max(0, ok | 0) + 2 * Math.max(0, mal | 0));
+    ok = Math.max(0, ok | 0); mal = Math.max(0, mal | 0);
+    buf.ok += ok; buf.mal += mal;
+    ganaXp(valor(ok, mal));
     enviar();
   }
   // El servidor acepta hasta 50 de cada una por envío; lo demás queda para el siguiente
@@ -225,7 +240,7 @@
   function enviar() {
     clearTimeout(tEnvio); tEnvio = null;
     if (enviando || !PAG || buf.ok + buf.mal === 0) return;
-    var p = paquete(); enviando = true; vuelo = 10 * p.ok + 2 * p.mal;
+    var p = paquete(); enviando = true; vuelo = valor(p.ok, p.mal);
     rpc('sumar_xp', { p: p }).then(function (e) { enviando = false; vuelo = 0; cambiar(e); if (buf.ok + buf.mal) enviar(); },
       function () { enviando = false; vuelo = 0; buf.ok += p.ok; buf.mal += p.mal; });
   }
@@ -404,7 +419,7 @@
     if (!estado) return;
     var quedan = estado.canjes_max - estado.canjes, lleno = estado.quedan >= 5, falta = estado.xp_saldo < estado.precio;
     var cupos = ''; for (var i = 0; i < estado.canjes_max; i++) cupos += '<span' + (i < estado.canjes ? ' class="usado"' : '') + '></span>';
-    var motivo = lleno ? 'Ya tienes tus 5 corazones.' : quedan <= 0 ? 'Ya usaste tus ' + estado.canjes_max + ' canjes de hoy.' : falta ? 'Te faltan ' + (estado.precio - estado.xp_saldo) + ' XP. Gánalos respondiendo en Práctica, Vocabulario o Flashcards.' : '';
+    var motivo = lleno ? 'Ya tienes tus 5 corazones.' : quedan <= 0 ? 'Ya usaste tus ' + estado.canjes_max + ' canjes de hoy.' : falta ? 'Te faltan ' + (estado.precio - estado.xp_saldo) + ' XP. Repaso, Fijas, Seminarios y Banqueo dan más XP por respuesta.' : '';
     abrirHoja('canje',
       '<div class="mcz-cab"><b class="bc">Canjear XP</b><button type="button" class="mcz-x" aria-label="Cerrar">' + SVG.x + '</button></div>' +
       '<div class="mcz-trueque"><span class="mcz-ficha">' + SVG.xp + '<b class="bc">' + estado.precio + '</b><small class="bc">XP</small></span><span class="mcz-flecha">' + SVG.flecha + '</span><span class="mcz-ficha cor">' + SVG.corazon + '<b class="bc">1</b><small class="bc">Corazón</small></span></div>' +
@@ -465,7 +480,7 @@
 
   /* ---------- Aviso: ganaste un corazón ---------- */
   var TEXTO = { explora: 'Misión Explora cumplida', vocabulario: 'Misión de Vocabulario cumplida', duelo: 'Terminaste un duelo', tarjetas: 'Repasaste tus flashcards', repaso: 'Misión de Repaso cumplida',
-    seguidas: '5 seguidas, ¡bien!', simulacro: 'Simulacro del día: vuelven los 5', canje: 'Canjeaste 150 XP' };
+    seguidas: '5 seguidas, ¡bien!', simulacro: 'Simulacro del día: vuelven los 5', canje: 'Canjeaste 400 XP' };
   function celebrar(t) {
     css();
     var d = document.createElement('div'); d.className = 'mcz-toast'; d.setAttribute('role', 'status');
