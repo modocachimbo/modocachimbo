@@ -1,7 +1,7 @@
 /* =========================================================
    Panel · Descargas PDF
    - Prender o apagar las descargas (apagadas: el botón no se ve en la web)
-   - Abierto para todos (sin código) o solo con el paquete descarga-VIP
+   - Abierto para todos (sin código) o solo con el paquete descarga-VIP (TODO-VIP no lo incluye)
    - Qué se puede descargar, ficha óptica y límites por día y por mes
    - Historial con buscador por N.º, correo, apodo o título
    - Bloquear o desbloquear a un alumno
@@ -90,7 +90,7 @@ function pintarDescargas(filas) {
       <h3>Ajustes</h3>
       <p>Lo que cambies aquí les llega a los alumnos en unos minutos. Tú (y el equipo con permiso) ven el botón aunque esté apagado, para probarlo.</p>
       ${sw('dscActivo', c.activo, 'Descargas prendidas', 'Apagadas: el botón PDF desaparece de toda la web.')}
-      ${sw('dscAbierto', c.abierto, 'Abierto para todos', 'Cualquier alumno con su cuenta de Google puede descargar, sin código. Apagado: solo con el paquete Descargas PDF (descarga-VIP o TODO-VIP).')}
+      ${sw('dscAbierto', c.abierto, 'Abierto para todos', 'Cualquier alumno con su cuenta de Google puede descargar, sin código. Apagado: solo con el paquete Descargas PDF (descarga-VIP). El Acceso total no lo incluye: se vende aparte.')}
       ${sw('dscFicha', c.ficha !== false, 'Ficha óptica OptiCheck', 'Ofrece la hoja horizontal de respuestas para calificar con OptiCheck.')}
       <div class="dsc-sw" style="display:block"><b>Qué se puede descargar</b><small>Toca para prender o apagar cada sección.</small>
         <div class="dsc-tipos">${DSC_TIPOS.map(([k, n]) => `<button type="button" class="chip ${tipos[k] !== false ? 'on' : ''}" data-t="${k}">${n}${porTipo[k] ? ` <span class="c">${dscMil(porTipo[k])}</span>` : ''}</button>`).join('')}</div>

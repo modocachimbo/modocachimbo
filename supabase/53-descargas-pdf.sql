@@ -15,7 +15,8 @@
 --   · descargas: una fila por descarga, con su N.º único (MC-XXXX-XXXX),
 --     quién, qué y cuándo. Ese N.º va impreso en cada hoja del PDF.
 --   · descarga_bloqueos: alumnos a los que se les quitó la descarga.
---   · El acceso con código: el paquete descarga-VIP (o TODO-VIP) guardado
+--   · El acceso con código: el paquete descarga-VIP (o TODO-VIP; desde
+--     54-descarga-aparte.sql, solo descarga-VIP) guardado
 --     en la cuenta del alumno (codigos_cuenta). Los administradores y el
 --     equipo con permiso "descargas" pueden descargar siempre, sin límite.
 --   · Permiso nuevo para ayudantes: "descargas".

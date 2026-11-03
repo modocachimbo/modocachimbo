@@ -32,7 +32,7 @@
     };
     if (cat === 'descarga') return {
       nombre: 'Descargas PDF', color: '#1CB0F6',
-      incluye: ['Descarga en PDF tus temas, Fijas, simulacros y exámenes', 'Con hoja de respuestas, claves y ficha óptica para OptiCheck', 'Se suma a los otros códigos que tengas']
+      incluye: ['Descarga en PDF tus temas, Fijas, simulacros y exámenes', 'Con hoja de respuestas, claves y ficha óptica para OptiCheck', 'Se vende aparte: no viene en el Acceso total']
     };
     if (cat === 'vocabulario') return {
       nombre: 'Vocabulario', color: '#CE82FF',
