@@ -218,7 +218,53 @@
   }
   // XP que ya ganó pero el servidor todavía no anotó (se ve al instante)
   function pendiente() { return valor(buf.ok, buf.mal) + vuelo; }
-  function verXp() { return ((estado && estado.xp_semana) || 0) + pendiente(); }
+  function verXp() { return ((estado && estado.xp_semana) || 0) + pendiente() + enCola(); }
+
+  /* ---------- Sin internet: lo que no se pudo mandar queda en el teléfono ----------
+     Si un envío de XP o un corazón perdido no llega al servidor (sin señal, o la
+     página se cerró sin internet), se guarda aquí y se manda solo cuando vuelve la
+     conexión (al abrir cualquier página o al recuperar la señal). Lo de hace más de
+     7 días se descarta. Un candado evita que dos pestañas lo manden a la vez. */
+  var K_COLA = 'mc_cz_cola_' + uid, K_CANDADO = K_COLA + '_candado';
+  function leerCola() {
+    try { var c = JSON.parse(localStorage.getItem(K_COLA) || 'null'); if (c && Array.isArray(c.p)) return { p: c.p, h: +c.h || 0 }; } catch (e) {}
+    return { p: [], h: 0 };
+  }
+  function guardarCola(c) {
+    try { if (!c.p.length && !c.h) localStorage.removeItem(K_COLA); else localStorage.setItem(K_COLA, JSON.stringify(c)); } catch (e) {}
+  }
+  function aCola(p) {
+    if (!p || p.ok + p.mal === 0) return;
+    var c = leerCola();
+    c.p.push({ fuente: p.fuente, curso: p.curso, ok: p.ok, mal: p.mal, seguidas: p.seguidas || 0, t: Date.now(), xp: valor(p.ok, p.mal) });
+    guardarCola(c);
+  }
+  function enCola() { return leerCola().p.reduce(function (a, x) { return a + (+x.xp || 0); }, 0); }
+  var vaciando = false;
+  function vaciarCola() {
+    if (vaciando || navigator.onLine === false) return;
+    var c = leerCola();
+    c.p = c.p.filter(function (x) { return Date.now() - (+x.t || 0) < 7 * 864e5; });
+    guardarCola(c);
+    if (!c.p.length && !c.h) return;
+    try {
+      if (Date.now() - (+localStorage.getItem(K_CANDADO) || 0) < 30000) return;   // otra pestaña lo está mandando
+      localStorage.setItem(K_CANDADO, String(Date.now()));
+    } catch (e) { return; }
+    vaciando = true;
+    function fin() { vaciando = false; try { localStorage.removeItem(K_CANDADO); } catch (e) {} }
+    function siguiente() {
+      var c = leerCola();
+      try { localStorage.setItem(K_CANDADO, String(Date.now())); } catch (e) {}
+      if (c.h > 0) return rpc('perder_corazon').then(function (e) { var d = leerCola(); d.h = Math.max(0, d.h - 1); guardarCola(d); cambiar(e); return siguiente(); });
+      if (!c.p.length) return;
+      var x = c.p[0];
+      return rpc('sumar_xp', { p: { fuente: x.fuente, curso: x.curso, ok: x.ok, mal: x.mal, seguidas: x.seguidas } }).then(function (e) {
+        var d = leerCola(); d.p.shift(); guardarCola(d); cambiar(e); return siguiente();
+      });
+    }
+    siguiente().then(fin, fin);
+  }
   function respuesta(ok) {
     if (!PAG) return;
     if (ok) { buf.ok++; racha++; buf.seguidas = Math.max(buf.seguidas, racha); }
@@ -244,12 +290,15 @@
     clearTimeout(tEnvio); tEnvio = null;
     if (enviando || !PAG || buf.ok + buf.mal === 0) return;
     var p = paquete(); enviando = true; vuelo = valor(p.ok, p.mal);
-    rpc('sumar_xp', { p: p }).then(function (e) { enviando = false; vuelo = 0; cambiar(e); if (buf.ok + buf.mal) enviar(); },
-      function () { enviando = false; vuelo = 0; buf.ok += p.ok; buf.mal += p.mal; });
+    rpc('sumar_xp', { p: p }).then(function (e) { enviando = false; vuelo = 0; cambiar(e); if (buf.ok + buf.mal) enviar(); else vaciarCola(); },
+      // No llegó (sin señal o error): queda guardado en el teléfono para mandarlo después
+      function () { enviando = false; vuelo = 0; aCola(p); });
   }
   // Al cerrar la página se manda lo que falte
   window.addEventListener('pagehide', function () {
-    if (!PAG || buf.ok + buf.mal === 0 || !MCAuth.token || !MCAuth.token()) return;
+    if (!PAG || buf.ok + buf.mal === 0) return;
+    // Sin internet: se guarda en el teléfono y se manda al volver la conexión
+    if (navigator.onLine === false || !MCAuth.token || !MCAuth.token()) { while (buf.ok + buf.mal > 0) aCola(paquete()); return; }
     try {
       fetch(CFG.SUPABASE_URL + '/rest/v1/rpc/sumar_xp', {
         method: 'POST', keepalive: true,
@@ -269,7 +318,8 @@
       estado = e; recibido = Date.now(); pintar(true);
       if (e.quedan === 0) setTimeout(bloqueo, 1300);
     }
-    cola = cola.then(function () { return rpc('perder_corazon').then(cambiar, function () {}); });
+    // Si no llega, el corazón perdido queda anotado y se descuenta al volver la conexión
+    cola = cola.then(function () { return rpc('perder_corazon').then(cambiar, function () { var c = leerCola(); c.h++; guardarCola(c); }); });
   }
 
   function vidasInicio(max) {
@@ -527,6 +577,9 @@
     .observe(document.body, { childList: true, subtree: true });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { pintar(); }); else pintar();
   cargar();
+  // Lo que quedó guardado sin internet se manda en cuanto hay conexión
+  MCAuth.listo.then(function () { setTimeout(vaciarCola, 1500); }, function () {});
+  window.addEventListener('online', function () { setTimeout(function () { enviar(); vaciarCola(); }, 1000); });
   // Al volver a la pestaña (por ejemplo, después de una misión) se actualiza
-  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') cargar(); else enviar(); });
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { cargar(); vaciarCola(); } else enviar(); });
 })();
