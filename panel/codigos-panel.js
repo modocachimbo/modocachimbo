@@ -78,13 +78,32 @@ async function guardarLimites(cods, limite) {
   }
 }
 
+/* ---------- Códigos de descarga válidos (supabase/56-descarga-codigos-validos.sql) ----------
+   Supabase solo deja descargar con códigos que estén en su copia de la lista.
+   Se manda la lista completa (los borrados se quitan) cada vez que cambia algo aquí. */
+async function sincronizarDescargas() {
+  if (!CD.cargada) return;   // nunca con una lista a medias: borraría códigos buenos
+  const lista = CD.lista.filter(esDescarga).map(c => ({ codigo: c.codigo, max: c.max || 0, vence: c.vence || '', activo: c.activo !== false }));
+  try {
+    const r = await (await MCAuth.listo).rpc('descarga_codigos_sincronizar', { p: lista });
+    if (r.error) throw r.error;
+    CD.syncErr = '';
+  } catch (e) {
+    const msg = /descarga_codigos_sincronizar/.test(e.message || '') ? 'Falta correr supabase/56-descarga-codigos-validos.sql en Supabase.'
+      : 'Entra al panel con tu cuenta de Google para que valgan los códigos de Descargas PDF.';
+    if (CD.syncErr !== msg) toast('Descargas PDF: ' + msg, true);
+    CD.syncErr = msg;
+  }
+}
+
 async function cargarCodigos() {
   revisarLibre();
   $('cdList').innerHTML = '<div class="loader">Cargando códigos…</div>';
   try {
     const [r] = await Promise.all([api('codigos'), cargarLimites()]);
-    CD.lista = r.codigos || []; CD.config = r.config || CD.config; CD.hoy = r.hoy;
+    CD.lista = r.codigos || []; CD.config = r.config || CD.config; CD.hoy = r.hoy; CD.cargada = true;
     renderConfigAcceso(); renderCodigos();
+    sincronizarDescargas();
   } catch (e) { $('cdList').innerHTML = `<div class="state-msg error">${esc(e.message)}</div>`; }
 }
 
@@ -224,7 +243,7 @@ function renderCodigos() {
   $('cdList').querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', async () => {
     if (!b.classList.contains('confirm')) { b.classList.add('confirm'); b.textContent = '¿Seguro? Toca otra vez'; setTimeout(() => { if (b.isConnected) { b.classList.remove('confirm'); b.textContent = 'Borrar'; } }, 4000); return; }
     b.disabled = true;
-    try { await api('borrarCodigo', { codigo: b.dataset.del }); CD.lista = CD.lista.filter(x => x.codigo !== b.dataset.del); toast('Código borrado'); renderCodigos(); }
+    try { await api('borrarCodigo', { codigo: b.dataset.del }); CD.lista = CD.lista.filter(x => x.codigo !== b.dataset.del); toast('Código borrado'); renderCodigos(); sincronizarDescargas(); }
     catch (e) { toast(e.message, true); b.disabled = false; }
   }));
 }
@@ -370,12 +389,12 @@ function editarCodigo(orig) {
       if (orig) {
         Object.assign(orig, { producto: datos.producto, max: datos.max, vence: datos.vence, nota: datos.nota, activo: datos.activo, etiqueta: etiquetaProd(datos.producto) });
         orig.estado = !orig.activo ? 'Desactivado' : (orig.vence && CD.hoy && CD.hoy > orig.vence) ? 'Vencido' : (orig.max > 0 && orig.usosAnt + orig.dispositivos.length >= orig.max) ? 'Lleno' : 'Activo';
-        renderCodigos(); cerrar();
+        renderCodigos(); cerrar(); sincronizarDescargas();
         toast(avisoLim ? 'Código guardado, pero no el límite de descargas: ' + avisoLim : 'Código actualizado', !!avisoLim); return;
       }
       const nuevos = r.creados.map(cod => ({ codigo: cod, producto: datos.producto, etiqueta: r.etiqueta || etiquetaProd(datos.producto), max: datos.max, usosAnt: 0,
         nota: datos.nota, vence: datos.vence, activo: true, dispositivos: [], estado: 'Activo', creado: new Date().toISOString() }));
-      CD.lista = nuevos.concat(CD.lista); renderCodigos();
+      CD.lista = nuevos.concat(CD.lista); renderCodigos(); sincronizarDescargas();
       if (avisoLim) toast('Códigos creados, pero no el límite de descargas: ' + avisoLim, true);
       o.querySelector('.mcard').innerHTML = `<button class="mx" type="button">✕</button>
         <div class="done" style="text-align:left;padding-top:0;">
