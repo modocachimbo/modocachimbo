@@ -3,8 +3,9 @@
    La experiencia que ganan respondiendo en Práctica, Vocabulario,
    Flashcards, Duelos y Simulacro (lunes a domingo).
    Datos: supabase/19-top-xp.sql (ranking_xp_admin).
+   «Revisar trampas»: supabase/50-revisar-trampas-xp.sql (xp_revision, xp_ajustar).
    ========================================================= */
-const TXP = { dia: null }; // un día de la semana que se ve (null = esta semana)
+const TXP = { dia: null, revisar: false }; // dia: un día de la semana que se ve (null = esta semana)
 
 (function estilosTopXp() {
   const st = document.createElement('style');
@@ -16,7 +17,36 @@ const TXP = { dia: null }; // un día de la semana que se ve (null = esta semana
   .txp-rgo { display: inline-flex; align-items: center; gap: 8px; font: 900 13.5px Nunito, sans-serif; white-space: nowrap; }
   .txp-rgo .mc-rgo-mini { width: 30px; }
   .txp-rgo.sin { color: var(--text-faint); }
-  .txp-res b { display: block; font: 900 20px Nunito, sans-serif; color: var(--text); }`;
+  .txp-res b { display: block; font: 900 20px Nunito, sans-serif; color: var(--text); }
+  #txpRev[aria-pressed="true"] { background: var(--red); border-color: var(--red); color: #1a0606; }
+  .txp-ok { color: var(--green); font-weight: 800; font-size: 12.5px; }
+  .txp-sen { display: flex; flex-direction: column; gap: 4px; }
+  .txp-sen span { display: inline-block; background: rgba(224,60,60,.14); color: var(--red); border: 1px solid rgba(255,138,138,.35); border-radius: 8px; padding: 3px 8px; font-size: 12px; font-weight: 800; line-height: 1.3; }
+  tr.txp-alerta td { background: rgba(224,60,60,.06); }
+  .txp-num-mal { color: var(--red); font-weight: 900; }
+  .txp-aj { font-size: 11.5px; color: var(--amber); font-weight: 800; display: block; margin-top: 3px; }
+  .txp-quitar { white-space: nowrap; }
+  .txp-rev td { vertical-align: top; }
+  .txp-rev td.num small { display: block; font-size: 11.5px; color: var(--text-dim); margin-top: 3px; white-space: nowrap; }
+  .txp-hizo { min-width: 200px; font-size: 12.5px; color: var(--text-dim); line-height: 1.5; }
+  .txp-hizo span { display: block; }
+  .txp-rev .txp-sen { min-width: 190px; }
+  .txp-rev .txp-quitar { padding-left: 10px; padding-right: 10px; }
+  .txp-hizo span, .txp-sen span { white-space: normal; }
+  /* Celular: cada alumno es una tarjeta */
+  @media (max-width: 760px) {
+    .txp-rev thead { display: none; }
+    .txp-rev, .txp-rev tbody, .txp-rev tr, .txp-rev td { display: block; width: 100%; box-sizing: border-box; }
+    .al-tabla.txp-rev { min-width: 0; }
+    .txp-rev tr.txp-alerta { background: rgba(224,60,60,.06); }
+    .txp-rev tr.txp-alerta td { background: none; }
+    .txp-rev tr { border: 2px solid #2C2549; border-radius: 14px; margin-bottom: 10px; padding: 8px 4px; position: relative; }
+    .txp-rev td { border: 0 !important; padding: 4px 10px !important; text-align: left !important; }
+    .txp-rev td.pos { position: absolute; top: 8px; right: 6px; width: auto; }
+    .txp-rev .txp-hizo, .txp-rev .txp-sen { min-width: 0; }
+    .txp-rev .txp-quitar { width: 100%; justify-content: center; }
+  }
+  .txp-leyenda { font-size: 12.5px; color: var(--text-dim); line-height: 1.55; margin: 0 0 14px; }`;
   document.head.appendChild(st);
 })();
 
@@ -30,6 +60,7 @@ const txpRango = xp => {
 const TXP_GEMA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FFC800" d="M12 1.6 21 6.8v10.4L12 22.4 3 17.2V6.8z"/><path fill="#FFDD4A" d="M12 1.6 21 6.8 12 12 3 6.8z"/><path fill="#E0A100" d="M21 6.8v10.4L12 22.4V12z"/><path fill="#fff" opacity=".95" d="M13 5.6 8.2 12.6h3.2l-.9 5.8 5.3-7.4h-3.3z"/></svg>';
 
 async function cargarTopXp() {
+  if (TXP.revisar) return cargarRevision();
   const caja = $('txpList');
   caja.innerHTML = '<div class="loader">Cargando…</div>';
   const lunes = simLunes(TXP.dia);
@@ -73,5 +104,96 @@ async function cargarTopXp() {
     ${L.length >= 50 ? '<p class="hint" style="margin-top:10px">Se muestran los 50 primeros.</p>' : ''}`;
 }
 
+/* ---------- Revisar trampas ---------- */
+const txpMil = n => String(Math.round(Number(n) || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0');
+async function cargarRevision() {
+  const caja = $('txpList');
+  caja.innerHTML = '<div class="loader">Revisando…</div>';
+  const lunes = simLunes(TXP.dia);
+  const dom = new Date(lunes + 'T12:00:00'); dom.setDate(dom.getDate() + 6);
+  const esta = lunes === simLunes(null);
+  $('txpSemana').textContent = 'Semana del ' + simCorta(lunes) + ' al ' + simCorta(simIso(dom)) + (esta ? ' (esta semana)' : '') + ' · Lo que ganaron frente a lo que de verdad hicieron.';
+  $('txpSig').disabled = esta;
+  let cliente;
+  try { cliente = await MCAuth.listo; }
+  catch (e) { caja.innerHTML = '<div class="state-msg error">No se pudo conectar con Supabase. Revisa tu internet.</div>'; return; }
+  if (!MCAuth.usuario()) { caja.innerHTML = '<div class="state-msg">Entra con tu cuenta de administrador.</div>'; return; }
+  const r = await cliente.rpc('xp_revision', { p_dia: lunes });
+  if (r.error) {
+    caja.innerHTML = /no autorizado/i.test(r.error.message || '')
+      ? '<div class="state-msg error">Tu cuenta no tiene permiso para ver el Top de la semana.</div>'
+      : `<div class="state-msg error">${esc(r.error.message || 'No se pudo cargar.')}<br>¿Ya corriste el archivo supabase/50-revisar-trampas-xp.sql?</div>`;
+    return;
+  }
+  const L = r.data || [];
+  if (!L.length) { caja.innerHTML = '<div class="state-msg">Nadie ganó XP esa semana.</div>'; return; }
+  const alertas = L.filter(x => (x.senales || []).length).length;
+  const dash = '<span style="color:var(--text-faint)">—</span>';
+  caja.innerHTML = `<div class="txp-res">
+      <div><b style="color:${alertas ? 'var(--red)' : 'var(--green)'}">${alertas}</b>${alertas === 1 ? 'alumno para revisar' : 'alumnos para revisar'}</div>
+      <div><b>${txpMil(L.length)}</b>revisados (los 50 primeros)</div>
+    </div>
+    <p class="txp-leyenda"><b>Preguntas</b>: las que quedaron registradas en Práctica, Repaso, Fijas, Exámenes y Simulacro. Seminarios, Banqueo, Duelo, Vocabulario y Tarjetas no se registran ahí, así que el número real es mayor. Un alumno normal saca entre 15 y 40 <b>XP por pregunta</b>; muy por encima, algo no cuadra. Las <b>respuestas, aciertos y horas</b> salen del registro de envíos, que empieza cuando corres el archivo 50. Las alertas son para revisar, no son prueba.</p>
+    <div class="al-tabla-wrap"><table class="al-tabla sim-tabla txp-rev">
+    <thead><tr><th>#</th><th>Alumno</th><th class="num">XP</th><th>Lo que hizo</th><th>Alertas</th><th></th></tr></thead>
+    <tbody>${L.map((x, i) => {
+      const sen = x.senales || [];
+      const xpp = x.xp_por_pregunta;
+      const extra = x.regalado || x.premios ? '<small>' + (x.regalado ? txpMil(x.regalado) + ' regalado' : '') + (x.regalado && x.premios ? ' · ' : '') + (x.premios ? txpMil(x.premios) + ' de duelos' : '') + '</small>' : '';
+      const preg = xpp == null
+        ? (x.xp > 5000 ? '<span class="txp-num-mal">Ninguna pregunta registrada</span>' : 'Sin preguntas registradas')
+        : txpMil(x.preguntas) + ' preguntas registradas</span><span class="' + (xpp > 60 ? 'txp-num-mal' : '') + '">' + txpMil(xpp) + ' XP por pregunta';
+      const env = x.envios
+        ? txpMil(x.respuestas) + ' respuestas</span><span>' + x.aciertos + '\u00a0%\u00a0de aciertos</span><span>' + txpMil(x.horas) + (x.horas === 1 ? ' hora' : ' horas') + ' activo</span><span class="' + (x.max_hora > 6000 ? 'txp-num-mal' : '') + '">Máx. ' + txpMil(x.max_hora) + ' XP en 1 hora'
+        : 'Sin envíos registrados';
+      return `<tr class="${sen.length ? 'txp-alerta' : ''}">
+      <td class="pos">${x.puesto}</td>
+      <td><div class="al-quien"><div><b>${esc(x.nombre || x.apodo || '—')}${x.apodo && x.nombre ? ' · ' + esc(x.apodo) : ''}</b><small>${esc(x.email || '')}</small>${x.ajustado ? '<span class="txp-aj">XP ajustado esta semana</span>' : ''}</div></div></td>
+      <td class="num"><span class="txp-pts">${TXP_GEMA}${txpMil(x.xp)}</span>${extra}</td>
+      <td class="txp-hizo"><span>${preg}</span><span>${env}</span></td>
+      <td>${sen.length ? '<div class="txp-sen">' + sen.map(t => '<span>' + esc(t) + '</span>').join('') + '</div>' : '<span class="txp-ok">Todo normal</span>'}</td>
+      <td><button type="button" class="btn-ghost txp-quitar" data-i="${i}">Quitar XP</button></td>
+    </tr>`; }).join('')}</tbody></table></div>`;
+  caja.querySelectorAll('.txp-quitar').forEach(b => b.addEventListener('click', () => txpQuitar(L[+b.dataset.i], lunes)));
+}
+
+// Deja el XP de la semana de un alumno en un valor (0 = todo)
+function txpQuitar(x, lunes) {
+  const quien = x.nombre || x.apodo || x.email || 'este alumno';
+  const o = document.createElement('div');
+  o.className = 'ov';
+  o.innerHTML = `<div class="mcard" style="max-width:460px;"><button class="mx" type="button" aria-label="Cerrar">✕</button>
+    <div class="eyebrow">Revisar trampas</div>
+    <h3>Quitar XP a ${esc(quien)}</h3>
+    <p class="hint" style="margin:0 0 12px;">Tiene <b>${txpMil(x.xp)} XP</b> esta semana. Se le baja también el XP que tiene para canjear. Queda anotado quién lo hizo y por qué.</p>
+    <label class="fld">Dejarle esta cantidad de XP <span class="hint">0 = se lo quitas todo</span></label>
+    <input class="inp" id="txpNuevo" type="number" min="0" max="${x.xp}" value="0">
+    <label class="fld">Motivo</label>
+    <input class="inp" id="txpMotivo" maxlength="300" placeholder="Ej.: XP sin preguntas respondidas (script)">
+    <div class="err" id="txpErr"></div>
+    <div class="mfoot"><button type="button" class="btn-ghost" data-x>Cancelar</button><button type="button" class="btn-main" id="txpOk">Quitar XP</button></div>
+  </div>`;
+  document.body.appendChild(o); document.body.classList.add('modal-open');
+  const cerrar = () => { o.remove(); document.body.classList.remove('modal-open'); };
+  o.querySelector('.mx').addEventListener('click', cerrar); o.querySelector('[data-x]').addEventListener('click', cerrar);
+  o.querySelector('#txpOk').addEventListener('click', async () => {
+    const btn = o.querySelector('#txpOk'), err = o.querySelector('#txpErr');
+    const nuevo = Math.max(0, Math.min(x.xp, parseInt(o.querySelector('#txpNuevo').value, 10) || 0));
+    btn.disabled = true; btn.textContent = 'Quitando…'; err.style.display = 'none';
+    const cliente = await MCAuth.listo;
+    const r = await cliente.rpc('xp_ajustar', { p_usuario: x.usuario, p_dia: lunes, p_xp: nuevo, p_motivo: o.querySelector('#txpMotivo').value.trim() || null });
+    if (r.error) { err.textContent = r.error.message || 'No se pudo.'; err.style.display = 'block'; btn.disabled = false; btn.textContent = 'Quitar XP'; return; }
+    cerrar();
+    toast('XP de ' + quien + ': ' + txpMil(r.data.antes) + ' → ' + txpMil(r.data.despues));
+    cargarRevision();
+  });
+}
+
+$('txpRev').addEventListener('click', () => {
+  TXP.revisar = !TXP.revisar;
+  $('txpRev').setAttribute('aria-pressed', String(TXP.revisar));
+  $('txpRev').textContent = TXP.revisar ? '‹ Volver al Top' : 'Revisar trampas';
+  cargarTopXp();
+});
 $('txpAnt').addEventListener('click', () => { const d = new Date(simLunes(TXP.dia) + 'T12:00:00'); d.setDate(d.getDate() - 7); TXP.dia = simIso(d); cargarTopXp(); });
 $('txpSig').addEventListener('click', () => { const d = new Date(simLunes(TXP.dia) + 'T12:00:00'); d.setDate(d.getDate() + 7); TXP.dia = simIso(d); cargarTopXp(); });
