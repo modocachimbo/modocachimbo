@@ -345,10 +345,10 @@
       '.mcpdf .arc2 span{font:900 9.5px Nunito,Arial;letter-spacing:.12em;color:var(--o);background:#fff;border:1.4px solid var(--c);border-radius:99px;padding:1px 9px}' +
       '.mcpdf .cur2{display:flex;align-items:center;gap:7px;font:900 10px Nunito,Arial;letter-spacing:.18em;text-transform:uppercase;color:var(--c);margin:2px 0 2px}.mcpdf .cur2 i{flex:1;border-top:1.6px dashed var(--c);opacity:.5}' +
       /* Formato 1: número en pastilla */
-      '.mcpdf .qn1{display:flex;align-items:center;gap:7px;margin-bottom:3px}.mcpdf .qn1 span{font:800 14.5px/1.25 ' + BC + ';color:#fff;background:var(--c);border-radius:6px;padding:0 7px;letter-spacing:.04em}.mcpdf .qn1:after{content:"";flex:1;border-top:1.2px dotted #c3cad7}' +
+      '.mcpdf .qn1{display:flex;align-items:center;gap:7px;margin-bottom:3px}.mcpdf .qn1 span{font:800 14.5px/1.05 ' + BC + ';color:#fff;background:var(--c);border-radius:6px;padding:1px 7px 2.6px;letter-spacing:.04em}.mcpdf .qn1:after{content:"";flex:1;border-top:1.2px dotted #c3cad7}' +
       '.mcpdf.m1 .ops b,.mcpdf .m1 .ops b{color:var(--o)}' +
       /* Formato 2: número en círculo al costado y alternativas en cápsulas */
-      '.mcpdf .q2{display:flex;gap:9px;padding-bottom:9px;border-bottom:1px solid #eef0f4}.mcpdf .q2 .nm{flex:none;width:28px;height:28px;border-radius:50%;background:var(--s);border:2px solid var(--c);color:var(--o);font:800 14px/24px ' + BC + ';text-align:center}' +
+      '.mcpdf .q2{display:flex;gap:9px;padding-bottom:9px;border-bottom:1px solid #eef0f4}.mcpdf .q2 .nm{flex:none;width:28px;height:28px;border-radius:50%;background:var(--s);border:1.3px solid var(--c);color:var(--o);font:800 16px/23.4px ' + BC + ';text-align:center;padding-bottom:2px}' +
       '.mcpdf .q2 .cu{flex:1;min-width:0}.mcpdf .q2 .ops{gap:4px 7px}' +
       '.mcpdf .q2 .ops>div{display:flex;align-items:flex-start;gap:5px;border:1.2px solid #dfe3ea;border-radius:9px;padding:1px 8px 1px 3px}' +
       '.mcpdf .q2 .ops>div>b{flex:none;width:18px;height:18px;margin-top:1.5px;border-radius:50%;background:var(--c);color:#fff;font:900 9px/18px Nunito,Arial;text-align:center}' +
