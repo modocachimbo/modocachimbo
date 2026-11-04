@@ -396,7 +396,7 @@
       '.mcpdf .pc1 .tx{position:absolute;left:10mm;top:11mm;z-index:2}.mcpdf .pc1 .tx small{font:900 8.5pt Nunito,Arial;letter-spacing:.26em;text-transform:uppercase;color:#0B6BCB}' +
       '.mcpdf .pc1 h1{margin:2mm 0 0;font:900 64pt/.9 ' + BC + ';text-transform:uppercase;color:' + t + '}' +
       '.mcpdf .pc1 .nro{display:inline-flex;align-items:stretch;margin-top:4mm;border-radius:3.5mm;overflow:hidden;box-shadow:0 2mm 0 #0A4F94}' +
-      '.mcpdf .pc1 .nro span{background:' + t + ';color:#fff;font:800 15pt/1 ' + BC + ';letter-spacing:.12em;padding:4mm;display:flex;align-items:center}.mcpdf .pc1 .nro b{background:#0B6BCB;color:#fff;font:900 46pt/1 ' + BC + ';padding:1mm 6mm 0}' +
+      '.mcpdf .pc1 .nro span{background:' + t + ';color:#fff;font:800 15pt/1 ' + BC + ';letter-spacing:.12em;padding:4mm;display:flex;align-items:center}.mcpdf .pc1 .nro b{background:#0B6BCB;color:#fff;font:900 46pt/1 ' + BC + ';padding:0 6mm 1.6mm;display:flex;align-items:center}' +
       '.mcpdf .pc1 .tipo{display:block;margin-top:6mm;font:800 15pt ' + BC + ';letter-spacing:.14em;text-transform:uppercase;color:#3d4b66}' +
       '.mcpdf .pc1 .chip{display:inline-block;margin-top:2.5mm;background:#C5F209;color:' + t + ';font:900 8pt Nunito,Arial;letter-spacing:.14em;text-transform:uppercase;border-radius:99px;padding:5px 14px}' +
       '.mcpdf .pc1 .blq{margin-top:7mm;display:flex;gap:5mm;align-items:center;border:1.4px solid #d5dbe6;border-radius:5mm;padding:4mm 5mm}' +
