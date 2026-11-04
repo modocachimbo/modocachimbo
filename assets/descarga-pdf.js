@@ -76,6 +76,8 @@
   var FUENTES = ['800 20px "Barlow Condensed"', '600 20px "Barlow Condensed"', '700 20px "Barlow Condensed"', '900 20px "Barlow Condensed"', 'italic 900 20px "Barlow Condensed"', '400 14px Nunito', '700 14px Nunito', '800 14px Nunito', '900 14px Nunito'];
 
   /* ---------- Formatos del simulacro (el alumno elige uno al descargar) ---------- */
+  // Fuentes de KaTeX: se piden antes de dibujar (si no, la primera descarga sacaba las letras de las fórmulas movidas)
+  var FUENTES_KATEX = ['20px KaTeX_Main', 'italic 20px KaTeX_Main', 'bold 20px KaTeX_Main', 'italic 20px KaTeX_Math', 'bold italic 20px KaTeX_Math', '20px KaTeX_AMS', '20px KaTeX_Size1', '20px KaTeX_Size2', '20px KaTeX_Size3', '20px KaTeX_Size4'];
   var MODELOS = {
     1: { nombre: 'Formato 1', desc: 'Portada clara · una área por columna' },
     2: { nombre: 'Formato 2', desc: 'Portada oscura · preguntas en cápsulas' }
@@ -151,6 +153,9 @@
   function partirFormulas(t) {
     var SEP = /^(\\q?quad\s*\\text\{\s*(?:y|e|o)\s*\}\s*\\q?quad|\\qquad)/;
     return String(t || '').replace(/\$\$([\s\S]+?)\$\$/g, function (m, f) {
+      // {\large\displaystyle …}: se quita la llave de afuera (y el tamaño, que en la columna no cabe) para poder partirla
+      var pre = '', env = /^\{\s*((?:\\(?:tiny|small|normalsize|large|Large|LARGE|huge|Huge|displaystyle|textstyle)\s*)+)([\s\S]*)\}$/.exec(f.trim());
+      if (env && llavesCierran(env[2])) { f = env[2]; pre = (/\\displaystyle/.test(env[1]) ? '\\displaystyle ' : ''); } else env = null;
       var partes = [], ini = 0, prof = 0;
       for (var i = 0; i < f.length; i++) {
         var ch = f.charAt(i);
@@ -160,8 +165,19 @@
       }
       partes.push(f.slice(ini));
       partes = partes.map(function (x) { return x.trim(); }).filter(Boolean);
-      return partes.length > 1 ? partes.map(function (x) { return '$$' + x + '$$'; }).join('\n') : m;
+      if (partes.length < 2 && !env) return m;
+      return partes.map(function (x) { return '$$' + pre + x + '$$'; }).join('\n');
     });
+  }
+  // ¿Las llaves de t están balanceadas sin cerrarse antes de tiempo? (para saber si la llave de afuera envuelve todo)
+  function llavesCierran(t) {
+    var p = 0;
+    for (var i = 0; i < t.length; i++) {
+      var ch = t.charAt(i);
+      if (ch === '\\') { i++; continue; }
+      if (ch === '{') p++; else if (ch === '}' && --p < 0) return false;
+    }
+    return p === 0;
   }
   function formatoSimple(s) {
     var e = esc(s);
@@ -489,6 +505,21 @@
       return !cajas.some(function (c) { return c[0] < y - 1 && c[1] > y + 1; });
     });
   }
+  // ¿Algo de adentro se sale por la derecha de el? (sin contar el MathML oculto ni los trazos SVG de KaTeX)
+  function sale(el) {
+    var der = el.getBoundingClientRect().right + 1;
+    return Array.prototype.some.call(el.querySelectorAll('*'), function (e) {
+      return !e.closest('.katex-mathml') && !e.closest('svg') && e.getBoundingClientRect().right > der;
+    });
+  }
+  function achicar(ks, caja) {
+    var der = caja.getBoundingClientRect().right;
+    Array.prototype.forEach.call(ks, function (k) {
+      var r = k.getBoundingClientRect(); if (r.right <= der + 1 || !r.width) return;
+      var cabe = der - Math.max(r.left, caja.getBoundingClientRect().left);
+      k.style.fontSize = Math.round(Math.max(0.75, Math.min(1, cabe / r.width) * 0.97) * 104) + '%';
+    });
+  }
   Armador.prototype.medir = function (html, ancho, pal) {
     var b = this.D.createElement('div'); b.className = 'bl'; b.style.position = 'relative'; b.style.width = ancho + 'px'; b.innerHTML = html;
     this.medidas(b);
@@ -508,10 +539,17 @@
         ops.className = 'ops ' + cols[i];
         // Cada alternativa debe entrar en una sola línea (letra incluida): se prueba sin saltos de línea
         var partida = Array.prototype.some.call(ops.children, function (c) {
-          c.style.whiteSpace = 'nowrap'; var no = c.scrollWidth > c.clientWidth + 1; c.style.whiteSpace = ''; return no;
+          c.style.whiteSpace = 'nowrap'; var no = c.scrollWidth > c.clientWidth + 1 || sale(c); c.style.whiteSpace = ''; return no;
         });
         if (!partida) break;
       }
+      // En una columna y aún se sale (una fórmula larga en la alternativa): se achica solo esa fórmula
+      Array.prototype.forEach.call(ops.children, function (c) { if (sale(c)) achicar(c.querySelectorAll('.katex'), c); });
+    });
+    // Fórmulas en el texto y tablas que se salen de la columna: se achican lo justo (mínimo 75 %)
+    achicar(Array.prototype.filter.call(b.querySelectorAll('.katex'), function (k) { return !k.closest('.katex-display') && !k.closest('.ops'); }), b);
+    Array.prototype.forEach.call(b.querySelectorAll('table'), function (t) {
+      var r = b.clientWidth / t.getBoundingClientRect().width; if (r < 1) t.style.fontSize = Math.round(Math.max(0.75, r * 0.97) * 100) + '%';
     });
     var h = b.offsetHeight, cortes = puntosDeCorte(b);
     this.med.removeChild(b);
@@ -978,7 +1016,7 @@
       if (!d.fonts || !d.fonts.load) return;
       // KaTeX también usa sus propias fuentes: se dibuja una fórmula de prueba para que las pida
       var k = d.createElement('div'); k.style.cssText = 'position:absolute;left:0;top:0;opacity:0'; k.textContent = '$$\\frac{a^2}{\\sqrt{b}}\\sum x$$ $x_1$'; d.body.appendChild(k); matematicas(k);
-      return Promise.all(FUENTES.map(function (f) { return d.fonts.load(f).catch(function () {}); }))
+      return Promise.all(FUENTES.concat(FUENTES_KATEX).map(function (f) { return d.fonts.load(f).catch(function () {}); }))
         .then(function () { return d.fonts.ready; }).then(function () { k.remove(); });
     });
     return Promise.all([fuentes].concat(imgs.map(function (im) {
@@ -1024,8 +1062,9 @@
       // antes se pasa a imagen un bloque chico con todas las letras para que ya estén listas
       var prueba = A.D.createElement('div');
       prueba.className = 'mcpdf'; prueba.style.cssText = 'width:300px;height:auto;padding:4px';
-      prueba.innerHTML = FUENTES.map(function (f) { return '<div style="font:' + f.replace(/"/g, "'") + '">Aa Ñ 0123 áé</div>'; }).join('');
-      A.taller.appendChild(prueba);
+      prueba.innerHTML = FUENTES.map(function (f) { return '<div style="font:' + f.replace(/"/g, "'") + '">Aa Ñ 0123 áé</div>'; }).join('') +
+        '<div>$$\\frac{a^2}{\\sqrt{b}}\\sum_{i=1}^{n} x_i \\left(\\dfrac{p}{q}\\right) \\mathbb{R}$$ $x^2 + y_1 \\le \\alpha$</div>';
+      A.taller.appendChild(prueba); matematicas(prueba);
       return html2canvas(prueba, { scale: 0.5, backgroundColor: '#ffffff', logging: false }).then(function () { prueba.remove(); }, function () { prueba.remove(); }).then(siguiente);
     }).then(function (pdf) {
       return { pdf: pdf, paginas: pdf.getNumberOfPages() };
