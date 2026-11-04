@@ -19,7 +19,8 @@
         no se puede borrar editando el PDF.
    Los colores y tamaños del PDF están juntos en ESTILO (abajo): cambiar el
    formato más adelante es tocar solo ese bloque.
-   Simulacro y Exámenes: el alumno elige el formato al descargar (MODELOS):
+   Todos los PDF (simulacro, exámenes, temas, fijas, falladas, vocabulario y flashcards):
+   el alumno elige el formato al descargar (MODELOS):
      Formato 1 · portada clara con lomo y una área por columna
      Formato 2 · portada oscura y preguntas en cápsulas
    La portada lleva un búho al azar (assets/buho/simulacro) y el N.º del simulacro.
@@ -350,6 +351,45 @@
   function cssModelos() {
     var t = ESTILO.tinta, BC = '"Barlow Condensed",Arial Narrow,sans-serif';
     return '' +
+
+      /* Vocabulario · Formato 1 (tabla con número en bloque) */
+      '.mcpdf .vh1{display:grid;grid-template-columns:34px 132px 1fr 1fr;gap:0 12px;align-items:center;background:#1B2A4A;color:#fff;border-radius:11px 11px 0 0;padding:8px 10px;font:900 9.5px Nunito,Arial;letter-spacing:.14em;text-transform:uppercase;border-bottom:4px solid #A8D81E}' +
+      '.mcpdf .vh1.def,.mcpdf .vr1.def{grid-template-columns:34px 132px 1fr 1fr 1.6fr}' +
+      '.mcpdf .vr1{display:grid;grid-template-columns:34px 132px 1fr 1fr;gap:0 12px;align-items:start;padding:7px 10px;border-bottom:1px solid #e3e7ee;font-size:12px;line-height:1.4}.mcpdf .vr1.z{background:#F7F9FC}' +
+      '.mcpdf .vr1 .n{font:800 13px/1.05 ' + BC + ';color:#fff;background:var(--c);border-radius:6px;padding:2px 0 3px;text-align:center;margin-top:1px}' +
+      '.mcpdf .vr1 b{font:800 15.5px/1.15 ' + BC + ';letter-spacing:.03em;color:#1B2A4A;text-transform:uppercase}' +
+      '.mcpdf .vr1 em{font-style:normal;color:#4a5468}.mcpdf .vr1 em.a{color:var(--o)}.mcpdf .vr1 .ej{display:block;font-style:italic;color:#6b7388;font-size:11px;margin-top:2px}' +
+      '.mcpdf .vl1{display:flex;align-items:center;gap:10px;padding:10px 0 6px}.mcpdf .vl1:before,.mcpdf .vl1:after{content:"";flex:1;height:2px;background:var(--c);opacity:.3}' +
+      '.mcpdf .vl1 span{font:800 22px/1 ' + BC + ';color:#fff;background:#1B2A4A;border-radius:8px;padding:3px 14px 5px;box-shadow:0 3px 0 #A8D81E}' +
+      /* Vocabulario · Formato 2 (cápsulas a dos columnas) */
+      '.mcpdf .vc2{display:flex;gap:9px;border:1.2px solid #dfe3ea;border-radius:13px;padding:8px 11px 9px 8px}' +
+      '.mcpdf .vc2 .nm{flex:none;width:27px;height:27px;border-radius:50%;background:var(--s);border:1.3px solid var(--c);color:var(--o);font:800 14px/22.5px ' + BC + ';text-align:center}' +
+      '.mcpdf .vc2 .cu{flex:1;min-width:0;font-size:11.8px;line-height:1.4}.mcpdf .vc2 h3{margin:1px 0 4px;font:800 17px/1.05 ' + BC + ';letter-spacing:.03em;text-transform:uppercase;color:#0E1A31}' +
+      '.mcpdf .vc2 .ln{display:flex;gap:6px;align-items:flex-start;margin-top:2px}.mcpdf .vc2 .ln i{flex:none;font:900 8px/14px Nunito,Arial;font-style:normal;letter-spacing:.1em;border-radius:99px;padding:0 6px;margin-top:1px}' +
+      '.mcpdf .vc2 .ln i.s{background:var(--c);color:#fff}.mcpdf .vc2 .ln i.a{border:1.2px solid var(--c);color:var(--o);line-height:11.6px}.mcpdf .vc2 .ln span{color:#3d4b66}' +
+      '.mcpdf .vc2 .df{margin-top:5px;color:#1B2A4A}.mcpdf .vc2 .ej{display:block;margin-top:3px;padding-left:7px;border-left:3px solid #C5F209;font-style:italic;color:#6b7388;font-size:11px}' +
+      '.mcpdf .vl2{display:flex;align-items:center;gap:9px;background:#0E1A31;border-radius:12px;padding:5px 12px 6px 6px;color:#fff;font:900 9.5px Nunito,Arial;letter-spacing:.2em;text-transform:uppercase}' +
+      '.mcpdf .vl2 b{width:30px;height:30px;border-radius:50%;background:#C5F209;color:#0E1A31;font:italic 900 21px/30px ' + BC + ';text-align:center;letter-spacing:0}' +
+      /* Flashcards · Formato 1 */
+      '.mcpdf .tj.f1{padding:0;border:1.4px dashed #9aa3b5;background:#fff}' +
+      '.mcpdf .tj.f1 .hd{display:flex;align-items:center;gap:8px;padding:10px 12px 0}.mcpdf .tj.f1 .hd b{font:800 14px/1.05 ' + BC + ';color:#fff;background:#1B2A4A;border-radius:6px;padding:2px 8px 3px}' +
+      '.mcpdf .tj.f1 .hd small{font:900 8.5px Nunito,Arial;letter-spacing:.18em;text-transform:uppercase;color:var(--o)}.mcpdf .tj.f1 .hd em{margin-left:auto;font:800 11px ' + BC + ';font-style:normal;letter-spacing:.08em;text-transform:uppercase;color:#8a93a6;max-width:55%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+      '.mcpdf .tj.f1 .x{padding:6px 14px 14px;border-left:0}.mcpdf .tj.f1:after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--c)}' +
+      '.mcpdf .tj.f1.rev{background:linear-gradient(115deg,#fff 25%,#EEF8D2 70%,#DDF1A6);border-color:#9aa3b5}.mcpdf .tj.f1.rev .hd b{background:var(--c)}.mcpdf .tj.f1.rev:after{background:#A8D81E}' +
+      '.mcpdf .tj.f1.rev .x{text-align:center;font-weight:800;color:#1B2A4A}' +
+      /* Flashcards · Formato 2 */
+      '.mcpdf .tj.f2{padding:0;border:1.4px dashed #9aa3b5;background:#fff}' +
+      '.mcpdf .tj.f2 .hd{position:relative;display:flex;align-items:center;gap:8px;background:#0E1A31;padding:7px 12px 9px 8px;overflow:hidden}' +
+      '.mcpdf .tj.f2 .hd:after{content:"";position:absolute;left:-10px;right:-10px;bottom:-2px;height:4px;background:#C5F209;transform:rotate(-1deg)}' +
+      '.mcpdf .tj.f2 .hd b{width:24px;height:24px;border-radius:50%;background:#C5F209;color:#0E1A31;font:italic 900 14px/24px ' + BC + ';text-align:center}' +
+      '.mcpdf .tj.f2 .hd small{font:900 8.5px Nunito,Arial;letter-spacing:.2em;text-transform:uppercase;color:#fff}.mcpdf .tj.f2 .hd em{margin-left:auto;font:900 8px Nunito,Arial;font-style:normal;letter-spacing:.14em;text-transform:uppercase;color:#1CB0F6;max-width:55%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+      '.mcpdf .tj.f2 .x{padding:8px 14px 14px}' +
+      '.mcpdf .tj.f2.rev .hd{background:#C5F209}.mcpdf .tj.f2.rev .hd:after{background:#0E1A31}.mcpdf .tj.f2.rev .hd b{background:#0E1A31;color:#C5F209}.mcpdf .tj.f2.rev .hd small{color:#0E1A31}.mcpdf .tj.f2.rev .hd em{color:#3d4b66}' +
+      '.mcpdf .tj.f2.rev .x{text-align:center;font-weight:800;color:#0E1A31}.mcpdf .tj.f2.rev:before{content:"";position:absolute;right:-40px;bottom:-40px;width:120px;height:120px;border-radius:50%;border:18px solid rgba(197,242,9,.22)}' +
+      '.mcpdf .ins1,.mcpdf .ins2{display:flex;align-items:center;gap:14px;height:100%;border-radius:16px;padding:14px 20px;font-size:12px;line-height:1.5}' +
+      '.mcpdf .ins1{background:linear-gradient(100deg,#fff 30%,#EEF8D2 72%,#DDF1A6);border:1.5px solid #dde3ee;color:#1B2A4A}.mcpdf .ins2{background:#0E1A31;color:#dfe6f3}' +
+      '.mcpdf .ins1 h4,.mcpdf .ins2 h4{margin:0 0 4px;font:800 20px/1 ' + BC + ';letter-spacing:.06em;text-transform:uppercase}.mcpdf .ins2 h4{color:#C5F209}.mcpdf .ins1 ol,.mcpdf .ins2 ol{margin:0;padding-left:18px}' +
+      '.mcpdf .ins1 img,.mcpdf .ins2 img{height:150px;width:auto;flex:none}' +
       /* Cabecera de área del ancho de la columna (las áreas siguen en la misma hoja) */
       '.mcpdf .arc1{display:flex;align-items:center;gap:9px;background:var(--c);color:#fff;border-radius:11px;padding:7px 11px 7px 8px;margin:0 0 10px}' +
       '.mcpdf .arc1 .ico{flex:none;width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center}.mcpdf .arc1 .ico svg{width:21px;height:21px}' +
@@ -478,7 +518,7 @@
   function Armador(doc, info, op, tam) {
     this.doc = doc; this.info = info; this.op = op; this.tam = tam || {};
     this.pal = ESTILO.area[doc.area] || ESTILO.area.general;
-    this.modelo = MODELOS[doc.modelo] ? +doc.modelo : 0;   // 0 = formato de siempre (temas, fijas, falladas…)
+    this.modelo = MODELOS[doc.modelo] ? +doc.modelo : 0;   // 0 = formato antiguo (si no se eligió ninguno)
     this.paginas = [];
     this.D = lienzo().d;
     this.taller = this.D.createElement('div');
@@ -503,7 +543,7 @@
   // entre líneas de texto, nunca en medio de una línea, fórmula, imagen, fila de tabla o grupo de alternativas
   function puntosDeCorte(b) {
     var D = b.ownerDocument, top = b.getBoundingClientRect().top, cajas = [];
-    var atom = b.querySelectorAll('img,svg,.katex-display,.katex,tr,summary,.qn,.qn1,.nm,.arc1,.arc2,.tm1,.tm2,.mcq-par,.mcq-an,.mcq-img,.g,.abierta,.mcq-etq,.hr,.vf');
+    var atom = b.querySelectorAll('img,svg,.katex-display,.katex,tr,summary,.qn,.qn1,.nm,.arc1,.arc2,.tm1,.tm2,.mcq-par,.mcq-an,.mcq-img,.g,.abierta,.mcq-etq,.hr,.vf,.vr1,.vh1');
     Array.prototype.forEach.call(atom, function (e) { var r = e.getBoundingClientRect(); if (r.height) cajas.push([r.top - top, r.bottom - top]); });
     Array.prototype.forEach.call(b.querySelectorAll('.ops'), function (o) {
       var r = o.getBoundingClientRect();
@@ -783,6 +823,8 @@
         if (prim && enCol && (s._primera || s.titulo)) {
           var t = (s._primera ? areaColHtml(M, s.area, s._tramo.i, s._tramo.j) : '') + cursoColHtml(M, s.titulo) + tmH;
           tmH = '';
+          // Formato 1: la cabecera de un área nueva se separa de la última pregunta del área anterior
+          if (s._primera && M === 1 && A.pg && A.pg.y[A.pg.col] > A.pg.base) A.pg.y[A.pg.col] += 14;
           if (t) A.columna(t, { pal: pal, gap: 10, titulo: true, conSiguiente: sig });
         } else if (prim && s.titulo) {
           A.columna(M ? cursoColHtml(M, s.titulo) : '<div class="asig"><span>' + esc(s.titulo) + '</span></div>', { pal: pal, gap: 10, titulo: !!M, conSiguiente: sig });
@@ -990,15 +1032,55 @@
   function hacerAgrupado(A) {
     var d = A.doc, op = A.op, qs = todas(d.secciones);
     A.nuevaPagina();
+    if (A.modelo) {
+      A.ancho(cabeceraTema(A), { gap: 20 });
+      armarPreguntas(A, d.secciones, true);
+      if (op.hoja) armarHoja(A, qs);
+      if (op.ficha) armarFichas(A, qs);
+      if (op.claves) armarClaves(A, qs, null, op.hoja && !op.ficha);
+      return;
+    }
     A.ancho(bannerHtml(d), { gap: 18 });
     armarPreguntas(A, d.secciones, true);
     if (op.hoja) armarHoja(A, qs);
     if (op.ficha) armarFichas(A, qs);
     if (op.claves) armarClaves(A, qs);
   }
+  function letraDe(p) { return String(p || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').charAt(0).toUpperCase(); }
   function hacerVocabulario(A) {
     var d = A.doc, op = A.op, def = !!op.definicion, ej = !!op.ejemplos;
     A.nuevaPagina();
+    if (A.modelo === 1) {
+      A.ancho(cabeceraTema(A), { gap: 18 });
+      var cab1 = '<div class="vh1' + (def ? ' def' : '') + '"><span>N.º</span><span>Palabra</span><span>Sinónimos</span><span>Antónimos</span>' + (def ? '<span>Definición</span>' : '') + '</div>';
+      var pag1 = null, letra1 = '';
+      d.palabras.forEach(function (w, i) {
+        var L = letraDe(w.palabra), sep = L !== letra1 ? '<div class="vl1"><span>' + esc(L) + '</span></div>' : '';
+        letra1 = L;
+        var fila = '<div class="vr1' + (def ? ' def' : '') + (i % 2 ? ' z' : '') + '"><span class="n">' + dos(i + 1) + '</span><b>' + esc(w.palabra) + '</b><em>' + esc((w.sin || []).join(', ') || '—') + '</em><em class="a">' + esc((w.ant || []).join(', ') || '—') + '</em>' +
+          (def ? '<span>' + esc(w.def || '') + (ej && w.ej && [].concat(w.ej).length ? '<span class="ej">' + esc([].concat(w.ej)[0]) + '</span>' : '') + '</span>' : '') + '</div>';
+        var m = A.medir(sep + fila, A.W);
+        if (Math.max(A.pg.y[0], A.pg.y[1]) + m.h + 34 > A.pg.h) A.nuevaPagina();
+        if (A.pg !== pag1) { pag1 = A.pg; A.ancho(cab1, { gap: 0 }); }
+        A.ancho(sep + fila, { gap: 0 });
+      });
+      return;
+    }
+    if (A.modelo === 2) {
+      A.ancho(cabeceraTema(A), { gap: 18 });
+      var letra2 = '';
+      d.palabras.forEach(function (w, i) {
+        var L = letraDe(w.palabra);
+        var cap = '<div class="vc2"><div class="nm">' + (i + 1) + '</div><div class="cu"><h3>' + esc(w.palabra) + '</h3>' +
+          '<div class="ln"><i class="s">SIN</i><span>' + esc((w.sin || []).join(', ') || '—') + '</span></div>' +
+          '<div class="ln"><i class="a">ANT</i><span>' + esc((w.ant || []).join(', ') || '—') + '</span></div>' +
+          (def && w.def ? '<div class="df">' + esc(w.def) + (ej && w.ej && [].concat(w.ej).length ? '<span class="ej">' + esc([].concat(w.ej)[0]) + '</span>' : '') + '</div>' : '') + '</div></div>';
+        var m = A.medir(cap, A.colW);
+        if (L !== letra2) { letra2 = L; A.columna('<div class="vl2"><b>' + esc(L) + '</b>Palabras con ' + esc(L) + '</div>', { gap: 8, titulo: true, conSiguiente: m.h + 8 }); }
+        A.columna(null, { medido: m, gap: 8, noDividir: true });
+      });
+      return;
+    }
     A.ancho(bannerHtml(d), { gap: 18 });
     var cab = '<div class="vf cab2' + (def ? ' def' : '') + '"><span>Palabra</span><span>Sinónimos</span><span>Antónimos</span>' + (def ? '<span>Definición</span>' : '') + '</div>';
     var pagAct = null;
@@ -1016,25 +1098,36 @@
     var d = A.doc, cartas = d.cartas, porHoja = 8, cw = (A.W - 14) / 2, ch = (A.Hc - 3 * 14) / 4;
     var frente = function (c) { return c.frente != null ? formatoSimple(c.frente) : textoHtml(c.q) + (c.ops && c.q.options ? '<div class="ops c2" style="margin-top:6px">' + c.q.options.map(function (o, i) { return '<div><b>' + 'ABCDE'.charAt(i) + ')</b> <span class="ot">' + opcionHtml(o) + '</span></div>'; }).join('') + '</div>' : ''); };
     var reverso = function (c) { if (c.reverso != null) return formatoSimple(c.reverso); if (esAbierta(c.q)) return esc(respAbierta(c.q)); var o = c.q.options[c.q.correct]; return (c.ops ? '<b>' + 'ABCDE'.charAt(c.q.correct) + ')</b> ' : '') + opcionHtml(o); };
-    var self = A;
+    var self = A, M = A.modelo;
     function tarjeta(pg, html, k, x, y, rev, num) {
-      var t = A.D.createElement('div'); t.className = 'tj' + (rev ? ' rev' : '');
+      var t = A.D.createElement('div'); t.className = 'tj' + (rev ? ' rev' : '') + (M ? ' f' + M : '');
       t.style.left = x + 'px'; t.style.top = y + 'px'; t.style.width = cw + 'px'; t.style.height = ch + 'px';
-      t.innerHTML = '<div class="k">' + esc(k) + '</div><div class="x">' + html + '</div><span class="n">' + num + '</span>';
+      t.innerHTML = M ? '<div class="hd"><b>' + (M === 1 ? dos(num) : num) + '</b><small>' + (rev ? 'Respuesta' : 'Pregunta') + '</small><em>' + esc(d.titulo) + '</em></div><div class="x">' + html + '</div>'
+        : '<div class="k">' + esc(k) + '</div><div class="x">' + html + '</div><span class="n">' + num + '</span>';
       pg.c.appendChild(t); A.medidas(t); matematicas(t);
       // Si el texto no entra, se achica la letra
       var x2 = t.querySelector('.x'), fs = 13;
       while (x2.scrollHeight > x2.clientHeight + 1 && fs > 7.5) { fs -= 0.5; x2.style.fontSize = fs + 'px'; }
     }
-    for (var i = 0; i < cartas.length; i += porHoja) {
-      var lote = cartas.slice(i, i + porHoja);
+    // Formato 1 y 2: la primera hoja lleva la cabecera del tema en la fila de arriba (6 tarjetas) y su reverso, cómo imprimirlas
+    var i = 0, primera = !!M;
+    while (i < cartas.length) {
+      var salto = primera ? 1 : 0, cuantas = porHoja - 2 * salto;
+      var lote = cartas.slice(i, i + cuantas), ini = i;
       var pf = A.nuevaPagina();
-      lote.forEach(function (c, j) { var col = j % 2, fila = Math.floor(j / 2); tarjeta(pf, frente(c), d.titulo + ' · Pregunta', col * (cw + 14), fila * (ch + 14), false, i + j + 1); });
+      if (primera) { var hc = A.medir(cabeceraTema(A), A.W); A.poner(pf, hc.el, 0, Math.max(0, (ch - hc.h) / 2), A.W); }
+      lote.forEach(function (c, j) { var col = j % 2, fila = Math.floor(j / 2) + salto; tarjeta(pf, frente(c), d.titulo + ' · Pregunta', col * (cw + 14), fila * (ch + 14), false, ini + j + 1); });
       if (A.op.reverso) {
         var pr = A.nuevaPagina();
+        if (primera) {
+          var bu = BUHOS[Math.floor(Math.random() * BUHOS.length)];
+          var ins = A.medir('<div class="ins' + M + '" style="height:' + ch + 'px"><div style="flex:1"><h4>Cómo imprimirlas</h4><ol><li>Imprime a <b>doble cara</b>, volteando por el <b>borde largo</b>.</li><li>Recorta por la línea punteada: detrás de cada pregunta queda su respuesta.</li><li>Las que ya te sabes, sepáralas; repasa el resto cada día.</li></ol></div><img src="' + esc(RAIZ + 'assets/buho/simulacro/' + bu.n + '.webp') + '" alt=""></div>', A.W);
+          A.poner(pr, ins.el, 0, 0, A.W);
+        }
         // Al imprimir a doble cara (borde largo), el reverso de cada tarjeta queda detrás de su frente
-        lote.forEach(function (c, j) { var col = 1 - (j % 2), fila = Math.floor(j / 2); tarjeta(pr, reverso(c), 'Respuesta', col * (cw + 14), fila * (ch + 14), true, i + j + 1); });
+        lote.forEach(function (c, j) { var col = 1 - (j % 2), fila = Math.floor(j / 2) + salto; tarjeta(pr, reverso(c), 'Respuesta', col * (cw + 14), fila * (ch + 14), true, ini + j + 1); });
       }
+      i += cuantas; primera = false;
     }
     if (!A.op.reverso) {
       A.nuevaPagina(); A.ancho('<div class="tit">Respuestas</div>', { gap: 10 });
@@ -1235,7 +1328,7 @@
       }
       if (e.bloqueado) { caja.innerHTML = cab(doc) + '<div class="mcd-err">Tu cuenta no puede descargar PDF por ahora. Si crees que es un error, escríbele a tu profe.</div>'; return; }
       if (!e.acceso) { ov.remove(); hojaCodigo(reg); return; }
-      var ops = opcionesPara(doc, e), conModelo = doc.formato === 'simulacro' || doc.formato === 'tema', modelo = +(leer(K_MODELO) || 1);
+      var ops = opcionesPara(doc, e), conModelo = ['simulacro', 'tema', 'agrupado', 'vocabulario', 'tarjetas'].indexOf(doc.formato) >= 0, modelo = +(leer(K_MODELO) || 1);
       if (!MODELOS[modelo]) modelo = 1;
       var fms = !conModelo ? '' : '<div class="mcd-sec">Formato</div><div class="mcd-fms" role="radiogroup" aria-label="Formato del PDF">' + Object.keys(MODELOS).map(function (k) {
         var mini = k === '1' ? '<i style="top:40px;right:7px;background:#e1e6ee"></i><i style="top:48px;right:16px;background:#e1e6ee"></i><i style="top:58px;width:8px;background:#7B3FC4"></i><i style="top:58px;left:27px;width:8px;background:#0B6BCB"></i><i style="top:58px;left:38px;width:8px;background:#4F7A00"></i>'
@@ -1428,7 +1521,7 @@
       lugar: function () { var i = document.querySelector('#startScreen .start-info'); return i && { padre: i.parentNode, antes: i.nextSibling, solo: true, clase: 'mcd-solo', texto: 'Descargar PDF', envolver: true }; },
       datos: function () {
         var x = window.MC_SET, secs = porAreaYCurso(x.preguntas, function (q) { return String(q._ref || '').split('/')[0]; });
-        return { formato: 'agrupado', tipo: 'falladas', area: 'general', etiqueta: '', numero: '', titulo: 'Mis falladas', subtitulo: 'Para repasar lo que más te cuesta',
+        return { formato: 'agrupado', tipo: 'falladas', area: 'general', etiqueta: 'FALLADAS', numero: String(x.preguntas.length), titulo: 'Mis falladas', subtitulo: 'Para repasar lo que más te cuesta',
           chips: [x.preguntas.length + ' preguntas', secs.length + (secs.length === 1 ? ' curso' : ' cursos')], cabecera1: 'Repaso', cabecera2: 'Mis falladas', ref: 'falladas', secciones: secs };
       }
     });
@@ -1477,7 +1570,7 @@
         if (!window.MCVocab) throw new Error('No se pudieron cargar las palabras.');
         return MCVocab.banco().then(function (l) {
           var p = (l || []).filter(function (w) { return w && w.palabra; });
-          return { formato: 'vocabulario', tipo: 'vocabulario', area: 'comunicacion', etiqueta: '', numero: '', titulo: 'Vocabulario', subtitulo: 'Sinónimos y antónimos · Razonamiento Verbal',
+          return { formato: 'vocabulario', tipo: 'vocabulario', area: 'comunicacion', etiqueta: 'LÉXICO', numero: '', titulo: 'Vocabulario', subtitulo: 'Sinónimos y antónimos · Razonamiento Verbal',
             chips: [p.length + ' palabras'], cabecera1: 'Razonamiento Verbal', cabecera2: 'Vocabulario', ref: 'vocabulario', palabras: p };
         });
       }
