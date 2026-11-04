@@ -379,6 +379,7 @@
       '.mcpdf .tc2 .tx{flex:1;min-width:0;position:relative;z-index:1}.mcpdf .tc2 .tx small{font:900 10px Nunito,Arial;letter-spacing:.2em;text-transform:uppercase;color:#1CB0F6}' +
       '.mcpdf .tc2 h1{margin:4px 0 9px;font:800 34px/1 ' + BC + ';text-transform:uppercase;color:#fff;letter-spacing:.02em}' +
       '.mcpdf .tc2 .ch span{display:inline-block;font:800 9.5px Nunito,Arial;letter-spacing:.1em;text-transform:uppercase;border:1.3px solid #C5F209;color:#C5F209;border-radius:99px;padding:2px 10px 3px;margin-right:6px}' +
+      '.mcpdf .tc1 .nb .ic,.mcpdf .tc2 .nb .ic{display:block;width:52px;height:52px;margin-top:6px}.mcpdf .tc1 .nb .ic svg,.mcpdf .tc2 .nb .ic svg{width:100%;height:100%}.mcpdf .tc2 .nb .ic svg{fill:#C5F209}.mcpdf .tc2 .nb .ic svg *{fill:#C5F209}' +
       '.mcpdf .tc2 .bu{z-index:1}.mcpdf .tc1.anch .tx{padding-right:215px}.mcpdf .tc2.anch{padding-right:225px}' +
       '.mcpdf .tm1{display:flex;align-items:center;gap:8px;margin:3px 0 1px}.mcpdf .tm1:before,.mcpdf .tm1:after{content:"";flex:1;height:1.2px;background:var(--c);opacity:.35}' +
       '.mcpdf .tm1 span{font:800 12.5px/1.15 ' + BC + ';letter-spacing:.12em;text-transform:uppercase;color:var(--o);border:1.2px solid var(--c);border-radius:99px;padding:1px 12px 2.4px;background:#fff;text-align:center;max-width:82%}' +
@@ -784,7 +785,7 @@
           tmH = '';
           if (t) A.columna(t, { pal: pal, gap: 10, titulo: true, conSiguiente: sig });
         } else if (prim && s.titulo) {
-          A.columna('<div class="asig"><span>' + esc(s.titulo) + '</span></div>', { pal: pal, gap: 10, conSiguiente: sig });
+          A.columna(M ? cursoColHtml(M, s.titulo) : '<div class="asig"><span>' + esc(s.titulo) + '</span></div>', { pal: pal, gap: 10, titulo: !!M, conSiguiente: sig });
         }
         prim = false;
         if (tmH) A.columna(tmH, { pal: pal, gap: 8, titulo: true, conSiguiente: sig });
@@ -882,7 +883,9 @@
   function cabeceraTema(A) {
     var d = A.doc, M = A.modelo, bu = BUHOS[Math.floor(Math.random() * BUHOS.length)];
     var t = String(d.titulo || ''), fs = t.length > 22 ? Math.max(20, 34 * 22 / t.length) : 34;
-    return '<div class="tc' + M + (bu.grande ? ' anch' : '') + '"><div class="nb"><small>' + esc(d.etiqueta || 'TEMA') + '</small><b>' + esc(d.numero || '') + '</b></div>' +
+    // Sin número (Fijas): en su lugar va el ícono del área
+    var nb = d.numero ? '<b>' + esc(d.numero) + '</b>' : '<i class="ic">' + (ICONOS[d.area] || '') + '</i>';
+    return '<div class="tc' + M + (bu.grande ? ' anch' : '') + '"><div class="nb"><small>' + esc(d.etiqueta || 'TEMA') + '</small>' + nb + '</div>' +
       '<div class="tx"><small>' + esc(d.subtitulo || '') + '</small><h1 style="font-size:' + fs.toFixed(1) + 'px">' + esc(t) + '</h1>' +
       '<div class="ch">' + (d.chips || []).map(function (c) { return '<span>' + esc(c) + '</span>'; }).join('') + '</div></div>' +
       '<img class="bu" src="' + esc(RAIZ + 'assets/buho/simulacro/' + bu.n + '.webp') + '" alt=""' + (bu.grande ? ' style="height:126px;right:6px;bottom:-2px"' : '') + '></div>';
