@@ -343,6 +343,10 @@
       '.mcpdf .arc2{display:flex;align-items:baseline;justify-content:space-between;border-top:5px solid var(--c);background:linear-gradient(var(--s),#fff);padding:7px 11px;margin:0 0 9px;border-radius:0 0 12px 12px}' +
       '.mcpdf .arc2 h2{margin:0;font:800 21px/1.05 ' + BC + ';letter-spacing:.05em;text-transform:uppercase;color:var(--o)}' +
       '.mcpdf .arc2 span{font:900 9.5px Nunito,Arial;letter-spacing:.12em;color:var(--o);background:#fff;border:1.4px solid var(--c);border-radius:99px;padding:1px 9px}' +
+      '.mcpdf .tm1{display:flex;align-items:center;gap:8px;margin:3px 0 1px}.mcpdf .tm1:before,.mcpdf .tm1:after{content:"";flex:1;height:1.2px;background:var(--c);opacity:.35}' +
+      '.mcpdf .tm1 span{font:800 12.5px/1.15 ' + BC + ';letter-spacing:.12em;text-transform:uppercase;color:var(--o);border:1.2px solid var(--c);border-radius:99px;padding:1px 12px 2.4px;background:#fff;text-align:center;max-width:82%}' +
+      '.mcpdf .tm2{display:flex;align-items:center;gap:7px;margin:3px 0 1px}.mcpdf .tm2:before,.mcpdf .tm2:after{content:"";flex:1;border-top:1.6px dashed var(--c);opacity:.5}' +
+      '.mcpdf .tm2 span{font:900 9.5px/1.3 Nunito,Arial;letter-spacing:.16em;text-transform:uppercase;color:var(--o);background:var(--s);border-radius:99px;padding:2px 12px 3px;text-align:center;max-width:82%}' +
       '.mcpdf .cur2{display:flex;align-items:center;gap:7px;font:900 10px Nunito,Arial;letter-spacing:.18em;text-transform:uppercase;color:var(--c);margin:2px 0 2px}.mcpdf .cur2 i{flex:1;border-top:1.6px dashed var(--c);opacity:.5}' +
       /* Formato 1: número en pastilla */
       '.mcpdf .qn1{display:flex;align-items:center;gap:7px;margin-bottom:3px}.mcpdf .qn1 span{font:800 14.5px/1.05 ' + BC + ';color:#fff;background:var(--c);border-radius:6px;padding:1px 7px 2.6px;letter-spacing:.04em}.mcpdf .qn1:after{content:"";flex:1;border-top:1.2px dotted #c3cad7}' +
@@ -461,7 +465,7 @@
   // entre líneas de texto, nunca en medio de una línea, fórmula, imagen, fila de tabla o grupo de alternativas
   function puntosDeCorte(b) {
     var D = b.ownerDocument, top = b.getBoundingClientRect().top, cajas = [];
-    var atom = b.querySelectorAll('img,svg,.katex-display,.katex,tr,summary,.qn,.qn1,.nm,.arc1,.arc2,.mcq-par,.mcq-an,.mcq-img,.g,.abierta,.mcq-etq,.hr,.vf');
+    var atom = b.querySelectorAll('img,svg,.katex-display,.katex,tr,summary,.qn,.qn1,.nm,.arc1,.arc2,.tm1,.tm2,.mcq-par,.mcq-an,.mcq-img,.g,.abierta,.mcq-etq,.hr,.vf');
     Array.prototype.forEach.call(atom, function (e) { var r = e.getBoundingClientRect(); if (r.height) cajas.push([r.top - top, r.bottom - top]); });
     Array.prototype.forEach.call(b.querySelectorAll('.ops'), function (o) {
       var r = o.getBoundingClientRect();
@@ -642,6 +646,19 @@
     if (!titulo) return '';
     return modelo === 2 ? '<div class="cur2">' + esc(titulo) + '<i></i></div>' : '<div class="cur1"><span>' + esc(titulo) + '</span></div>';
   }
+  // Tema de la pregunta (Antonimia, Analogías…): va centrado cuando cambia, para separar las preguntas por tema
+  function temaDe(q) {
+    var t = String((q && (q.tema || q._tit)) || '').trim();
+    if (t.indexOf(' · ') > 0) t = t.split(' · ').pop().trim();
+    return /^(seminario|banqueo|simulacro|tema)\b/i.test(t) ? '' : t;
+  }
+  function temaColHtml(modelo, t) { return '<div class="tm' + modelo + '"><span>' + esc(t) + '</span></div>'; }
+  // Junta las preguntas de un mismo tema (en el orden en que aparece cada tema)
+  function juntarTemas(qs) {
+    var orden = [], g = {};
+    qs.forEach(function (q) { var t = temaDe(q).toLowerCase(); if (!g[t]) { g[t] = []; orden.push(t); } g[t].push(q); });
+    return [].concat.apply([], orden.map(function (t) { return g[t]; }));
+  }
   function bannerHtml(doc) {
     return '<div class="ban">' + (doc.numero ? '<div class="n"><small>' + esc(doc.etiqueta || 'TEMA') + '</small>' + esc(doc.numero) + '</div>' : '') +
       '<div><h1>' + esc(doc.titulo) + '</h1><p>' + esc(doc.subtitulo || '') + '</p><div class="chips">' + (doc.chips || []).map(function (c) { return '<span>' + esc(c) + '</span>'; }).join('') + '</div></div></div>';
@@ -663,7 +680,7 @@
         var prim0 = s.preguntas[0] ? A.medir(preguntaHtml(s.preguntas[0], n + 1, M), A.colW, pal).h : 0;
         A.ancho('<div class="bandaa"><span>Área de ' + esc((AREAS[s.area] || {}).nom || s.areaNom || 'Preguntas') + '</span></div>', { pal: pal, gap: 12, conSiguiente: Math.min(prim0 + 20, 170) });
       }
-      var prim = true, lecAct = null;
+      var prim = true, lecAct = null, temAct = null;
       s.preguntas.forEach(function (q, k) {
         n++;
         // ¿Empieza aquí una lectura? Se cuentan las preguntas seguidas que la comparten
@@ -679,13 +696,18 @@
         } else lecAct = null;
         var m = A.medir(preguntaHtml(q, n, M), A.colW, pal);
         var sig = (cab ? Math.min(cab.h, A.Hc * 0.5) + 10 : 0) + m.h + 10;
+        var tm = enCol ? temaDe(q) : '', tmH = '';
+        if (tm && tm.toLowerCase() !== String(s.titulo || '').toLowerCase() && tm.toLowerCase() !== temAct) tmH = temaColHtml(M, tm);
+        if (enCol) temAct = tm.toLowerCase();
         if (prim && enCol && (s._primera || s.titulo)) {
-          var t = (s._primera ? areaColHtml(M, s.area, s._tramo.i, s._tramo.j) : '') + cursoColHtml(M, s.titulo);
+          var t = (s._primera ? areaColHtml(M, s.area, s._tramo.i, s._tramo.j) : '') + cursoColHtml(M, s.titulo) + tmH;
+          tmH = '';
           if (t) A.columna(t, { pal: pal, gap: 10, titulo: true, conSiguiente: sig });
         } else if (prim && s.titulo) {
           A.columna('<div class="asig"><span>' + esc(s.titulo) + '</span></div>', { pal: pal, gap: 10, conSiguiente: sig });
         }
         prim = false;
+        if (tmH) A.columna(tmH, { pal: pal, gap: 8, titulo: true, conSiguiente: sig });
         if (cab) {
           // La lectura va pegada a su primera pregunta; si es más alta que una columna, a todo el ancho
           A.columna(null, { medido: cab, gap: 10 });
@@ -1330,6 +1352,7 @@
         var secs = x.tipo === 'personalizado'
           ? porAreaYCurso(x.preguntas, function (q) { return q._curso; })
           : porAreaYCurso(x.preguntas, function (q) { return q._curso; }, false);
+        secs.forEach(function (s) { s.preguntas = juntarTemas(s.preguntas); });
         var nro = dos(numeroSim(x.id));
         return { formato: 'simulacro', tipo: 'simulacro', area: 'general', titulo: x.nombre || 'Simulacro', portada1: 'Simulacro', portada2: '',
           subtitulo: (NOMT[x.tipo] || 'Simulacro') + (x.bloque ? ' · Bloque ' + x.bloque : ''), ciclo: 'Admisión UNJFSC', minutos: x.minutos,
