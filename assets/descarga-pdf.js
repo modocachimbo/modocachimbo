@@ -485,13 +485,10 @@
     Array.prototype.forEach.call(atom, function (e) { var r = e.getBoundingClientRect(); if (r.height) cajas.push([r.top - top, r.bottom - top]); });
     Array.prototype.forEach.call(b.querySelectorAll('.ops'), function (o) {
       var r = o.getBoundingClientRect();
-      // Las alternativas van juntas (solo si ocupan casi media columna se pueden cortar entre filas)
-      // y nunca se separan del enunciado: van pegadas a la última línea de arriba (unos 26 px)
-      if (r.height < 320) cajas.push([r.top - top - 26, r.bottom - top]);
-      else {
-        Array.prototype.forEach.call(o.children, function (c) { var q = c.getBoundingClientRect(); cajas.push([q.top - top, q.bottom - top]); });
-        var p1 = o.children[0] && o.children[0].getBoundingClientRect(); if (p1) cajas.push([r.top - top - 26, p1.bottom - top]);
-      }
+      // Las alternativas se pueden cortar entre filas para aprovechar la hoja, pero la primera fila
+      // nunca se separa del enunciado: va pegada a la última línea de arriba (unos 26 px)
+      Array.prototype.forEach.call(o.children, function (c) { var q = c.getBoundingClientRect(); cajas.push([q.top - top, q.bottom - top]); });
+      var p1 = o.children[0] && o.children[0].getBoundingClientRect(); if (p1) cajas.push([r.top - top - 26, p1.bottom - top]);
     });
     var tw = D.createTreeWalker(b, NodeFilter.SHOW_TEXT, null), t, rg = D.createRange();
     while ((t = tw.nextNode())) {
