@@ -203,14 +203,12 @@
 
   /* ---------- Respuestas: XP y corazones ---------- */
   var buf = { ok: 0, mal: 0, seguidas: 0 }, racha = 0, tEnvio = null, enviando = false, vuelo = 0;
-  // XP por respuesta: el mismo cálculo que sumar_xp en supabase/49-xp-por-modo-y-rango.sql.
-  // [correcta, incorrecta] según el modo; la correcta se multiplica por el
-  // rango de la semana (xp_mult, en %, lo manda el servidor).
-  var XP_MODO = { repaso: [30, 2], fijas: [30, 2], seminarios: [30, 2], banqueo: [30, 2], simulacro: [30, 2],
-    duelo: [16, 1], libro: [14, 1], examen: [14, 1], falladas: [14, 1], tarjetas: [8, 1], vocabulario: [8, 1] };
-  function multXp(xp) {  // respaldo si el servidor aún no manda xp_mult (mismos cortes que rango.js)
-    return xp >= 50000 ? 60 : xp >= 16000 ? 70 : xp >= 9000 ? 80 : xp >= 4700 ? 85 : xp >= 2300 ? 90 : 100;
-  }
+  // XP por respuesta: el mismo cálculo que sumar_xp en supabase/59-xp-10-y-15-sin-tope.sql.
+  // [correcta, incorrecta]: 15 donde se gasta corazón, 10 en lo demás. Sin multiplicador
+  // de rango (el servidor manda xp_mult = 100; se deja por si vuelve).
+  var XP_MODO = { repaso: [15, 2], fijas: [15, 2], seminarios: [15, 2], banqueo: [15, 2], simulacro: [10, 2],
+    duelo: [10, 2], libro: [10, 2], examen: [10, 2], falladas: [10, 2], tarjetas: [10, 2], vocabulario: [10, 2] };
+  function multXp() { return 100; }  // respaldo si el servidor aún no manda xp_mult
   function valor(ok, mal) {
     var b = (PAG && XP_MODO[PAG.fuente]) || [14, 1];
     var mu = estado && estado.xp_mult != null ? +estado.xp_mult : multXp((estado && estado.xp_semana) || 0);
