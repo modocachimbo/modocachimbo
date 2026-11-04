@@ -652,6 +652,11 @@
     if (t.indexOf(' · ') > 0) t = t.split(' · ').pop().trim();
     return /^(seminario|banqueo|simulacro|tema)\b/i.test(t) ? '' : t;
   }
+  // Solo en Lenguaje y Razonamiento Verbal
+  function conTemas(q, titulo) {
+    var c = (q && q._curso) || cursoPorNombre((q && q.asignatura) || titulo || '');
+    return c === 'lenguaje' || c === 'raz-verbal';
+  }
   function temaColHtml(modelo, t) { return '<div class="tm' + modelo + '"><span>' + esc(t) + '</span></div>'; }
   // Junta las preguntas de un mismo tema (en el orden en que aparece cada tema)
   function juntarTemas(qs) {
@@ -696,7 +701,7 @@
         } else lecAct = null;
         var m = A.medir(preguntaHtml(q, n, M), A.colW, pal);
         var sig = (cab ? Math.min(cab.h, A.Hc * 0.5) + 10 : 0) + m.h + 10;
-        var tm = enCol ? temaDe(q) : '', tmH = '';
+        var tm = enCol && conTemas(q, s.titulo) ? temaDe(q) : '', tmH = '';
         if (tm && tm.toLowerCase() !== String(s.titulo || '').toLowerCase() && tm.toLowerCase() !== temAct) tmH = temaColHtml(M, tm);
         if (enCol) temAct = tm.toLowerCase();
         if (prim && enCol && (s._primera || s.titulo)) {
@@ -1352,7 +1357,7 @@
         var secs = x.tipo === 'personalizado'
           ? porAreaYCurso(x.preguntas, function (q) { return q._curso; })
           : porAreaYCurso(x.preguntas, function (q) { return q._curso; }, false);
-        secs.forEach(function (s) { s.preguntas = juntarTemas(s.preguntas); });
+        secs.forEach(function (s) { if (s.preguntas[0] && conTemas(s.preguntas[0], s.titulo)) s.preguntas = juntarTemas(s.preguntas); });
         var nro = dos(numeroSim(x.id));
         return { formato: 'simulacro', tipo: 'simulacro', area: 'general', titulo: x.nombre || 'Simulacro', portada1: 'Simulacro', portada2: '',
           subtitulo: (NOMT[x.tipo] || 'Simulacro') + (x.bloque ? ' · Bloque ' + x.bloque : ''), ciclo: 'Admisión UNJFSC', minutos: x.minutos,
