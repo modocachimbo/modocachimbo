@@ -166,7 +166,9 @@
       partes.push(f.slice(ini));
       partes = partes.map(function (x) { return x.trim(); }).filter(Boolean);
       if (partes.length < 2 && !env) return m;
-      return partes.map(function (x) { return '$$' + pre + x + '$$'; }).join('\n');
+      if (partes.length < 2) return '$$' + pre + partes.join('') + '$$';
+      // Una debajo de otra y pegadas (en un solo bloque centrado)
+      return '$$\\begin{gathered}' + partes.join(' \\\\[3pt] ') + '\\end{gathered}$$';
     });
   }
   // ¿Las llaves de t están balanceadas sin cerrarse antes de tiempo? (para saber si la llave de afuera envuelve todo)
@@ -523,6 +525,17 @@
     if (pal) this.vars(b, pal);
     this.med.appendChild(b);
     matematicas(b);
+    // Un salto de línea justo después de una fórmula en bloque dejaba una línea en blanco
+    Array.prototype.forEach.call(b.querySelectorAll('.katex-display'), function (d) {
+      var vacio = function (x) { return x && x.nodeType === 3 && !x.nodeValue.trim(); };
+      var p = d, n = null;
+      while (p && p !== b) {
+        n = p.nextSibling; while (vacio(n)) n = n.nextSibling;
+        if (n) break;
+        p = p.parentNode;
+      }
+      if (n && n.nodeName === 'BR') n.remove();
+    });
     // Fórmulas en bloque que no caben: se achican (mínimo 70 %)
     Array.prototype.forEach.call(b.querySelectorAll('.katex-display'), function (d) {
       var k = d.querySelector('.katex-html'); if (!k) return;
