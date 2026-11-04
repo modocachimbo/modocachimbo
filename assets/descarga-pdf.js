@@ -19,6 +19,10 @@
         no se puede borrar editando el PDF.
    Los colores y tamaños del PDF están juntos en ESTILO (abajo): cambiar el
    formato más adelante es tocar solo ese bloque.
+   Simulacro y Exámenes: el alumno elige el formato al descargar (MODELOS):
+     Formato 1 · portada clara con lomo y una área por columna
+     Formato 2 · portada oscura y preguntas en cápsulas
+   La portada lleva un búho al azar (assets/buho/simulacro) y el N.º del simulacro.
    ========================================================= */
 (function () {
   if (window.MCDescarga) return;
@@ -33,7 +37,7 @@
     katexCss: 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css',
     katex: 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js',
     auto: 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js',
-    fuentes: 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Nunito:wght@400;700;900&display=swap'
+    fuentes: 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,900&family=Nunito:wght@400;700;800;900&display=swap'
   };
 
   var TIPOS = { libro: 'Libros', seminario: 'Seminarios', banqueo: 'Banqueo', fijas: 'Fijas', falladas: 'Mis falladas', simulacro: 'Simulacro', examen: 'Exámenes', vocabulario: 'Vocabulario', tarjetas: 'Flashcards' };
@@ -69,6 +73,19 @@
     escala: 2             // nitidez de la imagen (2 ≈ 192 ppp)
   };
   var PX_MM = 794 / 210;
+  var FUENTES = ['800 20px "Barlow Condensed"', '600 20px "Barlow Condensed"', '700 20px "Barlow Condensed"', '900 20px "Barlow Condensed"', 'italic 900 20px "Barlow Condensed"', '400 14px Nunito', '700 14px Nunito', '800 14px Nunito', '900 14px Nunito'];
+
+  /* ---------- Formatos del simulacro (el alumno elige uno al descargar) ---------- */
+  // Fuentes de KaTeX: se piden antes de dibujar (si no, la primera descarga sacaba las letras de las fórmulas movidas)
+  var FUENTES_KATEX = ['20px KaTeX_Main', 'italic 20px KaTeX_Main', 'bold 20px KaTeX_Main', 'italic 20px KaTeX_Math', 'bold italic 20px KaTeX_Math', '20px KaTeX_AMS', '20px KaTeX_Size1', '20px KaTeX_Size2', '20px KaTeX_Size3', '20px KaTeX_Size4'];
+  var MODELOS = {
+    1: { nombre: 'Formato 1', desc: 'Portada clara · una área por columna' },
+    2: { nombre: 'Formato 2', desc: 'Portada oscura · preguntas en cápsulas' }
+  };
+  var K_MODELO = 'mc_pdf_modelo';
+  // Búhos de la portada (assets/buho/simulacro/<nombre>.webp): sale uno al azar en cada descarga.
+  // grande: la imagen es ancha (el búho ocupa poco) y se dibuja más grande para que el búho mida lo mismo
+  var BUHOS = [{ n: 'nota20' }, { n: 'postulante' }, { n: 'portapapeles' }, { n: 'feliz20' }, { n: 'escalera', grande: 1.32 }];
 
   /* ---------- Utilidades ---------- */
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -136,6 +153,9 @@
   function partirFormulas(t) {
     var SEP = /^(\\q?quad\s*\\text\{\s*(?:y|e|o)\s*\}\s*\\q?quad|\\qquad)/;
     return String(t || '').replace(/\$\$([\s\S]+?)\$\$/g, function (m, f) {
+      // {\large\displaystyle …}: se quita la llave de afuera (y el tamaño, que en la columna no cabe) para poder partirla
+      var pre = '', env = /^\{\s*((?:\\(?:tiny|small|normalsize|large|Large|LARGE|huge|Huge|displaystyle|textstyle)\s*)+)([\s\S]*)\}$/.exec(f.trim());
+      if (env && llavesCierran(env[2])) { f = env[2]; pre = (/\\displaystyle/.test(env[1]) ? '\\displaystyle ' : ''); } else env = null;
       var partes = [], ini = 0, prof = 0;
       for (var i = 0; i < f.length; i++) {
         var ch = f.charAt(i);
@@ -145,8 +165,21 @@
       }
       partes.push(f.slice(ini));
       partes = partes.map(function (x) { return x.trim(); }).filter(Boolean);
-      return partes.length > 1 ? partes.map(function (x) { return '$$' + x + '$$'; }).join('\n') : m;
+      if (partes.length < 2 && !env) return m;
+      if (partes.length < 2) return '$$' + pre + partes.join('') + '$$';
+      // Una debajo de otra y pegadas (en un solo bloque centrado)
+      return '$$\\begin{gathered}' + partes.join(' \\\\[3pt] ') + '\\end{gathered}$$';
     });
+  }
+  // ¿Las llaves de t están balanceadas sin cerrarse antes de tiempo? (para saber si la llave de afuera envuelve todo)
+  function llavesCierran(t) {
+    var p = 0;
+    for (var i = 0; i < t.length; i++) {
+      var ch = t.charAt(i);
+      if (ch === '\\') { i++; continue; }
+      if (ch === '{') p++; else if (ch === '}' && --p < 0) return false;
+    }
+    return p === 0;
   }
   function formatoSimple(s) {
     var e = esc(s);
@@ -310,24 +343,122 @@
       '.mcpdf .instr{display:grid;grid-template-columns:1.55fr 1fr;gap:11px;margin-top:11px}.mcpdf .instr>div{border:1.3px solid #b8c0cf;border-radius:8px;padding:7px 11px;font-size:10px;line-height:1.4}' +
       '.mcpdf .instr h4{margin:0 0 3px;font:800 12px Barlow Condensed,Arial;letter-spacing:.1em;text-transform:uppercase;color:var(--o)}.mcpdf .instr ul{margin:0;padding-left:14px}' +
       '.mcpdf .ej{display:flex;gap:8px;align-items:center;margin-top:3px}.mcpdf .ej i{width:17px;height:17px;border-radius:50%;border:1.1px solid #5a6b80;display:inline-block}.mcpdf .ej i.ok{background:#000;border-color:#000}.mcpdf .ej small{font-size:9px;color:#6b7388}' +
-      '.mcpdf :is(strong,b,em,i,u,sup,sub){color:inherit}.mcpdf .mcq-p :is(strong,b){color:inherit;font-weight:900}';
+      '.mcpdf :is(strong,b,em,i,u,sup,sub){color:inherit}.mcpdf .mcq-p :is(strong,b){color:inherit;font-weight:900}' +
+      cssModelos();
+  }
+  // Formato 1 (m1) y Formato 2 (m2): preguntas, cabecera de área en la columna y portadas
+  function cssModelos() {
+    var t = ESTILO.tinta, BC = '"Barlow Condensed",Arial Narrow,sans-serif';
+    return '' +
+      /* Cabecera de área del ancho de la columna (las áreas siguen en la misma hoja) */
+      '.mcpdf .arc1{display:flex;align-items:center;gap:9px;background:var(--c);color:#fff;border-radius:11px;padding:7px 11px 7px 8px;margin:0 0 10px}' +
+      '.mcpdf .arc1 .ico{flex:none;width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center}.mcpdf .arc1 .ico svg{width:21px;height:21px}' +
+      '.mcpdf .arc1 small{display:block;font:900 8px Nunito,Arial;letter-spacing:.2em;text-transform:uppercase;opacity:.85}' +
+      '.mcpdf .arc1 h2{margin:0;font:800 19px/1 ' + BC + ';letter-spacing:.06em;text-transform:uppercase;color:#fff}' +
+      '.mcpdf .arc1 .rg{margin-left:auto;text-align:right;font:800 8px Nunito,Arial;letter-spacing:.14em;text-transform:uppercase;opacity:.92}.mcpdf .arc1 .rg b{display:block;font:800 16px/1 ' + BC + ';letter-spacing:.04em;color:#fff}' +
+      '.mcpdf .cur1{display:flex;align-items:center;gap:8px;margin:2px 0 2px;font:800 13px ' + BC + ';letter-spacing:.16em;text-transform:uppercase;color:var(--o)}' +
+      '.mcpdf .cur1:after{content:"";flex:1;height:2px;background:var(--c);opacity:.35}.mcpdf .cur1 span{background:var(--s);padding:1px 10px;border-radius:6px}' +
+      '.mcpdf .arc2{display:flex;align-items:baseline;justify-content:space-between;border-top:5px solid var(--c);background:linear-gradient(var(--s),#fff);padding:7px 11px;margin:0 0 9px;border-radius:0 0 12px 12px}' +
+      '.mcpdf .arc2 h2{margin:0;font:800 21px/1.05 ' + BC + ';letter-spacing:.05em;text-transform:uppercase;color:var(--o)}' +
+      '.mcpdf .arc2 span{font:900 9.5px Nunito,Arial;letter-spacing:.12em;color:var(--o);background:#fff;border:1.4px solid var(--c);border-radius:99px;padding:1px 9px}' +
+      '.mcpdf .tm1{display:flex;align-items:center;gap:8px;margin:3px 0 1px}.mcpdf .tm1:before,.mcpdf .tm1:after{content:"";flex:1;height:1.2px;background:var(--c);opacity:.35}' +
+      '.mcpdf .tm1 span{font:800 12.5px/1.15 ' + BC + ';letter-spacing:.12em;text-transform:uppercase;color:var(--o);border:1.2px solid var(--c);border-radius:99px;padding:1px 12px 2.4px;background:#fff;text-align:center;max-width:82%}' +
+      '.mcpdf .tm2{display:flex;align-items:center;gap:7px;margin:3px 0 1px}.mcpdf .tm2:before,.mcpdf .tm2:after{content:"";flex:1;border-top:1.6px dashed var(--c);opacity:.5}' +
+      '.mcpdf .tm2 span{font:900 9.5px/1.3 Nunito,Arial;letter-spacing:.16em;text-transform:uppercase;color:var(--o);background:var(--s);border-radius:99px;padding:2px 12px 3px;text-align:center;max-width:82%}' +
+      '.mcpdf .cur2{display:flex;align-items:center;gap:7px;font:900 10px Nunito,Arial;letter-spacing:.18em;text-transform:uppercase;color:var(--c);margin:2px 0 2px}.mcpdf .cur2 i{flex:1;border-top:1.6px dashed var(--c);opacity:.5}' +
+      /* Formato 1: número en pastilla */
+      '.mcpdf .qn1{display:flex;align-items:center;gap:7px;margin-bottom:3px}.mcpdf .qn1 span{font:800 14.5px/1.05 ' + BC + ';color:#fff;background:var(--c);border-radius:6px;padding:1px 7px 2.6px;letter-spacing:.04em}.mcpdf .qn1:after{content:"";flex:1;border-top:1.2px dotted #c3cad7}' +
+      '.mcpdf.m1 .ops b,.mcpdf .m1 .ops b{color:var(--o)}' +
+      /* Formato 2: número en círculo al costado y alternativas en cápsulas */
+      '.mcpdf .q2{display:flex;gap:9px;padding-bottom:9px;border-bottom:1px solid #eef0f4}.mcpdf .q2 .nm{flex:none;width:28px;height:28px;border-radius:50%;background:var(--s);border:1.3px solid var(--c);color:var(--o);font:800 16px/23.4px ' + BC + ';text-align:center;padding-bottom:2px}' +
+      '.mcpdf .q2 .cu{flex:1;min-width:0}.mcpdf .q2 .ops{gap:4px 7px}' +
+      '.mcpdf .q2 .ops>div{display:flex;align-items:flex-start;gap:5px;border:1.2px solid #dfe3ea;border-radius:9px;padding:1px 8px 1px 3px}' +
+      '.mcpdf .q2 .ops>div>b{flex:none;width:18px;height:18px;margin-top:1.5px;border-radius:50%;background:var(--c);color:#fff;font:900 9px/18px Nunito,Arial;text-align:center}' +
+      /* Portadas (toda la hoja, en mm) */
+      '.mcpdf .pc{position:absolute;left:0;top:0;width:210mm;height:297mm;overflow:hidden;color:' + t + '}' +
+      '.mcpdf .pc .bc{font-family:' + BC + '}.mcpdf .pc img.bu{position:absolute;z-index:3}' +
+      '.mcpdf .pc .dt{display:grid;grid-template-columns:repeat(4,1fr);gap:3mm}.mcpdf .pc .dt div{border-radius:4mm;padding:3mm 4mm}' +
+      '.mcpdf .pc .dt small,.mcpdf .pc .nb small{display:block;font:900 6.5pt Nunito,Arial;letter-spacing:.16em;text-transform:uppercase}' +
+      '.mcpdf .pc .dt b{font:800 20pt/1.1 ' + BC + '}' +
+      '.mcpdf .pc .ar{display:grid;gap:2.4mm}.mcpdf .pc .ar div{display:flex;align-items:center;gap:2mm;border-radius:3mm;padding:2.2mm 2.6mm;font:800 7.8pt/1.15 Nunito,Arial}' +
+      '.mcpdf .pc .ar svg{flex:none;width:5mm;height:5mm}.mcpdf .pc .ar small{display:block;font-weight:700;font-size:6.6pt;opacity:.85}' +
+      '.mcpdf .pc .nb{display:grid;grid-template-columns:3fr 1fr;gap:3mm}.mcpdf .pc .nb div{border-radius:4mm;height:16mm;padding:2.4mm 4mm}' +
+      /* Portada clara (Formato 1) */
+      '.mcpdf .pc1{background:#fff}' +
+      '.mcpdf .pc1 .lomo{position:absolute;left:0;top:0;bottom:0;width:30mm;background:' + t + '}' +
+      '.mcpdf .pc1 .vert{position:absolute;left:0;top:297mm;width:297mm;height:30mm;transform:rotate(-90deg);transform-origin:0 0;display:flex;align-items:center;justify-content:center;white-space:nowrap;font:italic 900 50pt/1 ' + BC + ';text-transform:uppercase;color:#fff;letter-spacing:.015em;padding-top:1.5mm}.mcpdf .pc1 .vert em{font-style:italic;color:#C5F209}' +
+      '.mcpdf .pc1 .zona{position:absolute;left:30mm;right:0;top:0;bottom:0;padding:14mm 15mm 0 13mm}' +
+      '.mcpdf .pc1 .top{display:flex;justify-content:space-between;align-items:center}.mcpdf .pc1 .placa{background:' + t + ';border-radius:3.5mm;padding:3mm 5mm;display:inline-flex}.mcpdf .pc1 .placa svg{height:9mm;width:auto}' +
+      '.mcpdf .pc1 .top>span:last-child{font:900 7.6pt Nunito,Arial;letter-spacing:.2em;text-transform:uppercase;color:#0B6BCB}' +
+      '.mcpdf .pc1 .hero{position:relative;margin-top:10mm;height:124mm;border-radius:7mm;overflow:hidden;background:linear-gradient(150deg,#E8F1FB 0%,#F4F9E2 100%)}' +
+      '.mcpdf .pc1 .hero .o1{position:absolute;right:-26mm;top:-26mm;width:96mm;height:96mm;border-radius:50%;border:12mm solid rgba(11,107,203,.10)}' +
+      '.mcpdf .pc1 .hero .o2{position:absolute;left:-14mm;bottom:-30mm;width:70mm;height:70mm;border-radius:50%;background:rgba(197,242,9,.35)}' +
+      '.mcpdf .pc1 .tx{position:absolute;left:10mm;top:11mm;z-index:2}.mcpdf .pc1 .tx small{font:900 8.5pt Nunito,Arial;letter-spacing:.26em;text-transform:uppercase;color:#0B6BCB}' +
+      '.mcpdf .pc1 h1{margin:2mm 0 0;font:900 64pt/.9 ' + BC + ';text-transform:uppercase;color:' + t + '}' +
+      '.mcpdf .pc1 .nro{display:inline-flex;align-items:stretch;margin-top:4mm;border-radius:3.5mm;overflow:hidden;box-shadow:0 2mm 0 #0A4F94}' +
+      '.mcpdf .pc1 .nro span{background:' + t + ';color:#fff;font:800 15pt/1 ' + BC + ';letter-spacing:.12em;padding:4mm;display:flex;align-items:center}.mcpdf .pc1 .nro b{background:#0B6BCB;color:#fff;font:900 46pt/1 ' + BC + ';padding:0 6mm 1.6mm;display:flex;align-items:center}' +
+      '.mcpdf .pc1 .tipo{display:block;margin-top:6mm;font:800 15pt ' + BC + ';letter-spacing:.14em;text-transform:uppercase;color:#3d4b66}' +
+      '.mcpdf .pc1 .chip{display:inline-block;margin-top:2.5mm;background:#C5F209;color:' + t + ';font:900 8pt Nunito,Arial;letter-spacing:.14em;text-transform:uppercase;border-radius:99px;padding:5px 14px}' +
+      '.mcpdf .pc1 .blq{margin-top:7mm;display:flex;gap:5mm;align-items:center;border:1.4px solid #d5dbe6;border-radius:5mm;padding:4mm 5mm}' +
+      '.mcpdf .pc1 .blq .l{flex:none;width:21mm;height:21mm;border-radius:4mm;background:' + t + ';color:#C5F209;display:flex;flex-direction:column;align-items:center;justify-content:center;font:900 34pt/1 ' + BC + '}.mcpdf .pc1 .blq .l small{display:block;font:900 6pt Nunito,Arial;letter-spacing:.2em;color:#fff;margin-bottom:-1mm}' +
+      '.mcpdf .pc1 .blq h3{margin:0;font:800 14pt ' + BC + ';letter-spacing:.1em;text-transform:uppercase;color:' + t + '}.mcpdf .pc1 .blq p{margin:1mm 0 0;font-size:8.6pt;color:#56627a;line-height:1.4}.mcpdf .pc1 .blq p b{color:' + t + '}' +
+      '.mcpdf .pc1 .dt{margin-top:5mm}.mcpdf .pc1 .dt div{background:#F2F4F8}.mcpdf .pc1 .dt small,.mcpdf .pc1 .nb small{color:#56627a}' +
+      '.mcpdf .pc1 .ar{margin-top:5mm}.mcpdf .pc1 .ar div{background:var(--c);color:#fff}' +
+      '.mcpdf .pc1 .nb{margin-top:6mm}.mcpdf .pc1 .nb div{border:1.4px solid #c9cfda}' +
+      '.mcpdf.pcla .pie{left:43mm;right:15mm}' +
+      /* Portada oscura (Formato 2) */
+      '.mcpdf .pc2{background:#0E1A31;color:#fff}' +
+      '.mcpdf .pc2 .ban1{position:absolute;left:-30mm;top:116mm;width:290mm;height:56mm;background:#C5F209;transform:rotate(-8deg)}' +
+      '.mcpdf .pc2 .ban2{position:absolute;left:-30mm;top:176mm;width:290mm;height:4.5mm;background:#1CB0F6;transform:rotate(-8deg)}' +
+      '.mcpdf .pc2 .anillo{position:absolute;right:-48mm;top:-40mm;width:150mm;height:150mm;border-radius:50%;border:16mm solid rgba(28,176,246,.10)}' +
+      '.mcpdf .pc2 .top{position:absolute;left:16mm;right:16mm;top:15mm;display:flex;justify-content:space-between;align-items:center;z-index:2}.mcpdf .pc2 .top svg{height:11mm;width:auto}' +
+      '.mcpdf .pc2 .top span{font:900 8pt Nunito,Arial;letter-spacing:.22em;text-transform:uppercase;color:#C5F209;border:1.3px solid #C5F209;border-radius:99px;padding:5px 13px}' +
+      '.mcpdf .pc2 .tit{position:absolute;left:16mm;top:38mm;z-index:2}.mcpdf .pc2 .tit small{font:900 9pt Nunito,Arial;letter-spacing:.3em;text-transform:uppercase;color:#1CB0F6}' +
+      '.mcpdf .pc2 h1{margin:2mm 0 0;font:900 84pt/.86 ' + BC + ';text-transform:uppercase;color:#fff;white-space:nowrap}' +
+      '.mcpdf .pc2 .num{position:absolute;left:14mm;top:74mm;z-index:1;display:flex;align-items:flex-end;gap:5mm}' +
+      '.mcpdf .pc2 .num small{display:block;font:900 9pt Nunito,Arial;letter-spacing:.3em;color:#C5F209;margin-bottom:3mm}' +
+      '.mcpdf .pc2 .num b{display:block;font:italic 900 128pt/.8 ' + BC + ';color:#C5F209;letter-spacing:-.02em}' +
+      '.mcpdf .pc2 .num em{font:700 17pt ' + BC + ';font-style:normal;letter-spacing:.14em;text-transform:uppercase;color:#B8C4DA;margin-bottom:5mm}' +
+      '.mcpdf .pc2 .banda{position:absolute;left:16mm;top:139mm;z-index:2;transform:rotate(-8deg);transform-origin:0 0;color:#0E1A31}' +
+      '.mcpdf .pc2 .banda b{display:block;font:italic 900 40pt/1 ' + BC + ';text-transform:uppercase}.mcpdf .pc2 .banda span{font:800 12pt ' + BC + ';letter-spacing:.2em;text-transform:uppercase}' +
+      '.mcpdf .pc2 .dt{position:absolute;left:16mm;right:16mm;top:209mm;z-index:2}.mcpdf .pc2 .dt div{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.04)}.mcpdf .pc2 .dt small{color:#8FA0BE}.mcpdf .pc2 .dt b.l{color:#C5F209}' +
+      '.mcpdf .pc2 .ar{position:absolute;left:16mm;right:16mm;top:234mm;z-index:2}.mcpdf .pc2 .ar div{background:rgba(255,255,255,.06);border-top:2.2px solid var(--c)}.mcpdf .pc2 .ar small{color:#8FA0BE;opacity:1}' +
+      '.mcpdf .pc2 .nb{position:absolute;left:16mm;right:16mm;top:251mm;z-index:2}.mcpdf .pc2 .nb div{background:#fff;color:#0E1A31}.mcpdf .pc2 .nb small{color:#56627a}' +
+      '.mcpdf.posc .pie{color:#8FA0BE;border-top-color:rgba(255,255,255,.16)}.mcpdf.posc .pie b{color:#fff}.mcpdf.posc .wm div{color:rgba(255,255,255,.045)}' +
+      '.mcpdf.pcla .wm,.mcpdf.posc .wm{z-index:2}';
   }
 
   function logoSvg(color) {
     // Búho y letras del logo horizontal, con el color del área
     return LOGO.replace(/#7A8C00/g, color).replace(/#1A1626/g, ESTILO.tinta);
   }
-  var LOGO = '';
+  var LOGO = '', LOGO_OSC = '', ICONOS = {};
   function cargarLogo() {
     if (LOGO) return Promise.resolve();
-    return fetch(RAIZ + 'assets/img/logo-modo-cachimbo-horizontal-claro.svg').then(function (r) { return r.text(); })
-      .then(function (t) { LOGO = t.replace(/<\?xml[^>]*>/, ''); }, function () { LOGO = '<svg viewBox="0 0 200 40"><text x="0" y="28" font-size="26" font-weight="900" fill="#1A1626">MODO CACHIMBO</text></svg>'; });
+    var texto = function (r) { if (!r.ok) throw new Error(); return r.text(); };
+    // Las clases del SVG (.cls-1…) se pasan a fill="" para que dos logos en la misma hoja no se pisen los colores
+    var limpio = function (t) {
+      t = t.replace(/<\?xml[^>]*>/, '');
+      var reglas = {}, st = t.match(/<style[^>]*>([\s\S]*?)<\/style>/);
+      if (st) st[1].replace(/\.([\w-]+)\s*\{\s*fill\s*:\s*([^;}]+);?\s*\}/g, function (m, c, f) { reglas[c] = f.trim(); });
+      return t.replace(/<style[^>]*>[\s\S]*?<\/style>/, '').replace(/class="([\w-]+)"/g, function (m, c) { return reglas[c] ? 'fill="' + reglas[c] + '"' : m; });
+    };
+    return Promise.all([
+      fetch(RAIZ + 'assets/img/logo-modo-cachimbo-horizontal-claro.svg').then(texto)
+        .then(function (t) { LOGO = limpio(t); }, function () { LOGO = '<svg viewBox="0 0 200 40"><text x="0" y="28" font-size="26" font-weight="900" fill="#1A1626">MODO CACHIMBO</text></svg>'; }),
+      // Logo original (lima y blanco) para las portadas
+      fetch(RAIZ + 'assets/img/logo-modo-cachimbo-horizontal.svg').then(texto)
+        .then(function (t) { LOGO_OSC = limpio(t); }, function () { LOGO_OSC = '<svg viewBox="0 0 200 40"><text x="0" y="28" font-size="26" font-weight="900" fill="#fff">MODO CACHIMBO</text></svg>'; })
+    ].concat(ORDEN_AREAS.map(function (a) {
+      return fetch(RAIZ + 'assets/icons/' + a + '.svg').then(texto).then(function (t) { ICONOS[a] = limpio(t).replace('<svg ', '<svg fill="#fff" '); }, function () { ICONOS[a] = ''; });
+    })));
   }
 
   /* ---------- Armado de páginas ---------- */
   function Armador(doc, info, op, tam) {
     this.doc = doc; this.info = info; this.op = op; this.tam = tam || {};
     this.pal = ESTILO.area[doc.area] || ESTILO.area.general;
+    this.modelo = MODELOS[doc.modelo] ? +doc.modelo : 0;   // 0 = formato de siempre (temas, fijas, falladas…)
     this.paginas = [];
     this.D = lienzo().d;
     this.taller = this.D.createElement('div');
@@ -335,7 +466,7 @@
     var H = ESTILO.hoja;
     this.W = H.w - 2 * H.lado; this.Hc = H.h - H.arriba - H.abajo; this.colW = (this.W - H.sep) / 2;
     // Medidor: un bloque fuera de la vista con el mismo estilo que la hoja
-    this.med = this.D.createElement('div'); this.med.className = 'mcpdf'; this.med.style.height = 'auto'; this.med.style.overflow = 'visible';
+    this.med = this.D.createElement('div'); this.med.className = 'mcpdf' + (this.modelo ? ' m' + this.modelo : ''); this.med.style.height = 'auto'; this.med.style.overflow = 'visible';
     this.taller.appendChild(this.med);
     this.vars(this.med, this.pal);
   }
@@ -352,17 +483,14 @@
   // entre líneas de texto, nunca en medio de una línea, fórmula, imagen, fila de tabla o grupo de alternativas
   function puntosDeCorte(b) {
     var D = b.ownerDocument, top = b.getBoundingClientRect().top, cajas = [];
-    var atom = b.querySelectorAll('img,svg,.katex-display,.katex,tr,summary,.qn,.mcq-par,.mcq-an,.mcq-img,.g,.abierta,.mcq-etq,.hr,.vf');
+    var atom = b.querySelectorAll('img,svg,.katex-display,.katex,tr,summary,.qn,.qn1,.nm,.arc1,.arc2,.tm1,.tm2,.mcq-par,.mcq-an,.mcq-img,.g,.abierta,.mcq-etq,.hr,.vf');
     Array.prototype.forEach.call(atom, function (e) { var r = e.getBoundingClientRect(); if (r.height) cajas.push([r.top - top, r.bottom - top]); });
     Array.prototype.forEach.call(b.querySelectorAll('.ops'), function (o) {
       var r = o.getBoundingClientRect();
-      // Las alternativas van juntas (solo si ocupan casi media columna se pueden cortar entre filas)
-      // y nunca se separan del enunciado: van pegadas a la última línea de arriba (unos 26 px)
-      if (r.height < 320) cajas.push([r.top - top - 26, r.bottom - top]);
-      else {
-        Array.prototype.forEach.call(o.children, function (c) { var q = c.getBoundingClientRect(); cajas.push([q.top - top, q.bottom - top]); });
-        var p1 = o.children[0] && o.children[0].getBoundingClientRect(); if (p1) cajas.push([r.top - top - 26, p1.bottom - top]);
-      }
+      // Las alternativas se pueden cortar entre filas para aprovechar la hoja, pero la primera fila
+      // nunca se separa del enunciado: va pegada a la última línea de arriba (unos 26 px)
+      Array.prototype.forEach.call(o.children, function (c) { var q = c.getBoundingClientRect(); cajas.push([q.top - top, q.bottom - top]); });
+      var p1 = o.children[0] && o.children[0].getBoundingClientRect(); if (p1) cajas.push([r.top - top - 26, p1.bottom - top]);
     });
     var tw = D.createTreeWalker(b, NodeFilter.SHOW_TEXT, null), t, rg = D.createRange();
     while ((t = tw.nextNode())) {
@@ -376,12 +504,38 @@
       return !cajas.some(function (c) { return c[0] < y - 1 && c[1] > y + 1; });
     });
   }
+  // ¿Algo de adentro se sale por la derecha de el? (sin contar el MathML oculto ni los trazos SVG de KaTeX)
+  function sale(el) {
+    var der = el.getBoundingClientRect().right + 1;
+    return Array.prototype.some.call(el.querySelectorAll('*'), function (e) {
+      return !e.closest('.katex-mathml') && !e.closest('svg') && e.getBoundingClientRect().right > der;
+    });
+  }
+  function achicar(ks, caja) {
+    var der = caja.getBoundingClientRect().right;
+    Array.prototype.forEach.call(ks, function (k) {
+      var r = k.getBoundingClientRect(); if (r.right <= der + 1 || !r.width) return;
+      var cabe = der - Math.max(r.left, caja.getBoundingClientRect().left);
+      k.style.fontSize = Math.round(Math.max(0.75, Math.min(1, cabe / r.width) * 0.97) * 104) + '%';
+    });
+  }
   Armador.prototype.medir = function (html, ancho, pal) {
     var b = this.D.createElement('div'); b.className = 'bl'; b.style.position = 'relative'; b.style.width = ancho + 'px'; b.innerHTML = html;
     this.medidas(b);
     if (pal) this.vars(b, pal);
     this.med.appendChild(b);
     matematicas(b);
+    // Un salto de línea justo después de una fórmula en bloque dejaba una línea en blanco
+    Array.prototype.forEach.call(b.querySelectorAll('.katex-display'), function (d) {
+      var vacio = function (x) { return x && x.nodeType === 3 && !x.nodeValue.trim(); };
+      var p = d, n = null;
+      while (p && p !== b) {
+        n = p.nextSibling; while (vacio(n)) n = n.nextSibling;
+        if (n) break;
+        p = p.parentNode;
+      }
+      if (n && n.nodeName === 'BR') n.remove();
+    });
     // Fórmulas en bloque que no caben: se achican (mínimo 70 %)
     Array.prototype.forEach.call(b.querySelectorAll('.katex-display'), function (d) {
       var k = d.querySelector('.katex-html'); if (!k) return;
@@ -395,10 +549,17 @@
         ops.className = 'ops ' + cols[i];
         // Cada alternativa debe entrar en una sola línea (letra incluida): se prueba sin saltos de línea
         var partida = Array.prototype.some.call(ops.children, function (c) {
-          c.style.whiteSpace = 'nowrap'; var no = c.scrollWidth > c.clientWidth + 1; c.style.whiteSpace = ''; return no;
+          c.style.whiteSpace = 'nowrap'; var no = c.scrollWidth > c.clientWidth + 1 || sale(c); c.style.whiteSpace = ''; return no;
         });
         if (!partida) break;
       }
+      // En una columna y aún se sale (una fórmula larga en la alternativa): se achica solo esa fórmula
+      Array.prototype.forEach.call(ops.children, function (c) { if (sale(c)) achicar(c.querySelectorAll('.katex'), c); });
+    });
+    // Fórmulas en el texto y tablas que se salen de la columna: se achican lo justo (mínimo 75 %)
+    achicar(Array.prototype.filter.call(b.querySelectorAll('.katex'), function (k) { return !k.closest('.katex-display') && !k.closest('.ops'); }), b);
+    Array.prototype.forEach.call(b.querySelectorAll('table'), function (t) {
+      var r = b.clientWidth / t.getBoundingClientRect().width; if (r < 1) t.style.fontSize = Math.round(Math.max(0.75, r * 0.97) * 100) + '%';
     });
     var h = b.offsetHeight, cortes = puntosDeCorte(b);
     this.med.removeChild(b);
@@ -406,7 +567,7 @@
   };
   Armador.prototype.nuevaPagina = function (horizontal) {
     var H = ESTILO.hoja, p = this.D.createElement('div');
-    p.className = 'mcpdf' + (horizontal ? ' h' : '');
+    p.className = 'mcpdf' + (horizontal ? ' h' : '') + (this.modelo ? ' m' + this.modelo : '');
     this.vars(p, this.pal);
     var marca = this.info.apodo + ' · ' + this.info.email + '        ';
     var wm = '<div class="wm">' + Array.from({ length: 18 }, function (_, i) { return '<div style="top:' + (i * 6 - 4) + '%">' + esc(marca + marca + marca + marca) + '</div>'; }).join('') + '</div>';
@@ -444,7 +605,7 @@
     }
     // Títulos (asignatura) no se quedan solos al final: necesitan algo de lo que sigue
     var junto = Math.min(op.conSiguiente || 0, 140);
-    if (m.h < 70 && junto && pg.h - pg.y[pg.col] < m.h + junto && pg.y[pg.col] > pg.base) siguiente();
+    if ((m.h < 70 || op.titulo) && junto && pg.h - pg.y[pg.col] < m.h + junto && pg.y[pg.col] > pg.base) siguiente();
     var desde = 0, primero = true;
     while (desde < m.h - 1) {
       var libre = pg.h - pg.y[pg.col], resta = m.h - desde, x = pg.col ? this.colW + sep : 0, y = pg.y[pg.col];
@@ -514,10 +675,42 @@
   };
 
   /* ---------- Piezas ---------- */
-  function preguntaHtml(q, n) {
-    var cuerpo = '<div class="qn">Pregunta N.º ' + n + '</div><div class="qt">' + textoHtml(q) + '</div>';
-    if (esAbierta(q)) return cuerpo + '<div class="abierta">Respuesta:</div>';
-    return cuerpo + '<div class="ops c3">' + q.options.map(function (o, i) { return '<div><b>' + 'ABCDE'.charAt(i) + ')</b> <span class="ot">' + opcionHtml(o) + '</span></div>'; }).join('') + '</div>';
+  function dos(n) { return n < 10 ? '0' + n : String(n); }
+  function preguntaHtml(q, n, modelo) {
+    var qt = '<div class="qt">' + textoHtml(q) + '</div>', par = modelo ? '' : ')';
+    var ops = esAbierta(q) ? '<div class="abierta">Respuesta:</div>'
+      : '<div class="ops c3">' + q.options.map(function (o, i) { return '<div><b>' + 'ABCDE'.charAt(i) + par + '</b> <span class="ot">' + opcionHtml(o) + '</span></div>'; }).join('') + '</div>';
+    if (modelo === 2) return '<div class="q2"><div class="nm">' + n + '</div><div class="cu">' + qt + ops + '</div></div>';
+    if (modelo === 1) return '<div class="qn1"><span>' + dos(n) + '</span></div>' + qt + ops;
+    return '<div class="qn">Pregunta N.º ' + n + '</div>' + qt + ops;
+  }
+  // Cabecera de un área del ancho de la columna (Formato 1 y 2)
+  function areaColHtml(modelo, area, i, j) {
+    var nom = (AREAS[area] || {}).nom || 'Preguntas';
+    if (modelo === 2) return '<div class="arc2"><h2>' + esc(nom) + '</h2><span>P. ' + i + '–' + j + '</span></div>';
+    return '<div class="arc1"><div class="ico">' + (ICONOS[area] || '') + '</div><div><small>Área</small><h2>' + esc(nom) + '</h2></div><div class="rg">Preguntas<b>' + dos(i) + ' – ' + dos(j) + '</b></div></div>';
+  }
+  function cursoColHtml(modelo, titulo) {
+    if (!titulo) return '';
+    return modelo === 2 ? '<div class="cur2">' + esc(titulo) + '<i></i></div>' : '<div class="cur1"><span>' + esc(titulo) + '</span></div>';
+  }
+  // Tema de la pregunta (Antonimia, Analogías…): va centrado cuando cambia, para separar las preguntas por tema
+  function temaDe(q) {
+    var t = String((q && (q.tema || q._tit)) || '').trim();
+    if (t.indexOf(' · ') > 0) t = t.split(' · ').pop().trim();
+    return /^(seminario|banqueo|simulacro|tema)\b/i.test(t) ? '' : t;
+  }
+  // Solo en Lenguaje y Razonamiento Verbal
+  function conTemas(q, titulo) {
+    var c = (q && q._curso) || cursoPorNombre((q && q.asignatura) || titulo || '');
+    return c === 'lenguaje' || c === 'raz-verbal';
+  }
+  function temaColHtml(modelo, t) { return '<div class="tm' + modelo + '"><span>' + esc(t) + '</span></div>'; }
+  // Junta las preguntas de un mismo tema (en el orden en que aparece cada tema)
+  function juntarTemas(qs) {
+    var orden = [], g = {};
+    qs.forEach(function (q) { var t = temaDe(q).toLowerCase(); if (!g[t]) { g[t] = []; orden.push(t); } g[t].push(q); });
+    return [].concat.apply([], orden.map(function (t) { return g[t]; }));
   }
   function bannerHtml(doc) {
     return '<div class="ban">' + (doc.numero ? '<div class="n"><small>' + esc(doc.etiqueta || 'TEMA') + '</small>' + esc(doc.numero) + '</div>' : '') +
@@ -526,15 +719,23 @@
 
   // Preguntas en secciones: [{ area, titulo (asignatura), preguntas }]; area = '' para un solo curso
   function armarPreguntas(A, secciones, conBandas) {
-    var n = 0, areaAct = null;
+    var n = 0, areaAct = null, M = A.modelo, enCol = conBandas && M, rg = [], c = 0, nLec = 0;
+    // En el simulacro las lecturas vienen de varias fuentes: se numeran de nuevo en orden (Texto 01, 02…)
+    var renumerar = A.doc.tipo === 'simulacro';
+    // Formato 1 y 2: el área va como cabecera de su columna; se calcula qué preguntas tiene cada tramo de área
+    secciones.forEach(function (s, k) {
+      var u = rg[rg.length - 1];
+      if (!u || u.area !== s.area) rg.push(u = { area: s.area, i: c + 1, j: c });
+      c += s.preguntas.length; u.j = c; s._tramo = u; s._primera = !k || secciones[k - 1].area !== s.area;
+    });
     secciones.forEach(function (s) {
       var pal = ESTILO.area[s.area] || A.pal;
-      if (conBandas && s.area !== areaAct) {
+      if (!enCol && conBandas && s.area !== areaAct) {
         areaAct = s.area;
-        var prim0 = s.preguntas[0] ? A.medir(preguntaHtml(s.preguntas[0], n + 1), A.colW, pal).h : 0;
+        var prim0 = s.preguntas[0] ? A.medir(preguntaHtml(s.preguntas[0], n + 1, M), A.colW, pal).h : 0;
         A.ancho('<div class="bandaa"><span>Área de ' + esc((AREAS[s.area] || {}).nom || s.areaNom || 'Preguntas') + '</span></div>', { pal: pal, gap: 12, conSiguiente: Math.min(prim0 + 20, 170) });
       }
-      var prim = true, lecAct = null;
+      var prim = true, lecAct = null, temAct = null;
       s.preguntas.forEach(function (q, k) {
         n++;
         // ¿Empieza aquí una lectura? Se cuentan las preguntas seguidas que la comparten
@@ -545,14 +746,29 @@
             lecAct = lec.lectura;
             var j = k + 1; while (j < s.preguntas.length) { var l2 = separarLectura(s.preguntas[j].text); if (!l2 || l2.lectura !== lecAct) break; j++; }
             var cuantas = j - k, pos = cuantas > 1 ? 'preguntas ' + n + ' a ' + (n + cuantas - 1) : 'pregunta ' + n;
-            cab = A.medir(lecturaHtml(lec, pos), A.colW, pal);
+            nLec++;
+            var lecV = lec;
+            if (renumerar) {
+              var tit = (/^lectura/i.test(lec.titulo) ? 'LECTURA ' : 'TEXTO ') + dos(nLec), ls = lec.lectura.split('\n');
+              ls[0] = '[' + tit + ']'; lecV = { lectura: ls.join('\n'), titulo: tit, resto: lec.resto };
+            }
+            cab = A.medir(lecturaHtml(lecV, pos), A.colW, pal);
           }
         } else lecAct = null;
-        var m = A.medir(preguntaHtml(q, n), A.colW, pal);
-        if (prim && s.titulo) {
-          A.columna('<div class="asig"><span>' + esc(s.titulo) + '</span></div>', { pal: pal, gap: 10, conSiguiente: (cab ? Math.min(cab.h, A.Hc * 0.5) + 10 : 0) + m.h + 10 });
+        var m = A.medir(preguntaHtml(q, n, M), A.colW, pal);
+        var sig = (cab ? Math.min(cab.h, A.Hc * 0.5) + 10 : 0) + m.h + 10;
+        var tm = enCol && conTemas(q, s.titulo) ? temaDe(q) : '', tmH = '';
+        if (tm && tm.toLowerCase() !== String(s.titulo || '').toLowerCase() && tm.toLowerCase() !== temAct) tmH = temaColHtml(M, tm);
+        if (enCol) temAct = tm.toLowerCase();
+        if (prim && enCol && (s._primera || s.titulo)) {
+          var t = (s._primera ? areaColHtml(M, s.area, s._tramo.i, s._tramo.j) : '') + cursoColHtml(M, s.titulo) + tmH;
+          tmH = '';
+          if (t) A.columna(t, { pal: pal, gap: 10, titulo: true, conSiguiente: sig });
+        } else if (prim && s.titulo) {
+          A.columna('<div class="asig"><span>' + esc(s.titulo) + '</span></div>', { pal: pal, gap: 10, conSiguiente: sig });
         }
         prim = false;
+        if (tmH) A.columna(tmH, { pal: pal, gap: 8, titulo: true, conSiguiente: sig });
         if (cab) {
           // La lectura va pegada a su primera pregunta; si es más alta que una columna, a todo el ancho
           A.columna(null, { medido: cab, gap: 10 });
@@ -652,13 +868,65 @@
     if (op.ficha) armarFichas(A, qs);
     if (op.claves) armarClaves(A, qs);
   }
+  // Portada del Formato 1 (clara con lomo) o 2 (oscura): ocupa toda la hoja
+  function portadaModelo(A, rangos, N, min) {
+    var d = A.doc, M = A.modelo, op = A.op;
+    var pg = A.nuevaPagina(); pg.sinCab = true;
+    pg.el.classList.add(M === 1 ? 'pcla' : 'posc');
+    pg.c.style.left = '0'; pg.c.style.top = '0'; pg.c.style.width = '100%'; pg.c.style.height = '100%';
+    var bu = BUHOS[Math.floor(Math.random() * BUHOS.length)], g = bu.grande || 1;
+    var buho = '<img class="bu" src="' + esc(RAIZ + 'assets/buho/simulacro/' + bu.n + '.webp') + '" alt="" style="' +
+      (M === 1 ? 'right:7mm;bottom:-2mm;width:' + (74 * g).toFixed(1) + 'mm' : 'right:8mm;top:' + (104 + (g > 1 ? 14 : 0)) + 'mm;width:' + (80 * g).toFixed(1) + 'mm') + '">';
+    var titulo = d.portada1 || 'Simulacro', nro = String(d.nro || ''), etq = d.nroEtq != null ? d.nroEtq : 'N.º';
+    var tipo = d.tipoNom || d.subtitulo || '', ciclo = d.ciclo || 'Admisión UNJFSC';
+    var ok = '+' + esc(d.ok || '1,00'), mal = '−' + esc(d.mal || '0,10');
+    var datos = '<div class="dt"><div><small>Preguntas</small><b>' + N + '</b></div><div><small>Tiempo</small><b>' + min + ' min</b></div><div><small>Correcta</small><b class="l">' + ok + '</b></div><div><small>Incorrecta</small><b>' + mal + '</b></div></div>';
+    var areas = '<div class="ar" style="grid-template-columns:repeat(' + Math.max(1, Math.min(rangos.length, 4)) + ',1fr)">' + rangos.slice(0, 4).map(function (r) {
+      return '<div style="--c:' + (ESTILO.area[r.area] || A.pal).c + '">' + (ICONOS[r.area] || '') + '<span>' + esc((AREAS[r.area] || {}).nom || 'Preguntas') + '<small>Preg. ' + r.i + '–' + r.j + '</small></span></div>';
+    }).join('') + '</div>';
+    var nombre = '<div class="nb"><div><small>Apellidos y nombres</small></div><div><small>Fecha</small></div></div>';
+    var largo = function (txt, base, porLetra) { var L = String(txt).length; return L <= porLetra ? base : Math.max(base * 0.45, base * porLetra / L); };
+    var h;
+    if (M === 1) {
+      var bl = window.MCCarreras && d.bloque ? (MCCarreras.bloques || []).filter(function (b) { return b.id === d.bloque; })[0] : null;
+      var bloque = d.bloque ? '<div class="blq"><div class="l"><small>BLOQUE</small>' + esc(d.bloque) + '</div><div><h3>' + (bl ? esc(bl.nombre) : 'Bloque ' + esc(d.bloque)) + '</h3><p>' +
+        (d.carrera ? 'Postulas a <b>' + esc(d.carrera) + '</b>' + (bl ? ' · ' : '') : '') + (bl ? esc(bl.carreras.length + ' carreras: ' + bl.carreras.slice(0, d.carrera ? 4 : 7).join(' · ') + (bl.carreras.length > (d.carrera ? 4 : 7) ? ' y más' : '')) : '') + '</p></div></div>' : '';
+      h = '<div class="pc pc1"><div class="lomo"></div><div class="vert"><span>' + esc(d.lomo1 || 'Simulacro de').replace(/ /g, '&nbsp;') + '&nbsp;<em>' + esc(d.lomo2 || 'admisión') + '</em>&nbsp;·&nbsp;UNJFSC</span></div>' +
+        '<div class="zona"><div class="top"><span class="placa">' + LOGO_OSC + '</span><span>' + esc(ciclo) + '</span></div>' +
+        '<div class="hero"><i class="o1"></i><i class="o2"></i><div class="tx"><small>Modo Cachimbo presenta</small><h1 style="font-size:' + largo(titulo, 64, 9).toFixed(1) + 'pt">' + esc(titulo) + '</h1>' +
+        (nro ? '<div class="nro">' + (etq ? '<span>' + esc(etq) + '</span>' : '') + '<b style="font-size:' + largo(nro, 46, 3).toFixed(1) + 'pt">' + esc(nro) + '</b></div>' : '') +
+        '<span class="tipo">' + esc(tipo) + '</span><span class="chip">Prueba de conocimientos</span></div>' + buho + '</div>' +
+        bloque + datos + areas + nombre + '</div></div>';
+    } else {
+      h = '<div class="pc pc2"><i class="anillo"></i><i class="ban1"></i><i class="ban2"></i>' +
+        '<div class="top">' + LOGO_OSC + '<span>' + esc(ciclo) + '</span></div>' +
+        '<div class="tit"><small>Examen de admisión</small><h1 style="font-size:' + largo(titulo, 84, 9).toFixed(1) + 'pt">' + esc(titulo) + '</h1></div>' +
+        '<div class="num">' + (nro ? '<div>' + (etq ? '<small>' + esc(etq) + '</small>' : '') + '<b style="font-size:' + largo(nro, 128, 2).toFixed(1) + 'pt">' + esc(nro) + '</b></div>' : '') + '<em>' + esc(tipo) + '</em></div>' +
+        '<div class="banda"><b>' + esc(d.bloque ? 'Bloque ' + d.bloque : (d.banda || 'Examen pasado')) + '</b><span>' + esc(d.carrera ? d.carrera : 'Prueba de conocimientos') + '</span></div>' +
+        buho + datos + areas + nombre + '</div>';
+    }
+    pg.c.insertAdjacentHTML('beforeend', h);
+    A.medidas(pg.c);
+    pg.y = [pg.h, pg.h];
+  }
   function hacerSimulacro(A) {
     var d = A.doc, op = A.op, qs = todas(d.secciones), N = qs.length;
-    // Portada
-    var pg = A.nuevaPagina();
     var rangos = [], n = 0, porArea = {};
     d.secciones.forEach(function (s) { var i = n + 1; n += s.preguntas.length; var k = s.area || 'general'; (porArea[k] = porArea[k] || { area: k, i: i, j: n, asig: [] }).j = n; if (s.titulo && porArea[k].asig.indexOf(s.titulo) < 0) porArea[k].asig.push(s.titulo); });
     Object.keys(porArea).forEach(function (k) { rangos.push(porArea[k]); });
+    var claves = function () { if (op.claves) armarClaves(A, qs, { puntaje: rangos.map(function (r) { return [(AREAS[r.area] || {}).nom || 'Preguntas', r.i, r.j]; }), ok: d.ok, mal: d.mal }); };
+    if (A.modelo) {
+      portadaModelo(A, rangos, N, d.minutos || Math.round(N * 1.5));
+      A.pg = null;
+      A.nuevaPagina();
+      armarPreguntas(A, d.secciones, true);
+      if (op.hoja) armarHoja(A, qs);
+      if (op.ficha) armarFichas(A, qs);
+      claves();
+      return;
+    }
+    // Portada
+    var pg = A.nuevaPagina();
     var filas = rangos.map(function (r) { return '<tr><td><b class="an" style="color:' + (ESTILO.area[r.area] || A.pal).o + '">' + esc((AREAS[r.area] || {}).nom || 'Preguntas') + '</b><span class="as">' + esc(r.asig.join(' · ')) + '</span></td><td>' + r.i + ' – ' + r.j + '</td><td>' + (r.j - r.i + 1) + '</td></tr>'; }).join('');
     var min = d.minutos || Math.round(N * 1.5);
     var port = '<div class="port" style="position:relative;height:' + (A.Hc - 2) + 'px"><div class="p-top"><small class="k">Modo Cachimbo · ' + esc(d.ciclo || 'Admisión UNJFSC') + '</small>' +
@@ -744,7 +1012,7 @@
       cargarLogo()
     ]).then(function () {
       if (!document.fonts || !document.fonts.load) return;
-      return Promise.all(['800 20px "Barlow Condensed"', '600 20px "Barlow Condensed"', '400 14px Nunito', '700 14px Nunito', '900 14px Nunito'].map(function (f) { return document.fonts.load(f).catch(function () {}); }))
+      return Promise.all(FUENTES.map(function (f) { return document.fonts.load(f).catch(function () {}); }))
         .then(function () { return document.fonts.ready; });
     });
   }
@@ -758,7 +1026,7 @@
       if (!d.fonts || !d.fonts.load) return;
       // KaTeX también usa sus propias fuentes: se dibuja una fórmula de prueba para que las pida
       var k = d.createElement('div'); k.style.cssText = 'position:absolute;left:0;top:0;opacity:0'; k.textContent = '$$\\frac{a^2}{\\sqrt{b}}\\sum x$$ $x_1$'; d.body.appendChild(k); matematicas(k);
-      return Promise.all(['800 20px "Barlow Condensed"', '600 20px "Barlow Condensed"', '400 14px Nunito', '700 14px Nunito', '900 14px Nunito'].map(function (f) { return d.fonts.load(f).catch(function () {}); }))
+      return Promise.all(FUENTES.concat(FUENTES_KATEX).map(function (f) { return d.fonts.load(f).catch(function () {}); }))
         .then(function () { return d.fonts.ready; }).then(function () { k.remove(); });
     });
     return Promise.all([fuentes].concat(imgs.map(function (im) {
@@ -773,6 +1041,7 @@
   }
   function generar(doc, op, info, avance) {
     return prepararLibrerias().then(function () { return precargar(doc); }).then(function (tam) {
+      if (op && op.modelo) doc = Object.assign({}, doc, { modelo: op.modelo });
       var A = new Armador(doc, info, op, tam);
       try {
         if (doc.formato === 'simulacro') hacerSimulacro(A);
@@ -799,7 +1068,14 @@
           return new Promise(function (r) { setTimeout(r, 0); }).then(siguiente);
         });
       }
-      return siguiente();
+      // La primera imagen salía con letra de reserva (la copia que arma html2canvas aún no tenía las fuentes):
+      // antes se pasa a imagen un bloque chico con todas las letras para que ya estén listas
+      var prueba = A.D.createElement('div');
+      prueba.className = 'mcpdf'; prueba.style.cssText = 'width:300px;height:auto;padding:4px';
+      prueba.innerHTML = FUENTES.map(function (f) { return '<div style="font:' + f.replace(/"/g, "'") + '">Aa Ñ 0123 áé</div>'; }).join('') +
+        '<div>$$\\frac{a^2}{\\sqrt{b}}\\sum_{i=1}^{n} x_i \\left(\\dfrac{p}{q}\\right) \\mathbb{R}$$ $x^2 + y_1 \\le \\alpha$</div>';
+      A.taller.appendChild(prueba); matematicas(prueba);
+      return html2canvas(prueba, { scale: 0.5, backgroundColor: '#ffffff', logging: false }).then(function () { prueba.remove(); }, function () { prueba.remove(); }).then(siguiente);
     }).then(function (pdf) {
       return { pdf: pdf, paginas: pdf.getNumberOfPages() };
     });
@@ -843,6 +1119,13 @@
       '.mcd-sw:after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#A99FC8;transition:transform .2s,background .2s}' +
       '.mcd-op.on .mcd-sw{background:var(--ac)}.mcd-op.on .mcd-sw:after{transform:translateX(18px);background:#0B0818}' +
       '.mcd-op.fijo{cursor:default}.mcd-op.fijo .mcd-sw{opacity:.55}' +
+      '.mcd-fms{display:grid;grid-template-columns:1fr 1fr;gap:8px}' +
+      '.mcd-fm{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 10px 11px;border:2px solid #2A2346;border-bottom-width:4px;border-radius:16px;background:#1D1834;cursor:pointer;color:#EEEAF7;font-family:inherit;text-align:center}' +
+      '.mcd-fm.on{border-color:var(--ac);background:rgba(28,176,246,.08)}.mcd-fm b{font-size:14.5px;font-weight:900}.mcd-fm small{display:block;font-size:11.5px;color:#A99FC8;line-height:1.3;margin-top:1px}' +
+      '.mcd-mini{position:relative;width:54px;height:72px;border-radius:6px;overflow:hidden;box-shadow:0 5px 14px rgba(0,0,0,.35)}' +
+      '.mcd-mini.f1{background:#fff}.mcd-mini.f1:before{content:"";position:absolute;left:0;top:0;bottom:0;width:11px;background:#1B2A4A}.mcd-mini.f1:after{content:"";position:absolute;left:16px;right:5px;top:9px;height:24px;border-radius:4px;background:linear-gradient(150deg,#E8F1FB,#F4F9E2)}' +
+      '.mcd-mini.f1 i{position:absolute;left:16px;height:4px;border-radius:2px}.mcd-mini.f2{background:#0E1A31}.mcd-mini.f2:before{content:"";position:absolute;left:-10px;right:-10px;top:30px;height:15px;background:#C5F209;transform:rotate(-8deg)}' +
+      '.mcd-mini.f2:after{content:"01";position:absolute;left:6px;top:8px;font:italic 900 17px/1 "Barlow Condensed",Nunito,sans-serif;color:#C5F209}.mcd-mini.f2 i{position:absolute;left:6px;right:6px;height:5px;border-radius:2px;background:rgba(255,255,255,.18)}' +
       '.mcd-tag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:99px;background:rgba(28,176,246,.14);color:#7fd3fa;font:800 10.5px Nunito,sans-serif;letter-spacing:.04em;vertical-align:1px}' +
       '.mcd-info{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding:10px 12px;border-radius:14px;background:rgba(198,224,0,.07);border:1px dashed rgba(198,224,0,.35);font-size:12.5px;color:#cfd6a0;line-height:1.45}' +
       '.mcd-info svg{flex:none;width:18px;height:18px;color:#C6E000;margin-top:1px}' +
@@ -911,9 +1194,15 @@
       }
       if (e.bloqueado) { caja.innerHTML = cab(doc) + '<div class="mcd-err">Tu cuenta no puede descargar PDF por ahora. Si crees que es un error, escríbele a tu profe.</div>'; return; }
       if (!e.acceso) { ov.remove(); hojaCodigo(reg); return; }
-      var ops = opcionesPara(doc, e);
+      var ops = opcionesPara(doc, e), conModelo = doc.formato === 'simulacro', modelo = +(leer(K_MODELO) || 1);
+      if (!MODELOS[modelo]) modelo = 1;
+      var fms = !conModelo ? '' : '<div class="mcd-sec">Formato</div><div class="mcd-fms" role="radiogroup" aria-label="Formato del PDF">' + Object.keys(MODELOS).map(function (k) {
+        var mini = k === '1' ? '<i style="top:40px;right:7px;background:#e1e6ee"></i><i style="top:48px;right:16px;background:#e1e6ee"></i><i style="top:58px;width:8px;background:#7B3FC4"></i><i style="top:58px;left:27px;width:8px;background:#0B6BCB"></i><i style="top:58px;left:38px;width:8px;background:#4F7A00"></i>'
+          : '<i style="top:52px"></i><i style="top:60px"></i>';
+        return '<button type="button" class="mcd-fm' + (+k === modelo ? ' on' : '') + '" data-m="' + k + '" role="radio" aria-checked="' + (+k === modelo) + '"><span class="mcd-mini f' + k + '">' + mini + '</span><span><b>' + MODELOS[k].nombre + '</b><small>' + MODELOS[k].desc + '</small></span></button>';
+      }).join('') + '</div>';
       var cupo = e.quedan_dia == null ? '' : '<div class="mcd-cupo"><span>' + Array.from({ length: Math.min(e.limite_dia, 20) }, function (_, i) { return '<i' + (i < e.usadas_dia ? ' class="usado"' : '') + '></i>'; }).join('') + '</span>Te quedan ' + e.quedan_dia + ' de ' + e.limite_dia + ' hoy</div>';
-      caja.innerHTML = cab(doc) + '<div class="mcd-sec">¿Qué incluye?</div>' +
+      caja.innerHTML = cab(doc) + fms + '<div class="mcd-sec">¿Qué incluye?</div>' +
         ops.map(function (o) { return '<div class="mcd-op' + (o[3] ? ' on' : '') + (o[4] ? ' fijo' : '') + '" data-k="' + o[0] + '" role="switch" aria-checked="' + !!o[3] + '" tabindex="0"><span class="tx"><b>' + o[1] + '</b><small>' + o[2] + '</small></span><span class="mcd-sw"></span></div>'; }).join('') +
         '<div class="mcd-info">' + IC.escudo + '<span>Lleva tu apodo y correo como marca de agua y un N.º único. Es solo para ti: no lo compartas.</span></div>' + cupo +
         '<button class="mcd-go" type="button"' + (e.quedan_dia === 0 ? ' disabled' : '') + '>' + IC.pdf + 'Descargar PDF</button><div class="mcd-msg"></div>';
@@ -921,9 +1210,16 @@
         var t = function () { var on = o.classList.toggle('on'); o.setAttribute('aria-checked', String(on)); };
         o.addEventListener('click', t); o.addEventListener('keydown', function (ev) { if (ev.key === ' ' || ev.key === 'Enter') { ev.preventDefault(); t(); } });
       });
+      Array.prototype.forEach.call(caja.querySelectorAll('.mcd-fm'), function (b) {
+        b.addEventListener('click', function () {
+          Array.prototype.forEach.call(caja.querySelectorAll('.mcd-fm'), function (x) { x.classList.toggle('on', x === b); x.setAttribute('aria-checked', String(x === b)); });
+          guardar(K_MODELO, b.dataset.m);
+        });
+      });
       if (e.quedan_dia === 0) caja.querySelector('.mcd-msg').innerHTML = '<div class="mcd-err">Ya usaste tus ' + e.limite_dia + ' descargas de hoy. Mañana tienes más.</div>';
       caja.querySelector('.mcd-go').addEventListener('click', function () {
         var op = {}; Array.prototype.forEach.call(caja.querySelectorAll('.mcd-op'), function (o) { op[o.dataset.k] = o.classList.contains('on'); });
+        var fm = caja.querySelector('.mcd-fm.on'); if (fm) op.modelo = +fm.dataset.m;
         var btn = this, msg = caja.querySelector('.mcd-msg');
         btn.disabled = true; ocupado = true;
         msg.innerHTML = '<div class="mcd-barra"><i></i></div><div class="mcd-est">Registrando tu descarga…</div>';
@@ -1053,7 +1349,9 @@
             last.preguntas.push(q);
           });
           return { formato: 'simulacro', tipo: 'examen', area: 'general', titulo: t.curso + ' ' + t.year, portada1: t.curso.replace(/^Examen\s+/i, 'Examen '), portada2: t.year,
-            subtitulo: 'Examen de admisión ' + t.year, ciclo: 'Exámenes pasados', cabecera1: 'Examen', cabecera2: t.curso + ' ' + t.year, ref: t.carpeta + '/' + t.year, secciones: secs };
+            subtitulo: 'Examen de admisión ' + t.year, ciclo: 'Exámenes pasados', cabecera1: 'Examen', cabecera2: t.curso + ' ' + t.year, ref: t.carpeta + '/' + t.year, secciones: secs,
+            // Portadas de los formatos 1 y 2
+            nro: t.year, nroEtq: 'Ciclo', tipoNom: 'Examen de admisión', banda: 'Examen pasado', lomo1: 'Examen de', lomo2: 'admisión' };
         });
       }
     });
@@ -1097,6 +1395,14 @@
   document.addEventListener('mc:set-listo', registrarSet);
   if (window.MC_SET) registrarSet();
 
+  // N.º de cada simulacro del alumno (01, 02…): se guarda en el teléfono; el mismo simulacro conserva su número
+  function numeroSim(id) {
+    var K = 'mc_sim_numeros', m = {};
+    try { m = JSON.parse(leer(K) || '{}') || {}; } catch (e) {}
+    id = String(id || 'sin-id');
+    if (!m[id]) { var max = 0; Object.keys(m).forEach(function (k) { max = Math.max(max, +m[k] || 0); }); m[id] = max + 1; guardar(K, JSON.stringify(m)); }
+    return m[id];
+  }
   // Simulacro: al empezar el examen, la página deja window.MC_SIM
   function registrarSim() {
     if (!window.MC_SIM) return;
@@ -1108,9 +1414,13 @@
         var secs = x.tipo === 'personalizado'
           ? porAreaYCurso(x.preguntas, function (q) { return q._curso; })
           : porAreaYCurso(x.preguntas, function (q) { return q._curso; }, false);
+        secs.forEach(function (s) { if (s.preguntas[0] && conTemas(s.preguntas[0], s.titulo)) s.preguntas = juntarTemas(s.preguntas); });
+        var nro = dos(numeroSim(x.id));
         return { formato: 'simulacro', tipo: 'simulacro', area: 'general', titulo: x.nombre || 'Simulacro', portada1: 'Simulacro', portada2: '',
           subtitulo: (NOMT[x.tipo] || 'Simulacro') + (x.bloque ? ' · Bloque ' + x.bloque : ''), ciclo: 'Admisión UNJFSC', minutos: x.minutos,
-          cabecera1: NOMT[x.tipo] || 'Simulacro', cabecera2: x.nombre || 'Simulacro', ref: 'simulacro/' + (x.id || ''), secciones: secs };
+          cabecera1: NOMT[x.tipo] || 'Simulacro', cabecera2: 'Simulacro N.º ' + nro, ref: 'simulacro/' + (x.id || ''), secciones: secs,
+          // Portadas de los formatos 1 y 2
+          nro: nro, tipoNom: NOMT[x.tipo] || 'Simulacro', bloque: x.bloque || '', carrera: x.carrera || '' };
       }
     });
   }
