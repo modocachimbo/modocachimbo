@@ -671,7 +671,9 @@
 
   // Preguntas en secciones: [{ area, titulo (asignatura), preguntas }]; area = '' para un solo curso
   function armarPreguntas(A, secciones, conBandas) {
-    var n = 0, areaAct = null, M = A.modelo, enCol = conBandas && M, rg = [], c = 0;
+    var n = 0, areaAct = null, M = A.modelo, enCol = conBandas && M, rg = [], c = 0, nLec = 0;
+    // En el simulacro las lecturas vienen de varias fuentes: se numeran de nuevo en orden (Texto 01, 02…)
+    var renumerar = A.doc.tipo === 'simulacro';
     // Formato 1 y 2: el área va como cabecera de su columna; se calcula qué preguntas tiene cada tramo de área
     secciones.forEach(function (s, k) {
       var u = rg[rg.length - 1];
@@ -696,7 +698,13 @@
             lecAct = lec.lectura;
             var j = k + 1; while (j < s.preguntas.length) { var l2 = separarLectura(s.preguntas[j].text); if (!l2 || l2.lectura !== lecAct) break; j++; }
             var cuantas = j - k, pos = cuantas > 1 ? 'preguntas ' + n + ' a ' + (n + cuantas - 1) : 'pregunta ' + n;
-            cab = A.medir(lecturaHtml(lec, pos), A.colW, pal);
+            nLec++;
+            var lecV = lec;
+            if (renumerar) {
+              var tit = (/^lectura/i.test(lec.titulo) ? 'LECTURA ' : 'TEXTO ') + dos(nLec), ls = lec.lectura.split('\n');
+              ls[0] = '[' + tit + ']'; lecV = { lectura: ls.join('\n'), titulo: tit, resto: lec.resto };
+            }
+            cab = A.medir(lecturaHtml(lecV, pos), A.colW, pal);
           }
         } else lecAct = null;
         var m = A.medir(preguntaHtml(q, n, M), A.colW, pal);
