@@ -5,7 +5,8 @@
      Android/PC: botón que abre el instalador del navegador
      iPhone (Safari): explica Compartir → Agregar a inicio
    - Versión nueva: al volver a la app revisa si hay un sw.js nuevo (sw.js
-     recarga las pestañas), y en el inicio tras 10 min fuera revisa si se publicó algo
+     recarga las pestañas), y en cualquier página tras 10 min fuera revisa si se
+     publicó algo nuevo de esa página o de sus scripts (sin usar Supabase)
    ========================================================= */
 (function () {
   var script = document.currentScript;
@@ -26,21 +27,54 @@
     });
   }
 
-  // App abierta por días (celular): al volver al inicio tras 10 min fuera,
-  // si el servidor tiene una versión más nueva de la página, recarga
-  var esInicio = /\/(index\.html)?$/.test(location.pathname) && !/\/panel\//.test(location.pathname);
-  if (esInicio && window.fetch) {
-    var publicada = null, oculta = 0;
-    var revisar = function () {
-      return fetch(location.pathname, { method: 'HEAD', cache: 'no-cache' }).then(function (r) {
-        return r.ok ? (r.headers.get('last-modified') || r.headers.get('etag')) : null;
-      }).catch(function () { return null; });
+  // App abierta por días (celular): una página que se queda abierta sigue con el código viejo.
+  // Al volver tras 10 min fuera se pregunta al servidor (no a Supabase) si cambió la página
+  // o alguno de sus scripts y estilos: son pedidos HEAD, solo cabeceras, casi sin datos.
+  // Si cambió: recarga sola; si hay un ejercicio a medias, avisa con un botón para actualizar.
+  if (!/\/panel\//.test(location.pathname) && window.fetch) {
+    var versiones = null, oculta = 0, revisando = false;
+    var archivos = function () {
+      var u = [location.pathname];
+      Array.prototype.forEach.call(document.querySelectorAll('script[src],link[rel=stylesheet][href]'), function (el) {
+        var x = new URL(el.src || el.href, location.href);
+        if (x.origin === location.origin && x.href.indexOf(BASE) === 0 && u.indexOf(x.pathname) < 0) u.push(x.pathname);
+      });
+      return u;
     };
-    window.addEventListener('load', function () { revisar().then(function (v) { publicada = v; }); });
+    var leerVersiones = function () {
+      return Promise.all(archivos().map(function (p) {
+        return fetch(p, { method: 'HEAD', cache: 'no-cache' }).then(function (r) {
+          return r.ok ? p + '=' + (r.headers.get('etag') || r.headers.get('last-modified') || '') : '';
+        }).catch(function () { return null; });
+      })).then(function (l) { return l.indexOf(null) >= 0 ? null : l.join('|'); });
+    };
+    // ¿Hay un ejercicio, flashcards o duelo a medias? (recargar haría perder lo avanzado)
+    var aMedias = function () {
+      if (/duelo\.html$/.test(location.pathname)) return true;
+      return ['quizBody', 'juego'].some(function (id) { var e = document.getElementById(id); return e && !e.hidden && e.offsetParent !== null; });
+    };
+    var avisar = function () {
+      if (document.getElementById('mcVersionNueva')) return;
+      var b = document.createElement('button'); b.id = 'mcVersionNueva'; b.type = 'button';
+      b.textContent = 'Hay una versión nueva · Actualizar';
+      b.style.cssText = 'position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:400;border:0;border-radius:99px;padding:11px 18px;background:#C6E000;color:#141a00;font:900 14px Nunito,sans-serif;box-shadow:0 4px 0 #8fa300,0 8px 22px rgba(0,0,0,.35);cursor:pointer';
+      b.addEventListener('click', function () { location.reload(); });
+      document.body.appendChild(b);
+    };
     document.addEventListener('visibilitychange', function () {
-      if (document.hidden) { oculta = Date.now(); return; }
-      if (!oculta || Date.now() - oculta < 600000 || !publicada) return;
-      revisar().then(function (v) { if (v && v !== publicada) location.reload(); });
+      if (document.hidden) {
+        oculta = Date.now();
+        // La primera vez que se sale de la página se anota qué versión tiene cada archivo
+        if (!versiones && !revisando) { revisando = true; leerVersiones().then(function (v) { versiones = v; revisando = false; }); }
+        return;
+      }
+      if (!oculta || Date.now() - oculta < 600000 || !versiones || revisando) return;
+      revisando = true;
+      leerVersiones().then(function (v) {
+        revisando = false;
+        if (!v || v === versiones) return;
+        if (aMedias()) avisar(); else location.reload();
+      });
     });
   }
 
