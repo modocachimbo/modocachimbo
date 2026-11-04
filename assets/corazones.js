@@ -203,12 +203,14 @@
 
   /* ---------- Respuestas: XP y corazones ---------- */
   var buf = { ok: 0, mal: 0, seguidas: 0 }, racha = 0, tEnvio = null, enviando = false, vuelo = 0;
-  // XP por respuesta: el mismo cálculo que sumar_xp en supabase/59-xp-10-y-15-sin-tope.sql.
-  // [correcta, incorrecta]: 15 donde se gasta corazón, 10 en lo demás. Sin multiplicador
-  // de rango (el servidor manda xp_mult = 100; se deja por si vuelve).
+  // XP por respuesta: el mismo cálculo que sumar_xp en supabase/60-multiplicadores-leyenda-04.sql.
+  // [correcta, incorrecta]: 15 donde se gasta corazón, 10 en lo demás; la correcta se
+  // multiplica por el rango de la semana (xp_mult, en %, lo manda el servidor).
   var XP_MODO = { repaso: [15, 2], fijas: [15, 2], seminarios: [15, 2], banqueo: [15, 2], simulacro: [10, 2],
     duelo: [10, 2], libro: [10, 2], examen: [10, 2], falladas: [10, 2], tarjetas: [10, 2], vocabulario: [10, 2] };
-  function multXp() { return 100; }  // respaldo si el servidor aún no manda xp_mult
+  function multXp(xp) {  // respaldo si el servidor aún no manda xp_mult (mismos cortes que rango.js)
+    return xp >= 50000 ? 40 : xp >= 16000 ? 70 : xp >= 9000 ? 80 : xp >= 4700 ? 85 : xp >= 2300 ? 90 : 100;
+  }
   function valor(ok, mal) {
     var b = (PAG && XP_MODO[PAG.fuente]) || [14, 1];
     var mu = estado && estado.xp_mult != null ? +estado.xp_mult : multXp((estado && estado.xp_semana) || 0);
