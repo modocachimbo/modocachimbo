@@ -2,7 +2,8 @@
    Modo Cachimbo · Mi colección (lo que tienes y te pones)
    - CATALOGO: búhos, fotos de perfil, fondos, marcos, títulos y pines.
      Cada objeto dice cómo se consigue (regla):
-       gratis · racha (mejor racha de N días) · rango (cerrar una semana
+       gratis · racha (mejor racha de N días) · grupo (influencers: mientras
+       estés en el grupo, supabase/64-influencers.sql) · rango (cerrar una semana
        en ese rango) · top (ir en el puesto N del Top desde el martes; se
        queda si cierras la semana ahí, supabase/61-pines-corona-top3.sql) · evento / regalo (te lo
        entregan por SQL en coleccion_mia)
@@ -213,21 +214,23 @@
   var CLAVE = 'mc_coleccion', CLAVE_T = 'mc_coleccion_t';   // _t: cuándo se pidió cada cosa { u, col, rgo }
 
   // Estado: lo que tienes (mias), lo que llevas (puesto) y los datos para las reglas
-  var E = { mias: {}, puesto: copiar(DEFECTO), mejorRacha: 0, maxRango: -1, tops: {}, sql: false, listo: false, rachaOk: false };
+  var E = { mias: {}, puesto: copiar(DEFECTO), mejorRacha: 0, maxRango: -1, tops: {}, grupos: [], sql: false, listo: false, rachaOk: false };
   var cache = leer(CLAVE);
-  if (cache) { E.mias = cache.mias || {}; E.puesto = mezclar(cache.puesto); E.mejorRacha = cache.mejorRacha || 0; E.maxRango = cache.maxRango == null ? -1 : cache.maxRango; E.tops = cache.tops || {}; E.sql = !!cache.sql; }
+  if (cache) { E.mias = cache.mias || {}; E.puesto = mezclar(cache.puesto); E.mejorRacha = cache.mejorRacha || 0; E.maxRango = cache.maxRango == null ? -1 : cache.maxRango; E.tops = cache.tops || {}; E.grupos = cache.grupos || []; E.sql = !!cache.sql; }
   function copiar(o) { return JSON.parse(JSON.stringify(o)); }
   function mezclar(p) { var r = copiar(DEFECTO); Object.keys(p || {}).forEach(function (k) { if (k in r) r[k] = p[k]; }); if (!Array.isArray(r.pines)) r.pines = []; return r; }
   var oyentes = [];
   function avisar() {
-    guardar(CLAVE, { mias: E.mias, puesto: E.puesto, mejorRacha: E.mejorRacha, maxRango: E.maxRango, tops: E.tops, sql: E.sql });
+    guardar(CLAVE, { mias: E.mias, puesto: E.puesto, mejorRacha: E.mejorRacha, maxRango: E.maxRango, tops: E.tops, grupos: E.grupos, sql: E.sql });
     oyentes.forEach(function (fn) { try { fn(E); } catch (e) {} });
   }
 
   function tiene(id) {
     var x = POR_ID[id]; if (!x) return false;
-    if (E.mias[id]) return true;
     var r = x.regla;
+    // Influencers: se tiene mientras estés en el grupo (supabase/64-influencers.sql), aunque te lo hayan regalado
+    if (r.tipo === 'grupo') return E.grupos.indexOf(r.g) >= 0;
+    if (E.mias[id]) return true;
     if (r.tipo === 'gratis') return true;
     if (r.tipo === 'racha') return E.mejorRacha >= r.n;
     if (r.tipo === 'rango') return E.maxRango >= r.n;
@@ -253,6 +256,7 @@
       if (ok) return 'Vas en el ' + P + ' puesto del Top: llévala esta semana. Si cierras el domingo en ese puesto, es tuya para siempre.';
       return 'Desde el martes la llevan los 3 primeros del Top de la semana. Es tuya para siempre si cierras la semana en el ' + P + ' puesto.';
     }
+    if (r.tipo === 'grupo') return ok ? 'Es tuyo por ser influencer de Modo Cachimbo.' : 'Solo para los influencers de Modo Cachimbo.';
     if (r.tipo === 'evento') return ok ? 'Lo ganaste en ' + r.evento + '. Es tuyo para siempre.' : 'Se ganaba en ' + r.evento + '.';
     return ok ? 'Un regalo de Modo Cachimbo.' : 'Es un regalo especial: no se puede conseguir solo.';
   }
@@ -285,6 +289,7 @@
           E.sql = true; E.mias = {};
           (d.mias || []).forEach(function (m) { E.mias[m.item] = m.origen || 'regalo'; });
           if (d.puesto) E.puesto = mezclar(d.puesto);
+          E.grupos = Array.isArray(d.grupos) ? d.grupos : [];   // ['influencer'] (supabase/64-influencers.sql)
           E.tops = d.tops || {};   // { "1": veces, "2": …, "3": …, ahora: tu puesto esta semana } (supabase/61-pines-corona-top3.sql)
           T.col = Date.now();
         }).catch(function () { E.sql = false; }),
