@@ -9,7 +9,7 @@
      de la imagen; los marcos sin imagen y los cuadros de racha se
      arman con colores.
    - Se gana con las reglas de Mi colección: para todos, racha,
-     rango en una semana o regalo (a todos, por ID o por correo; uno solo o en paquete).
+     rango en una semana, solo influencers (64-influencers.sql) o regalo (a todos, por ID o por correo; uno solo o en paquete).
    Datos: supabase/40-recursos.sql y 41-recursos-coleccion.sql
    (guardar_recurso, recursos_admin, borrar_recurso) y 62-regalar-paquete.sql (regalar_items: uno o varios, a todos, por ID o por correo).
    ========================================================= */
@@ -214,8 +214,11 @@ function recReglaTxt(g) {
   if (g.tipo === 'gratis') return 'Para todos';
   if (g.tipo === 'racha') return 'Racha de ' + g.n + ' días';
   if (g.tipo === 'rango') return 'Llegar a ' + recRango(g.n) + ' en una semana';
+  if (g.tipo === 'grupo') return 'Solo influencers';
   return 'Regalo';
 }
+// Se puede regalar: no lo de «Para todos» (ya lo tienen) ni lo de influencers (va con el grupo)
+const recRegalable = x => !!x.regla && x.regla.tipo !== 'gratis' && x.regla.tipo !== 'grupo';
 
 /* ---------- Formulario ---------- */
 function recFormHtml() {
@@ -245,6 +248,7 @@ function recFormHtml() {
       <button type="button" class="agp-op" data-r="regalo">Regalo</button>
       <button type="button" class="agp-op" data-r="racha">Racha</button>
       <button type="button" class="agp-op" data-r="rango">Rango semanal</button>
+      <button type="button" class="agp-op" data-r="grupo">Solo influencers</button>
     </div>
     <div class="rec-sub" id="recSub"></div>
     <label class="tmp-sw" style="display:flex;align-items:center;gap:12px;margin-top:16px;cursor:pointer;font:800 14px Nunito,sans-serif">
@@ -263,6 +267,7 @@ function recSubHtml() {
   if (REC.regla === 'gratis') return '<p class="hint" style="margin:0">Lo tienen todos los alumnos desde que lo publicas, también los que se registren después.</p>';
   if (REC.regla === 'racha') return `<label for="recN">Días de racha</label><input class="inp" id="recN" type="number" min="1" max="1000" value="${g.tipo === 'racha' ? g.n : 7}">
     <p class="hint" style="margin:8px 0 0">Lo gana solo quien llega (o ya llegó) a esa racha. Al ganarlo le sale la celebración.</p>`;
+  if (REC.regla === 'grupo') return '<p class="hint" style="margin:0">Lo tienen los alumnos que pongas en <b>Panel → Influencers</b>, solo mientras estén ahí. Cuando agregas a alguien le llega en un sobre; si lo quitas, se le quita y vuelve a lo que usaba antes.' + (e && e.regla && e.regla.tipo === 'grupo' ? '' : ' Al publicarlo, a los influencers de ahora les llega en un sobre.') + '</p>';
   if (REC.regla === 'rango') return `<label for="recRg">Rango</label><select class="inp" id="recRg">${REC_RANGO_XP.map((x, i) => `<option value="${i}"${g.tipo === 'rango' && +g.n === i ? ' selected' : ''}>${esc(recRango(i))} (${x.toLocaleString('es-PE')} XP en una semana)</option>`).join('')}</select>
     <p class="hint" style="margin:8px 0 0">Lo gana quien cierra (o ya cerró) una semana en ese rango o más.</p>`;
   return `${e ? '<p class="hint" style="margin:0 0 4px">Para entregarlo a más alumnos usa <b>Regalar</b> en la lista de abajo.</p>' : `
@@ -368,11 +373,11 @@ function recItemHtml(x) {
     : `<div class="im mini">${recDibujo(x)}</div>`;
   return `<div class="rec-it${x.visible ? '' : ' oculto'}${REC.sel.includes(x.id) ? ' elegido' : ''}">
     ${im}
-    <div class="tx">${x.regla && x.regla.tipo !== 'gratis' ? `<label class="sel"><input type="checkbox" data-sel="${esc(x.id)}"${REC.sel.includes(x.id) ? ' checked' : ''}> Elegir</label>` : ''}<b>${esc(x.nom)}</b><small>${esc(recReglaTxt(x.regla))} · ${datos}</small>
+    <div class="tx">${recRegalable(x) ? `<label class="sel"><input type="checkbox" data-sel="${esc(x.id)}"${REC.sel.includes(x.id) ? ' checked' : ''}> Elegir</label>` : ''}<b>${esc(x.nom)}</b><small>${esc(recReglaTxt(x.regla))} · ${datos}</small>
       <span class="tag" style="--c:#C6E000">${esc(T.nom)}</span><span class="tag" style="--c:${R.c}">${R.nom}</span>${x.visible ? '' : '<span class="tag" style="--c:#8a83a8">Oculto</span>'}</div>
     <div class="bts">
       <button class="btn-ghost" type="button" data-ed="${esc(x.id)}">Editar</button>
-      ${x.regla && x.regla.tipo === 'gratis' ? '' : `<button class="btn-ghost" type="button" data-rg="${esc(x.id)}">Regalar</button>`}
+      ${!recRegalable(x) ? '' : `<button class="btn-ghost" type="button" data-rg="${esc(x.id)}">Regalar</button>`}
       <button class="btn-ghost" type="button" data-vi="${esc(x.id)}">${x.visible ? 'Ocultar' : 'Mostrar'}</button>
       <button class="btn-ghost rojo" type="button" data-bo="${esc(x.id)}">${seguro ? '¿Borrar? Toca otra vez' : 'Borrar'}</button>
     </div>
@@ -443,7 +448,7 @@ function recPintarLista() {
 }
 // Regalar varios a la vez: elige los que quieras (o todo el paquete de lo que ves) y a quién
 function recRegaloHtml(lista) {
-  const regalables = lista.filter(x => x.regla && x.regla.tipo !== 'gratis');
+  const regalables = lista.filter(recRegalable);
   if (!regalables.length) return '';
   const n = REC.sel.length, nombres = REC.sel.map(id => (REC.lista.find(x => x.id === id) || {}).nom).filter(Boolean);
   const op = (k, t) => `<button type="button" class="agp-op${REC.rgPara === k ? ' on' : ''}" data-rgp="${k}">${t}</button>`;
@@ -493,6 +498,7 @@ async function guardarRecurso() {
   const regla = { tipo: REC.regla };
   if (REC.regla === 'racha') { regla.n = parseInt($('recN').value, 10); if (!(regla.n >= 1 && regla.n <= 1000)) { toast('Los días de racha van de 1 a 1000', true); return; } }
   if (REC.regla === 'rango') regla.n = parseInt($('recRg').value, 10);
+  if (REC.regla === 'grupo') regla.g = 'influencer';
   const entregar = !e && REC.regla === 'regalo' && REC.para !== 'nadie';
   const dest = entregar && REC.para !== 'todos' ? recDestinos($('recCorreos').value) : null;
   if (dest && dest.malos.length) { toast('No se entiende: ' + dest.malos.slice(0, 3).join(', '), true); return; }
@@ -547,7 +553,7 @@ async function recAccionLista(ev) {
   if ($('recRgPara')) REC.rgTxt = $('recRgPara').value;
   if ($('recRgMsj')) REC.rgMsj = $('recRgMsj').value;
   if (b.dataset.rg) { REC.sel = [b.dataset.rg]; REC.regalar = true; REC.borrar = null; recPintarLista(); return; }
-  if (b.dataset.rgtodo) { REC.sel = REC.lista.filter(x => (!REC.filtro || x.espacio === REC.filtro) && x.regla && x.regla.tipo !== 'gratis').map(x => x.id); recPintarLista(); return; }
+  if (b.dataset.rgtodo) { REC.sel = REC.lista.filter(x => (!REC.filtro || x.espacio === REC.filtro) && recRegalable(x)).map(x => x.id); recPintarLista(); return; }
   if (b.dataset.rgnada) { REC.sel = []; REC.regalar = false; recPintarLista(); return; }
   if (b.dataset.rgabrir) { REC.regalar = !REC.regalar; recPintarLista(); return; }
   if (b.dataset.rgp) { REC.rgPara = b.dataset.rgp; recPintarLista(); return; }

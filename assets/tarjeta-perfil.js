@@ -292,6 +292,7 @@
     var r = px.regla || {};
     if (r.tipo === 'evento') return 'Se ganaba en ' + r.evento + '.';
     if (r.tipo === 'racha') return 'Se gana con ' + r.n + ' días de racha.';
+    if (r.tipo === 'grupo') return 'Solo para los influencers de Modo Cachimbo.';
     if (r.tipo === 'top') return 'La lleva el puesto ' + r.n + ' del Top de la semana (desde el martes). Se queda para siempre si cierras la semana ahí.';
     return 'Un pin de su colección (Mi colección → Pines).';
   }

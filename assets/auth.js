@@ -75,7 +75,7 @@
     document.head.appendChild(n);
     // Corazones, misiones del día y XP (assets/corazones.js) y el búho que usa
     var cz = document.createElement('script');
-    cz.src = BASE + 'assets/corazones.js?v=3';
+    cz.src = BASE + 'assets/corazones.js?v=4';
     document.head.appendChild(cz);
     var pagina = location.href.replace(/[?#].*$/, '');
     // Rangos de la semana: tarjeta en el inicio, vitrina en el perfil (assets/rango.js)
