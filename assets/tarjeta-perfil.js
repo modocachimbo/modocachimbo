@@ -183,8 +183,8 @@
     O1 + '.mct .mcu-av{clip-path:none}' +
     O1 + '.mct-nv{left:auto;right:0;bottom:0;padding:3px 6px 2px 9px;background:rgba(10,6,28,.88);color:#fff;clip-path:polygon(8px 0,100% 0,100% 100%,0 100%)}' +
     O1 + '.mct-nv b{color:#FFE14D}' +
-    O1 + '.mct-tx{position:static;padding-right:52px}' +
-    O1 + '.mct-rg i{position:absolute;z-index:1;right:12px;top:50%;width:46px!important;transform:translateY(-50%)}' +
+    O1 + '.mct-tx{position:static;padding-right:58px}' +
+    O1 + '.mct-rg i{position:absolute;z-index:1;right:10px;top:50%;width:54px!important;transform:translateY(-50%)}' +
     // 2: foto con marco dorado separada del banner por una franja oscura; el rango sigue junto al nombre
     O2 + '.mcu-chip.mct{background:#0d0820}' +
     O2 + '.mct-arte,' + O2 + '.mct-velo{left:calc(var(--h) + 6px);width:calc(100% - var(--h) - 6px)}' +
@@ -195,7 +195,7 @@
       X + '.mcu-chip.mct{--h:clamp(60px,calc((100vw - 32px) / 5),96px);width:auto;height:var(--h);padding-right:12px;--bi:var(--h)}' +
       X + '.mct-caja{width:var(--h);height:var(--h)}' +
       X + '.mct-pin{width:44%;height:44%;right:-5%}' +
-      O1 + '.mct-rg i{width:40px!important;right:10px}' + O1 + '.mct-tx{padding-right:44px}' +
+      O1 + '.mct-rg i{width:48px!important;right:8px}' + O1 + '.mct-tx{padding-right:52px}' +
     '}';
   var SOLO_ICONO = window.matchMedia ? window.matchMedia('(max-width:360px)') : { matches: false };
   var tVer = null;
