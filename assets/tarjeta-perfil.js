@@ -239,7 +239,7 @@
   // Los estilos de la tarjeta grande y de las fotos: assets/tarjeta-jugador.css
   function hoja() {
     if (document.querySelector('link[href*="tarjeta-jugador.css"]')) return;
-    var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = BASE + 'assets/tarjeta-jugador.css?v=5';
+    var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = BASE + 'assets/tarjeta-jugador.css?v=6';
     document.head.appendChild(l);
   }
   var GALAXIA = ['#5b34b8', '#241452', '#4a2a9a', '#1a0f40'];
@@ -292,6 +292,7 @@
     var r = px.regla || {};
     if (r.tipo === 'evento') return 'Se ganaba en ' + r.evento + '.';
     if (r.tipo === 'racha') return 'Se gana con ' + r.n + ' días de racha.';
+    if (r.tipo === 'top') return 'La lleva el puesto ' + r.n + ' del Top de la semana (desde el martes). Se queda para siempre si cierras la semana ahí.';
     return 'Un pin de su colección (Mi colección → Pines).';
   }
   // Pin que se toca: al tocarlo sale un globito con su nombre y cómo se consigue
