@@ -65,6 +65,7 @@ const recRango = n => window.MCRango ? MCRango.nombre(MCRango.nivel(REC_RANGO_XP
   .rec-it .im.fijo .mcc-dib { width: auto; height: 100%; max-width: 100%; aspect-ratio: 1; }
   .rec-it .im.fijo .mcc-dib > * { max-height: 100%; }
   .rec-it .im.fijo.ancho .mcc-dib { aspect-ratio: auto; width: 100%; }
+  .rec-it .im.fijo .rec-ver { display: grid; place-items: center; height: 70%; } .rec-it .im.fijo .rec-ver svg { height: 100%; width: auto; }
   .rec-sep { grid-column: 1 / -1; margin: 10px 0 0; font: 1000 12px Nunito, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--text-dim); }
   .rec-sep small { display: block; letter-spacing: 0; text-transform: none; font-weight: 700; margin-top: 2px; }
   .rec-it .tx .sel { float: right; display: inline-flex; align-items: center; gap: 6px; font: 800 12px Nunito, sans-serif; color: var(--text-dim); cursor: pointer; margin-left: 8px; }
@@ -219,16 +220,27 @@ async function cargarRecursos(soloLista) {
 // Se dibuja con assets/coleccion.js, que se carga la primera vez.
 const REC_EXTRA = { buho: { nom: 'Búho', plural: 'Búhos' }, escena: { nom: 'Escenario', plural: 'Escenarios' } };
 const recTipoDe = k => REC_TIPOS[k] || REC_EXTRA[k] || { nom: k, plural: k };
-function recFijos() {
-  const listo = () => (window.MCColeccion.catalogo || []).filter(x => !x.recurso)
-    .map(x => ({ id: x.id, espacio: x.espacio, nom: x.nom, rareza: x.rareza, regla: x.regla, visible: true, fijo: true }));
-  if (window.MCColeccion) return Promise.resolve(listo());
-  return new Promise(ok => {
-    const s = document.createElement('script'); s.src = '../assets/coleccion.js?v=190';
-    s.onload = () => { try { MCColeccion.css(); ok(listo()); } catch (e) { ok([]); } };
-    s.onerror = () => ok([]);
+// Lo eliminado de la web (supabase/66-eliminar-de-la-web.sql) sale apagado, con «Restaurar».
+// Al final va el pin V de verificado: no es de la colección, lo llevan solos los del equipo.
+const REC_VER = { id: 'pin-verificado', espacio: 'pines', nom: 'Admin verificado', rareza: 'legendario', regla: { tipo: 'equipo' }, visible: true, fijo: true, auto: true };
+async function recFijos() {
+  const C = window.MCColeccion || await new Promise(ok => {
+    const s = document.createElement('script'); s.src = '../assets/coleccion.js?v=191';
+    s.onload = () => { try { MCColeccion.css(); ok(MCColeccion); } catch (e) { ok(null); } };
+    s.onerror = () => ok(null);
     document.head.appendChild(s);
   });
+  if (!C) return [];
+  let fuera = [];
+  try {
+    const c = await MCAuth.listo;
+    const r = await c.from('coleccion_item').select('id').eq('recurso', false).eq('visible', false);
+    if (!r.error) fuera = (r.data || []).map(x => x.id);
+  } catch (e) {}
+  const def = Object.values(C.defecto).filter(x => typeof x === 'string').concat('avatar-buho');
+  return (C.fijos || C.catalogo || []).filter(x => !x.recurso)
+    .map(x => ({ id: x.id, espacio: x.espacio, nom: x.nom, rareza: x.rareza, regla: x.regla, visible: !fuera.includes(x.id), fijo: true, defecto: def.includes(x.id) }))
+    .concat(REC_VER);
 }
 
 function recReglaTxt(g) {
@@ -239,10 +251,11 @@ function recReglaTxt(g) {
   if (g.tipo === 'racha') return 'Racha de ' + g.n + ' días';
   if (g.tipo === 'rango') return 'Llegar a ' + recRango(g.n) + ' en una semana';
   if (g.tipo === 'grupo') return 'Solo influencers';
+  if (g.tipo === 'equipo') return 'Lo llevan solos los admins y ayudantes del equipo';
   return 'Regalo';
 }
 // Se puede regalar: no lo de «Para todos» (ya lo tienen) ni lo de influencers (va con el grupo)
-const recRegalable = x => !!x.regla && x.regla.tipo !== 'gratis' && x.regla.tipo !== 'grupo';
+const recRegalable = x => !!x.regla && x.visible !== false && !['gratis', 'grupo', 'equipo'].includes(x.regla.tipo);
 
 /* ---------- Formulario ---------- */
 function recFormHtml() {
@@ -467,20 +480,31 @@ function recPintarLista() {
   const lista = REC.lista.filter(x => !REC.filtro || x.espacio === REC.filtro);
   REC.sel = REC.sel.filter(id => REC.lista.some(x => x.id === id));
   const subidos = lista.filter(x => !x.fijo), fijos = lista.filter(x => x.fijo);
-  $('recListaC').innerHTML = lista.length ? recRegaloHtml(lista) + `<div class="rec-lista">${subidos.map(recItemHtml).join('')}${fijos.length ? `<div class="rec-sep">De la web · ${fijos.length}<small>Vienen con la página. No se editan aquí, pero los que no son «para todos» se pueden regalar.</small></div>` + fijos.map(recItemHtml).join('') : ''}</div>`
+  $('recListaC').innerHTML = lista.length ? recRegaloHtml(lista) + `<div class="rec-lista">${subidos.map(recItemHtml).join('')}${fijos.length ? `<div class="rec-sep">De la web · ${fijos.length}<small>Vienen con la página. No se editan aquí; los que no son «para todos» se pueden regalar y cualquiera (menos lo que viene por defecto) se puede eliminar.</small></div>` + fijos.map(recItemHtml).join('') : ''}</div>`
     : '<div class="rec-vacio">Todavía no subiste nada. Elige qué subir arriba.</div>';
   const t = $('recRgPara');
   if (t) t.value = REC.rgTxt || '';
 }
+// El pin V de verificado, igual que en assets/tarjeta-perfil.js
+const REC_VER_SVG = '<svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="recV-o" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF3A6"/><stop offset=".45" stop-color="#FFC800"/><stop offset="1" stop-color="#B86E00"/></linearGradient><linearGradient id="recV-v" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B3261E"/><stop offset="1" stop-color="#4A0A0A"/></linearGradient></defs>' +
+  '<path d="M24 2 43 13v22L24 46 5 35V13z" fill="url(#recV-o)" stroke="#5a2a00" stroke-width="1.5"/><path d="M24 7 39 15.5v17L24 41 9 32.5v-17z" fill="url(#recV-v)"/><path d="M14 15h6.5L24 28l3.5-13H34l-7 19h-6z" fill="url(#recV-o)" stroke="#5a2a00" stroke-width="1"/></svg>';
 function recFijoHtml(x) {
   const R = REC_RAREZA[x.rareza] || REC_RAREZA.comun, T = recTipoDe(x.espacio), C = window.MCColeccion;
   const rc = { comun: '169,159,200', raro: '28,176,246', epico: '206,130,255', legendario: '255,200,0', evento: '255,75,75' }[x.rareza] || '169,159,200';
-  const it = C && C.item(x.id);
-  return `<div class="rec-it${REC.sel.includes(x.id) ? ' elegido' : ''}">
-    <div class="im mini fijo${x.espacio === 'racha' || x.espacio === 'titulo' ? ' ancho' : ''}" style="--rc:${rc}">${it ? '<span class="mcc-dib">' + C.dibujo(it) + '</span>' : ''}</div>
+  const it = !x.auto && C && (C.item(x.id) || (C.fijos || []).find(f => f.id === x.id));
+  const dib = x.auto ? '<span class="mcc-dib rec-ver">' + REC_VER_SVG + '</span>' : it ? '<span class="mcc-dib">' + C.dibujo(it) + '</span>' : '';
+  const seguro = REC.borrar === x.id;
+  let bts;
+  if (x.auto) bts = '<span class="hint" style="margin:0;font-size:12px">Se pone solo. No se regala ni se elimina.</span>';
+  else if (x.visible === false) bts = `<button class="btn-ghost" type="button" data-rew="${esc(x.id)}">Restaurar</button>`;
+  else bts = (recRegalable(x) ? `<button class="btn-ghost" type="button" data-rg="${esc(x.id)}">Regalar</button>` : '<span class="hint" style="margin:0;font-size:12px">Ya lo tienen todos</span>') +
+    (x.defecto ? '<span class="hint" style="margin:0;font-size:12px">· Viene por defecto</span>'
+      : `<button class="btn-ghost rojo" type="button" data-elw="${esc(x.id)}">${seguro ? '¿Eliminar? Toca otra vez' : 'Eliminar'}</button>`);
+  return `<div class="rec-it${x.visible === false ? ' oculto' : ''}${REC.sel.includes(x.id) ? ' elegido' : ''}">
+    <div class="im mini fijo${x.espacio === 'racha' || x.espacio === 'titulo' ? ' ancho' : ''}" style="--rc:${rc}">${dib}</div>
     <div class="tx">${recRegalable(x) ? `<label class="sel"><input type="checkbox" data-sel="${esc(x.id)}"${REC.sel.includes(x.id) ? ' checked' : ''}> Elegir</label>` : ''}<b>${esc(x.nom)}</b><small>${esc(recReglaTxt(x.regla))}</small>
-      <span class="tag" style="--c:#C6E000">${esc(T.nom)}</span><span class="tag" style="--c:${R.c}">${R.nom}</span><span class="tag" style="--c:#8a83a8">De la web</span></div>
-    <div class="bts">${recRegalable(x) ? `<button class="btn-ghost" type="button" data-rg="${esc(x.id)}">Regalar</button>` : '<span class="hint" style="margin:0;font-size:12px">Ya lo tienen todos</span>'}</div>
+      <span class="tag" style="--c:#C6E000">${esc(T.nom)}</span><span class="tag" style="--c:${R.c}">${R.nom}</span><span class="tag" style="--c:#8a83a8">${x.auto ? 'Del equipo' : 'De la web'}</span>${x.visible === false ? '<span class="tag" style="--c:#FF4B4B">Eliminado</span>' : ''}</div>
+    <div class="bts">${bts}</div>
   </div>`;
 }
 // Regalar varios a la vez: elige los que quieras (o todo el paquete de lo que ves) y a quién
@@ -609,6 +633,21 @@ async function recAccionLista(ev) {
     const r = await c.rpc('guardar_recurso', { p: Object.assign({}, x, { visible: !x.visible }) });
     if (r.error) { toast('No se pudo cambiar: ' + r.error.message, true); return; }
     toast(x.visible ? 'Oculto: ya no sale en Mi colección' : 'Ya sale en Mi colección');
+    cargarRecursos(true); return;
+  }
+  // Lo de la web: se apaga (supabase/66-eliminar-de-la-web.sql) y se puede restaurar
+  if (b.dataset.elw || b.dataset.rew) {
+    const id = b.dataset.elw || b.dataset.rew, quitar = !!b.dataset.elw;
+    if (quitar && REC.borrar !== id) { REC.borrar = id; recPintarLista(); return; }
+    REC.borrar = null;
+    const x = buscar(id);
+    b.disabled = true;
+    const r = await c.rpc('web_item_eliminar', { p_id: x.id, p_espacio: x.espacio, p_regla: x.regla || null, p_eliminar: quitar });
+    if (r.error) {
+      toast(/web_item_eliminar|does not exist|schema cache/i.test(r.error.message || '') ? 'Falta correr supabase/66-eliminar-de-la-web.sql' : 'No se pudo: ' + r.error.message, true);
+      recPintarLista(); return;
+    }
+    toast(quitar ? 'Eliminado: ya no sale en Mi colección y a quien lo llevaba se le quitó' : 'Restaurado: vuelve a salir en Mi colección');
     cargarRecursos(true); return;
   }
   if (b.dataset.bo) {

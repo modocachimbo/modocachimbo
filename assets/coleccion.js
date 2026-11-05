@@ -164,7 +164,7 @@
   // Recursos: lo que se sube desde el panel (supabase/40-recursos.sql y 41-recursos-coleccion.sql):
   // fondos, fotos de perfil, pines, marcos, cuadros de racha y títulos.
   // Se suman al catálogo al llegar; se recuerdan en este equipo para no esperar la próxima vez.
-  var CLAVE_REC = 'mc_recursos';
+  var CLAVE_REC = 'mc_recursos2';   // 2: también trae lo de la web eliminado (66)
   var IMG_REC = /^https:\/\/[a-z0-9.-]+\/storage\/v1\/object\/public\/recursos\/[A-Za-z0-9\/_.-]+$/;
   function colores(l, n) { return Array.isArray(l) && l.length === n && l.every(function (c) { return /^#[0-9a-fA-F]{6}$/.test(c); }); }
   function recurso(r) {
@@ -184,9 +184,18 @@
     else if (e !== 'titulo') return null;
     return x;
   }
+  // Lo que viene con la web, tal cual (el panel lo muestra aunque se haya eliminado)
+  var FIJOS = CATALOGO.slice(), OCULTOS = [];
+  // Rearma el catálogo: lo de la web menos lo eliminado desde el panel
+  // (supabase/66-eliminar-de-la-web.sql) y luego los recursos visibles
   function sumarRecursos(lista) {
-    for (var i = CATALOGO.length - 1; i >= 0; i--) if (CATALOGO[i].recurso) { delete POR_ID[CATALOGO[i].id]; CATALOGO.splice(i, 1); }
-    (lista || []).forEach(function (r) {
+    lista = lista || [];
+    OCULTOS = lista.filter(function (r) { return r.recurso === false && r.visible === false; }).map(function (r) { return r.id; });
+    CATALOGO.length = 0;
+    Object.keys(POR_ID).forEach(function (k) { delete POR_ID[k]; });
+    FIJOS.forEach(function (x) { if (OCULTOS.indexOf(x.id) < 0) { CATALOGO.push(x); POR_ID[x.id] = x; } });
+    lista.forEach(function (r) {
+      if (r.recurso === false || r.visible === false) return;
       var x = recurso(r);
       if (x) { CATALOGO.push(x); POR_ID[x.id] = x; }
     });
@@ -198,7 +207,7 @@
     if (pedidoRec || !window.MCAuth) return pedidoRec;
     if (leer(CLAVE_REC) && Date.now() - (+leer(CLAVE_REC + '_t') || 0) < 6 * 3600000) return (pedidoRec = Promise.resolve());
     pedidoRec = MCAuth.listo.then(function (c) {
-      return c.from('coleccion_item').select('id,espacio,regla,nom,rareza,img,tema,llama,descr').eq('recurso', true).eq('visible', true).order('creado').then(function (r) {
+      return c.from('coleccion_item').select('id,espacio,regla,nom,rareza,img,tema,llama,descr,recurso,visible').or('and(recurso.eq.true,visible.eq.true),visible.eq.false').order('creado').then(function (r) {
         if (r.error) return; // todavía no se corrió supabase/40-recursos.sql
         var antes = JSON.stringify(leer(CLAVE_REC) || []), ahora = JSON.stringify(r.data || []);
         guardar(CLAVE_REC, r.data || []); guardar(CLAVE_REC + '_t', Date.now());
@@ -574,7 +583,7 @@
     item: function (id) { return POR_ID[id]; },
     items: function (esp) { return CATALOGO.filter(function (x) { return !esp || x.espacio === esp; }); },
     estado: function () { return E; },
-    cargar: cargar, tiene: tiene, avance: avance, como: como, puesto: puesto, poner: poner, corona: coronaAhora,
+    cargar: cargar, tiene: tiene, avance: avance, como: como, puesto: puesto, poner: poner, corona: coronaAhora, fijos: FIJOS, ocultos: function () { return OCULTOS.slice(); },
     alCambiar: function (fn) { oyentes.push(fn); },
     tarjeta: tarjeta, dibujo: dibujo, buho: buhoImg, pin: pinSvg, css: css,
     avatar: avatarSrc, avatarHtml: avatarSvg,
