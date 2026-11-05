@@ -45,7 +45,8 @@
       '.mcs-sobre-in{position:absolute;inset:0;animation:mcsSacude 2.6s ease-in-out 1.2s infinite;transform-origin:50% 90%;perspective:900px}' +
       '.mcs-sobre:hover .mcs-sobre-in{animation-play-state:paused}' +
       '.mcs-atras{position:absolute;inset:0;border-radius:16px;z-index:1;background:#4a2a9a;box-shadow:0 22px 40px rgba(0,0,0,.55)}' +
-      '.mcs-hoja{position:absolute;left:7%;right:7%;top:-14%;height:70%;border-radius:12px;z-index:2;background:#F6F1FF;padding:12px 14px;color:#3b2a6e;font:900 12.5px Nunito,sans-serif;box-shadow:0 4px 0 rgba(0,0,0,.12);transform:rotate(1.5deg);transition:transform .55s cubic-bezier(.3,1.3,.5,1),opacity .3s}' +
+      '.mcs-hoja{position:absolute;left:7%;right:7%;top:5%;height:72%;border-radius:12px;z-index:0;background:#F6F1FF;padding:12px 14px;color:#3b2a6e;font:900 12.5px Nunito,sans-serif;box-shadow:0 4px 0 rgba(0,0,0,.12);transition:transform .6s cubic-bezier(.3,1.25,.5,1),opacity .3s}' +
+      '.mcs-para{position:absolute;left:6%;bottom:7%;z-index:4;font:900 12px Nunito,sans-serif;letter-spacing:1px;text-transform:uppercase;color:#E6DAFF;transition:opacity .2s}.mcs-para b{color:#C6E000}.mcs.abre .mcs-para{opacity:0}' +
       '.mcs-hoja i{display:block;height:8px;border-radius:4px;background:#e3d9fb;margin-top:8px}' +
       '.mcs-frente{position:absolute;inset:0;border-radius:16px;z-index:3;clip-path:polygon(0 30%,50% 64%,100% 30%,100% 100%,0 100%);background:linear-gradient(180deg,#7b4fe0,#4a2a9a)}' +
       '.mcs-borde{position:absolute;inset:0;border-radius:16px;border:3px solid #CE82FF;border-bottom-width:7px;border-bottom-color:#2e1a6b;pointer-events:none;z-index:3}' +
@@ -58,11 +59,11 @@
       // Abriendo: se rompe el sello, la tapa gira, la hoja sube
       '.mcs.abre .mcs-sobre-in{animation:none}' +
       '.mcs.abre .mcs-lacre{animation:mcsRompe .35s ease-in forwards}' +
-      '.mcs.abre .mcs-cinta{opacity:0}' +
+      '.mcs.abre .mcs-cinta{opacity:0}.mcs.abre .mcs-borde{border-top-color:transparent}' +
       '.mcs.abre .mcs-chispa{animation:mcsChispa .6s ease-out forwards}' +
       '.mcs.abre .mcs-tapa{transform:rotateX(180deg);transition-delay:.2s}' +
       '.mcs.abre .mcs-tapa{animation:mcsAtras .7s steps(1) forwards}' +
-      '.mcs.abre .mcs-hoja{transform:translateY(-52%) rotate(0);transition-delay:.55s}' +
+      '.mcs.abre .mcs-hoja{transform:translateY(-58%);transition-delay:.5s;animation:mcsHojaZ .45s steps(1) forwards}' +
       '.mcs.abre .mcs-tit{animation:mcsSeVa .35s ease-in forwards}' +
       '.mcs.abre .mcs-pie{animation:mcsSeVa .3s ease-in forwards}' +
       '.mcs.carta .mcs-cerrado{opacity:0;transform:translateY(60px) scale(.92);pointer-events:none}' +
@@ -112,6 +113,7 @@
       '@keyframes mcsRompe{40%{transform:translate(-50%,-50%) scale(1.25) rotate(-8deg)}100%{transform:translate(-50%,-50%) scale(0) rotate(40deg);opacity:0}}' +
       '@keyframes mcsChispa{0%{transform:none;opacity:1}100%{transform:translate(var(--x),var(--y)) scale(.3);opacity:0}}' +
       '@keyframes mcsAtras{0%{z-index:4}50%,100%{z-index:1}}' +
+      '@keyframes mcsHojaZ{0%{z-index:0}100%{z-index:2}}' +
       '@keyframes mcsBaja{from{transform:translateY(-20px);opacity:0}to{transform:none;opacity:1}}' +
       '@keyframes mcsSube{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}' +
       '@keyframes mcsSeVa{to{transform:translateY(-10px);opacity:0}}' +
@@ -169,6 +171,7 @@
           '<div class="mcs-atras"></div>' +
           '<div class="mcs-hoja">' + (nombre ? 'Para: ' + esc(nombre) : 'Para ti') + '<i></i><i style="width:70%"></i><i style="width:45%"></i></div>' +
           '<div class="mcs-frente"></div><div class="mcs-borde"></div>' +
+          '<div class="mcs-para">Para: <b>' + esc(nombre || 'ti') + '</b></div>' +
           '<div class="mcs-tapa"></div>' +
           '<div class="mcs-lacre"><img src="' + esc(BUHO) + '" alt=""></div>' + chispas +
           '<div class="mcs-cinta">¡NUEVO!</div>' +
