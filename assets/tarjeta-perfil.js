@@ -169,6 +169,32 @@
       T + '.mct-rg{font-size:13px}' + T + '.mct-rg i{width:18px}' +
     '}' +
     '@media (max-width:400px){' + T + '.mct .mcu-nom{font-size:22px;max-width:100%}' + T + '.mct-rg{font-size:12px}}';
+
+  // ===== PRUEBA: foto en su cuadro y banner al lado (html[data-mct="1"|"2"]) =====
+  var X = 'html[data-mct] [data-mc-tarjeta] ', O1 = 'html[data-mct="1"] [data-mc-tarjeta] ', O2 = 'html[data-mct="2"] [data-mc-tarjeta] ';
+  CSS +=
+    X + '.mcu-chip.mct{--h:64px;height:var(--h);width:calc(var(--h) * 5);padding:0 14px 0 0;gap:12px;--bi:var(--h)}' +
+    X + '.mct-arte,' + X + '.mct-velo{left:var(--h);width:calc(100% - var(--h))}' +
+    X + '.mct-caja{width:var(--h);height:var(--h)}' +
+    X + '.mct-pin{top:4px;right:4px;width:22px;height:22px}' +
+    // 1: como la referencia: foto cuadrada pegada, nivel abajo a la derecha y el emblema del rango grande a la derecha
+    O1 + '.mct-marco{padding:0;clip-path:none;background:#0d0820;box-shadow:inset 0 0 0 2px rgba(255,255,255,.18)}' +
+    O1 + '.mct .mcu-av{clip-path:none}' +
+    O1 + '.mct-nv{left:auto;right:0;bottom:0;padding:3px 6px 2px 9px;background:rgba(10,6,28,.88);color:#fff;clip-path:polygon(8px 0,100% 0,100% 100%,0 100%)}' +
+    O1 + '.mct-nv b{color:#FFE14D}' +
+    O1 + '.mct-tx{position:static;padding-right:52px}' +
+    O1 + '.mct-rg i{position:absolute;z-index:1;right:12px;top:50%;width:46px!important;transform:translateY(-50%)}' +
+    // 2: foto con marco dorado separada del banner por una franja oscura; el rango sigue junto al nombre
+    O2 + '.mcu-chip.mct{background:#0d0820}' +
+    O2 + '.mct-arte,' + O2 + '.mct-velo{left:calc(var(--h) + 6px);width:calc(100% - var(--h) - 6px)}' +
+    O2 + '.mct-marco{padding:3px;clip-path:none}' + O2 + '.mct .mcu-av{clip-path:none}' +
+    O2 + '.mct-tx{margin-left:6px}' +
+    O2 + '.mct-nv{left:0;bottom:0}' +
+    '@media (max-width:900px){' +
+      X + '.mcu-chip.mct{--h:clamp(60px,calc((100vw - 32px) / 5),96px);width:auto;height:var(--h);padding-right:12px;--bi:var(--h)}' +
+      X + '.mct-caja{width:var(--h);height:var(--h)}' +
+      O1 + '.mct-rg i{width:40px!important;right:10px}' + O1 + '.mct-tx{padding-right:44px}' +
+    '}';
   var SOLO_ICONO = window.matchMedia ? window.matchMedia('(max-width:360px)') : { matches: false };
   var tVer = null;
   document.addEventListener('click', function (e) {
