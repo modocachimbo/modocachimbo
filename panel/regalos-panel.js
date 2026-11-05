@@ -146,7 +146,7 @@ function rgOpciones() {
   const t = RG_TIPOS[RG.tipo], caja = $('rgOpc');
   if (RG.tipo === 'item') {
     const lista = RG.items.filter(i => i.visible !== false || (i.regla || {}).tipo === 'regalo');
-    caja.innerHTML = `<label>Elige el ítem</label>${lista.length ? `<div class="rg-items">${lista.map(i => `<button class="rg-it${RG.item === i.id ? ' on' : ''}" type="button" data-rgi="${esc(i.id)}"><i${i.img ? ` style="background-image:url('${esc(i.img)}')"` : ''}></i><b>${esc(i.nom)}</b><small>${esc(RG_ESP[i.espacio] || i.espacio)}${(i.regla || {}).tipo === 'regalo' ? ' · solo regalo' : ''}</small></button>`).join('')}</div>`
+    caja.innerHTML = `<label>Elige el ítem</label>${lista.length ? `<div class="rg-items">${lista.map(i => `<button class="rg-it${RG.item === i.id ? ' on' : ''}" type="button" data-rgi="${esc(i.id)}"><i${i.img ? ` style="background-image:url('${esc(/^https:/.test(i.img) ? i.img : '../' + i.img.replace(/^\//, ''))}')"` : ''}></i><b>${esc(i.nom)}</b><small>${esc(RG_ESP[i.espacio] || i.espacio)}${(i.regla || {}).tipo === 'regalo' ? ' · solo regalo' : ''}</small></button>`).join('')}</div>`
       : '<p class="hint">Aún no hay ítems subidos en Recursos.</p>'}`;
     caja.querySelectorAll('[data-rgi]').forEach(b => b.addEventListener('click', () => { RG.item = b.dataset.rgi; caja.querySelectorAll('[data-rgi]').forEach(x => x.classList.toggle('on', x === b)); rgResumen(); }));
   } else {

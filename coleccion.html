@@ -306,7 +306,7 @@
 <script src="assets/auth.js"></script>
 <script src="assets/buho.js"></script>
 <script src="assets/rango.js?v=184"></script>
-<script src="assets/coleccion.js?v=188"></script>
+<script src="assets/coleccion.js?v=190"></script>
 <script src="assets/tarjeta-perfil.js?v=200"></script>
 <script src="assets/buho/buho-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
@@ -697,7 +697,9 @@
     var lleva = x.espacio === 'pines' ? C.puesto('pines').indexOf(id) >= 0 : C.puesto(x.espacio) === id;
     var esp = C.espacios.filter(function (e) { return e.id === x.espacio; })[0];
     var d = document.createElement('div'); d.className = 'hoja'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true'); d.setAttribute('aria-label', x.nom);
-    var boton = !ok ? '' : x.espacio === 'pines'
+    var boton = !ok ? '' : C.corona && C.corona() === id
+      ? '<button type="button" class="btn gris" disabled>La llevas por ir en el Top 3</button>'
+      : x.espacio === 'pines'
       ? '<button type="button" class="btn' + (lleva ? ' gris' : '') + '" data-poner>' + (lleva ? 'Quitar de mi vitrina' : 'Poner en mi vitrina') + '</button>'
       : lleva ? '<button type="button" class="btn gris" disabled>Ya lo llevas puesto</button>' : '<button type="button" class="btn" data-poner>Ponérmelo</button>';
     d.innerHTML = '<div class="hoja-c" style="--c:' + rz.c + '"><button type="button" class="x" aria-label="Cerrar">✕</button>' +

@@ -253,16 +253,23 @@
       var v = +E.tops[r.n] || 0, P = PUESTO_TXT[r.n];
       if (E.mias[x.id] && !v) return 'Un regalo de Modo Cachimbo. Es tuya para siempre.';
       if (v) return 'Es tuya para siempre: cerraste ' + (v > 1 ? v + ' semanas' : 'una semana') + ' en el ' + P + ' puesto del Top.';
-      if (ok) return 'Vas en el ' + P + ' puesto del Top: llévala esta semana. Si cierras el domingo en ese puesto, es tuya para siempre.';
+      if (ok) return 'Vas en el ' + P + ' puesto del Top: esta semana la llevas puesta sola y no se puede quitar. Si cierras el domingo en ese puesto, se queda en tu colección y ahí tú decides si la usas.';
       return 'Desde el martes la llevan los 3 primeros del Top de la semana. Es tuya para siempre si cierras la semana en el ' + P + ' puesto.';
     }
     if (r.tipo === 'grupo') return ok ? 'Es tuyo por ser influencer de Modo Cachimbo.' : 'Solo para los influencers de Modo Cachimbo.';
     if (r.tipo === 'evento') return ok ? 'Lo ganaste en ' + r.evento + '. Es tuyo para siempre.' : 'Se ganaba en ' + r.evento + '.';
     return ok ? 'Un regalo de Modo Cachimbo.' : 'Es un regalo especial: no se puede conseguir solo.';
   }
+  // La corona «Top global» que llevas esta semana (desde el martes, si vas en el top 3)
+  var CORONA = { 1: 'pin-corona-oro', 2: 'pin-corona-plata', 3: 'pin-corona-bronce' };
+  function coronaAhora() { var c = CORONA[+E.tops.ahora]; return c && POR_ID[c] ? c : ''; }
   function puesto(esp) {
     var p = E.puesto[esp];
-    if (esp === 'pines') return (p || []).filter(tiene);
+    if (esp === 'pines') {
+      // La corona de la semana se pone sola y va primero (supabase/65-corona-se-pone-sola.sql)
+      var c = coronaAhora(), l = (p || []).filter(function (id) { return id !== c && tiene(id); });
+      return c ? [c].concat(l).slice(0, 3) : l;
+    }
     return p && tiene(p) ? p : DEFECTO[esp];
   }
 
@@ -300,7 +307,7 @@
           E.maxRango = max; T.rgo = Date.now();
         }).catch(function () {})
       ]);
-    }).then(function () { guardar(CLAVE_T, T); E.listo = true; avisar(); return E; }, function () { E.listo = true; avisar(); return E; });
+    }).then(function () { guardar(CLAVE_T, T); E.listo = true; avisar(); avisoCorona(); return E; }, function () { E.listo = true; avisar(); return E; });
     // La mejor racha llega con assets/racha.js
     (function esperar(i) {
       if (window.MCRacha) MCRacha.alCambiar(function (r) {
@@ -313,6 +320,26 @@
       else { E.rachaOk = true; avisar(); }
     })(0);
     return pedido;
+  }
+
+  // ¡Vas en el top 3! Un sobre con la corona, una vez por semana y puesto
+  function avisoCorona() {
+    var c = coronaAhora(), u = window.MCAuth && MCAuth.usuario();
+    if (!c || !u) return;
+    var lima = new Date(Date.now() - 5 * 3600000), dia = (lima.getUTCDay() + 6) % 7;
+    var lunes = new Date(lima.getTime() - dia * 864e5).toISOString().slice(0, 10);
+    var k = 'mc_corona_' + u.id, v = lunes + ':' + c;
+    if (leer(k) === v) return;
+    guardar(k, v);
+    var P = PUESTO_TXT[+E.tops.ahora];
+    function abrir() {
+      MCSobre.abrir({ regalos: [{ tipo: 'item', id: c }], de: 'Modo Cachimbo',
+        nota: '¡Vas en el ' + P + ' puesto del Top global de la semana! Ya llevas la corona en tu vitrina y en los tops. Si cierras el domingo en ese puesto, es tuya para siempre.' });
+    }
+    setTimeout(function () {
+      if (window.MCSobre) return abrir();
+      var s = document.createElement('script'); s.src = BASE + 'assets/sobre.js?v=3'; s.onload = abrir; document.head.appendChild(s);
+    }, 1800);
   }
 
   // Volver a pedir lo tuyo ya (sin esperar los 10 min): al llegar un regalo
@@ -329,8 +356,11 @@
     if (!tiene(id) || !POR_ID[id] || POR_ID[id].espacio !== esp) return Promise.reject(new Error('no-tienes'));
     var antes = copiar(E.puesto);
     if (esp === 'pines') {
-      var l = puesto('pines').slice(), i = l.indexOf(id);
-      if (i >= 0) l.splice(i, 1); else { l.push(id); if (l.length > 3) l.shift(); }
+      // La corona de la semana no se quita: se pone sola mientras vayas en el top 3
+      var c = coronaAhora();
+      if (id === c) return Promise.reject(new Error('fija'));
+      var l = puesto('pines').filter(function (p) { return p !== c; }), i = l.indexOf(id);
+      if (i >= 0) l.splice(i, 1); else { l.push(id); if (l.length > (c ? 2 : 3)) l.shift(); }
       E.puesto.pines = l;
     } else E.puesto[esp] = id;
     avisar();
@@ -394,7 +424,7 @@
       '<b>' + esc(x.nom) + '</b><small>' + R.nom + (x.area ? ' · ' + esc(x.area.replace('Ciencia y Tecnología', 'CyT').replace('Ciencias Sociales', 'Sociales')) : '') + '</small>' +
       // Abajo siempre la misma fila, para que todos los cuadros midan igual
       '<span class="mcc-pie">' + (!ok ? (av != null ? '<span class="mcc-prog"><i style="width:' + Math.round(av * 100) + '%"></i></span>' : '<span class="mcc-usar no">Bloqueado</span>')
-        : lleva ? (x.espacio === 'pines' ? '<span class="mcc-usar gris" data-usar>Quitar</span>' : '<span class="mcc-usar on">En uso</span>')
+        : lleva ? (x.espacio === 'pines' ? (x.id === coronaAhora() ? '<span class="mcc-usar on">Esta semana</span>' : '<span class="mcc-usar gris" data-usar>Quitar</span>') : '<span class="mcc-usar on">En uso</span>')
         : '<span class="mcc-usar" data-usar>Usar</span>') + '</span>' +
       '</button>';
   }
@@ -544,7 +574,7 @@
     item: function (id) { return POR_ID[id]; },
     items: function (esp) { return CATALOGO.filter(function (x) { return !esp || x.espacio === esp; }); },
     estado: function () { return E; },
-    cargar: cargar, tiene: tiene, avance: avance, como: como, puesto: puesto, poner: poner,
+    cargar: cargar, tiene: tiene, avance: avance, como: como, puesto: puesto, poner: poner, corona: coronaAhora,
     alCambiar: function (fn) { oyentes.push(fn); },
     tarjeta: tarjeta, dibujo: dibujo, buho: buhoImg, pin: pinSvg, css: css,
     avatar: avatarSrc, avatarHtml: avatarSvg,

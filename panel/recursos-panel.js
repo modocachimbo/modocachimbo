@@ -61,6 +61,12 @@ const recRango = n => window.MCRango ? MCRango.nombre(MCRango.nivel(REC_RANGO_XP
   .rec-it .bts .btn-ghost { padding: 6px 10px; font-size: 12.5px; }
   .rec-it .bts .btn-ghost.rojo { color: var(--red); border-color: rgba(224,60,60,.4); }
   .rec-it .rg { padding: 0 12px 12px; }
+  .rec-it .im.fijo { display: grid; place-items: center; aspect-ratio: 4 / 1.6; padding: 8px; background: radial-gradient(circle at 50% 50%, rgba(var(--rc),.28), #0f0b1e 70%); }
+  .rec-it .im.fijo .mcc-dib { width: auto; height: 100%; max-width: 100%; aspect-ratio: 1; }
+  .rec-it .im.fijo .mcc-dib > * { max-height: 100%; }
+  .rec-it .im.fijo.ancho .mcc-dib { aspect-ratio: auto; width: 100%; }
+  .rec-sep { grid-column: 1 / -1; margin: 10px 0 0; font: 1000 12px Nunito, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--text-dim); }
+  .rec-sep small { display: block; letter-spacing: 0; text-transform: none; font-weight: 700; margin-top: 2px; }
   .rec-it .tx .sel { float: right; display: inline-flex; align-items: center; gap: 6px; font: 800 12px Nunito, sans-serif; color: var(--text-dim); cursor: pointer; margin-left: 8px; }
   .rec-it .tx .sel input { width: 20px; height: 20px; accent-color: #C6E000; cursor: pointer; }
   .rec-it.elegido { border-color: rgba(198,224,0,.6); border-bottom-color: #8fa300; }
@@ -205,12 +211,30 @@ async function cargarRecursos(soloLista) {
       : `<div class="state-msg error">No se pudieron leer los recursos. ¿Ya corriste <b>supabase/40-recursos.sql</b>?<br><small>${esc(r.error.message || '')}</small></div>`;
     return;
   }
-  REC.lista = r.data || [];
+  REC.lista = (r.data || []).concat(await recFijos());
   if (soloLista === true && $('recListaC')) recPintarLista(); else pintarRecursos();
+}
+
+// Lo que ya viene en la web (búhos, escenarios, pines como las coronas…): sale en la lista para regalarlo.
+// Se dibuja con assets/coleccion.js, que se carga la primera vez.
+const REC_EXTRA = { buho: { nom: 'Búho', plural: 'Búhos' }, escena: { nom: 'Escenario', plural: 'Escenarios' } };
+const recTipoDe = k => REC_TIPOS[k] || REC_EXTRA[k] || { nom: k, plural: k };
+function recFijos() {
+  const listo = () => (window.MCColeccion.catalogo || []).filter(x => !x.recurso)
+    .map(x => ({ id: x.id, espacio: x.espacio, nom: x.nom, rareza: x.rareza, regla: x.regla, visible: true, fijo: true }));
+  if (window.MCColeccion) return Promise.resolve(listo());
+  return new Promise(ok => {
+    const s = document.createElement('script'); s.src = '../assets/coleccion.js?v=190';
+    s.onload = () => { try { MCColeccion.css(); ok(listo()); } catch (e) { ok([]); } };
+    s.onerror = () => ok([]);
+    document.head.appendChild(s);
+  });
 }
 
 function recReglaTxt(g) {
   g = g || {};
+  if (g.tipo === 'top') return 'Top global · ' + g.n + '.º puesto (se pone sola desde el martes)';
+  if (g.tipo === 'evento') return 'Evento: ' + g.evento;
   if (g.tipo === 'gratis') return 'Para todos';
   if (g.tipo === 'racha') return 'Racha de ' + g.n + ' días';
   if (g.tipo === 'rango') return 'Llegar a ' + recRango(g.n) + ' en una semana';
@@ -367,6 +391,7 @@ function recMarcarRegla() {
 
 /* ---------- Lista ---------- */
 function recItemHtml(x) {
+  if (x.fijo) return recFijoHtml(x);
   const R = REC_RAREZA[x.rareza] || REC_RAREZA.comun, seguro = REC.borrar === x.id, T = REC_TIPOS[x.espacio] || REC_TIPOS.racha;
   const datos = [x.regla && x.regla.tipo === 'regalo' ? x.regalados + ' lo recibieron' : '', x.puestos + ' lo llevan puesto'].filter(Boolean).join(' · ');
   const im = x.espacio === 'racha' ? `<div class="im" style="background-image:url(&quot;${esc(x.img)}&quot;)"></div>`
@@ -387,7 +412,7 @@ function recItemHtml(x) {
 function pintarRecursos() {
   const e = REC.editando;
   if (e) { REC.tipo = e.espacio; REC.marcoCon = e.espacio === 'marco' && e.img ? 'imagen' : REC.marcoCon; }
-  $('recCuerpo').innerHTML = recFormHtml() + `<h2 class="rec-h">Lo que subiste</h2>
+  $('recCuerpo').innerHTML = recFormHtml() + `<h2 class="rec-h">Todo lo de Mi colección</h2>
     <div class="agp-ops" id="recFiltro" style="margin-bottom:12px"></div><div id="recListaC"></div>`;
   $('recListaC').addEventListener('click', recAccionLista);
   $('recListaC').addEventListener('change', ev => {
@@ -431,20 +456,32 @@ function pintarRecursos() {
   if ($('recCancelar')) $('recCancelar').addEventListener('click', () => { REC.editando = null; REC.img = null; REC.colores = null; REC.regla = 'gratis'; pintarRecursos(); });
 }
 function recPintarLista() {
-  const tipos = Object.keys(REC_TIPOS).filter(k => REC.lista.some(x => x.espacio === k));
+  const tipos = Object.keys(REC_TIPOS).concat(Object.keys(REC_EXTRA)).filter(k => REC.lista.some(x => x.espacio === k));
   if (REC.filtro && !tipos.includes(REC.filtro)) REC.filtro = '';
   const f = $('recFiltro');
   if (f) {
     f.hidden = tipos.length < 2;
     f.innerHTML = `<button type="button" class="agp-op${REC.filtro ? '' : ' on'}" data-f="">Todos ${REC.lista.length}</button>` +
-      tipos.map(k => `<button type="button" class="agp-op${REC.filtro === k ? ' on' : ''}" data-f="${k}">${REC_TIPOS[k].plural} ${REC.lista.filter(x => x.espacio === k).length}</button>`).join('');
+      tipos.map(k => `<button type="button" class="agp-op${REC.filtro === k ? ' on' : ''}" data-f="${k}">${recTipoDe(k).plural} ${REC.lista.filter(x => x.espacio === k).length}</button>`).join('');
   }
   const lista = REC.lista.filter(x => !REC.filtro || x.espacio === REC.filtro);
   REC.sel = REC.sel.filter(id => REC.lista.some(x => x.id === id));
-  $('recListaC').innerHTML = lista.length ? recRegaloHtml(lista) + `<div class="rec-lista">${lista.map(recItemHtml).join('')}</div>`
+  const subidos = lista.filter(x => !x.fijo), fijos = lista.filter(x => x.fijo);
+  $('recListaC').innerHTML = lista.length ? recRegaloHtml(lista) + `<div class="rec-lista">${subidos.map(recItemHtml).join('')}${fijos.length ? `<div class="rec-sep">De la web · ${fijos.length}<small>Vienen con la página. No se editan aquí, pero los que no son «para todos» se pueden regalar.</small></div>` + fijos.map(recItemHtml).join('') : ''}</div>`
     : '<div class="rec-vacio">Todavía no subiste nada. Elige qué subir arriba.</div>';
   const t = $('recRgPara');
   if (t) t.value = REC.rgTxt || '';
+}
+function recFijoHtml(x) {
+  const R = REC_RAREZA[x.rareza] || REC_RAREZA.comun, T = recTipoDe(x.espacio), C = window.MCColeccion;
+  const rc = { comun: '169,159,200', raro: '28,176,246', epico: '206,130,255', legendario: '255,200,0', evento: '255,75,75' }[x.rareza] || '169,159,200';
+  const it = C && C.item(x.id);
+  return `<div class="rec-it${REC.sel.includes(x.id) ? ' elegido' : ''}">
+    <div class="im mini fijo${x.espacio === 'racha' || x.espacio === 'titulo' ? ' ancho' : ''}" style="--rc:${rc}">${it ? '<span class="mcc-dib">' + C.dibujo(it) + '</span>' : ''}</div>
+    <div class="tx">${recRegalable(x) ? `<label class="sel"><input type="checkbox" data-sel="${esc(x.id)}"${REC.sel.includes(x.id) ? ' checked' : ''}> Elegir</label>` : ''}<b>${esc(x.nom)}</b><small>${esc(recReglaTxt(x.regla))}</small>
+      <span class="tag" style="--c:#C6E000">${esc(T.nom)}</span><span class="tag" style="--c:${R.c}">${R.nom}</span><span class="tag" style="--c:#8a83a8">De la web</span></div>
+    <div class="bts">${recRegalable(x) ? `<button class="btn-ghost" type="button" data-rg="${esc(x.id)}">Regalar</button>` : '<span class="hint" style="margin:0;font-size:12px">Ya lo tienen todos</span>'}</div>
+  </div>`;
 }
 // Regalar varios a la vez: elige los que quieras (o todo el paquete de lo que ves) y a quién
 function recRegaloHtml(lista) {
@@ -453,7 +490,7 @@ function recRegaloHtml(lista) {
   const n = REC.sel.length, nombres = REC.sel.map(id => (REC.lista.find(x => x.id === id) || {}).nom).filter(Boolean);
   const op = (k, t) => `<button type="button" class="agp-op${REC.rgPara === k ? ' on' : ''}" data-rgp="${k}">${t}</button>`;
   return `<div class="rec-rgbar"><span class="n">${n ? n + ' elegido' + (n === 1 ? '' : 's') : 'Elige uno o varios para regalarlos juntos'}</span>
-      <button class="btn-ghost" type="button" data-rgtodo="1">Elegir todo${REC.filtro ? ' (' + esc(REC_TIPOS[REC.filtro].plural.toLowerCase()) + ')' : ''} · paquete</button>
+      <button class="btn-ghost" type="button" data-rgtodo="1">Elegir todo${REC.filtro ? ' (' + esc(recTipoDe(REC.filtro).plural.toLowerCase()) + ')' : ''} · paquete</button>
       ${n ? '<button class="btn-ghost" type="button" data-rgnada="1">Quitar selección</button>' : ''}
       <button class="btn-main" type="button" data-rgabrir="1"${n ? '' : ' disabled'}>Regalar${n ? ' ' + n : ''}</button></div>
     ${REC.regalar && n ? `<div class="rec-rgcaja">
