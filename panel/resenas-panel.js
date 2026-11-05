@@ -34,7 +34,7 @@ const RSP = { lista: [], cuenta: {}, ver: 'pendiente', ocupado: false };
   .rsp-al .ver { margin-left: auto; flex-shrink: 0; font: 900 12px Nunito, sans-serif; color: var(--accent); text-transform: uppercase; letter-spacing: .5px; }
   .rsp-acc { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .rsp-acc .orden { margin-left: auto; display: flex; gap: 6px; }
-  .rsp-acc .orden button { width: 40px; padding: 8px 0; }
+  .rsp-acc .orden button { width: 40px; height: 40px; padding: 0; display: inline-flex; align-items: center; justify-content: center; text-align: center; font-size: 17px; line-height: 1; }
   .rsp-prev { margin-top: 18px; padding: 18px; border-radius: 18px; background: #0B0818;
     --tarjeta: #151127; --borde: #2A2346; --texto: #EEEAF7; --suave: #A99FC8; --display: 'Barlow Condensed', 'Arial Narrow', sans-serif; --cuerpo: Nunito, sans-serif; }
   .rsp-prev .rs-card { flex: none; max-width: 340px; }
