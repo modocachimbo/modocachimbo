@@ -9,11 +9,11 @@
      de la imagen; los marcos sin imagen y los cuadros de racha se
      arman con colores.
    - Se gana con las reglas de Mi colección: para todos, racha,
-     rango en una semana o regalo (a todos o a ciertos correos).
+     rango en una semana o regalo (a todos, por ID o por correo; uno solo o en paquete).
    Datos: supabase/40-recursos.sql y 41-recursos-coleccion.sql
-   (guardar_recurso, recursos_admin, borrar_recurso) y 31-coleccion.sql (regalar_item).
+   (guardar_recurso, recursos_admin, borrar_recurso) y 62-regalar-paquete.sql (regalar_items: uno o varios, a todos, por ID o por correo).
    ========================================================= */
-const REC = { lista: [], editando: null, img: null, tipo: 'racha', marcoCon: 'colores', regla: 'gratis', para: 'todos', borrar: null, regalar: null, filtro: '' };
+const REC = { lista: [], editando: null, img: null, tipo: 'racha', marcoCon: 'colores', regla: 'gratis', para: 'todos', borrar: null, regalar: false, sel: [], rgPara: 'ids', filtro: '' };
 // Cada tipo: tamaño de la imagen (w×h) y dónde sale
 const REC_TIPOS = {
   racha: { nom: 'Fondo de perfil', plural: 'Fondos', w: 1200, h: 300, img: true, donde: '<b>Mi colección → Fondos</b>, en la tarjeta del perfil y en la de arriba de la web.', medida: 'horizontal 4:1, ideal 1200×300 o más grande', ej: 'Atardecer en Huacho' },
@@ -61,6 +61,17 @@ const recRango = n => window.MCRango ? MCRango.nombre(MCRango.nivel(REC_RANGO_XP
   .rec-it .bts .btn-ghost { padding: 6px 10px; font-size: 12.5px; }
   .rec-it .bts .btn-ghost.rojo { color: var(--red); border-color: rgba(224,60,60,.4); }
   .rec-it .rg { padding: 0 12px 12px; }
+  .rec-it .tx .sel { float: right; display: inline-flex; align-items: center; gap: 6px; font: 800 12px Nunito, sans-serif; color: var(--text-dim); cursor: pointer; margin-left: 8px; }
+  .rec-it .tx .sel input { width: 20px; height: 20px; accent-color: #C6E000; cursor: pointer; }
+  .rec-it.elegido { border-color: rgba(198,224,0,.6); border-bottom-color: #8fa300; }
+  .rec-rgbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; padding: 10px 12px; border: 2px solid #2A2346; border-radius: 14px; background: var(--surface); }
+  .rec-rgbar .n { font: 800 13px Nunito, sans-serif; color: var(--text-dim); margin-right: auto; }
+  .rec-rgbar .btn-ghost, .rec-rgbar .btn-main { padding: 7px 12px; font-size: 12.5px; }
+  .rec-rgcaja { margin: -4px 0 14px; padding: 14px; border: 2px solid rgba(198,224,0,.45); border-bottom-width: 4px; border-radius: 16px; background: var(--surface); }
+  .rec-rgcaja .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .rec-rgcaja .chips span { font: 800 12px Nunito, sans-serif; border-radius: 10px; padding: 4px 9px; background: rgba(198,224,0,.12); color: #C6E000; }
+  .rec-rgcaja textarea.inp { min-height: 64px; font-family: inherit; }
+  .rec-rgcaja .inp { margin: 8px 0; }
   .rec-it .rg textarea.inp { min-height: 60px; font-family: inherit; }
   .rec-it .rg .inp { margin-bottom: 8px; }
   .rec-vacio { padding: 18px; border-radius: 16px; border: 2px dashed #2A2346; color: var(--text-dim); font: 700 13.5px/1.5 Nunito, sans-serif; text-align: center; }
@@ -258,10 +269,11 @@ function recSubHtml() {
     <span class="agp-l">A quién se lo entregas ahora</span>
     <div class="agp-ops" id="recPara">
       <button type="button" class="agp-op${REC.para === 'todos' ? ' on' : ''}" data-p="todos">Todos los alumnos con cuenta</button>
+      <button type="button" class="agp-op${REC.para === 'ids' ? ' on' : ''}" data-p="ids">Solo a estos ID</button>
       <button type="button" class="agp-op${REC.para === 'correos' ? ' on' : ''}" data-p="correos">Solo a estos correos</button>
       <button type="button" class="agp-op${REC.para === 'nadie' ? ' on' : ''}" data-p="nadie">Nadie por ahora</button>
     </div>
-    <div id="recCorreosC"${REC.para === 'correos' ? '' : ' hidden'}><label for="recCorreos">Correos (uno por línea o separados por coma)</label><textarea class="inp" id="recCorreos" placeholder="alumno@gmail.com"></textarea></div>
+    <div id="recCorreosC"${REC.para === 'correos' || REC.para === 'ids' ? '' : ' hidden'}><label for="recCorreos" id="recCorreosL">${REC_PARA_TXT[REC.para === 'correos' ? 'correos' : 'ids'].l}</label><textarea class="inp" id="recCorreos" placeholder="${REC_PARA_TXT[REC.para === 'correos' ? 'correos' : 'ids'].ph}"></textarea></div>
     <div id="recMsjC"${REC.para === 'nadie' ? ' hidden' : ''}><label for="recMsj">Mensaje (opcional)</label><input class="inp" id="recMsj" maxlength="120" placeholder="Ej.: ¡Gracias por estudiar con nosotros!"></div>
     <p class="hint" style="margin:8px 0 0">«Todos» es para los que ya tienen cuenta; los nuevos no lo reciben. Si quieres que lo tengan todos siempre, elige <b>Para todos</b>.</p>`}`;
 }
@@ -342,7 +354,8 @@ function recMarcarRegla() {
     const b = ev.target.closest('[data-p]'); if (!b) return;
     REC.para = b.dataset.p;
     pa.querySelectorAll('[data-p]').forEach(x => x.classList.toggle('on', x === b));
-    $('recCorreosC').hidden = REC.para !== 'correos';
+    $('recCorreosC').hidden = REC.para !== 'correos' && REC.para !== 'ids';
+    if (!$('recCorreosC').hidden) { $('recCorreosL').textContent = REC_PARA_TXT[REC.para].l; $('recCorreos').placeholder = REC_PARA_TXT[REC.para].ph; }
     $('recMsjC').hidden = REC.para === 'nadie';
   });
 }
@@ -353,9 +366,9 @@ function recItemHtml(x) {
   const datos = [x.regla && x.regla.tipo === 'regalo' ? x.regalados + ' lo recibieron' : '', x.puestos + ' lo llevan puesto'].filter(Boolean).join(' · ');
   const im = x.espacio === 'racha' ? `<div class="im" style="background-image:url(&quot;${esc(x.img)}&quot;)"></div>`
     : `<div class="im mini">${recDibujo(x)}</div>`;
-  return `<div class="rec-it${x.visible ? '' : ' oculto'}">
+  return `<div class="rec-it${x.visible ? '' : ' oculto'}${REC.sel.includes(x.id) ? ' elegido' : ''}">
     ${im}
-    <div class="tx"><b>${esc(x.nom)}</b><small>${esc(recReglaTxt(x.regla))} · ${datos}</small>
+    <div class="tx">${x.regla && x.regla.tipo !== 'gratis' ? `<label class="sel"><input type="checkbox" data-sel="${esc(x.id)}"${REC.sel.includes(x.id) ? ' checked' : ''}> Elegir</label>` : ''}<b>${esc(x.nom)}</b><small>${esc(recReglaTxt(x.regla))} · ${datos}</small>
       <span class="tag" style="--c:#C6E000">${esc(T.nom)}</span><span class="tag" style="--c:${R.c}">${R.nom}</span>${x.visible ? '' : '<span class="tag" style="--c:#8a83a8">Oculto</span>'}</div>
     <div class="bts">
       <button class="btn-ghost" type="button" data-ed="${esc(x.id)}">Editar</button>
@@ -363,11 +376,6 @@ function recItemHtml(x) {
       <button class="btn-ghost" type="button" data-vi="${esc(x.id)}">${x.visible ? 'Ocultar' : 'Mostrar'}</button>
       <button class="btn-ghost rojo" type="button" data-bo="${esc(x.id)}">${seguro ? '¿Borrar? Toca otra vez' : 'Borrar'}</button>
     </div>
-    ${REC.regalar === x.id ? `<div class="rg">
-      <textarea class="inp" id="recRgCorreos" placeholder="Correos, uno por línea. Vacío = a todos los alumnos con cuenta."></textarea>
-      <input class="inp" id="recRgMsj" maxlength="120" placeholder="Mensaje (opcional)">
-      <button class="btn-main" type="button" data-rgok="${esc(x.id)}">Entregar</button>
-    </div>` : ''}
   </div>`;
 }
 
@@ -377,6 +385,14 @@ function pintarRecursos() {
   $('recCuerpo').innerHTML = recFormHtml() + `<h2 class="rec-h">Lo que subiste</h2>
     <div class="agp-ops" id="recFiltro" style="margin-bottom:12px"></div><div id="recListaC"></div>`;
   $('recListaC').addEventListener('click', recAccionLista);
+  $('recListaC').addEventListener('change', ev => {
+    const k = ev.target.closest('[data-sel]'); if (!k) return;
+    if ($('recRgPara')) REC.rgTxt = $('recRgPara').value;
+    if ($('recRgMsj')) REC.rgMsj = $('recRgMsj').value;
+    REC.sel = k.checked ? REC.sel.concat(k.dataset.sel) : REC.sel.filter(id => id !== k.dataset.sel);
+    if (!REC.sel.length) REC.regalar = false;
+    recPintarLista();
+  });
   $('recFiltro').addEventListener('click', ev => { const b = ev.target.closest('[data-f]'); if (b) { REC.filtro = b.dataset.f; recPintarLista(); } });
   recPintarLista();
   REC.regla = e ? (e.regla && e.regla.tipo) || 'gratis' : REC.regla;
@@ -419,11 +435,55 @@ function recPintarLista() {
       tipos.map(k => `<button type="button" class="agp-op${REC.filtro === k ? ' on' : ''}" data-f="${k}">${REC_TIPOS[k].plural} ${REC.lista.filter(x => x.espacio === k).length}</button>`).join('');
   }
   const lista = REC.lista.filter(x => !REC.filtro || x.espacio === REC.filtro);
-  $('recListaC').innerHTML = lista.length ? `<div class="rec-lista">${lista.map(recItemHtml).join('')}</div>`
+  REC.sel = REC.sel.filter(id => REC.lista.some(x => x.id === id));
+  $('recListaC').innerHTML = lista.length ? recRegaloHtml(lista) + `<div class="rec-lista">${lista.map(recItemHtml).join('')}</div>`
     : '<div class="rec-vacio">Todavía no subiste nada. Elige qué subir arriba.</div>';
+  const t = $('recRgPara');
+  if (t) t.value = REC.rgTxt || '';
+}
+// Regalar varios a la vez: elige los que quieras (o todo el paquete de lo que ves) y a quién
+function recRegaloHtml(lista) {
+  const regalables = lista.filter(x => x.regla && x.regla.tipo !== 'gratis');
+  if (!regalables.length) return '';
+  const n = REC.sel.length, nombres = REC.sel.map(id => (REC.lista.find(x => x.id === id) || {}).nom).filter(Boolean);
+  const op = (k, t) => `<button type="button" class="agp-op${REC.rgPara === k ? ' on' : ''}" data-rgp="${k}">${t}</button>`;
+  return `<div class="rec-rgbar"><span class="n">${n ? n + ' elegido' + (n === 1 ? '' : 's') : 'Elige uno o varios para regalarlos juntos'}</span>
+      <button class="btn-ghost" type="button" data-rgtodo="1">Elegir todo${REC.filtro ? ' (' + esc(REC_TIPOS[REC.filtro].plural.toLowerCase()) + ')' : ''} · paquete</button>
+      ${n ? '<button class="btn-ghost" type="button" data-rgnada="1">Quitar selección</button>' : ''}
+      <button class="btn-main" type="button" data-rgabrir="1"${n ? '' : ' disabled'}>Regalar${n ? ' ' + n : ''}</button></div>
+    ${REC.regalar && n ? `<div class="rec-rgcaja">
+      <div class="chips">${nombres.map(x => '<span>' + esc(x) + '</span>').join('')}</div>
+      <span class="agp-l">A quién</span>
+      <div class="agp-ops">${op('ids', 'Solo a estos ID')}${op('correos', 'Solo a estos correos')}${op('todos', 'Todos los alumnos con cuenta')}</div>
+      ${REC.rgPara === 'todos' ? '' : `<textarea class="inp" id="recRgPara" placeholder="${REC_PARA_TXT[REC.rgPara].l}"></textarea>`}
+      <input class="inp" id="recRgMsj" maxlength="120" placeholder="Mensaje (opcional)" value="${esc(REC.rgMsj || '')}">
+      <button class="btn-main" type="button" data-rgok="1">Entregar ${n === 1 ? '' : 'paquete de ' + n}</button>
+    </div>` : ''}`;
 }
 
 const recCorreos = t => String(t || '').split(/[\s,;]+/).map(x => x.trim().toLowerCase()).filter(x => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(x));
+// A quién: correos e ID de 5 cifras (el de la tarjeta), separados por coma, espacio o línea
+const REC_PARA_TXT = {
+  ids: { l: 'ID de los alumnos (los 5 números de su tarjeta), separados por coma o uno por línea', ph: '12345, 67890' },
+  correos: { l: 'Correos (uno por línea o separados por coma)', ph: 'alumno@gmail.com' }
+};
+function recDestinos(t) {
+  const d = { correos: [], codigos: [], malos: [] };
+  String(t || '').split(/[\s,;]+/).map(x => x.trim()).filter(Boolean).forEach(x => {
+    if (/^\d{5}$/.test(x)) d.codigos.push(+x);
+    else if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(x)) d.correos.push(x.toLowerCase());
+    else d.malos.push(x);
+  });
+  return d;
+}
+// Entrega uno o varios ítems (supabase/62-regalar-paquete.sql). d null = a todos los alumnos con cuenta.
+async function recEntregar(c, items, d, msj) {
+  const g = await c.rpc('regalar_items', { p_items: items, p_emails: d && d.correos.length ? d.correos : null, p_codigos: d && d.codigos.length ? d.codigos : null, p_mensaje: msj || null });
+  if (g.error) throw new Error(/function public.regalar_items|does not exist|schema cache/i.test(g.error.message || '') ? 'falta correr supabase/62-regalar-paquete.sql' : g.error.message);
+  const x = g.data || {};
+  return (x.alumnos ? 'Entregado a ' + x.alumnos + ' alumno' + (x.alumnos === 1 ? '' : 's') : 'Ya lo tenían todos') +
+    (x.sin_id && x.sin_id.length ? ' · no existen los ID ' + x.sin_id.join(', ') : '');
+}
 const recRuta = url => (String(url || '').split('/object/public/recursos/')[1] || '').split('?')[0];
 
 async function guardarRecurso() {
@@ -434,8 +494,9 @@ async function guardarRecurso() {
   if (REC.regla === 'racha') { regla.n = parseInt($('recN').value, 10); if (!(regla.n >= 1 && regla.n <= 1000)) { toast('Los días de racha van de 1 a 1000', true); return; } }
   if (REC.regla === 'rango') regla.n = parseInt($('recRg').value, 10);
   const entregar = !e && REC.regla === 'regalo' && REC.para !== 'nadie';
-  const correos = entregar && REC.para === 'correos' ? recCorreos($('recCorreos').value) : null;
-  if (entregar && REC.para === 'correos' && !correos.length) { toast('Escribe al menos un correo', true); return; }
+  const dest = entregar && REC.para !== 'todos' ? recDestinos($('recCorreos').value) : null;
+  if (dest && dest.malos.length) { toast('No se entiende: ' + dest.malos.slice(0, 3).join(', '), true); return; }
+  if (dest && !dest.correos.length && !dest.codigos.length) { toast(REC.para === 'ids' ? 'Escribe al menos un ID' : 'Escribe al menos un correo', true); return; }
   const bt = $('recGuardar');
   bt.disabled = true; bt.innerHTML = '<span class="spin-s"></span> ' + (REC.img ? 'Subiendo imagen…' : 'Guardando…');
   try {
@@ -461,9 +522,7 @@ async function guardarRecurso() {
     if (vieja) c.storage.from('recursos').remove([vieja]).then(() => {}, () => {});
     let msg = e ? 'Cambios guardados' : T.nom + ' publicado: ya sale en Mi colección';
     if (entregar) {
-      const g = await c.rpc('regalar_item', { p_item: id, p_emails: correos, p_origen: 'regalo', p_mensaje: $('recMsj').value.trim() || null });
-      if (g.error) throw g.error;
-      msg = T.nom + ' publicado y entregado a ' + (g.data || 0) + ' alumno' + (g.data === 1 ? '' : 's');
+      msg = T.nom + ' publicado · ' + (await recEntregar(c, [id], dest, $('recMsj').value.trim())).replace(/^E/, 'e');
     }
     toast(msg);
     if (REC.img) URL.revokeObjectURL(REC.img.url);
@@ -481,19 +540,26 @@ async function recAccionLista(ev) {
   const buscar = id => REC.lista.find(x => x.id === id);
   if (b.dataset.ed) {
     const x = buscar(b.dataset.ed);
-    REC.editando = Object.assign({}, x, { imgAntes: x.img }); REC.img = null; REC.colores = null; REC.borrar = null; REC.regalar = null;
+    REC.editando = Object.assign({}, x, { imgAntes: x.img }); REC.img = null; REC.colores = null; REC.borrar = null; REC.regalar = false;
     pintarRecursos(); window.scrollTo(0, 0); return;
   }
-  if (b.dataset.rg) { REC.regalar = REC.regalar === b.dataset.rg ? null : b.dataset.rg; REC.borrar = null; recPintarLista(); return; }
+  // Lo escrito en la caja de regalo se guarda para no perderlo al repintar
+  if ($('recRgPara')) REC.rgTxt = $('recRgPara').value;
+  if ($('recRgMsj')) REC.rgMsj = $('recRgMsj').value;
+  if (b.dataset.rg) { REC.sel = [b.dataset.rg]; REC.regalar = true; REC.borrar = null; recPintarLista(); return; }
+  if (b.dataset.rgtodo) { REC.sel = REC.lista.filter(x => (!REC.filtro || x.espacio === REC.filtro) && x.regla && x.regla.tipo !== 'gratis').map(x => x.id); recPintarLista(); return; }
+  if (b.dataset.rgnada) { REC.sel = []; REC.regalar = false; recPintarLista(); return; }
+  if (b.dataset.rgabrir) { REC.regalar = !REC.regalar; recPintarLista(); return; }
+  if (b.dataset.rgp) { REC.rgPara = b.dataset.rgp; recPintarLista(); return; }
   const c = await MCAuth.listo;
   if (b.dataset.rgok) {
-    const correos = recCorreos($('recRgCorreos').value), txt = $('recRgCorreos').value.trim();
-    if (txt && !correos.length) { toast('Esos correos no se entienden', true); return; }
+    const d = REC.rgPara === 'todos' ? null : recDestinos(REC.rgTxt);
+    if (d && d.malos.length) { toast('No se entiende: ' + d.malos.slice(0, 3).join(', '), true); return; }
+    if (d && !d.correos.length && !d.codigos.length) { toast(REC.rgPara === 'ids' ? 'Escribe al menos un ID' : 'Escribe al menos un correo', true); return; }
     b.disabled = true;
-    const g = await c.rpc('regalar_item', { p_item: b.dataset.rgok, p_emails: correos.length ? correos : null, p_origen: 'regalo', p_mensaje: $('recRgMsj').value.trim() || null });
-    if (g.error) { toast('No se pudo entregar: ' + g.error.message, true); b.disabled = false; return; }
-    toast(g.data ? 'Entregado a ' + g.data + ' alumno' + (g.data === 1 ? '' : 's') : 'Ya lo tenían todos');
-    REC.regalar = null; cargarRecursos(true); return;
+    try { toast(await recEntregar(c, REC.sel.slice(), d, (REC.rgMsj || '').trim())); }
+    catch (err) { toast('No se pudo entregar: ' + err.message, true); b.disabled = false; return; }
+    REC.regalar = false; REC.sel = []; REC.rgTxt = ''; REC.rgMsj = ''; cargarRecursos(true); return;
   }
   if (b.dataset.vi) {
     const x = buscar(b.dataset.vi);
@@ -503,7 +569,7 @@ async function recAccionLista(ev) {
     cargarRecursos(true); return;
   }
   if (b.dataset.bo) {
-    if (REC.borrar !== b.dataset.bo) { REC.borrar = b.dataset.bo; REC.regalar = null; recPintarLista(); return; }
+    if (REC.borrar !== b.dataset.bo) { REC.borrar = b.dataset.bo; recPintarLista(); return; }
     const x = buscar(b.dataset.bo);
     REC.borrar = null;
     const r = await c.rpc('borrar_recurso', { p_id: x.id });
