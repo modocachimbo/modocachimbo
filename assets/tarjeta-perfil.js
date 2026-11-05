@@ -177,7 +177,7 @@
     X + '.mct-arte,' + X + '.mct-velo{left:var(--h);width:calc(100% - var(--h))}' +
     X + '.mct-caja{width:var(--h);height:var(--h)}' +
     X + '.mct-tx{margin-left:8px}' +
-    X + '.mct-pin{z-index:2;top:3px;right:-15px;width:30px;height:30px}' +
+    X + '.mct-pin{z-index:2;top:2px;right:2px;width:28px;height:28px}' +
     // 1: como la referencia: foto cuadrada pegada, nivel abajo a la derecha y el emblema del rango grande a la derecha
     O1 + '.mct-marco{padding:0;clip-path:none;background:#0d0820;box-shadow:inset 0 0 0 2px rgba(255,255,255,.18)}' +
     O1 + '.mct .mcu-av{clip-path:none}' +
@@ -194,7 +194,7 @@
     '@media (max-width:900px){' +
       X + '.mcu-chip.mct{--h:clamp(60px,calc((100vw - 32px) / 5),96px);width:auto;height:var(--h);padding-right:12px;--bi:var(--h)}' +
       X + '.mct-caja{width:var(--h);height:var(--h)}' +
-      X + '.mct-pin{width:28px;height:28px;right:-14px}' +
+      X + '.mct-pin{width:26px;height:26px;right:2px}' +
       O1 + '.mct-rg i{width:40px!important;right:10px}' + O1 + '.mct-tx{padding-right:44px}' +
     '}';
   var SOLO_ICONO = window.matchMedia ? window.matchMedia('(max-width:360px)') : { matches: false };
