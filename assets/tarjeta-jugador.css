@@ -131,3 +131,6 @@
 /* En el podio, la foto ya trae su marco: sin el aro redondo de atrás */
 .aro:has(> .mcj-f) { background: none !important; padding: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
 .l1 .aro > .mcj-f { filter: drop-shadow(0 0 12px rgba(255,200,0,.55)); }
+/* Coronas del Top 3: pin sin círculo, el dibujo un poco más grande */
+.mcj-pin .mcc-pin.suelto img, .pj-pin .mcc-pin.suelto img { width: 125%; height: 125%; }
+.pj-pin:has(.suelto) { width: 54px; height: 54px; top: -20px; right: -20px; }

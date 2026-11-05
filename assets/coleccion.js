@@ -116,9 +116,9 @@
     { id: 'pin-telarana', espacio: 'pines', nom: 'Telaraña', rareza: 'evento', regla: { tipo: 'evento', evento: HALLOWEEN }, pin: ['🕸️', '#1d1a2e', '#6F6690'] },
 
     // Coronas del Top de la semana (XP): se ganan al cerrar una semana en el puesto 1, 2 o 3
-    { id: 'pin-corona-oro', espacio: 'pines', nom: 'Corona de oro', rareza: 'legendario', regla: { tipo: 'top', n: 1 }, img: BASE + 'assets/pines/corona-oro.svg', ancho: true, pin: ['', '#2a1d05', '#FFC800'], desc: 'Para quien cierra la semana en el 1.er puesto del Top.' },
-    { id: 'pin-corona-plata', espacio: 'pines', nom: 'Corona de plata', rareza: 'epico', regla: { tipo: 'top', n: 2 }, img: BASE + 'assets/pines/corona-plata.svg', ancho: true, pin: ['', '#1b2130', '#C9D1DC'], desc: 'Para quien cierra la semana en el 2.º puesto del Top.' },
-    { id: 'pin-corona-bronce', espacio: 'pines', nom: 'Corona de bronce', rareza: 'raro', regla: { tipo: 'top', n: 3 }, img: BASE + 'assets/pines/corona-bronce.svg', ancho: true, pin: ['', '#26150a', '#E0995E'], desc: 'Para quien cierra la semana en el 3.er puesto del Top.' }
+    { id: 'pin-corona-oro', espacio: 'pines', nom: 'Corona de oro', rareza: 'legendario', regla: { tipo: 'top', n: 1 }, img: BASE + 'assets/pines/corona-oro.webp', suelto: true, pin: ['', '#2a1d05', '#FFC800'], desc: 'Para quien cierra la semana en el 1.er puesto del Top.' },
+    { id: 'pin-corona-plata', espacio: 'pines', nom: 'Corona de plata', rareza: 'epico', regla: { tipo: 'top', n: 2 }, img: BASE + 'assets/pines/corona-plata.webp', suelto: true, pin: ['', '#1b2130', '#C9D1DC'], desc: 'Para quien cierra la semana en el 2.º puesto del Top.' },
+    { id: 'pin-corona-bronce', espacio: 'pines', nom: 'Corona de bronce', rareza: 'raro', regla: { tipo: 'top', n: 3 }, img: BASE + 'assets/pines/corona-bronce.webp', suelto: true, pin: ['', '#26150a', '#E0995E'], desc: 'Para quien cierra la semana en el 3.er puesto del Top.' }
   ];
   var PUESTO_TXT = { 1: '1.er', 2: '2.º', 3: '3.er' };
   // Tu foto (o inicial) para dibujar «Mi foto»; la pone la página con fijarFoto
@@ -359,7 +359,7 @@
     return '<span class="mcc-av" style="--f1:' + t[0] + ';--f2:' + t[3] + '">' + (src ? '<img src="' + esc(src) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : '<b>' + esc(letra || '?') + '</b>') + '</span>';
   }
   function pinSvg(x) {
-    return '<span class="mcc-pin" style="--pf:' + x.pin[1] + ';--pb:' + x.pin[2] + '">' + (x.img ? '<img src="' + esc(x.img) + '" alt="" loading="lazy"' + (x.ancho ? ' style="width:88%;height:88%"' : '') + '>' : '<span>' + x.pin[0] + '</span>') + '</span>';
+    return '<span class="mcc-pin' + (x.suelto ? ' suelto' : '') + '" style="--pf:' + x.pin[1] + ';--pb:' + x.pin[2] + '">' + (x.img ? '<img src="' + esc(x.img) + '" alt="" loading="lazy">' : '<span>' + x.pin[0] + '</span>') + '</span>';
   }
   function tarjeta(x, i) {
     var ok = tiene(x.id), R = RAREZA[x.rareza] || RAREZA.comun, av = ok ? null : avance(x.id);
@@ -451,6 +451,8 @@
       '.mcc-titulo span{font-size:12.5px;font-weight:1000;color:rgb(var(--c));background:rgba(var(--c),.12);border:1.5px solid rgba(var(--c),.55);border-radius:999px;padding:5px 10px;max-width:96%}' +
       '.mcc-pin{width:74%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.25),transparent 45%),var(--pf);border:5px solid var(--pb);box-shadow:inset 0 -6px 0 rgba(0,0,0,.25),0 4px 0 rgba(0,0,0,.3)}' +
       '.mcc-pin span{font-size:min(44px,11vw);line-height:1}' +
+      // Pin sin círculo (las coronas del Top 3): solo el dibujo, un poco más grande
+      '.mcc-pin.suelto{background:none;border:0;box-shadow:none;border-radius:0;filter:drop-shadow(0 3px 0 rgba(0,0,0,.35))}.mcc-pin.suelto img,.mcc-dib .mcc-pin.suelto img{width:118%;height:118%;max-width:none}' +
       '.mcc-pin img,.mcc-dib .mcc-pin img{width:68%;height:68%;object-fit:contain;display:block}' +
       '@keyframes mccEntra{from{opacity:0;transform:translateY(16px) scale(.92)}to{opacity:1;transform:none}}' +
       '@keyframes mccLate{50%{transform:scale(1.1)}}' +
