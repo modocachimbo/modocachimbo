@@ -305,7 +305,10 @@ function initSubir(modo) {
     const b = ss('get', SUB.borrador); if (b && !ta.value) ta.value = b;
     ta.addEventListener('input', () => ss('set', SUB.borrador, ta.value));
     // Copiar prompt para IA (Gemini/ChatGPT): el del tema o el del examen según el modo (prompt-ia.js)
-    $('subArchivo').closest('label').after(botonPromptIA(() => SUB.modo === 'examen' ? 'examen' : 'tema'));
+    const bIA = botonPromptIA(() => SUB.modo === 'examen' ? 'examen' : 'tema');
+    $('subArchivo').closest('label').after(bIA);
+    // Prompt para reilustrar la imagen de una pregunta (fiel o con color)
+    bIA.after(botonPromptImagen());
     $('subArchivo').addEventListener('change', async e => {
       const f = e.target.files[0]; e.target.value = '';
       if (!f) return;
