@@ -19,6 +19,7 @@
   .ia-img-menu { position: absolute; z-index: 30; top: calc(100% + 6px); left: 0; min-width: 270px;
     background: #1b1530; border: 1px solid rgba(206,130,255,.45); border-radius: 12px; padding: 6px;
     box-shadow: 0 10px 30px rgba(0,0,0,.45); display: flex; flex-direction: column; gap: 4px; }
+  .ia-img-menu.der { left: auto; right: 0; }
   .ia-img-menu[hidden] { display: none; }
   .ia-img-menu button { text-align: left; background: none; border: 0; border-radius: 8px; padding: 9px 10px;
     color: #eee; cursor: pointer; font: inherit; line-height: 1.3; }
@@ -286,7 +287,13 @@ function botonPromptImagen() {
   const menu = document.createElement('div'); menu.className = 'ia-img-menu'; menu.hidden = true;
   menu.innerHTML = `<button type="button" data-v="fiel"><b>Fiel al original</b><small>Igual que la imagen, solo limpia: fondo blanco y enderezada</small></button>
     <button type="button" data-v="color"><b>Mejorada con color</b><small>Mismo contenido, con colores suaves en gráficos y líneas</small></button>`;
-  b.addEventListener('click', e => { e.stopPropagation(); menu.hidden = !menu.hidden; });
+  b.addEventListener('click', e => {
+    e.stopPropagation(); menu.hidden = !menu.hidden;
+    if (menu.hidden) return;
+    // Si no entra a la derecha, se abre hacia la izquierda (alineado al borde derecho del botón)
+    menu.classList.remove('der');
+    if (menu.getBoundingClientRect().right > document.documentElement.clientWidth - 8) menu.classList.add('der');
+  });
   menu.addEventListener('click', e => {
     const op = e.target.closest('[data-v]'); if (!op) return;
     menu.hidden = true;
