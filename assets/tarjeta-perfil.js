@@ -181,17 +181,25 @@
     T + '.mct .mcu-av{clip-path:none}' +
     T + '.mct-tx{position:static;margin-left:8px;padding-right:58px}' +
     // La imagen del pin trae borde transparente: se corre un poco para que el dibujo quede en la esquina
-    T + '.mct-pin{z-index:2;top:-3%;right:-5%;width:44%;height:44%}' +
+    T + '.mct-pin{z-index:2;top:-3%;right:-5%;width:38%;height:38%}' +
     T + '.mct-nv{left:auto;right:0;bottom:0;padding:3px 6px 2px 9px;background:rgba(10,6,28,.88);color:#fff;clip-path:polygon(8px 0,100% 0,100% 100%,0 100%)}' +
     T + '.mct-nv b{color:#FFE14D}' +
     T + '.mct-rg i{position:absolute;z-index:1;right:10px;top:50%;width:54px!important;transform:translateY(-50%)}' +
     '@media (max-width:900px){' +
       T + '.mcu-chip.mct{--h:clamp(60px,calc((100vw - 32px) / 5),96px);width:auto;height:var(--h);padding-right:12px;--bi:var(--h)}' +
       T + '.mct-caja{width:var(--h);height:var(--h)}' +
-      T + '.mct-pin{width:44%;height:44%;right:-5%}' +
+      T + '.mct-pin{width:38%;height:38%;right:-5%}' +
       T + '.mct-nv{padding:2px 5px 1px 8px}' +
       T + '.mct-rg i{width:48px!important;right:8px}' + T + '.mct-tx{padding-right:52px}' +
     '}';
+
+  // ===== PRUEBA nivel: html[data-mct="a"] solo el número en una esquina; "b" el nivel pasa al texto =====
+  CSS +=
+    T + '.mct-nvt{font-style:normal;display:none}' +
+    'html[data-mct="a"] ' + T + '.mct-nv{font-size:0;padding:3px 6px 2px 9px;background:rgba(10,6,28,.92);box-shadow:inset 1px 1px 0 rgba(255,255,255,.12)}' +
+    'html[data-mct="a"] ' + T + '.mct-nv b{font-size:14px;font-style:normal;color:#fff;letter-spacing:.02em}' +
+    'html[data-mct="b"] ' + T + '.mct-nv{display:none}' +
+    'html[data-mct="b"] ' + T + '.mct-nvt{display:inline;color:#FFE14D}';
   var SOLO_ICONO = window.matchMedia ? window.matchMedia('(max-width:360px)') : { matches: false };
   var tVer = null;
   document.addEventListener('click', function (e) {
@@ -215,7 +223,8 @@
     var n = window.MCRango && xp != null ? MCRango.nivel(xp) : -1;
     var r = xp == null || !window.MCRango ? '' : n < 0 ? '<b>Sin rango</b>' : '<i>' + MCRango.svg(n, { mini: true, quieto: true }) + '</i><b>' + esc(MCRango.nombre(n)) + '</b>';
     var id = yo && yo.codigo ? '<span>' + (r ? '· ' : '') + 'ID ' + esc(yo.codigo) + '</span>' : '';
-    return r + id;
+    var nv = yo ? '<em class="mct-nvt">· Nvl ' + nivel(yo.xp_total) + '</em>' : '';
+    return r + nv + id;
   }
 
   // Arma la tarjeta y la pinta con lo que llevas puesto. Solo toca lo que cambió:
@@ -273,7 +282,7 @@
       if (pe.getAttribute('data-p') !== ph) { pe.setAttribute('data-p', ph); pe.innerHTML = ph; pe.title = p ? p.nom : ''; }
       // Rango de la semana e ID
       var r = chip.querySelector('.mct-rg'), n = miXp == null || !window.MCRango ? -1 : MCRango.nivel(miXp);
-      var k = (miXp == null ? 'x' : String(n)) + '|' + (yo ? yo.codigo : ''), c = n < 0 ? '#cfc8e6' : MCRango.color(n).c;
+      var k = (miXp == null ? 'x' : String(n)) + '|' + (yo ? yo.codigo + '|' + nivel(yo.xp_total) : ''), c = n < 0 ? '#cfc8e6' : MCRango.color(n).c;
       if (r.getAttribute('data-n') !== k) { r.setAttribute('data-n', k); r.innerHTML = rangoHtml(miXp); }
       if (chip.style.getPropertyValue('--rc') !== c) chip.style.setProperty('--rc', c);
     });
