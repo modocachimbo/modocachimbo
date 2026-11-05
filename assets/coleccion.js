@@ -120,9 +120,7 @@
     // se quedan para siempre a quien cierra la semana (domingo) en ese puesto
     { id: 'pin-corona-oro', espacio: 'pines', nom: 'Top global · 1.º', rareza: 'legendario', regla: { tipo: 'top', n: 1 }, img: BASE + 'assets/pines/corona-oro.webp', suelto: true, pin: ['', '#2a1d05', '#FFC800'], desc: 'Para el 1.º del Top de la semana.' },
     { id: 'pin-corona-plata', espacio: 'pines', nom: 'Top global · 2.º', rareza: 'epico', regla: { tipo: 'top', n: 2 }, img: BASE + 'assets/pines/corona-plata.webp', suelto: true, pin: ['', '#1b2130', '#C9D1DC'], desc: 'Para el 2.º del Top de la semana.' },
-    { id: 'pin-corona-bronce', espacio: 'pines', nom: 'Top global · 3.º', rareza: 'raro', regla: { tipo: 'top', n: 3 }, img: BASE + 'assets/pines/corona-bronce.webp', suelto: true, pin: ['', '#26150a', '#E0995E'], desc: 'Para el 3.º del Top de la semana.' },
-    // La V de verificado: antes la llevaban solos los del equipo; ahora es un pin de influencers (supabase/67-verificado-influencers.sql)
-    { id: 'pin-verificado', espacio: 'pines', nom: 'Verificado', rareza: 'legendario', regla: { tipo: 'grupo', g: 'influencer' }, img: BASE + 'assets/pines/verificado.webp', suelto: true, pin: ['', '#4A0A0A', '#FFC800'], desc: 'La V de verificado de Modo Cachimbo.' }
+    { id: 'pin-corona-bronce', espacio: 'pines', nom: 'Top global · 3.º', rareza: 'raro', regla: { tipo: 'top', n: 3 }, img: BASE + 'assets/pines/corona-bronce.webp', suelto: true, pin: ['', '#26150a', '#E0995E'], desc: 'Para el 3.º del Top de la semana.' }
   ];
   var PUESTO_TXT = { 1: '1.er', 2: '2.º', 3: '3.er' };
   // Tu foto (o inicial) para dibujar «Mi foto»; la pone la página con fijarFoto
