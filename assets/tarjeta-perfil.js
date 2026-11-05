@@ -149,36 +149,26 @@
       T + '.mc-ver>span{max-width:4.5em;opacity:1;margin-left:5px}' +
     '}';
 
-  // ===== PRUEBA: dos alternativas del banner (html[data-mct="a"|"b"]) =====
-  var A = 'html[data-mct="a"] [data-mc-tarjeta] ', B = 'html[data-mct="b"] [data-mc-tarjeta] ';
+  // Banner rectangular en proporción 4:1 (la medida de los banners del panel: 1200×300) para que se vea
+  // completo, con un velo oscuro a la izquierda para que el nombre, el rango y el ID se lean con cualquier fondo
   CSS +=
-    T + '.mct-velo{position:absolute;inset:0;pointer-events:none;display:none}' +
+    T + '.mcu-chip.mct{flex:none;width:304px;padding-right:14px;clip-path:none}' +
+    T + '.mct-velo{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(10,6,28,.92) 0,rgba(10,6,28,.86) 48%,rgba(10,6,28,.45) 72%,rgba(10,6,28,0) 92%)}' +
+    T + '.mct-tx{flex:1}' +
+    T + '.mct .mcu-nom{max-width:100%;text-shadow:0 2px 0 rgba(0,0,0,.6)}' +
+    T + '.mct-rg{color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.6)}' +
+    T + '.mct-rg span{color:rgba(255,255,255,.85)}' +
+    // El pin (verificado u otro) en la esquina de la foto, siempre de su tamaño
     T + '.mct-pin img{width:100%!important;height:100%!important;object-fit:contain;display:block;max-width:none}' +
     T + '.mct-pin .mcc-pin.suelto{width:100%;height:100%;aspect-ratio:auto}' +
-    T + '.mct-rg span{color:rgba(255,255,255,.85)}' +
-    // A: velo oscuro detrás del texto, el fondo luce a la derecha; corte en diagonal más corto
-    A + '.mct-velo{display:block;background:linear-gradient(90deg,rgba(10,6,28,.92) 0,rgba(10,6,28,.86) 48%,rgba(10,6,28,.45) 72%,rgba(10,6,28,0) 92%)}' +
-    A + '.mcu-chip.mct{padding-right:64px;clip-path:polygon(0 0,100% 0,calc(100% - 22px) 100%,0 100%)}' +
-    A + '.mct .mcu-nom{max-width:11em;text-shadow:0 2px 0 rgba(0,0,0,.6)}' +
-    A + '.mct-rg{color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.6)}' +
-    A + '.mct-rg b{color:var(--rc)}' +
-    // B: el fondo se ve entero (sin velo) y el texto va en cintas oscuras, estilo placa de juego
-    B + '.mcu-chip.mct{padding-right:60px;clip-path:polygon(0 0,100% 0,calc(100% - 22px) 100%,0 100%)}' +
-    B + '.mct-tx{gap:4px;justify-items:start}' +
-    B + '.mct .mcu-nom{max-width:11em;text-shadow:none;background:rgba(10,6,28,.84);padding:4px 14px 2px 8px;clip-path:polygon(0 0,100% 0,calc(100% - 8px) 100%,0 100%)}' +
-    B + '.mct-rg{color:#fff;text-shadow:none;background:rgba(10,6,28,.84);padding:4px 14px 4px 8px;clip-path:polygon(0 0,100% 0,calc(100% - 8px) 100%,0 100%)}' +
-    B + '.mct-rg b{color:var(--rc)}' +
+    // Celular: ocupa toda la fila (assets en index.html bajan los cuadros) y el alto sigue el 4:1
     '@media (max-width:900px){' +
-      A + '.mcu-chip.mct{padding-right:34px;clip-path:polygon(0 0,100% 0,calc(100% - 14px) 100%,0 100%)}' +
-      A + '.mct .mcu-nom{max-width:8em}' +
-      B + '.mcu-chip.mct{padding-right:34px;clip-path:polygon(0 0,100% 0,calc(100% - 14px) 100%,0 100%)}' +
-      B + '.mct-tx{gap:3px}' +
-      // Celular: la tarjeta ocupa toda la fila y los cuadros van debajo, repartidos
-      'html[data-mct] .cab .mcu-user{flex-wrap:wrap;row-gap:8px}' +
-      'html[data-mct] .cab .mcu-user .mcu-chip.mct{flex:1 1 100%;margin-right:0}' +
-      'html[data-mct] .cab .mcu-user .mcz-pill:not([hidden]),html[data-mct] .cab .mcu-user .mcu-racha:not([hidden]){flex:1 1 0;justify-content:center}' +
-      B + '.mct .mcu-nom{max-width:8em;padding:3px 10px 1px 6px}' + B + '.mct-rg{padding:3px 10px 3px 6px}' +
-    '}';
+      T + '.mcu-chip.mct{width:auto;height:clamp(60px,calc((100vw - 32px) / 4),96px);padding-right:12px;--bi:62px}' +
+      T + '.mct-caja{width:56px;height:56px}' +
+      T + '.mct .mcu-nom{font-size:24px;max-width:100%}' +
+      T + '.mct-rg{font-size:13px}' + T + '.mct-rg i{width:18px}' +
+    '}' +
+    '@media (max-width:400px){' + T + '.mct .mcu-nom{font-size:22px;max-width:100%}' + T + '.mct-rg{font-size:12px}}';
   var SOLO_ICONO = window.matchMedia ? window.matchMedia('(max-width:360px)') : { matches: false };
   var tVer = null;
   document.addEventListener('click', function (e) {

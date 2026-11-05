@@ -307,7 +307,7 @@
 <script src="assets/buho.js"></script>
 <script src="assets/rango.js?v=184"></script>
 <script src="assets/coleccion.js?v=194"></script>
-<script src="assets/tarjeta-perfil.js?v=202"></script>
+<script src="assets/tarjeta-perfil.js?v=203"></script>
 <script src="assets/buho/buho-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
 </head>
@@ -453,7 +453,7 @@
     if ($('pTarj').getAttribute('data-h') !== h + t[0] + fi) {
       $('pTarj').setAttribute('data-h', h + t[0] + fi);
       $('pTarj').innerHTML = h;
-      if (window.MCTarjeta) $('pTarj').firstChild.insertAdjacentHTML('afterbegin', MCTarjeta.arte(t, fi));
+      if (window.MCTarjeta) $('pTarj').firstChild.insertAdjacentHTML('afterbegin', MCTarjeta.arte(t, fi) + '<span class="mct-velo" aria-hidden="true"></span>');
     }
   }
   new MutationObserver(function () { setTimeout(pintarTarjeta, 0); }).observe(document.querySelector('header [data-mc-auth]'), { childList: true, subtree: true, attributes: true });
