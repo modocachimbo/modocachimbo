@@ -248,6 +248,7 @@
     if (r.tipo === 'rango') return ok ? 'Lo ganaste al llegar a ' + rangoDe(r.n) + ' en una semana.' : 'Llega a ' + rangoDe(r.n) + ' en una semana (' + (window.MCRango ? String(RANGO_XP[r.n]).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' XP' : '') + ').';
     if (r.tipo === 'top') {
       var v = +E.tops[r.n] || 0, P = PUESTO_TXT[r.n];
+      if (E.mias[x.id] && !v) return 'Un regalo de Modo Cachimbo. Es tuya para siempre.';
       if (v) return 'Es tuya para siempre: cerraste ' + (v > 1 ? v + ' semanas' : 'una semana') + ' en el ' + P + ' puesto del Top.';
       if (ok) return 'Vas en el ' + P + ' puesto del Top: llévala esta semana. Si cierras el domingo en ese puesto, es tuya para siempre.';
       return 'Desde el martes la llevan los 3 primeros del Top de la semana. Es tuya para siempre si cierras la semana en el ' + P + ' puesto.';
@@ -307,6 +308,15 @@
       else { E.rachaOk = true; avisar(); }
     })(0);
     return pedido;
+  }
+
+  // Volver a pedir lo tuyo ya (sin esperar los 10 min): al llegar un regalo
+  function refrescar() {
+    var T = leer(CLAVE_T) || {}; T.col = 0; guardar(CLAVE_T, T);
+    guardar(CLAVE_REC + '_t', 0);
+    pedido = null; pedidoRec = null;
+    var p = cargar();   // también trae los recursos nuevos (por si el regalo es uno recién subido)
+    return Promise.all([p, pedidoRec]).then(function () { return E; });
   }
 
   // Ponerse algo (o quitarse un pin). Se guarda en la cuenta si existe el SQL.
@@ -543,7 +553,7 @@
     cuadro: function (id) { var x = POR_ID[id || puesto('cuadro')]; if (!x || x.espacio !== 'cuadro') x = POR_ID['cuadro-galaxia']; return { tema: x.tema, llama: x.llama }; },
     llama: llama, titulo: tituloHtml,
     marco: function (id) { var x = POR_ID[id || puesto('marco')]; return x && x.marco !== 'none' ? x.marco : ''; },
-    nuevos: nuevos, marcarVistos: marcarVistos, celebrar: celebrar,
+    nuevos: nuevos, marcarVistos: marcarVistos, celebrar: celebrar, refrescar: refrescar,
     contar: function () { var n = 0; CATALOGO.forEach(function (x) { if (tiene(x.id)) n++; }); return { tengo: n, total: CATALOGO.length }; }
   };
 })();

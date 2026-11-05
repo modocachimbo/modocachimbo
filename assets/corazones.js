@@ -146,6 +146,7 @@
       '.mcz-globo b{color:#FF6B6B;font-weight:900}.mcz-globo::before{content:"";position:absolute;left:-9px;bottom:16px;width:14px;height:14px;background:#1D1834;border:solid #2F284E;border-width:0 0 2px 2px;rotate:45deg;border-radius:0 0 0 4px}' +
       // Aviso de corazón ganado
       '.mcz-toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;z-index:300;display:flex;align-items:center;gap:12px;background:#19142E;border:2px solid rgba(255,75,75,.45);color:#f2f2f2;border-radius:18px;padding:12px 18px 12px 14px;box-shadow:0 18px 40px rgba(0,0,0,.6);font:700 13.5px Nunito,Inter,sans-serif;transition:transform .35s ease,opacity .35s ease;max-width:calc(100vw - 32px)}' +
+      '.mcz-toast.sobre{cursor:pointer;text-align:left;border-color:rgba(206,130,255,.6);border-bottom:4px solid #7b4fe0}.mcz-sobre-i{font-size:28px;animation:mczLatido .7s ease 3}.mcz-toast.sobre b{color:#CE82FF}' +
       '.mcz-toast.show{transform:translate(-50%,0);opacity:1}.mcz-toast svg{width:30px;height:30px;flex-shrink:0;animation:mczLatido .7s ease 2}.mcz-toast b{display:block;font-size:16px;font-weight:1000;color:#FF4B4B}' +
       '@media (prefers-reduced-motion:reduce){.mcz-hoja,.mcz-toast svg,.mcz-late,.mcz-gema,.mcz-destello{animation:none!important}}';
     document.head.appendChild(st);
@@ -169,7 +170,8 @@
     pintar();
     oyentes.forEach(function (fn) { try { fn(estado); } catch (x) {} });
     (e.nuevas || []).forEach(function (t) { celebrar(t); });
-    regs.forEach(function (g, i) { setTimeout(function () { regalo(g); }, 600 + i * 4300); });
+    // Todo lo que llegó junto va en un solo sobre (assets/sobre.js)
+    if (regs.length) sobre(regs);
     if (antes && antes.quedan === 0 && e.quedan > 0) cerrarBloqueo();
   }
 
@@ -550,7 +552,8 @@
     css();
     var t = g.tipo === 'corazones' ? '¡Te regalaron ' + g.cantidad + (g.cantidad === 1 ? ' corazón!' : ' corazones!')
       : g.tipo === 'infinito' ? '¡Corazones infinitos por ' + (g.cantidad % 24 ? g.cantidad + (g.cantidad === 1 ? ' hora!' : ' horas!') : g.cantidad / 24 + (g.cantidad === 24 ? ' día!' : ' días!'))
-      : g.tipo === 'xp' ? '¡Te regalaron ' + g.cantidad + ' XP!' : '¡Te regalaron algo para tu colección!';
+      : g.tipo === 'xp' ? '¡Te regalaron ' + g.cantidad + ' XP!'
+      : '¡Te regalaron algo para tu colección!';
     var d = document.createElement('div'); d.className = 'mcz-toast'; d.setAttribute('role', 'status');
     d.innerHTML = (g.tipo === 'xp' ? SVG.xp : SVG.corazon) + '<div><b></b><span></span></div>';
     d.querySelector('b').textContent = '🎁 ' + t;
@@ -559,6 +562,60 @@
     try { if (window.MCSonido && MCSonido.racha) MCSonido.racha(); } catch (e) {}
     requestAnimationFrame(function () { requestAnimationFrame(function () { d.classList.add('show'); }); });
     setTimeout(function () { d.classList.remove('show'); setTimeout(function () { d.remove(); }, 400); }, 4000);
+  }
+
+  /* ---------- El sobre de regalo ---------- */
+  // Si llega en plena práctica, no tapa la pregunta: sale un aviso con «Abrir»
+  // y, si no lo abre, el sobre queda guardado para la próxima página.
+  var K_SOBRE = 'mc_sobre_' + uid;
+  function sobresGuardados() { try { return JSON.parse(localStorage.getItem(K_SOBRE) || '[]') || []; } catch (e) { return []; } }
+  function guardarSobres(l) { try { if (l.length) localStorage.setItem(K_SOBRE, JSON.stringify(l.slice(-30))); else localStorage.removeItem(K_SOBRE); } catch (e) {} }
+  function js(src, hay) {
+    if (hay()) return Promise.resolve();
+    return new Promise(function (ok, mal) {
+      var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = mal; document.head.appendChild(s);
+    });
+  }
+  function sobre(regs) {
+    guardarSobres(sobresGuardados().concat(regs));
+    if (PAG) return avisoSobre();
+    abrirSobre();
+  }
+  var abriendo = false;
+  function abrirSobre() {
+    var regs = sobresGuardados();
+    if (!regs.length || abriendo) return;
+    abriendo = true;
+    var ids = regs.filter(function (g) { return g.tipo === 'item' && g.item; }).map(function (g) { return g.item; });
+    var pasos = [js(BASE + 'assets/sobre.js?v=1', function () { return window.MCSobre; })];
+    // Los ítems: la colección se vuelve a pedir al toque (no los 10 min guardados)
+    if (ids.length) pasos.push(js(BASE + 'assets/coleccion.js?v=186', function () { return window.MCColeccion; })
+      .then(function () { return MCColeccion.refrescar ? MCColeccion.refrescar() : null; }));
+    var con = regs.filter(function (g) { return g.nota; })[0] || regs[0];
+    Promise.all(pasos).then(function () {
+      guardarSobres([]);
+      if (ids.length && MCColeccion.marcarVistos) MCColeccion.marcarVistos(ids);   // que no salga otra vez como «nuevo»
+      return MCSobre.abrir({
+        regalos: regs.map(function (g) { return g.tipo === 'item' ? { tipo: 'item', id: g.item } : { tipo: g.tipo, cantidad: +g.cantidad || 0 }; }),
+        de: con.de, nota: con.nota, iconos: SVG
+      });
+    }).catch(function () {
+      // Sin internet para el sobre: el aviso de siempre
+      guardarSobres([]);
+      regs.forEach(function (g, i) { setTimeout(function () { regalo(g); }, i * 4300); });
+    }).then(function () { abriendo = false; });
+  }
+  function avisoSobre() {
+    css();
+    if (document.querySelector('.mcz-toast.sobre')) return;
+    var d = document.createElement('button'); d.type = 'button'; d.className = 'mcz-toast sobre';
+    d.innerHTML = '<span class="mcz-sobre-i" aria-hidden="true">💌</span><div><b>¡Te llegó un sobre!</b><span>Tócalo para abrirlo</span></div>';
+    document.body.appendChild(d);
+    try { if (window.MCSonido && MCSonido.racha) MCSonido.racha(); } catch (e) {}
+    requestAnimationFrame(function () { requestAnimationFrame(function () { d.classList.add('show'); }); });
+    function quitar() { d.classList.remove('show'); setTimeout(function () { d.remove(); }, 400); }
+    d.addEventListener('click', function () { quitar(); abrirSobre(); });
+    setTimeout(quitar, 9000);
   }
 
   window.MCCorazones = {
@@ -577,6 +634,21 @@
     .observe(document.body, { childList: true, subtree: true });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { pintar(); }); else pintar();
   cargar();
+  // Regalos al toque: el servidor avisa cuando le dejan uno (supabase/63-regalos-con-aviso.sql
+  // pone la tabla regalos en Realtime). Si eso no conecta, se pregunta cada 90 s mientras mira la web.
+  var enVivo = false;
+  if (uid) MCAuth.listo.then(function (c) {
+    if (!c.channel) return;
+    var t = null;
+    c.channel('regalos-' + uid)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'regalos', filter: 'usuario=eq.' + uid }, function () {
+        clearTimeout(t); t = setTimeout(function () { cargar(true); }, 1200);   // un paquete trae varias filas juntas
+      })
+      .subscribe(function (s) { enVivo = s === 'SUBSCRIBED'; });
+  }, function () {});
+  if (uid) setInterval(function () { if (!enVivo && document.visibilityState === 'visible') cargar(true); }, 90000);
+  // Un sobre que quedó sin abrir en una práctica sale en la próxima página
+  if (!PAG && uid) setTimeout(abrirSobre, 1500);
   // Lo que quedó guardado sin internet se manda en cuanto hay conexión
   MCAuth.listo.then(function () { setTimeout(vaciarCola, 1500); }, function () {});
   window.addEventListener('online', function () { setTimeout(function () { enviar(); vaciarCola(); }, 1000); });
