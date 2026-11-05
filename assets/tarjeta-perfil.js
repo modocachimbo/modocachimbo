@@ -280,8 +280,13 @@
   // el primero de su vitrina (la V de verificado ya no se pone sola al equipo).
   // Tu fila usa el tuyo (si aún no carga, lo del top).
   function pinDe(x) {
-    var mio = x.yo && pin();
-    if (mio) return mio;
+    if (x.yo) {
+      // En los tops la corona solo la llevan los 3 de esta semana (supabase/69-corona-solo-top-actual.sql)
+      var C0 = window.MCColeccion, ca = C0 && C0.corona ? C0.corona() : '';
+      var id = C0 && C0.puesto('pines').filter(function (p) { return !/^pin-corona-/.test(p) || p === ca; })[0], mx = id && C0.item(id);
+      if (mx) return { html: C0.pin(mx), nom: mx.nom, como: C0.como(mx) };
+      if (C0 && C0.estado().listo) return null;
+    }
     var C = window.MCColeccion, px = C && x.pin && C.item(x.pin);
     return px ? { html: C.pin(px), nom: px.nom, como: comoDe(px) } : null;
   }
