@@ -3,7 +3,9 @@
    - CATALOGO: búhos, fotos de perfil, fondos, marcos, títulos y pines.
      Cada objeto dice cómo se consigue (regla):
        gratis · racha (mejor racha de N días) · rango (cerrar una semana
-       en ese rango) · evento / regalo (te lo entregan por SQL en coleccion_mia)
+       en ese rango) · top (cerrar una semana en el puesto N del Top de la
+       semana, supabase/61-pines-corona-top3.sql) · evento / regalo (te lo
+       entregan por SQL en coleccion_mia)
    - Lo que tienes puesto y lo que te regalaron vive en supabase/31-coleccion.sql.
      Si ese SQL aún no corrió, lo puesto se guarda solo en este equipo.
    - window.MCColeccion para coleccion.html y perfil.html:
@@ -111,8 +113,14 @@
     { id: 'pin-calabaza', espacio: 'pines', nom: 'Calabaza', rareza: 'evento', regla: { tipo: 'evento', evento: HALLOWEEN }, pin: ['🎃', '#2c1240', '#FF9600'] },
     { id: 'pin-murcielago', espacio: 'pines', nom: 'Murciélago', rareza: 'evento', regla: { tipo: 'evento', evento: HALLOWEEN }, pin: ['🦇', '#2a1650', '#CE82FF'] },
     { id: 'pin-fantasma', espacio: 'pines', nom: 'Fantasma', rareza: 'evento', regla: { tipo: 'evento', evento: HALLOWEEN }, pin: ['👻', '#14213f', '#A99FC8'] },
-    { id: 'pin-telarana', espacio: 'pines', nom: 'Telaraña', rareza: 'evento', regla: { tipo: 'evento', evento: HALLOWEEN }, pin: ['🕸️', '#1d1a2e', '#6F6690'] }
+    { id: 'pin-telarana', espacio: 'pines', nom: 'Telaraña', rareza: 'evento', regla: { tipo: 'evento', evento: HALLOWEEN }, pin: ['🕸️', '#1d1a2e', '#6F6690'] },
+
+    // Coronas del Top de la semana (XP): se ganan al cerrar una semana en el puesto 1, 2 o 3
+    { id: 'pin-corona-oro', espacio: 'pines', nom: 'Corona de oro', rareza: 'legendario', regla: { tipo: 'top', n: 1 }, img: BASE + 'assets/pines/corona-oro.svg', ancho: true, pin: ['', '#2a1d05', '#FFC800'], desc: 'Para quien cierra la semana en el 1.er puesto del Top.' },
+    { id: 'pin-corona-plata', espacio: 'pines', nom: 'Corona de plata', rareza: 'epico', regla: { tipo: 'top', n: 2 }, img: BASE + 'assets/pines/corona-plata.svg', ancho: true, pin: ['', '#1b2130', '#C9D1DC'], desc: 'Para quien cierra la semana en el 2.º puesto del Top.' },
+    { id: 'pin-corona-bronce', espacio: 'pines', nom: 'Corona de bronce', rareza: 'raro', regla: { tipo: 'top', n: 3 }, img: BASE + 'assets/pines/corona-bronce.svg', ancho: true, pin: ['', '#26150a', '#E0995E'], desc: 'Para quien cierra la semana en el 3.er puesto del Top.' }
   ];
+  var PUESTO_TXT = { 1: '1.er', 2: '2.º', 3: '3.er' };
   // Tu foto (o inicial) para dibujar «Mi foto»; la pone la página con fijarFoto
   var miFoto = { src: '', letra: '', nombre: '' };
   // Piso de cada fondo: la superficie donde se para el búho en el escenario del inicio.
@@ -204,14 +212,14 @@
   var CLAVE = 'mc_coleccion', CLAVE_T = 'mc_coleccion_t';   // _t: cuándo se pidió cada cosa { u, col, rgo }
 
   // Estado: lo que tienes (mias), lo que llevas (puesto) y los datos para las reglas
-  var E = { mias: {}, puesto: copiar(DEFECTO), mejorRacha: 0, maxRango: -1, sql: false, listo: false, rachaOk: false };
+  var E = { mias: {}, puesto: copiar(DEFECTO), mejorRacha: 0, maxRango: -1, tops: {}, sql: false, listo: false, rachaOk: false };
   var cache = leer(CLAVE);
-  if (cache) { E.mias = cache.mias || {}; E.puesto = mezclar(cache.puesto); E.mejorRacha = cache.mejorRacha || 0; E.maxRango = cache.maxRango == null ? -1 : cache.maxRango; E.sql = !!cache.sql; }
+  if (cache) { E.mias = cache.mias || {}; E.puesto = mezclar(cache.puesto); E.mejorRacha = cache.mejorRacha || 0; E.maxRango = cache.maxRango == null ? -1 : cache.maxRango; E.tops = cache.tops || {}; E.sql = !!cache.sql; }
   function copiar(o) { return JSON.parse(JSON.stringify(o)); }
   function mezclar(p) { var r = copiar(DEFECTO); Object.keys(p || {}).forEach(function (k) { if (k in r) r[k] = p[k]; }); if (!Array.isArray(r.pines)) r.pines = []; return r; }
   var oyentes = [];
   function avisar() {
-    guardar(CLAVE, { mias: E.mias, puesto: E.puesto, mejorRacha: E.mejorRacha, maxRango: E.maxRango, sql: E.sql });
+    guardar(CLAVE, { mias: E.mias, puesto: E.puesto, mejorRacha: E.mejorRacha, maxRango: E.maxRango, tops: E.tops, sql: E.sql });
     oyentes.forEach(function (fn) { try { fn(E); } catch (e) {} });
   }
 
@@ -222,6 +230,7 @@
     if (r.tipo === 'gratis') return true;
     if (r.tipo === 'racha') return E.mejorRacha >= r.n;
     if (r.tipo === 'rango') return E.maxRango >= r.n;
+    if (r.tipo === 'top') return (+E.tops[r.n] || 0) > 0;
     return false;
   }
   // Cuánto falta (0 a 1) para las reglas que se pueden medir
@@ -236,6 +245,7 @@
     if (r.tipo === 'gratis') return 'Viene con tu cuenta.';
     if (r.tipo === 'racha') return ok ? 'Lo ganaste al llegar a ' + r.n + ' días de racha.' : 'Llega a una racha de ' + r.n + ' días (tu mejor: ' + E.mejorRacha + ').';
     if (r.tipo === 'rango') return ok ? 'Lo ganaste al llegar a ' + rangoDe(r.n) + ' en una semana.' : 'Llega a ' + rangoDe(r.n) + ' en una semana (' + (window.MCRango ? String(RANGO_XP[r.n]).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' XP' : '') + ').';
+    if (r.tipo === 'top') { var v = +E.tops[r.n] || 0; return ok ? 'Lo ganaste al cerrar una semana en el ' + PUESTO_TXT[r.n] + ' puesto del Top' + (v > 1 ? ' (' + v + ' veces).' : '.') : 'Cierra una semana en el ' + PUESTO_TXT[r.n] + ' puesto del Top de la semana.'; }
     if (r.tipo === 'evento') return ok ? 'Lo ganaste en ' + r.evento + '. Es tuyo para siempre.' : 'Se ganaba en ' + r.evento + '.';
     return ok ? 'Un regalo de Modo Cachimbo.' : 'Es un regalo especial: no se puede conseguir solo.';
   }
@@ -268,6 +278,7 @@
           E.sql = true; E.mias = {};
           (d.mias || []).forEach(function (m) { E.mias[m.item] = m.origen || 'regalo'; });
           if (d.puesto) E.puesto = mezclar(d.puesto);
+          E.tops = d.tops || {};   // { "1": veces, "2": …, "3": … } (supabase/61-pines-corona-top3.sql)
           T.col = Date.now();
         }).catch(function () { E.sql = false; }),
         !pedirRgo ? null : c.from('xp_semana').select('semana,xp').eq('usuario', u.id).limit(200).then(function (r) {
@@ -348,7 +359,7 @@
     return '<span class="mcc-av" style="--f1:' + t[0] + ';--f2:' + t[3] + '">' + (src ? '<img src="' + esc(src) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : '<b>' + esc(letra || '?') + '</b>') + '</span>';
   }
   function pinSvg(x) {
-    return '<span class="mcc-pin" style="--pf:' + x.pin[1] + ';--pb:' + x.pin[2] + '">' + (x.img ? '<img src="' + esc(x.img) + '" alt="" loading="lazy">' : '<span>' + x.pin[0] + '</span>') + '</span>';
+    return '<span class="mcc-pin" style="--pf:' + x.pin[1] + ';--pb:' + x.pin[2] + '">' + (x.img ? '<img src="' + esc(x.img) + '" alt="" loading="lazy"' + (x.ancho ? ' style="width:88%;height:88%"' : '') + '>' : '<span>' + x.pin[0] + '</span>') + '</span>';
   }
   function tarjeta(x, i) {
     var ok = tiene(x.id), R = RAREZA[x.rareza] || RAREZA.comun, av = ok ? null : avance(x.id);
