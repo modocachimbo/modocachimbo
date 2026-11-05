@@ -73,10 +73,9 @@
   }
   function icono(id) { defs(); return '<svg aria-hidden="true"><use href="#mct-' + id + '"/></svg>'; }
 
-  // Tu pin personal: el verificado si eres del equipo; si no, el primero de tu vitrina
+  // Tu pin personal: el primero de tu vitrina (la V de verificado ya es un pin de influencers)
   function pin() {
     var C = window.MCColeccion;
-    if (yo && yo.admin) return { html: icono('ver'), nom: 'Admin verificado', como: 'Solo lo llevan los administradores de Modo Cachimbo.' };
     var id = C && C.puesto('pines')[0], x = id && C.item(id);
     return x ? { html: C.pin(x), nom: x.nom, como: C.como(x) } : null;
   }
@@ -278,12 +277,11 @@
   }
 
   // Pin en la esquina de la foto de los tops (supabase/47-pines-tops.sql), como en tu tarjeta:
-  // el de admin verificado si es del equipo; si no, el primero de su vitrina.
+  // el primero de su vitrina (la V de verificado ya no se pone sola al equipo).
   // Tu fila usa el tuyo (si aún no carga, lo del top).
   function pinDe(x) {
     var mio = x.yo && pin();
     if (mio) return mio;
-    if (x.admin) return { html: icono('ver'), nom: 'Admin verificado', como: 'Solo lo llevan los administradores de Modo Cachimbo.' };
     var C = window.MCColeccion, px = C && x.pin && C.item(x.pin);
     return px ? { html: C.pin(px), nom: px.nom, como: comoDe(px) } : null;
   }
@@ -322,8 +320,7 @@
   function tarjetaHtml(d) {
     var C = window.MCColeccion, v = vista(d), p = d.puesto || {};
     var tit = C && (C.item(p.titulo) || C.item('titulo-cachimbo')), pin = null;
-    if (d.admin) pin = { html: icono('ver'), nom: 'Admin verificado', como: 'Solo lo llevan los administradores de Modo Cachimbo.' };
-    else if (C && p.pines && p.pines[0] && C.item(p.pines[0])) { var px = C.item(p.pines[0]); pin = { html: C.pin(px), nom: px.nom, como: d.yo ? C.como(px) : comoDe(px) }; }
+    if (C && p.pines && p.pines[0] && C.item(p.pines[0])) { var px = C.item(p.pines[0]); pin = { html: C.pin(px), nom: px.nom, como: d.yo ? C.como(px) : comoDe(px) }; }
     var n = window.MCRango ? MCRango.nivel(d.xp_semana) : -1;
     var st = function (ic, val, lab) { return '<span class="pj-st">' + icono(ic) + '<b>' + val + '</b><small>' + lab + '</small></span>'; };
     var total = C ? C.contar().total : '';
