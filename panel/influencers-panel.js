@@ -74,7 +74,7 @@ function pintarInfluencers() {
     </div>
     <div class="agp-form">
       <h3>Lo que tienen los influencers</h3>
-      ${it.length ? `<div class="inf-items">${it.map(x => `<span class="inf-it"><i${x.img ? ` style="background-image:url('${esc(x.img)}')"` : ''}></i><span>${esc(x.nom)}<br><small>${esc(INF_ESP[x.espacio] || x.espacio)}</small></span></span>`).join('')}</div>`
+      ${it.length ? `<div class="inf-items">${it.map(x => `<span class="inf-it"><i${x.img ? ` style="background-image:url('${esc(/^(https:|\/)/.test(x.img) ? x.img : '../' + x.img)}')"` : ''}></i><span>${esc(x.nom)}<br><small>${esc(INF_ESP[x.espacio] || x.espacio)}</small></span></span>`).join('')}</div>`
         : '<p class="hint" style="margin:0">Todavía nada.</p>'}
       <p class="hint" style="margin:10px 0 0">Para sumar más, en <b>Recursos</b> elige <b>Solo influencers</b> en «Cómo se gana». A los que ya son influencers les llega en un sobre.</p>
     </div>
