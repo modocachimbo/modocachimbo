@@ -835,7 +835,10 @@ html.mc-fuera body { background: var(--bg); }
   .cab .der { flex: 1 1 100%; min-width: 0; }
   .cab .der [data-mc-auth] { flex: 1; }
   .cab .mcu-user { flex: 1; min-width: 0; gap: 6px; }
-  .cab .mcu-user .mcu-chip.mct { order: 0; margin-right: auto; }
+  .cab .mcu-user { flex-wrap: wrap; row-gap: 8px; }
+  /* La tarjeta ocupa toda la fila (se ve completa) y los cuadros van debajo, repartidos */
+  .cab .mcu-user .mcu-chip.mct { order: 0; flex: 1 1 100%; margin-right: 0; }
+  .cab .mcu-user .mcz-pill:not([hidden]), .cab .mcu-user .mcu-racha:not([hidden]) { flex: 1 1 0; justify-content: center; }
   .cab .mcu-user .mcz-pill, .cab .mcu-user .mcu-racha { height: 40px; padding: 0 9px 0 8px; gap: 5px; font-size: 18px; }
   .cab .mcu-user .mcz-xp:not([hidden]) { display: inline-flex; }
   .cab .mcu-user .mcz-pill svg, .cab .mcu-user .mcu-racha svg { width: 20px; height: 20px; }
@@ -1405,7 +1408,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
 
 <script src="assets/rango.js"></script>
 <script src="assets/coleccion.js?v=194"></script>
-<script src="assets/tarjeta-perfil.js?v=202"></script>
+<script src="assets/tarjeta-perfil.js?v=203"></script>
 <script src="assets/buho/buho-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
 <script src="assets/buho.js"></script>

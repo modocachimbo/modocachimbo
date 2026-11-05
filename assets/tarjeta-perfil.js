@@ -148,6 +148,27 @@
       T + '.mcz-pill>span,' + T + '.mcu-racha>span{display:inline-block;max-width:0;overflow:hidden;opacity:0;transition:max-width .25s ease,opacity .2s ease,margin .25s ease}' +
       T + '.mc-ver>span{max-width:4.5em;opacity:1;margin-left:5px}' +
     '}';
+
+  // Banner rectangular en proporción 4:1 (la medida de los banners del panel: 1200×300) para que se vea
+  // completo, con un velo oscuro a la izquierda para que el nombre, el rango y el ID se lean con cualquier fondo
+  CSS +=
+    T + '.mcu-chip.mct{flex:none;width:304px;padding-right:14px;clip-path:none}' +
+    T + '.mct-velo{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(10,6,28,.92) 0,rgba(10,6,28,.86) 48%,rgba(10,6,28,.45) 72%,rgba(10,6,28,0) 92%)}' +
+    T + '.mct-tx{flex:1}' +
+    T + '.mct .mcu-nom{max-width:100%;text-shadow:0 2px 0 rgba(0,0,0,.6)}' +
+    T + '.mct-rg{color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.6)}' +
+    T + '.mct-rg span{color:rgba(255,255,255,.85)}' +
+    // El pin (verificado u otro) en la esquina de la foto, siempre de su tamaño
+    T + '.mct-pin img{width:100%!important;height:100%!important;object-fit:contain;display:block;max-width:none}' +
+    T + '.mct-pin .mcc-pin.suelto{width:100%;height:100%;aspect-ratio:auto}' +
+    // Celular: ocupa toda la fila (assets en index.html bajan los cuadros) y el alto sigue el 4:1
+    '@media (max-width:900px){' +
+      T + '.mcu-chip.mct{width:auto;height:clamp(60px,calc((100vw - 32px) / 4),96px);padding-right:12px;--bi:62px}' +
+      T + '.mct-caja{width:56px;height:56px}' +
+      T + '.mct .mcu-nom{font-size:24px;max-width:100%}' +
+      T + '.mct-rg{font-size:13px}' + T + '.mct-rg i{width:18px}' +
+    '}' +
+    '@media (max-width:400px){' + T + '.mct .mcu-nom{font-size:22px;max-width:100%}' + T + '.mct-rg{font-size:12px}}';
   var SOLO_ICONO = window.matchMedia ? window.matchMedia('(max-width:360px)') : { matches: false };
   var tVer = null;
   document.addEventListener('click', function (e) {
@@ -198,6 +219,7 @@
         var viejo = chip.querySelector('.mct-arte'); if (viejo) viejo.remove();
         chip.insertAdjacentHTML('afterbegin', arte(tema, fondo));
       }
+      if (!chip.querySelector('.mct-velo')) chip.querySelector('.mct-arte').insertAdjacentHTML('afterend', '<span class="mct-velo" aria-hidden="true"></span>');
       // Foto de perfil: el búho (o un disfraz) sobre tu fondo, o tu foto de Google / inicial
       var av = chip.querySelector('.mcu-av');
       if (av) {
@@ -228,7 +250,7 @@
       if (pe.getAttribute('data-p') !== ph) { pe.setAttribute('data-p', ph); pe.innerHTML = ph; pe.title = p ? p.nom : ''; }
       // Rango de la semana e ID
       var r = chip.querySelector('.mct-rg'), n = miXp == null || !window.MCRango ? -1 : MCRango.nivel(miXp);
-      var k = (miXp == null ? 'x' : String(n)) + '|' + (yo ? yo.codigo : ''), c = n < 0 ? '#cfc8e6' : RC[n];
+      var k = (miXp == null ? 'x' : String(n)) + '|' + (yo ? yo.codigo : ''), c = n < 0 ? '#cfc8e6' : MCRango.color(n).c;
       if (r.getAttribute('data-n') !== k) { r.setAttribute('data-n', k); r.innerHTML = rangoHtml(miXp); }
       if (chip.style.getPropertyValue('--rc') !== c) chip.style.setProperty('--rc', c);
     });
