@@ -32,7 +32,7 @@ const INF = { datos: null, quitar: null, enviando: false };
   document.head.appendChild(st);
 })();
 
-const INF_ESP = { racha: 'Fondo', avatar: 'Foto de perfil', pines: 'Pin', marco: 'Marco', cuadro: 'Cuadro de racha', titulo: 'Título' };
+const INF_ESP = { racha: 'Banner', avatar: 'Foto de perfil', pines: 'Pin', marco: 'Marco', cuadro: 'Cuadro de racha', titulo: 'Título' };
 function infFecha(s) { return new Date(s).toLocaleDateString('es-PE', { day: 'numeric', month: 'short', year: 'numeric' }); }
 function infCodigos(t) { return [...new Set((String(t || '').match(/\d+/g) || []).filter(x => x.length === 5).map(Number))]; }
 

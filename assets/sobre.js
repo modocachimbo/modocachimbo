@@ -90,6 +90,8 @@
       '.mcs-ft .mcs-d>*{max-width:100%;max-height:100%}' +
       '.mcs-ft .mcs-d .mcc-dib{width:64px}' +
       '.mcs-ft .mcs-d svg{width:56px;height:56px}' +
+      '.mcs-ft.ancho{grid-column:1/-1}.mcs .mcs-ft.ancho .mcs-d{width:100%;max-width:340px;height:auto;aspect-ratio:4/1}' +
+      '.mcs-banner{display:block;width:100%;height:100%;border-radius:10px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.12)}' +
       '.mcs-ft b{position:relative;font:900 11.5px/1.15 Nunito,sans-serif;color:#fff;text-align:center;overflow-wrap:anywhere}' +
       '.mcs-ft em{position:relative;font:1000 9.5px Nunito,sans-serif;font-style:normal;letter-spacing:1px;text-transform:uppercase;color:rgb(var(--c))}' +
       '.mcs-bts{flex:none;display:grid;gap:10px}' +
@@ -126,12 +128,16 @@
 
   // Cada regalo como una fichita: dibujo, nombre y rareza
   function ficha(g, i, iconos) {
-    var C = window.MCColeccion, d = '', nom = '', sub = '', c = '198,224,0';
+    var C = window.MCColeccion, d = '', nom = '', sub = '', c = '198,224,0', ancho = false;
     if (g.tipo === 'item') {
       var x = C && C.item(g.id);
       if (!x) return '';
       var R = (C.rareza || {})[x.rareza] || { nom: '', c: '169,159,200' };
-      d = '<span class="mcc-dib">' + C.dibujo(x) + '</span>'; nom = x.nom; sub = R.nom; c = R.c;
+      // Banner: se ve entero y ancho (no la mini tarjeta, que en chiquito sale cortada)
+      if (x.espacio === 'racha') { var t = x.tema || ['#2a1d5c', '', '', '#120d24']; ancho = true;
+        d = '<span class="mcs-banner" style="background:' + (x.img ? 'url(&quot;' + esc(x.img) + '&quot;) center/cover,' : '') + 'linear-gradient(90deg,' + t[0] + ',' + t[3] + ')"></span>'; }
+      else d = '<span class="mcc-dib">' + C.dibujo(x) + '</span>';
+      nom = x.nom; sub = R.nom + (x.espacio === 'racha' ? ' · Banner' : ''); c = R.c;
     } else if (g.tipo === 'xp') {
       d = iconos.xp || '⚡'; nom = '+' + g.cantidad + ' XP'; sub = 'XP'; c = '255,200,0';
     } else if (g.tipo === 'infinito') {
@@ -140,7 +146,7 @@
     } else {
       d = iconos.corazon || '❤'; nom = '+' + g.cantidad + (g.cantidad === 1 ? ' corazón' : ' corazones'); sub = 'Vidas'; c = '255,75,75';
     }
-    return '<div class="mcs-ft" style="--c:' + c + ';--i:' + i + '"><span class="mcs-d">' + d + '</span><b>' + esc(nom) + '</b>' + (sub ? '<em>' + esc(sub) + '</em>' : '') + '</div>';
+    return '<div class="mcs-ft' + (ancho ? ' ancho' : '') + '" style="--c:' + c + ';--i:' + i + '"><span class="mcs-d">' + d + '</span><b>' + esc(nom) + '</b>' + (sub ? '<em>' + esc(sub) + '</em>' : '') + '</div>';
   }
 
   function confeti() {
