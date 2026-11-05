@@ -1,10 +1,10 @@
 -- =========================================================
--- Modo Cachimbo · Coronas para el Top 3 de la semana
+-- Modo Cachimbo · Pines «Top global»: coronas para el Top 3 de la semana
 -- Cómo usarlo: Supabase → SQL Editor → New query → pega todo
 -- este archivo → Run. Se puede volver a correr sin problema.
 -- Necesita 31-coleccion.sql y 16-corazones.sql.
 --
---   · Tres pines nuevos en Mi colección → Pines:
+--   · Tres pines nuevos en Mi colección → Pines («Top global»):
 --       pin-corona-oro    · cerrar una semana en el 1.er puesto del Top
 --       pin-corona-plata  · cerrar una semana en el 2.º puesto
 --       pin-corona-bronce · cerrar una semana en el 3.er puesto
@@ -14,14 +14,16 @@
 --     la corona llega el lunes, cuando se reinicia el Top.
 --   · No hace falta entregarla: col_tiene la reconoce sola y
 --     mi_coleccion manda cuántas veces quedaste 1.º, 2.º y 3.º (tops).
+--   · También salen en Panel → Regalos, por si quieres dar una a mano.
 --   · Las semanas anteriores también cuentan.
 -- =========================================================
 
-insert into public.coleccion_item (id, espacio, regla) values
-  ('pin-corona-oro',    'pines', '{"tipo":"top","n":1}'),
-  ('pin-corona-plata',  'pines', '{"tipo":"top","n":2}'),
-  ('pin-corona-bronce', 'pines', '{"tipo":"top","n":3}')
-on conflict (id) do update set espacio = excluded.espacio, regla = excluded.regla;
+-- nom e img: para que también salgan en Panel → Regalos (por si quieres entregar una a mano)
+insert into public.coleccion_item (id, espacio, regla, nom, rareza, img) values
+  ('pin-corona-oro',    'pines', '{"tipo":"top","n":1}', 'Top global · 1.º', 'legendario', '/assets/pines/corona-oro.webp'),
+  ('pin-corona-plata',  'pines', '{"tipo":"top","n":2}', 'Top global · 2.º', 'epico',      '/assets/pines/corona-plata.webp'),
+  ('pin-corona-bronce', 'pines', '{"tipo":"top","n":3}', 'Top global · 3.º', 'raro',       '/assets/pines/corona-bronce.webp')
+on conflict (id) do update set espacio = excluded.espacio, regla = excluded.regla, nom = excluded.nom, rareza = excluded.rareza, img = excluded.img;
 
 -- Cuántas semanas cerradas terminó el alumno en el puesto 1, 2 y 3 del Top de XP
 create or replace function public.mis_tops(uid uuid)

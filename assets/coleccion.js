@@ -115,10 +115,10 @@
     { id: 'pin-fantasma', espacio: 'pines', nom: 'Fantasma', rareza: 'evento', regla: { tipo: 'evento', evento: HALLOWEEN }, pin: ['👻', '#14213f', '#A99FC8'] },
     { id: 'pin-telarana', espacio: 'pines', nom: 'Telaraña', rareza: 'evento', regla: { tipo: 'evento', evento: HALLOWEEN }, pin: ['🕸️', '#1d1a2e', '#6F6690'] },
 
-    // Coronas del Top de la semana (XP): se ganan al cerrar una semana en el puesto 1, 2 o 3
-    { id: 'pin-corona-oro', espacio: 'pines', nom: 'Corona de oro', rareza: 'legendario', regla: { tipo: 'top', n: 1 }, img: BASE + 'assets/pines/corona-oro.webp', suelto: true, pin: ['', '#2a1d05', '#FFC800'], desc: 'Para quien cierra la semana en el 1.er puesto del Top.' },
-    { id: 'pin-corona-plata', espacio: 'pines', nom: 'Corona de plata', rareza: 'epico', regla: { tipo: 'top', n: 2 }, img: BASE + 'assets/pines/corona-plata.webp', suelto: true, pin: ['', '#1b2130', '#C9D1DC'], desc: 'Para quien cierra la semana en el 2.º puesto del Top.' },
-    { id: 'pin-corona-bronce', espacio: 'pines', nom: 'Corona de bronce', rareza: 'raro', regla: { tipo: 'top', n: 3 }, img: BASE + 'assets/pines/corona-bronce.webp', suelto: true, pin: ['', '#26150a', '#E0995E'], desc: 'Para quien cierra la semana en el 3.er puesto del Top.' }
+    // Top global: coronas del Top de la semana (XP). Llegan solas al cerrar una semana en el puesto 1, 2 o 3
+    { id: 'pin-corona-oro', espacio: 'pines', nom: 'Top global · 1.º', rareza: 'legendario', regla: { tipo: 'top', n: 1 }, img: BASE + 'assets/pines/corona-oro.webp', suelto: true, pin: ['', '#2a1d05', '#FFC800'], desc: 'Para quien cierra la semana en el 1.er puesto del Top.' },
+    { id: 'pin-corona-plata', espacio: 'pines', nom: 'Top global · 2.º', rareza: 'epico', regla: { tipo: 'top', n: 2 }, img: BASE + 'assets/pines/corona-plata.webp', suelto: true, pin: ['', '#1b2130', '#C9D1DC'], desc: 'Para quien cierra la semana en el 2.º puesto del Top.' },
+    { id: 'pin-corona-bronce', espacio: 'pines', nom: 'Top global · 3.º', rareza: 'raro', regla: { tipo: 'top', n: 3 }, img: BASE + 'assets/pines/corona-bronce.webp', suelto: true, pin: ['', '#26150a', '#E0995E'], desc: 'Para quien cierra la semana en el 3.er puesto del Top.' }
   ];
   var PUESTO_TXT = { 1: '1.er', 2: '2.º', 3: '3.er' };
   // Tu foto (o inicial) para dibujar «Mi foto»; la pone la página con fijarFoto
