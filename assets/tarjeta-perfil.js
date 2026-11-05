@@ -292,7 +292,7 @@
     var r = px.regla || {};
     if (r.tipo === 'evento') return 'Se ganaba en ' + r.evento + '.';
     if (r.tipo === 'racha') return 'Se gana con ' + r.n + ' días de racha.';
-    if (r.tipo === 'top') return 'Se gana al cerrar una semana en el puesto ' + r.n + ' del Top de la semana.';
+    if (r.tipo === 'top') return 'La lleva el puesto ' + r.n + ' del Top de la semana (desde el martes). Se queda para siempre si cierras la semana ahí.';
     return 'Un pin de su colección (Mi colección → Pines).';
   }
   // Pin que se toca: al tocarlo sale un globito con su nombre y cómo se consigue

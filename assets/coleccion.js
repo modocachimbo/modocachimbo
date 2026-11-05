@@ -3,8 +3,8 @@
    - CATALOGO: búhos, fotos de perfil, fondos, marcos, títulos y pines.
      Cada objeto dice cómo se consigue (regla):
        gratis · racha (mejor racha de N días) · rango (cerrar una semana
-       en ese rango) · top (cerrar una semana en el puesto N del Top de la
-       semana, supabase/61-pines-corona-top3.sql) · evento / regalo (te lo
+       en ese rango) · top (ir en el puesto N del Top desde el martes; se
+       queda si cierras la semana ahí, supabase/61-pines-corona-top3.sql) · evento / regalo (te lo
        entregan por SQL en coleccion_mia)
    - Lo que tienes puesto y lo que te regalaron vive en supabase/31-coleccion.sql.
      Si ese SQL aún no corrió, lo puesto se guarda solo en este equipo.
@@ -115,10 +115,11 @@
     { id: 'pin-fantasma', espacio: 'pines', nom: 'Fantasma', rareza: 'evento', regla: { tipo: 'evento', evento: HALLOWEEN }, pin: ['👻', '#14213f', '#A99FC8'] },
     { id: 'pin-telarana', espacio: 'pines', nom: 'Telaraña', rareza: 'evento', regla: { tipo: 'evento', evento: HALLOWEEN }, pin: ['🕸️', '#1d1a2e', '#6F6690'] },
 
-    // Top global: coronas del Top de la semana (XP). Llegan solas al cerrar una semana en el puesto 1, 2 o 3
-    { id: 'pin-corona-oro', espacio: 'pines', nom: 'Top global · 1.º', rareza: 'legendario', regla: { tipo: 'top', n: 1 }, img: BASE + 'assets/pines/corona-oro.webp', suelto: true, pin: ['', '#2a1d05', '#FFC800'], desc: 'Para quien cierra la semana en el 1.er puesto del Top.' },
-    { id: 'pin-corona-plata', espacio: 'pines', nom: 'Top global · 2.º', rareza: 'epico', regla: { tipo: 'top', n: 2 }, img: BASE + 'assets/pines/corona-plata.webp', suelto: true, pin: ['', '#1b2130', '#C9D1DC'], desc: 'Para quien cierra la semana en el 2.º puesto del Top.' },
-    { id: 'pin-corona-bronce', espacio: 'pines', nom: 'Top global · 3.º', rareza: 'raro', regla: { tipo: 'top', n: 3 }, img: BASE + 'assets/pines/corona-bronce.webp', suelto: true, pin: ['', '#26150a', '#E0995E'], desc: 'Para quien cierra la semana en el 3.er puesto del Top.' }
+    // Top global: coronas del Top de la semana (XP). Desde el martes las llevan los 3 primeros;
+    // se quedan para siempre a quien cierra la semana (domingo) en ese puesto
+    { id: 'pin-corona-oro', espacio: 'pines', nom: 'Top global · 1.º', rareza: 'legendario', regla: { tipo: 'top', n: 1 }, img: BASE + 'assets/pines/corona-oro.webp', suelto: true, pin: ['', '#2a1d05', '#FFC800'], desc: 'Para el 1.º del Top de la semana.' },
+    { id: 'pin-corona-plata', espacio: 'pines', nom: 'Top global · 2.º', rareza: 'epico', regla: { tipo: 'top', n: 2 }, img: BASE + 'assets/pines/corona-plata.webp', suelto: true, pin: ['', '#1b2130', '#C9D1DC'], desc: 'Para el 2.º del Top de la semana.' },
+    { id: 'pin-corona-bronce', espacio: 'pines', nom: 'Top global · 3.º', rareza: 'raro', regla: { tipo: 'top', n: 3 }, img: BASE + 'assets/pines/corona-bronce.webp', suelto: true, pin: ['', '#26150a', '#E0995E'], desc: 'Para el 3.º del Top de la semana.' }
   ];
   var PUESTO_TXT = { 1: '1.er', 2: '2.º', 3: '3.er' };
   // Tu foto (o inicial) para dibujar «Mi foto»; la pone la página con fijarFoto
@@ -230,7 +231,7 @@
     if (r.tipo === 'gratis') return true;
     if (r.tipo === 'racha') return E.mejorRacha >= r.n;
     if (r.tipo === 'rango') return E.maxRango >= r.n;
-    if (r.tipo === 'top') return (+E.tops[r.n] || 0) > 0;
+    if (r.tipo === 'top') return (+E.tops[r.n] || 0) > 0 || +E.tops.ahora === r.n;   // ganada o la llevas esta semana
     return false;
   }
   // Cuánto falta (0 a 1) para las reglas que se pueden medir
@@ -245,7 +246,12 @@
     if (r.tipo === 'gratis') return 'Viene con tu cuenta.';
     if (r.tipo === 'racha') return ok ? 'Lo ganaste al llegar a ' + r.n + ' días de racha.' : 'Llega a una racha de ' + r.n + ' días (tu mejor: ' + E.mejorRacha + ').';
     if (r.tipo === 'rango') return ok ? 'Lo ganaste al llegar a ' + rangoDe(r.n) + ' en una semana.' : 'Llega a ' + rangoDe(r.n) + ' en una semana (' + (window.MCRango ? String(RANGO_XP[r.n]).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' XP' : '') + ').';
-    if (r.tipo === 'top') { var v = +E.tops[r.n] || 0; return ok ? 'Lo ganaste al cerrar una semana en el ' + PUESTO_TXT[r.n] + ' puesto del Top' + (v > 1 ? ' (' + v + ' veces).' : '.') : 'Cierra una semana en el ' + PUESTO_TXT[r.n] + ' puesto del Top de la semana.'; }
+    if (r.tipo === 'top') {
+      var v = +E.tops[r.n] || 0, P = PUESTO_TXT[r.n];
+      if (v) return 'Es tuya para siempre: cerraste ' + (v > 1 ? v + ' semanas' : 'una semana') + ' en el ' + P + ' puesto del Top.';
+      if (ok) return 'Vas en el ' + P + ' puesto del Top: llévala esta semana. Si cierras el domingo en ese puesto, es tuya para siempre.';
+      return 'Desde el martes la llevan los 3 primeros del Top de la semana. Es tuya para siempre si cierras la semana en el ' + P + ' puesto.';
+    }
     if (r.tipo === 'evento') return ok ? 'Lo ganaste en ' + r.evento + '. Es tuyo para siempre.' : 'Se ganaba en ' + r.evento + '.';
     return ok ? 'Un regalo de Modo Cachimbo.' : 'Es un regalo especial: no se puede conseguir solo.';
   }
@@ -278,7 +284,7 @@
           E.sql = true; E.mias = {};
           (d.mias || []).forEach(function (m) { E.mias[m.item] = m.origen || 'regalo'; });
           if (d.puesto) E.puesto = mezclar(d.puesto);
-          E.tops = d.tops || {};   // { "1": veces, "2": …, "3": … } (supabase/61-pines-corona-top3.sql)
+          E.tops = d.tops || {};   // { "1": veces, "2": …, "3": …, ahora: tu puesto esta semana } (supabase/61-pines-corona-top3.sql)
           T.col = Date.now();
         }).catch(function () { E.sql = false; }),
         !pedirRgo ? null : c.from('xp_semana').select('semana,xp').eq('usuario', u.id).limit(200).then(function (r) {
