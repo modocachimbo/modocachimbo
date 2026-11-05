@@ -224,7 +224,7 @@ function recFijos() {
     .map(x => ({ id: x.id, espacio: x.espacio, nom: x.nom, rareza: x.rareza, regla: x.regla, visible: true, fijo: true }));
   if (window.MCColeccion) return Promise.resolve(listo());
   return new Promise(ok => {
-    const s = document.createElement('script'); s.src = '../assets/coleccion.js?v=189';
+    const s = document.createElement('script'); s.src = '../assets/coleccion.js?v=190';
     s.onload = () => { try { MCColeccion.css(); ok(listo()); } catch (e) { ok([]); } };
     s.onerror = () => ok([]);
     document.head.appendChild(s);
