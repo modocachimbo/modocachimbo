@@ -260,9 +260,16 @@
     if (r.tipo === 'evento') return ok ? 'Lo ganaste en ' + r.evento + '. Es tuyo para siempre.' : 'Se ganaba en ' + r.evento + '.';
     return ok ? 'Un regalo de Modo Cachimbo.' : 'Es un regalo especial: no se puede conseguir solo.';
   }
+  // La corona «Top global» que llevas esta semana (desde el martes, si vas en el top 3)
+  var CORONA = { 1: 'pin-corona-oro', 2: 'pin-corona-plata', 3: 'pin-corona-bronce' };
+  function coronaAhora() { var c = CORONA[+E.tops.ahora]; return c && POR_ID[c] ? c : ''; }
   function puesto(esp) {
     var p = E.puesto[esp];
-    if (esp === 'pines') return (p || []).filter(tiene);
+    if (esp === 'pines') {
+      // La corona de la semana se pone sola y va primero (supabase/65-corona-se-pone-sola.sql)
+      var c = coronaAhora(), l = (p || []).filter(function (id) { return id !== c && tiene(id); });
+      return c ? [c].concat(l).slice(0, 3) : l;
+    }
     return p && tiene(p) ? p : DEFECTO[esp];
   }
 
@@ -300,7 +307,7 @@
           E.maxRango = max; T.rgo = Date.now();
         }).catch(function () {})
       ]);
-    }).then(function () { guardar(CLAVE_T, T); E.listo = true; avisar(); return E; }, function () { E.listo = true; avisar(); return E; });
+    }).then(function () { guardar(CLAVE_T, T); E.listo = true; avisar(); avisoCorona(); return E; }, function () { E.listo = true; avisar(); return E; });
     // La mejor racha llega con assets/racha.js
     (function esperar(i) {
       if (window.MCRacha) MCRacha.alCambiar(function (r) {
@@ -313,6 +320,26 @@
       else { E.rachaOk = true; avisar(); }
     })(0);
     return pedido;
+  }
+
+  // ¡Vas en el top 3! Un sobre con la corona, una vez por semana y puesto
+  function avisoCorona() {
+    var c = coronaAhora(), u = window.MCAuth && MCAuth.usuario();
+    if (!c || !u) return;
+    var lima = new Date(Date.now() - 5 * 3600000), dia = (lima.getUTCDay() + 6) % 7;
+    var lunes = new Date(lima.getTime() - dia * 864e5).toISOString().slice(0, 10);
+    var k = 'mc_corona_' + u.id, v = lunes + ':' + c;
+    if (leer(k) === v) return;
+    guardar(k, v);
+    var P = PUESTO_TXT[+E.tops.ahora];
+    function abrir() {
+      MCSobre.abrir({ regalos: [{ tipo: 'item', id: c }], de: 'Modo Cachimbo',
+        nota: '¡Vas en el ' + P + ' puesto del Top global de la semana! Ya llevas la corona en tu vitrina y en los tops. Si cierras el domingo en ese puesto, es tuya para siempre.' });
+    }
+    setTimeout(function () {
+      if (window.MCSobre) return abrir();
+      var s = document.createElement('script'); s.src = BASE + 'assets/sobre.js?v=3'; s.onload = abrir; document.head.appendChild(s);
+    }, 1800);
   }
 
   // Volver a pedir lo tuyo ya (sin esperar los 10 min): al llegar un regalo
