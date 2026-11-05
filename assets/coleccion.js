@@ -37,7 +37,7 @@
     { id: 'buho', nom: 'Búho', uno: 'Búho' },
     { id: 'avatar', nom: 'Perfil', uno: 'Foto de perfil' },
     { id: 'escena', nom: 'Escenarios', uno: 'Escenario' },
-    { id: 'racha', nom: 'Fondos', uno: 'Fondo de perfil' },
+    { id: 'racha', nom: 'Banners', uno: 'Banner' },
     { id: 'cuadro', nom: 'Racha', uno: 'Cuadro de racha' },
     { id: 'marco', nom: 'Marcos', uno: 'Marco' },
     { id: 'titulo', nom: 'Títulos', uno: 'Título' },

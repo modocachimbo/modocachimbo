@@ -16,7 +16,7 @@ const RG_TIPOS = {
   xp: { nom: 'XP', c: '#FFC800', ops: [[100, '+100'], [250, '+250'], [500, '+500'], [1000, '+1000']], min: 1, max: 10000, uni: 'XP' },
   item: { nom: 'Ítem de colección', c: '#1CB0F6' }
 };
-const RG_ESP = { racha: 'Fondo', avatar: 'Foto de perfil', pines: 'Pin', marco: 'Marco', cuadro: 'Cuadro de racha', titulo: 'Título', buho: 'Búho' };
+const RG_ESP = { racha: 'Banner', avatar: 'Foto de perfil', pines: 'Pin', marco: 'Marco', cuadro: 'Cuadro de racha', titulo: 'Título', buho: 'Búho' };
 
 (function estilosRegalos() {
   const st = document.createElement('style');

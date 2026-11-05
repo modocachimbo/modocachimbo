@@ -16,7 +16,7 @@
 const REC = { lista: [], editando: null, img: null, tipo: 'racha', marcoCon: 'colores', regla: 'gratis', para: 'todos', borrar: null, regalar: false, sel: [], rgPara: 'ids', filtro: '' };
 // Cada tipo: tamaño de la imagen (w×h) y dónde sale
 const REC_TIPOS = {
-  racha: { nom: 'Fondo de perfil', plural: 'Fondos', w: 1200, h: 300, img: true, donde: '<b>Mi colección → Fondos</b>, en la tarjeta del perfil y en la de arriba de la web.', medida: 'horizontal 4:1, ideal 1200×300 o más grande', ej: 'Atardecer en Huacho' },
+  racha: { nom: 'Banner', plural: 'Banners', w: 1200, h: 300, img: true, donde: '<b>Mi colección → Banners</b>, en la tarjeta del perfil y en la de arriba de la web.', medida: 'horizontal 4:1, ideal 1200×300 o más grande', ej: 'Atardecer en Huacho' },
   avatar: { nom: 'Foto de perfil', plural: 'Fotos', w: 512, h: 512, img: true, donde: '<b>Mi colección → Perfil</b>: es la foto del alumno en su tarjeta, los tops y los duelos.', medida: 'cuadrada, ideal 512×512; si es PNG sin fondo se ve encima del fondo del alumno', ej: 'Búho ingeniero' },
   pines: { nom: 'Pin', plural: 'Pines', w: 256, h: 256, img: true, donde: '<b>Mi colección → Pines</b>: va en la vitrina del perfil (hasta 3) y en la tarjeta.', medida: 'cuadrada, ideal 256×256 y mejor PNG sin fondo; el círculo toma sus colores', ej: 'Ingresante 2027' },
   marco: { nom: 'Marco', plural: 'Marcos', w: 400, h: 400, img: 'opcional', donde: '<b>Mi colección → Marcos</b>: el borde de la foto en la tarjeta y el perfil.', medida: 'una textura cuadrada (oro, madera, mármol…); se ve solo el borde', ej: 'Esmeralda' },
