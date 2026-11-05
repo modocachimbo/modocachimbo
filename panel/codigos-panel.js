@@ -100,6 +100,7 @@ async function cargarCodigos() {
   revisarLibre();
   $('cdList').innerHTML = '<div class="loader">Cargando códigos…</div>';
   try {
+    cargarPorId();
     const [r] = await Promise.all([api('codigos'), cargarLimites()]);
     CD.lista = r.codigos || []; CD.config = r.config || CD.config; CD.hoy = r.hoy; CD.cargada = true;
     renderConfigAcceso(); renderCodigos();
@@ -444,5 +445,148 @@ function importarCodigos() {
       cerrar(); await cargarCodigos();
       toast(`${r.importados} importado${r.importados === 1 ? '' : 's'}` + (r.saltados.length ? ` · ${r.saltados.length} saltado${r.saltados.length === 1 ? '' : 's'} (ya existían o no son válidos)` : ''));
     } catch (e) { b.disabled = false; b.textContent = 'Importar'; const er = o.querySelector('#impErr'); er.textContent = e.message; er.classList.add('show'); }
+  });
+}
+
+/* ---------- Acceso por ID (supabase/70-acceso-por-id.sql) ----------
+   Sin código: el alumno te pasa su ID (el de 5 cifras de su tarjeta, en Perfil)
+   y el paquete va directo a su cuenta de Google. Los códigos siguen igual. */
+const PID = { lista: [], equipos: 2, hoy: '', q: '', err: '', abierto: true };
+const PID_FALTA = 'Falta correr supabase/70-acceso-por-id.sql en Supabase.';
+const pidError = e => /acceso_id_/.test(e && e.message || '') ? PID_FALTA
+  : /no autorizado/.test(e && e.message || '') ? 'Tu cuenta no tiene permiso de Códigos.'
+  : (e && e.message) || 'Entra al panel con tu cuenta de Google para dar acceso por ID.';
+async function pidRpc(fn, args) {
+  const r = await (await MCAuth.listo).rpc(fn, args || {});
+  if (r.error) throw r.error;
+  return r.data;
+}
+async function cargarPorId() {
+  try {
+    const d = await pidRpc('acceso_id_lista');
+    PID.lista = d.lista || []; PID.equipos = d.equipos; PID.hoy = d.hoy || ''; PID.err = '';
+  } catch (e) { PID.err = pidError(e); }
+  renderPorId();
+}
+function renderPorId() {
+  const box = $('cdPorId'); if (!box) return;
+  const q = PID.q.trim().toLowerCase();
+  const vigente = a => !a.vence || !PID.hoy || a.vence >= PID.hoy;
+  const n = PID.lista.filter(vigente).length;
+  const lista = PID.lista.filter(a => !q || [a.jid, a.apodo, a.email, a.nota, etiquetaProd(a.producto)].join(' ').toLowerCase().includes(q));
+  const fila = a => `<div class="acc-row">
+      <div><b>${esc(a.apodo || 'Sin apodo')} <span style="display:inline;font-weight:600">· ID ${esc(a.jid || '—')} · ${esc(a.email || '')}</span></b>
+      <span>${esc(etiquetaProd(a.producto))} · ${a.vence ? (vigente(a) ? 'hasta ' : 'venció el ') + esc(a.vence.split('-').reverse().join('/')) : 'sin fecha de fin'} · ${a.equipos ? a.equipos + (a.equipos === 1 ? ' equipo' : ' equipos') : 'aún no entra'}${a.nota ? ' · ' + esc(a.nota) : ''} · dado el ${esc(fechaCorta(a.creado))}</span></div>
+      ${vigente(a) ? '' : '<span class="pill gray">Vencido</span>'}
+      <button class="rbtn" type="button" data-pid-q="${a.id}">Quitar</button></div>`;
+  box.innerHTML = `<details class="acc-box" id="pidBox" ${PID.abierto ? 'open' : ''} style="margin-bottom:16px;">
+    <summary class="acc-ttl">Accesos por ID <span>— ${PID.err ? 'sin conectar' : n + (n === 1 ? ' activo' : ' activos') + ' · sin código, van directo a la cuenta'}</span></summary>
+    ${PID.err ? `<div class="hint" style="color:var(--red);padding:10px 0;">${esc(PID.err)}</div>` : `
+    <div class="acc-add"><input class="inp" id="pidBuscar" placeholder="Buscar por ID, apodo, correo o nota" style="flex:1" value="${esc(PID.q)}"><button class="rbtn" type="button" id="pidDar">＋ Dar por ID</button></div>
+    ${lista.length ? lista.slice(0, 200).map(fila).join('') : `<div class="hint" style="padding:12px 0;">${q ? 'Nada con esa búsqueda.' : 'Aún no diste nada por ID. El alumno te pasa su ID (Perfil → su tarjeta → copiar) y tú tocas «Dar por ID».'}</div>`}
+    <div class="acc-row legacy"><div><b>Equipos por cuenta</b><span>En cuántos celulares o laptops abre lo dado por ID. Si entra en uno más, deja de abrir en el más antiguo. Los códigos no cambian.</span></div>
+      <select class="inp" id="pidEquipos">${[1, 2, 3, 4, 5, 0].map(v => `<option value="${v}" ${PID.equipos === v ? 'selected' : ''}>${v ? v + (v === 1 ? ' equipo' : ' equipos') : 'Sin límite'}</option>`).join('')}</select></div>`}
+  </details>`;
+  box.querySelector('#pidBox').addEventListener('toggle', e => { PID.abierto = e.target.open; });
+  if (PID.err) return;
+  const bus = box.querySelector('#pidBuscar');
+  bus.addEventListener('input', () => { PID.q = bus.value; const pos = bus.selectionStart; renderPorId(); const b = $('pidBuscar'); b.focus(); b.setSelectionRange(pos, pos); });
+  box.querySelector('#pidDar').addEventListener('click', () => darPorId());
+  box.querySelector('#pidEquipos').addEventListener('change', async e => {
+    const v = parseInt(e.target.value, 10);
+    try { await pidRpc('acceso_id_equipos_guardar', { p_max: v }); PID.equipos = v; toast('Equipos por cuenta: ' + (v || 'sin límite')); }
+    catch (er) { toast(pidError(er), true); renderPorId(); }
+  });
+  box.querySelectorAll('[data-pid-q]').forEach(b => b.addEventListener('click', async () => {
+    const a = PID.lista.find(x => String(x.id) === b.dataset.pidQ); if (!a) return;
+    if (b.dataset.seguro !== '1') { b.dataset.seguro = '1'; b.textContent = '¿Seguro?'; b.style.color = 'var(--red)'; return; }
+    b.disabled = true; b.textContent = 'Quitando…';
+    try { await pidRpc('acceso_id_quitar', { p_id: a.id }); PID.lista = PID.lista.filter(x => x !== a); renderPorId(); toast('Quitado. Al alumno se le cierra en unos minutos.'); }
+    catch (er) { toast(pidError(er), true); renderPorId(); }
+  }));
+}
+// Saca los ID de 5 cifras de lo que se pegue (con comas, espacios, saltos de línea o «ID 12345»)
+const pidIds = t => [...new Set((String(t).match(/\b\d{5}\b/g) || []).map(Number))].slice(0, 200);
+function darPorId() {
+  const st = { todos: ['seminario-VIP'], areas: [] };
+  const multi = (g, ops) => `<div class="chips" data-g="${g}">` + ops.map(([v, l]) => `<button type="button" class="chip" data-v="${esc(v)}">${l}</button>`).join('') + '</div>';
+  const o = document.createElement('div');
+  o.className = 'ov';
+  o.innerHTML = `<div class="mcard" style="max-width:620px;"><button class="mx" type="button" aria-label="Cerrar">✕</button>
+    <div class="eyebrow">Sin código</div><h3>Dar acceso por ID</h3>
+    <label class="fld">ID del alumno <span class="hint">Uno o varios: el número de 5 cifras de su tarjeta (Perfil)</span></label>
+    <textarea class="inp" id="pidIds" rows="2" placeholder="Ej.: 48217, 10593"></textarea>
+    <div class="hint" id="pidQuien" style="margin-top:6px;line-height:1.6;"></div>
+    <label class="fld">¿Qué le das? <span class="hint">Puedes marcar varios paquetes</span></label>
+    ${multi('todos', PROD_TODOS)}
+    <div class="hint" id="pidAyuda" style="margin:6px 0 0;"></div>
+    <div class="hint" style="margin:12px 0 6px;">O solo un área (sin Simulacro ni Duelos)</div>${multi('areas', AREAS_COD)}
+    <div class="hint" id="pidResumen" style="margin-top:10px;"></div>
+    <div class="cdgrid">
+      <label>Hasta (opcional)<input class="inp" id="pidVence" type="date"></label>
+      <label style="grid-column: span 2;">Nota (solo la ves tú)<input class="inp" id="pidNota" maxlength="120" placeholder="Ej.: Yape 05/11 · S/ 25"></label>
+    </div>
+    <div class="err" id="pidErr"></div>
+    <div class="mfoot"><button type="button" class="btn-ghost" data-x>Cancelar</button><button type="button" class="btn-main" id="pidSave">Activar</button></div>
+  </div>`;
+  document.body.appendChild(o); document.body.classList.add('modal-open');
+  const cerrar = () => { o.remove(); document.body.classList.remove('modal-open'); };
+  o.querySelector('.mx').addEventListener('click', cerrar); o.querySelector('[data-x]').addEventListener('click', cerrar);
+  // Mismas reglas que al crear un código
+  const producto = () => {
+    if (st.todos.includes('TODO-VIP')) return st.todos.includes(PROD_DESCARGA) ? 'TODO-VIP,' + PROD_DESCARGA : 'TODO-VIP';
+    const areas = st.todos.includes('general') ? [] : st.areas.map(a => 'area-' + a);
+    return st.todos.concat(areas).join(',');
+  };
+  let quienes = [], ids = [], tQ = null;
+  const pintar = () => {
+    o.querySelectorAll('[data-g="todos"] .chip').forEach(x => x.classList.toggle('on', st.todos.includes(x.dataset.v)));
+    o.querySelectorAll('[data-g="areas"] .chip').forEach(x => x.classList.toggle('on', st.areas.includes(x.dataset.v)));
+    o.querySelector('#pidAyuda').textContent = st.todos.map(v => PROD_AYUDA[v]).filter(Boolean).join(' · ');
+    const p = producto(); o.querySelector('#pidResumen').innerHTML = p ? 'Abrirá: <b style="color:#f5ffcc">' + esc(etiquetaProd(p)) + '</b>' : '';
+    const ok = quienes.filter(x => x.existe).length;
+    o.querySelector('#pidQuien').innerHTML = quienes.map(x => x.existe
+      ? `<span style="color:var(--accent)">✔</span> <b>${x.id}</b> ${esc(x.apodo || 'Sin apodo')} · ${esc(x.email || '')}`
+      : `<span style="color:var(--red)">✘ <b>${x.id}</b> no existe</span>`).join('<br>');
+    o.querySelector('#pidSave').textContent = ok > 1 ? `Activar a ${ok} alumnos` : 'Activar';
+  };
+  o.querySelector('#pidIds').addEventListener('input', e => {
+    ids = pidIds(e.target.value); clearTimeout(tQ);
+    if (!ids.length) { quienes = []; pintar(); return; }
+    tQ = setTimeout(async () => {
+      const pedidos = ids.slice();
+      try { const r = await pidRpc('acceso_id_quienes', { p_codigos: pedidos }); if (pedidos.join() === ids.join()) { quienes = r || []; pintar(); } }
+      catch (er) { o.querySelector('#pidQuien').innerHTML = `<span style="color:var(--red)">${esc(pidError(er))}</span>`; }
+    }, 350);
+  });
+  o.querySelector('[data-g="todos"]').addEventListener('click', e => {
+    const b = e.target.closest('.chip'); if (!b) return;
+    const v = b.dataset.v, i = st.todos.indexOf(v);
+    if (i >= 0) st.todos.splice(i, 1); else st.todos.push(v);
+    if (v === 'TODO-VIP' && i < 0) { st.todos = st.todos.filter(x => x === 'TODO-VIP' || x === PROD_DESCARGA); st.areas = []; }
+    else if (v !== 'TODO-VIP' && v !== PROD_DESCARGA) st.todos = st.todos.filter(x => x !== 'TODO-VIP');
+    if (v === 'general' && i < 0) st.areas = [];
+    pintar();
+  });
+  o.querySelector('[data-g="areas"]').addEventListener('click', e => {
+    const b = e.target.closest('.chip'); if (!b) return;
+    const v = b.dataset.v, i = st.areas.indexOf(v);
+    if (i >= 0) st.areas.splice(i, 1); else { st.areas.push(v); st.todos = st.todos.filter(x => x !== 'TODO-VIP' && x !== 'general'); }
+    pintar();
+  });
+  pintar();
+  o.querySelector('#pidIds').focus();
+  o.querySelector('#pidSave').addEventListener('click', async () => {
+    const err = o.querySelector('#pidErr'); err.classList.remove('show');
+    const p = producto();
+    if (!ids.length) { err.textContent = 'Escribe al menos un ID (5 cifras).'; err.classList.add('show'); return; }
+    if (!p) { err.textContent = 'Marca qué le das.'; err.classList.add('show'); return; }
+    const btn = o.querySelector('#pidSave'); btn.disabled = true; btn.innerHTML = '<span class="spin-s"></span> Activando…';
+    try {
+      const r = await pidRpc('acceso_id_dar', { p_codigos: ids, p_producto: p, p_vence: o.querySelector('#pidVence').value || null, p_nota: o.querySelector('#pidNota').value || null });
+      const sin = r.sin_id || [];
+      cerrar(); cargarPorId();
+      toast(`Activado a ${r.alumnos} alumno${r.alumnos === 1 ? '' : 's'}: ${etiquetaProd(p)}` + (sin.length ? ` · no existen: ${sin.join(', ')}` : ''), !!sin.length);
+    } catch (er) { btn.disabled = false; btn.textContent = 'Activar'; err.textContent = pidError(er); err.classList.add('show'); }
   });
 }

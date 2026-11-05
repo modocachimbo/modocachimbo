@@ -15,12 +15,16 @@
    - Lo abierto para todos (Panel → Códigos → Acceso libre) se pregunta al servidor
      al cargar cada página (como mucho una vez cada 2 minutos) y se guarda aquí:
      así los candados de las tarjetas se quitan aunque el alumno no tenga códigos.
+   - Acceso por ID (supabase/70-acceso-por-id.sql): lo que el profe dio desde
+     Panel → Códigos → «Dar por ID» llega directo a la cuenta, sin código.
+     Se pregunta a Supabase (como mucho una vez cada 2 minutos) y se guarda aquí.
+     La página abre si hay código O acceso por ID. Si se lo quitan, se recarga sola.
    Requiere assets/mc-config.js
    ========================================================= */
 (function () {
   var CFG = window.MC_CONFIG || {};
   var API = CFG.API_URL || CFG.REPORTES_URL || '';
-  var K_DISP = 'mc_dispositivo', K_ACC = 'mc_accesos', K_AVISO = 'mc_acceso_aviso', K_ABIERTOS = 'mc_abiertos';
+  var K_DISP = 'mc_dispositivo', K_ACC = 'mc_accesos', K_AVISO = 'mc_acceso_aviso', K_ABIERTOS = 'mc_abiertos', K_ID = 'mc_accesos_id';
   var DIA = 24 * 3600 * 1000;
   var memoria = {};
   // true abre todas las páginas sin código (los códigos siguen activables)
@@ -177,6 +181,7 @@
     if (LIBRE) return true;
     x = puerta(x);
     if (abiertoLocal(x)) return true;
+    if (idCubre(x)) return true;
     var a = accesos(), hoy = Date.now();
     return codigosPara(x).some(function (c) { return hoy - (a[c].ok || 0) < 3 * DIA; }) || antiguo(x);
   }
@@ -255,6 +260,14 @@
   function verificar(x) {
     if (LIBRE) return Promise.resolve({ acceso: true });
     x = puerta(x);
+    // Primero lo dado por ID (Supabase); si no lo cubre, los códigos de siempre
+    return refrescarID(!idCubre(x)).then(function () {
+      // Abierta por ID: si se lo quitan con la página abierta, se recarga (y el candado lo pide)
+      if (idCubre(x)) { document.documentElement.classList.add('mc-por-id'); return { acceso: true, motivo: 'id' }; }
+      return porCodigo(x);
+    });
+  }
+  function porCodigo(x) {
     // Sin código en este dispositivo: buscar en la cuenta de Google antes de pedirlo
     var previo = codigosPara(x).length ? Promise.resolve() : traerDeCuenta();
     return previo.then(function () { return revisar(x); });
@@ -316,7 +329,10 @@
     var a = accesos();
     return Object.keys(a).map(function (c) { return { codigo: c, producto: a[c].producto, vence: a[c].vence, error: a[c].error || '' }; });
   }
-  function activos() { return todos().filter(function (x) { return !x.error; }); }
+  function activos() {
+    return todos().filter(function (x) { return !x.error; })
+      .concat(idActivos().map(function (g) { return { codigo: 'ID', producto: g.producto, vence: g.vence || '', porId: true }; }));
+  }
 
   // Si el navegador tiene varias cuentas de Google, a veces el Apps Script no responde a la primera
   function jsonp2(params) {
@@ -357,6 +373,75 @@
     });
   }
 
+  /* ---- Acceso por ID (supabase/70-acceso-por-id.sql) ----
+     { uid, t: última pregunta, ok: última respuesta buena, permitido, equipos, max, lista: [{ id, producto, vence }] } */
+  function cacheID() { try { return JSON.parse(leer(K_ID) || 'null') || {}; } catch (e) { return {}; } }
+  function vigenteID(g) { return !!g && (!g.vence || g.vence >= hoyLima()); }
+  // Lo que vale en este equipo: de la cuenta con la que se entró, sin vencer y confirmado hace menos de 7 días
+  function idActivos() {
+    var c = cacheID(), u = window.MCAuth && MCAuth.usuario ? MCAuth.usuario() : null;
+    if (!c.lista || !c.permitido || Date.now() - (c.ok || 0) > 7 * DIA) return [];
+    if (u && c.uid && u.id !== c.uid) return [];
+    return c.lista.filter(vigenteID);
+  }
+  function idCubre(x) { return idActivos().some(function (g) { return cubre(g.producto, x); }); }
+  var pidiendoID = null;
+  // Pregunta a Supabase como mucho una vez cada 2 minutos.
+  // ya: la página no abre con lo guardado, se vuelve a preguntar si pasaron 20 s (por si se lo acaban de dar)
+  function refrescarID(ya) {
+    if (LIBRE) return Promise.resolve();
+    var antes = cacheID();
+    if (Date.now() - (antes.t || 0) < (ya ? 20 * 1000 : 2 * 60 * 1000)) return Promise.resolve();
+    if (pidiendoID) return pidiendoID;
+    pidiendoID = cuenta().then(function (c) {
+      if (!c) return;
+      return c.rpc('mis_accesos_id', { p_dispositivo: dispositivo(), p_equipo: equipo() }).then(function (r) {
+        if (r.error || !r.data) return;   // sin supabase/70 todavía: no se toca nada
+        var d = r.data, u = MCAuth.usuario();
+        var lista = (d.lista || []).map(function (g) { return { id: g.id, producto: g.producto, vence: g.vence || '' }; });
+        var ahora = { uid: u ? u.id : '', t: Date.now(), ok: Date.now(), permitido: d.permitido !== false, equipos: d.equipos || 0, max: d.max || 0, lista: lista };
+        escribir(K_ID, JSON.stringify(ahora));
+        var nuevos = (d.lista || []).filter(function (g) { return g.nuevo; });
+        if (nuevos.length) avisoActivado(nuevos);
+        // ¿Se quitó algo que abría? (o este equipo quedó fuera)
+        var tenia = (antes.permitido ? antes.lista || [] : []).filter(vigenteID).map(function (g) { return g.id; });
+        var tiene = (ahora.permitido ? lista : []).map(function (g) { return g.id; });
+        var perdio = tenia.some(function (id) { return tiene.indexOf(id) < 0; });
+        var cambio = perdio || tiene.some(function (id) { return tenia.indexOf(id) < 0; });
+        if (cambio) alAbiertos.forEach(function (fn) { try { fn(); } catch (e) {} });
+        if (perdio && document.documentElement.classList.contains('mc-por-id')) location.reload();
+      });
+    }).catch(function () {}).then(function () { pidiendoID = null; });
+    return pidiendoID;
+  }
+  function idEstado() { var c = cacheID(); return { lista: idActivos(), permitido: c.permitido !== false, equipos: c.equipos || 0, max: c.max || 0, t: c.ok || 0 }; }
+
+  // «¡Acceso activado!» la primera vez que el alumno entra después de que se lo dieron
+  var NOM = { 'TODO-VIP': 'Acceso total', general: 'Acceso general', 'seminario-VIP': 'Seminarios + Banqueo', 'vocabulario-VIP': 'Vocabulario', 'biblioteca-VIP': 'Biblioteca', 'descarga-VIP': 'Descargas PDF', simulacro: 'Simulacro', duelo: 'Duelos', examenes: 'Exámenes',
+    'area-matematica': 'Área Matemática', 'area-ciencia-tecnologia': 'Área Ciencia y Tecnología', 'area-comunicacion': 'Área Comunicación', 'area-ciencias-sociales': 'Área Ciencias Sociales' };
+  function nombreProd(p) { return String(p || '').split(',').map(function (x) { return NOM[x] || x; }).join(' + '); }
+  function avisoActivado(nuevos) {
+    function pintar() {
+      if (document.getElementById('mcIdAviso')) return;
+      var esc = function (t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+      var vence = nuevos.map(function (g) { return g.vence; }).filter(Boolean).sort().pop();
+      var o = document.createElement('div');
+      o.id = 'mcIdAviso';
+      o.setAttribute('role', 'dialog');
+      o.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(5,3,15,.75);display:flex;align-items:center;justify-content:center;padding:16px;font-family:Nunito,Inter,system-ui,sans-serif';
+      o.innerHTML = '<div style="background:#1a1530;border:2px solid #302950;border-bottom-width:5px;border-radius:20px;max-width:360px;width:100%;text-align:center;padding:26px 22px;color:#ece8ff">' +
+        '<div style="font-size:52px;line-height:1">🎉</div>' +
+        '<div style="font:900 11px Nunito,sans-serif;letter-spacing:2px;color:#38bdf8;margin-top:10px">¡ACCESO ACTIVADO!</div>' +
+        '<div style="font:900 28px/1.1 \'Barlow Condensed\',Nunito,sans-serif;text-transform:uppercase;margin:6px 0 10px">' + esc(nuevos.map(function (g) { return nombreProd(g.producto); }).join(' · ')) + '</div>' +
+        '<div style="font-size:14px;color:#c9c2e8;line-height:1.5">Modo Cachimbo lo activó en tu cuenta. Entra con tu Google en tu celular o laptop y se abre solo' +
+        (vence ? ', hasta el <b style="color:#fff">' + vence.split('-').reverse().join('/') + '</b>' : '') + '.</div>' +
+        '<button type="button" style="margin-top:18px;width:100%;border:0;border-bottom:4px solid #8aa300;background:#c8e600;color:#151127;font:900 15px Nunito,sans-serif;padding:14px;border-radius:14px;text-transform:uppercase;cursor:pointer">¡Vamos!</button></div>';
+      o.querySelector('button').addEventListener('click', function () { o.remove(); });
+      document.body.appendChild(o);
+    }
+    if (document.body) pintar(); else document.addEventListener('DOMContentLoaded', pintar);
+  }
+
   /* ---- Acceso cortado desde el panel ----
      Con la página abierta se pregunta al servidor cada 5 minutos y al volver a la pestaña o a la app
      (como mucho una vez por minuto). Si el profesor liberó este equipo, desactivó o borró el código,
@@ -368,6 +453,7 @@
   var MALOS = { vencido: 1, desactivado: 1, 'no-existe': 1, lleno: 1 };
   var ultimaRevision = 0;
   function vigilar() {
+    if (document.visibilityState !== 'hidden') refrescarID();
     if (LIBRE || document.visibilityState === 'hidden' || Date.now() - ultimaRevision < 60 * 1000) return;
     var a = accesos(), cods = Object.keys(a).filter(function (c) { return !a[c].error; });
     if (!cods.length) return;
@@ -393,6 +479,7 @@
   window.addEventListener('focus', vigilar);
   setTimeout(vigilar, 4000);
   revisarAbiertos();
+  setTimeout(function () { refrescarID(); }, 1500);
 
-  window.MCAcceso = { verificar: verificar, activar: activar, activos: activos, todos: todos, estado: estado, soltar: soltar, accesoLocal: accesoLocal, alAbiertos: function (fn) { alAbiertos.push(fn); }, antiguo: antiguo, cubre: cubre, puerta: puerta, AREAS: AREAS };
+  window.MCAcceso = { verificar: verificar, activar: activar, activos: activos, todos: todos, estado: estado, soltar: soltar, accesoLocal: accesoLocal, idEstado: idEstado, refrescarID: refrescarID, nombreProd: nombreProd, alAbiertos: function (fn) { alAbiertos.push(fn); }, antiguo: antiguo, cubre: cubre, puerta: puerta, AREAS: AREAS };
 })();

@@ -6,6 +6,8 @@
    vencieron, se desactivaron o no tienen cupo.
    Usa window.MCAcceso (assets/acceso.js) y las acciones misCodigos
    y soltar del Apps Script.
+   Arriba de los códigos, lo activado por ID desde el panel (sin código):
+   no se quita desde aquí, solo el profe lo quita.
    ========================================================= */
 (function () {
   var ul = document.getElementById('accesos');
@@ -67,6 +69,10 @@
     '.acc-limpiar .rojo{border:0;background:#FF4B4B;color:#fff;text-transform:uppercase;letter-spacing:.04em;box-shadow:0 4px 0 #c43434}',
     '.acc-limpiar .rojo:disabled{opacity:.6}',
     '.acc-limpiar .gris{border:2px solid #322B52;border-bottom-width:4px;background:transparent;color:#ddd}',
+    '.acc i.id{background:rgba(56,189,248,.14);color:#7dd3fc}',
+    '.acc-eq{margin:10px 0 0;color:var(--text-dim);font:800 12.5px/1.45 Nunito,sans-serif}',
+    '.acc-eq b{color:#fff}',
+    '.acc-eq.fuera{color:#ff9b9b}',
     '.acc-pie small{color:var(--text-dim);font:800 12.5px Nunito,sans-serif;flex:1;min-width:180px}'
   ].join('\n');
   document.head.appendChild(st);
@@ -150,15 +156,31 @@
         '<div class="bts"><button type="button" class="rojo" data-limpiar="1">Quitar los que no sirven</button></div>';
   }
 
+  // Lo activado por ID: el profe lo dio en el panel, va con la cuenta (no con un código)
+  function filaId(g) {
+    var t = tipo(g.producto), col = COLOR[t] || '#1CB0F6';
+    var chips = ['<i class="ok">Activo</i>', '<i class="id">Por ID</i>', '<i>' + (g.vence ? 'Vence ' + fecha(g.vence) : 'Sin vencimiento') + '</i>'];
+    return '<li><span class="ic" style="background:' + col + '22;color:' + col + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' + (ICO[t] || ICO.curso) + '</svg></span>' +
+      '<div class="tx"><b>' + esc(nombre(g.producto)) + '</b><code>Activado en tu cuenta</code><div class="meta">' + chips.join('') + '</div></div></li>';
+  }
+  var eq = document.createElement('p');
+  eq.className = 'acc-eq';
+  eq.hidden = true;
+  ul.after(eq);
+
   function pintar() {
-    var lista = MCAcceso.todos();
+    var lista = MCAcceso.todos(), ide = MCAcceso.idEstado ? MCAcceso.idEstado() : { lista: [] };
     pintarLimpiar(lista.filter(function (a) { return aviso(a); }));
-    if (!lista.length) { ul.innerHTML = '<li class="vacio">Aún no activaste ningún código. Tócalo abajo para activar el tuyo.</li>'; return; }
-    ul.innerHTML = lista.map(fila).join('');
+    eq.hidden = !ide.lista.length && ide.permitido;
+    if (!ide.permitido) { eq.className = 'acc-eq fuera'; eq.innerHTML = 'Lo activado por ID se abrió en otros equipos más nuevos y ya no abre en este. Si este es tu equipo, recarga la página para usarlo aquí.'; }
+    else if (ide.lista.length) { eq.className = 'acc-eq'; eq.innerHTML = 'Lo activado por ID se abre con tu cuenta de Google' + (ide.max ? ' en <b>' + ide.equipos + ' de ' + ide.max + '</b> ' + (ide.max === 1 ? 'equipo' : 'equipos') : '') + '.'; }
+    if (!lista.length && !ide.lista.length) { ul.innerHTML = '<li class="vacio">Aún no tienes accesos. Activa un código abajo o pásale tu ID (arriba, en tu tarjeta) a Modo Cachimbo.</li>'; return; }
+    ul.innerHTML = ide.lista.map(filaId).join('') + lista.map(fila).join('');
   }
 
   function revisar() {
     pintar();
+    if (MCAcceso.refrescarID) MCAcceso.refrescarID(true).then(pintar);
     MCAcceso.estado().then(function (m) { if (m) { servidor = m; pintar(); } });
   }
 

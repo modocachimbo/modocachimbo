@@ -1025,9 +1025,11 @@ E) Alternativa"></textarea>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <button class="btn-ghost" id="btnLimpiarCuentas" type="button" title="Quita de Perfil · Mis accesos de los alumnos los códigos que ya no sirven">Limpiar cuentas</button>
             <button class="btn-ghost" id="btnImportar" type="button">Importar</button>
+            <button class="btn-ghost" id="btnDarId" type="button" title="Sin código: el paquete va directo a la cuenta del alumno">＋ Dar por ID</button>
             <button class="btn-main" id="btnCrearCod" type="button">＋ Crear códigos</button>
           </div>
         </div>
+        <div id="cdPorId"></div>
         <div id="cdConfig"></div>
         <div class="toolbar" style="margin-top:18px;"><input class="search" id="cdBuscar" type="search" placeholder="Buscar por código, usuario o curso…"></div>
         <div class="chips last" id="cdChips"></div>
@@ -2349,7 +2351,7 @@ E) Alternativa"></textarea>
 <script src="tutorial-panel.js"></script>
 <script>
   $('btnNuevaAlerta').addEventListener('click', () => editarAlerta(null));
-  $('btnCrearCod').addEventListener('click', () => editarCodigo(null));  $('btnImportar').addEventListener('click', importarCodigos);
+  $('btnCrearCod').addEventListener('click', () => editarCodigo(null));  $('btnDarId').addEventListener('click', () => darPorId());  $('btnImportar').addEventListener('click', importarCodigos);
   $('btnLimpiarCuentas').addEventListener('click', limpiarCuentas);
   $('cdBuscar').addEventListener('input', renderCodigos);
   $('btnRevArch').addEventListener('click', revisarArchivos);
