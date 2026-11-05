@@ -14,7 +14,18 @@
   .btn-ia { border-color: rgba(206,130,255,.55) !important; color: #CE82FF !important; }
   .btn-ia:hover { border-color: #CE82FF !important; background: rgba(206,130,255,.08) !important; }
   .btn-ia svg { width: 15px; height: 15px; }
-  .btn-ia.ok { border-color: #58CC02 !important; color: #58CC02 !important; }`;
+  .btn-ia.ok { border-color: #58CC02 !important; color: #58CC02 !important; }
+  .ia-img { position: relative; display: inline-block; }
+  .ia-img-menu { position: absolute; z-index: 30; top: calc(100% + 6px); left: 0; min-width: 270px;
+    background: #1b1530; border: 1px solid rgba(206,130,255,.45); border-radius: 12px; padding: 6px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.45); display: flex; flex-direction: column; gap: 4px; }
+  .ia-img-menu.der { left: auto; right: 0; }
+  .ia-img-menu[hidden] { display: none; }
+  .ia-img-menu button { text-align: left; background: none; border: 0; border-radius: 8px; padding: 9px 10px;
+    color: #eee; cursor: pointer; font: inherit; line-height: 1.3; }
+  .ia-img-menu button:hover { background: rgba(206,130,255,.12); }
+  .ia-img-menu b { display: block; color: #CE82FF; font-size: .92em; }
+  .ia-img-menu small { display: block; opacity: .7; font-size: .8em; margin-top: 2px; }`;
   document.head.appendChild(st);
 })();
 
@@ -196,10 +207,49 @@ Mitocondria || Organelo que produce la energía (ATP) de la célula
 Responde solo "Listo, pásame el material." y espera el material.`
 };
 
-function copiarPromptIA(tipo, boton) {
-  const texto = IA_PROMPTS[tipo]();
+// Prompts para reilustrar la imagen de una pregunta (Gemini / ChatGPT con imágenes)
+const IA_IMG_BASE = `Reilustra esta imagen de una pregunta de examen de admisión para usarla en mi plataforma de estudio.
+
+QUÉ NO PUEDE CAMBIAR (muy importante)
+- No cambies el contenido: mismos números, letras, palabras, símbolos, fórmulas, medidas, ángulos, flechas y etiquetas, en el mismo lugar.
+- No agregues ni quites nada: ni datos, ni líneas, ni elementos, ni la respuesta. No resuelvas el ejercicio.
+- Respeta las proporciones y la posición de cada elemento (si un lado es más largo o un punto está más arriba, que siga igual).
+- Si alguna letra o número no se lee bien, déjalo lo más parecido al original; no lo inventes.
+
+QUÉ SÍ DEBES HACER
+- Fondo blanco liso y limpio: quita sombras, manchas, dobleces, textura de papel, marcas de lapicero y lo que se vea del otro lado de la hoja.
+- Si la imagen está chueca, inclinada o en perspectiva (foto tomada de lado), enderézala para que quede recta y de frente.
+- Recorta los bordes sobrantes: que quede solo el gráfico, con un margen blanco pequeño alrededor.
+- Líneas nítidas y parejas, texto claro y legible, en buena resolución.`;
+
+const IA_IMG = {
+  fiel: () => `${IA_IMG_BASE}
+
+ESTILO: FIEL AL ORIGINAL
+- Mantén los mismos colores del original. Si es en blanco y negro, déjala en blanco y negro (líneas negras sobre fondo blanco).
+- Solo limpia y endereza: que se vea como el mismo gráfico, pero escaneado perfecto.
+
+Devuélveme solo la imagen final, sin texto adicional.`,
+
+  color: () => `${IA_IMG_BASE}
+
+ESTILO: MEJORADO CON COLOR
+- Dale color para que se entienda mejor, según lo que muestre la imagen:
+  · Geometría: contorno en negro o azul oscuro; regiones o áreas sombreadas con colores suaves (pastel); ángulos marcados con un arco de color.
+  · Gráficos de barras, de líneas o circulares: un color distinto y suave para cada serie o sector.
+  · Mapas: regiones en colores suaves distintos, sin tapar los nombres.
+  · Esquemas de Biología, Química o Física: colores naturales y suaves (por ejemplo, vectores o flechas en un color fuerte que resalte).
+- Colores planos y suaves, estilo libro escolar moderno. Nada de degradados fuertes, sombras, 3D ni brillos.
+- El texto y los números siempre en negro o gris muy oscuro, bien legibles sobre el fondo blanco.
+- El color solo ayuda a leer: no debe cambiar ni insinuar la respuesta, ni resaltar una alternativa más que otra.
+
+Devuélveme solo la imagen final, sin texto adicional.`
+};
+
+function copiarPromptIA(tipo, boton, textoListo, aviso) {
+  const texto = textoListo || IA_PROMPTS[tipo]();
   const ok = () => {
-    toast('Prompt copiado. Pégalo en Gemini y luego pásale tus preguntas.');
+    toast(aviso || 'Prompt copiado. Pégalo en Gemini y luego pásale tus preguntas.');
     if (boton) {
       const antes = boton.innerHTML;
       boton.classList.add('ok'); boton.innerHTML = '✓ Prompt copiado';
@@ -225,4 +275,31 @@ function botonPromptIA(tipo) {
   b.innerHTML = ICONO_IA + ' Copiar prompt para IA';
   b.addEventListener('click', () => copiarPromptIA(tipoActual(), b));
   return b;
+}
+
+// Botón "Prompt para imagen" con dos opciones: fiel al original o mejorado con color
+function botonPromptImagen() {
+  const caja = document.createElement('span'); caja.className = 'ia-img';
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'btn-ghost btn-ia';
+  b.title = 'Copia un prompt para que Gemini o ChatGPT reilustre la imagen de una pregunta (fondo blanco, derecha y nítida)';
+  b.innerHTML = ICONO_IA + ' Prompt para imagen ▾';
+  const menu = document.createElement('div'); menu.className = 'ia-img-menu'; menu.hidden = true;
+  menu.innerHTML = `<button type="button" data-v="fiel"><b>Fiel al original</b><small>Igual que la imagen, solo limpia: fondo blanco y enderezada</small></button>
+    <button type="button" data-v="color"><b>Mejorada con color</b><small>Mismo contenido, con colores suaves en gráficos y líneas</small></button>`;
+  b.addEventListener('click', e => {
+    e.stopPropagation(); menu.hidden = !menu.hidden;
+    if (menu.hidden) return;
+    // Si no entra a la derecha, se abre hacia la izquierda (alineado al borde derecho del botón)
+    menu.classList.remove('der');
+    if (menu.getBoundingClientRect().right > document.documentElement.clientWidth - 8) menu.classList.add('der');
+  });
+  menu.addEventListener('click', e => {
+    const op = e.target.closest('[data-v]'); if (!op) return;
+    menu.hidden = true;
+    copiarPromptIA(null, b, IA_IMG[op.dataset.v](), 'Prompt copiado. Pégalo en Gemini junto con la imagen.');
+  });
+  document.addEventListener('click', e => { if (!caja.contains(e.target)) menu.hidden = true; });
+  caja.append(b, menu);
+  return caja;
 }
