@@ -315,7 +315,8 @@
     var T = leer(CLAVE_T) || {}; T.col = 0; guardar(CLAVE_T, T);
     guardar(CLAVE_REC + '_t', 0);
     pedido = null; pedidoRec = null;
-    return cargar();
+    var p = cargar();   // también trae los recursos nuevos (por si el regalo es uno recién subido)
+    return Promise.all([p, pedidoRec]).then(function () { return E; });
   }
 
   // Ponerse algo (o quitarse un pin). Se guarda en la cuenta si existe el SQL.

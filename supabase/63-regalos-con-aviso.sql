@@ -6,10 +6,12 @@
 --
 --   · regalar_items (Panel → Recursos) ahora, además de dar el ítem,
 --     deja el aviso en public.regalos, como Panel → Regalos:
---       - al alumno le sale «🎁 Te regalaron…» y la celebración del
---         ítem la próxima vez que abre o vuelve a la web (mis_corazones);
+--       - al alumno le llega un sobre con el mensaje y los regalos
+--         (assets/sobre.js, lo abre corazones.js con mis_corazones);
 --       - sale en el historial de regalos del alumno en el panel.
 --   · Se anota en el historial del equipo (anotar).
+--   · La tabla regalos entra a Realtime: el sobre le llega al alumno
+--     en segundos, sin recargar la página.
 -- =========================================================
 
 create or replace function public.regalar_items(p_items text[], p_emails text[] default null, p_codigos integer[] default null, p_mensaje text default null)
@@ -54,3 +56,14 @@ begin
 end $$;
 revoke all on function public.regalar_items(text[], text[], integer[], text) from public, anon;
 grant execute on function public.regalar_items(text[], text[], integer[], text) to authenticated;
+
+-- ---------------------------------------------------------
+-- Al toque: la tabla regalos avisa en vivo (Realtime) a la web del alumno.
+-- Cada alumno solo escucha sus regalos (la regla «regalos: míos» de 43).
+-- ---------------------------------------------------------
+do $$ begin
+  if exists (select 1 from pg_publication where pubname = 'supabase_realtime')
+     and not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'regalos') then
+    alter publication supabase_realtime add table public.regalos;
+  end if;
+end $$;
