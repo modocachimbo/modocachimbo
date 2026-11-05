@@ -87,7 +87,7 @@
   .puesto .k { font-size: 12px; color: var(--text-dim); font-weight: 1000; text-transform: uppercase; letter-spacing: 1.5px; }
   .p-tarj { justify-content: center; margin: 10px 0 10px; pointer-events: none; }
   /* La tarjeta de prueba ocupa el ancho del panel en 4:1, así el banner se ve completo */
-  #pTarj .mcu-chip.mct { flex: none; width: 304px !important; height: 76px !important; padding: 0 14px 0 8px !important; zoom: .85; }
+  #pTarj .mcu-chip.mct { --h: 64px !important; flex: none; width: 320px !important; height: 64px !important; padding: 0 14px 0 0 !important; zoom: .82; }
   .p-esc { position: relative; aspect-ratio: 1.05; border-radius: 18px; overflow: hidden; isolation: isolate; border: 1px solid var(--borde);
     background: var(--esc, radial-gradient(120% 85% at 50% 30%, #3a1f73 0%, #22124a 38%, #110b26 78%)); }
   .p-esc::before { content: ""; position: absolute; left: 28%; right: 28%; top: 0; bottom: 18%; z-index: -1; background: linear-gradient(to bottom, rgba(255,236,190,.16), transparent); clip-path: polygon(38% 0, 62% 0, 100% 100%, 0 100%); }
@@ -308,7 +308,7 @@
 <script src="assets/buho.js"></script>
 <script src="assets/rango.js?v=184"></script>
 <script src="assets/coleccion.js?v=195"></script>
-<script src="assets/tarjeta-perfil.js?v=204"></script>
+<script src="assets/tarjeta-perfil.js?v=205"></script>
 <script src="assets/buho/buho-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
 </head>

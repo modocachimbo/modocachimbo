@@ -169,6 +169,32 @@
       T + '.mct-rg{font-size:13px}' + T + '.mct-rg i{width:18px}' +
     '}' +
     '@media (max-width:400px){' + T + '.mct .mcu-nom{font-size:22px;max-width:100%}' + T + '.mct-rg{font-size:12px}}';
+
+  // La foto en su propio cuadro a la izquierda (con un marco delgado) y el banner al lado en 4:1.
+  // El pin (la V u otro) va pegado a la esquina superior derecha de la foto, el nivel abajo a la
+  // derecha y el emblema del rango grande al lado derecho del banner. --h: alto de la tarjeta.
+  CSS +=
+    T + '.mcu-chip.mct{--h:64px;height:var(--h);width:calc(var(--h) * 5);padding:0 14px 0 0;gap:12px;--bi:var(--h)}' +
+    T + '.mct-arte,' + T + '.mct-velo{left:var(--h);width:calc(100% - var(--h))}' +
+    T + '.mct-caja{width:var(--h);height:var(--h)}' +
+    T + '.mct-marco{padding:2px;clip-path:none}' +
+    T + '.mct .mcu-av{clip-path:none}' +
+    T + '.mct-tx{position:static;margin-left:8px;padding-right:58px}' +
+    // La imagen del pin trae borde transparente: se corre un poco para que el dibujo quede en la esquina
+    T + '.mct-pin{z-index:2;top:-3%;right:-5%;width:38%;height:38%}' +
+    // El nivel: solo el número, en un cuadrito oscuro dentro del marco (el marco pasa por encima)
+    T + '.mct-nv{left:auto;right:2px;bottom:2px;font-size:0;padding:3px 6px 2px 9px;background:rgba(10,6,28,.92);clip-path:polygon(8px 0,100% 0,100% 100%,0 100%)}' +
+    T + '.mct-nv b{font-size:14px;font-style:normal;color:#fff;letter-spacing:.02em}' +
+    T + '.mct-rg b{display:none}' +
+    T + '.mct-rg i{position:absolute;z-index:1;right:10px;top:50%;width:54px!important;transform:translateY(-50%)}' +
+    '@media (max-width:900px){' +
+      T + '.mcu-chip.mct{--h:clamp(60px,calc((100vw - 32px) / 5),96px);width:auto;height:var(--h);padding-right:12px;--bi:var(--h)}' +
+      T + '.mct-caja{width:var(--h);height:var(--h)}' +
+      T + '.mct-pin{width:38%;height:38%;right:-5%}' +
+      T + '.mct-nv{padding:2px 5px 1px 8px}' + T + '.mct-nv b{font-size:13px}' +
+      T + '.mct-rg i{width:48px!important;right:8px}' + T + '.mct-tx{padding-right:52px}' +
+    '}';
+
   var SOLO_ICONO = window.matchMedia ? window.matchMedia('(max-width:360px)') : { matches: false };
   var tVer = null;
   document.addEventListener('click', function (e) {
@@ -191,7 +217,8 @@
   function rangoHtml(xp) {
     var n = window.MCRango && xp != null ? MCRango.nivel(xp) : -1;
     var r = xp == null || !window.MCRango ? '' : n < 0 ? '<b>Sin rango</b>' : '<i>' + MCRango.svg(n, { mini: true, quieto: true }) + '</i><b>' + esc(MCRango.nombre(n)) + '</b>';
-    var id = yo && yo.codigo ? '<span>' + (r ? '· ' : '') + 'ID ' + esc(yo.codigo) + '</span>' : '';
+    // El nombre del rango no se escribe: ya sale su emblema grande a la derecha de la tarjeta
+    var id = yo && yo.codigo ? '<span>ID ' + esc(yo.codigo) + '</span>' : '';
     return r + id;
   }
 
