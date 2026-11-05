@@ -169,6 +169,10 @@
     pintar();
     oyentes.forEach(function (fn) { try { fn(estado); } catch (x) {} });
     (e.nuevas || []).forEach(function (t) { celebrar(t); });
+    // Los ítems de Mi colección llegan juntos (un paquete): un solo aviso y luego la celebración de cada uno
+    var items = regs.filter(function (g) { return g.tipo === 'item' && g.item; });
+    regs = regs.filter(function (g) { return !(g.tipo === 'item' && g.item); });
+    if (items.length) regs.push({ tipo: 'item', items: items.map(function (g) { return g.item; }), nota: items[0].nota, de: items[0].de });
     regs.forEach(function (g, i) { setTimeout(function () { regalo(g); }, 600 + i * 4300); });
     if (antes && antes.quedan === 0 && e.quedan > 0) cerrarBloqueo();
   }
@@ -550,7 +554,9 @@
     css();
     var t = g.tipo === 'corazones' ? '¡Te regalaron ' + g.cantidad + (g.cantidad === 1 ? ' corazón!' : ' corazones!')
       : g.tipo === 'infinito' ? '¡Corazones infinitos por ' + (g.cantidad % 24 ? g.cantidad + (g.cantidad === 1 ? ' hora!' : ' horas!') : g.cantidad / 24 + (g.cantidad === 24 ? ' día!' : ' días!'))
-      : g.tipo === 'xp' ? '¡Te regalaron ' + g.cantidad + ' XP!' : '¡Te regalaron algo para tu colección!';
+      : g.tipo === 'xp' ? '¡Te regalaron ' + g.cantidad + ' XP!'
+      : g.items && g.items.length > 1 ? '¡Te regalaron ' + g.items.length + ' cosas para tu colección!' : '¡Te regalaron algo para tu colección!';
+    if (g.items) regaloColeccion(g.items);
     var d = document.createElement('div'); d.className = 'mcz-toast'; d.setAttribute('role', 'status');
     d.innerHTML = (g.tipo === 'xp' ? SVG.xp : SVG.corazon) + '<div><b></b><span></span></div>';
     d.querySelector('b').textContent = '🎁 ' + t;
@@ -559,6 +565,17 @@
     try { if (window.MCSonido && MCSonido.racha) MCSonido.racha(); } catch (e) {}
     requestAnimationFrame(function () { requestAnimationFrame(function () { d.classList.add('show'); }); });
     setTimeout(function () { d.classList.remove('show'); setTimeout(function () { d.remove(); }, 400); }, 4000);
+  }
+
+  // Regalo de Mi colección: se vuelve a pedir la colección al toque y sale la celebración de cada ítem
+  function regaloColeccion(ids) {
+    var C = window.MCColeccion;
+    // Sin la colección en esta página: que la próxima la pida de nuevo (no los 10 min guardados)
+    if (!C || !C.refrescar) { try { var t = JSON.parse(localStorage.getItem('mc_coleccion_t') || '{}') || {}; t.col = 0; localStorage.setItem('mc_coleccion_t', JSON.stringify(t)); } catch (e) {} return; }
+    C.refrescar().then(function () {
+      var l = ids.filter(function (id) { return C.item(id) && C.tiene(id); });
+      if (l.length) setTimeout(function () { C.celebrar(l); }, 4300);   // después del aviso
+    });
   }
 
   window.MCCorazones = {
