@@ -2,6 +2,8 @@
    Modo Cachimbo · App instalable (service worker)
    - Páginas, preguntas y scripts del sitio: primero internet;
      sin internet, lo último que se guardó.
+   - Scripts/estilos con ?v= e imágenes: lo guardado al toque y se
+     revisa por detrás (al cambiar un archivo, sube su ?v=).
    - KaTeX, Supabase y fuentes (versiones fijas): se guardan una vez.
    - Apps Script, Supabase (datos) y todo lo demás: no se toca.
    - "Primero internet" pregunta siempre al servidor (cache: 'no-cache'):
@@ -37,8 +39,25 @@ self.addEventListener('fetch', e => {
   if (CDN.test(req.url)) { e.respondWith(primeroGuardado(req)); return; }
   if (url.origin !== location.origin) return;
   if (!url.pathname.startsWith(new URL(self.registration.scope).pathname)) return;
+  // Scripts y estilos con ?v= e imágenes: salen de lo guardado al toque y se revisan por detrás
+  if (req.mode !== 'navigate' && (/[?&]v=/.test(url.search) || /\.(webp|png|jpe?g|svg|gif|woff2?)$/i.test(url.pathname))) {
+    e.respondWith(guardadoYRevisa(req, e)); return;
+  }
   e.respondWith(primeroInternet(req));
 });
+
+// Lo guardado sale al instante; en paralelo se pide al servidor y se guarda para la próxima.
+// Si no había nada guardado, espera al servidor como siempre.
+async function guardadoYRevisa(req, e) {
+  const c = await caches.open(VERSION);
+  const hit = await c.match(req);
+  const red = fetch(req, { cache: 'no-cache' }).then(r => {
+    if (r.ok && r.type === 'basic') c.put(req, r.clone());
+    return r;
+  });
+  if (hit) { e.waitUntil(red.catch(() => {})); return hit; }
+  return sinGuardar(await red);
+}
 
 async function primeroGuardado(req) {
   const c = await caches.open(VERSION);

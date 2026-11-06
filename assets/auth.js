@@ -13,6 +13,14 @@
   // Carpeta raíz del sitio, para que los enlaces funcionen desde cualquier página
   var BASE = script && script.src ? script.src.replace(/assets\/auth\.js(\?.*)?$/, '') : './';
 
+  // Abre ya la conexión con Supabase (DNS + TLS) mientras baja el SDK: la primera consulta sale antes
+  try {
+    if (CFG.SUPABASE_URL && !document.querySelector('link[data-mc-pre]')) {
+      var pre = document.createElement('link'); pre.rel = 'preconnect'; pre.href = CFG.SUPABASE_URL; pre.crossOrigin = ''; pre.setAttribute('data-mc-pre', '');
+      document.head.appendChild(pre);
+    }
+  } catch (e) {}
+
   var cliente = null, sesion = null, perfilCache = null, perfilPedido = null, iniciado = false;
   var oyentes = [];
 
@@ -79,12 +87,12 @@
     document.head.appendChild(cz);
     var pagina = location.href.replace(/[?#].*$/, '');
     // Rangos de la semana: tarjeta en el inicio, vitrina en el perfil (assets/rango.js)
-    if (pagina === BASE || pagina === BASE + 'index.html' || pagina === BASE + 'perfil.html') {
+    if (!window.MCRango && (pagina === BASE || pagina === BASE + 'index.html' || pagina === BASE + 'perfil.html')) {
       var rg = document.createElement('script');
       rg.src = BASE + 'assets/rango.js';
       document.head.appendChild(rg);
     }
-    if (pagina !== BASE && pagina !== BASE + 'index.html') {
+    if (!window.MCBuho && pagina !== BASE && pagina !== BASE + 'index.html') {
       var bh = document.createElement('script');
       bh.src = BASE + 'assets/buho.js';
       document.head.appendChild(bh);
