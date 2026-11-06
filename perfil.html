@@ -60,6 +60,39 @@
   .mixp small { font-size: 13px; color: var(--text-dim); font-weight: 700; }
   .mixp .pos { margin-left: auto; text-align: right; }
   .mixp .pos b { color: var(--text); font-size: 22px; }
+  /* XP de arriba v2 */
+  .mixp { position: relative; overflow: hidden; flex-wrap: wrap; gap: 6px 16px; padding: 18px 20px 16px; border-radius: 20px; border: 2px solid rgba(255,200,0,.45); border-bottom-width: 5px;
+    background: radial-gradient(50% 130% at 0% 0%, rgba(255,200,0,.22), transparent 70%), radial-gradient(40% 100% at 100% 100%, rgba(255,120,0,.14), transparent 70%), linear-gradient(180deg, #1f1830, #130f22); }
+  .mixp svg { width: 58px; height: 58px; filter: drop-shadow(0 0 12px rgba(255,200,0,.45)); }
+  .mixp .tx { display: grid; gap: 4px; }
+  .mixp small { font: italic 900 14px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; letter-spacing: .08em; text-transform: uppercase; color: #cfc8ee; }
+  .mixp b { font: italic 900 44px/.9 'Barlow Condensed', 'Arial Narrow', sans-serif; color: #FFC800; text-shadow: 0 3px 0 rgba(0,0,0,.4); }
+  .mixp .pos { display: grid; gap: 4px; justify-items: end; padding-left: 18px; border-left: 2px solid rgba(255,255,255,.08); }
+  .mixp .pos b { font-size: 40px; color: #fff; }
+  .mixp .pos small:last-child { font-size: 13px; letter-spacing: .04em; color: #8a83b0; }
+  .mx-meta { flex-basis: 100%; display: grid; gap: 7px; margin-top: 8px; }
+  .mx-meta[hidden] { display: none; }
+  .mx-barra { display: block; height: 10px; background: rgba(0,0,0,.35); clip-path: polygon(0 0, 100% 0, 99.5% 100%, 0 100%); }
+  .mx-barra u { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #FF9600, #FFC800 60%, #FFF08A); box-shadow: 0 0 12px rgba(255,200,0,.6); transition: width .6s; }
+  .mx-meta em { font: 800 13.5px Nunito, sans-serif; font-style: normal; color: #e9e4ff; }
+  .mx-meta em strong { color: #FFC800; }
+  #tabRanking .sec-tit { margin-bottom: 16px; }
+  /* Top 3: fondo animado premium (destello que pasa y chispas) */
+  #rkLista .rk-fila.p1, #rkLista .rk-fila.p2, #rkLista .rk-fila.p3 { overflow: hidden; isolation: isolate;
+    background: radial-gradient(38% 160% at 12% 50%, color-mix(in srgb, var(--fo, transparent) 40%, transparent), transparent 70%),
+      linear-gradient(110deg, color-mix(in srgb, var(--rk) 30%, #1c1636) 0%, #1a1433 45%, color-mix(in srgb, var(--rk) 16%, #140f28) 100%); }
+  #rkLista .rk-fila.p1::before, #rkLista .rk-fila.p2::before, #rkLista .rk-fila.p3::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: linear-gradient(105deg, transparent 35%, color-mix(in srgb, var(--rk) 35%, transparent) 48%, rgba(255,255,255,.18) 50%, color-mix(in srgb, var(--rk) 35%, transparent) 52%, transparent 65%);
+    background-size: 250% 100%; animation: rkBrillo 3.6s ease-in-out infinite; }
+  #rkLista .rk-fila.p2::before { animation-delay: .6s; } #rkLista .rk-fila.p3::before { animation-delay: 1.2s; }
+  #rkLista .rk-fila.p1::after, #rkLista .rk-fila.p2::after, #rkLista .rk-fila.p3::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .8;
+    background-image: radial-gradient(1.5px 1.5px at 22% 30%, #fff, transparent), radial-gradient(1.5px 1.5px at 48% 72%, var(--rk), transparent), radial-gradient(2px 2px at 63% 24%, #fff, transparent), radial-gradient(1.5px 1.5px at 81% 66%, var(--rk), transparent), radial-gradient(1.5px 1.5px at 35% 85%, #fff, transparent);
+    animation: rkChispas 2.4s ease-in-out infinite alternate; }
+  #rkLista .rk-fila.p1 { box-shadow: 0 0 22px rgba(255,200,0,.25); }
+  @keyframes rkBrillo { 0% { background-position: 130% 0; } 60%, 100% { background-position: -30% 0; } }
+  @keyframes rkChispas { from { opacity: .25; transform: translateY(2px); } to { opacity: .9; transform: translateY(-2px); } }
+  @media (prefers-reduced-motion: reduce) { #rkLista .rk-fila::before, #rkLista .rk-fila::after { animation: none !important; } }
+  @media (max-width: 600px) { .mixp b { font-size: 36px; } .mixp .pos b { font-size: 32px; } .mixp svg { width: 46px; height: 46px; } .mixp { padding: 16px; } }
   .rk { display: grid; gap: 8px; }
   .rk-fila { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 16px; background: var(--surface-2); border: 2px solid var(--border); font: 900 15px Nunito, Inter, sans-serif; font-variant-numeric: tabular-nums; }
   .rk-fila .n { width: 28px; text-align: center; font-weight: 1000; color: var(--text-faint); flex-shrink: 0; }
@@ -628,7 +661,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
 
       <!-- Ranking de la semana: los que más estudian (XP de supabase/16-corazones.sql) -->
       <div id="tabRanking" hidden>
-        <div class="mixp"><svg class="mcz-i-xp" viewBox="0 0 24 24" aria-hidden="true"><g class="mcz-gema"><path fill="#FFC800" d="M12 1.6 21 6.8v10.4L12 22.4 3 17.2V6.8z"/><path fill="#FFDD4A" d="M12 1.6 21 6.8 12 12 3 6.8z"/><path fill="#E0A100" d="M21 6.8v10.4L12 22.4V12z"/><path class="mcz-destello" fill="#fff" d="M12 1.6 16 3.9 7 9.1 3 6.8z"/><path fill="#fff" opacity=".95" d="M13 5.6 8.2 12.6h3.2l-.9 5.8 5.3-7.4h-3.3z"/><path fill="#FFE98A" d="M13 5.6 8.2 12.6h3.2l-.9 5.8 1.4-6.8H9.9z"/></g></svg><span><b id="rkXp">0 XP</b><small>esta semana</small></span><span class="pos"><b id="rkPuesto">–</b><small id="rkDe"></small></span></div>
+        <div class="mixp bc"><svg class="mcz-i-xp" viewBox="0 0 24 24" aria-hidden="true"><g class="mcz-gema"><path fill="#FFC800" d="M12 1.6 21 6.8v10.4L12 22.4 3 17.2V6.8z"/><path fill="#FFDD4A" d="M12 1.6 21 6.8 12 12 3 6.8z"/><path fill="#E0A100" d="M21 6.8v10.4L12 22.4V12z"/><path class="mcz-destello" fill="#fff" d="M12 1.6 16 3.9 7 9.1 3 6.8z"/><path fill="#fff" opacity=".95" d="M13 5.6 8.2 12.6h3.2l-.9 5.8 5.3-7.4h-3.3z"/><path fill="#FFE98A" d="M13 5.6 8.2 12.6h3.2l-.9 5.8 1.4-6.8H9.9z"/></g></svg><span class="tx"><small>Tu XP esta semana</small><b id="rkXp">0 XP</b></span><span class="pos"><small>Puesto</small><b id="rkPuesto">–</b><small id="rkDe"></small></span><span class="mx-meta"><i class="mx-barra"><u id="rkBarra"></u></i><em id="rkMeta"></em></span></div>
         <h2 class="sec-tit bc">Top de la semana</h2>
         <div class="rk" id="rkLista"><p class="nota">Cargando…</p></div>
         <p class="rk-nota">Se reinicia cada lunes. Cada correcta da +15 XP en Repaso, Fijas, Seminarios y Banqueo, y +10 en Práctica, Exámenes, Falladas, Simulacro, Duelo, Tarjetas y Vocabulario (la incorrecta, +2). Desde Esmeralda cada correcta vale menos (hasta ×0,4 en Leyenda).</p>
@@ -1546,8 +1579,18 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
         if (r.error) throw r.error;
         var d = r.data || {}, top = d.top || [], yo = d.yo;
         document.getElementById('rkXp').textContent = (yo ? yo.xp : 0) + ' XP';
-        document.getElementById('rkPuesto').textContent = yo ? yo.puesto + '.º' : '–';
+        document.getElementById('rkPuesto').textContent = yo ? yo.puesto + '.°' : '–';
         document.getElementById('rkDe').textContent = yo ? 'de ' + d.total : 'responde para entrar';
+        // Cuánto te falta para pasar al de arriba (o entrar al top)
+        var arriba = yo && yo.puesto > 1 ? (top.filter(function (x) { return x.puesto === yo.puesto - 1; })[0] || top[top.length - 1]) : null;
+        var meta = document.getElementById('rkMeta'), barra = document.getElementById('rkBarra');
+        if (!yo) { meta.textContent = 'Responde preguntas para entrar al Top de la semana.'; barra.style.width = '0'; }
+        else if (yo.puesto === 1) { meta.innerHTML = '¡Vas <strong>1.º</strong>! Sigue sumando para cerrar la semana arriba.'; barra.style.width = '100%'; }
+        else if (arriba) {
+          var falta = Math.max(1, (arriba.xp || 0) - (yo.xp || 0) + 1);
+          meta.innerHTML = 'Te faltan <strong>' + falta + ' XP</strong> para pasar al ' + arriba.puesto + '.°';
+          barra.style.width = Math.min(100, Math.round((yo.xp || 0) / Math.max(1, arriba.xp || 1) * 100)) + '%';
+        }
         var html = top.map(fila).join('');
         if (yo && !top.some(function (x) { return x.yo; })) html += '<div class="rk-sep">···</div>' + fila({ puesto: yo.puesto, apodo: 'Tú', xp: yo.xp, yo: true }).replace(' (tú)', '');
         document.getElementById('rkLista').innerHTML = html || '<p class="nota">Aún nadie suma XP esta semana. ¡Sé el primero!</p>';
