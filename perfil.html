@@ -382,6 +382,46 @@
   .pf-cont > div:not(#tabVitrina), .pf-cont > #btnSalir { max-width: 860px; }
   #vitrina .nota { color: var(--text-dim); padding: 40px 0; text-align: center; }
   #btnSalir { width: 100%; }
+  /* Tu poder: radar de 5 puntas */
+  .pd { position: relative; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 18px; align-items: center; margin: 14px 0 22px; padding: 18px; border-radius: 18px; overflow: hidden;
+    background: radial-gradient(70% 90% at 25% 50%, rgba(198,224,0,.12), transparent 70%), linear-gradient(180deg, #1c1636, #120e24); border: 2px solid #2f2852; border-bottom-width: 5px; }
+  .pd::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(135deg, rgba(255,255,255,.025) 0 2px, transparent 2px 14px); pointer-events: none; }
+  .pd > * { position: relative; }
+  .pd .nota { grid-column: 1 / -1; }
+  .pd-radar svg { width: 100%; max-width: 440px; display: block; margin: 0 auto; overflow: visible; }
+  .pd-radar .an { fill: rgba(255,255,255,.03); stroke: #3a3266; stroke-width: 1.5; }
+  .pd-radar .an.par { fill: rgba(255,255,255,.055); }
+  .pd-radar .ej { stroke: #3a3266; stroke-width: 1.2; }
+  .pd-radar .yo { fill: url(#pdYo); stroke: #C6E000; stroke-width: 3; stroke-linejoin: round; filter: drop-shadow(0 0 10px rgba(198,224,0,.55)); transform-origin: 190px 170px; animation: pdCrece .9s cubic-bezier(.2,1.3,.4,1) both; }
+  .pd-radar .pt { stroke: #120e24; stroke-width: 2.5; }
+  .pd-radar .nm { font: italic 900 17px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; text-transform: uppercase; letter-spacing: .04em; fill: #e9e4ff; }
+  .pd-radar .vl { font: italic 900 19px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; }
+  .pd-radar .cen { font: italic 900 46px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; fill: #fff; paint-order: stroke; stroke: #120e24; stroke-width: 6px; }
+  .pd-radar .cen2 { font: 900 10px/1 Nunito, sans-serif; letter-spacing: .14em; fill: #C6E000; paint-order: stroke; stroke: #120e24; stroke-width: 4px; }
+  @keyframes pdCrece { from { transform: scale(.1); opacity: 0; } to { transform: none; opacity: 1; } }
+  .pd-lado h3 { margin: 0; font: italic 900 30px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; text-transform: uppercase; color: #fff; }
+  .pd-lado h3 em { font-style: inherit; color: var(--c, #C6E000); }
+  .pd-lado > p { margin: 4px 0 12px; color: var(--text-dim); font: 700 13px/1.4 Nunito, sans-serif; }
+  .pd-fil { display: grid; grid-template-columns: 26px minmax(0, 1fr) 44px; align-items: center; gap: 4px 10px; margin: 8px 0; }
+  .pd-fil svg { width: 24px; height: 24px; }
+  .pd-fil b { font: italic 900 17px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; text-transform: uppercase; letter-spacing: .03em; color: #e9e4ff; }
+  .pd-fil b small { display: block; margin-top: 2px; font: 700 11px/1.2 Nunito, sans-serif; text-transform: none; letter-spacing: 0; color: var(--text-dim); }
+  .pd-fil i { grid-column: 2 / 3; display: block; height: 8px; background: rgba(255,255,255,.07); clip-path: polygon(0 0, 100% 0, 98% 100%, 0 100%); }
+  .pd-fil i u { display: block; height: 100%; background: var(--c); box-shadow: 0 0 10px var(--c); transition: width .8s; }
+  .pd-fil em { grid-row: 1 / 3; grid-column: 3; font: italic 900 22px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; font-style: italic; color: var(--c); text-align: right; }
+  .pd-debil { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding: 10px 12px; border-radius: 12px; background: rgba(255,75,75,.1); border: 1.5px dashed rgba(255,110,110,.5); color: #ffd9d9; font: 700 13px/1.35 Nunito, sans-serif; text-decoration: none; }
+  .pd-debil strong { color: #fff; }
+  .pd-debil span:last-child { margin-left: auto; flex: none; padding: 7px 12px; transform: skewX(-10deg); background: linear-gradient(180deg, #e8fb6a, #C6E000); color: #14101f; font: italic 900 15px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; text-transform: uppercase; }
+  @media (max-width: 760px) { .pd { grid-template-columns: minmax(0, 1fr); padding: 14px 12px; } .pd-lado h3 { font-size: 26px; } }
+  @media (prefers-reduced-motion: reduce) { .pd-radar .yo { animation: none; } }
+  /* PC: el menú y el título quedan quietos; solo se desliza el contenido de la derecha */
+  @media (min-width: 900px) {
+    body.pf-scroll { overflow: hidden; }
+    body.pf-scroll .wrap { padding-bottom: 0; }
+    body.pf-scroll .pf-cont { height: calc(100vh - 104px); overflow-y: auto; overscroll-behavior: contain; padding: 0 14px 40px 4px; scrollbar-width: thin; scrollbar-color: #4a3f78 transparent; }
+    body.pf-scroll .pf-cont::-webkit-scrollbar { width: 8px; } body.pf-scroll .pf-cont::-webkit-scrollbar-thumb { background: #4a3f78; border-radius: 8px; }
+    body.pf-scroll .pf-cont > div > .sec-tit:first-child, body.pf-scroll .pf-cont .sec-tit:first-of-type { margin-top: 0; }
+  }
 </style>
 <style id="mc-claro">
 /* Modo claro de esta página (assets/claro.css trae lo común) */
@@ -550,6 +590,8 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       <!-- 2. Cómo vas: racha, meta y números -->
 
       <h2 class="sec-tit bc" style="--tc:var(--nar)">Estadísticas</h2>
+      <!-- Tu poder: radar de 5 puntas con lo que ya se sabe de tu estudio (se calcula aquí, sin consultas nuevas) -->
+      <section class="pd bc" id="poder" aria-label="Tu poder de estudio"><p class="nota">Cargando tus estadísticas…</p></section>
       <section class="racha-card" id="racha">
         <div class="rc-cab">
           <span class="rc-fuego" id="rFuego"><svg viewBox="0 0 32 36" aria-hidden="true"><path class="f1" d="M16 1.5c1.2 4.6 7.6 8.2 9.6 13.6 2.6 7-1.6 17.4-9.6 17.4S3.8 24.9 6.1 17.6c1-3.2 3.3-5.3 4.9-6.9.2 2.8 1.4 4.6 3 5.2C13.3 10.6 14 6 16 1.5z"/><path class="f2" d="M16.3 15.5c.6 2.4 4.5 4.4 4.5 8.6a4.8 4.8 0 0 1-9.6 0c0-2 1-3.4 2.1-4.4.2 1.4.8 2.3 1.6 2.6-.4-2.4 0-4.6 1.4-6.8z"/></svg></span>
@@ -909,7 +951,78 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
     (d.cursos || []).forEach(function (c) { NOMBRE_CURSO[c.id] = c.nombre; });
   }).catch(function () {});
   var ICONO_REP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 0 1 14.8-5.7L21 9"/><polyline points="21 3.5 21 9 15.5 9"/><path d="M20.5 12a8.5 8.5 0 0 1-14.8 5.7L3 15"/><polyline points="3 20.5 3 15 8.5 15"/></svg>';
+  // ===== Tu poder: 5 puntas de 0 a 100, con lo que ya cargó la página =====
+  var PROG = null, N_CURSOS = 19;
+  cursosListos.then(function () { var n = Object.keys(NOMBRE_CURSO).length - 4; if (n > 0) N_CURSOS = n; });
+  var PD_EJES = [
+    ['constancia', 'Constancia', '#FF9600', 'Días que estudiaste este mes', 'Cumple tu meta hoy', '#racha'],
+    ['precision', 'Precisión', '#1CB0F6', 'Tu promedio de aciertos', 'Repasa tus errores', 'falladas.html'],
+    ['practica', 'Práctica', '#C6E000', 'Preguntas de esta semana frente a tu meta', 'Haz una práctica', 'index.html'],
+    ['simulacro', 'Simulacro', '#CE82FF', 'Tu mejor simulacro o examen', 'Haz un simulacro', 'simulacro.html'],
+    ['cursos', 'Cursos', '#FF4B4B', 'Cursos que ya practicaste', 'Prueba un curso nuevo', 'index.html#cursos']
+  ];
+  var PD_ICO = {
+    constancia: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12.3 1.8c.6 3.2 3.4 4.8 5.2 7.6 2.7 4.2.6 11.8-5.5 11.8S3.6 16.6 5.6 12c.8-1.9 2.3-3 3.2-4.4.3 1.6 1 2.6 2 3.2-.4-3.2.3-6.4 1.5-9z"/></svg>',
+    precision: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>',
+    practica: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
+    simulacro: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v3H9z"/><path d="M7 4.5H5V21h14V4.5h-2"/><path d="m9 13 2 2 4-4"/></svg>',
+    cursos: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/></svg>'
+  };
+  function valoresPoder() {
+    var r = RACHA || {}, hoy = fechaPeru(Date.now()), dia = +hoy.slice(8, 10), mes = hoy.slice(0, 7), P = (PROG && PROG.practicas) || [];
+    var dias = 0, semana = 0, lunes = new Date(lunesPeru()).toISOString().slice(0, 10);
+    Object.keys(ACT || {}).forEach(function (f) {
+      var n = f === hoy ? (r.hoy || 0) : (ACT[f] || 0);
+      if (f.slice(0, 7) === mes && n > 0) dias++;
+      if (f >= lunes) semana += n;
+    });
+    if (!(ACT && ACT[hoy]) && r.hoy) { dias++; semana += r.hoy; }
+    var estudio = P.filter(function (x) { return x.tipo !== 'simulacro' && x.tipo !== 'examen'; });
+    var exam = P.filter(function (x) { return x.tipo === 'simulacro' || x.tipo === 'examen'; });
+    var cursos = {}; estudio.forEach(function (x) { if (x.carpeta) cursos[x.carpeta] = 1; });
+    var lim = function (v) { return Math.max(0, Math.min(100, Math.round(v))); };
+    return {
+      constancia: lim(dias / Math.max(1, dia) * 100),
+      precision: lim(estudio.length ? estudio.reduce(function (s, x) { return s + (x.mejor || 0); }, 0) / estudio.length : 0),
+      practica: lim(semana / ((r.meta || 20) * 7) * 100),
+      simulacro: lim(exam.reduce(function (m, x) { return Math.max(m, x.mejor || 0); }, 0)),
+      cursos: lim(Object.keys(cursos).length / N_CURSOS * 100)
+    };
+  }
+  function radarPoder(v, total) {
+    var C = 190, CY = 172, R = 138, n = PD_EJES.length;
+    var pt = function (i, x) { var a = -Math.PI / 2 + i * 2 * Math.PI / n, rr = R * x / 100; return [C + rr * Math.cos(a), CY + rr * Math.sin(a)]; };
+    var pts = function (f) { return PD_EJES.map(function (e, i) { return pt(i, f(e)).map(function (z) { return z.toFixed(1); }).join(','); }).join(' '); };
+    var g = '<defs><radialGradient id="pdYo" cx="50%" cy="50%" r="60%"><stop offset="0" stop-color="#C6E000" stop-opacity=".15"/><stop offset="1" stop-color="#C6E000" stop-opacity=".55"/></radialGradient></defs>';
+    [100, 75, 50, 25].forEach(function (k, j) { g += '<polygon class="an' + (j % 2 ? ' par' : '') + '" points="' + pts(function () { return k; }) + '"/>'; });
+    PD_EJES.forEach(function (e, i) { var p = pt(i, 100); g += '<line class="ej" x1="' + C + '" y1="' + CY + '" x2="' + p[0].toFixed(1) + '" y2="' + p[1].toFixed(1) + '"/>'; });
+    g += '<polygon class="yo" points="' + pts(function (e) { return Math.max(6, v[e[0]]); }) + '"/>';
+    PD_EJES.forEach(function (e, i) { var p = pt(i, Math.max(6, v[e[0]])); g += '<circle class="pt" cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="6" fill="' + e[2] + '"/>'; });
+    PD_EJES.forEach(function (e, i) {
+      var p = pt(i, 116), anc = Math.abs(p[0] - C) < 8 ? 'middle' : p[0] > C ? 'start' : 'end', y = p[1] < CY - 40 ? p[1] - 26 : p[1] + 2;
+      g += '<text class="nm" x="' + p[0].toFixed(1) + '" y="' + y.toFixed(1) + '" text-anchor="' + anc + '">' + e[1] + '</text>' +
+           '<text class="vl" x="' + p[0].toFixed(1) + '" y="' + (y + 20).toFixed(1) + '" text-anchor="' + anc + '" fill="' + e[2] + '">' + v[e[0]] + '</text>';
+    });
+    g += '<text class="cen" x="' + C + '" y="' + (CY + 14) + '" text-anchor="middle">' + total + '</text><text class="cen2" x="' + C + '" y="' + (CY + 30) + '" text-anchor="middle">PODER</text>';
+    return '<svg viewBox="-40 -12 460 360" role="img" aria-label="Tu poder de estudio en 5 puntas">' + g + '</svg>';
+  }
+  var PD_HECHO = '';
+  function pintarPoder() {
+    var caja = $('poder'); if (!caja || !RACHA || !PROG) return;
+    var v = valoresPoder(), total = Math.round(PD_EJES.reduce(function (s, e) { return s + v[e[0]]; }, 0) / PD_EJES.length);
+    var clave = JSON.stringify(v); if (clave === PD_HECHO) return; PD_HECHO = clave;
+    var rango = total >= 80 ? ['Élite', '#FFC800'] : total >= 60 ? ['Pro', '#C6E000'] : total >= 40 ? ['Competidor', '#1CB0F6'] : total >= 20 ? ['Aprendiz', '#CE82FF'] : ['Novato', '#A99FC8'];
+    var debil = PD_EJES.slice().sort(function (a, b) { return v[a[0]] - v[b[0]]; })[0];
+    caja.innerHTML = '<div class="pd-radar">' + radarPoder(v, total) + '</div>' +
+      '<div class="pd-lado" style="--c:' + rango[1] + '"><h3>Nivel <em>' + rango[0] + '</em></h3><p>Tu poder sube cuando estudias seguido, aciertas más y pruebas cursos y simulacros.</p>' +
+      PD_EJES.map(function (e) {
+        return '<div class="pd-fil" style="--c:' + e[2] + '"><span style="color:' + e[2] + '">' + PD_ICO[e[0]] + '</span><b>' + e[1] + '<small>' + e[3] + '</small></b><em>' + v[e[0]] + '</em><i><u style="width:' + v[e[0]] + '%"></u></i></div>';
+      }).join('') +
+      '<a class="pd-debil" href="' + debil[5] + '"><span>Tu punto débil: <strong>' + debil[1] + '</strong></span><span>' + debil[4] + '</span></a></div>';
+  }
+
   function pintarProgreso(d) {
+    PROG = d; pintarPoder();
     var P = d.practicas, F = d.falladas;
     var n = P.reduce(function (s, x) { return s + (x.intentos || 0); }, 0);
     $('pPracticas').textContent = n;
@@ -1080,6 +1193,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
   }
   function pintarSemana() {
     var r = RACHA; if (!r || !ACT) return;
+    pintarPoder();
     var meta = r.meta || 20, hoy = fechaPeru(Date.now()), lunes = lunesPeru(), caja = $('rDias'), hielo = false;
     caja.textContent = '';
     DIAS.forEach(function (letra, i) {
@@ -1328,6 +1442,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       });
       document.getElementById('tabVitrina').hidden = cual !== 'vitrina';
       document.body.classList.toggle('ma-fit', cual === 'vitrina');
+      document.body.classList.toggle('pf-scroll', cual !== 'vitrina');
       document.getElementById('tabRanking').hidden = cual !== 'ranking';
       document.getElementById('tabAgenda').hidden = cual !== 'agenda';
       document.getElementById('tabPerfil').hidden = GRUPOS.indexOf(cual) < 0;
