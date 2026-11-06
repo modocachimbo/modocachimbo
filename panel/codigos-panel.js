@@ -453,7 +453,7 @@ function importarCodigos() {
    y el paquete va directo a su cuenta de Google. Los códigos siguen igual. */
 const PID = { lista: [], equipos: 2, hoy: '', q: '', err: '', abierto: true };
 const PID_FALTA = 'Falta correr supabase/70-acceso-por-id.sql en Supabase.';
-const pidError = e => /acceso_id_/.test(e && e.message || '') ? PID_FALTA
+const pidError = e => /(could not find|does not exist|schema cache).*acceso_id_|acceso_id_.*(could not find|does not exist|schema cache)/i.test(e && e.message || '') ? PID_FALTA
   : /no autorizado/.test(e && e.message || '') ? 'Tu cuenta no tiene permiso de Códigos.'
   : (e && e.message) || 'Entra al panel con tu cuenta de Google para dar acceso por ID.';
 async function pidRpc(fn, args) {
@@ -476,7 +476,7 @@ function renderPorId() {
   const lista = PID.lista.filter(a => !q || [a.jid, a.apodo, a.email, a.nota, etiquetaProd(a.producto)].join(' ').toLowerCase().includes(q));
   const fila = a => `<div class="acc-row">
       <div><b>${esc(a.apodo || 'Sin apodo')} <span style="display:inline;font-weight:600">· ID ${esc(a.jid || '—')} · ${esc(a.email || '')}</span></b>
-      <span>${esc(etiquetaProd(a.producto))} · ${a.vence ? (vigente(a) ? 'hasta ' : 'venció el ') + esc(a.vence.split('-').reverse().join('/')) : 'sin fecha de fin'} · ${a.equipos ? a.equipos + (a.equipos === 1 ? ' equipo' : ' equipos') : 'aún no entra'}${a.nota ? ' · ' + esc(a.nota) : ''} · dado el ${esc(fechaCorta(a.creado))}</span></div>
+      <span>${esc(etiquetaProd(a.producto))}${a.limite_dia ? ' (' + a.limite_dia + ' PDF al día)' : ''} · ${a.vence ? (vigente(a) ? 'hasta ' : 'venció el ') + esc(a.vence.split('-').reverse().join('/')) : 'sin fecha de fin'} · ${a.equipos ? a.equipos + (a.equipos === 1 ? ' equipo' : ' equipos') : 'aún no entra'}${a.nota ? ' · ' + esc(a.nota) : ''} · dado el ${esc(fechaCorta(a.creado))}</span></div>
       ${vigente(a) ? '' : '<span class="pill gray">Vencido</span>'}
       <button class="rbtn" type="button" data-pid-q="${a.id}">Quitar</button></div>`;
   box.innerHTML = `<details class="acc-box" id="pidBox" ${PID.abierto ? 'open' : ''} style="margin-bottom:16px;">
@@ -522,6 +522,10 @@ function darPorId() {
     <div class="hint" id="pidAyuda" style="margin:6px 0 0;"></div>
     <div class="hint" style="margin:12px 0 6px;">O solo un área (sin Simulacro ni Duelos)</div>${multi('areas', AREAS_COD)}
     <div class="hint" id="pidResumen" style="margin-top:10px;"></div>
+    <div id="pidLimBox" hidden>
+      <label class="fld">Descargas PDF por día <span class="hint">por alumno · vacío = el límite general de Panel → Descargas PDF</span></label>
+      <input class="inp" id="pidLimDia" type="number" min="1" max="500" placeholder="Ej.: 20">
+    </div>
     <div class="cdgrid">
       <label>Hasta (opcional)<input class="inp" id="pidVence" type="date"></label>
       <label style="grid-column: span 2;">Nota (solo la ves tú)<input class="inp" id="pidNota" maxlength="120" placeholder="Ej.: Yape 05/11 · S/ 25"></label>
@@ -544,6 +548,7 @@ function darPorId() {
     o.querySelectorAll('[data-g="areas"] .chip').forEach(x => x.classList.toggle('on', st.areas.includes(x.dataset.v)));
     o.querySelector('#pidAyuda').textContent = st.todos.map(v => PROD_AYUDA[v]).filter(Boolean).join(' · ');
     const p = producto(); o.querySelector('#pidResumen').innerHTML = p ? 'Abrirá: <b style="color:#f5ffcc">' + esc(etiquetaProd(p)) + '</b>' : '';
+    o.querySelector('#pidLimBox').hidden = !esDescarga({ producto: p });
     const ok = quienes.filter(x => x.existe).length;
     o.querySelector('#pidQuien').innerHTML = quienes.map(x => x.existe
       ? `<span style="color:var(--accent)">✔</span> <b>${x.id}</b> ${esc(x.apodo || 'Sin apodo')} · ${esc(x.email || '')}`
@@ -583,7 +588,13 @@ function darPorId() {
     if (!p) { err.textContent = 'Marca qué le das.'; err.classList.add('show'); return; }
     const btn = o.querySelector('#pidSave'); btn.disabled = true; btn.innerHTML = '<span class="spin-s"></span> Activando…';
     try {
-      const r = await pidRpc('acceso_id_dar', { p_codigos: ids, p_producto: p, p_vence: o.querySelector('#pidVence').value || null, p_nota: o.querySelector('#pidNota').value || null });
+      const lim = esDescarga({ producto: p }) ? Math.min(500, Math.max(0, parseInt(o.querySelector('#pidLimDia').value, 10) || 0)) : 0;
+      const args = { p_codigos: ids, p_producto: p, p_vence: o.querySelector('#pidVence').value || null, p_nota: o.querySelector('#pidNota').value || null };
+      if (lim) args.p_limite = lim;
+      const r = await pidRpc('acceso_id_dar', args).catch(er => {
+        if (lim && /p_limite|acceso_id_dar/.test(er && er.message || '')) throw new Error('Para poner descargas por día, falta correr supabase/76-limite-descarga-por-id.sql en Supabase.');
+        throw er;
+      });
       const sin = r.sin_id || [];
       cerrar(); cargarPorId();
       toast(`Activado a ${r.alumnos} alumno${r.alumnos === 1 ? '' : 's'}: ${etiquetaProd(p)}` + (sin.length ? ` · no existen: ${sin.join(', ')}` : ''), !!sin.length);
