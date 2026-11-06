@@ -1353,8 +1353,30 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
   (function () {
     var caja = document.getElementById('vitrina'), A = window.MCAmigos, hecho = false;
     if (!A) return;
+    // Lo último que se vio se guarda: al volver, tu perfil sale al toque y luego se actualiza
+    var KV = 'mc_vitrina', ref = {}, pintado = false;
     function pintar(d) {
       caja.innerHTML = A.perfil(d, { mio: true });
+      ref.codigo = d.codigo;
+      if (!pintado) { pintado = true; A.conectar(caja, ref, { editar: function () { document.getElementById('btnEditar').click(); } }); }
+    }
+    function uidGuardado() {
+      try {
+        var t = JSON.parse(localStorage.getItem('sb-' + new URL(window.MC_CONFIG.SUPABASE_URL).hostname.split('.')[0] + '-auth-token'));
+        return (t && t.user && t.user.id) || (t && t.currentSession && t.currentSession.user && t.currentSession.user.id) || null;
+      } catch (e) { return null; }
+    }
+    var guardado = null;
+    try { guardado = JSON.parse(localStorage.getItem(KV)); } catch (e) {}
+    var uid0 = uidGuardado();
+    if (guardado && guardado.d && uid0 && guardado.u === uid0) {
+      try {
+        pintar(guardado.d);
+        // Sesión guardada en este equipo: se muestra la página sin esperar a Supabase (cargar() la confirma)
+        document.getElementById('cargando').hidden = true;
+        document.getElementById('sinSesion').hidden = true;
+        document.getElementById('conSesion').hidden = false;
+      } catch (e) { pintado = false; caja.innerHTML = ''; }
     }
     // Si 71-amigos.sql aún no se corrió: ver_jugador con tu ID (sin carrera ni examen)
     function respaldo() {
@@ -1362,14 +1384,15 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
         .then(function (cod) { return A.rpc('ver_jugador', { p_codigo: cod }); });
     }
     function cargar(u) {
-      if (!u || hecho) return;
+      if (!u) { try { localStorage.removeItem(KV); } catch (e) {} return; }
+      if (hecho) return;
       hecho = true;
       A.ver().catch(respaldo).then(function (d) {
         if (!d) throw new Error('sin datos');
         d.mi_xp_semana = d.xp_semana;
         pintar(d);
-        A.conectar(caja, d, { editar: function () { document.getElementById('btnEditar').click(); } });
-      }).catch(function () { hecho = false; caja.innerHTML = '<p class="nota">No se pudo cargar tu perfil. Revisa tu internet y recarga.</p>'; });
+        try { localStorage.setItem(KV, JSON.stringify({ u: u.id, d: d, t: Date.now() })); } catch (e) {}
+      }).catch(function () { hecho = false; if (!pintado) caja.innerHTML = '<p class="nota">No se pudo cargar tu perfil. Revisa tu internet y recarga.</p>'; });
     }
     MCAuth.listo.then(function () { cargar(MCAuth.usuario()); MCAuth.alCambiar(cargar); }, function () {});
   })();
