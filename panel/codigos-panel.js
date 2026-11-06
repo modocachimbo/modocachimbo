@@ -504,16 +504,21 @@ function renderPorId() {
   const rows = L.filter(a => pasa(a, PID.filtro) && (!q || [a.jid, a.apodo, a.email, a.nota, etiquetaProd(a.producto)].join(' ').toLowerCase().includes(q)));
   if (!L.length) { $('cdList').innerHTML = '<div class="state-msg">Aún no diste nada por ID. El alumno te pasa su ID (Perfil → su tarjeta → copiar) y tú tocas <b>＋ Dar por ID</b>.</div>'; return; }
   if (!rows.length) { $('cdList').innerHTML = '<div class="state-msg">Nada con ese filtro.</div>'; return; }
-  const max = PID.equipos || 0;
+  // Equipos que vale cada alumno: el más alto de sus accesos activos (0 = sin límite), igual que en Supabase
+  const maxDe = u => {
+    const m = L.filter(x => x.usuario === u && pidVigente(x)).map(x => x.max_equipos == null ? (PID.equipos || 0) : x.max_equipos);
+    return !m.length ? (PID.equipos || 0) : m.includes(0) ? 0 : Math.max(...m);
+  };
   const ico = t => /Android|iPhone/.test(t || '') ? '📱' : '💻';
   $('cdList').innerHTML = rows.slice(0, 300).map(a => {
-    const vig = pidVigente(a), eqs = pidEquipos(a), pct = max ? Math.min(100, Math.round(eqs.length / max * 100)) : 0;
+    const max = maxDe(a.usuario), vig = pidVigente(a), eqs = pidEquipos(a), pct = max ? Math.min(100, Math.round(eqs.length / max * 100)) : 0;
     return `<article class="rcard cdcard ${vig ? '' : 'dim'}">
       <div class="rtop">
         <div class="rmeta">
           ${a.jid ? `<button class="cdcode" type="button" data-copy="${esc(a.jid)}" title="Copiar ID">ID ${esc(a.jid)} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>` : ''}
           <span class="pill">${esc(etiquetaProd(a.producto))}</span>
           ${esDescarga(a) ? `<span class="pill gray" title="Descargas PDF por día">${a.limite_dia ? a.limite_dia + ' descargas/día' : 'límite general'}</span>` : ''}
+          ${a.max_equipos != null ? `<span class="pill gray" title="Dispositivos de este acceso">${a.max_equipos ? a.max_equipos + (a.max_equipos === 1 ? ' dispositivo' : ' dispositivos') : 'Dispositivos sin límite'}</span>` : ''}
           <span class="pill ${vig ? 'Vigente' : 'Revertida'}">${vig ? 'Activo' : 'Vencido'}</span>
         </div>
         <span class="rdate">${a.vence ? (vig ? 'vence el ' : 'venció el ') + esc(a.vence.split('-').reverse().join('/')) : 'sin vencimiento'}</span>
@@ -601,6 +606,11 @@ function darPorId(orig) {
       <input class="inp" id="pidLimDia" type="number" min="1" max="500" placeholder="Ej.: 20" value="${orig && orig.limite_dia ? orig.limite_dia : ''}">
     </div>
     <div class="cdgrid">
+      <label>Dispositivos<input class="inp" id="pidMax" type="number" min="1" max="100" placeholder="General: ${PID.equipos ? PID.equipos : 'sin límite'}" value="${orig && orig.max_equipos ? orig.max_equipos : ''}"></label>
+      <label class="ck" style="align-self:end;"><input type="checkbox" id="pidSinLim" ${orig && orig.max_equipos === 0 ? 'checked' : ''}>Sin límite</label>
+    </div>
+    <div class="hint" style="margin:4px 0 0;">En cuántos celulares o laptops abre. Vacío = lo general (${PID.equipos ? PID.equipos : 'sin límite'}). Si el alumno entra en uno más, el más antiguo deja de abrir.</div>
+    <div class="cdgrid">
       <label>Hasta (opcional)<input class="inp" id="pidVence" type="date" value="${orig && orig.vence ? esc(orig.vence) : ''}"></label>
       <label style="grid-column: span 2;">Nota (solo la ves tú)<input class="inp" id="pidNota" maxlength="120" placeholder="Ej.: Yape 05/11 · S/ 25" value="${orig && orig.nota ? esc(orig.nota) : ''}"></label>
     </div>
@@ -654,6 +664,8 @@ function darPorId(orig) {
     if (i >= 0) st.areas.splice(i, 1); else { st.areas.push(v); st.todos = st.todos.filter(x => x !== 'TODO-VIP' && x !== 'general'); }
     pintar();
   });
+  const syncMax = () => { const sl = o.querySelector('#pidSinLim').checked, m = o.querySelector('#pidMax'); m.disabled = sl; if (sl) m.value = ''; };
+  o.querySelector('#pidSinLim').addEventListener('change', syncMax); syncMax();
   pintar();
   if (!orig) o.querySelector('#pidIds').focus();
   o.querySelector('#pidSave').addEventListener('click', async () => {
@@ -666,15 +678,17 @@ function darPorId(orig) {
       const lim = esDescarga({ producto: p }) ? Math.min(500, Math.max(0, parseInt(o.querySelector('#pidLimDia').value, 10) || 0)) : 0;
       const args = { p_codigos: ids, p_producto: p, p_vence: o.querySelector('#pidVence').value || null, p_nota: o.querySelector('#pidNota').value || null };
       if (lim) args.p_limite = lim;
+      const mxv = parseInt(o.querySelector('#pidMax').value, 10);
+      const eq = o.querySelector('#pidSinLim').checked ? 0 : (mxv > 0 ? Math.min(100, mxv) : null);
+      if (eq !== null) args.p_equipos = eq;
+      const falta78 = er => { if (/p_equipos|acceso_id_dar|acceso_id_editar/.test(er && er.message || '')) throw new Error('Para poner dispositivos por ID, falta correr supabase/78-dispositivos-por-id.sql en Supabase.'); throw er; };
       if (orig) {
-        await pidRpc('acceso_id_editar', { p_id: orig.id, p_producto: p, p_vence: args.p_vence, p_nota: args.p_nota, p_limite: lim || null }).catch(er => {
-          if (/acceso_id_editar/.test(er && er.message || '')) throw new Error('Falta correr supabase/77-accesos-id-panel.sql en Supabase.');
-          throw er;
-        });
-        Object.assign(orig, { producto: p, vence: args.p_vence, nota: args.p_nota, limite_dia: lim || null });
+        await pidRpc('acceso_id_editar', { p_id: orig.id, p_producto: p, p_vence: args.p_vence, p_nota: args.p_nota, p_limite: lim || null, p_equipos: eq }).catch(falta78);
+        Object.assign(orig, { producto: p, vence: args.p_vence, nota: args.p_nota, limite_dia: lim || null, max_equipos: eq });
         cerrar(); renderPorId(); toast('Acceso actualizado'); return;
       }
       const r = await pidRpc('acceso_id_dar', args).catch(er => {
+        if (eq !== null) falta78(er);
         if (lim && /p_limite|acceso_id_dar/.test(er && er.message || '')) throw new Error('Para poner descargas por día, falta correr supabase/76-limite-descarga-por-id.sql en Supabase.');
         throw er;
       });
