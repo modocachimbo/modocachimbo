@@ -109,8 +109,10 @@
   #errores .err-btn:not([hidden]) + .prog-repasar { background: transparent; }
   .prog-cursos { gap: 8px; }
   .prog-curso { display: flex; gap: 12px; align-items: flex-start; padding: 10px 12px !important; }
-  .prog-ic { width: 40px; height: 40px; flex-shrink: 0; border-radius: 12px; display: grid; place-items: center; background: color-mix(in srgb, var(--pc, #C6E000) 14%, transparent); border: 2px solid color-mix(in srgb, var(--pc, #C6E000) 35%, transparent); font-weight: 1000; color: var(--pc); }
-  .prog-ic img { width: 26px; height: 26px; object-fit: contain; filter: brightness(0) invert(1); opacity: .92; }
+  .prog-ic { width: 44px; height: 44px; flex-shrink: 0; display: grid; place-items: center; background: color-mix(in srgb, var(--ac) 14%, transparent); clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%); }
+  .prog-ic i { width: 26px; height: 26px; background: var(--ac); -webkit-mask: var(--ico) center/contain no-repeat; mask: var(--ico) center/contain no-repeat; }
+  /* Íconos de cabecera con el mismo corte que el inicio */
+  #errores .err-ic, [data-g="estudio"] .sec-ic { border: 0 !important; border-radius: 0 !important; clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%); }
   .prog-cu { flex: 1; min-width: 0; }
   .prog-curso .prog-cab span { color: var(--pc) !important; }
   .prog-curso .prog-barra { height: 7px !important; margin: 6px 0 5px; }
@@ -1031,10 +1033,10 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
   MCAuth.alCambiar(cargarReportes);
 
   // Mi progreso (assets/progreso.js lo carga auth.js)
-  var ICONO_CURSO = {};
+  var ICONO_CURSO = {}, AREA_CURSO = {}, COLOR_AREA = { 'ciencia-tecnologia': '#C6E000', matematica: '#1CB0F6', comunicacion: '#CE82FF', 'ciencias-sociales': '#FF9600' };
   var NOMBRE_CURSO = { ordinario: 'Exámenes · Ordinario', cpu: 'Exámenes · CPU', 'control-cpu': 'Exámenes · Control CPU', simulacro: 'Simulacros' };
   var cursosListos = fetch('assets/cursos.json').then(function (r) { return r.json(); }).then(function (d) {
-    (d.cursos || []).forEach(function (c) { NOMBRE_CURSO[c.id] = c.nombre; if (c.icono) ICONO_CURSO[c.id] = c.icono; });
+    (d.cursos || []).forEach(function (c) { NOMBRE_CURSO[c.id] = c.nombre; if (c.icono) ICONO_CURSO[c.id] = c.icono; AREA_CURSO[c.id] = c.area; });
   }).catch(function () {});
   var ICONO_REP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 0 1 14.8-5.7L21 9"/><polyline points="21 3.5 21 9 15.5 9"/><path d="M20.5 12a8.5 8.5 0 0 1-14.8 5.7L3 15"/><polyline points="3 20.5 3 15 8.5 15"/></svg>';
   // ===== Tu poder: 5 puntas de 0 a 100, con lo que ya cargó la página =====
@@ -1138,8 +1140,10 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       var div = document.createElement('div'); div.className = 'prog-curso';
       div.style.setProperty('--pc', prom < 40 ? '#FF4B4B' : prom < 70 ? '#FF9600' : '#C6E000');
       var ic = document.createElement('span'); ic.className = 'prog-ic';
-      if (ICONO_CURSO[k]) { var im = document.createElement('img'); im.src = ICONO_CURSO[k]; im.alt = ''; im.loading = 'lazy'; ic.appendChild(im); }
-      else ic.textContent = String(NOMBRE_CURSO[k] || k).charAt(0).toUpperCase();
+      ic.style.setProperty('--ac', COLOR_AREA[AREA_CURSO[k]] || '#FF9600');
+      var im = document.createElement('i');
+      im.style.setProperty('--ico', 'url("' + (ICONO_CURSO[k] || 'assets/icons/examenes.svg') + '")');
+      ic.appendChild(im);
       div.appendChild(ic);
       var cu = document.createElement('div'); cu.className = 'prog-cu';
       var cab = document.createElement('div'); cab.className = 'prog-cab';
