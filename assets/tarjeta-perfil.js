@@ -402,13 +402,35 @@
     requestAnimationFrame(function () { requestAnimationFrame(function () { ov.classList.add('ver'); }); });
     var caja = ov.querySelector('.mcj-in');
     if (!window.MCAuth) { caja.innerHTML = '<p class="mcj-msg">Ingresa para ver su tarjeta.</p>'; return; }
-    MCAuth.listo.then(function (sb) { return sb.rpc('ver_jugador', { p_codigo: +cod }); }).then(function (r) {
+    // ver_amigo (supabase/71-amigos.sql) dice además si ya son amigos; si aún no está, ver_jugador
+    MCAuth.listo.then(function (sb) {
+      return sb.rpc('ver_amigo', { p_codigo: +cod }).then(function (r) { return r && r.error ? sb.rpc('ver_jugador', { p_codigo: +cod }) : r; });
+    }).then(function (r) {
       if (!r || r.error || !r.data) throw new Error('sin datos');
       var d = r.data;
-      caja.innerHTML = tarjetaHtml(d) + '<div class="mcj-acc">' + (d.yo
-        ? '<a class="si" href="' + BASE + 'perfil.html"><span>Ir a mi perfil</span></a>'
-        : '<button type="button" class="no" disabled><span>Agregar amigo <small>· muy pronto</small></span></button>') + '</div>';
+      caja.innerHTML = tarjetaHtml(d) + '<div class="mcj-acc">' + accionesHtml(d) + '</div>';
     }).catch(function () { caja.innerHTML = '<p class="mcj-msg">No se pudo cargar su tarjeta. Intenta otra vez.</p>'; });
+    // Agregar amigo / aceptar sin salir de la tarjeta
+    caja.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-amigo]'); if (!b || b.disabled) return;
+      b.disabled = true;
+      var acep = b.getAttribute('data-amigo') === 'aceptar';
+      MCAuth.listo.then(function (sb) { return acep ? sb.rpc('amigo_responder', { p_codigo: +cod, p_aceptar: true }) : sb.rpc('amigo_solicitar', { p_codigo: +cod }); }).then(function (r) {
+        if (!r || r.error) throw new Error('error');
+        try { Object.keys(localStorage).forEach(function (k) { if (/^mc_amigos_/.test(k)) localStorage.removeItem(k); }); } catch (x) {}
+        var d = r.data || {}, amigos = acep || d.estado === 'amigos';
+        if (d.ok === false) { b.innerHTML = '<span>' + (d.error === 'espera' ? 'Podrás volver a mandarle en unos días' : d.error === 'limite_amigos' ? 'Llegaste a 100 amigos' : 'Tienes muchas solicitudes sin responder') + '</span>'; return; }
+        b.outerHTML = amigos ? '<a class="si" href="' + BASE + 'amigos.html?id=' + esc(cod) + '"><span>¡Ya son amigos! Ver perfil</span></a>' : '<button type="button" class="no" disabled><span>Solicitud enviada ✓</span></button>';
+      }).catch(function () { b.disabled = false; b.innerHTML = '<span>No se pudo. Toca otra vez</span>'; });
+    });
+  }
+  function accionesHtml(d) {
+    if (d.yo) return '<a class="si" href="' + BASE + 'perfil.html"><span>Ir a mi perfil</span></a>';
+    if (d.relacion === 'amigo') return '<a class="si" href="' + BASE + 'amigos.html?id=' + esc(d.codigo) + '"><span>Ver su perfil</span></a>';
+    if (d.relacion === 'enviada') return '<button type="button" class="no" disabled><span>Solicitud enviada ✓</span></button>';
+    if (d.relacion === 'recibida') return '<button type="button" class="si" data-amigo="aceptar"><span>Aceptar solicitud</span></button>';
+    if (!d.relacion) return '<button type="button" class="no" disabled><span>Agregar amigo <small>· muy pronto</small></span></button>';
+    return '<button type="button" class="si" data-amigo="agregar"><span>+ Agregar amigo</span></button>';
   }
   // Tocar (o Enter) cualquier foto con data-jug abre su tarjeta; tocar su pin, el globito
   document.addEventListener('click', function (e) {
