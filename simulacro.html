@@ -561,9 +561,17 @@
   #topSim .l1 .cara { background: #FFE27A; } #topSim .l1 .frente { height: 110px; background: linear-gradient(#FFC800, #9c7400); }
   #topSim .l2 .cara { background: #F2F0F8; } #topSim .l2 .frente { height: 80px; background: linear-gradient(#C9C6D6, #5c5675); }
   #topSim .l3 .cara { background: #FFC38F; } #topSim .l3 .frente { height: 62px; background: linear-gradient(#E58A45, #7a3f12); }
+  /* Podio: destello que pasa por los bloques y chispas, como el top 3 del Ranking */
+  #topSim .lugar:not(.vacio) .frente { position: relative; overflow: hidden; isolation: isolate; }
+  #topSim .lugar:not(.vacio) .frente::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, .35) 50%, transparent 65%); background-size: 250% 100%; animation: podBrillo 3.6s ease-in-out infinite; }
+  #topSim .l2:not(.vacio) .frente::before { animation-delay: .6s; } #topSim .l3:not(.vacio) .frente::before { animation-delay: 1.2s; }
+  #topSim .lugar:not(.vacio) .frente::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .9; background-image: radial-gradient(2px 2px at 18% 28%, #fff, transparent), radial-gradient(1.5px 1.5px at 42% 70%, #fff, transparent), radial-gradient(2px 2px at 70% 22%, #fff, transparent), radial-gradient(1.5px 1.5px at 84% 62%, #fff, transparent), radial-gradient(1.5px 1.5px at 30% 88%, #fff, transparent); animation: podChispas 2.4s ease-in-out infinite alternate; }
+  @keyframes podBrillo { 0% { background-position: 130% 0; } 60%, 100% { background-position: -30% 0; } }
+  @keyframes podChispas { from { opacity: .2; transform: translateY(3px); } to { opacity: .9; transform: translateY(-3px); } }
   /* Resplandor del color de su fondo detrás de cada foto */
   #topSim .aro .letra.mcj-f { filter: drop-shadow(0 0 10px var(--f1, transparent)); }
   #topSim .sim-lista .letra.mcj-f { filter: drop-shadow(0 0 6px color-mix(in srgb, var(--f1, transparent) 80%, transparent)); }
+  @media (prefers-reduced-motion: reduce) { #topSim .frente::before, #topSim .frente::after { animation: none !important; } }
   #topSim .sim-lista { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--borde); }
   #topSim .sim-lista li { display: grid; grid-template-columns: 30px 30px minmax(0, 1fr) 24px auto; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--borde); font: 800 16.5px/1.15 var(--cuerpo) !important; }
   #topSim .sim-lista li > * { font-family: var(--cuerpo); }
