@@ -112,6 +112,7 @@
   .prog-ic { width: 44px; height: 44px; flex-shrink: 0; display: grid; place-items: center; background: color-mix(in srgb, var(--ac) 14%, transparent); clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%); }
   .prog-ic i { width: 26px; height: 26px; background: var(--ac); -webkit-mask: var(--ico) center/contain no-repeat; mask: var(--ico) center/contain no-repeat; }
   /* Íconos de cabecera con el mismo corte que el inicio */
+  #errores .err-ic svg.ic3, [data-g="estudio"] .sec-ic svg.ic3 { width: 32px; height: 32px; filter: drop-shadow(0 2px 0 rgba(0,0,0,.35)); }
   #errores .err-ic, [data-g="estudio"] .sec-ic { border: 0 !important; border-radius: 0 !important; clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%); }
   .prog-cu { flex: 1; min-width: 0; }
   .prog-curso .prog-cab span { color: var(--pc) !important; }
@@ -711,7 +712,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       <h2 class="sec-tit bc" style="--tc:var(--roj)">Tu estudio</h2>
       <section class="panel" id="errores">
         <div class="err-top">
-          <div class="err-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 0 1 14.8-5.7L21 9"/><polyline points="21 3.5 21 9 15.5 9"/><path d="M20.5 12a8.5 8.5 0 0 1-14.8 5.7L3 15"/><polyline points="3 20.5 3 15 8.5 15"/></svg></div>
+          <div class="err-ic"><svg class="ic3" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="ic3R" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF8A7A"/><stop offset="1" stop-color="#E5262B"/></linearGradient></defs><path d="M9 22a15 15 0 0 1 26-9l3-3v12H26l4-4a9 9 0 0 0-15 4z" fill="url(#ic3R)" stroke="#6e0d10" stroke-width="2" stroke-linejoin="round"/><path d="M39 26a15 15 0 0 1-26 9l-3 3V26h12l-4 4a9 9 0 0 0 15-4z" fill="url(#ic3R)" stroke="#6e0d10" stroke-width="2" stroke-linejoin="round"/><path d="M14 17a12 12 0 0 1 8-5" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="2.4" stroke-linecap="round"/></svg></div>
           <div><h2>Tu repaso</h2><p class="nota" id="eSub">Cargando…</p></div>
           <span class="rp-tot" id="eTot" hidden><b>–</b>por repasar</span>
         </div>
@@ -723,7 +724,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
 
       <section class="panel" id="progreso">
         <div class="sec-cab">
-          <span class="sec-ic cel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-6M12 20V5M19 20v-10"/></svg></span>
+          <span class="sec-ic cel"><svg class="ic3" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="ic3B" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7FD8FF"/><stop offset="1" stop-color="#0E8FD6"/></linearGradient><linearGradient id="ic3L" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2FF7A"/><stop offset="1" stop-color="#9DB800"/></linearGradient></defs><rect x="6" y="26" width="9" height="16" rx="2" fill="url(#ic3B)" stroke="#063a5c" stroke-width="2"/><rect x="19.5" y="17" width="9" height="25" rx="2" fill="url(#ic3B)" stroke="#063a5c" stroke-width="2"/><rect x="33" y="8" width="9" height="34" rx="2" fill="url(#ic3L)" stroke="#3d4a00" stroke-width="2"/><path d="M8.5 29v4M22 20v4M35.5 11v4" stroke="#fff" stroke-opacity=".6" stroke-width="2.2" stroke-linecap="round"/></svg></span>
           <div><h2>Mi progreso por curso</h2><p class="nota">Primero lo que más te falta. Se guarda al terminar una práctica, un Repaso, unas Fijas o un examen.</p></div>
         </div>
         <div class="prog-cursos" id="pCursos"><p class="nota">Cargando tu progreso…</p></div>
@@ -731,7 +732,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
 
       <section class="panel" id="simulacros">
         <div class="sec-cab">
-          <span class="sec-ic mor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6v3H9z"/><path d="M7 4.5H5V21h14V4.5h-2"/><path d="M9 11h6M9 15h4"/></svg></span>
+          <span class="sec-ic mor"><svg class="ic3" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="ic3M" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9C2FF"/><stop offset="1" stop-color="#A54EE8"/></linearGradient></defs><rect x="9" y="8" width="30" height="36" rx="4" fill="url(#ic3M)" stroke="#3f1260" stroke-width="2"/><rect x="14" y="13" width="20" height="26" rx="2" fill="#fff" fill-opacity=".92"/><rect x="17" y="4" width="14" height="8" rx="3" fill="#FFC800" stroke="#7a5200" stroke-width="2"/><path d="M18 26l4 4 8-9" fill="none" stroke="#2ecc40" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           <div><h2>Mis simulacros</h2><p class="nota">Tus simulacros terminados. Con «Repetir» das las mismas preguntas otra vez.</p></div>
         </div>
         <ul class="lista rep-lista" id="simLista"><li><span>Cargando…</span></li></ul>
