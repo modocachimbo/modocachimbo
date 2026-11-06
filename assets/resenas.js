@@ -15,6 +15,8 @@
 (function () {
   if (window.MCResenas) return;
   var MIN = 20, MAX = 280;
+  var ETIQ = ['', 'No me gustó', 'Puede mejorar', 'Está bien', 'Muy bueno', '¡Me encanta!'];
+  var ESTRELLA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.85 5.9 6.45.85-4.75 4.45 1.2 6.4L12 17.1l-5.75 3.1 1.2-6.4L2.7 9.35l6.45-.85z"/></svg>';
   function esc(x) { return String(x == null ? '' : x).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function estrellas(n, cls) {
     var s = '';
@@ -48,7 +50,7 @@
     if (document.querySelector('link[href*="resenas.css"]')) return;
     var s = document.currentScript || document.querySelector('script[src*="resenas.js"]');
     var l = document.createElement('link'); l.rel = 'stylesheet';
-    l.href = (s && s.src ? s.src.replace(/resenas\.js(\?.*)?$/, '') : 'assets/') + 'resenas.css?v=3';
+    l.href = (s && s.src ? s.src.replace(/resenas\.js(\?.*)?$/, '') : 'assets/') + 'resenas.css?v=4';
     document.head.appendChild(l);
   }
 
@@ -145,11 +147,11 @@
       est = mia ? mia.estrellas : est;
       el.innerHTML =
         (e ? '<div class="rsf-estado ' + e[0] + '"><b>' + e[1] + '</b><span>' + e[2] + '</span></div>' : '') +
-        '<div class="rsf-est" role="radiogroup" aria-label="Tu calificación">' + [1, 2, 3, 4, 5].map(function (n) {
-          return '<button type="button" role="radio" data-e="' + n + '" aria-checked="' + (n === est) + '" aria-label="' + n + (n === 1 ? ' estrella' : ' estrellas') + '" class="' + (n <= est ? 'on' : '') + '">★</button>';
-        }).join('') + '</div>' +
+        '<div class="rsf-fila"><div class="rsf-est" role="radiogroup" aria-label="Tu calificación">' + [1, 2, 3, 4, 5].map(function (n) {
+          return '<button type="button" role="radio" data-e="' + n + '" aria-checked="' + (n === est) + '" aria-label="' + n + (n === 1 ? ' estrella' : ' estrellas') + '" class="' + (n <= est ? 'on' : '') + '" style="--i:' + n + '">' + ESTRELLA + '</button>';
+        }).join('') + '</div><span class="rsf-lbl' + (est ? ' on' : '') + '">' + (ETIQ[est] || 'Toca una estrella') + '</span></div>' +
         '<textarea class="rsf-tx" maxlength="' + MAX + '" rows="4" placeholder="¿Qué es lo que más te sirve de Modo Cachimbo? ¿Qué mejorarías?">' + esc(mia ? mia.texto : '') + '</textarea>' +
-        '<div class="rsf-cont"><span class="rsf-n"></span></div>' +
+        '<div class="rsf-cont"><span class="rsf-barra"><i></i></span><span class="rsf-n"></span></div>' +
         '<p class="rsf-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.5"/></svg><span>Tu apodo, tu foto de perfil y tu ID aparecerán junto a tu reseña.</span></p>' +
         '<div class="rsf-acc"><button type="button" class="btn-cel rsf-enviar">' + (mia ? 'Guardar cambios' : 'Enviar reseña') + '</button>' +
         (mia ? '<button type="button" class="rsf-borrar">Borrar</button>' : '') + '<span class="rsf-msg" role="status"></span></div>';
@@ -159,13 +161,31 @@
       var n = el.querySelector('.rsf-tx').value.trim().length, c = el.querySelector('.rsf-n');
       c.textContent = n < MIN ? 'Faltan ' + (MIN - n) + ' letras' : n + '/' + MAX;
       c.className = 'rsf-n' + (n < MIN ? ' falta' : '');
+      var b = el.querySelector('.rsf-barra');
+      b.className = 'rsf-barra' + (n >= MIN ? ' listo' : '');
+      b.firstChild.style.width = Math.min(100, n < MIN ? n / MIN * 100 : 100) + '%';
     }
+    // Pasar el mouse por las estrellas muestra cuántas pondrías
+    function previa(k) {
+      Array.prototype.forEach.call(el.querySelectorAll('[data-e]'), function (x) { x.classList.toggle('pre', k > 0 && +x.getAttribute('data-e') <= k); });
+      var l = el.querySelector('.rsf-lbl'); if (l) { l.textContent = ETIQ[k || est] || 'Toca una estrella'; l.className = 'rsf-lbl bc' + ((k || est) ? ' on' : ''); }
+    }
+    el.addEventListener('mouseover', function (e) { var b = e.target.closest('[data-e]'); if (b) previa(+b.getAttribute('data-e')); });
+    el.addEventListener('mouseout', function (e) { if (e.target.closest('.rsf-est') && !(e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('.rsf-est'))) previa(0); });
     el.addEventListener('input', function (e) { if (e.target.classList.contains('rsf-tx')) contar(); });
     el.addEventListener('click', function (e) {
       var b = e.target.closest('[data-e]');
       if (b) {
         est = +b.getAttribute('data-e');
-        Array.prototype.forEach.call(el.querySelectorAll('[data-e]'), function (x) { var n = +x.getAttribute('data-e'); x.classList.toggle('on', n <= est); x.setAttribute('aria-checked', n === est); });
+        Array.prototype.forEach.call(el.querySelectorAll('[data-e]'), function (x) {
+          var n = +x.getAttribute('data-e'); x.classList.toggle('on', n <= est); x.setAttribute('aria-checked', n === est);
+          x.classList.remove('pop'); if (n <= est) { void x.offsetWidth; x.classList.add('pop'); }
+        });
+        // Chispas que salen de la estrella elegida
+        var ch = document.createElement('span'); ch.className = 'rsf-chispas';
+        for (var k = 0; k < 8; k++) ch.innerHTML += '<i style="--a:' + (k * 45) + 'deg"></i>';
+        b.appendChild(ch); setTimeout(function () { ch.remove(); }, 700);
+        previa(0);
         return;
       }
       if (e.target.closest('.rsf-enviar')) enviar(e.target.closest('.rsf-enviar'));

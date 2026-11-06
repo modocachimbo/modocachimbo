@@ -86,14 +86,32 @@
 .rsf-estado.pend { border-color: rgba(255,200,0,.4); background: rgba(255,200,0,.08); color: #FFC800; }
 .rsf-estado.pub { border-color: rgba(88,204,2,.45); background: rgba(88,204,2,.08); color: #58CC02; }
 .rsf-estado.ocu { border-color: #352E58; color: var(--text-dim); }
-.rsf-est { display: flex; gap: 6px; margin: 14px 0 10px; }
-.rsf-est button { width: 46px; height: 46px; border-radius: 14px; border: 2px solid #352E58; border-bottom-width: 4px; background: var(--surface-2); color: #3a3260; font-size: 26px; line-height: 1; cursor: pointer; transition: transform .08s; }
-.rsf-est button.on { color: #FFC800; border-color: #8a6a00; background: rgba(255,200,0,.1); }
-.rsf-est button:active { transform: translateY(2px); }
+.rsf-fila { display: flex; align-items: center; gap: 10px 16px; flex-wrap: wrap; margin: 16px 0 12px; }
+.rsf-est { display: flex; gap: 8px; }
+.rsf-est button { position: relative; width: 52px; height: 52px; padding: 0; display: grid; place-items: center; border-radius: 16px; border: 2px solid #352E58; border-bottom-width: 4px; background: var(--surface-2); color: #3a3260; cursor: pointer; transition: transform .12s, border-color .15s, background .15s; -webkit-tap-highlight-color: transparent; }
+.rsf-est button svg { width: 30px; height: 30px; fill: currentColor; transition: transform .15s; }
+.rsf-est button.pre { color: #8a6a00; border-color: #5c4a10; }
+.rsf-est button.on { color: #FFC800; border-color: #8a6a00; border-bottom-color: #b38600; background: radial-gradient(circle at 50% 40%, rgba(255,200,0,.22), rgba(255,200,0,.06) 70%); }
+.rsf-est button.on svg { filter: drop-shadow(0 0 6px rgba(255,200,0,.55)); }
+.rsf-est button:hover svg { transform: scale(1.12) rotate(-6deg); }
+.rsf-est button:active { transform: translateY(2px); border-bottom-width: 2px; }
+.rsf-est button.pop svg { animation: rsfPop .5s cubic-bezier(.3,1.6,.5,1) both; animation-delay: calc(var(--i) * 45ms); }
+@keyframes rsfPop { 0% { transform: scale(.6) rotate(-25deg); } 60% { transform: scale(1.3) rotate(8deg); } 100% { transform: scale(1) rotate(0); } }
+.rsf-chispas { position: absolute; inset: 0; pointer-events: none; }
+.rsf-chispas i { position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px; border-radius: 50%; background: #FFE066; box-shadow: 0 0 6px #FFC800; transform: rotate(var(--a)) translateY(0); animation: rsfChispa .6s ease-out forwards; }
+@keyframes rsfChispa { to { transform: rotate(var(--a)) translateY(-38px) scale(.3); opacity: 0; } }
+.rsf-lbl { font: italic 900 22px/1 'Barlow Condensed', 'Arial Narrow', sans-serif !important; text-transform: uppercase; letter-spacing: .02em; color: var(--text-faint); }
+.rsf-lbl.on { color: #FFC800; text-shadow: 0 0 14px rgba(255,200,0,.35); }
+.rsf-barra { flex: 1; height: 6px; border-radius: 6px; background: #272041; overflow: hidden; margin-right: 12px; align-self: center; }
+.rsf-barra i { display: block; height: 100%; width: 0; border-radius: 6px; background: #FF9600; transition: width .25s, background .25s; }
+.rsf-barra.listo i { background: #58CC02; }
+.rsf-enviar { color: #FFC800 !important; border-color: #b38600 !important; background: rgba(255,200,0,.08) !important; }
+@media (max-width: 420px) { .rsf-est { gap: 6px; } .rsf-est button { width: 46px; height: 46px; } .rsf-est button svg { width: 26px; height: 26px; } }
+@media (prefers-reduced-motion: reduce) { .rsf-est button.pop svg, .rsf-chispas i { animation: none !important; } }
 .rsf-tx { width: 100%; box-sizing: border-box; resize: vertical; min-height: 96px; background: var(--surface-2); border: 2px solid #352E58; border-bottom-width: 4px; border-radius: 14px; padding: 12px 14px; color: var(--text); font: 700 15px/1.5 Nunito, sans-serif; }
 .rsf-tx:focus { outline: none; border-color: var(--cel, #1CB0F6); }
 .rsf-tx::placeholder { color: var(--text-faint); }
-.rsf-cont { display: flex; justify-content: flex-end; margin-top: 4px; }
+.rsf-cont { display: flex; justify-content: flex-end; align-items: center; margin-top: 8px; }
 .rsf-n { font-size: 12px; font-weight: 800; color: var(--text-faint); }
 .rsf-n.falta { color: #FF9600; }
 .rsf-ok { display: flex; gap: 8px; align-items: flex-start; margin: 10px 0 14px; font-size: 13px; font-weight: 700; color: var(--text-dim); line-height: 1.45; }
