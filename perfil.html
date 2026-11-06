@@ -365,7 +365,24 @@
 <script src="assets/buho.js"></script>
 <script src="assets/coleccion.js?v=195"></script>
 <link rel="stylesheet" href="assets/tarjeta-jugador.css?v=6">
-<script src="assets/tarjeta-perfil.js?v=205"></script>
+<script src="assets/tarjeta-perfil.js?v=206"></script>
+<link rel="stylesheet" href="assets/buho/buho.css">
+<link rel="stylesheet" href="assets/amigos.css?v=1">
+<script src="assets/rango.js?v=184"></script>
+<script src="assets/buho/buho-datos.js"></script>
+<script src="assets/buho/buho-vivo.js"></script>
+<script src="assets/amigos.js?v=1"></script>
+<style>
+  /* Perfil estilo juego: menú a la izquierda; «Mi perfil» es tu búho con tu tarjeta (assets/amigos.js) */
+  @media (min-width: 900px) { .wrap { max-width: 1280px; padding: 0 32px 60px; } }
+  :root { --display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif; --borde: #2C2549; }
+  .pf-viejo { display: none !important; }
+  .pf-lay { margin-top: 14px; }
+  .pf-cont { min-width: 0; }
+  .pf-cont > div:not(#tabVitrina), .pf-cont > #btnSalir { max-width: 860px; }
+  #vitrina .nota { color: var(--text-dim); padding: 40px 0; text-align: center; }
+  #btnSalir { width: 100%; }
+</style>
 <style id="mc-claro">
 /* Modo claro de esta página (assets/claro.css trae lo común) */
 html[data-modo="claro"] .racha-dato.on b { color: #6F8000 !important; }
@@ -408,7 +425,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
     <!-- Con sesión -->
     <div id="conSesion" hidden>
       <!-- Tu tarjeta de jugador: paisaje con tu fondo, foto con nivel y pin, nombre, título, tus números, rango e ID -->
-      <section class="pj" id="pj">
+      <section class="pj pf-viejo" id="pj">
         <div class="pj-card" id="pjCard">
           <div class="pj-av">
             <a class="pj-fr" id="avCaja" href="coleccion.html#avatar" aria-label="Cambiar mi foto de perfil en Mi colección"><div class="avatar" id="avatar"></div></a>
@@ -436,11 +453,20 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
         <div class="cuenta" id="cuenta"></div>
       </section>
 
-      <div class="tabs" role="tablist">
-        <button type="button" role="tab" class="on" id="tabBtnPerfil" aria-selected="true">Mi perfil</button>
-        <button type="button" role="tab" id="tabBtnAgenda" aria-selected="false">Agenda</button>
-        <button type="button" role="tab" id="tabBtnRanking" aria-selected="false">Ranking</button>
-      </div>
+      <div class="ma-lay pf-lay">
+      <nav class="ma-rail muchos" id="pfRail" aria-label="Secciones de tu perfil">
+        <button type="button" class="r on" data-pf="vitrina"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Mi perfil</span></button>
+        <button type="button" class="r" data-pf="stats"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Estadísticas</span></button>
+        <button type="button" class="r" data-pf="estudio"><svg viewBox="0 0 24 24"><path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-5a2 2 0 0 0-2 2"/><path d="M20 4v14h-5a2 2 0 0 0-2 2"/></svg><span>Mi estudio</span></button>
+        <button type="button" class="r" data-pf="agenda"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="1"/><path d="M4 10h16M8 3v4M16 3v4"/></svg><span>Agenda</span></button>
+        <button type="button" class="r" data-pf="ranking"><svg viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v4M8 21h8"/></svg><span>Ranking</span></button>
+        <button type="button" class="r" data-pf="resena"><svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/></svg><span>Mi reseña</span></button>
+        <button type="button" class="r" data-pf="cuenta"><svg viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M15 8l2 2"/></svg><span>Mi cuenta</span></button>
+      </nav>
+      <div class="pf-cont">
+
+      <!-- Mi perfil: tu búho en su escenario y tu tarjeta (assets/amigos.js) -->
+      <div id="tabVitrina"><div id="vitrina"><p class="nota">Cargando tu perfil…</p></div></div>
 
       <!-- Ranking de la semana: los que más estudian (XP de supabase/16-corazones.sql) -->
       <div id="tabRanking" hidden>
@@ -455,6 +481,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
 
       <div id="tabPerfil">
 
+      <div data-g="cuenta">
       <!-- 1. Quién eres: tus datos (se editan aquí mismo) -->
       <h2 class="sec-tit bc" style="--tc:var(--cel)">Datos del estudiante</h2>
       <details class="panel datos" id="datos">
@@ -518,6 +545,8 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
         </form>
       </details>
 
+      </div>
+      <div data-g="stats">
       <!-- 2. Cómo vas: racha, meta y números -->
 
       <h2 class="sec-tit bc" style="--tc:var(--nar)">Estadísticas</h2>
@@ -548,6 +577,8 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
         <div class="st roj"><span class="st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 0 1 14.8-5.7L21 9"/><polyline points="21 3.5 21 9 15.5 9"/><path d="M20.5 12a8.5 8.5 0 0 1-14.8 5.7L3 15"/><polyline points="3 20.5 3 15 8.5 15"/></svg></span><div><b id="pFalladas">–</b><span>por repasar</span></div></div>
       </section>
 
+      </div>
+      <div data-g="estudio">
       <!-- 3. Tu estudio: errores, progreso y simulacros -->
       <h2 class="sec-tit bc" style="--tc:var(--roj)">Tu estudio</h2>
       <section class="panel" id="errores">
@@ -578,6 +609,8 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
         <a class="btn-mor" href="simulacro.html">Crear un simulacro</a>
       </section>
 
+      </div>
+      <div data-g="resena">
       <!-- Tu reseña de la app: sale en la bienvenida y el inicio cuando el profe la publica (assets/resenas.js) -->
       <h2 class="sec-tit bc" style="--tc:var(--amb)">Tu reseña</h2>
       <section class="panel" id="resena">
@@ -588,6 +621,8 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
         <div id="resenaForm"></div>
       </section>
 
+      </div>
+      <div data-g="cuenta">
       <!-- 4. Tu colección y tu cuenta -->
       <h2 class="sec-tit bc" style="--tc:var(--accent)">Mi colección</h2>
       <!-- Mi colección (coleccion.html): tus pines y lo que tienes -->
@@ -613,10 +648,12 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
         </div>
         <ul class="lista rep-lista" id="repLista"></ul>
       </section>
-
+      <button class="btn-gris" type="button" id="btnSalir">Cerrar sesión</button>
       </div>
 
-      <button class="btn-gris" type="button" id="btnSalir">Cerrar sesión</button>
+      </div>
+      </div>
+      </div>
     </div>
 
   </div>
@@ -748,6 +785,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
     Object.keys(v).forEach(function (k) { var e = $(k); e.textContent = v[k] || 'Sin completar'; e.classList.toggle('vacio-d', !v[k]); });
   }
   function abrirDatos() {
+    if (window.__pfVer) window.__pfVer('cuenta');
     var d = $('datos'); d.open = true;
     d.scrollIntoView({ behavior: 'smooth', block: 'start' });
     setTimeout(function () { $('nombre').focus({ preventScroll: true }); }, 350);
@@ -1248,7 +1286,6 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
 <script>
   /* ===== Pestañas y ranking de la semana (ranking_xp en supabase/16-corazones.sql) ===== */
   (function () {
-    var bP = document.getElementById('tabBtnPerfil'), bR = document.getElementById('tabBtnRanking');
     var cargado = false;
     var COL = ['#1CB0F6', '#CE82FF', '#FF9600', '#FFC800', '#FF4B4B', '#C6E000'];
     var MED = { 1: ['#f5c542', '#b8860b'], 2: ['#d9dee5', '#8a94a3'], 3: ['#e0995e', '#9a5a2a'] };
@@ -1280,33 +1317,60 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
         document.getElementById('rkLista').innerHTML = '<p class="nota">No se pudo cargar el ranking. Revisa tu conexión.</p>';
       });
     }
-    var bA = document.getElementById('tabBtnAgenda');
-    function ver(cual) {
-      [[bP, 'tabPerfil', 'perfil'], [bA, 'tabAgenda', 'agenda'], [bR, 'tabRanking', 'ranking']].forEach(function (t) {
-        var on = t[2] === cual;
-        t[0].classList.toggle('on', on); t[0].setAttribute('aria-selected', String(on));
-        document.getElementById(t[1]).hidden = !on;
+    // Menú de la izquierda: «Mi perfil» (tu búho y tu tarjeta), estadísticas, estudio, agenda, ranking, reseña y cuenta
+    var GRUPOS = ['stats', 'estudio', 'resena', 'cuenta'];
+    var HASH = { racha: 'stats', stats: 'stats', estudio: 'estudio', agenda: 'agenda', ranking: 'ranking', resena: 'resena', cuenta: 'cuenta', datos: 'cuenta' };
+    function ver(cual, sinHash) {
+      Array.prototype.forEach.call(document.querySelectorAll('#pfRail [data-pf]'), function (b) {
+        var on = b.getAttribute('data-pf') === cual;
+        b.classList.toggle('on', on); b.setAttribute('aria-current', on ? 'page' : 'false');
+        if (on && b.scrollIntoView && window.innerWidth < 900) b.scrollIntoView({ block: 'nearest', inline: 'center' });
       });
+      document.getElementById('tabVitrina').hidden = cual !== 'vitrina';
+      document.getElementById('tabRanking').hidden = cual !== 'ranking';
+      document.getElementById('tabAgenda').hidden = cual !== 'agenda';
+      document.getElementById('tabPerfil').hidden = GRUPOS.indexOf(cual) < 0;
+      Array.prototype.forEach.call(document.querySelectorAll('#tabPerfil [data-g]'), function (g) { g.hidden = g.getAttribute('data-g') !== cual; });
       if (cual === 'ranking') cargarRanking();
       if (cual === 'agenda' && window.MCAgendaPerfil && MCAuth.usuario()) MCAgendaPerfil.cargar();
-      history.replaceState(null, '', cual === 'perfil' ? location.pathname + location.search : '#' + cual);
+      if (!sinHash) history.replaceState(null, '', cual === 'vitrina' ? location.pathname + location.search : '#' + cual);
     }
-    bP.addEventListener('click', function () { ver('perfil'); });
-    bA.addEventListener('click', function () { ver('agenda'); });
-    bR.addEventListener('click', function () { ver('ranking'); });
-    document.getElementById('cuenta').addEventListener('click', function () { ver('agenda'); bA.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
-    // Números de la tarjeta: el XP abre el ranking; racha y mejor bajan a tu racha
-    document.getElementById('pjXp').addEventListener('click', function (e) { e.preventDefault(); ver('ranking'); bR.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
-    Array.prototype.forEach.call(document.querySelectorAll('.pj-st[href="#racha"]'), function (a) {
-      a.addEventListener('click', function (e) { e.preventDefault(); ver('perfil'); document.getElementById('racha').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+    window.__pfVer = ver;
+    document.getElementById('pfRail').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-pf]'); if (b) ver(b.getAttribute('data-pf'));
     });
-    if (location.hash === '#ranking') ver('ranking');
-    if (location.hash === '#agenda') ver('agenda');
+    ver(HASH[location.hash.slice(1)] || 'vitrina', true);
     MCAuth.alCambiar(function (u) {
       if (!u) return;
       if (!document.getElementById('tabRanking').hidden) cargarRanking();
       if (!document.getElementById('tabAgenda').hidden && window.MCAgendaPerfil) MCAgendaPerfil.cargar();
     });
+  })();
+</script>
+<script>
+  /* ===== Mi perfil: tu búho en su escenario y tu tarjeta (ver_amigo sin ID, supabase/71-amigos.sql) ===== */
+  (function () {
+    var caja = document.getElementById('vitrina'), A = window.MCAmigos, hecho = false;
+    if (!A) return;
+    function pintar(d) {
+      caja.innerHTML = A.perfil(d, { mio: true });
+    }
+    // Si 71-amigos.sql aún no se corrió: ver_jugador con tu ID (sin carrera ni examen)
+    function respaldo() {
+      return new Promise(function (ok) { MCTarjeta.alJugador(function (y) { if (y && y.codigo) ok(y.codigo); }); })
+        .then(function (cod) { return A.rpc('ver_jugador', { p_codigo: cod }); });
+    }
+    function cargar(u) {
+      if (!u || hecho) return;
+      hecho = true;
+      A.ver().catch(respaldo).then(function (d) {
+        if (!d) throw new Error('sin datos');
+        d.mi_xp_semana = d.xp_semana;
+        pintar(d);
+        A.conectar(caja, d, { editar: function () { document.getElementById('btnEditar').click(); } });
+      }).catch(function () { hecho = false; caja.innerHTML = '<p class="nota">No se pudo cargar tu perfil. Revisa tu internet y recarga.</p>'; });
+    }
+    MCAuth.listo.then(function () { cargar(MCAuth.usuario()); MCAuth.alCambiar(cargar); }, function () {});
   })();
 </script>
 <script src="assets/sonido.js"></script>

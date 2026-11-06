@@ -868,6 +868,10 @@ button.juego { width: 100%; text-align: left; font: inherit; color: #fff; }
 #novBtn::after { display: none; }
 #novBtn:not([hidden])::after { display: block; }
 #novPunto { display: none; }
+/* Amigos: burbuja roja con las solicitudes (mi_tarjeta, supabase/71-amigos.sql) */
+.am-bdg { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--error, #FF4B4B); color: #fff; font: 900 12px/20px Nunito, sans-serif; text-align: center; box-shadow: 0 2px 0 #a71d1d; }
+.nav a .am-bdg { margin-left: auto; }
+.acceso .am-bdg { position: absolute; right: -6px; top: -6px; }
 
 /* Fechas importantes reales: color del tipo de fecha */
 .fecha { --fc: var(--info); }
@@ -1232,6 +1236,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
   <symbol id="i-libro" viewBox="0 0 24 24"><path d="M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z"/><path d="M5 18a2 2 0 0 1 2-2h12"/></symbol>
   <symbol id="i-espadas" viewBox="0 0 24 24"><path d="M3 3h3l9 9-3 3-9-9z"/><path d="M21 3h-3l-9 9 3 3 9-9z"/><path d="M10 18l8-8M14 18l-8-8"/><path d="M16 16l4 4M8 16l-4 4"/></symbol>
   <symbol id="i-cofre" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="12"/><path d="M3 12h18M8 8V5h8v3M8 12v8M16 12v8"/></symbol>
+  <symbol id="i-amigos" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.8"/><path d="M15.5 14.2A5.5 5.5 0 0 1 21.5 20"/></symbol>
   <symbol id="i-persona" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></symbol>
   <symbol id="i-mision" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="1"/><path d="M9 4V2h6v2M9 13l2 2 4-4"/></symbol>
   <symbol id="i-copa" viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v4M8 21h8M9 18h6"/></symbol>
@@ -1254,6 +1259,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
       <button type="button" data-hoja="cursos"><svg class="ic"><use href="#i-libro"/></svg>Cursos</button>
       <a href="duelo.html" class="duelo"><svg class="ic"><use href="#i-espadas"/></svg>Duelo</a>
       <a href="coleccion.html"><svg class="ic"><use href="#i-cofre"/></svg>Colección</a>
+      <a href="amigos.html"><svg class="ic"><use href="#i-amigos"/></svg>Amigos<b class="am-bdg" data-am-bdg hidden></b></a>
       <a href="perfil.html"><svg class="ic"><use href="#i-persona"/></svg>Perfil</a>
     </nav>
     <section class="top" aria-label="Top de la semana">
@@ -1292,7 +1298,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
           <div class="fechas" id="fechas"></div>
           <nav class="accesos disp" aria-label="Accesos">
             <button class="acceso" type="button" id="accMisiones"><svg class="ic"><use href="#i-mision"/></svg><span>Misiones</span></button>
-            <a class="acceso" href="coleccion.html"><svg class="ic"><use href="#i-cofre"/></svg><span>Colección</span></a>
+            <a class="acceso" href="amigos.html"><svg class="ic"><use href="#i-amigos"/></svg><span>Amigos</span><b class="am-bdg" data-am-bdg hidden></b></a>
             <a class="acceso" href="perfil.html#ranking"><svg class="ic"><use href="#i-copa"/></svg><span>Ranking</span></a>
             <a class="acceso" href="perfil.html#agenda"><svg class="ic"><use href="#i-agenda"/></svg><span>Agenda</span></a>
             <button class="acceso punto" type="button" id="novBtn" aria-label="Nuevo para ti" hidden><svg class="ic"><use href="#i-regalo"/></svg><span>Nuevo</span><b id="novPunto"></b></button>
@@ -1408,11 +1414,18 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
 
 <script src="assets/rango.js"></script>
 <script src="assets/coleccion.js?v=195"></script>
-<script src="assets/tarjeta-perfil.js?v=205"></script>
+<script src="assets/tarjeta-perfil.js?v=206"></script>
 <script src="assets/buho/buho-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
 <script src="assets/buho.js"></script>
 <script src="assets/inicio.js?v=198"></script>
+<script>
+  // Burbuja roja de Amigos: cuántas solicitudes tienes (llega con mi_tarjeta, sin llamadas nuevas)
+  if (window.MCTarjeta) MCTarjeta.alJugador(function (y) {
+    var n = y && +y.solicitudes || 0;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-am-bdg]'), function (b) { b.hidden = !n; b.textContent = n > 9 ? '9+' : n; });
+  });
+</script>
 <script src="assets/resenas.js?v=4"></script>
 <script>
   // Reseñas: en la bienvenida sin sesión y en el inicio con sesión (assets/resenas.js)

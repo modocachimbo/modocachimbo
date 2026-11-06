@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script src="assets/guardia.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0B0818">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="assets/app/icono-180.png">
+<meta name="apple-mobile-web-app-title" content="Modo Cachimbo">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<script src="assets/app.js" defer></script>
+<title>Amigos · Modo Cachimbo</title>
+<link rel="stylesheet" href="assets/buho/buho.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,800;1,800;1,900&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,900&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0B0818; --surface: #151127; --surface-2: #1D1834; --border: #2A2346; --borde: #2C2549;
+    --accent: #C6E000; --text: #EEEAF7; --text-dim: #A99FC8; --text-faint: #6F6690;
+    --display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Nunito', system-ui, sans-serif; font-weight: 700; min-height: 100vh; }
+  [hidden] { display: none !important; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 16px 60px; }
+  @media (min-width: 900px) { .wrap { padding: 0 32px 60px; } }
+  /* Arriba: volver al inicio, el título y tu tarjeta */
+  header.top { display: flex; align-items: center; gap: 14px; padding: 22px 0 18px; }
+  header.top h1 { flex: 1; display: flex; align-items: center; gap: 18px; min-width: 0; font: italic 900 46px/1 var(--display); text-transform: uppercase; letter-spacing: .01em; color: var(--accent); padding-top: 4px; text-shadow: 0 3px 0 rgba(0,0,0,.45); white-space: nowrap; }
+  header.top h1::after { content: ""; flex: 1; height: 2px; min-width: 20px; background: linear-gradient(90deg, rgba(198,224,0,.45), rgba(198,224,0,0)); }
+  .top-tarj { flex: none; }
+  @media (max-width: 700px) {
+    header.top { gap: 10px; padding: 16px 0 14px; }
+    header.top h1 { font-size: 32px; gap: 10px; }
+    /* En el celular tu tarjeta ya sale en la vista previa */
+    .top-tarj { display: none !important; }
+  }
+  .panel { background: var(--surface); border: 2px solid var(--borde); border-bottom-width: 5px; border-radius: 22px; padding: 22px; }
+  .vacio { text-align: center; padding: 50px 24px; }
+  .vacio h1 { font: italic 900 30px/1 var(--display); text-transform: uppercase; margin-bottom: 10px; }
+  .vacio p { color: var(--text-dim); font-size: 14px; line-height: 1.6; max-width: 420px; margin: 0 auto 20px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: var(--accent); color: #1a1f00; border: 2px solid #8fa300; border-bottom-width: 5px; border-radius: 14px; padding: 12px 22px; font: 1000 14px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .5px; cursor: pointer; text-decoration: none; }
+  .btn:active { transform: translateY(3px); border-bottom-width: 2px; }
+  .btn.gris { background: var(--surface-2); color: var(--text-dim); border-color: #352E58; }
+
+  /* Volver al inicio: botón con relieve, como los de la grilla */
+  .c-volver { flex: none; display: inline-flex; align-items: center; gap: 4px; height: 46px; padding: 0 16px 0 10px; border-radius: 14px; background: var(--surface-2); border: 2px solid #352E58; border-bottom-width: 5px; color: var(--text); font-weight: 900; font-size: 15px; text-decoration: none; text-transform: uppercase; letter-spacing: .04em; transition: transform .08s, border-color .15s, color .15s; -webkit-tap-highlight-color: transparent; }
+  .c-volver svg { display: block; flex: none; width: 22px; height: 22px; fill: none; stroke: var(--accent); stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; transition: transform .15s; }
+  .c-volver:hover { border-color: var(--accent); color: var(--accent); }
+  .c-volver:hover svg { transform: translateX(-3px); }
+  .c-volver:active { transform: translateY(3px); border-bottom-width: 2px; margin-bottom: 3px; }
+  .c-volver { transform: skewX(-10deg); border-radius: 10px; }
+  .c-volver > * { transform: skewX(10deg); }
+  .c-volver:active { transform: skewX(-10deg) translateY(3px); }
+  .estado { color: var(--text-dim); text-align: center; padding: 40px 10px; }
+</style>
+<link rel="stylesheet" href="assets/amigos.css?v=1">
+<script src="assets/mc-config.js"></script>
+<script src="assets/acceso.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/buho.js"></script>
+<script src="assets/rango.js?v=184"></script>
+<script src="assets/coleccion.js?v=195"></script>
+<script src="assets/tarjeta-perfil.js?v=206"></script>
+<script src="assets/buho/buho-datos.js"></script>
+<script src="assets/buho/buho-vivo.js"></script>
+<script src="assets/amigos.js?v=1"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <a class="c-volver" id="volver" href="index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span id="volverTx">Inicio</span></a>
+      <h1 id="titulo">Amigos</h1>
+      <div class="top-tarj" data-mc-auth data-mc-tarjeta="sola"></div>
+    </header>
+    <div id="app"><p class="estado">Cargando…</p></div>
+  </div>
+
+<script>
+/* Amigos: lista, ficha, solicitudes y añadir (supabase/71-amigos.sql).
+   amigos.html?id=58213 abre el perfil de ese amigo; ?agregar=58213 lo busca en Añadir. */
+(function () {
+  var A = window.MCAmigos, C = window.MCColeccion, T = window.MCTarjeta, SV = A.SV, esc = A.esc;
+  var app = document.getElementById('app');
+  var Q = new URLSearchParams(location.search);
+  var PERFIL = +Q.get('id') || 0, AGREGAR = (Q.get('agregar') || '').replace(/\D/g, '').slice(0, 5);
+  var D = null, vista = 'amigos', abierta = null, filtro = '', miCod = null, sugeridos = null, buscado = null, quitarSeguro = 0;
+
+  function sinTabla(e) { return e && /ver_amigo|mis_amigos|amistades|function .* does not exist|Could not find the function/i.test(String(e.message || e)); }
+  function fallo(e) {
+    app.innerHTML = '<div class="panel vacio"><h1>Uy</h1><p>' + (sinTabla(e) ? 'Amigos todavía no está activado. Avísale al profe.' : 'No se pudo cargar. Revisa tu internet e intenta otra vez.') + '</p><a class="btn" href="amigos.html">Reintentar</a></div>';
+  }
+
+  /* ---------- Menú ---------- */
+  function rail() {
+    var it = [['amigos', '<i class="spc">Mis </i>amigos', SV.amigos, '<span class="n">' + D.amigos.length + '</span>'],
+              ['solic', 'Solicitudes', SV.solic, D.recibidas.length ? '<span class="bdg">' + D.recibidas.length + '</span>' : ''],
+              ['anadir', 'Añadir', SV.add, '']];
+    return '<nav class="ma-rail" aria-label="Amigos">' + it.map(function (x) {
+      return '<button type="button" class="r' + (x[0] === vista ? ' on' : '') + '" data-vista="' + x[0] + '">' + x[2] + '<span>' + x[1] + '</span>' + x[3] + '</button>';
+    }).join('') + (miCod ? '<div class="mi">Tu ID para que te agreguen<b>' + miCod + '</b><button class="ma-mini" type="button" data-inv="id">Copiar</button></div>' : '') + '</nav>';
+  }
+  function invitar() {
+    if (!miCod) return '';
+    return '<div class="ma-inv"><span class="t">Estudia con tus amigos<small>Mándales tu ID ' + miCod + ' para que te agreguen</small></span>' +
+      '<button type="button" class="ma-sq lk" data-inv="link" title="Copiar enlace" aria-label="Copiar enlace">' + SV.link + '</button>' +
+      '<button type="button" class="ma-sq wa" data-inv="wa" title="Mandar por WhatsApp" aria-label="Mandar por WhatsApp">' + SV.wa + '</button>' +
+      '<button type="button" class="ma-sq id" data-inv="id" title="Copiar mi ID" aria-label="Copiar mi ID">' + SV.id + '</button>' +
+      '<button type="button" class="ma-sq sh" data-inv="share" title="Compartir" aria-label="Compartir">' + SV.share + '</button></div>';
+  }
+
+  /* ---------- Mis amigos ---------- */
+  function fila(a, i) {
+    var u = A.ultima(a.ultima);
+    return '<div class="ma-fila' + (abierta === a.codigo ? ' sel' : '') + '" data-abrir="' + a.codigo + '" role="button" tabindex="0">' +
+      (a.destacado ? '<span class="top">★ Destacado</span>' : i === 0 && a.xp_semana > 0 && D.amigos.length > 1 ? '<span class="top">#1 semana</span>' : '') + A.banner(a) +
+      '<span class="xp">' + T.icono('xp') + '<span>' + A.nf(a.xp_semana) + '<small>XP esta semana</small></span></span>' +
+      '<span class="est' + (u.hoy ? ' hoy' : '') + '">' + u.t + '</span>' +
+      '<span class="ac solo-pc"><a class="ma-ib duelo" href="duelo.html" title="Retar a duelo" aria-label="Retar a duelo">' + SV.duelo + '</a><a class="ma-ib" href="amigos.html?id=' + a.codigo + '" title="Ver perfil" aria-label="Ver perfil">' + SV.ver + '</a></span></div>';
+  }
+  function amigos() {
+    if (!D.amigos.length) return '<div class="ma-vac"><div><div class="bb">' + C.buho(C.item('buho-clasico')) + '</div><h3>Aún no tienes amigos</h3>' +
+      '<p>Agrega a tus compañeros con su ID, mira cuánto estudian cada semana y rétalos a un duelo.</p>' +
+      '<div class="row"><button type="button" class="btn" data-vista="anadir">+ Añadir amigos</button><button type="button" class="btn" style="background:#22C55E;color:#fff;border-color:#15803d" data-inv="wa">Invitar por WhatsApp</button></div></div></div>' + invitar();
+    var f = filtro.toLowerCase();
+    var lista = D.amigos.filter(function (a) { return !f || String(a.apodo || '').toLowerCase().indexOf(f) >= 0 || String(a.codigo).indexOf(f) === 0; });
+    return '<div class="ma-cab"><h2>Mis amigos <em>' + D.amigos.length + '/100</em></h2><span class="sp"></span>' +
+      '<label class="ma-buscar">' + SV.lupa + '<input id="filtro" type="search" placeholder="Buscar entre tus amigos" value="' + esc(filtro) + '" aria-label="Buscar entre tus amigos"></label></div>' +
+      '<div class="ma-filas">' + (lista.length ? lista.map(fila).join('') : '<p class="ma-vacia">Ninguno coincide.</p>') + '</div>' + invitar();
+  }
+
+  /* ---------- Ficha ---------- */
+  function ficha(a, d) {
+    var u = d || {};
+    var racha = d ? (+u.racha || 0) + ' día' + (+u.racha === 1 ? '' : 's') : '…';
+    var dest = !!(d ? d.destacado : a.destacado);
+    return '<div class="ma-velo" data-cerrar></div><aside class="ma-ficha" role="dialog" aria-label="' + esc(a.apodo) + '"><button type="button" class="x" data-cerrar aria-label="Cerrar">×</button>' +
+      A.banner(a, 'ID ' + a.codigo + ' · Nvl ' + T.nivel(a.xp_total)) +
+      '<span class="ma-k">Esta semana</span>' +
+      '<div class="ma-tres"><div><span class="ico">' + A.emb(a.xp_semana) + '</span><b style="color:' + A.rangoCol(a.xp_semana) + '">' + A.rangoNom(a.xp_semana) + '</b><small>Rango</small></div>' +
+        '<div><span class="ico ch">' + T.icono('xp') + '</span><b>' + A.nf(a.xp_semana) + '</b><small>XP</small></div>' +
+        '<div><span class="ico ch">' + T.icono('racha') + '</span><b>' + racha + '</b><small>Racha</small></div></div>' +
+      A.vitrina(a) +
+      '<div class="ma-lazo">' + (miCod ? T.foto({ yo: true, apodo: 'Tú' }, 'ft') : '<span></span>') + '<span class="m">' + SV.cor + '<b>' + A.dias(a.desde) + ' día' + (A.dias(a.desde) === 1 ? '' : 's') + '</b><small>de amistad</small></span>' + A.foto(a) + '</div>' +
+      '<div class="ma-btns"><a class="ma-gb lim" href="amigos.html?id=' + a.codigo + '">' + SV.ver + 'Ver perfil</a><a class="ma-gb" href="duelo.html">' + SV.duelo + 'Retar a duelo</a>' +
+        '<button type="button" class="ma-gb osc' + (dest ? ' on' : '') + '" data-destacar="' + a.codigo + '" data-si="' + (dest ? 0 : 1) + '">' + SV.estrella + (dest ? 'Destacado' : 'Destacar') + '</button>' +
+        '<button type="button" class="ma-gb rojo' + (quitarSeguro === a.codigo ? ' seguro' : '') + '" data-quitar="' + a.codigo + '">' + SV.quitar + (quitarSeguro === a.codigo ? '¿Seguro?' : 'Eliminar') + '</button></div></aside>';
+  }
+
+  /* ---------- Solicitudes ---------- */
+  function solicitudes() {
+    var h = '<div class="ma-cab"><h2>Te quieren agregar <em>' + D.recibidas.length + '</em></h2></div><div class="ma-filas">' +
+      (D.recibidas.length ? D.recibidas.map(function (a) {
+        return '<div class="ma-fila s3">' + A.banner(a) + '<span class="com">' + (a.comun ? 'Amigo de <b>' + esc(a.comun) + '</b> · ' : 'ID ' + a.codigo + ' · ') + A.hace(a.cuando) + '</span>' +
+          '<span class="ac"><button class="btn" type="button" data-resp="' + a.codigo + '" data-si="1">Aceptar</button><button class="btn gris" type="button" data-resp="' + a.codigo + '" data-si="0">Rechazar</button></span></div>';
+      }).join('') : '<p class="ma-vacia">No tienes solicitudes nuevas.</p>') + '</div>';
+    if (D.enviadas.length) h += '<div class="ma-cab" style="margin-top:22px"><h2>Enviadas <em>' + D.enviadas.length + '</em></h2></div><div class="ma-filas">' +
+      D.enviadas.map(function (a) {
+        return '<div class="ma-fila s3">' + A.banner(a) + '<span class="com">Esperando que acepte · ' + A.hace(a.cuando) + '</span>' +
+          '<span class="ac"><button class="btn gris" type="button" data-cancelar="' + a.codigo + '">Cancelar</button></span></div>';
+      }).join('') + '</div>';
+    return h;
+  }
+
+  /* ---------- Añadir ---------- */
+  function botonRel(rel, cod) {
+    if (rel === 'amigo') return '<a class="btn" href="amigos.html?id=' + cod + '">Ver perfil</a>';
+    if (rel === 'enviada') return '<button class="btn gris" type="button" disabled>Solicitud enviada ✓</button>';
+    if (rel === 'recibida') return '<button class="btn" type="button" data-resp="' + cod + '" data-si="1">Aceptar solicitud</button>';
+    if (rel === 'yo') return '<span class="ma-nota" style="margin:0">Este eres tú 😄</span>';
+    return '<button class="btn" type="button" data-agregar="' + cod + '">+ Agregar amigo</button>';
+  }
+  function anadir() {
+    var b = buscado, res = '';
+    if (b && b.cargando) res = '<p>Buscando…</p>';
+    else if (b && b.error) res = '<p class="mal">' + esc(b.error) + '</p>';
+    else if (b && b.d) res = '<div class="ma-res">' + A.banner(b.d, 'ID ' + b.d.codigo + ' · Nvl ' + T.nivel(b.d.xp_total)) + botonRel(b.d.relacion, b.d.codigo) + '</div>';
+    else res = '<p>El ID sale en la tarjeta de cada alumno, debajo de su nombre.</p>';
+    var sug = sugeridos == null ? '<p class="ma-vacia">Cargando…</p>' : !sugeridos.length ? '<p class="ma-vacia">Por ahora no tenemos a quién sugerirte. Invita a tus compañeros con tu ID.</p>' :
+      '<div class="ma-filas">' + sugeridos.map(function (a) {
+        return '<div class="ma-fila s3">' + A.banner(a) + '<span class="com">' + esc(a.motivo || '') + '</span><span class="ac">' +
+          (a.enviada ? '<span class="ma-ib listo">Enviada ✓</span>' : '<button type="button" class="ma-ib add" data-agregar="' + a.codigo + '" title="Agregar" aria-label="Agregar a ' + esc(a.apodo) + '">' + SV.add + '</button>') + '</span></div>';
+      }).join('') + '</div>';
+    return '<form class="ma-busca" id="buscaId" novalidate><label>' + SV.lupa + '<input id="idBuscar" inputmode="numeric" pattern="[0-9]*" maxlength="5" autocomplete="off" placeholder="Escribe su ID de 5 dígitos" value="' + esc(b && b.cod || '') + '" aria-label="ID de tu amigo"></label>' +
+      '<button class="btn" type="submit">Buscar</button>' + res + '</form>' +
+      '<div class="ma-cab"><h2>Quizás los conozcas</h2></div><p class="ma-nota">Del top de esta semana, amigos de tus amigos y de tu misma carrera.</p>' + sug + invitar();
+  }
+
+  /* ---------- Pintar ---------- */
+  function pintar() {
+    if (!D) return;
+    var foco = document.activeElement && document.activeElement.id, cur = foco && document.activeElement.selectionStart;
+    var cuerpo = vista === 'solic' ? solicitudes() : vista === 'anadir' ? anadir() : amigos();
+    var a = abierta && D.amigos.filter(function (x) { return x.codigo === abierta; })[0];
+    app.innerHTML = '<div class="ma-lay">' + rail() + '<div>' + cuerpo + '</div></div>' + (a ? ficha(a, fichaDatos[a.codigo]) : '');
+    if (foco && document.getElementById(foco)) { var el = document.getElementById(foco); el.focus(); try { el.setSelectionRange(cur, cur); } catch (e) {} }
+  }
+  var fichaDatos = {};
+  function abrir(cod) {
+    abierta = cod; quitarSeguro = 0; pintar();
+    if (!fichaDatos[cod]) A.ver(cod).then(function (d) { fichaDatos[cod] = d; if (abierta === cod) pintar(); }, function () {});
+  }
+  function irA(v) {
+    vista = v; abierta = null;
+    history.replaceState(null, '', location.pathname + (v === 'amigos' ? '' : '#' + (v === 'solic' ? 'solicitudes' : 'anadir')));
+    if (v === 'anadir' && sugeridos == null) A.rpc('amigos_sugeridos').then(function (s) { sugeridos = s || []; if (vista === 'anadir') pintar(); }, function () { sugeridos = []; if (vista === 'anadir') pintar(); });
+    pintar();
+  }
+  function recargar() {
+    return A.lista(true).then(function (d) { D = d; window.MCTarjeta && T.jugador() && (T.jugador().solicitudes = d.recibidas.length); pintar(); });
+  }
+  function buscar(cod) {
+    cod = String(cod || '').replace(/\D/g, '');
+    if (cod.length !== 5) { buscado = { cod: cod, error: 'El ID tiene 5 dígitos.' }; pintar(); return; }
+    buscado = { cod: cod, cargando: true }; pintar();
+    A.ver(+cod, true).then(function (d) {
+      buscado = d ? { cod: cod, d: d } : { cod: cod, error: A.ERRORES.no_existe };
+      pintar();
+    }, function (e) { buscado = { cod: cod, error: sinTabla(e) ? 'Amigos todavía no está activado.' : 'No se pudo buscar. Revisa tu internet.' }; pintar(); });
+  }
+  function agregar(cod, btn) {
+    if (btn) btn.disabled = true;
+    A.accion('amigo_solicitar', { p_codigo: +cod }).then(function (r) {
+      if (!r.ok) { A.toast(A.ERRORES[r.error] || 'No se pudo enviar.'); if (btn) btn.disabled = false; return; }
+      A.toast(r.estado === 'amigos' ? '¡Ya son amigos!' : 'Solicitud enviada');
+      (sugeridos || []).forEach(function (s) { if (s.codigo === +cod) s.enviada = true; });
+      if (buscado && buscado.d && buscado.d.codigo === +cod) buscado.d.relacion = r.estado === 'amigos' ? 'amigo' : 'enviada';
+      return recargar();
+    }, function () { A.toast('No se pudo enviar. Revisa tu internet.'); if (btn) btn.disabled = false; });
+  }
+
+  /* ---------- Clics ---------- */
+  app.addEventListener('click', function (e) {
+    var t = e.target, el;
+    if ((el = t.closest('[data-vista]'))) { irA(el.getAttribute('data-vista')); return; }
+    if ((el = t.closest('[data-inv]'))) { e.preventDefault(); A.compartir(miCod, el.getAttribute('data-inv')); return; }
+    if ((el = t.closest('[data-cerrar]'))) { abierta = null; pintar(); return; }
+    if ((el = t.closest('[data-agregar]'))) { agregar(el.getAttribute('data-agregar'), el); return; }
+    if ((el = t.closest('[data-resp]'))) {
+      el.disabled = true; var si = el.getAttribute('data-si') === '1';
+      A.accion('amigo_responder', { p_codigo: +el.getAttribute('data-resp'), p_aceptar: si }).then(function (r) {
+        if (r.ok === false && r.error) A.toast(A.ERRORES[r.error] || 'No se pudo.');
+        else A.toast(si ? '¡Ahora son amigos!' : 'Solicitud rechazada');
+        if (buscado && buscado.d) buscado.d.relacion = si ? 'amigo' : 'nada';
+        return recargar();
+      }, function () { el.disabled = false; A.toast('No se pudo. Revisa tu internet.'); });
+      return;
+    }
+    if ((el = t.closest('[data-cancelar]'))) {
+      el.disabled = true;
+      A.accion('amigo_cancelar', { p_codigo: +el.getAttribute('data-cancelar') }).then(recargar, function () { el.disabled = false; });
+      return;
+    }
+    if ((el = t.closest('[data-destacar]'))) {
+      var cod = +el.getAttribute('data-destacar'), s = el.getAttribute('data-si') === '1';
+      el.disabled = true;
+      A.accion('amigo_destacar', { p_codigo: cod, p_si: s }).then(function () { if (fichaDatos[cod]) fichaDatos[cod].destacado = s; A.toast(s ? 'Lo verás primero en tu lista' : 'Ya no está destacado'); return recargar(); }, function () { el.disabled = false; });
+      return;
+    }
+    if ((el = t.closest('[data-quitar]'))) {
+      var q = +el.getAttribute('data-quitar');
+      if (quitarSeguro !== q) { quitarSeguro = q; pintar(); return; }
+      el.disabled = true;
+      A.accion('amigo_quitar', { p_codigo: q }).then(function () { abierta = null; quitarSeguro = 0; A.toast('Ya no son amigos'); return recargar(); }, function () { el.disabled = false; });
+      return;
+    }
+    if (t.closest('a, button')) return;
+    if ((el = t.closest('[data-abrir]'))) abrir(+el.getAttribute('data-abrir'));
+  });
+  app.addEventListener('keydown', function (e) {
+    var el = e.target.closest && e.target.closest('[data-abrir]');
+    if (el && (e.key === 'Enter' || e.key === ' ') && e.target === el) { e.preventDefault(); abrir(+el.getAttribute('data-abrir')); }
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && abierta) { abierta = null; pintar(); } });
+  app.addEventListener('input', function (e) {
+    if (e.target.id === 'filtro') { filtro = e.target.value; pintar(); }
+    if (e.target.id === 'idBuscar') { var v = e.target.value.replace(/\D/g, '').slice(0, 5); if (v !== e.target.value) e.target.value = v; }
+  });
+  app.addEventListener('submit', function (e) { if (e.target.id === 'buscaId') { e.preventDefault(); buscar(document.getElementById('idBuscar').value); } });
+
+  /* ---------- Perfil de un amigo (amigos.html?id=) ---------- */
+  var perfilTab = 'perfil', perfilD = null;
+  function pintarPerfil() {
+    var d = perfilD, rel = d.relacion;
+    var acc = rel === 'amigo' ? '<div class="ma-acc-pf"><a class="ma-gb" href="duelo.html">' + SV.duelo + 'Retar a duelo</a><button type="button" class="ma-gb osc' + (d.destacado ? ' on' : '') + '" data-pdest>' + SV.estrella + (d.destacado ? 'Destacado' : 'Destacar') + '</button></div>'
+      : '<div class="ma-acc-pf uno">' + botonRel(rel, d.codigo) + '</div>';
+    var rail = '<nav class="ma-rail muchos" aria-label="Perfil"><button type="button" class="r' + (perfilTab === 'perfil' ? ' on' : '') + '" data-ptab="perfil">' + SV.ver + '<span>Perfil</span></button>' +
+      (d.tiene ? '<button type="button" class="r' + (perfilTab === 'col' ? ' on' : '') + '" data-ptab="col">' + SV.cofre + '<span>Su colección</span></button>' : '') +
+      '<a class="r" href="amigos.html">' + SV.amigos + '<span>Mis amigos</span></a></nav>';
+    var cuerpo = perfilTab === 'col' && d.tiene ? A.coleccion(d, filtro) : A.perfil(d, { acciones: acc });
+    app.innerHTML = '<div class="ma-lay">' + rail + '<div>' + cuerpo + '</div></div>';
+  }
+  function iniciarPerfil() {
+    document.getElementById('volverTx').textContent = 'Amigos';
+    document.getElementById('volver').href = 'amigos.html';
+    A.ver(PERFIL, true).then(function (d) {
+      if (!d) { app.innerHTML = '<div class="panel vacio"><h1>No existe</h1><p>No hay ningún alumno con ese ID.</p><a class="btn" href="amigos.html">Volver a Amigos</a></div>'; return; }
+      if (d.yo) { location.replace('perfil.html'); return; }
+      perfilD = d;
+      document.getElementById('titulo').textContent = d.apodo || 'Perfil';
+      document.title = (d.apodo || 'Perfil') + ' · Modo Cachimbo';
+      pintarPerfil();
+      A.conectar(app, d);
+    }, fallo);
+    app.addEventListener('click', function (e) {
+      var el;
+      if ((el = e.target.closest('[data-ptab]'))) { perfilTab = el.getAttribute('data-ptab'); filtro = ''; pintarPerfil(); return; }
+      if ((el = e.target.closest('[data-filtro]'))) { filtro = el.getAttribute('data-filtro'); pintarPerfil(); return; }
+      if ((el = e.target.closest('[data-pdest]'))) {
+        el.disabled = true; var s = !perfilD.destacado;
+        A.accion('amigo_destacar', { p_codigo: perfilD.codigo, p_si: s }).then(function () { perfilD.destacado = s; pintarPerfil(); }, function () { el.disabled = false; });
+        return;
+      }
+      if ((el = e.target.closest('[data-agregar]'))) {
+        el.disabled = true;
+        A.accion('amigo_solicitar', { p_codigo: perfilD.codigo }).then(function (r) {
+          if (!r.ok) { A.toast(A.ERRORES[r.error] || 'No se pudo enviar.'); el.disabled = false; return; }
+          perfilD.relacion = r.estado === 'amigos' ? 'amigo' : 'enviada'; A.toast(r.estado === 'amigos' ? '¡Ya son amigos!' : 'Solicitud enviada');
+          if (r.estado === 'amigos') location.reload(); else pintarPerfil();
+        }, function () { el.disabled = false; });
+        return;
+      }
+      if ((el = e.target.closest('[data-resp]'))) {
+        el.disabled = true;
+        A.accion('amigo_responder', { p_codigo: perfilD.codigo, p_aceptar: true }).then(function () { location.reload(); }, function () { el.disabled = false; });
+      }
+    });
+  }
+
+  /* ---------- Arranque ---------- */
+  C.css();
+  if (T) T.alJugador(function (y) {
+    if (y && y.codigo && miCod !== y.codigo) {
+      miCod = y.codigo;
+      if (!PERFIL) pintar();
+    }
+  });
+  var empezado = false;
+  function empezar(u) {
+    if (!u || empezado) return;
+    empezado = true;
+    if (PERFIL) { iniciarPerfil(); return; }
+    var h = location.hash.slice(1);
+    vista = AGREGAR ? 'anadir' : h === 'solicitudes' ? 'solic' : h === 'anadir' ? 'anadir' : 'amigos';
+    var g = A.lista(false).then(function (d) { D = d; irA(vista); if (AGREGAR) buscar(AGREGAR); });
+    g.catch(fallo);
+  }
+  MCAuth.listo.then(function () { empezar(MCAuth.usuario()); MCAuth.alCambiar(empezar); }, fallo);
+})();
+</script>
+<script src="assets/sonido.js"></script>
+</body>
+</html>
