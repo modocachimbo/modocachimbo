@@ -73,7 +73,7 @@
   /* Ranking v2: foto cuadrada completa (como la tarjeta del inicio) */
   #rkLista { gap: 10px; }
   #rkLista .rk-fila { --rk: #2f2852; position: relative; gap: 14px; padding: 10px 16px 10px 10px; border-radius: 16px; border: 2px solid var(--rk); border-bottom-width: 4px;
-    background: linear-gradient(90deg, color-mix(in srgb, var(--rk) 22%, transparent), transparent 55%), linear-gradient(180deg, #1c1636, #140f28); }
+    background: radial-gradient(38% 160% at 12% 50%, color-mix(in srgb, var(--fo, transparent) 45%, transparent), transparent 70%), linear-gradient(90deg, color-mix(in srgb, var(--rk) 18%, transparent), transparent 55%), linear-gradient(180deg, #1c1636, #140f28); }
   #rkLista .rk-fila.p1 { --rk: #FFC800; box-shadow: 0 0 18px rgba(255,200,0,.18); }
   #rkLista .rk-fila.p2 { --rk: #C9D1DC; }
   #rkLista .rk-fila.p3 { --rk: #E0995E; }
@@ -1533,8 +1533,10 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
     }
     function fila(x) {
       var nom = x.apodo || 'Cachimbo';
-      return '<div class="rk-fila' + (x.yo ? ' yo' : '') + (x.puesto <= 3 ? ' p' + x.puesto : '') + '"><span class="n">' + (x.puesto <= 3 ? medalla(x.puesto) : x.puesto) + '</span>' +
-        (window.MCTarjeta ? MCTarjeta.foto(x, 'avt') : '<span class="avt" style="background:' + COL[(x.puesto - 1) % COL.length] + '">' + esc(nom.charAt(0).toUpperCase()) + '</span>') +
+      var ft = window.MCTarjeta ? MCTarjeta.foto(x, 'avt') : '<span class="avt" style="background:' + COL[(x.puesto - 1) % COL.length] + '">' + esc(nom.charAt(0).toUpperCase()) + '</span>';
+      var f1 = (ft.match(/--f1:([^;"]+)/) || [])[1] || '';   // el color de su fondo (skin de racha), como un brillo suave detrás de la foto
+      return '<div class="rk-fila' + (x.yo ? ' yo' : '') + (x.puesto <= 3 ? ' p' + x.puesto : '') + '"' + (f1 ? ' style="--fo:' + esc(f1) + '"' : '') + '><span class="n">' + (x.puesto <= 3 ? medalla(x.puesto) : x.puesto) + '</span>' +
+        ft +
         '<span class="nom">' + esc(nom) + (x.yo ? ' (tú)' : '') + '</span>' + (window.MCRango ? MCRango.mini(x.xp) : '') + '<span class="xp">' + (x.xp || 0) + ' XP</span></div>';
     }
     function cargarRanking() {
