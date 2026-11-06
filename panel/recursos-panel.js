@@ -222,7 +222,7 @@ const recTipoDe = k => REC_TIPOS[k] || REC_EXTRA[k] || { nom: k, plural: k };
 // Lo eliminado de la web (supabase/66-eliminar-de-la-web.sql) sale apagado, con «Restaurar».
 async function recFijos() {
   const C = window.MCColeccion || await new Promise(ok => {
-    const s = document.createElement('script'); s.src = '../assets/coleccion.js?v=194';
+    const s = document.createElement('script'); s.src = '../assets/coleccion.js?v=196';
     s.onload = () => { try { MCColeccion.css(); ok(MCColeccion); } catch (e) { ok(null); } };
     s.onerror = () => ok(null);
     document.head.appendChild(s);

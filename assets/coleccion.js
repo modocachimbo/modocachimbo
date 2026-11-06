@@ -245,7 +245,7 @@
     if (r.tipo === 'gratis') return true;
     if (r.tipo === 'racha') return E.mejorRacha >= r.n;
     if (r.tipo === 'rango') return E.maxRango >= r.n;
-    if (r.tipo === 'top') return (+E.tops[r.n] || 0) > 0 || +E.tops.ahora === r.n;   // ganada o la llevas esta semana
+    if (r.tipo === 'top') return (+E.tops[r.n] || 0) > 0;   // solo al cerrar la semana en ese puesto (supabase/73)
     return false;
   }
   // Cuánto falta (0 a 1) para las reglas que se pueden medir
@@ -264,8 +264,8 @@
       var v = +E.tops[r.n] || 0, P = PUESTO_TXT[r.n];
       if (E.mias[x.id] && !v) return 'Un regalo de Modo Cachimbo. Es tuya para siempre.';
       if (v) return 'Es tuya para siempre: cerraste ' + (v > 1 ? v + ' semanas' : 'una semana') + ' en el ' + P + ' puesto del Top.';
-      if (ok) return 'Vas en el ' + P + ' puesto del Top: esta semana la llevas puesta sola y no se puede quitar. Si cierras el domingo en ese puesto, se queda en tu colección y ahí tú decides si la usas.';
-      return 'Desde el martes la llevan los 3 primeros del Top de la semana. Es tuya para siempre si cierras la semana en el ' + P + ' puesto.';
+      if (+E.tops.ahora === r.n) return 'Vas en el ' + P + ' puesto del Top. Si cierras el domingo ahí, la corona es tuya para siempre y tú decides si te la pones.';
+      return 'Es tuya para siempre si cierras la semana en el ' + P + ' puesto del Top. Luego tú decides si te la pones.';
     }
     if (r.tipo === 'grupo') return ok ? 'Es tuyo por ser influencer de Modo Cachimbo.' : 'Solo para los influencers de Modo Cachimbo.';
     if (r.tipo === 'evento') return ok ? 'Lo ganaste en ' + r.evento + '. Es tuyo para siempre.' : 'Se ganaba en ' + r.evento + '.';
@@ -273,7 +273,8 @@
   }
   // La corona «Top global» que llevas esta semana (desde el martes, si vas en el top 3)
   var CORONA = { 1: 'pin-corona-oro', 2: 'pin-corona-plata', 3: 'pin-corona-bronce' };
-  function coronaAhora() { var c = CORONA[+E.tops.ahora]; return c && POR_ID[c] ? c : ''; }
+  // Ya no se pone sola (supabase/73-corona-se-gana-al-cerrar.sql): se gana al cerrar la semana y tú decides si la usas
+  function coronaAhora() { return ''; }
   function puesto(esp) {
     var p = E.puesto[esp];
     if (esp === 'pines') {
@@ -333,19 +334,18 @@
     return pedido;
   }
 
-  // ¡Vas en el top 3! Un sobre con la corona, una vez por semana y puesto
+  // ¡Ganaste una corona! Al cerrar la semana en el top 3 llega un sobre (una vez por cada corona nueva)
   function avisoCorona() {
-    var c = coronaAhora(), u = window.MCAuth && MCAuth.usuario();
-    if (!c || !u) return;
-    var lima = new Date(Date.now() - 5 * 3600000), dia = (lima.getUTCDay() + 6) % 7;
-    var lunes = new Date(lima.getTime() - dia * 864e5).toISOString().slice(0, 10);
-    var k = 'mc_corona_' + u.id, v = lunes + ':' + c;
-    if (leer(k) === v) return;
-    guardar(k, v);
-    var P = PUESTO_TXT[+E.tops.ahora];
+    var u = window.MCAuth && MCAuth.usuario();
+    if (!u) return;
+    var k = 'mc_coronas_' + u.id, antes = leer(k) || {}, nuevo = 0, ahora = {};
+    [1, 2, 3].forEach(function (n) { ahora[n] = +E.tops[n] || 0; if (!nuevo && ahora[n] > (+antes[n] || 0) && POR_ID[CORONA[n]]) nuevo = n; });
+    guardar(k, ahora);
+    if (!nuevo) return;
+    var c = CORONA[nuevo];
     function abrir() {
       MCSobre.abrir({ regalos: [{ tipo: 'item', id: c }], de: 'Modo Cachimbo',
-        nota: '¡Vas en el ' + P + ' puesto del Top global de la semana! Ya llevas la corona en tu vitrina y en los tops. Si cierras el domingo en ese puesto, es tuya para siempre.' });
+        nota: '¡Cerraste la semana en el ' + PUESTO_TXT[nuevo] + ' puesto del Top global! La corona ya es tuya para siempre. Si quieres lucirla, póntela en Mi colección → Pines.' });
     }
     setTimeout(function () {
       if (window.MCSobre) return abrir();
