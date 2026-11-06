@@ -373,3 +373,8 @@
 }
 .ma-cuatro .ma-st small { white-space: nowrap; }
 @media (max-width: 899px) { .ma-cuatro .ma-st:not(.col) small { font-size: 9.5px; letter-spacing: .03em; } }
+/* PC: el menú un poco más ancho (la letra grande no se sale) y con aire antes del contenido */
+@media (min-width: 900px) {
+  .ma-lay { grid-template-columns: 250px minmax(0, 1fr); gap: 30px; }
+  .ma-rail .r { min-width: 0; }
+}
