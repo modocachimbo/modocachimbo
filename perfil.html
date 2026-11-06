@@ -101,6 +101,26 @@
   .prog-debiles { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
   .prog-debiles a { font-size: 12px; font-weight: 600; color: #ffb4b4; background: rgba(224,60,60,.1); border: 1px solid rgba(224,60,60,.25); border-radius: 100px; padding: 5px 10px; text-decoration: none; }
   .prog-debiles a:hover { border-color: #ff8a8a; }
+  /* Tu repaso + progreso compacto */
+  .rp-tot { margin-left: auto; flex-shrink: 0; display: grid; justify-items: center; padding: 6px 12px; border-radius: 12px; background: rgba(28,176,246,.1); border: 2px solid rgba(28,176,246,.3); color: #8fd6ff; font-size: 11px; font-weight: 800; line-height: 1.1; }
+  .rp-tot b { font: italic 900 24px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; color: #1CB0F6; }
+  .rp-tot[hidden] { display: none; }
+  #errores .prog-repasar { margin-top: 10px; }
+  #errores .err-btn:not([hidden]) + .prog-repasar { background: transparent; }
+  .prog-cursos { gap: 8px; }
+  .prog-curso { display: flex; gap: 12px; align-items: flex-start; padding: 10px 12px !important; }
+  .prog-ic { width: 44px; height: 44px; flex-shrink: 0; display: grid; place-items: center; background: color-mix(in srgb, var(--ac) 14%, transparent); clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%); }
+  .prog-ic i { width: 26px; height: 26px; background: var(--ac); -webkit-mask: var(--ico) center/contain no-repeat; mask: var(--ico) center/contain no-repeat; }
+  /* Íconos de cabecera con el mismo corte que el inicio */
+  #errores .err-ic svg.ic3, [data-g="estudio"] .sec-ic svg.ic3 { width: 32px; height: 32px; filter: drop-shadow(0 2px 0 rgba(0,0,0,.35)); }
+  #errores .err-ic, [data-g="estudio"] .sec-ic { border: 0 !important; border-radius: 0 !important; clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%); }
+  .prog-cu { flex: 1; min-width: 0; }
+  .prog-curso .prog-cab span { color: var(--pc) !important; }
+  .prog-curso .prog-barra { height: 7px !important; margin: 6px 0 5px; }
+  .prog-curso .prog-barra i { background: var(--pc) !important; }
+  .prog-debiles { margin-top: 8px; }
+  .prog-debiles a { display: inline-flex; align-items: center; gap: 8px; padding: 4px 4px 4px 10px; color: #ffd0d0; }
+  .prog-debiles a em { font-style: normal; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: .03em; padding: 3px 8px; border-radius: 100px; background: #FF4B4B; color: #fff; }
 
   .cabecera { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
   .avatar { width: 72px; height: 72px; border-radius: 50%; background: var(--accent); color: #0e0e0e; display: flex; align-items: center; justify-content: center; font: 800 28px 'Sora', sans-serif; overflow: hidden; flex-shrink: 0; }
@@ -692,26 +712,27 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       <h2 class="sec-tit bc" style="--tc:var(--roj)">Tu estudio</h2>
       <section class="panel" id="errores">
         <div class="err-top">
-          <div class="err-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 0 1 14.8-5.7L21 9"/><polyline points="21 3.5 21 9 15.5 9"/><path d="M20.5 12a8.5 8.5 0 0 1-14.8 5.7L3 15"/><polyline points="3 20.5 3 15 8.5 15"/></svg></div>
-          <div><h2>Errores de hoy</h2><p class="nota" id="eSub">Cargando…</p></div>
+          <div class="err-ic"><svg class="ic3" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="ic3R" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF8A7A"/><stop offset="1" stop-color="#E5262B"/></linearGradient></defs><path d="M9 22a15 15 0 0 1 26-9l3-3v12H26l4-4a9 9 0 0 0-15 4z" fill="url(#ic3R)" stroke="#6e0d10" stroke-width="2" stroke-linejoin="round"/><path d="M39 26a15 15 0 0 1-26 9l-3 3V26h12l-4 4a9 9 0 0 0 15-4z" fill="url(#ic3R)" stroke="#6e0d10" stroke-width="2" stroke-linejoin="round"/><path d="M14 17a12 12 0 0 1 8-5" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="2.4" stroke-linecap="round"/></svg></div>
+          <div><h2>Tu repaso</h2><p class="nota" id="eSub">Cargando…</p></div>
+          <span class="rp-tot" id="eTot" hidden><b>–</b>por repasar</span>
         </div>
         <div class="err-lista" id="eLista"></div>
-        <a class="err-btn" id="eBtn" href="falladas.html?hoy=1" hidden>Practicar mis errores</a>
+        <a class="err-btn" id="eBtn" href="falladas.html?hoy=1" hidden>Practicar mis errores de hoy</a>
+        <a class="btn-cel prog-repasar" id="pRepasar" href="falladas.html" hidden></a>
         <p class="err-reloj" id="eReloj"></p>
       </section>
 
       <section class="panel" id="progreso">
         <div class="sec-cab">
-          <span class="sec-ic cel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-6M12 20V5M19 20v-10"/></svg></span>
-          <div><h2>Mi progreso por curso</h2><p class="nota">Se guarda cada vez que terminas una práctica, un Repaso, unas Fijas o un examen.</p></div>
+          <span class="sec-ic cel"><svg class="ic3" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="ic3B" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7FD8FF"/><stop offset="1" stop-color="#0E8FD6"/></linearGradient><linearGradient id="ic3L" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2FF7A"/><stop offset="1" stop-color="#9DB800"/></linearGradient></defs><rect x="6" y="26" width="9" height="16" rx="2" fill="url(#ic3B)" stroke="#063a5c" stroke-width="2"/><rect x="19.5" y="17" width="9" height="25" rx="2" fill="url(#ic3B)" stroke="#063a5c" stroke-width="2"/><rect x="33" y="8" width="9" height="34" rx="2" fill="url(#ic3L)" stroke="#3d4a00" stroke-width="2"/><path d="M8.5 29v4M22 20v4M35.5 11v4" stroke="#fff" stroke-opacity=".6" stroke-width="2.2" stroke-linecap="round"/></svg></span>
+          <div><h2>Mi progreso por curso</h2><p class="nota">Primero lo que más te falta. Se guarda al terminar una práctica, un Repaso, unas Fijas o un examen.</p></div>
         </div>
-        <a class="btn-cel prog-repasar" id="pRepasar" href="falladas.html" hidden></a>
         <div class="prog-cursos" id="pCursos"><p class="nota">Cargando tu progreso…</p></div>
       </section>
 
       <section class="panel" id="simulacros">
         <div class="sec-cab">
-          <span class="sec-ic mor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6v3H9z"/><path d="M7 4.5H5V21h14V4.5h-2"/><path d="M9 11h6M9 15h4"/></svg></span>
+          <span class="sec-ic mor"><svg class="ic3" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="ic3M" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9C2FF"/><stop offset="1" stop-color="#A54EE8"/></linearGradient></defs><rect x="9" y="8" width="30" height="36" rx="4" fill="url(#ic3M)" stroke="#3f1260" stroke-width="2"/><rect x="14" y="13" width="20" height="26" rx="2" fill="#fff" fill-opacity=".92"/><rect x="17" y="4" width="14" height="8" rx="3" fill="#FFC800" stroke="#7a5200" stroke-width="2"/><path d="M18 26l4 4 8-9" fill="none" stroke="#2ecc40" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           <div><h2>Mis simulacros</h2><p class="nota">Tus simulacros terminados. Con «Repetir» das las mismas preguntas otra vez.</p></div>
         </div>
         <ul class="lista rep-lista" id="simLista"><li><span>Cargando…</span></li></ul>
@@ -1013,9 +1034,10 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
   MCAuth.alCambiar(cargarReportes);
 
   // Mi progreso (assets/progreso.js lo carga auth.js)
+  var ICONO_CURSO = {}, AREA_CURSO = {}, COLOR_AREA = { 'ciencia-tecnologia': '#C6E000', matematica: '#1CB0F6', comunicacion: '#CE82FF', 'ciencias-sociales': '#FF9600' };
   var NOMBRE_CURSO = { ordinario: 'Exámenes · Ordinario', cpu: 'Exámenes · CPU', 'control-cpu': 'Exámenes · Control CPU', simulacro: 'Simulacros' };
   var cursosListos = fetch('assets/cursos.json').then(function (r) { return r.json(); }).then(function (d) {
-    (d.cursos || []).forEach(function (c) { NOMBRE_CURSO[c.id] = c.nombre; });
+    (d.cursos || []).forEach(function (c) { NOMBRE_CURSO[c.id] = c.nombre; if (c.icono) ICONO_CURSO[c.id] = c.icono; AREA_CURSO[c.id] = c.area; });
   }).catch(function () {});
   var ICONO_REP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 0 1 14.8-5.7L21 9"/><polyline points="21 3.5 21 9 15.5 9"/><path d="M20.5 12a8.5 8.5 0 0 1-14.8 5.7L3 15"/><polyline points="3 20.5 3 15 8.5 15"/></svg>';
   // ===== Tu poder: 5 puntas de 0 a 100, con lo que ya cargó la página =====
@@ -1094,7 +1116,8 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
     var rep = $('pRepasar');
     rep.hidden = !F.length;
     rep.innerHTML = ICONO_REP;
-    rep.appendChild(document.createTextNode('Repasar mis ' + F.length + ' pregunta' + (F.length === 1 ? '' : 's') + ' fallada' + (F.length === 1 ? '' : 's')));
+    rep.appendChild(document.createTextNode('Repasar mis falladas'));
+    $('eTot').hidden = !F.length; $('eTot').firstChild.textContent = F.length;
     var caja = $('pCursos'); caja.textContent = '';
     if (!P.length) {
       var v = document.createElement('p'); v.className = 'nota';
@@ -1108,37 +1131,50 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       if (!grupos[k]) { grupos[k] = []; orden.push(k); }
       grupos[k].push(x);
     });
-    orden.forEach(function (k) {
+    orden.map(function (k) {
       var L = grupos[k];
-      var prom = Math.round(L.reduce(function (s, x) { return s + x.mejor; }, 0) / L.length);
+      return { k: k, L: L, prom: Math.round(L.reduce(function (s, x) { return s + (x.mejor || 0); }, 0) / L.length) };
+    }).sort(function (a, b) { return a.prom - b.prom; }).forEach(function (g) {
+      var k = g.k, L = g.L, prom = g.prom;
       var temas = L.filter(function (x) { return x.tipo === 'libro' && x.tema; });
-      var debiles = temas.filter(function (x) { return x.mejor < 60; }).sort(function (a, b) { return a.mejor - b.mejor; }).slice(0, 4);
+      var debiles = temas.filter(function (x) { return x.mejor < 60; }).sort(function (a, b) { return a.mejor - b.mejor; }).slice(0, 3);
       var div = document.createElement('div'); div.className = 'prog-curso';
+      div.style.setProperty('--pc', prom < 40 ? '#FF4B4B' : prom < 70 ? '#FF9600' : '#C6E000');
+      var ic = document.createElement('span'); ic.className = 'prog-ic';
+      ic.style.setProperty('--ac', COLOR_AREA[AREA_CURSO[k]] || '#FF9600');
+      var im = document.createElement('i');
+      im.style.setProperty('--ico', 'url("' + (ICONO_CURSO[k] || 'assets/icons/examenes.svg') + '")');
+      ic.appendChild(im);
+      div.appendChild(ic);
+      var cu = document.createElement('div'); cu.className = 'prog-cu';
       var cab = document.createElement('div'); cab.className = 'prog-cab';
-      var b = document.createElement('b'); b.textContent = NOMBRE_CURSO[k] || k;
+      var b = document.createElement('b'); b.textContent = String(NOMBRE_CURSO[k] || k).replace(/^Exámenes · /, '');
       var sp = document.createElement('span'); sp.textContent = prom + '%';
-      cab.appendChild(b); cab.appendChild(sp); div.appendChild(cab);
+      cab.appendChild(b); cab.appendChild(sp); cu.appendChild(cab);
       var barra = document.createElement('div'); barra.className = 'prog-barra';
-      var i = document.createElement('i'); i.style.width = prom + '%'; barra.appendChild(i); div.appendChild(barra);
+      var i = document.createElement('i'); i.style.width = Math.max(prom, 2) + '%'; barra.appendChild(i); cu.appendChild(barra);
       var sub = document.createElement('div'); sub.className = 'prog-sub';
       var partes = [];
-      if (temas.length) partes.push(temas.length + (temas.length === 1 ? ' tema practicado' : ' temas practicados'));
+      if (temas.length) partes.push(temas.length + (temas.length === 1 ? ' tema' : ' temas'));
       ['repaso', 'fijas', 'examen'].forEach(function (t) {
         var x = L.filter(function (y) { return y.tipo === t; });
         if (x.length) partes.push({ repaso: 'Repaso', fijas: 'Fijas', examen: 'Mejor nota' }[t] + ' ' + Math.max.apply(null, x.map(function (y) { return y.mejor; })) + '%');
       });
       sub.textContent = partes.join(' · ');
-      div.appendChild(sub);
+      cu.appendChild(sub);
       if (debiles.length) {
         var dd = document.createElement('div'); dd.className = 'prog-debiles';
         debiles.forEach(function (x) {
           var a = document.createElement('a');
           a.href = x.carpeta + '/libros/tema.html?year=' + encodeURIComponent(x.anio) + '&tema=' + encodeURIComponent(x.tema);
-          a.textContent = 'Reforzar: ' + String(x.titulo || '').replace(/^.*? · /, '') + ' (' + x.mejor + '%)';
+          var t = document.createElement('span'); t.textContent = String(x.titulo || '').replace(/^.*? · /, '') + ' · ' + x.mejor + '%';
+          var go = document.createElement('em'); go.textContent = 'Reforzar ›';
+          a.appendChild(t); a.appendChild(go);
           dd.appendChild(a);
         });
-        div.appendChild(dd);
+        cu.appendChild(dd);
       }
+      div.appendChild(cu);
       caja.appendChild(div);
     });
   }
@@ -1146,7 +1182,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
   function pintarErrores(L) {
     var sec = $('errores'), lista = $('eLista'); lista.textContent = '';
     sec.classList.toggle('cero', !L.length);
-    $('eSub').textContent = L.length ? L.length + (L.length === 1 ? ' pregunta por repasar' : ' preguntas por repasar') : 'Sin errores hoy. ¡Bien!';
+    $('eSub').textContent = L.length ? 'Hoy fallaste ' + L.length + (L.length === 1 ? ' pregunta' : ' preguntas') : 'Sin errores hoy. ¡Bien!';
     $('eBtn').hidden = !L.length;
     // Agrupar por curso y tema
     var g = {}, orden = [];
@@ -1166,7 +1202,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       var n = document.createElement('span'); n.className = 'k'; n.textContent = x.n;
       fila.appendChild(c); fila.appendChild(n); lista.appendChild(fila);
     });
-    reloj();
+    if (L.length) reloj(); else $('eReloj').textContent = '';
   }
   function reloj() {
     var falta = MCProgreso.inicioHoy().getTime() + 86400000 - Date.now();
@@ -1184,7 +1220,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
   (function esperarProgreso(n) {
     if (window.MCProgreso) {
       cargarErrores();
-      MCProgreso.cargar().then(pintarProgreso, function () {
+      MCProgreso.cargar().then(function (d) { return cursosListos.then(function () { pintarProgreso(d); }, function () { pintarProgreso(d); }); }, function () {
         $('pCursos').innerHTML = '<p class="nota">No se pudo cargar tu progreso. Recarga la página.</p>';
       });
     } else if (n < 100) setTimeout(function () { esperarProgreso(n + 1); }, 150);
