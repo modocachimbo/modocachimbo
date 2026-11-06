@@ -77,6 +77,7 @@
   .mx-meta em { font: 800 13.5px Nunito, sans-serif; font-style: normal; color: #e9e4ff; }
   .mx-meta em strong { color: #FFC800; }
   #tabRanking .sec-tit { margin-top: 38px !important; margin-bottom: 16px; }
+  [data-g="cuenta"] .sec-tit { margin-bottom: 14px; } .sec-tit.tit-cuenta { margin-top: 38px; }
   /* Top 3: fondo animado premium (destello que pasa y chispas) */
   #rkLista .rk-fila.p1, #rkLista .rk-fila.p2, #rkLista .rk-fila.p3 { overflow: hidden; isolation: isolate;
     background: radial-gradient(38% 160% at 12% 50%, color-mix(in srgb, var(--fo, transparent) 40%, transparent), transparent 70%),
@@ -811,16 +812,8 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
 
       </div>
       <div data-g="cuenta">
-      <!-- 4. Tu colección y tu cuenta -->
-      <h2 class="sec-tit bc" style="--tc:var(--accent)">Mi colección</h2>
-      <!-- Mi colección (coleccion.html): tus pines y lo que tienes -->
-      <a class="col-strip" id="colStrip" href="coleccion.html">
-        <span class="pins" id="colPins"></span>
-        <span class="tx"><b>Mi colección <small id="colN" style="color:var(--accent);font-weight:1000"></small></b><span>Búhos, fotos de perfil, banners, marcos, títulos y pines.</span></span>
-        <span class="ir">Ver<span class="ir-l"> colección</span> ›</span>
-      </a>
-
-      <h2 class="sec-tit bc" style="--tc:var(--mor)">Mi cuenta</h2>
+      <!-- 4. Tu cuenta (Mi colección ya está en «Mi perfil») -->
+      <h2 class="sec-tit bc tit-cuenta" style="--tc:var(--mor)">Mi cuenta</h2>
       <section class="panel">
         <div class="sec-cab">
           <span class="sec-ic mor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4.5"/><path d="M11.3 11.7L20 3M16.5 6.5l3 3M14 9l2 2"/></svg></span>
@@ -846,7 +839,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
 
   </div>
 
-<script src="assets/accesos-perfil.js"></script>
+<script src="assets/accesos-perfil.js?v=2"></script>
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
@@ -1435,8 +1428,8 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
     $('pTitulo').innerHTML = C.titulo(ti); $('pTitulo').classList.toggle('con-svg', !!ti.svg);
     var pines = C.puesto('pines'), h = '';
     for (var i = 0; i < 3; i++) h += pines[i] ? C.pin(C.item(pines[i])) : '<span class="hueco">+</span>';
-    $('colPins').innerHTML = h;
-    var n = C.contar(); $('colN').textContent = n.tengo + '/' + n.total; $('pnCol').textContent = n.tengo + '/' + n.total;
+    if ($('colPins')) $('colPins').innerHTML = h;
+    var n = C.contar(); if ($('colN')) $('colN').textContent = n.tengo + '/' + n.total; if ($('pnCol')) $('pnCol').textContent = n.tengo + '/' + n.total;
     // La tarjeta lleva un paisaje con tu fondo de perfil
     var ft = C.tema(), fi = C.fondo ? C.fondo() : '', card = $('pjCard');
     card.style.setProperty('--f1', ft[0]); card.style.setProperty('--f2', ft[3]);
