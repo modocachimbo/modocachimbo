@@ -93,10 +93,20 @@
     '.ag-caja{margin-top:0;border-radius:20px;border:2px solid #2f2852;border-bottom-width:5px;background:radial-gradient(70% 90% at 0% 0%,rgba(255,150,0,.10),transparent 70%),linear-gradient(180deg,#1c1636,#120e24)}',
     '.ag-hero{position:relative;overflow:hidden;display:flex;align-items:center;gap:16px;padding:16px 18px;border-radius:20px;border:2px solid color-mix(in srgb,var(--hc,#FF9600) 45%,#2f2852);border-bottom-width:5px;background:radial-gradient(60% 130% at 0% 0%,color-mix(in srgb,var(--hc,#FF9600) 30%,transparent),transparent 70%),radial-gradient(50% 90% at 100% 100%,rgba(255,61,46,.14),transparent 70%),linear-gradient(180deg,#1c1636,#120e24);color:#fff;text-align:left;cursor:pointer;width:100%;font:inherit}',
     '.ag-hero.vacio{--hc:#5b5f80;cursor:default}',
-    '.ag-hero .rc-fuego{flex-shrink:0;width:56px;height:64px}',
-    '.ag-hero .rc-fuego .f1{fill:url(#agG1)}.ag-hero .rc-fuego .f2{fill:url(#agG2)}.ag-hero .rc-fuego svg{width:100%;height:100%}',
+    '.ag-reloj{flex-shrink:0;width:58px;height:58px;filter:drop-shadow(0 0 10px color-mix(in srgb,var(--hc,#FF9600) 45%,transparent))}.ag-reloj svg{width:100%;height:100%;display:block}',
+    '.ag-reloj .aguja{transform-origin:24px 27px;animation:agAguja 4s steps(60) infinite}',
+    '.ag-reloj{animation:agTic 1s ease-in-out infinite}',
+    '@keyframes agAguja{to{transform:rotate(360deg)}}',
+    '@keyframes agTic{0%,100%{transform:rotate(0)}50%{transform:rotate(-3deg)}}',
+    '.ag-hero.vacio .ag-reloj{filter:none;animation:none}.ag-hero.vacio .ag-reloj .aguja{animation-duration:12s}',
+    /* Días de examen: brasa con llamita animada */
+    '.ag-d.fuego{overflow:visible;animation:agBrasa 1.6s ease-in-out infinite}',
+    '.ag-d.fuego::after{content:"";position:absolute;top:-9px;right:-5px;width:15px;height:18px;background:radial-gradient(circle at 50% 70%,#FFF3A0 0 22%,#FFC21A 35%,#FF6A1A 62%,transparent 64%);clip-path:path("M7.5 0C8.5 4 14 6.5 14 11.5 14 15.5 11 18 7.5 18S1 15.5 1 11.5C1 8.5 3 7 4 5.5 4.3 7.5 5.2 8.6 6.3 9 5.8 5.5 6.3 2.8 7.5 0Z");transform-origin:50% 100%;animation:rcLlama 1.1s ease-in-out infinite;filter:drop-shadow(0 0 4px #FF9600)}',
+    '@keyframes agBrasa{0%,100%{box-shadow:0 0 8px rgba(255,120,0,.4),inset 0 -2px 0 rgba(0,0,0,.25)}50%{box-shadow:0 0 16px rgba(255,140,0,.75),inset 0 -2px 0 rgba(0,0,0,.25)}}',
+    '.ag-d.hoy{animation:agHoy 2.4s ease-in-out infinite}',
+    '@keyframes agHoy{0%,100%{box-shadow:0 3px 0 #8fa300}50%{box-shadow:0 3px 0 #8fa300,0 0 14px rgba(198,224,0,.55)}}',
+    '@media (prefers-reduced-motion:reduce){.ag-reloj,.ag-reloj .aguja,.ag-d.fuego,.ag-d.fuego::after,.ag-d.hoy{animation:none}}',
     '@media (max-width:600px){.ag-hero b{white-space:normal!important;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical}.ag-hero{gap:12px;padding:14px}.ag-hero .num{font-size:40px}}',
-    '.ag-hero.vacio .rc-fuego .f1{fill:#4b5a75}.ag-hero.vacio .rc-fuego .f2{fill:#75809c}.ag-hero.vacio .rc-fuego svg{filter:none}.ag-hero.vacio .rc-fuego .fx-ch,.ag-hero.vacio .rc-fuego .fx-halo{display:none}',
     '.ag-hero .num{font:italic 900 46px/.9 "Barlow Condensed","Arial Narrow",sans-serif;text-shadow:0 3px 0 rgba(0,0,0,.4)}',
     '.ag-hero .num small{font-size:20px;margin-left:4px;letter-spacing:.04em;text-transform:uppercase}',
     '.ag-hero .tx{flex:1;min-width:0}',
@@ -226,17 +236,22 @@
     }).join('') : '<p class="ag-nada">Aún no tienes fechas. Toca un día del calendario y agrega tu primer seminario, simulacro o examen.</p>');
   }
 
-  var FUEGO = '<span class="rc-fuego" aria-hidden="true"><i class="fx-halo"></i><svg viewBox="0 0 32 36"><defs><linearGradient id="agG1" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FF3D2E"/><stop offset=".55" stop-color="#FF9600"/><stop offset="1" stop-color="#FFC21A"/></linearGradient><linearGradient id="agG2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FFC800"/><stop offset="1" stop-color="#FFF6C8"/></linearGradient></defs><g class="fx-a"><path class="f1" fill="url(#agG1)" d="M16 1.5c1.2 4.6 7.6 8.2 9.6 13.6 2.6 7-1.6 17.4-9.6 17.4S3.8 24.9 6.1 17.6c1-3.2 3.3-5.3 4.9-6.9.2 2.8 1.4 4.6 3 5.2C13.3 10.6 14 6 16 1.5z"/></g><g class="fx-b"><path class="f2" fill="url(#agG2)" d="M16.3 15.5c.6 2.4 4.5 4.4 4.5 8.6a4.8 4.8 0 0 1-9.6 0c0-2 1-3.4 2.1-4.4.2 1.4.8 2.3 1.6 2.6-.4-2.4 0-4.6 1.4-6.8z"/></g></svg><i class="fx-ch"></i><i class="fx-ch"></i><i class="fx-ch"></i></span>';
+  var RELOJ = '<span class="ag-reloj" aria-hidden="true"><svg viewBox="0 0 48 48"><defs><linearGradient id="agR1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F4F1FF"/><stop offset="1" stop-color="#B9B2D8"/></linearGradient></defs>' +
+    '<rect x="20" y="2" width="8" height="5" rx="1.5" fill="var(--hc,#FF9600)" stroke="#2a1f00" stroke-width="1.5"/><rect x="22.5" y="6" width="3" height="4" fill="#8a84a8"/>' +
+    '<path d="M36.5 9.5l3 3" stroke="#8a84a8" stroke-width="3.2" stroke-linecap="round"/>' +
+    '<circle cx="24" cy="27" r="18" fill="url(#agR1)" stroke="#1d1836" stroke-width="2.4"/><circle cx="24" cy="27" r="13.5" fill="#15112a"/>' +
+    '<circle class="arco" cx="24" cy="27" r="13.5" fill="none" stroke="var(--hc,#FF9600)" stroke-width="3" stroke-dasharray="84.8" stroke-dashoffset="21" transform="rotate(-90 24 27)"/>' +
+    '<g class="aguja"><path d="M24 27V16" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></g><circle cx="24" cy="27" r="2.4" fill="var(--hc,#FF9600)"/></svg></span>';
   function pintarHero() {
     var h = $('agHero'), t = A.proximas(lista, 8), e = t.filter(function (x) { return x.tipo === 'examen'; })[0] || t[0];
     if (!e) {
       h.className = 'ag-hero vacio'; h.removeAttribute('data-d');
-      h.innerHTML = FUEGO + '<span class="tx"><span class="k">Sin fechas próximas</span><b>Anota tu próximo examen</b><span class="q">Toca un día del calendario y agrégalo.</span></span>';
+      h.innerHTML = RELOJ + '<span class="tx"><span class="k">Sin fechas próximas</span><b>Anota tu próximo examen</b><span class="q">Toca un día del calendario y agrégalo.</span></span>';
       return;
     }
     var n = A.dias(e.fecha), d = A.aFecha(e.fecha);
     h.className = 'ag-hero'; h.dataset.d = e.fecha; h.style.setProperty('--hc', color(e.tipo));
-    h.innerHTML = FUEGO + '<span class="num">' + (n === 0 ? '¡HOY!' : n + '<small>' + (n === 1 ? 'día' : 'días') + '</small>') + '</span>' +
+    h.innerHTML = RELOJ + '<span class="num">' + (n === 0 ? '¡HOY!' : n + '<small>' + (n === 1 ? 'día' : 'días') + '</small>') + '</span>' +
       '<span class="tx"><span class="k">' + (n === 0 ? 'Es hoy' : 'Falta' + (n === 1 ? '' : 'n')) + ' · ' + esc((A.TIPOS[e.tipo] || A.TIPOS.otro).n) + '</span><b>' + esc(e.titulo) + '</b>' +
       '<span class="q">' + DIAS[d.getDay()] + ' ' + d.getDate() + ' de ' + MESES[d.getMonth()] + (e.hora ? ' · ' + A.hora12(e.hora) : '') + '</span></span>';
   }
