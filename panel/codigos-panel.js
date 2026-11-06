@@ -179,10 +179,13 @@ function renderConfigAcceso() {
     const cfg = JSON.parse(JSON.stringify(CD.config)); cfg.legacy = e.target.checked;
     guardar(cfg, e.target.checked ? 'Accesos antiguos permitidos' : 'Accesos antiguos cerrados');
   });
+  ajusteEquiposId();
 }
 
 /* ---------- Lista ---------- */
 function renderCodigos() {
+  if (CD.vista === 'id') { renderPorId(); return; }
+  renderVista();
   const L = CD.lista;
   // 'Descargas' no es un estado: muestra solo los códigos de descarga (descarga-VIP)
   const pasa = (c, e) => e === 'Todos' || (e === 'Descargas' ? esDescarga(c) : c.estado === e);
@@ -451,7 +454,7 @@ function importarCodigos() {
 /* ---------- Acceso por ID (supabase/70-acceso-por-id.sql) ----------
    Sin código: el alumno te pasa su ID (el de 5 cifras de su tarjeta, en Perfil)
    y el paquete va directo a su cuenta de Google. Los códigos siguen igual. */
-const PID = { lista: [], equipos: 2, hoy: '', q: '', err: '', abierto: true };
+const PID = { lista: [], equipos: 2, hoy: '', err: '', filtro: 'Todos', abiertos: {} };
 const PID_FALTA = 'Falta correr supabase/70-acceso-por-id.sql en Supabase.';
 const pidError = e => /(could not find|does not exist|schema cache).*acceso_id_|acceso_id_.*(could not find|does not exist|schema cache)/i.test(e && e.message || '') ? PID_FALTA
   : /no autorizado/.test(e && e.message || '') ? 'Tu cuenta no tiene permiso de Códigos.'
@@ -464,59 +467,130 @@ async function pidRpc(fn, args) {
 async function cargarPorId() {
   try {
     const d = await pidRpc('acceso_id_lista');
-    PID.lista = d.lista || []; PID.equipos = d.equipos; PID.hoy = d.hoy || ''; PID.err = '';
+    PID.lista = d.lista || []; PID.equipos = d.equipos; PID.hoy = d.hoy || ''; PID.err = ''; PID.cargado = true;
   } catch (e) { PID.err = pidError(e); }
-  renderPorId();
+  renderPorId(); ajusteEquiposId();
 }
-function renderPorId() {
+// Arriba de la lista: «Códigos» o «Por ID». Por ID usa el mismo buscador, filtros y tarjetas que los códigos
+function renderVista() {
   const box = $('cdPorId'); if (!box) return;
-  const q = PID.q.trim().toLowerCase();
-  const vigente = a => !a.vence || !PID.hoy || a.vence >= PID.hoy;
-  const n = PID.lista.filter(vigente).length;
-  const lista = PID.lista.filter(a => !q || [a.jid, a.apodo, a.email, a.nota, etiquetaProd(a.producto)].join(' ').toLowerCase().includes(q));
-  const fila = a => `<div class="acc-row">
-      <div><b>${esc(a.apodo || 'Sin apodo')} <span style="display:inline;font-weight:600">· ID ${esc(a.jid || '—')} · ${esc(a.email || '')}</span></b>
-      <span>${esc(etiquetaProd(a.producto))}${a.limite_dia ? ' (' + a.limite_dia + ' PDF al día)' : ''} · ${a.vence ? (vigente(a) ? 'hasta ' : 'venció el ') + esc(a.vence.split('-').reverse().join('/')) : 'sin fecha de fin'} · ${a.equipos ? a.equipos + (a.equipos === 1 ? ' equipo' : ' equipos') : 'aún no entra'}${a.nota ? ' · ' + esc(a.nota) : ''} · dado el ${esc(fechaCorta(a.creado))}</span></div>
-      ${vigente(a) ? '' : '<span class="pill gray">Vencido</span>'}
-      <button class="rbtn" type="button" data-pid-q="${a.id}">Quitar</button></div>`;
-  box.innerHTML = `<details class="acc-box" id="pidBox" ${PID.abierto ? 'open' : ''} style="margin-bottom:16px;">
-    <summary class="acc-ttl">Accesos por ID <span>— ${PID.err ? 'sin conectar' : n + (n === 1 ? ' activo' : ' activos') + ' · sin código, van directo a la cuenta'}</span></summary>
-    ${PID.err ? `<div class="hint" style="color:var(--red);padding:10px 0;">${esc(PID.err)}</div>` : `
-    <div class="acc-add"><input class="inp" id="pidBuscar" placeholder="Buscar por ID, apodo, correo o nota" style="flex:1" value="${esc(PID.q)}"><button class="rbtn" type="button" id="pidDar">＋ Dar por ID</button></div>
-    ${lista.length ? lista.slice(0, 200).map(fila).join('') : `<div class="hint" style="padding:12px 0;">${q ? 'Nada con esa búsqueda.' : 'Aún no diste nada por ID. El alumno te pasa su ID (Perfil → su tarjeta → copiar) y tú tocas «Dar por ID».'}</div>`}
-    <div class="acc-row legacy"><div><b>Equipos por cuenta</b><span>En cuántos celulares o laptops abre lo dado por ID. Si entra en uno más, deja de abrir en el más antiguo. Los códigos no cambian.</span></div>
-      <select class="inp" id="pidEquipos">${[1, 2, 3, 4, 5, 0].map(v => `<option value="${v}" ${PID.equipos === v ? 'selected' : ''}>${v ? v + (v === 1 ? ' equipo' : ' equipos') : 'Sin límite'}</option>`).join('')}</select></div>`}
-  </details>`;
-  box.querySelector('#pidBox').addEventListener('toggle', e => { PID.abierto = e.target.open; });
-  if (PID.err) return;
-  const bus = box.querySelector('#pidBuscar');
-  bus.addEventListener('input', () => { PID.q = bus.value; const pos = bus.selectionStart; renderPorId(); const b = $('pidBuscar'); b.focus(); b.setSelectionRange(pos, pos); });
-  box.querySelector('#pidDar').addEventListener('click', () => darPorId());
-  box.querySelector('#pidEquipos').addEventListener('change', async e => {
-    const v = parseInt(e.target.value, 10);
-    try { await pidRpc('acceso_id_equipos_guardar', { p_max: v }); PID.equipos = v; toast('Equipos por cuenta: ' + (v || 'sin límite')); }
-    catch (er) { toast(pidError(er), true); renderPorId(); }
-  });
-  box.querySelectorAll('[data-pid-q]').forEach(b => b.addEventListener('click', async () => {
-    const a = PID.lista.find(x => String(x.id) === b.dataset.pidQ); if (!a) return;
-    if (b.dataset.seguro !== '1') { b.dataset.seguro = '1'; b.textContent = '¿Seguro?'; b.style.color = 'var(--red)'; return; }
+  const nId = PID.lista.length;
+  box.innerHTML = `<div class="chips" style="margin:0 0 14px;">
+    <button type="button" class="chip ${CD.vista !== 'id' ? 'on' : ''}" data-vista="codigos">Códigos <span class="c">${CD.lista.length}</span></button>
+    <button type="button" class="chip ${CD.vista === 'id' ? 'on' : ''}" data-vista="id">Por ID <span class="c">${PID.err ? '!' : nId}</span></button></div>`;
+  box.querySelectorAll('[data-vista]').forEach(b => b.addEventListener('click', () => {
+    if (CD.vista === b.dataset.vista) return;
+    CD.vista = b.dataset.vista; $('cdBuscar').value = '';
+    $('cdBuscar').placeholder = CD.vista === 'id' ? 'Buscar por ID, apodo, correo o nota…' : 'Buscar por código, usuario o curso…';
+    renderCodigos();
+  }));
+}
+const pidVigente = a => !a.vence || !PID.hoy || a.vence >= PID.hoy;
+const pidEquipos = a => Array.isArray(a.equipos) ? a.equipos : [];
+function renderPorId() {
+  renderVista();
+  if (CD.vista !== 'id') return;
+  const L = PID.lista;
+  const pasa = (a, e) => e === 'Todos' || (e === 'Activos' ? pidVigente(a) : e === 'Vencidos' ? !pidVigente(a) : esDescarga(a));
+  const cuenta = e => L.filter(a => pasa(a, e)).length;
+  if (!['Todos', 'Activos', 'Vencidos', 'Descargas'].includes(PID.filtro)) PID.filtro = 'Todos';
+  const eqUso = L.reduce((s, a) => s + pidEquipos(a).length, 0);
+  $('cdStats').innerHTML = PID.err ? '' : `<b>${L.length}</b> por ID · <b>${cuenta('Activos')}</b> activos · <b>${eqUso}</b> equipo${eqUso === 1 ? '' : 's'} en uso`;
+  $('cdChips').innerHTML = PID.err ? '' : ['Todos', 'Activos', 'Vencidos', 'Descargas'].map(e =>
+    `<button type="button" class="chip st ${e === PID.filtro ? 'on' : ''}" data-e="${e}">${e === 'Descargas' ? 'Descargas PDF' : e} <span class="c">${cuenta(e)}</span></button>`).join('');
+  $('cdChips').querySelectorAll('.chip').forEach(ch => ch.addEventListener('click', () => { PID.filtro = ch.dataset.e; renderPorId(); }));
+  if (PID.err) { $('cdList').innerHTML = `<div class="state-msg error">${esc(PID.err)}</div>`; return; }
+  const q = $('cdBuscar').value.trim().toLowerCase();
+  const rows = L.filter(a => pasa(a, PID.filtro) && (!q || [a.jid, a.apodo, a.email, a.nota, etiquetaProd(a.producto)].join(' ').toLowerCase().includes(q)));
+  if (!L.length) { $('cdList').innerHTML = '<div class="state-msg">Aún no diste nada por ID. El alumno te pasa su ID (Perfil → su tarjeta → copiar) y tú tocas <b>＋ Dar por ID</b>.</div>'; return; }
+  if (!rows.length) { $('cdList').innerHTML = '<div class="state-msg">Nada con ese filtro.</div>'; return; }
+  const max = PID.equipos || 0;
+  const ico = t => /Android|iPhone/.test(t || '') ? '📱' : '💻';
+  $('cdList').innerHTML = rows.slice(0, 300).map(a => {
+    const vig = pidVigente(a), eqs = pidEquipos(a), pct = max ? Math.min(100, Math.round(eqs.length / max * 100)) : 0;
+    return `<article class="rcard cdcard ${vig ? '' : 'dim'}">
+      <div class="rtop">
+        <div class="rmeta">
+          ${a.jid ? `<button class="cdcode" type="button" data-copy="${esc(a.jid)}" title="Copiar ID">ID ${esc(a.jid)} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>` : ''}
+          <span class="pill">${esc(etiquetaProd(a.producto))}</span>
+          ${esDescarga(a) ? `<span class="pill gray" title="Descargas PDF por día">${a.limite_dia ? a.limite_dia + ' descargas/día' : 'límite general'}</span>` : ''}
+          <span class="pill ${vig ? 'Vigente' : 'Revertida'}">${vig ? 'Activo' : 'Vencido'}</span>
+        </div>
+        <span class="rdate">${a.vence ? (vig ? 'vence el ' : 'venció el ') + esc(a.vence.split('-').reverse().join('/')) : 'sin vencimiento'}</span>
+      </div>
+      <div class="cdnota">👤 <b>${esc(a.apodo || 'Sin apodo')}</b> · ${esc(a.email || '')}${a.nota ? ' · ' + esc(a.nota) : ''}</div>
+      <div class="cduso"><div class="bar"><i style="width:${pct}%"></i></div>
+        <span><b>${eqs.length}</b> de ${max || '∞'} equipos · dado el ${esc(fechaCorta(a.creado))}</span></div>
+      <div class="cddevs" id="pdevs-${a.id}" ${PID.abiertos && PID.abiertos[a.id] ? '' : 'hidden'}>
+        ${eqs.length ? eqs.map(d => `<div class="dev"><span>${ico(d.equipo)} <b>${esc(d.equipo || 'Equipo')}</b> · último uso ${esc(fechaCorta(d.visto))}</span>
+          <button class="rbtn" type="button" data-plib="${a.id}" data-disp="${esc(d.dispositivo)}">Liberar</button></div>`).join('') : '<div class="hint">Aún no entra en ningún equipo.</div>'}
+        ${eqs.length > 1 ? `<div class="rfoot" style="margin-top:8px;"><button class="rbtn danger" type="button" data-plib="${a.id}" data-disp="">Liberar todos</button></div>` : ''}
+      </div>
+      <div class="rfoot">
+        <button class="rbtn" type="button" data-pdevs="${a.id}">Equipos (${eqs.length})</button>
+        <button class="rbtn danger" type="button" data-pid-q="${a.id}">Quitar</button>
+        <button class="rbtn primary" type="button" data-pid-ed="${a.id}">${typeof ICON_EDIT !== 'undefined' ? ICON_EDIT : ''} Editar</button>
+      </div>
+    </article>`;
+  }).join('');
+  const find = id => PID.lista.find(x => String(x.id) === String(id));
+  const L2 = $('cdList');
+  L2.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', () => copiar(b.dataset.copy)));
+  L2.querySelectorAll('[data-pdevs]').forEach(b => b.addEventListener('click', () => {
+    PID.abiertos = PID.abiertos || {}; PID.abiertos[b.dataset.pdevs] = !PID.abiertos[b.dataset.pdevs];
+    $('pdevs-' + b.dataset.pdevs).hidden = !PID.abiertos[b.dataset.pdevs];
+  }));
+  L2.querySelectorAll('[data-pid-ed]').forEach(b => b.addEventListener('click', () => darPorId(find(b.dataset.pidEd))));
+  L2.querySelectorAll('[data-plib]').forEach(b => b.addEventListener('click', async () => {
+    const a = find(b.dataset.plib); if (!a) return;
+    b.disabled = true; b.textContent = 'Liberando…';
+    try {
+      await pidRpc('acceso_id_liberar', { p_usuario: a.usuario, p_dispositivo: b.dataset.disp || null });
+      // El mismo alumno puede tener varios accesos: sus equipos son los mismos en todos
+      PID.lista.filter(x => x.usuario === a.usuario).forEach(x => { x.equipos = b.dataset.disp ? pidEquipos(x).filter(d => d.dispositivo !== b.dataset.disp) : []; });
+      renderPorId(); toast(b.dataset.disp ? 'Equipo liberado' : 'Equipos liberados');
+    } catch (er) { toast(/acceso_id_liberar/.test(er.message || '') ? 'Falta correr supabase/77-accesos-id-panel.sql en Supabase.' : pidError(er), true); renderPorId(); }
+  }));
+  L2.querySelectorAll('[data-pid-q]').forEach(b => b.addEventListener('click', async () => {
+    const a = find(b.dataset.pidQ); if (!a) return;
+    if (b.dataset.seguro !== '1') { b.dataset.seguro = '1'; b.textContent = '¿Seguro?'; return; }
     b.disabled = true; b.textContent = 'Quitando…';
     try { await pidRpc('acceso_id_quitar', { p_id: a.id }); PID.lista = PID.lista.filter(x => x !== a); renderPorId(); toast('Quitado. Al alumno se le cierra en unos minutos.'); }
     catch (er) { toast(pidError(er), true); renderPorId(); }
   }));
 }
+// «Equipos por cuenta» va en la caja «Acceso libre y ajustes»
+function ajusteEquiposId() {
+  const box = $('cdAjustes'); if (!box || PID.err || !PID.cargado) return;
+  const ya = box.querySelector('#pidEquipos'); if (ya) { ya.value = String(PID.equipos); return; }
+  const row = document.createElement('div');
+  row.className = 'acc-row legacy';
+  row.innerHTML = `<div><b>Equipos por cuenta (acceso por ID)</b><span>En cuántos celulares o laptops abre lo dado por ID. Si entra en uno más, deja de abrir en el más antiguo. Los códigos no cambian.</span></div>
+    <select class="inp" id="pidEquipos">${[1, 2, 3, 4, 5, 0].map(v => `<option value="${v}" ${PID.equipos === v ? 'selected' : ''}>${v ? v + (v === 1 ? ' equipo' : ' equipos') : 'Sin límite'}</option>`).join('')}</select>`;
+  box.appendChild(row);
+  row.querySelector('select').addEventListener('change', async e => {
+    const v = parseInt(e.target.value, 10);
+    try { await pidRpc('acceso_id_equipos_guardar', { p_max: v }); PID.equipos = v; toast('Equipos por cuenta: ' + (v || 'sin límite')); if (CD.vista === 'id') renderPorId(); }
+    catch (er) { toast(pidError(er), true); e.target.value = String(PID.equipos); }
+  });
+}
 // Saca los ID de 5 cifras de lo que se pegue (con comas, espacios, saltos de línea o «ID 12345»)
 const pidIds = t => [...new Set((String(t).match(/\b\d{5}\b/g) || []).map(Number))].slice(0, 200);
-function darPorId() {
-  const st = { todos: ['seminario-VIP'], areas: [] };
+function darPorId(orig) {
+  // orig: editar un acceso ya dado (cambia paquete, fecha, nota o límite sin quitarlo)
+  const st = { todos: orig ? [] : ['seminario-VIP'], areas: [] };
+  if (orig) String(orig.producto || '').split(',').filter(Boolean).forEach(p => {
+    if (/^area-/.test(p)) st.areas.push(p.slice(5)); else st.todos.push(p);
+  });
   const multi = (g, ops) => `<div class="chips" data-g="${g}">` + ops.map(([v, l]) => `<button type="button" class="chip" data-v="${esc(v)}">${l}</button>`).join('') + '</div>';
   const o = document.createElement('div');
   o.className = 'ov';
   o.innerHTML = `<div class="mcard" style="max-width:620px;"><button class="mx" type="button" aria-label="Cerrar">✕</button>
-    <div class="eyebrow">Sin código</div><h3>Dar acceso por ID</h3>
+    <div class="eyebrow">${orig ? 'Editar acceso por ID' : 'Sin código'}</div><h3>${orig ? 'ID ' + esc(orig.jid || '') : 'Dar acceso por ID'}</h3>
+    ${orig ? `<div class="hint" style="margin-top:2px;">👤 <b>${esc(orig.apodo || 'Sin apodo')}</b> · ${esc(orig.email || '')}</div>` : `
     <label class="fld">ID del alumno <span class="hint">Uno o varios: el número de 5 cifras de su tarjeta (Perfil)</span></label>
     <textarea class="inp" id="pidIds" rows="2" placeholder="Ej.: 48217, 10593"></textarea>
-    <div class="hint" id="pidQuien" style="margin-top:6px;line-height:1.6;"></div>
+    <div class="hint" id="pidQuien" style="margin-top:6px;line-height:1.6;"></div>`}
     <label class="fld">¿Qué le das? <span class="hint">Puedes marcar varios paquetes</span></label>
     ${multi('todos', PROD_TODOS)}
     <div class="hint" id="pidAyuda" style="margin:6px 0 0;"></div>
@@ -524,14 +598,14 @@ function darPorId() {
     <div class="hint" id="pidResumen" style="margin-top:10px;"></div>
     <div id="pidLimBox" hidden>
       <label class="fld">Descargas PDF por día <span class="hint">por alumno · vacío = el límite general de Panel → Descargas PDF</span></label>
-      <input class="inp" id="pidLimDia" type="number" min="1" max="500" placeholder="Ej.: 20">
+      <input class="inp" id="pidLimDia" type="number" min="1" max="500" placeholder="Ej.: 20" value="${orig && orig.limite_dia ? orig.limite_dia : ''}">
     </div>
     <div class="cdgrid">
-      <label>Hasta (opcional)<input class="inp" id="pidVence" type="date"></label>
-      <label style="grid-column: span 2;">Nota (solo la ves tú)<input class="inp" id="pidNota" maxlength="120" placeholder="Ej.: Yape 05/11 · S/ 25"></label>
+      <label>Hasta (opcional)<input class="inp" id="pidVence" type="date" value="${orig && orig.vence ? esc(orig.vence) : ''}"></label>
+      <label style="grid-column: span 2;">Nota (solo la ves tú)<input class="inp" id="pidNota" maxlength="120" placeholder="Ej.: Yape 05/11 · S/ 25" value="${orig && orig.nota ? esc(orig.nota) : ''}"></label>
     </div>
     <div class="err" id="pidErr"></div>
-    <div class="mfoot"><button type="button" class="btn-ghost" data-x>Cancelar</button><button type="button" class="btn-main" id="pidSave">Activar</button></div>
+    <div class="mfoot"><button type="button" class="btn-ghost" data-x>Cancelar</button><button type="button" class="btn-main" id="pidSave">${orig ? 'Guardar cambios' : 'Activar'}</button></div>
   </div>`;
   document.body.appendChild(o); document.body.classList.add('modal-open');
   const cerrar = () => { o.remove(); document.body.classList.remove('modal-open'); };
@@ -549,13 +623,14 @@ function darPorId() {
     o.querySelector('#pidAyuda').textContent = st.todos.map(v => PROD_AYUDA[v]).filter(Boolean).join(' · ');
     const p = producto(); o.querySelector('#pidResumen').innerHTML = p ? 'Abrirá: <b style="color:#f5ffcc">' + esc(etiquetaProd(p)) + '</b>' : '';
     o.querySelector('#pidLimBox').hidden = !esDescarga({ producto: p });
+    if (orig) return;
     const ok = quienes.filter(x => x.existe).length;
     o.querySelector('#pidQuien').innerHTML = quienes.map(x => x.existe
       ? `<span style="color:var(--accent)">✔</span> <b>${x.id}</b> ${esc(x.apodo || 'Sin apodo')} · ${esc(x.email || '')}`
       : `<span style="color:var(--red)">✘ <b>${x.id}</b> no existe</span>`).join('<br>');
     o.querySelector('#pidSave').textContent = ok > 1 ? `Activar a ${ok} alumnos` : 'Activar';
   };
-  o.querySelector('#pidIds').addEventListener('input', e => {
+  if (!orig) o.querySelector('#pidIds').addEventListener('input', e => {
     ids = pidIds(e.target.value); clearTimeout(tQ);
     if (!ids.length) { quienes = []; pintar(); return; }
     tQ = setTimeout(async () => {
@@ -580,24 +655,32 @@ function darPorId() {
     pintar();
   });
   pintar();
-  o.querySelector('#pidIds').focus();
+  if (!orig) o.querySelector('#pidIds').focus();
   o.querySelector('#pidSave').addEventListener('click', async () => {
     const err = o.querySelector('#pidErr'); err.classList.remove('show');
     const p = producto();
-    if (!ids.length) { err.textContent = 'Escribe al menos un ID (5 cifras).'; err.classList.add('show'); return; }
+    if (!orig && !ids.length) { err.textContent = 'Escribe al menos un ID (5 cifras).'; err.classList.add('show'); return; }
     if (!p) { err.textContent = 'Marca qué le das.'; err.classList.add('show'); return; }
     const btn = o.querySelector('#pidSave'); btn.disabled = true; btn.innerHTML = '<span class="spin-s"></span> Activando…';
     try {
       const lim = esDescarga({ producto: p }) ? Math.min(500, Math.max(0, parseInt(o.querySelector('#pidLimDia').value, 10) || 0)) : 0;
       const args = { p_codigos: ids, p_producto: p, p_vence: o.querySelector('#pidVence').value || null, p_nota: o.querySelector('#pidNota').value || null };
       if (lim) args.p_limite = lim;
+      if (orig) {
+        await pidRpc('acceso_id_editar', { p_id: orig.id, p_producto: p, p_vence: args.p_vence, p_nota: args.p_nota, p_limite: lim || null }).catch(er => {
+          if (/acceso_id_editar/.test(er && er.message || '')) throw new Error('Falta correr supabase/77-accesos-id-panel.sql en Supabase.');
+          throw er;
+        });
+        Object.assign(orig, { producto: p, vence: args.p_vence, nota: args.p_nota, limite_dia: lim || null });
+        cerrar(); renderPorId(); toast('Acceso actualizado'); return;
+      }
       const r = await pidRpc('acceso_id_dar', args).catch(er => {
         if (lim && /p_limite|acceso_id_dar/.test(er && er.message || '')) throw new Error('Para poner descargas por día, falta correr supabase/76-limite-descarga-por-id.sql en Supabase.');
         throw er;
       });
       const sin = r.sin_id || [];
-      cerrar(); cargarPorId();
+      cerrar(); CD.vista = 'id'; cargarPorId();
       toast(`Activado a ${r.alumnos} alumno${r.alumnos === 1 ? '' : 's'}: ${etiquetaProd(p)}` + (sin.length ? ` · no existen: ${sin.join(', ')}` : ''), !!sin.length);
-    } catch (er) { btn.disabled = false; btn.textContent = 'Activar'; err.textContent = pidError(er); err.classList.add('show'); }
+    } catch (er) { btn.disabled = false; btn.textContent = orig ? 'Guardar cambios' : 'Activar'; err.textContent = pidError(er); err.classList.add('show'); }
   });
 }
