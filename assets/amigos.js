@@ -14,6 +14,21 @@
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function nf(n) { return (+n || 0).toLocaleString('es-PE'); }
 
+  // Íconos de «Esta semana»: llama, trofeo de los tops y cofre de la colección
+  var ICO = {
+    racha: '<svg class="mai" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="maiR1" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FF3D2E"/><stop offset=".6" stop-color="#FF7A1A"/><stop offset="1" stop-color="#FFB020"/></linearGradient><linearGradient id="maiR2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FFC21A"/><stop offset="1" stop-color="#FFF3A0"/></linearGradient></defs>' +
+      '<path d="M24 3c2 7 10 11 12 19 3 11-4 22-12 22S9 37 10 27c1-6 5-9 6-14 3 4 3 8 3 8s1-11 5-18z" fill="url(#maiR1)" stroke="#8a1a00" stroke-width="2" stroke-linejoin="round"/>' +
+      '<path d="M24 22c1 4 6 7 6 13 0 5-3 8-6 8s-7-3-6-8c0-4 3-5 4-9 1 2 1 4 1 4s0-5 1-8z" fill="url(#maiR2)"/></svg>',
+    top: '<svg class="mai" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="maiT1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF08A"/><stop offset=".55" stop-color="#FFC800"/><stop offset="1" stop-color="#C98A00"/></linearGradient></defs>' +
+      '<path d="M14 6h20v4h7v5c0 6-4 10-9 11-2 4-4 6-6 6v4h5l2 6H15l2-6h5v-4c-2 0-4-2-6-6-5-1-9-5-9-11v-5h7z" fill="url(#maiT1)" stroke="#7a5200" stroke-width="2" stroke-linejoin="round"/>' +
+      '<path d="M14 13H10v2c0 3 2 6 5 7M34 13h4v2c0 3-2 6-5 7" fill="none" stroke="#7a5200" stroke-width="2"/>' +
+      '<path d="m24 11 1.8 3.7 4 .6-2.9 2.8.7 4L24 20.2l-3.6 1.9.7-4-2.9-2.8 4-.6z" fill="#fff" opacity=".9"/></svg>',
+    cofre: '<svg class="mai" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="maiC1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C77A3A"/><stop offset="1" stop-color="#7A3F17"/></linearGradient></defs>' +
+      '<path d="M6 20c0-8 6-12 18-12s18 4 18 12z" fill="url(#maiC1)" stroke="#3d1d08" stroke-width="2" stroke-linejoin="round"/>' +
+      '<rect x="6" y="20" width="36" height="20" rx="2" fill="url(#maiC1)" stroke="#3d1d08" stroke-width="2"/>' +
+      '<path d="M6 26h36M15 9v31M33 9v31" stroke="#FFC800" stroke-width="3"/>' +
+      '<rect x="20" y="22" width="8" height="9" rx="1.5" fill="#FFE14D" stroke="#7a5200" stroke-width="1.5"/><circle cx="24" cy="26" r="1.4" fill="#3d1d08"/></svg>'
+  };
   var SV = {
     amigos: '<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.8"/><path d="M15.5 14.2A5.5 5.5 0 0 1 21.5 20"/></svg>',
     solic: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
@@ -158,16 +173,16 @@
       return '<' + (mio ? 'a href="coleccion.html#' + x.espacio + '"' : 'span') + ' style="--c:' + Rr.c + '"><u>' + Rr.nom + '</u><span class="mcc-dib">' + c.dibujo(x) + '</span><small>' + esc(x.nom) + '</small></' + (mio ? 'a' : 'span') + '>';
     }).join('');
     var card = '<div class="ma-card' + (mio ? '' : ' amigo') + '"><div class="c-head">' + T().arte(tema(d), fondo(d)) +
-      '<div class="lg"><img src="' + BASE + 'assets/img/logo-modo-cachimbo-horizontal.svg" alt="Modo Cachimbo">' + (mio ? '<a href="coleccion.html" title="Mi colección" aria-label="Mi colección">' + SV.cfg + '</a>' : '') + '</div>' +
+      '<div class="lg"><img src="' + BASE + 'assets/img/logo-modo-cachimbo-horizontal.svg" alt="Modo Cachimbo"></div>' +
       '<div class="yo">' + foto(d) + '<div><div class="nm">' + esc(d.apodo || 'Cachimbo') + '</div>' +
         (t ? '<div class="ttl">' + c.titulo(t) + '</div>' : '') +
         (d.carrera ? '<div class="ca">' + esc(d.carrera) + '</div>' : '') +
         '<button type="button" class="uid" data-ma="id" title="Copiar ID">ID: ' + esc(d.codigo) + ' ' + SV.copia + '</button></div></div></div>' +
       '<div class="c-sec"><span class="ma-k">' + SV.stats + 'Esta semana</span><div class="ma-cuatro">' +
         '<a class="em"' + (mio ? ' href="coleccion.html#rangos"' : '') + '>' + emb(sx) + '<b style="color:' + rangoCol(sx) + ';font-size:16px">' + rangoNom(sx) + '</b><small>Rango</small></a>' +
-        '<span>' + T().icono('racha') + '<b>' + (+d.racha || 0) + '</b><small>Racha</small></span>' +
-        '<span>' + T().icono('mejor') + '<b>' + (+d.mejor || 0) + '</b><small>Mejor</small></span>' +
-        '<span>' + T().icono('cofre') + '<b>' + (+d.coleccion || 0) + '/' + total + '</b><small>Colección</small></span></div></div>' +
+        '<span class="ma-st">' + ICO.racha + '<b>' + (+d.racha || 0) + '</b><small>Racha</small></span>' +
+        '<span class="ma-st">' + ICO.top + '<b>' + (d.tops != null ? +d.tops : '–') + '</b><small>Veces en top</small></span>' +
+        (mio ? '<a class="ma-st col" href="coleccion.html">' : d.tiene ? '<a class="ma-st col" href="#" data-ptab="col">' : '<span class="ma-st col">') + ICO.cofre + '<small>Colección</small>' + (mio || d.tiene ? '</a>' : '</span>') + '</div></div>' +
       '<div class="c-sec"><span class="ma-k">' + SV.estrella + 'Vitrina</span>' + vitrina(d) + '</div>' +
       (meta ? '<div class="c-sec"><' + (mio ? 'a href="#" data-ma="editar"' : 'div') + ' class="ma-meta">' + meta + '</' + (mio ? 'a' : 'div') + '></div>' : '') +
       '<div class="ma-dest">' + dest + '</div>' +
