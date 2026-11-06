@@ -102,6 +102,10 @@
     '.acc .meta i.ok::before{content:"";width:7px;height:7px;border-radius:50%;background:#C6E000;box-shadow:0 0 0 0 rgba(198,224,0,.6);animation:accLate 1.8s ease-out infinite}',
     '@keyframes accLate{0%{box-shadow:0 0 0 0 rgba(198,224,0,.6)}100%{box-shadow:0 0 0 7px rgba(198,224,0,0)}}',
     '.acc li.pase .quitar{margin-top:10px;padding:5px 10px;border-radius:10px;border-width:1.5px;border-bottom-width:3px;font-size:12px;color:#a9a2cc}',
+    '.acc .meta i.pronto{background:rgba(255,150,0,.16);color:#FFB04A;animation:accAviso 2s ease-in-out infinite}',
+    '@keyframes accAviso{0%,100%{box-shadow:0 0 0 0 rgba(255,150,0,0)}50%{box-shadow:0 0 0 3px rgba(255,150,0,.25)}}',
+    '.acc li.pase.pronto{border-color:rgba(255,150,0,.45);border-bottom-color:rgba(255,150,0,.7)}',
+    '@media (prefers-reduced-motion:reduce){.acc .meta i.pronto{animation:none!important}}',
     '@media (prefers-reduced-motion:reduce){.acc li.pase,.acc li.pase::before,.acc .meta i.ok::before,.acc-hero .cand .arco{animation:none!important}}'
   ].join('\n');
   document.head.appendChild(st);
@@ -155,6 +159,18 @@
     return p === 'simulacro' ? 'simulacro' : p.split('-')[0];
   }
   function fecha(s) { var p = String(s).split('-'); return +p[2] + ' ' + MESES[+p[1] - 1] + ' ' + p[0]; }
+  // Días que le quedan (null si no tiene fecha); con 7 o menos se avisa en naranja
+  function dias(s) {
+    var p = String(s || '').split('-'); if (p.length < 3) return null;
+    var h = new Date(); h = new Date(h.getFullYear(), h.getMonth(), h.getDate());
+    return Math.round((new Date(+p[0], +p[1] - 1, +p[2]) - h) / 864e5);
+  }
+  function chipVence(v) {
+    var d = dias(v);
+    if (d !== null && d >= 0 && d <= 7) return '<i class="pronto">' + (d === 0 ? 'Vence hoy' : d === 1 ? 'Vence mañana' : 'Vence en ' + d + ' días') + '</i>';
+    return '<i>Vence ' + fecha(v) + '</i>';
+  }
+  function pronto(v) { var d = dias(v); return d !== null && d >= 0 && d <= 7; }
 
   function aviso(a) { var s = servidor[a.codigo] || {}; return s.estado && s.estado !== 'activo' ? s.mensaje : a.error; }
 
@@ -165,10 +181,10 @@
     var chips = [];
     if (mal) chips.push('<i class="mal">' + (s.estado === 'vencido' ? 'Venció' : s.estado === 'desactivado' ? 'Desactivado' : s.estado === 'no-existe' ? 'Ya no existe' : s.estado === 'lleno' ? 'Sin cupo' : s.estado === 'liberado' ? 'Liberado' : 'No funciona') + '</i>');
     else chips.push('<i class="ok">Activo</i>');
-    if (vence) chips.push('<i>' + (s.estado === 'vencido' ? '' : 'Vence ') + fecha(vence) + '</i>');
+    if (vence) chips.push(s.estado === 'vencido' || mal ? '<i>' + (s.estado === 'vencido' ? '' : 'Vence ') + fecha(vence) + '</i>' : chipVence(vence));
     else if (!mal) chips.push('<i>Sin vencimiento</i>');
     if (!mal && s.max > 0) chips.push('<i>' + s.usados + ' de ' + s.max + (s.max === 1 ? ' equipo' : ' equipos') + '</i>');
-    return '<li class="pase ' + (mal ? 'mal' : 'on') + (elegido === a.codigo ? ' elegido' : '') + '" style="--c:' + col + '"><span class="ic" style="background:' + col + '22;color:' + col + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' + (ICO[t] || ICO.curso) + '</svg></span>' +
+    return '<li class="pase ' + (mal ? 'mal' : 'on') + (!mal && pronto(vence) ? ' pronto' : '') + (elegido === a.codigo ? ' elegido' : '') + '" style="--c:' + col + '"><span class="ic" style="background:' + col + '22;color:' + col + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' + (ICO[t] || ICO.curso) + '</svg></span>' +
       '<div class="tx"><b>' + esc(nombre(s.producto || a.producto)) + '</b><code>' + esc(a.codigo) + '</code><div class="meta">' + chips.join('') + '</div>' +
       (mal ? '<span class="aviso">' + esc(aviso(a)) + '</span>' : '') +
       '<button type="button" class="quitar" data-c="' + esc(a.codigo) + '">' + (mal ? 'Quitar de la lista' : 'Quitar de este equipo') + '</button></div></li>' +
@@ -200,8 +216,8 @@
   // Lo activado por ID: el profe lo dio en el panel, va con la cuenta (no con un código)
   function filaId(g) {
     var t = tipo(g.producto), col = COLOR[t] || '#1CB0F6';
-    var chips = ['<i class="ok">Activo</i>', '<i class="id">Por ID</i>', '<i>' + (g.vence ? 'Vence ' + fecha(g.vence) : 'Sin vencimiento') + '</i>'];
-    return '<li class="pase on" style="--c:' + col + '"><span class="ic" style="background:' + col + '22;color:' + col + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' + (ICO[t] || ICO.curso) + '</svg></span>' +
+    var chips = ['<i class="ok">Activo</i>', '<i class="id">Por ID</i>', (g.vence ? chipVence(g.vence) : '<i>Sin vencimiento</i>')];
+    return '<li class="pase on' + (pronto(g.vence) ? ' pronto' : '') + '" style="--c:' + col + '"><span class="ic" style="background:' + col + '22;color:' + col + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' + (ICO[t] || ICO.curso) + '</svg></span>' +
       '<div class="tx"><b>' + esc(nombre(g.producto)) + '</b><code>Activado en tu cuenta</code><div class="meta">' + chips.join('') + '</div></div></li>';
   }
   var eq = document.createElement('p');

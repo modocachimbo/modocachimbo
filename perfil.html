@@ -293,6 +293,37 @@
   header.top [data-mc-auth] .mcu-chip { display: none !important; }
   /* La tarjeta de jugador (.pj) está en assets/tarjeta-jugador.css */
 
+  /* Mi cuenta: tu sesión y ayuda por WhatsApp */
+  .ses-filas { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 16px; }
+  .ses-f { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; background: var(--surface-2); border: 2px solid #2C2549; border-bottom-width: 4px; min-width: 0; }
+  .ses-f > div { flex: 1; min-width: 0; }
+  .ses-f small { display: block; font: 900 11px Nunito, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); }
+  .ses-f b { display: block; font: 900 15px Nunito, sans-serif; overflow-wrap: anywhere; }
+  .ses-ic { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; flex-shrink: 0; background: rgba(28,176,246,.12); color: var(--cel); }
+  .ses-ic svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .ses-aqui { margin-top: 6px; display: inline-flex; align-items: center; gap: 6px; font: normal 900 11.5px Nunito, sans-serif; border-radius: 8px; padding: 3px 8px; background: rgba(198,224,0,.12); color: #C6E000; white-space: nowrap; }
+  .ses-aqui::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #C6E000; animation: sesLate 1.8s ease-out infinite; }
+  @keyframes sesLate { 0% { box-shadow: 0 0 0 0 rgba(198,224,0,.6); } 100% { box-shadow: 0 0 0 8px rgba(198,224,0,0); } }
+  .ses-otros { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; margin-top: 14px; }
+  .ses-otros p { flex: 1; min-width: 200px; margin: 0; font: 800 13px/1.45 Nunito, sans-serif; color: var(--text-dim); }
+  .ses-otros p strong { color: var(--text); }
+  .ses-otros p.ok { color: #C6E000; }
+  .ses-otros p.mal { color: #ff8a8a; }
+  .ses-otros .rojo { padding: 10px 16px; border-radius: 12px; border: 0; background: #FF4B4B; color: #fff; font: 1000 13.5px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .04em; box-shadow: 0 4px 0 #c43434; cursor: pointer; }
+  .ses-otros .rojo:disabled { opacity: .6; }
+  .ayuda { position: relative; overflow: hidden; display: flex; align-items: center; gap: 14px; margin-top: 18px; padding: 16px 18px; border-radius: 22px; border: 2px solid #1d6b3c; border-bottom-width: 5px; background: linear-gradient(100deg, rgba(37,211,102,.16), var(--surface) 75%); color: var(--text); text-decoration: none; transition: transform .08s; }
+  .ayuda:active { transform: translateY(3px); border-bottom-width: 2px; }
+  .ayuda::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.08) 50%, transparent 62%); background-size: 260% 100%; animation: ayBrillo 5s ease-in-out infinite; }
+  @keyframes ayBrillo { 0%, 55% { background-position: 130% 0; } 100% { background-position: -130% 0; } }
+  .ay-ic { width: 48px; height: 48px; border-radius: 15px; flex-shrink: 0; display: grid; place-items: center; background: #25D366; color: #fff; box-shadow: 0 4px 0 #128C4B; animation: ayLate 2.4s ease-in-out infinite; }
+  .ay-ic svg { width: 28px; height: 28px; }
+  @keyframes ayLate { 0%, 70%, 100% { transform: scale(1); } 80% { transform: scale(1.1) rotate(-6deg); } 90% { transform: scale(1.04) rotate(4deg); } }
+  .ay-tx { flex: 1; min-width: 0; }
+  .ay-tx b { display: block; font: 900 17px Nunito, sans-serif; }
+  .ay-tx span { display: block; margin-top: 2px; font: 700 13px/1.4 Nunito, sans-serif; color: var(--text-dim); }
+  .ay-fl svg { width: 22px; height: 22px; fill: none; stroke: #25D366; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  @media (prefers-reduced-motion: reduce) { .ayuda::before, .ay-ic, .ses-aqui::before { animation: none !important; } }
+
   /* Mi colección: tus pines y un botón a la colección */
   .col-strip { display: flex; align-items: center; gap: 14px; margin-top: 18px; padding: 14px 16px; border-radius: 22px; border: 2px solid #5a3b10; border-bottom-width: 5px; background: linear-gradient(100deg, #231527, var(--surface) 70%); text-decoration: none; color: var(--text); flex-wrap: wrap; }
   .col-strip .pins { display: flex; gap: 6px; }
@@ -829,6 +860,24 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
         </div>
         <ul class="lista rep-lista" id="repLista"></ul>
       </section>
+      <section class="panel" id="sesionBox" hidden>
+        <div class="sec-cab">
+          <span class="sec-ic cel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4" width="19" height="12.5" rx="2.5"/><path d="M8 20.5h8M12 16.5v4"/></svg></span>
+          <div><h2>Tu sesión</h2><p class="nota">Dónde y cómo entraste. Si usaste otro equipo y no cerraste sesión, ciérrala desde aquí.</p></div>
+        </div>
+        <div class="ses-filas">
+          <div class="ses-f"><span class="ses-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4" width="19" height="12.5" rx="2.5"/><path d="M8 20.5h8M12 16.5v4"/></svg></span><div><small>Este equipo</small><b id="sesEquipo">—</b><i class="ses-aqui">Aquí estás</i></div></div>
+          <div class="ses-f"><span class="ses-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><div><small>Cuenta</small><b id="sesCuenta">—</b></div></div>
+          <div class="ses-f"><span class="ses-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><small>Último ingreso</small><b id="sesUltimo">—</b></div></div>
+        </div>
+        <div class="ses-otros" id="sesOtros"></div>
+      </section>
+
+      <a class="ayuda" id="ayudaWa" href="https://wa.me/51917797543" target="_blank" rel="noopener">
+        <span class="ay-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1-.7-.3-1.5-.8-2.2-1.5-.6-.6-1-1.2-1.2-1.6-.1-.2 0-.4.1-.5l.4-.5.3-.5v-.5l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg></span>
+        <span class="ay-tx"><b>¿Necesitas ayuda?</b><span>Escríbenos por WhatsApp si un código no abre o algo falla. Te mandamos tu ID para ubicarte rápido.</span></span>
+        <span class="ay-fl"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+      </a>
       <button class="btn-gris" type="button" id="btnSalir">Cerrar sesión</button>
       </div>
 
@@ -839,7 +888,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
 
   </div>
 
-<script src="assets/accesos-perfil.js?v=2"></script>
+<script src="assets/accesos-perfil.js?v=3"></script>
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
@@ -1047,6 +1096,56 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
 
   $('btnIngresar').addEventListener('click', function () { MCAuth.abrirIngreso(); });
   $('btnSalir').addEventListener('click', function () { MCAuth.salir(); });
+
+  // Tu sesión: este equipo, la cuenta y el último ingreso; cerrar en los otros equipos
+  (function () {
+    var box = $('sesionBox'), otros = $('sesOtros'), estado = 'nada';
+    var MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'set', 'oct', 'nov', 'dic'];
+    function equipo() {
+      var ua = navigator.userAgent, nav = 'Navegador', so = '';
+      if (/Edg\//.test(ua)) nav = 'Edge'; else if (/OPR\//.test(ua)) nav = 'Opera'; else if (/SamsungBrowser/.test(ua)) nav = 'Samsung Internet';
+      else if (/Chrome\//.test(ua)) nav = 'Chrome'; else if (/Firefox\//.test(ua)) nav = 'Firefox'; else if (/Safari\//.test(ua)) nav = 'Safari';
+      if (/iPhone/.test(ua)) so = 'iPhone'; else if (/iPad/.test(ua)) so = 'iPad'; else if (/Android/.test(ua)) so = 'Android';
+      else if (/Windows/.test(ua)) so = 'Windows'; else if (/Mac OS X/.test(ua)) so = 'Mac'; else if (/Linux/.test(ua)) so = 'Linux';
+      return nav + (so ? ' en ' + so : '');
+    }
+    function cuando(iso) {
+      var d = new Date(iso); if (isNaN(d)) return '—';
+      var h = new Date(), ay = new Date(h.getFullYear(), h.getMonth(), h.getDate() - 1);
+      var hora = d.getHours() + ':' + ('0' + d.getMinutes()).slice(-2);
+      if (d.toDateString() === h.toDateString()) return 'Hoy, ' + hora;
+      if (d.toDateString() === ay.toDateString()) return 'Ayer, ' + hora;
+      return d.getDate() + ' ' + MES[d.getMonth()] + ' ' + d.getFullYear() + ', ' + hora;
+    }
+    function pintarOtros() {
+      otros.innerHTML = estado === 'conf' ? '<p>Los otros equipos tendrán que volver a ingresar. <strong>Este equipo sigue abierto.</strong></p><button type="button" class="rojo" data-ses="si">Sí, cerrar</button><button type="button" class="btn-gris" data-ses="no">Cancelar</button>'
+        : estado === 'yendo' ? '<p>Cerrando sesión en los otros equipos…</p>'
+        : estado === 'ok' ? '<p class="ok">Listo: tu cuenta quedó abierta solo en este equipo.</p>'
+        : (estado === 'mal' ? '<p class="mal">No se pudo conectar. Revisa tu internet e inténtalo otra vez.</p>' : '') + '<button type="button" class="btn-gris" data-ses="pedir">Cerrar sesión en otros equipos</button>';
+    }
+    otros.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-ses]'); if (!b) return;
+      if (b.dataset.ses === 'pedir') { estado = 'conf'; pintarOtros(); return; }
+      if (b.dataset.ses === 'no') { estado = 'nada'; pintarOtros(); return; }
+      estado = 'yendo'; pintarOtros();
+      MCAuth.listo.then(function (c) { return c.auth.signOut({ scope: 'others' }); })
+        .then(function (r) { estado = r && r.error ? 'mal' : 'ok'; }, function () { estado = 'mal'; })
+        .then(pintarOtros);
+    });
+    function pintarSesion() {
+      var u = MCAuth.usuario(); box.hidden = !u; if (!u) return;
+      var prov = (u.app_metadata && u.app_metadata.provider) || '';
+      $('sesEquipo').textContent = equipo();
+      $('sesCuenta').textContent = (u.email || 'Tu cuenta') + (prov === 'google' ? ' · Google' : prov === 'email' ? ' · Correo' : '');
+      $('sesUltimo').textContent = u.last_sign_in_at ? cuando(u.last_sign_in_at) : '—';
+      if (estado === 'nada') pintarOtros();
+      var id = $('pjUid') && $('pjUid').querySelector('b'), num = id ? id.textContent.trim() : '';
+      $('ayudaWa').href = 'https://wa.me/51917797543?text=' + encodeURIComponent('Hola Modo Cachimbo, necesito ayuda con mi cuenta.' + (num ? ' Mi ID es ' + num + '.' : ''));
+    }
+    MCAuth.alCambiar(function () { setTimeout(pintarSesion, 0); });
+    pintarSesion();
+    $('ayudaWa').addEventListener('pointerdown', pintarSesion);
+  })();
 
   // Mis reportes de claves (supabase/07-reportes.sql)
   var REP_EST = { Enviado: 'Enviado', Recibido: 'Recibido', Corregido: 'Corregido', Denegado: 'Denegado' };
