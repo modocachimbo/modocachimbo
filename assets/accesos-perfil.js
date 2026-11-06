@@ -73,10 +73,55 @@
     '.acc-eq{margin:10px 0 0;color:var(--text-dim);font:800 12.5px/1.45 Nunito,sans-serif}',
     '.acc-eq b{color:#fff}',
     '.acc-eq.fuera{color:#ff9b9b}',
-    '.acc-pie small{color:var(--text-dim);font:800 12.5px Nunito,sans-serif;flex:1;min-width:180px}'
+    '.acc-pie small{color:var(--text-dim);font:800 12.5px Nunito,sans-serif;flex:1;min-width:180px}',
+    /* ===== v2: pases con brillo animado ===== */
+    '.acc-hero{position:relative;overflow:hidden;display:flex;align-items:center;gap:16px;margin-top:16px;padding:16px 18px;border-radius:18px;border:2px solid rgba(198,224,0,.4);border-bottom-width:5px;background:radial-gradient(60% 130% at 0% 0%,rgba(198,224,0,.2),transparent 70%),linear-gradient(180deg,#1c1636,#120e24)}',
+    '.acc-hero.cero{border-color:#2f2852;background:linear-gradient(180deg,#1c1636,#120e24)}',
+    '.acc-hero .cand{flex-shrink:0;width:54px;height:54px;filter:drop-shadow(0 0 10px rgba(198,224,0,.45))}',
+    '.acc-hero.cero .cand{filter:none;opacity:.6}',
+    '.acc-hero .cand .arco{transform-origin:31px 22px;animation:accAbre 2.8s ease-in-out infinite}',
+    '.acc-hero.cero .cand .arco{animation:none}',
+    '@keyframes accAbre{0%,55%,100%{transform:rotate(0)}70%,85%{transform:rotate(-28deg) translateY(-2px)}}',
+    '.acc-hero .num{font:italic 900 46px/.9 "Barlow Condensed","Arial Narrow",sans-serif;color:#C6E000;text-shadow:0 3px 0 rgba(0,0,0,.4)}',
+    '.acc-hero.cero .num{color:#8a83b0}',
+    '.acc-hero .tx b{display:block;font:italic 900 19px/1.05 "Barlow Condensed","Arial Narrow",sans-serif !important;text-transform:uppercase;letter-spacing:.04em;color:#fff}',
+    '.acc-hero .tx span{display:block;margin-top:3px;font:800 13px Nunito,sans-serif;color:#cfc8ee}',
+    '.acc{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}',
+    '.acc li.conf,.acc li.vacio{grid-column:1/-1}',
+    '.acc li.pase{--c:#1CB0F6;position:relative;overflow:hidden;isolation:isolate;padding:14px;border:2px solid color-mix(in srgb,var(--c) 45%,#2f2852);border-bottom-width:5px;border-radius:18px;background:radial-gradient(70% 120% at 0% 0%,color-mix(in srgb,var(--c) 24%,transparent),transparent 70%),linear-gradient(180deg,#1c1636,#140f28);animation:accEntra .45s ease-out both}',
+    '.acc li.pase:nth-child(2){animation-delay:.06s}.acc li.pase:nth-child(3){animation-delay:.12s}.acc li.pase:nth-child(4){animation-delay:.18s}.acc li.pase:nth-child(5){animation-delay:.24s}',
+    '@keyframes accEntra{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}',
+    '.acc li.pase.on::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.10) 50%,transparent 62%);background-size:260% 100%;animation:accBrillo 4.5s ease-in-out infinite}',
+    '@keyframes accBrillo{0%{background-position:130% 0}55%,100%{background-position:-30% 0}}',
+    '.acc li.pase.mal{--c:#5b5f80;filter:saturate(.6)}',
+    '.acc li.pase .ic{width:52px;height:52px;border-radius:14px;background:color-mix(in srgb,var(--c) 18%,transparent)!important;color:var(--c)!important;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--c) 40%,transparent),0 0 16px color-mix(in srgb,var(--c) 30%,transparent)}',
+    '.acc li.pase .ic svg{width:26px;height:26px}',
+    '.acc li.pase b{font:italic 900 20px/1.05 "Barlow Condensed","Arial Narrow",sans-serif !important;text-transform:uppercase;letter-spacing:.02em;color:#fff}',
+    '.acc li.pase code{display:block;margin-top:3px}',
+    '.acc .meta i.ok{display:inline-flex;align-items:center;gap:5px}',
+    '.acc .meta i.ok::before{content:"";width:7px;height:7px;border-radius:50%;background:#C6E000;box-shadow:0 0 0 0 rgba(198,224,0,.6);animation:accLate 1.8s ease-out infinite}',
+    '@keyframes accLate{0%{box-shadow:0 0 0 0 rgba(198,224,0,.6)}100%{box-shadow:0 0 0 7px rgba(198,224,0,0)}}',
+    '.acc li.pase .quitar{margin-top:10px;padding:5px 10px;border-radius:10px;border-width:1.5px;border-bottom-width:3px;font-size:12px;color:#a9a2cc}',
+    '.acc .meta i.pronto{background:rgba(255,150,0,.16);color:#FFB04A;animation:accAviso 2s ease-in-out infinite}',
+    '@keyframes accAviso{0%,100%{box-shadow:0 0 0 0 rgba(255,150,0,0)}50%{box-shadow:0 0 0 3px rgba(255,150,0,.25)}}',
+    '.acc li.pase.pronto{border-color:rgba(255,150,0,.45);border-bottom-color:rgba(255,150,0,.7)}',
+    '@media (prefers-reduced-motion:reduce){.acc .meta i.pronto{animation:none!important}}',
+    '@media (prefers-reduced-motion:reduce){.acc li.pase,.acc li.pase::before,.acc .meta i.ok::before,.acc-hero .cand .arco{animation:none!important}}'
   ].join('\n');
   document.head.appendChild(st);
   ul.className = 'acc';
+
+  var hero = document.createElement('div');
+  hero.className = 'acc-hero';
+  ul.before(hero);
+  var CANDADO = '<svg class="cand" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="accG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2FF7A"/><stop offset="1" stop-color="#9DB800"/></linearGradient></defs>' +
+    '<path class="arco" d="M15 22v-6a9 9 0 0 1 18 0v6" fill="none" stroke="#d9d4f2" stroke-width="4.5" stroke-linecap="round"/>' +
+    '<rect x="9" y="21" width="30" height="23" rx="6" fill="url(#accG)" stroke="#3d4a00" stroke-width="2"/><circle cx="24" cy="31" r="3.4" fill="#2b3300"/><path d="M24 33v5" stroke="#2b3300" stroke-width="3" stroke-linecap="round"/></svg>';
+  function pintarHero(n) {
+    hero.className = 'acc-hero' + (n ? '' : ' cero');
+    hero.innerHTML = CANDADO + '<span class="num">' + n + '</span><span class="tx"><b>' + (n === 1 ? 'Paquete activo' : 'Paquetes activos') + '</b><span>' +
+      (n ? 'Todo esto ya está desbloqueado para ti.' : 'Activa un código para desbloquear más contenido.') + '</span></span>';
+  }
 
   var limpiar = document.createElement('div');
   limpiar.className = 'acc-limpiar';
@@ -114,6 +159,18 @@
     return p === 'simulacro' ? 'simulacro' : p.split('-')[0];
   }
   function fecha(s) { var p = String(s).split('-'); return +p[2] + ' ' + MESES[+p[1] - 1] + ' ' + p[0]; }
+  // Días que le quedan (null si no tiene fecha); con 7 o menos se avisa en naranja
+  function dias(s) {
+    var p = String(s || '').split('-'); if (p.length < 3) return null;
+    var h = new Date(); h = new Date(h.getFullYear(), h.getMonth(), h.getDate());
+    return Math.round((new Date(+p[0], +p[1] - 1, +p[2]) - h) / 864e5);
+  }
+  function chipVence(v) {
+    var d = dias(v);
+    if (d !== null && d >= 0 && d <= 7) return '<i class="pronto">' + (d === 0 ? 'Vence hoy' : d === 1 ? 'Vence mañana' : 'Vence en ' + d + ' días') + '</i>';
+    return '<i>Vence ' + fecha(v) + '</i>';
+  }
+  function pronto(v) { var d = dias(v); return d !== null && d >= 0 && d <= 7; }
 
   function aviso(a) { var s = servidor[a.codigo] || {}; return s.estado && s.estado !== 'activo' ? s.mensaje : a.error; }
 
@@ -124,10 +181,10 @@
     var chips = [];
     if (mal) chips.push('<i class="mal">' + (s.estado === 'vencido' ? 'Venció' : s.estado === 'desactivado' ? 'Desactivado' : s.estado === 'no-existe' ? 'Ya no existe' : s.estado === 'lleno' ? 'Sin cupo' : s.estado === 'liberado' ? 'Liberado' : 'No funciona') + '</i>');
     else chips.push('<i class="ok">Activo</i>');
-    if (vence) chips.push('<i>' + (s.estado === 'vencido' ? '' : 'Vence ') + fecha(vence) + '</i>');
+    if (vence) chips.push(s.estado === 'vencido' || mal ? '<i>' + (s.estado === 'vencido' ? '' : 'Vence ') + fecha(vence) + '</i>' : chipVence(vence));
     else if (!mal) chips.push('<i>Sin vencimiento</i>');
     if (!mal && s.max > 0) chips.push('<i>' + s.usados + ' de ' + s.max + (s.max === 1 ? ' equipo' : ' equipos') + '</i>');
-    return '<li class="' + (mal ? 'mal' : '') + (elegido === a.codigo ? ' elegido' : '') + '"><span class="ic" style="background:' + col + '22;color:' + col + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' + (ICO[t] || ICO.curso) + '</svg></span>' +
+    return '<li class="pase ' + (mal ? 'mal' : 'on') + (!mal && pronto(vence) ? ' pronto' : '') + (elegido === a.codigo ? ' elegido' : '') + '" style="--c:' + col + '"><span class="ic" style="background:' + col + '22;color:' + col + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' + (ICO[t] || ICO.curso) + '</svg></span>' +
       '<div class="tx"><b>' + esc(nombre(s.producto || a.producto)) + '</b><code>' + esc(a.codigo) + '</code><div class="meta">' + chips.join('') + '</div>' +
       (mal ? '<span class="aviso">' + esc(aviso(a)) + '</span>' : '') +
       '<button type="button" class="quitar" data-c="' + esc(a.codigo) + '">' + (mal ? 'Quitar de la lista' : 'Quitar de este equipo') + '</button></div></li>' +
@@ -159,8 +216,8 @@
   // Lo activado por ID: el profe lo dio en el panel, va con la cuenta (no con un código)
   function filaId(g) {
     var t = tipo(g.producto), col = COLOR[t] || '#1CB0F6';
-    var chips = ['<i class="ok">Activo</i>', '<i class="id">Por ID</i>', '<i>' + (g.vence ? 'Vence ' + fecha(g.vence) : 'Sin vencimiento') + '</i>'];
-    return '<li><span class="ic" style="background:' + col + '22;color:' + col + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' + (ICO[t] || ICO.curso) + '</svg></span>' +
+    var chips = ['<i class="ok">Activo</i>', '<i class="id">Por ID</i>', (g.vence ? chipVence(g.vence) : '<i>Sin vencimiento</i>')];
+    return '<li class="pase on' + (pronto(g.vence) ? ' pronto' : '') + '" style="--c:' + col + '"><span class="ic" style="background:' + col + '22;color:' + col + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' + (ICO[t] || ICO.curso) + '</svg></span>' +
       '<div class="tx"><b>' + esc(nombre(g.producto)) + '</b><code>Activado en tu cuenta</code><div class="meta">' + chips.join('') + '</div></div></li>';
   }
   var eq = document.createElement('p');
@@ -174,6 +231,7 @@
     eq.hidden = !ide.lista.length && ide.permitido;
     if (!ide.permitido) { eq.className = 'acc-eq fuera'; eq.innerHTML = 'Lo activado por ID se abrió en otros equipos más nuevos y ya no abre en este. Si este es tu equipo, recarga la página para usarlo aquí.'; }
     else if (ide.lista.length) { eq.className = 'acc-eq'; eq.innerHTML = 'Lo activado por ID se abre con tu cuenta de Google' + (ide.max ? ' en <b>' + ide.equipos + ' de ' + ide.max + '</b> ' + (ide.max === 1 ? 'equipo' : 'equipos') : '') + '.'; }
+    pintarHero(ide.lista.length + lista.filter(function (a) { return !aviso(a); }).length);
     if (!lista.length && !ide.lista.length) { ul.innerHTML = '<li class="vacio">Aún no tienes accesos. Activa un código abajo o pásale tu ID (arriba, en tu tarjeta) a Modo Cachimbo.</li>'; return; }
     ul.innerHTML = ide.lista.map(filaId).join('') + lista.map(fila).join('');
   }
