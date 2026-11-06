@@ -82,7 +82,7 @@
   }
   function emb(xp) { var n = R().nivel(+xp || 0); return R().svg(Math.max(n, 0), { quieto: true }); }
   function rangoNom(xp) { var n = R().nivel(+xp || 0); return n < 0 ? 'Sin rango' : R().nombre(n); }
-  function rangoCol(xp) { var n = R().nivel(+xp || 0); return n < 0 ? '#cfc8e6' : T().colores[n]; }
+  function rangoCol(xp) { var n = R().nivel(+xp || 0); return n < 0 ? '#cfc8e6' : (R().color(n).c || '#fff'); }
   function tit(a) { var t = it(puesto(a).titulo, 'titulo'); return t ? t.nom : 'Cachimbo en camino'; }
   function tema(a) { var p = puesto(a), c = C(); return c.tema(c.item(p.racha) ? p.racha : c.defecto.racha); }
   function fondo(a) { var p = puesto(a), c = C(); return c.item(p.racha) ? c.fondo(p.racha) : ''; }
