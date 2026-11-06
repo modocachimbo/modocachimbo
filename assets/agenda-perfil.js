@@ -87,7 +87,47 @@
     '.ag-g{display:inline-flex;align-items:center;gap:8px;color:#1CB0F6;font:900 14.5px Nunito,sans-serif;text-decoration:none}.ag-g svg{width:20px;height:20px}',
     '.ag-borrar{border:0;background:transparent;color:#FF4B4B;font:900 14.5px Nunito,sans-serif;cursor:pointer;padding:4px}',
     '@media (min-width:600px){.ag-d{aspect-ratio:auto;height:62px;font-size:16.5px}.ag-mes,.ag-sem{gap:8px}}',
-    '@media (max-width:420px){.ag-caja{padding:16px 12px}.ag-sem,.ag-mes{gap:5px}.ag-d{font-size:14.5px;border-radius:11px}.ag-d .bs{bottom:6px}}'
+    '@media (max-width:420px){.ag-caja{padding:16px 12px}.ag-sem,.ag-mes{gap:5px}.ag-d{font-size:14.5px;border-radius:11px}.ag-d .bs{bottom:6px}}',
+    /* ===== Agenda v2: compacta, oscura y con fuego (como la racha) ===== */
+    '.ag-p{display:grid;gap:14px}',
+    '.ag-caja{margin-top:0;border-radius:20px;border:2px solid #2f2852;border-bottom-width:5px;background:radial-gradient(70% 90% at 0% 0%,rgba(255,150,0,.10),transparent 70%),linear-gradient(180deg,#1c1636,#120e24)}',
+    '.ag-hero{position:relative;overflow:hidden;display:flex;align-items:center;gap:16px;padding:16px 18px;border-radius:20px;border:2px solid color-mix(in srgb,var(--hc,#FF9600) 45%,#2f2852);border-bottom-width:5px;background:radial-gradient(60% 130% at 0% 0%,color-mix(in srgb,var(--hc,#FF9600) 30%,transparent),transparent 70%),radial-gradient(50% 90% at 100% 100%,rgba(255,61,46,.14),transparent 70%),linear-gradient(180deg,#1c1636,#120e24);color:#fff;text-align:left;cursor:pointer;width:100%;font:inherit}',
+    '.ag-hero.vacio{--hc:#5b5f80;cursor:default}',
+    '.ag-hero .rc-fuego{flex-shrink:0;width:56px;height:64px}',
+    '.ag-hero .rc-fuego .f1{fill:url(#agG1)}.ag-hero .rc-fuego .f2{fill:url(#agG2)}.ag-hero .rc-fuego svg{width:100%;height:100%}',
+    '@media (max-width:600px){.ag-hero b{white-space:normal!important;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical}.ag-hero{gap:12px;padding:14px}.ag-hero .num{font-size:40px}}',
+    '.ag-hero.vacio .rc-fuego .f1{fill:#4b5a75}.ag-hero.vacio .rc-fuego .f2{fill:#75809c}.ag-hero.vacio .rc-fuego svg{filter:none}.ag-hero.vacio .rc-fuego .fx-ch,.ag-hero.vacio .rc-fuego .fx-halo{display:none}',
+    '.ag-hero .num{font:italic 900 46px/.9 "Barlow Condensed","Arial Narrow",sans-serif;text-shadow:0 3px 0 rgba(0,0,0,.4)}',
+    '.ag-hero .num small{font-size:20px;margin-left:4px;letter-spacing:.04em;text-transform:uppercase}',
+    '.ag-hero .tx{flex:1;min-width:0}',
+    '.ag-hero .k{display:block;font:italic 900 14px/1 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--hc,#FF9600);margin-bottom:5px}',
+    '.ag-hero b{display:block;font:900 17px/1.2 Nunito,sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+    '.ag-hero .q{display:block;font:800 13px Nunito,sans-serif;color:#cfc8ee;margin-top:3px}',
+    '.ag-cab h2{font:italic 900 24px/1 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.04em;text-transform:uppercase}',
+    '.ag-cab p{font-size:12.5px;margin-top:4px}',
+    '.ag-nav{width:34px;height:34px;border-radius:10px;border-bottom-width:3px}',
+    '.ag-nav svg{width:15px;height:15px}',
+    '.ag-cal{max-width:380px;margin:12px auto 0;padding:10px 12px 12px;border-radius:14px;background:rgba(0,0,0,.25)}',
+    '.ag-sem{margin:0 0 6px;font:italic 900 13px "Barlow Condensed","Arial Narrow",sans-serif}',
+    '.ag-sem,.ag-mes{grid-template-columns:repeat(7,1fr);gap:5px}',
+    '.ag-d,.ag-d.fuera{aspect-ratio:auto;height:40px;border-radius:10px;padding:0;justify-content:center;font-size:13.5px;background:rgba(255,255,255,.05)}',
+    '.ag-d.fuera{background:transparent;color:rgba(255,255,255,.14)}',
+    '.ag-d.paso{background:transparent;color:rgba(255,255,255,.35)}',
+    '.ag-d.ev{background:color-mix(in srgb,var(--ec) 22%,transparent);color:#fff;box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--ec) 55%,transparent)}',
+    '.ag-d.ev.fuego{background:radial-gradient(circle at 50% 35%,#FFB547,#FF6A1A);color:#3a1300;box-shadow:0 0 10px rgba(255,120,0,.45),inset 0 -2px 0 rgba(0,0,0,.25)}',
+    '.ag-d.hoy{background:var(--accent);color:#1f2600;box-shadow:0 3px 0 #8fa300}',
+    '.ag-d.sel{box-shadow:inset 0 0 0 2px #fff}',
+    '.ag-d.hoy.sel{box-shadow:0 3px 0 #8fa300,inset 0 0 0 2px #1f2600}',
+    '.ag-d .bs{left:50%;right:auto;bottom:4px;transform:translateX(-50%);flex-direction:row;gap:2px}',
+    '.ag-d .bs i{width:4px;height:4px;border-radius:50%}',
+    '.ag-d.ev .bs{display:none}',
+    '.ag-ley{justify-content:center;gap:4px 12px;margin-top:10px;font-size:11.5px}.ag-ley i{width:8px;height:8px;border-radius:50%}',
+    '.ag-dia h3,.ag-prox h3{font:italic 900 19px/1.1 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.04em;text-transform:uppercase}',
+    '.ag-ev{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.06)}',
+    '.ag-pr .n{width:44px;height:44px;border-radius:12px;font:italic 900 20px/1 "Barlow Condensed","Arial Narrow",sans-serif}',
+    '@media (min-width:900px){.ag-p{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}.ag-hero{grid-column:1/-1}.ag-p>.ag-cal-caja{grid-row:2/span 2}}',
+    '@media (min-width:600px){.ag-d,.ag-d.fuera{height:42px;font-size:14px}}',
+    '@media (max-width:420px){.ag-d,.ag-d.fuera{height:38px}}'
   ].join('\n');
   document.head.appendChild(st);
 
@@ -98,13 +138,14 @@
   ver.setDate(1);
 
   raiz.innerHTML =
-    '<div class="ag-p">' +
-    '<section class="ag-caja" aria-label="Calendario">' +
+    '<div class="ag-p bc">' +
+    '<button type="button" class="ag-hero" id="agHero"></button>' +
+    '<section class="ag-caja ag-cal-caja" aria-label="Calendario">' +
       '<div class="ag-cab"><div><h2 id="agMes"></h2><p id="agMesSub"></p></div><span class="esp"></span>' +
       '<button type="button" class="ag-nav" id="agAnt" aria-label="Mes anterior">' + ICO.izq + '</button>' +
       '<button type="button" class="ag-nav" id="agSig" aria-label="Mes siguiente">' + ICO.flecha + '</button></div>' +
-      '<div class="ag-sem" aria-hidden="true"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span></div>' +
-      '<div class="ag-mes" id="agGrid"></div>' +
+      '<div class="ag-cal"><div class="ag-sem" aria-hidden="true"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span></div>' +
+      '<div class="ag-mes" id="agGrid"></div></div>' +
       '<div class="ag-ley">' + Object.keys(A.TIPOS).map(function (k) { return '<span><i style="background:' + A.TIPOS[k].c + '"></i>' + A.TIPOS[k].n + '</span>'; }).join('') + '</div>' +
     '</section>' +
     '<section class="ag-caja ag-dia" id="agDia"></section>' +
@@ -143,7 +184,9 @@
       if (fuera) html += '<span class="ag-d fuera" aria-hidden="true">' + d.getDate() + '</span>';
       else {
         var evs = delDia(s), cls = 'ag-d' + (s === hoyS ? ' hoy' : s < hoyS ? ' paso' : '') + (s === sel ? ' sel' : '');
-        html += '<button type="button" class="' + cls + '" data-d="' + s + '" aria-label="' + d.getDate() + ' de ' + MESES[m] + (evs.length ? ', ' + evs.length + (evs.length === 1 ? ' fecha' : ' fechas') : '') + '">' + d.getDate() +
+        var fut = evs.length && s > hoyS;
+        if (fut) cls += ' ev' + (evs.some(function (e) { return e.tipo === 'examen'; }) ? ' fuego' : '');
+        html += '<button type="button" class="' + cls + '"' + (fut ? ' style="--ec:' + color(evs[0].tipo) + '"' : '') + ' data-d="' + s + '" aria-label="' + d.getDate() + ' de ' + MESES[m] + (evs.length ? ', ' + evs.length + (evs.length === 1 ? ' fecha' : ' fechas') : '') + '">' + d.getDate() +
           (evs.length ? '<span class="bs">' + evs.slice(0, 3).map(function (e) { return '<i style="background:' + color(e.tipo) + '"></i>'; }).join('') + '</span>' : '') + '</button>';
       }
       d.setDate(d.getDate() + 1);
@@ -183,7 +226,21 @@
     }).join('') : '<p class="ag-nada">Aún no tienes fechas. Toca un día del calendario y agrega tu primer seminario, simulacro o examen.</p>');
   }
 
-  function pintar() { pintarMes(); pintarDia(); pintarProx(); }
+  var FUEGO = '<span class="rc-fuego" aria-hidden="true"><i class="fx-halo"></i><svg viewBox="0 0 32 36"><defs><linearGradient id="agG1" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FF3D2E"/><stop offset=".55" stop-color="#FF9600"/><stop offset="1" stop-color="#FFC21A"/></linearGradient><linearGradient id="agG2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FFC800"/><stop offset="1" stop-color="#FFF6C8"/></linearGradient></defs><g class="fx-a"><path class="f1" fill="url(#agG1)" d="M16 1.5c1.2 4.6 7.6 8.2 9.6 13.6 2.6 7-1.6 17.4-9.6 17.4S3.8 24.9 6.1 17.6c1-3.2 3.3-5.3 4.9-6.9.2 2.8 1.4 4.6 3 5.2C13.3 10.6 14 6 16 1.5z"/></g><g class="fx-b"><path class="f2" fill="url(#agG2)" d="M16.3 15.5c.6 2.4 4.5 4.4 4.5 8.6a4.8 4.8 0 0 1-9.6 0c0-2 1-3.4 2.1-4.4.2 1.4.8 2.3 1.6 2.6-.4-2.4 0-4.6 1.4-6.8z"/></g></svg><i class="fx-ch"></i><i class="fx-ch"></i><i class="fx-ch"></i></span>';
+  function pintarHero() {
+    var h = $('agHero'), t = A.proximas(lista, 8), e = t.filter(function (x) { return x.tipo === 'examen'; })[0] || t[0];
+    if (!e) {
+      h.className = 'ag-hero vacio'; h.removeAttribute('data-d');
+      h.innerHTML = FUEGO + '<span class="tx"><span class="k">Sin fechas próximas</span><b>Anota tu próximo examen</b><span class="q">Toca un día del calendario y agrégalo.</span></span>';
+      return;
+    }
+    var n = A.dias(e.fecha), d = A.aFecha(e.fecha);
+    h.className = 'ag-hero'; h.dataset.d = e.fecha; h.style.setProperty('--hc', color(e.tipo));
+    h.innerHTML = FUEGO + '<span class="num">' + (n === 0 ? '¡HOY!' : n + '<small>' + (n === 1 ? 'día' : 'días') + '</small>') + '</span>' +
+      '<span class="tx"><span class="k">' + (n === 0 ? 'Es hoy' : 'Falta' + (n === 1 ? '' : 'n')) + ' · ' + esc((A.TIPOS[e.tipo] || A.TIPOS.otro).n) + '</span><b>' + esc(e.titulo) + '</b>' +
+      '<span class="q">' + DIAS[d.getDay()] + ' ' + d.getDate() + ' de ' + MESES[d.getMonth()] + (e.hora ? ' · ' + A.hora12(e.hora) : '') + '</span></span>';
+  }
+  function pintar() { pintarHero(); pintarMes(); pintarDia(); pintarProx(); }
 
   function elegir(s) {
     sel = s;
@@ -195,6 +252,7 @@
   $('agAnt').onclick = function () { ver.setMonth(ver.getMonth() - 1); pintarMes(); };
   $('agSig').onclick = function () { ver.setMonth(ver.getMonth() + 1); pintarMes(); };
   $('agGrid').addEventListener('click', function (ev) { var b = ev.target.closest('[data-d]'); if (b) elegir(b.dataset.d); });
+  $('agHero').addEventListener('click', function () { if (this.dataset.d) elegir(this.dataset.d); });
   $('agProx').addEventListener('click', function (ev) {
     var b = ev.target.closest('[data-d]'); if (!b) return;
     elegir(b.dataset.d);
