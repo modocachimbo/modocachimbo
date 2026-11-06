@@ -330,9 +330,9 @@
   // Tu fila usa el tuyo (si aún no carga, lo del top).
   function pinDe(x) {
     if (x.yo) {
-      // En los tops la corona solo la llevan los 3 de esta semana (supabase/69-corona-solo-top-actual.sql)
-      var C0 = window.MCColeccion, ca = C0 && C0.corona ? C0.corona() : '';
-      var id = C0 && C0.puesto('pines').filter(function (p) { return !/^pin-corona-/.test(p) || p === ca; })[0], mx = id && C0.item(id);
+      // El primero de tu vitrina; una corona solo si es tuya (supabase/73-corona-se-gana-al-cerrar.sql)
+      var C0 = window.MCColeccion;
+      var id = C0 && C0.puesto('pines')[0], mx = id && C0.item(id);
       if (mx) return { html: C0.pin(mx), nom: mx.nom, como: C0.como(mx) };
       if (C0 && C0.estado().listo) return null;
     }
@@ -345,7 +345,7 @@
     if (r.tipo === 'evento') return 'Se ganaba en ' + r.evento + '.';
     if (r.tipo === 'racha') return 'Se gana con ' + r.n + ' días de racha.';
     if (r.tipo === 'grupo') return 'Solo para los influencers de Modo Cachimbo.';
-    if (r.tipo === 'top') return 'La lleva el puesto ' + r.n + ' del Top de la semana (desde el martes). Se queda para siempre si cierras la semana ahí.';
+    if (r.tipo === 'top') return 'Se gana al cerrar una semana en el puesto ' + r.n + ' del Top global.';
     return 'Un pin de su colección (Mi colección → Pines).';
   }
   // Pin que se toca: al tocarlo sale un globito con su nombre y cómo se consigue

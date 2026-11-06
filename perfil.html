@@ -70,6 +70,31 @@
   .rk-fila.yo { border-color: rgba(198,224,0,.45); background: rgba(198,224,0,.07); }
   .rk-sep { text-align: center; color: var(--text-faint); font-weight: 900; letter-spacing: .2em; }
   .rk-nota { text-align: center; font-size: 12.5px; color: var(--text-faint); margin-top: 14px; line-height: 1.5; }
+  /* Ranking v2: foto cuadrada completa (como la tarjeta del inicio) */
+  #rkLista { gap: 10px; }
+  #rkLista .rk-fila { --rk: #2f2852; position: relative; gap: 14px; padding: 10px 16px 10px 10px; border-radius: 16px; border: 2px solid var(--rk); border-bottom-width: 4px;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--rk) 22%, transparent), transparent 55%), linear-gradient(180deg, #1c1636, #140f28); }
+  #rkLista .rk-fila.p1 { --rk: #FFC800; box-shadow: 0 0 18px rgba(255,200,0,.18); }
+  #rkLista .rk-fila.p2 { --rk: #C9D1DC; }
+  #rkLista .rk-fila.p3 { --rk: #E0995E; }
+  #rkLista .rk-fila.yo { --rk: #C6E000; }
+  #rkLista .rk-fila .n { width: 34px; font: italic 900 24px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; color: #8a83b0; }
+  #rkLista .rk-fila .n svg { width: 30px; height: 35px; }
+  #rkLista .rk-fila .avt { position: relative; width: 64px; height: 64px; border-radius: 0; flex-shrink: 0; display: block; }
+  #rkLista .avt .mcj-fr { padding: 3px; clip-path: none; background: var(--m, #C6E000); }
+  #rkLista .avt .mcj-av { clip-path: none; font-size: 26px; }
+  #rkLista .avt .mcj-nv { left: auto !important; right: 3px; bottom: 3px; padding: 2px 5px 1px 8px !important; background: rgba(10,6,28,.92); color: #fff;
+    clip-path: polygon(6px 0, 100% 0, 100% 100%, 0 100%); font: 900 13px/1 'Barlow Condensed', 'Arial Narrow', sans-serif !important; }
+  #rkLista .avt .mcj-pin { top: -8px; right: -9px; width: 40%; height: 40%; }
+  #rkLista .rk-fila .nom { font: italic 900 22px/1.05 'Barlow Condensed', 'Arial Narrow', sans-serif !important; text-transform: uppercase; letter-spacing: .02em; color: #fff; }
+  #rkLista .rk-fila .xp { font: italic 900 21px/1 'Barlow Condensed', 'Arial Narrow', sans-serif !important; color: #FFC800; white-space: nowrap; }
+  @media (max-width: 600px) {
+    #rkLista .rk-fila { gap: 10px; padding: 8px 12px 8px 8px; }
+    #rkLista .rk-fila .avt { width: 52px; height: 52px; }
+    #rkLista .rk-fila .n { width: 26px; font-size: 20px; }
+    #rkLista .rk-fila .nom { font-size: 18px !important; }
+    #rkLista .rk-fila .xp { font-size: 17px !important; }
+  }
 
   /* Errores de hoy */
   .err-top { display: flex; align-items: center; gap: 12px; }
@@ -385,7 +410,7 @@
 <script src="assets/buho.js"></script>
 <script src="assets/coleccion.js?v=196"></script>
 <link rel="stylesheet" href="assets/tarjeta-jugador.css?v=6">
-<script src="assets/tarjeta-perfil.js?v=206"></script>
+<script src="assets/tarjeta-perfil.js?v=207"></script>
 <link rel="stylesheet" href="assets/buho/buho.css">
 <link rel="stylesheet" href="assets/amigos.css?v=5">
 <script src="assets/rango.js?v=184"></script>
@@ -1508,7 +1533,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
     }
     function fila(x) {
       var nom = x.apodo || 'Cachimbo';
-      return '<div class="rk-fila' + (x.yo ? ' yo' : '') + '"><span class="n">' + (x.puesto <= 3 ? medalla(x.puesto) : x.puesto) + '</span>' +
+      return '<div class="rk-fila' + (x.yo ? ' yo' : '') + (x.puesto <= 3 ? ' p' + x.puesto : '') + '"><span class="n">' + (x.puesto <= 3 ? medalla(x.puesto) : x.puesto) + '</span>' +
         (window.MCTarjeta ? MCTarjeta.foto(x, 'avt') : '<span class="avt" style="background:' + COL[(x.puesto - 1) % COL.length] + '">' + esc(nom.charAt(0).toUpperCase()) + '</span>') +
         '<span class="nom">' + esc(nom) + (x.yo ? ' (tú)' : '') + '</span>' + (window.MCRango ? MCRango.mini(x.xp) : '') + '<span class="xp">' + (x.xp || 0) + ' XP</span></div>';
     }
