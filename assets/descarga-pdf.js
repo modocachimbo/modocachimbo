@@ -272,6 +272,7 @@
       '.mcpdf .qt{margin:0 0 7px;overflow-wrap:break-word}.mcpdf .qt .mcq-p{display:block}.mcpdf .qt .mcq-p+.mcq-p{margin-top:6px}' +
       '.mcpdf .qt img,.mcpdf .g img{max-width:100%;height:auto;display:block;margin:6px auto}.mcpdf .g{margin:6px 0}.mcpdf .g svg{max-width:100%;height:auto}' +
       '.mcpdf table{border-collapse:collapse;margin:6px auto;font-size:.95em}.mcpdf th,.mcpdf td{border:1px solid #9aa3b5!important;padding:2px 6px!important;background:#fff!important;color:' + t + '!important}' +
+      '.mcpdf td.mcpdf-alta,.mcpdf th.mcpdf-alta{padding:6px 7px 10px!important;line-height:1.7}' +
       '.mcpdf details{margin:4px 0 8px;border:1px solid #c9cfda;border-radius:6px;padding:6px 9px;background:#fff!important;color:' + t + '!important}.mcpdf summary{font:800 12px Barlow Condensed,Arial;letter-spacing:.08em;list-style:none;color:var(--o)}.mcpdf summary::-webkit-details-marker{display:none}' +
       '.mcpdf .lect details{margin:0;border:1.4px solid var(--c);border-left-width:5px;border-radius:8px;padding:8px 11px;background:var(--s)!important}.mcpdf .lect summary{font-size:13px;margin-bottom:4px}.mcpdf .lect p{margin:0 0 5px;text-align:justify}.mcpdf .lect .mcq-lec-pos{color:#4a5468;font-weight:700;letter-spacing:.02em;text-transform:none}' +
       '.mcpdf .mcq-etq{position:static;display:inline-block;margin:0 0 4px;background:var(--s)!important;border:1px solid var(--c)!important;color:var(--o)!important;font-size:10.5px;padding:1px 8px;border-radius:99px}.mcpdf .mcq-etq:after{display:none}' +
@@ -619,6 +620,11 @@
       }
       // En una columna y aún se sale (una fórmula larga en la alternativa): se achica solo esa fórmula
       Array.prototype.forEach.call(ops.children, function (c) { if (sale(c)) achicar(c.querySelectorAll('.katex'), c); });
+    });
+    // Celdas con fracciones, raíces o sumatorias: la fila queda más alta para que la fórmula no se salga
+    // (al pasar la hoja a imagen, las letras de KaTeX pueden dibujarse un poco más abajo que en pantalla)
+    Array.prototype.forEach.call(b.querySelectorAll('td,th'), function (c) {
+      if (c.querySelector('.mfrac,.sqrt,.op-limits,.delimsizing')) c.classList.add('mcpdf-alta');
     });
     // Fórmulas en el texto y tablas que se salen de la columna: se achican lo justo (mínimo 75 %)
     achicar(Array.prototype.filter.call(b.querySelectorAll('.katex'), function (k) { return !k.closest('.katex-display') && !k.closest('.ops'); }), b);
