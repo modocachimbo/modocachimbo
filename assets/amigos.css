@@ -173,6 +173,10 @@
 .ma-card .c-head { position: relative; overflow: hidden; padding: 12px 14px; min-height: 168px; }
 .ma-card .c-head .mct-arte { position: absolute; inset: 0; width: 100%; height: 100%; }
 .ma-card .c-head > *:not(.mct-arte) { position: relative; z-index: 1; }
+/* Banner con imagen: entero (4:1) arriba, sin recortar los lados; debajo, la misma imagen difuminada */
+.ma-card .c-head.con-img .ma-relleno { position: absolute; inset: -20px; z-index: 0; background: center/cover no-repeat; filter: blur(16px) brightness(.55); }
+.ma-card .c-head.con-img > span.mct-arte { z-index: 0; bottom: auto; height: auto; aspect-ratio: 4 / 1;
+  -webkit-mask-image: linear-gradient(180deg, #000 86%, transparent); mask-image: linear-gradient(180deg, #000 86%, transparent); }
 .ma-card .lg { display: flex; align-items: center; justify-content: space-between; min-height: 30px; }
 .ma-card .lg img { height: 22px; display: block; }
 .ma-card .lg a { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 8px; background: rgba(0,0,0,.35); color: #fff; }

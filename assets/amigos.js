@@ -172,7 +172,9 @@
       var Rr = c.rareza[x.rareza] || c.rareza.comun;
       return '<' + (mio ? 'a href="coleccion.html#' + x.espacio + '"' : 'span') + ' style="--c:' + Rr.c + '"><u>' + Rr.nom + '</u><span class="mcc-dib">' + c.dibujo(x) + '</span><small>' + esc(x.nom) + '</small></' + (mio ? 'a' : 'span') + '>';
     }).join('');
-    var card = '<div class="ma-card' + (mio ? '' : ' amigo') + '"><div class="c-head">' + T().arte(tema(d), fondo(d)) +
+    // Banner con imagen (4:1): se ve entero arriba y el resto del alto se rellena con la misma imagen difuminada
+    var fd = fondo(d), relleno = fd ? '<span class="ma-relleno" aria-hidden="true" style="background-image:url(&quot;' + esc(fd) + '&quot;)"></span>' : '';
+    var card = '<div class="ma-card' + (mio ? '' : ' amigo') + '"><div class="c-head' + (fd ? ' con-img' : '') + '">' + relleno + T().arte(tema(d), fd) +
       '<div class="lg"><img src="' + BASE + 'assets/img/logo-modo-cachimbo-horizontal.svg" alt="Modo Cachimbo"></div>' +
       '<div class="yo">' + foto(d) + '<div><div class="nm">' + esc(d.apodo || 'Cachimbo') + '</div>' +
         (t ? '<div class="ttl">' + c.titulo(t) + '</div>' : '') +
