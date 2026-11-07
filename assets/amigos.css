@@ -173,10 +173,6 @@
 .ma-card .c-head { position: relative; overflow: hidden; padding: 12px 14px; min-height: 168px; }
 .ma-card .c-head .mct-arte { position: absolute; inset: 0; width: 100%; height: 100%; }
 .ma-card .c-head > *:not(.mct-arte) { position: relative; z-index: 1; }
-/* Banner con imagen: entero (4:1) arriba, sin recortar los lados; debajo, la misma imagen difuminada */
-.ma-card .c-head.con-img .ma-relleno { position: absolute; inset: -20px; z-index: 0; background: center/cover no-repeat; filter: blur(16px) brightness(.55); }
-.ma-card .c-head.con-img > span.mct-arte { z-index: 0; bottom: auto; height: auto; aspect-ratio: 4 / 1;
-  -webkit-mask-image: linear-gradient(180deg, #000 86%, transparent); mask-image: linear-gradient(180deg, #000 86%, transparent); }
 .ma-card .lg { display: flex; align-items: center; justify-content: space-between; min-height: 30px; }
 .ma-card .lg img { height: 22px; display: block; }
 .ma-card .lg a { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 8px; background: rgba(0,0,0,.35); color: #fff; }
@@ -281,8 +277,6 @@
   .ma-esc .lat { bottom: auto; top: 12px; gap: 6px; }
   .ma-esc .lat .ma-ib { width: 42px; height: 42px; }
   .ma-esc .vs { right: 66px; }
-  .ma-card .yo .ft { width: 78px; height: 78px; }
-  .ma-card .nm { font-size: 30px; }
   .ma-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .ma-grid .mcc-it b { font-size: 13px; } .ma-grid .tu { font-size: 9.5px; } .ma-grid .lleva { font-size: 8.5px; padding: 2px 6px; top: 5px; left: 5px; }
 }
@@ -318,10 +312,6 @@
 }
 /* Pantallas bajas (laptop 1366×768 con barras del navegador): tarjeta más compacta */
 @media (min-width: 900px) and (max-height: 820px) {
-  body.ma-fit .ma-card .c-head { min-height: 0; padding: 10px 14px; }
-  body.ma-fit .ma-card .yo { margin-top: 6px; }
-  body.ma-fit .ma-card .yo .ft { width: 78px; height: 78px; }
-  body.ma-fit .ma-card .nm { font-size: 30px; }
   body.ma-fit .ma-cuatro .em svg { width: 48px; height: 48px; }
   body.ma-fit .ma-cuatro svg { width: 26px; height: 26px; }
   body.ma-fit .ma-cuatro b { font-size: 20px; }
@@ -358,7 +348,6 @@
   body.ma-fit .ma-vitr { margin: 2px 0 0; }
   body.ma-fit .ma-vitr .mcc-pin, body.ma-fit .ma-vitr .hueco { width: 40px; height: 40px; }
   body.ma-fit .ma-card .c-sec .ma-k { font-size: 14px; margin-bottom: 2px; }
-  body.ma-fit .ma-card .lg { min-height: 24px; }
 }
 .ma-rail .r span { min-width: 0; }
 
@@ -391,3 +380,18 @@
   .ma-lay { grid-template-columns: 250px minmax(0, 1fr); gap: 30px; }
   .ma-rail .r { min-width: 0; }
 }
+
+/* ---------- Cabecera de la tarjeta con la forma del banner (4:1): el banner se ve entero ----------
+   Todo lo de adentro se mide con el ancho de la cabecera (cqw), así crece y se achica con ella. */
+.ma-card .c-head { aspect-ratio: 4 / 1; min-height: 0; padding: 0 3%; display: flex; align-items: center; container-type: inline-size; overflow: visible; }
+/* El logo baja a la línea de «Esta semana» para no tapar el dibujo del banner */
+.ma-card .c-head .lg { position: absolute; top: calc(100% + 6px); right: 14px; z-index: 2; min-height: 0; }
+.ma-card .c-head .lg img { height: 15px; opacity: .85; }
+.ma-card .c-head .yo { margin: 0; gap: 3.2cqw; width: 100%; }
+.ma-card .c-head .yo .ft { width: 19.5cqw; height: 19.5cqw; }
+.ma-card .c-head .nm { font-size: clamp(16px, 7cqw, 40px); padding-right: 18cqw; }
+.ma-card .c-head .ttl { margin-top: .8cqw; font-size: clamp(10px, 3.6cqw, 18px); }
+.ma-card .c-head .ttl .mc-tsvg { height: clamp(14px, 5cqw, 26px); }
+.ma-card .c-head .ca { margin-top: .6cqw; font-size: clamp(9px, 2.9cqw, 14px); }
+.ma-card .c-head .uid { margin-top: 1.4cqw; padding: .5cqw 1.6cqw; gap: 1.2cqw; font-size: clamp(9px, 2.9cqw, 14px); }
+.ma-card .c-head .uid svg { width: 1.1em; height: 1.1em; }
