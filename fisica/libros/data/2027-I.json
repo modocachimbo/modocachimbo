@@ -1731,7 +1731,12 @@
             "text": "$x=13\\text{ cm}$"
           }
         ],
-        "correct": 0
+        "correct": 0,
+        "res": {
+          "rapido": "$V = \\dfrac{m}{\\rho_c} = \\dfrac{14}{2000} = 7 \\times 10^{-3}\\ \\text{m}^3 \\Rightarrow E = 1000 \\cdot 10 \\cdot 7 \\times 10^{-3} = 70\\ \\text{N}$\nEquilibrio: $E + kx = W \\Rightarrow 70 + 700x = 140$\n$x = 0{,}1\\ \\text{m} = 10\\ \\text{cm}$",
+          "pasos": "Paso 1: Hallamos la masa del cuerpo.\n$W = m\\,g \\Rightarrow 140 = m \\cdot 10 \\Rightarrow m = 14\\ \\text{kg}$\nPaso 2: Hallamos su volumen con la densidad.\n$V = \\dfrac{m}{\\rho_c} = \\dfrac{14}{2000} = 7 \\times 10^{-3}\\ \\text{m}^3$\nPaso 3: Calculamos el empuje del agua ($\\rho_{agua} = 1000\\ \\text{kg/m}^3$).\n$E = \\rho_{agua} \\cdot g \\cdot V = 1000 \\cdot 10 \\cdot 7 \\times 10^{-3} = 70\\ \\text{N}$\nPaso 4: El cuerpo está quieto. Hacia arriba lo sostienen el empuje y el resorte ($F_e = kx$); hacia abajo jala su peso.\n$E + kx = W$\n$70 + 700x = 140$\nPaso 5: Despejamos.\n$700x = 70 \\Rightarrow x = 0{,}1\\ \\text{m} = 10\\ \\text{cm}$",
+          "cero": "Imagina el bloque colgado del resorte dentro del agua. Su peso (140 N) lo jala hacia abajo, y dos \"ayudantes\" lo sostienen hacia arriba: el **agua** (empuje) y el **resorte**.\nPrimero vemos cuánto ayuda el agua. Para eso necesitamos el volumen del bloque:\n• **Masa:** $140 \\div 10 = 14\\ \\text{kg}$\n• **Volumen:** masa ÷ densidad $= 14 \\div 2000 = 0{,}007\\ \\text{m}^3$\n• **Empuje del agua:** $E = 1000 \\cdot 10 \\cdot 0{,}007 = 70\\ \\text{N}$\nO sea, el agua carga 70 N de los 140 N. Los otros 70 N los tiene que cargar el resorte.\nEl resorte hace fuerza $F = k \\cdot x$, donde $x$ es cuánto se estira:\n$700 \\cdot x = 70 \\Rightarrow x = 0{,}1\\ \\text{m}$\nY $0{,}1\\ \\text{m} = 10\\ \\text{cm}$.\n💡 **Tip de examen:** si el bloque está quieto, lo que sube = lo que baja ($E + kx = W$). Y la respuesta la piden en cm: no olvides convertir."
+        }
       },
       {
         "text": "Un bloque cúbico de $10\\text{ cm}$ de lado y densidad $500\\text{ kg/m}^{3}$ flota en un recipiente que contiene agua y aceite de la forma como muestra la figura. Si la densidad del aceite es $800\\text{ kg/m}^{3}$ ¿Qué espesor tendrá la capa de aceite?\n[IMG-DER:assets/img/fisica/2027-I/t07-q29lhovp6j.webp]",
