@@ -741,6 +741,7 @@ html[data-modo="claro"] .badge .curso { color: #1A1626 !important; }
     const wasCorrect = selectedIndex === q.correct;
     feedback.textContent = wasCorrect ? '¡Correcto!' : `Incorrecto. La respuesta correcta era la ${q.options[q.correct].letter}.`;
     feedback.className = 'feedback show ' + (wasCorrect ? 'ok' : 'bad');
+    if (window.MCBuhoTutor) MCBuhoTutor.feedback(feedback, q); // Búho tutor (assets/buho-tutor.js)
   }
 
   function selectAnswer(index) {

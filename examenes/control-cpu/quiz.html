@@ -475,6 +475,7 @@
     const correctLetter = q.options[q.correct].letter;
     feedback.textContent = wasCorrect ? '¡Correcto!' : `Incorrecto. La respuesta correcta era la ${correctLetter}.`;
     feedback.className = 'feedback show ' + (wasCorrect ? 'ok' : 'bad');
+    if (window.MCBuhoTutor) MCBuhoTutor.feedback(feedback, q); // Búho tutor (assets/buho-tutor.js)
   }
 
   function selectAnswer(index, el) {

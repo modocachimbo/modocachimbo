@@ -306,6 +306,42 @@ Devuélveme solo la imagen final, sin texto adicional.`
 };
 
 // Prompt para pasar UN gráfico (foto, captura o PDF) al bloque [GRÁFICO: …]
+// Búho tutor: la IA agrega la resolución en 3 niveles debajo de cada pregunta (subir.js: [RÁPIDO], [PASO A PASO], [DESDE CERO])
+const IA_RESOLUCIONES = () => `Eres profesor de una academia preuniversitaria en Perú y escribes las resoluciones del "Búho tutor" de mi plataforma de estudio "Modo Cachimbo". Te pasaré preguntas ya escritas en mi formato (PREGUNTA N:, enunciado, alternativas A) B) C)… y la correcta marcada con ✅ o con CLAVE:).
+
+TU TAREA
+Devuélveme el MISMO texto, sin cambiar nada de lo que ya está (encabezado, enunciados, alternativas, ✅, [IMG:…], [GRÁFICO…], TEXTO…), y agrega debajo de las alternativas de CADA pregunta su resolución en 3 niveles, con estas etiquetas exactas, cada una en su propia línea:
+
+[RÁPIDO]
+(2 o 3 líneas: lo directo, para el alumno que ya domina el tema. Solo la idea clave y el cálculo principal.)
+[PASO A PASO]
+Paso 1: …
+Paso 2: …
+(Explicado con calma, sin saltarse pasos, como en la pizarra. De 3 a 7 pasos. Cada paso empieza con "Paso N:" en su propia línea.)
+[DESDE CERO]
+(Para el alumno que recién empieza: lenguaje muy sencillo, frases cortas y una comparación de la vida diaria —canastas, manzanas, plata, la combi, el mercado—. Explica también qué significa cada término difícil. Máximo 180 palabras.)
+[FIN RESOLUCIÓN]
+
+REGLAS
+- Resuelve tú mismo la pregunta y comprueba que llegas a la alternativa marcada como correcta. La resolución debe llegar a ESE resultado.
+- NUNCA menciones la letra de la alternativa (A, B, C…), porque en la plataforma las alternativas se mezclan. Escribe el valor: "la respuesta es $\\frac{\\sqrt{3}}{3}$", "la respuesta es Mario Vargas Llosa".
+- Español peruano neutro, cercano y claro. Sin saludos ("¡Hola!"), sin "muchacho" ni jerga, sin emojis, sin repetir el enunciado completo.
+- Fórmulas en LaTeX entre $…$ (una fórmula larga puede ir sola en su línea entre $$…$$). Decimales con coma: $0{,}25$. Seno: $\\text{sen}\\,x$. Usa **negrita** solo para la idea clave o el resultado final.
+- No escribas tablas en Markdown con guiones ni separadores "---". Si necesitas una tabla usa mi formato: | a | b | en cada fila.
+- No inventes datos que no estén en el enunciado. Si la pregunta tiene [IMG:…] o [IMAGEN] y no puedes ver la figura, resuelve con los datos del texto; si no se puede, escribe solo [RÁPIDO] con la idea general.
+- Cursos de letras (Lenguaje, Literatura, Historia, Geografía, Biología…): en vez de cálculos:
+  · [RÁPIDO]: la idea clave o el dato que decide la respuesta, en 2 o 3 líneas.
+  · [PASO A PASO]: Paso 1 ubica el concepto o la fecha, los pasos siguientes razonan, y el último paso descarta las otras opciones por su contenido, sin letras ("la que habla del Homo erectus es falsa porque…").
+  · [DESDE CERO]: primero explica las palabras difíciles con palabras simples, luego una analogía de la vida diaria, la conclusión y al final un "Tip para el examen" (por ejemplo: desconfía de "exclusivamente" o "únicamente").
+
+REGLAS DE SALIDA (muy importantes)
+- Devuelve TODO dentro de UN SOLO bloque de código Markdown (\`\`\`markdown … \`\`\`), así me sale el botón de copiar y lo pego tal cual en "Subir tema".
+- Nada de [cite: 1], referencias ni notas al pie.
+- No resumas ni te saltes preguntas. Si son muchas, para al terminar una pregunta completa y dime "continúo"; sigue cuando te escriba "sigue".
+- Si crees que la clave marcada de alguna pregunta está MAL, igual no la cambies: después del bloque de código escribe una sola línea "Revisar clave: PREGUNTA N" con el motivo en pocas palabras.
+
+Ahora te paso las preguntas.`;
+
 const IA_GRAFICO_SOLO = () => `Te pasaré la imagen de un gráfico de una pregunta de examen (de estadística, una función o gráfica en el plano cartesiano, intervalos, diagrama de Venn, triángulo, vectores u orbitales). Escríbelo como texto con el formato de abajo, para mi plataforma de estudio "Modo Cachimbo", que lo dibuja sola.
 
 REGLAS
@@ -360,6 +396,7 @@ function botonPrompts(tipo) {
   b.innerHTML = ICONO_IA + ' Prompts ▾';
   const menu = document.createElement('div'); menu.className = 'ia-img-menu'; menu.hidden = true;
   menu.innerHTML = `<button type="button" data-v="formato"><b>Formato de las preguntas</b><small>Pásale el PDF o las fotos y te devuelve las preguntas listas para pegar aquí (con tablas, fórmulas y gráficos)</small></button>
+    <button type="button" data-v="resol"><b>🦉 Resoluciones del Búho tutor</b><small>Pásale tus preguntas ya formateadas y te devuelve el mismo texto con la resolución en 3 niveles (al toque, paso a paso y desde cero)</small></button>
     <button type="button" data-v="grafico"><b>Gráfico (estadística, funciones, Venn, vectores…)</b><small>Pásale la imagen de un gráfico y te devuelve el bloque [GRÁFICO: …] para pegar en la pregunta</small></button>
     <button type="button" data-v="fiel"><b>Imagen fiel al original</b><small>Reilustra la imagen igual, solo limpia: fondo blanco y enderezada</small></button>
     <button type="button" data-v="color"><b>Imagen mejorada con color</b><small>Mismo contenido, con colores suaves en gráficos y líneas</small></button>`;
@@ -374,6 +411,7 @@ function botonPrompts(tipo) {
     menu.hidden = true;
     const v = op.dataset.v;
     if (v === 'formato') copiarPromptIA(typeof tipo === 'function' ? tipo() : tipo, b);
+    else if (v === 'resol') copiarPromptIA(null, b, IA_RESOLUCIONES(), 'Prompt copiado. Pégalo en Gemini y luego tus preguntas ya formateadas; el resultado lo pegas aquí en Subir tema.');
     else if (v === 'grafico') copiarPromptIA(null, b, IA_GRAFICO_SOLO(), 'Prompt copiado. Pégalo en Gemini junto con la imagen del gráfico y pega el bloque que te devuelva en la pregunta.');
     else copiarPromptIA(null, b, IA_IMG[v](), 'Prompt copiado. Pégalo en Gemini junto con la imagen.');
   });
