@@ -276,7 +276,7 @@
       '.mcpdf .lect details{margin:0;border:1.4px solid var(--c);border-left-width:5px;border-radius:8px;padding:8px 11px;background:var(--s)!important}.mcpdf .lect summary{font-size:13px;margin-bottom:4px}.mcpdf .lect p{margin:0 0 5px;text-align:justify}.mcpdf .lect .mcq-lec-pos{color:#4a5468;font-weight:700;letter-spacing:.02em;text-transform:none}' +
       '.mcpdf .mcq-etq{position:static;display:inline-block;margin:0 0 4px;background:var(--s)!important;border:1px solid var(--c)!important;color:var(--o)!important;font-size:10.5px;padding:1px 8px;border-radius:99px}.mcpdf .mcq-etq:after{display:none}' +
       // Gráficos escritos como texto: tinta oscura sobre blanco, relleno suave del color del curso (se imprime bien en blanco y negro)
-      '.mcpdf .mcq-graf{margin:6px 0;display:flex;justify-content:center;--g-eje:' + t + ';--g-tx:' + t + ';--g-tx2:' + t + ';--g-gu:#8A93A6;--g-red:rgba(27,42,74,.08);--g-b:' + t + ';--g-b2:var(--o);--g-rell:var(--s);--g-somb:#AEB7C6;--g-lin:var(--c);' +
+      '.mcpdf .mcq-graf{margin:6px 0;display:flex;justify-content:center;--g-fondo:#fff;--g-eje:' + t + ';--g-tx:' + t + ';--g-tx2:' + t + ';--g-gu:#8A93A6;--g-red:rgba(27,42,74,.08);--g-b:' + t + ';--g-b2:var(--o);--g-rell:var(--s);--g-somb:#AEB7C6;--g-lin:var(--c);' +
       '--g1:#3D5E00;--g2:#0A4F94;--g3:#9A4300;--g4:#5E2A9E;--g5:#A3245E;--g6:#1B6E4A;--g1f:#E4EEC8;--g2f:#DCE8F7;--g3f:#FBE3CC;--g4f:#EADDF8;--g5f:#F7DCE8;--g6f:#D8EFE3}' +
       '.mcpdf .mcq-graf svg{width:100%;max-height:250px;height:auto;font-family:Nunito,Arial,sans-serif;overflow:visible}.mcpdf .mcq-graf-error{display:none}' +
       '.mcpdf .mcq-par .c,.mcpdf .mcq-par .d,.mcpdf .mcq-an .c{color:var(--o)!important}' +

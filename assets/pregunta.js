@@ -86,7 +86,7 @@
      Los colores salen de variables CSS (--g-…): oscuro, claro y PDF. */
   var RX_GRAF = /^\[GR[AÁ]FICO(\s+DERECHA)?\s*:\s*([^\]]+)\]$/i, RX_GRAF_FIN = /^\[\/GR[AÁ]FICO\]$/i;
   var Graf = (function () {
-    var TIPOS_TXT = 'histograma, polígono, línea, barras, barras horizontales, barras agrupadas, barras apiladas, circular, circular 3d, dona, caja, dispersión, pictograma, tallo y hojas';
+    var TIPOS_TXT = 'histograma, polígono, línea, barras, barras horizontales, barras agrupadas, barras apiladas, circular, circular 3d, dona, caja, dispersión, pictograma, tallo y hojas, función, recta numérica, venn, triángulo, vectores, orbitales';
     var uid = 0;
     function r1(v) { return Math.round(v * 10) / 10; }
     function sinTilde(s) { return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim(); }
@@ -112,7 +112,7 @@
     }
     function T(x, y, s, o) {
       o = o || {};
-      return '<text x="' + r1(x) + '" y="' + r1(y) + '" style="fill:' + (o.c || 'var(--g-tx)') + '" font-size="' + (o.f || 12) + '" font-weight="' + (o.w || 700) + '" text-anchor="' + (o.a || 'middle') + '"' + (o.i ? ' font-style="italic"' : '') + '>' + e(s) + '</text>';
+      return '<text x="' + r1(x) + '" y="' + r1(y) + '" style="fill:' + (o.c || 'var(--g-tx)') + (o.halo ? ';paint-order:stroke;stroke:var(--g-fondo);stroke-width:4px;stroke-linejoin:round' : '') + '" font-size="' + (o.f || 12) + '" font-weight="' + (o.w || 700) + '" text-anchor="' + (o.a || 'middle') + '"' + (o.i ? ' font-style="italic"' : '') + '>' + e(s) + '</text>';
     }
     function L(x1, y1, x2, y2, c, guia, w) {
       return '<line x1="' + r1(x1) + '" y1="' + r1(y1) + '" x2="' + r1(x2) + '" y2="' + r1(y2) + '" style="stroke:' + c + '" stroke-width="' + (w || 1.5) + '"' + (guia ? ' stroke-dasharray="4 3"' : '') + '/>';
@@ -424,6 +424,329 @@
       return svg(W, H, out);
     }
 
+    /* ---------- Matemática, Física y Química ---------- */
+
+    // Fórmula → función de x (sin eval): + - * / ^, paréntesis, |x|, 2x, sen cos tan raiz log ln abs, pi, e
+    function compilar(expr) {
+      var s = String(expr).toLowerCase().replace(/\s+/g, '').replace(/π/g, 'pi').replace(/[·×]/g, '*').replace(/[−–]/g, '-').replace(/√/g, 'raiz').replace(/²/g, '^2').replace(/³/g, '^3').replace(/,/g, '.');
+      var i = 0;
+      var FN = { sen: Math.sin, sin: Math.sin, cos: Math.cos, tan: Math.tan, tg: Math.tan, raiz: Math.sqrt, sqrt: Math.sqrt, log: Math.log10, ln: Math.log, abs: Math.abs, exp: Math.exp };
+      function ver(c) { return s.charAt(i) === c; }
+      function suma() { var f = prod(); while (ver('+') || ver('-')) { var op = s.charAt(i++), g = prod(); f = (function (a, b, o) { return o === '+' ? function (x) { return a(x) + b(x); } : function (x) { return a(x) - b(x); }; })(f, g, op); } return f; }
+      function prod() {
+        var f = unario();
+        for (;;) {
+          if (ver('*') || ver('/')) { var op = s.charAt(i++), g = unario(); f = (function (a, b, o) { return o === '*' ? function (x) { return a(x) * b(x); } : function (x) { return a(x) / b(x); }; })(f, g, op); }
+          else if (i < s.length && /[0-9a-z(.π]/.test(s.charAt(i))) { var h = potencia(); f = (function (a, b) { return function (x) { return a(x) * b(x); }; })(f, h); }
+          else return f;
+        }
+      }
+      function unario() { if (ver('-')) { i++; var f = unario(); return function (x) { return -f(x); }; } if (ver('+')) { i++; return unario(); } return potencia(); }
+      function potencia() { var b = primario(); if (ver('^')) { i++; var e = unario(); return function (x) { return Math.pow(b(x), e(x)); }; } return b; }
+      function primario() {
+        var m;
+        if (ver('(')) { i++; var f = suma(); if (!ver(')')) throw 0; i++; return f; }
+        if (ver('|')) { i++; var g = suma(); if (!ver('|')) throw 0; i++; return function (x) { return Math.abs(g(x)); }; }
+        if ((m = s.slice(i).match(/^\d*\.?\d+/))) { i += m[0].length; var n = +m[0]; return function () { return n; }; }
+        if ((m = s.slice(i).match(/^(sen|sin|cos|tan|tg|raiz|sqrt|log|ln|abs|exp)/))) {
+          i += m[0].length; var fn = FN[m[1]], arg = ver('(') ? primario() : potencia();
+          return function (x) { return fn(arg(x)); };
+        }
+        if (s.slice(i, i + 2) === 'pi') { i += 2; return function () { return Math.PI; }; }
+        if (ver('x')) { i++; return function (x) { return x; }; }
+        if (ver('e')) { i++; return function () { return Math.E; }; }
+        throw 0;
+      }
+      try { var f = suma(); if (i !== s.length) return null; f(1.234); return f; } catch (e) { return null; }
+    }
+    function marcasEje(a, b) { // marcas "redondas" entre a y b
+      var r = b - a; if (!(r > 0)) return [a];
+      var p = Math.pow(10, Math.floor(Math.log10(r / 6))), paso = [1, 2, 2.5, 5, 10].map(function (k) { return k * p; }).filter(function (s) { return r / s <= 10; })[0] || p * 10;
+      var out = []; for (var v = Math.ceil(a / paso) * paso; v <= b + 1e-9; v += paso) out.push(Math.round(v * 1e6) / 1e6);
+      return out;
+    }
+    function puntosDe(s) { // "A(2; 0), (0; -4), B(1,5; 2)" → [{n, x, y}]
+      var out = [], rx = /([A-Za-zÁÉÍÓÚáéíóúñÑ₀-₉'′]*\d*)\s*\(([^()]*)\)/g, m;
+      while ((m = rx.exec(s || ''))) {
+        var d = /;/.test(m[2]) ? m[2].split(';') : m[2].split(/,\s+|,(?=\s*-?\d)/);
+        if (d.length === 2) { var x = num(d[0]), y = num(d[1]); if (!isNaN(x) && !isNaN(y)) out.push({ n: m[1], x: x, y: y, tx: d[0].trim(), ty: d[1].trim() }); }
+      }
+      return out;
+    }
+
+    // ---- funciones y plano cartesiano ----
+    function funcion(o, pares, lineas, err) {
+      var curvas = [], polis = [];
+      lineas.forEach(function (l) {
+        var m = l.match(/^(?:([^:=]{1,20}):\s*)?(y\s*=\s*.+?)\s*(?:\[\s*(-?[\d.,]+)\s*;\s*(-?[\d.,]+)\s*\])?$/i);
+        if (m && /^y\s*=/i.test(m[2])) {
+          var f = compilar(m[2].replace(/^y\s*=\s*/i, ''));
+          curvas.push({ n: m[1] ? m[1].trim() : '', f: f, txt: m[2], a: m[3] != null ? num(m[3]) : null, b: m[4] != null ? num(m[4]) : null });
+          return;
+        }
+        var t = l.match(/^(?:([^:]{1,20}):\s*)?(\(.+\))\s*$/);
+        if (t && !/^puntos/i.test(t[1] || '')) polis.push({ n: t[1] ? t[1].trim() : '', p: puntosDe(t[2]) });
+      });
+      var mal = curvas.filter(function (c) { return !c.f; })[0];
+      if (mal) return err('No entiendo la fórmula «' + mal.txt + '». Usa por ejemplo y = x^2 - 4, y = 2x + 1, y = sen(x), y = raiz(x)');
+      var pts = puntosDe(o.puntos), segs = lista(o.segmentos);
+      if (!curvas.length && !polis.length && !pts.length) return err('Escribe una función (y = x^2 - 4), una línea por puntos ((0; 0), (4; 8)) o puntos: A(2; 3)');
+      // rango x
+      var xr = lista(o.x).map(num), xs = [];
+      polis.forEach(function (p) { p.p.forEach(function (q) { xs.push(q.x); }); }); pts.forEach(function (q) { xs.push(q.x); });
+      var x0 = !isNaN(xr[0]) ? xr[0] : (xs.length ? Math.min(0, Math.min.apply(null, xs)) : -5), x1 = !isNaN(xr[1]) ? xr[1] : (xs.length ? Math.max(0, Math.max.apply(null, xs)) : 5);
+      if (isNaN(xr[0]) && xs.length) { var px = (x1 - x0) * .08; if (x0 < 0) x0 -= px; x1 += px; }
+      // rango y
+      var yr = lista(o.y).map(num), ys = [];
+      polis.forEach(function (p) { p.p.forEach(function (q) { ys.push(q.y); }); }); pts.forEach(function (q) { ys.push(q.y); });
+      curvas.forEach(function (c) { var a = c.a != null ? c.a : x0, b = c.b != null ? c.b : x1; for (var k = 0; k <= 60; k++) { var v = c.f(a + (b - a) * k / 60); if (isFinite(v)) ys.push(v); } });
+      ys.sort(function (a, b) { return a - b; });
+      var y0 = !isNaN(yr[0]) ? yr[0] : Math.min(0, ys.length ? ys[Math.floor(ys.length * .03)] : -5), y1 = !isNaN(yr[1]) ? yr[1] : Math.max(0, ys.length ? ys[Math.ceil(ys.length * .97) - 1] : 5);
+      if (isNaN(yr[0])) { var py = (y1 - y0) * .1 || 1; if (y0 < 0) y0 -= py; y1 += py; }
+      var W = 320, H = 240, L0 = 34, R0 = W - 18, T0 = 18, B0 = H - 26;
+      var X = function (v) { return L0 + (v - x0) / (x1 - x0) * (R0 - L0); }, Y = function (v) { return B0 - (v - y0) / (y1 - y0) * (B0 - T0); };
+      var ax = Math.max(x0, Math.min(x1, 0)), ay = Math.max(y0, Math.min(y1, 0)), out = '', id = 'mcgf' + (++uid);
+      var mxs = o['marcas x'] != null ? lista(o['marcas x']).map(valor) : marcasEje(x0, x1).filter(function (v) { return v; }).map(function (v) { return { et: fmt(v), v: v }; });
+      var mys = o['marcas y'] != null ? lista(o['marcas y']).map(valor) : marcasEje(y0, y1).filter(function (v) { return v; }).map(function (v) { return { et: fmt(v), v: v }; });
+      if (!/^no/i.test(o['cuadrícula'] || o.cuadricula || '')) {
+        mxs.forEach(function (m) { out += L(X(m.v), T0, X(m.v), B0, 'var(--g-red)', 0, 1); });
+        mys.forEach(function (m) { out += L(L0, Y(m.v), R0, Y(m.v), 'var(--g-red)', 0, 1); });
+      }
+      out += L(L0 - 4, Y(ay), R0 + 4, Y(ay), 'var(--g-eje)') + flecha(R0 + 4, Y(ay), 'x') + L(X(ax), B0 + 4, X(ax), T0 - 4, 'var(--g-eje)') + flecha(X(ax), T0 - 4, 'y');
+      out += T(R0 + 10, Y(ay) + 16, o['eje x'] || 'x', { a: 'end', i: 1, c: 'var(--g-b2)', w: 800 }) + T(X(ax) + 8, T0 - 2, o['eje y'] || 'y', { a: 'start', i: 1, c: 'var(--g-b2)', w: 800 });
+      mxs.forEach(function (m) { out += L(X(m.v), Y(ay) - 3, X(m.v), Y(ay) + 3, 'var(--g-eje)') + T(X(m.v), Y(ay) + 15, m.et, { f: 10.5 }); });
+      mys.forEach(function (m) { out += L(X(ax) - 3, Y(m.v), X(ax) + 3, Y(m.v), 'var(--g-eje)') + T(X(ax) - 6, Y(m.v) + 4, m.et, { a: 'end', f: 10.5 }); });
+      if (ax === 0 && ay === 0) out += T(X(0) - 6, Y(0) + 14, 'O', { a: 'end', f: 10.5 });
+      out += '<clipPath id="' + id + '"><rect x="' + L0 + '" y="' + T0 + '" width="' + (R0 - L0) + '" height="' + (B0 - T0) + '"/></clipPath><g clip-path="url(#' + id + ')">';
+      var etqs = '', usadas = [];
+      function ponEtq(x, y, txt, an, col) { // sin encimarse con otra etiqueta
+        for (var n = 0; n < 6 && usadas.some(function (u) { return Math.abs(u[0] - x) < 40 && Math.abs(u[1] - y) < 13; }); n++) y -= 14;
+        usadas.push([x, y]);
+        return T(x, y, txt, { a: an, f: 12, w: 900, c: col, halo: 1 });
+      }
+      curvas.forEach(function (c, k) {
+        var a = c.a != null ? c.a : x0, b = c.b != null ? c.b : x1, d = '', antes = null, N = 400, ult = null;
+        for (var j = 0; j <= N; j++) {
+          var x = a + (b - a) * j / N, v = c.f(x), ok = isFinite(v) && Math.abs(v - (y0 + y1) / 2) < (y1 - y0) * 4;
+          if (ok && antes != null && Math.abs(v - antes) > (y1 - y0) * 1.5) ok = 'salto';
+          if (ok === true) { d += (d && antes != null ? 'L' : 'M') + r1(X(x)) + ' ' + r1(Y(v)); antes = v; if (v >= y0 && v <= y1) ult = [X(x), Y(v)]; }
+          else { antes = ok === 'salto' ? v : null; if (ok === 'salto') d += 'M' + r1(X(x)) + ' ' + r1(Y(v)); }
+        }
+        out += '<path d="' + d + '" style="fill:none;stroke:' + C(k) + '" stroke-width="2.4"/>';
+        if (c.n && ult) etqs += ponEtq(Math.min(ult[0], R0 - 4), Math.max(ult[1] - 6, T0 + 10), c.n, 'end', C(k));
+      });
+      polis.forEach(function (p, k) {
+        var col = C(curvas.length + k);
+        out += '<polyline points="' + p.p.map(function (q) { return r1(X(q.x)) + ',' + r1(Y(q.y)); }).join(' ') + '" style="fill:none;stroke:' + col + '" stroke-width="2.4"/>';
+        if (p.n && p.p.length > 1) { // nombre a mitad del primer tramo, al lado
+          var q0 = p.p[0], q1 = p.p[1], mx = (X(q0.x) + X(q1.x)) / 2, my = (Y(q0.y) + Y(q1.y)) / 2, dx = X(q1.x) - X(q0.x), dy = Y(q1.y) - Y(q0.y), dn = Math.hypot(dx, dy) || 1;
+          etqs += ponEtq(mx + dy / dn * 12, my - dx / dn * 12 + 4, p.n, 'middle', col);
+        }
+      });
+      out += '</g>';
+      var guias = /^s[ií]/i.test(o['guías'] || o.guias || '');
+      var porNombre = {}; pts.forEach(function (q) { if (q.n) porNombre[q.n] = q; });
+      segs.forEach(function (sg) {
+        var m = sg.match(/^([A-Z]'?|O)([A-Z]'?|O)$/); if (!m) return;
+        var a = m[1] === 'O' && !porNombre.O ? { x: 0, y: 0 } : porNombre[m[1]], b = m[2] === 'O' && !porNombre.O ? { x: 0, y: 0 } : porNombre[m[2]];
+        if (a && b) out += L(X(a.x), Y(a.y), X(b.x), Y(b.y), 'var(--g-b)', 0, 2);
+      });
+      // ángulo en posición normal: "ángulo: θ, P" (del eje x positivo hasta OP)
+      var ang = o['ángulo'] || o.angulo;
+      if (ang) {
+        var pa = lista(ang), q = porNombre[pa[1]];
+        if (q) {
+          var t1 = Math.atan2(q.y, q.x); if (t1 < 0) t1 += 2 * Math.PI;
+          var rr = 18, path = 'M' + r1(X(0) + rr) + ' ' + r1(Y(0));
+          for (var j = 1; j <= 30; j++) { var t = t1 * j / 30; path += 'L' + r1(X(0) + rr * Math.cos(t)) + ' ' + r1(Y(0) - rr * Math.sin(t)); }
+          out += L(X(0), Y(0), X(q.x), Y(q.y), 'var(--g-b)', 0, 2) + '<path d="' + path + '" style="fill:none;stroke:var(--g-lin)" stroke-width="1.6"/>';
+          var tm = t1 / 2; out += T(X(0) + 30 * Math.cos(tm), Y(0) - 30 * Math.sin(tm) + 4, pa[0], { f: 13, w: 900, c: 'var(--g-lin)' });
+        }
+      }
+      pts.forEach(function (q) {
+        if (guias) out += L(X(q.x), Y(q.y), X(q.x), Y(ay), 'var(--g-gu)', 1, 1) + L(X(q.x), Y(q.y), X(ax), Y(q.y), 'var(--g-gu)', 1, 1);
+        out += '<circle cx="' + r1(X(q.x)) + '" cy="' + r1(Y(q.y)) + '" r="3.6" style="fill:var(--g-b)"/>';
+        if (q.n) out += T(X(q.x) + (q.x < 0 ? -6 : 6), Y(q.y) - 7, /^s[ií]/i.test(o.coordenadas || '') ? q.n + '(' + q.tx + '; ' + q.ty + ')' : q.n, { a: q.x < 0 ? 'end' : 'start', f: 12, w: 900, halo: 1 });
+      });
+      return svg(W, H, out + etqs);
+    }
+
+    // ---- recta numérica con intervalos ----
+    function recta(o, pares, lineas, err) {
+      var ints = [];
+      lineas.forEach(function (l) {
+        var m = l.match(/^(?:intervalo|[A-Z]\w{0,3})?\s*:?\s*([\[<(\]])\s*([^;,]+?)\s*[;,]\s*([^\]>)\[]+?)\s*([\]>)\[])\s*$/i);
+        if (m) ints.push({ n: (l.match(/^([A-Z]\w{0,3})\s*:/) || [])[1] || '', ca: m[1] === '[', a: m[2].trim(), b: m[3].trim(), cb: m[4] === ']' });
+      });
+      if (!ints.length) return err('Escribe intervalos como [-3; 2> o <5; +∞>');
+      var marcas = lista(o.marcas || o.valores);
+      var inf = function (s) { return /∞|inf/i.test(s); };
+      ints.forEach(function (it) { [it.a, it.b].forEach(function (v) { if (!inf(v) && marcas.indexOf(v) < 0) marcas.push(v); }); });
+      if (!o.marcas) marcas.sort(function (p, q) { return num(p) - num(q); });
+      var W = 320, x0 = 30, x1 = W - 30, n = marcas.length, H = 56 + ints.length * 20, ya = H - 26, out = '';
+      var X = function (s) { if (inf(s)) return /-/.test(s) ? x0 - 12 : x1 + 12; var k = marcas.indexOf(s); return x0 + 20 + (n > 1 ? k / (n - 1) : .5) * (x1 - x0 - 40); };
+      out += L(x0 - 18, ya, x1 + 18, ya, 'var(--g-eje)') + flecha(x1 + 18, ya, 'x') + '<path d="M' + (x0 - 18) + ' ' + (ya - 4) + 'L' + (x0 - 25) + ' ' + ya + 'L' + (x0 - 18) + ' ' + (ya + 4) + 'z" style="fill:var(--g-eje)"/>';
+      marcas.forEach(function (m) { out += L(X(m), ya - 4, X(m), ya + 4, 'var(--g-eje)') + T(X(m), ya + 18, m, { f: 12 }); });
+      ints.forEach(function (it, k) {
+        var y = ya - 14 - k * 20, a = X(it.a), b = X(it.b), col = C(k);
+        out += '<rect x="' + r1(Math.min(a, b)) + '" y="' + (y - 3) + '" width="' + r1(Math.abs(b - a)) + '" height="6" rx="3" style="fill:' + col + '" fill-opacity=".5"/>';
+        [[it.a, a, it.ca], [it.b, b, it.cb]].forEach(function (e) {
+          if (inf(e[0])) return;
+          out += L(e[1], y, e[1], ya, 'var(--g-gu)', 1, 1) + '<circle cx="' + r1(e[1]) + '" cy="' + y + '" r="4.5" style="fill:' + (e[2] ? col : 'var(--g-fondo, #151127)') + ';stroke:' + col + '" stroke-width="2"/>';
+        });
+        if (it.n) out += T(Math.min(a, b) - 8, y + 4, it.n, { a: 'end', f: 12, w: 900, c: col });
+      });
+      return svg(W, H, out);
+    }
+
+    // ---- diagrama de Venn (2 o 3 conjuntos) ----
+    function venn(o, pares, lineas, err) {
+      var cs = lista(o.conjuntos || 'A, B');
+      if (cs.length < 2 || cs.length > 3) return err('Escribe conjuntos: A, B (o A, B, C)');
+      var tres = cs.length === 3, W = 320, H = tres ? 236 : 190, id = 'mcgv' + (++uid), out = '';
+      var cen = tres ? [[128, 92, 62], [192, 92, 62], [160, 146, 62]] : [[125, 95, 68], [195, 95, 68]];
+      var reg = {}; lista(o.regiones || o.valores).forEach(function (r) { var m = r.match(/^(.+?)\s*=\s*(.+)$/); if (m) reg[sinTilde(m[1]).replace(/\s|∩/g, '').toUpperCase()] = m[2]; });
+      pares.forEach(function (p) { var k = sinTilde(p[0]).replace(/\s|∩/g, '').toUpperCase(); if (/^[A-Z]{1,3}$|^FUERA$|^SOLO/.test(k)) reg[k.replace(/^SOLO/, '')] = p[1].trim(); });
+      function clave(sets) { return sets.map(function (k) { return cs[k].toUpperCase(); }).join(''); }
+      var POS = tres ? { 0: [100, 72], 1: [220, 72], 2: [160, 178], '01': [160, 66], '02': [124, 132], '12': [196, 132], '012': [160, 112] } : { 0: [92, 99], 1: [228, 99], '01': [160, 99] };
+      var somb = lista(o.sombrear).map(function (s) { return sinTilde(s).replace(/\s|∩/g, '').toUpperCase(); });
+      var defs = '';
+      cen.forEach(function (c, k) { defs += '<clipPath id="' + id + 'c' + k + '"><circle cx="' + c[0] + '" cy="' + c[1] + '" r="' + c[2] + '"/></clipPath>'; });
+      function region(dentro) { // dibuja una región sombreada (dentro = índices)
+        var fuera = [0, 1, 2].slice(0, cs.length).filter(function (k) { return dentro.indexOf(k) < 0; });
+        var mid = id + 'm' + dentro.join('');
+        defs += '<mask id="' + mid + '"><rect x="0" y="0" width="' + W + '" height="' + H + '" fill="#fff"/>' + fuera.map(function (k) { return '<circle cx="' + cen[k][0] + '" cy="' + cen[k][1] + '" r="' + cen[k][2] + '" fill="#000"/>'; }).join('') + '</mask>';
+        var g = '<rect x="6" y="6" width="' + (W - 12) + '" height="' + (H - 12) + '" style="fill:var(--g-somb)" mask="url(#' + mid + ')"/>';
+        dentro.forEach(function (k) { g = '<g clip-path="url(#' + id + 'c' + k + ')">' + g + '</g>'; });
+        return g;
+      }
+      var combos = tres ? [[0], [1], [2], [0, 1], [0, 2], [1, 2], [0, 1, 2], []] : [[0], [1], [0, 1], []];
+      combos.forEach(function (cb) { var k = cb.length ? clave(cb) : 'FUERA'; if (somb.indexOf(k) >= 0) out += region(cb); });
+      if (o.universo || reg.FUERA || somb.indexOf('FUERA') >= 0) out += '<rect x="6" y="6" width="' + (W - 12) + '" height="' + (H - 12) + '" rx="6" style="fill:none;stroke:var(--g-eje)" stroke-width="1.6"/>' + T(16, 24, o.universo || 'U', { a: 'start', f: 13, w: 900 });
+      cen.forEach(function (c, k) {
+        out += '<circle cx="' + c[0] + '" cy="' + c[1] + '" r="' + c[2] + '" style="fill:none;stroke:' + C(k) + '" stroke-width="2.2"/>';
+        var lx = c[0] + (k === 2 ? 0 : (k ? 1 : -1) * c[2] * .78), ly = k === 2 ? c[1] + c[2] + 16 : c[1] - c[2] * .78;
+        out += T(lx, ly, cs[k], { f: 15, w: 900, c: C(k) });
+      });
+      combos.forEach(function (cb) {
+        var k = cb.length ? clave(cb) : 'FUERA', v = reg[k]; if (v == null) return;
+        var p = cb.length ? POS[cb.join('')] : [W - 22, H - 16];
+        out += T(p[0], p[1] + 5, v, { f: 14, w: 900 });
+      });
+      return svg(W, H, '<defs>' + defs + '</defs>' + out);
+    }
+
+    // ---- triángulo (rectángulo o cualquiera) ----
+    function triangulo(o, pares, lineas, err) {
+      var vs = lista(o['vértices'] || o.vertices || 'A, B, C'); if (vs.length !== 3) return err('Escribe vértices: A, B, C');
+      var recto = (o.recto || '').trim(), angs = {}, lados = {};
+      lista(o['ángulos'] || o.angulos).forEach(function (a) { var m = a.match(/^(\S+)\s*=\s*(.+)$/); if (m) angs[m[1]] = m[2].trim(); });
+      lista(o.lados).forEach(function (a) { var m = a.match(/^(\S+)\s*=\s*(.+)$/); if (m) lados[m[1].split('').sort().join('')] = m[2].trim(); });
+      var deg = function (s) { var m = String(s || '').match(/^(\d+(?:[.,]\d+)?)\s*°$/); return m ? num(m[1]) : NaN; };
+      var P = {}, A = vs[0], B = vs[1], Cc = vs[2];
+      if (recto && vs.indexOf(recto) >= 0) {
+        // recto abajo a la derecha, un cateto horizontal y otro vertical
+        var otros = vs.filter(function (v) { return v !== recto; }), hz = otros[0], vt = otros[1];
+        var lh = num(lados[[hz, recto].sort().join('')]), lv = num(lados[[vt, recto].sort().join('')]), ah = deg(angs[hz]), av = deg(angs[vt]);
+        var razon = !isNaN(lh) && !isNaN(lv) ? lv / lh : !isNaN(ah) ? Math.tan(ah * Math.PI / 180) : !isNaN(av) ? 1 / Math.tan(av * Math.PI / 180) : .75;
+        razon = Math.max(.25, Math.min(2.5, razon));
+        P[hz] = [0, 0]; P[recto] = [1, 0]; P[vt] = [1, razon];
+      } else {
+        var a1 = deg(angs[A]), a3 = deg(angs[Cc]); if (isNaN(a1)) a1 = isNaN(a3) ? 62 : Math.min(70, 180 - a3 - 50); if (isNaN(a3)) a3 = Math.min(70, 180 - a1 - 48);
+        var t1 = a1 * Math.PI / 180, t3 = a3 * Math.PI / 180, hgt = Math.sin(t1) * Math.sin(t3) / Math.sin(t1 + t3), bx = hgt / Math.tan(t1);
+        if (hgt > .8) { bx = bx * .8 / hgt; hgt = .8; } // figura no a escala: que no quede como aguja
+        P[A] = [0, 0]; P[Cc] = [1, 0]; P[B] = [bx, hgt];
+      }
+      var xsP = vs.map(function (v) { return P[v][0]; }), ysP = vs.map(function (v) { return P[v][1]; });
+      var mnx = Math.min.apply(null, xsP), mxx = Math.max.apply(null, xsP), mxy = Math.max.apply(null, ysP);
+      var esc = Math.min(230 / (mxx - mnx), 160 / mxy), W = 320, H = Math.round(mxy * esc + 56), ox = (W - (mxx - mnx) * esc) / 2 - mnx * esc;
+      var Q = {}; vs.forEach(function (v) { Q[v] = [ox + P[v][0] * esc, H - 28 - P[v][1] * esc]; });
+      var g = [(Q[A][0] + Q[B][0] + Q[Cc][0]) / 3, (Q[A][1] + Q[B][1] + Q[Cc][1]) / 3], out = '';
+      out += '<polygon points="' + vs.map(function (v) { return r1(Q[v][0]) + ',' + r1(Q[v][1]); }).join(' ') + '" style="fill:var(--g-rell);stroke:var(--g-b)" stroke-width="2.2" stroke-linejoin="round"/>';
+      vs.forEach(function (v) { // vértice y su ángulo
+        var p = Q[v], dx = p[0] - g[0], dy = p[1] - g[1], d = Math.sqrt(dx * dx + dy * dy) || 1;
+        out += T(p[0] + dx / d * 14, p[1] + dy / d * 14 + 5, v, { f: 15, w: 900 });
+        var o2 = vs.filter(function (w) { return w !== v; }), u1 = [Q[o2[0]][0] - p[0], Q[o2[0]][1] - p[1]], u2 = [Q[o2[1]][0] - p[0], Q[o2[1]][1] - p[1]];
+        var n1 = Math.hypot(u1[0], u1[1]), n2 = Math.hypot(u2[0], u2[1]); u1 = [u1[0] / n1, u1[1] / n1]; u2 = [u2[0] / n2, u2[1] / n2];
+        if (v === recto) { var k = 11; out += '<path d="M' + r1(p[0] + u1[0] * k) + ' ' + r1(p[1] + u1[1] * k) + 'L' + r1(p[0] + (u1[0] + u2[0]) * k) + ' ' + r1(p[1] + (u1[1] + u2[1]) * k) + 'L' + r1(p[0] + u2[0] * k) + ' ' + r1(p[1] + u2[1] * k) + '" style="fill:none;stroke:var(--g-b)" stroke-width="1.6"/>'; }
+        else if (angs[v]) {
+          var rr = 20, cr = u1[0] * u2[1] - u1[1] * u2[0];
+          out += '<path d="M' + r1(p[0] + u1[0] * rr) + ' ' + r1(p[1] + u1[1] * rr) + 'A' + rr + ' ' + rr + ' 0 0 ' + (cr > 0 ? 1 : 0) + ' ' + r1(p[0] + u2[0] * rr) + ' ' + r1(p[1] + u2[1] * rr) + '" style="fill:none;stroke:var(--g-lin)" stroke-width="1.8"/>';
+          var bis = [u1[0] + u2[0], u1[1] + u2[1]], nb = Math.hypot(bis[0], bis[1]) || 1;
+          out += T(p[0] + bis[0] / nb * 34, p[1] + bis[1] / nb * 34 + 5, angs[v], { f: 13, w: 900, c: 'var(--g-lin)' });
+        }
+      });
+      Object.keys(lados).forEach(function (k) { // nombre o medida de cada lado, por fuera
+        var a = Q[k[0]], b = Q[k[1]]; if (!a || !b) return;
+        var mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2, dx = mx - g[0], dy = my - g[1], d = Math.hypot(dx, dy) || 1;
+        out += T(mx + dx / d * 14, my + dy / d * 14 + 5, lados[k], { f: 13, w: 800, i: !/\d/.test(lados[k]) });
+      });
+      return svg(W, H, out);
+    }
+
+    // ---- configuración electrónica en orbitales ----
+    function orbitales(o, pares, lineas, err) {
+      var txt = lineas.join(' '), partes = txt.match(/\[[A-Z][a-z]?\]|\d[spdf]\d{1,2}/g);
+      if (!partes) return err('Escribe la configuración, por ejemplo 1s2 2s2 2p4 (o [Ne] 3s2 3p3)');
+      var cajas = { s: 1, p: 3, d: 5, f: 7 }, x = 8, y = 12, W = 320, out = '', fila = 0, alto = 58;
+      partes.forEach(function (p) {
+        if (/^\[/.test(p)) { var w0 = 44; if (x + w0 > W - 8) { x = 8; fila++; } out += R(x, y + fila * alto, w0, 24, 'var(--g-rell)', null, ' rx="5"') + T(x + w0 / 2, y + fila * alto + 17, p, { f: 12, w: 900 }); x += w0 + 12; return; }
+        var m = p.match(/^(\d)([spdf])(\d+)$/), n = cajas[m[2]], e = Math.min(+m[3], 2 * n), w = n * 24;
+        if (x + w > W - 8) { x = 8; fila++; }
+        var yy = y + fila * alto;
+        for (var k = 0; k < n; k++) {
+          var bx = x + k * 24, sube = e > k, baja = e > n + k;
+          out += R(bx, yy, 24, 24, 'none', 'var(--g-b)');
+          if (sube) out += '<path d="M' + (bx + (baja ? 8 : 12)) + ' ' + (yy + 20) + 'V' + (yy + 5) + 'm-3 4l3-4l3 4" style="fill:none;stroke:var(--g-lin)" stroke-width="1.8"/>';
+          if (baja) out += '<path d="M' + (bx + 16) + ' ' + (yy + 4) + 'V' + (yy + 19) + 'm-3-4l3 4l3-4" style="fill:none;stroke:var(--g-lin)" stroke-width="1.8"/>';
+        }
+        out += T(x + w / 2, yy + 40, m[1] + m[2], { f: 12, w: 900 }) + '<text x="' + (x + w / 2 + 9) + '" y="' + (yy + 34) + '" font-size="9" font-weight="800" style="fill:var(--g-tx)">' + m[3] + '</text>';
+        x += w + 12;
+      });
+      return svg(W, y + (fila + 1) * alto, out);
+    }
+
+    // ---- vectores (desde un origen o uno tras otro) ----
+    function vectores(o, pares, lineas, err) {
+      var vs = [];
+      pares.forEach(function (p) {
+        var m = p[1].match(/^\s*(-?\d+(?:[.,]\d+)?)?\s*(?:u|N|m|m\/s)?\s*[,;]?\s*(-?\d+(?:[.,]\d+)?)\s*°\s*$/);
+        if (m) vs.push({ n: p[0], mod: m[1] != null ? num(m[1]) : NaN, ang: num(m[2]), txt: p[1].trim() });
+      });
+      if (!vs.length) return err('Escribe un vector por línea: A: 10, 37° (módulo y ángulo con el eje x)');
+      var cad = /cadena|poligono|seguido/.test(sinTilde(o.modo || ''));
+      var mods = vs.map(function (v) { return isNaN(v.mod) ? 1 : v.mod; }), mx = Math.max.apply(null, mods);
+      var pts = [[0, 0]], ends = [];
+      vs.forEach(function (v, k) {
+        var r = (isNaN(v.mod) ? mx * .8 : v.mod) / mx, t = v.ang * Math.PI / 180, ini = cad ? pts[pts.length - 1] : [0, 0];
+        var fin = [ini[0] + r * Math.cos(t), ini[1] + r * Math.sin(t)]; pts.push(fin); ends.push([ini, fin]);
+      });
+      var all = [[0, 0]].concat(pts), xsA = all.map(function (p) { return p[0]; }), ysA = all.map(function (p) { return p[1]; });
+      var mnx = Math.min.apply(null, xsA), mxx = Math.max.apply(null, xsA), mny = Math.min.apply(null, ysA), mxy = Math.max.apply(null, ysA);
+      var esc = Math.min(240 / (mxx - mnx || 1), 170 / (mxy - mny || 1)), W = 320, H = Math.round((mxy - mny) * esc + 60);
+      var X = function (v) { return (W - (mxx - mnx) * esc) / 2 + (v - mnx) * esc; }, Y = function (v) { return 30 + (mxy - v) * esc; }, out = '', id = 'mcgw' + (++uid);
+      var flechaM = function (k, col) { return '<marker id="' + id + k + '" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:' + col + '"/></marker>'; };
+      out += '<defs>' + vs.map(function (v, k) { return flechaM(k, C(k)); }).join('') + flechaM('r', 'var(--g-b)') + '</defs>';
+      if (!cad) out += L(X(mnx) - 14, Y(0), X(mxx) + 14, Y(0), 'var(--g-gu)', 1, 1) + T(X(mxx) + 18, Y(0) + 4, 'x', { a: 'start', i: 1, f: 11, c: 'var(--g-eje)' });
+      vs.forEach(function (v, k) {
+        var e = ends[k], col = C(k), a = e[0], b = e[1];
+        out += '<line x1="' + r1(X(a[0])) + '" y1="' + r1(Y(a[1])) + '" x2="' + r1(X(b[0])) + '" y2="' + r1(Y(b[1])) + '" style="stroke:' + col + ';fill:' + col + '" stroke-width="2.4" marker-end="url(#' + id + k + ')"/>';
+        var mx2 = (X(a[0]) + X(b[0])) / 2, my2 = (Y(a[1]) + Y(b[1])) / 2, t = v.ang * Math.PI / 180;
+        out += T(mx2 - Math.sin(t) * 14, my2 - Math.cos(t) * 14 + 4, v.n, { f: 14, w: 900, c: col, i: 1 });
+        if (!cad && v.ang % 180 !== 0) {
+          var rr = 22 + k * 7, t0 = 0, p = 'M' + r1(X(0) + rr) + ' ' + r1(Y(0));
+          for (var j = 1; j <= 24; j++) { var tt = t0 + (t - t0) * j / 24; p += 'L' + r1(X(0) + rr * Math.cos(tt)) + ' ' + r1(Y(0) - rr * Math.sin(tt)); }
+          out += '<path d="' + p + '" style="fill:none;stroke:' + col + '" stroke-width="1.3"/>' + T(X(0) + (rr + 12) * Math.cos(t / 2), Y(0) - (rr + 12) * Math.sin(t / 2) + 4, Math.abs(v.ang) + '°', { f: 10.5, c: col });
+        }
+      });
+      if (/^s[ií]/i.test(o.resultante || '') && cad) {
+        var z = pts[pts.length - 1];
+        out += '<line x1="' + r1(X(0)) + '" y1="' + r1(Y(0)) + '" x2="' + r1(X(z[0])) + '" y2="' + r1(Y(z[1])) + '" style="stroke:var(--g-b);fill:var(--g-b)" stroke-width="2.4" stroke-dasharray="6 4" marker-end="url(#' + id + 'r)"/>' + T((X(0) + X(z[0])) / 2 + 10, (Y(0) + Y(z[1])) / 2 + 16, 'R', { f: 14, w: 900, i: 1 });
+      }
+      return svg(W, H, out);
+    }
+
+    var GEO = ['x', 'y', 'eje x', 'eje y', 'puntos', 'segmentos', 'ángulo', 'angulo', 'marcas x', 'marcas y', 'guías', 'guias', 'coordenadas', 'cuadrícula', 'cuadricula', 'conjuntos', 'regiones', 'valores', 'universo', 'sombrear', 'vértices', 'vertices', 'recto', 'ángulos', 'angulos', 'lados', 'modo', 'resultante', 'marcas'];
     var CLAVES = ['x', 'y', 'alturas', 'sombrear', 'eje x', 'eje y', 'series', 'polígono', 'poligono', 'destacar', 'separar', 'centro', 'valores', 'datos', 'puntos', 'recta', 'cada', 'unidad', 'clave', 'estilo', 'orientación', 'orientacion'];
     var CAT = ['eje x', 'eje y', 'series', 'destacar', 'separar', 'centro', 'estilo', 'cada', 'unidad', 'orientación', 'orientacion'];
     // tipo + líneas → { html } o { error }
@@ -431,10 +754,11 @@
       var t = sinTilde(tipo), o = {}, pares = [], error = null;
       function err(msg) { error = msg; return ''; }
       var esCat = /^(barras|circular|dona|pastel|torta|sectores|pictograma|caja)/.test(t);
+      var esGeo = /^(funcion|funciones|plano|cartesiano|recta numerica|intervalo|venn|conjuntos|diagrama de venn|triangulo|orbitales|configuracion|vectores|vector)/.test(t);
       lineas.forEach(function (l) {
         var m = l.match(/^([^:|]+?)\s*:\s*(.*)$/); if (!m) return;
         var k = m[1].trim(), kl = k.toLowerCase();
-        if ((esCat ? CAT : CLAVES).indexOf(kl) >= 0) o[kl] = m[2].trim(); else pares.push([k, m[2]]);
+        if ((esGeo ? GEO : esCat ? CAT : CLAVES).indexOf(kl) >= 0) o[kl] = m[2].trim(); else pares.push([k, m[2]]);
       });
       var est = sinTilde(o.estilo || ''), hor = /horizontal/.test(t) || /horizontal/.test(sinTilde(o['orientación'] || o.orientacion || '')), html = '';
       if (/^histograma/.test(t)) html = histograma(o, pares, err, false);
@@ -447,6 +771,12 @@
       else if (/^(dispersion|puntos)/.test(t)) html = dispersion(o, pares, err);
       else if (/^pictograma/.test(t)) html = pictograma(o, pares, err);
       else if (/^tallo/.test(t)) html = tallo(o, pares, lineas, err);
+      else if (/^(funcion|funciones|plano|cartesiano)/.test(t)) html = funcion(o, pares, lineas, err);
+      else if (/^(recta numerica|intervalo)/.test(t)) html = recta(o, pares, lineas, err);
+      else if (/^(venn|conjuntos|diagrama de venn)/.test(t)) html = venn(o, pares, lineas, err);
+      else if (/^triangulo/.test(t)) html = triangulo(o, pares, lineas, err);
+      else if (/^(orbitales|configuracion)/.test(t)) html = orbitales(o, pares, lineas, err);
+      else if (/^vector/.test(t)) html = vectores(o, pares, lineas, err);
       else error = 'No conozco el gráfico «' + tipo.trim() + '». Puede ser: ' + TIPOS_TXT;
       return error ? { error: error } : { html: '<div class="mcq-graf">' + html + '</div>' };
     }
@@ -876,10 +1206,10 @@
     '.mcq-an{display:inline-flex;align-items:baseline;gap:9px;flex-wrap:nowrap}.mcq-an .a{display:inline-block;text-align:right}' +
     '.mcq-p+.mcq-par,.mcq-par+.mcq-p{margin-top:10px}' +
     // Gráficos escritos como texto: colores por variables (oscuro, claro; el PDF pone los suyos)
-    '.mcq-graf{margin:12px 0;display:flex;justify-content:center;--g-eje:#A99FC8;--g-tx:#E6E1F5;--g-tx2:#fff;--g-gu:#7A7199;--g-red:rgba(169,159,200,.14);--g-b:#C6E000;--g-b2:#C6E000;--g-rell:rgba(198,224,0,.16);--g-somb:rgba(198,224,0,.55);--g-lin:#7FD4FF;' +
+    '.mcq-graf{margin:12px 0;display:flex;justify-content:center;--g-fondo:#18132B;--g-eje:#A99FC8;--g-tx:#E6E1F5;--g-tx2:#fff;--g-gu:#7A7199;--g-red:rgba(169,159,200,.14);--g-b:#C6E000;--g-b2:#C6E000;--g-rell:rgba(198,224,0,.16);--g-somb:rgba(198,224,0,.55);--g-lin:#7FD4FF;' +
     '--g1:#C6E000;--g2:#7FD4FF;--g3:#FF9F6B;--g4:#C59BFF;--g5:#FF6FAE;--g6:#5EE0A0;--g1f:rgba(198,224,0,.25);--g2f:rgba(127,212,255,.25);--g3f:rgba(255,159,107,.25);--g4f:rgba(197,155,255,.25);--g5f:rgba(255,111,174,.25);--g6f:rgba(94,224,160,.25)}' +
     '.mcq-graf svg{width:100%;height:auto;display:block;font-family:Nunito,Inter,sans-serif;overflow:visible}' +
-    'html[data-modo="claro"] .mcq-graf{--g-eje:#4A4560;--g-tx:#1E1A2E;--g-tx2:#1E1A2E;--g-gu:#9A94B0;--g-red:rgba(30,26,46,.08);--g-b:#3F4A00;--g-b2:#5B6B00;--g-rell:rgba(150,175,0,.16);--g-somb:rgba(110,130,0,.45);--g-lin:#1F7FB8;' +
+    'html[data-modo="claro"] .mcq-graf{--g-fondo:#fff;--g-eje:#4A4560;--g-tx:#1E1A2E;--g-tx2:#1E1A2E;--g-gu:#9A94B0;--g-red:rgba(30,26,46,.08);--g-b:#3F4A00;--g-b2:#5B6B00;--g-rell:rgba(150,175,0,.16);--g-somb:rgba(110,130,0,.45);--g-lin:#1F7FB8;' +
     '--g1:#7E9100;--g2:#1F7FB8;--g3:#D2622A;--g4:#7A4FC9;--g5:#C9367A;--g6:#1E9A63;--g1f:rgba(126,145,0,.2);--g2f:rgba(31,127,184,.18);--g3f:rgba(210,98,42,.18);--g4f:rgba(122,79,201,.18);--g5f:rgba(201,54,122,.18);--g6f:rgba(30,154,99,.18)}' +
     '.mcq-der:has(.mcq-graf){background:none!important;padding:0!important}.mcq-der .mcq-graf{margin:0;width:100%}' +
     '.mcq-graf-error{margin:10px 0;padding:8px 12px;border-radius:10px;border:2px dashed #E03C3C;color:#FFB4B4;font-size:.85em;font-weight:700}' +

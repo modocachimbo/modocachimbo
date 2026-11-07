@@ -64,7 +64,17 @@ sombrear: 2, 3
 - Tallo y hojas: [GRÁFICO: tallo y hojas] y una línea por tallo "1 | 2 4 7".
 - Opcionales: "eje x: …" y "eje y: …" con el nombre de cada eje (f_i pone la i abajo). Listas separadas por coma y espacio; decimales con coma pegada (0,25).
 - [GRÁFICO DERECHA: …] en lugar de [GRÁFICO: …] si el gráfico va al lado de las alternativas.
-- Mapas, figuras geométricas, dibujos y fotos siguen con [IMAGEN].`;
+
+GRÁFICOS DE MATEMÁTICA, FÍSICA Y QUÍMICA (también con [GRÁFICO: …], no con [IMAGEN])
+- Función: [GRÁFICO: función] y una línea por curva "f: y = x^2 - 4" (el nombre "f:" es opcional). Usa ^ * / ( ) |x|, 2x, sen, cos, tan, raiz, log, ln, pi. Un tramo: "y = raiz(x) [0; 6]". Rango opcional: "x: -4, 4" y "y: -5, 10". Puntos: "puntos: A(-1; -3), B(3; 5)".
+- Gráficas por puntos (v–t, x–t, P–V con datos): [GRÁFICO: función] con "eje x: t(s)", "eje y: v(m/s)" y una línea por tramo "A: (0; 0), (6; 8)". "marcas x: 4, 6" y "marcas y: 8" ponen solo esos números en los ejes; "cuadrícula: no" la quita; "guías: sí" dibuja punteadas de los puntos a los ejes.
+- Plano cartesiano: [GRÁFICO: plano] con "puntos: P(-12; 5)", "segmentos: AB, BC", "ángulo: θ, P" (ángulo en posición normal desde el eje x hasta OP) y "coordenadas: sí" si el dibujo muestra (x; y).
+- Intervalos: [GRÁFICO: recta numérica] y una línea por intervalo "A: [-3; 2>" o "B: <0; +∞>".
+- Diagrama de Venn: [GRÁFICO: venn] con "conjuntos: A, B" (o A, B, C), "universo: U" si hay rectángulo, "regiones: A=12, AB=5, B=8, fuera=3" (cada región se nombra con los conjuntos a los que pertenece: A = solo A, AB = A y B sin C, ABC = los tres) y "sombrear: A, AB" para las regiones sombreadas.
+- Triángulo: [GRÁFICO: triángulo] con "vértices: A, B, C", "recto: C" si es rectángulo, "lados: AC=24, BC=7, AB=x" y "ángulos: A=θ, B=53°".
+- Vectores: [GRÁFICO: vectores] y una línea por vector "A: 10, 37°" (módulo y ángulo desde el eje x positivo; si no hay módulo, solo el ángulo "A: 37°"). Uno tras otro: "modo: cadena" y "resultante: sí".
+- Orbitales: [GRÁFICO: orbitales] y la configuración "1s2 2s2 2p6 3s2 3p4" (o "[Ar] 4s2 3d6").
+- Mapas, escenas, figuras geométricas complejas, dibujos y fotos siguen con [IMAGEN].`;
 
 const IA_PREGUNTAS = `CÓMO VA CADA PREGUNTA
 PREGUNTA 1:
@@ -273,14 +283,14 @@ Devuélveme solo la imagen final, sin texto adicional.`
 };
 
 // Prompt para pasar UN gráfico (foto, captura o PDF) al bloque [GRÁFICO: …]
-const IA_GRAFICO_SOLO = () => `Te pasaré la imagen de un gráfico de estadística de una pregunta de examen (histograma, polígono, ojiva, barras, circular, caja, dispersión, pictograma o tallo y hojas). Escríbelo como texto con el formato de abajo, para mi plataforma de estudio "Modo Cachimbo", que lo dibuja sola.
+const IA_GRAFICO_SOLO = () => `Te pasaré la imagen de un gráfico de una pregunta de examen (de estadística, una función o gráfica en el plano cartesiano, intervalos, diagrama de Venn, triángulo, vectores u orbitales). Escríbelo como texto con el formato de abajo, para mi plataforma de estudio "Modo Cachimbo", que lo dibuja sola.
 
 REGLAS
 - Devuelve SOLO el bloque, desde [GRÁFICO: …] hasta [/GRÁFICO], dentro de UN bloque de código Markdown (\`\`\`markdown … \`\`\`), sin explicaciones.
 - Copia exactamente los números, letras y nombres que se ven en el gráfico (ejes, alturas, sectores, categorías). No calcules ni resuelvas nada.
 - Si hay una expresión o letra sin valor (k, 3k, 2x, 7a), ponla con su altura aproximada según el dibujo, como 3k=60, salvo que todas sean letras simples (a, 5a, 7a).
 - Si te paso varios gráficos, devuelve un bloque por cada uno, en orden.
-- Si la imagen NO es un gráfico de estadística (mapa, figura geométrica, dibujo, foto, esquema), responde solo: "Esta imagen va con [IMAGEN]".
+- Si la imagen no se puede escribir con ninguno de estos tipos (mapa, escena, figura geométrica compleja, dibujo, foto), responde solo: "Esta imagen va con [IMAGEN]".
 
 ${IA_GRAFICOS}`;
 
@@ -326,7 +336,7 @@ function botonPrompts(tipo) {
   b.innerHTML = ICONO_IA + ' Prompts ▾';
   const menu = document.createElement('div'); menu.className = 'ia-img-menu'; menu.hidden = true;
   menu.innerHTML = `<button type="button" data-v="formato"><b>Formato de las preguntas</b><small>Pásale el PDF o las fotos y te devuelve las preguntas listas para pegar aquí (con tablas, fórmulas y gráficos)</small></button>
-    <button type="button" data-v="grafico"><b>Gráfico de estadística</b><small>Pásale la imagen de un gráfico y te devuelve el bloque [GRÁFICO: …] para pegar en la pregunta</small></button>
+    <button type="button" data-v="grafico"><b>Gráfico (estadística, funciones, Venn, vectores…)</b><small>Pásale la imagen de un gráfico y te devuelve el bloque [GRÁFICO: …] para pegar en la pregunta</small></button>
     <button type="button" data-v="fiel"><b>Imagen fiel al original</b><small>Reilustra la imagen igual, solo limpia: fondo blanco y enderezada</small></button>
     <button type="button" data-v="color"><b>Imagen mejorada con color</b><small>Mismo contenido, con colores suaves en gráficos y líneas</small></button>`;
   b.addEventListener('click', e => {
