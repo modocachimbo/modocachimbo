@@ -302,6 +302,15 @@
   body.ma-fit .ma-card .ma-dest { flex: 1 1 0; min-height: 84px; }
   body.ma-fit .ma-card .ma-dest > * { height: auto; min-height: 84px; }
   body.ma-fit .ma-rail .r { height: clamp(46px, calc((var(--fit-h) - 60px) / 7), 62px); }
+  /* Perfil de un amigo: la tarjeta se encoge para dejar sitio a «Retar a duelo / Destacar» */
+  body.ma-fit .ma-pf > div:last-child:has(> .ma-acc-pf) { display: flex; flex-direction: column; }
+  body.ma-fit .ma-pf > div:last-child > .ma-card:has(~ .ma-acc-pf) { flex: 1 1 0; min-height: 0; height: auto; }
+  body.ma-fit .ma-pf > div:last-child > .ma-acc-pf { flex: none; }
+}
+@media (min-width: 900px) and (max-height: 820px) {
+  body.ma-fit .ma-card.amigo .ma-dest .mcc-dib { width: 54px; height: 54px; }
+  body.ma-fit .ma-card.amigo .ma-vitr { margin: 0; }
+  body.ma-fit .ma-card.amigo .ma-dest, body.ma-fit .ma-card.amigo .ma-dest > * { min-height: 70px; }
 }
 /* Pantallas bajas (laptop 1366×768 con barras del navegador): tarjeta más compacta */
 @media (min-width: 900px) and (max-height: 820px) {
