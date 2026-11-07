@@ -27,6 +27,12 @@
    como número. Otros tipos sin alternativas: ver tipoEspecial().
    Analogías: CORDERO : OVEJA :: (dos puntos con espacios) en el enunciado y
    en las alternativas; assets/pregunta.js alinea los dos puntos.
+   Búho tutor (assets/buho-tutor.js): debajo de las alternativas, la resolución
+   en hasta 3 niveles; cada bloque va hasta el siguiente o hasta [FIN RESOLUCIÓN]
+   (o la siguiente PREGUNTA). Se guarda como q.res = { rapido, pasos, cero }.
+     [RÁPIDO]       ⚡ Al toque: lo directo, para el que ya tiene base
+     [PASO A PASO]  📝 explicado con calma
+     [DESDE CERO]   🍎 con ejemplos de la vida diaria, para el que recién empieza
    ========================================================= */
 const MARCA = /\s*(✅|✔️|✔|☑️|☑|✓)\s*/gu;
 const LETRAS = 'ABCDEF';
@@ -130,12 +136,21 @@ function tipoEspecial(q) {
   if (vf.length && rel.length) q.errores.push('Mezclaste afirmaciones (V)/(F) y parejas con ->: usa un solo tipo por pregunta');
 }
 
+// Búho tutor: [RÁPIDO] / [AL TOQUE], [PASO A PASO] / [RESOLUCIÓN], [DESDE CERO] / [MANZANITAS]
+const RX_RES = /^\[\s*(R[AÁ]PIDO|AL\s+TOQUE|DIRECTO|PASO\s+A\s+PASO|RESOLUCI[OÓ]N|DESDE\s+CERO|MANZANITAS|M[AÁ]S\s+F[AÁ]CIL)\s*\]$/i;
+const RX_RES_FIN = /^\[\s*(?:FIN\s+(?:DE\s+LA\s+)?RESOLUCI[OÓ]N|\/\s*(?:R[AÁ]PIDO|AL\s+TOQUE|DIRECTO|PASO\s+A\s+PASO|RESOLUCI[OÓ]N|DESDE\s+CERO|MANZANITAS|M[AÁ]S\s+F[AÁ]CIL))\s*\]$/i;
+const MAX_RES = 6000;
+function claveRes(t) {
+  t = sinTildes(t);
+  return /rapido|toque|directo/.test(t) ? 'rapido' : /paso|resolucion/.test(t) ? 'pasos' : 'cero';
+}
+
 // Lee el texto y devuelve { meta, preguntas: [{num, text, options, correct, errores[]}], avisos[] }
 const RX_GRAF_PANEL = /^\[\s*GR[AÁ]FICO(\s+DERECHA)?\s*:\s*([^\]]+)\]$/i;
 function parsearTexto(raw) {
   const meta = { curso: '', ciclo: '', tema: '', nombre: '' };
   const preguntas = [], avisos = [];
-  let cur = null, lastOpt = null, lectura = null, enLectura = false, etiqueta = '', graf = null;
+  let cur = null, lastOpt = null, lectura = null, enLectura = false, etiqueta = '', graf = null, resK = null;
   const lecturas = [];
   const lineas = String(raw || '').replace(/\r/g, '').split('\n');
   for (const linea of lineas) {
@@ -145,6 +160,12 @@ function parsearTexto(raw) {
       if (/^\[\s*\/\s*GR[AÁ]FICO\s*\]$/i.test(l)) { graf.push('[/GRÁFICO]'); graf = null; continue; }
       if (!/^PREGUNTA\s*N?[°º]?\s*\d{1,3}\b/i.test(l)) { if (l) graf.push(l); continue; }
       graf = null;
+    }
+    // Dentro de una resolución del Búho tutor: las líneas van tal cual (también las vacías)
+    if (resK) {
+      if (RX_RES_FIN.test(l)) { resK = null; continue; }
+      if (!/^PREGUNTA\s*N?[°º]?\s*\d{1,3}\b/i.test(l) && !/^(TEXTO|LECTURA)\s*(?:N?[°º]?\s*\d{1,3})?\s*[:.]?\s*$/i.test(l) && !RX_RES.test(l)) { if (!/^[-=_*]{3,}$/.test(l)) cur.res[resK].push(l); continue; }
+      resK = null;
     }
     if (enLectura && !l) { lectura.lines.push(''); continue; }
     if (!l || /^[-=_*]{3,}$/.test(l)) continue;
@@ -175,6 +196,12 @@ function parsearTexto(raw) {
       continue;
     }
     if (!cur) { avisos.push('Línea ignorada (antes de la PREGUNTA 1): "' + l.slice(0, 60) + '"'); continue; }
+    if ((m = l.match(RX_RES))) {
+      resK = claveRes(m[1]);
+      cur.res = cur.res || {};
+      if (cur.res[resK]) cur.resDoble = true;
+      cur.res[resK] = []; lastOpt = null; continue;
+    }
     if ((m = l.match(RX_GRAF_PANEL))) {
       if (lastOpt && !m[1]) cur.grafTarde = true;
       cur.textLines.push('[GRÁFICO' + (m[1] ? ' DERECHA' : '') + ': ' + m[2].trim() + ']');
@@ -232,6 +259,17 @@ function parsearTexto(raw) {
       if (q.textLines.some(l => /\[\[[^\]]+\]\]/.test(l))) q.errores.push('Los espacios [[…]] son para completar sin alternativas; si tiene alternativas, escribe ____');
     }
     if (q.tipo !== 'ordenar') delete q.orden;
+    // Búho tutor: cada nivel queda como texto (sin líneas vacías al inicio o al final)
+    if (q.res) {
+      Object.keys(q.res).forEach(k => {
+        const t = q.res[k].join('\n').replace(/^\s*\n+|\n+\s*$/g, '').trim();
+        if (t) q.res[k] = t; else delete q.res[k];
+        if (t.length > MAX_RES) q.errores.push('La resolución es muy larga (máximo ' + MAX_RES + ' letras por nivel)');
+      });
+      if (!Object.keys(q.res).length) { delete q.res; q.errores.push('Hay un bloque de resolución vacío: escribe la resolución debajo de [RÁPIDO], [PASO A PASO] o [DESDE CERO]'); }
+    }
+    if (q.resDoble) q.errores.push('Un mismo nivel de resolución está dos veces');
+    delete q.resDoble;
     delete q.tocar; delete q.tocarTarde;
     q.text = q.textLines.join('\n').trim();
     delete q.textLines;
@@ -281,6 +319,15 @@ function parsearTexto(raw) {
 }
 
 /* ---------- Vista previa (igual que la web del alumno) ---------- */
+// Búho tutor: los niveles que tiene la pregunta, plegados (se abren para revisarlos)
+const NIVELES_RES = [['rapido', '⚡ Al toque'], ['pasos', '📝 Paso a paso'], ['cero', '🍎 Desde cero']];
+function vistaRes(res) {
+  if (!res) return '';
+  const ns = NIVELES_RES.filter(n => res[n[0]]);
+  if (!ns.length) return '';
+  const armar = t => window.MCBuhoTutor ? MCBuhoTutor.armarTexto(t) : MCPregunta.armar(String(t).replace(/^\s*(Paso\s*\d{1,2}\s*[:.)-])/gim, '**$1**')).html;
+  return `<details class="pres"><summary>🦉 Búho tutor · ${ns.map(n => n[1]).join(' · ')}</summary>${ns.map(n => `<div class="pres-n"><div class="pres-t">${n[1]}</div><div class="pres-x">${armar(res[n[0]])}</div></div>`).join('')}</details>`;
+}
 function formatQText(str) {
   let e = esc(str);
   // Etiquetas permitidas: <u> <i> <b> <em> <strong> <sub> <sup> (también una dentro de otra)
@@ -401,6 +448,7 @@ function revisarTexto() {
       <div class="ptext">${v.html}</div>
       ${q.marcasImg ? '' : `<div class="pimg" data-z="${i}|g"></div>`}
       ${v.derecha ? `<div class="pder"><div>${opts}</div><div><div class="hint">Al lado de las alternativas</div>${v.derecha}</div></div>` : `<div class="popts ${!q.abierta && MCPregunta.cortas(q.options) ? 'popts-cortas' : ''}">${opts}</div>`}
+      ${vistaRes(q.res)}
     </article>`;
   }).join('');
   SUB.zonas = {};
@@ -530,6 +578,7 @@ function armarConImagenes(ruta, base) {
     const out = Object.assign(base(q), { text: q.lectura + text + (q.etiqueta ? '\n[ETIQUETA: ' + q.etiqueta + ']' : ''), options: q.options.map(o => ({ letter: o.letter, text: o.text })), correct: q.correct });
     if (q.abierta) Object.assign(out, { abierta: true, respuestas: q.respuestas.slice(), options: [], correct: 0 });
     if (q.tipo) out.tipo = q.tipo;
+    if (q.res) out.res = Object.assign({}, q.res);
     if (q.tipo === 'completar') out.huecos = q.huecos.map(h => h.slice());
     if (q.tipo === 'vf') out.afirmaciones = q.afirmaciones.map(a => ({ texto: a.texto, v: a.v }));
     if (q.tipo === 'relacionar') out.pares = q.pares.map(p => p.slice());

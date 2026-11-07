@@ -1826,6 +1826,12 @@
     '@media (max-width:420px){.mcq-rel button{font-size:13.5px;padding:8px}.mcq-vf-bt button{width:38px;height:38px}}';
   document.head.appendChild(st3);
 
+  // Búho tutor: resolución guardada de cada pregunta (assets/buho-tutor.js)
+  if (!window.MCBuhoTutor && !document.querySelector('script[src*="buho-tutor.js"]')) {
+    var bt = document.createElement('script'); bt.src = RAIZ + 'assets/buho-tutor.js'; bt.async = true;
+    (document.head || document.documentElement).appendChild(bt);
+  }
+
   window.MCPregunta = {
     grafico: Graf,
     esAbierta: esAbierta, acierta: acierta, burbuja: burbuja, normal: normal, numero: numero, cuadroAbierto: cuadroAbierto, solucion: solucion, llenarHuecos: llenarHuecos, nombreTipo: nombreTipo, tipoDe: tipoDe, analogias: analogias, esPar: esPar, armar: armar, pintar: pintar, alternativas: alternativas, cortas: cortas, formato: formato, sinLectura: sinLectura, mezclar: mezclar, rangos: rangos,

@@ -618,6 +618,15 @@
     font-family: 'Nunito', 'Inter', sans-serif !important; font-weight: 800; font-size: 17px; line-height: 1.55; color: #f2f2f2; }
   .ptext * { font-family: inherit; }
   .popts { display: flex; flex-direction: column; gap: 10px; }
+  /* Búho tutor en la vista previa: resolución plegada */
+  .pres { margin-top: 12px; border: 1.5px solid rgba(198,224,0,.35); border-radius: 14px; background: rgba(198,224,0,.05); }
+  .pres > summary { cursor: pointer; padding: 10px 14px; font: 800 13.5px 'Nunito', 'Inter', sans-serif; color: var(--accent); }
+  .pres-n { padding: 4px 14px 12px; border-top: 1px dashed rgba(198,224,0,.25); }
+  .pres-t { font: 800 12px 'Nunito', 'Inter', sans-serif; letter-spacing: .04em; text-transform: uppercase; color: var(--text-dim); margin: 8px 0 4px; }
+  .pres-x .mcq-p { display: block; margin-bottom: 8px; }
+  .ed-res { margin-top: 18px; border: 1.5px solid rgba(198,224,0,.35); border-radius: 14px; padding: 4px 14px 12px; background: rgba(198,224,0,.04); }
+  .ed-res > summary { cursor: pointer; padding: 8px 0; font: 800 14px 'Nunito', 'Inter', sans-serif; color: var(--accent); }
+  .ed-res .ta { min-height: 110px; }
   .popts.popts-cortas { display: grid; gap: 10px; }
   .popt { gap: 12px; padding: 12px 14px; border: 2px solid #2F284E; border-bottom-width: 5px; border-radius: 16px; background: #1E1935;
     font: 800 15px/1.4 'Nunito', 'Inter', sans-serif; color: #dcdcdc; }
@@ -813,6 +822,10 @@ E) Alternativa"></textarea>
               <code>A) VVV   B) FVV   C) VVF</code><span>Varias alternativas en una línea también valen. Si son cortas, se muestran en columnas solas.</span>
               <code>a. texto   b. texto</code><span>Con punto es texto del enunciado (por ejemplo, una lista para relacionar). Las alternativas siempre van con paréntesis: A) o a).</span>
               <code>PREGUNTA 4:<br>&lt;u&gt;CORDERO&lt;/u&gt; : OVEJA ::<br>A) potro : yegua<br>B) ternero : vaca ✅<br>C) pollo : gallo</code><span>Analogía: el par va con dos puntos y espacios a los lados (<code>CORDERO : OVEJA</code>); los <code>::</code> del final son opcionales. Las alternativas también con dos puntos. Al alumno le salen centradas y con los dos puntos uno debajo del otro.</span>
+            </div>
+            <div class="fmt-tit">🦉 Búho tutor · resolución de la pregunta (opcional)</div>
+            <div class="fmt-grid">
+              <code>D) $\sqrt{3}/3$ ✅<br>E) $3\sqrt{3}$<br>[RÁPIDO]<br>Junta los extremos y factoriza:<br>$L = \tan 30°$<br>[PASO A PASO]<br>Paso 1: …<br>Paso 2: …<br>[DESDE CERO]<br>Imagina que tienes canastas…<br>[FIN RESOLUCIÓN]</code><span>Debajo de las alternativas puedes poner la resolución en hasta <b>3 niveles</b>: <code>[RÁPIDO]</code> (⚡ al toque, 2 o 3 líneas para el que ya sabe), <code>[PASO A PASO]</code> (📝 con calma) y <code>[DESDE CERO]</code> (🍎 con manzanitas, para el que recién empieza). Pon solo los que quieras. Cada bloque va hasta el siguiente, hasta <code>[FIN RESOLUCIÓN]</code> o hasta la siguiente <code>PREGUNTA</code>. Se usan las mismas fórmulas, negritas, tablas y <code>[GRÁFICO]</code> que en el enunciado. Una línea que empieza con <code>Paso 1:</code> sale en negrita.<br>El alumno ve el botón <b>🦉 Búho tutor</b> en el modo estudio y después de responder en práctica, Repaso, Fijas y Falladas: el búho le responde como en un chat, primero al toque, y el alumno pide "paso a paso" o "desde cero". No usa internet ni IA: es lo que tú escribiste. No menciones letras (A, B…) en la resolución, porque las alternativas se mezclan; escribe el valor. Para que la IA te las escriba, usa <b>Prompts ▾ → Resoluciones del Búho tutor</b>.</span>
             </div>
             <div class="fmt-tit">Preguntas sin alternativas · solo Seminarios y Banqueo</div>
             <div class="fmt-grid">
@@ -2043,6 +2056,15 @@ E) Alternativa"></textarea>
       <input class="opt-in" id="edResp" style="width:100%;" value="${esc((q.respuestas || []).join(' | '))}">` : `<label class="fld">Alternativas <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— toca la letra para marcar la correcta</span></label>`}
       <div id="edOpts"></div>
       ${q.abierta ? '' : '<button type="button" class="rbtn ed-add" id="edAddOpt">＋ Agregar alternativa</button>'}
+      <details class="ed-res"${q.res ? ' open' : ''}><summary>🦉 Búho tutor · resolución ${q.res ? '(' + ['rapido', 'pasos', 'cero'].filter(k => q.res[k]).length + ' de 3 niveles)' : '(vacía)'}</summary>
+        <div class="hint">Lo que el alumno lee al tocar el búho. Pon solo los niveles que quieras; un nivel vacío no sale. No menciones letras (A, B…): las alternativas se mezclan. Para que la IA te las escriba: <b>Subir tema → Prompts ▾ → Resoluciones del Búho tutor</b>.</div>
+        <label class="fld">⚡ Al toque <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— 2 o 3 líneas, para el que ya sabe</span></label>
+        <textarea class="ta" id="edResR">${esc((q.res && q.res.rapido) || '')}</textarea>
+        <label class="fld">📝 Paso a paso <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— "Paso 1:", "Paso 2:"… sale en negrita</span></label>
+        <textarea class="ta" id="edResP" style="min-height:160px;">${esc((q.res && q.res.pasos) || '')}</textarea>
+        <label class="fld">🍎 Desde cero <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— con manzanitas, para el que recién empieza</span></label>
+        <textarea class="ta" id="edResC" style="min-height:140px;">${esc((q.res && q.res.cero) || '')}</textarea>
+      </details>
       <label class="fld">Así lo verá el alumno <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— se actualiza mientras editas</span></label>
       <article class="pcard ed-prev" id="edPrev"></article>
       <div class="err" id="edErr"></div>
@@ -2081,15 +2103,24 @@ E) Alternativa"></textarea>
         correct
       };
       if (respEl) v.respuestas = respuestas();
+      v.res = leerRes();
       if (tipo) { const r = leerTipo(v.text); if (r.campos) Object.assign(v, r.campos); v.errorTipo = r.error; }
       return v;
     }
     const firma = x => JSON.stringify([x.huecos, x.afirmaciones, x.pares, x.orden, x.zona]);
+    // Búho tutor: { rapido, pasos, cero } solo con los niveles escritos; null si no hay ninguno
+    function leerRes() {
+      const r = {};
+      [['rapido', '#edResR'], ['pasos', '#edResP'], ['cero', '#edResC']].forEach(([k, id]) => { const t = body.querySelector(id).value.replace(/\r/g, '').trim(); if (t) r[k] = t; });
+      return Object.keys(r).length ? r : null;
+    }
+    const firmaRes = r => JSON.stringify(r ? ['rapido', 'pasos', 'cero'].map(k => r[k] || '') : null);
     function cambio() {
       const v = leer();
       const dif = v.correct !== q.correct || v.text !== q.text || v.options.length !== q.options.length || v.options.some((o, i) => o.text !== q.options[i].text) ||
         (respEl && v.respuestas.join('|') !== (q.respuestas || []).join('|')) ||
         (tipo && firma(v) !== firma(q)) ||
+        firmaRes(v.res) !== firmaRes(q.res && Object.keys(q.res).length ? q.res : null) ||
         zonaImg.estado().cambio !== 'igual';
       save.disabled = !dif;
       clearTimeout(tPrev); tPrev = setTimeout(pintarPrev, 250);
@@ -2151,6 +2182,7 @@ E) Alternativa"></textarea>
         MCPregunta.analogias(lista, v);
         if (r.derecha) lista.outerHTML = `<div class="pder"><div class="popts">${lista.innerHTML}</div><div>${r.derecha}</div></div>`;
       }
+      if (typeof vistaRes === 'function' && v.res) { prev.insertAdjacentHTML('beforeend', vistaRes(v.res)); const d = prev.querySelector('.pres'); if (d) d.open = true; }
       renderMath(prev);
     }
     const zonaImg = crearZonaImagen(body.querySelector('#edImg'), { actual: q.graphic || '', onChange: () => cambio() });
