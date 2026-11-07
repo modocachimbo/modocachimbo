@@ -370,13 +370,69 @@
     }
     return out;
   }
+  /* ---------- Fórmulas largas en celular ----------
+     KaTeX solo puede bajar de línea después de un +, −, = … que esté
+     "suelto". Dentro de \left( … \right) todo queda pegado en un bloque
+     y en celular se sale de la tarjeta. Si lo de adentro es de una sola
+     altura (sin fracciones, raíces, sumatorias…), \left y \right no
+     hacen falta: se quitan y la fórmula ya puede partirse. */
+  var ALTO = /\\(?:[dtc]?frac|over|atop|choose|[dt]?binom|sqrt|sum|prod|coprod|int|iint|iiint|oint|lim|limsup|liminf|max|min|sup|inf|begin|overbrace|underbrace|overset|underset|stackrel|substack|displaystyle|xrightarrow|xleftarrow|bigcup|bigcap)(?![a-zA-Z])|\\\\/;
+  var DELIM = /^\s*(\\[a-zA-Z]+|\\.|.)/;
+  function sinLeftRight(tex) {
+    if (tex.indexOf('\\left') < 0) return tex;
+    var re = /\\(left|right)(?![a-zA-Z])/g, m, pila = [], cambios = [];
+    while ((m = re.exec(tex))) {
+      var d = tex.slice(re.lastIndex).match(DELIM);
+      if (!d) return tex;
+      var tok = { ini: m.index, fin: re.lastIndex + d[0].length, del: d[1] };
+      re.lastIndex = tok.fin;
+      if (m[1] === 'left') { pila.push(tok); continue; }
+      var a = pila.pop();
+      if (!a) return tex; // \right sin pareja: no se toca nada
+      if (!ALTO.test(tex.slice(a.fin, tok.ini))) cambios.push(a, tok);
+    }
+    if (pila.length) return tex;
+    cambios.sort(function (x, y) { return y.ini - x.ini; });
+    cambios.forEach(function (c) {
+      var d = c.del === '.' ? '' : c.del;
+      // {} evita que el delimitador se pegue a la letra siguiente (\left\langle x → \langle{}x)
+      if (/^\\[a-zA-Z]+$/.test(d)) d += '{}';
+      tex = tex.slice(0, c.ini) + d + tex.slice(c.fin);
+    });
+    return tex;
+  }
+  // Si aun así un pedazo no entra (por ejemplo una fracción muy ancha),
+  // ese pedazo se desliza de lado en vez de salirse de la tarjeta
+  function ajustarAnchos(raiz) {
+    if (!raiz || !raiz.querySelectorAll) return;
+    raiz.querySelectorAll('.katex:not(.katex-display .katex) > .katex-html > .base').forEach(function (b) {
+      b.classList.remove('mcq-base-ancha');
+      var caja = b.closest('.katex').parentElement;
+      while (caja && getComputedStyle(caja).display.indexOf('inline') === 0) caja = caja.parentElement;
+      if (caja && caja.clientWidth && b.getBoundingClientRect().width > caja.clientWidth + 1) b.classList.add('mcq-base-ancha');
+    });
+  }
+  var porAjustar = [];
+  window.addEventListener('resize', function () {
+    clearTimeout(ajustarAnchos.t);
+    ajustarAnchos.t = setTimeout(function () {
+      porAjustar = porAjustar.filter(function (r) { return r.isConnected; });
+      porAjustar.forEach(ajustarAnchos);
+    }, 150);
+  });
   function conFracciones(fn) {
     if (typeof fn !== 'function' || fn._mcFrac) return fn;
     var w = function (el, op) {
       op = Object.assign({}, op);
       var antes = op.preProcess;
-      op.preProcess = function (t) { t = fraccionesGrandes(t); return antes ? antes(t) : t; };
-      return fn.call(this, el, op);
+      op.preProcess = function (t) { t = sinLeftRight(fraccionesGrandes(t)); return antes ? antes(t) : t; };
+      var r = fn.call(this, el, op);
+      try {
+        ajustarAnchos(el);
+        if (el && porAjustar.indexOf(el) < 0) porAjustar.push(el);
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { ajustarAnchos(el); });
+      } catch (e) {}
+      return r;
     };
     w._mcFrac = true;
     return w;
@@ -414,7 +470,8 @@
     '.mcq-con-der>*{grid-column:1}.mcq-con-der>.mcq-der{grid-column:2;align-self:stretch;background:#fff;border-radius:12px;padding:10px;display:flex;justify-content:center;align-items:center;box-sizing:border-box}' +
     // La imagen derecha toma el alto de las alternativas (no las estira ni las deja pegadas arriba)
     '@media (min-width:601px){.mcq-con-der>.mcq-der{position:relative;min-height:140px;background:none;padding:0}.mcq-con-der>.mcq-der img{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:100%;max-height:100%;width:auto;height:auto;box-sizing:border-box;background:#fff;padding:10px;border-radius:12px}}' +
-    '.katex-display{overflow-x:auto;overflow-y:hidden;max-width:100%}@media (max-width:600px){.mcq-ecs .katex-display{font-size:.85em}}' +
+    '.katex-display{overflow-x:auto;overflow-y:hidden;max-width:100%}.katex .base.mcq-base-ancha{display:block;max-width:100%;overflow-x:auto;overflow-y:hidden;padding-bottom:2px}'+
+    '@media (max-width:600px){.mcq-ecs .katex-display{font-size:.85em}}' +
     '.mcq-ecs{display:flex;flex-wrap:wrap;justify-content:center;column-gap:2.5em}.mcq-ecs>span{max-width:100%;min-width:0}' +
     '.mcq-lec{margin:0 0 14px;padding:10px 14px;border-left:3px solid #c6e000;background:rgba(198,224,0,.07);border-radius:10px}' +
     '.mcq-lec summary{cursor:pointer;font-weight:800;letter-spacing:.05em;color:#f5ffcc;font-size:.85em}' +
