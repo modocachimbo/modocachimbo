@@ -57,8 +57,10 @@
   .c-volver > * { transform: skewX(10deg); }
   .c-volver:active { transform: skewX(-10deg) translateY(3px); }
   .estado { color: var(--text-dim); text-align: center; padding: 40px 10px; }
+  /* PC: aquí el título es más alto que en «Mi perfil»; el perfil del amigo empieza más abajo */
+  @media (min-width: 900px) { body.ma-fit { --fit-top: 122px; } }
 </style>
-<link rel="stylesheet" href="assets/amigos.css?v=5">
+<link rel="stylesheet" href="assets/amigos.css?v=6">
 <script src="assets/mc-config.js"></script>
 <script src="assets/acceso.js"></script>
 <script src="assets/auth.js"></script>
@@ -68,7 +70,7 @@
 <script src="assets/tarjeta-perfil.js?v=207"></script>
 <script src="assets/buho/buho-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
-<script src="assets/amigos.js?v=4"></script>
+<script src="assets/amigos.js?v=5"></script>
 </head>
 <body>
   <div class="wrap">
@@ -293,6 +295,8 @@
       '<a class="r" href="amigos.html">' + SV.amigos + '<span>Mis amigos</span></a></nav>';
     var cuerpo = perfilTab === 'col' && d.tiene ? A.coleccion(d, filtro) : A.perfil(d, { acciones: acc });
     app.innerHTML = '<div class="ma-lay">' + rail + '<div>' + cuerpo + '</div></div>';
+    // PC: el perfil entra justo en la pantalla, igual que «Mi perfil» (assets/amigos.css, body.ma-fit)
+    document.body.classList.toggle('ma-fit', perfilTab === 'perfil');
   }
   function iniciarPerfil() {
     document.getElementById('volverTx').textContent = 'Amigos';
