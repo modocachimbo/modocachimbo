@@ -310,7 +310,7 @@
         if (/^resto$/i.test(v)) { resto = i; ds.push({ et: m ? et : '', g: 0 }); return; }
         var n = num(v);
         if (isNaN(n)) { ds.push({ et: et, g: NaN }); return; }
-        if (/%/.test(v)) ds.push({ et: et, g: n * 3.6 }); else if (/°|º/.test(v)) ds.push({ et: et, g: n }); else { ds.push({ et: et, g: n, plano: 1 }); plano++; sumaPlano += n; }
+        if (/%/.test(v)) ds.push({ et: et, g: n * 3.6 }); else if (/°|º/.test(v)) ds.push({ et: et, g: n, grado: 1 }); else { ds.push({ et: et, g: n, plano: 1 }); plano++; sumaPlano += n; }
       });
       var mal = ds.filter(function (d) { return isNaN(d.g); })[0];
       if (mal) return err('No sé de qué tamaño dibujar «' + mal.et + '»: escribe por ejemplo ' + mal.et + '=60°');
@@ -344,6 +344,15 @@
         var cs = Math.cos(m * rad), sn = Math.sin(m * rad), baja = d3 && sn > 0 ? prof : 0;
         var e1 = P(m, r * 0.94, ox, oy, baja), e2 = P(m, r + 12, ox, oy, baja), e3 = P(m, r + 16, ox, oy, baja);
         etq += L(e1[0], e1[1], e2[0], e2[1], col, 0, 1.2) + T(e3[0], e3[1] + 4 + (sn > .3 ? 6 : 0), p[0], { f: 13, w: 900, a: Math.abs(cs) < .25 ? 'middle' : cs > 0 ? 'start' : 'end' });
+        // Sector dado en grados: arco del ángulo en el centro (90° con su cuadradito), como en los libros
+        if (ds[i].grado && !dona && g < 359) {
+          var ra = Math.min(r * 0.3, 26), sy = d3 ? ry / r : 1;
+          var Q = function (ang, rr) { return [cx + ox + rr * Math.cos(ang * rad), cy + oy + rr * sy * Math.sin(ang * rad)]; };
+          if (Math.abs(g - 90) < 0.5) {
+            var q1 = Q(a1, ra * 0.55), q2 = Q(m, ra * 0.55 * Math.SQRT2), q3 = Q(a2, ra * 0.55);
+            etq += '<path d="M' + pt(q1) + 'L' + pt(q2) + 'L' + pt(q3) + '" style="fill:none;stroke:var(--g-tx)" stroke-width="1.6"/>';
+          } else etq += '<path d="M' + pt(Q(a1, ra)) + 'A' + ra + ' ' + r1(ra * sy) + ' 0 ' + grande + ' 1 ' + pt(Q(a2, ra)) + '" style="fill:none;stroke:var(--g-tx)" stroke-width="1.6"/>';
+        }
         if (ds[i].et) { var c = P(m, dona ? r * 0.78 : r * 0.6, ox, oy); etq += T(c[0], c[1] + 4, ds[i].et, { f: g < 30 ? 9.5 : 12, w: 900, c: 'var(--g-tx2)' }); }
       });
       var centro = dona && o.centro ? T(cx, cy + 5, o.centro, { f: 13, w: 900 }) : '';
