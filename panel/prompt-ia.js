@@ -53,11 +53,11 @@ x: 20, 40, 60, 80, 100
 alturas: 40, k=20, 3k=60, k=20
 sombrear: 2, 3
 [/GRÁFICO]
-  En x van los límites de clase (uno más que las alturas) o las letras del eje (a, b, c…). Las alturas en el orden de las barras. Si una altura es una letra o expresión y hay números en el mismo gráfico, escribe etiqueta=altura aproximada según el dibujo (3k=60). Si todas son letras (a, 5a, 7a) se escriben tal cual. "sombrear" dice qué barras están sombreadas (1 = la primera). Si encima hay un polígono, agrega "polígono: sí".
+  En x van los límites de clase (uno más que las alturas) o las letras del eje (a, b, c…). Si los números del eje están DEBAJO DEL CENTRO de cada barra (marcas de clase), pon uno por barra (tantos como alturas): "x: 18, 22, 26, 30, 34". Las alturas en el orden de las barras. Si una altura es una letra o expresión y hay números en el mismo gráfico, escribe etiqueta=altura aproximada según el dibujo (3k=60). Si todas son letras (a, 5a, 7a) se escriben tal cual. "sombrear" dice qué barras están sombreadas (1 = la primera). Si encima hay un polígono, agrega "polígono: sí".
 - Polígono de frecuencias solo: igual, con [GRÁFICO: polígono].
 - Ojiva o línea: [GRÁFICO: línea] con "x: …" y "y: …". Varias líneas: una línea por serie "Lima: 20, 35, 30".
 - Barras: [GRÁFICO: barras] y una línea por barra "Septiembre: 70". Horizontales: [GRÁFICO: barras horizontales]. Dos o más barras por categoría: [GRÁFICO: barras agrupadas] con "series: Hombres, Mujeres" y "Lunes: 12, 15". Una sobre otra: [GRÁFICO: barras apiladas].
-- Circular: [GRÁFICO: circular] (o [GRÁFICO: circular 3d] si el original es en 3D) y una línea por sector "A: 168°", "Vóley: 25%" o "Lima: 12". Para un sector sin dato escribe "G: resto". Si el sector muestra una expresión: "Fútbol: 2x=30%" (el valor aproximado según el dibujo). Sector separado del resto: "destacar: Publicidad". Dona: [GRÁFICO: dona].
+- Circular: [GRÁFICO: circular] (o [GRÁFICO: circular 3d] si el original es en 3D) y una línea por sector "A: 168°", "Vóley: 25%" o "Lima: 12". Si el sector tiene el cuadradito de ángulo recto, escríbelo como "90°". Para un sector sin dato escribe "G: resto". Los sectores en grados dibujan solos el arco del ángulo en el centro. Si el sector muestra una expresión: "Fútbol: 2x=30%" (el valor aproximado según el dibujo). Sector separado del resto: "destacar: Publicidad". Dona: [GRÁFICO: dona].
 - Diagrama de caja: [GRÁFICO: caja] con "mín:", "Q1:", "mediana:", "Q3:", "máx:".
 - Dispersión: [GRÁFICO: dispersión] con "puntos: (1; 6), (2; 8)".
 - Pictograma: [GRÁFICO: pictograma] con "cada: 10" y una línea por fila "Lunes: 40".
@@ -92,6 +92,7 @@ E) Alternativa
 - La correcta lleva ✅ al final de su línea. NO inventes la respuesta: si el material trae la clave (marcada, subrayada, en negrita, en una tabla de claves al final o como "Rpta: C"), ponle ✅. Si no la trae, deja la pregunta sin ✅ y yo la marco después.
 - En vez de la ✅ también vale una línea "CLAVE: C" al final de la pregunta (úsala si la clave viene en una tabla aparte).
 - Deja una línea en blanco entre pregunta y pregunta.
+- Nunca repitas un número de PREGUNTA. Si el material trae dos veces el mismo número (dos "PROBLEMA 26"), la segunda va con el número siguiente y las de abajo siguen desde ahí.
 - Listas DENTRO del enunciado (proposiciones, premisas, columnas para relacionar) van con punto, nunca con paréntesis: "I. …", "II. …", "a. …", "b. …". Los paréntesis A) B) son solo para las alternativas.
 - Varias alternativas cortas en una sola línea también valen: "A) VVF   B) FVV   C) VVV".
 
@@ -132,7 +133,7 @@ FORMATO DEL TEXTO
 FORMATO MATEMÁTICO (copia la notación tal como está en el original)
 - Toda expresión matemática va entre $…$, aunque sea corta: $x = 3$, $2x + 1$, $a_n$, $\\pi$. Un número suelto en una oración normal no necesita $ ("compró 12 lapiceros").
 - Decimales con coma: dentro de $…$ escribe la coma entre llaves para que no deje espacio: $0{,}25$, $3{,}1416$. Fuera de $…$ va normal: 0,25.
-- Decimales periódicos: copia la marca que trae el original, solo encima de las cifras que se repiten. Arco: $0{,}\\overset{\\frown}{36}$. Gorrito: $0{,}\\widehat{36}$. Raya: $0{,}\\overline{3}$. Mixto: $0{,}2\\overset{\\frown}{45}$. Numerales con raya: $\\overline{abc}$, $\\overline{2a5}_{(7)}$ (la base va abajo entre paréntesis).
+- Decimales periódicos con arco o gorrito (⌒ o ^ encima de las cifras que se repiten): escribe SIEMPRE \\widehat solo sobre esas cifras, la plataforma dibuja el arco: $0{,}\\widehat{2}$, $0{,}5\\widehat{7}$ (mixto: solo el 7 se repite), $16{,}\\widehat{6}\\%$, $0{,}\\widehat{36}$. Con raya: $0{,}\\overline{3}$. No uses \\overset ni \\frown, y no escribas 0,222… si el original trae la marca. Numerales con raya: $\\overline{abc}$, $\\overline{2a5}_{(7)}$ (la base va abajo entre paréntesis).
 - Primas (prima, doble prima): con ' dentro de $…$: $f'(x)$, $f''(x)$, $A'$, $A'B'C'$, $\\overline{A'B'}$.
 - Grados, minutos y segundos: $37^\\circ$, $30^\\circ 15' 20''$, $\\frac{\\pi}{4}\\ \\text{rad}$. Grados centesimales: $50^g\\,20^m$.
 - Operaciones: $\\times$ (por), $\\div$, $\\cdot$, $\\pm$, $\\neq$, $\\leq$, $\\geq$, $\\approx$, $\\equiv$. Potencias y raíces: $x^{2n+1}$, $\\sqrt[3]{x}$, $\\sqrt{\\frac{a}{b}}$.
@@ -142,6 +143,7 @@ FORMATO MATEMÁTICO (copia la notación tal como está en el original)
 - Matrices y sistemas: $\\begin{pmatrix} 1 & 2 \\\\ 3 & 4 \\end{pmatrix}$, $\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix}$, $\\begin{cases} x + y = 5 \\\\ x - y = 1 \\end{cases}$.
 - Física y Química: unidades fuera de la fórmula o con \\text: $v = 20\\ \\text{m/s}$, $g = 10\\ \\text{m/s}^2$; $^{14}_{6}C$; $Fe^{3+}$; $SO_4^{2-}$; reacciones con $\\rightarrow$ o $\\rightleftharpoons$.
 - Una fórmula muy larga o con fracciones grandes puede ir sola en su línea entre $…$.
+- Varios datos en una misma línea (x₅ = mm, f₁ = 3n, h₂ = 0,2…): ponlos en UNA sola fórmula separados con \\qquad, así no se pegan: $x_5 = \\overline{mm} \\qquad f_1 = 3n \\qquad h_2 = 0{,}\\widehat{2}$.
 - No pongas $ dentro de un bloque [GRÁFICO] (ahí los datos van como texto simple).
 
 IMÁGENES, TABLAS Y COLUMNAS
