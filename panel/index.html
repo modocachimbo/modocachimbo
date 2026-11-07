@@ -861,6 +861,17 @@ E) Alternativa"></textarea>
               <code>[GRÁFICO: tallo y hojas]<br>1 | 2 4 7<br>2 | 0 3 8<br>[/GRÁFICO]</code><span><b>Tallo y hojas.</b> Opcional: <code>clave: 1 | 2 = 12</code>.</span>
               <code>[GRÁFICO DERECHA: circular]</code><span>Igual que <code>[IMAGEN DERECHA]</code>: el gráfico va al lado de las alternativas.</span>
             </div>
+            <div class="fmt-tit">Gráficos de Matemática, Física y Química</div>
+            <div class="fmt-grid">
+              <code>[GRÁFICO: función]<br>f: y = x^2 - 4<br>g: y = 2x + 1<br>x: -4, 4<br>puntos: A(-1; -3), B(3; 5)<br>[/GRÁFICO]</code><span><b>Funciones.</b> Una línea <code>y = …</code> por curva; el nombre es opcional (<code>f:</code>). Se puede usar <code>^ * / ( ) |x|</code>, <code>2x</code>, <code>sen cos tan raiz log ln</code>, <code>pi</code>. Para un tramo: <code>y = raiz(x) [0; 6]</code>. Opcionales: <code>x: -4, 4</code> y <code>y: -5, 10</code> (rango), <code>eje x:</code>, <code>eje y:</code>, <code>cuadrícula: no</code>.</span>
+              <code>[GRÁFICO: función]<br>eje x: t(s)<br>eje y: v(m/s)<br>A: (0; 0), (6; 8)<br>B: (4; 0), (6; 8)<br>marcas x: 4, 6<br>marcas y: 8<br>cuadrícula: no<br>[/GRÁFICO]</code><span><b>Líneas por puntos</b> (gráficas v–t, x–t de Física). <code>marcas x/y</code> elige qué números salen en los ejes. Con <code>guías: sí</code> los puntos llevan líneas punteadas a los ejes.</span>
+              <code>[GRÁFICO: plano]<br>puntos: P(-12; 5)<br>ángulo: θ, P<br>coordenadas: sí<br>[/GRÁFICO]</code><span><b>Plano cartesiano.</b> Puntos con nombre, <code>segmentos: AB, BC</code>, <code>ángulo: θ, P</code> (ángulo en posición normal hasta OP) y <code>coordenadas: sí</code> para mostrar (x; y).</span>
+              <code>[GRÁFICO: recta numérica]<br>A: [-3; 2&gt;<br>B: &lt;0; +∞&gt;<br>[/GRÁFICO]</code><span><b>Intervalos.</b> Con [ ] cerrado (punto lleno) y con &lt; &gt; abierto (punto vacío).</span>
+              <code>[GRÁFICO: venn]<br>conjuntos: A, B, C<br>universo: U<br>regiones: A=10, AB=3, ABC=1, fuera=6<br>sombrear: A, AB<br>[/GRÁFICO]</code><span><b>Diagrama de Venn</b> de 2 o 3 conjuntos. Cada región se nombra con los conjuntos donde está: <code>A</code> (solo A), <code>AB</code> (A y B, sin C), <code>ABC</code>, <code>fuera</code>.</span>
+              <code>[GRÁFICO: triángulo]<br>vértices: A, B, C<br>recto: C<br>lados: AC=24, BC=7, AB=x<br>ángulos: A=θ<br>[/GRÁFICO]</code><span><b>Triángulo.</b> Con <code>recto:</code> es rectángulo; sin él, uno cualquiera (los ángulos en grados le dan la forma).</span>
+              <code>[GRÁFICO: vectores]<br>A: 10, 37°<br>B: 6, 127°<br>[/GRÁFICO]</code><span><b>Vectores</b> con módulo y ángulo desde el eje x. Con <code>modo: cadena</code> van uno tras otro y <code>resultante: sí</code> dibuja la suma.</span>
+              <code>[GRÁFICO: orbitales]<br>1s2 2s2 2p6 3s2 3p4<br>[/GRÁFICO]</code><span><b>Orbitales</b> (configuración electrónica) en cajitas con flechas. También con kernel: <code>[Ar] 4s2 3d6</code>.</span>
+            </div>
             <p class="hint">Las listas van separadas por coma y espacio (<code>20, 40, 60</code>); los decimales con coma pegada (<code>0,25</code>). Si algo está mal escrito, la vista previa te dice qué corregir.</p>
           </details>
         </div>
