@@ -15,6 +15,7 @@
      A) VVV   B) FVV   C) VVF       varias alternativas en una línea
      Las alternativas van con paréntesis: A) o a). Con punto (A. a.) es texto
      del enunciado, por ejemplo una lista para relacionar.
+     [GRÁFICO: barras] … [/GRÁFICO]   gráfico escrito como texto (ver assets/pregunta.js)
      TEXTO 03:          lectura que comparten las preguntas de abajo
      …                  (hasta el siguiente TEXTO o hasta FIN TEXTO)
    Pregunta de respuesta abierta (solo Seminarios y Banqueo): sin
@@ -130,14 +131,21 @@ function tipoEspecial(q) {
 }
 
 // Lee el texto y devuelve { meta, preguntas: [{num, text, options, correct, errores[]}], avisos[] }
+const RX_GRAF_PANEL = /^\[\s*GR[AÁ]FICO(\s+DERECHA)?\s*:\s*([^\]]+)\]$/i;
 function parsearTexto(raw) {
   const meta = { curso: '', ciclo: '', tema: '', nombre: '' };
   const preguntas = [], avisos = [];
-  let cur = null, lastOpt = null, lectura = null, enLectura = false, etiqueta = '';
+  let cur = null, lastOpt = null, lectura = null, enLectura = false, etiqueta = '', graf = null;
   const lecturas = [];
   const lineas = String(raw || '').replace(/\r/g, '').split('\n');
   for (const linea of lineas) {
     const l = linea.trim();
+    // Dentro de un [GRÁFICO: …]: las líneas van tal cual hasta [/GRÁFICO] (si aparece otra PREGUNTA, se cerró mal)
+    if (graf) {
+      if (/^\[\s*\/\s*GR[AÁ]FICO\s*\]$/i.test(l)) { graf.push('[/GRÁFICO]'); graf = null; continue; }
+      if (!/^PREGUNTA\s*N?[°º]?\s*\d{1,3}\b/i.test(l)) { if (l) graf.push(l); continue; }
+      graf = null;
+    }
     if (enLectura && !l) { lectura.lines.push(''); continue; }
     if (!l || /^[-=_*]{3,}$/.test(l)) continue;
     let m;
@@ -162,10 +170,16 @@ function parsearTexto(raw) {
       preguntas.push(cur); lastOpt = null; enLectura = false; continue;
     }
     if (enLectura) {
+      if (RX_GRAF_PANEL.test(l)) lectura.grafico = true;
       if (marcaImagen(l)) lectura.malas = true; else lectura.lines.push(l);
       continue;
     }
     if (!cur) { avisos.push('Línea ignorada (antes de la PREGUNTA 1): "' + l.slice(0, 60) + '"'); continue; }
+    if ((m = l.match(RX_GRAF_PANEL))) {
+      if (lastOpt && !m[1]) cur.grafTarde = true;
+      cur.textLines.push('[GRÁFICO' + (m[1] ? ' DERECHA' : '') + ': ' + m[2].trim() + ']');
+      graf = cur.textLines; continue;
+    }
     const marca = marcaImagen(l);
     if (marca === '[IMAGEN TOCAR]') { cur.tocar = (cur.tocar || 0) + 1; if (cur.options.length) cur.tocarTarde = true; continue; }
     // Ordenar: "ORDEN:" y debajo los pasos en el orden correcto (hasta la siguiente PREGUNTA)
@@ -225,6 +239,7 @@ function parsearTexto(raw) {
     q.lectura = x && x.cuerpo ? '[' + x.titulo + ']\n' + x.cuerpo + '\n[/TEXTO]\n' : '';
     if (x && !x.cuerpo) q.errores.push('El ' + x.titulo + ' está vacío');
     if (x && x.malas) q.errores.push('Por ahora el ' + x.titulo + ' no puede llevar [IMAGEN]; ponla en la pregunta');
+    if (x && x.grafico) q.errores.push('Por ahora el ' + x.titulo + ' no puede llevar [GRÁFICO]; ponlo en la pregunta');
     // Sin alternativas y con RESPUESTA: pregunta abierta (el alumno escribe la respuesta)
     const resp = q.resp; delete q.resp;
     if (q.tipo) { /* completar, vf, relacionar, ordenar o tocar: ya se leyó del texto */ }
@@ -251,6 +266,11 @@ function parsearTexto(raw) {
     q.marcasImg = marcas.length;
     if (q.malas) q.errores.push('La marca [IMAGEN] va en el enunciado, antes de las alternativas (o usa [IMAGEN DERECHA])');
     delete q.malas;
+    // Gráficos escritos como texto: que estén bien escritos y en el enunciado
+    if (q.grafTarde) q.errores.push('El [GRÁFICO] va en el enunciado, antes de las alternativas (o usa [GRÁFICO DERECHA: …])');
+    delete q.grafTarde;
+    if (window.MCPregunta && MCPregunta.grafico) MCPregunta.grafico.errores(q.text).forEach(er => q.errores.push(er));
+    if (/^\[GRÁFICO DERECHA:/m.test(q.text) && (/^\[IMAGEN DERECHA\]$/m.test(q.text) || (q.text.match(/^\[GRÁFICO DERECHA:/gm) || []).length > 1)) q.errores.push('Solo puede haber una imagen o gráfico al lado de las alternativas');
     if (marcas.filter(x => x === '[IMAGEN DERECHA]').length > 1) q.errores.push('Solo puede haber una [IMAGEN DERECHA]');
     if (marcas.length > MAX_IMG) q.errores.push('Máximo ' + MAX_IMG + ' imágenes por pregunta');
     if (q.text && !q.text.replace(/^\[IMAGEN( DERECHA)?\]$/gm, '').trim()) q.errores.push('Falta el enunciado');

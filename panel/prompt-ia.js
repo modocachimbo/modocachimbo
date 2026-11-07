@@ -101,7 +101,29 @@ IMÁGENES, TABLAS Y COLUMNAS
 | Meses | fi | Fi |
 |---|---|---|
 | Enero | 4 | 4 |
-- Dos columnas sin bordes (por ejemplo, para relacionar): "I. CaO || p) cal viva" (las columnas separadas con ||).`;
+- Dos columnas sin bordes (por ejemplo, para relacionar): "I. CaO || p) cal viva" (las columnas separadas con ||).
+
+GRÁFICOS DE ESTADÍSTICA (NO uses [IMAGEN] para estos: escríbelos con este formato, dentro del enunciado)
+- Histograma:
+[GRÁFICO: histograma]
+eje x: I_i
+eje y: f_i
+x: 20, 40, 60, 80, 100
+alturas: 40, k=20, 3k=60, k=20
+sombrear: 2, 3
+[/GRÁFICO]
+  En x van los límites de clase (uno más que las alturas) o las letras del eje (a, b, c…). Las alturas en el orden de las barras. Si una altura es una letra o expresión y hay números en el mismo gráfico, escribe etiqueta=altura aproximada según el dibujo (3k=60). Si todas son letras (a, 5a, 7a) se escriben tal cual. "sombrear" dice qué barras están sombreadas (1 = la primera). Si encima hay un polígono, agrega "polígono: sí".
+- Polígono de frecuencias solo: igual, con [GRÁFICO: polígono].
+- Ojiva o línea: [GRÁFICO: línea] con "x: …" y "y: …". Varias líneas: una línea por serie "Lima: 20, 35, 30".
+- Barras: [GRÁFICO: barras] y una línea por barra "Septiembre: 70". Horizontales: [GRÁFICO: barras horizontales]. Dos o más barras por categoría: [GRÁFICO: barras agrupadas] con "series: Hombres, Mujeres" y "Lunes: 12, 15". Una sobre otra: [GRÁFICO: barras apiladas].
+- Circular: [GRÁFICO: circular] (o [GRÁFICO: circular 3d] si el original es en 3D) y una línea por sector "A: 168°", "Vóley: 25%" o "Lima: 12". Para un sector sin dato escribe "G: resto". Si el sector muestra una expresión: "Fútbol: 2x=30%" (el valor aproximado según el dibujo). Sector separado del resto: "destacar: Publicidad". Dona: [GRÁFICO: dona].
+- Diagrama de caja: [GRÁFICO: caja] con "mín:", "Q1:", "mediana:", "Q3:", "máx:".
+- Dispersión: [GRÁFICO: dispersión] con "puntos: (1; 6), (2; 8)".
+- Pictograma: [GRÁFICO: pictograma] con "cada: 10" y una línea por fila "Lunes: 40".
+- Tallo y hojas: [GRÁFICO: tallo y hojas] y una línea por tallo "1 | 2 4 7".
+- Opcionales: "eje x: …" y "eje y: …" con el nombre de cada eje (f_i pone la i abajo). Listas separadas por coma y espacio; decimales con coma pegada (0,25).
+- [GRÁFICO DERECHA: …] en lugar de [GRÁFICO: …] si el gráfico va al lado de las alternativas.
+- Mapas, figuras geométricas, dibujos y fotos siguen con [IMAGEN].`;
 
 const IA_SIN_ALTERNATIVAS = `PREGUNTAS SIN ALTERNATIVAS (úsalas SOLO si la pregunta original no tiene alternativas)
 - Respuesta escrita: debajo del enunciado "RESPUESTA: Karl Ritter | Ritter" (con | separas otras formas que también valen).

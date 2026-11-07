@@ -847,6 +847,21 @@ E) Alternativa"></textarea>
               <code>| Meses | fi | Fi |<br>|---|---|---|<br>| [120 - > | | 126 |</code><span>Tabla. La línea <code>|---|</code> hace que la primera fila sea el título.</span>
               <code>I. CaO || p) cal viva</code><span>Columnas sin bordes, para "asociar" o listas en varias columnas.</span>
             </div>
+            <div class="fmt-tit">Gráficos de estadística (se escriben, no se pegan)</div>
+            <div class="fmt-grid">
+              <code>[GRÁFICO: histograma]<br>eje x: I_i<br>eje y: f_i<br>x: 20, 40, 60, 80, 100<br>alturas: 40, k=20, 3k=60, k=20<br>sombrear: 2, 3<br>[/GRÁFICO]</code><span><b>Histograma.</b> En <code>x:</code> van los límites (uno más que las alturas) o letras (<code>a, b, c</code>). <code>3k=60</code> se lee 3k y se dibuja a la altura 60; si todas son letras (<code>a, 5a, 7a</code>) no hace falta el =. Opcional: <code>sombrear: 2, 3</code> (barras sombreadas) y <code>polígono: sí</code>. Con <code>f_i</code> la i sale abajo.</span>
+              <code>[GRÁFICO: polígono]</code><span><b>Polígono de frecuencias</b> solo, con las mismas líneas que el histograma.</span>
+              <code>[GRÁFICO: línea]<br>eje y: %<br>x: 200, 400, 600, 800<br>y: 0, 35, 60, 100<br>[/GRÁFICO]</code><span><b>Línea u ojiva.</b> Para varias líneas, en vez de <code>y:</code> una línea por serie: <code>Lima: 20, 35, 30, 50</code>.</span>
+              <code>[GRÁFICO: barras]<br>eje y: Miles de soles<br>Septiembre: 70<br>Octubre: 56<br>[/GRÁFICO]</code><span><b>Barras.</b> Una línea por barra. También <code>barras horizontales</code>.</span>
+              <code>[GRÁFICO: barras agrupadas]<br>series: Hombres, Mujeres<br>Lunes: 12, 15<br>[/GRÁFICO]</code><span><b>Barras dobles</b> (una al lado de otra). Con <code>barras apiladas</code> van una encima de otra; si suman 100 salen en %.</span>
+              <code>[GRÁFICO: circular]<br>A: 168°<br>X: 72°<br>G: resto<br>[/GRÁFICO]</code><span><b>Circular.</b> En grados (<code>60°</code>), porcentaje (<code>25%</code>) o cantidades (<code>12</code>). <code>resto</code> completa el círculo. <code>2x=30%</code> muestra 2x. Para verlo en 3D: <code>circular 3d</code>. Para separar un sector: <code>destacar: A</code>. También <code>dona</code> (con <code>centro: 540</code>).</span>
+              <code>[GRÁFICO: caja]<br>mín: 12<br>Q1: 15<br>mediana: 18<br>Q3: 22<br>máx: 30<br>[/GRÁFICO]</code><span><b>Diagrama de caja.</b></span>
+              <code>[GRÁFICO: dispersión]<br>puntos: (1; 6), (2; 8), (3; 11)<br>recta: sí<br>[/GRÁFICO]</code><span><b>Dispersión</b> (puntos). <code>recta: sí</code> dibuja la recta de ajuste.</span>
+              <code>[GRÁFICO: pictograma]<br>cada: 10<br>unidad: alumnos<br>Lunes: 40<br>[/GRÁFICO]</code><span><b>Pictograma.</b> Cada figura vale lo que digas en <code>cada:</code>.</span>
+              <code>[GRÁFICO: tallo y hojas]<br>1 | 2 4 7<br>2 | 0 3 8<br>[/GRÁFICO]</code><span><b>Tallo y hojas.</b> Opcional: <code>clave: 1 | 2 = 12</code>.</span>
+              <code>[GRÁFICO DERECHA: circular]</code><span>Igual que <code>[IMAGEN DERECHA]</code>: el gráfico va al lado de las alternativas.</span>
+            </div>
+            <p class="hint">Las listas van separadas por coma y espacio (<code>20, 40, 60</code>); los decimales con coma pegada (<code>0,25</code>). Si algo está mal escrito, la vista previa te dice qué corregir.</p>
           </details>
         </div>
 
