@@ -16,7 +16,7 @@
   .btn-ia svg { width: 15px; height: 15px; }
   .btn-ia.ok { border-color: #58CC02 !important; color: #58CC02 !important; }
   .ia-img { position: relative; display: inline-block; }
-  .ia-img-menu { position: absolute; z-index: 30; top: calc(100% + 6px); left: 0; min-width: 270px;
+  .ia-img-menu { position: absolute; z-index: 30; top: calc(100% + 6px); left: 0; min-width: 270px; max-width: min(340px, calc(100vw - 24px));
     background: #1b1530; border: 1px solid rgba(206,130,255,.45); border-radius: 12px; padding: 6px;
     box-shadow: 0 10px 30px rgba(0,0,0,.45); display: flex; flex-direction: column; gap: 4px; }
   .ia-img-menu.der { left: auto; right: 0; }
@@ -315,14 +315,37 @@ function botonPromptIA(tipo) {
   return b;
 }
 
-// Botón "Prompt para gráfico": pasa la foto de un gráfico de estadística al bloque [GRÁFICO: …]
-function botonPromptGrafico() {
+// Un solo botón "Prompts ▾" (Subir tema / examen) con todos los prompts adentro:
+// formato de las preguntas, imagen (fiel o con color) y gráfico de estadística.
+// tipo: () => 'tema' | 'examen' (cambia según el modo de Subir)
+function botonPrompts(tipo) {
+  const caja = document.createElement('span'); caja.className = 'ia-img';
   const b = document.createElement('button');
   b.type = 'button'; b.className = 'btn-ghost btn-ia';
-  b.title = 'Copia un prompt para que Gemini o ChatGPT escriba un gráfico de estadística como texto ([GRÁFICO: …]) a partir de su imagen';
-  b.innerHTML = ICONO_IA + ' Prompt para gráfico';
-  b.addEventListener('click', () => copiarPromptIA(null, b, IA_GRAFICO_SOLO(), 'Prompt copiado. Pégalo en Gemini junto con la imagen del gráfico y pega el bloque que te devuelva en la pregunta.'));
-  return b;
+  b.title = 'Prompts para copiar y pegar en Gemini o ChatGPT';
+  b.innerHTML = ICONO_IA + ' Prompts ▾';
+  const menu = document.createElement('div'); menu.className = 'ia-img-menu'; menu.hidden = true;
+  menu.innerHTML = `<button type="button" data-v="formato"><b>Formato de las preguntas</b><small>Pásale el PDF o las fotos y te devuelve las preguntas listas para pegar aquí (con tablas, fórmulas y gráficos)</small></button>
+    <button type="button" data-v="grafico"><b>Gráfico de estadística</b><small>Pásale la imagen de un gráfico y te devuelve el bloque [GRÁFICO: …] para pegar en la pregunta</small></button>
+    <button type="button" data-v="fiel"><b>Imagen fiel al original</b><small>Reilustra la imagen igual, solo limpia: fondo blanco y enderezada</small></button>
+    <button type="button" data-v="color"><b>Imagen mejorada con color</b><small>Mismo contenido, con colores suaves en gráficos y líneas</small></button>`;
+  b.addEventListener('click', e => {
+    e.stopPropagation(); menu.hidden = !menu.hidden;
+    if (menu.hidden) return;
+    menu.classList.remove('der');
+    if (menu.getBoundingClientRect().right > document.documentElement.clientWidth - 8) menu.classList.add('der');
+  });
+  menu.addEventListener('click', e => {
+    const op = e.target.closest('[data-v]'); if (!op) return;
+    menu.hidden = true;
+    const v = op.dataset.v;
+    if (v === 'formato') copiarPromptIA(typeof tipo === 'function' ? tipo() : tipo, b);
+    else if (v === 'grafico') copiarPromptIA(null, b, IA_GRAFICO_SOLO(), 'Prompt copiado. Pégalo en Gemini junto con la imagen del gráfico y pega el bloque que te devuelva en la pregunta.');
+    else copiarPromptIA(null, b, IA_IMG[v](), 'Prompt copiado. Pégalo en Gemini junto con la imagen.');
+  });
+  document.addEventListener('click', e => { if (!caja.contains(e.target)) menu.hidden = true; });
+  caja.append(b, menu);
+  return caja;
 }
 
 // Botón "Prompt para imagen" con dos opciones: fiel al original o mejorado con color
