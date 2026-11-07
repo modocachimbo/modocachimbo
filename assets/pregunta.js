@@ -76,6 +76,17 @@
     return m ? [m[1].trim(), m[2].trim(), !!m[3]] : [l, '', false];
   }
   function celdas(l) { return l.replace(/^\||\|$/g, '').split('|').map(function (c) { return c.trim(); }); }
+  // Celda de intervalo "[ 6 - >", "[20 - 40>", "<0; +∞]": se dibuja en casillas fijas
+  // (corchete · número · guion · número · corchete) para que los espacios vacíos se vean
+  // y todas las filas queden alineadas, como en el original.
+  var RX_INTERVALO = /^([\[\]<(])\s*(-?[^\s;\-–\[\]<>()]*)\s*[-–;]\s*(-?[^\s;\-–\[\]<>()]*)\s*([\]>)\[])$/;
+  function celda(c) {
+    var m = c.indexOf('$') < 0 && c.match(RX_INTERVALO);
+    if (!m) return formato(c);
+    var sep = /;/.test(c) ? ';' : '-';
+    return '<span class="mcq-int"><span>' + esc(m[1]) + '</span><span class="mcq-int-n">' + formato(m[2]) + '</span><span>' + sep +
+      '</span><span class="mcq-int-n">' + formato(m[3]) + '</span><span>' + esc(m[4]) + '</span></span>';
+  }
 
   /* ---------- Gráficos escritos como texto ----------
      [GRÁFICO: tipo] … [/GRÁFICO]  (o [GRÁFICO DERECHA: tipo] al lado de las alternativas)
@@ -868,7 +879,7 @@
         var cuerpo = cab ? filas.slice(2) : filas;
         partes.push('<div class="mcq-tabla"><table>' +
           (cab ? '<thead><tr>' + celdas(filas[0]).map(function (c) { return '<th>' + formato(c) + '</th>'; }).join('') + '</tr></thead>' : '') +
-          '<tbody>' + cuerpo.map(function (f) { return '<tr>' + celdas(f).map(function (c) { return '<td>' + formato(c) + '</td>'; }).join('') + '</tr>'; }).join('') +
+          '<tbody>' + cuerpo.map(function (f) { return '<tr>' + celdas(f).map(function (c) { return '<td>' + celda(c) + '</td>'; }).join('') + '</tr>'; }).join('') +
           '</tbody></table></div>');
         continue;
       }
@@ -1218,6 +1229,7 @@
     '.mcq-tabla{overflow-x:auto;margin:12px 0}.mcq-tabla table{border-collapse:collapse;margin:0 auto;font-size:.95em;font-variant-numeric:tabular-nums}' +
     '.mcq-tabla th,.mcq-tabla td{border:1px solid #3A3360;padding:6px 12px;text-align:center;white-space:nowrap}' +
     '.mcq-tabla th{background:rgba(198,224,0,.12);color:#f5ffcc;font-weight:700}' +
+    '.mcq-int{display:inline-grid;grid-template-columns:auto minmax(1.6em,auto) auto minmax(1.6em,auto) auto;column-gap:.45em;align-items:baseline}.mcq-int-n{text-align:center}' +
     '.mcq-cols{display:grid;gap:6px 28px;margin:10px 0;overflow-x:auto;justify-content:start}.mcq-cols span{white-space:nowrap}' +
     '.mcq-cortas{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))}' +
     '.mcq-con-der{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,42%);column-gap:16px;align-items:start}' +

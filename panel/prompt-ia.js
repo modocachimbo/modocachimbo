@@ -64,6 +64,8 @@ sombrear: 2, 3
 - Tallo y hojas: [GRÁFICO: tallo y hojas] y una línea por tallo "1 | 2 4 7".
 - Opcionales: "eje x: …" y "eje y: …" con el nombre de cada eje (f_i pone la i abajo). Listas separadas por coma y espacio; decimales con coma pegada (0,25).
 - [GRÁFICO DERECHA: …] en lugar de [GRÁFICO: …] si el gráfico va al lado de las alternativas.
+- Dentro de un bloque [GRÁFICO] NO uses $…$, LaTeX, ** ni <sub>: escribe f_i, x^2, θ, 37° tal cual. Cada dato en su propia línea; no pongas tablas Markdown ni [IMAGEN] dentro del bloque.
+- Si el original muestra una TABLA de frecuencias (no un dibujo), va como tabla Markdown, no como [GRÁFICO]. Si muestra un dibujo de barras, línea o sectores, va como [GRÁFICO]. Si trae los dos, pon los dos.
 
 GRÁFICOS DE MATEMÁTICA, FÍSICA Y QUÍMICA (también con [GRÁFICO: …], no con [IMAGEN])
 - Función: [GRÁFICO: función] y una línea por curva "f: y = x^2 - 4" (el nombre "f:" es opcional). Usa ^ * / ( ) |x|, 2x, sen, cos, tan, raiz, log, ln, pi. Un tramo: "y = raiz(x) [0; 6]". Rango opcional: "x: -4, 4" y "y: -5, 10". Puntos: "puntos: A(-1; -3), B(3; 5)".
@@ -128,12 +130,16 @@ FORMATO DEL TEXTO
 - Fórmulas y símbolos matemáticos en LaTeX entre $…$: $x^2$, $\\frac{a}{b}$, $\\sqrt{16}$, $H_2SO_4$, $\\Delta H$, $10^{-3}$, $\\overline{ab}$. Usa \\frac (no \\dfrac). Nunca uses $$…$$ ni \\( \\).
 
 IMÁGENES, TABLAS Y COLUMNAS
-- [IMAGEN] en su propia línea, dentro del enunciado, donde va un gráfico, figura, mapa o dibujo (yo pego la imagen después). Si las alternativas son imágenes, pon [IMAGEN] en el enunciado y deja las alternativas como A) Figura 1, B) Figura 2…
-- [IMAGEN DERECHA] en lugar de [IMAGEN] si la figura va al lado de las alternativas (máximo una por pregunta).
-- Tablas en formato Markdown:
-| Meses | fi | Fi |
-|---|---|---|
-| Enero | 4 | 4 |
+- [IMAGEN] en su propia línea, dentro del enunciado, donde va una figura, mapa, dibujo o foto que NO se puede escribir como [GRÁFICO: …] (yo pego la imagen después). Los gráficos de estadística, funciones, intervalos, Venn, triángulos, vectores y orbitales van con [GRÁFICO: …] (ver más abajo), nunca con [IMAGEN]. Si las alternativas son imágenes, pon [IMAGEN] en el enunciado y deja las alternativas como A) Figura 1, B) Figura 2…
+- [IMAGEN DERECHA] en lugar de [IMAGEN] si la figura va al lado de las alternativas. Solo UNA figura por pregunta puede ir a la derecha (sea [IMAGEN DERECHA] o [GRÁFICO DERECHA: …]).
+- Tablas en formato Markdown (la fila |---| va debajo de los títulos):
+| $I_i$ | $x_i$ | $f_i$ | $F_i$ |
+|---|---|---|---|
+| [20 - 40> | 30 | 4 | 4 |
+| [ - > | | 6 | |
+- En una tabla cada fila tiene la misma cantidad de celdas. Una celda vacía va como | | (no escribas "-", "?" ni 0 si el original está en blanco).
+- Intervalos de clase dentro de una tabla: cópialos tal como vienen, con su corchete de inicio, un guion y su cierre: [20 - 40>, [60 - >. Si falta un número, deja ese lugar vacío con espacios: [ - >, [ 6 - >. No los pongas entre $…$ ni los conviertas en [20; 40⟩ (la plataforma los alinea sola).
+- Dentro de una tabla no uses la barra | para otra cosa (rompe las columnas). Para valor absoluto usa $\\lvert x \\rvert$.
 - Dos columnas sin bordes (por ejemplo, para relacionar): "I. CaO || p) cal viva" (las columnas separadas con ||).
 
 
@@ -290,6 +296,7 @@ REGLAS
 - Copia exactamente los números, letras y nombres que se ven en el gráfico (ejes, alturas, sectores, categorías). No calcules ni resuelvas nada.
 - Si hay una expresión o letra sin valor (k, 3k, 2x, 7a), ponla con su altura aproximada según el dibujo, como 3k=60, salvo que todas sean letras simples (a, 5a, 7a).
 - Si te paso varios gráficos, devuelve un bloque por cada uno, en orden.
+- Si en este mismo chat ya te pasé el prompt de "Formato de las preguntas", ese sigue valiendo: cuando te pase preguntas completas, devuélvelas con ese formato (con los [GRÁFICO] adentro del enunciado); cuando te pase solo la imagen de un gráfico, devuelve solo el bloque. Las reglas de gráficos son las mismas en los dos prompts.
 - Si la imagen no se puede escribir con ninguno de estos tipos (mapa, escena, figura geométrica compleja, dibujo, foto), responde solo: "Esta imagen va con [IMAGEN]".
 
 ${IA_GRAFICOS}`;
