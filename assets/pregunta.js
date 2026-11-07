@@ -1186,12 +1186,23 @@
       porAjustar.forEach(ajustarAnchos);
     }, 150);
   });
+  /* ---------- Decimales periódicos ----------
+     El gorrito de KaTeX (\widehat) sale chueco y chiquito sobre una cifra,
+     y \overset{\frown} queda flotando lejos. Sobre CIFRAS (no letras: un
+     ángulo \widehat{ABC} no se toca) se cambia por un arco propio
+     (.mcq-per en el CSS), del ancho justo de las cifras que se repiten. */
+  var RX_PER = /\\(?:widehat|overgroup|wideparen|overparen)\s*\{\s*(\d+)\s*\}|\\overset\s*\{\s*\\(?:frown|smallfrown)\s*\}\s*\{\s*(\d+)\s*\}/g;
+  function periodicos(tex) {
+    return tex.replace(RX_PER, function (x, a, b) { return '\\htmlClass{mcq-per}{' + (a || b) + '}'; });
+  }
+  function confiarPer(ctx) { return ctx.command === '\\htmlClass' && ctx['class'] === 'mcq-per'; }
   function conFracciones(fn) {
     if (typeof fn !== 'function' || fn._mcFrac) return fn;
     var w = function (el, op) {
       op = Object.assign({}, op);
       var antes = op.preProcess;
-      op.preProcess = function (t) { t = sinLeftRight(fraccionesGrandes(t)); return antes ? antes(t) : t; };
+      op.preProcess = function (t) { t = periodicos(sinLeftRight(fraccionesGrandes(t))); return antes ? antes(t) : t; };
+      if (op.trust == null) op.trust = confiarPer;
       var r = fn.call(this, el, op);
       try {
         ajustarAnchos(el);
@@ -1217,6 +1228,7 @@
   var st = document.createElement('style');
   st.textContent =
     '.mcq-p{display:block;white-space:normal}.mcq-p+.mcq-p{margin-top:10px}' +
+    '.mcq-per{position:relative;display:inline-block}.mcq-per::before{content:"";position:absolute;left:-.05em;right:-.05em;top:-.12em;height:.24em;border:.07em solid currentColor;border-bottom:0;border-radius:50% 50% 0 0/100% 100% 0 0;box-sizing:border-box}' +
     '.mcq-con-etq{position:relative}' +
     '.mcq-etq{position:absolute;top:-13px;right:16px;z-index:1;max-width:60%;padding:4px 11px;border-radius:999px;background:#2A2052;border:2px solid #5B47A6;color:#EDE6FF;font:900 11.5px/1.2 Nunito,sans-serif;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 3px 0 rgba(0,0,0,.25);pointer-events:none}' +
     '.mcq-etq::after{content:"";position:absolute;left:16px;bottom:-6px;width:8px;height:8px;background:#2A2052;border:solid #5B47A6;border-width:0 2px 2px 0;transform:rotate(45deg)}' +
