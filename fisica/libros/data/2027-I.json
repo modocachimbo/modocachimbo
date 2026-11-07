@@ -1699,7 +1699,12 @@
             "text": "$0{,}5 \\times 10^{2}\\text{ m}^{2}$"
           }
         ],
-        "correct": 1
+        "correct": 1,
+        "res": {
+          "rapido": "El cuerpo pierde $50 - 45 = 5\\ \\text{N}$: ese es el empuje.\n$E = \\rho_L \\cdot g \\cdot V \\Rightarrow 5 = 200 \\cdot 10 \\cdot V$\n$V = 2{,}5 \\times 10^{-3}\\ \\text{m}^3$",
+          "pasos": "Paso 1: El empuje es lo que \"pierde\" de peso el cuerpo dentro del líquido.\n$E = W_{aire} - W_{sumergido} = 50 - 45 = 5\\ \\text{N}$\nPaso 2: Pasamos la densidad del líquido a kg/m³ (multiplicamos por 1000).\n$\\rho_L = 0{,}2\\ \\text{g/cm}^3 = 200\\ \\text{kg/m}^3$\nPaso 3: Usamos la fórmula del empuje. Como está totalmente sumergido, el volumen sumergido es todo el volumen del cuerpo.\n$E = \\rho_L \\cdot g \\cdot V$\n$5 = 200 \\cdot 10 \\cdot V$\n$5 = 2000\\,V$\nPaso 4: Despejamos.\n$V = \\dfrac{5}{2000} = 2{,}5 \\times 10^{-3}\\ \\text{m}^3$",
+          "cero": "Cuando metes algo al agua, se siente más liviano. Eso pasa porque el líquido lo empuja hacia arriba: a esa fuerza se le llama **empuje** ($E$).\nAquí el cuerpo pesa 50 N en el aire y 45 N dentro del líquido. Los 5 N que \"desaparecieron\" son justo el empuje: $E = 5\\ \\text{N}$.\nEl empuje depende de 3 cosas: qué tan denso es el líquido ($\\rho_L$), la gravedad ($g = 10$) y cuánto volumen está metido ($V$):\n$E = \\rho_L \\cdot g \\cdot V$\nOjo con las unidades: la densidad está en g/cm³ y la necesitamos en kg/m³. Truco: se multiplica por 1000 → $0{,}2 \\times 1000 = 200\\ \\text{kg/m}^3$.\nReemplazamos: $5 = 200 \\cdot 10 \\cdot V = 2000\\,V$\n$V = \\dfrac{5}{2000} = 0{,}0025\\ \\text{m}^3 = 2{,}5 \\times 10^{-3}\\ \\text{m}^3$\n💡 **Tip de examen:** peso en el aire − peso sumergido = empuje. Casi siempre es el primer paso."
+        }
       },
       {
         "text": "Un cuerpo de $140\\text{ N}$ de peso y $2\\,000\\text{ kg/m}^{3}$ de densidad se sumerge completamente en agua, se pide determinar la deformación del resorte de constante $k=700\\text{ N/m}$. $(g=10\\text{ m/s}^{2})$\n[IMG-DER:assets/img/fisica/2027-I/t07-q29lh8xb2o.webp]",
