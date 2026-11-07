@@ -60,7 +60,7 @@
   /* PC: aquí el título es más alto que en «Mi perfil»; el perfil del amigo empieza más abajo */
   @media (min-width: 900px) { body.ma-fit { --fit-top: 122px; } }
 </style>
-<link rel="stylesheet" href="assets/amigos.css?v=6">
+<link rel="stylesheet" href="assets/amigos.css?v=7">
 <script src="assets/mc-config.js"></script>
 <script src="assets/acceso.js"></script>
 <script src="assets/auth.js"></script>
@@ -71,6 +71,7 @@
 <script src="assets/buho/buho-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
 <script src="assets/amigos.js?v=5"></script>
+<script src="assets/poder.js?v=1"></script>
 </head>
 <body>
   <div class="wrap">
@@ -290,13 +291,64 @@
     var d = perfilD, rel = d.relacion;
     var acc = rel === 'amigo' ? '<div class="ma-acc-pf"><a class="ma-gb" href="duelo.html">' + SV.duelo + 'Retar a duelo</a><button type="button" class="ma-gb osc' + (d.destacado ? ' on' : '') + '" data-pdest>' + SV.estrella + (d.destacado ? 'Destacado' : 'Destacar') + '</button></div>'
       : '<div class="ma-acc-pf uno">' + botonRel(rel, d.codigo) + '</div>';
+    // Estadísticas (estrella VS) solo entre amigos; su colección se abre con «Colección» de su tarjeta
+    var conStats = rel === 'amigo' && window.MCPoder;
+    if (perfilTab === 'stats' && !conStats) perfilTab = 'perfil';
     var rail = '<nav class="ma-rail muchos" aria-label="Perfil"><button type="button" class="r' + (perfilTab === 'perfil' ? ' on' : '') + '" data-ptab="perfil">' + SV.ver + '<span>Perfil</span></button>' +
-      (d.tiene ? '<button type="button" class="r' + (perfilTab === 'col' ? ' on' : '') + '" data-ptab="col">' + SV.cofre + '<span>Su colección</span></button>' : '') +
+      (conStats ? '<button type="button" class="r' + (perfilTab === 'stats' ? ' on' : '') + '" data-ptab="stats">' + SV.stats + '<span>Estadísticas</span></button>'
+        : d.tiene ? '<button type="button" class="r' + (perfilTab === 'col' ? ' on' : '') + '" data-ptab="col">' + SV.cofre + '<span>Su colección</span></button>' : '') +
       '<a class="r" href="amigos.html">' + SV.amigos + '<span>Mis amigos</span></a></nav>';
-    var cuerpo = perfilTab === 'col' && d.tiene ? A.coleccion(d, filtro) : A.perfil(d, { acciones: acc });
+    var cuerpo = perfilTab === 'col' && d.tiene ? A.coleccion(d, filtro) : perfilTab === 'stats' ? estadisticas(d) : A.perfil(d, { acciones: acc });
     app.innerHTML = '<div class="ma-lay">' + rail + '<div>' + cuerpo + '</div></div>';
     // PC: el perfil entra justo en la pantalla, igual que «Mi perfil» (assets/amigos.css, body.ma-fit)
-    document.body.classList.toggle('ma-fit', perfilTab === 'perfil');
+    document.body.classList.toggle('ma-fit', perfilTab === 'perfil' || perfilTab === 'stats');
+    if (perfilTab === 'stats' && !poderD && !poderPidiendo) cargarPoder();
+  }
+
+  /* ---------- Estadísticas: tu estrella contra la de tu amigo (supabase/79-poder-amigo.sql) ---------- */
+  var poderD = null, poderPidiendo = false, poderError = '', CURSOS = { n: 19, nom: {} };
+  function cargarPoder() {
+    poderPidiendo = true; poderError = '';
+    var cursos = fetch('assets/cursos.json').then(function (r) { return r.json(); }).then(function (j) {
+      var vis = (j.cursos || []).filter(function (c) { return !c.oculto; });
+      if (vis.length) CURSOS.n = vis.length;
+      (j.cursos || []).forEach(function (c) { CURSOS.nom[c.id] = c.nombre; });
+    }).catch(function () {});
+    Promise.all([A.rpc('poder_amigo', { p_codigo: perfilD.codigo }), cursos]).then(function (r) {
+      poderD = r[0] || null; if (!poderD) poderError = 'Solo puedes ver las estadísticas de tus amigos.';
+    }, function (e) {
+      poderError = /poder_amigo|does not exist|Could not find the function/i.test(String(e && e.message || e)) ? 'Las estadísticas de amigos todavía no están activadas. Avísale al profe.' : 'No se pudo cargar. Revisa tu internet e intenta otra vez.';
+    }).then(function () { poderPidiendo = false; if (perfilTab === 'stats') pintarPerfil(); });
+  }
+  function estadisticas(d) {
+    var P = window.MCPoder, nom = esc(d.apodo || 'Tu amigo');
+    if (!poderD) return '<div class="panel vacio"><p>' + (poderError || 'Cargando sus estadísticas…') + '</p>' + (poderError && !/activadas|amigos\./.test(poderError) ? '<button class="btn" type="button" data-poder-otra>Reintentar</button>' : '') + '</div>';
+    var y = P.valores(poderD.yo, CURSOS.n), e = P.valores(poderD.el, CURSOS.n), ty = P.total(y), te = P.total(e), ny = P.nivel(ty), ne = P.nivel(te);
+    var gana = P.EJES.filter(function (x) { return e[x[0]] > y[x[0]]; }), ganas = P.EJES.filter(function (x) { return y[x[0]] > e[x[0]]; });
+    var nombres = function (l) { return l.map(function (x) { return '<b style="color:' + x[2] + '">' + x[1] + '</b>'; }).join(', '); };
+    var stage = '<div class="ma-pod-esc">' +
+      '<div class="ma-pod-vs"><span class="yo"><small>Tú</small><b>' + ty + '</b><em style="color:' + ny[1] + '">' + ny[0] + '</em></span><i>VS</i>' +
+        '<span class="el"><small>' + nom + '</small><b>' + te + '</b><em style="color:' + ne[1] + '">' + ne[0] + '</em></span></div>' +
+      '<div class="ma-pod-radar">' + P.radarVS(y, e) + '</div>' +
+      '<div class="ma-pod-ley"><span><i style="background:' + P.YO + '"></i>Tú</span><span><i style="background:' + P.EL + '"></i>' + nom + '</span><span class="pw">Poder: promedio de las 5 puntas</span></div></div>';
+    var filas = P.EJES.map(function (x) {
+      var a = y[x[0]], b = e[x[0]];
+      return '<div class="ma-pod-fil"><span class="ic" style="color:' + x[2] + '">' + P.ICO[x[0]] + '</span><span class="t"><b>' + x[1] + '</b><small>' + x[3] + '</small></span>' +
+        '<span class="br"><i class="yo"><u style="width:' + a + '%"></u><em>' + a + '</em></i><i class="el"><u style="width:' + b + '%"></u><em>' + b + '</em></i></span></div>';
+    }).join('');
+    var pe = poderD.el || {}, fuerte = pe.curso_fuerte ? esc(CURSOS.nom[pe.curso_fuerte] || pe.curso_fuerte) : '';
+    var rec = '<div class="ma-pod-rec">' +
+      '<span><small>Mejor racha</small><b>' + (+pe.mejor_racha || 0) + '</b><em>día' + (+pe.mejor_racha === 1 ? '' : 's') + '</em></span>' +
+      '<span><small>Mejor simulacro</small><b>' + (pe.mejor_sim != null ? (+pe.mejor_sim).toLocaleString('es-PE') : '–') + '</b><em>' + (pe.mejor_sim != null ? 'de ' + (+pe.mejor_sim_max || 200) : 'aún no rinde') + '</em></span>' +
+      '<span><small>Curso más fuerte</small><b class="cu">' + (fuerte || '–') + '</b><em>' + (fuerte ? pe.curso_fuerte_prom + '% de aciertos' : 'aún no practica') + '</em></span></div>';
+    var veredicto = !gana.length && !ganas.length ? 'Van empatados en todo. ¡Desempaten en un duelo!'
+      : !gana.length ? '¡Le ganas en todo! Mantén el ritmo.'
+      : 'Te gana en ' + nombres(gana) + '.' + (ganas.length ? ' Tú le ganas en ' + nombres(ganas) + '.' : '');
+    var lado = '<div class="ma-pod-lado"><div class="ma-pod-cab"><span class="ma-k">' + SV.stats + 'Tú vs ' + nom + '</span><span class="ley"><i class="yo"></i>Tú <i class="el"></i>' + nom + '</span></div>' +
+      filas + '<p class="ma-pod-ver">' + veredicto + '</p>' +
+      '<span class="ma-k">' + SV.estrella + 'Sus récords</span>' + rec +
+      '<a class="ma-gb lim ma-pod-duelo" href="duelo.html">' + SV.duelo + 'Retar a duelo</a></div>';
+    return '<div class="ma-pf ma-pod">' + stage + '<div>' + lado + '</div></div>';
   }
   function iniciarPerfil() {
     document.getElementById('volverTx').textContent = 'Amigos';
@@ -313,6 +365,7 @@
     app.addEventListener('click', function (e) {
       var el;
       if ((el = e.target.closest('[data-ptab]'))) { e.preventDefault(); perfilTab = el.getAttribute('data-ptab'); filtro = ''; pintarPerfil(); return; }
+      if (e.target.closest('[data-poder-otra]')) { poderD = null; poderError = ''; cargarPoder(); pintarPerfil(); return; }
       if ((el = e.target.closest('[data-filtro]'))) { filtro = el.getAttribute('data-filtro'); pintarPerfil(); return; }
       if ((el = e.target.closest('[data-pdest]'))) {
         el.disabled = true; var s = !perfilD.destacado;
