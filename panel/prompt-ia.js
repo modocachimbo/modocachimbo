@@ -43,6 +43,29 @@ const IA_SALIDA = `REGLAS DE SALIDA (muy importantes)
 - No cambies el contenido: copia enunciados y alternativas palabra por palabra. Solo arregla errores evidentes de escaneo o de copiado (letras raras, palabras cortadas, saltos de línea en medio de una oración).
 - No resumas ni te saltes preguntas. Si son muchas y no entran en una respuesta, para en una pregunta completa y dime "continúo", y sigue cuando te escriba "sigue".`;
 
+// Gráficos de estadística escritos como texto ([GRÁFICO: …], assets/pregunta.js)
+const IA_GRAFICOS = `GRÁFICOS DE ESTADÍSTICA (NO uses [IMAGEN] para estos: escríbelos con este formato, dentro del enunciado)
+- Histograma:
+[GRÁFICO: histograma]
+eje x: I_i
+eje y: f_i
+x: 20, 40, 60, 80, 100
+alturas: 40, k=20, 3k=60, k=20
+sombrear: 2, 3
+[/GRÁFICO]
+  En x van los límites de clase (uno más que las alturas) o las letras del eje (a, b, c…). Las alturas en el orden de las barras. Si una altura es una letra o expresión y hay números en el mismo gráfico, escribe etiqueta=altura aproximada según el dibujo (3k=60). Si todas son letras (a, 5a, 7a) se escriben tal cual. "sombrear" dice qué barras están sombreadas (1 = la primera). Si encima hay un polígono, agrega "polígono: sí".
+- Polígono de frecuencias solo: igual, con [GRÁFICO: polígono].
+- Ojiva o línea: [GRÁFICO: línea] con "x: …" y "y: …". Varias líneas: una línea por serie "Lima: 20, 35, 30".
+- Barras: [GRÁFICO: barras] y una línea por barra "Septiembre: 70". Horizontales: [GRÁFICO: barras horizontales]. Dos o más barras por categoría: [GRÁFICO: barras agrupadas] con "series: Hombres, Mujeres" y "Lunes: 12, 15". Una sobre otra: [GRÁFICO: barras apiladas].
+- Circular: [GRÁFICO: circular] (o [GRÁFICO: circular 3d] si el original es en 3D) y una línea por sector "A: 168°", "Vóley: 25%" o "Lima: 12". Para un sector sin dato escribe "G: resto". Si el sector muestra una expresión: "Fútbol: 2x=30%" (el valor aproximado según el dibujo). Sector separado del resto: "destacar: Publicidad". Dona: [GRÁFICO: dona].
+- Diagrama de caja: [GRÁFICO: caja] con "mín:", "Q1:", "mediana:", "Q3:", "máx:".
+- Dispersión: [GRÁFICO: dispersión] con "puntos: (1; 6), (2; 8)".
+- Pictograma: [GRÁFICO: pictograma] con "cada: 10" y una línea por fila "Lunes: 40".
+- Tallo y hojas: [GRÁFICO: tallo y hojas] y una línea por tallo "1 | 2 4 7".
+- Opcionales: "eje x: …" y "eje y: …" con el nombre de cada eje (f_i pone la i abajo). Listas separadas por coma y espacio; decimales con coma pegada (0,25).
+- [GRÁFICO DERECHA: …] en lugar de [GRÁFICO: …] si el gráfico va al lado de las alternativas.
+- Mapas, figuras geométricas, dibujos y fotos siguen con [IMAGEN].`;
+
 const IA_PREGUNTAS = `CÓMO VA CADA PREGUNTA
 PREGUNTA 1:
 Enunciado de la pregunta (puede ocupar varias líneas)
@@ -103,27 +126,8 @@ IMÁGENES, TABLAS Y COLUMNAS
 | Enero | 4 | 4 |
 - Dos columnas sin bordes (por ejemplo, para relacionar): "I. CaO || p) cal viva" (las columnas separadas con ||).
 
-GRÁFICOS DE ESTADÍSTICA (NO uses [IMAGEN] para estos: escríbelos con este formato, dentro del enunciado)
-- Histograma:
-[GRÁFICO: histograma]
-eje x: I_i
-eje y: f_i
-x: 20, 40, 60, 80, 100
-alturas: 40, k=20, 3k=60, k=20
-sombrear: 2, 3
-[/GRÁFICO]
-  En x van los límites de clase (uno más que las alturas) o las letras del eje (a, b, c…). Las alturas en el orden de las barras. Si una altura es una letra o expresión y hay números en el mismo gráfico, escribe etiqueta=altura aproximada según el dibujo (3k=60). Si todas son letras (a, 5a, 7a) se escriben tal cual. "sombrear" dice qué barras están sombreadas (1 = la primera). Si encima hay un polígono, agrega "polígono: sí".
-- Polígono de frecuencias solo: igual, con [GRÁFICO: polígono].
-- Ojiva o línea: [GRÁFICO: línea] con "x: …" y "y: …". Varias líneas: una línea por serie "Lima: 20, 35, 30".
-- Barras: [GRÁFICO: barras] y una línea por barra "Septiembre: 70". Horizontales: [GRÁFICO: barras horizontales]. Dos o más barras por categoría: [GRÁFICO: barras agrupadas] con "series: Hombres, Mujeres" y "Lunes: 12, 15". Una sobre otra: [GRÁFICO: barras apiladas].
-- Circular: [GRÁFICO: circular] (o [GRÁFICO: circular 3d] si el original es en 3D) y una línea por sector "A: 168°", "Vóley: 25%" o "Lima: 12". Para un sector sin dato escribe "G: resto". Si el sector muestra una expresión: "Fútbol: 2x=30%" (el valor aproximado según el dibujo). Sector separado del resto: "destacar: Publicidad". Dona: [GRÁFICO: dona].
-- Diagrama de caja: [GRÁFICO: caja] con "mín:", "Q1:", "mediana:", "Q3:", "máx:".
-- Dispersión: [GRÁFICO: dispersión] con "puntos: (1; 6), (2; 8)".
-- Pictograma: [GRÁFICO: pictograma] con "cada: 10" y una línea por fila "Lunes: 40".
-- Tallo y hojas: [GRÁFICO: tallo y hojas] y una línea por tallo "1 | 2 4 7".
-- Opcionales: "eje x: …" y "eje y: …" con el nombre de cada eje (f_i pone la i abajo). Listas separadas por coma y espacio; decimales con coma pegada (0,25).
-- [GRÁFICO DERECHA: …] en lugar de [GRÁFICO: …] si el gráfico va al lado de las alternativas.
-- Mapas, figuras geométricas, dibujos y fotos siguen con [IMAGEN].`;
+
+${IA_GRAFICOS}`;
 
 const IA_SIN_ALTERNATIVAS = `PREGUNTAS SIN ALTERNATIVAS (úsalas SOLO si la pregunta original no tiene alternativas)
 - Respuesta escrita: debajo del enunciado "RESPUESTA: Karl Ritter | Ritter" (con | separas otras formas que también valen).
@@ -268,6 +272,18 @@ ESTILO: MEJORADO CON COLOR
 Devuélveme solo la imagen final, sin texto adicional.`
 };
 
+// Prompt para pasar UN gráfico (foto, captura o PDF) al bloque [GRÁFICO: …]
+const IA_GRAFICO_SOLO = () => `Te pasaré la imagen de un gráfico de estadística de una pregunta de examen (histograma, polígono, ojiva, barras, circular, caja, dispersión, pictograma o tallo y hojas). Escríbelo como texto con el formato de abajo, para mi plataforma de estudio "Modo Cachimbo", que lo dibuja sola.
+
+REGLAS
+- Devuelve SOLO el bloque, desde [GRÁFICO: …] hasta [/GRÁFICO], dentro de UN bloque de código Markdown (\`\`\`markdown … \`\`\`), sin explicaciones.
+- Copia exactamente los números, letras y nombres que se ven en el gráfico (ejes, alturas, sectores, categorías). No calcules ni resuelvas nada.
+- Si hay una expresión o letra sin valor (k, 3k, 2x, 7a), ponla con su altura aproximada según el dibujo, como 3k=60, salvo que todas sean letras simples (a, 5a, 7a).
+- Si te paso varios gráficos, devuelve un bloque por cada uno, en orden.
+- Si la imagen NO es un gráfico de estadística (mapa, figura geométrica, dibujo, foto, esquema), responde solo: "Esta imagen va con [IMAGEN]".
+
+${IA_GRAFICOS}`;
+
 function copiarPromptIA(tipo, boton, textoListo, aviso) {
   const texto = textoListo || IA_PROMPTS[tipo]();
   const ok = () => {
@@ -296,6 +312,16 @@ function botonPromptIA(tipo) {
   const tipoActual = () => typeof tipo === 'function' ? tipo() : tipo;
   b.innerHTML = ICONO_IA + ' Copiar prompt para IA';
   b.addEventListener('click', () => copiarPromptIA(tipoActual(), b));
+  return b;
+}
+
+// Botón "Prompt para gráfico": pasa la foto de un gráfico de estadística al bloque [GRÁFICO: …]
+function botonPromptGrafico() {
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'btn-ghost btn-ia';
+  b.title = 'Copia un prompt para que Gemini o ChatGPT escriba un gráfico de estadística como texto ([GRÁFICO: …]) a partir de su imagen';
+  b.innerHTML = ICONO_IA + ' Prompt para gráfico';
+  b.addEventListener('click', () => copiarPromptIA(null, b, IA_GRAFICO_SOLO(), 'Prompt copiado. Pégalo en Gemini junto con la imagen del gráfico y pega el bloque que te devuelva en la pregunta.'));
   return b;
 }
 

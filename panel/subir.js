@@ -328,7 +328,9 @@ function initSubir(modo) {
     const bIA = botonPromptIA(() => SUB.modo === 'examen' ? 'examen' : 'tema');
     $('subArchivo').closest('label').after(bIA);
     // Prompt para reilustrar la imagen de una pregunta (fiel o con color)
-    bIA.after(botonPromptImagen());
+    const bImg = botonPromptImagen();
+    bIA.after(bImg);
+    bImg.after(botonPromptGrafico()); // gráficos de estadística como texto
     $('subArchivo').addEventListener('change', async e => {
       const f = e.target.files[0]; e.target.value = '';
       if (!f) return;
