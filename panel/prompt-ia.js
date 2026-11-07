@@ -129,6 +129,21 @@ FORMATO DEL TEXTO
 - H<sub>2</sub>O y x<sup>2</sup> para subíndices y superíndices sueltos.
 - Fórmulas y símbolos matemáticos en LaTeX entre $…$: $x^2$, $\\frac{a}{b}$, $\\sqrt{16}$, $H_2SO_4$, $\\Delta H$, $10^{-3}$, $\\overline{ab}$. Usa \\frac (no \\dfrac). Nunca uses $$…$$ ni \\( \\).
 
+FORMATO MATEMÁTICO (copia la notación tal como está en el original)
+- Toda expresión matemática va entre $…$, aunque sea corta: $x = 3$, $2x + 1$, $a_n$, $\\pi$. Un número suelto en una oración normal no necesita $ ("compró 12 lapiceros").
+- Decimales con coma: dentro de $…$ escribe la coma entre llaves para que no deje espacio: $0{,}25$, $3{,}1416$. Fuera de $…$ va normal: 0,25.
+- Decimales periódicos: copia la marca que trae el original, solo encima de las cifras que se repiten. Arco: $0{,}\\overset{\\frown}{36}$. Gorrito: $0{,}\\widehat{36}$. Raya: $0{,}\\overline{3}$. Mixto: $0{,}2\\overset{\\frown}{45}$. Numerales con raya: $\\overline{abc}$, $\\overline{2a5}_{(7)}$ (la base va abajo entre paréntesis).
+- Primas (prima, doble prima): con ' dentro de $…$: $f'(x)$, $f''(x)$, $A'$, $A'B'C'$, $\\overline{A'B'}$.
+- Grados, minutos y segundos: $37^\\circ$, $30^\\circ 15' 20''$, $\\frac{\\pi}{4}\\ \\text{rad}$. Grados centesimales: $50^g\\,20^m$.
+- Operaciones: $\\times$ (por), $\\div$, $\\cdot$, $\\pm$, $\\neq$, $\\leq$, $\\geq$, $\\approx$, $\\equiv$. Potencias y raíces: $x^{2n+1}$, $\\sqrt[3]{x}$, $\\sqrt{\\frac{a}{b}}$.
+- Funciones y trigonometría: $\\sin x$, $\\cos x$, $\\tan x$, $\\cot x$, $\\sec x$, $\\csc x$, $\\log_2 8$, $\\ln x$. Si el original dice sen, escribe $\\text{sen}\\,x$.
+- Conjuntos y lógica: $\\in$, $\\notin$, $\\subset$, $\\cup$, $\\cap$, $\\emptyset$, $A^c$, $n(A)$, $\\mathbb{R}$, $\\mathbb{N}$, $\\mathbb{Z}$, $\\wedge$, $\\vee$, $\\sim p$, $\\rightarrow$, $\\leftrightarrow$.
+- Intervalos en el texto (no en tablas): $[2; 5\\rangle$, $\\langle -\\infty; 3]$. Valor absoluto: $|x - 2|$. Vectores: $\\vec{A}$. Factorial: $5!$. Combinaciones: $C^{n}_{k}$. Sumatoria: $\\sum_{i=1}^{n} x_i$. Límite: $\\lim_{x \\to 0}$.
+- Matrices y sistemas: $\\begin{pmatrix} 1 & 2 \\\\ 3 & 4 \\end{pmatrix}$, $\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix}$, $\\begin{cases} x + y = 5 \\\\ x - y = 1 \\end{cases}$.
+- Física y Química: unidades fuera de la fórmula o con \\text: $v = 20\\ \\text{m/s}$, $g = 10\\ \\text{m/s}^2$; $^{14}_{6}C$; $Fe^{3+}$; $SO_4^{2-}$; reacciones con $\\rightarrow$ o $\\rightleftharpoons$.
+- Una fórmula muy larga o con fracciones grandes puede ir sola en su línea entre $…$.
+- No pongas $ dentro de un bloque [GRÁFICO] (ahí los datos van como texto simple).
+
 IMÁGENES, TABLAS Y COLUMNAS
 - [IMAGEN] en su propia línea, dentro del enunciado, donde va una figura, mapa, dibujo o foto que NO se puede escribir como [GRÁFICO: …] (yo pego la imagen después). Los gráficos de estadística, funciones, intervalos, Venn, triángulos, vectores y orbitales van con [GRÁFICO: …] (ver más abajo), nunca con [IMAGEN]. Si las alternativas son imágenes, pon [IMAGEN] en el enunciado y deja las alternativas como A) Figura 1, B) Figura 2…
 - [IMAGEN DERECHA] en lugar de [IMAGEN] si la figura va al lado de las alternativas. Solo UNA figura por pregunta puede ir a la derecha (sea [IMAGEN DERECHA] o [GRÁFICO DERECHA: …]).
