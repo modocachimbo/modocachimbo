@@ -13,7 +13,7 @@
    Se ve como chat: primero el nivel más corto que haya, revelado línea
    por línea (tocar el globo lo muestra todo), y abajo las burbujas
    "Explícame paso a paso" / "Explícame desde cero". El búho es el oficial
-   (assets/buho/avatar/<área>.webp), disfrazado según el área del curso.
+   (assets/buho/tutor/<área>.webp), disfrazado según el área del curso.
    La carga assets/pregunta.js. El texto se arma con MCPregunta.armar
    (fórmulas, negrita, tablas y [GRÁFICO] igual que en las preguntas).
    ========================================================= */
@@ -36,7 +36,8 @@
   }
   function tiene(q) { return niveles(q).length > 0; }
 
-  // El búho oficial (verde), disfrazado según el área del curso: assets/buho/avatar/<área>.webp
+  // El búho oficial (verde), disfrazado según el área del curso: assets/buho/tutor/<área>.webp (medio cuerpo, alas completas;
+  // recortado de assets/buho/disfraces/<área>-feliz.webp)
   // (misma tabla que assets/buho/escena.js). Fuera de un curso, el clásico.
   var AREAS = {
     biologia: 'ciencia-tecnologia', anatomia: 'ciencia-tecnologia', quimica: 'ciencia-tecnologia', fisica: 'ciencia-tecnologia',
@@ -53,7 +54,7 @@
     return a && /^(matematica|ciencia-tecnologia|comunicacion|ciencias-sociales)$/.test(a) ? a : 'clasico';
   }
   function buho(tam) {
-    return '<img src="' + RAIZ + 'assets/buho/avatar/' + areaActual() + '.webp" width="' + tam + '" height="' + tam + '" alt="" decoding="async">';
+    return '<img src="' + RAIZ + 'assets/buho/tutor/' + areaActual() + '.webp" width="' + tam + '" height="' + tam + '" alt="" decoding="async">';
   }
 
   var CSS =
@@ -72,7 +73,7 @@
     '@media (prefers-reduced-motion:reduce){.bt-sheet,.bt-velo{animation:none}}' +
     '.bt-asa{width:42px;height:5px;border-radius:3px;background:var(--bt-borde);margin:8px auto 0;flex:none}@media (min-width:900px){.bt-asa{display:none}}' +
     '.bt-head{display:flex;align-items:center;gap:10px;padding:12px 16px 10px;flex:none}' +
-    '.bt-head .bt-av{width:44px;height:44px;flex:none;display:grid;place-items:center}.bt-head .bt-av svg,.bt-head .bt-av img{width:44px;height:44px}' +
+    '.bt-head .bt-av{width:54px;height:54px;flex:none;display:grid;place-items:center}.bt-head .bt-av svg,.bt-head .bt-av img{width:54px;height:54px}' +
     '.bt-head b{font:800 17px "Sora","Inter",sans-serif;display:block}.bt-head small{color:var(--bt-dim);font-size:12.5px;display:block;margin-top:1px}' +
     '.bt-x{margin-left:auto;flex:none;background:var(--bt-chip);border:0;color:inherit;width:36px;height:36px;border-radius:50%;font-size:17px;cursor:pointer}' +
     '.bt-x:focus-visible{outline:2px solid var(--bt-acento);outline-offset:2px}' +
@@ -87,7 +88,7 @@
     '.bt-sug:hover{background:var(--bt-chip)}.bt-sug:focus-visible{outline:2px solid var(--bt-acento);outline-offset:2px}' +
     '.bt-gracias{color:var(--bt-dim);border-color:var(--bt-borde)}' +
     '.bt-msg{margin:10px 0;animation:btMsg .25s ease}@keyframes btMsg{from{opacity:0;transform:translateY(6px)}}' +
-    '.bt-el{display:flex;gap:8px;align-items:flex-end}.bt-mini{width:30px;height:30px;flex:none;display:grid;place-items:center}.bt-mini svg,.bt-mini img{width:30px;height:30px}' +
+    '.bt-el{display:flex;gap:8px;align-items:flex-end}.bt-mini{width:36px;height:36px;flex:none;display:grid;place-items:center}.bt-mini svg,.bt-mini img{width:36px;height:36px}' +
     '.bt-glob{min-width:0;flex:1;background:var(--bt-caja);border:1px solid var(--bt-borde);border-radius:18px 18px 18px 6px;padding:10px 13px}' +
     '.bt-glob .bt-texto{background:none;border:0;padding:0;border-radius:0}.bt-intro{margin:0 0 6px;font:800 14px "Nunito","Inter",sans-serif;color:var(--bt-dim)}' +
     '.bt-el:has(.bt-texto[data-n="cero"]) .bt-glob{background:rgba(255,143,177,.08);border-color:rgba(255,143,177,.3)}' +
@@ -149,7 +150,7 @@
     var hoja = document.createElement('div'); hoja.className = 'bt-sheet';
     hoja.setAttribute('role', 'dialog'); hoja.setAttribute('aria-modal', 'true'); hoja.setAttribute('aria-label', 'Búho tutor');
     hoja.innerHTML = '<div class="bt-asa"></div>' +
-      '<div class="bt-head"><span class="bt-av">' + buho(44) + '</span><div><b>Búho tutor</b><small>' + esc(opts.titulo || (opts.num ? 'Pregunta ' + opts.num : 'Resolución')) + '</small></div>' +
+      '<div class="bt-head"><span class="bt-av">' + buho(54) + '</span><div><b>Búho tutor</b><small>' + esc(opts.titulo || (opts.num ? 'Pregunta ' + opts.num : 'Resolución')) + '</small></div>' +
       '<button type="button" class="bt-x" aria-label="Cerrar">✕</button></div>' +
       '<div class="bt-body" aria-live="polite"></div><div class="bt-pie"></div>';
     document.body.appendChild(velo); document.body.appendChild(hoja);
@@ -161,7 +162,7 @@
 
     function burbujaBuho(html, k) {
       var d = document.createElement('div'); d.className = 'bt-msg bt-el';
-      d.innerHTML = '<span class="bt-mini">' + buho(30) + '</span><div class="bt-glob">' + html + '</div>';
+      d.innerHTML = '<span class="bt-mini">' + buho(36) + '</span><div class="bt-glob">' + html + '</div>';
       body.appendChild(d); return d;
     }
     function escribiendo(fn) {
