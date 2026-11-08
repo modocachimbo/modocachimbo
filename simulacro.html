@@ -2048,7 +2048,7 @@ html body .cursos-card h3:not(#z) { font-family: var(--display) !important; font
   function pintarPregunta() {
     const i = S.act, q = PREGS[i], a = AREA_DE[q._curso];
     $('pTag').style.setProperty('--c', a.c);
-    $('pTag').textContent = a.nom + ' · ' + (NOMBRE[q._curso] || q._curso);
+    $('pTag').textContent = a.nom + ' · ' + (NOMBRE[q._curso] || q._curso) + temaDe(q);
     $('pNum').textContent = 'Pregunta ' + (i + 1) + ' de ' + PREGS.length;
     const r = MCPregunta.armar(q.text, { lecPos: q.lecPos, lecSigue: q.lecSigue });
     $('pTxt').innerHTML = r.html;
@@ -2373,13 +2373,18 @@ html body .cursos-card h3:not(#z) { font-family: var(--display) !important; font
     const b = e.target.closest('button'); if (!b) return;
     filtro = b.dataset.f; $('filtros').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); pintarRevision();
   });
+  // Tema de la pregunta para la etiqueta (Razonamiento Verbal · Analogías), sin el «Tema 03 –» del libro
+  function temaDe(q) {
+    const t = String(q.tema || q._tit || '').replace(/^\s*(?:tema|semana|sem\.?)?\s*n?[°º]?\s*\d{1,3}\s*[-–—:.)]\s*/i, '').trim();
+    return t && t !== (NOMBRE[q._curso] || q._curso) ? ' · ' + t : '';
+  }
   function pintarRevision() {
     const caja = $('revLista'); let html = '';
     PREGS.forEach((q, i) => {
       const r = S.resp[i], est = r == null ? 'blanco' : r === q.correct ? 'ok' : 'mal';
       if (filtro !== 'todas' && filtro !== est) return;
       const a = AREA_DE[q._curso], m = MCPregunta.armar(q.text, { lecPos: q.lecPos });
-      html += '<div class="rev-item" data-i="' + i + '"><span class="preg-tag" style="--c:' + a.c + '">' + a.nom + ' · ' + esc(NOMBRE[q._curso] || q._curso) + '</span>' +
+      html += '<div class="rev-item" data-i="' + i + '"><span class="preg-tag" style="--c:' + a.c + '">' + a.nom + ' · ' + esc(NOMBRE[q._curso] || q._curso) + esc(temaDe(q)) + '</span>' +
         '<div class="preg-num">Pregunta ' + (i + 1) + '<span class="rev-est ' + est + '">' + { ok: ICO.ok + 'Correcta', mal: ICO.mal + 'Incorrecta', blanco: ICO.bl + 'En blanco' }[est] + '</span></div>' +
         '<div class="preg-txt">' + m.html + '</div>' + (q.graphic ? '<div class="preg-graf">' + grafico(q.graphic) + '</div>' : '') +
         '<ul class="alts ver">' + q.options.map((o, k) => '<li><button type="button" tabindex="-1" class="' + (k === q.correct ? 'ok' : k === r ? 'mal' : '') + '"><i>' + esc(o.letter || 'ABCDE'[k]) + '</i><span>' + MCPregunta.formato(o.text) + '</span></button></li>').join('') + '</ul></div>';

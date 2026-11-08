@@ -418,7 +418,7 @@
     answered = false;
     const q = activeQuestions[current];
     document.getElementById('topicBadge').style.setProperty('--c', COLOR_AREA[q.area] || 'var(--ex)');
-    topicText.textContent = q.asignatura || q.topic || 'Ordinario';
+    topicText.textContent = q.asignatura ? q.asignatura + (q.tema && q.tema !== q.asignatura ? ' · ' + q.tema : '') : (q.tema || q.topic || 'Ordinario');
     const qGraphic = document.getElementById('qGraphic');
     // Imágenes en medio del texto, tablas, lecturas: assets/pregunta.js
     const mcq = window.MCPregunta ? MCPregunta.pintar({ texto: questionText, grafico: qGraphic }, q) : null;
