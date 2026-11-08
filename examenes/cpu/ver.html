@@ -98,7 +98,6 @@
     padding: 5px 12px; border-radius: 100px;
   }
 
-  .qcard .qtema .qtema-t { font-weight: 800; opacity: .85; }
   .qcard .qtext { font-size: 14.5px; line-height: 1.7; color: #ececec; white-space: pre-line; margin-bottom: 16px; }
 
   .opt-row {
@@ -333,8 +332,9 @@
           });
           const ico = iconoCurso(q.asignatura);
           // Curso y, si lo tiene, el tema (Razonamiento Verbal · Analogías)
-          const temaQ = q.tema && q.tema !== q.asignatura ? `<span class="qtema-t"> · ${q.tema}</span>` : '';
-          const temaTag = q.asignatura ? `<div class="qtema">${ico ? `<i class="ic-m" style="-webkit-mask-image:url(${ico});mask-image:url(${ico})"></i>` : ''}${q.asignatura}${temaQ}</div>` : (q.tema ? `<div class="qtema">${q.tema}</div>` : '');
+          const conT = q.tema && q.tema !== q.asignatura;
+          // Con tema: dos líneas (curso arriba, tema abajo) para que en celular no se parta raro
+          const temaTag = q.asignatura ? `<div class="qtema${conT ? ' con-t' : ''}">${ico ? `<i class="ic-m" style="-webkit-mask-image:url(${ico});mask-image:url(${ico})"></i>` : ''}${conT ? `<span class="qtema-x"><span>${q.asignatura}</span><small class="qtema-t">${q.tema}</small></span>` : q.asignatura}</div>` : (q.tema ? `<div class="qtema">${q.tema}</div>` : '');
           const idx = allQuestions.indexOf(q);
           const mcq = window.MCPregunta ? MCPregunta.armar(q.text, { lecPos: q.lecPos, lecSigue: q.lecSigue }) : { html: q.text.replace(/\n/g,'<br>'), derecha: '' };
           const cortas = window.MCPregunta && !mcq.derecha && MCPregunta.cortas(q.options);

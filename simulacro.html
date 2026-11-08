@@ -611,6 +611,8 @@
   #contador { font-weight: 800; color: var(--dim); }
   #contador b { font: italic 900 20px/1 var(--display) !important; color: var(--text); letter-spacing: .02em; }
   .preg-tag { font-weight: 900; font-size: 12.5px; }
+  .preg-tag.con-t { flex-direction: column; align-items: flex-start; gap: 2px; border-radius: 12px; }
+  .preg-tag .pt-t { font-size: 11.5px; font-weight: 800; opacity: .85; line-height: 1.2; }
   .preg-num { font: 800 14px/1 var(--display) !important; letter-spacing: .08em; text-transform: uppercase; margin: 16px 0 8px; }
   .preg-txt { font-weight: 800; font-size: 17px; line-height: 1.55; }
   .preg-txt :is(strong, b) { font-weight: 1000; }
@@ -2048,7 +2050,7 @@ html body .cursos-card h3:not(#z) { font-family: var(--display) !important; font
   function pintarPregunta() {
     const i = S.act, q = PREGS[i], a = AREA_DE[q._curso];
     $('pTag').style.setProperty('--c', a.c);
-    $('pTag').textContent = a.nom + ' · ' + (NOMBRE[q._curso] || q._curso) + temaDe(q);
+    $('pTag').innerHTML = tagHtml(a, q); $('pTag').classList.toggle('con-t', !!temaDe(q));
     $('pNum').textContent = 'Pregunta ' + (i + 1) + ' de ' + PREGS.length;
     const r = MCPregunta.armar(q.text, { lecPos: q.lecPos, lecSigue: q.lecSigue });
     $('pTxt').innerHTML = r.html;
@@ -2376,7 +2378,12 @@ html body .cursos-card h3:not(#z) { font-family: var(--display) !important; font
   // Tema de la pregunta para la etiqueta (Razonamiento Verbal · Analogías), sin el «Tema 03 –» del libro
   function temaDe(q) {
     const t = String(q.tema || q._tit || '').replace(/^\s*(?:tema|semana|sem\.?)?\s*n?[°º]?\s*\d{1,3}\s*[-–—:.)]\s*/i, '').trim();
-    return t && t !== (NOMBRE[q._curso] || q._curso) ? ' · ' + t : '';
+    return t && t !== (NOMBRE[q._curso] || q._curso) ? t : '';
+  }
+  // Área · curso arriba y el tema debajo (en celular no se parte raro)
+  function tagHtml(a, q) {
+    const t = temaDe(q);
+    return '<span>' + esc(a.nom + ' · ' + (NOMBRE[q._curso] || q._curso)) + '</span>' + (t ? '<small class="pt-t">' + esc(t) + '</small>' : '');
   }
   function pintarRevision() {
     const caja = $('revLista'); let html = '';
@@ -2384,7 +2391,7 @@ html body .cursos-card h3:not(#z) { font-family: var(--display) !important; font
       const r = S.resp[i], est = r == null ? 'blanco' : r === q.correct ? 'ok' : 'mal';
       if (filtro !== 'todas' && filtro !== est) return;
       const a = AREA_DE[q._curso], m = MCPregunta.armar(q.text, { lecPos: q.lecPos });
-      html += '<div class="rev-item" data-i="' + i + '"><span class="preg-tag" style="--c:' + a.c + '">' + a.nom + ' · ' + esc(NOMBRE[q._curso] || q._curso) + esc(temaDe(q)) + '</span>' +
+      html += '<div class="rev-item" data-i="' + i + '"><span class="preg-tag' + (temaDe(q) ? ' con-t' : '') + '" style="--c:' + a.c + '">' + tagHtml(a, q) + '</span>' +
         '<div class="preg-num">Pregunta ' + (i + 1) + '<span class="rev-est ' + est + '">' + { ok: ICO.ok + 'Correcta', mal: ICO.mal + 'Incorrecta', blanco: ICO.bl + 'En blanco' }[est] + '</span></div>' +
         '<div class="preg-txt">' + m.html + '</div>' + (q.graphic ? '<div class="preg-graf">' + grafico(q.graphic) + '</div>' : '') +
         '<ul class="alts ver">' + q.options.map((o, k) => '<li><button type="button" tabindex="-1" class="' + (k === q.correct ? 'ok' : k === r ? 'mal' : '') + '"><i>' + esc(o.letter || 'ABCDE'[k]) + '</i><span>' + MCPregunta.formato(o.text) + '</span></button></li>').join('') + '</ul></div>';

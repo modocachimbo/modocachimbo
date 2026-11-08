@@ -420,7 +420,9 @@
     answered = false;
     const q = activeQuestions[current];
     document.getElementById('topicBadge').style.setProperty('--c', COLOR_AREA[q.area] || 'var(--ex)');
-    topicText.textContent = q.asignatura ? q.asignatura + (q.tema && q.tema !== q.asignatura ? ' · ' + q.tema : '') : (q.tema || q.topic || 'Examen de control CPU');
+    // Curso y, debajo, el tema (en dos líneas para que en celular se lea bien)
+    const escT = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    topicText.innerHTML = q.asignatura ? escT(q.asignatura) + (q.tema && q.tema !== q.asignatura ? '<small class="tt">' + escT(q.tema) + '</small>' : '') : escT(q.tema || q.topic || 'Examen de control CPU');
     const qGraphic = document.getElementById('qGraphic');
     // Imágenes en medio del texto, tablas, lecturas: assets/pregunta.js
     const mcq = window.MCPregunta ? MCPregunta.pintar({ texto: questionText, grafico: qGraphic }, q) : null;

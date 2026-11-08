@@ -256,5 +256,11 @@ html body .ex-badge:not(#z), html body .ex-badge span:not(#z), html body .ex-f .
 html body .exa-pick:not(#z), html body .exa-res:not(#z), html body .exa-res b:not(#z), html body.ex-quiz .title .accent:not(#z), html body.ex-quiz .startscreen h1 .accent:not(#z) { font-family: var(--display) !important; }
 
 /* Curso con su ícono y "¿Error en la clave?" como en los libros */
+/* Etiqueta con curso y tema: dos líneas */
+html[data-examen] .qcard .qtema.con-t:not(#z) { border-radius: 14px; padding: 7px 13px; text-align: left; max-width: 100%; }
+html[data-examen] .qcard .qtema .qtema-x { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+html[data-examen] .qcard .qtema .qtema-t { font: 800 11.5px/1.2 'Nunito', sans-serif; opacity: .85; overflow-wrap: anywhere; }
+#topicText .tt { display: block; font-size: .86em; font-weight: 800; opacity: .85; margin-top: 2px; line-height: 1.2; }
+#topicBadge { align-items: center; }
 html[data-examen] .qcard .qtema .ic-m { width: 16px; height: 16px; background: currentColor; -webkit-mask: center/contain no-repeat; mask: center/contain no-repeat; flex-shrink: 0; }
 html[data-examen] .qcard .rep-row { border-top: 2px dashed var(--borde-g); }
