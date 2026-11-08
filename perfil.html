@@ -196,6 +196,10 @@
   .bloque-info { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; font-size: 13px; color: var(--text-dim); }
   .bloque-info[hidden] { display: none; }
   .extras { display: contents; }
+  .voc-link { display: flex; align-items: center; gap: 10px; margin-top: 8px; background: rgba(46,230,214,.08); border: 1px dashed #2EE6D6; border-radius: 12px; padding: 8px 12px; color: #2EE6D6; font: 800 14px Nunito, sans-serif; text-decoration: none; }
+  .voc-link img { width: 30px; height: 30px; flex: none; }
+  .voc-link b { letter-spacing: .06em; }
+  :root[data-modo="claro"] .voc-link { color: #0d7f77; border-color: #0d8f86; }
   .extras[hidden] { display: none; }
   .bloque-info .tit { width: 100%; color: var(--text); font-weight: 600; }
   .bloque-info .pt { background: var(--accent-soft); color: var(--accent); border-radius: 100px; padding: 5px 10px; font-weight: 700; font-size: 12.5px; white-space: nowrap; }
@@ -754,6 +758,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
             <select id="carrera" name="carrera">
               <option value="">Primero elige tu bloque</option>
             </select>
+            <a class="voc-link" id="vocLink" href="vocacional.html"><img src="assets/buho/avatar/clasico.webp" alt="" width="34" height="34" loading="lazy"><span id="vocTx">¿Aún dudas? Haz el test vocacional ›</span></a>
           </div>
           <div class="campo ancho bloque-info" id="bloqueInfo" hidden></div>
           <div class="campo">
@@ -953,6 +958,17 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
   $('bloque').addEventListener('change', function () { llenarCarreras(this.value, ''); });
   llenarCarreras('', '');
 
+  // Resultado del test vocacional (vocacional.html lo guarda en perfiles.extra.vocacional)
+  var TIPO_VOC = { R: ['Realista', '#FF9600'], I: ['Investigador', '#1CB0F6'], A: ['Artístico', '#CE82FF'], S: ['Social', '#FF6FA8'], E: ['Emprendedor', '#FFC800'], C: ['Convencional', '#58CC02'] };
+  function pintarVocacional(v) {
+    if (!v || !/^[RIASEC]{3}$/.test(v.cod || '')) return;
+    var tx = $('vocTx'); tx.textContent = 'Tu código vocacional: ';
+    var b = document.createElement('b');
+    v.cod.split('').forEach(function (t) { var s = document.createElement('span'); s.textContent = t; s.style.color = TIPO_VOC[t][1]; b.appendChild(s); });
+    tx.appendChild(b); tx.appendChild(document.createTextNode(' · ' + TIPO_VOC[v.cod[0]][0] + ' · Ver ›'));
+    $('vocLink').href = 'vocacional.html?ver=1';
+  }
+
   // Preguntas extra que se agregan desde el panel (se guardan en perfiles.extra)
   function llenarExtras(resp) {
     var caja = $('extras'); caja.textContent = '';
@@ -1048,6 +1064,7 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       var p = PERFIL = rs[0] || {};
       llenarBloques();
       llenarExtras(p.extra);
+      pintarVocacional(p.extra && p.extra.vocacional);
       CAMPOS.forEach(function (c) { if (c !== 'carrera') $(c).value = p[c] || ''; });
       ponerCarrera(p.carrera || '');
       // Meta del simulacro: solo si ya existe la columna (supabase/23-simulacro-comparar.sql)
