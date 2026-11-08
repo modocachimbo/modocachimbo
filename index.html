@@ -441,8 +441,12 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
 .j-sim { background: linear-gradient(160deg, #8a5a00, #4d3200); border-color: var(--amarillo); }
 .j-sim .chip { background: var(--amarillo); color: #2a1d00; }
 .j-ex { background: linear-gradient(160deg, #0c5f8f, #123864); border-color: var(--info); }
-.j-flash { grid-column: span 2; min-height: 0; background: linear-gradient(90deg, #4d5c00, #2c3505); border-color: var(--lima); }
-.j-flash .ic { font-size: 56px; top: 50%; translate: 0 -50%; bottom: auto; }
+.j-flash { min-height: 0; background: linear-gradient(90deg, #4d5c00, #2c3505); border-color: var(--lima); }
+.j-flash .ic { font-size: 44px; }
+/* Test vocacional (vocacional.html), a la mitad junto a Flashcards */
+.j-voc { min-height: 0; padding-right: 84px; background: linear-gradient(90deg, #0d6d6a, #0c3a44); border-color: #2EE6D6; }
+.j-voc .chip { background: #2EE6D6; color: #062a28; }
+.j-voc img { position: absolute; right: 4px; bottom: -12px; width: 78px; height: auto; filter: drop-shadow(0 4px 10px rgba(0,0,0,.4)); pointer-events: none; }
 .j-bib { grid-column: span 2; min-height: 0; padding-left: 92px; background: linear-gradient(90deg, #4a1f6e, #261538); border-color: #CE82FF; }
 .j-bib .chip { background: #CE82FF; color: #2a0f3d; }
 .j-bib .lomos { position: absolute; left: 16px; top: 50%; translate: 0 -50%; display: flex; align-items: flex-end; gap: 3px; height: 58px; }
@@ -528,7 +532,8 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
   .juego small { font-size: 13.5px; }
   .juego .ic { font-size: 54px; right: 10px; bottom: 8px; }
   .j-duelo .ic { font-size: 96px; right: 18px; bottom: 26px; }
-  .j-flash .ic { font-size: 46px; }
+  .j-flash .ic { font-size: 40px; }
+  .j-voc { padding-right: 64px; } .j-voc img { width: 62px; bottom: -8px; }
   .j-bib { min-height: 0; padding-left: 78px; } .j-bib .lomos { left: 12px; height: 48px; } .j-bib .lomos i { width: 11px; }
   .juego .chip { font-size: 13px; }
   .podio { padding: 22px 10px 0; gap: 8px; }
@@ -958,7 +963,9 @@ button.juego { width: 100%; text-align: left; font: inherit; color: #fff; }
   #examenes .modos { flex: 1; grid-template-rows: 1fr 1fr auto auto; }
   #examenes .juego { min-height: 124px; }
   #examenes .j-sim .ic, #examenes .j-ex .ic { font-size: 50px; right: 12px; bottom: 10px; }
-  #examenes .j-flash, #examenes .j-bib { min-height: 0; padding-top: 12px; padding-bottom: 12px; }
+  #examenes .j-flash, #examenes .j-voc, #examenes .j-bib { min-height: 0; padding-top: 12px; padding-bottom: 12px; }
+  #examenes .j-flash .ic { display: none; }
+  #examenes .j-voc { padding-right: 70px; } #examenes .j-voc img { width: 62px; bottom: -14px; }
   /* «¡A practicar!» más bajo para dejar espacio a los modos */
   .practicar { min-height: 92px; font-size: clamp(26px, 2.6vw, 44px); }
   .modo-box { padding: 10px 14px; gap: 2px; }
@@ -967,6 +974,7 @@ button.juego { width: 100%; text-align: left; font: inherit; color: #fff; }
 /* PC angosta (laptop con zoom): las tarjetas chicas no caben con ícono, así que va solo el texto */
 @media (min-width: 901px) and (max-width: 1250px) {
   #examenes .j-sim .ic, #examenes .j-ex .ic { display: none; }
+  #examenes .j-voc { padding-right: 18px; } #examenes .j-voc img { display: none; }
   #examenes .juego b { font-size: 27px; }
   #examenes .juego small { font-size: 14.5px; }
   .modo-box b { font-size: 16px; overflow-wrap: normal; }
@@ -1353,10 +1361,11 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
             <a class="juego j-duelo duelo-banner" href="duelo.html" data-mc-nav="practicar"><span class="chip disp">Reto</span><b class="tit">Duelos</b><small>Reta hasta a 3 amigos en vivo</small><svg class="ic"><use href="#i-espadas"/></svg></a>
             <a class="juego j-sim" href="simulacro.html" data-mc-nav="practicar"><span class="chip disp" id="simNuevo">Nuevo</span><b class="tit">Simulacro</b><small>Como el real, con tiempo</small><svg class="ic"><use href="#i-reloj"/></svg></a>
             <button class="juego j-ex" type="button" data-hoja="examenes" data-candado="examenes" data-candado-nombre="Exámenes"><b class="tit">Exámenes</b><small>Ordinario, CPU, Control</small><svg class="ic"><use href="#i-examen"/></svg></button>
-            <button class="juego j-flash" type="button" data-hoja="flashcards"><b class="tit">Flashcards</b><small style="max-width:none">Repasa con tarjetas por curso</small><svg class="ic"><use href="#i-tarjetas"/></svg></button>
+            <button class="juego j-flash" type="button" data-hoja="flashcards"><b class="tit">Flashcards</b><small>Repasa por curso</small><svg class="ic"><use href="#i-tarjetas"/></svg></button>
+            <a class="juego j-voc" href="vocacional.html"><span class="chip disp" id="vocNuevo">Nuevo</span><b class="tit">Carrera</b><small>Test vocacional</small><img src="assets/buho/avatar/clasico-cuerpo.webp" alt="" width="174" height="180" loading="lazy"></a>
             <a class="juego j-bib" href="biblioteca.html"><span class="chip disp" id="bibNuevo">Nuevo</span><span class="lomos" aria-hidden="true"><i></i><i></i><i></i><i></i></span><b class="tit">Biblioteca</b><small style="max-width:none">Libros en PDF para leer aquí mismo</small></a>
           </div>
-          <script>try { if (localStorage.getItem('mc_sim_visto')) document.getElementById('simNuevo').remove(); if (localStorage.getItem('mc_biblioteca_lectura')) document.getElementById('bibNuevo').remove(); } catch (e) {}</script>
+          <script>try { if (localStorage.getItem('mc_sim_visto')) document.getElementById('simNuevo').remove(); if (localStorage.getItem('mc_voc_res')) document.getElementById('vocNuevo').remove(); if (localStorage.getItem('mc_biblioteca_lectura')) document.getElementById('bibNuevo').remove(); } catch (e) {}</script>
         </section>
         <div class="sal-accesos" id="salAccesos">
           <button type="button" class="sal-cod" id="salCodigo" title="Activar código"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="5" fill="currentColor"/><circle cx="8" cy="15" r="2" fill="#0b2a3a"/><path d="M11.5 11.5 20 3m-4 4 3 3m-5.5-.5 2 2" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>Activar código</button>

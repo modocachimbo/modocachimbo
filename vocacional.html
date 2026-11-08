@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script src="assets/guardia.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0B0818">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="assets/app/icono-180.png">
+<meta name="apple-mobile-web-app-title" content="Modo Cachimbo">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<script src="assets/app.js" defer></script>
+<title>Test vocacional · Modo Cachimbo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;1,800&family=Inter:wght@400;500;600;700&family=Nunito:wght@700;800;900&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0B0818; --s: #151127; --s2: #1D1834; --b: #2A2346; --l: #C6E000; --l-d: #8fa300; --lt: #151A03;
+    --t: #EEEAF7; --d: #A99FC8; --f: #6F6690; --voc: #2EE6D6;
+    --R: #FF9600; --I: #1CB0F6; --A: #CE82FF; --S: #FF6FA8; --E: #FFC800; --C: #58CC02;
+    color-scheme: dark;
+  }
+  :root[data-modo="claro"] {
+    --bg: #F6F5FA; --s: #FFFFFF; --s2: #EEECF5; --b: #DCD8E8; --l: #7a8f00; --l-d: #5c6b00; --lt: #FFFFFF;
+    --t: #1A1626; --d: #6B6485; --f: #A49DB8; --voc: #0d8f86; color-scheme: light;
+  }
+  body { background: var(--bg); color: var(--t); font: 500 15px/1.45 Inter, sans-serif; min-height: 100vh; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  a { color: inherit; text-decoration: none; }
+  .tit { font-family: Nunito, sans-serif; font-weight: 900; }
+  .disp { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
+  .top { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--bg); border-bottom: 1px solid var(--b); }
+  .top .x { width: 36px; height: 36px; border-radius: 10px; background: var(--s2); display: grid; place-items: center; color: var(--d); }
+  .top .x svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2.4; fill: none; stroke-linecap: round; }
+  .top b { font: 900 17px Nunito, sans-serif; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 18px 16px 32px; }
+  [hidden] { display: none !important; }
+  .btn { display: block; width: 100%; text-align: center; background: var(--l); color: var(--lt); border-radius: 16px; padding: 15px; font: 900 18px Nunito, sans-serif; box-shadow: 0 4px 0 var(--l-d); border: 0; }
+  .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--l-d); }
+  .btn:disabled { opacity: .6; }
+  .btn2 { display: block; width: 100%; text-align: center; background: transparent; border: 2px solid var(--b); border-radius: 16px; padding: 13px; font: 800 16px Nunito, sans-serif; }
+  .card { background: var(--s); border: 1px solid var(--b); border-radius: 20px; padding: 18px; }
+  .chip { display: inline-block; background: rgba(46,230,214,.14); color: var(--voc); border-radius: 99px; padding: 3px 10px; font-size: 14px; }
+
+  /* Inicio del test */
+  .intro { text-align: center; }
+  .intro img { width: 150px; height: auto; margin: 6px auto 4px; display: block; filter: drop-shadow(0 10px 30px rgba(46,230,214,.25)); }
+  .intro h1 { font-size: 30px; line-height: 1.1; margin: 8px 0; }
+  .intro h1 em { color: var(--voc); font-style: normal; }
+  .intro p { color: var(--d); max-width: 470px; margin: 0 auto; }
+  .tipos { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 16px 0 4px; }
+  .tipos span { font: 800 12.5px Nunito, sans-serif; padding: 4px 10px; border-radius: 99px; border: 1px solid var(--b); color: var(--d); }
+  .tipos i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; }
+  .datos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; }
+  .datos div { background: var(--s); border: 1px solid var(--b); border-radius: 16px; padding: 12px 6px; text-align: center; }
+  .datos b { display: block; font: 900 22px Nunito, sans-serif; color: var(--voc); }
+  .datos small { color: var(--d); font-size: 12px; }
+  .intro .acc { display: grid; gap: 10px; }
+  .intro .nota { font-size: 12.5px; color: var(--f); margin-top: 16px; }
+
+  /* Pregunta */
+  .prog { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
+  .prog .bar { flex: 1; height: 12px; border-radius: 99px; background: var(--b); overflow: hidden; }
+  .prog .bar i { display: block; height: 100%; width: 0; background: var(--voc); border-radius: 99px; transition: width .25s; }
+  .prog small { color: var(--d); font-weight: 700; min-width: 44px; text-align: right; }
+  .ilus { height: 140px; border-radius: 20px; background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--c) 28%, transparent), transparent 65%), var(--s); border: 1px solid var(--b); display: grid; place-items: center; margin-bottom: 18px; }
+  .ilus svg { width: 78px; height: 78px; stroke: var(--c); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .preg-lbl { color: var(--d); font-size: 14px; margin-bottom: 4px; }
+  .preg { font-size: 25px; line-height: 1.2; margin-bottom: 18px; min-height: 2.4em; }
+  .opc { display: grid; gap: 9px; }
+  .opc button { display: flex; align-items: center; gap: 12px; width: 100%; background: var(--s); border: 2px solid var(--b); border-radius: 16px; padding: 10px 14px; font: 800 16px Nunito, sans-serif; text-align: left; transition: border-color .15s, background .15s; }
+  .opc button svg { width: 32px; height: 32px; flex: none; }
+  .opc button.sel { border-color: var(--voc); background: rgba(46,230,214,.09); box-shadow: 0 3px 0 #0d8f86; }
+  .pie { display: flex; justify-content: space-between; align-items: center; color: var(--f); font-size: 13px; margin-top: 14px; }
+  .pie button { background: none; border: 0; color: var(--d); font-weight: 700; padding: 6px 0; }
+  .pie button:disabled { opacity: .35; }
+
+  /* Resultado */
+  .res-cab { text-align: center; margin-bottom: 16px; }
+  .res-cab small { color: var(--d); }
+  .codigo { font: 900 48px Nunito, sans-serif; letter-spacing: .08em; margin: 0 0 2px; }
+  .res-cab p { color: var(--d); max-width: 540px; margin: 0 auto; }
+  .res-cab p b { font-weight: 800; }
+  .perfil6 h3, .carr-card h3 { font: 900 18px Nunito, sans-serif; margin: 0 0 10px; }
+  .fila { display: grid; grid-template-columns: 112px 1fr 34px; align-items: center; gap: 10px; margin: 9px 0; font-size: 14px; }
+  .fila b { font-family: Nunito, sans-serif; font-weight: 800; }
+  .fila .bar { height: 12px; background: var(--b); border-radius: 99px; overflow: hidden; }
+  .fila .bar i { display: block; height: 100%; border-radius: 99px; width: 0; transition: width .8s ease; }
+  .fila em { font-style: normal; color: var(--d); text-align: right; font-weight: 700; }
+  .aviso { font-size: 12.5px; color: var(--f); margin-top: 12px; line-height: 1.5; }
+  .carr { display: grid; gap: 9px; }
+  .carr button { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: var(--s2); border: 2px solid transparent; border-radius: 16px; padding: 10px 12px; }
+  .carr button.sel { border-color: var(--voc); }
+  .carr .pc { width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center; font: 900 16px Nunito, sans-serif; background: rgba(46,230,214,.12); color: var(--voc); flex: none; }
+  .carr .nom { min-width: 0; }
+  .carr .nom b { font: 800 15.5px Nunito, sans-serif; display: block; }
+  .carr .nom small { color: var(--d); font-size: 12.5px; }
+  .carr .bq { margin-left: auto; font-size: 12px; padding: 3px 8px; border-radius: 8px; background: var(--b); color: var(--d); white-space: nowrap; }
+  .carr .ideal { display: inline-block; font: 800 11.5px 'Barlow Condensed', sans-serif; letter-spacing: .05em; text-transform: uppercase; background: var(--voc); color: #062a28; border-radius: 6px; padding: 1px 6px; margin-bottom: 3px; }
+  .carr.mas { margin-top: 9px; }
+  .acc2 { display: grid; gap: 10px; margin-top: 16px; }
+  .ok { text-align: center; color: var(--voc); font-weight: 700; margin-top: 10px; min-height: 1.4em; }
+  .ok a { text-decoration: underline; }
+  .grid2 { display: grid; gap: 14px; }
+  .otra { display: block; text-align: center; color: var(--d); font-weight: 700; margin-top: 18px; text-decoration: underline; background: none; border: 0; width: 100%; }
+
+  @media (min-width: 900px) {
+    .wrap { max-width: 1080px; padding: 28px 24px 40px; }
+    .intro { display: grid; grid-template-columns: 300px 1fr; gap: 34px; text-align: left; align-items: center; max-width: 920px; margin: 30px auto; }
+    .intro img { width: 260px; }
+    .intro p { margin: 0; }
+    .intro h1 { font-size: 42px; }
+    .tipos { justify-content: flex-start; }
+    .intro .acc { grid-template-columns: 1fr 1fr; }
+    .intro .acc .btn2:only-child, .intro .acc .btn:only-child { grid-column: 1 / -1; }
+    .pq { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; max-width: 980px; margin: 10px auto; align-items: center; }
+    .prog { max-width: 980px; margin: 0 auto 22px; }
+    .ilus { height: 340px; margin: 0; }
+    .ilus svg { width: 150px; height: 150px; }
+    .preg { font-size: 32px; }
+    .grid2 { grid-template-columns: 1fr 1.15fr; align-items: start; }
+    .acc2 { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="x" href="index.html" aria-label="Volver al inicio"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></a>
+  <b>Test vocacional</b>
+</header>
+
+<main class="wrap">
+  <!-- 1. Presentación -->
+  <section class="intro" id="vIntro">
+    <img src="assets/buho/avatar/clasico-cuerpo.webp" alt="" width="174" height="180">
+    <div>
+      <span class="chip disp">Gratis · 6 minutos</span>
+      <h1 class="tit">¿Qué carrera <em>va contigo</em>?</h1>
+      <p>Responde qué tanto te gustarían 48 actividades. No hay respuestas buenas ni malas: marca lo que sientes, no lo que crees que conviene. Al final te mostramos tu perfil y las carreras de la UNJFSC que más se parecen a ti.</p>
+      <div class="tipos" id="tipos"></div>
+      <div class="datos"><div><b>48</b><small>actividades</small></div><div><b>6</b><small>minutos</small></div><div><b id="nCarr">36</b><small>carreras</small></div></div>
+      <div class="acc">
+        <button class="btn" type="button" id="empezar">Empezar test</button>
+        <button class="btn2" type="button" id="verUltimo" hidden>Ver mi último resultado</button>
+      </div>
+      <p class="nota">Basado en el modelo de intereses de Holland (RIASEC), el más usado en orientación vocacional. Es una guía para conocerte, no un diagnóstico.</p>
+    </div>
+  </section>
+
+  <!-- 2. Preguntas -->
+  <section id="vPreg" hidden>
+    <div class="prog"><div class="bar"><i id="barra"></i></div><small id="cuenta">1/48</small></div>
+    <div class="pq">
+      <div class="ilus" id="ilus"></div>
+      <div>
+        <p class="preg-lbl">¿Qué tanto te gustaría…</p>
+        <h2 class="preg tit" id="pregTx"></h2>
+        <div class="opc" id="opc"></div>
+        <div class="pie"><button type="button" id="atras">‹ Anterior</button><span>Se guarda solo, puedes seguir luego</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Resultado -->
+  <section id="vRes" hidden>
+    <div class="res-cab">
+      <small>Tu código vocacional</small>
+      <div class="codigo" id="codigo"></div>
+      <p id="resFrase"></p>
+    </div>
+    <div class="grid2">
+      <div class="card perfil6">
+        <h3>Tu perfil</h3>
+        <div id="barras"></div>
+        <p class="aviso">Es una guía, no una sentencia. Tus intereses pueden cambiar, y también importan tus notas, tus sueños y lo que te cuenten quienes ya estudian esa carrera. Puedes repetir el test cuando quieras.</p>
+      </div>
+      <div class="card carr-card">
+        <h3>Carreras UNJFSC que van contigo</h3>
+        <div class="carr" id="top5"></div>
+        <div class="carr mas" id="resto" hidden></div>
+        <div class="acc2">
+          <button class="btn" type="button" id="elegir">Elegir como mi carrera</button>
+          <button class="btn2" type="button" id="verTodas">Ver todas las carreras</button>
+        </div>
+        <p class="ok" id="ok" role="status"></p>
+      </div>
+    </div>
+    <button class="otra" type="button" id="repetir">Repetir el test</button>
+  </section>
+</main>
+
+<script src="assets/mc-config.js"></script>
+<script src="assets/carreras.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/vocacional.js"></script>
+<script>
+(function () {
+  var V = window.MCVocacional, $ = function (id) { return document.getElementById(id); };
+  var N = V.PREGUNTAS.length, GUARDA = 'mc_voc', RES = 'mc_voc_res';
+  var estado = leer(GUARDA) || { resp: [], i: 0 };
+  var ultimo = leer(RES), elegida = null, lista = [];
+
+  function leer(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
+  function guardar(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+  function ver(id) { ['vIntro', 'vPreg', 'vRes'].forEach(function (s) { $(s).hidden = s !== id; }); window.scrollTo(0, 0); }
+
+  // Dibujos de cada tipo (trazos simples, se pintan con el color del tipo)
+  var ICONOS = {
+    R: '<path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.6 2.6-2.5-.7-.7-2.5z"/>',
+    I: '<path d="M9 3h6M10 3v6L5 19a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 19l-5-10V3"/><path d="M7.5 15h9"/>',
+    A: '<path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.7 0-1.4-1.2-1.6-1.2-2.8 0-1 .8-1.6 1.8-1.6H17a4 4 0 0 0 4-4C21 6.6 17 3 12 3z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10.5" cy="7" r="1.2"/><circle cx="15.5" cy="7.5" r="1.2"/>',
+    S: '<circle cx="9" cy="8" r="3.2"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M15 14.3c3 .1 6 1.9 6 5.7"/>',
+    E: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/><path d="M14 7l3-3 3 3M17 4v5"/>',
+    C: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>'
+  };
+  // Caritas de la escala (1 = nada … 5 = me encantaría)
+  var CARAS = [
+    { tx: 'No me gustaría nada', c: '#FF4B4B', boca: '<path d="M11 23c2.5-3.5 7.5-3.5 10 0"/>', ojos: '<path d="M10 12l3 2M22 12l-3 2"/>' },
+    { tx: 'No mucho', c: '#FF9600', boca: '<path d="M11.5 22.5c2.5-2 6.5-2 9 0"/>' },
+    { tx: 'Me da igual', c: '#A99FC8', boca: '<path d="M11.5 21h9"/>' },
+    { tx: 'Me gustaría', c: '#2EE6D6', boca: '<path d="M11 20c2.5 3 7.5 3 10 0"/>' },
+    { tx: '¡Me encantaría!', c: '#C6E000', boca: '<path d="M10 18.5h12c0 4-2.7 6-6 6s-6-2-6-6z" fill="currentColor"/>', ojos: '<path d="M10 13.5c1-1.8 3-1.8 4 0M18 13.5c1-1.8 3-1.8 4 0"/>' }
+  ];
+  function cara(k) {
+    var x = CARAS[k];
+    return '<svg viewBox="0 0 32 32" style="color:' + x.c + '" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">' +
+      '<circle cx="16" cy="16" r="14" fill="' + x.c + '" fill-opacity=".16"/>' +
+      (x.ojos || '<circle cx="11.5" cy="13" r="1.6" fill="currentColor" stroke="none"/><circle cx="20.5" cy="13" r="1.6" fill="currentColor" stroke="none"/>') + x.boca + '</svg>';
+  }
+
+  // Presentación
+  V.ORDEN.forEach(function (t) {
+    var s = el('span'), i = el('i'); i.style.background = V.TIPOS[t].color; s.appendChild(i); s.appendChild(document.createTextNode(V.TIPOS[t].nombre)); $('tipos').appendChild(s);
+  });
+  function contarCarreras() { var n = 0; (MCCarreras.bloques || []).forEach(function (b) { n += (b.carreras || []).length; }); $('nCarr').textContent = n; }
+  contarCarreras();
+  if (MCCarreras.cargar) MCCarreras.cargar().then(contarCarreras);
+  var aMedias = estado.resp.filter(function (v) { return v; }).length;
+  if (aMedias > 0 && aMedias < N) $('empezar').textContent = 'Seguir donde me quedé (' + aMedias + '/' + N + ')';
+  if (ultimo && ultimo.p) $('verUltimo').hidden = false;
+
+  $('empezar').onclick = function () { if (estado.resp.filter(function (v) { return v; }).length >= N) estado = { resp: [], i: 0 }; ver('vPreg'); pintarPregunta(); };
+  $('verUltimo').onclick = function () { mostrarResultado(ultimo.p); };
+  $('repetir').onclick = function () { estado = { resp: [], i: 0 }; guardar(GUARDA, estado); ver('vPreg'); pintarPregunta(); };
+
+  // Preguntas
+  CARAS.forEach(function (x, k) {
+    var b = el('button'); b.type = 'button'; b.innerHTML = cara(k); b.appendChild(document.createTextNode(x.tx));
+    b.onclick = function () { responder(k + 1); };
+    $('opc').appendChild(b);
+  });
+  var avanzando = null;
+  function pintarPregunta() {
+    var i = Math.min(estado.i, N - 1), p = V.PREGUNTAS[i];
+    $('pregTx').textContent = p.texto + '?';
+    $('cuenta').textContent = (i + 1) + '/' + N;
+    $('barra').style.width = (i / N * 100) + '%';
+    $('ilus').style.setProperty('--c', V.TIPOS[p.tipo].color);
+    $('ilus').innerHTML = '<svg viewBox="0 0 24 24">' + ICONOS[p.tipo] + '</svg>';
+    Array.prototype.forEach.call($('opc').children, function (b, k) { b.classList.toggle('sel', estado.resp[i] === k + 1); });
+    $('atras').disabled = i === 0;
+  }
+  function responder(v) {
+    if (avanzando) return;
+    var i = estado.i; estado.resp[i] = v;
+    Array.prototype.forEach.call($('opc').children, function (b, k) { b.classList.toggle('sel', k + 1 === v); });
+    avanzando = setTimeout(function () {
+      avanzando = null;
+      // Siguiente sin responder (por si volvió atrás)
+      var sig = i + 1; while (sig < N && estado.resp[sig]) sig++;
+      if (sig >= N) { for (sig = 0; sig < N && estado.resp[sig]; sig++); }
+      if (sig >= N) { estado.i = N - 1; guardar(GUARDA, estado); terminar(); return; }
+      estado.i = sig; guardar(GUARDA, estado); pintarPregunta();
+    }, 260);
+  }
+  $('atras').onclick = function () { if (estado.i > 0) { estado.i--; guardar(GUARDA, estado); pintarPregunta(); } };
+
+  function terminar() {
+    var p = V.puntajes(estado.resp);
+    ultimo = { p: p, cod: V.codigo(p), f: new Date().toISOString().slice(0, 10) };
+    guardar(RES, ultimo);
+    guardar(GUARDA, null); estado = { resp: [], i: 0 };
+    mostrarResultado(p);
+    // Se guarda también en el perfil (perfiles.extra.vocacional), sin tocar la carrera
+    guardarEnPerfil(null).catch(function () {});
+  }
+
+  // Resultado
+  function mostrarResultado(p) {
+    ver('vRes');
+    var cod = V.codigo(p);
+    $('codigo').innerHTML = '';
+    cod.split('').forEach(function (t) { var s = el('span', null, t); s.style.color = V.TIPOS[t].color; $('codigo').appendChild(s); });
+    var t0 = V.TIPOS[cod[0]], f = $('resFrase'); f.textContent = 'Eres ';
+    var b = el('b', null, t0.nombre.toLowerCase()); b.style.color = t0.color; f.appendChild(b);
+    f.appendChild(document.createTextNode(': ' + t0.frase + ' También sales ' + V.TIPOS[cod[1]].nombre.toLowerCase() + ' y ' + V.TIPOS[cod[2]].nombre.toLowerCase() + '.'));
+    var caja = $('barras'); caja.textContent = '';
+    V.ORDEN.slice().sort(function (a, c) { return p[c] - p[a]; }).forEach(function (t) {
+      var fila = el('div', 'fila'), bar = el('span', 'bar'), i = el('i');
+      i.style.background = V.TIPOS[t].color; bar.appendChild(i);
+      fila.appendChild(el('b', null, V.TIPOS[t].nombre)); fila.appendChild(bar); fila.appendChild(el('em', null, p[t]));
+      caja.appendChild(fila);
+      requestAnimationFrame(function () { requestAnimationFrame(function () { i.style.width = Math.max(3, p[t]) + '%'; }); });
+    });
+    var pintar = function () {
+      lista = V.ranking(p);
+      elegida = lista[0] || null;
+      pintarCarreras();
+    };
+    pintar();
+    if (MCCarreras.cargar) MCCarreras.cargar().then(pintar);
+    $('ok').textContent = '';
+  }
+  function filaCarrera(x, k) {
+    var b = el('button'); b.type = 'button';
+    var pc = el('span', 'pc', x.pct + '%'), nom = el('span', 'nom');
+    if (k === 0) nom.appendChild(el('span', 'ideal', 'Tu carrera ideal'));
+    nom.appendChild(el('b', null, x.carrera));
+    nom.appendChild(el('small', null, x.codigo.split('').slice(0, 2).map(function (t) { return V.TIPOS[t].nombre; }).join(' · ')));
+    b.appendChild(pc); b.appendChild(nom); b.appendChild(el('span', 'bq', 'Bloque ' + x.bloque));
+    b.classList.toggle('sel', elegida === x);
+    b.onclick = function () { elegida = x; pintarCarreras(); $('ok').textContent = ''; };
+    return b;
+  }
+  function pintarCarreras() {
+    var top = $('top5'), resto = $('resto'); top.textContent = ''; resto.textContent = '';
+    lista.forEach(function (x, k) { (k < 5 ? top : resto).appendChild(filaCarrera(x, k)); });
+    $('verTodas').textContent = resto.hidden ? 'Ver todas las carreras (' + lista.length + ')' : 'Ver menos';
+    $('elegir').textContent = elegida ? 'Elegir ' + (elegida === lista[0] ? 'como mi carrera' : elegida.carrera) : 'Elegir como mi carrera';
+  }
+  $('verTodas').onclick = function () { $('resto').hidden = !$('resto').hidden; pintarCarreras(); };
+
+  function guardarEnPerfil(carrera) {
+    if (!window.MCAuth || !MCAuth.perfil || !ultimo) return Promise.resolve(null);
+    return MCAuth.listo.then(function () { return MCAuth.perfil(); }).then(function (p) {
+      if (!p) throw new Error('sin-sesion');
+      var datos = {};
+      if ('extra' in p) {
+        var extra = {}; Object.keys(p.extra || {}).forEach(function (k) { extra[k] = p.extra[k]; });
+        extra.vocacional = { cod: ultimo.cod, p: ultimo.p, f: ultimo.f };
+        datos.extra = extra;
+      }
+      if (carrera) datos.carrera = carrera;
+      if (!Object.keys(datos).length) return null;
+      return MCAuth.guardarPerfil(datos);
+    });
+  }
+  $('elegir').onclick = function () {
+    if (!elegida) return;
+    var btn = this; btn.disabled = true; $('ok').textContent = 'Guardando…';
+    guardarEnPerfil(elegida.carrera).then(function () {
+      $('ok').textContent = '';
+      $('ok').appendChild(document.createTextNode('✓ Listo, ahora postulas a ' + elegida.carrera + ' (Bloque ' + elegida.bloque + '). '));
+      var a = el('a', null, 'Ver Mi perfil'); a.href = 'perfil.html'; $('ok').appendChild(a);
+    }, function (e) {
+      $('ok').textContent = e && e.code === 'sesion-vencida' ? 'Tu sesión venció. Vuelve a entrar e inténtalo otra vez.' : 'No se pudo guardar. Revisa tu internet e inténtalo otra vez.';
+    }).then(function () { btn.disabled = false; });
+  };
+
+  // Desde Mi perfil: vocacional.html?ver=1 abre el último resultado
+  if (/[?&]ver=1/.test(location.search) && ultimo && ultimo.p) mostrarResultado(ultimo.p);
+  else if (/[?&]ver=1/.test(location.search) && window.MCAuth && MCAuth.perfil) {
+    MCAuth.listo.then(function () { return MCAuth.perfil(); }).then(function (p) {
+      var v = p && p.extra && p.extra.vocacional;
+      if (v && v.p) { ultimo = v; guardar(RES, v); $('verUltimo').hidden = false; mostrarResultado(v.p); }
+    }, function () {});
+  }
+})();
+</script>
+</body>
+</html>
