@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,800;1,900&family=Nunito:wght@600;800;900&display=swap">
 <script src="assets/app.js" defer></script>
 <script src="assets/arcade-mundo.js"></script>
+<script src="assets/arcade-sonido.js"></script>
 <script>(function () { var m = new URLSearchParams(location.search).get('modo'); try { m = m || localStorage.getItem('mc-modo'); } catch (e) {} if (m === 'claro' || m === 'oscuro') document.documentElement.setAttribute('data-modo', m); })();</script>
 <style>
 /* =========================================================
@@ -95,6 +96,8 @@ body.en-inicio .cab { display: none; }
 .m-chip { display: flex; align-items: center; gap: 6px; height: 42px; padding: 0 14px; border-radius: 14px; background: rgba(4,17,46,.72); border: 2px solid rgba(120,200,255,.35); font: 900 17px/1 var(--cuerpo); backdrop-filter: blur(4px); }
 .m-chip .ic { font-size: 19px; color: #FFD23F; }
 .m-chip.xp b { color: var(--lima); }
+.btn-sonido { cursor: pointer; font-size: 18px; color: #fff; justify-content: center; min-width: 46px; }
+.cab .btn-sonido { min-width: 0; }
 /* Las islas */
 .escena { position: absolute; inset: 0; z-index: 2; touch-action: pan-y; }
 .isla { --h: min(64vh, 640px); position: absolute; left: 50%; top: 42%; height: var(--h); width: calc(var(--h) * .75); margin-left: calc(var(--h) * -.375); margin-top: calc(var(--h) * -.5); display: grid; place-items: center; transition: transform .75s cubic-bezier(.22,.9,.25,1), opacity .6s, filter .6s; cursor: pointer; }
@@ -338,6 +341,7 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
   <a class="volver" id="volver" href="index.html" aria-label="Volver"><svg class="ic"><use href="#i-atras"/></svg></a>
   <h1 class="tit" id="titulo"><small>Modo Cachimbo</small>Arcade</h1>
   <span class="chip-beta">Beta</span>
+  <button class="xp btn-sonido" type="button" aria-label="Sonido">🔊</button>
   <span class="combo" id="combo">x2</span>
   <span class="xp" id="xp"><svg class="ic"><use href="#i-rayo"/></svg><span id="xpN">0</span> XP</span>
 </header>
@@ -358,6 +362,7 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     <div class="m-top">
       <a class="m-btn" href="index.html" aria-label="Salir del Arcade"><svg class="ic"><use href="#i-atras"/></svg></a>
       <div class="m-tit"><b>Arcade</b><span class="chip-beta">Beta</span></div>
+      <button class="m-chip btn-sonido" type="button" aria-label="Sonido">🔊</button>
       <span class="m-chip"><svg class="ic"><use href="#i-estrella"/></svg><b id="totEst">0</b></span>
       <span class="m-chip xp"><svg class="ic"><use href="#i-rayo"/></svg><b id="xpN2">0</b></span>
     </div>
@@ -378,6 +383,7 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
   <div class="mn-top">
     <a class="m-btn" href="#" id="mnVolver" aria-label="Volver a los mundos"><svg class="ic"><use href="#i-atras"/></svg></a>
     <div class="placa-m" id="mnPlaca"></div>
+    <button class="m-chip btn-sonido" type="button" aria-label="Sonido">🔊</button>
     <span class="m-chip"><svg class="ic"><use href="#i-estrella"/></svg><b id="mnEst">0</b></span>
   </div>
   <div class="mn-mapa" id="mnMapa"></div>
@@ -513,6 +519,7 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     document.querySelectorAll('.vista').forEach(function (v) { v.classList.toggle('on', v.id === id); });
     document.body.classList.toggle('en-inicio', id === 'v-inicio');
     document.body.classList.toggle('en-mundo', id === 'v-mundo');
+    if (window.MCSonido) MCSonido.ambiente(id === 'v-inicio' ? 'mapa' : id === 'v-mundo' ? 'mundo' : null);
     $('titulo').innerHTML = '<small>' + (sub || 'Modo Cachimbo') + '</small>' + titulo;
     window.scrollTo(0, 0);
   }
@@ -582,9 +589,10 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     $('vtx').style.transform = 'rotate(' + giro + 'deg) scale(1.12)';
     setTimeout(function () { $('vtx').style.transform = 'rotate(' + giro + 'deg)'; }, 520);
     pintarMundo(true);
+    if (window.MCSonido) MCSonido.efecto('cambio');
     if (navigator.vibrate) try { navigator.vibrate(8); } catch (e) {}
   }
-  function entrar() { var c = mundos[mundo]; if (c.temas.length) irCurso(c.id); }
+  function entrar() { var c = mundos[mundo]; if (window.MCSonido) MCSonido.efecto(c.temas.length ? 'abrir' : 'bloq'); if (c.temas.length) irCurso(c.id); }
   $('flIzq').onclick = function () { irMundo(mundo - 1); };
   $('flDer').onclick = function () { irMundo(mundo + 1); };
   $('jugar').onclick = entrar;
@@ -625,6 +633,7 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
       extras: c.extras,
       tocar: function (i, nv, s) { abrirHoja(c, i, nv, s); },
       tocarExtra: function (x, s) {
+        if (window.MCSonido) MCSonido.efecto(s.abierto ? 'tap' : 'bloq');
         $('hoja').innerHTML = '<div class="agarre"></div><div class="nv">Nivel extra</div><h3>' + x.n + '</h3><p class="nota">' + x.desc + '</p>' +
           (s.abierto ? '<p class="nota">🛠️ Muy pronto tendrá su desafío. ¡Prepárate!</p><button class="jugar" type="button" disabled>Próximamente</button>'
             : '<p class="nota">🔒 Gana el nivel ' + (x.tras + 1) + ' para abrir este nivel extra.</p><button class="jugar" type="button" disabled>Bloqueado</button>');
@@ -635,6 +644,7 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     requestAnimationFrame(function () { if (r.foco) window.scrollTo(0, Math.max(0, r.foco.getBoundingClientRect().top + window.scrollY - innerHeight * .55)); });
   }
   function abrirHoja(c, i, nv, s) {
+    if (window.MCSonido) MCSonido.efecto(nv.t && s.abierto ? 'tap' : 'bloq');
     var ult = i === c.niveles.length - 1, h = '<div class="agarre"></div><div class="nv">' + (ult ? 'Jefe del mundo' : 'Nivel ' + (i + 1)) + '</div><h3>' + nv.n + '</h3>';
     if (nv.t && s.abierto) {
       var t = nv.t;
@@ -650,7 +660,7 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     }
     $('hoja').innerHTML = h;
     $('hoja').classList.add('on'); $('hojaFondo').classList.add('on');
-    var b = $('hojaJugar'); if (b) b.onclick = function () { cerrarHoja(); estado.tema = nv.t; irRuta(); };
+    var b = $('hojaJugar'); if (b) b.onclick = function () { if (window.MCSonido) MCSonido.efecto('abrir'); cerrarHoja(); estado.tema = nv.t; irRuta(); };
   }
   function cerrarHoja() { $('hoja').classList.remove('on'); $('hojaFondo').classList.remove('on'); }
   $('hojaFondo').onclick = cerrarHoja;
@@ -701,8 +711,9 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     var c = $('combo');
     if (estado.combo >= 3) { c.textContent = 'x' + (estado.combo >= 5 ? 3 : 2); c.classList.remove('si'); void c.offsetWidth; c.classList.add('si'); }
     if (navigator.vibrate) try { navigator.vibrate(12); } catch (e) {}
+    if (window.MCSonido) MCSonido.efecto('bien');
   }
-  function fallo() { estado.combo = 0; $('combo').classList.remove('si'); if (navigator.vibrate) try { navigator.vibrate([30, 40, 30]); } catch (e) {} }
+  function fallo() { if (window.MCSonido) MCSonido.efecto('mal'); estado.combo = 0; $('combo').classList.remove('si'); if (navigator.vibrate) try { navigator.vibrate([30, 40, 30]); } catch (e) {} }
   function progreso(h, t) { $('jBarra').style.width = Math.round(h / t * 100) + '%'; }
 
   function jugar(i) {
@@ -864,6 +875,7 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     var sig = pos >= 0 && pos + 1 < nj.length ? nj[pos + 1] : null;
     $('fSig').textContent = sig != null ? 'Siguiente: ' + JUEGOS[sig].nom : 'Volver a la ruta';
     $('fSig').onclick = function () { if (sig != null) jugar(sig); else irRuta(); };
+    if (window.MCSonido) MCSonido.efecto('victoria');
     if (est === 3) confeti();
   }
 
