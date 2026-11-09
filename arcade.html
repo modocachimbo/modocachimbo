@@ -468,13 +468,19 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
      vendrá del panel, igual que los exámenes). area sirve para los filtros. */
   var AREAS = [['todos', 'Todos'], ['ciencias', 'Ciencias'], ['letras', 'Letras'], ['sociales', 'Sociales']];
   var CURSOS = [
-    { id: 'hp', nom: 'Historia del Perú', area: 'sociales', arte: 'a-historia', img: 'historia', c: '#F28A1E', c2: '#7A2E0A', temas: ['hp01'], mapa: 'andes',
+    { id: 'hp', nom: 'Historia del Perú', area: 'sociales', arte: 'a-historia', img: 'historia', c: '#F28A1E', c2: '#7A2E0A', temas: ['hp01'], mapa: 'cusco',
       // Niveles del mundo: cada uno es un tema (t: null = aún sin juegos). El último es el jefe del mundo.
       niveles: [
         { n: 'Poblamiento americano', t: 'hp01' }, { n: 'Chavín y Paracas', t: null }, { n: 'Mochica y Nasca', t: null },
         { n: 'Tiahuanaco y Wari', t: null }, { n: 'Chimú y reinos regionales', t: null }, { n: 'Incas: origen y expansión', t: null },
         { n: 'Incas: organización', t: null }, { n: 'Conquista del Tahuantinsuyo', t: null }, { n: 'Virreinato', t: null },
-        { n: 'Emancipación', t: null }, { n: 'Jefe: el Gran Templo', t: null }
+        { n: 'Emancipación', t: null }, { n: 'Jefe: Machu Picchu', t: null }
+      ],
+      // Niveles extra fuera del camino: se abren al ganar el nivel "tras" (0 = nivel 1)
+      extras: [
+        { n: 'Manantial del saber', tipo: 'manantial', tras: 1, desc: 'Repaso relámpago con preguntas de todos los niveles que ganaste.' },
+        { n: 'Lápida del cronista', tipo: 'lapida', tras: 4, desc: '¿Quién fue? Adivina el personaje de la historia con pistas.' },
+        { n: 'Portal del tiempo', tipo: 'portal', tras: 7, desc: 'Viaja en el tiempo: ordena hechos de varios niveles en una sola línea.' }
       ] },
     { id: 'bio', nom: 'Biología', area: 'ciencias', arte: 'a-biologia', img: 'biologia', c: '#1FC79A', c2: '#0B5E5E', temas: [] },
     { id: 'qui', nom: 'Química', area: 'ciencias', arte: 'a-quimica', img: 'quimica', c: '#B35CFF', c2: '#3D1A7A', temas: [] },
@@ -616,7 +622,14 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     var r = MCMundo.abrir($('mnMapa'), {
       niveles: c.niveles, tema: c.mapa, ancho: 560,
       estrellas: estrellasTema, max: maxTema, completo: temaCompleto,
-      tocar: function (i, nv, s) { abrirHoja(c, i, nv, s); }
+      extras: c.extras,
+      tocar: function (i, nv, s) { abrirHoja(c, i, nv, s); },
+      tocarExtra: function (x, s) {
+        $('hoja').innerHTML = '<div class="agarre"></div><div class="nv">Nivel extra</div><h3>' + x.n + '</h3><p class="nota">' + x.desc + '</p>' +
+          (s.abierto ? '<p class="nota">🛠️ Muy pronto tendrá su desafío. ¡Prepárate!</p><button class="jugar" type="button" disabled>Próximamente</button>'
+            : '<p class="nota">🔒 Gana el nivel ' + (x.tras + 1) + ' para abrir este nivel extra.</p><button class="jugar" type="button" disabled>Bloqueado</button>');
+        $('hoja').classList.add('on'); $('hojaFondo').classList.add('on');
+      }
     });
     // La cámara empieza en el nivel actual
     requestAnimationFrame(function () { if (r.foco) window.scrollTo(0, Math.max(0, r.foco.getBoundingClientRect().top + window.scrollY - innerHeight * .55)); });

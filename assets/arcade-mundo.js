@@ -23,7 +23,12 @@
       monte: ['#9AA7C4', '#6F7EA0', '#55627F'], nieve: ['#FFFFFF', '#DCE6F5'], muro: ['#D9C49A', '#B39E74', '#8E7B55']
     }
   };
-  TEMAS_V.andes = TEMAS_V.sierra;
+  // Cusco: del Valle Sagrado (río Urubamba / Vilcanota) hasta Machu Picchu
+  TEMAS_V.cusco = Object.assign({}, TEMAS_V.sierra, {
+    cielo: ['#9ED8F2', '#E4F5FB'], monte: ['#5FAF6A', '#3E8E4E', '#2C6E3C'], roca: ['#A9A28C', '#857E68', '#66604D'],
+    granito: ['#D8D0BC', '#B9AF97', '#958B74'], paja: ['#E9B94F', '#C8902E']
+  });
+  TEMAS_V.andes = TEMAS_V.cusco;
 
   function azar(s) { return function () { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; }; }
   function f(n) { return (+n).toFixed(1); }
@@ -87,7 +92,15 @@
       '.mm .niv .pin::after{content:"";position:absolute;top:100%;left:50%;translate:-50% 0;border:7px solid transparent;border-top-color:#fff}',
       '@keyframes mmSalta{50%{transform:translateY(-7px)}}',
       '.mm .niv .nom{position:absolute;top:92%;left:50%;translate:-50% 0;padding:3px 8px;border-radius:7px;background:rgba(70,45,10,.78);color:#FFF4D6;font:800 clamp(10px,2.8vw,12.5px)/1.15 Nunito,system-ui,sans-serif;white-space:nowrap;max-width:42vw;overflow:hidden;text-overflow:ellipsis;pointer-events:none}',
-      '.mm .niv.hecho .nom{top:122%}'
+      '.mm .niv.hecho .nom{top:122%}',
+      '.mm .extra{position:absolute;z-index:2;width:12%;aspect-ratio:1/1;translate:-50% -100%;border:0;padding:0;cursor:pointer;border-radius:12px;background:#fff;box-shadow:0 4px 0 #C9C4B4,0 6px 10px rgba(0,0,0,.25);display:grid;place-items:center;-webkit-tap-highlight-color:transparent}',
+      '.mm .extra::after{content:"";position:absolute;top:100%;left:50%;translate:-50% 0;border:7px solid transparent;border-top-color:#fff}',
+      '.mm .extra svg{width:70%;height:auto}',
+      '.mm .extra.bloq{background:#E6E2D6;box-shadow:0 4px 0 #A9A496}',
+      '.mm .extra.bloq::after{border-top-color:#E6E2D6}',
+      '.mm .extra.bloq svg{filter:grayscale(1) opacity(.55)}',
+      '.mm .extra.abierto{animation:mmSalta 1.4s ease-in-out infinite}',
+      '.mm .extra .tag{position:absolute;top:-9px;right:-9px;padding:2px 6px;border-radius:7px;background:#A35CFF;color:#fff;font:900 10px/1.2 Nunito,system-ui,sans-serif;text-transform:uppercase}'
     ].join('');
     document.head.appendChild(st);
   }
@@ -191,6 +204,164 @@
       '<path d="M-14 0-12-18h24l2 18z" fill="' + P.muro[1] + '"/><path d="M0 -18h12l2 18H0z" fill="' + P.muro[2] + '"/>' +
       '<path d="M-2 -16h4v3h3v3h3v4h-3v3h-3v3h-4v-3h-3v-3h-3v-4h3v-3h3z" fill="' + P.muro[0] + '"/><rect x="-1.2" y="-9.2" width="2.4" height="2.4" fill="' + P.muro[2] + '"/></g>';
   }
+
+  /* ---------- Cusco y Machu Picchu ---------- */
+  // Moray: andenes circulares concéntricos
+  function moray(x, y, s, P) {
+    var h = '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + s.toFixed(2) + ')"><ellipse cx="0" cy="6" rx="58" ry="22" fill="rgba(20,60,10,.25)"/>';
+    var rs = [[54, 22], [42, 17], [30, 12], [18, 7]];
+    rs.forEach(function (q, i) {
+      h += '<ellipse cx="0" cy="' + (i * 4) + '" rx="' + q[0] + '" ry="' + q[1] + '" fill="' + P.granito[1] + '"/>';
+      h += '<ellipse cx="0" cy="' + (i * 4 + 2) + '" rx="' + (q[0] - 3) + '" ry="' + (q[1] - 2) + '" fill="' + (i % 2 ? P.pasto2 : P.pasto) + '"/>';
+    });
+    return h + '</g>';
+  }
+  // Salineras de Maras: pozas blancas y rosadas en gradas
+  function maras(x, y, s) {
+    var h = '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + s.toFixed(2) + ')"><ellipse cx="0" cy="8" rx="50" ry="14" fill="rgba(20,60,10,.25)"/>';
+    var cs = ['#FFFFFF', '#F3D9D3', '#EADFC8', '#F7EEEA', '#E9C7C0'], k = 0;
+    for (var fila = 0; fila < 4; fila++) for (var col = 0; col < 5 - (fila % 2); col++) {
+      var cx = -36 + col * 18 + (fila % 2) * 9, cy = -24 + fila * 9;
+      h += '<path d="M' + cx + ' ' + (cy - 5) + 'l9 5-9 5-9-5z" fill="' + cs[(k++ * 3) % cs.length] + '" stroke="#C9B39A" stroke-width="1"/>';
+    }
+    return h + '</g>';
+  }
+  // Sacsayhuamán: muros en zigzag de piedras enormes
+  function sacsay(x, y, s, P) {
+    var g = P.granito, h = '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + s.toFixed(2) + ')"><ellipse cx="0" cy="6" rx="62" ry="12" fill="rgba(20,60,10,.28)"/>';
+    var zz = [[-56, 0], [-38, -10], [-20, 0], [-2, -10], [16, 0], [34, -10], [52, 0]];
+    for (var i = 0; i < zz.length - 1; i++) {
+      var a = zz[i], b = zz[i + 1];
+      h += '<path d="M' + a[0] + ' ' + a[1] + 'L' + b[0] + ' ' + b[1] + 'v-22L' + a[0] + ' ' + (a[1] - 22) + 'z" fill="' + (i % 2 ? g[1] : g[0]) + '"/>';
+      h += '<path d="M' + a[0] + ' ' + (a[1] - 11) + 'L' + b[0] + ' ' + (b[1] - 13) + 'M' + ((a[0] + b[0]) / 2) + ' ' + ((a[1] + b[1]) / 2) + 'v-22" stroke="' + g[2] + '" stroke-width="1.5"/>';
+    }
+    h += '<path d="M' + zz.map(function (p) { return p[0] + ' ' + (p[1] - 22); }).join('L') + 'l0 -5' + 'L-56 -27z" fill="' + P.pasto2 + '"/>';
+    return h + '</g>';
+  }
+  // Ollantaytambo: los seis monolitos rosados del Templo del Sol
+  function ollanta(x, y, s, P) {
+    var h = '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + s.toFixed(2) + ')"><ellipse cx="0" cy="6" rx="52" ry="11" fill="rgba(20,60,10,.28)"/>';
+    h += '<path d="M-50 4-46-6h92l4 10z" fill="' + P.granito[2] + '"/>';
+    var ws = [12, 15, 13, 16, 12, 14], xx = -44;
+    ws.forEach(function (w, i) {
+      var alto = 30 + (i % 3) * 4;
+      h += '<path d="M' + xx + ' -6v-' + alto + 'h' + w + 'v' + alto + 'z" fill="' + (i % 2 ? '#C9958A' : '#D9A79B') + '"/><path d="M' + (xx + w - 3) + ' -6v-' + alto + 'h3v' + alto + 'z" fill="#A9766B"/>';
+      xx += w + 2;
+    });
+    return h + '</g>';
+  }
+  // Pisac: ladera con andenes curvos
+  function pisac(x, y, s, P) {
+    var h = '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + s.toFixed(2) + ')"><ellipse cx="0" cy="6" rx="60" ry="12" fill="rgba(20,60,10,.28)"/>';
+    for (var i = 0; i < 5; i++) {
+      var w = 58 - i * 9, yy = -i * 10;
+      h += '<path d="M' + (-w) + ' ' + yy + 'Q0 ' + (yy + 12) + ' ' + w + ' ' + yy + 'v-6Q0 ' + (yy + 6) + ' ' + (-w) + ' ' + (yy - 6) + 'z" fill="' + P.muro[1] + '"/>';
+      h += '<path d="M' + (-w) + ' ' + (yy - 6) + 'Q0 ' + (yy + 6) + ' ' + w + ' ' + (yy - 6) + 'Q0 ' + (yy - 4) + ' ' + (-w + 6) + ' ' + (yy - 10) + 'z" fill="' + (i % 2 ? P.pasto2 : P.pasto) + '"/>';
+    }
+    return h + '</g>';
+  }
+  // Intipunku: la Puerta del Sol del Camino Inca
+  function intipunku(x, y, s, P) {
+    var g = P.granito;
+    return '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + s.toFixed(2) + ')"><ellipse cx="0" cy="4" rx="34" ry="7" fill="rgba(20,60,10,.28)"/>' +
+      '<path d="M-30 2-26-38h52l4 40z" fill="' + g[0] + '"/><path d="M4 -38h22l4 40H6z" fill="' + g[1] + '"/>' +
+      '<path d="M-9 2-6-26h12l3 28z" fill="#3B2F22"/><path d="M-28 -14h56M-27 -26h54" stroke="' + g[2] + '" stroke-width="1.3"/>' +
+      '<circle cx="0" cy="-48" r="7" fill="#FFD23F"/><path d="M0 -60v4M0 -40v4M-12 -48h4M8 -48h4" stroke="#FFD23F" stroke-width="2" stroke-linecap="round"/></g>';
+  }
+  function ichu(x, y, s, P) {
+    return '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + s.toFixed(2) + ')"><path d="M-9 0-6-16-3 0z" fill="' + P.paja[1] + '"/><path d="M-4 0 0-20 3 0z" fill="' + P.paja[0] + '"/><path d="M1 0 6-14 9 0z" fill="' + P.paja[1] + '"/><path d="M-1 0 3-12 5 0z" fill="#F4D27A"/></g>';
+  }
+  function orquideas(x, y, r) {
+    var h = '';
+    for (var k = 0; k < 2; k++) {
+      var fx = x + (r() - .5) * 14, fy = y + (r() - .5) * 6, c = r() < .5 ? '#D94DB0' : '#9B5DE5';
+      h += '<path d="M' + f(fx) + ' ' + f(fy) + 'v-8" stroke="#2E9E45" stroke-width="1.5"/><path d="M' + f(fx) + ' ' + f(fy - 12) + 'l3 3-3 3-3-3z" fill="' + c + '"/><circle cx="' + f(fx) + '" cy="' + f(fy - 9) + '" r="1.2" fill="#FFE07A"/>';
+    }
+    return h;
+  }
+  // Casita inca con techo de paja a dos aguas
+  function casita(x, y, s, P) {
+    var g = P.granito;
+    return '<path d="M' + (x - 11 * s) + ' ' + y + 'v' + (-12 * s) + 'l' + (11 * s) + ' ' + (-5 * s) + 'l' + (11 * s) + ' ' + (5 * s) + 'v' + (12 * s) + 'z" fill="' + g[0] + '"/>' +
+      '<path d="M' + x + ' ' + (y - 17 * s) + 'l' + (11 * s) + ' ' + (5 * s) + 'v' + (12 * s) + 'H' + x + 'z" fill="' + g[1] + '"/>' +
+      '<path d="M' + (x - 13 * s) + ' ' + (y - 11 * s) + 'L' + x + ' ' + (y - 26 * s) + 'L' + (x + 13 * s) + ' ' + (y - 11 * s) + 'L' + x + ' ' + (y - 17 * s) + 'z" fill="' + P.paja[0] + '"/>' +
+      '<path d="M' + x + ' ' + (y - 26 * s) + 'L' + (x + 13 * s) + ' ' + (y - 11 * s) + 'L' + x + ' ' + (y - 17 * s) + 'z" fill="' + P.paja[1] + '"/>' +
+      '<path d="M' + (x - 4 * s) + ' ' + y + 'v' + (-7 * s) + 'h' + (5 * s) + 'v' + (7 * s) + 'z" fill="#3B2F22"/>';
+  }
+  // Huayna Picchu: el cerro en forma de pan de azúcar detrás de la ciudadela
+  function huaynaPicchu(x, y, P) {
+    var m = P.monte;
+    var h = '<path d="M' + (x - 70) + ' ' + y + 'C' + (x - 52) + ' ' + (y - 120) + ' ' + (x - 30) + ' ' + (y - 210) + ' ' + (x + 2) + ' ' + (y - 222) + 'C' + (x + 34) + ' ' + (y - 210) + ' ' + (x + 50) + ' ' + (y - 110) + ' ' + (x + 72) + ' ' + y + 'z" fill="' + m[1] + '"/>';
+    h += '<path d="M' + (x + 2) + ' ' + (y - 222) + 'C' + (x + 34) + ' ' + (y - 210) + ' ' + (x + 50) + ' ' + (y - 110) + ' ' + (x + 72) + ' ' + y + 'H' + (x + 6) + 'z" fill="' + m[2] + '"/>';
+    h += '<path d="M' + (x - 12) + ' ' + (y - 214) + 'l14 -8 16 10 -6 14 -18 2z" fill="' + P.roca[1] + '"/>';
+    for (var i = 0; i < 5; i++) { var yy = y - 190 + i * 14, w = 18 + i * 5; h += '<path d="M' + (x - w) + ' ' + yy + 'h' + (w * 2) + '" stroke="' + P.granito[1] + '" stroke-width="2.4" opacity=".8"/>'; }
+    return h;
+  }
+  // La ciudadela de Machu Picchu (nivel del jefe): andenes, casitas, el Torreón y el Intihuatana
+  function machuPicchu(x, y, P) {
+    var g = P.granito, h = '<g transform="translate(' + x + ' ' + y + ')"><ellipse cx="0" cy="14" rx="130" ry="24" fill="rgba(20,60,10,.3)"/>';
+    // andenes al frente
+    for (var i = 0; i < 4; i++) {
+      var w = 130 - i * 16, yy = -i * 14;
+      h += '<path d="M' + (-w) + ' ' + yy + 'h' + (w * 2) + 'v-6h' + (-w * 2) + 'z" fill="' + P.muro[1] + '"/><path d="M' + (-w) + ' ' + (yy - 6) + 'h' + (w * 2) + 'l-6 -8h' + (-w * 2 + 12) + 'z" fill="' + (i % 2 ? P.pasto2 : P.pasto) + '"/>';
+    }
+    // plaza central
+    h += '<path d="M-40 -58h80l-8 -10h-64z" fill="#8BE07A"/>';
+    // filas de casitas
+    [[-78, -60], [-58, -64], [-38, -70], [52, -62], [72, -58], [92, -54], [-96, -54]].forEach(function (c) { h += casita(c[0], c[1], 1, P); });
+    [[-64, -84], [-44, -88], [60, -84], [80, -80]].forEach(function (c) { h += casita(c[0], c[1], .9, P); });
+    // Torreón (Templo del Sol, muro curvo)
+    h += '<path d="M14 -70a16 7 0 0 0 32 0v-22a16 7 0 0 0 -32 0z" fill="' + g[0] + '"/><path d="M30 -63a16 7 0 0 0 16 -7v-22a16 7 0 0 1 -16 7z" fill="' + g[1] + '"/><ellipse cx="30" cy="-92" rx="16" ry="7" fill="' + g[2] + '"/><rect x="24" y="-84" width="5" height="7" fill="#3B2F22"/>';
+    // Templo de las Tres Ventanas
+    h += '<path d="M-30 -86h40v-16h-40z" fill="' + g[0] + '"/><path d="M-24 -90v-8h5v8zM-12 -90v-8h5v8zM0 -90v-8h5v8z" fill="#3B2F22"/>';
+    // Intihuatana en la cima
+    h += '<path d="M-14 -112h28l-4 -8h-20z" fill="' + g[1] + '"/><path d="M-4 -120v-16l6 -2 2 18z" fill="' + g[0] + '"/><path d="M2 -138l2 18h-6z" fill="' + g[2] + '"/>';
+    h += '<g class="gira"><path d="M0 -176l5 12 13-3-8 11 8 11-13-3-5 12-5-12-13 3 8-11-8-11 13 3z" fill="#FFD23F" opacity=".85"/></g><circle cx="0" cy="-157" r="9" fill="#FFB31F"/>';
+    h += antorcha(-112, -20) + antorcha(112, -20);
+    return h + '</g>';
+  }
+  // Montaña de Siete Colores (Vinicunca)
+  function vinicunca(x, y, w, hgt) {
+    var cs = ['#B9473A', '#E08A4A', '#E9C46A', '#6FB59A', '#9C6FB0', '#C2574A'], h = '';
+    for (var i = 0; i < cs.length; i++) {
+      var t = i / cs.length, t2 = (i + 1) / cs.length;
+      h += '<path d="M' + (x - w * (1 - t)) + ' ' + (y - hgt * t) + 'L' + x + ' ' + (y - hgt) + 'L' + (x + w * (1 - t)) + ' ' + (y - hgt * t) + 'L' + (x + w * (1 - t2)) + ' ' + (y - hgt * t2) + 'L' + (x - w * (1 - t2)) + ' ' + (y - hgt * t2) + 'z" fill="' + cs[i] + '" opacity=".95"/>';
+    }
+    return h + '<path d="M' + x + ' ' + (y - hgt) + 'L' + (x + w) + ' ' + y + 'H' + x + 'z" fill="rgba(0,0,0,.12)"/>';
+  }
+
+  /* ---------- Niveles extra ---------- */
+  // Manantial inca (como las fuentes de Tipón): agua que cae de canales de piedra
+  function manantial(x, y, P) {
+    var g = P.granito;
+    return '<g transform="translate(' + f(x) + ' ' + f(y) + ')"><ellipse cx="0" cy="4" rx="38" ry="9" fill="rgba(20,60,10,.28)"/>' +
+      '<path d="M-34 0-30-12h60l4 12z" fill="' + g[1] + '"/><path d="M-28 -6-25-11h50l3 5z" fill="' + P.agua + '"/>' +
+      '<path d="M-22 -11v-26h44v26z" fill="' + g[0] + '"/><path d="M8 -37h14v26H8z" fill="' + g[1] + '"/>' +
+      '<path d="M-12 -30h6v4h-6zM6 -30h6v4H6z" fill="#3B2F22"/>' +
+      '<path class="cae" d="M-9 -26v15M9 -26v15" stroke="' + P.agua2 + '" stroke-width="4"/>' +
+      '<g class="bruma"><ellipse cx="-9" cy="-9" rx="6" ry="2" fill="#fff" opacity=".8"/><ellipse cx="9" cy="-9" rx="6" ry="2" fill="#fff" opacity=".8"/></g></g>';
+  }
+  // Lápida de piedra con la chakana grabada y velas
+  function lapida(x, y, P) {
+    var g = P.granito;
+    return '<g transform="translate(' + f(x) + ' ' + f(y) + ')"><ellipse cx="0" cy="4" rx="30" ry="8" fill="rgba(20,60,10,.28)"/>' +
+      '<path d="M-24 2-20-6h40l4 8z" fill="' + g[2] + '"/>' +
+      '<path d="M-14 -6v-28a14 12 0 0 1 28 0v28z" fill="' + g[0] + '"/><path d="M2 -46a14 12 0 0 1 12 12v28H2z" fill="' + g[1] + '"/>' +
+      '<path d="M-2 -38h4v3h3v3h3v4h-3v3h-3v3h-4v-3h-3v-3h-3v-4h3v-3h3z" fill="' + g[2] + '"/>' +
+      '<path d="M-20 -2v-8h4v8zM16 -2v-8h4v8z" fill="#F4ECD8"/><g class="fuego"><path d="M-18 -14l2 3-2 3-2-3z" fill="#FFB31F"/></g><g class="fuego"><path d="M18 -14l2 3-2 3-2-3z" fill="#FFB31F"/></g>' +
+      '<path d="M-26 0l4-6M24 0l-3-7" stroke="#2E9E45" stroke-width="2"/></g>';
+  }
+  // Portal del tiempo: arco de piedra con un remolino brillante
+  function portal(x, y, P) {
+    var g = P.granito, h = '<g transform="translate(' + f(x) + ' ' + f(y) + ')"><ellipse cx="0" cy="4" rx="36" ry="9" fill="rgba(20,60,10,.28)"/>';
+    h += '<ellipse cx="0" cy="-26" rx="22" ry="26" fill="#1A3A8A"/>';
+    h += '<g class="gira" style="animation-duration:6s"><path d="M0 -26m-18 0a18 22 0 1 0 36 0a14 17 0 1 0 -28 0a9 12 0 1 0 18 0a5 6 0 1 0 -10 0" fill="none" stroke="#7FE0FF" stroke-width="3"/><path d="M0 -26m18 0a18 22 0 1 0 -36 0a14 17 0 1 0 28 0" fill="none" stroke="#C9A6FF" stroke-width="2.4" opacity=".8"/></g>';
+    h += '<circle cx="0" cy="-26" r="6" fill="#fff" opacity=".85"/><circle cx="0" cy="-26" r="26" fill="rgba(120,220,255,.18)"/>';
+    h += '<path d="M-30 2v-34a30 30 0 0 1 60 0v34h-8v-34a22 22 0 0 0 -44 0v34z" fill="' + g[0] + '"/><path d="M22 2v-34a22 22 0 0 0 -4 -12l7 -5a30 30 0 0 1 5 17v34z" fill="' + g[1] + '"/>';
+    h += '<path d="M-26 -42l6 4M-6 -58v7M14 -54l-3 6M-30 -14h8M22 -14h8" stroke="' + g[2] + '" stroke-width="1.5"/></g>';
+    return h;
+  }
+
   function templo(x, y, P) {
     var m = P.muro, h = '<g transform="translate(' + x + ' ' + y + ')"><ellipse cx="0" cy="10" rx="110" ry="22" fill="rgba(20,60,10,.3)"/>';
     [[96, 0], [76, -22], [56, -44], [36, -66]].forEach(function (c) {
@@ -215,7 +386,8 @@
   }
 
   /* ---------- Dibujo completo ---------- */
-  function paisaje(n, P, pts) {
+  function paisaje(n, P, pts, ext) {
+    ext = ext || [];
     var H = ARR + ABA + (n - 1) * PASO, r = azar(11), s = '', k;
     var top = pts[pts.length - 1], orilla = top[1] - 150;   // donde el cielo y los cerros se encuentran con el río
     s += '<defs><linearGradient id="mmCielo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + P.cielo[0] + '"/><stop offset="1" stop-color="' + P.cielo[1] + '"/></linearGradient>' +
@@ -223,8 +395,16 @@
     // Cielo y cordillera al fondo
     s += '<rect width="' + W + '" height="' + (orilla + 40) + '" fill="url(#mmCielo)"/>';
     s += '<g class="nubes"><g fill="#fff" opacity=".9"><path d="M20 70h70l-10-14H40z"/><path d="M40 56h40l-8-10H52z"/><path d="M250 40h80l-12-16h-52z"/><path d="M270 24h44l-8-10h-26z"/></g></g>';
-    s += montana(40, orilla + 30, 110, 210, P, false) + montana(360, orilla + 30, 120, 230, P, false);
-    s += montana(140, orilla + 40, 100, 170, P, true) + montana(270, orilla + 40, 110, 190, P, true);
+    if (P.granito) {
+      // Cusco: el nevado Salkantay al fondo, la Montaña de Siete Colores y cerros verdes de ceja de selva
+      s += montana(300, orilla - 10, 150, 250, Object.assign({}, P, { monte: ['#AFC0DA', '#8EA2C2', '#7488AA'] }), false);
+      s += vinicunca(70, orilla + 20, 110, 150);
+      s += montana(200, orilla + 30, 90, 160, P, false) + montana(380, orilla + 40, 100, 170, P, true) + montana(10, orilla + 40, 80, 120, P, true);
+      s += '<g class="nubes"><path d="M-20 ' + (orilla - 30) + 'h180l-20 -12h-140z M220 ' + (orilla - 60) + 'h200l-24 -14h-150z" fill="#fff" opacity=".75"/></g>';
+    } else {
+      s += montana(40, orilla + 30, 110, 210, P, false) + montana(360, orilla + 30, 120, 230, P, false);
+      s += montana(140, orilla + 40, 100, 170, P, true) + montana(270, orilla + 40, 110, 190, P, true);
+    }
     s += '<path d="M-10 ' + (orilla + 10) + 'L60 ' + (orilla - 30) + 'L130 ' + (orilla + 5) + 'L200 ' + (orilla - 25) + 'L280 ' + (orilla + 8) + 'L350 ' + (orilla - 20) + 'L410 ' + (orilla + 10) + 'V' + (orilla + 60) + 'H-10z" fill="#3E9A4E"/>';
     // Río ancho que corre a ambos lados de la isla
     s += '<rect y="' + (orilla + 30) + '" width="' + W + '" height="' + (H - orilla) + '" fill="url(#mmRio)"/>';
@@ -245,13 +425,15 @@
     catch (e) { muestras = ruta.slice(); }
 
     // Isla: franja ancha a lo largo del camino + lóbulos a los lados
-    var lobulos = [];
+    var lobulos = [], lobNivel = [];
     for (k = 0; k < n; k++) {
       var p = pts[k], lado = p[0] > W / 2 ? -1 : 1;
+      lobNivel.push(lobulos.length);
       lobulos.push(mancha(p[0] + lado * (66 + r() * 26), p[1] + (r() - .5) * 40, 66 + r() * 22, 52 + r() * 18, 7, r));
       if (r() < .5) lobulos.push(mancha(p[0] - lado * (52 + r() * 18), p[1] + 50 + (r() - .5) * 30, 46 + r() * 18, 38 + r() * 14, 6, r));
     }
     lobulos.push(mancha(top[0], top[1] - 30, 150, 80, 9, r));
+    ext.forEach(function (e) { lobulos.push(mancha(e.x, e.y + 6, 62, 48, 7, r)); });
     var franja = 'M' + muestras.map(function (m, i) { return f(m[0] + (i % 2 ? 6 : -6)) + ' ' + f(m[1]); }).join(' L');
     function isla(color, dy, ancho, esc, extra) {
       var h = '<g transform="translate(0 ' + dy + ')"' + (extra || '') + '>';
@@ -262,6 +444,7 @@
       });
       return h + '</g>';
     }
+    if (P.granito) s += huaynaPicchu(top[0] + 70, top[1] - 40, P);
     s += isla('rgba(8,50,90,.35)', 26, 206, 1.03);            // sombra en el agua
     s += isla(P.espuma, 20, 216, 1.06, ' opacity=".55"');       // espuma en la orilla
     s += isla(P.tierra2, 18, 200, 1);                           // acantilado (abajo)
@@ -278,7 +461,7 @@
     s += '<g class="condor"><g transform="translate(0 ' + (orilla - 150) + ')"><path class="ala" d="M-22 0l11-7 11 7 11-7 11 7-11-2-11 4-11-4z" fill="#2A2A2A"/><path d="M-3 0h6v3h-6z" fill="#F2F2F2"/></g></g>';
 
     // Laguna con cascada que cae al río por el borde de la isla
-    var cosas = [], lago = lobulos[3];
+    var cosas = [], lago = lobulos[lobNivel[3] != null ? lobNivel[3] : 3];
     if (lago) {
       var lc = centro(lago), lagoP = mancha(lc[0], lc[1], 38, 24, 7, r);
       s += '<polygon points="' + poli(lagoP) + '" fill="' + P.agua + '"/><polygon points="' + poli(mancha(lc[0] - 6, lc[1] - 4, 22, 12, 6, r)) + '" fill="' + P.agua2 + '" opacity=".7"/>';
@@ -297,6 +480,14 @@
     s += '<path class="corre" d="' + arr + '" stroke="' + P.agua2 + '" stroke-width="3" fill="none" stroke-linecap="round"/>';
     cosas.push([mx - 80, my + 20, 26], [mx + 80, my + 14, 26], [mx, my, 34]);
 
+    // Caminitos a los niveles extra (manantial, lápida, portal)
+    ext.forEach(function (e) {
+      var a = pts[e.tras], d = 'M' + a[0] + ' ' + a[1] + 'Q' + f((a[0] + e.x) / 2) + ' ' + f(Math.min(a[1], e.y) - 10) + ' ' + f(e.x) + ' ' + f(e.y + 14);
+      s += '<path d="' + d + '" stroke="' + P.arena2 + '" stroke-width="22" fill="none" stroke-linecap="round"/><path d="' + d + '" stroke="' + P.arena + '" stroke-width="15" fill="none" stroke-linecap="round"/>';
+      s += '<path d="' + d + '" stroke="' + P.granito[1] + '" stroke-width="7" stroke-dasharray="5 9" fill="none" stroke-linecap="round"/>';
+      s += e.tipo === 'manantial' ? manantial(e.x, e.y + 16, P) : e.tipo === 'lapida' ? lapida(e.x, e.y + 16, P) : portal(e.x, e.y + 16, P);
+      cosas.push([e.x, e.y, 54]);
+    });
     // Camino de arena
     s += '<path d="' + camino + '" stroke="' + P.arena2 + '" stroke-width="52" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
     s += '<path d="' + camino + '" stroke="' + P.arena + '" stroke-width="42" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
@@ -318,7 +509,23 @@
       return !cosas.some(function (c) { return Math.hypot(c[0] - x, c[1] - y) < c[2] + d; });
     }
     var deco = [];
-    [['andenes', 34], ['portada', 28], ['llama', 16], ['choza', 26], ['llama', 16], ['andenes', 34], ['portada', 28], ['choza', 26], ['llama', 16]].forEach(function (g, gi) {
+    // Hitos del Cusco junto a los niveles: Maras, Moray, Pisac, Ollantaytambo, Sacsayhuamán, Intipunku
+    if (P.granito) {
+      var hitos = { 0: 'maras', 2: 'moray', 4: 'pisac', 5: 'ollanta', 7: 'sacsay', 9: 'intipunku' };
+      Object.keys(hitos).forEach(function (kk) {
+        var i = +kk; if (i >= n - 1) return;
+        var c = centro(lobulos[lobNivel[i]]), lado = pts[i][0] > W / 2 ? -1 : 1, hx = null, hy = null;
+        var cand = [[c[0], c[1] + 10]];
+        [110, 135, 90].forEach(function (dx) { [14, -30, 50, -60].forEach(function (dy) { cand.push([pts[i][0] + lado * dx, pts[i][1] + dy], [pts[i][0] - lado * dx, pts[i][1] + dy]); }); });
+        for (var ci = 0; ci < cand.length; ci++) {
+          var qx = Math.max(62, Math.min(W - 62, cand[ci][0])), qy = cand[ci][1];
+          if (libre(qx, qy, 22) && Math.hypot(qx - pts[i][0], qy - pts[i][1]) > 80) { hx = qx; hy = qy; break; }
+        }
+        if (hx == null) return;
+        cosas.push([hx, hy, 58]); deco.push([hx, hy, hitos[i]]);
+      });
+    }
+    (P.granito ? [['llama', 16], ['choza', 26], ['llama', 16], ['portada', 28], ['llama', 16], ['choza', 26]] : [['andenes', 34], ['portada', 28], ['llama', 16], ['choza', 26], ['llama', 16], ['andenes', 34], ['portada', 28], ['choza', 26], ['llama', 16]]).forEach(function (g, gi) {
       for (var t = 0; t < 250; t++) {
         var x = 30 + r() * (W - 60), y = top[1] + 40 + r() * (H - top[1] - 120);
         if (!enIsla(x, y) || !libre(x, y, g[1])) continue;
@@ -329,7 +536,8 @@
       var x = 24 + r() * (W - 48), y = top[1] + 10 + r() * (H - top[1] - 40);
       if (!enIsla(x, y) || !libre(x, y, 10)) continue;
       if (deco.some(function (o) { return Math.hypot(o[0] - x, o[1] - y) < 30; })) continue;
-      var u = r(), tipo = u < .26 ? 'arbol' : u < .44 ? 'pasto' : u < .55 ? 'roca' : u < .66 ? 'cactus' : u < .74 ? 'huaco' : u < .8 ? 'chakana' : 'flores';
+      var u = r(), tipo = P.granito ? (u < .3 ? 'arbol' : u < .5 ? 'ichu' : u < .6 ? 'roca' : u < .66 ? 'cactus' : u < .72 ? 'huaco' : u < .77 ? 'chakana' : u < .88 ? 'orquidea' : 'flores')
+        : (u < .26 ? 'arbol' : u < .44 ? 'pasto' : u < .55 ? 'roca' : u < .66 ? 'cactus' : u < .74 ? 'huaco' : u < .8 ? 'chakana' : 'flores');
       deco.push([x, y, tipo]);
     }
     deco.sort(function (a, b) { return a[1] - b[1]; });
@@ -337,10 +545,12 @@
       var x = o[0], y = o[1];
       s += o[2] === 'arbol' ? arbolCubo(x, y, .9 + r() * .35, P) : o[2] === 'roca' ? roca(x, y, .8 + r() * .4, P) : o[2] === 'cactus' ? cactus(x, y, .85)
         : o[2] === 'pasto' ? pasto(x, y, 1) : o[2] === 'flores' ? flores(x, y, r) : o[2] === 'andenes' ? andenes(x, y, .8, P)
-        : o[2] === 'choza' ? choza(x, y, .9, P) : o[2] === 'huaco' ? huaco(x, y, .9) : o[2] === 'chakana' ? chakana(x, y, .9, P) : o[2] === 'portada' ? portada(x, y, .85, P) : llama(x, y, .95, o[3] % 2 === 1);
+        : o[2] === 'choza' ? choza(x, y, .9, P) : o[2] === 'huaco' ? huaco(x, y, .9) : o[2] === 'chakana' ? chakana(x, y, .9, P) : o[2] === 'portada' ? portada(x, y, .85, P) : o[2] === 'ichu' ? ichu(x, y, 1, P) : o[2] === 'orquidea' ? orquideas(x, y, r)
+        : o[2] === 'maras' ? maras(x, y, .95) : o[2] === 'moray' ? moray(x, y, .95, P) : o[2] === 'pisac' ? pisac(x, y, .95, P) : o[2] === 'ollanta' ? ollanta(x, y, .95, P)
+        : o[2] === 'sacsay' ? sacsay(x, y, .95, P) : o[2] === 'intipunku' ? intipunku(x, y, .95, P) : llama(x, y, .95, o[3] % 2 === 1);
     });
     pts.forEach(function (p, i) { if (i % 3 === 1 && i < pts.length - 1) { var ax = p[0] + (p[0] > W / 2 ? -50 : 50); if (libre(ax, p[1] + 8, -24)) s += antorcha(ax, p[1] + 8); } });
-    s += templo(top[0], top[1] - 40, P);
+    s += P.granito ? machuPicchu(top[0], top[1] - 40, P) : templo(top[0], top[1] - 40, P);
     return { svg: '<svg class="paisaje" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' + s + '</svg>', H: H };
   }
 
@@ -352,7 +562,11 @@
     // Zigzag: tramos diagonales que suben de un lado al otro
     var xs = [250, 140, 110, 210, 300, 290, 180, 100, 150, 270, 200];
     for (var i = 0; i < n; i++) pts.push([i === n - 1 ? W / 2 : xs[i % (xs.length - 1)], H - ABA - i * PASO]);
-    var dib = paisaje(n, P, pts);
+    var ext = (o.extras || []).filter(function (e) { return e.tras < n - 1; }).map(function (e) {
+      var a = pts[e.tras], lado = a[0] > W / 2 ? -1 : 1;
+      return { x: Math.max(56, Math.min(W - 56, a[0] + lado * 128)), y: a[1] - PASO * .5, tipo: e.tipo, tras: e.tras, n: e.n, dat: e };
+    });
+    var dib = paisaje(n, P, pts, ext);
     var actual = -1, abiertos = true;
     var est = o.niveles.map(function (nv, i) {
       var e = nv.t ? o.estrellas(nv.t) : 0, m = nv.t ? o.max(nv.t) : 0, hecho = m > 0 && o.completo(nv.t);
@@ -370,7 +584,17 @@
         (s.hecho ? '<span class="est">' + [1, 2, 3].map(function (k) { return k <= s.tres ? ESTRELLA : ESTRELLA_V; }).join('') + '</span>' : '') +
         (i === actual ? '<span class="pin">¡Juega!</span>' : '') + '<span class="nom">' + nv.n + '</span></button>';
     });
+    var ICO = {
+      manantial: '<svg viewBox="0 0 24 24"><path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z" fill="#34B9D9"/><path d="M9 14a3 3 0 0 0 3 3" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>',
+      lapida: '<svg viewBox="0 0 24 24"><path d="M5 21V10a7 7 0 0 1 14 0v11z" fill="#9C9480"/><path d="M11 9h2v2h2v2h-2v4h-2v-4H9v-2h2z" fill="#fff"/><path d="M3 21h18" stroke="#6E6A4E" stroke-width="2"/></svg>',
+      portal: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#1A3A8A"/><path d="M12 12m-6 0a6 7 0 1 0 12 0a4 5 0 1 0-8 0a2 2 0 1 0 4 0" stroke="#7FE0FF" stroke-width="2" fill="none"/></svg>'
+    };
+    var estExt = ext.map(function (e) { return { abierto: !!(est[e.tras] && est[e.tras].hecho) }; });
+    ext.forEach(function (e, j) {
+      h += '<button class="extra ' + (estExt[j].abierto ? 'abierto' : 'bloq') + '" type="button" data-x="' + j + '" style="left:' + (e.x / W * 100).toFixed(2) + '%;top:' + ((e.y - 40) / dib.H * 100).toFixed(2) + '%" aria-label="Nivel extra: ' + e.n + '">' + ICO[e.tipo] + '<span class="tag">Extra</span></button>';
+    });
     cont.innerHTML = h + '</div>';
+    cont.querySelectorAll('.extra').forEach(function (b) { b.onclick = function () { var j = +b.dataset.x; if (o.tocarExtra) o.tocarExtra(ext[j].dat, estExt[j]); }; });
     cont.querySelectorAll('.niv').forEach(function (b) { b.onclick = function () { var i = +b.dataset.i; o.tocar(i, o.niveles[i], est[i]); }; });
     var hechos = est.filter(function (s) { return s.hecho; }).length;
     return { foco: cont.querySelector('.niv.ahora') || cont.querySelector('.niv'), estado: est, actual: actual, hechos: hechos, total: n };
