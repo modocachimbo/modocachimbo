@@ -205,16 +205,16 @@
 
   /* ---------- Respuestas: XP y corazones ---------- */
   var buf = { ok: 0, mal: 0, seguidas: 0 }, racha = 0, tEnvio = null, enviando = false, vuelo = 0;
-  // XP por respuesta: el mismo cálculo que sumar_xp en supabase/60-multiplicadores-leyenda-04.sql.
-  // [correcta, incorrecta]: 15 donde se gasta corazón, 10 en lo demás; la correcta se
-  // multiplica por el rango de la semana (xp_mult, en %, lo manda el servidor).
-  var XP_MODO = { repaso: [15, 2], fijas: [15, 2], seminarios: [15, 2], banqueo: [15, 2], simulacro: [10, 2],
-    duelo: [10, 2], libro: [10, 2], examen: [10, 2], falladas: [10, 2], tarjetas: [10, 2], vocabulario: [10, 2] };
+  // XP por respuesta: el mismo cálculo que sumar_xp en supabase/81-xp-error-0-tope-10000.sql.
+  // [correcta, incorrecta]: 15 donde se gasta corazón, 10 en lo demás; la incorrecta da 0;
+  // la correcta se multiplica por el rango de la semana (xp_mult, en %, lo manda el servidor).
+  var XP_MODO = { repaso: [15, 0], fijas: [15, 0], seminarios: [15, 0], banqueo: [15, 0], simulacro: [10, 0],
+    duelo: [10, 0], libro: [10, 0], examen: [10, 0], falladas: [10, 0], tarjetas: [10, 0], vocabulario: [10, 0] };
   function multXp(xp) {  // respaldo si el servidor aún no manda xp_mult (mismos cortes que rango.js)
-    return xp >= 50000 ? 40 : xp >= 16000 ? 70 : xp >= 9000 ? 80 : xp >= 4700 ? 85 : xp >= 2300 ? 90 : 100;
+    return xp >= 50000 ? 25 : xp >= 16000 ? 50 : xp >= 9000 ? 70 : xp >= 4700 ? 80 : xp >= 2300 ? 90 : 100;
   }
   function valor(ok, mal) {
-    var b = (PAG && XP_MODO[PAG.fuente]) || [14, 1];
+    var b = (PAG && XP_MODO[PAG.fuente]) || [14, 0];
     var mu = estado && estado.xp_mult != null ? +estado.xp_mult : multXp((estado && estado.xp_semana) || 0);
     return ok * Math.round(b[0] * mu / 100) + mal * b[1];
   }
