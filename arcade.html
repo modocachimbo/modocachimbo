@@ -52,19 +52,6 @@ a { color: inherit; text-decoration: none; }
 .vista.on { display: block; animation: entra .28s ease-out; }
 @keyframes entra { from { opacity: 0; transform: translateY(10px); } }
 
-/* ---------- Inicio del Arcade ---------- */
-.hero { position: relative; overflow: hidden; border-radius: 24px; padding: 26px 24px; background: radial-gradient(120% 140% at 100% 0, #5B2BD6 0, #2A1460 45%, #170D36 100%); border: 1px solid #3B2A7A; border-bottom: 5px solid #7A4DFF; }
-.hero b { display: block; font-size: clamp(40px, 7vw, 64px); color: #fff; }
-.hero b span { color: var(--lima); }
-.hero p { margin-top: 8px; max-width: 36ch; color: #D9CFFF; font-weight: 700; line-height: 1.45; }
-.hero .pix { position: absolute; right: -10px; bottom: -18px; font-size: 150px; color: rgba(255,255,255,.1); transform: rotate(-12deg); }
-.fila { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 16px; }
-.reto, .duelo-a { position: relative; display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 20px; background: var(--tarjeta); border: 1px solid var(--borde); border-bottom: 4px solid var(--oro); }
-.duelo-a { border-bottom-color: var(--mal); }
-.reto .ico, .duelo-a .ico { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; font-size: 28px; background: rgba(255,200,0,.14); color: var(--oro); flex: none; }
-.duelo-a .ico { background: rgba(255,75,75,.14); color: var(--mal); }
-.reto b, .duelo-a b { display: block; font-size: 24px; }
-.reto small, .duelo-a small { display: block; color: var(--suave); font-weight: 700; font-size: 14px; margin-top: 3px; }
 .sec-t { margin: 30px 0 12px; font-size: 26px; display: flex; align-items: baseline; gap: 10px; }
 .sec-t small { font: 800 14px/1 var(--display); font-style: normal; letter-spacing: .06em; color: var(--suave); }
 .temas { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
@@ -80,6 +67,65 @@ a { color: inherit; text-decoration: none; }
 .tema.bloq { opacity: .55; cursor: default; }
 .tema .pronto { position: absolute; right: 12px; top: 12px; padding: 4px 9px; border-radius: 8px; background: var(--tarjeta2); color: var(--suave); font: 800 12px/1 var(--display); letter-spacing: .08em; }
 .tema .nuevo { position: absolute; right: 12px; top: 12px; padding: 4px 9px; border-radius: 8px; background: var(--lima); color: var(--sobre-lima); font: 800 12px/1 var(--display); letter-spacing: .08em; }
+
+/* ---------- Elige tu curso (cartas tipo "modo de juego") ---------- */
+.sel-cab { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: space-between; }
+.sel-tit { position: relative; padding: 12px 34px 12px 18px; font-size: clamp(24px, 4vw, 32px); color: #fff; background: linear-gradient(90deg, #1E1940, #2B2258); clip-path: polygon(0 0, 100% 0, calc(100% - 18px) 100%, 0 100%); border-left: 4px solid var(--lima); }
+.filtros { display: flex; gap: 4px; padding: 4px; border-radius: 14px; background: var(--tarjeta); border: 1px solid var(--borde); overflow-x: auto; scrollbar-width: none; }
+.filtros::-webkit-scrollbar { display: none; }
+.filtros button { padding: 10px 16px; border-radius: 10px; font: 800 15px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; color: var(--suave); white-space: nowrap; }
+.filtros button.on { color: #fff; background: linear-gradient(180deg, #3A63D8, #2643A8); box-shadow: inset 0 -3px 0 #8FB3FF; }
+.sel-info { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 16px 0 6px; padding: 10px 16px; border-radius: 12px; background: linear-gradient(90deg, rgba(58,99,216,.22), transparent); border-bottom: 1px solid rgba(143,179,255,.25); color: var(--suave); font-weight: 800; font-size: 14.5px; }
+.sel-info b { color: var(--texto); } .sel-info .ic { color: var(--oro); vertical-align: -2px; }
+.sel-info .sep { width: 1px; height: 16px; background: var(--borde); }
+.carrusel-env { position: relative; margin: 0 -16px; }
+.carrusel { display: flex; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 34px 16px 26px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.carrusel::-webkit-scrollbar { display: none; }
+.flecha { position: absolute; top: 50%; z-index: 5; width: 46px; height: 46px; margin-top: -10px; border-radius: 14px; display: grid; place-items: center; font-size: 24px; color: #fff; background: rgba(21,17,39,.9); border: 1px solid var(--borde); }
+.flecha.izq { left: 8px; } .flecha.der { right: 8px; } .flecha.der .ic { transform: scaleX(-1); }
+.flecha[hidden] { display: none; }
+.cc { --cc: #F07A1A; --cc2: #FFB067; position: relative; flex: none; width: 270px; height: 390px; scroll-snap-align: center; text-align: center; color: #fff; transition: transform .18s; }
+.cc .marco { position: absolute; inset: 0; clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px); background: linear-gradient(180deg, #120E26 0%, #171235 42%, color-mix(in srgb, var(--cc) 75%, #000) 100%); }
+.cc .marco::before { content: ""; position: absolute; inset: 0; opacity: .35; background-image: radial-gradient(circle at 50% 120%, var(--cc2) 0, transparent 55%), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='48' viewBox='0 0 28 48'%3E%3Cpath d='M14 0 28 8v16L14 32 0 24V8zM14 32l14 8v16M14 32 0 40v16' fill='none' stroke='%23ffffff' stroke-opacity='.10'/%3E%3C/svg%3E"); }
+.cc .borde { position: absolute; inset: 0; clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px, 16px 0, 18px 3px, 3px 17px, 3px calc(100% - 3px), calc(100% - 17px) calc(100% - 3px), calc(100% - 3px) calc(100% - 17px), calc(100% - 3px) 3px, 18px 3px); background: color-mix(in srgb, var(--cc) 60%, #fff 10%); }
+.cc .cinta { position: absolute; top: -14px; left: 50%; z-index: 2; translate: -50% 0; padding: 7px 22px 6px; font: 800 15px/1 var(--display); letter-spacing: .12em; text-transform: uppercase; color: #fff; background: #2B2258; clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 100%, 0 100%); white-space: nowrap; }
+.cc .est-ch { position: absolute; top: 14px; right: 14px; z-index: 2; display: flex; align-items: center; gap: 4px; padding: 5px 8px; border-radius: 8px; background: rgba(0,0,0,.35); font: 800 14px/1 var(--display); }
+.cc .est-ch .ic { color: var(--oro); }
+.cc .arte { position: absolute; left: 0; right: 0; top: 50px; height: 180px; display: grid; place-items: center; }
+.cc .arte::before { content: ""; position: absolute; width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--cc2) 55%, transparent) 0, transparent 68%); }
+.cc .arte svg { position: relative; width: 132px; height: 132px; filter: drop-shadow(0 10px 14px rgba(0,0,0,.45)); }
+.cc .pie { position: absolute; left: 14px; right: 14px; bottom: 22px; }
+.cc .pie .ins { width: 46px; height: 46px; margin: 0 auto 10px; border-radius: 14px; display: grid; place-items: center; font-size: 24px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); }
+.cc .pie b { display: block; font-size: 30px; line-height: .95; text-shadow: 0 3px 0 rgba(0,0,0,.3); }
+.cc .pie small { display: block; margin-top: 7px; font: 800 13.5px/1 var(--display); letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.85); }
+.cc .barra-c { height: 6px; margin: 12px 18px 0; border-radius: 6px; background: rgba(0,0,0,.35); overflow: hidden; }
+.cc .barra-c i { display: block; height: 100%; width: var(--p, 0%); background: var(--lima); }
+.cc:not(.bloq):hover { transform: translateY(-6px); }
+.cc.sel .borde { background: #FFE28A; }
+.cc.sel .cinta { background: #FFE28A; color: #3A2A00; }
+.cc.sel { transform: translateY(-6px) scale(1.03); }
+.cc.sel .marco { box-shadow: 0 0 0 4px #FFE28A; }
+.cc.bloq { cursor: default; }
+.cc.bloq .marco, .cc.bloq .arte { filter: grayscale(.85) brightness(.75); }
+.cc.bloq .pie b { color: #B8B2CF; }
+.cc.bloq .cinta { background: #2A2440; color: #A99FC8; }
+:root[data-modo="claro"] .sel-tit { color: #fff; }
+.curso-cab { position: relative; overflow: hidden; display: flex; align-items: center; gap: 18px; padding: 22px; border-radius: 24px; color: #fff; background: linear-gradient(135deg, var(--cc), color-mix(in srgb, var(--cc) 45%, #000)); border-bottom: 5px solid color-mix(in srgb, var(--cc) 40%, #000); }
+.curso-cab svg.ar { width: 92px; height: 92px; flex: none; filter: drop-shadow(0 8px 10px rgba(0,0,0,.35)); }
+.curso-cab small { font: 800 14px/1 var(--display); letter-spacing: .1em; text-transform: uppercase; opacity: .85; }
+.curso-cab b { display: block; font-size: clamp(32px, 6vw, 48px); margin-top: 4px; }
+.curso-cab p { margin-top: 6px; font-weight: 700; opacity: .9; }
+.tema .estrellas-t { display: flex; align-items: center; gap: 6px; color: var(--suave); font: 800 14px/1 var(--display); letter-spacing: .06em; }
+.tema .estrellas-t .ic { color: var(--oro); }
+@media (max-width: 720px) {
+  .cc { width: 222px; height: 330px; }
+  .cc .arte { height: 150px; } .cc .arte svg { width: 116px; height: 116px; }
+  .cc .pie b { font-size: 27px; }
+  .flecha { display: none; }
+  .ruta .nodo { width: calc(100% - 30px); }
+  .sel-cab { gap: 10px; } .filtros { width: 100%; }
+  .filtros button { flex: 1; padding: 10px 8px; font-size: 14px; }
+}
 
 /* ---------- Ruta del tema ---------- */
 .ruta-cab { border-radius: 24px; padding: 22px 22px 24px; background: linear-gradient(135deg, var(--c) 0, #B24A00 100%); color: #fff; border-bottom: 5px solid #7D3400; }
@@ -201,6 +247,15 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="a-historia" viewBox="0 0 120 120"><circle cx="86" cy="30" r="14" fill="#FFD25A"/><path d="M86 8v6M86 46v6M64 30h6M102 30h6M71 15l4 4M97 41l4 4M101 15l-4 4M75 41l-4 4" stroke="#FFD25A" stroke-width="3" stroke-linecap="round"/><path d="M14 104h92l-8-14H22z" fill="#8A4A1C"/><path d="M24 90h72l-7-13H31z" fill="#B5652A"/><path d="M33 77h54l-6-13H39z" fill="#D7843C"/><path d="M42 64h36l-5-12H47z" fill="#F0A35A"/><rect x="53" y="40" width="14" height="12" rx="2" fill="#FFD9A8"/><path d="M57 104v-12h6v12" fill="#5C2E0E"/></symbol>
+  <symbol id="a-biologia" viewBox="0 0 120 120"><ellipse cx="60" cy="62" rx="48" ry="42" fill="#2EB872" opacity=".35"/><ellipse cx="60" cy="62" rx="42" ry="36" fill="#7BE3A8" stroke="#1E8F55" stroke-width="4"/><circle cx="62" cy="60" r="15" fill="#9B5DE5" stroke="#5B2BA0" stroke-width="3"/><circle cx="66" cy="56" r="5" fill="#D4B5FF"/><ellipse cx="36" cy="74" rx="11" ry="6" fill="#FF8A4C" transform="rotate(-20 36 74)"/><path d="M28 75q8-5 16 0" stroke="#B2461A" stroke-width="2" fill="none"/><ellipse cx="86" cy="76" rx="9" ry="5" fill="#FF8A4C" transform="rotate(25 86 76)"/><circle cx="40" cy="48" r="4" fill="#1E8F55"/><circle cx="84" cy="46" r="3" fill="#1E8F55"/><circle cx="76" cy="88" r="3" fill="#1E8F55"/></symbol>
+  <symbol id="a-quimica" viewBox="0 0 120 120"><path d="M48 14h24M52 14v30L26 92a9 9 0 0 0 8 14h52a9 9 0 0 0 8-14L68 44V14" fill="#E9E3FF" stroke="#5B2BA0" stroke-width="4" stroke-linejoin="round"/><path d="M36 74h48l12 20a6 6 0 0 1-5 9H29a6 6 0 0 1-5-9z" fill="#A35CFF"/><circle cx="50" cy="88" r="5" fill="#E2CCFF"/><circle cx="68" cy="82" r="3.5" fill="#E2CCFF"/><circle cx="62" cy="94" r="3" fill="#E2CCFF"/><circle cx="74" cy="30" r="5" fill="#C9A6FF"/><circle cx="84" cy="18" r="3.5" fill="#C9A6FF"/></symbol>
+  <symbol id="a-fisica" viewBox="0 0 120 120"><g fill="none" stroke="#1CB0F6" stroke-width="5"><ellipse cx="60" cy="60" rx="48" ry="18"/><ellipse cx="60" cy="60" rx="48" ry="18" transform="rotate(60 60 60)"/><ellipse cx="60" cy="60" rx="48" ry="18" transform="rotate(-60 60 60)"/></g><circle cx="60" cy="60" r="12" fill="#FFC800" stroke="#B88A00" stroke-width="3"/><circle cx="108" cy="60" r="6" fill="#7FDBFF"/><circle cx="36" cy="19" r="6" fill="#7FDBFF"/><circle cx="36" cy="101" r="6" fill="#7FDBFF"/></symbol>
+  <symbol id="a-verbal" viewBox="0 0 120 120"><path d="M60 30C46 20 26 20 12 24v68c14-4 34-4 48 6z" fill="#FFFFFF" stroke="#1B6FA8" stroke-width="4" stroke-linejoin="round"/><path d="M60 30c14-10 34-10 48-6v68c-14-4-34-4-48 6z" fill="#EAF6FF" stroke="#1B6FA8" stroke-width="4" stroke-linejoin="round"/><path d="M22 40h26M22 52h28M22 64h22M70 40h26M70 52h20M70 64h26" stroke="#7FB8E0" stroke-width="4" stroke-linecap="round"/><path d="M84 6l6 12 12 2-9 9 2 13-11-6-11 6 2-13-9-9 12-2z" fill="#FFC800"/></symbol>
+  <symbol id="a-geografia" viewBox="0 0 120 120"><circle cx="60" cy="60" r="44" fill="#1CB0F6"/><path d="M40 24c8 6 4 14 12 16s14 10 8 18-14 4-16 14 6 18-4 22c-10-6-18-18-20-30 0-14 8-30 20-40zM78 26c10 4 22 16 24 30-8 2-10-6-18-4s-6 12-14 10-6-14 0-20 0-10 8-16z" fill="#58CC02"/><ellipse cx="60" cy="60" rx="44" ry="44" fill="none" stroke="#0A6FA0" stroke-width="4"/><path d="M60 104v10M44 114h32" stroke="#8A6A4A" stroke-width="5" stroke-linecap="round"/></symbol>
+  <symbol id="a-mate" viewBox="0 0 120 120"><rect x="22" y="14" width="76" height="92" rx="12" fill="#2B2258" stroke="#FF4B4B" stroke-width="4"/><rect x="32" y="24" width="56" height="20" rx="5" fill="#C6E000"/><text x="82" y="40" text-anchor="end" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="17" fill="#151a03">3,14</text><g fill="#FF8A8A"><rect x="32" y="52" width="14" height="12" rx="3"/><rect x="53" y="52" width="14" height="12" rx="3"/><rect x="74" y="52" width="14" height="12" rx="3"/><rect x="32" y="70" width="14" height="12" rx="3"/><rect x="53" y="70" width="14" height="12" rx="3"/><rect x="32" y="88" width="14" height="10" rx="3"/><rect x="53" y="88" width="14" height="10" rx="3"/></g><rect x="74" y="70" width="14" height="28" rx="3" fill="#FFC800"/></symbol>
+  <symbol id="a-anatomia" viewBox="0 0 120 120"><path d="M60 104C28 82 12 64 12 44a22 22 0 0 1 48-8 22 22 0 0 1 48 8c0 20-16 38-48 60z" fill="#FF4B6E" stroke="#A3102E" stroke-width="4" stroke-linejoin="round"/><path d="M18 58h22l7-14 10 28 8-18 5 4h32" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="a-mundo" viewBox="0 0 120 120"><path d="M20 100h80" stroke="#C9A36A" stroke-width="6" stroke-linecap="round"/><path d="M28 94h64v-6H28z" fill="#E8C98E"/><g fill="#F6E3B8" stroke="#A67C3D" stroke-width="2"><rect x="32" y="46" width="8" height="42"/><rect x="48" y="46" width="8" height="42"/><rect x="64" y="46" width="8" height="42"/><rect x="80" y="46" width="8" height="42"/></g><path d="M24 46h72L60 22z" fill="#F6E3B8" stroke="#A67C3D" stroke-width="3" stroke-linejoin="round"/></symbol>
   <symbol id="i-atras" viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></symbol>
   <symbol id="i-mando" viewBox="0 0 24 24"><path d="M7 7h10a5 5 0 0 1 4.9 6l-.8 4a2.6 2.6 0 0 1-4.5 1.2L14.5 16h-5l-2.1 2.2A2.6 2.6 0 0 1 2.9 17l-.8-4A5 5 0 0 1 7 7z"/><path d="M7 10v4M5 12h4"/><circle cx="16" cy="11" r=".6" fill="currentColor"/><circle cx="18" cy="13" r=".6" fill="currentColor"/></symbol>
   <symbol id="i-rayo" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z" fill="currentColor" stroke="none"/></symbol>
@@ -234,55 +289,32 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
 
 <!-- Inicio del Arcade -->
 <main class="vista on" id="v-inicio">
-  <section class="hero">
-    <b class="tit">Aprende <span>jugando</span></b>
-    <p>Une, desliza y ordena. Cada tema es una ruta de minijuegos que suma XP a tu rango.</p>
-    <svg class="ic pix"><use href="#i-mando"/></svg>
-  </section>
-  <div class="fila">
-    <button class="reto" type="button" data-tema="hp01"><span class="ico"><svg class="ic"><use href="#i-fuego"/></svg></span><span><b class="tit">Reto del día</b><small>Poblamiento americano · x2 XP hoy</small></span></button>
-    <a class="duelo-a" href="duelo.html"><span class="ico"><svg class="ic"><use href="#i-espadas"/></svg></span><span><b class="tit">Duelo 1 vs 1</b><small>Reta a tus amigos en vivo</small></span></a>
+  <div class="sel-cab">
+    <span class="sel-tit tit">Elige tu curso</span>
+    <nav class="filtros" id="filtros" aria-label="Filtrar cursos"></nav>
   </div>
-  <h2 class="sec-t tit">Temas <small>Elige y juega</small></h2>
-  <div class="temas">
-    <button class="tema" type="button" data-tema="hp01" style="--tc:#F07A1A">
-      <span class="nuevo">Beta</span>
-      <span class="curso"><i></i>Historia del Perú</span>
-      <b class="tit">Poblamiento americano y peruano</b>
-      <span class="mini"><span>Une parejas</span><span>V o F</span><span>Línea del tiempo</span></span>
-      <span class="prog"><i id="progHp" style="--p:0%"></i></span>
-    </button>
-    <div class="tema bloq" style="--tc:#2EB872">
-      <span class="pronto">Pronto</span>
-      <span class="curso"><i></i>Biología</span>
-      <b class="tit">La célula y sus organelas</b>
-      <span class="mini"><span>Etiqueta el dibujo</span><span>Clasifica</span></span>
-      <span class="prog"><i></i></span>
-    </div>
-    <div class="tema bloq" style="--tc:#1CB0F6">
-      <span class="pronto">Pronto</span>
-      <span class="curso"><i></i>Raz. Verbal</span>
-      <b class="tit">Vocabulario: sinónimos</b>
-      <span class="mini"><span>Une parejas</span><span>Contrarreloj</span></span>
-      <span class="prog"><i></i></span>
-    </div>
-    <div class="tema bloq" style="--tc:#A35CFF">
-      <span class="pronto">Pronto</span>
-      <span class="curso"><i></i>Química</span>
-      <b class="tit">Tabla periódica</b>
-      <span class="mini"><span>Memoria</span><span>Clasifica</span></span>
-      <span class="prog"><i></i></span>
-    </div>
+  <div class="sel-info">
+    <span><svg class="ic"><use href="#i-estrella"/></svg> <b id="totEst">0</b> estrellas</span>
+    <span class="sep"></span>
+    <span id="totDispT"><b id="totDisp">0</b> cursos disponibles</span>
   </div>
+  <div class="carrusel-env">
+    <button class="flecha izq" type="button" id="flIzq" aria-label="Anterior"><svg class="ic"><use href="#i-atras"/></svg></button>
+    <div class="carrusel" id="carrusel"></div>
+    <button class="flecha der" type="button" id="flDer" aria-label="Siguiente"><svg class="ic"><use href="#i-atras"/></svg></button>
+  </div>
+</main>
+
+<!-- Temas de un curso -->
+<main class="vista" id="v-curso">
+  <section class="curso-cab" id="cursoCab"></section>
+  <h2 class="sec-t tit">Temas <small>Cada tema es una ruta de minijuegos</small></h2>
+  <div class="temas" id="temas"></div>
 </main>
 
 <!-- Ruta del tema -->
 <main class="vista" id="v-ruta">
-  <section class="ruta-cab">
-    <small>Historia del Perú · Tema 01</small>
-    <b class="tit">Poblamiento americano y peruano</b>
-    <p>Teorías, primeros habitantes, Lítico y Arcaico.</p>
-  </section>
+  <section class="ruta-cab" id="rutaCab"></section>
   <div class="ruta" id="ruta"></div>
 </main>
 
@@ -320,7 +352,8 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
      ORDEN: etapa | detalle (en orden cronológico)                        */
   var TEMAS = {
     hp01: {
-      curso: 'Historia del Perú', titulo: 'Poblamiento americano y peruano',
+      curso: 'Historia del Perú', titulo: 'Poblamiento americano y peruano', n: 'Tema 01',
+      desc: 'Teorías, primeros habitantes, Lítico y Arcaico.',
       pares: [
         ['Alex Hrdlicka', 'Teoría asiática (Estrecho de Bering)'],
         ['Paul Rivet', 'Teoría oceánica (melanesios y polinesios)'],
@@ -349,18 +382,36 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     }
   };
 
+  /* ---------- Cursos del Arcade ----------
+     Cada curso es una carta. Un curso sin temas sale gris con "Pronto".
+     Para sumar un curso o tema basta con agregarlo aquí (más adelante
+     vendrá del panel, igual que los exámenes). area sirve para los filtros. */
+  var AREAS = [['todos', 'Todos'], ['ciencias', 'Ciencias'], ['letras', 'Letras'], ['sociales', 'Sociales']];
+  var CURSOS = [
+    { id: 'hp', nom: 'Historia del Perú', area: 'sociales', arte: 'a-historia', c: '#F07A1A', c2: '#FFB067', temas: ['hp01'] },
+    { id: 'bio', nom: 'Biología', area: 'ciencias', arte: 'a-biologia', c: '#2EB872', c2: '#7BE3A8', temas: [] },
+    { id: 'qui', nom: 'Química', area: 'ciencias', arte: 'a-quimica', c: '#A35CFF', c2: '#D4B5FF', temas: [] },
+    { id: 'fis', nom: 'Física', area: 'ciencias', arte: 'a-fisica', c: '#1C8FE0', c2: '#7FDBFF', temas: [] },
+    { id: 'ana', nom: 'Anatomía', area: 'ciencias', arte: 'a-anatomia', c: '#E8395F', c2: '#FF9AB0', temas: [] },
+    { id: 'mat', nom: 'Matemática', area: 'ciencias', arte: 'a-mate', c: '#D63A3A', c2: '#FF8A8A', temas: [] },
+    { id: 'rv', nom: 'Raz. Verbal', area: 'letras', arte: 'a-verbal', c: '#2F6FE0', c2: '#8FC2FF', temas: [] },
+    { id: 'geo', nom: 'Geografía', area: 'sociales', arte: 'a-geografia', c: '#12A39A', c2: '#7EE6DE', temas: [] },
+    { id: 'hu', nom: 'Historia Universal', area: 'sociales', arte: 'a-mundo', c: '#B8873E', c2: '#F2D7A6', temas: [] }
+  ];
+  var filtro = 'todos';
+
   var JUEGOS = [
-    { id: 'une', nom: 'Une parejas', sub: 'Autor ↔ teoría', ic: 'i-une', c: '#A35CFF' },
-    { id: 'vf', nom: 'Verdadero o falso', sub: 'Desliza la carta', ic: 'i-cartas', c: '#1CB0F6' },
-    { id: 'orden', nom: 'Línea del tiempo', sub: 'Ordena las etapas', ic: 'i-tiempo', c: '#F07A1A' },
+    { id: 'une', nom: 'Une parejas', sub: 'Autor ↔ teoría', ic: 'i-une', c: '#A35CFF', dato: 'pares' },
+    { id: 'vf', nom: 'Verdadero o falso', sub: 'Desliza la carta', ic: 'i-cartas', c: '#1CB0F6', dato: 'vf' },
+    { id: 'orden', nom: 'Línea del tiempo', sub: 'Ordena las etapas', ic: 'i-tiempo', c: '#F07A1A', dato: 'orden' },
     { id: 'jefe', nom: 'Jefe del tema', sub: 'Todo mezclado, contra el reloj', ic: 'i-corona', c: '#FF4B4B', bloq: true }
   ];
 
   var $ = function (id) { return document.getElementById(id); };
   var estado = { tema: null, juego: 0, xp: 0, combo: 0, mejor: 0, ok: 0, total: 0, est: {} };
   function leer() { try { return JSON.parse(localStorage.getItem('mc_arcade') || '{}'); } catch (e) { return {}; } }
-  function guardar() { try { localStorage.setItem('mc_arcade', JSON.stringify({ xp: estado.xp, est: estado.est })); } catch (e) {} }
-  var g0 = leer(); estado.xp = g0.xp || 0; estado.est = g0.est || {};
+  function guardar() { try { localStorage.setItem('mc_arcade', JSON.stringify({ xp: estado.xp, est: estado.est, ultimo: estado.ultimo })); } catch (e) {} }
+  var g0 = leer(); estado.xp = g0.xp || 0; estado.est = g0.est || {}; estado.ultimo = g0.ultimo || null;
   $('xpN').textContent = estado.xp;
   function mezclar(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
 
@@ -371,26 +422,88 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     $('titulo').innerHTML = '<small>' + (sub || 'Modo Cachimbo') + '</small>' + titulo;
     window.scrollTo(0, 0);
   }
-  function irInicio() { ver('v-inicio', 'Arcade'); $('volver').onclick = null; $('volver').href = 'index.html'; actualizarProg(); }
+  // Juegos que tiene un tema (según los datos que trae); el jefe va al final
+  function juegosDe(t) { var T = TEMAS[t]; return JUEGOS.filter(function (j) { return !j.dato || (T[j.dato] && T[j.dato].length); }); }
+  function estrellasTema(t) { return juegosDe(t).reduce(function (a, j) { return a + (j.bloq ? 0 : (estado.est[t + ':' + j.id] || 0)); }, 0); }
+  function maxTema(t) { return juegosDe(t).filter(function (j) { return !j.bloq; }).length * 3; }
+  function cursoDe(id) { return CURSOS.filter(function (c) { return c.id === id; })[0]; }
+  function cursoDelTema(t) { return CURSOS.filter(function (c) { return c.temas.indexOf(t) >= 0; })[0]; }
+  function estrella(on) { return '<svg class="ic' + (on ? ' on' : '') + '"><use href="#i-estrella"/></svg>'; }
+  function volverA(fn) { $('volver').href = '#'; $('volver').onclick = function (e) { e.preventDefault(); fn(); }; }
+
+  function irInicio() {
+    ver('v-inicio', 'Arcade'); $('volver').onclick = null; $('volver').href = 'index.html';
+    var tot = 0, disp = 0;
+    CURSOS.forEach(function (c) { c.temas.forEach(function (t) { tot += estrellasTema(t); }); if (c.temas.length) disp++; });
+    $('totEst').textContent = tot; $('totDispT').innerHTML = '<b>' + disp + '</b> ' + (disp === 1 ? 'curso disponible' : 'cursos disponibles') + ' · más cada semana';
+    $('filtros').innerHTML = AREAS.map(function (a) { return '<button type="button" data-a="' + a[0] + '" class="' + (a[0] === filtro ? 'on' : '') + '">' + a[1] + '</button>'; }).join('');
+    $('filtros').querySelectorAll('button').forEach(function (b) { b.onclick = function () { filtro = b.dataset.a; irInicio(); }; });
+    // Primero los disponibles; el último que jugaste sale "Seleccionado"
+    var lista = CURSOS.filter(function (c) { return filtro === 'todos' || c.area === filtro; })
+      .sort(function (x, y) { return (y.temas.length ? 1 : 0) - (x.temas.length ? 1 : 0); });
+    var elegido = estado.ultimo && cursoDe(estado.ultimo) && cursoDe(estado.ultimo).temas.length ? estado.ultimo : (lista.filter(function (c) { return c.temas.length; })[0] || {}).id;
+    $('carrusel').innerHTML = lista.map(function (c) {
+      var bloq = !c.temas.length, e = 0, m = 0;
+      c.temas.forEach(function (t) { e += estrellasTema(t); m += maxTema(t); });
+      var cinta = bloq ? 'Pronto' : c.id === elegido ? (estado.ultimo ? 'Seguir jugando' : 'Empieza aquí') : 'Disponible';
+      return '<button class="cc' + (bloq ? ' bloq' : '') + (c.id === elegido ? ' sel' : '') + '" type="button" data-c="' + c.id + '" style="--cc:' + c.c + ';--cc2:' + c.c2 + '"' + (bloq ? ' aria-disabled="true"' : '') + '>' +
+        '<span class="marco"></span><span class="borde"></span><span class="cinta">' + cinta + '</span>' +
+        (bloq ? '' : '<span class="est-ch">' + estrella(true) + e + '/' + m + '</span>') +
+        '<span class="arte"><svg viewBox="0 0 120 120"><use href="#' + c.arte + '"/></svg></span>' +
+        '<span class="pie"><span class="ins"><svg class="ic"><use href="#' + (bloq ? 'i-candado' : 'i-mando') + '"/></svg></span>' +
+        '<b class="tit">' + c.nom + '</b><small>' + (bloq ? 'Próximamente' : c.temas.length + (c.temas.length === 1 ? ' tema' : ' temas') + ' · ' + c.temas.reduce(function (a, t) { return a + juegosDe(t).filter(function (j) { return !j.bloq; }).length; }, 0) + ' juegos') + '</small>' +
+        (bloq ? '' : '<span class="barra-c"><i style="--p:' + (m ? Math.round(e / m * 100) : 0) + '%"></i></span>') + '</span></button>';
+    }).join('');
+    $('carrusel').querySelectorAll('.cc:not(.bloq)').forEach(function (b) { b.onclick = function () { irCurso(b.dataset.c); }; });
+    var car = $('carrusel'), sel = car.querySelector('.sel');
+    requestAnimationFrame(function () { if (sel) car.scrollLeft = sel.offsetLeft - (car.clientWidth - sel.offsetWidth) / 2; flechas(); });
+    setTimeout(flechas, 400);
+  }
+  function flechas() {
+    var car = $('carrusel');
+    $('flIzq').hidden = car.scrollLeft < 10; $('flDer').hidden = car.scrollLeft + car.clientWidth > car.scrollWidth - 10;
+  }
+  $('carrusel').addEventListener('scroll', flechas, { passive: true });
+  $('flIzq').onclick = function () { $('carrusel').scrollBy({ left: -270, behavior: 'smooth' }); };
+  $('flDer').onclick = function () { $('carrusel').scrollBy({ left: 270, behavior: 'smooth' }); };
+  window.addEventListener('resize', function () { if ($('v-inicio').classList.contains('on')) flechas(); });
+
+  function irCurso(id) {
+    var c = cursoDe(id); estado.curso = id;
+    ver('v-curso', c.nom, 'Arcade'); volverA(irInicio);
+    var e = 0, m = 0; c.temas.forEach(function (t) { e += estrellasTema(t); m += maxTema(t); });
+    $('cursoCab').style.setProperty('--cc', c.c);
+    $('cursoCab').innerHTML = '<svg class="ar" viewBox="0 0 120 120"><use href="#' + c.arte + '"/></svg><div><small>Arcade · ' + AREAS.filter(function (a) { return a[0] === c.area; })[0][1] + '</small><b class="tit">' + c.nom + '</b><p>' + e + ' de ' + m + ' estrellas</p></div>';
+    $('temas').innerHTML = c.temas.map(function (t) {
+      var T = TEMAS[t], et = estrellasTema(t), mt = maxTema(t);
+      return '<button class="tema" type="button" data-t="' + t + '" style="--tc:' + c.c + '">' +
+        (et ? '' : '<span class="nuevo">Nuevo</span>') +
+        '<span class="curso"><i></i>' + (T.n || '') + '</span><b class="tit">' + T.titulo + '</b>' +
+        '<span class="mini">' + juegosDe(t).filter(function (j) { return !j.bloq; }).map(function (j) { return '<span>' + j.nom + '</span>'; }).join('') + '</span>' +
+        '<span class="estrellas-t">' + estrella(true) + et + ' / ' + mt + '</span>' +
+        '<span class="prog"><i style="--p:' + (mt ? Math.round(et / mt * 100) : 0) + '%"></i></span></button>';
+    }).join('');
+    $('temas').querySelectorAll('.tema').forEach(function (b) { b.onclick = function () { estado.tema = b.dataset.t; irRuta(); }; });
+  }
+
   function irRuta() {
-    var T = TEMAS[estado.tema];
-    ver('v-ruta', 'Ruta del tema', 'Arcade');
-    $('volver').href = '#'; $('volver').onclick = function (e) { e.preventDefault(); irInicio(); };
-    var hechos = JUEGOS.filter(function (j) { return estado.est[estado.tema + ':' + j.id]; }).length;
-    $('ruta').innerHTML = JUEGOS.map(function (j, i) {
-      var e = estado.est[estado.tema + ':' + j.id] || 0, bloq = j.bloq && hechos < 3;
+    var T = TEMAS[estado.tema], c = cursoDelTema(estado.tema);
+    estado.ultimo = c.id; guardar();
+    ver('v-ruta', 'Ruta del tema', c.nom); volverA(function () { irCurso(c.id); });
+    $('rutaCab').style.background = 'linear-gradient(135deg, ' + c.c + ' 0, color-mix(in srgb, ' + c.c + ' 55%, #000) 100%)';
+    $('rutaCab').style.borderBottomColor = 'color-mix(in srgb, ' + c.c + ' 40%, #000)';
+    $('rutaCab').innerHTML = '<small>' + c.nom + ' · ' + (T.n || '') + '</small><b class="tit">' + T.titulo + '</b><p>' + (T.desc || '') + '</p>';
+    var js = juegosDe(estado.tema), normales = js.filter(function (j) { return !j.bloq; });
+    var hechos = normales.filter(function (j) { return estado.est[estado.tema + ':' + j.id]; }).length;
+    $('ruta').innerHTML = js.map(function (j) {
+      var i = JUEGOS.indexOf(j), e = estado.est[estado.tema + ':' + j.id] || 0, bloq = j.bloq && hechos < normales.length;
       return '<button class="nodo' + (bloq ? ' bloq' : '') + '" type="button" data-i="' + i + '" style="--nc:' + j.c + '">' +
         '<span class="bola"><svg class="ic"><use href="#' + (bloq ? 'i-candado' : j.ic) + '"/></svg></span>' +
-        '<span><b class="tit">' + j.nom + '</b><small>' + (bloq ? 'Completa los 3 juegos para desbloquear' : j.sub) + '</small></span>' +
-        '<span class="est">' + [1, 2, 3].map(function (k) { return '<svg class="ic' + (k <= e ? ' on' : '') + '"><use href="#i-estrella"/></svg>'; }).join('') + '</span></button>';
+        '<span><b class="tit">' + j.nom + '</b><small>' + (bloq ? 'Completa los ' + normales.length + ' juegos para desbloquear' : j.sub) + '</small></span>' +
+        '<span class="est">' + [1, 2, 3].map(function (k) { return estrella(k <= e); }).join('') + '</span></button>';
     }).join('');
     $('ruta').querySelectorAll('.nodo:not(.bloq)').forEach(function (n) { n.onclick = function () { jugar(+n.dataset.i); }; });
   }
-  function actualizarProg() {
-    var n = ['une', 'vf', 'orden'].filter(function (j) { return estado.est['hp01:' + j]; }).length;
-    $('progHp').style.setProperty('--p', Math.round(n / 3 * 100) + '%');
-  }
-  actualizarProg();
 
   /* ---------- Puntos y combo ---------- */
   function acierto() {
@@ -559,7 +672,8 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     $('fCombo').textContent = 'x' + estado.mejor;
     $('fXp').textContent = '+' + estado.ganado;
     $('fOtra').onclick = function () { jugar(estado.juego); };
-    var sig = estado.juego + 1 < 3 ? estado.juego + 1 : null;
+    var nj = juegosDe(estado.tema).filter(function (x) { return !x.bloq; }).map(function (x) { return JUEGOS.indexOf(x); }), pos = nj.indexOf(estado.juego);
+    var sig = pos >= 0 && pos + 1 < nj.length ? nj[pos + 1] : null;
     $('fSig').textContent = sig != null ? 'Siguiente: ' + JUEGOS[sig].nom : 'Volver a la ruta';
     $('fSig').onclick = function () { if (sig != null) jugar(sig); else irRuta(); };
     if (est === 3) confeti();
@@ -577,7 +691,7 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     })();
   }
 
-  document.querySelectorAll('[data-tema]').forEach(function (b) { b.onclick = function () { estado.tema = b.dataset.tema; irRuta(); }; });
+  irInicio();
   
 })();
 </script>
