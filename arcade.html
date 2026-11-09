@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,800;1,900&family=Nunito:wght@600;800;900&display=swap">
 <script src="assets/app.js" defer></script>
+<script src="assets/arcade-mundo.js"></script>
 <script>(function () { var m = new URLSearchParams(location.search).get('modo'); try { m = m || localStorage.getItem('mc-modo'); } catch (e) {} if (m === 'claro' || m === 'oscuro') document.documentElement.setAttribute('data-modo', m); })();</script>
 <style>
 /* =========================================================
@@ -160,6 +161,34 @@ body.en-inicio .cab { display: none; }
   .ruta .nodo { width: calc(100% - 30px); }
   .curso-cab .ar { width: 96px; height: 120px; }
 }
+
+/* ---------- Mapa de niveles del mundo (assets/arcade-mundo.js) ---------- */
+body.en-mundo { background: #3F7F26; }
+body.en-mundo .cab { display: none; }
+#v-mundo { max-width: none; padding: 0; }
+.mn-top { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 10px; padding: max(10px, env(safe-area-inset-top)) 12px 10px; background: linear-gradient(180deg, rgba(20,40,70,.85), rgba(20,40,70,0)); }
+.mn-top .m-btn { flex: none; }
+.mn-top .placa-m { flex: 1; display: flex; justify-content: center; min-width: 0; }
+.mn-top .placa-m img { height: 52px; width: auto; max-width: 100%; filter: drop-shadow(0 4px 6px rgba(0,0,0,.45)); }
+.mn-top .placa-m .txt { padding: 8px 18px; border-radius: 12px; background: linear-gradient(180deg, #8C8576, #6D6758); border: 3px solid #4A4538; font: 900 20px/1 var(--cuerpo); color: #EDE6D2; text-transform: uppercase; }
+.mn-mapa { margin-top: -72px; background: linear-gradient(90deg, #2F6A1E, #3F7F26 18%, #3F7F26 82%, #2F6A1E); }
+.mn-mapa .mm { box-shadow: 0 0 60px rgba(0,0,0,.35); }
+/* Hoja del nivel */
+.hoja-fondo { position: fixed; inset: 0; z-index: 60; background: rgba(5,10,25,.55); opacity: 0; pointer-events: none; transition: opacity .25s; }
+.hoja-fondo.on { opacity: 1; pointer-events: auto; }
+.hoja { visibility: hidden; position: fixed; left: 50%; bottom: 0; z-index: 61; width: min(520px, 100%); translate: -50% 105%; transition: translate .35s cubic-bezier(.2,.9,.3,1.1); padding: 22px 20px calc(22px + env(safe-area-inset-bottom)); border-radius: 26px 26px 0 0; background: linear-gradient(180deg, #FFF8E6, #F3E6C4); color: #3A2A10; border-top: 5px solid #B48A4E; box-shadow: 0 -10px 40px rgba(0,0,0,.35); }
+.hoja.on { translate: -50% 0; visibility: visible; }
+.hoja .agarre { width: 46px; height: 5px; margin: -8px auto 14px; border-radius: 5px; background: #D2B98A; }
+.hoja .nv { font: 900 14px/1 var(--cuerpo); letter-spacing: .1em; text-transform: uppercase; color: #9A6A00; }
+.hoja h3 { margin: 6px 0 10px; font: 900 26px/1.1 var(--cuerpo); }
+.hoja .estr { display: flex; gap: 6px; font-size: 30px; color: #E0D2AE; margin-bottom: 12px; }
+.hoja .estr .on { color: #FFC800; filter: drop-shadow(0 2px 0 #9A6A00); }
+.hoja .jg { display: grid; gap: 8px; margin-bottom: 16px; }
+.hoja .jg div { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: #fff; border: 2px solid #EADBB6; font-weight: 800; }
+.hoja .jg i { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; color: #fff; font-size: 18px; flex: none; }
+.hoja .jg span { margin-left: auto; display: flex; gap: 1px; color: #E0D2AE; font-size: 15px; } .hoja .jg span .on { color: #FFC800; }
+.hoja .nota { padding: 12px 14px; border-radius: 14px; background: rgba(180,138,78,.15); font-weight: 800; color: #7A5A20; margin-bottom: 16px; line-height: 1.4; }
+.hoja .jugar { width: 100%; animation: none; }
 
 /* ---------- Ruta del tema ---------- */
 .ruta-cab { border-radius: 24px; padding: 22px 22px 24px; background: linear-gradient(135deg, var(--c) 0, #B24A00 100%); color: #fff; border-bottom: 5px solid #7D3400; }
@@ -344,6 +373,18 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
   </div>
 </main>
 
+<!-- Mapa de niveles de un mundo -->
+<main class="vista" id="v-mundo">
+  <div class="mn-top">
+    <a class="m-btn" href="#" id="mnVolver" aria-label="Volver a los mundos"><svg class="ic"><use href="#i-atras"/></svg></a>
+    <div class="placa-m" id="mnPlaca"></div>
+    <span class="m-chip"><svg class="ic"><use href="#i-estrella"/></svg><b id="mnEst">0</b></span>
+  </div>
+  <div class="mn-mapa" id="mnMapa"></div>
+</main>
+<div class="hoja-fondo" id="hojaFondo"></div>
+<section class="hoja" id="hoja" aria-live="polite"></section>
+
 <!-- Temas de un curso -->
 <main class="vista" id="v-curso">
   <section class="curso-cab" id="cursoCab"></section>
@@ -427,7 +468,14 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
      vendrá del panel, igual que los exámenes). area sirve para los filtros. */
   var AREAS = [['todos', 'Todos'], ['ciencias', 'Ciencias'], ['letras', 'Letras'], ['sociales', 'Sociales']];
   var CURSOS = [
-    { id: 'hp', nom: 'Historia del Perú', area: 'sociales', arte: 'a-historia', img: 'historia', c: '#F28A1E', c2: '#7A2E0A', temas: ['hp01'] },
+    { id: 'hp', nom: 'Historia del Perú', area: 'sociales', arte: 'a-historia', img: 'historia', c: '#F28A1E', c2: '#7A2E0A', temas: ['hp01'], mapa: 'andes',
+      // Niveles del mundo: cada uno es un tema (t: null = aún sin juegos). El último es el jefe del mundo.
+      niveles: [
+        { n: 'Poblamiento americano', t: 'hp01' }, { n: 'Chavín y Paracas', t: null }, { n: 'Mochica y Nasca', t: null },
+        { n: 'Tiahuanaco y Wari', t: null }, { n: 'Chimú y reinos regionales', t: null }, { n: 'Incas: origen y expansión', t: null },
+        { n: 'Incas: organización', t: null }, { n: 'Conquista del Tahuantinsuyo', t: null }, { n: 'Virreinato', t: null },
+        { n: 'Emancipación', t: null }, { n: 'Jefe: el Gran Templo', t: null }
+      ] },
     { id: 'bio', nom: 'Biología', area: 'ciencias', arte: 'a-biologia', img: 'biologia', c: '#1FC79A', c2: '#0B5E5E', temas: [] },
     { id: 'qui', nom: 'Química', area: 'ciencias', arte: 'a-quimica', img: 'quimica', c: '#B35CFF', c2: '#3D1A7A', temas: [] },
     { id: 'fis', nom: 'Física', area: 'ciencias', arte: 'a-fisica', c: '#2AA8F0', c2: '#0C3F86', temas: [] },
@@ -458,6 +506,7 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     confetiVivo++; var cv = $('confeti'); cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
     document.querySelectorAll('.vista').forEach(function (v) { v.classList.toggle('on', v.id === id); });
     document.body.classList.toggle('en-inicio', id === 'v-inicio');
+    document.body.classList.toggle('en-mundo', id === 'v-mundo');
     $('titulo').innerHTML = '<small>' + (sub || 'Modo Cachimbo') + '</small>' + titulo;
     window.scrollTo(0, 0);
   }
@@ -556,8 +605,46 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     $('chispas').innerHTML = h;
   })();
 
+  /* ---------- Mapa de niveles (assets/arcade-mundo.js) ---------- */
+  function temaCompleto(t) { return juegosDe(t).filter(function (j) { return !j.bloq; }).every(function (j) { return (estado.est[t + ':' + j.id] || 0) > 0; }); }
+  function irMapa(c) {
+    ver('v-mundo', c.nom, 'Arcade');
+    document.body.classList.add('en-mundo');
+    $('mnVolver').onclick = function (e) { e.preventDefault(); cerrarHoja(); irInicio(); };
+    $('mnPlaca').innerHTML = c.img ? '<img src="assets/arcade/nombre-' + c.img + '.webp" alt="' + c.nom + '">' : '<span class="txt">' + c.nom + '</span>';
+    var e = 0; c.temas.forEach(function (t) { e += estrellasTema(t); }); $('mnEst').textContent = e;
+    var r = MCMundo.abrir($('mnMapa'), {
+      niveles: c.niveles, tema: c.mapa, ancho: 620,
+      estrellas: estrellasTema, max: maxTema, completo: temaCompleto,
+      tocar: function (i, nv, s) { abrirHoja(c, i, nv, s); }
+    });
+    // La cámara empieza en el nivel actual
+    requestAnimationFrame(function () { if (r.foco) window.scrollTo(0, Math.max(0, r.foco.getBoundingClientRect().top + window.scrollY - innerHeight * .55)); });
+  }
+  function abrirHoja(c, i, nv, s) {
+    var ult = i === c.niveles.length - 1, h = '<div class="agarre"></div><div class="nv">' + (ult ? 'Jefe del mundo' : 'Nivel ' + (i + 1)) + '</div><h3>' + nv.n + '</h3>';
+    if (nv.t && s.abierto) {
+      var t = nv.t;
+      h += '<div class="estr">' + [1, 2, 3].map(function (k) { return estrella(k <= s.tres); }).join('') + '</div><div class="jg">' +
+        juegosDe(t).map(function (j) {
+          var e = estado.est[t + ':' + j.id] || 0;
+          return '<div><i style="background:' + j.c + '"><svg class="ic"><use href="#' + j.ic + '"/></svg></i>' + j.nom + '<span>' + [1, 2, 3].map(function (k) { return estrella(k <= e); }).join('') + '</span></div>';
+        }).join('') + '</div><button class="jugar" type="button" id="hojaJugar">' + (s.hecho ? 'Repetir' : 'Jugar') + '</button>';
+    } else if (nv.t) {
+      h += '<p class="nota">🔒 Termina el nivel ' + i + ' para abrir este.</p><button class="jugar" type="button" disabled>Bloqueado</button>';
+    } else {
+      h += '<p class="nota">🛠️ Este nivel está en construcción. ¡Muy pronto tendrá sus juegos!</p><button class="jugar" type="button" disabled>Próximamente</button>';
+    }
+    $('hoja').innerHTML = h;
+    $('hoja').classList.add('on'); $('hojaFondo').classList.add('on');
+    var b = $('hojaJugar'); if (b) b.onclick = function () { cerrarHoja(); estado.tema = nv.t; irRuta(); };
+  }
+  function cerrarHoja() { $('hoja').classList.remove('on'); $('hojaFondo').classList.remove('on'); }
+  $('hojaFondo').onclick = cerrarHoja;
+
   function irCurso(id) {
     var c = cursoDe(id); estado.curso = id;
+    if (c.niveles && window.MCMundo) return irMapa(c);
     ver('v-curso', c.nom, 'Arcade'); volverA(irInicio);
     var e = 0, m = 0; c.temas.forEach(function (t) { e += estrellasTema(t); m += maxTema(t); });
     $('cursoCab').style.setProperty('--cc', c.c);
