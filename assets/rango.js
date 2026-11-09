@@ -17,7 +17,7 @@
 (function () {
   if (window.MCRango) return;
   // c: texto · t: fondo · b: borde · o: barra; min: XP de la semana para cada nivel
-  // mu: cuánto vale la respuesta correcta en ese rango, en %. Desde supabase/81-xp-error-0-tope-10000.sql
+  // mu: cuánto vale la respuesta correcta en ese rango, en %. Desde supabase/81-xp-error-0-multiplicadores.sql
   //     más arriba, menos XP (Leyenda ×0,25); debe coincidir con public.xp_mult.
   // antes: la tabla que regía hasta la semana del 26 oct 2026 (esas semanas se siguen viendo con ella)
   var DESDE = '2026-11-02';  // primer lunes con la tabla min y los nombres nuevos

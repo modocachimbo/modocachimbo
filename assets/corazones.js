@@ -205,7 +205,7 @@
 
   /* ---------- Respuestas: XP y corazones ---------- */
   var buf = { ok: 0, mal: 0, seguidas: 0 }, racha = 0, tEnvio = null, enviando = false, vuelo = 0;
-  // XP por respuesta: el mismo cálculo que sumar_xp en supabase/81-xp-error-0-tope-10000.sql.
+  // XP por respuesta: el mismo cálculo que sumar_xp en supabase/81-xp-error-0-multiplicadores.sql.
   // [correcta, incorrecta]: 15 donde se gasta corazón, 10 en lo demás; la incorrecta da 0;
   // la correcta se multiplica por el rango de la semana (xp_mult, en %, lo manda el servidor).
   var XP_MODO = { repaso: [15, 0], fijas: [15, 0], seminarios: [15, 0], banqueo: [15, 0], simulacro: [10, 0],

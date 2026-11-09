@@ -1,5 +1,5 @@
 -- =========================================================
--- Modo Cachimbo · Error 0 XP, multiplicadores más bajos y tope de 10 000 al día
+-- Modo Cachimbo · Error 0 XP y multiplicadores más bajos (sin tope diario)
 -- Cómo usarlo: Supabase → SQL Editor → New query → pega todo
 -- este archivo → Run. Se puede volver a correr sin problema.
 -- Necesita 60-multiplicadores-leyenda-04.sql. Rige desde que se corre
@@ -10,8 +10,7 @@
 --       sin rango, Bronce, Plata ×1 · Esmeralda ×0,9 · Zafiro ×0,8
 --       Amatista ×0,7 · Mítico ×0,5 · Leyenda ×0,25
 --     (se redondea: 15 → 14, 12, 11, 8, 4 · 10 → 9, 8, 7, 5, 3)
---   · Tope diario: 10 000 XP por respuestas (quien ya pasó 10 000 hoy no
---     suma más hasta mañana). Misiones (+40) siguen sumando aparte.
+--   · Sin tope diario.
 --   · Los XP mínimos de cada rango NO cambian (Leyenda desde 50 000).
 --   · Se quedan el freno de ritmo (120 XP por minuto) y el tope de
 --     Vocabulario + Flashcards (1000 al día).
@@ -31,7 +30,7 @@ $$;
 revoke all on function public.xp_mult(integer) from public, anon;
 grant execute on function public.xp_mult(integer) to authenticated;
 
--- Respuestas: igual que en 60-multiplicadores-leyenda-04.sql, pero el error da 0 y hay tope diario.
+-- Respuestas: igual que en 60-multiplicadores-leyenda-04.sql, pero el error da 0.
 -- p = { fuente, curso, ok, mal, seguidas }
 create or replace function public.sumar_xp(p jsonb)
 returns jsonb language plpgsql volatile security definer set search_path = '' as $$
@@ -65,9 +64,6 @@ begin
   -- La correcta se multiplica según el rango que tiene ahora (XP de la semana)
   select coalesce(x.xp, 0) into xps from (select 1) d left join public.xp_semana x on x.usuario = uid and x.semana = public.cz_lunes();
   xp := ok * round(b_ok * public.xp_mult(xps) / 100.0)::int;
-
-  -- Tope diario: como máximo 10 000 XP por respuestas al día (se reinicia a la medianoche de Lima)
-  xp := least(xp, greatest(10000 - r.xp_hoy, 0));
 
   -- Tarjetas y Vocabulario: el alumno marca él mismo «me la sé», así que
   -- dan como máximo 1000 XP al día entre las dos.
