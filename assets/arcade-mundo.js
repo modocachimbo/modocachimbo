@@ -582,7 +582,7 @@
       h += '<button class="' + cls + '" type="button" data-i="' + i + '" style="left:' + (pts[i][0] / W * 100).toFixed(2) + '%;top:' + (pts[i][1] / dib.H * 100).toFixed(2) + '%" aria-label="Nivel ' + (i + 1) + ': ' + nv.n + '">' +
         '<span class="sombra"></span><span class="base"></span><span class="disco">' + dentro + '</span>' + (jefe ? ESPADAS : '') +
         (s.hecho ? '<span class="est">' + [1, 2, 3].map(function (k) { return k <= s.tres ? ESTRELLA : ESTRELLA_V; }).join('') + '</span>' : '') +
-        (i === actual ? '<span class="pin">¡Juega!</span>' : '') + '<span class="nom">' + nv.n + '</span></button>';
+        (i === actual ? '<span class="pin">¡Juega!</span>' : '') + (i === 0 ? '<span class="nom">' + nv.n + '</span>' : '') + '</button>';
     });
     var ICO = {
       manantial: '<svg viewBox="0 0 24 24"><path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z" fill="#34B9D9"/><path d="M9 14a3 3 0 0 0 3 3" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>',
