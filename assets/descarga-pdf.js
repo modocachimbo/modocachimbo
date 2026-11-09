@@ -71,6 +71,8 @@
     pantalla: { comunicacion: '#CE82FF', matematica: '#1CB0F6', 'ciencia-tecnologia': '#C6E000', 'ciencias-sociales': '#FF9600', general: '#1CB0F6' },
     letra: 13.4,          // px del texto de las preguntas (a 96 ppp ≈ 10 pt)
     hoja: { w: 794, h: 1123, arriba: 91, abajo: 68, lado: 53, sep: 34, gap: 16 },  // A4 vertical en px (96 ppp)
+    imgAlto: 190,         // alto máximo de un gráfico (px a 96 ppp ≈ 5 cm); se achica hasta imgMin si así entra en el hueco
+    imgMin: 110,
     escala: 2             // nitidez de la imagen (2 ≈ 192 ppp)
   };
   var PX_MM = 794 / 210;
@@ -538,7 +540,15 @@
   Armador.prototype.medidas = function (el) {
     var tam = this.tam;
     Array.prototype.forEach.call(el.querySelectorAll('img'), function (im) {
-      var t = tam[im.getAttribute('src')]; if (t) { im.setAttribute('width', t[0]); im.setAttribute('height', t[1]); }
+      var src = im.getAttribute('src'), t = tam[src];
+      if (t) {
+        // Tamaño fijo desde ya (sin esperar a que cargue): ancho hasta 80 % de la columna y alto hasta --imgh
+        im.setAttribute('width', t[0]); im.setAttribute('height', t[1]);
+        im.style.aspectRatio = t[0] + ' / ' + t[1];
+        im.style.width = 'min(var(--imgw, 80%), calc(var(--imgh, ' + ESTILO.imgAlto + 'px) * ' + (t[0] / t[1]).toFixed(4) + '), ' + t[0] + 'px)';
+        im.style.height = 'auto';
+      }
+      if (tam['tinta:' + src]) im.setAttribute('src', tam['tinta:' + src]);
       im.loading = 'eager';
     });
   };
@@ -675,6 +685,12 @@
     }
     // Títulos (asignatura) no se quedan solos al final: necesitan algo de lo que sigue
     var junto = Math.min(op.conSiguiente || 0, 140);
+    if (op.sigMedido) {
+      // Lo mínimo que tiene que entrar de lo que sigue: hasta su primer corte permitido, o entero si es corto
+      var sm = op.sigMedido, minS = Math.min(160, Math.max(110, sm.h * 0.34)), pc = sm.h;
+      (sm.cortes || []).some(function (cy) { if (cy >= minS && sm.h - cy >= 48) { pc = cy; return true; } return false; });
+      junto = Math.min(pc, pg.h * 0.6);
+    }
     if ((m.h < 70 || op.titulo) && junto && pg.h - pg.y[pg.col] < m.h + junto && pg.y[pg.col] > pg.base) siguiente();
     var desde = 0, primero = true;
     while (desde < m.h - 1) {
@@ -835,17 +851,26 @@
           tmH = '';
           // Formato 1: la cabecera de un área nueva se separa de la última pregunta del área anterior
           if (s._primera && M === 1 && A.pg && A.pg.y[A.pg.col] > A.pg.base) A.pg.y[A.pg.col] += 14;
-          if (t) A.columna(t, { pal: pal, gap: 10, titulo: true, conSiguiente: sig });
+          if (t) A.columna(t, { pal: pal, gap: 10, titulo: true, conSiguiente: sig, sigMedido: cab || m });
         } else if (prim && s.titulo) {
-          A.columna(M ? cursoColHtml(M, s.titulo) : '<div class="asig"><span>' + esc(s.titulo) + '</span></div>', { pal: pal, gap: 10, titulo: !!M, conSiguiente: sig });
+          A.columna(M ? cursoColHtml(M, s.titulo) : '<div class="asig"><span>' + esc(s.titulo) + '</span></div>', { pal: pal, gap: 10, titulo: true, conSiguiente: sig, sigMedido: cab || m });
         }
         prim = false;
-        if (tmH) A.columna(tmH, { pal: pal, gap: 8, titulo: true, conSiguiente: sig });
+        if (tmH) A.columna(tmH, { pal: pal, gap: 8, titulo: true, conSiguiente: sig, sigMedido: cab || m });
         if (cab) {
           // La lectura va pegada a su primera pregunta; si es más alta que una columna, a todo el ancho
           A.columna(null, { medido: cab, gap: 10 });
         }
-        // Lectura más alta que una columna: va a todo el ancho, con letra normal
+        // Con gráfico: si no entra en lo que queda de la columna, se achica el gráfico (hasta imgMin) para llenar el hueco
+        if (A.pg && /<img/i.test(m.el.innerHTML)) {
+          var libre = A.pg.h - A.pg.y[A.pg.col];
+          if (m.h > libre && libre > ESTILO.imgMin + 60) {
+            for (var ih = ESTILO.imgAlto - 20; ih >= ESTILO.imgMin; ih -= 20) {
+              var m2 = A.medir('<div style="--imgh:' + ih + 'px">' + preguntaHtml(q, n, M) + '</div>', A.colW, pal);
+              if (m2.h <= libre) { m = m2; break; }
+            }
+          }
+        }
         A.columna(null, { medido: m });
       });
     });
@@ -1161,6 +1186,25 @@
     });
   }
   // Tamaño real de cada imagen de las preguntas (para reservar su lugar al medir)
+  // Gráfico en blanco y negro (líneas negras sobre blanco): se pinta con el color del texto del PDF.
+  // Si tiene color (una ilustración, una foto), se deja tal cual.
+  function entintar(img) {
+    var w = img.naturalWidth, h = img.naturalHeight; if (!w || !h) return null;
+    var k = Math.min(1, 1400 / Math.max(w, h)), cw = Math.round(w * k), ch = Math.round(h * k);
+    var cv = document.createElement('canvas'); cv.width = cw; cv.height = ch;
+    var cx = cv.getContext('2d'); cx.drawImage(img, 0, 0, cw, ch);
+    var d = cx.getImageData(0, 0, cw, ch), p = d.data, color = 0, tot = 0, i;
+    for (i = 0; i < p.length; i += 4 * 7) { if (p[i + 3] < 30) continue; tot++; var mx = Math.max(p[i], p[i + 1], p[i + 2]), mn = Math.min(p[i], p[i + 1], p[i + 2]); if (mx - mn > 40) color++; }
+    if (!tot || color / tot > 0.02) return null;
+    var t = ESTILO.tinta.replace('#', ''), R = parseInt(t.slice(0, 2), 16), G = parseInt(t.slice(2, 4), 16), B = parseInt(t.slice(4, 6), 16);
+    for (i = 0; i < p.length; i += 4) {
+      var L = (p[i] + p[i + 1] + p[i + 2]) / 765, a = p[i + 3] / 255;
+      L = 1 - (1 - L) * a;   // lo transparente cuenta como blanco
+      p[i] = Math.round(R + (255 - R) * L); p[i + 1] = Math.round(G + (255 - G) * L); p[i + 2] = Math.round(B + (255 - B) * L); p[i + 3] = 255;
+    }
+    cx.putImageData(d, 0, 0);
+    return cv.toDataURL('image/png');
+  }
   function precargar(doc) {
     var L = lienzo(), d = L.d, tmp = d.createElement('div'), tam = {};
     var qs = doc.secciones ? todas(doc.secciones) : (doc.cartas || []).map(function (c) { return c.q; }).filter(Boolean);
@@ -1177,7 +1221,7 @@
       var src = im.getAttribute('src');
       return new Promise(function (ok) {
         var x = new Image(), t = setTimeout(ok, 10000);
-        x.onload = function () { clearTimeout(t); tam[src] = [x.naturalWidth, x.naturalHeight]; ok(); };
+        x.onload = function () { clearTimeout(t); tam[src] = [x.naturalWidth, x.naturalHeight]; try { var e = entintar(x); if (e) tam['tinta:' + src] = e; } catch (er) {} ok(); };
         x.onerror = function () { clearTimeout(t); ok(); };
         x.src = new URL(src, location.href).href;
       });
