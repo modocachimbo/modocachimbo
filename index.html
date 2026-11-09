@@ -313,6 +313,9 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
 .nav a[aria-current] { background: var(--lima); color: var(--sobre-lima); clip-path: polygon(0 0, 100% 0, 96% 100%, 0 100%); }
 .nav a.duelo { color: var(--texto); }
 .nav a.duelo svg { color: var(--error); }
+/* Arcade en beta (assets/arcade-beta.js): solo admin + influencers */
+html:not(.arcade-si) a[href="arcade.html"] { display: none !important; }
+html.arcade-si .tabbar .solo-sin-arcade { display: none !important; }
 .nav a.arcade { color: var(--texto); }
 .nav a.arcade svg { color: #A35CFF; }
 .nav a .nv-nuevo { margin-left: auto; padding: 4px 8px; border-radius: 8px; background: var(--lima); color: var(--sobre-lima); font: 800 12px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; }
@@ -1217,6 +1220,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
 <script src="assets/acceso.js?v=165"></script>
 <script src="assets/candado.js?v=164"></script>
 <script src="assets/auth.js"></script>
+<script src="assets/arcade-beta.js"></script>
 <script src="assets/agenda.js"></script>
 </head>
 <body>
@@ -1427,6 +1431,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
 <nav class="tabbar disp" aria-label="Principal">
   <a href="#top" aria-current="page"><svg class="ic"><use href="#i-casa"/></svg>Inicio</a>
   <button type="button" data-hoja="cursos"><svg class="ic"><use href="#i-libro"/></svg>Cursos</button>
+  <a href="duelo.html" class="duelo solo-sin-arcade"><i><svg class="ic"><use href="#i-espadas"/></svg></i><span>Duelo</span></a>
   <a href="arcade.html" class="duelo arcade"><i><svg class="ic"><use href="#i-mando"/></svg></i><span>Arcade</span></a>
   <a href="coleccion.html"><svg class="ic"><use href="#i-cofre"/></svg>Colección</a>
   <a href="perfil.html"><svg class="ic"><use href="#i-persona"/></svg>Perfil</a>

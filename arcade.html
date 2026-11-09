@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<script src="assets/guardia.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0B0818">
 <link rel="manifest" href="manifest.webmanifest">
@@ -170,6 +171,17 @@ a { color: inherit; text-decoration: none; }
 .fin .datos small { color: var(--suave); font: 800 12px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; }
 .fin .datos .x strong { color: var(--lima); }
 
+/* Beta: solo admin + influencers (assets/arcade-beta.js, supabase/80-arcade-beta.sql) */
+html:not(.arcade-si) .vista, html:not(.arcade-si) #combo, html:not(.arcade-si) #xp { display: none !important; }
+.beta-aviso { display: none; max-width: 440px; margin: 60px auto; padding: 32px 24px; text-align: center; border-radius: 26px; background: var(--tarjeta); border: 1px solid var(--borde); border-bottom: 5px solid var(--morado); }
+html.arcade-no .beta-aviso { display: block; }
+.beta-aviso .ico { width: 72px; height: 72px; margin: 0 auto 14px; border-radius: 22px; display: grid; place-items: center; font-size: 38px; color: var(--morado); background: rgba(163,92,255,.15); }
+.beta-aviso b { display: block; font-size: 34px; }
+.beta-aviso p { margin: 10px 0 20px; color: var(--suave); font-weight: 700; line-height: 1.5; }
+.cargando { display: none; margin: 80px auto; width: 40px; height: 40px; border-radius: 50%; border: 4px solid var(--borde); border-top-color: var(--morado); animation: gira .8s linear infinite; }
+html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
+@keyframes gira { to { transform: rotate(1turn); } }
+.chip-beta { padding: 5px 9px; border-radius: 9px; background: var(--morado); color: #fff; font: 800 13px/1 var(--display); letter-spacing: .1em; }
 .confeti { position: fixed; inset: 0; pointer-events: none; z-index: 50; }
 
 @media (max-width: 720px) {
@@ -207,9 +219,18 @@ a { color: inherit; text-decoration: none; }
 <header class="cab">
   <a class="volver" id="volver" href="index.html" aria-label="Volver"><svg class="ic"><use href="#i-atras"/></svg></a>
   <h1 class="tit" id="titulo"><small>Modo Cachimbo</small>Arcade</h1>
+  <span class="chip-beta">Beta</span>
   <span class="combo" id="combo">x2</span>
   <span class="xp" id="xp"><svg class="ic"><use href="#i-rayo"/></svg><span id="xpN">0</span> XP</span>
 </header>
+
+<div class="cargando" aria-label="Cargando"></div>
+<section class="beta-aviso">
+  <div class="ico"><svg class="ic"><use href="#i-mando"/></svg></div>
+  <b class="tit">Arcade en beta</b>
+  <p>Lo estamos probando con el equipo y los influencers de Modo Cachimbo. Muy pronto estará abierto para todos.</p>
+  <a class="btn" href="index.html">Volver al inicio</a>
+</section>
 
 <!-- Inicio del Arcade -->
 <main class="vista on" id="v-inicio">
@@ -560,5 +581,8 @@ a { color: inherit; text-decoration: none; }
   
 })();
 </script>
+<script src="assets/mc-config.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/arcade-beta.js"></script>
 </body>
 </html>
