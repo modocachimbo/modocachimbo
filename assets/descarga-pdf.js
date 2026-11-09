@@ -71,8 +71,8 @@
     pantalla: { comunicacion: '#CE82FF', matematica: '#1CB0F6', 'ciencia-tecnologia': '#C6E000', 'ciencias-sociales': '#FF9600', general: '#1CB0F6' },
     letra: 13.4,          // px del texto de las preguntas (a 96 ppp ≈ 10 pt)
     hoja: { w: 794, h: 1123, arriba: 91, abajo: 68, lado: 53, sep: 34, gap: 16 },  // A4 vertical en px (96 ppp)
-    imgAlto: 190,         // alto máximo de un gráfico (px a 96 ppp ≈ 5 cm); se achica hasta imgMin si así entra en el hueco
-    imgMin: 110,
+    imgAlto: 160,         // alto máximo de un gráfico (px a 96 ppp ≈ 4,2 cm); se achica hasta imgMin si así entra en el hueco
+    imgMin: 90,
     escala: 2             // nitidez de la imagen (2 ≈ 192 ppp)
   };
   var PX_MM = 794 / 210;
@@ -565,7 +565,10 @@
       // Las alternativas se pueden cortar entre filas para aprovechar la hoja, pero la primera fila
       // nunca se separa del enunciado: va pegada a la última línea de arriba (unos 26 px)
       Array.prototype.forEach.call(o.children, function (c) { var q = c.getBoundingClientRect(); cajas.push([q.top - top, q.bottom - top]); });
-      var p1 = o.children[0] && o.children[0].getBoundingClientRect(); if (p1) cajas.push([r.top - top - 26, p1.bottom - top]);
+      // Con gráfico arriba, sí se puede cortar justo antes de las alternativas: el enunciado y el gráfico
+      // llenan el final de la columna y las alternativas siguen arriba de la siguiente
+      var conGraf = !!b.querySelector('img,.g svg,.mcq-graf');
+      var p1 = o.children[0] && o.children[0].getBoundingClientRect(); if (p1 && !conGraf) cajas.push([r.top - top - 26, p1.bottom - top]);
     });
     var tw = D.createTreeWalker(b, NodeFilter.SHOW_TEXT, null), t, rg = D.createRange();
     while ((t = tw.nextNode())) {
@@ -864,8 +867,8 @@
         // Con gráfico: si no entra en lo que queda de la columna, se achica el gráfico (hasta imgMin) para llenar el hueco
         if (A.pg && /<img/i.test(m.el.innerHTML)) {
           var libre = A.pg.h - A.pg.y[A.pg.col];
-          if (m.h > libre && libre > ESTILO.imgMin + 60) {
-            for (var ih = ESTILO.imgAlto - 20; ih >= ESTILO.imgMin; ih -= 20) {
+          if (m.h > libre && libre > ESTILO.imgMin + 40) {
+            for (var ih = ESTILO.imgAlto - 10; ih >= ESTILO.imgMin; ih -= 10) {
               var m2 = A.medir('<div style="--imgh:' + ih + 'px">' + preguntaHtml(q, n, M) + '</div>', A.colW, pal);
               if (m2.h <= libre) { m = m2; break; }
             }
