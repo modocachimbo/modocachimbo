@@ -560,27 +560,49 @@
     var D = b.ownerDocument, top = b.getBoundingClientRect().top, cajas = [];
     var atom = b.querySelectorAll('img,svg,.katex-display,.katex,tr,summary,.qn,.qn1,.nm,.arc1,.arc2,.tm1,.tm2,.mcq-par,.mcq-an,.mcq-img,.g,.abierta,.mcq-etq,.hr,.vf,.vr1,.vh1');
     Array.prototype.forEach.call(atom, function (e) { var r = e.getBoundingClientRect(); if (r.height) cajas.push([r.top - top, r.bottom - top]); });
+    // Claves A–E: se pueden partir entre filas, pero con al menos 2 claves a cada lado
+    // (A B | C D E, o A B C | D E). Una clave sola nunca pasa a la otra columna.
     Array.prototype.forEach.call(b.querySelectorAll('.ops'), function (o) {
-      var r = o.getBoundingClientRect();
-      // Las alternativas se pueden cortar entre filas para aprovechar la hoja, pero la primera fila
-      // nunca se separa del enunciado: va pegada a la última línea de arriba (unos 26 px)
-      // Las alternativas A–E van siempre juntas (no se parten entre columnas). Solo si son enormes
-      // (más de ~8 cm) se permite cortar entre filas, para no dejar media columna vacía
-      if (r.height > 300) Array.prototype.forEach.call(o.children, function (c) { var q = c.getBoundingClientRect(); cajas.push([q.top - top, q.bottom - top]); });
-      else cajas.push([r.top - top, r.bottom - top]);
-      // Con gráfico arriba, sí se puede cortar justo antes de las alternativas: el enunciado y el gráfico
-      // llenan el final de la columna y las alternativas siguen arriba de la siguiente
-      var conGraf = !!b.querySelector('img,.g svg,.mcq-graf');
-      // Sin gráfico: las alternativas van con las dos últimas líneas del enunciado (nunca pasa sola una
-      // línea suelta como «gas?» a la otra columna)
-      var p1 = o.children[0] && o.children[0].getBoundingClientRect(); if (p1 && !conGraf) cajas.push([r.top - top - 46, p1.bottom - top]);
+      var filas = [];
+      Array.prototype.forEach.call(o.children, function (c) {
+        var q = c.getBoundingClientRect(); if (!q.height) return;
+        cajas.push([q.top - top, q.bottom - top]);
+        var f = filas[filas.length - 1];
+        if (f && q.top < f.bot - 4) { f.n++; f.bot = Math.max(f.bot, q.bottom); } else filas.push({ top: q.top, bot: q.bottom, n: 1 });
+      });
+      var total = filas.reduce(function (s, f) { return s + f.n; }, 0), antes = 0;
+      for (var i = 0; i < filas.length - 1; i++) {
+        antes += filas[i].n;
+        if (antes < 2 || total - antes < 2) cajas.push([filas[i].top - top, filas[i + 1].bot - top]);
+      }
     });
-    // Antes de un gráfico tampoco pasa sola la última línea del texto: o se corta justo antes del
-    // gráfico, o al menos dos líneas más arriba
-    Array.prototype.forEach.call(b.querySelectorAll('img,.g'), function (g) {
-      if (g.closest('.ops')) return;
-      var r = g.getBoundingClientRect(); if (r.height) cajas.push([r.top - top - 46, r.top - top - 10]);
+    // Texto: se corta entre líneas, pero siempre con al menos 2 líneas a cada lado del corte
+    // (nunca pasa una línea suelta como «gas?», ni se queda sola la primera línea con el número)
+    var lineas = [], rg0 = D.createRange(), tw0 = D.createTreeWalker(b, NodeFilter.SHOW_TEXT, null), t0;
+    while ((t0 = tw0.nextNode())) {
+      if (!t0.nodeValue.trim() || !t0.parentElement || t0.parentElement.closest('.ops,table,.katex-display,.g,svg,.qn,.qn1,.nm,.mcq-etq,.katex-mathml')) continue;
+      rg0.selectNodeContents(t0);
+      Array.prototype.forEach.call(rg0.getClientRects(), function (r) { if (r.height) lineas.push([r.top - top, r.bottom - top]); });
+    }
+    lineas.sort(function (p, q) { return p[0] - q[0]; });
+    var ls = [];
+    lineas.forEach(function (r) { var u = ls[ls.length - 1]; if (u && r[0] < u[1] - 4) u[1] = Math.max(u[1], r[1]); else ls.push([r[0], r[1]]); });
+    // Lo que no es texto (gráficos, fórmulas grandes, tablas, claves) separa los tramos de texto:
+    // ahí sí se puede cortar (texto | gráfico + claves, o texto + gráfico | claves)
+    var muros = Array.prototype.map.call(b.querySelectorAll('img,.g,.katex-display,table,.ops,.mcq-img'), function (e) { return e.getBoundingClientRect().top - top; });
+    var tramos = [], tr = [];
+    ls.forEach(function (l) {
+      if (tr.length) { var prev = tr[tr.length - 1]; if (muros.some(function (y) { return y >= prev[1] - 2 && y <= l[0] + 2; })) { tramos.push(tr); tr = []; } }
+      tr.push(l);
     });
+    if (tr.length) tramos.push(tr);
+    tramos.forEach(function (x) {
+      if (x.length < 2) return;
+      cajas.push([x[0][0], x[1][1]]);
+      cajas.push([x[x.length - 2][0], x[x.length - 1][1]]);
+    });
+    // El número de la pregunta va con sus dos primeras líneas
+    if (tramos[0] && tramos[0].length >= 2) cajas.push([0, tramos[0][1][1]]);
     var tw = D.createTreeWalker(b, NodeFilter.SHOW_TEXT, null), t, rg = D.createRange();
     while ((t = tw.nextNode())) {
       if (!t.nodeValue.trim()) continue;
@@ -702,11 +724,11 @@
     var junto = Math.min(op.conSiguiente || 0, 140);
     if (op.sigMedido) {
       // Lo mínimo que tiene que entrar de lo que sigue: hasta su primer corte permitido, o entero si es corto
-      var sm = op.sigMedido, minS = Math.min(160, Math.max(110, sm.h * 0.34)), pc = sm.h;
+      var sm = op.sigMedido, minS = 40, pc = sm.h;
       (sm.cortes || []).some(function (cy) { if (cy >= minS && sm.h - cy >= 48) { pc = cy; return true; } return false; });
       junto = Math.min(pc, pg.h * 0.6);
     }
-    if ((m.h < 70 || op.titulo) && junto && pg.h - pg.y[pg.col] < m.h + junto && pg.y[pg.col] > pg.base) siguiente();
+    if ((m.h < 70 || op.titulo) && junto && pg.h - pg.y[pg.col] < m.h + (op.gap != null ? op.gap : G) + junto + 4 && pg.y[pg.col] > pg.base) siguiente();
     var desde = 0, primero = true;
     while (desde < m.h - 1) {
       var libre = pg.h - pg.y[pg.col], resta = m.h - desde, x = pg.col ? this.colW + sep : 0, y = pg.y[pg.col];
@@ -722,10 +744,8 @@
       // No entra: se busca el último corte que quepa y se sigue en la otra columna u hoja
       var corte = 0;
       (m.cortes || []).forEach(function (cy) { if (cy > desde + 1 && cy - desde <= libre && m.h - cy >= 48) corte = cy; });
-      // El primer pedazo tiene que ser al menos unas 5 líneas (o un tercio si la pregunta es corta);
-      // si solo entraría el título y una o dos líneas, la pregunta entera pasa a la otra columna u hoja
-      // (el título más unas 3 líneas): menos que eso sí deja un pedacito suelto; más, desperdicia hoja
-      var minimo = primero ? Math.min(130, Math.max(85, m.h * 0.3)) : MIN;
+      // Los cortes ya garantizan 2 líneas (o 2 claves) a cada lado: cualquier corte permitido sirve
+      var minimo = primero ? 40 : MIN;
       if (op.noDividir || !corte || corte - desde < minimo) {
         if (y <= pg.base && libre >= pg.h * 0.9) {
           // Ni en una columna vacía entra hasta el primer corte (imagen enorme): se achica
