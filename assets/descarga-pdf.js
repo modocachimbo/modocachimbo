@@ -568,7 +568,9 @@
       // Con gráfico arriba, sí se puede cortar justo antes de las alternativas: el enunciado y el gráfico
       // llenan el final de la columna y las alternativas siguen arriba de la siguiente
       var conGraf = !!b.querySelector('img,.g svg,.mcq-graf');
-      var p1 = o.children[0] && o.children[0].getBoundingClientRect(); if (p1 && !conGraf) cajas.push([r.top - top - 26, p1.bottom - top]);
+      // Sin gráfico: las alternativas van con las dos últimas líneas del enunciado (nunca pasa sola una
+      // línea suelta como «gas?» a la otra columna)
+      var p1 = o.children[0] && o.children[0].getBoundingClientRect(); if (p1 && !conGraf) cajas.push([r.top - top - 46, p1.bottom - top]);
     });
     var tw = D.createTreeWalker(b, NodeFilter.SHOW_TEXT, null), t, rg = D.createRange();
     while ((t = tw.nextNode())) {
