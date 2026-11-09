@@ -163,7 +163,7 @@ body.en-inicio .cab { display: none; }
 }
 
 /* ---------- Mapa de niveles del mundo (assets/arcade-mundo.js) ---------- */
-body.en-mundo { background: #3F7F26; }
+body.en-mundo { background: #1E86BE; }
 body.en-mundo .cab { display: none; }
 #v-mundo { max-width: none; padding: 0; }
 .mn-top { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 10px; padding: max(10px, env(safe-area-inset-top)) 12px 10px; background: linear-gradient(180deg, rgba(20,40,70,.85), rgba(20,40,70,0)); }
@@ -171,7 +171,7 @@ body.en-mundo .cab { display: none; }
 .mn-top .placa-m { flex: 1; display: flex; justify-content: center; min-width: 0; }
 .mn-top .placa-m img { height: 52px; width: auto; max-width: 100%; filter: drop-shadow(0 4px 6px rgba(0,0,0,.45)); }
 .mn-top .placa-m .txt { padding: 8px 18px; border-radius: 12px; background: linear-gradient(180deg, #8C8576, #6D6758); border: 3px solid #4A4538; font: 900 20px/1 var(--cuerpo); color: #EDE6D2; text-transform: uppercase; }
-.mn-mapa { margin-top: -72px; background: linear-gradient(90deg, #2F6A1E, #3F7F26 18%, #3F7F26 82%, #2F6A1E); }
+.mn-mapa { margin-top: -72px; background: linear-gradient(90deg, #1A6FA3, #2A9FD3 25%, #2A9FD3 75%, #1A6FA3); }
 .mn-mapa .mm { box-shadow: 0 0 60px rgba(0,0,0,.35); }
 /* Hoja del nivel */
 .hoja-fondo { position: fixed; inset: 0; z-index: 60; background: rgba(5,10,25,.55); opacity: 0; pointer-events: none; transition: opacity .25s; }
@@ -614,7 +614,7 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     $('mnPlaca').innerHTML = c.img ? '<img src="assets/arcade/nombre-' + c.img + '.webp" alt="' + c.nom + '">' : '<span class="txt">' + c.nom + '</span>';
     var e = 0; c.temas.forEach(function (t) { e += estrellasTema(t); }); $('mnEst').textContent = e;
     var r = MCMundo.abrir($('mnMapa'), {
-      niveles: c.niveles, tema: c.mapa, ancho: 620,
+      niveles: c.niveles, tema: c.mapa, ancho: 560,
       estrellas: estrellasTema, max: maxTema, completo: temaCompleto,
       tocar: function (i, nv, s) { abrirHoja(c, i, nv, s); }
     });
