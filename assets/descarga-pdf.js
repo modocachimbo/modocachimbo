@@ -564,13 +564,22 @@
       var r = o.getBoundingClientRect();
       // Las alternativas se pueden cortar entre filas para aprovechar la hoja, pero la primera fila
       // nunca se separa del enunciado: va pegada a la última línea de arriba (unos 26 px)
-      Array.prototype.forEach.call(o.children, function (c) { var q = c.getBoundingClientRect(); cajas.push([q.top - top, q.bottom - top]); });
+      // Las alternativas A–E van siempre juntas (no se parten entre columnas). Solo si son enormes
+      // (más de ~8 cm) se permite cortar entre filas, para no dejar media columna vacía
+      if (r.height > 300) Array.prototype.forEach.call(o.children, function (c) { var q = c.getBoundingClientRect(); cajas.push([q.top - top, q.bottom - top]); });
+      else cajas.push([r.top - top, r.bottom - top]);
       // Con gráfico arriba, sí se puede cortar justo antes de las alternativas: el enunciado y el gráfico
       // llenan el final de la columna y las alternativas siguen arriba de la siguiente
       var conGraf = !!b.querySelector('img,.g svg,.mcq-graf');
       // Sin gráfico: las alternativas van con las dos últimas líneas del enunciado (nunca pasa sola una
       // línea suelta como «gas?» a la otra columna)
       var p1 = o.children[0] && o.children[0].getBoundingClientRect(); if (p1 && !conGraf) cajas.push([r.top - top - 46, p1.bottom - top]);
+    });
+    // Antes de un gráfico tampoco pasa sola la última línea del texto: o se corta justo antes del
+    // gráfico, o al menos dos líneas más arriba
+    Array.prototype.forEach.call(b.querySelectorAll('img,.g'), function (g) {
+      if (g.closest('.ops')) return;
+      var r = g.getBoundingClientRect(); if (r.height) cajas.push([r.top - top - 46, r.top - top - 10]);
     });
     var tw = D.createTreeWalker(b, NodeFilter.SHOW_TEXT, null), t, rg = D.createRange();
     while ((t = tw.nextNode())) {
@@ -646,9 +655,10 @@
     Array.prototype.forEach.call(b.querySelectorAll('table'), function (t) {
       var r = b.clientWidth / t.getBoundingClientRect().width; if (r < 1) t.style.fontSize = Math.round(Math.max(0.75, r * 0.97) * 100) + '%';
     });
-    var h = b.offsetHeight, cortes = puntosDeCorte(b);
+    var h = b.offsetHeight, cortes = puntosDeCorte(b), arriba = b.getBoundingClientRect().top, finImg = 0;
+    Array.prototype.forEach.call(b.querySelectorAll('img'), function (im) { finImg = Math.max(finImg, im.getBoundingClientRect().bottom - arriba); });
     this.med.removeChild(b);
-    return { el: b, h: h, cortes: cortes };
+    return { el: b, h: h, cortes: cortes, finImg: finImg };
   };
   Armador.prototype.nuevaPagina = function (horizontal) {
     var H = ESTILO.hoja, p = this.D.createElement('div');
@@ -870,10 +880,14 @@
         // Con gráfico: si no entra en lo que queda de la columna, se achica el gráfico (hasta imgMin) para llenar el hueco
         if (A.pg && /<img/i.test(m.el.innerHTML)) {
           var libre = A.pg.h - A.pg.y[A.pg.col];
-          if (m.h > libre && libre > ESTILO.imgMin + 40) {
+          // Entra entera, o al menos el enunciado con el gráfico (las claves siguen en la otra columna)
+          var entra = function (mm) {
+            return mm.h <= libre || (mm.finImg && mm.cortes.some(function (c) { return c >= mm.finImg && c <= libre - 8 && mm.h - c >= 48; }));
+          };
+          if (!entra(m) && libre > ESTILO.imgMin + 40) {
             for (var ih = ESTILO.imgAlto - 10; ih >= ESTILO.imgMin; ih -= 10) {
               var m2 = A.medir('<div style="--imgh:' + ih + 'px">' + preguntaHtml(q, n, M) + '</div>', A.colW, pal);
-              if (m2.h <= libre) { m = m2; break; }
+              if (entra(m2)) { m = m2; break; }
             }
           }
         }
