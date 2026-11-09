@@ -313,6 +313,9 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
 .nav a[aria-current] { background: var(--lima); color: var(--sobre-lima); clip-path: polygon(0 0, 100% 0, 96% 100%, 0 100%); }
 .nav a.duelo { color: var(--texto); }
 .nav a.duelo svg { color: var(--error); }
+.nav a.arcade { color: var(--texto); }
+.nav a.arcade svg { color: #A35CFF; }
+.nav a .nv-nuevo { margin-left: auto; padding: 4px 8px; border-radius: 8px; background: var(--lima); color: var(--sobre-lima); font: 800 12px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; }
 .lado .top { margin: 0 18px; }
 .apoya { margin: auto 18px 0; padding: 14px 18px; background: linear-gradient(90deg, rgba(150, 90, 255, .22), var(--tarjeta)); border-left: 4px solid #9b5cff; }
 .apoya b { display: block; font-size: 18px; }
@@ -438,6 +441,9 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
 .j-duelo { grid-row: span 2; background: linear-gradient(160deg, #9b1426, #5e0d27 55%, #3b0b28); border-color: #ff4b4b; }
 .j-duelo .ic { font-size: 120px; right: 24px; bottom: 24px; }
 .j-duelo .chip { background: #ff4b4b; }
+.j-arc { grid-column: 1 / -1; order: 99; min-height: 0; background: linear-gradient(120deg, #5B2BD6, #2A1460 60%, #170D36); border-color: #A35CFF; }
+.j-arc .chip { background: var(--lima); color: var(--sobre-lima); }
+.j-arc .ic { font-size: 56px; }
 .j-sim { background: linear-gradient(160deg, #8a5a00, #4d3200); border-color: var(--amarillo); }
 .j-sim .chip { background: var(--amarillo); color: #2a1d00; }
 .j-ex { background: linear-gradient(160deg, #0c5f8f, #123864); border-color: var(--info); }
@@ -551,6 +557,7 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
   .tabbar .duelo i { position: absolute; left: 50%; top: -34px; translate: -50% 0; width: 70px; height: 76px; display: grid; place-items: center; background: #ff4b4b; color: #fff;
     clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); filter: drop-shadow(0 6px 10px rgba(255, 75, 75, .4)); }
   .tabbar .duelo i svg { font-size: 34px; }
+  .tabbar .arcade i { background: linear-gradient(160deg, #A35CFF, #5B2BD6); filter: drop-shadow(0 6px 10px rgba(124, 77, 255, .45)); }
   .tabbar .duelo span { margin-top: 44px; }
 }
 @media (max-width: 400px) {
@@ -1271,6 +1278,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
   <symbol id="i-casa" viewBox="0 0 24 24"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></symbol>
   <symbol id="i-libro" viewBox="0 0 24 24"><path d="M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z"/><path d="M5 18a2 2 0 0 1 2-2h12"/></symbol>
   <symbol id="i-espadas" viewBox="0 0 24 24"><path d="M3 3h3l9 9-3 3-9-9z"/><path d="M21 3h-3l-9 9 3 3 9-9z"/><path d="M10 18l8-8M14 18l-8-8"/><path d="M16 16l4 4M8 16l-4 4"/></symbol>
+  <symbol id="i-mando" viewBox="0 0 24 24"><path d="M7 7h10a5 5 0 0 1 4.9 6l-.8 4a2.6 2.6 0 0 1-4.5 1.2L14.5 16h-5l-2.1 2.2A2.6 2.6 0 0 1 2.9 17l-.8-4A5 5 0 0 1 7 7z"/><path d="M7 10v4M5 12h4"/><circle cx="16" cy="11" r=".6" fill="currentColor"/><circle cx="18" cy="13" r=".6" fill="currentColor"/></symbol>
   <symbol id="i-cofre" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="12"/><path d="M3 12h18M8 8V5h8v3M8 12v8M16 12v8"/></symbol>
   <symbol id="i-amigos" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.8"/><path d="M15.5 14.2A5.5 5.5 0 0 1 21.5 20"/></symbol>
   <symbol id="i-persona" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></symbol>
@@ -1294,6 +1302,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
       <a href="index.html" aria-current="page"><svg class="ic"><use href="#i-casa"/></svg>Inicio</a>
       <button type="button" data-hoja="cursos"><svg class="ic"><use href="#i-libro"/></svg>Cursos</button>
       <a href="duelo.html" class="duelo"><svg class="ic"><use href="#i-espadas"/></svg>Duelo</a>
+      <a href="arcade.html" class="arcade"><svg class="ic"><use href="#i-mando"/></svg>Arcade<b class="nv-nuevo">Nuevo</b></a>
       <a href="coleccion.html"><svg class="ic"><use href="#i-cofre"/></svg>Colección</a>
       <a href="amigos.html"><svg class="ic"><use href="#i-amigos"/></svg>Amigos<b class="am-bdg" data-am-bdg hidden></b></a>
       <a href="perfil.html"><svg class="ic"><use href="#i-persona"/></svg>Perfil</a>
@@ -1359,6 +1368,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
           <div class="sec-cab"><h2 class="tit">Modos de estudio</h2></div>
           <div class="modos">
             <a class="juego j-duelo duelo-banner" href="duelo.html" data-mc-nav="practicar"><span class="chip disp">Reto</span><b class="tit">Duelos</b><small>Reta hasta a 3 amigos en vivo</small><svg class="ic"><use href="#i-espadas"/></svg></a>
+            <a class="juego j-arc" href="arcade.html"><span class="chip disp">Nuevo</span><b class="tit">Arcade</b><small style="max-width:none">Aprende jugando: une, desliza y ordena</small><svg class="ic"><use href="#i-mando"/></svg></a>
             <a class="juego j-sim" href="simulacro.html" data-mc-nav="practicar"><span class="chip disp" id="simNuevo">Nuevo</span><b class="tit">Simulacro</b><small>Como el real, con tiempo</small><svg class="ic"><use href="#i-reloj"/></svg></a>
             <button class="juego j-ex" type="button" data-hoja="examenes" data-candado="examenes" data-candado-nombre="Exámenes"><b class="tit">Exámenes</b><small>Ordinario, CPU, Control</small><svg class="ic"><use href="#i-examen"/></svg></button>
             <button class="juego j-flash" type="button" data-hoja="flashcards"><b class="tit">Flashcards</b><small>Repasa por curso</small><svg class="ic"><use href="#i-tarjetas"/></svg></button>
@@ -1417,7 +1427,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
 <nav class="tabbar disp" aria-label="Principal">
   <a href="#top" aria-current="page"><svg class="ic"><use href="#i-casa"/></svg>Inicio</a>
   <button type="button" data-hoja="cursos"><svg class="ic"><use href="#i-libro"/></svg>Cursos</button>
-  <a href="duelo.html" class="duelo"><i><svg class="ic"><use href="#i-espadas"/></svg></i><span>Duelo</span></a>
+  <a href="arcade.html" class="duelo arcade"><i><svg class="ic"><use href="#i-mando"/></svg></i><span>Arcade</span></a>
   <a href="coleccion.html"><svg class="ic"><use href="#i-cofre"/></svg>Colección</a>
   <a href="perfil.html"><svg class="ic"><use href="#i-persona"/></svg>Perfil</a>
 </nav>

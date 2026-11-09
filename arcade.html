@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B0818">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="assets/app/icono-180.png">
+<title>Arcade · Modo Cachimbo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,800;1,900&family=Nunito:wght@600;800;900&display=swap">
+<script src="assets/app.js" defer></script>
+<script>(function () { var m = new URLSearchParams(location.search).get('modo'); try { m = m || localStorage.getItem('mc-modo'); } catch (e) {} if (m === 'claro' || m === 'oscuro') document.documentElement.setAttribute('data-modo', m); })();</script>
+<style>
+/* =========================================================
+   Modo Cachimbo · Arcade (prototipo)
+   Minijuegos por tema. Todo sale de un solo bloque de datos por tema
+   (PAR / VF / ORDEN), así que cualquier tema nuevo trae los 3 juegos solos.
+   ========================================================= */
+:root {
+  --fondo: #0B0818; --tarjeta: #151127; --tarjeta2: #1D1834; --borde: #2A2346;
+  --texto: #EEEAF7; --suave: #A99FC8; --lima: #C6E000; --sobre-lima: #151a03;
+  --ok: #58CC02; --mal: #FF4B4B; --oro: #FFC800; --morado: #A35CFF;
+  --c: #F07A1A; --c2: #FFB067; --c-soft: rgba(240,122,26,.16);
+  --display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
+  --cuerpo: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+:root[data-modo="claro"] { --fondo: #F6F5FA; --tarjeta: #FFFFFF; --tarjeta2: #EEECF5; --borde: #DCD8E8; --texto: #1A1626; --suave: #6B6485; --lima: #7FA300; --sobre-lima: #fff; --c-soft: rgba(240,122,26,.12); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--fondo); color: var(--texto); font-family: var(--cuerpo); -webkit-tap-highlight-color: transparent; }
+body { min-height: 100dvh; overflow-x: hidden; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+.disp { font-family: var(--display); font-weight: 800; text-transform: uppercase; letter-spacing: .04em; line-height: 1; }
+.tit { font-family: var(--display); font-style: italic; font-weight: 900; text-transform: uppercase; line-height: .95; }
+.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* Cabecera */
+.cab { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 14px; padding: 14px max(16px, env(safe-area-inset-left)) 14px; background: color-mix(in srgb, var(--fondo) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--borde); }
+.cab .volver { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 12px; background: var(--tarjeta); border: 1px solid var(--borde); font-size: 22px; }
+.cab h1 { font-size: 30px; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cab h1 small { display: block; font: 800 13px/1 var(--display); font-style: normal; letter-spacing: .08em; color: var(--suave); margin-bottom: 3px; }
+.xp { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 12px; background: var(--tarjeta); border: 1px solid var(--borde); font: 800 18px/1 var(--display); color: var(--lima); white-space: nowrap; }
+.xp .ic { font-size: 18px; color: var(--oro); }
+.combo { display: none; padding: 8px 12px; border-radius: 12px; background: linear-gradient(135deg, #FF8A00, #FF3D6E); color: #fff; font: italic 900 18px/1 var(--display); white-space: nowrap; }
+.combo.si { display: block; animation: pop .25s; }
+@keyframes pop { 50% { transform: scale(1.18); } }
+
+.vista { display: none; width: 100%; max-width: 1080px; margin: 0 auto; padding: 22px 16px calc(40px + env(safe-area-inset-bottom)); }
+.vista.on { display: block; animation: entra .28s ease-out; }
+@keyframes entra { from { opacity: 0; transform: translateY(10px); } }
+
+/* ---------- Inicio del Arcade ---------- */
+.hero { position: relative; overflow: hidden; border-radius: 24px; padding: 26px 24px; background: radial-gradient(120% 140% at 100% 0, #5B2BD6 0, #2A1460 45%, #170D36 100%); border: 1px solid #3B2A7A; border-bottom: 5px solid #7A4DFF; }
+.hero b { display: block; font-size: clamp(40px, 7vw, 64px); color: #fff; }
+.hero b span { color: var(--lima); }
+.hero p { margin-top: 8px; max-width: 36ch; color: #D9CFFF; font-weight: 700; line-height: 1.45; }
+.hero .pix { position: absolute; right: -10px; bottom: -18px; font-size: 150px; color: rgba(255,255,255,.1); transform: rotate(-12deg); }
+.fila { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 16px; }
+.reto, .duelo-a { position: relative; display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 20px; background: var(--tarjeta); border: 1px solid var(--borde); border-bottom: 4px solid var(--oro); }
+.duelo-a { border-bottom-color: var(--mal); }
+.reto .ico, .duelo-a .ico { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; font-size: 28px; background: rgba(255,200,0,.14); color: var(--oro); flex: none; }
+.duelo-a .ico { background: rgba(255,75,75,.14); color: var(--mal); }
+.reto b, .duelo-a b { display: block; font-size: 24px; }
+.reto small, .duelo-a small { display: block; color: var(--suave); font-weight: 700; font-size: 14px; margin-top: 3px; }
+.sec-t { margin: 30px 0 12px; font-size: 26px; display: flex; align-items: baseline; gap: 10px; }
+.sec-t small { font: 800 14px/1 var(--display); font-style: normal; letter-spacing: .06em; color: var(--suave); }
+.temas { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+.tema { position: relative; overflow: hidden; display: grid; gap: 10px; padding: 18px; border-radius: 20px; text-align: left; background: var(--tarjeta); border: 1px solid var(--borde); border-bottom: 4px solid var(--tc, var(--c)); transition: transform .15s; }
+.tema:not(.bloq):hover { transform: translateY(-3px); }
+.tema .curso { display: flex; align-items: center; gap: 8px; font: 800 13px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; color: var(--tc, var(--c)); }
+.tema .curso i { width: 10px; height: 10px; border-radius: 3px; background: var(--tc, var(--c)); }
+.tema b { font-size: 26px; }
+.tema .mini { display: flex; gap: 6px; flex-wrap: wrap; }
+.tema .mini span { padding: 4px 9px; border-radius: 8px; background: var(--tarjeta2); color: var(--suave); font: 800 12.5px/1 var(--display); letter-spacing: .05em; text-transform: uppercase; }
+.tema .prog { height: 8px; border-radius: 8px; background: var(--tarjeta2); overflow: hidden; }
+.tema .prog i { display: block; height: 100%; width: var(--p, 0%); background: var(--tc, var(--c)); border-radius: 8px; }
+.tema.bloq { opacity: .55; cursor: default; }
+.tema .pronto { position: absolute; right: 12px; top: 12px; padding: 4px 9px; border-radius: 8px; background: var(--tarjeta2); color: var(--suave); font: 800 12px/1 var(--display); letter-spacing: .08em; }
+.tema .nuevo { position: absolute; right: 12px; top: 12px; padding: 4px 9px; border-radius: 8px; background: var(--lima); color: var(--sobre-lima); font: 800 12px/1 var(--display); letter-spacing: .08em; }
+
+/* ---------- Ruta del tema ---------- */
+.ruta-cab { border-radius: 24px; padding: 22px 22px 24px; background: linear-gradient(135deg, var(--c) 0, #B24A00 100%); color: #fff; border-bottom: 5px solid #7D3400; }
+.ruta-cab small { font: 800 14px/1 var(--display); letter-spacing: .1em; text-transform: uppercase; opacity: .9; }
+.ruta-cab b { display: block; font-size: clamp(32px, 6vw, 48px); margin-top: 6px; }
+.ruta-cab p { margin-top: 8px; font-weight: 700; opacity: .92; }
+.ruta { position: relative; display: grid; gap: 26px; justify-items: center; padding: 34px 0 10px; }
+.ruta::before { content: ""; position: absolute; top: 40px; bottom: 40px; left: 50%; width: 6px; translate: -50% 0; background: repeating-linear-gradient(to bottom, var(--borde) 0 12px, transparent 12px 22px); border-radius: 6px; }
+.nodo { position: relative; display: flex; align-items: center; gap: 16px; width: min(420px, 100%); padding: 14px 18px 14px 14px; border-radius: 22px; background: var(--tarjeta); border: 1px solid var(--borde); border-bottom: 4px solid var(--nc); text-align: left; transition: transform .15s; }
+.nodo:nth-child(even) { translate: 28px 0; } .nodo:nth-child(odd) { translate: -28px 0; }
+.nodo:not(.bloq):hover { transform: scale(1.03); }
+.nodo .bola { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; font-size: 30px; color: #fff; background: var(--nc); box-shadow: 0 6px 0 color-mix(in srgb, var(--nc) 55%, #000); flex: none; }
+.nodo b { display: block; font-size: 25px; }
+.nodo small { display: block; color: var(--suave); font-weight: 700; font-size: 14px; margin-top: 3px; }
+.nodo .est { margin-left: auto; display: flex; gap: 2px; font-size: 18px; color: var(--borde); }
+.nodo .est .on { color: var(--oro); }
+.nodo.bloq { opacity: .5; cursor: default; }
+.nodo.bloq .bola { background: #3A3358; box-shadow: 0 6px 0 #241f3a; }
+
+/* ---------- Juegos: comunes ---------- */
+.juego-cab { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.juego-cab .t { flex: 1; min-width: 0; }
+.juego-cab .t b { display: block; font-size: 28px; }
+.juego-cab .t small { color: var(--suave); font-weight: 700; }
+.barra { height: 12px; border-radius: 12px; background: var(--tarjeta2); overflow: hidden; margin-bottom: 18px; }
+.barra i { display: block; height: 100%; width: 0; border-radius: 12px; background: linear-gradient(90deg, var(--lima), #7EE000); transition: width .35s; }
+.aviso { min-height: 24px; text-align: center; font-weight: 800; color: var(--suave); margin: 4px 0 10px; }
+.aviso.ok { color: var(--ok); } .aviso.mal { color: var(--mal); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 54px; padding: 0 26px; border-radius: 16px; font: 900 19px/1 var(--cuerpo); letter-spacing: .02em; background: var(--lima); color: var(--sobre-lima); border-bottom: 4px solid #7F9000; }
+.btn:active { transform: translateY(2px); border-bottom-width: 2px; }
+.btn.sec { background: var(--tarjeta); color: var(--texto); border: 1px solid var(--borde); border-bottom: 4px solid var(--borde); }
+.acciones { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
+
+/* 1 · Une parejas */
+.une { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 12px clamp(36px, 10vw, 120px); max-width: 820px; margin: 0 auto; }
+.une svg.lineas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.une .col { display: grid; gap: 12px; align-content: start; }
+.ficha { position: relative; display: flex; align-items: center; gap: 10px; min-height: 64px; padding: 10px 14px; border-radius: 16px; background: var(--tarjeta); border: 2px solid var(--borde); border-bottom-width: 5px; font-weight: 800; font-size: 15.5px; line-height: 1.25; text-align: left; transition: transform .12s, border-color .12s, background .12s; }
+.ficha .pt { position: absolute; top: 50%; width: 14px; height: 14px; margin-top: -7px; border-radius: 50%; background: var(--oro); box-shadow: 0 0 0 4px var(--fondo); }
+.col.izq .ficha .pt { right: -8px; } .col.der .ficha .pt { left: -8px; }
+.col.der .ficha { padding-left: 18px; }
+.ficha.sel { border-color: var(--morado); background: rgba(163,92,255,.16); transform: scale(1.03); }
+.ficha.hecha { border-color: var(--ok); background: rgba(88,204,2,.12); cursor: default; }
+.ficha.hecha .pt { background: var(--ok); }
+.ficha.error { animation: tiembla .35s; border-color: var(--mal); }
+@keyframes tiembla { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+
+/* 2 · Cartas V o F */
+.mesa { position: relative; height: 340px; max-width: 380px; margin: 6px auto 0; touch-action: none; }
+.carta { position: absolute; inset: 0; display: grid; align-content: center; justify-items: center; gap: 16px; padding: 30px 26px; border-radius: 28px; text-align: center; background: linear-gradient(160deg, var(--tarjeta2), var(--tarjeta)); border: 2px solid var(--borde); border-bottom-width: 6px; box-shadow: 0 18px 40px rgba(0,0,0,.35); user-select: none; -webkit-user-select: none; will-change: transform; }
+.carta .tag { padding: 5px 12px; border-radius: 10px; background: var(--c-soft); color: var(--c2); font: 800 13px/1 var(--display); letter-spacing: .1em; text-transform: uppercase; }
+.carta p { font-size: 22px; font-weight: 900; line-height: 1.3; }
+.carta .sello { position: absolute; top: 22px; padding: 6px 12px; border: 4px solid; border-radius: 12px; font: italic 900 30px/1 var(--display); text-transform: uppercase; opacity: 0; }
+.carta .sello.v { left: 20px; color: var(--ok); rotate: -14deg; } .carta .sello.f { right: 20px; color: var(--mal); rotate: 14deg; }
+.carta.atras { transform: scale(.94) translateY(16px); filter: brightness(.8); }
+.carta.atras2 { transform: scale(.88) translateY(32px); filter: brightness(.65); }
+.vf-btns { display: flex; justify-content: center; gap: 28px; margin-top: 26px; }
+.vf-btns button { width: 76px; height: 76px; border-radius: 50%; display: grid; place-items: center; font-size: 34px; background: var(--tarjeta); border: 2px solid var(--borde); border-bottom-width: 5px; }
+.vf-btns .no { color: var(--mal); } .vf-btns .si { color: var(--ok); }
+.vf-btns small { display: block; text-align: center; margin-top: 8px; color: var(--suave); font: 800 14px/1 var(--display); letter-spacing: .08em; }
+.explica { max-width: 420px; margin: 16px auto 0; min-height: 48px; text-align: center; color: var(--suave); font-weight: 700; line-height: 1.4; }
+.explica b { color: var(--texto); }
+
+/* 3 · Línea del tiempo */
+.linea { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; max-width: 900px; margin: 0 auto; }
+.linea h3 { font: 800 15px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; color: var(--suave); margin-bottom: 10px; }
+.huecos { position: relative; display: grid; gap: 12px; padding-left: 34px; }
+.huecos::before { content: ""; position: absolute; left: 13px; top: 10px; bottom: 10px; width: 4px; border-radius: 4px; background: linear-gradient(to bottom, var(--c), var(--morado)); }
+.hueco { position: relative; min-height: 62px; display: flex; align-items: center; padding: 10px 14px; border-radius: 16px; border: 2px dashed var(--borde); color: var(--suave); font-weight: 800; text-align: left; }
+.hueco::before { content: attr(data-n); position: absolute; left: -34px; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--tarjeta2); border: 2px solid var(--borde); font: 800 15px/1 var(--display); color: var(--texto); }
+.hueco.lleno { border-style: solid; background: var(--tarjeta); color: var(--texto); border-bottom-width: 5px; }
+.hueco.bien { border-color: var(--ok); background: rgba(88,204,2,.12); }
+.hueco.bien::before { background: var(--ok); border-color: var(--ok); color: #fff; }
+.hueco.malo { border-color: var(--mal); animation: tiembla .35s; }
+.pozo { display: grid; gap: 10px; align-content: start; }
+.pozo .ficha { min-height: 58px; }
+.pozo .ficha.usada { opacity: .25; pointer-events: none; }
+.lt-et { display: block; font: 800 12.5px/1 var(--display); letter-spacing: .08em; color: var(--c2); text-transform: uppercase; margin-bottom: 4px; }
+
+/* Resultado */
+.fin { max-width: 460px; margin: 10px auto 0; text-align: center; padding: 30px 24px; border-radius: 28px; background: var(--tarjeta); border: 1px solid var(--borde); border-bottom: 6px solid var(--lima); }
+.fin .estrellas { display: flex; justify-content: center; gap: 8px; font-size: 54px; color: var(--borde); }
+.fin .estrellas .on { color: var(--oro); animation: pop .4s backwards; }
+.fin .estrellas .on:nth-child(2) { animation-delay: .15s; } .fin .estrellas .on:nth-child(3) { animation-delay: .3s; }
+.fin b.t { display: block; font-size: 44px; margin-top: 12px; }
+.fin .datos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
+.fin .datos div { padding: 12px 6px; border-radius: 14px; background: var(--tarjeta2); }
+.fin .datos strong { display: block; font: 800 28px/1 var(--display); }
+.fin .datos small { color: var(--suave); font: 800 12px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; }
+.fin .datos .x strong { color: var(--lima); }
+
+.confeti { position: fixed; inset: 0; pointer-events: none; z-index: 50; }
+
+@media (max-width: 720px) {
+  .cab h1 { font-size: 24px; }
+  .xp { font-size: 16px; padding: 7px 10px; }
+  .une { gap: 10px 28px; }
+  .ficha { font-size: 14px; min-height: 60px; padding: 8px 11px; border-radius: 14px; }
+  .col.der .ficha { padding-left: 14px; }
+  .linea { grid-template-columns: 1fr; gap: 18px; }
+  .nodo:nth-child(even) { translate: 14px 0; } .nodo:nth-child(odd) { translate: -14px 0; }
+  .carta p { font-size: 20px; }
+  .mesa { height: 320px; }
+  .pozo .ficha.usada { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-atras" viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></symbol>
+  <symbol id="i-mando" viewBox="0 0 24 24"><path d="M7 7h10a5 5 0 0 1 4.9 6l-.8 4a2.6 2.6 0 0 1-4.5 1.2L14.5 16h-5l-2.1 2.2A2.6 2.6 0 0 1 2.9 17l-.8-4A5 5 0 0 1 7 7z"/><path d="M7 10v4M5 12h4"/><circle cx="16" cy="11" r=".6" fill="currentColor"/><circle cx="18" cy="13" r=".6" fill="currentColor"/></symbol>
+  <symbol id="i-rayo" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-estrella" viewBox="0 0 24 24"><path d="m12 2 3 6.6 7 .8-5.2 4.8 1.5 7L12 17.6 5.7 21.2l1.5-7L2 9.4l7-.8z" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-une" viewBox="0 0 24 24"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="18" r="2.5"/><circle cx="5" cy="18" r="2.5"/><circle cx="19" cy="6" r="2.5"/><path d="M7.5 6.5 16.5 17.5M7.5 17.5l9-11"/></symbol>
+  <symbol id="i-cartas" viewBox="0 0 24 24"><rect x="7" y="3" width="12" height="16" rx="2" transform="rotate(12 13 11)"/><rect x="4" y="5" width="12" height="16" rx="2" transform="rotate(-8 10 13)"/></symbol>
+  <symbol id="i-tiempo" viewBox="0 0 24 24"><path d="M4 12h16"/><circle cx="6" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="12" r="2"/><path d="M6 7V5M12 19v-2M18 7V5"/></symbol>
+  <symbol id="i-corona" viewBox="0 0 24 24"><path d="m3 8 4.5 4L12 5l4.5 7L21 8l-2 11H5z"/></symbol>
+  <symbol id="i-candado" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></symbol>
+  <symbol id="i-espadas" viewBox="0 0 24 24"><path d="M3 3h3l9 9-3 3-9-9z"/><path d="M21 3h-3l-9 9 3 3 9-9z"/><path d="m4 20 3-3M20 20l-3-3"/></symbol>
+  <symbol id="i-fuego" viewBox="0 0 24 24"><path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 2-5 3-6 0 2 1 3 2 3 0-4-1-6 1-9z"/></symbol>
+</svg>
+
+<header class="cab">
+  <a class="volver" id="volver" href="index.html" aria-label="Volver"><svg class="ic"><use href="#i-atras"/></svg></a>
+  <h1 class="tit" id="titulo"><small>Modo Cachimbo</small>Arcade</h1>
+  <span class="combo" id="combo">x2</span>
+  <span class="xp" id="xp"><svg class="ic"><use href="#i-rayo"/></svg><span id="xpN">0</span> XP</span>
+</header>
+
+<!-- Inicio del Arcade -->
+<main class="vista on" id="v-inicio">
+  <section class="hero">
+    <b class="tit">Aprende <span>jugando</span></b>
+    <p>Une, desliza y ordena. Cada tema es una ruta de minijuegos que suma XP a tu rango.</p>
+    <svg class="ic pix"><use href="#i-mando"/></svg>
+  </section>
+  <div class="fila">
+    <button class="reto" type="button" data-tema="hp01"><span class="ico"><svg class="ic"><use href="#i-fuego"/></svg></span><span><b class="tit">Reto del día</b><small>Poblamiento americano · x2 XP hoy</small></span></button>
+    <a class="duelo-a" href="duelo.html"><span class="ico"><svg class="ic"><use href="#i-espadas"/></svg></span><span><b class="tit">Duelo 1 vs 1</b><small>Reta a tus amigos en vivo</small></span></a>
+  </div>
+  <h2 class="sec-t tit">Temas <small>Elige y juega</small></h2>
+  <div class="temas">
+    <button class="tema" type="button" data-tema="hp01" style="--tc:#F07A1A">
+      <span class="nuevo">Nuevo</span>
+      <span class="curso"><i></i>Historia del Perú</span>
+      <b class="tit">Poblamiento americano y peruano</b>
+      <span class="mini"><span>Une parejas</span><span>V o F</span><span>Línea del tiempo</span></span>
+      <span class="prog"><i id="progHp" style="--p:0%"></i></span>
+    </button>
+    <div class="tema bloq" style="--tc:#2EB872">
+      <span class="pronto">Pronto</span>
+      <span class="curso"><i></i>Biología</span>
+      <b class="tit">La célula y sus organelas</b>
+      <span class="mini"><span>Etiqueta el dibujo</span><span>Clasifica</span></span>
+      <span class="prog"><i></i></span>
+    </div>
+    <div class="tema bloq" style="--tc:#1CB0F6">
+      <span class="pronto">Pronto</span>
+      <span class="curso"><i></i>Raz. Verbal</span>
+      <b class="tit">Vocabulario: sinónimos</b>
+      <span class="mini"><span>Une parejas</span><span>Contrarreloj</span></span>
+      <span class="prog"><i></i></span>
+    </div>
+    <div class="tema bloq" style="--tc:#A35CFF">
+      <span class="pronto">Pronto</span>
+      <span class="curso"><i></i>Química</span>
+      <b class="tit">Tabla periódica</b>
+      <span class="mini"><span>Memoria</span><span>Clasifica</span></span>
+      <span class="prog"><i></i></span>
+    </div>
+  </div>
+</main>
+
+<!-- Ruta del tema -->
+<main class="vista" id="v-ruta">
+  <section class="ruta-cab">
+    <small>Historia del Perú · Tema 01</small>
+    <b class="tit">Poblamiento americano y peruano</b>
+    <p>Teorías, primeros habitantes, Lítico y Arcaico.</p>
+  </section>
+  <div class="ruta" id="ruta"></div>
+</main>
+
+<!-- Juego -->
+<main class="vista" id="v-juego">
+  <div class="juego-cab"><div class="t"><b class="tit" id="jTit"></b><small id="jSub"></small></div></div>
+  <div class="barra"><i id="jBarra"></i></div>
+  <div id="jZona"></div>
+</main>
+
+<!-- Resultado -->
+<main class="vista" id="v-fin">
+  <div class="fin">
+    <div class="estrellas" id="fEst"></div>
+    <b class="t tit" id="fTit"></b>
+    <div class="datos">
+      <div><strong id="fAc"></strong><small>Aciertos</small></div>
+      <div><strong id="fCombo"></strong><small>Mejor combo</small></div>
+      <div class="x"><strong id="fXp"></strong><small>XP</small></div>
+    </div>
+    <div class="acciones">
+      <button class="btn sec" type="button" id="fOtra">Otra vez</button>
+      <button class="btn" type="button" id="fSig">Siguiente</button>
+    </div>
+  </div>
+</main>
+
+<canvas class="confeti" id="confeti"></canvas>
+
+<script>
+(function () {
+  /* ---------- Datos del tema (lo que se subiría desde el panel) ----------
+     PAR:   autor o lugar | lo que le corresponde
+     VF:    afirmación | V o F | explicación corta
+     ORDEN: etapa | detalle (en orden cronológico)                        */
+  var TEMAS = {
+    hp01: {
+      curso: 'Historia del Perú', titulo: 'Poblamiento americano y peruano',
+      pares: [
+        ['Alex Hrdlicka', 'Teoría asiática (Estrecho de Bering)'],
+        ['Paul Rivet', 'Teoría oceánica (melanesios y polinesios)'],
+        ['Antonio Méndez Correia', 'Teoría australiana (por la Antártida)'],
+        ['Florentino Ameghino', 'Teoría autoctonista'],
+        ['Thor Heyerdahl', 'Expedición Kon-Tiki (1947)'],
+        ['José Imbelloni', 'Siete oleadas migratorias']
+      ],
+      vf: [
+        ['Caral es considerada la civilización más antigua de América.', true, '<b>Verdadero.</b> Caral (Supe, Lima) tiene unos 5000 años.'],
+        ['Florentino Ameghino defendió el origen asiático del hombre americano.', false, '<b>Falso.</b> Ameghino propuso la teoría autoctonista (origen americano).'],
+        ['Los hombres del periodo Lítico eran nómades cazadores y recolectores.', true, '<b>Verdadero.</b> Vivían en bandas que se desplazaban.'],
+        ['Paul Rivet es el autor de la teoría australiana.', false, '<b>Falso.</b> La australiana es de Méndez Correia; Rivet planteó la oceánica.'],
+        ['Las pinturas rupestres de Toquepala muestran el chaco de camélidos.', true, '<b>Verdadero.</b> Están en la cueva del Diablo, Tacna.'],
+        ['En Kotosh se encuentra el Templo de las Manos Cruzadas.', true, '<b>Verdadero.</b> Kotosh está en Huánuco.'],
+        ['En el Arcaico Superior el hombre seguía siendo nómade.', false, '<b>Falso.</b> En el Arcaico Superior aparece el sedentarismo.'],
+        ['Huaca Prieta destaca por sus mates pirograbados.', true, '<b>Verdadero.</b> Huaca Prieta está en La Libertad.']
+      ],
+      orden: [
+        ['Glaciación de Wisconsin', 'Se forma el puente de Beringia'],
+        ['Llegada a América', 'Bandas cruzan desde Asia'],
+        ['Periodo Lítico', 'Cazadores nómades: Pikimachay, Guitarrero'],
+        ['Arcaico Inferior', 'Inicio de la horticultura y el pastoreo'],
+        ['Arcaico Superior', 'Sedentarismo y templos: Caral, Kotosh']
+      ]
+    }
+  };
+
+  var JUEGOS = [
+    { id: 'une', nom: 'Une parejas', sub: 'Autor ↔ teoría', ic: 'i-une', c: '#A35CFF' },
+    { id: 'vf', nom: 'Verdadero o falso', sub: 'Desliza la carta', ic: 'i-cartas', c: '#1CB0F6' },
+    { id: 'orden', nom: 'Línea del tiempo', sub: 'Ordena las etapas', ic: 'i-tiempo', c: '#F07A1A' },
+    { id: 'jefe', nom: 'Jefe del tema', sub: 'Todo mezclado, contra el reloj', ic: 'i-corona', c: '#FF4B4B', bloq: true }
+  ];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var estado = { tema: null, juego: 0, xp: 0, combo: 0, mejor: 0, ok: 0, total: 0, est: {} };
+  function leer() { try { return JSON.parse(localStorage.getItem('mc_arcade') || '{}'); } catch (e) { return {}; } }
+  function guardar() { try { localStorage.setItem('mc_arcade', JSON.stringify({ xp: estado.xp, est: estado.est })); } catch (e) {} }
+  var g0 = leer(); estado.xp = g0.xp || 0; estado.est = g0.est || {};
+  $('xpN').textContent = estado.xp;
+  function mezclar(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+
+  var confetiVivo = 0;
+  function ver(id, titulo, sub) {
+    confetiVivo++; var cv = $('confeti'); cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
+    document.querySelectorAll('.vista').forEach(function (v) { v.classList.toggle('on', v.id === id); });
+    $('titulo').innerHTML = '<small>' + (sub || 'Modo Cachimbo') + '</small>' + titulo;
+    window.scrollTo(0, 0);
+  }
+  function irInicio() { ver('v-inicio', 'Arcade'); $('volver').onclick = null; $('volver').href = 'index.html'; actualizarProg(); }
+  function irRuta() {
+    var T = TEMAS[estado.tema];
+    ver('v-ruta', 'Ruta del tema', 'Arcade');
+    $('volver').href = '#'; $('volver').onclick = function (e) { e.preventDefault(); irInicio(); };
+    var hechos = JUEGOS.filter(function (j) { return estado.est[estado.tema + ':' + j.id]; }).length;
+    $('ruta').innerHTML = JUEGOS.map(function (j, i) {
+      var e = estado.est[estado.tema + ':' + j.id] || 0, bloq = j.bloq && hechos < 3;
+      return '<button class="nodo' + (bloq ? ' bloq' : '') + '" type="button" data-i="' + i + '" style="--nc:' + j.c + '">' +
+        '<span class="bola"><svg class="ic"><use href="#' + (bloq ? 'i-candado' : j.ic) + '"/></svg></span>' +
+        '<span><b class="tit">' + j.nom + '</b><small>' + (bloq ? 'Completa los 3 juegos para desbloquear' : j.sub) + '</small></span>' +
+        '<span class="est">' + [1, 2, 3].map(function (k) { return '<svg class="ic' + (k <= e ? ' on' : '') + '"><use href="#i-estrella"/></svg>'; }).join('') + '</span></button>';
+    }).join('');
+    $('ruta').querySelectorAll('.nodo:not(.bloq)').forEach(function (n) { n.onclick = function () { jugar(+n.dataset.i); }; });
+  }
+  function actualizarProg() {
+    var n = ['une', 'vf', 'orden'].filter(function (j) { return estado.est['hp01:' + j]; }).length;
+    $('progHp').style.setProperty('--p', Math.round(n / 3 * 100) + '%');
+  }
+  actualizarProg();
+
+  /* ---------- Puntos y combo ---------- */
+  function acierto() {
+    estado.ok++; estado.combo++; estado.mejor = Math.max(estado.mejor, estado.combo);
+    var gana = 10 * (estado.combo >= 5 ? 3 : estado.combo >= 3 ? 2 : 1);
+    estado.ganado += gana; estado.xp += gana; $('xpN').textContent = estado.xp;
+    var c = $('combo');
+    if (estado.combo >= 3) { c.textContent = 'x' + (estado.combo >= 5 ? 3 : 2); c.classList.remove('si'); void c.offsetWidth; c.classList.add('si'); }
+    if (navigator.vibrate) try { navigator.vibrate(12); } catch (e) {}
+  }
+  function fallo() { estado.combo = 0; $('combo').classList.remove('si'); if (navigator.vibrate) try { navigator.vibrate([30, 40, 30]); } catch (e) {} }
+  function progreso(h, t) { $('jBarra').style.width = Math.round(h / t * 100) + '%'; }
+
+  function jugar(i) {
+    estado.juego = i; estado.ok = 0; estado.total = 0; estado.combo = 0; estado.mejor = 0; estado.ganado = 0; estado.fallos = 0;
+    $('combo').classList.remove('si');
+    var j = JUEGOS[i];
+    ver('v-juego', j.nom, TEMAS[estado.tema].curso);
+    $('volver').onclick = function (e) { e.preventDefault(); irRuta(); };
+    $('jTit').textContent = j.nom; $('jSub').textContent = j.sub; progreso(0, 1);
+    ({ une: une, vf: vf, orden: orden })[j.id](TEMAS[estado.tema]);
+  }
+
+  /* ---------- 1 · Une parejas ---------- */
+  function une(T) {
+    var izq = mezclar(T.pares.map(function (p, i) { return { t: p[0], i: i }; }));
+    var der = mezclar(T.pares.map(function (p, i) { return { t: p[1], i: i }; }));
+    estado.total = T.pares.length;
+    var z = $('jZona');
+    z.innerHTML = '<p class="aviso" id="aviso">Toca un autor y luego su teoría</p>' +
+      '<div class="une" id="une"><svg class="lineas" id="lineas"></svg>' +
+      '<div class="col izq">' + izq.map(function (x) { return '<button class="ficha" type="button" data-l="i" data-i="' + x.i + '">' + x.t + '<span class="pt"></span></button>'; }).join('') + '</div>' +
+      '<div class="col der">' + der.map(function (x) { return '<button class="ficha" type="button" data-l="d" data-i="' + x.i + '"><span class="pt"></span>' + x.t + '</button>'; }).join('') + '</div></div>';
+    var sel = null, hechas = [], box = $('une');
+    function dibujar() {
+      var r0 = box.getBoundingClientRect();
+      $('lineas').innerHTML = hechas.map(function (i) {
+        var a = box.querySelector('[data-l="i"][data-i="' + i + '"] .pt').getBoundingClientRect(), b = box.querySelector('[data-l="d"][data-i="' + i + '"] .pt').getBoundingClientRect();
+        var x1 = a.left + a.width / 2 - r0.left, y1 = a.top + a.height / 2 - r0.top, x2 = b.left + b.width / 2 - r0.left, y2 = b.top + b.height / 2 - r0.top, mx = (x1 + x2) / 2;
+        return '<path d="M' + x1 + ' ' + y1 + ' C' + mx + ' ' + y1 + ' ' + mx + ' ' + y2 + ' ' + x2 + ' ' + y2 + '" stroke="#58CC02" stroke-width="4" fill="none" stroke-linecap="round"/>';
+      }).join('');
+    }
+    window.onresize = dibujar;
+    box.querySelectorAll('.ficha').forEach(function (f) {
+      f.onclick = function () {
+        if (f.classList.contains('hecha')) return;
+        if (!sel || sel.dataset.l === f.dataset.l) {
+          if (sel) sel.classList.remove('sel');
+          sel = sel === f ? null : f; if (sel) sel.classList.add('sel'); return;
+        }
+        var a = sel; sel = null; a.classList.remove('sel');
+        if (a.dataset.i === f.dataset.i) {
+          a.classList.add('hecha'); f.classList.add('hecha'); hechas.push(+f.dataset.i); dibujar(); acierto();
+          $('aviso').className = 'aviso ok'; $('aviso').textContent = '¡Bien! ' + T.pares[+f.dataset.i][0] + ' → ' + T.pares[+f.dataset.i][1];
+          progreso(hechas.length, T.pares.length);
+          if (hechas.length === T.pares.length) setTimeout(terminar, 900);
+        } else {
+          estado.fallos++; fallo();
+          [a, f].forEach(function (x) { x.classList.remove('error'); void x.offsetWidth; x.classList.add('error'); });
+          $('aviso').className = 'aviso mal'; $('aviso').textContent = 'No corresponde, intenta otra vez';
+        }
+      };
+    });
+  }
+
+  /* ---------- 2 · Verdadero o falso (cartas que se deslizan) ---------- */
+  function vf(T) {
+    var cartas = mezclar(T.vf), k = 0; estado.total = cartas.length;
+    var z = $('jZona');
+    z.innerHTML = '<div class="mesa" id="mesa"></div>' +
+      '<div class="vf-btns"><div><button class="no" type="button" id="bF" aria-label="Falso"><svg class="ic"><use href="#i-x"/></svg></button><small>Falso</small></div>' +
+      '<div><button class="si" type="button" id="bV" aria-label="Verdadero"><svg class="ic"><use href="#i-check"/></svg></button><small>Verdadero</small></div></div>' +
+      '<p class="explica" id="explica">Desliza a la <b>derecha</b> si es verdadero y a la <b>izquierda</b> si es falso</p>';
+    var mesa = $('mesa');
+    function pintar() {
+      mesa.innerHTML = '';
+      for (var i = Math.min(k + 2, cartas.length - 1); i >= k; i--) {
+        var c = document.createElement('div'); c.className = 'carta' + (i === k + 1 ? ' atras' : i === k + 2 ? ' atras2' : '');
+        c.innerHTML = '<span class="sello v">Verdad</span><span class="sello f">Falso</span><span class="tag">' + (i + 1) + ' de ' + cartas.length + '</span><p>' + cartas[i][0] + '</p>';
+        mesa.appendChild(c);
+      }
+      var top = mesa.lastChild; if (top) arrastre(top);
+    }
+    function responder(dijoV, el) {
+      var c = cartas[k], bien = c[1] === dijoV;
+      if (bien) acierto(); else { estado.fallos++; fallo(); }
+      $('explica').innerHTML = (bien ? '✅ ' : '❌ ') + c[2];
+      el.style.transition = 'transform .35s ease-in, opacity .35s';
+      el.style.transform = 'translate(' + (dijoV ? 140 : -140) + '%, -10%) rotate(' + (dijoV ? 28 : -28) + 'deg)'; el.style.opacity = '0';
+      k++; progreso(k, cartas.length);
+      setTimeout(function () { if (k >= cartas.length) terminar(); else pintar(); }, 330);
+    }
+    function arrastre(el) {
+      var x0 = 0, dx = 0, activo = false;
+      el.onpointerdown = function (e) { activo = true; x0 = e.clientX; dx = 0; el.setPointerCapture(e.pointerId); el.style.transition = 'none'; };
+      el.onpointermove = function (e) {
+        if (!activo) return; dx = e.clientX - x0;
+        el.style.transform = 'translateX(' + dx + 'px) rotate(' + dx / 14 + 'deg)';
+        el.querySelector('.sello.v').style.opacity = Math.max(0, Math.min(1, dx / 90));
+        el.querySelector('.sello.f').style.opacity = Math.max(0, Math.min(1, -dx / 90));
+      };
+      el.onpointerup = el.onpointercancel = function () {
+        if (!activo) return; activo = false;
+        if (Math.abs(dx) > 90) responder(dx > 0, el);
+        else { el.style.transition = 'transform .25s'; el.style.transform = ''; el.querySelectorAll('.sello').forEach(function (s) { s.style.opacity = 0; }); }
+      };
+    }
+    $('bV').onclick = function () { var t = mesa.lastChild; if (t) { t.querySelector('.sello.v').style.opacity = 1; responder(true, t); } };
+    $('bF').onclick = function () { var t = mesa.lastChild; if (t) { t.querySelector('.sello.f').style.opacity = 1; responder(false, t); } };
+    pintar();
+  }
+
+  /* ---------- 3 · Línea del tiempo ---------- */
+  function orden(T) {
+    var n = T.orden.length, fichas = mezclar(T.orden.map(function (o, i) { return { o: o, i: i }; })), puesto = new Array(n).fill(null);
+    estado.total = n;
+    var z = $('jZona');
+    z.innerHTML = '<p class="aviso" id="aviso">Toca las etapas en orden, de la más antigua a la más reciente</p>' +
+      '<div class="linea"><div><h3>Etapas</h3><div class="pozo" id="pozo">' +
+      fichas.map(function (f, j) { return '<button class="ficha" type="button" data-j="' + j + '"><span><span class="lt-et">' + f.o[0] + '</span>' + f.o[1] + '</span></button>'; }).join('') +
+      '</div></div><div><h3>Más antiguo ↓ Más reciente</h3><div class="huecos" id="huecos">' +
+      puesto.map(function (_, i) { return '<button class="hueco" type="button" data-n="' + (i + 1) + '" data-h="' + i + '">Vacío</button>'; }).join('') +
+      '</div></div></div><div class="acciones"><button class="btn" type="button" id="comprobar" disabled style="opacity:.5">Comprobar</button></div>';
+    var intentos = 0;
+    function pintar() {
+      document.querySelectorAll('#huecos .hueco').forEach(function (h, i) {
+        var f = puesto[i];
+        if (f == null) { h.className = 'hueco'; h.innerHTML = 'Vacío'; return; }
+        h.classList.add('lleno'); h.innerHTML = '<span><span class="lt-et">' + fichas[f].o[0] + '</span>' + fichas[f].o[1] + '</span>';
+      });
+      document.querySelectorAll('#pozo .ficha').forEach(function (b) { b.classList.toggle('usada', puesto.indexOf(+b.dataset.j) >= 0); });
+      var lleno = puesto.every(function (x) { return x != null; });
+      $('comprobar').disabled = !lleno; $('comprobar').style.opacity = lleno ? 1 : .5;
+      progreso(puesto.filter(function (x) { return x != null; }).length, n);
+    }
+    document.querySelectorAll('#pozo .ficha').forEach(function (b) {
+      b.onclick = function () { var v = puesto.indexOf(null); if (v < 0) return; puesto[v] = +b.dataset.j; pintar(); };
+    });
+    document.querySelectorAll('#huecos .hueco').forEach(function (h, i) {
+      h.onclick = function () { if (h.classList.contains('bien')) return; puesto[i] = null; pintar(); };
+    });
+    $('comprobar').onclick = function () {
+      intentos++;
+      var buenos = 0;
+      document.querySelectorAll('#huecos .hueco').forEach(function (h, i) {
+        var bien = fichas[puesto[i]].i === i;
+        if (bien) { if (!h.classList.contains('bien')) acierto(); buenos++; h.classList.add('bien'); }
+        else { estado.fallos++; fallo(); h.classList.remove('malo'); void h.offsetWidth; h.classList.add('malo'); }
+      });
+      if (buenos === n) { $('aviso').className = 'aviso ok'; $('aviso').textContent = '¡Orden perfecto!'; setTimeout(terminar, 900); return; }
+      $('aviso').className = 'aviso mal'; $('aviso').textContent = buenos + ' de ' + n + ' en su lugar. Toca las rojas para quitarlas y vuelve a ordenar';
+      setTimeout(function () { puesto = puesto.map(function (f, i) { return fichas[f].i === i ? f : null; }); pintar(); }, 900);
+    };
+  }
+
+  /* ---------- Fin del juego ---------- */
+  function terminar() {
+    var j = JUEGOS[estado.juego], f = estado.fallos;
+    var est = f === 0 ? 3 : f <= 2 ? 2 : 1, clave = estado.tema + ':' + j.id;
+    estado.est[clave] = Math.max(estado.est[clave] || 0, est); guardar();
+    ver('v-fin', 'Resultado', j.nom); $('combo').classList.remove('si');
+    $('volver').onclick = function (e) { e.preventDefault(); irRuta(); };
+    $('fEst').innerHTML = [1, 2, 3].map(function (k) { return '<svg class="ic' + (k <= est ? ' on' : '') + '"><use href="#i-estrella"/></svg>'; }).join('');
+    $('fTit').textContent = est === 3 ? '¡Perfecto!' : est === 2 ? '¡Muy bien!' : '¡Completado!';
+    $('fAc').textContent = estado.total + '/' + (estado.total + f);
+    $('fCombo').textContent = 'x' + estado.mejor;
+    $('fXp').textContent = '+' + estado.ganado;
+    $('fOtra').onclick = function () { jugar(estado.juego); };
+    var sig = estado.juego + 1 < 3 ? estado.juego + 1 : null;
+    $('fSig').textContent = sig != null ? 'Siguiente: ' + JUEGOS[sig].nom : 'Volver a la ruta';
+    $('fSig').onclick = function () { if (sig != null) jugar(sig); else irRuta(); };
+    if (est === 3) confeti();
+  }
+
+  function confeti() {
+    var cv = $('confeti'), cx = cv.getContext('2d'), W = cv.width = innerWidth, H = cv.height = innerHeight, cols = ['#C6E000', '#FFC800', '#A35CFF', '#1CB0F6', '#FF4B4B', '#F07A1A'];
+    var ps = Array.from({ length: 120 }, function () { return { x: Math.random() * W, y: -20 - Math.random() * H * .5, v: 2 + Math.random() * 4, r: Math.random() * 6, a: Math.random() * 6, c: cols[Math.floor(Math.random() * cols.length)] }; });
+    var t = 0, mio = confetiVivo;
+    (function cuadro() {
+      if (mio !== confetiVivo) return;
+      cx.clearRect(0, 0, W, H);
+      ps.forEach(function (p) { p.y += p.v; p.a += .1; cx.save(); cx.translate(p.x + Math.sin(p.a) * 12, p.y); cx.rotate(p.a); cx.fillStyle = p.c; cx.fillRect(-4, -6, 8, 12); cx.restore(); });
+      if (++t < 160) requestAnimationFrame(cuadro); else cx.clearRect(0, 0, W, H);
+    })();
+  }
+
+  document.querySelectorAll('[data-tema]').forEach(function (b) { b.onclick = function () { estado.tema = b.dataset.tema; irRuta(); }; });
+  
+})();
+</script>
+</body>
+</html>
