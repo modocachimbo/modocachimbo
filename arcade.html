@@ -68,112 +68,96 @@ a { color: inherit; text-decoration: none; }
 .tema .pronto { position: absolute; right: 12px; top: 12px; padding: 4px 9px; border-radius: 8px; background: var(--tarjeta2); color: var(--suave); font: 800 12px/1 var(--display); letter-spacing: .08em; }
 .tema .nuevo { position: absolute; right: 12px; top: 12px; padding: 4px 9px; border-radius: 8px; background: var(--lima); color: var(--sobre-lima); font: 800 12px/1 var(--display); letter-spacing: .08em; }
 
-/* ---------- Elige tu curso (idéntico a la pantalla "Select gamemode") ----------
-   Fondo: pon una imagen en assets/arcade/fondo.jpg (o cambia --arc-fondo) y se usa sola.
-   Cada curso puede tener su propia imagen (img: 'assets/arcade/historia.png'); si no, usa el dibujo. */
-body.en-inicio { --arc-fondo: url("assets/arcade/fondo.jpg"); background: #12306E; }
-body.en-inicio::before { content: ""; position: fixed; inset: 0; z-index: -1; background:
-  linear-gradient(180deg, rgba(10,30,80,.15), rgba(10,30,80,.55)),
-  var(--arc-fondo),
-  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='96' viewBox='0 0 56 96'%3E%3Cpath d='M28 0 56 16v32L28 64 0 48V16zM28 64l28 16v32M28 64 0 80v32' fill='none' stroke='%23ffffff' stroke-opacity='.06' stroke-width='2'/%3E%3C/svg%3E"),
-  radial-gradient(120% 80% at 50% 0, #2F6FD6 0, #1A4AA8 45%, #123477 100%);
-  background-size: cover, cover, 56px 96px, cover; background-position: center; }
+/* ---------- Mapa de mundos (estilo Plants vs. Zombies 2) ----------
+   Cada curso es un mundo (una isla flotante) sobre el remolino; se pasa de uno a otro
+   deslizando o con las flechas. Imágenes en assets/arcade/: mundo-<curso>.webp (isla sin
+   fondo), nombre-<curso>.webp (letrero), fondo.jpg y remolino.webp (capa que gira). */
+body.en-inicio { background: #04112E; overflow: hidden; }
 body.en-inicio .cab { display: none; }
-#v-inicio { max-width: none; padding: 0 0 calc(30px + env(safe-area-inset-bottom)); }
-.gm-top { display: flex; align-items: stretch; justify-content: space-between; gap: 12px; }
-.gm-tit { display: flex; align-items: center; padding: 16px 64px 16px max(22px, env(safe-area-inset-left)); background: #0F1B3D; clip-path: polygon(0 0, 100% 0, calc(100% - 34px) 100%, 0 100%); color: #fff; font: 900 clamp(20px, 3vw, 28px)/1 var(--cuerpo); letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
-.gm-der { display: flex; align-items: flex-start; gap: 10px; padding-right: max(14px, env(safe-area-inset-right)); }
-.filtros { display: flex; margin-top: 10px; background: #12275A; overflow-x: auto; scrollbar-width: none; clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%); }
-.filtros::-webkit-scrollbar { display: none; }
-.filtros button { position: relative; padding: 14px 26px 16px; font: 900 15px/1 var(--cuerpo); letter-spacing: .05em; text-transform: uppercase; color: #9FB6E6; white-space: nowrap; }
-.filtros button::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: #2B4C93; }
-.filtros button.on { color: #fff; background: linear-gradient(180deg, #2E6FD8, #1F57B8); }
-.filtros button.on::after { background: #7FD3FF; }
-.gm-x { width: 64px; height: 50px; margin-top: 10px; display: grid; place-items: center; color: #fff; font-size: 30px; background: linear-gradient(180deg, #2E86F0, #1660D0); clip-path: polygon(14px 0, 100% 0, 100% 100%, 0 100%); }
-.gm-x .ic { stroke-width: 3.4; }
-.gm-xp { display: flex; align-items: center; gap: 6px; margin-top: 10px; padding: 0 14px; height: 50px; color: #FFE28A; background: #0F1B3D; font: 900 18px/1 var(--cuerpo); clip-path: polygon(10px 0, 100% 0, 100% 100%, 0 100%); }
-.gm-xp .ic { color: var(--oro); }
-.gm-barra { display: flex; align-items: center; gap: 0; margin: 22px clamp(14px, 4vw, 60px) 0; border-bottom: 2px solid rgba(127,179,255,.35); }
-.gm-barra .et { padding: 10px 26px; background: linear-gradient(180deg, #2B5DB8, #1F4A9C); color: #fff; font: 900 15px/1 var(--cuerpo); letter-spacing: .05em; text-transform: uppercase; clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 100%, 0 100%); white-space: nowrap; }
-.gm-barra .tx { display: flex; align-items: center; gap: 8px; padding: 0 16px; color: #fff; font-weight: 800; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.gm-barra .tx b { color: #6FD3FF; }
-.gm-barra .tx .ic { color: #FFD45A; font-size: 18px; }
-.carrusel-env { position: relative; }
-.carrusel { display: flex; gap: 26px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 46px clamp(14px, 4vw, 60px) 30px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-.carrusel::-webkit-scrollbar { display: none; }
-.flecha { position: absolute; top: 50%; z-index: 5; width: 48px; height: 64px; margin-top: -32px; display: grid; place-items: center; font-size: 28px; color: #fff; background: linear-gradient(180deg, #2E86F0, #1660D0); }
-.flecha.izq { left: 0; clip-path: polygon(0 0, 100% 12px, 100% calc(100% - 12px), 0 100%); }
-.flecha.der { right: 0; clip-path: polygon(0 12px, 100% 0, 100% 100%, 0 calc(100% - 12px)); }
-.flecha.der .ic { transform: scaleX(-1); } .flecha .ic { stroke-width: 3.4; }
-.flecha[hidden] { display: none; }
-/* La carta */
-.cc { --cc: #18B39A; --cc2: #0E6E77; position: relative; flex: none; width: 290px; height: 440px; scroll-snap-align: center; text-align: center; color: #fff; transition: transform .18s; }
-.cc .marco { position: absolute; inset: 0; clip-path: polygon(34px 0, 100% 0, 100% calc(100% - 34px), calc(100% - 34px) 100%, 0 100%, 0 34px); background: linear-gradient(180deg, var(--cc2) 0%, color-mix(in srgb, var(--cc2) 70%, var(--cc)) 48%, var(--cc) 100%); }
-.cc .marco::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 45%; opacity: .5; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='38' viewBox='0 0 22 38'%3E%3Cpath d='M11 0 22 6.3v12.7L11 25.3 0 19V6.3zM11 25.3 22 31.7V38M11 25.3 0 31.7V38' fill='none' stroke='%23000' stroke-opacity='.18' stroke-width='1.5'/%3E%3C/svg%3E"); -webkit-mask: linear-gradient(transparent, #000 60%); mask: linear-gradient(transparent, #000 60%); }
-.cc .borde { position: absolute; inset: 0; z-index: 1; pointer-events: none; clip-path: polygon(34px 0, 100% 0, 100% calc(100% - 34px), calc(100% - 34px) 100%, 0 100%, 0 34px, 34px 0, 35.5px 4px, 4px 35.5px, 4px calc(100% - 4px), calc(100% - 35.5px) calc(100% - 4px), calc(100% - 4px) calc(100% - 35.5px), calc(100% - 4px) 4px, 35.5px 4px); background: color-mix(in srgb, var(--cc) 55%, #fff 25%); }
-.cc .cinta { position: absolute; top: -22px; left: 50%; z-index: 3; translate: -50% 0; padding: 10px 30px 8px; font: 900 16px/1 var(--cuerpo); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; color: #fff; background: #2B3A66; clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 100%, 0 100%); }
-.cc .info { position: absolute; top: 14px; right: 16px; z-index: 3; width: 30px; height: 28px; display: grid; place-items: center; background: linear-gradient(180deg, #2E86F0, #1660D0); color: #fff; font: italic 900 17px/1 Georgia, serif; clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%); box-shadow: inset 0 0 0 2px rgba(255,255,255,.4); }
-.cc .est-ch { position: absolute; top: 14px; left: 40px; z-index: 3; display: flex; align-items: center; gap: 4px; padding: 6px 9px; background: rgba(0,0,0,.35); font: 900 14px/1 var(--cuerpo); clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%); }
-.cc .est-ch .ic { color: var(--oro); }
-.cc .arte { position: absolute; left: 10px; right: 10px; top: 40px; height: 200px; display: grid; place-items: center; }
-.cc .arte img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 12px 16px rgba(0,0,0,.4)); }
-.cc .arte svg { width: 180px; height: 180px; filter: drop-shadow(0 14px 16px rgba(0,0,0,.4)); }
-.cc .ico-m { display: grid; place-items: center; height: 54px; margin-bottom: 8px; font-size: 46px; color: #fff; filter: drop-shadow(0 4px 0 rgba(0,0,0,.25)); }
-.cc .ico-m svg.ic { stroke-width: 2.2; }
-.cc .pie { position: absolute; left: 14px; right: 14px; bottom: 30px; z-index: 2; display: flex; flex-direction: column; align-items: stretch; }
-.cc .pie b { display: block; font: 900 30px/1 var(--cuerpo); text-transform: uppercase; letter-spacing: .01em; text-shadow: 0 3px 0 rgba(0,0,0,.25); }
-.cc .pie small { display: block; margin-top: 8px; font: 900 13.5px/1 var(--cuerpo); letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.9); }
-.cc .barra-c { height: 6px; margin: 12px 40px 0; background: rgba(0,0,0,.3); overflow: hidden; }
-.cc .barra-c i { display: block; height: 100%; width: var(--p, 0%); background: #FFE28A; }
-.cc:not(.bloq):hover { transform: translateY(-6px); }
-.cc.sel .borde { background: #FFE9A8; }
-.cc.sel .cinta { background: #FFE9A8; color: #2B2200; }
-.cc.sel .marco { box-shadow: none; }
-.cc.sel { transform: translateY(-4px); }
-.cc.sel::before { content: ""; position: absolute; inset: -6px; z-index: 0; clip-path: polygon(38px 0, 100% 0, 100% calc(100% - 38px), calc(100% - 38px) 100%, 0 100%, 0 38px); background: rgba(255,233,168,.35); filter: blur(2px); }
-.cc.bloq { cursor: default; --cc: #5A4A9A; --cc2: #2A2458; }
-.cc.bloq .marco { filter: saturate(.25) brightness(.62) hue-rotate(10deg); }
-.cc.bloq .marco::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(60,40,140,.35), rgba(90,60,170,.45)); mix-blend-mode: color; }
-.cc.bloq .arte { filter: grayscale(.85) brightness(.75); opacity: .8; }
-.cc.bloq .pie b { color: #B9B1D8; }
-.cc.bloq .pie small, .cc.bloq .ico-m { color: #C9C0EA; }
-.cc.bloq .cinta { background: #2B3A66; color: #CFD8F5; }
-.cc.bloq .borde { background: rgba(160,140,230,.45); }
+#v-inicio { max-width: none; padding: 0; }
+.mapa { position: relative; height: 100dvh; min-height: 560px; overflow: hidden; color: #fff; background: #04112E url("assets/arcade/fondo.jpg") center / cover no-repeat; user-select: none; -webkit-user-select: none; }
+.mapa::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 45%, transparent 35%, rgba(2,8,30,.55) 100%); }
+/* El remolino: gira siempre y da una vuelta rápida al cambiar de mundo */
+.vtx { position: absolute; left: 50%; top: 44%; width: min(118vw, 112vh); aspect-ratio: 1; translate: -50% -50%; transition: transform 1s cubic-bezier(.3,.7,.2,1); pointer-events: none; }
+.vtx img { width: 100%; height: 100%; animation: gira 60s linear infinite; opacity: .7; mix-blend-mode: screen; }
+.vtx::after { content: ""; position: absolute; inset: 22%; border-radius: 50%; background: radial-gradient(circle, rgba(140,240,255,.35), transparent 70%); animation: late 3.2s ease-in-out infinite; }
+@keyframes late { 50% { opacity: .45; transform: scale(1.08); } }
+.chispas { position: absolute; inset: 0; pointer-events: none; }
+.chispas i { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #CFFAFF; box-shadow: 0 0 8px 2px rgba(120,230,255,.8); animation: chispa var(--t) linear infinite; animation-delay: var(--d); opacity: 0; }
+@keyframes chispa { 0% { opacity: 0; transform: translate(0,0) scale(.6); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(1.2); } }
+/* Barra de arriba */
+.m-top { position: absolute; top: 0; left: 0; right: 0; z-index: 6; display: flex; align-items: center; gap: 10px; padding: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) 0 max(14px, env(safe-area-inset-left)); }
+.m-btn { width: 50px; height: 50px; display: grid; place-items: center; border-radius: 16px; font-size: 26px; color: #fff; background: linear-gradient(180deg, #3D8BFF, #1A55D0); border: 3px solid #0B2A70; box-shadow: 0 4px 0 #0B2A70, inset 0 2px 0 rgba(255,255,255,.35); }
+.m-btn .ic { stroke-width: 3.2; }
+.m-tit { flex: 1; display: flex; align-items: center; gap: 10px; min-width: 0; }
+.m-tit b { font: italic 900 clamp(28px, 4.5vw, 40px)/1 var(--display); letter-spacing: .03em; text-transform: uppercase; text-shadow: 0 3px 0 #0B2A70, 0 0 18px rgba(80,200,255,.6); }
+.m-chip { display: flex; align-items: center; gap: 6px; height: 42px; padding: 0 14px; border-radius: 14px; background: rgba(4,17,46,.72); border: 2px solid rgba(120,200,255,.35); font: 900 17px/1 var(--cuerpo); backdrop-filter: blur(4px); }
+.m-chip .ic { font-size: 19px; color: #FFD23F; }
+.m-chip.xp b { color: var(--lima); }
+/* Las islas */
+.escena { position: absolute; inset: 0; z-index: 2; touch-action: pan-y; }
+.isla { --h: min(50vh, 470px); position: absolute; left: 50%; top: 44%; height: var(--h); width: calc(var(--h) * .75); margin-left: calc(var(--h) * -.375); margin-top: calc(var(--h) * -.5); display: grid; place-items: center; transition: transform .75s cubic-bezier(.22,.9,.25,1), opacity .6s, filter .6s; cursor: pointer; }
+.isla .flota { width: 100%; height: 100%; display: grid; place-items: center; animation: flota 4.6s ease-in-out infinite; }
+.isla img { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 26px 30px rgba(0,10,40,.55)); pointer-events: none; }
+.isla .sombra { position: absolute; bottom: -4%; left: 25%; right: 25%; height: 7%; border-radius: 50%; background: radial-gradient(rgba(0,10,40,.55), transparent 70%); animation: sombra 4.6s ease-in-out infinite; }
+@keyframes flota { 50% { transform: translateY(-14px); } }
+@keyframes sombra { 50% { transform: scale(.85); opacity: .7; } }
+.isla.c { transform: none; z-index: 3; }
+.isla.l { transform: translateX(calc(var(--h) * -.92)) scale(.46); opacity: .62; filter: brightness(.65) saturate(.8); z-index: 2; }
+.isla.r { transform: translateX(calc(var(--h) * .92)) scale(.46); opacity: .62; filter: brightness(.65) saturate(.8); z-index: 2; }
+.isla.ll { transform: translateX(calc(var(--h) * -1.6)) scale(.3); opacity: 0; pointer-events: none; }
+.isla.rr { transform: translateX(calc(var(--h) * 1.6)) scale(.3); opacity: 0; pointer-events: none; }
+.isla.c.entra .flota { animation: emerge .8s cubic-bezier(.2,.9,.3,1.2), flota 4.6s ease-in-out .8s infinite; }
+@keyframes emerge { from { transform: scale(.55) rotate(-14deg); filter: brightness(2.2) blur(2px); } }
+/* Mundo sin juegos todavía: silueta apagada con candado */
+.isla.bloq img { filter: grayscale(.55) brightness(.62) drop-shadow(0 26px 30px rgba(0,10,40,.55)); }
+.isla.bloq.sil img { filter: brightness(0) drop-shadow(0 0 18px rgba(120,220,255,.55)); opacity: .85; }
+.isla .cand { position: absolute; top: 38%; left: 50%; translate: -50% -50%; width: 74px; height: 74px; border-radius: 50%; display: grid; place-items: center; font-size: 36px; color: #fff; background: rgba(4,17,46,.75); border: 3px solid rgba(160,220,255,.6); box-shadow: 0 0 24px rgba(80,200,255,.5); }
+.isla.l .cand, .isla.r .cand { display: none; }
+.isla .sig { position: absolute; top: 34%; left: 50%; translate: -50% -50%; font: 900 120px/1 var(--cuerpo); color: rgba(150,230,255,.7); text-shadow: 0 0 24px rgba(80,200,255,.8); }
+/* Flechas */
+.m-fl { position: absolute; top: 44%; z-index: 5; width: 58px; height: 58px; margin-top: -29px; display: grid; place-items: center; border-radius: 50%; font-size: 30px; color: #fff; background: linear-gradient(180deg, #FFD23F, #F59E0B); border: 3px solid #7A4A00; box-shadow: 0 5px 0 #7A4A00, inset 0 2px 0 rgba(255,255,255,.5); transition: transform .12s, opacity .2s; }
+.m-fl .ic { stroke-width: 3.4; color: #4A2A00; }
+.m-fl:active { transform: translateY(3px); box-shadow: 0 2px 0 #7A4A00; }
+.m-fl.izq { left: max(14px, 3vw); } .m-fl.der { right: max(14px, 3vw); } .m-fl.der .ic { transform: scaleX(-1); }
+.m-fl[disabled] { opacity: 0; pointer-events: none; }
+/* Pie: letrero, datos y botón jugar */
+.m-pie { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; display: grid; justify-items: center; gap: 10px; padding: 0 16px max(22px, env(safe-area-inset-bottom)); }
+.placa { height: clamp(62px, 10vh, 92px); display: flex; justify-content: center; align-items: center; animation: aparece .5s cubic-bezier(.2,.9,.3,1.3); }
+.placa img { height: 100%; width: auto; max-width: 90vw; object-fit: contain; filter: drop-shadow(0 6px 10px rgba(0,0,0,.5)); }
+.placa .txt { padding: 12px 30px; border-radius: 14px; background: linear-gradient(180deg, #8C8576, #6D6758); border: 3px solid #4A4538; box-shadow: inset 0 2px 0 rgba(255,255,255,.25), 0 6px 0 #3A3628; font: 900 clamp(22px, 4vw, 32px)/1 var(--cuerpo); color: #EDE6D2; text-transform: uppercase; text-shadow: 0 3px 0 #3A3628; }
+@keyframes aparece { from { transform: scale(.6) translateY(10px); opacity: 0; } }
+.m-info { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; font: 900 15px/1 var(--cuerpo); color: #DDF4FF; text-shadow: 0 2px 4px rgba(0,0,0,.6); }
+.m-info span { display: flex; align-items: center; gap: 5px; padding: 7px 12px; border-radius: 12px; background: rgba(4,17,46,.7); border: 1px solid rgba(120,200,255,.3); }
+.m-info .ic { color: #FFD23F; font-size: 17px; }
+.jugar { min-width: 230px; height: 64px; padding: 0 34px; border-radius: 20px; font: 900 28px/1 var(--cuerpo); letter-spacing: .04em; color: #fff; text-transform: uppercase; text-shadow: 0 3px 0 #1E6B00; background: linear-gradient(180deg, #8BEA2C, #4DB80A); border: 4px solid #1E5A00; box-shadow: 0 7px 0 #1E5A00, inset 0 3px 0 rgba(255,255,255,.45); transition: transform .1s; animation: late2 2.4s ease-in-out infinite; }
+.jugar:active { transform: translateY(4px); box-shadow: 0 3px 0 #1E5A00; }
+.jugar[disabled] { background: linear-gradient(180deg, #8A93A8, #5F6880); border-color: #353C50; box-shadow: 0 7px 0 #353C50; text-shadow: 0 3px 0 #353C50; animation: none; font-size: 22px; }
+@keyframes late2 { 50% { transform: scale(1.04); } }
+.puntos { display: flex; gap: 8px; }
+.puntos i { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,.3); transition: all .3s; }
+.puntos i.on { width: 26px; border-radius: 6px; background: #FFD23F; }
 @media (max-width: 720px) {
-  .gm-top { display: grid; grid-template-columns: 1fr auto auto; gap: 0; }
-  .gm-der { display: contents; }
-  .gm-tit { padding: 14px 40px 14px 16px; font-size: 19px; }
-  .gm-xp { grid-column: 2; grid-row: 1; height: 100%; margin: 0; font-size: 16px; padding: 0 12px; }
-  .gm-x { grid-column: 3; grid-row: 1; width: 56px; height: 100%; margin: 0; font-size: 26px; }
-  .filtros { grid-column: 1 / -1; grid-row: 2; width: 100%; margin-top: 0; clip-path: none; }
-  .filtros button { flex: 1; padding: 13px 6px 15px; font-size: 13px; }
-  .gm-barra { margin-top: 16px; }
-  .gm-barra .et { padding: 9px 14px; font-size: 13px; }
-  .gm-barra .tx { font-size: 13px; padding: 0 8px; }
-  #totDispT { display: none; }
-  .carrusel { gap: 18px; padding-top: 40px; }
-  .cc { width: 252px; height: 392px; }
-  .cc .arte { height: 190px; top: 42px; } .cc .arte svg { width: 154px; height: 154px; }
-  .cc .ico-m { font-size: 40px; height: 46px; }
-  .cc .arte { top: 38px; height: 170px; }
-  .cc .pie b { font-size: 26px; }
-  .flecha { display: none; }
+  .isla { --h: min(46vh, 420px); top: 42%; }
+  .isla.l { transform: translateX(calc(var(--h) * -.78)) scale(.4); }
+  .isla.r { transform: translateX(calc(var(--h) * .78)) scale(.4); }
+  .m-fl { width: 48px; height: 48px; margin-top: -24px; font-size: 24px; top: 42%; }
+  .vtx { top: 42%; width: 150vw; }
+  .m-chip { height: 38px; padding: 0 10px; font-size: 15px; }
+  .m-btn { width: 44px; height: 44px; }
+  .jugar { height: 58px; font-size: 25px; min-width: 210px; }
 }
+@media (max-height: 640px) { .isla { --h: 40vh; } .placa { height: 58px; } }
 .curso-cab { position: relative; overflow: hidden; display: flex; align-items: center; gap: 18px; padding: 22px; border-radius: 24px; color: #fff; background: linear-gradient(135deg, var(--cc), color-mix(in srgb, var(--cc) 45%, #000)); border-bottom: 5px solid color-mix(in srgb, var(--cc) 40%, #000); }
-.curso-cab svg.ar { width: 92px; height: 92px; flex: none; filter: drop-shadow(0 8px 10px rgba(0,0,0,.35)); }
+.curso-cab .ar { width: 120px; height: 150px; flex: none; object-fit: contain; filter: drop-shadow(0 10px 12px rgba(0,0,0,.4)); }
 .curso-cab small { font: 800 14px/1 var(--display); letter-spacing: .1em; text-transform: uppercase; opacity: .85; }
 .curso-cab b { display: block; font-size: clamp(32px, 6vw, 48px); margin-top: 4px; }
 .curso-cab p { margin-top: 6px; font-weight: 700; opacity: .9; }
 .tema .estrellas-t { display: flex; align-items: center; gap: 6px; color: var(--suave); font: 800 14px/1 var(--display); letter-spacing: .06em; }
 .tema .estrellas-t .ic { color: var(--oro); }
 @media (max-width: 720px) {
-  .cc { width: 222px; height: 330px; }
-  .cc .arte { height: 150px; } .cc .arte svg { width: 116px; height: 116px; }
-  .cc .pie b { font-size: 27px; }
-  .flecha { display: none; }
   .ruta .nodo { width: calc(100% - 30px); }
-  .sel-cab { gap: 10px; } .filtros { width: 100%; }
-  .filtros button { flex: 1; padding: 10px 8px; font-size: 14px; }
+  .curso-cab .ar { width: 96px; height: 120px; }
 }
 
 /* ---------- Ruta del tema ---------- */
@@ -338,22 +322,24 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
 
 <!-- Inicio del Arcade -->
 <main class="vista on" id="v-inicio">
-  <div class="gm-top">
-    <span class="gm-tit">Elige tu curso</span>
-    <div class="gm-der">
-      <nav class="filtros" id="filtros" aria-label="Filtrar cursos"></nav>
-      <span class="gm-xp"><svg class="ic"><use href="#i-rayo"/></svg><span id="xpN2">0</span></span>
-      <a class="gm-x" href="index.html" aria-label="Salir del Arcade"><svg class="ic"><use href="#i-x"/></svg></a>
+  <div class="mapa" id="mapa">
+    <div class="vtx" id="vtx"><img src="assets/arcade/remolino.webp" alt=""></div>
+    <div class="chispas" id="chispas"></div>
+    <div class="m-top">
+      <a class="m-btn" href="index.html" aria-label="Salir del Arcade"><svg class="ic"><use href="#i-atras"/></svg></a>
+      <div class="m-tit"><b>Arcade</b><span class="chip-beta">Beta</span></div>
+      <span class="m-chip"><svg class="ic"><use href="#i-estrella"/></svg><b id="totEst">0</b></span>
+      <span class="m-chip xp"><svg class="ic"><use href="#i-rayo"/></svg><b id="xpN2">0</b></span>
     </div>
-  </div>
-  <div class="gm-barra">
-    <span class="et">Tu progreso</span>
-    <span class="tx"><svg class="ic"><use href="#i-estrella"/></svg><b id="totEst">0</b> estrellas · <span id="totDispT"></span></span>
-  </div>
-  <div class="carrusel-env">
-    <button class="flecha izq" type="button" id="flIzq" aria-label="Anterior"><svg class="ic"><use href="#i-atras"/></svg></button>
-    <div class="carrusel" id="carrusel"></div>
-    <button class="flecha der" type="button" id="flDer" aria-label="Siguiente"><svg class="ic"><use href="#i-atras"/></svg></button>
+    <div class="escena" id="escena"></div>
+    <button class="m-fl izq" type="button" id="flIzq" aria-label="Mundo anterior"><svg class="ic"><use href="#i-atras"/></svg></button>
+    <button class="m-fl der" type="button" id="flDer" aria-label="Mundo siguiente"><svg class="ic"><use href="#i-atras"/></svg></button>
+    <div class="m-pie">
+      <div class="placa" id="placa"></div>
+      <div class="m-info" id="mInfo"></div>
+      <button class="jugar" type="button" id="jugar">Jugar</button>
+      <div class="puntos" id="puntos"></div>
+    </div>
   </div>
 </main>
 
@@ -440,9 +426,9 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
      vendrá del panel, igual que los exámenes). area sirve para los filtros. */
   var AREAS = [['todos', 'Todos'], ['ciencias', 'Ciencias'], ['letras', 'Letras'], ['sociales', 'Sociales']];
   var CURSOS = [
-    { id: 'hp', nom: 'Historia del Perú', area: 'sociales', arte: 'a-historia', c: '#F28A1E', c2: '#7A2E0A', temas: ['hp01'] },
-    { id: 'bio', nom: 'Biología', area: 'ciencias', arte: 'a-biologia', c: '#1FC79A', c2: '#0B5E5E', temas: [] },
-    { id: 'qui', nom: 'Química', area: 'ciencias', arte: 'a-quimica', c: '#B35CFF', c2: '#3D1A7A', temas: [] },
+    { id: 'hp', nom: 'Historia del Perú', area: 'sociales', arte: 'a-historia', img: 'historia', c: '#F28A1E', c2: '#7A2E0A', temas: ['hp01'] },
+    { id: 'bio', nom: 'Biología', area: 'ciencias', arte: 'a-biologia', img: 'biologia', c: '#1FC79A', c2: '#0B5E5E', temas: [] },
+    { id: 'qui', nom: 'Química', area: 'ciencias', arte: 'a-quimica', img: 'quimica', c: '#B35CFF', c2: '#3D1A7A', temas: [] },
     { id: 'fis', nom: 'Física', area: 'ciencias', arte: 'a-fisica', c: '#2AA8F0', c2: '#0C3F86', temas: [] },
     { id: 'ana', nom: 'Anatomía', area: 'ciencias', arte: 'a-anatomia', c: '#F23D8C', c2: '#5E0F44', temas: [] },
     { id: 'mat', nom: 'Matemática', area: 'ciencias', arte: 'a-mate', c: '#F0553A', c2: '#6A1414', temas: [] },
@@ -450,7 +436,6 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     { id: 'geo', nom: 'Geografía', area: 'sociales', arte: 'a-geografia', c: '#20C2B4', c2: '#0A4C55', temas: [] },
     { id: 'hu', nom: 'Historia Universal', area: 'sociales', arte: 'a-mundo', c: '#D9A443', c2: '#5A3A0E', temas: [] }
   ];
-  var filtro = 'todos';
 
   var JUEGOS = [
     { id: 'une', nom: 'Une parejas', sub: 'Autor ↔ teoría', ic: 'i-une', c: '#A35CFF', dato: 'pares' },
@@ -484,49 +469,98 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
   function estrella(on) { return '<svg class="ic' + (on ? ' on' : '') + '"><use href="#i-estrella"/></svg>'; }
   function volverA(fn) { $('volver').href = '#'; $('volver').onclick = function (e) { e.preventDefault(); fn(); }; }
 
+  /* ---------- Mapa de mundos ----------
+     Orden: primero los mundos con juegos, luego los que tienen dibujo y al final
+     los que aún no tienen ni dibujo (salen como silueta con "?"). */
+  var mundo = 0, mundos = [];
+  function ordenMundos() {
+    return CURSOS.slice().sort(function (x, y) {
+      var px = x.temas.length ? 0 : x.img ? 1 : 2, py = y.temas.length ? 0 : y.img ? 1 : 2;
+      return px - py;
+    });
+  }
   function irInicio() {
     ver('v-inicio', 'Arcade'); $('volver').onclick = null; $('volver').href = 'index.html';
-    var tot = 0, disp = 0;
-    CURSOS.forEach(function (c) { c.temas.forEach(function (t) { tot += estrellasTema(t); }); if (c.temas.length) disp++; });
-    $('totEst').textContent = tot; $('totDispT').innerHTML = '<b>' + disp + '</b> ' + (disp === 1 ? 'curso disponible' : 'cursos disponibles'); $('xpN2').textContent = estado.xp;
-    $('filtros').innerHTML = AREAS.map(function (a) { return '<button type="button" data-a="' + a[0] + '" class="' + (a[0] === filtro ? 'on' : '') + '">' + a[1] + '</button>'; }).join('');
-    $('filtros').querySelectorAll('button').forEach(function (b) { b.onclick = function () { filtro = b.dataset.a; irInicio(); }; });
-    // Primero los disponibles; el último que jugaste sale "Seleccionado"
-    var lista = CURSOS.filter(function (c) { return filtro === 'todos' || c.area === filtro; })
-      .sort(function (x, y) { return (y.temas.length ? 1 : 0) - (x.temas.length ? 1 : 0); });
-    var elegido = estado.ultimo && cursoDe(estado.ultimo) && cursoDe(estado.ultimo).temas.length ? estado.ultimo : (lista.filter(function (c) { return c.temas.length; })[0] || {}).id;
-    $('carrusel').innerHTML = lista.map(function (c) {
-      var bloq = !c.temas.length, e = 0, m = 0;
-      c.temas.forEach(function (t) { e += estrellasTema(t); m += maxTema(t); });
-      var cinta = bloq ? 'Próximamente' : c.id === elegido ? 'Seleccionado' : 'Disponible';
-      var nj = c.temas.reduce(function (a, t) { return a + juegosDe(t).filter(function (j) { return !j.bloq; }).length; }, 0);
-      return '<button class="cc' + (bloq ? ' bloq' : '') + (c.id === elegido ? ' sel' : '') + '" type="button" data-c="' + c.id + '" style="--cc:' + c.c + ';--cc2:' + c.c2 + '"' + (bloq ? ' aria-disabled="true"' : '') + '>' +
-        '<span class="marco"></span><span class="borde"></span><span class="cinta">' + cinta + '</span><span class="info" aria-hidden="true">i</span>' +
-        (bloq ? '' : '<span class="est-ch">' + estrella(true) + e + '/' + m + '</span>') +
-        '<span class="arte">' + (c.img ? '<img src="' + c.img + '" alt="" loading="lazy">' : '<svg viewBox="0 0 120 120"><use href="#' + c.arte + '"/></svg>') + '</span>' +
-        '<span class="pie"><span class="ico-m"><svg class="ic"><use href="#' + (bloq ? 'i-candado' : 'i-estrella') + '"/></svg></span><b>' + c.nom + '</b><small>' + (bloq ? 'Próximamente' : c.temas.length + (c.temas.length === 1 ? ' tema' : ' temas') + ' · ' + nj + ' juegos') + '</small>' +
-        (bloq ? '' : '<span class="barra-c"><i style="--p:' + (m ? Math.round(e / m * 100) : 0) + '%"></i></span>') + '</span></button>';
-    }).join('');
-    $('carrusel').querySelectorAll('.cc:not(.bloq)').forEach(function (b) { b.onclick = function () { irCurso(b.dataset.c); }; });
-    var car = $('carrusel'), sel = car.querySelector('.sel');
-    requestAnimationFrame(function () { if (sel) car.scrollLeft = sel.offsetLeft - (car.clientWidth - sel.offsetWidth) / 2; flechas(); });
-    setTimeout(flechas, 400);
+    var tot = 0; CURSOS.forEach(function (c) { c.temas.forEach(function (t) { tot += estrellasTema(t); }); });
+    $('totEst').textContent = tot; $('xpN2').textContent = estado.xp;
+    mundos = ordenMundos();
+    var u = mundos.map(function (c) { return c.id; }).indexOf(estado.ultimo);
+    if (!$('escena').children.length) {
+      mundo = u >= 0 ? u : 0;
+      $('escena').innerHTML = mundos.map(function (c, i) {
+        var sil = !c.img, bloq = !c.temas.length;
+        return '<div class="isla' + (bloq ? ' bloq' : '') + (sil ? ' sil' : '') + '" data-i="' + i + '">' +
+          '<span class="sombra"></span><div class="flota"><img src="assets/arcade/mundo-' + (c.img || 'historia') + '.webp" alt="' + c.nom + '"' + (i === mundo ? '' : ' loading="lazy"') + ' draggable="false"></div>' +
+          (sil ? '<span class="sig">?</span>' : bloq ? '<span class="cand"><svg class="ic"><use href="#i-candado"/></svg></span>' : '') + '</div>';
+      }).join('');
+      $('escena').querySelectorAll('.isla').forEach(function (el) {
+        el.onclick = function () { var i = +el.dataset.i; if (arrastrado) return; if (i === mundo) entrar(); else irMundo(i); };
+      });
+      $('puntos').innerHTML = mundos.map(function () { return '<i></i>'; }).join('');
+    }
+    pintarMundo(false);
   }
-  function flechas() {
-    var car = $('carrusel');
-    $('flIzq').hidden = car.scrollLeft < 10; $('flDer').hidden = car.scrollLeft + car.clientWidth > car.scrollWidth - 10;
+  function pintarMundo(anim) {
+    var c = mundos[mundo];
+    $('escena').querySelectorAll('.isla').forEach(function (el) {
+      var d = +el.dataset.i - mundo;
+      el.className = el.className.replace(/\s(c|l|r|ll|rr|entra)\b/g, '') + ' ' + (d === 0 ? 'c' : d === -1 ? 'l' : d === 1 ? 'r' : d < 0 ? 'll' : 'rr') + (d === 0 && anim ? ' entra' : '');
+    });
+    var bloq = !c.temas.length, e = 0, m = 0, nj = 0;
+    c.temas.forEach(function (t) { e += estrellasTema(t); m += maxTema(t); nj += juegosDe(t).filter(function (j) { return !j.bloq; }).length; });
+    var pl = $('placa');
+    pl.innerHTML = c.img ? '<img src="assets/arcade/nombre-' + c.img + '.webp" alt="' + c.nom + '">' : '<span class="txt">' + c.nom + '</span>';
+    pl.style.animation = 'none'; void pl.offsetWidth; pl.style.animation = '';
+    $('mInfo').innerHTML = bloq ? '<span><svg class="ic"><use href="#i-candado"/></svg>Mundo en construcción</span>'
+      : '<span><svg class="ic"><use href="#i-estrella"/></svg>' + e + ' / ' + m + '</span><span>' + c.temas.length + (c.temas.length === 1 ? ' tema' : ' temas') + '</span><span>' + nj + ' juegos</span>';
+    $('jugar').disabled = bloq; $('jugar').textContent = bloq ? 'Próximamente' : 'Jugar';
+    $('flIzq').disabled = mundo === 0; $('flDer').disabled = mundo === mundos.length - 1;
+    $('puntos').querySelectorAll('i').forEach(function (p, i) { p.classList.toggle('on', i === mundo); });
   }
-  $('carrusel').addEventListener('scroll', flechas, { passive: true });
-  $('flIzq').onclick = function () { $('carrusel').scrollBy({ left: -270, behavior: 'smooth' }); };
-  $('flDer').onclick = function () { $('carrusel').scrollBy({ left: 270, behavior: 'smooth' }); };
-  window.addEventListener('resize', function () { if ($('v-inicio').classList.contains('on')) flechas(); });
+  var giro = 0;
+  function irMundo(i) {
+    i = Math.max(0, Math.min(mundos.length - 1, i));
+    if (i === mundo) return;
+    var dir = i > mundo ? 1 : -1; mundo = i;
+    giro += 360 * dir;
+    $('vtx').style.transform = 'rotate(' + giro + 'deg) scale(1.12)';
+    setTimeout(function () { $('vtx').style.transform = 'rotate(' + giro + 'deg)'; }, 520);
+    pintarMundo(true);
+    if (navigator.vibrate) try { navigator.vibrate(8); } catch (e) {}
+  }
+  function entrar() { var c = mundos[mundo]; if (c.temas.length) irCurso(c.id); }
+  $('flIzq').onclick = function () { irMundo(mundo - 1); };
+  $('flDer').onclick = function () { irMundo(mundo + 1); };
+  $('jugar').onclick = entrar;
+  document.addEventListener('keydown', function (e) {
+    if (!$('v-inicio').classList.contains('on')) return;
+    if (e.key === 'ArrowLeft') irMundo(mundo - 1); else if (e.key === 'ArrowRight') irMundo(mundo + 1); else if (e.key === 'Enter') entrar();
+  });
+  // Deslizar con el dedo o el mouse
+  var x0 = null, arrastrado = false;
+  $('escena').addEventListener('pointerdown', function (e) { x0 = e.clientX; arrastrado = false; });
+  $('escena').addEventListener('pointermove', function (e) { if (x0 != null && Math.abs(e.clientX - x0) > 12) arrastrado = true; });
+  $('escena').addEventListener('pointerup', function (e) {
+    if (x0 == null) return; var dx = e.clientX - x0; x0 = null;
+    if (Math.abs(dx) > 50) irMundo(mundo + (dx < 0 ? 1 : -1));
+    setTimeout(function () { arrastrado = false; }, 0);
+  });
+  // Chispas que salen del remolino
+  (function () {
+    var h = '';
+    for (var k = 0; k < 26; k++) {
+      var ang = Math.random() * Math.PI * 2, dist = 160 + Math.random() * 380;
+      h += '<i style="left:' + (50 + Math.cos(ang) * 6) + '%;top:' + (44 + Math.sin(ang) * 6) + '%;--x:' + Math.round(Math.cos(ang) * dist) + 'px;--y:' + Math.round(Math.sin(ang) * dist) + 'px;--t:' + (4 + Math.random() * 5).toFixed(1) + 's;--d:-' + (Math.random() * 8).toFixed(1) + 's"></i>';
+    }
+    $('chispas').innerHTML = h;
+  })();
 
   function irCurso(id) {
     var c = cursoDe(id); estado.curso = id;
     ver('v-curso', c.nom, 'Arcade'); volverA(irInicio);
     var e = 0, m = 0; c.temas.forEach(function (t) { e += estrellasTema(t); m += maxTema(t); });
     $('cursoCab').style.setProperty('--cc', c.c);
-    $('cursoCab').innerHTML = '<svg class="ar" viewBox="0 0 120 120"><use href="#' + c.arte + '"/></svg><div><small>Arcade · ' + AREAS.filter(function (a) { return a[0] === c.area; })[0][1] + '</small><b class="tit">' + c.nom + '</b><p>' + e + ' de ' + m + ' estrellas</p></div>';
+    $('cursoCab').innerHTML = (c.img ? '<img class="ar" src="assets/arcade/mundo-' + c.img + '.webp" alt="">' : '<svg class="ar" viewBox="0 0 120 120"><use href="#' + c.arte + '"/></svg>') + '<div><small>Arcade · ' + AREAS.filter(function (a) { return a[0] === c.area; })[0][1] + '</small><b class="tit">' + c.nom + '</b><p>' + e + ' de ' + m + ' estrellas</p></div>';
     $('temas').innerHTML = c.temas.map(function (t) {
       var T = TEMAS[t], et = estrellasTema(t), mt = maxTema(t);
       return '<button class="tema" type="button" data-t="' + t + '" style="--tc:' + c.c + '">' +
