@@ -94,7 +94,15 @@
   }
   ['subCurso', 'subNombre', 'exTipo'].forEach(function (id) { var el = document.getElementById(id); if (el) el.addEventListener('input', pronto); });
   // Cambio de paso (revisar / volver) y de modo (tema / examen)
-  new MutationObserver(pronto).observe(document.getElementById('subPaso2'), { attributes: true, attributeFilter: ['hidden'] });
+  // La vista solo sale después de "Revisar preguntas" (paso 2)
+  function verVista() {
+    var p2 = document.getElementById('subPaso2'), on = !p2.hidden;
+    document.getElementById('vistaAlu').hidden = !on;
+    document.querySelector('.sub-grid').classList.toggle('sin-vista', !on);
+    if (on) pronto();
+  }
+  new MutationObserver(verVista).observe(document.getElementById('subPaso2'), { attributes: true, attributeFilter: ['hidden'] });
+  verVista();
 
   // Controles
   document.getElementById('vaAnt').onclick = function () { if (st.i > 0) { st.i--; enviar(); } };
