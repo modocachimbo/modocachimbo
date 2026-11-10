@@ -222,6 +222,12 @@ body.en-inicio .cab { display: none; }
 .h-prog small { font: 900 13px/1 var(--cuerpo); white-space: nowrap; }
 @keyframes brillo { from { transform: translateX(-120%); } 60%, to { transform: translateX(220%); } }
 @keyframes late2 { 50% { scale: 1.06; } }
+/* Estrella con volumen (barra del mundo y moneda de estrellas) */
+.e3d { position: absolute; flex: none; filter: drop-shadow(0 0 8px rgba(255,200,0,.55)); }
+.h-prog .e3d { left: -16px; top: 50%; width: 54px; height: 54px; margin-top: -29px; animation: estG 3s ease-in-out infinite; }
+.h-pill .e3d { left: -16px; top: 50%; width: 40px; height: 40px; margin-top: -21px; transform: skewX(10deg); }
+@keyframes estG { 0%, 100% { transform: rotate(-6deg) scale(1); } 50% { transform: rotate(6deg) scale(1.08); } }
+.h-prog { padding-left: 44px; }
 /* Título del mundo */
 .h-cap { position: absolute; z-index: 5; left: 12px; right: 12px; top: calc(max(12px, env(safe-area-inset-top)) + 116px); display: grid; justify-items: center; gap: 2px; pointer-events: none; }
 .h-ctit { font: italic 900 40px/1 var(--display); letter-spacing: .03em; text-transform: uppercase; color: #fff; -webkit-text-stroke: 2px var(--mo); paint-order: stroke fill; text-shadow: 0 4px 0 var(--mo), 0 0 18px rgba(198,224,0,.35); }
@@ -274,13 +280,24 @@ body.en-inicio .cab { display: none; }
 .h-toast { position: absolute; z-index: 20; left: 50%; top: 40%; translate: -50% -50%; padding: 14px 22px; border-radius: 16px; background: rgba(16,8,48,.94); border: 2px solid #A35CFF; font: 900 16px/1.3 var(--cuerpo); text-align: center; opacity: 0; pointer-events: none; transition: opacity .25s, scale .25s; scale: .9; }
 .h-toast.on { opacity: 1; scale: 1; }
 @media (max-width: 720px) {
-  .m-pie { padding-left: 74px; padding-right: 8px; }
-  .h-fila { margin-left: -74px; }
-  #jugar { min-width: 0; width: min(214px, calc(100vw - 176px)); height: 80px; padding: 0 12px; column-gap: 8px; } #jugar b { font-size: 34px; } #jugar .pl { width: 36px; height: 36px; font-size: 18px; } #jugar small { font-size: 10.5px; max-width: 120px; }
-  .h-dif { width: 66px; } .h-dif img { width: 52px; } .h-dif b { font-size: 15px; }
+  /* Celular: arriba en dos filas (volver · jugador · sonido / monedas) y abajo cada botón con su espacio */
+  .mapa { --top: calc(env(safe-area-inset-top) + 248px); --bot: calc(env(safe-area-inset-bottom) + 214px); }
+  .h-top { flex-wrap: wrap; row-gap: 10px; }
+  .h-son { order: 2; }
+  .h-mon { order: 3; flex-basis: 100%; justify-content: center; gap: 34px; margin: 0; }
+  .h-dat small { display: block; } .h-bar { width: clamp(80px, 30vw, 150px); }
+  .h-prog { top: calc(max(12px, env(safe-area-inset-top)) + 112px); width: min(80vw, 360px); }
+  .h-cap { top: calc(max(12px, env(safe-area-inset-top)) + 158px); } .h-ctit { font-size: 36px; }
+  .m-pie { padding: 0 14px; gap: 14px; }
+  .h-fila { gap: 14px; } .h-fl { width: 42px; height: 42px; }
+  .h-accion { width: 100%; max-width: 440px; justify-content: center; gap: 16px; }
+  .h-isla { position: static; width: 64px; flex: none; align-content: center; }
+  .h-isla img { height: 56px; }
+  .h-isla span { padding: 4px 7px; }
+  #jugar { flex: 1; min-width: 0; width: auto; max-width: 320px; height: 80px; padding: 0 10px; column-gap: 8px; } #jugar b { font-size: 32px; } #jugar .pl { width: 34px; height: 34px; font-size: 17px; } #jugar small { font-size: 11.5px; max-width: 190px; }
+  .h-dif { width: 64px; flex: none; } .h-dif img { width: 50px; } .h-dif b { font-size: 15px; }
 }
-@media (max-width: 440px) { .h-dat small { display: none; } .h-bar { width: 56px; } .h-mon { gap: 12px; margin-right: 0; } .h-top { gap: 8px; } }
-@media (max-width: 380px) { .h-dat b { font-size: 15px; } .h-bar { width: 60px; } .h-dat small { display: none; } .h-mon { gap: 12px; } .h-pill { padding: 0 8px 0 24px; font-size: 14px; } .h-pill .ic { width: 30px; height: 30px; } .h-volver, .h-son { width: 40px; height: 40px; } }
+@media (max-width: 380px) { .m-pie { padding: 0 18px; } .h-accion { gap: 12px; } .h-isla { width: 56px; } .h-isla img { height: 50px; } #jugar .pl { width: 30px; height: 30px; font-size: 15px; } #jugar b { font-size: 30px; } #jugar small { max-width: 120px; } .h-nodos .nd { width: 30px; height: 30px; } .h-nodos .nd.ahora { width: 40px; height: 40px; } .h-nodos .ln { width: 9px; } .h-fila { gap: 10px; } }
 @media (min-width: 721px) {
   .mapa { --top: 190px; --bot: 236px; }
   #jugar small { max-width: 240px; }
@@ -290,10 +307,10 @@ body.en-inicio .cab { display: none; }
   .h-prog { top: 28px; width: min(32vw, 420px); }
   .h-cap { top: 96px; } .h-ctit { font-size: 52px; } .h-csub { font-size: 17px; }
   .m-pie { bottom: 26px; gap: 12px; }
-  #jugar { min-width: 320px; height: 94px; } #jugar b { font-size: 48px; }
+  #jugar { min-width: 420px; height: 94px; } #jugar b { font-size: 50px; }
   .h-dif { width: 88px; } .h-dif img { width: 72px; }
   .h-fl { width: 44px; height: 44px; }
-  .h-isla { left: 28px; bottom: 26px; width: 130px; } .h-isla img { height: 120px; }
+  .h-isla { left: 28px; bottom: 0; width: 130px; } .h-isla img { height: 120px; }
 }
 @media (min-width: 721px) and (max-height: 760px) { .mapa { --top: 170px; --bot: 210px; } .h-cap { top: 88px; } .h-ctit { font-size: 42px; } #jugar { height: 80px; } }
 .curso-cab { position: relative; overflow: hidden; display: flex; align-items: center; gap: 18px; padding: 22px; border-radius: 24px; color: #fff; background: linear-gradient(135deg, var(--cc), color-mix(in srgb, var(--cc) 45%, #000)); border-bottom: 5px solid color-mix(in srgb, var(--cc) 40%, #000); }
@@ -479,7 +496,9 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
   <symbol id="i-espadas" viewBox="0 0 24 24"><path d="M3 3h3l9 9-3 3-9-9z"/><path d="M21 3h-3l-9 9 3 3 9-9z"/><path d="m4 20 3-3M20 20l-3-3"/></symbol>
   <symbol id="i-fuego" viewBox="0 0 24 24"><path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 2-5 3-6 0 2 1 3 2 3 0-4-1-6 1-9z"/></symbol>
   <symbol id="i-mapa" viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></symbol>
+  <symbol id="i-estrella3d" viewBox="0 0 64 64"><path d="M32.0,8.0 L39.6,24.5 L57.7,26.7 L44.4,39.0 L47.9,56.8 L32.0,48.0 L16.1,56.8 L19.6,39.0 L6.3,26.7 L24.4,24.5Z" fill="#7A3A00" stroke="#7A3A00" stroke-width="7" stroke-linejoin="round" transform="translate(0 2)"/><path d="M32.0,8.0 L39.6,24.5 L57.7,26.7 L44.4,39.0 L47.9,56.8 L32.0,48.0 L16.1,56.8 L19.6,39.0 L6.3,26.7 L24.4,24.5Z" fill="url(#mcEstG)" stroke="#9A4A00" stroke-width="4" stroke-linejoin="round"/><path d="M32.0,35.0 L32.0,8.0 L39.6,24.5 Z M32.0,35.0 L57.7,26.7 L44.4,39.0 Z M32.0,35.0 L47.9,56.8 L32.0,48.0 Z M32.0,35.0 L16.1,56.8 L19.6,39.0 Z M32.0,35.0 L6.3,26.7 L24.4,24.5 Z " fill="#D06A00" opacity=".38"/><path d="M32.0,8.0 L39.6,24.5 L57.7,26.7 L44.4,39.0 L47.9,56.8 L32.0,48.0 L16.1,56.8 L19.6,39.0 L6.3,26.7 L24.4,24.5Z" fill="none" stroke="#FFF6C0" stroke-width="1.6" stroke-linejoin="round" opacity=".7" transform="translate(32 35) scale(.82) translate(-32 -35)"/><ellipse cx="24" cy="25" rx="5" ry="3" fill="#fff" opacity=".85" transform="rotate(-35 24 25)"/><circle cx="19" cy="31" r="1.6" fill="#fff" opacity=".8"/></symbol>
 </svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="mcEstG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF7B8"/><stop offset=".45" stop-color="#FFD21F"/><stop offset="1" stop-color="#F08A00"/></linearGradient></defs></svg>
 
 <header class="cab">
   <a class="volver" id="volver" href="index.html" aria-label="Volver"><svg class="ic"><use href="#i-atras"/></svg></a>
@@ -512,12 +531,12 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
         <span class="h-dat"><b id="hNom">Cachimbo</b><span class="h-bar"><i id="hBar"></i></span><small id="hXp">0 / 100 XP</small></span>
       </a>
       <div class="h-mon">
-        <span class="h-pill est" title="Estrellas"><svg class="ic"><use href="#i-estrella"/></svg><b id="totEst">0</b></span>
+        <span class="h-pill est" title="Estrellas"><svg class="e3d"><use href="#i-estrella3d"/></svg><b id="totEst">0</b></span>
         <span class="h-pill hx" title="XP del Arcade"><svg class="ic"><use href="#i-rayo"/></svg><b id="xpN2">0</b></span>
       </div>
       <button type="button" class="g-btn h-son btn-sonido" aria-label="Sonido">🔊</button>
     </div>
-    <div class="h-prog" title="Estrellas de este mundo"><svg class="ic"><use href="#i-estrella"/></svg><span class="h-pbar"><i id="hPbar"></i></span><small id="hPtxt">0/9</small></div>
+    <div class="h-prog" title="Estrellas de este mundo"><svg class="e3d"><use href="#i-estrella3d"/></svg><span class="h-pbar"><i id="hPbar"></i></span><small id="hPtxt">0/9</small></div>
     <div class="h-cap"><b class="h-ctit" id="hMundo">Mundo 1</b><span class="h-csub" id="hSub"></span><div class="placa" id="placa"></div><span class="m-info" id="mInfo"></span></div>
     <div class="escena" id="escena"></div>
     <button class="m-fl izq" type="button" id="flIzq" aria-label="Mundo anterior"><svg class="ic"><use href="#i-atras"/></svg></button>
@@ -525,12 +544,11 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     <div class="m-pie">
       <div class="h-fila"><button type="button" class="g-btn h-fl" id="hFlIzq" aria-label="Mundo anterior"><svg class="ic"><use href="#i-atras"/></svg></button><div class="h-nodos" id="hNodos"></div><button type="button" class="g-btn h-fl der" id="hFlDer" aria-label="Mundo siguiente"><svg class="ic"><use href="#i-atras"/></svg></button></div>
       <div class="h-accion">
+      <button type="button" class="h-isla" id="hMapa" aria-label="Ver mapa del mundo"><img id="hIslaImg" src="assets/arcade/mundo-historia.webp" alt=""><span><svg class="ic"><use href="#i-mapa"/></svg>Mapa</span></button>
         <button class="jugar" type="button" id="jugar"><span class="pl"><svg class="ic" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/></svg></span><b id="jugarT">Jugar</b><small id="jugarS">Nivel 1</small></button>
-        <button type="button" class="h-dif" data-pronto="Elegir dificultad"><b>Fácil</b><img src="assets/buho/avatar/clasico.webp" alt=""></button>
       </div>
       <div class="puntos" id="puntos"></div>
     </div>
-    <button type="button" class="h-isla" id="hMapa" aria-label="Ver mapa del mundo"><img id="hIslaImg" src="assets/arcade/mundo-historia.webp" alt=""><span><svg class="ic"><use href="#i-mapa"/></svg>Mapa</span></button>
     <div class="h-toast" id="hToast"></div>
   </div>
 </main>
