@@ -159,17 +159,20 @@ function pintarAvance() {
   (AV.reg.areas || []).forEach(a => {
     const cs = cursos.filter(c => c.area === a.id).sort((x, y) => (x.orden || 0) - (y.orden || 0)); if (!cs.length) return;
     const col = avColorArea(a.id);
-    h += `<tr class="area" style="--c:${col[0]}"><td colspan="${N + 1}"><span>${esc(a.nombre)}</span></td></tr>`;
+    let filas = '', visibles = 0;
     cs.forEach(c => {
       let fila = '', falta = false;
       for (let s = 1; s <= N; s++) {
         const x = avCelda(c.id, s); if (x.cls !== 'ok' && s <= hoy) falta = true;
         fila += `<td class="${s === hoy ? 'col-hoy' : ''}"><button type="button" class="av-c ${x.cls}" data-c="${c.id}" data-s="${s}" title="${esc(c.nombre)} · semana ${s}">${x.txt}${x.nom ? `<small>${esc(x.nom)}</small>` : ''}</button></td>`;
       }
-      h += `<tr class="${AV.soloFalta && !falta ? 'oculta' : ''}"><td class="curso" style="--c:${col[0]}"><i></i>${esc(c.nombre)}</td>${fila}</tr>`;
+      if (!(AV.soloFalta && !falta)) visibles++;
+      filas += `<tr class="${AV.soloFalta && !falta ? 'oculta' : ''}"><td class="curso" style="--c:${col[0]}"><i></i>${esc(c.nombre)}</td>${fila}</tr>`;
     });
+    h += `<tr class="area${visibles ? '' : ' oculta'}" style="--c:${col[0]}"><td colspan="${N + 1}"><span>${esc(a.nombre)}</span></td></tr>` + filas;
   });
   h += '</tbody></table></div>';
+  if (AV.soloFalta && !/<tr class=""|<tr class="area"/.test(h)) h += '<div class="state-msg" style="margin-top:12px">🎉 No falta ningún curso hasta la semana ' + String(hoy).padStart(2, '0') + '.</div>';
   $('avCaja').innerHTML = h;
   $('avCaja').querySelectorAll('.av-c').forEach(b => b.onclick = () => avAbrir(b.dataset.c, +b.dataset.s));
   // La tabla se coloca sola en la semana actual
@@ -296,15 +299,15 @@ async function avHoja() {
   await avScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
   const secNom = AV_SEC.find(x => x[0] === AV.sec)[1], hoy = new Date();
   const hoja = document.createElement('div'); hoja.className = 'av-hoja';
-  hoja.innerHTML = `<div class="h-top"><img src="../assets/app/icono-192.png" alt=""><div class="t"><b>Avance del ciclo</b><small>${esc(secNom)} ${esc(AV.cfg.ciclo)} · estamos en la semana ${String(AV.cfg.semana).padStart(2, '0')}</small></div>
+  hoja.innerHTML = `<div class="h-top"><img src="../assets/app/icono-192.png" alt=""><div class="t"><b>Avance del ciclo</b><small>${esc(secNom)} ${esc(AV.cfg.ciclo)} · estamos en la semana ${String(AV.cfg.semana).padStart(2, '0')}${AV.soloFalta ? ' · <span style="color:#FF8A8A">solo los cursos que faltan</span>' : ''}</small></div>
     <div class="f">Modo Cachimbo<br>${hoy.toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' })} · ${hoy.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' })}</div></div>` + $('avCaja').innerHTML + '<div class="pie">modocachimbo.github.io · Panel del equipo</div>';
-  hoja.querySelectorAll('tr.oculta').forEach(t => t.classList.remove('oculta'));
+  hoja.querySelectorAll('tr.oculta').forEach(t => t.remove());
   document.body.appendChild(hoja);
   await (document.fonts ? document.fonts.ready : Promise.resolve());
   try { return await html2canvas(hoja, { backgroundColor: '#0B0818', scale: 2, useCORS: true, logging: false }); }
   finally { hoja.remove(); }
 }
-function avNombre(ext) { return 'avance-' + AV.sec + '-' + AV.cfg.ciclo + '-semana-' + String(AV.cfg.semana).padStart(2, '0') + '.' + ext; }
+function avNombre(ext) { return 'avance-' + (AV.soloFalta ? 'faltan-' : '') + AV.sec + '-' + AV.cfg.ciclo + '-semana-' + String(AV.cfg.semana).padStart(2, '0') + '.' + ext; }
 function avBajar(blob, nombre) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nombre; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); }
 async function avExportar(tipo, b) {
   if (!AV.reg) return;
