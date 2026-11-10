@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vista del alumno</title>
 <!--
-  Modo Cachimbo · Panel · Vista del alumno
-  Se abre dentro del panel (Subir tema / Subir examen) y dibuja la pregunta tal como la ve
-  el alumno en la práctica: usa los mismos estilos de la página real (se copian de
-  geometria/libros/quiz.html) y el mismo assets/pregunta.js. El panel le manda las
-  preguntas con postMessage({ tipo: 'mc-vista', preguntas, i, titulo, clave }).
+  Modo Cachimbo · Panel · Vista del alumno (modo estudio)
+  Se abre dentro del panel (Subir tema / Subir examen) y dibuja las preguntas tal como
+  las ve el alumno en el modo estudio: copia los estilos de la página real
+  (geometria/libros/tema.html o examenes/cpu/ver.html) y usa el mismo assets/pregunta.js.
+  El panel le manda las preguntas con postMessage({ tipo: 'mc-vista', preguntas, i, ... }).
 -->
 <link rel="stylesheet" href="../assets/areas.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
@@ -17,50 +17,42 @@
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="document.dispatchEvent(new Event('mc:katex'))"></script>
 <script src="../assets/pregunta.js"></script>
 <style id="estiloBase">
-  html, body { margin: 0; background: #0B0818; }
   .vacia { color: #A99FC8; font: 700 15px/1.5 Nunito, system-ui, sans-serif; text-align: center; padding: 60px 20px; }
-  .mc-img-falta { display: grid; place-items: center; min-height: 120px; margin: 10px 0; border: 2px dashed #4A4170; border-radius: 14px; color: #A99FC8; font: 700 13px/1.4 Nunito, system-ui, sans-serif; text-align: center; padding: 10px; }
-  .vista-sol { margin-top: 10px; padding: 12px 14px; border-radius: 14px; background: rgba(88,204,2,.1); border: 2px solid rgba(88,204,2,.4); color: #CFF5B0; font: 700 14px/1.45 Nunito, system-ui, sans-serif; }
-  .card { margin: 0 auto !important; }
-  .backlink { pointer-events: none; }
+  .mc-img-falta { display: grid; place-items: center; min-height: 110px; margin: 10px 0; border: 2px dashed #4A4170; border-radius: 14px; color: #A99FC8; font: 700 13px/1.4 Nunito, system-ui, sans-serif; text-align: center; padding: 10px; }
+  .vista-sol { margin-top: 6px; padding: 12px 14px; border-radius: 14px; background: rgba(88,204,2,.1); border: 2px solid rgba(88,204,2,.4); color: #CFF5B0; font: 700 14px/1.45 Nunito, system-ui, sans-serif; }
+  .qcard.foco { outline: 3px solid rgba(198,224,0,.55); outline-offset: 3px; }
+  .back-row a { pointer-events: none; }
+  .rep-row { pointer-events: none; }
 </style>
 </head>
 <body>
-  <div class="card" id="carta">
-    <div class="backlink"><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> <span id="backLabel">Libros</span></a></div>
-    <div class="header" id="quizHeader">
-      <div class="title" id="vTitulo">Práctica <span class="accent">Admisión</span></div>
-      <div class="topbar">
-        <div class="lives" id="lives"></div>
-        <div class="stat"><span id="score">0 pts</span></div>
-      </div>
-      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
-      <div class="progress-label" id="progress-label">Pregunta 1 de 1</div>
+  <div class="wrap">
+    <header class="top">
+      <div class="back-row"><a class="back" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> <span id="backLabel">Temario</span></a></div>
+      <div class="course-badge"><div class="dot"></div><span id="badge">Curso</span></div>
+    </header>
+    <div class="page-head">
+      <div class="eyebrow" id="eyebrow">tema · modo estudio</div>
+      <h1 id="titulo">Tema</h1>
+      <p id="cuenta"></p>
     </div>
-    <div id="quizBody">
-      <div class="badge" id="topicBadge"><span class="dot"></span><span id="topicText"></span></div>
-      <div class="question"><p id="questionText"></p></div>
-      <div class="q-graphic" id="qGraphic" style="display:none;"></div>
-      <div class="options" id="optionsList"></div>
-      <div class="feedback" id="feedback"></div>
-      <div class="navrow">
-        <button class="btn" id="btnBack" type="button">Atrás</button>
-        <button class="btn primary" id="btnNext" type="button">Siguiente</button>
-      </div>
-    </div>
+    <div id="qlist"></div>
   </div>
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
-  var datos = { preguntas: [], i: 0, titulo: '', clave: false };
-  var elegida = null;
+  var datos = { preguntas: [], i: 0 }, modo = null;
 
-  // Copia los estilos de la página real de práctica para verse igual que el alumno
-  fetch('../geometria/libros/quiz.html', { cache: 'no-cache' }).then(function (r) { return r.text(); }).then(function (html) {
-    var doc = new DOMParser().parseFromString(html, 'text/html');
-    doc.querySelectorAll('style').forEach(function (st) { var s = document.createElement('style'); s.textContent = st.textContent; document.head.insertBefore(s, $('estiloBase')); });
-  }).catch(function () {});
-
+  // Copia los estilos de la página real de modo estudio
+  function estilos(m) {
+    if (m === modo) return; modo = m;
+    document.querySelectorAll('style.copiado').forEach(function (s) { s.remove(); });
+    var url = m === 'examen' ? '../examenes/cpu/ver.html' : '../geometria/libros/tema.html';
+    fetch(url, { cache: 'no-cache' }).then(function (r) { return r.text(); }).then(function (html) {
+      var doc = new DOMParser().parseFromString(html, 'text/html');
+      doc.querySelectorAll('style').forEach(function (st) { var s = document.createElement('style'); s.className = 'copiado'; s.textContent = st.textContent; document.head.insertBefore(s, $('estiloBase')); });
+    }).catch(function () {});
+  }
   function formatQText(str) {
     var esc = String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     for (var k = 0; k < 3; k++) esc = esc.replace(/&lt;(u|i|b|em|strong|sub|sup)&gt;([\s\S]*?)&lt;\/\1&gt;/gi, function (x, t, d) { return '<' + t.toLowerCase() + '>' + d + '</' + t.toLowerCase() + '>'; });
@@ -70,76 +62,51 @@
     if (!window.renderMathInElement) { document.addEventListener('mc:katex', function () { renderMath(el); }, { once: true }); return; }
     renderMathInElement(el, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false });
   }
-  function corazon(lleno) {
-    return '<svg width="16" height="16" viewBox="0 0 24 24" fill="' + (lleno ? '#C6E000' : 'none') + '" stroke="' + (lleno ? '#C6E000' : '#3a3a3a') + '" stroke-width="2"><path d="M12 21s-6.7-4.35-9.3-8.3C1.1 10.1 1.6 6.6 4.4 5.1c2.2-1.2 4.7-.4 6 1.4l1.6 2.1 1.6-2.1c1.3-1.8 3.8-2.6 6-1.4 2.8 1.5 3.3 5 1.7 7.6C18.7 16.65 12 21 12 21z"/></svg>';
+  var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+
+  function tarjeta(q, idx) {
+    var div = document.createElement('div'); div.className = 'qcard'; div.id = 'q' + (idx + 1);
+    var k = 0, imgs = q._imgs || {};
+    var r = MCPregunta.armar(q.text || '', { lecPos: q.lecPos, lecSigue: q.lecSigue, marca: function () {
+      var src = imgs[k++]; return src ? '<img class="mc-img" src="' + src + '" alt="">' : '<div class="mc-img-falta">Aquí irá la imagen<br>(pégala en la lista de la izquierda)</div>';
+    } });
+    var graf = imgs.g ? '<img class="mc-img" src="' + imgs.g + '" alt="">' : (q.graphic || '');
+    var ops;
+    if (q.abierta || q.tipo) ops = '<div class="vista-sol">' + (q.tipo ? MCPregunta.nombreTipo(q) + ' · ' + MCPregunta.solucion(q) : 'Respuesta: ' + (q.respuestas || []).map(formatQText).join(' o ')) + '</div>';
+    else {
+      var cortas = !r.derecha && MCPregunta.cortas(q.options);
+      ops = '<div class="opts ' + (cortas ? 'mcq-cortas' : '') + '" style="' + (cortas ? 'gap:8px;' : '') + '">' + (q.options || []).map(function (o, i) {
+        var ok = i === q.correct;
+        return '<div class="opt-row ' + (ok ? 'correct' : '') + '"><div class="letter">' + o.letter + '</div><span class="opt-text">' + formatQText(o.text) + '</span>' + (ok ? CHECK : '') + '</div>';
+      }).join('') + '</div>';
+      if (r.derecha) ops = '<div class="mcq-con-der">' + ops + '<div class="mcq-der" style="margin:0;">' + r.derecha + '</div></div>';
+    }
+    var tag = modo === 'examen' && q.asignatura ? (q.tema ? '<div class="qtema con-t"><span class="qtema-x"><span>' + q.asignatura + '</span><small class="qtema-t">' + q.tema + '</small></span></div>' : '<div class="qtema">' + q.asignatura + '</div>') : '';
+    div.innerHTML = tag + '<div class="qnum">' + (q.num || idx + 1) + '</div><div class="qtext">' + r.html + '</div>' + (graf ? '<div class="q-graphic">' + graf + '</div>' : '') + ops;
+    var op = div.querySelector('.opts'); if (op) try { MCPregunta.analogias(op, q); } catch (e) {}
+    try { MCPregunta.llenarHuecos(div.querySelector('.qtext'), q); } catch (e) {}
+    return div;
   }
 
-  function pintar() {
-    var ps = datos.preguntas, n = ps.length;
-    if (!n) { $('quizBody').hidden = true; $('quizHeader').hidden = true; if (!$('vacia')) $('carta').insertAdjacentHTML('beforeend', '<div class="vacia" id="vacia">Escribe o pega una pregunta y aquí verás cómo la ve el alumno.</div>'); return; }
-    if ($('vacia')) $('vacia').remove();
-    $('quizBody').hidden = false; $('quizHeader').hidden = false;
-    var i = Math.max(0, Math.min(n - 1, datos.i)), q = ps[i];
-    $('vTitulo').innerHTML = datos.titulo ? formatQText(datos.titulo).replace(/^(\S+)\s/, '$1 <span class="accent">') + '</span>' : 'Práctica <span class="accent">Admisión</span>';
-    $('backLabel').textContent = datos.atras || 'Libros';
-    $('lives').innerHTML = [0, 1, 2, 3, 4].map(function () { return corazon(true); }).join('');
-    $('progress-fill').style.width = (i / n * 100) + '%';
-    $('progress-label').textContent = 'Pregunta ' + (i + 1) + ' de ' + n;
-    $('topicText').textContent = q.topic || '';
-    $('topicBadge').style.display = q.topic ? '' : 'none';
-    // Enunciado (imágenes pegadas en el panel o un recuadro si aún falta pegarlas)
-    var k = 0, imgs = q._imgs || {};
-    var r = MCPregunta.armar(q.text || '', { lecPos: q.lecPos, marca: function () { var src = imgs[k++]; return src ? '<img class="mc-img" src="' + src + '" alt="">' : '<div class="mc-img-falta">Aquí irá la imagen<br>(pégala en la lista de la izquierda)</div>'; } });
-    $('questionText').innerHTML = r.html;
-    MCPregunta.burbuja($('questionText').closest('.question'), r.etiqueta);
-    var g = $('qGraphic'), graf = imgs.g ? '<img class="mc-img" src="' + imgs.g + '" alt="">' : (q.graphic || '');
-    g.innerHTML = graf; g.style.display = graf ? 'block' : 'none';
-    // Alternativas
-    var lista = $('optionsList'); lista.innerHTML = ''; $('feedback').className = 'feedback'; $('feedback').textContent = '';
-    if (q.abierta || q.tipo) {
-      if (q.abierta && !q.tipo) { try { MCPregunta.cuadroAbierto(lista, Object.assign({}, q, { options: [], correct: 0 }), {}, r); } catch (e) {} }
-      else lista.innerHTML = '<div class="vista-sol">' + MCPregunta.nombreTipo(q) + ' · ' + MCPregunta.solucion(q) + '</div>';
-    } else {
-      (q.options || []).forEach(function (o, j) {
-        var d = document.createElement('div'); d.className = 'option';
-        d.innerHTML = '<div class="letter">' + o.letter + '</div><span class="text">' + formatQText(o.text) + '</span>';
-        d.addEventListener('click', function () { elegida = j; marcar(); });
-        lista.appendChild(d);
-      });
-      MCPregunta.alternativas(lista, q, r);
-      try { MCPregunta.llenarHuecos($('questionText'), q); } catch (e) {}
-      if (elegida != null || datos.clave) marcar();
-    }
-    $('btnBack').disabled = i === 0;
-    $('btnNext').textContent = i === n - 1 ? 'Finalizar' : 'Siguiente';
-    renderMath($('carta'));
+  function pintar(saltar) {
+    var ps = datos.preguntas, n = ps.length, lista = $('qlist');
+    estilos(datos.modo);
+    $('badge').textContent = datos.badge || '';
+    $('backLabel').textContent = datos.modo === 'examen' ? 'Exámenes' : 'Temario';
+    $('eyebrow').textContent = datos.modo === 'examen' ? 'examen · modo estudio' : 'tema ' + (datos.num || '') + ' · modo estudio';
+    $('titulo').textContent = datos.titulo || (datos.modo === 'examen' ? 'Examen' : 'Tema');
+    $('cuenta').textContent = n ? n + ' preguntas con respuesta marcada.' : '';
+    lista.innerHTML = '';
+    if (!n) { lista.innerHTML = '<div class="vacia">Aquí verás las preguntas como en el modo estudio.</div>'; return; }
+    ps.forEach(function (q, i) { var c = tarjeta(q, i); if (i === datos.i) c.classList.add('foco'); lista.appendChild(c); });
+    renderMath(lista);
+    if (saltar) { var f = $('q' + (datos.i + 1)); if (f) f.scrollIntoView({ block: 'start' }); }
   }
-  // Como al responder: verde la correcta y rojo la que eligió (o solo la clave si está "Mostrar clave")
-  function marcar() {
-    var q = datos.preguntas[datos.i]; if (!q || !q.options) return;
-    $('optionsList').querySelectorAll('.option').forEach(function (d, j) {
-      d.classList.add('locked');
-      if (j === q.correct) d.classList.add('correct');
-      else if (j === elegida) d.classList.add('wrong');
-    });
-    if (elegida != null) {
-      var ok = elegida === q.correct, f = $('feedback');
-      f.className = 'feedback show ' + (ok ? 'ok' : 'bad');
-      f.textContent = ok ? '¡Correcto!' : 'Incorrecto. La respuesta correcta era la ' + (q.options[q.correct] || {}).letter + '.';
-    }
-  }
-  function ir(d) {
-    var n = datos.preguntas.length; if (!n) return;
-    datos.i = Math.max(0, Math.min(n - 1, datos.i + d)); elegida = null; pintar();
-    parent.postMessage({ tipo: 'mc-vista-i', i: datos.i }, '*');
-  }
-  $('btnBack').onclick = function () { ir(-1); };
-  $('btnNext').onclick = function () { ir(1); };
   window.addEventListener('message', function (e) {
     var m = e.data; if (!m || m.tipo !== 'mc-vista') return;
-    if (m.i !== datos.i) elegida = null;
+    var salta = m.i !== datos.i || !datos.preguntas.length;
     datos = Object.assign(datos, m);
-    pintar();
+    var y = window.scrollY; pintar(salta); if (!salta) window.scrollTo(0, y);
   });
   parent.postMessage({ tipo: 'mc-vista-lista' }, '*');
 })();

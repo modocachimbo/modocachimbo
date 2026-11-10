@@ -36,7 +36,7 @@
     var out = {
       text: (q.lectura || '') + q.text + (q.etiqueta ? '\n[ETIQUETA: ' + q.etiqueta + ']' : ''),
       options: (q.options || []).map(function (o) { return { letter: o.letter, text: o.text }; }),
-      correct: q.correct, topic: topic, _imgs: {}
+      correct: q.correct, topic: topic, asignatura: q.asignatura, tema: q.tema, num: q.num, _imgs: {}
     };
     if (q.abierta) Object.assign(out, { abierta: true, respuestas: (q.respuestas || []).slice(), options: [], correct: 0 });
     ['tipo', 'huecos', 'afirmaciones', 'pares', 'orden'].forEach(function (k) { if (q[k] != null) out[k] = q[k]; });
@@ -60,8 +60,12 @@
     try { if (window.MCPregunta && MCPregunta.rangos) MCPregunta.rangos(st.preguntas); } catch (e) {}
     st.i = Math.max(0, Math.min(st.preguntas.length - 1, st.i));
     document.getElementById('vaNum').textContent = st.preguntas.length ? (st.i + 1) + ' / ' + st.preguntas.length : '—';
-    var titulo = SUB.modo === 'examen' ? 'Examen Admisión' : 'Práctica ' + nombreCurso();
-    if (frame.contentWindow) frame.contentWindow.postMessage({ tipo: 'mc-vista', preguntas: st.preguntas, i: st.i, clave: st.clave, titulo: titulo, atras: SUB.modo === 'examen' ? 'Exámenes' : 'Libros CPU' }, '*');
+    var ex = SUB.modo === 'examen', ta2 = document.getElementById('subTexto');
+    var num = (document.getElementById('subNum') || {}).value || ((ta2 && ta2.value.match(/^\s*TEMA\s*:\s*(\d+)/mi)) || [])[1] || '';
+    var ciclo = ex ? (document.getElementById('exCiclo') || {}).value : (document.getElementById('subCiclo') || {}).value;
+    var titulo = ex ? nombreCurso() + (ciclo ? ' ' + ciclo : '') : nombreTema();
+    var badge = ex ? 'Examen' + (ciclo ? ' · ' + ciclo : '') : nombreCurso() + (ciclo ? ' · ' + ciclo : '');
+    if (frame.contentWindow) frame.contentWindow.postMessage({ tipo: 'mc-vista', preguntas: st.preguntas, i: st.i, modo: ex ? 'examen' : 'tema', titulo: titulo, badge: badge, num: num ? String(num).padStart(2, '0') : '' }, '*');
   }
   function pronto() { clearTimeout(tPars); tPars = setTimeout(enviar, 300); }
 
@@ -107,7 +111,6 @@
   // Controles
   document.getElementById('vaAnt').onclick = function () { if (st.i > 0) { st.i--; enviar(); } };
   document.getElementById('vaSig').onclick = function () { if (st.i < st.preguntas.length - 1) { st.i++; enviar(); } };
-  document.getElementById('vaClave').onchange = function (e) { st.clave = e.target.checked; enviar(); };
   document.querySelectorAll('.va-tabs button').forEach(function (b) {
     b.onclick = function () {
       document.querySelectorAll('.va-tabs button').forEach(function (x) { x.classList.toggle('on', x === b); });
