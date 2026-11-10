@@ -98,14 +98,42 @@
   }
   ['subCurso', 'subNombre', 'exTipo'].forEach(function (id) { var el = document.getElementById(id); if (el) el.addEventListener('input', pronto); });
   // Cambio de paso (revisar / volver) y de modo (tema / examen)
-  // La vista solo sale después de "Revisar preguntas" (paso 2)
+  // La vista es una ventana flotante: el botón "Ver como alumno" sale después de "Revisar preguntas"
+  var caja = document.getElementById('vistaAlu'), abrir = document.getElementById('vaAbrir'), pant = document.getElementById('vaPantalla');
+  var abierta = false; try { abierta = localStorage.getItem('mc_panel_vista_abierta') === '1'; } catch (e) {}
   function verVista() {
-    var p2 = document.getElementById('subPaso2'), on = !p2.hidden;
-    document.getElementById('vistaAlu').hidden = !on;
-    document.querySelector('.sub-grid').classList.toggle('sin-vista', !on);
-    if (on) pronto();
+    var on = !document.getElementById('subPaso2').hidden && !document.getElementById('tab-subir').hidden;
+    caja.hidden = !(on && abierta); abrir.hidden = !on || abierta;
+    if (on && abierta) { escalar(); pronto(); }
   }
+  function ponerAbierta(v) { abierta = v; try { localStorage.setItem('mc_panel_vista_abierta', v ? '1' : '0'); } catch (e) {} verVista(); }
+  abrir.onclick = function () { ponerAbierta(true); };
+  document.getElementById('vaCerrar').onclick = function () { ponerAbierta(false); };
   new MutationObserver(verVista).observe(document.getElementById('subPaso2'), { attributes: true, attributeFilter: ['hidden'] });
+  new MutationObserver(verVista).observe(document.getElementById('tab-subir'), { attributes: true, attributeFilter: ['hidden'] });
+  // Tamaño real de la pantalla y escala para caber en la ventana
+  var TAM = { cel: [390, 844], pc: [1366, 768] };
+  function escalar() {
+    var w = marco.classList.contains('pc') ? 'pc' : 'cel', t = TAM[w], borde = w === 'cel' ? 20 : 6, arriba = w === 'cel' ? 20 : 29;
+    var ancho = t[0] + borde, alto = t[1] + arriba, sc = Math.min(marco.clientWidth / ancho, marco.clientHeight / alto, 1);
+    pant.style.width = ancho + 'px'; pant.style.height = alto + 'px';
+    pant.style.transform = 'translateX(-50%) scale(' + sc + ')';
+  }
+  if (window.ResizeObserver) new ResizeObserver(escalar).observe(marco);
+  // Mover la ventana arrastrando la barra de arriba
+  (function () {
+    var cab = document.getElementById('vaCab'), x0, y0, r0;
+    cab.addEventListener('pointerdown', function (e) {
+      if (e.target.closest('button')) return;
+      r0 = caja.getBoundingClientRect(); x0 = e.clientX; y0 = e.clientY; cab.setPointerCapture(e.pointerId);
+    });
+    cab.addEventListener('pointermove', function (e) {
+      if (!r0) return;
+      var l = Math.max(0, Math.min(innerWidth - 80, r0.left + e.clientX - x0)), t = Math.max(0, Math.min(innerHeight - 60, r0.top + e.clientY - y0));
+      caja.style.left = l + 'px'; caja.style.top = t + 'px'; caja.style.right = 'auto'; caja.style.bottom = 'auto';
+    });
+    cab.addEventListener('pointerup', function () { r0 = null; });
+  })();
   verVista();
 
   // Controles
@@ -114,7 +142,7 @@
   document.querySelectorAll('.va-tabs button').forEach(function (b) {
     b.onclick = function () {
       document.querySelectorAll('.va-tabs button').forEach(function (x) { x.classList.toggle('on', x === b); });
-      marco.className = 'va-marco ' + b.dataset.w;
+      marco.className = 'va-marco ' + b.dataset.w; caja.classList.toggle('pc', b.dataset.w === 'pc'); escalar();
       try { localStorage.setItem('mc_panel_vista', b.dataset.w); } catch (e) {}
     };
   });

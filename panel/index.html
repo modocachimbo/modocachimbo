@@ -229,25 +229,32 @@
   .done .ico { width: 70px; height: 70px; border-radius: 20px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; background: var(--accent-soft); border: 1px solid rgba(198,224,0,0.3); color: var(--accent); }
   .done .ico svg { width: 34px; height: 34px; }
   .done p { font-size: 14px; color: var(--text-dim); line-height: 1.6; max-width: 440px; margin: 8px auto 0; }
-  /* Subir: vista del alumno a la derecha (panel/vista-alumno.html) */
-  .sub-grid { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 22px; align-items: start; }
+  /* Subir: vista del alumno en ventana flotante (panel/vista-alumno.html) */
+  .sub-grid { display: block; }
   .sub-izq { min-width: 0; }
-  .sub-grid.sin-vista { grid-template-columns: minmax(0, 1fr); }
-  .vista-alu { position: sticky; top: 14px; display: grid; gap: 10px; padding: 14px; border-radius: 18px; background: var(--card, #151127); border: 1px solid var(--line, #2A2346); }
-  .vista-alu .va-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-  .vista-alu .va-cab b { font: 900 15px/1 var(--font-body, Nunito, sans-serif); }
+  .va-abrir { position: fixed; right: 22px; bottom: 96px; z-index: 900; display: flex; align-items: center; gap: 8px; padding: 13px 18px; border-radius: 16px; border: 0; cursor: pointer;
+    background: #C6E000; color: #151a03; font: 900 15px/1 Nunito, sans-serif; box-shadow: 0 5px 0 #7F9000, 0 10px 24px rgba(0,0,0,.4); }
+  .va-abrir[hidden] { display: none; }
+  .vista-alu { position: fixed; right: 22px; bottom: 22px; z-index: 901; width: 440px; height: min(820px, calc(100vh - 44px)); display: flex; flex-direction: column; gap: 10px; padding: 12px 14px 14px;
+    border-radius: 18px; background: #151127; border: 2px solid #3B3366; box-shadow: 0 20px 60px rgba(0,0,0,.6); resize: both; overflow: hidden; min-width: 340px; min-height: 420px; max-width: calc(100vw - 30px); }
+  .vista-alu.pc { width: min(900px, calc(100vw - 60px)); }
+  .vista-alu[hidden] { display: none; }
+  .vista-alu .va-cab { display: flex; align-items: center; gap: 10px; cursor: move; user-select: none; }
+  .vista-alu .va-cab b { flex: 1; font: 900 15px/1 Nunito, sans-serif; }
+  .va-cerrar { width: 32px; height: 32px; border-radius: 10px; border: 1px solid #3B3366; background: rgba(255,255,255,.05); color: inherit; font-size: 18px; cursor: pointer; }
   .va-tabs { display: flex; gap: 4px; padding: 3px; border-radius: 10px; background: rgba(255,255,255,.06); }
-  .va-tabs button { padding: 6px 10px; border-radius: 8px; border: 0; background: none; color: inherit; font: 800 12.5px/1 inherit; cursor: pointer; opacity: .7; }
+  .va-tabs button { padding: 6px 10px; border-radius: 8px; border: 0; background: none; color: inherit; font: 800 12.5px/1 Nunito, sans-serif; cursor: pointer; opacity: .7; }
   .va-tabs button.on { background: #C6E000; color: #151a03; opacity: 1; }
   .va-nav { display: flex; align-items: center; gap: 8px; font-weight: 800; }
-  .va-nav button { width: 32px; height: 32px; border-radius: 10px; border: 1px solid var(--line, #2A2346); background: rgba(255,255,255,.05); color: inherit; font-size: 20px; line-height: 1; cursor: pointer; }
-  .va-nav .va-clave { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
-  .va-marco { margin: 0 auto; border-radius: 26px; overflow: hidden; background: #0B0818; transition: width .25s; }
-  .va-marco.cel { width: 360px; height: 680px; border: 8px solid #2A2346; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
-  .va-marco.pc { width: 100%; height: 620px; border: 3px solid #2A2346; border-radius: 14px; }
-  .va-marco iframe { width: 100%; height: 100%; border: 0; display: block; }
-  .vista-alu > .hint { margin: 0; }
-  @media (max-width: 1180px) { .sub-grid { grid-template-columns: minmax(0, 1fr); } .vista-alu { position: static; } }
+  .va-nav button { width: 32px; height: 32px; border-radius: 10px; border: 1px solid #3B3366; background: rgba(255,255,255,.05); color: inherit; font-size: 20px; line-height: 1; cursor: pointer; }
+  .va-nav .hint { margin-left: auto; font-size: 12px; }
+  /* El marco tiene el tamaño real de la pantalla (celular 390 px, PC 1366 px) y se achica para caber */
+  .va-marco { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+  .va-pantalla { position: absolute; left: 50%; top: 0; transform-origin: top center; background: #0B0818; overflow: hidden; }
+  .va-marco.cel .va-pantalla { border: 10px solid #2A2346; border-radius: 34px; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+  .va-marco.pc .va-pantalla { border: 3px solid #2A2346; border-top-width: 26px; border-radius: 10px; }
+  .va-marco.pc .va-pantalla::before { content: "● ● ●"; position: absolute; top: -21px; left: 12px; color: #4A4170; font-size: 11px; letter-spacing: 2px; }
+  .va-pantalla iframe { width: 100%; height: 100%; border: 0; display: block; }
   .spin-s { width: 16px; height: 16px; border: 2px solid rgba(0,0,0,.25); border-top-color: #151127; border-radius: 50%; animation: spin .7s linear infinite; }
   .loader { text-align: center; padding: 40px 0; color: var(--text-dim); font-size: 13.5px; }
   .loader::before { content: ""; display: block; width: 26px; height: 26px; margin: 0 auto 12px; border: 3px solid #292245; border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
@@ -947,18 +954,20 @@ E) Alternativa"></textarea>
         </div>
 
         </div>
-        <aside class="vista-alu" id="vistaAlu">
-          <div class="va-cab">
+        <button type="button" class="va-abrir" id="vaAbrir" hidden>👁 Ver como alumno</button>
+        <aside class="vista-alu" id="vistaAlu" hidden>
+          <div class="va-cab" id="vaCab">
             <b>Así lo ve el alumno</b>
             <div class="va-tabs"><button type="button" class="on" data-w="cel">Celular</button><button type="button" data-w="pc">PC</button></div>
+            <button type="button" class="va-cerrar" id="vaCerrar" aria-label="Ocultar vista">✕</button>
           </div>
           <div class="va-nav">
             <button type="button" id="vaAnt" aria-label="Pregunta anterior">‹</button>
             <span id="vaNum">—</span>
             <button type="button" id="vaSig" aria-label="Pregunta siguiente">›</button>
+            <span class="hint">Modo estudio · arrastra la barra para moverla</span>
           </div>
-          <div class="va-marco cel" id="vaMarco"><iframe id="vaFrame" src="vista-alumno.html" title="Vista del alumno"></iframe></div>
-          <p class="hint">Modo estudio: así verá el alumno el tema con la clave marcada. Con ‹ › vas a cada pregunta.</p>
+          <div class="va-marco cel" id="vaMarco"><div class="va-pantalla" id="vaPantalla"><iframe id="vaFrame" src="vista-alumno.html" title="Vista del alumno"></iframe></div></div>
         </aside>
         </div>
 
