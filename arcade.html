@@ -960,14 +960,26 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     });
     return { titulo: 'Nivel ' + d.nivel + ' · ' + d.titulo, retos: retos };
   }
+  // Avance a medio nivel (localStorage mc_retos_av): { tema: { ids: [retos de la ruta], hechos, primera, xp } }
+  function leerAvance(t) { try { return (JSON.parse(localStorage.getItem('mc_retos_av') || '{}'))[t] || null; } catch (e) { return null; } }
+  function guardarAvanceRetos(t, v) {
+    try { var a = JSON.parse(localStorage.getItem('mc_retos_av') || '{}'); if (v) a[t] = v; else delete a[t]; localStorage.setItem('mc_retos_av', JSON.stringify(a)); } catch (e) {}
+  }
   function jugarRetos(c, i, nv) {
     var t = nv.t, vez = estado.est[t + ':retos'] ? 1 : 0;
     cargarRetos(t).then(function (d) {
       if (window.MCSonido) MCSonido.ambiente(null);
       var antes = nvMapa ? nvMapa.actual : i, yaHecho = !!estado.est[t + ':retos'];
-      MCRetos.jugar(armarRuta(d, vez), {
-        vidas: 5,
-        otraVez: function () { return armarRuta(d, 1); },
+      // Si dejó el nivel a medias, se arma la misma ruta y sigue desde ahí
+      var av = leerAvance(t), ruta = armarRuta(d, vez), todos = d.retos.concat(d.extra || []);
+      if (av && av.ids) {
+        var rs = av.ids.map(function (id) { return todos.filter(function (x) { return x.id === id; })[0]; });
+        if (rs.every(Boolean)) ruta.retos = rs; else av = null;
+      }
+      MCRetos.jugar(ruta, {
+        vidas: 5, guardado: av,
+        alGuardar: function (g) { guardarAvanceRetos(t, g && g.hechos.length ? { ids: ruta.retos.map(function (x) { return x.id; }), hechos: g.hechos, primera: g.primera, xp: g.xp } : null); },
+        otraVez: function () { ruta = armarRuta(d, 1); return ruta; },
         alGanar: function (r) {
           var k = t + ':retos';
           estado.est[k] = Math.max(estado.est[k] || 0, r.estrellas);
@@ -1211,10 +1223,11 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     if (window.MCSonido) MCSonido.efecto(nv.t && s.abierto ? 'tap' : 'bloq');
     var ult = i === c.niveles.length - 1, h = '<span class="h-cint">' + (ult ? 'Jefe de la isla' : 'Nivel ' + (i + 1)) + '</span><b class="h-ctit" data-t="' + nv.n + '">' + nv.n + '</b>';
     if (nv.t && s.abierto && RETOS[nv.t]) {
-      var tr = nv.t, er = estado.est[tr + ':retos'] || 0;
+      var tr = nv.t, er = estado.est[tr + ':retos'] || 0, avR = leerAvance(tr);
       h += '<span class="st3">' + [1, 2, 3].map(function (k) { return E3(k <= er); }).join('') + '</span><span class="lb">Ruta del nivel</span><div class="ruta-n r7" id="hojaRuta"></div>' +
         '<div class="prem"><span>' + E3(true) + '3 si no fallas</span><span><svg viewBox="0 0 100 100"><use href="#r-corazon"/></svg>5 vidas</span></div>' +
-        '<button class="jugar" type="button" id="hojaJugar"><svg class="pl" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>' + (s.hecho ? 'REPETIR' : 'JUGAR') + '</button>';
+        (avR ? '<p class="nota">Vas en el reto ' + (avR.hechos.length + 1) + ' de ' + avR.ids.length + '. Sigues desde ahí.</p>' : '') +
+        '<button class="jugar" type="button" id="hojaJugar"><svg class="pl" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>' + (avR ? 'CONTINUAR' : s.hecho ? 'REPETIR' : 'JUGAR') + '</button>';
       abrirVentana(h);
       cargarRetos(tr).then(function (d) {
         var el = $('hojaRuta'); if (!el || !window.MCRetos) return;

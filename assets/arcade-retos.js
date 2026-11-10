@@ -137,12 +137,19 @@
     var vidas = opts.vidas == null ? 5 : opts.vidas, errores = 0, inicio = Date.now();
     var cola = ruta.retos.slice(), total = cola.length, hechos = 0, actual = null;
     var racha = 0, mejorRacha = 0, xp = 0, primera = {};   // primera[id] = lo acertó a la primera
+    // Avance guardado (opts.guardado = { hechos: [ids], primera: {}, xp }): sigue donde se quedó
+    var listos = [], g0 = opts.guardado;
+    if (g0 && g0.hechos && g0.hechos.length) {
+      listos = g0.hechos.slice(); primera = Object.assign({}, g0.primera || {}); xp = g0.xp || 0;
+      cola = cola.filter(function (r) { return listos.indexOf(r.id) < 0; }); hechos = total - cola.length;
+    }
+    function guardarAvance() { try { opts.alGuardar && opts.alGuardar({ hechos: listos.slice(), primera: Object.assign({}, primera), xp: xp }); } catch (e) {} }
     var raiz = h('<div class="rt" role="dialog" aria-label="' + esc(ruta.titulo || 'Nivel') + '">' + cielo() +
       '<div class="rt-col"><div class="rt-top"><button class="rt-x" aria-label="Salir">' + IC.x + '</button><div class="rt-barra"><i></i></div>' +
       '<div class="rt-vidas">' + IC.corazon + '<span></span></div></div><div class="rt-racha" aria-live="polite"></div><div class="rt-cab"></div><div class="rt-cuerpo"></div></div>' +
       '<div class="rt-pie"><div class="rt-pie-in"><button class="rt-btn" disabled>Comprobar</button></div>' +
       '<div class="rt-hoja"><div class="rt-hoja-in"><h3></h3><p></p><button class="rt-btn">Continuar</button></div></div></div>' +
-      '<div class="rt-salir"><div class="rt-salir-in"><b>¿Salir del nivel?</b><p>Si sales ahora pierdes lo que llevas de este nivel.</p>' +
+      '<div class="rt-salir"><div class="rt-salir-in"><b>¿Salir del nivel?</b><p>Tu avance queda guardado: la próxima vez sigues desde el reto donde te quedaste.</p>' +
       '<button class="rt-btn verde" data-a="seguir">Seguir jugando</button><button class="otra" data-a="salir">Salir</button></div></div></div>');
     document.body.appendChild(raiz);
     var $ = function (s) { return raiz.querySelector(s); };
@@ -150,6 +157,7 @@
     var pintarVidas = function () { $('.rt-vidas span').textContent = vidas; };
     var pintarBarra = function () { $('.rt-barra i').style.width = (hechos / total * 100) + '%'; };
     pintarVidas(); pintarBarra();
+    if (hechos) setTimeout(function () { var r = $('.rt-racha'); if (!r) return; r.innerHTML = IC.bien + 'Sigues donde te quedaste: <b>' + hechos + '/' + total + '</b>'; r.classList.add('on', 'sigue'); setTimeout(function () { r.classList.remove('on', 'sigue'); }, 2600); }, 300);
 
     // Salir: si ya avanzó, pregunta antes (como Duolingo), nunca con alert del navegador
     var salir = $('.rt-salir');
@@ -185,6 +193,7 @@
     // Racha de aciertos seguidos: chip de fuego y XP extra
     function pintarRacha(sube) {
       var r = $('.rt-racha');
+      r.classList.remove('sigue');
       if (racha < 2) { r.classList.remove('on'); return; }
       r.innerHTML = IC.fuego + '<b>' + racha + '</b> seguidas' + (racha >= 5 ? '<em>XP x2</em>' : '');
       r.classList.add('on');
@@ -196,7 +205,7 @@
     hojaBtn.onclick = function () {
       hoja.classList.remove('on');
       var r = resultado;
-      if (r.ok) { hechos++; } else { vidas--; pintarVidas(); var v = $('.rt-vidas'); v.classList.remove('pierde'); void v.offsetWidth; v.classList.add('pierde'); cola.push(actual.reto); }
+      if (r.ok) { hechos++; listos.push(actual.reto.id); guardarAvance(); } else { vidas--; pintarVidas(); var v = $('.rt-vidas'); v.classList.remove('pierde'); void v.offsetWidth; v.classList.add('pierde'); cola.push(actual.reto); }
       pintarBarra();
       if (vidas <= 0) return setTimeout(fin, 350);
       siguiente();
@@ -269,20 +278,22 @@
         '<div class="rt-estrellas">' + [1, 2, 3].map(function (n, i) { return IC.estrella(n <= est).replace('<svg', '<svg style="animation-delay:' + (.25 + i * .25) + 's"'); }).join('') + '</div>' +
         '<h2>' + (!gano ? 'Sin corazones' : est === 3 ? '¡Perfecto!' : '¡Nivel superado!') + '</h2>' +
         (gano && est < 3 ? '<p class="rt-tip">' + (fallados === 1 ? 'Fallaste 1 reto.' : 'Fallaste ' + fallados + ' retos.') + ' Hazlos todos a la primera para las 3 estrellas.</p>' : '') +
-        (!gano ? '<p class="rt-tip">Repasa y vuelve a intentarlo: cada error te deja una explicación.</p>' : '') +
+        (!gano ? '<p class="rt-tip">Tu avance quedó guardado: llevas <b>' + hechos + ' de ' + total + '</b> retos. Sigue con 5 corazones nuevos y termina el nivel para ganar tus estrellas.</p>' : '') +
         '<div class="rt-stats"><div class="rt-stat" style="--c:#C6E000"><small>XP ganada</small><b>' + IC.rayo + xp + '</b></div>' +
         '<div class="rt-stat" style="--c:#FF8A00"><small>Mejor racha</small><b>' + IC.fuego + mejorRacha + '</b></div>' +
         '<div class="rt-stat" style="--c:#FF6B8A"><small>Precisión</small><b>' + IC.diana + prec + '%</b></div>' +
         '<div class="rt-stat" style="--c:#FFC800"><small>Tiempo</small><b>' + IC.reloj + mm + '</b></div></div>' +
-        '<button class="rt-btn verde">' + (gano ? 'Continuar' : 'Intentar de nuevo') + '</button>' +
+        '<button class="rt-btn verde">' + (gano ? 'Continuar' : 'Seguir desde aquí') + '</button>' +
         '<button class="otra">' + (gano ? 'Jugar otra vez' : 'Volver al mapa') + '</button></div>');
       raiz.appendChild(f);
       son(gano ? 'victoria' : 'mal');
       if (gano && est === 3) confeti(raiz);
       var res = { gano: gano, estrellas: est, errores: errores, segundos: seg, precision: prec, xp: xp, racha: mejorRacha };
       if (gano) { try { opts.alGanar && opts.alGanar(res); } catch (e) {} }
-      f.querySelector('.rt-btn').onclick = function () { cerrar(); if (gano) { opts.alTerminar && opts.alTerminar(res); } else jugar(opts.otraVez ? opts.otraVez() : ruta, opts); };
-      f.querySelector('.otra').onclick = function () { cerrar(); if (gano) jugar(opts.otraVez ? opts.otraVez() : ruta, opts); else { opts.alTerminar && opts.alTerminar(res); } };
+      var sigue = function () { var o = Object.assign({}, opts, { guardado: { hechos: listos.slice(), primera: Object.assign({}, primera), xp: xp } }); jugar(ruta, o); };
+      if (gano) { try { opts.alGuardar && opts.alGuardar(null); } catch (e) {} }
+      f.querySelector('.rt-btn').onclick = function () { cerrar(); if (gano) { opts.alTerminar && opts.alTerminar(res); } else sigue(); };
+      f.querySelector('.otra').onclick = function () { cerrar(); if (gano) jugar(opts.otraVez ? opts.otraVez() : ruta, Object.assign({}, opts, { guardado: null })); else { opts.alCerrar && opts.alCerrar(); } };
     }
 
     siguiente();
