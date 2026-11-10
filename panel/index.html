@@ -1344,7 +1344,70 @@ E) Alternativa"></textarea>
 
   class ApiError extends Error {}
   // POST simple (sin preflight); si el navegador lo bloquea, reintenta por JSONP
-  async function api(action, data = {}, pass = PASS) {
+  /* Cambios que GitHub publica (cada uno es un commit): van en fila, uno tras otro y con
+     unos segundos entre cada uno. Dos commits en el mismo segundo hacían que GitHub Pages
+     se trabara y la web se quedara con la versión anterior. Después, el vigía revisa que
+     la web publicada quede al día (ver vigiaPublicacion). */
+  const COMMITS = /^(corregir|corregirExamen|publicarTema|publicarExamen|borrarPregunta|borrarTema|renombrarTema|crearAnio|eliminarAnio|editarCurso|ordenarCursos|configCurso|reaplicar|restaurarArchivo|repararAnios|creditoTema)$/;
+  let colaCommits = Promise.resolve(), ultimoCommit = 0;
+  function api(action, data = {}, pass = PASS) {
+    if (!COMMITS.test(action)) return apiDirecta(action, data, pass);
+    const turno = colaCommits.then(async () => {
+      const espera = 5000 - (Date.now() - ultimoCommit);
+      if (espera > 0) await new Promise(r => setTimeout(r, espera));
+      try { return await apiDirecta(action, data, pass); }
+      finally { ultimoCommit = Date.now(); vigiaPublicacion(); }
+    });
+    colaCommits = turno.catch(() => {});
+    return turno;
+  }
+
+  /* ---------- Vigía de publicación: ¿la web ya tiene el último cambio? ----------
+     Usa la API pública de GitHub (sin contraseña): el último commit de main y la última
+     publicación de GitHub Pages. Muestra un aviso abajo a la izquierda. Si GitHub se atrasa,
+     .github/workflows/republicar.yml la vuelve a publicar sola cada 10 minutos. */
+  const REPO_GH = 'modocachimbo/modocachimbo';
+  let vigiaT = 0, vigiaIni = 0;
+  function avisoPub(tipo, html) {
+    let el = document.getElementById('avisoPub');
+    if (!el) {
+      el = document.createElement('div'); el.id = 'avisoPub';
+      el.style.cssText = 'position:fixed;left:16px;bottom:16px;z-index:9999;max-width:min(380px,calc(100vw - 32px));padding:12px 16px;border-radius:14px;font:800 14px/1.4 Nunito,system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.4);transition:opacity .3s';
+      document.body.appendChild(el);
+    }
+    const c = { pub: ['#1D1834', '#C9C2E8', '#3B3366'], ok: ['#0F2A12', '#B6F09A', '#2E7A1E'], mal: ['#3A1414', '#FFD0D0', '#A33'] }[tipo];
+    el.style.background = c[0]; el.style.color = c[1]; el.style.border = '2px solid ' + c[2]; el.style.opacity = '1';
+    el.innerHTML = html;
+    if (tipo === 'ok') setTimeout(() => { if (el.dataset.t === 'ok') el.style.opacity = '0'; }, 8000);
+    el.dataset.t = tipo;
+  }
+  async function gh(ruta) {
+    const r = await fetch('https://api.github.com/repos/' + REPO_GH + ruta, { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store' });
+    if (!r.ok) throw new Error('GitHub ' + r.status);
+    return r.json();
+  }
+  function vigiaPublicacion() {
+    clearTimeout(vigiaT); vigiaIni = Date.now();
+    avisoPub('pub', '<span class="spin-s" style="display:inline-block;vertical-align:-3px;border-color:rgba(255,255,255,.2);border-top-color:#C9C2E8"></span> Publicando en la web…');
+    vigiaT = setTimeout(revisarPub, 40000);
+  }
+  async function revisarPub() {
+    if (colaCommits && Date.now() - ultimoCommit < 4000) { vigiaT = setTimeout(revisarPub, 20000); return; }
+    try {
+      const cabeza = (await gh('/commits/main')).sha;
+      const dep = (await gh('/deployments?environment=github-pages&per_page=1'))[0];
+      let listo = false, fallo = false;
+      if (dep && dep.sha === cabeza) { const st = (await gh('/deployments/' + dep.id + '/statuses?per_page=1'))[0]; listo = st && st.state === 'success'; fallo = st && /failure|error/.test(st.state); }
+      if (fallo) { avisoPub('mal', '⚠ <b>GitHub falló al publicar.</b> Tus cambios están guardados; el vigilante los volverá a publicar solo en menos de 10 minutos.'); vigiaT = setTimeout(revisarPub, 60000); return; }
+      if (listo) { avisoPub('ok', '✓ <b>Publicado en la web.</b> Los alumnos ya ven tus cambios (que recarguen la página).'); return; }
+    } catch (e) { /* sin conexión con GitHub: se vuelve a intentar */ }
+    const min = (Date.now() - vigiaIni) / 60000;
+    if (min > 15) { avisoPub('mal', '⚠ <b>GitHub todavía no publica tus cambios.</b> Están guardados; el vigilante los volverá a publicar solo. Si en 15 minutos más no salen, avísale a soporte.'); return; }
+    if (min > 6) avisoPub('mal', '⚠ <b>GitHub se está demorando en publicar.</b> Tus cambios están guardados; si se trabó, se volverá a publicar solo en unos minutos.');
+    vigiaT = setTimeout(revisarPub, 45000);
+  }
+
+  async function apiDirecta(action, data = {}, pass = PASS) {
     const token = window.MCAuth && MCAuth.token ? MCAuth.token() : '';
     const payload = Object.assign({ action, password: pass }, token ? { token } : {}, data);
     let j;
