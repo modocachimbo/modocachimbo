@@ -10,7 +10,7 @@
 <link rel="apple-touch-icon" href="assets/app/icono-180.png">
 <title>Arcade · Modo Cachimbo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,800;1,900&family=Nunito:wght@600;800;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,800;1,900&family=Nunito:wght@600;800;900&family=Lilita+One&display=swap">
 <script src="assets/app.js" defer></script>
 <script src="assets/arcade-mundo.js"></script>
 <script src="assets/arcade-sonido.js"></script>
@@ -265,7 +265,7 @@ body.en-inicio .cab { display: none; }
 @media (max-width: 720px) {
   /* Celular: arriba en dos filas (volver · jugador · sonido / monedas) y abajo cada botón con su espacio */
   /* Celular: la fila de arriba baja un poco para que el notch no la tape y la de abajo sube un poco */
-  .mapa { --top: calc(max(30px, env(safe-area-inset-top) + 14px) + 150px); --bot: calc(max(34px, env(safe-area-inset-bottom) + 18px) + 214px); }
+  .mapa { --top: calc(max(30px, env(safe-area-inset-top) + 14px) + 178px); --bot: calc(max(34px, env(safe-area-inset-bottom) + 18px) + 214px); }
   .h-top { padding-top: max(30px, env(safe-area-inset-top) + 14px); }
   .m-pie { bottom: max(34px, env(safe-area-inset-bottom) + 18px); }
   .h-prog { height: 40px; } .h-prog .e3d { width: 58px; height: 58px; margin-top: -31px; }
@@ -281,7 +281,7 @@ body.en-inicio .cab { display: none; }
 }
 @media (max-width: 380px) { .m-pie { padding: 0 18px; } .h-accion { gap: 12px; } .h-isla { width: 56px; } .h-isla img { height: 50px; } #jugar .pl { width: 30px; height: 30px; font-size: 15px; } #jugar b { font-size: 30px; } #jugar small { max-width: 120px; } .h-nodos .nd { width: 30px; height: 30px; } .h-nodos .nd.ahora { width: 40px; height: 40px; } .h-nodos .ln { width: 9px; } .h-fila { gap: 10px; } }
 @media (min-width: 721px) {
-  .mapa { --top: 170px; --bot: 236px; }
+  .mapa { --top: 214px; --bot: 236px; }
   #jugar small { max-width: 240px; }
   .h-top { padding: 18px 24px 0; gap: 30px; }
   .h-volver, .h-son { width: 50px; height: 50px; }
@@ -293,7 +293,56 @@ body.en-inicio .cab { display: none; }
   .h-fl { width: 44px; height: 44px; }
   .h-isla { left: 28px; bottom: 0; width: 130px; } .h-isla img { height: 120px; }
 }
-@media (min-width: 721px) and (max-height: 760px) { .mapa { --top: 160px; --bot: 210px; } .h-cap { top: 80px; } .h-ctit { font-size: 42px; } #jugar { height: 80px; } }
+@media (min-width: 721px) and (max-height: 760px) { .mapa { --top: 196px; --bot: 210px; } .h-cap { top: 80px; } .h-ctit { font-size: 42px; } #jugar { height: 80px; } }
+/* Recursos de arriba: rayo (abre mundos), corazones (se pierden al fallar) y diamantes (tienda) */
+.h-top { gap: 22px; justify-content: space-between; padding-left: max(26px, env(safe-area-inset-left) + 14px); }
+.rec { --c: #2FA8FF; --c2: #1060E0; --o: #0B3C8C; position: relative; flex: 1; max-width: 150px; min-width: 0; height: 34px; display: flex; align-items: center; justify-content: center; padding: 0 30px 0 26px; border-radius: 8px; cursor: pointer; color: #fff;
+  background: linear-gradient(180deg, #2A2158, #140D36); border: 2px solid #0A0620; box-shadow: inset 0 2px 0 rgba(255,255,255,.12), inset 0 -3px 0 rgba(0,0,0,.35), 0 3px 0 rgba(10,6,32,.6); }
+.rec b { font: 400 18px/1 "Lilita One", var(--cuerpo); letter-spacing: .03em; text-shadow: 0 2px 0 #000; }
+.rec .ri { position: absolute; left: -18px; top: 50%; width: 44px; height: 44px; margin-top: -23px; filter: drop-shadow(0 0 8px color-mix(in srgb, var(--c) 70%, transparent)); }
+.rec .mas { position: absolute; right: 3px; top: 50%; width: 24px; height: 24px; margin-top: -12px; display: grid; place-items: center; border-radius: 6px; font: 400 20px/1 "Lilita One", var(--cuerpo); font-style: normal; color: var(--o);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--c) 55%, #fff), var(--c) 55%, var(--c2)); border: 2px solid var(--o); box-shadow: inset 0 2px 0 rgba(255,255,255,.5); }
+.rec:active { transform: translateY(2px); }
+.rec.co { --c: #FF4B5E; --c2: #C4142A; --o: #6A0A14; }
+.rec.co .ri { filter: drop-shadow(0 0 8px #FF4B5E); animation: latido 1.6s ease-in-out infinite; }
+@keyframes latido { 0%, 100% { transform: scale(1); } 12% { transform: scale(1.12); } 24% { transform: scale(.98); } 36% { transform: scale(1.08); } }
+.rec.di { --c: #D46BFF; --c2: #8A2BD0; --o: #3A0A6A; }
+.rec.di .ri { filter: drop-shadow(0 0 8px #D46BFF); animation: brillaG 3s ease-in-out infinite; }
+@keyframes brillaG { 50% { filter: drop-shadow(0 0 14px #E9A8FF) brightness(1.15); } }
+.rec.ry .ri { filter: drop-shadow(0 0 8px #2FA8FF); animation: chispa2 2.4s ease-in-out infinite; }
+@keyframes chispa2 { 0%, 80%, 100% { transform: rotate(0); } 85% { transform: rotate(-10deg) scale(1.1); } 92% { transform: rotate(8deg); } }
+/* Botón de ajustes: cuadrado naranja */
+.h-aj { width: 44px; height: 44px; flex: none; font-size: 26px; border-radius: 12px; background: linear-gradient(180deg, #FFB25A, #FF8A1E 48%, #F06A00 52%, #D85500); border-color: #6A2A00; box-shadow: 0 4px 0 #6A2A00, 0 6px 12px rgba(16,8,48,.45), inset 0 2px 0 rgba(255,255,255,.55), inset 0 -3px 0 rgba(0,0,0,.2); }
+.h-aj .ic { stroke: none; color: #fff; transition: rotate .4s; }
+.h-aj .ic circle { fill: #E06A00; }
+.h-aj:hover .ic, .h-ajustes.on ~ * .h-aj .ic { rotate: 60deg; }
+/* Ventana de ajustes */
+.h-ajustes { position: absolute; z-index: 30; right: max(12px, env(safe-area-inset-right)); top: calc(max(30px, env(safe-area-inset-top) + 14px) + 54px); width: min(260px, calc(100vw - 24px)); display: grid; gap: 10px; padding: 16px; border-radius: 18px; background: linear-gradient(180deg, #2A2158, #140D36); border: 3px solid #0A0620; box-shadow: inset 0 2px 0 rgba(255,255,255,.12), 0 10px 30px rgba(0,0,0,.5); opacity: 0; scale: .9; transform-origin: top right; pointer-events: none; transition: opacity .2s, scale .2s; }
+.h-ajustes.on { opacity: 1; scale: 1; pointer-events: auto; }
+.h-ajustes .t { font: 400 24px/1 "Lilita One", var(--cuerpo); letter-spacing: .03em; text-align: center; text-shadow: 0 2px 0 #000; }
+.h-ajustes .op { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 48px; padding: 0 14px; border-radius: 12px; background: rgba(255,255,255,.07); border: 2px solid rgba(163,92,255,.35); font: 900 16px/1 var(--cuerpo); color: #fff; cursor: pointer; text-align: left; }
+.h-ajustes .op .btn-sonido { font-style: normal; font-size: 22px; }
+.h-ajustes .op .ic { font-size: 20px; transform: scaleX(-1); stroke-width: 3; }
+.h-ajustes .cerrar { position: absolute; right: -12px; top: -12px; width: 34px; height: 34px; border-radius: 50%; font-size: 16px; background: linear-gradient(180deg, #FF7A7A, #E0263A 50%, #B80E22); border-color: #5A0610; box-shadow: 0 3px 0 #5A0610, inset 0 2px 0 rgba(255,255,255,.5); }
+/* Nombre del mundo: "ISLA N" en cinta y el curso grande con letra de juego */
+.h-cint { position: relative; padding: 5px 22px 6px; font: 400 14px/1 "Lilita One", var(--cuerpo); letter-spacing: .14em; text-transform: uppercase; color: #1C2600; background: linear-gradient(180deg, #F4FF8A, var(--lima) 60%, #9CB800); border: 2px solid #2A3300; border-radius: 4px; box-shadow: 0 3px 0 #2A3300; clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 50%, 100% 100%, 0 100%, 10px 50%); }
+.h-ctit { position: relative; margin-top: 6px; max-width: 100%; font: 400 44px/1 "Lilita One", var(--display); letter-spacing: .02em; text-transform: uppercase; text-align: center; color: #fff; -webkit-text-stroke: 0; text-shadow: none;
+  background: linear-gradient(180deg, #FFFFFF 0, #FFF6C8 45%, #FFD23F 55%, #FF9A1E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.h-ctit::before { content: attr(data-t); position: absolute; inset: 0; z-index: -1; -webkit-text-fill-color: #2A1A66; -webkit-text-stroke: 8px #2A1A66; text-shadow: 0 5px 0 #140A3A, 0 8px 14px rgba(0,0,0,.45); }
+.h-csub { display: flex; align-items: center; gap: 5px; margin-top: 4px; font: 900 14px/1 var(--cuerpo); }
+.h-csub .ic { color: #FFD23F; fill: currentColor; stroke: none; }
+@media (max-width: 720px) {
+  .h-top { gap: 18px; padding-right: max(12px, env(safe-area-inset-right)); }
+  .h-ctit { font-size: clamp(30px, 9.5vw, 40px); }
+}
+@media (max-width: 380px) { .h-top { gap: 14px; } .rec { padding: 0 26px 0 22px; height: 32px; } .rec .ri { width: 38px; height: 38px; margin-top: -20px; left: -15px; } .rec b { font-size: 16px; } .rec .mas { width: 21px; height: 21px; margin-top: -10.5px; } .h-aj { width: 40px; height: 40px; } }
+@media (min-width: 721px) {
+  .h-top { justify-content: flex-end; gap: 30px; }
+  .rec { flex: none; width: 150px; height: 40px; } .rec .ri { width: 52px; height: 52px; margin-top: -27px; left: -22px; } .rec b { font-size: 21px; }
+  .h-aj { width: 50px; height: 50px; margin-left: 6px; }
+  .h-ajustes { top: 82px; }
+  .h-ctit { font-size: 58px; } .h-cint { font-size: 16px; }
+}
 .curso-cab { position: relative; overflow: hidden; display: flex; align-items: center; gap: 18px; padding: 22px; border-radius: 24px; color: #fff; background: linear-gradient(135deg, var(--cc), color-mix(in srgb, var(--cc) 45%, #000)); border-bottom: 5px solid color-mix(in srgb, var(--cc) 40%, #000); }
 .curso-cab .ar { width: 120px; height: 150px; flex: none; object-fit: contain; filter: drop-shadow(0 10px 12px rgba(0,0,0,.4)); }
 .curso-cab small { font: 800 14px/1 var(--display); letter-spacing: .1em; text-transform: uppercase; opacity: .85; }
@@ -477,9 +526,13 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
   <symbol id="i-espadas" viewBox="0 0 24 24"><path d="M3 3h3l9 9-3 3-9-9z"/><path d="M21 3h-3l-9 9 3 3 9-9z"/><path d="m4 20 3-3M20 20l-3-3"/></symbol>
   <symbol id="i-fuego" viewBox="0 0 24 24"><path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 2-5 3-6 0 2 1 3 2 3 0-4-1-6 1-9z"/></symbol>
   <symbol id="i-mapa" viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></symbol>
+  <symbol id="r-rayo" viewBox="0 0 64 64"><path d="M38 4 12 36h16l-6 24 30-36H35l8-20z" fill="#0B3C8C" stroke="#0B3C8C" stroke-width="6" stroke-linejoin="round" transform="translate(2 3)"/><path d="M38 4 12 36h16l-6 24 30-36H35l8-20z" fill="url(#mcRayoG)" stroke="#0E4BB0" stroke-width="3" stroke-linejoin="round"/><path d="M36 9 18 32h8" fill="none" stroke="#D8F1FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/><path d="M41 27h5L30 47" fill="none" stroke="#0E4BB0" stroke-width="2.5" stroke-linecap="round" opacity=".45"/></symbol>
+  <symbol id="r-corazon" viewBox="0 0 64 64"><path d="M32 57C14 44 5 34 5 22A13 13 0 0 1 32 15a13 13 0 0 1 27 7c0 12-9 22-27 35z" fill="#6A0A14" stroke="#6A0A14" stroke-width="6" stroke-linejoin="round" transform="translate(1 3)"/><path d="M32 57C14 44 5 34 5 22A13 13 0 0 1 32 15a13 13 0 0 1 27 7c0 12-9 22-27 35z" fill="url(#mcCorG)" stroke="#8A0E1C" stroke-width="3" stroke-linejoin="round"/><ellipse cx="18" cy="21" rx="7" ry="4.5" fill="#fff" opacity=".85" transform="rotate(-30 18 21)"/><circle cx="27" cy="16" r="2" fill="#fff" opacity=".7"/></symbol>
+  <symbol id="r-diamante" viewBox="0 0 64 64"><path d="M18 8h28l14 16-28 34L4 24z" fill="#3A0A6A" stroke="#3A0A6A" stroke-width="6" stroke-linejoin="round" transform="translate(1 3)"/><path d="M18 8h28l14 16-28 34L4 24z" fill="url(#mcDiaG)" stroke="#5A1A9A" stroke-width="3" stroke-linejoin="round"/><path d="M4 24h56M18 8l6 16 8-16 8 16 6-16M24 24l8 34 8-34" fill="none" stroke="#5A1A9A" stroke-width="2" stroke-linejoin="round" opacity=".55"/><path d="M18 8l6 16H4z" fill="#fff" opacity=".35"/><path d="M24 24h16l-8 34z" fill="#fff" opacity=".18"/><path d="M14 30l8 12" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"/><path d="M50 4v8M46 8h8" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></symbol>
+  <symbol id="i-ajustes" viewBox="0 0 24 24"><path d="M10.3 2.5h3.4l.5 2.6 1.9.8 2.2-1.5 2.4 2.4-1.5 2.2.8 1.9 2.6.5v3.4l-2.6.5-.8 1.9 1.5 2.2-2.4 2.4-2.2-1.5-1.9.8-.5 2.6h-3.4l-.5-2.6-1.9-.8-2.2 1.5-2.4-2.4 1.5-2.2-.8-1.9-2.6-.5v-3.4l2.6-.5.8-1.9-1.5-2.2 2.4-2.4 2.2 1.5 1.9-.8z" fill="currentColor" stroke="rgba(0,0,0,.35)" stroke-width="1"/><circle cx="12" cy="12" r="3.6" fill="#4A22B8"/></symbol>
   <symbol id="i-estrella3d" viewBox="0 0 64 64"><path d="M32.0,8.0 L39.6,24.5 L57.7,26.7 L44.4,39.0 L47.9,56.8 L32.0,48.0 L16.1,56.8 L19.6,39.0 L6.3,26.7 L24.4,24.5Z" fill="#7A3A00" stroke="#7A3A00" stroke-width="7" stroke-linejoin="round" transform="translate(0 2)"/><path d="M32.0,8.0 L39.6,24.5 L57.7,26.7 L44.4,39.0 L47.9,56.8 L32.0,48.0 L16.1,56.8 L19.6,39.0 L6.3,26.7 L24.4,24.5Z" fill="url(#mcEstG)" stroke="#9A4A00" stroke-width="4" stroke-linejoin="round"/><path d="M32.0,35.0 L32.0,8.0 L39.6,24.5 Z M32.0,35.0 L57.7,26.7 L44.4,39.0 Z M32.0,35.0 L47.9,56.8 L32.0,48.0 Z M32.0,35.0 L16.1,56.8 L19.6,39.0 Z M32.0,35.0 L6.3,26.7 L24.4,24.5 Z " fill="#D06A00" opacity=".38"/><path d="M32.0,8.0 L39.6,24.5 L57.7,26.7 L44.4,39.0 L47.9,56.8 L32.0,48.0 L16.1,56.8 L19.6,39.0 L6.3,26.7 L24.4,24.5Z" fill="none" stroke="#FFF6C0" stroke-width="1.6" stroke-linejoin="round" opacity=".7" transform="translate(32 35) scale(.82) translate(-32 -35)"/><ellipse cx="24" cy="25" rx="5" ry="3" fill="#fff" opacity=".85" transform="rotate(-35 24 25)"/><circle cx="19" cy="31" r="1.6" fill="#fff" opacity=".8"/></symbol>
 </svg>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="mcEstG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF7B8"/><stop offset=".45" stop-color="#FFD21F"/><stop offset="1" stop-color="#F08A00"/></linearGradient></defs></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="mcRayoG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9BE4FF"/><stop offset=".5" stop-color="#2FA8FF"/><stop offset="1" stop-color="#1060E0"/></linearGradient><linearGradient id="mcCorG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF8A8A"/><stop offset=".5" stop-color="#F0263A"/><stop offset="1" stop-color="#B80E22"/></linearGradient><linearGradient id="mcDiaG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F7B8FF"/><stop offset=".5" stop-color="#C64DF0"/><stop offset="1" stop-color="#7A1FC2"/></linearGradient><linearGradient id="mcEstG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF7B8"/><stop offset=".45" stop-color="#FFD21F"/><stop offset="1" stop-color="#F08A00"/></linearGradient></defs></svg>
 
 <header class="cab">
   <a class="volver" id="volver" href="index.html" aria-label="Volver"><svg class="ic"><use href="#i-atras"/></svg></a>
@@ -506,11 +559,18 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     <!-- Cielo animado (nubes, estrellitas, luces que suben, estrella fugaz): lo llena el JS -->
     <div class="cielo" id="cielo"><i class="fugaz"></i></div>
     <div class="h-top">
-      <a class="g-btn h-volver" href="index.html" aria-label="Salir del Arcade"><svg class="ic"><use href="#i-atras"/></svg></a>
-      <div class="h-prog" title="Estrellas de este mundo"><svg class="e3d"><use href="#i-estrella3d"/></svg><span class="h-pbar"><i id="hPbar"></i></span><small id="hPtxt">0/9</small></div>
-      <button type="button" class="g-btn h-son btn-sonido" aria-label="Sonido">🔊</button>
+      <button type="button" class="rec ry" data-pronto="⚡ Rayos: con ellos abrirás nuevos mundos"><svg class="ri"><use href="#r-rayo"/></svg><b id="recRayo">0</b><i class="mas">+</i></button>
+      <button type="button" class="rec co" id="recCor" aria-label="Corazones"><svg class="ri"><use href="#r-corazon"/></svg><b id="recCorN">5</b><i class="mas">+</i></button>
+      <button type="button" class="rec di" data-pronto="💎 Diamantes: para la tienda del Arcade"><svg class="ri"><use href="#r-diamante"/></svg><b id="recDia">0</b><i class="mas">+</i></button>
+      <button type="button" class="g-btn h-aj" id="hAj" aria-label="Ajustes"><svg class="ic"><use href="#i-ajustes"/></svg></button>
     </div>
-    <div class="h-cap"><b class="h-ctit" id="hMundo">Mundo 1</b><span class="h-csub" id="hSub"></span><div class="placa" id="placa"></div><span class="m-info" id="mInfo"></span></div>
+    <div class="h-ajustes" id="hAjustes" role="dialog" aria-label="Ajustes">
+      <b class="t">Ajustes</b>
+      <button type="button" class="op btn-sonido-fila" id="hSonFila"><span>Sonido</span><i class="btn-sonido" aria-label="Sonido">🔊</i></button>
+      <a class="op" href="index.html"><span>Salir del Arcade</span><svg class="ic"><use href="#i-atras"/></svg></a>
+      <button type="button" class="cerrar g-btn" id="hAjX" aria-label="Cerrar"><svg class="ic"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="h-cap"><span class="h-cint" id="hMundo">Isla 1</span><b class="h-ctit" id="hNomM" data-t=""></b><span class="h-csub" id="hSub"></span><div class="placa" id="placa"></div><span class="m-info" id="mInfo"></span></div>
     <div class="escena" id="escena"></div>
     <button class="m-fl izq" type="button" id="flIzq" aria-label="Mundo anterior"><svg class="ic"><use href="#i-atras"/></svg></button>
     <button class="m-fl der" type="button" id="flDer" aria-label="Mundo siguiente"><svg class="ic"><use href="#i-atras"/></svg></button>
@@ -731,10 +791,10 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
   /* ---------- HUD estilo juego ---------- */
   function pintarHud(c, bloq, e, m) {
     var N0 = (c.niveles || []).length, hechos0 = (c.niveles || []).filter(function (x) { return x.t && maxTema(x.t) > 0 && temaCompleto(x.t); }).length;
-    $('hMundo').textContent = 'Mundo ' + (mundo + 1);
-    $('hSub').textContent = c.nom + (N0 ? ' · ' + hechos0 + '/' + N0 : '');
+    $('hMundo').textContent = 'Isla ' + (mundo + 1);
+    $('hNomM').textContent = c.nom; $('hNomM').setAttribute('data-t', c.nom);
+    $('hSub').innerHTML = bloq ? 'En construcción' : '<svg class="ic"><use href="#i-estrella"/></svg>' + e + '/' + m + (N0 ? ' · ' + hechos0 + '/' + N0 + ' niveles' : '');
     $('hIslaImg').src = 'assets/arcade/mundo-' + ((mundos[mundo + 1] || mundos[mundo - 1] || c).img || 'historia') + '.webp';
-    $('hPbar').style.width = (m ? e / m * 100 : 0) + '%'; $('hPtxt').textContent = bloq ? '–' : e + '/' + m;
     // Rombos: los niveles del mundo alrededor del nivel actual (máx. 5)
     var N = c.niveles || [], act = -1, hechos = 0;
     N.forEach(function (x, i) { var ok = x.t && maxTema(x.t) > 0 && temaCompleto(x.t); if (ok) hechos = i + 1; else if (act < 0 && x.t) act = i; });
@@ -762,6 +822,17 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     $('cielo').insertAdjacentHTML('beforeend', h);
   })();
   $('hMapa').onclick = function () { entrar(); };
+  // Ajustes
+  function ajustes(on) { $('hAjustes').classList.toggle('on', on); }
+  $('hAj').onclick = function () { if (window.MCSonido) MCSonido.efecto('tap'); ajustes(!$('hAjustes').classList.contains('on')); };
+  $('hAjX').onclick = function () { ajustes(false); };
+  $('hSonFila').onclick = function (e) { if (!e.target.closest('.btn-sonido')) $('hSonFila').querySelector('.btn-sonido').click(); };
+  // Corazones reales del alumno (assets/corazones.js); "+" abre las misiones para recuperarlos
+  $('recCor').onclick = function () { if (window.MCCorazones) MCCorazones.abrirMisiones(); else toast('❤️ Corazones: pierdes uno por cada error'); };
+  (function esperarCz(n) {
+    if (window.MCCorazones) return MCCorazones.alCambiar(function (st) { $('recCorN').textContent = st.infinito ? '∞' : st.quedan; });
+    if (n < 40) setTimeout(function () { esperarCz(n + 1); }, 250);
+  })(0);
   $('hFlIzq').onclick = function () { irMundo(mundo - 1); };
   $('hFlDer').onclick = function () { irMundo(mundo + 1); };
   var giro = 0;
