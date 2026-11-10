@@ -64,6 +64,20 @@ const AV_AREA = { 'ciencia-tecnologia': ['#C6E000', '198,224,0'], matematica: ['
   .av-card .bts { display: flex; gap: 8px; flex-wrap: wrap; }
   .av-card .bts > * { flex: 1; min-width: 130px; justify-content: center; }
   .av-aviso { margin: 0 0 12px; }
+  .av-exp { display: flex; gap: 8px; flex-wrap: wrap; }
+  /* Hoja para imagen / PDF: toda la tabla a la vista, sin desplazamiento */
+  .av-hoja { position: fixed; left: -99999px; top: 0; width: 1180px; padding: 34px 36px 28px; background: #0B0818; color: #EEEAF7; font-family: 'Nunito', sans-serif; }
+  .av-hoja .h-top { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+  .av-hoja .h-top img { height: 46px; }
+  .av-hoja .h-top .t { flex: 1; }
+  .av-hoja .h-top .t b { display: block; font: italic 900 40px/1 'Barlow Condensed', sans-serif; text-transform: uppercase; }
+  .av-hoja .h-top .t small { color: #A99FC8; font-weight: 800; font-size: 15px; }
+  .av-hoja .h-top .f { color: #A99FC8; font-weight: 800; font-size: 14px; text-align: right; }
+  .av-hoja .av-tabla-env { overflow: visible; }
+  .av-hoja .av-tabla { min-width: 0; }
+  .av-hoja .av-c { animation: none; }
+  .av-hoja .av-tabla th, .av-hoja .av-tabla td, .av-hoja .av-tabla tr.area td span { position: static !important; }
+  .av-hoja .pie { margin-top: 14px; color: #6E6690; font-weight: 800; font-size: 13px; text-align: center; }
   @media (max-width: 700px) { .av-tabla .curso { min-width: 104px; max-width: 104px; padding: 8px 8px; font-size: 12.5px; white-space: normal; } .av-tabla { min-width: 0; } .av-c { min-width: 52px; } .av-resumen { grid-template-columns: auto 1fr; } .av-ley { grid-column: 1 / -1; justify-content: flex-start; } .av-cfg { margin-left: 0; } }`;
   document.head.appendChild(st);
 })();
@@ -272,4 +286,52 @@ setInterval(() => { if ($('tab-avance') && !$('tab-avance').hidden && !document.
   const pintarSel = () => { $('avSemana').innerHTML = Array.from({ length: AV.cfg.semanas || 10 }, (_, i) => `<option value="${i + 1}" ${i + 1 === AV.cfg.semana ? 'selected' : ''}>Semana ${String(i + 1).padStart(2, '0')}</option>`).join(''); };
   const orig = pintarAvance;
   pintarAvance = function () { pintarSel(); return orig.apply(this, arguments); };
+})();
+
+/* ---------- Descargar / compartir (imagen PNG o PDF) ---------- */
+function avScript(src) {
+  return new Promise((ok, mal) => { if (document.querySelector('script[src="' + src + '"]')) return ok(); const x = document.createElement('script'); x.src = src; x.onload = ok; x.onerror = mal; document.head.appendChild(x); });
+}
+async function avHoja() {
+  await avScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+  const secNom = AV_SEC.find(x => x[0] === AV.sec)[1], hoy = new Date();
+  const hoja = document.createElement('div'); hoja.className = 'av-hoja';
+  hoja.innerHTML = `<div class="h-top"><img src="../assets/app/icono-192.png" alt=""><div class="t"><b>Avance del ciclo</b><small>${esc(secNom)} ${esc(AV.cfg.ciclo)} · estamos en la semana ${String(AV.cfg.semana).padStart(2, '0')}</small></div>
+    <div class="f">Modo Cachimbo<br>${hoy.toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' })} · ${hoy.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' })}</div></div>` + $('avCaja').innerHTML + '<div class="pie">modocachimbo.github.io · Panel del equipo</div>';
+  hoja.querySelectorAll('tr.oculta').forEach(t => t.classList.remove('oculta'));
+  document.body.appendChild(hoja);
+  await (document.fonts ? document.fonts.ready : Promise.resolve());
+  try { return await html2canvas(hoja, { backgroundColor: '#0B0818', scale: 2, useCORS: true, logging: false }); }
+  finally { hoja.remove(); }
+}
+function avNombre(ext) { return 'avance-' + AV.sec + '-' + AV.cfg.ciclo + '-semana-' + String(AV.cfg.semana).padStart(2, '0') + '.' + ext; }
+function avBajar(blob, nombre) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nombre; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); }
+async function avExportar(tipo, b) {
+  if (!AV.reg) return;
+  const txt = b.textContent; b.disabled = true; b.innerHTML = '<span class="spin-s"></span> Preparando…';
+  try {
+    const cv = await avHoja();
+    if (tipo === 'pdf') {
+      await avScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+      const pdf = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+      const W = 297, H = 210, m = 8, r = Math.min((W - 2 * m) / cv.width, (H - 2 * m) / cv.height);
+      pdf.setFillColor(11, 8, 24); pdf.rect(0, 0, W, H, 'F');
+      pdf.addImage(cv.toDataURL('image/jpeg', .92), 'JPEG', (W - cv.width * r) / 2, m, cv.width * r, cv.height * r);
+      avBajar(pdf.output('blob'), avNombre('pdf'));
+    } else {
+      const blob = await new Promise(ok => cv.toBlob(ok, 'image/png'));
+      const file = new File([blob], avNombre('png'), { type: 'image/png' });
+      // En el celular abre "Compartir" (WhatsApp, Telegram…); en la PC se descarga
+      if (tipo === 'compartir' && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ files: [file], title: 'Avance del ciclo', text: 'Avance del ciclo · semana ' + String(AV.cfg.semana).padStart(2, '0') }); } catch (e) {}
+      } else avBajar(blob, avNombre('png'));
+    }
+  } catch (e) { toast('No se pudo preparar el archivo: ' + e.message, true); }
+  finally { b.disabled = false; b.textContent = txt; }
+}
+(function () {
+  const caja = $('avExp'); if (!caja) return;
+  const puede = !!(navigator.canShare && window.File);
+  caja.innerHTML = `<button class="btn-ghost" type="button" data-t="png">⬇ Imagen</button><button class="btn-ghost" type="button" data-t="pdf">⬇ PDF</button>${puede ? '<button class="btn-main" type="button" data-t="compartir">Compartir</button>' : ''}`;
+  caja.querySelectorAll('button').forEach(b => b.onclick = () => avExportar(b.dataset.t, b));
 })();
