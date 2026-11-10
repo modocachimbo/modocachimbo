@@ -413,6 +413,12 @@ body.en-inicio .cab { display: none; }
 .h-isla::before { content: ""; position: absolute; left: 50%; top: 40%; width: 70%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: radial-gradient(circle, rgba(198,224,0,.35), transparent 70%); animation: halo 2.4s ease-in-out infinite; pointer-events: none; }
 .h-isla { position: relative; }
 @media (min-width: 721px) { .h-isla { position: absolute; } }
+/* Celular: el mapa va a la izquierda, encima de los rombos (antes quedaba apretado junto a JUGAR) */
+@media (max-width: 720px) {
+  .m-pie .h-isla { position: absolute; left: max(8px, env(safe-area-inset-left)); bottom: calc(100% + 6px); width: 84px; }
+  .m-pie .h-isla img { height: 74px; }
+  .h-accion #jugar { flex: 1; }
+}
 @media (prefers-reduced-motion: reduce) { .fx *, .rec *, .rec::after, #jugar, #jugar .pl::after, .h-isla * { animation: none !important; } }
 /* Mapa desactivado: gris, sin halo y con etiqueta "Pronto" */
 .h-isla.off img { filter: grayscale(.75) brightness(.65) drop-shadow(0 8px 6px rgba(16,8,48,.55)); }
