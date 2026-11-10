@@ -229,6 +229,24 @@
   .done .ico { width: 70px; height: 70px; border-radius: 20px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; background: var(--accent-soft); border: 1px solid rgba(198,224,0,0.3); color: var(--accent); }
   .done .ico svg { width: 34px; height: 34px; }
   .done p { font-size: 14px; color: var(--text-dim); line-height: 1.6; max-width: 440px; margin: 8px auto 0; }
+  /* Subir: vista del alumno a la derecha (panel/vista-alumno.html) */
+  .sub-grid { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 22px; align-items: start; }
+  .sub-izq { min-width: 0; }
+  .vista-alu { position: sticky; top: 14px; display: grid; gap: 10px; padding: 14px; border-radius: 18px; background: var(--card, #151127); border: 1px solid var(--line, #2A2346); }
+  .vista-alu .va-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .vista-alu .va-cab b { font: 900 15px/1 var(--font-body, Nunito, sans-serif); }
+  .va-tabs { display: flex; gap: 4px; padding: 3px; border-radius: 10px; background: rgba(255,255,255,.06); }
+  .va-tabs button { padding: 6px 10px; border-radius: 8px; border: 0; background: none; color: inherit; font: 800 12.5px/1 inherit; cursor: pointer; opacity: .7; }
+  .va-tabs button.on { background: #C6E000; color: #151a03; opacity: 1; }
+  .va-nav { display: flex; align-items: center; gap: 8px; font-weight: 800; }
+  .va-nav button { width: 32px; height: 32px; border-radius: 10px; border: 1px solid var(--line, #2A2346); background: rgba(255,255,255,.05); color: inherit; font-size: 20px; line-height: 1; cursor: pointer; }
+  .va-nav .va-clave { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+  .va-marco { margin: 0 auto; border-radius: 26px; overflow: hidden; background: #0B0818; transition: width .25s; }
+  .va-marco.cel { width: 360px; height: 680px; border: 8px solid #2A2346; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+  .va-marco.pc { width: 100%; height: 620px; border: 3px solid #2A2346; border-radius: 14px; }
+  .va-marco iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .vista-alu > .hint { margin: 0; }
+  @media (max-width: 1180px) { .sub-grid { grid-template-columns: minmax(0, 1fr); } .vista-alu { position: static; } }
   .spin-s { width: 16px; height: 16px; border: 2px solid rgba(0,0,0,.25); border-top-color: #151127; border-radius: 50%; animation: spin .7s linear infinite; }
   .loader { text-align: center; padding: 40px 0; color: var(--text-dim); font-size: 13.5px; }
   .loader::before { content: ""; display: block; width: 26px; height: 26px; margin: 0 auto 12px; border: 3px solid #292245; border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
@@ -771,6 +789,7 @@
 
         <div id="subNovAviso" class="nv-aviso" hidden></div>
 
+        <div class="sub-grid"><div class="sub-izq">
         <div id="subPaso1">
           <textarea class="ta big" id="subTexto" spellcheck="false" placeholder="CURSO: Lenguaje
 CICLO: 2027-I
@@ -924,6 +943,23 @@ E) Alternativa"></textarea>
             <span id="subResumen"></span>
             <button type="button" class="btn-main" id="subPublicar" disabled>Publicar tema</button>
           </div>
+        </div>
+
+        </div>
+        <aside class="vista-alu" id="vistaAlu">
+          <div class="va-cab">
+            <b>Así lo ve el alumno</b>
+            <div class="va-tabs"><button type="button" class="on" data-w="cel">Celular</button><button type="button" data-w="pc">PC</button></div>
+          </div>
+          <div class="va-nav">
+            <button type="button" id="vaAnt" aria-label="Pregunta anterior">‹</button>
+            <span id="vaNum">—</span>
+            <button type="button" id="vaSig" aria-label="Pregunta siguiente">›</button>
+            <label class="va-clave"><input type="checkbox" id="vaClave"> Mostrar clave</label>
+          </div>
+          <div class="va-marco cel" id="vaMarco"><iframe id="vaFrame" src="vista-alumno.html" title="Vista del alumno"></iframe></div>
+          <p class="hint">Toca una alternativa para probarla como alumno. Se actualiza mientras escribes.</p>
+        </aside>
         </div>
 
         <div id="subListo" hidden></div>
@@ -2433,6 +2469,7 @@ E) Alternativa"></textarea>
 <script src="../assets/pregunta.js"></script>
 <script src="prompt-ia.js"></script>
 <script src="subir.js"></script>
+<script src="vista-alumno-panel.js"></script>
 <script src="examen-panel.js"></script>
 <script src="../assets/alertas.js" data-solo-previa></script>
 <script src="alertas-panel.js"></script>
