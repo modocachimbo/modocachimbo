@@ -481,14 +481,27 @@ body.en-inicio .cab { display: none; }
 .ni .nb { position: absolute; z-index: 3; bottom: 30px; left: var(--x); width: 120px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.75); filter: blur(5px); pointer-events: none; animation: nubeL 9s ease-in-out infinite alternate; }
 .ni .nb::before { content: ""; position: absolute; left: 22%; top: -16px; width: 50px; height: 40px; border-radius: 50%; background: inherit; }
 @keyframes nubeL { to { translate: 40px 0; } }
-.pd { position: absolute; width: 22px; height: 16px; margin: -8px 0 0 -11px; pointer-events: none; animation: flota 4s ease-in-out infinite; animation-delay: var(--d); }
-.pd::before { content: ""; position: absolute; left: 3px; right: 3px; top: 5px; height: 12px; background: #6E4622; clip-path: polygon(0 0, 100% 0, 55% 100%); }
-.pd::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 8px; border-radius: 50%; background: #8E7FC0; box-shadow: inset 0 -2px 0 rgba(0,0,0,.25); }
-.pd.on::after { background: var(--lima); box-shadow: 0 0 10px var(--lima), inset 0 -2px 0 #6E8A00; }
-.nv-ext { position: absolute; z-index: 2; width: 76px; margin-left: -38px; display: grid; justify-items: center; padding: 0; background: none; border: 0; color: #fff; cursor: pointer; }
-.nv-ext .cf { width: 54px; height: 54px; display: grid; place-items: center; border-radius: 50%; font-size: 28px; background: radial-gradient(circle at 35% 30%, #FFF0A0, #FFC800 50%, #D07800); border: 3px solid #7A4A00; box-shadow: 0 5px 0 #5A3400, 0 0 18px rgba(255,200,0,.6); animation: late2 2.2s ease-in-out infinite; }
-.nv-ext em { margin-top: -6px; padding: 2px 7px; border-radius: 6px; background: #B35CFF; border: 2px solid #3A0A6A; font: 400 11px/1 "Lilita One", var(--cuerpo); letter-spacing: .06em; font-style: normal; text-transform: uppercase; }
-.nv-ext.lock .cf { filter: grayscale(.8) brightness(.6); animation: none; }
+.nv-lineas { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+.nv-lineas > path { fill: none; stroke: rgba(255,255,255,.35); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 1 15; }
+.nv-lineas > path.on { stroke: var(--lima); filter: drop-shadow(0 0 6px var(--lima)); }
+.nv-lineas .puente.off { opacity: .5; }
+.pd { position: absolute; width: 38px; height: 28px; margin: -10px 0 0 -19px; pointer-events: none; animation: flota 4s ease-in-out infinite; animation-delay: var(--d); }
+.pd::before { content: ""; position: absolute; left: 5px; right: 5px; top: 7px; height: 21px; background: linear-gradient(180deg, #8A5A2E, #4E2F14); clip-path: polygon(0 0, 100% 0, 70% 50%, 52% 100%, 30% 55%); }
+.pd::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 13px; border-radius: 50%; background: #9C8FD8; box-shadow: inset 0 -3px 0 #5A4E9A; }
+.pd.on::after { background: radial-gradient(ellipse at 50% 35%, #F4FF8A, var(--lima)); box-shadow: 0 0 12px var(--lima), inset 0 -3px 0 #6E8A00; }
+.nv-ext { position: absolute; z-index: 2; display: grid; justify-items: center; padding: 0; background: none; border: 0; color: #fff; cursor: pointer; animation: flota 5.4s ease-in-out infinite; animation-delay: -1.3s; }
+.nv-ext .exv { display: block; width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 10px 10px rgba(16,8,60,.45)); }
+.nv-ext em { position: absolute; top: 46%; z-index: 2; padding: 3px 8px; border-radius: 7px; background: linear-gradient(180deg, #D48BFF, #8A2BD0); border: 2px solid #3A0A6A; box-shadow: 0 3px 0 #3A0A6A; font: 400 11px/1 "Lilita One", var(--cuerpo); letter-spacing: .06em; font-style: normal; text-transform: uppercase; white-space: nowrap; }
+.nv-ext.lock .exv { filter: grayscale(.75) brightness(.7) drop-shadow(0 10px 10px rgba(16,8,60,.45)); }
+.exv .cascadaA { animation: cae 1s linear infinite; } @keyframes cae { 50% { opacity: .75; } }
+.exv .brilloA { animation: titila 2.4s ease-in-out infinite; }
+.exv .giroP { transform-origin: 60px 32px; animation: giroP 3s linear infinite; } @keyframes giroP { to { rotate: 360deg; } }
+.ni .llama-f { transform-box: fill-box; transform-origin: 50% 100%; animation: fuego .5s ease-in-out infinite alternate; } @keyframes fuego { to { scale: 1.08 .9; } }
+.ni .ondea { animation: ondea 1.6s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: 0 50%; } @keyframes ondea { to { scale: .94 1; } }
+.hoja .ext-ico { width: 140px; }
+.hoja .ext-ico svg { width: 100%; height: auto; overflow: visible; }
+.hoja .nota .ic { vertical-align: -3px; margin-right: 4px; color: var(--lima); }
+.hoja .jugar .pl { width: 26px; height: 26px; fill: currentColor; }
 .nv-etapa { position: absolute; z-index: 1; left: 50%; translate: -50% 0; white-space: nowrap; padding: 7px 26px 8px; font: 400 15px/1 "Lilita One", var(--cuerpo); letter-spacing: .08em; text-transform: uppercase; color: #fff; text-align: center; background: linear-gradient(180deg, #B58BFF, #7A4DF0 50%, #5A2FD0); border: 2px solid var(--mo); box-shadow: 0 4px 0 var(--mo); clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 50%, 100% 100%, 0 100%, 12px 50%); }
 .nv-etapa small { display: block; margin-top: 3px; font: 900 10px/1 var(--cuerpo); letter-spacing: .04em; text-transform: none; opacity: .85; }
 @media (max-width: 720px) {
@@ -724,9 +737,9 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     <!-- Cielo animado (nubes, estrellitas, luces que suben, estrella fugaz): lo llena el JS -->
     <div class="cielo" id="cielo"><i class="fugaz"></i></div>
     <div class="h-top">
-      <button type="button" class="rec ry" data-pronto="⚡ Rayos: con ellos abrirás nuevos mundos"><svg class="ri"><use href="#r-rayo"/></svg><b id="recRayo">0</b><i class="chis"></i><i class="chis"></i><i class="mas">+</i></button>
+      <button type="button" class="rec ry" data-pronto="Rayos: con ellos abrirás nuevos mundos"><svg class="ri"><use href="#r-rayo"/></svg><b id="recRayo">0</b><i class="chis"></i><i class="chis"></i><i class="mas">+</i></button>
       <button type="button" class="rec co" id="recCor" aria-label="Corazones"><svg class="ri"><use href="#r-corazon"/></svg><b id="recCorN">5</b><i class="chis"></i><i class="chis"></i><i class="mas">+</i></button>
-      <button type="button" class="rec di" data-pronto="💎 Diamantes: para la tienda del Arcade"><svg class="ri"><use href="#r-diamante"/></svg><b id="recDia">0</b><i class="chis"></i><i class="chis"></i><i class="mas">+</i></button>
+      <button type="button" class="rec di" data-pronto="Diamantes: para la tienda del Arcade"><svg class="ri"><use href="#r-diamante"/></svg><b id="recDia">0</b><i class="chis"></i><i class="chis"></i><i class="mas">+</i></button>
       <button type="button" class="g-btn h-aj" id="hAj" aria-label="Ajustes"><svg class="ic"><use href="#i-ajustes"/></svg></button>
     </div>
     <div class="h-ajustes" id="hAjustes" role="dialog" aria-label="Ajustes">
@@ -854,10 +867,11 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     { id: 'hp', nom: 'Historia del Perú', area: 'sociales', arte: 'a-historia', img: 'historia', c: '#F28A1E', c2: '#7A2E0A', temas: ['hp01'], mapa: 'cusco',
       // Niveles del mundo: cada uno es un tema (t: null = aún sin juegos). El último es el jefe del mundo.
       niveles: [
-        { n: 'Poblamiento americano', t: 'hp01' }, { n: 'Chavín y Paracas', t: null }, { n: 'Mochica y Nasca', t: null },
-        { n: 'Tiahuanaco y Wari', t: null }, { n: 'Chimú y reinos regionales', t: null }, { n: 'Incas: origen y expansión', t: null },
-        { n: 'Incas: organización', t: null }, { n: 'Conquista del Tahuantinsuyo', t: null }, { n: 'Virreinato', t: null },
-        { n: 'Emancipación', t: null }, { n: 'Jefe: Machu Picchu', t: null }
+        // d = adornos de su isla (assets/arcade-islas.js, DECOS)
+        { n: 'Poblamiento americano', t: 'hp01', d: 'fogata' }, { n: 'Chavín y Paracas', t: null, d: 'clava' }, { n: 'Mochica y Nasca', t: null, d: 'huaco' },
+        { n: 'Tiahuanaco y Wari', t: null, d: 'puerta' }, { n: 'Chimú y reinos regionales', t: null, d: 'chanchan' }, { n: 'Incas: origen y expansión', t: null, d: 'incas' },
+        { n: 'Incas: organización', t: null, d: 'andenes' }, { n: 'Conquista del Tahuantinsuyo', t: null, d: 'conquista' }, { n: 'Virreinato', t: null, d: 'virreinato' },
+        { n: 'Emancipación', t: null, d: 'emancipacion' }, { n: 'Jefe: Machu Picchu', t: null, d: 'machu' }
       ],
       // Niveles extra fuera del camino: se abren al ganar el nivel "tras" (0 = nivel 1)
       extras: [
@@ -995,7 +1009,7 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
   }
   var tToast;
   function toast(t) { var el = $('hToast'); el.innerHTML = t; el.classList.add('on'); clearTimeout(tToast); tToast = setTimeout(function () { el.classList.remove('on'); }, 1800); }
-  document.querySelectorAll('[data-pronto]').forEach(function (b) { b.onclick = function () { if (window.MCSonido) MCSonido.efecto('tap'); toast('🛠️ ' + b.dataset.pronto + '<br><small>¡Muy pronto!</small>'); }; });
+  document.querySelectorAll('[data-pronto]').forEach(function (b) { b.onclick = function () { if (window.MCSonido) MCSonido.efecto('tap'); toast(b.dataset.pronto + '<br><small>¡Muy pronto!</small>'); }; });
   // Cielo: nubes, estrellitas y luces con tamaños y tiempos al azar
   (function () {
     var h = '', r = Math.random;
@@ -1005,14 +1019,14 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     $('cielo').insertAdjacentHTML('beforeend', h);
   })();
   // Mapa desactivado por ahora: hoy JUGAR ya abre el mapa del mundo
-  $('hMapa').onclick = function () { if (window.MCSonido) MCSonido.efecto('bloq'); toast('🗺️ Mapa<br><small>¡Muy pronto!</small>'); };
+  $('hMapa').onclick = function () { if (window.MCSonido) MCSonido.efecto('bloq'); toast('Mapa<br><small>¡Muy pronto!</small>'); };
   // Ajustes
   function ajustes(on) { $('hAjustes').classList.toggle('on', on); }
   $('hAj').onclick = function () { if (window.MCSonido) MCSonido.efecto('tap'); ajustes(!$('hAjustes').classList.contains('on')); };
   $('hAjX').onclick = function () { ajustes(false); };
   $('hSonFila').onclick = function (e) { if (!e.target.closest('.btn-sonido')) $('hSonFila').querySelector('.btn-sonido').click(); };
   // Corazones reales del alumno (assets/corazones.js); "+" abre las misiones para recuperarlos
-  $('recCor').onclick = function () { if (window.MCCorazones) MCCorazones.abrirMisiones(); else toast('❤️ Corazones: pierdes uno por cada error'); };
+  $('recCor').onclick = function () { if (window.MCCorazones) MCCorazones.abrirMisiones(); else toast('Corazones: pierdes uno por cada error'); };
   (function esperarCz(n) {
     if (window.MCCorazones) return MCCorazones.alCambiar(function (st) { $('recCorN').textContent = st.infinito ? '∞' : st.quedan; });
     if (n < 40) setTimeout(function () { esperarCz(n + 1); }, 250);
@@ -1066,6 +1080,7 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
   // Etapas del camino (cinta morada antes del nivel indicado)
   var ETAPAS = { hp: { 0: ['Etapa 1', 'Primeros pobladores y culturas'], 5: ['Etapa 2', 'El Tahuantinsuyo'], 7: ['Etapa 3', 'De la Conquista a la Independencia'] } };
   var nvMapa = null;
+  var CAND = '<svg class="ic"><use href="#i-candado"/></svg>';
   function E3(on) { return '<svg class="' + (on ? '' : 'off') + '" viewBox="0 0 100 100"><use href="#i-estrella3d"/></svg>'; }
   function irMapa(c) {
     cerrarHoja();
@@ -1084,9 +1099,9 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
         tocar: function (i, nv, s) { abrirHoja(c, i, nv, s); },
         tocarExtra: function (x, s) {
           if (window.MCSonido) MCSonido.efecto(s.abierto ? 'tap' : 'bloq');
-          abrirVentana('<span class="h-cint">Nivel extra</span><b class="h-ctit" data-t="' + x.n + '">' + x.n + '</b><span class="ext-ico">' + ({ manantial: '🏺', lapida: '📜', portal: '🌀' }[x.tipo] || '🎁') + '</span><p class="nota">' + x.desc + '</p>' +
-            (s.abierto ? '<p class="nota">🛠️ Muy pronto tendrá su desafío. ¡Prepárate!</p><button class="jugar" type="button" disabled>Próximamente</button>'
-              : '<p class="nota">🔒 Gana el nivel ' + (x.tras + 1) + ' para abrir este nivel extra.</p><button class="jugar" type="button" disabled>Bloqueado</button>'));
+          abrirVentana('<span class="h-cint">Nivel extra</span><b class="h-ctit" data-t="' + x.n + '">' + x.n + '</b><span class="ext-ico">' + MCIslas.extra(x.tipo) + '</span><p class="nota">' + x.desc + '</p>' +
+            (s.abierto ? '<p class="nota">Muy pronto tendrá su desafío. ¡Prepárate!</p><button class="jugar" type="button" disabled>Próximamente</button>'
+              : '<p class="nota">' + CAND + 'Gana el nivel ' + (x.tras + 1) + ' para abrir este nivel extra.</p><button class="jugar" type="button" disabled>Bloqueado</button>'));
         }
       });
       nvMapa.curso = c;
@@ -1115,11 +1130,11 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
           return '<div><i style="--c:' + j.c + '"><svg class="ic"><use href="#' + j.ic + '"/></svg></i>' + j.nom + (j.bloq ? '' : '<span>' + [1, 2, 3].map(function (k) { return E3(k <= e); }).join('') + '</span>') + '</div>';
         }).join('') + '</div>' +
         '<div class="prem"><span>' + E3(true) + 'hasta ' + maxTema(t) + '</span><span><svg viewBox="0 0 100 100"><use href="#r-corazon"/></svg>−1 si fallas</span></div>' +
-        '<button class="jugar" type="button" id="hojaJugar">▶ ' + (s.hecho ? 'REPETIR' : 'JUGAR') + '</button>';
+        '<button class="jugar" type="button" id="hojaJugar"><svg class="pl" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>' + (s.hecho ? 'REPETIR' : 'JUGAR') + '</button>';
     } else if (nv.t) {
-      h += '<p class="nota">🔒 Termina el nivel ' + i + ' para abrir este.</p><button class="jugar" type="button" disabled>Bloqueado</button>';
+      h += '<p class="nota">' + CAND + 'Termina el nivel ' + i + ' para abrir este.</p><button class="jugar" type="button" disabled>Bloqueado</button>';
     } else {
-      h += '<p class="nota">🛠️ Este nivel está en construcción. ¡Muy pronto tendrá sus retos!</p><button class="jugar" type="button" disabled>Próximamente</button>';
+      h += '<p class="nota">Este nivel está en construcción. ¡Muy pronto tendrá sus retos!</p><button class="jugar" type="button" disabled>Próximamente</button>';
     }
     abrirVentana(h);
     var b = $('hojaJugar'); if (b) b.onclick = function () { if (window.MCSonido) MCSonido.efecto('abrir'); cerrarHoja(); estado.tema = nv.t; irRuta(); };
