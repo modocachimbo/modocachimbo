@@ -2500,5 +2500,281 @@
         "correct": 1
       }
     ]
+  },
+  {
+    "num": "10",
+    "name": "Probabilidad Condicional y Teorema de Bayes",
+    "questions": [
+      {
+        "text": "En una gasolinera ubicada en la avenida Arequipa el $25\\%$ de los clientes usan gasolina de 84 sin plomo; el $45\\%$ utiliza gasolina de 90 sin plomo y el resto usan gasolina de 95 sin plomo. De los que utilizan gasolina de 84 sin plomo solo el $30\\%$ llenan sus tanques mientras los que usan de 90 solo el $60\\%$ llenan sus tanques; en tanto de los que usan 95 sin plomo el $80\\%$ llenan sus tanques. ¿Cuál es la probabilidad que el cliente que ingresa a la gasolinera llene su tanque?",
+        "topic": "Estadística · Probabilidad Condicional y Teorema de Bayes",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$0{,}582$"
+          },
+          {
+            "letter": "B",
+            "text": "$0{,}583$"
+          },
+          {
+            "letter": "C",
+            "text": "$0{,}584$"
+          },
+          {
+            "letter": "D",
+            "text": "$0{,}585$"
+          },
+          {
+            "letter": "E",
+            "text": "$0{,}586$"
+          }
+        ],
+        "correct": 3
+      },
+      {
+        "text": "Se estudia el nivel de glucosa en la sangre y para ello se selecciona un grupo de personas que estaban comprando en Plaza Vea y se obtuvo la siguiente información: el $32\\%$ de los varones y el $48\\%$ de las mujeres son diabéticos. Sabiendo además que el $32\\%$ de las personas son mujeres, seleccionado un individuo al azar que resulta ser diabético. Calcula la probabilidad de que sea mujer.",
+        "topic": "Estadística · Probabilidad Condicional y Teorema de Bayes",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$\\frac{7}{11}$"
+          },
+          {
+            "letter": "B",
+            "text": "$\\frac{6}{31}$"
+          },
+          {
+            "letter": "C",
+            "text": "$\\frac{2}{19}$"
+          },
+          {
+            "letter": "D",
+            "text": "$\\frac{5}{17}$"
+          },
+          {
+            "letter": "E",
+            "text": "$\\frac{12}{29}$"
+          }
+        ],
+        "correct": 4
+      },
+      {
+        "text": "Un automovilista hace recargar la batería de su vehículo y pide que le efectúen una carga rápida. Dicho automovilista admite que, a pesar de su pedido, es posible que le efectúen una carga lenta, asignándole a este hecho una probabilidad de $40\\%$. Su experiencia le indica que si la carga es rápida dura menos de un año con una probabilidad de $82\\%$. Si la carga es lenta, en cambio, esta probabilidad se reduce al $64\\%$. Si la batería falló después de 2 años, ¿Cuál es la probabilidad de la carga haya sido lenta?",
+        "topic": "Estadística · Probabilidad Condicional y Teorema de Bayes",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$\\frac{6}{7}$"
+          },
+          {
+            "letter": "B",
+            "text": "$\\frac{5}{7}$"
+          },
+          {
+            "letter": "C",
+            "text": "$\\frac{4}{7}$"
+          },
+          {
+            "letter": "D",
+            "text": "$\\frac{3}{7}$"
+          },
+          {
+            "letter": "E",
+            "text": "$\\frac{2}{7}$"
+          }
+        ],
+        "correct": 2
+      },
+      {
+        "text": "Manuel tiene en una mesa dos urnas con esferas de diferentes colores: una con 4 esferas azules y 3 verdes, la otra con 3 verdes y 2 azules. Si se elige una urna al azar y después se saca una esfera para entregarlo a su amigo. ¿Cuál es la probabilidad de que sea de color azul?",
+        "topic": "Estadística · Probabilidad Condicional y Teorema de Bayes",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$\\frac{12}{97}$"
+          },
+          {
+            "letter": "B",
+            "text": "$\\frac{41}{95}$"
+          },
+          {
+            "letter": "C",
+            "text": "$\\frac{31}{91}$"
+          },
+          {
+            "letter": "D",
+            "text": "$\\frac{11}{94}$"
+          },
+          {
+            "letter": "E",
+            "text": "$\\frac{58}{99}$"
+          }
+        ],
+        "correct": 4
+      },
+      {
+        "text": "Una fábrica de productos de belleza utiliza tres máquinas A, B, C para producir cierto artículo. Supongamos que: La máquina A produce el $40\\%$ de todos los artículos, de los cuales el $2\\%$ son defectuosos. La máquina B produce el $50\\%$ de todos los artículos, de los cuales el $4\\%$ son defectuosos. La máquina C produce el $10\\%$ de todos los artículos, de los cuales el $6\\%$ son defectuosos. Encuentre la probabilidad de que el artículo seleccionado aleatoriamente sea defectuoso.",
+        "topic": "Estadística · Probabilidad Condicional y Teorema de Bayes",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$0{,}032$"
+          },
+          {
+            "letter": "B",
+            "text": "$0{,}033$"
+          },
+          {
+            "letter": "C",
+            "text": "$0{,}034$"
+          },
+          {
+            "letter": "D",
+            "text": "$0{,}035$"
+          },
+          {
+            "letter": "E",
+            "text": "$0{,}036$"
+          }
+        ],
+        "correct": 2
+      },
+      {
+        "text": "Una urna contiene tres bolas blancas y una roja. Una segunda urna contiene una bola blanca y cuatro rojas. Se lanza un dado, si sale una puntuación inferior o igual a cuatro se extrae una bola al azar de la primera urna; en caso contrario se extrae, también al azar de la segunda. Suponiendo que una persona desconoce el resultado del lanzamiento del dado pero sabe que la bola extraída es blanca. ¿Cuánto valdrá la probabilidad de que la bola blanca extraída sea debido a que ha salido 5?",
+        "topic": "Estadística · Probabilidad Condicional y Teorema de Bayes",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$\\frac{2}{17}$"
+          },
+          {
+            "letter": "B",
+            "text": "$\\frac{7}{15}$"
+          },
+          {
+            "letter": "C",
+            "text": "$\\frac{1}{17}$"
+          },
+          {
+            "letter": "D",
+            "text": "$\\frac{3}{17}$"
+          },
+          {
+            "letter": "E",
+            "text": "$\\frac{5}{8}$"
+          }
+        ],
+        "correct": 2
+      },
+      {
+        "text": "Una fábrica utiliza tres máquinas M, N, P para producir ciertos artículos. Supongamos que: la máquina M produce el $50\\%$ de todos los artículos, de los cuales el $10\\%$ son defectuosos; la máquina N produce el $30\\%$ de todos los artículos, de los cuales el $20\\%$ son defectuosos; la máquina P produce el $20\\%$ de todos los artículos, de los cuales el $15\\%$ son defectuosos. Se ha encontrado un material defectuoso, encuentre la probabilidad de que el artículo seleccionado provenga de la máquina N.",
+        "topic": "Estadística · Probabilidad Condicional y Teorema de Bayes",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$\\frac{3}{4}$"
+          },
+          {
+            "letter": "B",
+            "text": "$\\frac{9}{11}$"
+          },
+          {
+            "letter": "C",
+            "text": "$\\frac{3}{7}$"
+          },
+          {
+            "letter": "D",
+            "text": "$\\frac{5}{14}$"
+          },
+          {
+            "letter": "E",
+            "text": "$\\frac{2}{3}$"
+          }
+        ],
+        "correct": 2
+      },
+      {
+        "text": "En una fábrica de televisores las máquinas X, Y y Z producen respectivamente el $24\\%$, el $30\\%$ y el $46\\%$ del total. En la producción de cada máquina, el $3{,}5\\%$, $4{,}2\\%$ y el $4{,}9\\%$ son televisores defectuosos. Se toma al azar un televisor y se le encuentra defectuoso ¿Cuáles son las probabilidades que haya sido producido por la máquina Y?",
+        "topic": "Estadística · Probabilidad Condicional y Teorema de Bayes",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$\\frac{15}{137}$"
+          },
+          {
+            "letter": "B",
+            "text": "$\\frac{90}{311}$"
+          },
+          {
+            "letter": "C",
+            "text": "$\\frac{35}{297}$"
+          },
+          {
+            "letter": "D",
+            "text": "$\\frac{32}{197}$"
+          },
+          {
+            "letter": "E",
+            "text": "$\\frac{30}{397}$"
+          }
+        ],
+        "correct": 1
+      },
+      {
+        "text": "En un país hay cuatro partidos políticos que se dividen la opinión pública. Se sabe que:\nI. El $25\\%$ de la población adhiere al partido A\nII. El $32\\%$ adhiere al partido B\nIII. El $24\\%$ adhiere al partido C\nIV. El $19\\%$ adhiere al partido D\nEntre los adherentes al partido A, un $4\\%$ corresponde a personas con ingresos inferiores a dos salarios mínimos. Entre los adherentes al partido B, esa proporción es del $6\\%$. Para el partido C, es un $8\\%$ y para el partido D el $10\\%$. Si se elige una persona al azar y resulta tener ingresos inferiores a dos salarios mínimos. Calcular la probabilidad de que sea un adherente al partido D.",
+        "topic": "Estadística · Probabilidad Condicional y Teorema de Bayes",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$\\frac{5}{161}$"
+          },
+          {
+            "letter": "B",
+            "text": "$\\frac{21}{161}$"
+          },
+          {
+            "letter": "C",
+            "text": "$\\frac{10}{231}$"
+          },
+          {
+            "letter": "D",
+            "text": "$\\frac{12}{623}$"
+          },
+          {
+            "letter": "E",
+            "text": "$\\frac{45}{167}$"
+          }
+        ],
+        "correct": 4
+      },
+      {
+        "text": "En un sistema de alarma del Banco de Crédito ante la ola de asaltos ocurridos en el país, la probabilidad de haber peligro es $0{,}9$; la probabilidad de que esta funcione habiendo peligro es $0{,}51$; calcular la probabilidad de que no habiendo funcionado la alarma haya peligro.",
+        "topic": "Estadística · Probabilidad Condicional y Teorema de Bayes",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$\\frac{20}{27}$"
+          },
+          {
+            "letter": "B",
+            "text": "$\\frac{12}{23}$"
+          },
+          {
+            "letter": "C",
+            "text": "$\\frac{2}{17}$"
+          },
+          {
+            "letter": "D",
+            "text": "$\\frac{5}{27}$"
+          },
+          {
+            "letter": "E",
+            "text": "$\\frac{4}{29}$"
+          }
+        ],
+        "correct": 0
+      }
+    ]
   }
 ]
