@@ -264,8 +264,12 @@ body.en-inicio .cab { display: none; }
 .h-toast.on { opacity: 1; scale: 1; }
 @media (max-width: 720px) {
   /* Celular: arriba en dos filas (volver · jugador · sonido / monedas) y abajo cada botón con su espacio */
-  .mapa { --top: calc(env(safe-area-inset-top) + 150px); --bot: calc(env(safe-area-inset-bottom) + 214px); }
-  .h-cap { top: calc(max(12px, env(safe-area-inset-top)) + 62px); } .h-ctit { font-size: 36px; }
+  /* Celular: la fila de arriba baja un poco para que el notch no la tape y la de abajo sube un poco */
+  .mapa { --top: calc(max(30px, env(safe-area-inset-top) + 14px) + 150px); --bot: calc(max(34px, env(safe-area-inset-bottom) + 18px) + 214px); }
+  .h-top { padding-top: max(30px, env(safe-area-inset-top) + 14px); }
+  .m-pie { bottom: max(34px, env(safe-area-inset-bottom) + 18px); }
+  .h-prog { height: 40px; } .h-prog .e3d { width: 58px; height: 58px; margin-top: -31px; }
+  .h-cap { top: calc(max(30px, env(safe-area-inset-top) + 14px) + 60px); } .h-ctit { font-size: 36px; }
   .m-pie { padding: 0 14px; gap: 14px; }
   .h-fila { gap: 14px; } .h-fl { width: 42px; height: 42px; }
   .h-accion { width: 100%; max-width: 440px; justify-content: center; gap: 16px; }
