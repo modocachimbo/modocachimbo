@@ -414,11 +414,16 @@ body.en-inicio .cab { display: none; }
 .h-isla { position: relative; }
 @media (min-width: 721px) { .h-isla { position: absolute; } }
 /* Celular: el mapa va a la izquierda, encima de los rombos (antes quedaba apretado junto a JUGAR) */
-@media (max-width: 720px) {
-  .m-pie .h-isla { position: absolute; left: max(8px, env(safe-area-inset-left)); bottom: calc(100% + 6px); width: 84px; }
-  .m-pie .h-isla img { height: 74px; }
-  .h-accion #jugar { flex: 1; }
-}
+/* Mapa a la izquierda, encima de los rombos (celular y PC) */
+.m-pie .h-isla { position: absolute; left: max(8px, env(safe-area-inset-left)); bottom: calc(100% + 6px); width: 84px; }
+.m-pie .h-isla img { height: 74px; }
+@media (max-width: 720px) { .h-accion #jugar { flex: 1; } }
+@media (min-width: 721px) { .m-pie .h-isla { left: 28px; width: 120px; } .m-pie .h-isla img { height: 108px; } }
+/* Rombos: los 11 niveles en una fila que se desliza; el actual queda al centro */
+.h-nodos { max-width: min(calc(100vw - 132px), 470px); overflow-x: auto; overflow-y: hidden; padding: 12px 10px; margin: -12px 0; scroll-behavior: smooth; scrollbar-width: none; -webkit-mask: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%); mask: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%); cursor: grab; }
+.h-nodos::-webkit-scrollbar { display: none; }
+.h-nodos .nd, .h-nodos .ln { flex: none; }
+.h-nodos .nd { cursor: pointer; }
 @media (prefers-reduced-motion: reduce) { .fx *, .rec *, .rec::after, #jugar, #jugar .pl::after, .h-isla * { animation: none !important; } }
 /* Mapa desactivado: gris, sin halo y con etiqueta "Pronto" */
 .h-isla.off img { filter: grayscale(.75) brightness(.65) drop-shadow(0 8px 6px rgba(16,8,48,.55)); }
@@ -1000,13 +1005,16 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     var N = c.niveles || [], act = -1, hechos = 0;
     N.forEach(function (x, i) { var ok = x.t && maxTema(x.t) > 0 && temaCompleto(x.t); if (ok) hechos = i + 1; else if (act < 0 && x.t) act = i; });
     if (act < 0) act = Math.min(hechos, N.length - 1);
-    var ini = Math.max(0, Math.min(act - 1, N.length - 5)), h = '';
-    for (var i = ini; i < Math.min(N.length, ini + 5); i++) {
+    var h = '';
+    for (var i = 0; i < N.length; i++) {
       var jefe = i === N.length - 1, st = i < hechos ? 'hecho' : i === act ? 'ahora' : '';
-      if (i > ini) h += '<span class="ln' + (i <= hechos ? ' on' : '') + '"></span>';
-      h += '<span class="nd ' + st + (jefe ? ' jefe' : '') + '" title="' + N[i].n + '">' + (st || jefe ? (jefe ? '<svg class="ic"><use href="#i-corona"/></svg>' : '<b>' + (i + 1) + '</b>') : '<svg class="ic"><use href="#i-candado"/></svg>') + '</span>';
+      if (i > 0) h += '<span class="ln' + (i <= hechos ? ' on' : '') + '"></span>';
+      h += '<span class="nd ' + st + (jefe ? ' jefe' : '') + '" data-i="' + i + '" title="' + N[i].n + '">' + (st || jefe ? (jefe ? '<svg class="ic"><use href="#i-corona"/></svg>' : '<b>' + (i + 1) + '</b>') : '<svg class="ic"><use href="#i-candado"/></svg>') + '</span>';
     }
     $('hNodos').innerHTML = h; $('hNodos').style.visibility = N.length ? '' : 'hidden';
+    // Centrar el rombo del nivel actual
+    var nd = $('hNodos').querySelector('.nd.ahora') || $('hNodos').querySelector('.nd.hecho:last-of-type');
+    requestAnimationFrame(function () { var el = $('hNodos'); el.style.scrollBehavior = 'auto'; if (nd) el.scrollLeft = nd.offsetLeft - el.clientWidth / 2 + nd.offsetWidth / 2; el.style.scrollBehavior = ''; });
     $('jugarT').textContent = bloq ? 'Próximamente' : 'Jugar';
     $('jugarS').textContent = bloq ? 'Mundo en construcción' : N[act] ? 'Nivel ' + (act + 1) + ' · ' + N[act].n : c.temas.length + ' tema';
     $('hFlIzq').disabled = mundo === 0; $('hFlDer').disabled = mundo === mundos.length - 1;
@@ -1037,6 +1045,21 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
   })(0);
   $('hFlIzq').onclick = function () { irMundo(mundo - 1); };
   $('hFlDer').onclick = function () { irMundo(mundo + 1); };
+  // Rombos: tocar uno abre ese nivel; con mouse se arrastran y la rueda los mueve
+  (function () {
+    var el = $('hNodos'), x0 = null, s0 = 0, movio = false;
+    el.addEventListener('pointerdown', function (e) { if (e.pointerType !== 'mouse') return; x0 = e.clientX; s0 = el.scrollLeft; movio = false; });
+    window.addEventListener('pointermove', function (e) { if (x0 == null) return; var dx = e.clientX - x0; if (Math.abs(dx) > 5) movio = true; el.style.scrollBehavior = 'auto'; el.scrollLeft = s0 - dx; });
+    window.addEventListener('pointerup', function () { x0 = null; el.style.scrollBehavior = ''; setTimeout(function () { movio = false; }, 0); });
+    el.addEventListener('wheel', function (e) { if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) { el.scrollLeft += e.deltaY; e.preventDefault(); } }, { passive: false });
+    el.addEventListener('click', function (e) {
+      var nd = e.target.closest('.nd'); if (!nd || movio) return;
+      var c = mundos[mundo], i = +nd.dataset.i; if (!c || !c.niveles || !c.temas.length) return;
+      if (window.MCSonido) MCSonido.efecto('abrir');
+      irCurso(c.id);
+      if (nvMapa) abrirHoja(c, i, c.niveles[i], nvMapa.estado[i]);
+    });
+  })();
   var giro = 0;
   function irMundo(i) {
     i = Math.max(0, Math.min(mundos.length - 1, i));
