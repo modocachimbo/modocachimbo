@@ -265,7 +265,7 @@ body.en-inicio .cab { display: none; }
 @media (max-width: 720px) {
   /* Celular: arriba en dos filas (volver · jugador · sonido / monedas) y abajo cada botón con su espacio */
   /* Celular: la fila de arriba baja un poco para que el notch no la tape y la de abajo sube un poco */
-  .mapa { --top: calc(max(30px, env(safe-area-inset-top) + 14px) + 178px); --bot: calc(max(34px, env(safe-area-inset-bottom) + 18px) + 214px); }
+  .mapa { --top: calc(max(30px, env(safe-area-inset-top) + 14px) + 156px); --bot: calc(max(34px, env(safe-area-inset-bottom) + 18px) + 214px); }
   .h-top { padding-top: max(30px, env(safe-area-inset-top) + 14px); }
   .m-pie { bottom: max(34px, env(safe-area-inset-bottom) + 18px); }
   .h-prog { height: 40px; } .h-prog .e3d { width: 58px; height: 58px; margin-top: -31px; }
@@ -281,7 +281,7 @@ body.en-inicio .cab { display: none; }
 }
 @media (max-width: 380px) { .m-pie { padding: 0 18px; } .h-accion { gap: 12px; } .h-isla { width: 56px; } .h-isla img { height: 50px; } #jugar .pl { width: 30px; height: 30px; font-size: 15px; } #jugar b { font-size: 30px; } #jugar small { max-width: 120px; } .h-nodos .nd { width: 30px; height: 30px; } .h-nodos .nd.ahora { width: 40px; height: 40px; } .h-nodos .ln { width: 9px; } .h-fila { gap: 10px; } }
 @media (min-width: 721px) {
-  .mapa { --top: 214px; --bot: 236px; }
+  .mapa { --top: 196px; --bot: 236px; }
   #jugar small { max-width: 240px; }
   .h-top { padding: 18px 24px 0; gap: 30px; }
   .h-volver, .h-son { width: 50px; height: 50px; }
@@ -293,7 +293,7 @@ body.en-inicio .cab { display: none; }
   .h-fl { width: 44px; height: 44px; }
   .h-isla { left: 28px; bottom: 0; width: 130px; } .h-isla img { height: 120px; }
 }
-@media (min-width: 721px) and (max-height: 760px) { .mapa { --top: 196px; --bot: 210px; } .h-cap { top: 80px; } .h-ctit { font-size: 42px; } #jugar { height: 80px; } }
+@media (min-width: 721px) and (max-height: 760px) { .mapa { --top: 180px; --bot: 210px; } .h-cap { top: 80px; } .h-ctit { font-size: 42px; } #jugar { height: 80px; } }
 /* Recursos de arriba: rayo (abre mundos), corazones (se pierden al fallar) y diamantes (tienda) */
 .h-top { gap: 22px; justify-content: space-between; padding-left: max(26px, env(safe-area-inset-left) + 14px); }
 .rec { --c: #2FA8FF; --c2: #1060E0; --o: #0B3C8C; position: relative; flex: 1; max-width: 150px; min-width: 0; height: 34px; display: flex; align-items: center; justify-content: center; padding: 0 30px 0 26px; border-radius: 8px; cursor: pointer; color: #fff;
@@ -327,9 +327,9 @@ body.en-inicio .cab { display: none; }
 /* Nombre del mundo: "ISLA N" en cinta y el curso grande con letra de juego */
 .h-cint { position: relative; padding: 5px 22px 6px; font: 400 14px/1 "Lilita One", var(--cuerpo); letter-spacing: .14em; text-transform: uppercase; color: #1C2600; background: linear-gradient(180deg, #F4FF8A, var(--lima) 60%, #9CB800); border: 2px solid #2A3300; border-radius: 4px; box-shadow: 0 3px 0 #2A3300; clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 50%, 100% 100%, 0 100%, 10px 50%); }
 .h-ctit { position: relative; margin-top: 6px; max-width: 100%; font: 400 44px/1 "Lilita One", var(--display); letter-spacing: .02em; text-transform: uppercase; text-align: center; color: #fff; -webkit-text-stroke: 0; text-shadow: none;
-  background: linear-gradient(180deg, #FFFFFF 0, #FFF6C8 45%, #FFD23F 55%, #FF9A1E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-.h-ctit::before { content: attr(data-t); position: absolute; inset: 0; z-index: -1; -webkit-text-fill-color: #2A1A66; -webkit-text-stroke: 8px #2A1A66; text-shadow: 0 5px 0 #140A3A, 0 8px 14px rgba(0,0,0,.45); }
-.h-csub { display: flex; align-items: center; gap: 5px; margin-top: 4px; font: 900 14px/1 var(--cuerpo); }
+  background: linear-gradient(180deg, #FFFFFF 0, #FFFFFF 46%, #E6FA4A 54%, var(--lima) 75%, #9CB800 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.h-ctit::before { content: attr(data-t); position: absolute; inset: 0; z-index: -1; -webkit-text-fill-color: #2A1A66; -webkit-text-stroke: 8px #2A1A66; text-shadow: 0 5px 0 #140A3A, 0 0 22px rgba(198,224,0,.45), 0 8px 14px rgba(0,0,0,.45); }
+.h-csub { display: none !important; align-items: center; gap: 5px; margin-top: 4px; font: 900 14px/1 var(--cuerpo); }
 .h-csub .ic { color: #FFD23F; fill: currentColor; stroke: none; }
 @media (max-width: 720px) {
   .h-top { gap: 18px; padding-right: max(12px, env(safe-area-inset-right)); }
