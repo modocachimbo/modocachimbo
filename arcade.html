@@ -505,6 +505,16 @@ body.en-inicio .cab { display: none; }
 .exv .cascadaA { animation: cae 1s linear infinite; } @keyframes cae { 50% { opacity: .75; } }
 .exv .brilloA { animation: titila 2.4s ease-in-out infinite; }
 .exv .giroP { transform-origin: 60px 32px; animation: giroP 3s linear infinite; } @keyframes giroP { to { rotate: 360deg; } }
+.ni .a-ichu { transform-box: fill-box; transform-origin: 50% 100%; animation: ichuA 3s ease-in-out infinite alternate; } @keyframes ichuA { from { rotate: -6deg; } to { rotate: 6deg; } }
+.ni .a-cabeza { transform-box: fill-box; transform-origin: 30% 100%; animation: cabezaA 4s ease-in-out infinite; } @keyframes cabezaA { 0%, 60%, 100% { rotate: 0deg; } 70% { rotate: -10deg; } 85% { rotate: 4deg; } }
+.ni .a-humo { animation: humoA 3s ease-out infinite; opacity: 0; } .ni .a-humo.d2 { animation-delay: -1.5s; } @keyframes humoA { 0% { opacity: .7; translate: 0 6px; scale: .5; } 100% { opacity: 0; translate: 4px -16px; scale: 1.6; } }
+.ni .a-chispa { animation: chispaA 1.4s ease-out infinite; } .ni .a-chispa.d2 { animation-delay: -.7s; } @keyframes chispaA { 0% { opacity: 1; translate: 0 0; } 100% { opacity: 0; translate: 2px -14px; } }
+.ni .a-brilla { transform-box: fill-box; transform-origin: center; animation: brillaA 2s ease-in-out infinite; } @keyframes brillaA { 50% { scale: 1.35; filter: drop-shadow(0 0 3px #FFE27A); } }
+.ni .a-tiro { transform-box: fill-box; transform-origin: center; animation: tiroA 4s ease-out infinite; opacity: 0; } @keyframes tiroA { 0%, 70% { opacity: 0; scale: .3; } 75% { opacity: .9; scale: 1; } 100% { opacity: 0; scale: 2; translate: 6px -4px; } }
+.ni .a-campana { transform-box: fill-box; transform-origin: 50% 0; animation: campanaA 1.6s ease-in-out infinite alternate; } .ni .a-campana.d2 { animation-delay: -.8s; } @keyframes campanaA { from { rotate: -18deg; } to { rotate: 18deg; } }
+.ni .a-destello { transform-box: fill-box; transform-origin: center; animation: destelloA 2.6s ease-in-out infinite; } @keyframes destelloA { 0%, 100% { opacity: 0; scale: .3; } 50% { opacity: 1; scale: 1; } }
+.ni .a-nube { animation: nubeM 6s ease-in-out infinite alternate; } @keyframes nubeM { to { translate: 10px 0; } }
+@media (prefers-reduced-motion: reduce) { .ni *, .nv-ext * { animation: none !important; } }
 .ni .llama-f { transform-box: fill-box; transform-origin: 50% 100%; animation: fuego .5s ease-in-out infinite alternate; } @keyframes fuego { to { scale: 1.08 .9; } }
 .ni .ondea { animation: ondea 1.6s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: 0 50%; } @keyframes ondea { to { scale: .94 1; } }
 .hoja .ext-ico { width: 140px; }

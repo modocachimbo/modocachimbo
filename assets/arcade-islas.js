@@ -16,18 +16,18 @@
       '<g stroke="#5A4630" stroke-width="2.4" stroke-linecap="round"><path d="M-8 -6v6M-4 -6v6M5 -6v6M9 -6v6"/></g>' +
       '<ellipse cx="0" cy="-10" rx="12" ry="7" fill="#F4E6CC"/><path d="M-10 -12q-4 2 -3 6" stroke="#F4E6CC" stroke-width="4" stroke-linecap="round" fill="none"/>' +
       '<rect x="-5" y="-16" width="11" height="6" rx="2" fill="#D7263D"/><rect x="-5" y="-14" width="11" height="2" fill="#FFC800"/><path d="M-5 -10h11" stroke="#1E86BE" stroke-width="1.5"/>' +
-      '<path d="M7 -12q2 -12 1 -20" stroke="#F4E6CC" stroke-width="6" stroke-linecap="round" fill="none"/>' +
+      '<g class="a-cabeza"><path d="M7 -12q2 -12 1 -20" stroke="#F4E6CC" stroke-width="6" stroke-linecap="round" fill="none"/>' +
       '<ellipse cx="10" cy="-32" rx="5" ry="4" fill="#F4E6CC"/><path d="M6 -35l-1 -6l3 4M9 -36l1 -6l2 5" fill="#E8D4B0" stroke="#E8D4B0" stroke-width="1.5" stroke-linejoin="round"/>' +
-      '<circle cx="11" cy="-33" r="1.2" fill="#2A1A10"/><circle cx="14.5" cy="-31" r=".9" fill="#7A5A40"/>'; },
+      '<circle cx="11" cy="-33" r="1.2" fill="#2A1A10"/><circle cx="14.5" cy="-31" r=".9" fill="#7A5A40"/></g>'; },
     cactus: function () { return SOMBRA(9) +
       '<path d="M-3 0v-34a3.5 3.5 0 0 1 7 0v34z" fill="#3E9A4A"/><path d="M4 -14h4v-10a3 3 0 0 1 6 0v10a6 6 0 0 1 -6 6h-4z" fill="#3E9A4A"/><path d="M-3 -10h-4v-8a3 3 0 0 0 -6 0v8a6 6 0 0 0 6 6h4z" fill="#46AA52"/>' +
       '<path d="M0.5 -36v34M11 -26v12M-10 -20v10" stroke="#2A7A36" stroke-width="1.2"/><circle cx="0.5" cy="-37" r="2.2" fill="#FFF2F6"/>'; },
-    ichu: function () { return '<g stroke="#E9C46A" stroke-width="1.8" stroke-linecap="round" fill="none"><path d="M0 0q-6 -6 -9 -14M0 0q-2 -8 -3 -17M0 0q2 -9 3 -16M0 0q5 -6 9 -12"/></g><g stroke="#C89A3A" stroke-width="1.4" stroke-linecap="round"><path d="M0 0q-4 -4 -6 -10M0 0q3 -5 6 -9"/></g>'; },
+    ichu: function () { return '<g class="a-ichu"><g stroke="#E9C46A" stroke-width="1.8" stroke-linecap="round" fill="none"><path d="M0 0q-6 -6 -9 -14M0 0q-2 -8 -3 -17M0 0q2 -9 3 -16M0 0q5 -6 9 -12"/></g><g stroke="#C89A3A" stroke-width="1.4" stroke-linecap="round"><path d="M0 0q-4 -4 -6 -10M0 0q3 -5 6 -9"/></g></g>'; },
     huaco: function () { return SOMBRA(11) +
       '<path d="M-11 -12a11 11 0 0 0 22 0q0 -9 -11 -11q-11 2 -11 11z" fill="#C8643A"/><path d="M-10.5 -14h21" stroke="#F4E3C3" stroke-width="5"/>' +
       '<path d="M-7 -14l3 -2l3 2l3 -2l3 2l3 -2" stroke="#7A2E14" stroke-width="1.3" fill="none"/>' +
       '<path d="M-6 -22q0 -10 6 -10t6 10" stroke="#C8643A" stroke-width="3.5" fill="none"/><rect x="-1.8" y="-40" width="3.6" height="9" rx="1.2" fill="#C8643A"/>' +
-      '<path d="M-8 -8a9 9 0 0 0 6 6" stroke="#fff" stroke-width="2" opacity=".35" fill="none" stroke-linecap="round"/>'; },
+      '<path d="M-8 -8a9 9 0 0 0 6 6" stroke="#fff" stroke-width="2" opacity=".35" fill="none" stroke-linecap="round"/><path class="a-destello" d="M9 -26l1 3l3 1l-3 1l-1 3l-1 -3l-3 -1l3 -1z" fill="#fff"/>'; },
     clava: function () { return SOMBRA(13) +
       '<rect x="-4" y="-6" width="8" height="7" fill="#7E7A6E"/><path d="M-12 -8q0 -18 12 -20q12 2 12 20q-2 4 -12 4q-10 0 -12 -4z" fill="#A9A492"/>' +
       '<path d="M-12 -8q0 -18 12 -20q-6 6 -6 24q-4 0 -6 -4z" fill="#C4BFAE"/>' +
@@ -35,7 +35,7 @@
       '<path d="M-6 -10h12" stroke="#5A5648" stroke-width="2"/><path d="M-4 -10l1.5 4l1.5 -4M1 -10l1.5 4l1.5 -4" fill="#fff"/><path d="M-2 -15h4" stroke="#5A5648" stroke-width="1.6"/>'; },
     puerta: function () { return SOMBRA(18) +
       '<path d="M-18 0v-26h36v26h-11v-16h-14v16z" fill="#9A9488"/><path d="M-18 -26h36v-5h-36z" fill="#B6B0A2"/>' +
-      '<path d="M-16 -21h32" stroke="#6E6A5E" stroke-width="1.4" stroke-dasharray="3 2"/><circle cx="0" cy="-23" r="3" fill="#C9A23A"/>' +
+      '<path d="M-16 -21h32" stroke="#6E6A5E" stroke-width="1.4" stroke-dasharray="3 2"/><circle class="a-brilla" cx="0" cy="-23" r="3" fill="#FFD23F"/>' +
       '<path d="M-7 0v-16h14v16" fill="#3A3A44" opacity=".55"/>'; },
     chanchan: function () { return SOMBRA(20) +
       '<path d="M-20 0v-20l4 -3h32l4 3v20z" fill="#D9B27C"/><path d="M-20 -20h40" stroke="#B88E58" stroke-width="2"/>' +
@@ -47,19 +47,19 @@
     andenes: function () { return '<g><path d="M-26 0h52v-6h-46z" fill="#7A6A4A"/><path d="M-20 -6h46v-2h-44z" fill="#5CC846"/><path d="M-20 -8h44v-6h-38z" fill="#7A6A4A"/><path d="M-14 -14h38v-2h-36z" fill="#5CC846"/><path d="M-14 -16h36v-6h-30z" fill="#7A6A4A"/><path d="M-8 -22h30v-2h-28z" fill="#5CC846"/></g>'; },
     choza: function () { return SOMBRA(14) +
       '<path d="M-12 0v-10h24v10z" fill="#9A8A70"/><path d="M-16 -9l16 -14l16 14z" fill="#E0B44E"/><path d="M-16 -9l16 -14l-4 14z" fill="#C8902E"/><rect x="-3" y="-8" width="6" height="8" fill="#3A2A1A"/>'; },
-    fogata: function () { return '<path d="M-8 0l16 -5M-8 -5l16 5" stroke="#6E4622" stroke-width="3" stroke-linecap="round"/><path class="llama-f" d="M0 -3q-7 -6 -2 -14q1 5 4 4q-1 -4 2 -8q5 8 1 18z" fill="#FF8A1E"/><path d="M0 -4q-3 -4 0 -8q1 3 2 3q2 3 -2 5z" fill="#FFE27A"/>'; },
+    fogata: function () { return '<path d="M-8 0l16 -5M-8 -5l16 5" stroke="#6E4622" stroke-width="3" stroke-linecap="round"/><path class="llama-f" d="M0 -3q-7 -6 -2 -14q1 5 4 4q-1 -4 2 -8q5 8 1 18z" fill="#FF8A1E"/><path d="M0 -4q-3 -4 0 -8q1 3 2 3q2 3 -2 5z" fill="#FFE27A"/><circle class="a-humo" cx="1" cy="-20" r="3.5" fill="#D8D4E8"/><circle class="a-humo d2" cx="1" cy="-20" r="3" fill="#D8D4E8"/><circle class="a-chispa" cx="-2" cy="-16" r="1" fill="#FFE27A"/><circle class="a-chispa d2" cx="3" cy="-14" r="1" fill="#FFB23F"/>'; },
     iglesia: function () { return SOMBRA(20) +
       '<rect x="-14" y="-18" width="28" height="18" fill="#F4EEE2"/><path d="M-14 -18l14 -8l14 8z" fill="#C8643A"/>' +
       '<rect x="-22" y="-30" width="9" height="30" fill="#FFFFFF"/><rect x="13" y="-30" width="9" height="30" fill="#FFFFFF"/><path d="M-22 -30l4.5 -6l4.5 6zM13 -30l4.5 -6l4.5 6z" fill="#C8643A"/>' +
-      '<rect x="-19.5" y="-26" width="4" height="5" rx="2" fill="#5A4630"/><rect x="15.5" y="-26" width="4" height="5" rx="2" fill="#5A4630"/>' +
+      '<rect x="-19.5" y="-26" width="4" height="5" rx="2" fill="#5A4630"/><rect x="15.5" y="-26" width="4" height="5" rx="2" fill="#5A4630"/><path class="a-campana" d="M-19 -25.5a1.6 1.6 0 0 1 3 0v3h-3z" fill="#E0B44E"/><path class="a-campana d2" d="M16 -25.5a1.6 1.6 0 0 1 3 0v3h-3z" fill="#E0B44E"/>' +
       '<path d="M-5 0v-8a5 5 0 0 1 10 0v8z" fill="#7A4A22"/><path d="M0 -26v-7M-2.5 -30.5h5" stroke="#C9A23A" stroke-width="1.6"/>'; },
     bandera: function () { return '<rect x="-1.5" y="-44" width="3" height="44" fill="#E8E2D2"/><circle cx="0" cy="-45" r="2.5" fill="#C9A23A"/>' +
       '<path class="ondea" d="M1.5 -42q8 -3 16 0t16 0v18q-8 3 -16 0t-16 0z" fill="#fff"/><path d="M1.5 -42q4 -1.5 10.6 -1v18q-6.6 -.5 -10.6 1z" fill="#D7263D"/><path d="M22.9 -42.4q5 1 10.6 .4v18q-5.6 .6 -10.6 -.4z" fill="#D7263D"/>'; },
-    canon: function () { return SOMBRA(14) + '<path d="M-14 -8l24 -8l2 6l-24 8z" fill="#3A3A44"/><circle cx="12" cy="-13" r="3" fill="#2A2A30"/><circle cx="-4" cy="-3" r="6" fill="#7A4A22" stroke="#4A2C12" stroke-width="2"/><circle cx="-4" cy="-3" r="1.5" fill="#4A2C12"/>'; },
+    canon: function () { return SOMBRA(14) + '<path d="M-14 -8l24 -8l2 6l-24 8z" fill="#3A3A44"/><circle cx="12" cy="-13" r="3" fill="#2A2A30"/><circle class="a-tiro" cx="16" cy="-15" r="4" fill="#E8E4F0"/><circle cx="-4" cy="-3" r="6" fill="#7A4A22" stroke="#4A2C12" stroke-width="2"/><circle cx="-4" cy="-3" r="1.5" fill="#4A2C12"/>'; },
     cruz: function () { return SOMBRA(6) + '<rect x="-2" y="-30" width="4" height="30" fill="#7A4A22"/><rect x="-9" y="-24" width="18" height="4" fill="#7A4A22"/>'; },
     machu: function () { return '<path d="M-6 -40l12 -26l16 26z" fill="#3E8E4E"/><path d="M6 -66l3 7l-6 3z" fill="#2C6E3C"/><path d="M-40 -40l18 -18l14 18z" fill="#5FAF6A"/>' + P.andenes() +
       '<g transform="translate(-26 -2)"><rect x="-6" y="-8" width="12" height="8" fill="#B9AF97"/><path d="M-8 -8l8 -6l8 6z" fill="#E0B44E"/></g><g transform="translate(-14 -10)"><rect x="-5" y="-7" width="10" height="7" fill="#B9AF97"/><path d="M-7 -7l7 -5l7 5z" fill="#E0B44E"/></g>'; },
-    chakana: function () { return '<path d="M-3 -18h6v4h4v4h4v6h-4v4h-4v4h-6v-4h-4v-4h-4v-6h4v-4h4z" fill="#C9A23A" transform="translate(0 0)"/><circle cx="0" cy="-7" r="2.4" fill="#7A5A10"/>'; }
+    chakana: function () { return '<path d="M-3 -18h6v4h4v4h4v6h-4v4h-4v4h-6v-4h-4v-4h-4v-6h4v-4h4z" fill="#C9A23A" transform="translate(0 0)"/><circle class="a-brilla" cx="0" cy="-7" r="2.4" fill="#FFE27A"/>'; }
   };
   // Qué lleva cada isla: [pieza, x, y, escala, voltear]
   var DECOS = {
