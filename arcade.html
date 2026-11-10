@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,800;1,900&family=Nunito:wght@600;800;900&family=Lilita+One&display=swap">
 <script src="assets/app.js" defer></script>
-<script src="assets/arcade-mundo.js"></script>
+<script src="assets/arcade-islas.js"></script>
 <script src="assets/arcade-sonido.js"></script>
 <script>(function () { var m = new URLSearchParams(location.search).get('modo'); try { m = m || localStorage.getItem('mc-modo'); } catch (e) {} if (m === 'claro' || m === 'oscuro') document.documentElement.setAttribute('data-modo', m); })();</script>
 <style>
@@ -447,6 +447,94 @@ body.en-inicio .cab { display: none; }
   .curso-cab .ar { width: 96px; height: 120px; }
 }
 
+/* ---------- Niveles de una isla: islas flotantes en el cielo (assets/arcade-islas.js) ---------- */
+.nv-capa, .nv-volver, .nv-cab { display: none; }
+.mapa.niveles .nv-capa, .mapa.niveles .nv-cab { display: block; }
+.mapa.niveles .nv-volver { display: grid; }
+.mapa.niveles .h-cap, .mapa.niveles .escena, .mapa.niveles .h-fila, .mapa.niveles .h-isla, .mapa.niveles .m-fl { display: none !important; }
+.nv-volver { position: absolute; z-index: 8; left: max(14px, env(safe-area-inset-left)); top: max(12px, env(safe-area-inset-top)); width: 44px; height: 44px; font-size: 22px; }
+.mapa.niveles .h-top { padding-left: 74px; }
+.nv-cab { position: absolute; z-index: 6; left: 0; right: 0; top: 0; padding: 74px 12px 26px; text-align: center; pointer-events: none; background: linear-gradient(180deg, #170C46 0, #1B0F52 78%, rgba(27,15,82,0)); }
+.nv-cab > * { margin-left: auto; margin-right: auto; }
+.nv-cab .h-cint { display: inline-block; }
+.nv-cab .h-ctit { display: block; width: fit-content; font-size: 30px; margin-top: 6px; }
+.nv-est { position: relative; display: flex; width: fit-content; align-items: center; gap: 6px; margin-top: 10px; padding: 0 16px 0 40px; height: 34px; border-radius: 12px; background: linear-gradient(180deg, #4A2A00, #2A1600); border: 2px solid #FFC800; box-shadow: 0 3px 0 #7A4A00, 0 0 16px rgba(255,200,0,.35), inset 0 2px 0 rgba(255,255,255,.15); font: 400 19px/1 "Lilita One", var(--cuerpo); letter-spacing: .03em; color: #FFE27A; text-shadow: 0 2px 0 #000; }
+.nv-est small { font: inherit; font-size: 14px; color: #C8A040; }
+.nv-est svg { position: absolute; left: -14px; top: 50%; width: 48px; height: 48px; margin-top: -26px; filter: drop-shadow(0 0 8px rgba(255,200,0,.6)); animation: estG 3s ease-in-out infinite; }
+.nv-cab .nv-isla { display: none; }
+.nv-capa { position: absolute; inset: 0; z-index: 3; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.nv-capa::-webkit-scrollbar { display: none; }
+.nv-ruta { position: relative; margin: 0 auto; }
+.ni { position: absolute; display: grid; justify-items: center; padding: 0; background: none; border: 0; color: #fff; cursor: pointer; animation: flota 6s ease-in-out infinite; animation-delay: var(--d); -webkit-tap-highlight-color: transparent; }
+.ni .cuerpo { display: block; width: 100%; filter: drop-shadow(0 14px 14px rgba(16,8,60,.45)); transition: transform .15s; }
+.ni:active .cuerpo { transform: scale(.96); }
+.ni .isv { display: block; width: 100%; height: auto; overflow: visible; }
+.ni.lock .cuerpo { filter: grayscale(.75) brightness(.7) drop-shadow(0 14px 14px rgba(16,8,60,.45)); }
+.ni.ya .cuerpo { filter: drop-shadow(0 0 22px rgba(198,224,0,.55)) drop-shadow(0 14px 14px rgba(16,8,60,.45)); }
+.ni .st { position: absolute; top: 2%; z-index: 3; display: flex; gap: 2px; } .ni .st svg { width: 24px; height: 24px; } .ni .st svg:nth-child(2) { translate: 0 -6px; } .ni .st .off { filter: grayscale(1) brightness(.45); }
+.ni .nm { position: absolute; top: 47%; z-index: 3; white-space: nowrap; padding: 5px 10px; border-radius: 9px; background: rgba(10,6,32,.8); border: 1.5px solid rgba(160,140,255,.35); box-shadow: 0 3px 0 rgba(10,6,32,.6); font: 900 11.5px/1.15 var(--cuerpo); color: #fff; }
+.ni.lock .nm { color: #B9B0E0; }
+.ni.ya .nm { background: #1C2600; border-color: var(--lima); color: var(--lima); font-size: 12.5px; }
+.ni .bur { position: absolute; z-index: 4; top: -6px; padding: 6px 12px; border-radius: 10px; background: #fff; color: #2A1A66; font: 400 17px/1 "Lilita One", var(--cuerpo); letter-spacing: .04em; box-shadow: 0 4px 0 #2A1A66; animation: late2 1.6s ease-in-out infinite; }
+.ni .bur::after { content: ""; position: absolute; left: 50%; bottom: -7px; margin-left: -7px; border: 7px solid transparent; border-bottom: 0; border-top-color: #fff; }
+.ni .haz { position: absolute; z-index: 2; top: -60px; left: 50%; width: 70px; margin-left: -35px; height: 120px; background: linear-gradient(180deg, rgba(230,255,90,0), rgba(230,255,90,.45)); clip-path: polygon(30% 0, 70% 0, 100% 100%, 0 100%); filter: blur(2px); animation: late2 1.6s ease-in-out infinite; pointer-events: none; }
+.ni .nb { position: absolute; z-index: 3; bottom: 30px; left: var(--x); width: 120px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.75); filter: blur(5px); pointer-events: none; animation: nubeL 9s ease-in-out infinite alternate; }
+.ni .nb::before { content: ""; position: absolute; left: 22%; top: -16px; width: 50px; height: 40px; border-radius: 50%; background: inherit; }
+@keyframes nubeL { to { translate: 40px 0; } }
+.pd { position: absolute; width: 22px; height: 16px; margin: -8px 0 0 -11px; pointer-events: none; animation: flota 4s ease-in-out infinite; animation-delay: var(--d); }
+.pd::before { content: ""; position: absolute; left: 3px; right: 3px; top: 5px; height: 12px; background: #6E4622; clip-path: polygon(0 0, 100% 0, 55% 100%); }
+.pd::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 8px; border-radius: 50%; background: #8E7FC0; box-shadow: inset 0 -2px 0 rgba(0,0,0,.25); }
+.pd.on::after { background: var(--lima); box-shadow: 0 0 10px var(--lima), inset 0 -2px 0 #6E8A00; }
+.nv-ext { position: absolute; z-index: 2; width: 76px; margin-left: -38px; display: grid; justify-items: center; padding: 0; background: none; border: 0; color: #fff; cursor: pointer; }
+.nv-ext .cf { width: 54px; height: 54px; display: grid; place-items: center; border-radius: 50%; font-size: 28px; background: radial-gradient(circle at 35% 30%, #FFF0A0, #FFC800 50%, #D07800); border: 3px solid #7A4A00; box-shadow: 0 5px 0 #5A3400, 0 0 18px rgba(255,200,0,.6); animation: late2 2.2s ease-in-out infinite; }
+.nv-ext em { margin-top: -6px; padding: 2px 7px; border-radius: 6px; background: #B35CFF; border: 2px solid #3A0A6A; font: 400 11px/1 "Lilita One", var(--cuerpo); letter-spacing: .06em; font-style: normal; text-transform: uppercase; }
+.nv-ext.lock .cf { filter: grayscale(.8) brightness(.6); animation: none; }
+.nv-etapa { position: absolute; z-index: 1; left: 50%; translate: -50% 0; white-space: nowrap; padding: 7px 26px 8px; font: 400 15px/1 "Lilita One", var(--cuerpo); letter-spacing: .08em; text-transform: uppercase; color: #fff; text-align: center; background: linear-gradient(180deg, #B58BFF, #7A4DF0 50%, #5A2FD0); border: 2px solid var(--mo); box-shadow: 0 4px 0 var(--mo); clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 50%, 100% 100%, 0 100%, 12px 50%); }
+.nv-etapa small { display: block; margin-top: 3px; font: 900 10px/1 var(--cuerpo); letter-spacing: .04em; text-transform: none; opacity: .85; }
+@media (max-width: 720px) {
+  .nv-volver { top: max(30px, calc(env(safe-area-inset-top) + 14px)); }
+  .nv-cab { padding-top: max(84px, calc(env(safe-area-inset-top) + 70px)); }
+  .mapa.niveles .h-top .h-aj { display: none; }
+  .mapa.niveles .h-top { gap: 30px; padding-right: 14px; }
+  .mapa.niveles::before { content: ""; position: absolute; z-index: 4; left: 0; right: 0; bottom: 0; height: 170px; pointer-events: none; background: linear-gradient(180deg, rgba(62,139,234,0), rgba(70,150,236,.9)); }
+}
+@media (min-width: 721px) {
+  .nv-capa { -webkit-mask: linear-gradient(180deg, transparent 60px, #000 140px); mask: linear-gradient(180deg, transparent 60px, #000 140px); }
+  .nv-ruta { margin-left: 460px; }
+  .ni .nm { font-size: 13px; }
+  .nv-cab { left: 40px; right: auto; width: 380px; top: 70px; padding: 0; background: none; }
+  .nv-cab .h-ctit { font-size: 40px; }
+  .nv-cab .nv-isla { display: block; width: 210px; margin-top: 10px; filter: drop-shadow(0 18px 16px rgba(10,6,40,.5)); animation: flota 5s ease-in-out infinite; }
+  .mapa.niveles .m-pie { left: 40px; right: auto; width: 380px; bottom: 40px; }
+  .mapa.niveles #jugar { min-width: 360px; height: 84px; } .mapa.niveles #jugar b { font-size: 42px; }
+}
+@media (min-width: 721px) and (max-height: 700px) { .nv-cab .nv-isla { width: 150px; } .nv-cab .h-ctit { font-size: 34px; } }
+/* Ventana al tocar un nivel: tarjeta morada al centro, con el estilo del home */
+.hoja-fondo { position: fixed; inset: 0; z-index: 60; opacity: 0; pointer-events: none; transition: opacity .25s; }
+.hoja-fondo.on { opacity: 1; pointer-events: auto; }
+.hoja { visibility: hidden; position: fixed; left: 50%; z-index: 61; }
+.hoja.on { visibility: visible; }
+.hoja { top: 50%; bottom: auto; width: min(380px, calc(100% - 32px)); translate: -50% -40%; opacity: 0; transition: translate .3s cubic-bezier(.2,.9,.3,1.2), opacity .2s; padding: 34px 18px 20px; border-radius: 24px; text-align: center; color: #fff; background: linear-gradient(180deg, #33287A, #1A1046); border: 3px solid #0A0620; box-shadow: inset 0 2px 0 rgba(255,255,255,.15), 0 8px 0 #0A0620, 0 20px 50px rgba(0,0,0,.5); display: grid; justify-items: center; gap: 12px; }
+.hoja.on { translate: -50% -50%; opacity: 1; }
+.hoja-fondo { background: rgba(10,4,40,.62); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+.hoja .agarre { display: none; }
+.hoja .h-cint { position: absolute; top: -15px; font-size: 15px; }
+.hoja .x { position: absolute; right: -12px; top: -12px; width: 38px; height: 38px; border-radius: 50%; font-size: 17px; --mo: #5A0610; background: linear-gradient(180deg, #FF7A7A, #E0263A 50%, #B80E22); border-color: #5A0610; box-shadow: 0 3px 0 #5A0610, inset 0 2px 0 rgba(255,255,255,.5); }
+.hoja .h-ctit { margin: 0; font-size: 26px; }
+.hoja .st3 { display: flex; gap: 6px; align-items: end; } .hoja .st3 svg { width: 44px; height: 44px; } .hoja .st3 svg:nth-child(2) { width: 56px; height: 56px; } .hoja .st3 .off { filter: grayscale(1) brightness(.4); }
+.hoja .lb { font: 400 13px/1 "Lilita One", var(--cuerpo); letter-spacing: .1em; color: var(--lima); text-transform: uppercase; }
+.hoja .ruta-n { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 6px; width: 100%; }
+.hoja .ruta-n > div { display: grid; justify-items: center; gap: 5px; font: 900 10.5px/1.1 var(--cuerpo); color: #DCD4FF; }
+.hoja .ruta-n i { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 14px; color: #fff; font-size: 22px; background: linear-gradient(180deg, color-mix(in srgb, var(--c) 65%, #fff), var(--c) 55%, color-mix(in srgb, var(--c) 70%, #000)); border: 3px solid #0A0620; box-shadow: 0 4px 0 #0A0620, inset 0 2px 0 rgba(255,255,255,.4); }
+.hoja .ruta-n span { display: flex; gap: 1px; } .hoja .ruta-n span svg { width: 13px; height: 13px; } .hoja .ruta-n span .off { filter: grayscale(1) brightness(.45); }
+.hoja .prem { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.hoja .prem span { display: flex; align-items: center; gap: 5px; padding: 6px 10px; border-radius: 10px; background: rgba(10,6,32,.6); border: 2px solid rgba(160,140,255,.3); font: 900 13px/1 var(--cuerpo); }
+.hoja .prem svg { width: 20px; height: 20px; }
+.hoja .jugar { position: relative; overflow: hidden; width: 100%; min-width: 0; height: 64px; padding: 0; border-radius: 16px; display: flex; align-items: center; justify-content: center; gap: 10px; font: 400 32px/1 "Lilita One", var(--cuerpo); letter-spacing: .04em; color: #1C2600; text-shadow: none; background: linear-gradient(180deg, #F8FFB0 0, #E6FA4A 44%, var(--lima) 52%, #9CB800 100%); border: 3px solid #2A3300; box-shadow: 0 6px 0 #2A3300, 0 0 26px rgba(198,224,0,.5), inset 0 3px 0 rgba(255,255,255,.7); animation: none; }
+.hoja .jugar[disabled] { filter: grayscale(.9) brightness(.8); font-size: 24px; box-shadow: 0 6px 0 #2A3300; }
+.hoja .nota { margin: 0; padding: 10px 12px; border-radius: 12px; background: rgba(10,6,32,.5); color: #DCD4FF; font: 800 13px/1.35 var(--cuerpo); }
+.hoja .ext-ico { font-size: 56px; filter: drop-shadow(0 0 18px rgba(255,200,0,.6)); }
+
 /* ---------- Mapa de niveles del mundo (assets/arcade-mundo.js) ---------- */
 body.en-mundo { background: #1E86BE; }
 body.en-mundo .cab { display: none; }
@@ -459,21 +547,6 @@ body.en-mundo .cab { display: none; }
 .mn-mapa { margin-top: -72px; background: linear-gradient(90deg, #1A6FA3, #2A9FD3 25%, #2A9FD3 75%, #1A6FA3); }
 .mn-mapa .mm { box-shadow: 0 0 60px rgba(0,0,0,.35); }
 /* Hoja del nivel */
-.hoja-fondo { position: fixed; inset: 0; z-index: 60; background: rgba(5,10,25,.55); opacity: 0; pointer-events: none; transition: opacity .25s; }
-.hoja-fondo.on { opacity: 1; pointer-events: auto; }
-.hoja { visibility: hidden; position: fixed; left: 50%; bottom: 0; z-index: 61; width: min(520px, 100%); translate: -50% 105%; transition: translate .35s cubic-bezier(.2,.9,.3,1.1); padding: 22px 20px calc(22px + env(safe-area-inset-bottom)); border-radius: 26px 26px 0 0; background: linear-gradient(180deg, #FFF8E6, #F3E6C4); color: #3A2A10; border-top: 5px solid #B48A4E; box-shadow: 0 -10px 40px rgba(0,0,0,.35); }
-.hoja.on { translate: -50% 0; visibility: visible; }
-.hoja .agarre { width: 46px; height: 5px; margin: -8px auto 14px; border-radius: 5px; background: #D2B98A; }
-.hoja .nv { font: 900 14px/1 var(--cuerpo); letter-spacing: .1em; text-transform: uppercase; color: #9A6A00; }
-.hoja h3 { margin: 6px 0 10px; font: 900 26px/1.1 var(--cuerpo); }
-.hoja .estr { display: flex; gap: 6px; font-size: 30px; color: #E0D2AE; margin-bottom: 12px; }
-.hoja .estr .on { color: #FFC800; filter: drop-shadow(0 2px 0 #9A6A00); }
-.hoja .jg { display: grid; gap: 8px; margin-bottom: 16px; }
-.hoja .jg div { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: #fff; border: 2px solid #EADBB6; font-weight: 800; }
-.hoja .jg i { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; color: #fff; font-size: 18px; flex: none; }
-.hoja .jg span { margin-left: auto; display: flex; gap: 1px; color: #E0D2AE; font-size: 15px; } .hoja .jg span .on { color: #FFC800; }
-.hoja .nota { padding: 12px 14px; border-radius: 14px; background: rgba(180,138,78,.15); font-weight: 800; color: #7A5A20; margin-bottom: 16px; line-height: 1.4; }
-.hoja .jugar { width: 100%; animation: none; }
 
 /* ---------- Ruta del tema ---------- */
 .ruta-cab { border-radius: 24px; padding: 22px 22px 24px; background: linear-gradient(135deg, var(--c) 0, #B24A00 100%); color: #fff; border-bottom: 5px solid #7D3400; }
@@ -674,6 +747,10 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
       </div>
       <div class="puntos" id="puntos"></div>
     </div>
+    <!-- Mapa de niveles de la isla elegida: islas flotantes (assets/arcade-islas.js) -->
+    <div class="nv-capa" id="nvCapa"></div>
+    <button type="button" class="g-btn nv-volver" id="nvVolver" aria-label="Volver a las islas"><svg class="ic"><use href="#i-atras"/></svg></button>
+    <div class="nv-cab" id="nvCab"></div>
     <div class="h-toast" id="hToast"></div>
   </div>
 </main>
@@ -856,6 +933,7 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     return h + '</div>';
   }
   function irInicio() {
+    $('mapa').classList.remove('niveles'); nvMapa = null;
     ver('v-inicio', 'Arcade'); $('volver').onclick = null; $('volver').href = 'index.html';
     var tot = 0; CURSOS.forEach(function (c) { c.temas.forEach(function (t) { tot += estrellasTema(t); }); });
     mundos = ordenMundos();
@@ -953,12 +1031,15 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     if (window.MCSonido) MCSonido.efecto('cambio');
     if (navigator.vibrate) try { navigator.vibrate(8); } catch (e) {}
   }
-  function entrar() { var c = mundos[mundo]; if (window.MCSonido) MCSonido.efecto(c.temas.length ? 'abrir' : 'bloq'); if (c.temas.length) irCurso(c.id); }
+  function entrar() {
+    if ($('mapa').classList.contains('niveles') && nvMapa) { var cc = nvMapa.curso, a = nvMapa.actual; return abrirHoja(cc, a, cc.niveles[a], nvMapa.estado[a]); }
+    var c = mundos[mundo]; if (window.MCSonido) MCSonido.efecto(c.temas.length ? 'abrir' : 'bloq'); if (c.temas.length) irCurso(c.id); }
   $('flIzq').onclick = function () { irMundo(mundo - 1); };
   $('flDer').onclick = function () { irMundo(mundo + 1); };
   $('jugar').onclick = entrar;
   document.addEventListener('keydown', function (e) {
     if (!$('v-inicio').classList.contains('on')) return;
+    if ($('mapa').classList.contains('niveles')) { if (e.key === 'Enter' && !$('hoja').classList.contains('on')) entrar(); else if (e.key === 'Escape') cerrarHoja(); return; }
     if (e.key === 'ArrowLeft') irMundo(mundo - 1); else if (e.key === 'ArrowRight') irMundo(mundo + 1); else if (e.key === 'Enter') entrar();
   });
   // Deslizar con el dedo o el mouse
@@ -982,45 +1063,65 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
 
   /* ---------- Mapa de niveles (assets/arcade-mundo.js) ---------- */
   function temaCompleto(t) { return juegosDe(t).filter(function (j) { return !j.bloq; }).every(function (j) { return (estado.est[t + ':' + j.id] || 0) > 0; }); }
+  // Etapas del camino (cinta morada antes del nivel indicado)
+  var ETAPAS = { hp: { 0: ['Etapa 1', 'Primeros pobladores y culturas'], 5: ['Etapa 2', 'El Tahuantinsuyo'], 7: ['Etapa 3', 'De la Conquista a la Independencia'] } };
+  var nvMapa = null;
+  function E3(on) { return '<svg class="' + (on ? '' : 'off') + '" viewBox="0 0 100 100"><use href="#i-estrella3d"/></svg>'; }
   function irMapa(c) {
-    ver('v-mundo', c.nom, 'Arcade');
-    document.body.classList.add('en-mundo');
-    $('mnVolver').onclick = function (e) { e.preventDefault(); cerrarHoja(); irInicio(); };
-    $('mnPlaca').innerHTML = c.img ? '<img src="assets/arcade/nombre-' + c.img + '.webp" alt="' + c.nom + '">' : '<span class="txt">' + c.nom + '</span>';
-    var e = 0; c.temas.forEach(function (t) { e += estrellasTema(t); }); $('mnEst').textContent = e;
-    var r = MCMundo.abrir($('mnMapa'), {
-      niveles: c.niveles, tema: c.mapa, ancho: 560,
-      estrellas: estrellasTema, max: maxTema, completo: temaCompleto,
-      extras: c.extras,
-      tocar: function (i, nv, s) { abrirHoja(c, i, nv, s); },
-      tocarExtra: function (x, s) {
-        if (window.MCSonido) MCSonido.efecto(s.abierto ? 'tap' : 'bloq');
-        $('hoja').innerHTML = '<div class="agarre"></div><div class="nv">Nivel extra</div><h3>' + x.n + '</h3><p class="nota">' + x.desc + '</p>' +
-          (s.abierto ? '<p class="nota">🛠️ Muy pronto tendrá su desafío. ¡Prepárate!</p><button class="jugar" type="button" disabled>Próximamente</button>'
-            : '<p class="nota">🔒 Gana el nivel ' + (x.tras + 1) + ' para abrir este nivel extra.</p><button class="jugar" type="button" disabled>Bloqueado</button>');
-        $('hoja').classList.add('on'); $('hojaFondo').classList.add('on');
-      }
-    });
-    // La cámara empieza en el nivel actual
-    requestAnimationFrame(function () { if (r.foco) window.scrollTo(0, Math.max(0, r.foco.getBoundingClientRect().top + window.scrollY - innerHeight * .55)); });
+    cerrarHoja();
+    if (!$('v-inicio').classList.contains('on')) ver('v-inicio', 'Arcade');
+    if (window.MCSonido) MCSonido.ambiente('mundo');
+    estado.ultimo = c.id; guardar();
+    var num = mundos.map(function (x) { return x.id; }).indexOf(c.id) + 1;
+    $('nvCab').innerHTML = '<span class="h-cint">Isla ' + (num || 1) + '</span><b class="h-ctit" data-t="' + c.nom + '">' + c.nom + '</b>' +
+      '<span class="nv-est" id="nvEst"></span>' + (c.img ? '<img class="nv-isla" src="assets/arcade/mundo-' + c.img + '.webp" alt="">' : '');
+    $('mapa').classList.add('niveles');
+    $('nvVolver').onclick = function () { if (window.MCSonido) MCSonido.efecto('tap'); cerrarHoja(); $('mapa').classList.remove('niveles'); nvMapa = null; irInicio(); };
+    function pintar() {
+      nvMapa = MCIslas.abrir($('nvCapa'), {
+        niveles: c.niveles, extras: c.extras, etapas: ETAPAS[c.id],
+        estrellas: estrellasTema, max: maxTema, completo: temaCompleto,
+        tocar: function (i, nv, s) { abrirHoja(c, i, nv, s); },
+        tocarExtra: function (x, s) {
+          if (window.MCSonido) MCSonido.efecto(s.abierto ? 'tap' : 'bloq');
+          abrirVentana('<span class="h-cint">Nivel extra</span><b class="h-ctit" data-t="' + x.n + '">' + x.n + '</b><span class="ext-ico">' + ({ manantial: '🏺', lapida: '📜', portal: '🌀' }[x.tipo] || '🎁') + '</span><p class="nota">' + x.desc + '</p>' +
+            (s.abierto ? '<p class="nota">🛠️ Muy pronto tendrá su desafío. ¡Prepárate!</p><button class="jugar" type="button" disabled>Próximamente</button>'
+              : '<p class="nota">🔒 Gana el nivel ' + (x.tras + 1) + ' para abrir este nivel extra.</p><button class="jugar" type="button" disabled>Bloqueado</button>'));
+        }
+      });
+      nvMapa.curso = c;
+      $('nvEst').innerHTML = E3(true) + nvMapa.estado.reduce(function (a, x) { return a + (x.hecho ? x.tres : 0); }, 0) + '<small>/ ' + c.niveles.length * 3 + '</small>';
+      var a = nvMapa.actual, nv = c.niveles[a];
+      $('jugarT').textContent = 'Jugar';
+      $('jugarS').textContent = nv ? (a === c.niveles.length - 1 ? 'Jefe' : 'Nivel ' + (a + 1)) + ' · ' + nv.n : '';
+      $('jugar').disabled = !(nv && nv.t);
+    }
+    pintar();
+    var tR; window.onresize = function () { clearTimeout(tR); tR = setTimeout(function () { if (nvMapa && $('mapa').classList.contains('niveles')) pintar(); }, 200); };
+  }
+  function abrirVentana(h) {
+    $('hoja').innerHTML = h + '<button class="g-btn x" type="button" id="hojaX" aria-label="Cerrar"><svg class="ic"><use href="#i-x"/></svg></button>';
+    $('hoja').classList.add('on'); $('hojaFondo').classList.add('on');
+    $('hojaX').onclick = cerrarHoja;
   }
   function abrirHoja(c, i, nv, s) {
     if (window.MCSonido) MCSonido.efecto(nv.t && s.abierto ? 'tap' : 'bloq');
-    var ult = i === c.niveles.length - 1, h = '<div class="agarre"></div><div class="nv">' + (ult ? 'Jefe del mundo' : 'Nivel ' + (i + 1)) + '</div><h3>' + nv.n + '</h3>';
+    var ult = i === c.niveles.length - 1, h = '<span class="h-cint">' + (ult ? 'Jefe de la isla' : 'Nivel ' + (i + 1)) + '</span><b class="h-ctit" data-t="' + nv.n + '">' + nv.n + '</b>';
     if (nv.t && s.abierto) {
-      var t = nv.t;
-      h += '<div class="estr">' + [1, 2, 3].map(function (k) { return estrella(k <= s.tres); }).join('') + '</div><div class="jg">' +
-        juegosDe(t).map(function (j) {
+      var t = nv.t, js = juegosDe(t);
+      h += '<span class="st3">' + [1, 2, 3].map(function (k) { return E3(k <= s.tres); }).join('') + '</span><span class="lb">Ruta del nivel</span><div class="ruta-n">' +
+        js.map(function (j) {
           var e = estado.est[t + ':' + j.id] || 0;
-          return '<div><i style="background:' + j.c + '"><svg class="ic"><use href="#' + j.ic + '"/></svg></i>' + j.nom + '<span>' + [1, 2, 3].map(function (k) { return estrella(k <= e); }).join('') + '</span></div>';
-        }).join('') + '</div><button class="jugar" type="button" id="hojaJugar">' + (s.hecho ? 'Repetir' : 'Jugar') + '</button>';
+          return '<div><i style="--c:' + j.c + '"><svg class="ic"><use href="#' + j.ic + '"/></svg></i>' + j.nom + (j.bloq ? '' : '<span>' + [1, 2, 3].map(function (k) { return E3(k <= e); }).join('') + '</span>') + '</div>';
+        }).join('') + '</div>' +
+        '<div class="prem"><span>' + E3(true) + 'hasta ' + maxTema(t) + '</span><span><svg viewBox="0 0 100 100"><use href="#r-corazon"/></svg>−1 si fallas</span></div>' +
+        '<button class="jugar" type="button" id="hojaJugar">▶ ' + (s.hecho ? 'REPETIR' : 'JUGAR') + '</button>';
     } else if (nv.t) {
       h += '<p class="nota">🔒 Termina el nivel ' + i + ' para abrir este.</p><button class="jugar" type="button" disabled>Bloqueado</button>';
     } else {
-      h += '<p class="nota">🛠️ Este nivel está en construcción. ¡Muy pronto tendrá sus juegos!</p><button class="jugar" type="button" disabled>Próximamente</button>';
+      h += '<p class="nota">🛠️ Este nivel está en construcción. ¡Muy pronto tendrá sus retos!</p><button class="jugar" type="button" disabled>Próximamente</button>';
     }
-    $('hoja').innerHTML = h;
-    $('hoja').classList.add('on'); $('hojaFondo').classList.add('on');
+    abrirVentana(h);
     var b = $('hojaJugar'); if (b) b.onclick = function () { if (window.MCSonido) MCSonido.efecto('abrir'); cerrarHoja(); estado.tema = nv.t; irRuta(); };
   }
   function cerrarHoja() { $('hoja').classList.remove('on'); $('hojaFondo').classList.remove('on'); }
@@ -1028,7 +1129,7 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
 
   function irCurso(id) {
     var c = cursoDe(id); estado.curso = id;
-    if (c.niveles && window.MCMundo) return irMapa(c);
+    if (c.niveles && window.MCIslas) return irMapa(c);
     ver('v-curso', c.nom, 'Arcade'); volverA(irInicio);
     var e = 0, m = 0; c.temas.forEach(function (t) { e += estrellasTema(t); m += maxTema(t); });
     $('cursoCab').style.setProperty('--cc', c.c);
