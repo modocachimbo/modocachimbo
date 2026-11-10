@@ -345,6 +345,8 @@
           qlistEl.appendChild(div);
           renderMath(div);
         });
+      // Sello "Clave verificada" (assets/claves-verificadas.js)
+      if (window.MCVerif) MCVerif.enVer(document.documentElement.dataset.examen, year, allQuestions);
     }
 
     fetch('data/' + year + '.json')
@@ -371,6 +373,7 @@
   })();
 </script>
 <script src="../../assets/reportes.js"></script>
+<script src="../../assets/claves-verificadas.js"></script>
 <script src="../../assets/sonido.js"></script>
 <script src="../../assets/descarga-pdf.js" defer></script>
 </body>

@@ -230,6 +230,7 @@
 <script src="../../assets/pregunta.js"></script>
 <script src="../../assets/sonido.js"></script>
 <script src="../../assets/auth.js"></script>
+<script src="../../assets/claves-verificadas.js"></script>
 </head>
 <body class="ex-quiz">
 
@@ -477,6 +478,7 @@
     const correctLetter = q.options[q.correct].letter;
     feedback.textContent = wasCorrect ? '¡Correcto!' : `Incorrecto. La respuesta correcta era la ${correctLetter}.`;
     feedback.className = 'feedback show ' + (wasCorrect ? 'ok' : 'bad');
+    if (window.MCVerif) MCVerif.feedback(feedback, q); // Sello "Clave verificada" (assets/claves-verificadas.js)
     if (window.MCBuhoTutor) MCBuhoTutor.feedback(feedback, q); // Búho tutor (assets/buho-tutor.js)
   }
 

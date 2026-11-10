@@ -14,6 +14,7 @@ const EQ_PERMISOS = [
   ['Alumnos', [
     ['reportes', 'Reportes', 'Ver los reportes de errores y atenderlos'],
     ['corr', 'Correcciones', 'Ver, verificar y reaplicar correcciones'],
+    ['verificar', 'Verificar claves', 'Marcar las claves de exámenes que un profesor confirmó (los alumnos ven el sello). Para cambiar la clave también necesita Subir examen o Editar preguntas'],
     ['alumnos', 'Alumnos', 'Ver la lista de alumnos con su racha y progreso'],
     ['simulacro', 'Top simulacro', 'Ver el ranking semanal'],
     ['topxp', 'Top de la semana', 'Ver quiénes ganaron más experiencia en la semana'],
