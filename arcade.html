@@ -343,6 +343,11 @@ body.en-inicio .cab { display: none; }
   .h-ajustes { top: 82px; }
   .h-ctit { font-size: 58px; } .h-cint { font-size: 16px; }
 }
+/* PC: el título va a escala de la isla (crece con la altura de la ventana, nunca más grande que ella) */
+@media (min-width: 721px) {
+  .h-ctit { font-size: clamp(30px, 5.4vh, 46px); } .h-ctit::before { -webkit-text-stroke-width: 7px; }
+  .h-cint { font-size: clamp(12px, 1.9vh, 15px); padding: 4px 20px 5px; }
+}
 /* ---------- Efectos dentro de la isla (posiciones en % de la imagen, por mundo en FX_ISLA) ---------- */
 .isla .flota { position: relative; }
 .isla .fx { position: absolute; top: 0; left: 50%; height: 100%; aspect-ratio: var(--ar, .693); translate: -50% 0; pointer-events: none; }
