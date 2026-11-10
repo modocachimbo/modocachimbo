@@ -209,12 +209,11 @@
         (cls === 'lock' ? '' : '<span class="nm">' + N[i].n + '</span>') + (i % 3 === 1 ? '<i class="nb" style="--x:' + (i % 2 ? -20 : 30) + '%"></i>' : '') + '</button>';
       y -= PASO;
     }
-    // Camino: estela de luz punteada + piedritas flotantes entre isla e isla
+    // Camino: piedritas flotantes entre isla e isla
     var lin = '';
     for (var k = 1; k < pts.length; k++) {
       var lo = pts[k - 1], up = pts[k], yTop = lo[1] - lo[2] * .42, yTip = up[1] - up[2] * .3 + up[2] * .93, on = est[k - 1].hecho;
       var mx = (lo[0] + up[0]) / 2 + (k % 2 ? 30 : -30);
-      lin += '<path d="M' + lo[0].toFixed(0) + ' ' + yTop.toFixed(0) + 'Q' + mx.toFixed(0) + ' ' + ((yTop + yTip) / 2).toFixed(0) + ' ' + up[0].toFixed(0) + ' ' + yTip.toFixed(0) + '" class="' + (on ? 'on' : '') + '"/>';
       [.25, .5, .75].forEach(function (t, j) {
         var u = 1 - t, xx = u * u * lo[0] + 2 * u * t * mx + t * t * up[0], yy = u * u * yTop + 2 * u * t * ((yTop + yTip) / 2) + t * t * yTip;
         h += '<i class="pd' + (on ? ' on' : '') + '" style="left:' + xx.toFixed(0) + 'px;top:' + yy.toFixed(0) + 'px;--d:-' + ((k + j) * .6).toFixed(1) + 's"></i>';
