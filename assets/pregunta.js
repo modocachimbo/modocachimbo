@@ -1279,8 +1279,13 @@
   function noCabe(lista) {
     return [].some.call(lista.children, function (h) { return h.scrollWidth > h.clientWidth + 1; });
   }
-  function ajustarCols(lista) {
+  // Las columnas se deciden una vez por pregunta y ancho: al tocar una alternativa
+  // (cambia el alto) o al marcar (sale ✓/✗) NO se recalculan, así no se mueven las claves
+  function ajustarCols(lista, forzar) {
     if (!lista.isConnected || !lista.clientWidth) return;
+    var ancho = lista.clientWidth, txt = lista.textContent, prim = lista.firstElementChild;
+    if (!forzar && lista._mcqAncho === ancho && lista._mcqTxt === txt && lista._mcqPrim === prim) return;
+    lista._mcqAncho = ancho; lista._mcqTxt = txt; lista._mcqPrim = prim;
     lista.classList.remove('mcq-c2', 'mcq-c1');
     var tres = getComputedStyle(lista).gridTemplateColumns.split(' ').length >= 3;
     if (tres && noCabe(lista)) lista.classList.add('mcq-c2');
@@ -1289,16 +1294,18 @@
   var vistas = window.ResizeObserver ? new ResizeObserver(function (es) { es.forEach(function (e) { ajustarCols(e.target); }); }) : null;
   function revisar(raiz) {
     var ls = raiz.classList && raiz.classList.contains('mcq-cortas') ? [raiz] : (raiz.querySelectorAll ? raiz.querySelectorAll('.mcq-cortas') : []);
-    [].forEach.call(ls, function (l) { if (l._mcqVista) return; l._mcqVista = true; if (vistas) vistas.observe(l); ajustarCols(l); });
+    [].forEach.call(ls, function (l) { if (!l._mcqVista) { l._mcqVista = true; if (vistas) vistas.observe(l); } ajustarCols(l); });
   }
   if (window.MutationObserver) new MutationObserver(function (ms) {
     ms.forEach(function (m) {
       [].forEach.call(m.addedNodes, function (n) { if (n.nodeType === 1) revisar(n); });
+      // Lista reutilizada con alternativas nuevas (siguiente pregunta): se vuelve a decidir
+      if (m.type === 'childList' && m.target.classList && m.target.classList.contains('mcq-cortas')) revisar(m.target);
       if (m.type === 'attributes' && m.target.classList.contains('mcq-cortas')) revisar(m.target);
     });
   }).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
   // Cuando llega la letra Nunito el ancho cambia
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { [].forEach.call(document.querySelectorAll('.mcq-cortas'), ajustarCols); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { [].forEach.call(document.querySelectorAll('.mcq-cortas'), function (l) { ajustarCols(l, true); }); });
 
   /* ---------- Preguntas sin alternativas (Seminarios y Banqueo) ----------
      Todas llevan abierta: true, options: [], correct: 0 y respuestas
