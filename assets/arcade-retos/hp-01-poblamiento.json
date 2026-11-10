@@ -10,10 +10,22 @@
       "titulo": "Elige la imagen correcta",
       "pregunta": "Según Alex Hrdlička, ¿por dónde llegaron los primeros pobladores de América?",
       "opciones": [
-        { "dibujo": "bering", "texto": "Estrecho de Bering" },
-        { "dibujo": "balsa", "texto": "Océano Pacífico en balsas" },
-        { "dibujo": "antartida", "texto": "Por la Antártida" },
-        { "dibujo": "fosil", "texto": "Surgieron en América" }
+        {
+          "dibujo": "bering",
+          "texto": "Estrecho de Bering"
+        },
+        {
+          "dibujo": "balsa",
+          "texto": "Océano Pacífico en balsas"
+        },
+        {
+          "dibujo": "antartida",
+          "texto": "Por la Antártida"
+        },
+        {
+          "dibujo": "fosil",
+          "texto": "Surgieron en América"
+        }
       ],
       "correcta": 0,
       "explica": "Teoría inmigracionista asiática: cruzaron Beringia durante la última glaciación (Wisconsin), cuando bajó el nivel del mar."
@@ -24,11 +36,26 @@
       "titulo": "Toca los pares",
       "pregunta": "Une cada investigador con su teoría",
       "pares": [
-        ["Florentino Ameghino", "Autoctonista"],
-        ["Alex Hrdlička", "Asiática (Bering)"],
-        ["Paul Rivet", "Oceánica"],
-        ["Méndez Correa", "Australiana"],
-        ["Tom Dillehay", "Monte Verde (Chile)"]
+        [
+          "Florentino Ameghino",
+          "Autoctonista"
+        ],
+        [
+          "Alex Hrdlička",
+          "Asiática (Bering)"
+        ],
+        [
+          "Paul Rivet",
+          "Oceánica"
+        ],
+        [
+          "Méndez Correa",
+          "Australiana"
+        ],
+        [
+          "Tom Dillehay",
+          "Monte Verde (Chile)"
+        ]
       ]
     },
     {
@@ -36,14 +63,35 @@
       "tipo": "parejas",
       "titulo": "Cartas parejas",
       "pregunta": "Voltea dos cartas: une cada sitio con su región",
-      "etiquetas": ["Sitio", "Región"],
+      "etiquetas": [
+        "Sitio",
+        "Región"
+      ],
       "pares": [
-        ["Piquimachay", "Ayacucho"],
-        ["Lauricocha", "Huánuco"],
-        ["Toquepala", "Tacna"],
-        ["Guitarrero", "Áncash"],
-        ["Paiján", "La Libertad"],
-        ["Chivateros", "Lima"]
+        [
+          "Piquimachay",
+          "Ayacucho"
+        ],
+        [
+          "Lauricocha",
+          "Huánuco"
+        ],
+        [
+          "Toquepala",
+          "Tacna"
+        ],
+        [
+          "Guitarrero",
+          "Áncash"
+        ],
+        [
+          "Paiján",
+          "La Libertad"
+        ],
+        [
+          "Chivateros",
+          "Lima"
+        ]
       ]
     },
     {
@@ -51,8 +99,16 @@
       "tipo": "completar",
       "titulo": "Completa la frase",
       "frase": "Paul Rivet planteó la teoría {0}: grupos {1} llegaron a América cruzando el océano {2}.",
-      "respuestas": ["oceánica", "melanesios y polinesios", "Pacífico"],
-      "distractores": ["autoctonista", "Atlántico", "europeos"],
+      "respuestas": [
+        "oceánica",
+        "melanesios y polinesios",
+        "Pacífico"
+      ],
+      "distractores": [
+        "autoctonista",
+        "Atlántico",
+        "europeos"
+      ],
       "explica": "Rivet propuso un origen múltiple: además de asiáticos, llegaron melanesios y polinesios por el Pacífico (semejanzas en lenguas, hamaca, mazo, propulsor)."
     },
     {
@@ -61,10 +117,22 @@
       "titulo": "Elige la imagen correcta",
       "pregunta": "¿Qué evidencia hizo famosa a Toquepala (Tacna)?",
       "opciones": [
-        { "dibujo": "punta", "texto": "Puntas de proyectil" },
-        { "dibujo": "pintura", "texto": "Pinturas rupestres de caza" },
-        { "dibujo": "frijol", "texto": "Primeras plantas cultivadas" },
-        { "dibujo": "craneo", "texto": "Restos humanos" }
+        {
+          "dibujo": "punta",
+          "texto": "Puntas de proyectil"
+        },
+        {
+          "dibujo": "pintura",
+          "texto": "Pinturas rupestres de caza"
+        },
+        {
+          "dibujo": "frijol",
+          "texto": "Primeras plantas cultivadas"
+        },
+        {
+          "dibujo": "craneo",
+          "texto": "Restos humanos"
+        }
       ],
       "correcta": 1,
       "explica": "En la cueva de Toquepala hay pinturas rupestres que muestran el chaco: la caza colectiva de guanacos y vicuñas (aprox. 9 500 a.C.)."
@@ -75,11 +143,31 @@
       "titulo": "Ordena en el tiempo",
       "pregunta": "Del más antiguo al más reciente",
       "items": [
-        { "texto": "Piquimachay", "dato": "Cazadores de megafauna", "fecha": "≈ 20 000 a.C." },
-        { "texto": "Toquepala", "dato": "Pinturas de cacería", "fecha": "≈ 9 500 a.C." },
-        { "texto": "Lauricocha", "dato": "Restos humanos", "fecha": "≈ 8 000 a.C." },
-        { "texto": "Telarmachay", "dato": "Camélidos domesticados", "fecha": "≈ 5 000 a.C." },
-        { "texto": "Chilca", "dato": "Aldea con casas de caña", "fecha": "≈ 4 000 a.C." }
+        {
+          "texto": "Piquimachay",
+          "dato": "Cazadores de megafauna",
+          "fecha": "≈ 20 000 a.C."
+        },
+        {
+          "texto": "Toquepala",
+          "dato": "Pinturas de cacería",
+          "fecha": "≈ 9 500 a.C."
+        },
+        {
+          "texto": "Lauricocha",
+          "dato": "Restos humanos",
+          "fecha": "≈ 8 000 a.C."
+        },
+        {
+          "texto": "Telarmachay",
+          "dato": "Camélidos domesticados",
+          "fecha": "≈ 5 000 a.C."
+        },
+        {
+          "texto": "Chilca",
+          "dato": "Aldea con casas de caña",
+          "fecha": "≈ 4 000 a.C."
+        }
       ],
       "explica": "Primero cazadores nómades en cuevas (Lítico); luego domestican animales y forman aldeas (Arcaico)."
     },
@@ -87,9 +175,42 @@
       "id": "sopa",
       "tipo": "sopa",
       "titulo": "Sopa de letras",
-      "pregunta": "Encuentra los sitios y palabras del Lítico",
+      "pregunta": "Lee cada pista, piensa la palabra y búscala en la sopa",
       "tam": 12,
-      "palabras": ["PIQUIMACHAY", "LAURICOCHA", "TOQUEPALA", "GUITARRERO", "CHIVATEROS", "PAIJAN", "BERING", "LITICO"]
+      "palabras": [
+        {
+          "p": "PIQUIMACHAY",
+          "pista": "Cueva de Ayacucho con las evidencias humanas más antiguas del Perú"
+        },
+        {
+          "p": "LAURICOCHA",
+          "pista": "Cueva de Huánuco donde Augusto Cardich halló restos humanos"
+        },
+        {
+          "p": "TOQUEPALA",
+          "pista": "Cueva de Tacna con pinturas rupestres del chaco (caza)"
+        },
+        {
+          "p": "GUITARRERO",
+          "pista": "Cueva de Áncash con las primeras plantas cultivadas"
+        },
+        {
+          "p": "CHIVATEROS",
+          "pista": "Taller lítico de Lima, junto al río Chillón"
+        },
+        {
+          "p": "PAIJAN",
+          "pista": "Punta de proyectil de la costa norte (La Libertad)"
+        },
+        {
+          "p": "BERING",
+          "pista": "Estrecho por donde llegaron desde Asia, según Hrdlička"
+        },
+        {
+          "p": "LITICO",
+          "pista": "Periodo de los cazadores y recolectores nómades"
+        }
+      ]
     },
     {
       "id": "vf",
@@ -98,14 +219,38 @@
       "pregunta": "Responde antes de que se acabe el tiempo",
       "segundos": 45,
       "frases": [
-        ["Ameghino planteó que el hombre surgió en América.", true],
-        ["Hrdlička dijo que llegaron de Australia por la Antártida.", false],
-        ["Toquepala es famosa por sus pinturas rupestres de cacería.", true],
-        ["En el Lítico la agricultura ya estaba plenamente desarrollada.", false],
-        ["Piquimachay se ubica en Ayacucho.", true],
-        ["Monte Verde, prueba de poblamiento antiguo, está en Brasil.", false],
-        ["La punta Paiján es una punta de proyectil de la costa norte.", true],
-        ["Wilamaya Patjxa (Puno) mostró restos de una mujer cazadora.", true]
+        [
+          "Ameghino planteó que el hombre surgió en América.",
+          true
+        ],
+        [
+          "Hrdlička dijo que llegaron de Australia por la Antártida.",
+          false
+        ],
+        [
+          "Toquepala es famosa por sus pinturas rupestres de cacería.",
+          true
+        ],
+        [
+          "En el Lítico la agricultura ya estaba plenamente desarrollada.",
+          false
+        ],
+        [
+          "Piquimachay se ubica en Ayacucho.",
+          true
+        ],
+        [
+          "Monte Verde, prueba de poblamiento antiguo, está en Brasil.",
+          false
+        ],
+        [
+          "La punta Paiján es una punta de proyectil de la costa norte.",
+          true
+        ],
+        [
+          "Wilamaya Patjxa (Puno) mostró restos de una mujer cazadora.",
+          true
+        ]
       ]
     }
   ],
@@ -116,11 +261,26 @@
       "titulo": "Toca los pares",
       "pregunta": "Une cada sitio con quien lo estudió",
       "pares": [
-        ["Piquimachay", "Richard MacNeish"],
-        ["Lauricocha", "Augusto Cardich"],
-        ["Guitarrero", "Thomas Lynch"],
-        ["Paiján", "Rafael Larco Hoyle"],
-        ["Telarmachay", "Danièle Lavallée"]
+        [
+          "Piquimachay",
+          "Richard MacNeish"
+        ],
+        [
+          "Lauricocha",
+          "Augusto Cardich"
+        ],
+        [
+          "Guitarrero",
+          "Thomas Lynch"
+        ],
+        [
+          "Paiján",
+          "Rafael Larco Hoyle"
+        ],
+        [
+          "Telarmachay",
+          "Danièle Lavallée"
+        ]
       ]
     },
     {
@@ -129,10 +289,22 @@
       "titulo": "Elige la imagen correcta",
       "pregunta": "En la cueva del Guitarrero (Áncash) se hallaron las primeras evidencias de...",
       "opciones": [
-        { "dibujo": "llama", "texto": "Corrales de camélidos" },
-        { "dibujo": "pintura", "texto": "Arte rupestre" },
-        { "dibujo": "frijol", "texto": "Plantas cultivadas" },
-        { "dibujo": "punta", "texto": "Puntas pedunculadas" }
+        {
+          "dibujo": "llama",
+          "texto": "Corrales de camélidos"
+        },
+        {
+          "dibujo": "pintura",
+          "texto": "Arte rupestre"
+        },
+        {
+          "dibujo": "frijol",
+          "texto": "Plantas cultivadas"
+        },
+        {
+          "dibujo": "punta",
+          "texto": "Puntas pedunculadas"
+        }
       ],
       "correcta": 2,
       "explica": "Guitarrero (Callejón de Huaylas) tiene frijol, pallar y ají: horticultura inicial. También textiles de fibra vegetal."
@@ -142,8 +314,14 @@
       "tipo": "completar",
       "titulo": "Completa la frase",
       "frase": "Los restos humanos de {0} (Huánuco) fueron hallados por {1}.",
-      "respuestas": ["Lauricocha", "Augusto Cardich"],
-      "distractores": ["Toquepala", "Richard MacNeish"],
+      "respuestas": [
+        "Lauricocha",
+        "Augusto Cardich"
+      ],
+      "distractores": [
+        "Toquepala",
+        "Richard MacNeish"
+      ],
       "explica": "Augusto Cardich excavó Lauricocha en 1958: cazadores de camélidos y cérvidos, aprox. 8 000 a.C."
     }
   ]

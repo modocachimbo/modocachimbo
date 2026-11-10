@@ -471,7 +471,9 @@
 
   // Sopa de letras
   TIPOS.sopa = function (a) {
-    var r = a.reto, N = r.tam || 12, pal = r.palabras.map(function (w) { return w.toUpperCase(); });
+    // palabras: "TEXTO" o { p: "TEXTO", pista: "definición" }. Con pista, el alumno deduce la palabra antes de buscarla.
+    var r = a.reto, items = r.palabras.map(function (x) { return typeof x === 'string' ? { w: x.toUpperCase() } : { w: String(x.p).toUpperCase(), pista: x.pista }; });
+    var N = r.tam || 12, pal = items.map(function (x) { return x.w; }), conPistas = items.some(function (x) { return x.pista; });
     var COL = ['#C6E000', '#7FD4FF', '#FFB067', '#FF8AC8', '#9AF0B0', '#FFD84D', '#C9A6FF', '#FF9A9A'];
     var M, pos;
     // Arma la cuadrícula (reintenta hasta que todas las palabras entren)
@@ -498,7 +500,13 @@
     var AB = 'ABCDEFGHIJLMNOPQRSTUVAEIOU';
     for (y = 0; y < N; y++) for (x = 0; x < N; x++) if (!M[y][x]) M[y][x] = AB[Math.floor(Math.random() * AB.length)];
 
-    var lista = h('<div class="rt-sopa-pal">' + pal.map(function (w) { return '<span data-w="' + w + '">' + w + '</span>'; }).join('') + '</div>');
+    var lista = conPistas
+      ? h('<div class="rt-sopa-pal claves">' + items.map(function (x, k) {
+          return '<span data-w="' + x.w + '"><i>' + (k + 1) + '</i><span class="def">' + esc(x.pista || '') + '</span><span class="hue">' + x.w.split('').map(function () { return '<u></u>'; }).join('') + '</span></span>';
+        }).join('') + '</div>')
+      : h('<div class="rt-sopa-pal">' + pal.map(function (w) { return '<span data-w="' + w + '">' + w + '</span>'; }).join('') + '</div>');
+    // Con pistas: al encontrarla se escribe la palabra en sus casillas
+    function llenar(tag, w, hasta) { tag.querySelectorAll('.hue u').forEach(function (u, k) { if (k < hasta) u.textContent = w[k]; }); }
     var g = h('<div class="rt-sopa" style="--n:' + N + '"></div>');
     var celdas = [];
     for (y = 0; y < N; y++) for (x = 0; x < N; x++) { var c = document.createElement('i'); c.textContent = M[y][x]; c.dataset.x = x; c.dataset.y = y; g.appendChild(c); celdas.push(c); }
@@ -515,6 +523,7 @@
       var p0 = pos[falta], c0 = cel(p0.x, p0.y); son('tap');
       c0.classList.remove('pista'); void c0.offsetWidth; c0.classList.add('pista');
       var tg = lista.querySelector('[data-w="' + falta + '"]'); tg.classList.add('pista');
+      if (conPistas) { llenar(tg, falta, 1); try { lista.scrollTo({ left: tg.offsetLeft - 16, behavior: 'smooth' }); } catch (e) {} }
       setTimeout(function () { tg.classList.remove('pista'); }, 2500);
     };
 
@@ -538,6 +547,11 @@
         var col = COL[encontradas % COL.length]; encontradas++;
         lst.forEach(function (p) { var c = cel(p.x, p.y); c.classList.remove('pista'); c.classList.add('ok'); c.style.setProperty('--col', col); });
         tag.classList.add('ok'); tag.style.setProperty('--col', col); a.acierto(); vibrar(30);
+        if (conPistas) {
+          llenar(tag, hit, hit.length); cuenta.querySelector('b').textContent = encontradas;
+          // pasa a la siguiente pista que falta
+          var sig = lista.querySelector(':scope > span:not(.ok)'); if (sig) try { lista.scrollTo({ left: sig.offsetLeft - 16, behavior: 'smooth' }); } catch (e) {}
+        }
         if (encontradas === pal.length) a.terminar({ ok: true, titulo: '¡Sopa resuelta!', msg: 'Encontraste las ' + pal.length + ' palabras' + (fallos ? ' con ' + fallos + ' intento' + (fallos > 1 ? 's' : '') + ' fallido' + (fallos > 1 ? 's.' : '.') : ' sin fallar.') });
       } else if (lst && lst.length > 2) { fallos++; if (fallos % 3 === 0) a.error(); }
       pintar(null); cel(ini.x, ini.y).classList.remove('ini'); ini = null;
@@ -556,6 +570,8 @@
       // si solo tocó una letra, queda marcada como inicio y espera el segundo toque
     };
     window.addEventListener('pointerup', up);
+    var cuenta = conPistas ? h('<span class="rt-sopa-cuenta">Desliza las pistas · <b>0</b> de ' + pal.length + '</span>') : null;
+    if (cuenta) a.cuerpo.appendChild(cuenta);
     a.cuerpo.appendChild(lista); a.cuerpo.appendChild(g); a.cuerpo.appendChild(h('<div class="rt-sopa-pie"></div>')).appendChild(bPista);
     return function () { window.removeEventListener('pointerup', up); };
   };

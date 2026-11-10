@@ -122,8 +122,8 @@
 
 /* Sopa de letras */
 .rt-sopa-pal { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-.rt-sopa-pal span { padding: 5px 9px; border-radius: 8px; font: 900 12px/1 var(--cuerpo); letter-spacing: .05em; background: rgba(16,8,48,.5); border: 2px solid rgba(255,255,255,.15); transition: all .3s; }
-.rt-sopa-pal span.ok { color: #1C2600; background: var(--col); border-color: transparent; text-decoration: line-through; text-decoration-thickness: 2px; }
+.rt-sopa-pal > span { padding: 5px 9px; border-radius: 8px; font: 900 12px/1 var(--cuerpo); letter-spacing: .05em; background: rgba(16,8,48,.5); border: 2px solid rgba(255,255,255,.15); transition: all .3s; }
+.rt-sopa-pal > span.ok { color: #1C2600; background: var(--col); border-color: transparent; text-decoration: line-through; text-decoration-thickness: 2px; }
 .rt-sopa { position: relative; display: grid; grid-template-columns: repeat(var(--n), 1fr); gap: 2px; padding: 8px; border-radius: 16px; background: linear-gradient(180deg, #FFFFFF, #E8E2FF); border: 3px solid var(--mo); box-shadow: 0 6px 0 #1A0F4A; touch-action: none; max-width: 520px; margin: 0 auto; }
 .rt-sopa i { aspect-ratio: 1; display: grid; place-items: center; border-radius: 8px; font: 400 clamp(14px, 4.4vw, 22px)/1 var(--fuente); font-style: normal; color: var(--tinta); transition: background .15s, color .15s, transform .15s; }
 .rt-sopa i.marca { background: var(--lima); color: #1C2600; transform: scale(1.08); }
@@ -285,7 +285,7 @@
 .rt-pista[disabled] { opacity: .45; pointer-events: none; }
 .rt-sopa i.pista { animation: rtPista 1s ease-in-out 3; }
 @keyframes rtPista { 50% { background: #FFC800; transform: scale(1.25); box-shadow: 0 0 0 4px rgba(255,200,0,.5); } }
-.rt-sopa-pal span.pista { border-color: #FFC800; color: #FFC800; }
+.rt-sopa-pal > span.pista { border-color: #FFC800; color: #FFC800; }
 
 /* Verdadero o falso: destello rojo al fallar y repaso al final */
 .rt-vf.flash .rt-pila { animation: rtTiembla .35s; }
@@ -303,3 +303,33 @@
 .rt-tit.larga { font-size: clamp(21px, 5.6vw, 27px); line-height: 1.15; }
 @media (min-width: 900px) and (min-height: 600px) { .rt-tit.larga { font-size: 32px; } }
 .rt-sopa { width: 100%; }
+
+/* Sopa con pistas: cada palabra se deduce de su definición */
+.rt-sopa-pal.claves { display: grid; grid-template-columns: 1fr; gap: 6px; margin-bottom: 12px; }
+.rt-sopa-pal.claves > span { display: grid; grid-template-columns: 22px 1fr; column-gap: 8px; row-gap: 4px; align-items: center; padding: 7px 10px; border-radius: 12px;
+  font: 700 13px/1.25 var(--cuerpo); letter-spacing: 0; text-decoration: none; background: rgba(16,8,48,.5); border: 2px solid rgba(255,255,255,.14); }
+.rt-sopa-pal.claves > span > i { grid-row: span 2; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; font: normal 400 13px/1 var(--fuente); color: var(--tinta); background: #fff; }
+.rt-sopa-pal.claves .def { color: #EAE4FF; }
+.rt-sopa-pal.claves .hue { display: flex; flex-wrap: wrap; gap: 3px; }
+.rt-sopa-pal.claves .hue u { display: grid; place-items: center; width: 17px; height: 20px; border-radius: 4px; text-decoration: none; font: 400 13px/1 var(--fuente); color: #fff; background: rgba(255,255,255,.12); border-bottom: 2px solid rgba(255,255,255,.5); }
+.rt-sopa-pal.claves > span.ok { color: inherit; background: rgba(16,8,48,.5); border-color: var(--col); text-decoration: none; }
+.rt-sopa-pal.claves > span.ok > i { background: var(--col); }
+.rt-sopa-pal.claves > span.ok .def { opacity: .7; }
+.rt-sopa-pal.claves > span.ok .hue u { color: #12061F; background: var(--col); border-color: transparent; }
+.rt-sopa-pal.claves > span.pista { border-color: #FFC800; color: inherit; }
+.rt-sopa-pal.claves > span.pista .hue u:first-child { color: #3A2600; background: #FFC800; }
+@media (min-width: 900px) and (min-height: 600px) {
+  .rt-cuerpo:has(.rt-sopa-pal.claves) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); column-gap: 22px; align-content: start; }
+  .rt-cuerpo:has(.rt-sopa-pal.claves)::before, .rt-cuerpo:has(.rt-sopa-pal.claves)::after { display: none; }
+  .rt-sopa-pal.claves { grid-row: span 2; margin: 0; }
+  .rt-sopa-pal.claves > span { font-size: 14px; }
+  .rt-cuerpo:has(.rt-sopa-pal.claves) .rt-sopa { max-width: min(480px, 56vh); }
+}
+/* Celular/tablet: las pistas van en una fila deslizable para que la sopa quede a la vista */
+@media not ((min-width: 900px) and (min-height: 600px)) {
+  .rt-sopa-pal.claves { display: flex; flex-wrap: nowrap; overflow-x: auto; scroll-snap-type: x mandatory; gap: 8px; padding-bottom: 4px; margin: 0 -16px 10px; padding-inline: 16px; scroll-padding-inline: 16px; scrollbar-width: none; }
+  .rt-sopa-pal.claves::-webkit-scrollbar { display: none; }
+  .rt-sopa-pal.claves > span { flex: 0 0 84%; scroll-snap-align: start; min-height: 70px; }
+}
+.rt-sopa-cuenta { display: block; margin: -4px 0 8px; font: 800 12px/1 var(--cuerpo); letter-spacing: .06em; text-transform: uppercase; color: #CFC6F5; }
+@media (min-width: 900px) and (min-height: 600px) { .rt-sopa-cuenta { display: none; } }
