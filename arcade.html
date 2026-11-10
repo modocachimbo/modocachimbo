@@ -159,7 +159,7 @@ body.en-inicio .cab { display: none; }
    Arriba: volver, jugador (foto, nivel, XP), monedas y sonido.
    Debajo: estrellas del mundo. Centro: "MUNDO N" + la isla con su sombra.
    Abajo: rombos de niveles con flechas, JUGAR + dificultad e isla chica (mapa). */
-.mapa { --top: calc(env(safe-area-inset-top) + 200px); --bot: calc(env(safe-area-inset-bottom) + 232px); --mo: #2A1A66;
+.mapa { --top: calc(env(safe-area-inset-top) + 150px); --bot: calc(env(safe-area-inset-bottom) + 232px); --mo: #2A1A66;
   background: radial-gradient(120% 55% at 50% 112%, rgba(198,224,0,.22), transparent 60%), linear-gradient(180deg, #170C46 0%, #3B23A8 30%, #5B3FD6 56%, #3E8BEA 84%, #5FD0F5 100%); }
 .mapa::after { background: radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(16,8,48,.45) 100%); }
 .vtx, .chispas, .m-fl, .puntos, .h-cap .placa, .h-cap .m-info { display: none; }
@@ -195,26 +195,10 @@ body.en-inicio .cab { display: none; }
 /* Barra de arriba */
 .h-top { position: absolute; z-index: 7; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 10px; padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) 0 max(12px, env(safe-area-inset-left)); }
 .h-volver { width: 44px; height: 44px; flex: none; font-size: 22px; }
-.h-jug { flex: 1; min-width: 0; display: flex; align-items: center; gap: 9px; }
-.h-av { position: relative; flex: none; width: 52px; height: 52px; border-radius: 14px; padding: 2px; background: conic-gradient(from 200deg, var(--lima), #A35CFF, #5FD0F5, var(--lima)); box-shadow: 0 4px 0 var(--mo), 0 0 14px rgba(198,224,0,.35); }
-.h-av img { width: 100%; height: 100%; border-radius: 12px; object-fit: cover; background: #2A1A66; }
-.h-nv { position: absolute; left: -7px; bottom: -8px; width: 28px; height: 31px; display: grid; place-items: center; font: 900 15px/1 var(--cuerpo); color: #2A1A00; background: linear-gradient(180deg, #FFF3A0, #FFC800 55%, #E08600); clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); filter: drop-shadow(0 2px 0 #7A4A00); }
-.h-dat { min-width: 0; display: grid; gap: 4px; }
-.h-dat b { font: italic 900 18px/1 var(--display); text-transform: uppercase; letter-spacing: .04em; text-shadow: 0 2px 0 var(--mo); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.h-bar { position: relative; display: block; width: clamp(70px, 20vw, 170px); height: 11px; border-radius: 3px; transform: skewX(-12deg); background: rgba(16,8,48,.85); border: 2px solid var(--mo); overflow: hidden; }
-.h-bar i { display: block; height: 100%; width: 0; background: linear-gradient(180deg, #F4FF8A, var(--lima) 60%, #8FA800); box-shadow: inset 0 2px 0 rgba(255,255,255,.5); transition: width .6s; }
-.h-dat small { font: 800 11px/1 var(--cuerpo); color: #D9D0FF; }
-.h-mon { display: flex; gap: 14px; margin-right: 4px; }
-.h-pill { position: relative; flex: none; display: flex; align-items: center; height: 34px; padding: 0 12px 0 30px; border-radius: 8px; transform: skewX(-10deg); background: linear-gradient(180deg, #241660, #120A38); border: 2px solid #6A54C8; box-shadow: 0 3px 0 var(--mo), inset 0 2px 0 rgba(255,255,255,.18); font: 900 16px/1 var(--cuerpo); }
-.h-pill > * { transform: skewX(10deg); }
-.h-pill .ic { position: absolute; left: -12px; width: 34px; height: 34px; padding: 6px; border-radius: 50%; stroke: none; box-shadow: 0 2px 0 rgba(0,0,0,.35), inset 0 2px 0 rgba(255,255,255,.6); }
-.h-pill.est .ic { color: #FFF8C8; background: radial-gradient(circle at 35% 30%, #FFF0A0, #FFC800 50%, #D07800); border: 2px solid #7A4A00; }
-.h-pill.hx .ic { color: #1C2600; background: radial-gradient(circle at 35% 30%, #F8FFB0, var(--lima) 55%, #7A9000); border: 2px solid #3E4A00; }
-.h-pill.hx b { color: var(--lima); }
 .h-son { width: 44px; height: 44px; flex: none; font-size: 20px; border-radius: 50%; }
 .h-son::before { border-radius: 50% 50% 40% 40%; }
 /* Estrellas del mundo */
-.h-prog { position: absolute; z-index: 6; top: calc(max(12px, env(safe-area-inset-top)) + 70px); left: 50%; translate: -50% 0; width: min(76vw, 400px); height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 40px; border-radius: 10px; background: linear-gradient(180deg, rgba(36,22,96,.9), rgba(18,10,56,.9)); border: 2px solid #6A54C8; box-shadow: 0 3px 0 var(--mo), inset 0 2px 0 rgba(255,255,255,.15); }
+.h-prog { position: relative; flex: 1; max-width: 460px; margin: 0 auto; height: 36px; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 40px; border-radius: 10px; background: linear-gradient(180deg, rgba(36,22,96,.9), rgba(18,10,56,.9)); border: 2px solid #6A54C8; box-shadow: 0 3px 0 var(--mo), inset 0 2px 0 rgba(255,255,255,.15); }
 .h-prog .ic { position: absolute; left: -10px; width: 42px; height: 42px; padding: 7px; border-radius: 50%; color: #FFF8C8; stroke: none; background: radial-gradient(circle at 35% 30%, #FFF0A0, #FFC800 50%, #D07800); border: 2px solid #7A4A00; box-shadow: 0 3px 0 rgba(0,0,0,.35), inset 0 2px 0 rgba(255,255,255,.6), 0 0 14px rgba(255,200,0,.5); animation: late2 2.4s ease-in-out infinite; }
 .h-pbar { position: relative; flex: 1; height: 14px; border-radius: 3px; background: #0B0622; border: 2px solid #05030F; overflow: hidden; }
 .h-pbar i { position: relative; display: block; height: 100%; width: 0; min-width: 6px; background: linear-gradient(180deg, #F4FF8A, var(--lima) 60%, #8FA800); box-shadow: inset 0 2px 0 rgba(255,255,255,.5); transition: width .6s; overflow: hidden; }
@@ -225,11 +209,10 @@ body.en-inicio .cab { display: none; }
 /* Estrella con volumen (barra del mundo y moneda de estrellas) */
 .e3d { position: absolute; flex: none; filter: drop-shadow(0 0 8px rgba(255,200,0,.55)); }
 .h-prog .e3d { left: -16px; top: 50%; width: 54px; height: 54px; margin-top: -29px; animation: estG 3s ease-in-out infinite; }
-.h-pill .e3d { left: -16px; top: 50%; width: 40px; height: 40px; margin-top: -21px; transform: skewX(10deg); }
 @keyframes estG { 0%, 100% { transform: rotate(-6deg) scale(1); } 50% { transform: rotate(6deg) scale(1.08); } }
-.h-prog { padding-left: 44px; }
+.h-prog { padding-left: 44px; margin: 0 auto; } .h-top { gap: 26px; }
 /* Título del mundo */
-.h-cap { position: absolute; z-index: 5; left: 12px; right: 12px; top: calc(max(12px, env(safe-area-inset-top)) + 116px); display: grid; justify-items: center; gap: 2px; pointer-events: none; }
+.h-cap { position: absolute; z-index: 5; left: 12px; right: 12px; top: calc(max(12px, env(safe-area-inset-top)) + 64px); display: grid; justify-items: center; gap: 2px; pointer-events: none; }
 .h-ctit { font: italic 900 40px/1 var(--display); letter-spacing: .03em; text-transform: uppercase; color: #fff; -webkit-text-stroke: 2px var(--mo); paint-order: stroke fill; text-shadow: 0 4px 0 var(--mo), 0 0 18px rgba(198,224,0,.35); }
 .h-csub { font: 900 15px/1.1 var(--cuerpo); color: #fff; text-shadow: 0 2px 0 var(--mo), 0 0 4px var(--mo); }
 /* Abajo */
@@ -281,13 +264,8 @@ body.en-inicio .cab { display: none; }
 .h-toast.on { opacity: 1; scale: 1; }
 @media (max-width: 720px) {
   /* Celular: arriba en dos filas (volver · jugador · sonido / monedas) y abajo cada botón con su espacio */
-  .mapa { --top: calc(env(safe-area-inset-top) + 248px); --bot: calc(env(safe-area-inset-bottom) + 214px); }
-  .h-top { flex-wrap: wrap; row-gap: 10px; }
-  .h-son { order: 2; }
-  .h-mon { order: 3; flex-basis: 100%; justify-content: center; gap: 34px; margin: 0; }
-  .h-dat small { display: block; } .h-bar { width: clamp(80px, 30vw, 150px); }
-  .h-prog { top: calc(max(12px, env(safe-area-inset-top)) + 112px); width: min(80vw, 360px); }
-  .h-cap { top: calc(max(12px, env(safe-area-inset-top)) + 158px); } .h-ctit { font-size: 36px; }
+  .mapa { --top: calc(env(safe-area-inset-top) + 150px); --bot: calc(env(safe-area-inset-bottom) + 214px); }
+  .h-cap { top: calc(max(12px, env(safe-area-inset-top)) + 62px); } .h-ctit { font-size: 36px; }
   .m-pie { padding: 0 14px; gap: 14px; }
   .h-fila { gap: 14px; } .h-fl { width: 42px; height: 42px; }
   .h-accion { width: 100%; max-width: 440px; justify-content: center; gap: 16px; }
@@ -299,20 +277,19 @@ body.en-inicio .cab { display: none; }
 }
 @media (max-width: 380px) { .m-pie { padding: 0 18px; } .h-accion { gap: 12px; } .h-isla { width: 56px; } .h-isla img { height: 50px; } #jugar .pl { width: 30px; height: 30px; font-size: 15px; } #jugar b { font-size: 30px; } #jugar small { max-width: 120px; } .h-nodos .nd { width: 30px; height: 30px; } .h-nodos .nd.ahora { width: 40px; height: 40px; } .h-nodos .ln { width: 9px; } .h-fila { gap: 10px; } }
 @media (min-width: 721px) {
-  .mapa { --top: 190px; --bot: 236px; }
+  .mapa { --top: 170px; --bot: 236px; }
   #jugar small { max-width: 240px; }
-  .h-top { padding: 18px 24px 0; gap: 14px; }
-  .h-volver, .h-son { width: 50px; height: 50px; } .h-av { width: 62px; height: 62px; } .h-dat b { font-size: 22px; } .h-bar { height: 13px; }
-  .h-pill { height: 40px; font-size: 19px; padding-left: 36px; } .h-pill .ic { width: 40px; height: 40px; }
-  .h-prog { top: 28px; width: min(32vw, 420px); }
-  .h-cap { top: 96px; } .h-ctit { font-size: 52px; } .h-csub { font-size: 17px; }
+  .h-top { padding: 18px 24px 0; gap: 30px; }
+  .h-volver, .h-son { width: 50px; height: 50px; }
+  .h-prog { height: 40px; max-width: 520px; } .h-prog small { font-size: 15px; }
+  .h-cap { top: 84px; } .h-ctit { font-size: 52px; } .h-csub { font-size: 17px; }
   .m-pie { bottom: 26px; gap: 12px; }
   #jugar { min-width: 420px; height: 94px; } #jugar b { font-size: 50px; }
   .h-dif { width: 88px; } .h-dif img { width: 72px; }
   .h-fl { width: 44px; height: 44px; }
   .h-isla { left: 28px; bottom: 0; width: 130px; } .h-isla img { height: 120px; }
 }
-@media (min-width: 721px) and (max-height: 760px) { .mapa { --top: 170px; --bot: 210px; } .h-cap { top: 88px; } .h-ctit { font-size: 42px; } #jugar { height: 80px; } }
+@media (min-width: 721px) and (max-height: 760px) { .mapa { --top: 160px; --bot: 210px; } .h-cap { top: 80px; } .h-ctit { font-size: 42px; } #jugar { height: 80px; } }
 .curso-cab { position: relative; overflow: hidden; display: flex; align-items: center; gap: 18px; padding: 22px; border-radius: 24px; color: #fff; background: linear-gradient(135deg, var(--cc), color-mix(in srgb, var(--cc) 45%, #000)); border-bottom: 5px solid color-mix(in srgb, var(--cc) 40%, #000); }
 .curso-cab .ar { width: 120px; height: 150px; flex: none; object-fit: contain; filter: drop-shadow(0 10px 12px rgba(0,0,0,.4)); }
 .curso-cab small { font: 800 14px/1 var(--display); letter-spacing: .1em; text-transform: uppercase; opacity: .85; }
@@ -526,17 +503,9 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     <div class="cielo" id="cielo"><i class="fugaz"></i></div>
     <div class="h-top">
       <a class="g-btn h-volver" href="index.html" aria-label="Salir del Arcade"><svg class="ic"><use href="#i-atras"/></svg></a>
-      <a class="h-jug" href="perfil.html" aria-label="Mi perfil">
-        <span class="h-av"><img id="hAv" src="assets/buho/avatar/clasico.webp" alt=""><b class="h-nv" id="hNv">1</b></span>
-        <span class="h-dat"><b id="hNom">Cachimbo</b><span class="h-bar"><i id="hBar"></i></span><small id="hXp">0 / 100 XP</small></span>
-      </a>
-      <div class="h-mon">
-        <span class="h-pill est" title="Estrellas"><svg class="e3d"><use href="#i-estrella3d"/></svg><b id="totEst">0</b></span>
-        <span class="h-pill hx" title="XP del Arcade"><svg class="ic"><use href="#i-rayo"/></svg><b id="xpN2">0</b></span>
-      </div>
+      <div class="h-prog" title="Estrellas de este mundo"><svg class="e3d"><use href="#i-estrella3d"/></svg><span class="h-pbar"><i id="hPbar"></i></span><small id="hPtxt">0/9</small></div>
       <button type="button" class="g-btn h-son btn-sonido" aria-label="Sonido">🔊</button>
     </div>
-    <div class="h-prog" title="Estrellas de este mundo"><svg class="e3d"><use href="#i-estrella3d"/></svg><span class="h-pbar"><i id="hPbar"></i></span><small id="hPtxt">0/9</small></div>
     <div class="h-cap"><b class="h-ctit" id="hMundo">Mundo 1</b><span class="h-csub" id="hSub"></span><div class="placa" id="placa"></div><span class="m-info" id="mInfo"></span></div>
     <div class="escena" id="escena"></div>
     <button class="m-fl izq" type="button" id="flIzq" aria-label="Mundo anterior"><svg class="ic"><use href="#i-atras"/></svg></button>
@@ -720,7 +689,6 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
   function irInicio() {
     ver('v-inicio', 'Arcade'); $('volver').onclick = null; $('volver').href = 'index.html';
     var tot = 0; CURSOS.forEach(function (c) { c.temas.forEach(function (t) { tot += estrellasTema(t); }); });
-    $('totEst').textContent = tot; $('xpN2').textContent = estado.xp;
     mundos = ordenMundos();
     var u = mundos.map(function (c) { return c.id; }).indexOf(estado.ultimo);
     if (!$('escena').children.length) {
@@ -757,11 +725,8 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     pintarHud(c, bloq, e, m);
   }
   /* ---------- HUD estilo juego ---------- */
-  var XP_NIVEL = 100;  // cada 100 XP del Arcade sube un nivel
   function pintarHud(c, bloq, e, m) {
     var N0 = (c.niveles || []).length, hechos0 = (c.niveles || []).filter(function (x) { return x.t && maxTema(x.t) > 0 && temaCompleto(x.t); }).length;
-    var nv = Math.floor(estado.xp / XP_NIVEL) + 1, r = estado.xp % XP_NIVEL;
-    $('hNv').textContent = nv; $('hBar').style.width = (r / XP_NIVEL * 100) + '%'; $('hXp').textContent = r + ' / ' + XP_NIVEL + ' XP';
     $('hMundo').textContent = 'Mundo ' + (mundo + 1);
     $('hSub').textContent = c.nom + (N0 ? ' · ' + hechos0 + '/' + N0 : '');
     $('hIslaImg').src = 'assets/arcade/mundo-' + ((mundos[mundo + 1] || mundos[mundo - 1] || c).img || 'historia') + '.webp';
@@ -795,14 +760,6 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
   $('hMapa').onclick = function () { entrar(); };
   $('hFlIzq').onclick = function () { irMundo(mundo - 1); };
   $('hFlDer').onclick = function () { irMundo(mundo + 1); };
-  // Foto y apodo del alumno (si no hay, el búho)
-  if (window.MCAuth) MCAuth.listo.then(function () { return MCAuth.perfil(); }).then(function (p) {
-    var u = MCAuth.usuario() || {}, md = u.user_metadata || {};
-    var n = (p && (p.apodo || p.nombre)) || md.full_name || md.name || '';
-    var f = (p && p.foto_url) || md.avatar_url || md.picture || '';
-    if (n) $('hNom').textContent = n.split(' ')[0];
-    if (/^https:\/\//.test(f)) $('hAv').src = f;
-  }).catch(function () {});
   var giro = 0;
   function irMundo(i) {
     i = Math.max(0, Math.min(mundos.length - 1, i));
