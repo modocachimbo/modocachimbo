@@ -240,3 +240,66 @@
   .rt-c .frente { font-size: 16px; }
   .rt-hoja h3 { font-size: 28px; } .rt-hoja p { font-size: 17px; }
 }
+
+/* ---------- Mejoras de mecánica (racha, salir, memoriza, pista, confeti) ---------- */
+/* Racha de aciertos: chip de fuego bajo la barra */
+.rt-racha { align-self: center; display: flex; align-items: center; gap: 6px; height: 0; margin-top: 0; padding: 0 14px; border-radius: 99px; overflow: hidden; opacity: 0;
+  font: 400 15px/1 var(--fuente); letter-spacing: .04em; color: #FFE2B8; background: rgba(90,30,0,.55); border: 2px solid transparent; transition: height .25s, margin .25s, opacity .25s; }
+.rt-racha.on { height: 32px; margin-top: 10px; opacity: 1; border-color: #FF8A00; }
+.rt-racha b { font-weight: 400; font-size: 19px; color: #FFC800; }
+.rt-racha svg { width: 20px; height: 20px; }
+.rt-racha em { font-style: normal; margin-left: 4px; padding: 3px 7px; border-radius: 6px; font: 900 11px/1 var(--cuerpo); color: #1C2600; background: var(--lima); }
+.rt-racha.pop svg { animation: rtFuego .5s; }
+@keyframes rtFuego { 40% { transform: scale(1.5) rotate(-10deg); } }
+.rt-tipo.repaso { margin-left: 6px; color: #FFB067; border-color: rgba(255,138,0,.6); padding-left: 12px; }
+.rt-hoja h3 .xp { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 99px; font-size: 17px; color: var(--lima); background: rgba(0,0,0,.3); }
+.rt-hoja h3 .xp svg { width: 18px; height: 18px; }
+.rt-vuelve { display: block; margin-top: 6px; font: 800 13px/1.3 var(--cuerpo); color: #FFB0B0; }
+
+/* Salir del nivel: ventana propia (no alert del navegador) */
+.rt-salir { position: absolute; inset: 0; z-index: 10; display: grid; place-items: center; padding: 16px; background: rgba(10,4,30,.7); opacity: 0; pointer-events: none; transition: opacity .2s; }
+.rt-salir.on { opacity: 1; pointer-events: auto; }
+.rt-salir-in { width: 100%; max-width: 360px; display: grid; gap: 12px; justify-items: center; text-align: center; padding: 24px 20px 16px; border-radius: 24px;
+  background: linear-gradient(180deg, #4A2FC0, #2A1A80); border: 3px solid #8A6CFF; box-shadow: 0 8px 0 #160A44; transform: scale(.9); transition: transform .25s cubic-bezier(.3,1.5,.5,1); }
+.rt-salir.on .rt-salir-in { transform: none; }
+.rt-salir-in b { font: 400 26px/1.1 var(--fuente); letter-spacing: .02em; }
+.rt-salir-in p { margin: 0 0 6px; font: 700 15px/1.4 var(--cuerpo); color: #E2DBFF; }
+.rt-salir-in .otra, .rt-fin .otra { font: 900 15px/1 var(--cuerpo); letter-spacing: .06em; text-transform: uppercase; color: #FF9A9A; padding: 10px; }
+.rt-fin .otra { color: #E8E2FF; }
+
+/* Cartas parejas: aviso "Memoriza" */
+.rt-mira { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 auto 12px; width: fit-content; padding: 7px 14px; border-radius: 99px;
+  font: 400 17px/1 var(--fuente); letter-spacing: .03em; background: rgba(255,200,0,.18); border: 2px solid #FFC800; color: #FFE7A0; }
+.rt-mira svg { width: 24px; height: 24px; }
+.rt-mira b { font-weight: 400; color: #FFC800; font-size: 20px; }
+.rt-mira.ya { background: rgba(198,224,0,.15); border-color: var(--lima); color: #EFFF9A; }
+.rt-mira.ya svg { width: 20px; height: 20px; }
+
+/* Sopa: botón de pista */
+.rt-sopa-pie { display: flex; justify-content: center; margin-top: 14px; }
+.rt-pista { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 14px 0 10px; border-radius: 14px; font: 400 17px/1 var(--fuente) !important; letter-spacing: .04em;
+  color: #3A2600 !important; background: linear-gradient(180deg, #FFE97A, #FFC800) !important; border: 3px solid #7A4A00 !important; box-shadow: 0 4px 0 #7A4A00; }
+.rt-pista svg { width: 22px; height: 22px; }
+.rt-pista b { display: grid; place-items: center; min-width: 22px; height: 22px; border-radius: 50%; font-weight: 400; color: #fff; background: #7A4A00; }
+.rt-pista:active { transform: translateY(3px); box-shadow: 0 1px 0 #7A4A00; }
+.rt-pista[disabled] { opacity: .45; pointer-events: none; }
+.rt-sopa i.pista { animation: rtPista 1s ease-in-out 3; }
+@keyframes rtPista { 50% { background: #FFC800; transform: scale(1.25); box-shadow: 0 0 0 4px rgba(255,200,0,.5); } }
+.rt-sopa-pal span.pista { border-color: #FFC800; color: #FFC800; }
+
+/* Verdadero o falso: destello rojo al fallar y repaso al final */
+.rt-vf.flash .rt-pila { animation: rtTiembla .35s; }
+.rt-vf-sol { display: flex; gap: 8px; align-items: baseline; margin-top: 6px; font: 700 14px/1.3 var(--cuerpo); }
+.rt-vf-sol em { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; font: normal 400 14px/1 var(--fuente); color: #fff; }
+.rt-vf-sol.v em { background: var(--ok); } .rt-vf-sol.f em { background: var(--mal); }
+
+/* Final */
+.rt-tip { margin: -4px 0 0; max-width: 360px; font: 800 15px/1.35 var(--cuerpo); color: #E2DBFF; }
+.rt-confeti { position: absolute; inset: 0; z-index: 5; pointer-events: none; overflow: hidden; }
+.rt-confeti i { position: absolute; top: -20px; width: 9px; height: 14px; border-radius: 2px; animation: rtCae var(--t) cubic-bezier(.3,.6,.6,1) var(--d) forwards; }
+@keyframes rtCae { to { transform: translate(var(--x), 110vh) rotate(var(--r)); } }
+@media (max-width: 380px) { .rt-stat { min-width: 76px; } .rt-stat b { font-size: 19px; } }
+/* La consigna es el título grande (sin repetir el nombre del juego) */
+.rt-tit.larga { font-size: clamp(21px, 5.6vw, 27px); line-height: 1.15; }
+@media (min-width: 900px) and (min-height: 600px) { .rt-tit.larga { font-size: 32px; } }
+.rt-sopa { width: 100%; }

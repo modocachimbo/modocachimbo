@@ -39,6 +39,9 @@
     flechaV: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
     flechaF: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>',
     antiguo: '<svg viewBox="0 0 16 16" width="14" height="14"><path d="M8 2v10M3.5 7.5L8 12l4.5-4.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    fuego: '<svg viewBox="0 0 24 24"><path d="M12 2.5c1 3.6 5.8 5.6 5.8 11a5.8 5.8 0 0 1-11.6 0c0-2.6 1.2-4.2 2.6-5.6.2 1.6 1 2.8 2.2 3.2-.8-3.4.4-6.4 1-8.6z" fill="#FF8A00" stroke="#7A2E00" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 12.5c1.4 1.4 2.8 2.4 2.8 4.4a2.8 2.8 0 0 1-5.6 0c0-1.4.9-2.4 2.8-4.4z" fill="#FFD84D"/></svg>',
+    pista: '<svg viewBox="0 0 24 24"><path d="M12 2.5a7 7 0 0 0-4.2 12.6c.7.6 1.2 1.4 1.2 2.4h6c0-1 .5-1.8 1.2-2.4A7 7 0 0 0 12 2.5z" fill="#FFD84D" stroke="#7A4A00" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 20h5M10.5 22.5h3" stroke="#7A4A00" stroke-width="2" stroke-linecap="round"/><path d="M9.5 8a3 3 0 0 1 2.5-2" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>',
+    ojo: '<svg viewBox="0 0 24 24"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z" fill="#fff" stroke="#1A1046" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="#5A2FD0"/><circle cx="12" cy="12" r="1.8" fill="#1A1046"/><circle cx="13.4" cy="10.6" r="1" fill="#fff"/></svg>',
     // Íconos de cada tipo de reto
     imagen: '<svg viewBox="0 0 24 24" fill="none" stroke="#C6E000" stroke-width="2.4" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 16l5-5 4 4 3-3 6 6" stroke-linecap="round"/><circle cx="16" cy="9" r="1.8" fill="#C6E000"/></svg>',
     relacionar: '<svg viewBox="0 0 24 24" fill="none" stroke="#C6E000" stroke-width="2.4" stroke-linecap="round"><rect x="2.5" y="4" width="7" height="5" rx="1.5"/><rect x="2.5" y="15" width="7" height="5" rx="1.5"/><rect x="14.5" y="4" width="7" height="5" rx="1.5"/><rect x="14.5" y="15" width="7" height="5" rx="1.5"/><path d="M9.5 6.5l5 11M9.5 17.5l5-11"/></svg>',
@@ -133,11 +136,14 @@
     opts = opts || {};
     var vidas = opts.vidas == null ? 5 : opts.vidas, errores = 0, inicio = Date.now();
     var cola = ruta.retos.slice(), total = cola.length, hechos = 0, actual = null;
+    var racha = 0, mejorRacha = 0, xp = 0, primera = {};   // primera[id] = lo acertó a la primera
     var raiz = h('<div class="rt" role="dialog" aria-label="' + esc(ruta.titulo || 'Nivel') + '">' + cielo() +
       '<div class="rt-col"><div class="rt-top"><button class="rt-x" aria-label="Salir">' + IC.x + '</button><div class="rt-barra"><i></i></div>' +
-      '<div class="rt-vidas">' + IC.corazon + '<span></span></div></div><div class="rt-cab"></div><div class="rt-cuerpo"></div></div>' +
+      '<div class="rt-vidas">' + IC.corazon + '<span></span></div></div><div class="rt-racha" aria-live="polite"></div><div class="rt-cab"></div><div class="rt-cuerpo"></div></div>' +
       '<div class="rt-pie"><div class="rt-pie-in"><button class="rt-btn" disabled>Comprobar</button></div>' +
-      '<div class="rt-hoja"><div class="rt-hoja-in"><h3></h3><p></p><button class="rt-btn">Continuar</button></div></div></div></div>');
+      '<div class="rt-hoja"><div class="rt-hoja-in"><h3></h3><p></p><button class="rt-btn">Continuar</button></div></div></div>' +
+      '<div class="rt-salir"><div class="rt-salir-in"><b>¿Salir del nivel?</b><p>Si sales ahora pierdes lo que llevas de este nivel.</p>' +
+      '<button class="rt-btn verde" data-a="seguir">Seguir jugando</button><button class="otra" data-a="salir">Salir</button></div></div></div>');
     document.body.appendChild(raiz);
     var $ = function (s) { return raiz.querySelector(s); };
     var pie = $('.rt-pie'), cab = $('.rt-cab'), cuerpo = $('.rt-cuerpo'), btn = $('.rt-pie-in .rt-btn'), hoja = $('.rt-hoja'), hojaBtn = $('.rt-hoja .rt-btn');
@@ -145,8 +151,45 @@
     var pintarBarra = function () { $('.rt-barra i').style.width = (hechos / total * 100) + '%'; };
     pintarVidas(); pintarBarra();
 
-    $('.rt-x').onclick = function () { cerrar(); opts.alCerrar && opts.alCerrar(); };
-    function cerrar() { if (actual && actual.limpiar) actual.limpiar(); raiz.remove(); }
+    // Salir: si ya avanzó, pregunta antes (como Duolingo), nunca con alert del navegador
+    var salir = $('.rt-salir');
+    $('.rt-x').onclick = function () {
+      son('tap');
+      if (!hechos && !errores) { cerrar(); opts.alCerrar && opts.alCerrar(); return; }
+      salir.classList.add('on');
+    };
+    salir.onclick = function (e) {
+      var a = e.target.closest('[data-a]'); if (!a && e.target !== salir) return;
+      salir.classList.remove('on'); son('tap');
+      if (a && a.dataset.a === 'salir') { cerrar(); opts.alCerrar && opts.alCerrar(); }
+    };
+    function cerrar() { if (actual && actual.limpiar) actual.limpiar(); window.removeEventListener('keydown', teclas); raiz.remove(); }
+
+    // Teclado en PC: Enter = Comprobar / Continuar, 1-9 = elegir opción
+    function teclas(e) {
+      if (!raiz.isConnected || salir.classList.contains('on')) return;
+      if (e.key === 'Enter') {
+        var fb = raiz.querySelector('.rt-fin .rt-btn');
+        if (fb) { e.preventDefault(); fb.click(); return; }
+        if (hoja.classList.contains('on')) { e.preventDefault(); hojaBtn.click(); }
+        else if (!btn.disabled && btn.style.display !== 'none') { e.preventDefault(); btn.click(); }
+        return;
+      }
+      if (e.key === 'Escape') { $('.rt-x').click(); return; }
+      var n = +e.key; if (!n || hoja.classList.contains('on')) return;
+      var ops = cuerpo.querySelectorAll('.rt-img .rt-t, .rt-banco .rt-p:not(.fant), .rt-ord-banco .rt-t:not(.fant)');
+      if (ops[n - 1]) ops[n - 1].click();
+    }
+    window.addEventListener('keydown', teclas);
+
+    // Racha de aciertos seguidos: chip de fuego y XP extra
+    function pintarRacha(sube) {
+      var r = $('.rt-racha');
+      if (racha < 2) { r.classList.remove('on'); return; }
+      r.innerHTML = IC.fuego + '<b>' + racha + '</b> seguidas' + (racha >= 5 ? '<em>XP x2</em>' : '');
+      r.classList.add('on');
+      if (sube) { r.classList.remove('pop'); void r.offsetWidth; r.classList.add('pop'); }
+    }
 
     var comprobar = null, resultado = null;
     btn.onclick = function () { if (comprobar) { son('tap'); mostrar(comprobar()); } };
@@ -162,7 +205,7 @@
     // Lo que cada reto puede usar
     function api(reto) {
       return {
-        reto: reto, cuerpo: cuerpo,
+        reto: reto, cuerpo: cuerpo, iconos: IC,
         listo: function (si) { btn.disabled = !si; },
         alComprobar: function (fn) { comprobar = fn; },
         sinBoton: function () { comprobar = null; btn.disabled = true; btn.style.display = 'none'; pie.classList.add('vacio'); },
@@ -174,14 +217,27 @@
 
     function mostrar(r) {
       resultado = r;
-      if (r.ok) son('bien'); else { errores++; son('mal'); vibrar(120); }
+      var id = actual.reto.id || actual.reto.tipo;
+      if (r.ok) {
+        son('bien');
+        if (!(id in primera)) primera[id] = true;
+        racha++; mejorRacha = Math.max(mejorRacha, racha);
+        var gana = 10 * (racha >= 5 ? 2 : 1); xp += gana;
+        if (racha === 3 || racha === 5) son('abrir');
+      } else {
+        errores++; son('mal'); vibrar(120); primera[id] = false; racha = 0;
+      }
+      try { window.MCCorazones && MCCorazones.respuesta && MCCorazones.respuesta(!!r.ok); } catch (e) {}
+      pintarRacha(r.ok);
       pie.classList.remove('vacio');
       hoja.className = 'rt-hoja on ' + (r.ok ? 'bien' : 'mal');
-      hoja.querySelector('h3').innerHTML = (r.ok ? IC.bien : IC.mal) + esc(r.titulo || (r.ok ? ELOGIOS[Math.floor(Math.random() * ELOGIOS.length)] : 'Respuesta correcta:'));
-      hoja.querySelector('p').innerHTML = r.msg || '';
+      hoja.querySelector('h3').innerHTML = (r.ok ? IC.bien : IC.mal) + esc(r.titulo || (r.ok ? ELOGIOS[Math.floor(Math.random() * ELOGIOS.length)] : 'Respuesta correcta:')) +
+        (r.ok ? '<span class="xp">' + IC.rayo + '+' + (10 * (racha >= 5 ? 2 : 1)) + '</span>' : '');
+      hoja.querySelector('p').innerHTML = (r.msg || '') + (r.ok ? '' : '<span class="rt-vuelve">Este reto volverá al final del nivel.</span>');
       hojaBtn.className = 'rt-btn ' + (r.ok ? 'verde' : 'rojo');
       hojaBtn.textContent = r.ok ? 'Continuar' : 'Entendido';
       btn.disabled = true;
+      setTimeout(function () { try { hojaBtn.focus({ preventScroll: true }); } catch (e) {} }, 50);
     }
 
     function siguiente() {
@@ -189,8 +245,9 @@
       if (!cola.length) return fin();
       var reto = cola.shift();
       comprobar = null; btn.disabled = true; btn.style.display = ''; pie.classList.remove('vacio');
-      cab.innerHTML = '<span class="rt-tipo">' + (IC[reto.tipo] || '') + esc(NOMBRE[reto.tipo] || reto.tipo) + '</span>' +
-        '<h2 class="rt-tit">' + esc(reto.titulo || '') + '</h2>' + (reto.pregunta ? '<p class="rt-preg">' + esc(reto.pregunta) + '</p>' : '');
+      var repaso = reto.id in primera && primera[reto.id] === false;
+      cab.innerHTML = '<span class="rt-tipo">' + (IC[reto.tipo] || '') + esc(NOMBRE[reto.tipo] || reto.tipo) + '</span>' + (repaso ? '<span class="rt-tipo repaso">Repaso</span>' : '') +
+        '<h2 class="rt-tit' + (reto.pregunta ? ' larga' : '') + '">' + esc(reto.pregunta || reto.titulo || '') + '</h2>';
       cuerpo.innerHTML = ''; cuerpo.scrollTop = 0;
       cuerpo.classList.remove('rt-anim'); void cuerpo.offsetWidth; cuerpo.classList.add('rt-anim');
       var fn = TIPOS[reto.tipo];
@@ -201,27 +258,43 @@
     function fin() {
       if (actual && actual.limpiar) actual.limpiar();
       var gano = vidas > 0, seg = Math.round((Date.now() - inicio) / 1000);
-      var est = !gano ? 0 : errores <= 2 ? 3 : errores <= 5 ? 2 : 1;
-      var prec = Math.max(0, Math.round(total / (total + errores) * 100));
+      // Estrellas: 3 = todos los retos a la primera, 2 = falló 1 o 2 retos, 1 = superado
+      var fallados = Object.keys(primera).filter(function (k) { return primera[k] === false; }).length;
+      var est = !gano ? 0 : fallados === 0 ? 3 : fallados <= 2 ? 2 : 1;
+      var bono = gano ? est * 5 : 0; xp += bono;
+      var prec = Math.max(0, Math.round((total - fallados) / total * 100));
       raiz.querySelector('.rt-col').remove(); raiz.querySelector('.rt-pie').remove();
       var mm = Math.floor(seg / 60) + ':' + ('0' + seg % 60).slice(-2);
       var f = h('<div class="rt-fin"><span class="cint">' + esc(ruta.titulo || 'Nivel') + '</span>' +
         '<div class="rt-estrellas">' + [1, 2, 3].map(function (n, i) { return IC.estrella(n <= est).replace('<svg', '<svg style="animation-delay:' + (.25 + i * .25) + 's"'); }).join('') + '</div>' +
-        '<h2>' + (gano ? '¡Nivel superado!' : 'Sin corazones') + '</h2>' +
-        '<div class="rt-stats"><div class="rt-stat" style="--c:#C6E000"><small>XP ganada</small><b>' + IC.rayo + (gano ? 10 + est * 5 : 0) + '</b></div>' +
+        '<h2>' + (!gano ? 'Sin corazones' : est === 3 ? '¡Perfecto!' : '¡Nivel superado!') + '</h2>' +
+        (gano && est < 3 ? '<p class="rt-tip">' + (fallados === 1 ? 'Fallaste 1 reto.' : 'Fallaste ' + fallados + ' retos.') + ' Hazlos todos a la primera para las 3 estrellas.</p>' : '') +
+        (!gano ? '<p class="rt-tip">Repasa y vuelve a intentarlo: cada error te deja una explicación.</p>' : '') +
+        '<div class="rt-stats"><div class="rt-stat" style="--c:#C6E000"><small>XP ganada</small><b>' + IC.rayo + xp + '</b></div>' +
+        '<div class="rt-stat" style="--c:#FF8A00"><small>Mejor racha</small><b>' + IC.fuego + mejorRacha + '</b></div>' +
         '<div class="rt-stat" style="--c:#FF6B8A"><small>Precisión</small><b>' + IC.diana + prec + '%</b></div>' +
         '<div class="rt-stat" style="--c:#FFC800"><small>Tiempo</small><b>' + IC.reloj + mm + '</b></div></div>' +
         '<button class="rt-btn verde">' + (gano ? 'Continuar' : 'Intentar de nuevo') + '</button>' +
-        (gano ? '<button class="otra">Jugar otra vez</button>' : '') + '</div>');
+        '<button class="otra">' + (gano ? 'Jugar otra vez' : 'Volver al mapa') + '</button></div>');
       raiz.appendChild(f);
       son(gano ? 'victoria' : 'mal');
-      var res = { gano: gano, estrellas: est, errores: errores, segundos: seg, precision: prec };
-      f.querySelector('.rt-btn').onclick = function () { cerrar(); if (gano) { opts.alTerminar && opts.alTerminar(res); } else jugar(ruta, opts); };
-      var o = f.querySelector('.otra'); if (o) o.onclick = function () { cerrar(); jugar(ruta, opts); };
+      if (gano && est === 3) confeti(raiz);
+      var res = { gano: gano, estrellas: est, errores: errores, segundos: seg, precision: prec, xp: xp, racha: mejorRacha };
+      if (gano) { try { opts.alGanar && opts.alGanar(res); } catch (e) {} }
+      f.querySelector('.rt-btn').onclick = function () { cerrar(); if (gano) { opts.alTerminar && opts.alTerminar(res); } else jugar(opts.otraVez ? opts.otraVez() : ruta, opts); };
+      f.querySelector('.otra').onclick = function () { cerrar(); if (gano) jugar(opts.otraVez ? opts.otraVez() : ruta, opts); else { opts.alTerminar && opts.alTerminar(res); } };
     }
 
     siguiente();
     return { cerrar: cerrar };
+  }
+
+  // Confeti de colores al sacar 3 estrellas (piezas con CSS, sin canvas)
+  function confeti(raiz) {
+    var cols = ['#C6E000', '#FFC800', '#A35CFF', '#1CB0F6', '#FF4B6E', '#FF8A00'], s = '';
+    for (var k = 0; k < 70; k++) s += '<i style="left:' + (Math.random() * 100).toFixed(1) + '%;background:' + cols[k % cols.length] + ';--t:' + (2.2 + Math.random() * 2).toFixed(2) + 's;--d:' + (Math.random() * .9).toFixed(2) + 's;--x:' + (Math.random() * 120 - 60).toFixed(0) + 'px;--r:' + (Math.random() * 720).toFixed(0) + 'deg"></i>';
+    var c = h('<div class="rt-confeti" aria-hidden="true">' + s + '</div>'); raiz.appendChild(c);
+    setTimeout(function () { c.remove(); }, 4800);
   }
 
   /* =========================================================
@@ -281,6 +354,7 @@
     var cartas = []; r.pares.forEach(function (p, i) { cartas.push({ i: i, t: p[0], e: et[0], c: 'a' }, { i: i, t: p[1], e: et[1], c: 'b' }); });
     var g = h('<div class="rt-mem"></div>');
     var info = h('<div class="rt-mem-info"><span class="rt-chip">' + IC.parejas + '<span class="pa">0/' + faltan + '</span></span><span class="rt-chip">' + IC.reloj + '<span class="in">0 intentos</span></span></div>');
+    var mira = h('<div class="rt-mira">' + IC.ojo + '<span>¡Memoriza! <b></b></span></div>');
     var total = faltan;
     a.sinBoton();
     barajar(cartas).forEach(function (c) {
@@ -307,7 +381,19 @@
       };
       g.appendChild(d);
     });
-    a.cuerpo.appendChild(g); a.cuerpo.appendChild(info);
+    a.cuerpo.appendChild(mira); a.cuerpo.appendChild(g); a.cuerpo.appendChild(info);
+    // Antes de jugar se muestran todas las cartas unos segundos para memorizarlas
+    bloqueo = true;
+    var todas = g.querySelectorAll('.rt-c'), cuenta = Math.min(6, Math.max(3, Math.round(todas.length / 2.4))), tv = [];
+    tv.push(setTimeout(function () { todas.forEach(function (d) { d.classList.add('vuelta'); }); }, 250));
+    mira.querySelector('b').textContent = cuenta;
+    var iv = setInterval(function () {
+      cuenta--; if (cuenta > 0) { mira.querySelector('b').textContent = cuenta; return; }
+      clearInterval(iv); todas.forEach(function (d) { d.classList.remove('vuelta'); });
+      mira.innerHTML = IC.parejas + '<span>¡Ahora encuentra las parejas!</span>'; mira.classList.add('ya');
+      tv.push(setTimeout(function () { bloqueo = false; }, 450));
+    }, 1000);
+    return function () { clearInterval(iv); tv.forEach(clearTimeout); };
   };
 
   // Completa la frase (banco de palabras)
@@ -403,7 +489,7 @@
           for (var k = 0; k < w.length; k++) { var c = M[y0 + d[1] * k][x0 + d[0] * k]; if (c && c !== w[k]) { cabe = false; break; } }
           if (!cabe) continue;
           for (k = 0; k < w.length; k++) M[y0 + d[1] * k][x0 + d[0] * k] = w[k];
-          pos[w] = true; return;
+          pos[w] = { x: x0, y: y0, d: d }; return;
         }
         ok = false;
       });
@@ -417,8 +503,20 @@
     var celdas = [];
     for (y = 0; y < N; y++) for (x = 0; x < N; x++) { var c = document.createElement('i'); c.textContent = M[y][x]; c.dataset.x = x; c.dataset.y = y; g.appendChild(c); celdas.push(c); }
     var cel = function (x, y) { return celdas[y * N + x]; };
-    var ini = null, marcadas = [], encontradas = 0, arrastro = false, fallos = 0;
+    var ini = null, marcadas = [], encontradas = 0, arrastro = false, fallos = 0, pistas = 2;
     a.sinBoton();
+    // Pista: ilumina la primera letra de una palabra que falta (2 por sopa)
+    var bPista = h('<button class="rt-pista">' + IC.pista + '<span>Pista</span><b>' + pistas + '</b></button>');
+    bPista.onclick = function () {
+      if (!pistas) return;
+      var falta = pal.filter(function (w) { var t = lista.querySelector('[data-w="' + w + '"]'); return t && !t.classList.contains('ok'); })[0];
+      if (!falta) return;
+      pistas--; bPista.querySelector('b').textContent = pistas; if (!pistas) bPista.disabled = true;
+      var p0 = pos[falta], c0 = cel(p0.x, p0.y); son('tap');
+      c0.classList.remove('pista'); void c0.offsetWidth; c0.classList.add('pista');
+      var tg = lista.querySelector('[data-w="' + falta + '"]'); tg.classList.add('pista');
+      setTimeout(function () { tg.classList.remove('pista'); }, 2500);
+    };
 
     function camino(p, q) {
       var dx = q.x - p.x, dy = q.y - p.y, L = Math.max(Math.abs(dx), Math.abs(dy));
@@ -438,7 +536,7 @@
       var tag = hit && lista.querySelector('[data-w="' + hit + '"]');
       if (tag && !tag.classList.contains('ok')) {
         var col = COL[encontradas % COL.length]; encontradas++;
-        lst.forEach(function (p) { var c = cel(p.x, p.y); c.classList.add('ok'); c.style.setProperty('--col', col); });
+        lst.forEach(function (p) { var c = cel(p.x, p.y); c.classList.remove('pista'); c.classList.add('ok'); c.style.setProperty('--col', col); });
         tag.classList.add('ok'); tag.style.setProperty('--col', col); a.acierto(); vibrar(30);
         if (encontradas === pal.length) a.terminar({ ok: true, titulo: '¡Sopa resuelta!', msg: 'Encontraste las ' + pal.length + ' palabras' + (fallos ? ' con ' + fallos + ' intento' + (fallos > 1 ? 's' : '') + ' fallido' + (fallos > 1 ? 's.' : '.') : ' sin fallar.') });
       } else if (lst && lst.length > 2) { fallos++; if (fallos % 3 === 0) a.error(); }
@@ -458,13 +556,13 @@
       // si solo tocó una letra, queda marcada como inicio y espera el segundo toque
     };
     window.addEventListener('pointerup', up);
-    a.cuerpo.appendChild(lista); a.cuerpo.appendChild(g);
+    a.cuerpo.appendChild(lista); a.cuerpo.appendChild(g); a.cuerpo.appendChild(h('<div class="rt-sopa-pie"></div>')).appendChild(bPista);
     return function () { window.removeEventListener('pointerup', up); };
   };
 
   // Verdadero o falso contrarreloj
   TIPOS.vf = function (a) {
-    var r = a.reto, seg = r.segundos || 45, quedan = seg, frases = barajar(r.frases), i = 0, bien = 0, timer = null, ocupado = false;
+    var r = a.reto, seg = r.segundos || 45, quedan = seg, frases = barajar(r.frases), i = 0, bien = 0, timer = null, ocupado = false, malas = [];
     var w = h('<div class="rt-vf"><div class="rt-reloj">' + IC.reloj + '<div class="b"><i></i></div><b>' + seg + '</b></div>' +
       '<div class="rt-pila"></div><div class="rt-vf-marca">' + frases.map(function () { return '<i></i>'; }).join('') + '</div>' +
       '<div class="rt-vf-bot"><button class="f">' + IC.flechaF + 'Falso</button><button class="v">' + IC.flechaV + 'Verdadero</button></div></div>');
@@ -482,7 +580,7 @@
       if (ocupado || i >= frases.length) return; ocupado = true;
       var top = pila.lastChild, ok = frases[i][1] === v;
       w.querySelectorAll('.rt-vf-marca i')[i].className = ok ? 'b' : 'm';
-      if (ok) { bien++; a.acierto(); } else a.error();
+      if (ok) { bien++; a.acierto(); } else { a.error(); malas.push(frases[i]); w.classList.remove('flash'); void w.offsetWidth; w.classList.add('flash'); }
       top.style.transform = ''; top.classList.add(v ? 'va-v' : 'va-f');
       i++;
       setTimeout(function () { ocupado = false; if (i >= frases.length) terminar(); else pintarPila(); }, 300);
@@ -503,8 +601,10 @@
     function terminar() {
       clearInterval(timer); timer = null;
       var ok = bien >= Math.ceil(frases.length * .6);
-      a.terminar({ ok: ok, titulo: ok ? bien + ' de ' + frases.length + ' correctas' : 'Solo ' + bien + ' de ' + frases.length,
-        msg: frases.map(function (f) { return (f[1] ? 'V' : 'F') + ' · ' + esc(f[0]); }).slice(0, ok ? 0 : 8).join('<br>') || (quedan > 0 ? 'Te sobraron ' + quedan + ' segundos.' : '¡Justo a tiempo!') });
+      for (var k = i; k < frases.length; k++) malas.push(frases[k]);   // las que no alcanzó a responder
+      var lista = malas.slice(0, 5).map(function (f) { return '<span class="rt-vf-sol ' + (f[1] ? 'v' : 'f') + '"><em>' + (f[1] ? 'V' : 'F') + '</em>' + esc(f[0]) + '</span>'; }).join('');
+      a.terminar({ ok: ok, titulo: ok ? bien + ' de ' + frases.length + ' correctas' : 'Solo ' + bien + ' de ' + frases.length + ' (necesitas ' + Math.ceil(frases.length * .6) + ')',
+        msg: (malas.length ? 'Repasa: ' + lista : '') || (quedan > 0 ? '¡Todas bien! Te sobraron ' + quedan + ' segundos.' : '¡Justo a tiempo!') });
     }
     w.querySelector('.v').onclick = function () { responder(true); };
     w.querySelector('.f').onclick = function () { responder(false); };
