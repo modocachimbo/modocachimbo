@@ -23,6 +23,11 @@
       return (typeof NOMBRE !== 'undefined' && NOMBRE[c]) || c || 'Libros';
     } catch (e) { return 'Libros'; }
   }
+  function cursoId() {
+    var ta = document.getElementById('subTexto'), m = ta && ta.value.match(/^\s*CURSO\s*:\s*(.+)$/mi);
+    var c = (!document.getElementById('subPaso2').hidden && document.getElementById('subCurso').value) || (m && detectarCurso(m[1])) || document.getElementById('subCurso').value || '';
+    return String(c).split('/')[0];
+  }
   function nombreTema() {
     var el = document.getElementById('subNombre'), ta = document.getElementById('subTexto');
     if (el && el.value && !document.getElementById('subPaso2').hidden) return el.value;
@@ -65,7 +70,7 @@
     var ciclo = ex ? (document.getElementById('exCiclo') || {}).value : (document.getElementById('subCiclo') || {}).value;
     var titulo = ex ? nombreCurso() + (ciclo ? ' ' + ciclo : '') : nombreTema();
     var badge = ex ? 'Examen' + (ciclo ? ' · ' + ciclo : '') : nombreCurso() + (ciclo ? ' · ' + ciclo : '');
-    if (frame.contentWindow) frame.contentWindow.postMessage({ tipo: 'mc-vista', preguntas: st.preguntas, i: st.i, modo: ex ? 'examen' : 'tema', titulo: titulo, badge: badge, num: num ? String(num).padStart(2, '0') : '' }, '*');
+    if (frame.contentWindow) frame.contentWindow.postMessage({ tipo: 'mc-vista', preguntas: st.preguntas, i: st.i, modo: ex ? 'examen' : 'tema', titulo: titulo, badge: badge, num: num ? String(num).padStart(2, '0') : '', carpeta: ex ? '' : cursoId() }, '*');
   }
   function pronto() { clearTimeout(tPars); tPars = setTimeout(enviar, 300); }
 
