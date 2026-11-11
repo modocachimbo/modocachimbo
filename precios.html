@@ -146,15 +146,17 @@
 
   <section class="planes" id="planes"></section>
 
-  <div class="amigos">
+  <div class="amigos" id="amigos">
     <span class="ic"><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 4.5a3 3 0 010 6"/><path d="M18 14c2 .6 3.5 2.8 3.5 6"/></svg></span>
-    <span><b>Trae 2 amigos y te regalamos 1 mes</b><p>Cuando 2 amigos que agregaste en Modo Cachimbo activen un plan, tu acceso suma 30 días más.</p></span>
+    <span><b id="amTit"></b><p id="amTxt"></p></span>
   </div>
 
-  <h3 class="sec">¿Por qué no un banco en Quizizz?</h3>
-  <p class="sec">Quizizz sirve para jugar preguntas. Modo Cachimbo es una academia completa para la UNJFSC.</p>
+  <section id="comparar">
+  <h3 class="sec" id="cmTit"></h3>
+  <p class="sec" id="cmSub"></p>
   <div class="tabla" id="tabla"></div>
-  <p class="nota">Comparamos con un banco de preguntas armado en Quizizz y vendido a S/ 30 por 3 meses. Quizizz es una marca de sus dueños; no tenemos relación con ellos.</p>
+  <p class="nota" id="cmNota"></p>
+  </section>
 
   <h3 class="sec">Cómo activar tu plan</h3>
   <p class="sec">En menos de 5 minutos.</p>
@@ -167,6 +169,7 @@
 
 <script src="assets/mc-config.js"></script>
 <script src="assets/auth.js"></script>
+<script src="assets/planes.js"></script>
 <script>
 // Beta: solo el admin (public.es_admin) ve los planes
 (function () {
@@ -181,34 +184,9 @@
 </script>
 <script>
 (function () {
-  // Precios y textos de los planes. Más adelante se editan desde Panel → Paquetes.
-  var CFG = {
-    preventa: { activa: true, ciclo: '2027-I', hasta: '30/11', cupos: 100, precio: 39.90, plan: 'total' },
-    planes: [
-      { id: 'gratis', nombre: 'Gratis', c: 'var(--d)', sub: 'Para conocer la app y repasar lo del ciclo pasado.', mes: 0, ciclo: 0,
-        si: ['Libros y exámenes pasados', 'Practicar el material de ciclos anteriores', 'Racha, amigos y test vocacional'],
-        no: ['Material del ciclo nuevo', 'Repaso, Fijas y Simulacro', 'Descargas PDF'] },
-      { id: 'area', nombre: 'Un área', c: 'var(--cel)', sub: 'Refuerza solo el área que más te cuesta.', mes: 12.90, ciclo: 34.90, areas: true,
-        si: ['Todo lo gratis', 'Material nuevo de los cursos del área', 'Repaso, Fijas y Flashcards del área', 'Búho tutor en sus preguntas'],
-        no: ['Simulacro y duelos', 'Descargas PDF'] },
-      { id: 'total', nombre: 'Total', c: 'var(--l)', top: true, sub: 'Las 4 áreas y todo lo que tiene Modo Cachimbo.', mes: 19.90, ciclo: 49.90,
-        si: ['Las 4 áreas con todo el material nuevo', 'Repaso, Fijas, Flashcards y Banqueo', 'Simulacro de 80 preguntas con puntaje por bloque', 'Duelos y Top de la semana', 'Seminarios, Vocabulario y Biblioteca', 'Descarga en PDF del material nuevo'],
-        no: [] }
-    ],
-    // [qué, Modo Cachimbo, banco en Quizizz]  (true = sí, false = no, texto = detalle)
-    tabla: [
-      ['Preguntas del ciclo UNJFSC con su clave', true, true],
-      ['Resolución explicada paso a paso (Búho tutor)', true, 'Depende de quien lo arma'],
-      ['Simulacro con puntaje real por bloque y carrera', true, false],
-      ['Repaso de tus preguntas falladas', true, false],
-      ['Libros y exámenes pasados por curso', true, false],
-      ['Ranking semanal con todos los postulantes', true, 'Solo dentro de cada juego'],
-      ['Racha, duelos con amigos y Arcade', true, false],
-      ['Descarga del material en PDF', true, false],
-      ['Material del ciclo pasado gratis', true, false],
-      ['Precio por 3 meses', 'S/ 49.90', 'S/ 30']
-    ]
-  };
+  // Precios y textos: Panel → Web → Planes y precios (assets/planes.js)
+  var CFG = MCPlanes.base();
+  var COLOR = { gratis: 'var(--d)', area: 'var(--cel)', total: 'var(--l)' };
   var WA = (window.MC_CONFIG && MC_CONFIG.WHATSAPP) || '51917797543';
   var AREAS = [['matematica', 'Matemática'], ['ciencia-tecnologia', 'Ciencia y Tecnología'], ['comunicacion', 'Comunicación'], ['ciencias-sociales', 'Ciencias Sociales']];
   var ICO = {
@@ -224,24 +202,24 @@
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function wa(p) {
     var t = p.id === 'area' ? 'Un área (' + AREAS.filter(function (a) { return a[0] === area; })[0][1] + ')' : p.nombre;
-    var pv = CFG.preventa.activa && p.id === CFG.preventa.plan && periodo === 'ciclo';
+    var pv = CFG.preventa.activa && p.id === 'total' && periodo === 'ciclo';
     var precio = pv ? CFG.preventa.precio : p[periodo];
     return 'https://wa.me/' + WA + '?text=' + encodeURIComponent('Hola! Quiero el plan ' + t + ' de Modo Cachimbo, ' + (periodo === 'mes' ? 'mensual' : 'por ciclo (3 meses)') + (pv ? ' en preventa' : '') + ': ' + sol(precio));
   }
 
   function plan(p) {
-    var pv = CFG.preventa.activa && p.id === CFG.preventa.plan && periodo === 'ciclo';
+    var pv = CFG.preventa.activa && p.id === 'total' && periodo === 'ciclo';
     var precio = pv ? CFG.preventa.precio : p[periodo];
     var ahorro = '';
     if (p.mes && periodo === 'ciclo') ahorro = 'Equivale a ' + sol(precio / 3) + ' al mes · <em>ahorras ' + sol(p.mes * 3 - precio) + '</em>';
     else if (p.mes) ahorro = 'O ' + sol(p.ciclo) + ' por todo el ciclo';
-    return '<article class="plan' + (p.top ? ' top-plan' : '') + '" style="--c:' + p.c + '">' +
+    return '<article class="plan' + (p.top ? ' top-plan' : '') + '" style="--c:' + COLOR[p.id] + '">' +
       (p.top ? '<span class="tag">' + (pv ? 'Preventa' : 'El más completo') + '</span>' : '') +
       '<div class="cab"><span class="ic"><svg class="i" viewBox="0 0 24 24">' + ICO[p.id] + '</svg></span><h2>' + esc(p.nombre) + '</h2></div>' +
       '<p class="sub">' + esc(p.sub) + '</p>' +
       '<div class="precio"><b>' + (precio ? sol(precio) : 'S/ 0') + '</b><span>' + (precio ? (periodo === 'mes' ? '/ mes' : '/ ciclo') : 'para siempre') + '</span></div>' +
       '<div class="ahorro">' + ahorro + '</div>' +
-      (p.areas ? '<div class="area-sel">' + AREAS.map(function (a) { return '<button type="button" data-a="' + a[0] + '"' + (a[0] === area ? ' class="on"' : '') + '>' + a[1] + '</button>'; }).join('') + '</div>' : '') +
+      (p.id === 'area' ? '<div class="area-sel">' + AREAS.map(function (a) { return '<button type="button" data-a="' + a[0] + '"' + (a[0] === area ? ' class="on"' : '') + '>' + a[1] + '</button>'; }).join('') + '</div>' : '') +
       '<ul class="lista">' + p.si.map(function (x) { return '<li class="si">' + SI + '<span>' + esc(x) + '</span></li>'; }).join('') +
         p.no.map(function (x) { return '<li class="no">' + NO + '<span>' + esc(x) + '</span></li>'; }).join('') + '</ul>' +
       (precio ? '<a class="' + (p.top ? 'btn' : 'btn2') + '" href="' + wa(p) + '" target="_blank" rel="noopener">Lo quiero</a>'
@@ -261,15 +239,30 @@
     });
   }
   document.querySelectorAll('.periodo button').forEach(function (b) { b.onclick = function () { periodo = b.dataset.p; pintar(); }; });
-  var P = CFG.preventa;
-  document.getElementById('preventa').hidden = !P.activa;
-  document.getElementById('pvCiclo').textContent = P.ciclo;
-  document.getElementById('pvTxt').textContent = 'Plan Total por todo el ciclo · hasta el ' + P.hasta + ' o los primeros ' + P.cupos + ' alumnos';
-  document.getElementById('pvAntes').textContent = sol(CFG.planes[2].ciclo);
-  document.getElementById('pvPrecio').textContent = sol(P.precio);
-  document.getElementById('tabla').innerHTML = '<div class="fila cab"><div></div><div>Modo Cachimbo</div><div>Banco en Quizizz</div></div>' +
-    CFG.tabla.map(function (r) { return '<div class="fila"><div>' + esc(r[0]) + '</div><div>' + celda(r[1]) + '</div><div>' + celda(r[2]) + '</div></div>'; }).join('');
-  pintar();
+  function todo() {
+    CFG.planes.forEach(function (p) { p.top = p.id === 'total'; p.mes = +p.mes || 0; p.ciclo = +p.ciclo || 0; p.si = p.si || []; p.no = p.no || []; });
+    var P = CFG.preventa, tot = CFG.planes.filter(function (p) { return p.id === 'total'; })[0];
+    P.precio = +P.precio || 0;
+    document.getElementById('preventa').hidden = !P.activa;
+    document.getElementById('pvCiclo').textContent = P.ciclo || '';
+    document.getElementById('pvTxt').textContent = 'Plan Total por todo el ciclo' + (P.hasta ? ' · hasta el ' + P.hasta : '') + (+P.cupos ? (P.hasta ? ' o ' : ' · ') + 'los primeros ' + P.cupos + ' alumnos' : '');
+    document.getElementById('pvAntes').textContent = sol(tot.ciclo);
+    document.getElementById('pvPrecio').textContent = sol(P.precio);
+    var A = CFG.amigos;
+    document.getElementById('amigos').hidden = !A.activa;
+    document.getElementById('amTit').textContent = A.titulo || '';
+    document.getElementById('amTxt').textContent = A.texto || '';
+    var C = CFG.comparar;
+    document.getElementById('comparar').hidden = !C.activa;
+    document.getElementById('cmTit').textContent = C.titulo || '';
+    document.getElementById('cmSub').textContent = C.sub || '';
+    document.getElementById('cmNota').textContent = C.nota || '';
+    document.getElementById('tabla').innerHTML = '<div class="fila cab"><div></div><div>Modo Cachimbo</div><div>' + esc(C.otro || '') + '</div></div>' +
+      (C.tabla || []).map(function (r) { return '<div class="fila"><div>' + esc(r[0]) + '</div><div>' + celda(r[1]) + '</div><div>' + celda(r[2]) + '</div></div>'; }).join('');
+    pintar();
+  }
+  todo();
+  MCPlanes.cargar().then(function (v) { CFG = v; todo(); });
 })();
 </script>
 </body>
