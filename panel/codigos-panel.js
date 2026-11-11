@@ -581,7 +581,9 @@ function ajusteEquiposId() {
 }
 // Saca los ID de 5 cifras de lo que se pegue (con comas, espacios, saltos de línea o «ID 12345»)
 const pidIds = t => [...new Set((String(t).match(/\b\d{5}\b/g) || []).map(Number))].slice(0, 200);
-function darPorId(orig) {
+function darPorId(orig, opts) {
+  // opts (desde la Ficha del alumno): { ids: [48213], despues: fn }
+  opts = opts || {};
   // orig: editar un acceso ya dado (cambia paquete, fecha, nota o límite sin quitarlo)
   const st = { todos: orig ? [] : ['seminario-VIP'], areas: [] };
   if (orig) String(orig.producto || '').split(',').filter(Boolean).forEach(p => {
@@ -667,6 +669,7 @@ function darPorId(orig) {
   const syncMax = () => { const sl = o.querySelector('#pidSinLim').checked, m = o.querySelector('#pidMax'); m.disabled = sl; if (sl) m.value = ''; };
   o.querySelector('#pidSinLim').addEventListener('change', syncMax); syncMax();
   pintar();
+  if (!orig && opts.ids && opts.ids.length) { const t = o.querySelector('#pidIds'); t.value = opts.ids.join(', '); t.dispatchEvent(new Event('input')); }
   if (!orig) o.querySelector('#pidIds').focus();
   o.querySelector('#pidSave').addEventListener('click', async () => {
     const err = o.querySelector('#pidErr'); err.classList.remove('show');
@@ -685,7 +688,7 @@ function darPorId(orig) {
       if (orig) {
         await pidRpc('acceso_id_editar', { p_id: orig.id, p_producto: p, p_vence: args.p_vence, p_nota: args.p_nota, p_limite: lim || null, p_equipos: eq }).catch(falta78);
         Object.assign(orig, { producto: p, vence: args.p_vence, nota: args.p_nota, limite_dia: lim || null, max_equipos: eq });
-        cerrar(); renderPorId(); toast('Acceso actualizado'); return;
+        cerrar(); renderPorId(); toast('Acceso actualizado'); if (opts.despues) opts.despues(); return;
       }
       const r = await pidRpc('acceso_id_dar', args).catch(er => {
         if (eq !== null) falta78(er);
@@ -693,7 +696,7 @@ function darPorId(orig) {
         throw er;
       });
       const sin = r.sin_id || [];
-      cerrar(); CD.vista = 'id'; cargarPorId();
+      cerrar(); CD.vista = 'id'; cargarPorId(); if (opts.despues) opts.despues();
       toast(`Activado a ${r.alumnos} alumno${r.alumnos === 1 ? '' : 's'}: ${etiquetaProd(p)}` + (sin.length ? ` · no existen: ${sin.join(', ')}` : ''), !!sin.length);
     } catch (er) { btn.disabled = false; btn.textContent = orig ? 'Guardar cambios' : 'Activar'; err.textContent = pidError(er); err.classList.add('show'); }
   });

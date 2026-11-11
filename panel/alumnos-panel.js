@@ -107,7 +107,7 @@ function renderAlumnos() {
       return `<tr>
         <td><div class="al-quien"><span class="al-av">${a.foto_url ? `<img src="${esc(a.foto_url)}" alt="" referrerpolicy="no-referrer">` : ini}</span>
           <div><b>${esc(nom)}</b><small>${esc(a.email || '')}</small></div></div></td>
-        ${ALU.nivel ? `<td class="num"><span class="al-nv" title="${a.xp_total.toLocaleString('es-PE')} XP en total">Nvl <b>${a.nivel}</b></span></td><td class="num">${a.codigo || '—'}${a.codigo && puedeTab('regalos') ? ` <button class="al-rg" type="button" data-rg="${a.codigo}" title="Darle un regalo" aria-label="Darle un regalo">🎁</button>` : ''}</td>` : ''}
+        ${ALU.nivel ? `<td class="num"><span class="al-nv" title="${a.xp_total.toLocaleString('es-PE')} XP en total">Nvl <b>${a.nivel}</b></span></td><td class="num">${a.codigo || '—'}${a.codigo && puedeTab('regalos') ? ` <button class="al-rg" type="button" data-rg="${a.codigo}" title="Darle un regalo" aria-label="Darle un regalo"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12v9H4v-9"/><path d="M2 7h20v5H2z"/><path d="M12 21V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></button>` : ''}</td>` : ''}
         <td>${esc(a.carrera || '—')}</td>
         <td class="num"><span class="al-racha ${a.hoy >= 10 ? 'on' : ''}">${icono}${a.actual}</span></td>
         <td class="num">${a.mejor}</td>

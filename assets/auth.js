@@ -86,6 +86,12 @@
     cz.src = BASE + 'assets/corazones.js?v=6';
     document.head.appendChild(cz);
     var pagina = location.href.replace(/[?#].*$/, '');
+    // Cuenta suspendida desde el panel (assets/suspension.js); el panel no se bloquea
+    if (pagina.indexOf(BASE + 'panel/') !== 0) {
+      var su = document.createElement('script');
+      su.src = BASE + 'assets/suspension.js';
+      document.head.appendChild(su);
+    }
     // Rangos de la semana: tarjeta en el inicio, vitrina en el perfil (assets/rango.js)
     if (!window.MCRango && (pagina === BASE || pagina === BASE + 'index.html' || pagina === BASE + 'perfil.html')) {
       var rg = document.createElement('script');
