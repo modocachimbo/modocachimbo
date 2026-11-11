@@ -79,8 +79,45 @@
     });
   }
 
-  function tieneCodigo() {
-    try { return !!(window.MCAcceso && MCAcceso.activos().length); } catch (e) { return false; }
+  function activos() {
+    try { return (window.MCAcceso && MCAcceso.activos()) || []; } catch (e) { return []; }
+  }
+  function tieneCodigo() { return activos().length > 0; }
+  // ¿Alguno de sus accesos cubre este producto? (los mismos nombres que el panel)
+  var AREAS = ['area-matematica', 'area-ciencia-tecnologia', 'area-comunicacion', 'area-ciencias-sociales'];
+  function tieneProd(prod, acc) {
+    return acc.some(function (x) {
+      var pc = String(x.producto || '');
+      if (prod === 'TODO-VIP') return pc.split(',').indexOf('TODO-VIP') >= 0;
+      if (!window.MCAcceso || !MCAcceso.cubre) return false;
+      if (prod === 'area') return AREAS.some(function (k) { return MCAcceso.cubre(pc, k); });
+      return MCAcceso.cubre(pc, prod);
+    });
+  }
+  function equipo() {
+    if (document.documentElement.classList.contains('mc-app')) return 'app';
+    var tactil = window.matchMedia && matchMedia('(pointer: coarse)').matches;
+    return tactil && Math.min(screen.width, screen.height) < 820 ? 'celular' : 'pc';
+  }
+  // Todas las reglas del segmento tienen que cumplirse
+  function cumple(seg, perfil) {
+    seg = seg || {};
+    var acc = null;
+    function A() { return acc || (acc = activos()); }
+    if (seg.no_tiene && seg.no_tiene.length && seg.no_tiene.some(function (p) { return tieneProd(p, A()); })) return false;
+    if (seg.tiene && seg.tiene.length && !seg.tiene.some(function (p) { return tieneProd(p, A()); })) return false;
+    if (seg.modalidad && (!perfil || perfil.modalidad !== seg.modalidad)) return false;
+    if (seg.cuenta) {
+      var u = MCAuth.usuario(), t = u && Date.parse(u.created_at);
+      if (!t) return false;
+      var nueva = Date.now() - t < (seg.dias || 7) * 864e5;
+      if ((seg.cuenta === 'nuevas') !== nueva) return false;
+    }
+    if (seg.equipo) {
+      var e = equipo();
+      if (seg.equipo === 'app' ? e !== 'app' : seg.equipo === 'celular' ? e === 'pc' : e !== 'pc') return false;
+    }
+    return true;
   }
 
   function elegir(lista, perfil) {
@@ -95,6 +132,7 @@
         if ((a.publico === 'con-codigo') !== cod) return false;
       }
       if ((a.publico === 'Ordinario' || a.publico === 'CPU') && (!perfil || perfil.modalidad !== a.publico)) return false;
+      if (!cumple(a.segmento, perfil)) return false;
       var v = visto[a.id];
       if (a.frecuencia === 'una-vez') return !v && !yaHoy;
       if (a.frecuencia === 'dia') return (!v || v.slice(0, 10) !== hoy) && !yaHoy;
@@ -193,7 +231,7 @@
     }).catch(function () {});
   }
 
-  window.MCAnuncios = { iniciar: iniciar, ocupado: ocupado };
+  window.MCAnuncios = { iniciar: iniciar, ocupado: ocupado, cumple: cumple, equipo: equipo };
   // Vista previa del panel: no cuenta vistas ni clics
   window.MCAnunciosVista = function (a) {
     var img = new Image();
