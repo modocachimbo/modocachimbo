@@ -5,11 +5,30 @@
    Datos: supabase/84-anuncios.sql. La web: assets/anuncios.js.
    Usa los estilos de agenda-panel.js (.agp-*) y canvasABlob (imagenes.js).
    ========================================================= */
-const ANP = { lista: [], editando: null, img: null, borrar: null, tipo: 'propio', icono: 'whatsapp', frecuencia: 'dia', publico: 'todos' };
+const ANP = { lista: [], editando: null, img: null, borrar: null, tipo: 'propio', icono: 'whatsapp', frecuencia: 'dia', publico: 'todos', noTiene: [], tiene: [], modalidad: '', cuenta: '', equipo: '' };
 const ANP_TIPOS = { propio: ['Propio (Modo Cachimbo)', '#C6E000'], patrocinado: ['Academia / patrocinado', '#38BDF8'], aviso: ['Aviso importante', '#FBBF24'] };
 const ANP_ICONOS = { whatsapp: 'WhatsApp', web: 'Web', tiktok: 'TikTok', instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube' };
 const ANP_FREC = { 'una-vez': 'Solo una vez', dia: 'Una vez al día', siempre: 'Cada vez que entra' };
-const ANP_PUB = { todos: 'Todos', 'sin-codigo': 'Sin código', 'con-codigo': 'Con código', Ordinario: 'Solo Ordinario', CPU: 'Solo CPU' };
+const ANP_PUB = { todos: 'Todos', 'sin-codigo': 'Sin ningún código', 'con-codigo': 'Con algún código' };
+const ANP_PUB_VIEJO = { Ordinario: 'Solo Ordinario', CPU: 'Solo CPU' };
+// Los mismos productos que los códigos (assets/acceso.js · cubre)
+const ANP_PROD = { 'TODO-VIP': 'Acceso total', area: 'Repaso y Fijas (áreas)', seminario: 'Seminarios + Banqueo', simulacro: 'Simulacro',
+  duelo: 'Duelos', examenes: 'Exámenes', vocabulario: 'Vocabulario', biblioteca: 'Biblioteca', descarga: 'Descargas PDF' };
+const ANP_MOD = { '': 'Todas', Ordinario: 'Ordinario', CPU: 'CPU' };
+const ANP_CUENTA = { '': 'Todas', nuevas: 'Nuevas', antiguas: 'Antiguas' };
+const ANP_EQUIPO = { '': 'Todos', celular: 'Celular', pc: 'PC', app: 'App instalada' };
+// Resumen corto de a quién le sale
+function anpQuien(a) {
+  const s = a.segmento || {}, p = [];
+  p.push(ANP_PUB[a.publico] || ANP_PUB_VIEJO[a.publico] || a.publico);
+  if (s.no_tiene && s.no_tiene.length) p.push('sin ' + s.no_tiene.map(x => ANP_PROD[x] || x).join(' / '));
+  if (s.tiene && s.tiene.length) p.push('con ' + s.tiene.map(x => ANP_PROD[x] || x).join(' / '));
+  if (s.modalidad) p.push(s.modalidad);
+  if (s.cuenta) p.push(s.cuenta === 'nuevas' ? 'cuentas de menos de ' + s.dias + ' días' : 'cuentas de más de ' + s.dias + ' días');
+  if (s.equipo) p.push(ANP_EQUIPO[s.equipo]);
+  if (p.length > 1 && p[0] === 'Todos') p.shift();
+  return p.join(' · ');
+}
 const ANP_FREC_CORTO = { 'una-vez': '1 sola vez', dia: '1 vez al día', siempre: 'cada ingreso' };
 
 (function estilosAnuncios() {
@@ -31,6 +50,7 @@ const ANP_FREC_CORTO = { 'una-vez': '1 sola vez', dia: '1 vez al día', siempre:
   .anp-bts { display: flex; gap: 6px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
   .anp-bts .btn-ghost.rojo { color: var(--red); border-color: rgba(224,60,60,.4); }
   .anp-ayuda { color: var(--text-dim); font-size: 12.5px; margin-top: 6px; }
+  .anp-quien { margin-top: 14px; padding: 10px 13px; border-radius: 12px; background: rgba(198,224,0,.08); border: 1px solid rgba(198,224,0,.25); color: var(--accent); font: 800 13.5px Nunito, sans-serif; }
   .anp-3 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   @media (max-width: 700px) { .anp-fila { flex-wrap: wrap; } .anp-num { text-align: left; } .anp-bts { width: 100%; } .anp-3 { grid-template-columns: 1fr; } .anp-up { flex-direction: column; align-items: stretch; } .anp-up .anp-prev { width: 100%; height: 200px; } }`;
   document.head.appendChild(st);
@@ -81,7 +101,7 @@ function pintarAnuncios() {
     return `<div class="anp-fila${e[0] === 'Activo' || e[0] === 'Programado' ? '' : ' apagado'}">
       <img src="${esc(a.img)}" alt="" loading="lazy">
       <div class="anp-tx"><b>${esc(a.titulo)}</b>
-        <small>${anpFecha(a.desde)} – ${anpFecha(a.hasta)} · ${ANP_FREC_CORTO[a.frecuencia] || a.frecuencia} · ${ANP_PUB[a.publico] || a.publico}${a.anunciante ? ' · ' + esc(a.anunciante) : ''}</small>
+        <small>${anpFecha(a.desde)} – ${anpFecha(a.hasta)} · ${ANP_FREC_CORTO[a.frecuencia] || a.frecuencia} · ${esc(anpQuien(a))}${a.tope ? ' · tope ' + anpMiles(a.tope) + ' vistas' : ''}${a.anunciante ? ' · ' + esc(a.anunciante) : ''}</small>
         <span class="agp-tag" style="background:#272041;color:${t[1]}">${a.tipo === 'patrocinado' ? 'Patrocinado' : a.tipo === 'aviso' ? 'Aviso' : 'Propio'}</span>
         <span class="agp-tag" style="background:#272041;color:${e[1]}">${e[0]}</span></div>
       <div class="anp-num"><b>${anpMiles(a.vistas)}</b> vistas · <b>${anpMiles(a.clics)}</b> clics${pct}<br>${anpMiles(a.alumnos)} alumnos · hoy ${anpMiles(a.hoy)}</div>
@@ -110,22 +130,63 @@ $('anpForm').innerHTML = `<h3 id="anpFormTit">Nuevo anuncio</h3>
   <div class="anp-3"><div><label for="anpDesde">Desde</label><input class="inp" id="anpDesde" type="date"></div>
     <div><label for="anpHasta">Hasta (incluido)</label><input class="inp" id="anpHasta" type="date"></div></div>
   <span class="agp-l">Cada cuánto lo ve un alumno</span>${anpOps('anpFrec', ANP_FREC)}
-  <span class="agp-l">Quién lo ve</span>${anpOps('anpPub', ANP_PUB)}
+  <h3 style="margin-top:22px">¿A quién le sale?</h3>
+  <div class="anp-ayuda" style="margin-top:0">Tiene que cumplir todo lo que elijas. Lo que dejes en «Todos» no filtra.</div>
+  <span class="agp-l">Códigos</span>${anpOps('anpPub', ANP_PUB)}
+  <span class="agp-l">Solo a quien NO tiene (ideal para vender: si ya lo compró, no le sale)</span>${anpOps('anpNoTiene', ANP_PROD)}
+  <span class="agp-l">Solo a quien SÍ tiene alguno de</span>${anpOps('anpTiene', ANP_PROD)}
+  <div class="anp-3"><div><span class="agp-l">Modalidad</span>${anpOps('anpMod', ANP_MOD)}</div>
+    <div><span class="agp-l">Equipo</span>${anpOps('anpEquipo', ANP_EQUIPO)}</div></div>
+  <div class="anp-3"><div><span class="agp-l">Cuenta</span>${anpOps('anpCuenta', ANP_CUENTA)}</div>
+    <div id="anpDiasCaja"><label for="anpDias">Cuenta nueva = menos de (días)</label><input class="inp" id="anpDias" type="number" min="1" max="365" value="7"></div></div>
+  <div class="anp-3"><div><label for="anpTope">Tope de vistas (opcional)</label><input class="inp" id="anpTope" type="number" min="1" placeholder="Ej.: 5000"></div>
+    <div class="anp-ayuda" style="align-self:end">Al llegar a ese número de vistas se apaga solo. Sirve para venderle a una academia un paquete de vistas.</div></div>
+  <div class="anp-quien" id="anpQuien"></div>
   <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:16px"><input type="checkbox" id="anpActivo" checked> Prendido (sale en sus fechas)</label>
   <div class="agp-acc"><button class="btn-main" type="button" id="anpGuardar">Guardar</button><button class="btn-ghost" type="button" id="anpVer">Ver cómo sale</button><button class="btn-ghost" type="button" id="anpCancelar">Cancelar</button></div>`;
 
 function anpMarcar() {
-  [['anpTipos', 'tipo'], ['anpIconos', 'icono'], ['anpFrec', 'frecuencia'], ['anpPub', 'publico']].forEach(([id, k]) =>
+  [['anpTipos', 'tipo'], ['anpIconos', 'icono'], ['anpFrec', 'frecuencia'], ['anpPub', 'publico'], ['anpMod', 'modalidad'], ['anpCuenta', 'cuenta'], ['anpEquipo', 'equipo']].forEach(([id, k]) =>
     $(id).querySelectorAll('[data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === ANP[k])));
+  [['anpNoTiene', 'noTiene'], ['anpTiene', 'tiene']].forEach(([id, k]) =>
+    $(id).querySelectorAll('[data-v]').forEach(b => b.classList.toggle('on', ANP[k].includes(b.dataset.v))));
   $('anpAnunCaja').hidden = ANP.tipo !== 'patrocinado';
+  $('anpDiasCaja').style.visibility = ANP.cuenta ? '' : 'hidden';
+  $('anpQuien').textContent = 'Le sale a: ' + anpQuien({ publico: ANP.publico, segmento: anpSegmento() });
 }
-[['anpTipos', 'tipo'], ['anpIconos', 'icono'], ['anpFrec', 'frecuencia'], ['anpPub', 'publico']].forEach(([id, k]) =>
+[['anpTipos', 'tipo'], ['anpIconos', 'icono'], ['anpFrec', 'frecuencia'], ['anpPub', 'publico'], ['anpMod', 'modalidad'], ['anpCuenta', 'cuenta'], ['anpEquipo', 'equipo']].forEach(([id, k]) =>
   $(id).addEventListener('click', ev => { const b = ev.target.closest('[data-v]'); if (b) { ANP[k] = b.dataset.v; anpMarcar(); } }));
+
+[['anpNoTiene', 'noTiene', 'tiene'], ['anpTiene', 'tiene', 'noTiene']].forEach(([id, k, otro]) =>
+  $(id).addEventListener('click', ev => {
+    const b = ev.target.closest('[data-v]'); if (!b) return;
+    const v = b.dataset.v, L = ANP[k];
+    if (L.includes(v)) L.splice(L.indexOf(v), 1); else { L.push(v); if (ANP[otro].includes(v)) ANP[otro].splice(ANP[otro].indexOf(v), 1); }
+    anpMarcar();
+  }));
+$('anpDias').addEventListener('input', () => anpMarcar());
+function anpSegmento() {
+  const s = {};
+  if (ANP.noTiene.length) s.no_tiene = ANP.noTiene.slice();
+  if (ANP.tiene.length) s.tiene = ANP.tiene.slice();
+  if (ANP.modalidad) s.modalidad = ANP.modalidad;
+  if (ANP.cuenta) { s.cuenta = ANP.cuenta; s.dias = Math.min(365, Math.max(1, Math.round(+$('anpDias').value || 7))); }
+  if (ANP.equipo) s.equipo = ANP.equipo;
+  return s;
+}
 
 function anpAbrir(a) {
   ANP.editando = a || null; ANP.img = null;
   ANP.tipo = a ? a.tipo : 'propio'; ANP.icono = a ? a.icono : 'whatsapp';
-  ANP.frecuencia = a ? a.frecuencia : 'dia'; ANP.publico = a ? a.publico : 'todos';
+  ANP.frecuencia = a ? a.frecuencia : 'dia';
+  const sg = (a && a.segmento) || {};
+  // Los de antes guardaban Ordinario/CPU en "publico": pasan a Modalidad
+  ANP.publico = a && ANP_PUB[a.publico] ? a.publico : 'todos';
+  ANP.modalidad = sg.modalidad || (a && ANP_PUB_VIEJO[a.publico] ? a.publico : '');
+  ANP.noTiene = (sg.no_tiene || []).slice(); ANP.tiene = (sg.tiene || []).slice();
+  ANP.cuenta = sg.cuenta || ''; ANP.equipo = sg.equipo || '';
+  $('anpDias').value = sg.dias || 7;
+  $('anpTope').value = a && a.tope ? a.tope : '';
   const hoy = anpHoy(), mes = new Date(Date.now() - 5 * 3600e3 + 30 * 864e5).toISOString().slice(0, 10);
   $('anpFormTit').textContent = a ? 'Editar anuncio' : 'Nuevo anuncio';
   $('anpTitulo').value = a ? a.titulo : '';
@@ -181,7 +242,7 @@ function anpDatos() {
   return { id: ANP.editando ? ANP.editando.id : null, titulo: $('anpTitulo').value.trim(), tipo: ANP.tipo,
     anunciante: ANP.tipo === 'patrocinado' ? $('anpAnun').value.trim() : '', link: $('anpLink').value.trim(),
     boton: $('anpBoton').value.trim(), icono: ANP.icono, desde: $('anpDesde').value, hasta: $('anpHasta').value,
-    frecuencia: ANP.frecuencia, publico: ANP.publico, activo: $('anpActivo').checked };
+    frecuencia: ANP.frecuencia, publico: ANP.publico, activo: $('anpActivo').checked, segmento: anpSegmento(), tope: +$('anpTope').value > 0 ? Math.round(+$('anpTope').value) : null };
 }
 
 // Vista previa: la misma ventana que ve el alumno
