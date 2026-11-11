@@ -89,7 +89,7 @@
     // Cuenta suspendida desde el panel (assets/suspension.js); el panel no se bloquea
     if (pagina.indexOf(BASE + 'panel/') !== 0) {
       var su = document.createElement('script');
-      su.src = BASE + 'assets/suspension.js';
+      su.src = BASE + 'assets/suspension.js?v=2';
       document.head.appendChild(su);
     }
     // Rangos de la semana: tarjeta en el inicio, vitrina en el perfil (assets/rango.js)
