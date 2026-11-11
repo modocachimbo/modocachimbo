@@ -183,6 +183,7 @@
     horas_mal: 'La guerra dura 1 o 2 días.',
     lider_no_existe: 'No hay ningún alumno con ese ID.',
     lider_en_clan: 'Ese alumno ya está en otro clan. Que salga primero.',
+    nombre_no_coincide: 'El nombre no coincide. Escríbelo igual que el de tu clan.',
     forma_mal: 'Esa forma de escudo aún no está disponible. Actualiza la página.',
     simbolo_mal: 'Ese símbolo aún no está disponible. Actualiza la página.'
   };
