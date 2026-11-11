@@ -343,14 +343,14 @@ function fxExtender(x, quien, despues) {
     <label class="fld">¿Cuántos días más?</label>
     <div class="fx-ops" id="fxDias">${[7, 15, 30, 60, 90].map(d => `<button type="button" class="fx-op${d === 30 ? ' on' : ''}" data-v="${d}">${d} días</button>`).join('')}</div>
     <div class="hint" id="fxNueva" style="margin-top:10px"></div>
-    <label class="fld">Pagó (opcional) <span class="hint">se anota en su ficha y en tus ventas</span></label>
+    ${quien.usuario ? `<label class="fld">Pagó (opcional) <span class="hint">se anota en su ficha y en tus ventas</span></label>
     <div class="cdgrid"><label>Monto S/<input class="inp" id="fxMonto" type="number" min="0" step="0.5" placeholder="Ej.: 15"></label></div>
-    <div class="fx-ops" id="fxMedio">${Object.keys(FX_MEDIOS).map(k => `<button type="button" class="fx-op${k === medio ? ' on' : ''}" data-v="${k}">${FX_MEDIOS[k]}</button>`).join('')}</div>
+    <div class="fx-ops" id="fxMedio">${Object.keys(FX_MEDIOS).map(k => `<button type="button" class="fx-op${k === medio ? ' on' : ''}" data-v="${k}">${FX_MEDIOS[k]}</button>`).join('')}</div>` : ''}
     <div class="err" id="fxErr"></div>
     <div class="mfoot"><button type="button" class="btn-ghost" data-x>Cancelar</button><button type="button" class="btn-main" id="fxOk">Renovar</button></div>`);
   const nueva = () => { m.o.querySelector('#fxNueva').innerHTML = 'Nueva fecha: <b style="color:#f5ffcc">' + fxFecha(fxSumar(x.vence, dias)) + '</b>'; };
   fxOps(m.o.querySelector('#fxDias'), v => { dias = +v; nueva(); });
-  fxOps(m.o.querySelector('#fxMedio'), v => { medio = v; });
+  if (quien.usuario) fxOps(m.o.querySelector('#fxMedio'), v => { medio = v; });
   nueva();
   m.o.querySelector('#fxOk').addEventListener('click', async () => {
     const b = m.o.querySelector('#fxOk'), err = m.o.querySelector('#fxErr'); err.classList.remove('show');
@@ -366,7 +366,7 @@ function fxExtender(x, quien, despues) {
         fxRpc('codigo_cuenta_vence', { p_codigo: c.codigo, p_vence: vence }).catch(() => {});
         if (typeof esDescarga === 'function' && esDescarga(c) && typeof sincronizarDescargas === 'function') sincronizarDescargas();
       }
-      const monto = parseFloat(m.o.querySelector('#fxMonto').value);
+      const monto = quien.usuario ? parseFloat(m.o.querySelector('#fxMonto').value) : 0;
       let aviso = '';
       if (monto > 0) {
         try { await fxRpc('alumno_pagar', { p_usuario: quien.usuario, p_monto: monto, p_medio: medio, p_producto: x.producto, p_nota: '+' + dias + ' días' }); }
@@ -483,6 +483,7 @@ document.addEventListener('click', async e => {
     return;
   }
   if (b.dataset.vercod) {
+    CD.vista = 'codigos';
     document.querySelector('.tab[data-tab="codigos"]').click();
     setTimeout(() => { const s = $('cdBuscar'); if (s) { s.value = b.dataset.vercod; s.dispatchEvent(new Event('input')); } }, 300);
     return;

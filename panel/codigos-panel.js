@@ -96,12 +96,17 @@ async function sincronizarDescargas() {
   }
 }
 
+// Quién metió cada código en su cuenta (supabase/87-codigos-duenos.sql)
+async function cargarDuenos() {
+  try { CD.duenos = await pidRpc('codigos_duenos') || {}; CD.duenosErr = false; }
+  catch (e) { CD.duenos = null; CD.duenosErr = /codigos_duenos|could not find|does not exist|schema cache/i.test(e && e.message || ''); }
+}
 async function cargarCodigos() {
   revisarLibre();
   $('cdList').innerHTML = '<div class="loader">Cargando códigos…</div>';
   try {
     cargarPorId();
-    const [r] = await Promise.all([api('codigos'), cargarLimites()]);
+    const [r] = await Promise.all([api('codigos'), cargarLimites(), cargarDuenos()]);
     CD.lista = r.codigos || []; CD.config = r.config || CD.config; CD.hoy = r.hoy; CD.cargada = true;
     renderConfigAcceso(); renderCodigos();
     sincronizarDescargas();
@@ -182,75 +187,323 @@ function renderConfigAcceso() {
   ajusteEquiposId();
 }
 
-/* ---------- Lista ---------- */
+/* ---------- Lista (tabla compacta) ----------
+   Códigos y Por ID se ven en filas: quién lo usa (con su ficha), equipos, vence,
+   +30 días y el menú ⋯. En Códigos se pueden elegir varios a la vez. */
+const CX_ICO = {
+  copiar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+  mas: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
+  cel: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg>',
+  pc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M2 20h20"/></svg>'
+};
+const cxIcoEquipo = t => /Android|iPhone|iPad|Celular|móvil/i.test(t || '') ? CX_ICO.cel : CX_ICO.pc;
+const cxFecha = v => v ? v.split('-').reverse().join('/') : '';
+const cxHoy = () => CD.hoy || PID.hoy || new Date(Date.now() - 5 * 3600e3).toISOString().slice(0, 10);
+const cxDias = v => Math.round((new Date(v + 'T00:00:00Z') - new Date(cxHoy() + 'T00:00:00Z')) / 864e5);
+function cxVence(v, vencido) {
+  if (!v) return '<b>Sin fecha</b><small style="color:var(--text-faint)">no vence</small>';
+  const d = cxDias(v);
+  const col = vencido || d < 0 ? '#9A9A9A' : d <= 3 ? '#FF4B4B' : d <= 7 ? '#FF9600' : 'var(--text-faint)';
+  const txt = d < 0 ? 'venció' : d === 0 ? 'vence hoy' : d === 1 ? 'queda 1 día' : 'quedan ' + d + ' días';
+  return `<b>${esc(cxFecha(v))}</b><small style="color:${col}">${txt}</small>`;
+}
+const CX_EST = { Activo: '#C6E000', Lleno: '#38BDF8', Vencido: '#9A9A9A', Desactivado: '#9A9A9A', Vencidos: '#9A9A9A', Activos: '#C6E000' };
+const cxEstado = e => `<span class="cx-e" style="background:${CX_EST[e] || '#9A9A9A'}22;color:${CX_EST[e] || '#9A9A9A'}">${esc(e === 'Desactivado' ? 'Apagado' : e)}</span>`;
+
+(function estilosLista() {
+  const st = document.createElement('style');
+  st.textContent = `
+  .cx-sub { display: flex; gap: 6px; border-bottom: 2px solid #221C3B; margin: 4px 0 18px; overflow-x: auto; scrollbar-width: none; }
+  .cx-sub button { background: none; border: 0; color: var(--text-dim); font: 900 14.5px Nunito, sans-serif; padding: 10px 14px; border-bottom: 3px solid transparent; margin-bottom: -2px; cursor: pointer; white-space: nowrap; }
+  .cx-sub button.on { color: var(--accent); border-color: var(--accent); }
+  .cx-sub .c { background: #272041; border-radius: 8px; padding: 1px 7px; font-size: 12px; margin-left: 5px; color: var(--text); }
+  .cx-res { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+  .cx-res > div { background: var(--surface); border: 2px solid #2A2346; border-radius: 16px; padding: 12px 14px; }
+  .cx-res small { color: var(--text-faint); font: 800 10.5px Nunito, sans-serif; letter-spacing: 1px; text-transform: uppercase; }
+  .cx-res b { display: block; font: 1000 24px Nunito, sans-serif; margin-top: 2px; }
+  .cx-res button { background: none; border: 0; padding: 0; font: 800 12px Nunito, sans-serif; color: #FF9600; cursor: pointer; }
+  #cdChips { align-items: center; }
+  #cdChips select { width: auto; padding: 7px 12px; }
+  .cx-t { width: 100%; border-collapse: separate; border-spacing: 0 6px; font-size: 13.5px; }
+  .cx-t th { color: var(--text-faint); font: 800 10.5px Nunito, sans-serif; letter-spacing: 1px; text-transform: uppercase; text-align: left; padding: 0 10px; }
+  .cx-t td { background: var(--surface); padding: 10px; border-top: 2px solid #2A2346; border-bottom: 2px solid #2A2346; vertical-align: middle; }
+  .cx-t td:first-child { border-left: 2px solid #2A2346; border-radius: 14px 0 0 14px; }
+  .cx-t td:last-child { border-right: 2px solid #2A2346; border-radius: 0 14px 14px 0; text-align: right; white-space: nowrap; }
+  .cx-t tr.sel td { border-color: var(--accent); background: #1B1F0E; }
+  .cx-t tr.dim td { opacity: .6; }
+  .cx-t tr.cx-det td { background: #120E22; border: 2px solid #2A2346; border-radius: 14px; text-align: left; white-space: normal; }
+  .cx-cod { white-space: nowrap; background: none; border: 0; padding: 0; cursor: pointer; font: 1000 14px Nunito, sans-serif; letter-spacing: 1px; color: var(--accent); display: inline-flex; gap: 6px; align-items: center; }
+  .cx-cod svg { width: 13px; height: 13px; color: var(--text-faint); }
+  .cx-ck { width: 20px; height: 20px; border-radius: 6px; border: 2px solid #4A4170; display: inline-grid; place-items: center; background: none; padding: 0; cursor: pointer; vertical-align: middle; }
+  .cx-ck.on { background: var(--accent); border-color: var(--accent); }
+  .cx-ck.on::after { content: ''; width: 8px; height: 4px; border-left: 2.5px solid #151A03; border-bottom: 2.5px solid #151A03; transform: rotate(-45deg) translate(1px, -1px); }
+  .cx-pq { font-weight: 800; }
+  .cx-pq small { display: block; color: var(--text-faint); font-weight: 700; font-size: 11.5px; }
+  .cx-quien b { display: block; font-weight: 800; overflow-wrap: anywhere; }
+  .cx-quien small { color: var(--text-faint); font-size: 11.5px; display: block; overflow-wrap: anywhere; }
+  .cx-lnk { background: none; border: 0; padding: 0; cursor: pointer; color: #38BDF8; font: 800 11.5px Nunito, sans-serif; }
+  .cx-eq { min-width: 86px; }
+  .cx-eq .bar { height: 6px; border-radius: 4px; background: #2A2346; overflow: hidden; margin-top: 5px; }
+  .cx-eq i { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
+  .cx-v b { display: block; font-weight: 800; }
+  .cx-v small { font: 800 11.5px Nunito, sans-serif; }
+  .cx-e { font: 900 10.5px Nunito, sans-serif; letter-spacing: .06em; text-transform: uppercase; border-radius: 8px; padding: 3px 7px; margin-right: 8px; vertical-align: middle; }
+  .cx-ext { padding: 7px 10px; font-size: 12.5px; color: var(--accent); border-color: rgba(198,224,0,.45); vertical-align: middle; }
+  .cx-mas { width: 34px; height: 34px; border-radius: 10px; border: 2px solid #2F284E; background: none; color: var(--text); display: inline-grid; place-items: center; vertical-align: middle; cursor: pointer; margin-left: 4px; }
+  .cx-mas svg { width: 16px; height: 16px; }
+  .cx-acc { position: relative; }
+  .cx-menu { position: absolute; right: 8px; top: calc(100% - 6px); background: #1E1838; border: 2px solid #3A3160; border-radius: 14px; padding: 6px; width: 200px; z-index: 30; text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,.5); }
+  .cx-menu button { display: block; width: 100%; text-align: left; background: none; border: 0; color: var(--text); padding: 9px 10px; border-radius: 9px; font: 800 13px Nunito, sans-serif; cursor: pointer; }
+  .cx-menu button:hover { background: #2A2346; }
+  .cx-menu .r { color: #FF8A8A; }
+  .cx-dev { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #221C3B; font-size: 13px; }
+  .cx-dev:last-of-type { border: 0; }
+  .cx-dev span { display: flex; align-items: center; gap: 8px; }
+  .cx-dev svg { width: 16px; height: 16px; color: var(--text-faint); flex-shrink: 0; }
+  .cx-flot { position: sticky; bottom: 14px; margin-top: 14px; background: #C6E000; color: #151A03; border-radius: 18px; padding: 12px 16px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; box-shadow: 0 10px 30px rgba(0,0,0,.5); z-index: 20; }
+  .cx-flot b { font: 1000 15px Nunito, sans-serif; margin-right: auto; }
+  .cx-flot button { background: #151A03; color: #C6E000; border: 0; border-radius: 12px; padding: 9px 13px; font: 900 13px Nunito, sans-serif; cursor: pointer; }
+  .cx-flot button.r { background: #5a1010; color: #FFB3B3; }
+  .cx-flot button.x { background: none; color: #151A03; text-decoration: underline; }
+  .cx-mas-filas { display: block; margin: 10px auto 0; }
+  @media (max-width: 800px) {
+    .cx-res { grid-template-columns: 1fr 1fr; }
+    .cx-t thead { display: none; }
+    .cx-t, .cx-t tbody, .cx-t tr, .cx-t td { display: block; }
+    .cx-t tr { background: var(--surface); border: 2px solid #2A2346; border-radius: 16px; margin-bottom: 8px; padding: 10px 12px; display: grid; grid-template-columns: 26px 1fr auto; gap: 4px 10px; align-items: center; }
+    .cx-t tr.sel { border-color: var(--accent); background: #1B1F0E; }
+    .cx-t tr.cx-det { display: block; margin-top: -4px; }
+    .cx-t td { background: none !important; border: 0 !important; padding: 0; border-radius: 0 !important; }
+    .cx-t tr:not(.cx-det) td:nth-child(1) { grid-row: 1; }
+    .cx-t tr:not(.cx-det) td:nth-child(2) { grid-column: 2; grid-row: 1; }
+    .cx-t tr:not(.cx-det) td:nth-child(6) { grid-column: 3; grid-row: 1; text-align: right; }
+    .cx-t tr:not(.cx-det) td:nth-child(3), .cx-t tr:not(.cx-det) td:nth-child(4), .cx-t tr:not(.cx-det) td:nth-child(5) { grid-column: 2 / 4; }
+    .cx-t tr:not(.cx-det) td:nth-child(7) { grid-column: 1 / 4; text-align: left !important; margin-top: 6px; }
+    .cx-t.sin-ck tr:not(.cx-det) { grid-template-columns: 0 1fr auto; column-gap: 0; }
+    .cx-t.sin-ck tr:not(.cx-det) td:nth-child(2) { padding-right: 10px; }
+    .cx-pq small { display: inline; margin-left: 6px; }
+    .cx-menu { right: auto; left: 0; }
+    .cx-flot { position: sticky; bottom: 10px; }
+  }`;
+  document.head.appendChild(st);
+})();
+
+// Pestañas de arriba: Códigos · Por ID · Acceso libre y ajustes
+function renderVista() {
+  const box = $('cdPorId'); if (!box) return;
+  const v = CD.vista || 'codigos';
+  box.innerHTML = `<div class="cx-sub">
+    <button type="button" class="${v === 'codigos' ? 'on' : ''}" data-vista="codigos">Códigos<span class="c">${CD.lista.length}</span></button>
+    <button type="button" class="${v === 'id' ? 'on' : ''}" data-vista="id">Por ID<span class="c">${PID.err ? '!' : PID.lista.length}</span></button>
+    <button type="button" class="${v === 'ajustes' ? 'on' : ''}" data-vista="ajustes">Acceso libre y ajustes</button></div>
+    <div class="cx-res" id="cdRes"${v === 'ajustes' ? ' hidden' : ''}></div>`;
+  box.querySelectorAll('[data-vista]').forEach(b => b.addEventListener('click', () => {
+    if (v === b.dataset.vista) return;
+    CD.vista = b.dataset.vista; CD.menu = null; $('cdBuscar').value = '';
+    $('cdBuscar').placeholder = CD.vista === 'id' ? 'Buscar por ID, apodo, correo o nota…' : 'Buscar código, alumno, ID o nota…';
+    renderCodigos();
+  }));
+  const aj = v === 'ajustes';
+  $('cdConfig').hidden = !aj;
+  $('cdBuscar').closest('.toolbar').hidden = aj; $('cdChips').hidden = aj; $('cdList').hidden = aj;
+  const det = $('cdAjustes'); if (det && aj) det.open = true;
+}
+
+// Fila de acciones: estado, +30 días y ⋯
+const cxAcciones = (key, estado, ext, extTxt) => `<td class="cx-acc">${cxEstado(estado)}${ext ? `<button class="btn-ghost cx-ext" type="button" data-cx-ext="${esc(key)}">${extTxt || '+30 días'}</button>` : ''}<button class="cx-mas" type="button" data-cx-menu="${esc(key)}" aria-label="Más opciones">${CX_ICO.mas}</button>${CD.menu === key ? '<div class="cx-menu" id="cxMenu"></div>' : ''}</td>`;
+
 function renderCodigos() {
-  if (CD.vista === 'id') { renderPorId(); return; }
   renderVista();
-  const L = CD.lista;
+  if (CD.vista === 'ajustes') { $('cdStats').innerHTML = 'Lo que se abre para todos sin código y los ajustes de equipos.'; return; }
+  if (CD.vista === 'id') { renderPorId(); return; }
+  const L = CD.lista, hoy = cxHoy();
+  CD.sel = CD.sel || new Set();
+  [...CD.sel].forEach(k => { if (!L.some(c => c.codigo === k)) CD.sel.delete(k); });
+  const duenos = c => (CD.duenos || {})[c.codigo] || { n: 0, lista: [] };
+  const pronto = c => c.estado !== 'Desactivado' && c.estado !== 'Vencido' && c.vence && cxDias(c.vence) >= 0 && cxDias(c.vence) <= 7;
   // 'Descargas' no es un estado: muestra solo los códigos de descarga (descarga-VIP)
-  const pasa = (c, e) => e === 'Todos' || (e === 'Descargas' ? esDescarga(c) : c.estado === e);
+  const pasa = (c, e) => e === 'Todos' || (e === 'Descargas' ? esDescarga(c) : e === 'Pronto' ? pronto(c) : c.estado === e);
   const cuenta = e => L.filter(c => pasa(c, e)).length;
   const disp = L.reduce((s, c) => s + c.dispositivos.length, 0);
-  $('cdStats').innerHTML = `<b>${L.length}</b> código${L.length === 1 ? '' : 's'} · <b>${cuenta('Activo')}</b> activos · <b>${disp}</b> dispositivo${disp === 1 ? '' : 's'} registrados`;
-  $('cdChips').innerHTML = ['Todos', 'Activo', 'Lleno', 'Vencido', 'Desactivado', 'Descargas'].map(e =>
-    `<button type="button" class="chip st ${e === CD.filtro ? 'on' : ''}" data-e="${e}">${e === 'Todos' ? 'Todos' : e === 'Descargas' ? 'Descargas PDF' : e + 's'} <span class="c">${cuenta(e)}</span></button>`).join('');
-  $('cdChips').querySelectorAll('.chip').forEach(ch => ch.addEventListener('click', () => { CD.filtro = ch.dataset.e; renderCodigos(); }));
+  $('cdStats').innerHTML = `<b>${L.length}</b> código${L.length === 1 ? '' : 's'} · <b>${disp}</b> equipo${disp === 1 ? '' : 's'} registrados${CD.duenosErr ? ' · <span style="color:#FBBF24">para ver quién usa cada código falta correr supabase/87-codigos-duenos.sql</span>' : ''}`;
+  $('cdRes').innerHTML = `<div><small>Activos</small><b style="color:#C6E000">${cuenta('Activo')}</b></div>
+    <div><small>Llenos</small><b style="color:#38BDF8">${cuenta('Lleno')}</b></div>
+    <div><small>Vencen en 7 días</small><b style="color:#FF9600">${cuenta('Pronto')}</b>${puedeTab('porvencer') ? '<button type="button" data-ir="porvencer">Ver en Por vencer ›</button>' : ''}</div>
+    <div><small>Vencidos / apagados</small><b style="color:#9A9A9A">${cuenta('Vencido') + cuenta('Desactivado')}</b></div>`;
+  const prods = [...new Set(L.map(c => etiquetaProd(c.producto)))].sort();
+  if (CD.prod && !prods.includes(CD.prod)) CD.prod = '';
+  $('cdChips').innerHTML = ['Todos', 'Activo', 'Lleno', 'Pronto', 'Vencido', 'Desactivado', 'Descargas'].map(e =>
+    `<button type="button" class="chip st ${e === CD.filtro ? 'on' : ''}" data-e="${e}">${{ Todos: 'Todos', Descargas: 'Descargas PDF', Pronto: 'Vencen pronto', Desactivado: 'Apagados' }[e] || e + 's'} <span class="c">${cuenta(e)}</span></button>`).join('') +
+    (prods.length > 1 ? `<select class="inp" id="cdProd"><option value="">Todos los paquetes</option>${prods.map(p => `<option${CD.prod === p ? ' selected' : ''}>${esc(p)}</option>`).join('')}</select>` : '');
+  $('cdChips').querySelectorAll('.chip').forEach(ch => ch.addEventListener('click', () => { CD.filtro = ch.dataset.e; CD.mostrar = 0; renderCodigos(); }));
+  const sp = $('cdProd'); if (sp) sp.addEventListener('change', () => { CD.prod = sp.value; CD.mostrar = 0; renderCodigos(); });
   const q = $('cdBuscar').value.trim().toLowerCase();
-  const rows = L.filter(c => pasa(c, CD.filtro) &&
-    (!q || [c.codigo, c.nota, etiquetaProd(c.producto)].join(' ').toLowerCase().includes(q)));
+  const rows = L.filter(c => pasa(c, CD.filtro) && (!CD.prod || etiquetaProd(c.producto) === CD.prod) &&
+    (!q || [c.codigo, c.nota, etiquetaProd(c.producto), ...duenos(c).lista.map(d => [d.apodo, d.jid, d.email].join(' '))].join(' ').toLowerCase().includes(q)));
   if (!L.length) { $('cdList').innerHTML = '<div class="state-msg">Aún no hay códigos. Crea uno con <b>Crear códigos</b> o trae los antiguos con <b>Importar</b>.</div>'; return; }
   if (!rows.length) { $('cdList').innerHTML = '<div class="state-msg">No hay códigos con ese filtro.</div>'; return; }
-  $('cdList').innerHTML = rows.map(c => {
-    const usados = c.usosAnt + c.dispositivos.length;
-    const pct = c.max ? Math.min(100, Math.round(usados / c.max * 100)) : 0;
-    return `<article class="rcard cdcard est-${esc(c.estado)} ${['Vencido', 'Desactivado'].includes(c.estado) ? 'dim' : ''}">
-      <div class="rtop">
-        <div class="rmeta">
-          <button class="cdcode" type="button" data-copy="${esc(c.codigo)}" title="Copiar código">${esc(c.codigo)} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
-          <span class="pill">${esc(etiquetaProd(c.producto))}</span>
-          ${esDescarga(c) ? `<span class="pill gray" title="Descargas PDF por alumno al día">${CD.limites[c.codigo] ? CD.limites[c.codigo] + ' descargas/día' : 'límite general'}</span>` : ''}
-          <span class="pill ${c.estado === 'Activo' ? 'Vigente' : c.estado === 'Lleno' ? 'Pendiente' : 'Revertida'}">${esc(c.estado)}</span>
-        </div>
-        <span class="rdate">${c.vence ? 'vence el ' + esc(c.vence.split('-').reverse().join('/')) : 'sin vencimiento'}</span>
-      </div>
-      ${c.nota ? `<div class="cdnota">👤 ${esc(c.nota)}</div>` : ''}
-      <div class="cduso"><div class="bar"><i style="width:${c.max ? pct : 0}%"></i></div>
-        <span><b>${usados}</b> de ${c.max ? c.max : '∞'} dispositivos${c.usosAnt ? ` <em>(${c.usosAnt} del sistema anterior)</em>` : ''}</span></div>
-      <div class="cddevs" id="devs-${esc(c.codigo)}" hidden>
-        ${c.dispositivos.length ? c.dispositivos.map(d => `<div class="dev"><span>📱 <b>${esc(d.equipo || 'Dispositivo')}</b> · activado ${esc(fechaCorta(d.alta))} · último uso ${esc(fechaCorta(d.ultimo))}</span>
-          <button class="rbtn" type="button" data-lib="${esc(c.codigo)}" data-id="${esc(d.id)}">Liberar</button></div>`).join('') : '<div class="hint">Aún no hay dispositivos registrados con este código.</div>'}
-        <div class="rfoot" style="margin-top:8px;">
-          ${c.usosAnt ? `<button class="rbtn" type="button" data-lib="${esc(c.codigo)}" data-id="anteriores">Reiniciar usos anteriores (${c.usosAnt})</button>` : ''}
-          ${usados ? `<button class="rbtn danger" type="button" data-lib="${esc(c.codigo)}" data-id="todos">Liberar todos</button>` : ''}
-        </div>
-      </div>
-      <div class="rfoot">
-        <button class="rbtn" type="button" data-devs="${esc(c.codigo)}">Dispositivos (${c.dispositivos.length})</button>
-        <button class="rbtn link" type="button" data-msg="${esc(c.codigo)}">Copiar mensaje</button>
-        <button class="rbtn danger" type="button" data-del="${esc(c.codigo)}">Borrar</button>
-        <button class="rbtn primary" type="button" data-ed="${esc(c.codigo)}">${ICON_EDIT} Editar</button>
-      </div>
-    </article>`;
-  }).join('');
-  const find = cod => CD.lista.find(x => x.codigo === cod);
-  $('cdList').querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', () => copiar(b.dataset.copy)));
-  $('cdList').querySelectorAll('[data-msg]').forEach(b => b.addEventListener('click', () => copiar(mensajeCodigo(find(b.dataset.msg)))));
-  $('cdList').querySelectorAll('[data-devs]').forEach(b => b.addEventListener('click', () => { const el = document.getElementById('devs-' + b.dataset.devs); el.hidden = !el.hidden; }));
-  $('cdList').querySelectorAll('[data-ed]').forEach(b => b.addEventListener('click', () => editarCodigo(find(b.dataset.ed))));
-  $('cdList').querySelectorAll('[data-lib]').forEach(b => b.addEventListener('click', async () => {
-    const todos = b.dataset.id === 'todos';
+  const tope = Math.max(60, CD.mostrar || 0), ver = rows.slice(0, tope);
+  $('cdList').innerHTML = `<table class="cx-t"><thead><tr><th><button type="button" class="cx-ck${ver.every(c => CD.sel.has(c.codigo)) ? ' on' : ''}" data-cx-todos aria-label="Elegir todos"></button></th><th>Código</th><th>Paquete</th><th>Lo usa</th><th>Equipos</th><th>Vence</th><th></th></tr></thead><tbody>
+    ${ver.map(c => {
+      const usados = c.usosAnt + c.dispositivos.length, d = duenos(c), sel = CD.sel.has(c.codigo);
+      const lim = esDescarga(c) ? (CD.limites[c.codigo] ? CD.limites[c.codigo] + ' descargas al día' : 'límite general de descargas') : '';
+      const quien = CD.duenosErr || !CD.duenos ? '<small>—</small>'
+        : !d.n ? `<b style="color:var(--text-faint)">Nadie aún</b><small>${c.nota ? esc(c.nota) : 'nadie lo metió en su cuenta'}</small>`
+        : d.n === 1 ? `<b>${esc(d.lista[0].apodo || 'Sin apodo')}</b>${puedeTab('alumnos') ? `<button class="cx-lnk" type="button" data-cx-ficha="${esc(d.lista[0].usuario)}">${d.lista[0].jid ? 'ID ' + d.lista[0].jid + ' · ' : ''}Ficha ›</button>` : `<small>${d.lista[0].jid ? 'ID ' + d.lista[0].jid : ''}</small>`}${c.nota ? `<small>${esc(c.nota)}</small>` : ''}`
+        : `<b>${d.n} cuentas</b><button class="cx-lnk" type="button" data-cx-det="q:${esc(c.codigo)}">Ver quiénes ›</button>${c.nota ? `<small>${esc(c.nota)}</small>` : ''}`;
+      const det = CD.det === 'q:' + c.codigo ? `<tr class="cx-det"><td colspan="7">${d.lista.map(x => `<div class="cx-dev"><span><b>${esc(x.apodo || 'Sin apodo')}</b>${x.jid ? ' · ID ' + x.jid : ''} · ${esc(x.email || '')}</span>${puedeTab('alumnos') ? `<button class="rbtn" type="button" data-cx-ficha="${esc(x.usuario)}">Ficha</button>` : ''}</div>`).join('')}</td></tr>`
+        : CD.det === 'e:' + c.codigo ? `<tr class="cx-det"><td colspan="7">${c.dispositivos.length ? c.dispositivos.map(x => `<div class="cx-dev"><span>${cxIcoEquipo(x.equipo)}<span><b>${esc(x.equipo || 'Equipo')}</b> · activado ${esc(fechaCorta(x.alta))} · último uso ${esc(fechaCorta(x.ultimo))}</span></span>
+            <button class="rbtn" type="button" data-lib="${esc(c.codigo)}" data-id="${esc(x.id)}">Liberar</button></div>`).join('') : '<div class="hint">Aún no hay equipos registrados con este código.</div>'}
+          <div class="rfoot" style="margin-top:8px;">${c.usosAnt ? `<button class="rbtn" type="button" data-lib="${esc(c.codigo)}" data-id="anteriores">Reiniciar usos anteriores (${c.usosAnt})</button>` : ''}${usados ? `<button class="rbtn danger" type="button" data-lib="${esc(c.codigo)}" data-id="todos">Liberar todos</button>` : ''}</div></td></tr>` : '';
+      return `<tr class="${sel ? 'sel' : ''}${['Vencido', 'Desactivado'].includes(c.estado) ? ' dim' : ''}">
+        <td><button type="button" class="cx-ck${sel ? ' on' : ''}" data-cx-sel="${esc(c.codigo)}" aria-label="Elegir"></button></td>
+        <td><button class="cx-cod" type="button" data-copy="${esc(c.codigo)}" title="Copiar código">${esc(c.codigo)} ${CX_ICO.copiar}</button></td>
+        <td class="cx-pq">${esc(etiquetaProd(c.producto))}${lim ? `<small>${esc(lim)}</small>` : ''}</td>
+        <td class="cx-quien">${quien}</td>
+        <td class="cx-eq"><b>${usados}</b> de ${c.max ? c.max : '∞'}<div class="bar"><i style="width:${c.max ? Math.min(100, Math.round(usados / c.max * 100)) : 0}%"></i></div></td>
+        <td class="cx-v">${cxVence(c.vence, c.estado === 'Vencido')}</td>
+        ${cxAcciones(c.codigo, c.estado, c.estado !== 'Desactivado', c.estado === 'Vencido' ? 'Renovar' : '')}</tr>${det}`;
+    }).join('')}</tbody></table>
+    ${rows.length > tope ? `<button class="btn-ghost cx-mas-filas" type="button" data-cx-mas>Ver ${Math.min(60, rows.length - tope)} más (de ${rows.length})</button>` : ''}
+    ${CD.sel.size ? `<div class="cx-flot"><b>${CD.sel.size} código${CD.sel.size === 1 ? '' : 's'} elegido${CD.sel.size === 1 ? '' : 's'}</b>
+      <button type="button" data-cx-lote="ext">+ días a ${CD.sel.size === 1 ? 'este' : 'los ' + CD.sel.size}</button><button type="button" data-cx-lote="msg">Copiar mensajes</button>
+      <button type="button" data-cx-lote="apagar">Apagar</button><button type="button" class="r" data-cx-lote="borrar">Borrar</button><button type="button" class="x" data-cx-lote="nada">Quitar selección</button></div>` : ''}`;
+  if (CD.menu && $('cxMenu')) {
+    const c = L.find(x => x.codigo === CD.menu);
+    if (c) $('cxMenu').innerHTML = `<button type="button" data-cx-m="editar">Editar</button><button type="button" data-cx-m="equipos">Equipos (${c.dispositivos.length})</button>
+      <button type="button" data-cx-m="msg">Copiar mensaje</button><button type="button" data-cx-m="apagar">${c.activo === false ? 'Prender' : 'Apagar'}</button><button type="button" class="r" data-cx-m="borrar">Borrar</button>`;
+  }
+}
+
+// Guardar un código en la hoja con cambios (vence, activo) y avisar a la cuenta del alumno
+async function cxGuardarCod(c, cambios) {
+  const datos = { producto: c.producto, max: c.max, vence: c.vence || '', nota: c.nota || '', editar: c.codigo, activo: c.activo !== false, ...cambios };
+  await api('guardarCodigo', { datos: JSON.stringify(datos) });
+  Object.assign(c, { vence: datos.vence, activo: datos.activo });
+  c.estado = !c.activo ? 'Desactivado' : (c.vence && CD.hoy && CD.hoy > c.vence) ? 'Vencido' : (c.max > 0 && c.usosAnt + c.dispositivos.length >= c.max) ? 'Lleno' : 'Activo';
+  if ('vence' in cambios && typeof fxRpc === 'function') fxRpc('codigo_cuenta_vence', { p_codigo: c.codigo, p_vence: datos.vence }).catch(() => {});
+}
+function cxLoteDias(n, alElegir) {
+  let dias = 30;
+  const m = fxModal(`<div class="eyebrow">Renovar varios</div><h3>${n} código${n === 1 ? '' : 's'}</h3>
+    <div class="hint" style="margin-top:2px">A cada uno se le suman los días desde su fecha (o desde hoy si ya venció). Los apagados se prenden.</div>
+    <label class="fld">¿Cuántos días más?</label>
+    <div class="fx-ops" id="fxDias">${[7, 15, 30, 60, 90].map(d => `<button type="button" class="fx-op${d === 30 ? ' on' : ''}" data-v="${d}">${d} días</button>`).join('')}</div>
+    <div class="err" id="fxErr"></div>
+    <div class="mfoot"><button type="button" class="btn-ghost" data-x>Cancelar</button><button type="button" class="btn-main" id="fxOk">Renovar</button></div>`);
+  fxOps(m.o.querySelector('#fxDias'), v => { dias = +v; });
+  m.o.querySelector('#fxOk').addEventListener('click', () => { m.cerrar(); alElegir(dias); });
+}
+async function cxLote(accion) {
+  const L = CD.lista.filter(c => CD.sel.has(c.codigo));
+  if (!L.length) return;
+  if (accion === 'nada') { CD.sel.clear(); renderCodigos(); return; }
+  if (accion === 'msg') { copiar(L.map(mensajeCodigo).join('\n\n— — —\n\n')); return; }
+  const correr = async (txt, fn) => {
+    let ok = 0, mal = 0;
+    for (const [i, c] of L.entries()) {
+      toast(`${txt} ${i + 1} de ${L.length}…`);
+      try { await fn(c); ok++; } catch (e) { mal++; }
+    }
+    sincronizarDescargas(); renderCodigos();
+    toast(`${txt}: ${ok} listo${ok === 1 ? '' : 's'}${mal ? ` · ${mal} no se pudo` : ''}`, !!mal);
+  };
+  if (accion === 'ext') cxLoteDias(L.length, dias => correr('Renovando', c => cxGuardarCod(c, { vence: fxSumar(c.vence, dias), activo: true })));
+  if (accion === 'apagar') correr('Apagando', c => cxGuardarCod(c, { activo: false }));
+  if (accion === 'borrar') {
+    const m = fxModal(`<div class="eyebrow">Borrar</div><h3>¿Borrar ${L.length} código${L.length === 1 ? '' : 's'}?</h3><div class="hint">Dejan de abrir en todos sus equipos. No se puede deshacer.</div>
+      <div class="mfoot"><button type="button" class="btn-ghost" data-x>Cancelar</button><button type="button" class="btn-main" id="fxOk" style="background:#FF4B4B;box-shadow:0 4px 0 #a32b2b;color:#fff">Borrar</button></div>`);
+    m.o.querySelector('#fxOk').addEventListener('click', () => {
+      m.cerrar();
+      correr('Borrando', async c => { await api('borrarCodigo', { codigo: c.codigo }); CD.lista = CD.lista.filter(x => x !== c); CD.sel.delete(c.codigo); });
+    });
+  }
+}
+
+// Un solo manejador para la tabla (Códigos y Por ID)
+$('cdList').addEventListener('click', async e => {
+  const b = e.target.closest('button'); if (!b || !$('cdList').contains(b)) return;
+  const enId = CD.vista === 'id', d = b.dataset;
+  if (d.copy) { copiar(d.copy); return; }
+  if (d.cxFicha) { abrirFicha(d.cxFicha); return; }
+  if ('cxMas' in d) { CD.mostrar = (Math.max(60, CD.mostrar || 0)) + 60; renderCodigos(); return; }
+  if (d.cxDet) { CD.det = CD.det === d.cxDet ? null : d.cxDet; renderCodigos(); return; }
+  if (d.cxMenu) { CD.menu = CD.menu === d.cxMenu ? null : d.cxMenu; renderCodigos(); return; }
+  if (d.cxLote) { cxLote(d.cxLote); return; }
+  if (d.cxSel) { CD.sel.has(d.cxSel) ? CD.sel.delete(d.cxSel) : CD.sel.add(d.cxSel); renderCodigos(); return; }
+  if ('cxTodos' in d) {
+    const ver = [...$('cdList').querySelectorAll('[data-cx-sel]')].map(x => x.dataset.cxSel);
+    const todos = ver.every(k => CD.sel.has(k));
+    ver.forEach(k => todos ? CD.sel.delete(k) : CD.sel.add(k)); renderCodigos(); return;
+  }
+  if (d.cxExt) {
+    if (enId) {
+      const a = PID.lista.find(x => String(x.id) === d.cxExt); if (!a) return;
+      fxExtender({ origen: 'id', id: a.id, producto: a.producto, vence: a.vence }, { usuario: a.usuario, apodo: a.apodo }, () => cargarPorId());
+    } else {
+      const c = CD.lista.find(x => x.codigo === d.cxExt); if (!c) return;
+      const due = ((CD.duenos || {})[c.codigo] || { lista: [] }).lista;
+      fxExtender({ origen: 'codigo', codigo: c.codigo, hoja: c, producto: c.producto, vence: c.vence }, due.length === 1 ? due[0] : { usuario: null, apodo: c.nota || c.codigo }, () => renderCodigos());
+    }
+    return;
+  }
+  if (d.cxM) {
+    const key = CD.menu; CD.menu = null;
+    if (enId) {
+      const a = PID.lista.find(x => String(x.id) === key); if (!a) { renderCodigos(); return; }
+      if (d.cxM === 'editar') { renderCodigos(); darPorId(a); return; }
+      if (d.cxM === 'equipos') { CD.det = 'p:' + a.id; renderCodigos(); return; }
+      if (d.cxM === 'ficha') { abrirFicha(a.usuario); return; }
+      if (d.cxM === 'quitar') {
+        if (b.dataset.seguro !== '1') { CD.menu = key; b.dataset.seguro = '1'; b.textContent = '¿Seguro? Toca otra vez'; return; }
+        try { await pidRpc('acceso_id_quitar', { p_id: a.id }); PID.lista = PID.lista.filter(x => x !== a); toast('Quitado. Al alumno se le cierra en unos minutos.'); }
+        catch (er) { toast(pidError(er), true); }
+        renderCodigos(); return;
+      }
+      return;
+    }
+    const c = CD.lista.find(x => x.codigo === key); if (!c) { renderCodigos(); return; }
+    if (d.cxM === 'editar') { renderCodigos(); editarCodigo(c); return; }
+    if (d.cxM === 'equipos') { CD.det = 'e:' + c.codigo; renderCodigos(); return; }
+    if (d.cxM === 'msg') { renderCodigos(); copiar(mensajeCodigo(c)); return; }
+    if (d.cxM === 'apagar') {
+      try { await cxGuardarCod(c, { activo: c.activo === false }); toast(c.activo ? 'Código prendido' : 'Código apagado: deja de abrir'); sincronizarDescargas(); }
+      catch (er) { toast(er.message, true); }
+      renderCodigos(); return;
+    }
+    if (d.cxM === 'borrar') {
+      if (b.dataset.seguro !== '1') { CD.menu = key; b.dataset.seguro = '1'; b.textContent = '¿Seguro? Toca otra vez'; return; }
+      try { await api('borrarCodigo', { codigo: c.codigo }); CD.lista = CD.lista.filter(x => x !== c); CD.sel && CD.sel.delete(c.codigo); toast('Código borrado'); sincronizarDescargas(); }
+      catch (er) { toast(er.message, true); }
+      renderCodigos(); return;
+    }
+  }
+  if (d.lib) {
+    const todos = d.id === 'todos';
     if (todos && !b.classList.contains('confirm')) { b.classList.add('confirm'); b.textContent = '¿Seguro? Toca otra vez'; return; }
     b.disabled = true;
-    try { await api('liberar', { codigo: b.dataset.lib, id: b.dataset.id }); toast(todos ? 'Todos los dispositivos liberados: pedirán el código otra vez' : b.dataset.id === 'anteriores' ? 'Usos anteriores reiniciados' : 'Dispositivo liberado: pedirá el código otra vez'); await cargarCodigos(); const el = document.getElementById('devs-' + b.dataset.lib); if (el) el.hidden = false; }
-    catch (e) { toast(e.message, true); b.disabled = false; }
-  }));
-  $('cdList').querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', async () => {
-    if (!b.classList.contains('confirm')) { b.classList.add('confirm'); b.textContent = '¿Seguro? Toca otra vez'; setTimeout(() => { if (b.isConnected) { b.classList.remove('confirm'); b.textContent = 'Borrar'; } }, 4000); return; }
-    b.disabled = true;
-    try { await api('borrarCodigo', { codigo: b.dataset.del }); CD.lista = CD.lista.filter(x => x.codigo !== b.dataset.del); toast('Código borrado'); renderCodigos(); sincronizarDescargas(); }
-    catch (e) { toast(e.message, true); b.disabled = false; }
-  }));
-}
+    try { await api('liberar', { codigo: d.lib, id: d.id }); toast(todos ? 'Todos los equipos liberados: pedirán el código otra vez' : d.id === 'anteriores' ? 'Usos anteriores reiniciados' : 'Equipo liberado: pedirá el código otra vez'); await cargarCodigos(); }
+    catch (er) { toast(er.message, true); b.disabled = false; }
+    return;
+  }
+  if (d.plib) {
+    const a = PID.lista.find(x => String(x.id) === d.plib); if (!a) return;
+    b.disabled = true; b.textContent = 'Liberando…';
+    try {
+      await pidRpc('acceso_id_liberar', { p_usuario: a.usuario, p_dispositivo: d.disp || null });
+      // El mismo alumno puede tener varios accesos: sus equipos son los mismos en todos
+      PID.lista.filter(x => x.usuario === a.usuario).forEach(x => { x.equipos = d.disp ? pidEquipos(x).filter(q => q.dispositivo !== d.disp) : []; });
+      toast(d.disp ? 'Equipo liberado' : 'Equipos liberados');
+    } catch (er) { toast(/acceso_id_liberar/.test(er.message || '') ? 'Falta correr supabase/77-accesos-id-panel.sql en Supabase.' : pidError(er), true); }
+    renderCodigos();
+  }
+});
+// El menú ⋯ se cierra al tocar fuera; «Ver en Por vencer» lleva a esa sección
+document.addEventListener('click', e => {
+  const ir = e.target.closest('#cdRes [data-ir]');
+  if (ir) { const t = document.querySelector(`.tab[data-tab="${ir.dataset.ir}"]`); if (t) t.click(); return; }
+  if (CD.menu && !e.target.closest('.cx-menu, [data-cx-menu]')) { CD.menu = null; if (!$('tab-codigos').hidden) renderCodigos(); }
+});
 
 /* ---------- Limpiar cuentas ----------
    Los alumnos guardan sus códigos en su cuenta (Perfil · Mis accesos). Este botón marca como
@@ -471,34 +724,25 @@ async function cargarPorId() {
   } catch (e) { PID.err = pidError(e); }
   renderPorId(); ajusteEquiposId();
 }
-// Arriba de la lista: «Códigos» o «Por ID». Por ID usa el mismo buscador, filtros y tarjetas que los códigos
-function renderVista() {
-  const box = $('cdPorId'); if (!box) return;
-  const nId = PID.lista.length;
-  box.innerHTML = `<div class="chips" style="margin:0 0 14px;">
-    <button type="button" class="chip ${CD.vista !== 'id' ? 'on' : ''}" data-vista="codigos">Códigos <span class="c">${CD.lista.length}</span></button>
-    <button type="button" class="chip ${CD.vista === 'id' ? 'on' : ''}" data-vista="id">Por ID <span class="c">${PID.err ? '!' : nId}</span></button></div>`;
-  box.querySelectorAll('[data-vista]').forEach(b => b.addEventListener('click', () => {
-    if (CD.vista === b.dataset.vista) return;
-    CD.vista = b.dataset.vista; $('cdBuscar').value = '';
-    $('cdBuscar').placeholder = CD.vista === 'id' ? 'Buscar por ID, apodo, correo o nota…' : 'Buscar por código, usuario o curso…';
-    renderCodigos();
-  }));
-}
 const pidVigente = a => !a.vence || !PID.hoy || a.vence >= PID.hoy;
 const pidEquipos = a => Array.isArray(a.equipos) ? a.equipos : [];
 function renderPorId() {
   renderVista();
   if (CD.vista !== 'id') return;
   const L = PID.lista;
-  const pasa = (a, e) => e === 'Todos' || (e === 'Activos' ? pidVigente(a) : e === 'Vencidos' ? !pidVigente(a) : esDescarga(a));
+  const pronto = a => pidVigente(a) && a.vence && cxDias(a.vence) <= 7;
+  const pasa = (a, e) => e === 'Todos' || (e === 'Activos' ? pidVigente(a) : e === 'Vencidos' ? !pidVigente(a) : e === 'Pronto' ? pronto(a) : esDescarga(a));
   const cuenta = e => L.filter(a => pasa(a, e)).length;
-  if (!['Todos', 'Activos', 'Vencidos', 'Descargas'].includes(PID.filtro)) PID.filtro = 'Todos';
+  if (!['Todos', 'Activos', 'Pronto', 'Vencidos', 'Descargas'].includes(PID.filtro)) PID.filtro = 'Todos';
   const eqUso = L.reduce((s, a) => s + pidEquipos(a).length, 0);
-  $('cdStats').innerHTML = PID.err ? '' : `<b>${L.length}</b> por ID · <b>${cuenta('Activos')}</b> activos · <b>${eqUso}</b> equipo${eqUso === 1 ? '' : 's'} en uso`;
-  $('cdChips').innerHTML = PID.err ? '' : ['Todos', 'Activos', 'Vencidos', 'Descargas'].map(e =>
-    `<button type="button" class="chip st ${e === PID.filtro ? 'on' : ''}" data-e="${e}">${e === 'Descargas' ? 'Descargas PDF' : e} <span class="c">${cuenta(e)}</span></button>`).join('');
-  $('cdChips').querySelectorAll('.chip').forEach(ch => ch.addEventListener('click', () => { PID.filtro = ch.dataset.e; renderPorId(); }));
+  $('cdStats').innerHTML = PID.err ? '' : `<b>${L.length}</b> accesos dados por ID, sin código`;
+  $('cdRes').innerHTML = PID.err ? '' : `<div><small>Activos</small><b style="color:#C6E000">${cuenta('Activos')}</b></div>
+    <div><small>Vencen en 7 días</small><b style="color:#FF9600">${cuenta('Pronto')}</b>${puedeTab('porvencer') ? '<button type="button" data-ir="porvencer">Ver en Por vencer ›</button>' : ''}</div>
+    <div><small>Vencidos</small><b style="color:#9A9A9A">${cuenta('Vencidos')}</b></div>
+    <div><small>Equipos en uso</small><b style="color:#38BDF8">${eqUso}</b></div>`;
+  $('cdChips').innerHTML = PID.err ? '' : ['Todos', 'Activos', 'Pronto', 'Vencidos', 'Descargas'].map(e =>
+    `<button type="button" class="chip st ${e === PID.filtro ? 'on' : ''}" data-e="${e}">${{ Descargas: 'Descargas PDF', Pronto: 'Vencen pronto' }[e] || e} <span class="c">${cuenta(e)}</span></button>`).join('');
+  $('cdChips').querySelectorAll('.chip').forEach(ch => ch.addEventListener('click', () => { PID.filtro = ch.dataset.e; CD.mostrar = 0; renderPorId(); }));
   if (PID.err) { $('cdList').innerHTML = `<div class="state-msg error">${esc(PID.err)}</div>`; return; }
   const q = $('cdBuscar').value.trim().toLowerCase();
   const rows = L.filter(a => pasa(a, PID.filtro) && (!q || [a.jid, a.apodo, a.email, a.nota, etiquetaProd(a.producto)].join(' ').toLowerCase().includes(q)));
@@ -509,60 +753,29 @@ function renderPorId() {
     const m = L.filter(x => x.usuario === u && pidVigente(x)).map(x => x.max_equipos == null ? (PID.equipos || 0) : x.max_equipos);
     return !m.length ? (PID.equipos || 0) : m.includes(0) ? 0 : Math.max(...m);
   };
-  const ico = t => /Android|iPhone/.test(t || '') ? '📱' : '💻';
-  $('cdList').innerHTML = rows.slice(0, 300).map(a => {
-    const max = maxDe(a.usuario), vig = pidVigente(a), eqs = pidEquipos(a), pct = max ? Math.min(100, Math.round(eqs.length / max * 100)) : 0;
-    return `<article class="rcard cdcard ${vig ? '' : 'dim'}">
-      <div class="rtop">
-        <div class="rmeta">
-          ${a.jid ? `<button class="cdcode" type="button" data-copy="${esc(a.jid)}" title="Copiar ID">ID ${esc(a.jid)} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>` : ''}
-          <span class="pill">${esc(etiquetaProd(a.producto))}</span>
-          ${esDescarga(a) ? `<span class="pill gray" title="Descargas PDF por día">${a.limite_dia ? a.limite_dia + ' descargas/día' : 'límite general'}</span>` : ''}
-          ${a.max_equipos != null ? `<span class="pill gray" title="Dispositivos de este acceso">${a.max_equipos ? a.max_equipos + (a.max_equipos === 1 ? ' dispositivo' : ' dispositivos') : 'Dispositivos sin límite'}</span>` : ''}
-          <span class="pill ${vig ? 'Vigente' : 'Revertida'}">${vig ? 'Activo' : 'Vencido'}</span>
-        </div>
-        <span class="rdate">${a.vence ? (vig ? 'vence el ' : 'venció el ') + esc(a.vence.split('-').reverse().join('/')) : 'sin vencimiento'}</span>
-      </div>
-      <div class="cdnota">👤 <b>${esc(a.apodo || 'Sin apodo')}</b> · ${esc(a.email || '')}${a.nota ? ' · ' + esc(a.nota) : ''}</div>
-      <div class="cduso"><div class="bar"><i style="width:${pct}%"></i></div>
-        <span><b>${eqs.length}</b> de ${max || '∞'} equipos · dado el ${esc(fechaCorta(a.creado))}</span></div>
-      <div class="cddevs" id="pdevs-${a.id}" ${PID.abiertos && PID.abiertos[a.id] ? '' : 'hidden'}>
-        ${eqs.length ? eqs.map(d => `<div class="dev"><span>${ico(d.equipo)} <b>${esc(d.equipo || 'Equipo')}</b> · último uso ${esc(fechaCorta(d.visto))}</span>
-          <button class="rbtn" type="button" data-plib="${a.id}" data-disp="${esc(d.dispositivo)}">Liberar</button></div>`).join('') : '<div class="hint">Aún no entra en ningún equipo.</div>'}
-        ${eqs.length > 1 ? `<div class="rfoot" style="margin-top:8px;"><button class="rbtn danger" type="button" data-plib="${a.id}" data-disp="">Liberar todos</button></div>` : ''}
-      </div>
-      <div class="rfoot">
-        <button class="rbtn" type="button" data-pdevs="${a.id}">Equipos (${eqs.length})</button>
-        <button class="rbtn danger" type="button" data-pid-q="${a.id}">Quitar</button>
-        <button class="rbtn primary" type="button" data-pid-ed="${a.id}">${typeof ICON_EDIT !== 'undefined' ? ICON_EDIT : ''} Editar</button>
-      </div>
-    </article>`;
-  }).join('');
-  const find = id => PID.lista.find(x => String(x.id) === String(id));
-  const L2 = $('cdList');
-  L2.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', () => copiar(b.dataset.copy)));
-  L2.querySelectorAll('[data-pdevs]').forEach(b => b.addEventListener('click', () => {
-    PID.abiertos = PID.abiertos || {}; PID.abiertos[b.dataset.pdevs] = !PID.abiertos[b.dataset.pdevs];
-    $('pdevs-' + b.dataset.pdevs).hidden = !PID.abiertos[b.dataset.pdevs];
-  }));
-  L2.querySelectorAll('[data-pid-ed]').forEach(b => b.addEventListener('click', () => darPorId(find(b.dataset.pidEd))));
-  L2.querySelectorAll('[data-plib]').forEach(b => b.addEventListener('click', async () => {
-    const a = find(b.dataset.plib); if (!a) return;
-    b.disabled = true; b.textContent = 'Liberando…';
-    try {
-      await pidRpc('acceso_id_liberar', { p_usuario: a.usuario, p_dispositivo: b.dataset.disp || null });
-      // El mismo alumno puede tener varios accesos: sus equipos son los mismos en todos
-      PID.lista.filter(x => x.usuario === a.usuario).forEach(x => { x.equipos = b.dataset.disp ? pidEquipos(x).filter(d => d.dispositivo !== b.dataset.disp) : []; });
-      renderPorId(); toast(b.dataset.disp ? 'Equipo liberado' : 'Equipos liberados');
-    } catch (er) { toast(/acceso_id_liberar/.test(er.message || '') ? 'Falta correr supabase/77-accesos-id-panel.sql en Supabase.' : pidError(er), true); renderPorId(); }
-  }));
-  L2.querySelectorAll('[data-pid-q]').forEach(b => b.addEventListener('click', async () => {
-    const a = find(b.dataset.pidQ); if (!a) return;
-    if (b.dataset.seguro !== '1') { b.dataset.seguro = '1'; b.textContent = '¿Seguro?'; return; }
-    b.disabled = true; b.textContent = 'Quitando…';
-    try { await pidRpc('acceso_id_quitar', { p_id: a.id }); PID.lista = PID.lista.filter(x => x !== a); renderPorId(); toast('Quitado. Al alumno se le cierra en unos minutos.'); }
-    catch (er) { toast(pidError(er), true); renderPorId(); }
-  }));
+  const tope = Math.max(60, CD.mostrar || 0), ver = rows.slice(0, tope);
+  $('cdList').innerHTML = `<table class="cx-t sin-ck"><thead><tr><th></th><th>ID</th><th>Paquete</th><th>Alumno</th><th>Equipos</th><th>Vence</th><th></th></tr></thead><tbody>
+    ${ver.map(a => {
+      const max = maxDe(a.usuario), vig = pidVigente(a), eqs = pidEquipos(a);
+      const sub = [esDescarga(a) ? (a.limite_dia ? a.limite_dia + ' descargas al día' : 'límite general de descargas') : '',
+        a.max_equipos != null ? (a.max_equipos ? a.max_equipos + (a.max_equipos === 1 ? ' equipo' : ' equipos') : 'equipos sin límite') : ''].filter(Boolean).join(' · ');
+      const det = CD.det === 'p:' + a.id ? `<tr class="cx-det"><td colspan="7">${eqs.length ? eqs.map(x => `<div class="cx-dev"><span>${cxIcoEquipo(x.equipo)}<span><b>${esc(x.equipo || 'Equipo')}</b> · último uso ${esc(fechaCorta(x.visto))}</span></span>
+          <button class="rbtn" type="button" data-plib="${a.id}" data-disp="${esc(x.dispositivo)}">Liberar</button></div>`).join('') : '<div class="hint">Aún no entra en ningún equipo.</div>'}
+        ${eqs.length > 1 ? `<div class="rfoot" style="margin-top:8px;"><button class="rbtn danger" type="button" data-plib="${a.id}" data-disp="">Liberar todos</button></div>` : ''}</td></tr>` : '';
+      return `<tr class="${vig ? '' : 'dim'}"><td></td>
+        <td>${a.jid ? `<button class="cx-cod" type="button" data-copy="${esc(a.jid)}" title="Copiar ID">ID ${esc(a.jid)} ${CX_ICO.copiar}</button>` : '<span class="cx-cod">Sin ID</span>'}</td>
+        <td class="cx-pq">${esc(etiquetaProd(a.producto))}${sub ? `<small>${esc(sub)}</small>` : ''}</td>
+        <td class="cx-quien"><b>${esc(a.apodo || 'Sin apodo')}</b>${puedeTab('alumnos') ? `<button class="cx-lnk" type="button" data-cx-ficha="${esc(a.usuario)}">${esc(a.email || '')} · Ficha ›</button>` : `<small>${esc(a.email || '')}</small>`}${a.nota ? `<small>${esc(a.nota)}</small>` : ''}</td>
+        <td class="cx-eq"><b>${eqs.length}</b> de ${max || '∞'}<div class="bar"><i style="width:${max ? Math.min(100, Math.round(eqs.length / max * 100)) : 0}%"></i></div></td>
+        <td class="cx-v">${cxVence(a.vence, !vig)}</td>
+        ${cxAcciones(String(a.id), vig ? 'Activo' : 'Vencido', !!a.vence, vig ? '' : 'Renovar')}</tr>${det}`;
+    }).join('')}</tbody></table>
+    ${rows.length > tope ? `<button class="btn-ghost cx-mas-filas" type="button" data-cx-mas>Ver ${Math.min(60, rows.length - tope)} más (de ${rows.length})</button>` : ''}`;
+  if (CD.menu && $('cxMenu')) {
+    const a = PID.lista.find(x => String(x.id) === CD.menu);
+    if (a) $('cxMenu').innerHTML = `<button type="button" data-cx-m="editar">Editar</button><button type="button" data-cx-m="equipos">Equipos (${pidEquipos(a).length})</button>
+      ${puedeTab('alumnos') ? '<button type="button" data-cx-m="ficha">Abrir ficha</button>' : ''}<button type="button" class="r" data-cx-m="quitar">Quitar</button>`;
+  }
 }
 // «Equipos por cuenta» va en la caja «Acceso libre y ajustes»
 function ajusteEquiposId() {
@@ -594,7 +807,7 @@ function darPorId(orig, opts) {
   o.className = 'ov';
   o.innerHTML = `<div class="mcard" style="max-width:620px;"><button class="mx" type="button" aria-label="Cerrar">✕</button>
     <div class="eyebrow">${orig ? 'Editar acceso por ID' : 'Sin código'}</div><h3>${orig ? 'ID ' + esc(orig.jid || '') : 'Dar acceso por ID'}</h3>
-    ${orig ? `<div class="hint" style="margin-top:2px;">👤 <b>${esc(orig.apodo || 'Sin apodo')}</b> · ${esc(orig.email || '')}</div>` : `
+    ${orig ? `<div class="hint" style="margin-top:2px;"><b>${esc(orig.apodo || 'Sin apodo')}</b> · ${esc(orig.email || '')}</div>` : `
     <label class="fld">ID del alumno <span class="hint">Uno o varios: el número de 5 cifras de su tarjeta (Perfil)</span></label>
     <textarea class="inp" id="pidIds" rows="2" placeholder="Ej.: 48217, 10593"></textarea>
     <div class="hint" id="pidQuien" style="margin-top:6px;line-height:1.6;"></div>`}
