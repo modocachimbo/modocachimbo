@@ -275,14 +275,14 @@ function pintarFicha() {
         <div><small>Celular</small><b>${esc(p.celular || '—')}</b></div>
         <div><small>Descargas (30 días)</small><b>${(a.descargas && a.descargas.mes) || 0}</b></div>
       </div>
-      ${susp ? `<div class="fx-susp">Suspendida ${susp.hasta ? 'hasta el ' + fxFecha(susp.hasta) : 'para siempre'}${susp.motivo ? ' · ' + esc(susp.motivo) : ''}</div>` : ''}
+      ${susp ? `<div class="fx-susp">${susp.hasta ? 'Suspendida hasta el ' + fxFecha(susp.hasta) : 'Baneada para siempre'}${susp.motivo ? ' · ' + esc(susp.motivo) : ''}</div>` : ''}
       <div class="fx-bts">
         ${a.jid && puedeTab('codigos') ? '<button class="btn-main" type="button" data-fx="dar">＋ Dar acceso</button>' : ''}
         <button class="btn-ghost" type="button" data-fx="pago">Anotar pago</button>
         <button class="btn-ghost wa" type="button" data-fx="wa">${fxSvg('wa')} WhatsApp</button>
         ${a.jid && puedeTab('regalos') ? `<button class="btn-ghost" type="button" data-fx="regalar">Regalar</button>
         <button class="btn-ghost${a.influencer ? ' lima' : ''}" type="button" data-fx="influencer">Influencer: ${a.influencer ? 'sí' : 'no'}</button>` : ''}
-        ${puedeAdmin ? `<button class="btn-ghost rojo" type="button" data-fx="suspender" style="grid-column:1/-1">${susp ? 'Levantar suspensión' : 'Suspender cuenta'}</button>` : ''}
+        ${puedeAdmin ? `<button class="btn-ghost rojo" type="button" data-fx="suspender" style="grid-column:1/-1">${susp ? (susp.hasta ? 'Levantar suspensión' : 'Quitar baneo') : 'Suspender o banear'}</button>` : ''}
       </div>
       <textarea class="fx-nota" id="fxNota" maxlength="600" placeholder="Nota privada (solo la ves tú): cómo pagó, cuándo renueva…">${esc(a.nota || '')}</textarea>
     </div>
@@ -410,17 +410,17 @@ function fxSuspender() {
     return;
   }
   let dias = 7;
-  const m = fxModal(`<div class="eyebrow">Restringir</div><h3>Suspender cuenta</h3>
-    <div class="hint" style="margin-top:2px">${esc(a.apodo || '')} · ${esc(a.email || '')}<br>Al entrar le sale «Tu cuenta está pausada» y no puede usar nada. Lo que tiene por ID deja de abrir.</div>
+  const m = fxModal(`<div class="eyebrow">Restringir</div><h3>Suspender o banear</h3>
+    <div class="hint" style="margin-top:2px">${esc(a.apodo || '')} · ${esc(a.email || '')}<br>Por días le sale «Tu cuenta está suspendida» con la fecha en que vuelve. Para siempre le sale «Tu cuenta fue baneada». No puede usar nada y lo que tiene por ID deja de abrir.</div>
     <label class="fld">¿Por cuánto tiempo?</label>
-    <div class="fx-ops" id="fxDias">${[[1, '1 día'], [3, '3 días'], [7, '7 días'], [30, '30 días'], [0, 'Para siempre']].map(([d, l]) => `<button type="button" class="fx-op${d === 7 ? ' on' : ''}" data-v="${d}">${l}</button>`).join('')}</div>
+    <div class="fx-ops" id="fxDias">${[[1, '1 día'], [3, '3 días'], [7, '7 días'], [30, '30 días'], [0, 'Banear para siempre']].map(([d, l]) => `<button type="button" class="fx-op${d === 7 ? ' on' : ''}" data-v="${d}">${l}</button>`).join('')}</div>
     <label class="fld">Motivo (solo lo ves tú)</label><input class="inp" id="fxMotivo" maxlength="200" placeholder="Ej.: comparte la cuenta con otros">
     <div class="err" id="fxErr"></div>
     <div class="mfoot"><button type="button" class="btn-ghost" data-x>Cancelar</button><button type="button" class="btn-main" id="fxOk" style="background:#FF4B4B;box-shadow:0 4px 0 #a32b2b;color:#fff">Suspender</button></div>`);
   fxOps(m.o.querySelector('#fxDias'), v => { dias = +v; });
   m.o.querySelector('#fxOk').addEventListener('click', async () => {
     const err = m.o.querySelector('#fxErr');
-    try { await fxRpc('alumno_suspender', { p_usuario: a.usuario, p_dias: dias || null, p_motivo: m.o.querySelector('#fxMotivo').value.trim() || null }); m.cerrar(); toast('Cuenta suspendida'); abrirFicha(a.usuario); }
+    try { await fxRpc('alumno_suspender', { p_usuario: a.usuario, p_dias: dias || null, p_motivo: m.o.querySelector('#fxMotivo').value.trim() || null }); m.cerrar(); toast(dias ? 'Cuenta suspendida' : 'Cuenta baneada'); abrirFicha(a.usuario); }
     catch (e) { err.textContent = fxErr(e); err.classList.add('show'); }
   });
 }
