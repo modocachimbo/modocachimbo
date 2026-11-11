@@ -402,6 +402,7 @@
       '<text x="16" y="28" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-style="italic" font-size="14" fill="' + c[2] + '">' + n + '</text></svg>';
   }
   function puesto(p) { return p === 1 ? copa() : p <= 3 ? medalla(p) : '<span class="num">' + p + '</span>'; }
+  window.MCTopPuesto = puesto; // lo usa assets/clanes-inicio.js para el top de clanes
   function inicial(nom) { return esc((String(nom || '?').trim()[0] || '?').toUpperCase()); }
   // Foto (o inicial) con el marco y el fondo que cada alumno lleva en Mi colección
   // (supabase/32-tops-perfil.sql). Tu fila usa lo tuyo aunque ese SQL aún no corra.
