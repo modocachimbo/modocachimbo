@@ -486,5 +486,23 @@
   revisarAbiertos();
   setTimeout(function () { refrescarID(); }, 1500);
 
-  window.MCAcceso = { verificar: verificar, activar: activar, activos: activos, todos: todos, estado: estado, soltar: soltar, accesoLocal: accesoLocal, idEstado: idEstado, refrescarID: refrescarID, nombreProd: nombreProd, celebrar: celebrar, alAbiertos: function (fn) { alAbiertos.push(fn); }, antiguo: antiguo, cubre: cubre, puerta: puerta, AREAS: AREAS };
+  /* ---- Ciclos anteriores: gratis para practicar ----
+     En Libros, Seminarios y Banqueo, un ciclo que no es el más nuevo del curso
+     (data/manifest.json de la carpeta de la página) se practica sin código.
+     Solo el ciclo más nuevo se cobra. Las descargas PDF de ciclos anteriores
+     están apagadas (assets/descarga-pdf.js). */
+  var ROM = { I: 1, II: 2, III: 3 };
+  function ordenCiclo(id) { var x = String(id || '').match(/^(\d{4})-(III|II|I)$/); return x ? +x[1] * 10 + ROM[x[2]] : 0; }
+  var pedidoManifest = null;
+  function cicloAnterior(year) {
+    var o = ordenCiclo(year);
+    if (!o || !window.fetch) return Promise.resolve(false);
+    if (!pedidoManifest) pedidoManifest = fetch('data/manifest.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; });
+    return pedidoManifest.then(function (m) {
+      var max = 0; (Array.isArray(m) ? m : []).forEach(function (c) { max = Math.max(max, ordenCiclo(c && c.id)); });
+      return max > o;
+    });
+  }
+
+  window.MCAcceso = { cicloAnterior: cicloAnterior, verificar: verificar, activar: activar, activos: activos, todos: todos, estado: estado, soltar: soltar, accesoLocal: accesoLocal, idEstado: idEstado, refrescarID: refrescarID, nombreProd: nombreProd, celebrar: celebrar, alAbiertos: function (fn) { alAbiertos.push(fn); }, antiguo: antiguo, cubre: cubre, puerta: puerta, AREAS: AREAS };
 })();

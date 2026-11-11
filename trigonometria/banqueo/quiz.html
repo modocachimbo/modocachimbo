@@ -746,7 +746,9 @@
     else bloquear(v.mensaje);
   }
 
-  verificarAcceso();
+  // Ciclos anteriores: gratis para practicar (assets/acceso.js · cicloAnterior). Solo el ciclo más nuevo pide código
+  (MCAcceso.cicloAnterior ? MCAcceso.cicloAnterior(year) : Promise.resolve(false))
+    .then(function (libre) { if (libre) unlockAndStart(); else verificarAcceso(); }, verificarAcceso);
   // === Fin candado ===
 </script>
 <script src="../../assets/alertas.js" defer></script>
