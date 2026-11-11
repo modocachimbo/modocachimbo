@@ -739,6 +739,7 @@
         <button class="tab disp" data-tab="descargas" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg><span>Descargas PDF</span></button>
         <button class="tab disp" data-tab="simulacro" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg><span>Top simulacro</span></button>
         <button class="tab disp" data-tab="topxp" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 20.5 7v10L12 22l-8.5-5V7z"/><path d="M13 7l-3.5 5.5H12l-1 4.5 3.5-5.5H12z"/></svg><span>Top de la semana</span></button>
+        <button class="tab disp" data-tab="clanes" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5 20 5.5v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z"/><path d="m13 7-3.5 5H12l-1 4 3.5-5H12z"/></svg><span>Clanes</span></button>
         <div class="menu-grupo">Contenido</div>
         <button class="tab disp" data-tab="avance" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 3v18"/><path d="m12.5 14 1.5 1.5 3-3"/></svg><span>Avance del ciclo</span></button>
         <button class="tab disp" data-tab="subir" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span>Subir tema</span></button>
@@ -1187,6 +1188,18 @@ E) Alternativa"></textarea>
           </div>
         </div>
         <div id="txpList"></div>
+      </div>
+      <!-- Clanes: moderar y crear clanes oficiales (clanes-panel.js) -->
+      <div id="tab-clanes" hidden>
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Alumnos</div>
+            <h1 class="disp">Clanes</h1>
+            <p>Revisa nombres, mira quién está en cada clan, cierra los que no corresponden y crea clanes oficiales.</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn-ghost" id="clpRecargar" type="button">↻ Actualizar</button></div>
+        </div>
+        <div id="clpList"></div>
       </div>
 
       <!-- Avance del ciclo: cursos × semanas (avance-panel.js) -->
@@ -1686,7 +1699,7 @@ E) Alternativa"></textarea>
   const traido = {};
   const CARGAR = {
     cursos: f => { cargarCursos(); cargarPractica(); }, perfil: f => cargarPerfilCfg(), frases: f => cargarFrases(), planes: f => cargarPlanes(), vocab: f => cargarVocabulario(),
-    ciclos: f => cargarCiclos(f), alumnos: f => cargarAlumnos(f), porvencer: f => cargarPorVencer(f), codigos: () => cargarCodigos(), simulacro: () => cargarTopSimulacro(), topxp: () => cargarTopXp(),
+    ciclos: f => cargarCiclos(f), alumnos: f => cargarAlumnos(f), porvencer: f => cargarPorVencer(f), codigos: () => cargarCodigos(), simulacro: () => cargarTopSimulacro(), topxp: () => cargarTopXp(), clanes: () => cargarClanes(),
     agenda: () => cargarAgenda(), tematicas: () => cargarTematicas(), recursos: () => cargarRecursos(), biblioteca: () => cargarBiblioteca(), regalos: () => cargarRegalos(), influencers: () => cargarInfluencers(), descargas: () => cargarDescargas(), resenas: () => cargarResenas(), alertas: () => cargarAlertas(), anuncios: () => cargarAnuncios(), corr: () => cargarCorrecciones(),
     equipo: () => cargarEquipo(), historial: () => cargarHistorial(), avance: () => cargarAvance(), verif: f => cargarVerificar(f)
   };
@@ -1704,7 +1717,7 @@ E) Alternativa"></textarea>
     window.scrollTo(0, 0);
     document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
     const pestana = t.dataset.tab === 'examen' ? 'subir' : t.dataset.tab; // "Subir examen" usa la misma pantalla que "Subir tema"
-    ['reportes', 'subir', 'editar', 'cursos', 'ciclos', 'vocab', 'perfil', 'frases', 'alertas', 'tutorial', 'codigos', 'alumnos', 'porvencer', 'corr', 'simulacro', 'topxp', 'agenda', 'tematicas', 'recursos', 'biblioteca', 'regalos', 'influencers', 'descargas', 'resenas', 'equipo', 'historial', 'avance', 'verif', 'anuncios', 'planes'].forEach(id => { $('tab-' + id).hidden = id !== pestana; });
+    ['reportes', 'subir', 'editar', 'cursos', 'ciclos', 'vocab', 'perfil', 'frases', 'alertas', 'tutorial', 'codigos', 'alumnos', 'porvencer', 'corr', 'simulacro', 'topxp', 'clanes', 'agenda', 'tematicas', 'recursos', 'biblioteca', 'regalos', 'influencers', 'descargas', 'resenas', 'equipo', 'historial', 'avance', 'verif', 'anuncios', 'planes'].forEach(id => { $('tab-' + id).hidden = id !== pestana; });
     if (t.dataset.tab === 'tutorial' && !TU.datos) cargarTutorial();
     // Las que tienen textos por guardar (Perfil, Frases, Vocabulario) no se recargan solas al tocarlas otra vez
     cargarSeccion(t.dataset.tab, yaEstaba && !['perfil', 'frases', 'vocab', 'planes'].includes(t.dataset.tab));
@@ -2575,6 +2588,8 @@ E) Alternativa"></textarea>
 <script src="simulacro-panel.js"></script>
 <script src="../assets/rango.js"></script>
 <script src="topxp-panel.js?v=3"></script>
+<script src="../assets/clanes.js?v=2"></script>
+<script src="clanes-panel.js?v=1"></script>
 <script src="agenda-panel.js"></script>
 <script src="tematicas-panel.js"></script>
 <script src="recursos-panel.js?v=7"></script>

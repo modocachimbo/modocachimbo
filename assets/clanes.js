@@ -71,11 +71,25 @@
     tag_mal: 'La sigla debe tener de 2 a 5 letras o números, sin espacios.',
     no_lider: 'Solo el líder puede hacer eso.',
     max_sub: 'El clan ya tiene 2 sublíderes, el máximo.',
-    no_miembro: 'Ese alumno ya no está en el clan.'
+    no_miembro: 'Ese alumno ya no está en el clan.',
+    rival_pocos: 'Ese clan aún no tiene 3 miembros para ir a la guerra.',
+    pocos: 'Necesitan al menos 3 miembros para ir a la guerra.',
+    rival_en_guerra: 'Ese clan ya está en una guerra. Elige otro.',
+    ya_en_guerra: 'Tu clan ya tiene una guerra o un reto pendiente.',
+    reto_no_existe: 'Ese reto ya no está disponible.',
+    muchos_empujones: 'Ya empujaste a 20 compañeros hoy. Mañana puedes seguir.',
+    ya_empujado: 'Ya lo empujaste hoy.',
+    sin_clan: 'Primero únete a un clan.',
+    horas_mal: 'La guerra dura 1 o 2 días.',
+    lider_no_existe: 'No hay ningún alumno con ese ID.',
+    lider_en_clan: 'Ese alumno ya está en otro clan. Que salga primero.'
   };
   function error(e) {
     var m = String(e && (e.message || e) || '');
-    for (var k in ERRORES) if (m.indexOf(k) >= 0) return ERRORES[k];
+    // La clave más larga gana (reto_no_existe antes que no_existe)
+    var mejor = '';
+    for (var k in ERRORES) if (m.indexOf(k) >= 0 && k.length > mejor.length) mejor = k;
+    if (mejor) return ERRORES[mejor];
     return 'No se pudo. Revisa tu internet e intenta otra vez.';
   }
 

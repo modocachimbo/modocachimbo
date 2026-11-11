@@ -215,6 +215,81 @@
   .vista .d { font-size: 22px; color: #fff; line-height: 1; }
   .dos { display: grid; gap: 12px; }
   @media (min-width: 900px) { .dos { grid-template-columns: 1fr 1fr; align-items: start; } }
+  /* Parte 2: muro, guerra, oficiales */
+  .cl-rail .r .vivo { width: 9px; height: 9px; border-radius: 50%; background: var(--rojo); box-shadow: 0 0 0 3px rgba(255,75,75,.25); margin-left: auto; flex: none; }
+  @media (max-width: 899px) { .cl-rail .r .vivo { position: absolute; top: 6px; right: 6px; margin: 0; } }
+  @media (max-width: 480px) { .cl-rail .r { font-size: 15px; gap: 4px; padding: 0 4px; } .cl-rail .r svg { width: 16px; height: 16px; } }
+  .ofi { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; color: var(--azul); font: 900 11px/1 Nunito, sans-serif; letter-spacing: .06em; text-transform: uppercase; vertical-align: middle; }
+  .ofi svg { width: 15px; height: 15px; }
+  .ofc { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 12px; background: #120e24; border: 1px solid #2a2346; margin-bottom: 6px; }
+  .ofc .esc { width: 38px; height: 44px; }
+  .ofc .d { font-size: 18px; color: #fff; line-height: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ofc .ofi { margin-top: 3px; }
+  .muro { display: grid; gap: 7px; margin-top: 12px; }
+  .ev { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 12px; background: #120e24; border: 1px solid #2a2346; }
+  .ev .ft { width: 40px; height: 40px; flex: none; }
+  .ev .mcj-nv, .ev .mcj-pin { display: none !important; }
+  .ev .t { flex: 1; min-width: 0; font-size: 13px; color: #d9d3ef; }
+  .ev .t b { color: #fff; }
+  .ev .t small { display: block; color: var(--text-dim); font-size: 11.5px; margin-top: 1px; }
+  .ev .ic { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; flex: none; }
+  .ev .ic.ok { background: rgba(198,224,0,.15); color: var(--accent); }
+  .ev .ic.na { background: rgba(255,150,0,.15); }
+  .ev .ic.na svg { width: 20px; height: 20px; }
+  .emp { flex: none; height: 34px; padding: 0 12px; border-radius: 10px; border: 0; border-bottom: 3px solid #b56a00; background: var(--nar); color: #fff; font: italic 900 16px/1 var(--display); text-transform: uppercase; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+  .emp svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
+  .emp.ya { background: #2a2346; color: var(--text-dim); border-bottom-color: #1a1530; cursor: default; display: inline-flex; align-items: center; }
+  .emp:disabled { opacity: .6; }
+  .empuje { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 12px; background: rgba(255,150,0,.12); border: 1.5px solid rgba(255,150,0,.45); color: #ffd9a8; font-size: 13px; margin-bottom: 12px; }
+  .empuje svg { width: 22px; height: 22px; flex: none; fill: none; stroke: var(--nar); stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
+  .empuje b { color: #fff; }
+  .gmini { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; margin-bottom: 12px; border: 2px solid #6b1f2c; background: linear-gradient(100deg, #3a1030, #1c0f33 60%, #0f2440); cursor: pointer; color: #fff; }
+  .gmini > svg { width: 30px; height: 30px; flex: none; fill: none; stroke: var(--rojo); stroke-width: 2.4; stroke-linecap: round; }
+  .gmini b { display: block; font: italic 900 20px/1 var(--display); text-transform: uppercase; }
+  .gmini small { display: block; color: #c9bfe6; font-size: 12.5px; margin-top: 3px; }
+  .gmini .ver { flex: none; height: 32px; padding: 0 12px; border-radius: 9px; background: var(--accent); color: #14101f; font: italic 900 15px/32px var(--display); text-transform: uppercase; }
+  .gmini.pend { border-color: #5a3a10; background: linear-gradient(100deg, #3a2410, #1c0f33); }
+  .gmini.pend > svg { stroke: var(--nar); }
+  .tug { display: flex; height: 10px; border-radius: 9px; overflow: hidden; margin-top: 8px; background: linear-gradient(90deg, #1287bd, #1CB0F6); border: 1.5px solid rgba(255,255,255,.15); }
+  .tug i { display: block; background: linear-gradient(90deg, #8fa300, #C6E000); }
+  .tug.big { height: 16px; margin-top: 14px; }
+  .gbig { border-radius: 20px; border: 2px solid #4a2350; padding: 16px; margin-bottom: 12px; background: radial-gradient(70% 60% at 0% 0%, rgba(198,224,0,.22), transparent 60%), radial-gradient(70% 60% at 100% 0%, rgba(28,176,246,.28), transparent 60%), linear-gradient(180deg, #22113a, #0f0b22); }
+  .gbig .vs2 { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; text-align: center; gap: 6px; }
+  .gbig .esc { width: 96px; height: 110px; margin: 0 auto; }
+  .gbig .n { font: italic 900 22px/1 var(--display); text-transform: uppercase; color: #fff; margin-top: 6px; overflow-wrap: anywhere; }
+  .gbig .pts { font: 900 26px/1 Nunito, sans-serif; margin-top: 4px; }
+  .vsb { font: italic 900 44px/1 var(--display); color: var(--oro); text-shadow: 0 0 12px rgba(255,200,0,.6); }
+  .reloj { display: flex; justify-content: center; gap: 6px; margin: 12px 0 6px; }
+  .reloj div { min-width: 56px; padding: 6px 8px; border-radius: 10px; background: rgba(0,0,0,.35); border: 1.5px solid rgba(255,255,255,.12); text-align: center; }
+  .reloj b { display: block; font: italic 900 26px/1 var(--display); color: #fff; }
+  .reloj small { font: 900 9.5px/1 Nunito, sans-serif; color: var(--text-dim); letter-spacing: .1em; }
+  .res { text-align: center; margin-top: 12px; font: italic 900 26px/1 var(--display); text-transform: uppercase; }
+  .res.win { color: var(--accent); } .res.lose { color: #ff9a9a; } .res.emp { color: var(--oro); }
+  .aporte { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .aporte h4 { font: italic 900 16px/1 var(--display); text-transform: uppercase; margin-bottom: 6px; }
+  .ap { display: flex; align-items: center; gap: 7px; padding: 6px 8px; border-radius: 9px; background: #120e24; border: 1px solid #2a2346; margin-bottom: 5px; font-size: 12.5px; }
+  .ap .ft { width: 28px; height: 28px; flex: none; }
+  .ap .mcj-nv, .ap .mcj-pin { display: none !important; }
+  .ap > span:not(.ft) { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff; }
+  .ap b { font-weight: 900; font-size: 12px; }
+  .btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .card.reto { border-color: #6b1f2c; background: linear-gradient(180deg, #2a1030, #141027); }
+  .card .h2 > svg { width: 22px; height: 22px; fill: none; stroke: var(--rojo); stroke-width: 2.4; stroke-linecap: round; }
+  .seg button { flex: 1; height: 36px; border-radius: 10px; background: #1f1938; border: 2px solid #352E58; font: italic 900 16px/1 var(--display); text-transform: uppercase; color: #d9d3ef; cursor: pointer; }
+  .seg button.on { background: var(--accent); color: #14101f; border-color: #8fa300; }
+  .riv { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 12px; background: #120e24; border: 1px solid #2a2346; margin-top: 6px; }
+  .riv .esc { width: 38px; height: 44px; }
+  .riv .d { font: italic 900 18px/1 var(--display); text-transform: uppercase; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .seg { display: flex; gap: 8px; margin-bottom: 6px; }
+  .mini { height: 32px; padding: 0 14px; border-radius: 9px; border: 0; background: var(--accent); color: #14101f; font: italic 900 15px/1 var(--display); text-transform: uppercase; cursor: pointer; }
+  .mini:disabled { opacity: .5; }
+  .hist { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-top: 1px solid #2a2346; font-size: 13px; }
+  .hist .t { flex: 1; min-width: 0; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hist .rs { font: 900 10.5px/1 Nunito, sans-serif; letter-spacing: .06em; text-transform: uppercase; padding: 4px 7px; border-radius: 6px; }
+  .hist .rs.win { background: rgba(198,224,0,.15); color: var(--accent); } .hist .rs.lose { background: rgba(255,75,75,.15); color: #ff9a9a; } .hist .rs.emp { background: rgba(255,200,0,.15); color: var(--oro); }
+  .reglas { display: grid; gap: 8px; font-size: 13px; color: #d9d3ef; }
+  .reglas > div:not(.h2) { display: flex; gap: 8px; align-items: flex-start; }
+  .reglas svg.i { width: 18px; height: 18px; color: var(--accent); margin-top: 1px; }
   .ma-toast { position: fixed; left: 50%; bottom: 24px; z-index: 80; translate: -50% 20px; opacity: 0; padding: 10px 18px; border-radius: 12px; background: #1D1834; border: 2px solid var(--accent); color: #fff; font: 800 14px Nunito, sans-serif; transition: .25s; pointer-events: none; max-width: calc(100vw - 32px); text-align: center; }
   .ma-toast.ver { translate: -50% 0; opacity: 1; }
 </style>
@@ -227,7 +302,7 @@
 <script src="assets/coleccion.js?v=196"></script>
 <script src="assets/tarjeta-perfil.js?v=207"></script>
 <script src="assets/amigos.js?v=5"></script>
-<script src="assets/clanes.js?v=1"></script>
+<script src="assets/clanes.js?v=2"></script>
 </head>
 <body>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -254,7 +329,7 @@
   var app = document.getElementById('app');
   var Q = new URLSearchParams(location.search);
   var UNIRSE = (Q.get('unirse') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
-  var D = null, TOP = null, vista = 'clan', abierto = null, seguro = '', previa = null, previaCod = '';
+  var D = null, TOP = null, G = null, RIV = null, OFI = null, horasReto = 24, vista = 'clan', abierto = null, seguro = '', previa = null, previaCod = '', relojT = 0;
   var F = { nombre: '', tag: '', forma: 'punta', simbolo: 'rayo', color: '#C6E000' };
 
   var SV = {
@@ -269,7 +344,11 @@
     alerta: '<svg class="i" viewBox="0 0 24 24"><path d="M12 3 2 20h20zM12 10v4M12 17h.01"/></svg>',
     link: '<svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
     wa: '<svg viewBox="0 0 24 24"><path d="M4 20l1.3-4A8 8 0 1 1 8 18.7z"/><path d="M9 9.5c.3 2 2.5 4.6 5 5l1.2-1.3 1.8.9c-.3 1.3-1.3 2-2.6 1.8-3.2-.6-6-3.4-6.5-6.6-.2-1.3.5-2.3 1.8-2.6l.9 1.8z"/></svg>',
-    salir: '<svg viewBox="0 0 24 24"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg>'
+    salir: '<svg viewBox="0 0 24 24"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg>',
+    guerra: '<svg viewBox="0 0 24 24"><path d="M5 3l14 14M19 3 5 17M3 21l4-4M21 21l-4-4"/></svg>',
+    empujar: '<svg viewBox="0 0 24 24"><path d="M5 12h11M12 6l6 6-6 6"/></svg>',
+    check: '<svg class="i" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg>',
+    sello: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#1CB0F6" d="M12 1.6l2.3 1.7 2.8-.3 1.1 2.6 2.6 1.1-.3 2.8 1.7 2.3-1.7 2.3.3 2.8-2.6 1.1-1.1 2.6-2.8-.3L12 22.4l-2.3-1.7-2.8.3-1.1-2.6-2.6-1.1.3-2.8L1.8 12l1.7-2.3-.3-2.8 2.6-1.1 1.1-2.6 2.8.3z"/><path d="m7.6 12.3 3 3 5.8-6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
   };
   function xpIco() { return '<svg aria-hidden="true"><use href="#cl-rayo"/></svg>'; }
   function escudo(c, cls) { return '<span class="esc ' + (cls || '') + '">' + K.escudo(c) + '</span>'; }
@@ -286,9 +365,9 @@
 
   /* ---------- Menú ---------- */
   function rail() {
-    var c = D && D.clan, it = c ? [['clan', 'Mi clan', SV.clan], ['top', 'Top', SV.top], ['ajustes', 'Ajustes', SV.cfg]] : [['clan', 'Unirme', SV.clan], ['top', 'Top', SV.top]];
+    var c = D && D.clan, it = c ? [['clan', 'Mi clan', SV.clan], ['guerra', 'Guerra', SV.guerra, D.guerra && D.guerra.estado === 'activa' ? '<i class="vivo"></i>' : ''], ['top', 'Top', SV.top], ['ajustes', 'Ajustes', SV.cfg]] : [['clan', 'Unirme', SV.clan], ['top', 'Top', SV.top]];
     return '<nav class="cl-rail" aria-label="Clanes">' + it.map(function (x) {
-      return '<button type="button" class="r' + (x[0] === vista ? ' on' : '') + '" data-vista="' + x[0] + '">' + x[2] + '<span>' + x[1] + '</span></button>';
+      return '<button type="button" class="r' + (x[0] === vista ? ' on' : '') + '" data-vista="' + x[0] + '">' + x[2] + '<span>' + x[1] + '</span>' + (x[3] || '') + '</button>';
     }).join('') + (c ? '<div class="mi">Código para invitar<b>' + esc(c.codigo) + '</b><button type="button" class="cb g" data-inv="link">Copiar enlace</button></div>' : '') + '</nav>';
   }
 
@@ -296,10 +375,11 @@
   function rolHtml(r) { return r === 'lider' ? '<span class="rol lider">' + SV.corona + 'LÍDER</span>' : r === 'sub' ? '<span class="rol sub">SUBLÍDER</span>' : ''; }
   function hero(c) {
     return '<div class="hero"><div class="nivel"><div class="n">' + (+c.nivel || 1) + '</div><small>NIVEL</small></div><div class="row">' + escudo(c) +
-      '<div style="min-width:0"><div class="nm">' + esc(c.nombre) + '</div><span class="tag">#' + esc(c.tag) + ' · CÓDIGO ' + esc(c.codigo) + '</span>' +
+      '<div style="min-width:0"><div class="nm">' + esc(c.nombre) + '</div>' + (c.oficial ? '<span class="ofi">' + SV.sello + 'Clan oficial</span> ' : '') + '<span class="tag">#' + esc(c.tag) + ' · CÓDIGO ' + esc(c.codigo) + '</span>' +
       '<div class="meta"><span>' + SV.gente + '<b>' + c.miembros + '</b>/20</span>' +
       (c.puesto ? '<span>' + SV.copaL + 'Top <b>#' + c.puesto + '</b></span>' : '') +
-      (+c.copas ? '<span><svg class="i" viewBox="0 0 40 40" style="width:18px;height:18px"><use href="#cl-copa"/></svg><b>' + c.copas + '</b> copa' + (+c.copas === 1 ? '' : 's') + '</span>' : '') + '</div></div></div></div>';
+      (+c.copas ? '<span><svg class="i" viewBox="0 0 40 40" style="width:18px;height:18px"><use href="#cl-copa"/></svg><b>' + c.copas + '</b> copa' + (+c.copas === 1 ? '' : 's') + '</span>' : '') +
+      (+c.victorias ? '<span><svg class="i" viewBox="0 0 24 24" style="color:var(--azul)"><path d="M5 3l14 14M19 3 5 17"/></svg><b>' + c.victorias + '</b> guerra' + (+c.victorias === 1 ? '' : 's') + ' ganada' + (+c.victorias === 1 ? '' : 's') + '</span>' : '') + '</div></div></div></div>';
   }
   function metaCard(c) {
     var pct = Math.min(100, Math.round(100 * (+c.xp || 0) / Math.max(1, +c.meta))), ok = +c.xp >= +c.meta;
@@ -308,12 +388,37 @@
       '<div class="meta-lr"><span class="small">' + (ok ? '' : 'Faltan ' + nf(c.meta - c.xp) + ' XP para subir al nivel ' + ((+c.nivel || 1) + 1) + ' · ') + faltan() + '</span>' +
       (ok ? '<span class="meta-ok">¡Meta cumplida! El lunes suben al nivel ' + ((+c.nivel || 1) + 1) + '</span>' : '') + '</div></div>';
   }
-  function hoyCard() {
-    var hoy = diaLima(), ms = D.miembros, si = ms.filter(function (m) { return String(m.ultima || '').slice(0, 10) === hoy; });
+  function diasSin(m) {
+    var f = String(m.ultima || '').slice(0, 10); if (!f) return 99;
+    return Math.max(0, Math.round((new Date(diaLima() + 'T12:00:00Z') - new Date(f + 'T12:00:00Z')) / 864e5));
+  }
+  // Muro: quién estudió hoy, rachas y a quién empujar (sin chat)
+  function muro() {
+    var ms = D.miembros, si = ms.filter(function (m) { return diasSin(m) === 0; });
     var orden = si.concat(ms.filter(function (m) { return si.indexOf(m) < 0; }));
-    return '<div class="card"><div class="h2">Hoy en el clan <span class="sp"></span><span class="lado">' + si.length + ' de ' + ms.length + ' estudiaron</span></div><div class="hoy">' +
-      orden.map(function (m) { return '<span class="p' + (si.indexOf(m) < 0 ? ' no' : '') + '" title="' + esc(m.apodo) + '">' + A.foto(m) + '</span>';
+    var ev = [];
+    ms.forEach(function (m) {
+      var d = diasSin(m), nom = m.yo ? 'Tú' : esc(m.apodo || 'Cachimbo');
+      if (d === 0) ev.push([1, m, '<b>' + nom + '</b> ' + (m.yo ? 'estudiaste' : 'estudió') + ' hoy', +m.racha >= 2 ? 'Racha de ' + m.racha + ' días · ' + nf(m.xp_semana) + ' XP esta semana' : nf(m.xp_semana) + ' XP esta semana',
+        +m.racha >= 7 ? '<span class="ic na"><svg><use href="#cl-llama"/></svg></span>' : '<span class="ic ok">' + SV.check + '</span>']);
+      else if (!m.yo) ev.push([0, m, '<b>' + nom + '</b> ' + (d === 1 ? 'no estudia hoy' : d >= 99 ? 'aún no empieza a estudiar' : 'no estudia hace ' + d + ' días'),
+        (+m.racha ? 'Su racha de ' + m.racha + (+m.racha === 1 ? ' día' : ' días') + ' está en peligro' : 'Anímalo a volver') + (+m.empujones ? ' · lo empujaron ' + m.empujones + (+m.empujones === 1 ? ' vez' : ' veces') : ''),
+        m.empujado ? '<span class="emp ya">Empujado</span>' : '<button type="button" class="emp" data-empujar="' + m.codigo + '">' + SV.empujar + 'Empujar</button>']);
+    });
+    ev.sort(function (x, y) { return x[0] - y[0] || (+y[1].racha || 0) - (+x[1].racha || 0); });
+    var aviso = (D.me_empujaron || []).length ? '<div class="empuje">' + SV.empujar + '<span><b>' + esc(D.me_empujaron.slice(0, 3).join(', ')) + (D.me_empujaron.length > 3 ? ' y ' + (D.me_empujaron.length - 3) + ' más' : '') + '</b> ' + (D.me_empujaron.length === 1 ? 'te empujó' : 'te empujaron') + ' a estudiar hoy. ¡No los dejes solos!</span></div>' : '';
+    return '<div class="card">' + aviso + '<div class="h2">Muro del clan <span class="sp"></span><span class="lado">Hoy ' + si.length + ' de ' + ms.length + ' estudiaron</span></div><div class="hoy">' +
+      orden.map(function (m) { return '<span class="p' + (si.indexOf(m) < 0 ? ' no' : '') + '" title="' + esc(m.apodo) + '">' + A.foto(m) + '</span>'; }).join('') + '</div>' +
+      '<div class="muro">' + ev.slice(0, 8).map(function (e) {
+        return '<div class="ev">' + A.foto(e[1]) + '<div class="t">' + e[2] + '<small>' + e[3] + '</small></div>' + e[4] + '</div>';
       }).join('') + '</div></div>';
+  }
+  function guerraMini() {
+    var g = D.guerra; if (!g) return '';
+    if (g.estado === 'pendiente') return '<div class="gmini pend" data-vista="guerra" role="button" tabindex="0">' + SV.guerra + '<span><b>' + (g.reto_mio ? 'Retaron a ' + esc(g.rival) : esc(g.rival) + ' los retó a una guerra') + '</b><small>' + (g.reto_mio ? 'Esperando que acepten' : 'Tu líder o sublíder puede aceptar') + '</small></span><span class="ver">Ver ›</span></div>';
+    var tot = Math.max(1, (+g.xp_mio || 0) + (+g.xp_rival || 0)), p = Math.round(100 * (+g.xp_mio || 0) / tot);
+    return '<div class="gmini" data-vista="guerra" role="button" tabindex="0">' + SV.guerra + '<span style="flex:1;min-width:0"><b>Guerra contra ' + esc(g.rival) + '</b><small>' + nf(g.xp_mio) + ' vs ' + nf(g.xp_rival) + ' XP · termina en <span data-reloj="' + esc(g.fin) + '" data-corto>…</span></small>' +
+      '<span class="tug"><i style="width:' + (tot > 1 ? p : 50) + '%"></i></span></span><span class="ver">Ver ›</span></div>';
   }
   function miembro(m, i) {
     var yo = D.rol, puede = !m.yo && (yo === 'lider' || (yo === 'sub' && m.rol === 'miembro'));
@@ -340,7 +445,7 @@
   }
   function miClan() {
     var c = D.clan;
-    return hero(c) + '<div class="dos"><div>' + metaCard(c) + hoyCard() + (c.miembros < 20 ? invitar(c) : '') + '</div>' +
+    return hero(c) + guerraMini() + '<div class="dos"><div>' + metaCard(c) + muro() + (c.miembros < 20 ? invitar(c) : '') + '</div>' +
       '<div class="card"><div class="h2">Miembros <em>XP de la semana</em></div><div class="mbs">' + D.miembros.map(miembro).join('') + '</div></div></div>';
   }
 
@@ -364,12 +469,19 @@
         return '<button type="button" class="col-pk' + (c.toUpperCase() === f.color.toUpperCase() ? ' on' : '') + '" style="background:' + c + '" data-color="' + c + '" aria-label="Color ' + c + '"></button>';
       }).join('') + '</div></div>' + boton + '<p class="err" id="fErr"></p>';
   }
+  function oficiales() {
+    if (OFI == null) { OFI = []; K.rpc('clanes_oficiales').then(function (l) { OFI = l || []; if (!D.clan && vista === 'clan' && OFI.length) pintar(); }, function () {}); return ''; }
+    if (!OFI.length) return '';
+    return '<div class="o">CLANES OFICIALES</div><p class="small" style="margin-bottom:8px">De academias y profes. Pídeles su código para entrar.</p>' + OFI.map(function (c) {
+      return '<div class="ofc">' + escudo(c) + '<div style="min-width:0"><div class="d">' + esc(c.nombre) + '</div><span class="ofi">' + SV.sello + 'Oficial</span> <span class="small">· ' + c.miembros + '/20 miembros</span></div>' + (c.miembros >= 20 ? '<span class="small">Lleno</span>' : '') + '</div>';
+    }).join('');
+  }
   function sinClan() {
     var esp = D && D.espera ? '<div class="aviso">' + SV.alerta + '<span>Saliste de un clan hace poco. Podrás entrar o crear otro en ' + D.espera + ' hora' + (D.espera == 1 ? '' : 's') + '.</span></div>' : '';
     return esp + '<div class="dos"><div class="card"><div class="h2">Unirme con código</div>' +
       '<p class="small" style="margin-bottom:10px">Pídele el código de 4 letras al líder del clan.</p>' +
       '<input class="inp code" id="cCod" maxlength="4" autocomplete="off" autocapitalize="characters" placeholder="K7Q2" value="' + esc(previaCod) + '">' +
-      '<div id="cPrev">' + (previa ? vistaPrevia(previa) : previa === false ? '<p class="err">No hay ningún clan con ese código.</p>' : '') + '</div><p class="err" id="cErr"></p></div>' +
+      '<div id="cPrev">' + (previa ? vistaPrevia(previa) : previa === false ? '<p class="err">No hay ningún clan con ese código.</p>' : '') + '</div><p class="err" id="cErr"></p>' + oficiales() + '</div>' +
       '<div class="card"><div class="h2">O crea el tuyo</div>' + formEscudo('<button type="button" class="cb l w" data-crear>Crear clan</button><p class="small" style="text-align:center;margin-top:8px">Hasta 20 miembros · Tú serás el líder</p>') + '</div></div>';
   }
 
@@ -391,6 +503,67 @@
       '<div class="card nota"><svg width="46" height="46"><use href="#cl-copa"/></svg><span>Cada semana que tu clan termina en el <b style="color:var(--oro)">Top 3</b> gana una copa que queda en su escudo. Cuentan todos los XP de la semana de sus miembros.</span></div>';
   }
 
+  /* ---------- Guerra ---------- */
+  function puedoMandar() { return D.rol === 'lider' || D.rol === 'sub'; }
+  function lado(l, col, yoClan) {
+    if (!l || !l.length) return '<p class="small">Aún nadie suma XP.</p>';
+    return l.slice(0, 6).map(function (x) { return '<div class="ap">' + A.foto(x) + '<span>' + (x.yo ? 'Tú' : esc(x.apodo)) + '</span><b style="color:' + col + '">' + nf(x.xp) + '</b></div>'; }).join('');
+  }
+  function guerraVista() {
+    if (!G) { K.rpc('clan_guerra').then(function (d) { G = d || {}; if (vista === 'guerra') pintar(); }, function (e) { G = { error: K.error(e) }; if (vista === 'guerra') pintar(); }); return '<p class="estado">Cargando la guerra…</p>'; }
+    if (G.error) return '<p class="estado">' + esc(G.error) + '</p>';
+    var g = G.guerra, h = '';
+    (G.retos || []).forEach(function (r) {
+      h += '<div class="card reto"><div class="h2">' + SV.guerra + '¡Los retaron!</div><div class="vista" style="margin-top:0">' + escudo(r.clan) + '<div style="flex:1;min-width:0"><div class="d">' + esc(r.clan.nombre) + '</div><div class="small">' + r.clan.miembros + ' miembros · ' + nf(r.clan.xp) + ' XP esta semana · guerra de ' + r.horas + ' h</div></div></div>' +
+        (puedoMandar() && !(g && g.estado === 'activa') ? '<div class="btns"><button type="button" class="cb l" data-aceptar="' + r.id + '">Aceptar guerra</button><button type="button" class="cb g" data-rechazar="' + r.id + '">No, gracias</button></div>' : '<p class="small" style="margin-top:8px">' + (g && g.estado === 'activa' ? 'Ya están en una guerra.' : 'Tu líder o sublíder puede aceptar.') + ' El reto vence en 24 horas.</p>') + '</div>';
+    });
+    if (g && g.estado !== 'pendiente') {
+      var vivo = g.estado === 'activa', tot = Math.max(1, (+g.xp_mio || 0) + (+g.xp_rival || 0)), p = tot > 1 ? Math.round(100 * g.xp_mio / tot) : 50;
+      var res = vivo ? '<div class="reloj" data-reloj="' + esc(g.fin) + '"></div><p class="small" style="text-align:center">Gana el clan que sume más XP antes de que acabe el tiempo</p>'
+        : '<div class="res ' + (g.gane ? 'win' : g.empate ? 'emp' : 'lose') + '">' + (g.gane ? '¡Ganaron la guerra!' : g.empate ? 'Quedaron empatados' : 'Esta vez ganó ' + esc(g.rival.nombre)) + '</div>';
+      h += '<div class="gbig' + (vivo ? '' : ' fin') + '"><div class="vs2"><div>' + escudo(g.mio) + '<div class="n">' + esc(g.mio.nombre) + '</div><div class="pts" style="color:var(--accent)">' + nf(g.xp_mio) + '</div><div class="small">XP</div></div>' +
+        '<div class="vsb">VS</div><div>' + escudo(g.rival) + '<div class="n">' + esc(g.rival.nombre) + '</div><div class="pts" style="color:var(--azul)">' + nf(g.xp_rival) + '</div><div class="small">XP</div></div></div>' +
+        '<div class="tug big"><i style="width:' + p + '%"></i></div>' + res + '</div>';
+      h += '<div class="card"><div class="h2">Quién está aportando</div>' + (vivo && !g.yo_cuento ? '<p class="small" style="margin-bottom:8px">Entraste al clan cuando la guerra ya había empezado: tu XP cuenta desde la próxima.</p>' : '') +
+        '<div class="aporte"><div><h4 style="color:var(--accent)">Tu clan</h4>' + lado(g.aporte_mio, 'var(--accent)') + '</div><div><h4 style="color:var(--azul)">Rival</h4>' + lado(g.aporte_rival, 'var(--azul)') + '</div></div>' +
+        '<p class="small" style="margin-top:8px">Cada uno suma hasta ' + nf(g.tope) + ' XP en esta guerra, para que no gane uno solo.</p></div>';
+    } else if (g && g.estado === 'pendiente') {
+      h += '<div class="card"><div class="h2">' + SV.guerra + 'Reto enviado</div><div class="vista" style="margin-top:0">' + escudo(g.rival) + '<div style="flex:1;min-width:0"><div class="d">' + esc(g.rival.nombre) + '</div><div class="small">Guerra de ' + g.horas + ' h · esperando que acepten (vence en 24 h)</div></div></div>' +
+        (puedoMandar() ? '<div class="btns"><button type="button" class="cb g" data-cancelar="' + g.id + '">Cancelar reto</button></div>' : '') + '</div>';
+    }
+    if (!g || g.estado === 'terminada') {
+      if (puedoMandar()) {
+        if (RIV == null) { RIV = false; K.rpc('clan_rivales').then(function (l) { RIV = l || []; if (vista === 'guerra') pintar(); }, function () { RIV = []; if (vista === 'guerra') pintar(); }); }
+        h += '<div class="card"><div class="h2">Retar a otro clan</div>' + (D.clan.miembros < 3 ? '<p class="small">Necesitan al menos 3 miembros para ir a la guerra. Invita a tus compañeros.</p>' :
+          '<div class="seg"><button type="button" class="' + (horasReto === 24 ? 'on' : '') + '" data-horas="24">1 día</button><button type="button" class="' + (horasReto === 48 ? 'on' : '') + '" data-horas="48">2 días</button></div>' +
+          (RIV === false ? '<p class="estado" style="padding:10px">Buscando clanes…</p>' : !RIV.length ? '<p class="small">Por ahora no hay clanes libres para retar (con 3 miembros o más y sin guerra).</p>' :
+            RIV.map(function (c) { return '<div class="riv">' + escudo(c) + '<div style="min-width:0"><div class="d">' + esc(c.nombre) + '</div><div class="small">' + c.miembros + ' miembros · ' + nf(c.xp) + ' XP' + (+c.victorias ? ' · ' + c.victorias + ' victorias' : '') + '</div></div><button type="button" class="mini" data-retar="' + c.id + '">Retar</button></div>'; }).join(''))) + '</div>';
+      } else if (!g) h += '<div class="card"><div class="h2">Sin guerra por ahora</div><p class="small">Tu líder o sublíder puede retar a otro clan. Mientras tanto, cada XP que ganes suma para la meta de la semana.</p></div>';
+    }
+    if ((G.historial || []).length) h += '<div class="card"><div class="h2">Últimas guerras <em>' + (+G.victorias || 0) + ' ganadas</em></div>' + G.historial.map(function (x) {
+      return '<div class="hist"><span class="rs ' + (x.gane ? 'win' : x.empate ? 'emp' : 'lose') + '">' + (x.gane ? 'Ganaron' : x.empate ? 'Empate' : 'Perdieron') + '</span><span class="t">vs ' + esc(x.rival || 'clan cerrado') + '</span><span class="small">' + nf(x.xp_mio) + ' – ' + nf(x.xp_rival) + '</span></div>';
+    }).join('') + '</div>';
+    h += '<div class="card reglas"><div class="h2">Cómo funciona</div>' +
+      '<div>' + SV.check + 'El líder o sublíder reta a otro clan. El otro tiene 24 horas para aceptar.</div>' +
+      '<div>' + SV.check + 'Dura 1 o 2 días. Cuenta el XP que ganan practicando, en duelos, simulacro y más.</div>' +
+      '<div>' + SV.check + 'Cada persona suma hasta 3 000 XP por día de guerra, para que no gane uno solo.</div>' +
+      '<div>' + SV.check + 'El clan que gana suma una victoria a su escudo.</div></div>';
+    return h;
+  }
+  // Cuenta regresiva de las guerras
+  function relojes() {
+    clearInterval(relojT);
+    var els = app.querySelectorAll('[data-reloj]'); if (!els.length) return;
+    function tic() {
+      els.forEach(function (el) {
+        var ms = Math.max(0, new Date(el.getAttribute('data-reloj')) - Date.now()), d = Math.floor(ms / 864e5), hh = Math.floor(ms / 36e5) % 24, mm = Math.floor(ms / 6e4) % 60, ss = Math.floor(ms / 1e3) % 60;
+        if (el.hasAttribute('data-corto')) el.textContent = d ? d + ' d ' + hh + ' h' : hh ? hh + ' h ' + mm + ' min' : mm + ' min';
+        else el.innerHTML = [[d, 'DÍAS'], [hh, 'HORAS'], [mm, 'MIN'], [ss, 'SEG']].map(function (x) { return '<div><b>' + (x[0] < 10 ? '0' : '') + x[0] + '</b><small>' + x[1] + '</small></div>'; }).join('');
+      });
+    }
+    tic(); relojT = setInterval(tic, 1000);
+  }
+
   /* ---------- Ajustes ---------- */
   function ajustes() {
     var c = D.clan, h = '';
@@ -403,8 +576,9 @@
 
   /* ---------- Pintar ---------- */
   function pintar() {
-    var cuerpo = vista === 'top' ? top() : !D.clan ? sinClan() : vista === 'ajustes' ? ajustes() : miClan();
+    var cuerpo = vista === 'top' ? top() : !D.clan ? sinClan() : vista === 'ajustes' ? ajustes() : vista === 'guerra' ? guerraVista() : miClan();
     app.innerHTML = '<div class="cl-lay">' + rail() + '<div>' + cuerpo + '</div></div>';
+    relojes();
   }
   function cargar() {
     return K.rpc('mi_clan').then(function (d) {
@@ -413,7 +587,7 @@
       pintar();
     });
   }
-  function refrescar() { K.olvidar(); TOP = null; seguro = ''; abierto = null; return cargar(); }
+  function refrescar() { K.olvidar(); TOP = null; G = null; RIV = null; seguro = ''; abierto = null; return cargar(); }
 
   function leerForm() {
     var n = document.getElementById('fNom'), t = document.getElementById('fTag');
@@ -441,7 +615,7 @@
   });
   app.addEventListener('click', function (e) {
     var el;
-    if ((el = e.target.closest('[data-vista]'))) { vista = el.getAttribute('data-vista'); seguro = ''; abierto = null; if (vista === 'top') TOP = null; pintar(); return; }
+    if ((el = e.target.closest('[data-vista]'))) { vista = el.getAttribute('data-vista'); seguro = ''; abierto = null; if (vista === 'top') TOP = null; if (vista === 'guerra') { G = null; RIV = null; } pintar(); return; }
     if ((el = e.target.closest('[data-forma],[data-simbolo],[data-color]'))) {
       leerForm();
       if (el.dataset.forma) F.forma = el.dataset.forma; if (el.dataset.simbolo) F.simbolo = el.dataset.simbolo; if (el.dataset.color) F.color = el.dataset.color;
@@ -451,6 +625,30 @@
       var c = D.clan, l = enlace(c.codigo), txt = 'Únete a mi clan «' + c.nombre + '» en Modo Cachimbo. Código: ' + c.codigo + ' ' + l;
       if (el.dataset.inv === 'wa') window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
       else A.copiar(l, 'Enlace copiado');
+      return;
+    }
+    if ((el = e.target.closest('[data-empujar]'))) {
+      el.disabled = true; var ec = +el.dataset.empujar;
+      K.rpc('clan_empujar', { p_jugador: ec }).then(function () {
+        D.miembros.forEach(function (m) { if (m.codigo === ec) { m.empujado = true; m.empujones = (+m.empujones || 0) + 1; } });
+        toast('¡Empujón enviado! Le saldrá un aviso en su clan'); pintar();
+      }, function (x) { toast(K.error(x)); el.disabled = false; });
+      return;
+    }
+    if ((el = e.target.closest('[data-horas]'))) { horasReto = +el.dataset.horas; pintar(); return; }
+    if ((el = e.target.closest('[data-retar]'))) {
+      el.disabled = true;
+      K.rpc('clan_retar', { p_clan: +el.dataset.retar, p_horas: horasReto }).then(function () { toast('¡Reto enviado! Tienen 24 horas para aceptar'); vista = 'guerra'; refrescar(); }, function (x) { toast(K.error(x)); el.disabled = false; RIV = null; pintar(); });
+      return;
+    }
+    if ((el = e.target.closest('[data-aceptar],[data-rechazar]'))) {
+      var si = el.hasAttribute('data-aceptar'); el.disabled = true;
+      K.rpc('clan_responder_reto', { p_guerra: +(el.dataset.aceptar || el.dataset.rechazar), p_aceptar: si }).then(function () { toast(si ? '¡Empezó la guerra!' : 'Reto rechazado'); vista = 'guerra'; refrescar(); }, function (x) { toast(K.error(x)); el.disabled = false; });
+      return;
+    }
+    if ((el = e.target.closest('[data-cancelar]'))) {
+      el.disabled = true;
+      K.rpc('clan_cancelar_reto', { p_guerra: +el.dataset.cancelar }).then(function () { toast('Reto cancelado'); vista = 'guerra'; refrescar(); }, function (x) { toast(K.error(x)); el.disabled = false; });
       return;
     }
     if ((el = e.target.closest('[data-abrir]'))) { var cod = +el.dataset.abrir; abierto = abierto === cod ? null : cod; seguro = ''; pintar(); return; }
@@ -502,7 +700,7 @@
   function empezar(u) {
     if (!u || empezado) return;
     empezado = true;
-    if (location.hash === '#top') vista = 'top';
+    if (location.hash === '#top') vista = 'top'; else if (location.hash === '#guerra') vista = 'guerra';
     cargar().then(function () {
       if (UNIRSE && !D.clan) { previaCod = UNIRSE; pintar(); buscarCodigo(UNIRSE); }
       else if (UNIRSE && D.clan) toast('Ya estás en un clan');
