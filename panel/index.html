@@ -754,6 +754,7 @@
         <button class="tab disp" data-tab="biblioteca" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span>Biblioteca</span></button>
         <button class="tab disp" data-tab="alertas" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Alertas</span></button>
         <button class="tab disp" data-tab="anuncios" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v4a1 1 0 0 0 1 1h3l5 4V5L7 9H4a1 1 0 0 0-1 1z"/><path d="M16 8.5a4.5 4.5 0 0 1 0 7"/><path d="M19 5.5a8.5 8.5 0 0 1 0 13"/></svg><span>Anuncios</span></button>
+        <button class="tab disp" data-tab="planes" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg><span>Planes y precios</span></button>
         <button class="tab disp" data-tab="frases" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Frases del día</span></button>
         <button class="tab disp" data-tab="tutorial" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Tutorial</span></button>
         <button class="tab disp" data-tab="perfil" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M15 8h2"/><path d="M15 12h2"/><path d="M7 16h10"/></svg><span>Perfil del alumno</span></button>
@@ -1040,6 +1041,23 @@ E) Alternativa"></textarea>
           </div>
         </div>
         <div id="ciBody"></div>
+      </div>
+
+      <!-- Planes y precios (precios.html) -->
+      <div id="tab-planes" hidden>
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Web · en beta, solo la ves tú</div>
+            <h1 class="disp">Planes y precios</h1>
+            <p>Lo que pongas aquí sale en la página Planes: precios, qué incluye cada plan, la preventa y la tabla de comparación.</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span class="hint" id="plEstado"></span>
+            <a class="btn-ghost" href="../precios.html" target="_blank" rel="noopener">Ver la página</a>
+            <button class="btn-main" id="plGuardar" type="button" disabled>Guardar y publicar</button>
+          </div>
+        </div>
+        <div id="plBody"></div>
       </div>
 
       <!-- Frases del día -->
@@ -1667,7 +1685,7 @@ E) Alternativa"></textarea>
   const VIGENCIA = 5 * 60 * 1000;
   const traido = {};
   const CARGAR = {
-    cursos: f => { cargarCursos(); cargarPractica(); }, perfil: f => cargarPerfilCfg(), frases: f => cargarFrases(), vocab: f => cargarVocabulario(),
+    cursos: f => { cargarCursos(); cargarPractica(); }, perfil: f => cargarPerfilCfg(), frases: f => cargarFrases(), planes: f => cargarPlanes(), vocab: f => cargarVocabulario(),
     ciclos: f => cargarCiclos(f), alumnos: f => cargarAlumnos(f), porvencer: f => cargarPorVencer(f), codigos: () => cargarCodigos(), simulacro: () => cargarTopSimulacro(), topxp: () => cargarTopXp(),
     agenda: () => cargarAgenda(), tematicas: () => cargarTematicas(), recursos: () => cargarRecursos(), biblioteca: () => cargarBiblioteca(), regalos: () => cargarRegalos(), influencers: () => cargarInfluencers(), descargas: () => cargarDescargas(), resenas: () => cargarResenas(), alertas: () => cargarAlertas(), anuncios: () => cargarAnuncios(), corr: () => cargarCorrecciones(),
     equipo: () => cargarEquipo(), historial: () => cargarHistorial(), avance: () => cargarAvance(), verif: f => cargarVerificar(f)
@@ -1686,10 +1704,10 @@ E) Alternativa"></textarea>
     window.scrollTo(0, 0);
     document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
     const pestana = t.dataset.tab === 'examen' ? 'subir' : t.dataset.tab; // "Subir examen" usa la misma pantalla que "Subir tema"
-    ['reportes', 'subir', 'editar', 'cursos', 'ciclos', 'vocab', 'perfil', 'frases', 'alertas', 'tutorial', 'codigos', 'alumnos', 'porvencer', 'corr', 'simulacro', 'topxp', 'agenda', 'tematicas', 'recursos', 'biblioteca', 'regalos', 'influencers', 'descargas', 'resenas', 'equipo', 'historial', 'avance', 'verif', 'anuncios'].forEach(id => { $('tab-' + id).hidden = id !== pestana; });
+    ['reportes', 'subir', 'editar', 'cursos', 'ciclos', 'vocab', 'perfil', 'frases', 'alertas', 'tutorial', 'codigos', 'alumnos', 'porvencer', 'corr', 'simulacro', 'topxp', 'agenda', 'tematicas', 'recursos', 'biblioteca', 'regalos', 'influencers', 'descargas', 'resenas', 'equipo', 'historial', 'avance', 'verif', 'anuncios', 'planes'].forEach(id => { $('tab-' + id).hidden = id !== pestana; });
     if (t.dataset.tab === 'tutorial' && !TU.datos) cargarTutorial();
     // Las que tienen textos por guardar (Perfil, Frases, Vocabulario) no se recargan solas al tocarlas otra vez
-    cargarSeccion(t.dataset.tab, yaEstaba && !['perfil', 'frases', 'vocab'].includes(t.dataset.tab));
+    cargarSeccion(t.dataset.tab, yaEstaba && !['perfil', 'frases', 'vocab', 'planes'].includes(t.dataset.tab));
     if (t.dataset.tab === 'subir' || t.dataset.tab === 'examen') initSubir(t.dataset.tab === 'examen' ? 'examen' : 'tema');
     if (t.dataset.tab === 'editar') renderPicker();
   }));
@@ -2575,6 +2593,8 @@ E) Alternativa"></textarea>
 <script src="perfil-panel.js"></script>
 <script src="../assets/frases.js"></script>
 <script src="frases-panel.js"></script>
+<script src="../assets/planes.js"></script>
+<script src="planes-panel.js"></script>
 <script src="ciclos-panel.js"></script>
 <script src="novedades-panel.js"></script>
 <script src="mantenimiento.js"></script>
