@@ -111,13 +111,21 @@
   .paso .n { width: 30px; height: 30px; border-radius: 50%; background: var(--l); color: var(--lt); font: 900 15px Nunito, sans-serif; display: grid; place-items: center; flex: none; }
   .paso b { font: 900 15px Nunito, sans-serif; display: block; }
   .paso span { color: var(--d); font-size: 13px; }
+  /* Beta: solo el admin ve la página mientras se prueba (RPC es_admin) */
+  html:not(.beta-si) main.wrap { display: none; }
+  .beta-aviso { max-width: 420px; margin: 60px auto; padding: 0 16px; text-align: center; color: var(--d); }
+  .beta-aviso b { display: block; font: 900 20px Nunito, sans-serif; color: var(--t); margin-bottom: 6px; }
+  html.beta-si .beta-aviso, html:not(.beta-no) .beta-aviso { display: none; }
+  .beta-tag { margin-left: auto; font: 900 11px Nunito, sans-serif; letter-spacing: .06em; color: var(--rosa); border: 1px solid var(--rosa); border-radius: 99px; padding: 2px 8px; }
 </style>
 </head>
 <body>
 <header class="top">
   <a class="x" href="index.html" aria-label="Volver"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></a>
   <b>Planes</b>
+  <span class="beta-tag">BETA</span>
 </header>
+<div class="beta-aviso"><b>Muy pronto</b>Esta página todavía está en prueba.</div>
 
 <main class="wrap">
   <section class="hero">
@@ -157,6 +165,20 @@
   </div>
 </main>
 
+<script src="assets/mc-config.js"></script>
+<script src="assets/auth.js"></script>
+<script>
+// Beta: solo el admin (public.es_admin) ve los planes
+(function () {
+  var r = document.documentElement;
+  function poner(ok) { r.classList.toggle('beta-si', ok); r.classList.toggle('beta-no', !ok); }
+  if (!window.MCAuth) { poner(false); return; }
+  MCAuth.listo.then(function (c) {
+    if (!MCAuth.usuario()) { poner(false); return; }
+    return c.rpc('es_admin').then(function (x) { poner(!x.error && x.data === true); });
+  }).catch(function () { poner(false); });
+})();
+</script>
 <script>
 (function () {
   // Precios y textos de los planes. Más adelante se editan desde Panel → Paquetes.
