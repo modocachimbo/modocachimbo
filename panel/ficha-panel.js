@@ -584,10 +584,10 @@ $('pvList').addEventListener('click', e => {
   fxExtender({ origen: x.origen, id: x.id, codigo: x.codigo, hoja: x.hoja, producto: x.producto, vence: x.vence }, x, () => cargarPorVencer(true));
 });
 
-/* ---------- Menú: Regalos e Influencers salen; entra Por vencer ---------- */
+/* ---------- Menú: Regalos sale (está en la ficha); Influencers se queda porque ahí se suben sus aspectos exclusivos; entra Por vencer ---------- */
 (function menuAlumnos() {
   const q = s => document.querySelector('.tab[data-tab="' + s + '"]');
-  ['regalos', 'influencers'].forEach(s => { const t = q(s); if (t) t.classList.add('fuera-menu'); });
+  ['regalos'].forEach(s => { const t = q(s); if (t) t.classList.add('fuera-menu'); });
   const alu = q('alumnos'); if (alu) alu.querySelector('span').textContent = 'Alumnos y fichas';
   fxPrepararAlumnos();
   // Al tocar «Alumnos y fichas» otra vez desde otra sección, se vuelve a la lista
