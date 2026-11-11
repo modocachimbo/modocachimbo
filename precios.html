@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script src="assets/guardia.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0B0818">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="assets/app/icono-180.png">
+<meta name="apple-mobile-web-app-title" content="Modo Cachimbo">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<script src="assets/app.js" defer></script>
+<title>Planes · Modo Cachimbo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;1,800&family=Inter:wght@400;500;600;700&family=Nunito:wght@700;800;900&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0B0818; --s: #151127; --s2: #1D1834; --b: #2A2346; --l: #C6E000; --l-d: #8fa300; --lt: #151A03;
+    --t: #EEEAF7; --d: #A99FC8; --f: #6F6690; --rosa: #FF6FA8; --cel: #1CB0F6; --oro: #FFC800;
+    color-scheme: dark;
+  }
+  body { background: var(--bg); color: var(--t); font: 500 15px/1.45 Inter, sans-serif; min-height: 100vh; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  a { color: inherit; text-decoration: none; }
+  [hidden] { display: none !important; }
+  .top { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--bg); border-bottom: 1px solid var(--b); }
+  .top .x { width: 36px; height: 36px; border-radius: 10px; background: var(--s2); display: grid; place-items: center; color: var(--d); }
+  .top svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .top b { font: 900 17px Nunito, sans-serif; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 18px 16px 40px; }
+  svg.i { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+  .hero { text-align: center; margin: 6px 0 18px; }
+  .hero h1 { font: 900 30px/1.1 Nunito, sans-serif; }
+  .hero h1 em { color: var(--l); font-style: normal; }
+  .hero p { color: var(--d); max-width: 520px; margin: 8px auto 0; }
+
+  .preventa { display: flex; align-items: center; gap: 12px; background: linear-gradient(100deg, rgba(255,111,168,.18), rgba(198,224,0,.12)); border: 1px solid rgba(255,111,168,.45); border-radius: 18px; padding: 12px 14px; margin: 0 auto 18px; max-width: 640px; }
+  .preventa .ic { width: 42px; height: 42px; border-radius: 12px; background: var(--rosa); color: #2a0414; display: grid; place-items: center; flex: none; }
+  .preventa .ic svg { width: 24px; height: 24px; }
+  .preventa b { font: 900 16px Nunito, sans-serif; display: block; }
+  .preventa small { color: var(--d); font-size: 13px; }
+  .preventa .pr { margin-left: auto; text-align: right; white-space: nowrap; }
+  .preventa .pr s { color: var(--f); font-size: 13px; display: block; }
+  .preventa .pr strong { font: 900 22px Nunito, sans-serif; color: var(--rosa); }
+
+  .periodo { display: flex; justify-content: center; margin-bottom: 18px; }
+  .periodo div { display: inline-flex; background: var(--s); border: 1px solid var(--b); border-radius: 99px; padding: 4px; }
+  .periodo button { border: 0; background: none; border-radius: 99px; padding: 8px 16px; font: 800 14.5px Nunito, sans-serif; color: var(--d); }
+  .periodo button.on { background: var(--l); color: var(--lt); }
+  .periodo button span { font-size: 11.5px; font-weight: 900; color: var(--rosa); margin-left: 4px; }
+  .periodo button.on span { color: #3a4a00; }
+
+  .planes { display: grid; gap: 14px; grid-template-columns: 1fr; }
+  .plan.top-plan { order: -1; margin-top: 8px; }
+  @media (min-width: 820px) { .planes { grid-template-columns: repeat(3, 1fr); align-items: stretch; } .plan.top-plan { order: 0; margin-top: 0; } }
+  .plan { position: relative; background: var(--s); border: 1px solid var(--b); border-radius: 22px; padding: 18px; display: flex; flex-direction: column; }
+  .plan.top-plan { border: 2px solid var(--l); box-shadow: 0 0 0 4px rgba(198,224,0,.08), 0 18px 40px rgba(0,0,0,.35); }
+  .plan .tag { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--l); color: var(--lt); font: 900 12px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .05em; padding: 4px 12px; border-radius: 99px; white-space: nowrap; }
+  .plan .cab { display: flex; align-items: center; gap: 10px; }
+  .plan .cab .ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--s2); color: var(--c, var(--d)); }
+  .plan .cab .ic svg { width: 22px; height: 22px; }
+  .plan h2 { font: 900 21px Nunito, sans-serif; }
+  .plan .sub { color: var(--d); font-size: 13.5px; margin: 6px 0 12px; min-height: 2.6em; }
+  .precio { display: flex; align-items: baseline; gap: 6px; margin-bottom: 2px; }
+  .precio b { font: 900 36px/1 Nunito, sans-serif; color: var(--c, var(--t)); }
+  .precio span { color: var(--d); font-weight: 600; }
+  .ahorro { font-size: 12.5px; color: var(--f); min-height: 1.4em; margin-bottom: 12px; }
+  .ahorro em { color: var(--l); font-style: normal; font-weight: 700; }
+  .lista { list-style: none; display: grid; gap: 8px; margin-bottom: 16px; flex: 1; }
+  .lista li { display: flex; gap: 9px; align-items: flex-start; font-size: 14px; }
+  .lista li svg { margin-top: 1px; }
+  .lista li.si svg { color: var(--l); }
+  .lista li.no { color: var(--f); }
+  .lista li.no svg { color: var(--f); }
+  .btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: var(--l); color: var(--lt); border-radius: 16px; padding: 14px; font: 900 17px Nunito, sans-serif; box-shadow: 0 4px 0 var(--l-d); border: 0; }
+  .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--l-d); }
+  .btn2 { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: transparent; border: 2px solid var(--b); border-radius: 16px; padding: 12px; font: 800 16px Nunito, sans-serif; color: var(--d); }
+  .area-sel { display: flex; flex-wrap: wrap; gap: 6px; margin: -4px 0 12px; }
+  .area-sel button { border: 1px solid var(--b); background: var(--s2); color: var(--d); border-radius: 99px; padding: 4px 10px; font: 800 12.5px Nunito, sans-serif; }
+  .area-sel button.on { border-color: var(--cel); color: var(--cel); background: rgba(28,176,246,.1); }
+
+  .amigos { display: flex; align-items: center; gap: 14px; background: var(--s); border: 1px dashed var(--b); border-radius: 20px; padding: 14px 16px; margin: 22px 0 0; }
+  .amigos .ic { width: 46px; height: 46px; border-radius: 14px; background: rgba(28,176,246,.14); color: var(--cel); display: grid; place-items: center; flex: none; }
+  .amigos .ic svg { width: 26px; height: 26px; }
+  .amigos b { font: 900 16px Nunito, sans-serif; }
+  .amigos p { color: var(--d); font-size: 13.5px; }
+
+  h3.sec { font: 900 22px Nunito, sans-serif; margin: 34px 0 4px; text-align: center; }
+  p.sec { color: var(--d); text-align: center; font-size: 14px; margin-bottom: 14px; }
+  .tabla { background: var(--s); border: 1px solid var(--b); border-radius: 20px; overflow: hidden; }
+  .fila { display: grid; grid-template-columns: 1.5fr 1fr 1fr; align-items: center; border-top: 1px solid var(--b); }
+  .fila:first-child { border-top: 0; }
+  .fila > div { padding: 11px 12px; font-size: 13.5px; }
+  .fila > div:nth-child(2) { background: rgba(198,224,0,.06); text-align: center; }
+  .fila > div:nth-child(3) { text-align: center; color: var(--d); }
+  .fila.cab > div { font: 900 14px Nunito, sans-serif; padding: 13px 12px; }
+  .fila.cab > div:nth-child(2) { color: var(--l); }
+  .fila .ok, .fila .nn { display: inline-flex; align-items: center; gap: 6px; justify-content: center; }
+  .fila .ok { color: var(--l); font-weight: 700; }
+  .fila .nn { color: var(--f); }
+  .fila small { display: block; color: var(--f); font-size: 11.5px; font-weight: 500; }
+  .nota { color: var(--f); font-size: 11.5px; margin-top: 8px; text-align: center; }
+
+  .como { display: grid; gap: 10px; grid-template-columns: 1fr; margin-top: 6px; }
+  @media (min-width: 720px) { .como { grid-template-columns: repeat(3, 1fr); } }
+  .paso { background: var(--s); border: 1px solid var(--b); border-radius: 18px; padding: 14px; display: flex; gap: 12px; }
+  .paso .n { width: 30px; height: 30px; border-radius: 50%; background: var(--l); color: var(--lt); font: 900 15px Nunito, sans-serif; display: grid; place-items: center; flex: none; }
+  .paso b { font: 900 15px Nunito, sans-serif; display: block; }
+  .paso span { color: var(--d); font-size: 13px; }
+  /* Beta: solo el admin ve la página mientras se prueba (RPC es_admin) */
+  html:not(.beta-si) main.wrap { display: none; }
+  .beta-aviso { max-width: 420px; margin: 60px auto; padding: 0 16px; text-align: center; color: var(--d); }
+  .beta-aviso b { display: block; font: 900 20px Nunito, sans-serif; color: var(--t); margin-bottom: 6px; }
+  html.beta-si .beta-aviso, html:not(.beta-no) .beta-aviso { display: none; }
+  .beta-tag { margin-left: auto; font: 900 11px Nunito, sans-serif; letter-spacing: .06em; color: var(--rosa); border: 1px solid var(--rosa); border-radius: 99px; padding: 2px 8px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="x" href="index.html" aria-label="Volver"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></a>
+  <b>Planes</b>
+  <span class="beta-tag">BETA</span>
+</header>
+<div class="beta-aviso"><b>Muy pronto</b>Esta página todavía está en prueba.</div>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Ingresa con <em>Modo Cachimbo</em></h1>
+    <p>Lo del ciclo pasado es gratis para siempre. Paga solo por el material nuevo del ciclo que estás preparando.</p>
+  </section>
+
+  <div class="preventa" id="preventa">
+    <span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg></span>
+    <span><b>Preventa ciclo <span id="pvCiclo">2027-I</span></b><small id="pvTxt">Hasta el 30/11 o los primeros 100 alumnos</small></span>
+    <span class="pr"><s id="pvAntes">S/ 49.90</s><strong id="pvPrecio">S/ 39.90</strong></span>
+  </div>
+
+  <div class="periodo"><div role="tablist">
+    <button type="button" data-p="mes">Mensual</button>
+    <button type="button" data-p="ciclo" class="on">Ciclo · 3 meses <span>AHORRA</span></button>
+  </div></div>
+
+  <section class="planes" id="planes"></section>
+
+  <div class="amigos">
+    <span class="ic"><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 4.5a3 3 0 010 6"/><path d="M18 14c2 .6 3.5 2.8 3.5 6"/></svg></span>
+    <span><b>Trae 2 amigos y te regalamos 1 mes</b><p>Cuando 2 amigos que agregaste en Modo Cachimbo activen un plan, tu acceso suma 30 días más.</p></span>
+  </div>
+
+  <h3 class="sec">¿Por qué no un banco en Quizizz?</h3>
+  <p class="sec">Quizizz sirve para jugar preguntas. Modo Cachimbo es una academia completa para la UNJFSC.</p>
+  <div class="tabla" id="tabla"></div>
+  <p class="nota">Comparamos con un banco de preguntas armado en Quizizz y vendido a S/ 30 por 3 meses. Quizizz es una marca de sus dueños; no tenemos relación con ellos.</p>
+
+  <h3 class="sec">Cómo activar tu plan</h3>
+  <p class="sec">En menos de 5 minutos.</p>
+  <div class="como">
+    <div class="paso"><span class="n">1</span><span><b>Elige tu plan</b><span>Toca «Lo quiero» y se abre WhatsApp con tu plan escrito.</span></span></div>
+    <div class="paso"><span class="n">2</span><span><b>Paga con Yape</b><span>Envía la captura del pago por el mismo chat.</span></span></div>
+    <div class="paso"><span class="n">3</span><span><b>Listo</b><span>Te activamos el acceso en tu cuenta (por tu ID) o te mandamos un código.</span></span></div>
+  </div>
+</main>
+
+<script src="assets/mc-config.js"></script>
+<script src="assets/auth.js"></script>
+<script>
+// Beta: solo el admin (public.es_admin) ve los planes
+(function () {
+  var r = document.documentElement;
+  function poner(ok) { r.classList.toggle('beta-si', ok); r.classList.toggle('beta-no', !ok); }
+  if (!window.MCAuth) { poner(false); return; }
+  MCAuth.listo.then(function (c) {
+    if (!MCAuth.usuario()) { poner(false); return; }
+    return c.rpc('es_admin').then(function (x) { poner(!x.error && x.data === true); });
+  }).catch(function () { poner(false); });
+})();
+</script>
+<script>
+(function () {
+  // Precios y textos de los planes. Más adelante se editan desde Panel → Paquetes.
+  var CFG = {
+    preventa: { activa: true, ciclo: '2027-I', hasta: '30/11', cupos: 100, precio: 39.90, plan: 'total' },
+    planes: [
+      { id: 'gratis', nombre: 'Gratis', c: 'var(--d)', sub: 'Para conocer la app y repasar lo del ciclo pasado.', mes: 0, ciclo: 0,
+        si: ['Libros y exámenes pasados', 'Practicar el material de ciclos anteriores', 'Racha, amigos y test vocacional'],
+        no: ['Material del ciclo nuevo', 'Repaso, Fijas y Simulacro', 'Descargas PDF'] },
+      { id: 'area', nombre: 'Un área', c: 'var(--cel)', sub: 'Refuerza solo el área que más te cuesta.', mes: 12.90, ciclo: 34.90, areas: true,
+        si: ['Todo lo gratis', 'Material nuevo de los cursos del área', 'Repaso, Fijas y Flashcards del área', 'Búho tutor en sus preguntas'],
+        no: ['Simulacro y duelos', 'Descargas PDF'] },
+      { id: 'total', nombre: 'Total', c: 'var(--l)', top: true, sub: 'Las 4 áreas y todo lo que tiene Modo Cachimbo.', mes: 19.90, ciclo: 49.90,
+        si: ['Las 4 áreas con todo el material nuevo', 'Repaso, Fijas, Flashcards y Banqueo', 'Simulacro de 80 preguntas con puntaje por bloque', 'Duelos y Top de la semana', 'Seminarios, Vocabulario y Biblioteca', 'Descarga en PDF del material nuevo'],
+        no: [] }
+    ],
+    // [qué, Modo Cachimbo, banco en Quizizz]  (true = sí, false = no, texto = detalle)
+    tabla: [
+      ['Preguntas del ciclo UNJFSC con su clave', true, true],
+      ['Resolución explicada paso a paso (Búho tutor)', true, 'Depende de quien lo arma'],
+      ['Simulacro con puntaje real por bloque y carrera', true, false],
+      ['Repaso de tus preguntas falladas', true, false],
+      ['Libros y exámenes pasados por curso', true, false],
+      ['Ranking semanal con todos los postulantes', true, 'Solo dentro de cada juego'],
+      ['Racha, duelos con amigos y Arcade', true, false],
+      ['Descarga del material en PDF', true, false],
+      ['Material del ciclo pasado gratis', true, false],
+      ['Precio por 3 meses', 'S/ 49.90', 'S/ 30']
+    ]
+  };
+  var WA = (window.MC_CONFIG && MC_CONFIG.WHATSAPP) || '51917797543';
+  var AREAS = [['matematica', 'Matemática'], ['ciencia-tecnologia', 'Ciencia y Tecnología'], ['comunicacion', 'Comunicación'], ['ciencias-sociales', 'Ciencias Sociales']];
+  var ICO = {
+    gratis: '<path d="M4 6.5C4 5.1 5.1 4 6.5 4H11v16H6.5A2.5 2.5 0 014 17.5z"/><path d="M20 6.5C20 5.1 18.9 4 17.5 4H13v16h4.5a2.5 2.5 0 002.5-2.5z"/>',
+    area: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/>',
+    total: '<path d="M5 18h14l1.5-10-5 3.5L12 5l-3.5 6.5-5-3.5z"/><path d="M5 21h14"/>'
+  };
+  var SI = '<svg class="i" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  var NO = '<svg class="i" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg>';
+  var periodo = 'ciclo', area = 'matematica';
+
+  function sol(n) { return 'S/ ' + n.toFixed(2); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function wa(p) {
+    var t = p.id === 'area' ? 'Un área (' + AREAS.filter(function (a) { return a[0] === area; })[0][1] + ')' : p.nombre;
+    var pv = CFG.preventa.activa && p.id === CFG.preventa.plan && periodo === 'ciclo';
+    var precio = pv ? CFG.preventa.precio : p[periodo];
+    return 'https://wa.me/' + WA + '?text=' + encodeURIComponent('Hola! Quiero el plan ' + t + ' de Modo Cachimbo, ' + (periodo === 'mes' ? 'mensual' : 'por ciclo (3 meses)') + (pv ? ' en preventa' : '') + ': ' + sol(precio));
+  }
+
+  function plan(p) {
+    var pv = CFG.preventa.activa && p.id === CFG.preventa.plan && periodo === 'ciclo';
+    var precio = pv ? CFG.preventa.precio : p[periodo];
+    var ahorro = '';
+    if (p.mes && periodo === 'ciclo') ahorro = 'Equivale a ' + sol(precio / 3) + ' al mes · <em>ahorras ' + sol(p.mes * 3 - precio) + '</em>';
+    else if (p.mes) ahorro = 'O ' + sol(p.ciclo) + ' por todo el ciclo';
+    return '<article class="plan' + (p.top ? ' top-plan' : '') + '" style="--c:' + p.c + '">' +
+      (p.top ? '<span class="tag">' + (pv ? 'Preventa' : 'El más completo') + '</span>' : '') +
+      '<div class="cab"><span class="ic"><svg class="i" viewBox="0 0 24 24">' + ICO[p.id] + '</svg></span><h2>' + esc(p.nombre) + '</h2></div>' +
+      '<p class="sub">' + esc(p.sub) + '</p>' +
+      '<div class="precio"><b>' + (precio ? sol(precio) : 'S/ 0') + '</b><span>' + (precio ? (periodo === 'mes' ? '/ mes' : '/ ciclo') : 'para siempre') + '</span></div>' +
+      '<div class="ahorro">' + ahorro + '</div>' +
+      (p.areas ? '<div class="area-sel">' + AREAS.map(function (a) { return '<button type="button" data-a="' + a[0] + '"' + (a[0] === area ? ' class="on"' : '') + '>' + a[1] + '</button>'; }).join('') + '</div>' : '') +
+      '<ul class="lista">' + p.si.map(function (x) { return '<li class="si">' + SI + '<span>' + esc(x) + '</span></li>'; }).join('') +
+        p.no.map(function (x) { return '<li class="no">' + NO + '<span>' + esc(x) + '</span></li>'; }).join('') + '</ul>' +
+      (precio ? '<a class="' + (p.top ? 'btn' : 'btn2') + '" href="' + wa(p) + '" target="_blank" rel="noopener">Lo quiero</a>'
+              : '<a class="btn2" href="index.html">Ya lo tienes</a>') +
+      '</article>';
+  }
+  function celda(v) {
+    if (v === true) return '<span class="ok">' + SI + 'Sí</span>';
+    if (v === false) return '<span class="nn">' + NO + 'No</span>';
+    return '<span>' + esc(v) + '</span>';
+  }
+  function pintar() {
+    document.getElementById('planes').innerHTML = CFG.planes.map(plan).join('');
+    document.querySelectorAll('.periodo button').forEach(function (b) { b.classList.toggle('on', b.dataset.p === periodo); });
+    document.querySelectorAll('.area-sel button').forEach(function (b) {
+      b.onclick = function () { area = b.dataset.a; pintar(); };
+    });
+  }
+  document.querySelectorAll('.periodo button').forEach(function (b) { b.onclick = function () { periodo = b.dataset.p; pintar(); }; });
+  var P = CFG.preventa;
+  document.getElementById('preventa').hidden = !P.activa;
+  document.getElementById('pvCiclo').textContent = P.ciclo;
+  document.getElementById('pvTxt').textContent = 'Plan Total por todo el ciclo · hasta el ' + P.hasta + ' o los primeros ' + P.cupos + ' alumnos';
+  document.getElementById('pvAntes').textContent = sol(CFG.planes[2].ciclo);
+  document.getElementById('pvPrecio').textContent = sol(P.precio);
+  document.getElementById('tabla').innerHTML = '<div class="fila cab"><div></div><div>Modo Cachimbo</div><div>Banco en Quizizz</div></div>' +
+    CFG.tabla.map(function (r) { return '<div class="fila"><div>' + esc(r[0]) + '</div><div>' + celda(r[1]) + '</div><div>' + celda(r[2]) + '</div></div>'; }).join('');
+  pintar();
+})();
+</script>
+</body>
+</html>
