@@ -21,6 +21,8 @@
         si: ['Las 4 áreas con todo el material nuevo', 'Repaso, Fijas, Flashcards y Banqueo', 'Simulacro de 80 preguntas con puntaje por bloque', 'Duelos y Top de la semana', 'Seminarios, Vocabulario y Biblioteca', 'Descarga en PDF del material nuevo'],
         no: [] }
     ],
+    // Ciclos que se cobran y ciclos que se descargan (assets/acceso.js · cicloAnterior / cicloDescarga)
+    ciclos: { modo: 'auto', cobrados: [], descarga: { modo: 'auto', lista: [] } },
     amigos: { activa: true, titulo: 'Trae 2 amigos y te regalamos 1 mes', texto: 'Cuando 2 amigos que agregaste en Modo Cachimbo activen un plan, tu acceso suma 30 días más.' },
     comparar: {
       activa: true,
@@ -50,6 +52,7 @@
     var b = copia(BASE);
     if (!v || typeof v !== 'object') return b;
     if (v.preventa) b.preventa = Object.assign(b.preventa, v.preventa);
+    if (v.ciclos) { b.ciclos = Object.assign(b.ciclos, v.ciclos); b.ciclos.descarga = Object.assign({ modo: 'auto', lista: [] }, v.ciclos.descarga || {}); }
     if (v.amigos) b.amigos = Object.assign(b.amigos, v.amigos);
     if (v.comparar) b.comparar = Object.assign(b.comparar, v.comparar);
     if (Array.isArray(v.planes)) b.planes = b.planes.map(function (p) {

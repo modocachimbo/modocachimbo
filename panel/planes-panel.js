@@ -22,6 +22,11 @@ const PL = { v: null, cambios: false, cargado: false };
   .pl-sw input { width: 18px; height: 18px; accent-color: var(--accent); }
   .pl-fila { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr) minmax(0, 1fr) 34px; gap: 8px; margin-top: 8px; }
   .pl-fila.cab { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-faint); font-weight: 700; }
+  .pl-op { font-weight: 600; font-size: 13.5px; margin-top: 6px; }
+  .pl-ciclos { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 0 28px; }
+  .pl-chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 99px; padding: 5px 11px; font-weight: 700; font-size: 13px; cursor: pointer; }
+  .pl-chip input { accent-color: var(--accent); }
+  .pl-chip.off { opacity: .45; cursor: default; }
   .pl-x { width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--border); background: none; color: var(--text-dim); cursor: pointer; display: grid; place-items: center; }
   .pl-x svg { width: 14px; height: 14px; }
   .pl-x:hover { color: #ff9a9a; border-color: #5a2a2a; }
@@ -64,6 +69,24 @@ function plCelda(v) { return v === true ? 'Sí' : v === false ? 'No' : String(v 
 function plValor(t) { if (typeof t === 'boolean') return t; t = String(t || '').trim(); return /^s[ií]$/i.test(t) ? true : /^no$/i.test(t) ? false : t; }
 function plLineas(t) { return String(t || '').split('\n').map(x => x.trim()).filter(Boolean).slice(0, 12); }
 
+// Ciclos que existen en Libros, Seminarios y Banqueo de todos los cursos (de sus manifest.json)
+const PL_CURSOS = ['algebra', 'aritmetica', 'estadistica', 'geometria', 'trigonometria', 'anatomia', 'biologia', 'fisica', 'quimica', 'lenguaje', 'literatura', 'raz-verbal', 'ciudadania', 'economia', 'filosofia', 'geografia', 'historia-peru', 'historia-universal', 'psicologia'];
+let plCiclos = null;
+function plOrden(id) { const x = String(id).match(/^(\d{4})-(III|II|I)$/); return x ? +x[1] * 10 + { I: 1, II: 2, III: 3 }[x[2]] : 0; }
+async function plCargarCiclos() {
+  if (plCiclos) return plCiclos;
+  const ids = new Set();
+  await Promise.all(PL_CURSOS.flatMap(c => ['libros', 'seminarios', 'banqueo'].map(t =>
+    fetch(`../${c}/${t}/data/manifest.json`, { cache: 'no-cache' }).then(r => r.ok ? r.json() : []).then(m => (m || []).forEach(x => x && x.id && ids.add(x.id))).catch(() => {}))));
+  plCiclos = [...ids].filter(plOrden).sort((a, b) => plOrden(b) - plOrden(a));
+  return plCiclos;
+}
+function plChips(marcados, apagado) {
+  const todos = [...new Set([...(plCiclos || []), ...(marcados || [])])].sort((a, b) => plOrden(b) - plOrden(a));
+  if (!todos.length) return '<span class="hint">Buscando ciclos…</span>';
+  return todos.map(id => `<label class="pl-chip${apagado ? ' off' : ''}"><input type="checkbox" value="${esc(id)}" ${(marcados || []).includes(id) ? 'checked' : ''} ${apagado ? 'disabled' : ''}> ${esc(id)}</label>`).join('');
+}
+
 function renderPlanes(errores) {
   const v = PL.v, P = v.preventa, A = v.amigos, C = v.comparar;
   const body = $('plBody');
@@ -83,6 +106,26 @@ function renderPlanes(errores) {
         <label class="fld">No incluye <span class="hint">sale tachado</span></label>
         <textarea class="inp" rows="3" data-p="${i}" data-k="no">${esc((p.no || []).join('\n'))}</textarea>
       </div>`).join('')}
+    </div>
+
+    <div class="pcard pl-card pl-sec">
+      <h3>Ciclos: qué se cobra y qué se descarga</h3>
+      <p class="hint" style="margin:0 0 4px">Para Libros, Seminarios y Banqueo. Lo que no se cobra se practica gratis. Repaso, Fijas y Simulacro siempre piden código.</p>
+      <div class="pl-dos" style="gap:18px">
+        <div>
+          <label class="fld">Se cobran (piden código)</label>
+          <label class="pl-sw pl-op"><input type="radio" name="plCobMod" value="auto" ${v.ciclos.modo !== 'lista' ? 'checked' : ''}> Automático: solo el ciclo más nuevo de cada curso</label>
+          <label class="pl-sw pl-op"><input type="radio" name="plCobMod" value="lista" ${v.ciclos.modo === 'lista' ? 'checked' : ''}> Solo los que marco:</label>
+          <div class="pl-ciclos" id="plCob">${plChips(v.ciclos.cobrados, v.ciclos.modo !== 'lista')}</div>
+        </div>
+        <div>
+          <label class="fld">Se descargan en PDF</label>
+          <label class="pl-sw pl-op"><input type="radio" name="plDesMod" value="auto" ${v.ciclos.descarga.modo !== 'lista' ? 'checked' : ''}> Automático: los mismos que se cobran</label>
+          <label class="pl-sw pl-op"><input type="radio" name="plDesMod" value="lista" ${v.ciclos.descarga.modo === 'lista' ? 'checked' : ''}> Solo los que marco:</label>
+          <div class="pl-ciclos" id="plDes">${plChips(v.ciclos.descarga.lista, v.ciclos.descarga.modo !== 'lista')}</div>
+        </div>
+      </div>
+      <p class="hint" style="margin:10px 0 0">Los exámenes pasados no cambian con esto.</p>
     </div>
 
     <div class="pcard pl-card pl-sec">
@@ -135,10 +178,22 @@ function renderPlanes(errores) {
   body.querySelectorAll('[data-quitar]').forEach(b => b.addEventListener('click', () => {
     C.tabla.splice(+b.dataset.quitar, 1); plCambio(); renderPlanes();
   }));
+  const C2 = v.ciclos;
+  body.querySelectorAll('input[name="plCobMod"]').forEach(r => r.addEventListener('change', () => { C2.modo = r.value; if (r.value === 'lista' && !C2.cobrados.length && plCiclos && plCiclos[0]) C2.cobrados = [plCiclos[0]]; plCambio(); renderPlanes(); }));
+  body.querySelectorAll('input[name="plDesMod"]').forEach(r => r.addEventListener('change', () => { C2.descarga.modo = r.value; if (r.value === 'lista' && !C2.descarga.lista.length) C2.descarga.lista = C2.cobrados.slice(); plCambio(); renderPlanes(); }));
+  body.querySelectorAll('#plCob input').forEach(x => x.addEventListener('change', () => { C2.cobrados = [...body.querySelectorAll('#plCob input:checked')].map(i => i.value); plCambio(); }));
+  body.querySelectorAll('#plDes input').forEach(x => x.addEventListener('change', () => { C2.descarga.lista = [...body.querySelectorAll('#plDes input:checked')].map(i => i.value); plCambio(); }));
+  if (!plCiclos) plCargarCiclos().then(() => { { $('plCob').innerHTML = plChips(C2.cobrados, C2.modo !== 'lista'); $('plDes').innerHTML = plChips(C2.descarga.lista, C2.descarga.modo !== 'lista'); renderPlanesCiclosEventos(); } });
   $('plFila').addEventListener('click', () => {
     C.tabla.push(['', 'Sí', 'No']); plCambio(); renderPlanes();
     const t = body.querySelector(`[data-f="${C.tabla.length - 1}"][data-c="0"]`); if (t) t.focus();
   });
+}
+
+function renderPlanesCiclosEventos() {
+  const body = $('plBody'), C2 = PL.v.ciclos;
+  body.querySelectorAll('#plCob input').forEach(x => x.addEventListener('change', () => { C2.cobrados = [...body.querySelectorAll('#plCob input:checked')].map(i => i.value); plCambio(); }));
+  body.querySelectorAll('#plDes input').forEach(x => x.addEventListener('change', () => { C2.descarga.lista = [...body.querySelectorAll('#plDes input:checked')].map(i => i.value); plCambio(); }));
 }
 
 async function guardarPlanes() {
@@ -154,6 +209,7 @@ async function guardarPlanes() {
   });
   v.preventa.precio = num(v.preventa.precio); v.preventa.cupos = Math.max(0, parseInt(v.preventa.cupos, 10) || 0);
   if (v.preventa.activa && !v.preventa.precio) err.push('Preventa: pon el precio.');
+  if (v.ciclos.modo === 'lista' && !v.ciclos.cobrados.length) err.push('Ciclos: marca al menos un ciclo que se cobra, o elige Automático.');
   v.comparar.tabla = (v.comparar.tabla || []).filter(f => String(f[0] || '').trim()).map(f => [String(f[0]).trim(), plValor(f[1]), plValor(f[2])]).slice(0, 20);
   if (err.length) { renderPlanes(err); window.scrollTo(0, 0); toast('Revisa lo marcado en rojo', true); return; }
   const btn = $('plGuardar'); btn.disabled = true; plEstado('Guardando…');

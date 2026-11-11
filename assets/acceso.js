@@ -486,23 +486,56 @@
   revisarAbiertos();
   setTimeout(function () { refrescarID(); }, 1500);
 
-  /* ---- Ciclos anteriores: gratis para practicar ----
-     En Libros, Seminarios y Banqueo, un ciclo que no es el más nuevo del curso
-     (data/manifest.json de la carpeta de la página) se practica sin código.
-     Solo el ciclo más nuevo se cobra. Las descargas PDF de ciclos anteriores
-     están apagadas (assets/descarga-pdf.js). */
+  /* ---- Ciclos gratis y ciclos que se cobran ----
+     En Libros, Seminarios y Banqueo. Panel → Web → Planes y precios → «Ciclos que se cobran»
+     (ajustes 'planes': { ciclos: { modo: 'auto' | 'lista', cobrados: ['2027-I'] } }):
+     - auto: solo el ciclo más nuevo del curso (data/manifest.json de la carpeta) pide código
+     - lista: solo los ciclos marcados piden código; los demás se practican gratis
+     Descarga PDF (assets/descarga-pdf.js), ciclos.descarga = { modo: 'auto' | 'lista', lista: [...] }:
+     - auto: se descargan solo los ciclos que se cobran
+     - lista: solo los ciclos marcados se descargan */
   var ROM = { I: 1, II: 2, III: 3 };
   function ordenCiclo(id) { var x = String(id || '').match(/^(\d{4})-(III|II|I)$/); return x ? +x[1] * 10 + ROM[x[2]] : 0; }
-  var pedidoManifest = null;
+  var pedidoManifest = null, pedidoCiclos = null;
+  function reglaCiclos() {
+    if (pedidoCiclos) return pedidoCiclos;
+    var g = null; try { g = JSON.parse(leer('mc_planes') || 'null'); } catch (e) {}
+    var deG = function (v) { return (v && v.ciclos) || { modo: 'auto' }; };
+    var red = !window.MCAuth ? Promise.resolve(null) : MCAuth.listo
+      .then(function (c) { return c.from('ajustes').select('valor').eq('clave', 'planes').maybeSingle(); })
+      .then(function (r) {
+        if (!r || r.error) return null;
+        var v = (r.data && r.data.valor) || {};
+        escribir('mc_planes', JSON.stringify(v));
+        return v;
+      }, function () { return null; });
+    var espera = new Promise(function (ok) { setTimeout(function () { ok(null); }, g ? 1200 : 3500); });
+    pedidoCiclos = Promise.race([red, espera]).then(function (v) { return deG(v || g); });
+    return pedidoCiclos;
+  }
+  // true si el ciclo "year" se practica gratis (sin código y sin PDF)
   function cicloAnterior(year) {
     var o = ordenCiclo(year);
     if (!o || !window.fetch) return Promise.resolve(false);
-    if (!pedidoManifest) pedidoManifest = fetch('data/manifest.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; });
-    return pedidoManifest.then(function (m) {
-      var max = 0; (Array.isArray(m) ? m : []).forEach(function (c) { max = Math.max(max, ordenCiclo(c && c.id)); });
-      return max > o;
-    });
+    return reglaCiclos().then(function (R) {
+      if (R.modo === 'lista' && Array.isArray(R.cobrados)) return R.cobrados.indexOf(year) < 0;
+      if (!pedidoManifest) pedidoManifest = fetch('data/manifest.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; });
+      return pedidoManifest.then(function (m) {
+        var max = 0; (Array.isArray(m) ? m : []).forEach(function (c) { max = Math.max(max, ordenCiclo(c && c.id)); });
+        return max > o;
+      });
+    }).catch(function () { return false; });
   }
 
-  window.MCAcceso = { cicloAnterior: cicloAnterior, verificar: verificar, activar: activar, activos: activos, todos: todos, estado: estado, soltar: soltar, accesoLocal: accesoLocal, idEstado: idEstado, refrescarID: refrescarID, nombreProd: nombreProd, celebrar: celebrar, alAbiertos: function (fn) { alAbiertos.push(fn); }, antiguo: antiguo, cubre: cubre, puerta: puerta, AREAS: AREAS };
+  // true si el ciclo "year" tiene botón de descarga PDF
+  function cicloDescarga(year) {
+    if (!ordenCiclo(year)) return Promise.resolve(true);
+    return reglaCiclos().then(function (R) {
+      var d = R.descarga || {};
+      if (d.modo === 'lista' && Array.isArray(d.lista)) return d.lista.indexOf(year) >= 0;
+      return cicloAnterior(year).then(function (gratis) { return !gratis; });
+    }).catch(function () { return true; });
+  }
+
+  window.MCAcceso = { cicloAnterior: cicloAnterior, cicloDescarga: cicloDescarga, verificar: verificar, activar: activar, activos: activos, todos: todos, estado: estado, soltar: soltar, accesoLocal: accesoLocal, idEstado: idEstado, refrescarID: refrescarID, nombreProd: nombreProd, celebrar: celebrar, alAbiertos: function (fn) { alAbiertos.push(fn); }, antiguo: antiguo, cubre: cubre, puerta: puerta, AREAS: AREAS };
 })();
