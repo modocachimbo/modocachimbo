@@ -59,39 +59,85 @@
   // Adornos detrás (t) y delante (d) del escudo
   function adornos(f, col, id) {
     var t = '', d = '', i, o = osc(col, .75);
-    if (f === 'alas') t = '<path d="M20 26C8 30 2 44 4 60c6-4 10-4 16-2zM80 26c12 4 18 18 16 34-6-4-10-4-16-2z" fill="' + o + '" stroke="rgba(0,0,0,.4)" stroke-width="2"/>';
-    if (f === 'dragon') t = '<path d="M24 30C14 18 2 16 0 20c4 4 4 10 2 14 4 0 6 4 4 8 4 0 6 4 4 8 4-1 8 0 12 4zM76 30c10-12 22-14 24-10-4 4-4 10-2 14-4 0-6 4-4 8-4 0-6 4-4 8-4-1-8 0-12 4z" fill="' + o + '" stroke="rgba(0,0,0,.45)" stroke-width="2" stroke-linejoin="round"/>' +
-      '<path d="M24 30 4 22M24 38 8 34M24 46l-12-4M76 30l20-8M76 38l16-4M76 46l12-4" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/>';
+    if (f === 'alas') t = '<path class="mccl-ala i" d="M20 26C8 30 2 44 4 60c6-4 10-4 16-2z" fill="url(#' + id + 'b)" stroke="rgba(0,0,0,.4)" stroke-width="2"/><path class="mccl-ala d" d="M80 26c12 4 18 18 16 34-6-4-10-4-16-2z" fill="url(#' + id + 'b)" stroke="rgba(0,0,0,.4)" stroke-width="2"/>';
+    if (f === 'dragon') t = '<g class="mccl-ala i"><path d="M24 30C14 18 2 16 0 20c4 4 4 10 2 14 4 0 6 4 4 8 4 0 6 4 4 8 4-1 8 0 12 4z" fill="url(#' + id + 'b)" stroke="rgba(0,0,0,.45)" stroke-width="2" stroke-linejoin="round"/><path d="M24 30 4 22M24 38 8 34M24 46l-12-4" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/></g>' +
+      '<g class="mccl-ala d"><path d="M76 30c10-12 22-14 24-10-4 4-4 10-2 14-4 0-6 4-4 8-4 0-6 4-4 8-4-1-8 0-12 4z" fill="url(#' + id + 'b)" stroke="rgba(0,0,0,.45)" stroke-width="2" stroke-linejoin="round"/><path d="M76 30l20-8M76 38l16-4M76 46l12-4" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/></g>';
     if (f === 'espadas') t = esp(-38) + esp(38);
-    if (f === 'llamas') t = '<path d="M50 110C20 108 6 90 8 66c2-14 8-20 8-20 0 10 6 14 6 14-4-20 6-36 18-44-2 10 2 16 2 16 2-14 6-22 8-32 2 10 6 18 8 32 0 0 4-6 2-16 12 8 22 24 18 44 0 0 6-4 6-14 0 0 6 6 8 20 2 24-12 42-42 44z" fill="url(#' + id + 'f)" stroke="#a33a00" stroke-width="2" stroke-linejoin="round"/>' +
-      '<path d="M50 104c-20-2-30-16-28-32 1-8 5-12 5-12 0 6 4 9 4 9-2-12 4-22 11-28-1 6 2 10 2 10 2-8 4-14 6-20 2 6 4 12 6 20 0 0 3-4 2-10 7 6 13 16 11 28 0 0 4-3 4-9 0 0 4 4 5 12 2 16-8 30-28 32z" fill="#FFC800" opacity=".75"/>';
-    if (f === 'pinchos') { for (i = 0; i < 12; i++) { var a = i * 30 - 75; t += '<path d="M46 56 50 4 54 56z" transform="rotate(' + a + ' 50 58)" fill="' + osc(col, .5) + '" stroke="rgba(0,0,0,.45)" stroke-width="1.5"/>'; } }
+    if (f === 'llamas') t = '<g class="mccl-fuego"><path d="M50 110C20 108 6 90 8 66c2-14 8-20 8-20 0 10 6 14 6 14-4-20 6-36 18-44-2 10 2 16 2 16 2-14 6-22 8-32 2 10 6 18 8 32 0 0 4-6 2-16 12 8 22 24 18 44 0 0 6-4 6-14 0 0 6 6 8 20 2 24-12 42-42 44z" fill="url(#' + id + 'f)" stroke="#a33a00" stroke-width="2" stroke-linejoin="round"/>' +
+      '<path d="M50 104c-20-2-30-16-28-32 1-8 5-12 5-12 0 6 4 9 4 9-2-12 4-22 11-28-1 6 2 10 2 10 2-8 4-14 6-20 2 6 4 12 6 20 0 0 3-4 2-10 7 6 13 16 11 28 0 0 4-3 4-9 0 0 4 4 5 12 2 16-8 30-28 32z" fill="#FFC800" opacity=".75"/></g>';
+    if (f === 'pinchos') { for (i = 0; i < 12; i++) { var a = i * 30 - 75; t += '<path d="M46 56 50 4 54 56z" transform="rotate(' + a + ' 50 58)" fill="url(#' + id + 'b)" stroke="rgba(0,0,0,.45)" stroke-width="1.5"/>'; } }
     if (f === 'cuernos') t = '<path d="M20 26C8 22 4 10 8 0c2 10 10 14 18 16zM80 26c12-4 16-16 12-26-2 10-10 14-18 16z" fill="#F4E9D0" stroke="#7a6a48" stroke-width="2"/><path d="M12 8c4 4 8 6 12 6M88 8c-4 4-8 6-12 6" stroke="#7a6a48" stroke-width="1.5" fill="none"/>';
     if (f === 'laurel') {
       var g = '#58CC02', ramas = '<path d="M30 104C10 92 4 66 12 40" fill="none" stroke="#3d8a00" stroke-width="2.5"/><path d="M70 104c20-12 26-38 18-64" fill="none" stroke="#3d8a00" stroke-width="2.5"/>';
       for (i = 0; i < 6; i++) { var yy = 46 + i * 10, xx = 10 + Math.abs(i - 2) * 1.6 + i * 1.2; d += hoja(xx, yy, -60 + i * 10, g) + hoja(100 - xx, yy, 60 - i * 10, g); }
       d = ramas + d + '<path d="M38 104h24l-4 6h-16z" fill="#FFC800" stroke="#8a6400" stroke-width="1.5"/>';
     }
-    if (f === 'real') d = '<circle cx="22" cy="7" r="4" fill="#FF4B4B" stroke="#fff" stroke-width="1.5"/><circle cx="50" cy="3" r="5" fill="#1CB0F6" stroke="#fff" stroke-width="1.5"/><circle cx="78" cy="7" r="4" fill="#FF4B4B" stroke="#fff" stroke-width="1.5"/>' +
+    if (f === 'real') d = '<g class="mccl-gema"><circle cx="22" cy="7" r="4" fill="#FF4B4B" stroke="#fff" stroke-width="1.5"/><circle cx="50" cy="3" r="5" fill="#1CB0F6" stroke="#fff" stroke-width="1.5"/><circle cx="78" cy="7" r="4" fill="#FF4B4B" stroke="#fff" stroke-width="1.5"/></g>' +
       '<path d="M4 88h18l-4 8h22v-8h20v8h22l-4-8h18l-6 10 6 10H74l2-4H24l2 4H4l6-10z" fill="#FFC800" stroke="#8a6400" stroke-width="2" stroke-linejoin="round"/>';
     if (f === 'diamante') d = '<path d="M50 2 95 46 50 108 5 46z" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.5" transform="translate(50 50) scale(.6) translate(-50 -50)"/>';
     if (f === 'hex') d = [[50, 9], [85, 29], [85, 77], [50, 100], [15, 77], [15, 29]].map(function (q) { return '<circle cx="' + q[0] + '" cy="' + q[1] + '" r="2.4" fill="rgba(255,255,255,.55)"/>'; }).join('');
     return { t: t, d: d };
   }
+  function cla(c, f) { // aclara hacia el blanco (f de 0 a 1)
+    var n = parseInt(String(c || '#C6E000').slice(1), 16), r = n >> 16, g = n >> 8 & 255, b = n & 255;
+    return 'rgb(' + Math.round(r + (255 - r) * f) + ',' + Math.round(g + (255 - g) * f) + ',' + Math.round(b + (255 - b) * f) + ')';
+  }
+  // Estilos de brillo y chispas: solo se animan en los escudos grandes
+  (function () {
+    if (document.getElementById('mccl-css')) return;
+    var st = document.createElement('style'); st.id = 'mccl-css';
+    st.textContent = '.mccl-brillo{opacity:0}.mccl-chispa{opacity:0}' +
+      '.hero .mccl-brillo,.gbig .mccl-brillo,.prev .mccl-brillo,.grande .mccl-brillo{opacity:1;animation:mcclBrillo 4.5s ease-in-out infinite}' +
+      '.hero .mccl-chispa,.gbig .mccl-chispa,.prev .mccl-chispa,.grande .mccl-chispa{animation:mcclChispa 3s ease-in-out infinite;transform-box:fill-box;transform-origin:center}' +
+      '.mccl-chispa.b{animation-delay:1s !important}.mccl-chispa.c{animation-delay:2s !important}' +
+      '.hero .esc,.prev .esc,.grande{animation:mcclFlota 4s ease-in-out infinite}' +
+      '.mccl-ala,.mccl-fuego{transform-box:fill-box}.mccl-ala.i{transform-origin:100% 20%}.mccl-ala.d{transform-origin:0 20%}.mccl-fuego{transform-origin:50% 100%}' +
+      '.hero .mccl-ala.i,.gbig .mccl-ala.i,.prev .mccl-ala.i,.grande .mccl-ala.i{animation:mcclAlaI 2.2s ease-in-out infinite}' +
+      '.hero .mccl-ala.d,.gbig .mccl-ala.d,.prev .mccl-ala.d,.grande .mccl-ala.d{animation:mcclAlaD 2.2s ease-in-out infinite}' +
+      '.hero .mccl-fuego,.gbig .mccl-fuego,.prev .mccl-fuego,.grande .mccl-fuego{animation:mcclFuego .9s ease-in-out infinite alternate}' +
+      '.hero .mccl-gema,.gbig .mccl-gema,.prev .mccl-gema,.grande .mccl-gema{animation:mcclGema 2s ease-in-out infinite}' +
+      '@keyframes mcclAlaI{50%{transform:rotate(-9deg)}}@keyframes mcclAlaD{50%{transform:rotate(9deg)}}' +
+      '@keyframes mcclFuego{0%{transform:scale(1,1)}100%{transform:scale(1.04,1.08)}}' +
+      '@keyframes mcclGema{50%{filter:drop-shadow(0 0 3px #fff) brightness(1.3)}}' +
+      '@keyframes mcclBrillo{0%,55%{transform:translateX(-120px)}85%,100%{transform:translateX(130px)}}' +
+      '@keyframes mcclChispa{0%,100%{opacity:0;transform:scale(.3) rotate(0)}50%{opacity:1;transform:scale(1) rotate(45deg)}}' +
+      '@keyframes mcclFlota{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-4px) rotate(1deg)}}' +
+      '@media (prefers-reduced-motion:reduce){.mccl-brillo,.mccl-chispa,.mccl-ala,.mccl-fuego,.mccl-gema,.hero .esc,.prev .esc,.grande{animation:none !important}}';
+    (document.head || document.documentElement).appendChild(st);
+  })();
   var uid = 0;
-  // El escudo del clan: c = { forma, simbolo, color }
+  // El escudo del clan: c = { forma, simbolo, color }. Capas: grosor, bisel metálico, panel, brillo, símbolo en relieve.
   function escudo(c) {
     c = c || {};
     var f = FORMAS[c.forma] ? c.forma : 'punta', col = /^#[0-9a-f]{6}$/i.test(c.color || '') ? c.color : '#C6E000', p = FORMAS[f], id = 'mcclg' + (uid++);
     var k = ESCALA[f] || 1, esc = k === 1 ? '' : ' transform="translate(50 56) scale(' + k + ') translate(-50 -56)"', a = adornos(f, col, id);
-    return '<svg viewBox="0 0 100 112" width="100%" height="100%" aria-hidden="true"><defs><linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + col + '"/><stop offset="1" stop-color="' + osc(col, .55) + '"/></linearGradient>' +
+    var dentro = ' transform="translate(50 56) scale(.84) translate(-50 -56)"';
+    var simb = (SIMB[c.simbolo] || '').replace(/fill="#fff"/g, 'fill="url(#' + id + 'w)"');
+    var chispa = function (x, y, r, cl) { return '<path class="mccl-chispa ' + cl + '" d="M' + x + ' ' + (y - r) + 'Q' + x + ' ' + y + ' ' + (x + r) + ' ' + y + 'Q' + x + ' ' + y + ' ' + x + ' ' + (y + r) + 'Q' + x + ' ' + y + ' ' + (x - r) + ' ' + y + 'Q' + x + ' ' + y + ' ' + x + ' ' + (y - r) + 'z" fill="#fff"/>'; };
+    return '<svg viewBox="0 0 100 112" width="100%" height="100%" aria-hidden="true" style="overflow:visible"><defs>' +
+      '<linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + cla(col, .12) + '"/><stop offset=".5" stop-color="' + col + '"/><stop offset="1" stop-color="' + osc(col, .5) + '"/></linearGradient>' +
+      '<linearGradient id="' + id + 'b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + cla(col, .7) + '"/><stop offset=".35" stop-color="' + cla(col, .2) + '"/><stop offset=".65" stop-color="' + osc(col, .55) + '"/><stop offset="1" stop-color="' + osc(col, .28) + '"/></linearGradient>' +
+      '<radialGradient id="' + id + 'r" cx=".32" cy=".22" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".38"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".28"/></radialGradient>' +
+      '<linearGradient id="' + id + 'w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="' + cla(col, .72) + '"/></linearGradient>' +
       '<linearGradient id="' + id + 'f" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FF4B4B"/><stop offset=".6" stop-color="#FF9600"/><stop offset="1" stop-color="#FFC800"/></linearGradient>' +
-      '<linearGradient id="' + id + 's" x1="0" y1="0" x2="1" y2="1"><stop offset=".3" stop-color="#fff" stop-opacity="0"/><stop offset=".45" stop-color="#fff" stop-opacity=".28"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/></linearGradient>' +
+      '<linearGradient id="' + id + 's" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>' +
+      '<filter id="' + id + 'h" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="2.6" stdDeviation="1.1" flood-color="#000" flood-opacity=".5"/></filter>' +
       '<clipPath id="' + id + 'c"><path d="' + p + '"/></clipPath></defs>' + a.t +
-      '<g' + esc + '><path d="' + p + '" fill="#14101f" transform="translate(0,4)" opacity=".6"/><path d="' + p + '" fill="url(#' + id + ')" stroke="' + osc(col, .4) + '" stroke-width="3"/>' +
-      '<g clip-path="url(#' + id + 'c)"><path d="M0 0h100v30H0z" fill="rgba(255,255,255,.16)"/><path d="M0 0h100v112H0z" fill="url(#' + id + 's)"/></g>' +
-      '<path d="' + p + '" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2" transform="translate(50 56) scale(.84) translate(-50 -56)"/>' +
-      (SIMB[c.simbolo] || '') + '</g>' + a.d + '</svg>';
+      '<g' + esc + '>' +
+        // grosor (el canto del escudo) y sombra
+        '<path d="' + p + '" fill="#0a0814" transform="translate(0,8)" opacity=".45"/>' +
+        '<path d="' + p + '" fill="' + osc(col, .3) + '" transform="translate(0,4.5)"/>' +
+        // bisel metálico
+        '<path d="' + p + '" fill="url(#' + id + 'b)" stroke="' + osc(col, .25) + '" stroke-width="2.5" stroke-linejoin="round"/>' +
+        // panel interior hundido
+        '<path d="' + p + '" fill="' + osc(col, .35) + '"' + ' transform="translate(50 56.8) scale(.86) translate(-50 -56)"/>' +
+        '<path d="' + p + '" fill="url(#' + id + ')"' + dentro + '/>' +
+        '<path d="' + p + '" fill="url(#' + id + 'r)"' + dentro + '/>' +
+        '<g clip-path="url(#' + id + 'c)"><path d="M0 0h100v24H0z" fill="rgba(255,255,255,.12)"' + dentro + '/>' +
+          '<g class="mccl-brillo"><path d="M30 -10h22L22 122H0z" fill="url(#' + id + 's)"/></g></g>' +
+        '<path d="' + p + '" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="1.2" transform="translate(50 56) scale(.9) translate(-50 -56)"/>' +
+        '<g filter="url(#' + id + 'h)">' + simb + '</g>' +
+      '</g>' + a.d + chispa(16, 18, 5, 'a') + chispa(86, 40, 4, 'b') + chispa(24, 92, 3.5, 'c') + '</svg>';
   }
   // Solo el símbolo, para el selector
   function simbolo(s, color) {
