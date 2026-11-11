@@ -1548,7 +1548,19 @@
   var NOM_SEC = { libro: 'Libros', seminario: 'Seminarios', banqueo: 'Banqueo' };
 
   // Libros, Seminarios y Banqueo: tema.html (los datos los deja la página en window.MC_TEMA)
-  if (archivo === 'tema.html' && SEC[ruta[ruta.length - 2]]) {
+  // Solo el ciclo más nuevo del curso se descarga: los ciclos anteriores se practican gratis
+  // pero sin PDF (la misma regla que MCAcceso.cicloAnterior en assets/acceso.js)
+  function cicloAnteriorDescarga(year) {
+    var R = { I: 1, II: 2, III: 3 }, ord = function (id) { var x = String(id || '').match(/^(\d{4})-(III|II|I)$/); return x ? +x[1] * 10 + R[x[2]] : 0; };
+    var o = ord(year);
+    if (!o || !window.fetch) return Promise.resolve(false);
+    return fetch('data/manifest.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : []; }).then(function (m) {
+      var max = 0; (Array.isArray(m) ? m : []).forEach(function (c) { max = Math.max(max, ord(c && c.id)); });
+      return max > o;
+    }, function () { return false; });
+  }
+  if (archivo === 'tema.html' && SEC[ruta[ruta.length - 2]]) cicloAnteriorDescarga(new URLSearchParams(location.search).get('year')).then(function (anterior) {
+    if (anterior) return;
     var tipoT = SEC[ruta[ruta.length - 2]], cursoT = ruta[ruta.length - 3];
     registrar({
       tipo: tipoT, area: AREA_DE[cursoT],
@@ -1563,7 +1575,7 @@
         });
       }
     });
-  }
+  });
   // Exámenes pasados: ver.html (window.MC_TEMA con examen: true). Se agrupan por área y asignatura
   if (archivo === 'ver.html' && ruta[ruta.length - 3] === 'examenes') {
     registrar({
