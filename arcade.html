@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="assets/arcade-retos.css">
 <script src="assets/arcade-retos.js"></script>
 <script src="assets/arcade-sonido.js"></script>
-<script>(function () { var m = new URLSearchParams(location.search).get('modo'); try { m = m || localStorage.getItem('mc-modo'); } catch (e) {} if (m === 'claro' || m === 'oscuro') document.documentElement.setAttribute('data-modo', m); })();</script>
+<script>document.documentElement.setAttribute('data-modo', 'oscuro'); try { localStorage.removeItem('mc-modo'); } catch (e) {}</script>
 <style>
 /* =========================================================
    Modo Cachimbo · Arcade (prototipo)

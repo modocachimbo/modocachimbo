@@ -9,7 +9,6 @@
    - Cursos populares (cursos_populares), Top de la semana (ranking_xp) y
      Top simulacro (ranking_simulacro).
    - Hoja que sube desde abajo: cursos, exámenes, flashcards y "Nuevo para ti".
-   - Modo claro / oscuro (html[data-modo], se guarda en mc-modo).
    ========================================================= */
 (function () {
   var raiz = document.documentElement;
@@ -35,22 +34,6 @@
   try { cursosGuardados = JSON.parse(localStorage.getItem('mc-cursos-json') || 'null'); } catch (e) {}
   cursosJson.then(function (d) { cursosGuardados = d; try { localStorage.setItem('mc-cursos-json', JSON.stringify(d)); } catch (e) {} }, function () {});
 
-  /* ---------- Modo claro / oscuro ---------- */
-  var temaBtn = $('temaBtn');
-  function oscuro() { return raiz.getAttribute('data-modo') !== 'claro'; }
-  function cambiarModo() {
-    raiz.setAttribute('data-modo', oscuro() ? 'claro' : 'oscuro');
-    try { localStorage.setItem('mc-modo', raiz.getAttribute('data-modo')); } catch (e) {}
-    pintarModo();
-  }
-  function pintarModo() {
-    var o = oscuro();
-    temaBtn.innerHTML = '<svg class="ic"><use href="#i-' + (o ? 'sol' : 'luna') + '"/></svg>';
-    temaBtn.setAttribute('aria-label', o ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
-    Array.prototype.forEach.call(document.querySelectorAll('.mcu-modo'), function (b) { var t = o ? 'Modo claro' : 'Modo oscuro'; if (b.textContent !== t) b.textContent = t; });
-  }
-  temaBtn.addEventListener('click', cambiarModo);
-  pintarModo();
 
   /* ---------- Bienvenida, código al primer ingreso y regreso a la página pedida ---------- */
   var wa = 'https://wa.me/' + (CFG.WHATSAPP || '51917797543') + '?text=' + encodeURIComponent('Hola! Tengo problemas para entrar a Modo Cachimbo');
@@ -151,19 +134,7 @@
 
   /* ---------- Barra de la cuenta: la tarjeta del perfil la arma assets/tarjeta-perfil.js ---------- */
   var miXp = null;
-  function arreglarCuenta() {
-    // En celular el cambio de modo va en el menú de la cuenta
-    Array.prototype.forEach.call(document.querySelectorAll('.cab .mcu-menu'), function (menu) {
-      if (menu.querySelector('.mcu-modo')) return;
-      var b = document.createElement('button'); b.type = 'button'; b.className = 'mcu-modo';
-      b.addEventListener('click', function () { cambiarModo(); menu.classList.remove('show'); });
-      var salir = menu.querySelector('button:last-child');
-      menu.insertBefore(b, salir);
-      pintarModo();
-    });
-  }
   var cuenta = document.querySelector('[data-mc-auth]');
-  new MutationObserver(arreglarCuenta).observe(cuenta, { childList: true, subtree: true });
 
   /* ---------- Rango de la semana (barra de la escena) ---------- */
   function pintarRango(e) {
@@ -182,7 +153,6 @@
     $('rangoBarra').style.width = Math.round(Math.max(0, Math.min(1, pct)) * 100) + '%';
     barra.hidden = false;
     $('ligaNom').textContent = n < 0 ? 'Liga de la semana' : 'Liga ' + MCRango.nombre(n);
-    arreglarCuenta();
   }
 
   /* ---------- Escena: fechas importantes (temática + tu agenda) ---------- */

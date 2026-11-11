@@ -29,11 +29,10 @@
   })();
 </script>
 <script>
-  // Modo oscuro por defecto; claro si el alumno lo eligió (o ?modo=claro para probar)
+  // La web va siempre en modo oscuro (ya no hay botón de modo claro)
   (function () {
-    var m = new URLSearchParams(location.search).get('modo');
-    try { m = m || localStorage.getItem('mc-modo'); } catch (e) {}
-    if (m === 'claro' || m === 'oscuro') document.documentElement.setAttribute('data-modo', m);
+    document.documentElement.setAttribute('data-modo', 'oscuro');
+    try { localStorage.removeItem('mc-modo'); } catch (e) {}
   })();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1331,7 +1330,6 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
     <header class="cab">
       <h1 class="hola" id="salNombre">¡Hola!</h1>
       <div class="der">
-        <button class="tema-btn" id="temaBtn" type="button" aria-label="Cambiar a modo claro"><svg class="ic"><use href="#i-sol"/></svg></button>
         <div data-mc-auth data-mc-tarjeta></div>
       </div>
     </header>
