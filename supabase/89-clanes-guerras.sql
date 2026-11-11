@@ -421,3 +421,33 @@ begin
 end $$;
 revoke all on function public.admin_clan_crear(text, text, text, text, text, integer) from public, anon;
 grant execute on function public.admin_clan_crear(text, text, text, text, text, integer) to authenticated;
+
+-- ---------- Aviso liviano para el inicio ----------
+-- Sin la lista de miembros: solo si hay guerra, reto o empujones de hoy.
+create or replace function public.clan_aviso()
+returns jsonb language plpgsql volatile security definer set search_path = '' as $$
+declare uid uuid := auth.uid(); m public.clan_miembros; g public.clan_guerras; t public.clan_guerras; rv bigint;
+  hoy date := (now() at time zone 'America/Lima')::date;
+begin
+  if uid is null then return null; end if;
+  select * into m from public.clan_miembros where usuario = uid;
+  if m.usuario is null then return jsonb_build_object('clan', false); end if;
+  perform public.clan_guerras_tick();
+  g := public.clan_guerra_viva(m.clan);
+  select * into t from public.clan_guerras where (clan_a = m.clan or clan_b = m.clan) and estado = 'terminada' and fin > now() - interval '24 hours'
+    order by fin desc limit 1;
+  rv := case when g.id is null then null when g.clan_a = m.clan then g.clan_b else g.clan_a end;
+  return jsonb_build_object('clan', true,
+    'nombre', (select k.nombre from public.clanes k where k.id = m.clan),
+    'empujaron', coalesce((select jsonb_agg(public.duelo_apodo(e.de)) from public.clan_empujones e
+      join public.clan_miembros k on k.usuario = e.de and k.clan = m.clan where e.para = uid and e.fecha = hoy), '[]'::jsonb),
+    'guerra', case when g.id is not null then jsonb_build_object('estado', g.estado, 'fin', g.fin, 'reto_mio', g.clan_a = m.clan,
+      'rival', (select k.nombre from public.clanes k where k.id = rv),
+      'xp_mio', case when g.estado = 'activa' then public.clan_guerra_xp(g, m.clan) else 0 end,
+      'xp_rival', case when g.estado = 'activa' then public.clan_guerra_xp(g, rv) else 0 end) end,
+    'resultado', case when t.id is not null and g.id is null then jsonb_build_object('gane', t.ganador = m.clan, 'empate', t.ganador is null,
+      'rival', (select k.nombre from public.clanes k where k.id = case when t.clan_a = m.clan then t.clan_b else t.clan_a end),
+      'xp_mio', case when t.clan_a = m.clan then t.xp_a else t.xp_b end, 'xp_rival', case when t.clan_a = m.clan then t.xp_b else t.xp_a end, 'fin', t.fin) end);
+end $$;
+revoke all on function public.clan_aviso() from public, anon;
+grant execute on function public.clan_aviso() to authenticated;

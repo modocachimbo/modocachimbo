@@ -290,6 +290,39 @@
   .reglas { display: grid; gap: 8px; font-size: 13px; color: #d9d3ef; }
   .reglas > div:not(.h2) { display: flex; gap: 8px; align-items: flex-start; }
   .reglas svg.i { width: 18px; height: 18px; color: var(--accent); margin-top: 1px; }
+  /* Pulido: animaciones */
+  .cl-rail .r .vivo { animation: clLat 1.6s ease-in-out infinite; }
+  @keyframes clLat { 50% { box-shadow: 0 0 0 6px rgba(255,75,75,0); } }
+  .gbig .vs2 > div:first-child .esc { animation: clIzq .55s cubic-bezier(.2,1.4,.4,1) both; }
+  .gbig .vs2 > div:last-child .esc { animation: clDer .55s cubic-bezier(.2,1.4,.4,1) both; }
+  @keyframes clIzq { from { opacity: 0; transform: translateX(-40px) rotate(-8deg); } }
+  @keyframes clDer { from { opacity: 0; transform: translateX(40px) rotate(8deg); } }
+  .vsb { animation: clVs 2.4s ease-in-out .5s infinite; }
+  @keyframes clVs { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); text-shadow: 0 0 22px rgba(255,200,0,.9); } }
+  .tug i { position: relative; animation: clTug .9s ease-out both; }
+  @keyframes clTug { from { width: 50%; } }
+  .tug.big i::after { content: ""; position: absolute; right: -2px; top: -3px; bottom: -3px; width: 4px; border-radius: 2px; background: #fff; box-shadow: 0 0 8px #fff; }
+  .reloj.urge b, [data-corto].urge { color: #ff8a8a; }
+  .gbig { position: relative; overflow: hidden; }
+  .gbig.gano { border-color: #8fa300; }
+  .brillo { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.14) 50%, transparent 65%); background-size: 250% 100%; animation: clBrillo 2.8s ease-in-out infinite; }
+  @keyframes clBrillo { from { background-position: 120% 0; } to { background-position: -120% 0; } }
+  .res.win { animation: clWin .6s cubic-bezier(.2,1.6,.4,1) both; text-shadow: 0 0 16px rgba(198,224,0,.6); }
+  @keyframes clWin { from { opacity: 0; transform: scale(.6); } }
+  .emp { transition: transform .12s; } .emp:active { transform: translateY(2px); }
+  .emp.ya svg { width: 15px; height: 15px; }
+  .emp.pop { animation: clPop .5s cubic-bezier(.2,1.8,.4,1); }
+  @keyframes clPop { 0% { transform: scale(.6); background: var(--nar); color: #fff; } 60% { transform: scale(1.12); } }
+  .ev { animation: clEv .35s ease-out both; }
+  .ev:nth-child(2) { animation-delay: .04s; } .ev:nth-child(3) { animation-delay: .08s; } .ev:nth-child(4) { animation-delay: .12s; } .ev:nth-child(n+5) { animation-delay: .16s; }
+  @keyframes clEv { from { opacity: 0; transform: translateY(6px); } }
+  .todos { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 12px; background: rgba(198,224,0,.1); border: 1.5px solid rgba(198,224,0,.4); color: #e8f5a0; font-size: 13px; margin-bottom: 12px; }
+  .todos svg.i { width: 22px; height: 22px; color: var(--accent); flex: none; }
+  .todos b { color: #fff; }
+  .gmini { transition: transform .15s, border-color .15s; } .gmini:hover { transform: translateY(-2px); border-color: #a8324a; }
+  .riv, .ofc { transition: border-color .15s; } .riv:hover { border-color: #4a4072; }
+  .quieto .gbig .esc, .quieto .tug i, .quieto .ev, .quieto .res.win { animation: none !important; }
+  @media (prefers-reduced-motion: reduce) { .gbig .esc, .vsb, .tug i, .brillo, .res.win, .emp.pop, .ev, .cl-rail .r .vivo { animation: none !important; } }
   .ma-toast { position: fixed; left: 50%; bottom: 24px; z-index: 80; translate: -50% 20px; opacity: 0; padding: 10px 18px; border-radius: 12px; background: #1D1834; border: 2px solid var(--accent); color: #fff; font: 800 14px Nunito, sans-serif; transition: .25s; pointer-events: none; max-width: calc(100vw - 32px); text-align: center; }
   .ma-toast.ver { translate: -50% 0; opacity: 1; }
 </style>
@@ -329,7 +362,7 @@
   var app = document.getElementById('app');
   var Q = new URLSearchParams(location.search);
   var UNIRSE = (Q.get('unirse') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
-  var D = null, TOP = null, G = null, RIV = null, OFI = null, horasReto = 24, vista = 'clan', abierto = null, seguro = '', previa = null, previaCod = '', relojT = 0;
+  var D = null, TOP = null, G = null, RIV = null, OFI = null, horasReto = 24, vista = 'clan', abierto = null, seguro = '', previa = null, previaCod = '', relojT = 0, recien = 0;
   var F = { nombre: '', tag: '', forma: 'punta', simbolo: 'rayo', color: '#C6E000' };
 
   var SV = {
@@ -365,7 +398,7 @@
 
   /* ---------- Menú ---------- */
   function rail() {
-    var c = D && D.clan, it = c ? [['clan', 'Mi clan', SV.clan], ['guerra', 'Guerra', SV.guerra, D.guerra && D.guerra.estado === 'activa' ? '<i class="vivo"></i>' : ''], ['top', 'Top', SV.top], ['ajustes', 'Ajustes', SV.cfg]] : [['clan', 'Unirme', SV.clan], ['top', 'Top', SV.top]];
+    var c = D && D.clan, it = c ? [['clan', 'Mi clan', SV.clan], ['guerra', 'Guerra', SV.guerra, D.guerra && (D.guerra.estado === 'activa' || !D.guerra.reto_mio) ? '<i class="vivo"></i>' : ''], ['top', 'Top', SV.top], ['ajustes', 'Ajustes', SV.cfg]] : [['clan', 'Unirme', SV.clan], ['top', 'Top', SV.top]];
     return '<nav class="cl-rail" aria-label="Clanes">' + it.map(function (x) {
       return '<button type="button" class="r' + (x[0] === vista ? ' on' : '') + '" data-vista="' + x[0] + '">' + x[2] + '<span>' + x[1] + '</span>' + (x[3] || '') + '</button>';
     }).join('') + (c ? '<div class="mi">Código para invitar<b>' + esc(c.codigo) + '</b><button type="button" class="cb g" data-inv="link">Copiar enlace</button></div>' : '') + '</nav>';
@@ -403,10 +436,12 @@
         +m.racha >= 7 ? '<span class="ic na"><svg><use href="#cl-llama"/></svg></span>' : '<span class="ic ok">' + SV.check + '</span>']);
       else if (!m.yo) ev.push([0, m, '<b>' + nom + '</b> ' + (d === 1 ? 'no estudia hoy' : d >= 99 ? 'aún no empieza a estudiar' : 'no estudia hace ' + d + ' días'),
         (+m.racha ? 'Su racha de ' + m.racha + (+m.racha === 1 ? ' día' : ' días') + ' está en peligro' : 'Anímalo a volver') + (+m.empujones ? ' · lo empujaron ' + m.empujones + (+m.empujones === 1 ? ' vez' : ' veces') : ''),
-        m.empujado ? '<span class="emp ya">Empujado</span>' : '<button type="button" class="emp" data-empujar="' + m.codigo + '">' + SV.empujar + 'Empujar</button>']);
+        m.empujado ? '<span class="emp ya' + (recien === m.codigo ? ' pop' : '') + '">' + SV.check + 'Empujado</span>' : '<button type="button" class="emp" data-empujar="' + m.codigo + '">' + SV.empujar + 'Empujar</button>']);
     });
     ev.sort(function (x, y) { return x[0] - y[0] || (+y[1].racha || 0) - (+x[1].racha || 0); });
+    var todos = ms.length > 1 && si.length === ms.length;
     var aviso = (D.me_empujaron || []).length ? '<div class="empuje">' + SV.empujar + '<span><b>' + esc(D.me_empujaron.slice(0, 3).join(', ')) + (D.me_empujaron.length > 3 ? ' y ' + (D.me_empujaron.length - 3) + ' más' : '') + '</b> ' + (D.me_empujaron.length === 1 ? 'te empujó' : 'te empujaron') + ' a estudiar hoy. ¡No los dejes solos!</span></div>' : '';
+    if (todos) aviso += '<div class="todos">' + SV.check + '<span><b>¡Todo el clan estudió hoy!</b> Así se sube de nivel.</span></div>';
     return '<div class="card">' + aviso + '<div class="h2">Muro del clan <span class="sp"></span><span class="lado">Hoy ' + si.length + ' de ' + ms.length + ' estudiaron</span></div><div class="hoy">' +
       orden.map(function (m) { return '<span class="p' + (si.indexOf(m) < 0 ? ' no' : '') + '" title="' + esc(m.apodo) + '">' + A.foto(m) + '</span>'; }).join('') + '</div>' +
       '<div class="muro">' + ev.slice(0, 8).map(function (e) {
@@ -521,9 +556,9 @@
       var vivo = g.estado === 'activa', tot = Math.max(1, (+g.xp_mio || 0) + (+g.xp_rival || 0)), p = tot > 1 ? Math.round(100 * g.xp_mio / tot) : 50;
       var res = vivo ? '<div class="reloj" data-reloj="' + esc(g.fin) + '"></div><p class="small" style="text-align:center">Gana el clan que sume más XP antes de que acabe el tiempo</p>'
         : '<div class="res ' + (g.gane ? 'win' : g.empate ? 'emp' : 'lose') + '">' + (g.gane ? '¡Ganaron la guerra!' : g.empate ? 'Quedaron empatados' : 'Esta vez ganó ' + esc(g.rival.nombre)) + '</div>';
-      h += '<div class="gbig' + (vivo ? '' : ' fin') + '"><div class="vs2"><div>' + escudo(g.mio) + '<div class="n">' + esc(g.mio.nombre) + '</div><div class="pts" style="color:var(--accent)">' + nf(g.xp_mio) + '</div><div class="small">XP</div></div>' +
+      h += '<div class="gbig' + (vivo ? '' : ' fin') + (g.gane ? ' gano' : '') + '">'+ (g.gane ? '<div class="brillo"></div>' : '') + '<div class="vs2"><div>' + escudo(g.mio) + '<div class="n">' + esc(g.mio.nombre) + '</div><div class="pts" style="color:var(--accent)">' + nf(g.xp_mio) + '</div><div class="small">XP</div></div>' +
         '<div class="vsb">VS</div><div>' + escudo(g.rival) + '<div class="n">' + esc(g.rival.nombre) + '</div><div class="pts" style="color:var(--azul)">' + nf(g.xp_rival) + '</div><div class="small">XP</div></div></div>' +
-        '<div class="tug big"><i style="width:' + p + '%"></i></div>' + res + '</div>';
+        '<div class="tug big"><i style="--p:' + p + '%;width:' + p + '%"></i></div>' + res + '</div>';
       h += '<div class="card"><div class="h2">Quién está aportando</div>' + (vivo && !g.yo_cuento ? '<p class="small" style="margin-bottom:8px">Entraste al clan cuando la guerra ya había empezado: tu XP cuenta desde la próxima.</p>' : '') +
         '<div class="aporte"><div><h4 style="color:var(--accent)">Tu clan</h4>' + lado(g.aporte_mio, 'var(--accent)') + '</div><div><h4 style="color:var(--azul)">Rival</h4>' + lado(g.aporte_rival, 'var(--azul)') + '</div></div>' +
         '<p class="small" style="margin-top:8px">Cada uno suma hasta ' + nf(g.tope) + ' XP en esta guerra, para que no gane uno solo.</p></div>';
@@ -557,6 +592,7 @@
     function tic() {
       els.forEach(function (el) {
         var ms = Math.max(0, new Date(el.getAttribute('data-reloj')) - Date.now()), d = Math.floor(ms / 864e5), hh = Math.floor(ms / 36e5) % 24, mm = Math.floor(ms / 6e4) % 60, ss = Math.floor(ms / 1e3) % 60;
+        el.classList.toggle('urge', ms < 36e5);
         if (el.hasAttribute('data-corto')) el.textContent = d ? d + ' d ' + hh + ' h' : hh ? hh + ' h ' + mm + ' min' : mm + ' min';
         else el.innerHTML = [[d, 'DÍAS'], [hh, 'HORAS'], [mm, 'MIN'], [ss, 'SEG']].map(function (x) { return '<div><b>' + (x[0] < 10 ? '0' : '') + x[0] + '</b><small>' + x[1] + '</small></div>'; }).join('');
       });
@@ -577,6 +613,7 @@
   /* ---------- Pintar ---------- */
   function pintar() {
     var cuerpo = vista === 'top' ? top() : !D.clan ? sinClan() : vista === 'ajustes' ? ajustes() : vista === 'guerra' ? guerraVista() : miClan();
+    var clave = vista + !!D.clan + (vista === 'guerra' ? !!G : ''); app.classList.toggle('quieto', pintar.ult === clave); pintar.ult = clave;
     app.innerHTML = '<div class="cl-lay">' + rail() + '<div>' + cuerpo + '</div></div>';
     relojes();
   }
@@ -631,7 +668,7 @@
       el.disabled = true; var ec = +el.dataset.empujar;
       K.rpc('clan_empujar', { p_jugador: ec }).then(function () {
         D.miembros.forEach(function (m) { if (m.codigo === ec) { m.empujado = true; m.empujones = (+m.empujones || 0) + 1; } });
-        toast('¡Empujón enviado! Le saldrá un aviso en su clan'); pintar();
+        recien = ec; toast('¡Empujón enviado! Le saldrá un aviso en su clan'); pintar(); recien = 0;
       }, function (x) { toast(K.error(x)); el.disabled = false; });
       return;
     }
