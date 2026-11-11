@@ -24,6 +24,16 @@
     '.liga li.cl .quien small{display:block;color:var(--suave);font:800 11px/1.1 var(--display);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}' +
     '.liga li.cl-cta{display:block;text-align:center;padding:12px;clip-path:none;font-size:13.5px;color:var(--suave)}' +
     '.liga li.cl-cta a{color:var(--lima-tx,#C6E000);font-weight:900;text-decoration:none}' +
+    '.cl-av{display:flex;align-items:center;gap:10px;margin:8px 8px 0;padding:9px 11px;text-decoration:none;color:#fff;border:1.5px solid #6b1f2c;background:linear-gradient(100deg,#3a1030,#1c0f33 60%,#0f2440);' +
+      'clip-path:polygon(0 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%);animation:clAvEnt .4s ease-out both}' +
+    '.cl-av.nar{border-color:rgba(255,150,0,.5);background:linear-gradient(100deg,#3a2410,#1c0f33)}' +
+    '.cl-av.win{border-color:#8fa300;background:linear-gradient(100deg,#2c3a08,#1c0f33)}' +
+    '.cl-av svg{width:24px;height:24px;flex:none;fill:none;stroke:#FF4B4B;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}' +
+    '.cl-av.nar svg{stroke:#FF9600}.cl-av.win svg{stroke:#C6E000}' +
+    '.cl-av span{flex:1;min-width:0}.cl-av b{display:block;font:italic 900 15px/1.05 var(--display);text-transform:uppercase;letter-spacing:.02em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
+    '.cl-av small{display:block;color:#c9bfe6;font-size:11.5px;margin-top:2px}' +
+    '.cl-av i{display:flex;height:6px;margin-top:5px;background:#1CB0F6;overflow:hidden}.cl-av i em{display:block;background:#C6E000}' +
+    '@keyframes clAvEnt{from{opacity:0;transform:translateY(-6px)}}@media (prefers-reduced-motion:reduce){.cl-av{animation:none}}' +
     '.cl-ver{display:block;text-align:center;padding:4px 0 12px;font:italic 900 15px/1 var(--display);text-transform:uppercase;color:var(--amarillo-tx);text-decoration:none;letter-spacing:.03em}';
   document.head.appendChild(css);
 
@@ -76,6 +86,42 @@
       K.ranking().then(function (d) { datos = d || { top: [] }; }, function () { fallo = true; }).then(function () { cargando = false; aplicar(); });
     }
   }
+  // Aviso de guerra, reto o empujones (clan_aviso en supabase/89-clanes-guerras.sql)
+  var IC = {
+    guerra: '<svg viewBox="0 0 24 24"><path d="M5 3l14 14M19 3 5 17M3 21l4-4M21 21l-4-4"/></svg>',
+    empujar: '<svg viewBox="0 0 24 24"><path d="M5 12h11M12 6l6 6-6 6"/></svg>',
+    copa: '<svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>'
+  };
+  function quedan(fin) {
+    var ms = Math.max(0, new Date(fin) - Date.now()), h = Math.floor(ms / 36e5), m = Math.floor(ms / 6e4) % 60;
+    return h >= 24 ? Math.floor(h / 24) + ' d ' + (h % 24) + ' h' : h ? h + ' h ' + m + ' min' : m + ' min';
+  }
+  function avisoHtml(a) {
+    var g = a.guerra, e = a.empujaron || [], r = a.resultado;
+    if (g && g.estado === 'activa') {
+      var t = Math.max(1, (+g.xp_mio || 0) + (+g.xp_rival || 0)), p = t > 1 ? Math.round(100 * g.xp_mio / t) : 50, va = +g.xp_mio >= +g.xp_rival;
+      return '<a class="cl-av" href="clanes.html#guerra">' + IC.guerra + '<span><b>Guerra vs ' + esc(g.rival) + '</b><small>' + (+g.xp_mio === +g.xp_rival ? 'Van empatados' : va ? 'Van ganando' : 'Van perdiendo') + ' ' + miles(g.xp_mio) + ' a ' + miles(g.xp_rival) + ' · quedan ' + quedan(g.fin) + '</small><i><em style="width:' + p + '%"></em></i></span></a>';
+    }
+    if (g && g.estado === 'pendiente' && !g.reto_mio) return '<a class="cl-av" href="clanes.html#guerra">' + IC.guerra + '<span><b>¡' + esc(g.rival) + ' los retó!</b><small>Tu líder o sublíder puede aceptar la guerra</small></span></a>';
+    if (r) return '<a class="cl-av' + (r.gane ? ' win' : '') + '" href="clanes.html#guerra">' + (r.gane ? IC.copa : IC.guerra) + '<span><b>' + (r.gane ? '¡Ganaron la guerra!' : r.empate ? 'Guerra empatada' : 'Perdieron la guerra') + '</b><small>vs ' + esc(r.rival) + ' · ' + miles(r.xp_mio) + ' a ' + miles(r.xp_rival) + ' XP</small></span></a>';
+    if (e.length) return '<a class="cl-av nar" href="clanes.html">' + IC.empujar + '<span><b>' + esc(e[0]) + (e.length > 1 ? ' y ' + (e.length - 1) + ' más' : '') + ' te ' + (e.length > 1 ? 'empujaron' : 'empujó') + '</b><small>Tu clan te espera: estudia hoy y suma para la meta</small></span></a>';
+    return '';
+  }
+  function aviso() {
+    if (!window.MCAuth || !MCAuth.usuario || !MCAuth.usuario()) return;
+    K.rpc('clan_aviso').then(function (a) {
+      if (!a || !a.clan) return;
+      var h = avisoHtml(a);
+      var punto = !!h;
+      if (punto) [].forEach.call(document.querySelectorAll('a.acceso[href="clanes.html"]'), function (x) { x.classList.add('punto'); });
+      if (!h) return;
+      lugares.forEach(function (l) {
+        var d = document.createElement('div'); d.innerHTML = h;
+        l.tabs.parentNode.insertBefore(d.firstChild, l.tabs);
+      });
+    }, function () {});
+  }
+
   function iniciar() {
     preparar('topLado', 3);
     preparar('topCel', 4);
@@ -86,7 +132,7 @@
       try { localStorage.setItem(LS, tab); } catch (x) {}
       aplicar();
     });
-    if (window.MCAuth && MCAuth.listo) MCAuth.listo.then(aplicar, aplicar); else aplicar();
+    if (window.MCAuth && MCAuth.listo) MCAuth.listo.then(function () { aplicar(); aviso(); }, aplicar); else aplicar();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar); else iniciar();
 })();
