@@ -420,26 +420,31 @@
   var NOM = { 'TODO-VIP': 'Acceso total', general: 'Acceso general', 'seminario-VIP': 'Seminarios + Banqueo', 'vocabulario-VIP': 'Vocabulario', 'biblioteca-VIP': 'Biblioteca', 'descarga-VIP': 'Descargas PDF', simulacro: 'Simulacro', duelo: 'Duelos', examenes: 'Exámenes',
     'area-matematica': 'Área Matemática', 'area-ciencia-tecnologia': 'Área Ciencia y Tecnología', 'area-comunicacion': 'Área Comunicación', 'area-ciencias-sociales': 'Área Ciencias Sociales' };
   function nombreProd(p) { return String(p || '').split(',').map(function (x) { return NOM[x] || x; }).join(' + '); }
+  // El sobre del acceso (assets/pase.js): se carga solo la primera vez que hace falta
+  var RAIZ = (function () { var sc = document.currentScript; return sc && sc.src ? sc.src.replace(/assets\/acceso\.js(\?.*)?$/, '') : './'; })();
+  var cargandoPase = null;
+  function pase() {
+    if (window.MCPase) return Promise.resolve(window.MCPase);
+    if (!cargandoPase) cargandoPase = new Promise(function (ok, mal) {
+      var sc = document.createElement('script'); sc.src = RAIZ + 'assets/pase.js?v=1';
+      sc.onload = function () { window.MCPase ? ok(window.MCPase) : mal(); }; sc.onerror = mal;
+      (document.head || document.documentElement).appendChild(sc);
+    }).catch(function (e) { cargandoPase = null; throw e; });
+    return cargandoPase;
+  }
+  // o: { codigo, sinSobre } (ver assets/pase.js)
+  function celebrar(lista, o) {
+    o = o || {};
+    lista = (lista || []).map(function (g) { return { producto: g.producto, vence: g.vence || '' }; });
+    function abrir() { return pase().then(function (P) { return P.abrir({ accesos: lista, codigo: o.codigo, sinSobre: o.sinSobre }); }).catch(function () {}); }
+    if (document.body) return abrir();
+    return new Promise(function (r) { document.addEventListener('DOMContentLoaded', function () { abrir().then(r); }); });
+  }
   function avisoActivado(nuevos) {
-    function pintar() {
-      if (document.getElementById('mcIdAviso')) return;
-      var esc = function (t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
-      var vence = nuevos.map(function (g) { return g.vence; }).filter(Boolean).sort().pop();
-      var o = document.createElement('div');
-      o.id = 'mcIdAviso';
-      o.setAttribute('role', 'dialog');
-      o.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(5,3,15,.75);display:flex;align-items:center;justify-content:center;padding:16px;font-family:Nunito,Inter,system-ui,sans-serif';
-      o.innerHTML = '<div style="background:#1a1530;border:2px solid #302950;border-bottom-width:5px;border-radius:20px;max-width:360px;width:100%;text-align:center;padding:26px 22px;color:#ece8ff">' +
-        '<div style="font-size:52px;line-height:1">🎉</div>' +
-        '<div style="font:900 11px Nunito,sans-serif;letter-spacing:2px;color:#38bdf8;margin-top:10px">¡ACCESO ACTIVADO!</div>' +
-        '<div style="font:900 28px/1.1 \'Barlow Condensed\',Nunito,sans-serif;text-transform:uppercase;margin:6px 0 10px">' + esc(nuevos.map(function (g) { return nombreProd(g.producto); }).join(' · ')) + '</div>' +
-        '<div style="font-size:14px;color:#c9c2e8;line-height:1.5">Modo Cachimbo lo activó en tu cuenta. Entra con tu Google en tu celular o laptop y se abre solo' +
-        (vence ? ', hasta el <b style="color:#fff">' + vence.split('-').reverse().join('/') + '</b>' : '') + '.</div>' +
-        '<button type="button" style="margin-top:18px;width:100%;border:0;border-bottom:4px solid #8aa300;background:#c8e600;color:#151127;font:900 15px Nunito,sans-serif;padding:14px;border-radius:14px;text-transform:uppercase;cursor:pointer">¡Vamos!</button></div>';
-      o.querySelector('button').addEventListener('click', function () { o.remove(); });
-      document.body.appendChild(o);
-    }
-    if (document.body) pintar(); else document.addEventListener('DOMContentLoaded', pintar);
+    if (document.getElementById('mcIdAviso')) return;
+    var marca = document.createElement('i'); marca.id = 'mcIdAviso'; marca.hidden = true;
+    (document.body || document.documentElement).appendChild(marca);
+    celebrar(nuevos).then(function () { marca.remove(); });
   }
 
   /* ---- Acceso cortado desde el panel ----
@@ -481,5 +486,5 @@
   revisarAbiertos();
   setTimeout(function () { refrescarID(); }, 1500);
 
-  window.MCAcceso = { verificar: verificar, activar: activar, activos: activos, todos: todos, estado: estado, soltar: soltar, accesoLocal: accesoLocal, idEstado: idEstado, refrescarID: refrescarID, nombreProd: nombreProd, alAbiertos: function (fn) { alAbiertos.push(fn); }, antiguo: antiguo, cubre: cubre, puerta: puerta, AREAS: AREAS };
+  window.MCAcceso = { verificar: verificar, activar: activar, activos: activos, todos: todos, estado: estado, soltar: soltar, accesoLocal: accesoLocal, idEstado: idEstado, refrescarID: refrescarID, nombreProd: nombreProd, celebrar: celebrar, alAbiertos: function (fn) { alAbiertos.push(fn); }, antiguo: antiguo, cubre: cubre, puerta: puerta, AREAS: AREAS };
 })();

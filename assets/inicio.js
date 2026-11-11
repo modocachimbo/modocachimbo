@@ -85,8 +85,9 @@
       if (r.ok) {
         msg.textContent = r.mensaje || '¡Código activado!'; msg.className = 'cod-msg show ok';
         pintarAccesos();
-        sonar('abrir');
-        setTimeout(cerrarCodigo, 1400);
+        // El pase con lo que se abrió (assets/pase.js); sin él, el aviso de siempre
+        if (MCAcceso.celebrar) setTimeout(function () { fondo.classList.remove('show'); MCAcceso.celebrar([{ producto: r.producto, vence: r.vence }], { codigo: r.codigo || codigo, sinSobre: true }).then(seguir); }, 500);
+        else { sonar('abrir'); setTimeout(cerrarCodigo, 1400); }
       } else { msg.textContent = r.mensaje || 'Código inválido.'; msg.className = 'cod-msg show error'; sonar('error'); }
     } catch (e) {
       msg.textContent = 'No se pudo verificar. Revisa tu conexión.'; msg.className = 'cod-msg show error';
