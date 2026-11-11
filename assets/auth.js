@@ -35,10 +35,39 @@
     });
   }
 
+  // Si una consulta vuelve con "JWT expired" (pestaña abierta mucho rato, PC suspendida
+  // o reloj de la PC atrasado), renueva la sesión una vez y repite la misma consulta.
+  var renovando = null;
+  function renovarSesion() {
+    if (!renovando) {
+      renovando = cliente.auth.refreshSession().then(function (r) {
+        return r && r.data && r.data.session ? r.data.session.access_token : null;
+      }, function () { return null; });
+      renovando.then(function () { setTimeout(function () { renovando = null; }, 3000); });
+    }
+    return renovando;
+  }
+  function fetchConRenovar(url, init) {
+    var u = String(url && url.url || url);
+    return fetch(url, init).then(function (res) {
+      if (res.status !== 401 || !cliente || !/\/(rest|storage|functions)\/v1\//.test(u)) return res;
+      return res.clone().text().then(function (t) {
+        if (!/jwt|PGRST30[123]/i.test(t)) return res;
+        return renovarSesion().then(function (token) {
+          if (!token) return res;
+          var h = new Headers(init && init.headers || {});
+          h.set('Authorization', 'Bearer ' + token);
+          return fetch(url, Object.assign({}, init, { headers: h }));
+        });
+      }, function () { return res; });
+    });
+  }
+
   var listo = (CFG.SUPABASE_URL && CFG.SUPABASE_KEY ? cargarSDK() : Promise.reject(new Error('sin-config')))
     .then(function () {
       cliente = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_KEY, {
-        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+        global: { fetch: fetchConRenovar }
       });
       cliente.auth.onAuthStateChange(function (evento, s) {
         var antes = sesion && sesion.user.id, ahora = s && s.user.id;
