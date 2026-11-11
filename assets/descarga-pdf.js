@@ -1548,16 +1548,13 @@
   var NOM_SEC = { libro: 'Libros', seminario: 'Seminarios', banqueo: 'Banqueo' };
 
   // Libros, Seminarios y Banqueo: tema.html (los datos los deja la página en window.MC_TEMA)
-  // Solo el ciclo más nuevo del curso se descarga: los ciclos anteriores se practican gratis
-  // pero sin PDF (la misma regla que MCAcceso.cicloAnterior en assets/acceso.js)
+  // Qué ciclos se descargan: Panel → Planes y precios → Ciclos (regla en MCAcceso.cicloDescarga, assets/acceso.js).
+  // Resuelve true si NO se descarga
   function cicloAnteriorDescarga(year) {
-    var R = { I: 1, II: 2, III: 3 }, ord = function (id) { var x = String(id || '').match(/^(\d{4})-(III|II|I)$/); return x ? +x[1] * 10 + R[x[2]] : 0; };
-    var o = ord(year);
-    if (!o || !window.fetch) return Promise.resolve(false);
-    return fetch('data/manifest.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : []; }).then(function (m) {
-      var max = 0; (Array.isArray(m) ? m : []).forEach(function (c) { max = Math.max(max, ord(c && c.id)); });
-      return max > o;
-    }, function () { return false; });
+    if (!year) return Promise.resolve(false);
+    return (window.MCAcceso ? Promise.resolve() : cargarJs(RAIZ + 'assets/acceso.js'))
+      .then(function () { return window.MCAcceso && MCAcceso.cicloDescarga ? MCAcceso.cicloDescarga(year).then(function (si) { return !si; }) : false; })
+      .catch(function () { return false; });
   }
   if (archivo === 'tema.html' && SEC[ruta[ruta.length - 2]]) cicloAnteriorDescarga(new URLSearchParams(location.search).get('year')).then(function (anterior) {
     if (anterior) return;
