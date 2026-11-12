@@ -11,7 +11,7 @@
    ========================================================= */
 (function () {
   var ok = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
-  var K_NO = 'mc_push_no', K_DIA = 'mc_push_dia';
+  var K_NO = 'mc_push_no', K_DIA = 'mc_push_dia', CLAVE = '';
   function leer(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function guardar(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   function hoy() { return new Date(Date.now() - 5 * 3600e3).toISOString().slice(0, 10); }
@@ -40,7 +40,7 @@
       var c = a[0], reg = a[1];
       return reg.pushManager.getSubscription().then(function (sub) {
         if (sub) return sub;
-        return claveVapid(c).then(function (clave) {
+        return (CLAVE ? Promise.resolve(CLAVE) : claveVapid(c)).then(function (clave) {
           return reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64aBytes(clave) });
         });
       }).then(function (sub) {
@@ -111,11 +111,13 @@
       if (p !== 'default') return;
       var no = +leer(K_NO) || 0;
       if (Date.now() - no < 7 * 864e5) return;
+      // Solo si el envío ya está configurado (hay llave pública); la guarda para «Activar»
+      MCAuth.listo.then(claveVapid).then(function (k) { CLAVE = k; esperar(0); }, function () {});
       // Espera a que se cierre el anuncio flotante, si hay uno
-      (function esperar(n) {
+      function esperar(n) {
         if (document.body.classList.contains('mcan-abierto') && n < 60) return setTimeout(function () { esperar(n + 1); }, 1000);
         tarjeta();
-      })(0);
+      }
     }, function () {});
   }
 
