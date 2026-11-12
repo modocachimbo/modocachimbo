@@ -13,6 +13,21 @@
   var BASE = script && script.src ? script.src.replace(/assets\/app\.js(\?.*)?$/, '') : './';
   var CERRADO = 'mc_app_cerrado', DIAS = 14;
 
+  // Dentro de la app de Play Store (com.modocachimbo.app): Google no deja mostrar pagos
+  // fuera de Google Play. Se esconden el QR de Yape, «Pide tu código por WhatsApp» y el
+  // aviso de instalar. Activar un código sí se puede. Al abrir la app, Chrome pone como
+  // referrer android-app://com.modocachimbo.app; se recuerda mientras la app siga abierta.
+  try {
+    if (/^android-app:\/\/com\.modocachimbo\.app/.test(document.referrer)) sessionStorage.setItem('mc_en_app', '1');
+    if (sessionStorage.getItem('mc_en_app') === '1') {
+      document.documentElement.classList.add('mc-app');
+      var stApp = document.createElement('style');
+      stApp.textContent = 'html.mc-app .coffee,html.mc-app #apoya,html.mc-app .mck-wa,html.mc-app #appInstalar,html.mc-app [data-compra]{display:none!important}';
+      document.head.appendChild(stApp);
+    }
+  } catch (e) {}
+  window.MCEnApp = document.documentElement.classList.contains('mc-app');
+
   // Temáticas por fechas (Halloween, …): se ven en todas las páginas menos el panel
   if (!/\/panel\//.test(location.pathname) && !document.getElementById('mcTemaJs')) {
     var tema = document.createElement('script'); tema.id = 'mcTemaJs'; tema.src = BASE + 'assets/tema.js';
