@@ -755,6 +755,7 @@
         <button class="tab disp" data-tab="biblioteca" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span>Biblioteca</span></button>
         <button class="tab disp" data-tab="alertas" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Alertas</span></button>
         <button class="tab disp" data-tab="anuncios" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v4a1 1 0 0 0 1 1h3l5 4V5L7 9H4a1 1 0 0 0-1 1z"/><path d="M16 8.5a4.5 4.5 0 0 1 0 7"/><path d="M19 5.5a8.5 8.5 0 0 1 0 13"/></svg><span>Anuncios</span></button>
+        <button class="tab disp" data-tab="notif" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M10 18h4"/><path d="M15.5 6.5a3 3 0 0 0-7 0c0 3-1.5 4-1.5 4h10s-1.5-1-1.5-4"/></svg><span>Notificaciones</span></button>
         <button class="tab disp" data-tab="planes" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg><span>Planes y precios</span></button>
         <button class="tab disp" data-tab="frases" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Frases del día</span></button>
         <button class="tab disp" data-tab="tutorial" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Tutorial</span></button>
@@ -1220,6 +1221,18 @@ E) Alternativa"></textarea>
         </div>
         <div id="avCaja"><div class="loader">Cargando avance…</div></div>
         <div class="av-pop" id="avPop" hidden></div>
+      </div>
+
+      <!-- Notificaciones push al celular / PC de los alumnos (notificaciones-panel.js) -->
+      <div id="tab-notif" hidden>
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Web</div>
+            <h1 class="disp">Notificaciones</h1>
+            <p>Llegan al celular o PC de los alumnos que las activaron, aunque tengan la app cerrada.</p>
+          </div>
+        </div>
+        <div id="ntpCaja"></div>
       </div>
 
       <!-- Anuncios flotantes: imagen al entrar al inicio, con link y conteo de vistas y clics (anuncios-panel.js) -->
@@ -1700,7 +1713,7 @@ E) Alternativa"></textarea>
   const CARGAR = {
     cursos: f => { cargarCursos(); cargarPractica(); }, perfil: f => cargarPerfilCfg(), frases: f => cargarFrases(), planes: f => cargarPlanes(), vocab: f => cargarVocabulario(),
     ciclos: f => cargarCiclos(f), alumnos: f => cargarAlumnos(f), porvencer: f => cargarPorVencer(f), codigos: () => cargarCodigos(), simulacro: () => cargarTopSimulacro(), topxp: () => cargarTopXp(), clanes: () => cargarClanes(),
-    agenda: () => cargarAgenda(), tematicas: () => cargarTematicas(), recursos: () => cargarRecursos(), biblioteca: () => cargarBiblioteca(), regalos: () => cargarRegalos(), influencers: () => cargarInfluencers(), descargas: () => cargarDescargas(), resenas: () => cargarResenas(), alertas: () => cargarAlertas(), anuncios: () => cargarAnuncios(), corr: () => cargarCorrecciones(),
+    agenda: () => cargarAgenda(), tematicas: () => cargarTematicas(), recursos: () => cargarRecursos(), biblioteca: () => cargarBiblioteca(), regalos: () => cargarRegalos(), influencers: () => cargarInfluencers(), descargas: () => cargarDescargas(), resenas: () => cargarResenas(), alertas: () => cargarAlertas(), anuncios: () => cargarAnuncios(), notif: () => cargarNotificaciones(), corr: () => cargarCorrecciones(),
     equipo: () => cargarEquipo(), historial: () => cargarHistorial(), avance: () => cargarAvance(), verif: f => cargarVerificar(f)
   };
   function cargarSeccion(tab, forzar) {
@@ -1717,7 +1730,7 @@ E) Alternativa"></textarea>
     window.scrollTo(0, 0);
     document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
     const pestana = t.dataset.tab === 'examen' ? 'subir' : t.dataset.tab; // "Subir examen" usa la misma pantalla que "Subir tema"
-    ['reportes', 'subir', 'editar', 'cursos', 'ciclos', 'vocab', 'perfil', 'frases', 'alertas', 'tutorial', 'codigos', 'alumnos', 'porvencer', 'corr', 'simulacro', 'topxp', 'clanes', 'agenda', 'tematicas', 'recursos', 'biblioteca', 'regalos', 'influencers', 'descargas', 'resenas', 'equipo', 'historial', 'avance', 'verif', 'anuncios', 'planes'].forEach(id => { $('tab-' + id).hidden = id !== pestana; });
+    ['reportes', 'subir', 'editar', 'cursos', 'ciclos', 'vocab', 'perfil', 'frases', 'alertas', 'tutorial', 'codigos', 'alumnos', 'porvencer', 'corr', 'simulacro', 'topxp', 'clanes', 'agenda', 'tematicas', 'recursos', 'biblioteca', 'regalos', 'influencers', 'descargas', 'resenas', 'equipo', 'historial', 'avance', 'verif', 'anuncios', 'notif', 'planes'].forEach(id => { $('tab-' + id).hidden = id !== pestana; });
     if (t.dataset.tab === 'tutorial' && !TU.datos) cargarTutorial();
     // Las que tienen textos por guardar (Perfil, Frases, Vocabulario) no se recargan solas al tocarlas otra vez
     cargarSeccion(t.dataset.tab, yaEstaba && !['perfil', 'frases', 'vocab', 'planes'].includes(t.dataset.tab));
@@ -2595,6 +2608,8 @@ E) Alternativa"></textarea>
 <script src="recursos-panel.js?v=7"></script>
 <script src="../assets/anuncios.js?v=2" data-solo-vista></script>
 <script src="anuncios-panel.js?v=2"></script>
+<script src="../assets/push.js?v=1"></script>
+<script src="notificaciones-panel.js?v=1"></script>
 <script src="influencers-panel.js?v=3"></script>
 <script src="biblioteca-panel.js"></script>
 <script src="regalos-panel.js?v=3"></script>
