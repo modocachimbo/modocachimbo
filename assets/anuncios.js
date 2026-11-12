@@ -127,6 +127,8 @@
     var cod = null;
     var ok = lista.filter(function (a) {
       if (!a || !a.img) return false;
+      // En la app de Play Store no salen los anuncios propios (venden códigos) ni los que llevan a WhatsApp
+      if (window.MCEnApp && (a.tipo === 'propio' || /wa\.me|whatsapp/i.test(a.link || ''))) return false;
       if (a.publico === 'sin-codigo' || a.publico === 'con-codigo') {
         if (cod === null) cod = tieneCodigo();
         if ((a.publico === 'con-codigo') !== cod) return false;
