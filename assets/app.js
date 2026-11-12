@@ -14,7 +14,7 @@
   var CERRADO = 'mc_app_cerrado', DIAS = 14;
 
   // Dentro de la app de Play Store (com.modocachimbo.app): Google no deja mostrar pagos
-  // fuera de Google Play. Se esconden el QR de Yape, «Pide tu código por WhatsApp» y el
+  // fuera de Google Play. Se esconden «Pide tu código por WhatsApp» y el
   // aviso de instalar. Activar un código sí se puede. Al abrir la app, Chrome pone como
   // referrer android-app://com.modocachimbo.app; se recuerda mientras la app siga abierta.
   try {
@@ -22,7 +22,7 @@
     if (sessionStorage.getItem('mc_en_app') === '1') {
       document.documentElement.classList.add('mc-app');
       var stApp = document.createElement('style');
-      stApp.textContent = 'html.mc-app .coffee,html.mc-app #apoya,html.mc-app .mck-wa,html.mc-app #appInstalar,html.mc-app [data-compra]{display:none!important}';
+      stApp.textContent = 'html.mc-app .mck-wa,html.mc-app #appInstalar,html.mc-app [data-compra]{display:none!important}';
       document.head.appendChild(stApp);
     }
   } catch (e) {}
