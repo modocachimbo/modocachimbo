@@ -176,6 +176,12 @@
     });
   }
 
+  // Correo y contraseña: solo para cuentas creadas a mano en Supabase
+  // (Authentication → Add user), por ejemplo la de los revisores de Google Play
+  function entrarClave(correo, clave) {
+    return listo.then(function (c) { return c.auth.signInWithPassword({ email: correo, password: clave }); });
+  }
+
   // Si el servidor no responde (internet lento o sesión ya vencida),
   // signOut devuelve un error y deja la sesión guardada. En ese caso se
   // borra solo en este navegador para que igual quede cerrada.
@@ -462,6 +468,7 @@
     guardarPerfil: guardarPerfil,
     entrarGoogle: entrarGoogle,
     entrarCorreo: entrarCorreo,
+    entrarClave: entrarClave,
     salir: salir,
     alCambiar: alCambiar,
     abrirIngreso: abrirIngreso,
