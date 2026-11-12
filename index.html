@@ -189,8 +189,9 @@
   .bv-ayuda { margin-top: 22px; font-size: 12.5px; color: var(--text-faint); }
   .bv-ayuda a { color: var(--text-dim); }
   .bv-ayuda a:hover { color: var(--accent); }
-  .bv-otro { margin-top: 10px; align-self: flex-start; background: none; border: 0; padding: 0; color: var(--text-faint); font: inherit; font-size: 12px; text-decoration: underline; cursor: pointer; }
-  .bv-otro:hover { color: var(--text-dim); }
+  .bv-otro { margin-top: 12px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 13px 16px; border-radius: 999px; border: 2px solid rgba(198,224,0,.55); background: rgba(198,224,0,.08); color: var(--accent); font: 800 15px Nunito, system-ui, sans-serif; cursor: pointer; transition: background .15s, transform .15s; }
+  .bv-otro:hover { background: rgba(198,224,0,.16); transform: translateY(-1px); }
+  .bv-otro svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   .bv-correo { display: grid; gap: 8px; margin-top: 12px; }
   .bv-correo[hidden] { display: none; }
   .bv-correo input { width: 100%; box-sizing: border-box; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font: 600 14px Nunito, system-ui, sans-serif; }
@@ -1248,6 +1249,12 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
         <h1>¡Bienvenido,<br><span class="accent">cachimbo</span>!</h1>
         <p>Ingresa con tu cuenta de Google para estudiar con libros, exámenes pasados, repasos y fijas.</p>
         <button class="bv-google" type="button" id="bvGoogle"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg><span>Continuar con Google</span></button>
+        <button class="bv-otro" type="button" id="bvCorreoAbrir"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 6 8-6"/></svg><span>Entrar con correo y contraseña</span></button>
+        <form class="bv-correo" id="bvCorreo" hidden>
+          <input type="email" id="bvCorreoMail" placeholder="Correo" autocomplete="username" required>
+          <input type="password" id="bvCorreoClave" placeholder="Contraseña" autocomplete="current-password" required>
+          <button type="submit" id="bvCorreoBtn">Entrar</button>
+        </form>
         <div class="bv-msg" id="bvMsg" role="status"></div>
         <ul class="bv-lista">
           <li><span><b>Libros y exámenes</b> pasados de la UNJFSC, gratis.</span></li>
@@ -1255,12 +1262,6 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
           <li><span><b>Tu perfil</b> con cuenta regresiva para tu examen.</span></li>
         </ul>
         <p class="bv-ayuda">¿Problemas para entrar? <a id="bvWhatsapp" href="#" target="_blank" rel="noopener noreferrer">Escríbeme por WhatsApp</a></p>
-        <button class="bv-otro" type="button" id="bvCorreoAbrir">Entrar con correo y contraseña</button>
-        <form class="bv-correo" id="bvCorreo" hidden>
-          <input type="email" id="bvCorreoMail" placeholder="Correo" autocomplete="username" required>
-          <input type="password" id="bvCorreoClave" placeholder="Contraseña" autocomplete="current-password" required>
-          <button type="submit" id="bvCorreoBtn">Entrar</button>
-        </form>
       </div>
     </div>
     <section class="bv-dentro" aria-label="Lo que hay adentro">
