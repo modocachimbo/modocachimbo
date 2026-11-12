@@ -189,6 +189,14 @@
   .bv-ayuda { margin-top: 22px; font-size: 12.5px; color: var(--text-faint); }
   .bv-ayuda a { color: var(--text-dim); }
   .bv-ayuda a:hover { color: var(--accent); }
+  .bv-otro { margin-top: 10px; align-self: flex-start; background: none; border: 0; padding: 0; color: var(--text-faint); font: inherit; font-size: 12px; text-decoration: underline; cursor: pointer; }
+  .bv-otro:hover { color: var(--text-dim); }
+  .bv-correo { display: grid; gap: 8px; margin-top: 12px; }
+  .bv-correo[hidden] { display: none; }
+  .bv-correo input { width: 100%; box-sizing: border-box; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font: 600 14px Nunito, system-ui, sans-serif; }
+  .bv-correo input:focus { outline: 2px solid var(--accent); outline-offset: 0; }
+  .bv-correo button { padding: 12px; border: 0; border-radius: 12px; background: var(--accent); color: #0B0818; font: 900 14px Nunito, system-ui, sans-serif; cursor: pointer; }
+  .bv-correo button:disabled { opacity: .6; cursor: default; }
   .bv-pie { margin-top: 22px; color: var(--text-faint); font-size: 12px; font-family: 'Sora', sans-serif; font-weight: 700; }
   /* Lo que hay adentro: debajo del ingreso */
   .bv-dentro { width: 100%; max-width: 920px; margin-top: 34px; }
@@ -1224,7 +1232,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
 <script src="assets/mc-config.js"></script>
 <script src="assets/acceso.js?v=166"></script>
 <script src="assets/candado.js?v=164"></script>
-<script src="assets/auth.js"></script>
+<script src="assets/auth.js?v=2"></script>
 <script src="assets/arcade-beta.js"></script>
 <script src="assets/agenda.js"></script>
 </head>
@@ -1247,6 +1255,12 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
           <li><span><b>Tu perfil</b> con cuenta regresiva para tu examen.</span></li>
         </ul>
         <p class="bv-ayuda">¿Problemas para entrar? <a id="bvWhatsapp" href="#" target="_blank" rel="noopener noreferrer">Escríbeme por WhatsApp</a></p>
+        <button class="bv-otro" type="button" id="bvCorreoAbrir">Entrar con correo y contraseña</button>
+        <form class="bv-correo" id="bvCorreo" hidden>
+          <input type="email" id="bvCorreoMail" placeholder="Correo" autocomplete="username" required>
+          <input type="password" id="bvCorreoClave" placeholder="Contraseña" autocomplete="current-password" required>
+          <button type="submit" id="bvCorreoBtn">Entrar</button>
+        </form>
       </div>
     </div>
     <section class="bv-dentro" aria-label="Lo que hay adentro">
@@ -1477,7 +1491,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
 <script src="assets/buho/buho-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
 <script src="assets/buho.js"></script>
-<script src="assets/inicio.js?v=200"></script>
+<script src="assets/inicio.js?v=201"></script>
 <script src="assets/clanes.js?v=5"></script>
 <script src="assets/clanes-inicio.js?v=2"></script>
 <script>

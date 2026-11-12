@@ -49,6 +49,27 @@
     });
   });
 
+  // Correo y contraseña (cuentas creadas a mano, como la de los revisores de Google Play)
+  var bvCorreo = $('bvCorreo');
+  $('bvCorreoAbrir').addEventListener('click', function () {
+    bvCorreo.hidden = !bvCorreo.hidden;
+    if (!bvCorreo.hidden) $('bvCorreoMail').focus();
+  });
+  bvCorreo.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var b = $('bvCorreoBtn');
+    b.disabled = true; b.textContent = 'Entrando…';
+    bvMsg.classList.remove('show');
+    MCAuth.entrarClave($('bvCorreoMail').value.trim(), $('bvCorreoClave').value).then(function (r) {
+      if (r && r.error) throw r.error;
+      location.reload();
+    }).catch(function () {
+      b.disabled = false; b.textContent = 'Entrar';
+      bvMsg.textContent = 'Correo o contraseña incorrectos. Si eres alumno, entra con Google.';
+      bvMsg.classList.add('show');
+    });
+  });
+
   // Solo rutas internas del sitio (evita mandar a otra web)
   function destino() {
     var v = new URLSearchParams(location.search).get('volver') || '';
