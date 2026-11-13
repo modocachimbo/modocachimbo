@@ -901,13 +901,13 @@ html.mc-fuera body { background: var(--bg); }
 /* Corazones, racha y XP con el mismo formato de los recursos del Arcade:
    barra oscura con relieve, ícono grande que sale por la izquierda, número en Lilita One y brillo que pasa */
 .cab .mcu-user .mcz-pill, .cab .mcu-user .mcu-racha {
-  --c: #FFC800; position: relative; overflow: visible; height: 42px; min-width: 112px; margin-left: 22px; padding: 0 34px 0 30px; justify-content: center; gap: 0; border-radius: 10px;
+  --c: #FFC800; position: relative; overflow: visible; height: 42px; flex: none; min-width: 0; margin-left: 14px; padding: 0 36px 0 34px; justify-content: center; gap: 0; border-radius: 10px;
   background: linear-gradient(180deg, #2A2158, #140D36); border: 2px solid #0A0620; color: #fff;
   box-shadow: inset 0 2px 0 rgba(255,255,255,.12), inset 0 -3px 0 rgba(0,0,0,.35), 0 3px 0 rgba(10,6,32,.6);
   font: 400 22px/1 "Lilita One", var(--display); letter-spacing: .03em; text-shadow: 0 2px 0 #000; }
 .cab .mcu-user .mcz-pill:active, .cab .mcu-user .mcu-racha:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 0; }
-.cab .mcu-user .mcz-pill > svg:first-child, .cab .mcu-user .mcu-racha > svg:first-child { position: absolute; left: -20px; top: 50%; width: 52px; height: 52px; margin-top: -27px; }
-.cab .mcu-user .mcz-cor { --c: #FF4B5E; --c1: #FFB0B8; --c2: #C4142A; --o: #6A0A14; }
+.cab .mcu-user .mcz-pill > svg:first-child, .cab .mcu-user .mcu-racha > svg:first-child { position: absolute; left: -18px; top: 50%; width: 48px; height: 48px; margin-top: -25px; }
+.cab .mcu-user .mcz-cor { padding-left: 42px; --c: #FF4B5E; --c1: #FFB0B8; --c2: #C4142A; --o: #6A0A14; }
 .cab .mcu-user .mcz-xp { --c: #FFC800; --c1: #FFF0A0; --c2: #E08A00; --o: #6A3A00; }
 .cab .mcu-user .mcz-cor > svg:first-child { filter: drop-shadow(0 0 8px #FF4B5E); }
 .cab .mcu-user .mcz-xp > svg:first-child { filter: drop-shadow(0 0 8px rgba(255,200,0,.7)); }
@@ -933,11 +933,13 @@ html.mc-fuera body { background: var(--bg); }
 }
 @media (prefers-reduced-motion: reduce) { .cab .mcu-user .mcz-pill::after, .cab .mcu-user .mcu-racha::after, .cab .mcu-user .mcz-pill::before, .cab .mcu-user .mcu-racha::before { animation: none; } }
 .cab .mcu-user .mcz-pill::before { animation-delay: .4s; } .cab .mcu-user .mcz-xp::before { animation-delay: .8s; }
+/* PC: el saludo se achica un poco en pantallas medianas para que entre en una línea junto a los cuadros */
+@media (min-width: 901px) { .cab h1.hola { font-size: clamp(30px, 2.5vw, 40px); white-space: nowrap; } }
 /* Infinito dibujado (corazones ilimitados) */
 .cab .mcu-user .mcz-inf { width: 42px; height: 24px; flex: none; filter: drop-shadow(0 2px 0 #000) drop-shadow(0 0 6px rgba(255,120,140,.6)); }
 @media (max-width: 900px) { .cab .mcu-user .mcz-inf { width: 40px; height: 23px; } }
-.cab .mcu-user .mcz-xp { padding-left: 40px; }
-@media (max-width: 900px) { .cab .mcu-user .mcz-xp { padding-left: 32px; } }
+.cab .mcu-user .mcz-xp { padding-left: 38px; }
+@media (max-width: 900px) { .cab .mcu-user .mcz-xp, .cab .mcu-user .mcz-cor { padding-left: 32px; } }
 @media (max-width: 400px) { .cab .mcu-user .mcz-pill, .cab .mcu-user .mcu-racha { padding: 0 25px 0 20px; font-size: 17px; } .cab .mcu-user .mcz-xp { padding-left: 28px; } }
 /* Celular chico: con este formato el número sí entra, así que se ve siempre (antes solo se veía el ícono) */
 @media (max-width: 360px) {
