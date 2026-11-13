@@ -7,7 +7,8 @@
 --   · regalo_grupo: los alumnos del grupo (se guardan por cuenta, así
 --     que siguen ahí aunque cambies algo de su perfil).
 --   · regalo_grupo_envio: cada regalo que diste a todo el grupo.
---   · grupo_regalo_ver(grupo): la lista y los últimos regalos al grupo.
+--   · grupo_regalo_ver(grupo): la lista (con la última vez que entró cada
+--     uno) y los últimos regalos al grupo.
 --   · grupo_regalo_guardar(grupo, ids): guarda la lista de IDs de 5 cifras.
 --   · grupo_regalo_dar(grupo, tipo, cantidad, ítem, nota): el mismo regalo
 --     a todos de una vez. Cada alumno ve su aviso como un regalo normal.
@@ -75,7 +76,10 @@ begin
     'miembros', coalesce((select jsonb_agg(jsonb_build_object(
         'codigo', j.codigo, 'apodo', public.duelo_apodo(g.usuario),
         'email', (select lower(a.email) from auth.users a where a.id = g.usuario),
-        'foto', (select p.foto_url from public.perfiles p where p.id = g.usuario and p.foto_url like 'https://%'))
+        'foto', (select p.foto_url from public.perfiles p where p.id = g.usuario and p.foto_url like 'https://%'),
+        -- Última vez que se le vio: entró con Google o practicó (lo más reciente)
+        'visto', greatest((select a.last_sign_in_at from auth.users a where a.id = g.usuario),
+                          (select (max(x.fecha) + time '12:00') at time zone 'America/Lima' from public.actividad x where x.usuario = g.usuario and x.preguntas > 0)))
         order by g.agregado, j.codigo)
       from public.regalo_grupo g join public.jugador_id j on j.usuario = g.usuario
      where g.grupo = p_grupo), '[]'::jsonb),

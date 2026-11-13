@@ -12,7 +12,7 @@
    regalo de una vez (supabase/93-grupo-vip.sql: grupo_regalo_ver,
    grupo_regalo_guardar, grupo_regalo_dar).
    ========================================================= */
-const RG = { modo: 'uno', grupo: null, grupoCargando: false, grupoError: '', alumno: null, tipo: 'corazones', cant: 3, item: '', items: null, enviando: false };
+const RG = { modo: 'uno', inactivoDias: 7, grupo: null, grupoCargando: false, grupoError: '', alumno: null, tipo: 'corazones', cant: 3, item: '', items: null, enviando: false };
 const RG_TIPOS = {
   corazones: { nom: 'Corazones', c: '#FF4B4B', ops: [[1, '+1'], [3, '+3'], [5, '+5'], [10, '+10']], min: 1, max: 50, uni: 'corazones' },
   infinito: { nom: 'Infinitos', c: '#CE82FF', ops: [[1, '1 hora'], [24, '1 día'], [72, '3 días'], [168, '7 días'], [720, '30 días']] },
@@ -65,6 +65,12 @@ const RG_ESP = { racha: 'Banner', avatar: 'Foto de perfil', pines: 'Pin', marco:
   .rg-chip { display: flex; align-items: center; gap: 8px; padding: 5px 6px 5px 5px; border-radius: 999px; background: #1D1834; border: 2px solid #2F284E; font: 900 13px Nunito, sans-serif; max-width: 100%; }
   .rg-chip.nuevo { border-color: var(--accent); }
   .rg-chip.malo { border-color: #FF4B4B; color: #FF6E6E; }
+  .rg-chip.dormido { border-color: rgba(255,150,0,.55); background: rgba(255,150,0,.08); }
+  .rg-chip.dormido small { color: #FFAD4D; }
+  .rg-act { margin-top: 14px; padding: 12px; border-radius: 14px; background: #120e22; border: 2px solid #2A2346; }
+  .rg-act-res { font: 900 14px Nunito, sans-serif; margin-bottom: 10px; }
+  .rg-act-res span { color: var(--accent); } .rg-act-res em { font-style: normal; color: #FFAD4D; }
+  .rg-act-fila { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font: 800 13px Nunito, sans-serif; color: var(--text-dim); }
   .rg-chip .rg-foto { width: 26px; height: 26px; font-size: 12px; }
   .rg-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .rg-chip small { color: var(--text-dim); font-weight: 800; }
@@ -291,6 +297,18 @@ function rgVipCambios() {
   return g !== b;
 }
 
+// Días desde que se le vio (null = nunca entró)
+function rgDiasVisto(v) {
+  if (!v) return null;
+  const f = d => new Date(new Date(d).toLocaleDateString('en-CA', { timeZone: 'America/Lima' }));
+  return Math.max(0, Math.round((f(Date.now()) - f(v)) / 86400000));
+}
+function rgVistoTxt(v) {
+  const d = rgDiasVisto(v);
+  return d == null ? 'nunca activo' : d === 0 ? 'activo hoy' : d === 1 ? 'activo ayer' : 'activo hace ' + d + ' días';
+}
+function rgDormido(m) { const d = rgDiasVisto(m.visto); return d == null || d >= RG.inactivoDias; }
+
 function rgHoyLima(s) {
   const f = d => new Date(d).toLocaleDateString('es-PE', { timeZone: 'America/Lima' });
   return f(s) === f(Date.now());
@@ -307,9 +325,9 @@ function pintarVip() {
   const chips = RG.borrador.map(cod => {
     const m = info[cod], malo = RG.noExisten.includes(cod);
     const ini = m ? (m.apodo || m.email || '?').trim().charAt(0).toUpperCase() : '#';
-    return `<span class="rg-chip${malo ? ' malo' : m ? '' : ' nuevo'}" title="${m ? esc(m.email || '') : malo ? 'No hay ningún alumno con este ID' : 'Falta guardar'}">
+    return `<span class="rg-chip${malo ? ' malo' : m ? (rgDormido(m) ? ' dormido' : '') : ' nuevo'}" title="${m ? esc((m.email || '') + ' · ' + rgVistoTxt(m.visto)) : malo ? 'No hay ningún alumno con este ID' : 'Falta guardar'}">
       <span class="rg-foto"${m && m.foto ? ` style="background-image:url('${esc(m.foto)}')"` : ''}>${m && m.foto ? '' : esc(ini)}</span>
-      <span>${m ? esc(m.apodo || 'Sin apodo') + ' <small>· ' + cod + '</small>' : cod + ' <small>· ' + (malo ? 'no existe' : 'sin guardar') + '</small>'}</span>
+      <span>${m ? esc(m.apodo || 'Sin apodo') + ' <small>· ' + cod + ' · ' + rgVistoTxt(m.visto) + '</small>' : cod + ' <small>· ' + (malo ? 'no existe' : 'sin guardar') + '</small>'}</span>
       <button type="button" data-rgq="${cod}" aria-label="Quitar ${cod}" title="Quitar del grupo">${RG_IC.quitar}</button></span>`;
   }).join('');
   $('rgCuerpo').innerHTML = cab + `
@@ -321,6 +339,7 @@ function pintarVip() {
         <button class="btn-ghost" type="button" id="rgVipAdd">Agregar</button>
       </div>
       ${n ? `<div class="rg-chips">${chips}</div>` : '<p class="hint" style="margin-top:12px">Aún no hay nadie en el grupo.</p>'}
+      ${rgActividadHtml(info)}
       ${RG.noExisten.length ? `<div class="rg-aviso">No hay ningún alumno con ${RG.noExisten.length === 1 ? 'el ID' : 'los IDs'} ${RG.noExisten.join(', ')}. No se guard${RG.noExisten.length === 1 ? 'ó' : 'aron'}: quíta${RG.noExisten.length === 1 ? 'lo' : 'los'} o revisa el número.</div>` : ''}
       <div class="agp-acc"><button class="btn-main" type="button" id="rgVipGuardar"${cambios ? '' : ' disabled'}>Guardar grupo</button>
         <span class="rg-resumen">${cambios ? 'Tienes cambios sin guardar' : guardados ? 'Grupo guardado' : ''}</span></div>
@@ -347,7 +366,28 @@ function pintarVip() {
     pintarVip();
   }));
   $('rgVipGuardar').addEventListener('click', rgVipGuardar);
+  document.querySelectorAll('[data-rgd]').forEach(b => b.addEventListener('click', () => { RG.inactivoDias = +b.dataset.rgd; pintarVip(); }));
+  if ($('rgQuitarDorm')) $('rgQuitarDorm').addEventListener('click', () => {
+    const fuera = RG.grupo.miembros.filter(rgDormido).map(m => m.codigo);
+    RG.borrador = RG.borrador.filter(c => !fuera.includes(c));
+    toast(fuera.length + (fuera.length === 1 ? ' alumno quitado' : ' alumnos quitados') + '. Toca Guardar grupo.');
+    pintarVip();
+  });
   if (guardados) { rgFormEventos(rgVipDar); rgOpciones(); }
+}
+
+// ¿Se conectaron? Cuántos entraron en los últimos días y botón para quitar a los que no
+function rgActividadHtml(info) {
+  const ms = RG.borrador.map(c => info[c]).filter(Boolean);
+  if (!ms.length) return '';
+  const dorm = ms.filter(rgDormido).length, nunca = ms.filter(m => !m.visto).length;
+  return `<div class="rg-act">
+    <div class="rg-act-res"><span>${ms.length - dorm} activos</span> en los últimos ${RG.inactivoDias} días · <em>${dorm} no${nunca ? ' (' + nunca + ' nunca)' : ''}</em></div>
+    <div class="rg-act-fila">Sin actividad hace
+      ${[3, 7, 14, 30].map(d => `<button class="agp-op${RG.inactivoDias === d ? ' on' : ''}" type="button" data-rgd="${d}">${d} días</button>`).join('')}
+      ${dorm ? `<button class="btn-ghost" type="button" id="rgQuitarDorm">Quitar a los ${dorm}</button>` : ''}</div>
+    <p class="hint" style="margin:8px 0 0">«Activo» = inició sesión o practicó ese día. Los que no están activos se ven en naranja. Al quitarlos, toca Guardar grupo.</p>
+  </div>`;
 }
 
 async function rgVipGuardar() {
