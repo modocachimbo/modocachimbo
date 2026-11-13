@@ -59,6 +59,38 @@
     repaso: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v4.5h-4.5"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg>',
     simulacro: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13.5" r="8"/><path d="M12 9.5v4l2.5 2.5M9.5 2.5h5M12 2.5v3"/></svg>'
   };
+  /* Solo en el inicio (window.MC_RECURSOS_ARCADE): corazón y XP en 3D, con el mismo formato que los recursos del Arcade
+     (contorno oscuro desplazado, degradado de arriba a abajo, brillo blanco).
+     Cada copia lleva su propio degradado (id único) para que el gris de "sin corazones" funcione en cada una. */
+  var nIco = 0;
+  function icoCorazon() {
+    var g = 'mczCorG' + (++nIco), h = 'M32 57C14 44 5 34 5 22A13 13 0 0 1 32 15a13 13 0 0 1 27 7c0 12-9 22-27 35z';
+    return '<svg class="mcz-i-cor" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="' + g + '" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0" style="stop-color:var(--g1,#FF8A8A)"/><stop offset=".5" style="stop-color:var(--g2,#F0263A)"/><stop offset="1" style="stop-color:var(--g3,#B80E22)"/></linearGradient></defs>' +
+      '<g class="mcz-late"><path d="' + h + '" style="fill:var(--go,#6A0A14);stroke:var(--go,#6A0A14)" stroke-width="6" stroke-linejoin="round" transform="translate(1 3)"/>' +
+      '<path d="' + h + '" fill="url(#' + g + ')" style="stroke:var(--gs,#8A0E1C)" stroke-width="3" stroke-linejoin="round"/>' +
+      '<ellipse cx="18" cy="21" rx="7" ry="4.5" fill="#fff" style="opacity:var(--gb,.85)" transform="rotate(-30 18 21)"/><circle cx="27" cy="16" r="2" fill="#fff" style="opacity:var(--gb,.7)"/></g></svg>';
+  }
+  function icoXp() {
+    var g = 'mczXpG' + (++nIco), hx = 'M32 4 57 18v28L32 60 7 46V18z';
+    return '<svg class="mcz-i-xp" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="' + g + '" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0" stop-color="#FFF7B8"/><stop offset=".45" stop-color="#FFD21F"/><stop offset="1" stop-color="#F08A00"/></linearGradient></defs>' +
+      '<g class="mcz-gema"><path d="' + hx + '" fill="#7A3A00" stroke="#7A3A00" stroke-width="6" stroke-linejoin="round" transform="translate(1 3)"/>' +
+      '<path d="' + hx + '" fill="url(#' + g + ')" stroke="#9A4A00" stroke-width="3" stroke-linejoin="round"/>' +
+      '<path d="M57 18v28L32 60V32z" fill="#D06A00" opacity=".35"/><path d="M32 4 57 18 32 32 7 18z" fill="#fff" opacity=".22"/>' +
+      '<path class="mcz-destello" d="M32 4 43 10.2 18 24.6 7 18z" fill="#fff"/>' +
+      '<path d="M36 13 21 35h10l-4 17 17-24H33z" fill="#fff" stroke="#9A4A00" stroke-width="2.5" stroke-linejoin="round"/>' +
+      '<path d="M36 13 21 35h5z" fill="#FFF0A0"/><circle cx="17" cy="19" r="2" fill="#fff" opacity=".85"/></g></svg>';
+  }
+  // Infinito dibujado: lazo con degradado rosa-blanco y brillo (corazones ilimitados)
+  function icoInf() {
+    var g = 'mczInfG' + (++nIco), d = 'M16 15c-4-6-13-6-13 0s9 6 13 0 13-6 13 0-9 6-13 0z';
+    return '<svg class="mcz-inf" viewBox="0 0 32 30" role="img" aria-label="infinito" style="vertical-align:middle"><defs><linearGradient id="' + g + '" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#FFC2CB"/><stop offset="1" stop-color="#FF4B5E"/></linearGradient></defs>' +
+      '<path d="' + d + '" fill="none" stroke="#6A0A14" stroke-width="7" stroke-linecap="round" transform="translate(0 1.5)"/>' +
+      '<path d="' + d + '" fill="none" stroke="url(#' + g + ')" stroke-width="4.5" stroke-linecap="round"/>' +
+      '<path d="M6 12.5c1.5-1.6 4-1.6 6 .2" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".9"/></svg>';
+  }
   var COLOR = { explora: 'az', vocabulario: 'mo', duelo: 'na', tarjetas: 'li', seguidas: 'az', repaso: 'ro', simulacro: 'or' };
 
   function css() {
@@ -79,7 +111,7 @@
       '.mcz-late,.mcz-gema{transform-box:fill-box;transform-origin:50% 60%}' +
       '.mcz-cor .mcz-late{animation:mczBum 1.4s ease-in-out infinite}' +
       '@keyframes mczBum{0%,40%,100%{transform:scale(1)}10%{transform:scale(1.16)}20%{transform:scale(.96)}30%{transform:scale(1.1)}}' +
-      '.mcz-cor.cero{color:#9a9a9a;--c1:#5a5a5a;--c2:#444;--c3:0}.mcz-cor.cero .mcz-late{animation:none}' +
+      '.mcz-cor.cero{color:#9a9a9a;--c1:#5a5a5a;--c2:#444;--c3:0;--g1:#8a8a8a;--g2:#5a5a5a;--g3:#3a3a3a;--go:#1e1e1e;--gs:#2a2a2a;--gb:.25}.mcz-cor.cero .mcz-late{animation:none}' +
       '.mcz-cor.late .mcz-late{animation:mczLatido .6s ease}' +
       '@keyframes mczLatido{0%,100%{transform:scale(1)}40%{transform:scale(1.3)}70%{transform:scale(.92)}}' +
       // La gema del XP se inclina y destella de vez en cuando
@@ -363,9 +395,10 @@
         cor.addEventListener('click', function () { abrirMisiones(); });
         cont.insertBefore(xp, cont.firstChild); cont.insertBefore(cor, cont.firstChild);
       }
-      cor.innerHTML = SVG.corazon + '<span>' + (estado.infinito ? '∞' : estado.quedan) + '</span>';
+      var arc = window.MC_RECURSOS_ARCADE && cor.closest('.cab');
+      cor.innerHTML = (arc ? icoCorazon() : SVG.corazon) + '<span>' + (estado.infinito ? (arc ? icoInf() : '∞') : estado.quedan) + '</span>';
       cor.setAttribute('aria-label', (estado.infinito ? 'Corazones infinitos' : estado.quedan + ' corazones') + '. Ver misiones');
-      xp.innerHTML = SVG.xp + '<span>' + verXp() + '</span>';
+      xp.innerHTML = (window.MC_RECURSOS_ARCADE && xp.closest('.cab') ? icoXp() : SVG.xp) + '<span>' + verXp() + '</span>';
       xp.setAttribute('aria-label', verXp() + ' XP esta semana. Canjear');
       cor.classList.toggle('cero', !estado.quedan);
       if (late) { cor.classList.remove('late'); void cor.offsetWidth; cor.classList.add('late'); setTimeout(function () { cor.classList.remove('late'); }, 700); }
