@@ -67,6 +67,9 @@ const RG_ESP = { racha: 'Banner', avatar: 'Foto de perfil', pines: 'Pin', marco:
   .rg-chip.malo { border-color: #FF4B4B; color: #FF6E6E; }
   .rg-chip.dormido { border-color: rgba(255,150,0,.55); background: rgba(255,150,0,.08); }
   .rg-chip.dormido small { color: #FFAD4D; }
+  .rg-vig { display: inline-block; padding: 2px 8px; border-radius: 8px; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); font: 900 11.5px Nunito, sans-serif; }
+  .rg-h.rg-pasado { opacity: .6; }
+  .rg-anular { flex-shrink: 0; padding: 6px 10px; font-size: 12.5px; }
   .rg-act { margin-top: 14px; padding: 12px; border-radius: 14px; background: #120e22; border: 2px solid #2A2346; }
   .rg-act-res { font: 900 14px Nunito, sans-serif; margin-bottom: 10px; }
   .rg-act-res span { color: var(--accent); } .rg-act-res em { font-style: normal; color: #FFAD4D; }
@@ -270,7 +273,9 @@ const RG_GRUPO = 'vip';
 function rgVipError(e) {
   const m = (e && e.message) || '';
   return /no autorizado/i.test(m) ? 'Tu cuenta no tiene permiso para dar regalos.'
+    : /grupo_regalo_anular|nuevos|regalo_grupo_dado/i.test(m) ? 'Falta correr supabase/95-grupo-vip-mientras.sql en Supabase.'
     : /function|does not exist|schema cache/i.test(m) ? 'Falta correr supabase/93-grupo-vip.sql en Supabase.'
+    : /ya es del grupo/i.test(m) ? 'Ese ítem ya es del grupo: lo tienen todos y lo reciben los que entran.'
     : m || 'No se pudo.';
 }
 
@@ -321,7 +326,7 @@ function pintarVip() {
   if (RG.grupoCargando) { $('rgCuerpo').innerHTML = cab + '<div class="loader">Cargando el grupo…</div>'; rgModosEventos(); return; }
   const info = {}; RG.grupo.miembros.forEach(m => { info[m.codigo] = m; });
   const cambios = rgVipCambios(), n = RG.borrador.length, guardados = RG.grupo.miembros.length;
-  const ult = RG.grupo.envios[0];
+  const ult = RG.grupo.envios.filter(x => x.tipo !== 'item' && x.tipo !== 'item-quitado').sort((a, b) => new Date(b.creado) - new Date(a.creado))[0];
   const chips = RG.borrador.map(cod => {
     const m = info[cod], malo = RG.noExisten.includes(cod);
     const ini = m ? (m.apodo || m.email || '?').trim().charAt(0).toUpperCase() : '#';
@@ -346,7 +351,9 @@ function pintarVip() {
     </div>
     ${rgFormHtml(!guardados, '¿Qué les regalas a todos?', 'Regalar a todos')}
     ${ult && rgHoyLima(ult.creado) ? `<div class="rg-aviso" style="margin:-4px 0 16px">Hoy ya le diste al grupo: <b>${esc(rgTexto(ult))}</b> (${rgFecha(ult.creado)}).</div>` : ''}
-    ${RG.grupo.envios.length ? `<div class="agp-form"><h3>Regalos al grupo</h3>${RG.grupo.envios.map(x => `<div class="rg-h" style="--c:${RG_TIPOS[x.tipo].c}"><i></i><div><b>${esc(rgTexto(x))}</b> · ${x.recibieron} ${x.recibieron === 1 ? 'alumno' : 'alumnos'}${x.saltados ? ' (' + x.saltados + ' ya lo tenían)' : ''}${x.nota ? ' · «' + esc(x.nota) + '»' : ''}<br><small>${esc(x.de || 'Admin')} · ${rgFecha(x.creado)}</small></div></div>`).join('')}</div>` : ''}`;
+    ${RG.grupo.envios.length ? `<div class="agp-form"><h3>Regalos al grupo</h3>
+      <p class="hint">Valen solo mientras estén en el grupo: si quitas a alguien, se le quita lo que le dio el grupo (ítems, infinitos que le quedan, corazones que no usó y el XP). Si agregas a alguien, recibe los ítems del grupo, los infinitos que siguen vigentes y los corazones y XP de hoy.</p>
+      ${RG.grupo.envios.map(rgEnvioHtml).join('')}</div>` : ''}`;
   rgModosEventos();
   const add = () => {
     const ids = ($('rgVipIds').value.match(/\d{5}/g) || []).map(Number);
@@ -366,6 +373,7 @@ function pintarVip() {
     pintarVip();
   }));
   $('rgVipGuardar').addEventListener('click', rgVipGuardar);
+  document.querySelectorAll('[data-rga]').forEach(b => b.addEventListener('click', () => rgVipAnular(b)));
   document.querySelectorAll('[data-rgd]').forEach(b => b.addEventListener('click', () => { RG.inactivoDias = +b.dataset.rgd; pintarVip(); }));
   if ($('rgQuitarDorm')) $('rgQuitarDorm').addEventListener('click', () => {
     const fuera = RG.grupo.miembros.filter(rgDormido).map(m => m.codigo);
@@ -390,6 +398,32 @@ function rgActividadHtml(info) {
   </div>`;
 }
 
+// Un regalo del grupo: vigente (lo reciben los que entran) o ya pasado
+function rgEnvioHtml(x) {
+  const quitado = x.tipo === 'item-quitado', t = RG_TIPOS[quitado ? 'item' : x.tipo] || RG_TIPOS.item;
+  const txt = quitado ? rgTexto({ tipo: 'item', item: x.item }) + ' (quitado)' : rgTexto(x);
+  const anulable = x.vigente && (x.tipo === 'item' || x.tipo === 'infinito');
+  const estado = quitado ? '' : x.vigente ? `<span class="rg-vig">${x.tipo === 'item' ? 'Del grupo' : x.tipo === 'infinito' ? 'Vigente hasta ' + rgFecha(x.hasta) : 'De hoy'}</span>` : '';
+  return `<div class="rg-h${quitado || !x.vigente ? ' rg-pasado' : ''}" style="--c:${t.c}"><i></i><div><b>${esc(txt)}</b> ${estado}<br>
+    <small>${x.recibieron} ${x.recibieron === 1 ? 'alumno' : 'alumnos'}${x.nuevos ? ' + ' + x.nuevos + (x.nuevos === 1 ? ' que entró' : ' que entraron') + ' después' : ''}${x.saltados ? ' · ' + x.saltados + ' ya lo tenían' : ''}${x.nota ? ' · «' + esc(x.nota) + '»' : ''} · ${esc(x.de || 'Admin')} · ${rgFecha(x.creado)}</small></div>
+    ${anulable ? `<button class="btn-ghost rg-anular" type="button" data-rga="${x.id}">Quitar a todos</button>` : ''}</div>`;
+}
+
+async function rgVipAnular(b) {
+  if (b.dataset.ok !== '1') {
+    b.dataset.ok = '1'; b.textContent = '¿Seguro? Toca otra vez';
+    setTimeout(() => { if (b.isConnected) { b.dataset.ok = ''; b.textContent = 'Quitar a todos'; } }, 4000);
+    return;
+  }
+  b.disabled = true; b.textContent = 'Quitando…';
+  const c = await MCAuth.listo;
+  const r = await c.rpc('grupo_regalo_anular', { p_grupo: RG_GRUPO, p_envio: +b.dataset.rga });
+  if (r.error) { b.disabled = false; b.textContent = 'Quitar a todos'; toast(rgVipError(r.error)); return; }
+  rgVipTomar(r.data);
+  toast('Regalo quitado a todo el grupo');
+  pintarVip();
+}
+
 async function rgVipGuardar() {
   const btn = $('rgVipGuardar'); btn.disabled = true; btn.textContent = 'Guardando…';
   const c = await MCAuth.listo;
@@ -399,7 +433,8 @@ async function rgVipGuardar() {
   rgVipTomar(r.data);
   // Los que no existen se quedan a la vista (en rojo) para que los corrijas
   RG.borrador = RG.borrador.concat(malos);
-  toast('Grupo VIP guardado: ' + RG.grupo.miembros.length + ' alumnos');
+  const ent = r.data.entraron || 0, sal = r.data.salieron || 0;
+  toast('Grupo VIP guardado: ' + RG.grupo.miembros.length + ' alumnos' + (ent ? ' · ' + ent + ' recibieron los regalos del grupo' : '') + (sal ? ' · a ' + sal + ' se les quitaron' : ''));
   pintarVip();
 }
 
