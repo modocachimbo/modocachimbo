@@ -6,7 +6,8 @@
      Edge Function «enviar-push» y guarda el equipo en Supabase
      (supabase/92-notificaciones.sql · push_guardar).
    - Si ya dio permiso, renueva el equipo una vez al día.
-   - window.MCPush.activar() / .estado() para otras páginas.
+   - window.MCPush.activar() / .desactivar() / .suscrito() / .estado()
+     para otras páginas (Mi perfil → Notificaciones).
    El envío se hace desde el panel → Web → Notificaciones.
    ========================================================= */
 (function () {
@@ -64,7 +65,32 @@
     return Notification.permission; // default · granted · denied
   }
 
-  window.MCPush = { activar: activar, estado: estado, soportado: ok };
+  // ¿Este equipo está recibiendo notificaciones?
+  function suscrito() {
+    if (!ok || Notification.permission !== 'granted') return Promise.resolve(false);
+    return navigator.serviceWorker.ready.then(function (reg) { return reg.pushManager.getSubscription(); })
+      .then(function (sub) { return !!sub && leer(K_NO) !== 'apagado'; }, function () { return false; });
+  }
+
+  // Apaga las notificaciones en este equipo (lo borra de Supabase)
+  function desactivar() {
+    if (!ok) return Promise.resolve();
+    guardar(K_NO, 'apagado');
+    return Promise.all([cliente(), navigator.serviceWorker.ready]).then(function (a) {
+      return a[1].pushManager.getSubscription().then(function (sub) {
+        if (!sub) return;
+        var ep = sub.endpoint;
+        return a[0].rpc('push_quitar', { p_endpoint: ep }).then(function () { return sub.unsubscribe(); });
+      });
+    });
+  }
+
+  function activarYa() {
+    guardar(K_NO, String(Date.now()));
+    return activar();
+  }
+
+  window.MCPush = { activar: activarYa, desactivar: desactivar, suscrito: suscrito, estado: estado, soportado: ok };
   if (!ok) return;
 
   /* ---------- Tarjeta en el inicio ---------- */
@@ -107,8 +133,9 @@
     MCAuth.listo.then(function () {
       if (!MCAuth.usuario()) return;
       var p = Notification.permission;
-      if (p === 'granted') { if (leer(K_DIA) !== hoy()) suscribir().catch(function () {}); return; }
+      if (p === 'granted') { if (leer(K_NO) !== 'apagado' && leer(K_DIA) !== hoy()) suscribir().catch(function () {}); return; }
       if (p !== 'default') return;
+      if (leer(K_NO) === 'apagado') return;
       var no = +leer(K_NO) || 0;
       if (Date.now() - no < 7 * 864e5) return;
       // Solo si el envío ya está configurado (hay llave pública); la guarda para «Activar»
@@ -122,5 +149,5 @@
   }
 
   if (document.querySelector('script[src*="push.js"][data-tarjeta]')) setTimeout(revisar, 5000);
-  else setTimeout(function () { if (window.MCAuth) MCAuth.listo.then(function () { if (MCAuth.usuario() && Notification.permission === 'granted' && leer(K_DIA) !== hoy()) suscribir().catch(function () {}); }, function () {}); }, 4000);
+  else setTimeout(function () { if (window.MCAuth) MCAuth.listo.then(function () { if (MCAuth.usuario() && Notification.permission === 'granted' && leer(K_NO) !== 'apagado' && leer(K_DIA) !== hoy()) suscribir().catch(function () {}); }, function () {}); }, 4000);
 })();
