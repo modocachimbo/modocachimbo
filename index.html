@@ -955,7 +955,9 @@ html .cab .mcu-user .mcz-xp, html .cab .mcu-user .mcu-racha { padding-right: 16p
   html body .cab .mcu-user .mcu-chip.mct { margin-left: -10px; }
   .cab .mcu-user .mcz-pill, .cab .mcu-user .mcu-racha { margin-left: 14px; }
   .cab .mcu-user .mcz-cor:not([hidden]), .cab .mcu-user .mcu-racha:not([hidden]) { flex: 0 0 auto; box-sizing: border-box; width: 82px; padding-left: 24px; padding-right: 26px; }
-  .cab .mcu-user .mcz-xp:not([hidden]) { flex: 1 1 0; }
+  html .cab .mcu-user .mcz-xp:not([hidden]) { flex: 0 0 auto; padding-left: 32px; padding-right: 12px; }
+  /* Los tres se ajustan a su número y se reparten la fila */
+  html body .cab .mcu-user { justify-content: space-between; }
   .cab .mcu-user .mcz-pill > svg:first-child, .cab .mcu-user .mcu-racha > svg:first-child { width: 38px; height: 38px; margin-top: -20px; left: -16px; }
 }
 /* Celular chico: con este formato el número sí entra, así que se ve siempre (antes solo se veía el ícono) */
