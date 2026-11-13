@@ -28,8 +28,10 @@ const REC_RAREZA = {
   comun: { nom: 'Común', c: '#A99FC8' }, raro: { nom: 'Raro', c: '#1CB0F6' }, epico: { nom: 'Épico', c: '#CE82FF' },
   legendario: { nom: 'Legendario', c: '#FFC800' }, evento: { nom: 'Evento', c: '#FF4B4B' }
 };
-// Topes de XP en una semana de cada rango (los mismos de assets/coleccion.js)
-const REC_RANGO_XP = [20, 1500, 4000, 8000, 12000];
+// XP en una semana de cada premio por rango (los mismos de assets/coleccion.js y supabase/96-rangos-premios.sql).
+// 0..4 son los de antes (solo salen si un recurso ya los usa); 5..11 son los rangos de ahora, cada uno desde su nivel I.
+const REC_RANGO_XP = [20, 1500, 4000, 8000, 12000, 20, 900, 2300, 4700, 9000, 16000, 50000];
+const REC_RANGO_NUEVOS = [5, 6, 7, 8, 9, 10, 11];
 const recRango = n => window.MCRango ? MCRango.nombre(MCRango.nivel(REC_RANGO_XP[n])) : 'Rango ' + (n + 1);
 
 (function estilosRecursos() {
@@ -229,7 +231,7 @@ const recTipoDe = k => REC_TIPOS[k] || REC_EXTRA[k] || { nom: k, plural: k };
 // Lo eliminado de la web (supabase/66-eliminar-de-la-web.sql) sale apagado, con «Restaurar».
 async function recFijos() {
   const C = window.MCColeccion || await new Promise(ok => {
-    const s = document.createElement('script'); s.src = '../assets/coleccion.js?v=198';
+    const s = document.createElement('script'); s.src = '../assets/coleccion.js?v=199';
     s.onload = () => { try { MCColeccion.css(); ok(MCColeccion); } catch (e) { ok(null); } };
     s.onerror = () => ok(null);
     document.head.appendChild(s);
@@ -307,8 +309,8 @@ function recSubHtml() {
   if (REC.regla === 'racha') return `<label for="recN">Días de racha</label><input class="inp" id="recN" type="number" min="1" max="1000" value="${g.tipo === 'racha' ? g.n : 7}">
     <p class="hint" style="margin:8px 0 0">Lo gana solo quien llega (o ya llegó) a esa racha. Al ganarlo le sale la celebración.</p>`;
   if (REC.regla === 'grupo') return '<p class="hint" style="margin:0">Lo tienen los alumnos que pongas en <b>Panel → Influencers</b>, solo mientras estén ahí. Cuando agregas a alguien le llega en un sobre; si lo quitas, se le quita y vuelve a lo que usaba antes.' + (e && e.regla && e.regla.tipo === 'grupo' ? '' : ' Al publicarlo, a los influencers de ahora les llega en un sobre.') + '</p>';
-  if (REC.regla === 'rango') return `<label for="recRg">Rango</label><select class="inp" id="recRg">${REC_RANGO_XP.map((x, i) => `<option value="${i}"${g.tipo === 'rango' && +g.n === i ? ' selected' : ''}>${esc(recRango(i))} (${x.toLocaleString('es-PE')} XP en una semana)</option>`).join('')}</select>
-    <p class="hint" style="margin:8px 0 0">Lo gana quien cierra (o ya cerró) una semana en ese rango o más.</p>`;
+  if (REC.regla === 'rango') return `<label for="recRg">Rango</label><select class="inp" id="recRg">${(g.tipo === 'rango' && +g.n < 5 ? [+g.n] : []).concat(REC_RANGO_NUEVOS).map(i => `<option value="${i}"${g.tipo === 'rango' && +g.n === i ? ' selected' : ''}>${esc(recRango(i))} (${REC_RANGO_XP[i].toLocaleString('es-PE')} XP en una semana)${i < 5 ? ' · antiguo' : ''}</option>`).join('')}</select>
+    <p class="hint" style="margin:8px 0 0">Lo gana quien cierra (o ya cerró) una semana en ese rango o más. Necesita el SQL 96-rangos-premios.sql.</p>`;
   return `${e ? '<p class="hint" style="margin:0 0 4px">Para entregarlo a más alumnos usa <b>Regalar</b> en la lista de abajo.</p>' : `
     <span class="agp-l">A quién se lo entregas ahora</span>
     <div class="agp-ops" id="recPara">

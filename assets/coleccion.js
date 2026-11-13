@@ -28,7 +28,9 @@
     evento: { nom: 'Evento', c: '255,75,75' }
   };
   // Premios por rango: n es un tope de XP en una semana (el mismo de supabase/31-coleccion.sql)
-  var RANGO_XP = [20, 1500, 4000, 8000, 12000];
+  // 0..4: los premios de antes (se quedan con su XP). 5..11: los rangos de ahora
+  // (Bronce I, Plata I, Esmeralda I, Zafiro I, Amatista I, Mítico I, Leyenda I). Igual en supabase/96-rangos-premios.sql
+  var RANGO_XP = [20, 1500, 4000, 8000, 12000, 20, 900, 2300, 4700, 9000, 16000, 50000];
   function rangoDe(n) { return window.MCRango ? MCRango.nombre(MCRango.nivel(RANGO_XP[n])) : ''; }
   var HALLOWEEN = 'Noche de Brujas 2026';  // en la cinta de la tarjeta sale «Halloween»
 
@@ -222,17 +224,17 @@
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function leer(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function guardar(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
-  var CLAVE = 'mc_coleccion', CLAVE_T = 'mc_coleccion_t';   // _t: cuándo se pidió cada cosa { u, col, rgo }
+  var CLAVE = 'mc_coleccion', CLAVE_T = 'mc_coleccion_t2';   // _t: cuándo se pidió cada cosa { u, col, rgo }
 
   // Estado: lo que tienes (mias), lo que llevas (puesto) y los datos para las reglas
-  var E = { mias: {}, puesto: copiar(DEFECTO), mejorRacha: 0, maxRango: -1, tops: {}, grupos: [], sql: false, listo: false, rachaOk: false };
+  var E = { mias: {}, puesto: copiar(DEFECTO), mejorRacha: 0, maxXp: 0, tops: {}, grupos: [], sql: false, listo: false, rachaOk: false };
   var cache = leer(CLAVE);
-  if (cache) { E.mias = cache.mias || {}; E.puesto = mezclar(cache.puesto); E.mejorRacha = cache.mejorRacha || 0; E.maxRango = cache.maxRango == null ? -1 : cache.maxRango; E.tops = cache.tops || {}; E.grupos = cache.grupos || []; E.sql = !!cache.sql; }
+  if (cache) { E.mias = cache.mias || {}; E.puesto = mezclar(cache.puesto); E.mejorRacha = cache.mejorRacha || 0; E.maxXp = +cache.maxXp || 0; E.tops = cache.tops || {}; E.grupos = cache.grupos || []; E.sql = !!cache.sql; }
   function copiar(o) { return JSON.parse(JSON.stringify(o)); }
   function mezclar(p) { var r = copiar(DEFECTO); Object.keys(p || {}).forEach(function (k) { if (k in r) r[k] = p[k]; }); if (!Array.isArray(r.pines)) r.pines = []; return r; }
   var oyentes = [];
   function avisar() {
-    guardar(CLAVE, { mias: E.mias, puesto: E.puesto, mejorRacha: E.mejorRacha, maxRango: E.maxRango, tops: E.tops, grupos: E.grupos, sql: E.sql });
+    guardar(CLAVE, { mias: E.mias, puesto: E.puesto, mejorRacha: E.mejorRacha, maxXp: E.maxXp, tops: E.tops, grupos: E.grupos, sql: E.sql });
     oyentes.forEach(function (fn) { try { fn(E); } catch (e) {} });
   }
 
@@ -244,7 +246,7 @@
     if (E.mias[id]) return true;
     if (r.tipo === 'gratis') return true;
     if (r.tipo === 'racha') return E.mejorRacha >= r.n;
-    if (r.tipo === 'rango') return E.maxRango >= r.n;
+    if (r.tipo === 'rango') return E.maxXp >= (RANGO_XP[r.n] || Infinity);
     if (r.tipo === 'top') return (+E.tops[r.n] || 0) > 0;   // solo al cerrar la semana en ese puesto (supabase/73)
     return false;
   }
@@ -252,7 +254,7 @@
   function avance(id) {
     var r = (POR_ID[id] || {}).regla || {};
     if (r.tipo === 'racha') return Math.min(1, E.mejorRacha / r.n);
-    if (r.tipo === 'rango') return Math.min(1, (E.maxRango + 1) / (r.n + 1));
+    if (r.tipo === 'rango') return Math.min(1, E.maxXp / (RANGO_XP[r.n] || 1));
     return null;
   }
   function como(x) {
@@ -314,9 +316,9 @@
         }).catch(function () { E.sql = false; }),
         !pedirRgo ? null : c.from('xp_semana').select('semana,xp').eq('usuario', u.id).limit(200).then(function (r) {
           if (r.error) return;
-          var max = -1, MIN = RANGO_XP;
-          (r.data || []).forEach(function (f) { for (var i = MIN.length - 1; i >= 0; i--) if (+f.xp >= MIN[i]) { max = Math.max(max, i); break; } });
-          E.maxRango = max; T.rgo = Date.now();
+          var max = 0;   // tu mejor semana en XP
+          (r.data || []).forEach(function (f) { max = Math.max(max, +f.xp || 0); });
+          E.maxXp = max; T.rgo = Date.now();
         }).catch(function () {})
       ]);
     }).then(function () { guardar(CLAVE_T, T); E.listo = true; avisar(); avisoCorona(); return E; }, function () { E.listo = true; avisar(); return E; });
