@@ -9,9 +9,11 @@
    - "Primero internet" pregunta siempre al servidor (cache: 'no-cache'):
      GitHub Pages pide guardar 10 min cada archivo y sin esto el navegador
      seguía mostrando la versión anterior después de publicar.
+   - Notificaciones push (panel → Web → Notificaciones): las muestra
+     y al tocarlas abre el link (o el inicio).
    Al cambiar este archivo, sube VERSION para limpiar lo viejo.
    ========================================================= */
-const VERSION = 'mc-v3';
+const VERSION = 'mc-v4';
 const OFFLINE = 'offline.html';
 const CDN = /^https:\/\/(cdn\.jsdelivr\.net\/npm\/(katex@|@supabase\/supabase-js@)|fonts\.(googleapis|gstatic)\.com\/)/;
 
@@ -93,3 +95,33 @@ function sinGuardar(r) {
   h.set('Cache-Control', 'no-cache');
   return new Response(r.body, { status: r.status, statusText: r.statusText, headers: h });
 }
+
+// ---------- Notificaciones push ----------
+self.addEventListener('push', e => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (err) { d = { cuerpo: e.data ? e.data.text() : '' }; }
+  const base = self.registration.scope;
+  e.waitUntil(self.registration.showNotification(d.titulo || 'Modo Cachimbo', {
+    body: d.cuerpo || '',
+    icon: base + 'assets/app/icono-192.png',
+    badge: base + 'assets/app/notif-badge.png',
+    data: { link: d.link || '' },
+    tag: d.tag || undefined
+  }));
+});
+
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const base = self.registration.scope;
+  let destino = base;
+  try { if (e.notification.data && e.notification.data.link) destino = new URL(e.notification.data.link, base).href; } catch (err) {}
+  e.waitUntil((async () => {
+    const ps = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    const propia = ps.find(p => p.url.startsWith(base));
+    if (propia && new URL(destino).origin === location.origin) {
+      await propia.focus();
+      return propia.navigate(destino).catch(() => self.clients.openWindow(destino));
+    }
+    return self.clients.openWindow(destino);
+  })());
+});

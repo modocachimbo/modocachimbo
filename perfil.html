@@ -326,6 +326,18 @@
   .ses-otros p strong { color: var(--text); }
   .ses-otros p.ok { color: #C6E000; }
   .ses-otros p.mal { color: #ff8a8a; }
+  /* Notificaciones */
+  .nt-fila { display: flex; align-items: center; gap: 14px; margin-top: 16px; padding: 12px 14px; border-radius: 16px; background: var(--surface-2); border: 2px solid #2C2549; border-bottom-width: 4px; }
+  .nt-tx { flex: 1; min-width: 0; }
+  .nt-tx b { display: block; font: 900 15px Nunito, sans-serif; }
+  .nt-tx small { display: block; font: 800 12.5px Nunito, sans-serif; color: var(--text-dim); }
+  .nt-sw { position: relative; width: 58px; height: 34px; flex-shrink: 0; border-radius: 99px; border: 2px solid #3A3260; background: #1E1838; cursor: pointer; transition: background .2s, border-color .2s; padding: 0; }
+  .nt-sw i { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #8C84B0; transition: transform .2s, background .2s; }
+  .nt-sw[aria-checked="true"] { background: rgba(198,224,0,.2); border-color: #C6E000; }
+  .nt-sw[aria-checked="true"] i { transform: translateX(24px); background: #C6E000; }
+  .nt-sw:disabled { opacity: .55; cursor: default; }
+  .nt-ayuda { margin: 12px 2px 0; font: 800 13px/1.5 Nunito, sans-serif; color: var(--text-dim); }
+  .nt-ayuda strong { color: var(--text); }
   .ses-otros .rojo { padding: 10px 16px; border-radius: 12px; border: 0; background: #FF4B4B; color: #fff; font: 1000 13.5px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .04em; box-shadow: 0 4px 0 #c43434; cursor: pointer; }
   .ses-otros .rojo:disabled { opacity: .6; }
   .ayuda { position: relative; overflow: hidden; display: flex; align-items: center; gap: 14px; margin-top: 18px; padding: 16px 18px; border-radius: 22px; border: 2px solid #1d6b3c; border-bottom-width: 5px; background: linear-gradient(100deg, rgba(37,211,102,.16), var(--surface) 75%); color: var(--text); text-decoration: none; transition: transform .08s; }
@@ -490,9 +502,9 @@
 <script src="assets/auth.js"></script>
 <script src="assets/agenda.js"></script>
 <script src="assets/buho.js"></script>
-<script src="assets/coleccion.js?v=196"></script>
+<script src="assets/coleccion.js?v=199"></script>
 <link rel="stylesheet" href="assets/tarjeta-jugador.css?v=7">
-<script src="assets/tarjeta-perfil.js?v=208"></script>
+<script src="assets/tarjeta-perfil.js?v=209"></script>
 <link rel="stylesheet" href="assets/buho/buho.css">
 <link rel="stylesheet" href="assets/amigos.css?v=7">
 <script src="assets/rango.js?v=184"></script>
@@ -877,6 +889,17 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
           <div><h2>Mis reportes de claves</h2><p class="nota">Cuando avisas de un posible error en una clave, aquí ves si el profe ya lo leyó y qué decidió.</p></div>
         </div>
         <ul class="lista rep-lista" id="repLista"></ul>
+      </section>
+      <section class="panel" id="notifBox" hidden>
+        <div class="sec-cab">
+          <span class="sec-ic mor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg></span>
+          <div><h2>Notificaciones</h2><p class="nota">Te avisamos de temas nuevos, cuando tu racha está en peligro y cuando tus corazones se llenan. Máximo 2 al día, de 8 a. m. a 9 p. m.</p></div>
+        </div>
+        <div class="nt-fila">
+          <span class="nt-tx"><b id="ntEstado">Revisando…</b><small id="ntDet">En este equipo</small></span>
+          <button type="button" class="nt-sw" id="ntSw" role="switch" aria-checked="false" aria-label="Notificaciones en este equipo" disabled><i></i></button>
+        </div>
+        <p class="nt-ayuda" id="ntAyuda" hidden></p>
       </section>
       <section class="panel" id="sesionBox" hidden>
         <div class="sec-cab">
@@ -1800,6 +1823,41 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       }).catch(function () { hecho = false; if (!pintado) caja.innerHTML = '<p class="nota">No se pudo cargar tu perfil. Revisa tu internet y recarga.</p>'; });
     }
     MCAuth.listo.then(function () { cargar(MCAuth.usuario()); MCAuth.alCambiar(cargar); }, function () {});
+  })();
+</script>
+<script src="assets/push.js?v=3" defer></script>
+<script>
+  // Mi perfil → Notificaciones: prender o apagar en este equipo
+  (function () {
+    var box = document.getElementById('notifBox'), sw = document.getElementById('ntSw');
+    var est = document.getElementById('ntEstado'), det = document.getElementById('ntDet'), ay = document.getElementById('ntAyuda');
+    var android = /Android/i.test(navigator.userAgent), app = window.matchMedia && matchMedia('(display-mode: standalone)').matches;
+    function pintar(on, texto, ayuda) {
+      sw.setAttribute('aria-checked', on ? 'true' : 'false');
+      est.textContent = texto;
+      ay.hidden = !ayuda; ay.innerHTML = ayuda || '';
+    }
+    function bloqueado() {
+      return android
+        ? (app ? 'Están bloqueadas en tu celular. Ve a <strong>Ajustes → Apps → Modo Cachimbo → Notificaciones</strong> y actívalas. Luego vuelve aquí.'
+               : 'Están bloqueadas en este navegador. Toca el <strong>candado</strong> junto a la dirección → <strong>Permisos → Notificaciones → Permitir</strong>. Luego recarga.')
+        : 'Están bloqueadas en este navegador. Haz clic en el <strong>candado</strong> junto a la dirección → <strong>Notificaciones → Permitir</strong>. Luego recarga.';
+    }
+    function revisar() {
+      var P = window.MCPush;
+      if (!P || !window.MCAuth || !MCAuth.usuario()) { box.hidden = true; return; }
+      box.hidden = false;
+      det.textContent = app ? 'En esta app' : 'En este equipo';
+      if (!P.soportado) { sw.disabled = true; return pintar(false, 'No disponibles aquí', /iPhone|iPad/.test(navigator.userAgent) ? 'En iPhone primero agrega Modo Cachimbo a tu pantalla de inicio (Compartir → Agregar a inicio) y ábrela desde ahí.' : 'Este navegador no permite notificaciones.'); }
+      if (P.estado() === 'denied') { sw.disabled = true; return pintar(false, 'Bloqueadas', bloqueado()); }
+      P.suscrito().then(function (on) { sw.disabled = false; pintar(on, on ? 'Activadas' : 'Apagadas'); });
+    }
+    sw.addEventListener('click', function () {
+      var P = window.MCPush, on = sw.getAttribute('aria-checked') === 'true';
+      sw.disabled = true; est.textContent = on ? 'Apagando…' : 'Activando…';
+      (on ? P.desactivar() : P.activar()).then(revisar, function () { revisar(); est.textContent = 'No se pudo, intenta otra vez'; });
+    });
+    window.addEventListener('load', function () { if (window.MCAuth) MCAuth.listo.then(revisar, function () {}); });
   })();
 </script>
 <script src="assets/sonido.js"></script>

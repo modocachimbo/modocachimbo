@@ -208,7 +208,7 @@
   var SOLO_ICONO = window.matchMedia ? window.matchMedia('(max-width:360px)') : { matches: false };
   var tVer = null;
   document.addEventListener('click', function (e) {
-    if (!SOLO_ICONO.matches) return;
+    if (!SOLO_ICONO.matches || window.MC_RECURSOS_ARCADE) return;
     var p = e.target.closest && e.target.closest('[data-mc-tarjeta] .mcz-pill, [data-mc-tarjeta] .mcu-racha');
     if (!p || p.classList.contains('mc-ver')) return;
     e.preventDefault(); e.stopPropagation();

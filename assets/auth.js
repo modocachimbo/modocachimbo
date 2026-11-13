@@ -72,7 +72,7 @@
       cliente.auth.onAuthStateChange(function (evento, s) {
         var antes = sesion && sesion.user.id, ahora = s && s.user.id;
         sesion = s;
-        if (antes !== ahora) { perfilCache = null; recordarPerfil(null); if (iniciado) avisar(); }
+        if (antes !== ahora) { perfilCache = null; recordarPerfil(null); if (iniciado) { avisar(); marcarVisto(); } }
       });
       return cliente.auth.getSession();
     })
@@ -84,8 +84,18 @@
       }
       iniciado = true;
       avisar();
+      marcarVisto();
       return cliente;
     });
+
+  // «Activo hoy» en el panel (Grupo VIP): anota que el alumno abrió la web.
+  // Como mucho una vez cada 10 minutos por equipo (supabase/94-alumno-visto.sql).
+  function marcarVisto() {
+    var u = usuario(); if (!u || !cliente) return;
+    var k = 'mc_visto_' + u.id, ahora = Date.now();
+    try { if (ahora - (+localStorage.getItem(k) || 0) < 600000) return; localStorage.setItem(k, String(ahora)); } catch (e) {}
+    cliente.rpc('marcar_visto').then(function () {}, function () {});
+  }
   listo.catch(function () { iniciado = true; avisar(); });
 
   function usuario() { return sesion ? sesion.user : null; }
@@ -96,7 +106,7 @@
     if (rachaPedida || window.MCRacha || !usuario()) return;
     rachaPedida = true;
     var s = document.createElement('script');
-    s.src = BASE + 'assets/racha.js';
+    s.src = BASE + 'assets/racha.js?v=2';
     document.head.appendChild(s);
     // Progreso del estudiante (assets/progreso.js)
     var g = document.createElement('script');
@@ -112,7 +122,7 @@
     document.head.appendChild(n);
     // Corazones, misiones del día y XP (assets/corazones.js) y el búho que usa
     var cz = document.createElement('script');
-    cz.src = BASE + 'assets/corazones.js?v=6';
+    cz.src = BASE + 'assets/corazones.js?v=9';
     document.head.appendChild(cz);
     var pagina = location.href.replace(/[?#].*$/, '');
     // Cuenta suspendida desde el panel (assets/suspension.js); el panel no se bloquea
@@ -174,6 +184,12 @@
     return listo.then(function (c) {
       return c.auth.signInWithOtp({ email: correo, options: { emailRedirectTo: volverAqui() } });
     });
+  }
+
+  // Correo y contraseña: solo para cuentas creadas a mano en Supabase
+  // (Authentication → Add user), por ejemplo la de los revisores de Google Play
+  function entrarClave(correo, clave) {
+    return listo.then(function (c) { return c.auth.signInWithPassword({ email: correo, password: clave }); });
   }
 
   // Si el servidor no responde (internet lento o sesión ya vencida),
@@ -462,6 +478,7 @@
     guardarPerfil: guardarPerfil,
     entrarGoogle: entrarGoogle,
     entrarCorreo: entrarCorreo,
+    entrarClave: entrarClave,
     salir: salir,
     alCambiar: alCambiar,
     abrirIngreso: abrirIngreso,

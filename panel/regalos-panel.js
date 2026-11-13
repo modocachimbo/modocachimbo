@@ -8,8 +8,11 @@
    - Un ítem de Mi colección subido en Recursos.
    El alumno ve un aviso con la nota la próxima vez que entra.
    Datos: supabase/43-ayudantes-regalos.sql (regalo_buscar, regalar).
+   Grupo VIP: una lista de IDs guardada para darles a todos el mismo
+   regalo de una vez (supabase/93-grupo-vip.sql: grupo_regalo_ver,
+   grupo_regalo_guardar, grupo_regalo_dar).
    ========================================================= */
-const RG = { alumno: null, tipo: 'corazones', cant: 3, item: '', items: null, enviando: false };
+const RG = { modo: 'uno', inactivoDias: 7, grupo: null, grupoCargando: false, grupoError: '', alumno: null, tipo: 'corazones', cant: 3, item: '', items: null, enviando: false };
 const RG_TIPOS = {
   corazones: { nom: 'Corazones', c: '#FF4B4B', ops: [[1, '+1'], [3, '+3'], [5, '+5'], [10, '+10']], min: 1, max: 50, uni: 'corazones' },
   infinito: { nom: 'Infinitos', c: '#CE82FF', ops: [[1, '1 hora'], [24, '1 día'], [72, '3 días'], [168, '7 días'], [720, '30 días']] },
@@ -48,6 +51,35 @@ const RG_ESP = { racha: 'Banner', avatar: 'Foto de perfil', pines: 'Pin', marco:
   .rg-h:last-child { border-bottom: 0; }
   .rg-h i { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; background: var(--c); }
   .rg-h div { flex: 1; min-width: 0; } .rg-h small { color: var(--text-dim); }
+  .rg-modos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .rg-modo { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 16px; border: 2px solid #2F284E; background: #120e22; color: var(--text); cursor: pointer; text-align: left; }
+  .rg-modo svg { width: 30px; height: 30px; flex-shrink: 0; color: var(--text-dim); }
+  .rg-modo b { display: block; font: 1000 16px Nunito, sans-serif; }
+  .rg-modo small { display: block; color: var(--text-dim); font: 800 12px Nunito, sans-serif; }
+  .rg-modo.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, #120e22); }
+  .rg-modo.on svg { color: var(--accent); }
+  .rg-vip-add { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+  .rg-vip-add > div { flex: 1; min-width: 200px; }
+  .rg-vip-add textarea { min-height: 70px; resize: vertical; font: 900 15px Nunito, sans-serif; letter-spacing: .06em; }
+  .rg-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; max-height: 340px; overflow-y: auto; padding: 2px; }
+  .rg-chip { display: flex; align-items: center; gap: 8px; padding: 5px 6px 5px 5px; border-radius: 999px; background: #1D1834; border: 2px solid #2F284E; font: 900 13px Nunito, sans-serif; max-width: 100%; }
+  .rg-chip.nuevo { border-color: var(--accent); }
+  .rg-chip.malo { border-color: #FF4B4B; color: #FF6E6E; }
+  .rg-chip.dormido { border-color: rgba(255,150,0,.55); background: rgba(255,150,0,.08); }
+  .rg-chip.dormido small { color: #FFAD4D; }
+  .rg-act { margin-top: 14px; padding: 12px; border-radius: 14px; background: #120e22; border: 2px solid #2A2346; }
+  .rg-act-res { font: 900 14px Nunito, sans-serif; margin-bottom: 10px; }
+  .rg-act-res span { color: var(--accent); } .rg-act-res em { font-style: normal; color: #FFAD4D; }
+  .rg-act-fila { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font: 800 13px Nunito, sans-serif; color: var(--text-dim); }
+  .rg-chip .rg-foto { width: 26px; height: 26px; font-size: 12px; }
+  .rg-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rg-chip small { color: var(--text-dim); font-weight: 800; }
+  .rg-chip button { width: 24px; height: 24px; border-radius: 50%; border: 0; background: #2A2346; color: var(--text-dim); cursor: pointer; display: grid; place-items: center; flex-shrink: 0; }
+  .rg-chip button:hover { background: #FF4B4B; color: #fff; }
+  .rg-vip-cab { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .rg-vip-cab .rg-cuenta { font: 1000 15px Nunito, sans-serif; }
+  .rg-aviso { padding: 10px 12px; border-radius: 12px; background: rgba(255,200,0,.1); border: 2px solid rgba(255,200,0,.35); color: #FFD84D; font: 800 13px Nunito, sans-serif; margin-top: 10px; }
+  @media (max-width: 560px) { .rg-modos { grid-template-columns: 1fr; } }
   @media (max-width: 560px) { .rg-tipos { grid-template-columns: 1fr 1fr; } }`;
   document.head.appendChild(st);
 })();
@@ -56,6 +88,9 @@ const RG_IC = {
   corazones: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.8 4.5c2.1 0 3.7 1.1 5.2 3 1.5-1.9 3.1-3 5.2-3 3.8 0 5.9 3.9 4.4 7.3C19.5 16.4 12 21 12 21z"/></svg>',
   infinito: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 12c-2-2.7-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.3 5.5-4zm0 0c2 2.7 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.3-5.5 4z"/></svg>',
   xp: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
+  uno: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>',
+  vip: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18 2 7l5.5 4L12 4l4.5 7L22 7l-1 11z"/><path d="M3 21h18"/></svg>',
+  quitar: '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
   item: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M20 12v9H4v-9M2 7h20v5H2zM12 21V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zm0 0h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>'
 };
 
@@ -87,12 +122,53 @@ async function cargarRegalos() {
   pintarRegalos();
   // Desde Alumnos: #regalos=12345 abre ese ID
   const m = location.hash.match(/regalos=(\d{5})/);
-  if (m) { $('rgId').value = m[1]; history.replaceState(null, '', location.pathname + location.search); rgBuscar(); }
+  if (m) { if (RG.modo !== 'uno') { RG.modo = 'uno'; pintarRegalos(); } $('rgId').value = m[1]; history.replaceState(null, '', location.pathname + location.search); rgBuscar(); }
+}
+
+function rgModosHtml() {
+  const n = RG.grupo ? RG.grupo.miembros.length : null;
+  return `<div class="rg-modos">
+    <button class="rg-modo${RG.modo === 'uno' ? ' on' : ''}" type="button" data-rgm="uno">${RG_IC.uno}<div><b>Un alumno</b><small>Buscas su ID y le regalas</small></div></button>
+    <button class="rg-modo${RG.modo === 'vip' ? ' on' : ''}" type="button" data-rgm="vip">${RG_IC.vip}<div><b>Grupo VIP</b><small>${n == null ? 'Tu lista guardada: a todos de una vez' : n + (n === 1 ? ' alumno' : ' alumnos') + ' · a todos de una vez'}</small></div></button>
+  </div>`;
+}
+
+function rgModosEventos() {
+  document.querySelectorAll('[data-rgm]').forEach(b => b.addEventListener('click', () => {
+    if (RG.modo === b.dataset.rgm) return;
+    RG.modo = b.dataset.rgm; RG.item = '';
+    pintarRegalos();
+    if (RG.modo === 'vip' && !RG.grupo) rgVipCargar();
+  }));
+}
+
+// Lo de abajo (tipo, cantidad, nota, botón) es igual en los dos modos
+function rgFormHtml(oculto, titulo, boton) {
+  return `<div class="agp-form" id="rgForm"${oculto ? ' hidden' : ''}>
+      <h3>${titulo}</h3>
+      <div class="rg-tipos">${Object.entries(RG_TIPOS).map(([k, t]) => `<button class="rg-tipo${RG.tipo === k ? ' on' : ''}" type="button" data-rgt="${k}" style="--c:${t.c}">${RG_IC[k]}${t.nom}</button>`).join('')}</div>
+      <div id="rgOpc"></div>
+      <label for="rgNota">Nota para ${RG.modo === 'vip' ? 'los alumnos' : 'el alumno'} (opcional)</label>
+      <input class="inp" id="rgNota" maxlength="140" placeholder="${RG.modo === 'vip' ? '¡Tu regalo VIP del día!' : '¡Bien hecho en el simulacro!'}">
+      <p class="hint">Le sale en el aviso del regalo la próxima vez que entra a la web.</p>
+      <div class="agp-acc"><button class="btn-main" type="button" id="rgDar">${boton}</button><span class="rg-resumen" id="rgRes"></span></div>
+    </div>`;
+}
+
+function rgFormEventos(alDar) {
+  document.querySelectorAll('[data-rgt]').forEach(b => b.addEventListener('click', () => {
+    RG.tipo = b.dataset.rgt;
+    const o = RG_TIPOS[RG.tipo].ops; RG.cant = o ? o[1][0] : 0;
+    document.querySelectorAll('[data-rgt]').forEach(x => x.classList.toggle('on', x === b));
+    rgOpciones();
+  }));
+  $('rgDar').addEventListener('click', alDar);
 }
 
 function pintarRegalos() {
+  if (RG.modo === 'vip') { pintarVip(); return; }
   const a = RG.alumno;
-  $('rgCuerpo').innerHTML = `
+  $('rgCuerpo').innerHTML = rgModosHtml() + `
     <div class="agp-form">
       <h3>¿A quién?</h3>
       <p class="hint">Escribe el ID de 5 dígitos del alumno. Lo ve en su tarjeta de jugador y también sale en la pestaña Alumnos.</p>
@@ -102,26 +178,13 @@ function pintarRegalos() {
       </div>
       <div id="rgAl">${a ? rgAlumnoHtml(a) : ''}</div>
     </div>
-    <div class="agp-form" id="rgForm"${a ? '' : ' hidden'}>
-      <h3>¿Qué le regalas?</h3>
-      <div class="rg-tipos">${Object.entries(RG_TIPOS).map(([k, t]) => `<button class="rg-tipo${RG.tipo === k ? ' on' : ''}" type="button" data-rgt="${k}" style="--c:${t.c}">${RG_IC[k]}${t.nom}</button>`).join('')}</div>
-      <div id="rgOpc"></div>
-      <label for="rgNota">Nota para el alumno (opcional)</label>
-      <input class="inp" id="rgNota" maxlength="140" placeholder="¡Bien hecho en el simulacro!">
-      <p class="hint">Le sale en el aviso del regalo la próxima vez que entra a la web.</p>
-      <div class="agp-acc"><button class="btn-main" type="button" id="rgDar">Regalar</button><span class="rg-resumen" id="rgRes"></span></div>
-    </div>
+    ${rgFormHtml(!a, '¿Qué le regalas?', 'Regalar')}
     ${a && a.historial && a.historial.length ? `<div class="agp-form"><h3>Regalos que recibió</h3>${a.historial.map(x => `<div class="rg-h" style="--c:${RG_TIPOS[x.tipo].c}"><i></i><div><b>${esc(rgTexto(x))}</b>${x.nota ? ' · «' + esc(x.nota) + '»' : ''}<br><small>${esc(x.de || 'Admin')} · ${rgFecha(x.creado)}</small></div></div>`).join('')}</div>` : ''}`;
   $('rgId').addEventListener('keydown', e => { if (e.key === 'Enter') rgBuscar(); });
   $('rgId').addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 5); });
   $('rgBuscar').addEventListener('click', rgBuscar);
-  document.querySelectorAll('[data-rgt]').forEach(b => b.addEventListener('click', () => {
-    RG.tipo = b.dataset.rgt;
-    const o = RG_TIPOS[RG.tipo].ops; RG.cant = o ? o[1][0] : 0;
-    document.querySelectorAll('[data-rgt]').forEach(x => x.classList.toggle('on', x === b));
-    rgOpciones();
-  }));
-  $('rgDar').addEventListener('click', rgDar);
+  rgModosEventos();
+  rgFormEventos(rgDar);
   if (a) rgOpciones();
 }
 
@@ -161,6 +224,7 @@ function rgOpciones() {
 }
 
 function rgResumen() {
+  if (RG.modo === 'vip') { rgVipResumen(); return; }
   const a = RG.alumno, t = RG_TIPOS[RG.tipo];
   let ok = !!a, txt = '';
   if (RG.tipo === 'item') { ok = ok && !!RG.item; txt = RG.item ? rgTexto({ tipo: 'item', item: RG.item }) : 'Elige un ítem'; }
@@ -198,4 +262,176 @@ async function rgDar() {
   toast('🎁 ' + rgTexto({ tipo: RG.tipo, cantidad: RG.cant, item: RG.item }) + ' para ' + (a.apodo || 'ID ' + a.codigo));
   RG.alumno = r.data; RG.item = '';
   pintarRegalos();
+}
+
+/* ---------- Grupo VIP: una lista de IDs guardada y el mismo regalo a todos ---------- */
+const RG_GRUPO = 'vip';
+
+function rgVipError(e) {
+  const m = (e && e.message) || '';
+  return /no autorizado/i.test(m) ? 'Tu cuenta no tiene permiso para dar regalos.'
+    : /function|does not exist|schema cache/i.test(m) ? 'Falta correr supabase/93-grupo-vip.sql en Supabase.'
+    : m || 'No se pudo.';
+}
+
+async function rgVipCargar() {
+  RG.grupoCargando = true; RG.grupoError = ''; pintarRegalos();
+  const c = await MCAuth.listo;
+  const r = await c.rpc('grupo_regalo_ver', { p_grupo: RG_GRUPO });
+  RG.grupoCargando = false;
+  if (r.error) { RG.grupoError = rgVipError(r.error); pintarRegalos(); return; }
+  rgVipTomar(r.data);
+  pintarRegalos();
+}
+
+function rgVipTomar(d) {
+  RG.grupo = { miembros: d.miembros || [], envios: d.envios || [] };
+  RG.borrador = RG.grupo.miembros.map(m => m.codigo);
+  RG.noExisten = d.no_existen || [];
+}
+
+function rgVipCambios() {
+  if (!RG.grupo) return false;
+  // Los IDs que no existen (en rojo) no cuentan como cambio: no se pueden guardar
+  const g = RG.grupo.miembros.map(m => m.codigo).sort().join(), b = RG.borrador.filter(c => !RG.noExisten.includes(c)).sort().join();
+  return g !== b;
+}
+
+// Días desde que se le vio (null = nunca entró)
+function rgDiasVisto(v) {
+  if (!v) return null;
+  const f = d => new Date(new Date(d).toLocaleDateString('en-CA', { timeZone: 'America/Lima' }));
+  return Math.max(0, Math.round((f(Date.now()) - f(v)) / 86400000));
+}
+function rgVistoTxt(v) {
+  const d = rgDiasVisto(v);
+  return d == null ? 'nunca activo' : d === 0 ? 'activo hoy' : d === 1 ? 'activo ayer' : 'activo hace ' + d + ' días';
+}
+function rgDormido(m) { const d = rgDiasVisto(m.visto); return d == null || d >= RG.inactivoDias; }
+
+function rgHoyLima(s) {
+  const f = d => new Date(d).toLocaleDateString('es-PE', { timeZone: 'America/Lima' });
+  return f(s) === f(Date.now());
+}
+
+function pintarVip() {
+  const cab = rgModosHtml();
+  if (RG.grupoError) { $('rgCuerpo').innerHTML = cab + `<div class="state-msg error">${esc(RG.grupoError)}</div>`; rgModosEventos(); return; }
+  if (!RG.grupo && !RG.grupoCargando) { rgVipCargar(); return; }
+  if (RG.grupoCargando) { $('rgCuerpo').innerHTML = cab + '<div class="loader">Cargando el grupo…</div>'; rgModosEventos(); return; }
+  const info = {}; RG.grupo.miembros.forEach(m => { info[m.codigo] = m; });
+  const cambios = rgVipCambios(), n = RG.borrador.length, guardados = RG.grupo.miembros.length;
+  const ult = RG.grupo.envios[0];
+  const chips = RG.borrador.map(cod => {
+    const m = info[cod], malo = RG.noExisten.includes(cod);
+    const ini = m ? (m.apodo || m.email || '?').trim().charAt(0).toUpperCase() : '#';
+    return `<span class="rg-chip${malo ? ' malo' : m ? (rgDormido(m) ? ' dormido' : '') : ' nuevo'}" title="${m ? esc((m.email || '') + ' · ' + rgVistoTxt(m.visto)) : malo ? 'No hay ningún alumno con este ID' : 'Falta guardar'}">
+      <span class="rg-foto"${m && m.foto ? ` style="background-image:url('${esc(m.foto)}')"` : ''}>${m && m.foto ? '' : esc(ini)}</span>
+      <span>${m ? esc(m.apodo || 'Sin apodo') + ' <small>· ' + cod + ' · ' + rgVistoTxt(m.visto) + '</small>' : cod + ' <small>· ' + (malo ? 'no existe' : 'sin guardar') + '</small>'}</span>
+      <button type="button" data-rgq="${cod}" aria-label="Quitar ${cod}" title="Quitar del grupo">${RG_IC.quitar}</button></span>`;
+  }).join('');
+  $('rgCuerpo').innerHTML = cab + `
+    <div class="agp-form">
+      <div class="rg-vip-cab"><h3 style="margin:0">Alumnos del grupo VIP</h3><span class="rg-cuenta">${n} ${n === 1 ? 'alumno' : 'alumnos'}</span></div>
+      <p class="hint">Escribe o pega los IDs de 5 dígitos (puedes pegar varios juntos, separados por espacios, comas o saltos de línea) y toca Agregar. Luego Guardar grupo: la lista queda guardada para la próxima vez.</p>
+      <div class="rg-vip-add">
+        <div><label for="rgVipIds">IDs</label><textarea class="inp" id="rgVipIds" inputmode="numeric" placeholder="12345, 23456, 34567"></textarea></div>
+        <button class="btn-ghost" type="button" id="rgVipAdd">Agregar</button>
+      </div>
+      ${n ? `<div class="rg-chips">${chips}</div>` : '<p class="hint" style="margin-top:12px">Aún no hay nadie en el grupo.</p>'}
+      ${rgActividadHtml(info)}
+      ${RG.noExisten.length ? `<div class="rg-aviso">No hay ningún alumno con ${RG.noExisten.length === 1 ? 'el ID' : 'los IDs'} ${RG.noExisten.join(', ')}. No se guard${RG.noExisten.length === 1 ? 'ó' : 'aron'}: quíta${RG.noExisten.length === 1 ? 'lo' : 'los'} o revisa el número.</div>` : ''}
+      <div class="agp-acc"><button class="btn-main" type="button" id="rgVipGuardar"${cambios ? '' : ' disabled'}>Guardar grupo</button>
+        <span class="rg-resumen">${cambios ? 'Tienes cambios sin guardar' : guardados ? 'Grupo guardado' : ''}</span></div>
+    </div>
+    ${rgFormHtml(!guardados, '¿Qué les regalas a todos?', 'Regalar a todos')}
+    ${ult && rgHoyLima(ult.creado) ? `<div class="rg-aviso" style="margin:-4px 0 16px">Hoy ya le diste al grupo: <b>${esc(rgTexto(ult))}</b> (${rgFecha(ult.creado)}).</div>` : ''}
+    ${RG.grupo.envios.length ? `<div class="agp-form"><h3>Regalos al grupo</h3>${RG.grupo.envios.map(x => `<div class="rg-h" style="--c:${RG_TIPOS[x.tipo].c}"><i></i><div><b>${esc(rgTexto(x))}</b> · ${x.recibieron} ${x.recibieron === 1 ? 'alumno' : 'alumnos'}${x.saltados ? ' (' + x.saltados + ' ya lo tenían)' : ''}${x.nota ? ' · «' + esc(x.nota) + '»' : ''}<br><small>${esc(x.de || 'Admin')} · ${rgFecha(x.creado)}</small></div></div>`).join('')}</div>` : ''}`;
+  rgModosEventos();
+  const add = () => {
+    const ids = ($('rgVipIds').value.match(/\d{5}/g) || []).map(Number);
+    if (!ids.length) { toast('Escribe IDs de 5 dígitos'); return; }
+    const antes = RG.borrador.length;
+    ids.forEach(i => { if (!RG.borrador.includes(i)) RG.borrador.push(i); });
+    const nuevos = RG.borrador.length - antes;
+    toast(nuevos ? nuevos + (nuevos === 1 ? ' ID agregado' : ' IDs agregados') + '. Toca Guardar grupo.' : 'Esos IDs ya estaban en el grupo');
+    pintarVip();
+  };
+  $('rgVipAdd').addEventListener('click', add);
+  $('rgVipIds').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); add(); } });
+  document.querySelectorAll('[data-rgq]').forEach(b => b.addEventListener('click', () => {
+    const cod = +b.dataset.rgq;
+    RG.borrador = RG.borrador.filter(x => x !== cod);
+    RG.noExisten = RG.noExisten.filter(x => x !== cod);
+    pintarVip();
+  }));
+  $('rgVipGuardar').addEventListener('click', rgVipGuardar);
+  document.querySelectorAll('[data-rgd]').forEach(b => b.addEventListener('click', () => { RG.inactivoDias = +b.dataset.rgd; pintarVip(); }));
+  if ($('rgQuitarDorm')) $('rgQuitarDorm').addEventListener('click', () => {
+    const fuera = RG.grupo.miembros.filter(rgDormido).map(m => m.codigo);
+    RG.borrador = RG.borrador.filter(c => !fuera.includes(c));
+    toast(fuera.length + (fuera.length === 1 ? ' alumno quitado' : ' alumnos quitados') + '. Toca Guardar grupo.');
+    pintarVip();
+  });
+  if (guardados) { rgFormEventos(rgVipDar); rgOpciones(); }
+}
+
+// ¿Se conectaron? Cuántos entraron en los últimos días y botón para quitar a los que no
+function rgActividadHtml(info) {
+  const ms = RG.borrador.map(c => info[c]).filter(Boolean);
+  if (!ms.length) return '';
+  const dorm = ms.filter(rgDormido).length, nunca = ms.filter(m => !m.visto).length;
+  return `<div class="rg-act">
+    <div class="rg-act-res"><span>${ms.length - dorm} activos</span> en los últimos ${RG.inactivoDias} días · <em>${dorm} no${nunca ? ' (' + nunca + ' nunca)' : ''}</em></div>
+    <div class="rg-act-fila">Sin actividad hace
+      ${[3, 7, 14, 30].map(d => `<button class="agp-op${RG.inactivoDias === d ? ' on' : ''}" type="button" data-rgd="${d}">${d} días</button>`).join('')}
+      ${dorm ? `<button class="btn-ghost" type="button" id="rgQuitarDorm">Quitar a los ${dorm}</button>` : ''}</div>
+    <p class="hint" style="margin:8px 0 0">«Activo» = inició sesión o practicó ese día. Los que no están activos se ven en naranja. Al quitarlos, toca Guardar grupo.</p>
+  </div>`;
+}
+
+async function rgVipGuardar() {
+  const btn = $('rgVipGuardar'); btn.disabled = true; btn.textContent = 'Guardando…';
+  const c = await MCAuth.listo;
+  const r = await c.rpc('grupo_regalo_guardar', { p_grupo: RG_GRUPO, p_codigos: RG.borrador });
+  if (r.error) { btn.disabled = false; btn.textContent = 'Guardar grupo'; toast(rgVipError(r.error)); return; }
+  const malos = r.data.no_existen || [];
+  rgVipTomar(r.data);
+  // Los que no existen se quedan a la vista (en rojo) para que los corrijas
+  RG.borrador = RG.borrador.concat(malos);
+  toast('Grupo VIP guardado: ' + RG.grupo.miembros.length + ' alumnos');
+  pintarVip();
+}
+
+function rgVipResumen() {
+  const t = RG_TIPOS[RG.tipo], n = RG.grupo ? RG.grupo.miembros.length : 0;
+  let ok = n > 0 && !rgVipCambios(), txt = '';
+  if (RG.tipo === 'item') { ok = ok && !!RG.item; txt = RG.item ? rgTexto({ tipo: 'item', item: RG.item }) : 'Elige un ítem'; }
+  else if (t.max && !(RG.cant >= t.min && RG.cant <= t.max)) { ok = false; txt = 'Elige de ' + t.min + ' a ' + t.max.toLocaleString('es-PE') + ' ' + t.uni; }
+  else txt = rgTexto({ tipo: RG.tipo, cantidad: RG.cant });
+  const btn = $('rgDar'); if (!btn) return;
+  btn.disabled = !ok || RG.enviando;
+  if (!RG.confirmar) btn.textContent = 'Regalar a todos';
+  $('rgRes').innerHTML = rgVipCambios() ? 'Primero guarda el grupo' : esc(txt) + (ok ? ' para cada uno de los <b>' + n + '</b>' : '');
+}
+
+async function rgVipDar() {
+  if (RG.enviando) return;
+  const btn = $('rgDar');
+  // Dos toques: el primero pide confirmar (llega a todos y no se deshace)
+  if (!RG.confirmar) {
+    RG.confirmar = true; btn.textContent = '¿Seguro? Toca otra vez';
+    clearTimeout(RG.confT); RG.confT = setTimeout(() => { RG.confirmar = false; rgVipResumen(); }, 4000);
+    return;
+  }
+  clearTimeout(RG.confT); RG.confirmar = false;
+  RG.enviando = true; rgVipResumen(); btn.textContent = 'Regalando…';
+  const c = await MCAuth.listo;
+  const r = await c.rpc('grupo_regalo_dar', { p_grupo: RG_GRUPO, p_tipo: RG.tipo, p_cantidad: RG.tipo === 'item' ? null : RG.cant, p_item: RG.tipo === 'item' ? RG.item : null, p_nota: $('rgNota').value.trim() || null });
+  RG.enviando = false;
+  if (r.error) { rgVipResumen(); toast(rgVipError(r.error)); return; }
+  const txt = rgTexto({ tipo: RG.tipo, cantidad: RG.cant, item: RG.item });
+  toast(txt + ' para ' + r.data.recibieron + (r.data.recibieron === 1 ? ' alumno' : ' alumnos') + (r.data.saltados ? ' · ' + r.data.saltados + ' ya lo tenían' : ''));
+  rgVipTomar(r.data); RG.item = '';
+  pintarVip();
 }
