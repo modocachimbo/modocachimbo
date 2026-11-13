@@ -930,7 +930,11 @@ html.mc-fuera body { background: var(--bg); }
   .cab .mcu-user .mcu-chip.mct { margin-left: -16px; }
 }
 @media (prefers-reduced-motion: reduce) { .cab .mcu-user .mcz-pill::after, .cab .mcu-user .mcu-racha::after, .cab .mcu-user .mcz-pill::before, .cab .mcu-user .mcu-racha::before { animation: none; } }
-.cab .mcu-user .mcz-pill::before { animation-delay: .4s; } .cab .mcu-user .mcz-xp::before { animation-delay: .8s; }
+.cab .mcu-user .mcz-pill::before { animation-delay: .4s; }
+/* El "+" solo en corazones (ahí sí consigues más); racha y XP sin "+" y con el número centrado */
+html .cab .mcu-user .mcz-xp::before, html .cab .mcu-user .mcu-racha::before { content: none; display: none; }
+html .cab .mcu-user .mcz-xp, html .cab .mcu-user .mcu-racha { padding-right: 16px; }
+@media (max-width: 900px) { html .cab .mcu-user .mcz-xp, html .cab .mcu-user .mcu-racha { padding-right: 12px; } html .cab .mcu-user .mcu-racha:not([hidden]) { width: 70px; } }
 /* PC: el saludo se achica un poco en pantallas medianas para que entre en una línea junto a los cuadros */
 @media (min-width: 901px) { .cab h1.hola { font-size: clamp(30px, 2.5vw, 40px); white-space: nowrap; } }
 /* Racha: llama 3D (assets/racha.js). Encendida = brilla y se mueve como fuego; sin estudiar hoy = gris y quieta */
@@ -957,7 +961,9 @@ html.mc-fuera body { background: var(--bg); }
 /* Celular chico: con este formato el número sí entra, así que se ve siempre (antes solo se veía el ícono) */
 @media (max-width: 360px) {
   html .cab .mcu-user .mcz-pill, html .cab .mcu-user .mcu-racha { padding: 0 24px 0 18px !important; }
-  html .cab .mcu-user .mcz-xp { padding-left: 26px !important; padding-right: 28px !important; }
+  html .cab .mcu-user .mcz-xp { padding-left: 26px !important; padding-right: 10px !important; }
+  html .cab .mcu-user .mcu-racha { padding-right: 10px !important; }
+  html .cab .mcu-user .mcu-racha:not([hidden]) { width: 64px; }
   html body .cab .mcu-user { gap: 10px; }
   html .cab .mcu-user .mcz-cor:not([hidden]), html .cab .mcu-user .mcu-racha:not([hidden]) { width: 76px; padding-left: 22px !important; }
   html .cab .mcu-user .mcz-pill, html .cab .mcu-user .mcu-racha { margin-left: 12px; font-size: 16px; }
