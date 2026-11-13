@@ -65,6 +65,16 @@
     '<symbol id="mct-xp" viewBox="0 0 32 32"><path d="M16 1.5 29 9v14L16 30.5 3 23V9z" fill="url(#mct-hray)" stroke="#fff" stroke-opacity=".6" stroke-width="1.3"/><path d="M16 4.5 26.5 10.5" stroke="#fff" stroke-opacity=".35" stroke-width="1.2" fill="none"/><g fill="#fff"><path d="M18 6 9.8 17.4h5.4L13.6 26 22.2 14.3h-5.5z"/></g></symbol>' +
     '<symbol id="mct-mejor" viewBox="0 0 32 32"><path d="M16 1.5 29 9v14L16 30.5 3 23V9z" fill="url(#mct-hmor)" stroke="#fff" stroke-opacity=".6" stroke-width="1.3"/><path d="M16 4.5 26.5 10.5" stroke="#fff" stroke-opacity=".35" stroke-width="1.2" fill="none"/><g fill="#fff"><path d="M11 8h10v4.6a5 5 0 0 1-10 0z"/><path d="M11 9.6H8.6c0 2.7 1.5 3.9 3.2 3.9M21 9.6h2.4c0 2.7-1.5 3.9-3.2 3.9" fill="none" stroke="#fff" stroke-width="1.7"/><path d="M15 17.4h2v3.2h-2zM11.4 21h9.2v3.4h-9.2z"/></g></symbol>' +
     '<symbol id="mct-cofre" viewBox="0 0 32 32"><path d="M16 1.5 29 9v14L16 30.5 3 23V9z" fill="url(#mct-hlim)" stroke="#fff" stroke-opacity=".6" stroke-width="1.3"/><path d="M16 4.5 26.5 10.5" stroke="#fff" stroke-opacity=".35" stroke-width="1.2" fill="none"/><g fill="#fff"><path d="M8.5 15.2h15v7.6a1.2 1.2 0 0 1-1.2 1.2H9.7a1.2 1.2 0 0 1-1.2-1.2zM8.5 14c0-3.6 3-5.6 7.5-5.6s7.5 2 7.5 5.6z"/><path d="M14.5 12.6h3v4.6h-3z" fill="#4F6600"/></g></symbol>' +
+    // Íconos 3D de la ventana del jugador: los mismos de Mi perfil (llama, trofeo, cofre) y el XP del inicio
+    '<linearGradient id="mct3R1" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FF3D2E"/><stop offset=".6" stop-color="#FF7A1A"/><stop offset="1" stop-color="#FFB020"/></linearGradient><linearGradient id="mct3R2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FFC21A"/><stop offset="1" stop-color="#FFF3A0"/></linearGradient>' +
+    '<linearGradient id="mct3T1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF08A"/><stop offset=".55" stop-color="#FFC800"/><stop offset="1" stop-color="#C98A00"/></linearGradient>' +
+    '<linearGradient id="mct3C1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C77A3A"/><stop offset="1" stop-color="#7A3F17"/></linearGradient>' +
+    '<linearGradient id="mct3X1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF7B8"/><stop offset=".45" stop-color="#FFD21F"/><stop offset="1" stop-color="#F08A00"/></linearGradient>' +
+    '<symbol id="mct-racha3" viewBox="0 0 48 48"><path d="M24 3c2 7 10 11 12 19 3 11-4 22-12 22S9 37 10 27c1-6 5-9 6-14 3 4 3 8 3 8s1-11 5-18z" fill="url(#mct3R1)" stroke="#8a1a00" stroke-width="2" stroke-linejoin="round"/><path d="M24 22c1 4 6 7 6 13 0 5-3 8-6 8s-7-3-6-8c0-4 3-5 4-9 1 2 1 4 1 4s0-5 1-8z" fill="url(#mct3R2)"/></symbol>' +
+    '<symbol id="mct-mejor3" viewBox="0 0 48 48"><path d="M14 6h20v4h7v5c0 6-4 10-9 11-2 4-4 6-6 6v4h5l2 6H15l2-6h5v-4c-2 0-4-2-6-6-5-1-9-5-9-11v-5h7z" fill="url(#mct3T1)" stroke="#7a5200" stroke-width="2" stroke-linejoin="round"/><path d="M14 13H10v2c0 3 2 6 5 7M34 13h4v2c0 3-2 6-5 7" fill="none" stroke="#7a5200" stroke-width="2"/><path d="m24 11 1.8 3.7 4 .6-2.9 2.8.7 4L24 20.2l-3.6 1.9.7-4-2.9-2.8 4-.6z" fill="#fff" opacity=".9"/></symbol>' +
+    '<symbol id="mct-cofre3" viewBox="0 0 48 48"><path d="M6 20c0-8 6-12 18-12s18 4 18 12z" fill="url(#mct3C1)" stroke="#3d1d08" stroke-width="2" stroke-linejoin="round"/><rect x="6" y="20" width="36" height="20" rx="2" fill="url(#mct3C1)" stroke="#3d1d08" stroke-width="2"/><path d="M6 26h36M15 9v31M33 9v31" stroke="#FFC800" stroke-width="3"/><rect x="20" y="22" width="8" height="9" rx="1.5" fill="#FFE14D" stroke="#7a5200" stroke-width="1.5"/><circle cx="24" cy="26" r="1.4" fill="#3d1d08"/></symbol>' +
+    '<symbol id="mct-xp3" viewBox="0 0 64 64"><path d="M32 4 57 18v28L32 60 7 46V18z" fill="#7A3A00" stroke="#7A3A00" stroke-width="6" stroke-linejoin="round" transform="translate(1 3)"/><path d="M32 4 57 18v28L32 60 7 46V18z" fill="url(#mct3X1)" stroke="#9A4A00" stroke-width="3" stroke-linejoin="round"/><path d="M57 18v28L32 60V32z" fill="#D06A00" opacity=".35"/><path d="M32 4 57 18 32 32 7 18z" fill="#fff" opacity=".22"/><path d="M36 13 21 35h10l-4 17 17-24H33z" fill="#fff" stroke="#9A4A00" stroke-width="2.5" stroke-linejoin="round"/><path d="M36 13 21 35h5z" fill="#FFF0A0"/><circle cx="17" cy="19" r="2" fill="#fff" opacity=".85"/></symbol>' +
+    '<symbol id="mct-per" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M4 21a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>' +
     '</defs></svg>';
   function defs() {
     if (document.getElementById('mct-defs') || !document.body) return;
@@ -287,7 +297,7 @@
   // Los estilos de la tarjeta grande y de las fotos: assets/tarjeta-jugador.css
   function hoja() {
     if (document.querySelector('link[href*="tarjeta-jugador.css"]')) return;
-    var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = BASE + 'assets/tarjeta-jugador.css?v=6';
+    var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = BASE + 'assets/tarjeta-jugador.css?v=7';
     document.head.appendChild(l);
   }
   var GALAXIA = ['#5b34b8', '#241452', '#4a2a9a', '#1a0f40'];
@@ -370,25 +380,27 @@
   }
   addEventListener('scroll', cerrarBurb, true);
 
-  // La tarjeta grande de otro alumno (lo que devuelve ver_jugador en supabase/38-ver-jugador.sql)
-  function tarjetaHtml(d) {
+  // Ventana del jugador (se abre al tocar una foto): cabecera con su fondo, foto, nombre, título e ID;
+  // franja del rango de la semana con su XP; y racha, mejor racha y colección con los íconos 3D de Mi perfil.
+  function ventanaHtml(d) {
     var C = window.MCColeccion, v = vista(d), p = d.puesto || {};
-    var tit = C && (C.item(p.titulo) || C.item('titulo-cachimbo')), pin = null;
-    if (C && p.pines && p.pines[0] && C.item(p.pines[0])) { var px = C.item(p.pines[0]); pin = { html: C.pin(px), nom: px.nom, como: d.yo ? C.como(px) : comoDe(px) }; }
-    var n = window.MCRango ? MCRango.nivel(d.xp_semana) : -1;
-    var st = function (ic, val, lab) { return '<span class="pj-st">' + icono(ic) + '<b>' + val + '</b><small>' + lab + '</small></span>'; };
-    var total = C ? C.contar().total : '';
-    return '<section class="pj" style="--rc:' + (n < 0 ? '#cfc8e6' : RC[n]) + '"><div class="pj-card" style="--f1:' + v.tema[0] + ';--f2:' + v.tema[3] + '">' + arte(v.tema, v.fondo) +
-      '<div class="pj-av"><span class="pj-fr"' + (v.marco ? ' style="--m:' + v.marco + '"' : '') + '><span class="pj-foto">' +
-        (v.img ? '<img src="' + esc(v.img) + '" alt="" referrerpolicy="no-referrer">' : inicial(d.apodo)) + '</span></span>' +
-        '<span class="pj-nv">Nvl <b>' + nivel(d.xp_total) + '</b></span>' +
-        (pin ? pinHtml(pin, 'pj-pin') : '') + '</div>' +
-      '<div class="pj-mid pj-sh"><div class="pj-nom">' + esc(d.apodo || 'Cachimbo') + '</div>' +
-        (tit ? '<span class="pj-tit' + (tit.svg ? ' con-svg' : '') + '">' + C.titulo(tit) + '</span>' : '') +
-        '<div class="pj-stats">' + st('racha', d.racha || 0, 'racha') + st('xp', (+d.xp_semana || 0).toLocaleString('es-PE'), 'XP') + st('mejor', d.mejor || 0, 'mejor') +
-          st('cofre', (d.coleccion || 0) + (total ? '/' + total : ''), 'colección') + '</div></div>' +
-      '<span class="pj-rk pj-sh' + (n < 0 ? ' sin' : '') + '"><span>' + (window.MCRango ? MCRango.svg(Math.max(n, 0), { quieto: true }) : '') + '</span><b>' + (n < 0 ? 'Sin rango' : MCRango.nombre(n)) + '</b><small>Rango semanal</small></span>' +
-      '<span class="pj-uid pj-sh">ID <b>' + esc(d.codigo) + '</b></span></div></section>';
+    var tit = C && (C.item(p.titulo) || C.item('titulo-cachimbo'));
+    var pinId = C && p.pines && p.pines[0] && C.item(p.pines[0]) ? p.pines[0] : '';
+    var R = window.MCRango, n = R ? R.nivel(+d.xp_semana || 0) : -1;
+    var rc = n < 0 ? '#cfc8e6' : (R.color && R.color(n) && R.color(n).c) || RC[n] || '#C6E000';
+    var total = C ? C.contar().total : 0, col = +d.coleccion || 0;
+    var ft = foto({ apodo: d.apodo, codigo: 0, xp_total: d.xp_total, foto: d.foto, puesto: p, pin: pinId }, 'mcp-ft');
+    var st = function (ic, val, lab) { return '<span class="mcp-st">' + icono(ic) + '<b>' + val + '</b><small>' + lab + '</small></span>'; };
+    return '<section class="mcp" style="--rc:' + rc + '">' +
+      '<div class="mcp-cab">' + arte(v.tema, v.fondo) + '<img class="mcp-lg" src="' + BASE + 'assets/img/logo-modo-cachimbo-horizontal.svg" alt="Modo Cachimbo"></div>' +
+      '<div class="mcp-yo">' + ft + '<div class="mcp-tx"><div class="mcp-nom">' + esc(d.apodo || 'Cachimbo') + '</div>' +
+        (tit ? '<div class="mcp-tit' + (tit.svg ? ' con-svg' : '') + '">' + C.titulo(tit) + '</div>' : '') +
+        '<span class="mcp-id">ID ' + esc(d.codigo) + '</span></div></div>' +
+      '<div class="mcp-rk' + (n < 0 ? ' sin' : '') + '"><span class="em">' + (R ? R.svg(Math.max(n, 0), { quieto: true }) : '') + '</span>' +
+        '<span class="nm"><small>Rango semanal</small><b>' + (n < 0 ? 'Sin rango' : esc(R.nombre(n))) + '</b></span>' +
+        '<span class="xp">' + icono('xp3') + '<b>' + (+d.xp_semana || 0).toLocaleString('es-PE') + '</b><small>XP</small></span></div>' +
+      '<div class="mcp-sts">' + st('racha3', +d.racha || 0, 'Racha') + st('mejor3', +d.mejor || 0, 'Mejor racha') +
+        st('cofre3', col + (total && col <= total ? '<i>/' + total + '</i>' : ''), 'Colección') + '</div></section>';
   }
   function ver(cod) {
     hoja(); css(); defs(); if (window.MCColeccion) MCColeccion.css();
@@ -408,7 +420,7 @@
     }).then(function (r) {
       if (!r || r.error || !r.data) throw new Error('sin datos');
       var d = r.data;
-      caja.innerHTML = tarjetaHtml(d) + '<div class="mcj-acc">' + accionesHtml(d) + '</div>';
+      caja.innerHTML = ventanaHtml(d) + '<div class="mcj-acc">' + accionesHtml(d) + '</div>';
     }).catch(function () { caja.innerHTML = '<p class="mcj-msg">No se pudo cargar su tarjeta. Intenta otra vez.</p>'; });
     // Agregar amigo / aceptar sin salir de la tarjeta
     caja.addEventListener('click', function (e) {
@@ -425,8 +437,8 @@
     });
   }
   function accionesHtml(d) {
-    if (d.yo) return '<a class="si" href="' + BASE + 'perfil.html"><span>Ir a mi perfil</span></a>';
-    if (d.relacion === 'amigo') return '<a class="si" href="' + BASE + 'amigos.html?id=' + esc(d.codigo) + '"><span>Ver su perfil</span></a>';
+    if (d.yo) return '<a class="si" href="' + BASE + 'perfil.html">' + icono('per') + '<span>Ir a mi perfil</span></a>';
+    if (d.relacion === 'amigo') return '<a class="si" href="' + BASE + 'amigos.html?id=' + esc(d.codigo) + '">' + icono('per') + '<span>Ver su perfil</span></a>';
     if (d.relacion === 'enviada') return '<button type="button" class="no" disabled><span>Solicitud enviada ✓</span></button>';
     if (d.relacion === 'recibida') return '<button type="button" class="si" data-amigo="aceptar"><span>Aceptar solicitud</span></button>';
     if (!d.relacion) return '<button type="button" class="no" disabled><span>Agregar amigo <small>· muy pronto</small></span></button>';
