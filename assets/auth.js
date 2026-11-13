@@ -72,7 +72,7 @@
       cliente.auth.onAuthStateChange(function (evento, s) {
         var antes = sesion && sesion.user.id, ahora = s && s.user.id;
         sesion = s;
-        if (antes !== ahora) { perfilCache = null; recordarPerfil(null); if (iniciado) avisar(); }
+        if (antes !== ahora) { perfilCache = null; recordarPerfil(null); if (iniciado) { avisar(); marcarVisto(); } }
       });
       return cliente.auth.getSession();
     })
@@ -84,8 +84,18 @@
       }
       iniciado = true;
       avisar();
+      marcarVisto();
       return cliente;
     });
+
+  // «Activo hoy» en el panel (Grupo VIP): anota que el alumno abrió la web.
+  // Como mucho una vez cada 10 minutos por equipo (supabase/94-alumno-visto.sql).
+  function marcarVisto() {
+    var u = usuario(); if (!u || !cliente) return;
+    var k = 'mc_visto_' + u.id, ahora = Date.now();
+    try { if (ahora - (+localStorage.getItem(k) || 0) < 600000) return; localStorage.setItem(k, String(ahora)); } catch (e) {}
+    cliente.rpc('marcar_visto').then(function () {}, function () {});
+  }
   listo.catch(function () { iniciado = true; avisar(); });
 
   function usuario() { return sesion ? sesion.user : null; }
