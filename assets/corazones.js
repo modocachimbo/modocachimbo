@@ -87,8 +87,8 @@
     var g = 'mczInfG' + (++nIco), d = 'M16 15c-4-6-13-6-13 0s9 6 13 0 13-6 13 0-9 6-13 0z';
     return '<svg class="mcz-inf" viewBox="0 0 32 30" role="img" aria-label="infinito" style="vertical-align:middle"><defs><linearGradient id="' + g + '" x1="0" y1="0" x2="0" y2="1">' +
       '<stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#FFC2CB"/><stop offset="1" stop-color="#FF4B5E"/></linearGradient></defs>' +
-      '<path d="' + d + '" fill="none" stroke="#6A0A14" stroke-width="7" stroke-linecap="round" transform="translate(0 1.5)"/>' +
-      '<path d="' + d + '" fill="none" stroke="url(#' + g + ')" stroke-width="4.5" stroke-linecap="round"/>' +
+      '<path d="' + d + '" fill="none" stroke="#9A1626" stroke-width="6" stroke-linecap="round"/>' +
+      '<path d="' + d + '" fill="none" stroke="url(#' + g + ')" stroke-width="3.6" stroke-linecap="round"/>' +
       '<path d="M6 12.5c1.5-1.6 4-1.6 6 .2" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".9"/></svg>';
   }
   var COLOR = { explora: 'az', vocabulario: 'mo', duelo: 'na', tarjetas: 'li', seguidas: 'az', repaso: 'ro', simulacro: 'or' };

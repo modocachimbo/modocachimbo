@@ -122,7 +122,7 @@
     document.head.appendChild(n);
     // Corazones, misiones del día y XP (assets/corazones.js) y el búho que usa
     var cz = document.createElement('script');
-    cz.src = BASE + 'assets/corazones.js?v=8';
+    cz.src = BASE + 'assets/corazones.js?v=9';
     document.head.appendChild(cz);
     var pagina = location.href.replace(/[?#].*$/, '');
     // Cuenta suspendida desde el panel (assets/suspension.js); el panel no se bloquea
