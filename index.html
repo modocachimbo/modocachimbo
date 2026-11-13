@@ -37,7 +37,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,800;1,900&family=Inter:wght@400;500;600&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,800;1,900&family=Sora:wght@700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,800;1,900&family=Inter:wght@400;500;600&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,800;1,900&family=Sora:wght@700;800&family=Lilita+One&display=swap">
 <link rel="stylesheet" href="assets/buho/buho.css">
 <style>
   :root {
@@ -873,7 +873,6 @@ html.mc-fuera body { background: var(--bg); }
 .cab .mcu-user .mcz-pill[hidden], .cab .mcu-user .mcu-racha[hidden] { display: none; }
 .cab .mcu-user .mcz-pill:active, .cab .mcu-user .mcu-racha:active { transform: translateY(1px); border-bottom-width: 1px; margin-bottom: 0; }
 .cab .mcu-user .mcz-pill svg, .cab .mcu-user .mcu-racha svg { width: 26px; height: 26px; }
-.cab .mcu-user .mcz-pill svg { width: 34px; height: 34px; }
 .cab .mcu-user .mcu-racha.on svg { filter: none; }
 .cab .mcu-user .mcz-cor.cero { color: var(--suave); }
 .cab .mcu-btn { font-family: var(--cuerpo); border-radius: 0; }
@@ -894,11 +893,57 @@ html.mc-fuera body { background: var(--bg); }
   .cab .mcu-user .mcz-pill, .cab .mcu-user .mcu-racha { height: 40px; padding: 0 9px 0 8px; gap: 5px; font-size: 18px; }
   .cab .mcu-user .mcz-xp:not([hidden]) { display: inline-flex; }
   .cab .mcu-user .mcz-pill svg, .cab .mcu-user .mcu-racha svg { width: 20px; height: 20px; }
-  .cab .mcu-user .mcz-pill svg { width: 28px; height: 28px; }
   .cab .mcu-menu .mcu-modo { display: block; }
 }
 @media (max-width: 400px) {
   .cab .mcu-user .mcz-pill, .cab .mcu-user .mcu-racha { padding: 0 6px; gap: 4px; font-size: 16px; }
+}
+/* Corazones, racha y XP con el mismo formato de los recursos del Arcade:
+   barra oscura con relieve, ícono grande que sale por la izquierda, número en Lilita One y brillo que pasa */
+.cab .mcu-user .mcz-pill, .cab .mcu-user .mcu-racha {
+  --c: #FFC800; position: relative; overflow: visible; height: 42px; min-width: 112px; margin-left: 22px; padding: 0 34px 0 30px; justify-content: center; gap: 0; border-radius: 10px;
+  background: linear-gradient(180deg, #2A2158, #140D36); border: 2px solid #0A0620; color: #fff;
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.12), inset 0 -3px 0 rgba(0,0,0,.35), 0 3px 0 rgba(10,6,32,.6);
+  font: 400 22px/1 "Lilita One", var(--display); letter-spacing: .03em; text-shadow: 0 2px 0 #000; }
+.cab .mcu-user .mcz-pill:active, .cab .mcu-user .mcu-racha:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 0; }
+.cab .mcu-user .mcz-pill > svg:first-child, .cab .mcu-user .mcu-racha > svg:first-child { position: absolute; left: -20px; top: 50%; width: 52px; height: 52px; margin-top: -27px; }
+.cab .mcu-user .mcz-cor { --c: #FF4B5E; --c1: #FFB0B8; --c2: #C4142A; --o: #6A0A14; }
+.cab .mcu-user .mcz-xp { --c: #FFC800; --c1: #FFF0A0; --c2: #E08A00; --o: #6A3A00; }
+.cab .mcu-user .mcz-cor > svg:first-child { filter: drop-shadow(0 0 8px #FF4B5E); }
+.cab .mcu-user .mcz-xp > svg:first-child { filter: drop-shadow(0 0 8px rgba(255,200,0,.7)); }
+.cab .mcu-user .mcu-racha { --c: #FF9600; --c1: #FFD08A; --c2: #D05A00; --o: #5A2400; }
+.cab .mcu-user .mcu-racha > svg:first-child { width: 40px; height: 40px; margin-top: -21px; left: -14px; }
+.cab .mcu-user .mcz-cor.cero { color: #fff; }
+.cab .mcu-user .mcz-cor.cero > svg:first-child { filter: none; }
+/* "+" como en el Arcade (abre las misiones para ganar corazones) */
+.cab .mcu-user .mcz-pill::before, .cab .mcu-user .mcu-racha::before { content: "+"; position: absolute; right: 4px; top: 50%; width: 24px; height: 24px; margin-top: -12px; display: grid; place-items: center; border-radius: 6px;
+  font: 400 20px/1 "Lilita One", var(--cuerpo); color: var(--o); text-shadow: none; background: linear-gradient(180deg, var(--c1), var(--c) 55%, var(--c2)); border: 2px solid var(--o); box-shadow: inset 0 2px 0 rgba(255,255,255,.5); animation: mcMasL 2.6s ease-in-out infinite; }
+@keyframes mcMasL { 0%, 82%, 100% { transform: scale(1); } 88% { transform: scale(1.22); } 94% { transform: scale(.95); } }
+.cab .mcu-user .mcz-pill::after, .cab .mcu-user .mcu-racha::after { content: ""; position: absolute; inset: 2px; border-radius: 7px; pointer-events: none;
+  background: linear-gradient(100deg, transparent 35%, rgba(255,255,255,.18) 50%, transparent 65%) no-repeat; background-size: 250% 100%; animation: mcBarrido 5s ease-in-out infinite; }
+.cab .mcu-user .mcu-racha::after { animation-delay: 1.6s; } .cab .mcu-user .mcz-xp::after { animation-delay: 3.2s; }
+@keyframes mcBarrido { 0%, 70% { background-position: 150% 0; } 100% { background-position: -50% 0; } }
+@media (max-width: 900px) {
+  .cab .mcu-user { gap: 10px; padding-left: 16px; }
+  .cab .mcu-user .mcz-pill, .cab .mcu-user .mcu-racha { height: 36px; min-width: 0; margin-left: 4px; padding: 0 27px 0 22px; gap: 0; font-size: 18px; }
+  .cab .mcu-user .mcz-pill::before, .cab .mcu-user .mcu-racha::before { width: 21px; height: 21px; margin-top: -10.5px; font-size: 18px; right: 3px; }
+  .cab .mcu-user .mcz-pill > svg:first-child { width: 44px; height: 44px; margin-top: -23px; left: -18px; }
+  .cab .mcu-user .mcu-racha > svg:first-child { width: 34px; height: 34px; margin-top: -18px; left: -12px; }
+  .cab .mcu-user .mcu-chip.mct { margin-left: -16px; }
+}
+@media (prefers-reduced-motion: reduce) { .cab .mcu-user .mcz-pill::after, .cab .mcu-user .mcu-racha::after, .cab .mcu-user .mcz-pill::before, .cab .mcu-user .mcu-racha::before { animation: none; } }
+.cab .mcu-user .mcz-pill::before { animation-delay: .4s; } .cab .mcu-user .mcz-xp::before { animation-delay: .8s; }
+/* Infinito dibujado (corazones ilimitados) */
+.cab .mcu-user .mcz-inf { width: 42px; height: 24px; flex: none; filter: drop-shadow(0 2px 0 #000) drop-shadow(0 0 6px rgba(255,120,140,.6)); }
+@media (max-width: 900px) { .cab .mcu-user .mcz-inf { width: 40px; height: 23px; } }
+.cab .mcu-user .mcz-xp { padding-left: 40px; }
+@media (max-width: 900px) { .cab .mcu-user .mcz-xp { padding-left: 32px; } }
+@media (max-width: 400px) { .cab .mcu-user .mcz-pill, .cab .mcu-user .mcu-racha { padding: 0 25px 0 20px; font-size: 17px; } .cab .mcu-user .mcz-xp { padding-left: 28px; } }
+/* Celular chico: con este formato el número sí entra, así que se ve siempre (antes solo se veía el ícono) */
+@media (max-width: 360px) {
+  html .cab .mcu-user .mcz-pill, html .cab .mcu-user .mcu-racha { padding: 0 24px 0 18px !important; }
+  html .cab .mcu-user .mcz-xp { padding-left: 26px !important; }
+  html .cab .mcu-user .mcz-pill > span, html .cab .mcu-user .mcu-racha > span { max-width: none !important; opacity: 1 !important; margin: 0 !important; }
 }
 
 /* Botones que antes eran enlaces */
@@ -1232,6 +1277,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
 }
 </style>
 <link rel="stylesheet" href="assets/areas.css">
+<script>window.MC_RECURSOS_ARCADE = 1; /* corazones y XP del inicio con el estilo del Arcade (assets/corazones.js) */</script>
 <script src="assets/mc-config.js"></script>
 <script src="assets/acceso.js?v=166"></script>
 <script src="assets/candado.js?v=164"></script>
@@ -1490,7 +1536,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
 
 <script src="assets/rango.js"></script>
 <script src="assets/coleccion.js?v=196"></script>
-<script src="assets/tarjeta-perfil.js?v=207"></script>
+<script src="assets/tarjeta-perfil.js?v=208"></script>
 <script src="assets/buho/buho-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
 <script src="assets/buho.js"></script>

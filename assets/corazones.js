@@ -44,7 +44,9 @@
 
   /* ---------- Íconos propios ---------- */
   var SVG = {
+    corazon: '<svg class="mcz-i-cor" viewBox="0 0 24 24" aria-hidden="true"><g class="mcz-late"><path fill="var(--c1,#FF4B4B)" d="M12 21.4s-8.2-4.9-10.1-10C.4 7.3 2.9 3.4 6.7 3.4c2.3 0 3.9 1.3 5.3 3.1 1.4-1.8 3-3.1 5.3-3.1 3.8 0 6.3 3.9 4.8 8-1.9 5.1-10.1 10-10.1 10z"/><path fill="var(--c2,#D93636)" d="M12 21.4s8.2-4.9 10.1-10c.6-1.6.6-3.2.1-4.5-.2 4.3-5 9.6-10.2 12.4-5.2-2.8-10-8.1-10.2-12.4-.5 1.3-.5 2.9.1 4.5C3.8 16.5 12 21.4 12 21.4z"/><path fill="#fff" opacity="var(--c3,.7)" d="M6.5 6.2c-1.7.1-2.8 1.6-2.6 3.3.1.7.9.8 1.1 0 .3-1.1 1-1.8 1.9-2.1.8-.3.5-1.3-.4-1.2z"/><circle fill="#fff" opacity="var(--c3,.7)" cx="8.6" cy="5.6" r=".9"/></g></svg>',
     vacio: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#2a2a2a" d="M12 21.4s-8.2-4.9-10.1-10C.4 7.3 2.9 3.4 6.7 3.4c2.3 0 3.9 1.3 5.3 3.1 1.4-1.8 3-3.1 5.3-3.1 3.8 0 6.3 3.9 4.8 8-1.9 5.1-10.1 10-10.1 10z"/></svg>',
+    xp: '<svg class="mcz-i-xp" viewBox="0 0 24 24" aria-hidden="true"><g class="mcz-gema"><path fill="#FFC800" d="M12 1.6 21 6.8v10.4L12 22.4 3 17.2V6.8z"/><path fill="#FFDD4A" d="M12 1.6 21 6.8 12 12 3 6.8z"/><path fill="#E0A100" d="M21 6.8v10.4L12 22.4V12z"/><path class="mcz-destello" fill="#fff" d="M12 1.6 16 3.9 7 9.1 3 6.8z"/><path fill="#fff" opacity=".95" d="M13 5.6 8.2 12.6h3.2l-.9 5.8 5.3-7.4h-3.3z"/><path fill="#FFE98A" d="M13 5.6 8.2 12.6h3.2l-.9 5.8 1.4-6.8H9.9z"/></g></svg>',
     reloj: '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 2.5h5"/></svg>',
     x: '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
     check: '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>',
@@ -57,7 +59,7 @@
     repaso: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v4.5h-4.5"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg>',
     simulacro: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13.5" r="8"/><path d="M12 9.5v4l2.5 2.5M9.5 2.5h5M12 2.5v3"/></svg>'
   };
-  /* Corazón y XP en 3D, con el mismo formato que los recursos del Arcade
+  /* Solo en el inicio (window.MC_RECURSOS_ARCADE): corazón y XP en 3D, con el mismo formato que los recursos del Arcade
      (contorno oscuro desplazado, degradado de arriba a abajo, brillo blanco).
      Cada copia lleva su propio degradado (id único) para que el gris de "sin corazones" funcione en cada una. */
   var nIco = 0;
@@ -80,8 +82,15 @@
       '<path d="M36 13 21 35h10l-4 17 17-24H33z" fill="#fff" stroke="#9A4A00" stroke-width="2.5" stroke-linejoin="round"/>' +
       '<path d="M36 13 21 35h5z" fill="#FFF0A0"/><circle cx="17" cy="19" r="2" fill="#fff" opacity=".85"/></g></svg>';
   }
-  Object.defineProperty(SVG, 'corazon', { get: icoCorazon });
-  Object.defineProperty(SVG, 'xp', { get: icoXp });
+  // Infinito dibujado: lazo con degradado rosa-blanco y brillo (corazones ilimitados)
+  function icoInf() {
+    var g = 'mczInfG' + (++nIco), d = 'M16 15c-4-6-13-6-13 0s9 6 13 0 13-6 13 0-9 6-13 0z';
+    return '<svg class="mcz-inf" viewBox="0 0 32 30" role="img" aria-label="infinito" style="vertical-align:middle"><defs><linearGradient id="' + g + '" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#FFC2CB"/><stop offset="1" stop-color="#FF4B5E"/></linearGradient></defs>' +
+      '<path d="' + d + '" fill="none" stroke="#6A0A14" stroke-width="7" stroke-linecap="round" transform="translate(0 1.5)"/>' +
+      '<path d="' + d + '" fill="none" stroke="url(#' + g + ')" stroke-width="4.5" stroke-linecap="round"/>' +
+      '<path d="M6 12.5c1.5-1.6 4-1.6 6 .2" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".9"/></svg>';
+  }
   var COLOR = { explora: 'az', vocabulario: 'mo', duelo: 'na', tarjetas: 'li', seguidas: 'az', repaso: 'ro', simulacro: 'or' };
 
   function css() {
@@ -97,12 +106,12 @@
       // Píldoras de arriba (junto a la racha)
       '.mcz-pill{display:inline-flex;align-items:center;gap:5px;height:42px;padding:0 12px 0 10px;border-radius:14px;border:2px solid #322B52;border-bottom-width:4px;background:#1D1834;font:900 15px Nunito,Sora,Inter,sans-serif;font-variant-numeric:tabular-nums;cursor:pointer;transition:transform .08s ease;-webkit-tap-highlight-color:transparent;text-decoration:none}' +
       '.mcz-pill[hidden]{display:none}.mcz-pill svg{width:24px;height:24px;overflow:visible}.mcz-pill:active{transform:translateY(2px);border-bottom-width:2px;margin-bottom:2px}' +
-      '.mcz-cor{color:#FF4B4B}.mcz-xp{color:#FFC800}.mcz-i-cor{filter:drop-shadow(0 0 5px rgba(255,75,94,.55))}.mcz-cor.cero .mcz-i-cor,.vacio .mcz-i-cor{filter:none}.mcz-i-xp{filter:drop-shadow(0 0 5px rgba(255,200,0,.5))}' +
+      '.mcz-cor{color:#FF4B4B}.mcz-xp{color:#FFC800}' +
       // El corazón late en bucle; sin corazones queda gris y quieto
       '.mcz-late,.mcz-gema{transform-box:fill-box;transform-origin:50% 60%}' +
       '.mcz-cor .mcz-late{animation:mczBum 1.4s ease-in-out infinite}' +
       '@keyframes mczBum{0%,40%,100%{transform:scale(1)}10%{transform:scale(1.16)}20%{transform:scale(.96)}30%{transform:scale(1.1)}}' +
-      '.mcz-cor.cero{color:#9a9a9a;--g1:#8a8a8a;--g2:#5a5a5a;--g3:#3a3a3a;--go:#1e1e1e;--gs:#2a2a2a;--gb:.25}.mcz-cor.cero .mcz-late{animation:none}' +
+      '.mcz-cor.cero{color:#9a9a9a;--c1:#5a5a5a;--c2:#444;--c3:0;--g1:#8a8a8a;--g2:#5a5a5a;--g3:#3a3a3a;--go:#1e1e1e;--gs:#2a2a2a;--gb:.25}.mcz-cor.cero .mcz-late{animation:none}' +
       '.mcz-cor.late .mcz-late{animation:mczLatido .6s ease}' +
       '@keyframes mczLatido{0%,100%{transform:scale(1)}40%{transform:scale(1.3)}70%{transform:scale(.92)}}' +
       // La gema del XP se inclina y destella de vez en cuando
@@ -129,7 +138,7 @@
       '.mcz-hoja .bc,.mcz-sin .bc{font-family:"Barlow Condensed",Nunito,sans-serif;text-transform:uppercase}' +
       '.mcz-cab{display:flex;align-items:center;gap:8px}.mcz-cab b{flex:1;font:italic 900 28px/1 "Barlow Condensed",Nunito,sans-serif;letter-spacing:.01em}.mcz-cab .mcz-pill{height:38px}' +
       '.mcz-x{width:40px;height:40px;border-radius:12px;border:2px solid #322B52;background:transparent;color:#9a9a9a;cursor:pointer;display:grid;place-items:center}.mcz-x svg{width:18px;height:18px}' +
-      '.mcz-vidas{display:flex;justify-content:center;gap:8px}.mcz-vidas svg{width:42px;height:42px}.mcz-vidas .vacio{--g1:#3A3260;--g2:#2F284E;--g3:#241E3E;--go:#15112A;--gs:#1B1634;--gb:0}.mcz-vidas .vacio .mcz-late{animation:none}' +
+      '.mcz-vidas{display:flex;justify-content:center;gap:8px}.mcz-vidas svg{width:42px;height:42px}.mcz-vidas .vacio{--c1:#2F284E;--c2:#241E3E;--c3:0}.mcz-vidas .vacio .mcz-late{animation:none}' +
       '.mcz-rec{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 12px;border-radius:14px;background:#1D1834;border:1px solid #2A2346;border-bottom:4px solid #1CB0F6;font:800 14px Nunito,sans-serif;color:#A99FC8}' +
       '.mcz-rec svg{width:18px;height:18px;color:#1CB0F6;flex-shrink:0}.mcz-rec b{color:#fff;font:italic 900 20px/1 "Barlow Condensed",Nunito,sans-serif;letter-spacing:.02em}.mcz-rec.lleno{border-bottom-color:#C6E000}.mcz-rec.lleno svg{color:#C6E000}' +
       '.mcz-sub{display:flex;align-items:center;gap:8px;margin:4px 0 -4px}.mcz-sub b{font:italic 900 21px/1 "Barlow Condensed",Nunito,sans-serif;color:#fff}.mcz-sub small{font:900 12px Nunito,sans-serif;color:#FF6B6B}.mcz-sub::after{content:"";flex:1;height:2px;background:#2A2346}' +
@@ -386,9 +395,10 @@
         cor.addEventListener('click', function () { abrirMisiones(); });
         cont.insertBefore(xp, cont.firstChild); cont.insertBefore(cor, cont.firstChild);
       }
-      cor.innerHTML = SVG.corazon + '<span>' + (estado.infinito ? '∞' : estado.quedan) + '</span>';
+      var arc = window.MC_RECURSOS_ARCADE && cor.closest('.cab');
+      cor.innerHTML = (arc ? icoCorazon() : SVG.corazon) + '<span>' + (estado.infinito ? (arc ? icoInf() : '∞') : estado.quedan) + '</span>';
       cor.setAttribute('aria-label', (estado.infinito ? 'Corazones infinitos' : estado.quedan + ' corazones') + '. Ver misiones');
-      xp.innerHTML = SVG.xp + '<span>' + verXp() + '</span>';
+      xp.innerHTML = (window.MC_RECURSOS_ARCADE && xp.closest('.cab') ? icoXp() : SVG.xp) + '<span>' + verXp() + '</span>';
       xp.setAttribute('aria-label', verXp() + ' XP esta semana. Canjear');
       cor.classList.toggle('cero', !estado.quedan);
       if (late) { cor.classList.remove('late'); void cor.offsetWidth; cor.classList.add('late'); setTimeout(function () { cor.classList.remove('late'); }, 700); }
