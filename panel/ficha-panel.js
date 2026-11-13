@@ -7,7 +7,7 @@
    - Por vencer: accesos que vencen pronto, con WhatsApp y +30 días.
    Datos: supabase/86-ficha-alumno.sql. Usa darPorId (codigos-panel.js)
    para dar y editar accesos por ID, y la hoja (api 'codigos') para los códigos.
-   Regalos e Influencers ya no van en el menú: se abren desde la ficha.
+   Regalos también se abre desde la ficha (y sigue en el menú, con el Grupo VIP).
    ========================================================= */
 const FX = { a: null, usuario: null, volver: null, pv: null, pvVer: 'prox', pvProd: '' };
 const FX_FALTA = 'Falta correr supabase/86-ficha-alumno.sql en Supabase.';
@@ -584,10 +584,9 @@ $('pvList').addEventListener('click', e => {
   fxExtender({ origen: x.origen, id: x.id, codigo: x.codigo, hoja: x.hoja, producto: x.producto, vence: x.vence }, x, () => cargarPorVencer(true));
 });
 
-/* ---------- Menú: Regalos sale (está en la ficha); Influencers se queda porque ahí se suben sus aspectos exclusivos; entra Por vencer ---------- */
+/* ---------- Menú: Regalos vuelve (un alumno o el Grupo VIP) y también se abre desde la ficha; entra Por vencer ---------- */
 (function menuAlumnos() {
   const q = s => document.querySelector('.tab[data-tab="' + s + '"]');
-  ['regalos'].forEach(s => { const t = q(s); if (t) t.classList.add('fuera-menu'); });
   const alu = q('alumnos'); if (alu) alu.querySelector('span').textContent = 'Alumnos y fichas';
   fxPrepararAlumnos();
   // Al tocar «Alumnos y fichas» otra vez desde otra sección, se vuelve a la lista
