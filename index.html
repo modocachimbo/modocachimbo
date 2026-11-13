@@ -901,7 +901,7 @@ html.mc-fuera body { background: var(--bg); }
 /* Corazones, racha y XP con el mismo formato de los recursos del Arcade:
    barra oscura con relieve, ícono grande que sale por la izquierda, número en Lilita One y brillo que pasa */
 .cab .mcu-user .mcz-pill, .cab .mcu-user .mcu-racha {
-  --c: #FFC800; position: relative; overflow: visible; height: 42px; flex: none; min-width: 0; margin-left: 14px; padding: 0 36px 0 34px; justify-content: center; gap: 0; border-radius: 10px;
+  --c: #FFC800; position: relative; overflow: visible; height: 42px; flex: none; min-width: 0; margin-left: 20px; padding: 0 36px 0 34px; justify-content: center; gap: 0; border-radius: 10px;
   background: linear-gradient(180deg, #2A2158, #140D36); border: 2px solid #0A0620; color: #fff;
   box-shadow: inset 0 2px 0 rgba(255,255,255,.12), inset 0 -3px 0 rgba(0,0,0,.35), 0 3px 0 rgba(10,6,32,.6);
   font: 400 22px/1 "Lilita One", var(--display); letter-spacing: .03em; text-shadow: 0 2px 0 #000; }
@@ -912,7 +912,6 @@ html.mc-fuera body { background: var(--bg); }
 .cab .mcu-user .mcz-cor > svg:first-child { filter: drop-shadow(0 0 8px #FF4B5E); }
 .cab .mcu-user .mcz-xp > svg:first-child { filter: drop-shadow(0 0 8px rgba(255,200,0,.7)); }
 .cab .mcu-user .mcu-racha { --c: #FF9600; --c1: #FFD08A; --c2: #D05A00; --o: #5A2400; }
-.cab .mcu-user .mcu-racha > svg:first-child { width: 40px; height: 40px; margin-top: -21px; left: -14px; }
 .cab .mcu-user .mcz-cor.cero { color: #fff; }
 .cab .mcu-user .mcz-cor.cero > svg:first-child { filter: none; }
 /* "+" como en el Arcade (abre las misiones para ganar corazones) */
@@ -927,24 +926,41 @@ html.mc-fuera body { background: var(--bg); }
   .cab .mcu-user { gap: 10px; padding-left: 16px; }
   .cab .mcu-user .mcz-pill, .cab .mcu-user .mcu-racha { height: 36px; min-width: 0; margin-left: 4px; padding: 0 27px 0 22px; gap: 0; font-size: 18px; }
   .cab .mcu-user .mcz-pill::before, .cab .mcu-user .mcu-racha::before { width: 21px; height: 21px; margin-top: -10.5px; font-size: 18px; right: 3px; }
-  .cab .mcu-user .mcz-pill > svg:first-child { width: 44px; height: 44px; margin-top: -23px; left: -18px; }
-  .cab .mcu-user .mcu-racha > svg:first-child { width: 34px; height: 34px; margin-top: -18px; left: -12px; }
+  .cab .mcu-user .mcz-pill > svg:first-child, .cab .mcu-user .mcu-racha > svg:first-child { width: 44px; height: 44px; margin-top: -23px; left: -18px; }
   .cab .mcu-user .mcu-chip.mct { margin-left: -16px; }
 }
 @media (prefers-reduced-motion: reduce) { .cab .mcu-user .mcz-pill::after, .cab .mcu-user .mcu-racha::after, .cab .mcu-user .mcz-pill::before, .cab .mcu-user .mcu-racha::before { animation: none; } }
 .cab .mcu-user .mcz-pill::before { animation-delay: .4s; } .cab .mcu-user .mcz-xp::before { animation-delay: .8s; }
 /* PC: el saludo se achica un poco en pantallas medianas para que entre en una línea junto a los cuadros */
 @media (min-width: 901px) { .cab h1.hola { font-size: clamp(30px, 2.5vw, 40px); white-space: nowrap; } }
+/* Racha: llama 3D (assets/racha.js). Encendida = brilla y se mueve como fuego; sin estudiar hoy = gris y quieta */
+.cab .mcu-user .mcu-racha.on > svg:first-child { animation: mcFuegoBrillo 1.6s ease-in-out infinite; }
+@keyframes mcFuegoBrillo { 0%, 100% { filter: drop-shadow(0 0 6px rgba(255,150,0,.75)); } 50% { filter: drop-shadow(0 0 14px rgba(255,190,40,.95)) brightness(1.08); } }
+.cab .mcu-user .mcu-racha:not(.on) { --f1: #A8A8B8; --f2: #6E6E80; --f3: #45455A; --f4: #D0D0DA; --f5: #8A8A9A; --fo: #1C1C28; --fs: #2E2E3E; --fb: .35; }
+@media (prefers-reduced-motion: reduce) { .cab .mcu-user .mcu-racha.on > svg:first-child { animation: none; } }
 /* Infinito dibujado (corazones ilimitados) */
 .cab .mcu-user .mcz-inf { width: 42px; height: 24px; flex: none; filter: drop-shadow(0 2px 0 #000) drop-shadow(0 0 6px rgba(255,120,140,.6)); }
-@media (max-width: 900px) { .cab .mcu-user .mcz-inf { width: 40px; height: 23px; } }
+@media (max-width: 900px) { .cab .mcu-user .mcz-inf { width: 30px; height: 18px; } }
 .cab .mcu-user .mcz-xp { padding-left: 38px; }
 @media (max-width: 900px) { .cab .mcu-user .mcz-xp, .cab .mcu-user .mcz-cor { padding-left: 32px; } }
 @media (max-width: 400px) { .cab .mcu-user .mcz-pill, .cab .mcu-user .mcu-racha { padding: 0 25px 0 20px; font-size: 17px; } .cab .mcu-user .mcz-xp { padding-left: 28px; } }
+/* Celular: corazón y racha más cortos (pocas cifras), XP ocupa el resto; más aire entre cuadros y la fila un poco más abajo
+   para que el ícono, al latir, no toque la tarjeta del perfil */
+@media (max-width: 900px) {
+  html body .cab .mcu-user { gap: 10px; row-gap: 22px; padding-left: 10px; }
+  html body .cab .mcu-user .mcu-chip.mct { margin-left: -10px; }
+  .cab .mcu-user .mcz-pill, .cab .mcu-user .mcu-racha { margin-left: 14px; }
+  .cab .mcu-user .mcz-cor:not([hidden]), .cab .mcu-user .mcu-racha:not([hidden]) { flex: 0 0 auto; box-sizing: border-box; width: 82px; padding-left: 24px; padding-right: 26px; }
+  .cab .mcu-user .mcz-xp:not([hidden]) { flex: 1 1 0; }
+  .cab .mcu-user .mcz-pill > svg:first-child, .cab .mcu-user .mcu-racha > svg:first-child { width: 38px; height: 38px; margin-top: -20px; left: -16px; }
+}
 /* Celular chico: con este formato el número sí entra, así que se ve siempre (antes solo se veía el ícono) */
 @media (max-width: 360px) {
   html .cab .mcu-user .mcz-pill, html .cab .mcu-user .mcu-racha { padding: 0 24px 0 18px !important; }
-  html .cab .mcu-user .mcz-xp { padding-left: 26px !important; }
+  html .cab .mcu-user .mcz-xp { padding-left: 26px !important; padding-right: 28px !important; }
+  html body .cab .mcu-user { gap: 10px; }
+  html .cab .mcu-user .mcz-cor:not([hidden]), html .cab .mcu-user .mcu-racha:not([hidden]) { width: 76px; padding-left: 22px !important; }
+  html .cab .mcu-user .mcz-pill, html .cab .mcu-user .mcu-racha { margin-left: 12px; font-size: 16px; }
   html .cab .mcu-user .mcz-pill > span, html .cab .mcu-user .mcu-racha > span { max-width: none !important; opacity: 1 !important; margin: 0 !important; }
 }
 
@@ -1283,7 +1299,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
 <script src="assets/mc-config.js"></script>
 <script src="assets/acceso.js?v=166"></script>
 <script src="assets/candado.js?v=164"></script>
-<script src="assets/auth.js?v=2"></script>
+<script src="assets/auth.js?v=3"></script>
 <script src="assets/arcade-beta.js"></script>
 <script src="assets/agenda.js"></script>
 </head>
