@@ -18,7 +18,7 @@ const REC = { lista: [], editando: null, img: null, tipo: 'racha', marcoCon: 'co
 const REC_TIPOS = {
   racha: { nom: 'Banner', plural: 'Banners', w: 1200, h: 300, img: true, donde: '<b>Mi colección → Banners</b>, en la tarjeta del perfil y en la de arriba de la web.', medida: 'horizontal 4:1, ideal 1200×300 o más grande', ej: 'Atardecer en Huacho' },
   avatar: { nom: 'Foto de perfil', plural: 'Fotos', w: 512, h: 512, img: true, donde: '<b>Mi colección → Perfil</b>: es la foto del alumno en su tarjeta, los tops y los duelos.', medida: 'cuadrada, ideal 512×512; si es PNG sin fondo se ve encima del fondo del alumno', ej: 'Búho ingeniero' },
-  pines: { nom: 'Pin', plural: 'Pines', w: 256, h: 256, img: true, donde: '<b>Mi colección → Pines</b>: va en la vitrina del perfil (hasta 3) y en la tarjeta.', medida: 'cuadrada, ideal 256×256 y mejor PNG sin fondo; el círculo toma sus colores', ej: 'Ingresante 2027' },
+  pines: { nom: 'Pin', plural: 'Pines', w: 256, h: 256, img: true, donde: '<b>Mi colección → Pines</b>: va en la vitrina del perfil (hasta 3) y en la tarjeta.', medida: 'cuadrada, ideal 256×256 y mejor PNG sin fondo; puede ir dentro de un círculo de sus colores o suelto', ej: 'Ingresante 2027' },
   marco: { nom: 'Marco', plural: 'Marcos', w: 400, h: 400, img: 'opcional', donde: '<b>Mi colección → Marcos</b>: el borde de la foto en la tarjeta y el perfil.', medida: 'una textura cuadrada (oro, madera, mármol…); se ve solo el borde', ej: 'Esmeralda' },
   cuadro: { nom: 'Cuadro de racha', plural: 'Rachas', donde: '<b>Mi colección → Racha</b>: el cuadro de la racha en el perfil.', ej: 'Fuego verde' },
   titulo: { nom: 'Título', plural: 'Títulos', donde: '<b>Mi colección → Títulos</b>: sale debajo del nombre en la tarjeta y el perfil.', ej: 'Rey del álgebra' }
@@ -93,6 +93,11 @@ const recRango = n => window.MCRango ? MCRango.nombre(MCRango.nivel(REC_RANGO_XP
   .rec-pin { width: 92px; height: 92px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.25), transparent 45%), var(--pf); border: 5px solid var(--pb); box-shadow: inset 0 -6px 0 rgba(0,0,0,.25), 0 4px 0 rgba(0,0,0,.3); }
   .rec-pin img { width: 68%; height: 68%; object-fit: contain; display: block; }
   .rec-pin.chico { width: 46px; height: 46px; border-width: 3px; }
+  .rec-pin.suelto { background: none; border: 0; box-shadow: none; border-radius: 0; filter: drop-shadow(0 3px 0 rgba(0,0,0,.35)); }
+  .rec-pin.suelto img { width: 100%; height: 100%; }
+  .rec-fondo { display: flex; justify-content: center; gap: 8px; margin-top: 10px; }
+  .rec-fondo button { padding: 7px 12px; border-radius: 10px; border: 2px solid var(--border, #2A2346); background: transparent; color: var(--text, #fff); font: 800 12.5px Nunito, sans-serif; cursor: pointer; }
+  .rec-fondo button.on { border-color: #C6E000; color: #C6E000; }
   .rec-marco { width: 104px; height: 104px; border-radius: 30%; padding: 7px; background: var(--m); }
   .rec-marco > span { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 26%; background: radial-gradient(120% 120% at 80% 0%, #5b34b8, #1a0f40 70%, #0d0820); color: #fff; font: 900 34px Nunito, sans-serif; }
   .rec-cr { display: flex; align-items: center; gap: 8px; width: 210px; padding: 14px 14px; border-radius: 14px; color: #fff; background: linear-gradient(135deg, var(--r1), var(--r2)); border: 2px solid var(--rb); border-bottom: 4px solid var(--rd); }
@@ -159,7 +164,7 @@ async function recPreparar(file, W, H) {
     let blob = await canvasABlob(c, 'image/webp', 0.82), ext = 'webp';
     if (!blob || blob.type !== 'image/webp') { blob = alfa ? await canvasABlob(c, 'image/png') : await canvasABlob(c, 'image/jpeg', 0.85); ext = alfa ? 'png' : 'jpg'; }
     if (blob.size > 500000) throw new Error('La imagen sigue muy pesada; prueba con otra');
-    return { blob, ext, tema, url: URL.createObjectURL(blob), kb: Math.round(blob.size / 1024), chica: sw < W * .75 };
+    return { blob, ext, tema, alfa, url: URL.createObjectURL(blob), kb: Math.round(blob.size / 1024), chica: sw < W * .75 };
   } finally { URL.revokeObjectURL(url); }
 }
 
@@ -180,10 +185,12 @@ const recFuegoSvg = l => `<svg viewBox="0 0 32 36" aria-hidden="true"><path fill
 
 /* ---------- Dibujos (como salen en Mi colección) ---------- */
 // x: { espacio, img, tema, llama, nom, rareza }; chico para la lista
+// Pin "sin círculo": se muestra solo la imagen (PNG transparente). Se marca en el nombre del archivo (-suelto), así no hace falta SQL
+function recPinSuelto(x) { return x.suelto != null ? !!x.suelto : /-suelto\.[a-z]+$/.test(x.img || ''); }
 function recDibujo(x, chico) {
   const ch = chico ? ' chico' : '';
   if (x.espacio === 'avatar') return `<span class="rec-av${ch}"><img src="${esc(x.img)}" alt=""></span>`;
-  if (x.espacio === 'pines') return `<span class="rec-pin${ch}" style="--pf:${x.tema[3]};--pb:${x.tema[0]}"><img src="${esc(x.img)}" alt=""></span>`;
+  if (x.espacio === 'pines') return `<span class="rec-pin${ch}${recPinSuelto(x) ? ' suelto' : ''}" style="--pf:${x.tema[3]};--pb:${x.tema[0]}"><img src="${esc(x.img)}" alt=""></span>`;
   if (x.espacio === 'marco') {
     const m = x.img ? `url(${x.img}) center/cover` : `conic-gradient(from 200deg,${x.tema[0]},${x.tema[1]},${x.tema[2]},${x.tema[0]})`;
     return `<span class="rec-marco" style="--m:${esc(m)}"><span>J</span></span>`;
@@ -351,11 +358,15 @@ function recPintarImg() {
         <div class="tj"><i></i><span><b id="recVNom">${esc(nom || 'Tu nombre')}</b><small>Así se ve en la tarjeta</small></span></div>
         <button type="button" class="x" id="recCambiar">Cambiar imagen</button></div>`;
   } else {
-    const x = { espacio: REC.tipo, img: src, tema };
+    const x = { espacio: REC.tipo, img: src, tema, suelto: REC.img && REC.tipo === 'pines' ? !!REC.img.suelto : undefined };
     // La foto de perfil y el pin se ven también en chico, como en la tarjeta
     z.innerHTML = `<div class="rec-mini"><span>${recDibujo(x)}<span class="pie">En Mi colección</span></span>
       ${REC.tipo === 'marco' ? '' : `<span>${recDibujo(x, true)}<span class="pie">En la tarjeta</span></span>`}
       <button type="button" class="x" id="recCambiar">Cambiar imagen</button></div>`;
+  }
+  if (REC.tipo === 'pines' && REC.img) {
+    z.insertAdjacentHTML('beforeend', `<div class="rec-fondo"><button type="button" data-suelto="0" class="${REC.img.suelto ? '' : 'on'}">Con círculo de color</button><button type="button" data-suelto="1" class="${REC.img.suelto ? 'on' : ''}">Sin círculo (solo la imagen)</button></div>`);
+    z.querySelectorAll('.rec-fondo button').forEach(b => b.addEventListener('click', () => { REC.img.suelto = b.dataset.suelto === '1'; recPintarImg(); }));
   }
   z.insertAdjacentHTML('beforeend', info ? `<div class="rec-info">${info}</div>` : '');
   $('recCambiar').addEventListener('click', () => {
@@ -370,6 +381,8 @@ async function recRecibir(file) {
   try {
     const prev = await recPreparar(file, recTipo().w, recTipo().h);
     if (REC.img) URL.revokeObjectURL(REC.img.url);
+    // PNG con fondo transparente: por defecto el pin va sin círculo (se ve tal cual)
+    if (REC.tipo === 'pines') prev.suelto = !!prev.alfa;
     REC.img = prev;
     recPintarImg();
   } catch (e) { toast(e.message || 'No se pudo leer la imagen', true); }
@@ -562,7 +575,7 @@ async function guardarRecurso() {
     const id = e ? e.id : 'rec-' + Date.now().toString(36).slice(-5) + Math.random().toString(36).slice(2, 6);
     let img = conImg && e ? e.img || '' : '', tema = null, llama = null, vieja = '';
     if (conImg && REC.img) {
-      const ruta = ({ racha: 'fondos', avatar: 'fotos', pines: 'pines', marco: 'marcos' })[REC.tipo] + '/' + id + '-' + Date.now().toString(36) + '.' + REC.img.ext;
+      const ruta = ({ racha: 'fondos', avatar: 'fotos', pines: 'pines', marco: 'marcos' })[REC.tipo] + '/' + id + '-' + Date.now().toString(36) + (REC.tipo === 'pines' && REC.img.suelto ? '-suelto' : '') + '.' + REC.img.ext;
       const up = await c.storage.from('recursos').upload(ruta, REC.img.blob, { contentType: REC.img.blob.type, cacheControl: '31536000', upsert: false });
       if (up.error) throw up.error;
       img = c.storage.from('recursos').getPublicUrl(ruta).data.publicUrl;

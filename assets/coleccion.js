@@ -176,7 +176,7 @@
     if (r.descr) x.desc = r.descr;
     if (e === 'racha') { if (!img || !colores(r.tema, 4)) return null; x.tema = r.tema; x.img = img; }
     else if (e === 'avatar') { if (!img) return null; x.img = img; }
-    else if (e === 'pines') { if (!img || !colores(r.tema, 4)) return null; x.img = img; x.pin = ['', r.tema[3], r.tema[0]]; }
+    else if (e === 'pines') { if (!img || !colores(r.tema, 4)) return null; x.img = img; x.pin = ['', r.tema[3], r.tema[0]]; if (/-suelto\.[a-z]+$/.test(img)) x.suelto = true; }
     else if (e === 'marco') {
       if (img) x.marco = 'url(' + img + ') center/cover';
       else if (colores(r.tema, 3)) x.marco = 'conic-gradient(from 200deg,' + r.tema[0] + ',' + r.tema[1] + ',' + r.tema[2] + ',' + r.tema[0] + ')';
@@ -421,7 +421,7 @@
     return '<span class="mcc-av" style="--f1:' + t[0] + ';--f2:' + t[3] + '">' + (src ? '<img src="' + esc(src) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : '<b>' + esc(letra || '?') + '</b>') + '</span>';
   }
   function pinSvg(x) {
-    return '<span class="mcc-pin' + (x.suelto ? ' suelto' : '') + '" style="--pf:' + x.pin[1] + ';--pb:' + x.pin[2] + '">' + (x.img ? '<img src="' + esc(x.img) + '" alt="" loading="lazy">' : '<span>' + x.pin[0] + '</span>') + '</span>';
+    return '<span class="mcc-pin' + (x.suelto ? ' suelto' + (x.recurso ? ' rec' : '') : '') + '" style="--pf:' + x.pin[1] + ';--pb:' + x.pin[2] + '">' + (x.img ? '<img src="' + esc(x.img) + '" alt="" loading="lazy">' : '<span>' + x.pin[0] + '</span>') + '</span>';
   }
   function tarjeta(x, i) {
     var ok = tiene(x.id), R = RAREZA[x.rareza] || RAREZA.comun, av = ok ? null : avance(x.id);
@@ -516,6 +516,7 @@
       // Pin sin círculo (las coronas del Top 3): solo el dibujo, un poco más grande
       '.mcc-pin.suelto{background:none;border:0;box-shadow:none;border-radius:0;filter:drop-shadow(0 3px 0 rgba(0,0,0,.35))}.mcc-pin.suelto img,.mcc-dib .mcc-pin.suelto img{width:118%;height:118%;max-width:none}' +
       '.mcc-pin img,.mcc-dib .mcc-pin img{width:68%;height:68%;object-fit:contain;display:block}' +
+      '.mcc-pin.suelto.rec img,.mcc-dib .mcc-pin.suelto.rec img{width:100%;height:100%}' +
       '@keyframes mccEntra{from{opacity:0;transform:translateY(16px) scale(.92)}to{opacity:1;transform:none}}' +
       '@keyframes mccLate{50%{transform:scale(1.1)}}' +
       '@media (prefers-reduced-motion:reduce){.mcc-it,.mcc-etq.nuevo{animation:none}}';
