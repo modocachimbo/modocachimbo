@@ -56,6 +56,12 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
 .chips button{height:34px;min-width:48px;padding:0 9px;border-radius:10px;background:#0E0A22;border:1px solid var(--borde);font:800 13px "Sora";color:var(--dim)}
 .chips button.on{border-color:var(--lima);color:var(--lima);background:rgba(198,224,0,.08)}
 .caja h3+.desl{margin-top:0}
+/* Girar solo (lab-trigo) */
+.giro{display:flex;gap:8px;margin:0 0 6px}
+.giro .play{flex:1;height:46px;border-radius:14px;background:var(--lima);color:#151A03;font:800 15px "Sora";display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 0 var(--lima-osc)}
+.giro .play.on{background:var(--card2);color:var(--lima);border:1.5px solid var(--lima);box-shadow:0 4px 0 #1a1530}
+.giro .play svg{width:20px;height:20px}
+.giro .vel{height:46px;min-width:96px;padding:0 14px;border-radius:14px;background:#0E0A22;border:1px solid var(--borde);font:800 14px "Nunito";color:var(--dim)}
 /* Modo Reto (assets/lab-reto.js) */
 .modo{display:flex;padding:4px;gap:2px;border-radius:14px}
 .modo button{height:36px;padding:0 16px;border-radius:10px;font:800 14px "Nunito";color:var(--dim);display:flex;align-items:center;justify-content:center;gap:7px}

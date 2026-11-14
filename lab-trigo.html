@@ -20,6 +20,8 @@
 <symbol id="i-son" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="on-l" d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/><path class="off-l" d="M16 9.5l5 5M21 9.5l-5 5"/></symbol>
 <symbol id="i-mas" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
 <symbol id="i-menos" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></symbol>
+<symbol id="i-pausa" viewBox="0 0 24 24"><path d="M8 5.5v13M16 5.5v13" stroke-width="3.4"/></symbol>
 <symbol id="i-centrar" viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></symbol>
 <symbol id="i-rayo" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
 </defs></svg>
@@ -39,6 +41,7 @@
     <div class="ficha">
       <div class="tipos" id="ver"></div>
       <div class="caja" id="cAng"><h3>Gira el ángulo</h3>
+        <div class="giro"><button class="play" id="bPlay"><svg class="i"><use href="#i-play"/></svg><span>Girar</span></button><button class="vel" id="bVel">Normal</button></div>
         <label class="desl"><b>θ</b><input type="range" min="0" max="360" step="1" id="ang"><output id="angO"></output></label>
         <div class="chips" id="chips"></div>
       </div>
@@ -81,9 +84,16 @@ function pintarVer(){
   document.querySelectorAll('#ver button').forEach(function(b){ b.onclick=function(){ VER[b.dataset.k]=!VER[b.dataset.k]; son('tic'); pintarVer(); vista(); }; });
 }
 document.getElementById('chips').innerHTML=[30,37,45,53,60,90,120,135,150,180,210,270,300,330].map(function(a){ return '<button data-a="'+a+'">'+a+'°</button>'; }).join('');
-document.querySelectorAll('#chips button').forEach(function(b){ b.onclick=function(){ poner(+b.dataset.a,1); }; });
+document.querySelectorAll('#chips button').forEach(function(b){ b.onclick=function(){ parar(); poner(+b.dataset.a,1); }; });
 var ang=document.getElementById('ang');
-ang.oninput=function(){ poner(+ang.value); };
+ang.oninput=function(){ parar(); poner(+ang.value); };
+/* Girar solo: P da vueltas sin parar hasta pausar. Tres velocidades (grados por segundo) */
+var VEL=[['Lento',15],['Normal',30],['Rápido',60]], vi=1, giro=null, acum=0, tAnt=0, bPlay=document.getElementById('bPlay'), bVel=document.getElementById('bVel');
+function cuadro(t){ if(!giro) return; var dt=Math.min(.1,(t-tAnt)/1000); tAnt=t; acum=(acum+VEL[vi][1]*dt)%360; var n=Math.floor(acum); if(n!==th){ th=n; actualizar(); } giro=requestAnimationFrame(cuadro); }
+function pintarPlay(){ bPlay.classList.toggle('on',!!giro); bPlay.innerHTML='<svg class="i"><use href="#i-'+(giro?'pausa':'play')+'"/></svg><span>'+(giro?'Pausar':'Girar')+'</span>'; }
+function parar(){ if(!giro) return; cancelAnimationFrame(giro); giro=null; pintarPlay(); }
+bPlay.onclick=function(){ son('tic'); if(giro) return parar(); acum=th>=360?0:th; tAnt=performance.now(); giro=requestAnimationFrame(cuadro); pintarPlay(); };
+bVel.onclick=function(){ son('tic'); vi=(vi+1)%VEL.length; bVel.textContent=VEL[vi][0]; };
 
 function poner(t,toque){
   t=Math.max(0,Math.min(360,Math.round(t)));
@@ -144,7 +154,7 @@ var P=MCPlano(document.getElementById('plano'),{r:1.45,paso:.5,numeros:false,qui
   var mb=th/2*RAD; s+=tx(.42*Math.cos(mb),.42*Math.sin(mb),'θ','#FFC800','middle',0,5,14);
   /* coseno y seno */
   if(VER.cos&&v.c) { s+=ln(0,0,v.c,0,'stroke:'+C.cos+';stroke-width:6;stroke-linecap:round'); s+=tx(v.c/2,0,'cos θ',C.cos,'middle',0,v.s>=0?20:-10); }
-  if(VER.sen&&v.s) { s+=ln(v.c,0,v.c,v.s,'stroke:'+C.sen+';stroke-width:6;stroke-linecap:round'); s+=tx(v.c,v.s/2,'sen θ',C.sen,v.c>=0?'start':'end',v.c>=0?9:-9,4); }
+  if(VER.sen&&v.s) { s+=ln(v.c,0,v.c,v.s,'stroke:'+C.sen+';stroke-width:6;stroke-linecap:round'); var izq=v.c<0||(VER.tg&&v.c>.55); s+=tx(v.c,v.s/2,'sen θ',C.sen,izq?'end':'start',izq?-9:9,4); }
   s+=ln(0,0,v.c,v.s,'stroke:#C6E000;stroke-width:3.2;stroke-linecap:round;filter:drop-shadow(0 0 6px rgba(198,224,0,.5))');
   /* la onda */
   if(VER.onda){ var W=function(t){ return P.X(X0+t*RAD*SX); };
@@ -168,7 +178,7 @@ function angDe(e){ var b=pl.getBoundingClientRect(), x=P.ix(e.clientX-b.left), y
   if(VER.onda&&x>X0-.1&&Math.abs(y)<1.6) return Math.max(0,Math.min(360,(x-X0)/SX/RAD));
   if(Math.hypot(x,y)>1.9) return null; var a=Math.atan2(y,x)/RAD; return a<0?a+360:a; }
 function encaje(a){ var r=Math.round(a); NOT.some(function(n){ if(Math.abs(n-a)<=2.2){ r=n; return true; } }); return r===360&&th<180?0:r; }
-pl.addEventListener('pointerdown',function(e){ var a=angDe(e); if(a===null) return; arr=e.pointerId; pl.setPointerCapture(e.pointerId); poner(encaje(a)); });
+pl.addEventListener('pointerdown',function(e){ var a=angDe(e); if(a===null) return; parar(); arr=e.pointerId; pl.setPointerCapture(e.pointerId); poner(encaje(a)); });
 pl.addEventListener('pointermove',function(e){ if(arr!==e.pointerId) return; var a=angDe(e); if(a===null) return; var n=encaje(a); if(th>300&&n<60&&n!==0) n=n; poner(n); });
 function suelta(e){ if(arr===e.pointerId) arr=null; }
 pl.addEventListener('pointerup',suelta); pl.addEventListener('pointercancel',suelta);
@@ -179,6 +189,7 @@ var AZ=MCAzar, cA=document.getElementById('cAng'), cAsitio=cA.nextElementSibling
 function devolver(){ if(cA.parentNode!==cAsitio.parentNode) cAsitio.parentNode.insertBefore(cA,cAsitio); }
 function angAzar(){ var a=AZ([30,37,45,53,60]), q=AZ([1,2,2,3,3,4,4]); return [q===1?a:q===2?180-a:q===3?180+a:360-a,a,q]; }
 var RT=MCReto({sim:'trigo',nombre:'Reto · Circunferencia',
+  alEntrar:function(){ parar(); },
   alSalir:function(){ devolver(); },
   nueva:function(i,caja,R){
     devolver(); var g=angAzar(), t=g[0], a=g[1], q=g[2], fi=AZ([0,1,1,0,2]), v=val(t), vv=[v.s,v.c,v.t][fi], bueno=exacto(t,fi,vv);
