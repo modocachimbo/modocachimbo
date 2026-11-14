@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<script src="assets/guardia.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06040F">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="assets/app/icono-180.png">
+<title>Configuración electrónica · Laboratorio · Modo Cachimbo</title>
+<script src="assets/app.js" defer></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Nunito:wght@600;700;800;900&family=Sora:wght@700;800&display=swap">
+<link rel="stylesheet" href="assets/lab-mate.css">
+<style>
+/* Química: celeste en el título y en la pregunta del reto */
+.ttl small{color:#3AB4F0}
+.preg{background:linear-gradient(135deg,rgba(58,180,240,.16),rgba(21,17,39,.6));border-color:rgba(58,180,240,.35)}
+.preg small{color:#8FD6FF}
+.desl{grid-template-columns:52px 1fr 92px}
+.desl output{font-size:15px;white-space:nowrap}
+.plano>svg{touch-action:none}
+.busca{display:flex;gap:8px;margin:0 0 8px}
+.busca input{flex:1;min-width:0;height:44px;border-radius:13px;background:#0E0A22;border:1px solid var(--borde);padding:0 14px;font:800 15px "Nunito";color:var(--txt,#EEEAF7)}
+.busca input::placeholder{color:var(--faint)}
+.busca input:focus{outline:none;border-color:#3AB4F0}
+.busca button{width:44px;height:44px;border-radius:13px;background:#0E0A22;border:1px solid var(--borde);font:800 20px "Sora";color:var(--dim)}
+.conf{font:800 15px/1.6 "Sora";letter-spacing:.01em}
+.conf sup{font-size:.68em;color:#C6E000;margin-left:1px}
+.conf .k{color:#8FD6FF}
+.ops button sup{font-size:.62em;color:inherit}
+.ops.chico button{font-size:15px;line-height:1.5}
+.paso{margin:6px 0 0;font:700 13px/1.4 "Nunito";color:var(--faint);min-height:18px}
+.paso b{color:#8FD6FF}
+html.reto-on .giro,html.reto-on .paso{display:none}
+@media (max-width:860px),(orientation:portrait) and (max-width:1024px){ .plano{height:var(--alto,520px);min-height:0} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="i-atras" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="i-son" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="on-l" d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/><path class="off-l" d="M16 9.5l5 5M21 9.5l-5 5"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></symbol>
+<symbol id="i-pausa" viewBox="0 0 24 24"><path d="M8 5.5v13M16 5.5v13" stroke-width="3.4"/></symbol>
+<symbol id="i-otra" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5"/></symbol>
+<symbol id="i-rayo" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
+</defs></svg>
+<section class="beta-aviso"><b>Laboratorio en prueba</b><p>Los simuladores están en beta. Muy pronto se abren para todos.</p><a href="index.html">Volver al inicio</a></section>
+
+<div class="app">
+  <div class="top">
+    <a class="ib glass" href="laboratorio.html" aria-label="Volver al Laboratorio"><svg class="i"><use href="#i-atras"/></svg></a>
+    <div class="ttl glass"><small>Química</small><b>Configuración electrónica</b></div>
+    <div class="sp"></div>
+    <button class="ib glass son" id="bSon" aria-label="Sonido"><svg class="i"><use href="#i-son"/></svg></button>
+  </div>
+  <div class="cuerpo">
+    <div class="plano" id="plano"></div>
+    <div class="ficha">
+      <div class="tipos" id="ver"></div>
+      <div class="caja" id="cEle"><h3>Elige el elemento</h3>
+        <div class="busca"><button id="bMenos" aria-label="Anterior">−</button><input id="iBus" placeholder="Escribe: Fe, 26 o hierro" autocomplete="off"><button id="bMas" aria-label="Siguiente">+</button></div>
+        <label class="desl" data-k="z"><b>Z</b><input type="range" min="1" max="118" step="1" id="iz"><output id="izO"></output></label>
+        <label class="desl" data-k="q"><b>Carga</b><input type="range" min="-3" max="3" step="1" id="iq"><output id="iqO"></output></label>
+        <div class="giro"><button class="play" id="bPlay"></button><button class="vel" id="bVel">Normal</button></div>
+        <p class="paso" id="paso"></p>
+        <div class="chips" id="chips"></div>
+      </div>
+      <div class="caja"><h3 id="tDat">Resultados</h3><div class="datos" id="datos"></div></div>
+      <div class="clave" id="clave"></div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/mc-config.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/arcade-beta.js"></script>
+<script src="assets/lab-rayos.js"></script>
+<script src="assets/lab-sonido.js"></script>
+<script src="assets/lab-plano.js"></script>
+<script src="assets/lab-reto.js"></script>
+<script>
+MCLabPuerta('atomo');
+var son=MCLabComun('atomo');
+var SIM='H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf Db Sg Bh Hs Mt Ds Rg Cn Nh Fl Mc Lv Ts Og'.split(' ');
+var NOM='Hidrógeno Helio Litio Berilio Boro Carbono Nitrógeno Oxígeno Flúor Neón Sodio Magnesio Aluminio Silicio Fósforo Azufre Cloro Argón Potasio Calcio Escandio Titanio Vanadio Cromo Manganeso Hierro Cobalto Níquel Cobre Zinc Galio Germanio Arsénico Selenio Bromo Kriptón Rubidio Estroncio Itrio Circonio Niobio Molibdeno Tecnecio Rutenio Rodio Paladio Plata Cadmio Indio Estaño Antimonio Telurio Yodo Xenón Cesio Bario Lantano Cerio Praseodimio Neodimio Prometio Samario Europio Gadolinio Terbio Disprosio Holmio Erbio Tulio Iterbio Lutecio Hafnio Tantalio Wolframio Renio Osmio Iridio Platino Oro Mercurio Talio Plomo Bismuto Polonio Astato Radón Francio Radio Actinio Torio Protactinio Uranio Neptunio Plutonio Americio Curio Berkelio Californio Einstenio Fermio Mendelevio Nobelio Laurencio Rutherfordio Dubnio Seaborgio Bohrio Hasio Meitnerio Darmstatio Roentgenio Copernicio Nihonio Flerovio Moscovio Livermorio Teneso Oganesón'.split(' ');
+/* Regla de Moeller (serrucho): orden de llenado [n, l] */
+var ORD=[[1,0],[2,0],[2,1],[3,0],[3,1],[4,0],[3,2],[4,1],[5,0],[4,2],[5,1],[6,0],[4,3],[5,2],[6,1],[7,0],[5,3],[6,2],[7,1]];
+var LET='spdf', CAP=[2,6,10,14], CAPA='KLMNOPQ', GAS={2:0,10:2,18:4,36:7,54:10,86:14,118:18};
+var ANOM=[24,29,42,47,79]; /* Cr, Cu, Mo, Ag, Au: terminan en d⁴ o d⁹ y "saltan" */
+var COL={s:'#FF5C8A',p:'#C6E000',d:'#3AB4F0',f:'#B99CFF',up:'#C6E000',dn:'#FFC800'};
+var S={Z:26,q:0,k:-1}, VER={atomo:1,serrucho:1,orbitales:1}, OCULTA=false, FIJO={}, CAJ=null;
+function sup(n){ return String(n).split('').map(function(c){ return '⁰¹²³⁴⁵⁶⁷⁸⁹'['0123456789'.indexOf(c)]||c; }).join(''); }
+function carga(q){ return q?sup(Math.abs(q)===1?'':Math.abs(q))+(q>0?'⁺':'⁻'):''; }
+function nomSub(i){ return ORD[i][0]+LET[ORD[i][1]]; }
+function moeller(N){ var c=ORD.map(function(){ return 0; }); for(var i=0;i<ORD.length&&N>0;i++){ var t=Math.min(N,CAP[ORD[i][1]]); c[i]=t; N-=t; } return c; }
+function idx(n,l){ for(var i=0;i<ORD.length;i++) if(ORD[i][0]===n&&ORD[i][1]===l) return i; return -1; }
+
+/* Pasos: llenado por Moeller, salto (Cr, Cu…), y quitar electrones en los cationes */
+function pasos(Z,q){
+  var L=[{c:moeller(0),t:'Átomo sin electrones: solo el núcleo con '+Z+' protones.',u:-1}], N=Z-Math.min(q,0)*1, i;
+  if(q<0) N=Z-q;
+  for(var e=1;e<=(q<0?Z-q:Z);e++){ var c=moeller(e), u=0; for(i=ORD.length-1;i>=0;i--) if(c[i]){ u=i; break; } L.push({c:c,u:u,t:'Electrón '+e+' entra en <b>'+nomSub(u)+'</b>'+(c[u]===CAP[ORD[u][1]]?' (se llena)':'')+'.'}); }
+  var fin=L[L.length-1].c.slice();
+  if(ANOM.indexOf(Z)>=0&&q>=0){ var n=ORD[(function(){ for(i=ORD.length-1;i>=0;i--) if(fin[i]&&ORD[i][1]===2) return i; })()][0], is=idx(n+1,0), id=idx(n,2);
+    fin[is]--; fin[id]++; L.push({c:fin.slice(),u:id,salto:[is,id],t:'<b>Salto:</b> un electrón de '+nomSub(is)+' pasa a '+nomSub(id)+'. Queda d'+sup(fin[id])+(fin[id]===5?' (semilleno)':' (lleno)')+', que es más estable.'}); }
+  for(var r=0;r<q;r++){ var nm=0,j=-1; for(i=0;i<ORD.length;i++) if(fin[i]){ var nn=ORD[i][0]*10+ORD[i][1]; if(nn>nm){ nm=nn; j=i; } }
+    if(j<0) break; fin[j]--; L.push({c:fin.slice(),u:j,quita:1,t:'Catión: se quita un electrón del último nivel, de <b>'+nomSub(j)+'</b>.'}); }
+  return L;
+}
+var P=[], C=null;
+function total(c){ return c.reduce(function(s,x){ return s+x; },0); }
+function texto(c,html){ var out=[]; c.forEach(function(x,i){ if(x) out.push(html?nomSub(i)+'<sup>'+x+'</sup>':nomSub(i)+sup(x)); }); return out.join(' '); }
+function kernel(c){ var last=-1,i; for(i=0;i<c.length;i++) if(c[i]) last=i; var best=null;
+  [2,10,18,36,54,86].forEach(function(z){ var e=GAS[z]; if(e>=last) return; for(var k=0;k<=e;k++) if(c[k]!==CAP[ORD[k][1]]) return; best=z; });
+  return best; }
+function kerTexto(c,html){ var g=kernel(c); if(!g) return texto(c,html); var r=c.slice(); for(var k=0;k<=GAS[g];k++) r[k]=0; return (html?'<span class="k">['+SIM[g-1]+']</span> ':'['+SIM[g-1]+'] ')+texto(r,html); }
+function capas(c){ var n=[0,0,0,0,0,0,0]; c.forEach(function(x,i){ n[ORD[i][0]-1]+=x; }); while(n.length&&!n[n.length-1]) n.pop(); return n; }
+function desap(c){ var u=0; c.forEach(function(x,i){ var m=2*ORD[i][1]+1; u+=x<=m?x:2*m-x; }); return u; }
+function ultimo(c){ for(var i=ORD.length-1;i>=0;i--) if(c[i]){ var l=ORD[i][1], m=2*l+1, x=c[i], b=x<=m?x-1:x-m-1; return {i:i,n:ORD[i][0],l:l,ml:-l+b,ms:x<=m?'+1/2':'−1/2'}; } return null; }
+var ROM=['','I','II','III','IV','V','VI','VII','VIII'];
+function grupo(Z){ var c=pasos(Z,0), r=c[c.length-1].c, m=moeller(Z), last=0, i; for(i=ORD.length-1;i>=0;i--) if(m[i]){ last=i; break; }
+  var per=0; r.forEach(function(x,k){ if(x) per=Math.max(per,ORD[k][0]); });
+  var l=ORD[last][1], ns=r[idx(per,0)]||0, g, iu;
+  if(Z===2){ g='VIIIA'; iu=18; }
+  else if(l===0){ g=ROM[ns]+'A'; iu=ns; }
+  else if(l===1){ var np=r[idx(per,1)]; g=ROM[2+np]+'A'; iu=12+np; }
+  else if(l===2){ var nd=r[idx(per-1,2)], sm=ns+nd; iu=sm; g=sm<=7?ROM[sm]+'B':sm<=10?'VIIIB':sm===11?'IB':'IIB'; }
+  else { g='IIIB'; iu=3; }
+  return {per:per,g:g,iu:iu,bloque:LET[l],f:l===3}; }
+function nq(u){ return u?'('+u.n+', '+u.l+', '+(u.ml>0?'+':u.ml<0?'−':'')+Math.abs(u.ml)+', '+u.ms+')':'—'; }
+
+/* ===== Controles ===== */
+var bVer=[['atomo','Átomo de Bohr','#FF9600'],['serrucho','Serrucho (Moeller)','#3AB4F0'],['orbitales','Orbitales (cajitas)','#C6E000']];
+function pintarVer(){ document.getElementById('ver').innerHTML=bVer.map(function(b){ return '<button data-k="'+b[0]+'" class="'+(VER[b[0]]?'on':'')+'"><i style="background:'+b[2]+'"></i>'+b[1]+'</button>'; }).join('');
+  document.querySelectorAll('#ver button').forEach(function(b){ b.onclick=function(){ var k=b.dataset.k; VER[k]=!VER[k]; if(!VER.atomo&&!VER.serrucho&&!VER.orbitales) VER[k]=1; son('tic'); pintarVer(); dibujar(); }; }); }
+var EJ=[[8,0],[11,0],[17,0],[26,0],[24,0],[29,0],[35,0],[47,0],[26,3],[8,-2],[11,1],[20,2]];
+document.getElementById('chips').innerHTML=EJ.map(function(e,i){ return '<button data-i="'+i+'">'+SIM[e[0]-1]+carga(e[1])+'</button>'; }).join('');
+document.querySelectorAll('#chips button').forEach(function(b){ b.onclick=function(){ var e=EJ[+b.dataset.i]; son('tic'); poner(e[0],e[1]); lanzar(); }; });
+var iZ=document.getElementById('iz'), iQ=document.getElementById('iq'), iB=document.getElementById('iBus');
+iZ.oninput=function(){ poner(+iZ.value,S.q); };
+iQ.oninput=function(){ poner(S.Z,+iQ.value); };
+document.getElementById('bMenos').onclick=function(){ son('tic'); poner(Math.max(1,S.Z-1),S.q); };
+document.getElementById('bMas').onclick=function(){ son('tic'); poner(Math.min(118,S.Z+1),S.q); };
+function quitaTildes(t){ return t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
+iB.oninput=function(){ var t=iB.value.trim(); if(!t) return; var z=0;
+  if(/^\d+$/.test(t)) z=+t; else { var k=SIM.indexOf(t.charAt(0).toUpperCase()+t.slice(1).toLowerCase()); if(k>=0) z=k+1; else { var tq=quitaTildes(t); for(var i=0;i<NOM.length;i++) if(quitaTildes(NOM[i]).indexOf(tq)===0){ z=i+1; break; } } }
+  if(z>=1&&z<=118&&z!==S.Z) poner(z,S.q); };
+function rango(i,v){ i.style.setProperty('--p',((v-i.min)/(i.max-i.min)*100)+'%'); }
+function poner(Z,q){ parar(); S.Z=Z; S.q=Math.max(-3,Math.min(q,Z)); P=pasos(S.Z,S.q); S.k=P.length-1; actualizar(); }
+
+/* Llenar paso a paso */
+var VEL=[['Lento',.55],['Normal',.28],['Rápido',.1]], vi=1, anim=null, bPlay=document.getElementById('bPlay'), bVel=document.getElementById('bVel');
+function pintarPlay(){ var fin=S.k>=P.length-1; bPlay.classList.toggle('on',!!anim); bPlay.innerHTML='<svg class="i"><use href="#i-'+(anim?'pausa':'play')+'"/></svg><span>'+(anim?'Pausar':fin?'Llenar paso a paso':'Seguir')+'</span>'; }
+function lanzar(){ parar(); if(S.k>=P.length-1) S.k=0; son('lanzar'); anim=setTimeout(paso1,320); pintarPlay(); actualizar(); }
+function paso1(){ S.k++; var p=P[S.k]; son(p.salto?'bien':p.quita?'caer':'tic'); if(S.k>=P.length-1){ anim=null; actualizar(); if(alFin){ var fc=alFin; alFin=null; fc(); } return; }
+  actualizar(); anim=setTimeout(paso1,(p.salto||(p.c[p.u]===CAP[ORD[p.u][1]])?1.8:1)*VEL[vi][1]*1000); }
+var alFin=null;
+function parar(){ if(!anim) return; clearTimeout(anim); anim=null; pintarPlay(); }
+bPlay.onclick=function(){ if(anim){ son('tic'); return parar(); } lanzar(); };
+bVel.onclick=function(){ son('tic'); vi=(vi+1)%VEL.length; bVel.textContent=VEL[vi][0]; };
+
+function actualizar(){
+  iZ.value=S.Z; iQ.value=S.q; rango(iZ,S.Z); rango(iQ,S.q);
+  document.getElementById('izO').textContent=SIM[S.Z-1]+' · '+S.Z; document.getElementById('iqO').textContent=S.q?(S.q>0?'+':'−')+Math.abs(S.q)+(S.q>0?' catión':' anión'):'neutro';
+  if(document.activeElement!==iB) iB.value='';
+  C=P[S.k].c; var fin=P[P.length-1].c, g=grupo(S.Z), u=ultimo(fin), ne=total(fin), cp=capas(fin), d=desap(fin);
+  document.getElementById('paso').innerHTML=S.k<P.length-1||anim?P[S.k].t:'';
+  document.getElementById('tDat').textContent=NOM[S.Z-1]+' ('+SIM[S.Z-1]+carga(S.q)+') · '+ne+' electrones';
+  var dd=[['Configuración','<span class="conf">'+texto(fin,1)+'</span>','#3AB4F0',1],['Con kernel (gas noble)','<span class="conf">'+kerTexto(fin,1)+'</span>','#B99CFF',1],
+    ['Por niveles',cp.map(function(x,i){ return CAPA[i]+'='+x; }).join('  '),'#FF9600',1],
+    ['Último nivel','n = '+cp.length+' · '+cp[cp.length-1]+' e⁻',null],['Desapareados',d+' · '+(d?'paramagnético':'diamagnético'),null],
+    ['Último electrón (n, ℓ, mℓ, ms)',nq(u),'#C6E000',1],
+    ['Periodo y grupo',S.q?'<em style="font-style:normal;color:var(--faint)">del átomo neutro:</em> ':'',null],['Bloque',g.bloque+(g.f?' (tierras raras)':''),null]];
+  dd[6][1]+=g.per+' · '+g.g+' ('+g.iu+')';
+  document.getElementById('datos').innerHTML=dd.map(function(x){ return '<div class="dato'+(x[3]?' ancho':'')+'"><small>'+(x[2]?'<i style="background:'+x[2]+'"></i>':'')+x[0]+'</small><b>'+x[1]+'</b></div>'; }).join('');
+  /* Cae en el examen */
+  var cl=[], neu=pasos(S.Z,0); neu=neu[neu.length-1].c;
+  cl.push('Regla del serrucho (Moeller): 1s 2s 2p 3s 3p 4s 3d 4p 5s 4d 5p 6s 4f 5d 6p 7s 5f 6d 7p. Se llena por energía relativa n + ℓ: 4s (4+0) va antes que 3d (3+2).');
+  cl.push('Capacidad: s = 2, p = 6, d = 10, f = 14. Pauli: en un orbital caben 2 electrones con espín opuesto. Hund: en un subnivel primero va un electrón en cada orbital (todos ↑) y luego se aparean.');
+  if(ANOM.indexOf(S.Z)>=0) cl.push(NOM[S.Z-1]+' es una excepción: por Moeller terminaría en '+texto(moeller(S.Z)).split(' ').slice(-2).join(' ')+', pero un electrón de s salta a d para quedar d⁵ o d¹⁰. Así: '+kerTexto(neu)+'. Pasa con Cr, Cu, Mo, Ag y Au.');
+  if(S.q>0) cl.push('En un catión se quitan primero los electrones del último nivel (el n más alto), aunque se hayan llenado antes: '+SIM[S.Z-1]+' = '+kerTexto(neu)+' → '+SIM[S.Z-1]+carga(S.q)+' = '+kerTexto(fin)+'.');
+  if(S.q<0) cl.push('Un anión gana electrones y se siguen llenando por Moeller: '+SIM[S.Z-1]+carga(S.q)+' tiene '+ne+' e⁻ = '+kerTexto(fin)+(GAS[ne]!==undefined?' (isoelectrónico con el '+NOM[ne-1].toLowerCase()+').':'.'));
+  if(u) cl.push('Último electrón en '+nomSub(u.i)+': n = '+u.n+' (nivel), ℓ = '+u.l+' ('+LET[u.l]+'), mℓ = '+u.ml+' (su cajita, de −ℓ a +ℓ), ms = '+u.ms+' ('+(u.ms==='+1/2'?'flecha ↑':'flecha ↓')+').');
+  cl.push('Periodo = mayor nivel ('+g.per+'). Grupo A si termina en s o p (los electrones del último nivel); grupo B si termina en d: se suman ns + (n−1)d. '+NOM[S.Z-1]+': grupo '+g.g+'.');
+  document.getElementById('clave').innerHTML='<b><svg><use href="#i-rayo"/></svg>Cae en el examen</b>'+cl.map(function(c){ return '<p>'+c+'</p>'; }).join('');
+  pintarPlay(); dibujar();
+}
+
+/* ===== Dibujo ===== */
+var pl=document.getElementById('plano'), svg=document.createElementNS('http://www.w3.org/2000/svg','svg'); pl.appendChild(svg);
+var W=0,H=0, HIT=[], t0=performance.now();
+function tx(x,y,t,c,an,sz,w,fam){ return '<text x="'+x+'" y="'+y+'" fill="'+c+'" text-anchor="'+(an||'middle')+'" style="font:'+(w||800)+' '+(sz||12)+'px '+(fam||'Sora')+',sans-serif;paint-order:stroke;stroke:#0B0820;stroke-width:4px">'+t+'</text>'; }
+function flechaE(x,y,h,up,col){ var a=up?-1:1, y1=y-a*h/2, y2=y+a*h/2;
+  return '<path d="M'+x+' '+y1+'V'+(y2+a*h*.08)+'" stroke="'+col+'" stroke-width="2.6" stroke-linecap="round"/><path d="M'+x+' '+(y2+a*1)+'l'+(-h*.22)+' '+(-a*h*.3)+'M'+x+' '+(y2+a*1)+'l'+(h*.22)+' '+(-a*h*.3)+'" stroke="'+col+'" stroke-width="2.6" stroke-linecap="round" fill="none"/>'; }
+/* cajitas que caben en un ancho; devuelve el alto */
+function medirCajas(ws,b,subs){ var x=0, filas=1, gap=b*.55; subs.forEach(function(i){ var w=(2*ORD[i][1]+1)*b; if(x&&x+w>ws){ filas++; x=0; } x+=w+gap; }); return filas*(b+30)+(FIJO.cajas?0:18); }
+function subsVer(c){ var s=[]; c.forEach(function(x,i){ if(x) s.push(i); }); return s; }
+function plan(){
+  var chico=W<700, top=VER.atomo||VER.serrucho, subs=CAJ?CAJ.subs:subsVer(OCULTA?[]:C), alto=null;
+  var L={chico:chico};
+  if(chico){ var tw=W-24, th=top?Math.min(W*.62,300):0, b=24; if(VER.orbitales) while(b>17&&medirCajas(tw-8,b,subs)>360) b-=1;
+    var bh=VER.orbitales?Math.max(70,medirCajas(tw-8,b,subs)):0; L.top={x:12,y:12,w:tw,h:th}; L.caj={x:16,y:12+th+(th?14:0),w:tw-8,h:bh,b:b}; alto=L.caj.y+bh+16; }
+  else { var b2=34, cw=W-48; if(VER.orbitales) while(b2>18&&medirCajas(cw,b2,subs)>H*.42) b2-=1;
+    var bh2=VER.orbitales?Math.max(90,medirCajas(cw,b2,subs)):0, th2=top?H-bh2-48-(VER.orbitales?16:0):0; L.top={x:20,y:20,w:W-40,h:th2}; L.caj={x:24,y:H-bh2-22,w:cw,h:bh2,b:b2}; }
+  return {L:L,alto:alto};
+}
+function dibujar(){
+  var bx=pl.getBoundingClientRect(); W=bx.width; H=bx.height; if(!W||!C) return;
+  var pn=plan(); if(pn.alto&&Math.abs(pn.alto-H)>2){ pl.style.setProperty('--alto',pn.alto+'px'); H=pn.alto; }
+  svg.setAttribute('viewBox','0 0 '+W+' '+H); var L=pn.L, s='', T=L.top; HIT=[];
+  var c=OCULTA?ORD.map(function(){ return 0; }):C, p=OCULTA?{u:-1}:P[S.k];
+  if(VER.atomo&&VER.serrucho){ var wa=T.w*(L.chico?.46:.44); s+=atomo(T.x,T.y,wa,T.h,c,p)+serrucho(T.x+wa+10,T.y,T.w-wa-10,T.h,c,p); }
+  else if(VER.atomo) s+=atomo(T.x,T.y,T.w,T.h,c,p); else if(VER.serrucho) s+=serrucho(T.x,T.y,T.w,T.h,c,p);
+  if(VER.orbitales) s+=cajas(L.caj,c,p);
+  svg.innerHTML=s;
+}
+/* átomo de Bohr: núcleo y capas K, L, M… con sus electrones girando */
+function atomo(x,y,w,h,c,p){
+  var cx=x+w/2, cy=y+h/2+8, R=Math.min(w,h)/2-16, cp=capas(c), nmax=Math.max(cp.length,OCULTA?0:1), s='', ahora=(performance.now()-t0)/1000;
+  var r0=Math.max(15,R*.2), paso=nmax?(R-r0)/Math.max(nmax,1):0;
+  s+='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="16" fill="#0E0A22" stroke="#2A2346"/>';
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(R+8)+'" fill="url(#gHalo)"/>';
+  for(var n=1;n<=nmax;n++){ var r=r0+paso*n, e=cp[n-1]||0, dur=6+n*3.5;
+    s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r.toFixed(1)+'" fill="none" stroke="#3A3060" stroke-width="1.4"/>';
+    var g='', rr=Math.max(2.6,Math.min(4.6,paso*.32));
+    for(var k=0;k<e;k++){ var a=2*Math.PI*k/e; g+='<circle cx="'+(r*Math.cos(a)).toFixed(1)+'" cy="'+(r*Math.sin(a)).toFixed(1)+'" r="'+rr+'"/>'; }
+    var nuevo=p.u>=0&&ORD[p.u][0]===n;
+    s+='<g transform="translate('+cx+' '+cy+')"><g style="animation:gira '+dur+'s linear infinite;animation-delay:-'+(ahora%dur).toFixed(2)+'s" fill="'+(nuevo?'#C6E000':'#8FD6FF')+'">'+g+'</g></g>';
+    if(paso>13) s+=tx(cx+r*.71+4,cy-r*.71-2,CAPA[n-1]+(e?' '+e:''),nuevo?'#C6E000':'#A99FC8','start',Math.min(12,8+paso*.25),800);
+  }
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r0+'" fill="#FF9600" stroke="#FFC800" stroke-width="2" style="filter:drop-shadow(0 0 8px rgba(255,150,0,.6))"/>'+tx(cx,cy+4,S.Z+'p⁺','#1A0F00','middle',Math.min(13,r0*.62),800).replace('stroke:#0B0820','stroke:none');
+  /* ficha del elemento */
+  var fw=56,fh=62; s+='<rect x="'+(x+10)+'" y="'+(y+10)+'" width="'+fw+'" height="'+fh+'" rx="10" fill="#151127" stroke="#3AB4F0" stroke-opacity=".6"/>'+
+    tx(x+16,y+24,S.Z,'#8FD6FF','start',10.5,800)+tx(x+10+fw/2,y+50,SIM[S.Z-1]+(S.q?'<tspan font-size="11" dy="-9">'+carga(S.q)+'</tspan>':''),'#EEEAF7','middle',21,800)+
+    '<text x="'+(x+10+fw/2)+'" y="'+(y+65)+'" text-anchor="middle" style="font:800 8.5px Nunito;fill:#A99FC8">'+NOM[S.Z-1].slice(0,10)+'</text>';
+  if(!OCULTA) s+=tx(x+w-10,y+22,total(c)+' e⁻','#C6E000','end',12.5);
+  return s;
+}
+/* diagrama de Moeller (serrucho) con lo que ya se llenó */
+function serrucho(x,y,w,h,c,p){
+  var s='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="16" fill="#0E0A22" stroke="#2A2346"/>', cw=Math.min(96,(w-40)/4.2), ch=Math.min(54,(h-44)/7.3), ix=x+Math.max(26,(w-4*cw)/2+6), iy=y+30+Math.max(0,(h-40-7*ch)/2), bw=cw*.72, bh=ch*.66;
+  function cen(n,l){ return [ix+l*cw+cw/2,iy+(n-1)*ch+ch/2]; }
+  s+=tx(x+12,y+18,'Regla del serrucho','#8FD6FF','start',11,800,'Nunito');
+  for(var n=1;n<=7;n++) s+='<text x="'+(ix-8)+'" y="'+(cen(n,0)[1]+4)+'" text-anchor="end" style="font:700 11px \'Barlow Condensed\';fill:#6F6690">'+n+'</text>';
+  /* diagonales: n + ℓ constante, de arriba-derecha a abajo-izquierda */
+  var hecho=-1; c.forEach(function(v,i){ if(v) hecho=i; });
+  for(var sm=1;sm<=8;sm++){ var g=[]; ORD.forEach(function(o,i){ if(o[0]+o[1]===sm) g.push(i); }); if(!g.length) continue;
+    var a=cen(ORD[g[0]][0],ORD[g[0]][1]), b=cen(ORD[g[g.length-1]][0],ORD[g[g.length-1]][1]), dx=-cw*.5, dy=ch*.5, on=g[0]<=hecho;
+    var x1=a[0]-dx*.85, y1=a[1]-dy*.85, x2=b[0]+dx*1.05, y2=b[1]+dy*1.05, L=Math.hypot(x2-x1,y2-y1), ux=(x2-x1)/L, uy=(y2-y1)/L;
+    s+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+(on?'#C6E000':'#3A3060')+'" stroke-width="'+(on?2.4:1.6)+'" stroke-opacity="'+(on?.8:1)+'"/><path d="M'+x2+' '+y2+'l'+(-ux*8-uy*4)+' '+(-uy*8+ux*4)+'l'+(uy*8)+' '+(-ux*8)+'z" fill="'+(on?'#C6E000':'#3A3060')+'"/>'; }
+  ORD.forEach(function(o,i){ var q=cen(o[0],o[1]), cap=CAP[o[1]], v=c[i], col=COL[LET[o[1]]], act=i===p.u;
+    s+='<rect x="'+(q[0]-bw/2)+'" y="'+(q[1]-bh/2)+'" width="'+bw+'" height="'+bh+'" rx="7" fill="#151127" stroke="'+(v?col:'#2A2346')+'" stroke-width="'+(act?2.6:1.3)+'"'+(act?' style="filter:drop-shadow(0 0 6px '+col+')"':'')+'/>';
+    if(v) s+='<rect x="'+(q[0]-bw/2)+'" y="'+(q[1]-bh/2)+'" width="'+(bw*v/cap).toFixed(1)+'" height="'+bh+'" rx="7" fill="'+col+'" fill-opacity=".22"/>';
+    var fz=Math.min(16,bh*.5); s+='<text x="'+q[0]+'" y="'+(q[1]+fz*.36)+'" text-anchor="middle" style="font:800 '+fz+'px Sora;fill:'+(v?'#EEEAF7':'#4A4170')+'">'+o[0]+LET[o[1]]+(v?'<tspan dy="'+(-fz*.45)+'" style="font-size:'+(fz*.72)+'px;fill:'+col+'">'+v+'</tspan>':'')+'</text>'; });
+  return s;
+}
+/* cajitas (orbitales) con flechas ↑ ↓ siguiendo Hund */
+function cajas(R,c,p){
+  var s='', b=R.b, gap=b*.55, x=R.x, y=R.y+(FIJO.cajas?0:18), subs=CAJ?CAJ.subs:subsVer(c);
+  if(!FIJO.cajas) s+=tx(R.x-4,R.y+6,'Orbitales: cada cajita = 1 orbital (máx. 2 electrones)','#A99FC8','start',11,700,'Nunito');
+  if(!subs.length&&!OCULTA) s+=tx(R.x+R.w/2,y+b/2+4,'Pulsa "Llenar paso a paso" para ver entrar los electrones','#6F6690','middle',12,700,'Nunito');
+  if(OCULTA&&!CAJ) s+=tx(R.x+R.w/2,y+b/2+4,'Se verán al comprobar','#4A4170','middle',12,700,'Nunito');
+  var ultimoE=p.u>=0?ultimo(c):null;
+  subs.forEach(function(i){ var l=ORD[i][1], m=2*l+1, w=m*b, v=CAJ?null:c[i], col=COL[LET[l]];
+    if(x>R.x&&x+w>R.x+R.w){ x=R.x; y+=b+30; }
+    for(var j=0;j<m;j++){ var bx=x+j*b, st=CAJ?CAJ.st[i][j]:(j<Math.min(v,m)?1:0)+(j<v-m?1:0), act=!CAJ&&ultimoE&&ultimoE.i===i&&j===ultimoE.ml+l&&i===p.u;
+      s+='<rect x="'+bx+'" y="'+y+'" width="'+b+'" height="'+b+'" fill="'+(act?'rgba(198,224,0,.14)':'#151127')+'" stroke="'+(CAJ?'#8FD6FF':col)+'" stroke-opacity="'+(CAJ?.8:.75)+'" stroke-width="1.6"/>';
+      if(st>=1) s+=flechaE(bx+b*(st===2?.33:.5),y+b/2,b*.66,true,COL.up);
+      if(st===2) s+=flechaE(bx+b*.67,y+b/2,b*.66,false,COL.dn);
+      if(CAJ) HIT.push({i:i,j:j,x:bx,y:y,b:b});
+      if(!CAJ&&ultimoE&&ultimoE.i===i&&b>=20) s+='<text x="'+(bx+b/2)+'" y="'+(y+b+24)+'" text-anchor="middle" style="font:700 10px \'Barlow Condensed\';fill:#6F6690">'+((j-l)>0?'+':'')+(j-l)+'</text>'; }
+    s+=tx(x+w/2,y+b+13,nomSub(i)+(v?sup(v):''),col,'middle',Math.min(13,b*.48),800);
+    x+=w+gap; });
+  if(CAJ&&CAJ.ker) s=tx(R.x,R.y-4,'['+CAJ.ker+'] y luego:','#B99CFF','start',12,800)+s;
+  return s;
+}
+/* tocar una cajita en el reto: vacía → ↑ → ↑↓ → vacía */
+pl.addEventListener('pointerdown',function(e){ if(!CAJ||CAJ.listo) return; var b=pl.getBoundingClientRect(), x=e.clientX-b.left, y=e.clientY-b.top;
+  HIT.forEach(function(h){ if(x>=h.x&&x<=h.x+h.b&&y>=h.y&&y<=h.y+h.b){ CAJ.st[h.i][h.j]=(CAJ.st[h.i][h.j]+1)%3; son('tic'); RT.listo(true); dibujar(); } }); });
+var est=document.createElement('style'); est.textContent='@keyframes gira{to{transform:rotate(360deg)}}'; document.head.appendChild(est);
+svg.insertAdjacentHTML('beforebegin','');
+var defs='<svg width="0" height="0" style="position:absolute"><defs><radialGradient id="gHalo"><stop offset="0" stop-color="#FF9600" stop-opacity=".18"/><stop offset="1" stop-color="#FF9600" stop-opacity="0"/></radialGradient></defs></svg>';
+document.body.insertAdjacentHTML('afterbegin',defs);
+if(window.ResizeObserver) new ResizeObserver(function(){ dibujar(); }).observe(pl); else addEventListener('resize',dibujar);
+pintarVer(); poner(26,0);
+
+/* ============ MODO RETO (assets/lab-reto.js) ============ */
+var QID=0, AZ=MCAzar, GUARDA=null;
+function fin(Z,q){ var L=pasos(Z,q||0); return L[L.length-1].c; }
+function ops4(buena,malas,c){ var o=[buena]; malas.forEach(function(m){ if(o.indexOf(m)<0&&o.length<4) o.push(m); }); for(var k=4;c&&o.length<4&&k<14;k++){ var v=variante(c,k); if(o.indexOf(v)<0) o.push(v); } return o; }
+function variante(c,k){ /* configuraciones parecidas pero mal escritas */
+  var r=c.slice(), u=ultimo(r); if(!u) return texto(r,1);
+  if(k===0){ var m=moeller(total(c)); if(texto(m)!==texto(c)) return kerTexto(m,1); r[u.i]++; return kerTexto(r,1); }
+  if(k===1){ if(u.i>0&&r[u.i]>1){ r[u.i]--; var j=u.i+1; r[j]=(r[j]||0)+1; return kerTexto(r,1); } r[u.i]=Math.max(0,r[u.i]-1); return kerTexto(r,1); }
+  if(k===2){ /* 3d antes que 4s: escribir n−1 d con todos */ var is=-1; ORD.forEach(function(o,i){ if(o[1]===0&&r[i]===2&&i>0&&ORD[i][0]===u.n+(u.l===2?1:0)) is=i; }); if(is>=0&&u.l===2){ r[is]=0; r[u.i]+=2; if(r[u.i]>10){ r[u.i]=10; } return kerTexto(r,1); } r[u.i]=Math.max(1,r[u.i]-2); return kerTexto(r,1); }
+  if(k===3){ r[u.i]=Math.min(CAP[u.l],r[u.i]+2); if(texto(r)!==texto(c)) return kerTexto(r,1); }
+  /* otras: cambiar en ±1 algún subnivel después del kernel (el total ya no cuadra) */
+  var g=kernel(c), libres=[]; r=c.slice(); r.forEach(function(x,i){ if(x&&i>(g?GAS[g]:-1)) libres.push(i); });
+  if(k%3===2){ var ul=libres[libres.length-1]+1; if(ul<ORD.length){ r[ul]=(r[ul]||0)+(k>8?2:1); return kerTexto(r,1); } }
+  var j=libres[k%libres.length], d=(k%2?1:-1); if(r[j]+d>CAP[ORD[j][1]]||r[j]+d<1) d=-d; r[j]+=d; return kerTexto(r,1);
+}
+function revela(cp){ return function(){ var r=cp(); OCULTA=false; CAJ=null; FIJO={reto:1}; S.k=0; actualizar(); lanzar(); return r; }; }
+var RT=MCReto({sim:'atomo',nombre:'Reto · Configuración electrónica',
+  alEntrar:function(){ parar(); GUARDA={Z:S.Z,q:S.q,VER:JSON.parse(JSON.stringify(VER))}; VER={atomo:1,serrucho:1,orbitales:1}; pintarVer(); },
+  alSalir:function(){ QID++; parar(); OCULTA=false; CAJ=null; FIJO={}; if(GUARDA){ VER=GUARDA.VER; pintarVer(); poner(GUARDA.Z,GUARDA.q); } },
+  nueva:function(i,caja,R){
+    QID++; parar(); CAJ=null; FIJO={reto:1}; OCULTA=true;
+    if(i===0){ var Z=AZ([7,8,11,15,16,17,19,20,24,26,29,30,33,35]); poner(Z,0); var c=fin(Z), bue=kerTexto(c,1);
+      var o=R.opciones(caja,'¿Cuál es la configuración electrónica del <em>'+NOM[Z-1].toLowerCase()+' ('+SIM[Z-1]+', Z = '+Z+')</em>?',ops4(bue,[variante(c,0),variante(c,1),variante(c,2),variante(c,3)],c),0,
+        (ANOM.indexOf(Z)>=0?'Es una excepción: un electrón de s salta a d. ':'Siguiendo el serrucho: ')+SIM[Z-1]+' = '+kerTexto(c)+'.');
+      caja.querySelector('.ops').classList.add('chico'); o.comprobar=revela(o.comprobar); return o; }
+    if(i===1){ var Z1=AZ([6,7,8,15,16,21,23,25,26,27,28,24,29,34]); poner(Z1,0); var d=desap(fin(Z1));
+      var o1=R.opciones(caja,'¿Cuántos <em>electrones desapareados</em> tiene el <em>'+NOM[Z1-1].toLowerCase()+' (Z = '+Z1+')</em>?',ops4(String(d),[String(d+1),String(Math.max(0,d-1)),String(d+2),String(d===0?3:0)]),0,
+        SIM[Z1-1]+' = '+kerTexto(fin(Z1))+'. Por Hund, en el último subnivel quedan '+d+' electrones solos: '+(d?'paramagnético.':'diamagnético.'));
+      o1.comprobar=revela(o1.comprobar); return o1; }
+    if(i===2){ /* llenar las cajitas de la capa de valencia */
+      var Z2=AZ([6,7,8,9,14,15,16,21,22,23,25,26,27,28]), c2=fin(Z2), g=kernel(c2), subs=[];
+      c2.forEach(function(x,k){ if(x&&k>(g?GAS[g]:-1)) subs.push(k); });
+      if(subs.length===1&&ORD[subs[0]][1]===1) subs.unshift(subs[0]-1);
+      var st={}; subs.forEach(function(k){ st[k]=Array(2*ORD[k][1]+1).fill(0); });
+      CAJ={subs:subs,st:st,ker:g?SIM[g-1]:''}; FIJO={reto:1,cajas:1}; VER.orbitales=1; poner(Z2,0); OCULTA=true;
+      R.texto(caja,'Llena','Llena los orbitales del <em>'+NOM[Z2-1].toLowerCase()+' (Z = '+Z2+')</em> después del kernel. Toca una cajita: una vez ↑, otra vez ↑↓.');
+      return { listo:false, comprobar:function(){ var ok=true; subs.forEach(function(k){ var a=st[k], m=a.length, tot=a.reduce(function(s,x){ return s+x; },0), sol=a.filter(function(x){ return x===1; }).length, de=c2[k]<=m?c2[k]:2*m-c2[k]; if(tot!==c2[k]||sol!==de) ok=false; });
+          CAJ.listo=1; var q=QID; setTimeout(function(){ if(q!==QID) return; OCULTA=false; CAJ=null; FIJO={reto:1}; S.k=0; actualizar(); lanzar(); },ok?900:1400);
+          return {ok:ok,msg:SIM[Z2-1]+' = '+kerTexto(c2)+'. Hund: en cada subnivel primero un electrón por cajita (↑) y recién después se aparean (↑↓).'}; } };
+    }
+    if(i===3){ var Z3=AZ([7,8,9,11,13,15,17,20,21,24,26,29,30,35]); poner(Z3,0); var u=ultimo(fin(Z3)), bue3=nq(u);
+      var m1=nq({n:u.n,l:u.l,ml:u.ml,ms:u.ms==='+1/2'?'−1/2':'+1/2'}), m2=nq({n:u.n,l:u.l,ml:-u.ml||u.l,ms:u.ms}), m3=nq({n:u.n+1,l:u.l,ml:u.ml,ms:u.ms}), m4=nq({n:u.n,l:Math.max(0,u.l-1),ml:0,ms:u.ms});
+      var o3=R.opciones(caja,'Números cuánticos <em>(n, ℓ, mℓ, ms)</em> del <em>último electrón</em> del '+NOM[Z3-1].toLowerCase()+' (Z = '+Z3+'):',ops4(bue3,[m1,m2,m3,m4,nq({n:u.n,l:u.l,ml:u.ml===0?1:0,ms:u.ms==='+1/2'?'−1/2':'+1/2'}),nq({n:Math.max(1,u.n-1),l:u.l,ml:u.ml,ms:u.ms})]),0,
+        'Termina en '+nomSub(u.i)+sup(fin(Z3)[u.i])+': n = '+u.n+', ℓ = '+u.l+', su cajita es mℓ = '+u.ml+' y la flecha '+(u.ms==='+1/2'?'↑ → +1/2.':'↓ → −1/2.'));
+      caja.querySelector('.ops').classList.add('chico'); o3.comprobar=revela(o3.comprobar); return o3; }
+    if(AZ([0,1])){ var Z4=AZ([11,12,13,15,17,19,20,22,25,26,29,30,33,35,38]), g4=grupo(Z4), bue4='Periodo '+g4.per+', grupo '+g4.g;
+      var otros=['Periodo '+(g4.per+1)+', grupo '+g4.g,'Periodo '+g4.per+', grupo '+(g4.g.slice(-1)==='A'?g4.g.slice(0,-1)+'B':g4.g==='VIIIB'?'VIIIA':g4.g.slice(0,-1)+'A'),'Periodo '+(g4.per-1)+', grupo '+g4.g,'Periodo '+g4.per+', grupo '+ROM[Math.min(8,g4.iu%10||2)]+'A'];
+      poner(Z4,0); var o4=R.opciones(caja,'¿En qué <em>periodo y grupo</em> está el elemento de <em>Z = '+Z4+'</em>?',ops4(bue4,otros),0,
+        SIM[Z4-1]+' = '+kerTexto(fin(Z4))+'. Periodo = último nivel ('+g4.per+'); termina en '+g4.bloque+' → grupo '+g4.g+'.');
+      caja.querySelector('.ops').classList.add('chico'); o4.comprobar=revela(o4.comprobar); return o4; }
+    var I=AZ([[26,2],[26,3],[29,1],[29,2],[25,2],[24,3],[30,2],[27,2],[28,2]]), ci=fin(I[0],I[1]), bue5=kerTexto(ci,1);
+    var mal1=kerTexto(moeller(I[0]-I[1]),1);
+    poner(I[0],I[1]); var o5=R.opciones(caja,'Configuración del ion <em>'+SIM[I[0]-1]+carga(I[1])+'</em> (Z = '+I[0]+'):',ops4(bue5,[mal1,variante(ci,1),variante(ci,3),variante(ci,0)],ci),0,
+      'Primero el átomo neutro: '+kerTexto(fin(I[0]))+'. En el catión se quitan '+I[1]+' electrones del último nivel (4s primero): '+kerTexto(ci)+'.');
+    caja.querySelector('.ops').classList.add('chico'); o5.comprobar=revela(o5.comprobar); return o5;
+  }});
+</script>
+</body>
+</html>
