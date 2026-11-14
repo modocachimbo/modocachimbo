@@ -50,7 +50,29 @@
 .ley i{width:18px;height:6px;border-radius:4px}
 .dato b.cambia{animation:cambia .6s ease}
 @keyframes cambia{0%{color:#C6E000;transform:scale(1.08)}100%{transform:none}}
+.extra{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.extra span{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:10px;background:#0E0A22;border:1px solid var(--borde);font:800 12.5px "Nunito";color:var(--dim)}
+.extra span b{font:800 12.5px "Sora";color:var(--tx)}
+.mas{margin:0 0 12px;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.mas li{position:relative;padding:7px 10px 7px 26px;border-radius:11px;background:#0E0A22;border:1px solid var(--borde);font:700 13.5px/1.45 "Nunito";color:var(--tx);transition:border-color .3s,background .3s,opacity .3s}
+.mas li::before{content:"";position:absolute;left:10px;top:13px;width:7px;height:7px;border-radius:50%;background:#55C23A}
+.mas li em{font-style:normal;color:#9BE04A}
+.mas.sub li{opacity:.45}.mas.sub li.on{opacity:1;border-color:#55C23A;background:rgba(85,194,58,.1)}
+.ciclo{display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;align-items:center}
+.ciclo svg{width:150px;height:150px;display:block}
+.ciclo p{margin:0 0 6px;font:700 13px/1.45 "Nunito";color:var(--dim)}
+.ciclo p b{color:var(--tx);font-family:"Sora";font-size:13px}
+.solo-cro{display:none}
+html.modo-cro .solo-cro{display:block}html.modo-cro .solo-ciclo{display:none}
+html.modo-cro .linea,html.modo-cro .fase,html.modo-cro .nombres{display:none}
+html.modo-cro #lienzo{height:100%;bottom:0}
+.btn-sep{width:100%;height:44px;margin-top:10px;border-radius:13px;background:#55C23A;color:#0B1A03;font:800 14.5px "Sora";box-shadow:0 4px 0 #2E7A16}
+.btn-sep:active{transform:translateY(3px);box-shadow:0 1px 0 #2E7A16}
+.tabla-c{width:100%;border-collapse:collapse;font:700 13px/1.4 "Nunito"}
+.tabla-c td{padding:6px 4px;border-top:1px solid var(--borde);vertical-align:top}
+.tabla-c td:first-child{color:#9BE04A;font-weight:800;white-space:nowrap;padding-right:10px}
 @media (max-width:860px),(orientation:portrait) and (max-width:1024px){
+  .ciclo{grid-template-columns:120px minmax(0,1fr)}.ciclo svg{width:120px;height:120px}
   .plano{height:min(calc(66vw + 120px),70vh);min-height:300px}
   .fase b{font-size:15px}
   .nombres{height:34px;padding:0 10px;font-size:12px}
@@ -87,21 +109,39 @@
     </div>
     <div class="ficha">
       <div class="tipos" id="tipos"></div>
-      <div class="caja">
+      <div class="caja solo-ciclo">
         <div class="etapa"><b id="eNom">G1</b><span id="eNum">1 de 8</span></div>
         <p class="desc" id="eDesc"></p>
+        <div class="extra" id="eExtra"></div>
+        <ul class="mas" id="eMas"></ul>
         <div class="giro"><button class="play" id="bPlay"><svg><use href="#i-play"/></svg><span>Reproducir</span></button><button class="vel" id="bVel">Normal</button></div>
         <div class="nav"><button id="bAnt"><svg><use href="#i-izq"/></svg>Anterior</button><button id="bSig">Siguiente<svg><use href="#i-der"/></svg></button></div>
         <div class="ley"><span><i style="background:#FF5C8A"></i>De la madre</span><span><i style="background:#3AB4F0"></i>Del padre</span><span><i style="background:#C6E000;height:2px"></i>Huso</span></div>
       </div>
-      <div class="caja"><h3>Conteo por célula · modelo 2n = 4</h3><div class="datos" id="datos"></div>
+      <div class="caja solo-ciclo"><h3>Ciclo celular · etapa actual</h3><div class="ciclo"><svg id="cicloSvg" viewBox="0 0 200 200"></svg><div id="cicloTx"></div></div></div>
+      <div class="caja solo-cro"><h3>Cromosoma en metafase · tipos</h3><div class="chips" id="cTipos"></div><p class="desc" id="cTipoTx" style="margin:10px 0 0"></p>
+        <button class="btn-sep" id="bSep">Ver anafase: la separasa corta las cohesinas</button></div>
+      <div class="caja solo-cro"><h3>Proteínas del cromosoma</h3><table class="tabla-c">
+        <tr><td>Condensinas</td><td>Empaquetan (condensan) el cromosoma. Se <em>activan en profase</em> y se inactivan en telofase.</td></tr>
+        <tr><td>Cohesinas</td><td>Mantienen unidas a las cromátidas hermanas. Se <em>activan en la fase S</em> y se destruyen en <em>anafase</em>.</td></tr>
+        <tr><td>Separasa</td><td>Enzima que corta las cohesinas en anafase.</td></tr>
+        <tr><td>Securina</td><td>Freno de la separasa. El complejo <em>APC/C</em> la destruye para que empiece la anafase.</td></tr></table></div>
+      <div class="caja solo-cro"><h3>Clases y cariotipo humano</h3><table class="tabla-c">
+        <tr><td>Autosomas</td><td>Somáticos: <em>22 pares</em> (44 cromosomas).</td></tr>
+        <tr><td>Sexuales</td><td>Genosomas: <em>1 par</em>. XX mujer, XY varón. Alteraciones: XXX (triple X) y XYY.</td></tr>
+        <tr><td>Cariotipo</td><td>Número y forma de los cromosomas de una especie. Se arma con cromosomas en <em>metafase</em> (cariograma).</td></tr>
+        <tr><td>2n y n</td><td>Diploide <em>2n = 46</em> (células somáticas). Haploide <em>n = 23</em> (gametos).</td></tr></table></div>
+      <div class="caja solo-ciclo"><h3>Conteo por célula · modelo 2n = 4</h3><div class="datos" id="datos"></div>
         <p style="margin:10px 0 0;font:700 12.5px/1.45 Nunito;color:var(--dim)">En humanos 2n = 46: cambia el número, pero las fases son iguales.</p></div>
       <div class="clave"><b><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7.1L12 17.3 5.8 21l1.6-7.1L2 9.2l7.1-.6z"/></svg>Cae en el examen</b>
         <p>El ADN se duplica en la <em>fase S</em> de la interfase. La interfase es la etapa más larga del ciclo.</p>
         <p><em>Metafase</em>: mejor momento para ver y contar cromosomas (cariotipo). <em>Anafase</em>: la fase más corta.</p>
         <p><em>Mitosis</em>: 1 célula 2n da <em>2 células 2n idénticas</em> (crecimiento, reparación). <em>Meiosis</em>: da <em>4 células n distintas</em> (gametos).</p>
         <p>El <em>crossing over</em> ocurre en la <em>profase I</em> (paquiteno). En anafase I se separan los <em>homólogos</em>; en anafase II, las <em>cromátidas hermanas</em>.</p>
-        <p>Citocinesis: en animales por <em>surco</em> (anillo contráctil); en plantas por <em>placa celular</em> (fragmoplasto).</p></div>
+        <p>Citocinesis: en animales por <em>surco</em> (anillo contráctil); en plantas por <em>placa celular</em> (fragmoplasto).</p>
+        <p>Duración: <em>G1 &gt; S &gt; G2 &gt; M</em>. En la mitosis: profase (30 min) &gt; telofase (15) &gt; anafase (12) &gt; metafase (3). Para recordar el orden: <em>PROFE METE ANA TELO</em>.</p>
+        <p><em>Mitosis</em> ocurre en células somáticas (división ecuacional). <em>Meiosis</em> en células germinales: la I es reduccional y la II ecuacional.</p>
+        <p>Mitosis animal: <em>astral</em> (con centriolos). Vegetal: <em>anastral</em>.</p></div>
     </div>
   </div>
 </div>
@@ -207,6 +247,40 @@ var MEI=[['G1',[g1],[1,'4','4','2c','2n']],['S',[fS],[1,'4','4 → 8','2c → 4c
  ['Anafase II',[aII],[2,'4 (2 por polo)','4','2c','n'],'Ahora sí se separan las <em>cromátidas hermanas</em> y van a polos opuestos.'],
  ['Telofase II',[tII],[2,'2 por núcleo','2 por núcleo','c por núcleo','n'],'Se forman <em>4 núcleos</em>, cada uno con n cromosomas de una sola cromátida.'],
  ['Citocinesis II',[cIIA,cIIB],[4,'2','2','c','n'],'Resultan <em>4 células haploides (n)</em> distintas entre sí por el crossing over y el azar. En animales son los <em>gametos</em>.']];
+var EX={
+ G1:['7 h','Ciclina D – CDK 4/6 · luego Ciclina E – CDK 2 (FPR)',['Síntesis de proteínas y <em>duplicación de organelas</em>.','Punto de control: <em>p53 / p21 / Rb → E2F</em>.','<em>G0</em>: la célula deja de dividirse. Definitivo: neuronas y miocitos cardíacos. Temporal: hepatocitos, linfocitos y fibroblastos.']],
+ S:['5 h','Ciclina A – CDK 2',['<em>Replicación del ADN</em> y síntesis de histonas.','Se activan las <em>cohesinas</em>: mantienen unidas a las cromátidas hermanas.']],
+ G2:['3 h','Ciclina B – CDK 1 (FPM)',['Síntesis de <em>tubulina</em> (para el huso) y acumulación de ATP.','Punto de control: <em>p53 / p21 / CDC25</em>.']],
+ 'Profase':['30 min','Ciclina B – CDK 1',['Se activan las <em>condensinas</em>: empaquetan el ADN.','Los centriolos van a los polos y forman los <em>ásteres</em> y el huso acromático.','Profase tardía (<em>prometafase</em>): se fosforila la lámina nuclear y se desintegra la carioteca.']],
+ 'Metafase':['3 min','',['<em>Máxima condensación</em>: cada cromosoma tiene 2 cromátidas.','El huso se ancla al <em>cinetocoro</em>.','Con cromosomas en metafase se arma el <em>cariotipo</em> (cariograma).']],
+ 'Anafase':['12 min','APC/C',['El APC/C destruye la <em>securina</em>; la <em>separasa</em> queda libre y corta las cohesinas.','<em>Disyunción</em>: cada cromátida va a un polo; el huso se acorta.','Empieza la citocinesis.']],
+ 'Telofase':['15 min','',['Se inactivan las condensinas: la cromatina se <em>descondensa</em>.','Reaparecen la carioteca y el nucléolo; desaparece el huso.']],
+ 'Citocinesis':['','',['Animal: <em>anillo contráctil</em> de actina y miosina, de afuera hacia adentro (centrípeta).','Vegetal: el <em>fragmoplasto</em> forma la placa celular del centro hacia afuera (centrífuga).','Resultado: 2 células hijas diploides (división ecuacional).']],
+ 'Profase I':['','',['<em>Leptonema</em>: los cromosomas se ven como un ramillete (bouquet).','<em>Cigonema</em>: sinapsis, se forma el complejo sinaptonémico.','<em>Paquinema</em>: crossing over, fuente de variabilidad.','<em>Diplonema</em>: se ven los quiasmas (puntos de unión). En la mujer, aquí se detiene el ovocito I (1.er arresto).','<em>Diacinesis</em>: desaparece la carioteca y se forma el huso.'],[[0,1],[2,3],[4]]],
+ 'Metafase I':['','',['<em>Placa ecuatorial doble</em>: cada homólogo queda a un lado.','El huso se ancla al cinetocoro.']],
+ 'Anafase I':['','',['<em>Disyunción I</em>: se separan los cromosomas homólogos.','División <em>reduccional</em>: de 2n a n.']],
+ 'Telofase I':['','',['Se forma la carioteca y desaparece el huso.']],
+ 'Citocinesis I':['','',['<em>Intercinesis</em>: se duplican los centriolos, pero el ADN <em>no</em> se duplica.','Varón: espermatocito I (2n) da 2 espermatocitos II (n).']],
+ 'Profase II':['','',['La meiosis II es <em>ecuacional</em>: es parecida a una mitosis.']],
+ 'Metafase II':['','',['En la mujer el ovocito II queda detenido aquí (<em>2.º arresto</em>) hasta la fecundación.']],
+ 'Anafase II':['','',['Se separan las <em>cromátidas hermanas</em>, como en la anafase de la mitosis.']],
+ 'Telofase II':['','',['Reaparece la carioteca en los 4 núcleos.']],
+ 'Citocinesis II':['','',['Varón: 4 espermátidas que maduran a 4 espermatozoides.','Mujer: 1 óvulo y 3 cuerpos polares.']]};
+var SUBK=-1;
+function marcarSub(k){ if(k===SUBK) return; SUBK=k; var e=EX[lista()[S.i][0]]; if(!e||!e[3]) return; var on=e[3][Math.max(0,Math.min(k,e[3].length-1))];
+  document.querySelectorAll('#eMas li').forEach(function(li,j){ li.classList.toggle('on',on.indexOf(j)>=0); }); }
+function ciclo(nom){ var es=INT.indexOf(nom), act=es>=0?es:3, SG=[['G1',7,'#55C23A'],['S',5,'#3AB4F0'],['G2',3,'#9B6BFF'],['M',1,'#FF5C8A']], tot=16, a0=-90, h='';
+  SG.forEach(function(g,k){ var a1=a0+g[1]/tot*360, r=k===act?90:82, ri=50, L=(a1-a0)>180?1:0;
+    function P(rr,a){ return f1(100+rr*Math.cos(a*RAD))+' '+f1(100+rr*Math.sin(a*RAD)); }
+    h+='<path d="M'+P(r,a0+1)+'A'+r+' '+r+' 0 '+L+' 1 '+P(r,a1-1)+'L'+P(ri,a1-1)+'A'+ri+' '+ri+' 0 '+L+' 0 '+P(ri,a0+1)+'Z" fill="'+g[2]+'" opacity="'+(k===act?1:.28)+'"/>';
+    var am=(a0+a1)/2, rt=66; h+='<text x="'+f1(100+rt*Math.cos(am*RAD))+'" y="'+f1(100+rt*Math.sin(am*RAD)+4)+'" text-anchor="middle" font-family="Sora" font-weight="800" font-size="'+(k===3?11:13)+'" fill="'+(k===act?(k===3?'#FF9DC0':'#0B1A03'):'#EEEAF7')+'">'+g[0]+'</text>';
+    a0=a1; });
+  h+='<text x="100" y="97" text-anchor="middle" font-family="Sora" font-weight="800" font-size="15" fill="#EEEAF7">~16 h</text><text x="100" y="114" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="10" fill="#A99FC8">un ciclo</text>';
+  document.getElementById('cicloSvg').innerHTML=h;
+  var x=EX[nom]||['','',[]], t='<p><b>'+(act<3?SG[act][0]+' · '+SG[act][1]+' h':'Fase M (división) · ~1 h')+'</b></p>';
+  if(x[1]) t+='<p>Regula: <b>'+x[1]+'</b></p>';
+  t+='<p>'+(act<3?'La interfase (G1 + S + G2) ocupa casi todo el ciclo.':S.modo==='mit'?'Mitosis = cariocinesis (núcleo) + citocinesis (citoplasma).':'En la meiosis no hay fase S entre la división I y la II.')+'</p>';
+  document.getElementById('cicloTx').innerHTML=t; }
 var CORTO={'Profase':'Pro','Metafase':'Meta','Anafase':'Ana','Telofase':'Telo','Citocinesis':'Cito','Profase I':'Pro I','Metafase I':'Meta I','Anafase I':'Ana I','Telofase I':'Telo I','Citocinesis I':'Cito I','Profase II':'Pro II','Metafase II':'Meta II','Anafase II':'Ana II','Telofase II':'Telo II','Citocinesis II':'Cito II'};
 
 /* ===== Interpolación ===== */
@@ -291,7 +365,6 @@ function nombres(F,tm){ var h='', c0=F.cell[0];
 
 /* ===== Control ===== */
 var S={modo:'mit',i:0,play:false,vel:1}, FASES=MIT, CUR=clon(pre), COLA=[], DESDE=null, TI=0, DUR=1200, ESPERA=null;
-function lista(){ return S.modo==='mit'?MIT:MEI; }
 function ir(i,anim){ var L=lista(); if(i<0||i>=L.length) return; var antes=S.i; S.i=i; clearTimeout(ESPERA);
   if(!anim){ CUR=clon(L[i][1][L[i][1].length-1]); COLA=[]; }
   else { if(i===0) CUR=clon(pre); else if(i!==antes+1) CUR=clon(L[i-1][1][L[i-1][1].length-1]); COLA=L[i][1].slice(); DESDE=clon(CUR); TI=performance.now(); }
@@ -299,12 +372,15 @@ function ir(i,anim){ var L=lista(); if(i<0||i>=L.length) return; var antes=S.i; 
 function siguiente(){ var L=lista(); son('tic'); ir(S.i+1<L.length?S.i+1:0,true); }
 function bucle(tm){ if(COLA.length){ var dur=(COLA.length>1||lista()[S.i][1].length>1?1000:1300)/S.vel, p=Math.min(1,(tm-TI)/dur); CUR=mezcla(DESDE,COLA[0],ease(p));
     if(p>=1){ DESDE=clon(COLA.shift()); CUR=clon(DESDE); TI=tm; if(!COLA.length&&S.play){ ESPERA=setTimeout(function(){ if(S.play) siguiente(); },(S.i===lista().length-1?2600:1700)/S.vel); } } }
-  render(CUR,tm); requestAnimationFrame(bucle); }
+  if(S.modo==='cro') cromo(tm); else { render(CUR,tm); marcarSub(COLA.length?lista()[S.i][1].length-COLA.length:lista()[S.i][1].length-1); } requestAnimationFrame(bucle); }
 function ficha(){ var L=lista(), F=L[S.i], nom=F[0], t=TX[nom], es=INT.indexOf(nom)>=0;
   document.getElementById('faseS').textContent=es?'Interfase':(S.modo==='mit'?'Mitosis':'Meiosis'+(/ II$/.test(nom)?' II':' I'));
   document.getElementById('faseB').textContent=es?t[1]:nom; document.getElementById('eNom').textContent=es?'Interfase · '+t[1]:nom;
   document.getElementById('eNum').textContent=(S.i+1)+' de '+L.length; document.getElementById('eDesc').innerHTML=es?t[2]:F[3];
   document.getElementById('bAnt').disabled=S.i===0;
+  var x=EX[nom]||['','',[]]; document.getElementById('eExtra').innerHTML=(x[0]?'<span>Dura <b>'+x[0]+'</b></span>':'')+(x[1]&&INT.indexOf(nom)<0?'<span>Regula <b>'+x[1]+'</b></span>':'');
+  var ul=document.getElementById('eMas'); ul.className='mas'+(x[3]?' sub':''); ul.innerHTML=x[2].map(function(m){ return '<li>'+m+'</li>'; }).join(''); SUBK=-2; marcarSub(COLA.length?L[S.i][1].length-COLA.length:L[S.i][1].length-1);
+  ciclo(nom);
   var d=F[2], et=['Células','Cromosomas','Cromátidas','ADN','Ploidía'], cl=['#55C23A','#FF5C8A','#3AB4F0','#C6E000','#9B6BFF'], box=document.getElementById('datos'), viejo=box.dataset.v?JSON.parse(box.dataset.v):[];
   box.innerHTML=d.map(function(v,k){ return '<div class="dato'+(k===4?' ancho':'')+'"><small><i style="background:'+cl[k]+'"></i>'+et[k]+'</small><b'+(viejo[k]!==undefined&&String(viejo[k])!==String(v)?' class="cambia"':'')+'>'+v+(k===4?(v==='2n'?' · diploide':' · haploide'):'')+'</b></div>'; }).join('');
   box.dataset.v=JSON.stringify(d);
@@ -315,8 +391,10 @@ function linea2(){ var L=lista(), h='';
   var ln=document.getElementById('linea'); ln.innerHTML=h;
   ln.querySelectorAll('button').forEach(function(b){ b.onclick=function(){ if(RETO) return; son('tic'); ir(+b.dataset.i,true); }; });
   var on=ln.querySelector('.on'); if(on&&on.scrollIntoView&&ln.scrollWidth>ln.clientWidth) ln.scrollLeft=on.offsetLeft-ln.clientWidth/2+on.offsetWidth/2; }
-function tipos(){ document.getElementById('tipos').innerHTML='<button data-t="mit" class="'+(S.modo==='mit'?'on':'')+'">Mitosis</button><button data-t="mei" class="'+(S.modo==='mei'?'on':'')+'">Meiosis</button>';
-  document.querySelectorAll('#tipos button').forEach(function(b){ b.onclick=function(){ if(RETO||S.modo===b.dataset.t) return; son('abrir'); S.modo=b.dataset.t; tipos(); ir(0,true); }; }); }
+function tipos(){ document.getElementById('tipos').innerHTML='<button data-t="mit" class="'+(S.modo==='mit'?'on':'')+'">Mitosis</button><button data-t="mei" class="'+(S.modo==='mei'?'on':'')+'">Meiosis</button><button data-t="cro" class="'+(S.modo==='cro'?'on':'')+'">Cromosoma</button>';
+  document.documentElement.classList.toggle('modo-cro',S.modo==='cro');
+  document.querySelectorAll('#tipos button').forEach(function(b){ b.onclick=function(){ if(RETO||S.modo===b.dataset.t) return; son('abrir'); S.play=false; playUI(); clearTimeout(ESPERA); S.modo=b.dataset.t; tipos(); if(S.modo==='cro'){ CR.sep=0; CR.obj=0; crTipos(); } else ir(0,true); }; }); }
+function lista(){ return S.modo==='mei'?MEI:MIT; }
 function playUI(){ var b=document.getElementById('bPlay'); b.classList.toggle('on',S.play); b.innerHTML='<svg><use href="#i-'+(S.play?'pausa':'play')+'"/></svg><span>'+(S.play?'Pausa':'Reproducir')+'</span>'; }
 document.getElementById('bPlay').onclick=function(){ son('tic'); S.play=!S.play; playUI(); clearTimeout(ESPERA); if(S.play&&!COLA.length) siguiente(); };
 var VEL=[[1,'Normal'],[2,'Rápido'],[.5,'Lento']];
@@ -324,12 +402,51 @@ document.getElementById('bVel').onclick=function(){ son('tic'); var k=(VEL.findI
 document.getElementById('bAnt').onclick=function(){ if(S.i>0){ son('tic'); ir(S.i-1,true); } };
 document.getElementById('bSig').onclick=function(){ siguiente(); };
 document.getElementById('bNom').onclick=function(){ son('tic'); NOM=!NOM; this.classList.toggle('on',NOM); };
+/* ===== Cromosoma en metafase ===== */
+var CT=[['meta','Metacéntrico','p = q',.5,'El centrómero está al medio: brazos iguales.'],['sub','Submetacéntrico','p < q',.36,'El centrómero está un poco arriba: brazo corto (p) menor que el largo (q).'],['acro','Acrocéntrico','p << q',.13,'El centrómero está casi en un extremo: el brazo p es muy pequeño.'],['telo','Telocéntrico','sin p',0,'El centrómero está en el extremo: no hay brazo p. No existe en humanos (sí en la rata).']];
+var CR={t:1,sep:0,obj:0};
+function crTipos(){ document.getElementById('cTipos').innerHTML=CT.map(function(c,k){ return '<button data-k="'+k+'" class="'+(k===CR.t?'on':'')+'">'+c[1]+'</button>'; }).join('');
+  document.getElementById('cTipoTx').innerHTML='<em>'+CT[CR.t][1]+' ('+CT[CR.t][2]+')</em>: '+CT[CR.t][4];
+  document.querySelectorAll('#cTipos button').forEach(function(b){ b.onclick=function(){ if(RETO) return; son('tic'); CR.t=+b.dataset.k; CR.sep=0; CR.obj=0; crTipos(); botonSep(); }; }); }
+function botonSep(){ document.getElementById('bSep').textContent=CR.obj?'Volver a unir (metafase)':'Ver anafase: la separasa corta las cohesinas'; }
+document.getElementById('bSep').onclick=function(){ son(CR.obj?'cerrar':'abrir'); CR.obj=CR.obj?0:1; botonSep(); };
+var CRt=0;
+function cromo(tm){ var dt=Math.min(50,tm-(CRt||tm)); CRt=tm; CR.sep+=(CR.obj-CR.sep)*Math.min(1,dt/420);
+  var T=CT[CR.t], top=70, bot=330, H=bot-top, cy=T[3]?top+H*T[3]:top+14, W=22, sep=CR.sep, coh=Math.max(0,1-sep*2.2), mov=Math.max(0,sep*1.6-.6)*80, h='';
+  function w(y){ var e=Math.min(1,Math.min(y-top,bot-y)/W), r=Math.sqrt(Math.max(0,1-Math.pow(1-e,2))); return W*r*(1-.66*Math.exp(-Math.pow((y-cy)/13,2))); }
+  var xs=[300-25-mov,300+25+mov];
+  /* huso */
+  xs.forEach(function(x,k){ var g=k?1:-1, kx=x+g*(w(cy)+8); for(var j=-3;j<=3;j++) h+='<line x1="'+f1(kx)+'" y1="'+f1(cy+j*3)+'" x2="'+f1(kx+g*105)+'" y2="'+f1(cy+j*15)+'" stroke="#C6E000" stroke-opacity=".45" stroke-width="1.4"/>'; });
+  /* cohesinas */
+  if(coh>.01) for(var y=top+16;y<bot-10;y+=17){ if(Math.abs(y-cy)<10) continue; var a=xs[0]+w(y)-2, b=xs[1]-w(y)+2; if(b-a<2) continue; h+='<rect x="'+f1(a)+'" y="'+f1(y-2.5)+'" width="'+f1(b-a)+'" height="5" rx="2" fill="#FF3B30" opacity="'+f1(coh)+'"/>'; }
+  /* cromátidas */
+  xs.forEach(function(x,k){ var L='',Rr=''; for(var yy=top;yy<=bot;yy+=3){ var ww=w(yy); L+=(L?'L':'M')+f1(x-ww)+' '+yy; Rr='L'+f1(x+ww)+' '+yy+Rr; }
+    var d=L+Rr+'Z'; h+='<path d="'+d+'" fill="#3A1426" stroke="#9E2A4E" stroke-width="5"/><path d="'+d+'" fill="#FF5C8A" fill-opacity=".9" stroke="#FFB8CB" stroke-width="1.6"/>';
+    var sp=''; for(yy=top+6;yy<=bot-6;yy+=1.5){ var ww2=w(yy)*.72; sp+=(sp?'L':'M')+f1(x+ww2*Math.sin(yy*.55+k))+' '+f1(yy); }
+    h+='<path d="'+sp+'" fill="none" stroke="#FFE1EA" stroke-opacity=".55" stroke-width="1.3"/>';
+    [top+5,bot-5].forEach(function(ty,j){ if(!T[3]&&j===0) return; h+='<ellipse cx="'+f1(x)+'" cy="'+f1(ty+(j?-3:3))+'" rx="'+f1(W*.82)+'" ry="5" fill="#2A0E1A"/>'; });
+    var g=k?1:-1; h+='<ellipse cx="'+f1(x+g*(w(cy)+4))+'" cy="'+f1(cy)+'" rx="5" ry="10" fill="#55C23A" stroke="#B8F59A" stroke-width="1.2"/>'; });
+  /* centrómero */
+  if(coh>.01) h+='<rect x="'+f1(xs[0]-3)+'" y="'+f1(cy-5)+'" width="'+f1(xs[1]-xs[0]+6)+'" height="10" rx="5" fill="#2A0E1A" opacity="'+f1(coh)+'"/>';
+  /* etiquetas */
+  var X0=xs[0]-W-8;
+  if(T[3]){ h+=llave(X0,top,cy-12,'Brazo corto (p)'); h+=etq(xs[0],top+4,xs[0]-70,top-22,'Telómero'); }
+  else h+=etq(xs[0],top+16,xs[0]-80,top-14,'Centrómero en el extremo');
+  h+=llave(X0,cy+12,bot,'Brazo largo (q)');
+  h+=etq(xs[0]-w(cy)-4,cy,X0-60,cy-(T[3]>.3?2:-40),'Cinetocoro');
+  if(T[3]&&sep<.3) h+=etq(300,cy,420,cy+(T[3]>.3?-30:40),'Centrómero');
+  if(coh>.3) h+=etq(300,top+(T[3]>.3?54:150),440,top+(T[3]>.3?20:120),'Cohesinas');
+  var hx=xs[1]+w(cy)+8+70; h+=etq(hx,cy+6+2*10,Math.min(hx+20,492),cy+90,'Huso acromático');
+  h+='<path d="M'+f1(xs[0]-W)+' '+(bot+12)+'q0 8 8 8H'+f1(xs[1]+W-8)+'q8 0 8-8" fill="none" stroke="#EEEAF7" stroke-opacity=".6" stroke-width="1.4"/><text x="300" y="'+(bot+38)+'" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="'+FS+'" fill="#EEEAF7">'+(sep>.5?'Cada cromátida ya es un cromosoma':'Cromátidas hermanas')+'</text>';
+  if(sep>.05) h+='<text x="300" y="34" text-anchor="middle" font-family="Sora" font-weight="800" font-size="'+f1(FS*1.1)+'" fill="#C6E000" opacity="'+f1(Math.min(1,sep*2))+'">Anafase: la separasa corta las cohesinas</text>';
+  svg.innerHTML=h; }
+function llave(x,y1,y2,t){ return '<path d="M'+f1(x)+' '+f1(y1)+'q-8 0 -8 8V'+f1((y1+y2)/2-6)+'l-6 6l6 6V'+f1(y2-8)+'q0 8 8 8" fill="none" stroke="#EEEAF7" stroke-opacity=".6" stroke-width="1.4"/><text x="'+f1(x-20)+'" y="'+f1((y1+y2)/2+4)+'" text-anchor="end" font-family="Nunito" font-weight="800" font-size="'+FS+'" fill="#EEEAF7" stroke="#06040F" stroke-width="3.5" paint-order="stroke">'+t+'</text>'; }
 var RETO=null;
-tipos(); ir(0,true); requestAnimationFrame(bucle);
+crTipos(); tipos(); ir(0,true); requestAnimationFrame(bucle);
 
 /* ============ MODO RETO ============ */
 var AZ=MCAzar;
-function mostrar(modo,i){ S.play=false; playUI(); S.modo=modo; tipos(); ir(i,false); }
+function mostrar(modo,i){ S.play=false; playUI(); S.modo=modo; tipos(); if(modo==='cro'){ CR.t=i; CR.sep=0; CR.obj=0; crTipos(); botonSep(); } else ir(i,false); }
 function ops4(buena,malas){ var o=[buena]; malas.sort(function(){ return Math.random()-.5; }).forEach(function(m){ if(o.indexOf(m)<0&&o.length<4) o.push(m); }); return o; }
 function ver(){ document.getElementById('plano').classList.remove('oculto'); }
 var RT=MCReto({sim:'mitosis',nombre:'Reto · Mitosis',
@@ -347,7 +464,10 @@ var RT=MCReto({sim:'mitosis',nombre:'Reto · Mitosis',
     if(i===2){ var p2=AZ([['¿En qué etapa se <em>duplica el ADN</em>?','Fase S de la interfase',['G1 de la interfase','G2 de la interfase','Profase'],'mit',1,'En la fase S (síntesis) cada cromosoma se copia y queda con 2 cromátidas.'],
         ['¿En qué fase ocurre el <em>crossing over</em>?','Profase I',['Metafase I','Anafase II','Profase II'],'mei',3,'En la profase I (paquiteno) las cromátidas no hermanas intercambian pedazos.'],
         ['¿Qué fase es la <em>más corta</em> de la mitosis?','Anafase',['Profase','Metafase','Telofase'],'mit',5,'La anafase es la más corta; la profase es la más larga.'],
-        ['¿En qué fase se ve mejor el <em>cariotipo</em>?','Metafase',['Profase','Anafase','Interfase'],'mit',4,'En metafase los cromosomas están más condensados y alineados.']]);
+        ['¿En qué fase se ve mejor el <em>cariotipo</em>?','Metafase',['Profase','Anafase','Interfase'],'mit',4,'En metafase los cromosomas están más condensados y alineados.'],
+        ['¿Cuál es la etapa <em>más larga</em> del ciclo celular?','G1',['S','G2','Fase M'],'mit',0,'Duración: G1 (7 h) &gt; S (5 h) &gt; G2 (3 h) &gt; M.'],
+        ['¿Qué proteínas mantienen unidas a las <em>cromátidas hermanas</em>?','Cohesinas',['Condensinas','Histonas','Tubulinas'],'mit',4,'Las cohesinas se activan en la fase S y la separasa las corta en anafase.'],
+        ['¿Qué complejo regula el paso de G2 a mitosis (<em>FPM</em>)?','Ciclina B – CDK 1',['Ciclina D – CDK 4/6','Ciclina E – CDK 2','Ciclina A – CDK 2'],'mit',2,'El factor promotor de la mitosis (FPM) es ciclina B con CDK 1.']]);
       mostrar(p2[3],p2[4]); pl.classList.add('oculto'); var o2=R.opciones(caja,p2[0],[p2[1]].concat(p2[2]),0,p2[5]); var q2=o2.comprobar; o2.comprobar=function(){ ver(); return q2(); }; return o2; }
     if(i===3){ var n=AZ([46,40,8,24,12]), me=AZ([true,false]); mostrar(me?'mei':'mit',me?12:7);
       var o3=R.opciones(caja,'Una célula con <em>2n = '+n+'</em> hace '+(me?'<em>meiosis</em>':'<em>mitosis</em>')+'. ¿Cuántos cromosomas tiene cada célula hija?',[String(me?n/2:n)].concat([String(me?n:n/2),String(n*2),String(me?n/4:n*4)]),0,me?'La meiosis reduce a la mitad: cada célula hija es n = '+(n/2)+'.':'La mitosis conserva el número: cada hija es 2n = '+n+'.');
@@ -355,7 +475,11 @@ var RT=MCReto({sim:'mitosis',nombre:'Reto · Mitosis',
     var p4=AZ([['¿Cuántas células resultan de una <em>meiosis</em> y cómo son?','4 células haploides (n) distintas',['2 células diploides (2n) idénticas','4 células diploides (2n)','2 células haploides (n) idénticas'],'mei',12,'La meiosis da 4 células n, distintas por el crossing over y el azar.'],
       ['En <em>anafase I</em> de la meiosis se separan…','Los cromosomas homólogos',['Las cromátidas hermanas','Los centriolos','Los nucléolos'],'mei',5,'En anafase I se separan los homólogos; en anafase II, las cromátidas hermanas.'],
       ['En <em>anafase II</em> de la meiosis se separan…','Las cromátidas hermanas',['Los cromosomas homólogos','Las tétradas','Los centrómeros de los homólogos'],'mei',10,'La anafase II es como la anafase de la mitosis: se separan cromátidas hermanas.'],
-      ['¿Cuántas células resultan de una <em>mitosis</em> y cómo son?','2 células diploides (2n) idénticas',['4 células haploides (n)','2 células haploides (n)','4 células diploides (2n)'],'mit',7,'La mitosis da 2 células hijas idénticas a la madre, 2n.']]);
+      ['¿Cuántas células resultan de una <em>mitosis</em> y cómo son?','2 células diploides (2n) idénticas',['4 células haploides (n)','2 células haploides (n)','4 células diploides (2n)'],'mit',7,'La mitosis da 2 células hijas idénticas a la madre, 2n.'],
+      ['Este cromosoma tiene el centrómero casi al extremo (<em>p &lt;&lt; q</em>). ¿Cómo se llama?','Acrocéntrico',['Metacéntrico','Submetacéntrico','Telocéntrico'],'cro',2,'Acrocéntrico: brazo p muy pequeño.'],
+      ['Este cromosoma tiene <em>p &lt; q</em>. ¿Cómo se llama?','Submetacéntrico',['Metacéntrico','Acrocéntrico','Telocéntrico'],'cro',1,'Submetacéntrico: el centrómero está un poco desplazado.'],
+      ['¿En qué subfase de la profase I ocurre el <em>crossing over</em>?','Paquinema',['Leptonema','Cigonema','Diacinesis'],'mei',3,'Lepto, cigo, PAQUI (crossing over), diplo (quiasmas), diacinesis.'],
+      ['En la ovogénesis, ¿dónde ocurre el <em>2.º arresto</em> del ovocito?','Metafase II',['Diploteno','Anafase I','Telofase II'],'mei',9,'1.er arresto: diploteno (profase I). 2.º arresto: metafase II, hasta la fecundación.']]);
     mostrar(p4[3],p4[4]); pl.classList.add('oculto'); var o4=R.opciones(caja,p4[0],[p4[1]].concat(p4[2]),0,p4[5]); var q4=o4.comprobar; o4.comprobar=function(){ ver(); return q4(); }; return o4;
   }});
 </script>
