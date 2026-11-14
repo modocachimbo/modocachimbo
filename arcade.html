@@ -1096,8 +1096,8 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
   function toast(t) { var el = $('hToast'); el.innerHTML = t; el.classList.add('on'); clearTimeout(tToast); tToast = setTimeout(function () { el.classList.remove('on'); }, 1800); }
   // Rayos: se ganan pasando niveles y abren simuladores del Laboratorio (assets/lab-rayos.js)
   function pintarRayos(st) { if (st && !st.error) $('recRayo').textContent = st.saldo; }
-  $('recRy').onclick = function () { if (window.MCSonido) MCSonido.efecto('tap'); toast('Rayos: +3 por nivel, +5 con 3 estrellas<br><small>Úsalos para abrir simuladores del Laboratorio</small>'); };
-  function cobrarRayos() { if (!window.MCRayos) return; pintarRayos(MCRayos.guardado()); MCRayos.estado().then(function (st) { if (st && st.nuevos > 0) toast('+' + st.nuevos + ' rayos'); pintarRayos(st); }); }
+  $('recRy').onclick = function () { if (window.MCSonido) MCSonido.efecto('tap'); toast('Energía: +3 por nivel, +5 con 3 estrellas<br><small>Úsala para abrir simuladores del Laboratorio</small>'); };
+  function cobrarRayos() { if (!window.MCRayos) return; pintarRayos(MCRayos.guardado()); MCRayos.estado().then(function (st) { if (st && st.nuevos > 0) toast('+' + st.nuevos + ' de energía'); pintarRayos(st); }); }
   setTimeout(cobrarRayos, 400);
   document.querySelectorAll('[data-pronto]').forEach(function (b) { b.onclick = function () { if (window.MCSonido) MCSonido.efecto('tap'); toast(b.dataset.pronto + '<br><small>¡Muy pronto!</small>'); }; });
   // Cielo: nubes, estrellitas y luces con tamaños y tiempos al azar

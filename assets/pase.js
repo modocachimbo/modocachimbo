@@ -31,7 +31,7 @@
     'vocabulario-VIP': ['Vocabulario completo'],
     'biblioteca-VIP': ['Toda la biblioteca'],
     'descarga-VIP': ['Descargar los temas en PDF'],
-    'laboratorio-VIP': ['Todos los simuladores del Laboratorio', 'Sin gastar rayos'],
+    'laboratorio-VIP': ['Todos los simuladores del Laboratorio', 'Sin gastar energía'],
     simulacro: ['Simulacro de 80 preguntas con tu puntaje'],
     duelo: ['Retar a duelo a tus amigos'],
     examenes: ['Exámenes de admisión resueltos'],
