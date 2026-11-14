@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<script src="assets/guardia.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06040F">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="assets/app/icono-180.png">
+<title>Lentes y espejos · Laboratorio · Modo Cachimbo</title>
+<script src="assets/app.js" defer></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Nunito:wght@600;700;800;900&family=Sora:wght@700;800&display=swap">
+<link rel="stylesheet" href="assets/lab-mate.css">
+<style>
+/* Física: naranja en el título y en la pregunta del reto */
+.ttl small{color:#FF9600}
+.preg{background:linear-gradient(135deg,rgba(255,150,0,.16),rgba(21,17,39,.6));border-color:rgba(255,150,0,.35)}
+.preg small{color:#FFB54D}
+.desl{grid-template-columns:40px 1fr 76px}
+.desl output{font-size:15px;white-space:nowrap}
+.plano>svg{touch-action:none}
+.modoM{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.modoM button{height:46px;border-radius:13px;background:#0E0A22;border:1px solid var(--borde);font:800 14.5px "Sora";color:var(--dim)}
+.modoM button.on{background:rgba(255,150,0,.14);border-color:#FF9600;color:#FFB54D}
+.modoM button small{display:block;font:800 10.5px/1 "Nunito";color:var(--faint);margin-top:3px}
+.nat{display:flex;flex-wrap:wrap;gap:6px}
+.nat span{padding:5px 10px;border-radius:9px;font:800 13px "Nunito";background:#0E0A22;border:1px solid var(--borde)}
+html.reto-on .giro{display:none}
+@media (max-width:860px),(orientation:portrait) and (max-width:1024px){ .plano{height:min(104vw,58vh)} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="i-atras" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="i-son" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="on-l" d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/><path class="off-l" d="M16 9.5l5 5M21 9.5l-5 5"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></symbol>
+<symbol id="i-pausa" viewBox="0 0 24 24"><path d="M8 5.5v13M16 5.5v13" stroke-width="3.4"/></symbol>
+<symbol id="i-otra" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5"/></symbol>
+<symbol id="i-rayo" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
+</defs></svg>
+<section class="beta-aviso"><b>Laboratorio en prueba</b><p>Los simuladores están en beta. Muy pronto se abren para todos.</p><a href="index.html">Volver al inicio</a></section>
+
+<div class="app">
+  <div class="top">
+    <a class="ib glass" href="laboratorio.html" aria-label="Volver al Laboratorio"><svg class="i"><use href="#i-atras"/></svg></a>
+    <div class="ttl glass"><small>Física</small><b>Lentes y espejos</b></div>
+    <div class="sp"></div>
+    <button class="ib glass son" id="bSon" aria-label="Sonido"><svg class="i"><use href="#i-son"/></svg></button>
+  </div>
+  <div class="cuerpo">
+    <div class="plano" id="plano"></div>
+    <div class="ficha">
+      <div class="modoM" id="tipo">
+        <button data-t="concavo">Espejo cóncavo<small>maquillaje, linterna</small></button><button data-t="convexo">Espejo convexo<small>retrovisor</small></button>
+        <button data-t="conv">Lente convergente<small>lupa, cámara</small></button><button data-t="div">Lente divergente<small>lentes para miopía</small></button>
+      </div>
+      <div class="tipos" id="ver"></div>
+      <div class="caja" id="cMov"><h3>Mueve el objeto</h3>
+        <div class="giro"><button class="play" id="bPlay"></button><button class="vel" id="bVel">Normal</button></div>
+        <label class="desl" data-k="o"><b>o</b><input type="range" min="2" max="60" step="1" id="io"><output id="ioO"></output></label>
+        <label class="desl" data-k="f"><b>f</b><input type="range" min="5" max="30" step="1" id="if"><output id="ifO"></output></label>
+        <label class="desl" data-k="h"><b>h</b><input type="range" min="2" max="10" step="1" id="ih"><output id="ihO"></output></label>
+        <div class="chips" id="chips"></div>
+      </div>
+      <div class="caja"><h3>La imagen</h3><div class="datos" id="datos"></div></div>
+      <div class="clave" id="clave"></div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/mc-config.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/arcade-beta.js"></script>
+<script src="assets/lab-rayos.js"></script>
+<script src="assets/lab-sonido.js"></script>
+<script src="assets/lab-plano.js"></script>
+<script src="assets/lab-reto.js"></script>
+<script>
+MCLabPuerta('optica');
+var f=MCfmt, son=MCLabComun('optica');
+var C={obj:'#FF9600',real:'#3AB4F0',virt:'#B99CFF',r1:'#FFC800',r2:'#FF5C8A',r3:'#C6E000',el:'#8FE0FF'};
+var S={tipo:'concavo', o:30, f:10, h:6};
+var VER={r1:1,r2:1,r3:1,prol:1,regla:0}, OCULTA=false, FIJO={};
+function espejo(){ return S.tipo==='concavo'||S.tipo==='convexo'; }
+function F(){ return S.tipo==='convexo'||S.tipo==='div'?-S.f:S.f; } /* focal con signo */
+/* 1/f = 1/o + 1/i ; A = −i/o (sirve para espejos y lentes) */
+function img(){ var fs=F(); if(Math.abs(S.o-fs)<1e-6) return null; var i=1/(1/fs-1/S.o), A=-i/S.o; return {i:i,A:A,hi:A*S.h}; }
+function cm(n){ return f(n)+' cm'; }
+function naturaleza(m){ if(!m) return null; var a=Math.abs(m.A);
+  return {real:m.i>0, inv:m.A<0, tam:Math.abs(a-1)<.02?'igual':a>1?'mayor':'menor'}; }
+function natTxt(n){ return n?(n.real?'Real':'Virtual')+', '+(n.inv?'invertida':'derecha')+' y '+(n.tam==='igual'?'del mismo tamaño':n.tam):'No se forma'; }
+
+/* ===== Controles ===== */
+function nombre(){ return {concavo:'espejo cóncavo',convexo:'espejo convexo',conv:'lente convergente',div:'lente divergente'}[S.tipo]; }
+function pintarTipo(){ document.querySelectorAll('#tipo button').forEach(function(b){ b.classList.toggle('on',b.dataset.t===S.tipo); }); }
+document.querySelectorAll('#tipo button').forEach(function(b){ b.onclick=function(){ if(FIJO.reto) return; son('tic'); S.tipo=b.dataset.t; pintarTipo(); pintarVer(); pintarChips(); actualizar(); }; });
+var bVer=[['r1','Rayo paralelo',C.r1],['r2',function(){ return espejo()?'Rayo al vértice':'Rayo por el centro'; },C.r2],['r3','Rayo por el foco',C.r3],['prol','Prolongaciones',C.virt],['regla','Regla en cm','#A99FC8']];
+function pintarVer(){ document.getElementById('ver').innerHTML=bVer.map(function(b){ return '<button data-k="'+b[0]+'" class="'+(VER[b[0]]?'on':'')+'"><i style="background:'+b[2]+'"></i>'+(typeof b[1]==='function'?b[1]():b[1])+'</button>'; }).join('');
+  document.querySelectorAll('#ver button').forEach(function(b){ b.onclick=function(){ VER[b.dataset.k]=!VER[b.dataset.k]; son('tic'); pintarVer(); dibujar(); }; }); }
+/* casos de examen: posiciones del objeto respecto a F y C (2F) */
+function pintarChips(){ var c=S.tipo==='concavo'||S.tipo==='conv', L=espejo()?'C':'2F';
+  var EJ=c?[['Más allá de '+L,3],['En '+L,2],['Entre F y '+L,1.5],['En F',1],['Entre F y '+(espejo()?'el espejo':'la lente'),.5]]:[['Lejos',3],['En 2F',2],['En F',1],['Muy cerca',.4]];
+  document.getElementById('chips').innerHTML=EJ.map(function(e){ return '<button data-k="'+e[1]+'">'+e[0]+'</button>'; }).join('');
+  document.querySelectorAll('#chips button').forEach(function(b){ b.onclick=function(){ parar(); son('tic'); S.o=Math.max(2,Math.min(60,Math.round(+b.dataset.k*S.f))); actualizar(); }; }); }
+var iO=document.getElementById('io'), iF=document.getElementById('if'), iH=document.getElementById('ih');
+iO.oninput=function(){ parar(); S.o=+iO.value; actualizar(); };
+iF.oninput=function(){ parar(); S.f=+iF.value; actualizar(); };
+iH.oninput=function(){ S.h=+iH.value; actualizar(); };
+function rango(i,v){ i.style.setProperty('--p',((v-i.min)/(i.max-i.min)*100)+'%'); }
+
+/* Acercar el objeto: va de 60 cm hasta casi tocar (Lento x0,5 · Normal x1 · Rápido x2) */
+var VEL=[['Lento',.5],['Normal',1],['Rápido',2]], vi=1, anim=null, tAnt=0, bPlay=document.getElementById('bPlay'), bVel=document.getElementById('bVel'), pasoF=0;
+function pintarPlay(){ bPlay.classList.toggle('on',!!anim); bPlay.innerHTML='<svg class="i"><use href="#i-'+(anim?'pausa':'play')+'"/></svg><span>'+(anim?'Pausar':'Acercar el objeto')+'</span>'; }
+function cuadro(t){ if(!anim) return; var dt=Math.min(.1,(t-tAnt)/1000); tAnt=t; var antes=S.o; S.o-=dt*6.5*VEL[vi][1];
+  var marcas=[2*S.f,S.f]; marcas.forEach(function(m){ if(antes>m&&S.o<=m) son('tic'); });
+  if(S.o<=2){ S.o=2; anim=null; actualizar(); return; } actualizar(); anim=requestAnimationFrame(cuadro); }
+function lanzar(){ if(S.o<=2.5) S.o=60; son('lanzar'); tAnt=performance.now(); anim=requestAnimationFrame(cuadro); pintarPlay(); }
+function parar(){ if(!anim) return; cancelAnimationFrame(anim); anim=null; pintarPlay(); }
+bPlay.onclick=function(){ if(anim){ son('tic'); return parar(); } lanzar(); };
+bVel.onclick=function(){ son('tic'); vi=(vi+1)%VEL.length; bVel.textContent=VEL[vi][0]; };
+
+function actualizar(){
+  iO.value=Math.round(S.o); iF.value=S.f; iH.value=S.h; rango(iO,S.o); rango(iF,S.f); rango(iH,S.h);
+  document.getElementById('ioO').textContent=cm(Math.round(S.o*10)/10); document.getElementById('ifO').textContent=(F()<0?'−':'')+cm(S.f); document.getElementById('ihO').textContent=cm(S.h);
+  var m=img(), n=naturaleza(m), esp=espejo(), fs=F(), o=Math.round(S.o*10)/10;
+  var lado=!m?'':m.i>0?(esp?'delante del espejo':'al otro lado de la lente'):(esp?'detrás del espejo':'del mismo lado que el objeto');
+  var dd=[['Distancia de la imagen i',m?cm(m.i):'en el infinito',m?(m.i>0?C.real:C.virt):null],['Aumento A = −i / o',m?f(m.A):'—',null],
+    ['Altura de la imagen',m?cm(m.hi):'—',m?(m.i>0?C.real:C.virt):null],['Dónde está',m?lado:'—',null],
+    ['Naturaleza',n?'<span class="nat"><span style="color:'+(n.real?C.real:C.virt)+'">'+(n.real?'Real':'Virtual')+'</span><span>'+(n.inv?'Invertida':'Derecha')+'</span><span>'+(n.tam==='igual'?'Igual':n.tam==='mayor'?'Mayor':'Menor')+'</span></span>':'No se forma imagen: los rayos salen paralelos',null,1]];
+  document.getElementById('datos').innerHTML=dd.map(function(x){ return '<div class="dato'+(x[3]?' ancho':'')+'"><small>'+(x[2]?'<i style="background:'+x[2]+'"></i>':'')+x[0]+'</small><b>'+x[1]+'</b></div>'; }).join('');
+  /* Cae en el examen */
+  var cl=[], L=esp?'C':'2F', d2=2*S.f, sg=function(x){ return x<0?'('+f(x)+')':f(x); };
+  if(m) cl.push('1/f = 1/o + 1/i → 1/'+sg(fs)+' = 1/'+f(o)+' + 1/i → i = '+cm(m.i)+'. Aumento A = −i/o = '+f(m.A)+(Math.abs(m.A)!==1?' (la imagen es '+f(Math.abs(m.A))+' veces el objeto)':'')+'.');
+  else cl.push('El objeto está justo en el foco: 1/i = 1/f − 1/o = 0, los rayos salen paralelos y no se forma imagen.');
+  cl.push('Signos: f es + en espejo cóncavo y lente convergente, y − en espejo convexo y lente divergente. Si i sale + la imagen es real; si sale −, virtual. A negativo = invertida.');
+  if(S.tipo==='concavo'||S.tipo==='conv'){
+    var caso=S.o>d2+1e-6?'más allá de '+L+': imagen real, invertida y menor, entre F y '+L+(esp?'':' del otro lado')+(esp?'':' (así funciona la cámara y el ojo)'):Math.abs(S.o-d2)<1e-6?'en '+L+': imagen real, invertida y del mismo tamaño, también en '+L+'.':S.o>S.f+1e-6?'entre F y '+L+': imagen real, invertida y mayor, más allá de '+L+(esp?'':' (proyector de cine)'):Math.abs(S.o-S.f)<1e-6?'en F: no se forma imagen.':'entre F y '+(esp?'el espejo':'la lente')+': imagen virtual, derecha y mayor'+(esp?' (espejo de maquillaje)':' (así funciona la lupa)');
+    cl.push('Objeto '+caso+(caso.slice(-1)==='.'?'':'.'));
+    if(esp) cl.push('En el espejo cóncavo C = 2f = '+cm(d2)+' es el centro de curvatura: f = R / 2.');
+  } else cl.push(esp?'El espejo convexo siempre da una imagen virtual, derecha y menor, detrás del espejo: por eso se usa en retrovisores y en las curvas de las calles (ves más campo).':'La lente divergente siempre da una imagen virtual, derecha y menor, del mismo lado del objeto. Corrige la miopía.');
+  if(!esp) cl.push('Potencia de la lente: P = 1 / f (en metros) = 100 / '+sg(fs)+' = '+f(100/fs)+' dioptrías.');
+  document.getElementById('clave').innerHTML='<b><svg><use href="#i-rayo"/></svg>Cae en el examen</b>'+cl.map(function(c){ return '<p>'+c+'</p>'; }).join('');
+  pintarPlay(); dibujar();
+}
+
+/* ===== Dibujo ===== */
+var pl=document.getElementById('plano'), svg=document.createElementNS('http://www.w3.org/2000/svg','svg'); pl.appendChild(svg);
+var W=0,H=0,K={};
+function tx(x,y,t,c,an,sz,w){ return '<text x="'+x+'" y="'+y+'" fill="'+c+'" text-anchor="'+(an||'middle')+'" style="font:'+(w||800)+' '+(sz||12)+'px Sora,sans-serif;paint-order:stroke;stroke:#0B0820;stroke-width:4px">'+t+'</text>'; }
+function PX(x){ return K.cx+x*K.kx; } function PY(y){ return K.cy-y*K.ky; }
+function linea(a,b,col,dash,an,op){ return '<line x1="'+PX(a[0]).toFixed(1)+'" y1="'+PY(a[1]).toFixed(1)+'" x2="'+PX(b[0]).toFixed(1)+'" y2="'+PY(b[1]).toFixed(1)+'" stroke="'+col+'" stroke-width="'+(an||2.4)+'"'+(dash?' stroke-dasharray="'+dash+'"':'')+(op?' stroke-opacity="'+op+'"':'')+' stroke-linecap="round"/>'; }
+/* flecha a la mitad de un rayo para ver hacia dónde va la luz */
+function punta(a,b,col){ var x1=PX(a[0]),y1=PY(a[1]),x2=PX(b[0]),y2=PY(b[1]), L=Math.hypot(x2-x1,y2-y1); if(L<40) return ''; var ux=(x2-x1)/L,uy=(y2-y1)/L, mx=x1+ux*L*.5, my=y1+uy*L*.5, h=8;
+  return '<path d="M'+(mx+ux*h)+' '+(my+uy*h)+'L'+(mx-uy*h*.6)+' '+(my+ux*h*.6)+'L'+(mx+uy*h*.6)+' '+(my-ux*h*.6)+'Z" fill="'+col+'"/>'; }
+function flecha(x,h,col,dash,grosor){ var X=PX(x), y0=PY(0), y1=PY(h), d=h>0?1:-1, cab=Math.min(12,Math.abs(y1-y0)*.45);
+  return '<line x1="'+X+'" y1="'+y0+'" x2="'+X+'" y2="'+(y1+d*cab*.7)+'" stroke="'+col+'" stroke-width="'+(grosor||4)+'" stroke-linecap="round"'+(dash?' stroke-dasharray="6 5"':'')+'/><path d="M'+X+' '+y1+'L'+(X-cab*.7)+' '+(y1+d*cab)+'L'+(X+cab*.7)+' '+(y1+d*cab)+'Z" fill="'+col+'"'+(dash?' fill-opacity=".85"':'')+'/>'; }
+function dibujar(){
+  var b=pl.getBoundingClientRect(); W=b.width; H=b.height; if(!W) return; svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  var esp=espejo(), mg=14, XM=66;
+  var mi=OCULTA?null:img(), ym=Math.min(26,Math.max(13.5,mi?Math.abs(mi.hi)+2.5:0));
+  K.cx=W/2; K.cy=H*.5; K.kx=(W-2*mg)/(2*XM); K.ky=(H/2-34)/ym;
+  var s='', fs=F(), m=OCULTA?null:img(), Lh=10.6*ym/13.5;
+  /* cuadrícula suave + eje óptico */
+  for(var gx=-60;gx<=60;gx+=10) s+='<line x1="'+PX(gx)+'" y1="0" x2="'+PX(gx)+'" y2="'+H+'" stroke="rgba(255,255,255,.035)"/>';
+  s+='<line x1="0" y1="'+K.cy+'" x2="'+W+'" y2="'+K.cy+'" stroke="#6F6690" stroke-width="1.5" stroke-dasharray="10 6"/>';
+  if(VER.regla) for(gx=-60;gx<=60;gx+=10){ s+='<line x1="'+PX(gx)+'" y1="'+(K.cy-4)+'" x2="'+PX(gx)+'" y2="'+(K.cy+4)+'" stroke="#A99FC8"/>'+'<text x="'+PX(gx)+'" y="'+(H-10)+'" text-anchor="middle" style="font:700 11px \'Barlow Condensed\';fill:#6F6690">'+Math.abs(gx)+'</text>'; }
+  /* focos y centros */
+  var ptos=[]; var af=Math.abs(fs);
+  if(esp){ var lado=S.tipo==='concavo'?-1:1; ptos=[[lado*af,'F'],[lado*2*af,'C']]; }
+  else ptos=[[-af,'F'],[af,'F′'],[-2*af,'2F'],[2*af,'2F′']];
+  ptos.forEach(function(p){ if(Math.abs(p[0])>XM) return; var X=PX(p[0]); s+='<circle cx="'+X+'" cy="'+K.cy+'" r="4.5" fill="#0B0820" stroke="#EEEAF7" stroke-width="2"/>'+tx(X,K.cy+22,p[1],'#EEEAF7','middle',12.5); });
+  /* elemento óptico */
+  var yt=PY(Lh), yb=PY(-Lh), X0=PX(0), cur=Math.min(14,W*.02);
+  if(esp){ var bo=S.tipo==='concavo'?1:-1; /* cóncavo: los bordes se acercan al objeto */
+    var dpath='M'+(X0-bo*cur)+' '+yt+'Q'+(X0+bo*cur)+' '+K.cy+' '+(X0-bo*cur)+' '+yb;
+    for(var hy=yt+6;hy<yb;hy+=11){ var tt=(hy-yt)/(yb-yt), xx=(1-tt)*(1-tt)*(X0-bo*cur)+2*tt*(1-tt)*(X0+bo*cur)+tt*tt*(X0-bo*cur); s+='<line x1="'+xx+'" y1="'+hy+'" x2="'+(xx+9)+'" y2="'+(hy+7)+'" stroke="#6F6690" stroke-width="1.5"/>'; }
+    s+='<path d="'+dpath+'" fill="none" stroke="'+C.el+'" stroke-width="4.5" stroke-linecap="round" style="filter:drop-shadow(0 0 6px rgba(143,224,255,.5))"/>';
+  } else {
+    var wv=Math.max(9,cur), lens=S.tipo==='conv'?'M'+X0+' '+yt+'Q'+(X0+wv*2)+' '+K.cy+' '+X0+' '+yb+'Q'+(X0-wv*2)+' '+K.cy+' '+X0+' '+yt+'Z':
+      'M'+(X0-wv)+' '+yt+'L'+(X0+wv)+' '+yt+'Q'+(X0+wv*.1)+' '+K.cy+' '+(X0+wv)+' '+yb+'L'+(X0-wv)+' '+yb+'Q'+(X0-wv*.1)+' '+K.cy+' '+(X0-wv)+' '+yt+'Z';
+    s+='<path d="'+lens+'" fill="rgba(143,224,255,.16)" stroke="'+C.el+'" stroke-width="2.4" style="filter:drop-shadow(0 0 6px rgba(143,224,255,.4))"/>';
+  }
+  /* rayos: se calculan como lente y, si es espejo, la parte de después se refleja (x → −x) */
+  var o=S.o, h=S.h, M=function(p){ return esp?[-p[0],p[1]]:p; }, tip=[-o,h], rays=[];
+  function sale(p0,d){ var t=(XM+4-p0[0])/d[0]; return [p0[0]+d[0]*t,p0[1]+d[1]*t]; }
+  var sgn=fs>0?1:-1;
+  rays.push({k:'r1',col:C.r1,a:[0,h],d:[sgn*fs,-sgn*h],ini:[tip,[0,h]]});
+  rays.push({k:'r2',col:C.r2,a:[0,0],d:[o,-h],ini:[tip,[0,0]]});
+  if(Math.abs(o-fs)>1e-6){ var y0=h*fs/(fs-o); if(Math.abs(y0)<=Lh) rays.push({k:'r3',col:C.r3,a:[0,y0],d:[1,0],ini:[tip,[0,y0]],guia:fs>0&&o<fs?[[-fs,0],tip]:fs<0?[[0,y0],[-fs,0]]:null}); }
+  var mm=img();
+  rays.forEach(function(r){ if(!VER[r.k]) return;
+    s+=linea(r.ini[0],r.ini[1],r.col,null,2.6)+punta(r.ini[0],r.ini[1],r.col);
+    if(OCULTA) return;
+    var fin=sale(r.a,r.d), A=M(r.a), B=M(fin);
+    s+=linea(A,B,r.col,null,2.6)+punta(A,B,r.col);
+    if(r.k==='r1'&&fs<0&&VER.prol) s+=linea(A,M([fs,0]),r.col,'5 5',1.6,.7);
+    if(r.guia&&VER.prol) s+=linea(r.guia[0],r.guia[1],r.col,'5 5',1.6,.7);
+    if(mm&&mm.i<0&&VER.prol) s+=linea(A,M([mm.i,mm.hi]),C.virt,'5 5',1.8,.85);
+  });
+  /* objeto (vela-flecha) e imagen */
+  s+=flecha(-o,h,C.obj)+tx(PX(-o),PY(h)-10,'objeto',C.obj,'middle',12);
+  if(m){ var xi=M([m.i,0])[0], real=m.i>0, col=real?C.real:C.virt, visible=Math.abs(xi)<=XM;
+    if(visible){ s+=flecha(xi,m.hi,col,!real,4)+tx(PX(xi),PY(m.hi)+(m.hi>0?-10:20),'imagen '+(real?'real':'virtual'),col,'middle',12); }
+    else s+=tx(xi>0?W-12:12,K.cy-30,'imagen muy lejos ('+cm(Math.abs(m.i))+')',col,xi>0?'end':'start',12);
+  } else if(!OCULTA) s+=tx(W/2,26,'Objeto en el foco: no se forma imagen','#FF5C8A','middle',12.5);
+  /* distancias o e i bajo el eje */
+  if(!OCULTA&&m&&Math.abs(M([m.i,0])[0])<=XM){ var yy=H-58, xi2=PX(M([m.i,0])[0]);
+    s+='<path d="M'+PX(-o)+' '+(yy-5)+'v10M'+X0+' '+(yy-5)+'v10" stroke="'+C.obj+'" stroke-width="1.5"/><line x1="'+PX(-o)+'" y1="'+yy+'" x2="'+X0+'" y2="'+yy+'" stroke="'+C.obj+'" stroke-width="1.5"/>'+tx((PX(-o)+X0)/2,yy+16,'o = '+cm(Math.round(o*10)/10),C.obj,'middle',11.5);
+    var yy2=yy+28; s+='<line x1="'+xi2+'" y1="'+yy2+'" x2="'+X0+'" y2="'+yy2+'" stroke="'+(m.i>0?C.real:C.virt)+'" stroke-width="1.5" stroke-dasharray="'+(m.i>0?'':'4 3')+'"/>'+tx((xi2+X0)/2,yy2+16,'i = '+cm(m.i),m.i>0?C.real:C.virt,'middle',11.5); }
+  else if(OCULTA&&FIJO.dist){ var y3=H-58; s+='<line x1="'+PX(-o)+'" y1="'+y3+'" x2="'+X0+'" y2="'+y3+'" stroke="'+C.obj+'" stroke-width="1.5"/>'+tx((PX(-o)+X0)/2,y3+16,'o = '+cm(o),C.obj,'middle',11.5); }
+  svg.innerHTML=s;
+}
+/* arrastrar el objeto */
+var arr=null;
+function mover(e){ var b=pl.getBoundingClientRect(), x=(e.clientX-b.left-K.cx)/K.kx; S.o=Math.max(2,Math.min(60,Math.round(-x))); actualizar(); }
+pl.addEventListener('pointerdown',function(e){ if(FIJO.reto&&!FIJO.mueve) return; var b=pl.getBoundingClientRect(), x=e.clientX-b.left; if(x>K.cx-6) return; parar(); arr=e.pointerId; pl.setPointerCapture(e.pointerId); mover(e); });
+pl.addEventListener('pointermove',function(e){ if(arr===e.pointerId) mover(e); });
+function suelta(e){ if(arr===e.pointerId) arr=null; }
+pl.addEventListener('pointerup',suelta); pl.addEventListener('pointercancel',suelta);
+if(window.ResizeObserver) new ResizeObserver(function(){ dibujar(); }).observe(pl); else addEventListener('resize',dibujar);
+pintarTipo(); pintarVer(); pintarChips(); actualizar();
+
+/* ============ MODO RETO (assets/lab-reto.js) ============ */
+var QID=0, AZ=MCAzar, cM=document.getElementById('cMov'), cMsitio=cM.nextElementSibling, GUARDA=null;
+function devolver(){ if(cM.parentNode!==cMsitio.parentNode) cMsitio.parentNode.insertBefore(cM,cMsitio); cM.querySelectorAll('.desl').forEach(function(r){ r.style.display=''; }); document.getElementById('chips').style.display=''; FIJO={}; }
+function solo(k){ cM.querySelectorAll('.desl').forEach(function(r){ r.style.display=r.dataset.k===k?'':'none'; }); document.getElementById('chips').style.display='none'; }
+function poner(t,o,fv,h){ S.tipo=t; S.o=o; S.f=fv; S.h=h||6; pintarTipo(); pintarVer(); actualizar(); }
+function opc(ops){ var out=[]; ops.forEach(function(x){ if(out.indexOf(x)<0) out.push(x); }); return out; }
+var PARES=[['concavo',30,10],['concavo',20,10],['concavo',15,10],['concavo',60,20],['concavo',6,12],['concavo',10,15],['conv',30,10],['conv',20,10],['conv',15,10],['conv',12,8],['conv',5,10],['convexo',10,10],['convexo',20,20],['convexo',30,15],['div',10,10],['div',12,12],['div',30,15]];
+function elNom(t){ return {concavo:'un espejo cóncavo',convexo:'un espejo convexo',conv:'una lente convergente',div:'una lente divergente'}[t]; }
+var RT=MCReto({sim:'optica',nombre:'Reto · Lentes y espejos',
+  alEntrar:function(){ parar(); GUARDA={S:JSON.parse(JSON.stringify(S)),VER:JSON.parse(JSON.stringify(VER))}; },
+  alSalir:function(){ QID++; parar(); devolver(); OCULTA=false; if(GUARDA){ S=GUARDA.S; VER=GUARDA.VER; } pintarTipo(); pintarVer(); pintarChips(); actualizar(); },
+  nueva:function(i,caja,R){
+    QID++; devolver(); parar(); OCULTA=true; FIJO={reto:1,dist:1}; VER.r1=VER.r2=VER.r3=1; VER.prol=1;
+    var p=AZ(PARES); poner(p[0],p[1],p[2],6); var mm=img(), fsg=F();
+    function revela(cp){ return function(){ var r=cp(); OCULTA=false; FIJO.dist=0; son('lanzar'); dibujar(); return r; }; }
+    if(i===0){ var ii=mm.i, nat=ii>0?'real':'virtual', otra=ii>0?'virtual':'real', alt=Math.round(1/(1/p[2]+1/p[1])*100)/100;
+      var o0=R.opciones(caja,'Un objeto está a <em>'+p[1]+' cm</em> de '+elNom(p[0])+' de foco <em>'+p[2]+' cm</em>. ¿Dónde se forma la imagen?',
+        opc([f(Math.abs(ii))+' cm, '+nat,f(Math.abs(ii))+' cm, '+otra,f(alt)+' cm, '+nat,f(p[1]+p[2])+' cm, '+nat]),0,'1/'+(fsg<0?'('+fsg+')':fsg)+' = 1/'+p[1]+' + 1/i → i = '+f(ii)+' cm: '+(ii>0?'positiva, imagen real.':'negativa, imagen virtual.'));
+      o0.comprobar=revela(o0.comprobar); return o0; }
+    if(i===1){ var n=naturaleza(mm), buena=natTxt(n), q=p[0]==='concavo'||p[0]==='conv';
+      var cands=['Real, invertida y menor','Real, invertida y mayor','Real, invertida y del mismo tamaño','Virtual, derecha y mayor','Virtual, derecha y menor','Virtual, invertida y menor'].filter(function(x){ return x!==buena; }).sort(function(){ return Math.random()-.5; });
+      var lugar=!q?'a '+p[1]+' cm':p[1]>2*p[2]?'más allá de '+(espejo()?'C':'2F'):p[1]===2*p[2]?'en '+(espejo()?'C':'2F'):p[1]>p[2]?'entre F y '+(espejo()?'C':'2F'):'entre F y '+(espejo()?'el espejo':'la lente');
+      var o1=R.opciones(caja,'El objeto está <em>'+lugar+'</em> de '+elNom(p[0])+'. ¿Cómo es la imagen?',[buena].concat(cands.slice(0,3)),0,'i = '+f(mm.i)+' cm y A = '+f(mm.A)+': '+buena.toLowerCase()+'.');
+      o1.comprobar=revela(o1.comprobar); return o1; }
+    if(i===2){ /* mover el objeto */
+      var t2=AZ(['concavo','conv']), f2=AZ([10,12,15]), meta=AZ(['igual','virtual2']); poner(t2,40,f2,6); FIJO={reto:1,mueve:1};
+      var okO=meta==='igual'?2*f2:f2/2;
+      R.texto(caja,'Mueve',meta==='igual'?'Con '+elNom(t2)+' de foco <em>'+f2+' cm</em>, coloca el objeto para que la imagen salga <em>del mismo tamaño</em> (invertida).':'Con '+elNom(t2)+' de foco <em>'+f2+' cm</em>, coloca el objeto para que la imagen sea <em>virtual y el doble de grande</em>.');
+      caja.appendChild(cM); solo('o');
+      return { comprobar:function(){ var ok=Math.abs(S.o-okO)<.01; OCULTA=false; FIJO={reto:1}; dibujar(); var mq=img();
+          return {ok:ok,msg:(ok?'':'Con o = '+cm(S.o)+(mq?' sale A = '+f(mq.A)+'. ':'. '))+(meta==='igual'?'Imagen igual e invertida: A = −1 → i = o → o = 2f = '+okO+' cm.':'A = 2 → i = −2o → 1/f = 1/o − 1/(2o) = 1/(2o) → o = f / 2 = '+f(okO)+' cm.')}; },
+        mostrar:function(){ var q=QID; setTimeout(function(){ if(q!==QID||!RT.activo) return; S.o=okO; actualizar(); },1500); } };
+    }
+    if(i===3){ var A=mm.A, o3=R.opciones(caja,'Un objeto a <em>'+p[1]+' cm</em> de '+elNom(p[0])+' forma su imagen a <em>'+f(Math.abs(mm.i))+' cm</em> ('+(mm.i>0?'real':'virtual')+'). ¿Cuál es el aumento?',
+        opc([f(A),f(-A),f(1/A),f(Math.abs(mm.i)+p[1])]).concat(['1']).slice(0,4),0,'A = −i / o = −('+f(mm.i)+') / '+p[1]+' = '+f(A)+(A<0?' (negativo: invertida).':' (positivo: derecha).'));
+      o3.comprobar=revela(o3.comprobar); return o3; }
+    /* hallar el foco */
+    var P4=AZ([[30,15,10],[20,20,10],[60,30,20],[15,30,10],[40,40,20],[12,24,8],[24,12,8]]); poner(AZ(['concavo','conv']),P4[0],P4[2],6);
+    var o4=R.opciones(caja,'Un objeto a <em>'+P4[0]+' cm</em> forma una imagen <em>real</em> a <em>'+P4[1]+' cm</em> de '+elNom(S.tipo)+'. ¿Cuál es su distancia focal?',
+      opc([P4[2]+' cm',(P4[0]+P4[1])+' cm',f((P4[0]+P4[1])/2)+' cm',f(Math.abs(P4[0]-P4[1])||P4[2]*2)+' cm']),0,'1/f = 1/'+P4[0]+' + 1/'+P4[1]+' → f = o·i / (o + i) = '+(P4[0]*P4[1])+' / '+(P4[0]+P4[1])+' = '+P4[2]+' cm.');
+    o4.comprobar=revela(o4.comprobar); return o4;
+  }});
+</script>
+</body>
+</html>
