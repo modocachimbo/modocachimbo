@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<script src="assets/guardia.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06040F">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="assets/app/icono-180.png">
+<title>Tiro parabólico · Laboratorio · Modo Cachimbo</title>
+<script src="assets/app.js" defer></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Nunito:wght@600;700;800;900&family=Sora:wght@700;800&display=swap">
+<link rel="stylesheet" href="assets/lab-mate.css">
+<style>
+/* Física: naranja en el título y en la pregunta del reto */
+.ttl small{color:#FF9600}
+.preg{background:linear-gradient(135deg,rgba(255,150,0,.16),rgba(21,17,39,.6));border-color:rgba(255,150,0,.35)}
+.preg small{color:#FFB54D}
+.desl{grid-template-columns:40px 1fr 74px}
+.desl b small{font:800 11px "Sora"}
+.desl output{font-size:15px;white-space:nowrap}
+.gtit{margin:12px 0 6px;font:900 10.5px/1 "Nunito";letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+html.reto-on .giro,html.reto-on #grav,html.reto-on .gtit,html.reto-on #rowT{display:none}
+.ayuda{position:absolute;right:10px;top:10px;padding:6px 11px;font:800 12px/1.2 "Nunito";color:var(--dim);display:flex;align-items:center;gap:6px;pointer-events:none}
+.ayuda svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+html.reto-on .ayuda{display:none}
+@media (max-width:860px),(orientation:portrait) and (max-width:1024px){ .ayuda{display:none} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="i-atras" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="i-son" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="on-l" d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/><path class="off-l" d="M16 9.5l5 5M21 9.5l-5 5"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></symbol>
+<symbol id="i-pausa" viewBox="0 0 24 24"><path d="M8 5.5v13M16 5.5v13" stroke-width="3.4"/></symbol>
+<symbol id="i-otra" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5"/></symbol>
+<symbol id="i-mano" viewBox="0 0 24 24"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V11m0-1.5a1.5 1.5 0 0 1 3 0V11m0-.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-6 6h-1a6 6 0 0 1-5-2.7L3.6 15a1.5 1.5 0 0 1 2.5-1.7L8 15"/></symbol>
+<symbol id="i-rayo" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
+</defs></svg>
+<section class="beta-aviso"><b>Laboratorio en prueba</b><p>Los simuladores están en beta. Muy pronto se abren para todos.</p><a href="index.html">Volver al inicio</a></section>
+
+<div class="app">
+  <div class="top">
+    <a class="ib glass" href="laboratorio.html" aria-label="Volver al Laboratorio"><svg class="i"><use href="#i-atras"/></svg></a>
+    <div class="ttl glass"><small>Física</small><b>Tiro parabólico</b></div>
+    <div class="sp"></div>
+    <button class="ib glass son" id="bSon" aria-label="Sonido"><svg class="i"><use href="#i-son"/></svg></button>
+  </div>
+  <div class="cuerpo">
+    <div class="plano" id="plano" style="touch-action:none">
+      <div class="chipv glass" id="formula"></div>
+      <div class="ayuda glass"><svg><use href="#i-mano"/></svg>Arrastra en el cielo para apuntar el cañón</div>
+    </div>
+    <div class="ficha">
+      <div class="tipos" id="ver"></div>
+      <div class="caja" id="cLan"><h3>Lanza el proyectil</h3>
+        <div class="giro"><button class="play" id="bPlay"></button><button class="vel" id="bVel">Normal</button></div>
+        <label class="desl" data-k="v"><b>v₀</b><input type="range" min="5" max="50" step="1" id="vel"><output id="velO"></output></label>
+        <label class="desl" data-k="a"><b>θ</b><input type="range" min="0" max="90" step="1" id="ang"><output id="angO"></output></label>
+        <div class="chips" id="chips"></div>
+        <label class="desl" data-k="h"><b>h</b><input type="range" min="0" max="60" step="5" id="alt"><output id="altO"></output></label>
+        <label class="desl" data-k="t" id="rowT"><b>t</b><input type="range" min="0" max="1" step="0.01" id="tie"><output id="tieO"></output></label>
+        <div class="gtit">Gravedad</div>
+        <div class="tipos" id="grav"></div>
+      </div>
+      <div class="caja"><h3>Resultados del lanzamiento</h3><div class="datos" id="datos"></div></div>
+      <div class="caja"><h3 id="tInst">En el instante t</h3><div class="datos" id="inst"></div></div>
+      <div class="clave" id="clave"></div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/mc-config.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/arcade-beta.js"></script>
+<script src="assets/lab-rayos.js"></script>
+<script src="assets/lab-sonido.js"></script>
+<script src="assets/lab-plano.js"></script>
+<script src="assets/lab-reto.js"></script>
+<script>
+MCLabPuerta('parabolico');
+var f=MCfmt, son=MCLabComun('parabolico');
+var C={vx:'#3AB4F0',vy:'#FF5C8A',v:'#C6E000',tray:'#FF9600',comp:'#9B6BFF',oro:'#FFC800'};
+var RAD=Math.PI/180, ex=new URLSearchParams(location.search);
+/* Estado: v0 (m/s), θ (°), h altura inicial (m), g (m/s²), t instante (s) */
+var S={v:+(ex.get('v')||25), a:+(ex.get('a')||37), h:+(ex.get('h')||0), g:10, t:0};
+var VER={vec:1,marcas:1,medidas:1,comp:0}, RASTROS=[], OCULTA=false, OBJ=null, FIJO={};
+var SEN={0:'0',30:'1/2',37:'3/5',45:'√2/2',53:'4/5',60:'√3/2',90:'1'}, COS={0:'1',30:'√3/2',37:'4/5',45:'√2/2',53:'3/5',60:'1/2',90:'0'};
+var GRAV=[[10,'g = 10'],[9.8,'g = 9,8'],[1.6,'Luna 1,6']];
+function m(n,u){ return f(n)+' '+u; }
+/* Física del tiro */
+function tiro(v,a,h,g){
+  /* En el examen 37° y 53° salen del triángulo 3-4-5 (sen 37° = 3/5 exacto) */
+  var NT={37:[.6,.8],53:[.8,.6],30:[.5,Math.sqrt(3)/2],60:[Math.sqrt(3)/2,.5],0:[0,1],90:[1,0]}, s=NT[a]?NT[a][0]:Math.sin(a*RAD), c=NT[a]?NT[a][1]:Math.cos(a*RAD);
+  var vx=v*c, vy=v*s, T=(vy+Math.sqrt(vy*vy+2*g*h))/g, ts=vy/g;
+  return {vx:vx,vy:vy,T:T,ts:ts,H:h+vy*vy/(2*g),R:vx*T,xH:vx*ts,
+    x:function(t){ return vx*t; }, y:function(t){ return h+vy*t-g*t*t/2; }, vyt:function(t){ return vy-g*t; }};
+}
+var K=tiro(S.v,S.a,S.h,S.g);
+
+/* Botones de "ver" */
+var bVer=[['vec','Velocidades',C.v],['marcas','Cada segundo',C.oro],['medidas','Alcance y altura',C.tray],['comp','Ángulo complementario',C.comp]];
+function pintarVer(){
+  document.getElementById('ver').innerHTML=bVer.map(function(b){ return '<button data-k="'+b[0]+'" class="'+(VER[b[0]]?'on':'')+'"><i style="background:'+b[2]+'"></i>'+b[1]+'</button>'; }).join('');
+  document.querySelectorAll('#ver button').forEach(function(b){ b.onclick=function(){ VER[b.dataset.k]=!VER[b.dataset.k]; son('tic'); pintarVer(); vista(); }; });
+}
+function pintarGrav(){
+  document.getElementById('grav').innerHTML=GRAV.map(function(x){ return '<button data-g="'+x[0]+'" class="'+(S.g===x[0]?'on':'')+'">'+x[1]+'</button>'; }).join('');
+  document.querySelectorAll('#grav button').forEach(function(b){ b.onclick=function(){ son('tic'); S.g=+b.dataset.g; RASTROS=[]; pintarGrav(); cambio(); }; });
+}
+document.getElementById('chips').innerHTML=[0,15,30,37,45,53,60,75,90].map(function(a){ return '<button data-a="'+a+'">'+a+'°</button>'; }).join('');
+document.querySelectorAll('#chips button').forEach(function(b){ b.onclick=function(){ son('tic'); S.a=+b.dataset.a; cambio(); }; });
+var iV=document.getElementById('vel'), iA=document.getElementById('ang'), iH=document.getElementById('alt'), iT=document.getElementById('tie');
+iV.oninput=function(){ S.v=+iV.value; cambio(); };
+iA.oninput=function(){ var a=+iA.value; if(a!==S.a&&SEN[a]) son('tic'); S.a=a; cambio(); };
+iH.oninput=function(){ S.h=+iH.value; RASTROS=[]; cambio(); };
+iT.oninput=function(){ parar(); S.t=Math.min(K.T,+iT.value); actualizar(); };
+function rango(i,v){ var p=(v-i.min)/(i.max-i.min)*100; i.style.setProperty('--p',p+'%'); }
+
+/* Lanzar: el tiempo corre de verdad (Lento x0,5 · Normal x1 · Rápido x2) */
+var VEL=[['Lento',.5],['Normal',1],['Rápido',2]], vi=1, anim=null, tAnt=0, bPlay=document.getElementById('bPlay'), bVel=document.getElementById('bVel');
+function pintarPlay(){ var fin=S.t>=K.T-1e-9&&S.t>0; bPlay.classList.toggle('on',!!anim); bPlay.innerHTML='<svg class="i"><use href="#i-'+(anim?'pausa':fin?'otra':'play')+'"/></svg><span>'+(anim?'Pausar':fin?'Otra vez':S.t>0?'Seguir':'Lanzar')+'</span>'; }
+function cuadro(t){ if(!anim) return; var dt=Math.min(.1,(t-tAnt)/1000); tAnt=t; S.t+=dt*VEL[vi][1];
+  if(S.t>=K.T){ S.t=K.T; anim=null; son('caer'); actualizar(); if(alCaer){ var fc=alCaer; alCaer=null; fc(); } return; }
+  actualizar(); anim=requestAnimationFrame(cuadro); }
+var alCaer=null;
+function lanzar(fc){ if(S.t>=K.T-1e-9) S.t=0;
+  if(S.t===0){ guardarRastro(); son('lanzar'); }
+  alCaer=fc||null; tAnt=performance.now(); anim=requestAnimationFrame(cuadro); pintarPlay(); }
+function parar(){ if(!anim) return; cancelAnimationFrame(anim); anim=null; pintarPlay(); }
+bPlay.onclick=function(){ if(anim){ son('tic'); return parar(); } lanzar(); };
+bVel.onclick=function(){ son('tic'); vi=(vi+1)%VEL.length; bVel.textContent=VEL[vi][0]; };
+/* Rastros: los últimos 3 lanzamientos distintos quedan dibujados suaves para comparar */
+function guardarRastro(){ var k=S.v+'|'+S.a; if(RASTROS.length&&RASTROS[RASTROS.length-1].k===k) return;
+  RASTROS=RASTROS.filter(function(r){ return r.k!==k; }); RASTROS.push({k:k,v:S.v,a:S.a}); if(RASTROS.length>4) RASTROS.shift(); }
+
+function cambio(){ parar(); S.t=0; K=tiro(S.v,S.a,S.h,S.g); vista(); actualizar(); }
+
+/* Textos con los valores exactos de los ángulos notables */
+function senTx(a){ return SEN[a]||f(Math.sin(a*RAD)); }
+function cosTx(a){ return COS[a]||f(Math.cos(a*RAD)); }
+function actualizar(){
+  iV.value=S.v; iA.value=S.a; iH.value=S.h; rango(iV,S.v); rango(iA,S.a); rango(iH,S.h);
+  iT.max=Math.max(.01,K.T).toFixed(2); iT.value=S.t; rango(iT,S.t);
+  document.getElementById('velO').textContent=S.v+' m/s'; document.getElementById('angO').textContent=S.a+'°';
+  document.getElementById('altO').textContent=S.h+' m'; document.getElementById('tieO').textContent=f(S.t)+' s';
+  document.querySelectorAll('#chips button').forEach(function(b){ b.classList.toggle('on',+b.dataset.a===S.a); });
+  document.getElementById('formula').innerHTML='v₀ = '+S.v+' m/s · θ = '+S.a+'°'+(S.h?' · h = '+S.h+' m':'');
+  var d=[['Tiempo de vuelo',m(K.T,'s'),C.oro],['Altura máxima',m(K.H,'m'),C.vy],['Alcance horizontal',m(K.R,'m'),C.tray],['Tiempo de subida',m(K.ts,'s'),null],
+    ['vₓ (no cambia)',m(K.vx,'m/s'),C.vx],['v₀y (al inicio)',m(K.vy,'m/s'),C.vy]];
+  document.getElementById('datos').innerHTML=d.map(function(x){ return '<div class="dato"><small>'+(x[2]?'<i style="background:'+x[2]+'"></i>':'')+x[0]+'</small><b>'+x[1]+'</b></div>'; }).join('');
+  var t=S.t, vy=K.vyt(t), y=Math.max(0,K.y(t));
+  document.getElementById('tInst').textContent='En el instante t = '+f(t)+' s';
+  var e=[['Posición x',m(K.x(t),'m'),null],['Altura y',m(y,'m'),null],['vₓ',m(K.vx,'m/s'),C.vx],['vy',m(vy,'m/s')+(Math.abs(vy)<.05?' (punto más alto)':vy>0?' (sube)':' (baja)'),C.vy],
+    ['Rapidez |v| = √(vₓ² + vy²)',m(Math.hypot(K.vx,vy),'m/s'),C.v,1]];
+  document.getElementById('inst').innerHTML=e.map(function(x){ return '<div class="dato'+(x[3]?' ancho':'')+'"><small>'+(x[2]?'<i style="background:'+x[2]+'"></i>':'')+x[0]+'</small><b>'+x[1]+'</b></div>'; }).join('');
+  /* Cae en el examen */
+  var cl=[], a=S.a, g=S.g, gt=f(g);
+  if(a>0&&a<90) cl.push('Descompón la velocidad: vₓ = v₀·cos θ = '+S.v+'·'+cosTx(a)+' = '+m(K.vx,'m/s')+' (no cambia nunca) y v₀y = v₀·sen θ = '+S.v+'·'+senTx(a)+' = '+m(K.vy,'m/s')+'.');
+  if(S.h===0&&a>0){
+    cl.push('Sale y cae al mismo nivel: T = 2·v₀y / g = 2·'+f(K.vy)+' / '+gt+' = '+m(K.T,'s')+'. H = v₀y² / (2g) = '+m(K.H,'m')+'. R = vₓ·T = '+m(K.R,'m')+'.');
+    if(a===45) cl.push('Con 45° se logra el mayor alcance: R máx = v₀² / g = '+m(K.R,'m')+'.');
+    else if(a<90) cl.push(a+'° y su complementario '+(90-a)+'° llegan al mismo alcance (R = v₀²·sen 2θ / g). Con 45° se llega más lejos.');
+    else cl.push('Lanzamiento vertical: no avanza (R = 0). Sube durante '+m(K.ts,'s')+' y baja en el mismo tiempo.');
+    if(a<90) cl.push('Truco: tg θ = 4H / R. Aquí 4·'+f(K.H)+' / '+f(K.R)+' = '+f(4*K.H/K.R)+' = tg '+a+'°.');
+  } else if(a===0){
+    cl.push('Lanzamiento horizontal: v₀y = 0, así que cae como en caída libre. h = g·t² / 2 → t = √(2h / g)'+(S.h?' = √(2·'+S.h+' / '+gt+') = '+m(K.T,'s'):'')+'.');
+    if(S.h) cl.push('Mientras cae, avanza con vₓ constante: x = vₓ·t = '+S.v+'·'+f(K.T)+' = '+m(K.R,'m')+'.');
+    else cl.push('Sube la altura h para lanzar desde un edificio.');
+  } else {
+    cl.push('Desde h = '+S.h+' m no sirve T = 2v₀y / g. Usa la altura: '+S.h+' + '+f(K.vy)+'·t − '+f(g/2)+'·t² = 0 → T = '+m(K.T,'s')+'. Luego R = vₓ·T = '+m(K.R,'m')+'.');
+    cl.push('Altura máxima desde el suelo: H = h + v₀y² / (2g) = '+S.h+' + '+f(K.vy*K.vy/(2*g))+' = '+m(K.H,'m')+'.');
+  }
+  cl.push('En el punto más alto vy = 0, pero la velocidad no es cero: vale vₓ = '+m(K.vx,'m/s')+'. La aceleración siempre es g, hacia abajo.');
+  document.getElementById('clave').innerHTML='<b><svg><use href="#i-rayo"/></svg>Cae en el examen</b>'+cl.map(function(c){ return '<p>'+c+'</p>'; }).join('');
+  pintarPlay(); P.redibujar();
+}
+
+/* Encuadre: suelo abajo a la izquierda. La escala cambia por saltos para que se note
+   cuando el tiro llega más lejos (no se reescala con cada metro). */
+function redondo(v){ var e=Math.pow(10,Math.floor(Math.log10(v))), q=v/e; return (q<=1?1:q<=1.5?1.5:q<=2?2:q<=3?3:q<=4?4:q<=6?6:q<=8?8:10)*e; }
+var pl=document.getElementById('plano');
+function caja(){ var R=K.R, H=K.H;
+  if(OCULTA){ R=S.v*S.v/S.g; H=R/2; } /* en el reto la escala no delata la respuesta */
+  if(VER.comp){ var c=tiro(S.v,90-S.a,S.h,S.g); R=Math.max(R,c.R); H=Math.max(H,c.H); }
+  RASTROS.forEach(function(r){ var c=tiro(r.v,r.a,S.h,S.g); R=Math.max(R,c.R); H=Math.max(H,c.H); });
+  if(OBJ&&OBJ.R) R=Math.max(R,OBJ.R); if(OBJ&&OBJ.H) H=Math.max(H,OBJ.H);
+  return {X:redondo(Math.max(10,R*1.04)), Y:redondo(Math.max(5,H*1.08,S.h+2))}; }
+function vista(){
+  var b=pl.getBoundingClientRect(); if(!b.width) return;
+  var c=caja(), iz=S.h?Math.max(46,b.width*.07):40, de=22, ar=64, ab=48;
+  var xmin=0, k=Math.min((b.width-iz-de)/(c.X-xmin),(b.height-ar-ab)/c.Y);
+  P.r=Math.min(b.width,b.height)/(2*k);
+  P.cx=xmin+(b.width/2-iz)/k; P.cy=0+(b.height/2-ab)/k;
+  P.redibujar();
+}
+
+/* Dibujo */
+var Q;
+function flecha(x1,y1,x2,y2,col,an){ var L=Math.hypot(x2-x1,y2-y1); if(L<3) return ''; var ux=(x2-x1)/L, uy=(y2-y1)/L, a=Math.min(10,L*.45);
+  return '<line x1="'+x1+'" y1="'+y1+'" x2="'+(x2-ux*a*.6)+'" y2="'+(y2-uy*a*.6)+'" stroke="'+col+'" stroke-width="'+(an||3.2)+'" stroke-linecap="round"/>'+
+    '<path d="M'+x2+' '+y2+'L'+(x2-ux*a-uy*a*.55)+' '+(y2-uy*a+ux*a*.55)+'L'+(x2-ux*a+uy*a*.55)+' '+(y2-uy*a-ux*a*.55)+'Z" fill="'+col+'"/>'; }
+function tx(x,y,t,c,an,sz){ return '<text class="ptx" x="'+x+'" y="'+y+'" fill="'+c+'" text-anchor="'+(an||'middle')+'"'+(sz?' style="font-size:'+sz+'px"':'')+'>'+t+'</text>'; }
+function camino(k,t1){ var d='', n=Math.max(24,Math.ceil(t1*30)); for(var i=0;i<=n;i++){ var t=t1*i/n; d+=(i?'L':'M')+Q.X(k.x(t)).toFixed(1)+' '+Q.Y(Math.max(0,k.y(t))).toFixed(1); } return d; }
+var P=MCPlano(pl,{r:20,quieto:true,alDibujar:function(P){
+  Q=P; var s='', g0=P.Y(0), x0=P.X(0), h0=P.Y(S.h), W=P.w, Hh=P.h;
+  /* suelo */
+  s+='<rect x="0" y="'+g0+'" width="'+W+'" height="'+Math.max(0,Hh-g0)+'" fill="rgba(255,150,0,.07)"/><line x1="0" y1="'+g0+'" x2="'+W+'" y2="'+g0+'" stroke="#FF9600" stroke-opacity=".55" stroke-width="2"/>';
+  s+='<text class="num" x="'+(W-8)+'" y="'+(g0-6)+'" text-anchor="end" style="font-size:12px;fill:#A99FC8">x (m)</text>';
+  /* edificio */
+  if(S.h>0){ var bw=Math.max(30,x0-6); s+='<rect x="'+(x0-bw)+'" y="'+h0+'" width="'+bw+'" height="'+(g0-h0)+'" rx="3" fill="#1D1834" stroke="#3A3060" stroke-width="1.5"/>';
+    for(var wy=h0+10;wy<g0-12;wy+=16) for(var wx=x0-bw+7;wx<x0-10;wx+=12) s+='<rect x="'+wx+'" y="'+wy+'" width="6" height="8" rx="1" fill="rgba(255,200,0,.14)"/>';
+    s+='<line x1="'+(x0+10)+'" y1="'+h0+'" x2="'+(x0+10)+'" y2="'+g0+'" stroke="#A99FC8" stroke-width="1.2" stroke-dasharray="4 4"/>'+tx(x0+15,(h0+g0)/2+4,'h = '+S.h+' m','#A99FC8','start',12); }
+  /* diana del reto */
+  if(OBJ&&OBJ.R){ var dx=P.X(OBJ.R); s+='<ellipse cx="'+dx+'" cy="'+g0+'" rx="22" ry="6" fill="rgba(255,92,138,.25)" stroke="#FF5C8A" stroke-width="2"/><ellipse cx="'+dx+'" cy="'+g0+'" rx="11" ry="3" fill="#FF5C8A"/>'+
+    '<line x1="'+dx+'" y1="'+g0+'" x2="'+dx+'" y2="'+(g0-46)+'" stroke="#EEEAF7" stroke-width="2"/><path d="M'+dx+' '+(g0-46)+'h20l-5 6 5 6h-20z" fill="#FF5C8A"/>'+tx(dx,g0+30,f(OBJ.R)+' m','#FF5C8A','middle',13); }
+  if(OBJ&&OBJ.H){ var my=P.Y(OBJ.H); s+='<line x1="'+x0+'" y1="'+my+'" x2="'+W+'" y2="'+my+'" stroke="#FF5C8A" stroke-width="2" stroke-dasharray="8 6"/>'+tx(W-10,my-8,'Meta: '+f(OBJ.H)+' m','#FF5C8A','end',13); }
+  /* rastros de lanzamientos anteriores */
+  RASTROS.forEach(function(r){ if(r.k===S.v+'|'+S.a) return; var k=tiro(r.v,r.a,S.h,S.g);
+    s+='<path d="'+camino(k,k.T)+'" fill="none" stroke="#A99FC8" stroke-opacity=".35" stroke-width="2"/>'+tx(P.X(k.xH),P.Y(k.H)-8,r.a+'° · '+r.v+' m/s','#6F6690','middle',11); });
+  /* ángulo complementario */
+  if(VER.comp&&!OCULTA&&S.a!==45){ var kc=tiro(S.v,90-S.a,S.h,S.g);
+    s+='<path d="'+camino(kc,kc.T)+'" fill="none" stroke="'+C.comp+'" stroke-width="2.4" stroke-dasharray="7 6"/>'+tx(P.X(kc.xH),P.Y(kc.H)-10,(90-S.a)+'°','#B99CFF','middle',13); }
+  /* trayectoria completa (punteada) y lo recorrido (lleno) */
+  if(!OCULTA){ s+='<path d="'+camino(K,K.T)+'" fill="none" stroke="'+C.tray+'" stroke-opacity=".7" stroke-width="2.4" stroke-dasharray="6 6"/>';
+    if(S.t>0) s+='<path d="'+camino(K,S.t)+'" fill="none" stroke="'+C.tray+'" stroke-width="3.6" stroke-linecap="round" style="filter:drop-shadow(0 0 6px rgba(255,150,0,.55))"/>';
+    /* marcas cada segundo */
+    if(VER.marcas){ var paso=K.T>14?2:1; for(var ts=paso;ts<K.T-1e-6;ts+=paso){ var mx=P.X(K.x(ts)), my2=P.Y(K.y(ts)), ya=ts<=S.t;
+      s+='<circle cx="'+mx+'" cy="'+my2+'" r="4.5" fill="'+(ya?C.oro:'#0B0820')+'" stroke="'+C.oro+'" stroke-width="2"/>'+tx(mx+(S.a>80?10:0),my2+(S.a>80?4:-10),ts+' s',ya?C.oro:'#8B7FB0',S.a>80?'start':'middle',11); } }
+    /* medidas: altura máxima y alcance */
+    if(VER.medidas&&K.H>0){ var ax=P.X(K.xH), ay=P.Y(K.H);
+      s+='<line x1="'+ax+'" y1="'+ay+'" x2="'+ax+'" y2="'+g0+'" stroke="'+C.vy+'" stroke-width="1.6" stroke-dasharray="4 4"/>';
+      s+='<circle cx="'+ax+'" cy="'+ay+'" r="4" fill="'+C.vy+'"/>'+tx(ax+8,Math.min(g0-10,(ay+g0)/2+4),'H = '+m(K.H,'m'),C.vy,'start',13); }
+    if(VER.medidas&&K.R>.5){ var rx=P.X(K.R), ry=g0+30;
+      s+='<line x1="'+x0+'" y1="'+(g0+20)+'" x2="'+x0+'" y2="'+(g0+38)+'" stroke="'+C.tray+'" stroke-width="1.4"/><line x1="'+rx+'" y1="'+(g0+20)+'" x2="'+rx+'" y2="'+(g0+38)+'" stroke="'+C.tray+'" stroke-width="1.4"/>'+
+        flecha((x0+rx)/2,ry,x0+1,ry,C.tray,1.6)+flecha((x0+rx)/2,ry,rx-1,ry,C.tray,1.6);
+      var lbl='R = '+m(K.R,'m'), lw=lbl.length*7+14; s+='<rect x="'+((x0+rx)/2-lw/2)+'" y="'+(ry-10)+'" width="'+lw+'" height="20" rx="10" fill="#0B0820"/>'+tx((x0+rx)/2,ry+4.5,lbl,C.tray,'middle',12.5); }
+  }
+  /* cañón */
+  var ca=S.a*RAD, cl=36, bx=x0+Math.cos(ca)*cl, by=h0-Math.sin(ca)*cl;
+  s+='<line x1="'+x0+'" y1="'+h0+'" x2="'+bx+'" y2="'+by+'" stroke="#3A3060" stroke-width="15" stroke-linecap="round"/><line x1="'+x0+'" y1="'+h0+'" x2="'+bx+'" y2="'+by+'" stroke="#C6E000" stroke-width="9" stroke-linecap="round"/>';
+  s+='<circle cx="'+x0+'" cy="'+h0+'" r="11" fill="#1D1834" stroke="#C6E000" stroke-width="2.5"/><circle cx="'+x0+'" cy="'+h0+'" r="3.5" fill="#C6E000"/>';
+  /* arco del ángulo */
+  if(S.a>0){ var ra=56, ex2=x0+ra*Math.cos(ca), ey2=h0-ra*Math.sin(ca);
+    s+='<line x1="'+x0+'" y1="'+h0+'" x2="'+(x0+ra+14)+'" y2="'+h0+'" stroke="rgba(238,234,247,.35)" stroke-width="1.4" stroke-dasharray="4 4"/>';
+    s+='<path d="M'+(x0+ra)+' '+h0+' A'+ra+' '+ra+' 0 0 0 '+ex2+' '+ey2+'" fill="none" stroke="#FFC800" stroke-width="2"/>'+tx(x0+(ra+14)*Math.cos(ca/2),h0-(ra+14)*Math.sin(ca/2)+5,S.a+'°','#FFC800','middle',13); }
+  /* el proyectil y sus velocidades */
+  var t=S.t, px=P.X(K.x(t)), py=P.Y(Math.max(0,K.y(t))), vy=K.vyt(t);
+  if(VER.vec){ var esc=58/Math.max(10,S.v), fx=K.vx*esc, fy=-vy*esc;
+    if(Math.abs(fx)>3) s+=flecha(px,py,px+fx,py,C.vx,3)+tx(px+fx+(fx>0?6:-6),py+16,'vₓ',C.vx,'middle',12);
+    if(Math.abs(fy)>3) s+=flecha(px,py,px,py+fy,C.vy,3)+tx(px-10,py+fy+(fy<0?4:10),'vy',C.vy,'end',12);
+    if(Math.abs(fx)>3&&Math.abs(fy)>3) s+='<path d="M'+(px+fx)+' '+py+'L'+(px+fx)+' '+(py+fy)+'L'+px+' '+(py+fy)+'" fill="none" stroke="rgba(238,234,247,.3)" stroke-dasharray="3 4"/>';
+    s+=flecha(px,py,px+fx,py+fy,C.v,3.6)+tx(px+fx+8,py+fy-6,'v','#C6E000','start',13); }
+  s+='<circle cx="'+px+'" cy="'+py+'" r="16" fill="rgba(255,200,0,.16)"/><circle cx="'+px+'" cy="'+py+'" r="8" fill="#FFC800" stroke="#0B0820" stroke-width="2.5" style="filter:drop-shadow(0 0 6px rgba(255,200,0,.7))"/>';
+  if(t>=K.T-1e-9&&t>0) s+='<circle cx="'+px+'" cy="'+g0+'" r="20" fill="none" stroke="#FFC800" stroke-opacity=".5" stroke-width="2"/>';
+  return s; }});
+
+/* Arrastrar en el cielo apunta el cañón; arrastrar la bola la mueve por su camino */
+var arr=null;
+function punto(e){ var b=pl.getBoundingClientRect(); return {x:e.clientX-b.left,y:e.clientY-b.top}; }
+function aplicar(e){ var p=punto(e);
+  if(arr.modo==='t'){ if(!K.vx) return; S.t=Math.max(0,Math.min(K.T,P.ix(p.x)/K.vx)); return actualizar(); }
+  var a=Math.atan2(P.Y(S.h)-p.y,p.x-P.X(0))/RAD; a=Math.max(0,Math.min(90,a));
+  var r=Math.round(a); [0,30,37,45,53,60,90].some(function(n){ if(Math.abs(n-a)<=1.6){ r=n; return true; } });
+  if(r!==S.a){ if(SEN[r]) son('tic'); S.a=r; cambio(); } }
+pl.addEventListener('pointerdown',function(e){ if(FIJO.todo) return; var p=punto(e), bx=P.X(K.x(S.t)), by=P.Y(Math.max(0,K.y(S.t)));
+  var modo=(Math.hypot(p.x-bx,p.y-by)<30&&K.vx>0&&!FIJO.reto)?'t':'a'; if(modo==='a'&&FIJO.a) return;
+  parar(); arr={id:e.pointerId,modo:modo}; pl.setPointerCapture(e.pointerId); aplicar(e); });
+pl.addEventListener('pointermove',function(e){ if(arr&&arr.id===e.pointerId) aplicar(e); });
+function suelta(e){ if(arr&&arr.id===e.pointerId) arr=null; }
+pl.addEventListener('pointerup',suelta); pl.addEventListener('pointercancel',suelta);
+if(window.ResizeObserver) new ResizeObserver(function(){ vista(); }).observe(pl); else addEventListener('resize',vista);
+pintarVer(); pintarGrav(); cambio();
+
+/* ============ MODO RETO (assets/lab-reto.js) ============ */
+var QID=0, AZ=MCAzar, cL=document.getElementById('cLan'), cLsitio=cL.nextElementSibling, GUARDA=null;
+function devolver(){ if(cL.parentNode!==cLsitio.parentNode) cLsitio.parentNode.insertBefore(cL,cLsitio); cL.querySelectorAll('.desl').forEach(function(r){ r.style.display=''; }); document.getElementById('chips').style.display=''; }
+function solo(k){ cL.querySelectorAll('.desl').forEach(function(r){ r.style.display=r.dataset.k===k?'':'none'; }); }
+function poner(v,a){ S.v=v; S.a=a; S.h=0; S.g=10; cambio(); }
+/* Combinaciones con números limpios (g = 10): [θ, velocidades] */
+var COMBOS=[[37,[10,20,25,30,50]],[53,[10,20,25,30,50]],[30,[10,20,30,40]]];
+function pregCalc(){
+  var cb=AZ(COMBOS), a=cb[0], v=AZ(cb[1]), k=tiro(v,a,0,10), tipo=a===30?AZ(['T','H','T','H']):AZ(['T','H','R','R','vmin']);
+  var vy=k.vy, vx=k.vx, ops, txt, u, expl;
+  var base='v₀y = '+v+'·'+SEN[a]+' = '+f(vy)+' m/s';
+  if(tipo==='T'){ txt='¿Cuál es su <em>tiempo de vuelo</em>?'; u=' s'; ops=[k.T,k.ts,2*k.T,2*vx/10]; expl=base+'. T = 2·v₀y / g = 2·'+f(vy)+' / 10 = '+f(k.T)+' s.'; }
+  else if(tipo==='H'){ txt='¿Qué <em>altura máxima</em> alcanza?'; u=' m'; ops=[k.H,2*k.H,vy*vy/10/4,vx*vx/20]; expl=base+'. H = v₀y² / (2g) = '+f(vy*vy)+' / 20 = '+f(k.H)+' m.'; }
+  else if(tipo==='R'){ txt='¿Cuál es su <em>alcance horizontal</em>?'; u=' m'; ops=[k.R,k.R/2,v*v/10,vx*k.ts]; expl='vₓ = '+v+'·'+COS[a]+' = '+f(vx)+' m/s y T = 2·'+f(vy)+' / 10 = '+f(k.T)+' s. R = vₓ·T = '+f(k.R)+' m.'; }
+  else { txt='¿Cuál es su <em>rapidez en el punto más alto</em>?'; u=' m/s'; ops=[vx,0,vy,v]; expl='Arriba vy = 0, solo queda vₓ = '+v+'·'+COS[a]+' = '+f(vx)+' m/s.'; }
+  var out=[]; ops.forEach(function(x){ var t=f(x)+u; if(out.indexOf(t)<0) out.push(t); });
+  var extra=[1.5,.75,3]; while(out.length<4){ var t2=f(ops[0]*extra[out.length-1]||ops[0]+out.length)+u; if(out.indexOf(t2)<0) out.push(t2); else extra[out.length-1]+=.5; }
+  return {v:v,a:a,txt:'Lanzas con <em>v₀ = '+v+' m/s</em> y <em>θ = '+a+'°</em> (g = 10 m/s²). '+txt,ops:out,expl:expl};
+}
+var RT=MCReto({sim:'parabolico',nombre:'Reto · Tiro parabólico',
+  alEntrar:function(){ parar(); GUARDA={S:JSON.parse(JSON.stringify(S)),VER:JSON.parse(JSON.stringify(VER)),R:RASTROS}; RASTROS=[]; VER.marcas=0; VER.medidas=0; VER.comp=0; pintarVer(); },
+  alSalir:function(){ QID++; parar(); devolver(); OBJ=null; OCULTA=false; FIJO={}; if(GUARDA){ S=GUARDA.S; S.t=0; VER=GUARDA.VER; RASTROS=GUARDA.R; } pintarVer(); pintarGrav(); cambio(); },
+  nueva:function(i,caja,R){
+    QID++; devolver(); parar(); OBJ=null; RASTROS=[]; VER.medidas=0; VER.marcas=0;
+    if(i%2===0){ /* calcular: 4 opciones; al comprobar se lanza para verlo */
+      var q=pregCalc(); OCULTA=true; FIJO={todo:1}; poner(q.v,q.a);
+      var o=R.opciones(caja,q.txt,q.ops,0,q.expl), comp=o.comprobar;
+      o.comprobar=function(){ var r=comp(); OCULTA=false; VER.medidas=1; S.t=0; vista(); actualizar(); lanzar(); return r; };
+      return o;
+    }
+    if(i===1){ /* apuntar a la diana */
+      var v=AZ([20,25,30]), at=AZ([37,53,37,53,45]), kt=tiro(v,at,0,10);
+      OBJ={R:kt.R}; OCULTA=true; FIJO={reto:1}; poner(v,15);
+      R.texto(caja,'Apunta','Con <em>v₀ = '+v+' m/s</em> (g = 10), ¿con qué ángulo cae justo en la diana a <em>'+f(kt.R)+' m</em>? Mueve θ o arrastra en el cielo.');
+      caja.appendChild(cL); solo('a');
+      var tol=Math.max(1,kt.R*.02);
+      return { comprobar:function(){ var ok=Math.abs(K.R-kt.R)<=tol, a2=90-at;
+          var msg=(ok?'':'Con '+S.a+'° cae a '+f(K.R)+' m. ')+'R = v₀²·sen 2θ / g → sen 2θ = '+f(kt.R)+'·10 / '+(v*v)+' = '+f(kt.R*10/(v*v))+(at===45?'. Solo sirve 45°: es el alcance máximo.':'. Sirven '+Math.min(at,a2)+'° y '+Math.max(at,a2)+'° (son complementarios).');
+          FIJO={todo:1}; OCULTA=false; VER.medidas=1; S.t=0; actualizar(); lanzar(); return {ok:ok,msg:msg}; },
+        mostrar:function(){ var q=QID; setTimeout(function(){ if(q!==QID||!RT.activo) return; S.a=at; cambio(); lanzar(); },1400); } };
+    }
+    /* llegar a una altura: se mueve v0 con θ fijo */
+    var a3=AZ([30,37,53,90]), vv=a3===30?AZ([20,40]):a3===90?AZ([10,20,30]):AZ([10,20,25,30]), kh=tiro(vv,a3,0,10);
+    OBJ={H:kh.H}; OCULTA=true; FIJO={a:1,reto:1}; poner(a3===90?8:6,a3);
+    R.texto(caja,'Ajusta','Con <em>θ = '+a3+'°</em> (g = 10), ¿qué rapidez v₀ hace que llegue justo a <em>'+f(kh.H)+' m</em> de altura?');
+    caja.appendChild(cL); solo('v');
+    return { comprobar:function(){ var ok=S.v===vv;
+        var msg=(ok?'':'Con '+S.v+' m/s llega a '+f(K.H)+' m. ')+'H = v₀y² / (2g) → v₀y = √(2·10·'+f(kh.H)+') = '+f(kh.vy)+' m/s'+(a3===90?' = v₀.':'. Como v₀y = v₀·sen '+a3+'° = v₀·'+SEN[a3]+', v₀ = '+vv+' m/s.');
+        FIJO={todo:1}; OCULTA=false; VER.medidas=1; S.t=0; actualizar(); lanzar(); return {ok:ok,msg:msg}; },
+      mostrar:function(){ var q=QID; setTimeout(function(){ if(q!==QID||!RT.activo) return; S.v=vv; cambio(); lanzar(); },1400); } };
+  }});
+</script>
+</body>
+</html>

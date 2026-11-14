@@ -1,5 +1,5 @@
 /* Modo Cachimbo · Laboratorio · Sonidos cortos hechos con código (0 KB de audio).
-   MCLabSonido.tocar('tic'|'abrir'|'cerrar'|'bien'|'mal'), .activo(), .alternar().
+   MCLabSonido.tocar('tic'|'abrir'|'cerrar'|'bien'|'mal'|'lanzar'|'caer'), .activo(), .alternar().
    La preferencia se recuerda en el teléfono (mc_lab_sonido). Sin música de fondo. */
 (function () {
   if (window.MCLabSonido) return;
@@ -34,7 +34,9 @@
     abrir: function () { soplo(.32, 500, 2600, .09); tono(660, .05, .16, { vol: .05, hasta: 990 }); },
     cerrar: function () { soplo(.25, 2200, 450, .07); },
     bien: function () { tono(784, 0, .14, { vol: .1 }); tono(1175, .09, .26, { vol: .1 }); },
-    mal: function () { tono(220, 0, .24, { tipo: 'triangle', vol: .09, hasta: 160 }); }
+    mal: function () { tono(220, 0, .24, { tipo: 'triangle', vol: .09, hasta: 160 }); },
+    lanzar: function () { soplo(.28, 300, 1800, .12); tono(140, 0, .12, { tipo: 'triangle', vol: .1, hasta: 70 }); },
+    caer: function () { tono(110, 0, .18, { tipo: 'triangle', vol: .12, hasta: 55 }); soplo(.18, 900, 300, .06); }
   };
   window.MCLabSonido = {
     activo: function () { return activo; },
