@@ -298,14 +298,14 @@ function rp(x,y){ return ROT?[CX-(y-CY),CY+(x-CX)]:[x,y]; }
 var seed=11; function rnd(){ seed=(seed*16807)%2147483647; return (seed-1)/2147483646; }
 function celula(){
   var s='<defs><filter id="fGlow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="7"/></filter>'+
-    '<mask id="mOsc" maskUnits="userSpaceOnUse" x="-500" y="-500" width="2500" height="2500"><rect x="-500" y="-500" width="2500" height="2500" fill="#fff"/><path id="mHueco" fill="#000"/></mask></defs>';
+    '<mask id="mOsc" maskUnits="userSpaceOnUse" x="-4000" y="-4000" width="10400" height="10400"><rect x="-4000" y="-4000" width="10400" height="10400" fill="#fff"/><path id="mHueco" fill="#000"/></mask></defs>';
   s+='<image class="img-cel" href="'+IMG+'" width="'+IW+'" height="'+IH+'"/>';
   /* partículas flotando en el citoplasma */
   s+='<g class="part" pointer-events="none">';
   for(var i=0;i<34;i++){ var a=rnd()*6.28, r=Math.sqrt(rnd()), x=1200+Math.cos(a)*r*900, y=980+Math.sin(a)*r*480;
     s+='<circle cx="'+x.toFixed(0)+'" cy="'+y.toFixed(0)+'" r="'+(2+rnd()*3).toFixed(1)+'" style="animation-delay:-'+(rnd()*9).toFixed(1)+'s;animation-duration:'+(7+rnd()*6).toFixed(1)+'s"/>'; }
   s+='</g>';
-  s+='<rect class="osc" x="-500" y="-500" width="2500" height="2500" mask="url(#mOsc)" pointer-events="none"/>';
+  s+='<rect class="osc" x="-4000" y="-4000" width="10400" height="10400" mask="url(#mOsc)" pointer-events="none"/>';
   s+='<g id="brillo" pointer-events="none"></g><g id="atp" pointer-events="none"></g>';
   /* zonas que se tocan: primero la membrana (solo su borde), encima los orgánulos */
   s+='<path class="org memb" data-id="membrana" d="'+(F.membrana||'')+'"/>';
@@ -374,7 +374,7 @@ function irA(id,abrirDet){ seleccionar(id); svg.classList.add('sin-nombres'); do
   var b=DET[id].b, c=rp((b[0]+b[2])/2,(b[1]+b[3])/2), bw=b[2]-b[0], bh=b[3]-b[1]; if(ROT){ var t=bw; bw=bh; bh=t; }
   var w=Math.max(bw,bh*BASE.w/BASE.h)*1.9;
   volar(c[0],c[1],Math.max(380,Math.min(BASE.w,w)),800,function(){ if(abrirDet) setTimeout(function(){ abrir(id); },250); }); }
-svg.addEventListener('click',function(e){ if(movio) return; var g=e.target.closest('.org'); if(g) irA(g.getAttribute('data-id'),true); });
+svg.addEventListener('click',function(e){ if(movio) return; var g=e.target.closest('.org'); if(g) irA(g.getAttribute('data-id'),true); else if(svg.classList.contains('cel-foco')) quitarFoco(); });
 document.getElementById('chips').innerHTML=ORDEN.concat(EXTRA).map(function(id){ return '<button class="chip glass" data-id="'+id+'"><i style="background:'+O[id].c+'"></i>'+O[id].n.replace('Retículo endoplasmático','Retículo')+'</button>'; }).join('');
 function ir(id){ if(EXTRA.indexOf(id)>=0){ quitarFoco(); document.querySelectorAll('.chip').forEach(function(c){ c.classList.toggle('on',c.dataset.id===id); }); abrir(id); } else irA(id,true); }
 document.querySelectorAll('.chip').forEach(function(c){ c.onclick=function(){ ir(c.dataset.id); }; });
@@ -425,7 +425,8 @@ function abrir(id){
     '<div class="d-acc"><button class="btn sec" id="dVer">Ver en la célula</button><button class="btn" id="dSig">'+O[sig].n.split(' ')[0]+'<svg style="color:#151A03"><use href="#i-sig"/></svg></button></div></div></div>';
   det.classList.add('on');
   det.querySelectorAll('.tabs button').forEach(function(bt){ bt.onclick=function(){ TAB=bt.dataset.t; abrir(id); }; });
-  document.getElementById('dX').onclick=document.getElementById('dVer').onclick=function(){ det.classList.remove('on'); };
+  document.getElementById('dVer').onclick=function(){ det.classList.remove('on'); };
+  document.getElementById('dX').onclick=function(){ det.classList.remove('on'); quitarFoco(); volar(BASE.x+BASE.w/2,BASE.y+BASE.h/2,BASE.w,600); };
   document.getElementById('dSig').onclick=function(){ det.classList.remove('on'); ir(sig); };
 }
 aplicar();
