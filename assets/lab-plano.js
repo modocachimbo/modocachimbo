@@ -25,7 +25,7 @@
     P.Y = function (y) { return P.h / 2 - (y - P.cy) * P.k; };
     P.ix = function (px) { return (px - P.w / 2) / P.k + P.cx; };
     P.iy = function (py) { return -(py - P.h / 2) / P.k + P.cy; };
-    function paso() { if (o.paso) return o.paso; var u = 1; [1, 2, 5, 10, 20, 50].some(function (s) { u = s; return s * P.k >= 34; }); return u; }
+    function paso() { if (o.paso) return o.paso; var u = 1; [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000].some(function (s) { u = s; return s * P.k >= 34; }); return u; }
     function cuadricula() {
       var s = '', u = paso(), x0 = Math.ceil(P.ix(0) / u) * u, x1 = P.ix(P.w), y0 = Math.ceil(P.iy(P.h) / u) * u, y1 = P.iy(0), x, y;
       for (x = x0; x <= x1; x += u) s += '<line class="cuad' + (Math.round(x / u) % 5 === 0 ? ' m5' : '') + '" x1="' + P.X(x) + '" y1="0" x2="' + P.X(x) + '" y2="' + P.h + '"/>';
