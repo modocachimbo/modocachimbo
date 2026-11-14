@@ -38,7 +38,7 @@
     </div>
     <div class="ficha">
       <div class="tipos" id="ver"></div>
-      <div class="caja"><h3>Gira el ángulo</h3>
+      <div class="caja" id="cAng"><h3>Gira el ángulo</h3>
         <label class="desl"><b>θ</b><input type="range" min="0" max="360" step="1" id="ang"><output id="angO"></output></label>
         <div class="chips" id="chips"></div>
       </div>
@@ -54,6 +54,7 @@
 <script src="assets/lab-rayos.js"></script>
 <script src="assets/lab-sonido.js"></script>
 <script src="assets/lab-plano.js"></script>
+<script src="assets/lab-reto.js"></script>
 <script>
 MCLabPuerta('trigo');
 var f=MCfmt, son=MCLabComun('trigo');
@@ -93,7 +94,7 @@ function actualizar(){
   var v=val(th), q=cuad(th), a=refe(th);
   ang.value=th; ang.style.setProperty('--p',(th/360*100)+'%'); document.getElementById('angO').textContent=th+'°';
   document.querySelectorAll('#chips button').forEach(function(b){ b.classList.toggle('on',+b.dataset.a===th); });
-  document.getElementById('formula').textContent='θ = '+th+'° = '+rad(th)+' rad';
+  var rr=rad(th); document.getElementById('formula').textContent='θ = '+th+'° '+(rr.charAt(0)==='≈'?'':'= ')+rr+' rad';
   var Q=['Sobre un eje','I cuadrante','II cuadrante','III cuadrante','IV cuadrante'];
   var SG=['','Todas son positivas','Solo el seno es positivo','Solo la tangente es positiva','Solo el coseno es positivo'];
   var d=[['sen θ',muestra(th,0,v.s),C.sen],['cos θ',muestra(th,1,v.c),C.cos],['tg θ',muestra(th,2,v.t),C.tg],
@@ -173,6 +174,31 @@ function suelta(e){ if(arr===e.pointerId) arr=null; }
 pl.addEventListener('pointerup',suelta); pl.addEventListener('pointercancel',suelta);
 if(window.ResizeObserver) new ResizeObserver(function(){ vista(); }).observe(pl); else addEventListener('resize',vista);
 pintarVer(); vista(); actualizar();
+/* ============ MODO RETO (assets/lab-reto.js) ============ */
+var AZ=MCAzar, cA=document.getElementById('cAng'), cAsitio=cA.nextElementSibling, FN=['sen','cos','tg'], QN=['','I','II','III','IV'];
+function devolver(){ if(cA.parentNode!==cAsitio.parentNode) cAsitio.parentNode.insertBefore(cA,cAsitio); }
+function angAzar(){ var a=AZ([30,37,45,53,60]), q=AZ([1,2,2,3,3,4,4]); return [q===1?a:q===2?180-a:q===3?180+a:360-a,a,q]; }
+var RT=MCReto({sim:'trigo',nombre:'Reto · Circunferencia',
+  alSalir:function(){ devolver(); },
+  nueva:function(i,caja,R){
+    devolver(); var g=angAzar(), t=g[0], a=g[1], q=g[2], fi=AZ([0,1,1,0,2]), v=val(t), vv=[v.s,v.c,v.t][fi], bueno=exacto(t,fi,vv);
+    var signo=vv>0?'positivo':'negativo', expl=t+'° está en el '+QN[q]+' cuadrante, ahí el '+['seno','coseno','la tangente'][fi].replace('el la','la')+' es '+(fi===2?(vv>0?'positiva':'negativa'):signo)+'. Ángulo de referencia: '+a+'°.';
+    expl=expl.replace('el la tangente','la tangente');
+    if(i%2===0){ /* cuánto vale */
+      th=t; actualizar();
+      var co=EX[a][fi===0?1:fi===1?0:2]; if(fi===2) co=EX[90-a]?EX[90-a][2]:'1';
+      var mag=bueno.replace('−',''), ops=[bueno,(vv<0?'':'−')+mag,(vv<0?'−':'')+co,(vv<0?'':'−')+co,'1/2','√3/2','3/4','4/3'];
+      ops=ops.filter(function(x,k){ return ops.indexOf(x)===k; }).slice(0,4);
+      return R.opciones(caja,'¿Cuánto vale <em>'+FN[fi]+' '+t+'°</em>?',ops,0,expl);
+    }
+    /* llevar P al ángulo */
+    th=0; actualizar();
+    R.texto(caja,'Arrastra','Lleva el punto P al ángulo del <em>'+QN[q]+' cuadrante</em> donde <em>'+FN[fi]+' θ = '+bueno+'</em>.');
+    caja.appendChild(cA);
+    return { comprobar:function(){ var ok=th===t; return { ok:ok, msg:(ok?'':'Era θ = '+t+'°. ')+expl }; },
+      mostrar:function(){ poner(t); } };
+  }});
+
 </script>
 </body>
 </html>
