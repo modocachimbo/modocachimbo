@@ -459,7 +459,7 @@ html:not(.arcade-si) .solo-beta { display: none !important; }
 .j-arc { grid-column: 1 / -1; order: 99; min-height: 0; background: linear-gradient(120deg, #5B2BD6, #2A1460 60%, #170D36); border-color: #A35CFF; }
 .j-arc .chip { background: #A35CFF; color: #fff; }
 .j-arc .ic { font-size: 56px; }
-/* Laboratorio de simuladores (laboratorio.html), en beta igual que el Arcade */
+/* Laboratorio de simuladores (laboratorio.html), abierto a todos */
 .j-lab { grid-column: 1 / -1; order: 100; min-height: 0; background: linear-gradient(120deg, #4a6400, #22300a 60%, #131a05); border-color: var(--lima); }
 .j-lab .chip { background: var(--lima); color: var(--sobre-lima); }
 .j-lab .ic { font-size: 56px; color: var(--lima); }
@@ -1420,7 +1420,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
       <button type="button" data-hoja="cursos"><svg class="ic"><use href="#i-libro"/></svg>Cursos</button>
       <a href="duelo.html" class="duelo"><svg class="ic"><use href="#i-espadas"/></svg>Duelo</a>
       <a href="arcade.html" class="arcade"><svg class="ic"><use href="#i-mando"/></svg>Arcade<b class="nv-nuevo">Beta</b></a>
-      <a href="laboratorio.html" class="lab solo-beta"><svg class="ic"><use href="#i-celula"/></svg>Laboratorio<b class="nv-nuevo">Beta</b></a>
+      <a href="laboratorio.html" class="lab"><svg class="ic"><use href="#i-celula"/></svg>Laboratorio<b class="nv-nuevo">Nuevo</b></a>
       <a href="coleccion.html"><svg class="ic"><use href="#i-cofre"/></svg>Colección</a>
       <a href="amigos.html"><svg class="ic"><use href="#i-amigos"/></svg>Amigos<b class="am-bdg" data-am-bdg hidden></b></a>
       <a href="clanes.html"><svg class="ic"><use href="#i-clan"/></svg>Clanes</a>
@@ -1488,7 +1488,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
           <div class="modos">
             <a class="juego j-duelo duelo-banner" href="duelo.html" data-mc-nav="practicar"><span class="chip disp">Reto</span><b class="tit">Duelos</b><small>Reta hasta a 3 amigos en vivo</small><svg class="ic"><use href="#i-espadas"/></svg></a>
             <a class="juego j-arc" href="arcade.html"><span class="chip disp">Beta</span><b class="tit">Arcade</b><small style="max-width:none">Aprende jugando: une, desliza y ordena</small><svg class="ic"><use href="#i-mando"/></svg></a>
-            <a class="juego j-lab solo-beta" href="laboratorio.html"><span class="chip disp">Beta</span><b class="tit">Laboratorio</b><small style="max-width:none">La célula en 3D: haz zoom y toca cada parte</small><svg class="ic"><use href="#i-celula"/></svg></a>
+            <a class="juego j-lab" href="laboratorio.html"><span class="chip disp">Nuevo</span><b class="tit">Laboratorio</b><small style="max-width:none">Simuladores de Biología, Química, Física y Matemática</small><svg class="ic"><use href="#i-celula"/></svg></a>
             <a class="juego j-sim" href="simulacro.html" data-mc-nav="practicar"><span class="chip disp" id="simNuevo">Nuevo</span><b class="tit">Simulacro</b><small>Como el real, con tiempo</small><svg class="ic"><use href="#i-reloj"/></svg></a>
             <button class="juego j-ex" type="button" data-hoja="examenes" data-candado="examenes" data-candado-nombre="Exámenes"><b class="tit">Exámenes</b><small>Ordinario, CPU, Control</small><svg class="ic"><use href="#i-examen"/></svg></button>
             <button class="juego j-flash" type="button" data-hoja="flashcards"><b class="tit">Flashcards</b><small>Repasa por curso</small><svg class="ic"><use href="#i-tarjetas"/></svg></button>

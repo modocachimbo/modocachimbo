@@ -119,9 +119,8 @@ html.reto-on .ficha{padding-bottom:150px}
 .pt{stroke:#0B0820;stroke-width:2.5}
 .ptx{font:800 12px "Sora",sans-serif;paint-order:stroke;stroke:#0B0820;stroke-width:4px}
 /* beta: igual que el Arcade (assets/arcade-beta.js) */
-html:not(.arcade-si) .app,html.lab-espera .app{display:none}
+html.lab-espera .app{display:none}
 .beta-aviso{display:none;max-width:420px;margin:90px auto 0;padding:30px 24px;text-align:center;border-radius:24px;background:var(--card);border:1px solid var(--borde);border-bottom:5px solid var(--lima)}
-html.arcade-no .beta-aviso{display:block}
 .beta-aviso b{display:block;font:800 26px/1.2 "Sora",sans-serif}
 .beta-aviso p{margin:10px 0 20px;color:var(--dim);font-weight:700}
 .beta-aviso a{display:inline-flex;align-items:center;height:48px;padding:0 22px;border-radius:14px;background:var(--lima);color:#151A03;font:800 15px/1 "Sora"}
