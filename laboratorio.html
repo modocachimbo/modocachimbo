@@ -103,6 +103,46 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
 .tipos span{padding:3px 8px;border-radius:7px;font:800 11px/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;background:rgba(198,224,0,.12);color:var(--lima)}
 .tipos span.no{background:rgba(255,255,255,.06);color:var(--faint)}
 .sec.oculta{display:none}
+/* Rayos (supabase/97-laboratorio-rayos.sql · assets/lab-rayos.js) */
+.ray{position:relative;display:flex;align-items:center;height:40px;padding:0 34px 0 40px;border-radius:12px;background:linear-gradient(180deg,#2FA8FF,#1060E0);box-shadow:0 4px 0 #0B3C8C,inset 0 2px 0 rgba(255,255,255,.35);color:#fff}
+.ray .ri{position:absolute;left:-10px;top:50%;width:46px;height:46px;margin-top:-24px;filter:drop-shadow(0 0 8px #2FA8FF);animation:rayoA 3s ease-in-out infinite}
+.ray b{font:800 19px/1 "Sora";text-shadow:0 2px 0 rgba(0,0,0,.35);min-width:18px;text-align:center}
+.ray i{position:absolute;right:5px;top:50%;width:24px;height:24px;margin-top:-12px;display:grid;place-items:center;border-radius:7px;background:#fff;color:#0B3C8C;font:800 18px/1 "Sora";font-style:normal}
+.ray.lab{background:linear-gradient(180deg,#d6f04a,#8fa300);box-shadow:0 4px 0 #556100,inset 0 2px 0 rgba(255,255,255,.35);color:#151A03}
+.ray.lab b{font-size:13px;text-shadow:none;letter-spacing:.02em}
+@keyframes rayoA{0%,70%,100%{transform:rotate(0)}74%{transform:rotate(-12deg) scale(1.15)}80%{transform:rotate(6deg)}86%{transform:rotate(0) scale(1)}}
+.prc{display:inline-flex;align-items:center;gap:3px;font:800 13px/1 "Sora";color:#9BE4FF}
+.prc svg{width:20px;height:20px;margin:-4px -2px -4px -4px}
+.prc.gratis{color:var(--lima);font:800 12px/1 "Barlow Condensed";letter-spacing:.12em;text-transform:uppercase}
+.sim .pie.prcs{justify-content:space-between}
+.fondo{position:fixed;inset:0;z-index:20;background:rgba(3,2,10,.72);display:none;align-items:flex-end;justify-content:center}
+.fondo.on{display:flex}
+.hoja{position:relative;width:min(460px,100%);max-height:92vh;overflow:auto;background:#120E26;border:1px solid var(--borde);border-bottom:0;border-radius:26px 26px 0 0;padding:22px 20px max(22px,env(safe-area-inset-bottom));animation:sube .25s ease-out}
+@media (min-width:700px){.fondo{align-items:center}.hoja{border-radius:26px;border-bottom:1px solid var(--borde)}}
+@keyframes sube{from{transform:translateY(40px);opacity:0}}
+.hoja .cerrar{position:absolute;right:14px;top:14px;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:var(--card2)}
+.hoja .grande{display:flex;align-items:center;gap:10px;margin:6px 0 4px}
+.hoja .grande svg{width:58px;height:58px;filter:drop-shadow(0 0 14px #2FA8FF)}
+.hoja .grande b{font:800 44px/1 "Sora"}
+.hoja h3{margin:0;font:800 22px/1.2 "Sora"}
+.hoja p{margin:4px 0 0;color:var(--dim);font-weight:700}
+.hoja .lista{margin:16px 0;display:grid;gap:8px}
+.hoja .fila2{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:var(--card);border:1px solid var(--borde)}
+.hoja .fila2 .ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;flex:none}
+.hoja .fila2 div{flex:1;min-width:0}
+.hoja .fila2 b{display:block;font:800 14.5px/1.25 "Nunito"}.hoja .fila2 small{color:var(--dim);font-size:12.5px}
+.hoja .fila2 .prc{font-size:15px}
+.hoja .cod{margin-top:6px;padding:14px;border-radius:16px;background:linear-gradient(135deg,rgba(198,224,0,.12),rgba(21,17,39,.6));border:1px solid rgba(198,224,0,.3)}
+.hoja .cod b{display:flex;align-items:center;gap:8px;font:800 15px "Nunito";color:var(--lima)}
+.hoja .cod b svg{width:20px;height:20px}
+.hoja .cod form{display:flex;gap:8px;margin-top:10px}
+.hoja .cod input{flex:1;min-width:0;height:46px;border-radius:12px;border:1px solid var(--borde);background:#0A0718;color:var(--tx);padding:0 12px;font:800 15px "Sora";text-transform:uppercase;letter-spacing:.06em}
+.hoja .cod button{height:46px;padding:0 16px;border-radius:12px;background:var(--lima);color:#151A03;font:800 14px "Sora"}
+.hoja .msg{min-height:18px;margin-top:8px;font:800 13px "Nunito";color:#FF7A85}
+.hoja .msg.ok{color:var(--lima)}
+.hoja .usar{width:100%;margin-top:14px;justify-content:center;border:0}
+.hoja .usar[disabled]{background:#2A2346;color:var(--faint);box-shadow:0 5px 0 #1a1530;cursor:default}
+.hoja .falta{margin-top:10px;text-align:center;color:var(--dim);font:800 13px "Nunito"}
 .paq .sb[disabled]{opacity:.55;cursor:default}
 .aviso{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:.25s;padding:12px 18px;border-radius:14px;background:#1D1834;border:1px solid var(--borde);font:800 14px/1.3 "Nunito";max-width:calc(100vw - 32px);text-align:center;z-index:9}
 .aviso.on{opacity:1;transform:translate(-50%,0)}
@@ -125,6 +165,13 @@ html:not(.arcade-si):not(.arcade-no) .cargando{display:block}
 <symbol id="ic-son" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="on-l" d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/><path class="off-l" d="M16 9.5l5 5M21 9.5l-5 5"/></symbol>
 <symbol id="ic-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></symbol>
 <symbol id="ic-cand" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
+<symbol id="r-rayo" viewBox="0 0 64 64"><path d="M38 4 12 36h16l-6 24 30-36H35l8-20z" fill="#0B3C8C" stroke="#0B3C8C" stroke-width="6" stroke-linejoin="round" transform="translate(2 3)"/><path d="M38 4 12 36h16l-6 24 30-36H35l8-20z" fill="url(#mcRayoG)" stroke="#0E4BB0" stroke-width="3" stroke-linejoin="round"/><path d="M36 9 18 32h8" fill="none" stroke="#D8F1FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/></symbol>
+<linearGradient id="mcRayoG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9BE4FF"/><stop offset=".5" stop-color="#2FA8FF"/><stop offset="1" stop-color="#1060E0"/></linearGradient>
+<symbol id="ic-mando" viewBox="0 0 24 24"><path d="M7 8h10a4 4 0 0 1 4 4.5l-.6 3.6a2.4 2.4 0 0 1-4.2 1.1L14.5 15h-5l-1.7 2.2a2.4 2.4 0 0 1-4.2-1.1L3 12.5A4 4 0 0 1 7 8z"/><path d="M8 11v3M6.5 12.5h3"/><circle cx="15.5" cy="11.5" r=".6" fill="currentColor"/><circle cx="17" cy="13.2" r=".6" fill="currentColor"/></symbol>
+<symbol id="ic-fuego" viewBox="0 0 24 24"><path d="M12 21c-3.9 0-6.5-2.6-6.5-6 0-3.3 2.3-5.2 3.6-8 .8 1.6 1.3 2.5 2.6 3.3.3-2.6 1.4-4.6 3.1-6.3.4 3.3 3.7 5.8 3.7 10 0 4.1-2.7 7-6.5 7z"/><path d="M12 21c-1.6 0-2.8-1.2-2.8-2.8 0-1.9 1.8-2.7 2.8-4.7 1 2 2.8 2.8 2.8 4.7 0 1.6-1.2 2.8-2.8 2.8z"/></symbol>
+<symbol id="ic-hoja" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 4.5V3h6v1.5M8.5 10l1.5 1.5 3-3M8.5 15.5h7"/></symbol>
+<symbol id="ic-llave" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4.5"/><path d="M11.2 11.8 20 3M16.5 6.5l2.5 2.5M14 9l2 2"/></symbol>
+<symbol id="ic-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
 <symbol id="ic-desc" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></symbol>
 </defs></svg>
 <div class="cargando"></div>
@@ -134,7 +181,7 @@ html:not(.arcade-si):not(.arcade-no) .cargando{display:block}
     <a class="bt" href="index.html" aria-label="Volver al inicio"><svg class="i"><use href="#ic-atras"/></svg></a>
     <div class="ttl"><small>Modo Cachimbo</small><b>Laboratorio</b></div>
     <div class="der">
-      <div class="xp"><i id="xpAro"></i><b id="xpTx"></b></div>
+      <button class="ray" id="bRay" aria-label="Mis rayos"><svg class="ri"><use href="#r-rayo"/></svg><b id="rayN">0</b><i>+</i></button>
       <button class="bt son" id="bSon" aria-label="Sonido"><svg class="i"><use href="#ic-son"/></svg></button>
     </div>
   </div>
@@ -161,11 +208,14 @@ html:not(.arcade-si):not(.arcade-no) .cargando{display:block}
   </div>
 </div>
 <div class="aviso" id="aviso"></div>
+<div class="fondo" id="fondo"><div class="hoja" id="hoja"></div></div>
 
 <script src="assets/mc-config.js"></script>
 <script src="assets/auth.js"></script>
 <script src="assets/arcade-beta.js"></script>
+<script src="assets/acceso.js?v=166"></script>
 <script src="assets/lab-sonido.js"></script>
+<script src="assets/lab-rayos.js"></script>
 <script>
 var ART={
  vegetal:'<svg viewBox="0 0 120 80"><rect x="18" y="8" width="84" height="64" rx="10" fill="#1d4a1a" stroke="#6fdc4f" stroke-width="3"/><rect x="26" y="15" width="68" height="50" rx="7" fill="#2a6b24" opacity=".6"/><ellipse cx="66" cy="42" rx="20" ry="16" fill="#8fe0ff" opacity=".35" stroke="#8fe0ff"/><circle cx="40" cy="30" r="8" fill="#9b6bff"/><ellipse cx="38" cy="54" rx="7" ry="4" fill="#4cd137"/><ellipse cx="84" cy="24" rx="6" ry="3.5" fill="#4cd137"/></svg>',
@@ -194,41 +244,119 @@ var CUR=[
  ['Anatomía','#E0458A','rgba(224,69,138,.22)',[['corazon','Corazón','Circulación mayor y menor','pronto'],['neurona','Neurona y sinapsis','El impulso nervioso','pronto'],['ojo','El ojo','Cómo se forma la imagen','pronto']]],
  ['Matemática','#9B6BFF','rgba(155,107,255,.22)',[['funcion','Funciones','Mueve los parámetros','pronto'],['trigo','Circunferencia trigonométrica','Seno y coseno girando','pronto'],['geo','Triángulos notables','Arrastra los vértices','pronto']]]
 ];
-var SN=window.MCLabSonido, vistos=[];
+/* Precios por si el servidor no respondió (los de verdad: tabla lab_sims) */
+var PRECIO0={celula:[60,1],tabla:[40,1],parabolico:[40,1],corazon:[60,1],funcion:[40,1],adn:[60,0]};
+var NOMBRE={}; CUR.forEach(function(c){ c[3].forEach(function(s){ NOMBRE[s[0]]=s[1]; }); });
+var SN=window.MCLabSonido, R=window.MCRayos, ST=R&&R.guardado()||null, vistos=[];
 try{ vistos=JSON.parse(localStorage.getItem('mc_lab_celula')||'[]'); }catch(e){}
 var pct=Math.min(100,Math.round(vistos.length/14*100));
-var total=0, listos=0; CUR.forEach(function(c){ total+=c[3].length; c[3].forEach(function(s){ if(s[3]!=='pronto') listos++; }); });
-document.getElementById('xpTx').textContent=listos+' de '+total+' listos';
-document.getElementById('xpAro').style.background='conic-gradient(var(--lima) 0 '+Math.round(listos/total*100)+'%,#2A2346 0)';
+var total=0; CUR.forEach(function(c){ total+=c[3].length; });
+function esc(t){ return String(t).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function precio(sim){ var p=ST&&ST.precios&&ST.precios[sim]; return p?p.precio:(PRECIO0[sim]||[40])[0]; }
+function gratis(sim){ var p=ST&&ST.precios&&ST.precios[sim]; return p?!!p.gratis:!!(PRECIO0[sim]||[0,0])[1]; }
+function abierto(sim){ return gratis(sim)||!!(ST&&(ST.codigo||ST.equipo||(ST.abiertos||[]).indexOf(sim)>=0)); }
+function rayo(n){ return '<span class="prc"><svg><use href="#r-rayo"/></svg>'+n+'</span>'; }
+
 document.getElementById('hVis').textContent=Math.min(14,vistos.length)+' / 14';
 document.getElementById('hBar').style.width=pct+'%';
 if(vistos.length){ document.getElementById('hTag').textContent='Biología · Continúa'; document.querySelector('#hBtn span').textContent='Continuar'; }
-
 document.getElementById('cursos').innerHTML='<button class="cur on" data-c="">Todos <em>'+total+'</em></button>'+CUR.map(function(c){ return '<button class="cur" data-c="'+c[0]+'"><i style="background:'+c[1]+'"></i>'+c[0]+' <em>'+c[3].length+'</em></button>'; }).join('');
-document.getElementById('secs').innerHTML=CUR.map(function(c){
- return '<section class="sec" data-c="'+c[0]+'"><h2><i style="background:'+c[1]+'"></i>'+c[0]+'<span>'+c[3].filter(function(s){ return s[3]!=='pronto'; }).length+' de '+c[3].length+' listos</span></h2><div class="fila">'+
- c[3].map(function(s){
-  var art=s[0]==='celula'?'<img src="assets/laboratorio/celula-animal.webp" alt="" loading="lazy">':ART[s[0]];
-  var esq=s[3]==='pronto'?'<span class="lock"><svg class="i" style="width:12px;height:12px"><use href="#ic-cand"/></svg>Pronto</span>':'';
-  var pie='';
-  if(s[0]==='celula') pie='<div class="tipos"><span>Animal</span><span class="no">Vegetal · pronto</span></div><div class="pie"><div class="barra"><i style="width:'+pct+'%"></i></div>'+pct+'%</div>';
-  var tag=s[3]==='pronto'?'button':'a';
-  return '<'+tag+' class="sim'+(s[3]==='pronto'?' pronto':'')+'"'+(s[4]?' href="'+s[4]+'"':' type="button" data-n="'+s[1]+'"')+' style="--g:'+c[2]+';text-align:left;padding:0"><div class="esq">'+esq+'</div><div class="art">'+art+'</div><div class="inf"><b>'+s[1]+'</b><small>'+s[2]+'</small>'+pie+'</div></'+tag+'>';
- }).join('')+'</div></section>';
-}).join('');
+
+function pintar(){
+ document.getElementById('secs').innerHTML=CUR.map(function(c){
+  return '<section class="sec'+(FILTRO&&FILTRO!==c[0]?' oculta':'')+'" data-c="'+c[0]+'"><h2><i style="background:'+c[1]+'"></i>'+c[0]+'<span>'+c[3].filter(function(s){ return s[3]!=='pronto'; }).length+' de '+c[3].length+' listos</span></h2><div class="fila">'+
+  c[3].map(function(s){
+   var art=s[0]==='celula'?'<img src="assets/laboratorio/celula-animal.webp" alt="" loading="lazy">':ART[s[0]];
+   var listo=s[3]!=='pronto', ab=abierto(s[0]);
+   var esq=!listo?'<span class="lock"><svg class="i" style="width:12px;height:12px"><use href="#ic-cand"/></svg>Pronto</span>':!ab?'<span class="lock"><svg class="i" style="width:12px;height:12px"><use href="#ic-cand"/></svg>Cerrado</span>':'';
+   var pie='';
+   if(s[0]==='celula') pie='<div class="tipos"><span>Animal</span><span class="no">Vegetal · pronto</span></div><div class="pie"><div class="barra"><i style="width:'+pct+'%"></i></div>'+pct+'%</div>';
+   else pie='<div class="pie prcs">'+(ab&&gratis(s[0])?'<span class="prc gratis">Gratis</span>':ab?'<span class="prc gratis">Abierto</span>':rayo(precio(s[0])))+'</div>';
+   var tag=listo&&ab?'a':'button';
+   return '<'+tag+' class="sim'+(listo?'':' pronto')+'"'+(tag==='a'?' href="'+s[4]+'"':' type="button" data-sim="'+s[0]+'" data-listo="'+(listo?1:0)+'"')+' style="--g:'+c[2]+';text-align:left;padding:0"><div class="esq">'+esq+'</div><div class="art">'+art+'</div><div class="inf"><b>'+s[1]+'</b><small>'+s[2]+'</small>'+pie+'</div></'+tag+'>';
+  }).join('')+'</div></section>';
+ }).join('');
+ document.querySelectorAll('button.sim').forEach(function(b){ b.onclick=function(){
+   if(b.dataset.listo==='1') return hoja(b.dataset.sim);
+   if(SN) SN.tocar('mal'); aviso(NOMBRE[b.dataset.sim]+' llega pronto al Laboratorio');
+ }; });
+ document.querySelectorAll('a.sim').forEach(function(a){ a.addEventListener('click',function(){ if(SN) SN.tocar('abrir'); }); });
+ var br=document.getElementById('bRay');
+ br.classList.toggle('lab',!!(ST&&ST.codigo));
+ document.getElementById('rayN').textContent=ST&&ST.codigo?'Laboratorio':(ST?ST.saldo:0);
+}
+var FILTRO='';
+pintar();
 
 var av=document.getElementById('aviso'), tm;
-function aviso(t){ av.textContent=t; av.classList.add('on'); clearTimeout(tm); tm=setTimeout(function(){ av.classList.remove('on'); },2600); }
-document.querySelectorAll('.sim.pronto').forEach(function(b){ b.onclick=function(){ if(SN) SN.tocar('mal'); aviso(b.dataset.n+' llega pronto al Laboratorio'); }; });
-document.querySelectorAll('a.sim, #hBtn').forEach(function(a){ a.addEventListener('click',function(){ if(SN) SN.tocar('abrir'); }); });
+function aviso(t){ av.innerHTML=t; av.classList.add('on'); clearTimeout(tm); tm=setTimeout(function(){ av.classList.remove('on'); },2800); }
+document.getElementById('hBtn').addEventListener('click',function(){ if(SN) SN.tocar('abrir'); });
 document.querySelectorAll('.cur').forEach(function(b){ b.onclick=function(){
-  if(SN) SN.tocar('tic');
+  if(SN) SN.tocar('tic'); FILTRO=b.dataset.c;
   document.querySelectorAll('.cur').forEach(function(x){ x.classList.toggle('on',x===b); });
-  document.querySelectorAll('.sec').forEach(function(s){ s.classList.toggle('oculta',!!b.dataset.c&&s.dataset.c!==b.dataset.c); });
+  document.querySelectorAll('.sec').forEach(function(s){ s.classList.toggle('oculta',!!FILTRO&&s.dataset.c!==FILTRO); });
 }; });
 var bs=document.getElementById('bSon');
 if(SN&&!SN.activo()) bs.classList.add('off');
 bs.onclick=function(){ if(SN) bs.classList.toggle('off',!SN.alternar()); };
+
+/* Ventana de rayos: cuántos tienes, cómo se ganan, el código y abrir un simulador */
+var fondo=document.getElementById('fondo'), H=document.getElementById('hoja');
+function cerrar(){ fondo.classList.remove('on'); }
+fondo.onclick=function(e){ if(e.target===fondo) cerrar(); };
+function hoja(sim){
+  if(SN) SN.tocar('abrir');
+  var saldo=ST?ST.saldo:0, h='<button class="cerrar" id="hX" aria-label="Cerrar"><svg class="i"><use href="#ic-x"/></svg></button>';
+  if(sim){
+    var pr=precio(sim), falta=Math.max(0,pr-saldo);
+    h+='<h3>Abrir '+esc(NOMBRE[sim])+'</h3><p>Una vez abierto, queda abierto para siempre.</p>'+
+      '<div class="grande"><svg><use href="#r-rayo"/></svg><b>'+pr+'</b></div>'+
+      '<button class="btn usar" id="hUsar"'+(falta?' disabled':'')+'>Abrir con '+pr+' rayos</button>'+
+      '<div class="falta">'+(falta?'Tienes '+saldo+' rayos: te faltan '+falta+'. Gánalos estudiando.':'Tienes '+saldo+' rayos.')+'</div>';
+  } else {
+    h+='<h3>Tus rayos</h3><p>Con tus rayos abres simuladores. Se ganan estudiando.</p><div class="grande"><svg><use href="#r-rayo"/></svg><b>'+saldo+'</b></div>';
+  }
+  h+='<div class="lista">'+
+    '<div class="fila2"><div class="ic" style="background:rgba(163,92,255,.16);color:#B98CFF"><svg class="i"><use href="#ic-mando"/></svg></div><div><b>Pasa un nivel del Arcade</b><small>+2 más si sacas 3 estrellas</small></div>'+rayo('+3')+'</div>'+
+    '<div class="fila2"><div class="ic" style="background:rgba(255,150,0,.16);color:#FF9600"><svg class="i"><use href="#ic-fuego"/></svg></div><div><b>Cumple tu racha del día</b><small>Responde tu meta de preguntas</small></div>'+rayo('+2')+'</div>'+
+    '<div class="fila2"><div class="ic" style="background:rgba(58,180,240,.16);color:#3AB4F0"><svg class="i"><use href="#ic-hoja"/></svg></div><div><b>Termina un simulacro</b><small>Hasta 2 por día</small></div>'+rayo('+5')+'</div></div>';
+  h+=ST&&ST.codigo?'<div class="cod"><b><svg class="i"><use href="#ic-llave"/></svg>Tienes el código Laboratorio</b><p>Todos los simuladores están abiertos para ti.</p></div>':
+    '<div class="cod"><b><svg class="i"><use href="#ic-llave"/></svg>¿Tienes el código Laboratorio?</b><p>Abre todos los simuladores sin gastar rayos.</p>'+
+    '<form id="hCod"><input id="hCodIn" placeholder="Escribe tu código" autocomplete="off" maxlength="40"><button>Activar</button></form><div class="msg" id="hMsg"></div></div>';
+  H.innerHTML=h; fondo.classList.add('on');
+  document.getElementById('hX').onclick=cerrar;
+  var u=document.getElementById('hUsar');
+  if(u) u.onclick=function(){
+    u.disabled=true; u.textContent='Abriendo…';
+    (R?R.abrir(sim):Promise.resolve(null)).then(function(r){
+      if(r&&!r.error){ ST=r; pintar(); cerrar(); if(SN) SN.tocar('bien'); aviso('¡Abriste '+esc(NOMBRE[sim])+'!'); }
+      else { u.disabled=false; u.textContent='Abrir con '+pr+' rayos'; if(SN) SN.tocar('mal'); aviso(r&&r.error?esc(r.error):'No se pudo abrir. Revisa tu internet.'); }
+    });
+  };
+  var f=document.getElementById('hCod');
+  if(f) f.onsubmit=function(e){
+    e.preventDefault();
+    var cod=document.getElementById('hCodIn').value.trim(), msg=document.getElementById('hMsg');
+    if(!cod){ msg.textContent='Escribe tu código.'; return; }
+    if(!window.MCAcceso){ msg.textContent='No se pudo revisar el código.'; return; }
+    msg.className='msg ok'; msg.textContent='Revisando…';
+    MCAcceso.activar(cod,'').then(function(r){
+      if(!r||!r.ok){ msg.className='msg'; msg.textContent=(r&&(r.mensaje||r.error))||'Código inválido.'; if(SN) SN.tocar('mal'); return; }
+      if(!/(^|,)laboratorio-VIP(,|$)/.test(r.producto||'')){ msg.className='msg'; msg.textContent='Código activado, pero no es del Laboratorio.'; return; }
+      ST=ST||{saldo:0,abiertos:[]}; ST.codigo=true; pintar(); cerrar(); if(SN) SN.tocar('bien');
+      if(MCAcceso.celebrar) MCAcceso.celebrar([{producto:'laboratorio-VIP',vence:r.vence||''}],{codigo:r.codigo});
+      setTimeout(function(){ if(R) R.estado().then(function(s){ if(s&&!s.error){ ST=s; if(!s.codigo) ST.codigo=true; pintar(); } }); },3000);
+    }).catch(function(){ msg.className='msg'; msg.textContent='Revisa tu internet e inténtalo otra vez.'; });
+  };
+}
+document.getElementById('bRay').onclick=function(){ hoja(null); };
+
+/* Trae los rayos (y cobra lo ganado estudiando) */
+if(R) R.estado().then(function(s){
+  if(!s||s.error) return;
+  ST=s; pintar();
+  if(s.nuevos>0) setTimeout(function(){ if(SN) SN.tocar('bien'); aviso('Ganaste <b>+'+s.nuevos+' rayos</b> estudiando'); },600);
+});
 </script>
 </body>
 </html>
