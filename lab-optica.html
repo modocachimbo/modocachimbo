@@ -239,7 +239,7 @@ var RT=MCReto({sim:'optica',nombre:'Reto · Lentes y espejos',
     function revela(cp){ return function(){ var r=cp(); OCULTA=false; FIJO.dist=0; son('lanzar'); dibujar(); return r; }; }
     if(i===0){ var ii=mm.i, nat=ii>0?'real':'virtual', otra=ii>0?'virtual':'real', alt=Math.round(1/(1/p[2]+1/p[1])*100)/100;
       var o0=R.opciones(caja,'Un objeto está a <em>'+p[1]+' cm</em> de '+elNom(p[0])+' de foco <em>'+p[2]+' cm</em>. ¿Dónde se forma la imagen?',
-        opc([f(Math.abs(ii))+' cm, '+nat,f(Math.abs(ii))+' cm, '+otra,f(alt)+' cm, '+nat,f(p[1]+p[2])+' cm, '+nat]),0,'1/'+(fsg<0?'('+fsg+')':fsg)+' = 1/'+p[1]+' + 1/i → i = '+f(ii)+' cm: '+(ii>0?'positiva, imagen real.':'negativa, imagen virtual.'));
+        opc([f(Math.abs(ii))+' cm, '+nat,f(Math.abs(ii))+' cm, '+otra,f(alt)+' cm, '+nat,f(p[1]+p[2])+' cm, '+nat,f(Math.abs(ii)*2)+' cm, '+nat,f(Math.abs(ii)+5)+' cm, '+otra]).slice(0,4),0,'1/'+(fsg<0?'('+fsg+')':fsg)+' = 1/'+p[1]+' + 1/i → i = '+f(ii)+' cm: '+(ii>0?'positiva, imagen real.':'negativa, imagen virtual.'));
       o0.comprobar=revela(o0.comprobar); return o0; }
     if(i===1){ var n=naturaleza(mm), buena=natTxt(n), q=p[0]==='concavo'||p[0]==='conv';
       var cands=['Real, invertida y menor','Real, invertida y mayor','Real, invertida y del mismo tamaño','Virtual, derecha y mayor','Virtual, derecha y menor','Virtual, invertida y menor'].filter(function(x){ return x!==buena; }).sort(function(){ return Math.random()-.5; });
@@ -261,7 +261,7 @@ var RT=MCReto({sim:'optica',nombre:'Reto · Lentes y espejos',
     /* hallar el foco */
     var P4=AZ([[30,15,10],[20,20,10],[60,30,20],[15,30,10],[40,40,20],[12,24,8],[24,12,8]]); poner(AZ(['concavo','conv']),P4[0],P4[2],6);
     var o4=R.opciones(caja,'Un objeto a <em>'+P4[0]+' cm</em> forma una imagen <em>real</em> a <em>'+P4[1]+' cm</em> de '+elNom(S.tipo)+'. ¿Cuál es su distancia focal?',
-      opc([P4[2]+' cm',(P4[0]+P4[1])+' cm',f((P4[0]+P4[1])/2)+' cm',f(Math.abs(P4[0]-P4[1])||P4[2]*2)+' cm']),0,'1/f = 1/'+P4[0]+' + 1/'+P4[1]+' → f = o·i / (o + i) = '+(P4[0]*P4[1])+' / '+(P4[0]+P4[1])+' = '+P4[2]+' cm.');
+      opc([P4[2]+' cm',(P4[0]+P4[1])+' cm',f((P4[0]+P4[1])/2)+' cm',f(Math.abs(P4[0]-P4[1])||P4[2]*2)+' cm',(P4[2]*2)+' cm',f(P4[2]/2)+' cm',(P4[2]+5)+' cm']).slice(0,4),0,'1/f = 1/'+P4[0]+' + 1/'+P4[1]+' → f = o·i / (o + i) = '+(P4[0]*P4[1])+' / '+(P4[0]+P4[1])+' = '+P4[2]+' cm.');
     o4.comprobar=revela(o4.comprobar); return o4;
   }});
 </script>
