@@ -400,6 +400,7 @@ if(TIPO==='vegetal'){
     clave:['Turgencia: la vacuola llena empuja contra la pared. Plasmólisis: en medio hipertónico pierde agua y la membrana se despega de la pared.','Puede ocupar hasta el 90 % del volumen de la célula vegetal madura.','También cumple la función de los lisosomas: tiene enzimas hidrolíticas.']};
   O.peroxisoma.n='Peroxisoma · glioxisoma'; O.peroxisoma.lat='Peroxisoma vegetal · 0,5 µm';
   O.peroxisoma.fn='Oxida peróxidos con la catalasa (2 H₂O₂ → 2 H₂O + O₂). En las semillas, los glioxisomas convierten las grasas de reserva en azúcares para que la planta germine.';
+  O.peroxisoma.partes=[['Membrana simple','Una sola membrana, con proteínas incrustadas.'],['Matriz','Enzimas del ciclo del glioxilato: isocitrato liasa y malato sintasa.'],['Catalasa','Grumos de enzima: 2 H₂O₂ → 2 H₂O + O₂.'],['Proteínas de transporte','Meten los ácidos grasos al glioxisoma.'],['Gota de lípido (oleosoma)','Grasa de reserva de la semilla: el glioxisoma la convierte en azúcar.']];
   O.peroxisoma.clave=['Glioxisoma: peroxisoma especial de las semillas oleaginosas; hace el ciclo del glioxilato (lípidos → glúcidos).','En las hojas, los peroxisomas trabajan junto al cloroplasto y la mitocondria en la fotorrespiración.'];
   /* Mismas organelas, pero en la vegetal cambian partes y funciones */
   O.membrana.partes=O.membrana.partes.slice(0,6);
@@ -425,7 +426,7 @@ if(TIPO==='vegetal'){
   O.golgi.clave=['En plantas forma la lámina media y la pared: sus vesículas arman la placa celular en la citocinesis.','También empaqueta las sustancias que van a la vacuola.'];
   O.mitocondria.clave=['La planta también respira: la mitocondria usa la glucosa que fabricó el cloroplasto.','Tiene ADN circular y ribosomas 70S, como las bacterias.'];
   ORDEN=['pared','membrana','vacuola','nucleo','cloroplasto','mitocondria','rer','rel','golgi','amiloplasto','peroxisoma','plasmodesmos'];
-  EXTRA=['leucoplasto','cromoplasto','ribosoma','citoesqueleto'];
+  EXTRA=['leucoplasto','ribosoma','citoesqueleto']; /* cromoplasto: cuando llegue su dibujo */
   ETQ={pared:[600,1500,330,1720],membrana:[2075,520,2250,300],vacuola:[1500,500,1760,60],nucleo:[820,430,820,60],cloroplasto:[1060,1170,1000,1740],mitocondria:[370,683,180,540],rer:[640,700,420,250],rel:[482,772,110,820],golgi:[460,980,120,1120],amiloplasto:[1035,998,1560,1160],peroxisoma:[1452,960,1980,1060],plasmodesmos:[2070,795,2260,1000]};
   /* celular en vertical (la célula se gira): nombres en dos columnas, a la izquierda y a la derecha */
   ETQR={mitocondria:[-40,130],rel:[300,130],rer:[640,130],nucleo:[980,130],vacuola:[1400,130],membrana:[1820,130],
@@ -441,7 +442,7 @@ if(TIPO==='vegetal'){
     leucoplasto:{w:1600,h:977,p:[[1,80,693],[2,747,460],[3,560,120],[4,1040,600],[5,707,753]]},
     membrana:{w:1600,h:815,img:'membrana-vegetal',p:[[1,320,453],[2,440,587],[3,1307,387],[4,453,320],[5,613,627],[6,1047,427],[7,793,453],[8,800,120]]},
     citoesqueleto:{w:1600,h:838,img:'citoesqueleto-vegetal',p:[[1,1360,400],[3,1333,583],[4,693,653],[5,1067,573],[6,800,120],[7,533,440],[8,347,667]]},
-    cromoplasto:{w:1067,h:1100,p:[[1,1033,560],[2,747,827],[3,333,320]]} };
+    peroxisoma:{w:1600,h:868,img:'glioxisoma',p:[[1,187,747],[2,440,440],[3,560,287],[4,660,660],[5,1240,440]]} };
 }
 
 var ROT=innerHeight>innerWidth*1.2, CX=IW/2, CY=IH/2;
