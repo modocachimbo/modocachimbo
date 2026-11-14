@@ -31,6 +31,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .sin-nombres .etq{opacity:0}
 /* célula ilustrada */
 .org{fill:transparent;cursor:pointer}
+.org,#mHueco,#brillo path{fill-rule:evenodd}
 .org.memb{fill:none;stroke:transparent;stroke-width:70;pointer-events:stroke}
 .osc{fill:rgba(4,3,12,.66);opacity:0;transition:opacity .45s}
 .cel-foco .osc{opacity:1}
@@ -269,7 +270,7 @@ a.ib{text-decoration:none}
 <div class="hud h-top">
   <a class="ib glass" href="laboratorio.html" aria-label="Volver al Laboratorio"><svg><use href="#i-atras"/></svg></a>
   <div class="ttl glass"><small><span class="pc">Laboratorio · </span>Biología</small><b>Célula <span class="pc">eucariota </span>animal</b></div>
-  <div class="av glass" id="tipoCel"><button class="on" data-t="animal">Animal</button><button data-t="vegetal">Vegetal<em>Pronto</em></button></div>
+  <div class="av glass" id="tipoCel"><button class="on" data-t="animal">Animal</button><button data-t="vegetal">Vegetal</button></div>
   <div class="sp"></div>
   <button class="ib glass lis" id="bLista" aria-label="Lista de organelas"><svg><use href="#i-lista"/></svg></button>
   <button class="ib glass son" id="bSon" aria-label="Sonido"><svg><use href="#i-son"/></svg></button>
@@ -291,6 +292,7 @@ a.ib{text-decoration:none}
 <script src="assets/auth.js"></script>
 <script src="assets/arcade-beta.js"></script>
 <script src="assets/laboratorio/celula-animal.js"></script>
+<script src="assets/laboratorio/celula-vegetal.js"></script>
 <script src="assets/lab-sonido.js"></script>
 <script>
 /* ============ DATOS ============ */
@@ -357,6 +359,68 @@ var EXTRA=['ribosoma','citoesqueleto','vacuola'];
 })();
 O.vesicula={n:'Vesículas de secreción',c:'#9B6BFF',lat:'Salen del Golgi',f:['Origen','Cara trans'],m:'Simple',fn:'Bolsitas que salen del aparato de Golgi llevando proteínas. Se unen a la membrana y sueltan su contenido fuera de la célula (exocitosis).',partes:[['Brote','Se forma en la cara trans del Golgi.'],['Contenido','Proteínas listas para salir.'],['Membrana','Se fusiona con la membrana plasmática.'],['Exocitosis','Suelta su contenido fuera de la célula.']],clave:'La exocitosis gasta energía y agranda la membrana; la endocitosis la achica.'};
 ORDEN=['membrana','nucleo','mitocondria','rer','rel','golgi','lisosoma','vesicula','peroxisoma','centrosoma'];
+O.centrosoma.en='Solo animal'; O.ribosoma.en='Todas las células'; O.lisosoma.en='Animal (en plantas, la vacuola)';
+
+/* ============ CÉLULA VEGETAL ============
+   ?tipo=vegetal (o la última que elegiste). Imagen: assets/laboratorio/celula-vegetal.webp
+   (2400×1792) y contornos en celula-vegetal.js. Núcleo, mitocondria, retículos, Golgi,
+   peroxisoma, ribosomas y citoesqueleto usan las mismas fichas y dibujos de la animal. */
+var TIPO=new URLSearchParams(location.search).get('tipo'); if(!TIPO){ try{ TIPO=localStorage.getItem('mc_lab_celula_tipo'); }catch(e){} }
+if(TIPO!=='vegetal') TIPO='animal';
+var DILV=null, ETQR={};
+if(TIPO==='vegetal'){
+  F=window.MC_CELULA_VEGETAL||{}; IMG='assets/laboratorio/celula-vegetal.webp';
+  O.pared={n:'Pared celular',c:'#6BBF3A',lat:'Celulosa · 0,1–10 µm',f:['Grosor','0,1–10 µm'],m:'No es membrana',en:'Vegetal (y hongos)',
+    fn:'Capa rígida por fuera de la membrana plasmática. Da forma, sostén y protección a la célula vegetal y evita que reviente cuando entra mucha agua.',
+    partes:[['Lámina media','Capa de pectina que pega una célula con su vecina.'],['Pared primaria','Celulosa, hemicelulosa y pectina: delgada y elástica, crece con la célula.'],['Pared secundaria','Más gruesa y rígida; se forma cuando la célula deja de crecer. Puede tener lignina.'],['Microfibrillas de celulosa','Cadenas de β-glucosa muy resistentes, ordenadas en capas.'],['Membrana plasmática','Queda por dentro, pegada a la pared.']],
+    clave:['Celulosa: polímero de β-glucosa. Hongos: pared de quitina. Bacterias: peptidoglucano (mureína).','La lámina media (pectatos de Ca y Mg) nace de vesículas del Golgi: placa celular o fragmoplasto.','Lignina: endurece la pared secundaria (madera). Suberina: la impermeabiliza (corcho).']};
+  O.plasmodesmos={n:'Plasmodesmos',c:'#E7D23A',lat:'Canales · 20–40 nm',f:['Diámetro','20–40 nm'],m:'Continua',en:'Solo vegetal',
+    fn:'Canales que atraviesan la pared celular y unen el citoplasma de dos células vecinas. Por ellos pasan agua, iones, azúcares, hormonas y hasta ARN.',
+    partes:[['Pared celular','Los plasmodesmos la atraviesan.'],['Membrana plasmática','Sigue de una célula a la otra por dentro del canal.'],['Desmotúbulo','Tubito central formado por el retículo endoplasmático.'],['Retículo endoplasmático','El desmotúbulo une el RE de las dos células.'],['Microfibrillas de celulosa','Forman la pared alrededor del canal.']],
+    clave:['Equivalen a las uniones GAP (uniones comunicantes) de las células animales.','Las zonas de la pared con muchos plasmodesmos se llaman punteaduras.']};
+  O.cloroplasto={n:'Cloroplasto',c:'#3FAE2A',lat:'Chloroplastus · 4–10 µm',f:['Tamaño','4–10 µm'],m:'Doble',en:'Solo vegetal (y algas)',proc:'foto',
+    fn:'Hace la fotosíntesis: con la energía de la luz, el agua y el CO₂ fabrica glucosa y libera oxígeno. La clorofila de los tilacoides es la que capta la luz.',
+    partes:[['Membrana externa','Lisa y permeable.'],['Membrana interna','Controla el paso de sustancias al estroma.'],['Grana','Pilas de tilacoides (cada pila es un granum). Aquí está la clorofila.'],['Lamelas','Tilacoides del estroma que unen un granum con otro.'],['Estroma','Líquido interno: aquí ocurre el ciclo de Calvin.'],['ADN circular','Propio, como el de las bacterias.'],['Ribosomas 70S','Fabrican algunas de sus propias proteínas.'],['Granos de almidón','Reserva de la glucosa fabricada.']],
+    clave:['Fase luminosa: en los tilacoides. La fotólisis del agua libera el O₂.','Fase oscura (ciclo de Calvin): en el estroma. La enzima RuBisCO fija el CO₂.','ADN circular y ribosomas 70S: teoría endosimbiótica (fue una cianobacteria).','Pigmentos: clorofila a y b (verdes) y carotenoides (amarillo-naranja).']};
+  O.amiloplasto={n:'Amiloplasto',c:'#F2EBD9',lat:'Leucoplasto con almidón',f:['Guarda','Almidón'],m:'Doble',en:'Solo vegetal',
+    fn:'Plastidio sin color que guarda almidón. Abunda en los órganos de reserva: papa, yuca, camote y semillas.',
+    partes:[['Doble membrana','Como todos los plastidios.'],['Granos de almidón','Capas concéntricas de amilosa y amilopectina.'],['Estroma','Matriz interna con las enzimas.'],['Gotas lipídicas','Pequeñas reservas de grasa.']],
+    clave:['Es un tipo de leucoplasto. El almidón se tiñe de azul-violeta con lugol (yodo).','En la punta de la raíz sienten la gravedad: estatolitos (gravitropismo).']};
+  O.leucoplasto={n:'Leucoplastos',c:'#D9D2BE',lat:'Plastidios incoloros',f:['Color','Ninguno'],m:'Doble',en:'Solo vegetal',
+    fn:'Plastidios sin pigmentos que guardan sustancias de reserva. Abundan en raíces, tubérculos y semillas, donde no llega la luz.',
+    partes:[['Doble membrana','Envoltura de dos membranas.'],['Estroma','Matriz interna.'],['Membranas internas','Pocas; no forman tilacoides.'],['Gránulos de reserva','Almidón, proteínas o aceites.'],['Gotas lipídicas','Pequeñas gotas de grasa.']],
+    clave:['Amiloplastos: almidón. Proteinoplastos (aleuroplastos): proteínas. Oleoplastos (elaioplastos): aceites.','Si les da la luz, pueden convertirse en cloroplastos.']};
+  O.cromoplasto={n:'Cromoplastos',c:'#F5A623',lat:'Plastidios con carotenoides',f:['Color','Amarillo · rojo'],m:'Doble',en:'Solo vegetal',
+    fn:'Plastidios con pigmentos carotenoides que dan color amarillo, naranja o rojo a flores, frutos y raíces (zanahoria, tomate, ají). Atraen a polinizadores y a los animales que dispersan semillas.',
+    partes:[['Doble membrana','Envoltura de dos membranas.'],['Carotenoides','Carotenos (naranja) y xantofilas (amarillo).'],['Plastoglóbulos','Gotas que guardan los pigmentos.']],
+    clave:['Licopeno: rojo del tomate. β-caroteno: naranja de la zanahoria (precursor de la vitamina A).','Al madurar el fruto, los cloroplastos se transforman en cromoplastos.']};
+  O.vacuola={n:'Vacuola central',c:'#5FD0E8',lat:'Tonoplasto · hasta 90 %',f:['Volumen','Hasta 90 %'],m:'Simple',en:'Vegetal (en animal, pequeñas)',
+    fn:'Bolsa enorme llena de jugo vacuolar. Guarda agua, sales, azúcares, pigmentos y desechos, y empuja el citoplasma contra la pared: esa presión (turgencia) mantiene firme a la planta.',
+    partes:[['Tonoplasto','Membrana simple que rodea la vacuola.'],['Jugo vacuolar','Agua con sales, azúcares, ácidos y proteínas.'],['Proteínas de transporte','Bombas de H⁺ y acuaporinas del tonoplasto.'],['Pigmentos','Antocianinas: rojo, morado o azul de flores y frutos.'],['Cristales','De oxalato de calcio (desechos).']],
+    clave:['Turgencia: la vacuola llena empuja contra la pared. Plasmólisis: en medio hipertónico pierde agua y la membrana se despega de la pared.','Puede ocupar hasta el 90 % del volumen de la célula vegetal madura.','También cumple la función de los lisosomas: tiene enzimas hidrolíticas.']};
+  O.peroxisoma.n='Peroxisoma · glioxisoma'; O.peroxisoma.lat='Peroxisoma vegetal · 0,5 µm';
+  O.peroxisoma.fn='Oxida peróxidos con la catalasa (2 H₂O₂ → 2 H₂O + O₂). En las semillas, los glioxisomas convierten las grasas de reserva en azúcares para que la planta germine.';
+  O.peroxisoma.clave=['Glioxisoma: peroxisoma especial de las semillas oleaginosas; hace el ciclo del glioxilato (lípidos → glúcidos).','En las hojas, los peroxisomas trabajan junto al cloroplasto y la mitocondria en la fotorrespiración.'];
+  O.membrana.partes=O.membrana.partes.slice(0,6);
+  O.golgi.clave=['En plantas forma la lámina media y la pared: sus vesículas arman la placa celular en la citocinesis.','También empaqueta las sustancias que van a la vacuola.'];
+  O.mitocondria.clave=['La planta también respira: la mitocondria usa la glucosa que fabricó el cloroplasto.','Tiene ADN circular y ribosomas 70S, como las bacterias.'];
+  ORDEN=['pared','membrana','vacuola','nucleo','cloroplasto','mitocondria','rer','rel','golgi','amiloplasto','peroxisoma','plasmodesmos'];
+  EXTRA=['leucoplasto','cromoplasto','ribosoma','citoesqueleto'];
+  ETQ={pared:[600,1500,330,1720],membrana:[2075,520,2250,300],vacuola:[1500,500,1760,60],nucleo:[820,430,820,60],cloroplasto:[1060,1170,1000,1740],mitocondria:[370,683,180,540],rer:[640,700,420,250],rel:[482,772,110,820],golgi:[460,980,120,1120],amiloplasto:[1035,998,1560,1160],peroxisoma:[1452,960,1980,1060],plasmodesmos:[2070,795,2260,1000]};
+  /* celular en vertical (la célula se gira): nombres en dos columnas, a la izquierda y a la derecha */
+  ETQR={mitocondria:[-40,130],rel:[300,130],rer:[640,130],nucleo:[980,130],vacuola:[1400,130],membrana:[1820,130],
+    golgi:[150,1700],pared:[520,1700],cloroplasto:[900,1700],amiloplasto:[1250,1700],peroxisoma:[1650,1700],plasmodesmos:[2300,1700]};
+  /* recorte para volar hacia cada orgánulo: la caja de su contorno */
+  DET={}; ORDEN.forEach(function(id){ var b=[1e9,1e9,-1,-1]; (F[id]||'').replace(/M([^Z]+)Z/g,function(_,t){ var n=t.trim().split(/\s+/).map(Number);
+    for(var i=0;i<n.length;i+=2){ b[0]=Math.min(b[0],n[i]);b[2]=Math.max(b[2],n[i]);b[1]=Math.min(b[1],n[i+1]);b[3]=Math.max(b[3],n[i+1]); } }); DET[id]={b:b,p:[]}; });
+  DILV={ cloroplasto:{w:1600,h:877,p:[[1,1547,507],[2,127,573],[3,320,573],[4,880,507],[5,747,747],[6,873,673],[7,457,671],[8,507,427]]},
+    pared:{w:1600,h:1000,p:[[1,693,600],[2,560,400],[3,267,667],[4,1360,827],[5,1493,533]]},
+    plasmodesmos:{w:1600,h:893,p:[[1,333,747],[2,667,460],[3,867,427],[4,1333,693],[5,1093,747]]},
+    vacuola:{w:1600,h:979,img:'vacuola-central',p:[[1,200,747],[2,533,333],[3,940,767],[4,640,720],[5,1040,527]]},
+    amiloplasto:{w:1600,h:977,p:[[1,1540,470],[2,440,560],[3,147,560],[4,713,751]]},
+    leucoplasto:{w:1600,h:977,p:[[1,80,693],[2,747,460],[3,560,120],[4,1040,600],[5,707,753]]},
+    cromoplasto:{w:1067,h:1100,p:[[1,1033,560],[2,747,827],[3,333,320]]} };
+}
 
 var ROT=innerHeight>innerWidth*1.2, CX=IW/2, CY=IH/2;
 function rp(x,y){ return ROT?[CX-(y-CY),CY+(x-CX)]:[x,y]; }
@@ -379,7 +443,7 @@ function celula(){
 }
 function etiquetas(){
   var s='', K=innerWidth<760?2.2:1.35;
-  ORDEN.forEach(function(id){ var e0=ETQ[id], a1=rp(e0[0],e0[1]), a2=rp(e0[2],e0[3]), e=[a1[0],a1[1],a2[0],a2[1]], n=O[id].n.replace('Retículo endoplasmático','R. E.'), w=(n.length*15+40)*K;
+  ORDEN.forEach(function(id){ var e0=ETQ[id]; if(ROT&&ETQR[id]) e0=[e0[0],e0[1],ETQR[id][0],ETQR[id][1]]; var a1=rp(e0[0],e0[1]), a2=rp(e0[2],e0[3]), e=[a1[0],a1[1],a2[0],a2[1]], n=O[id].n.replace('Retículo endoplasmático','R. E.'), w=(n.length*15+40)*K;
     /* que la etiqueta no se salga de la pantalla (celular vertical) */
     var B=ROT?{x:CX-IH/2-40,y:CY-IW/2-40,w:IH+80,h:IW+80}:{x:-40,y:-40,w:IW+80,h:IH+80};
     e[2]=Math.max(B.x+w/2+8,Math.min(B.x+B.w-w/2-8,e[2])); e[3]=Math.max(B.y+30*K,Math.min(B.y+B.h-30*K,e[3]));
@@ -387,7 +451,18 @@ function etiquetas(){
        '<rect x="'+(e[2]-w/2)+'" y="'+(e[3]-26*K)+'" width="'+w+'" height="'+52*K+'" rx="'+14*K+'"/><text x="'+e[2]+'" y="'+(e[3]+10*K)+'" text-anchor="middle" style="font-size:'+28*K+'px">'+n+'</text></g>'; });
   return s;
 }
+function burbujasFoto(cajas){ /* O₂ y glucosa que salen de cada cloroplasto */
+  var s=''; (cajas||[]).forEach(function(b,i){ var cx=(b[0]+b[2])/2, cy=(b[1]+b[3])/2, r=b[4]||20;
+    for(var k=0;k<3;k++){ var dl=(i*.5+k*1.1).toFixed(2), glu=k===1, dx=(k-1)*70+(i%2?30:-30), dy=-170-k*20;
+      s+='<g opacity="0"><animate attributeName="opacity" values="0;1;1;0" dur="3.4s" begin="'+dl+'s" repeatCount="indefinite"/>'+
+        '<animateMotion path="M'+cx+' '+cy+' q'+(dx*.2)+' '+(dy*.5)+' '+dx+' '+dy+'" dur="3.4s" begin="'+dl+'s" repeatCount="indefinite"/>'+
+        (glu?'<polygon points="'+[0,1,2,3,4,5].map(function(j){ var a=j*Math.PI/3+Math.PI/6; return (Math.cos(a)*r*1.25).toFixed(1)+','+(Math.sin(a)*r*1.25).toFixed(1); }).join(' ')+'" fill="#FFC800" stroke="#7A5000" stroke-width="2.5"/>'+
+          '<text y="'+(r*.3)+'" text-anchor="middle" style="font:800 '+(r*.8)+'px Barlow Condensed;fill:#3A2600">GLU</text>'
+        :'<circle r="'+r+'" fill="rgba(170,230,255,.85)" stroke="#2A88C0" stroke-width="2.5"/><text y="'+(r*.33)+'" text-anchor="middle" style="font:800 '+(r*.95)+'px Barlow Condensed;fill:#0B3A5A">O₂</text>')+'</g>'; } });
+  return s;
+}
 function bolitasATP(id,cajas){ /* ATP que sale de cada mitocondria */
+  if(id==='cloroplasto') return burbujasFoto((cajas||[]).map(function(b){ return b.slice(0,4).concat([30]); }));
   if(id!=='mitocondria') return '';
   var s=''; (cajas||[]).forEach(function(b,i){ var cx=(b[0]+b[2])/2, cy=(b[1]+b[3])/2, a=Math.atan2(cy-900,cx-1200)+(i%2?.5:-.4), d=150;
     for(var k=0;k<2;k++){ var dl=(i*.45+k*1.6).toFixed(2), r=b[4]||16;
@@ -463,12 +538,13 @@ var DIL={ mitocondria:{w:1600,h:925,p:[[1,1473,410],[2,435,772],[3,1271,410],[4,
  peroxisoma:{w:1200,h:1202,p:[[1,561,574],[2,885,686],[3,70,619]]},
  vesicula:{w:1600,h:913,p:[[1,458,442],[2,851,458],[3,1141,360],[4,1489,376]]},
  membrana:{w:1600,h:864,p:[[1,568,410],[2,689,470],[3,1309,427],[4,809,74],[5,603,659],[6,1042,461]]} };
+if(DILV) for(var kd in DILV) DIL[kd]=DILV[kd];
 var TAB=new URLSearchParams(location.search).get('tab')||'partes';
 function abrir(id){
   var o=O[id], D=DET[id]||{b:[0,0,1,1],p:[]}, b=D.b, cw=b[2]-b[0], ch=b[3]-b[1], m=Math.max(cw,ch)*.12, IL=DIL[id];
   if(IL){ D={p:IL.p}; b=[0,0,IL.w,IL.h]; cw=IL.w; ch=IL.h; m=Math.max(cw,ch)*.06; }
   var vb=(b[0]-m)+' '+(b[1]-m)+' '+(cw+2*m)+' '+(ch+2*m), u=Math.max(cw,ch)/420;
-  var vis=IL?'<g class="d-ilus"><image href="assets/laboratorio/detalle-'+id+'.webp" width="'+IL.w+'" height="'+IL.h+'"/>'+
+  var vis=IL?'<g class="d-ilus"><image href="assets/laboratorio/detalle-'+(IL.img||id)+'.webp" width="'+IL.w+'" height="'+IL.h+'"/>'+
     D.p.map(function(p){ return '<g class="mk" transform="translate('+p[1]+' '+p[2]+')"><circle class="mk-onda" r="'+13*u+'" fill="none" stroke="#C6E000" stroke-width="'+2*u+'"/><circle r="'+13*u+'" fill="#C6E000" stroke="#151A03" stroke-width="'+2.5*u+'"/><text y="'+5*u+'" text-anchor="middle" style="font:800 '+15*u+'px Barlow Condensed;fill:#151A03">'+p[0]+'</text></g>'; }).join('')+'</g>'
   :'<defs><clipPath id="cDet"><rect x="'+(b[0]-m)+'" y="'+(b[1]-m)+'" width="'+(cw+2*m)+'" height="'+(ch+2*m)+'"/></clipPath></defs>'+
     '<g clip-path="url(#cDet)"><image href="'+IMG+'" width="'+IW+'" height="'+IH+'"/>'+
@@ -479,7 +555,9 @@ function abrir(id){
   var marcados=D.p.map(function(p){ return p[0]; });
   var cuerpo='';
   if(TAB==='partes') cuerpo='<ol class="partes">'+o.partes.map(function(p,i){ return '<li'+(marcados.indexOf(i+1)>=0?' class="on"':'')+'><span class="n">'+(i+1)+'</span><div><b>'+p[0]+'</b><span>'+p[1]+'</span></div></li>'; }).join('')+'</ol>';
-  if(TAB==='funcion') cuerpo='<p class="txt">'+o.fn+'</p>'+(o.mas?'<div class="proc" style="margin-bottom:12px"><div class="eq">'+o.mas[0]+'</div>'+o.mas[1].map(function(r){ return '<div class="st"><i style="background:rgba(198,224,0,.16);color:#C6E000">'+r[0]+'</i><div><b>'+r[1]+'</b><span>'+r[2]+'</span></div><em>'+r[3]+'</em></div>'; }).join('')+'</div>':'')+(o.proc?'<div class="proc"><div class="eq">C₆H₁₂O₆ + 6 O₂ → 6 CO₂ + 6 H₂O + <b>36–38 ATP</b></div>'+
+  if(TAB==='funcion') cuerpo='<p class="txt">'+o.fn+'</p>'+(o.mas?'<div class="proc" style="margin-bottom:12px"><div class="eq">'+o.mas[0]+'</div>'+o.mas[1].map(function(r){ return '<div class="st"><i style="background:rgba(198,224,0,.16);color:#C6E000">'+r[0]+'</i><div><b>'+r[1]+'</b><span>'+r[2]+'</span></div><em>'+r[3]+'</em></div>'; }).join('')+'</div>':'')+(o.proc==='foto'?'<div class="proc"><div class="eq">6 CO₂ + 6 H₂O + <b>luz</b> → C₆H₁₂O₆ + 6 O₂</div>'+
+     '<div class="st"><i style="background:rgba(198,224,0,.16);color:#C6E000">1</i><div><b>Fase luminosa</b><span>En los tilacoides · la luz rompe el agua (fotólisis)</span></div><em>O₂ + ATP</em></div>'+
+     '<div class="st"><i style="background:rgba(255,200,0,.16);color:#FFC800">2</i><div><b>Fase oscura · ciclo de Calvin</b><span>En el estroma · la RuBisCO fija el CO₂</span></div><em>Glucosa</em></div></div>':'')+(o.proc===1?'<div class="proc"><div class="eq">C₆H₁₂O₆ + 6 O₂ → 6 CO₂ + 6 H₂O + <b>36–38 ATP</b></div>'+
      '<div class="st"><i style="background:rgba(58,180,240,.18);color:#3AB4F0">1</i><div><b>Glucólisis</b><span>En el citoplasma (fuera de la mitocondria)</span></div><em>2 ATP</em></div>'+
      '<div class="st"><i style="background:rgba(255,150,0,.18);color:#FF9600">2</i><div><b>Ciclo de Krebs</b><span>En la matriz · libera CO₂</span></div><em>2 ATP</em></div>'+
      '<div class="st"><i style="background:rgba(198,224,0,.16);color:#C6E000">3</i><div><b>Cadena respiratoria</b><span>En las crestas · el O₂ recibe los electrones</span></div><em>32–34 ATP</em></div></div>':'');
@@ -489,7 +567,7 @@ function abrir(id){
   det.innerHTML='<div class="d-box"><div class="d-vis"><div class="grid-bg"></div><svg viewBox="'+vb+'" preserveAspectRatio="xMidYMid meet">'+vis+'</svg>'+
     '<div class="d-cab"><span class="pill">'+(IL?'Ilustración 3D':'Vista ampliada')+'</span>'+(id==='mitocondria'&&!IL?'<span class="pill" style="color:#FFC800;border-color:rgba(255,200,0,.4);background:rgba(255,200,0,.1)">Animación: ATP</span>':'')+'</div></div>'+
     '<div class="d-inf"><header><div><h2>'+o.n+'</h2><span class="lat">'+o.lat+'</span></div><button class="x" id="dX"><svg><use href="#i-x"/></svg></button></header>'+
-    '<div class="ficha"><div><small>'+o.f[0]+'</small><b>'+o.f[1]+'</b></div><div><small>Membrana</small><b>'+o.m+'</b></div><div><small>Está en</small><b>'+(id==='centrosoma'?'Solo animal':id==='ribosoma'?'Todas las células':'Animal y vegetal')+'</b></div></div>'+
+    '<div class="ficha"><div><small>'+o.f[0]+'</small><b>'+o.f[1]+'</b></div><div><small>Membrana</small><b>'+o.m+'</b></div><div><small>Está en</small><b>'+(o.en||'Animal y vegetal')+'</b></div></div>'+
     '<div class="tabs">'+Object.keys(tabs).map(function(k){ return '<button data-t="'+k+'" class="'+(k===TAB?'on':'')+'">'+tabs[k]+'</button>'; }).join('')+'</div>'+cuerpo+
     '<div class="d-acc"><button class="btn sec" id="dVer">Ver en la célula</button><button class="btn" id="dSig">'+O[sig].n.split(' ')[0]+'<svg style="color:#151A03"><use href="#i-sig"/></svg></button></div></div></div>';
   var SN=window.MCLabSonido; if(SN) SN.tocar(det.classList.contains('on')?'tic':'abrir');
@@ -507,12 +585,13 @@ aplicar();
   var bs=document.getElementById('bSon'), SN=window.MCLabSonido, pista=document.getElementById('pista'), tx=pista.innerHTML, tm;
   if(SN&&!SN.activo()) bs.classList.add('off');
   bs.onclick=function(){ if(SN) bs.classList.toggle('off',!SN.alternar()); };
-  document.querySelectorAll('#tipoCel button').forEach(function(b){ b.onclick=function(){
-    if(b.dataset.t==='animal') return;
-    if(SN) SN.tocar('mal');
-    clearTimeout(tm); pista.style.display='flex'; pista.classList.remove('fuera');
-    pista.innerHTML='La célula vegetal llega pronto: cloroplastos, pared celular y vacuola central';
-    tm=setTimeout(function(){ pista.classList.add('fuera'); },3200);
+  /* Animal / Vegetal: se recuerda la última y se recarga con la otra célula */
+  document.querySelector('.ttl b').innerHTML='Célula <span class="pc">eucariota </span>'+TIPO;
+  document.querySelectorAll('#tipoCel button').forEach(function(b){ b.classList.toggle('on',b.dataset.t===TIPO); b.onclick=function(){
+    if(b.dataset.t===TIPO) return;
+    if(SN) SN.tocar('tic');
+    try{ localStorage.setItem('mc_lab_celula_tipo',b.dataset.t); }catch(e){}
+    var q=new URLSearchParams(location.search); q.set('tipo',b.dataset.t); location.search=q.toString();
   }; });
   try{ localStorage.setItem('mc_lab_ultimo','celula'); }catch(e){}
   /* La pista del dedo se va sola a los 5 segundos */
