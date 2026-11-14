@@ -405,6 +405,8 @@ if(TIPO==='vegetal'){
   O.membrana.partes=O.membrana.partes.slice(0,6);
   O.membrana.partes[1]=['Fitoesteroles','No hay colesterol: el sitosterol y el estigmasterol regulan la fluidez.'];
   O.membrana.partes[3]=['Glúcidos de membrana','Glucoproteínas y glucolípidos. No forman glucocáliz: por fuera está la pared.'];
+  O.membrana.partes[5]=['Acuaporina','Canal por donde entra el agua (ósmosis) para llenar la vacuola.'];
+  O.membrana.partes.push(['Bomba de protones','H⁺-ATPasa: saca H⁺ gastando ATP; en plantas reemplaza a la bomba Na⁺/K⁺.'],['Pared celular','Por fuera, fibras de celulosa: la membrana se aprieta contra ella.']);
   O.membrana.fn='Separa la célula del medio y controla qué entra y qué sale (semipermeable). En la vegetal queda por dentro de la pared celular y se aprieta contra ella cuando la vacuola se llena (turgencia).';
   O.membrana.mas=['Transporte de sustancias',[['P','Ósmosis y difusión','El agua entra por acuaporinas; así se llena la vacuola','Sin ATP'],['A','Transporte activo','Bomba de protones (H⁺-ATPasa): en plantas reemplaza a la bomba Na⁺/K⁺','Con ATP'],['M','Exocitosis','Lleva los materiales de la pared. No hay fagocitosis: la pared lo impide','Con ATP']]];
   O.membrana.clave=['La membrana vegetal no tiene colesterol: tiene fitoesteroles.','Su bomba principal es la H⁺-ATPasa (bomba de protones), no la Na⁺/K⁺.','Se comunica con las células vecinas por los plasmodesmos (en animales: uniones GAP).','Plasmólisis: en medio hipertónico se despega de la pared.'];
@@ -436,6 +438,7 @@ if(TIPO==='vegetal'){
     vacuola:{w:1600,h:979,img:'vacuola-central',p:[[1,200,747],[2,533,333],[3,940,767],[4,640,720],[5,1040,527]]},
     amiloplasto:{w:1600,h:977,p:[[1,1540,470],[2,440,560],[3,147,560],[4,713,751]]},
     leucoplasto:{w:1600,h:977,p:[[1,80,693],[2,747,460],[3,560,120],[4,1040,600],[5,707,753]]},
+    membrana:{w:1600,h:815,img:'membrana-vegetal',p:[[1,320,453],[2,440,587],[3,1307,387],[4,453,320],[5,613,627],[6,1047,427],[7,793,453],[8,800,120]]},
     cromoplasto:{w:1067,h:1100,p:[[1,1033,560],[2,747,827],[3,333,320]]} };
 }
 
