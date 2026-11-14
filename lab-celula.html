@@ -589,11 +589,19 @@ var AN={
   mov:function(d,cont,dur,del){ return '<g opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.12;.8;1" dur="'+dur+'s" begin="'+(del||0)+'s" repeatCount="indefinite"/>'+
     '<animateMotion path="'+d+'" dur="'+dur+'s" begin="'+(del||0)+'s" repeatCount="indefinite"/>'+cont+'</g>'; },
   bola:function(r,fill,borde,tx,tc){ return '<circle r="'+r+'" fill="'+fill+'" stroke="'+borde+'" stroke-width="'+(r*.12)+'"/><text y="'+(r*.34)+'" text-anchor="middle" style="font:800 '+(r*.92)+'px Barlow Condensed;fill:'+tc+'">'+tx+'</text>'; },
-  pastilla:function(r,fill,borde,tx,tc){ var w=r*3.2; return '<rect x="'+(-w/2)+'" y="'+(-r*.8)+'" width="'+w+'" height="'+(r*1.6)+'" rx="'+(r*.8)+'" fill="'+fill+'" stroke="'+borde+'" stroke-width="'+(r*.12)+'"/><text y="'+(r*.32)+'" text-anchor="middle" style="font:800 '+(r*.9)+'px Barlow Condensed;fill:'+tc+'">'+tx+'</text>'; },
+  pastilla:function(r,fill,borde,tx,tc){ var w=r*Math.max(3.2,String(tx).length*.62+1.3); return '<rect x="'+(-w/2)+'" y="'+(-r*.8)+'" width="'+w+'" height="'+(r*1.6)+'" rx="'+(r*.8)+'" fill="'+fill+'" stroke="'+borde+'" stroke-width="'+(r*.12)+'"/><text y="'+(r*.32)+'" text-anchor="middle" style="font:800 '+(r*.9)+'px Barlow Condensed;fill:'+tc+'">'+tx+'</text>'; },
   hexa:function(r,tx){ return '<polygon points="'+[0,1,2,3,4,5].map(function(j){ var a=j*Math.PI/3+Math.PI/6; return (Math.cos(a)*r).toFixed(1)+','+(Math.sin(a)*r).toFixed(1); }).join(' ')+'" fill="#FFC800" stroke="#7A5000" stroke-width="'+(r*.1)+'"/><text y="'+(r*.28)+'" text-anchor="middle" style="font:800 '+(r*.62)+'px Barlow Condensed;fill:#3A2600">'+tx+'</text>'; },
   rayo:function(x1,y1,x2,y2,del,g){ return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="#FFE45C" stroke-width="'+g+'" stroke-linecap="round" stroke-dasharray="'+(g*4)+' '+(g*5)+'" opacity=".9">'+
     '<animate attributeName="stroke-dashoffset" from="'+(g*9)+'" to="0" dur=".7s" begin="'+del+'s" repeatCount="indefinite"/></line>'; },
   destello:function(x,y,r,col,del){ return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+col+'" opacity="0"><animate attributeName="opacity" values="0;.55;0" dur="1.4s" begin="'+(del||0)+'s" repeatCount="indefinite"/><animate attributeName="r" values="'+(r*.5)+';'+r+';'+(r*1.3)+'" dur="1.4s" begin="'+(del||0)+'s" repeatCount="indefinite"/></circle>'; },
+  flecha:function(x,y,ang,L,col,del){ var w=L*.11; return '<g transform="translate('+x+' '+y+') rotate('+ang+')"><g opacity="0"><animate attributeName="opacity" values="0;.95;.95;0" dur="1.6s" begin="'+(del||0)+'s" repeatCount="indefinite"/>'+
+    '<animateTransform attributeName="transform" type="translate" values="0 0;'+(L*.3)+' 0" dur="1.6s" begin="'+(del||0)+'s" repeatCount="indefinite"/>'+
+    '<path d="M0 '+(-w)+' L'+(L*.6)+' '+(-w)+' L'+(L*.6)+' '+(-w*2.3)+' L'+L+' 0 L'+(L*.6)+' '+(w*2.3)+' L'+(L*.6)+' '+w+' L0 '+w+'Z" fill="'+col+'" stroke="rgba(0,0,0,.45)" stroke-width="'+(w*.3)+'"/></g></g>'; },
+  halo:function(cx,cy,rx,ry,col,k,dur){ return '<ellipse cx="'+cx+'" cy="'+cy+'" rx="'+rx+'" ry="'+ry+'" fill="none" stroke="'+col+'" stroke-width="'+(rx*.025)+'" stroke-dasharray="'+(rx*.08)+' '+(rx*.05)+'" opacity=".9">'+
+    '<animate attributeName="rx" values="'+rx+';'+(rx*k)+';'+rx+'" dur="'+(dur||2.4)+'s" repeatCount="indefinite"/><animate attributeName="ry" values="'+ry+';'+(ry*k)+';'+ry+'" dur="'+(dur||2.4)+'s" repeatCount="indefinite"/></ellipse>'; },
+  brillo:function(d,col,g){ return '<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="'+g+'" stroke-linecap="round" stroke-dasharray="'+(g*3)+' '+(g*4)+'" opacity=".95"><animate attributeName="stroke-dashoffset" from="'+(g*7)+'" to="0" dur=".9s" repeatCount="indefinite"/></path>'; },
+  rotulo:function(x,y,t,sz,col){ return '<text x="'+x+'" y="'+y+'" text-anchor="middle" style="font:800 '+sz+'px Barlow Condensed;letter-spacing:.05em;fill:'+(col||'#EEEAF7')+';paint-order:stroke;stroke:rgba(6,4,15,.85);stroke-width:'+(sz*.18)+'px">'+t+'</text>'; },
+  p:function(k,cont){ return '<g class="an-p" data-p="'+k+'">'+cont+'</g>'; },
   ciclo:function(x,y,r,col,tx){ return '<g transform="translate('+x+' '+y+')"><circle r="'+r+'" fill="rgba(10,7,26,.55)" stroke="'+col+'" stroke-width="'+(r*.09)+'" stroke-dasharray="'+(r*1.1)+' '+(r*.35)+'">'+
     '<animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="4s" repeatCount="indefinite"/></circle>'+
     '<text y="'+(r*.12)+'" text-anchor="middle" style="font:800 '+(r*.36)+'px Barlow Condensed;letter-spacing:.04em;fill:'+col+'">'+tx[0]+'</text><text y="'+(r*.5)+'" text-anchor="middle" style="font:700 '+(r*.24)+'px Barlow Condensed;fill:#EEEAF7">'+tx[1]+'</text></g>'; }
@@ -627,6 +635,119 @@ var ANIM={
         AN.mov('M'+C[0]+' '+C[1]+' Q900 860 1000 960',AN.hexa(62,'GLU'),2.6,1.1)+AN.destello(507,427,90,'#FFFFFF',2.2)+'</g>';
       return s; } }
 };
+/* Más animaciones: la clave es el nombre del dibujo (detalle-<clave>.webp) */
+(function(){
+  var M=AN.mov, P=AN.p, D=AN.destello, T=AN.rotulo;
+  function B(r,tipo){ var t={H2O:['rgba(110,190,255,.92)','#1D5E99','H₂O','#062C4F'],O2:['rgba(200,240,255,.95)','#2A88C0','O₂','#0B3A5A'],CO2:['#B8BFCC','#4A5160','CO₂','#1E2430'],
+    ATP:['#FFC800','#7A5000','ATP','#3A2600'],ADP:['#E7D9A8','#7A6A30','ADP','#3A3010'],H:['#FF7A9C','#8A1F3D','H⁺','#3D0718'],Na:['#B79CFF','#4B2A9E','Na⁺','#1E0E4A'],K:['#7FE0A0','#1F7A43','K⁺','#07361B'],
+    Ca:['#F5F5F5','#8A8A8A','Ca²⁺','#333'],aa:['#FF9AD5','#9A2A6E','aa','#40102C'],H2O2:['#FF9E7A','#9A3A1A','H₂O₂','#3D1405'],gr:['#FFE08A','#9A7A1A','AG','#3D2E05']}[tipo];
+    return AN.bola(r,t[0],t[1],t[2],t[3]); }
+  function PI(r,tx,f,b,c){ return AN.pastilla(r,f||'#4FD8B4',b||'#0E6B55',tx,c||'#05362B'); }
+  function VES(r,f){ return '<circle r="'+r+'" fill="'+(f||'rgba(150,200,255,.55)')+'" stroke="rgba(255,255,255,.85)" stroke-width="'+(r*.12)+'"/><circle r="'+(r*.35)+'" cx="'+(-r*.2)+'" cy="'+(r*.1)+'" fill="#FF8A5C"/><circle r="'+(r*.25)+'" cx="'+(r*.3)+'" cy="'+(-r*.2)+'" fill="#B07CFF"/>'; }
+  function CL(r){ return '<ellipse rx="'+(r*1.6)+'" ry="'+r+'" fill="#3FAE2A" stroke="#C6F28A" stroke-width="'+(r*.12)+'"/><ellipse rx="'+(r*.9)+'" ry="'+(r*.45)+'" fill="#1F6E14"/>'; }
+  function cadena(x,y,n,r,dx,dy){ var c=['#FF6B6B','#FFD93D','#6BCB77','#4D96FF','#C77DFF'], s=''; for(var i=0;i<n;i++) s+='<circle cx="'+(x+i*dx)+'" cy="'+(y+i*dy)+'" r="'+r+'" fill="'+c[i%5]+'" stroke="rgba(0,0,0,.4)" stroke-width="'+(r*.15)+'"/>'; return s; }
+
+  var A={
+  mitocondria:{pasos:['Entra el ácido pirúvico (de la glucólisis, que ocurrió en el citoplasma).','Ciclo de Krebs en la matriz: se libera CO₂ y se cargan electrones.','Cadena respiratoria en las crestas: se bombean H⁺ y el O₂ recibe los electrones formando agua.','La ATP sintasa gira con el paso de los H⁺ y fabrica el ATP.'],
+    svg:function(R){ var C=[700,470], cr=[[420,560],[600,500],[860,560],[1060,470]];
+      return P(0,[0,1,2].map(function(i){ return M('M-120 '+(600+i*60)+' Q300 '+(700-i*40)+' '+C[0]+' '+C[1],PI(R,'PIRUVATO','#FFB3D9','#9A2A6E','#40102C'),2.6,i*.8); }).join(''))+
+        P('1 2',AN.ciclo(C[0],C[1],R*3.2,'#FF9600',['KREBS','matriz']))+
+        P(1,[0,1,2].map(function(i){ return M('M'+C[0]+' '+C[1]+' q'+(i*120-120)+' -260 '+(i*180-180)+' -620',B(R,'CO2'),2.6,i*.8); }).join('')+[0,1].map(function(i){ return M('M'+C[0]+' '+C[1]+' Q'+(C[0]+300)+' '+(C[1]+40)+' 1060 470',PI(R*.9,'NADH'),2.2,i*1.1+.4); }).join(''))+
+        P(2,cr.map(function(c,i){ return M('M'+c[0]+' '+(c[1]+20)+' L'+(c[0]-40)+' '+(c[1]-170),B(R*.8,'H'),1.6,i*.35)+M('M'+(c[0]+40)+' '+(c[1]+20)+' L'+c[0]+' '+(c[1]-150),B(R*.8,'H'),1.6,i*.35+.8); }).join('')+
+          M('M1700 700 L1080 520',B(R,'O2'),2.4,0)+M('M1080 520 L1300 900',B(R,'H2O'),2.2,1.4))+
+        P(3,cr.map(function(c,i){ return D(c[0],c[1],R*2.2,'#FFE45C',i*.3)+M('M'+c[0]+' '+c[1]+' q80 120 '+(260-i*20)+' '+(420+i*40),B(R,'ATP'),2.4,i*.5); }).join('')+T(1300,120,'≈ 36 ATP por glucosa',R*1.3,'#FFC800')); } },
+  nucleo:{pasos:['Transcripción: el ADN de la cromatina se copia en ARN mensajero.','El ARNm sale por los poros nucleares hacia el citoplasma.','El nucléolo arma las subunidades del ribosoma, que también salen por los poros.','En el RE rugoso, pegado a la carioteca, los ribosomas fabrican proteínas.'],
+    svg:function(R){ var nc=[850,580], po=[[1280,370],[960,890],[720,120],[1380,700]];
+      return P(0,[[600,420],[1000,380],[700,700],[1100,620]].map(function(c,i){ return D(c[0],c[1],R*2.6,'#C6E000',i*.35)+M('M'+c[0]+' '+c[1]+' l60 -40',PI(R*.8,'ARNm','#FFE45C','#8A6A00','#3A2A00'),1.6,i*.35+.5); }).join(''))+
+        P(1,[0,1,2].map(function(i){ var p=po[i]; return M('M'+(700+i*150)+' '+(500+i*30)+' L'+p[0]+' '+p[1]+' L'+(p[0]+(p[0]-800)*.45)+' '+(p[1]+(p[1]-560)*.45),PI(R*.8,'ARNm','#FFE45C','#8A6A00','#3A2A00'),2.8,i*.7)+D(p[0],p[1],R*1.6,'#FFE45C',i*.7+1.3); }).join(''))+
+        P(2,D(nc[0],nc[1],R*3.2,'#B49CFF',0)+[0,1,2].map(function(i){ var p=po[i]; return M('M'+nc[0]+' '+nc[1]+' L'+p[0]+' '+p[1]+' L'+(p[0]+(p[0]-800)*.45)+' '+(p[1]+(p[1]-560)*.45),'<circle r="'+(R*.75)+'" fill="#FF8A5C" stroke="#7A2A10" stroke-width="'+(R*.1)+'"/><circle r="'+(R*.5)+'" cy="'+(R*.7)+'" fill="#B07CFF" stroke="#3A1A70" stroke-width="'+(R*.1)+'"/>',2.8,i*.8); }).join('')+T(nc[0],nc[1]-R*3.6,'NUCLÉOLO',R*1.2,'#C6E000'))+
+        P(3,[[400,980],[600,1150],[300,1200]].map(function(c,i){ return D(c[0],c[1],R*1.6,'#FFC800',i*.4)+M('M'+c[0]+' '+c[1]+' l-140 120','<g>'+cadena(0,0,4,R*.35,R*.6,R*.2)+'</g>',2,i*.4+.4); }).join('')); } },
+  rer:{pasos:['El ARNm llega y un ribosoma se pega a la membrana del retículo.','La proteína que se fabrica entra a la cisterna (lumen), donde se pliega.','Sale en una vesícula (COP II) que la lleva al aparato de Golgi.'],
+    svg:function(R){ return P(0,M('M-100 300 Q200 420 480 560',PI(R,'ARNm','#FFE45C','#8A6A00','#3A2A00'),2.4,0)+D(480,560,R*2,'#FF6B6B',1.6)+M('M-100 700 Q300 640 760 480',PI(R,'ARNm','#FFE45C','#8A6A00','#3A2A00'),2.4,1.2)+D(760,480,R*2,'#FF6B6B',2.8))+
+        P(1,AN.brillo('M480 560 Q700 470 900 520 T1300 430','#FF9AD5',R*.5)+[0,1].map(function(i){ return M('M480 560 Q700 470 900 520 T1300 430','<g>'+cadena(-R,0,4,R*.4,R*.65,0)+'</g>',3,i*1.5); }).join(''))+
+        P(2,[0,1].map(function(i){ return M('M1350 420 Q1550 300 1720 180',VES(R*1.3),2.6,i*1.3); }).join('')+T(1450,140,'→ GOLGI',R*1.3,'#C6E000')); } },
+  rel:{pasos:['Lipogénesis: en sus túbulos se fabrican lípidos (fosfolípidos y esteroides).','Guarda calcio (Ca²⁺) y lo suelta cuando la célula lo necesita.','Detoxificación: convierte sustancias tóxicas en otras que se pueden eliminar.'],
+    svg:function(R){ return P(0,[[420,420],[800,520],[1180,380],[600,250]].map(function(c,i){ return D(c[0],c[1],R*1.8,'#FFE45C',i*.4)+M('M'+c[0]+' '+c[1]+' q40 -200 '+(i*60-60)+' -520','<circle r="'+(R*.8)+'" fill="#FFE08A" stroke="#9A7A1A" stroke-width="'+(R*.12)+'"/>',2.6,i*.5); }).join(''))+
+        P(1,[0,1,2,3].map(function(i){ return M('M'+(300+i*300)+' 1050 Q'+(400+i*300)+' 700 '+(420+i*260)+' 500',B(R*.85,'Ca'),2.4,i*.4); }).join('')+T(800,960,'Ca²⁺ guardado',R*1.2,'#EEEAF7'))+
+        P(2,M('M1700 300 L1100 450','<circle r="'+R+'" fill="#7A2A2A" stroke="#FF6B6B" stroke-width="'+(R*.15)+'"/><text y="'+(R*.35)+'" text-anchor="middle" style="font:800 '+(R*.6)+'px Barlow Condensed;fill:#FFB3B3">TÓX</text>',2,0)+D(1100,450,R*2.4,'#C6E000',1.6)+M('M1100 450 L1500 900',B(R,'H2O'),2,2)+T(1350,1020,'tóxico → soluble',R*1.2,'#C6E000')); } },
+  golgi:{pasos:['Cara cis: llegan vesículas con proteínas desde el RE.','Las proteínas pasan de cisterna en cisterna y se modifican (glicosilación).','Cara trans: salen vesículas de secreción, lisosomas o, en plantas, material de la pared.'],
+    svg:function(R){ return P(0,[0,1,2].map(function(i){ return M('M-120 '+(380+i*150)+' L'+(260)+' '+(440+i*110),VES(R*1.2),2.2,i*.6); }).join('')+T(330,240,'CARA CIS',R*1.2,'#C6E000'))+
+        P(1,AN.brillo('M300 520 Q600 380 850 450 T1300 420','#C6E000',R*.45)+[0,1].map(function(i){ return M('M300 520 Q600 380 850 450 T1300 420','<circle r="'+(R*.7)+'" fill="#FF8A5C" stroke="#7A2A10" stroke-width="'+(R*.12)+'"/>',3,i*1.5); }).join(''))+
+        P(2,[0,1,2].map(function(i){ return M('M1300 '+(420+i*120)+' L1720 '+(250+i*220),VES(R*1.2,i===1?'rgba(224,69,138,.6)':null),2.4,i*.6); }).join('')+T(1300,140,'CARA TRANS',R*1.2,'#C6E000')); } },
+  lisosoma:{pasos:['Entra algo para digerir: alimento (fagocitosis) o un orgánulo viejo (autofagia).','Las hidrolasas ácidas lo rompen en sus piezas.','Las piezas útiles (aminoácidos, azúcares) salen a la célula; la bomba de H⁺ mantiene el pH ≈ 5.'],
+    svg:function(R){ var c=[1200,430];
+      return P(0,M('M1750 820 L'+c[0]+' '+c[1],'<rect x="'+(-R*1.6)+'" y="'+(-R*.7)+'" width="'+(R*3.2)+'" height="'+(R*1.4)+'" rx="'+(R*.7)+'" fill="#7FB04A" stroke="#2F5A10" stroke-width="'+(R*.15)+'"/>',2.6,0))+
+        P(1,D(c[0],c[1],R*4,'#FFE45C',0)+D(c[0],c[1],R*3,'#FF6B6B',.6)+T(c[0],c[1]-R*4.4,'¡DIGESTIÓN!',R*1.3,'#FFE45C'))+
+        P(2,[0,1,2,3].map(function(i){ var a=i*1.6-2.4; return M('M'+c[0]+' '+c[1]+' l'+(Math.cos(a)*600)+' '+(Math.sin(a)*500),B(R*.7,'aa'),2.4,i*.4); }).join('')+[0,1].map(function(i){ return M('M'+(380+i*120)+' 900 L'+(420+i*100)+' 450',B(R*.8,'H'),2,i*.9); }).join('')+T(400,880,'pH ≈ 5',R*1.3,'#FF7A9C')); } },
+  ribosoma:{pasos:['El ARN mensajero pasa entre las dos subunidades.','Un ARN de transferencia trae el aminoácido que pide cada codón.','Los aminoácidos se unen y la cadena de proteína sale por arriba.'],
+    svg:function(R){ return P(0,AN.brillo('M20 690 L1580 690','#FFE45C',R*.5)+M('M100 690 L1500 690',PI(R*.8,'codón','#FFE45C','#8A6A00','#3A2A00'),3.2,0))+
+        P(1,[0,1,2].map(function(i){ return M('M'+(80+i*60)+' 200 Q400 300 760 640','<path d="M0 '+(-R*1.4)+' L'+(R*.9)+' 0 L0 '+(R*1.4)+' L'+(-R*.9)+' 0Z" fill="#7FE0A0" stroke="#1F7A43" stroke-width="'+(R*.12)+'"/><circle cy="'+(-R*1.9)+'" r="'+(R*.6)+'" fill="'+['#FF6B6B','#4D96FF','#FFD93D'][i]+'"/>',2.6,i*.9); }).join('')+T(300,150,'ARNt + aminoácido',R*1.2,'#7FE0A0'))+
+        P(2,M('M900 330 Q980 200 1080 120','<g>'+cadena(0,0,5,R*.45,R*.7,-R*.3)+'</g>',2.6,0)+D(1080,170,R*2.4,'#C6E000',1)+T(1250,60,'PROTEÍNA',R*1.3,'#C6E000')); } },
+  citoesqueleto:{pasos:['Microtúbulos: la cinesina lleva vesículas por ellos, como un riel.','Microfilamentos (actina): se acortan y mueven la célula (contracción, ameboide).','Filamentos intermedios: dan resistencia y sostienen el núcleo.'],
+    svg:function(R){ return P(0,AN.brillo('M309 569 L1105 114','#FFE45C',R*.5)+[0,1].map(function(i){ return M('M309 569 L1105 114',VES(R*1.2),3,i*1.5); }).join(''))+
+        P(1,[[150,420,0],[1150,420,180],[650,90,90],[650,760,-90]].map(function(f,i){ return AN.flecha(f[0],f[1],f[2],R*3,'#FF7A59',i*.2); }).join('')+T(650,420,'ACTINA',R*1.4,'#FF7A59'))+
+        P(2,AN.halo(650,420,560,330,'#9AA8FF',1.04,1.8)+T(650,800,'RESISTENCIA',R*1.3,'#9AA8FF')); } },
+  vacuola:{pasos:['La vacuola guarda agua, sales y nutrientes.','Si sobra agua, la vacuola se llena (en protozoos, la vacuola contráctil la expulsa).','En la célula animal son pequeñas y varias; en la vegetal hay una grande.'],
+    svg:function(R){ return P(0,[0,1,2].map(function(i){ return M('M'+(1700)+' '+(300+i*200)+' L1220 '+(500+i*30),B(R,['H2O','Na','K'][i]),2.4,i*.6); }).join(''))+
+        P(1,AN.halo(1220,560,340,330,'#5FD0E8',1.08,1.6)+[0,1].map(function(i){ return M('M1220 560 L'+(1700)+' '+(800+i*80),B(R,'H2O'),2,i+1); }).join(''))+
+        P(2,AN.halo(370,500,330,330,'#C6E000',1.03,2)+AN.halo(760,300,230,230,'#C6E000',1.03,2)+T(800,880,'PEQUEÑAS Y VARIAS',R*1.3,'#C6E000')); } },
+  centrosoma:{pasos:['Dos centriolos perpendiculares, cada uno con 9 tripletes de microtúbulos.','Antes de dividirse, el centrosoma se duplica.','Desde aquí crecen los microtúbulos del huso mitótico (división astral).'],
+    svg:function(R){ return P(0,D(500,470,R*5,'#FFC800',0)+D(1150,450,R*5,'#FFC800',.7)+T(500,900,'9 × 3',R*1.6,'#FFC800'))+
+        P(1,AN.flecha(820,460,180,R*4,'#FFC800',0)+AN.flecha(830,460,0,R*4,'#FFC800',0)+T(820,120,'SE DUPLICA',R*1.4,'#FFC800'))+
+        P(2,[0,1,2,3,4,5,6,7,8,9].map(function(i){ var a=i*Math.PI/5; return AN.brillo('M800 470 L'+(800+Math.cos(a)*800)+' '+(470+Math.sin(a)*480),'#FFE45C',R*.35); }).join('')+T(800,60,'HUSO MITÓTICO',R*1.4,'#FFE45C')); } },
+  peroxisoma:{pasos:['Entran ácidos grasos y otras moléculas para oxidar: se forma peróxido (H₂O₂).','La catalasa (el cristal) destruye el H₂O₂: 2 H₂O₂ → 2 H₂O + O₂.'],
+    svg:function(R){ var c=[450,650]; return P(0,[0,1].map(function(i){ return M('M1300 '+(400+i*400)+' L'+c[0]+' '+c[1],B(R,'gr'),2.4,i*.8); }).join('')+[0,1].map(function(i){ return M('M700 '+(400+i*400)+' L'+c[0]+' '+c[1],B(R,'H2O2'),2,i*.8+1); }).join(''))+
+      P(1,D(c[0],c[1],R*5,'#9AA8FF',0)+M('M'+c[0]+' '+c[1]+' L1000 300',B(R,'H2O'),2.2,.6)+M('M'+c[0]+' '+c[1]+' L1000 1000',B(R,'H2O'),2.2,1.2)+M('M'+c[0]+' '+c[1]+' L-50 200',B(R,'O2'),2.2,1.6)+T(c[0],c[1]-R*5.2,'CATALASA',R*1.4,'#C6E000')); } },
+  vesicula:{pasos:['La vesícula brota de la cara trans del Golgi con proteínas.','Viaja por el citoplasma (sobre los microtúbulos).','Exocitosis: se fusiona con la membrana y suelta su contenido afuera.'],
+    svg:function(R){ return P(0,D(450,450,R*3,'#C6E000',0)+D(300,400,R*2.4,'#7FE0A0',.6))+
+      P(1,AN.brillo('M450 460 L1250 450','#FFE45C',R*.4)+M('M450 460 L1250 450',VES(R*2),3,0))+
+      P(2,D(1300,450,R*3,'#FFE45C',0)+[0,1,2,3,4].map(function(i){ return M('M1300 450 l'+(300+i*20)+' '+(i*90-180),'<circle r="'+(R*.5)+'" fill="'+['#FF8A5C','#B07CFF','#FFD93D','#FF6B6B','#7FE0A0'][i]+'"/>',2,i*.3); }).join('')+T(1350,880,'EXOCITOSIS',R*1.3,'#C6E000')); } },
+  membrana:{pasos:['Difusión: el agua y algunos iones pasan solos por las proteínas canal (sin ATP).','Bomba Na⁺/K⁺: gasta 1 ATP para sacar 3 Na⁺ y meter 2 K⁺ (transporte activo).','El glucocáliz reconoce señales y otras células.'],
+    svg:function(R){ return P(0,[0,1,2].map(function(i){ return M('M1040 60 L1040 820',B(R*.8,i===1?'Na':'H2O'),2.4,i*.8); }).join('')+T(1040,40,'canal',R*1.1,'#C6E000'))+
+      P(1,M('M1420 900 L1300 600',B(R,'ATP'),2,0)+[0,1,2].map(function(i){ return M('M1300 680 L'+(1250+i*40)+' 0',B(R*.8,'Na'),2.4,i*.5+.6); }).join('')+[0,1].map(function(i){ return M('M1340 20 L'+(1300+i*30)+' 860',B(R*.8,'K'),2.4,i*.6+1.4); }).join('')+T(1300,40,'3 Na⁺ afuera · 2 K⁺ adentro',R*1.1,'#B79CFF'))+
+      P(2,[[200,120],[800,70],[1100,100]].map(function(c,i){ return D(c[0],c[1],R*2.6,'#7FE0A0',i*.4); }).join('')+M('M-80 -40 L790 80','<path d="M0 '+(-R)+' L'+R+' 0 L0 '+R+' L'+(-R)+' 0Z" fill="#FFD93D" stroke="#7A5000" stroke-width="'+(R*.12)+'"/>',2.4,0)+T(800,-20,'RECONOCIMIENTO',R*1.2,'#7FE0A0')); } },
+  'membrana-vegetal':{pasos:['Ósmosis: el agua entra por las acuaporinas y llena la vacuola.','La bomba de protones gasta ATP para sacar H⁺ (crea el gradiente que usa la planta).','Exocitosis: lleva a la pared la pectina y la hemicelulosa hechas en el Golgi.'],
+    svg:function(R){ return P(0,[0,1,2].map(function(i){ return M('M1050 120 L1050 820',B(R*.85,'H2O'),2.4,i*.8); }).join('')+T(1050,880,'acuaporina',R*1.1,'#5FD0E8'))+
+      P(1,M('M900 900 L790 620',B(R,'ATP'),2,0)+[0,1,2].map(function(i){ return M('M790 640 L'+(760+i*40)+' 120',B(R*.8,'H'),2.2,i*.5+.6); }).join('')+T(790,890,'bomba de H⁺',R*1.1,'#FF7A9C'))+
+      P(2,[0,1,2].map(function(i){ return M('M'+(400+i*250)+' 900 L'+(450+i*250)+' 160',VES(R*1.1,'rgba(150,230,140,.6)'),2.6,i*.6); }).join('')+AN.brillo('M150 140 L1400 90','#C6F28A',R*.45)+T(800,40,'→ PARED',R*1.2,'#C6F28A')); } },
+  'citoesqueleto-vegetal':{pasos:['Ciclosis: los microfilamentos de actina mueven el citoplasma y llevan a los cloroplastos.','Los cloroplastos se acomodan según la luz.','Los microtúbulos guían cómo se ordena la celulosa de la pared y forman el huso (sin centriolos).'],
+    svg:function(R){ return P(0,AN.brillo('M360 776 L1480 516','#FF7A59',R*.45)+[0,1].map(function(i){ return M('M360 776 L1480 516',CL(R*.9),4,i*2); }).join(''))+
+      P(1,[0,1,2].map(function(i){ return AN.rayo(500+i*350,-140,620+i*300,560,i*.2,R*.35); }).join('')+M('M360 776 L760 682',CL(R),2.4,0)+T(800,-40,'LUZ',R*1.4,'#FFE45C'))+
+      P(2,AN.brillo('M820 560 L1380 380','#FFE45C',R*.45)+M('M820 560 L1380 380',VES(R*1.1),2.6,0)+AN.brillo('M150 150 L1400 100','#C6F28A',R*.4)+T(800,40,'CELULOSA ORDENADA',R*1.2,'#C6F28A')); } },
+  pared:{pasos:['La membrana fabrica la celulosa (celulosa sintasa) y la deja en capas.','El Golgi manda pectina para la lámina media, que pega las células vecinas.','La turgencia empuja desde adentro y la pared resiste: así la planta está firme.'],
+    svg:function(R){ return P(0,[0,1,2,3].map(function(i){ return M('M1490 '+(300+i*140)+' L1150 '+(320+i*130),'<rect x="'+(-R*1.2)+'" y="'+(-R*.25)+'" width="'+(R*2.4)+'" height="'+(R*.5)+'" rx="'+(R*.25)+'" fill="#7FE0C0" stroke="#1F7A5A" stroke-width="'+(R*.1)+'"/>',2.2,i*.4); }).join('')+T(1450,180,'celulosa',R*1.2,'#7FE0C0'))+
+      P(1,AN.brillo('M720 300 L720 820','#E7F2A0',R*.6)+[0,1].map(function(i){ return M('M'+(1700)+' '+(500+i*200)+' L740 '+(500+i*120),VES(R*1.1,'rgba(230,240,160,.6)'),2.8,i*1.2); }).join('')+T(720,240,'pectina',R*1.2,'#E7F2A0'))+
+      P(2,[0,1,2].map(function(i){ return AN.flecha(1650,350+i*180,180,R*4,'#5FD0E8',i*.25); }).join('')+T(1150,960,'TURGENCIA',R*1.4,'#5FD0E8')); } },
+  plasmodesmos:{pasos:['El canal une el citoplasma de dos células vecinas a través de la pared.','Pasan agua, iones y azúcares de una célula a otra.','También pasan ARN, proteínas y señales; el desmotúbulo une el RE de ambas.'],
+    svg:function(R){ var C='M260 225 L560 330 L900 460 L1190 565'; return P(0,AN.brillo(C,'#E7D23A',R*.5)+T(720,250,'CANAL',R*1.3,'#E7D23A'))+
+      P(1,[0,1,2].map(function(i){ return M(C,i===1?AN.hexa(R*1.1,'GLU'):B(R*.85,'H2O'),3,i*1); }).join(''))+
+      P(2,[0,1].map(function(i){ return M('M1190 565 L900 460 L560 330 L260 225',PI(R*.8,i?'señal':'ARN','#FFE45C','#8A6A00','#3A2A00'),3,i*1.5); }).join('')+AN.brillo(C,'#FF9AD5',R*.25)); } },
+  'vacuola-central':{pasos:['El agua entra por el tonoplasto (acuaporinas).','La vacuola se llena y empuja contra la pared: turgencia.','En medio salado pierde agua y se encoge: plasmólisis.','Guarda pigmentos (antocianinas) y desechos.'],
+    svg:function(R){ var c=[800,480]; return P(0,[[200,747],[940,767],[1500,300],[800,40]].map(function(p,i){ return M('M'+(p[0]+(p[0]-c[0])*.4)+' '+(p[1]+(p[1]-c[1])*.4)+' L'+c[0]+' '+c[1],B(R,'H2O'),2.4,i*.5); }).join(''))+
+      P(1,AN.halo(c[0],c[1],700,420,'#5FD0E8',1.07,1.8)+[0,90,180,270].map(function(a,i){ return AN.flecha(c[0]+Math.cos(a*Math.PI/180)*560,c[1]+Math.sin(a*Math.PI/180)*320,a,R*3,'#5FD0E8',i*.2); }).join('')+T(c[0],c[1],'TURGENCIA',R*1.6,'#5FD0E8'))+
+      P(2,AN.halo(c[0],c[1],700,420,'#FF7A9C',.75,2.2)+[0,1,2].map(function(i){ return M('M'+c[0]+' '+c[1]+' L'+(1700)+' '+(200+i*300),B(R,'H2O'),2.2,i*.6); }).join('')+T(c[0],c[1],'PLASMÓLISIS',R*1.6,'#FF7A9C'))+
+      P(3,[[640,720],[900,420],[1150,350],[520,500]].map(function(p,i){ return D(p[0],p[1],R*2,'#B07CFF',i*.35); }).join('')+T(c[0],60,'ANTOCIANINAS',R*1.3,'#B07CFF')); } },
+  amiloplasto:{pasos:['Entra la glucosa que fabricaron las hojas.','Se une en cadenas y forma capas de almidón en los granos.','Cuando la planta necesita energía, el almidón se rompe y sale glucosa.'],
+    svg:function(R){ var g=[[440,560],[1013,360],[667,227],[1333,307],[1067,587]]; return P(0,[0,1,2].map(function(i){ return M('M'+(1750)+' '+(200+i*300)+' L'+g[i+2][0]+' '+g[i+2][1],AN.hexa(R*1.1,'GLU'),2.4,i*.6); }).join(''))+
+      P(1,g.map(function(p,i){ return D(p[0],p[1],R*3.2,'#FFFFFF',i*.3); }).join('')+T(800,960,'ALMIDÓN',R*1.4,'#FFFFFF'))+
+      P(2,g.slice(0,3).map(function(p,i){ return M('M'+p[0]+' '+p[1]+' L'+(p[0]-200)+' -120',AN.hexa(R*1.1,'GLU'),2.4,i*.6); }).join('')+T(1100,950,'→ energía',R*1.3,'#FFC800')); } },
+  leucoplasto:{pasos:['Entran azúcares, aminoácidos o ácidos grasos.','Se guardan como reserva: almidón, proteínas o aceites.','Si le da la luz, el leucoplasto puede volverse cloroplasto.'],
+    svg:function(R){ return P(0,[0,1,2].map(function(i){ return M('M1750 '+(250+i*250)+' L'+(1040-i*300)+' '+(600-i*150),i===0?AN.hexa(R*1.1,'GLU'):B(R*.9,i===1?'aa':'gr'),2.4,i*.6); }).join(''))+
+      P(1,[[1040,600],[1027,133],[560,227],[960,360],[440,600]].map(function(p,i){ return D(p[0],p[1],R*3,'#FFF6D0',i*.3); }).join('')+T(800,960,'RESERVA',R*1.4,'#FFF6D0'))+
+      P(2,[0,1,2].map(function(i){ return AN.rayo(300+i*450,-150,400+i*420,300,i*.2,R*.35); }).join('')+AN.halo(800,490,760,450,'#3FAE2A',1.02,1.8)+T(800,520,'→ CLOROPLASTO',R*1.6,'#6FDC4F')); } },
+  cromoplasto:{pasos:['Al madurar el fruto, el cloroplasto pierde la clorofila y se vuelve cromoplasto.','Acumula carotenoides en cristales (β-caroteno, licopeno).','Su color naranja o rojo atrae a polinizadores y a los animales que dispersan semillas.'],
+    svg:function(R){ return P(0,AN.halo(800,500,720,440,'#3FAE2A',1.02,2)+T(800,500,'CLOROPLASTO → CROMOPLASTO',R*1.3,'#FFC27A'))+
+      P(1,[[747,640],[1160,373],[600,400],[950,550],[1300,500]].map(function(p,i){ return D(p[0],p[1],R*2.4,i%2?'#FF4A3A':'#FF9A2A',i*.3); }).join(''))+
+      P(2,[0,1,2].map(function(i){ return AN.rayo(200+i*500,-160,500+i*350,420,i*.2,R*.35); }).join('')+[0,1,2].map(function(i){ return '<line x1="'+(600+i*300)+'" y1="420" x2="'+(500+i*500)+'" y2="-160" stroke="#FF8A2A" stroke-width="'+(R*.35)+'" stroke-linecap="round" stroke-dasharray="'+(R*1.4)+' '+(R*1.8)+'"><animate attributeName="stroke-dashoffset" from="0" to="'+(R*3.2)+'" dur=".7s" repeatCount="indefinite"/></line>'; }).join('')+T(800,960,'COLOR QUE ATRAE',R*1.4,'#FF9A2A')); } },
+  glioxisoma:{pasos:['La gota de grasa de la semilla suelta ácidos grasos.','Entran al glioxisoma: β-oxidación y ciclo del glioxilato.','Sale azúcar (vía succinato) para que la semilla pueda germinar.','La catalasa destruye el H₂O₂ que se forma.'],
+    svg:function(R){ var c=[430,420]; return P(0,[0,1,2].map(function(i){ return M('M1000 '+(350+i*100)+' L'+c[0]+' '+c[1],B(R*.9,'gr'),2.4,i*.6); }).join('')+AN.halo(1240,440,360,360,'#FFC800',.94,2))+
+      P(1,AN.ciclo(c[0],c[1],R*3.3,'#C6E000',['GLIOXILATO','ciclo']))+
+      P(2,AN.ciclo(c[0],c[1],R*3.3,'#C6E000',['GLIOXILATO','ciclo'])+[0,1].map(function(i){ return M('M'+c[0]+' '+c[1]+' L'+(i?-80:300)+' '+(i?950:-140),AN.hexa(R*1.1,'GLU'),2.4,i*1); }).join('')+T(430,940,'→ GERMINACIÓN',R*1.3,'#FFC800'))+
+      P(3,D(560,287,R*3,'#9AA8FF',0)+M('M120 120 L560 287',B(R,'H2O2'),2,0)+M('M560 287 L900 -60',B(R,'O2'),2,1.4)); } }
+  };
+  for(var k in A) ANIM[k]=A[k];
+})();
+
 var ANT=null, ANON=false;
 function animar(id,on){ var det=document.getElementById('det'), vis=det.querySelector('.d-vis'), A=ANIM[id], g=det.querySelector('#anim'); if(!A||!g) return;
   clearInterval(ANT); ANON=on; vis.classList.toggle('anim-on',on);
@@ -641,9 +762,10 @@ var TAB=new URLSearchParams(location.search).get('tab')||'partes';
 function abrir(id){
   var o=O[id], D=DET[id]||{b:[0,0,1,1],p:[]}, b=D.b, cw=b[2]-b[0], ch=b[3]-b[1], m=Math.max(cw,ch)*.12, IL=DIL[id];
   if(IL){ D={p:IL.p}; b=[0,0,IL.w,IL.h]; cw=IL.w; ch=IL.h; m=Math.max(cw,ch)*.06; }
+  var AK=IL?(IL.img||id):'', AA=ANIM[AK];
   var vb=(b[0]-m)+' '+(b[1]-m)+' '+(cw+2*m)+' '+(ch+2*m), u=Math.max(cw,ch)/420;
   var vis=IL?'<g class="d-ilus"><image href="assets/laboratorio/detalle-'+(IL.img||id)+'.webp" width="'+IL.w+'" height="'+IL.h+'"/>'+
-    D.p.map(function(p){ return '<g class="mk" transform="translate('+p[1]+' '+p[2]+')"><circle class="mk-onda" r="'+13*u+'" fill="none" stroke="#C6E000" stroke-width="'+2*u+'"/><circle r="'+13*u+'" fill="#C6E000" stroke="#151A03" stroke-width="'+2.5*u+'"/><text y="'+5*u+'" text-anchor="middle" style="font:800 '+15*u+'px Barlow Condensed;fill:#151A03">'+p[0]+'</text></g>'; }).join('')+(ANIM[id]?'<g id="anim" style="display:none">'+ANIM[id].svg()+'</g>':'')+'</g>'
+    D.p.map(function(p){ return '<g class="mk" transform="translate('+p[1]+' '+p[2]+')"><circle class="mk-onda" r="'+13*u+'" fill="none" stroke="#C6E000" stroke-width="'+2*u+'"/><circle r="'+13*u+'" fill="#C6E000" stroke="#151A03" stroke-width="'+2.5*u+'"/><text y="'+5*u+'" text-anchor="middle" style="font:800 '+15*u+'px Barlow Condensed;fill:#151A03">'+p[0]+'</text></g>'; }).join('')+(AA?'<g id="anim" style="display:none">'+AA.svg(Math.max(IL.w,IL.h)/34)+'</g>':'')+'</g>'
   :'<defs><clipPath id="cDet"><rect x="'+(b[0]-m)+'" y="'+(b[1]-m)+'" width="'+(cw+2*m)+'" height="'+(ch+2*m)+'"/></clipPath></defs>'+
     '<g clip-path="url(#cDet)"><image href="'+IMG+'" width="'+IW+'" height="'+IH+'"/>'+
     '<path d="'+(F[id]||'')+'" fill="none" stroke="#C6E000" stroke-width="'+(id==='membrana'?3*u:2.2*u)+'" stroke-opacity=".9" class="det-borde"/>'+
@@ -663,7 +785,7 @@ function abrir(id){
   var TODO=ORDEN.concat(EXTRA), i=TODO.indexOf(id), sig=TODO[(i+1)%TODO.length];
   var det=document.getElementById('det');
   det.innerHTML='<div class="d-box"><div class="d-vis"><div class="grid-bg"></div><svg viewBox="'+vb+'" preserveAspectRatio="xMidYMid meet">'+vis+'</svg>'+
-    '<div class="d-cab"><span class="pill">'+(IL?'Ilustración 3D':'Vista ampliada')+'</span>'+(IL&&ANIM[id]?'<button class="pill an-btn">▶ Ver cómo funciona</button>':'')+(id==='mitocondria'&&!IL?'<span class="pill" style="color:#FFC800;border-color:rgba(255,200,0,.4);background:rgba(255,200,0,.1)">Animación: ATP</span>':'')+'</div>'+(IL&&ANIM[id]?'<div class="an-cap" hidden></div>':'')+'</div>'+
+    '<div class="d-cab"><span class="pill">'+(IL?'Ilustración 3D':'Vista ampliada')+'</span>'+(AA?'<button class="pill an-btn">▶ Ver cómo funciona</button>':'')+(id==='mitocondria'&&!IL?'<span class="pill" style="color:#FFC800;border-color:rgba(255,200,0,.4);background:rgba(255,200,0,.1)">Animación: ATP</span>':'')+'</div>'+(AA?'<div class="an-cap" hidden></div>':'')+'</div>'+
     '<div class="d-inf"><header><div><h2>'+o.n+'</h2><span class="lat">'+o.lat+'</span></div><button class="x" id="dX"><svg><use href="#i-x"/></svg></button></header>'+
     '<div class="ficha"><div><small>'+o.f[0]+'</small><b>'+o.f[1]+'</b></div><div><small>Membrana</small><b>'+o.m+'</b></div><div><small>Está en</small><b>'+(o.en||'Animal y vegetal')+'</b></div></div>'+
     '<div class="tabs">'+Object.keys(tabs).map(function(k){ return '<button data-t="'+k+'" class="'+(k===TAB?'on':'')+'">'+tabs[k]+'</button>'; }).join('')+'</div>'+cuerpo+
@@ -672,7 +794,7 @@ function abrir(id){
   try{ var V=JSON.parse(localStorage.getItem('mc_lab_celula')||'[]'); if(V.indexOf(id)<0){ V.push(id); localStorage.setItem('mc_lab_celula',JSON.stringify(V)); } localStorage.setItem('mc_lab_ultimo','celula'); }catch(e){}
   det.classList.add('on');
   det.querySelectorAll('.tabs button').forEach(function(bt){ bt.onclick=function(){ TAB=bt.dataset.t; abrir(id); }; });
-  var anb=det.querySelector('.an-btn'); if(anb){ anb.onclick=function(){ animar(id,!ANON); }; if(ANON) animar(id,true); } else { clearInterval(ANT); ANON=false; }
+  var anb=det.querySelector('.an-btn'); if(anb){ anb.onclick=function(){ animar(AK,!ANON); }; if(ANON) animar(AK,true); } else { clearInterval(ANT); ANON=false; }
   document.getElementById('dVer').onclick=function(){ det.classList.remove('on'); clearInterval(ANT); ANON=false; if(window.MCLabSonido) MCLabSonido.tocar('cerrar'); };
   document.getElementById('dX').onclick=function(){ det.classList.remove('on'); clearInterval(ANT); ANON=false; if(window.MCLabSonido) MCLabSonido.tocar('cerrar'); quitarFoco(); volar(BASE.x+BASE.w/2,BASE.y+BASE.h/2,BASE.w,600); };
   document.getElementById('dSig').onclick=function(){ det.classList.remove('on'); clearInterval(ANT); ANON=false; ir(sig); };
