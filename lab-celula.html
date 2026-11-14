@@ -28,6 +28,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .etq rect{fill:rgba(10,7,26,.82);stroke:rgba(198,224,0,.55);stroke-width:1.2}
 .etq line{stroke:rgba(198,224,0,.7);stroke-width:1.4}
 .etq circle{fill:#C6E000}
+.rib-hit{fill:transparent;cursor:pointer;pointer-events:all}
 .sin-nombres .etq{opacity:0}
 .etq-n circle.pin{fill:#C6E000;stroke:#151A03;stroke-width:5}.etq-n text.pin-t{fill:#151A03;font-weight:800}
 .etq-n rect{fill:rgba(10,7,26,.86)}
@@ -350,7 +351,7 @@ var DET={
   membrana:{b:[30,820,760,1720],p:[[1,520,1440],[3,300,1560],[5,140,1160]]}
 };
 /* etiquetas en la vista general: [x,y del orgánulo, x,y de la etiqueta] */
-var ETQ={membrana:[200,1250,160,1480],nucleo:[1450,330,2150,70],mitocondria:[520,900,250,640],rer:[1000,560,880,120],rel:[700,330,360,180],golgi:[1700,950,2150,1430],lisosoma:[1650,1212,1880,1580],vesicula:[1470,1215,1380,1560],peroxisoma:[455,840,170,780],centrosoma:[700,1000,720,1540]};
+var ETQ={membrana:[200,1250,160,1480],nucleo:[1450,330,2150,70],mitocondria:[520,900,250,640],rer:[1000,560,880,120],rel:[700,330,360,180],golgi:[1700,950,2150,1430],lisosoma:[1650,1212,1880,1580],vesicula:[1470,1215,1380,1560],peroxisoma:[455,840,170,780],centrosoma:[700,1000,720,1540],ribosoma:[2227,589,2620,470]};
 O.rer.partes=[['Cisternas','Sacos aplanados comunicados.'],['Ribosomas adheridos','Los puntitos rojos: fabrican proteínas.'],['Lumen','Las proteínas se pliegan y glicosilan.']];
 O.membrana.partes.push(['Microvellosidades','Pliegues que aumentan la superficie de absorción.']);
 O.centrosoma.n='Centriolos';O.centrosoma.lat='Centrosoma · 9 tripletes';
@@ -508,12 +509,13 @@ function etiquetas(){
         '<circle class="pin" cx="'+(x-w/2+26*Kp)+'" cy="'+q[1]+'" r="'+(20*Kp)+'"/><text class="pin-t" x="'+(x-w/2+26*Kp)+'" y="'+(q[1]+8*Kp)+'" text-anchor="middle" style="font-size:'+(23*Kp)+'px">'+num+'</text>'+
         '<text x="'+(x-w/2+56*Kp)+'" y="'+(q[1]+10*Kp)+'" style="font-size:'+(27*Kp)+'px">'+nm+'</text></g>'; });
     return s; }
-  ORDEN.forEach(function(id){ var e0=ETQ[id]; if(pos[id]) e0=[e0[0],e0[1],pos[id][0],pos[id][1]]; var a1=rp(e0[0],e0[1]), a2=rp(e0[2],e0[3]), e=[a1[0],a1[1],a2[0],a2[1]], n=O[id].n.replace('Retículo endoplasmático','R. E.'), w=(n.length*15+40)*K;
+  ORDEN.concat(ETQ.ribosoma&&ORDEN.indexOf('ribosoma')<0?['ribosoma']:[]).forEach(function(id){ var e0=ETQ[id]; if(pos[id]) e0=[e0[0],e0[1],pos[id][0],pos[id][1]]; var a1=rp(e0[0],e0[1]), a2=rp(e0[2],e0[3]), e=[a1[0],a1[1],a2[0],a2[1]], n=O[id].n.replace('Retículo endoplasmático','R. E.'), w=(n.length*15+40)*K;
     /* que la etiqueta no se salga de la pantalla (celular vertical) */
     var B=caja();
     e[2]=Math.max(B.x+w/2+8,Math.min(B.x+B.w-w/2-8,e[2])); e[3]=Math.max(B.y+30*K,Math.min(B.y+B.h-30*K,e[3]));
     s+='<g class="etq"><line x1="'+e[0]+'" y1="'+e[1]+'" x2="'+e[2]+'" y2="'+e[3]+'"/><circle cx="'+e[0]+'" cy="'+e[1]+'" r="7"/>'+
-       '<rect x="'+(e[2]-w/2)+'" y="'+(e[3]-26*K)+'" width="'+w+'" height="'+52*K+'" rx="'+14*K+'"/><text x="'+e[2]+'" y="'+(e[3]+10*K)+'" text-anchor="middle" style="font-size:'+28*K+'px">'+n+'</text></g>'; });
+       '<rect x="'+(e[2]-w/2)+'" y="'+(e[3]-26*K)+'" width="'+w+'" height="'+52*K+'" rx="'+14*K+'"/><text x="'+e[2]+'" y="'+(e[3]+10*K)+'" text-anchor="middle" style="font-size:'+28*K+'px">'+n+'</text></g>';
+    if(id==='ribosoma') s+='<circle class="rib-hit" cx="'+e[0]+'" cy="'+e[1]+'" r="'+22*K+'"/>'; });
   return s;
 }
 function burbujasFoto(cajas){ /* O₂ y glucosa que salen de cada cloroplasto */
@@ -584,7 +586,7 @@ function irA(id,abrirDet){ seleccionar(id); if(window.MCLabSonido) MCLabSonido.t
   var b=DET[id].b, c=rp((b[0]+b[2])/2,(b[1]+b[3])/2), bw=b[2]-b[0], bh=b[3]-b[1]; if(ROT){ var t=bw; bw=bh; bh=t; }
   var w=Math.max(bw,bh*BASE.w/BASE.h)*1.9;
   volar(c[0],c[1],Math.max(380,Math.min(BASE.w,w)),800,function(){ if(abrirDet) setTimeout(function(){ abrir(id); },250); }); }
-svg.addEventListener('click',function(e){ if(movio) return; var g=e.target.closest('.org'); if(g) irA(g.getAttribute('data-id'),true); else if(svg.classList.contains('cel-foco')) quitarFoco(); });
+svg.addEventListener('click',function(e){ if(movio) return; if(e.target.closest('.rib-hit')){ ir('ribosoma'); return; } var g=e.target.closest('.org'); if(g) irA(g.getAttribute('data-id'),true); else if(svg.classList.contains('cel-foco')) quitarFoco(); });
 document.getElementById('chips').innerHTML=ORDEN.concat(EXTRA).map(function(id){ return '<button class="chip glass" data-id="'+id+'"><i style="background:'+O[id].c+'"></i>'+O[id].n.replace('Retículo endoplasmático','Retículo')+'</button>'; }).join('');
 function ir(id){ if(EXTRA.indexOf(id)>=0){ quitarFoco(); document.querySelectorAll('.chip').forEach(function(c){ c.classList.toggle('on',c.dataset.id===id); }); abrir(id); } else irA(id,true); }
 document.querySelectorAll('.chip').forEach(function(c){ c.onclick=function(){ ir(c.dataset.id); }; });

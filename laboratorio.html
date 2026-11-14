@@ -124,7 +124,7 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
 .hoja .grande{display:flex;align-items:center;gap:10px;margin:6px 0 4px}
 .hoja .grande svg{width:58px;height:58px;filter:drop-shadow(0 0 14px #2FA8FF)}
 .hoja .grande b{font:800 44px/1 "Sora"}
-.hoja h3{margin:0;font:800 22px/1.2 "Sora"}
+.hoja h3{margin:0;padding-right:44px;font:800 22px/1.2 "Sora"}
 .hoja p{margin:4px 0 0;color:var(--dim);font-weight:700}
 .hoja .lista{margin:16px 0;display:grid;gap:8px}
 .hoja .fila2{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:var(--card);border:1px solid var(--borde)}
@@ -242,7 +242,7 @@ var CUR=[
  ['Química','#3AB4F0','rgba(58,180,240,.22)',[['tabla','Tabla periódica interactiva','Toca cada elemento','pronto'],['atomo','Configuración electrónica','Llena los orbitales','pronto'],['balanceo','Balanceo de ecuaciones','Equilibra la balanza','pronto']]],
  ['Física','#FF9600','rgba(255,150,0,.22)',[['parabolico','Tiro parabólico','Cambia ángulo y velocidad','pronto'],['plano','Plano inclinado','Fuerzas y fricción','pronto'],['mru','MRU y MRUV','Gráficas en vivo','pronto'],['circuito','Circuitos eléctricos','Serie y paralelo','pronto'],['optica','Lentes y espejos','Arma la imagen','pronto']]],
  ['Anatomía','#E0458A','rgba(224,69,138,.22)',[['corazon','Corazón','Circulación mayor y menor','pronto'],['neurona','Neurona y sinapsis','El impulso nervioso','pronto'],['ojo','El ojo','Cómo se forma la imagen','pronto']]],
- ['Matemática','#9B6BFF','rgba(155,107,255,.22)',[['funcion','Funciones','Mueve los parámetros','pronto'],['trigo','Circunferencia trigonométrica','Seno y coseno girando','pronto'],['geo','Triángulos notables','Arrastra los vértices','pronto']]]
+ ['Matemática','#9B6BFF','rgba(155,107,255,.22)',[['funcion','Funciones','Lineal, cuadrática, valor absoluto, raíz y exponencial','listo','lab-funciones.html'],['trigo','Circunferencia trigonométrica','Seno, coseno y tangente girando','listo','lab-trigo.html'],['geo','Triángulos notables','37°, 53°, 30°, 60°, 45° y más','listo','lab-triangulos.html']]]
 ];
 /* Precios por si el servidor no respondió (los de verdad: tabla lab_sims) */
 var PRECIO0={celula:[60,1],tabla:[40,1],parabolico:[40,1],corazon:[60,1],funcion:[40,1],adn:[60,0]};
@@ -351,10 +351,15 @@ function hoja(sim){
 }
 document.getElementById('bRay').onclick=function(){ hoja(null); };
 
+/* Volver desde un simulador cerrado: laboratorio.html?abrir=<sim> abre su ventana */
+var qAb=new URLSearchParams(location.search).get('abrir');
+function verAbrir(){ if(qAb&&NOMBRE[qAb]&&!abierto(qAb)&&!fondo.classList.contains('on')) hoja(qAb); qAb=null; }
+if(qAb&&!R) verAbrir();
+
 /* Trae los rayos (y cobra lo ganado estudiando) */
 if(R) R.estado().then(function(s){
   if(!s||s.error) return;
-  ST=s; pintar();
+  ST=s; pintar(); verAbrir();
   if(s.nuevos>0) setTimeout(function(){ if(SN) SN.tocar('bien'); aviso('Ganaste <b>+'+s.nuevos+' de energía</b> estudiando'); },600);
 });
 </script>

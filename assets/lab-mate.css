@@ -1,0 +1,82 @@
+/* Modo Cachimbo · Laboratorio · Simuladores de Matemática (lab-funciones, lab-trigo, lab-triangulos)
+   Diseño común: barra arriba, plano a la izquierda (arriba en celular) y ficha a la derecha. */
+:root{--bg:#06040F;--card:#151127;--card2:#1D1834;--borde:#2A2346;--lima:#C6E000;--lima-osc:#8fa300;--tx:#EEEAF7;--dim:#A99FC8;--faint:#6F6690;--oro:#FFC800;--azul:#3AB4F0;--rosa:#FF5C8A;--mora:#9B6BFF;--vidrio:rgba(21,17,39,.72)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+html{background:#06040F}
+body{background:radial-gradient(120% 70% at 30% 0%,#160E36,#06040F 60%) #06040F;color:var(--tx);font:700 15px/1.45 "Nunito",system-ui,sans-serif;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+a{color:inherit;text-decoration:none}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.glass{background:var(--vidrio);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.08);border-radius:16px}
+.app{height:100%;display:grid;grid-template-rows:auto 1fr;padding:max(14px,env(safe-area-inset-top)) 16px max(14px,env(safe-area-inset-bottom));gap:12px}
+.top{display:flex;align-items:center;gap:10px}
+.ib{width:44px;height:44px;display:grid;place-items:center;border-radius:14px;flex:none}
+.ttl{padding:6px 14px 7px;min-width:0}
+.ttl small{display:block;font:900 10.5px/1.2 "Nunito";letter-spacing:.16em;text-transform:uppercase;color:var(--mora)}
+.ttl b{display:block;font:800 19px/1.2 "Sora",sans-serif;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp{flex:1}
+.son{color:var(--lima)}.son.off{color:var(--faint)}
+.son.off .on-l{display:none}.son:not(.off) .off-l{display:none}
+.cuerpo{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:14px;min-height:0}
+.plano{position:relative;border-radius:22px;background:#0B0820;border:1px solid var(--borde);overflow:hidden;min-height:0;touch-action:none}
+.plano>svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.zoom{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:4px;padding:5px}
+.zoom .ib{width:38px;height:38px}
+.chipv{position:absolute;left:10px;top:10px;padding:7px 12px;font:800 15px/1.2 "Sora";color:var(--lima);max-width:calc(100% - 20px)}
+.ficha{display:flex;flex-direction:column;gap:12px;min-height:0;overflow:auto;padding:2px 2px 6px;scrollbar-width:thin}
+.tipos{display:flex;flex-wrap:wrap;gap:6px}
+.tipos button{height:38px;padding:0 12px;border-radius:11px;background:var(--card);border:1px solid var(--borde);font:800 13px "Nunito";color:var(--dim)}
+.tipos button.on{background:var(--lima);border-color:var(--lima);color:#151A03}
+.caja{background:var(--card);border:1px solid var(--borde);border-radius:18px;padding:14px}
+.caja h3{margin:0 0 10px;font:900 11px/1 "Nunito";letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.desl{display:grid;grid-template-columns:34px 1fr 52px;align-items:center;gap:10px;margin:8px 0}
+.desl b{font:800 18px "Sora";text-align:center}
+.desl output{font:800 16px "Sora";text-align:right;color:var(--lima)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:28px;background:transparent;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:6px;background:linear-gradient(90deg,var(--lima) var(--p,50%),#2A2346 var(--p,50%))}
+input[type=range]::-moz-range-track{height:6px;border-radius:6px;background:linear-gradient(90deg,var(--lima) var(--p,50%),#2A2346 var(--p,50%))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;margin-top:-9px;border-radius:50%;background:#fff;border:4px solid var(--lima);box-shadow:0 2px 8px rgba(0,0,0,.5)}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;border:4px solid var(--lima)}
+.datos{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dato{background:#0E0A22;border:1px solid var(--borde);border-radius:12px;padding:8px 10px;min-width:0}
+.dato small{display:flex;align-items:center;gap:6px;font:900 10px/1.2 "Nunito";letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+.dato small i{width:9px;height:9px;border-radius:50%;flex:none}
+.dato b{display:block;margin-top:3px;font:800 15px/1.3 "Sora";overflow-wrap:anywhere}
+.dato.ancho{grid-column:1/-1}
+.clave{background:linear-gradient(135deg,rgba(255,200,0,.1),rgba(21,17,39,.6));border:1px solid rgba(255,200,0,.3);border-radius:18px;padding:14px}
+.clave b{display:flex;align-items:center;gap:7px;font:900 11px/1 "Nunito";letter-spacing:.14em;text-transform:uppercase;color:var(--oro);margin-bottom:8px}
+.clave b svg{width:16px;height:16px;fill:currentColor;stroke:none}
+.clave p{margin:0;font:700 14px/1.5 "Nunito"}
+.clave p+p{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,200,0,.2)}
+.reset{align-self:flex-start;height:38px;padding:0 14px;border-radius:11px;background:var(--card2);border:1px solid var(--borde);font:800 13px "Nunito";color:var(--dim)}
+.tipos button i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:1px}
+.tipos button.on i{box-shadow:0 0 0 2px #151A03}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chips button{height:34px;min-width:48px;padding:0 9px;border-radius:10px;background:#0E0A22;border:1px solid var(--borde);font:800 13px "Sora";color:var(--dim)}
+.chips button.on{border-color:var(--lima);color:var(--lima);background:rgba(198,224,0,.08)}
+.caja h3+.desl{margin-top:0}
+/* plano */
+.cuad{stroke:rgba(255,255,255,.05);stroke-width:1}
+.cuad.m5{stroke:rgba(255,255,255,.1)}
+.eje{stroke:rgba(238,234,247,.55);stroke-width:1.6}
+.num{fill:var(--faint);font:700 11px "Barlow Condensed",sans-serif}
+.curva{fill:none;stroke:var(--lima);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 6px rgba(198,224,0,.45))}
+.guia{stroke:rgba(255,200,0,.6);stroke-width:1.4;stroke-dasharray:5 5;fill:none}
+.pt{stroke:#0B0820;stroke-width:2.5}
+.ptx{font:800 12px "Sora",sans-serif;paint-order:stroke;stroke:#0B0820;stroke-width:4px}
+/* beta: igual que el Arcade (assets/arcade-beta.js) */
+html:not(.arcade-si) .app,html.lab-espera .app{display:none}
+.beta-aviso{display:none;max-width:420px;margin:90px auto 0;padding:30px 24px;text-align:center;border-radius:24px;background:var(--card);border:1px solid var(--borde);border-bottom:5px solid var(--lima)}
+html.arcade-no .beta-aviso{display:block}
+.beta-aviso b{display:block;font:800 26px/1.2 "Sora",sans-serif}
+.beta-aviso p{margin:10px 0 20px;color:var(--dim);font-weight:700}
+.beta-aviso a{display:inline-flex;align-items:center;height:48px;padding:0 22px;border-radius:14px;background:var(--lima);color:#151A03;font:800 15px/1 "Sora"}
+@media (max-width:860px),(orientation:portrait) and (max-width:1024px){
+  body{overflow:auto;height:auto;min-height:100%}
+  .app{height:auto;min-height:100%}
+  .cuerpo{grid-template-columns:1fr}
+  .plano{height:min(92vw,52vh);min-height:260px}
+  .ficha{overflow:visible}
+  .ttl b{font-size:16px}
+}

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<script src="assets/guardia.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06040F">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="assets/app/icono-180.png">
+<title>Triángulos notables · Laboratorio · Modo Cachimbo</title>
+<script src="assets/app.js" defer></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Nunito:wght@600;700;800;900&family=Sora:wght@700;800&display=swap">
+<link rel="stylesheet" href="assets/lab-mate.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="i-atras" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="i-son" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="on-l" d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/><path class="off-l" d="M16 9.5l5 5M21 9.5l-5 5"/></symbol>
+<symbol id="i-mas" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-menos" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+<symbol id="i-centrar" viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></symbol>
+<symbol id="i-rayo" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
+</defs></svg>
+<section class="beta-aviso"><b>Laboratorio en prueba</b><p>Los simuladores están en beta. Muy pronto se abren para todos.</p><a href="index.html">Volver al inicio</a></section>
+
+<div class="app">
+  <div class="top">
+    <a class="ib glass" href="laboratorio.html" aria-label="Volver al Laboratorio"><svg class="i"><use href="#i-atras"/></svg></a>
+    <div class="ttl glass"><small>Matemática</small><b>Triángulos notables</b></div>
+    <div class="sp"></div>
+    <button class="ib glass son" id="bSon" aria-label="Sonido"><svg class="i"><use href="#i-son"/></svg></button>
+  </div>
+  <div class="cuerpo">
+    <div class="plano" id="plano">
+      <div class="chipv glass" id="formula"></div>
+    </div>
+    <div class="ficha">
+      <div class="tipos" id="tipos"></div>
+      <div class="caja"><h3>Elige el ángulo y el valor de k</h3>
+        <div class="tipos" id="angs" style="margin-bottom:6px"></div>
+        <label class="desl"><b>k</b><input type="range" min="1" max="10" step="1" id="kk"><output id="kO"></output></label>
+      </div>
+      <div class="caja"><h3 id="hRaz"></h3><div class="datos" id="datos"></div></div>
+      <div class="clave" id="clave"></div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/mc-config.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/arcade-beta.js"></script>
+<script src="assets/lab-rayos.js"></script>
+<script src="assets/lab-sonido.js"></script>
+<script src="assets/lab-plano.js"></script>
+<script>
+MCLabPuerta('geo');
+var f=MCfmt, son=MCLabComun('geo');
+var C={op:'#FF5C8A',ad:'#3AB4F0',hip:'#C6E000',ang:'#FFC800'};
+/* Cada triángulo: cateto horizontal, cateto vertical e hipotenusa como [número, raíz] (×k).
+   El ángulo A está abajo a la derecha (frente al cateto vertical) y B arriba. */
+var T={
+ t3753:{n:'37° y 53°',A:'37°',B:'53°',a:37,h:[4,1],v:[3,1],c:[5,1],ej:'Si la hipotenusa mide 20: 5k = 20, entonces k = 4 y los catetos miden 16 y 12.'},
+ t3060:{n:'30° y 60°',A:'30°',B:'60°',a:30,h:[1,3],v:[1,1],c:[2,1],ej:'El cateto opuesto a 30° es la mitad de la hipotenusa. Si la hipotenusa mide 10, ese cateto mide 5.'},
+ t45:{n:'45° y 45°',A:'45°',B:'45°',a:45,h:[1,1],v:[1,1],c:[1,2],ej:'Los dos catetos son iguales. Si un cateto mide 6, la hipotenusa mide 6√2.'},
+ t1674:{n:'16° y 74°',A:'16°',B:'74°',a:16,h:[24,1],v:[7,1],c:[25,1],ej:'Si el cateto menor mide 14: 7k = 14, entonces k = 2 y la hipotenusa mide 50.'},
+ t532:{n:'53°/2',A:'53°/2',B:'127°/2',a:26.5,h:[2,1],v:[1,1],c:[1,5],ej:'Sale de partir 53° por la mitad. Los catetos están en razón 1 a 2.'},
+ t372:{n:'37°/2',A:'37°/2',B:'143°/2',a:18.5,h:[3,1],v:[1,1],c:[1,10],ej:'Sale de partir 37° por la mitad. Los catetos están en razón 1 a 3.'}
+};
+var tipo='t3753', sel='A', K=1;
+function mcd(a,b){ return b?mcd(b,a%b):a; }
+function lado(l){ return (l[0]===1&&l[1]>1?'':l[0])+(l[1]>1?'√'+l[1]:'')+'k'; }
+function num(l){ return l[0]*Math.sqrt(l[1])*K; }
+function valor(l){ var n=num(l), e=(l[0]*K)+(l[1]>1?'√'+l[1]:''); if(l[0]*K===1&&l[1]>1) e='√'+l[1]; return l[1]>1?e+' ≈ '+f(n):f(n); }
+function razon(a,b){ var rad=a[1]*b[1], den=b[0]*b[1], o=1, i=rad;
+  for(var d=2;d*d<=i;d++) while(i%(d*d)===0){ o*=d; i/=d*d; }
+  var nu=a[0]*o, g=mcd(nu,den); nu/=g; den/=g;
+  return (i>1?(nu===1?'':nu)+'√'+i:nu)+(den>1?'/'+den:''); }
+function pintarTipos(){
+  document.getElementById('tipos').innerHTML=Object.keys(T).map(function(k){ return '<button data-t="'+k+'" class="'+(k===tipo?'on':'')+'">'+T[k].n+'</button>'; }).join('');
+  document.querySelectorAll('#tipos button').forEach(function(b){ b.onclick=function(){ tipo=b.dataset.t; sel='A'; son('tic'); pintarTipos(); actualizar(1); }; });
+}
+var kk=document.getElementById('kk'); kk.value=K;
+kk.oninput=function(){ K=+kk.value; son('tic'); actualizar(1); };
+function elegir(s){ if(s!==sel){ sel=s; son('tic'); actualizar(); } }
+function actualizar(enc){
+  var t=T[tipo], op=sel==='A'?t.v:t.h, ad=sel==='A'?t.h:t.v, hp=t.c, an=sel==='A'?t.A:t.B;
+  document.getElementById('angs').innerHTML=['A','B'].map(function(s){ return '<button data-s="'+s+'" class="'+(s===sel?'on':'')+'">Ángulo '+t[s]+'</button>'; }).join('');
+  document.querySelectorAll('#angs button').forEach(function(b){ b.onclick=function(){ elegir(b.dataset.s); }; });
+  kk.style.setProperty('--p',((K-1)/9*100)+'%'); document.getElementById('kO').textContent=K;
+  document.getElementById('formula').textContent='Lados: '+lado(t.h)+', '+lado(t.v)+' y '+lado(t.c);
+  document.getElementById('hRaz').textContent='Razones de '+an;
+  var d=[['sen '+an,razon(op,hp),C.op],['cos '+an,razon(ad,hp),C.ad],['tg '+an,razon(op,ad),null],['cot '+an,razon(ad,op),null],['sec '+an,razon(hp,ad),null],['csc '+an,razon(hp,op),null],
+    ['Con k = '+K+' los lados miden',lado(op)+' = '+valor(op)+' · '+lado(ad)+' = '+valor(ad)+' · '+lado(hp)+' = '+valor(hp),null,1]];
+  document.getElementById('datos').innerHTML=d.map(function(x){ return '<div class="dato'+(x[3]?' ancho':'')+'"><small>'+(x[2]?'<i style="background:'+x[2]+'"></i>':'')+x[0]+'</small><b>'+x[1]+'</b></div>'; }).join('');
+  var cl=['sen = cateto opuesto / hipotenusa, cos = cateto adyacente / hipotenusa y tg = opuesto / adyacente. Toca el otro ángulo y mira cómo se cambian.',
+    'Los dos ángulos agudos suman 90°, por eso sen '+t.A+' = cos '+t.B+'.', t.ej];
+  document.getElementById('clave').innerHTML='<b><svg><use href="#i-rayo"/></svg>Cae en el examen</b>'+cl.map(function(c){ return '<p>'+c+'</p>'; }).join('');
+  if(enc) encuadre(); else P.redibujar();
+}
+var pl=document.getElementById('plano');
+function encuadre(){
+  /* el triángulo llena el plano con espacio para los nombres: izquierda 125 px, derecha 45, abajo 60, arriba 40 */
+  var t=T[tipo], H=num(t.h), V=num(t.v), b=pl.getBoundingClientRect(); if(!b.width) return;
+  var w=b.width, h=b.height, mi=125, md=45, ma=60, mr=Math.max(40,h*.12);
+  var k=Math.min((w-mi-md)/H,(h-ma-mr)/V), ex=w-mi-md-k*H, ey=h-ma-mr-k*V;
+  P.r=Math.min(w,h)/(2*k); P.cx=(w/2-mi-ex/2)/k; P.cy=(h/2-ma-ey/2)/k; P.redibujar();
+}
+var Q;
+function arco(cx,cy,r,a0,a1,rel,col,fill){ var x0=cx+r*Math.cos(a0), y0=cy-r*Math.sin(a0), x1=cx+r*Math.cos(a1), y1=cy-r*Math.sin(a1);
+  return '<path d="M'+cx+' '+cy+' L'+x0+' '+y0+' A'+r+' '+r+' 0 0 0 '+x1+' '+y1+'Z" fill="'+fill+'"/><path d="M'+x0+' '+y0+' A'+r+' '+r+' 0 0 0 '+x1+' '+y1+'" fill="none" stroke="'+col+'" stroke-width="2.4"/>'; }
+function etq(x,y,t1,t2,col,an){ return '<text class="ptx" x="'+x+'" y="'+y+'" fill="'+col+'" text-anchor="'+(an||'middle')+'" style="font-size:16px">'+t1+'</text>'+(t2?'<text class="ptx" x="'+x+'" y="'+(y+15)+'" fill="'+col+'" text-anchor="'+(an||'middle')+'" style="font-size:10.5px;opacity:.85">'+t2+'</text>':''); }
+var P=MCPlano(pl,{r:4,cx:2,cy:1.5,quieto:true,alDibujar:function(P){
+  Q=P; var t=T[tipo], H=num(t.h), V=num(t.v), s='';
+  var c=[P.X(0),P.Y(0)], a=[P.X(H),P.Y(0)], b=[P.X(0),P.Y(V)], L=Math.hypot(a[0]-b[0],a[1]-b[1]);
+  var ra=Math.min(62,L*.16), q=Math.min(22,ra*.45);
+  s+='<path d="M'+c+' L'+a+' L'+b+'Z" fill="rgba(198,224,0,.07)" stroke="none"/>';
+  s+='<path d="M'+(c[0]+q)+' '+c[1]+' V'+(c[1]-q)+' H'+c[0]+'" fill="none" stroke="#EEEAF7" stroke-width="1.6"/>';
+  var angA=Math.atan2(V,H), selA=sel==='A';
+  s+=arco(a[0],a[1],ra,Math.PI-angA,Math.PI,0,selA?C.ang:'#9B6BFF',selA?'rgba(255,200,0,.18)':'rgba(155,107,255,.12)');
+  s+=arco(b[0],b[1],ra,-Math.PI/2,-angA,0,!selA?C.ang:'#9B6BFF',!selA?'rgba(255,200,0,.18)':'rgba(155,107,255,.12)');
+  /* lados: el color dice qué es cada uno para el ángulo elegido */
+  var cH=selA?C.ad:C.op, cV=selA?C.op:C.ad, nH=selA?'Cateto adyacente':'Cateto opuesto', nV=selA?'Cateto opuesto':'Cateto adyacente';
+  s+='<line x1="'+c[0]+'" y1="'+c[1]+'" x2="'+a[0]+'" y2="'+a[1]+'" stroke="'+cH+'" stroke-width="5" stroke-linecap="round"/>';
+  s+='<line x1="'+c[0]+'" y1="'+c[1]+'" x2="'+b[0]+'" y2="'+b[1]+'" stroke="'+cV+'" stroke-width="5" stroke-linecap="round"/>';
+  s+='<line x1="'+a[0]+'" y1="'+a[1]+'" x2="'+b[0]+'" y2="'+b[1]+'" stroke="'+C.hip+'" stroke-width="5" stroke-linecap="round" style="filter:drop-shadow(0 0 6px rgba(198,224,0,.45))"/>';
+  s+=etq((c[0]+a[0])/2,c[1]+26,lado(t.h),nH,cH);
+  s+=etq(c[0]-14,(c[1]+b[1])/2,lado(t.v),nV,cV,'end');
+  var mx=(a[0]+b[0])/2, my=(a[1]+b[1])/2, nx=(b[1]-a[1])/L, ny=(a[0]-b[0])/L;
+  s+=etq(mx-nx*22+6,my-ny*22-6,lado(t.c),'Hipotenusa',C.hip,'start');
+  /* ángulos */
+  var ba=(Math.PI-angA/2), bb=(-Math.PI/2+(Math.PI/2-angA)/2);
+  s+=etq(a[0]+(ra+20)*Math.cos(ba)-4,a[1]-(ra+20)*Math.sin(ba)+5,t.A,'',selA?C.ang:'#B99CFF','end');
+  s+=etq(b[0]+(ra+18)*Math.cos(bb),b[1]-(ra+18)*Math.sin(bb)+12,t.B,'',!selA?C.ang:'#B99CFF','start');
+  [[a,'A'],[b,'B']].forEach(function(v){ var on=sel===v[1]; s+='<circle cx="'+v[0][0]+'" cy="'+v[0][1]+'" r="16" fill="'+(on?'rgba(255,200,0,.2)':'rgba(155,107,255,.15)')+'"/><circle cx="'+v[0][0]+'" cy="'+v[0][1]+'" r="7" fill="'+(on?C.ang:'#9B6BFF')+'" stroke="#0B0820" stroke-width="2.5"/>'; });
+  s+='<circle cx="'+c[0]+'" cy="'+c[1]+'" r="5" fill="#EEEAF7" stroke="#0B0820" stroke-width="2"/>';
+  return s; }});
+/* Tocar un vértice elige ese ángulo */
+pl.addEventListener('pointerdown',function(e){ var t=T[tipo], b=pl.getBoundingClientRect(), x=e.clientX-b.left, y=e.clientY-b.top;
+  var dA=Math.hypot(x-P.X(num(t.h)),y-P.Y(0)), dB=Math.hypot(x-P.X(0),y-P.Y(num(t.v)));
+  if(Math.min(dA,dB)<60) elegir(dA<dB?'A':'B'); });
+if(window.ResizeObserver) new ResizeObserver(function(){ encuadre(); }).observe(pl);
+var qt=new URLSearchParams(location.search).get('t'); if(T[qt]) tipo=qt;
+pintarTipos(); actualizar(1);
+</script>
+</body>
+</html>
