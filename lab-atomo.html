@@ -284,7 +284,7 @@ svg.insertAdjacentHTML('beforebegin','');
 var defs='<svg width="0" height="0" style="position:absolute"><defs><radialGradient id="gHalo"><stop offset="0" stop-color="#FF9600" stop-opacity=".18"/><stop offset="1" stop-color="#FF9600" stop-opacity="0"/></radialGradient></defs></svg>';
 document.body.insertAdjacentHTML('afterbegin',defs);
 if(window.ResizeObserver) new ResizeObserver(function(){ dibujar(); }).observe(pl); else addEventListener('resize',dibujar);
-pintarVer(); poner(26,0);
+pintarVer(); var zQ=+(new URLSearchParams(location.search).get('z')||0); poner(zQ>=1&&zQ<=118?zQ:26,0);
 
 /* ============ MODO RETO (assets/lab-reto.js) ============ */
 var QID=0, AZ=MCAzar, GUARDA=null;

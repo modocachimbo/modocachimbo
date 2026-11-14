@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<script src="assets/guardia.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06040F">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="assets/app/icono-180.png">
+<title>Tabla periódica · Laboratorio · Modo Cachimbo</title>
+<script src="assets/app.js" defer></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Nunito:wght@600;700;800;900&family=Sora:wght@700;800&display=swap">
+<link rel="stylesheet" href="assets/lab-mate.css">
+<style>
+.ttl small{color:#3AB4F0}
+.preg{background:linear-gradient(135deg,rgba(58,180,240,.16),rgba(21,17,39,.6));border-color:rgba(58,180,240,.35)}
+.preg small{color:#8FD6FF}
+@media (min-width:861px){.cuerpo{grid-template-columns:minmax(0,1fr) 360px}}
+/* la tabla: celdas HTML con posición absoluta */
+.plano.tabla{overflow:auto;touch-action:pan-x pan-y;scrollbar-width:thin}
+.tb{position:relative}
+.el{position:absolute;border-radius:calc(var(--t)*.14);background:#151127;border:1px solid #2A2346;padding:calc(var(--t)*.07) calc(var(--t)*.09);display:flex;flex-direction:column;justify-content:space-between;text-align:left;color:var(--c);transition:opacity .2s,transform .15s,background .2s;overflow:hidden}
+.el:hover{transform:translateY(-2px);border-color:var(--c)}
+.el i{font:800 calc(var(--t)*.17)/1 "Nunito";font-style:normal;opacity:.9}
+.el b{font:800 calc(var(--t)*.36)/1 "Sora";letter-spacing:-.02em}
+.el small{font:700 calc(var(--t)*.135)/1.05 "Nunito";color:#A99FC8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.el.mini small{display:none}.el.mini{justify-content:center;gap:1px}.el.mini b{font-size:calc(var(--t)*.4)}.el.mini i{font-size:calc(var(--t)*.22)}
+.el.lleno{background:var(--c);border-color:var(--c);color:#0B0820}.el.lleno small{color:rgba(11,8,32,.75)}
+.el.apaga{opacity:.22}
+.el.sel{box-shadow:0 0 0 3px #C6E000,0 0 18px rgba(198,224,0,.45);z-index:2}
+.el.bien{box-shadow:0 0 0 3px #58CC02,0 0 18px rgba(88,204,2,.5);z-index:2}
+.el.mal{box-shadow:0 0 0 3px #FF5C8A;z-index:2}
+.el.calor{color:#0B0820;border-color:transparent}.el.calor small{color:rgba(11,8,32,.78)}
+.el.hueco{background:transparent;border:1px dashed #3A3060;color:#A99FC8;cursor:default}
+.el.hueco:hover{transform:none}
+.cab{position:absolute;font:800 11px/1.1 "Barlow Condensed";color:#6F6690;text-align:center}
+.cab b{display:block;font-size:13px;color:#A99FC8}
+.leyenda{position:absolute;display:flex;flex-direction:column;gap:6px;font:800 12px "Nunito";color:var(--dim)}
+.barra{height:10px;border-radius:6px}
+/* ficha */
+.chipsC{display:flex;flex-wrap:wrap;gap:6px}
+.chipsC button{display:flex;align-items:center;gap:7px;height:34px;padding:0 11px;border-radius:10px;background:#0E0A22;border:1px solid var(--borde);font:800 12.5px "Nunito";color:var(--dim)}
+.chipsC button i{width:10px;height:10px;border-radius:50%}
+.chipsC button.on{border-color:var(--c);color:var(--tx);background:rgba(255,255,255,.06)}
+.busca{display:flex;gap:8px}
+.busca input{flex:1;min-width:0;height:44px;border-radius:13px;background:#0E0A22;border:1px solid var(--borde);padding:0 14px;font:800 15px "Nunito";color:var(--tx)}
+.busca input:focus{outline:none;border-color:#3AB4F0}
+select.mos{width:100%;height:44px;border-radius:13px;background:#0E0A22;border:1px solid var(--borde);padding:0 12px;font:800 14.5px "Nunito";color:var(--tx)}
+.dos{display:flex;gap:6px}.dos button{flex:1;height:40px;border-radius:12px;background:#0E0A22;border:1px solid var(--borde);font:800 13.5px "Nunito";color:var(--dim)}
+.dos button.on{background:rgba(58,180,240,.14);border-color:#3AB4F0;color:#8FD6FF}
+.tend{margin:8px 0 0;font:700 13px/1.45 "Nunito";color:var(--dim)}
+.tend b{color:#8FD6FF}
+/* detalle del elemento */
+.det .cab2{display:flex;gap:14px;align-items:center}
+.ficha-el{width:86px;height:92px;flex:none;border-radius:16px;background:var(--c);color:#0B0820;padding:8px 10px;display:flex;flex-direction:column;justify-content:space-between}
+.ficha-el i{font:800 13px "Nunito";font-style:normal}.ficha-el b{font:800 32px/1 "Sora"}.ficha-el small{font:800 10.5px "Nunito"}
+.det h2{margin:0;font:800 24px/1.1 "Sora"}
+.det .cat{margin-top:4px;font:800 13px "Nunito"}
+.det h4{margin:16px 0 6px;display:flex;align-items:center;gap:9px;font:900 11px "Nunito";letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.det h4 span{width:24px;height:24px;border-radius:8px;display:grid;place-items:center}
+.det h4 svg{width:15px;height:15px;fill:none;stroke:#0B0820;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.fila{display:flex;justify-content:space-between;gap:12px;padding:8px 2px;border-bottom:1px solid rgba(255,255,255,.05)}
+.fila span{color:var(--dim);font:700 13.5px "Nunito"}
+.fila b{font:800 14px "Sora";text-align:right}
+.fila b sup{font-size:.7em;color:#C6E000}
+.ver-sim{margin-top:12px;width:100%;height:44px;border-radius:13px;background:rgba(58,180,240,.14);border:1px solid #3AB4F0;color:#8FD6FF;font:800 14px "Sora";display:flex;align-items:center;justify-content:center;gap:8px}
+.ver-sim svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px}
+.nav button{display:flex;align-items:center;gap:8px;height:42px;padding:0 12px;border-radius:12px;background:#0E0A22;border:1px solid var(--borde);font:800 12.5px "Nunito";color:var(--dim)}
+.nav button em{font-style:normal;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#0B0820;font:800 11px "Sora"}
+.nav svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.credito{font:700 11px "Nunito";color:var(--faint)}
+/* hoja del celular */
+.hoja{position:fixed;inset:0;z-index:60;background:#0B0820;display:none;flex-direction:column}
+.hoja.on{display:flex}
+.hoja .arriba{display:flex;align-items:center;gap:10px;padding:max(12px,env(safe-area-inset-top)) 14px 10px;border-bottom:1px solid var(--borde)}
+.hoja .cuerpoH{flex:1;overflow:auto;padding:14px 16px 20px}
+.hoja .abajo{padding:8px 14px max(10px,env(safe-area-inset-bottom));border-top:1px solid var(--borde)}
+.hoja .abajo .nav{margin:0}
+html.reto-on .hoja{display:none}
+@media (max-width:860px),(orientation:portrait) and (max-width:1024px){
+  .plano.tabla{height:var(--alto,520px);min-height:0}
+  .det-fija{display:none}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="i-atras" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-son" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="on-l" d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/><path class="off-l" d="M16 9.5l5 5M21 9.5l-5 5"/></symbol>
+<symbol id="i-rayo" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
+<symbol id="i-izq" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="i-der" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+<symbol id="i-atomo" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-60 12 12)"/></symbol>
+<symbol id="i-gen" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></symbol>
+<symbol id="i-gota" viewBox="0 0 24 24"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/></symbol>
+<symbol id="i-llama" viewBox="0 0 24 24"><path d="M12 3c1 4 6 6 6 11a6 6 0 0 1-12 0c0-3 2-4 3-6 1 2 2 2 3 2 0-3-1-5 0-7z"/></symbol>
+<symbol id="i-val" viewBox="0 0 24 24"><path d="M7 12h10M12 7v10"/><circle cx="12" cy="12" r="9"/></symbol>
+</defs></svg>
+<section class="beta-aviso"><b>Laboratorio en prueba</b><p>Los simuladores están en beta. Muy pronto se abren para todos.</p><a href="index.html">Volver al inicio</a></section>
+
+<div class="app">
+  <div class="top">
+    <a class="ib glass" href="laboratorio.html" aria-label="Volver al Laboratorio"><svg class="i"><use href="#i-atras"/></svg></a>
+    <div class="ttl glass"><small>Química</small><b>Tabla periódica</b></div>
+    <div class="sp"></div>
+    <button class="ib glass son" id="bSon" aria-label="Sonido"><svg class="i"><use href="#i-son"/></svg></button>
+  </div>
+  <div class="cuerpo">
+    <div class="plano tabla" id="plano"><div class="tb" id="tb"></div></div>
+    <div class="ficha">
+      <div class="caja"><h3>Busca y mira</h3>
+        <div class="busca"><input id="iBus" placeholder="Busca: Fe, 26, hierro…" autocomplete="off"></div>
+        <h3 style="margin-top:12px">Mostrar debajo del símbolo</h3>
+        <select class="mos" id="mos"></select>
+        <div class="dos" style="margin-top:8px" id="color"><button data-c="cat">Colores por familia</button><button data-c="calor">Ver la tendencia</button></div>
+        <p class="tend" id="tend"></p>
+      </div>
+      <div class="caja det det-fija" id="detF"></div>
+      <div class="caja"><h3>Familias (toca para resaltar)</h3><div class="chipsC" id="cats"></div>
+        <h3 style="margin-top:12px">Bloque y estado</h3><div class="chipsC" id="otros"></div></div>
+      <p class="credito">Datos: PubChem (paquete periodic-table-data, licencia MIT).</p>
+    </div>
+  </div>
+</div>
+<div class="hoja" id="hoja"><div class="arriba"><button class="ib glass" id="hX" aria-label="Cerrar"><svg class="i"><use href="#i-x"/></svg></button><b style="font:800 16px Sora">Elemento</b></div><div class="cuerpoH det" id="detH"></div><div class="abajo" id="navH"></div></div>
+
+<script src="assets/mc-config.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/arcade-beta.js"></script>
+<script src="assets/lab-rayos.js"></script>
+<script src="assets/lab-sonido.js"></script>
+<script src="assets/lab-plano.js"></script>
+<script src="assets/lab-reto.js"></script>
+<script src="assets/laboratorio/tabla-datos.js"></script>
+<script>
+MCLabPuerta('tabla');
+var son=MCLabComun('tabla'), f=MCfmt;
+var SIM='H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf Db Sg Bh Hs Mt Ds Rg Cn Nh Fl Mc Lv Ts Og'.split(' ');
+var NOM='Hidrógeno Helio Litio Berilio Boro Carbono Nitrógeno Oxígeno Flúor Neón Sodio Magnesio Aluminio Silicio Fósforo Azufre Cloro Argón Potasio Calcio Escandio Titanio Vanadio Cromo Manganeso Hierro Cobalto Níquel Cobre Zinc Galio Germanio Arsénico Selenio Bromo Kriptón Rubidio Estroncio Itrio Circonio Niobio Molibdeno Tecnecio Rutenio Rodio Paladio Plata Cadmio Indio Estaño Antimonio Telurio Yodo Xenón Cesio Bario Lantano Cerio Praseodimio Neodimio Prometio Samario Europio Gadolinio Terbio Disprosio Holmio Erbio Tulio Iterbio Lutecio Hafnio Tantalio Wolframio Renio Osmio Iridio Platino Oro Mercurio Talio Plomo Bismuto Polonio Astato Radón Francio Radio Actinio Torio Protactinio Uranio Neptunio Plutonio Americio Curio Berkelio Californio Einstenio Fermio Mendelevio Nobelio Laurencio Rutherfordio Dubnio Seaborgio Bohrio Hasio Meitnerio Darmstatio Roentgenio Copernicio Nihonio Flerovio Moscovio Livermorio Teneso Oganesón'.split(' ');
+var D=window.MC_TABLA; /* [masa, cat, config, EN, radio, EI, AE, oxid, estado, fus K, ebu K, dens, año] */
+var CAT={nm:['No metales','#3AB4F0'],ha:['Halógenos','#7C8CFF'],gn:['Gases nobles','#B99CFF'],al:['Metales alcalinos','#FF5C8A'],at:['Alcalinotérreos','#FF9600'],tr:['Metales de transición','#FFC800'],pt:['Metales del bloque p','#55C23A'],mt:['Metaloides','#2FD4C8'],la:['Lantánidos','#E07BFF'],ac:['Actínidos','#FF8FC8']};
+/* valencias que se usan en nomenclatura (examen de admisión) */
+var VAL={H:'1',Li:'1',Na:'1',K:'1',Rb:'1',Cs:'1',Fr:'1',Ag:'1',Be:'2',Mg:'2',Ca:'2',Sr:'2',Ba:'2',Ra:'2',Zn:'2',Cd:'2',Al:'3',Ga:'3',Cu:'1, 2',Hg:'1, 2',Au:'1, 3',Fe:'2, 3',Co:'2, 3',Ni:'2, 3',Sn:'2, 4',Pb:'2, 4',Pt:'2, 4',
+  Cr:'2, 3 (metal) · 3, 6 (no metal)',Mn:'2, 3 (metal) · 4, 6, 7 (no metal)',F:'1',Cl:'1, 3, 5, 7',Br:'1, 3, 5, 7',I:'1, 3, 5, 7',O:'2',S:'2, 4, 6',Se:'2, 4, 6',Te:'2, 4, 6',N:'1, 2, 3, 4, 5',P:'3, 5',As:'3, 5',Sb:'3, 5',Bi:'3, 5',B:'3',C:'2, 4',Si:'4'};
+var MOS=[['nom','Nombre'],['masa','Masa atómica'],['en','Electronegatividad'],['radio','Radio atómico'],['ei','Energía de ionización'],['ae','Afinidad electrónica'],['val','Valencias'],['conf','Configuración'],['est','Estado (25 °C)'],['dens','Densidad']];
+var NUM={masa:0,en:3,radio:4,ei:5,ae:6,dens:11};
+var TEND={en:'La <b>electronegatividad</b> aumenta → a la derecha en un periodo y ↑ hacia arriba en un grupo. El más electronegativo es el flúor (4,0).',
+  radio:'El <b>radio atómico</b> aumenta ← a la izquierda y ↓ hacia abajo. Los más grandes están abajo a la izquierda (Cs, Fr).',
+  ei:'La <b>energía de ionización</b> aumenta → a la derecha y ↑ hacia arriba. Los gases nobles son los más difíciles de ionizar.',
+  ae:'La <b>afinidad electrónica</b> aumenta → a la derecha y ↑ hacia arriba (los halógenos ganan electrones con facilidad).',
+  masa:'La <b>masa atómica</b> aumenta con el número atómico Z (hay pocas excepciones, como Ar y K).',dens:'La <b>densidad</b> es mayor en los metales de transición del centro (osmio e iridio, unos 22 g/cm³).'};
+var S={mos:'nom',color:'cat',filtro:null,sel:26};
+function sup(t){ return String(t).replace(/\d+/g,function(n){ return n.split('').map(function(c){ return '⁰¹²³⁴⁵⁶⁷⁸⁹'[+c]; }).join(''); }); }
+function confBonita(z,html){ var c=D[z-1][2]||''; return c.replace(/([spdf])(\d+)/g,function(_,l,n){ return l+(html?'<sup>'+n+'</sup>':sup(n)); }).replace(/\]/,'] ').replace(/ +/g,' '); }
+/* posición en la tabla: [columna 1–18, fila 1–7; lantánidos y actínidos en filas 9 y 10] */
+function pos(z){ if(z===1) return [1,1]; if(z===2) return [18,1];
+  var P=[[3,10,2],[11,18,3]]; for(var i=0;i<2;i++){ var a=P[i]; if(z>=a[0]&&z<=a[1]) return [z-a[0]<2?z-a[0]+1:18-(a[1]-z),a[2]]; }
+  if(z<=36) return [z-18,4]; if(z<=54) return [z-36,5];
+  if(z<=56) return [z-54,6]; if(z<=71) return [z-57+3,9]; if(z<=86) return [z-68,6];
+  if(z<=88) return [z-86,7]; if(z<=103) return [z-89+3,10]; return [z-100,7]; }
+var ROMA=['','IA','IIA','IIIB','IVB','VB','VIB','VIIB','VIIIB','VIIIB','VIIIB','IB','IIB','IIIA','IVA','VA','VIA','VIIA','VIIIA'];
+function grupo(z){ var p=pos(z); if(p[1]>=9) return [3,'IIIB']; return [p[0],ROMA[p[0]]]; }
+function periodo(z){ var p=pos(z); return p[1]===9?6:p[1]===10?7:p[1]; }
+function bloque(z){ var c=D[z-1][2]||'', m=c.match(/[spdf](?=\d)/g)||[]; var p=pos(z), col=p[0]; if(p[1]>=9) return 'f'; return col<=2||z===2?'s':col>=13?'p':'d'; }
+function capas(z){ /* electrones por nivel desde la configuración (con kernel) */
+  var c=D[z-1][2]||'', gases={He:'1s2',Ne:'[He]2s2 2p6',Ar:'[Ne]3s2 3p6',Kr:'[Ar]3d10 4s2 4p6',Xe:'[Kr]4d10 5s2 5p6',Rn:'[Xe]4f14 5d10 6s2 6p6'};
+  for(var k=0;k<6;k++) c=c.replace(/\[(\w+)\]/,function(_,g){ return gases[g]+' '; });
+  var n=[0,0,0,0,0,0,0]; (c.match(/(\d)([spdf])(\d+)/g)||[]).forEach(function(t){ var m=t.match(/(\d)([spdf])(\d+)/); n[+m[1]-1]+=+m[3]; });
+  while(n.length&&!n[n.length-1]) n.pop(); return n; }
+function estado(z){ return {s:'Sólido',l:'Líquido',g:'Gas'}[D[z-1][8]]||'—'; }
+function valor(z,k){ var d=D[z-1];
+  if(k==='nom') return NOM[z-1]; if(k==='masa') return d[0]!=null?f(d[0]):'—'; if(k==='en') return d[3]!=null?f(d[3]):'—';
+  if(k==='radio') return d[4]!=null?d[4]+' pm':'—'; if(k==='ei') return d[5]!=null?f(d[5])+' eV':'—'; if(k==='ae') return d[6]!=null?f(d[6])+' eV':'—';
+  if(k==='val') return VAL[SIM[z-1]]||(d[7]||'—').replace(/\+/g,'').replace(/,/g,', ');
+  if(k==='conf') return confBonita(z); if(k==='est') return estado(z); if(k==='dens') return d[11]!=null?f(d[11]):'—'; return ''; }
+
+/* ===== dibujar la tabla ===== */
+var pl=document.getElementById('plano'), tb=document.getElementById('tb'), T=56, G=4, OX=34, OY=34, RETO=null;
+function medir(){ var w=pl.clientWidth, h=pl.clientHeight, chico=innerWidth<=860||(innerHeight>innerWidth&&innerWidth<=1024);
+  var vert=chico&&innerHeight>innerWidth;
+  if(vert){ T=58; OX=30; OY=40; }
+  else { OX=chico?24:34; OY=chico?26:40; var hh=chico?innerHeight-24:h; T=Math.max(22,Math.min((w-OX-12)/18.1,(hh-OY-16)/9.5)); }
+  G=Math.max(2,Math.round(T*.07)); T=Math.floor(T-G);
+  var W=OX+18*(T+G)+10, H=OY+9*(T+G)+T*.4+12;
+  tb.style.width=W+'px'; tb.style.height=H+'px'; tb.style.setProperty('--t',T+'px');
+  if(chico) pl.style.setProperty('--alto',Math.ceil(H+4)+'px');
+  tb.style.marginLeft=vert?'0':Math.max(0,(w-W)/2)+'px'; tb.style.marginTop=!chico?Math.max(0,(h-H)/2)+'px':'0';
+}
+function XY(c,r){ return [OX+(c-1)*(T+G), OY+(r>=9?r-2:r-1)*(T+G)+(r>=9?T*.4:0)]; }
+function colorCalor(t){ /* de morado oscuro a lima */ var a=[58,44,110], b=[58,180,240], c=[198,224,0], m=t<.5?[a,b,t*2]:[b,c,(t-.5)*2];
+  return 'rgb('+m[0].map(function(v,i){ return Math.round(v+(m[1][i]-v)*m[2]); }).join(',')+')'; }
+function pintar(){
+  medir(); var chicoCab=T<44, h='', mos=S.mos, calor=S.color==='calor', kk=NUM[mos]!==undefined?mos:'en', idx=NUM[kk], vals=[];
+  if(calor) D.forEach(function(d){ if(d[idx]!=null) vals.push(d[idx]); });
+  var lo=Math.min.apply(null,vals), hi=Math.max.apply(null,vals);
+  /* números de grupo y de periodo */
+  if(!(RETO&&RETO.sinCab)){
+    for(var c=1;c<=18;c++){ var p=XY(c,1), fila=c===1||c===18?1:c===2||c>=13?2:4, y=XY(c,fila)[1]-(chicoCab?15:26); h+='<div class="cab" style="left:'+p[0]+'px;top:'+y+'px;width:'+T+'px"><b>'+c+'</b>'+(chicoCab?'':ROMA[c])+'</div>'; }
+    for(var r=1;r<=7;r++){ var q=XY(1,r); h+='<div class="cab" style="left:4px;top:'+(q[1]+T/2-8)+'px;width:'+(OX-10)+'px"><b>'+r+'</b></div>'; }
+  }
+  var mini=T<46;
+  for(var z=1;z<=118;z++){ var ps=pos(z), xy=XY(ps[0],ps[1]), d=D[z-1], col=CAT[d[1]][1], cls='el'+(mini?' mini':''), st='';
+    if(calor){ if(d[idx]!=null){ var t=hi>lo?(d[idx]-lo)/(hi-lo):0; if(kk==='radio') t=t; cls+=' calor'; st='background:'+colorCalor(t)+';'; } else cls+=' apaga'; }
+    else if(S.filtro){ var ok=S.filtro.t==='cat'?d[1]===S.filtro.v:S.filtro.t==='blq'?bloque(z)===S.filtro.v:d[8]===S.filtro.v; cls+=ok?' lleno':' apaga'; }
+    if(RETO&&RETO.marca[z]) cls+=' '+RETO.marca[z]; else if(z===S.sel&&!RETO) cls+=' sel';
+    var linea=RETO?'':valor(z,mos);
+    h+='<button class="'+cls+'" data-z="'+z+'" style="--c:'+col+';left:'+xy[0]+'px;top:'+xy[1]+'px;width:'+T+'px;height:'+T+'px;'+st+'"><i>'+z+'</i><b>'+SIM[z-1]+'</b><small>'+linea+'</small></button>'; }
+  /* huecos de lantánidos y actínidos */
+  [[6,'57–71','Lantánidos','#E07BFF'],[7,'89–103','Actínidos','#FF8FC8']].forEach(function(x){ var xy=XY(3,x[0]); h+='<div class="el hueco'+(mini?' mini':'')+'" style="--c:'+x[3]+';left:'+xy[0]+'px;top:'+xy[1]+'px;width:'+T+'px;height:'+T+'px"><i>'+x[1]+'</i><small>'+x[2]+'</small></div>'; });
+  if(calor){ var lx=XY(4,1)[0], ly=XY(4,1)[1]; h+='<div class="leyenda" style="left:'+lx+'px;top:'+ly+'px;width:'+(8*(T+G))+'px"><span>'+MOS.filter(function(m){ return m[0]===kk; })[0][1]+': de menor a mayor</span><div class="barra" style="background:linear-gradient(90deg,'+colorCalor(0)+','+colorCalor(.5)+','+colorCalor(1)+')"></div></div>'; }
+  tb.innerHTML=h;
+  document.getElementById('tend').innerHTML=calor?TEND[kk]:'Toca un elemento para ver todos sus datos.';
+}
+tb.addEventListener('click',function(e){ var b=e.target.closest('.el[data-z]'); if(!b) return; var z=+b.dataset.z;
+  if(RETO){ if(RETO.listo) return; RETO.elige=z; RETO.marca={}; RETO.marca[z]='sel'; son('tic'); RT.listo(true); pintar(); return; }
+  son('tic'); elegir(z,true); });
+function elegir(z,abrir){ S.sel=z; pintar(); detalle(); if(abrir&&(innerWidth<=860||(innerHeight>innerWidth&&innerWidth<=1024))) document.getElementById('hoja').classList.add('on'); }
+
+/* ===== detalle del elemento ===== */
+function fila(a,b){ return '<div class="fila"><span>'+a+'</span><b>'+b+'</b></div>'; }
+function seccion(t,ic,col){ return '<h4><span style="background:'+col+'"><svg><use href="#'+ic+'"/></svg></span>'+t+'</h4>'; }
+function navHtml(z){ var a=z>1?z-1:null, b=z<118?z+1:null;
+  return '<div class="nav">'+(a?'<button data-ir="'+a+'"><svg><use href="#i-izq"/></svg><em style="background:'+CAT[D[a-1][1]][1]+'">'+a+'</em>'+NOM[a-1]+'</button>':'<span></span>')+(b?'<button data-ir="'+b+'">'+NOM[b-1]+'<em style="background:'+CAT[D[b-1][1]][1]+'">'+b+'</em><svg><use href="#i-der"/></svg></button>':'')+'</div>'; }
+function detalle(){
+  var z=S.sel, d=D[z-1], c=CAT[d[1]], g=grupo(z), cp=capas(z), A=d[0];
+  var h='<div class="cab2"><div class="ficha-el" style="--c:'+c[1]+'"><i>'+z+'</i><b>'+SIM[z-1]+'</b><small>'+(A!=null?f(A):'')+'</small></div><div><h2>'+NOM[z-1]+'</h2><div class="cat" style="color:'+c[1]+'">'+c[0].replace(/s$/,'').replace('Metales','Metal').replace('Gase','Gas').replace('Alcalinotérreo','Metal alcalinotérreo')+'</div></div></div>';
+  h+=seccion('Ubicación','i-gen','#3AB4F0')+fila('Periodo',periodo(z))+fila('Grupo',g[1]+' ('+g[0]+')')+fila('Bloque',bloque(z));
+  h+=seccion('Átomo','i-atomo','#C6E000')+fila('Número atómico Z',z)+fila('Masa atómica',A!=null?f(A)+' uma':'—')+fila('Protones · electrones',z+' · '+z)+fila('Neutrones (A − Z)',A!=null?Math.round(A)-z:'—')+
+    fila('Electrones por capa',cp.map(function(x,i){ return 'KLMNOPQ'[i]+x; }).join(' '))+fila('Configuración',confBonita(z,1));
+  h+='<a class="ver-sim" href="lab-atomo.html?z='+z+'"><svg><use href="#i-atomo"/></svg>Ver cómo se llenan sus orbitales</a>';
+  h+=seccion('Propiedades periódicas','i-val','#FF9600')+fila('Electronegatividad',valor(z,'en'))+fila('Radio atómico',valor(z,'radio'))+fila('Energía de ionización',valor(z,'ei'))+fila('Afinidad electrónica',valor(z,'ae'))+
+    fila(VAL[SIM[z-1]]?'Valencias':'Estados de oxidación',valor(z,'val'));
+  var K=function(x){ return x!=null?f(Math.round((x-273.15)*10)/10)+' °C':'—'; }, an=d[12]==='Ancient'?'Antigüedad':d[12]||'—';
+  h+=seccion('Propiedades físicas','i-llama','#FF5C8A')+fila('Estado a 25 °C',estado(z))+fila('Densidad',d[11]!=null?f(d[11])+' g/cm³':'—')+fila('Punto de fusión',K(d[9]))+fila('Punto de ebullición',K(d[10]))+fila('Descubierto',an);
+  document.getElementById('detF').innerHTML=h+navHtml(z); document.getElementById('detH').innerHTML=h; document.getElementById('navH').innerHTML=navHtml(z);
+  document.querySelectorAll('[data-ir]').forEach(function(b){ b.onclick=function(){ son('tic'); elegir(+b.dataset.ir,false); document.getElementById('detH').scrollTop=0; }; });
+}
+document.getElementById('hX').onclick=function(){ son('tic'); document.getElementById('hoja').classList.remove('on'); };
+
+/* ===== controles ===== */
+var sel=document.getElementById('mos'); sel.innerHTML=MOS.map(function(m){ return '<option value="'+m[0]+'">'+m[1]+'</option>'; }).join('');
+sel.onchange=function(){ S.mos=sel.value; son('tic'); pintar(); };
+function pintarColor(){ document.querySelectorAll('#color button').forEach(function(b){ b.classList.toggle('on',b.dataset.c===S.color); }); }
+document.querySelectorAll('#color button').forEach(function(b){ b.onclick=function(){ S.color=b.dataset.c; if(S.color==='calor'){ S.filtro=null; if(NUM[S.mos]===undefined||S.mos==='masa'){ S.mos='en'; sel.value='en'; } } son('tic'); pintarColor(); pintarFiltros(); pintar(); }; });
+function pintarFiltros(){
+  document.getElementById('cats').innerHTML=Object.keys(CAT).map(function(k){ var on=S.filtro&&S.filtro.t==='cat'&&S.filtro.v===k; return '<button data-t="cat" data-v="'+k+'" class="'+(on?'on':'')+'" style="--c:'+CAT[k][1]+'"><i style="background:'+CAT[k][1]+'"></i>'+CAT[k][0]+'</button>'; }).join('');
+  document.getElementById('otros').innerHTML=[['blq','s','Bloque s'],['blq','p','Bloque p'],['blq','d','Bloque d'],['blq','f','Bloque f'],['est','s','Sólidos'],['est','l','Líquidos'],['est','g','Gases']].map(function(x){ var on=S.filtro&&S.filtro.t===x[0]&&S.filtro.v===x[1]; return '<button data-t="'+x[0]+'" data-v="'+x[1]+'" class="'+(on?'on':'')+'" style="--c:#3AB4F0"><i style="background:#3AB4F0"></i>'+x[2]+'</button>'; }).join('');
+  document.querySelectorAll('.chipsC button').forEach(function(b){ b.onclick=function(){ var t=b.dataset.t, v=b.dataset.v; S.filtro=S.filtro&&S.filtro.t===t&&S.filtro.v===v?null:{t:t,v:v}; if(S.filtro){ S.color='cat'; pintarColor(); } son('tic'); pintarFiltros(); pintar(); }; });
+}
+function quita(t){ return t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
+document.getElementById('iBus').oninput=function(){ var t=this.value.trim(); if(!t) return; var z=0;
+  if(/^\d+$/.test(t)) z=+t; else { var k=SIM.indexOf(t.charAt(0).toUpperCase()+t.slice(1).toLowerCase()); if(k>=0) z=k+1; else { var q=quita(t); for(var i=0;i<118;i++) if(quita(NOM[i]).indexOf(q)===0){ z=i+1; break; } } }
+  if(z>=1&&z<=118&&z!==S.sel){ elegir(z,false); var b=tb.querySelector('[data-z="'+z+'"]'); if(b) pl.scrollTo({left:Math.max(0,b.offsetLeft-pl.clientWidth/2+T/2),behavior:'smooth'}); } };
+addEventListener('resize',pintar); if(window.ResizeObserver){ var ultW=0; new ResizeObserver(function(){ if(pl.clientWidth!==ultW){ ultW=pl.clientWidth; pintar(); } }).observe(pl); }
+pintarColor(); pintarFiltros(); pintar(); detalle();
+
+/* ============ MODO RETO (assets/lab-reto.js) ============ */
+var AZ=MCAzar, ORD=['1s','2s','2p','3s','3p','4s','3d','4p','5s','4d','5p','6s','4f','5d','6p','7s'], CAPS={s:2,p:6,d:10,f:14};
+function termina(z){ var n=z, u=''; for(var i=0;i<ORD.length&&n>0;i++){ var c=Math.min(n,CAPS[ORD[i][1]]); n-=c; u=ORD[i]+sup(c); } return u; }
+function tocar(caja,R,txt,buenas,expl){ RETO={marca:{},elige:null,sinCab:RETO&&RETO.sinCab}; pintar();
+  R.texto(caja,'Toca',txt);
+  return { listo:false, comprobar:function(){ var ok=buenas.indexOf(RETO.elige)>=0; RETO.listo=1; RETO.marca={}; buenas.forEach(function(z){ RETO.marca[z]='bien'; }); if(!ok&&RETO.elige) RETO.marca[RETO.elige]='mal'; RETO.sinCab=false; pintar(); return {ok:ok,msg:expl}; } }; }
+var RT=MCReto({sim:'tabla',nombre:'Reto · Tabla periódica',
+  alEntrar:function(){ document.getElementById('hoja').classList.remove('on'); S.filtro=null; S.color='cat'; pintarColor(); pintarFiltros(); },
+  alSalir:function(){ RETO=null; pintar(); },
+  nueva:function(i,caja,R){
+    RETO={marca:{}}; pintar();
+    if(i===0){ var z=AZ([3,6,7,8,9,11,12,13,14,15,16,17,19,20,26,29,30,35,53]), g=grupo(z), p=periodo(z); RETO.sinCab=true;
+      return tocar(caja,R,'Toca el elemento del <em>periodo '+p+'</em> y <em>grupo '+g[1]+'</em>.',[z],'Es el '+NOM[z-1].toLowerCase()+' ('+SIM[z-1]+'): periodo = fila '+p+', grupo '+g[1]+' = columna '+g[0]+'.'); }
+    if(i===1){ var z1=AZ([5,7,8,9,13,14,15,16,17,19,20,31,33,34,35,37,38]), t=termina(z1);
+      return tocar(caja,R,'Toca el elemento cuya configuración termina en <em>'+t+'</em>.',[z1],'Termina en '+t+': el nivel '+t[0]+' da el periodo y '+t.slice(1)+' la columna. Es el '+NOM[z1-1].toLowerCase()+' ('+SIM[z1-1]+').'); }
+    if(i===2){ var set=AZ([[3,6,8,9],[11,15,16,17],[9,17,35,53],[19,20,33,35],[7,15,33,51],[12,13,14,16]]), mx=set.slice().sort(function(a,b){ return D[b-1][3]-D[a-1][3]; })[0], tipo=AZ(['en','radio']);
+      if(tipo==='radio') mx=set.slice().sort(function(a,b){ return D[b-1][4]-D[a-1][4]; })[0];
+      var ops=set.map(function(z){ return NOM[z-1]+' ('+SIM[z-1]+')'; }), b=set.indexOf(mx);
+      var o=R.opciones(caja,'¿Cuál tiene <em>'+(tipo==='en'?'mayor electronegatividad':'mayor radio atómico')+'</em>?',ops,b,(tipo==='en'?'La electronegatividad aumenta a la derecha y hacia arriba: ':'El radio aumenta a la izquierda y hacia abajo: ')+NOM[mx-1].toLowerCase()+'.');
+      var cp=o.comprobar; o.comprobar=function(){ var r=cp(); set.forEach(function(z){ RETO.marca[z]=z===mx?'bien':'sel'; }); pintar(); return r; }; return o; }
+    if(i===3){ var z3=AZ([3,4,9,10,11,12,14,17,18,19,20,26,29,33,35,36,47,53,54,56,79,80,92]), k=D[z3-1][1], otras=Object.keys(CAT).filter(function(x){ return x!==k; }).sort(function(){ return Math.random()-.5; }).slice(0,3);
+      var o3=R.opciones(caja,'¿A qué familia pertenece el <em>'+NOM[z3-1].toLowerCase()+' ('+SIM[z3-1]+')</em>?',[CAT[k][0]].concat(otras.map(function(x){ return CAT[x][0]; })),0,SIM[z3-1]+' está en el grupo '+grupo(z3)[1]+': '+CAT[k][0].toLowerCase()+'.');
+      var cp3=o3.comprobar; o3.comprobar=function(){ var r=cp3(); RETO.marca={}; RETO.marca[z3]='bien'; pintar(); return r; }; return o3; }
+    var fam=AZ(['ha','gn','al','at','mt']), todas=[]; for(var z4=1;z4<=118;z4++) if(D[z4-1][1]===fam) todas.push(z4);
+    var nom={ha:'un halógeno',gn:'un gas noble',al:'un metal alcalino',at:'un metal alcalinotérreo',mt:'un metaloide'}[fam];
+    return tocar(caja,R,'Toca <em>'+nom+'</em> (cualquiera).',todas,CAT[fam][0]+': '+todas.slice(0,7).map(function(z){ return SIM[z-1]; }).join(', ')+(fam==='mt'?' (en la escalera entre metales y no metales).':'.'));
+  }});
+</script>
+</body>
+</html>
