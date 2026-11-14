@@ -118,7 +118,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .partes .n{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--lima);color:#151A03;font:800 15px/1 "Barlow Condensed"}
 .partes b{display:block;font:800 15px/1.2 "Nunito"}
 .partes span{display:block;font:700 13.5px/1.4 "Nunito";color:var(--dim);margin-top:2px}
-.proc{display:flex;flex-direction:column;gap:0;border-radius:16px;border:1px solid var(--borde);overflow:hidden}
+.proc{flex-shrink:0;display:flex;flex-direction:column;gap:0;border-radius:16px;border:1px solid var(--borde);overflow:hidden}
 .proc .eq{padding:12px 14px;background:var(--card2);font:700 16px/1.3 "Nunito";text-align:center}
 .proc .eq b{color:var(--oro)}
 .proc .st{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:10px 14px;border-top:1px solid var(--borde)}
@@ -126,10 +126,11 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .proc .st b{display:block;font:800 14.5px/1.2 "Nunito"}
 .proc .st span{font:700 12.5px/1.3 "Nunito";color:var(--dim)}
 .proc .st em{font:800 14px/1 "Barlow Condensed";letter-spacing:.04em;color:var(--oro);font-style:normal;white-space:nowrap}
-.clave{border-radius:16px;padding:14px 16px;background:linear-gradient(135deg,rgba(255,200,0,.1),rgba(255,200,0,.03));border:1px solid rgba(255,200,0,.38)}
+.clave{flex-shrink:0;border-radius:16px;padding:14px 16px;background:linear-gradient(135deg,rgba(255,200,0,.1),rgba(255,200,0,.03));border:1px solid rgba(255,200,0,.38)}
 .clave b{display:flex;align-items:center;gap:7px;font:900 11px/1 "Nunito";letter-spacing:.14em;text-transform:uppercase;color:var(--oro);margin-bottom:8px}
 .clave b svg{width:16px;height:16px}
 .clave p{margin:0;font:700 14.5px/1.5 "Nunito"}
+.clave p+p{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,200,0,.2)}
 .d-acc{display:flex;gap:10px;margin-top:auto;padding-top:4px}
 .btn{flex:1;display:flex;align-items:center;justify-content:center;gap:9px;height:52px;border-radius:16px;font:800 16px/1 "Sora";background:var(--lima);color:#151A03;box-shadow:0 5px 0 var(--lima-osc)}
 .btn svg{width:20px;height:20px}
@@ -268,6 +269,27 @@ O.citoesqueleto={n:'Citoesqueleto',c:'#FF7A59',lat:'Red de proteínas · 3 tipos
 O.vacuola={n:'Vacuolas',c:'#5FD0E8',lat:'Vacuolas · tonoplasto',f:['En animal','Pequeñas'],m:'Simple',fn:'Bolsas con membrana que almacenan agua, sales, nutrientes y desechos. En la célula vegetal hay una vacuola central enorme que da turgencia.',partes:[['Tonoplasto','Membrana que rodea la vacuola.'],['Jugo vacuolar','Agua con sales, azúcares y pigmentos.'],['Proteínas de transporte','Bombean iones hacia el interior.']],clave:'En la célula vegetal la vacuola central puede ocupar hasta el 90 % del volumen. Los protozoos de agua dulce tienen vacuolas contráctiles que expulsan el exceso de agua.'};
 O.ribosoma.partes=[['Subunidad mayor','60S: une los aminoácidos.'],['Subunidad menor','40S: lee el ARN mensajero.'],['ARN mensajero','Trae la receta copiada del ADN.'],['Cadena de proteína','Aminoácidos unidos que salen del ribosoma.']];
 var EXTRA=['ribosoma','citoesqueleto','vacuola'];
+/* datos de la clase del profe (separata semana 05) */
+(function(){
+  function S(id,o){ for(var k in o) O[id][k]=o[k]; }
+  S('membrana',{fn:'Separa la célula del medio y controla qué entra y qué sale. Es lipoproteica, asimétrica y semipermeable (modelo del mosaico fluido).',
+    mas:['Transporte de sustancias',[['P','Difusión simple y facilitada','Por la bicapa o por proteínas (canales, acuaporinas)','Sin ATP'],['A','Transporte activo','Bombas: Na⁺/K⁺ saca 3 Na⁺ y mete 2 K⁺','Con ATP'],['M','Endocitosis y exocitosis','Fagocitosis (sólidos), pinocitosis (líquidos), secreción','Con ATP']]],
+    clave:['Mosaico fluido: Singer y Nicolson (1972).','Pasivo: a favor de la gradiente, sin ATP. Activo: en contra, con ATP.','Uniones GAP (conexinas) comunican células animales; plasmodesmos, vegetales.']});
+  O.nucleo.partes[0]=['Carioteca','Envoltura nuclear de doble membrana; se continúa con el RER.'];
+  S('nucleo',{fn:'Controla todas las actividades de la célula. En el carioplasma ocurren la replicación del ADN y la transcripción (ARNm).',
+    clave:['El nucléolo fabrica el ARNr (ARN polimerasa I) y arma las subunidades del ribosoma.','Eucromatina: laxa y activa (transcripción). Heterocromatina: condensada e inactiva.','Nucleosoma: ADN enrollado en un octámero de histonas; con la H1 se llama cromatosoma.']});
+  S('mitocondria',{clave:['Tiene ADN circular y ribosomas 70S, como las bacterias.','Krebs ocurre en la matriz; la cadena respiratoria, en las crestas.']});
+  S('rer',{clave:['Con ribosomas 80S: síntesis de proteínas (proteogénesis).','Vesículas COP II van del RER al Golgi; COP I regresan del Golgi al RER.']});
+  S('rel',{fn:'Túbulos sin ribosomas. Hace lipogénesis, detoxificación (hígado) y guarda Ca²⁺.',clave:['En el músculo se llama retículo sarcoplásmico y guarda el Ca²⁺ para la contracción.']});
+  S('golgi',{clave:['Empaqueta y secreta. Forma lisosomas, vacuolas y el acrosoma del espermatozoide.','En plantas, sus vesículas forman la placa celular en la citocinesis.']});
+  S('lisosoma',{clave:['Autofagia: la célula recicla sus orgánulos. Autólisis: se digiere a sí misma.','Se forman en el aparato de Golgi.']});
+  S('peroxisoma',{fn:'Oxida peróxidos con la catalasa (2 H₂O₂ → 2 H₂O + O₂) y degrada lípidos complejos.',clave:['Síndrome de Zellweger: peroxisomas defectuosos, se acumulan H₂O₂ y ácidos grasos de cadena larga.','En la semilla vegetal, los glioxisomas convierten lípidos en glúcidos.']});
+  S('centrosoma',{clave:['Estructura 9 + 0 (cilios y flagelos: 9 + 2).','Animal: división astral (con centriolos). Vegetal: casquetes polares, división anastral.']});
+  S('ribosoma',{clave:['Eucariotas 80S (60S + 40S). Procariotas, mitocondrias y cloroplastos: 70S.','Es el único organoide presente en todas las células.']});
+  O.citoesqueleto.partes=[['Microtúbulos','Tubulina α y β. Cilios, flagelos (9 + 2) y huso acromático.'],['Filamentos intermedios','De queratina, entre otras. Dan resistencia mecánica.'],['Microfilamentos','De actina. Contracción muscular y anillo contráctil de la citocinesis.']];
+  S('citoesqueleto',{clave:['La colchicina impide armar los microtúbulos: no se forma el huso acromático.','Dineína mueve cilios y flagelos; cinesina transporta vesículas.']});
+  S('vacuola',{clave:['Animal: vacuolas pequeñas (reserva). Vegetal: una grande (reserva y turgencia).']});
+})();
 O.vesicula={n:'Vesículas de secreción',c:'#9B6BFF',lat:'Salen del Golgi',f:['Origen','Cara trans'],m:'Simple',fn:'Bolsitas que salen del aparato de Golgi llevando proteínas. Se unen a la membrana y sueltan su contenido fuera de la célula (exocitosis).',partes:[['Contenido','Proteínas listas para salir (puntitos).'],['Membrana','Se fusiona con la membrana plasmática.']],clave:'La exocitosis gasta energía y agranda la membrana; la endocitosis la achica.'};
 ORDEN=['membrana','nucleo','mitocondria','rer','rel','golgi','lisosoma','vesicula','peroxisoma','centrosoma'];
 
@@ -387,11 +409,11 @@ function abrir(id){
   var marcados=D.p.map(function(p){ return p[0]; });
   var cuerpo='';
   if(TAB==='partes') cuerpo='<ol class="partes">'+o.partes.map(function(p,i){ return '<li'+(marcados.indexOf(i+1)>=0?' class="on"':'')+'><span class="n">'+(i+1)+'</span><div><b>'+p[0]+'</b><span>'+p[1]+'</span></div></li>'; }).join('')+'</ol>';
-  if(TAB==='funcion') cuerpo='<p class="txt">'+o.fn+'</p>'+(o.proc?'<div class="proc"><div class="eq">C₆H₁₂O₆ + 6 O₂ → 6 CO₂ + 6 H₂O + <b>36–38 ATP</b></div>'+
+  if(TAB==='funcion') cuerpo='<p class="txt">'+o.fn+'</p>'+(o.mas?'<div class="proc" style="margin-bottom:12px"><div class="eq">'+o.mas[0]+'</div>'+o.mas[1].map(function(r){ return '<div class="st"><i style="background:rgba(198,224,0,.16);color:#C6E000">'+r[0]+'</i><div><b>'+r[1]+'</b><span>'+r[2]+'</span></div><em>'+r[3]+'</em></div>'; }).join('')+'</div>':'')+(o.proc?'<div class="proc"><div class="eq">C₆H₁₂O₆ + 6 O₂ → 6 CO₂ + 6 H₂O + <b>36–38 ATP</b></div>'+
      '<div class="st"><i style="background:rgba(58,180,240,.18);color:#3AB4F0">1</i><div><b>Glucólisis</b><span>En el citoplasma (fuera de la mitocondria)</span></div><em>2 ATP</em></div>'+
      '<div class="st"><i style="background:rgba(255,150,0,.18);color:#FF9600">2</i><div><b>Ciclo de Krebs</b><span>En la matriz · libera CO₂</span></div><em>2 ATP</em></div>'+
      '<div class="st"><i style="background:rgba(198,224,0,.16);color:#C6E000">3</i><div><b>Cadena respiratoria</b><span>En las crestas · el O₂ recibe los electrones</span></div><em>32–34 ATP</em></div></div>':'');
-  if(TAB==='examen') cuerpo='<div class="clave"><b><svg><use href="#i-rayo"/></svg>Cae en el examen</b><p>'+o.clave+'</p></div>';
+  if(TAB==='examen') cuerpo='<div class="clave"><b><svg><use href="#i-rayo"/></svg>Cae en el examen</b>'+([].concat(o.clave).map(function(t){ return '<p>'+t+'</p>'; }).join(''))+'</div>';
   var TODO=ORDEN.concat(EXTRA), i=TODO.indexOf(id), sig=TODO[(i+1)%TODO.length];
   var det=document.getElementById('det');
   det.innerHTML='<div class="d-box"><div class="d-vis"><div class="grid-bg"></div><svg viewBox="'+vb+'" preserveAspectRatio="xMidYMid meet">'+vis+'</svg>'+
