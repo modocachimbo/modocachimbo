@@ -124,7 +124,7 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
 .hoja .grande{display:flex;align-items:center;gap:10px;margin:6px 0 4px}
 .hoja .grande svg{width:58px;height:58px;filter:drop-shadow(0 0 14px #2FA8FF)}
 .hoja .grande b{font:800 44px/1 "Sora"}
-.hoja h3{margin:0;font:800 22px/1.2 "Sora"}
+.hoja h3{margin:0;padding-right:44px;font:800 22px/1.2 "Sora"}
 .hoja p{margin:4px 0 0;color:var(--dim);font-weight:700}
 .hoja .lista{margin:16px 0;display:grid;gap:8px}
 .hoja .fila2{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:var(--card);border:1px solid var(--borde)}
@@ -353,12 +353,13 @@ document.getElementById('bRay').onclick=function(){ hoja(null); };
 
 /* Volver desde un simulador cerrado: laboratorio.html?abrir=<sim> abre su ventana */
 var qAb=new URLSearchParams(location.search).get('abrir');
-if(qAb&&NOMBRE[qAb]&&!abierto(qAb)) setTimeout(function(){ hoja(qAb); },300);
+function verAbrir(){ if(qAb&&NOMBRE[qAb]&&!abierto(qAb)&&!fondo.classList.contains('on')) hoja(qAb); qAb=null; }
+if(qAb&&!R) verAbrir();
 
 /* Trae los rayos (y cobra lo ganado estudiando) */
 if(R) R.estado().then(function(s){
   if(!s||s.error) return;
-  ST=s; pintar();
+  ST=s; pintar(); verAbrir();
   if(s.nuevos>0) setTimeout(function(){ if(SN) SN.tocar('bien'); aviso('Ganaste <b>+'+s.nuevos+' de energía</b> estudiando'); },600);
 });
 </script>
