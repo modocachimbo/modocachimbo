@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<script src="assets/guardia.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06040F">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="assets/app/icono-180.png">
+<title>Cruces de Mendel · Laboratorio · Modo Cachimbo</title>
+<script src="assets/app.js" defer></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Nunito:wght@600;700;800;900&family=Sora:wght@700;800&display=swap">
+<link rel="stylesheet" href="assets/lab-mate.css">
+<style>
+.ttl small{color:#55C23A}
+.preg{background:linear-gradient(135deg,rgba(85,194,58,.16),rgba(21,17,39,.6));border-color:rgba(85,194,58,.35)}
+.preg small{color:#9BE04A}
+/* ===== plano ===== */
+.plano.pn{display:grid;grid-template-rows:auto minmax(0,1fr);gap:12px;padding:14px;overflow:auto}
+.padres{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}
+.padre{display:flex;align-items:center;gap:12px;padding:10px 14px 10px 10px;border-radius:18px;background:#120E26;border:1px solid var(--borde);min-width:230px}
+.padre .pea{flex:none}
+.padre small{display:block;font:900 10px "Nunito";letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.padre .gen{display:flex;gap:4px;margin:4px 0}
+.al{min-width:34px;height:38px;padding:0 6px;border-radius:10px;font:800 21px/38px "Sora";text-align:center;background:#1D1834;border:1px solid #3A3060;color:var(--tx);transition:transform .15s,background .2s}
+.al.dom{background:rgba(198,224,0,.14);border-color:rgba(198,224,0,.6);color:#E4F57A}
+button.al:active{transform:scale(.9)}
+.padre em{font-style:normal;font:800 12.5px "Nunito";color:var(--dim)}
+.por{font:800 30px "Sora";color:var(--faint)}
+.medio{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:center;min-height:0}
+/* cuadro de Punnett */
+.cuadro{display:grid;gap:6px;justify-content:center;align-content:center}
+.cuadro .esq{display:grid;place-items:center;font:800 11px "Nunito";color:var(--faint);text-align:center;line-height:1.1}
+.gam{display:grid;place-items:center;border-radius:12px;font:800 18px "Sora";color:#8FD6FF;background:rgba(58,180,240,.1);border:1px dashed rgba(58,180,240,.5)}
+.gam.f{color:#FF9DC0;background:rgba(255,92,138,.1);border-color:rgba(255,92,138,.5)}
+.gam.vuela{animation:vuela .45s cubic-bezier(.3,1.5,.5,1) both}
+@keyframes vuela{from{transform:translateY(-24px) scale(.3);opacity:0}to{transform:none;opacity:1}}
+.cel{position:relative;border-radius:14px;background:#0E0A22;border:1px solid var(--borde);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:box-shadow .25s,opacity .25s,border-color .25s;cursor:pointer;overflow:hidden}
+.cel b{font:800 15px "Sora";letter-spacing:.02em}
+.cel .pea{animation:brota .5s cubic-bezier(.3,1.7,.5,1) both}
+.cel.vacia b{color:var(--faint)}
+@keyframes brota{from{transform:scale(0) rotate(-40deg)}to{transform:none}}
+.cel .ent{position:absolute;font:800 14px "Sora";animation:entra .45s ease-in both;pointer-events:none}
+@keyframes entra{0%{opacity:1}100%{transform:translate(0,0);opacity:0}}
+.cel.marca{border-color:#C6E000;box-shadow:0 0 0 2px #C6E000,0 0 16px rgba(198,224,0,.4)}
+.cel.apaga{opacity:.3}
+.cel.sel{border-color:#3AB4F0;box-shadow:0 0 0 2px #3AB4F0}
+.cel.bien{box-shadow:0 0 0 3px #58CC02}.cel.mal{box-shadow:0 0 0 3px #FF5C8A}
+/* resultados */
+.res{display:flex;flex-direction:column;gap:10px;min-width:0}
+.res h5{margin:0;font:900 10.5px "Nunito";letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.razon{font:800 30px "Sora";color:#C6E000;letter-spacing:.02em}
+.razon small{display:block;font:800 12px "Nunito";color:var(--dim);letter-spacing:0}
+.fen{display:grid;grid-template-columns:34px 1fr;gap:4px 10px;align-items:center;padding:6px 8px;border-radius:12px;background:#0E0A22;border:1px solid var(--borde);cursor:pointer;transition:border-color .2s}
+.fen.on{border-color:#C6E000}
+.fen .nom{font:800 13.5px "Nunito";display:flex;justify-content:space-between;gap:8px}
+.fen .nom span{color:var(--dim);font-family:"Sora";font-size:12.5px;white-space:nowrap}
+.fen .barra{grid-column:2;height:8px;border-radius:5px;background:#1D1834;overflow:hidden}
+.fen .barra i{display:block;height:100%;width:0;border-radius:5px;transition:width .8s cubic-bezier(.3,1.2,.5,1)}
+.gens{display:flex;flex-wrap:wrap;gap:6px}
+.gens span{padding:5px 9px;border-radius:9px;background:#0E0A22;border:1px solid var(--borde);font:800 13px "Sora";cursor:pointer}
+.gens span small{color:var(--dim);font-size:11px;margin-left:4px}
+.gens span.on{border-color:#3AB4F0;background:rgba(58,180,240,.12)}
+/* ficha */
+.pres{display:flex;flex-wrap:wrap;gap:6px}
+.pres button{height:36px;padding:0 11px;border-radius:10px;background:#0E0A22;border:1px solid var(--borde);font:800 12.5px "Sora";color:var(--dim)}
+.pres button small{font:800 10.5px "Nunito";color:var(--faint);margin-left:5px}
+.pres button.on{border-color:#55C23A;color:var(--tx);background:rgba(85,194,58,.14)}
+.cruzar{width:100%;height:46px;margin-top:10px;border-radius:14px;background:#55C23A;color:#0B1A03;font:800 15px "Sora";display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 0 #2E7A16}
+.cruzar svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.cruzar:active{transform:translateY(3px);box-shadow:0 1px 0 #2E7A16}
+.nota{margin:8px 0 0;font:700 12.5px/1.45 "Nunito";color:var(--dim)}
+.leyes p{margin:6px 0 0}
+.cars{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.cars button{display:flex;align-items:center;gap:8px;min-height:46px;padding:6px 9px;border-radius:12px;background:#0E0A22;border:1px solid var(--borde);text-align:left;font:800 12.5px/1.2 "Nunito";color:var(--tx)}
+.cars button small{display:block;font:700 11px "Nunito";color:var(--faint);margin-top:2px}
+.cars button.on{border-color:#55C23A;background:rgba(85,194,58,.14)}
+.cars button.off{opacity:.35}
+.cars .pea{flex:none}
+@media (max-width:860px),(orientation:portrait) and (max-width:1024px){
+  .plano.pn{height:auto;min-height:0;padding:10px;overflow:visible}
+  .medio{grid-template-columns:1fr}
+  .padre{min-width:0;flex:1 1 150px;padding:8px}
+  .por{font-size:22px}
+  .al{min-width:30px;height:34px;font-size:18px;line-height:34px}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="i-atras" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="i-son" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="on-l" d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/><path class="off-l" d="M16 9.5l5 5M21 9.5l-5 5"/></symbol>
+<symbol id="i-cruz" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/></symbol>
+<symbol id="i-rayo" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
+<radialGradient id="pY" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#FFF6B8"/><stop offset=".35" stop-color="#FFD23A"/><stop offset="1" stop-color="#C98A00"/></radialGradient>
+<radialGradient id="pV" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#D8FF9E"/><stop offset=".35" stop-color="#7BD13A"/><stop offset="1" stop-color="#2E7A16"/></radialGradient>
+</defs></svg>
+<section class="beta-aviso"><b>Laboratorio en prueba</b><p>Los simuladores están en beta. Muy pronto se abren para todos.</p><a href="index.html">Volver al inicio</a></section>
+
+<div class="app">
+  <div class="top">
+    <a class="ib glass" href="laboratorio.html" aria-label="Volver al Laboratorio"><svg class="i"><use href="#i-atras"/></svg></a>
+    <div class="ttl glass"><small>Biología</small><b>Cruces de Mendel</b></div>
+    <div class="sp"></div>
+    <button class="ib glass son" id="bSon" aria-label="Sonido"><svg class="i"><use href="#i-son"/></svg></button>
+  </div>
+  <div class="cuerpo">
+    <div class="plano pn" id="plano">
+      <div class="padres" id="padres"></div>
+      <div class="medio"><div class="cuadro" id="cuadro"></div><div class="res" id="res"></div></div>
+    </div>
+    <div class="ficha">
+      <div class="tipos" id="tipos"></div>
+      <div class="caja" id="cCar"></div>
+      <div class="caja"><h3>Cruces típicos</h3><div class="pres" id="pres"></div>
+        <button class="cruzar" id="bCruz"><svg><use href="#i-cruz"/></svg>Cruzar</button>
+        <p class="nota">Toca las letras de cada padre para cambiar sus alelos. Toca una casilla o un fenotipo para resaltarlo.</p></div>
+      <div class="caja"><h3>Resultados</h3><div class="datos" id="datos"></div></div>
+      <div class="clave leyes"><b><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7.1L12 17.3 5.8 21l1.6-7.1L2 9.2l7.1-.6z"/></svg>Cae en el examen</b>
+        <p><em>1.ª ley (segregación):</em> Aa × Aa da fenotipo <em>3 : 1</em> y genotipo <em>1 : 2 : 1</em>.</p>
+        <p><em>2.ª ley (distribución independiente):</em> AaRr × AaRr da <em>9 : 3 : 3 : 1</em>.</p>
+        <p><em>Retrocruce</em> (con el recesivo aa): Aa × aa da <em>1 : 1</em>; AaRr × aarr da <em>1 : 1 : 1 : 1</em>.</p>
+        <p>Un heterocigoto AaRr forma <em>2ⁿ = 4</em> gametos distintos.</p>
+        <p>Mendel usó la arveja <em>Pisum sativum</em> y estudió <em>7 caracteres</em>: color y forma de la semilla, color y posición de la flor, forma y color de la vaina, y altura del tallo.</p></div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/mc-config.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/arcade-beta.js"></script>
+<script src="assets/lab-rayos.js"></script>
+<script src="assets/lab-sonido.js"></script>
+<script src="assets/lab-plano.js"></script>
+<script src="assets/lab-reto.js"></script>
+<script>
+MCLabPuerta('punnett');
+var son=MCLabComun('punnett'), f=MCfmt;
+/* Los 7 caracteres de Pisum sativum que estudió Mendel (letra mayúscula = dominante) */
+var CAR={
+  color:{g:'A',n:'Color de la semilla',d:'Amarilla',r:'Verde',cd:'#FFD23A',cr:'#7BD13A'},
+  forma:{g:'R',n:'Forma de la semilla',d:'Lisa',r:'Rugosa',cd:'#FFD23A',cr:'#E0A800'},
+  flor:{g:'P',n:'Color de la flor',d:'Flor púrpura',r:'Flor blanca',cd:'#B07CFF',cr:'#EEEAF7'},
+  pos:{g:'F',n:'Posición de la flor',d:'Flor axial',r:'Flor terminal',cd:'#B07CFF',cr:'#FF9DC0'},
+  vforma:{g:'N',n:'Forma de la vaina',d:'Vaina inflada',r:'Vaina estrangulada',cd:'#7BD13A',cr:'#4FA82A'},
+  vcolor:{g:'V',n:'Color de la vaina',d:'Vaina verde',r:'Vaina amarilla',cd:'#7BD13A',cr:'#FFD23A'},
+  tallo:{g:'T',n:'Altura del tallo',d:'Alta',r:'Enana',cd:'#55C23A',cr:'#2FD4C8'}};
+var ORDEN=['color','forma','flor','pos','vforma','vcolor','tallo'];
+var S={modo:'mono',c:['color','forma'],p:['Aa','Aa'],marca:null};
+function cars(){ return S.modo==='mono'?[S.c[0]]:[S.c[0],S.c[1]]; }
+function genes(){ return cars().map(function(k){ return CAR[k].g; }); }
+function plantilla(t){ var G=genes(); return t.replace(/X/g,G[0]).replace(/x/g,G[0].toLowerCase()).replace(/Y/g,G[1]||'').replace(/y/g,(G[1]||'').toLowerCase()); }
+function presets(){ return (S.modo==='mono'?[['XX','xx','Generación P'],['Xx','Xx','F1 × F1'],['Xx','xx','Retrocruce'],['XX','Xx','']]:[['XXYY','xxyy','Generación P'],['XxYy','XxYy','F1 × F1'],['XxYy','xxyy','Retrocruce'],['XxYy','Xxyy','']]).map(function(p){ return [plantilla(p[0]),plantilla(p[1]),p[2]]; }); }
+/* ===== dibujos ===== */
+var DEF='';
+function pea(am,rug,sz){ var g=am?'url(#pY)':'url(#pV)', st=am?'#9A6A00':'#215A10', d='';
+  if(rug){ for(var i=0;i<=48;i++){ var t=i/48*Math.PI*2, r=10*(1+.075*Math.sin(7*t)+.045*Math.sin(11*t+1)); d+=(i?'L':'M')+(12+r*Math.cos(t)).toFixed(2)+' '+(12+r*Math.sin(t)).toFixed(2); } d+='Z'; }
+  return '<svg class="pea" width="'+sz+'" height="'+sz+'" viewBox="0 0 24 24">'+(rug?'<path d="'+d+'" fill="'+g+'" stroke="'+st+'" stroke-width=".6"/><path d="M7 9q3 2 2 6M14 6q-1 4 3 6M11 17q3-1 5 1" fill="none" stroke="'+st+'" stroke-width=".8" stroke-linecap="round" opacity=".7"/>'
+    :'<circle cx="12" cy="12" r="10" fill="'+g+'" stroke="'+st+'" stroke-width=".6"/><ellipse cx="8.5" cy="8" rx="3" ry="1.8" fill="#fff" opacity=".45" transform="rotate(-30 8.5 8)"/>')+'</svg>'; }
+function flor(cx,cy,r,col){ var s=''; for(var i=0;i<5;i++) s+='<ellipse cx="'+cx+'" cy="'+(cy-r*.55)+'" rx="'+(r*.42)+'" ry="'+(r*.6)+'" fill="'+col+'" stroke="rgba(0,0,0,.25)" stroke-width=".3" transform="rotate('+(i*72)+' '+cx+' '+cy+')"/>'; return s+'<circle cx="'+cx+'" cy="'+cy+'" r="'+(r*.28)+'" fill="#FFD23A"/>'; }
+function vaina(col,estr){ var st='rgba(0,0,0,.35)', d=estr?'M3 15 Q5 9 8 12 Q10 7 13 11 Q15 6 18 10 Q21 7 22 10 Q22 14 18 15 Q15 18 13 15 Q10 19 8 16 Q5 19 3 15Z':'M2 15 Q6 6 14 7 Q21 7 22 10 Q22 15 14 16 Q6 18 2 15Z';
+  return '<path d="'+d+'" fill="'+col+'" stroke="'+st+'" stroke-width=".6"/>'+(estr?'':'<path d="M5 13 Q12 9 20 10" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width=".8"/>')+'<path d="M22 10 l1.5 -1.5" stroke="#3E8E1E" stroke-width="1" stroke-linecap="round"/>'; }
+function hoja(x,y,lado){ return '<path d="M'+x+' '+y+' q'+(4*lado)+' -3 '+(6*lado)+' 0 q-'+(2*lado)+' 3 -'+(6*lado)+' 0z" fill="#55C23A"/>'; }
+function dibujo(k,dom){ var s='';
+  if(k==='color') return null; if(k==='forma') return null;
+  if(k==='flor') s=flor(12,12,10,dom?'#B07CFF':'#F4F2FF');
+  if(k==='pos') s='<path d="M12 23V2" stroke="#3E8E1E" stroke-width="1.6"/>'+hoja(12,16,1)+hoja(12,10,-1)+(dom?flor(16.5,13,3.8,'#B07CFF')+flor(7.5,8,3.8,'#B07CFF')+flor(16.5,5,3.8,'#B07CFF'):flor(9,4,3.8,'#B07CFF')+flor(15,4,3.8,'#B07CFF')+flor(12,7,3.8,'#B07CFF'));
+  if(k==='vforma') s=vaina('#7BD13A',!dom);
+  if(k==='vcolor') s=vaina(dom?'#7BD13A':'#FFD23A',false);
+  if(k==='tallo') s='<path d="M3 23h18" stroke="#6F6690" stroke-width="1"/>'+(dom?'<path d="M12 23V3" stroke="#3E8E1E" stroke-width="1.6"/>'+hoja(12,18,1)+hoja(12,13,-1)+hoja(12,8,1)+hoja(12,4,-1):'<path d="M12 23V16" stroke="#3E8E1E" stroke-width="1.6"/>'+hoja(12,20,1)+hoja(12,17,-1));
+  return s; }
+function icono1(k,dom,sz){ if(k==='color') return pea(dom,false,sz); if(k==='forma') return pea(true,!dom,sz); return '<svg class="pea" width="'+sz+'" height="'+sz+'" viewBox="0 0 24 24">'+dibujo(k,dom)+'</svg>'; }
+function icono(fen,sz){ var C=fen.cars;
+  if(C.length===1) return icono1(C[0],fen.dom[0],sz);
+  var ic=C.indexOf('color'), iff=C.indexOf('forma');
+  if(ic>=0&&iff>=0) return pea(fen.dom[ic],!fen.dom[iff],sz);
+  return '<span style="display:inline-flex;gap:2px">'+icono1(C[0],fen.dom[0],Math.round(sz*.7))+icono1(C[1],fen.dom[1],Math.round(sz*.7))+'</span>'; }
+/* ===== genética ===== */
+function norm(g){ var o=''; for(var i=0;i<g.length;i+=2){ var a=g[i], b=g[i+1]; o+=a<b?a+b:b+a; } return o; }
+function gametos(g){ if(g.length===2) return [g[0],g[1]]; return [g[0]+g[2],g[0]+g[3],g[1]+g[2],g[1]+g[3]]; }
+function hijo(x,y){ var o=''; for(var i=0;i<x.length;i++) o+=x[i]+y[i]; return norm(o); }
+function fenotipo(g){ var C=cars(), dom=C.map(function(k,i){ return g.substr(i*2,2).indexOf(CAR[k].g)>=0; }), ns=C.map(function(k,i){ return dom[i]?CAR[k].d:CAR[k].r; });
+  var semilla=C.length>1&&C.indexOf('color')>=0&&C.indexOf('forma')>=0, nom=C.length===1?ns[0]:semilla?ns[0]+' '+ns[1].toLowerCase():ns[0]+' · '+ns[1].toLowerCase();
+  return {cars:C,dom:dom,nom:nom,k:nom,col:dom[0]?CAR[C[0]].cd:CAR[C[0]].cr}; }
+function tipoGen(g){ var dom=true, rec=true, het=0; for(var i=0;i<g.length;i+=2){ if(g[i]!==g[i+1]) het++; if(g[i]!==g[i].toUpperCase()||g[i+1]!==g[i+1].toUpperCase()) dom=false; if(g[i]!==g[i].toLowerCase()||g[i+1]!==g[i+1].toLowerCase()) rec=false; }
+  return dom?'Homocigoto dominante':rec?'Homocigoto recesivo':!het?'Homocigoto':g.length>2?(het===2?'Dihíbrido (heterocigoto)':'Heterocigoto en un gen'):'Heterocigoto'; }
+function cruce(){ var gx=gametos(S.p[0]), gy=gametos(S.p[1]), cel=[]; gy.forEach(function(y){ gx.forEach(function(x){ cel.push(hijo(x,y)); }); });
+  var fen={}, gen={}; cel.forEach(function(g){ var p=fenotipo(g); fen[p.k]=fen[p.k]||{n:0,p:p}; fen[p.k].n++; gen[g]=(gen[g]||0)+1; }); return {gx:gx,gy:gy,cel:cel,fen:fen,gen:gen,N:cel.length}; }
+function mcd(a,b){ return b?mcd(b,a%b):a; }
+function frac(n,N){ var g=mcd(n,N); return (n/g)+'/'+(N/g); }
+function ordFen(fen){ return Object.keys(fen).sort(function(a,b){ return fen[b].n-fen[a].n||(fen[b].p.dom.join()>fen[a].p.dom.join()?1:-1); }); }
+function ordGen(gen){ return Object.keys(gen).sort(function(a,b){ var ua=a.replace(/[a-z]/g,'').length, ub=b.replace(/[a-z]/g,'').length; return ub-ua||(a<b?-1:1); }); }
+function razon(ns){ var g=ns.reduce(mcd); return ns.map(function(n){ return n/g; }).join(' : '); }
+
+/* ===== pintar ===== */
+function padres(){ var h='';
+  S.p.forEach(function(g,k){ var p=fenotipo(g); h+=(k?'<span class="por">×</span>':'')+'<div class="padre">'+icono(p,52)+'<div><small>'+(k?'Padre 2':'Padre 1')+'</small><div class="gen">'+g.split('').map(function(a,i){ return '<button class="al'+(a===a.toUpperCase()?' dom':'')+'" data-k="'+k+'" data-i="'+i+'">'+a+'</button>'; }).join('')+'</div><em>'+p.nom+' · '+tipoGen(g)+'</em></div></div>'; });
+  document.getElementById('padres').innerHTML=h;
+  document.querySelectorAll('.al[data-k]').forEach(function(b){ b.onclick=function(){ if(RETO&&RETO.bloq) return; var k=+b.dataset.k, i=+b.dataset.i, g=S.p[k].split(''); g[i]=g[i]===g[i].toUpperCase()?g[i].toLowerCase():g[i].toUpperCase(); S.p[k]=norm(g.join('')); son('tic'); S.marca=null; padres(); lista(); dibujar(true); }; }); }
+function medida(n){ var pl=document.getElementById('plano'), chico=innerWidth<=860||(innerHeight>innerWidth&&innerWidth<=1024), w=chico?innerWidth-40:Math.min((pl.clientWidth||innerWidth-460)*.56,(pl.clientHeight||innerHeight-120)-150);
+  return Math.max(n>2?56:80,Math.min(n>2?108:150,Math.floor((w-60)/n-6))); }
+var tAnim=[];
+function dibujar(animar){ tAnim.forEach(clearTimeout); tAnim=[];
+  var c=cruce(), n=c.gx.length, s=medida(n), cu=document.getElementById('cuadro'), gw=Math.round(s*.55), pz=Math.round(s*(n>2?.42:.46));
+  cu.style.gridTemplateColumns=gw+'px repeat('+n+','+s+'px)'; cu.style.gridTemplateRows=gw+'px repeat('+n+','+s+'px)';
+  var h='<div class="esq">Gametos</div>';
+  c.gx.forEach(function(x,i){ h+='<div class="gam'+(animar?' vuela':'')+'" style="animation-delay:'+(i*.08)+'s;font-size:'+(n>2?15:20)+'px">'+x+'</div>'; });
+  c.gy.forEach(function(y,j){ h+='<div class="gam f'+(animar?' vuela':'')+'" style="animation-delay:'+(.3+j*.08)+'s;font-size:'+(n>2?15:20)+'px">'+y+'</div>';
+    c.gx.forEach(function(x,i){ var k=j*n+i; h+='<div class="cel'+(animar?' vacia':'')+'" data-c="'+k+'"><b>'+(animar?'?':c.cel[k])+'</b>'+(animar?'':icono(fenotipo(c.cel[k]),pz))+'</div>'; }); });
+  cu.innerHTML=h;
+  cu.querySelectorAll('.cel').forEach(function(el){ el.onclick=function(){ if(RETO&&!RETO.listo&&RETO.tocar){ RETO.tocar(+el.dataset.c,el); return; } if(RETO) return; son('tic'); var g=c.cel[+el.dataset.c]; S.marca=S.marca&&S.marca.v===g&&S.marca.t==='g'?{t:'f',v:fenotipo(g).k}:S.marca&&S.marca.t==='f'&&S.marca.v===fenotipo(g).k?null:{t:'g',v:g}; resaltar(c); resultados(c,true); }; });
+  var paso=n>2?.16:.42, t0=.55+n*.08;
+  if(animar){ c.cel.forEach(function(g,k){ tAnim.push(setTimeout(function(){ var el=cu.querySelector('[data-c="'+k+'"]'); if(!el) return; var i=k%n, j=Math.floor(k/n);
+      el.classList.remove('vacia'); el.innerHTML='<b>'+g+'</b>'+icono(fenotipo(g),pz)+'<i class="ent" style="color:#8FD6FF;transform:translateY(-'+(s*(j+1))+'px)">'+c.gx[i]+'</i><i class="ent" style="color:#FF9DC0;transform:translateX(-'+(s*(i+1))+'px)">'+c.gy[j]+'</i>';
+      if(n<=2||k%2===0) son('tic'); },(t0+k*paso)*1000)); });
+    tAnim.push(setTimeout(function(){ resultados(c,true); son('bien'); },(t0+c.N*paso+.2)*1000)); resultados(c,false,true); }
+  else resultados(c,true);
+  datos(c); resaltar(c); }
+function resultados(c,lleno,vacio){ var F=ordFen(c.fen), G=ordGen(c.gen);
+  var h='<div><h5>Proporción fenotípica</h5><div class="razon">'+(vacio?'?':razon(F.map(function(k){ return c.fen[k].n; })))+'<small>'+F.join(' : ')+'</small></div></div>';
+  F.forEach(function(k){ var x=c.fen[k], on=S.marca&&S.marca.t==='f'&&S.marca.v===k; h+='<div class="fen'+(on?' on':'')+'" data-f="'+k+'">'+icono(x.p,30)+'<div class="nom">'+k+'<span>'+(vacio?'':x.n+'/'+c.N+' · '+f(Math.round(x.n/c.N*1000)/10)+' %')+'</span></div><div class="barra"><i style="background:'+x.p.col+'" data-w="'+(x.n/c.N*100)+'"></i></div></div>'; });
+  h+='<div><h5>Proporción genotípica'+(vacio?'':' · '+razon(G.map(function(k){ return c.gen[k]; })))+'</h5></div><div class="gens">'+G.map(function(g){ var on=S.marca&&S.marca.t==='g'&&S.marca.v===g; return '<span data-g="'+g+'" class="'+(on?'on':'')+'">'+g+(vacio?'':'<small>'+frac(c.gen[g],c.N)+'</small>')+'</span>'; }).join('')+'</div>';
+  var r=document.getElementById('res'); r.innerHTML=h;
+  if(lleno) requestAnimationFrame(function(){ r.querySelectorAll('.barra i').forEach(function(i){ i.style.width=i.dataset.w+'%'; }); });
+  r.querySelectorAll('[data-f]').forEach(function(e){ e.onclick=function(){ if(RETO) return; son('tic'); S.marca=S.marca&&S.marca.t==='f'&&S.marca.v===e.dataset.f?null:{t:'f',v:e.dataset.f}; resaltar(c); resultados(c,true); }; });
+  r.querySelectorAll('[data-g]').forEach(function(e){ e.onclick=function(){ if(RETO) return; son('tic'); S.marca=S.marca&&S.marca.t==='g'&&S.marca.v===e.dataset.g?null:{t:'g',v:e.dataset.g}; resaltar(c); resultados(c,true); }; }); }
+function resaltar(c){ document.querySelectorAll('.cel').forEach(function(el){ var g=c.cel[+el.dataset.c], m=S.marca, ok=m&&(m.t==='g'?g===m.v:fenotipo(g).k===m.v);
+  el.classList.toggle('marca',!!ok); el.classList.toggle('apaga',!!m&&!ok); }); }
+function datos(c){ var F=ordFen(c.fen), G=ordGen(c.gen);
+  document.getElementById('datos').innerHTML='<div class="dato ancho"><small><i style="background:#55C23A"></i>Cruce</small><b>'+S.p[0]+' × '+S.p[1]+'</b></div>'+
+    '<div class="dato ancho"><small><i style="background:#FFD23A"></i>Carácter'+(S.modo==='di'?'es':'')+'</small><b>'+cars().map(function(k){ return CAR[k].n+' ('+CAR[k].g+' '+CAR[k].d.replace(/^(Flor|Vaina) /,'').toLowerCase()+' / '+CAR[k].g.toLowerCase()+' '+CAR[k].r.replace(/^(Flor|Vaina) /,'').toLowerCase()+')'; }).join('<br>')+'</b></div>'+
+    '<div class="dato"><small><i style="background:#3AB4F0"></i>Gametos padre 1</small><b>'+Array.from(new Set(c.gx)).join(', ')+'</b></div><div class="dato"><small><i style="background:#FF5C8A"></i>Gametos padre 2</small><b>'+Array.from(new Set(c.gy)).join(', ')+'</b></div>'+
+    '<div class="dato"><small><i style="background:#FFD23A"></i>Fenotipos</small><b>'+F.length+' distintos</b></div><div class="dato"><small><i style="background:#9B6BFF"></i>Genotipos</small><b>'+G.length+' distintos</b></div>'; }
+function reiniciar(){ S.p=presets()[1].slice(0,2); S.marca=null; tipos(); caracteres(); padres(); lista(); dibujar(true); }
+function tipos(){ document.getElementById('tipos').innerHTML='<button data-t="mono" class="'+(S.modo==='mono'?'on':'')+'">Monohíbrido (1 carácter)</button><button data-t="di" class="'+(S.modo==='di'?'on':'')+'">Dihíbrido (2 caracteres)</button>';
+  document.querySelectorAll('#tipos button').forEach(function(b){ b.onclick=function(){ if(RETO||S.modo===b.dataset.t) return; son('tic'); S.modo=b.dataset.t; reiniciar(); }; }); }
+function caracteres(){ var h='<h3>'+(S.modo==='di'?'Primer carácter':'Elige el carácter')+'</h3><div class="cars">'+ORDEN.map(function(k){ return '<button data-c="0" data-k="'+k+'" class="'+(S.c[0]===k?'on':'')+(S.modo==='di'&&S.c[1]===k?' off':'')+'">'+icono1(k,true,26)+'<span>'+CAR[k].n+'<small>'+CAR[k].d.replace(/^(Flor|Vaina) /,'')+' / '+CAR[k].r.replace(/^(Flor|Vaina) /,'').toLowerCase()+'</small></span></button>'; }).join('')+'</div>';
+  if(S.modo==='di') h+='<h3 style="margin-top:12px">Segundo carácter</h3><div class="cars">'+ORDEN.map(function(k){ return '<button data-c="1" data-k="'+k+'" class="'+(S.c[1]===k?'on':'')+(S.c[0]===k?' off':'')+'">'+icono1(k,true,26)+'<span>'+CAR[k].n+'</span></button>'; }).join('')+'</div>';
+  document.getElementById('cCar').innerHTML=h;
+  document.querySelectorAll('#cCar [data-k]').forEach(function(b){ b.onclick=function(){ if(RETO) return; var i=+b.dataset.c, k=b.dataset.k; if(S.c[i]===k||(S.modo==='di'&&S.c[1-i]===k)) return; son('tic'); S.c[i]=k; reiniciar(); }; }); }
+function lista(){ var P=presets(); document.getElementById('pres').innerHTML=P.map(function(p,i){ var on=p[0]===S.p[0]&&p[1]===S.p[1]; return '<button data-i="'+i+'" class="'+(on?'on':'')+'">'+p[0]+' × '+p[1]+(p[2]?'<small>'+p[2]+'</small>':'')+'</button>'; }).join('');
+  document.querySelectorAll('#pres button').forEach(function(b){ b.onclick=function(){ if(RETO) return; son('tic'); var p=P[+b.dataset.i]; S.p=[p[0],p[1]]; S.marca=null; padres(); lista(); dibujar(true); }; }); }
+document.getElementById('bCruz').onclick=function(){ son('abrir'); S.marca=null; dibujar(true); };
+var rz; addEventListener('resize',function(){ clearTimeout(rz); rz=setTimeout(function(){ dibujar(false); },200); });
+var RETO=null;
+if(window.ResizeObserver){ var uW=0; new ResizeObserver(function(){ var pl=document.getElementById('plano'); if(Math.abs(pl.clientWidth-uW)>4){ var primera=!uW; uW=pl.clientWidth; if(!primera) dibujar(false); } }).observe(document.getElementById('plano')); }
+tipos(); caracteres(); padres(); lista(); dibujar(true);
+
+/* ============ MODO RETO ============ */
+var AZ=MCAzar;
+function poner(modo,c,p1,p2,anim){ S.modo=modo; S.c=c.concat(c.length<2?[c[0]==='color'?'forma':'color']:[]); S.p=[p1,p2]; S.marca=null; tipos(); caracteres(); padres(); lista(); dibujar(anim); }
+function tapar(){ document.querySelectorAll('.cel').forEach(function(el){ el.innerHTML='<b>?</b>'; el.classList.add('vacia'); }); document.getElementById('res').style.visibility='hidden'; }
+function ops4(buena,malas){ var o=[buena]; malas.forEach(function(m){ if(o.indexOf(m)<0&&o.length<4) o.push(m); }); return o; }
+var RT=MCReto({sim:'punnett',nombre:'Reto · Mendel',
+  alEntrar:function(){},
+  alSalir:function(){ RETO=null; S.marca=null; document.getElementById('res').style.visibility=''; dibujar(false); },
+  nueva:function(i,caja,R){
+    RETO={bloq:true};
+    if(i===0){ var k0=AZ(ORDEN), G0=CAR[k0].g, g0=G0.toLowerCase(), cr=AZ([[G0+g0,G0+g0],[G0+g0,g0+g0],[G0+G0,G0+g0]]); poner('mono',[k0],cr[0],cr[1],false);
+      var c=cruce(), buenas=[]; c.cel.forEach(function(g,k){ if(!fenotipo(g).dom[0]) buenas.push(k); }); var elegidas={}; tapar();
+      RETO.tocar=function(k,el){ elegidas[k]=!elegidas[k]; el.classList.toggle('sel',elegidas[k]); son('tic'); };
+      R.texto(caja,'Toca','Carácter: <em>'+CAR[k0].n.toLowerCase()+'</em>. En el cruce <em>'+cr[0]+' × '+cr[1]+'</em>, toca las casillas que darán <em>'+CAR[k0].r.toLowerCase()+'</em>'+(buenas.length?'':' (si no hay ninguna, no toques nada)')+'.');
+      return {listo:true,comprobar:function(){ RETO.listo=true; var ok=c.cel.every(function(_,k){ return !!elegidas[k]===(buenas.indexOf(k)>=0); }); document.getElementById('res').style.visibility=''; dibujar(false);
+        document.querySelectorAll('.cel').forEach(function(el){ var k=+el.dataset.c; if(buenas.indexOf(k)>=0) el.classList.add('bien'); else if(elegidas[k]) el.classList.add('mal'); });
+        return {ok:ok,msg:CAR[k0].r+' es recesivo: solo sale con '+g0+g0+' ('+(buenas.length?buenas.length+' de 4 casillas':'aquí ninguna')+').'}; }}; }
+    if(i===1){ var k1=AZ(ORDEN), G1=CAR[k1].g, g1=G1.toLowerCase(), cr1=AZ([[G1+g1,G1+g1,'3 : 1'],[G1+g1,g1+g1,'1 : 1'],[G1+G1,g1+g1,'Todos '+CAR[k1].d.toLowerCase()]]); poner('mono',[k1],cr1[0],cr1[1],false); tapar();
+      var o1=R.opciones(caja,'Carácter: <em>'+CAR[k1].n.toLowerCase()+'</em>. ¿Qué proporción fenotípica da <em>'+cr1[0]+' × '+cr1[1]+'</em>?',ops4(cr1[2],['3 : 1','1 : 1','1 : 2 : 1','Todos '+CAR[k1].d.toLowerCase(),'Todos '+CAR[k1].r.toLowerCase()]),0,cr1[2]==='3 : 1'?'Dos heterocigotos: 3 dominantes por 1 recesivo.':cr1[2]==='1 : 1'?'Retrocruce con el recesivo: mitad y mitad.':'Homocigotos opuestos: toda la F1 es heterocigota y muestra el dominante.');
+      var q1=o1.comprobar; o1.comprobar=function(){ document.getElementById('res').style.visibility=''; RETO.listo=true; dibujar(true); return q1(); }; return o1; }
+    if(i===2){ var k2=AZ(ORDEN), G2=CAR[k2].g, g2=G2.toLowerCase(), q=AZ([[G2+g2,G2+g2,g2+g2,'1/4'],[G2+g2,G2+g2,G2+g2,'1/2'],[G2+g2,g2+g2,g2+g2,'1/2'],[G2+G2,G2+g2,G2+g2,'1/2'],[G2+g2,G2+g2,G2+G2,'1/4']]); poner('mono',[k2],q[0],q[1],false); tapar();
+      var o2=R.opciones(caja,'En '+q[0]+' × '+q[1]+', ¿qué probabilidad hay de un hijo <em>'+q[2]+'</em>?',ops4(q[3],['1/4','1/2','3/4','0','1']),0,'Cuenta las casillas '+q[2]+' en el cuadro de 4.');
+      var q2=o2.comprobar; o2.comprobar=function(){ document.getElementById('res').style.visibility=''; RETO.listo=true; S.marca={t:'g',v:q[2]}; dibujar(true); return q2(); }; return o2; }
+    if(i===3){ var q3=AZ([['Amarilla rugosa',3],['Verde lisa',3],['Amarilla lisa',9],['Verde rugosa',1]]); poner('di',['color','forma'],'AaRr','AaRr',false); tapar();
+      var o3=R.opciones(caja,'En AaRr × AaRr (16 casillas), ¿cuántas semillas serán <em>'+q3[0].toLowerCase()+'</em>?',ops4(String(q3[1]),['9','3','1','6','4']),0,'Proporción 9 : 3 : 3 : 1 → '+q3[0].toLowerCase()+' = '+q3[1]+'/16.');
+      var r3=o3.comprobar; o3.comprobar=function(){ document.getElementById('res').style.visibility=''; RETO.listo=true; S.marca={t:'f',v:q3[0]}; dibujar(true); return r3(); }; return o3; }
+    var k4=AZ(ORDEN), G4=CAR[k4].g, g4=G4.toLowerCase(), D=CAR[k4].d.toLowerCase(), Rr=CAR[k4].r.toLowerCase();
+    var q4=AZ([['la mitad '+Rr,G4+g4+' × '+g4+g4],['todos '+D+', y al cruzarlos entre sí sale 3 : 1',G4+G4+' × '+g4+g4],['3/4 '+D+' y 1/4 '+Rr,G4+g4+' × '+G4+g4],['todos '+Rr,g4+g4+' × '+g4+g4]]); poner('mono',[k4],G4+g4,G4+g4,false); tapar();
+    var o4=R.opciones(caja,'Carácter: <em>'+CAR[k4].n.toLowerCase()+'</em>. Dos plantas dan hijos <em>'+q4[0]+'</em>. ¿Cuál fue el cruce?',ops4(q4[1],[G4+g4+' × '+g4+g4,G4+G4+' × '+g4+g4,G4+g4+' × '+G4+g4,g4+g4+' × '+g4+g4,G4+G4+' × '+G4+G4]),0,'El cruce '+q4[1]+' da '+q4[0]+'.');
+    var r4=o4.comprobar; o4.comprobar=function(){ var p=q4[1].split(' × '); document.getElementById('res').style.visibility=''; RETO.listo=true; poner('mono',[k4],p[0],p[1],true); return r4(); }; return o4;
+  }});
+</script>
+</body>
+</html>
