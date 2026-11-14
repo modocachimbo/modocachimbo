@@ -13,469 +13,222 @@
 <script src="assets/app.js" defer></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Nunito:wght@600;700;800;900&family=Sora:wght@700;800&display=swap">
 <style>
-:root{--bg:#06040F;--card:#151127;--card2:#1D1834;--borde:#2A2346;--lima:#C6E000;--lima-osc:#8fa300;--tx:#EEEAF7;--dim:#A99FC8;--faint:#6F6690;--oro:#FFC800;--vidrio:rgba(21,17,39,.72)}
+:root{--bg:#06040F;--card:#151127;--card2:#1D1834;--borde:#2A2346;--lima:#C6E000;--lima-osc:#8fa300;--tx:#EEEAF7;--dim:#A99FC8;--faint:#6F6690;--oro:#FFC800}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;overflow:hidden}
-body{background:var(--bg);color:var(--tx);font:700 15px/1.45 "Nunito",system-ui,sans-serif}
-button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
-/* ===== escena ===== */
-#escena{position:fixed;inset:0;touch-action:none;cursor:grab;background:radial-gradient(70% 70% at 50% 45%,#140D33 0%,#08051A 60%,#030209 100%)}
-#escena:active{cursor:grabbing}
-#escena svg{width:100%;height:100%;display:block}
-.org{cursor:pointer}
-.etq{pointer-events:none;transition:opacity .3s}
-.etq text{font:700 20px "Barlow Condensed",sans-serif;letter-spacing:.06em;text-transform:uppercase;fill:#EEEAF7}
-.etq rect{fill:rgba(10,7,26,.82);stroke:rgba(198,224,0,.55);stroke-width:1.2}
-.etq line{stroke:rgba(198,224,0,.7);stroke-width:1.4}
-.etq circle{fill:#C6E000}
-.sin-nombres .etq{opacity:0}
-/* célula ilustrada */
-.org{fill:transparent;cursor:pointer}
-.org.memb{fill:none;stroke:transparent;stroke-width:70;pointer-events:stroke}
-.osc{fill:rgba(4,3,12,.66);opacity:0;transition:opacity .45s}
-.cel-foco .osc{opacity:1}
-.br-a{fill:none;stroke:#C6E000;stroke-width:14;opacity:.55;filter:url(#fGlow);animation:late 1.6s ease-in-out infinite}
-.br-b{fill:none;stroke:#E4FF5A;stroke-width:3.5}
-.br-m{fill:none;stroke:#C6E000;stroke-width:16;opacity:.8;filter:url(#fGlow);animation:late 1.6s ease-in-out infinite}
-@keyframes late{50%{opacity:.25}}
-.part circle{fill:#DDF3FF;opacity:.35;animation:flota 9s ease-in-out infinite alternate}
-@keyframes flota{from{transform:translate(0,0)}to{transform:translate(18px,-26px)}}
-.img-cel{animation:respira 7s ease-in-out infinite;transform-origin:1200px 900px}
-@keyframes respira{50%{transform:scale(1.006)}}
-.etq text{font-size:28px}
-/* ===== HUD ===== */
-.hud{position:fixed;z-index:5;display:flex;gap:10px;align-items:center}
-.glass{background:var(--vidrio);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.08);border-radius:16px}
-.h-top{top:max(14px,env(safe-area-inset-top));left:16px;right:16px}
-.ib{width:44px;height:44px;display:grid;place-items:center;border-radius:14px}
-.ib svg{width:20px;height:20px}
-.ttl{padding:6px 14px 7px}
-.ttl small{display:block;font:900 10.5px/1.2 "Nunito";letter-spacing:.16em;text-transform:uppercase;color:var(--lima)}
-.ttl b{display:block;font:800 19px/1.2 "Sora",sans-serif;letter-spacing:-.01em}
-.sp{flex:1}
-.tg{display:flex;align-items:center;gap:8px;padding:0 12px;height:44px;font:800 13px/1 "Nunito";color:var(--dim)}
-.sw{width:38px;height:22px;border-radius:11px;background:var(--lima);position:relative;flex:none}
-.sw::after{content:"";position:absolute;top:3px;right:3px;width:16px;height:16px;border-radius:50%;background:#151A03;transition:.2s}
-.sw.off{background:#3A3358}.sw.off::after{right:19px;background:#A99FC8}
-.h-zoom{right:16px;top:50%;transform:translateY(-50%);flex-direction:column;padding:6px;gap:4px}
-.h-zoom .nv{font:800 12px/1 "Barlow Condensed";letter-spacing:.06em;color:var(--lima);padding:4px 0}
-.h-esc{left:16px;bottom:calc(76px + env(safe-area-inset-bottom));padding:8px 12px;flex-direction:column;align-items:flex-start;gap:5px}
-.h-esc i{display:block;height:6px;border:2px solid var(--tx);border-top:0;width:80px}
-.h-esc span{font:800 12px/1 "Barlow Condensed";letter-spacing:.08em;color:var(--dim)}
-.h-bot{left:0;right:0;bottom:0;padding:10px 16px max(14px,env(safe-area-inset-bottom));display:block}
-.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
-.chips::-webkit-scrollbar{display:none}
-.chip{flex:none;display:flex;align-items:center;gap:8px;padding:0 14px;height:44px;border-radius:14px;font:800 14px/1 "Nunito";white-space:nowrap}
-.chip i{width:10px;height:10px;border-radius:50%}
-.chip.on{background:var(--lima);color:#151A03;border-color:var(--lima)}
-.modo{position:fixed;z-index:5;left:50%;transform:translateX(-50%);bottom:calc(72px + env(safe-area-inset-bottom));display:flex;padding:4px;border-radius:16px}
-.modo button{padding:9px 16px;border-radius:12px;font:900 13px/1 "Nunito";color:var(--dim);display:flex;align-items:center;gap:6px}
-.modo button svg{width:16px;height:16px}
-.modo .on{background:var(--lima);color:#151A03}
-.pista{display:none;position:fixed;z-index:4;left:50%;top:calc(76px + env(safe-area-inset-top));transform:translateX(-50%);padding:8px 14px;border-radius:12px;font:800 13px/1.2 "Nunito";color:var(--dim);gap:8px;align-items:center;white-space:nowrap}
-.pista svg{width:18px;height:18px;color:var(--lima)}
-/* ===== detalle ===== */
-#det{position:fixed;inset:0;z-index:20;display:none;background:rgba(4,3,12,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
-#det.on{display:flex;animation:ent .45s cubic-bezier(.2,.8,.2,1)}
-@keyframes ent{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:none}}
-.d-box{margin:auto;width:min(1240px,100% - 40px);height:min(760px,100% - 40px);display:grid;grid-template-columns:1.25fr 1fr;border-radius:26px;overflow:hidden;background:#0C0920;border:1px solid var(--borde);box-shadow:0 40px 120px rgba(0,0,0,.6)}
-.d-ilus{animation:dIlus .6s ease both,dFlota 6s ease-in-out .6s infinite}
-@keyframes dIlus{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
-@keyframes dFlota{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
-.d-vis .mk-onda{transform-box:fill-box;transform-origin:center;animation:mkOnda 2.2s ease-out infinite}
-@keyframes mkOnda{from{transform:scale(1);opacity:.8}to{transform:scale(2.2);opacity:0}}
-@media (prefers-reduced-motion:reduce){.d-ilus,.d-vis .mk-onda{animation:none}}
+html,body{margin:0}
+body{background:radial-gradient(120% 60% at 50% -10%,#1A1040 0%,#08051A 55%,#06040F 100%) no-repeat #06040F;color:var(--tx);font:700 15px/1.45 "Nunito",system-ui,sans-serif;min-height:100vh}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+a{color:inherit;text-decoration:none}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.wrap{max-width:1240px;margin:0 auto;padding:18px 24px 60px}
+/* top */
+.top{display:flex;align-items:center;gap:12px}
+.bt{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:rgba(21,17,39,.8);border:1px solid var(--borde)}
+.ttl small{display:block;font:800 12px/1 "Barlow Condensed";letter-spacing:.16em;text-transform:uppercase;color:var(--lima)}
+.ttl b{display:block;font:800 26px/1.1 "Sora";letter-spacing:-.02em}
+.top .der{margin-left:auto;display:flex;gap:8px;align-items:center}
+.xp{display:flex;align-items:center;gap:8px;padding:0 14px;height:44px;border-radius:14px;background:rgba(21,17,39,.8);border:1px solid var(--borde);font:800 15px "Barlow Condensed";letter-spacing:.06em}
+.xp i{width:22px;height:22px;border-radius:50%;background:conic-gradient(var(--lima) 0 18%,#2A2346 0);display:grid;place-items:center;font-style:normal}
+.xp i:after{content:"";width:14px;height:14px;border-radius:50%;background:#151127}
+.son{color:var(--lima);border-color:rgba(198,224,0,.45)}
+/* hero */
+.hero{margin-top:20px;position:relative;border-radius:28px;overflow:hidden;min-height:330px;display:grid;grid-template-columns:1fr 1.1fr;align-items:center;background:linear-gradient(135deg,#1B1240,#0D0926 60%);border:1px solid var(--borde)}
+.hero:before{content:"";position:absolute;inset:0;background:radial-gradient(60% 80% at 75% 50%,rgba(198,224,0,.16),transparent 70%)}
+.hero .tx{position:relative;padding:34px 36px;z-index:2}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:9px;font:800 12px/1 "Barlow Condensed";letter-spacing:.12em;text-transform:uppercase;background:rgba(198,224,0,.12);color:var(--lima);border:1px solid rgba(198,224,0,.35)}
+.hero h1{margin:14px 0 8px;font:800 44px/1.02 "Sora";letter-spacing:-.03em}
+.hero p{margin:0 0 20px;color:var(--dim);font-weight:700;max-width:430px}
+.hero .meta{display:flex;gap:16px;margin-bottom:22px;color:var(--dim);font:800 13px "Barlow Condensed";letter-spacing:.1em;text-transform:uppercase}
+.hero .meta b{color:var(--tx);font-size:18px;display:block;letter-spacing:.02em}
+.btn{display:inline-flex;align-items:center;gap:10px;height:54px;padding:0 26px;border-radius:16px;background:var(--lima);color:#151A03;font:800 17px "Sora";box-shadow:0 5px 0 var(--lima-osc)}
+.hero .img{position:relative;height:100%;min-height:330px}
+.hero .img img{position:absolute;right:-30px;top:50%;width:118%;transform:translateY(-50%) rotate(-4deg);filter:drop-shadow(0 30px 50px rgba(0,0,0,.6));animation:flota 7s ease-in-out infinite}
+@keyframes flota{50%{transform:translateY(-53%) rotate(-3deg)}}
+.prog{height:6px;border-radius:6px;background:#2A2346;overflow:hidden;max-width:330px;margin:-6px 0 22px}
+.prog i{display:block;height:100%;width:57%;background:var(--lima);border-radius:6px}
+/* cursos */
+.cursos{display:flex;gap:8px;margin:26px 0 6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.cursos::-webkit-scrollbar{display:none}
+.cur{flex:none;display:flex;align-items:center;gap:8px;height:42px;padding:0 16px;border-radius:13px;background:rgba(21,17,39,.8);border:1px solid var(--borde);font:800 14px "Nunito";color:var(--dim)}
+.cur i{width:9px;height:9px;border-radius:50%}
+.cur.on{background:var(--lima);color:#151A03;border-color:var(--lima)}
+.cur em{font:800 12px "Barlow Condensed";font-style:normal;opacity:.7}
+/* secciones */
+.sec{margin-top:26px}
+.sec h2{display:flex;align-items:center;gap:10px;margin:0 0 12px;font:800 15px "Barlow Condensed";letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.sec h2 i{width:10px;height:10px;border-radius:3px}
+.sec h2 span{margin-left:auto;font-size:13px;color:var(--faint)}
+.fila{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.sim{position:relative;border-radius:20px;overflow:hidden;background:var(--card);border:1px solid var(--borde);display:flex;flex-direction:column;transition:transform .2s}
+.sim:hover{transform:translateY(-3px)}
+.sim .art{position:relative;aspect-ratio:16/10;display:grid;place-items:center;background:radial-gradient(70% 80% at 50% 55%,var(--g,rgba(198,224,0,.18)),transparent 70%),#0E0A22;overflow:hidden}
+.sim .art svg{width:62%;height:72%}
+.sim .art img{width:112%;filter:drop-shadow(0 10px 20px rgba(0,0,0,.6))}
+.sim .inf{padding:12px 14px 14px}
+.sim b{display:block;font:800 16px/1.2 "Nunito"}
+.sim small{display:block;color:var(--dim);font:700 12.5px/1.35 "Nunito";margin-top:3px}
+.sim .pie{display:flex;align-items:center;gap:8px;margin-top:10px;font:800 12px "Barlow Condensed";letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.sim .pie .barra{flex:1;height:5px;border-radius:5px;background:#2A2346;overflow:hidden}.sim .pie .barra i{display:block;height:100%;background:var(--lima)}
+.sim .esq{position:absolute;top:10px;left:10px;z-index:2}
+.sim.pronto .art>svg{opacity:.55;filter:saturate(.6)}.sim.pronto b{color:#C9C2DE}
+.sim.pronto .art:after{content:"";position:absolute;inset:0;background:rgba(6,4,15,.35)}
+.lock{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:8px;background:rgba(6,4,15,.75);border:1px solid var(--borde);font:800 11px/1 "Barlow Condensed";letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.nuevo{background:var(--lima);color:#151A03;border-color:var(--lima)}
+.paq{margin-top:30px;display:flex;align-items:center;gap:16px;padding:16px 20px;border-radius:20px;background:linear-gradient(90deg,rgba(58,180,240,.12),rgba(21,17,39,.8));border:1px solid rgba(58,180,240,.3)}
+.paq .ic{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:rgba(58,180,240,.16);color:#3AB4F0;flex:none}
+.paq b{display:block;font:800 16px "Nunito"}.paq small{color:var(--dim)}
+.paq .sb{margin-left:auto;height:42px;padding:0 16px;border-radius:12px;border:1px solid rgba(58,180,240,.5);color:#3AB4F0;font:800 14px "Nunito";flex:none}
+@media (max-width:1000px){.fila{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:760px){
+  .wrap{padding:max(12px,env(safe-area-inset-top)) 0 40px}
+  .top,.cursos,.sec h2,.paq{margin-left:16px;margin-right:16px}
+  .ttl b{font-size:21px}.xp b{display:none}
+  .hero{margin:16px 16px 0;grid-template-columns:1fr;min-height:0}
+  .hero .img{min-height:190px;order:-1}
+  .hero .img{min-height:0}.hero .img img{position:static;display:block;width:100%;transform:rotate(-4deg);animation:none;margin:-10px 0 -6px}
+  .hero .meta{font-size:11px}.hero .meta b{font-size:16px}
+  .hero .tx{padding:4px 20px 22px}
+  .hero h1{font-size:32px;margin-top:10px}
+  .hero .meta{gap:12px}
+  .btn{width:100%;justify-content:center}
+  .fila{display:flex;overflow-x:auto;gap:12px;padding:0 16px 4px;scroll-snap-type:x mandatory;scrollbar-width:none}
+  .fila::-webkit-scrollbar{display:none}
+  .sim{flex:0 0 68%;scroll-snap-align:start}
+  .paq{flex-wrap:wrap}.paq .sb{margin-left:62px}
+}
 
-.d-vis{position:relative;background:radial-gradient(80% 80% at 50% 50%,#1C1240 0%,#0A0720 70%);overflow:hidden}
-.d-vis svg{position:absolute;inset:0;width:100%;height:100%}
-.d-vis .grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:32px 32px}
-.d-vis .lbl text{font:700 17px "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;fill:#EEEAF7}
-.d-vis .lbl line,.d-vis .lbl polyline{stroke:#C6E000;stroke-width:1.3;fill:none}
-.d-vis .lbl circle{fill:#C6E000}
-.d-vis .lbl .n{fill:#151A03;font:800 14px "Barlow Condensed"}
-.d-vis .lbl .nb{fill:#C6E000}
-.d-cab{position:absolute;left:18px;top:16px;right:18px;display:flex;align-items:center;gap:10px}
-.pill{padding:6px 11px;border-radius:10px;font:800 12px/1 "Barlow Condensed";letter-spacing:.1em;text-transform:uppercase;background:rgba(198,224,0,.12);color:var(--lima);border:1px solid rgba(198,224,0,.35)}
-.d-pie{position:absolute;left:18px;bottom:16px;right:18px;display:flex;align-items:center;gap:10px;font:800 12px/1 "Barlow Condensed";letter-spacing:.08em;color:var(--faint);text-transform:uppercase}
-.d-pie .esc{text-transform:none}
-.d-pie .esc i{display:inline-block;width:60px;height:6px;border:2px solid var(--dim);border-top:0;margin-right:8px;vertical-align:middle}
-.d-inf{padding:26px 28px;overflow:auto;display:flex;flex-direction:column;gap:16px;border-left:1px solid var(--borde)}
-.d-inf header{display:flex;gap:12px;align-items:flex-start}
-.d-inf h2{margin:0;font:800 34px/1.05 "Sora",sans-serif;letter-spacing:-.02em}
-.d-inf .lat{display:block;margin-top:6px;font:700 14px/1.2 "Nunito";color:var(--dim)}
-.d-inf .x{margin-left:auto;width:42px;height:42px;border-radius:12px;background:var(--card2);border:1px solid var(--borde);display:grid;place-items:center;flex:none}
-.d-inf .x svg{width:18px;height:18px}
-.ficha{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.ficha div{padding:10px 12px;border-radius:14px;background:var(--card);border:1px solid var(--borde)}
-.ficha small{display:block;font:800 10.5px/1 "Nunito";letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
-.ficha b{font:800 15px/1.15 "Nunito"}
-.tabs{display:flex;gap:4px;padding:4px;border-radius:14px;background:var(--card);border:1px solid var(--borde)}
-.tabs button{flex:1;padding:10px 6px;border-radius:10px;font:900 13px/1 "Nunito";color:var(--dim)}
-.tabs .on{background:var(--card2);color:var(--tx);box-shadow:inset 0 -2px 0 var(--lima)}
-.txt{margin:0;font:700 15.5px/1.55 "Nunito";color:#DCD6EE}
-.partes{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
-.partes li{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;padding:10px 12px;border-radius:12px;background:var(--card);border:1px solid var(--borde)}
-.partes li.on{border-color:rgba(198,224,0,.6);background:linear-gradient(90deg,rgba(198,224,0,.09),transparent)}
-.partes .n{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--lima);color:#151A03;font:800 15px/1 "Barlow Condensed"}
-.partes b{display:block;font:800 15px/1.2 "Nunito"}
-.partes span{display:block;font:700 13.5px/1.4 "Nunito";color:var(--dim);margin-top:2px}
-.proc{flex-shrink:0;display:flex;flex-direction:column;gap:0;border-radius:16px;border:1px solid var(--borde);overflow:hidden}
-.proc .eq{padding:12px 14px;background:var(--card2);font:700 16px/1.3 "Nunito";text-align:center}
-.proc .eq b{color:var(--oro)}
-.proc .st{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:10px 14px;border-top:1px solid var(--borde)}
-.proc .st i{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font:800 15px/1 "Barlow Condensed";font-style:normal}
-.proc .st b{display:block;font:800 14.5px/1.2 "Nunito"}
-.proc .st span{font:700 12.5px/1.3 "Nunito";color:var(--dim)}
-.proc .st em{font:800 14px/1 "Barlow Condensed";letter-spacing:.04em;color:var(--oro);font-style:normal;white-space:nowrap}
-.clave{flex-shrink:0;border-radius:16px;padding:14px 16px;background:linear-gradient(135deg,rgba(255,200,0,.1),rgba(255,200,0,.03));border:1px solid rgba(255,200,0,.38)}
-.clave b{display:flex;align-items:center;gap:7px;font:900 11px/1 "Nunito";letter-spacing:.14em;text-transform:uppercase;color:var(--oro);margin-bottom:8px}
-.clave b svg{width:16px;height:16px}
-.clave p{margin:0;font:700 14.5px/1.5 "Nunito"}
-.clave p+p{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,200,0,.2)}
-.d-acc{display:flex;gap:10px;margin-top:auto;padding-top:4px}
-.btn{flex:1;display:flex;align-items:center;justify-content:center;gap:9px;height:52px;border-radius:16px;font:800 16px/1 "Sora";background:var(--lima);color:#151A03;box-shadow:0 5px 0 var(--lima-osc)}
-.btn svg{width:20px;height:20px}
-.btn.sec{background:var(--card2);color:var(--tx);box-shadow:0 5px 0 #0d0a1c;border:1px solid var(--borde);flex:.8}
+.son.off{color:var(--faint);border-color:var(--borde)}
+.son.off .on-l{display:none}.son:not(.off) .off-l{display:none}
+.tipos{display:flex;gap:6px;margin-top:8px}
+.tipos span{padding:3px 8px;border-radius:7px;font:800 11px/1.2 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;background:rgba(198,224,0,.12);color:var(--lima)}
+.tipos span.no{background:rgba(255,255,255,.06);color:var(--faint)}
+.sec.oculta{display:none}
+.paq .sb[disabled]{opacity:.55;cursor:default}
+.aviso{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:.25s;padding:12px 18px;border-radius:14px;background:#1D1834;border:1px solid var(--borde);font:800 14px/1.3 "Nunito";max-width:calc(100vw - 32px);text-align:center;z-index:9}
+.aviso.on{opacity:1;transform:translate(-50%,0)}
 /* Beta: solo admin + influencers, igual que el Arcade (assets/arcade-beta.js) */
-html:not(.arcade-si) #escena, html:not(.arcade-si) .hud, html:not(.arcade-si) .pista, html:not(.arcade-si) #det { display:none !important; }
+html:not(.arcade-si) .wrap{display:none}
 .beta-aviso{display:none;max-width:420px;margin:90px auto 0;padding:30px 24px;text-align:center;border-radius:24px;background:var(--card);border:1px solid var(--borde);border-bottom:5px solid var(--lima)}
 html.arcade-no .beta-aviso{display:block}
 .beta-aviso b{display:block;font:800 26px/1.2 "Sora",sans-serif}
 .beta-aviso p{margin:10px 0 20px;color:var(--dim);font-weight:700}
 .beta-aviso a{display:inline-flex;align-items:center;height:48px;padding:0 22px;border-radius:14px;background:var(--lima);color:#151A03;font:800 15px/1 "Sora";text-decoration:none}
 .cargando{display:none;margin:120px auto;width:40px;height:40px;border-radius:50%;border:4px solid var(--borde);border-top-color:var(--lima);animation:gira .8s linear infinite}
-html:not(.arcade-si):not(.arcade-no) .cargando{display:block}
 @keyframes gira{to{transform:rotate(1turn)}}
-a.ib{text-decoration:none}
-@media (max-width:760px){
-  .pista{display:flex}
-  .ttl b{font-size:16px}
-  .h-top .tg span{display:none}
-  .pista{font-size:12px}
-  .h-zoom{top:auto;bottom:calc(76px + env(safe-area-inset-bottom));transform:none}
-  .h-esc{bottom:calc(76px + env(safe-area-inset-bottom))}
-  .modo{bottom:calc(70px + env(safe-area-inset-bottom))}
-  .d-box{width:100%;height:100%;border-radius:0;grid-template-columns:1fr;grid-template-rows:44% 1fr;border:0}
-  .d-inf{border-left:0;border-top:1px solid var(--borde);padding:18px 16px max(18px,env(safe-area-inset-bottom));border-radius:22px 22px 0 0;margin-top:-22px;background:#0C0920;position:relative;z-index:2;gap:14px}
-  .d-inf h2{font-size:27px}
-  .d-vis .lbl text{font-size:22px}
-  .d-cab{top:max(14px,env(safe-area-inset-top))}
-  .ficha b{font-size:13.5px}
-  .d-acc .sec{display:none}
-  .d-pie{display:none}
-}
-
-/* ===== detalle: adaptación a cada pantalla ===== */
-.d-acc{position:sticky;bottom:0;margin-top:auto;padding:10px 0 2px;background:linear-gradient(transparent,#0C0920 30%)}
-.d-inf>*{flex-shrink:0}
-@media (min-width:1600px) and (min-height:950px){
-  .d-box{width:min(1480px,100% - 80px);height:min(900px,100% - 80px)}
-  .d-inf{padding:32px 34px}
-}
-/* celular, y tablet en vertical: dibujo arriba, ficha abajo */
-@media (max-width:760px),(orientation:portrait) and (max-width:1024px){
-  .d-box{width:100%;height:100%;border-radius:0;grid-template-columns:1fr;grid-template-rows:auto 1fr;border:0}
-  .d-vis{height:clamp(190px,58vw,46vh)}
-  .d-inf{border-left:0;border-top:1px solid var(--borde);padding:18px 16px max(14px,env(safe-area-inset-bottom));border-radius:22px 22px 0 0;margin-top:-22px;background:#0C0920;position:relative;z-index:2;gap:12px}
-  .d-inf h2{font-size:clamp(24px,6.6vw,34px)}
-  .ficha{gap:6px}.ficha div{padding:8px 10px;border-radius:12px}
-  .ficha small{font-size:9.5px;margin-bottom:4px}.ficha b{font-size:13.5px}
-  .tabs button{padding:9px 4px}
-  .partes li{padding:9px 11px}
-  .d-acc .sec{display:none}
-}
-@media (orientation:portrait) and (min-width:600px) and (max-width:1024px){
-  .d-vis{height:44vh}
-  .d-inf{padding:24px 28px;max-width:none}
-  .d-acc .sec{display:flex}
-}
-/* celular en horizontal (poca altura): todo más compacto */
-@media (max-height:520px) and (orientation:landscape){
-  .d-box{width:100%;height:100%;border-radius:0;border:0;grid-template-columns:1.1fr 1fr}
-  .d-inf{padding:12px 16px 8px;gap:8px}
-  .d-inf h2{font-size:22px}.d-inf .lat{margin-top:2px;font-size:12.5px}
-  .d-inf .x{width:36px;height:36px}
-  .ficha div{padding:6px 9px}.ficha small{font-size:9px;margin-bottom:3px}.ficha b{font-size:12.5px}
-  .tabs button{padding:7px 4px;font-size:12px}
-  .partes{gap:4px}.partes li{padding:7px 10px;gap:8px;grid-template-columns:24px 1fr}.partes .n{width:24px;height:24px;font-size:13px}
-  .partes b{font-size:13.5px}.partes span{font-size:12px}
-  .txt{font-size:13.5px}
-  .btn{height:42px;font-size:14px}
-  .d-cab .pill{font-size:10px;padding:4px 8px}
-}
+html:not(.arcade-si):not(.arcade-no) .cargando{display:block}
+@media (prefers-reduced-motion:reduce){.hero .img img{animation:none}}
 </style>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-  <!-- citoplasma -->
-  <radialGradient id="gCito" cx="45%" cy="40%" r="65%"><stop offset="0" stop-color="#2B2170"/><stop offset=".55" stop-color="#1D1550"/><stop offset="1" stop-color="#130D38"/></radialGradient>
-  <linearGradient id="gPared" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6A7A12"/><stop offset=".5" stop-color="#3C4708"/><stop offset="1" stop-color="#1A2003"/></linearGradient>
-  <filter id="fRuido" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="4"/><feColorMatrix values="0 0 0 0 .7  0 0 0 0 .65  0 0 0 0 1  0 0 0 .09 0"/><feComposite in2="SourceGraphic" operator="in"/></filter>
-  <filter id="fNiebla" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency=".012" numOctaves="3" seed="9"/><feColorMatrix values="0 0 0 0 .55  0 0 0 0 .4  0 0 0 0 1  0 0 0 .22 0"/><feComposite in2="SourceGraphic" operator="in"/></filter>
-  <filter id="fSombra" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="7" stdDeviation="6" flood-color="#000" flood-opacity=".55"/></filter>
-  <filter id="fBrillo" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8"/></filter>
-  <pattern id="pLip" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="4.5" cy="4.5" r="3" fill="#D8F04A"/><circle cx="3.6" cy="3.6" r="1" fill="#fff" opacity=".6"/></pattern>
-  <!-- núcleo -->
-  <radialGradient id="gNuc" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#B49CFF"/><stop offset=".45" stop-color="#6E4FE0"/><stop offset="1" stop-color="#2E1B86"/></radialGradient>
-  <radialGradient id="gNucCorte" cx="50%" cy="50%" r="55%"><stop offset="0" stop-color="#4A33A8"/><stop offset="1" stop-color="#2A1A74"/></radialGradient>
-  <radialGradient id="gNcl" cx="35%" cy="30%" r="70%"><stop offset="0" stop-color="#FF9BD0"/><stop offset=".6" stop-color="#C2307A"/><stop offset="1" stop-color="#6B1145"/></radialGradient>
-  <!-- mitocondria -->
-  <radialGradient id="gMito" cx="40%" cy="30%" r="75%"><stop offset="0" stop-color="#FFC27A"/><stop offset=".5" stop-color="#F27A1A"/><stop offset="1" stop-color="#8E3A05"/></radialGradient>
-  <radialGradient id="gMatriz" cx="45%" cy="40%" r="65%"><stop offset="0" stop-color="#FFD9A0"/><stop offset="1" stop-color="#F0A050"/></radialGradient>
-  <radialGradient id="gEsf" cx="35%" cy="30%" r="70%"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset=".25" stop-color="#fff" stop-opacity=".0"/></radialGradient>
-  <radialGradient id="gLis" cx="38%" cy="32%" r="70%"><stop offset="0" stop-color="#FFB3D2"/><stop offset=".55" stop-color="#E0458A"/><stop offset="1" stop-color="#7A1342"/></radialGradient>
-  <radialGradient id="gPer" cx="38%" cy="32%" r="70%"><stop offset="0" stop-color="#C8FFB0"/><stop offset=".55" stop-color="#55C23A"/><stop offset="1" stop-color="#1F5A10"/></radialGradient>
-  <radialGradient id="gVes" cx="38%" cy="32%" r="70%"><stop offset="0" stop-color="#C9F1FF"/><stop offset=".55" stop-color="#3AB4F0"/><stop offset="1" stop-color="#0D4A78"/></radialGradient>
-  <radialGradient id="gCen" cx="38%" cy="32%" r="70%"><stop offset="0" stop-color="#FFF0A0"/><stop offset=".55" stop-color="#FFC800"/><stop offset="1" stop-color="#8A6200"/></radialGradient>
-  <!-- iconos -->
-  <symbol id="i-atras" viewBox="0 0 20 20"><path d="M12.5 4l-6 6 6 6" fill="none" stroke="#EEEAF7" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-x" viewBox="0 0 20 20"><path d="M5 5l10 10M15 5L5 15" stroke="#EEEAF7" stroke-width="2.6" stroke-linecap="round"/></symbol>
-  <symbol id="i-mas" viewBox="0 0 20 20"><path d="M10 4v12M4 10h12" stroke="#EEEAF7" stroke-width="2.6" stroke-linecap="round"/></symbol>
-  <symbol id="i-menos" viewBox="0 0 20 20"><path d="M4 10h12" stroke="#EEEAF7" stroke-width="2.6" stroke-linecap="round"/></symbol>
-  <symbol id="i-centrar" viewBox="0 0 20 20"><path d="M3 7V3h4M13 3h4v4M17 13v4h-4M7 17H3v-4" fill="none" stroke="#EEEAF7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-lupa" viewBox="0 0 20 20"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
-  <symbol id="i-diana" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="10" cy="10" r="3.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="10" cy="10" r="1" fill="currentColor"/></symbol>
-  <symbol id="i-dedo" viewBox="0 0 20 20"><path d="M8 3.5v8l-1.6-1.5a1.5 1.5 0 0 0-2.2 2l3.6 4.5h7.2l1-6.2a1.6 1.6 0 0 0-1.4-1.8L10.5 8V3.5a1.25 1.25 0 0 0-2.5 0z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
-  <symbol id="i-rayo" viewBox="0 0 20 20"><path d="M11 2L4 11h5l-1 7 7-9h-5z" fill="#FFC800" stroke="#B88A00" stroke-width="1.2" stroke-linejoin="round"/></symbol>
-  <symbol id="i-sig" viewBox="0 0 20 20"><path d="M7.5 4l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-capas" viewBox="0 0 20 20"><path d="M10 3l7 4-7 4-7-4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M3 10.5l7 4 7-4M3 14l7 4 7-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="ic-atras" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="ic-son" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="on-l" d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/><path class="off-l" d="M16 9.5l5 5M21 9.5l-5 5"/></symbol>
+<symbol id="ic-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></symbol>
+<symbol id="ic-cand" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
+<symbol id="ic-desc" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></symbol>
 </defs></svg>
-
 <div class="cargando"></div>
 <section class="beta-aviso"><b>Laboratorio en prueba</b><p>Los simuladores están en beta. Muy pronto se abren para todos.</p><a href="index.html">Volver al inicio</a></section>
-<div id="escena"></div>
+<div class="wrap">
+  <div class="top">
+    <a class="bt" href="index.html" aria-label="Volver al inicio"><svg class="i"><use href="#ic-atras"/></svg></a>
+    <div class="ttl"><small>Modo Cachimbo</small><b>Laboratorio</b></div>
+    <div class="der">
+      <div class="xp"><i id="xpAro"></i><b id="xpTx"></b></div>
+      <button class="bt son" id="bSon" aria-label="Sonido"><svg class="i"><use href="#ic-son"/></svg></button>
+    </div>
+  </div>
 
-<div class="hud h-top">
-  <a class="ib glass" href="index.html" aria-label="Volver al inicio"><svg><use href="#i-atras"/></svg></a>
-  <div class="ttl glass"><small>Laboratorio · Biología</small><b>Célula eucariota animal</b></div>
-  <div class="sp"></div>
-  <button class="tg glass" id="bNom"><span>Nombres</span><i class="sw" id="swNom"></i></button>
-</div>
-<div class="pista glass" id="pista"><svg><use href="#i-dedo"/></svg>Toca un orgánulo · arrastra y pellizca para hacer zoom</div>
-<div class="hud h-zoom glass">
-  <button class="ib" id="zMas"><svg><use href="#i-mas"/></svg></button>
-  <span class="nv" id="zNv">×1.0</span>
-  <button class="ib" id="zMenos"><svg><use href="#i-menos"/></svg></button>
-  <button class="ib" id="zCen"><svg><use href="#i-centrar"/></svg></button>
-</div>
-<div class="hud h-esc glass"><i id="escBar"></i><span id="escTx">10 µm</span></div>
-<div class="hud h-bot"><div class="chips" id="chips"></div></div>
+  <section class="hero">
+    <div class="tx">
+      <span class="tag" id="hTag">Biología · Empieza aquí</span>
+      <h1>Célula eucariota</h1>
+      <p>Haz zoom, toca cada organela y descubre sus partes en ilustración 3D. Cambia entre célula animal y vegetal.</p>
+      <div class="meta"><div><b id="hVis">0 / 14</b>organelas vistas</div><div><b>14</b>ilustraciones 3D</div><div><b>12 min</b>aprox.</div></div>
+      <div class="prog"><i id="hBar" style="width:0"></i></div>
+      <a class="btn" href="lab-celula.html" id="hBtn"><svg class="i"><use href="#ic-play"/></svg><span>Empezar</span></a>
+    </div>
+    <div class="img"><img src="assets/laboratorio/celula-animal.webp" alt=""></div>
+  </section>
 
-<div id="det"></div>
+  <div class="cursos" id="cursos"></div>
+  <div id="secs"></div>
+
+  <div class="paq">
+    <div class="ic"><svg class="i"><use href="#ic-desc"/></svg></div>
+    <div><b>Úsalo sin internet</b><small>Muy pronto podrás descargar los simuladores de cada curso y estudiar sin datos.</small></div>
+    <button class="sb" disabled>Pronto</button>
+  </div>
+</div>
+<div class="aviso" id="aviso"></div>
 
 <script src="assets/mc-config.js"></script>
 <script src="assets/auth.js"></script>
 <script src="assets/arcade-beta.js"></script>
-<script src="assets/laboratorio/celula-animal.js"></script>
+<script src="assets/lab-sonido.js"></script>
 <script>
-/* ============ DATOS ============ */
-var O = {
-  membrana:{n:'Membrana plasmática',c:'#C6E000',lat:'Bicapa lipídica · 7–10 nm',f:['Grosor','7–10 nm'],m:'Bicapa',fn:'Separa la célula del medio y controla qué entra y qué sale (permeabilidad selectiva). Tiene proteínas que hacen de canales, bombas y receptores.',partes:[['Fosfolípidos','Cabeza hidrofílica y dos colas hidrofóbicas.'],['Colesterol','Regula la fluidez.'],['Proteínas integrales','Atraviesan la bicapa: canales y bombas.'],['Glucocáliz','Glúcidos de reconocimiento celular.'],['Proteínas periféricas','Pegadas por fuera o por dentro, sin atravesarla.'],['Proteína canal','Deja pasar iones y agua por su poro.']],clave:'Modelo del mosaico fluido (Singer y Nicolson, 1972). La bomba Na⁺/K⁺ saca 3 Na⁺ y mete 2 K⁺ gastando 1 ATP.'},
-  nucleo:{n:'Núcleo',c:'#8A6CF0',lat:'Nucleus · 5–10 µm',f:['Tamaño','5–10 µm'],m:'Doble',fn:'Guarda el ADN y controla la célula: allí se copia el ADN (replicación) y se fabrica el ARN (transcripción).',partes:[['Envoltura nuclear','Doble membrana unida al RE rugoso.'],['Poros nucleares','Dejan pasar ARN y proteínas.'],['Cromatina','ADN + histonas: eucromatina y heterocromatina.'],['Nucléolo','Fabrica el ARN ribosomal. No tiene membrana.'],['RE rugoso unido','La membrana externa del núcleo continúa en el RER.']],clave:'La envoltura nuclear se continúa con el RE rugoso. Los glóbulos rojos maduros de mamíferos no tienen núcleo.'},
-  mitocondria:{n:'Mitocondria',c:'#FF9600',lat:'Mitochondrion · 0,5–1 µm',f:['Tamaño','0,5–1 µm'],m:'Doble',fn:'Hace la respiración celular aeróbica: oxida la glucosa con oxígeno y guarda la energía en ATP. Por eso se le llama la "central energética" de la célula.',partes:[['Membrana externa','Lisa y permeable; tiene porinas.'],['Espacio intermembrana','Aquí se acumulan protones (H⁺).'],['Membrana interna','Muy poco permeable; tiene cardiolipina.'],['Crestas','Pliegues que aumentan la superficie.'],['Matriz','Aquí ocurre el ciclo de Krebs.'],['ADN mitocondrial','Circular, como el de las bacterias.'],['Ribosomas 70S','Fabrican algunas de sus propias proteínas.'],['ATP sintasa','Proteína que gira y produce el ATP.']],clave:'Tiene ADN circular y ribosomas 70S propios (teoría endosimbiótica de Lynn Margulis). El ADN mitocondrial se hereda solo por la madre.',proc:1},
-  rer:{n:'Retículo endoplasmático rugoso',c:'#3AB4F0',lat:'RER · cisternas',f:['Forma','Cisternas'],m:'Simple',fn:'Red de sacos aplanados con ribosomas pegados. Fabrica las proteínas que se secretan o que van a las membranas y a los lisosomas.',partes:[['Cisternas','Sacos aplanados comunicados.'],['Ribosomas adheridos','Fabrican las proteínas.'],['Lumen','Las proteínas se pliegan y glicosilan.']],clave:'Muy desarrollado en células que secretan proteínas: páncreas (acinos), células plasmáticas (anticuerpos).'},
-  rel:{n:'Retículo endoplasmático liso',c:'#4FD8B4',lat:'REL · túbulos',f:['Forma','Túbulos'],m:'Simple',fn:'Túbulos sin ribosomas. Fabrica lípidos y hormonas esteroides, desintoxica fármacos y guarda calcio.',partes:[['Túbulos','Red de tubos ramificados y conectados.'],['Luz (lumen)','Interior hueco de los túbulos.'],['Enzimas P-450','Desintoxican en el hígado.']],clave:'En el músculo se llama retículo sarcoplásmico y guarda el Ca²⁺ para la contracción.'},
-  golgi:{n:'Aparato de Golgi',c:'#1CB0F6',lat:'Complejo de Golgi · dictiosomas',f:['Cisternas','4–8'],m:'Simple',fn:'Recibe las proteínas del RE, las modifica, las clasifica y las empaqueta en vesículas para enviarlas a su destino.',partes:[['Cara cis','Recibe vesículas del RE.'],['Cisternas medias','Modifican las proteínas.'],['Cara trans','Libera vesículas de secreción.'],['Vesículas','Llevan las proteínas a su destino.']],clave:'Forma los lisosomas, el acrosoma del espermatozoide y, en plantas, la lámina media.'},
-  lisosoma:{n:'Lisosoma',c:'#E0458A',lat:'Lysosoma · 0,1–1 µm',f:['pH','≈ 5'],m:'Simple',fn:'Vesícula con enzimas hidrolíticas que digiere lo que entra a la célula y recicla orgánulos viejos (autofagia).',partes:[['Hidrolasas ácidas','Proteasas, lipasas, nucleasas.'],['Bomba de H⁺','Mantiene el pH ácido.'],['Membrana simple','Protegida por dentro para no digerirse.']],clave:'"Bolsas suicidas": si se rompen digieren a la célula (autólisis).'},
-  peroxisoma:{n:'Peroxisoma',c:'#55C23A',lat:'Peroxisoma · 0,5 µm',f:['Enzima','Catalasa'],m:'Simple',fn:'Oxida ácidos grasos y destruye el peróxido de hidrógeno (H₂O₂) con la enzima catalasa.',partes:[['Cristaloide de catalasa','2 H₂O₂ → 2 H₂O + O₂'],['Oxidasas','Producen H₂O₂.'],['Membrana simple','Una sola membrana; trae enzimas del citosol.']],clave:'Abundan en hígado y riñón. En plantas, los glioxisomas son peroxisomas especiales.'},
-  centrosoma:{n:'Centrosoma',c:'#FFC800',lat:'2 centriolos · 9 tripletes',f:['Estructura','9 × 3'],m:'Sin membrana',fn:'Centro organizador de microtúbulos. Sus dos centriolos forman el huso mitótico en la división celular.',partes:[['Centriolos','Dos cilindros perpendiculares.'],['9 tripletes','Microtúbulos en patrón 9 + 0.'],['Material pericentriolar','Nube de proteínas que inicia los microtúbulos.']],clave:'Las plantas superiores no tienen centriolos. Cilios y flagelos tienen el patrón 9 + 2.'},
-  ribosoma:{n:'Ribosomas',c:'#EEEAF7',lat:'80S · 25 nm',f:['Tipo','80S'],m:'Sin membrana',fn:'Leen el ARN mensajero y unen aminoácidos para fabricar proteínas (traducción).',partes:[['Subunidad mayor','60S'],['Subunidad menor','40S']],clave:'Es el único orgánulo presente en TODAS las células. Procariotas: 70S (50S + 30S).'}
+var ART={
+ vegetal:'<svg viewBox="0 0 120 80"><rect x="18" y="8" width="84" height="64" rx="10" fill="#1d4a1a" stroke="#6fdc4f" stroke-width="3"/><rect x="26" y="15" width="68" height="50" rx="7" fill="#2a6b24" opacity=".6"/><ellipse cx="66" cy="42" rx="20" ry="16" fill="#8fe0ff" opacity=".35" stroke="#8fe0ff"/><circle cx="40" cy="30" r="8" fill="#9b6bff"/><ellipse cx="38" cy="54" rx="7" ry="4" fill="#4cd137"/><ellipse cx="84" cy="24" rx="6" ry="3.5" fill="#4cd137"/></svg>',
+ mitosis:'<svg viewBox="0 0 120 80"><ellipse cx="60" cy="40" rx="46" ry="30" fill="#2a1e55" stroke="#55C23A" stroke-width="2.5"/><g stroke="#C6E000" stroke-width="1" opacity=".6"><path d="M20 40Q60 10 100 40M20 40Q60 70 100 40M20 40H100"/></g><g fill="#E0458A"><rect x="56" y="22" width="4" height="12" rx="2" transform="rotate(20 58 28)"/><rect x="60" y="22" width="4" height="12" rx="2" transform="rotate(-20 62 28)"/><rect x="56" y="44" width="4" height="12" rx="2" transform="rotate(-20 58 50)"/><rect x="60" y="44" width="4" height="12" rx="2" transform="rotate(20 62 50)"/></g><circle cx="20" cy="40" r="4" fill="#FFC800"/><circle cx="100" cy="40" r="4" fill="#FFC800"/></svg>',
+ punnett:'<svg viewBox="0 0 120 80"><g font-family="Barlow Condensed" font-weight="800" font-size="13" text-anchor="middle"><rect x="34" y="10" width="72" height="62" rx="6" fill="#151127" stroke="#55C23A" stroke-width="2"/><path d="M70 10V72M34 41H106" stroke="#55C23A" stroke-width="2"/><text x="52" y="30" fill="#C6E000">AA</text><text x="88" y="30" fill="#C6E000">Aa</text><text x="52" y="61" fill="#C6E000">Aa</text><text x="88" y="61" fill="#A99FC8">aa</text><text x="22" y="30" fill="#EEEAF7">A</text><text x="22" y="61" fill="#EEEAF7">a</text></g></svg>',
+ adn:'<svg viewBox="0 0 120 80"><g stroke-width="3" fill="none"><path d="M10 20C35 20 35 60 60 60S85 20 110 20" stroke="#3AB4F0"/><path d="M10 60C35 60 35 20 60 20S85 60 110 60" stroke="#E0458A"/></g><g stroke-width="2.5"><path d="M22 23V57M46 34V46M74 34V46M98 23V57" stroke="#C6E000"/><path d="M34 27V53M86 27V53" stroke="#FFC800"/></g></svg>',
+ tabla:'<svg viewBox="0 0 120 80"><g>'+[...Array(18)].map((_,i)=>'<rect x="'+(4+i*6.3)+'" y="'+([0,17].includes(i)?10:(i<2||i>11)?22:46)+'" width="5" height="5" rx="1" fill="'+(i<2?'#E0458A':i>11?'#3AB4F0':'#FFC800')+'"/>').join('')+[...Array(18)].map((_,i)=>'<rect x="'+(4+i*6.3)+'" y="'+(i<2||i>11?28:52)+'" width="5" height="5" rx="1" fill="'+(i<2?'#E0458A':i>11?'#3AB4F0':'#FFC800')+'" opacity=".7"/>').join('')+'</g><rect x="40" y="58" width="44" height="16" rx="3" fill="#151127" stroke="#3AB4F0"/><text x="62" y="70" text-anchor="middle" font-family="Barlow Condensed" font-weight="800" font-size="11" fill="#3AB4F0">Fe · 26</text></svg>',
+ atomo:'<svg viewBox="0 0 120 80"><g fill="none" stroke="#3AB4F0" stroke-width="1.6"><ellipse cx="60" cy="40" rx="44" ry="14"/><ellipse cx="60" cy="40" rx="44" ry="14" transform="rotate(60 60 40)"/><ellipse cx="60" cy="40" rx="44" ry="14" transform="rotate(-60 60 40)"/></g><circle cx="60" cy="40" r="7" fill="#E0458A"/><circle cx="104" cy="40" r="3.5" fill="#C6E000"/><circle cx="38" cy="18" r="3.5" fill="#C6E000"/><circle cx="38" cy="62" r="3.5" fill="#C6E000"/></svg>',
+ balanceo:'<svg viewBox="0 0 120 80"><path d="M60 14V64M30 64H90" stroke="#A99FC8" stroke-width="3"/><path d="M22 26H98" stroke="#3AB4F0" stroke-width="3"/><path d="M30 26L20 46H40ZM90 26L80 46H100Z" fill="#3AB4F0" opacity=".35" stroke="#3AB4F0"/><text x="30" y="58" text-anchor="middle" font-family="Barlow Condensed" font-weight="800" font-size="11" fill="#EEEAF7">2H₂</text><text x="90" y="58" text-anchor="middle" font-family="Barlow Condensed" font-weight="800" font-size="11" fill="#EEEAF7">2H₂O</text></svg>',
+ parabolico:'<svg viewBox="0 0 120 80"><path d="M6 70H114" stroke="#A99FC8" stroke-width="2"/><path d="M14 66Q60 -10 106 66" fill="none" stroke="#FF9600" stroke-width="2.5" stroke-dasharray="4 4"/><circle cx="60" cy="28" r="5" fill="#FFC800"/><path d="M14 66L30 40" stroke="#C6E000" stroke-width="2.5"/><path d="M60 28h14M60 28v14" stroke="#3AB4F0" stroke-width="2"/></svg>',
+ plano:'<svg viewBox="0 0 120 80"><path d="M10 70H110V20Z" fill="#2a1e55" stroke="#FF9600" stroke-width="2.5"/><rect x="58" y="34" width="20" height="14" fill="#FFC800" transform="rotate(-26.5 68 41)"/><path d="M68 41v18M68 41l12-6" stroke="#C6E000" stroke-width="2"/></svg>',
+ circuito:'<svg viewBox="0 0 120 80"><rect x="16" y="14" width="88" height="52" rx="6" fill="none" stroke="#FF9600" stroke-width="2.5"/><rect x="44" y="9" width="32" height="10" rx="2" fill="#151127" stroke="#C6E000" stroke-width="2"/><circle cx="104" cy="40" r="9" fill="#FFC800" opacity=".9"/><path d="M12 32v16M20 36v8" stroke="#3AB4F0" stroke-width="3"/></svg>',
+ optica:'<svg viewBox="0 0 120 80"><path d="M60 10Q72 40 60 70Q48 40 60 10Z" fill="#3AB4F0" opacity=".35" stroke="#3AB4F0" stroke-width="2"/><path d="M8 26L60 26L104 58M8 40H112M8 54L60 54L104 22" stroke="#FFC800" stroke-width="1.8" fill="none"/></svg>',
+ mru:'<svg viewBox="0 0 120 80"><path d="M10 64H110M14 66V12" stroke="#A99FC8" stroke-width="2"/><path d="M14 60L104 20" stroke="#FF9600" stroke-width="3"/><path d="M14 60Q60 58 104 14" stroke="#C6E000" stroke-width="2.5" fill="none" stroke-dasharray="4 3"/></svg>',
+ corazon:'<svg viewBox="0 0 120 80"><path d="M60 72C20 48 14 24 34 14c12-6 22 2 26 10 4-8 14-16 26-10 20 10 14 34-26 58Z" fill="#a8243f" stroke="#E0458A" stroke-width="2.5"/><path d="M50 10v16M66 8v18" stroke="#3AB4F0" stroke-width="5" stroke-linecap="round"/></svg>',
+ neurona:'<svg viewBox="0 0 120 80"><circle cx="30" cy="40" r="11" fill="#9B6BFF"/><path d="M41 40H100" stroke="#E0458A" stroke-width="4"/><g stroke="#9B6BFF" stroke-width="2"><path d="M22 32L10 20M24 50L12 62M30 29V12M20 42H6"/><path d="M100 40l10-10M100 40l12 0M100 40l10 10"/></g><g fill="#FFC800"><rect x="52" y="36" width="10" height="8" rx="4"/><rect x="70" y="36" width="10" height="8" rx="4"/></g></svg>',
+ ojo:'<svg viewBox="0 0 120 80"><path d="M10 40Q60 0 110 40Q60 80 10 40Z" fill="#EEEAF7" opacity=".9"/><circle cx="60" cy="40" r="17" fill="#3AB4F0"/><circle cx="60" cy="40" r="8" fill="#06040F"/></svg>',
+ funcion:'<svg viewBox="0 0 120 80"><path d="M8 40H112M60 6V74" stroke="#A99FC8" stroke-width="1.5"/><path d="M14 72Q60 -30 106 72" fill="none" stroke="#9B6BFF" stroke-width="3"/><circle cx="60" cy="21" r="3.5" fill="#C6E000"/></svg>',
+ trigo:'<svg viewBox="0 0 120 80"><circle cx="60" cy="40" r="30" fill="none" stroke="#9B6BFF" stroke-width="2.5"/><path d="M60 40L81 19M60 40H81V19" stroke="#C6E000" stroke-width="2"/><path d="M30 40H90M60 10V70" stroke="#A99FC8" stroke-width="1"/></svg>',
+ geo:'<svg viewBox="0 0 120 80"><path d="M14 66L60 12L106 66Z" fill="#2a1e55" stroke="#9B6BFF" stroke-width="2.5"/><path d="M60 12V66" stroke="#C6E000" stroke-width="1.8" stroke-dasharray="3 3"/><path d="M60 58h8v8" stroke="#C6E000" stroke-width="1.8" fill="none"/></svg>'
 };
-var ORDEN=['membrana','nucleo','mitocondria','rer','rel','golgi','lisosoma','peroxisoma','centrosoma','ribosoma'];
+var CUR=[
+ ['Biología','#55C23A','rgba(85,194,58,.22)',[['celula','Célula eucariota','Animal y vegetal · 14 organelas en 3D','listo','lab-celula.html'],['mitosis','Mitosis y meiosis','Mira cada fase paso a paso','pronto'],['punnett','Cruces de Mendel','Arma el cuadro de Punnett','pronto'],['adn','ADN y síntesis de proteínas','Replicación, transcripción y traducción','pronto']]],
+ ['Química','#3AB4F0','rgba(58,180,240,.22)',[['tabla','Tabla periódica interactiva','Toca cada elemento','pronto'],['atomo','Configuración electrónica','Llena los orbitales','pronto'],['balanceo','Balanceo de ecuaciones','Equilibra la balanza','pronto']]],
+ ['Física','#FF9600','rgba(255,150,0,.22)',[['parabolico','Tiro parabólico','Cambia ángulo y velocidad','pronto'],['plano','Plano inclinado','Fuerzas y fricción','pronto'],['mru','MRU y MRUV','Gráficas en vivo','pronto'],['circuito','Circuitos eléctricos','Serie y paralelo','pronto'],['optica','Lentes y espejos','Arma la imagen','pronto']]],
+ ['Anatomía','#E0458A','rgba(224,69,138,.22)',[['corazon','Corazón','Circulación mayor y menor','pronto'],['neurona','Neurona y sinapsis','El impulso nervioso','pronto'],['ojo','El ojo','Cómo se forma la imagen','pronto']]],
+ ['Matemática','#9B6BFF','rgba(155,107,255,.22)',[['funcion','Funciones','Mueve los parámetros','pronto'],['trigo','Circunferencia trigonométrica','Seno y coseno girando','pronto'],['geo','Triángulos notables','Arrastra los vértices','pronto']]]
+];
+var SN=window.MCLabSonido, vistos=[];
+try{ vistos=JSON.parse(localStorage.getItem('mc_lab_celula')||'[]'); }catch(e){}
+var pct=Math.min(100,Math.round(vistos.length/14*100));
+var total=0, listos=0; CUR.forEach(function(c){ total+=c[3].length; c[3].forEach(function(s){ if(s[3]!=='pronto') listos++; }); });
+document.getElementById('xpTx').textContent=listos+' de '+total+' listos';
+document.getElementById('xpAro').style.background='conic-gradient(var(--lima) 0 '+Math.round(listos/total*100)+'%,#2A2346 0)';
+document.getElementById('hVis').textContent=Math.min(14,vistos.length)+' / 14';
+document.getElementById('hBar').style.width=pct+'%';
+if(vistos.length){ document.getElementById('hTag').textContent='Biología · Continúa'; document.querySelector('#hBtn span').textContent='Continuar'; }
 
-/* ============ CÉLULA (ilustración + contornos) ============
-   La imagen es assets/laboratorio/celula-animal.webp (1490×1490). Los contornos
-   de cada orgánulo están en assets/laboratorio/celula-animal.js. */
-var F=window.MC_CELULA_FORMAS||{}, IMG='assets/laboratorio/celula-animal.webp', IW=2400, IH=1792;
-/* recorte para la ficha de detalle [x0,y0,x1,y1] y puntos numerados [n.º de parte, x, y] */
-var DET={
-  nucleo:{b:[940,30,2060,890],p:[[1,1790,330],[2,1850,262],[3,1180,600],[4,1420,400]]},
-  mitocondria:{b:[290,710,750,1080],p:[[1,372,1000],[3,470,1012],[4,520,940],[5,600,880]]},
-  rer:{b:[560,150,2260,1320],p:[[1,900,700],[2,1395,690],[3,1700,560]]},
-  rel:{b:[500,220,1100,720],p:[[1,700,330],[2,900,470]]},
-  golgi:{b:[1130,780,2070,1320],p:[[1,1950,850],[2,1600,960],[3,1290,1090]]},
-  lisosoma:{b:[1540,1100,1770,1320],p:[[1,1650,1212],[2,1700,1150]]},
-  vesicula:{b:[1370,1140,1580,1420],p:[[1,1470,1215],[2,1480,1370]]},
-  peroxisoma:{b:[370,760,540,920],p:[[1,450,845],[2,500,800]]},
-  centrosoma:{b:[610,920,800,1090],p:[[1,690,1010],[2,740,960]]},
-  membrana:{b:[30,820,760,1720],p:[[1,520,1440],[3,300,1560],[5,140,1160]]}
-};
-/* etiquetas en la vista general: [x,y del orgánulo, x,y de la etiqueta] */
-var ETQ={membrana:[200,1250,160,1480],nucleo:[1450,330,2150,70],mitocondria:[520,900,250,640],rer:[1000,560,880,120],rel:[700,330,360,180],golgi:[1700,950,2150,1430],lisosoma:[1650,1212,1880,1580],vesicula:[1470,1215,1380,1560],peroxisoma:[455,840,170,780],centrosoma:[700,1000,720,1540]};
-O.rer.partes=[['Cisternas','Sacos aplanados comunicados.'],['Ribosomas adheridos','Los puntitos rojos: fabrican proteínas.'],['Lumen','Las proteínas se pliegan y glicosilan.']];
-O.membrana.partes.push(['Microvellosidades','Pliegues que aumentan la superficie de absorción.']);
-O.centrosoma.n='Centriolos';O.centrosoma.lat='Centrosoma · 9 tripletes';
-O.citoesqueleto={n:'Citoesqueleto',c:'#FF7A59',lat:'Red de proteínas · 3 tipos',f:['Filamentos','3 tipos'],m:'Sin membrana',fn:'Red de proteínas que da forma a la célula, la sostiene, mueve los orgánulos y participa en la división y el movimiento celular.',partes:[['Microtúbulos','Tubos huecos de tubulina (25 nm). Forman el huso, cilios y flagelos.'],['Filamentos intermedios','Cuerdas resistentes (10 nm), como la queratina.'],['Microfilamentos','De actina (7 nm): contracción, movimiento ameboide y citocinesis.']],clave:'Los microtúbulos forman el huso mitótico. La colchicina los destruye y detiene la mitosis en metafase.'};
-O.vacuola={n:'Vacuolas',c:'#5FD0E8',lat:'Vacuolas · tonoplasto',f:['En animal','Pequeñas'],m:'Simple',fn:'Bolsas con membrana que almacenan agua, sales, nutrientes y desechos. En la célula vegetal hay una vacuola central enorme que da turgencia.',partes:[['Tonoplasto','Membrana que rodea la vacuola.'],['Jugo vacuolar','Agua con sales, azúcares y pigmentos.'],['Proteínas de transporte','Bombean iones hacia el interior.']],clave:'En la célula vegetal la vacuola central puede ocupar hasta el 90 % del volumen. Los protozoos de agua dulce tienen vacuolas contráctiles que expulsan el exceso de agua.'};
-O.ribosoma.partes=[['Subunidad mayor','60S: une los aminoácidos.'],['Subunidad menor','40S: lee el ARN mensajero.'],['ARN mensajero','Trae la receta copiada del ADN.'],['Cadena de proteína','Aminoácidos unidos que salen del ribosoma.']];
-var EXTRA=['ribosoma','citoesqueleto','vacuola'];
-/* datos de la clase del profe (separata semana 05) */
-(function(){
-  function S(id,o){ for(var k in o) O[id][k]=o[k]; }
-  S('membrana',{fn:'Separa la célula del medio y controla qué entra y qué sale. Es lipoproteica, asimétrica y semipermeable (modelo del mosaico fluido).',
-    mas:['Transporte de sustancias',[['P','Difusión simple y facilitada','Por la bicapa o por proteínas (canales, acuaporinas)','Sin ATP'],['A','Transporte activo','Bombas: Na⁺/K⁺ saca 3 Na⁺ y mete 2 K⁺','Con ATP'],['M','Endocitosis y exocitosis','Fagocitosis (sólidos), pinocitosis (líquidos), secreción','Con ATP']]],
-    clave:['Mosaico fluido: Singer y Nicolson (1972).','Pasivo: a favor de la gradiente, sin ATP. Activo: en contra, con ATP.','Uniones GAP (conexinas) comunican células animales; plasmodesmos, vegetales.']});
-  O.nucleo.partes[0]=['Carioteca','Envoltura nuclear de doble membrana; se continúa con el RER.'];
-  S('nucleo',{fn:'Controla todas las actividades de la célula. En el carioplasma ocurren la replicación del ADN y la transcripción (ARNm).',
-    clave:['El nucléolo fabrica el ARNr (ARN polimerasa I) y arma las subunidades del ribosoma.','Eucromatina: laxa y activa (transcripción). Heterocromatina: condensada e inactiva.','Nucleosoma: ADN enrollado en un octámero de histonas; con la H1 se llama cromatosoma.']});
-  S('mitocondria',{clave:['Tiene ADN circular y ribosomas 70S, como las bacterias.','Krebs ocurre en la matriz; la cadena respiratoria, en las crestas.']});
-  S('rer',{clave:['Con ribosomas 80S: síntesis de proteínas (proteogénesis).','Vesículas COP II van del RER al Golgi; COP I regresan del Golgi al RER.']});
-  S('rel',{fn:'Túbulos sin ribosomas. Hace lipogénesis, detoxificación (hígado) y guarda Ca²⁺.',clave:['En el músculo se llama retículo sarcoplásmico y guarda el Ca²⁺ para la contracción.']});
-  S('golgi',{clave:['Empaqueta y secreta. Forma lisosomas, vacuolas y el acrosoma del espermatozoide.','En plantas, sus vesículas forman la placa celular en la citocinesis.']});
-  S('lisosoma',{clave:['Autofagia: la célula recicla sus orgánulos. Autólisis: se digiere a sí misma.','Se forman en el aparato de Golgi.']});
-  S('peroxisoma',{fn:'Oxida peróxidos con la catalasa (2 H₂O₂ → 2 H₂O + O₂) y degrada lípidos complejos.',clave:['Síndrome de Zellweger: peroxisomas defectuosos, se acumulan H₂O₂ y ácidos grasos de cadena larga.','En la semilla vegetal, los glioxisomas convierten lípidos en glúcidos.']});
-  S('centrosoma',{clave:['Estructura 9 + 0 (cilios y flagelos: 9 + 2).','Animal: división astral (con centriolos). Vegetal: casquetes polares, división anastral.']});
-  S('ribosoma',{clave:['Eucariotas 80S (60S + 40S). Procariotas, mitocondrias y cloroplastos: 70S.','Es el único organoide presente en todas las células.']});
-  O.citoesqueleto.partes=[['Microtúbulos','Tubulina α y β. Cilios, flagelos (9 + 2) y huso acromático.'],['Filamentos intermedios','De queratina, entre otras. Dan resistencia mecánica.'],['Microfilamentos','De actina. Contracción muscular y anillo contráctil de la citocinesis.']];
-  S('citoesqueleto',{clave:['La colchicina impide armar los microtúbulos: no se forma el huso acromático.','Dineína mueve cilios y flagelos; cinesina transporta vesículas.']});
-  S('vacuola',{clave:['Animal: vacuolas pequeñas (reserva). Vegetal: una grande (reserva y turgencia).']});
-})();
-O.vesicula={n:'Vesículas de secreción',c:'#9B6BFF',lat:'Salen del Golgi',f:['Origen','Cara trans'],m:'Simple',fn:'Bolsitas que salen del aparato de Golgi llevando proteínas. Se unen a la membrana y sueltan su contenido fuera de la célula (exocitosis).',partes:[['Brote','Se forma en la cara trans del Golgi.'],['Contenido','Proteínas listas para salir.'],['Membrana','Se fusiona con la membrana plasmática.'],['Exocitosis','Suelta su contenido fuera de la célula.']],clave:'La exocitosis gasta energía y agranda la membrana; la endocitosis la achica.'};
-ORDEN=['membrana','nucleo','mitocondria','rer','rel','golgi','lisosoma','vesicula','peroxisoma','centrosoma'];
+document.getElementById('cursos').innerHTML='<button class="cur on" data-c="">Todos <em>'+total+'</em></button>'+CUR.map(function(c){ return '<button class="cur" data-c="'+c[0]+'"><i style="background:'+c[1]+'"></i>'+c[0]+' <em>'+c[3].length+'</em></button>'; }).join('');
+document.getElementById('secs').innerHTML=CUR.map(function(c){
+ return '<section class="sec" data-c="'+c[0]+'"><h2><i style="background:'+c[1]+'"></i>'+c[0]+'<span>'+c[3].filter(function(s){ return s[3]!=='pronto'; }).length+' de '+c[3].length+' listos</span></h2><div class="fila">'+
+ c[3].map(function(s){
+  var art=s[0]==='celula'?'<img src="assets/laboratorio/celula-animal.webp" alt="" loading="lazy">':ART[s[0]];
+  var esq=s[3]==='pronto'?'<span class="lock"><svg class="i" style="width:12px;height:12px"><use href="#ic-cand"/></svg>Pronto</span>':'';
+  var pie='';
+  if(s[0]==='celula') pie='<div class="tipos"><span>Animal</span><span class="no">Vegetal · pronto</span></div><div class="pie"><div class="barra"><i style="width:'+pct+'%"></i></div>'+pct+'%</div>';
+  var tag=s[3]==='pronto'?'button':'a';
+  return '<'+tag+' class="sim'+(s[3]==='pronto'?' pronto':'')+'"'+(s[4]?' href="'+s[4]+'"':' type="button" data-n="'+s[1]+'"')+' style="--g:'+c[2]+';text-align:left;padding:0"><div class="esq">'+esq+'</div><div class="art">'+art+'</div><div class="inf"><b>'+s[1]+'</b><small>'+s[2]+'</small>'+pie+'</div></'+tag+'>';
+ }).join('')+'</div></section>';
+}).join('');
 
-var ROT=innerHeight>innerWidth*1.2, CX=IW/2, CY=IH/2;
-function rp(x,y){ return ROT?[CX-(y-CY),CY+(x-CX)]:[x,y]; }
-var seed=11; function rnd(){ seed=(seed*16807)%2147483647; return (seed-1)/2147483646; }
-function celula(){
-  var s='<defs><filter id="fGlow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="7"/></filter>'+
-    '<mask id="mOsc" maskUnits="userSpaceOnUse" x="-4000" y="-4000" width="10400" height="10400"><rect x="-4000" y="-4000" width="10400" height="10400" fill="#fff"/><path id="mHueco" fill="#000"/></mask></defs>';
-  s+='<image class="img-cel" href="'+IMG+'" width="'+IW+'" height="'+IH+'"/>';
-  /* partículas flotando en el citoplasma */
-  s+='<g class="part" pointer-events="none">';
-  for(var i=0;i<34;i++){ var a=rnd()*6.28, r=Math.sqrt(rnd()), x=1200+Math.cos(a)*r*900, y=980+Math.sin(a)*r*480;
-    s+='<circle cx="'+x.toFixed(0)+'" cy="'+y.toFixed(0)+'" r="'+(2+rnd()*3).toFixed(1)+'" style="animation-delay:-'+(rnd()*9).toFixed(1)+'s;animation-duration:'+(7+rnd()*6).toFixed(1)+'s"/>'; }
-  s+='</g>';
-  s+='<rect class="osc" x="-4000" y="-4000" width="10400" height="10400" mask="url(#mOsc)" pointer-events="none"/>';
-  s+='<g id="brillo" pointer-events="none"></g><g id="atp" pointer-events="none"></g>';
-  /* zonas que se tocan: primero la membrana (solo su borde), encima los orgánulos */
-  s+='<path class="org memb" data-id="membrana" d="'+(F.membrana||'')+'"/>';
-  ORDEN.forEach(function(id){ if(id!=='membrana') s+='<path class="org" data-id="'+id+'" d="'+(F[id]||'')+'"/>'; });
-  return s;
-}
-function etiquetas(){
-  var s='', K=innerWidth<760?2.2:1.35;
-  ORDEN.forEach(function(id){ var e0=ETQ[id], a1=rp(e0[0],e0[1]), a2=rp(e0[2],e0[3]), e=[a1[0],a1[1],a2[0],a2[1]], n=O[id].n.replace('Retículo endoplasmático','R. E.'), w=(n.length*15+40)*K;
-    s+='<g class="etq"><line x1="'+e[0]+'" y1="'+e[1]+'" x2="'+e[2]+'" y2="'+e[3]+'"/><circle cx="'+e[0]+'" cy="'+e[1]+'" r="7"/>'+
-       '<rect x="'+(e[2]-w/2)+'" y="'+(e[3]-26*K)+'" width="'+w+'" height="'+52*K+'" rx="'+14*K+'"/><text x="'+e[2]+'" y="'+(e[3]+10*K)+'" text-anchor="middle" style="font-size:'+28*K+'px">'+n+'</text></g>'; });
-  return s;
-}
-function bolitasATP(id,cajas){ /* ATP que sale de cada mitocondria */
-  if(id!=='mitocondria') return '';
-  var s=''; (cajas||[]).forEach(function(b,i){ var cx=(b[0]+b[2])/2, cy=(b[1]+b[3])/2, a=Math.atan2(cy-900,cx-1200)+(i%2?.5:-.4), d=150;
-    for(var k=0;k<2;k++){ var dl=(i*.45+k*1.6).toFixed(2), r=b[4]||16;
-      s+='<g opacity="0"><animate attributeName="opacity" values="0;1;1;0" dur="3.2s" begin="'+dl+'s" repeatCount="indefinite"/>'+
-        '<animateMotion path="M'+cx+' '+cy+' q'+(Math.cos(a)*d*.5-20)+' '+(Math.sin(a)*d*.5-30)+' '+(Math.cos(a)*d)+' '+(Math.sin(a)*d)+'" dur="3.2s" begin="'+dl+'s" repeatCount="indefinite"/>'+
-        '<circle r="'+r+'" fill="#FFC800" stroke="#7A5000" stroke-width="2.5"/><text y="'+(r*.33)+'" text-anchor="middle" style="font:800 '+(r*.95)+'px Barlow Condensed;fill:#3A2600">ATP</text></g>'; } });
-  return s;
-}
-function cajasDe(id){ var out=[]; (F[id]||'').replace(/M([^Z]+)Z/g,function(_,t){ var n=t.trim().split(/\s+/).map(Number), x0=1e9,y0=1e9,x1=-1,y1=-1;
-  for(var i=0;i<n.length;i+=2){ x0=Math.min(x0,n[i]);x1=Math.max(x1,n[i]);y0=Math.min(y0,n[i+1]);y1=Math.max(y1,n[i+1]); } if((x1-x0)*(y1-y0)>3000) out.push([x0,y0,x1,y1]); }); return out; }
-
-/* ============ CÁMARA (zoom + arrastre + pellizco) ============ */
-var esc=document.getElementById('escena');
-esc.innerHTML='<svg id="cel" preserveAspectRatio="xMidYMid meet"><g id="mundo"'+(ROT?' transform="rotate(90 '+CX+' '+CY+')"':'')+'>'+celula()+'</g><g id="etqs">'+etiquetas()+'</g></svg>';
-var svg=document.getElementById('cel');
-var BASE=ROT?{x:CX-IH/2-40,y:CY-IW/2-40,w:IH+80,h:IW+80}:{x:-40,y:-40,w:IW+80,h:IH+80}, cam={x:BASE.x,y:BASE.y,w:BASE.w,h:BASE.h};
-function aplicar(){ svg.setAttribute('viewBox',cam.x+' '+cam.y+' '+cam.w+' '+cam.h);
-  var z=BASE.w/cam.w; document.getElementById('zNv').textContent='×'+z.toFixed(1);
-  var um=z>3?2:z>1.6?5:10; document.getElementById('escTx').textContent=um+' µm';
-  document.getElementById('escBar').style.width=(80*um/10*z*.8+20).toFixed(0)+'px'; }
-function volar(x,y,w,ms,fin){ var a={x:cam.x,y:cam.y,w:cam.w,h:cam.h}, h=w*BASE.h/BASE.w, b={x:x-w/2,y:y-h/2,w:w,h:h}, t0=performance.now();
-  (function paso(t){ var k=Math.min(1,(t-t0)/(ms||700)); k=1-Math.pow(1-k,3);
-    ['x','y','w','h'].forEach(function(p){ cam[p]=a[p]+(b[p]-a[p])*k; }); aplicar(); if(k<1) requestAnimationFrame(paso); else if(fin) fin(); })(t0); }
-function zoomEn(f,px,py){ var r=svg.getBoundingClientRect(), esc2=Math.max(cam.w/r.width,cam.h/r.height), ox=(r.width-cam.w/esc2)/2, oy=(r.height-cam.h/esc2)/2,
-  sx=cam.x+(px-r.left-ox)*esc2, sy=cam.y+(py-r.top-oy)*esc2;
-  var w=Math.max(220,Math.min(BASE.w*1.3,cam.w/f)), h=w*BASE.h/BASE.w; cam.x=sx-(sx-cam.x)*w/cam.w; cam.y=sy-(sy-cam.y)*h/cam.h; cam.w=w; cam.h=h; aplicar(); }
-var ptrs={}, movio=false;
-esc.addEventListener('pointerdown',function(e){ ptrs[e.pointerId]={x:e.clientX,y:e.clientY}; movio=false; });
-esc.addEventListener('pointermove',function(e){ if(!ptrs[e.pointerId]) return; var ids=Object.keys(ptrs);
-  if(ids.length===2){ var o=ptrs[ids[0]],p=ptrs[ids[1]], d0=Math.hypot(o.x-p.x,o.y-p.y); ptrs[e.pointerId]={x:e.clientX,y:e.clientY}; o=ptrs[ids[0]];p=ptrs[ids[1]];
-    var d1=Math.hypot(o.x-p.x,o.y-p.y); zoomEn(d1/d0,(o.x+p.x)/2,(o.y+p.y)/2); movio=true; return; }
-  var q=ptrs[e.pointerId], dx=e.clientX-q.x, dy=e.clientY-q.y; if(Math.abs(dx)+Math.abs(dy)>3) movio=true;
-  var r=svg.getBoundingClientRect(), k=Math.max(cam.w/r.width,cam.h/r.height); cam.x-=dx*k; cam.y-=dy*k; ptrs[e.pointerId]={x:e.clientX,y:e.clientY}; aplicar(); });
-['pointerup','pointercancel','pointerleave'].forEach(function(ev){ esc.addEventListener(ev,function(e){ delete ptrs[e.pointerId]; }); });
-esc.addEventListener('wheel',function(e){ e.preventDefault(); zoomEn(e.deltaY<0?1.15:1/1.15,e.clientX,e.clientY); },{passive:false});
-document.getElementById('zMas').onclick=function(){ volar(cam.x+cam.w/2,cam.y+cam.h/2,cam.w/1.6,350); };
-document.getElementById('zMenos').onclick=function(){ volar(cam.x+cam.w/2,cam.y+cam.h/2,Math.min(BASE.w*1.3,cam.w*1.6),350); };
-document.getElementById('zCen').onclick=function(){ quitarFoco(); volar(BASE.x+BASE.w/2,BASE.y+BASE.h/2,BASE.w,600); };
-document.getElementById('bNom').onclick=function(){ document.getElementById('swNom').classList.toggle('off'); svg.classList.toggle('sin-nombres'); };
-
-function quitarFoco(){ svg.classList.remove('cel-foco'); document.getElementById('brillo').innerHTML=''; document.getElementById('atp').innerHTML='';
-  document.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('on'); }); }
-function seleccionar(id){ var d=F[id]||'';
-  svg.classList.add('cel-foco');
-  document.getElementById('mHueco').setAttribute('d',id==='membrana'?'':d);
-  document.getElementById('brillo').innerHTML=id==='membrana'
-    ? '<path d="'+d+'" class="br-m"/>'
-    : '<path d="'+d+'" class="br-a"/><path d="'+d+'" class="br-b"/>';
-  document.getElementById('atp').innerHTML=bolitasATP(id,cajasDe(id).map(function(b){ return b.concat([18]); }));
-  document.querySelectorAll('.chip').forEach(function(c){ c.classList.toggle('on',c.dataset.id===id); }); }
-function irA(id,abrirDet){ seleccionar(id); svg.classList.add('sin-nombres'); document.getElementById('swNom').classList.add('off');
-  var b=DET[id].b, c=rp((b[0]+b[2])/2,(b[1]+b[3])/2), bw=b[2]-b[0], bh=b[3]-b[1]; if(ROT){ var t=bw; bw=bh; bh=t; }
-  var w=Math.max(bw,bh*BASE.w/BASE.h)*1.9;
-  volar(c[0],c[1],Math.max(380,Math.min(BASE.w,w)),800,function(){ if(abrirDet) setTimeout(function(){ abrir(id); },250); }); }
-svg.addEventListener('click',function(e){ if(movio) return; var g=e.target.closest('.org'); if(g) irA(g.getAttribute('data-id'),true); else if(svg.classList.contains('cel-foco')) quitarFoco(); });
-document.getElementById('chips').innerHTML=ORDEN.concat(EXTRA).map(function(id){ return '<button class="chip glass" data-id="'+id+'"><i style="background:'+O[id].c+'"></i>'+O[id].n.replace('Retículo endoplasmático','Retículo')+'</button>'; }).join('');
-function ir(id){ if(EXTRA.indexOf(id)>=0){ quitarFoco(); document.querySelectorAll('.chip').forEach(function(c){ c.classList.toggle('on',c.dataset.id===id); }); abrir(id); } else irA(id,true); }
-document.querySelectorAll('.chip').forEach(function(c){ c.onclick=function(){ ir(c.dataset.id); }; });
-
-/* ============ VISTA DE DETALLE ============ */
-/* ilustraciones propias de cada organela (pantalla de detalle) */
-var DIL={ mitocondria:{w:1600,h:925,p:[[1,1473,410],[2,435,772],[3,1271,410],[4,588,370],[5,717,410],[6,897,347],[7,653,522]]},
- nucleo:{w:1600,h:1433,p:[[1,1478,904],[2,1393,701],[3,766,715],[4,930,556],[5,221,904]]},
- rer:{w:1600,h:997,p:[[1,986,722],[2,1402,556],[3,1032,398]]},
- rel:{w:1600,h:975,p:[[1,799,380],[2,675,520]]},
- golgi:{w:1600,h:1000,p:[[1,313,282],[2,699,282],[3,1326,398],[4,1519,620]]},
- lisosoma:{w:1600,h:850,p:[[1,1124,325],[2,202,342],[3,1446,223]]},
- ribosoma:{w:1600,h:1095,p:[[1,803,438],[2,803,908],[3,199,699],[4,1168,146]]},
- citoesqueleto:{w:1300,h:832,p:[[1,857,453],[2,663,532],[3,92,415]]},
- vacuola:{w:1600,h:913,p:[[1,1536,462],[2,1191,541],[3,1377,727]]},
- centrosoma:{w:1600,h:959,p:[[1,973,481],[2,415,335],[3,1317,241]]},
- peroxisoma:{w:1200,h:1202,p:[[1,561,574],[2,885,686],[3,70,619]]},
- vesicula:{w:1600,h:913,p:[[1,458,442],[2,851,458],[3,1141,360],[4,1489,376]]},
- membrana:{w:1600,h:864,p:[[1,568,410],[2,689,470],[3,1309,427],[4,809,74],[5,603,659],[6,1042,461]]} };
-var TAB=new URLSearchParams(location.search).get('tab')||'partes';
-function abrir(id){
-  var o=O[id], D=DET[id]||{b:[0,0,1,1],p:[]}, b=D.b, cw=b[2]-b[0], ch=b[3]-b[1], m=Math.max(cw,ch)*.12, IL=DIL[id];
-  if(IL){ D={p:IL.p}; b=[0,0,IL.w,IL.h]; cw=IL.w; ch=IL.h; m=Math.max(cw,ch)*.06; }
-  var vb=(b[0]-m)+' '+(b[1]-m)+' '+(cw+2*m)+' '+(ch+2*m), u=Math.max(cw,ch)/420;
-  var vis=IL?'<g class="d-ilus"><image href="assets/laboratorio/detalle-'+id+'.webp" width="'+IL.w+'" height="'+IL.h+'"/>'+
-    D.p.map(function(p){ return '<g class="mk" transform="translate('+p[1]+' '+p[2]+')"><circle class="mk-onda" r="'+13*u+'" fill="none" stroke="#C6E000" stroke-width="'+2*u+'"/><circle r="'+13*u+'" fill="#C6E000" stroke="#151A03" stroke-width="'+2.5*u+'"/><text y="'+5*u+'" text-anchor="middle" style="font:800 '+15*u+'px Barlow Condensed;fill:#151A03">'+p[0]+'</text></g>'; }).join('')+'</g>'
-  :'<defs><clipPath id="cDet"><rect x="'+(b[0]-m)+'" y="'+(b[1]-m)+'" width="'+(cw+2*m)+'" height="'+(ch+2*m)+'"/></clipPath></defs>'+
-    '<g clip-path="url(#cDet)"><image href="'+IMG+'" width="'+IW+'" height="'+IH+'"/>'+
-    '<path d="'+(F[id]||'')+'" fill="none" stroke="#C6E000" stroke-width="'+(id==='membrana'?3*u:2.2*u)+'" stroke-opacity=".9" class="det-borde"/>'+
-    bolitasATP(id,id==='mitocondria'?[[b[0]+cw*.5-20,b[1]+ch*.5-30,b[0]+cw*.5+20,b[1]+ch*.5+30,10]]:[])+'</g>'+
-    D.p.map(function(p){ return '<g class="mk" transform="translate('+p[1]+' '+p[2]+')"><circle r="'+13*u+'" fill="#C6E000" stroke="#151A03" stroke-width="'+2.5*u+'"/><text y="'+5*u+'" text-anchor="middle" style="font:800 '+15*u+'px Barlow Condensed;fill:#151A03">'+p[0]+'</text></g>'; }).join('');
-  var tabs={partes:'Partes',funcion:'Función',examen:'Examen'};
-  var marcados=D.p.map(function(p){ return p[0]; });
-  var cuerpo='';
-  if(TAB==='partes') cuerpo='<ol class="partes">'+o.partes.map(function(p,i){ return '<li'+(marcados.indexOf(i+1)>=0?' class="on"':'')+'><span class="n">'+(i+1)+'</span><div><b>'+p[0]+'</b><span>'+p[1]+'</span></div></li>'; }).join('')+'</ol>';
-  if(TAB==='funcion') cuerpo='<p class="txt">'+o.fn+'</p>'+(o.mas?'<div class="proc" style="margin-bottom:12px"><div class="eq">'+o.mas[0]+'</div>'+o.mas[1].map(function(r){ return '<div class="st"><i style="background:rgba(198,224,0,.16);color:#C6E000">'+r[0]+'</i><div><b>'+r[1]+'</b><span>'+r[2]+'</span></div><em>'+r[3]+'</em></div>'; }).join('')+'</div>':'')+(o.proc?'<div class="proc"><div class="eq">C₆H₁₂O₆ + 6 O₂ → 6 CO₂ + 6 H₂O + <b>36–38 ATP</b></div>'+
-     '<div class="st"><i style="background:rgba(58,180,240,.18);color:#3AB4F0">1</i><div><b>Glucólisis</b><span>En el citoplasma (fuera de la mitocondria)</span></div><em>2 ATP</em></div>'+
-     '<div class="st"><i style="background:rgba(255,150,0,.18);color:#FF9600">2</i><div><b>Ciclo de Krebs</b><span>En la matriz · libera CO₂</span></div><em>2 ATP</em></div>'+
-     '<div class="st"><i style="background:rgba(198,224,0,.16);color:#C6E000">3</i><div><b>Cadena respiratoria</b><span>En las crestas · el O₂ recibe los electrones</span></div><em>32–34 ATP</em></div></div>':'');
-  if(TAB==='examen') cuerpo='<div class="clave"><b><svg><use href="#i-rayo"/></svg>Cae en el examen</b>'+([].concat(o.clave).map(function(t){ return '<p>'+t+'</p>'; }).join(''))+'</div>';
-  var TODO=ORDEN.concat(EXTRA), i=TODO.indexOf(id), sig=TODO[(i+1)%TODO.length];
-  var det=document.getElementById('det');
-  det.innerHTML='<div class="d-box"><div class="d-vis"><div class="grid-bg"></div><svg viewBox="'+vb+'" preserveAspectRatio="xMidYMid meet">'+vis+'</svg>'+
-    '<div class="d-cab"><span class="pill">'+(IL?'Ilustración 3D':'Vista ampliada')+'</span>'+(id==='mitocondria'&&!IL?'<span class="pill" style="color:#FFC800;border-color:rgba(255,200,0,.4);background:rgba(255,200,0,.1)">Animación: ATP</span>':'')+'</div></div>'+
-    '<div class="d-inf"><header><div><h2>'+o.n+'</h2><span class="lat">'+o.lat+'</span></div><button class="x" id="dX"><svg><use href="#i-x"/></svg></button></header>'+
-    '<div class="ficha"><div><small>'+o.f[0]+'</small><b>'+o.f[1]+'</b></div><div><small>Membrana</small><b>'+o.m+'</b></div><div><small>Está en</small><b>'+(id==='centrosoma'?'Solo animal':id==='ribosoma'?'Todas las células':'Animal y vegetal')+'</b></div></div>'+
-    '<div class="tabs">'+Object.keys(tabs).map(function(k){ return '<button data-t="'+k+'" class="'+(k===TAB?'on':'')+'">'+tabs[k]+'</button>'; }).join('')+'</div>'+cuerpo+
-    '<div class="d-acc"><button class="btn sec" id="dVer">Ver en la célula</button><button class="btn" id="dSig">'+O[sig].n.split(' ')[0]+'<svg style="color:#151A03"><use href="#i-sig"/></svg></button></div></div></div>';
-  det.classList.add('on');
-  det.querySelectorAll('.tabs button').forEach(function(bt){ bt.onclick=function(){ TAB=bt.dataset.t; abrir(id); }; });
-  document.getElementById('dVer').onclick=function(){ det.classList.remove('on'); };
-  document.getElementById('dX').onclick=function(){ det.classList.remove('on'); quitarFoco(); volar(BASE.x+BASE.w/2,BASE.y+BASE.h/2,BASE.w,600); };
-  document.getElementById('dSig').onclick=function(){ det.classList.remove('on'); ir(sig); };
-}
-aplicar();
-
-/* modos para revisar: ?v=foco&o=mitocondria | ?v=detalle&o=mitocondria&tab=funcion | &nom=0|1 */
-var P=new URLSearchParams(location.search);
-if(P.get('nom')==='0'||((innerWidth<760||innerHeight<520)&&P.get('nom')!=='1')){ document.getElementById('swNom').classList.add('off'); svg.classList.add('sin-nombres'); }
-if(P.get('v')==='foco'){ document.getElementById('pista').style.display='none'; irA(P.get('o')||'mitocondria'); }
-if(P.get('v')==='detalle'){ ir(P.get('o')||'mitocondria'); }
+var av=document.getElementById('aviso'), tm;
+function aviso(t){ av.textContent=t; av.classList.add('on'); clearTimeout(tm); tm=setTimeout(function(){ av.classList.remove('on'); },2600); }
+document.querySelectorAll('.sim.pronto').forEach(function(b){ b.onclick=function(){ if(SN) SN.tocar('mal'); aviso(b.dataset.n+' llega pronto al Laboratorio'); }; });
+document.querySelectorAll('a.sim, #hBtn').forEach(function(a){ a.addEventListener('click',function(){ if(SN) SN.tocar('abrir'); }); });
+document.querySelectorAll('.cur').forEach(function(b){ b.onclick=function(){
+  if(SN) SN.tocar('tic');
+  document.querySelectorAll('.cur').forEach(function(x){ x.classList.toggle('on',x===b); });
+  document.querySelectorAll('.sec').forEach(function(s){ s.classList.toggle('oculta',!!b.dataset.c&&s.dataset.c!==b.dataset.c); });
+}; });
+var bs=document.getElementById('bSon');
+if(SN&&!SN.activo()) bs.classList.add('off');
+bs.onclick=function(){ if(SN) bs.classList.toggle('off',!SN.alternar()); };
 </script>
 </body>
 </html>
