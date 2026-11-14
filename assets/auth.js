@@ -21,7 +21,7 @@
     }
   } catch (e) {}
 
-  var cliente = null, sesion = null, perfilCache = null, perfilPedido = null, iniciado = false;
+  var cliente = null, sesion = null, perfilCache = null, perfilPedido = null, iniciado = false, sinRed = false;
   var oyentes = [];
 
   function cargarSDK() {
@@ -78,6 +78,7 @@
     })
     .then(function (r) {
       sesion = r.data.session;
+      sinRed = !sesion && (navigator.onLine === false || !!(r.error && /fetch|network|retryable/i.test((r.error.name || '') + ' ' + (r.error.message || ''))));
       // Quita el #access_token=… de la barra después de entrar
       if (/access_token=|error_description=/.test(location.hash) || location.href.slice(-1) === '#') {
         history.replaceState(null, '', location.pathname + location.search);
@@ -164,7 +165,8 @@
 
   function avisar() {
     // Página privada sin sesión (venció o cerró sesión): a la bienvenida
-    if (window.MC_PRIVADA && cliente && iniciado && !usuario() && window.MC_BIENVENIDA) { window.MC_BIENVENIDA(); return; }
+    // Sin internet (paquetes de descarga del Laboratorio) la sesión no se puede renovar: no se saca a nadie
+    if (window.MC_PRIVADA && cliente && iniciado && !usuario() && window.MC_BIENVENIDA && !sinRed) { window.MC_BIENVENIDA(); return; }
     cargarRacha();
     oyentes.forEach(function (fn) { try { fn(usuario()); } catch (e) {} });
     pintarWidgets();

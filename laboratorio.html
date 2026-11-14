@@ -89,14 +89,10 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
 .sim.pronto .art:after{content:"";position:absolute;inset:0;background:rgba(6,4,15,.35)}
 .lock{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:8px;background:rgba(6,4,15,.75);border:1px solid var(--borde);font:800 11px/1 "Barlow Condensed";letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
 .nuevo{background:var(--lima);color:#151A03;border-color:var(--lima)}
-.paq{margin-top:30px;display:flex;align-items:center;gap:16px;padding:16px 20px;border-radius:20px;background:linear-gradient(90deg,rgba(58,180,240,.12),rgba(21,17,39,.8));border:1px solid rgba(58,180,240,.3)}
-.paq .ic{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:rgba(58,180,240,.16);color:#3AB4F0;flex:none}
-.paq b{display:block;font:800 16px "Nunito"}.paq small{color:var(--dim)}
-.paq .sb{margin-left:auto;height:42px;padding:0 16px;border-radius:12px;border:1px solid rgba(58,180,240,.5);color:#3AB4F0;font:800 14px "Nunito";flex:none}
 @media (max-width:1000px){.fila{grid-template-columns:repeat(3,1fr)}}
 @media (max-width:760px){
   .wrap{padding:max(12px,env(safe-area-inset-top)) 0 40px}
-  .top,.cursos,.sec h2,.paq{margin-left:16px;margin-right:16px}
+  .top,.cursos,.sec h2{margin-left:16px;margin-right:16px}
   .ttl b{font-size:21px}.xp b{display:none}
   .hero{margin:16px 16px 0;grid-template-columns:1fr;min-height:0}
   .hero .img{min-height:190px;order:-1}
@@ -112,7 +108,6 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
   .fila{display:flex;overflow-x:auto;gap:12px;padding:0 16px 4px;scroll-snap-type:x mandatory;scrollbar-width:none}
   .fila::-webkit-scrollbar{display:none}
   .sim{flex:0 0 68%;scroll-snap-align:start}
-  .paq{flex-wrap:wrap}.paq .sb{margin-left:62px}
 }
 
 .son.off{color:var(--faint);border-color:var(--borde)}
@@ -161,16 +156,68 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
 .hoja .usar{width:100%;margin-top:14px;justify-content:center;border:0}
 .hoja .usar[disabled]{background:#2A2346;color:var(--faint);box-shadow:0 5px 0 #1a1530;cursor:default}
 .hoja .falta{margin-top:10px;text-align:center;color:var(--dim);font:800 13px "Nunito"}
-.paq .sb[disabled]{opacity:.55;cursor:default}
+/* Descargas (assets/lab-paquetes.js): la tira y la cajita con un paquete por curso */
+.paq{position:relative;margin-top:16px;width:100%;display:flex;align-items:center;gap:16px;padding:14px 18px;border-radius:22px;text-align:left;background:linear-gradient(100deg,rgba(198,224,0,.13),rgba(58,180,240,.08) 45%,rgba(21,17,39,.85));border:1px solid rgba(198,224,0,.32);transition:transform .2s}
+.paq:hover{transform:translateY(-2px)}
+.paq .caja{width:62px;height:62px;flex:none;display:grid;place-items:center;border-radius:18px;background:radial-gradient(circle at 50% 40%,rgba(198,224,0,.22),rgba(198,224,0,.04) 70%)}
+.paq .caja svg{width:58px;height:58px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.45));animation:cajaA 3.2s ease-in-out infinite}
+@keyframes cajaA{0%,70%,100%{transform:translateY(0)}80%{transform:translateY(-4px) rotate(-3deg)}90%{transform:translateY(0) rotate(2deg)}}
+.paq .tx{flex:1;min-width:0}
+.paq b{display:flex;align-items:center;gap:8px;font:800 18px/1.2 "Sora"}
+.paq b em{font:800 11px/1 "Barlow Condensed";font-style:normal;letter-spacing:.12em;text-transform:uppercase;padding:4px 7px;border-radius:7px;background:rgba(58,180,240,.16);color:#7FD0FF}
+.paq small{display:block;margin-top:3px;color:var(--dim);font:700 13.5px/1.35 "Nunito"}
+.paq .sb{flex:none;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 18px;border-radius:14px;background:var(--lima);color:#151A03;font:800 14px "Sora";box-shadow:0 4px 0 var(--lima-osc)}
+.paq .sb svg{width:18px;height:18px;stroke-width:2.6}
+.hoja.ancha{width:min(560px,100%)}
+.pk-cab{display:flex;align-items:center;gap:14px;padding-right:44px}
+.pk-cab svg{width:58px;height:58px;flex:none;filter:drop-shadow(0 6px 10px rgba(0,0,0,.45))}
+.pk-todo{width:100%;margin:16px 0 4px;justify-content:center;border:0}
+.pk-todo[disabled]{background:#2A2346;color:var(--faint);box-shadow:0 5px 0 #1a1530;cursor:default}
+.pk-lista{display:grid;gap:10px;margin:14px 0}
+.pk{padding:12px;border-radius:18px;background:var(--card);border:1px solid var(--borde);border-left:4px solid var(--c)}
+.pk.listo{background:linear-gradient(90deg,color-mix(in srgb,var(--c) 12%,transparent),var(--card) 60%)}
+.pk-f{display:flex;align-items:center;gap:12px}
+.pk-ic{width:46px;height:46px;flex:none;border-radius:14px;display:grid;place-items:center;color:var(--c);background:color-mix(in srgb,var(--c) 18%,transparent)}
+.pk-ic svg{width:26px;height:26px}
+.pk-t{flex:1;min-width:0}
+.pk-t b{display:block;font:800 16px/1.2 "Nunito"}
+.pk-t small{display:block;margin-top:2px;color:var(--dim);font:700 12.5px/1.3 "Nunito"}
+.pk-t .okt{color:var(--lima);font-weight:800}
+.pk-b{flex:none;display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 14px;border-radius:12px;font:800 13.5px "Sora";background:var(--lima);color:#151A03;box-shadow:0 3px 0 var(--lima-osc)}
+.pk-b svg{width:17px;height:17px;stroke-width:2.6}
+.pk-b.act{background:#3AB4F0;color:#04223A;box-shadow:0 3px 0 #1F7DB0}
+.pk-b.no{background:#221C3E;color:var(--faint);box-shadow:none;cursor:default}
+.pk-b.ya{background:transparent;color:var(--lima);box-shadow:none;border:1.5px solid rgba(198,224,0,.45);cursor:default}
+.pk-x{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--card2);color:var(--dim)}
+.pk-x svg{width:18px;height:18px}
+.pk-sims{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0 58px}
+.pk-sims span{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;font:800 11.5px/1.2 "Nunito";background:rgba(255,255,255,.05);color:var(--dim)}
+.pk-sims span.si{background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--tx)}
+.pk-sims span.ce{color:var(--faint)}
+.pk-sims svg{width:12px;height:12px;stroke-width:2.4}
+.pk-bar{height:8px;margin:10px 0 0 58px;border-radius:8px;background:#2A2346;overflow:hidden}
+.pk-bar i{display:block;height:100%;width:0;border-radius:8px;background:linear-gradient(90deg,var(--lima),#E6FF4D);transition:width .25s}
+.pk-uso{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:#0D0A1F;border:1px solid var(--borde)}
+.pk-uso svg{width:22px;height:22px;color:var(--dim);flex:none}
+.pk-uso div{flex:1;min-width:0;font:700 13px/1.35 "Nunito";color:var(--dim)}.pk-uso b{color:var(--tx)}
+.pk-uso button{flex:none;height:36px;padding:0 12px;border-radius:10px;border:1px solid rgba(255,122,133,.45);color:#FF7A85;font:800 13px "Nunito"}
+.pk-nota{display:flex;gap:10px;margin-top:10px;padding:10px 12px;border-radius:14px;background:rgba(58,180,240,.08);border:1px solid rgba(58,180,240,.22);font:700 12.5px/1.4 "Nunito";color:var(--dim)}
+.pk-nota svg{width:18px;height:18px;flex:none;color:#7FD0FF;margin-top:1px}
+/* Simulador descargado: marca en la tarjeta. Sin internet, los no descargados se ven apagados */
+.desc-ok{position:absolute;top:10px;right:10px;z-index:2;width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:rgba(6,4,15,.78);border:1px solid rgba(198,224,0,.5);color:var(--lima)}
+.desc-ok svg{width:16px;height:16px;stroke-width:2.6}
+html.sin-red .sim.no-desc{opacity:.45}
+@media (max-width:760px){
+  .paq{margin:14px 16px 0;width:calc(100% - 32px);padding:12px 14px;gap:12px}
+  .paq .caja{width:54px;height:54px}.paq .caja svg{width:50px;height:50px}
+  .paq .sb{display:none}.paq .tx:after{content:"";position:absolute;right:16px;top:50%;width:9px;height:9px;margin-top:-5px;border:solid var(--lima);border-width:2.5px 2.5px 0 0;transform:rotate(45deg)}
+  .paq .tx{padding-right:22px}
+  .pk-sims span{font-size:10.5px}
+  .pk-sims,.pk-bar{margin-left:0}
+  .paq b{font-size:16px}.paq small{font-size:12.5px}
+}
 .aviso{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:.25s;padding:12px 18px;border-radius:14px;background:#1D1834;border:1px solid var(--borde);font:800 14px/1.3 "Nunito";max-width:calc(100vw - 32px);text-align:center;z-index:9}
 .aviso.on{opacity:1;transform:translate(-50%,0)}
-/* Beta: solo admin + influencers, igual que el Arcade (assets/arcade-beta.js) */
-.beta-aviso{display:none;max-width:420px;margin:90px auto 0;padding:30px 24px;text-align:center;border-radius:24px;background:var(--card);border:1px solid var(--borde);border-bottom:5px solid var(--lima)}
-.beta-aviso b{display:block;font:800 26px/1.2 "Sora",sans-serif}
-.beta-aviso p{margin:10px 0 20px;color:var(--dim);font-weight:700}
-.beta-aviso a{display:inline-flex;align-items:center;height:48px;padding:0 22px;border-radius:14px;background:var(--lima);color:#151A03;font:800 15px/1 "Sora";text-decoration:none}
-.cargando{display:none;margin:120px auto;width:40px;height:40px;border-radius:50%;border:4px solid var(--borde);border-top-color:var(--lima);animation:gira .8s linear infinite}
-@keyframes gira{to{transform:rotate(1turn)}}
 @media (prefers-reduced-motion:reduce){.hero .dos a,.hero .img img,.ray .ri{animation:none}}
 </style>
 </head>
@@ -187,10 +234,21 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
 <symbol id="ic-hoja" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 4.5V3h6v1.5M8.5 10l1.5 1.5 3-3M8.5 15.5h7"/></symbol>
 <symbol id="ic-llave" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4.5"/><path d="M11.2 11.8 20 3M16.5 6.5l2.5 2.5M14 9l2 2"/></symbol>
 <symbol id="ic-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="ic-sig" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+<symbol id="ic-ok" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+<symbol id="ic-bote" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13M10 11v5.5M14 11v5.5"/></symbol>
+<symbol id="ic-act" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4h-4"/></symbol>
+<symbol id="ic-mem" viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2.5"/><path d="M10 17.5h4"/></symbol>
+<symbol id="ic-nube" viewBox="0 0 24 24"><path d="M7 18.5h10a4 4 0 0 0 .6-8A5.5 5.5 0 0 0 7 9.5a4.5 4.5 0 0 0 0 9z"/><path d="M4 4l16 16"/></symbol>
+<symbol id="ic-desc-ok" viewBox="0 0 24 24"><path d="M12 4v9M8 9.5l4 4 4-4M5 19.5h14"/></symbol>
+<symbol id="cu-bio" viewBox="0 0 24 24"><path d="M5 19c0-8 5-14 15-15-1 10-7 15-15 15z"/><path d="M5 19l8-8"/></symbol>
+<symbol id="cu-qui" viewBox="0 0 24 24"><path d="M9.5 3.5h5M10 3.5v6L5 18.5a1.5 1.5 0 0 0 1.3 2h11.4a1.5 1.5 0 0 0 1.3-2L14 9.5v-6"/><path d="M7.5 14.5h9"/></symbol>
+<symbol id="cu-fis" viewBox="0 0 24 24"><path d="M3.5 19.5c3-9 9-14 17-14"/><circle cx="20" cy="5.5" r="1.4" fill="currentColor"/><path d="M3.5 19.5h17"/></symbol>
+<symbol id="cu-ana" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/></symbol>
+<symbol id="cu-mat" viewBox="0 0 24 24"><path d="M3.5 12h17M12 3.5v17"/><path d="M5 19c3-1 4-12 7-12s4 6 7 6"/></symbol>
+<symbol id="r-caja" viewBox="0 0 64 64"><path d="M32 6 56 18v28L32 58 8 46V18z" fill="#3B2A0F"/><path d="M8 18 32 30v28L8 46z" fill="#C98A3A"/><path d="M56 18 32 30v28l24-12z" fill="#A86C25"/><path d="M8 18 32 6l24 12-24 12z" fill="#E8B36A"/><path d="M20 12l24 12v8l-6-3v-8L14 9z" fill="#F7D9A4" opacity=".9"/><path d="M8 18 32 30 56 18M32 30v28" fill="none" stroke="#5A3B12" stroke-width="1.6" stroke-linejoin="round"/><path d="M32 6 56 18v28L32 58 8 46V18z" fill="none" stroke="#3B2A0F" stroke-width="2.4" stroke-linejoin="round"/><circle cx="44" cy="44" r="12.5" fill="#C6E000" stroke="#151A03" stroke-width="2.4"/><path d="M44 37.5v11M39.5 44.5 44 49l4.5-4.5" fill="none" stroke="#151A03" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <symbol id="ic-desc" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></symbol>
 </defs></svg>
-<div class="cargando"></div>
-<section class="beta-aviso"><b>Laboratorio en prueba</b><p>Los simuladores están en beta. Muy pronto se abren para todos.</p><a href="index.html">Volver al inicio</a></section>
 <div class="wrap">
   <div class="top">
     <a class="bt" href="index.html" aria-label="Volver al inicio"><svg class="i"><use href="#ic-atras"/></svg></a>
@@ -213,14 +271,15 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
     <div class="img dos"><a class="c-veg" href="lab-celula.html?tipo=vegetal"><img src="assets/laboratorio/celula-vegetal.webp" alt="Célula vegetal"><span>Vegetal</span></a><a class="c-ani" href="lab-celula.html?tipo=animal"><img src="assets/laboratorio/celula-animal.webp" alt="Célula animal"><span>Animal</span></a></div>
   </section>
 
+  <button class="paq" id="bPaq" type="button">
+    <span class="caja"><svg viewBox="0 0 64 64"><use href="#r-caja"/></svg></span>
+    <span class="tx"><b>Descargas <em>Sin internet</em></b><small id="paqTx">Descarga los simuladores de cada curso y estudia sin datos.</small></span>
+    <span class="sb">Ver paquetes<svg class="i"><use href="#ic-sig"/></svg></span>
+  </button>
+
   <div class="cursos" id="cursos"></div>
   <div id="secs"></div>
 
-  <div class="paq">
-    <div class="ic"><svg class="i"><use href="#ic-desc"/></svg></div>
-    <div><b>Úsalo sin internet</b><small>Muy pronto podrás descargar los simuladores de cada curso y estudiar sin datos.</small></div>
-    <button class="sb" disabled>Pronto</button>
-  </div>
 </div>
 <div class="aviso" id="aviso"></div>
 <div class="fondo" id="fondo"><div class="hoja" id="hoja"></div></div>
@@ -231,6 +290,7 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
 <script src="assets/acceso.js?v=166"></script>
 <script src="assets/lab-sonido.js"></script>
 <script src="assets/lab-rayos.js"></script>
+<script src="assets/lab-paquetes.js"></script>
 <script>
 var ART={
  vegetal:'<svg viewBox="0 0 120 80"><rect x="18" y="8" width="84" height="64" rx="10" fill="#1d4a1a" stroke="#6fdc4f" stroke-width="3"/><rect x="26" y="15" width="68" height="50" rx="7" fill="#2a6b24" opacity=".6"/><ellipse cx="66" cy="42" rx="20" ry="16" fill="#8fe0ff" opacity=".35" stroke="#8fe0ff"/><circle cx="40" cy="30" r="8" fill="#9b6bff"/><ellipse cx="38" cy="54" rx="7" ry="4" fill="#4cd137"/><ellipse cx="84" cy="24" rx="6" ry="3.5" fill="#4cd137"/></svg>',
@@ -262,7 +322,7 @@ var CUR=[
 /* Precios por si el servidor no respondió (los de verdad: tabla lab_sims) */
 var PRECIO0={celula:[60,1],tabla:[40,1],parabolico:[40,0],corazon:[60,0],funcion:[40,0],adn:[60,0]};
 var NOMBRE={}; CUR.forEach(function(c){ c[3].forEach(function(s){ NOMBRE[s[0]]=s[1]; }); });
-var SN=window.MCLabSonido, R=window.MCRayos, ST=R&&R.guardado()||null, vistos=[];
+var SN=window.MCLabSonido, R=window.MCRayos, P=window.MCPaquetes&&MCPaquetes.soportado()?MCPaquetes:null, ST=R&&R.guardado()||null, vistos=[];
 try{ vistos=JSON.parse(localStorage.getItem('mc_lab_celula')||'[]'); }catch(e){}
 var pct=Math.min(100,Math.round(vistos.length/14*100));
 var total=0; CUR.forEach(function(c){ total+=c[3].length; });
@@ -287,15 +347,18 @@ function pintar(){
    var pie='';
    if(s[0]==='celula') pie='<div class="tipos"><span>Animal</span><span>Vegetal</span></div><div class="pie"><div class="barra"><i style="width:'+pct+'%"></i></div>'+pct+'%</div>';
    else pie='<div class="pie prcs">'+(ab&&gratis(s[0])?'<span class="prc gratis">Gratis</span>':ab?'<span class="prc gratis">Abierto</span>':rayo(precio(s[0])))+'</div>';
-   var tag=listo&&ab?'a':'button';
-   return '<'+tag+' class="sim'+(listo?'':' pronto')+'"'+(tag==='a'?' href="'+s[4]+'"':' type="button" data-sim="'+s[0]+'" data-listo="'+(listo?1:0)+'"')+' style="--g:'+c[2]+';text-align:left;padding:0"><div class="esq">'+esq+'</div><div class="art">'+art+'</div><div class="inf"><b>'+s[1]+'</b><small>'+s[2]+'</small>'+pie+'</div></'+tag+'>';
+   var tag=listo&&ab?'a':'button', dsc=P&&listo&&P.tiene(s[0]);
+   return '<'+tag+' class="sim'+(listo?'':' pronto')+(listo&&!dsc?' no-desc':'')+'"'+(tag==='a'?' href="'+s[4]+'"':' type="button" data-sim="'+s[0]+'" data-listo="'+(listo?1:0)+'"')+' style="--g:'+c[2]+';text-align:left;padding:0"><div class="esq">'+esq+'</div>'+(dsc?'<span class="desc-ok" title="Descargado"><svg class="i"><use href="#ic-desc-ok"/></svg></span>':'')+'<div class="art">'+art+'</div><div class="inf"><b>'+s[1]+'</b><small>'+s[2]+'</small>'+pie+'</div></'+tag+'>';
   }).join('')+'</div></section>';
  }).join('');
  document.querySelectorAll('button.sim').forEach(function(b){ b.onclick=function(){
    if(b.dataset.listo==='1') return hoja(b.dataset.sim);
    if(SN) SN.tocar('mal'); aviso(NOMBRE[b.dataset.sim]+' llega pronto al Laboratorio');
  }; });
- document.querySelectorAll('a.sim').forEach(function(a){ a.addEventListener('click',function(){ if(SN) SN.tocar('abrir'); }); });
+ document.querySelectorAll('a.sim').forEach(function(a){ a.addEventListener('click',function(e){
+   if(navigator.onLine===false&&a.classList.contains('no-desc')){ e.preventDefault(); if(SN) SN.tocar('mal'); aviso('Sin internet. Descarga su paquete en <b>Descargas</b> para usarlo sin datos.'); return; }
+   if(SN) SN.tocar('abrir'); }); });
+ pintarPaq();
  var br=document.getElementById('bRay');
  br.classList.toggle('lab',!!(ST&&ST.codigo));
  document.getElementById('rayN').textContent=ST&&ST.codigo?'Laboratorio':(ST?ST.saldo:0);
@@ -338,7 +401,7 @@ function hoja(sim){
   h+=ST&&ST.codigo?'<div class="cod"><b><svg class="i"><use href="#ic-llave"/></svg>Tienes el código Laboratorio</b><p>Todos los simuladores están abiertos para ti.</p></div>':
     '<div class="cod"><b><svg class="i"><use href="#ic-llave"/></svg>¿Tienes el código Laboratorio?</b><p>Abre todos los simuladores sin gastar energía.</p>'+
     '<form id="hCod"><input id="hCodIn" placeholder="Escribe tu código" autocomplete="off" maxlength="40"><button>Activar</button></form><div class="msg" id="hMsg"></div></div>';
-  H.innerHTML=h; fondo.classList.add('on');
+  H.innerHTML=h; H.classList.remove('ancha'); fondo.classList.add('on');
   document.getElementById('hX').onclick=cerrar;
   var u=document.getElementById('hUsar');
   if(u) u.onclick=function(){
@@ -365,6 +428,118 @@ function hoja(sim){
   };
 }
 document.getElementById('bRay').onclick=function(){ hoja(null); };
+
+/* ===== Descargas: un paquete por curso (assets/lab-paquetes.js) ===== */
+var ICUR={'Biología':'cu-bio','Química':'cu-qui','Física':'cu-fis','Anatomía':'cu-ana','Matemática':'cu-mat'};
+// Tamaño aproximado (KB) antes de descargar; después se muestra el real
+var TAM={celula:3900,mitosis:60,punnett:30,tabla:50,atomo:35,balanceo:30,parabolico:30,plano:25,mru:30,circuito:30,optica:25,funcion:20,trigo:20,geo:15}, TAMBASE=1400;
+var NUEVO={}, BAJA=null;
+function mb(b){ return b<1048576?Math.max(1,Math.round(b/1024))+' KB':(b/1048576).toFixed(1).replace('.',',')+' MB'; }
+function hace(t){ var d=Math.floor((Date.now()-t)/86400000); return d<=0?'hoy':d===1?'ayer':'hace '+d+' días'; }
+function enHoja(){ return fondo.classList.contains('on')&&H.classList.contains('ancha'); }
+function paqDe(c){
+  var listos=c[3].filter(function(s){ return s[3]!=='pronto'; });
+  var ab=listos.filter(function(s){ return abierto(s[0]); });
+  var inf=P?P.info().cursos[P.id(c[0])]:null;
+  var faltan=inf?ab.filter(function(s){ return (inf.sims||[]).indexOf(s[0])<0; }).length:0;
+  return {c:c,listos:listos,ab:ab,inf:inf,faltan:faltan,nuevo:!!NUEVO[c[0]]};
+}
+function pintarPaq(){
+  var t=document.getElementById('paqTx'); if(!t) return;
+  document.documentElement.classList.toggle('sin-red',navigator.onLine===false);
+  if(!P) return;
+  var n=Object.keys(P.info().cursos).length;
+  t.textContent=n?n+(n===1?' paquete descargado':' paquetes descargados')+' · '+mb(P.uso())+' en tu celular':'Descarga los simuladores de cada curso y estudia sin datos.';
+}
+function filaPaq(k){
+  var c=k.c, id=P.id(c[0]), baja=BAJA&&BAJA.c===c[0], est, bt, h;
+  if(!k.listos.length){ est='Llega pronto'; bt='<span class="pk-b no">Pronto</span>'; }
+  else if(baja){ est='Descargando… '+BAJA.pct+'%'; bt='<span class="pk-b no">'+BAJA.pct+'%</span>'; }
+  else if(k.inf&&(k.faltan||k.nuevo)){
+    est=k.faltan?(k.faltan===1?'1 simulador nuevo para agregar':k.faltan+' simuladores nuevos para agregar'):'Hay una versión nueva';
+    bt=navigator.onLine===false?'<span class="pk-b no">Sin internet</span>':'<button class="pk-b act" data-p="'+id+'"><svg class="i"><use href="#ic-act"/></svg>Actualizar</button>'; }
+  else if(k.inf){ est='<span class="okt">Listo sin internet</span> · '+mb(k.inf.bytes)+' · '+hace(k.inf.t); bt='<span class="pk-b ya"><svg class="i"><use href="#ic-ok"/></svg>Listo</span>'; }
+  else if(!k.ab.length){ est='Ábrelos con energía para descargarlos'; bt='<span class="pk-b no"><svg class="i"><use href="#ic-cand"/></svg>Cerrado</span>'; }
+  else {
+    var kb=k.ab.reduce(function(a,s){ return a+(TAM[s[0]]||40); },0)+(P.info().base?0:TAMBASE);
+    est=k.ab.length+(k.ab.length===1?' simulador':' simuladores')+' · aprox. '+mb(kb*1024);
+    bt=navigator.onLine===false?'<span class="pk-b no">Sin internet</span>':'<button class="pk-b" data-p="'+id+'"><svg class="i"><use href="#ic-desc"/></svg>Descargar</button>';
+  }
+  h='<div class="pk'+(k.inf&&!k.faltan&&!k.nuevo?' listo':'')+'" style="--c:'+c[1]+'"><div class="pk-f"><div class="pk-ic"><svg class="i"><use href="#'+ICUR[c[0]]+'"/></svg></div><div class="pk-t"><b>'+c[0]+'</b><small>'+est+'</small></div>'+bt+
+    (k.inf&&!baja?'<button class="pk-x" data-b="'+id+'" aria-label="Borrar '+c[0]+'"><svg class="i"><use href="#ic-bote"/></svg></button>':'')+'</div>';
+  if(baja) h+='<div class="pk-bar"><i style="width:'+BAJA.pct+'%"></i></div>';
+  h+='<div class="pk-sims">'+c[3].map(function(s){
+    var pr=s[3]==='pronto', en=k.inf&&(k.inf.sims||[]).indexOf(s[0])>=0, ab=!pr&&abierto(s[0]);
+    return '<span class="'+(en?'si':!ab?'ce':'')+'">'+(en?'<svg class="i"><use href="#ic-ok"/></svg>':!ab?'<svg class="i"><use href="#ic-cand"/></svg>':'')+esc(s[1])+'</span>';
+  }).join('')+'</div></div>';
+  return h;
+}
+function hojaPaq(){
+  var h='<button class="cerrar" id="hX" aria-label="Cerrar"><svg class="i"><use href="#ic-x"/></svg></button>'+
+    '<div class="pk-cab"><svg viewBox="0 0 64 64"><use href="#r-caja"/></svg><div><h3>Descargas</h3><p>Guarda los simuladores de cada curso en tu celular y úsalos sin internet.</p></div></div>';
+  H.classList.add('ancha'); fondo.classList.add('on');
+  if(!P){
+    H.innerHTML=h+'<div class="pk-nota" style="margin-top:16px"><svg class="i"><use href="#ic-nube"/></svg><div>Este navegador no permite descargas. Ábrelo en Chrome o usa la app de Modo Cachimbo.</div></div>';
+    document.getElementById('hX').onclick=cerrar; return;
+  }
+  var ks=CUR.map(paqDe), pend=ks.filter(function(k){ return k.ab.length&&(!k.inf||k.faltan||k.nuevo); }), off=navigator.onLine===false;
+  h+='<button class="btn pk-todo" id="pkTodo"'+(!pend.length||BAJA||off?' disabled':'')+'><svg class="i"><use href="#ic-desc"/></svg>'+(off?'Sin internet':BAJA?'Descargando…':pend.length?'Descargar todo lo abierto':'Todo descargado')+'</button>';
+  h+='<div class="pk-lista">'+ks.map(filaPaq).join('')+'</div>';
+  var uso=P.uso(), base=P.info().base;
+  h+='<div class="pk-uso"><svg class="i"><use href="#ic-mem"/></svg><div>En tu celular: <b>'+(uso?mb(uso):'nada todavía')+'</b>'+(base?'<br>Incluye lo común del Laboratorio ('+mb(base.bytes)+')':'')+'</div>'+(uso&&!BAJA?'<button id="pkBorrar">Borrar todo</button>':'')+'</div>';
+  h+='<div class="pk-nota"><svg class="i"><use href="#ic-nube"/></svg><div>Sin internet puedes usar los simuladores y practicar el Modo Reto. La <b style="color:#9BE4FF">energía</b> solo se gana con internet.</div></div>';
+  H.innerHTML=h;
+  document.getElementById('hX').onclick=cerrar;
+  H.querySelectorAll('[data-p]').forEach(function(b){ b.onclick=function(){ bajarCurso(b.dataset.p); }; });
+  H.querySelectorAll('[data-b]').forEach(function(b){ b.onclick=function(){
+    var c=CUR.filter(function(x){ return P.id(x[0])===b.dataset.b; })[0];
+    if(b.dataset.seguro!=='1'){ b.dataset.seguro='1'; b.style.cssText='width:auto;padding:0 10px;color:#FF7A85;font:800 12.5px Nunito'; b.textContent='¿Borrar?'; if(SN) SN.tocar('tic'); return; }
+    P.borrar(c[0]).then(function(){ delete NUEVO[c[0]]; if(SN) SN.tocar('tic'); pintar(); hojaPaq(); aviso('Borraste el paquete de '+c[0]); });
+  }; });
+  var bb=document.getElementById('pkBorrar');
+  if(bb) bb.onclick=function(){
+    if(bb.dataset.seguro!=='1'){ bb.dataset.seguro='1'; bb.textContent='¿Seguro? Toca otra vez'; if(SN) SN.tocar('tic'); return; }
+    P.borrarTodo().then(function(){ NUEVO={}; pintar(); hojaPaq(); aviso('Borraste todas las descargas'); });
+  };
+  var bt=document.getElementById('pkTodo');
+  if(bt) bt.onclick=function(){
+    var cola=pend.map(function(k){ return P.id(k.c[0]); });
+    (function sig(){ if(cola.length) bajarCurso(cola.shift(),!!cola.length).then(function(ok){ if(ok) sig(); }); })();
+  };
+}
+function bajarCurso(id,callado){
+  var c=CUR.filter(function(x){ return P.id(x[0])===id; })[0]; if(!c||BAJA) return Promise.resolve(false);
+  var sims=c[3].filter(function(s){ return s[3]!=='pronto'&&abierto(s[0]); }).map(function(s){ return {sim:s[0],url:s[4]}; });
+  if(!sims.length) return Promise.resolve(false);
+  if(SN) SN.tocar('abrir');
+  BAJA={c:c[0],pct:0}; if(enHoja()) hojaPaq();
+  return P.bajar(c[0],sims,function(hc,tot,fase){
+    BAJA.pct=Math.min(99,Math.round(fase==='base'?hc/tot*35:35+hc/tot*65));
+    var bar=H.querySelector('.pk-bar i'); if(!bar) return;
+    var pk=bar.closest('.pk'), sm=pk.querySelector('.pk-t small'), b2=pk.querySelector('.pk-b');
+    bar.style.width=BAJA.pct+'%'; if(sm) sm.textContent='Descargando… '+BAJA.pct+'%'; if(b2) b2.textContent=BAJA.pct+'%';
+  }).then(function(){
+    BAJA=null; delete NUEVO[c[0]]; pintar(); if(enHoja()) hojaPaq();
+    if(!callado){ if(SN) SN.tocar('bien'); aviso('¡Listo! <b>'+esc(c[0])+'</b> ya funciona sin internet'); }
+    return true;
+  },function(e){
+    BAJA=null; if(enHoja()) hojaPaq(); if(SN) SN.tocar('mal');
+    aviso(esc(e&&e.message||'No se pudo descargar.')+' Inténtalo otra vez.'); return false;
+  });
+}
+document.getElementById('bPaq').onclick=function(){ if(SN) SN.tocar('abrir'); hojaPaq(); revisarPaq(); };
+// Con internet: ¿algún paquete tiene versión nueva? (solo cabeceras, casi sin datos)
+var revisado=0;
+function revisarPaq(){
+  if(!P||navigator.onLine===false||Date.now()-revisado<600000) return;
+  revisado=Date.now();
+  var cs=P.info().cursos;
+  Object.keys(cs).forEach(function(id){
+    var nom=cs[id].curso;
+    P.revisar(nom).then(function(si){ if(si&&!NUEVO[nom]){ NUEVO[nom]=1; if(enHoja()&&!BAJA) hojaPaq(); } });
+  });
+}
+['online','offline'].forEach(function(ev){ window.addEventListener(ev,function(){ pintar(); if(enHoja()&&!BAJA) hojaPaq(); }); });
 
 /* Volver desde un simulador cerrado: laboratorio.html?abrir=<sim> abre su ventana */
 var qAb=new URLSearchParams(location.search).get('abrir');
