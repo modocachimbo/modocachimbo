@@ -50,6 +50,12 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
 .clave p{margin:0;font:700 14px/1.5 "Nunito"}
 .clave p+p{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,200,0,.2)}
 .reset{align-self:flex-start;height:38px;padding:0 14px;border-radius:11px;background:var(--card2);border:1px solid var(--borde);font:800 13px "Nunito";color:var(--dim)}
+.tipos button i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:1px}
+.tipos button.on i{box-shadow:0 0 0 2px #151A03}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chips button{height:34px;min-width:48px;padding:0 9px;border-radius:10px;background:#0E0A22;border:1px solid var(--borde);font:800 13px "Sora";color:var(--dim)}
+.chips button.on{border-color:var(--lima);color:var(--lima);background:rgba(198,224,0,.08)}
+.caja h3+.desl{margin-top:0}
 /* plano */
 .cuad{stroke:rgba(255,255,255,.05);stroke-width:1}
 .cuad.m5{stroke:rgba(255,255,255,.1)}
@@ -60,7 +66,7 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
 .pt{stroke:#0B0820;stroke-width:2.5}
 .ptx{font:800 12px "Sora",sans-serif;paint-order:stroke;stroke:#0B0820;stroke-width:4px}
 /* beta: igual que el Arcade (assets/arcade-beta.js) */
-html:not(.arcade-si) .app{display:none}
+html:not(.arcade-si) .app,html.lab-espera .app{display:none}
 .beta-aviso{display:none;max-width:420px;margin:90px auto 0;padding:30px 24px;text-align:center;border-radius:24px;background:var(--card);border:1px solid var(--borde);border-bottom:5px solid var(--lima)}
 html.arcade-no .beta-aviso{display:block}
 .beta-aviso b{display:block;font:800 26px/1.2 "Sora",sans-serif}
