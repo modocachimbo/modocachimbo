@@ -419,7 +419,8 @@ if(TIPO==='vegetal'){
   O.golgi.fn='Recibe las proteínas del RE, las modifica y las empaqueta. En la vegetal además fabrica la hemicelulosa y la pectina de la pared (la celulosa se hace en la membrana).';
   O.ribosoma.clave=O.ribosoma.clave.concat(['En la célula vegetal también hay ribosomas 70S dentro de los cloroplastos y las mitocondrias.']);
   O.citoesqueleto.fn='Red de proteínas que da forma a la célula, mueve el citoplasma y los orgánulos, y arma el huso en la división. En la vegetal no hay centriolos: el huso se forma desde los casquetes polares.';
-  O.citoesqueleto.partes=[['Microtúbulos','Tubulina. Forman el huso (anastral) y guían cómo se ordena la celulosa de la pared.'],['Filamentos intermedios','Casi no hay en plantas (no tienen queratina): la pared da la resistencia.'],['Microfilamentos','De actina. Mueven el citoplasma (ciclosis) y acomodan los cloroplastos según la luz.']];
+  O.citoesqueleto.lat='Microtúbulos y actina'; O.citoesqueleto.f=['Filamentos','2 principales'];
+  O.citoesqueleto.partes=[['Microtúbulos','Tubulina. Forman el huso (anastral) y guían cómo se ordena la celulosa de la pared.'],['Filamentos intermedios','Casi no hay en plantas (no tienen queratina): la pared da la resistencia.'],['Microfilamentos','De actina. Mueven el citoplasma (ciclosis) y acomodan los cloroplastos según la luz.'],['Cloroplasto','Viaja por los microfilamentos: se acomoda hacia la luz.'],['Mitocondria','También la llevan los filamentos por el citoplasma.'],['Pared celular','Por fuera; los microtúbulos de debajo guían cómo se ordena la celulosa.'],['Membrana plasmática','Los microtúbulos corticales van pegados por dentro.'],['RE rugoso','Se sostiene y se mueve sobre la red de actina.']];
   O.citoesqueleto.clave=['Ciclosis: corriente citoplasmática movida por actina y miosina.','Mitosis vegetal: anastral (sin centriolos) y la citocinesis es por placa celular, no por estrangulamiento.','La colchicina también impide el huso: se usa para obtener plantas poliploides.'];
   O.golgi.clave=['En plantas forma la lámina media y la pared: sus vesículas arman la placa celular en la citocinesis.','También empaqueta las sustancias que van a la vacuola.'];
   O.mitocondria.clave=['La planta también respira: la mitocondria usa la glucosa que fabricó el cloroplasto.','Tiene ADN circular y ribosomas 70S, como las bacterias.'];
@@ -439,6 +440,7 @@ if(TIPO==='vegetal'){
     amiloplasto:{w:1600,h:977,p:[[1,1540,470],[2,440,560],[3,147,560],[4,713,751]]},
     leucoplasto:{w:1600,h:977,p:[[1,80,693],[2,747,460],[3,560,120],[4,1040,600],[5,707,753]]},
     membrana:{w:1600,h:815,img:'membrana-vegetal',p:[[1,320,453],[2,440,587],[3,1307,387],[4,453,320],[5,613,627],[6,1047,427],[7,793,453],[8,800,120]]},
+    citoesqueleto:{w:1600,h:838,img:'citoesqueleto-vegetal',p:[[1,1360,400],[3,1333,583],[4,693,653],[5,1067,573],[6,800,120],[7,533,440],[8,347,667]]},
     cromoplasto:{w:1067,h:1100,p:[[1,1033,560],[2,747,827],[3,333,320]]} };
 }
 
