@@ -7,16 +7,18 @@ const CD = { lista: [], config: { abiertos: {}, legacy: true }, hoy: '', filtro:
 // descarga-VIP va aparte: ni TODO-VIP lo incluye. Se marca solo (código solo de descargas)
 // o junto a otros paquetes, incluso junto al Acceso total ("TODO-VIP,descarga-VIP").
 const PROD_TODOS = [
-  ['TODO-VIP', 'Acceso total'], ['general', 'Acceso general'], ['seminario-VIP', 'Seminarios + Banqueo'], ['vocabulario-VIP', 'Vocabulario'], ['biblioteca-VIP', 'Biblioteca'], ['descarga-VIP', 'Descargas PDF']
+  ['TODO-VIP', 'Acceso total'], ['general', 'Acceso general'], ['seminario-VIP', 'Seminarios + Banqueo'], ['vocabulario-VIP', 'Vocabulario'], ['biblioteca-VIP', 'Biblioteca'], ['descarga-VIP', 'Descargas PDF'], ['laboratorio-VIP', 'Laboratorio']
 ];
+const EXTRAS = ['descarga-VIP', 'laboratorio-VIP']; // van aparte: se pueden sumar al Acceso total
 const PROD_DESCARGA = 'descarga-VIP';
 const esDescarga = c => String(c && c.producto || '').split(',').includes(PROD_DESCARGA);
 const PROD_AYUDA = {
-  'TODO-VIP': 'Todo: el acceso general, Seminarios, Banqueo, Vocabulario y Biblioteca (las Descargas PDF van aparte)',
+  'TODO-VIP': 'Todo: el acceso general, Seminarios, Banqueo, Vocabulario y Biblioteca (las Descargas PDF y el Laboratorio van aparte)',
   general: 'Las 4 áreas con todo lo de adentro (práctica, Repaso, Fijas, Libros, Flashcards), Simulacro, Duelos y Exámenes',
   'seminario-VIP': 'Seminarios y Banqueo de todos los cursos',
   'vocabulario-VIP': 'Vocabulario de todos los cursos',
   'biblioteca-VIP': 'Solo la Biblioteca: entrar y leer todos sus libros',
+  'laboratorio-VIP': 'Todos los simuladores del Laboratorio sin gastar energía. Va aparte: no viene en el Acceso total',
   'descarga-VIP': 'Descargar en PDF (con marca de agua y N.º único) lo que permitas en Panel → Descargas PDF. Va aparte: no viene en el Acceso total ni abre los temas'
 };
 const AREAS_COD = [['matematica', 'Matemática'], ['ciencia-tecnologia', 'Ciencia y Tecnología'], ['comunicacion', 'Comunicación'], ['ciencias-sociales', 'Ciencias Sociales']];
@@ -36,7 +38,7 @@ function mensajeCodigo(c) {
     `\nActívalo aquí: ${SITE_URL} → «Ingresar código»`;
 }
 function etiquetaUno(p) {
-  const fijos = { 'TODO-VIP': 'Acceso total', general: 'Acceso general', 'seminario-VIP': 'Seminarios + Banqueo', duelo: 'Duelos', examenes: 'Exámenes', 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'banqueo-VIP': 'Todo el Banqueo', 'tarjetas-VIP': 'Todas las Flashcards', 'vocabulario-VIP': 'Vocabulario', 'biblioteca-VIP': 'Biblioteca', 'descarga-VIP': 'Descargas PDF', simulacro: 'Simulacro' };
+  const fijos = { 'TODO-VIP': 'Acceso total', general: 'Acceso general', 'seminario-VIP': 'Seminarios + Banqueo', duelo: 'Duelos', examenes: 'Exámenes', 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'banqueo-VIP': 'Todo el Banqueo', 'tarjetas-VIP': 'Todas las Flashcards', 'vocabulario-VIP': 'Vocabulario', 'biblioteca-VIP': 'Biblioteca', 'descarga-VIP': 'Descargas PDF', 'laboratorio-VIP': 'Laboratorio', simulacro: 'Simulacro' };
   if (fijos[p]) return fijos[p];
   const ar = AREAS_COD.find(([id]) => 'area-' + id === p); if (ar) return 'Área ' + ar[1];
   const m = String(p).match(/^(curso|repaso|fijas|seminario|banqueo|tarjetas|vocabulario)-(.+)$/); if (!m) return p;
@@ -590,7 +592,7 @@ function editarCodigo(orig) {
   const cerrar = () => { o.remove(); document.body.classList.remove('modal-open'); };
   o.querySelector('.mx').addEventListener('click', cerrar); o.querySelector('[data-x]').addEventListener('click', cerrar);
   const producto = () => {
-    if (st.todos.includes('TODO-VIP')) return st.todos.includes(PROD_DESCARGA) ? 'TODO-VIP,' + PROD_DESCARGA : 'TODO-VIP';
+    if (st.todos.includes('TODO-VIP')) return ['TODO-VIP'].concat(EXTRAS.filter(x => st.todos.includes(x))).join(',');
     const areas = st.todos.includes('general') ? [] : st.areas.map(a => 'area-' + a);
     return st.todos.concat(areas, st.antes).join(',');
   };
@@ -606,8 +608,8 @@ function editarCodigo(orig) {
     const v = b.dataset.v, i = st.todos.indexOf(v);
     if (i >= 0) st.todos.splice(i, 1); else st.todos.push(v);
     // El Acceso total ya trae todos los paquetes menos Descargas PDF: solo se le puede sumar esa
-    if (v === 'TODO-VIP' && i < 0) { st.todos = st.todos.filter(x => x === 'TODO-VIP' || x === PROD_DESCARGA); st.areas = []; }
-    else if (v !== 'TODO-VIP' && v !== PROD_DESCARGA) st.todos = st.todos.filter(x => x !== 'TODO-VIP');
+    if (v === 'TODO-VIP' && i < 0) { st.todos = st.todos.filter(x => x === 'TODO-VIP' || EXTRAS.includes(x)); st.areas = []; }
+    else if (v !== 'TODO-VIP' && !EXTRAS.includes(v)) st.todos = st.todos.filter(x => x !== 'TODO-VIP');
     if (v === 'general' && i < 0) st.areas = [];
     pintar();
   });
@@ -687,7 +689,7 @@ function importarCodigos() {
   o.querySelector('#impTxt').addEventListener('input', e => {
     filas = e.target.value.split(/\r?\n/).map(l => l.split(/\t|;|,(?=\S)/).map(x => x.trim())).filter(c => c[0] && !/^c[óo]digo$/i.test(c[0]))
       .map(c => ({ codigo: c[0].toUpperCase(), producto: c[1] || '', max: parseFloat(c[2]) || 0, usos: parseFloat(c[3]) || 0, nota: c[4] || '' }));
-    const malos = filas.filter(f => !f.producto.split(',').every(x => /^(TODO-VIP|general|repaso-VIP|fijas-VIP|seminario-VIP|banqueo-VIP|tarjetas-VIP|vocabulario-VIP|biblioteca-VIP|descarga-VIP|simulacro|(area|curso|repaso|fijas|seminario|banqueo|tarjetas|vocabulario)-[a-z0-9-]+)$/.test(x)));
+    const malos = filas.filter(f => !f.producto.split(',').every(x => /^(TODO-VIP|general|repaso-VIP|fijas-VIP|seminario-VIP|banqueo-VIP|tarjetas-VIP|vocabulario-VIP|biblioteca-VIP|descarga-VIP|laboratorio-VIP|simulacro|(area|curso|repaso|fijas|seminario|banqueo|tarjetas|vocabulario)-[a-z0-9-]+)$/.test(x)));
     o.querySelector('#impPrev').innerHTML = filas.length
       ? `<b style="color:var(--text)">${filas.length} código${filas.length > 1 ? 's' : ''} detectado${filas.length > 1 ? 's' : ''}:</b> ` + filas.slice(0, 6).map(f => `${esc(f.codigo)} (${esc(etiquetaProd(f.producto))}, ${f.usos}/${f.max || '∞'})`).join(' · ') + (filas.length > 6 ? ' …' : '') +
         (malos.length ? `<br><span style="color:var(--red)">${malos.length} con producto no reconocido se saltarán.</span>` : '')
@@ -837,7 +839,7 @@ function darPorId(orig, opts) {
   o.querySelector('.mx').addEventListener('click', cerrar); o.querySelector('[data-x]').addEventListener('click', cerrar);
   // Mismas reglas que al crear un código
   const producto = () => {
-    if (st.todos.includes('TODO-VIP')) return st.todos.includes(PROD_DESCARGA) ? 'TODO-VIP,' + PROD_DESCARGA : 'TODO-VIP';
+    if (st.todos.includes('TODO-VIP')) return ['TODO-VIP'].concat(EXTRAS.filter(x => st.todos.includes(x))).join(',');
     const areas = st.todos.includes('general') ? [] : st.areas.map(a => 'area-' + a);
     return st.todos.concat(areas).join(',');
   };
@@ -868,8 +870,8 @@ function darPorId(orig, opts) {
     const b = e.target.closest('.chip'); if (!b) return;
     const v = b.dataset.v, i = st.todos.indexOf(v);
     if (i >= 0) st.todos.splice(i, 1); else st.todos.push(v);
-    if (v === 'TODO-VIP' && i < 0) { st.todos = st.todos.filter(x => x === 'TODO-VIP' || x === PROD_DESCARGA); st.areas = []; }
-    else if (v !== 'TODO-VIP' && v !== PROD_DESCARGA) st.todos = st.todos.filter(x => x !== 'TODO-VIP');
+    if (v === 'TODO-VIP' && i < 0) { st.todos = st.todos.filter(x => x === 'TODO-VIP' || EXTRAS.includes(x)); st.areas = []; }
+    else if (v !== 'TODO-VIP' && !EXTRAS.includes(v)) st.todos = st.todos.filter(x => x !== 'TODO-VIP');
     if (v === 'general' && i < 0) st.areas = [];
     pintar();
   });

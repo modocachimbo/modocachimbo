@@ -760,7 +760,7 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     <!-- Cielo animado (nubes, estrellitas, luces que suben, estrella fugaz): lo llena el JS -->
     <div class="cielo" id="cielo"><i class="fugaz"></i></div>
     <div class="h-top">
-      <button type="button" class="rec ry" data-pronto="Rayos: con ellos abrirás nuevos mundos"><svg class="ri"><use href="#r-rayo"/></svg><b id="recRayo">0</b><i class="chis"></i><i class="chis"></i><i class="mas">+</i></button>
+      <button type="button" class="rec ry" id="recRy"><svg class="ri"><use href="#r-rayo"/></svg><b id="recRayo">0</b><i class="chis"></i><i class="chis"></i><i class="mas">+</i></button>
       <button type="button" class="rec co" id="recCor" aria-label="Corazones"><svg class="ri"><use href="#r-corazon"/></svg><b id="recCorN">5</b><i class="chis"></i><i class="chis"></i><i class="mas">+</i></button>
       <button type="button" class="rec di" data-pronto="Diamantes: para la tienda del Arcade"><svg class="ri"><use href="#r-diamante"/></svg><b id="recDia">0</b><i class="chis"></i><i class="chis"></i><i class="mas">+</i></button>
       <button type="button" class="g-btn h-aj" id="hAj" aria-label="Ajustes"><svg class="ic"><use href="#i-ajustes"/></svg></button>
@@ -983,7 +983,7 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
         alGanar: function (r) {
           var k = t + ':retos';
           estado.est[k] = Math.max(estado.est[k] || 0, r.estrellas);
-          estado.xp += r.xp; $('xpN').textContent = estado.xp; guardar();
+          estado.xp += r.xp; $('xpN').textContent = estado.xp; guardar(); cobrarRayos();
         },
         alTerminar: function () { volverDeRetos(c, antes, !yaHecho && !!estado.est[t + ':retos'], i); },
         alCerrar: function () { volverDeRetos(c, antes); }
@@ -1094,6 +1094,11 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
   }
   var tToast;
   function toast(t) { var el = $('hToast'); el.innerHTML = t; el.classList.add('on'); clearTimeout(tToast); tToast = setTimeout(function () { el.classList.remove('on'); }, 1800); }
+  // Rayos: se ganan pasando niveles y abren simuladores del Laboratorio (assets/lab-rayos.js)
+  function pintarRayos(st) { if (st && !st.error) $('recRayo').textContent = st.saldo; }
+  $('recRy').onclick = function () { if (window.MCSonido) MCSonido.efecto('tap'); toast('Energía: +3 por nivel, +5 con 3 estrellas<br><small>Úsala para abrir simuladores del Laboratorio</small>'); };
+  function cobrarRayos() { if (!window.MCRayos) return; pintarRayos(MCRayos.guardado()); MCRayos.estado().then(function (st) { if (st && st.nuevos > 0) toast('+' + st.nuevos + ' de energía'); pintarRayos(st); }); }
+  setTimeout(cobrarRayos, 400);
   document.querySelectorAll('[data-pronto]').forEach(function (b) { b.onclick = function () { if (window.MCSonido) MCSonido.efecto('tap'); toast(b.dataset.pronto + '<br><small>¡Muy pronto!</small>'); }; });
   // Cielo: nubes, estrellitas y luces con tamaños y tiempos al azar
   (function () {
@@ -1453,7 +1458,7 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
   function terminar() {
     var j = JUEGOS[estado.juego], f = estado.fallos;
     var est = f === 0 ? 3 : f <= 2 ? 2 : 1, clave = estado.tema + ':' + j.id;
-    estado.est[clave] = Math.max(estado.est[clave] || 0, est); guardar();
+    estado.est[clave] = Math.max(estado.est[clave] || 0, est); guardar(); cobrarRayos();
     ver('v-fin', 'Resultado', j.nom); $('combo').classList.remove('si');
     $('volver').onclick = function (e) { e.preventDefault(); irRuta(); };
     $('fEst').innerHTML = [1, 2, 3].map(function (k) { return '<svg class="ic' + (k <= est ? ' on' : '') + '"><use href="#i-estrella"/></svg>'; }).join('');
@@ -1489,5 +1494,6 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
 <script src="assets/mc-config.js"></script>
 <script src="assets/auth.js"></script>
 <script src="assets/arcade-beta.js"></script>
+<script src="assets/lab-rayos.js"></script>
 </body>
 </html>

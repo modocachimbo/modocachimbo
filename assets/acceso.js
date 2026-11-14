@@ -38,7 +38,9 @@
      biblioteca-VIP → la Biblioteca (todos sus libros)
      descarga-VIP   → Descargas en PDF (assets/descarga-pdf.js, supabase/54-descarga-aparte.sql).
                       Se vende aparte: TODO-VIP no la incluye
-     TODO-VIP       → todo, menos las Descargas PDF
+     laboratorio-VIP→ Laboratorio: todos los simuladores (supabase/97-laboratorio-rayos.sql).
+                      Va aparte, como las Descargas: TODO-VIP no lo incluye
+     TODO-VIP       → todo, menos las Descargas PDF y el Laboratorio
      Los códigos de antes (curso-x, repaso-VIP, fijas-x…) siguen abriendo lo suyo. */
   var AREAS = {
     'matematica': ['algebra', 'aritmetica', 'estadistica', 'geometria', 'trigonometria'],
@@ -112,7 +114,7 @@
     x = puerta(x);
     var cat = x.split('-')[0], resto = x.slice(cat.length + 1);
     return String(pc).split(',').some(function (u) {
-      if (u === x || (u === 'TODO-VIP' && cat !== 'descarga')) return true;
+      if (u === x || (u === 'TODO-VIP' && cat !== 'descarga' && cat !== 'laboratorio')) return true;
       if (cat === 'area') {
         if (u === 'general' || /^(repaso|fijas|tarjetas)-VIP$/.test(u)) return true;
         var m = /^(curso|repaso|fijas|tarjetas)-(.+)$/.exec(u);
@@ -123,6 +125,7 @@
       if (cat === 'vocabulario') return u === 'vocabulario-VIP';
       if (cat === 'biblioteca') return u === 'biblioteca-VIP';
       if (cat === 'descarga') return u === 'descarga-VIP';
+      if (cat === 'laboratorio') return u === 'laboratorio-VIP';
       return false;
     });
   }
@@ -417,7 +420,7 @@
   function idEstado() { var c = cacheID(); return { lista: idActivos(), permitido: c.permitido !== false, equipos: c.equipos || 0, max: c.max || 0, t: c.ok || 0 }; }
 
   // «¡Acceso activado!» la primera vez que el alumno entra después de que se lo dieron
-  var NOM = { 'TODO-VIP': 'Acceso total', general: 'Acceso general', 'seminario-VIP': 'Seminarios + Banqueo', 'vocabulario-VIP': 'Vocabulario', 'biblioteca-VIP': 'Biblioteca', 'descarga-VIP': 'Descargas PDF', simulacro: 'Simulacro', duelo: 'Duelos', examenes: 'Exámenes',
+  var NOM = { 'TODO-VIP': 'Acceso total', general: 'Acceso general', 'seminario-VIP': 'Seminarios + Banqueo', 'vocabulario-VIP': 'Vocabulario', 'biblioteca-VIP': 'Biblioteca', 'descarga-VIP': 'Descargas PDF', 'laboratorio-VIP': 'Laboratorio', simulacro: 'Simulacro', duelo: 'Duelos', examenes: 'Exámenes',
     'area-matematica': 'Área Matemática', 'area-ciencia-tecnologia': 'Área Ciencia y Tecnología', 'area-comunicacion': 'Área Comunicación', 'area-ciencias-sociales': 'Área Ciencias Sociales' };
   function nombreProd(p) { return String(p || '').split(',').map(function (x) { return NOM[x] || x; }).join(' + '); }
   // El sobre del acceso (assets/pase.js): se carga solo la primera vez que hace falta
