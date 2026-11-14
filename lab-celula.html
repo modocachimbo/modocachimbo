@@ -401,7 +401,24 @@ if(TIPO==='vegetal'){
   O.peroxisoma.n='Peroxisoma · glioxisoma'; O.peroxisoma.lat='Peroxisoma vegetal · 0,5 µm';
   O.peroxisoma.fn='Oxida peróxidos con la catalasa (2 H₂O₂ → 2 H₂O + O₂). En las semillas, los glioxisomas convierten las grasas de reserva en azúcares para que la planta germine.';
   O.peroxisoma.clave=['Glioxisoma: peroxisoma especial de las semillas oleaginosas; hace el ciclo del glioxilato (lípidos → glúcidos).','En las hojas, los peroxisomas trabajan junto al cloroplasto y la mitocondria en la fotorrespiración.'];
+  /* Mismas organelas, pero en la vegetal cambian partes y funciones */
   O.membrana.partes=O.membrana.partes.slice(0,6);
+  O.membrana.partes[1]=['Fitoesteroles','No hay colesterol: el sitosterol y el estigmasterol regulan la fluidez.'];
+  O.membrana.partes[3]=['Glúcidos de membrana','Glucoproteínas y glucolípidos. No forman glucocáliz: por fuera está la pared.'];
+  O.membrana.fn='Separa la célula del medio y controla qué entra y qué sale (semipermeable). En la vegetal queda por dentro de la pared celular y se aprieta contra ella cuando la vacuola se llena (turgencia).';
+  O.membrana.mas=['Transporte de sustancias',[['P','Ósmosis y difusión','El agua entra por acuaporinas; así se llena la vacuola','Sin ATP'],['A','Transporte activo','Bomba de protones (H⁺-ATPasa): en plantas reemplaza a la bomba Na⁺/K⁺','Con ATP'],['M','Exocitosis','Lleva los materiales de la pared. No hay fagocitosis: la pared lo impide','Con ATP']]];
+  O.membrana.clave=['La membrana vegetal no tiene colesterol: tiene fitoesteroles.','Su bomba principal es la H⁺-ATPasa (bomba de protones), no la Na⁺/K⁺.','Se comunica con las células vecinas por los plasmodesmos (en animales: uniones GAP).','Plasmólisis: en medio hipertónico se despega de la pared.'];
+  O.nucleo.clave=O.nucleo.clave.concat(['En la célula vegetal madura, la vacuola central empuja al núcleo hacia un costado.']);
+  O.rer.fn='Red de sacos aplanados con ribosomas. Fabrica las proteínas que van a la membrana, a la vacuola o que salen hacia la pared celular.';
+  O.rel.fn='Túbulos sin ribosomas. Fabrica los lípidos de las membranas, los aceites y las ceras de la cutícula, y guarda Ca²⁺.';
+  O.rel.partes=[['Túbulos','Red de tubos ramificados y conectados.'],['Luz (lumen)','Interior hueco de los túbulos.'],['Enzimas P-450','Fabrican sustancias de defensa de la planta.']];
+  O.rel.clave=['Pasa por los plasmodesmos como desmotúbulo y une el RE de células vecinas.','En las semillas oleaginosas forma los oleosomas (gotas de aceite).'];
+  O.golgi.lat='Dictiosomas · dispersos';
+  O.golgi.fn='Recibe las proteínas del RE, las modifica y las empaqueta. En la vegetal además fabrica la hemicelulosa y la pectina de la pared (la celulosa se hace en la membrana).';
+  O.ribosoma.clave=O.ribosoma.clave.concat(['En la célula vegetal también hay ribosomas 70S dentro de los cloroplastos y las mitocondrias.']);
+  O.citoesqueleto.fn='Red de proteínas que da forma a la célula, mueve el citoplasma y los orgánulos, y arma el huso en la división. En la vegetal no hay centriolos: el huso se forma desde los casquetes polares.';
+  O.citoesqueleto.partes=[['Microtúbulos','Tubulina. Forman el huso (anastral) y guían cómo se ordena la celulosa de la pared.'],['Filamentos intermedios','Casi no hay en plantas (no tienen queratina): la pared da la resistencia.'],['Microfilamentos','De actina. Mueven el citoplasma (ciclosis) y acomodan los cloroplastos según la luz.']];
+  O.citoesqueleto.clave=['Ciclosis: corriente citoplasmática movida por actina y miosina.','Mitosis vegetal: anastral (sin centriolos) y la citocinesis es por placa celular, no por estrangulamiento.','La colchicina también impide el huso: se usa para obtener plantas poliploides.'];
   O.golgi.clave=['En plantas forma la lámina media y la pared: sus vesículas arman la placa celular en la citocinesis.','También empaqueta las sustancias que van a la vacuola.'];
   O.mitocondria.clave=['La planta también respira: la mitocondria usa la glucosa que fabricó el cloroplasto.','Tiene ADN circular y ribosomas 70S, como las bacterias.'];
   ORDEN=['pared','membrana','vacuola','nucleo','cloroplasto','mitocondria','rer','rel','golgi','amiloplasto','peroxisoma','plasmodesmos'];
