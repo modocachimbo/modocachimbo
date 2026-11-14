@@ -72,6 +72,10 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .h-bot{left:0;right:0;bottom:0;padding:10px 16px max(14px,env(safe-area-inset-bottom));display:block}
 .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
 .chips::-webkit-scrollbar{display:none}
+/* Lista de organelas: escondida; se abre con el botón de lista (los nombres ya están en la célula) */
+html:not(.lista-on) .h-bot{display:none}
+html:not(.lista-on) .h-esc{bottom:max(16px,env(safe-area-inset-bottom))}
+.lis.on{color:var(--lima)}
 .chip{flex:none;display:flex;align-items:center;gap:8px;padding:0 14px;height:44px;border-radius:14px;font:800 14px/1 "Nunito";white-space:nowrap}
 .chip i{width:10px;height:10px;border-radius:50%}
 .chip.on{background:var(--lima);color:#151A03;border-color:var(--lima)}
@@ -160,11 +164,14 @@ a.ib{text-decoration:none}
   .h-top .tg span{display:none}
   .h-top{flex-wrap:wrap;row-gap:8px}
   .h-top .sp{display:none}
+  .ttl .pc{display:none}
+  .ttl{padding:6px 10px 7px}.ttl b{font-size:15px}.h-top{gap:8px}
   .ttl{flex:1;min-width:0}.ttl b,.ttl small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .av{order:5;height:38px}.av button{padding:0 11px;font-size:12.5px}
   .pista{font-size:12px;top:calc(120px + env(safe-area-inset-top));white-space:normal;width:max-content;max-width:calc(100vw - 32px);text-align:center}
   .h-zoom{top:auto;bottom:calc(76px + env(safe-area-inset-bottom));transform:none}
   .h-esc{bottom:calc(76px + env(safe-area-inset-bottom))}
+  html:not(.lista-on) .h-zoom,html:not(.lista-on) .h-esc{bottom:max(16px,env(safe-area-inset-bottom))}
   .modo{bottom:calc(70px + env(safe-area-inset-bottom))}
   .d-box{width:100%;height:100%;border-radius:0;grid-template-columns:1fr;grid-template-rows:44% 1fr;border:0}
   .d-inf{border-left:0;border-top:1px solid var(--borde);padding:18px 16px max(18px,env(safe-area-inset-bottom));border-radius:22px 22px 0 0;margin-top:-22px;background:#0C0920;position:relative;z-index:2;gap:14px}
@@ -250,6 +257,7 @@ a.ib{text-decoration:none}
   <symbol id="i-rayo" viewBox="0 0 20 20"><path d="M11 2L4 11h5l-1 7 7-9h-5z" fill="#FFC800" stroke="#B88A00" stroke-width="1.2" stroke-linejoin="round"/></symbol>
   <symbol id="i-sig" viewBox="0 0 20 20"><path d="M7.5 4l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-capas" viewBox="0 0 20 20"><path d="M10 3l7 4-7 4-7-4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M3 10.5l7 4 7-4M3 14l7 4 7-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-lista" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M7.5 5.5h9M7.5 10h9M7.5 14.5h9"/><circle cx="4" cy="5.5" r=".9" fill="currentColor"/><circle cx="4" cy="10" r=".9" fill="currentColor"/><circle cx="4" cy="14.5" r=".9" fill="currentColor"/></g></symbol>
   <symbol id="i-son" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h3l4-3.5v11L6 12H3z"/><path class="on-l" d="M13 7.5a3.5 3.5 0 0 1 0 5M15.3 5.2a6.8 6.8 0 0 1 0 9.6"/><path class="off-l" d="M13 8l4 4M17 8l-4 4"/></g></symbol>
 </defs></svg>
 
@@ -259,9 +267,10 @@ a.ib{text-decoration:none}
 
 <div class="hud h-top">
   <a class="ib glass" href="laboratorio.html" aria-label="Volver al Laboratorio"><svg><use href="#i-atras"/></svg></a>
-  <div class="ttl glass"><small>Laboratorio · Biología</small><b>Célula eucariota animal</b></div>
+  <div class="ttl glass"><small><span class="pc">Laboratorio · </span>Biología</small><b>Célula <span class="pc">eucariota </span>animal</b></div>
   <div class="av glass" id="tipoCel"><button class="on" data-t="animal">Animal</button><button data-t="vegetal">Vegetal<em>Pronto</em></button></div>
   <div class="sp"></div>
+  <button class="ib glass lis" id="bLista" aria-label="Lista de organelas"><svg><use href="#i-lista"/></svg></button>
   <button class="ib glass son" id="bSon" aria-label="Sonido"><svg><use href="#i-son"/></svg></button>
   <button class="tg glass" id="bNom"><span>Nombres</span><i class="sw" id="swNom"></i></button>
 </div>
@@ -433,6 +442,7 @@ svg.addEventListener('click',function(e){ if(movio) return; var g=e.target.close
 document.getElementById('chips').innerHTML=ORDEN.concat(EXTRA).map(function(id){ return '<button class="chip glass" data-id="'+id+'"><i style="background:'+O[id].c+'"></i>'+O[id].n.replace('Retículo endoplasmático','Retículo')+'</button>'; }).join('');
 function ir(id){ if(EXTRA.indexOf(id)>=0){ quitarFoco(); document.querySelectorAll('.chip').forEach(function(c){ c.classList.toggle('on',c.dataset.id===id); }); abrir(id); } else irA(id,true); }
 document.querySelectorAll('.chip').forEach(function(c){ c.onclick=function(){ ir(c.dataset.id); }; });
+document.getElementById('bLista').onclick=function(){ var on=document.documentElement.classList.toggle('lista-on'); this.classList.toggle('on',on); if(window.MCLabSonido) MCLabSonido.tocar('tic'); };
 
 /* ============ VISTA DE DETALLE ============ */
 /* ilustraciones propias de cada organela (pantalla de detalle) */
