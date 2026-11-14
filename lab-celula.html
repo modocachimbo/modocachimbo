@@ -109,6 +109,16 @@ html:not(.lista-on) .h-esc{bottom:max(16px,env(safe-area-inset-bottom))}
 .d-vis .lbl .nb{fill:#C6E000}
 .d-cab{position:absolute;left:18px;top:16px;right:18px;display:flex;align-items:center;gap:10px}
 .pill{padding:6px 11px;border-radius:10px;font:800 12px/1 "Barlow Condensed";letter-spacing:.1em;text-transform:uppercase;background:rgba(198,224,0,.12);color:var(--lima);border:1px solid rgba(198,224,0,.35)}
+.an-btn{cursor:pointer;margin-left:auto;background:var(--lima)!important;color:#151A03!important;border-color:var(--lima)!important;box-shadow:0 3px 0 var(--lima-osc)}
+.d-vis.anim-on .mk{display:none}
+.an-cap{position:absolute;left:14px;right:14px;bottom:14px;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:center;padding:10px 14px;border-radius:14px;background:rgba(10,7,26,.86);border:1px solid rgba(198,224,0,.35);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:ent .35s ease}
+.an-cap b{font:800 15px/1 "Barlow Condensed";color:var(--lima);letter-spacing:.06em}
+.an-cap span{font:800 14px/1.35 "Nunito";color:var(--tx)}
+.an-cap i{grid-column:1/-1;display:flex;gap:6px;justify-content:center;margin-top:2px}
+.an-cap em{width:22px;height:5px;border-radius:3px;background:#3A3358;cursor:pointer}.an-cap em.on{background:var(--lima)}
+.d-vis.anim-on svg{top:44px;bottom:84px;height:auto}
+@media (max-width:760px),(orientation:portrait) and (max-width:1024px){.an-cap{left:8px;right:8px;bottom:28px;padding:7px 10px}.an-cap span{font-size:12.5px}
+  .d-vis.anim-on{height:calc(clamp(190px,58vw,46vh) + 116px)}.d-vis.anim-on svg{top:40px;bottom:112px}}
 .d-pie{position:absolute;left:18px;bottom:16px;right:18px;display:flex;align-items:center;gap:10px;font:800 12px/1 "Barlow Condensed";letter-spacing:.08em;color:var(--faint);text-transform:uppercase}
 .d-pie .esc{text-transform:none}
 .d-pie .esc i{display:inline-block;width:60px;height:6px;border:2px solid var(--dim);border-top:0;margin-right:8px;vertical-align:middle}
@@ -532,9 +542,11 @@ esc.addEventListener('wheel',function(e){ e.preventDefault(); zoomEn(e.deltaY<0?
 document.getElementById('zMas').onclick=function(){ volar(cam.x+cam.w/2,cam.y+cam.h/2,cam.w/1.6,350); };
 document.getElementById('zMenos').onclick=function(){ volar(cam.x+cam.w/2,cam.y+cam.h/2,Math.min(BASE.w*1.3,cam.w*1.6),350); };
 document.getElementById('zCen').onclick=function(){ quitarFoco(); volar(BASE.x+BASE.w/2,BASE.y+BASE.h/2,BASE.w,600); };
-document.getElementById('bNom').onclick=function(){ document.getElementById('swNom').classList.toggle('off'); svg.classList.toggle('sin-nombres'); };
+/* Nombres: lo que elige el alumno se respeta; al ver una organela se esconden un rato y al salir vuelven */
+var NOMB=true;
+document.getElementById('bNom').onclick=function(){ NOMB=!NOMB; document.getElementById('swNom').classList.toggle('off',!NOMB); svg.classList.toggle('sin-nombres',!NOMB); };
 
-function quitarFoco(){ svg.classList.remove('cel-foco'); document.getElementById('brillo').innerHTML=''; document.getElementById('atp').innerHTML='';
+function quitarFoco(){ svg.classList.remove('cel-foco'); svg.classList.toggle('sin-nombres',!NOMB); document.getElementById('brillo').innerHTML=''; document.getElementById('atp').innerHTML='';
   document.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('on'); }); }
 function seleccionar(id){ var d=F[id]||'';
   svg.classList.add('cel-foco');
@@ -544,7 +556,7 @@ function seleccionar(id){ var d=F[id]||'';
     : '<path d="'+d+'" class="br-a"/><path d="'+d+'" class="br-b"/>';
   document.getElementById('atp').innerHTML=bolitasATP(id,cajasDe(id).map(function(b){ return b.concat([18]); }));
   document.querySelectorAll('.chip').forEach(function(c){ c.classList.toggle('on',c.dataset.id===id); }); }
-function irA(id,abrirDet){ seleccionar(id); if(window.MCLabSonido) MCLabSonido.tocar('tic'); svg.classList.add('sin-nombres'); document.getElementById('swNom').classList.add('off');
+function irA(id,abrirDet){ seleccionar(id); if(window.MCLabSonido) MCLabSonido.tocar('tic'); svg.classList.add('sin-nombres');
   var b=DET[id].b, c=rp((b[0]+b[2])/2,(b[1]+b[3])/2), bw=b[2]-b[0], bh=b[3]-b[1]; if(ROT){ var t=bw; bw=bh; bh=t; }
   var w=Math.max(bw,bh*BASE.w/BASE.h)*1.9;
   volar(c[0],c[1],Math.max(380,Math.min(BASE.w,w)),800,function(){ if(abrirDet) setTimeout(function(){ abrir(id); },250); }); }
@@ -570,13 +582,68 @@ var DIL={ mitocondria:{w:1600,h:925,p:[[1,1473,410],[2,435,772],[3,1271,410],[4,
  vesicula:{w:1600,h:913,p:[[1,458,442],[2,851,458],[3,1141,360],[4,1489,376]]},
  membrana:{w:1600,h:864,p:[[1,568,410],[2,689,470],[3,1309,427],[4,809,74],[5,603,659],[6,1042,461]]} };
 if(DILV) for(var kd in DILV) DIL[kd]=DILV[kd];
+/* ============ ANIMACIONES EN LA FICHA ("Ver cómo funciona") ============
+   Van encima del dibujo 3D, en sus mismas coordenadas, paso a paso con un texto abajo. */
+var AN={
+  /* mueve algo por un camino: aparece, viaja y se desvanece */
+  mov:function(d,cont,dur,del){ return '<g opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.12;.8;1" dur="'+dur+'s" begin="'+(del||0)+'s" repeatCount="indefinite"/>'+
+    '<animateMotion path="'+d+'" dur="'+dur+'s" begin="'+(del||0)+'s" repeatCount="indefinite"/>'+cont+'</g>'; },
+  bola:function(r,fill,borde,tx,tc){ return '<circle r="'+r+'" fill="'+fill+'" stroke="'+borde+'" stroke-width="'+(r*.12)+'"/><text y="'+(r*.34)+'" text-anchor="middle" style="font:800 '+(r*.92)+'px Barlow Condensed;fill:'+tc+'">'+tx+'</text>'; },
+  pastilla:function(r,fill,borde,tx,tc){ var w=r*3.2; return '<rect x="'+(-w/2)+'" y="'+(-r*.8)+'" width="'+w+'" height="'+(r*1.6)+'" rx="'+(r*.8)+'" fill="'+fill+'" stroke="'+borde+'" stroke-width="'+(r*.12)+'"/><text y="'+(r*.32)+'" text-anchor="middle" style="font:800 '+(r*.9)+'px Barlow Condensed;fill:'+tc+'">'+tx+'</text>'; },
+  hexa:function(r,tx){ return '<polygon points="'+[0,1,2,3,4,5].map(function(j){ var a=j*Math.PI/3+Math.PI/6; return (Math.cos(a)*r).toFixed(1)+','+(Math.sin(a)*r).toFixed(1); }).join(' ')+'" fill="#FFC800" stroke="#7A5000" stroke-width="'+(r*.1)+'"/><text y="'+(r*.28)+'" text-anchor="middle" style="font:800 '+(r*.62)+'px Barlow Condensed;fill:#3A2600">'+tx+'</text>'; },
+  rayo:function(x1,y1,x2,y2,del,g){ return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="#FFE45C" stroke-width="'+g+'" stroke-linecap="round" stroke-dasharray="'+(g*4)+' '+(g*5)+'" opacity=".9">'+
+    '<animate attributeName="stroke-dashoffset" from="'+(g*9)+'" to="0" dur=".7s" begin="'+del+'s" repeatCount="indefinite"/></line>'; },
+  destello:function(x,y,r,col,del){ return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+col+'" opacity="0"><animate attributeName="opacity" values="0;.55;0" dur="1.4s" begin="'+(del||0)+'s" repeatCount="indefinite"/><animate attributeName="r" values="'+(r*.5)+';'+r+';'+(r*1.3)+'" dur="1.4s" begin="'+(del||0)+'s" repeatCount="indefinite"/></circle>'; },
+  ciclo:function(x,y,r,col,tx){ return '<g transform="translate('+x+' '+y+')"><circle r="'+r+'" fill="rgba(10,7,26,.55)" stroke="'+col+'" stroke-width="'+(r*.09)+'" stroke-dasharray="'+(r*1.1)+' '+(r*.35)+'">'+
+    '<animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="4s" repeatCount="indefinite"/></circle>'+
+    '<text y="'+(r*.12)+'" text-anchor="middle" style="font:800 '+(r*.36)+'px Barlow Condensed;letter-spacing:.04em;fill:'+col+'">'+tx[0]+'</text><text y="'+(r*.5)+'" text-anchor="middle" style="font:700 '+(r*.24)+'px Barlow Condensed;fill:#EEEAF7">'+tx[1]+'</text></g>'; }
+};
+var ANIM={
+  cloroplasto:{
+    pasos:['La luz llega a la clorofila de los tilacoides (grana).',
+      'Fotólisis: la luz rompe el agua (H₂O) y se libera el oxígeno (O₂).',
+      'Fase luminosa: se forman ATP y NADPH, que pasan al estroma.',
+      'Fase oscura (ciclo de Calvin): la RuBisCO fija el CO₂ en el estroma.',
+      'Se forma glucosa (C₆H₁₂O₆); el sobrante se guarda como almidón.'],
+    svg:function(){
+      var G=[[320,533],[853,520],[1213,573],[573,427],[993,320]], C=[700,700], s='', r=46;
+      /* 1. luz */
+      s+='<g class="an-p" data-p="0">'+G.slice(0,5).map(function(g,i){ return AN.rayo(g[0]-160,-90,g[0],g[1]-60,i*.15,16)+AN.destello(g[0],g[1]-20,90,'#FFE45C',i*.2); }).join('')+'</g>';
+      /* 2. agua que se rompe y oxígeno que sale */
+      s+='<g class="an-p" data-p="1">'+[0,1,2].map(function(i){ var g=G[i];
+        return AN.mov('M'+(g[0]-170)+' '+(g[1]+170)+' L'+g[0]+' '+g[1],AN.bola(r,'rgba(110,190,255,.9)','#1D5E99','H₂O','#062C4F'),2.4,i*.5)+
+          AN.destello(g[0],g[1],80,'#9EE7FF',i*.5+1.1)+
+          AN.mov('M'+g[0]+' '+g[1]+' q60 -220 '+(40+i*30)+' -'+(g[1]+150),AN.bola(r,'rgba(200,240,255,.95)','#2A88C0','O₂','#0B3A5A'),2.6,i*.5+1.2); }).join('')+'</g>';
+      /* 3. ATP y NADPH hacia el estroma */
+      s+='<g class="an-p" data-p="2">'+[0,1,2].map(function(i){ var g=G[i];
+        return AN.mov('M'+g[0]+' '+g[1]+' Q'+((g[0]+C[0])/2)+' '+(g[1]+180)+' '+C[0]+' '+C[1],AN.bola(r,'#FFC800','#7A5000','ATP','#3A2600'),2.4,i*.45)+
+          AN.mov('M'+g[0]+' '+g[1]+' Q'+((g[0]+C[0])/2+60)+' '+(g[1]+120)+' '+C[0]+' '+C[1],AN.pastilla(r,'#4FD8B4','#0E6B55','NADPH','#05362B'),2.4,i*.45+1.1); }).join('')+'</g>';
+      /* 4. CO₂ entra al ciclo de Calvin */
+      s+='<g class="an-p" data-p="3 4">'+AN.ciclo(C[0],C[1],140,'#C6E000',['CALVIN','RuBisCO'])+'</g>';
+      s+='<g class="an-p" data-p="3">'+[0,1,2].map(function(i){ return AN.mov('M'+(1640)+' '+(640+i*70)+' Q1200 '+(780+i*20)+' '+(C[0]+110)+' '+C[1],AN.bola(r,'#B8BFCC','#4A5160','CO₂','#1E2430'),2.6,i*.8); }).join('')+
+        AN.mov('M'+(C[0]-260)+' '+(C[1]-60)+' L'+(C[0]-110)+' '+C[1],AN.bola(r,'#FFC800','#7A5000','ATP','#3A2600'),2,0.4)+'</g>';
+      /* 5. glucosa y almidón */
+      s+='<g class="an-p" data-p="4">'+AN.mov('M'+C[0]+' '+C[1]+' Q600 560 507 427',AN.hexa(62,'GLU'),2.6,0)+
+        AN.mov('M'+C[0]+' '+C[1]+' Q900 860 1000 960',AN.hexa(62,'GLU'),2.6,1.1)+AN.destello(507,427,90,'#FFFFFF',2.2)+'</g>';
+      return s; } }
+};
+var ANT=null, ANON=false;
+function animar(id,on){ var det=document.getElementById('det'), vis=det.querySelector('.d-vis'), A=ANIM[id], g=det.querySelector('#anim'); if(!A||!g) return;
+  clearInterval(ANT); ANON=on; vis.classList.toggle('anim-on',on);
+  var bt=det.querySelector('.an-btn'); if(bt) bt.innerHTML=on?'❚❚ Pausa':'▶ Ver cómo funciona';
+  var cap=det.querySelector('.an-cap'); cap.hidden=!on; g.style.display=on?'':'none'; if(!on) return;
+  var i=0; function ir(k){ i=k; g.querySelectorAll('.an-p').forEach(function(e){ e.style.display=e.getAttribute('data-p').split(' ').indexOf(String(i))>=0?'':'none'; });
+    cap.innerHTML='<b>'+(i+1)+'/'+A.pasos.length+'</b><span>'+A.pasos[i]+'</span><i>'+A.pasos.map(function(_,j){ return '<em class="'+(j===i?'on':'')+'" data-k="'+j+'"></em>'; }).join('')+'</i>';
+    cap.querySelectorAll('em').forEach(function(e){ e.onclick=function(ev){ ev.stopPropagation(); ir(+e.dataset.k); clearInterval(ANT); ANT=setInterval(function(){ ir((i+1)%A.pasos.length); },4200); }; });
+    if(window.MCLabSonido) MCLabSonido.tocar('tic'); }
+  ir(0); ANT=setInterval(function(){ ir((i+1)%A.pasos.length); },4200); }
 var TAB=new URLSearchParams(location.search).get('tab')||'partes';
 function abrir(id){
   var o=O[id], D=DET[id]||{b:[0,0,1,1],p:[]}, b=D.b, cw=b[2]-b[0], ch=b[3]-b[1], m=Math.max(cw,ch)*.12, IL=DIL[id];
   if(IL){ D={p:IL.p}; b=[0,0,IL.w,IL.h]; cw=IL.w; ch=IL.h; m=Math.max(cw,ch)*.06; }
   var vb=(b[0]-m)+' '+(b[1]-m)+' '+(cw+2*m)+' '+(ch+2*m), u=Math.max(cw,ch)/420;
   var vis=IL?'<g class="d-ilus"><image href="assets/laboratorio/detalle-'+(IL.img||id)+'.webp" width="'+IL.w+'" height="'+IL.h+'"/>'+
-    D.p.map(function(p){ return '<g class="mk" transform="translate('+p[1]+' '+p[2]+')"><circle class="mk-onda" r="'+13*u+'" fill="none" stroke="#C6E000" stroke-width="'+2*u+'"/><circle r="'+13*u+'" fill="#C6E000" stroke="#151A03" stroke-width="'+2.5*u+'"/><text y="'+5*u+'" text-anchor="middle" style="font:800 '+15*u+'px Barlow Condensed;fill:#151A03">'+p[0]+'</text></g>'; }).join('')+'</g>'
+    D.p.map(function(p){ return '<g class="mk" transform="translate('+p[1]+' '+p[2]+')"><circle class="mk-onda" r="'+13*u+'" fill="none" stroke="#C6E000" stroke-width="'+2*u+'"/><circle r="'+13*u+'" fill="#C6E000" stroke="#151A03" stroke-width="'+2.5*u+'"/><text y="'+5*u+'" text-anchor="middle" style="font:800 '+15*u+'px Barlow Condensed;fill:#151A03">'+p[0]+'</text></g>'; }).join('')+(ANIM[id]?'<g id="anim" style="display:none">'+ANIM[id].svg()+'</g>':'')+'</g>'
   :'<defs><clipPath id="cDet"><rect x="'+(b[0]-m)+'" y="'+(b[1]-m)+'" width="'+(cw+2*m)+'" height="'+(ch+2*m)+'"/></clipPath></defs>'+
     '<g clip-path="url(#cDet)"><image href="'+IMG+'" width="'+IW+'" height="'+IH+'"/>'+
     '<path d="'+(F[id]||'')+'" fill="none" stroke="#C6E000" stroke-width="'+(id==='membrana'?3*u:2.2*u)+'" stroke-opacity=".9" class="det-borde"/>'+
@@ -596,7 +663,7 @@ function abrir(id){
   var TODO=ORDEN.concat(EXTRA), i=TODO.indexOf(id), sig=TODO[(i+1)%TODO.length];
   var det=document.getElementById('det');
   det.innerHTML='<div class="d-box"><div class="d-vis"><div class="grid-bg"></div><svg viewBox="'+vb+'" preserveAspectRatio="xMidYMid meet">'+vis+'</svg>'+
-    '<div class="d-cab"><span class="pill">'+(IL?'Ilustración 3D':'Vista ampliada')+'</span>'+(id==='mitocondria'&&!IL?'<span class="pill" style="color:#FFC800;border-color:rgba(255,200,0,.4);background:rgba(255,200,0,.1)">Animación: ATP</span>':'')+'</div></div>'+
+    '<div class="d-cab"><span class="pill">'+(IL?'Ilustración 3D':'Vista ampliada')+'</span>'+(IL&&ANIM[id]?'<button class="pill an-btn">▶ Ver cómo funciona</button>':'')+(id==='mitocondria'&&!IL?'<span class="pill" style="color:#FFC800;border-color:rgba(255,200,0,.4);background:rgba(255,200,0,.1)">Animación: ATP</span>':'')+'</div>'+(IL&&ANIM[id]?'<div class="an-cap" hidden></div>':'')+'</div>'+
     '<div class="d-inf"><header><div><h2>'+o.n+'</h2><span class="lat">'+o.lat+'</span></div><button class="x" id="dX"><svg><use href="#i-x"/></svg></button></header>'+
     '<div class="ficha"><div><small>'+o.f[0]+'</small><b>'+o.f[1]+'</b></div><div><small>Membrana</small><b>'+o.m+'</b></div><div><small>Está en</small><b>'+(o.en||'Animal y vegetal')+'</b></div></div>'+
     '<div class="tabs">'+Object.keys(tabs).map(function(k){ return '<button data-t="'+k+'" class="'+(k===TAB?'on':'')+'">'+tabs[k]+'</button>'; }).join('')+'</div>'+cuerpo+
@@ -605,9 +672,10 @@ function abrir(id){
   try{ var V=JSON.parse(localStorage.getItem('mc_lab_celula')||'[]'); if(V.indexOf(id)<0){ V.push(id); localStorage.setItem('mc_lab_celula',JSON.stringify(V)); } localStorage.setItem('mc_lab_ultimo','celula'); }catch(e){}
   det.classList.add('on');
   det.querySelectorAll('.tabs button').forEach(function(bt){ bt.onclick=function(){ TAB=bt.dataset.t; abrir(id); }; });
-  document.getElementById('dVer').onclick=function(){ det.classList.remove('on'); if(window.MCLabSonido) MCLabSonido.tocar('cerrar'); };
-  document.getElementById('dX').onclick=function(){ det.classList.remove('on'); if(window.MCLabSonido) MCLabSonido.tocar('cerrar'); quitarFoco(); volar(BASE.x+BASE.w/2,BASE.y+BASE.h/2,BASE.w,600); };
-  document.getElementById('dSig').onclick=function(){ det.classList.remove('on'); ir(sig); };
+  var anb=det.querySelector('.an-btn'); if(anb){ anb.onclick=function(){ animar(id,!ANON); }; if(ANON) animar(id,true); } else { clearInterval(ANT); ANON=false; }
+  document.getElementById('dVer').onclick=function(){ det.classList.remove('on'); clearInterval(ANT); ANON=false; if(window.MCLabSonido) MCLabSonido.tocar('cerrar'); };
+  document.getElementById('dX').onclick=function(){ det.classList.remove('on'); clearInterval(ANT); ANON=false; if(window.MCLabSonido) MCLabSonido.tocar('cerrar'); quitarFoco(); volar(BASE.x+BASE.w/2,BASE.y+BASE.h/2,BASE.w,600); };
+  document.getElementById('dSig').onclick=function(){ det.classList.remove('on'); clearInterval(ANT); ANON=false; ir(sig); };
 }
 aplicar();
 /* Al girar el celular (o cambiar el tamaño de la ventana) se reacomodan los nombres y la vista */
@@ -635,7 +703,7 @@ var tGiro; addEventListener('resize',function(){ clearTimeout(tGiro); tGiro=setT
 
 /* modos para revisar: ?v=foco&o=mitocondria | ?v=detalle&o=mitocondria&tab=funcion | &nom=0|1 */
 var P=new URLSearchParams(location.search);
-if(P.get('nom')==='0'){ document.getElementById('swNom').classList.add('off'); svg.classList.add('sin-nombres'); }
+if(P.get('nom')==='0'){ NOMB=false; document.getElementById('swNom').classList.add('off'); svg.classList.add('sin-nombres'); }
 if(P.get('v')==='foco'){ document.getElementById('pista').style.display='none'; irA(P.get('o')||'mitocondria'); }
 if(P.get('v')==='detalle'){ ir(P.get('o')||'mitocondria'); }
 </script>
