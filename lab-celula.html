@@ -29,6 +29,8 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .etq line{stroke:rgba(198,224,0,.7);stroke-width:1.4}
 .etq circle{fill:#C6E000}
 .sin-nombres .etq{opacity:0}
+.etq-n circle.pin{fill:#C6E000;stroke:#151A03;stroke-width:5}.etq-n text.pin-t{fill:#151A03;font-weight:800}
+.etq-n rect{fill:rgba(10,7,26,.86)}
 /* célula ilustrada */
 .org{fill:transparent;cursor:pointer}
 .org,#mHueco,#brillo path{fill-rule:evenodd}
@@ -109,7 +111,16 @@ html:not(.lista-on) .h-esc{bottom:max(16px,env(safe-area-inset-bottom))}
 .d-vis .lbl .nb{fill:#C6E000}
 .d-cab{position:absolute;left:18px;top:16px;right:18px;display:flex;align-items:center;gap:10px}
 .pill{padding:6px 11px;border-radius:10px;font:800 12px/1 "Barlow Condensed";letter-spacing:.1em;text-transform:uppercase;background:rgba(198,224,0,.12);color:var(--lima);border:1px solid rgba(198,224,0,.35)}
-.an-btn{cursor:pointer;margin-left:auto;background:var(--lima)!important;color:#151A03!important;border-color:var(--lima)!important;box-shadow:0 3px 0 var(--lima-osc)}
+.an-btn{cursor:pointer;margin-left:auto;display:inline-flex;align-items:center;gap:8px;padding:4px 14px 4px 4px;border-radius:999px;border:1px solid rgba(198,224,0,.55);background:rgba(10,7,26,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#EEEAF7;font:800 13px/1 "Barlow Condensed";letter-spacing:.1em;text-transform:uppercase;box-shadow:0 0 0 0 rgba(198,224,0,.45);animation:anPulso 2.2s ease-out infinite;transition:background .2s,border-color .2s}
+.an-btn .ic{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--lima);box-shadow:0 2px 0 var(--lima-osc)}
+.an-btn .ic i{display:block;background:#151A03}.an-btn .tri{width:11px;height:12px;margin-left:3px;clip-path:polygon(0 0,100% 50%,0 100%)}
+.an-btn .pa{width:10px;height:11px;background:linear-gradient(90deg,var(--lima) 0 35%,transparent 35% 65%,var(--lima) 65%)!important}
+.an-btn.play{animation:none;border-color:rgba(255,255,255,.18)}
+.an-btn.play .ic{background:#2A2440;box-shadow:none}
+.an-btn:active{transform:scale(.96)}
+@keyframes anPulso{0%{box-shadow:0 0 0 0 rgba(198,224,0,.45)}70%{box-shadow:0 0 0 10px rgba(198,224,0,0)}100%{box-shadow:0 0 0 0 rgba(198,224,0,0)}}
+.an-cap[hidden]{display:none!important}
+.d-vis.anim-pausa .mk,.d-vis.anim-pausa .d-cab .pill:not(.an-btn){display:none}
 .d-vis.anim-on .mk{display:none}
 .an-cap{position:absolute;left:14px;right:14px;bottom:14px;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:center;padding:10px 14px;border-radius:14px;background:rgba(10,7,26,.86);border:1px solid rgba(198,224,0,.35);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:ent .35s ease}
 .an-cap b{font:800 15px/1 "Barlow Condensed";color:var(--lima);letter-spacing:.06em}
@@ -117,6 +128,7 @@ html:not(.lista-on) .h-esc{bottom:max(16px,env(safe-area-inset-bottom))}
 .an-cap i{grid-column:1/-1;display:flex;gap:6px;justify-content:center;margin-top:2px}
 .an-cap em{width:22px;height:5px;border-radius:3px;background:#3A3358;cursor:pointer}.an-cap em.on{background:var(--lima)}
 .d-vis.anim-on svg{top:44px;bottom:84px;height:auto}
+@media (max-width:760px){.an-btn{font-size:11.5px;gap:6px;padding:3px 11px 3px 3px}.an-btn .ic{width:24px;height:24px}}
 @media (max-width:760px),(orientation:portrait) and (max-width:1024px){.an-cap{left:8px;right:8px;bottom:28px;padding:7px 10px}.an-cap span{font-size:12.5px}
   .d-vis.anim-on{height:calc(clamp(190px,58vw,46vh) + 116px)}.d-vis.anim-on svg{top:40px;bottom:112px}}
 .d-pie{position:absolute;left:18px;bottom:16px;right:18px;display:flex;align-items:center;gap:10px;font:800 12px/1 "Barlow Condensed";letter-spacing:.08em;color:var(--faint);text-transform:uppercase}
@@ -477,13 +489,25 @@ function celula(){
 }
 function etiquetas(){
   var s='', K=PORT?2.6:innerHeight<500?1.9:innerWidth<760?2.2:1.35, pos={};
+  var Kp=Math.max(1.6,Math.min(2.4,960/innerWidth));
   if(PORT){ var arriba=[],abajo=[]; ORDEN.forEach(function(id){ (ETQ[id][1]<CY?arriba:abajo).push(id); });
     /* que ningún grupo pase de 3 filas: el sobrante pasa al otro lado */
     function yy(x){ return ETQ[x][1]; } while(arriba.length>abajo.length+1){ arriba.sort(function(a,b){ return yy(a)-yy(b); }); abajo.push(arriba.pop()); } while(abajo.length>arriba.length+1){ abajo.sort(function(a,b){ return yy(a)-yy(b); }); arriba.push(abajo.shift()); }
     [[arriba,-1],[abajo,1]].forEach(function(g){ var L=g[0].sort(function(a,b){ return ETQ[a][0]-ETQ[b][0]; }), nf=Math.ceil(L.length/2);
       L.forEach(function(id,i){ var fila=Math.floor(i/2), col=(L.length%2&&i===L.length-1)?0:(i%2?1:-1);
         /* la fila más cerca de la célula para los que están más al centro de su grupo */
-        pos[id]=[CX+col*640, g[1]<0? -165-(nf-1-fila)*185 : IH+165+fila*185]; }); }); }
+        pos[id]=[CX+col*640, g[1]<0? -69*Kp-(nf-1-fila)*77*Kp : IH+69*Kp+fila*77*Kp]; }); }); }
+  if(PORT){ /* celular y tablet en vertical: sin líneas que se crucen. Un punto numerado en cada organela y la lista con el mismo número */
+    var ord=[];
+    [[arriba,-1],[abajo,1]].forEach(function(g){ var L=g[0].slice().sort(function(a,b){ return pos[a][1]-pos[b][1] || pos[a][0]-pos[b][0]; }); ord=ord.concat(L); });
+    var B=caja(), mx=0; ord.forEach(function(id){ mx=Math.max(mx,O[id].n.replace('Retículo endoplasmático','R. E.').replace(' · glioxisoma','').length); });
+    ord.forEach(function(id,i){ var e0=ETQ[id], a=rp(e0[0],e0[1]), q=pos[id], nm=O[id].n.replace('Retículo endoplasmático','R. E.').replace(' · glioxisoma',''), num=i+1;
+      var w=Math.min(1090,(mx*16.5+100)*Kp), x=q[0]; x=Math.max(B.x+w/2+70,Math.min(B.x+B.w-w/2-70,x));
+      s+='<g class="etq etq-n"><circle class="pin" cx="'+a[0]+'" cy="'+a[1]+'" r="'+(23*Kp)+'"/><text class="pin-t" x="'+a[0]+'" y="'+(a[1]+9*Kp)+'" text-anchor="middle" style="font-size:'+(26*Kp)+'px">'+num+'</text>'+
+        '<rect x="'+(x-w/2)+'" y="'+(q[1]-26*Kp)+'" width="'+w+'" height="'+(52*Kp)+'" rx="'+(26*Kp)+'"/>'+
+        '<circle class="pin" cx="'+(x-w/2+26*Kp)+'" cy="'+q[1]+'" r="'+(20*Kp)+'"/><text class="pin-t" x="'+(x-w/2+26*Kp)+'" y="'+(q[1]+8*Kp)+'" text-anchor="middle" style="font-size:'+(23*Kp)+'px">'+num+'</text>'+
+        '<text x="'+(x-w/2+56*Kp)+'" y="'+(q[1]+10*Kp)+'" style="font-size:'+(27*Kp)+'px">'+nm+'</text></g>'; });
+    return s; }
   ORDEN.forEach(function(id){ var e0=ETQ[id]; if(pos[id]) e0=[e0[0],e0[1],pos[id][0],pos[id][1]]; var a1=rp(e0[0],e0[1]), a2=rp(e0[2],e0[3]), e=[a1[0],a1[1],a2[0],a2[1]], n=O[id].n.replace('Retículo endoplasmático','R. E.'), w=(n.length*15+40)*K;
     /* que la etiqueta no se salga de la pantalla (celular vertical) */
     var B=caja();
@@ -748,18 +772,26 @@ var ANIM={
   for(var k in A) ANIM[k]=A[k];
 })();
 
-var ANT=null, ANON=false;
+/* Estados: sin empezar (números del dibujo) · reproduciendo (texto y animación) · en pausa (solo la imagen limpia) */
+var ANT=null, ANON=false, ANPASO=0, ANPAUSA=false;
+var PLAY='<span class="ic"><i class="tri"></i></span>', PAUSA='<span class="ic"><i class="pa"></i></span>';
+var BOTON={ver:PLAY+'Cómo funciona', pausa:PAUSA+'Pausa', seguir:PLAY+'Seguir'};
 function animar(id,on){ var det=document.getElementById('det'), vis=det.querySelector('.d-vis'), A=ANIM[id], g=det.querySelector('#anim'); if(!A||!g) return;
-  clearInterval(ANT); ANON=on; vis.classList.toggle('anim-on',on);
-  var bt=det.querySelector('.an-btn'); if(bt) bt.innerHTML=on?'❚❚ Pausa':'▶ Ver cómo funciona';
-  var cap=det.querySelector('.an-cap'); cap.hidden=!on; g.style.display=on?'':'none'; if(!on) return;
-  var i=0; function ir(k){ i=k; g.querySelectorAll('.an-p').forEach(function(e){ e.style.display=e.getAttribute('data-p').split(' ').indexOf(String(i))>=0?'':'none'; });
+  clearInterval(ANT); var bt=det.querySelector('.an-btn'), cap=det.querySelector('.an-cap');
+  if(!on){ /* pausa: se esconde todo el texto y la animación para ver la imagen completa */
+    if(ANON){ ANPAUSA=true; } ANON=false; vis.classList.remove('anim-on'); vis.classList.toggle('anim-pausa',ANPAUSA);
+    cap.hidden=true; g.style.display='none'; if(bt){ bt.innerHTML=ANPAUSA?BOTON.seguir:BOTON.ver; bt.classList.remove('play'); } return; }
+  ANON=true; ANPAUSA=false; vis.classList.add('anim-on'); vis.classList.remove('anim-pausa'); if(bt){ bt.innerHTML=BOTON.pausa; bt.classList.add('play'); }
+  cap.hidden=false; g.style.display='';
+  var i=ANPASO; function ir(k){ ANPASO=k; i=k; g.querySelectorAll('.an-p').forEach(function(e){ e.style.display=e.getAttribute('data-p').split(' ').indexOf(String(i))>=0?'':'none'; });
     cap.innerHTML='<b>'+(i+1)+'/'+A.pasos.length+'</b><span>'+A.pasos[i]+'</span><i>'+A.pasos.map(function(_,j){ return '<em class="'+(j===i?'on':'')+'" data-k="'+j+'"></em>'; }).join('')+'</i>';
     cap.querySelectorAll('em').forEach(function(e){ e.onclick=function(ev){ ev.stopPropagation(); ir(+e.dataset.k); clearInterval(ANT); ANT=setInterval(function(){ ir((i+1)%A.pasos.length); },4200); }; });
     if(window.MCLabSonido) MCLabSonido.tocar('tic'); }
-  ir(0); ANT=setInterval(function(){ ir((i+1)%A.pasos.length); },4200); }
+  ir(Math.min(i,A.pasos.length-1)); ANT=setInterval(function(){ ir((i+1)%A.pasos.length); },4200); }
 var TAB=new URLSearchParams(location.search).get('tab')||'partes';
+var ABIERTO=null;
 function abrir(id){
+  if(id!==ABIERTO){ clearInterval(ANT); ANON=false; ANPAUSA=false; ANPASO=0; } ABIERTO=id;
   var o=O[id], D=DET[id]||{b:[0,0,1,1],p:[]}, b=D.b, cw=b[2]-b[0], ch=b[3]-b[1], m=Math.max(cw,ch)*.12, IL=DIL[id];
   if(IL){ D={p:IL.p}; b=[0,0,IL.w,IL.h]; cw=IL.w; ch=IL.h; m=Math.max(cw,ch)*.06; }
   var AK=IL?(IL.img||id):'', AA=ANIM[AK];
@@ -785,7 +817,7 @@ function abrir(id){
   var TODO=ORDEN.concat(EXTRA), i=TODO.indexOf(id), sig=TODO[(i+1)%TODO.length];
   var det=document.getElementById('det');
   det.innerHTML='<div class="d-box"><div class="d-vis"><div class="grid-bg"></div><svg viewBox="'+vb+'" preserveAspectRatio="xMidYMid meet">'+vis+'</svg>'+
-    '<div class="d-cab"><span class="pill">'+(IL?'Ilustración 3D':'Vista ampliada')+'</span>'+(AA?'<button class="pill an-btn">▶ Ver cómo funciona</button>':'')+(id==='mitocondria'&&!IL?'<span class="pill" style="color:#FFC800;border-color:rgba(255,200,0,.4);background:rgba(255,200,0,.1)">Animación: ATP</span>':'')+'</div>'+(AA?'<div class="an-cap" hidden></div>':'')+'</div>'+
+    '<div class="d-cab"><span class="pill">'+(IL?'Ilustración 3D':'Vista ampliada')+'</span>'+(AA?'<button class="an-btn">'+BOTON.ver+'</button>':'')+(id==='mitocondria'&&!IL?'<span class="pill" style="color:#FFC800;border-color:rgba(255,200,0,.4);background:rgba(255,200,0,.1)">Animación: ATP</span>':'')+'</div>'+(AA?'<div class="an-cap" hidden></div>':'')+'</div>'+
     '<div class="d-inf"><header><div><h2>'+o.n+'</h2><span class="lat">'+o.lat+'</span></div><button class="x" id="dX"><svg><use href="#i-x"/></svg></button></header>'+
     '<div class="ficha"><div><small>'+o.f[0]+'</small><b>'+o.f[1]+'</b></div><div><small>Membrana</small><b>'+o.m+'</b></div><div><small>Está en</small><b>'+(o.en||'Animal y vegetal')+'</b></div></div>'+
     '<div class="tabs">'+Object.keys(tabs).map(function(k){ return '<button data-t="'+k+'" class="'+(k===TAB?'on':'')+'">'+tabs[k]+'</button>'; }).join('')+'</div>'+cuerpo+
@@ -794,10 +826,10 @@ function abrir(id){
   try{ var V=JSON.parse(localStorage.getItem('mc_lab_celula')||'[]'); if(V.indexOf(id)<0){ V.push(id); localStorage.setItem('mc_lab_celula',JSON.stringify(V)); } localStorage.setItem('mc_lab_ultimo','celula'); }catch(e){}
   det.classList.add('on');
   det.querySelectorAll('.tabs button').forEach(function(bt){ bt.onclick=function(){ TAB=bt.dataset.t; abrir(id); }; });
-  var anb=det.querySelector('.an-btn'); if(anb){ anb.onclick=function(){ animar(AK,!ANON); }; if(ANON) animar(AK,true); } else { clearInterval(ANT); ANON=false; }
-  document.getElementById('dVer').onclick=function(){ det.classList.remove('on'); clearInterval(ANT); ANON=false; if(window.MCLabSonido) MCLabSonido.tocar('cerrar'); };
-  document.getElementById('dX').onclick=function(){ det.classList.remove('on'); clearInterval(ANT); ANON=false; if(window.MCLabSonido) MCLabSonido.tocar('cerrar'); quitarFoco(); volar(BASE.x+BASE.w/2,BASE.y+BASE.h/2,BASE.w,600); };
-  document.getElementById('dSig').onclick=function(){ det.classList.remove('on'); clearInterval(ANT); ANON=false; ir(sig); };
+  var anb=det.querySelector('.an-btn'); if(anb){ anb.onclick=function(){ animar(AK,!ANON); }; if(ANON) animar(AK,true); else if(ANPAUSA) animar(AK,false); } else { clearInterval(ANT); ANON=false; ANPAUSA=false; }
+  document.getElementById('dVer').onclick=function(){ det.classList.remove('on'); clearInterval(ANT); ANON=false; ABIERTO=null; if(window.MCLabSonido) MCLabSonido.tocar('cerrar'); };
+  document.getElementById('dX').onclick=function(){ det.classList.remove('on'); clearInterval(ANT); ANON=false; ABIERTO=null; if(window.MCLabSonido) MCLabSonido.tocar('cerrar'); quitarFoco(); volar(BASE.x+BASE.w/2,BASE.y+BASE.h/2,BASE.w,600); };
+  document.getElementById('dSig').onclick=function(){ det.classList.remove('on'); clearInterval(ANT); ANON=false; ABIERTO=null; ir(sig); };
 }
 aplicar();
 /* Al girar el celular (o cambiar el tamaño de la ventana) se reacomodan los nombres y la vista */
