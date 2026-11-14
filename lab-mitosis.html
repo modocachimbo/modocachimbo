@@ -73,7 +73,10 @@ html.modo-cro #lienzo{height:100%;bottom:0}
 .tabla-c td:first-child{color:#9BE04A;font-weight:800;white-space:nowrap;padding-right:10px}
 @media (max-width:860px),(orientation:portrait) and (max-width:1024px){
   .ciclo{grid-template-columns:120px minmax(0,1fr)}.ciclo svg{width:120px;height:120px}
-  .plano{height:min(calc(66vw + 120px),70vh);min-height:300px}
+  .plano{height:calc((100vw - 34px)*.667 + 108px);min-height:0}
+  #lienzo{top:48px;height:calc(100% - 106px)}
+  html.modo-cro #lienzo{top:0;height:100%}
+  html.modo-cro .plano{height:calc((100vw - 34px)*.667 + 20px)}
   .fase b{font-size:15px}
   .nombres{height:34px;padding:0 10px;font-size:12px}
   .linea button{min-width:40px;padding:0 7px;font-size:12px}
@@ -104,7 +107,7 @@ html.modo-cro #lienzo{height:100%;bottom:0}
     <div class="plano" id="plano">
       <svg id="lienzo" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid meet"></svg>
       <div class="fase glass" id="fase"><small id="faseS">Interfase</small><b id="faseB">G1</b></div>
-      <button class="nombres glass" id="bNom"><i></i>Nombres</button>
+      <button class="nombres glass on" id="bNom"><i></i>Nombres</button>
       <div class="linea" id="linea"></div>
     </div>
     <div class="ficha">
@@ -300,7 +303,7 @@ function mezcla(A,B,t){ var R=clon(B), ca=A.cell;
   return R; }
 
 /* ===== Dibujo ===== */
-var svg=document.getElementById('lienzo'), NOM=false, T0=performance.now();
+var svg=document.getElementById("lienzo"), NOM=true, T0=performance.now();
 function f1(n){ return Math.round(n*10)/10; }
 function celPaths(c){ var vert=c.e==='v', A=vert?c.W:c.H, B=vert?c.H:c.W, sg=A*.3, out=[];
   function M(u,v){ return vert?[c.x+u,c.y+v]:[c.x+v,c.y+u]; }
@@ -348,20 +351,42 @@ function render(F,tm){ var h='';
     h+='<circle cx="'+f1((p1[0]+p2[0])/2)+'" cy="'+f1((p1[1]+p2[1])/2)+'" r="'+f1(16*pu)+'" fill="none" stroke="#FFC800" stroke-width="2.4" stroke-dasharray="5 4" opacity="'+f1(F.qz)+'"/>'; }
   if(NOM) h+=nombres(F,tm);
   svg.innerHTML=h; }
-function etq(x,y,tx,ty,t){ if(tx<x&&tx<100) tx=x+(x-tx); else if(tx>x&&tx>500) tx=x-(tx-x); var an=tx<x?'end':'start'; return '<line x1="'+f1(x)+'" y1="'+f1(y)+'" x2="'+f1(tx)+'" y2="'+f1(ty)+'" stroke="#EEEAF7" stroke-opacity=".55" stroke-width="1"/><circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="2.2" fill="#EEEAF7"/>'+
+function etq(x,y,tx,ty,t,an){ an=an||(tx<x?'end':'start'); return '<line x1="'+f1(x)+'" y1="'+f1(y)+'" x2="'+f1(tx)+'" y2="'+f1(ty)+'" stroke="#EEEAF7" stroke-opacity=".55" stroke-width="1"/><circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="2.2" fill="#EEEAF7"/>'+
   '<text x="'+f1(tx+(an==='end'?-4:4))+'" y="'+f1(ty+4)+'" text-anchor="'+an+'" font-family="Nunito" font-weight="800" font-size="'+FS+'" fill="#EEEAF7" stroke="#06040F" stroke-width="3.5" paint-order="stroke">'+t+'</text>'; }
-var FS=12.5; function medirFS(){ var w=svg.clientWidth||600; FS=Math.round(Math.min(20,Math.max(12.5,12.5*560/w))*10)/10; } medirFS(); addEventListener('resize',medirFS); if(window.ResizeObserver) new ResizeObserver(medirFS).observe(svg);
-function nombres(F,tm){ var h='', c0=F.cell[0];
+var FS=12.5; function medirFS(){ var w=svg.clientWidth||600; FS=Math.round(Math.min(22,Math.max(12.5,12.5*560/w))*10)/10; } medirFS(); addEventListener('resize',medirFS); if(window.ResizeObserver) new ResizeObserver(medirFS).observe(svg);
+function nombres(F,tm){ var c0=F.cell[0], E=[], OB=[];
+  /* obstáculos: cromosomas, centrosomas, núcleos y los botones de encima */
+  F.ch.forEach(function(c,id){ if(c.op<.5) return; var P=cromPts(c,id,tm), x1=1e9,y1=1e9,x2=-1e9,y2=-1e9; P.forEach(function(q){ x1=Math.min(x1,q[0]); y1=Math.min(y1,q[1]); x2=Math.max(x2,q[0]); y2=Math.max(y2,q[1]); }); var m=3+3*c.c; OB.push([x1-m,y1-m,x2+m,y2+m]); });
+  F.pol.forEach(function(p){ if(p.op>.3) OB.push([p.x-15,p.y-15,p.x+15,p.y+15]); });
+  F.nuc.forEach(function(n){ if(n.op>.5) OB.push([n.x-n.r*.75,n.y-n.r*.75,n.x+n.r*.75,n.y+n.r*.75]); });
+  OB=OB.concat(TAPA);
   var cp=c0.e==='v'?[c0.x-c0.W*.55,c0.y-c0.H*.83]:[c0.x-c0.W*.83,c0.y-c0.H*.55];
-  if(F.cell.length===1&&c0.rd<.5) h+=etq(cp[0],cp[1],cp[0]-30,cp[1]-22,'Membrana');
-  var n=F.nuc[0]; if(n.op>.6){ h+=etq(n.x+n.r*.95,n.y+n.r*.3,n.x+n.r+28,n.y+n.r*.3+22,'Núcleo'); if(n.nl>.6) h+=etq(n.x+n.r*.38,n.y+n.r*.3,n.x+n.r*.6,n.y+n.r+30,'Nucléolo'); }
-  var p=F.pol[0]; if(p.op>.6) h+=etq(p.x,p.y,p.x<200?p.x+22:p.x-28,p.y-44,'Centrosoma');
-  var c=F.ch[0], lb=c.c>.5?(Math.abs(c.k)>.6?'Cromátida':'Cromosoma'):'Cromatina'; if(c.op>.5) h+=etq(c.x,c.y,c.x+(c.x>270&&c.x<330?70:-58),c.y+(c.y>200?44:-30),lb);
-  var q=F.sp.indexOf(Math.max.apply(null,F.sp)); if(F.sp[q]>.6){ var PS=[[0,1],[0,2],[1,3]], a=F.pol[PS[q][0]], b=F.pol[PS[q][1]], L=Math.hypot(b.x-a.x,b.y-a.y), mx=(a.x+b.x)/2-(b.y-a.y)/L*L*.17, my=(a.y+b.y)/2+(b.x-a.x)/L*L*.17; h+=q?etq(mx,my,mx-14,my+70,'Huso'):etq(mx+40,my-3,mx+70,my+36,'Huso'); }
-  if(F.eq>.6){ var l=F.eqL[0]; h+=etq(l[0]+(l[2]-l[0])*.9,l[1]+(l[3]-l[1])*.9,l[0]+(l[2]-l[0])*.9+24,l[1]+(l[3]-l[1])*.9+(F.eqL.length>1?-30:14),'Placa ecuatorial'); }
-  if(F.qz>.6){ var p1=cromPts(F.ch[1],1,tm)[27]; h+=etq(p1[0],p1[1]-14,p1[0]-56,p1[1]-56,'Quiasma'); }
-  if(c0.f>.3&&c0.f<.995){ var sx=c0.e==='v'?[c0.x,c0.y-c0.H*(1-c0.f)]:[c0.x-c0.W*(1-c0.f),c0.y]; h+=etq(sx[0],sx[1],sx[0]+30,sx[1]-30,'Surco'); }
+  if(F.cell.length===1&&c0.rd<.5) E.push([cp[0],cp[1],-40,-24,'Membrana']);
+  var n=F.nuc[0]; if(n.op>.6){ E.push([n.x+n.r*.95,n.y+n.r*.3,40,26,'Núcleo']); if(n.nl>.6) E.push([n.x+n.r*.38,n.y+n.r*.3,30,n.r*.7+34,'Nucléolo']); }
+  var p=F.pol[0]; if(p.op>.6) E.push([p.x,p.y,p.x<200?30:-30,-40,'Centrosoma']);
+  var c=F.ch[0], lb=c.c>.5?(Math.abs(c.k)>.6?'Cromátida':'Cromosoma'):'Cromatina'; if(c.op>.5) E.push([c.x,c.y,-60,c.y>200?44:-36,lb]);
+  var q=F.sp.indexOf(Math.max.apply(null,F.sp)); if(F.sp[q]>.6){ var PS=[[0,1],[0,2],[1,3]], a=F.pol[PS[q][0]], b=F.pol[PS[q][1]], L=Math.hypot(b.x-a.x,b.y-a.y), k=q?.62:.5, mx=a.x+(b.x-a.x)*k-(b.y-a.y)/L*L*.2*(q?1:1), my=a.y+(b.y-a.y)*k+(b.x-a.x)/L*L*.2;
+    if(q){ mx=a.x+(b.x-a.x)*.3+(a.x<300?-1:1)*0; my=a.y+(b.y-a.y)*.3; var tt=(my-a.y)/(b.y-a.y); mx=a.x-L*.2*4*tt*(1-tt); }
+    E.push([mx,my,q?-46:40,q?10:36,'Huso']); }
+  if(F.eq>.6){ var l=F.eqL[0], ex=l[0]+(l[2]-l[0])*(F.eqL.length>1?.12:.92), ey=l[1]+(l[3]-l[1])*(F.eqL.length>1?.12:.92); E.push([ex,ey,F.eqL.length>1?-10:40,F.eqL.length>1?-46:10,'Placa ecuatorial']); }
+  if(F.qz>.6){ var p1=cromPts(F.ch[1],1,tm)[27]; E.push([p1[0]-8,p1[1],-60,-30,'Quiasma']); }
+  if(c0.f>.3&&c0.f<.995){ var sx=c0.e==='v'?[c0.x,c0.y-c0.H*(1-c0.f)]:[c0.x-c0.W*(1-c0.f),c0.y]; E.push([sx[0],sx[1],36,-30,'Surco']); }
+  return colocar(E,OB); }
+function colocar(E,OB,PU){ /* acomodar los nombres sin que se encimen */
+  PU=PU||[]; var h='', hh=FS*1.25;
+  function caja(x,y,tx,ty,t){ var w=t.length*FS*.6+6, an=tx<x?'end':'start', x0=an==='end'?tx-4-w:tx+2; return [x0,ty-hh/2-1,x0+w,ty+hh/2+1,an]; }
+  function fuera(r){ return r[0]<4||r[2]>596||r[1]<4||r[3]>396; }
+  function choca(r){ var k=0; for(var i=0;i<PU.length;i++){ var o=PU[i]; if(r[0]<o[2]+3&&r[2]>o[0]-3&&r[1]<o[3]+3&&r[3]>o[1]-3) k++; } return k; }
+  function chocaOb(r){ var k=0; OB.forEach(function(o){ if(r[0]<o[2]&&r[2]>o[0]&&r[1]<o[3]&&r[3]>o[1]) k++; }); return k; }
+  E.forEach(function(e){ var x=e[0],y=e[1], C=[[e[2],e[3]]], best=null, bs=1e9;
+    [1,1.5,2.1,2.8,3.5].forEach(function(f){ [[e[2],e[3]],[-e[2],e[3]],[e[2],-e[3]],[-e[2],-e[3]],[50,0],[-50,0],[0,-44],[0,44],[46,-34],[-46,-34],[46,34],[-46,34]].forEach(function(d){ C.push([d[0]*f,d[1]*f]); }); });
+    C.forEach(function(d,i){ if(best&&bs===0) return; var tx=x+d[0], ty=y+d[1]; if(Math.abs(d[0])<6) tx=x+(x<300?-6:6); var r=caja(x,y,tx,ty,e[4]); if(fuera(r)) return; var sc=choca(r)*10000+chocaOb(r)*100+i; if(sc<bs){ bs=sc; best=[tx,ty,r]; } });
+    if(!best){ var r0=caja(x,y,x+e[2],y+e[3],e[4]); best=[x+e[2],y+e[3],r0]; }
+    PU.push(best[2]); h+=etq(x,y,best[0],best[1],e[4],best[2][4]); });
   return h; }
+var TAPA=[];
+function medirTapa(){ TAPA=[]; try{ var M=svg.getScreenCTM(); if(!M) return; var I=M.inverse(); ['fase','bNom'].forEach(function(id){ var el=document.getElementById(id); if(!el||!el.offsetWidth) return; var b=el.getBoundingClientRect(), p1=new DOMPoint(b.left,b.top).matrixTransform(I), p2=new DOMPoint(b.right,b.bottom).matrixTransform(I); TAPA.push([p1.x-4,p1.y-4,p2.x+4,p2.y+4]); }); }catch(e){} }
+addEventListener('resize',function(){ setTimeout(medirTapa,60); }); setTimeout(medirTapa,300); setTimeout(medirTapa,1500);
 
 /* ===== Control ===== */
 var S={modo:'mit',i:0,play:false,vel:1}, FASES=MIT, CUR=clon(pre), COLA=[], DESDE=null, TI=0, DUR=1200, ESPERA=null;
@@ -391,7 +416,7 @@ function linea2(){ var L=lista(), h='';
   var ln=document.getElementById('linea'); ln.innerHTML=h;
   ln.querySelectorAll('button').forEach(function(b){ b.onclick=function(){ if(RETO) return; son('tic'); ir(+b.dataset.i,true); }; });
   var on=ln.querySelector('.on'); if(on&&on.scrollIntoView&&ln.scrollWidth>ln.clientWidth) ln.scrollLeft=on.offsetLeft-ln.clientWidth/2+on.offsetWidth/2; }
-function tipos(){ document.getElementById('tipos').innerHTML='<button data-t="mit" class="'+(S.modo==='mit'?'on':'')+'">Mitosis</button><button data-t="mei" class="'+(S.modo==='mei'?'on':'')+'">Meiosis</button><button data-t="cro" class="'+(S.modo==='cro'?'on':'')+'">Cromosoma</button>';
+function tipos(){ setTimeout(medirTapa,50); document.getElementById('tipos').innerHTML='<button data-t="mit" class="'+(S.modo==='mit'?'on':'')+'">Mitosis</button><button data-t="mei" class="'+(S.modo==='mei'?'on':'')+'">Meiosis</button><button data-t="cro" class="'+(S.modo==='cro'?'on':'')+'">Cromosoma</button>';
   document.documentElement.classList.toggle('modo-cro',S.modo==='cro');
   document.querySelectorAll('#tipos button').forEach(function(b){ b.onclick=function(){ if(RETO||S.modo===b.dataset.t) return; son('abrir'); S.play=false; playUI(); clearTimeout(ESPERA); S.modo=b.dataset.t; tipos(); if(S.modo==='cro'){ CR.sep=0; CR.obj=0; crTipos(); } else ir(0,true); }; }); }
 function lista(){ return S.modo==='mei'?MEI:MIT; }
@@ -429,14 +454,17 @@ function cromo(tm){ var dt=Math.min(50,tm-(CRt||tm)); CRt=tm; CR.sep+=(CR.obj-CR
   /* centrómero */
   if(coh>.01) h+='<rect x="'+f1(xs[0]-3)+'" y="'+f1(cy-5)+'" width="'+f1(xs[1]-xs[0]+6)+'" height="10" rx="5" fill="#2A0E1A" opacity="'+f1(coh)+'"/>';
   /* etiquetas */
-  var X0=xs[0]-W-8;
-  if(T[3]){ h+=llave(X0,top,cy-12,'Brazo corto (p)'); h+=etq(xs[0],top+4,xs[0]-70,top-22,'Telómero'); }
-  else h+=etq(xs[0],top+16,xs[0]-80,top-14,'Centrómero en el extremo');
-  h+=llave(X0,cy+12,bot,'Brazo largo (q)');
-  h+=etq(xs[0]-w(cy)-4,cy,X0-60,cy-(T[3]>.3?2:-40),'Cinetocoro');
-  if(T[3]&&sep<.3) h+=etq(300,cy,420,cy+(T[3]>.3?-30:40),'Centrómero');
-  if(coh>.3) h+=etq(300,top+(T[3]>.3?54:150),440,top+(T[3]>.3?20:120),'Cohesinas');
-  var hx=xs[1]+w(cy)+8+70; h+=etq(hx,cy+6+2*10,Math.min(hx+20,492),cy+90,'Huso acromático');
+  var FS0=FS; FS=Math.min(FS,18); var X0=xs[0]-W-8, E=[], OB=[], PU=[[160,bot+16,440,bot+48]];
+  function txb(x,y,t){ var w=t.length*FS*.6+6; return [x-20-w,y-FS*.7,x-20,y+FS*.7]; }
+  xs.forEach(function(x){ OB.push([x-W-4,top-4,x+W+4,bot+4]); });
+  if(T[3]){ h+=llave(X0,top,cy-12,'Brazo corto (p)'); PU.push(txb(X0,(top+cy-12)/2,'Brazo corto (p)')); E.push([xs[0],top+4,-60,-26,'Telómero']); }
+  else E.push([xs[0],top+16,-70,-30,'Centrómero en el extremo']);
+  h+=llave(X0,cy+12,bot,'Brazo largo (q)'); PU.push(txb(X0,(cy+12+bot)/2,'Brazo largo (q)'));
+  E.push([xs[0]-w(cy)-4,cy,-70,T[3]>.3?0:40,'Cinetocoro']);
+  if(T[3]&&sep<.3) E.push([300,cy,110,T[3]>.3?-40:40,'Centrómero']);
+  if(coh>.3) E.push([300,top+(T[3]>.3?54:150),130,-30,'Cohesinas']);
+  var hx=xs[1]+w(cy)+8+70; E.push([hx,cy+6+2*10,20,70,'Huso acromático']);
+  h+=colocar(E,OB,PU); FS=FS0;
   h+='<path d="M'+f1(xs[0]-W)+' '+(bot+12)+'q0 8 8 8H'+f1(xs[1]+W-8)+'q8 0 8-8" fill="none" stroke="#EEEAF7" stroke-opacity=".6" stroke-width="1.4"/><text x="300" y="'+(bot+38)+'" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="'+FS+'" fill="#EEEAF7">'+(sep>.5?'Cada cromátida ya es un cromosoma':'Cromátidas hermanas')+'</text>';
   if(sep>.05) h+='<text x="300" y="34" text-anchor="middle" font-family="Sora" font-weight="800" font-size="'+f1(FS*1.1)+'" fill="#C6E000" opacity="'+f1(Math.min(1,sep*2))+'">Anafase: la separasa corta las cohesinas</text>';
   svg.innerHTML=h; }
