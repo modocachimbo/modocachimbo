@@ -367,7 +367,7 @@ O.centrosoma.en='Solo animal'; O.ribosoma.en='Todas las células'; O.lisosoma.en
    peroxisoma, ribosomas y citoesqueleto usan las mismas fichas y dibujos de la animal. */
 var TIPO=new URLSearchParams(location.search).get('tipo'); if(!TIPO){ try{ TIPO=localStorage.getItem('mc_lab_celula_tipo'); }catch(e){} }
 if(TIPO!=='vegetal') TIPO='animal';
-var DILV=null, ETQR={};
+var DILV=null;
 if(TIPO==='vegetal'){
   F=window.MC_CELULA_VEGETAL||{}; IMG='assets/laboratorio/celula-vegetal.webp';
   O.pared={n:'Pared celular',c:'#6BBF3A',lat:'Celulosa · 0,1–10 µm',f:['Grosor','0,1–10 µm'],m:'No es membrana',en:'Vegetal (y hongos)',
@@ -428,9 +428,6 @@ if(TIPO==='vegetal'){
   ORDEN=['pared','membrana','vacuola','nucleo','cloroplasto','mitocondria','rer','rel','golgi','amiloplasto','peroxisoma','plasmodesmos'];
   EXTRA=['leucoplasto','cromoplasto','ribosoma','citoesqueleto'];
   ETQ={pared:[600,1500,330,1720],membrana:[2075,520,2250,300],vacuola:[1500,500,1760,60],nucleo:[820,430,820,60],cloroplasto:[1060,1170,1000,1740],mitocondria:[370,683,180,540],rer:[640,700,420,250],rel:[482,772,110,820],golgi:[460,980,120,1120],amiloplasto:[1035,998,1560,1160],peroxisoma:[1452,960,1980,1060],plasmodesmos:[2070,795,2260,1000]};
-  /* celular en vertical (la célula se gira): nombres en dos columnas, a la izquierda y a la derecha */
-  ETQR={mitocondria:[-40,130],rel:[300,130],rer:[640,130],nucleo:[980,130],vacuola:[1400,130],membrana:[1820,130],
-    golgi:[150,1700],pared:[520,1700],cloroplasto:[900,1700],amiloplasto:[1250,1700],peroxisoma:[1650,1700],plasmodesmos:[2300,1700]};
   /* recorte para volar hacia cada orgánulo: la caja de su contorno */
   DET={}; ORDEN.forEach(function(id){ var b=[1e9,1e9,-1,-1]; (F[id]||'').replace(/M([^Z]+)Z/g,function(_,t){ var n=t.trim().split(/\s+/).map(Number);
     for(var i=0;i<n.length;i+=2){ b[0]=Math.min(b[0],n[i]);b[2]=Math.max(b[2],n[i]);b[1]=Math.min(b[1],n[i+1]);b[3]=Math.max(b[3],n[i+1]); } }); DET[id]={b:b,p:[]}; });
@@ -446,7 +443,10 @@ if(TIPO==='vegetal'){
     peroxisoma:{w:1600,h:868,img:'glioxisoma',p:[[1,187,747],[2,440,440],[3,560,287],[4,660,660],[5,1240,440]]} };
 }
 
-var ROT=innerHeight>innerWidth*1.2, CX=IW/2, CY=IH/2;
+/* La célula ya no se gira en el celular: se ve tal cual (horizontal) y ajustada al ancho;
+   el alumno hace zoom con los dedos. En vertical los nombres van en filas arriba y abajo. */
+var ROT=false, PORT=innerHeight>innerWidth*1.2, CX=IW/2, CY=IH/2;
+function caja(){ return PORT?{x:-40,y:-640,w:IW+80,h:IH+1508}:{x:-40,y:-40,w:IW+80,h:IH+80}; }
 function rp(x,y){ return ROT?[CX-(y-CY),CY+(x-CX)]:[x,y]; }
 var seed=11; function rnd(){ seed=(seed*16807)%2147483647; return (seed-1)/2147483646; }
 function celula(){
@@ -466,10 +466,17 @@ function celula(){
   return s;
 }
 function etiquetas(){
-  var s='', K=innerWidth<760?2.2:1.35;
-  ORDEN.forEach(function(id){ var e0=ETQ[id]; if(ROT&&ETQR[id]) e0=[e0[0],e0[1],ETQR[id][0],ETQR[id][1]]; var a1=rp(e0[0],e0[1]), a2=rp(e0[2],e0[3]), e=[a1[0],a1[1],a2[0],a2[1]], n=O[id].n.replace('Retículo endoplasmático','R. E.'), w=(n.length*15+40)*K;
+  var s='', K=PORT?2.6:innerHeight<500?1.9:innerWidth<760?2.2:1.35, pos={};
+  if(PORT){ var arriba=[],abajo=[]; ORDEN.forEach(function(id){ (ETQ[id][1]<CY?arriba:abajo).push(id); });
+    /* que ningún grupo pase de 3 filas: el sobrante pasa al otro lado */
+    function yy(x){ return ETQ[x][1]; } while(arriba.length>abajo.length+1){ arriba.sort(function(a,b){ return yy(a)-yy(b); }); abajo.push(arriba.pop()); } while(abajo.length>arriba.length+1){ abajo.sort(function(a,b){ return yy(a)-yy(b); }); arriba.push(abajo.shift()); }
+    [[arriba,-1],[abajo,1]].forEach(function(g){ var L=g[0].sort(function(a,b){ return ETQ[a][0]-ETQ[b][0]; }), nf=Math.ceil(L.length/2);
+      L.forEach(function(id,i){ var fila=Math.floor(i/2), col=(L.length%2&&i===L.length-1)?0:(i%2?1:-1);
+        /* la fila más cerca de la célula para los que están más al centro de su grupo */
+        pos[id]=[CX+col*640, g[1]<0? -165-(nf-1-fila)*185 : IH+165+fila*185]; }); }); }
+  ORDEN.forEach(function(id){ var e0=ETQ[id]; if(pos[id]) e0=[e0[0],e0[1],pos[id][0],pos[id][1]]; var a1=rp(e0[0],e0[1]), a2=rp(e0[2],e0[3]), e=[a1[0],a1[1],a2[0],a2[1]], n=O[id].n.replace('Retículo endoplasmático','R. E.'), w=(n.length*15+40)*K;
     /* que la etiqueta no se salga de la pantalla (celular vertical) */
-    var B=ROT?{x:CX-IH/2-40,y:CY-IW/2-40,w:IH+80,h:IW+80}:{x:-40,y:-40,w:IW+80,h:IH+80};
+    var B=caja();
     e[2]=Math.max(B.x+w/2+8,Math.min(B.x+B.w-w/2-8,e[2])); e[3]=Math.max(B.y+30*K,Math.min(B.y+B.h-30*K,e[3]));
     s+='<g class="etq"><line x1="'+e[0]+'" y1="'+e[1]+'" x2="'+e[2]+'" y2="'+e[3]+'"/><circle cx="'+e[0]+'" cy="'+e[1]+'" r="7"/>'+
        '<rect x="'+(e[2]-w/2)+'" y="'+(e[3]-26*K)+'" width="'+w+'" height="'+52*K+'" rx="'+14*K+'"/><text x="'+e[2]+'" y="'+(e[3]+10*K)+'" text-anchor="middle" style="font-size:'+28*K+'px">'+n+'</text></g>'; });
@@ -502,7 +509,7 @@ function cajasDe(id){ var out=[]; (F[id]||'').replace(/M([^Z]+)Z/g,function(_,t)
 var esc=document.getElementById('escena');
 esc.innerHTML='<svg id="cel" preserveAspectRatio="xMidYMid meet"><g id="mundo"'+(ROT?' transform="rotate(90 '+CX+' '+CY+')"':'')+'>'+celula()+'</g><g id="etqs">'+etiquetas()+'</g></svg>';
 var svg=document.getElementById('cel');
-var BASE=ROT?{x:CX-IH/2-40,y:CY-IW/2-40,w:IH+80,h:IW+80}:{x:-40,y:-40,w:IW+80,h:IH+80}, cam={x:BASE.x,y:BASE.y,w:BASE.w,h:BASE.h};
+var BASE=caja(), cam={x:BASE.x,y:BASE.y,w:BASE.w,h:BASE.h};
 function aplicar(){ svg.setAttribute('viewBox',cam.x+' '+cam.y+' '+cam.w+' '+cam.h);
   var z=BASE.w/cam.w; document.getElementById('zNv').textContent='×'+z.toFixed(1);
   var um=z>3?2:z>1.6?5:10; document.getElementById('escTx').textContent=um+' µm';
@@ -603,6 +610,10 @@ function abrir(id){
   document.getElementById('dSig').onclick=function(){ det.classList.remove('on'); ir(sig); };
 }
 aplicar();
+/* Al girar el celular (o cambiar el tamaño de la ventana) se reacomodan los nombres y la vista */
+var tGiro; addEventListener('resize',function(){ clearTimeout(tGiro); tGiro=setTimeout(function(){
+  var p=innerHeight>innerWidth*1.2, fue=PORT; PORT=p; document.getElementById('etqs').innerHTML=etiquetas();
+  var nb=caja(); if(p!==fue||cam.w===BASE.w){ BASE=nb; cam={x:nb.x,y:nb.y,w:nb.w,h:nb.h}; } else BASE=nb; aplicar(); },200); });
 
 /* Animal / Vegetal y sonido */
 (function(){
