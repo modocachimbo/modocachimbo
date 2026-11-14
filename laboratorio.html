@@ -79,6 +79,12 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 #det.on{display:flex;animation:ent .45s cubic-bezier(.2,.8,.2,1)}
 @keyframes ent{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:none}}
 .d-box{margin:auto;width:min(1240px,100% - 40px);height:min(760px,100% - 40px);display:grid;grid-template-columns:1.25fr 1fr;border-radius:26px;overflow:hidden;background:#0C0920;border:1px solid var(--borde);box-shadow:0 40px 120px rgba(0,0,0,.6)}
+.d-ilus{animation:dIlus .6s ease both,dFlota 6s ease-in-out .6s infinite}
+@keyframes dIlus{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+@keyframes dFlota{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.d-vis .mk-onda{transform-box:fill-box;transform-origin:center;animation:mkOnda 2.2s ease-out infinite}
+@keyframes mkOnda{from{transform:scale(1);opacity:.8}to{transform:scale(2.2);opacity:0}}
+@media (prefers-reduced-motion:reduce){.d-ilus,.d-vis .mk-onda{animation:none}}
 .d-vis{position:relative;background:radial-gradient(80% 80% at 50% 50%,#1C1240 0%,#0A0720 70%);overflow:hidden}
 .d-vis svg{position:absolute;inset:0;width:100%;height:100%}
 .d-vis .grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:32px 32px}
@@ -224,12 +230,12 @@ a.ib{text-decoration:none}
 /* ============ DATOS ============ */
 var O = {
   membrana:{n:'Membrana plasmática',c:'#C6E000',lat:'Bicapa lipídica · 7–10 nm',f:['Grosor','7–10 nm'],m:'Bicapa',fn:'Separa la célula del medio y controla qué entra y qué sale (permeabilidad selectiva). Tiene proteínas que hacen de canales, bombas y receptores.',partes:[['Fosfolípidos','Cabeza hidrofílica y dos colas hidrofóbicas.'],['Colesterol','Regula la fluidez.'],['Proteínas integrales','Atraviesan la bicapa: canales y bombas.'],['Glucocáliz','Glúcidos de reconocimiento celular.']],clave:'Modelo del mosaico fluido (Singer y Nicolson, 1972). La bomba Na⁺/K⁺ saca 3 Na⁺ y mete 2 K⁺ gastando 1 ATP.'},
-  nucleo:{n:'Núcleo',c:'#8A6CF0',lat:'Nucleus · 5–10 µm',f:['Tamaño','5–10 µm'],m:'Doble',fn:'Guarda el ADN y controla la célula: allí se copia el ADN (replicación) y se fabrica el ARN (transcripción).',partes:[['Envoltura nuclear','Doble membrana unida al RE rugoso.'],['Poros nucleares','Dejan pasar ARN y proteínas.'],['Cromatina','ADN + histonas: eucromatina y heterocromatina.'],['Nucléolo','Fabrica el ARN ribosomal. No tiene membrana.']],clave:'La envoltura nuclear se continúa con el RE rugoso. Los glóbulos rojos maduros de mamíferos no tienen núcleo.'},
+  nucleo:{n:'Núcleo',c:'#8A6CF0',lat:'Nucleus · 5–10 µm',f:['Tamaño','5–10 µm'],m:'Doble',fn:'Guarda el ADN y controla la célula: allí se copia el ADN (replicación) y se fabrica el ARN (transcripción).',partes:[['Envoltura nuclear','Doble membrana unida al RE rugoso.'],['Poros nucleares','Dejan pasar ARN y proteínas.'],['Cromatina','ADN + histonas: eucromatina y heterocromatina.'],['Nucléolo','Fabrica el ARN ribosomal. No tiene membrana.'],['RE rugoso unido','La membrana externa del núcleo continúa en el RER.']],clave:'La envoltura nuclear se continúa con el RE rugoso. Los glóbulos rojos maduros de mamíferos no tienen núcleo.'},
   mitocondria:{n:'Mitocondria',c:'#FF9600',lat:'Mitochondrion · 0,5–1 µm',f:['Tamaño','0,5–1 µm'],m:'Doble',fn:'Hace la respiración celular aeróbica: oxida la glucosa con oxígeno y guarda la energía en ATP. Por eso se le llama la "central energética" de la célula.',partes:[['Membrana externa','Lisa y permeable; tiene porinas.'],['Espacio intermembrana','Aquí se acumulan protones (H⁺).'],['Membrana interna','Muy poco permeable; tiene cardiolipina.'],['Crestas','Pliegues que aumentan la superficie.'],['Matriz','Aquí ocurre el ciclo de Krebs.'],['ADN mitocondrial','Circular, como el de las bacterias.'],['Ribosomas 70S','Fabrican algunas de sus propias proteínas.'],['ATP sintasa','Proteína que gira y produce el ATP.']],clave:'Tiene ADN circular y ribosomas 70S propios (teoría endosimbiótica de Lynn Margulis). El ADN mitocondrial se hereda solo por la madre.',proc:1},
   rer:{n:'Retículo endoplasmático rugoso',c:'#3AB4F0',lat:'RER · cisternas',f:['Forma','Cisternas'],m:'Simple',fn:'Red de sacos aplanados con ribosomas pegados. Fabrica las proteínas que se secretan o que van a las membranas y a los lisosomas.',partes:[['Cisternas','Sacos aplanados comunicados.'],['Ribosomas adheridos','Fabrican las proteínas.'],['Lumen','Las proteínas se pliegan y glicosilan.']],clave:'Muy desarrollado en células que secretan proteínas: páncreas (acinos), células plasmáticas (anticuerpos).'},
-  rel:{n:'Retículo endoplasmático liso',c:'#4FD8B4',lat:'REL · túbulos',f:['Forma','Túbulos'],m:'Simple',fn:'Túbulos sin ribosomas. Fabrica lípidos y hormonas esteroides, desintoxica fármacos y guarda calcio.',partes:[['Túbulos','Red de tubos ramificados.'],['Enzimas P-450','Desintoxican en el hígado.']],clave:'En el músculo se llama retículo sarcoplásmico y guarda el Ca²⁺ para la contracción.'},
-  golgi:{n:'Aparato de Golgi',c:'#1CB0F6',lat:'Complejo de Golgi · dictiosomas',f:['Cisternas','4–8'],m:'Simple',fn:'Recibe las proteínas del RE, las modifica, las clasifica y las empaqueta en vesículas para enviarlas a su destino.',partes:[['Cara cis','Recibe vesículas del RE.'],['Cisternas medias','Modifican las proteínas.'],['Cara trans','Libera vesículas de secreción.']],clave:'Forma los lisosomas, el acrosoma del espermatozoide y, en plantas, la lámina media.'},
-  lisosoma:{n:'Lisosoma',c:'#E0458A',lat:'Lysosoma · 0,1–1 µm',f:['pH','≈ 5'],m:'Simple',fn:'Vesícula con enzimas hidrolíticas que digiere lo que entra a la célula y recicla orgánulos viejos (autofagia).',partes:[['Hidrolasas ácidas','Proteasas, lipasas, nucleasas.'],['Bomba de H⁺','Mantiene el pH ácido.']],clave:'"Bolsas suicidas": si se rompen digieren a la célula (autólisis).'},
+  rel:{n:'Retículo endoplasmático liso',c:'#4FD8B4',lat:'REL · túbulos',f:['Forma','Túbulos'],m:'Simple',fn:'Túbulos sin ribosomas. Fabrica lípidos y hormonas esteroides, desintoxica fármacos y guarda calcio.',partes:[['Túbulos','Red de tubos ramificados y conectados.'],['Luz (lumen)','Interior hueco de los túbulos.'],['Enzimas P-450','Desintoxican en el hígado.']],clave:'En el músculo se llama retículo sarcoplásmico y guarda el Ca²⁺ para la contracción.'},
+  golgi:{n:'Aparato de Golgi',c:'#1CB0F6',lat:'Complejo de Golgi · dictiosomas',f:['Cisternas','4–8'],m:'Simple',fn:'Recibe las proteínas del RE, las modifica, las clasifica y las empaqueta en vesículas para enviarlas a su destino.',partes:[['Cara cis','Recibe vesículas del RE.'],['Cisternas medias','Modifican las proteínas.'],['Cara trans','Libera vesículas de secreción.'],['Vesículas','Llevan las proteínas a su destino.']],clave:'Forma los lisosomas, el acrosoma del espermatozoide y, en plantas, la lámina media.'},
+  lisosoma:{n:'Lisosoma',c:'#E0458A',lat:'Lysosoma · 0,1–1 µm',f:['pH','≈ 5'],m:'Simple',fn:'Vesícula con enzimas hidrolíticas que digiere lo que entra a la célula y recicla orgánulos viejos (autofagia).',partes:[['Hidrolasas ácidas','Proteasas, lipasas, nucleasas.'],['Bomba de H⁺','Mantiene el pH ácido.'],['Membrana simple','Protegida por dentro para no digerirse.']],clave:'"Bolsas suicidas": si se rompen digieren a la célula (autólisis).'},
   peroxisoma:{n:'Peroxisoma',c:'#55C23A',lat:'Peroxisoma · 0,5 µm',f:['Enzima','Catalasa'],m:'Simple',fn:'Oxida ácidos grasos y destruye el peróxido de hidrógeno (H₂O₂) con la enzima catalasa.',partes:[['Catalasa','2 H₂O₂ → 2 H₂O + O₂'],['Oxidasas','Producen H₂O₂.']],clave:'Abundan en hígado y riñón. En plantas, los glioxisomas son peroxisomas especiales.'},
   centrosoma:{n:'Centrosoma',c:'#FFC800',lat:'2 centriolos · 9 tripletes',f:['Estructura','9 × 3'],m:'Sin membrana',fn:'Centro organizador de microtúbulos. Sus dos centriolos forman el huso mitótico en la división celular.',partes:[['Centriolos','Dos cilindros perpendiculares.'],['9 tripletes','Microtúbulos en patrón 9 + 0.']],clave:'Las plantas superiores no tienen centriolos. Cilios y flagelos tienen el patrón 9 + 2.'},
   ribosoma:{n:'Ribosomas',c:'#EEEAF7',lat:'80S · 25 nm',f:['Tipo','80S'],m:'Sin membrana',fn:'Leen el ARN mensajero y unen aminoácidos para fabricar proteínas (traducción).',partes:[['Subunidad mayor','60S'],['Subunidad menor','40S']],clave:'Es el único orgánulo presente en TODAS las células. Procariotas: 70S (50S + 30S).'}
@@ -258,6 +264,10 @@ var ETQ={membrana:[200,1250,160,1480],nucleo:[1450,330,2150,70],mitocondria:[520
 O.rer.partes=[['Cisternas','Sacos aplanados comunicados.'],['Ribosomas adheridos','Los puntitos rojos: fabrican proteínas.'],['Lumen','Las proteínas se pliegan y glicosilan.']];
 O.membrana.partes.push(['Microvellosidades','Pliegues que aumentan la superficie de absorción.']);
 O.centrosoma.n='Centriolos';O.centrosoma.lat='Centrosoma · 9 tripletes';
+O.citoesqueleto={n:'Citoesqueleto',c:'#FF7A59',lat:'Red de proteínas · 3 tipos',f:['Filamentos','3 tipos'],m:'Sin membrana',fn:'Red de proteínas que da forma a la célula, la sostiene, mueve los orgánulos y participa en la división y el movimiento celular.',partes:[['Microtúbulos','Tubos huecos de tubulina (25 nm). Forman el huso, cilios y flagelos.'],['Filamentos intermedios','Cuerdas resistentes (10 nm), como la queratina.'],['Microfilamentos','De actina (7 nm): contracción, movimiento ameboide y citocinesis.']],clave:'Los microtúbulos forman el huso mitótico. La colchicina los destruye y detiene la mitosis en metafase.'};
+O.vacuola={n:'Vacuolas',c:'#5FD0E8',lat:'Vacuolas · tonoplasto',f:['En animal','Pequeñas'],m:'Simple',fn:'Bolsas con membrana que almacenan agua, sales, nutrientes y desechos. En la célula vegetal hay una vacuola central enorme que da turgencia.',partes:[['Tonoplasto','Membrana que rodea la vacuola.'],['Jugo vacuolar','Agua con sales, azúcares y pigmentos.'],['Proteínas de transporte','Bombean iones hacia el interior.']],clave:'En la célula vegetal la vacuola central puede ocupar hasta el 90 % del volumen. Los protozoos de agua dulce tienen vacuolas contráctiles que expulsan el exceso de agua.'};
+O.ribosoma.partes=[['Subunidad mayor','60S: une los aminoácidos.'],['Subunidad menor','40S: lee el ARN mensajero.'],['ARN mensajero','Trae la receta copiada del ADN.'],['Cadena de proteína','Aminoácidos unidos que salen del ribosoma.']];
+var EXTRA=['ribosoma','citoesqueleto','vacuola'];
 O.vesicula={n:'Vesículas de secreción',c:'#9B6BFF',lat:'Salen del Golgi',f:['Origen','Cara trans'],m:'Simple',fn:'Bolsitas que salen del aparato de Golgi llevando proteínas. Se unen a la membrana y sueltan su contenido fuera de la célula (exocitosis).',partes:[['Contenido','Proteínas listas para salir (puntitos).'],['Membrana','Se fusiona con la membrana plasmática.']],clave:'La exocitosis gasta energía y agranda la membrana; la endocitosis la achica.'};
 ORDEN=['membrana','nucleo','mitocondria','rer','rel','golgi','lisosoma','vesicula','peroxisoma','centrosoma'];
 
@@ -343,15 +353,29 @@ function irA(id,abrirDet){ seleccionar(id); svg.classList.add('sin-nombres'); do
   var w=Math.max(bw,bh*BASE.w/BASE.h)*1.9;
   volar(c[0],c[1],Math.max(380,Math.min(BASE.w,w)),800,function(){ if(abrirDet) setTimeout(function(){ abrir(id); },250); }); }
 svg.addEventListener('click',function(e){ if(movio) return; var g=e.target.closest('.org'); if(g) irA(g.getAttribute('data-id'),true); });
-document.getElementById('chips').innerHTML=ORDEN.map(function(id){ return '<button class="chip glass" data-id="'+id+'"><i style="background:'+O[id].c+'"></i>'+O[id].n.replace('Retículo endoplasmático','Retículo')+'</button>'; }).join('');
-document.querySelectorAll('.chip').forEach(function(c){ c.onclick=function(){ irA(c.dataset.id,true); }; });
+document.getElementById('chips').innerHTML=ORDEN.concat(EXTRA).map(function(id){ return '<button class="chip glass" data-id="'+id+'"><i style="background:'+O[id].c+'"></i>'+O[id].n.replace('Retículo endoplasmático','Retículo')+'</button>'; }).join('');
+function ir(id){ if(EXTRA.indexOf(id)>=0){ quitarFoco(); document.querySelectorAll('.chip').forEach(function(c){ c.classList.toggle('on',c.dataset.id===id); }); abrir(id); } else irA(id,true); }
+document.querySelectorAll('.chip').forEach(function(c){ c.onclick=function(){ ir(c.dataset.id); }; });
 
 /* ============ VISTA DE DETALLE ============ */
+/* ilustraciones propias de cada organela (pantalla de detalle) */
+var DIL={ mitocondria:{w:1600,h:925,p:[[1,1473,410],[2,435,772],[3,1271,410],[4,588,370],[5,717,410],[6,897,347],[7,653,522]]},
+ nucleo:{w:1600,h:1433,p:[[1,1478,904],[2,1393,701],[3,766,715],[4,930,556],[5,221,904]]},
+ rer:{w:1600,h:997,p:[[1,986,722],[2,1402,556],[3,1032,398]]},
+ rel:{w:1600,h:975,p:[[1,799,380],[2,675,520]]},
+ golgi:{w:1600,h:1000,p:[[1,313,282],[2,699,282],[3,1326,398],[4,1519,620]]},
+ lisosoma:{w:1600,h:850,p:[[1,1124,325],[2,202,342],[3,1446,223]]},
+ ribosoma:{w:1600,h:1095,p:[[1,803,438],[2,803,908],[3,199,699],[4,1168,146]]},
+ citoesqueleto:{w:1300,h:832,p:[[1,857,453],[2,663,532],[3,92,415]]},
+ vacuola:{w:1600,h:913,p:[[1,1536,462],[2,1191,541],[3,1377,727]]} };
 var TAB=new URLSearchParams(location.search).get('tab')||'partes';
 function abrir(id){
-  var o=O[id], D=DET[id], b=D.b, cw=b[2]-b[0], ch=b[3]-b[1], m=Math.max(cw,ch)*.12;
+  var o=O[id], D=DET[id]||{b:[0,0,1,1],p:[]}, b=D.b, cw=b[2]-b[0], ch=b[3]-b[1], m=Math.max(cw,ch)*.12, IL=DIL[id];
+  if(IL){ D={p:IL.p}; b=[0,0,IL.w,IL.h]; cw=IL.w; ch=IL.h; m=Math.max(cw,ch)*.06; }
   var vb=(b[0]-m)+' '+(b[1]-m)+' '+(cw+2*m)+' '+(ch+2*m), u=Math.max(cw,ch)/420;
-  var vis='<defs><clipPath id="cDet"><rect x="'+(b[0]-m)+'" y="'+(b[1]-m)+'" width="'+(cw+2*m)+'" height="'+(ch+2*m)+'"/></clipPath></defs>'+
+  var vis=IL?'<g class="d-ilus"><image href="assets/laboratorio/detalle-'+id+'.webp" width="'+IL.w+'" height="'+IL.h+'"/>'+
+    D.p.map(function(p){ return '<g class="mk" transform="translate('+p[1]+' '+p[2]+')"><circle class="mk-onda" r="'+13*u+'" fill="none" stroke="#C6E000" stroke-width="'+2*u+'"/><circle r="'+13*u+'" fill="#C6E000" stroke="#151A03" stroke-width="'+2.5*u+'"/><text y="'+5*u+'" text-anchor="middle" style="font:800 '+15*u+'px Barlow Condensed;fill:#151A03">'+p[0]+'</text></g>'; }).join('')+'</g>'
+  :'<defs><clipPath id="cDet"><rect x="'+(b[0]-m)+'" y="'+(b[1]-m)+'" width="'+(cw+2*m)+'" height="'+(ch+2*m)+'"/></clipPath></defs>'+
     '<g clip-path="url(#cDet)"><image href="'+IMG+'" width="'+IW+'" height="'+IH+'"/>'+
     '<path d="'+(F[id]||'')+'" fill="none" stroke="#C6E000" stroke-width="'+(id==='membrana'?3*u:2.2*u)+'" stroke-opacity=".9" class="det-borde"/>'+
     bolitasATP(id,id==='mitocondria'?[[b[0]+cw*.5-20,b[1]+ch*.5-30,b[0]+cw*.5+20,b[1]+ch*.5+30,10]]:[])+'</g>'+
@@ -365,18 +389,18 @@ function abrir(id){
      '<div class="st"><i style="background:rgba(255,150,0,.18);color:#FF9600">2</i><div><b>Ciclo de Krebs</b><span>En la matriz · libera CO₂</span></div><em>2 ATP</em></div>'+
      '<div class="st"><i style="background:rgba(198,224,0,.16);color:#C6E000">3</i><div><b>Cadena respiratoria</b><span>En las crestas · el O₂ recibe los electrones</span></div><em>32–34 ATP</em></div></div>':'');
   if(TAB==='examen') cuerpo='<div class="clave"><b><svg><use href="#i-rayo"/></svg>Cae en el examen</b><p>'+o.clave+'</p></div>';
-  var i=ORDEN.indexOf(id), sig=ORDEN[(i+1)%ORDEN.length];
+  var TODO=ORDEN.concat(EXTRA), i=TODO.indexOf(id), sig=TODO[(i+1)%TODO.length];
   var det=document.getElementById('det');
   det.innerHTML='<div class="d-box"><div class="d-vis"><div class="grid-bg"></div><svg viewBox="'+vb+'" preserveAspectRatio="xMidYMid meet">'+vis+'</svg>'+
-    '<div class="d-cab"><span class="pill">Vista ampliada</span>'+(id==='mitocondria'?'<span class="pill" style="color:#FFC800;border-color:rgba(255,200,0,.4);background:rgba(255,200,0,.1)">Animación: ATP</span>':'')+'</div></div>'+
+    '<div class="d-cab"><span class="pill">'+(IL?'Ilustración 3D':'Vista ampliada')+'</span>'+(id==='mitocondria'&&!IL?'<span class="pill" style="color:#FFC800;border-color:rgba(255,200,0,.4);background:rgba(255,200,0,.1)">Animación: ATP</span>':'')+'</div></div>'+
     '<div class="d-inf"><header><div><h2>'+o.n+'</h2><span class="lat">'+o.lat+'</span></div><button class="x" id="dX"><svg><use href="#i-x"/></svg></button></header>'+
-    '<div class="ficha"><div><small>'+o.f[0]+'</small><b>'+o.f[1]+'</b></div><div><small>Membrana</small><b>'+o.m+'</b></div><div><small>Está en</small><b>'+(id==='centrosoma'?'Solo animal':'Animal y vegetal')+'</b></div></div>'+
+    '<div class="ficha"><div><small>'+o.f[0]+'</small><b>'+o.f[1]+'</b></div><div><small>Membrana</small><b>'+o.m+'</b></div><div><small>Está en</small><b>'+(id==='centrosoma'?'Solo animal':id==='ribosoma'?'Todas las células':'Animal y vegetal')+'</b></div></div>'+
     '<div class="tabs">'+Object.keys(tabs).map(function(k){ return '<button data-t="'+k+'" class="'+(k===TAB?'on':'')+'">'+tabs[k]+'</button>'; }).join('')+'</div>'+cuerpo+
     '<div class="d-acc"><button class="btn sec" id="dVer">Ver en la célula</button><button class="btn" id="dSig">'+O[sig].n.split(' ')[0]+'<svg style="color:#151A03"><use href="#i-sig"/></svg></button></div></div></div>';
   det.classList.add('on');
   det.querySelectorAll('.tabs button').forEach(function(bt){ bt.onclick=function(){ TAB=bt.dataset.t; abrir(id); }; });
   document.getElementById('dX').onclick=document.getElementById('dVer').onclick=function(){ det.classList.remove('on'); };
-  document.getElementById('dSig').onclick=function(){ det.classList.remove('on'); irA(sig,true); };
+  document.getElementById('dSig').onclick=function(){ det.classList.remove('on'); ir(sig); };
 }
 aplicar();
 
@@ -384,7 +408,7 @@ aplicar();
 var P=new URLSearchParams(location.search);
 if(P.get('nom')==='0'||(innerWidth<760&&P.get('nom')!=='1')){ document.getElementById('swNom').classList.add('off'); svg.classList.add('sin-nombres'); }
 if(P.get('v')==='foco'){ document.getElementById('pista').style.display='none'; irA(P.get('o')||'mitocondria'); }
-if(P.get('v')==='detalle'){ irA(P.get('o')||'mitocondria'); abrir(P.get('o')||'mitocondria'); }
+if(P.get('v')==='detalle'){ ir(P.get('o')||'mitocondria'); }
 </script>
 </body>
 </html>
