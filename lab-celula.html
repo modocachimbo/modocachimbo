@@ -72,6 +72,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .h-bot{left:0;right:0;bottom:0;padding:10px 16px max(14px,env(safe-area-inset-bottom));display:block}
 .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
 .chips::-webkit-scrollbar{display:none}
+.pista{transition:opacity .5s}.pista.fuera{opacity:0;pointer-events:none}
 /* Lista de organelas: escondida; se abre con el botón de lista (los nombres ya están en la célula) */
 html:not(.lista-on) .h-bot{display:none}
 html:not(.lista-on) .h-esc{bottom:max(16px,env(safe-area-inset-bottom))}
@@ -379,6 +380,9 @@ function celula(){
 function etiquetas(){
   var s='', K=innerWidth<760?2.2:1.35;
   ORDEN.forEach(function(id){ var e0=ETQ[id], a1=rp(e0[0],e0[1]), a2=rp(e0[2],e0[3]), e=[a1[0],a1[1],a2[0],a2[1]], n=O[id].n.replace('Retículo endoplasmático','R. E.'), w=(n.length*15+40)*K;
+    /* que la etiqueta no se salga de la pantalla (celular vertical) */
+    var B=ROT?{x:CX-IH/2-40,y:CY-IW/2-40,w:IH+80,h:IW+80}:{x:-40,y:-40,w:IW+80,h:IH+80};
+    e[2]=Math.max(B.x+w/2+8,Math.min(B.x+B.w-w/2-8,e[2])); e[3]=Math.max(B.y+30*K,Math.min(B.y+B.h-30*K,e[3]));
     s+='<g class="etq"><line x1="'+e[0]+'" y1="'+e[1]+'" x2="'+e[2]+'" y2="'+e[3]+'"/><circle cx="'+e[0]+'" cy="'+e[1]+'" r="7"/>'+
        '<rect x="'+(e[2]-w/2)+'" y="'+(e[3]-26*K)+'" width="'+w+'" height="'+52*K+'" rx="'+14*K+'"/><text x="'+e[2]+'" y="'+(e[3]+10*K)+'" text-anchor="middle" style="font-size:'+28*K+'px">'+n+'</text></g>'; });
   return s;
@@ -506,16 +510,18 @@ aplicar();
   document.querySelectorAll('#tipoCel button').forEach(function(b){ b.onclick=function(){
     if(b.dataset.t==='animal') return;
     if(SN) SN.tocar('mal');
-    clearTimeout(tm); pista.style.display='flex'; pista.style.opacity=1;
+    clearTimeout(tm); pista.style.display='flex'; pista.classList.remove('fuera');
     pista.innerHTML='La célula vegetal llega pronto: cloroplastos, pared celular y vacuola central';
-    tm=setTimeout(function(){ pista.innerHTML=tx; },3200);
+    tm=setTimeout(function(){ pista.classList.add('fuera'); },3200);
   }; });
   try{ localStorage.setItem('mc_lab_ultimo','celula'); }catch(e){}
+  /* La pista del dedo se va sola a los 5 segundos */
+  tm=setTimeout(function(){ pista.classList.add('fuera'); },5000);
 })();
 
 /* modos para revisar: ?v=foco&o=mitocondria | ?v=detalle&o=mitocondria&tab=funcion | &nom=0|1 */
 var P=new URLSearchParams(location.search);
-if(P.get('nom')==='0'||((innerWidth<760||innerHeight<520)&&P.get('nom')!=='1')){ document.getElementById('swNom').classList.add('off'); svg.classList.add('sin-nombres'); }
+if(P.get('nom')==='0'){ document.getElementById('swNom').classList.add('off'); svg.classList.add('sin-nombres'); }
 if(P.get('v')==='foco'){ document.getElementById('pista').style.display='none'; irA(P.get('o')||'mitocondria'); }
 if(P.get('v')==='detalle'){ ir(P.get('o')||'mitocondria'); }
 </script>
