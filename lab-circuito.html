@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<script src="assets/guardia.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06040F">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="assets/app/icono-180.png">
+<title>Circuitos eléctricos · Laboratorio · Modo Cachimbo</title>
+<script src="assets/app.js" defer></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Nunito:wght@600;700;800;900&family=Sora:wght@700;800&display=swap">
+<link rel="stylesheet" href="assets/lab-mate.css">
+<style>
+/* Física: naranja en el título y en la pregunta del reto */
+.ttl small{color:#FF9600}
+.preg{background:linear-gradient(135deg,rgba(255,150,0,.16),rgba(21,17,39,.6));border-color:rgba(255,150,0,.35)}
+.preg small{color:#FFB54D}
+.desl{grid-template-columns:40px 1fr 72px}
+.desl output{font-size:15px;white-space:nowrap}
+.plano>svg{touch-action:none}
+.modoM{display:flex;gap:6px}
+.modoM button{flex:1;height:44px;border-radius:13px;background:#0E0A22;border:1px solid var(--borde);font:800 15px "Sora";color:var(--dim)}
+.modoM button.on{background:rgba(255,150,0,.14);border-color:#FF9600;color:#FFB54D}
+.modoM button small{display:block;font:800 10.5px/1 "Nunito";color:var(--faint);margin-top:2px}
+.cant{display:flex;align-items:center;gap:8px;margin:2px 0 8px;font:800 13px "Nunito";color:var(--dim)}
+.cant button{height:34px;min-width:44px;border-radius:10px;background:#0E0A22;border:1px solid var(--borde);font:800 14px "Sora";color:var(--dim)}
+.cant button.on{border-color:#FF9600;color:#FFB54D;background:rgba(255,150,0,.1)}
+.giro .play.off{background:#0E0A22;color:var(--dim);border:1.5px solid var(--borde);box-shadow:0 4px 0 #1a1530}
+.tip{margin:6px 0 0;font:700 12.5px/1.4 "Nunito";color:var(--faint)}
+.dato b em{font-style:normal;color:var(--faint);font-weight:700}
+html.reto-on .giro,html.reto-on .tip{display:none}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="i-atras" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="i-son" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="on-l" d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/><path class="off-l" d="M16 9.5l5 5M21 9.5l-5 5"/></symbol>
+<symbol id="i-pow" viewBox="0 0 24 24"><path d="M12 3v8M7 6.5a7 7 0 1 0 10 0"/></symbol>
+<symbol id="i-otra" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5"/></symbol>
+<symbol id="i-rayo" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
+</defs></svg>
+<section class="beta-aviso"><b>Laboratorio en prueba</b><p>Los simuladores están en beta. Muy pronto se abren para todos.</p><a href="index.html">Volver al inicio</a></section>
+
+<div class="app">
+  <div class="top">
+    <a class="ib glass" href="laboratorio.html" aria-label="Volver al Laboratorio"><svg class="i"><use href="#i-atras"/></svg></a>
+    <div class="ttl glass"><small>Física</small><b>Circuitos eléctricos</b></div>
+    <div class="sp"></div>
+    <button class="ib glass son" id="bSon" aria-label="Sonido"><svg class="i"><use href="#i-son"/></svg></button>
+  </div>
+  <div class="cuerpo">
+    <div class="plano" id="plano"></div>
+    <div class="ficha">
+      <div class="modoM" id="tipo"><button data-t="serie">Serie<small>un solo camino</small></button><button data-t="paralelo">Paralelo<small>varios caminos</small></button><button data-t="mixto">Mixto<small>R1 + (R2 ∥ R3)</small></button></div>
+      <div class="tipos" id="ver"></div>
+      <div class="caja" id="cArma"><h3>Arma el circuito</h3>
+        <div class="giro"><button class="play" id="bPow"></button><button class="vel" id="bRe">Reparar</button></div>
+        <div class="cant" id="cant">Resistencias <button data-n="2">2</button><button data-n="3">3</button></div>
+        <label class="desl" data-k="V"><b>V</b><input type="range" min="1" max="24" step="1" id="iV"><output id="iVO"></output></label>
+        <label class="desl" data-k="R1"><b>R1</b><input type="range" min="1" max="20" step="1" id="iR1"><output id="iR1O"></output></label>
+        <label class="desl" data-k="R2"><b>R2</b><input type="range" min="1" max="20" step="1" id="iR2"><output id="iR2O"></output></label>
+        <label class="desl" data-k="R3" id="rowR3"><b>R3</b><input type="range" min="1" max="20" step="1" id="iR3"><output id="iR3O"></output></label>
+        <div class="chips" id="chips"></div>
+        <p class="tip">Toca un foco para fundirlo y mira qué pasa con los demás.</p>
+      </div>
+      <div class="caja"><h3>Medidas</h3><div class="datos" id="datos"></div></div>
+      <div class="clave" id="clave"></div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/mc-config.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/arcade-beta.js"></script>
+<script src="assets/lab-rayos.js"></script>
+<script src="assets/lab-sonido.js"></script>
+<script src="assets/lab-plano.js"></script>
+<script src="assets/lab-reto.js"></script>
+<script>
+MCLabPuerta('circuito');
+var f=MCfmt, son=MCLabComun('circuito');
+var C={I:'#3AB4F0',V:'#FFC800',P:'#FF9600',R:'#EEEAF7',lima:'#C6E000',rosa:'#FF5C8A'};
+var S={tipo:'serie', n:3, V:12, R:[2,4,6], on:true, fun:[0,0,0]};
+var VER={focos:1,medidas:1,corriente:1}, OCULTA=false, FIJO={}, ELIGE=null;
+function n(){ return S.tipo==='mixto'?3:S.n; }
+
+/* ===== Física: Req, corriente y voltaje de cada resistencia ===== */
+function calc(){
+  var N=n(), R=S.R.slice(0,N).map(function(r,k){ return S.fun[k]?Infinity:r; }), V=S.on?S.V:0, o={R:R,I:[],U:[],Req:0,It:0};
+  function par(a,b){ if(a===Infinity) return b; if(b===Infinity) return a; return a*b/(a+b); }
+  if(S.tipo==='serie'){ o.Req=R.reduce(function(s,r){ return s+r; },0); o.It=o.Req===Infinity?0:V/o.Req; R.forEach(function(r,k){ o.I[k]=o.It; o.U[k]=r===Infinity?(o.It?0:V*(S.fun.slice(0,N).filter(Boolean).length===1?1:0)):o.It*r; }); }
+  else if(S.tipo==='paralelo'){ var g=R.reduce(function(s,r){ return s+(r===Infinity?0:1/r); },0); o.Req=g?1/g:Infinity; R.forEach(function(r,k){ o.U[k]=V; o.I[k]=r===Infinity?0:V/r; }); o.It=o.I.reduce(function(s,x){ return s+x; },0); }
+  else { var Rp=par(R[1],R[2]); if(R[1]===Infinity&&R[2]===Infinity) Rp=Infinity; o.Rp=Rp; o.Req=R[0]+Rp; o.It=o.Req===Infinity?0:V/o.Req;
+    var Vp=Rp===Infinity?0:o.It*Rp; o.I[0]=o.It; o.U[0]=R[0]===Infinity?0:o.It*R[0]; o.U[1]=o.U[2]=Vp; o.I[1]=R[1]===Infinity?0:Vp/R[1]; o.I[2]=R[2]===Infinity?0:Vp/R[2]; }
+  o.P=o.I.map(function(i,k){ return i*o.U[k]; }); o.Pt=o.It*V; return o;
+}
+/* Req sin fundidos ni interruptor (lo que se pregunta en el examen) */
+function reqIdeal(){ var R=S.R; if(S.tipo==='serie') return R.slice(0,S.n).reduce(function(s,r){ return s+r; },0);
+  if(S.tipo==='paralelo') return 1/R.slice(0,S.n).reduce(function(s,r){ return s+1/r; },0); return R[0]+R[1]*R[2]/(R[1]+R[2]); }
+function ohm(x){ return f(x)+' Ω'; } function amp(x){ return f(x)+' A'; } function vol(x){ return f(x)+' V'; } function wat(x){ return f(x)+' W'; }
+
+/* ===== Controles ===== */
+function pintarTipo(){ document.querySelectorAll('#tipo button').forEach(function(b){ b.classList.toggle('on',b.dataset.t===S.tipo); });
+  document.getElementById('cant').style.display=S.tipo==='mixto'||FIJO.solo?'none':'';
+  document.querySelectorAll('#cant button').forEach(function(b){ b.classList.toggle('on',+b.dataset.n===S.n); });
+  if(!FIJO.solo) document.getElementById('rowR3').style.display=n()<3?'none':''; }
+document.querySelectorAll('#tipo button').forEach(function(b){ b.onclick=function(){ if(FIJO.reto) return; son('tic'); S.tipo=b.dataset.t; S.fun=[0,0,0]; pintarTipo(); cambio(); }; });
+document.querySelectorAll('#cant button').forEach(function(b){ b.onclick=function(){ son('tic'); S.n=+b.dataset.n; S.fun=[0,0,0]; pintarTipo(); cambio(); }; });
+var bVer=[['focos','Focos',C.P],['medidas','Corriente y voltaje',C.I],['corriente','Ver la corriente',C.lima]];
+function pintarVer(){ document.getElementById('ver').innerHTML=bVer.map(function(b){ return '<button data-k="'+b[0]+'" class="'+(VER[b[0]]?'on':'')+'"><i style="background:'+b[2]+'"></i>'+b[1]+'</button>'; }).join('');
+  document.querySelectorAll('#ver button').forEach(function(b){ b.onclick=function(){ VER[b.dataset.k]=!VER[b.dataset.k]; son('tic'); pintarVer(); dibujar(); }; }); }
+var EJ=[['3 focos iguales','serie',3,12,[4,4,4]],['Serie 2 + 4 + 6','serie',3,24,[2,4,6]],['Paralelo 3 y 6','paralelo',2,12,[3,6,6]],['Paralelo 3 iguales','paralelo',3,12,[6,6,6]],['Mixto 4 + (6 ∥ 3)','mixto',3,12,[4,6,3]]];
+document.getElementById('chips').innerHTML=EJ.map(function(e,i){ return '<button data-i="'+i+'">'+e[0]+'</button>'; }).join('');
+document.querySelectorAll('#chips button').forEach(function(b){ b.onclick=function(){ var e=EJ[+b.dataset.i]; son('tic'); S.tipo=e[1]; S.n=e[2]; S.V=e[3]; S.R=e[4].slice(); S.fun=[0,0,0]; S.on=true; pintarTipo(); cambio(); }; });
+var iV=document.getElementById('iV'), iR=[1,2,3].map(function(k){ return document.getElementById('iR'+k); });
+iV.oninput=function(){ S.V=+iV.value; cambio(); };
+iR.forEach(function(el,k){ el.oninput=function(){ S.R[k]=+el.value; cambio(); }; });
+var bPow=document.getElementById('bPow'), bRe=document.getElementById('bRe');
+bPow.onclick=function(){ interruptor(); };
+bRe.onclick=function(){ son('tic'); S.fun=[0,0,0]; cambio(); };
+function interruptor(){ if(FIJO.reto&&!FIJO.pow) return; S.on=!S.on; son(S.on?'abrir':'cerrar'); cambio(); }
+function rango(i,v){ i.style.setProperty('--p',((v-i.min)/(i.max-i.min)*100)+'%'); }
+
+function cambio(){ actualizar(); }
+function actualizar(){
+  var o=calc(), N=n();
+  iV.value=S.V; rango(iV,S.V); document.getElementById('iVO').textContent=vol(S.V);
+  iR.forEach(function(el,k){ el.value=S.R[k]; rango(el,S.R[k]); document.getElementById('iR'+(k+1)+'O').textContent=ohm(S.R[k]); });
+  bPow.classList.toggle('off',!S.on); bPow.innerHTML='<svg class="i"><use href="#i-pow"/></svg><span>'+(S.on?'Apagar':'Encender')+'</span>';
+  bRe.style.display=S.fun.some(Boolean)?'':'none';
+  var nm=VER.focos?'Foco ':'R';
+  var dd=[['Resistencia equivalente',ohm(reqIdeal()),C.R],['Corriente total',amp(o.It),C.I],['Voltaje de la pila',vol(S.V),C.V],['Potencia total',wat(o.Pt),C.P]];
+  for(var k=0;k<N;k++) dd.push(['R'+(k+1)+' = '+ohm(S.R[k]),S.fun[k]?'Fundido <em>· no pasa corriente</em>':amp(o.I[k])+' <em>·</em> '+vol(o.U[k])+' <em>·</em> '+wat(o.P[k]),null,1]);
+  document.getElementById('datos').innerHTML=dd.map(function(x){ return '<div class="dato'+(x[3]?' ancho':'')+'"><small>'+(x[2]?'<i style="background:'+x[2]+'"></i>':'')+x[0]+'</small><b>'+x[1]+'</b></div>'; }).join('');
+  /* Cae en el examen */
+  var cl=[], R=S.R, rq=reqIdeal(), I=S.V/rq;
+  if(S.tipo==='serie'){ var lista=R.slice(0,N);
+    cl.push('En serie las resistencias se suman: Req = '+lista.join(' + ')+' = '+ohm(rq)+'. Por todas pasa la misma corriente: I = V / Req = '+S.V+' / '+f(rq)+' = '+amp(I)+'.');
+    cl.push('El voltaje se reparte: '+lista.map(function(r,k){ return 'V'+(k+1)+' = I·R'+(k+1)+' = '+vol(I*r); }).join(', ')+'. Suman '+vol(S.V)+'. La resistencia mayor se lleva más voltaje y su foco brilla más.');
+    cl.push('Si un foco se funde, el circuito se abre y se apagan todos (como las luces navideñas antiguas).');
+  } else if(S.tipo==='paralelo'){ var l2=R.slice(0,N);
+    cl.push('En paralelo: 1 / Req = '+l2.map(function(r){ return '1/'+r; }).join(' + ')+' → Req = '+ohm(rq)+'. Req siempre es menor que la menor resistencia.'+(N===2?' Para dos: Req = R1·R2 / (R1 + R2) = '+(l2[0]*l2[1])+' / '+(l2[0]+l2[1])+'.':''));
+    cl.push('Todas tienen el mismo voltaje ('+vol(S.V)+'). La corriente se reparte: '+l2.map(function(r,k){ return 'I'+(k+1)+' = '+S.V+' / '+r+' = '+amp(S.V/r); }).join(', ')+'; la total es la suma: '+amp(I)+'.');
+    cl.push('La resistencia menor deja pasar más corriente y su foco brilla más. Si uno se funde, los demás siguen igual: así están conectadas las casas.');
+  } else { var Rp=R[1]*R[2]/(R[1]+R[2]), Vp=I*Rp;
+    cl.push('Primero el paralelo: R2 ∥ R3 = '+R[1]+'·'+R[2]+' / ('+R[1]+' + '+R[2]+') = '+ohm(Rp)+'. Luego en serie con R1: Req = '+R[0]+' + '+f(Rp)+' = '+ohm(rq)+'.');
+    cl.push('I = V / Req = '+S.V+' / '+f(rq)+' = '+amp(I)+' (pasa toda por R1). V1 = '+vol(I*R[0])+' y el paralelo recibe '+vol(Vp)+': I2 = '+amp(Vp/R[1])+', I3 = '+amp(Vp/R[2])+'.');
+    cl.push('Si se funde R2, toda la corriente del paralelo va por R3: R3 brilla más y R1 brilla menos.');
+  }
+  cl.push('Ley de Ohm: V = I·R. Potencia: P = V·I = I²·R = V² / R. La energía que gasta un foco es E = P·t.');
+  document.getElementById('clave').innerHTML='<b><svg><use href="#i-rayo"/></svg>Cae en el examen</b>'+cl.map(function(c){ return '<p>'+c+'</p>'; }).join('');
+  O=o; dibujar();
+}
+
+/* ===== Dibujo ===== */
+var pl=document.getElementById('plano'), svg=document.createElementNS('http://www.w3.org/2000/svg','svg'); pl.appendChild(svg);
+svg.innerHTML='<g id="gFijo"></g>'; var W=0,H=0,SC=1, O=null, SEG=[], HIT=[], gPuntos=null, gFrente=null;
+function tx(x,y,t,c,an,sz,w){ return '<text x="'+x+'" y="'+y+'" fill="'+c+'" text-anchor="'+(an||'middle')+'" style="font:'+(w||800)+' '+(sz||12)+'px Sora,sans-serif;paint-order:stroke;stroke:#0B0820;stroke-width:4px">'+t+'</text>'; }
+function cable(pts,vivo){ var d=pts.map(function(p,i){ return (i?'L':'M')+p[0]+' '+p[1]; }).join('');
+  return '<path d="'+d+'" fill="none" stroke="#2E2650" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="'+d+'" fill="none" stroke="'+(vivo?'#7A6CB0':'#4A4170')+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>'; }
+/* Resistencia (zigzag) o foco, centrado en (x,y); vertical u horizontal */
+function elemento(k,x,y,vert){
+  var fun=S.fun[k], p=O.P[k]||0, b=fun?0:1-Math.exp(-p/10), s='', h=VER.focos?20:28;
+  /* hueco del cable */
+  s+=vert?'<rect x="'+(x-9)+'" y="'+(y-h)+'" width="18" height="'+(2*h)+'" fill="#0B0820"/>':'<rect x="'+(x-h)+'" y="'+(y-9)+'" width="'+(2*h)+'" height="18" fill="#0B0820"/>';
+  if(VER.focos){
+    var r=17;
+    if(b>.02) s+='<circle cx="'+x+'" cy="'+y+'" r="'+(r+8+b*30)+'" fill="url(#gBrillo)" opacity="'+(.25+.75*b).toFixed(2)+'"/>';
+    s+=vert?'<path d="M'+x+' '+(y-h)+'V'+(y-r+2)+'M'+x+' '+(y+h)+'V'+(y+r-2)+'" stroke="#7A6CB0" stroke-width="3"/>':'<path d="M'+(x-h)+' '+y+'H'+(x-r+2)+'M'+(x+h)+' '+y+'H'+(x+r-2)+'" stroke="#7A6CB0" stroke-width="3"/>';
+    var vidrio=fun?'#2A2346':'rgb('+Math.round(40+215*b)+','+Math.round(34+186*b)+','+Math.round(70+20*b)+')';
+    s+='<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+vidrio+'" stroke="'+(fun?'#6F6690':b>.05?'#FFE48A':'#8A80B0')+'" stroke-width="2.5"/>';
+    /* filamento */
+    var rot=vert?'':' transform="rotate(90 '+x+' '+y+')"';
+    if(fun) s+='<path d="M'+(x-6)+' '+(y+9)+'L'+(x-3)+' '+(y-1)+'M'+(x+6)+' '+(y+9)+'L'+(x+3)+' '+(y+2)+'" stroke="#8A80B0" stroke-width="2" fill="none"'+rot+'/><path d="M'+(x-9)+' '+(y-9)+'L'+(x+9)+' '+(y+9)+'M'+(x+9)+' '+(y-9)+'L'+(x-9)+' '+(y+9)+'" stroke="'+C.rosa+'" stroke-width="2.5" stroke-linecap="round"/>';
+    else s+='<path d="M'+(x-6)+' '+(y+10)+'L'+(x-5)+' '+(y-2)+'Q'+(x-3)+' '+(y-8)+' '+(x-1)+' '+(y-2)+'Q'+(x+1)+' '+(y-8)+' '+(x+3)+' '+(y-2)+'Q'+(x+5)+' '+(y-8)+' '+(x+5)+' '+(y-2)+'L'+(x+6)+' '+(y+10)+'" stroke="'+(b>.05?'#FFFFFF':'#A99FC8')+'" stroke-width="2" fill="none"'+rot+'/>';
+  } else {
+    var z='', m=6, L=2*h-16, col=fun?'#6F6690':'rgb('+Math.round(200+55*b)+','+Math.round(190-90*b)+','+Math.round(220-180*b)+')';
+    for(var i=0;i<=m;i++){ var t=-h+8+L*i/m, w=i===0||i===m?0:(i%2?9:-9); z+=(i?'L':'M')+(vert?(x+w)+' '+(y+t):(x+t)+' '+(y+w)); }
+    var ex=vert?'M'+x+' '+(y-h)+'V'+(y-h+8)+'M'+x+' '+(y+h-8)+'V'+(y+h):'M'+(x-h)+' '+y+'H'+(x-h+8)+'M'+(x+h-8)+' '+y+'H'+(x+h);
+    if(b>.05) s+='<path d="'+z+'" stroke="#FF9600" stroke-width="10" opacity="'+(.15+.4*b).toFixed(2)+'" fill="none" stroke-linejoin="round" style="filter:blur(4px)"/>';
+    s+='<path d="'+ex+'" stroke="#7A6CB0" stroke-width="3"/><path d="'+z+'" stroke="'+col+'" stroke-width="3.4" fill="none" stroke-linejoin="round" stroke-linecap="round"/>';
+    if(fun) s+='<path d="M'+(x-9)+' '+(y-9)+'L'+(x+9)+' '+(y+9)+'M'+(x+9)+' '+(y-9)+'L'+(x-9)+' '+(y+9)+'" stroke="'+C.rosa+'" stroke-width="3" stroke-linecap="round"/>';
+  }
+  if(ELIGE&&ELIGE.sel===k) s+='<circle cx="'+x+'" cy="'+y+'" r="27" fill="none" stroke="'+C.lima+'" stroke-width="3" stroke-dasharray="6 4"/>';
+  HIT.push({k:k,x:x,y:y});
+  return s;
+}
+/* etiquetas de cada resistencia: nombre y valor, y debajo I y V */
+function etiqueta(k,x,y,an,arriba){
+  var med=VER.medidas&&!OCULTA; if(arriba&&med) y-=S.fun[k]?16:31;
+  var ch=W<520, s=tx(x,y,'R'+(k+1)+(ch?'=':' = ')+ohm(S.R[k]),C.R,an,ch?11.5:12.5);
+  if(med){ if(S.fun[k]) s+=tx(x,y+16,'fundido',C.rosa,an,11.5,700);
+    else { s+=tx(x,y+16,amp(O.I[k]),C.I,an,11.5); s+=tx(x,y+31,vol(O.U[k]),C.V,an,11.5); } }
+  return s;
+}
+function dibujar(){
+  var bx=pl.getBoundingClientRect(); W=bx.width; H=bx.height; if(!W||!O) return; svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  /* en pantallas grandes el circuito se agranda entero */
+  SC=W>=640?Math.min(1.75,Math.max(1,Math.min(W/600,H/420))):1; W/=SC; H/=SC;
+  HIT=[]; SEG=[];
+  var chico=W<520, x0=chico?58:Math.max(96,W*.14), x1=W-(chico?74:Math.max(90,W*.14)), y0=chico?(VER.medidas?96:66):Math.max(80,H*.17), y1=H-(chico?58:Math.max(70,H*.15)), ym=(y0+y1)/2, ww=x1-x0, vivo=O.It>1e-9;
+  var s='<defs><radialGradient id="gBrillo"><stop offset="0" stop-color="#FFE48A" stop-opacity=".9"/><stop offset=".45" stop-color="#FFC800" stop-opacity=".35"/><stop offset="1" stop-color="#FF9600" stop-opacity="0"/></radialGradient></defs>';
+  /* cables, puntos de corriente debajo, luego elementos encima */
+  var cab='', ele='', eti='', N=n(), It=O.It;
+  var xs=x0+ww*.2; /* interruptor (cable de abajo) */
+  var xa=x0+ww*.13; /* amperímetro (cable de arriba) */
+  function seg(pts,I){ SEG.push({p:pts,I:I}); }
+  /* lado izquierdo con la pila: sube desde − hasta + y sale por arriba */
+  seg([[x0,ym-14],[x0,y0]],It);
+  if(S.tipo==='serie'){
+    cab+=cable([[x0,y0],[x1,y0],[x1,y1],[x0,y1],[x0,ym+14]],vivo)+cable([[x0,ym-14],[x0,y0]],vivo);
+    seg([[x0,y0],[x1,y0],[x1,y1],[x0,y1],[x0,ym+14]],It);
+    var p1=N===3?x0+ww*.56:x0+ww*.56;
+    ele+=elemento(0,p1,y0,false); eti+=etiqueta(0,p1,y0-30,'middle',1);
+    ele+=elemento(1,x1,ym,true); eti+=etiqueta(1,x1+26,ym-8,'start');
+    if(N===3){ var p3=x0+ww*.6; ele+=elemento(2,p3,y1,false); eti+=etiqueta(2,p3,y1+32,'middle'); }
+  } else if(S.tipo==='paralelo'){
+    var bs=N===2?[x0+ww*.5,x1]:[x0+ww*.4,x0+ww*.7,x1];
+    if(chico&&N===3) bs=[x0+ww*.34,x0+ww*.67,x1];
+    var last=bs[N-1];
+    cab+=cable([[x0,ym-14],[x0,y0],[last,y0]],vivo)+cable([[last,y1],[x0,y1],[x0,ym+14]],vivo);
+    var acum=It;
+    seg([[x0,y0],[bs[0],y0]],It);
+    for(var k=0;k<N;k++){ cab+=cable([[bs[k],y0],[bs[k],y1]],O.I[k]>1e-9);
+      seg([[bs[k],y0],[bs[k],y1]],O.I[k]);
+      if(k<N-1){ acum-=O.I[k]; seg([[bs[k],y0],[bs[k+1],y0]],acum); } }
+    var vuelta=0; for(k=N-1;k>=0;k--){ vuelta+=O.I[k]; seg([[bs[k],y1],[k?bs[k-1]:x0,y1]],vuelta); }
+    seg([[x0,y1],[x0,ym+14]],It);
+    for(k=0;k<N;k++){ ele+=elemento(k,bs[k],ym,true);
+      if(chico&&N===3){ var lh=VER.medidas&&!OCULTA?(S.fun[k]?2:3):1; eti+='<rect x="'+(bs[k]-34)+'" y="'+(ym+26)+'" width="68" height="'+(lh*15+8)+'" rx="8" fill="#0B0820" stroke="#2A2346"/>'+etiqueta(k,bs[k],ym+41,'middle'); }
+      else eti+=etiqueta(k,bs[k]+(chico?22:26),ym-8,'start'); }
+  } else {
+    var xb=x0+ww*.62, xr=x0+ww*.38;
+    if(chico){ xb=x0+ww*.56; xr=x0+ww*.4; }
+    cab+=cable([[x0,ym-14],[x0,y0],[x1,y0],[x1,y1],[x0,y1],[x0,ym+14]],vivo)+cable([[xb,y0],[xb,y1]],O.I[1]>1e-9);
+    seg([[x0,y0],[xb,y0]],It); seg([[xb,y0],[x1,y0]],O.I[2]); seg([[xb,y0],[xb,y1]],O.I[1]); seg([[x1,y0],[x1,y1]],O.I[2]);
+    seg([[x1,y1],[xb,y1]],O.I[2]); seg([[xb,y1],[x0,y1],[x0,ym+14]],It);
+    ele+=elemento(0,xr,y0,false); eti+=etiqueta(0,xr,y0-30,'middle',1);
+    ele+=elemento(1,xb,ym,true); eti+=etiqueta(1,xb+(chico?22:26),ym-8,'start');
+    ele+=elemento(2,x1,ym,true); eti+=etiqueta(2,x1+(chico?22:26),ym-8,'start');
+  }
+  /* pila */
+  var pila='<rect x="'+(x0-22)+'" y="'+(ym-14)+'" width="44" height="28" fill="#0B0820"/>'+
+    '<path d="M'+x0+' '+(ym-14)+'V'+(ym-8)+'M'+x0+' '+(ym+14)+'V'+(ym+8)+'" stroke="#7A6CB0" stroke-width="3"/>'+
+    '<path d="M'+(x0-20)+' '+(ym-7)+'H'+(x0+20)+'" stroke="'+C.V+'" stroke-width="4" stroke-linecap="round"/><path d="M'+(x0-10)+' '+(ym+7)+'H'+(x0+10)+'" stroke="'+C.V+'" stroke-width="7" stroke-linecap="round"/>'+
+    tx(x0+30,ym-10,'+',C.V,'start',15)+tx(x0+30,ym+20,'−',C.V,'start',15)+
+    tx(x0-26,ym-2,vol(S.V),C.V,'end',chico?13:15)+tx(x0-26,ym+14,'pila','#A99FC8','end',11,700);
+  /* amperímetro en el cable de arriba */
+  var am='', ar=chico?15:17;
+  if(VER.medidas){ var ax=Math.min(xa,x0+(chico?32:52)); ax=Math.max(ax,x0+ar+8);
+    am='<circle cx="'+ax+'" cy="'+y0+'" r="'+ar+'" fill="#0E0A22" stroke="'+C.I+'" stroke-width="2.5"/>'+tx(ax,y0+5,'A',C.I,'middle',14)+
+      tx(ax,y0-ar-8,OCULTA?'I = ?':'I = '+amp(It),C.I,'middle',12.5); }
+  /* interruptor en el cable de abajo */
+  var a1=xs-16, a2=xs+16, ang=S.on?0:-34, rad=ang*Math.PI/180;
+  var swi='<rect x="'+(a1-2)+'" y="'+(y1-8)+'" width="'+(a2-a1+4)+'" height="16" fill="#0B0820"/>'+
+    '<circle cx="'+a1+'" cy="'+y1+'" r="4.5" fill="#0B0820" stroke="#EEEAF7" stroke-width="2"/><circle cx="'+a2+'" cy="'+y1+'" r="4.5" fill="#0B0820" stroke="#EEEAF7" stroke-width="2"/>'+
+    '<line x1="'+a1+'" y1="'+y1+'" x2="'+(a1+34*Math.cos(rad))+'" y2="'+(y1+34*Math.sin(rad))+'" stroke="'+(S.on?C.lima:C.rosa)+'" stroke-width="4" stroke-linecap="round"/>'+
+    tx(xs,y1+28,S.on?'cerrado':'abierto',S.on?C.lima:C.rosa,'middle',11.5,700);
+  HIT.push({k:'sw',x:xs,y:y1});
+  s+=cab+'<g id="gPuntos"></g>'+pila+am+swi+ele+eti;
+  if(!vivo&&S.on&&!OCULTA) s+=tx(W/2,24,'No circula corriente: el circuito está abierto',C.rosa,'middle',12,700);
+  svg.innerHTML='<g transform="scale('+SC+')">'+s+'</g>'; gPuntos=svg.querySelector('#gPuntos'); puntos();
+}
+/* puntos de corriente: cada tramo con su propia rapidez (más corriente, más rápido) */
+var FASE=[], tAnt=0;
+function rapidez(I){ return I>1e-9?Math.min(260,26+38*Math.sqrt(I)):0; }
+function puntos(){
+  if(!gPuntos) return; if(!VER.corriente){ gPuntos.innerHTML=''; return; }
+  var s='', esp=26;
+  SEG.forEach(function(g,i){ if(g.I<1e-9) return; var ph=FASE[i]||0, L=0, p=g.p;
+    for(var j=1;j<p.length;j++){ var dx=p[j][0]-p[j-1][0], dy=p[j][1]-p[j-1][1], l=Math.hypot(dx,dy);
+      for(var d=((ph-L)%esp+esp)%esp; d<l; d+=esp){ s+='<circle cx="'+(p[j-1][0]+dx*d/l).toFixed(1)+'" cy="'+(p[j-1][1]+dy*d/l).toFixed(1)+'" r="3.2"/>'; }
+      L+=l; } });
+  gPuntos.innerHTML='<g fill="'+C.lima+'" style="filter:drop-shadow(0 0 3px #C6E000)">'+s+'</g>';
+}
+function cuadro(t){ var dt=Math.min(.05,(t-tAnt)/1000); tAnt=t; SEG.forEach(function(g,i){ FASE[i]=((FASE[i]||0)+rapidez(g.I)*dt)%2600; }); puntos(); requestAnimationFrame(cuadro); }
+requestAnimationFrame(function(t){ tAnt=t; cuadro(t); });
+
+/* tocar un foco lo funde (o lo repara); tocar el interruptor lo abre o cierra */
+pl.addEventListener('pointerdown',function(e){ var b=pl.getBoundingClientRect(), x=(e.clientX-b.left)/SC, y=(e.clientY-b.top)/SC, mejor=null, dm=34;
+  HIT.forEach(function(h){ var d=Math.hypot(h.x-x,h.y-y); if(d<dm){ dm=d; mejor=h; } }); if(!mejor) return;
+  if(mejor.k==='sw') return interruptor();
+  if(ELIGE){ if(ELIGE.listo) return; ELIGE.sel=mejor.k; son('tic'); RT.listo(true); dibujar(); return; }
+  if(FIJO.reto) return;
+  S.fun[mejor.k]=S.fun[mejor.k]?0:1; son(S.fun[mejor.k]?'caer':'abrir'); cambio(); });
+if(window.ResizeObserver) new ResizeObserver(function(){ dibujar(); }).observe(pl); else addEventListener('resize',dibujar);
+pintarTipo(); pintarVer(); cambio();
+
+/* ============ MODO RETO (assets/lab-reto.js) ============ */
+var QID=0, AZ=MCAzar, cA=document.getElementById('cArma'), cAsitio=cA.nextElementSibling, GUARDA=null;
+function devolver(){ if(cA.parentNode!==cAsitio.parentNode) cAsitio.parentNode.insertBefore(cA,cAsitio); cA.querySelectorAll('.desl').forEach(function(r){ r.style.display=''; }); document.getElementById('chips').style.display=''; FIJO={}; ELIGE=null; pintarTipo(); }
+function solo(k){ FIJO.solo=k; cA.querySelectorAll('.desl').forEach(function(r){ r.style.display=r.dataset.k===k?'':'none'; }); document.getElementById('chips').style.display='none'; document.getElementById('cant').style.display='none'; }
+function poner(tipo,N,V,R){ S.tipo=tipo; S.n=N; S.V=V; S.R=R.concat([6,6,6]).slice(0,3); S.fun=[0,0,0]; S.on=true; pintarTipo(); cambio(); }
+function opciones(ops,u){ var out=[]; ops.forEach(function(x){ var t=f(x)+u; if(out.indexOf(t)<0) out.push(t); }); var k=1; while(out.length<4){ var t2=f(ops[0]+k)+u; if(out.indexOf(t2)<0) out.push(t2); k+=2; } return out.slice(0,4); }
+/* circuitos con números redondos */
+function armado(){ var t=AZ(['serie','paralelo','mixto']);
+  if(t==='serie'){ var R=AZ([[2,4],[3,5],[2,3,5],[1,2,3],[4,4,4],[2,4,6]]), q=R.reduce(function(s,r){ return s+r; },0); return {t:t,N:R.length,R:R,Req:q,V:q*AZ([1,2])}; }
+  if(t==='paralelo'){ var P=AZ([[[3,6],2],[[6,6],3],[[4,12],3],[[6,12],4],[[6,6,6],2],[[4,6,12],2],[[3,6,2],1]]); return {t:t,N:P[0].length,R:P[0],Req:P[1],V:P[1]*AZ([2,3,6])}; }
+  var M=AZ([[[4,6,3],6],[[2,3,6],4],[[1,6,6],4],[[3,4,12],6],[[5,6,3],7]]); return {t:t,N:3,R:M[0],Req:M[1],V:M[1]*AZ([1,2])}; }
+function nombreC(c){ return c.t==='serie'?'en serie':c.t==='paralelo'?'en paralelo':'mixto: R1 en serie con R2 ∥ R3'; }
+var RT=MCReto({sim:'circuito',nombre:'Reto · Circuitos',
+  alEntrar:function(){ GUARDA={S:JSON.parse(JSON.stringify(S)),VER:JSON.parse(JSON.stringify(VER))}; },
+  alSalir:function(){ QID++; devolver(); OCULTA=false; if(GUARDA){ S=GUARDA.S; VER=GUARDA.VER; } pintarTipo(); pintarVer(); cambio(); },
+  nueva:function(i,caja,R){
+    QID++; devolver(); OCULTA=false; FIJO={reto:1};
+    var c=armado();
+    if(i===0){ OCULTA=true; VER.focos=0; VER.medidas=1; pintarVer(); poner(c.t,c.N,c.V,c.R);
+      var q=c.Req, mal=c.t==='serie'?[q,q*2,q/2,q+2]:c.t==='paralelo'?[q,c.R.reduce(function(s,r){ return s+r; },0),c.R[0],q*2]:[q,c.R[0]+c.R[1]+c.R[2],c.R[1]*c.R[2]/(c.R[1]+c.R[2]),c.R[0]+c.R[1]];
+      var o=R.opciones(caja,'Las resistencias están <em>'+nombreC(c)+'</em>. ¿Cuál es la <em>resistencia equivalente</em>?',opciones(mal,' Ω'),0,c.t==='serie'?'En serie se suman: '+c.R.join(' + ')+' = '+q+' Ω.':c.t==='paralelo'?'En paralelo: 1 / Req = '+c.R.map(function(r){ return '1/'+r; }).join(' + ')+' → Req = '+q+' Ω.':'R2 ∥ R3 = '+c.R[1]+'·'+c.R[2]+' / '+(c.R[1]+c.R[2])+' = '+f(c.R[1]*c.R[2]/(c.R[1]+c.R[2]))+' Ω; más R1: '+q+' Ω.'), cp=o.comprobar;
+      o.comprobar=function(){ var r=cp(); OCULTA=false; dibujar(); actualizar(); return r; }; return o; }
+    if(i===1){ OCULTA=true; VER.medidas=1; pintarVer(); poner(c.t,c.N,c.V,c.R); var I=c.V/c.Req;
+      var o2=R.opciones(caja,'La pila es de <em>'+c.V+' V</em> y las resistencias están <em>'+nombreC(c)+'</em>. ¿Qué marca el <em>amperímetro</em>?',opciones([I,c.V/c.R.reduce(function(s,r){ return s+r; },0)*(c.t==='serie'?2:1),I*2,c.V*c.Req],' A'),0,'Req = '+c.Req+' Ω → I = V / Req = '+c.V+' / '+c.Req+' = '+f(I)+' A.'), cp2=o2.comprobar;
+      o2.comprobar=function(){ var r=cp2(); OCULTA=false; actualizar(); return r; }; return o2; }
+    if(i===2){ /* tocar el foco que más brilla */
+      var t=AZ(['serie','paralelo']), Rs=AZ([[2,4,6],[3,6,9],[2,5,8],[4,8,12]]).slice().sort(function(){ return Math.random()-.5; });
+      VER.focos=1; VER.medidas=0; pintarVer(); OCULTA=true; S.on=false; poner(t,3,12,Rs); S.on=false; cambio();
+      ELIGE={sel:null}; var mx=Rs.indexOf(t==='serie'?Math.max.apply(null,Rs):Math.min.apply(null,Rs));
+      R.texto(caja,'Toca','Tres focos <em>'+(t==='serie'?'en serie':'en paralelo')+'</em> de '+Rs.join(', ')+' Ω. Si cierras el interruptor, ¿cuál <em>brillará más</em>? Tócalo.');
+      return { listo:false, comprobar:function(){ var ok=ELIGE.sel===mx; ELIGE.listo=1; S.on=true; OCULTA=false; VER.medidas=1; son('abrir'); cambio();
+        return {ok:ok,msg:(t==='serie'?'En serie la corriente es la misma; brilla más el de mayor R (P = I²·R): '+Rs[mx]+' Ω.':'En paralelo el voltaje es el mismo; brilla más el de menor R (P = V² / R): '+Rs[mx]+' Ω.')}; } };
+    }
+    if(i===3){ /* ajustar el voltaje para una corriente */
+      var It=AZ([1,2,3]), Vok=It*c.Req; if(Vok>24){ It=1; Vok=c.Req; }
+      VER.medidas=1; VER.focos=1; pintarVer(); OCULTA=true; poner(c.t,c.N,1,c.R); S.on=false; cambio();
+      R.texto(caja,'Ajusta','Elige el voltaje de la pila para que por el circuito pase una corriente total de <em>'+It+' A</em>.');
+      caja.appendChild(cA); solo('V'); pintarTipo();
+      return { comprobar:function(){ var ok=S.V===Vok; S.on=true; OCULTA=false; son('abrir'); cambio(); return {ok:ok,msg:(ok?'':'Con '+S.V+' V pasan '+f(S.V/c.Req)+' A. ')+'Req = '+c.Req+' Ω → V = I·Req = '+It+'·'+c.Req+' = '+Vok+' V.'}; },
+        mostrar:function(){ var q=QID; setTimeout(function(){ if(q!==QID||!RT.activo) return; S.V=Vok; cambio(); },1500); } };
+    }
+    /* se funde un foco */
+    var t4=AZ(['serie','paralelo','mixto']), k4=t4==='mixto'?1:AZ([0,1,2]);
+    VER.focos=1; VER.medidas=0; pintarVer(); poner(t4,3,12,t4==='mixto'?[4,6,3]:[4,4,4]);
+    var ops=['Se apagan todos','Los demás siguen igual','Los demás brillan más','Los demás brillan menos'], buena=t4==='serie'?0:t4==='paralelo'?1:-1;
+    if(t4==='mixto'){ ops=['Foco 3 brilla más','Foco 3 se apaga','Foco 3 sigue igual','Foco 3 brilla menos']; buena=0; }
+    var o5=R.opciones(caja,t4==='mixto'?'Circuito mixto: <em>R1 + (R2 ∥ R3)</em>. Si se funde el <em>foco 2</em>, ¿qué pasa con el foco 3?':'Tres focos iguales <em>'+(t4==='serie'?'en serie':'en paralelo')+'</em>. Si se funde el <em>foco '+(k4+1)+'</em>, ¿qué pasa con los demás?',ops,buena,
+      t4==='serie'?'En serie hay un solo camino: si uno se abre, deja de circular corriente.':t4==='paralelo'?'En paralelo cada foco tiene su propio camino y el mismo voltaje de la pila.':'Toda la corriente del paralelo pasa ahora por R3 y su voltaje sube; R1 recibe menos corriente.'), cp5=o5.comprobar;
+    o5.comprobar=function(){ var r=cp5(); S.fun[k4]=1; VER.medidas=1; son('caer'); cambio(); return r; }; return o5;
+  }});
+</script>
+</body>
+</html>
