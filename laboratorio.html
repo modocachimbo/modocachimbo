@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" href="assets/app/icono-180.png">
 <title>Laboratorio · Modo Cachimbo</title>
 <script src="assets/app.js" defer></script>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Nunito:wght@400;500;600;700;800;900&family=Sora:wght@700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Nunito:wght@600;700;800;900&family=Sora:wght@700;800&display=swap">
 <style>
 :root{--bg:#06040F;--card:#151127;--card2:#1D1834;--borde:#2A2346;--lima:#C6E000;--lima-osc:#8fa300;--tx:#EEEAF7;--dim:#A99FC8;--faint:#6F6690;--oro:#FFC800;--vidrio:rgba(21,17,39,.72)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -86,31 +86,6 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 @keyframes mkOnda{from{transform:scale(1);opacity:.8}to{transform:scale(2.2);opacity:0}}
 @media (prefers-reduced-motion:reduce){.d-ilus,.d-vis .mk-onda{animation:none}}
 
-/* propuestas de diseño del detalle (?dis=a | b) */
-.dis-a .d-inf h2,.dis-b .d-inf h2{font:700 40px/1 "Barlow Condensed";letter-spacing:.03em;text-transform:uppercase}
-.dis-a .d-inf .lat,.dis-b .d-inf .lat{font:500 14px/1.3 "Nunito"}
-.dis-a .ficha small,.dis-b .ficha small{font:600 11.5px/1 "Barlow Condensed";letter-spacing:.14em}
-.dis-a .ficha b,.dis-b .ficha b{font:600 15px/1.2 "Nunito"}
-.dis-a .tabs button,.dis-b .tabs button{font:600 14px/1 "Barlow Condensed";letter-spacing:.12em;text-transform:uppercase}
-.dis-a .txt,.dis-b .txt{font:400 15.5px/1.6 "Nunito"}
-.dis-a .partes b,.dis-b .partes b{font:700 14.5px/1.2 "Nunito"}
-.dis-a .partes span,.dis-b .partes span{font:400 13.5px/1.45 "Nunito"}
-.dis-a .partes .n{font:700 15px/1 "Barlow Condensed";width:24px;height:24px}
-.dis-a .proc .st b,.dis-b .proc .st b{font-weight:700}.dis-a .proc .st span,.dis-b .proc .st span{font-weight:400}
-.dis-a .proc .eq,.dis-b .proc .eq{font-weight:600}
-.dis-a .clave p,.dis-b .clave p{font-weight:500}
-.dis-a .btn,.dis-b .btn{font:700 17px/1 "Barlow Condensed";letter-spacing:.1em;text-transform:uppercase}
-.d-inf .kick{display:none;font:600 12px/1 "Barlow Condensed";letter-spacing:.18em;text-transform:uppercase;color:var(--lima);margin-bottom:8px}
-.dis-b .d-inf .kick{display:block}
-.dis-b .ficha{flex-shrink:0;gap:0;border:1px solid var(--borde);border-radius:14px;overflow:hidden}
-.dis-b .ficha div{border:0;border-radius:0;background:transparent}.dis-b .ficha div+div{border-left:1px solid var(--borde)}
-.dis-b .tabs{background:transparent;border:0;border-bottom:1px solid var(--borde);border-radius:0;padding:0}
-.dis-b .tabs button{border-radius:0;padding:12px 6px}.dis-b .tabs .on{background:transparent;box-shadow:inset 0 -2px 0 var(--lima);color:var(--lima)}
-.dis-b .partes{gap:0}.dis-b .partes li{background:transparent;border:0;border-bottom:1px solid var(--borde);border-radius:0;padding:12px 4px}
-.dis-b .partes li.on{background:transparent;border-color:var(--borde)}
-.dis-b .partes .n{background:transparent;border:1.5px solid var(--lima);color:var(--lima);font:700 14px/1 "Barlow Condensed";width:24px;height:24px}
-.dis-b .mk circle:nth-of-type(2){fill:#0C0920;stroke:#C6E000}.dis-b .mk text{fill:#C6E000!important}
-@media (max-width:760px){.dis-a .d-inf h2,.dis-b .d-inf h2{font-size:32px}}
 .d-vis{position:relative;background:radial-gradient(80% 80% at 50% 50%,#1C1240 0%,#0A0720 70%);overflow:hidden}
 .d-vis svg{position:absolute;inset:0;width:100%;height:100%}
 .d-vis .grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:32px 32px}
@@ -188,6 +163,45 @@ a.ib{text-decoration:none}
   .ficha b{font-size:13.5px}
   .d-acc .sec{display:none}
   .d-pie{display:none}
+}
+
+/* ===== detalle: adaptación a cada pantalla ===== */
+.d-acc{position:sticky;bottom:0;margin-top:auto;padding:10px 0 2px;background:linear-gradient(transparent,#0C0920 30%)}
+.d-inf>*{flex-shrink:0}
+@media (min-width:1600px) and (min-height:950px){
+  .d-box{width:min(1480px,100% - 80px);height:min(900px,100% - 80px)}
+  .d-inf{padding:32px 34px}
+}
+/* celular, y tablet en vertical: dibujo arriba, ficha abajo */
+@media (max-width:760px),(orientation:portrait) and (max-width:1024px){
+  .d-box{width:100%;height:100%;border-radius:0;grid-template-columns:1fr;grid-template-rows:auto 1fr;border:0}
+  .d-vis{height:clamp(190px,58vw,46vh)}
+  .d-inf{border-left:0;border-top:1px solid var(--borde);padding:18px 16px max(14px,env(safe-area-inset-bottom));border-radius:22px 22px 0 0;margin-top:-22px;background:#0C0920;position:relative;z-index:2;gap:12px}
+  .d-inf h2{font-size:clamp(24px,6.6vw,34px)}
+  .ficha{gap:6px}.ficha div{padding:8px 10px;border-radius:12px}
+  .ficha small{font-size:9.5px;margin-bottom:4px}.ficha b{font-size:13.5px}
+  .tabs button{padding:9px 4px}
+  .partes li{padding:9px 11px}
+  .d-acc .sec{display:none}
+}
+@media (orientation:portrait) and (min-width:600px) and (max-width:1024px){
+  .d-vis{height:44vh}
+  .d-inf{padding:24px 28px;max-width:none}
+  .d-acc .sec{display:flex}
+}
+/* celular en horizontal (poca altura): todo más compacto */
+@media (max-height:520px) and (orientation:landscape){
+  .d-box{width:100%;height:100%;border-radius:0;border:0;grid-template-columns:1.1fr 1fr}
+  .d-inf{padding:12px 16px 8px;gap:8px}
+  .d-inf h2{font-size:22px}.d-inf .lat{margin-top:2px;font-size:12.5px}
+  .d-inf .x{width:36px;height:36px}
+  .ficha div{padding:6px 9px}.ficha small{font-size:9px;margin-bottom:3px}.ficha b{font-size:12.5px}
+  .tabs button{padding:7px 4px;font-size:12px}
+  .partes{gap:4px}.partes li{padding:7px 10px;gap:8px;grid-template-columns:24px 1fr}.partes .n{width:24px;height:24px;font-size:13px}
+  .partes b{font-size:13.5px}.partes span{font-size:12px}
+  .txt{font-size:13.5px}
+  .btn{height:42px;font-size:14px}
+  .d-cab .pill{font-size:10px;padding:4px 8px}
 }
 </style>
 </head>
@@ -420,12 +434,11 @@ var DIL={ mitocondria:{w:1600,h:925,p:[[1,1473,410],[2,435,772],[3,1271,410],[4,
  peroxisoma:{w:1200,h:1202,p:[[1,561,574],[2,885,686],[3,70,619]]},
  vesicula:{w:1600,h:913,p:[[1,458,442],[2,851,458],[3,1141,360],[4,1489,376]]},
  membrana:{w:1600,h:864,p:[[1,568,410],[2,689,470],[3,1309,427],[4,809,74],[5,603,659],[6,1042,461]]} };
-var DIS=new URLSearchParams(location.search).get('dis'); if(DIS) document.documentElement.classList.add('dis-'+DIS);
 var TAB=new URLSearchParams(location.search).get('tab')||'partes';
 function abrir(id){
   var o=O[id], D=DET[id]||{b:[0,0,1,1],p:[]}, b=D.b, cw=b[2]-b[0], ch=b[3]-b[1], m=Math.max(cw,ch)*.12, IL=DIL[id];
   if(IL){ D={p:IL.p}; b=[0,0,IL.w,IL.h]; cw=IL.w; ch=IL.h; m=Math.max(cw,ch)*.06; }
-  var vb=(b[0]-m)+' '+(b[1]-m)+' '+(cw+2*m)+' '+(ch+2*m), u=Math.max(cw,ch)/420*(DIS?.72:1);
+  var vb=(b[0]-m)+' '+(b[1]-m)+' '+(cw+2*m)+' '+(ch+2*m), u=Math.max(cw,ch)/420;
   var vis=IL?'<g class="d-ilus"><image href="assets/laboratorio/detalle-'+id+'.webp" width="'+IL.w+'" height="'+IL.h+'"/>'+
     D.p.map(function(p){ return '<g class="mk" transform="translate('+p[1]+' '+p[2]+')"><circle class="mk-onda" r="'+13*u+'" fill="none" stroke="#C6E000" stroke-width="'+2*u+'"/><circle r="'+13*u+'" fill="#C6E000" stroke="#151A03" stroke-width="'+2.5*u+'"/><text y="'+5*u+'" text-anchor="middle" style="font:800 '+15*u+'px Barlow Condensed;fill:#151A03">'+p[0]+'</text></g>'; }).join('')+'</g>'
   :'<defs><clipPath id="cDet"><rect x="'+(b[0]-m)+'" y="'+(b[1]-m)+'" width="'+(cw+2*m)+'" height="'+(ch+2*m)+'"/></clipPath></defs>'+
@@ -446,7 +459,7 @@ function abrir(id){
   var det=document.getElementById('det');
   det.innerHTML='<div class="d-box"><div class="d-vis"><div class="grid-bg"></div><svg viewBox="'+vb+'" preserveAspectRatio="xMidYMid meet">'+vis+'</svg>'+
     '<div class="d-cab"><span class="pill">'+(IL?'Ilustración 3D':'Vista ampliada')+'</span>'+(id==='mitocondria'&&!IL?'<span class="pill" style="color:#FFC800;border-color:rgba(255,200,0,.4);background:rgba(255,200,0,.1)">Animación: ATP</span>':'')+'</div></div>'+
-    '<div class="d-inf"><header><div><span class="kick">'+(EXTRA.indexOf(id)>=0?'Estructura':'Organela')+' · '+(o.m==='Sin membrana'?o.m:'Membrana '+o.m.toLowerCase())+'</span><h2>'+o.n+'</h2><span class="lat">'+o.lat+'</span></div><button class="x" id="dX"><svg><use href="#i-x"/></svg></button></header>'+
+    '<div class="d-inf"><header><div><h2>'+o.n+'</h2><span class="lat">'+o.lat+'</span></div><button class="x" id="dX"><svg><use href="#i-x"/></svg></button></header>'+
     '<div class="ficha"><div><small>'+o.f[0]+'</small><b>'+o.f[1]+'</b></div><div><small>Membrana</small><b>'+o.m+'</b></div><div><small>Está en</small><b>'+(id==='centrosoma'?'Solo animal':id==='ribosoma'?'Todas las células':'Animal y vegetal')+'</b></div></div>'+
     '<div class="tabs">'+Object.keys(tabs).map(function(k){ return '<button data-t="'+k+'" class="'+(k===TAB?'on':'')+'">'+tabs[k]+'</button>'; }).join('')+'</div>'+cuerpo+
     '<div class="d-acc"><button class="btn sec" id="dVer">Ver en la célula</button><button class="btn" id="dSig">'+O[sig].n.split(' ')[0]+'<svg style="color:#151A03"><use href="#i-sig"/></svg></button></div></div></div>';
@@ -460,7 +473,7 @@ aplicar();
 
 /* modos para revisar: ?v=foco&o=mitocondria | ?v=detalle&o=mitocondria&tab=funcion | &nom=0|1 */
 var P=new URLSearchParams(location.search);
-if(P.get('nom')==='0'||(innerWidth<760&&P.get('nom')!=='1')){ document.getElementById('swNom').classList.add('off'); svg.classList.add('sin-nombres'); }
+if(P.get('nom')==='0'||((innerWidth<760||innerHeight<520)&&P.get('nom')!=='1')){ document.getElementById('swNom').classList.add('off'); svg.classList.add('sin-nombres'); }
 if(P.get('v')==='foco'){ document.getElementById('pista').style.display='none'; irA(P.get('o')||'mitocondria'); }
 if(P.get('v')==='detalle'){ ir(P.get('o')||'mitocondria'); }
 </script>
