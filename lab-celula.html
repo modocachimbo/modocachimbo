@@ -392,7 +392,7 @@ if(TIPO==='vegetal'){
     clave:['Amiloplastos: almidón. Proteinoplastos (aleuroplastos): proteínas. Oleoplastos (elaioplastos): aceites.','Si les da la luz, pueden convertirse en cloroplastos.']};
   O.cromoplasto={n:'Cromoplastos',c:'#F5A623',lat:'Plastidios con carotenoides',f:['Color','Amarillo · rojo'],m:'Doble',en:'Solo vegetal',
     fn:'Plastidios con pigmentos carotenoides que dan color amarillo, naranja o rojo a flores, frutos y raíces (zanahoria, tomate, ají). Atraen a polinizadores y a los animales que dispersan semillas.',
-    partes:[['Doble membrana','Envoltura de dos membranas.'],['Carotenoides','Carotenos (naranja) y xantofilas (amarillo).'],['Plastoglóbulos','Gotas que guardan los pigmentos.']],
+    partes:[['Doble membrana','Envoltura de dos membranas.'],['Cristales de β-caroteno','Agujas y cintas naranjas: el color de la zanahoria.'],['Cristales de licopeno','Rojos: el color del tomate.'],['Plastoglóbulos','Gotitas amarillas con pigmento disuelto (xantofilas).'],['Estroma','Matriz interna; ya casi no tiene tilacoides.']],
     clave:['Licopeno: rojo del tomate. β-caroteno: naranja de la zanahoria (precursor de la vitamina A).','Al madurar el fruto, los cloroplastos se transforman en cromoplastos.']};
   O.vacuola={n:'Vacuola central',c:'#5FD0E8',lat:'Tonoplasto · hasta 90 %',f:['Volumen','Hasta 90 %'],m:'Simple',en:'Vegetal (en animal, pequeñas)',
     fn:'Bolsa enorme llena de jugo vacuolar. Guarda agua, sales, azúcares, pigmentos y desechos, y empuja el citoplasma contra la pared: esa presión (turgencia) mantiene firme a la planta.',
@@ -426,7 +426,7 @@ if(TIPO==='vegetal'){
   O.golgi.clave=['En plantas forma la lámina media y la pared: sus vesículas arman la placa celular en la citocinesis.','También empaqueta las sustancias que van a la vacuola.'];
   O.mitocondria.clave=['La planta también respira: la mitocondria usa la glucosa que fabricó el cloroplasto.','Tiene ADN circular y ribosomas 70S, como las bacterias.'];
   ORDEN=['pared','membrana','vacuola','nucleo','cloroplasto','mitocondria','rer','rel','golgi','amiloplasto','peroxisoma','plasmodesmos'];
-  EXTRA=['leucoplasto','ribosoma','citoesqueleto']; /* cromoplasto: cuando llegue su dibujo */
+  EXTRA=['leucoplasto','cromoplasto','ribosoma','citoesqueleto'];
   ETQ={pared:[600,1500,330,1720],membrana:[2075,520,2250,300],vacuola:[1500,500,1760,60],nucleo:[820,430,820,60],cloroplasto:[1060,1170,1000,1740],mitocondria:[370,683,180,540],rer:[640,700,420,250],rel:[482,772,110,820],golgi:[460,980,120,1120],amiloplasto:[1035,998,1560,1160],peroxisoma:[1452,960,1980,1060],plasmodesmos:[2070,795,2260,1000]};
   /* celular en vertical (la célula se gira): nombres en dos columnas, a la izquierda y a la derecha */
   ETQR={mitocondria:[-40,130],rel:[300,130],rer:[640,130],nucleo:[980,130],vacuola:[1400,130],membrana:[1820,130],
@@ -442,6 +442,7 @@ if(TIPO==='vegetal'){
     leucoplasto:{w:1600,h:977,p:[[1,80,693],[2,747,460],[3,560,120],[4,1040,600],[5,707,753]]},
     membrana:{w:1600,h:815,img:'membrana-vegetal',p:[[1,320,453],[2,440,587],[3,1307,387],[4,453,320],[5,613,627],[6,1047,427],[7,793,453],[8,800,120]]},
     citoesqueleto:{w:1600,h:838,img:'citoesqueleto-vegetal',p:[[1,1360,400],[3,1333,583],[4,693,653],[5,1067,573],[6,800,120],[7,533,440],[8,347,667]]},
+    cromoplasto:{w:1600,h:995,p:[[1,1520,560],[2,747,640],[3,1160,373],[4,540,273],[5,253,440]]},
     peroxisoma:{w:1600,h:868,img:'glioxisoma',p:[[1,187,747],[2,440,440],[3,560,287],[4,660,660],[5,1240,440]]} };
 }
 
