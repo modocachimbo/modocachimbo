@@ -6,7 +6,7 @@
 --
 --   · Gratis: Célula y Tabla periódica.
 --   · Todos los demás se abren con Energía (o con el código
---     laboratorio-VIP). Quien ya abrió uno lo sigue teniendo.
+--     laboratorio-VIP). Quien ya pagó Energía por uno lo sigue teniendo.
 --   · Para cambiar cuáles son gratis, edita la lista de abajo.
 -- =========================================================
 
