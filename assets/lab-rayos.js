@@ -35,6 +35,8 @@
     guardado: leer,
     estado: function () { return llamar('lab_estado', { niveles: niveles() }).then(avisar); },
     abrir: function (sim) { return llamar('lab_abrir', { p_sim: sim }).then(avisar); },
+    // Acierto en el Modo Reto: +2 de energía (máximo 10 al día, lo controla supabase/98)
+    reto: function (sim) { return llamar('lab_reto', { p_sim: sim }).then(avisar); },
     alCambiar: function (f) { oyentes.push(f); },
     puede: function (sim, st) {
       st = st || leer(); if (!st) return false;

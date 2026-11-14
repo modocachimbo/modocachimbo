@@ -56,6 +56,59 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
 .chips button{height:34px;min-width:48px;padding:0 9px;border-radius:10px;background:#0E0A22;border:1px solid var(--borde);font:800 13px "Sora";color:var(--dim)}
 .chips button.on{border-color:var(--lima);color:var(--lima);background:rgba(198,224,0,.08)}
 .caja h3+.desl{margin-top:0}
+/* Girar solo (lab-trigo) */
+.giro{display:flex;gap:8px;margin:0 0 6px}
+.giro .play{flex:1;height:46px;border-radius:14px;background:var(--lima);color:#151A03;font:800 15px "Sora";display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 0 var(--lima-osc)}
+.giro .play.on{background:var(--card2);color:var(--lima);border:1.5px solid var(--lima);box-shadow:0 4px 0 #1a1530}
+.giro .play svg{width:20px;height:20px}
+.giro .vel{height:46px;min-width:96px;padding:0 14px;border-radius:14px;background:#0E0A22;border:1px solid var(--borde);font:800 14px "Nunito";color:var(--dim)}
+/* Modo Reto (assets/lab-reto.js) */
+.modo{display:flex;padding:4px;gap:2px;border-radius:14px}
+.modo button{height:36px;padding:0 16px;border-radius:10px;font:800 14px "Nunito";color:var(--dim);display:flex;align-items:center;justify-content:center;gap:7px}
+.modo button.on{background:var(--lima);color:#151A03}
+.modo svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.reto{display:none;flex-direction:column;gap:12px}
+html.reto-on .ficha>:not(.reto){display:none}
+html.reto-on .reto{display:flex}
+html.reto-on #chips{display:none}
+html.reto-on .ficha{padding-bottom:150px}
+.prog{display:flex;align-items:center;gap:10px}
+.prog .seg{flex:1;display:flex;gap:5px}.prog .seg i{flex:1;height:8px;border-radius:6px;background:#2A2346;transition:background .3s}
+.prog .seg i.ok{background:var(--lima)}.prog .seg i.no{background:var(--rosa)}.prog .seg i.ya{background:var(--oro)}
+.prog b{font:800 13px "Nunito";color:var(--dim);white-space:nowrap}
+#rCaja{display:flex;flex-direction:column;gap:12px}
+.preg{background:linear-gradient(135deg,rgba(155,107,255,.18),rgba(21,17,39,.6));border:1px solid rgba(155,107,255,.35);border-radius:18px;padding:16px}
+.preg small{display:block;font:900 11px "Nunito";letter-spacing:.14em;text-transform:uppercase;color:#B99CFF;margin-bottom:6px}
+.preg p{margin:0;font:800 18px/1.4 "Sora"}
+.preg em{font-style:normal;color:var(--oro)}
+.btnr{min-height:56px;border-radius:16px;background:var(--lima);color:#151A03;font:800 17px "Sora";box-shadow:0 5px 0 var(--lima-osc);letter-spacing:.02em}
+.btnr:active{transform:translateY(3px);box-shadow:0 2px 0 var(--lima-osc)}
+.btnr[disabled]{background:#2A2346;color:var(--faint);box-shadow:0 5px 0 #1a1530;cursor:default;transform:none}
+.ops{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ops button{min-height:62px;padding:8px;border-radius:16px;background:var(--card);border:2px solid var(--borde);box-shadow:0 4px 0 #1a1530;font:800 19px "Sora"}
+.ops button.sel{border-color:var(--lima);color:var(--lima);background:rgba(198,224,0,.08)}
+.ops button.bien{border-color:#58CC02;color:#8EEA3C;background:rgba(88,204,2,.12)}
+.ops button.mala{border-color:var(--rosa);color:var(--rosa);background:rgba(255,92,138,.1)}
+.fb{position:fixed;left:0;right:0;bottom:0;padding:16px max(22px,calc(50vw - 560px)) max(16px,env(safe-area-inset-bottom));background:#14301A;border-top:2px solid #58CC02;display:flex;align-items:center;gap:14px;z-index:30;transform:translateY(110%);transition:transform .25s ease-out}
+.fb.on{transform:none}
+.fb.mal{background:#36121F;border-top-color:var(--rosa)}
+.fb .ic{width:50px;height:50px;border-radius:50%;background:#58CC02;display:grid;place-items:center;flex:none}
+.fb.mal .ic{background:var(--rosa)}
+.fb .ic svg{width:28px;height:28px;fill:none;stroke:#fff;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+.fb .tx{min-width:0;flex:1}
+.fb b{display:block;font:800 21px "Sora";color:#8EEA3C}.fb.mal b{color:#FF8FB0}
+.fb small{display:block;color:#D6F2C4;font:700 14.5px/1.4 "Nunito"}.fb.mal small{color:#FFD3DF}
+.fb .gana{display:flex;align-items:center;gap:6px;font:800 20px "Sora";color:#5EC8FF;white-space:nowrap}
+.fb .gana small{color:#9ADFFF;font-size:13px}
+.fb .gana svg{width:24px;height:24px;fill:#2FA8FF;stroke:none;filter:drop-shadow(0 0 6px #2FA8FF)}
+.fb button{height:50px;padding:0 26px;border-radius:14px;background:#58CC02;color:#fff;font:800 16px "Sora";box-shadow:0 4px 0 #3E9A00;flex:none}
+.fb.mal button{background:var(--rosa);box-shadow:0 4px 0 #B8325A}
+.fin{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:26px 16px;background:var(--card);border:1px solid var(--borde);border-radius:22px}
+.fin .copa{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,rgba(255,200,0,.3),transparent 70%)}
+.fin .copa svg{width:54px;height:54px;fill:none;stroke:#FFC800;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 8px rgba(255,200,0,.6))}
+.fin b{font:800 26px "Sora"}.fin p{margin:0;color:var(--dim);font:800 16px "Nunito"}.fin em{font-style:normal;color:var(--lima)}
+.fin .en{display:flex;align-items:center;gap:6px;color:#5EC8FF}.fin .en svg{width:20px;height:20px;fill:#2FA8FF}
+.fin .btnr{width:100%;margin-top:14px}.fin .reset{align-self:center;margin-top:6px}
 /* plano */
 .cuad{stroke:rgba(255,255,255,.05);stroke-width:1}
 .cuad.m5{stroke:rgba(255,255,255,.1)}
@@ -79,4 +132,7 @@ html.arcade-no .beta-aviso{display:block}
   .plano{height:min(92vw,52vh);min-height:260px}
   .ficha{overflow:visible}
   .ttl b{font-size:16px}
+  .top{flex-wrap:wrap}.top .ttl{flex:1 1 0}.top .sp{display:none}
+  .modo{order:9;width:100%}.modo button{flex:1}
+  .fb{flex-wrap:wrap;gap:10px 14px}.fb button{width:100%}
 }

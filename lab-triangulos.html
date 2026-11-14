@@ -54,6 +54,7 @@
 <script src="assets/lab-rayos.js"></script>
 <script src="assets/lab-sonido.js"></script>
 <script src="assets/lab-plano.js"></script>
+<script src="assets/lab-reto.js"></script>
 <script>
 MCLabPuerta('geo');
 var f=MCfmt, son=MCLabComun('geo');
@@ -143,6 +144,32 @@ pl.addEventListener('pointerdown',function(e){ var t=T[tipo], b=pl.getBoundingCl
 if(window.ResizeObserver) new ResizeObserver(function(){ encuadre(); }).observe(pl);
 var qt=new URLSearchParams(location.search).get('t'); if(T[qt]) tipo=qt;
 pintarTipos(); actualizar(1);
+/* ============ MODO RETO (assets/lab-reto.js) ============ */
+var AZ=MCAzar;
+function medida(l,k){ var n=l[0]*k; return l[1]>1?(n===1?'':n)+'√'+l[1]:String(n); }
+function nombreLado(t,cual,s){ if(cual==='c') return 'la hipotenusa'; var op=(s==='A')===(cual==='v'); return 'el cateto '+(op?'opuesto':'adyacente')+' a '+t[s]; }
+var RT=MCReto({sim:'geo',nombre:'Reto · Triángulos',
+  alSalir:function(){ actualizar(1); },
+  nueva:function(i,caja,R){
+    tipo=AZ(['t3753','t3753','t3060','t45','t1674','t3060']); sel=AZ(['A','B']); if(tipo==='t45') sel='A'; pintarTipos(); actualizar(1);
+    var t=T[tipo];
+    if(i%2===0||i===3){ /* calcular un lado */
+      var lados=['h','v','c'], dado=AZ(lados), pide=AZ(lados.filter(function(x){ return x!==dado; })), k=AZ(tipo==='t1674'?[1,2,3]:[2,3,4,5,6]);
+      var tercero=lados.filter(function(x){ return x!==dado&&x!==pide; })[0];
+      var ops=[medida(t[pide],k),medida(t[tercero],k),medida(t[pide],k+1),medida(t[pide],Math.max(1,k-1)),medida(t[dado],k)];
+      ops=ops.filter(function(x,j){ return ops.indexOf(x)===j; }).slice(0,4);
+      var Nd=nombreLado(t,dado,sel), Np=nombreLado(t,pide,sel);
+      return R.opciones(caja,'En el triángulo de '+t.n+', '+Nd+' mide <em>'+medida(t[dado],k)+'</em>. ¿Cuánto mide '+Np+'?',ops,0,
+        lado(t[dado])+' = '+medida(t[dado],k)+', entonces k = '+k+' y '+Np.replace(/^(el|la) /,'')+' = '+lado(t[pide])+' = '+medida(t[pide],k)+'.');
+    }
+    /* una razón */
+    var op=sel==='A'?t.v:t.h, ad=sel==='A'?t.h:t.v, hp=t.c, an=t[sel], fi=AZ([0,1,2]);
+    var vals=[razon(op,hp),razon(ad,hp),razon(op,ad),razon(ad,op),razon(hp,ad),razon(hp,op)], bueno=vals[fi];
+    var ops=[bueno].concat(vals.filter(function(x){ return x!==bueno; }));
+    ops=ops.filter(function(x,j){ return ops.indexOf(x)===j; }).slice(0,4);
+    var def=['cateto opuesto / hipotenusa','cateto adyacente / hipotenusa','cateto opuesto / cateto adyacente'][fi];
+    return R.opciones(caja,'¿Cuánto vale <em>'+['sen','cos','tg'][fi]+' '+an+'</em>?',ops,0,['sen','cos','tg'][fi]+' = '+def+' = '+bueno+'.');
+  }});
 </script>
 </body>
 </html>

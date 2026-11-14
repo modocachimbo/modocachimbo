@@ -43,7 +43,7 @@
     </div>
     <div class="ficha">
       <div class="tipos" id="tipos"></div>
-      <div class="caja"><h3>Mueve los valores</h3><div id="desl"></div></div>
+      <div class="caja" id="cDesl"><h3>Mueve los valores</h3><div id="desl"></div></div>
       <div class="caja"><h3>Lo que pasa en la gráfica</h3><div class="datos" id="datos"></div></div>
       <div class="clave" id="clave"></div>
       <button class="reset" id="reset">Volver a los valores iniciales</button>
@@ -55,7 +55,9 @@
 <script src="assets/auth.js"></script>
 <script src="assets/arcade-beta.js"></script>
 <script src="assets/lab-sonido.js"></script>
+<script src="assets/lab-rayos.js"></script>
 <script src="assets/lab-plano.js"></script>
+<script src="assets/lab-reto.js"></script>
 <script>
 var f=MCfmt, son=MCLabComun('funcion');
 var C={raiz:'#FF5C8A',vert:'#FFC800',cy:'#3AB4F0'};
@@ -136,18 +138,20 @@ function pintarDesl(){
 }
 function actualizar(){
   var t=T[tipo];
-  document.getElementById('formula').textContent=t.form(V).replace(/= $/,'= 0');
+  document.getElementById('formula').textContent=OCULTA?'¿Cómo es su gráfica?':(META?'Tu curva: ':'')+t.form(V).replace(/= $/,'= 0');
   document.getElementById('datos').innerHTML=t.datos(V).map(function(d){ return '<div class="dato'+(d[3]?' ancho':'')+'"><small>'+(d[2]?'<i style="background:'+d[2]+'"></i>':'')+d[0]+'</small><b>'+d[1]+'</b></div>'; }).join('');
   document.getElementById('clave').innerHTML='<b><svg><use href="#i-rayo"/></svg>Cae en el examen</b>'+t.clave.map(function(c){ return '<p>'+c+'</p>'; }).join('');
   P.redibujar();
 }
 var P=MCPlano(document.getElementById('plano'),{r:8,alDibujar:function(P){
-  if(!T[tipo]) return '';
-  var t=T[tipo], s=t.guias?t.guias(V,P):'', d='', pen=false, lim=P.h*4;
-  for(var px=0;px<=P.w;px+=1.5){ var x=P.ix(px), y=t.f(x,V), py=P.Y(y);
+  if(!T[tipo]||OCULTA) return '';
+  var t=T[tipo], s=t.guias?t.guias(V,P):'', lim=P.h*4;
+  function trazo(VV){ var d='', pen=false; for(var px=0;px<=P.w;px+=1.5){ var x=P.ix(px), y=t.f(x,VV), py=P.Y(y);
     if(!isFinite(py)||py<-lim||py>lim){ pen=false; continue; }
-    d+=(pen?'L':'M')+px.toFixed(1)+' '+py.toFixed(1); pen=true; }
-  s+='<path class="curva" d="'+d+'"/>';
+    d+=(pen?'L':'M')+px.toFixed(1)+' '+py.toFixed(1); pen=true; } return d; }
+  /* Modo Reto: la curva meta punteada */
+  if(META){ var dm=trazo(META.v); s+='<path d="'+dm+'" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-dasharray="9 8" opacity=".8"/>'; }
+  s+='<path class="curva" d="'+trazo(V)+'"/>';
   /* puntos y sus coordenadas: cada etiqueta busca un lado libre para no taparse con otra */
   var cajas=[], hechos=[];
   (t.pts(V)||[]).forEach(function(p){ if(!isFinite(p[0])||!isFinite(p[1])) return;
@@ -167,6 +171,41 @@ document.getElementById('zCen').onclick=function(){ P.centrar(); son('tic'); };
 document.getElementById('reset').onclick=function(){ iniciales(); pintarDesl(); P.centrar(); actualizar(); son('cerrar'); };
 var q=new URLSearchParams(location.search).get('t'); if(T[q]) tipo=q;
 iniciales(); pintarTipos(); pintarDesl(); actualizar();
+/* ============ MODO RETO (assets/lab-reto.js) ============ */
+var META=null, OCULTA=false, AZ=MCAzar, cD=document.getElementById('cDesl'), cDsitio=cD.nextElementSibling;
+function devolver(){ if(cD.parentNode!==cDsitio.parentNode) cDsitio.parentNode.insertBefore(cD,cDsitio); }
+function ponerTipo(k,vals){ tipo=k; iniciales(); if(vals) Object.keys(vals).forEach(function(n){ V[n]=vals[n]; }); pintarTipos(); pintarDesl(); P.centrar(); actualizar(); }
+function valorAzar(p){ var op=[]; for(var x=p[1];x<=p[2]+1e-9;x+=p[3]){ var r=Math.round(x*100)/100; if(Math.abs(r)<=4&&r!==0&&(p[3]>=.5||Math.round(r*2)===r*2)) op.push(r); } return AZ(op); }
+var RT=MCReto({sim:'funcion',nombre:'Reto · Funciones',
+  alEntrar:function(){},
+  alSalir:function(){ META=null; OCULTA=false; devolver(); ponerTipo(tipo); },
+  nueva:function(i,caja,R){
+    META=null; OCULTA=false; devolver();
+    if(i%2===0){ /* tapar la curva punteada */
+      var k=AZ(['lineal','cuadratica','absoluto','raiz','exponencial','cuadratica']), mv={}, ini={};
+      T[k].p.forEach(function(p){ ini[p[0]]=p[4]; });
+      do { T[k].p.forEach(function(p){ mv[p[0]]=valorAzar(p); }); } while(T[k].p.every(function(p){ return mv[p[0]]===ini[p[0]]; }));
+      META={tipo:k,v:mv}; ponerTipo(k);
+      R.texto(caja,T[k].n,'Mueve '+T[k].p.map(function(p){ return '<em>'+p[0]+'</em>'; }).join(', ').replace(/, ([^,]*)$/,' y $1')+' hasta que tu curva tape la línea punteada.');
+      caja.appendChild(cD);
+      return { comprobar:function(){ var ok=T[k].p.every(function(p){ return Math.abs(V[p[0]]-mv[p[0]])<1e-9; });
+          return { ok:ok, msg:(ok?'':'La meta era ')+T[k].form(mv) }; },
+        mostrar:function(){ ponerTipo(k,mv); caja.appendChild(cD); } };
+    }
+    /* preguntas de opciones: la gráfica aparece al responder */
+    var q=AZ(['vertice','raices','dominio','asintota']), r, vals, kk;
+    if(q==='vertice'){ var a=AZ([1,-1,2]), h=AZ([-3,-2,-1,1,2,3]), kv=AZ([-4,-3,-1,1,2,4]); kk='cuadratica'; vals={a:a,b:-2*a*h,c:a*h*h+kv};
+      r=R.opciones(caja,'¿Cuál es el vértice de <em>'+T.cuadratica.form(vals)+'</em>?',['('+f(h)+'; '+f(kv)+')','('+f(-h)+'; '+f(kv)+')','('+f(kv)+'; '+f(h)+')','('+f(h)+'; '+f(-kv)+')'],0,'h = −b/2a = '+f(h)+' y k = f('+f(h)+') = '+f(kv)+'.'); }
+    else if(q==='raices'){ var r1=AZ([-4,-3,-2,-1]), r2=AZ([1,2,3,5]); kk='cuadratica'; vals={a:1,b:-(r1+r2),c:r1*r2};
+      r=R.opciones(caja,'¿Dónde corta al eje x <em>'+T.cuadratica.form(vals)+'</em>?',['x = '+f(r1)+' y '+f(r2),'x = '+f(-r1)+' y '+f(-r2),'x = '+f(r1)+' y '+f(-r2),'No corta al eje x'],0,'Se factoriza: (x '+(r1<0?'+ '+f(-r1):'− '+f(r1))+')(x '+(r2<0?'+ '+f(-r2):'− '+f(r2))+') = 0.'); }
+    else if(q==='dominio'){ var hh=AZ([-3,-2,2,3,4]), k2=AZ([-2,1,3]); kk='raiz'; vals={a:1,h:hh,k:k2};
+      r=R.opciones(caja,'¿Cuál es el dominio de <em>'+T.raiz.form(vals)+'</em>?',['['+f(hh)+'; +∞⟩','⟨−∞; '+f(hh)+']','['+f(-hh)+'; +∞⟩','['+f(k2)+'; +∞⟩'],0,'Lo de adentro de la raíz no puede ser negativo: x '+(hh<0?'+ '+f(-hh):'− '+f(hh))+' ≥ 0.'); }
+    else { var ka=AZ([-3,-2,-1,1,2,3]), bb=AZ([2,3,.5]); kk='exponencial'; vals={a:1,b:bb,k:ka};
+      r=R.opciones(caja,'¿Cuál es la asíntota de <em>'+T.exponencial.form(vals)+'</em>?',['y = '+f(ka),'y = 0','x = '+f(ka),'y = '+f(-ka)],0,'bˣ nunca llega a 0, así que la curva se acerca a y = '+f(ka)+' sin tocarla.'); }
+    OCULTA=true; ponerTipo(kk,vals);
+    var c0=r.comprobar; r.comprobar=function(){ OCULTA=false; actualizar(); return c0(); }; return r;
+  }});
+
 </script>
 </body>
 </html>
