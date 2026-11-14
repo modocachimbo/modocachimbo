@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<script src="assets/guardia.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06040F">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="assets/app/icono-180.png">
+<title>MRU y MRUV · Laboratorio · Modo Cachimbo</title>
+<script src="assets/app.js" defer></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Nunito:wght@600;700;800;900&family=Sora:wght@700;800&display=swap">
+<link rel="stylesheet" href="assets/lab-mate.css">
+<style>
+/* Física: naranja en el título y en la pregunta del reto */
+.ttl small{color:#FF9600}
+.preg{background:linear-gradient(135deg,rgba(255,150,0,.16),rgba(21,17,39,.6));border-color:rgba(255,150,0,.35)}
+.preg small{color:#FFB54D}
+.desl{grid-template-columns:40px 1fr 84px}
+.desl output{font-size:15px;white-space:nowrap}
+.plano>svg{touch-action:none}
+.modoM{display:flex;gap:6px}
+.modoM button{flex:1;height:44px;border-radius:13px;background:#0E0A22;border:1px solid var(--borde);font:800 15px "Sora";color:var(--dim)}
+.modoM button.on{background:rgba(255,150,0,.14);border-color:#FF9600;color:#FFB54D}
+.modoM button small{display:block;font:800 10.5px/1 "Nunito";color:var(--faint);margin-top:2px}
+html.reto-on .giro,html.reto-on #rowT{display:none}
+@media (max-width:860px),(orientation:portrait) and (max-width:1024px){ .plano{height:var(--alto,470px);min-height:0} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="i-atras" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="i-son" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="on-l" d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/><path class="off-l" d="M16 9.5l5 5M21 9.5l-5 5"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></symbol>
+<symbol id="i-pausa" viewBox="0 0 24 24"><path d="M8 5.5v13M16 5.5v13" stroke-width="3.4"/></symbol>
+<symbol id="i-otra" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5"/></symbol>
+<symbol id="i-rayo" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
+</defs></svg>
+<section class="beta-aviso"><b>Laboratorio en prueba</b><p>Los simuladores están en beta. Muy pronto se abren para todos.</p><a href="index.html">Volver al inicio</a></section>
+
+<div class="app">
+  <div class="top">
+    <a class="ib glass" href="laboratorio.html" aria-label="Volver al Laboratorio"><svg class="i"><use href="#i-atras"/></svg></a>
+    <div class="ttl glass"><small>Física</small><b>MRU y MRUV</b></div>
+    <div class="sp"></div>
+    <button class="ib glass son" id="bSon" aria-label="Sonido"><svg class="i"><use href="#i-son"/></svg></button>
+  </div>
+  <div class="cuerpo">
+    <div class="plano" id="plano"></div>
+    <div class="ficha">
+      <div class="modoM" id="tipo"><button data-t="mru">MRU<small>velocidad constante</small></button><button data-t="mruv">MRUV<small>aceleración constante</small></button></div>
+      <div class="tipos" id="ver"></div>
+      <div class="caja" id="cMov"><h3>Mueve el auto</h3>
+        <div class="giro"><button class="play" id="bPlay"></button><button class="vel" id="bVel">Normal</button></div>
+        <label class="desl" data-k="x"><b>x₀</b><input type="range" min="-20" max="20" step="1" id="ix"><output id="ixO"></output></label>
+        <label class="desl" data-k="v"><b>v₀</b><input type="range" min="-10" max="20" step="1" id="iv"><output id="ivO"></output></label>
+        <label class="desl" data-k="a"><b>a</b><input type="range" min="-5" max="5" step="0.5" id="ia"><output id="iaO"></output></label>
+        <label class="desl" data-k="t" id="rowT"><b>t</b><input type="range" min="0" max="10" step="0.01" id="it"><output id="itO"></output></label>
+        <div class="chips" id="chips"></div>
+      </div>
+      <div class="caja"><h3 id="tInst">En el instante t</h3><div class="datos" id="datos"></div></div>
+      <div class="clave" id="clave"></div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/mc-config.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/arcade-beta.js"></script>
+<script src="assets/lab-rayos.js"></script>
+<script src="assets/lab-sonido.js"></script>
+<script src="assets/lab-plano.js"></script>
+<script src="assets/lab-reto.js"></script>
+<script>
+MCLabPuerta('mru');
+var f=MCfmt, son=MCLabComun('mru'), TM=10;
+var C={x:'#FF9600',v:'#3AB4F0',a:'#FF5C8A',area:'#C6E000',oro:'#FFC800'};
+var ex=new URLSearchParams(location.search);
+var S={tipo:ex.get('t')==='mru'?'mru':'mruv', x0:+(ex.get('x')||0), v0:+(ex.get('v')||2), a:+(ex.get('a')||1), t:0};
+var VER={xt:1,vt:1,at:0,area:1,marcas:1}, OCULTA=false, META=null, FIJO={};
+if(innerWidth>860) VER.at=1;
+function A(){ return S.tipo==='mru'?0:S.a; }
+function X(t){ return S.x0+S.v0*t+A()*t*t/2; }
+function V(t){ return S.v0+A()*t; }
+function tPara(){ var a=A(); if(!a) return null; var tp=-S.v0/a; return tp>1e-9&&tp<TM?tp:null; }
+/* distancia recorrida (si da la vuelta, se suman los dos tramos) */
+function recorrida(t){ var tp=tPara(); if(tp!==null&&t>tp) return Math.abs(X(tp)-S.x0)+Math.abs(X(t)-X(tp)); return Math.abs(X(t)-S.x0); }
+function m(n,u){ return f(n)+' '+u; }
+
+/* MRU / MRUV */
+function pintarTipo(){ document.querySelectorAll('#tipo button').forEach(function(b){ b.classList.toggle('on',b.dataset.t===S.tipo); });
+  document.querySelector('.desl[data-k=a]').style.display=S.tipo==='mru'||FIJO.solo&&FIJO.solo!=='a'?'none':''; }
+document.querySelectorAll('#tipo button').forEach(function(b){ b.onclick=function(){ if(FIJO.reto) return; son('tic'); S.tipo=b.dataset.t; pintarTipo(); pintarVer(); cambio(); }; });
+var bVer=[['xt','Gráfica x–t',C.x],['vt','Gráfica v–t',C.v],['at','Gráfica a–t',C.a],['area','Área = desplazamiento',C.area],['marcas','Cada segundo',C.oro]];
+function pintarVer(){
+  document.getElementById('ver').innerHTML=bVer.filter(function(b){ return !(S.tipo==='mru'&&b[0]==='at'); }).map(function(b){ return '<button data-k="'+b[0]+'" class="'+(VER[b[0]]?'on':'')+'"><i style="background:'+b[2]+'"></i>'+b[1]+'</button>'; }).join('');
+  document.querySelectorAll('#ver button').forEach(function(b){ b.onclick=function(){ VER[b.dataset.k]=!VER[b.dataset.k]; son('tic'); pintarVer(); alto(); dibujar(); }; });
+}
+/* Ejemplos de examen */
+var EJ=[['Arranca del reposo','mruv',0,0,2],['Frena hasta parar','mruv',0,10,-2],['Va y regresa','mruv',-10,8,-2],['Velocidad constante','mru',-15,4,0],['Hacia atrás','mru',15,-3,0]];
+document.getElementById('chips').innerHTML=EJ.map(function(e,i){ return '<button data-i="'+i+'">'+e[0]+'</button>'; }).join('');
+document.querySelectorAll('#chips button').forEach(function(b){ b.onclick=function(){ var e=EJ[+b.dataset.i]; son('tic'); S.tipo=e[1]; S.x0=e[2]; S.v0=e[3]; if(e[1]==='mruv') S.a=e[4]; pintarTipo(); pintarVer(); cambio(); lanzar(); }; });
+var iX=document.getElementById('ix'), iV=document.getElementById('iv'), iA=document.getElementById('ia'), iT=document.getElementById('it');
+iX.oninput=function(){ S.x0=+iX.value; cambio(); };
+iV.oninput=function(){ S.v0=+iV.value; cambio(); };
+iA.oninput=function(){ S.a=+iA.value; cambio(); };
+iT.oninput=function(){ parar(); S.t=+iT.value; actualizar(); };
+function rango(i,v){ i.style.setProperty('--p',((v-i.min)/(i.max-i.min)*100)+'%'); }
+
+/* Arrancar: el tiempo corre de verdad (Lento x0,5 · Normal x1 · Rápido x2) */
+var VEL=[['Lento',.5],['Normal',1],['Rápido',2]], vi=1, anim=null, tAnt=0, tFin=TM, alFin=null, bPlay=document.getElementById('bPlay'), bVel=document.getElementById('bVel');
+function pintarPlay(){ var fin=S.t>=TM-1e-9; bPlay.classList.toggle('on',!!anim); bPlay.innerHTML='<svg class="i"><use href="#i-'+(anim?'pausa':fin?'otra':'play')+'"/></svg><span>'+(anim?'Pausar':fin?'Otra vez':S.t>0?'Seguir':'Arrancar')+'</span>'; }
+var ultSeg=0;
+function cuadro(t){ if(!anim) return; var dt=Math.min(.1,(t-tAnt)/1000); tAnt=t; S.t+=dt*VEL[vi][1];
+  if(Math.floor(S.t)>ultSeg&&S.t<tFin){ ultSeg=Math.floor(S.t); son('tic'); }
+  if(S.t>=tFin){ S.t=tFin; anim=null; actualizar(); if(alFin){ var fc=alFin; alFin=null; fc(); } return; }
+  actualizar(); anim=requestAnimationFrame(cuadro); }
+function lanzar(hasta,fc){ if(S.t>=TM-1e-9||hasta!==undefined) S.t=0; tFin=hasta||TM; alFin=fc||null; ultSeg=Math.floor(S.t); if(S.t===0) son('lanzar'); tAnt=performance.now(); anim=requestAnimationFrame(cuadro); pintarPlay(); }
+function parar(){ if(!anim) return; cancelAnimationFrame(anim); anim=null; pintarPlay(); }
+bPlay.onclick=function(){ if(anim){ son('tic'); return parar(); } lanzar(); };
+bVel.onclick=function(){ son('tic'); vi=(vi+1)%VEL.length; bVel.textContent=VEL[vi][0]; };
+
+function cambio(){ parar(); S.t=0; escalas(); actualizar(); }
+
+function actualizar(){
+  var a=A(), t=S.t;
+  iX.value=S.x0; iV.value=S.v0; iA.value=S.a; iT.value=t; rango(iX,S.x0); rango(iV,S.v0); rango(iA,S.a); rango(iT,t);
+  document.getElementById('ixO').textContent=S.x0+' m'; document.getElementById('ivO').textContent=S.v0+' m/s'; document.getElementById('iaO').textContent=f(S.a)+' m/s²'; document.getElementById('itO').textContent=f(t)+' s';
+  document.getElementById('tInst').textContent='En el instante t = '+f(t)+' s';
+  var v=V(t), d=X(t)-S.x0, est=Math.abs(v)<.05?'(detenido)':(v>0?'(a la derecha)':'(a la izquierda)'), tipoMov=!a?'Uniforme':(v*a>0?'Acelerado':v*a<0?'Desacelerado (frena)':'Arranca');
+  var dd=[['Posición x',m(X(t),'m'),C.x],['Velocidad v',m(v,'m/s')+' '+est,C.v],['Aceleración a',m(a,'m/s²'),C.a],['Movimiento',tipoMov,null],
+    ['Desplazamiento Δx',m(d,'m'),C.area],['Distancia recorrida',m(recorrida(t),'m'),null],['Velocidad media Δx / t',t>0?m(d/t,'m/s'):'—',null,1]];
+  document.getElementById('datos').innerHTML=dd.map(function(x){ return '<div class="dato'+(x[3]?' ancho':'')+'"><small>'+(x[2]?'<i style="background:'+x[2]+'"></i>':'')+x[0]+'</small><b>'+x[1]+'</b></div>'; }).join('');
+  /* Cae en el examen */
+  var cl=[], tx=f(t), sg=function(n){ return n<0?'− '+f(-n):'+ '+f(n); };
+  if(!a){
+    cl.push('MRU: x = x₀ + v·t = '+S.x0+' '+sg(S.v0)+'·'+tx+' = '+m(X(t),'m')+'. La velocidad no cambia: a = 0.');
+    cl.push('En la gráfica x–t es una recta y su pendiente es la velocidad ('+S.v0+' m/s). En la v–t es una recta horizontal.');
+    cl.push('El área bajo la gráfica v–t es el desplazamiento: '+S.v0+'·'+tx+' = '+m(d,'m')+'.');
+  } else {
+    cl.push('v = v₀ + a·t = '+S.v0+' '+sg(a)+'·'+tx+' = '+m(v,'m/s')+'.');
+    cl.push('x = x₀ + v₀·t + a·t² / 2 = '+S.x0+' '+sg(S.v0)+'·'+tx+' '+sg(a/2)+'·'+tx+'² = '+m(X(t),'m')+'.');
+    cl.push('También: Δx = (v₀ + v) / 2 · t = ('+S.v0+' '+sg(v)+') / 2 · '+tx+' = '+m(d,'m')+' (es el área del trapecio en la v–t). Y sin tiempo: v² = v₀² + 2a·Δx.');
+    var tp=tPara(); if(tp!==null) cl.push('Se detiene en t = −v₀ / a = '+m(tp,'s')+' (la v–t cruza el eje) y en x = '+m(X(tp),'m')+'. Luego regresa: por eso la distancia recorrida es mayor que el desplazamiento.');
+    if(S.v0===0&&a>0) cl.push('Desde el reposo, en cada segundo recorre distancias en proporción 1 : 3 : 5 : 7… (números de Galileo). Aquí: '+[1,2,3,4].map(function(n){ return f(X(n)-X(n-1)); }).join(', ')+' m.');
+    cl.push('La pendiente de la v–t es la aceleración ('+f(a)+' m/s²) y la x–t es una parábola.');
+  }
+  document.getElementById('clave').innerHTML='<b><svg><use href="#i-rayo"/></svg>Cae en el examen</b>'+cl.map(function(c){ return '<p>'+c+'</p>'; }).join('');
+  pintarPlay(); dibujar();
+}
+
+/* ===== Dibujo: pista arriba y gráficas abajo ===== */
+var pl=document.getElementById('plano'), svg=document.createElementNS('http://www.w3.org/2000/svg','svg'); pl.appendChild(svg);
+var E={};
+function redondo(v){ var s=[1,2,5,10,20,25,50,100,200,500], i; for(i=0;i<s.length;i++) if(s[i]>=v) return s[i]; return 1000; }
+function rangoDe(fn,cero){ var lo=cero?0:Infinity, hi=cero?0:-Infinity; for(var t=0;t<=TM+1e-9;t+=.1){ var y=fn(t); lo=Math.min(lo,y); hi=Math.max(hi,y); } return [lo,hi]; }
+function escalas(){
+  var rx=rangoDe(X), lo=Math.min(rx[0],0), hi=Math.max(rx[1],0); if(META) { lo=Math.min(lo,META.x); hi=Math.max(hi,META.x); }
+  if(OCULTA){ var r=Math.max(Math.abs(S.v0)*TM,20); lo=Math.min(lo,-5); hi=Math.max(hi,META?META.x+10:r); }
+  var paso=redondo((hi-lo)/8||1); E.xlo=Math.floor((lo-paso*.3)/paso)*paso; E.xhi=Math.ceil((hi+paso*.3)/paso)*paso; E.xp=paso;
+  var rv=rangoDe(V,true), pv=redondo(Math.max(Math.abs(rv[0]),Math.abs(rv[1]),2)/3);
+  E.vlo=Math.floor(rv[0]/pv-.2)*pv; E.vhi=Math.ceil(rv[1]/pv+.2)*pv; if(E.vlo===E.vhi) E.vhi+=pv; E.vp=pv;
+  var am=Math.max(1,Math.abs(A())); E.alo=-Math.ceil(am+.5); E.ahi=Math.ceil(am+.5); E.ap=redondo(E.ahi/2);
+}
+function alto(){ var n=(VER.xt?1:0)+(VER.vt?1:0)+(VER.at&&S.tipo!=='mru'?1:0); pl.style.setProperty('--alto',(150+Math.max(1,n)*150)+'px'); }
+var W=0,H=0, PAN=[];
+function tx(x,y,t,c,an,sz,w){ return '<text x="'+x+'" y="'+y+'" fill="'+c+'" text-anchor="'+(an||'middle')+'" style="font:'+(w||800)+' '+(sz||12)+'px Sora,sans-serif;paint-order:stroke;stroke:#0B0820;stroke-width:4px">'+t+'</text>'; }
+function num(x,y,t,an){ return '<text x="'+x+'" y="'+y+'" text-anchor="'+(an||'middle')+'" style="font:700 11px \'Barlow Condensed\',sans-serif;fill:#6F6690">'+t+'</text>'; }
+function flecha(x1,y1,x2,y2,col,an){ var L=Math.hypot(x2-x1,y2-y1); if(L<4) return ''; var ux=(x2-x1)/L, uy=(y2-y1)/L, h=Math.min(10,L*.5);
+  return '<line x1="'+x1+'" y1="'+y1+'" x2="'+(x2-ux*h*.6)+'" y2="'+(y2-uy*h*.6)+'" stroke="'+col+'" stroke-width="'+(an||3.2)+'" stroke-linecap="round"/><path d="M'+x2+' '+y2+'L'+(x2-ux*h-uy*h*.55)+' '+(y2-uy*h+ux*h*.55)+'L'+(x2-ux*h+uy*h*.55)+' '+(y2-uy*h-ux*h*.55)+'Z" fill="'+col+'"/>'; }
+function auto(cx,cy,dir,col){ var s=dir<0?-1:1;
+  return '<g transform="translate('+cx+' '+cy+') scale('+(1.45*s)+' 1.45)"><path d="M-26 -6 L-24 -15 Q-22 -18 -18 -18 L-8 -18 L0 -28 Q2 -30 6 -30 L14 -30 Q18 -30 20 -27 L25 -18 Q30 -17 30 -12 L30 -6 Z" fill="'+col+'" stroke="#0B0820" stroke-width="2"/>'+
+    '<path d="M2 -26 L-4 -19 L9 -19 L9 -26 Z M12 -26 L12 -19 L22 -19 L18 -26 Z" fill="#0E0A22" opacity=".85"/><circle cx="-14" cy="-5" r="6.5" fill="#1D1834" stroke="#EEEAF7" stroke-width="2"/><circle cx="18" cy="-5" r="6.5" fill="#1D1834" stroke="#EEEAF7" stroke-width="2"/><circle cx="-14" cy="-5" r="2" fill="#EEEAF7"/><circle cx="18" cy="-5" r="2" fill="#EEEAF7"/><rect x="26" y="-15" width="4" height="4" rx="1" fill="#FFF3B0"/></g>'; }
+function dibujar(){
+  var b=pl.getBoundingClientRect(); W=b.width; H=b.height; if(!W) return; svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  var s='', t=S.t, a=A(), pistaH=Math.min(150,Math.max(118,H*.3)), mg=16;
+  /* pista */
+  var px0=mg+14, px1=W-mg-14, PX=function(x){ return px0+(x-E.xlo)/(E.xhi-E.xlo)*(px1-px0); }, ry=pistaH-40;
+  s+='<rect x="'+mg+'" y="'+(ry-6)+'" width="'+(W-2*mg)+'" height="30" rx="8" fill="#1A1430" stroke="#2A2346"/><line x1="'+(mg+8)+'" y1="'+(ry+9)+'" x2="'+(W-mg-8)+'" y2="'+(ry+9)+'" stroke="rgba(255,200,0,.35)" stroke-width="2" stroke-dasharray="14 12"/>';
+  for(var xm=E.xlo;xm<=E.xhi+1e-9;xm+=E.xp){ var xx=PX(xm); s+='<line x1="'+xx+'" y1="'+(ry+24)+'" x2="'+xx+'" y2="'+(ry+30)+'" stroke="#6F6690" stroke-width="1.4"/>'+num(xx,ry+42,f(xm)); }
+  s+='<text x="'+(W-mg-4)+'" y="'+(ry-12)+'" text-anchor="end" style="font:700 12px \'Barlow Condensed\';fill:#A99FC8">x (m)</text>';
+  if(E.xlo<0&&E.xhi>0) s+='<line x1="'+PX(0)+'" y1="'+(ry-10)+'" x2="'+PX(0)+'" y2="'+(ry+28)+'" stroke="#A99FC8" stroke-width="1.5" stroke-dasharray="3 3"/>';
+  if(META){ var mx=PX(META.x); s+='<line x1="'+mx+'" y1="'+(ry-50)+'" x2="'+mx+'" y2="'+(ry+24)+'" stroke="#EEEAF7" stroke-width="2"/><path d="M'+mx+' '+(ry-50)+'h20l-5 6 5 6h-20z" fill="#FF5C8A"/>'+tx(mx+25,ry-40,'Meta '+f(META.x)+' m','#FF5C8A','start',12); }
+  /* marcas de cada segundo (foto estroboscópica) */
+  if(VER.marcas&&!OCULTA) for(var k=0;k<=TM;k++){ var ya=k<=t+1e-9, mk=PX(X(k)); s+='<circle cx="'+mk+'" cy="'+(ry+9)+'" r="4" fill="'+(ya?C.oro:'#0B0820')+'" stroke="'+C.oro+'" stroke-opacity="'+(ya?1:.35)+'" stroke-width="1.6"/>'; }
+  var cx=PX(X(t)), v=V(t), dir=Math.abs(v)>.01?v:(S.v0||a||1);
+  s+=auto(cx,ry+4,dir,'#FF9600');
+  /* vectores sobre el auto */
+  var esc=Math.min(5,90/Math.max(5,Math.abs(S.v0),Math.abs(V(TM)))), fy=ry-62;
+  if(Math.abs(v)>.05) s+=flecha(cx,fy,cx+v*esc*1.2,fy,C.v,3.4)+tx(cx+v*esc*1.2+(v>0?8:-8),fy+4,'v = '+m(v,'m/s'),C.v,v>0?'start':'end',12);
+  else s+='<circle cx="'+cx+'" cy="'+fy+'" r="4" fill="'+C.v+'"/>'+tx(cx+8,fy+4,'v = 0','#3AB4F0','start',12);
+  if(a) s+=flecha(cx,fy-20,cx+a*14,fy-20,C.a,2.6)+tx(cx+a*14+(a>0?8:-8),fy-16,'a',C.a,a>0?'start':'end',12);
+  /* gráficas */
+  var gr=[]; if(VER.xt) gr.push(['x',X,C.x,'x (m)',E.xlo,E.xhi,E.xp]); if(VER.vt) gr.push(['v',V,C.v,'v (m/s)',E.vlo,E.vhi,E.vp]); if(VER.at&&S.tipo!=='mru') gr.push(['a',function(){ return A(); },C.a,'a (m/s²)',E.alo,E.ahi,E.ap]);
+  PAN=[]; var top=pistaH+8, hz=W>=760&&gr.length>1&&H-top<420, n=gr.length||1;
+  gr.forEach(function(g,i){ var r=hz?{x:mg+i*(W-2*mg+10)/n,y:top,w:(W-2*mg+10)/n-10,h:H-top-mg}:{x:mg,y:top+i*(H-top-mg+10)/n,w:W-2*mg,h:(H-top-mg+10)/n-10}; PAN.push(r); s+=panel(r,g); });
+  svg.innerHTML=s;
+}
+function panel(r,g){
+  var k=g[0], fn=g[1], col=g[2], lo=g[4], hi=g[5], paso=g[6], iz=40, ab=20, ar=28, de=34;
+  var GX=function(t){ return r.x+iz+t/TM*(r.w-iz-de); }, GY=function(y){ return r.y+ar+(hi-y)/(hi-lo)*(r.h-ar-ab); }, s='';
+  s+='<rect x="'+r.x+'" y="'+r.y+'" width="'+r.w+'" height="'+r.h+'" rx="14" fill="#0E0A22" stroke="#2A2346"/>';
+  for(var y=Math.ceil(lo/paso)*paso;y<=hi+1e-9;y+=paso){ var yy=GY(y); s+='<line x1="'+GX(0)+'" y1="'+yy+'" x2="'+GX(TM)+'" y2="'+yy+'" stroke="rgba(255,255,255,'+(Math.abs(y)<1e-9?.4:.06)+')" stroke-width="'+(Math.abs(y)<1e-9?1.5:1)+'"/>'+num(GX(0)-6,yy+4,f(y),'end'); }
+  for(var tt=0;tt<=TM;tt++){ var xx=GX(tt); s+='<line x1="'+xx+'" y1="'+GY(hi)+'" x2="'+xx+'" y2="'+GY(lo)+'" stroke="rgba(255,255,255,.05)"/>'+(tt%2===0&&tt<TM?num(xx,r.y+r.h-6,tt):''); }
+  s+='<text x="'+(r.x+12)+'" y="'+(r.y+15)+'" style="font:800 11px Nunito;letter-spacing:.08em;fill:'+col+'">'+g[3]+'</text><text x="'+(r.x+r.w-10)+'" y="'+(r.y+r.h-6)+'" text-anchor="end" style="font:700 11px \'Barlow Condensed\';fill:#A99FC8">t (s)</text>';
+  if(OCULTA&&k!=='vv') { s+=tx(r.x+r.w/2,r.y+r.h/2+4,'Se verá al comprobar','#4A4170','middle',12,700); return s; }
+  var t=S.t;
+  /* área bajo la v–t = desplazamiento */
+  if(k==='v'&&VER.area&&t>0){ var d='M'+GX(0)+' '+GY(0); for(var q=0;q<=60;q++){ var tq=t*q/60; d+='L'+GX(tq).toFixed(1)+' '+GY(V(tq)).toFixed(1); } d+='L'+GX(t)+' '+GY(0)+'Z';
+    s+='<path d="'+d+'" fill="rgba(198,224,0,.16)" stroke="none"/>'; var dd=X(t)-S.x0; s+=tx(GX(t/2),GY(V(t/2)/2)+4,'Δx = '+m(dd,'m'),'#C6E000','middle',12); }
+  var full='', done='';
+  for(var j=0;j<=100;j++){ var tj=TM*j/100; full+=(j?'L':'M')+GX(tj).toFixed(1)+' '+GY(fn(tj)).toFixed(1); }
+  for(j=0;j<=60;j++){ tj=t*j/60; done+=(j?'L':'M')+GX(tj).toFixed(1)+' '+GY(fn(tj)).toFixed(1); }
+  s+='<path d="'+full+'" fill="none" stroke="'+col+'" stroke-opacity=".45" stroke-width="2" stroke-dasharray="6 5"/>';
+  if(t>0) s+='<path d="'+done+'" fill="none" stroke="'+col+'" stroke-width="3.4" stroke-linecap="round" style="filter:drop-shadow(0 0 5px '+col+'88)"/>';
+  var px=GX(t), py=GY(fn(t));
+  s+='<line x1="'+px+'" y1="'+py+'" x2="'+px+'" y2="'+GY(Math.max(lo,Math.min(hi,0)))+'" stroke="'+col+'" stroke-opacity=".5" stroke-dasharray="3 4"/><line x1="'+GX(0)+'" y1="'+py+'" x2="'+px+'" y2="'+py+'" stroke="'+col+'" stroke-opacity=".5" stroke-dasharray="3 4"/>';
+  s+='<circle cx="'+px+'" cy="'+py+'" r="6.5" fill="'+col+'" stroke="#0B0820" stroke-width="2.5"/>';
+  var u=k==='x'?'m':k==='v'?'m/s':'m/s²', izq=px>r.x+r.w-90;
+  s+=tx(px+(izq?-10:10),py-9,f(fn(t))+' '+u,col,izq?'end':'start',12);
+  return s;
+}
+/* Tocar o arrastrar en una gráfica mueve el tiempo; en la pista, el auto */
+var arr=null;
+function aplicar(e){ var b=pl.getBoundingClientRect(), x=e.clientX-b.left, y=e.clientY-b.top, t=null;
+  if(arr.zona==='g'){ var r=arr.r; t=(x-r.x-40)/(r.w-74)*TM; }
+  else { var pistaH=Math.min(150,Math.max(118,b.height*.3)), px0=30, px1=b.width-30, xm=E.xlo+(x-px0)/(px1-px0)*(E.xhi-E.xlo), mejor=1e9;
+    for(var q=0;q<=TM+1e-9;q+=.02){ var c=Math.abs(X(q)-xm)+.4*Math.abs(q-S.t); if(c<mejor){ mejor=c; t=q; } } }
+  S.t=Math.max(0,Math.min(TM,t)); actualizar(); }
+pl.addEventListener('pointerdown',function(e){ if(FIJO.reto||OCULTA) return; var b=pl.getBoundingClientRect(), x=e.clientX-b.left, y=e.clientY-b.top, zona='p', r=null;
+  PAN.forEach(function(p){ if(x>=p.x&&x<=p.x+p.w&&y>=p.y&&y<=p.y+p.h){ zona='g'; r=p; } });
+  parar(); arr={id:e.pointerId,zona:zona,r:r}; pl.setPointerCapture(e.pointerId); aplicar(e); });
+pl.addEventListener('pointermove',function(e){ if(arr&&arr.id===e.pointerId) aplicar(e); });
+function suelta(e){ if(arr&&arr.id===e.pointerId) arr=null; }
+pl.addEventListener('pointerup',suelta); pl.addEventListener('pointercancel',suelta);
+if(window.ResizeObserver) new ResizeObserver(function(){ dibujar(); }).observe(pl); else addEventListener('resize',dibujar);
+pintarTipo(); pintarVer(); alto(); cambio();
+
+/* ============ MODO RETO (assets/lab-reto.js) ============ */
+var QID=0, AZ=MCAzar, cM=document.getElementById('cMov'), cMsitio=cM.nextElementSibling, GUARDA=null;
+function devolver(){ if(cM.parentNode!==cMsitio.parentNode) cMsitio.parentNode.insertBefore(cM,cMsitio); cM.querySelectorAll('.desl').forEach(function(r){ r.style.display=''; }); FIJO={}; pintarTipo(); }
+function solo(k){ FIJO.solo=k; cM.querySelectorAll('.desl').forEach(function(r){ r.style.display=r.dataset.k===k?'':'none'; }); }
+function poner(tipo,x0,v0,a){ S.tipo=tipo; S.x0=x0; S.v0=v0; S.a=a; pintarTipo(); pintarVer(); alto(); cambio(); }
+function opciones(ops,u){ var out=[]; ops.forEach(function(x){ var t=f(x)+u; if(out.indexOf(t)<0) out.push(t); }); var k=2; while(out.length<4){ var t2=f(ops[0]+k)+u; if(out.indexOf(t2)<0) out.push(t2); k+=3; } return out.slice(0,4); }
+function pregCalc(){
+  var tipo=AZ(['v','d','frena','mru','area']), q={};
+  if(tipo==='v'){ var v0=AZ([0,2,4,5,10]), a=AZ([1,2,3,4]), t=AZ([2,3,4,5]), v=v0+a*t;
+    q={p:['mruv',0,v0,a],t:t,txt:'Un auto va a <em>'+v0+' m/s</em> y acelera a <em>'+a+' m/s²</em>. ¿Qué velocidad tiene a los <em>'+t+' s</em>?',ops:opciones([v,a*t,v0+a*t*t/2,v0+a],' m/s'),expl:'v = v₀ + a·t = '+v0+' + '+a+'·'+t+' = '+v+' m/s.'}; }
+  else if(tipo==='d'||tipo==='area'){ var v0b=AZ([0,2,4,6]), ab=AZ([2,4]), tb=AZ([2,3,4,5]), d=v0b*tb+ab*tb*tb/2;
+    q={p:['mruv',0,v0b,ab],t:tb,txt:tipo==='area'?'Mira la gráfica <em>v–t</em>. ¿Cuánto se desplaza el auto entre <em>0 y '+tb+' s</em>?':'Parte con <em>'+v0b+' m/s</em> y acelera a <em>'+ab+' m/s²</em>. ¿Cuántos metros avanza en <em>'+tb+' s</em>?',
+      ops:opciones([d,v0b*tb+ab*tb*tb,(v0b+ab*tb)*tb,v0b*tb+ab*tb/2],' m'),expl:(tipo==='area'?'Es el área bajo la v–t: ':'')+'Δx = v₀·t + a·t² / 2 = '+v0b+'·'+tb+' + '+ab+'·'+tb+'² / 2 = '+d+' m.',ver:tipo==='area'}; }
+  else if(tipo==='frena'){ var c=AZ([[10,-2],[10,-5],[20,-2],[20,-5],[30,-5]]), d2=c[0]*c[0]/(2*-c[1]);
+    q={p:['mruv',0,c[0],c[1]],t:c[0]/-c[1],txt:'Un auto va a <em>'+c[0]+' m/s</em> y frena con <em>'+(-c[1])+' m/s²</em>. ¿Cuántos metros recorre hasta detenerse?',
+      ops:opciones([d2,2*d2,d2/2,c[0]*c[0]/-c[1]*1.5],' m'),expl:'Al final v = 0: v² = v₀² + 2a·Δx → 0 = '+(c[0]*c[0])+' − 2·'+(-c[1])+'·Δx → Δx = '+d2+' m.'}; }
+  else { var x0=AZ([-10,0,10]), vm=AZ([-3,2,4,5]), tm=AZ([3,4,5,6]), xf=x0+vm*tm;
+    q={p:['mru',x0,vm,0],t:tm,txt:'MRU: parte de <em>x₀ = '+x0+' m</em> con <em>v = '+vm+' m/s</em>. ¿Dónde está a los <em>'+tm+' s</em>?',ops:opciones([xf,vm*tm,x0-vm*tm,x0+vm*(tm+1)],' m'),expl:'x = x₀ + v·t = '+x0+' + ('+vm+')·'+tm+' = '+xf+' m.'}; }
+  return q;
+}
+var RT=MCReto({sim:'mru',nombre:'Reto · MRU y MRUV',
+  alEntrar:function(){ parar(); GUARDA={S:JSON.parse(JSON.stringify(S)),VER:JSON.parse(JSON.stringify(VER))}; VER.marcas=0; },
+  alSalir:function(){ QID++; parar(); devolver(); META=null; OCULTA=false; FIJO={}; if(GUARDA){ S=GUARDA.S; VER=GUARDA.VER; } pintarTipo(); pintarVer(); alto(); cambio(); },
+  nueva:function(i,caja,R){
+    QID++; devolver(); parar(); META=null; VER.marcas=0;
+    if(i%2===0){ var q=pregCalc(); OCULTA=!q.ver; FIJO={reto:1}; VER.xt=1; VER.vt=1; VER.area=q.ver?0:1; poner.apply(null,q.p);
+      var o=R.opciones(caja,q.txt,q.ops,0,q.expl), comp=o.comprobar;
+      o.comprobar=function(){ var r=comp(); OCULTA=false; VER.area=1; VER.marcas=1; escalas(); lanzar(q.t); return r; };
+      return o; }
+    if(i===1){ /* frenar justo en la meta */
+      var c=AZ([[10,-2],[10,-5],[20,-4],[20,-5],[12,-2],[15,-4.5]]), D=c[0]*c[0]/(2*-c[1]);
+      META={x:D}; OCULTA=true; FIJO={reto:1}; poner('mruv',0,c[0],-1);
+      R.texto(caja,'Frena','El auto va a <em>'+c[0]+' m/s</em>. ¿Con qué aceleración debe frenar para parar <em>justo en la meta</em> ('+f(D)+' m)?');
+      caja.appendChild(cM); solo('a'); pintarTipo();
+      return { comprobar:function(){ var ok=Math.abs(S.a-c[1])<1e-9, tp=-S.v0/S.a;
+          var msg=(ok?'':'Con '+f(S.a)+' m/s² '+(S.a>=0?'nunca frena. ':'para en '+f(S.v0*S.v0/(-2*S.a))+' m. '))+'0 = v₀² + 2a·Δx → a = −'+(c[0]*c[0])+' / (2·'+f(D)+') = '+f(c[1])+' m/s².';
+          FIJO={reto:1,todo:1}; OCULTA=false; escalas(); lanzar(S.a<0?Math.min(TM,tp):TM); return {ok:ok,msg:msg}; },
+        mostrar:function(){ var q=QID; setTimeout(function(){ if(q!==QID||!RT.activo) return; S.a=c[1]; cambio(); lanzar(-c[0]/c[1]); },1600); } };
+    }
+    /* MRU: llegar a la meta en un tiempo */
+    var vv=AZ([2,3,4,5,6,8]), T=AZ([4,5]), Xm=vv*T;
+    META={x:Xm}; OCULTA=true; FIJO={reto:1}; poner('mru',0,1,0);
+    R.texto(caja,'Ajusta','MRU: el auto sale de x = 0. ¿Qué velocidad necesita para llegar a la meta (<em>'+Xm+' m</em>) en <em>'+T+' s</em>?');
+    caja.appendChild(cM); solo('v'); pintarTipo();
+    return { comprobar:function(){ var ok=S.v0===vv; var msg=(ok?'':'Con '+S.v0+' m/s llega a '+(S.v0*T)+' m. ')+'v = d / t = '+Xm+' / '+T+' = '+vv+' m/s.';
+        FIJO={reto:1,todo:1}; OCULTA=false; escalas(); lanzar(T); return {ok:ok,msg:msg}; },
+      mostrar:function(){ var q=QID; setTimeout(function(){ if(q!==QID||!RT.activo) return; S.v0=vv; cambio(); lanzar(T); },1600); } };
+  }});
+</script>
+</body>
+</html>
