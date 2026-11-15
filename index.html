@@ -460,9 +460,12 @@ html:not(.arcade-si) .solo-beta { display: none !important; }
 .j-arc .chip { background: #A35CFF; color: #fff; }
 .j-arc .ic { font-size: 56px; }
 /* Laboratorio de simuladores (laboratorio.html), abierto a todos */
-.j-lab { grid-column: 1 / -1; order: 100; min-height: 0; background: linear-gradient(120deg, #4a6400, #22300a 60%, #131a05); border-color: var(--lima); }
+.j-lab { grid-column: span 1; order: 100; min-height: 0; background: linear-gradient(120deg, #4a6400, #22300a 60%, #131a05); border-color: var(--lima); }
 .j-lab .chip { background: var(--lima); color: var(--sobre-lima); }
 .j-lab .ic { font-size: 56px; color: var(--lima); }
+.j-lab, .j-bib { padding-top: 34px !important; }
+.j-lab b.tit, .j-bib b.tit { font-size: 27px; position: relative; z-index: 1; }
+.j-lab small, .j-bib small { max-width: 12ch; }
 /* Tienda de descargas (descargas.html): cursos, simuladores y exámenes sin internet */
 .j-desc { grid-column: 1 / -1; order: 101; min-height: 0; display: flex !important; align-items: center; gap: 16px; background: linear-gradient(110deg, #3a2a10, #1d1834 55%, #131a05); border-color: #E8B36A; }
 .j-desc .caja { width: 74px; height: 74px; flex: none; filter: drop-shadow(0 8px 12px rgba(0,0,0,.5)); }
@@ -480,9 +483,9 @@ html.desc-off .j-desc, html.desc-off .nav .desc, html.desc-todos .j-desc .vip-t 
 .j-voc { min-height: 0; padding-right: 84px; background: linear-gradient(90deg, #0d6d6a, #0c3a44); border-color: #2EE6D6; }
 .j-voc .chip { background: #2EE6D6; color: #062a28; }
 .j-voc img { position: absolute; right: 4px; bottom: -12px; width: 78px; height: auto; filter: drop-shadow(0 4px 10px rgba(0,0,0,.4)); pointer-events: none; }
-.j-bib { grid-column: span 2; min-height: 0; padding-left: 92px; background: linear-gradient(90deg, #4a1f6e, #261538); border-color: #CE82FF; }
+.j-bib { grid-column: span 1; order: 99; min-height: 0; background: linear-gradient(90deg, #4a1f6e, #261538); border-color: #CE82FF; }
 .j-bib .chip { background: #CE82FF; color: #2a0f3d; }
-.j-bib .lomos { position: absolute; left: 16px; top: 50%; translate: 0 -50%; display: flex; align-items: flex-end; gap: 3px; height: 58px; }
+.j-bib .lomos { position: absolute; right: 18px; bottom: 12px; display: flex; align-items: flex-end; gap: 3px; height: 58px; }
 .j-bib .lomos i { width: 13px; border-radius: 3px; box-shadow: inset -3px 0 0 rgba(0,0,0,.18); }
 .j-bib .lomos i:nth-child(1) { height: 46px; background: #1CB0F6; }
 .j-bib .lomos i:nth-child(2) { height: 58px; background: #C6E000; }
@@ -567,7 +570,8 @@ html.desc-off .j-desc, html.desc-off .nav .desc, html.desc-todos .j-desc .vip-t 
   .j-duelo .ic { font-size: 96px; right: 18px; bottom: 26px; }
   .j-flash .ic { font-size: 40px; }
   .j-voc { padding-right: 64px; } .j-voc img { width: 62px; bottom: -8px; }
-  .j-bib { min-height: 0; padding-left: 78px; } .j-bib .lomos { left: 12px; height: 48px; } .j-bib .lomos i { width: 11px; }
+  .j-bib { min-height: 0; } .j-bib .lomos { right: 12px; bottom: 10px; height: 46px; } .j-bib .lomos i { width: 10px; }
+  .j-lab b.tit, .j-bib b.tit { font-size: 21px; } .j-lab, .j-bib { padding-top: 30px !important; }
   .juego .chip { font-size: 13px; }
   .podio { padding: 22px 10px 0; gap: 8px; }
   .podio .letra { width: 56px; height: 56px; font-size: 28px; }
@@ -1081,6 +1085,8 @@ button.juego { width: 100%; text-align: left; font: inherit; color: #fff; }
   #examenes .j-sim .ic, #examenes .j-ex .ic { font-size: 50px; right: 12px; bottom: 10px; }
   #examenes .j-flash, #examenes .j-voc, #examenes .j-bib { min-height: 0; padding-top: 12px; padding-bottom: 12px; }
   #examenes .j-flash .ic { display: none; }
+  #examenes .juego.j-lab b.tit, #examenes .juego.j-bib b.tit { font-size: 24px; position: relative; z-index: 1; }
+  #examenes .j-bib .lomos { zoom: .72; right: 20px; bottom: 14px; }
   #examenes .j-voc { padding-right: 70px; } #examenes .j-voc img { width: 62px; bottom: -14px; }
   /* «¡A practicar!» más bajo para dejar espacio a los modos */
   .practicar { min-height: 92px; font-size: clamp(26px, 2.6vw, 44px); }
@@ -1500,13 +1506,13 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
           <div class="modos">
             <a class="juego j-duelo duelo-banner" href="duelo.html" data-mc-nav="practicar"><span class="chip disp">Reto</span><b class="tit">Duelos</b><small>Reta hasta a 3 amigos en vivo</small><svg class="ic"><use href="#i-espadas"/></svg></a>
             <a class="juego j-arc" href="arcade.html"><span class="chip disp">Beta</span><b class="tit">Arcade</b><small style="max-width:none">Aprende jugando: une, desliza y ordena</small><svg class="ic"><use href="#i-mando"/></svg></a>
-            <a class="juego j-lab" href="laboratorio.html"><span class="chip disp">Nuevo</span><b class="tit">Laboratorio</b><small style="max-width:none">Simuladores de Biología, Química, Física y Matemática</small><svg class="ic"><use href="#i-celula"/></svg></a>
+            <a class="juego j-lab" href="laboratorio.html"><span class="chip disp">Nuevo</span><b class="tit">Laboratorio</b><small>Simuladores de ciencias</small><svg class="ic"><use href="#i-celula"/></svg></a>
             <a class="juego j-desc" href="descargas.html"><svg class="caja" viewBox="0 0 64 64"><use href="#r-caja"/></svg><span class="tx"><span class="chip disp">Nuevo</span><b class="tit">Descargas</b><small>Cursos del ciclo actual, simuladores y exámenes para estudiar sin internet</small><span class="vip-t">VIP Total</span></span></a>
             <a class="juego j-sim" href="simulacro.html" data-mc-nav="practicar"><span class="chip disp" id="simNuevo">Nuevo</span><b class="tit">Simulacro</b><small>Como el real, con tiempo</small><svg class="ic"><use href="#i-reloj"/></svg></a>
             <button class="juego j-ex" type="button" data-hoja="examenes" data-candado="examenes" data-candado-nombre="Exámenes"><b class="tit">Exámenes</b><small>Ordinario, CPU, Control</small><svg class="ic"><use href="#i-examen"/></svg></button>
             <button class="juego j-flash" type="button" data-hoja="flashcards"><b class="tit">Flashcards</b><small>Repasa por curso</small><svg class="ic"><use href="#i-tarjetas"/></svg></button>
             <a class="juego j-voc" href="vocacional.html"><span class="chip disp" id="vocNuevo">Nuevo</span><b class="tit">Carrera</b><small>Test vocacional</small><img src="assets/buho/avatar/clasico-cuerpo.webp" alt="" width="174" height="180" loading="lazy"></a>
-            <a class="juego j-bib" href="biblioteca.html"><span class="chip disp" id="bibNuevo">Nuevo</span><span class="lomos" aria-hidden="true"><i></i><i></i><i></i><i></i></span><b class="tit">Biblioteca</b><small style="max-width:none">Libros en PDF para leer aquí mismo</small></a>
+            <a class="juego j-bib" href="biblioteca.html"><span class="chip disp" id="bibNuevo">Nuevo</span><span class="lomos" aria-hidden="true"><i></i><i></i><i></i><i></i></span><b class="tit">Biblioteca</b><small>Libros en PDF</small></a>
           </div>
           <script>try { if (localStorage.getItem('mc_sim_visto')) document.getElementById('simNuevo').remove(); if (localStorage.getItem('mc_voc_res')) document.getElementById('vocNuevo').remove(); if (localStorage.getItem('mc_biblioteca_lectura')) document.getElementById('bibNuevo').remove(); } catch (e) {}</script>
         </section>
