@@ -2,7 +2,7 @@
    Panel · Planes y precios (Web) — solo admin
    Edita la página precios.html: precios de cada plan, lo que incluye,
    la preventa, «Trae 2 amigos» y la tabla de comparación. También quién
-   usa la tienda de descargas (planes.tienda.modo: vip | todos | apagado).
+   usa la tienda de descargas (planes.tienda.modo: vip | todos | apagado; se edita en Panel → Descargas PDF).
    Se guarda en Supabase (tabla ajustes, clave 'planes'). Si nunca se
    guardó, se parte del ejemplo de assets/planes.js.
    ========================================================= */
@@ -130,14 +130,6 @@ function renderPlanes(errores) {
     </div>
 
     <div class="pcard pl-card pl-sec">
-      <h3>Tienda de descargas (sin internet)</h3>
-      <p class="hint" style="margin:0 0 4px">La página Descargas del inicio: cursos del ciclo actual, simuladores y exámenes para usar sin internet.</p>
-      <label class="pl-sw pl-op"><input type="radio" name="plTienda" value="vip" ${v.tienda.modo !== 'todos' && v.tienda.modo !== 'apagado' ? 'checked' : ''}> Solo VIP Total (código TODO-VIP)</label>
-      <label class="pl-sw pl-op"><input type="radio" name="plTienda" value="todos" ${v.tienda.modo === 'todos' ? 'checked' : ''}> Todos los alumnos</label>
-      <label class="pl-sw pl-op"><input type="radio" name="plTienda" value="apagado" ${v.tienda.modo === 'apagado' ? 'checked' : ''}> Apagada (no se ve en el inicio)</label>
-    </div>
-
-    <div class="pcard pl-card pl-sec">
       <label class="pl-sw"><input type="checkbox" data-g="preventa" data-k="activa" ${P.activa ? 'checked' : ''}> Preventa del plan completo (por ciclo)</label>
       <div class="pl-cuatro">
         <div><label class="fld">Precio preventa (S/)</label><input class="inp" type="number" min="0" step="0.10" data-g="preventa" data-k="precio" value="${P.precio}"></div>
@@ -187,7 +179,6 @@ function renderPlanes(errores) {
   body.querySelectorAll('[data-quitar]').forEach(b => b.addEventListener('click', () => {
     C.tabla.splice(+b.dataset.quitar, 1); plCambio(); renderPlanes();
   }));
-  body.querySelectorAll('input[name="plTienda"]').forEach(r => r.addEventListener('change', () => { v.tienda.modo = r.value; plCambio(); }));
   const C2 = v.ciclos;
   body.querySelectorAll('input[name="plCobMod"]').forEach(r => r.addEventListener('change', () => { C2.modo = r.value; if (r.value === 'lista' && !C2.cobrados.length && plCiclos && plCiclos[0]) C2.cobrados = [plCiclos[0]]; plCambio(); renderPlanes(); }));
   body.querySelectorAll('input[name="plDesMod"]').forEach(r => r.addEventListener('change', () => { C2.descarga.modo = r.value; if (r.value === 'lista' && !C2.descarga.lista.length) C2.descarga.lista = C2.cobrados.slice(); plCambio(); renderPlanes(); }));
@@ -223,6 +214,8 @@ async function guardarPlanes() {
   v.comparar.tabla = (v.comparar.tabla || []).filter(f => String(f[0] || '').trim()).map(f => [String(f[0]).trim(), plValor(f[1]), plValor(f[2])]).slice(0, 20);
   if (err.length) { renderPlanes(err); window.scrollTo(0, 0); toast('Revisa lo marcado en rojo', true); return; }
   const btn = $('plGuardar'); btn.disabled = true; plEstado('Guardando…');
+  // La tienda de Descargas se maneja en Panel → Descargas PDF: se guarda la que está ahora en Supabase
+  try { const g = await (await MCAuth.listo).from('ajustes').select('valor').eq('clave', 'planes').maybeSingle(); if (g.data && g.data.valor && g.data.valor.tienda) v.tienda = g.data.valor.tienda; } catch (e) { /* nada */ }
   const r = await (await MCAuth.listo).rpc('guardar_ajuste', { p_clave: 'planes', p_valor: v });
   if (r.error) {
     btn.disabled = false; plEstado('');

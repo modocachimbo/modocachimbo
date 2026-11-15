@@ -223,7 +223,7 @@ var av=document.getElementById('aviso'), tmA;
 function aviso(t){ av.innerHTML=t; av.classList.add('on'); clearTimeout(tmA); tmA=setTimeout(function(){ av.classList.remove('on'); },3000); }
 function sinRed(){ return navigator.onLine===false; }
 
-/* ---- ¿Quién puede descargar? (panel → Planes y precios → Tienda de descargas) ---- */
+/* ---- ¿Quién puede descargar? (panel → Descargas PDF → Descargas sin internet) ---- */
 function vigente(x){ if(!x.vence) return true; var d=new Date(x.vence); return isNaN(d)||d.getTime()+86400000>Date.now(); }
 function revisarVip(){
   var si=false;
