@@ -7,9 +7,9 @@ const CD = { lista: [], config: { abiertos: {}, legacy: true }, hoy: '', filtro:
 // descarga-VIP va aparte: ni TODO-VIP lo incluye. Se marca solo (código solo de descargas)
 // o junto a otros paquetes, incluso junto al Acceso total ("TODO-VIP,descarga-VIP").
 const PROD_TODOS = [
-  ['TODO-VIP', 'Acceso total'], ['general', 'Acceso general'], ['seminario-VIP', 'Seminarios + Banqueo'], ['vocabulario-VIP', 'Vocabulario'], ['biblioteca-VIP', 'Biblioteca'], ['descarga-VIP', 'Descargas PDF'], ['laboratorio-VIP', 'Laboratorio']
+  ['TODO-VIP', 'Acceso total'], ['general', 'Acceso general'], ['seminario-VIP', 'Seminarios + Banqueo'], ['vocabulario-VIP', 'Vocabulario'], ['biblioteca-VIP', 'Biblioteca'], ['descarga-VIP', 'Descargas PDF'], ['laboratorio-VIP', 'Laboratorio'], ['offline-VIP', 'Descargas sin internet']
 ];
-const EXTRAS = ['descarga-VIP', 'laboratorio-VIP']; // van aparte: se pueden sumar al Acceso total
+const EXTRAS = ['descarga-VIP', 'laboratorio-VIP', 'offline-VIP']; // van aparte: se pueden sumar al Acceso total
 const PROD_DESCARGA = 'descarga-VIP';
 const esDescarga = c => String(c && c.producto || '').split(',').includes(PROD_DESCARGA);
 const PROD_AYUDA = {
@@ -19,6 +19,7 @@ const PROD_AYUDA = {
   'vocabulario-VIP': 'Vocabulario de todos los cursos',
   'biblioteca-VIP': 'Solo la Biblioteca: entrar y leer todos sus libros',
   'laboratorio-VIP': 'Todos los simuladores del Laboratorio sin gastar energía. Va aparte: no viene en el Acceso total',
+  'offline-VIP': 'La tienda de Descargas del inicio: bajar los cursos del ciclo actual, simuladores y exámenes para estudiar sin internet. Va aparte, pero el Acceso total también la abre (si en Panel → Planes y precios → Tienda de descargas está en «Solo VIP»)',
   'descarga-VIP': 'Descargar en PDF (con marca de agua y N.º único) lo que permitas en Panel → Descargas PDF. Va aparte: no viene en el Acceso total ni abre los temas'
 };
 const AREAS_COD = [['matematica', 'Matemática'], ['ciencia-tecnologia', 'Ciencia y Tecnología'], ['comunicacion', 'Comunicación'], ['ciencias-sociales', 'Ciencias Sociales']];
@@ -38,7 +39,7 @@ function mensajeCodigo(c) {
     `\nActívalo aquí: ${SITE_URL} → «Ingresar código»`;
 }
 function etiquetaUno(p) {
-  const fijos = { 'TODO-VIP': 'Acceso total', general: 'Acceso general', 'seminario-VIP': 'Seminarios + Banqueo', duelo: 'Duelos', examenes: 'Exámenes', 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'banqueo-VIP': 'Todo el Banqueo', 'tarjetas-VIP': 'Todas las Flashcards', 'vocabulario-VIP': 'Vocabulario', 'biblioteca-VIP': 'Biblioteca', 'descarga-VIP': 'Descargas PDF', 'laboratorio-VIP': 'Laboratorio', simulacro: 'Simulacro' };
+  const fijos = { 'TODO-VIP': 'Acceso total', general: 'Acceso general', 'seminario-VIP': 'Seminarios + Banqueo', duelo: 'Duelos', examenes: 'Exámenes', 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'banqueo-VIP': 'Todo el Banqueo', 'tarjetas-VIP': 'Todas las Flashcards', 'vocabulario-VIP': 'Vocabulario', 'biblioteca-VIP': 'Biblioteca', 'descarga-VIP': 'Descargas PDF', 'offline-VIP': 'Descargas sin internet', 'laboratorio-VIP': 'Laboratorio', simulacro: 'Simulacro' };
   if (fijos[p]) return fijos[p];
   const ar = AREAS_COD.find(([id]) => 'area-' + id === p); if (ar) return 'Área ' + ar[1];
   const m = String(p).match(/^(curso|repaso|fijas|seminario|banqueo|tarjetas|vocabulario)-(.+)$/); if (!m) return p;
@@ -689,7 +690,7 @@ function importarCodigos() {
   o.querySelector('#impTxt').addEventListener('input', e => {
     filas = e.target.value.split(/\r?\n/).map(l => l.split(/\t|;|,(?=\S)/).map(x => x.trim())).filter(c => c[0] && !/^c[óo]digo$/i.test(c[0]))
       .map(c => ({ codigo: c[0].toUpperCase(), producto: c[1] || '', max: parseFloat(c[2]) || 0, usos: parseFloat(c[3]) || 0, nota: c[4] || '' }));
-    const malos = filas.filter(f => !f.producto.split(',').every(x => /^(TODO-VIP|general|repaso-VIP|fijas-VIP|seminario-VIP|banqueo-VIP|tarjetas-VIP|vocabulario-VIP|biblioteca-VIP|descarga-VIP|laboratorio-VIP|simulacro|(area|curso|repaso|fijas|seminario|banqueo|tarjetas|vocabulario)-[a-z0-9-]+)$/.test(x)));
+    const malos = filas.filter(f => !f.producto.split(',').every(x => /^(TODO-VIP|general|repaso-VIP|fijas-VIP|seminario-VIP|banqueo-VIP|tarjetas-VIP|vocabulario-VIP|biblioteca-VIP|descarga-VIP|laboratorio-VIP|offline-VIP|simulacro|(area|curso|repaso|fijas|seminario|banqueo|tarjetas|vocabulario)-[a-z0-9-]+)$/.test(x)));
     o.querySelector('#impPrev').innerHTML = filas.length
       ? `<b style="color:var(--text)">${filas.length} código${filas.length > 1 ? 's' : ''} detectado${filas.length > 1 ? 's' : ''}:</b> ` + filas.slice(0, 6).map(f => `${esc(f.codigo)} (${esc(etiquetaProd(f.producto))}, ${f.usos}/${f.max || '∞'})`).join(' · ') + (filas.length > 6 ? ' …' : '') +
         (malos.length ? `<br><span style="color:var(--red)">${malos.length} con producto no reconocido se saltarán.</span>` : '')

@@ -40,6 +40,7 @@
                       Se vende aparte: TODO-VIP no la incluye
      laboratorio-VIP→ Laboratorio: todos los simuladores (supabase/97-laboratorio-rayos.sql).
                       Va aparte, como las Descargas: TODO-VIP no lo incluye
+     offline-VIP    → Descargas sin internet (descargas.html). El Acceso total también la abre.
      TODO-VIP       → todo, menos las Descargas PDF y el Laboratorio
      Los códigos de antes (curso-x, repaso-VIP, fijas-x…) siguen abriendo lo suyo. */
   var AREAS = {
@@ -126,6 +127,7 @@
       if (cat === 'biblioteca') return u === 'biblioteca-VIP';
       if (cat === 'descarga') return u === 'descarga-VIP';
       if (cat === 'laboratorio') return u === 'laboratorio-VIP';
+      if (cat === 'offline') return u === 'offline-VIP' || u === 'TODO-VIP';
       return false;
     });
   }
@@ -420,7 +422,7 @@
   function idEstado() { var c = cacheID(); return { lista: idActivos(), permitido: c.permitido !== false, equipos: c.equipos || 0, max: c.max || 0, t: c.ok || 0 }; }
 
   // «¡Acceso activado!» la primera vez que el alumno entra después de que se lo dieron
-  var NOM = { 'TODO-VIP': 'Acceso total', general: 'Acceso general', 'seminario-VIP': 'Seminarios + Banqueo', 'vocabulario-VIP': 'Vocabulario', 'biblioteca-VIP': 'Biblioteca', 'descarga-VIP': 'Descargas PDF', 'laboratorio-VIP': 'Laboratorio', simulacro: 'Simulacro', duelo: 'Duelos', examenes: 'Exámenes',
+  var NOM = { 'TODO-VIP': 'Acceso total', general: 'Acceso general', 'seminario-VIP': 'Seminarios + Banqueo', 'vocabulario-VIP': 'Vocabulario', 'biblioteca-VIP': 'Biblioteca', 'descarga-VIP': 'Descargas PDF', 'offline-VIP': 'Descargas sin internet', 'laboratorio-VIP': 'Laboratorio', simulacro: 'Simulacro', duelo: 'Duelos', examenes: 'Exámenes',
     'area-matematica': 'Área Matemática', 'area-ciencia-tecnologia': 'Área Ciencia y Tecnología', 'area-comunicacion': 'Área Comunicación', 'area-ciencias-sociales': 'Área Ciencias Sociales' };
   function nombreProd(p) { return String(p || '').split(',').map(function (x) { return NOM[x] || x; }).join(' + '); }
   // El sobre del acceso (assets/pase.js): se carga solo la primera vez que hace falta
