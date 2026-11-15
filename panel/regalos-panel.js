@@ -11,12 +11,17 @@
    Grupo VIP: una lista de IDs guardada para darles a todos el mismo
    regalo de una vez (supabase/93-grupo-vip.sql: grupo_regalo_ver,
    grupo_regalo_guardar, grupo_regalo_dar).
+   Todos (solo admins): el mismo regalo a cada alumno, menos los
+   suspendidos, con una ventana para confirmar. Rayos: la energía del
+   Arcade y del Laboratorio (supabase/100-regalar-todos-rayos.sql:
+   regalo_todos_ver, regalo_todos_dar y el tipo «rayos»).
    ========================================================= */
-const RG = { modo: 'uno', inactivoDias: 7, grupo: null, grupoCargando: false, grupoError: '', alumno: null, tipo: 'corazones', cant: 3, item: '', items: null, enviando: false };
+const RG = { modo: 'uno', todos: null, todosCargando: false, todosError: '', inactivoDias: 7, grupo: null, grupoCargando: false, grupoError: '', alumno: null, tipo: 'corazones', cant: 3, item: '', items: null, enviando: false };
 const RG_TIPOS = {
   corazones: { nom: 'Corazones', c: '#FF4B4B', ops: [[1, '+1'], [3, '+3'], [5, '+5'], [10, '+10']], min: 1, max: 50, uni: 'corazones' },
   infinito: { nom: 'Infinitos', c: '#CE82FF', ops: [[1, '1 hora'], [24, '1 día'], [72, '3 días'], [168, '7 días'], [720, '30 días']] },
   xp: { nom: 'XP', c: '#FFC800', ops: [[100, '+100'], [250, '+250'], [500, '+500'], [1000, '+1000']], min: 1, max: 10000, uni: 'XP' },
+  rayos: { nom: 'Rayos', c: '#2FA8FF', ops: [[10, '+10'], [20, '+20'], [50, '+50'], [100, '+100']], min: 1, max: 1000, uni: 'rayos' },
   item: { nom: 'Ítem de colección', c: '#1CB0F6' }
 };
 const RG_ESP = { racha: 'Banner', avatar: 'Foto de perfil', pines: 'Pin', marco: 'Marco', cuadro: 'Cuadro de racha', titulo: 'Título', buho: 'Búho' };
@@ -33,7 +38,7 @@ const RG_ESP = { racha: 'Banner', avatar: 'Foto de perfil', pines: 'Pin', marco:
   .rg-al small { display: block; color: var(--text-dim); font-size: 12.5px; overflow-wrap: anywhere; }
   .rg-stats { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
   .rg-stats span { padding: 3px 8px; border-radius: 8px; background: #1D1834; font: 900 12px Nunito, sans-serif; }
-  .rg-tipos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .rg-tipos { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
   .rg-tipo { padding: 12px 8px; border-radius: 14px; border: 2px solid #2F284E; background: none; color: var(--text); font: 900 13.5px Nunito, sans-serif; cursor: pointer; display: grid; justify-items: center; gap: 6px; }
   .rg-tipo svg { width: 26px; height: 26px; color: var(--c); }
   .rg-tipo.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent); }
@@ -51,7 +56,7 @@ const RG_ESP = { racha: 'Banner', avatar: 'Foto de perfil', pines: 'Pin', marco:
   .rg-h:last-child { border-bottom: 0; }
   .rg-h i { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; background: var(--c); }
   .rg-h div { flex: 1; min-width: 0; } .rg-h small { color: var(--text-dim); }
-  .rg-modos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .rg-modos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
   .rg-modo { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 16px; border: 2px solid #2F284E; background: #120e22; color: var(--text); cursor: pointer; text-align: left; }
   .rg-modo svg { width: 30px; height: 30px; flex-shrink: 0; color: var(--text-dim); }
   .rg-modo b { display: block; font: 1000 16px Nunito, sans-serif; }
@@ -79,8 +84,20 @@ const RG_ESP = { racha: 'Banner', avatar: 'Foto de perfil', pines: 'Pin', marco:
   .rg-vip-cab { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
   .rg-vip-cab .rg-cuenta { font: 1000 15px Nunito, sans-serif; }
   .rg-aviso { padding: 10px 12px; border-radius: 12px; background: rgba(255,200,0,.1); border: 2px solid rgba(255,200,0,.35); color: #FFD84D; font: 800 13px Nunito, sans-serif; margin-top: 10px; }
-  @media (max-width: 560px) { .rg-modos { grid-template-columns: 1fr; } }
-  @media (max-width: 560px) { .rg-tipos { grid-template-columns: 1fr 1fr; } }`;
+  .rg-todos { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .rg-todos-n { font: 1000 44px/1 Nunito, sans-serif; color: var(--accent); }
+  .rg-todos-n small { display: block; font: 900 13px Nunito, sans-serif; color: var(--text-dim); margin-top: 4px; }
+  .rg-todos p { flex: 1; min-width: 220px; margin: 0; color: var(--text-dim); font: 700 13.5px/1.5 Nunito, sans-serif; }
+  .rg-todos p b { color: var(--text); }
+  .rg-conf { text-align: center; }
+  .rg-conf .rg-conf-ic { width: 64px; height: 64px; margin: 0 auto 10px; display: grid; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--c) 16%, transparent); color: var(--c); }
+  .rg-conf .rg-conf-ic svg { width: 34px; height: 34px; }
+  .rg-conf h3 { margin: 0 0 8px; }
+  .rg-conf .rg-conf-que { font: 1000 22px Nunito, sans-serif; margin: 6px 0 4px; }
+  .rg-conf .sub { line-height: 1.55; }
+  .rg-conf .mfoot { justify-content: center; }
+  @media (max-width: 760px) { .rg-modos { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .rg-tipos { grid-template-columns: repeat(3, minmax(0, 1fr)); } }`;
   document.head.appendChild(st);
 })();
 
@@ -88,6 +105,9 @@ const RG_IC = {
   corazones: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.8 4.5c2.1 0 3.7 1.1 5.2 3 1.5-1.9 3.1-3 5.2-3 3.8 0 5.9 3.9 4.4 7.3C19.5 16.4 12 21 12 21z"/></svg>',
   infinito: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 12c-2-2.7-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.3 5.5-4zm0 0c2 2.7 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.3-5.5 4z"/></svg>',
   xp: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
+  // El rayo del Arcade (arcade.html #r-rayo): azul con borde oscuro, distinto del XP
+  rayos: '<svg viewBox="0 0 64 64"><defs><linearGradient id="rgRayoG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9BE4FF"/><stop offset=".5" stop-color="#2FA8FF"/><stop offset="1" stop-color="#1060E0"/></linearGradient></defs><path d="M38 4 12 36h16l-6 24 30-36H35l8-20z" fill="#0B3C8C" stroke="#0B3C8C" stroke-width="6" stroke-linejoin="round" transform="translate(2 3)"/><path d="M38 4 12 36h16l-6 24 30-36H35l8-20z" fill="url(#rgRayoG)" stroke="#0E4BB0" stroke-width="3" stroke-linejoin="round"/><path d="M36 9 18 32h8" fill="none" stroke="#D8F1FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/></svg>',
+  todos: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17" cy="9" r="2.8"/><path d="M16.5 14.2c3 .2 5 2.3 5 5.3"/></svg>',
   uno: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>',
   vip: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18 2 7l5.5 4L12 4l4.5 7L22 7l-1 11z"/><path d="M3 21h18"/></svg>',
   quitar: '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
@@ -100,6 +120,7 @@ function rgTexto(x) {
   if (x.tipo === 'corazones') return '+' + x.cantidad + (x.cantidad === 1 ? ' corazón' : ' corazones');
   if (x.tipo === 'infinito') return 'Corazones infinitos por ' + rgHoras(x.cantidad);
   if (x.tipo === 'xp') return '+' + (+x.cantidad).toLocaleString('es-PE') + ' XP';
+  if (x.tipo === 'rayos') return '+' + (+x.cantidad).toLocaleString('es-PE') + (+x.cantidad === 1 ? ' rayo' : ' rayos');
   const it = (RG.items || []).find(i => i.id === x.item);
   return 'Ítem: ' + (it ? it.nom || it.id : x.item);
 }
@@ -126,10 +147,11 @@ async function cargarRegalos() {
 }
 
 function rgModosHtml() {
-  const n = RG.grupo ? RG.grupo.miembros.length : null;
+  const n = RG.grupo ? RG.grupo.miembros.length : null, t = RG.todos ? RG.todos.alumnos : null;
   return `<div class="rg-modos">
     <button class="rg-modo${RG.modo === 'uno' ? ' on' : ''}" type="button" data-rgm="uno">${RG_IC.uno}<div><b>Un alumno</b><small>Buscas su ID y le regalas</small></div></button>
     <button class="rg-modo${RG.modo === 'vip' ? ' on' : ''}" type="button" data-rgm="vip">${RG_IC.vip}<div><b>Grupo VIP</b><small>${n == null ? 'Tu lista guardada: a todos de una vez' : n + (n === 1 ? ' alumno' : ' alumnos') + ' · a todos de una vez'}</small></div></button>
+    ${ROL.admin ? `<button class="rg-modo${RG.modo === 'todos' ? ' on' : ''}" type="button" data-rgm="todos">${RG_IC.todos}<div><b>Todos</b><small>${t == null ? 'Cada alumno de la web, de una vez' : t.toLocaleString('es-PE') + (t === 1 ? ' alumno' : ' alumnos') + ' · a todos de una vez'}</small></div></button>` : ''}
   </div>`;
 }
 
@@ -139,6 +161,7 @@ function rgModosEventos() {
     RG.modo = b.dataset.rgm; RG.item = '';
     pintarRegalos();
     if (RG.modo === 'vip' && !RG.grupo) rgVipCargar();
+    if (RG.modo === 'todos' && !RG.todos) rgTodosCargar();
   }));
 }
 
@@ -148,8 +171,8 @@ function rgFormHtml(oculto, titulo, boton) {
       <h3>${titulo}</h3>
       <div class="rg-tipos">${Object.entries(RG_TIPOS).map(([k, t]) => `<button class="rg-tipo${RG.tipo === k ? ' on' : ''}" type="button" data-rgt="${k}" style="--c:${t.c}">${RG_IC[k]}${t.nom}</button>`).join('')}</div>
       <div id="rgOpc"></div>
-      <label for="rgNota">Nota para ${RG.modo === 'vip' ? 'los alumnos' : 'el alumno'} (opcional)</label>
-      <input class="inp" id="rgNota" maxlength="140" placeholder="${RG.modo === 'vip' ? '¡Tu regalo VIP del día!' : '¡Bien hecho en el simulacro!'}">
+      <label for="rgNota">Nota para ${RG.modo === 'uno' ? 'el alumno' : 'los alumnos'} (opcional)</label>
+      <input class="inp" id="rgNota" maxlength="140" placeholder="${RG.modo === 'vip' ? '¡Tu regalo VIP del día!' : RG.modo === 'todos' ? '¡Un regalo para todos por el fin de semana!' : '¡Bien hecho en el simulacro!'}">
       <p class="hint">Le sale en el aviso del regalo la próxima vez que entra a la web.</p>
       <div class="agp-acc"><button class="btn-main" type="button" id="rgDar">${boton}</button><span class="rg-resumen" id="rgRes"></span></div>
     </div>`;
@@ -167,6 +190,7 @@ function rgFormEventos(alDar) {
 
 function pintarRegalos() {
   if (RG.modo === 'vip') { pintarVip(); return; }
+  if (RG.modo === 'todos') { pintarTodos(); return; }
   const a = RG.alumno;
   $('rgCuerpo').innerHTML = rgModosHtml() + `
     <div class="agp-form">
@@ -201,6 +225,7 @@ function rgAlumnoHtml(a) {
         ${inf ? `<span style="color:#CE82FF">${esc(inf)}</span>` : ''}
         <span style="color:#FFC800">${(+a.xp_total || 0).toLocaleString('es-PE')} XP en total</span>
         <span>${(+a.xp_saldo || 0).toLocaleString('es-PE')} XP para canjear</span>
+        ${a.rayos != null ? `<span style="color:#5CBEFF">${(+a.rayos || 0).toLocaleString('es-PE')} rayos</span>` : ''}
       </div>
     </div></div>`;
 }
@@ -225,6 +250,7 @@ function rgOpciones() {
 
 function rgResumen() {
   if (RG.modo === 'vip') { rgVipResumen(); return; }
+  if (RG.modo === 'todos') { rgTodosResumen(); return; }
   const a = RG.alumno, t = RG_TIPOS[RG.tipo];
   let ok = !!a, txt = '';
   if (RG.tipo === 'item') { ok = ok && !!RG.item; txt = RG.item ? rgTexto({ tipo: 'item', item: RG.item }) : 'Elige un ítem'; }
@@ -258,8 +284,8 @@ async function rgDar() {
   const c = await MCAuth.listo;
   const r = await c.rpc('regalar', { p_codigo: a.codigo, p_tipo: RG.tipo, p_cantidad: RG.tipo === 'item' ? null : RG.cant, p_item: RG.tipo === 'item' ? RG.item : null, p_nota: $('rgNota').value.trim() || null });
   RG.enviando = false;
-  if (r.error) { btn.textContent = 'Regalar'; rgResumen(); toast(r.error.message || 'No se pudo regalar'); return; }
-  toast('🎁 ' + rgTexto({ tipo: RG.tipo, cantidad: RG.cant, item: RG.item }) + ' para ' + (a.apodo || 'ID ' + a.codigo));
+  if (r.error) { btn.textContent = 'Regalar'; rgResumen(); toast(rgFaltaSql(r.error) || r.error.message || 'No se pudo regalar'); return; }
+  toast(rgTexto({ tipo: RG.tipo, cantidad: RG.cant, item: RG.item }) + ' para ' + (a.apodo || 'ID ' + a.codigo));
   RG.alumno = r.data; RG.item = '';
   pintarRegalos();
 }
@@ -429,9 +455,95 @@ async function rgVipDar() {
   const c = await MCAuth.listo;
   const r = await c.rpc('grupo_regalo_dar', { p_grupo: RG_GRUPO, p_tipo: RG.tipo, p_cantidad: RG.tipo === 'item' ? null : RG.cant, p_item: RG.tipo === 'item' ? RG.item : null, p_nota: $('rgNota').value.trim() || null });
   RG.enviando = false;
-  if (r.error) { rgVipResumen(); toast(rgVipError(r.error)); return; }
+  if (r.error) { rgVipResumen(); toast(rgFaltaSql(r.error) || rgVipError(r.error)); return; }
   const txt = rgTexto({ tipo: RG.tipo, cantidad: RG.cant, item: RG.item });
   toast(txt + ' para ' + r.data.recibieron + (r.data.recibieron === 1 ? ' alumno' : ' alumnos') + (r.data.saltados ? ' · ' + r.data.saltados + ' ya lo tenían' : ''));
   rgVipTomar(r.data); RG.item = '';
   pintarVip();
+}
+
+// Rayos y Todos necesitan supabase/100-regalar-todos-rayos.sql
+function rgFaltaSql(e) {
+  const m = (e && e.message) || '';
+  return /regalos_tipo_check|tipo de regalo no válido|regalo_todos|function|does not exist|schema cache/i.test(m) ? 'Falta correr supabase/100-regalar-todos-rayos.sql en Supabase.' : '';
+}
+
+/* ---------- Todos: el mismo regalo a cada alumno de la web (solo admins) ---------- */
+async function rgTodosCargar() {
+  RG.todosCargando = true; RG.todosError = ''; pintarRegalos();
+  const c = await MCAuth.listo;
+  const r = await c.rpc('regalo_todos_ver');
+  RG.todosCargando = false;
+  if (r.error) { RG.todosError = /no autorizado/i.test(r.error.message || '') ? 'Solo un administrador puede regalar a todos.' : rgFaltaSql(r.error) || r.error.message || 'No se pudo.'; pintarRegalos(); return; }
+  RG.todos = r.data;
+  pintarRegalos();
+}
+
+function pintarTodos() {
+  const cab = rgModosHtml();
+  if (RG.todosError) { $('rgCuerpo').innerHTML = cab + `<div class="state-msg error">${esc(RG.todosError)}</div>`; rgModosEventos(); return; }
+  if (!RG.todos && !RG.todosCargando) { rgTodosCargar(); return; }
+  if (RG.todosCargando || !RG.todos) { $('rgCuerpo').innerHTML = cab + '<div class="loader">Contando a los alumnos…</div>'; rgModosEventos(); return; }
+  const T = RG.todos, ult = (T.envios || [])[0];
+  $('rgCuerpo').innerHTML = cab + `
+    <div class="agp-form">
+      <h3>¿A quién?</h3>
+      <div class="rg-todos">
+        <div class="rg-todos-n">${(+T.alumnos).toLocaleString('es-PE')}<small>${T.alumnos === 1 ? 'alumno' : 'alumnos'}</small></div>
+        <p>El regalo le llega a <b>cada alumno con cuenta</b> en la web. <b>${(+T.activos || 0).toLocaleString('es-PE')}</b> entraron en los últimos 7 días; los demás lo verán cuando vuelvan. Los suspendidos o baneados no reciben nada. Solo los administradores ven esta opción.</p>
+      </div>
+    </div>
+    ${rgFormHtml(!T.alumnos, '¿Qué les regalas a todos?', 'Regalar a todos')}
+    ${ult && rgHoyLima(ult.creado) ? `<div class="rg-aviso" style="margin:-4px 0 16px">Hoy ya les diste a todos: <b>${esc(rgTexto(ult))}</b> (${rgFecha(ult.creado)}).</div>` : ''}
+    ${(T.envios || []).length ? `<div class="agp-form"><h3>Regalos a todos</h3>${T.envios.map(x => `<div class="rg-h" style="--c:${(RG_TIPOS[x.tipo] || RG_TIPOS.item).c}"><i></i><div><b>${esc(rgTexto(x))}</b> · ${(+x.recibieron).toLocaleString('es-PE')} ${x.recibieron === 1 ? 'alumno' : 'alumnos'}${x.saltados && x.tipo === 'item' ? ' (' + x.saltados + ' ya lo tenían)' : ''}${x.nota ? ' · «' + esc(x.nota) + '»' : ''}<br><small>${esc(x.de || 'Admin')} · ${rgFecha(x.creado)}</small></div></div>`).join('')}</div>` : ''}`;
+  rgModosEventos();
+  if (T.alumnos) { rgFormEventos(rgTodosConfirmar); rgOpciones(); }
+}
+
+function rgTodosResumen() {
+  const t = RG_TIPOS[RG.tipo], n = RG.todos ? +RG.todos.alumnos : 0;
+  let ok = n > 0, txt = '';
+  if (RG.tipo === 'item') { ok = ok && !!RG.item; txt = RG.item ? rgTexto({ tipo: 'item', item: RG.item }) : 'Elige un ítem'; }
+  else if (t.max && !(RG.cant >= t.min && RG.cant <= t.max)) { ok = false; txt = 'Elige de ' + t.min + ' a ' + t.max.toLocaleString('es-PE') + ' ' + t.uni; }
+  else txt = rgTexto({ tipo: RG.tipo, cantidad: RG.cant });
+  const btn = $('rgDar'); if (!btn) return;
+  btn.disabled = !ok || RG.enviando;
+  $('rgRes').innerHTML = esc(txt) + (ok ? ' para cada uno de los <b>' + n.toLocaleString('es-PE') + '</b> alumnos' : '');
+}
+
+// Llega a todos y no se deshace: una ventana que dice qué y a cuántos antes de darlo
+function rgTodosConfirmar() {
+  if (RG.enviando) return;
+  const n = +RG.todos.alumnos, tipo = RG.tipo, cant = RG.cant, item = RG.item, nota = $('rgNota').value.trim();
+  const txt = rgTexto({ tipo, cantidad: cant, item });
+  const o = document.createElement('div');
+  o.className = 'ov';
+  o.innerHTML = `<div class="mcard rg-conf" style="max-width:460px;--c:${RG_TIPOS[tipo].c}">
+    <div class="rg-conf-ic">${RG_IC[tipo]}</div>
+    <h3>¿Regalar a todos?</h3>
+    <div class="rg-conf-que">${esc(txt)}</div>
+    <p class="sub">para cada uno de los <b>${n.toLocaleString('es-PE')} alumnos</b>${nota ? ', con la nota «' + esc(nota) + '»' : ''}.<br>Les llega al toque y <b>no se puede deshacer</b>.</p>
+    <div class="mfoot"><button type="button" class="btn-ghost" data-x>Cancelar</button>
+    <button type="button" class="btn-main" data-ok>Sí, regalar a ${n.toLocaleString('es-PE')}</button></div></div>`;
+  document.body.appendChild(o);
+  const fin = () => { o.remove(); document.removeEventListener('keydown', esc_); };
+  const esc_ = e => { if (e.key === 'Escape') fin(); };
+  document.addEventListener('keydown', esc_);
+  o.addEventListener('mousedown', e => { if (e.target === o) fin(); });
+  o.querySelector('[data-x]').addEventListener('click', fin);
+  o.querySelector('[data-ok]').addEventListener('click', () => { fin(); rgTodosDar(tipo, cant, item, nota); });
+  o.querySelector('[data-x]').focus();
+}
+
+async function rgTodosDar(tipo, cant, item, nota) {
+  if (RG.enviando) return;
+  RG.enviando = true; rgTodosResumen();
+  const btn = $('rgDar'); btn.textContent = 'Regalando a todos…';
+  const c = await MCAuth.listo;
+  const r = await c.rpc('regalo_todos_dar', { p_tipo: tipo, p_cantidad: tipo === 'item' ? null : cant, p_item: tipo === 'item' ? item : null, p_nota: nota || null });
+  RG.enviando = false;
+  if (r.error) { btn.textContent = 'Regalar a todos'; rgTodosResumen(); toast(rgFaltaSql(r.error) || r.error.message || 'No se pudo regalar'); return; }
+  toast(rgTexto({ tipo, cantidad: cant, item }) + ' para ' + (+r.data.recibieron).toLocaleString('es-PE') + (r.data.recibieron === 1 ? ' alumno' : ' alumnos') + (r.data.saltados && tipo === 'item' ? ' · ' + r.data.saltados + ' ya lo tenían' : ''));
+  RG.todos = r.data; RG.item = '';
+  pintarTodos();
 }

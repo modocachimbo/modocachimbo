@@ -5,7 +5,7 @@
      tocarlo se rompe el sello, se abre la tapa, sale la carta con el
      mensaje y quién lo manda, y adentro los regalos.
    - window.MCSobre.abrir({ regalos, de, nota, iconos })
-       regalos: [{ tipo: 'item', id } | { tipo: 'corazones'|'xp'|'infinito', cantidad }]
+       regalos: [{ tipo: 'item', id } | { tipo: 'corazones'|'xp'|'infinito'|'rayos', cantidad }]
        iconos:  { corazon, xp } (svg de corazones.js)
      Devuelve una promesa que se cumple al cerrar.
    - Los ítems de Mi colección se dibujan con window.MCColeccion
@@ -17,6 +17,8 @@
   var BASE = script && script.src ? script.src.replace(/assets\/sobre\.js(\?.*)?$/, '') : './';
   var BUHO = BASE + 'assets/buho/avatar/clasico.webp';
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  // Rayo de energía: el mismo dibujo del Arcade (arcade.html #r-rayo)
+  var RAYO = '<svg viewBox="0 0 64 64" width="100%" height="100%" aria-hidden="true"><defs><linearGradient id="mcsRayoG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9BE4FF"/><stop offset=".5" stop-color="#2FA8FF"/><stop offset="1" stop-color="#1060E0"/></linearGradient></defs><path d="M38 4 12 36h16l-6 24 30-36H35l8-20z" fill="#0B3C8C" stroke="#0B3C8C" stroke-width="6" stroke-linejoin="round" transform="translate(2 3)"/><path d="M38 4 12 36h16l-6 24 30-36H35l8-20z" fill="url(#mcsRayoG)" stroke="#0E4BB0" stroke-width="3" stroke-linejoin="round"/><path d="M36 9 18 32h8" fill="none" stroke="#D8F1FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/></svg>';
   var quieto = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function css() {
@@ -140,6 +142,8 @@
       nom = x.nom; sub = R.nom + (x.espacio === 'racha' ? ' · Banner' : ''); c = R.c;
     } else if (g.tipo === 'xp') {
       d = iconos.xp || '⚡'; nom = '+' + g.cantidad + ' XP'; sub = 'XP'; c = '255,200,0';
+    } else if (g.tipo === 'rayos') {
+      d = RAYO; nom = '+' + g.cantidad + ' de energía'; sub = g.cantidad === 1 ? 'Rayo' : 'Rayos'; c = '47,168,255';
     } else if (g.tipo === 'infinito') {
       var h = +g.cantidad || 0;
       d = iconos.corazon || '❤'; nom = 'Corazones ∞'; sub = h % 24 ? h + (h === 1 ? ' hora' : ' horas') : h / 24 + (h === 24 ? ' día' : ' días'); c = '255,75,75';
