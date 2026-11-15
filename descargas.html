@@ -16,8 +16,8 @@
 /* =========================================================
    Modo Cachimbo · Tienda de descargas (assets/paquetes.js)
    Cursos del ciclo actual, simuladores del Laboratorio y exámenes
-   de admisión para usar sin internet. Quién la usa: panel → Planes
-   y precios → Tienda de descargas (planes.tienda.modo).
+   de admisión para usar sin internet. Quién la usa: panel → Descargas
+   PDF → Descargas sin internet (planes.tienda.modo). Solo offline-VIP.
    ========================================================= */
 :root{--bg:#06040F;--card:#151127;--card2:#1D1834;--borde:#2A2346;--lima:#C6E000;--lima-osc:#8fa300;--tx:#EEEAF7;--dim:#A99FC8;--faint:#6F6690}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -201,7 +201,7 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
 
 <script src="assets/mc-config.js"></script>
 <script src="assets/auth.js"></script>
-<script src="assets/acceso.js?v=166"></script>
+<script src="assets/acceso.js?v=167"></script>
 <script src="assets/planes.js"></script>
 <script src="assets/lab-rayos.js"></script>
 <script src="assets/lab-catalogo.js"></script>
@@ -227,7 +227,7 @@ function sinRed(){ return navigator.onLine===false; }
 function vigente(x){ if(!x.vence) return true; var d=new Date(x.vence); return isNaN(d)||d.getTime()+86400000>Date.now(); }
 function revisarVip(){
   var si=false;
-  try{ si=window.MCAcceso&&MCAcceso.activos().some(function(x){ return /(^|,)(TODO-VIP|offline-VIP)(,|$)/.test(x.producto||'')&&vigente(x); }); }catch(e){}
+  try{ si=window.MCAcceso&&MCAcceso.activos().some(function(x){ return /(^|,)offline-VIP(,|$)/.test(x.producto||'')&&vigente(x); }); }catch(e){}
   if(ST&&ST.equipo) si=true;
   try{ if(localStorage.getItem('mc_desc_admin')==='1') si=true; }catch(e){}
   ES_VIP=si;
@@ -307,8 +307,8 @@ function tarjeta(k){
   } else {
     if(k.tipo==='lab'&&!k.listos.length) bt='<span class="pk-b no">Pronto</span>';
     else if(!P) bt='<span class="pk-b no">No disponible</span>';
-    else if(!puede()&&!inf) bt='<span class="pk-b vipb"><svg class="i"><use href="#ic-corona"/></svg>VIP Total</span>';
-    else if(inf&&(e.falt||e.nuevo)) bt=sinRed()||!puede()?'<span class="pk-b no">'+(sinRed()?'Sin internet':'VIP Total')+'</span>':'<button class="pk-b act" data-p="'+k.id+'"><svg class="i"><use href="#ic-act"/></svg>Actualizar</button>';
+    else if(!puede()&&!inf) bt='<span class="pk-b vipb"><svg class="i"><use href="#ic-corona"/></svg>Con código</span>';
+    else if(inf&&(e.falt||e.nuevo)) bt=sinRed()||!puede()?'<span class="pk-b no">'+(sinRed()?'Sin internet':'Con código')+'</span>':'<button class="pk-b act" data-p="'+k.id+'"><svg class="i"><use href="#ic-act"/></svg>Actualizar</button>';
     else if(inf) bt='<span class="pk-b ya"><svg class="i"><use href="#ic-ok"/></svg>Listo</span>';
     else if(k.tipo==='lab'&&!k.ab.length) bt='<span class="pk-b no"><svg class="i"><use href="#ic-cand"/></svg>Cerrados</span>';
     else bt=sinRed()?'<span class="pk-b no">Sin internet</span>':'<button class="pk-b" data-p="'+k.id+'"><svg class="i"><use href="#ic-desc"/></svg>Descargar</button>';
@@ -336,7 +336,7 @@ function pintar(){
   var pend=L.filter(function(k){ var e=estadoDe(k); return (k.tipo!=='lab'||k.ab.length)&&(!e.inf||e.falt||e.nuevo); });
   var bt=document.getElementById('todo');
   bt.disabled=!P||!puede()||!!BAJA||sinRed()||!pend.length;
-  bt.querySelector('span').textContent=!puede()?'Solo VIP Total':sinRed()?'Sin internet':BAJA?'Descargando…':pend.length?'Descargar todo ('+pend.length+')':'Todo descargado';
+  bt.querySelector('span').textContent=!puede()?'Solo con código':sinRed()?'Sin internet':BAJA?'Descargando…':pend.length?'Descargar todo ('+pend.length+')':'Todo descargado';
   document.getElementById('tabs').innerHTML=TABS.map(function(t){ var c=L.filter(function(k){ return k.tab===t[0]; }); var ok=c.filter(function(k){ return estadoDe(k).inf; }).length;
     return '<button class="tab'+(TAB===t[0]?' on':'')+'" data-t="'+t[0]+'">'+t[1]+(t[0]==='cursos'&&ciclo?' · '+ciclo:'')+' <em>'+(ok?ok+'/':'')+c.length+'</em></button>'; }).join('');
   document.getElementById('secs').innerHTML=TABS.map(function(t){
@@ -347,7 +347,7 @@ function pintar(){
       var cs=c.filter(function(k){ return k.curso.area===a.id; }); if(!cs.length) return '';
       var ok=cs.filter(function(k){ return estadoDe(k).inf; }).length;
       var pend=cs.filter(function(k){ var e=estadoDe(k); return !e.inf||e.nuevo; }).length, upd=cs.filter(function(k){ var e=estadoDe(k); return e.inf&&e.nuevo; }).length;
-      var ab=!P?'':!puede()?'<span class="area-b no"><svg class="i"><use href="#ic-corona"/></svg>VIP Total</span>'
+      var ab=!P?'':!puede()?'<span class="area-b no"><svg class="i"><use href="#ic-corona"/></svg>Con código</span>'
         :!pend?'<span class="area-b ya"><svg class="i"><use href="#ic-ok"/></svg>Área lista</span>'
         :BAJA||sinRed()?'<span class="area-b no">'+(BAJA?'Descargando…':'Sin internet')+'</span>'
         :'<button class="area-b" data-area="'+a.id+'"><svg class="i"><use href="#'+(upd===pend?'ic-act':'ic-desc')+'"/></svg>'+(upd===pend?'Actualizar área':'Descargar área')+' <b>'+pend+'</b></button>';
@@ -372,7 +372,7 @@ function pintarVip(){
   var box=document.getElementById('vip');
   if(MODO!=='vip'||ES_VIP){ box.innerHTML=''; return; }
   if(box.innerHTML) return;
-  box.innerHTML='<div class="vip"><div class="ic"><svg class="i"><use href="#ic-corona"/></svg></div><div class="tx"><b>Las descargas son del VIP Total</b><small>Con tu código VIP Total o tu código de Descargas bajas todo y estudias sin internet.</small></div>'+
+  box.innerHTML='<div class="vip"><div class="ic"><svg class="i"><use href="#ic-corona"/></svg></div><div class="tx"><b>Las descargas van con código</b><small>Con tu código Descargas sin internet bajas todo y estudias sin internet.</small></div>'+
     '<form id="vCod"><input id="vIn" placeholder="Escribe tu código" autocomplete="off" maxlength="40"><button>Activar</button></form><div class="msg" id="vMsg"></div></div>';
   document.getElementById('vCod').onsubmit=function(e){
     e.preventDefault();

@@ -183,7 +183,7 @@ async function pintarTienda() {
   const est = !on ? '<span class="dsc-estado off"><i></i>Apagada</span>' : `<span class="dsc-estado on"><i></i>Prendida · ${todos ? 'abierta para todos' : 'solo con código'}</span>`;
   caja.innerHTML = `<h3>Descargas sin internet</h3><p>La tienda Descargas del inicio: los alumnos bajan sus cursos del ciclo actual, simuladores y exámenes para estudiar sin internet. Se guarda al tocar.</p>
     ${sw('tdaOn', on, 'Descargas sin internet prendidas', 'Apagadas: el botón Descargas desaparece del inicio y la tienda dice «cerradas por ahora».')}
-    ${sw('tdaTodos', todos, 'Abierto para todos', 'Cualquier alumno puede descargar, sin código. Apagado: solo con el Acceso total o el paquete Descargas sin internet (Panel → Códigos).')}
+    ${sw('tdaTodos', todos, 'Abierto para todos', 'Cualquier alumno puede descargar, sin código. Apagado: solo con el paquete Descargas sin internet (Panel → Códigos). El Acceso total no lo incluye.')}
     <div class="dsc-pie">${est}<span class="hint" id="tdaMsg"></span></div>`;
   const guardar = async () => {
     const a = $('tdaOn'), b = $('tdaTodos'), msg = $('tdaMsg');
