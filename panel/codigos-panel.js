@@ -19,7 +19,7 @@ const PROD_AYUDA = {
   'vocabulario-VIP': 'Vocabulario de todos los cursos',
   'biblioteca-VIP': 'Solo la Biblioteca: entrar y leer todos sus libros',
   'laboratorio-VIP': 'Todos los simuladores del Laboratorio sin gastar energía. Va aparte: no viene en el Acceso total',
-  'offline-VIP': 'La tienda de Descargas del inicio: bajar los cursos del ciclo actual, simuladores y exámenes para estudiar sin internet. Va aparte, pero el Acceso total también la abre (si en Panel → Planes y precios → Tienda de descargas está en «Solo VIP»)',
+  'offline-VIP': 'La tienda de Descargas: bajar los cursos del ciclo actual, simuladores y exámenes para estudiar sin internet. Va aparte (el Acceso total también la abre)',
   'descarga-VIP': 'Descargar en PDF (con marca de agua y N.º único) lo que permitas en Panel → Descargas PDF. Va aparte: no viene en el Acceso total ni abre los temas'
 };
 const AREAS_COD = [['matematica', 'Matemática'], ['ciencia-tecnologia', 'Ciencia y Tecnología'], ['comunicacion', 'Comunicación'], ['ciencias-sociales', 'Ciencias Sociales']];
