@@ -448,6 +448,35 @@ if(window.MCAuth) MCAuth.listo.then(function(c){ return MCAuth.usuario()?c.rpc('
   if(!r||r.error) return; try{ localStorage.setItem('mc_desc_admin',r.data?'1':'0'); }catch(e){}
   if(r.data&&!ES_VIP&&!BAJA&&MODO!=='apagado'&&document.getElementById('secs')) pintar();
 }).catch(function(){});
+/* ---- Sin código, sin descargas ----
+   Si el alumno ya no tiene el código Descargas sin internet (se lo quitaron o venció) y la tienda
+   está «solo con código», al abrirla con internet se borra lo que bajó. Solo se borra cuando todo
+   lo confirma el servidor: el ajuste de la tienda, que no es administrador ni equipo, y sus accesos por ID. */
+function limpiarSinAcceso(){
+  if(!P||sinRed()||!window.MCAuth) return;
+  var i=P.info(); if(!Object.keys(i.packs||{}).length&&!i.base) return;
+  MCAuth.listo.then(function(c){
+    if(!MCAuth.usuario()) return;
+    return Promise.all([
+      c.from('ajustes').select('valor').eq('clave','planes').maybeSingle(),
+      c.rpc('es_admin'),
+      R?R.estado():Promise.resolve(null),
+      window.MCAcceso&&MCAcceso.refrescarID?MCAcceso.refrescarID(true):null
+    ]).then(function(r){
+      var pl=r[0], adm=r[1], st=r[2];
+      if(!pl||pl.error||!adm||adm.error||adm.data) return;
+      var v=pl.data&&pl.data.valor, m=v&&v.tienda&&v.tienda.modo||'vip';
+      if(m!=='vip') return;
+      if(R&&(!st||st.error)) return;
+      if(st&&st.equipo) return;
+      if(st) ST=st;
+      revisarVip();
+      if(ES_VIP||BAJA||sinRed()) return;
+      return P.borrarTodo().then(function(){ NUEVO={}; if(document.getElementById('secs')) pintar(); aviso('Tu acceso a Descargas terminó: se borró lo que habías bajado'); });
+    });
+  }).catch(function(){});
+}
+limpiarSinAcceso();
 // Con internet: ¿cambió algo de lo descargado? (solo cabeceras)
 if(P&&!sinRed()) Object.keys(P.info().packs).forEach(function(id){ P.revisar(id).then(function(si){ if(si){ NUEVO[id]=1; if(!BAJA&&document.getElementById('secs')) pintar(); } }); });
 ['online','offline'].forEach(function(ev){ window.addEventListener(ev,function(){ if(document.getElementById('secs')) pintar(); }); });
