@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" href="assets/app/icono-180.png">
 <title>Descargas · Modo Cachimbo</title>
 <script src="assets/app.js" defer></script>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Nunito:wght@600;700;800;900&family=Sora:wght@700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,800;1,900&family=Nunito:wght@600;700;800;900&family=Sora:wght@700;800&family=Lilita+One&display=swap">
 <style>
 /* =========================================================
    Modo Cachimbo · Tienda de descargas (assets/paquetes.js)
@@ -103,6 +103,24 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
 .pk-x{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--card2);color:var(--dim)}
 .pk-x svg{width:18px;height:18px}
 .pk-x.seguro{width:auto;padding:0 10px;color:#FF7A85;font:800 12.5px "Nunito"}
+/* áreas (como «Modos de estudio» del inicio) */
+.area{margin-top:22px}.area:first-of-type{margin-top:6px}
+.area h3{display:flex;align-items:center;gap:12px;margin:0 0 12px;font:italic 900 26px/1 "Barlow Condensed","Arial Narrow",sans-serif;text-transform:uppercase;letter-spacing:.02em;color:#fff}
+.area h3 i{width:6px;height:24px;border-radius:3px;background:var(--c);box-shadow:0 0 14px color-mix(in srgb,var(--c) 60%,transparent);transform:skewX(-12deg)}
+.area h3:after{content:"";flex:1;height:2px;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 45%,transparent),transparent);order:2}
+.area h3 em{order:3;font:800 13px "Barlow Condensed";font-style:normal;letter-spacing:.12em;color:var(--c);opacity:.9}
+/* tarjeta estilo juego: degradado del color del área, borde inferior grueso */
+.pk{border-radius:20px!important;border-bottom:4px solid var(--c)!important;background:linear-gradient(150deg,color-mix(in srgb,var(--c) 22%,#151127),#151127 58%)!important}
+.pk:before{display:none}
+.pk.listo{background:linear-gradient(150deg,color-mix(in srgb,var(--c) 32%,#151127),#151127 65%)!important}
+.pk-ic{width:58px!important;height:58px!important;border-radius:16px!important;background:linear-gradient(160deg,color-mix(in srgb,var(--c) 34%,#0A0718),#0A0718)!important;box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--c) 55%,transparent),0 6px 14px rgba(0,0,0,.35)}
+.pk-ic i{width:34px!important;height:34px!important}
+.pk-t b{font:italic 900 23px/1.02 "Barlow Condensed","Arial Narrow",sans-serif!important;text-transform:uppercase;letter-spacing:.01em}
+.pk-t small{font:800 12.5px/1.3 "Nunito"!important;color:color-mix(in srgb,var(--c) 70%,#fff)!important;opacity:.95}
+.pk-inc span{background:rgba(0,0,0,.28)}
+.pk-b{font:400 15px "Lilita One","Sora",sans-serif!important;letter-spacing:.02em}
+@media (max-width:760px){.area h3{font-size:22px}.pk-t b{font-size:21px!important}
+  .area .grid{gap:10px}.pk-curso .pk-inc{display:none}.pk-curso .pk-pie{padding-top:12px}.pk-curso .pk-ic{width:50px!important;height:50px!important}}
 /* pie */
 .pie2{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .caja2{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:18px;background:#0D0A1F;border:1px solid var(--borde);font:700 13.5px/1.4 "Nunito";color:var(--dim)}
@@ -187,7 +205,7 @@ var P=window.MCPaquetes&&MCPaquetes.soportado()?MCPaquetes:null, R=window.MCRayo
 var LAB=window.MC_LAB_CUR||[], PRECIO0=window.MC_LAB_PRECIO0||{};
 var AREA_COL={'ciencia-tecnologia':'#C6E000','matematica':'#1CB0F6','comunicacion':'#CE82FF','ciencias-sociales':'#FF9600'};
 var SECCIONES=[['libros','Libros'],['seminarios','Seminarios'],['banqueo','Banqueo']];
-var CURSOS=[], INFO={}, BAJA=null, NUEVO={}, MODO='vip', ES_VIP=false, TAB='cursos';
+var AREAS=[], CURSOS=[], INFO={}, BAJA=null, NUEVO={}, MODO='vip', ES_VIP=false, TAB='cursos';
 var ST=R&&R.guardado()||null;
 
 function esc(t){ return String(t).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
@@ -290,7 +308,7 @@ function tarjeta(k){
       :'aprox. '+mb(k.kb*1024);
     pie='<div class="pk-tam">'+tam+'</div>'+bt+(inf?'<button class="pk-x" data-b="'+k.id+'" aria-label="Borrar '+esc(k.nombre)+'"><svg class="i"><use href="#ic-bote"/></svg></button>':'');
   }
-  h='<div class="pk'+(listo?' listo':'')+'" style="--c:'+k.color+'"><div class="pk-f"><div class="pk-ic">'+ic+(listo?'<span class="pk-ok"><svg class="i"><use href="#ic-ok"/></svg></span>':'')+'</div><div class="pk-t"><b>'+esc(k.nombre)+'</b><small>'+esc(k.sub)+'</small></div></div>';
+  h='<div class="pk pk-'+k.tipo+(listo?' listo':'')+'" style="--c:'+k.color+'"><div class="pk-f"><div class="pk-ic">'+ic+(listo?'<span class="pk-ok"><svg class="i"><use href="#ic-ok"/></svg></span>':'')+'</div><div class="pk-t"><b>'+esc(k.nombre)+'</b><small>'+esc(k.sub)+'</small></div></div>';
   h+='<div class="pk-inc">'+k.inc.map(function(x){
     var en=inf&&k.tipo==='lab'&&(inf.items||[]).indexOf(x[2])>=0;
     return '<span class="'+(en||(inf&&k.tipo!=='lab')?'si':x[1]<0||x[1]===0?'ce':'')+'">'+(en||(inf&&k.tipo!=='lab')?'<svg class="i"><use href="#ic-ok"/></svg>':x[1]<0?'<svg class="i"><use href="#ic-cand"/></svg>':'')+esc(x[0])+(x[1]===0?' · pronto':'')+'</span>';
@@ -316,7 +334,12 @@ function pintar(){
     var c=L.filter(function(k){ return k.tab===t[0]; });
     var tit=t[0]==='cursos'?'Cursos del ciclo '+(ciclo||'actual'):t[0]==='simuladores'?'Simuladores del Laboratorio':'Exámenes de admisión';
     var nota=t[0]==='cursos'?'Libros, seminarios, banqueo, repaso y fijas':t[0]==='simuladores'?'Solo los que tienes abiertos':'Todos los años';
-    return '<section class="sec'+(TAB===t[0]?'':' oculta')+'" id="s-'+t[0]+'"><h2>'+tit+'<span>'+nota+'</span></h2><div class="grid">'+c.map(tarjeta).join('')+'</div></section>';
+    var cuerpo=t[0]==='cursos'&&AREAS.length?AREAS.map(function(a){
+      var cs=c.filter(function(k){ return k.curso.area===a.id; }); if(!cs.length) return '';
+      var ok=cs.filter(function(k){ return estadoDe(k).inf; }).length;
+      return '<div class="area" style="--c:'+(AREA_COL[a.id]||'#C6E000')+'"><h3><i></i>'+esc(a.nombre)+'<em>'+(ok?ok+' de ':'')+cs.length+(cs.length===1?' curso':' cursos')+'</em></h3><div class="grid">'+cs.map(tarjeta).join('')+'</div></div>';
+    }).join(''):'<div class="grid">'+c.map(tarjeta).join('')+'</div>';
+    return '<section class="sec'+(TAB===t[0]?'':' oculta')+'" id="s-'+t[0]+'"><h2>'+tit+'<span>'+nota+'</span></h2>'+cuerpo+'</section>';
   }).join('');
   document.getElementById('pUso').innerHTML=uso?'En tu celular: <b>'+mb(uso)+'</b>'+(v.base?'<br>Incluye lo común de la web ('+mb(v.base.bytes)+')':''):'Todavía no descargaste nada.';
   document.getElementById('borrarTodo').hidden=!uso||!!BAJA;
@@ -386,6 +409,7 @@ function cerrada(){
   document.getElementById('app').innerHTML='<div class="cerrada"><b>Descargas cerradas por ahora</b><p>Muy pronto podrás descargar tus cursos para estudiar sin internet.</p><a class="btn" href="index.html">Volver al inicio</a></div>';
 }
 fetch('assets/cursos.json',{cache:'no-cache'}).then(function(r){ return r.json(); }).then(function(d){
+  AREAS=d.areas||[];
   CURSOS=(d.cursos||[]).filter(function(c){ return !c.oculto; }).sort(function(a,b){ return (a.orden||0)-(b.orden||0); });
   if(MODO==='apagado') return cerrada();
   pintar();
