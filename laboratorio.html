@@ -89,14 +89,10 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
 .sim.pronto .art:after{content:"";position:absolute;inset:0;background:rgba(6,4,15,.35)}
 .lock{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:8px;background:rgba(6,4,15,.75);border:1px solid var(--borde);font:800 11px/1 "Barlow Condensed";letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
 .nuevo{background:var(--lima);color:#151A03;border-color:var(--lima)}
-.paq{margin-top:30px;display:flex;align-items:center;gap:16px;padding:16px 20px;border-radius:20px;background:linear-gradient(90deg,rgba(58,180,240,.12),rgba(21,17,39,.8));border:1px solid rgba(58,180,240,.3)}
-.paq .ic{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:rgba(58,180,240,.16);color:#3AB4F0;flex:none}
-.paq b{display:block;font:800 16px "Nunito"}.paq small{color:var(--dim)}
-.paq .sb{margin-left:auto;height:42px;padding:0 16px;border-radius:12px;border:1px solid rgba(58,180,240,.5);color:#3AB4F0;font:800 14px "Nunito";flex:none}
 @media (max-width:1000px){.fila{grid-template-columns:repeat(3,1fr)}}
 @media (max-width:760px){
   .wrap{padding:max(12px,env(safe-area-inset-top)) 0 40px}
-  .top,.cursos,.sec h2,.paq{margin-left:16px;margin-right:16px}
+  .top,.cursos,.sec h2{margin-left:16px;margin-right:16px}
   .ttl b{font-size:21px}.xp b{display:none}
   .hero{margin:16px 16px 0;grid-template-columns:1fr;min-height:0}
   .hero .img{min-height:190px;order:-1}
@@ -112,7 +108,6 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
   .fila{display:flex;overflow-x:auto;gap:12px;padding:0 16px 4px;scroll-snap-type:x mandatory;scrollbar-width:none}
   .fila::-webkit-scrollbar{display:none}
   .sim{flex:0 0 68%;scroll-snap-align:start}
-  .paq{flex-wrap:wrap}.paq .sb{margin-left:62px}
 }
 
 .son.off{color:var(--faint);border-color:var(--borde)}
@@ -161,16 +156,14 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
 .hoja .usar{width:100%;margin-top:14px;justify-content:center;border:0}
 .hoja .usar[disabled]{background:#2A2346;color:var(--faint);box-shadow:0 5px 0 #1a1530;cursor:default}
 .hoja .falta{margin-top:10px;text-align:center;color:var(--dim);font:800 13px "Nunito"}
-.paq .sb[disabled]{opacity:.55;cursor:default}
+/* Simulador descargado: marca en la tarjeta. Sin internet, los no descargados se ven apagados */
+.desc-ok{position:absolute;top:10px;right:10px;z-index:2;width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:rgba(6,4,15,.78);border:1px solid rgba(198,224,0,.5);color:var(--lima)}
+.desc-ok svg{width:16px;height:16px;stroke-width:2.6}
+html.sin-red .sim.no-desc{opacity:.45}
+@media (max-width:760px){
+              }
 .aviso{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:.25s;padding:12px 18px;border-radius:14px;background:#1D1834;border:1px solid var(--borde);font:800 14px/1.3 "Nunito";max-width:calc(100vw - 32px);text-align:center;z-index:9}
 .aviso.on{opacity:1;transform:translate(-50%,0)}
-/* Beta: solo admin + influencers, igual que el Arcade (assets/arcade-beta.js) */
-.beta-aviso{display:none;max-width:420px;margin:90px auto 0;padding:30px 24px;text-align:center;border-radius:24px;background:var(--card);border:1px solid var(--borde);border-bottom:5px solid var(--lima)}
-.beta-aviso b{display:block;font:800 26px/1.2 "Sora",sans-serif}
-.beta-aviso p{margin:10px 0 20px;color:var(--dim);font-weight:700}
-.beta-aviso a{display:inline-flex;align-items:center;height:48px;padding:0 22px;border-radius:14px;background:var(--lima);color:#151A03;font:800 15px/1 "Sora";text-decoration:none}
-.cargando{display:none;margin:120px auto;width:40px;height:40px;border-radius:50%;border:4px solid var(--borde);border-top-color:var(--lima);animation:gira .8s linear infinite}
-@keyframes gira{to{transform:rotate(1turn)}}
 @media (prefers-reduced-motion:reduce){.hero .dos a,.hero .img img,.ray .ri{animation:none}}
 </style>
 </head>
@@ -187,10 +180,9 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
 <symbol id="ic-hoja" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 4.5V3h6v1.5M8.5 10l1.5 1.5 3-3M8.5 15.5h7"/></symbol>
 <symbol id="ic-llave" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4.5"/><path d="M11.2 11.8 20 3M16.5 6.5l2.5 2.5M14 9l2 2"/></symbol>
 <symbol id="ic-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="ic-desc-ok" viewBox="0 0 24 24"><path d="M12 4v9M8 9.5l4 4 4-4M5 19.5h14"/></symbol>
 <symbol id="ic-desc" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></symbol>
 </defs></svg>
-<div class="cargando"></div>
-<section class="beta-aviso"><b>Laboratorio en prueba</b><p>Los simuladores están en beta. Muy pronto se abren para todos.</p><a href="index.html">Volver al inicio</a></section>
 <div class="wrap">
   <div class="top">
     <a class="bt" href="index.html" aria-label="Volver al inicio"><svg class="i"><use href="#ic-atras"/></svg></a>
@@ -216,11 +208,6 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
   <div class="cursos" id="cursos"></div>
   <div id="secs"></div>
 
-  <div class="paq">
-    <div class="ic"><svg class="i"><use href="#ic-desc"/></svg></div>
-    <div><b>Úsalo sin internet</b><small>Muy pronto podrás descargar los simuladores de cada curso y estudiar sin datos.</small></div>
-    <button class="sb" disabled>Pronto</button>
-  </div>
 </div>
 <div class="aviso" id="aviso"></div>
 <div class="fondo" id="fondo"><div class="hoja" id="hoja"></div></div>
@@ -231,6 +218,8 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
 <script src="assets/acceso.js?v=166"></script>
 <script src="assets/lab-sonido.js"></script>
 <script src="assets/lab-rayos.js"></script>
+<script src="assets/lab-catalogo.js"></script>
+<script src="assets/paquetes.js"></script>
 <script>
 var ART={
  vegetal:'<svg viewBox="0 0 120 80"><rect x="18" y="8" width="84" height="64" rx="10" fill="#1d4a1a" stroke="#6fdc4f" stroke-width="3"/><rect x="26" y="15" width="68" height="50" rx="7" fill="#2a6b24" opacity=".6"/><ellipse cx="66" cy="42" rx="20" ry="16" fill="#8fe0ff" opacity=".35" stroke="#8fe0ff"/><circle cx="40" cy="30" r="8" fill="#9b6bff"/><ellipse cx="38" cy="54" rx="7" ry="4" fill="#4cd137"/><ellipse cx="84" cy="24" rx="6" ry="3.5" fill="#4cd137"/></svg>',
@@ -252,17 +241,9 @@ var ART={
  trigo:'<svg class="rico" viewBox="0 0 320 200"><defs><radialGradient id="atF" cx="50%" cy="55%" r="60%"><stop offset="0" stop-color="#2A1B5E"/><stop offset="1" stop-color="#0E0A22"/></radialGradient><filter id="atG" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter><radialGradient id="atM" cx="50%" cy="50%" r="55%"><stop offset=".55" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><mask id="atK"><rect width="320" height="200" fill="url(#atM)"/></mask></defs><rect width="320" height="200" fill="url(#atF)"/><g stroke="#9B6BFF" stroke-opacity=".16" stroke-width="1" mask="url(#atK)"><path d="M20 0V200" /><path d="M45 0V200" /><path d="M70 0V200" /><path d="M95 0V200" /><path d="M120 0V200" /><path d="M145 0V200" /><path d="M170 0V200" /><path d="M195 0V200" /><path d="M220 0V200" /><path d="M245 0V200" /><path d="M270 0V200" /><path d="M295 0V200" /><path d="M0 25H320" /><path d="M0 50H320" /><path d="M0 75H320" /><path d="M0 100H320" /><path d="M0 125H320" /><path d="M0 150H320" /><path d="M0 175H320" /></g><path d="M30 100H300M100 20V180" stroke="#EEEAF7" stroke-opacity=".4" stroke-width="1.5"/><circle cx="100" cy="100" r="66" fill="rgba(155,107,255,.1)" stroke="#B99CFF" stroke-width="3" filter="url(#atG)"/><path d="M166.0 100.0L172.0 100.0" stroke="#B99CFF" stroke-opacity=".6" stroke-width="1.5"/><path d="M157.2 67.0L162.4 64.0" stroke="#B99CFF" stroke-opacity=".6" stroke-width="1.5"/><path d="M133.0 42.8L136.0 37.6" stroke="#B99CFF" stroke-opacity=".6" stroke-width="1.5"/><path d="M100.0 34.0L100.0 28.0" stroke="#B99CFF" stroke-opacity=".6" stroke-width="1.5"/><path d="M67.0 42.8L64.0 37.6" stroke="#B99CFF" stroke-opacity=".6" stroke-width="1.5"/><path d="M42.8 67.0L37.6 64.0" stroke="#B99CFF" stroke-opacity=".6" stroke-width="1.5"/><path d="M34.0 100.0L28.0 100.0" stroke="#B99CFF" stroke-opacity=".6" stroke-width="1.5"/><path d="M42.8 133.0L37.6 136.0" stroke="#B99CFF" stroke-opacity=".6" stroke-width="1.5"/><path d="M67.0 157.2L64.0 162.4" stroke="#B99CFF" stroke-opacity=".6" stroke-width="1.5"/><path d="M100.0 166.0L100.0 172.0" stroke="#B99CFF" stroke-opacity=".6" stroke-width="1.5"/><path d="M133.0 157.2L136.0 162.4" stroke="#B99CFF" stroke-opacity=".6" stroke-width="1.5"/><path d="M157.2 133.0L162.4 136.0" stroke="#B99CFF" stroke-opacity=".6" stroke-width="1.5"/><path d="M100 100L128 100A28 28 0 0 0 119.8 80.2Z" fill="rgba(255,200,0,.25)" stroke="#FFC800" stroke-width="2"/><text x="133" y="92" fill="#FFC800" style="font:800 13px Sora,sans-serif">θ</text><path d="M100 100H157.2" stroke="#3AB4F0" stroke-width="5" stroke-linecap="round"/><path d="M157.2 100V67" stroke="#FF5C8A" stroke-width="5" stroke-linecap="round"/><path d="M100 100L157.2 67" stroke="#C6E000" stroke-width="3.5" stroke-linecap="round" filter="url(#atG)"/><path d="M157.2 67H195.5" stroke="#FF5C8A" stroke-opacity=".6" stroke-dasharray="4 4"/><path d="M186.0 100.0 L187.9 93.1 L189.8 86.3 L191.7 79.6 L193.6 73.2 L195.5 67.0 L197.4 61.2 L199.3 55.8 L201.2 51.0 L203.1 46.6 L205.0 42.8 L206.9 39.7 L208.8 37.2 L210.7 35.4 L212.6 34.4 L214.5 34.0 L216.4 34.4 L218.3 35.4 L220.2 37.2 L222.1 39.7 L224.0 42.8 L225.9 46.6 L227.8 51.0 L229.7 55.8 L231.6 61.2 L233.5 67.0 L235.4 73.2 L237.3 79.6 L239.2 86.3 L241.1 93.1 L243.0 100.0 L244.9 106.9 L246.8 113.7 L248.7 120.4 L250.6 126.8 L252.5 133.0 L254.4 138.8 L256.3 144.2 L258.2 149.0 L260.1 153.4 L262.0 157.2 L263.9 160.3 L265.8 162.8 L267.7 164.6 L269.6 165.6 L271.5 166.0 L273.4 165.6 L275.3 164.6 L277.2 162.8 L279.1 160.3 L281.0 157.2 L282.9 153.4 L284.8 149.0 L286.7 144.2 L288.6 138.8 L290.5 133.0 L292.4 126.8 L294.3 120.4 L296.2 113.7 L298.1 106.9 L300.0 100.0" fill="none" stroke="#FF5C8A" stroke-width="3.2" stroke-linecap="round" opacity=".9"/><circle cx="195.5" cy="67" r="5" fill="#FF5C8A" stroke="#0E0A22" stroke-width="2"/><circle cx="157.2" cy="67" r="8" fill="#C6E000" stroke="#0E0A22" stroke-width="3" filter="url(#atG)"/><text x="166" y="58" fill="#EEEAF7" style="font:800 13px Sora,sans-serif">P</text></svg>',
  geo:'<svg class="rico" viewBox="0 0 320 200"><defs><radialGradient id="agF" cx="50%" cy="55%" r="60%"><stop offset="0" stop-color="#2A1B5E"/><stop offset="1" stop-color="#0E0A22"/></radialGradient><filter id="agG" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter><radialGradient id="agM" cx="50%" cy="50%" r="55%"><stop offset=".55" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><mask id="agK"><rect width="320" height="200" fill="url(#agM)"/></mask></defs><rect width="320" height="200" fill="url(#agF)"/><g stroke="#9B6BFF" stroke-opacity=".16" stroke-width="1" mask="url(#agK)"><path d="M20 0V200" /><path d="M45 0V200" /><path d="M70 0V200" /><path d="M95 0V200" /><path d="M120 0V200" /><path d="M145 0V200" /><path d="M170 0V200" /><path d="M195 0V200" /><path d="M220 0V200" /><path d="M245 0V200" /><path d="M270 0V200" /><path d="M295 0V200" /><path d="M0 25H320" /><path d="M0 50H320" /><path d="M0 75H320" /><path d="M0 100H320" /><path d="M0 125H320" /><path d="M0 150H320" /><path d="M0 175H320" /></g><path d="M190 168L190 40L290 168Z" fill="none" stroke="#9B6BFF" stroke-opacity=".35" stroke-width="2" stroke-dasharray="5 5"/><path d="M60 168L236 168L60 36Z" fill="rgba(198,224,0,.07)"/><path d="M60 168H236" stroke="#3AB4F0" stroke-width="5" stroke-linecap="round"/><path d="M60 168V36" stroke="#FF5C8A" stroke-width="5" stroke-linecap="round"/><path d="M60 36L236 168" stroke="#C6E000" stroke-width="5" stroke-linecap="round" filter="url(#agG)"/><path d="M60 154h14v14" fill="none" stroke="#EEEAF7" stroke-width="1.8"/><path d="M236 168L206 168A30 30 0 0 1 212 150Z" fill="rgba(255,200,0,.22)" stroke="#FFC800" stroke-width="2"/><path d="M60 36L60 64A28 28 0 0 0 82.4 52.8Z" fill="rgba(155,107,255,.25)" stroke="#B99CFF" stroke-width="2"/><text x="172" y="160" fill="#FFC800" style="font:800 13px Sora,sans-serif">37°</text><text x="68" y="84" fill="#B99CFF" style="font:800 13px Sora,sans-serif">53°</text><text x="44" y="108" text-anchor="end" fill="#FF5C8A" style="font:800 16px Sora,sans-serif">3k</text><text x="148" y="190" text-anchor="middle" fill="#3AB4F0" style="font:800 16px Sora,sans-serif">4k</text><text x="160" y="92" fill="#C6E000" style="font:800 16px Sora,sans-serif">5k</text><circle cx="60" cy="36" r="5" fill="#B99CFF" stroke="#0E0A22" stroke-width="2"/><circle cx="236" cy="168" r="5" fill="#FFC800" stroke="#0E0A22" stroke-width="2"/></svg>'
 };
-var CUR=[
- ['Biología','#55C23A','rgba(85,194,58,.22)',[['celula','Célula eucariota','Animal y vegetal · organelas en 3D','listo','lab-celula.html'],['mitosis','Mitosis y meiosis','Desde la interfase, fase por fase y animado','listo','lab-mitosis.html'],['punnett','Cruces de Mendel','Cuadro de Punnett animado con arvejas','listo','lab-punnett.html'],['adn','ADN y síntesis de proteínas','Replicación, transcripción y traducción','pronto']]],
- ['Química','#3AB4F0','rgba(58,180,240,.22)',[['tabla','Tabla periódica interactiva','Familias, tendencias y datos de los 118','listo','lab-tabla.html'],['atomo','Configuración electrónica','Serrucho, Hund, iones y números cuánticos','listo','lab-atomo.html'],['balanceo','Balanceo de ecuaciones','Moléculas, balanza y método del tanteo','listo','lab-balanceo.html']]],
- ['Física','#FF9600','rgba(255,150,0,.22)',[['parabolico','Tiro parabólico','Ángulo, velocidad, alcance y altura','listo','lab-parabolico.html'],['plano','Plano inclinado','Peso, normal, rozamiento y fuerza F','listo','lab-plano-inclinado.html'],['mru','MRU y MRUV','Gráficas x–t, v–t y a–t en vivo','listo','lab-mru.html'],['circuito','Circuitos eléctricos','Serie, paralelo y mixto con focos','listo','lab-circuito.html'],['optica','Lentes y espejos','Espejos cóncavos, convexos y lentes','listo','lab-optica.html']]],
- ['Anatomía','#E0458A','rgba(224,69,138,.22)',[['corazon','Corazón','Circulación mayor y menor','pronto'],['neurona','Neurona y sinapsis','El impulso nervioso','pronto'],['ojo','El ojo','Cómo se forma la imagen','pronto']]],
- ['Matemática','#9B6BFF','rgba(155,107,255,.22)',[['funcion','Funciones','Lineal, cuadrática, valor absoluto, raíz y exponencial','listo','lab-funciones.html'],['trigo','Circunferencia trigonométrica','Seno, coseno y tangente girando','listo','lab-trigo.html'],['geo','Triángulos notables','37°, 53°, 30°, 60°, 45° y más','listo','lab-triangulos.html']]]
-];
-/* Precios por si el servidor no respondió (los de verdad: tabla lab_sims) */
-var PRECIO0={celula:[60,1],tabla:[40,1],parabolico:[40,0],corazon:[60,0],funcion:[40,0],adn:[60,0]};
+var CUR=window.MC_LAB_CUR, PRECIO0=window.MC_LAB_PRECIO0;
 var NOMBRE={}; CUR.forEach(function(c){ c[3].forEach(function(s){ NOMBRE[s[0]]=s[1]; }); });
-var SN=window.MCLabSonido, R=window.MCRayos, ST=R&&R.guardado()||null, vistos=[];
+var SN=window.MCLabSonido, R=window.MCRayos, P=window.MCPaquetes&&MCPaquetes.soportado()?MCPaquetes:null, ST=R&&R.guardado()||null, vistos=[];
 try{ vistos=JSON.parse(localStorage.getItem('mc_lab_celula')||'[]'); }catch(e){}
 var pct=Math.min(100,Math.round(vistos.length/14*100));
 var total=0; CUR.forEach(function(c){ total+=c[3].length; });
@@ -287,15 +268,18 @@ function pintar(){
    var pie='';
    if(s[0]==='celula') pie='<div class="tipos"><span>Animal</span><span>Vegetal</span></div><div class="pie"><div class="barra"><i style="width:'+pct+'%"></i></div>'+pct+'%</div>';
    else pie='<div class="pie prcs">'+(ab&&gratis(s[0])?'<span class="prc gratis">Gratis</span>':ab?'<span class="prc gratis">Abierto</span>':rayo(precio(s[0])))+'</div>';
-   var tag=listo&&ab?'a':'button';
-   return '<'+tag+' class="sim'+(listo?'':' pronto')+'"'+(tag==='a'?' href="'+s[4]+'"':' type="button" data-sim="'+s[0]+'" data-listo="'+(listo?1:0)+'"')+' style="--g:'+c[2]+';text-align:left;padding:0"><div class="esq">'+esq+'</div><div class="art">'+art+'</div><div class="inf"><b>'+s[1]+'</b><small>'+s[2]+'</small>'+pie+'</div></'+tag+'>';
+   var tag=listo&&ab?'a':'button', dsc=P&&listo&&P.tiene(s[0]);
+   return '<'+tag+' class="sim'+(listo?'':' pronto')+(listo&&!dsc?' no-desc':'')+'"'+(tag==='a'?' href="'+s[4]+'"':' type="button" data-sim="'+s[0]+'" data-listo="'+(listo?1:0)+'"')+' style="--g:'+c[2]+';text-align:left;padding:0"><div class="esq">'+esq+'</div>'+(dsc?'<span class="desc-ok" title="Descargado"><svg class="i"><use href="#ic-desc-ok"/></svg></span>':'')+'<div class="art">'+art+'</div><div class="inf"><b>'+s[1]+'</b><small>'+s[2]+'</small>'+pie+'</div></'+tag+'>';
   }).join('')+'</div></section>';
  }).join('');
  document.querySelectorAll('button.sim').forEach(function(b){ b.onclick=function(){
    if(b.dataset.listo==='1') return hoja(b.dataset.sim);
    if(SN) SN.tocar('mal'); aviso(NOMBRE[b.dataset.sim]+' llega pronto al Laboratorio');
  }; });
- document.querySelectorAll('a.sim').forEach(function(a){ a.addEventListener('click',function(){ if(SN) SN.tocar('abrir'); }); });
+ document.querySelectorAll('a.sim').forEach(function(a){ a.addEventListener('click',function(e){
+   if(navigator.onLine===false&&a.classList.contains('no-desc')){ e.preventDefault(); if(SN) SN.tocar('mal'); aviso('Sin internet. Descárgalo desde <b>Descargas</b> en el inicio para usarlo sin datos.'); return; }
+   if(SN) SN.tocar('abrir'); }); });
+ pintarPaq();
  var br=document.getElementById('bRay');
  br.classList.toggle('lab',!!(ST&&ST.codigo));
  document.getElementById('rayN').textContent=ST&&ST.codigo?'Laboratorio':(ST?ST.saldo:0);
@@ -365,6 +349,13 @@ function hoja(sim){
   };
 }
 document.getElementById('bRay').onclick=function(){ hoja(null); };
+
+/* ===== Descargas (descargas.html · assets/paquetes.js) ===== */
+function pintarPaq(){
+  // Las descargas se hacen en descargas.html (botón en el inicio); aquí solo se marca lo descargado
+  document.documentElement.classList.toggle('sin-red',navigator.onLine===false);
+}
+['online','offline'].forEach(function(ev){ window.addEventListener(ev,pintar); });
 
 /* Volver desde un simulador cerrado: laboratorio.html?abrir=<sim> abre su ventana */
 var qAb=new URLSearchParams(location.search).get('abrir');

@@ -416,6 +416,8 @@ html:not(.arcade-si) .solo-beta { display: none !important; }
 .acceso { position: relative; width: 68px; height: 68px; display: grid; place-items: center; align-content: center; gap: 6px; background: var(--tarjeta); border: 1px solid var(--borde); color: var(--texto); box-shadow: var(--sombra-tarjeta); }
 .acceso svg { font-size: 26px; }
 .acceso span { font-size: 11px; letter-spacing: .06em; }
+.acceso.desc-acc { color: var(--lima); border-color: rgba(198,224,0,.45); }
+.acceso.desc-acc span { font-size: 8.5px; letter-spacing: 0; }
 .acceso.punto::after { content: ""; position: absolute; right: 5px; top: 5px; width: 7px; height: 7px; rotate: 45deg; background: var(--error); box-shadow: 0 0 0 2px var(--tarjeta), 0 0 8px rgba(255, 75, 75, .8); animation: aviso 2s ease-in-out infinite; }
 @keyframes aviso { 50% { scale: 1.3; } }
 
@@ -466,6 +468,7 @@ html:not(.arcade-si) .solo-beta { display: none !important; }
 .j-lab, .j-bib { padding-top: 34px !important; }
 .j-lab b.tit, .j-bib b.tit { font-size: 27px; position: relative; z-index: 1; }
 .j-lab small, .j-bib small { max-width: 12ch; }
+html.desc-off .nav .desc, html.desc-off .desc-acc { display: none !important; }
 .j-sim { background: linear-gradient(160deg, #8a5a00, #4d3200); border-color: var(--amarillo); }
 .j-sim .chip { background: var(--amarillo); color: #2a1d00; }
 .j-ex { background: linear-gradient(160deg, #0c5f8f, #123864); border-color: var(--info); }
@@ -1327,6 +1330,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
 </style>
 <link rel="stylesheet" href="assets/areas.css">
 <script>window.MC_RECURSOS_ARCADE = 1; /* corazones y XP del inicio con el estilo del Arcade (assets/corazones.js) */</script>
+<script>try{var mcPl=JSON.parse(localStorage.getItem('mc_planes')||'null');var mcTm=mcPl&&mcPl.tienda&&mcPl.tienda.modo;if(mcTm==='apagado')document.documentElement.classList.add('desc-off');if(mcTm==='todos')document.documentElement.classList.add('desc-todos');}catch(e){}</script>
 <script src="assets/mc-config.js"></script>
 <script src="assets/acceso.js?v=166"></script>
 <script src="assets/candado.js?v=164"></script>
@@ -1408,7 +1412,9 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
   <symbol id="i-copa" viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v4M8 21h8M9 18h6"/></symbol>
   <symbol id="i-agenda" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16"/><path d="M4 10h16M8 3v4M16 3v4"/></symbol>
   <symbol id="i-regalo" viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="12"/><path d="M3 9h18M12 9v12M12 9c-3 0-5-1-5-3s3-2 5 3c2-5 5-5 5-3s-2 3-5 3"/></symbol>
-  <symbol id="i-celula" viewBox="0 0 24 24"><path d="M5 21h14M9 17.5h6"/><path d="M15.5 9.5a6 6 0 0 1-3.5 8"/><path d="M8 4.2l3-1.6 3.6 6.8-3 1.6z"/><path d="M10.4 11.6l1.6-.9"/><circle cx="9.5" cy="14" r="1.3"/></symbol>
+  <symbol id="i-bajar" viewBox="0 0 24 24"><path d="M12 3v9"/><path d="M8.5 8.5 12 12l3.5-3.5"/><path d="M3.5 13.5h4.2l1.6 2.4h5.4l1.6-2.4h4.2V20H3.5z"/></symbol>
+  <symbol id="i-caja" viewBox="0 0 24 24"><path d="M12 3 20.5 7.2v9.6L12 21l-8.5-4.2V7.2z"/><path d="M3.5 7.2 12 11.4l8.5-4.2M12 11.4V21"/><path d="M15 13.2v3.2M13.6 15l1.4 1.4 1.4-1.4"/></symbol>
+<symbol id="i-celula" viewBox="0 0 24 24"><path d="M5 21h14M9 17.5h6"/><path d="M15.5 9.5a6 6 0 0 1-3.5 8"/><path d="M8 4.2l3-1.6 3.6 6.8-3 1.6z"/><path d="M10.4 11.6l1.6-.9"/><circle cx="9.5" cy="14" r="1.3"/></symbol>
   <symbol id="i-reloj" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M10 2h4M19 5l2 2"/></symbol>
   <symbol id="i-examen" viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"/><path d="M9 8h6M9 12h6M9 17l2 2 4-4"/><path d="M18 6h3v15h-3"/></symbol>
   <symbol id="i-tarjetas" viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="14" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v11"/><path d="M6 14h7"/></symbol>
@@ -1427,6 +1433,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
       <a href="duelo.html" class="duelo"><svg class="ic"><use href="#i-espadas"/></svg>Duelo</a>
       <a href="arcade.html" class="arcade"><svg class="ic"><use href="#i-mando"/></svg>Arcade<b class="nv-nuevo">Beta</b></a>
       <a href="laboratorio.html" class="lab"><svg class="ic"><use href="#i-celula"/></svg>Laboratorio<b class="nv-nuevo">Nuevo</b></a>
+      <a href="descargas.html" class="desc"><svg class="ic"><use href="#i-caja"/></svg>Descargas<b class="nv-nuevo">Nuevo</b></a>
       <a href="coleccion.html"><svg class="ic"><use href="#i-cofre"/></svg>Colección</a>
       <a href="amigos.html"><svg class="ic"><use href="#i-amigos"/></svg>Amigos<b class="am-bdg" data-am-bdg hidden></b></a>
       <a href="clanes.html"><svg class="ic"><use href="#i-clan"/></svg>Clanes</a>
@@ -1469,7 +1476,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
             <button class="acceso" type="button" id="accMisiones"><svg class="ic"><use href="#i-mision"/></svg><span>Misiones</span></button>
             <a class="acceso" href="amigos.html"><svg class="ic"><use href="#i-amigos"/></svg><span>Amigos</span><b class="am-bdg" data-am-bdg hidden></b></a>
             <a class="acceso" href="clanes.html"><svg class="ic"><use href="#i-clan"/></svg><span>Clanes</span></a>
-            <a class="acceso" href="perfil.html#ranking"><svg class="ic"><use href="#i-copa"/></svg><span>Ranking</span></a>
+            <a class="acceso desc-acc" href="descargas.html" aria-label="Descargas sin internet"><svg class="ic"><use href="#i-bajar"/></svg><span>Descargas</span></a>
             <a class="acceso" href="perfil.html#agenda"><svg class="ic"><use href="#i-agenda"/></svg><span>Agenda</span></a>
             <button class="acceso punto" type="button" id="novBtn" aria-label="Nuevo para ti" hidden><svg class="ic"><use href="#i-regalo"/></svg><span>Nuevo</span><b id="novPunto"></b></button>
           </nav>

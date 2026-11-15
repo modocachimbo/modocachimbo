@@ -9,11 +9,16 @@
    - "Primero internet" pregunta siempre al servidor (cache: 'no-cache'):
      GitHub Pages pide guardar 10 min cada archivo y sin esto el navegador
      seguía mostrando la versión anterior después de publicar.
+   - Paquetes de descarga del Laboratorio (assets/lab-paquetes.js): quedan en
+     cachés aparte "mc-pack-…" que no se borran al cambiar VERSION; sin internet
+     se buscan ahí también. Si un archivo del paquete se vuelve a bajar con
+     internet, el paquete se actualiza solo.
    - Notificaciones push (panel → Web → Notificaciones): las muestra
      y al tocarlas abre el link (o el inicio).
    Al cambiar este archivo, sube VERSION para limpiar lo viejo.
    ========================================================= */
-const VERSION = 'mc-v4';
+const VERSION = 'mc-v5';
+const PAQ = 'mc-pack-';
 const OFFLINE = 'offline.html';
 const CDN = /^https:\/\/(cdn\.jsdelivr\.net\/npm\/(katex@|@supabase\/supabase-js@)|fonts\.(googleapis|gstatic)\.com\/)/;
 
@@ -25,7 +30,7 @@ self.addEventListener('install', e => {
 // por si hay un formulario a medias). La primera instalación no recarga nada.
 self.addEventListener('activate', e => {
   e.waitUntil((async () => {
-    const viejas = (await caches.keys()).filter(k => k !== VERSION);
+    const viejas = (await caches.keys()).filter(k => k !== VERSION && !k.startsWith(PAQ));
     await Promise.all(viejas.map(k => caches.delete(k)));
     await self.clients.claim();
     if (!viejas.length) return;
@@ -52,9 +57,9 @@ self.addEventListener('fetch', e => {
 // Si no había nada guardado, espera al servidor como siempre.
 async function guardadoYRevisa(req, e) {
   const c = await caches.open(VERSION);
-  const hit = await c.match(req);
-  const red = fetch(req, { cache: 'no-cache' }).then(r => {
-    if (r.ok && r.type === 'basic') c.put(req, r.clone());
+  const hit = await c.match(req) || await enPaquete(req);
+  const red = fetch(req, { cache: 'no-cache' }).then(async r => {
+    if (r.ok && r.type === 'basic') { c.put(req, r.clone()); if ((await paquetes()).length) alPaquete(req, r.clone()); }
     return r;
   });
   if (hit) { e.waitUntil(red.catch(() => {})); return hit; }
@@ -63,7 +68,7 @@ async function guardadoYRevisa(req, e) {
 
 async function primeroGuardado(req) {
   const c = await caches.open(VERSION);
-  const hit = await c.match(req);
+  const hit = await c.match(req) || await enPaquete(req);
   if (hit) return hit;
   const r = await fetch(req);
   if (r.ok || r.type === 'opaque') c.put(req, r.clone());
@@ -75,16 +80,36 @@ async function primeroInternet(req) {
   try {
     // no-cache: revisa con el servidor (si no cambió responde 304, casi sin datos)
     const r = await fetch(req, { cache: 'no-cache' });
-    if (r.ok && r.type === 'basic') c.put(req, r.clone());
+    if (r.ok && r.type === 'basic') { c.put(req, r.clone()); if ((await paquetes()).length) alPaquete(req, r.clone()); }
     return sinGuardar(r);
   } catch (err) {
     const pagina = req.mode === 'navigate';
     // Una página (quiz.html?year=…) es la misma con cualquier ?…: vale la última guardada
-    const hit = await c.match(req) || (pagina && await c.match(req, { ignoreSearch: true }));
+    const hit = await c.match(req) || await enPaquete(req) ||
+      (pagina && (await c.match(req, { ignoreSearch: true }) || await enPaquete(req, { ignoreSearch: true })));
     if (hit) return hit;
     if (pagina) return (await c.match(OFFLINE)) || Response.error();
     throw err;
   }
+}
+
+// ---------- Paquetes de descarga (cachés mc-pack-…) ----------
+async function paquetes() { return (await caches.keys()).filter(k => k.startsWith(PAQ)); }
+async function enPaquete(req, op) {
+  for (const k of await paquetes()) {
+    const hit = await (await caches.open(k)).match(req, op);
+    if (hit) return hit;
+  }
+  return undefined;
+}
+// Lo que se baja con internet y ya estaba en un paquete, se renueva ahí también
+async function alPaquete(req, r) {
+  try {
+    for (const k of await paquetes()) {
+      const c = await caches.open(k);
+      if (await c.match(req)) { await c.put(req, r); return; }
+    }
+  } catch (err) {}
 }
 
 // El navegador también guarda en memoria los scripts e imágenes de la página
