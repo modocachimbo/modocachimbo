@@ -227,7 +227,7 @@ function sinRed(){ return navigator.onLine===false; }
 function vigente(x){ if(!x.vence) return true; var d=new Date(x.vence); return isNaN(d)||d.getTime()+86400000>Date.now(); }
 function revisarVip(){
   var si=false;
-  try{ si=window.MCAcceso&&MCAcceso.activos().some(function(x){ return /(^|,)TODO-VIP(,|$)/.test(x.producto||'')&&vigente(x); }); }catch(e){}
+  try{ si=window.MCAcceso&&MCAcceso.activos().some(function(x){ return /(^|,)(TODO-VIP|offline-VIP)(,|$)/.test(x.producto||'')&&vigente(x); }); }catch(e){}
   if(ST&&ST.equipo) si=true;
   try{ if(localStorage.getItem('mc_desc_admin')==='1') si=true; }catch(e){}
   ES_VIP=si;
@@ -372,7 +372,7 @@ function pintarVip(){
   var box=document.getElementById('vip');
   if(MODO!=='vip'||ES_VIP){ box.innerHTML=''; return; }
   if(box.innerHTML) return;
-  box.innerHTML='<div class="vip"><div class="ic"><svg class="i"><use href="#ic-corona"/></svg></div><div class="tx"><b>Las descargas son del VIP Total</b><small>Con tu código VIP Total descargas todo y estudias sin internet.</small></div>'+
+  box.innerHTML='<div class="vip"><div class="ic"><svg class="i"><use href="#ic-corona"/></svg></div><div class="tx"><b>Las descargas son del VIP Total</b><small>Con tu código VIP Total o tu código de Descargas bajas todo y estudias sin internet.</small></div>'+
     '<form id="vCod"><input id="vIn" placeholder="Escribe tu código" autocomplete="off" maxlength="40"><button>Activar</button></form><div class="msg" id="vMsg"></div></div>';
   document.getElementById('vCod').onsubmit=function(e){
     e.preventDefault();
@@ -384,7 +384,7 @@ function pintarVip(){
       if(!r||!r.ok){ msg.className='msg'; msg.textContent=(r&&(r.mensaje||r.error))||'Código inválido.'; return; }
       if(MCAcceso.celebrar) MCAcceso.celebrar([{producto:r.producto||'',vence:r.vence||''}],{codigo:r.codigo});
       revisarVip();
-      if(!ES_VIP){ msg.className='msg'; msg.textContent='Código activado, pero no es VIP Total.'; return; }
+      if(!ES_VIP){ msg.className='msg'; msg.textContent='Código activado, pero no abre las Descargas.'; return; }
       box.innerHTML=''; pintar();
     }).catch(function(){ msg.className='msg'; msg.textContent='Revisa tu internet e inténtalo otra vez.'; });
   };

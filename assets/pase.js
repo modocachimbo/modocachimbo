@@ -21,7 +21,7 @@
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   var quieto = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  var NOM = { 'TODO-VIP': 'Acceso total', general: 'Acceso general', 'seminario-VIP': 'Seminarios + Banqueo', 'vocabulario-VIP': 'Vocabulario', 'biblioteca-VIP': 'Biblioteca', 'descarga-VIP': 'Descargas PDF', 'laboratorio-VIP': 'Laboratorio', simulacro: 'Simulacro', duelo: 'Duelos', examenes: 'Exámenes',
+  var NOM = { 'TODO-VIP': 'Acceso total', general: 'Acceso general', 'seminario-VIP': 'Seminarios + Banqueo', 'vocabulario-VIP': 'Vocabulario', 'biblioteca-VIP': 'Biblioteca', 'descarga-VIP': 'Descargas PDF', 'offline-VIP': 'Descargas sin internet', 'laboratorio-VIP': 'Laboratorio', simulacro: 'Simulacro', duelo: 'Duelos', examenes: 'Exámenes',
     'area-matematica': 'Área Matemática', 'area-ciencia-tecnologia': 'Área Ciencia y Tecnología', 'area-comunicacion': 'Área Comunicación', 'area-ciencias-sociales': 'Área Ciencias Sociales' };
   // Lo que abre cada acceso, en palabras del alumno
   var ABRE = {
@@ -32,6 +32,7 @@
     'biblioteca-VIP': ['Toda la biblioteca'],
     'descarga-VIP': ['Descargar los temas en PDF'],
     'laboratorio-VIP': ['Todos los simuladores del Laboratorio', 'Sin gastar energía'],
+    'offline-VIP': ['Descargar tus cursos del ciclo actual', 'Simuladores y exámenes sin internet'],
     simulacro: ['Simulacro de 80 preguntas con tu puntaje'],
     duelo: ['Retar a duelo a tus amigos'],
     examenes: ['Exámenes de admisión resueltos'],
