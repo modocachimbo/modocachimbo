@@ -351,7 +351,7 @@
     }
     setTimeout(function () {
       if (window.MCSobre) return abrir();
-      var s = document.createElement('script'); s.src = BASE + 'assets/sobre.js?v=3'; s.onload = abrir; document.head.appendChild(s);
+      var s = document.createElement('script'); s.src = BASE + 'assets/sobre.js?v=4'; s.onload = abrir; document.head.appendChild(s);
     }, 1800);
   }
 

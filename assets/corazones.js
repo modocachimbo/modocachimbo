@@ -204,6 +204,8 @@
     (e.nuevas || []).forEach(function (t) { celebrar(t); });
     // Todo lo que llegó junto va en un solo sobre (assets/sobre.js)
     if (regs.length) sobre(regs);
+    // Rayos regalados: el contador del Arcade o del Laboratorio se pone al día
+    if (window.MCRayos && regs.some(function (g) { return g.tipo === 'rayos'; })) MCRayos.estado();
     if (antes && antes.quedan === 0 && e.quedan > 0) cerrarBloqueo();
   }
 
@@ -586,10 +588,11 @@
     var t = g.tipo === 'corazones' ? '¡Te regalaron ' + g.cantidad + (g.cantidad === 1 ? ' corazón!' : ' corazones!')
       : g.tipo === 'infinito' ? '¡Corazones infinitos por ' + (g.cantidad % 24 ? g.cantidad + (g.cantidad === 1 ? ' hora!' : ' horas!') : g.cantidad / 24 + (g.cantidad === 24 ? ' día!' : ' días!'))
       : g.tipo === 'xp' ? '¡Te regalaron ' + g.cantidad + ' XP!'
+      : g.tipo === 'rayos' ? '¡Te regalaron ' + g.cantidad + ' de energía!'
       : '¡Te regalaron algo para tu colección!';
     var d = document.createElement('div'); d.className = 'mcz-toast'; d.setAttribute('role', 'status');
     d.innerHTML = (g.tipo === 'xp' ? SVG.xp : SVG.corazon) + '<div><b></b><span></span></div>';
-    d.querySelector('b').textContent = '🎁 ' + t;
+    d.querySelector('b').textContent = t;
     d.querySelector('span').textContent = g.nota ? '«' + g.nota + '»' + (g.de ? ' — ' + g.de : '') : 'Un regalo de ' + (g.de || 'Modo Cachimbo');
     document.body.appendChild(d);
     try { if (window.MCSonido && MCSonido.racha) MCSonido.racha(); } catch (e) {}
@@ -620,7 +623,7 @@
     if (!regs.length || abriendo) return;
     abriendo = true;
     var ids = regs.filter(function (g) { return g.tipo === 'item' && g.item; }).map(function (g) { return g.item; });
-    var pasos = [js(BASE + 'assets/sobre.js?v=3', function () { return window.MCSobre; })];
+    var pasos = [js(BASE + 'assets/sobre.js?v=4', function () { return window.MCSobre; })];
     // Los ítems: la colección se vuelve a pedir al toque (no los 10 min guardados)
     if (ids.length) pasos.push(js(BASE + 'assets/coleccion.js?v=199', function () { return window.MCColeccion; })
       .then(function () { return MCColeccion.refrescar ? MCColeccion.refrescar() : null; }));
