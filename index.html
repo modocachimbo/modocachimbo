@@ -1477,6 +1477,12 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
             <a class="acceso" href="amigos.html"><svg class="ic"><use href="#i-amigos"/></svg><span>Amigos</span><b class="am-bdg" data-am-bdg hidden></b></a>
             <a class="acceso" href="clanes.html"><svg class="ic"><use href="#i-clan"/></svg><span>Clanes</span></a>
             <a class="acceso desc-acc" href="descargas.html" aria-label="Descargas sin internet"><svg class="ic"><use href="#i-bajar"/></svg><span>Descargas</span></a>
+            <script>/* Punto rojo en Descargas si subiste temas nuevos a un curso que el alumno ya descargó (revisa cada 6 h, solo el manifest de Libros) */
+            (function(){try{var b=document.currentScript.previousElementSibling,v=JSON.parse(localStorage.getItem('mc_paq')||'null'),ps=v&&v.packs||{},ids=Object.keys(ps).filter(function(k){return k.indexOf('curso-')===0&&ps[k].temas;});if(!ids.length)return;
+            var g=JSON.parse(localStorage.getItem('mc_paq_rev')||'{}');function pon(si){b.classList.toggle('punto',!!si);}
+            if(Date.now()-(g.t||0)<21600000||navigator.onLine===false)return pon(g.si);
+            function ord(id){var x=String(id||'').match(/^(\d{4})-(III|II|I)$/);return x?+x[1]*10+{I:1,II:2,III:3}[x[2]]:0;}
+            Promise.all(ids.map(function(k){var c=k.slice(6),p=ps[k];return fetch(c+'/libros/data/manifest.json',{cache:'no-cache'}).then(function(r){return r.ok?r.json():[];}).then(function(m){var l=(m||[]).filter(function(x){return ord(x&&x.id);}).sort(function(a,b){return ord(b.id)-ord(a.id);})[0];return !!l&&((p.items&&p.items[0]&&l.id!==p.items[0])||(l.temas||0)>p.temas);}).catch(function(){return false;});})).then(function(r){var si=r.some(Boolean);try{localStorage.setItem('mc_paq_rev',JSON.stringify({t:Date.now(),si:si}));}catch(e){}pon(si);});}catch(e){}})();</script>
             <a class="acceso" href="perfil.html#agenda"><svg class="ic"><use href="#i-agenda"/></svg><span>Agenda</span></a>
             <button class="acceso punto" type="button" id="novBtn" aria-label="Nuevo para ti" hidden><svg class="ic"><use href="#i-regalo"/></svg><span>Nuevo</span><b id="novPunto"></b></button>
           </nav>

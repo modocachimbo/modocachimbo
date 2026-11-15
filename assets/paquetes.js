@@ -75,16 +75,22 @@
   // Baja archivos (y lo que ellos piden) a una caché. fijos: tienen que bajar sí o sí;
   // opc y lo descubierto: si no existen se saltan. ya: archivos que ya están en la base.
   // propio(u): ¿es del paquete? Lo que no (scripts, KaTeX, fuentes…) va a la base, así no se repite en cada curso.
-  function llenar(nombre, fijos, opc, ya, alAvance, esPropio) {
-    var cola = [], vistos = {}, duro = {}, bytes = 0, comun = 0, hechos = 0, i = 0, guardados = [];
+  // reusar: { cambia: {url:1} } → al actualizar, lo que ya está guardado y no cambió se toma de la caché (no gasta datos)
+  function llenar(nombre, fijos, opc, ya, alAvance, esPropio, reusar) {
+    var cola = [], vistos = {}, duro = {}, bytes = 0, comun = 0, hechos = 0, i = 0, guardados = [], red = 0;
     fijos.concat(opc || []).forEach(function (u) { u = abs(u); if (!vistos[u]) { vistos[u] = 1; cola.push(u); } });
     fijos.forEach(function (u) { duro[abs(u)] = 1; });
     return Promise.all([caches.open(nombre), caches.open(PRE + 'base')]).then(function (cs) {
       var c = cs[0], cb = cs[1];
+      function traer(u) {
+        var deRed = function () { return fetch(u, { cache: 'no-cache', credentials: propio(u) ? 'same-origin' : 'omit' }).then(function (r) { r._red = 1; return r; }); };
+        if (!reusar || reusar.cambia[u]) return deRed();
+        return c.match(u).then(function (r) { return r || deRed(); });
+      }
       function uno(u) {
-        return fetch(u, { cache: 'no-cache', credentials: propio(u) ? 'same-origin' : 'omit' }).then(function (r) {
+        return traer(u).then(function (r) {
           if (!r.ok) throw new Error('falta');
-          var tp = tipoDe(u, r), copia = r.clone(), mio = !esPropio || duro[u] || esPropio(rel(u));
+          var tp = tipoDe(u, r), copia = r.clone(), mio = !esPropio || duro[u] || esPropio(rel(u)), nuevo = r._red;
           return r.blob().then(function (b) {
             var paso = Promise.resolve();
             if (tp) paso = b.text().then(function (t) {
@@ -92,6 +98,7 @@
             });
             return paso.then(function () { return (mio ? c : cb).put(u, copia); }).then(function () {
               if (mio) { bytes += b.size; guardados.push(u); } else comun += b.size;
+              if (nuevo) red += b.size;
             });
           });
         }).catch(function () {
@@ -101,18 +108,23 @@
       function siguiente() { return i < cola.length ? uno(cola[i++]).then(siguiente) : Promise.resolve(); }
       // De 4 en 4 para no ahogar el internet del celular; lo descubierto entra en la siguiente ronda
       function ronda() { return Promise.all([siguiente(), siguiente(), siguiente(), siguiente()]).then(function () { return i < cola.length ? ronda() : null; }); }
-      return ronda().then(function () { return { bytes: bytes, comun: comun, archivos: guardados }; });
+      return ronda().then(function () {
+        // Al actualizar: se borra lo que ya no usa el paquete
+        var limpiar = reusar ? c.keys().then(function (ks) { return Promise.all(ks.filter(function (r) { return guardados.indexOf(r.url) < 0; }).map(function (r) { return c.delete(r); })); }) : null;
+        return Promise.resolve(limpiar).then(function () { return { bytes: bytes, comun: comun, archivos: guardados, red: red }; });
+      });
     });
   }
 
   // Pide al servidor solo las cabeceras: ¿cambió algo desde que se descargó?
-  function firma(urls) {
+  function etiquetas(urls) {
     return Promise.all(urls.map(function (u) {
       return fetch(abs(u), { method: 'HEAD', cache: 'no-cache' }).then(function (r) {
         return r.ok ? (r.headers.get('etag') || r.headers.get('last-modified') || '') : '';
       });
-    })).then(function (l) { return l.join('|'); });
+    }));
   }
+  function firma(urls) { return etiquetas(urls).then(function (l) { return l.join('|'); }); }
 
   var bajando = null;
   window.MCPaquetes = {
@@ -145,19 +157,28 @@
           // 2) El paquete: sus páginas, datos y lo que piden. Lo común (scripts, KaTeX, fuentes) va a la base
           var pre = (p.propios || []).map(function (x) { return x; });
           var esPropio = pre.length ? function (r) { return pre.some(function (x) { return r.indexOf(x) === 0; }); } : null;
-          return caches.delete(PRE + id).then(function () {
-            return llenar(PRE + id, p.fijos || [], p.opc || [], ya, function (h, t) { if (alAvance) alAvance(h, t, 'paquete'); }, esPropio);
+          // Actualizar: solo baja las páginas/datos que cambiaron (según sus cabeceras) y lo nuevo que piden
+          var antes = v.packs[id], prep;
+          if (antes && antes.pags && antes.et && navigator.onLine !== false) {
+            prep = etiquetas(antes.pags).then(function (l) {
+              var cambia = {};
+              antes.pags.forEach(function (u, k) { if (!l[k] || l[k] !== antes.et[k]) cambia[abs(u)] = 1; });
+              return { cambia: cambia };
+            }, function () { return null; });
+          } else prep = caches.delete(PRE + id).then(function () { return null; });
+          return prep.then(function (reusar) {
+            return llenar(PRE + id, p.fijos || [], p.opc || [], ya, function (h, t) { if (alAvance) alAvance(h, t, 'paquete'); }, esPropio, reusar);
           });
           });
         })
         .then(function (rc) {
           var inicio = (p.fijos || []).concat(p.opc || []).map(abs);
           var pags = rc.archivos.filter(function (u) { return inicio.indexOf(u) >= 0; }).map(rel).sort();
-          return firma(pags).catch(function () { return ''; }).then(function (f) {
+          return etiquetas(pags).catch(function () { return []; }).then(function (et) {
             v = leer();
             var vb = v.base && v.base.bytes || 0;
             v.base = { bytes: (vb || base.bytes) + (rc.comun || 0), t: Date.now(), lab: conLab };
-            v.packs[id] = { nombre: p.nombre, tipo: p.tipo, items: p.items || [], pags: pags, bytes: rc.bytes, t: Date.now(), ver: f };
+            v.packs[id] = { nombre: p.nombre, tipo: p.tipo, items: p.items || [], temas: p.temas || 0, pags: pags, bytes: rc.bytes, t: Date.now(), ver: et.join('|'), et: et, red: rc.red };
             guardar(v); bajando = null;
             return v.packs[id];
           });
