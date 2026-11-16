@@ -1459,6 +1459,12 @@
         var equipoTxt = (function () { var u = navigator.userAgent || ''; return (/Android/i.test(u) ? 'Android' : /iPhone|iPad/i.test(u) ? 'iPhone/iPad' : /Windows/i.test(u) ? 'Windows' : /Mac/i.test(u) ? 'Mac' : 'Otro'); })();
         rpc('pedir_descarga', { p: { tipo: reg.tipo, ref: doc.ref || location.pathname, titulo: doc.titulo, equipo: equipoTxt } }).then(function (r) {
           if (!r || r.error) throw new Error((r && r.error) || 'No se pudo registrar la descarga.');
+          // Simulacro: el N.º sale de la cuenta (supabase/101), así es el mismo en el celular y en la PC.
+          // Sin ese SQL o sin respuesta, se queda el número guardado en el teléfono.
+          return (reg.tipo === 'simulacro' && doc.ref ? rpc('numero_simulacro', { p_ref: doc.ref }).then(function (n) {
+            n = +n; if (n > 0) { var nro = dos(n); doc = Object.assign({}, doc, { nro: nro, cabecera2: 'Simulacro N.º ' + nro }); }
+          }, function () {}) : Promise.resolve()).then(function () { return r; });
+        }).then(function (r) {
           est.textContent = 'Armando tu PDF…';
           return generar(doc, op, { apodo: r.apodo || 'Alumno', email: r.email || '', fecha: r.fecha || '', num: r.num }, function (i, n) {
             barra.style.width = Math.round(100 * i / n) + '%'; est.textContent = 'Armando la página ' + i + ' de ' + n + '…';
