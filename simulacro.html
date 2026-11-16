@@ -1272,6 +1272,8 @@ html body .cursos-card h3:not(#z) { font-family: var(--display) !important; font
     const lista = [];
     for (const a of AREAS) {
       for (const [curso, n] of a.cursos) {
+        // Lenguaje y Razonamiento Verbal van por partes, en el orden del examen de admisión
+        if (PARTES[curso]) { lista.push.apply(lista, await armarPartes(curso, ciclos)); continue; }
         // 80% de libros y 20% de banqueo y seminarios de esos ciclos (solo las de 5 alternativas);
         // en Razonamiento Verbal, 2 de ese 20% son sinonimia y antonimia del Vocabulario. Si no hay, sale de libros.
         const extras = [].concat.apply([], await Promise.all(ciclos.map(c => datosF('banqueo', curso, c)).concat(ciclos.map(c => datosF('seminarios', curso, c)))))
@@ -1305,28 +1307,128 @@ html body .cursos-card h3:not(#z) { font-family: var(--display) !important; font
     const quedan = sel.filter((q, i) => fuera.indexOf(i) < 0);
     return quedan.concat(nuevas.slice(0, fuera.length));
   }
+  /* ---------- Simulacro rápido: Lenguaje y RV por partes ----------
+     Cada parte saca sus preguntas de los temas cuyo nombre la nombra (tema). Orden de búsqueda:
+     libros y banqueo de los ciclos elegidos → otros ciclos → exámenes de control y de admisión
+     (por su "tema") → temas parecidos (parecido) → cualquier tema del curso. Nunca se repite una pregunta.
+     El nombre de la parte es el título que sale en el examen y en el PDF. */
+  const PARTES = {
+    lenguaje: [
+      { k: 'lav', n: 2, nom: 'Lenguaje audiovisual', tema: /audiovisual|teoria de la informacion/ },
+      { k: 'gyo', n: 2, nom: 'Gramática y ortografía', tema: /gramatica|ortografia/, resto: true }
+    ],
+    'raz-verbal': [
+      { k: 'ant', n: 2, nom: 'Antonimia', tema: /antonim/, vocab: 'ant' },
+      { k: 'ana', n: 2, nom: 'Analogía', tema: /analog/, parecido: /relacion(es)? semantica/ },
+      { k: 'ser', n: 2, nom: 'Series verbales y término excluido', tema: /serie|excluido/ },
+      { k: 'rel', n: 2, nom: 'Relaciones semánticas y formales', tema: /relacion(es)? semantica|formales/ },
+      { k: 'inc', n: 2, nom: 'Inclusión e implicancia de conceptos', tema: /inclusion|implicancia/, parecido: /relacion(es)? semantica/ },
+      { k: 'com', n: 2, nom: 'Comprensión de textos', tema: /comprension/, texto: true },
+      { k: 'ora', n: 2, nom: 'Oraciones eliminadas', tema: /eliminad|eliminacion/ }
+    ]
+  };
+  const PARTE_DE = {}; Object.keys(PARTES).forEach(c => PARTES[c].forEach(x => { PARTE_DE[x.k] = x; }));
+  // ¿A qué parte pertenece un tema? La primera que lo nombra; en Lenguaje, el resto va a Gramática
+  function parteDeTema(curso, nombre) {
+    const t = norm(nombre), L = PARTES[curso];
+    const x = L.filter(p => p.tema.test(t))[0] || L.filter(p => p.resto)[0];
+    return x ? x.k : '';
+  }
+  const EXAMENES = ['control-cpu', 'cpu', 'ordinario'];
+  const ASIG_EXA = { lenguaje: /^lenguaje/, 'raz-verbal': /^(raz|razonamiento)\.? ?verbal/ };
+  let cacheExa = null;
+  // Preguntas de Lenguaje y RV de todos los exámenes (control, CPU y admisión), con su tema
+  function preguntasExamenes() {
+    if (cacheExa) return cacheExa;
+    cacheExa = Promise.all(EXAMENES.map(tipo => fetch('examenes/' + tipo + '/data/manifest.json', { cache: 'no-cache' })
+      .then(r => r.ok ? r.json() : []).catch(() => [])
+      .then(m => Promise.all([].concat.apply([], (Array.isArray(m) ? m : []).map(c => (c.exams || []).map(e => e.id))).map(id => exaArchivo(tipo, id))))))
+      .then(L => [].concat.apply([], [].concat.apply([], L)));
+    return cacheExa;
+  }
+  const cacheExaArch = {};
+  function exaArchivo(tipo, id) {
+    const k = tipo + '|' + id;
+    if (!cacheExaArch[k]) cacheExaArch[k] = fetch('examenes/' + tipo + '/data/' + id + '.json', { cache: 'no-cache' })
+      .then(r => r.ok ? r.json() : []).catch(() => [])
+      .then(qs => {
+        const out = [];
+        (Array.isArray(qs) ? qs : []).forEach((q, i) => {
+          if (!q || !Array.isArray(q.options) || q.options.length !== 5) return;
+          const a = norm(q.asignatura), curso = Object.keys(ASIG_EXA).filter(c => ASIG_EXA[c].test(a))[0];
+          if (!curso) return;
+          out.push(Object.assign({}, q, { _ref: 'examenes/' + tipo + '/data/' + id + '.json##' + i, _tit: q.tema || '', _id: ['examen', tipo, id, i].join('|'), _curso: curso, _f: 'examen' }));
+        });
+        return out;
+      });
+    return cacheExaArch[k];
+  }
+  // Libros y banqueo de unos ciclos, cada pregunta con su parte
+  async function poolPartes(curso, ciclos) {
+    const L = await Promise.all([].concat(ciclos.map(c => datos(curso, c)), ciclos.map(c => datosF('banqueo', curso, c))));
+    return [].concat.apply([], L).filter(q => q.options.length === 5).map(q => Object.assign({}, q, { _parte: parteDeTema(curso, q._tit) }));
+  }
+  // Comprensión: un texto con 2 de sus preguntas (si no hay textos, 2 sueltas)
+  function elegirTexto(pool, n) {
+    const g = {};
+    pool.forEach(q => { const k = claveLec(q.text); if (k) (g[k] = g[k] || []).push(q); });
+    const k = barajar(Object.keys(g).filter(x => g[x].length >= n))[0];
+    return k ? g[k].slice(0, n) : elegir(pool, n);
+  }
+  async function armarPartes(curso, ciclos) {
+    const otros = (MAN[curso] || []).map(m => m.id).filter(c => ciclos.indexOf(c) < 0);
+    const fuentes = [() => poolPartes(curso, ciclos), () => poolPartes(curso, otros),
+      () => preguntasExamenes().then(L => L.filter(q => q._curso === curso).map(q => Object.assign({}, q, { _parte: parteDeTema(curso, q.tema || '') })))];
+    const cargadas = [];
+    const fuente = i => cargadas[i] || (cargadas[i] = fuentes[i]().catch(() => []));
+    const usadas = {}, lista = [];
+    for (const p of PARTES[curso]) {
+      let sel = [];
+      const libre = q => !usadas[q._id] && sel.indexOf(q) < 0;
+      const tomar = qs => { const falta = p.n - sel.length; if (falta > 0 && qs.length) sel = sel.concat((p.texto && !sel.length ? elegirTexto : elegir)(qs, falta)); };
+      if (p.vocab) sel = await vocabRapido(1, p.vocab);
+      for (let i = 0; i < fuentes.length && sel.length < p.n; i++) tomar((await fuente(i)).filter(q => q._parte === p.k && libre(q)));
+      // Temas parecidos y, al final, cualquier pregunta del curso
+      if (p.parecido) for (let i = 0; i < fuentes.length && sel.length < p.n; i++) tomar((await fuente(i)).filter(q => p.parecido.test(norm(q._tit)) && libre(q)));
+      for (let i = 0; i < fuentes.length && sel.length < p.n; i++) tomar((await fuente(i)).filter(libre));
+      sel.forEach(q => { usadas[q._id] = 1; });
+      lista.push.apply(lista, barajarSalvoTexto(sel).map(q => conParte(q, p.k)));
+    }
+    return lista;
+  }
+  // Dentro de una parte se mezcla el orden, pero las preguntas de un mismo texto siguen juntas
+  function barajarSalvoTexto(sel) { return sel.some(q => claveLec(q.text)) ? sel : barajar(sel); }
+  // La parte va pegada a la pregunta (y a su id, para Repetir y para seguir un examen a medias)
+  function conParte(q, k) {
+    const p = PARTE_DE[k]; if (!p) return q;
+    return Object.assign({}, q, { tema: p.nom, _parte: k, _id: String(q._id).split('@')[0] + '@' + k });
+  }
   // Una de sinonimia y otra de antonimia con palabras al azar del Vocabulario
-  async function vocabRapido(n) {
+  async function vocabRapido(n, solo) {
     const banco = await cargarVocab().catch(() => []);
     const out = [];
-    barajar(banco).some(w => { const q = vocabPregunta(w, out.length % 2 ? 'ant' : 'sin', banco); if (q) out.push(q); return out.length >= n; });
+    barajar(banco).some(w => { const q = vocabPregunta(w, solo || (out.length % 2 ? 'ant' : 'sin'), banco); if (q) out.push(q); return out.length >= n; });
     return out;
   }
-  async function cargarRefs(refs) {
-    const archivos = {};
+  async function cargarRefs(refsCon) {
+    // Las del simulacro rápido nuevo llevan su parte al final: "…|n@ant"
+    const refs = refsCon.map(r => String(r).split('@')[0]);
+    const archivos = {}, examenes = {};
     let conVocab = false;
     refs.forEach(r => {
       const p = String(r).split('|');
-      if (p[1] === 'vocab') conVocab = true;
+      if (p[0] === 'examen' && p.length === 4 && EXAMENES.indexOf(p[1]) >= 0) examenes[p[1] + '|' + p[2]] = 1;
+      else if (p[1] === 'vocab') conVocab = true;
       else if ((p.length === 4 || (p.length === 5 && FUENTES.some(x => x[0] === p[4]))) && AREA_DE[p[0]]) archivos[(p[4] || 'libros') + '|' + p[0] + '|' + p[1]] = 1;
     });
     const mapa = {};
     await Promise.all(Object.keys(archivos).map(k => { const p = k.split('|'); return datosF(p[0], p[1], p[2]).then(L => L.forEach(q => { mapa[q._id] = q; })); }));
+    await Promise.all(Object.keys(examenes).map(k => { const p = k.split('|'); return exaArchivo(p[0], p[1]).then(L => L.forEach(q => { mapa[q._id] = q; })); }));
     if (conVocab) {
       const banco = await cargarVocab().catch(() => []);
       refs.forEach(r => { const p = String(r).split('|'); if (p[1] === 'vocab') { const w = banco.filter(x => x.palabra === p[3])[0]; const q = w && vocabPregunta(w, p[2], banco); if (q) mapa[r] = q; } });
     }
-    return refs.map(r => mapa[r]).filter(Boolean);
+    return refs.map((r, i) => { const q = mapa[r], k = String(refsCon[i]).split('@')[1]; return q && k ? conParte(q, k) : q; }).filter(Boolean);
   }
   // S.ord guarda el orden de las alternativas de cada pregunta (se mezclan al armar el examen)
   function prepararPreguntas(lista) {
