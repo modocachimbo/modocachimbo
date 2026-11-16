@@ -2113,6 +2113,8 @@ html body .cursos-card h3:not(#z) { font-family: var(--display) !important; font
       const b = bloqueSel();
       S = {
         v: 1, uid: uid(), simId: REPETIR ? REPETIR.id : null,
+        // N.º del PDF: cada simulacro nuevo tiene el suyo (al repetir, el mismo de antes)
+        pdfId: REPETIR ? REPETIR.id : 'n-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
         pers: REPETIR ? !!REPETIR.personalizado : esPers(),
         libre: REPETIR ? !!REPETIR.libre : MODO === 'libre',
         nombre: REPETIR ? REPETIR.nombre : ($('nombre').value.trim().slice(0, 60) || 'Simulacro'),
@@ -2133,7 +2135,7 @@ html body .cursos-card h3:not(#z) { font-family: var(--display) !important; font
   function empezarExamen() {
     ver('examen');
     // Para «Descargar PDF» (assets/descarga-pdf.js): este mismo simulacro, en el mismo orden
-    window.MC_SIM = { id: S.simId || S.uid, nombre: S.nombre, tipo: S.libre ? 'libre' : S.pers ? 'personalizado' : 'rapido', bloque: S.bloque, carrera: S.carrera || '', minutos: Math.round((S.fin - S.inicio) / 60000), preguntas: PREGS };
+    window.MC_SIM = { id: S.pdfId || S.simId || S.uid, nombre: S.nombre, tipo: S.libre ? 'libre' : S.pers ? 'personalizado' : 'rapido', bloque: S.bloque, carrera: S.carrera || '', minutos: Math.round((S.fin - S.inicio) / 60000), preguntas: PREGS };
     document.dispatchEvent(new CustomEvent('mc:sim-listo'));
     $('mapaTit').textContent = 'Tus ' + PREGS.length + ' preguntas';
     pintarPregunta();
