@@ -2310,6 +2310,7 @@ html body .cursos-card h3:not(#z) { font-family: var(--display) !important; font
       preguntas: PREGS.map(q => q._id), puntaje: R.total, maximo: R.max, correctas: R.C, incorrectas: R.I, blancos: R.B,
       segundos: S.segundos, areas: R.areas, personalizado: !!S.pers, libre: !!S.libre
     };
+    const clavePend = String(S.pdfId || S.inicio);
     const yaGuardado = S.guardado ? Promise.resolve(S.guardado) : rpc('guardar_simulacro', { p: p });
     yaGuardado.then(id => {
       S.guardado = id; S.simId = id;
@@ -2321,11 +2322,27 @@ html body .cursos-card h3:not(#z) { font-family: var(--display) !important; font
     }).then(() => {
       ls(null);
       if (!S.pers) pintarAvance(R);
-    }).catch(() => {
-      guardarEstado();
-      st.className = 'guardado error'; st.innerHTML = 'No se pudo guardar. <button type="button" class="btn sec mini" id="btnReintentar">Reintentar</button>';
+    }).then(() => { pendiente(clavePend, null); }).catch(e => {
+      // Si no se pudo guardar, el resultado queda pendiente en este equipo y se vuelve a
+      // enviar solo la próxima vez. El simulacro ya no se queda "atascado": Otro simulacro funciona.
+      if (!S.guardado) pendiente(clavePend, p);
+      ls(null);
+      try { console.warn('guardar_simulacro', e); } catch (x) {}
+      st.className = 'guardado error'; st.innerHTML = 'No se pudo guardar ahora; se volverá a intentar solo. <button type="button" class="btn sec mini" id="btnReintentar">Reintentar</button>';
       $('btnReintentar').addEventListener('click', () => guardarResultado(R));
     });
+  }
+  /* Resultados que no se pudieron guardar: se reenvían al abrir la página */
+  function pendiente(k, p) {
+    try {
+      const L = JSON.parse(localStorage.getItem('mc_sim_pend') || '{}');
+      if (p) L[k] = { u: uid(), p: p }; else delete L[k];
+      Object.keys(L).length ? localStorage.setItem('mc_sim_pend', JSON.stringify(L)) : localStorage.removeItem('mc_sim_pend');
+    } catch (e) {}
+  }
+  function enviarPendientes() {
+    let L = {}; try { L = JSON.parse(localStorage.getItem('mc_sim_pend') || '{}'); } catch (e) {}
+    Object.keys(L).forEach(k => { if (L[k].u === uid()) rpc('guardar_simulacro', { p: L[k].p }).then(() => pendiente(k, null), () => {}); });
   }
   /* ---------- Tu avance: este simulacro frente a los anteriores del mismo bloque ---------- */
   const AREA_PAG = { com: 'comunicacion', mat: 'matematica', cta: 'ciencia-tecnologia', ccss: 'ciencias-sociales' };
@@ -2556,13 +2573,15 @@ html body .cursos-card h3:not(#z) { font-family: var(--display) !important; font
     await MCAuth.listo.catch(() => null);
     if (!uid()) { aviso('Ingresa con tu cuenta para dar el simulacro.'); return; }
     await cargarCursos();
+    enviarPendientes();
     const guardado = ls();
     if (guardado && guardado.v === 1 && guardado.uid === uid() && Array.isArray(guardado.refs)) {
       S = guardado;
       const lista = await cargarRefs(S.refs);
       if (lista.length === S.refs.length) {
         prepararPreguntas(lista);
-        if (S.terminado) { mostrarResultado(); return; }
+        if (S.terminado && !S.guardado) { mostrarResultado(); ls(null); return; } // se muestra una vez y ya no se queda atascado
+        if (S.terminado) { S = null; ls(null); abrirCrear(); return; }
         if (Date.now() >= S.fin) { terminar(true); return; }
         empezarExamen();
         return;
