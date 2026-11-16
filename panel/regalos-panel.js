@@ -22,6 +22,7 @@ const RG_TIPOS = {
   infinito: { nom: 'Infinitos', c: '#CE82FF', ops: [[1, '1 hora'], [24, '1 día'], [72, '3 días'], [168, '7 días'], [720, '30 días']] },
   xp: { nom: 'XP', c: '#FFC800', ops: [[100, '+100'], [250, '+250'], [500, '+500'], [1000, '+1000']], min: 1, max: 10000, uni: 'XP' },
   rayos: { nom: 'Rayos', c: '#2FA8FF', ops: [[10, '+10'], [20, '+20'], [50, '+50'], [100, '+100']], min: 1, max: 1000, uni: 'rayos' },
+  ticket: { nom: 'Ticket de sala', c: '#C6E000', ops: [[1, '+1'], [3, '+3'], [5, '+5'], [10, '+10']], min: 1, max: 50, uni: 'tickets' },
   item: { nom: 'Ítem de colección', c: '#1CB0F6' }
 };
 const RG_ESP = { racha: 'Banner', avatar: 'Foto de perfil', pines: 'Pin', marco: 'Marco', cuadro: 'Cuadro de racha', titulo: 'Título', buho: 'Búho' };
@@ -121,6 +122,7 @@ function rgTexto(x) {
   if (x.tipo === 'infinito') return 'Corazones infinitos por ' + rgHoras(x.cantidad);
   if (x.tipo === 'xp') return '+' + (+x.cantidad).toLocaleString('es-PE') + ' XP';
   if (x.tipo === 'rayos') return '+' + (+x.cantidad).toLocaleString('es-PE') + (+x.cantidad === 1 ? ' rayo' : ' rayos');
+  if (x.tipo === 'ticket') return '+' + x.cantidad + (+x.cantidad === 1 ? ' ticket de sala' : ' tickets de sala');
   const it = (RG.items || []).find(i => i.id === x.item);
   return 'Ítem: ' + (it ? it.nom || it.id : x.item);
 }

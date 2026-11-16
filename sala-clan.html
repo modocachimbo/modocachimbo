@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script src="assets/guardia.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0B0818">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="assets/app/icono-180.png">
+<meta name="apple-mobile-web-app-title" content="Modo Cachimbo">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<script src="assets/app.js" defer></script>
+<title>Sala de clan · Modo Cachimbo</title>
+<!--
+  Modo Cachimbo · Sala de clan (clan vs clan en vivo, amistosa)
+  Crear una sala gasta 1 ticket (se canjea con rayos o lo regala el panel).
+  El rival entra con el código de 5; todos ven la misma pregunta al mismo tiempo.
+  Servidor: supabase/104-clanes-sala.sql (clan_sala_crear, _entrar, _ver, _empezar, _responder, _salir,
+  clan_sala_mia, mis_tickets, canjear_ticket). Las preguntas salen de los libros (cursos/*/libros/data).
+-->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,800;1,800;1,900&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,900&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0B0818; --surface: #151127; --surface-2: #1D1834; --border: #2A2346; --borde: #2C2549;
+    --accent: #C6E000; --text: #EEEAF7; --text-dim: #A99FC8; --text-faint: #6F6690;
+    --oro: #FFC800; --rojo: #FF4B4B; --azul: #1CB0F6; --nar: #FF9600; --ok: #58CC02;
+    --ca: #C6E000; --cb: #1CB0F6;
+    --display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
+  }
+  body { background: radial-gradient(900px 500px at 50% -200px, rgba(176,124,255,.18), transparent 70%), var(--bg); color: var(--text); font-family: 'Nunito', system-ui, sans-serif; font-weight: 700; min-height: 100vh; }
+  [hidden] { display: none !important; }
+  button, input { font: inherit; color: inherit; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 16px 60px; }
+  header.top { display: flex; align-items: center; gap: 14px; padding: 22px 0 18px; }
+  header.top h1 { flex: 1; display: flex; align-items: center; gap: 18px; min-width: 0; font: italic 900 46px/1 var(--display); text-transform: uppercase; color: var(--accent); padding-top: 4px; text-shadow: 0 3px 0 rgba(0,0,0,.45); white-space: nowrap; }
+  header.top h1::after { content: ""; flex: 1; height: 2px; min-width: 20px; background: linear-gradient(90deg, rgba(198,224,0,.45), rgba(198,224,0,0)); }
+  .c-volver { flex: none; display: inline-flex; align-items: center; gap: 4px; height: 46px; padding: 0 16px 0 10px; border-radius: 10px; background: var(--surface-2); border: 2px solid #352E58; border-bottom-width: 5px; color: var(--text); font-weight: 900; font-size: 15px; text-decoration: none; transform: skewX(-10deg); }
+  .c-volver > * { transform: skewX(10deg); }
+  .c-volver svg { width: 22px; height: 22px; fill: none; stroke: var(--accent); stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
+  @media (max-width: 640px) { header.top { gap: 10px; padding: 16px 0 14px; } header.top h1 { font-size: 32px; gap: 10px; } }
+  .estado { color: var(--text-dim); text-align: center; padding: 40px 10px; }
+  .card { background: linear-gradient(180deg, #1b1533, #141027); border: 1.5px solid #2a2346; border-radius: 18px; padding: 16px; margin-bottom: 14px; }
+  .h2 { font: italic 900 24px/1 var(--display); text-transform: uppercase; color: #fff; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .h2 em { font-style: italic; color: var(--text-dim); font-size: 17px; }
+  .small { font-size: 12.5px; color: var(--text-dim); line-height: 1.45; }
+  .lb { display: block; font: 900 11px/1 Nunito, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--text-dim); margin: 14px 0 8px; }
+  .dos { display: grid; gap: 14px; }
+  @media (min-width: 860px) { .dos { grid-template-columns: 1.25fr 1fr; align-items: start; } }
+
+  .cb { display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 48px; padding: 0 18px; border-radius: 12px; font: italic 900 19px/1 var(--display); text-transform: uppercase; letter-spacing: .02em; cursor: pointer; border: 0; border-bottom: 4px solid rgba(0,0,0,.35); text-decoration: none; -webkit-tap-highlight-color: transparent; }
+  .cb:active { transform: translateY(2px); border-bottom-width: 2px; }
+  .cb:disabled { opacity: .5; cursor: default; }
+  .cb.l { background: linear-gradient(180deg, #e2f75a, #C6E000); color: #14101f; }
+  .cb.g { background: #241d44; color: #fff; border: 2px solid #352E58; border-bottom-width: 4px; }
+  .cb.r { background: #3a1528; color: #ff9a9a; border: 2px solid #5a2338; border-bottom-width: 4px; }
+  .cb.wa { background: #22C55E; color: #fff; }
+  .cb.w { width: 100%; }
+  .cb svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .inp { width: 100%; height: 50px; border-radius: 12px; background: #0f0b1e; border: 2px solid #352E58; padding: 0 12px; color: #fff; font: 800 16px Nunito, sans-serif; outline: none; }
+  .inp:focus { border-color: var(--accent); }
+  .inp.code { font: 1000 28px/1 Nunito, sans-serif; letter-spacing: .32em; text-align: center; color: var(--accent); text-transform: uppercase; }
+  .err { color: #ff8a8a; font-size: 13px; min-height: 18px; margin-top: 8px; }
+
+  /* Ticket */
+  .ticket { position: relative; display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 16px; background: linear-gradient(110deg, #2b2a07, #1a1730 60%); border: 1.5px solid rgba(198,224,0,.45); overflow: hidden; }
+  .ticket::before, .ticket::after { content: ""; position: absolute; top: 50%; width: 22px; height: 22px; border-radius: 50%; background: var(--bg); transform: translateY(-50%); }
+  .ticket::before { left: -11px; } .ticket::after { right: -11px; }
+  .ticket .tk { flex: none; width: 58px; height: 42px; }
+  .ticket b { font: italic 900 30px/1 var(--display); color: var(--accent); }
+  .ticket .t { flex: 1; min-width: 0; }
+  .ticket .t span { display: block; font: 900 12px Nunito, sans-serif; color: var(--text-dim); letter-spacing: .06em; text-transform: uppercase; margin-top: 2px; }
+  .canje { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .canje .cb { height: 40px; font-size: 16px; }
+  .rayo { display: inline-flex; align-items: center; gap: 4px; color: #6FC8FF; font-weight: 900; }
+
+  /* Opciones de la sala */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { height: 40px; padding: 0 14px; border-radius: 12px; background: #1b1533; border: 2px solid #2f2852; color: var(--text); font: 900 14px Nunito, sans-serif; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; }
+  .chip img { width: 20px; height: 20px; }
+  .chip.on { border-color: var(--accent); background: rgba(198,224,0,.12); color: #fff; box-shadow: 0 0 0 3px rgba(198,224,0,.12); }
+  .seg3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .seg3 .chip { justify-content: center; height: 54px; flex-direction: column; gap: 0; font: italic 900 22px/1 var(--display); }
+  .seg3 .chip small { font: 800 11px Nunito, sans-serif; color: var(--text-dim); margin-top: 2px; font-style: normal; }
+
+  /* Sala: VS */
+  .vs { position: relative; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; padding: 22px 16px 18px; border-radius: 22px; overflow: hidden;
+        background: radial-gradient(260px 160px at 18% 50%, color-mix(in srgb, var(--ca) 22%, transparent), transparent 70%), radial-gradient(260px 160px at 82% 50%, color-mix(in srgb, var(--cb) 22%, transparent), transparent 70%), linear-gradient(180deg, #1d1638, #130f26);
+        border: 1.5px solid #2f2852; margin-bottom: 14px; }
+  .vs .lado { text-align: center; min-width: 0; }
+  .vs .esc { display: block; width: 92px; height: 104px; margin: 0 auto 6px; filter: drop-shadow(0 8px 14px rgba(0,0,0,.45)); }
+  .vs .esc svg { width: 100%; height: 100%; }
+  .vs .nm { font: italic 900 22px/1 var(--display); text-transform: uppercase; color: #fff; overflow-wrap: anywhere; }
+  .vs .pt { font: italic 900 40px/1 var(--display); margin-top: 6px; }
+  .vs .pt small { display: block; font: 800 11px Nunito, sans-serif; color: var(--text-dim); font-style: normal; letter-spacing: .06em; text-transform: uppercase; }
+  .vs .x { font: italic 900 46px/1 var(--display); color: #fff; text-shadow: 0 0 22px rgba(198,224,0,.5); }
+  .vs .vacio .esc { opacity: .35; }
+  .vs .vacio .nm { color: var(--text-faint); }
+  .pulso { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--rojo); box-shadow: 0 0 0 0 rgba(255,75,75,.6); animation: pulso 1.6s infinite; vertical-align: 2px; margin-right: 6px; }
+  @keyframes pulso { 70% { box-shadow: 0 0 0 9px rgba(255,75,75,0); } 100% { box-shadow: 0 0 0 0 rgba(255,75,75,0); } }
+  @media (max-width: 560px) { .vs .esc { width: 66px; height: 76px; } .vs .nm { font-size: 17px; } .vs .x { font-size: 34px; } .vs .pt { font-size: 30px; } }
+
+  .codigo { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .codigo .c { font: 1000 40px/1 Nunito, sans-serif; letter-spacing: .28em; color: var(--accent); }
+  .codigo .sp { flex: 1; }
+  .codigo .cb { height: 42px; font-size: 16px; }
+  .info { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .info span { padding: 5px 10px; border-radius: 999px; background: #221c3d; border: 1px solid #332b57; font: 900 12px Nunito, sans-serif; color: var(--text-dim); }
+
+  .equipos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .eq { border-radius: 16px; padding: 12px; background: #120e22; border: 1.5px solid #2a2346; }
+  .eq h3 { font: italic 900 18px/1 var(--display); text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; gap: 6px; }
+  .eq h3 span { color: var(--text-dim); }
+  .jug { display: flex; align-items: center; gap: 8px; padding: 6px 0; min-width: 0; }
+  .jug .ft { width: 34px; height: 34px; flex: none; }
+  .jug b { flex: 1; min-width: 0; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .jug em { font: italic 900 16px/1 var(--display); font-style: italic; }
+  .jug.yo b { color: var(--accent); }
+  .slot { height: 46px; border-radius: 10px; border: 2px dashed #2f2852; margin: 4px 0; display: grid; place-items: center; color: var(--text-faint); font-size: 12px; }
+  @media (max-width: 560px) { .equipos { grid-template-columns: 1fr; } }
+
+  /* Juego */
+  .marca { position: sticky; top: 8px; z-index: 5; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 16px; background: rgba(21,17,39,.92); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1.5px solid #2f2852; margin-bottom: 12px; }
+  .marca .m { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .marca .m.b { flex-direction: row-reverse; text-align: right; }
+  .marca .esc { width: 34px; height: 38px; flex: none; } .marca .esc svg { width: 100%; height: 100%; }
+  .marca .m b { font: italic 900 26px/1 var(--display); }
+  .marca .m small { display: block; font-size: 11px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .reloj { position: relative; width: 56px; height: 56px; }
+  .reloj svg { width: 56px; height: 56px; transform: rotate(-90deg); }
+  .reloj circle { fill: none; stroke-width: 6; }
+  .reloj .f { stroke: #2a2346; } .reloj .v { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset .25s linear, stroke .3s; }
+  .reloj b { position: absolute; inset: 0; display: grid; place-items: center; font: italic 900 22px/1 var(--display); }
+  .reloj.poco .v { stroke: var(--rojo); }
+  .barra-q { display: flex; gap: 4px; margin-bottom: 12px; }
+  .barra-q i { flex: 1; height: 6px; border-radius: 3px; background: #2a2346; }
+  .barra-q i.ok { background: var(--ok); } .barra-q i.mal { background: var(--rojo); } .barra-q i.ya { background: #5b5480; } .barra-q i.act { background: var(--accent); }
+  .preg { font-size: 16px; line-height: 1.5; font-weight: 800; }
+  .preg .tag { display: inline-block; font: 900 11px Nunito, sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .preg img { max-width: 100%; border-radius: 10px; }
+  .alts { list-style: none; display: grid; gap: 8px; margin-top: 14px; }
+  .alts button { width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: #1b1533; border: 2px solid #2f2852; border-bottom-width: 4px; text-align: left; cursor: pointer; font: 800 15px/1.35 Nunito, sans-serif; color: var(--text); }
+  .alts button i { flex: none; width: 30px; height: 30px; border-radius: 9px; background: #2a2346; display: grid; place-items: center; font: italic 900 17px/1 var(--display); font-style: normal; }
+  .alts button:not(:disabled):hover { border-color: #4a417a; }
+  .alts button.sel { border-color: var(--accent); background: rgba(198,224,0,.1); }
+  .alts button.ok { border-color: var(--ok); background: rgba(88,204,2,.14); } .alts button.ok i { background: var(--ok); color: #0b1a00; }
+  .alts button.mal { border-color: var(--rojo); background: rgba(255,75,75,.12); } .alts button.mal i { background: var(--rojo); color: #fff; }
+  .alts button:disabled { cursor: default; }
+  .veredicto { margin-top: 12px; min-height: 26px; text-align: center; font: italic 900 22px/1 var(--display); text-transform: uppercase; }
+  .veredicto.ok { color: var(--ok); } .veredicto.mal { color: var(--rojo); } .veredicto.esp { color: var(--text-dim); font-size: 17px; }
+  .cuenta { display: grid; place-items: center; min-height: 52vh; text-align: center; }
+  .cuenta b { font: italic 900 120px/1 var(--display); color: var(--accent); text-shadow: 0 0 40px rgba(198,224,0,.45); animation: late 1s ease infinite; }
+  @keyframes late { 0% { transform: scale(1.25); opacity: .4; } 30% { transform: scale(1); opacity: 1; } }
+
+  /* Resultado */
+  .gana { text-align: center; padding: 8px 0 4px; }
+  .gana .tit { font: italic 900 44px/1 var(--display); text-transform: uppercase; color: var(--oro); text-shadow: 0 0 30px rgba(255,200,0,.35); }
+  .gana .tit.emp { color: #fff; }
+  .mvp { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .mvp .m { border-radius: 16px; padding: 14px; text-align: center; background: linear-gradient(180deg, rgba(255,200,0,.12), transparent); border: 1.5px solid rgba(255,200,0,.35); }
+  .mvp .m .ft { width: 58px; height: 58px; margin: 0 auto 6px; display: block; }
+  .mvp .m small { display: block; font: 900 11px Nunito, sans-serif; letter-spacing: .14em; color: var(--oro); }
+  .mvp .m b { display: block; font-size: 15px; margin-top: 2px; }
+  .premio { display: flex; align-items: center; gap: 10px; justify-content: center; padding: 12px; border-radius: 14px; background: rgba(255,200,0,.1); border: 1px solid rgba(255,200,0,.3); font-weight: 900; margin-top: 12px; }
+  .cb.comp { background: linear-gradient(180deg, #ffd84d, #FFB800); color: #2a1a00; }
+  .foto-fondo { position: fixed; inset: 0; z-index: 60; background: rgba(5,3,12,.86); display: grid; place-items: center; padding: 16px; }
+  .foto-caja { width: min(420px, 100%); text-align: center; }
+  .foto-caja img { width: 100%; border-radius: 18px; box-shadow: 0 20px 60px rgba(0,0,0,.6); }
+  .foto-caja .bt { display: flex; gap: 10px; margin-top: 12px; }
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #241d44; border: 1.5px solid #3a3266; padding: 12px 18px; border-radius: 14px; font-weight: 900; z-index: 50; box-shadow: 0 10px 30px rgba(0,0,0,.5); max-width: 92vw; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <a class="c-volver" href="clanes.html#guerra"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Clanes</span></a>
+      <h1>Sala de clan</h1>
+    </header>
+    <div id="app"><p class="estado">Cargando…</p></div>
+  </div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" media="print" onload="this.media='all'">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="document.dispatchEvent(new Event('mc:katex'))"></script>
+<script src="assets/mc-config.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/pregunta.js"></script>
+<script src="assets/rango.js?v=184"></script>
+<script src="assets/coleccion.js?v=199"></script>
+<script src="assets/tarjeta-perfil.js?v=209"></script>
+<script src="assets/amigos.js?v=5"></script>
+<script src="assets/clanes.js?v=6"></script>
+<script>
+(function () {
+  var K = window.MCClanes, A = window.MCAmigos, esc = A.esc;
+  var app = document.getElementById('app');
+  var Q = new URLSearchParams(location.search);
+  var COD = (Q.get('c') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5);
+  var LETRAS = 'ABCDEFGH';
+  var TK = '<svg class="tk" viewBox="0 0 58 42" aria-hidden="true"><path d="M3 8a5 5 0 0 1 5-5h42a5 5 0 0 1 5 5v7a6 6 0 0 0 0 12v7a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5v-7a6 6 0 0 0 0-12z" fill="#C6E000"/><path d="M39 6v30" stroke="#151A03" stroke-width="2.4" stroke-dasharray="3.5 3"/><path d="M11 15h20M11 22h14M11 29h17" stroke="#151A03" stroke-width="3.2" stroke-linecap="round"/><circle cx="47" cy="21" r="4" fill="#151A03"/></svg>';
+  var RAYO = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z" fill="#2FA8FF" stroke="#0b5c96" stroke-width="1.2" stroke-linejoin="round"/></svg>';
+  var ERR = {
+    sin_ticket: 'No tienes tickets de sala. Canjea uno con tus rayos.', pocos_rayos: 'Te faltan rayos para canjear un ticket. Gana rayos estudiando.',
+    sala_abierta: 'Tu clan ya tiene una sala abierta. Termínala o espera a que venza.', sala_no_existe: 'No hay ninguna sala con ese código.',
+    sala_cerrada: 'Esa sala ya empezó o terminó.', sala_sin_rival: 'Aún no hay clan rival. Solo el líder o un sublíder de otro clan puede aceptar la sala.',
+    sala_otro_clan: 'Esta sala es entre otros dos clanes.', sala_llena: 'Ya están todos los lugares de tu clan.', sala_pocos: 'Falta al menos un jugador por clan.',
+    no_lider: 'Solo el líder o un sublíder puede hacer eso.', sin_clan: 'Primero únete a un clan.', sala_no_juegas: 'No estás en esta sala.', fuera_de_tiempo: 'Se acabó el tiempo de esa pregunta.'
+  };
+  function error(e) { var m = String((e && (e.message || e.error_description)) || e || ''); for (var k in ERR) if (m.indexOf(k) >= 0) return ERR[k]; return /function|schema cache/i.test(m) ? 'Las salas aún no están activadas. Avísale al profe.' : 'No se pudo. Revisa tu internet.'; }
+  function rpc(n, a) { return K.rpc(n, a); }
+  function toast(m) { var t = document.createElement('div'); t.className = 'toast'; t.textContent = m; document.body.appendChild(t); setTimeout(function () { t.remove(); }, 3200); }
+  function son(x) { try { if (window.MCSonido && typeof MCSonido[x] === 'function') MCSonido[x](); } catch (e) {} }
+  function escudo(c) { return '<span class="esc">' + K.escudo(c || { forma: 'punta', color: '#3a3266' }) + '</span>'; }
+  function renderMath(el) {
+    if (!window.renderMathInElement) { document.addEventListener('mc:katex', function () { renderMath(el); }, { once: true }); return; }
+    renderMathInElement(el, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false });
+  }
+
+  /* ---------- Preguntas (de los libros) ---------- */
+  var CURSOS = [], AREAS = [], cache = {};
+  function archivo(r) { if (!cache[r]) cache[r] = fetch(r, { cache: 'no-cache' }).then(function (x) { return x.ok ? x.json() : []; }).catch(function () { return []; }).then(function (x) { return Array.isArray(x) ? x : []; }); return cache[r]; }
+  function valida(q) { return q && typeof q.text === 'string' && Array.isArray(q.options) && q.options.length >= 2 && q.options.length <= 8 && Number.isInteger(q.correct) && q.correct >= 0 && q.correct < q.options.length && !/\[IMAGEN/.test(q.text); }
+  function barajar(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function poolCurso(c) {
+    return archivo(c + '/libros/data/manifest.json').then(function (m) {
+      var ids = (m || []).filter(function (x) { return x && /^\d{4}-(I|II|III)$/.test(x.id) && (x.temas == null || x.temas > 0); }).map(function (x) { return x.id; });
+      return Promise.all(ids.map(function (id) {
+        var ruta = c + '/libros/data/' + id + '.json';
+        return archivo(ruta).then(function (T) { var out = []; T.forEach(function (t) { (t.questions || []).forEach(function (q, i) { if (valida(q) && !/\[(TEXTO|LECTURA)/i.test(q.text) && /^[A-Za-z0-9._-]{1,12}$/.test(String(t.num))) out.push({ ref: ruta + '#' + t.num + '#' + i, q: q }); }); }); return out; });
+      })).then(function (L) { return [].concat.apply([], L); });
+    });
+  }
+  function armar(cursos, n) {
+    cursos = barajar(cursos).slice(0, 8);
+    return Promise.all(cursos.map(poolCurso)).then(function (P) {
+      P = P.filter(function (p) { return p.length; }).map(barajar);
+      var out = [];
+      while (out.length < n && P.some(function (p) { return p.length; })) P.forEach(function (p) { if (out.length < n && p.length) out.push(p.pop()); });
+      return barajar(out);
+    });
+  }
+  function cargarRefs(L) {
+    return Promise.all((L || []).map(function (x) {
+      var m = String(x.ref).match(/^(.+\.json)#([^#]+)#(\d+)$/); if (!m) return null;
+      return archivo(m[1]).then(function (T) { var t = T.filter(function (y) { return String(y.num) === m[2]; })[0], q = t && (t.questions || [])[+m[3]]; return valida(q) ? Object.assign({ _tit: t.name, _curso: m[1].split('/')[0] }, q) : null; });
+    }));
+  }
+
+  /* ---------- Estado ---------- */
+  var verCursos = false, MIO = null, F = { curso: 'mezcla', n: 10, seg: 20, formato: 5 }, S = null, QS = null, desfase = 0, sondeo = 0, tic = 0, mios = {}, ultimaI = -1, enviando = false;
+
+  /* ---------- Inicio: ticket, crear o entrar ---------- */
+  function ticketHtml() {
+    var t = +MIO.tickets || 0, p = +MIO.precio || 60, r = +MIO.rayos || 0;
+    return '<div class="ticket">' + TK + '<div class="t"><b>' + t + '</b><span>' + (t === 1 ? 'Ticket de sala' : 'Tickets de sala') + '</span></div></div>' +
+      '<div class="canje"><button type="button" class="cb g" data-canje' + (r < p ? ' disabled' : '') + '>Canjear 1 ticket · ' + p + ' ' + RAYO + '</button><span class="small">Tienes <span class="rayo">' + RAYO + r + '</span> rayos</span></div>' +
+      '<p class="small" style="margin-top:8px">Crear una sala gasta 1 ticket. Si nadie la acepta en 30 minutos o la cancelas antes de empezar, el ticket vuelve.</p>';
+  }
+  function inicio() {
+    var s = MIO.sala;
+    var abierta = s ? '<div class="card" style="border-color:rgba(198,224,0,.5)"><div class="h2"><span class="pulso"></span>Tu clan tiene una sala</div><p class="small" style="margin-bottom:10px">' + esc(s.titulo) + (s.rival ? ' · contra <b style="color:#fff">' + esc(s.rival) + '</b>' : ' · esperando rival') + '</p><a class="cb l w" href="sala-clan.html?c=' + s.codigo + '">Entrar a la sala ' + s.codigo + '</a></div>' : '';
+    var cursos = [['mezcla', 'Mezcla de todo', '']].concat(AREAS.map(function (a) { return ['a:' + a.id, a.nombre, '']; })).concat(CURSOS.map(function (c) { return [c.id, c.nombre, c.icono]; }));
+    return abierta + '<div class="dos"><div class="card"><div class="h2">Crear sala <em>clan vs clan</em></div>' + ticketHtml() +
+      '<span class="lb">Preguntas de</span><div class="chips">' + cursos.filter(function (c, i) { return i < 5 || verCursos || F.curso === c[0]; }).map(function (c) { return '<button type="button" class="chip' + (F.curso === c[0] ? ' on' : '') + '" data-curso="' + c[0] + '">' + (c[2] ? '<img src="' + c[2] + '" alt="">' : '') + esc(c[1]) + '</button>'; }).join('') +
+      '<button type="button" class="chip" data-vercursos style="color:var(--accent)">' + (verCursos ? 'Menos' : 'Un curso ▾') + '</button></div>' +
+      '<span class="lb">Cuántas preguntas</span><div class="seg3">' + [10, 15, 20].map(function (n) { return '<button type="button" class="chip' + (F.n === n ? ' on' : '') + '" data-n="' + n + '">' + n + '<small>preguntas</small></button>'; }).join('') + '</div>' +
+      '<span class="lb">Tiempo por pregunta</span><div class="seg3">' + [15, 20, 30].map(function (n) { return '<button type="button" class="chip' + (F.seg === n ? ' on' : '') + '" data-seg="' + n + '">' + n + 's<small>' + (n === 15 ? 'rápido' : n === 20 ? 'normal' : 'tranquilo') + '</small></button>'; }).join('') + '</div>' +
+      '<span class="lb">Jugadores por clan</span><div class="seg3">' + [[3, '3 vs 3'], [5, '5 vs 5'], [10, 'Todos']].map(function (x) { return '<button type="button" class="chip' + (F.formato === x[0] ? ' on' : '') + '" data-formato="' + x[0] + '">' + x[1] + '<small>' + (x[0] === 10 ? 'hasta 10' : 'por lado') + '</small></button>'; }).join('') + '</div>' +
+      '<button type="button" class="cb l w" style="margin-top:16px" data-crear' + (+MIO.tickets ? '' : ' disabled') + '>' + TK.replace('class="tk"', 'width="30" height="22"') + 'Crear sala · usa 1 ticket</button>' +
+      (MIO.puedo ? '' : '<p class="small" style="margin-top:8px;text-align:center">Solo el líder o un sublíder crea la sala. Tú puedes entrar con el código.</p>') + '<p class="err" id="eCrear"></p></div>' +
+      '<div><div class="card"><div class="h2">Entrar con código</div><p class="small" style="margin-bottom:10px">Pídele el código de 5 letras a tu líder o al clan rival.</p>' +
+      '<input class="inp code" id="iCod" maxlength="5" autocomplete="off" autocapitalize="characters" placeholder="AB3K7"><button type="button" class="cb l w" style="margin-top:10px" data-entrar>Entrar</button><p class="err" id="eEntrar"></p></div>' +
+      '<div class="card"><div class="h2">Cómo se juega</div><p class="small">• Todos ven la <b style="color:#fff">misma pregunta al mismo tiempo</b>.<br>• Acierto: 50 puntos + hasta 50 más si respondes rápido.<br>• Gana el clan con <b style="color:#fff">mejor promedio por jugador</b>: un clan pequeño puede ganarle a uno grande.<br>• Es amistosa: nadie pone nada. Premio para cada jugador: <b style="color:var(--oro)">+20 XP por jugar, 5 XP por acierto y +60 XP si gana su clan</b>. Ese XP también sube a tu clan en el Top (si juegan 2 o más por lado; 3 salas al día).</p></div></div></div>';
+  }
+
+  /* ---------- Sala ---------- */
+  function lado(i) { return S.clanes[i]; }
+  function jugadoresDe(c) { return (S.jugadores || []).filter(function (j) { return c && j.clan === c.id; }); }
+  function vs(conPuntos) {
+    var a = lado(0), b = lado(1);
+    var pa = conPuntos ? prom(a) : null, pb = conPuntos ? prom(b) : null;
+    document.documentElement.style.setProperty('--ca', (a && a.color) || '#C6E000');
+    document.documentElement.style.setProperty('--cb', (b && b.color) || '#1CB0F6');
+    function l(c, p) { return '<div class="lado' + (c ? '' : ' vacio') + '">' + escudo(c) + '<div class="nm">' + (c ? esc(c.nombre) : 'Esperando rival') + '</div>' + (p != null ? '<div class="pt" style="color:' + (c && c.color || '#fff') + '">' + p + '<small>promedio</small></div>' : '') + '</div>'; }
+    return '<div class="vs">' + l(a, pa) + '<div class="x">VS</div>' + l(b, pb) + '</div>';
+  }
+  function prom(c) {
+    if (!c) return 0;
+    if (S.estado === 'fin') return Math.round(+(c.id === lado(0).id ? S.pts_a : S.pts_b) || 0);
+    var L = jugadoresDe(c); if (!L.length) return 0;
+    return Math.round(L.reduce(function (s, j) { return s + (+j.puntos || 0); }, 0) / L.length);
+  }
+  function equipo(c, i) {
+    var L = jugadoresDe(c), h = L.map(function (j) { return '<div class="jug' + (j.yo ? ' yo' : '') + '">' + A.foto(j) + '<b>' + (j.yo ? 'Tú' : esc(j.apodo || 'Cachimbo')) + '</b>' + (j.puntos != null ? '<em style="color:' + (c.color || '#fff') + '">' + j.puntos + '</em>' : '') + '</div>'; }).join('');
+    for (var k = L.length; k < Math.min(S.formato, S.estado === 'espera' ? Math.max(S.formato === 10 ? 4 : S.formato, L.length) : 0); k++) h += '<div class="slot">Lugar libre</div>';
+    return '<div class="eq" style="border-color:' + (c ? c.color + '55' : '#2a2346') + '"><h3><b style="color:' + (c ? c.color : 'var(--text-faint)') + '">' + (c ? esc(c.nombre) : 'Rival') + '</b><span>' + L.length + '/' + S.formato + '</span></h3>' + (c ? h : '<p class="small">Comparte el código con el líder o sublíder de otro clan. Cuando entre, su clan será el rival.</p>') + '</div>';
+  }
+  function lobby() {
+    var dentro = !!S.yo, puedoEmpezar = S.creador || (S.mi_clan === (lado(0) || {}).id && S.mi_rol !== 'miembro');
+    var listo = lado(1) && jugadoresDe(lado(0)).length && jugadoresDe(lado(1)).length;
+    var enlace = location.origin + location.pathname + '?c=' + S.codigo;
+    return vs(false) +
+      '<div class="card"><div class="codigo"><div><span class="lb" style="margin-top:0">Código de la sala</span><div class="c">' + S.codigo + '</div></div><span class="sp"></span>' +
+      '<button type="button" class="cb g" data-copiar="' + esc(enlace) + '"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>Copiar</button>' +
+      '<a class="cb wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent('¡Sala de clan en Modo Cachimbo! Entra con el código ' + S.codigo + ' ' + enlace) + '">WhatsApp</a></div>' +
+      '<div class="info"><span>' + esc(S.titulo) + '</span><span>' + S.n + ' preguntas</span><span>' + S.seg + ' s cada una</span><span>' + (S.formato === 10 ? 'Todos (hasta 10)' : S.formato + ' vs ' + S.formato) + '</span></div></div>' +
+      '<div class="equipos">' + equipo(lado(0), 0) + equipo(lado(1), 1) + '</div>' +
+      '<div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">' +
+      (!dentro ? '<button type="button" class="cb l" style="flex:1" data-unirme>Entrar a la sala</button>' : puedoEmpezar ? '<button type="button" class="cb l" style="flex:1" data-empezar' + (listo ? '' : ' disabled') + '>' + (listo ? '¡Empezar!' : 'Esperando al rival…') + '</button>' : '<div class="cb g" style="flex:1;cursor:default">Esperando que el líder empiece…</div>') +
+      (dentro ? '<button type="button" class="cb r" data-salir>' + (S.creador ? 'Cancelar sala' : 'Salir') + '</button>' : '') + '</div><p class="err" id="eSala"></p>';
+  }
+
+  /* ---------- Juego ---------- */
+  function ahora() { return Date.now() + desfase; }
+  function fase() {
+    var t0 = new Date(S.inicio).getTime(), paso = S.paso * 1000, t = ahora() - t0;
+    if (t < 0) return { tipo: 'cuenta', falta: Math.ceil(-t / 1000) };
+    var i = Math.floor(t / paso); if (i >= S.n) return { tipo: 'fin' };
+    var dentro = t - i * paso;
+    return { tipo: dentro < S.seg * 1000 ? 'pregunta' : 'pausa', i: i, queda: Math.max(0, S.seg - dentro / 1000) };
+  }
+  function marca() {
+    var a = lado(0), b = lado(1);
+    function m(c, cls) { return '<div class="m ' + cls + '">' + escudo(c) + '<div style="min-width:0"><b style="color:' + c.color + '">' + prom(c) + '</b><small>' + esc(c.nombre) + '</small></div></div>'; }
+    return '<div class="marca">' + m(a, 'a') + '<div class="reloj" id="reloj"><svg viewBox="0 0 56 56"><circle class="f" cx="28" cy="28" r="24"/><circle class="v" cx="28" cy="28" r="24" stroke-dasharray="150.8" stroke-dashoffset="0"/></svg><b>' + S.seg + '</b></div>' + m(b, 'b') + '</div>';
+  }
+  function juegoBase() {
+    app.innerHTML = '<div id="marca">' + marca() + '</div><div class="barra-q" id="barra"></div><div class="card" id="qcard"><div id="qcuerpo"></div><div class="veredicto" id="ver"></div></div><p class="small" id="resp" style="text-align:center"></p>';
+  }
+  function pintarBarra(f) {
+    var h = ''; for (var i = 0; i < S.n; i++) { var r = mios[i]; h += '<i class="' + (i === f.i && f.tipo !== 'fin' ? 'act' : r ? (r.ok == null ? 'ya' : r.ok ? 'ok' : 'mal') : '') + '"></i>'; }
+    document.getElementById('barra').innerHTML = h;
+  }
+  function pintarPregunta(i) {
+    var q = QS[i], c = document.getElementById('qcuerpo');
+    document.getElementById('ver').textContent = ''; document.getElementById('ver').className = 'veredicto';
+    if (!q) { c.innerHTML = '<p class="small">Esta pregunta ya no está en la web. No cuenta para nadie.</p>'; return; }
+    var r = MCPregunta.armar(q.text, {});
+    c.innerHTML = '<div class="preg"><span class="tag">' + (i + 1) + ' de ' + S.n + ' · ' + esc((NOMBRE[q._curso] || q._curso) + (q._tit ? ' · ' + q._tit : '')) + '</span><div>' + r.html + '</div>' + (q.graphic ? '<div style="margin-top:10px">' + q.graphic + '</div>' : '') + '</div>' +
+      '<ul class="alts" id="alts">' + q.options.map(function (o, k) { return '<li><button type="button" data-k="' + k + '"><i>' + esc(o.letter || LETRAS[k]) + '</i><span>' + MCPregunta.formato(o.text) + '</span></button></li>'; }).join('') + '</ul>';
+    renderMath(c);
+    var m = mios[i]; if (m) marcarAlts(i, m.k, null);
+  }
+  function marcarAlts(i, k, correcta) {
+    document.querySelectorAll('#alts button').forEach(function (b) {
+      var x = +b.dataset.k; b.disabled = true;
+      b.classList.toggle('sel', x === k && correcta == null);
+      if (correcta != null) { b.classList.toggle('ok', x === correcta); b.classList.toggle('mal', x === k && k !== correcta); }
+    });
+  }
+  function bucle() {
+    var f = fase();
+    if (f.tipo === 'fin') { clearInterval(tic); tic = 0; refrescar(); return; }
+    if (f.tipo === 'cuenta') { if (!document.getElementById('cuentaN')) app.innerHTML = vs(false) + '<div class="cuenta"><div><p class="small" style="margin-bottom:10px">¡Prepárense!</p><b id="cuentaN"></b></div></div>'; document.getElementById('cuentaN').textContent = f.falta; return; }
+    if (!document.getElementById('qcard')) juegoBase();
+    if (f.i !== ultimaI) { ultimaI = f.i; pintarPregunta(f.i); son('toque'); }
+    pintarBarra(f);
+    var rl = document.getElementById('reloj'), v = rl.querySelector('.v');
+    v.style.strokeDashoffset = (150.8 * (1 - f.queda / S.seg)).toFixed(1);
+    rl.querySelector('b').textContent = f.tipo === 'pregunta' ? Math.ceil(f.queda) : '✓';
+    rl.classList.toggle('poco', f.tipo === 'pregunta' && f.queda <= 5);
+    var ver = document.getElementById('ver'), m = mios[f.i];
+    if (f.tipo === 'pausa') {
+      var q = S.preguntas[f.i], c = q && q.c;
+      if (c == null && QS[f.i]) c = QS[f.i].correct;
+      marcarAlts(f.i, m ? m.k : -1, c);
+      if (m && m.ok != null) { ver.textContent = m.ok ? '¡Correcto! +' + m.p : 'Incorrecto'; ver.className = 'veredicto ' + (m.ok ? 'ok' : 'mal'); }
+      else if (!m) { ver.textContent = 'Se acabó el tiempo'; ver.className = 'veredicto mal'; }
+    } else if (m) { ver.textContent = 'Respuesta enviada · espera a los demás'; ver.className = 'veredicto esp'; }
+    var lados = [lado(0), lado(1)].map(function (c) { var L = jugadoresDe(c); return esc(c.nombre) + ': ' + L.filter(function (j) { return (+j.respondio || 0) > f.i; }).length + '/' + L.length; });
+    document.getElementById('resp').textContent = 'Respondieron · ' + lados.join(' · ');
+  }
+  function responder(k) {
+    var f = fase(); if (f.tipo !== 'pregunta' || mios[f.i] || enviando || !S.yo) return;
+    enviando = true; var i = f.i; mios[i] = { k: k, ok: null }; marcarAlts(i, k, null); son('toque');
+    rpc('clan_sala_responder', { p_codigo: S.codigo, p_i: i, p_k: k }).then(function (r) {
+      if (r && !r.repetida) { mios[i].ok = !!r.ok; mios[i].p = r.puntos; son(r.ok ? 'bien' : 'mal'); }
+    }, function (e) { delete mios[i]; toast(error(e)); }).then(function () { enviando = false; });
+  }
+
+  /* ---------- Resultado ---------- */
+  function resultado() {
+    var a = lado(0), b = lado(1), g = S.ganador, yo = S.yo;
+    var tit = g ? (g === (yo && yo.clan) ? '¡Ganó tu clan!' : yo ? 'Ganó ' + esc(g === a.id ? a.nombre : b.nombre) : 'Ganó ' + esc(g === a.id ? a.nombre : b.nombre)) : '¡Empate!';
+    function mvp(c) { var L = jugadoresDe(c).slice().sort(function (x, y) { return y.puntos - x.puntos; }); var j = L[0]; return '<div class="m">' + (j ? A.foto(j) : '') + '<small>MVP · ' + esc(c.nombre) + '</small><b>' + (j ? (j.yo ? 'Tú' : esc(j.apodo)) : '—') + '</b><span class="small">' + (j ? j.puntos + ' pts · ' + j.aciertos + ' aciertos' : '') + '</span></div>'; }
+    return '<div class="gana"><div class="tit' + (g ? '' : ' emp') + '">' + tit + '</div><p class="small" style="margin:6px 0 12px">' + esc(S.titulo) + ' · ' + S.n + ' preguntas</p></div>' + vs(true) +
+      '<div class="mvp">' + mvp(a) + mvp(b) + '</div>' +
+      (yo ? '<div class="premio">' + (yo.premio ? '⭐ Ganaste <span style="color:var(--oro)">+' + yo.premio + ' XP</span> · ' + yo.aciertos + ' de ' + S.n + ' aciertos · también suma a tu clan' : yo.premio === 0 ? 'Acertaste ' + yo.aciertos + ' de ' + S.n + '. Sin XP esta vez (se necesitan 2 por lado, máximo 3 salas al día).' : 'Calculando premio…') + '</div>' : '') +
+      '<div class="equipos" style="margin-top:14px">' + equipo(a, 0) + equipo(b, 1) + '</div>' +
+      '<button type="button" class="cb comp w" style="margin-top:14px" data-compartir><svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>' + (g && yo && g === yo.clan ? 'Compartir mi victoria' : 'Compartir resultado') + '</button>' +
+      '<div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap"><a class="cb l" style="flex:1" href="sala-clan.html">Otra sala</a><a class="cb g" style="flex:1" href="clanes.html">Volver a Clanes</a></div>';
+  }
+
+  /* ---------- Captura de la victoria (como en Free Fire) ----------
+     Se dibuja en un lienzo 1080×1350 (formato de historias y publicaciones) y se comparte o se descarga. */
+  function svgImg(html) {
+    var m = String(html).match(/<svg[\s\S]*<\/svg>/); if (!m) return Promise.resolve(null);
+    var svg = m[0]; if (svg.indexOf('xmlns=') < 0) svg = svg.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+    return new Promise(function (ok) { var i = new Image(); i.onload = function () { ok(i); }; i.onerror = function () { ok(null); }; i.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg); });
+  }
+  function fotoVictoria() {
+    var a = lado(0), b = lado(1), yo = S.yo, g = S.ganador;
+    var W = 1080, H = 1350, cv = document.createElement('canvas'); cv.width = W; cv.height = H; var c = cv.getContext('2d');
+    return (document.fonts ? document.fonts.ready : Promise.resolve()).then(function () { return Promise.all([svgImg(K.escudo(a)), svgImg(K.escudo(b))]); }).then(function (E) {
+      var ga = a.color || '#C6E000', gb = b.color || '#1CB0F6', gan = g === a.id ? a : g === b.id ? b : null;
+      // Fondo
+      c.fillStyle = '#0B0818'; c.fillRect(0, 0, W, H);
+      var r1 = c.createRadialGradient(250, 520, 20, 250, 520, 520); r1.addColorStop(0, ga + '66'); r1.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = r1; c.fillRect(0, 0, W, H);
+      var r2 = c.createRadialGradient(830, 520, 20, 830, 520, 520); r2.addColorStop(0, gb + '66'); r2.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = r2; c.fillRect(0, 0, W, H);
+      // Rayos de luz detrás del ganador
+      if (gan) { c.save(); c.translate(gan === a ? 250 : 830, 520); for (var k = 0; k < 16; k++) { c.rotate(Math.PI / 8); c.fillStyle = 'rgba(255,215,80,.07)'; c.beginPath(); c.moveTo(0, 0); c.lineTo(-60, -700); c.lineTo(60, -700); c.closePath(); c.fill(); } c.restore(); }
+      function txt(t, x, y, font, col, al, sombra) { c.font = font; c.textAlign = al || 'center'; c.fillStyle = col; if (sombra) { c.shadowColor = sombra; c.shadowBlur = 40; } c.fillText(t, x, y); c.shadowBlur = 0; }
+      function ajusta(t, max, size, base) { var s = size; c.font = base.replace('{s}', s); while (c.measureText(t).width > max && s > 20) { s -= 2; c.font = base.replace('{s}', s); } return base.replace('{s}', s); }
+      var D = '"Barlow Condensed", Impact, sans-serif', N = 'Nunito, sans-serif';
+      txt('MODO CACHIMBO · SALA DE CLAN', W / 2, 92, 'italic 900 38px ' + D, '#C6E000');
+      var tit = gan ? (yo && yo.clan === gan.id ? '¡VICTORIA!' : '¡GANÓ ' + gan.nombre.toUpperCase() + '!') : '¡EMPATE!';
+      txt(tit, W / 2, 230, ajusta(tit, 960, 150, 'italic 900 {s}px ' + D), gan ? '#FFC800' : '#FFFFFF', 'center', gan ? 'rgba(255,200,0,.6)' : null);
+      // Escudos
+      [[a, E[0], 250], [b, E[1], 830]].forEach(function (x) {
+        var es = x[0] === gan, w = es ? 300 : 240, h = w * 1.13;
+        c.globalAlpha = gan && !es ? .55 : 1; if (x[1]) c.drawImage(x[1], x[2] - w / 2, 520 - h / 2 - 20, w, h); c.globalAlpha = 1;
+        txt(x[0].nombre.toUpperCase(), x[2], 760, ajusta(x[0].nombre.toUpperCase(), 420, 52, 'italic 900 {s}px ' + D), '#FFFFFF');
+        txt(String(prom(x[0])), x[2], 870, 'italic 900 110px ' + D, x[0].color || '#fff');
+        txt('PROMEDIO', x[2], 912, '900 26px ' + N, '#A99FC8');
+        if (es) txt('👑', x[2], 300, '70px sans-serif', '#fff');
+      });
+      txt('VS', W / 2, 545, 'italic 900 110px ' + D, '#FFFFFF', 'center', 'rgba(198,224,0,.7)');
+      // Tarjeta del jugador
+      c.fillStyle = 'rgba(255,255,255,.06)'; c.strokeStyle = 'rgba(255,200,0,.5)'; c.lineWidth = 3;
+      c.beginPath(); if (c.roundRect) c.roundRect(110, 980, 860, 200, 32); else c.rect(110, 980, 860, 200); c.fill(); c.stroke();
+      var me = (S.jugadores || []).filter(function (j) { return j.yo; })[0];
+      var L = (S.jugadores || []).slice().sort(function (x, y) { return y.puntos - x.puntos; }), mvp = L[0];
+      txt(me ? (me.apodo || 'Yo').toUpperCase() : 'MVP: ' + ((mvp && mvp.apodo) || '').toUpperCase(), W / 2, 1050, 'italic 900 56px ' + D, '#FFFFFF');
+      txt(me ? me.puntos + ' pts · ' + me.aciertos + ' de ' + S.n + ' aciertos' + (yo && yo.premio ? ' · +' + yo.premio + ' XP' : '') : '', W / 2, 1105, '900 34px ' + N, '#FFC800');
+      if (mvp && me && mvp.yo) txt('⭐ MVP DE LA SALA', W / 2, 1155, 'italic 900 38px ' + D, '#C6E000');
+      else txt(S.titulo + ' · ' + S.n + ' preguntas', W / 2, 1155, '800 28px ' + N, '#A99FC8');
+      txt('modocachimbo.github.io', W / 2, 1270, '900 30px ' + N, '#6F6690');
+      var f = new Date(); txt(f.toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' }), W / 2, 1310, '700 24px ' + N, '#6F6690');
+      return new Promise(function (ok) { cv.toBlob(function (bl) { ok(bl); }, 'image/png'); });
+    });
+  }
+  function mostrarFoto(bl) {
+    var url = URL.createObjectURL(bl), nombre = 'victoria-modo-cachimbo.png', archivo = null;
+    try { archivo = new File([bl], nombre, { type: 'image/png' }); } catch (e) {}
+    var puede = archivo && navigator.canShare && navigator.canShare({ files: [archivo] });
+    var d = document.createElement('div'); d.className = 'foto-fondo';
+    d.innerHTML = '<div class="foto-caja"><img src="' + url + '" alt="Tu resultado"><div class="bt">' + (puede ? '<button type="button" class="cb comp" style="flex:1" data-f="compartir">Compartir</button>' : '') +
+      '<a class="cb l" style="flex:1" href="' + url + '" download="' + nombre + '">Descargar</a><button type="button" class="cb g" data-f="cerrar">✕</button></div></div>';
+    document.body.appendChild(d);
+    d.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-f]');
+      if ((b && b.dataset.f === 'cerrar') || e.target === d) { d.remove(); URL.revokeObjectURL(url); return; }
+      if (b && b.dataset.f === 'compartir') navigator.share({ files: [archivo], title: 'Modo Cachimbo', text: '¡Sala de clan en Modo Cachimbo!' }).catch(function () {});
+    });
+  }
+
+  /* ---------- Pintar y sondeo ---------- */
+  var NOMBRE = {};
+  function pintarSala() {
+    clearInterval(sondeo); sondeo = 0;
+    if (S.estado === 'cancelada') { app.innerHTML = '<div class="card estado"><div class="h2" style="justify-content:center">Sala cerrada</div><p class="small">La sala se canceló o venció sin empezar. Si era tuya, el ticket volvió.</p><a class="cb l" style="margin-top:14px" href="sala-clan.html">Volver</a></div>'; return; }
+    if (S.estado === 'espera') { app.innerHTML = lobby(); sondeo = setInterval(visible(refrescar), 3000); return; }
+    if (S.estado === 'fin') { clearInterval(tic); tic = 0; app.innerHTML = resultado(); son('bien'); if (S.yo && S.yo.premio == null) setTimeout(refrescar, 2500); return; }
+    // En juego: preguntas cargadas una sola vez; marcador cada 4 s
+    var seguir = function () { if (!tic) { tic = setInterval(bucle, 200); bucle(); } sondeo = setInterval(visible(refrescar), 4000); };
+    if (!QS) cargarRefs(S.preguntas).then(function (L) { QS = L; if (window.MCPregunta) MCPregunta.rangos(L.map(function (q) { return q || {}; })); seguir(); }); else seguir();
+    var m = document.getElementById('marca'); if (m) m.innerHTML = marca();
+  }
+  function visible(fn) { return function () { if (!document.hidden) fn(); }; }
+  function refrescar() {
+    return rpc('clan_sala_ver', { p_codigo: COD }).then(function (d) {
+      var antes = S && S.estado; S = d; desfase = new Date(d.ahora).getTime() - Date.now();
+      Object.keys((d.yo && d.yo.resp) || {}).forEach(function (i) { var r = d.yo.resp[i]; mios[i] = { k: r[0], ok: r[1], p: r[2] }; });
+      if (antes === 'juego' && d.estado === 'juego') { var m = document.getElementById('marca'); if (m) m.innerHTML = marca(); return; }
+      pintarSala();
+    }, function (e) { app.innerHTML = '<div class="card estado"><p>' + esc(error(e)) + '</p><a class="cb l" style="margin-top:14px" href="sala-clan.html">Volver</a></div>'; clearInterval(sondeo); });
+  }
+
+  /* ---------- Clics ---------- */
+  app.addEventListener('click', function (e) {
+    var el;
+    if ((el = e.target.closest('#alts button'))) { responder(+el.dataset.k); return; }
+    if ((el = e.target.closest('[data-vercursos]'))) { verCursos = !verCursos; app.innerHTML = inicio(); return; }
+    if ((el = e.target.closest('[data-curso]'))) { F.curso = el.dataset.curso; app.innerHTML = inicio(); return; }
+    if ((el = e.target.closest('[data-n]'))) { F.n = +el.dataset.n; app.innerHTML = inicio(); return; }
+    if ((el = e.target.closest('[data-seg]'))) { F.seg = +el.dataset.seg; app.innerHTML = inicio(); return; }
+    if ((el = e.target.closest('[data-formato]'))) { F.formato = +el.dataset.formato; app.innerHTML = inicio(); return; }
+    if ((el = e.target.closest('[data-canje]'))) {
+      el.disabled = true;
+      rpc('canjear_ticket').then(function (t) { MIO.tickets = t.tickets; MIO.rayos = t.rayos; son('bien'); toast('¡Canjeaste 1 ticket de sala!'); app.innerHTML = inicio(); }, function (x) { toast(error(x)); el.disabled = false; });
+      return;
+    }
+    if ((el = e.target.closest('[data-crear]'))) {
+      var er = document.getElementById('eCrear'); el.disabled = true; el.textContent = 'Armando preguntas…';
+      var lista = F.curso === 'mezcla' ? CURSOS.map(function (c) { return c.id; }) : F.curso.indexOf('a:') === 0 ? CURSOS.filter(function (c) { return c.area === F.curso.slice(2); }).map(function (c) { return c.id; }) : [F.curso];
+      var nom = F.curso === 'mezcla' ? 'Mezcla de todo' : F.curso.indexOf('a:') === 0 ? (AREAS.filter(function (a) { return 'a:' + a.id === F.curso; })[0] || {}).nombre : NOMBRE[F.curso];
+      armar(lista, F.n).then(function (L) {
+        if (L.length < F.n) throw new Error('Con esa opción solo hay ' + L.length + ' preguntas. Elige otra.');
+        return rpc('clan_sala_crear', { p: { titulo: nom, n: F.n, seg: F.seg, formato: F.formato, preguntas: L.map(function (x) { return { ref: x.ref, c: x.q.correct, k: x.q.options.length }; }) } });
+      }).then(function (cod) { location.href = 'sala-clan.html?c=' + cod; }, function (x) { er.textContent = x && x.message && x.message.indexOf('Con esa') === 0 ? x.message : error(x); app.innerHTML = inicio(); document.getElementById('eCrear').textContent = er.textContent; });
+      return;
+    }
+    if ((el = e.target.closest('[data-entrar]'))) {
+      var c = (document.getElementById('iCod').value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (c.length !== 5) { document.getElementById('eEntrar').textContent = 'El código tiene 5 letras o números.'; return; }
+      el.disabled = true;
+      rpc('clan_sala_entrar', { p_codigo: c }).then(function () { location.href = 'sala-clan.html?c=' + c; }, function (x) { document.getElementById('eEntrar').textContent = error(x); el.disabled = false; });
+      return;
+    }
+    if ((el = e.target.closest('[data-unirme]'))) {
+      el.disabled = true;
+      rpc('clan_sala_entrar', { p_codigo: S.codigo }).then(refrescar, function (x) { document.getElementById('eSala').textContent = error(x); el.disabled = false; });
+      return;
+    }
+    if ((el = e.target.closest('[data-empezar]'))) {
+      el.disabled = true;
+      rpc('clan_sala_empezar', { p_codigo: S.codigo }).then(refrescar, function (x) { document.getElementById('eSala').textContent = error(x); el.disabled = false; });
+      return;
+    }
+    if ((el = e.target.closest('[data-salir]'))) {
+      el.disabled = true;
+      rpc('clan_sala_salir', { p_codigo: S.codigo }).then(function () { location.href = 'sala-clan.html'; }, function (x) { toast(error(x)); el.disabled = false; });
+      return;
+    }
+    if ((el = e.target.closest('[data-compartir]'))) { el.disabled = true; fotoVictoria().then(mostrarFoto, function () { toast('No se pudo armar la imagen.'); }).then(function () { el.disabled = false; }); return; }
+    if ((el = e.target.closest('[data-copiar]'))) { A.copiar(el.dataset.copiar, 'Enlace copiado'); return; }
+  });
+  app.addEventListener('input', function (e) { if (e.target.id === 'iCod') e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5); });
+
+  /* ---------- Arranque ---------- */
+  var empezado = false;
+  function empezar(u) {
+    if (!u || empezado) return; empezado = true;
+    fetch('assets/cursos.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).catch(function () { return {}; }).then(function (reg) {
+      CURSOS = ((reg && reg.cursos) || []).filter(function (c) { return !c.oculto; }).sort(function (a, b) { return (a.orden || 0) - (b.orden || 0); });
+      AREAS = (reg && reg.areas) || []; CURSOS.forEach(function (c) { NOMBRE[c.id] = c.nombre; });
+      if (COD) return refrescar();
+      return Promise.all([rpc('clan_sala_mia'), rpc('mi_clan').catch(function () { return {}; })]).then(function (r) {
+        MIO = r[0] || {}; MIO.puedo = !!(r[1] && r[1].clan && r[1].rol !== 'miembro');
+        if (!(r[1] && r[1].clan)) { app.innerHTML = '<div class="card estado"><div class="h2" style="justify-content:center">Primero únete a un clan</div><p class="small">Las salas son entre clanes.</p><a class="cb l" style="margin-top:14px" href="clanes.html">Ir a Clanes</a></div>'; return; }
+        app.innerHTML = inicio();
+      });
+    }).catch(function (e) { app.innerHTML = '<div class="card estado"><p>' + esc(error(e)) + '</p></div>'; });
+  }
+  MCAuth.listo.then(function () { var u = MCAuth.usuario(); if (u) empezar(u); else app.innerHTML = '<div class="card estado"><p>Ingresa con tu cuenta para jugar.</p></div>'; MCAuth.alCambiar(empezar); });
+})();
+</script>
+<script src="assets/sonido.js"></script>
+</body>
+</html>

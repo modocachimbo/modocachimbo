@@ -589,6 +589,7 @@
       : g.tipo === 'infinito' ? '¡Corazones infinitos por ' + (g.cantidad % 24 ? g.cantidad + (g.cantidad === 1 ? ' hora!' : ' horas!') : g.cantidad / 24 + (g.cantidad === 24 ? ' día!' : ' días!'))
       : g.tipo === 'xp' ? '¡Te regalaron ' + g.cantidad + ' XP!'
       : g.tipo === 'rayos' ? '¡Te regalaron ' + g.cantidad + ' de energía!'
+      : g.tipo === 'ticket' ? '¡Te regalaron ' + g.cantidad + (g.cantidad === 1 ? ' ticket de sala!' : ' tickets de sala!')
       : '¡Te regalaron algo para tu colección!';
     var d = document.createElement('div'); d.className = 'mcz-toast'; d.setAttribute('role', 'status');
     d.innerHTML = (g.tipo === 'xp' ? SVG.xp : SVG.corazon) + '<div><b></b><span></span></div>';

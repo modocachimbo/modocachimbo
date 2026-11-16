@@ -164,6 +164,11 @@
   .seg { display: flex; gap: 6px; margin-bottom: 10px; }
   .cuenta { display: flex; align-items: center; justify-content: center; gap: 6px; font: 900 12px/1 Nunito, sans-serif; color: var(--text-dim); margin-bottom: 10px; }
   .cuenta svg { width: 15px; height: 15px; }
+  .salac { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; border-color: rgba(198,224,0,.45); background: radial-gradient(300px 140px at 0% 0%, rgba(198,224,0,.14), transparent 70%), linear-gradient(180deg, #1b1533, #141027); }
+  .salac .sc-tx { flex: 1; min-width: 220px; }
+  .salac .h2 { margin-bottom: 6px; } .salac .h2 em { font-size: 16px; color: var(--accent); }
+  .salac .vivo { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--rojo); box-shadow: 0 0 0 4px rgba(255,75,75,.25); }
+  .sc-tk { display: inline-block; margin-top: 8px; padding: 4px 10px; border-radius: 999px; background: rgba(198,224,0,.12); border: 1px solid rgba(198,224,0,.35); font: 900 12px Nunito, sans-serif; color: var(--accent); }
   .pedir { display: inline-flex; align-items: center; gap: 5px; height: 30px; padding: 0 11px; border-radius: 9px; border: 0; border-bottom: 3px solid rgba(0,0,0,.35); background: linear-gradient(180deg, #e2f75a, #C6E000); color: #14101f; font: italic 900 14px/1 var(--display); text-transform: uppercase; letter-spacing: .02em; cursor: pointer; white-space: nowrap; flex: none; }
   .pedir.ya { background: #221C3D; color: var(--accent); border-bottom-color: #120E22; }
   .pedir.lleno { background: transparent; color: var(--text-faint); border: 0; cursor: default; }
@@ -587,6 +592,16 @@
     if (!l || !l.length) return '<p class="small">Aún nadie suma XP.</p>';
     return l.slice(0, 6).map(function (x) { return '<div class="ap">' + A.foto(x) + '<span>' + (x.yo ? 'Tú' : esc(x.apodo)) + '</span><b style="color:' + col + '">' + nf(x.xp) + '</b></div>'; }).join('');
   }
+  /* Sala de clan (en vivo, con ticket): sala-clan.html · supabase/104-clanes-sala.sql */
+  var SALA = null;
+  function salaCard() {
+    if (SALA === null) { SALA = false; K.rpc('clan_sala_mia').then(function (d) { SALA = d || false; if (vista === 'guerra') pintar(); }, function () { SALA = false; }); }
+    var s = SALA && SALA.sala, t = SALA ? +SALA.tickets || 0 : null;
+    return '<div class="card salac"><div class="sc-tx"><div class="h2">' + (s ? '<i class="vivo"></i>' : '') + 'Sala de clan <em>en vivo</em></div>' +
+      '<p class="small">' + (s ? esc(s.titulo) + (s.rival ? ' · contra <b style="color:#fff">' + esc(s.rival) + '</b>' : ' · esperando rival') : 'Clan vs clan al instante: todos responden la misma pregunta al mismo tiempo. Crear una sala usa 1 ticket.') + '</p>' +
+      (t != null ? '<span class="sc-tk">🎟 ' + t + (t === 1 ? ' ticket' : ' tickets') + '</span>' : '') + '</div>' +
+      '<a class="cb l" href="sala-clan.html' + (s ? '?c=' + s.codigo : '') + '">' + (s ? 'Entrar a la sala' : 'Ir a salas') + '</a></div>';
+  }
   function guerraVista() {
     if (!G) { K.rpc('clan_guerra').then(function (d) { G = d || {}; if (vista === 'guerra') pintar(); }, function (e) { G = { error: K.error(e) }; if (vista === 'guerra') pintar(); }); return '<p class="estado">Cargando la guerra…</p>'; }
     if (G.error) return '<p class="estado">' + esc(G.error) + '</p>';
@@ -626,6 +641,7 @@
       '<div>' + SV.check + 'Dura 1 o 2 días. Cuenta el XP que ganan practicando, en duelos, simulacro y más.</div>' +
       '<div>' + SV.check + 'Cada persona suma hasta 3 000 XP por día de guerra, para que no gane uno solo.</div>' +
       '<div>' + SV.check + 'El clan que gana suma una victoria a su escudo.</div></div>';
+    h = salaCard() + h;
     return h;
   }
   // Cuenta regresiva de las guerras
@@ -704,7 +720,7 @@
   });
   app.addEventListener('click', function (e) {
     var el;
-    if ((el = e.target.closest('[data-vista]'))) { vista = el.getAttribute('data-vista'); seguro = ''; abierto = null; if (vista === 'top') TOP = null; if (vista === 'guerra') { G = null; RIV = null; } pintar(); return; }
+    if ((el = e.target.closest('[data-vista]'))) { vista = el.getAttribute('data-vista'); seguro = ''; abierto = null; if (vista === 'top') TOP = null; if (vista === 'guerra') { G = null; RIV = null; SALA = null; } pintar(); return; }
     if ((el = e.target.closest('[data-forma],[data-simbolo],[data-color]'))) {
       leerForm();
       if (el.dataset.forma) F.forma = el.dataset.forma; if (el.dataset.simbolo) F.simbolo = el.dataset.simbolo; if (el.dataset.color) F.color = el.dataset.color;
