@@ -976,12 +976,20 @@
         try { localStorage.setItem(K_ALT, v && v.mezclar === false ? '0' : '1'); localStorage.setItem(K_ALT + '_t', String(Date.now())); } catch (e) {}
       }, function () {});
   }, 1500);
-  var SIN_MEZCLA = /anteriores|\b(todas|ninguna|ambas)\b|^\s*(solo\s+)?[a-e]\s*(,|y|e|o|u)\s*[a-e]\b|\b(alternativas?|opci[oó]n(es)?|claves?)\s+[a-e]\b/i;
+  var SIN_MEZCLA = /anteriores|\b(todas|ninguna|ambas)\b|^\s*(s[oó]lo\s+)?[a-e]\s*(,|y|e|o|u)\s*[a-e]\b|\b(alternativas?|opci[oó]n(es)?|claves?)\s+[a-e]\b/i;
+  // Alternativa que solo nombra otras letras, aunque venga como fórmula: "$A+B$", "B + C", "A, B y C",
+  // "Sólo A y E" (en mayúscula, para no confundir con variables como "$a+b$")
+  var SOLO_LETRAS = /^\s*(?:[Ss][oó]lo\s+)?[A-E](?:\s*(?:\+|,|&|y|e|o|u)\s*[A-E])+\s*\.?\s*$/;
+  function nombraLetras(t) {
+    t = String(t || '');
+    return SIN_MEZCLA.test(t.replace(/\$[^$]*\$/g, '')) ||
+      SOLO_LETRAS.test(t.replace(/\$/g, '').replace(/\\(?:text|mathrm|textbf|mathbf)\s*\{([^}]*)\}/g, '$1').replace(/[{}]/g, '').replace(/\\[,;:! ]/g, ' '));
+  }
   function sePuedeMezclar(q) {
     var op = q && q.options;
     if (!Array.isArray(op) || op.length < 3) return false;
     if (typeof q.correct !== 'number' || q.correct < 0 || q.correct >= op.length) return false;
-    return !op.some(function (o) { return SIN_MEZCLA.test(String(o && o.text || '').replace(/\$[^$]*\$/g, '')); });
+    return !op.some(function (o) { return nombraLetras(o && o.text); });
   }
   // Generador con semilla (el mismo orden para la misma semilla)
   function azar(semilla) {
