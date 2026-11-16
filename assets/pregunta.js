@@ -976,12 +976,32 @@
         try { localStorage.setItem(K_ALT, v && v.mezclar === false ? '0' : '1'); localStorage.setItem(K_ALT + '_t', String(Date.now())); } catch (e) {}
       }, function () {});
   }, 1500);
-  var SIN_MEZCLA = /anteriores|\b(todas|ninguna|ambas)\b|^\s*(solo\s+)?[a-e]\s*(,|y|e|o|u)\s*[a-e]\b|\b(alternativas?|opci[oó]n(es)?|claves?)\s+[a-e]\b/i;
+  // Alternativas que no se pueden mover de lugar (si una aparece, la pregunta no se mezcla):
+  // - nombran otras alternativas: "A y E", "Solo B", "A, B y C", "$A+B$", "A y B son correctas",
+  //   "Excepto C", "alternativa D", "todas/ninguna de las anteriores", "ambas"
+  // - van al final por costumbre: "N.A.", "T.A.", "Ninguno", "Faltan datos", "No se puede determinar"
+  var SIN_MEZCLA = /anteriores|\b(todas|ninguna|ambas)\b|^\s*(s[oó]lo\s+)?[a-e]\s*(,|y|e|o|u)\s*[a-e]\b|\b(alternativas?|opci[oó]n(es)?|claves?|incisos?|respuestas?)\s+[a-e]\b/i;
+  // Letras en MAYÚSCULA (para no confundir con variables como "$a+b$" ni con "vitamina C")
+  var SEP = '\\s*(?:\\+|,|;|&|/|\\by\\b|\\be\\b|\\bo\\b|\\bu\\b|-|–|—)\\s*';
+  var SOLO_LETRAS = new RegExp('^\\s*(?:(?:[Ss][oó]lo|[ÚúUu]nicamente|[Ee]xcepto|[Mm]enos|[Ss]alvo)\\s+(?:la[s]?\\s+)?)?' +
+    '\\(?[A-E]\\)?(?:' + SEP + '\\(?[A-E]\\)?)*' +
+    '(?:\\s+(?:son|es|est[aá]n?)\\s+(?:correct|incorrect|verdader|fals)[ao]s?)?\\s*\\.?\\s*$');
+  // Una letra sola ("C") solo cuenta si va con Solo/Excepto o con "es correcta"
+  var UNA_LETRA = /^\s*\(?[A-E]\)?\s*\.?\s*$/;
+  var AL_FINAL = /^\s*(?:n\.?\s*a\.?|t\.?\s*a\.?|n\.?\s*e\.?|ninguno|ninguno de (?:ellos|estos)\b.*|faltan?\s+datos.*|datos insuficientes.*|no se puede (?:determinar|calcular|precisar).*|no (?:es posible|existe|hay soluci[oó]n).*|m[aá]s de una.*|indeterminad[oa].*|todos (?:los anteriores|ellos)\b.*)\s*\.?\s*$/i;
+  function nombraLetras(t) {
+    t = String(t || '');
+    if (SIN_MEZCLA.test(t.replace(/\$[^$]*\$/g, ''))) return true;
+    var p = t.replace(/\$/g, '').replace(/\\(?:text|mathrm|textbf|mathbf|mbox)\s*\{([^}]*)\}/g, '$1').replace(/[{}]/g, '')
+      .replace(/\\[,;:! ]|~/g, ' ').replace(/<[^>]*>/g, '').trim();
+    if (AL_FINAL.test(p)) return true;
+    return SOLO_LETRAS.test(p) && !UNA_LETRA.test(p);
+  }
   function sePuedeMezclar(q) {
     var op = q && q.options;
     if (!Array.isArray(op) || op.length < 3) return false;
     if (typeof q.correct !== 'number' || q.correct < 0 || q.correct >= op.length) return false;
-    return !op.some(function (o) { return SIN_MEZCLA.test(String(o && o.text || '').replace(/\$[^$]*\$/g, '')); });
+    return !op.some(function (o) { return nombraLetras(o && o.text); });
   }
   // Generador con semilla (el mismo orden para la misma semilla)
   function azar(semilla) {
