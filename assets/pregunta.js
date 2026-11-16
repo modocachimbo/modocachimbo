@@ -976,14 +976,26 @@
         try { localStorage.setItem(K_ALT, v && v.mezclar === false ? '0' : '1'); localStorage.setItem(K_ALT + '_t', String(Date.now())); } catch (e) {}
       }, function () {});
   }, 1500);
-  var SIN_MEZCLA = /anteriores|\b(todas|ninguna|ambas)\b|^\s*(s[oó]lo\s+)?[a-e]\s*(,|y|e|o|u)\s*[a-e]\b|\b(alternativas?|opci[oó]n(es)?|claves?)\s+[a-e]\b/i;
-  // Alternativa que solo nombra otras letras, aunque venga como fórmula: "$A+B$", "B + C", "A, B y C",
-  // "Sólo A y E" (en mayúscula, para no confundir con variables como "$a+b$")
-  var SOLO_LETRAS = /^\s*(?:[Ss][oó]lo\s+)?[A-E](?:\s*(?:\+|,|&|y|e|o|u)\s*[A-E])+\s*\.?\s*$/;
+  // Alternativas que no se pueden mover de lugar (si una aparece, la pregunta no se mezcla):
+  // - nombran otras alternativas: "A y E", "Solo B", "A, B y C", "$A+B$", "A y B son correctas",
+  //   "Excepto C", "alternativa D", "todas/ninguna de las anteriores", "ambas"
+  // - van al final por costumbre: "N.A.", "T.A.", "Ninguno", "Faltan datos", "No se puede determinar"
+  var SIN_MEZCLA = /anteriores|\b(todas|ninguna|ambas)\b|^\s*(s[oó]lo\s+)?[a-e]\s*(,|y|e|o|u)\s*[a-e]\b|\b(alternativas?|opci[oó]n(es)?|claves?|incisos?|respuestas?)\s+[a-e]\b/i;
+  // Letras en MAYÚSCULA (para no confundir con variables como "$a+b$" ni con "vitamina C")
+  var SEP = '\\s*(?:\\+|,|;|&|/|\\by\\b|\\be\\b|\\bo\\b|\\bu\\b|-|–|—)\\s*';
+  var SOLO_LETRAS = new RegExp('^\\s*(?:(?:[Ss][oó]lo|[ÚúUu]nicamente|[Ee]xcepto|[Mm]enos|[Ss]alvo)\\s+(?:la[s]?\\s+)?)?' +
+    '\\(?[A-E]\\)?(?:' + SEP + '\\(?[A-E]\\)?)*' +
+    '(?:\\s+(?:son|es|est[aá]n?)\\s+(?:correct|incorrect|verdader|fals)[ao]s?)?\\s*\\.?\\s*$');
+  // Una letra sola ("C") solo cuenta si va con Solo/Excepto o con "es correcta"
+  var UNA_LETRA = /^\s*\(?[A-E]\)?\s*\.?\s*$/;
+  var AL_FINAL = /^\s*(?:n\.?\s*a\.?|t\.?\s*a\.?|n\.?\s*e\.?|ninguno|ninguno de (?:ellos|estos)\b.*|faltan?\s+datos.*|datos insuficientes.*|no se puede (?:determinar|calcular|precisar).*|no (?:es posible|existe|hay soluci[oó]n).*|m[aá]s de una.*|indeterminad[oa].*|todos (?:los anteriores|ellos)\b.*)\s*\.?\s*$/i;
   function nombraLetras(t) {
     t = String(t || '');
-    return SIN_MEZCLA.test(t.replace(/\$[^$]*\$/g, '')) ||
-      SOLO_LETRAS.test(t.replace(/\$/g, '').replace(/\\(?:text|mathrm|textbf|mathbf)\s*\{([^}]*)\}/g, '$1').replace(/[{}]/g, '').replace(/\\[,;:! ]/g, ' '));
+    if (SIN_MEZCLA.test(t.replace(/\$[^$]*\$/g, ''))) return true;
+    var p = t.replace(/\$/g, '').replace(/\\(?:text|mathrm|textbf|mathbf|mbox)\s*\{([^}]*)\}/g, '$1').replace(/[{}]/g, '')
+      .replace(/\\[,;:! ]|~/g, ' ').replace(/<[^>]*>/g, '').trim();
+    if (AL_FINAL.test(p)) return true;
+    return SOLO_LETRAS.test(p) && !UNA_LETRA.test(p);
   }
   function sePuedeMezclar(q) {
     var op = q && q.options;
