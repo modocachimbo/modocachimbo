@@ -362,7 +362,7 @@
 <script src="assets/auth.js"></script>
 <script src="assets/buho.js"></script>
 <script src="assets/rango.js?v=184"></script>
-<script src="assets/coleccion.js?v=200"></script>
+<script src="assets/coleccion.js?v=201"></script>
 <script src="assets/tarjeta-perfil.js?v=209"></script>
 <script src="assets/buho/buho-datos.js"></script>
 <script src="assets/buho/rosa-datos.js"></script>
@@ -652,12 +652,10 @@
   var AMIGOS = [
     { id: 'buho', pj: '', nom: 'Búho', tag: 'El de siempre', c: 'rgba(151,205,71,.28)', tc: '#C6E000', desc: 'Te acompaña desde el primer día. Le encanta cantar con sus lentes de sol.', dice: ['¡A estudiar!', '¿Otra práctica?', '¡Tú puedes!'],
       // Sus aspectos son los del catálogo de Mi colección (espacio «buho»)
-      aspectos: function () { return C.items('buho').map(function (x) { return { id: x.id, nom: x.nom, rareza: x.rareza, item: x, pj: x.id === 'buho-clasico' ? '' : null }; }); } },
+      aspectos: function () { return C.items('buho').filter(function (x) { return !x.pj; }).map(function (x) { return { id: x.id, nom: x.nom, rareza: x.rareza, item: x, pj: x.id === 'buho-clasico' ? '' : null }; }); } },
     { id: 'rosa', pj: 'rosa', nom: 'Búha Rosa', tag: 'Nueva · Navidad', c: 'rgba(255,120,170,.32)', tc: '#FF8FB6', desc: 'La mejor amiga del Búho. Lleva una flor y siempre saluda con alegría.', dice: ['¡Hola, cachimbo!', '¡Feliz Navidad!', '¡Vamos juntos!'],
-      aspectos: function () { return [
-        { id: 'rosa', nom: 'Clásica', rareza: 'comun', pj: 'rosa', desc: 'Con su flor de siempre.' },
-        { id: 'rosa-navidad', nom: 'Navidad', rareza: 'evento', pj: 'rosa-navidad', desc: 'Gorro de Papá Noel, bufanda y capa roja.' }
-      ]; } },
+      // Sus aspectos son ítems de la colección que se regalan desde el panel (buho-rosa, buho-rosa-navidad)
+      aspectos: function () { return [['buho-rosa', 'Clásica'], ['buho-rosa-navidad', 'Navidad']].map(function (k) { var x = C.item(k[0]); return x && { id: x.id, nom: k[1], rareza: x.rareza, item: x, pj: x.pj, desc: x.desc }; }).filter(Boolean); } },
     { id: '?', nom: 'Muy pronto', tag: 'Sorpresa', c: 'rgba(120,110,170,.2)', tc: '#A99FC8', desc: 'Un nuevo amigo llega esta Navidad. ¿Quién será?' }
   ];
   var amListo = false, amVer = null, amAsp = {};
@@ -689,18 +687,18 @@
       g.append(c);
     });
   }
-  // Quién sale en el inicio: un amigo (localStorage mc_compa = su pj) o el Búho con el aspecto de Mi colección
-  function compa() { try { return localStorage.getItem('mc_compa') || ''; } catch (e) { return ''; } }
-  function enUso(x) { return x.pj ? compa() === x.pj : !compa() && C.puesto('buho') === (x.item ? x.item.id : 'buho-clasico'); }
+  // Quién sale en el inicio: lo que llevas puesto en el espacio «buho» (el Búho con un aspecto o un amigo)
+  function enUso(x) { return C.puesto('buho') === (x.item ? x.item.id : 'buho-clasico'); }
   function usarHtml(x) {
     if (enUso(x)) return '<button type="button" class="am-usar on" disabled>✓ Lo tienes en el inicio</button>';
-    if (x.item && !C.tiene(x.item.id)) return '<button type="button" class="am-usar" disabled>Aún no lo tienes</button>';
+    if (x.item && !C.tiene(x.item.id)) return '<button type="button" class="am-usar" disabled>' + ((x.item.regla || {}).tipo === 'regalo' ? '🎁 Solo de regalo' : 'Aún no lo tienes') + '</button>';
     return '<button type="button" class="am-usar" data-usar="' + esc(x.id) + '">Usar en el inicio</button>';
   }
   function usarAmigo(x) {
-    try { if (x.pj) localStorage.setItem('mc_compa', x.pj); else localStorage.removeItem('mc_compa'); } catch (e) {}
+    try { localStorage.removeItem('mc_compa'); } catch (e) {}
     var listo = function () { if (window.MCSonido && MCSonido.bien) MCSonido.bien(); pintarAmigo(amVer); };
-    if (x.item && x.item.id && C.puesto('buho') !== x.item.id) C.poner('buho', x.item.id).then(listo, listo); else listo();
+    var id = x.item ? x.item.id : 'buho-clasico';
+    if (C.puesto('buho') !== id) C.poner('buho', id).then(listo, listo); else listo();
   }
   function pintarAmigo(id) {
     var a = AMIGOS.filter(function (x) { return x.id === id; })[0], L = a.aspectos(), sel = amAsp[id] || L[0].id, x = L.filter(function (y) { return y.id === sel; })[0] || L[0];

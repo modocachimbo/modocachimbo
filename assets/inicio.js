@@ -246,8 +246,8 @@
     var C = window.MCColeccion, b = C && C.item(C.puesto('buho'));
     return b && b.img ? b.img : b && b.id === 'buho-antiguo' && window.MCBuho ? 'antiguo' : null;
   }
-  // Amigo del Búho elegido en Colección → Amigos del Búho (ej. 'rosa', 'rosa-navidad'); vacío = el Búho
-  function compa() { try { var k = localStorage.getItem('mc_compa') || ''; return k && window.MCBuhoAmigos && MCBuhoAmigos[k] ? k : ''; } catch (e) { return ''; } }
+  // Amigo del Búho que llevas puesto (Colección → El Búho y sus amigos; ej. 'rosa', 'rosa-navidad'); vacío = el Búho
+  function compa() { var C = window.MCColeccion, b = C && C.item(C.puesto('buho')); return b && b.pj && window.MCBuhoAmigos && MCBuhoAmigos[b.pj] ? b.pj : ''; }
   function crearBuho(p) {
     var pj = compa(); if (pj) return MCBuhoVivo.crear(p, pj);
     var ar = disfraz();

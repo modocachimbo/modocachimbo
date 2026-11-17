@@ -55,6 +55,9 @@
     { id: 'buho-cervantes', espacio: 'buho', nom: 'Cervantes', rareza: 'raro', regla: { tipo: 'gratis' }, img: 'comunicacion', area: 'Comunicación', desc: 'El autor del Quijote. Te acompaña en Comunicación.' },
     { id: 'buho-einstein', espacio: 'buho', nom: 'Einstein', rareza: 'raro', regla: { tipo: 'gratis' }, img: 'ciencia-tecnologia', area: 'Ciencia y Tecnología', desc: 'El genio de la relatividad. Te acompaña en Ciencia y Tecnología.' },
     { id: 'buho-inca', espacio: 'buho', nom: 'Inca', rareza: 'epico', regla: { tipo: 'gratis' }, img: 'ciencias-sociales', area: 'Ciencias Sociales', desc: 'Con mascaipacha y unku. Te acompaña en Ciencias Sociales.' },
+    // Amigos del Búho (pj = personaje animado por capas, assets/buho/rosa-datos.js). Solo de regalo (panel → Regalos)
+    { id: 'buho-rosa', espacio: 'buho', nom: 'Búha Rosa', rareza: 'epico', regla: { tipo: 'regalo' }, pj: 'rosa', foto: 'rosa', desc: 'La mejor amiga del Búho. Lleva una flor y siempre saluda con alegría.' },
+    { id: 'buho-rosa-navidad', espacio: 'buho', nom: 'Búha Rosa · Navidad', rareza: 'evento', regla: { tipo: 'regalo' }, pj: 'rosa-navidad', foto: 'rosa-navidad', desc: 'Gorro de Papá Noel, bufanda y capa roja.' },
     { id: 'buho-birrete', espacio: 'buho', nom: 'Birrete de ingresante', rareza: 'legendario', regla: { tipo: 'regalo' }, desc: 'Para quien ya ingresó a la universidad. Te lo entregamos cuando nos cuentes que ingresaste.' },
 
     // Foto de perfil: la de tu tarjeta, tu perfil y los tops (el búho es la de siempre)
@@ -159,7 +162,7 @@
   };
   // Por ahora salen solo estos (los pines, todos). Los demás quedan guardados para más adelante:
   // si alguien llevaba uno de ellos, vuelve a lo de siempre.
-  var VISIBLES = ['buho-clasico', 'buho-antiguo', 'avatar-buho', 'avatar-foto', 'escena-galaxia', 'escena-nube',
+  var VISIBLES = ['buho-clasico', 'buho-antiguo', 'buho-rosa', 'buho-rosa-navidad', 'avatar-buho', 'avatar-foto', 'escena-galaxia', 'escena-nube',
     'racha-galaxia', 'racha-cielo', 'cuadro-galaxia', 'cuadro-cielo', 'marco-ninguno', 'marco-lima', 'titulo-cachimbo', 'titulo-constante'];
   CATALOGO = CATALOGO.filter(function (x) { return x.espacio === 'pines' || VISIBLES.indexOf(x.id) >= 0; });
   var POR_ID = {};
@@ -389,6 +392,8 @@
 
   /* ---------- Dibujos ---------- */
   function buhoImg(x, animo) {
+    // Amigos del Búho: su foto quieta (animados solo en el inicio y en Colección → El Búho y sus amigos)
+    if (x.pj) return '<img src="' + esc(BASE + 'assets/buho/' + x.foto + '.webp') + '" alt="" loading="lazy">';
     if (x.img) return '<img src="' + esc(D + x.img + '-' + (animo || 'feliz') + '.webp') + '" alt="" loading="lazy">';
     // El antiguo: el búho del logo (assets/buho.js)
     if (x.id === 'buho-antiguo' && window.MCBuho) return '<span class="mcc-antiguo">' + MCBuho.svg(animo === 'triste' ? 'triste' : 'feliz', 160) + '</span>';
