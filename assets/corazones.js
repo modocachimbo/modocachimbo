@@ -624,9 +624,9 @@
     if (!regs.length || abriendo) return;
     abriendo = true;
     var ids = regs.filter(function (g) { return g.tipo === 'item' && g.item; }).map(function (g) { return g.item; });
-    var pasos = [js(BASE + 'assets/sobre.js?v=4', function () { return window.MCSobre; })];
+    var pasos = [js(BASE + 'assets/sobre.js?v=5', function () { return window.MCSobre; })];
     // Los ítems: la colección se vuelve a pedir al toque (no los 10 min guardados)
-    if (ids.length) pasos.push(js(BASE + 'assets/coleccion.js?v=199', function () { return window.MCColeccion; })
+    if (ids.length) pasos.push(js(BASE + 'assets/coleccion.js?v=201', function () { return window.MCColeccion; })
       .then(function () { return MCColeccion.refrescar ? MCColeccion.refrescar() : null; }));
     var con = regs.filter(function (g) { return g.nota; })[0] || regs[0];
     Promise.all(pasos).then(function () {

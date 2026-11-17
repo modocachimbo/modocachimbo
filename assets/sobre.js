@@ -42,6 +42,7 @@
       '.mcs-btn:active{transform:translateY(3px);border-bottom-width:3px}' +
       '.mcs-btn:focus{outline:none}.mcs-btn:focus-visible,.mcs-sobre:focus-visible{outline:3px solid #fff;outline-offset:3px}.mcs-sobre:focus{outline:none}' +
       '.mcs-btn.si{background:#C6E000;color:#1a1f00;border-color:#8fa300}' +
+      '.mcs-btn.no{background:#fff;color:#3a2a6a;border-color:#d9d0f0}' +
       // El sobre (todo dentro de su caja: nada se corta)
       '.mcs-sobre{position:relative;width:min(300px,78vw);aspect-ratio:300/220;cursor:pointer;animation:mcsLlega .8s cubic-bezier(.2,1.3,.4,1) both}' +
       '.mcs-sobre-in{position:absolute;inset:0;animation:mcsSacude 2.6s ease-in-out 1.2s infinite;transform-origin:50% 90%;perspective:900px}' +
@@ -198,8 +199,9 @@
           '<div class="mcs-izq"><div class="mcs-de"><img src="' + esc(BUHO) + '" alt=""><div><small>De</small><b>' + esc(de) + '</b></div></div>' +
           '<p class="mcs-msj">' + esc(msj) + '</p></div>' +
           '<div class="mcs-reg"><small>Dentro del sobre</small><div class="mcs-fila">' + fichas.join('') + '</div>' +
-          '<div class="mcs-bts"><button type="button" class="mcs-btn si mcs-recibir">' + (fichas.length > 1 ? 'Recibir todo' : 'Recibir') + '</button>' +
-          (hayItem && !/coleccion\.html/.test(location.pathname) ? '<button type="button" class="mcs-link mcs-ver">Verlo en mi colección</button>' : '') + '</div></div>' +
+          '<div class="mcs-bts">' + (hayItem ? '<button type="button" class="mcs-btn si mcs-usar">Usar</button>' : '') +
+          '<button type="button" class="mcs-btn ' + (hayItem ? 'no' : 'si') + ' mcs-recibir">' + (fichas.length > 1 ? 'Recibir todo' : 'Recibir') + '</button>' +
+          (hayItem && !/coleccion\.html/.test(location.pathname) ? '<button type="button" class="mcs-link mcs-ver">Abrir en mi colección</button>' : '') + '</div></div>' +
         '</div>' +
       '</div>';
     document.body.appendChild(d);
@@ -239,6 +241,19 @@
     sobre.addEventListener('click', abrirSobre);
     d.querySelector('.mcs-abrir').addEventListener('click', abrirSobre);
     d.querySelector('.mcs-recibir').addEventListener('click', function () { cerrar(); });
+    // Usar: se pone lo que llegó (ya quedó guardado en Mi colección) y se cierra
+    var usar = d.querySelector('.mcs-usar');
+    if (usar) usar.addEventListener('click', function () {
+      var C = window.MCColeccion; usar.disabled = true; usar.textContent = 'Poniéndolo…';
+      var ids = regalos.filter(function (g) { return g.tipo === 'item'; }).map(function (g) { return g.id; });
+      ids.reduce(function (p, id) {
+        return p.then(function () {
+          var x = C && C.item(id);
+          if (!x || !C.tiene(id) || (x.espacio === 'pines' && C.puesto('pines').indexOf(id) >= 0) || (x.espacio !== 'pines' && C.puesto(x.espacio) === id)) return null;
+          return C.poner(x.espacio, id).catch(function () {});
+        });
+      }, Promise.resolve()).then(function () { cerrar(); });
+    });
     var ver = d.querySelector('.mcs-ver'); if (ver) ver.addEventListener('click', function () { cerrar(true); });
     return fin;
   }
