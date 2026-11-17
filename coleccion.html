@@ -696,7 +696,7 @@
     if (x.item && !C.tiene(x.item.id)) return '<button type="button" class="am-usar" disabled>Aún no lo tienes</button>';
     return '<button type="button" class="am-usar" data-usar="' + esc(x.id) + '">Usar en el inicio</button>';
   }
-  function usar(x) {
+  function usarAmigo(x) {
     try { if (x.pj) localStorage.setItem('mc_compa', x.pj); else localStorage.removeItem('mc_compa'); } catch (e) {}
     var listo = function () { if (window.MCSonido && MCSonido.bien) MCSonido.bien(); pintarAmigo(amVer); };
     if (x.item && x.item.id && C.puesto('buho') !== x.item.id) C.poner('buho', x.item.id).then(listo, listo); else listo();
@@ -721,7 +721,7 @@
     var b = e.target.closest('[data-amigo]'); if (b) { amVer = b.dataset.amigo; pintarAmigos(); $('vAmigos').scrollIntoView({ behavior: 'smooth' }); return; }
     if (e.target.closest('[data-amvolver]')) { amVer = null; pintarAmigos(); return; }
     var s = e.target.closest('[data-asp]'); if (s) { amAsp[amVer] = s.dataset.asp; pintarAmigo(amVer); return; }
-    var u = e.target.closest('[data-usar]'); if (u) { var a = AMIGOS.filter(function (y) { return y.id === amVer; })[0]; var x = a.aspectos().filter(function (y) { return y.id === u.dataset.usar; })[0]; if (x) usar(x); }
+    var u = e.target.closest('[data-usar]'); if (u) { var a = AMIGOS.filter(function (y) { return y.id === amVer; })[0]; var x = a.aspectos().filter(function (y) { return y.id === u.dataset.usar; })[0]; if (x) usarAmigo(x); }
   });
   document.querySelector('.modos').addEventListener('click', function (e) { var b = e.target.closest('[data-modo]'); if (b) elegirModo(b.dataset.modo); });
 
