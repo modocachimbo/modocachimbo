@@ -21,6 +21,7 @@ const REC_TIPOS = {
   pines: { nom: 'Pin', plural: 'Pines', w: 256, h: 256, img: true, donde: '<b>Mi colección → Pines</b>: va en la vitrina del perfil (hasta 3) y en la tarjeta.', medida: 'cuadrada, ideal 256×256 y mejor PNG sin fondo; puede ir dentro de un círculo de sus colores o suelto', ej: 'Ingresante 2027' },
   marco: { nom: 'Marco', plural: 'Marcos', w: 400, h: 400, img: 'opcional', donde: '<b>Mi colección → Marcos</b>: el borde de la foto en la tarjeta y el perfil.', medida: 'una textura cuadrada (oro, madera, mármol…); se ve solo el borde', ej: 'Esmeralda' },
   cuadro: { nom: 'Cuadro de racha', plural: 'Rachas', donde: '<b>Mi colección → Racha</b>: el cuadro de la racha en el perfil.', ej: 'Fuego verde' },
+  escena: { nom: 'Escenario', plural: 'Escenarios', w: 1200, h: 900, img: true, donde: '<b>Mi colección → Escenarios</b>: es el fondo completo del búho en el inicio (cielo y piso).', medida: 'horizontal 4:3, ideal 1200×900; deja el piso abajo al centro, ahí se para el búho', ej: 'Navidad nevada' },
   titulo: { nom: 'Título', plural: 'Títulos', donde: '<b>Mi colección → Títulos</b>: sale debajo del nombre en la tarjeta y el perfil.', ej: 'Rey del álgebra' }
 };
 const recTipo = () => REC_TIPOS[REC.tipo];
@@ -91,6 +92,9 @@ const recRango = n => window.MCRango ? MCRango.nombre(MCRango.nivel(REC_RANGO_XP
   .rec-mini .pie { display: block; margin-top: 6px; font: 800 11px Nunito, sans-serif; color: var(--text-dim); text-align: center; }
   .rec-av { width: 96px; height: 96px; border-radius: 22%; overflow: hidden; display: grid; place-items: center; background: radial-gradient(120% 120% at 80% 0%, var(--f1, #5b34b8), var(--f2, #1a0f40) 70%, #0d0820); box-shadow: inset 0 -5px 0 rgba(0,0,0,.25); }
   .rec-av img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .rec-esc { position: relative; display: block; width: 240px; aspect-ratio: 4/3; border-radius: 14px; overflow: hidden; background: #1a0f40 center bottom/cover; box-shadow: inset 0 -5px 0 rgba(0,0,0,.25); }
+  .rec-esc.chico { width: 120px; }
+  .rec-esc img { position: absolute; left: 50%; bottom: 14%; width: 30%; translate: -50% 0; filter: drop-shadow(0 4px 4px rgba(0,0,0,.4)); }
   .rec-av.chico { width: 46px; height: 46px; border-radius: 12px; }
   .rec-pin { width: 92px; height: 92px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.25), transparent 45%), var(--pf); border: 5px solid var(--pb); box-shadow: inset 0 -6px 0 rgba(0,0,0,.25), 0 4px 0 rgba(0,0,0,.3); }
   .rec-pin img { width: 68%; height: 68%; object-fit: contain; display: block; }
@@ -197,6 +201,7 @@ function recDibujo(x, chico) {
     const m = x.img ? `url(${x.img}) center/cover` : `conic-gradient(from 200deg,${x.tema[0]},${x.tema[1]},${x.tema[2]},${x.tema[0]})`;
     return `<span class="rec-marco" style="--m:${esc(m)}"><span>J</span></span>`;
   }
+  if (x.espacio === 'escena') return `<span class="rec-esc${ch}" style="background-image:url(&quot;${esc(x.img)}&quot;)"><img src="../assets/buho/avatar/clasico-cuerpo.webp" alt=""></span>`;
   if (x.espacio === 'cuadro') return `<span class="rec-cr" style="--r1:${x.tema[0]};--r2:${x.tema[1]};--rb:${x.tema[2]};--rd:${x.tema[3]}">${recFuegoSvg(x.llama)}<b>7</b><i></i><i></i><i></i></span>`;
   if (x.espacio === 'titulo') return `<span class="rec-tit" style="--c:${(REC_RAREZA[x.rareza] || REC_RAREZA.comun).c}">★ ${esc(x.nom || 'Tu título')}</span>`;
   return '';
@@ -363,7 +368,7 @@ function recPintarImg() {
     const x = { espacio: REC.tipo, img: src, tema, suelto: REC.img && REC.tipo === 'pines' ? !!REC.img.suelto : undefined };
     // La foto de perfil y el pin se ven también en chico, como en la tarjeta
     z.innerHTML = `<div class="rec-mini"><span>${recDibujo(x)}<span class="pie">En Mi colección</span></span>
-      ${REC.tipo === 'marco' ? '' : `<span>${recDibujo(x, true)}<span class="pie">En la tarjeta</span></span>`}
+      ${REC.tipo === 'marco' || REC.tipo === 'escena' ? '' : `<span>${recDibujo(x, true)}<span class="pie">En la tarjeta</span></span>`}
       <button type="button" class="x" id="recCambiar">Cambiar imagen</button></div>`;
   }
   if (REC.tipo === 'pines' && REC.img) {
@@ -417,7 +422,7 @@ function recItemHtml(x) {
   if (x.fijo) return recFijoHtml(x);
   const R = REC_RAREZA[x.rareza] || REC_RAREZA.comun, seguro = REC.borrar === x.id, T = REC_TIPOS[x.espacio] || REC_TIPOS.racha;
   const datos = [x.regla && x.regla.tipo === 'regalo' ? x.regalados + ' lo recibieron' : '', x.puestos + ' lo llevan puesto'].filter(Boolean).join(' · ');
-  const im = x.espacio === 'racha' ? `<div class="im" style="background-image:url(&quot;${esc(x.img)}&quot;)"></div>`
+  const im = x.espacio === 'racha' || x.espacio === 'escena' ? `<div class="im" style="background-image:url(&quot;${esc(x.img)}&quot;)"></div>`
     : `<div class="im mini">${recDibujo(x)}</div>`;
   return `<div class="rec-it${x.visible ? '' : ' oculto'}${REC.sel.includes(x.id) ? ' elegido' : ''}">
     ${im}
@@ -479,7 +484,7 @@ function pintarRecursos() {
   if ($('recCancelar')) $('recCancelar').addEventListener('click', () => { REC.editando = null; REC.img = null; REC.colores = null; REC.regla = 'gratis'; pintarRecursos(); });
 }
 function recPintarLista() {
-  const tipos = Object.keys(REC_TIPOS).concat(Object.keys(REC_EXTRA)).filter(k => REC.lista.some(x => x.espacio === k));
+  const tipos = Object.keys(REC_TIPOS).concat(Object.keys(REC_EXTRA).filter(k => !REC_TIPOS[k])).filter(k => REC.lista.some(x => x.espacio === k));
   if (REC.filtro && !tipos.includes(REC.filtro)) REC.filtro = '';
   const f = $('recFiltro');
   if (f) {
@@ -577,7 +582,7 @@ async function guardarRecurso() {
     const id = e ? e.id : 'rec-' + Date.now().toString(36).slice(-5) + Math.random().toString(36).slice(2, 6);
     let img = conImg && e ? e.img || '' : '', tema = null, llama = null, vieja = '';
     if (conImg && REC.img) {
-      const ruta = ({ racha: 'fondos', avatar: 'fotos', pines: 'pines', marco: 'marcos' })[REC.tipo] + '/' + id + '-' + Date.now().toString(36) + (REC.tipo === 'pines' && REC.img.suelto ? '-suelto' : '') + '.' + REC.img.ext;
+      const ruta = ({ racha: 'fondos', avatar: 'fotos', pines: 'pines', marco: 'marcos', escena: 'escenarios' })[REC.tipo] + '/' + id + '-' + Date.now().toString(36) + (REC.tipo === 'pines' && REC.img.suelto ? '-suelto' : '') + '.' + REC.img.ext;
       const up = await c.storage.from('recursos').upload(ruta, REC.img.blob, { contentType: REC.img.blob.type, cacheControl: '31536000', upsert: false });
       if (up.error) throw up.error;
       img = c.storage.from('recursos').getPublicUrl(ruta).data.publicUrl;

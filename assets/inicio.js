@@ -279,7 +279,8 @@
       plat.innerHTML = id === 'escena-galaxia' ? '<i></i><i></i><i></i>' : C.piso(id);
     }
     if (id === 'escena-galaxia') { v.forEach(function (k) { e.style.removeProperty(k); }); return; }
-    e.style.setProperty('--esc-cielo', 'radial-gradient(120% 85% at 50% 30%, ' + t[0] + ' 0%, ' + t[3] + ' 42%, #0b0818 85%)');
+    var fi = C.fondoEscena && C.fondoEscena(id);
+    e.style.setProperty('--esc-cielo', fi ? 'url("' + fi + '") center bottom/cover no-repeat, ' + t[3] : 'radial-gradient(120% 85% at 50% 30%, ' + t[0] + ' 0%, ' + t[3] + ' 42%, #0b0818 85%)');
     e.style.setProperty('--plat-a', t[0]); e.style.setProperty('--plat-b', t[3]);
     e.style.setProperty('--esc-foco', 'rgba(255, 255, 255, .12)');
   }

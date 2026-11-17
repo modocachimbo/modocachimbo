@@ -185,6 +185,8 @@
       else return null;
     }
     else if (e === 'cuadro') { if (!colores(r.tema, 4) || !colores(r.llama, 2)) return null; x.tema = r.tema; x.llama = r.llama; }
+    // Escenario subido desde el panel: la imagen es todo el fondo (cielo y piso); el búho se para abajo al centro
+    else if (e === 'escena') { if (!img || !colores(r.tema, 4)) return null; x.tema = r.tema; x.img = img; }
     else if (e !== 'titulo') return null;
     return x;
   }
@@ -398,7 +400,8 @@
   function dibujo(x) {
     if (x.espacio === 'buho') return buhoImg(x);
     // Escenario: un mini escenario con su piso
-    if (x.espacio === 'escena') return '<span class="mcc-esc" style="--r1:' + x.tema[0] + ';--r2:' + x.tema[3] + '">' + PISOS[x.id].replace(/mcp-([gh])/g, 'mcp-$1-' + x.id) + '<img class="mcc-esc-b" src="' + esc(D.replace(/disfraces\/$/, 'avatar/') + 'clasico-cuerpo.webp') + '" alt="" loading="lazy"></span>';
+    if (x.espacio === 'escena' && x.img) return '<span class="mcc-esc" style="background:url(&quot;' + esc(x.img) + '&quot;) center bottom/cover"><img class="mcc-esc-b" src="' + esc(D.replace(/disfraces\/$/, 'avatar/') + 'clasico-cuerpo.webp') + '" alt="" loading="lazy"></span>';
+    if (x.espacio === 'escena') return '<span class="mcc-esc" style="--r1:' + x.tema[0] + ';--r2:' + x.tema[3] + '">' + (PISOS[x.id] || '').replace(/mcp-([gh])/g, 'mcp-$1-' + x.id) + '<img class="mcc-esc-b" src="' + esc(D.replace(/disfraces\/$/, 'avatar/') + 'clasico-cuerpo.webp') + '" alt="" loading="lazy"></span>';
     // Fondo de perfil: una mini tarjeta como la de arriba
     if (x.espacio === 'racha') return '<span class="mcc-fp" style="--r1:' + x.tema[0] + ';--r2:' + x.tema[3] + '"><span class="mcc-fp-c"' + (x.img ? ' style="background:linear-gradient(90deg,rgba(10,6,28,.92) 0,rgba(10,6,28,.86) 48%,rgba(10,6,28,.45) 72%,rgba(10,6,28,0) 92%),url(&quot;' + esc(x.img) + '&quot;) center/cover"' : '') + '><i' + (avatarSrc() || miFoto.src ? ' style="background-image:url(&quot;' + esc(avatarSrc() || miFoto.src) + '&quot;)"' : '') + '>' + (avatarSrc() || miFoto.src ? '' : esc(miFoto.letra)) + '</i><b>' + esc(miFoto.nombre || 'Tu nombre') + '</b><small>Tu rango</small></span></span>';
     // Cuadro de racha: uno chiquito con su fuego
@@ -665,6 +668,7 @@
     tarjeta: tarjeta, dibujo: dibujo, buho: buhoImg, pin: pinSvg, css: css,
     avatar: avatarSrc, avatarHtml: avatarSvg,
     piso: function (id) { return PISOS[id || puesto('escena')] || ''; },
+    fondoEscena: function (id) { var x = POR_ID[id || puesto('escena')]; return x && x.espacio === 'escena' && x.img || ''; },
     escena: function (id) { var x = POR_ID[id || puesto('escena')]; return x && x.tema || POR_ID['escena-galaxia'].tema; },
     fijarFoto: function (src, letra, nombre) { miFoto = { src: /^https:\/\//.test(src || '') ? src : '', letra: letra || '', nombre: nombre || miFoto.nombre || '' }; },
     tema: function (id) { var x = POR_ID[id || puesto('racha')]; return x && x.tema || POR_ID['racha-galaxia'].tema; },
