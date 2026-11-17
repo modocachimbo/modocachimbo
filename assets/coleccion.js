@@ -542,8 +542,8 @@
   var ICO_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="#1a1f00" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
   var ICO_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   function cssRegalos() {
-    if (document.getElementById('mcr-css')) return;
-    var st = document.createElement('style'); st.id = 'mcr-css';
+    if (document.getElementById('mcr-regalos-css')) return;
+    var st = document.createElement('style'); st.id = 'mcr-regalos-css';
     st.textContent =
       '.mcr{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:16px;font-family:Nunito,sans-serif;color:#EEEAF7;background:rgba(8,6,18,.9);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;transition:opacity .25s;-webkit-tap-highlight-color:transparent}' +
       '.mcr.ver{opacity:1}' +
