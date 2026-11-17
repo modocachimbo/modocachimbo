@@ -388,7 +388,7 @@
       <nav class="modos" role="tablist">
         <button type="button" class="modo" data-modo="estilo" role="tab"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3l-5 3 2 5 2-1v11h10V10l2 1 2-5-5-3a4 4 0 0 1-8 0z"/></svg><span>Mi estilo</span></button>
         <button type="button" class="modo" data-modo="rangos" role="tab"><span class="m-em" id="mEm" aria-hidden="true"></span><span>Rangos</span></button>
-        <button type="button" class="modo" data-modo="amigos" role="tab"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4c1 1 2 1.5 3 1.5S12 5 13 4c1 1 2 1.5 3 1.5S18 5 19 4v6a6 6 0 0 1-12 0z" transform="translate(-3 3)"/><path d="M15 9c.6.6 1.3 1 2 1s1.4-.4 2-1v4a4 4 0 0 1-6 3.4"/></svg><span><span class="m-lg">Amigos del </span>Búho<span class="m-cl">s</span></span></button>
+        <button type="button" class="modo" data-modo="amigos" role="tab"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4c1 1 2 1.5 3 1.5S12 5 13 4c1 1 2 1.5 3 1.5S18 5 19 4v6a6 6 0 0 1-12 0z" transform="translate(-3 3)"/><path d="M15 9c.6.6 1.3 1 2 1s1.4-.4 2-1v4a4 4 0 0 1-6 3.4"/></svg><span><span class="m-lg">El </span>Búho<span class="m-lg"> y sus amigos</span><span class="m-cl"> y amigos</span></span></button>
       </nav>
 
       <div id="vEstilo">
@@ -427,8 +427,8 @@
         <section class="am-hero">
           <div class="am-nieve" aria-hidden="true"></div>
           <small>Navidad en Modo Cachimbo</small>
-          <h2>Amigos del Búho</h2>
-          <p>El Búho ya no estudia solo: conoce a sus amigos. Toca a cada uno.</p>
+          <h2>El Búho y sus amigos</h2>
+          <p>Elige con quién estudias en el inicio y con qué aspecto. Toca a cada uno.</p>
         </section>
         <div class="am-grid" id="amGrid"></div>
       </div>
@@ -447,8 +447,9 @@
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var C = window.MCColeccion, R = C.rareza;
-  var TAB = (location.hash || '').slice(1) || 'buho', FIL = 'todos', MODO = 'estilo';
-  if (TAB === 'rangos' || TAB === 'amigos') { MODO = TAB; TAB = 'buho'; }
+  var TAB = (location.hash || '').slice(1) || 'avatar', FIL = 'todos', MODO = 'estilo';
+  // El Búho y sus aspectos ahora viven en «El Búho y sus amigos»
+  if (TAB === 'rangos' || TAB === 'amigos' || TAB === 'buho') { MODO = TAB === 'buho' ? 'amigos' : TAB; TAB = 'avatar'; }
   var INTRO = {
     buho: 'El búho que sale en tu inicio. Toca uno para probarlo y dale «Usar» si te gusta.',
     avatar: 'Tu foto de perfil: sale en tu tarjeta de arriba, en tu perfil y en los tops.',
@@ -604,7 +605,7 @@
     pines: '<svg viewBox="0 0 24 24"><circle cx="12" cy="9.5" r="5.5"/><path d="M9 14.5l-2 6 5-2 5 2-2-6"/></svg>'
   };
   function pintarTabs() {
-    var ids = C.espacios.map(function (e) { return e.id; });
+    var ids = C.espacios.map(function (e) { return e.id; }).filter(function (id) { return id !== 'buho'; });
     $('tabs').innerHTML = ids.map(function (id) {
       var L = C.items(id), t = TABS[id] || [id, '#C6E000'];
       var nuevo = L.some(function (x) { return C.tiene(x.id) && C.nuevos().indexOf(x.id) >= 0; });
