@@ -213,11 +213,33 @@
   .am-c .am-piso { position: absolute; left: 12%; right: 12%; bottom: -2%; height: 9%; border-radius: 50%; background: rgba(0,0,0,.45); filter: blur(6px); }
   .am-c .mcb { position: relative; width: 100%; }
   .am-c b { display: block; font: italic 900 28px/1 var(--display); text-transform: uppercase; color: #fff; }
-  .am-c .am-tag { display: inline-block; margin: 6px 0 8px; padding: 3px 10px; border-radius: 999px; font: 900 11px Nunito, sans-serif; letter-spacing: .1em; text-transform: uppercase; }
+  .am-c .am-tag, .am-det .am-tag { display: inline-block; margin: 6px 0 8px; padding: 3px 10px; border-radius: 999px; font: 900 11px Nunito, sans-serif; letter-spacing: .1em; text-transform: uppercase; }
   .am-c p { color: var(--text-dim); font-size: 13px; line-height: 1.5; }
-  .am-c .am-dice { position: absolute; left: 50%; top: 10px; transform: translateX(-50%); background: #fff; color: #1a1030; padding: 6px 12px; border-radius: 12px; font: 900 13px Nunito, sans-serif; white-space: nowrap; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 2; }
-  .am-c .am-dice.on { opacity: 1; }
+  .am-c .am-dice, .am-det .am-dice { position: absolute; left: 50%; top: 10px; transform: translateX(-50%); background: #fff; color: #1a1030; padding: 6px 12px; border-radius: 12px; font: 900 13px Nunito, sans-serif; white-space: nowrap; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 2; }
+  .am-c .am-dice.on, .am-det .am-dice.on { opacity: 1; }
   .am-c.pronto .am-esc { filter: brightness(0) opacity(.55); cursor: default; }
+  .am-ver { margin-top: 10px; height: 38px; padding: 0 16px; border-radius: 11px; border: 0; border-bottom: 3px solid rgba(0,0,0,.35); background: var(--tc); color: #14101f; font: italic 900 16px/1 var(--display); text-transform: uppercase; cursor: pointer; }
+  .am-volver { background: none; border: 0; color: var(--text-dim); font: 900 14px Nunito, sans-serif; cursor: pointer; margin: 0 0 10px; padding: 6px 0; }
+  .am-det { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 18px; align-items: center; padding: 18px; border-radius: 24px; overflow: hidden;
+    background: radial-gradient(360px 260px at 25% 45%, var(--ac), transparent 70%), linear-gradient(180deg, #1b1533, #120e22); border: 2px solid #2f2852; border-bottom-width: 5px; }
+  .am-det .am-esc.grande { position: relative; width: 88%; max-width: 340px; margin: 0 auto; cursor: pointer; }
+  .am-det .am-esc .mcb, .am-det .am-esc .am-img { position: relative; width: 100%; }
+  .am-img img, .am-img svg, .am-mini img, .am-mini svg { width: 100%; height: auto; display: block; }
+  .am-der small { font: 900 12px Nunito, sans-serif; letter-spacing: .16em; text-transform: uppercase; }
+  .am-der b { display: block; font: italic 900 44px/1 var(--display); text-transform: uppercase; color: #fff; margin: 4px 0 6px; }
+  .am-der p { color: var(--text-dim); font-size: 14px; line-height: 1.5; margin: 8px 0 4px; }
+  .am-lb { display: block; font: 900 11px Nunito, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--text-dim); margin: 14px 0 8px; }
+  .am-asp { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+  .am-a { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 6px 7px; border-radius: 14px; cursor: pointer;
+    background: linear-gradient(180deg, rgba(var(--rc),.16), rgba(var(--rc),.04)); border: 2px solid rgba(var(--rc),.35); border-bottom-width: 4px; color: var(--text); }
+  .am-a.on { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(198,224,0,.18); }
+  .am-a .am-mini { width: 70px; height: 70px; display: grid; place-items: end center; }
+  .am-a .am-mini .mcb { position: relative; width: 100%; }
+  .am-a em { font: italic 900 14px/1 var(--display); text-transform: uppercase; font-style: italic; }
+  .am-nota { font-size: 12px !important; }
+  .am-det .am-dice { top: 14px; left: 25%; }
+  @media (max-width: 700px) { .am-det { grid-template-columns: 1fr; padding: 14px; } .am-det .am-esc.grande { width: 70%; } .am-det .am-dice { left: 50%; } .am-der { text-align: center; } .am-der b { font-size: 36px; } }
+
   @media (max-width: 560px) { .am-grid { grid-template-columns: 1fr 1fr; gap: 10px; } .am-c { padding: 12px 10px 14px; } .am-c b { font-size: 22px; } .am-c p { font-size: 12px; } .am-c .am-tag { font-size: 10px; } .am-hero h2 { font-size: 38px; } }
   .modo { position: relative; display: flex; align-items: center; justify-content: center; gap: 10px; height: 56px; padding: 0 10px; transform: skewX(-10deg); border-radius: 12px; cursor: pointer;
     background: linear-gradient(180deg, #221c3d, #18132c); border: 2px solid #2f2852; border-bottom-width: 5px; color: var(--text-dim); font: italic 900 23px/1 var(--display); text-transform: uppercase; letter-spacing: .04em; -webkit-tap-highlight-color: transparent; }
@@ -624,30 +646,66 @@
      Cada amigo se arma y se mueve igual que el Búho (assets/buho/buho-vivo.js).
      Para sumar uno: sus capas en assets/buho/<id>-datos.js (MCBuhoAmigos.<id>) y una fila aquí. */
   var AMIGOS = [
-    { id: '', nom: 'Búho', tag: 'El de siempre', c: 'rgba(151,205,71,.28)', tc: '#C6E000', desc: 'Te acompaña desde el primer día. Le encanta cantar con sus lentes de sol.', dice: ['¡A estudiar!', '¿Otra práctica?', '¡Tú puedes!'] },
-    { id: 'rosa', nom: 'Búha Rosa', tag: 'Nueva · Navidad', c: 'rgba(255,120,170,.32)', tc: '#FF8FB6', desc: 'La mejor amiga del Búho. Lleva una flor y siempre saluda con alegría.', dice: ['¡Hola, cachimbo!', '¡Feliz Navidad!', '¡Vamos juntos!'] },
+    { id: 'buho', pj: '', nom: 'Búho', tag: 'El de siempre', c: 'rgba(151,205,71,.28)', tc: '#C6E000', desc: 'Te acompaña desde el primer día. Le encanta cantar con sus lentes de sol.', dice: ['¡A estudiar!', '¿Otra práctica?', '¡Tú puedes!'],
+      // Sus aspectos son los del catálogo de Mi colección (espacio «buho»)
+      aspectos: function () { return C.items('buho').map(function (x) { return { id: x.id, nom: x.nom, rareza: x.rareza, item: x, pj: x.id === 'buho-clasico' ? '' : null }; }); } },
+    { id: 'rosa', pj: 'rosa', nom: 'Búha Rosa', tag: 'Nueva · Navidad', c: 'rgba(255,120,170,.32)', tc: '#FF8FB6', desc: 'La mejor amiga del Búho. Lleva una flor y siempre saluda con alegría.', dice: ['¡Hola, cachimbo!', '¡Feliz Navidad!', '¡Vamos juntos!'],
+      aspectos: function () { return [
+        { id: 'rosa', nom: 'Clásica', rareza: 'comun', pj: 'rosa', desc: 'Con su flor de siempre.' },
+        { id: 'rosa-navidad', nom: 'Navidad', rareza: 'evento', pj: 'rosa-navidad', desc: 'Gorro de Papá Noel, bufanda y capa roja.' }
+      ]; } },
     { id: '?', nom: 'Muy pronto', tag: 'Sorpresa', c: 'rgba(120,110,170,.2)', tc: '#A99FC8', desc: 'Un nuevo amigo llega esta Navidad. ¿Quién será?' }
   ];
-  var amListo = false;
+  var amListo = false, amVer = null, amAsp = {};
+  // Un personaje: el animado por capas (pj) o la imagen del disfraz del catálogo
+  function amFigura(a, cont, x) {
+    cont.querySelectorAll('.mcb,.am-img').forEach(function (e) { e.remove(); });
+    if (!x || x.pj != null) {
+      var k = 0, carta = cont.closest('.am-c, .am-det'), globo = carta && carta.querySelector('.am-dice'), t = 0;
+      var poner = function (tx, ms) { if (!globo) return; globo.textContent = tx; globo.classList.add('on'); clearTimeout(t); t = setTimeout(function () { globo.classList.remove('on'); }, ms || 1800); };
+      if (cont._toques) { cont.append(MCBuhoVivo.crear('vivo', x ? x.pj || null : a.pj || null)); return; }
+      cont._toques = MCBuhoVivo.toques(cont, { pose: 'vivo', pj: x ? x.pj || null : a.pj || null,
+        decir: function (tx, tono, ms) { poner(tx, ms); }, alTocar: function () { poner(a.dice[k++ % a.dice.length]); } });
+    } else {
+      var w = document.createElement('div'); w.className = 'am-img'; w.innerHTML = C.buho(x.item); cont.append(w);
+    }
+  }
   function pintarAmigos() {
-    if (amListo) return; amListo = true;
-    var n = document.querySelector('.am-nieve'), h = '';
-    for (var i = 0; i < 26; i++) h += '<i style="left:' + ((i * 37) % 100) + '%;animation-duration:' + (5 + (i % 5)) + 's;animation-delay:-' + (i % 7) + 's;width:' + (3 + i % 4) + 'px;height:' + (3 + i % 4) + 'px"></i>';
-    n.innerHTML = h;
-    var g = $('amGrid'); g.innerHTML = '';
+    var n = document.querySelector('.am-nieve');
+    if (!amListo) { amListo = true; var h = ''; for (var i = 0; i < 26; i++) h += '<i style="left:' + ((i * 37) % 100) + '%;animation-duration:' + (5 + (i % 5)) + 's;animation-delay:-' + (i % 7) + 's;width:' + (3 + i % 4) + 'px;height:' + (3 + i % 4) + 'px"></i>'; n.innerHTML = h; }
+    var g = $('amGrid'); g.innerHTML = ''; g.className = amVer ? 'am-uno' : 'am-grid';
+    if (amVer) return pintarAmigo(amVer);
     AMIGOS.forEach(function (a) {
       var c = document.createElement('div'); c.className = 'am-c' + (a.id === '?' ? ' pronto' : ''); c.style.setProperty('--ac', a.c);
-      c.innerHTML = '<span class="am-dice"></span><div class="am-esc"><div class="am-piso"></div></div><b>' + esc(a.nom) + '</b><span class="am-tag" style="color:' + a.tc + ';background:' + a.tc + '22;border:1px solid ' + a.tc + '55">' + esc(a.tag) + '</span><p>' + esc(a.desc) + '</p>';
-      var esc2 = c.querySelector('.am-esc');
-      if (a.id === '?') esc2.append(MCBuhoVivo.crear('oficial'));
-      else {
-        var k = 0, globo = c.querySelector('.am-dice'), t = 0;
-        MCBuhoVivo.toques(esc2, { pose: 'vivo', pj: a.id || null, decir: function (tx, tono, ms) { globo.textContent = tx; globo.classList.add('on'); clearTimeout(t); t = setTimeout(function () { globo.classList.remove('on'); }, ms || 2000); },
-          alTocar: function () { globo.textContent = a.dice[k++ % a.dice.length]; globo.classList.add('on'); clearTimeout(t); t = setTimeout(function () { globo.classList.remove('on'); }, 1800); } });
-      }
+      var nA = a.aspectos ? a.aspectos().length : 0;
+      c.innerHTML = '<span class="am-dice"></span><div class="am-esc"><div class="am-piso"></div></div><b>' + esc(a.nom) + '</b><span class="am-tag" style="color:' + a.tc + ';background:' + a.tc + '22;border:1px solid ' + a.tc + '55">' + esc(a.tag) + '</span><p>' + esc(a.desc) + '</p>' +
+        (nA ? '<button type="button" class="am-ver" data-amigo="' + a.id + '" style="--tc:' + a.tc + '">Ver aspectos · ' + nA + '</button>' : '');
+      var e = c.querySelector('.am-esc');
+      if (a.id === '?') e.append(MCBuhoVivo.crear('oficial')); else amFigura(a, e, null);
       g.append(c);
     });
   }
+  function pintarAmigo(id) {
+    var a = AMIGOS.filter(function (x) { return x.id === id; })[0], L = a.aspectos(), sel = amAsp[id] || L[0].id, x = L.filter(function (y) { return y.id === sel; })[0] || L[0];
+    var RZ = C.rareza, rz = RZ[x.rareza] || RZ.comun, g = $('amGrid');
+    g.innerHTML = '<button type="button" class="am-volver" data-amvolver>‹ Todos los amigos</button>' +
+      '<div class="am-det" style="--ac:' + a.c + '"><span class="am-dice"></span><div class="am-izq"><div class="am-esc grande"><div class="am-piso"></div></div></div>' +
+      '<div class="am-der"><small style="color:' + a.tc + '">' + esc(a.nom) + '</small><b>' + esc(x.nom) + '</b><span class="am-tag" style="color:rgb(' + rz.c + ');background:rgba(' + rz.c + ',.14);border:1px solid rgba(' + rz.c + ',.45)">' + rz.nom + '</span>' +
+      '<p>' + esc(x.desc || (x.item && x.item.desc) || a.desc) + '</p>' +
+      '<span class="am-lb">Aspectos · ' + L.length + '</span><div class="am-asp">' + L.map(function (y) { var r = RZ[y.rareza] || RZ.comun;
+        return '<button type="button" class="am-a' + (y.id === x.id ? ' on' : '') + '" data-asp="' + esc(y.id) + '" style="--rc:' + r.c + '"><span class="am-mini" data-mini="' + esc(y.id) + '"></span><em>' + esc(y.nom) + '</em></button>'; }).join('') + '</div>' +
+      '<p class="am-nota">Toca un aspecto para verlo. Muy pronto podrás elegir con quién estudiar en el inicio.</p></div></div>';
+    amFigura(a, g.querySelector('.am-esc'), x.pj != null ? x : x);
+    L.forEach(function (y) {
+      var m = g.querySelector('[data-mini="' + y.id + '"]');
+      if (y.pj != null) m.append(MCBuhoVivo.crear('oficial', y.pj || null)); else m.innerHTML = C.buho(y.item);
+    });
+  }
+  $('amGrid').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-amigo]'); if (b) { amVer = b.dataset.amigo; pintarAmigos(); $('vAmigos').scrollIntoView({ behavior: 'smooth' }); return; }
+    if (e.target.closest('[data-amvolver]')) { amVer = null; pintarAmigos(); return; }
+    var s = e.target.closest('[data-asp]'); if (s) { amAsp[amVer] = s.dataset.asp; pintarAmigo(amVer); }
+  });
   document.querySelector('.modos').addEventListener('click', function (e) { var b = e.target.closest('[data-modo]'); if (b) elegirModo(b.dataset.modo); });
 
   /* ---------- Rangos (assets/rango.js; tus filas de xp_semana) ----------
