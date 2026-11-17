@@ -5,7 +5,7 @@
 .mcb img,.mcb .mcb-ojo{position:absolute;display:block;max-width:none}
 .mcb-ojo{overflow:hidden;-webkit-mask-size:100% 100%;mask-size:100% 100%}
 .mcb-lid{position:absolute;left:-5%;right:-5%;top:0;height:105%;transform:translateY(-102%);background:var(--lc);
-  border-bottom:solid #1f3a1c;border-bottom-width:max(2px,9%);border-radius:0 0 45% 45%;animation:mcb-parpadeo 4.2s infinite}
+  border-bottom:solid var(--lb,#1f3a1c);border-bottom-width:max(2px,9%);border-radius:0 0 45% 45%;animation:mcb-parpadeo 4.2s infinite}
 @keyframes mcb-parpadeo{0%,90%,100%{transform:translateY(-102%)}93.5%,95%{transform:translateY(0)}}
 
 @keyframes mcb-sombra{0%,100%{scale:1}50%{scale:.92}}

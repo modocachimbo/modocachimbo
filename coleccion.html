@@ -188,7 +188,37 @@
   @media (max-width: 899px) { .p-esc { aspect-ratio: 1.5; } .p-buho { width: 32%; bottom: 20%; } }
 
   /* Dos modos grandes: Mi estilo y Rangos */
-  .modos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 16px; }
+  .modos { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 0 0 16px; }
+  @media (max-width: 560px) { .modos { gap: 6px; } .modo { height: 52px; gap: 6px; font-size: 14px; } .modo svg { width: 20px; height: 20px; } .modo .m-em { width: 26px; height: 26px; } }
+  .modo .m-cl { display: none; }
+  @media (max-width: 560px) { .modo .m-lg { display: none; } .modo .m-cl { display: inline; } }
+  .am-c .mcb-pj-rosa { width: 112%; margin-left: -6%; }
+  .modo.on[data-modo="amigos"] { background: linear-gradient(180deg, #ff8fb6, #E0457A); border-color: #a3245a; color: #fff; box-shadow: 0 0 22px rgba(255,105,160,.45); }
+  /* Amigos del Búho (temporada de Navidad) */
+  .am-hero { position: relative; overflow: hidden; text-align: center; padding: 26px 18px 22px; border-radius: 22px; margin-bottom: 14px;
+    background: radial-gradient(500px 200px at 50% 0%, rgba(255,90,120,.28), transparent 70%), linear-gradient(180deg, #1e1336, #120d24); border: 2px solid #3a2550; }
+  .am-hero::before, .am-hero::after { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 10px;
+    background: repeating-linear-gradient(90deg, #E8384F 0 18px, #fff 18px 36px, #2FB85A 36px 54px, #fff 54px 72px); opacity: .9; }
+  .am-hero::after { top: auto; bottom: 0; }
+  .am-hero small { position: relative; font: 900 12px Nunito, sans-serif; letter-spacing: .2em; text-transform: uppercase; color: #ff9ab8; }
+  .am-hero h2 { position: relative; font: italic 900 48px/1 var(--display); text-transform: uppercase; color: #fff; margin: 6px 0 8px; text-shadow: 0 0 24px rgba(255,120,160,.45); }
+  .am-hero p { position: relative; color: var(--text-dim); font-size: 14px; }
+  .am-nieve { position: absolute; inset: 0; pointer-events: none; }
+  .am-nieve i { position: absolute; top: -10px; width: 6px; height: 6px; border-radius: 50%; background: #fff; opacity: .8; animation: amCae linear infinite; }
+  @keyframes amCae { to { transform: translate(20px, 260px); opacity: 0; } }
+  .am-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+  .am-c { position: relative; border-radius: 22px; padding: 16px 16px 18px; text-align: center; overflow: hidden;
+    background: radial-gradient(240px 180px at 50% 30%, var(--ac, rgba(198,224,0,.2)), transparent 70%), linear-gradient(180deg, #1b1533, #120e22); border: 2px solid #2f2852; border-bottom-width: 5px; }
+  .am-c .am-esc { position: relative; width: 78%; max-width: 230px; margin: 4px auto 6px; cursor: pointer; }
+  .am-c .am-piso { position: absolute; left: 12%; right: 12%; bottom: -2%; height: 9%; border-radius: 50%; background: rgba(0,0,0,.45); filter: blur(6px); }
+  .am-c .mcb { position: relative; width: 100%; }
+  .am-c b { display: block; font: italic 900 28px/1 var(--display); text-transform: uppercase; color: #fff; }
+  .am-c .am-tag { display: inline-block; margin: 6px 0 8px; padding: 3px 10px; border-radius: 999px; font: 900 11px Nunito, sans-serif; letter-spacing: .1em; text-transform: uppercase; }
+  .am-c p { color: var(--text-dim); font-size: 13px; line-height: 1.5; }
+  .am-c .am-dice { position: absolute; left: 50%; top: 10px; transform: translateX(-50%); background: #fff; color: #1a1030; padding: 6px 12px; border-radius: 12px; font: 900 13px Nunito, sans-serif; white-space: nowrap; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 2; }
+  .am-c .am-dice.on { opacity: 1; }
+  .am-c.pronto .am-esc { filter: brightness(0) opacity(.55); cursor: default; }
+  @media (max-width: 560px) { .am-grid { grid-template-columns: 1fr 1fr; gap: 10px; } .am-c { padding: 12px 10px 14px; } .am-c b { font-size: 22px; } .am-c p { font-size: 12px; } .am-c .am-tag { font-size: 10px; } .am-hero h2 { font-size: 38px; } }
   .modo { position: relative; display: flex; align-items: center; justify-content: center; gap: 10px; height: 56px; padding: 0 10px; transform: skewX(-10deg); border-radius: 12px; cursor: pointer;
     background: linear-gradient(180deg, #221c3d, #18132c); border: 2px solid #2f2852; border-bottom-width: 5px; color: var(--text-dim); font: italic 900 23px/1 var(--display); text-transform: uppercase; letter-spacing: .04em; -webkit-tap-highlight-color: transparent; }
   .modo > * { transform: skewX(10deg); }
@@ -310,6 +340,7 @@
 <script src="assets/coleccion.js?v=199"></script>
 <script src="assets/tarjeta-perfil.js?v=209"></script>
 <script src="assets/buho/buho-datos.js"></script>
+<script src="assets/buho/rosa-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
 </head>
 <body>
@@ -332,6 +363,7 @@
       <nav class="modos" role="tablist">
         <button type="button" class="modo" data-modo="estilo" role="tab"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3l-5 3 2 5 2-1v11h10V10l2 1 2-5-5-3a4 4 0 0 1-8 0z"/></svg><span>Mi estilo</span></button>
         <button type="button" class="modo" data-modo="rangos" role="tab"><span class="m-em" id="mEm" aria-hidden="true"></span><span>Rangos</span></button>
+        <button type="button" class="modo" data-modo="amigos" role="tab"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4c1 1 2 1.5 3 1.5S12 5 13 4c1 1 2 1.5 3 1.5S18 5 19 4v6a6 6 0 0 1-12 0z" transform="translate(-3 3)"/><path d="M15 9c.6.6 1.3 1 2 1s1.4-.4 2-1v4a4 4 0 0 1-6 3.4"/></svg><span><span class="m-lg">Amigos del </span>Búho<span class="m-cl">s</span></span></button>
       </nav>
 
       <div id="vEstilo">
@@ -366,6 +398,15 @@
       </div>
 
       <!-- Rangos: tu semana, la escalera y tu historial -->
+      <div id="vAmigos" hidden>
+        <section class="am-hero">
+          <div class="am-nieve" aria-hidden="true"></div>
+          <small>Navidad en Modo Cachimbo</small>
+          <h2>Amigos del Búho</h2>
+          <p>El Búho ya no estudia solo: conoce a sus amigos. Toca a cada uno.</p>
+        </section>
+        <div class="am-grid" id="amGrid"></div>
+      </div>
       <div id="vRangos" hidden>
         <div class="rg-hero" id="rgHero"><p class="rg-nada">Cargando tus rangos…</p></div>
         <div class="rg-h3">Escalera de rangos <small>gana XP en la semana para subir</small></div>
@@ -382,7 +423,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var C = window.MCColeccion, R = C.rareza;
   var TAB = (location.hash || '').slice(1) || 'buho', FIL = 'todos', MODO = 'estilo';
-  if (TAB === 'rangos') { MODO = 'rangos'; TAB = 'buho'; }
+  if (TAB === 'rangos' || TAB === 'amigos') { MODO = TAB; TAB = 'buho'; }
   var INTRO = {
     buho: 'El búho que sale en tu inicio. Toca uno para probarlo y dale «Usar» si te gusta.',
     avatar: 'Tu foto de perfil: sale en tu tarjeta de arriba, en tu perfil y en los tops.',
@@ -573,9 +614,39 @@
     MODO = m;
     $('vEstilo').hidden = m !== 'estilo';
     $('vRangos').hidden = m !== 'rangos';
+    $('vAmigos').hidden = m !== 'amigos';
+    if (m === 'amigos') pintarAmigos();
     document.querySelectorAll('.modo').forEach(function (b) { var on = b.dataset.modo === m; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
-    history.replaceState(null, '', '#' + (m === 'rangos' ? 'rangos' : TAB));
+    history.replaceState(null, '', '#' + (m === 'rangos' || m === 'amigos' ? m : TAB));
     if (m === 'rangos') pintarRangos();
+  }
+  /* ---------- Amigos del Búho ----------
+     Cada amigo se arma y se mueve igual que el Búho (assets/buho/buho-vivo.js).
+     Para sumar uno: sus capas en assets/buho/<id>-datos.js (MCBuhoAmigos.<id>) y una fila aquí. */
+  var AMIGOS = [
+    { id: '', nom: 'Búho', tag: 'El de siempre', c: 'rgba(151,205,71,.28)', tc: '#C6E000', desc: 'Te acompaña desde el primer día. Le encanta cantar con sus lentes de sol.', dice: ['¡A estudiar!', '¿Otra práctica?', '¡Tú puedes!'] },
+    { id: 'rosa', nom: 'Búha Rosa', tag: 'Nueva · Navidad', c: 'rgba(255,120,170,.32)', tc: '#FF8FB6', desc: 'La mejor amiga del Búho. Lleva una flor y siempre saluda con alegría.', dice: ['¡Hola, cachimbo!', '¡Feliz Navidad!', '¡Vamos juntos!'] },
+    { id: '?', nom: 'Muy pronto', tag: 'Sorpresa', c: 'rgba(120,110,170,.2)', tc: '#A99FC8', desc: 'Un nuevo amigo llega esta Navidad. ¿Quién será?' }
+  ];
+  var amListo = false;
+  function pintarAmigos() {
+    if (amListo) return; amListo = true;
+    var n = document.querySelector('.am-nieve'), h = '';
+    for (var i = 0; i < 26; i++) h += '<i style="left:' + ((i * 37) % 100) + '%;animation-duration:' + (5 + (i % 5)) + 's;animation-delay:-' + (i % 7) + 's;width:' + (3 + i % 4) + 'px;height:' + (3 + i % 4) + 'px"></i>';
+    n.innerHTML = h;
+    var g = $('amGrid'); g.innerHTML = '';
+    AMIGOS.forEach(function (a) {
+      var c = document.createElement('div'); c.className = 'am-c' + (a.id === '?' ? ' pronto' : ''); c.style.setProperty('--ac', a.c);
+      c.innerHTML = '<span class="am-dice"></span><div class="am-esc"><div class="am-piso"></div></div><b>' + esc(a.nom) + '</b><span class="am-tag" style="color:' + a.tc + ';background:' + a.tc + '22;border:1px solid ' + a.tc + '55">' + esc(a.tag) + '</span><p>' + esc(a.desc) + '</p>';
+      var esc2 = c.querySelector('.am-esc');
+      if (a.id === '?') esc2.append(MCBuhoVivo.crear('oficial'));
+      else {
+        var k = 0, globo = c.querySelector('.am-dice'), t = 0;
+        MCBuhoVivo.toques(esc2, { pose: 'vivo', pj: a.id || null, decir: function (tx, tono, ms) { globo.textContent = tx; globo.classList.add('on'); clearTimeout(t); t = setTimeout(function () { globo.classList.remove('on'); }, ms || 2000); },
+          alTocar: function () { globo.textContent = a.dice[k++ % a.dice.length]; globo.classList.add('on'); clearTimeout(t); t = setTimeout(function () { globo.classList.remove('on'); }, 1800); } });
+      }
+      g.append(c);
+    });
   }
   document.querySelector('.modos').addEventListener('click', function (e) { var b = e.target.closest('[data-modo]'); if (b) elegirModo(b.dataset.modo); });
 

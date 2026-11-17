@@ -25,11 +25,14 @@
   var N1 = '<svg viewBox="0 0 24 32"><ellipse cx="8" cy="25" rx="7" ry="5.5" transform="rotate(-20 8 25)"/><rect x="13" y="3" width="3" height="22"/><path d="M16 3c5 2 8 6 6 12-1-4-3-6-6-6z"/></svg>';
   var N2 = '<svg viewBox="0 0 32 32"><ellipse cx="7" cy="26" rx="6.5" ry="5" transform="rotate(-20 7 26)"/><ellipse cx="24" cy="22" rx="6.5" ry="5" transform="rotate(-20 24 22)"/><rect x="11.5" y="5" width="3" height="21"/><rect x="28.5" y="1" width="3" height="21"/><path d="M11.5 5L31.5 1v6L11.5 11z"/></svg>';
 
-  function crear(pose) {
-    var key = pose === 'vivo' ? 'oficial' : pose;
-    var d = window.MCBuhoDatos[key], el = document.createElement('div');
-    el.className = 'mcb mcb-' + pose;
-    el.setAttribute('role', 'img'); el.setAttribute('aria-label', 'Búho de Modo Cachimbo');
+  // pj: personaje amigo (MCBuhoAmigos[pj], por ejemplo assets/buho/rosa-datos.js). Sin pj, el Búho de siempre.
+  function crear(pose, pj) {
+    var key = pose === 'vivo' ? 'oficial' : pose, am = pj && window.MCBuhoAmigos && window.MCBuhoAmigos[pj];
+    var DS = am ? am.datos : window.MCBuhoDatos;
+    var d = DS[key] || DS.oficial, el = document.createElement('div');
+    el.className = 'mcb mcb-' + pose + (am ? ' mcb-pj-' + pj : '');
+    el.setAttribute('role', 'img'); el.setAttribute('aria-label', am ? am.nombre : 'Búho de Modo Cachimbo');
+    if (d.lb) el.style.setProperty('--lb', d.lb);
     el.style.setProperty('--ar', d.W + '/' + d.H);
     el.style.setProperty('--base', pct(d.base, d.H));
     el.style.setProperty('--drop', pct(d.H - d.fb - 6, d.H));
@@ -54,7 +57,7 @@
     });
     by('brow').forEach(function (l) { rig.append(mk(l)); });
     if (pose === 'vivo') {
-      var g = document.createElement('div'); g.className = 'mcb-gafas'; g.innerHTML = GAFAS; rig.append(g);
+      if (!am || am.gafas !== false) { var g = document.createElement('div'); g.className = 'mcb-gafas'; g.innerHTML = GAFAS; rig.append(g); }
       var b = document.createElement('div'); b.className = 'mcb-brillo'; b.textContent = '✦'; rig.append(b);
       [N1, N2, N1, N2].forEach(function (s, i) {
         var n = document.createElement('div'); n.className = 'mcb-nota mcb-n' + i; n.innerHTML = s; n.setAttribute('aria-hidden', 'true'); rig.append(n);
@@ -74,7 +77,7 @@
     // pose puede ser una función: la pose cambia y el búho vuelve a la que toque después de reír o enojarse
     var poseDe = function () { return (typeof o.pose === 'function' ? o.pose() : o.pose) || 'vivo'; }, decir = o.decir || function () {}, taps = [], timer = null, ocupado = false;
     var sonido = o.sonido !== false, hacer = o.crear || crear;
-    function poner(p) { var v = escena.querySelector('.mcb'); if (v) v.remove(); escena.append(hacer(p)); }
+    function poner(p) { var v = escena.querySelector('.mcb'); if (v) v.remove(); escena.append(hacer(p, o.pj)); }
     function tocar(k) {
       if (!sonido) return;
       try { var a = new Audio(BASE + k + '.mp3'); a.volume = .7; a.play().catch(function () {}); } catch (e) {}
