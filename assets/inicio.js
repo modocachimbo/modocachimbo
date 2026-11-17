@@ -246,7 +246,10 @@
     var C = window.MCColeccion, b = C && C.item(C.puesto('buho'));
     return b && b.img ? b.img : b && b.id === 'buho-antiguo' && window.MCBuho ? 'antiguo' : null;
   }
+  // Amigo del Búho elegido en Colección → Amigos del Búho (ej. 'rosa', 'rosa-navidad'); vacío = el Búho
+  function compa() { try { var k = localStorage.getItem('mc_compa') || ''; return k && window.MCBuhoAmigos && MCBuhoAmigos[k] ? k : ''; } catch (e) { return ''; } }
   function crearBuho(p) {
+    var pj = compa(); if (pj) return MCBuhoVivo.crear(p, pj);
     var ar = disfraz();
     if (!ar) return MCBuhoVivo.crear(p);
     // El antiguo: el búho del logo (assets/buho.js), con su cara según el momento
@@ -267,7 +270,7 @@
     decir: function (t, tono, ms) { decir({ t: t, tipo: tono }, ms, true); },
     alTocar: function () { decir(frasesToque()[toqueN++ % frasesToque().length], 4500); }
   });
-  var buhoPuesto = disfraz();
+  var buhoPuesto = disfraz() + '|' + compa();
   // El escenario que llevas puesto en Mi colección: su cielo y su piso (Galaxia es el de siempre, con su modo claro)
   function pintarEscenario() {
     var C = window.MCColeccion, e = $('escena'); if (!C || !e) return;
@@ -287,7 +290,7 @@
   pintarEscenario();
   if (window.MCColeccion) MCColeccion.alCambiar(pintarEscenario);
   if (window.MCColeccion) MCColeccion.alCambiar(function () {
-    var ar = disfraz(); if (ar === buhoPuesto) return;
+    var ar = disfraz() + '|' + compa(); if (ar === buhoPuesto) return;
     buhoPuesto = ar;
     var v = $('buho').querySelector('.mcb'); if (v) v.remove();
     $('buho').append(crearBuho('vivo'));

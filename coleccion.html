@@ -237,6 +237,9 @@
   .am-a .am-mini .mcb { position: relative; width: 100%; }
   .am-a em { font: italic 900 14px/1 var(--display); text-transform: uppercase; font-style: italic; }
   .am-nota { font-size: 12px !important; }
+  .am-usar { margin-top: 14px; height: 46px; padding: 0 20px; border-radius: 12px; border: 0; border-bottom: 4px solid rgba(0,0,0,.35); background: linear-gradient(180deg, #e2f75a, #C6E000); color: #14101f; font: italic 900 19px/1 var(--display); text-transform: uppercase; cursor: pointer; }
+  .am-usar:disabled { cursor: default; background: #241d44; color: var(--text-dim); border-bottom-color: #120E22; }
+  .am-usar.on { background: rgba(198,224,0,.14); color: var(--accent); border: 2px solid rgba(198,224,0,.5); }
   .am-det .am-dice { top: 14px; left: 25%; }
   @media (max-width: 700px) { .am-det { grid-template-columns: 1fr; padding: 14px; } .am-det .am-esc.grande { width: 70%; } .am-det .am-dice { left: 50%; } .am-der { text-align: center; } .am-der b { font-size: 36px; } }
 
@@ -685,6 +688,19 @@
       g.append(c);
     });
   }
+  // Quién sale en el inicio: un amigo (localStorage mc_compa = su pj) o el Búho con el aspecto de Mi colección
+  function compa() { try { return localStorage.getItem('mc_compa') || ''; } catch (e) { return ''; } }
+  function enUso(x) { return x.pj ? compa() === x.pj : !compa() && C.puesto('buho') === (x.item ? x.item.id : 'buho-clasico'); }
+  function usarHtml(x) {
+    if (enUso(x)) return '<button type="button" class="am-usar on" disabled>✓ Lo tienes en el inicio</button>';
+    if (x.item && !C.tiene(x.item.id)) return '<button type="button" class="am-usar" disabled>Aún no lo tienes</button>';
+    return '<button type="button" class="am-usar" data-usar="' + esc(x.id) + '">Usar en el inicio</button>';
+  }
+  function usar(x) {
+    try { if (x.pj) localStorage.setItem('mc_compa', x.pj); else localStorage.removeItem('mc_compa'); } catch (e) {}
+    var listo = function () { if (window.MCSonido && MCSonido.bien) MCSonido.bien(); pintarAmigo(amVer); };
+    if (x.item && x.item.id && C.puesto('buho') !== x.item.id) C.poner('buho', x.item.id).then(listo, listo); else listo();
+  }
   function pintarAmigo(id) {
     var a = AMIGOS.filter(function (x) { return x.id === id; })[0], L = a.aspectos(), sel = amAsp[id] || L[0].id, x = L.filter(function (y) { return y.id === sel; })[0] || L[0];
     var RZ = C.rareza, rz = RZ[x.rareza] || RZ.comun, g = $('amGrid');
@@ -694,7 +710,7 @@
       '<p>' + esc(x.desc || (x.item && x.item.desc) || a.desc) + '</p>' +
       '<span class="am-lb">Aspectos · ' + L.length + '</span><div class="am-asp">' + L.map(function (y) { var r = RZ[y.rareza] || RZ.comun;
         return '<button type="button" class="am-a' + (y.id === x.id ? ' on' : '') + '" data-asp="' + esc(y.id) + '" style="--rc:' + r.c + '"><span class="am-mini" data-mini="' + esc(y.id) + '"></span><em>' + esc(y.nom) + '</em></button>'; }).join('') + '</div>' +
-      '<p class="am-nota">Toca un aspecto para verlo. Muy pronto podrás elegir con quién estudiar en el inicio.</p></div></div>';
+      usarHtml(x) + '<p class="am-nota">Toca un aspecto para verlo y luego «Usar en el inicio» para estudiar con él.</p></div></div>';
     amFigura(a, g.querySelector('.am-esc'), x.pj != null ? x : x);
     L.forEach(function (y) {
       var m = g.querySelector('[data-mini="' + y.id + '"]');
@@ -704,7 +720,8 @@
   $('amGrid').addEventListener('click', function (e) {
     var b = e.target.closest('[data-amigo]'); if (b) { amVer = b.dataset.amigo; pintarAmigos(); $('vAmigos').scrollIntoView({ behavior: 'smooth' }); return; }
     if (e.target.closest('[data-amvolver]')) { amVer = null; pintarAmigos(); return; }
-    var s = e.target.closest('[data-asp]'); if (s) { amAsp[amVer] = s.dataset.asp; pintarAmigo(amVer); }
+    var s = e.target.closest('[data-asp]'); if (s) { amAsp[amVer] = s.dataset.asp; pintarAmigo(amVer); return; }
+    var u = e.target.closest('[data-usar]'); if (u) { var a = AMIGOS.filter(function (y) { return y.id === amVer; })[0]; var x = a.aspectos().filter(function (y) { return y.id === u.dataset.usar; })[0]; if (x) usar(x); }
   });
   document.querySelector('.modos').addEventListener('click', function (e) { var b = e.target.closest('[data-modo]'); if (b) elegirModo(b.dataset.modo); });
 

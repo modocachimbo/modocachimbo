@@ -376,6 +376,12 @@ html:not(.arcade-si) .solo-beta { display: none !important; }
 .plat svg { position: absolute; inset: -6% -4%; width: 108%; height: 112%; overflow: visible; filter: drop-shadow(0 8px 10px rgba(0, 0, 0, .35)); }
 .buho { position: absolute; left: 50%; bottom: 24%; width: 34%; translate: -50% 0; }
 .buho .mcb { width: 100%; translate: 0 var(--drop); }
+/* Sombra bajo las patas: el búho (o su amigo) se para en el escenario */
+.buho::before { content: ""; position: absolute; left: 12%; right: 12%; bottom: -5%; height: 11%; border-radius: 50%; z-index: 0; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, .62), rgba(0, 0, 0, .35) 55%, transparent); animation: buhoSombra 3s ease-in-out infinite; }
+@keyframes buhoSombra { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(.94); opacity: .85; } }
+.buho > .mcb, .buho > .mcb-disfraz { position: relative; z-index: 1; }
+.buho .mcb[class*="mcb-pj-"] { width: 112%; margin-left: -6%; }
 .buho .mcb-disfraz { display: block; width: 118%; margin-left: -9%; height: auto; aspect-ratio: auto; translate: 0 6%; user-select: none; -webkit-user-drag: none; filter: drop-shadow(0 6px 5px rgba(0, 0, 0, .4)); transform-origin: 50% 100%; animation: buhoFlota 3.2s ease-in-out infinite; }
 .buho .mcb-antiguo { width: 100%; margin-left: 0; translate: 0 2%; }
 .buho .mcb-antiguo svg { display: block; width: 100%; height: auto; }
@@ -1603,6 +1609,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
 <script src="assets/coleccion.js?v=199"></script>
 <script src="assets/tarjeta-perfil.js?v=209"></script>
 <script src="assets/buho/buho-datos.js"></script>
+<script src="assets/buho/rosa-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
 <script src="assets/buho.js"></script>
 <script src="assets/inicio.js?v=201"></script>
