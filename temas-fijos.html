@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" href="assets/app/icono-180.png">
 <script src="assets/app.js" defer></script>
 <title>Temas fijos · Modo Cachimbo</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Nunito:wght@700;800;900&display=swap">
 <style>
 /* Temas fijos (beta): qué temas vinieron en los exámenes de admisión, por curso */
 *{box-sizing:border-box;margin:0;padding:0}
@@ -66,23 +66,31 @@ header.top{display:flex;align-items:center;gap:12px;padding:24px 0 10px;padding-
 .tag.f1{background:var(--accent-soft);color:var(--accent)}
 .tag.f3{background:rgba(255,176,32,.12);color:var(--amber)}
 .tag.ult{background:rgba(255,95,162,.12);color:var(--pink)}
-.tabla-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:auto;max-width:100%}
-table{border-collapse:separate;border-spacing:0;font-size:12px}
-th,td{padding:0;text-align:center}
+.tabla-box{background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:auto;max-width:100%;padding:0 0 6px}
+table{border-collapse:separate;border-spacing:0;width:100%;font-family:Nunito,sans-serif}
+th,td{padding:0;text-align:center;vertical-align:middle}
 thead th{background:var(--surface)}
-th.tema,td.tema{position:sticky;left:0;background:var(--surface);z-index:3;text-align:left;padding:0 12px 0 14px;min-width:168px;font-weight:600;font-size:12.5px;border-right:1px solid var(--border);height:34px}
-thead th.tema{z-index:4;font:700 11px Inter,sans-serif;color:var(--text-faint);text-transform:uppercase;letter-spacing:.6px}
-.anio th{font:700 11px Sora,sans-serif;color:var(--text-dim);padding:10px 0 2px;border-left:1px solid var(--border)}
-.ciclo th{font-size:10px;color:var(--text-faint);font-weight:600;padding:0 0 8px;width:25px;min-width:25px}
-.ciclo th.g{border-left:1px solid var(--border)}
-td.c{width:25px;min-width:25px;height:34px;border-top:1px solid rgba(42,35,70,.6)}
-td.c.g{border-left:1px solid var(--border)}
-td.c i{display:block;width:16px;height:16px;margin:auto;border-radius:5px;background:rgba(111,102,144,.12)}
-td.c.x i{background:var(--accent);box-shadow:0 0 10px rgba(198,224,0,.35)}
-td.c.x.ultimo i{background:var(--pink);box-shadow:0 0 10px rgba(255,95,162,.4)}
-td.tot{font:800 13px Sora,sans-serif;color:var(--accent);padding:0 10px;border-left:1px solid var(--border);border-top:1px solid rgba(42,35,70,.6)}
-th.tot{font:700 10px Inter,sans-serif;color:var(--text-faint);padding:0 10px;border-left:1px solid var(--border)}
-tbody td.tema{border-top:1px solid rgba(42,35,70,.6)}
+th.tema,td.tema{position:sticky;left:0;background:var(--surface);z-index:3;text-align:left;padding:0 14px 0 14px;min-width:240px;border-right:1px solid var(--border);height:44px}
+thead th.tema{z-index:4;font:900 12px Nunito,sans-serif;color:var(--text-faint);text-transform:uppercase;letter-spacing:.8px;padding-left:12px}
+td.tema .tn{display:flex;align-items:center;gap:10px;font:800 14.5px/1.2 Nunito,sans-serif;color:var(--text)}
+td.tema .num{flex:none;width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--surface-2);border:1px solid var(--border);font:900 12.5px Nunito,sans-serif;color:var(--text-dim)}
+tr.top3 td.tema .num{background:var(--accent);border-color:var(--accent);color:#11130a}
+.anio th{padding:12px 2px 0}
+.anio th span{display:inline-block;font:800 12.5px Sora,sans-serif;color:var(--text);background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:4px 9px}
+.ciclo th{font:900 11px Nunito,sans-serif;color:var(--text-faint);padding:6px 0 10px;min-width:34px;border-bottom:1px solid var(--border)}
+.ciclo th.g,.anio th.g,td.c.g{border-left:1px solid rgba(42,35,70,.9)}
+td.c{min-width:34px;height:44px;border-top:1px solid rgba(42,35,70,.55)}
+tbody tr:first-child td{border-top:0}
+tbody tr:hover td{background:rgba(198,224,0,.04)}
+tbody tr:hover td.tema{background:#191430}
+td.c i{display:block;width:20px;height:20px;margin:auto;border-radius:7px;background:rgba(111,102,144,.13)}
+td.c.x i{background:var(--accent);box-shadow:0 0 12px rgba(198,224,0,.35);position:relative}
+td.c.x i:after{content:"";position:absolute;left:6px;top:4px;width:5px;height:9px;border:solid #1a1f00;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+td.c.x.ultimo i{background:var(--pink);box-shadow:0 0 12px rgba(255,95,162,.45)}
+td.c.x.ultimo i:after{border-color:#3a0018}
+td.tot{border-left:1px solid var(--border);border-top:1px solid rgba(42,35,70,.55);padding:0 12px}
+td.tot b{display:inline-grid;place-items:center;min-width:34px;height:28px;border-radius:9px;background:var(--accent-soft);color:var(--accent);font:900 14px Nunito,sans-serif}
+th.tot{font:900 11px Nunito,sans-serif;color:var(--text-faint);text-transform:uppercase;letter-spacing:.6px;padding:0 12px;border-left:1px solid var(--border)}
 .leyenda{display:flex;gap:16px;color:var(--text-dim);font-size:12px;margin:12px 2px 0;flex-wrap:wrap}
 .leyenda span{display:flex;align-items:center;gap:6px}
 .leyenda i{width:13px;height:13px;border-radius:4px;background:var(--accent)}
@@ -107,7 +115,10 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
   .lista{grid-template-columns:1fr}
   .seg button{padding:7px 10px;font-size:12px}
   .desliza{display:flex}
-  th.tema,td.tema{min-width:132px;max-width:132px;font-size:11.5px;padding:0 8px 0 10px;line-height:1.2}
+  th.tema,td.tema{min-width:156px;max-width:156px;padding:0 8px 0 10px}
+  td.tema .tn{font-size:12.5px;gap:7px}
+  td.tema .num{width:24px;height:24px;font-size:11px;border-radius:8px}
+  td.c,.ciclo th{min-width:32px}
 }
 </style>
 </head>
@@ -134,13 +145,13 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
         <button type="button" data-v="tabla"><svg viewBox="0 0 20 20"><path d="M3 2h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm1 2v3h3V4zm5 0v3h3V4zm5 0v3h2V4zM4 9v3h3V9zm5 0v3h3V9zm5 0v3h2V9zM4 14v2h3v-2zm5 0v2h3v-2zm5 0v2h2v-2z"/></svg>Tabla</button>
       </div>
       <div class="seg" id="periodo">
-        <button type="button" data-p="todo">Todos</button>
-        <button type="button" data-p="5a">Últimos 5 años</button>
+        <button type="button" data-p="2020">Desde 2020</button>
         <button type="button" data-p="10">Últimos 10</button>
+        <button type="button" data-p="todo">Desde 2015</button>
       </div>
     </div>
     <div id="cuerpo"></div>
-    <p class="nota">Conteo de los exámenes de admisión ordinarios desde 2015-I. Que un tema haya venido mucho no asegura que venga el próximo, pero te ayuda a decidir qué repasar primero.</p>
+    <p class="nota">Conteo de los exámenes de admisión ordinarios (tenemos desde 2015-I). Que un tema haya venido mucho no asegura que venga el próximo, pero te ayuda a decidir qué repasar primero.</p>
   </div>
 </div>
 
@@ -160,7 +171,7 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
     ['economia', 'Economía', 'ciencias-sociales'], ['ciudadania', 'Ciudadanía', 'ciencias-sociales'], ['psicologia', 'Psicología', 'ciencias-sociales'], ['filosofia', 'Filosofía', 'ciencias-sociales']
   ];
   var q = new URLSearchParams(location.search);
-  var S = { area: q.get('area') || 'todas', curso: q.get('curso') || 'biologia', v: q.get('v') || 'ranking', p: 'todo' };
+  var S = { area: q.get('area') || 'todas', curso: q.get('curso') || 'biologia', v: q.get('v') || 'ranking', p: q.get('p') || '2020' };
   if (!D.cursos[S.curso]) S.curso = 'biologia';
   function $(id) { return document.getElementById(id); }
   function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -190,7 +201,7 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
     var datos = D.cursos[S.curso];
     if (!datos) { $('sub').textContent = nombre(S.curso); $('cuerpo').innerHTML = '<div class="vacio"><b>Muy pronto</b>Estamos subiendo los temas de este curso.</div>'; return; }
     var idx = ex.map(function (_, i) { return i; });
-    if (S.p === '5a') { var desde = +ex[ULT].slice(0, 4) - 4; idx = idx.filter(function (i) { return +ex[i].slice(0, 4) >= desde; }); }
+    if (S.p === '2020') idx = idx.filter(function (i) { return +ex[i].slice(0, 4) >= 2020; });
     if (S.p === '10') idx = idx.slice(-10);
     var N = idx.length;
     $('sub').textContent = nombre(S.curso) + ' · ' + N + ' exámenes (' + ex[idx[0]] + ' a ' + ex[idx[N - 1]] + ')';
@@ -200,6 +211,7 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
     });
     var rk = temas.slice().sort(function (a, b) { return b.veces - a.veces || a.sinVenir - b.sinVenir; });
     var enUlt = temas.filter(function (t) { return t.s[ULT] === '1'; }).map(function (t) { return t.nombre; });
+    var top3 = rk.slice(0, 3);
     var olv = temas.slice().sort(function (a, b) { return b.sinVenir - a.sinVenir; })[0];
     var h = '<div class="kpis">' +
       '<div class="kpi"><div class="ic">' + I.trofeo + '</div><div><small>El que más viene</small><b>' + esc(rk[0].nombre) + '</b><span>' + rk[0].veces + ' de ' + N + ' exámenes</span></div></div>' +
@@ -217,13 +229,13 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
       idx.forEach(function (i) { var a = ex[i].slice(0, 4); if (!g[a]) { g[a] = 0; anios.push(a); } g[a]++; });
       function nuevo(k) { return k === 0 || ex[idx[k - 1]].slice(0, 4) !== ex[idx[k]].slice(0, 4); }
       h += '<div class="desliza">' + I.desliza + 'Desliza para ver todos los años</div><div class="tabla-box"><table><thead><tr class="anio"><th class="tema" rowspan="2">Tema</th>' +
-        anios.map(function (a) { return '<th colspan="' + g[a] + '">' + a + '</th>'; }).join('') + '<th class="tot" rowspan="2">Veces</th></tr><tr class="ciclo">' +
+        anios.map(function (a, k) { return '<th colspan="' + g[a] + '"' + (k ? ' class="g"' : '') + '><span>' + a + '</span></th>'; }).join('') + '<th class="tot" rowspan="2">Veces</th></tr><tr class="ciclo">' +
         idx.map(function (i, k) { return '<th' + (nuevo(k) ? ' class="g"' : '') + '>' + ex[i].split('-')[1] + '</th>'; }).join('') + '</tr></thead><tbody>' +
-        temas.map(function (t) {
-          return '<tr><td class="tema">' + esc(t.nombre) + '</td>' + idx.map(function (i, k) {
+        temas.map(function (t, n) {
+          return '<tr' + (top3.indexOf(t) >= 0 ? ' class="top3"' : '') + '><td class="tema"><span class="tn"><span class="num">' + (n < 9 ? '0' : '') + (n + 1) + '</span>' + esc(t.nombre) + '</span></td>' + idx.map(function (i, k) {
             var x = t.s[i] === '1';
             return '<td class="c' + (nuevo(k) ? ' g' : '') + (x ? ' x' : '') + (x && i === ULT ? ' ultimo' : '') + '" title="' + ex[i] + (x ? ': vino' : ': no vino') + '"><i></i></td>';
-          }).join('') + '<td class="tot">' + t.veces + '</td></tr>';
+          }).join('') + '<td class="tot"><b>' + t.veces + '</b></td></tr>';
         }).join('') + '</tbody></table></div><div class="leyenda"><span><i></i>Vino</span><span><i class="p"></i>Vino en el último examen</span><span><i class="e"></i>No vino</span></div>';
     }
     $('cuerpo').innerHTML = h;
