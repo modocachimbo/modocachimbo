@@ -121,11 +121,21 @@
     { id: 'pin-fantasma', espacio: 'pines', nom: 'Fantasma', rareza: 'evento', regla: { tipo: 'evento', evento: HALLOWEEN }, pin: ['👻', '#14213f', '#A99FC8'] },
     { id: 'pin-telarana', espacio: 'pines', nom: 'Telaraña', rareza: 'evento', regla: { tipo: 'evento', evento: HALLOWEEN }, pin: ['🕸️', '#1d1a2e', '#6F6690'] },
 
-    // Top global: coronas del Top de la semana (XP). Desde el martes las llevan los 3 primeros;
-    // se quedan para siempre a quien cierra la semana (domingo) en ese puesto
-    { id: 'pin-corona-oro', espacio: 'pines', nom: 'Top global · 1.º', rareza: 'legendario', regla: { tipo: 'top', n: 1 }, img: BASE + 'assets/pines/corona-oro.webp', suelto: true, pin: ['', '#2a1d05', '#FFC800'], desc: 'Para el 1.º del Top de la semana.' },
-    { id: 'pin-corona-plata', espacio: 'pines', nom: 'Top global · 2.º', rareza: 'epico', regla: { tipo: 'top', n: 2 }, img: BASE + 'assets/pines/corona-plata.webp', suelto: true, pin: ['', '#1b2130', '#C9D1DC'], desc: 'Para el 2.º del Top de la semana.' },
-    { id: 'pin-corona-bronce', espacio: 'pines', nom: 'Top global · 3.º', rareza: 'raro', regla: { tipo: 'top', n: 3 }, img: BASE + 'assets/pines/corona-bronce.webp', suelto: true, pin: ['', '#26150a', '#E0995E'], desc: 'Para el 3.º del Top de la semana.' },
+    // Top global: premios del Top de la semana (XP). Se quedan para siempre a quien cierra la semana
+    // (domingo) en ese puesto. Cada semana el premio es de una familia (supabase/108-premios-top-semana.sql):
+    // hasta el 22-11-2026 el hexágono; luego corona, medalla y escudo, una semana cada una; después al azar
+    { id: 'pin-corona-oro', espacio: 'pines', nom: 'Top global · 1.º', rareza: 'legendario', regla: { tipo: 'top', n: 1 }, img: BASE + 'assets/pines/top-hex-oro.webp', suelto: true, pin: ['', '#2a1d05', '#FFC800'], desc: 'Para el 1.º del Top de la semana.' },
+    { id: 'pin-corona-plata', espacio: 'pines', nom: 'Top global · 2.º', rareza: 'epico', regla: { tipo: 'top', n: 2 }, img: BASE + 'assets/pines/top-hex-plata.webp', suelto: true, pin: ['', '#1b2130', '#C9D1DC'], desc: 'Para el 2.º del Top de la semana.' },
+    { id: 'pin-corona-bronce', espacio: 'pines', nom: 'Top global · 3.º', rareza: 'raro', regla: { tipo: 'top', n: 3 }, img: BASE + 'assets/pines/top-hex-bronce.webp', suelto: true, pin: ['', '#26150a', '#E0995E'], desc: 'Para el 3.º del Top de la semana.' },
+    { id: 'pin-corona-cachimbo-oro', espacio: 'pines', nom: 'Corona Cachimbo · 1.º', rareza: 'legendario', regla: { tipo: 'top', n: 1, fam: 'corona' }, img: BASE + 'assets/pines/top-corona-oro.webp', suelto: true, pin: ['', '#2a1d05', '#FFC800'], desc: 'Para el 1.º del Top de la semana.' },
+    { id: 'pin-corona-cachimbo-plata', espacio: 'pines', nom: 'Corona Cachimbo · 2.º', rareza: 'epico', regla: { tipo: 'top', n: 2, fam: 'corona' }, img: BASE + 'assets/pines/top-corona-plata.webp', suelto: true, pin: ['', '#1b2130', '#C9D1DC'], desc: 'Para el 2.º del Top de la semana.' },
+    { id: 'pin-corona-cachimbo-bronce', espacio: 'pines', nom: 'Corona Cachimbo · 3.º', rareza: 'raro', regla: { tipo: 'top', n: 3, fam: 'corona' }, img: BASE + 'assets/pines/top-corona-bronce.webp', suelto: true, pin: ['', '#26150a', '#E0995E'], desc: 'Para el 3.º del Top de la semana.' },
+    { id: 'pin-corona-medalla-oro', espacio: 'pines', nom: 'Medalla del Top · 1.º', rareza: 'legendario', regla: { tipo: 'top', n: 1, fam: 'medalla' }, img: BASE + 'assets/pines/top-medalla-oro.webp', suelto: true, pin: ['', '#2a1d05', '#FFC800'], desc: 'Para el 1.º del Top de la semana.' },
+    { id: 'pin-corona-medalla-plata', espacio: 'pines', nom: 'Medalla del Top · 2.º', rareza: 'epico', regla: { tipo: 'top', n: 2, fam: 'medalla' }, img: BASE + 'assets/pines/top-medalla-plata.webp', suelto: true, pin: ['', '#1b2130', '#C9D1DC'], desc: 'Para el 2.º del Top de la semana.' },
+    { id: 'pin-corona-medalla-bronce', espacio: 'pines', nom: 'Medalla del Top · 3.º', rareza: 'raro', regla: { tipo: 'top', n: 3, fam: 'medalla' }, img: BASE + 'assets/pines/top-medalla-bronce.webp', suelto: true, pin: ['', '#26150a', '#E0995E'], desc: 'Para el 3.º del Top de la semana.' },
+    { id: 'pin-corona-escudo-oro', espacio: 'pines', nom: 'Escudo del Top · 1.º', rareza: 'legendario', regla: { tipo: 'top', n: 1, fam: 'escudo' }, img: BASE + 'assets/pines/top-escudo-oro.webp', suelto: true, pin: ['', '#2a1d05', '#FFC800'], desc: 'Para el 1.º del Top de la semana.' },
+    { id: 'pin-corona-escudo-plata', espacio: 'pines', nom: 'Escudo del Top · 2.º', rareza: 'epico', regla: { tipo: 'top', n: 2, fam: 'escudo' }, img: BASE + 'assets/pines/top-escudo-plata.webp', suelto: true, pin: ['', '#1b2130', '#C9D1DC'], desc: 'Para el 2.º del Top de la semana.' },
+    { id: 'pin-corona-escudo-bronce', espacio: 'pines', nom: 'Escudo del Top · 3.º', rareza: 'raro', regla: { tipo: 'top', n: 3, fam: 'escudo' }, img: BASE + 'assets/pines/top-escudo-bronce.webp', suelto: true, pin: ['', '#26150a', '#E0995E'], desc: 'Para el 3.º del Top de la semana.' },
     // La V de verificado: solo para influencers (supabase/67-verificado-influencers.sql)
     { id: 'pin-verificado', espacio: 'pines', nom: 'Verificado', rareza: 'legendario', regla: { tipo: 'grupo', g: 'influencer' }, img: BASE + 'assets/pines/verificado-v2.webp', suelto: true, pin: ['', '#1a2206', '#E4FF3A'], desc: 'La V de verificado de Modo Cachimbo.' }
   ];
@@ -254,8 +264,14 @@
     if (r.tipo === 'gratis') return true;
     if (r.tipo === 'racha') return E.mejorRacha >= r.n;
     if (r.tipo === 'rango') return E.maxXp >= (RANGO_XP[r.n] || Infinity);
-    if (r.tipo === 'top') return (+E.tops[r.n] || 0) > 0;   // solo al cerrar la semana en ese puesto (supabase/73)
+    if (r.tipo === 'top') return topVeces(r) > 0;   // solo al cerrar la semana en ese puesto (supabase/73 y 108)
     return false;
+  }
+  // Semanas cerradas en ese puesto con el premio de esa familia (sin 108 corrido: todo cuenta como hexágono)
+  function topVeces(r) {
+    var f = r.fam || 'hex';
+    if (E.tops.fam) return +((E.tops.fam[f] || {})[r.n]) || 0;
+    return f === 'hex' ? (+E.tops[r.n] || 0) : 0;
   }
   // Cuánto falta (0 a 1) para las reglas que se pueden medir
   function avance(id) {
@@ -270,18 +286,24 @@
     if (r.tipo === 'racha') return ok ? 'Lo ganaste al llegar a ' + r.n + ' días de racha.' : 'Llega a una racha de ' + r.n + ' días (tu mejor: ' + E.mejorRacha + ').';
     if (r.tipo === 'rango') return ok ? 'Lo ganaste al llegar a ' + rangoDe(r.n) + ' en una semana.' : 'Llega a ' + rangoDe(r.n) + ' en una semana (' + (window.MCRango ? String(RANGO_XP[r.n]).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' XP' : '') + ').';
     if (r.tipo === 'top') {
-      var v = +E.tops[r.n] || 0, P = PUESTO_TXT[r.n];
-      if (E.mias[x.id] && !v) return 'Un regalo de Modo Cachimbo. Es tuya para siempre.';
-      if (v) return 'Es tuya para siempre: cerraste ' + (v > 1 ? v + ' semanas' : 'una semana') + ' en el ' + P + ' puesto del Top.';
-      if (+E.tops.ahora === r.n) return 'Vas en el ' + P + ' puesto del Top. Si cierras el domingo ahí, la corona es tuya para siempre y tú decides si te la pones.';
-      return 'Es tuya para siempre si cierras la semana en el ' + P + ' puesto del Top. Luego tú decides si te la pones.';
+      var v = topVeces(r), P = PUESTO_TXT[r.n], f = r.fam || 'hex', esta = (E.tops.fam_ahora || 'hex') === f;
+      if (E.mias[x.id] && !v) return 'Un regalo de Modo Cachimbo. Es tuyo para siempre.';
+      if (v) return 'Es tuyo para siempre: cerraste ' + (v > 1 ? v + ' semanas' : 'una semana') + ' en el ' + P + ' puesto del Top con este premio.';
+      if (!esta) return 'Es el premio del Top en algunas semanas. Si esa semana cierras en el ' + P + ' puesto, es tuyo para siempre.';
+      if (+E.tops.ahora === r.n) return 'Es el premio de esta semana y vas en el ' + P + ' puesto del Top. Si cierras el domingo ahí, es tuyo para siempre y tú decides si te lo pones.';
+      return 'Es el premio de esta semana: si la cierras en el ' + P + ' puesto del Top, es tuyo para siempre. Luego tú decides si te lo pones.';
     }
     if (r.tipo === 'grupo') return ok ? 'Es tuyo por ser influencer de Modo Cachimbo.' : 'Solo para los influencers de Modo Cachimbo.';
     if (r.tipo === 'evento') return ok ? 'Lo ganaste en ' + r.evento + '. Es tuyo para siempre.' : 'Se ganaba en ' + r.evento + '.';
     return ok ? 'Un regalo de Modo Cachimbo.' : 'Es un regalo especial: no se puede conseguir solo.';
   }
   // La corona «Top global» que llevas esta semana (desde el martes, si vas en el top 3)
-  var CORONA = { 1: 'pin-corona-oro', 2: 'pin-corona-plata', 3: 'pin-corona-bronce' };
+  var CORONA = {
+    hex: { 1: 'pin-corona-oro', 2: 'pin-corona-plata', 3: 'pin-corona-bronce' },
+    corona: { 1: 'pin-corona-cachimbo-oro', 2: 'pin-corona-cachimbo-plata', 3: 'pin-corona-cachimbo-bronce' },
+    medalla: { 1: 'pin-corona-medalla-oro', 2: 'pin-corona-medalla-plata', 3: 'pin-corona-medalla-bronce' },
+    escudo: { 1: 'pin-corona-escudo-oro', 2: 'pin-corona-escudo-plata', 3: 'pin-corona-escudo-bronce' }
+  };
   // Ya no se pone sola (supabase/73-corona-se-gana-al-cerrar.sql): se gana al cerrar la semana y tú decides si la usas
   function coronaAhora() { return ''; }
   function puesto(esp) {
@@ -347,14 +369,22 @@
   function avisoCorona() {
     var u = window.MCAuth && MCAuth.usuario();
     if (!u) return;
-    var k = 'mc_coronas_' + u.id, antes = leer(k) || {}, nuevo = 0, ahora = {};
-    [1, 2, 3].forEach(function (n) { ahora[n] = +E.tops[n] || 0; if (!nuevo && ahora[n] > (+antes[n] || 0) && POR_ID[CORONA[n]]) nuevo = n; });
-    guardar(k, ahora);
+    var k = 'mc_coronas_' + u.id, antes = leer(k) || {}, nuevo = null, ahora = {}, viejo = !antes.fam;
+    var fams = E.tops.fam || { hex: { 1: E.tops[1], 2: E.tops[2], 3: E.tops[3] } };
+    // viejo: lo guardado antes de 108 era { 1, 2, 3 } (todo hexágono)
+    Object.keys(CORONA).forEach(function (f) {
+      [1, 2, 3].forEach(function (n) {
+        var v = +((fams[f] || {})[n]) || 0, a = viejo ? (f === 'hex' ? +antes[n] || 0 : 0) : +antes.fam[f + n] || 0;
+        ahora[f + n] = v;
+        if (!nuevo && v > a && POR_ID[CORONA[f][n]]) nuevo = { f: f, n: n };
+      });
+    });
+    guardar(k, { fam: ahora });
     if (!nuevo) return;
-    var c = CORONA[nuevo];
+    var c = CORONA[nuevo.f][nuevo.n];
     function abrir() {
       MCSobre.abrir({ regalos: [{ tipo: 'item', id: c }], de: 'Modo Cachimbo',
-        nota: '¡Cerraste la semana en el ' + PUESTO_TXT[nuevo] + ' puesto del Top global! La corona ya es tuya para siempre. Si quieres lucirla, póntela en Mi colección → Pines.' });
+        nota: '¡Cerraste la semana en el ' + PUESTO_TXT[nuevo.n] + ' puesto del Top global! Tu premio ya es tuyo para siempre. Si quieres lucirlo, póntelo en Mi colección → Pines.' });
     }
     setTimeout(function () {
       if (window.MCSobre) return abrir();
