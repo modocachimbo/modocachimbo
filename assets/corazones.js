@@ -239,13 +239,13 @@
 
   /* ---------- Respuestas: XP y corazones ---------- */
   var buf = { ok: 0, mal: 0, seguidas: 0 }, racha = 0, tEnvio = null, enviando = false, vuelo = 0;
-  // XP por respuesta: el mismo cálculo que sumar_xp en supabase/81-xp-error-0-multiplicadores.sql.
+  // XP por respuesta: el mismo cálculo que sumar_xp en supabase/81-xp-error-0-multiplicadores.sql (cortes de xp_mult en 110).
   // [correcta, incorrecta]: 15 donde se gasta corazón, 10 en lo demás; la incorrecta da 0;
   // la correcta se multiplica por el rango de la semana (xp_mult, en %, lo manda el servidor).
   var XP_MODO = { repaso: [15, 0], fijas: [15, 0], seminarios: [15, 0], banqueo: [15, 0], simulacro: [10, 0],
     duelo: [10, 0], libro: [10, 0], examen: [10, 0], falladas: [10, 0], tarjetas: [10, 0], vocabulario: [10, 0] };
   function multXp(xp) {  // respaldo si el servidor aún no manda xp_mult (mismos cortes que rango.js)
-    return xp >= 50000 ? 25 : xp >= 16000 ? 50 : xp >= 9000 ? 70 : xp >= 4700 ? 80 : xp >= 2300 ? 90 : 100;
+    return xp >= 60000 ? 25 : xp >= 23000 ? 50 : xp >= 14000 ? 70 : xp >= 7700 ? 80 : xp >= 4300 ? 90 : 100;
   }
   function valor(ok, mal) {
     var b = (PAG && XP_MODO[PAG.fuente]) || [14, 0];
@@ -626,7 +626,7 @@
     var ids = regs.filter(function (g) { return g.tipo === 'item' && g.item; }).map(function (g) { return g.item; });
     var pasos = [js(BASE + 'assets/sobre.js?v=5', function () { return window.MCSobre; })];
     // Los ítems: la colección se vuelve a pedir al toque (no los 10 min guardados)
-    if (ids.length) pasos.push(js(BASE + 'assets/coleccion.js?v=206', function () { return window.MCColeccion; })
+    if (ids.length) pasos.push(js(BASE + 'assets/coleccion.js?v=207', function () { return window.MCColeccion; })
       .then(function () { return MCColeccion.refrescar ? MCColeccion.refrescar() : null; }));
     var con = regs.filter(function (g) { return g.nota; })[0] || regs[0];
     Promise.all(pasos).then(function () {

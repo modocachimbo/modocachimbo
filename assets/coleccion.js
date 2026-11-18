@@ -31,7 +31,7 @@
   // 0..4: los premios de antes (se quedan con su XP). 5..11: los rangos de ahora
   // (Bronce I, Plata I, Esmeralda I, Zafiro I, Amatista I, Mítico I, Leyenda I). Igual en supabase/96-rangos-premios.sql
   var RANGO_XP = [20, 1500, 4000, 8000, 12000, 20, 900, 2300, 4700, 9000, 16000, 50000];
-  function rangoDe(n) { return window.MCRango ? MCRango.nombre(MCRango.nivel(RANGO_XP[n])) : ''; }
+  function rangoDe(n) { return window.MCRango ? MCRango.nombre(MCRango.nivel(RANGO_XP[n], '2026-11-09')) : ''; }   // RANGO_XP es la tabla de antes del 16-11
   var HALLOWEEN = 'Noche de Brujas 2026';  // en la cinta de la tarjeta sale «Halloween»
 
   // Espacios: dónde se pone cada cosa (pines: hasta 3 en tu vitrina)
@@ -147,15 +147,15 @@
   var TEMPORADAS = [
     { t: 't1', nom: 'T1 Nazca', sem: '2026-11-16', fig: [['la', 'Lagartija'], ['la', 'Araña'], ['el', 'Árbol'], ['la', 'Ballena'], ['el', 'Mono'], ['el', 'Cóndor'], ['el', 'Colibrí']] }
   ];
-  // rango, nombre, n de RANGO_XP, rareza, colores (texto, fondo, borde, brillo)
+  // rango, nombre, n de RANGO_XP, XP de la semana para llegar (tabla desde el 16-11-2026, assets/rango.js), rareza, colores (texto, fondo, borde, brillo)
   var TRANGOS = [
-    ['bronce', 'Bronce', 5, 'comun', '#E8A878', '#3a1e0e', '#9A5A30', '#FFD9B8'],
-    ['plata', 'Plata', 6, 'comun', '#D6DEEA', '#262c3a', '#8A96AA', '#FFFFFF'],
-    ['esmeralda', 'Esmeralda', 7, 'raro', '#5FF59A', '#06361a', '#0FA845', '#C9FFDD'],
-    ['zafiro', 'Zafiro', 8, 'raro', '#5FDAFF', '#06304a', '#1A6CC0', '#D6F6FF'],
-    ['amatista', 'Amatista', 9, 'epico', '#D79BFF', '#2a1050', '#8A36E0', '#F1DDFF'],
-    ['mitico', 'Mítico', 10, 'legendario', '#FF7AD9', '#3e0a34', '#C0399E', '#FFD6F3'],
-    ['leyenda', 'Leyenda', 11, 'legendario', '#FFC800', '#3e2400', '#D08A00', '#FFF3B0']
+    ['bronce', 'Bronce', 5, 20, 'comun', '#E8A878', '#3a1e0e', '#9A5A30', '#FFD9B8'],
+    ['plata', 'Plata', 6, 1900, 'comun', '#D6DEEA', '#262c3a', '#8A96AA', '#FFFFFF'],
+    ['esmeralda', 'Esmeralda', 7, 4300, 'raro', '#5FF59A', '#06361a', '#0FA845', '#C9FFDD'],
+    ['zafiro', 'Zafiro', 8, 7700, 'raro', '#5FDAFF', '#06304a', '#1A6CC0', '#D6F6FF'],
+    ['amatista', 'Amatista', 9, 14000, 'epico', '#D79BFF', '#2a1050', '#8A36E0', '#F1DDFF'],
+    ['mitico', 'Mítico', 10, 23000, 'legendario', '#FF7AD9', '#3e0a34', '#C0399E', '#FFD6F3'],
+    ['leyenda', 'Leyenda', 11, 60000, 'legendario', '#FFC800', '#3e2400', '#D08A00', '#FFF3B0']
   ];
   var MES_L = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'setiembre', 'octubre', 'noviembre', 'diciembre'];
   function semanaTxt(sem) {
@@ -165,11 +165,11 @@
   TEMPORADAS.forEach(function (T) {
     var dir = BASE + 'assets/temporadas/' + T.t + '/';
     TRANGOS.forEach(function (r, k) {
-      var f = T.fig[k], regla = { tipo: 'rango', n: r[2], sem: T.sem }, base = { rareza: r[3], regla: regla, temporada: T.nom };
+      var f = T.fig[k], regla = { tipo: 'rango', n: r[2], sem: T.sem, xp: r[3] }, base = { rareza: r[4], regla: regla, temporada: T.nom };
       var d = 'Temporada ' + T.nom + ': llega a ' + r[1] + ' en la semana ' + semanaTxt(T.sem) + '.';
       CATALOGO.push(Object.assign({ id: T.t + '-foto-' + r[0], espacio: 'avatar', nom: T.nom + ' · ' + f[1], img: dir + r[0] + '-foto.webp', desc: d }, base));
-      CATALOGO.push(Object.assign({ id: T.t + '-banner-' + r[0], espacio: 'racha', nom: T.nom + ' · Líneas ' + (f[0] === 'el' ? 'del ' : 'de la ') + f[1], img: dir + r[0] + '-banner.webp', tema: [r[4], r[6], r[6], r[5]], rg: r[4], desc: d }, base));
-      CATALOGO.push(Object.assign({ id: T.t + '-marco-' + r[0], espacio: 'marco', nom: T.nom + ' · Marco ' + r[1], marco: 'linear-gradient(135deg,' + r[7] + ',' + r[4] + ' 45%,' + r[6] + ')', mo: dir + r[0] + '-marco.webp', desc: d }, base));
+      CATALOGO.push(Object.assign({ id: T.t + '-banner-' + r[0], espacio: 'racha', nom: T.nom + ' · Líneas ' + (f[0] === 'el' ? 'del ' : 'de la ') + f[1], img: dir + r[0] + '-banner.webp', tema: [r[5], r[7], r[7], r[6]], rg: r[5], desc: d }, base));
+      CATALOGO.push(Object.assign({ id: T.t + '-marco-' + r[0], espacio: 'marco', nom: T.nom + ' · Marco ' + r[1], marco: 'linear-gradient(135deg,' + r[8] + ',' + r[5] + ' 45%,' + r[7] + ')', mo: dir + r[0] + '-marco.webp', desc: d }, base));
     });
   });
   // El lunes de esta semana (hora de Lima), como en xp_semana.semana
@@ -302,7 +302,7 @@
     if (E.mias[id]) return true;
     if (r.tipo === 'gratis') return true;
     if (r.tipo === 'racha') return E.mejorRacha >= r.n;
-    if (r.tipo === 'rango') return (r.sem ? xpDe(r.sem) : E.maxXp) >= (RANGO_XP[r.n] || Infinity);
+    if (r.tipo === 'rango') return (r.sem ? xpDe(r.sem) : E.maxXp) >= (r.xp || RANGO_XP[r.n] || Infinity);
     if (r.tipo === 'top') return topVeces(r) > 0;   // solo al cerrar la semana en ese puesto (supabase/73 y 108)
     return false;
   }
@@ -318,7 +318,7 @@
   function avance(id) {
     var r = (POR_ID[id] || {}).regla || {};
     if (r.tipo === 'racha') return Math.min(1, E.mejorRacha / r.n);
-    if (r.tipo === 'rango') return r.sem && r.sem !== lunesHoy() && !tiene(id) ? null : Math.min(1, (r.sem ? xpDe(r.sem) : E.maxXp) / (RANGO_XP[r.n] || 1));
+    if (r.tipo === 'rango') return r.sem && r.sem !== lunesHoy() && !tiene(id) ? null : Math.min(1, (r.sem ? xpDe(r.sem) : E.maxXp) / (r.xp || RANGO_XP[r.n] || 1));
     return null;
   }
   function como(x) {
@@ -330,7 +330,7 @@
       if (ok) return 'Lo ganaste al llegar a ' + nom + ' en la Temporada ' + x.temporada + '. Es tuyo para siempre.';
       if (r.sem > lunesHoy()) return 'Llega pronto: es el premio de la Temporada ' + x.temporada + ', la semana ' + semanaTxt(r.sem) + '.';
       if (ya) return 'Era el premio de la Temporada ' + x.temporada + ' (semana ' + semanaTxt(r.sem) + ') para quien llegó a ' + nom + '.';
-      return 'Premio de esta semana: llega a ' + nom + ' antes del domingo y es tuyo para siempre (' + String(RANGO_XP[r.n]).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' XP; llevas ' + String(xpDe(r.sem)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ').';
+      return 'Premio de esta semana: llega a ' + nom + ' antes del domingo y es tuyo para siempre (' + String(r.xp || RANGO_XP[r.n]).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' XP; llevas ' + String(xpDe(r.sem)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ').';
     }
     if (r.tipo === 'rango') return ok ? 'Lo ganaste al llegar a ' + rangoDe(r.n) + ' en una semana.' : 'Llega a ' + rangoDe(r.n) + ' en una semana (' + (window.MCRango ? String(RANGO_XP[r.n]).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' XP' : '') + ').';
     if (r.tipo === 'top') {
