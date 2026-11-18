@@ -1007,11 +1007,21 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
   function cuentaMini(t, d) { var m = estado.mini[t] || {}; return d.retos.filter(function (r) { return m[r.id]; }).length; }
   function grandes(n, tot) { return n >= tot ? 3 : n >= Math.ceil(tot * .75) ? 2 : n >= Math.ceil(tot * .375) ? 1 : 0; }
   function marcarMini(t, d, id) {
-    if (!id || miniDe(t)[id]) return;
+    if (!id || miniDe(t)[id]) return false;
     miniDe(t)[id] = 1;
     var k = t + ':retos', g = grandes(cuentaMini(t, d), d.retos.length);
     if (g > (estado.est[k] || 0)) estado.est[k] = g;
-    guardar();
+    guardar(); return true;
+  }
+  // Lo que la pantalla final muestra del nivel: estrellas grandes, los minijuegos y el nivel que se abre
+  function finNivel(c, i, t, d, nuevos, yaHecho) {
+    var m = miniDe(t), sig = c.niveles[i + 1], abre = !yaHecho && (estado.est[t + ':retos'] || 0) > 0 && sig;
+    return {
+      estrellas: estado.est[t + ':retos'] || 0,
+      minis: d.retos.map(function (r) { return { tipo: r.tipo, c: RETO_COLOR[r.tipo] || '#A35CFF', ok: !!m[r.id], nuevo: nuevos.indexOf(r.id) >= 0 }; }),
+      abre: abre ? '¡Nivel ' + (i + 2) + ' desbloqueado!' : '',
+      abreSub: abre ? sig.n + (sig.t ? ' · ya puedes jugarlo' : ' · llega muy pronto') : ''
+    };
   }
   // Quien ya ganó el nivel con el sistema anterior tiene todos sus minijuegos hechos
   function migrarMini(t, d) {
@@ -1035,11 +1045,13 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
         var ruta = { titulo: (MCRetos.nombres[base.tipo] || 'Minijuego') + ' · ' + (base.sub || d.titulo), retos: [r], slot: {} };
         ruta.slot[r.id] = base.id; return ruta;
       }
-      var ruta = armar();
+      var ruta = armar(), nuevos = [];
       MCRetos.jugar(ruta, {
         vidas: 3, solo: true,
-        alReto: function (id) { marcarMini(t, d, ruta.slot[id]); },
-        otraVez: function () { ruta = armar(); return ruta; },
+        alReto: function (id) { if (marcarMini(t, d, ruta.slot[id])) nuevos.push(ruta.slot[id]); },
+        finExtra: function () { return finNivel(c, i, t, d, nuevos, yaHecho); },
+        alMapa: function () { volverDeRetos(c, antes, !yaHecho && !!estado.est[t + ':retos'], i); },
+        otraVez: function () { ruta = armar(); nuevos = []; yaHecho = !!estado.est[t + ':retos']; return ruta; },
         alGanar: function (r) { estado.xp += r.xp; $('xpN').textContent = estado.xp; guardar(); cobrarRayos(); },
         alTerminar: function () { volverDeRetos(c, antes, !yaHecho && !!estado.est[t + ':retos'], i, true); },
         alCerrar: function () { volverDeRetos(c, antes, false, i, true); }
@@ -1052,16 +1064,17 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
       if (window.MCSonido) MCSonido.ambiente(null);
       var antes = nvMapa ? nvMapa.actual : i, yaHecho = !!estado.est[t + ':retos'];
       // Si dejó el nivel a medias, se arma la misma ruta y sigue desde ahí
-      var av = leerAvance(t), ruta = armarRuta(d, vez), todos = d.retos.concat(d.extra || []);
+      var av = leerAvance(t), ruta = armarRuta(d, vez), todos = d.retos.concat(d.extra || []), nuevos = [];
       if (av && av.ids) {
         var rs = av.ids.map(function (id) { return todos.filter(function (x) { return x.id === id; })[0]; });
         if (rs.every(Boolean)) { ruta.retos = rs; conSlot(d, ruta); } else av = null;
       }
       MCRetos.jugar(ruta, {
         vidas: 5, guardado: av, multXp: 2,
-        alReto: function (id) { marcarMini(t, d, ruta.slot[id]); },
+        alReto: function (id) { if (marcarMini(t, d, ruta.slot[id])) nuevos.push(ruta.slot[id]); },
+        finExtra: function () { return finNivel(c, i, t, d, nuevos, yaHecho); },
         alGuardar: function (g) { guardarAvanceRetos(t, g && g.hechos.length ? { ids: ruta.retos.map(function (x) { return x.id; }), hechos: g.hechos, primera: g.primera, xp: g.xp } : null); },
-        otraVez: function () { ruta = armarRuta(d, 1); return ruta; },
+        otraVez: function () { ruta = armarRuta(d, 1); nuevos = []; yaHecho = !!estado.est[t + ':retos']; return ruta; },
         alGanar: function (r) {
           estado.xp += r.xp; $('xpN').textContent = estado.xp; guardar(); cobrarRayos();
         },
