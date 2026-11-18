@@ -204,6 +204,7 @@
     (e.nuevas || []).forEach(function (t) { celebrar(t); });
     // Todo lo que llegó junto va en un solo sobre (assets/sobre.js)
     if (regs.length) sobre(regs);
+    premioRango(+e.xp_semana || 0);
     // Rayos regalados: el contador del Arcade o del Laboratorio se pone al día
     if (window.MCRayos && regs.some(function (g) { return g.tipo === 'rayos'; })) MCRayos.estado();
     if (antes && antes.quedan === 0 && e.quedan > 0) cerrarBloqueo();
@@ -613,6 +614,34 @@
       var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = mal; document.head.appendChild(s);
     });
   }
+  // Premios de temporada (assets/coleccion.js → TEMPORADAS): al llegar a un rango en la semana, su pack
+  // (foto, banner y marco) llega al instante en un sobre. En una práctica sale «¡Te llegó un sobre!».
+  // Cortes de la tabla desde el 16-11-2026 (assets/rango.js): Bronce, Plata … Leyenda
+  var CORTES_T = [20, 1900, 4300, 7700, 14000, 23000, 60000];
+  var NOM_T = ['Bronce', 'Plata', 'Esmeralda', 'Zafiro', 'Amatista', 'Mítico', 'Leyenda'];
+  function premioRango(xp) {
+    var k = -1; CORTES_T.forEach(function (c, i) { if (xp >= c) k = i; });
+    var u = window.MCAuth && MCAuth.usuario && MCAuth.usuario();
+    if (k < 0 || !u || !window.MCRango || !MCRango.clave) return;
+    var cl = 'mc_tpremio_' + u.id, g = {}, sem = MCRango.clave();
+    try { g = JSON.parse(localStorage.getItem(cl) || '{}') || {}; } catch (x) {}
+    var ya = g[sem] == null ? -1 : +g[sem];
+    if (k <= ya) return;
+    g = {}; g[sem] = k;   // solo se recuerda esta semana
+    try { localStorage.setItem(cl, JSON.stringify(g)); } catch (x) {}
+    js(BASE + 'assets/coleccion.js?v=208', function () { return window.MCColeccion; }).then(function () {
+      var C = window.MCColeccion, T = C.temporada && C.temporada(sem);
+      if (!T) return;
+      var regs = [];
+      for (var i = ya + 1; i <= k; i++) ['foto', 'banner', 'marco'].forEach(function (p) {
+        var x = C.premioTemporada(T, i, p); if (x) regs.push({ tipo: 'item', item: x.id });
+      });
+      if (!regs.length) return;
+      regs[0].de = 'Temporada ' + T.nom;
+      regs[0].nota = '¡Llegaste a ' + NOM_T[k] + '! Aquí está tu pack de la Temporada ' + T.nom + ': foto de perfil, banner y marco. Son tuyos para siempre. Póntelos en Mi colección.';
+      sobre(regs);
+    }).catch(function () {});
+  }
   function sobre(regs) {
     guardarSobres(sobresGuardados().concat(regs));
     if (PAG) return avisoSobre();
@@ -626,7 +655,7 @@
     var ids = regs.filter(function (g) { return g.tipo === 'item' && g.item; }).map(function (g) { return g.item; });
     var pasos = [js(BASE + 'assets/sobre.js?v=5', function () { return window.MCSobre; })];
     // Los ítems: la colección se vuelve a pedir al toque (no los 10 min guardados)
-    if (ids.length) pasos.push(js(BASE + 'assets/coleccion.js?v=207', function () { return window.MCColeccion; })
+    if (ids.length) pasos.push(js(BASE + 'assets/coleccion.js?v=208', function () { return window.MCColeccion; })
       .then(function () { return MCColeccion.refrescar ? MCColeccion.refrescar() : null; }));
     var con = regs.filter(function (g) { return g.nota; })[0] || regs[0];
     Promise.all(pasos).then(function () {
