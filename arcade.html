@@ -608,6 +608,22 @@ body.en-inicio .cab { display: none; }
 /* Celulares bajitos: las tarjetas se deslizan dentro de la ventana para que la cinta y la X no se corten */
 @media (max-width: 380px) { .mj-c { grid-template-columns: 38px minmax(0, 1fr); gap: 7px; padding-left: 8px; } .mj-c .ico { width: 38px; height: 38px; } .mj-c .ico svg { width: 22px; height: 22px; } .mj-c b { font-size: 12.5px; } .mj-c small { font-size: 10px; } }
 @media (max-height: 700px) { .hoja.mj .mj-grid { max-height: calc(100dvh - 330px); overflow-y: auto; overscroll-behavior: contain; padding: 4px 2px 6px; } }
+/* Celular en horizontal: estrellas y JUGAR TODO a la izquierda, minijuegos a la derecha */
+@media (orientation: landscape) and (max-height: 520px) {
+  .hoja.mj { width: min(880px, calc(100% - 48px)); display: grid; grid-template-columns: minmax(210px, 36%) minmax(0, 1fr); grid-template-rows: auto auto 1fr auto; column-gap: 18px; row-gap: 8px;
+    align-items: start; padding: 24px 16px 14px; max-height: calc(100dvh - 28px); }
+  .hoja.mj .h-cint { left: 50%; translate: -50% 0; }
+  .hoja.mj .h-ctit { grid-column: 1; grid-row: 1; font-size: 22px; }
+  .hoja.mj .mj-meta { grid-column: 1; grid-row: 2; min-height: 0; }
+  .hoja.mj .st3 svg { width: 30px; height: 30px; } .hoja.mj .st3 svg:nth-child(2) { width: 38px; height: 38px; }
+  .hoja.mj .jugar { grid-column: 1; grid-row: 4; align-self: end; padding: 8px 0 9px; }
+  .hoja.mj .jugar .fila { font-size: 24px; } .hoja.mj .jugar small { font-size: 10.5px; }
+  .hoja.mj .mj-tit { grid-column: 2; grid-row: 1; align-self: end; }
+  .hoja.mj .mj-grid { grid-column: 2; grid-row: 2 / 5; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; max-height: calc(100dvh - 92px); overflow-y: auto; overscroll-behavior: contain; padding: 2px 2px 6px; }
+  .hoja.mj .mj-c { grid-template-columns: 38px minmax(0, 1fr); justify-items: start; text-align: left; padding: 8px 8px 30px; gap: 8px; }
+  .hoja.mj .mj-c .ico { width: 38px; height: 38px; border-radius: 11px; } .hoja.mj .mj-c .ico svg { width: 22px; height: 22px; }
+  .hoja.mj .mj-c b { font-size: 13.5px; }
+}
 
 /* ---------- Mapa de niveles del mundo (assets/arcade-mundo.js) ---------- */
 body.en-mundo { background: #1E86BE; }
@@ -1362,12 +1378,13 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
         $('mjMeta').innerHTML = '<span class="st3">' + [1, 2, 3].map(function (k) { return E3(k <= g); }).join('') + '</span>' +
           '<span class="mj-seg">' + d.retos.map(function (r, k) { return '<i class="' + (k < n ? 'on' : '') + '"></i>'; }).join('') + '</span>' +
           '<small><b>' + n + ' de ' + tot + '</b> minijuegos completos' + (g ? '' : c.niveles[i + 1] ? ' · con ' + para1 + ' abres el nivel ' + (i + 2) : '') + '</small>';
-        if (!avR) $('mjTodoSub').textContent = 'Los ' + tot + ' mezclados · 5 vidas · XP doble';
+        var nTodo = d.retos.reduce(function (a, r) { return a + (r.preguntas ? Math.min(MEZCLA_PREG, r.preguntas.length) : 1); }, 0);
+        if (!avR) $('mjTodoSub').textContent = nTodo + ' retos de los ' + tot + ' minijuegos · 5 vidas · XP doble';
         el.innerHTML = d.retos.map(function (r, k) {
           var ok = !!m[r.id], E = '<svg class="' + (ok ? '' : 'off') + '" viewBox="0 0 100 100"><use href="#i-estrella3d"/></svg>';
           return '<button type="button" class="mj-c' + (ok ? ' hecho' : '') + '" data-k="' + k + '" style="--c:' + (RETO_COLOR[r.tipo] || '#A35CFF') + '">' +
             '<span class="ico">' + (MCRetos.iconos[r.tipo] || '').replace(/#C6E000/g, '#fff') + '</span>' +
-            '<span class="tx"><b>' + (MCRetos.nombres[r.tipo] || r.tipo) + '</b><small>' + (r.sub || r.titulo || '') + (r.preguntas ? ' · ' + r.preguntas.length + ' preguntas' : '') + '</small></span>' +
+            '<span class="tx"><b>' + (MCRetos.nombres[r.tipo] || r.tipo) + '</b><small>' + (r.sub || r.titulo || '') + (r.preguntas ? ' · ' + r.preguntas.length + (/imagen|completar/.test(r.tipo) ? ' preguntas' : ' rondas') : '') + '</small></span>' +
             '<span class="franja">' + E + (ok ? 'Completado' : 'Por jugar') + '</span></button>';
         }).join('');
         el.querySelectorAll('.mj-c').forEach(function (b) { b.onclick = function () { if (window.MCSonido) MCSonido.efecto('abrir'); cerrarHoja(); jugarMini(c, i, nv, +b.dataset.k); }; });

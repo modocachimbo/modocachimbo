@@ -256,160 +256,1154 @@
       "id": "teoricos",
       "tipo": "relacionar",
       "titulo": "Toca los pares",
-      "sub": "Investigadores y teorías",
-      "pregunta": "Une cada investigador con su teoría",
-      "pares": [
-        [
-          "Florentino Ameghino",
-          "Autoctonista"
-        ],
-        [
-          "Alex Hrdlička",
-          "Asiática (Bering)"
-        ],
-        [
-          "Paul Rivet",
-          "Oceánica"
-        ],
-        [
-          "Méndez Correa",
-          "Australiana"
-        ],
-        [
-          "Tom Dillehay",
-          "Monte Verde (Chile)"
-        ]
+      "sub": "Investigadores y sitios",
+      "preguntas": [
+        {
+          "id": "teorias",
+          "pregunta": "Une cada investigador con su teoría",
+          "pares": [
+            [
+              "Florentino Ameghino",
+              "Autoctonista"
+            ],
+            [
+              "Alex Hrdlička",
+              "Asiática (Bering)"
+            ],
+            [
+              "Paul Rivet",
+              "Oceánica"
+            ],
+            [
+              "Méndez Correa",
+              "Australiana"
+            ]
+          ]
+        },
+        {
+          "id": "descubridores",
+          "pregunta": "Une cada sitio con quien lo estudió",
+          "pares": [
+            [
+              "Piquimachay",
+              "Richard MacNeish"
+            ],
+            [
+              "Lauricocha",
+              "Augusto Cardich"
+            ],
+            [
+              "Guitarrero",
+              "Thomas Lynch"
+            ],
+            [
+              "Telarmachay",
+              "Danièle Lavallée"
+            ]
+          ]
+        },
+        {
+          "id": "rutas",
+          "pregunta": "Une cada teoría con su ruta",
+          "pares": [
+            [
+              "Asiática",
+              "Estrecho de Bering"
+            ],
+            [
+              "Oceánica",
+              "Océano Pacífico"
+            ],
+            [
+              "Australiana",
+              "Por la Antártida"
+            ],
+            [
+              "Autoctonista",
+              "Surgió en América"
+            ]
+          ]
+        },
+        {
+          "id": "hallazgos",
+          "pregunta": "Une cada sitio con su hallazgo",
+          "pares": [
+            [
+              "Toquepala",
+              "Pinturas rupestres"
+            ],
+            [
+              "Lauricocha",
+              "Restos humanos"
+            ],
+            [
+              "Guitarrero",
+              "Plantas cultivadas"
+            ],
+            [
+              "Telarmachay",
+              "Camélidos domesticados"
+            ]
+          ]
+        },
+        {
+          "id": "regiones",
+          "pregunta": "Une cada sitio con su región",
+          "pares": [
+            [
+              "Piquimachay",
+              "Ayacucho"
+            ],
+            [
+              "Toquepala",
+              "Tacna"
+            ],
+            [
+              "Guitarrero",
+              "Áncash"
+            ],
+            [
+              "Lauricocha",
+              "Huánuco"
+            ]
+          ]
+        },
+        {
+          "id": "conceptos",
+          "pregunta": "Une cada palabra con su significado",
+          "pares": [
+            [
+              "Nómade",
+              "Sin vivienda fija"
+            ],
+            [
+              "Sedentario",
+              "Vive en un lugar fijo"
+            ],
+            [
+              "Rupestre",
+              "Pintado sobre roca"
+            ],
+            [
+              "Lítico",
+              "De piedra"
+            ]
+          ]
+        },
+        {
+          "id": "estudiosos",
+          "pregunta": "Une cada sitio con quien lo estudió",
+          "pares": [
+            [
+              "Paiján",
+              "Rafael Larco Hoyle"
+            ],
+            [
+              "Chilca",
+              "Frédéric Engel"
+            ],
+            [
+              "Monte Verde",
+              "Tom Dillehay"
+            ],
+            [
+              "Chivateros",
+              "Edward Lanning"
+            ]
+          ]
+        },
+        {
+          "id": "evidencias",
+          "pregunta": "Une cada evidencia con lo que nos enseña",
+          "pares": [
+            [
+              "Punta de proyectil",
+              "Practicaban la caza"
+            ],
+            [
+              "Pintura rupestre",
+              "Registraban su vida"
+            ],
+            [
+              "Frijol y ají",
+              "Inicio de la horticultura"
+            ],
+            [
+              "Restos óseos",
+              "Presencia humana antigua"
+            ]
+          ]
+        },
+        {
+          "id": "america",
+          "pregunta": "Une cada sitio con su país",
+          "pares": [
+            [
+              "Monte Verde",
+              "Chile"
+            ],
+            [
+              "Clovis",
+              "Estados Unidos"
+            ],
+            [
+              "Pedra Furada",
+              "Brasil"
+            ],
+            [
+              "Piquimachay",
+              "Perú"
+            ]
+          ]
+        },
+        {
+          "id": "animales",
+          "pregunta": "Une cada animal con su descripción",
+          "pares": [
+            [
+              "Megaterio",
+              "Perezoso gigante"
+            ],
+            [
+              "Mastodonte",
+              "Pariente del elefante"
+            ],
+            [
+              "Guanaco",
+              "Camélido silvestre"
+            ],
+            [
+              "Taruca",
+              "Venado andino"
+            ]
+          ]
+        }
       ]
     },
     {
       "id": "sitios-region",
       "tipo": "parejas",
       "titulo": "Cartas parejas",
-      "sub": "Sitios y regiones",
-      "pregunta": "Voltea dos cartas: une cada sitio con su región",
-      "etiquetas": [
-        "Sitio",
-        "Región"
-      ],
-      "pares": [
-        [
-          "Piquimachay",
-          "Ayacucho"
-        ],
-        [
-          "Lauricocha",
-          "Huánuco"
-        ],
-        [
-          "Toquepala",
-          "Tacna"
-        ],
-        [
-          "Guitarrero",
-          "Áncash"
-        ],
-        [
-          "Paiján",
-          "La Libertad"
-        ],
-        [
-          "Chivateros",
-          "Lima"
-        ]
+      "sub": "Sitios, fechas y teorías",
+      "preguntas": [
+        {
+          "id": "sitio-region",
+          "pregunta": "Une cada sitio con su región",
+          "etiquetas": [
+            "Sitio",
+            "Región"
+          ],
+          "pares": [
+            [
+              "Piquimachay",
+              "Ayacucho"
+            ],
+            [
+              "Lauricocha",
+              "Huánuco"
+            ],
+            [
+              "Toquepala",
+              "Tacna"
+            ],
+            [
+              "Guitarrero",
+              "Áncash"
+            ]
+          ]
+        },
+        {
+          "id": "sitio-region-2",
+          "pregunta": "Une cada sitio con su región",
+          "etiquetas": [
+            "Sitio",
+            "Región"
+          ],
+          "pares": [
+            [
+              "Paiján",
+              "La Libertad"
+            ],
+            [
+              "Chivateros",
+              "Lima"
+            ],
+            [
+              "Telarmachay",
+              "Junín"
+            ],
+            [
+              "Wilamaya Patjxa",
+              "Puno"
+            ]
+          ]
+        },
+        {
+          "id": "teorias",
+          "pregunta": "Une cada investigador con su teoría",
+          "etiquetas": [
+            "Investigador",
+            "Teoría"
+          ],
+          "pares": [
+            [
+              "Ameghino",
+              "Autoctonista"
+            ],
+            [
+              "Hrdlička",
+              "Asiática"
+            ],
+            [
+              "Rivet",
+              "Oceánica"
+            ],
+            [
+              "Méndez Correa",
+              "Australiana"
+            ]
+          ]
+        },
+        {
+          "id": "fechas",
+          "pregunta": "Une cada sitio con su antigüedad",
+          "etiquetas": [
+            "Sitio",
+            "Fecha aprox."
+          ],
+          "pares": [
+            [
+              "Piquimachay",
+              "20 000 a.C."
+            ],
+            [
+              "Toquepala",
+              "9 500 a.C."
+            ],
+            [
+              "Lauricocha",
+              "8 000 a.C."
+            ],
+            [
+              "Chilca",
+              "4 000 a.C."
+            ]
+          ]
+        },
+        {
+          "id": "hallazgos",
+          "pregunta": "Une cada sitio con su hallazgo",
+          "etiquetas": [
+            "Sitio",
+            "Hallazgo"
+          ],
+          "pares": [
+            [
+              "Telarmachay",
+              "Camélidos"
+            ],
+            [
+              "Guitarrero",
+              "Frijol y ají"
+            ],
+            [
+              "Toquepala",
+              "Pinturas"
+            ],
+            [
+              "Lauricocha",
+              "Restos humanos"
+            ]
+          ]
+        },
+        {
+          "id": "rutas",
+          "pregunta": "Une cada teoría con su ruta",
+          "etiquetas": [
+            "Teoría",
+            "Ruta"
+          ],
+          "pares": [
+            [
+              "Asiática",
+              "Bering"
+            ],
+            [
+              "Oceánica",
+              "Pacífico"
+            ],
+            [
+              "Australiana",
+              "Antártida"
+            ],
+            [
+              "Autoctonista",
+              "Nació en América"
+            ]
+          ]
+        },
+        {
+          "id": "estudiosos",
+          "pregunta": "Une cada sitio con quien lo estudió",
+          "etiquetas": [
+            "Sitio",
+            "Estudioso"
+          ],
+          "pares": [
+            [
+              "Piquimachay",
+              "MacNeish"
+            ],
+            [
+              "Lauricocha",
+              "Cardich"
+            ],
+            [
+              "Paiján",
+              "Larco Hoyle"
+            ],
+            [
+              "Chilca",
+              "Engel"
+            ]
+          ]
+        },
+        {
+          "id": "conceptos",
+          "pregunta": "Une cada palabra con su significado",
+          "etiquetas": [
+            "Palabra",
+            "Significa"
+          ],
+          "pares": [
+            [
+              "Nómade",
+              "Sin vivienda fija"
+            ],
+            [
+              "Sedentario",
+              "Vive en un lugar fijo"
+            ],
+            [
+              "Rupestre",
+              "Pintado en roca"
+            ],
+            [
+              "Lítico",
+              "De piedra"
+            ]
+          ]
+        },
+        {
+          "id": "america",
+          "pregunta": "Une cada sitio con su país",
+          "etiquetas": [
+            "Sitio",
+            "País"
+          ],
+          "pares": [
+            [
+              "Monte Verde",
+              "Chile"
+            ],
+            [
+              "Clovis",
+              "Estados Unidos"
+            ],
+            [
+              "Pedra Furada",
+              "Brasil"
+            ],
+            [
+              "Toquepala",
+              "Perú"
+            ]
+          ]
+        },
+        {
+          "id": "herramientas",
+          "pregunta": "Une cada herramienta con su uso",
+          "etiquetas": [
+            "Herramienta",
+            "Uso"
+          ],
+          "pares": [
+            [
+              "Punta de proyectil",
+              "Armar lanzas"
+            ],
+            [
+              "Raedera",
+              "Raspar pieles"
+            ],
+            [
+              "Estólica",
+              "Lanzar dardos"
+            ],
+            [
+              "Bifaz",
+              "Cortar y golpear"
+            ]
+          ]
+        }
       ]
     },
     {
       "id": "rivet",
       "tipo": "completar",
       "titulo": "Completa la frase",
-      "sub": "Teoría de Rivet",
-      "frase": "Paul Rivet planteó la teoría {0}: grupos {1} llegaron a América cruzando el océano {2}.",
-      "respuestas": [
-        "oceánica",
-        "melanesios y polinesios",
-        "Pacífico"
-      ],
-      "distractores": [
-        "autoctonista",
-        "Atlántico",
-        "europeos"
-      ],
-      "explica": "Rivet propuso un origen múltiple: además de asiáticos, llegaron melanesios y polinesios por el Pacífico (semejanzas en lenguas, hamaca, mazo, propulsor)."
+      "sub": "Teorías y sitios",
+      "preguntas": [
+        {
+          "id": "rivet",
+          "frase": "Paul Rivet planteó la teoría {0}: grupos {1} llegaron a América cruzando el océano {2}.",
+          "respuestas": [
+            "oceánica",
+            "melanesios y polinesios",
+            "Pacífico"
+          ],
+          "distractores": [
+            "autoctonista",
+            "Atlántico",
+            "europeos"
+          ],
+          "explica": "Rivet propuso un origen múltiple: además de asiáticos, llegaron melanesios y polinesios por el Pacífico (semejanzas en lenguas, hamaca, mazo, propulsor)."
+        },
+        {
+          "id": "lauricocha",
+          "frase": "Los restos humanos de {0} (Huánuco) fueron hallados por {1}.",
+          "respuestas": [
+            "Lauricocha",
+            "Augusto Cardich"
+          ],
+          "distractores": [
+            "Toquepala",
+            "Richard MacNeish"
+          ],
+          "explica": "Augusto Cardich excavó Lauricocha en 1958: cazadores de camélidos y cérvidos, aprox. 8 000 a.C."
+        },
+        {
+          "id": "hrdlicka",
+          "frase": "Según {0}, los primeros pobladores llegaron desde {1} cruzando el estrecho de {2}.",
+          "respuestas": [
+            "Hrdlička",
+            "Asia",
+            "Bering"
+          ],
+          "distractores": [
+            "Rivet",
+            "Oceanía",
+            "Magallanes"
+          ],
+          "explica": "Teoría asiática (inmigracionista): durante la glaciación bajó el mar y apareció Beringia, un puente de tierra entre Asia y América."
+        },
+        {
+          "id": "ameghino",
+          "frase": "La teoría {0} de Florentino Ameghino decía que el hombre surgió en {1}.",
+          "respuestas": [
+            "autoctonista",
+            "América"
+          ],
+          "distractores": [
+            "asiática",
+            "Europa"
+          ],
+          "explica": "Ameghino (argentino) creyó que el hombre nació en la pampa americana. Hoy esta teoría está descartada."
+        },
+        {
+          "id": "mendez",
+          "frase": "Méndez Correa propuso que los {0} llegaron a América pasando por la {1}.",
+          "respuestas": [
+            "australianos",
+            "Antártida"
+          ],
+          "distractores": [
+            "polinesios",
+            "Groenlandia"
+          ],
+          "explica": "Teoría australiana: de Australia a Tasmania, luego por la Antártida hasta Tierra del Fuego, aprovechando un periodo más cálido."
+        },
+        {
+          "id": "toquepala",
+          "frase": "En la cueva de {0} (Tacna) hay pinturas rupestres que muestran la caza de {1}.",
+          "respuestas": [
+            "Toquepala",
+            "camélidos"
+          ],
+          "distractores": [
+            "Lauricocha",
+            "caballos"
+          ],
+          "explica": "Las pinturas de Toquepala (aprox. 9 500 a.C.) muestran el chaco: la caza colectiva de guanacos y vicuñas."
+        },
+        {
+          "id": "telarmachay",
+          "frase": "En Telarmachay ({0}) se halló evidencia de la domesticación de {1}.",
+          "respuestas": [
+            "Junín",
+            "camélidos"
+          ],
+          "distractores": [
+            "Tacna",
+            "caballos"
+          ],
+          "explica": "Danièle Lavallée estudió Telarmachay: allí se ve el paso de cazar camélidos a criarlos (aprox. 5 000 a.C.)."
+        },
+        {
+          "id": "litico",
+          "frase": "En el periodo {0}, los hombres eran cazadores y recolectores {1}.",
+          "respuestas": [
+            "Lítico",
+            "nómades"
+          ],
+          "distractores": [
+            "Formativo",
+            "sedentarios"
+          ],
+          "explica": "En el Lítico vivían en cuevas y abrigos rocosos y se movían siguiendo a los animales."
+        },
+        {
+          "id": "chilca",
+          "frase": "En Chilca se formó una {0} de chozas hechas de {1} y junco.",
+          "respuestas": [
+            "aldea",
+            "caña"
+          ],
+          "distractores": [
+            "ciudad",
+            "adobe"
+          ],
+          "explica": "Chilca (Lima, aprox. 4 000 a.C.): chozas cónicas junto al mar; vivían de la pesca y la recolección."
+        },
+        {
+          "id": "guitarrero",
+          "frase": "En la cueva del Guitarrero, Thomas {0} halló frijol, pallar y {1}.",
+          "respuestas": [
+            "Lynch",
+            "ají"
+          ],
+          "distractores": [
+            "Cardich",
+            "trigo"
+          ],
+          "explica": "Guitarrero (Áncash) tiene las primeras plantas cultivadas del Perú: horticultura inicial."
+        }
+      ]
     },
     {
       "id": "linea-tiempo",
       "tipo": "ordenar",
       "titulo": "Ordena en el tiempo",
-      "sub": "Del Lítico al Arcaico",
-      "pregunta": "Del más antiguo al más reciente",
-      "items": [
+      "sub": "Tiempo y procesos",
+      "preguntas": [
         {
-          "texto": "Piquimachay",
-          "dato": "Cazadores de megafauna",
-          "fecha": "≈ 20 000 a.C."
+          "id": "linea-tiempo",
+          "pregunta": "Del más antiguo al más reciente",
+          "items": [
+            {
+              "texto": "Piquimachay",
+              "dato": "Cazadores de megafauna",
+              "fecha": "≈ 20 000 a.C."
+            },
+            {
+              "texto": "Toquepala",
+              "dato": "Pinturas de cacería",
+              "fecha": "≈ 9 500 a.C."
+            },
+            {
+              "texto": "Lauricocha",
+              "dato": "Restos humanos",
+              "fecha": "≈ 8 000 a.C."
+            },
+            {
+              "texto": "Telarmachay",
+              "dato": "Camélidos domesticados",
+              "fecha": "≈ 5 000 a.C."
+            },
+            {
+              "texto": "Chilca",
+              "dato": "Aldea con casas de caña",
+              "fecha": "≈ 4 000 a.C."
+            }
+          ],
+          "explica": "Primero cazadores nómades en cuevas (Lítico); luego domestican animales y forman aldeas (Arcaico)."
         },
         {
-          "texto": "Toquepala",
-          "dato": "Pinturas de cacería",
-          "fecha": "≈ 9 500 a.C."
+          "id": "sitios-1",
+          "pregunta": "Del más antiguo al más reciente",
+          "items": [
+            {
+              "texto": "Piquimachay",
+              "dato": "Cazadores de megafauna",
+              "fecha": "≈ 20 000 a.C."
+            },
+            {
+              "texto": "Toquepala",
+              "dato": "Pinturas de cacería",
+              "fecha": "≈ 9 500 a.C."
+            },
+            {
+              "texto": "Lauricocha",
+              "dato": "Restos humanos",
+              "fecha": "≈ 8 000 a.C."
+            },
+            {
+              "texto": "Chilca",
+              "dato": "Aldea con casas de caña",
+              "fecha": "≈ 4 000 a.C."
+            }
+          ],
+          "explica": "Piquimachay es el más antiguo; Chilca ya es una aldea del Arcaico."
         },
         {
-          "texto": "Lauricocha",
-          "dato": "Restos humanos",
-          "fecha": "≈ 8 000 a.C."
+          "id": "sitios-2",
+          "pregunta": "Del más antiguo al más reciente",
+          "items": [
+            {
+              "texto": "Piquimachay",
+              "dato": "Cazadores de megafauna",
+              "fecha": "≈ 20 000 a.C."
+            },
+            {
+              "texto": "Lauricocha",
+              "dato": "Restos humanos",
+              "fecha": "≈ 8 000 a.C."
+            },
+            {
+              "texto": "Telarmachay",
+              "dato": "Camélidos domesticados",
+              "fecha": "≈ 5 000 a.C."
+            },
+            {
+              "texto": "Chilca",
+              "dato": "Aldea con casas de caña",
+              "fecha": "≈ 4 000 a.C."
+            }
+          ],
+          "explica": "Primero cazadores en cuevas; luego crían camélidos; al final forman aldeas."
         },
         {
-          "texto": "Telarmachay",
-          "dato": "Camélidos domesticados",
-          "fecha": "≈ 5 000 a.C."
+          "id": "sitios-3",
+          "pregunta": "Del más antiguo al más reciente",
+          "items": [
+            {
+              "texto": "Toquepala",
+              "dato": "Pinturas de cacería",
+              "fecha": "≈ 9 500 a.C."
+            },
+            {
+              "texto": "Lauricocha",
+              "dato": "Restos humanos",
+              "fecha": "≈ 8 000 a.C."
+            },
+            {
+              "texto": "Telarmachay",
+              "dato": "Camélidos domesticados",
+              "fecha": "≈ 5 000 a.C."
+            },
+            {
+              "texto": "Chilca",
+              "dato": "Aldea con casas de caña",
+              "fecha": "≈ 4 000 a.C."
+            }
+          ],
+          "explica": "Toquepala (9 500) es anterior a Lauricocha (8 000); Telarmachay y Chilca ya son del Arcaico."
         },
         {
-          "texto": "Chilca",
-          "dato": "Aldea con casas de caña",
-          "fecha": "≈ 4 000 a.C."
+          "id": "ruta-asia",
+          "pregunta": "Ordena el viaje según la teoría asiática",
+          "items": [
+            {
+              "texto": "Siberia",
+              "dato": "Parten desde Asia"
+            },
+            {
+              "texto": "Beringia",
+              "dato": "Cruzan el puente de tierra"
+            },
+            {
+              "texto": "Alaska",
+              "dato": "Entran a América"
+            },
+            {
+              "texto": "Sudamérica",
+              "dato": "Bajan hasta el sur"
+            }
+          ],
+          "explica": "Los grupos asiáticos cruzaron Beringia, entraron por Alaska y fueron bajando por el continente durante miles de años.",
+          "extremos": [
+            "Primero",
+            "Al final"
+          ]
+        },
+        {
+          "id": "puente",
+          "pregunta": "¿Cómo apareció el puente de Beringia?",
+          "items": [
+            {
+              "texto": "Llega la glaciación",
+              "dato": "Hace mucho frío"
+            },
+            {
+              "texto": "Se forman glaciares",
+              "dato": "El agua se congela"
+            },
+            {
+              "texto": "Baja el nivel del mar",
+              "dato": "Queda tierra al descubierto"
+            },
+            {
+              "texto": "Aparece Beringia",
+              "dato": "Asia y América se unen"
+            }
+          ],
+          "explica": "En la glaciación Wisconsin mucha agua quedó atrapada en el hielo; el mar bajó y apareció un puente de tierra.",
+          "extremos": [
+            "Primero",
+            "Al final"
+          ]
+        },
+        {
+          "id": "ruta-australia",
+          "pregunta": "Ordena el viaje según Méndez Correa",
+          "items": [
+            {
+              "texto": "Australia",
+              "dato": "Punto de partida"
+            },
+            {
+              "texto": "Tasmania",
+              "dato": "Isla al sur"
+            },
+            {
+              "texto": "Antártida",
+              "dato": "Bordean el hielo"
+            },
+            {
+              "texto": "Tierra del Fuego",
+              "dato": "Llegan a América"
+            }
+          ],
+          "explica": "La teoría australiana propone un viaje por el sur, aprovechando un periodo de clima más cálido.",
+          "extremos": [
+            "Primero",
+            "Al final"
+          ]
+        },
+        {
+          "id": "modo-vida",
+          "pregunta": "Ordena cómo cambió su forma de vida",
+          "items": [
+            {
+              "texto": "Cazadores nómades",
+              "dato": "Siguen a los animales"
+            },
+            {
+              "texto": "Domestican plantas",
+              "dato": "Horticultura inicial"
+            },
+            {
+              "texto": "Crían camélidos",
+              "dato": "Llamas y alpacas"
+            },
+            {
+              "texto": "Forman aldeas",
+              "dato": "Se vuelven sedentarios"
+            }
+          ],
+          "explica": "Del Lítico al Arcaico: al producir su alimento dejaron de moverse y fundaron aldeas.",
+          "extremos": [
+            "Primero",
+            "Al final"
+          ]
+        },
+        {
+          "id": "periodos",
+          "pregunta": "Ordena los periodos andinos",
+          "items": [
+            {
+              "texto": "Lítico",
+              "dato": "Cazadores y recolectores"
+            },
+            {
+              "texto": "Arcaico",
+              "dato": "Agricultura inicial"
+            },
+            {
+              "texto": "Formativo",
+              "dato": "Cerámica y templos"
+            },
+            {
+              "texto": "Desarrollos Regionales",
+              "dato": "Culturas como Moche y Nasca"
+            }
+          ],
+          "explica": "Lítico → Arcaico → Formativo → Desarrollos Regionales: cada periodo construye sobre el anterior."
+        },
+        {
+          "id": "punta",
+          "pregunta": "Ordena cómo se hacía una punta de piedra",
+          "items": [
+            {
+              "texto": "Elegir la roca",
+              "dato": "Una piedra dura"
+            },
+            {
+              "texto": "Sacar lascas",
+              "dato": "Golpearla con otra piedra"
+            },
+            {
+              "texto": "Retocar los bordes",
+              "dato": "Dejarla filuda"
+            },
+            {
+              "texto": "Amarrarla a la lanza",
+              "dato": "Lista para cazar"
+            }
+          ],
+          "explica": "Las puntas se tallaban por percusión y retoque; luego se enmangaban en lanzas o dardos.",
+          "extremos": [
+            "Primero",
+            "Al final"
+          ]
         }
-      ],
-      "explica": "Primero cazadores nómades en cuevas (Lítico); luego domestican animales y forman aldeas (Arcaico)."
+      ]
     },
     {
       "id": "sopa",
       "tipo": "sopa",
       "titulo": "Sopa de letras",
-      "sub": "Sitios arqueológicos",
-      "pregunta": "Lee cada pista, piensa la palabra y búscala en la sopa",
-      "tam": 12,
-      "palabras": [
+      "sub": "Sitios y palabras clave",
+      "preguntas": [
         {
-          "p": "PIQUIMACHAY",
-          "pista": "Cueva de Ayacucho con las evidencias humanas más antiguas del Perú"
+          "id": "cuevas",
+          "pregunta": "Lee cada pista, piensa la palabra y búscala en la sopa",
+          "tam": 11,
+          "palabras": [
+            {
+              "p": "PIQUIMACHAY",
+              "pista": "Cueva de Ayacucho con las evidencias humanas más antiguas del Perú"
+            },
+            {
+              "p": "LAURICOCHA",
+              "pista": "Cueva de Huánuco donde Augusto Cardich halló restos humanos"
+            },
+            {
+              "p": "TOQUEPALA",
+              "pista": "Cueva de Tacna con pinturas rupestres del chaco"
+            },
+            {
+              "p": "BERING",
+              "pista": "Estrecho por donde llegaron desde Asia, según Hrdlička"
+            }
+          ]
         },
         {
-          "p": "LAURICOCHA",
-          "pista": "Cueva de Huánuco donde Augusto Cardich halló restos humanos"
+          "id": "talleres",
+          "pregunta": "Lee cada pista, piensa la palabra y búscala en la sopa",
+          "tam": 10,
+          "palabras": [
+            {
+              "p": "GUITARRERO",
+              "pista": "Cueva de Áncash con las primeras plantas cultivadas"
+            },
+            {
+              "p": "CHIVATEROS",
+              "pista": "Taller lítico de Lima, junto al río Chillón"
+            },
+            {
+              "p": "PAIJAN",
+              "pista": "Punta de proyectil de la costa norte (La Libertad)"
+            },
+            {
+              "p": "LITICO",
+              "pista": "Periodo de los cazadores y recolectores nómades"
+            }
+          ]
         },
         {
-          "p": "TOQUEPALA",
-          "pista": "Cueva de Tacna con pinturas rupestres del chaco (caza)"
+          "id": "investigadores",
+          "pregunta": "Lee cada pista, piensa la palabra y búscala en la sopa",
+          "tam": 10,
+          "palabras": [
+            {
+              "p": "AMEGHINO",
+              "pista": "Planteó la teoría autoctonista"
+            },
+            {
+              "p": "RIVET",
+              "pista": "Planteó la teoría oceánica"
+            },
+            {
+              "p": "HRDLICKA",
+              "pista": "Planteó la teoría asiática"
+            },
+            {
+              "p": "CARDICH",
+              "pista": "Estudió las cuevas de Lauricocha"
+            }
+          ]
         },
         {
-          "p": "GUITARRERO",
-          "pista": "Cueva de Áncash con las primeras plantas cultivadas"
+          "id": "arcaico",
+          "pregunta": "Lee cada pista, piensa la palabra y búscala en la sopa",
+          "tam": 11,
+          "palabras": [
+            {
+              "p": "CHILCA",
+              "pista": "Aldea de chozas de caña junto al mar, en Lima"
+            },
+            {
+              "p": "TELARMACHAY",
+              "pista": "Sitio de Junín con camélidos domesticados"
+            },
+            {
+              "p": "ARCAICO",
+              "pista": "Periodo en que empieza la agricultura"
+            },
+            {
+              "p": "ALDEA",
+              "pista": "Grupo de viviendas de gente sedentaria"
+            }
+          ]
         },
         {
-          "p": "CHIVATEROS",
-          "pista": "Taller lítico de Lima, junto al río Chillón"
+          "id": "beringia",
+          "pregunta": "Lee cada pista, piensa la palabra y búscala en la sopa",
+          "tam": 10,
+          "palabras": [
+            {
+              "p": "BERINGIA",
+              "pista": "Puente de tierra entre Asia y América"
+            },
+            {
+              "p": "ALASKA",
+              "pista": "Primera tierra americana al cruzar"
+            },
+            {
+              "p": "SIBERIA",
+              "pista": "Región de Asia desde donde partieron"
+            },
+            {
+              "p": "GLACIAR",
+              "pista": "Gran masa de hielo de la glaciación"
+            }
+          ]
         },
         {
-          "p": "PAIJAN",
-          "pista": "Punta de proyectil de la costa norte (La Libertad)"
+          "id": "vida",
+          "pregunta": "Lee cada pista, piensa la palabra y búscala en la sopa",
+          "tam": 10,
+          "palabras": [
+            {
+              "p": "NOMADE",
+              "pista": "Que no tiene vivienda fija"
+            },
+            {
+              "p": "CAZADOR",
+              "pista": "Persigue animales para comer"
+            },
+            {
+              "p": "RECOLECTOR",
+              "pista": "Junta frutos, raíces y semillas"
+            },
+            {
+              "p": "RUPESTRE",
+              "pista": "Arte pintado sobre las rocas"
+            }
+          ]
         },
         {
-          "p": "BERING",
-          "pista": "Estrecho por donde llegaron desde Asia, según Hrdlička"
+          "id": "animales",
+          "pregunta": "Lee cada pista, piensa la palabra y búscala en la sopa",
+          "tam": 10,
+          "palabras": [
+            {
+              "p": "GUANACO",
+              "pista": "Camélido silvestre pintado en Toquepala"
+            },
+            {
+              "p": "MEGATERIO",
+              "pista": "Perezoso gigante, ya extinto"
+            },
+            {
+              "p": "MASTODONTE",
+              "pista": "Animal extinto pariente del elefante"
+            },
+            {
+              "p": "CAMELIDO",
+              "pista": "Familia de la llama y la alpaca"
+            }
+          ]
         },
         {
-          "p": "LITICO",
-          "pista": "Periodo de los cazadores y recolectores nómades"
+          "id": "plantas",
+          "pregunta": "Lee cada pista, piensa la palabra y búscala en la sopa",
+          "tam": 10,
+          "palabras": [
+            {
+              "p": "FRIJOL",
+              "pista": "Menestra hallada en Guitarrero"
+            },
+            {
+              "p": "PALLAR",
+              "pista": "Menestra grande, también cultivada en Guitarrero"
+            },
+            {
+              "p": "AJI",
+              "pista": "Planta picante de la horticultura inicial"
+            },
+            {
+              "p": "CALABAZA",
+              "pista": "Fruto usado como recipiente o alimento"
+            }
+          ]
+        },
+        {
+          "id": "oceanica",
+          "pregunta": "Lee cada pista, piensa la palabra y búscala en la sopa",
+          "tam": 10,
+          "palabras": [
+            {
+              "p": "PACIFICO",
+              "pista": "Océano que cruzaron según Rivet"
+            },
+            {
+              "p": "BALSA",
+              "pista": "Embarcación de troncos amarrados"
+            },
+            {
+              "p": "POLINESIOS",
+              "pista": "Pueblo de las islas del Pacífico"
+            },
+            {
+              "p": "OCEANICA",
+              "pista": "Nombre de la teoría de Rivet"
+            }
+          ]
+        },
+        {
+          "id": "australiana",
+          "pregunta": "Lee cada pista, piensa la palabra y búscala en la sopa",
+          "tam": 10,
+          "palabras": [
+            {
+              "p": "ANTARTIDA",
+              "pista": "Continente helado de la ruta de Méndez Correa"
+            },
+            {
+              "p": "AUSTRALIA",
+              "pista": "Punto de partida de esa ruta"
+            },
+            {
+              "p": "TASMANIA",
+              "pista": "Isla al sur de Australia"
+            },
+            {
+              "p": "PATAGONIA",
+              "pista": "Región del sur de América donde llegaron"
+            }
+          ]
         }
       ]
     },
@@ -417,90 +1411,292 @@
       "id": "vf",
       "tipo": "vf",
       "titulo": "¿Verdadero o falso?",
-      "sub": "Verdadero o falso · 45 s",
-      "pregunta": "Responde antes de que se acabe el tiempo",
-      "segundos": 45,
-      "frases": [
-        [
-          "Ameghino planteó que el hombre surgió en América.",
-          true
-        ],
-        [
-          "Hrdlička dijo que llegaron de Australia por la Antártida.",
-          false
-        ],
-        [
-          "Toquepala es famosa por sus pinturas rupestres de cacería.",
-          true
-        ],
-        [
-          "En el Lítico la agricultura ya estaba plenamente desarrollada.",
-          false
-        ],
-        [
-          "Piquimachay se ubica en Ayacucho.",
-          true
-        ],
-        [
-          "Monte Verde, prueba de poblamiento antiguo, está en Brasil.",
-          false
-        ],
-        [
-          "La punta Paiján es una punta de proyectil de la costa norte.",
-          true
-        ],
-        [
-          "Wilamaya Patjxa (Puno) mostró restos de una mujer cazadora.",
-          true
-        ]
+      "sub": "Verdadero o falso",
+      "preguntas": [
+        {
+          "id": "vf",
+          "pregunta": "Responde antes de que se acabe el tiempo",
+          "segundos": 45,
+          "frases": [
+            [
+              "Ameghino planteó que el hombre surgió en América.",
+              true
+            ],
+            [
+              "Hrdlička dijo que llegaron de Australia por la Antártida.",
+              false
+            ],
+            [
+              "Toquepala es famosa por sus pinturas rupestres de cacería.",
+              true
+            ],
+            [
+              "En el Lítico la agricultura ya estaba plenamente desarrollada.",
+              false
+            ],
+            [
+              "Piquimachay se ubica en Ayacucho.",
+              true
+            ],
+            [
+              "Monte Verde, prueba de poblamiento antiguo, está en Brasil.",
+              false
+            ],
+            [
+              "La punta Paiján es una punta de proyectil de la costa norte.",
+              true
+            ],
+            [
+              "Wilamaya Patjxa (Puno) mostró restos de una mujer cazadora.",
+              true
+            ]
+          ]
+        },
+        {
+          "id": "teorias",
+          "pregunta": "Responde antes de que se acabe el tiempo",
+          "segundos": 30,
+          "frases": [
+            [
+              "Rivet propuso que melanesios y polinesios llegaron por el Pacífico.",
+              true
+            ],
+            [
+              "Méndez Correa dijo que los australianos pasaron por la Antártida.",
+              true
+            ],
+            [
+              "Hrdlička defendía la teoría autoctonista.",
+              false
+            ],
+            [
+              "Beringia apareció porque bajó el nivel del mar.",
+              true
+            ],
+            [
+              "Florentino Ameghino era un investigador peruano.",
+              false
+            ]
+          ]
+        },
+        {
+          "id": "regiones",
+          "pregunta": "Responde antes de que se acabe el tiempo",
+          "segundos": 30,
+          "frases": [
+            [
+              "Lauricocha está en Huánuco.",
+              true
+            ],
+            [
+              "Augusto Cardich estudió Lauricocha.",
+              true
+            ],
+            [
+              "Toquepala está en Cusco.",
+              false
+            ],
+            [
+              "En Guitarrero se hallaron plantas cultivadas.",
+              true
+            ],
+            [
+              "Chilca está en la sierra de Junín.",
+              false
+            ]
+          ]
+        },
+        {
+          "id": "estudiosos",
+          "pregunta": "Responde antes de que se acabe el tiempo",
+          "segundos": 30,
+          "frases": [
+            [
+              "Telarmachay muestra la domesticación de camélidos.",
+              true
+            ],
+            [
+              "Danièle Lavallée estudió Telarmachay.",
+              true
+            ],
+            [
+              "Richard MacNeish estudió Piquimachay.",
+              true
+            ],
+            [
+              "Thomas Lynch estudió Lauricocha.",
+              false
+            ],
+            [
+              "Rafael Larco Hoyle describió la punta Paiján.",
+              true
+            ]
+          ]
+        },
+        {
+          "id": "periodos",
+          "pregunta": "Responde antes de que se acabe el tiempo",
+          "segundos": 30,
+          "frases": [
+            [
+              "En el Lítico los hombres eran nómades.",
+              true
+            ],
+            [
+              "En el Arcaico empieza la domesticación de plantas.",
+              true
+            ],
+            [
+              "Los cazadores del Lítico vivían en grandes ciudades.",
+              false
+            ],
+            [
+              "Las pinturas rupestres se hacían sobre rocas.",
+              true
+            ],
+            [
+              "Las chozas de Chilca eran de adobe y piedra labrada.",
+              false
+            ]
+          ]
+        },
+        {
+          "id": "rutas",
+          "pregunta": "Responde antes de que se acabe el tiempo",
+          "segundos": 30,
+          "frases": [
+            [
+              "Monte Verde está en Chile.",
+              true
+            ],
+            [
+              "Tom Dillehay estudió Monte Verde.",
+              true
+            ],
+            [
+              "La teoría asiática dice que llegaron por el océano Atlántico.",
+              false
+            ],
+            [
+              "Beringia unía Asia con América.",
+              true
+            ],
+            [
+              "Los primeros pobladores llegaron en barcos europeos.",
+              false
+            ]
+          ]
+        },
+        {
+          "id": "mapa",
+          "pregunta": "Responde antes de que se acabe el tiempo",
+          "segundos": 30,
+          "frases": [
+            [
+              "Piquimachay está en Ayacucho.",
+              true
+            ],
+            [
+              "Guitarrero está en Áncash.",
+              true
+            ],
+            [
+              "Paiján está en Arequipa.",
+              false
+            ],
+            [
+              "Chivateros está en Lima.",
+              true
+            ],
+            [
+              "Toquepala está en Tacna.",
+              true
+            ]
+          ]
+        },
+        {
+          "id": "caza",
+          "pregunta": "Responde antes de que se acabe el tiempo",
+          "segundos": 30,
+          "frases": [
+            [
+              "Las pinturas de Toquepala muestran el chaco, una caza colectiva.",
+              true
+            ],
+            [
+              "El chaco era cazar animales uno por uno con redes de pesca.",
+              false
+            ],
+            [
+              "Los primeros pobladores cazaron megafauna como el megaterio.",
+              true
+            ],
+            [
+              "El mastodonte era pariente del elefante.",
+              true
+            ],
+            [
+              "En Guitarrero se halló el primer templo del Perú.",
+              false
+            ]
+          ]
+        },
+        {
+          "id": "nombres",
+          "pregunta": "Responde antes de que se acabe el tiempo",
+          "segundos": 30,
+          "frases": [
+            [
+              "La teoría autoctonista dice que el hombre surgió en América.",
+              true
+            ],
+            [
+              "La teoría de Rivet también se llama de origen múltiple.",
+              true
+            ],
+            [
+              "La teoría australiana fue planteada por Paul Rivet.",
+              false
+            ],
+            [
+              "Según Rivet, los melanesios llegaron por Bering.",
+              false
+            ],
+            [
+              "La glaciación Wisconsin permitió cruzar Beringia.",
+              true
+            ]
+          ]
+        },
+        {
+          "id": "fechas",
+          "pregunta": "Responde antes de que se acabe el tiempo",
+          "segundos": 30,
+          "frases": [
+            [
+              "Wilamaya Patjxa está en Puno.",
+              true
+            ],
+            [
+              "En Wilamaya Patjxa se halló una mujer cazadora.",
+              true
+            ],
+            [
+              "Lauricocha tiene restos humanos de unos 8 000 a.C.",
+              true
+            ],
+            [
+              "Chilca es más antigua que Piquimachay.",
+              false
+            ],
+            [
+              "Piquimachay tiene evidencias de unos 20 000 a.C.",
+              true
+            ]
+          ]
+        }
       ]
     }
   ],
-  "extra": [
-    {
-      "id": "descubridores",
-      "tipo": "relacionar",
-      "titulo": "Toca los pares",
-      "sub": "Sitios y descubridores",
-      "pregunta": "Une cada sitio con quien lo estudió",
-      "pares": [
-        [
-          "Piquimachay",
-          "Richard MacNeish"
-        ],
-        [
-          "Lauricocha",
-          "Augusto Cardich"
-        ],
-        [
-          "Guitarrero",
-          "Thomas Lynch"
-        ],
-        [
-          "Paiján",
-          "Rafael Larco Hoyle"
-        ],
-        [
-          "Telarmachay",
-          "Danièle Lavallée"
-        ]
-      ]
-    },
-    {
-      "id": "lauricocha",
-      "tipo": "completar",
-      "titulo": "Completa la frase",
-      "sub": "Restos de Huánuco",
-      "frase": "Los restos humanos de {0} (Huánuco) fueron hallados por {1}.",
-      "respuestas": [
-        "Lauricocha",
-        "Augusto Cardich"
-      ],
-      "distractores": [
-        "Toquepala",
-        "Richard MacNeish"
-      ],
-      "explica": "Augusto Cardich excavó Lauricocha en 1958: cazadores de camélidos y cérvidos, aprox. 8 000 a.C."
-    }
-  ]
+  "extra": []
 }

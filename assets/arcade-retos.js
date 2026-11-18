@@ -555,7 +555,7 @@
   TIPOS.parejas = function (a) {
     var r = a.reto, et = r.etiquetas || ['', ''], abiertas = [], faltan = r.pares.length, intentos = 0, bloqueo = false;
     var cartas = []; r.pares.forEach(function (p, i) { cartas.push({ i: i, t: p[0], e: et[0], c: 'a' }, { i: i, t: p[1], e: et[1], c: 'b' }); });
-    var g = h('<div class="rt-mem"></div>');
+    var g = h('<div class="rt-mem n' + (r.pares.length * 2) + '"></div>');
     var info = h('<div class="rt-mem-info"><span class="rt-chip">' + IC.parejas + '<span class="pa">0/' + faltan + '</span></span><span class="rt-chip">' + IC.reloj + '<span class="in">0 intentos</span></span></div>');
     var mira = h('<div class="rt-mira">' + IC.ojo + '<span>¡Memoriza! <b></b></span></div>');
     var total = faltan;
@@ -635,7 +635,7 @@
   // Ordenar en el tiempo
   TIPOS.ordenar = function (a) {
     var r = a.reto, n = r.items.length;
-    var wrap = h('<div></div>');
+    var wrap = h('<div class="rt-ordw"></div>');
     var linea = h('<div class="rt-linea"></div>');
     var ranuras = [];
     for (var i = 0; i < n; i++) { var s = h('<div class="rt-ranura" data-n="' + (i + 1) + '"></div>'); ranuras.push(s); linea.appendChild(s); }
@@ -655,9 +655,10 @@
       };
       banco.appendChild(b);
     });
-    wrap.appendChild(h('<p class="rt-extremo">' + IC.antiguo + 'Más antiguo</p>'));
+    var ext = r.extremos || ['Más antiguo', 'Más reciente'];   // en pasos de un proceso: ["Primero", "Al final"]
+    wrap.appendChild(h('<p class="rt-extremo">' + IC.antiguo + esc(ext[0]) + '</p>'));
     wrap.appendChild(linea);
-    wrap.appendChild(h('<p class="rt-extremo fin">Más reciente</p>'));
+    wrap.appendChild(h('<p class="rt-extremo ult">' + esc(ext[1]) + '</p>'));
     wrap.appendChild(banco);
     a.cuerpo.appendChild(wrap);
     a.alComprobar(function () {
@@ -667,7 +668,7 @@
         var c = s.firstChild, i = +c.dataset.i, bien = i === k;
         c.innerHTML = contenido(r.items[i], true); c.classList.add(bien ? 'bien' : 'mal'); if (!bien) ok = false;
       });
-      var sol = r.items.map(function (it) { return '<b>' + esc(it.texto) + '</b> (' + esc(it.fecha) + ')'; }).join(' → ');
+      var sol = r.items.map(function (it) { return '<b>' + esc(it.texto) + '</b>' + (it.fecha ? ' (' + esc(it.fecha) + ')' : ''); }).join(' → ');
       return { ok: ok, correcta: ok ? '' : sol, msg: esc(r.explica || '') };
     });
   };
