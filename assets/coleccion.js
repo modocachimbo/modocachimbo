@@ -139,6 +139,45 @@
     // La V de verificado: solo para influencers (supabase/67-verificado-influencers.sql)
     { id: 'pin-verificado', espacio: 'pines', nom: 'Verificado', rareza: 'legendario', regla: { tipo: 'grupo', g: 'influencer' }, img: BASE + 'assets/pines/verificado-v2.webp', suelto: true, pin: ['', '#1a2206', '#E4FF3A'], desc: 'La V de verificado de Modo Cachimbo.' }
   ];
+  // Temporadas de premios por rango: una por semana. Si en esa semana llegas a un rango, ganas su
+  // foto de perfil, su banner y su marco de esa temporada (regla rango con sem = lunes de esa semana).
+  // Imágenes: assets/temporadas/<t>/<rango>-foto|banner|marco.webp (el marco es un dibujo con alas o corona
+  // que va por encima de la foto: mo). El banner pinta el nombre del rango con su color (rg).
+  // Lo mismo en supabase/109-temporadas-rango.sql (para cada temporada nueva: sumarla aquí y en el SQL).
+  var TEMPORADAS = [
+    { t: 't1', nom: 'T1 Nazca', sem: '2026-11-16', fig: [['la', 'Lagartija'], ['la', 'Araña'], ['el', 'Árbol'], ['la', 'Ballena'], ['el', 'Mono'], ['el', 'Cóndor'], ['el', 'Colibrí']] }
+  ];
+  // rango, nombre, n de RANGO_XP, rareza, colores (texto, fondo, borde, brillo)
+  var TRANGOS = [
+    ['bronce', 'Bronce', 5, 'comun', '#E8A878', '#3a1e0e', '#9A5A30', '#FFD9B8'],
+    ['plata', 'Plata', 6, 'comun', '#D6DEEA', '#262c3a', '#8A96AA', '#FFFFFF'],
+    ['esmeralda', 'Esmeralda', 7, 'raro', '#5FF59A', '#06361a', '#0FA845', '#C9FFDD'],
+    ['zafiro', 'Zafiro', 8, 'raro', '#5FDAFF', '#06304a', '#1A6CC0', '#D6F6FF'],
+    ['amatista', 'Amatista', 9, 'epico', '#D79BFF', '#2a1050', '#8A36E0', '#F1DDFF'],
+    ['mitico', 'Mítico', 10, 'legendario', '#FF7AD9', '#3e0a34', '#C0399E', '#FFD6F3'],
+    ['leyenda', 'Leyenda', 11, 'legendario', '#FFC800', '#3e2400', '#D08A00', '#FFF3B0']
+  ];
+  var MES_L = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'setiembre', 'octubre', 'noviembre', 'diciembre'];
+  function semanaTxt(sem) {
+    var a = new Date(sem + 'T12:00:00'), b = new Date(a); b.setDate(b.getDate() + 6);
+    return 'del ' + a.getDate() + (a.getMonth() === b.getMonth() ? '' : ' de ' + MES_L[a.getMonth()]) + ' al ' + b.getDate() + ' de ' + MES_L[b.getMonth()];
+  }
+  TEMPORADAS.forEach(function (T) {
+    var dir = BASE + 'assets/temporadas/' + T.t + '/';
+    TRANGOS.forEach(function (r, k) {
+      var f = T.fig[k], regla = { tipo: 'rango', n: r[2], sem: T.sem }, base = { rareza: r[3], regla: regla, temporada: T.nom };
+      var d = 'Temporada ' + T.nom + ': llega a ' + r[1] + ' en la semana ' + semanaTxt(T.sem) + '.';
+      CATALOGO.push(Object.assign({ id: T.t + '-foto-' + r[0], espacio: 'avatar', nom: T.nom + ' · ' + f[1], img: dir + r[0] + '-foto.webp', desc: d }, base));
+      CATALOGO.push(Object.assign({ id: T.t + '-banner-' + r[0], espacio: 'racha', nom: T.nom + ' · Líneas ' + (f[0] === 'el' ? 'del ' : 'de la ') + f[1], img: dir + r[0] + '-banner.webp', tema: [r[4], r[6], r[6], r[5]], rg: r[4], desc: d }, base));
+      CATALOGO.push(Object.assign({ id: T.t + '-marco-' + r[0], espacio: 'marco', nom: T.nom + ' · Marco ' + r[1], marco: 'linear-gradient(135deg,' + r[7] + ',' + r[4] + ' 45%,' + r[6] + ')', mo: dir + r[0] + '-marco.webp', desc: d }, base));
+    });
+  });
+  // El lunes de esta semana (hora de Lima), como en xp_semana.semana
+  function lunesHoy() {
+    var d = new Date(Date.now() - 5 * 3600000), w = (d.getUTCDay() + 6) % 7;
+    d.setUTCDate(d.getUTCDate() - w);
+    return d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0') + '-' + String(d.getUTCDate()).padStart(2, '0');
+  }
   var PUESTO_TXT = { 1: '1.er', 2: '2.º', 3: '3.er' };
   // Tu foto (o inicial) para dibujar «Mi foto»; la pone la página con fijarFoto
   var miFoto = { src: '', letra: '', nombre: '' };
@@ -174,7 +213,7 @@
   // si alguien llevaba uno de ellos, vuelve a lo de siempre.
   var VISIBLES = ['buho-clasico', 'buho-antiguo', 'buho-rosa', 'buho-rosa-navidad', 'avatar-buho', 'avatar-foto', 'escena-galaxia', 'escena-nube',
     'racha-galaxia', 'racha-cielo', 'cuadro-galaxia', 'cuadro-cielo', 'marco-ninguno', 'marco-lima', 'titulo-cachimbo', 'titulo-constante'];
-  CATALOGO = CATALOGO.filter(function (x) { return x.espacio === 'pines' || VISIBLES.indexOf(x.id) >= 0; });
+  CATALOGO = CATALOGO.filter(function (x) { return x.espacio === 'pines' || x.temporada || VISIBLES.indexOf(x.id) >= 0; });
   var POR_ID = {};
   CATALOGO.forEach(function (x) { POR_ID[x.id] = x; });
 
@@ -244,14 +283,14 @@
   var CLAVE = 'mc_coleccion', CLAVE_T = 'mc_coleccion_t2';   // _t: cuándo se pidió cada cosa { u, col, rgo }
 
   // Estado: lo que tienes (mias), lo que llevas (puesto) y los datos para las reglas
-  var E = { mias: {}, puesto: copiar(DEFECTO), mejorRacha: 0, maxXp: 0, tops: {}, grupos: [], sql: false, listo: false, rachaOk: false };
+  var E = { mias: {}, puesto: copiar(DEFECTO), mejorRacha: 0, maxXp: 0, xpSem: {}, xpAhora: 0, tops: {}, grupos: [], sql: false, listo: false, rachaOk: false };
   var cache = leer(CLAVE);
-  if (cache) { E.mias = cache.mias || {}; E.puesto = mezclar(cache.puesto); E.mejorRacha = cache.mejorRacha || 0; E.maxXp = +cache.maxXp || 0; E.tops = cache.tops || {}; E.grupos = cache.grupos || []; E.sql = !!cache.sql; }
+  if (cache) { E.mias = cache.mias || {}; E.puesto = mezclar(cache.puesto); E.mejorRacha = cache.mejorRacha || 0; E.maxXp = +cache.maxXp || 0; E.xpSem = cache.xpSem || {}; E.tops = cache.tops || {}; E.grupos = cache.grupos || []; E.sql = !!cache.sql; }
   function copiar(o) { return JSON.parse(JSON.stringify(o)); }
   function mezclar(p) { var r = copiar(DEFECTO); Object.keys(p || {}).forEach(function (k) { if (k in r) r[k] = p[k]; }); if (!Array.isArray(r.pines)) r.pines = []; return r; }
   var oyentes = [];
   function avisar() {
-    guardar(CLAVE, { mias: E.mias, puesto: E.puesto, mejorRacha: E.mejorRacha, maxXp: E.maxXp, tops: E.tops, grupos: E.grupos, sql: E.sql });
+    guardar(CLAVE, { mias: E.mias, puesto: E.puesto, mejorRacha: E.mejorRacha, maxXp: E.maxXp, xpSem: E.xpSem, tops: E.tops, grupos: E.grupos, sql: E.sql });
     oyentes.forEach(function (fn) { try { fn(E); } catch (e) {} });
   }
 
@@ -263,10 +302,12 @@
     if (E.mias[id]) return true;
     if (r.tipo === 'gratis') return true;
     if (r.tipo === 'racha') return E.mejorRacha >= r.n;
-    if (r.tipo === 'rango') return E.maxXp >= (RANGO_XP[r.n] || Infinity);
+    if (r.tipo === 'rango') return (r.sem ? xpDe(r.sem) : E.maxXp) >= (RANGO_XP[r.n] || Infinity);
     if (r.tipo === 'top') return topVeces(r) > 0;   // solo al cerrar la semana en ese puesto (supabase/73 y 108)
     return false;
   }
+  // Tu XP de una semana (la de esta semana llega en vivo con assets/corazones.js)
+  function xpDe(sem) { return Math.max(+E.xpSem[sem] || 0, sem === lunesHoy() ? E.xpAhora : 0); }
   // Semanas cerradas en ese puesto con el premio de esa familia (sin 108 corrido: todo cuenta como hexágono)
   function topVeces(r) {
     var f = r.fam || 'hex';
@@ -277,13 +318,20 @@
   function avance(id) {
     var r = (POR_ID[id] || {}).regla || {};
     if (r.tipo === 'racha') return Math.min(1, E.mejorRacha / r.n);
-    if (r.tipo === 'rango') return Math.min(1, E.maxXp / (RANGO_XP[r.n] || 1));
+    if (r.tipo === 'rango') return r.sem && r.sem !== lunesHoy() && !tiene(id) ? null : Math.min(1, (r.sem ? xpDe(r.sem) : E.maxXp) / (RANGO_XP[r.n] || 1));
     return null;
   }
   function como(x) {
     var r = x.regla, ok = tiene(x.id);
     if (r.tipo === 'gratis') return 'Viene con tu cuenta.';
     if (r.tipo === 'racha') return ok ? 'Lo ganaste al llegar a ' + r.n + ' días de racha.' : 'Llega a una racha de ' + r.n + ' días (tu mejor: ' + E.mejorRacha + ').';
+    if (r.tipo === 'rango' && r.sem) {
+      var ya = r.sem < lunesHoy(), nom = (TRANGOS.filter(function (t) { return t[2] === r.n; })[0] || [])[1] || rangoDe(r.n);
+      if (ok) return 'Lo ganaste al llegar a ' + nom + ' en la Temporada ' + x.temporada + '. Es tuyo para siempre.';
+      if (r.sem > lunesHoy()) return 'Llega pronto: es el premio de la Temporada ' + x.temporada + ', la semana ' + semanaTxt(r.sem) + '.';
+      if (ya) return 'Era el premio de la Temporada ' + x.temporada + ' (semana ' + semanaTxt(r.sem) + ') para quien llegó a ' + nom + '.';
+      return 'Premio de esta semana: llega a ' + nom + ' antes del domingo y es tuyo para siempre (' + String(RANGO_XP[r.n]).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' XP; llevas ' + String(xpDe(r.sem)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ').';
+    }
     if (r.tipo === 'rango') return ok ? 'Lo ganaste al llegar a ' + rangoDe(r.n) + ' en una semana.' : 'Llega a ' + rangoDe(r.n) + ' en una semana (' + (window.MCRango ? String(RANGO_XP[r.n]).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' XP' : '') + ').';
     if (r.tipo === 'top') {
       var v = topVeces(r), P = PUESTO_TXT[r.n], f = r.fam || 'hex', esta = (E.tops.fam_ahora || 'hex') === f;
@@ -345,12 +393,20 @@
         }).catch(function () { E.sql = false; }),
         !pedirRgo ? null : c.from('xp_semana').select('semana,xp').eq('usuario', u.id).limit(200).then(function (r) {
           if (r.error) return;
-          var max = 0;   // tu mejor semana en XP
-          (r.data || []).forEach(function (f) { max = Math.max(max, +f.xp || 0); });
-          E.maxXp = max; T.rgo = Date.now();
+          var max = 0, sem = {};   // tu mejor semana en XP y el XP de cada semana (para las temporadas)
+          (r.data || []).forEach(function (f) { max = Math.max(max, +f.xp || 0); sem[String(f.semana).slice(0, 10)] = +f.xp || 0; });
+          E.maxXp = max; E.xpSem = sem; T.rgo = Date.now();
         }).catch(function () {})
       ]);
     }).then(function () { guardar(CLAVE_T, T); E.listo = true; avisar(); avisoCorona(); return E; }, function () { E.listo = true; avisar(); return E; });
+    // El XP de esta semana en vivo (assets/corazones.js): así el premio de la temporada llega al momento
+    (function esperarXp(i) {
+      if (window.MCCorazones) MCCorazones.alCambiar(function (e) {
+        var v = +(e && e.xp_semana) || 0;
+        if (v !== E.xpAhora) { E.xpAhora = v; avisar(); }
+      });
+      else if (i < 60) setTimeout(function () { esperarXp(i + 1); }, 250);
+    })(0);
     // La mejor racha llega con assets/racha.js
     (function esperar(i) {
       if (window.MCRacha) MCRacha.alCambiar(function (r) {
@@ -444,7 +500,7 @@
     // Cuadro de racha: uno chiquito con su fuego
     if (x.espacio === 'cuadro') { var l = x.llama; return '<span class="mcc-cr" style="--r1:' + x.tema[0] + ';--r2:' + x.tema[1] + ';--rb:' + x.tema[2] + ';--rd:' + x.tema[3] + '"><span class="mcc-cr-c">' + llama(l) + '<b>7</b><i></i><i></i><i></i></span></span>'; }
     if (x.espacio === 'avatar') return avatarSvg(x, miFoto.src, miFoto.letra);
-    if (x.espacio === 'marco') return '<span class="mcc-marco" style="--m:' + (x.marco === 'none' ? 'transparent' : x.marco) + '"><span>' + (window.MCBuho ? MCBuho.svg('normal', 80) : '') + '</span></span>';
+    if (x.espacio === 'marco') return '<span class="mcc-marco' + (x.mo ? ' mc-mo' : '') + '" style="--m:' + (x.marco === 'none' ? 'transparent' : x.marco) + (x.mo ? ';--mo:url(&quot;' + esc(x.mo) + '&quot;)' : '') + '"><span>' + (window.MCBuho ? MCBuho.svg('normal', 80) : '') + '</span></span>';
     if (x.espacio === 'titulo') return '<span class="mcc-titulo">' + (x.svg ? tituloHtml(x) : '<span>★ ' + esc(x.nom) + '</span>') + '</span>';
     if (x.espacio === 'pines') return pinSvg(x);
     return '';
@@ -694,6 +750,21 @@
     });
   }
 
+  // El dibujo del marco va por encima de la foto y la desborda (alas a los lados, corona arriba).
+  // En el dibujo, el borde ocupa el 60 % del centro: por eso sale un 33 % hacia cada lado.
+  (function () {
+    if (document.getElementById('mc-mo-css')) return;
+    var st = document.createElement('style'); st.id = 'mc-mo-css';
+    st.textContent = '.mc-mo{clip-path:none!important;overflow:visible!important;background:none!important}' +
+      '.mc-mo::after{content:"";position:absolute;inset:-33%;background:var(--mo) center/100% 100% no-repeat;pointer-events:none;z-index:3}' +
+      '.mcc-marco.mc-mo,.letra.mc-mo{position:relative}' +
+      // En Mi colección el cuadro es más chico para que entren las alas y la corona
+      '.mcc-marco.mc-mo{width:52%}' +
+      // En tu tarjeta de arriba (que no deja salir nada) la foto se achica para que el marco entre entero
+      '[data-mc-tarjeta] .mct-caja:has(.mc-mo){width:44px!important;height:44px!important;margin:0 4px 0 12px}';
+    (document.head || document.documentElement).appendChild(st);
+  })();
+
   window.MCColeccion = {
     catalogo: CATALOGO, espacios: ESPACIOS, rareza: RAREZA, defecto: DEFECTO,
     item: function (id) { return POR_ID[id]; },
@@ -715,6 +786,23 @@
     cuadro: function (id) { var x = POR_ID[id || puesto('cuadro')]; if (!x || x.espacio !== 'cuadro') x = POR_ID['cuadro-galaxia']; return { tema: x.tema, llama: x.llama }; },
     llama: llama, titulo: tituloHtml,
     marco: function (id) { var x = POR_ID[id || puesto('marco')]; return x && x.marco !== 'none' ? x.marco : ''; },
+    // Marco con dibujo por encima de la foto (alas, corona): la imagen, o ''
+    marcoImg: function (id) { var x = POR_ID[id || puesto('marco')]; return x && x.mo || ''; },
+    // Pone el marco en un elemento: --m (el borde) y, si tiene dibujo, --mo y la clase mc-mo
+    ponerMarco: function (el, id) {
+      if (!el) return;
+      var x = POR_ID[id || puesto('marco')], m = x && x.marco !== 'none' ? x.marco : '', mo = x && x.mo || '';
+      if (m) el.style.setProperty('--m', m); else el.style.removeProperty('--m');
+      if (mo) el.style.setProperty('--mo', 'url("' + mo + '")'); else el.style.removeProperty('--mo');
+      el.classList.toggle('mc-mo', !!mo);
+    },
+    // Lo mismo para armar HTML: { cls, st } (clase y estilo)
+    marcoAttr: function (id) {
+      var x = POR_ID[id || puesto('marco')], m = x && x.marco !== 'none' ? x.marco : '', mo = x && x.mo || '';
+      return { cls: mo ? ' mc-mo' : '', st: (m ? '--m:' + m + ';' : '') + (mo ? '--mo:url(&quot;' + esc(mo) + '&quot;);' : '') };
+    },
+    // Color del nombre del rango con el banner que llevas (los banners de temporada lo traen), o ''
+    rangoColor: function (id) { var x = POR_ID[id || puesto('racha')]; return x && x.rg || ''; },
     nuevos: nuevos, marcarVistos: marcarVistos, celebrar: celebrar, refrescar: refrescar,
     contar: function () { var n = 0; CATALOGO.forEach(function (x) { if (tiene(x.id)) n++; }); return { tengo: n, total: CATALOGO.length }; }
   };
