@@ -171,7 +171,8 @@
   // Recursos: lo que se sube desde el panel (supabase/40-recursos.sql y 41-recursos-coleccion.sql):
   // fondos, fotos de perfil, pines, marcos, cuadros de racha y títulos.
   // Se suman al catálogo al llegar; se recuerdan en este equipo para no esperar la próxima vez.
-  var CLAVE_REC = 'mc_recursos2';   // 2: también trae lo de la web eliminado (66)
+  var CLAVE_REC = 'mc_recursos3';   // 2: también trae lo de la web eliminado (66); 3: pin PRO nuevo (todos lo piden de nuevo)
+  try { localStorage.removeItem('mc_recursos2'); localStorage.removeItem('mc_recursos2_t'); } catch (e) {}
   var IMG_REC = /^https:\/\/[a-z0-9.-]+\/storage\/v1\/object\/public\/recursos\/[A-Za-z0-9\/_.-]+$/;
   function colores(l, n) { return Array.isArray(l) && l.length === n && l.every(function (c) { return /^#[0-9a-fA-F]{6}$/.test(c); }); }
   function recurso(r) {
@@ -210,11 +211,12 @@
     });
   }
   sumarRecursos(leer(CLAVE_REC));
-  // Menos tráfico: el catálogo de recursos se vuelve a pedir como mucho cada 6 horas
+  // Menos tráfico: el catálogo de recursos se vuelve a pedir como mucho cada hora
+  // (así un cambio de imagen desde el panel llega a todos en menos de 1 h)
   var pedidoRec = null;
   function cargarRecursos() {
     if (pedidoRec || !window.MCAuth) return pedidoRec;
-    if (leer(CLAVE_REC) && Date.now() - (+leer(CLAVE_REC + '_t') || 0) < 6 * 3600000) return (pedidoRec = Promise.resolve());
+    if (leer(CLAVE_REC) && Date.now() - (+leer(CLAVE_REC + '_t') || 0) < 3600000) return (pedidoRec = Promise.resolve());
     pedidoRec = MCAuth.listo.then(function (c) {
       return c.from('coleccion_item').select('id,espacio,regla,nom,rareza,img,tema,llama,descr,recurso,visible').or('and(recurso.eq.true,visible.eq.true),visible.eq.false').order('creado').then(function (r) {
         if (r.error) return; // todavía no se corrió supabase/40-recursos.sql
