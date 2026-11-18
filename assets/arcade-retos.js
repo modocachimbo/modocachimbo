@@ -5,7 +5,7 @@
    juega en pantalla completa sobre el cielo del Arcade.
 
    Tipos de reto (inspirados en Duolingo y juegos de celular):
-     imagen     · elige la imagen correcta (4 dibujos hechos con código)
+     imagen     · elige la imagen correcta (4 escenas dibujadas con código, tarjetas A–D)
      relacionar · toca los pares (dos columnas)
      parejas    · cartas de memoria que se voltean
      completar  · completa la frase con el banco de palabras
@@ -63,64 +63,216 @@
     dorso: '<svg viewBox="0 0 60 60" fill="none"><path d="M30 4l26 26-26 26L4 30z" stroke="rgba(255,255,255,.35)" stroke-width="3"/><path d="M30 14l16 16-16 16-16-16z" fill="#C6E000" stroke="#2A3300" stroke-width="2.5"/><path d="M30 22l8 8-8 8-8-8z" fill="#5A2FD0"/><circle cx="30" cy="30" r="2.5" fill="#C6E000"/></svg>'
   };
 
-  /* ---------- Dibujos del tema (viewBox 100×100) ---------- */
-  var DIB = {
-    bering: '<svg viewBox="0 0 100 100"><rect x="4" y="18" width="92" height="64" rx="14" fill="#2D7FD8" stroke="' + T + '" stroke-width="3"/>' +
-      '<path d="M8 22h22q4 12-2 22t2 24q-4 10-22 10z" fill="#7BC043" stroke="#2C5A12" stroke-width="2.5"/>' +
-      '<path d="M92 22H70q-6 10 0 22t-4 22q2 10 26 12z" fill="#7BC043" stroke="#2C5A12" stroke-width="2.5"/>' +
-      '<path d="M28 40q10-6 22-4t20 4l-2 18q-10 4-20 2t-20-2z" fill="#EAF6FF" stroke="#9CC9F0" stroke-width="2.5"/>' +
-      '<path d="M36 44l4 3M48 41l3 4M58 46l4 2M44 53l4 2" stroke="#9CC9F0" stroke-width="2" stroke-linecap="round"/>' +
-      '<path d="M18 50q30-16 60-2" fill="none" stroke="#C6E000" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 8"/>' +
-      '<path d="M72 40l8 8-11 3" fill="none" stroke="#C6E000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>' +
-      '<text x="18" y="74" font-family="Lilita One, sans-serif" font-size="9" fill="#fff" text-anchor="middle">ASIA</text>' +
-      '<text x="82" y="74" font-family="Lilita One, sans-serif" font-size="8" fill="#fff" text-anchor="middle">AMÉRICA</text></svg>',
-    balsa: '<svg viewBox="0 0 100 100"><circle cx="76" cy="24" r="10" fill="#FFC800" stroke="#7A4A00" stroke-width="2.5"/>' +
-      '<path d="M44 22v38" stroke="#6B3E14" stroke-width="4" stroke-linecap="round"/>' +
-      '<path d="M46 24q22 10 2 32z" fill="#FFF3D6" stroke="' + T + '" stroke-width="2.5" stroke-linejoin="round"/>' +
-      '<path d="M48 32q8 6 2 16" fill="none" stroke="#FF8A00" stroke-width="2.5"/>' +
-      '<rect x="20" y="58" width="52" height="9" rx="4.5" fill="#B8742E" stroke="#5A3008" stroke-width="2.5"/>' +
-      '<path d="M30 58v9M40 58v9M50 58v9M60 58v9" stroke="#5A3008" stroke-width="2"/>' +
-      '<path d="M4 72q8-6 16 0t16 0 16 0 16 0 16 0 12 0V96H4z" fill="#2D7FD8" stroke="' + T + '" stroke-width="2.5"/>' +
-      '<path d="M10 84q6-4 12 0M50 86q6-4 12 0M76 80q5-3 10 0" fill="none" stroke="#9FD3FF" stroke-width="2.5" stroke-linecap="round"/></svg>',
-    antartida: '<svg viewBox="0 0 100 100"><rect x="4" y="60" width="92" height="30" rx="10" fill="#2D7FD8" stroke="' + T + '" stroke-width="3"/>' +
-      '<path d="M8 68l14-28 10 14 12-26 16 30 10-12 22 22z" fill="#F4FBFF" stroke="#6FA8D8" stroke-width="2.5" stroke-linejoin="round"/>' +
-      '<path d="M44 28l5 10-7 4M22 40l4 8" fill="none" stroke="#9CC9F0" stroke-width="2.5" stroke-linecap="round"/>' +
-      '<path d="M10 20q40-18 78 6" fill="none" stroke="#C6E000" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 8"/>' +
-      '<path d="M80 16l9 10-12 2" fill="none" stroke="#C6E000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>' +
-      '<g transform="translate(70 66)"><ellipse cx="0" cy="8" rx="7" ry="9" fill="#1A1046"/><ellipse cx="0" cy="10" rx="4.5" ry="6.5" fill="#fff"/><circle cx="0" cy="-2" r="5" fill="#1A1046"/><path d="M-1 -1l4 1-4 1z" fill="#FFC800"/></g></svg>',
-    fosil: '<svg viewBox="0 0 100 100"><path d="M10 70q2-30 20-40t44-6 18 30-12 34-50 4-20-22z" fill="#C9A77A" stroke="#5A3A12" stroke-width="3"/>' +
-      '<path d="M22 64q6-4 10 2M64 30q6 2 8 8M70 72q4-4 8-2" fill="none" stroke="#8C6A3E" stroke-width="2.5" stroke-linecap="round"/>' +
-      '<g transform="rotate(-24 50 54)"><rect x="32" y="49" width="36" height="10" rx="5" fill="#FFF8E8" stroke="' + T + '" stroke-width="2.5"/>' +
-      '<circle cx="31" cy="48" r="6" fill="#FFF8E8" stroke="' + T + '" stroke-width="2.5"/><circle cx="31" cy="60" r="6" fill="#FFF8E8" stroke="' + T + '" stroke-width="2.5"/>' +
-      '<circle cx="69" cy="48" r="6" fill="#FFF8E8" stroke="' + T + '" stroke-width="2.5"/><circle cx="69" cy="60" r="6" fill="#FFF8E8" stroke="' + T + '" stroke-width="2.5"/>' +
-      '<rect x="34" y="50.5" width="32" height="7" fill="#FFF8E8"/></g>' +
-      '<path d="M50 6v12M44 12h12" stroke="#C6E000" stroke-width="4" stroke-linecap="round"/></svg>',
-    punta: '<svg viewBox="0 0 100 100"><g transform="rotate(32 50 50)"><path d="M50 4q16 18 16 44 0 10-6 16l-4 4v22q0 4-6 4t-6-4V68l-4-4q-6-6-6-16 0-26 16-44z" fill="#A9A39A" stroke="' + T + '" stroke-width="3" stroke-linejoin="round"/>' +
-      '<path d="M50 4v64M42 22l8 8 8-8M38 36l12 10 12-10M37 50l13 10 13-10" fill="none" stroke="#6E6860" stroke-width="2.2" stroke-linejoin="round"/>' +
-      '<path d="M44 16q-4 10-5 22" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".7"/></g></svg>',
-    pintura: '<svg viewBox="0 0 100 100"><path d="M6 20q10-12 44-12t44 12v60q-10 12-44 12T6 80z" fill="#E2B97E" stroke="#6B4316" stroke-width="3"/>' +
-      '<path d="M14 30q4 3 8 1M78 74q4 2 7 0M70 22q5-2 9 1" fill="none" stroke="#C49358" stroke-width="2" stroke-linecap="round"/>' +
-      '<g fill="#B3261E" stroke="#B3261E" stroke-linecap="round" stroke-width="3.2">' +
-      '<circle cx="24" cy="38" r="4" stroke="none"/><path d="M24 42v14M24 56l-5 10M24 56l5 10M24 47l-6 4M24 47l10-5" fill="none"/><path d="M30 44l16-10" stroke-width="2.4" fill="none"/>' +
-      '<ellipse cx="62" cy="44" rx="10" ry="5" stroke="none"/><path d="M70 42l4-10 4 1M56 48l-2 9M60 48l0 9M66 48l1 9M70 47l2 9" fill="none" stroke-width="2.6"/>' +
-      '<ellipse cx="60" cy="68" rx="8" ry="4" stroke="none"/><path d="M66 66l3-8 3 1M55 71l-2 7M59 71v7M63 71l1 7M67 70l2 7" fill="none" stroke-width="2.4"/>' +
-      '<path d="M84 52l-3 6M82 30v6" fill="none" stroke-width="2"/></g>' +
-      '<path d="M40 70a4 4 0 1 0 8 0 4 4 0 1 0-8 0" fill="none" stroke="#B3261E" stroke-width="2"/></svg>',
-    frijol: '<svg viewBox="0 0 100 100"><path d="M60 14q10-6 18 2-10 4-14 12" fill="#7BC043" stroke="#2C5A12" stroke-width="2.5" stroke-linejoin="round"/>' +
-      '<path d="M66 18q4 14-6 34T22 84q-8 2-10-4 0-4 6-8 22-14 30-30t10-24z" fill="#8FD14F" stroke="#2C5A12" stroke-width="3" stroke-linejoin="round"/>' +
-      '<g fill="#7A2E1A" stroke="' + T + '" stroke-width="2"><ellipse cx="52" cy="40" rx="6" ry="4.5" transform="rotate(-50 52 40)"/><ellipse cx="42" cy="56" rx="6" ry="4.5" transform="rotate(-38 42 56)"/><ellipse cx="29" cy="69" rx="6" ry="4.5" transform="rotate(-28 29 69)"/></g>' +
-      '<g stroke="' + T + '" stroke-width="2.5"><ellipse cx="74" cy="72" rx="10" ry="7" fill="#F4E3C4" transform="rotate(20 74 72)"/><ellipse cx="58" cy="84" rx="9" ry="6.5" fill="#B3261E" transform="rotate(-10 58 84)"/></g>' +
-      '<path d="M70 69q4-1 7 2M54 82q3-2 6 0" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".7"/></svg>',
-    craneo: '<svg viewBox="0 0 100 100"><path d="M50 10c-22 0-36 15-36 34 0 12 6 20 12 24v12q0 6 6 6h36q6 0 6-6V68c6-4 12-12 12-24 0-19-14-34-36-34z" fill="#F6EEDC" stroke="' + T + '" stroke-width="3"/>' +
-      '<ellipse cx="36" cy="46" rx="9" ry="10" fill="' + T + '"/><ellipse cx="64" cy="46" rx="9" ry="10" fill="' + T + '"/>' +
-      '<path d="M50 56l-5 10h10z" fill="' + T + '"/><path d="M38 76v10M46 76v10M54 76v10M62 76v10" stroke="' + T + '" stroke-width="2.5"/>' +
-      '<path d="M28 26q8-8 20-9" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
-    llama: '<svg viewBox="0 0 100 100"><path d="M6 78h88M10 64h80" stroke="#8C5A22" stroke-width="4" stroke-linecap="round"/><path d="M14 58v32M86 58v32" stroke="#6B4316" stroke-width="5" stroke-linecap="round"/>' +
-      '<path d="M60 14l3-8 4 7q6 2 6 9v26q0 8-8 10H36q-10 0-12-8 0-10 10-12h20V24q0-8 6-10z" fill="#FFF3E0" stroke="' + T + '" stroke-width="3" stroke-linejoin="round"/>' +
-      '<path d="M32 58v26M42 60v24M52 60v24M62 58v26" stroke="' + T + '" stroke-width="5" stroke-linecap="round"/>' +
-      '<circle cx="66" cy="20" r="2.2" fill="' + T + '"/><path d="M73 26h4" stroke="' + T + '" stroke-width="3" stroke-linecap="round"/>' +
-      '<path d="M54 36h12M54 42h12" stroke="#E2463A" stroke-width="3.5"/></svg>'
-  };
+  /* ---------- Dibujos del tema: escenas completas (viewBox 120×100) ---------- */
+  var DIB = (function () {
+    var O = '#1A1046';   // contorno
+    // Personaje cazador con piel y lanza (x, y = pies), s = escala, c = color de la piel
+    function cazador(x, y, s, c, mira) {
+      var f = mira < 0 ? ' scale(-1 1)' : '';
+      return '<g transform="translate(' + x + ' ' + y + ') scale(' + s + ')' + f + '">' +
+        '<path d="M-1 -30 L9 -2" stroke="#7A4A20" stroke-width="2.2" stroke-linecap="round"/><path d="M8 -34 l3 6 -5 -1z" fill="#C9C2B0" stroke="' + O + '" stroke-width="1.2"/>' +
+        '<path d="M-6 0 l1-8 M2 0 l-1-8" stroke="#6B3A1A" stroke-width="3.2" stroke-linecap="round"/>' +
+        '<path d="M-9 -8 q0-12 7-14 q8 2 8 14 q-7 3-15 0z" fill="' + c + '" stroke="' + O + '" stroke-width="1.4"/>' +
+        '<path d="M-8 -9 l2 2 2-2 2 2 2-2 2 2 2-2" stroke="#fff" stroke-width="1" fill="none" opacity=".6"/>' +
+        '<circle cx="-1" cy="-26" r="5.2" fill="#C98A5A" stroke="' + O + '" stroke-width="1.4"/>' +
+        '<path d="M-6.5 -27 q1-7 6-7 q6 0 6 6 q-3-3-6-2 q-4 0-6 3z" fill="#2A1A10"/>' +
+        '<circle cx="1.6" cy="-26" r=".9" fill="' + O + '"/><path d="M0 -23.5 q1.5 1 3 0" stroke="' + O + '" stroke-width=".8" fill="none"/>' +
+        '<path d="M4 -16 L8 -22" stroke="#C98A5A" stroke-width="2.4" stroke-linecap="round"/>' +
+        '</g>';
+    }
+    var nube = function (x, y, s) { return '<g transform="translate(' + x + ' ' + y + ') scale(' + s + ')" fill="#fff" opacity=".9"><circle cx="0" cy="0" r="5"/><circle cx="6" cy="-2" r="6.5"/><circle cx="13" cy="0" r="5"/><rect x="0" y="0" width="13" height="5" rx="2.5"/></g>'; };
+    return {
+      // Estrecho de Bering: puente de hielo entre Asia y América, cazadores cruzando
+      bering:
+        '<svg viewBox="0 0 120 100"><defs><linearGradient id="bgB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7FD3FF"/><stop offset="1" stop-color="#CFF0FF"/></linearGradient>' +
+        '<linearGradient id="mrB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2E8FE0"/><stop offset="1" stop-color="#1A5FB0"/></linearGradient></defs>' +
+        '<rect width="120" height="100" fill="url(#bgB)"/>' + nube(14, 16, 1) + nube(84, 12, .8) +
+        '<path d="M0 50 h120 v50 H0z" fill="url(#mrB)"/>' +
+        '<path d="M0 44 q14-8 26-2 q8 4 10 14 L36 100 H0z" fill="#E9F6FF"/><path d="M0 52 q12-4 22 0 l4 48 H0z" fill="#B9DDF2"/>' +
+        '<path d="M120 44 q-14-8-26-2 q-8 4-10 14 L84 100 h36z" fill="#E9F6FF"/><path d="M120 52 q-12-4-22 0 l-4 48 h26z" fill="#B9DDF2"/>' +
+        '<path d="M30 62 q30-10 60 0 l2 8 q-32-8-64 0z" fill="#F4FBFF" stroke="#9CCBE8" stroke-width="1.2"/>' +
+        '<path d="M40 64 h4 M54 61 h5 M70 61 h4" stroke="#9CCBE8" stroke-width="1.2" stroke-linecap="round"/>' +
+        '<path d="M12 40 l6-12 6 12z M98 40 l7-14 7 14z" fill="#3E8E4A"/><path d="M15 34 l3-6 3 6z M102 32 l3-6 3 6z" fill="#fff"/>' +
+        cazador(52, 64, .82, '#A0703A', 1) + cazador(66, 63, .78, '#8A5A2A', 1) +
+        '<path d="M78 58 q4-4 8 0" stroke="#FFC800" stroke-width="2.4" fill="none" stroke-dasharray="2 3" stroke-linecap="round"/><path d="M86 56 l3 3 -4 1z" fill="#FFC800"/>' +
+        '<text x="14" y="94" font-family="Lilita One, sans-serif" font-size="9" fill="#1A5FB0">ASIA</text><text x="114" y="94" text-anchor="end" font-family="Lilita One, sans-serif" font-size="9" fill="#1A5FB0">AMÉRICA</text></svg>',
+      // Océano Pacífico en balsas
+      balsa:
+        '<svg viewBox="0 0 120 100"><defs><linearGradient id="bgP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFB86B"/><stop offset=".55" stop-color="#FFE3A8"/></linearGradient>' +
+        '<linearGradient id="mrP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1E88D8"/><stop offset="1" stop-color="#0F4E9A"/></linearGradient></defs>' +
+        '<rect width="120" height="100" fill="url(#bgP)"/><circle cx="92" cy="30" r="14" fill="#FFD84A"/><circle cx="92" cy="30" r="20" fill="#FFD84A" opacity=".25"/>' + nube(16, 18, .9) +
+        '<path d="M0 56 h120 v44 H0z" fill="url(#mrP)"/>' +
+        '<path d="M6 54 q8-10 16 0z" fill="#3E8E4A"/><path d="M14 50 q0-8 2-12" stroke="#7A4A1A" stroke-width="2" fill="none"/><path d="M16 38 q6-4 10 0 q-5-1-10 0 M16 38 q-6-4-10 0 q5-1 10 0 M16 38 q2-6 7-6 q-4 2-7 6" fill="#2C8A3A" stroke="#2C6A30" stroke-width="1"/>' +
+        '<path d="M30 74 h56 l-4 7 h-48z" fill="#B87A3A" stroke="' + O + '" stroke-width="1.6" stroke-linejoin="round"/>' +
+        '<path d="M38 74 v7 M46 74 v7 M54 74 v7 M62 74 v7 M70 74 v7 M78 74 v7" stroke="#7A4A1A" stroke-width="1.2"/>' +
+        '<path d="M58 74 V36" stroke="#6B3A1A" stroke-width="2.6"/><path d="M60 38 q22 14 2 34 z" fill="#FFF4E0" stroke="' + O + '" stroke-width="1.6"/><path d="M62 46 q8 8 1 18" stroke="#E0C8A0" stroke-width="1.4" fill="none"/>' +
+        cazador(44, 74, .7, '#C98A3A', 1) + cazador(74, 74, .66, '#A0703A', -1) +
+        '<path d="M0 84 q10-5 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 V100 H0z" fill="#2A9BEA" opacity=".9"/>' +
+        '<path d="M8 90 q6-3 12 0 M40 92 q6-3 12 0 M78 90 q6-3 12 0" stroke="#BFE6FF" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>',
+      // Por la Antártida
+      antartida:
+        '<svg viewBox="0 0 120 100"><defs><linearGradient id="bgA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3A4AB0"/><stop offset="1" stop-color="#9AB8FF"/></linearGradient></defs>' +
+        '<rect width="120" height="100" fill="url(#bgA)"/>' +
+        '<path d="M0 30 q20-10 40 0 t40 0 t40 0" stroke="#7CFFC8" stroke-width="4" fill="none" opacity=".45"/><path d="M0 22 q20-8 40 0 t40 0 t40 0" stroke="#C6E0FF" stroke-width="3" fill="none" opacity=".35"/>' +
+        '<circle cx="20" cy="12" r="1" fill="#fff"/><circle cx="60" cy="8" r="1.2" fill="#fff"/><circle cx="100" cy="16" r="1" fill="#fff"/>' +
+        '<path d="M8 70 l18-34 12 16 10-24 22 42z" fill="#F4FBFF"/><path d="M26 36 l4 22 8-6z M48 28 l2 30 20 12z" fill="#C9E4F7"/>' +
+        '<path d="M60 70 l22-28 18 28z" fill="#E4F2FF"/><path d="M82 42 l2 28 16 0z" fill="#B8D8F0"/>' +
+        '<path d="M0 70 h120 v30 H0z" fill="#1F6FC8"/><path d="M0 70 h120 v6 H0z" fill="#DDF0FF"/>' +
+        '<g transform="translate(96 70)"><ellipse cx="0" cy="-8" rx="5" ry="8" fill="#22264A"/><ellipse cx="0" cy="-6.5" rx="3.2" ry="6" fill="#fff"/><circle cx="0" cy="-15" r="3.6" fill="#22264A"/><circle cx="1.2" cy="-15.5" r=".9" fill="#fff"/><path d="M3 -14.5 l3 1 -3 1z" fill="#FFA000"/><path d="M-3 0 h2 M1 0 h2" stroke="#FFA000" stroke-width="1.6" stroke-linecap="round"/></g>' +
+        cazador(30, 74, .66, '#7A5A9A', 1) + cazador(42, 74, .62, '#5A6AA0', 1) +
+        '<path d="M50 62 q14-14 30-8" stroke="#FFC800" stroke-width="2.4" fill="none" stroke-dasharray="2 3" stroke-linecap="round"/><path d="M80 54 l1 4 -4 -1z" fill="#FFC800"/></svg>',
+      // Surgieron en América (fósil en capas de tierra)
+      fosil:
+        '<svg viewBox="0 0 120 100"><defs><linearGradient id="bgF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9FE07A"/><stop offset="1" stop-color="#E9FFD0"/></linearGradient></defs>' +
+        '<rect width="120" height="100" fill="url(#bgF)"/>' + nube(80, 14, .9) +
+        '<path d="M0 34 q30-8 60 0 t60 0 v66 H0z" fill="#6BBE45"/><path d="M0 40 q30-8 60 0 t60 0 v60 H0z" fill="#C98A4A"/>' +
+        '<path d="M0 58 q30-6 60 0 t60 0 v42 H0z" fill="#A86A32"/><path d="M0 78 q30-6 60 0 t60 0 v22 H0z" fill="#86501F"/>' +
+        '<circle cx="18" cy="50" r="2" fill="#86501F"/><circle cx="100" cy="70" r="2.4" fill="#6A3A12"/><circle cx="90" cy="48" r="1.6" fill="#86501F"/>' +
+        '<g transform="translate(46 66) rotate(-8)"><path d="M0 0 q0-14 14-14 q14 0 14 14 v4 q-4 2-6 0 v3 h-16 v-3 q-2 2-6 0z" fill="#F4ECD8" stroke="' + O + '" stroke-width="1.6"/>' +
+        '<ellipse cx="8" cy="-1" rx="3.4" ry="3.8" fill="' + O + '"/><ellipse cx="20" cy="-1" rx="3.4" ry="3.8" fill="' + O + '"/><path d="M13 3 l1 3 1-3z" fill="' + O + '"/><path d="M8 7 v3 M12 7 v3 M16 7 v3 M20 7 v3" stroke="' + O + '" stroke-width="1"/></g>' +
+        '<path d="M14 88 l20-4 M18 84 l-3 2 M30 82 l3 1" stroke="#F4ECD8" stroke-width="3.2" stroke-linecap="round"/>' +
+        '<path d="M84 90 l18 2" stroke="#F4ECD8" stroke-width="3.2" stroke-linecap="round"/>' +
+        '<g transform="translate(92 36)"><path d="M0 0 v-10" stroke="#2C6A30" stroke-width="2"/><path d="M0 -6 q-7-2-8-9 q7 0 8 9 M0 -9 q6-3 9-9 q-7-1-9 9" fill="#3FA02A"/></g>' +
+        '<g transform="translate(24 30) rotate(-20)"><circle cx="0" cy="0" r="7" fill="#BFE8FF" opacity=".6" stroke="' + O + '" stroke-width="2"/><path d="M5 5 l8 8" stroke="' + O + '" stroke-width="3.4" stroke-linecap="round"/></g></svg>'
+    };
+  })();
+  (function () {
+    var O = '#1A1046';
+    var nube = function (x, y, s) { return '<g transform="translate(' + x + ' ' + y + ') scale(' + s + ')" fill="#fff" opacity=".9"><circle cx="0" cy="0" r="5"/><circle cx="6" cy="-2" r="6.5"/><circle cx="13" cy="0" r="5"/><rect x="0" y="0" width="13" height="5" rx="2.5"/></g>'; };
+    function cazador(x, y, s, c, mira) {
+      var f = mira < 0 ? ' scale(-1 1)' : '';
+      return '<g transform="translate(' + x + ' ' + y + ') scale(' + s + ')' + f + '">' +
+        '<path d="M-1 -30 L9 -2" stroke="#7A4A20" stroke-width="2.2" stroke-linecap="round"/><path d="M8 -34 l3 6 -5 -1z" fill="#C9C2B0" stroke="' + O + '" stroke-width="1.2"/>' +
+        '<path d="M-6 0 l1-8 M2 0 l-1-8" stroke="#6B3A1A" stroke-width="3.2" stroke-linecap="round"/>' +
+        '<path d="M-9 -8 q0-12 7-14 q8 2 8 14 q-7 3-15 0z" fill="' + c + '" stroke="' + O + '" stroke-width="1.4"/>' +
+        '<path d="M-8 -9 l2 2 2-2 2 2 2-2 2 2 2-2" stroke="#fff" stroke-width="1" fill="none" opacity=".6"/>' +
+        '<circle cx="-1" cy="-26" r="5.2" fill="#C98A5A" stroke="' + O + '" stroke-width="1.4"/>' +
+        '<path d="M-6.5 -27 q1-7 6-7 q6 0 6 6 q-3-3-6-2 q-4 0-6 3z" fill="#2A1A10"/>' +
+        '<circle cx="1.6" cy="-26" r=".9" fill="' + O + '"/><path d="M0 -23.5 q1.5 1 3 0" stroke="' + O + '" stroke-width=".8" fill="none"/>' +
+        '<path d="M4 -16 L8 -22" stroke="#C98A5A" stroke-width="2.4" stroke-linecap="round"/>' +
+        '</g>';
+    }
+    // Persona sin lanza (pastor, agricultor, pescador)
+    function persona(x, y, s, c, mira, mano) {
+      var f = mira < 0 ? ' scale(-1 1)' : '';
+      return '<g transform="translate(' + x + ' ' + y + ') scale(' + s + ')' + f + '">' + (mano || '') +
+        '<path d="M-6 0 l1-8 M2 0 l-1-8" stroke="#6B3A1A" stroke-width="3.2" stroke-linecap="round"/>' +
+        '<path d="M-9 -8 q0-12 7-14 q8 2 8 14 q-7 3-15 0z" fill="' + c + '" stroke="' + O + '" stroke-width="1.4"/>' +
+        '<path d="M-8 -9 l2 2 2-2 2 2 2-2 2 2 2-2" stroke="#fff" stroke-width="1" fill="none" opacity=".6"/>' +
+        '<circle cx="-1" cy="-26" r="5.2" fill="#C98A5A" stroke="' + O + '" stroke-width="1.4"/>' +
+        '<path d="M-6.5 -27 q1-7 6-7 q6 0 6 6 q-3-3-6-2 q-4 0-6 3z" fill="#2A1A10"/>' +
+        '<circle cx="1.6" cy="-26" r=".9" fill="' + O + '"/><path d="M0 -23.5 q1.5 1 3 0" stroke="' + O + '" stroke-width=".8" fill="none"/>' +
+        '<path d="M4 -16 L9 -12" stroke="#C98A5A" stroke-width="2.4" stroke-linecap="round"/>' +
+        '</g>';
+    }
+    // Llama / alpaca (x, y = patas)
+    function llama(x, y, s, c, mira) {
+      var f = mira < 0 ? ' scale(-1 1)' : '', sh = '#00000022';
+      return '<g transform="translate(' + x + ' ' + y + ') scale(' + s + ')' + f + '">' +
+        '<ellipse cx="0" cy="1" rx="12" ry="2" fill="' + sh + '"/>' +
+        '<path d="M-8 -10 v10 M-4 -9 v9 M4 -9 v9 M8 -10 v10" stroke="' + O + '" stroke-width="3.4" stroke-linecap="round"/>' +
+        '<path d="M-8 -10 v10 M-4 -9 v9 M4 -9 v9 M8 -10 v10" stroke="' + c + '" stroke-width="1.8" stroke-linecap="round"/>' +
+        '<path d="M-12 -14 q0-8 10-8 h8 q6 0 6 6 v1 q0 7-8 7 h-8 q-8 0-8-6z" fill="' + c + '" stroke="' + O + '" stroke-width="1.5"/>' +
+        '<path d="M-13 -17 q-3 1-3 5" stroke="' + O + '" stroke-width="1.5" fill="none" stroke-linecap="round"/>' +
+        '<path d="M7 -18 q0-10 1-18 h6 q1 8 -1 20z" fill="' + c + '" stroke="' + O + '" stroke-width="1.5" stroke-linejoin="round"/>' +
+        '<path d="M8 -39 l-1 -6 3 3z M12 -39 l1 -6 2 4z" fill="' + c + '" stroke="' + O + '" stroke-width="1.2" stroke-linejoin="round"/>' +
+        '<path d="M7 -38 q2-3 7-2 q6 1 6 4 q0 3-5 3 h-6 q-2 0-2-2z" fill="' + c + '" stroke="' + O + '" stroke-width="1.5"/>' +
+        '<circle cx="12.5" cy="-37" r="1" fill="' + O + '"/><path d="M18 -35 h1.5" stroke="' + O + '" stroke-width="1" stroke-linecap="round"/>' +
+        '<path d="M-6 -19 q4-2 8 0 M-4 -15 q4-2 8 0" stroke="#fff" stroke-width="1" fill="none" opacity=".5"/>' +
+        '<path d="M8 -32 h5" stroke="#E2463A" stroke-width="2"/></g>';
+    }
+    var D = {
+      // Instrumentos de piedra: puntas de proyectil sobre una roca
+      punta:
+        '<svg viewBox="0 0 120 100"><defs><linearGradient id="bgPu" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD49A"/><stop offset="1" stop-color="#FFF1D6"/></linearGradient>' +
+        '<linearGradient id="pdPu" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D9D4CB"/><stop offset="1" stop-color="#8E877C"/></linearGradient></defs>' +
+        '<rect width="120" height="100" fill="url(#bgPu)"/>' + nube(86, 14, .8) +
+        '<path d="M0 46 l18-16 14 10 20-20 22 22 16-12 30 18 v52 H0z" fill="#C9A06A"/><path d="M52 20 l8 26 14-4z M90 30 l4 18 16-2z" fill="#B08452"/>' +
+        '<path d="M0 62 q60-10 120 0 v38 H0z" fill="#9C6A36"/>' +
+        '<path d="M10 92 q4-22 30-26 q34-4 46 8 q10 10 2 18z" fill="#7E7466" stroke="' + O + '" stroke-width="1.6"/><path d="M18 88 q8-14 26-16" stroke="#A39A8C" stroke-width="2" fill="none" stroke-linecap="round"/>' +
+        '<g transform="translate(52 50) rotate(-58)"><path d="M0 -32 q12 14 12 30 q0 10 -5 14 l-3 2 v8 q0 3 -4 3 t-4 -3 v-8 l-3 -2 q-5 -4 -5 -14 q0 -16 12 -30z" fill="url(#pdPu)" stroke="' + O + '" stroke-width="1.8" stroke-linejoin="round"/>' +
+        '<path d="M0 -32 v44 M-6 -18 l6 5 6 -5 M-9 -6 l9 7 9 -7 M-9 5 l9 6 9 -6" stroke="#6E675E" stroke-width="1.3" fill="none" stroke-linejoin="round"/>' +
+        '<path d="M-4 -24 q-4 8 -5 16" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".75"/></g>' +
+        '<g transform="translate(84 72) rotate(24)"><path d="M0 -16 q7 8 7 17 q0 5 -3 7 v4 q0 2 -4 2 t-4 -2 v-4 q-3 -2 -3 -7 q0 -9 7 -17z" fill="#B4AA9C" stroke="' + O + '" stroke-width="1.6" stroke-linejoin="round"/><path d="M0 -16 v24 M-4 -6 l4 3 4 -3 M-5 1 l5 4 5 -4" stroke="#7A7268" stroke-width="1.1" fill="none"/></g>' +
+        '<path d="M24 74 l8 -6 8 2 2 7 -9 4z" fill="#A99F90" stroke="' + O + '" stroke-width="1.4" stroke-linejoin="round"/><path d="M28 72 l4 3 6 -2" stroke="#7A7268" stroke-width="1" fill="none"/>' +
+        '<path d="M98 50 l4 -8 M104 54 l6 -4 M96 42 l-2 -6" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".8"/></svg>',
+      // Pinturas rupestres: pared de cueva con escena de caza (chaco)
+      pintura:
+        '<svg viewBox="0 0 120 100"><defs><radialGradient id="bgPi" cx=".5" cy=".55" r=".7"><stop offset="0" stop-color="#F1C98E"/><stop offset=".7" stop-color="#D49A5A"/><stop offset="1" stop-color="#8A5428"/></radialGradient></defs>' +
+        '<rect width="120" height="100" fill="#3A2210"/>' +
+        '<path d="M6 100 V40 q4-30 54-34 q50 4 54 34 V100z" fill="url(#bgPi)"/>' +
+        '<path d="M20 30 q6-4 12 0 M84 22 q8-2 12 4 M14 70 q4 4 10 2 M96 76 q6-2 10 2" stroke="#B57A40" stroke-width="1.6" fill="none" stroke-linecap="round"/>' +
+        '<g fill="#B3261E" stroke="#B3261E" stroke-linecap="round" stroke-linejoin="round">' +
+        '<circle cx="30" cy="38" r="3.4" stroke="none"/><path d="M30 41 v12 M30 53 l-4 9 M30 53 l5 9 M30 45 l-6 4 M30 45 l9 -5" fill="none" stroke-width="2.6"/><path d="M38 40 l16 -8" stroke-width="1.8"/>' +
+        '<circle cx="22" cy="58" r="2.8" stroke="none"/><path d="M22 61 v10 M22 71 l-3 7 M22 71 l4 7 M22 64 l7 -3" fill="none" stroke-width="2.2"/><path d="M28 60 l12 -6" stroke-width="1.5"/>' +
+        '<ellipse cx="68" cy="40" rx="9" ry="4.5" stroke="none"/><path d="M75 38 l4 -9 3 1 M61 43 l-2 8 M65 43 v8 M71 43 l1 8 M75 42 l2 8" fill="none" stroke-width="2.2"/>' +
+        '<ellipse cx="88" cy="56" rx="8" ry="4" stroke="none"/><path d="M94 54 l3 -8 3 1 M82 58 l-2 7 M86 59 v7 M91 59 l1 7 M94 58 l2 6" fill="none" stroke-width="2"/>' +
+        '<ellipse cx="64" cy="66" rx="7" ry="3.5" stroke="none"/><path d="M69 64 l3 -7 3 1 M59 68 l-2 6 M63 69 v6 M67 69 l1 6" fill="none" stroke-width="1.8"/>' +
+        '</g>' +
+        '<g fill="#3A1A0A" opacity=".75"><path d="M100 30 h1.6 v9 h-1.6z M103 30 h1.6 v9 h-1.6z"/><path d="M40 78 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0" fill="none" stroke="#3A1A0A" stroke-width="1.6"/></g>' +
+        '<g transform="translate(108 88)"><path d="M-2 0 l-3 -18 h6z" fill="#6B3A1A" stroke="' + O + '" stroke-width="1.2"/><path d="M-2 -18 q-7 -8 0 -16 q7 8 0 16z" fill="#FFB020"/><path d="M-2 -20 q-3 -4 0 -9 q3 5 0 9z" fill="#FFF0A0"/></g>' +
+        '<path d="M6 40 q4-30 54-34 q50 4 54 34 V100 h6 V0 H0 v100 h6z" fill="#2A160A"/></svg>',
+      // Plantas cultivadas: frijol trepador, pallar y ají en una huerta
+      frijol:
+        '<svg viewBox="0 0 120 100"><defs><linearGradient id="bgFr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8ED8FF"/><stop offset="1" stop-color="#DDF6FF"/></linearGradient></defs>' +
+        '<rect width="120" height="100" fill="url(#bgFr)"/><circle cx="20" cy="20" r="9" fill="#FFE04A"/>' + nube(70, 14, .9) +
+        '<path d="M0 54 q30-12 60 -2 t60 -4 v52 H0z" fill="#7CC655"/><path d="M0 70 q60-10 120 0 v30 H0z" fill="#8A5A2A"/>' +
+        '<path d="M0 78 q20-4 40 0 M50 84 q22-4 44 0 M10 92 q20-3 40 0 M70 94 q20-3 40 0" stroke="#6E4418" stroke-width="2" fill="none" stroke-linecap="round"/>' +
+        '<path d="M46 80 V22" stroke="#7A4A1A" stroke-width="3.2" stroke-linecap="round"/>' +
+        '<path d="M46 78 q-12-10 0-20 q12-10 0-20 q-8-8 0-16" stroke="#2C7A20" stroke-width="2.2" fill="none"/>' +
+        '<g fill="#5DB83A" stroke="#2C6A20" stroke-width="1.2"><path d="M46 66 q-14-2-14 8 q12 2 14-8z"/><path d="M46 52 q14-4 16 6 q-12 3-16-6z"/><path d="M46 36 q-12-6-16 2 q10 6 16-2z"/><path d="M46 26 q10-8 14-2 q-8 6-14 2z"/></g>' +
+        '<g fill="#3E8E2A" stroke="' + O + '" stroke-width="1.2"><path d="M50 58 q4 6 2 16 q-4-4-4-16z"/><path d="M40 44 q-4 6-2 15 q4-4 3-15z"/></g>' +
+        '<g transform="translate(78 74)"><path d="M0 0 q-2-12 6-20" stroke="#2C7A20" stroke-width="2" fill="none"/><path d="M5 -16 q8-4 12 2 q-8 4-12-2z M2 -8 q-8-4-12 2 q8 4 12-2z" fill="#5DB83A" stroke="#2C6A20" stroke-width="1"/>' +
+        '<path d="M6 -14 q6 2 6 10 q-2 8 -4 10 q-4 -6 -2 -20z" fill="#E2261E" stroke="' + O + '" stroke-width="1.4"/><path d="M8 -10 q2 4 1 8" stroke="#fff" stroke-width="1.2" fill="none" opacity=".7"/>' +
+        '<path d="M-2 -12 q-6 2 -6 9 q2 6 4 8 q3 -6 2 -17z" fill="#FF5A2A" stroke="' + O + '" stroke-width="1.4"/></g>' +
+        '<g transform="translate(22 86)"><ellipse cx="0" cy="0" rx="10" ry="4" fill="#5A3A1A" opacity=".35"/><path d="M-10 -2 q0-8 10-8 t10 8 q-10 4 -20 0z" fill="#C88A3A" stroke="' + O + '" stroke-width="1.4"/>' +
+        '<ellipse cx="-4" cy="-5" rx="3" ry="2" fill="#7A2E1A" stroke="' + O + '" stroke-width=".8"/><ellipse cx="2" cy="-6" rx="3" ry="2" fill="#F4E3C4" stroke="' + O + '" stroke-width=".8"/><ellipse cx="6" cy="-3" rx="2.6" ry="1.8" fill="#7A2E1A" stroke="' + O + '" stroke-width=".8"/></g>' +
+        '<g transform="translate(102 82)"><circle r="3.5" fill="#C9C9C9" opacity="0"/></g>' +
+        '</svg>',
+      // Restos humanos: excavación arqueológica con cráneo y huesos
+      craneo:
+        '<svg viewBox="0 0 120 100"><defs><linearGradient id="bgCr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B9E4FF"/><stop offset="1" stop-color="#E8F7FF"/></linearGradient></defs>' +
+        '<rect width="120" height="100" fill="url(#bgCr)"/>' + nube(12, 14, .8) +
+        '<path d="M0 36 l26-18 18 12 22-20 24 22 30-10 v100 H0z" fill="#8A9AA8"/><path d="M66 10 l6 22 16-2z" fill="#6E7E8C"/>' +
+        '<path d="M0 42 h120 v58 H0z" fill="#B57A40"/>' +
+        '<path d="M12 50 h96 l-6 46 h-84z" fill="#7A4A1E" stroke="#5A3412" stroke-width="1.6"/>' +
+        '<path d="M14 66 h92 M16 82 h88" stroke="#6A3E16" stroke-width="1.4" stroke-dasharray="3 3"/>' +
+        '<path d="M12 50 l-3 -4 M108 50 l3 -4 M12 50 h96" stroke="#FFF4E0" stroke-width="1.2"/><path d="M40 50 v46 M70 50 v46" stroke="#FFF4E0" stroke-width=".9" opacity=".7"/>' +
+        '<path d="M8 46 h104" stroke="#FFC800" stroke-width="1.4"/>' +
+        '<g transform="translate(50 74)"><path d="M0 0 q0-15 15-15 q15 0 15 15 v5 q-4 2-6 0 v4 h-18 v-4 q-2 2-6 0z" fill="#F4ECD8" stroke="' + O + '" stroke-width="1.6"/>' +
+        '<ellipse cx="8.5" cy="0" rx="3.6" ry="4" fill="' + O + '"/><ellipse cx="21.5" cy="0" rx="3.6" ry="4" fill="' + O + '"/><path d="M14 4 l1 3.4 1-3.4z" fill="' + O + '"/>' +
+        '<path d="M9 9 v3 M13 9 v3 M17 9 v3 M21 9 v3" stroke="' + O + '" stroke-width="1"/><path d="M5 -8 q4-5 10-5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/></g>' +
+        '<g stroke="' + O + '" stroke-width="1.3" fill="#F4ECD8"><path d="M22 88 l18 -4 M84 70 l14 6 M86 88 l16 -2" stroke="#F4ECD8" stroke-width="3.4" stroke-linecap="round"/>' +
+        '<circle cx="22" cy="88" r="2.4"/><circle cx="40" cy="84" r="2.4"/><circle cx="84" cy="70" r="2.4"/><circle cx="98" cy="76" r="2.4"/></g>' +
+        '<g transform="translate(28 66) rotate(-30)"><rect x="-1.5" y="-12" width="3" height="14" rx="1.5" fill="#B87A3A" stroke="' + O + '" stroke-width="1"/><path d="M-4 2 h8 l-1 7 h-6z" fill="#E8C060" stroke="' + O + '" stroke-width="1"/><path d="M-3 9 v3 M0 9 v3 M3 9 v3" stroke="#6B3A1A" stroke-width="1"/></g>' +
+        persona(104, 46, .62, '#3E8BEA', -1) + '</svg>',
+      // Corral de camélidos: llamas en la puna con un pastor
+      llama:
+        '<svg viewBox="0 0 120 100"><defs><linearGradient id="bgLl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6FC8FF"/><stop offset="1" stop-color="#D6F1FF"/></linearGradient></defs>' +
+        '<rect width="120" height="100" fill="url(#bgLl)"/>' + nube(70, 12, .8) +
+        '<path d="M0 50 l20-26 14 14 22-28 26 30 14-14 24 24 v50 H0z" fill="#7B8CC8"/><path d="M42 26 l14-16 9 11 -7 4 -5 -5z M20 24 l6 8 -6 -2 -6 2z M96 26 l7 7 -7 -1z" fill="#fff"/>' +
+        '<path d="M0 58 q30-10 60-2 t60-4 v48 H0z" fill="#B7C95A"/><path d="M0 74 q60-8 120 0 v26 H0z" fill="#9AB040"/>' +
+        '<g fill="#A89C8C" stroke="' + O + '" stroke-width="1"><ellipse cx="14" cy="84" rx="5" ry="3.4"/><ellipse cx="23" cy="83" rx="5" ry="3.4"/><ellipse cx="32" cy="84" rx="5" ry="3.4"/><ellipse cx="41" cy="83" rx="5" ry="3.4"/><ellipse cx="50" cy="84" rx="5" ry="3.4"/><ellipse cx="59" cy="83" rx="5" ry="3.4"/><ellipse cx="68" cy="84" rx="5" ry="3.4"/><ellipse cx="77" cy="83" rx="5" ry="3.4"/><ellipse cx="86" cy="84" rx="5" ry="3.4"/><ellipse cx="95" cy="83" rx="5" ry="3.4"/><ellipse cx="104" cy="84" rx="5" ry="3.4"/>' +
+        '<ellipse cx="18" cy="79" rx="5" ry="3.2"/><ellipse cx="28" cy="78" rx="5" ry="3.2"/><ellipse cx="38" cy="79" rx="5" ry="3.2"/><ellipse cx="80" cy="78" rx="5" ry="3.2"/><ellipse cx="90" cy="79" rx="5" ry="3.2"/><ellipse cx="100" cy="78" rx="5" ry="3.2"/></g>' +
+        llama(34, 74, .95, '#FFF3E0', 1) + llama(72, 72, .85, '#C98A4A', -1) + llama(14, 64, .55, '#F4ECD8', 1) +
+        persona(102, 70, .62, '#E2463A', -1, '<path d="M-6 -16 L-10 2" stroke="#7A4A20" stroke-width="2" stroke-linecap="round"/>') + '</svg>',
+      // Aldea de chozas: Chilca, chozas cónicas de caña y junco junto al mar
+      choza:
+        '<svg viewBox="0 0 120 100"><defs><linearGradient id="bgCh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFC27A"/><stop offset="1" stop-color="#FFEBC4"/></linearGradient></defs>' +
+        '<rect width="120" height="100" fill="url(#bgCh)"/><circle cx="96" cy="22" r="10" fill="#FFE04A"/>' + nube(18, 14, .8) +
+        '<path d="M0 46 h120 v12 H0z" fill="#2E8FE0"/><path d="M0 46 h120" stroke="#9FD3FF" stroke-width="1.4"/><path d="M12 52 q5-2 10 0 M70 50 q5-2 10 0" stroke="#BFE6FF" stroke-width="1.2" fill="none" stroke-linecap="round"/>' +
+        '<path d="M0 56 q30-6 60 0 t60 0 v44 H0z" fill="#F2D29A"/><path d="M0 74 q60-8 120 0 v26 H0z" fill="#E6BE7A"/>' +
+        '<g stroke="' + O + '" stroke-width="1.5" stroke-linejoin="round">' +
+        '<path d="M14 80 l18 -34 18 34z" fill="#C99A4A"/><path d="M32 46 v-4" stroke="#7A4A1A"/><path d="M26 80 q6 -10 12 0z" fill="#3A2210"/>' +
+        '<path d="M66 86 l22 -42 22 42z" fill="#D8AC5A"/><path d="M88 44 v-5" stroke="#7A4A1A"/><path d="M81 86 q7 -12 14 0z" fill="#3A2210"/>' +
+        '</g>' +
+        '<path d="M20 70 l12 -22 M24 74 l8 -26 M40 72 l-8 -24 M44 76 l-12 -28 M74 78 l14 -32 M78 82 l10 -36 M98 80 l-10 -34 M102 84 l-14 -38" stroke="#9A6A2A" stroke-width="1" fill="none"/>' +
+        '<path d="M18 64 h28 M22 56 h20 M70 72 h36 M76 62 h24 M80 54 h16" stroke="#8A5A1A" stroke-width="1.2" stroke-linecap="round"/>' +
+        persona(57, 96, .68, '#3E8BEA', 1, '<path d="M7 -14 L16 -30" stroke="#7A4A20" stroke-width="1.6" stroke-linecap="round"/><path d="M16 -30 q4 6 2 14" stroke="#555" stroke-width=".6" fill="none"/><path d="M15 -14 q4 -2 6 0 q-2 3 -6 0z" fill="#9FD3FF" stroke="' + O + '" stroke-width=".8"/>') +
+        '</svg>'
+    };
+    for (var k in D) DIB[k] = D[k];
+  })();
 
   /* ---------- Utilidades ---------- */
   function h(html) { var d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild; }
@@ -259,7 +411,7 @@
       hoja.querySelector('.rt-hoja-tx').innerHTML = (titulo ? '<b class="rt-hoja-tit">' + esc(titulo) + '</b>' : '') +
         (r.correcta ? '<div class="rt-clave"><i>' + CHK + '</i><span><small>Respuesta correcta</small><b>' + r.correcta + '</b></span></div>' : '') +
         (r.msg ? '<p>' + r.msg + '</p>' : '') +
-        (r.ok ? '' : '<span class="rt-vuelve"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v5h5"/></svg>Este reto volverá al final del nivel</span>');
+        (r.ok ? '' : '<span class="rt-vuelve"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v5h5"/></svg>Volverá a salir antes de terminar</span>');
       hojaBtn.className = 'rt-btn ' + (r.ok ? 'lima' : 'morado');
       hojaBtn.textContent = r.ok ? 'Continuar' : 'Entendido';
       btn.disabled = true;
@@ -357,9 +509,9 @@
   TIPOS.imagen = function (a) {
     var r = a.reto, sel = -1, orden = barajar(r.opciones.map(function (o, i) { return i; }));
     var g = h('<div class="rt-img"></div>');
-    orden.forEach(function (i) {
+    orden.forEach(function (i, k) {
       var o = r.opciones[i];
-      var b = h('<button class="rt-t"><span class="dib">' + (DIB[o.dibujo] || '') + '</span><span class="txt">' + esc(o.texto) + '</span></button>');
+      var b = h('<button class="rt-t"><span class="dib">' + (DIB[o.dibujo] || '') + '</span><span class="txt"><span class="let">' + 'ABCD'.charAt(k) + '</span>' + esc(o.texto) + '</span></button>');
       b.onclick = function () { sel = i; g.querySelectorAll('.rt-t').forEach(function (x) { x.classList.remove('sel'); }); b.classList.add('sel'); a.acierto(); a.listo(true); };
       b.dataset.i = i; g.appendChild(b);
     });

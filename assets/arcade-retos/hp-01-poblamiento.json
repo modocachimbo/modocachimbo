@@ -8,28 +8,249 @@
       "id": "teoria-ruta",
       "tipo": "imagen",
       "titulo": "Elige la imagen correcta",
-      "sub": "Ruta de llegada",
-      "pregunta": "Según Alex Hrdlička, ¿por dónde llegaron los primeros pobladores de América?",
-      "opciones": [
+      "sub": "Teorías y sitios",
+      "preguntas": [
         {
-          "dibujo": "bering",
-          "texto": "Estrecho de Bering"
+          "id": "teoria-ruta",
+          "pregunta": "Según Alex Hrdlička, ¿por dónde llegaron los primeros pobladores de América?",
+          "opciones": [
+            {
+              "dibujo": "bering",
+              "texto": "Estrecho de Bering"
+            },
+            {
+              "dibujo": "balsa",
+              "texto": "Océano Pacífico en balsas"
+            },
+            {
+              "dibujo": "antartida",
+              "texto": "Por la Antártida"
+            },
+            {
+              "dibujo": "fosil",
+              "texto": "Surgieron en América"
+            }
+          ],
+          "correcta": 0,
+          "explica": "Teoría inmigracionista asiática: cruzaron Beringia durante la última glaciación (Wisconsin), cuando bajó el nivel del mar."
         },
         {
-          "dibujo": "balsa",
-          "texto": "Océano Pacífico en balsas"
+          "id": "toquepala",
+          "pregunta": "¿Qué evidencia hizo famosa a Toquepala (Tacna)?",
+          "opciones": [
+            {
+              "dibujo": "punta",
+              "texto": "Puntas de proyectil"
+            },
+            {
+              "dibujo": "pintura",
+              "texto": "Pinturas rupestres de caza"
+            },
+            {
+              "dibujo": "frijol",
+              "texto": "Primeras plantas cultivadas"
+            },
+            {
+              "dibujo": "craneo",
+              "texto": "Restos humanos"
+            }
+          ],
+          "correcta": 1,
+          "explica": "En la cueva de Toquepala hay pinturas rupestres que muestran el chaco: la caza colectiva de guanacos y vicuñas (aprox. 9 500 a.C.)."
         },
         {
-          "dibujo": "antartida",
-          "texto": "Por la Antártida"
+          "id": "guitarrero",
+          "pregunta": "En la cueva del Guitarrero (Áncash) se hallaron las primeras evidencias de...",
+          "opciones": [
+            {
+              "dibujo": "llama",
+              "texto": "Corrales de camélidos"
+            },
+            {
+              "dibujo": "pintura",
+              "texto": "Arte rupestre"
+            },
+            {
+              "dibujo": "frijol",
+              "texto": "Plantas cultivadas"
+            },
+            {
+              "dibujo": "punta",
+              "texto": "Puntas pedunculadas"
+            }
+          ],
+          "correcta": 2,
+          "explica": "Guitarrero (Callejón de Huaylas) tiene frijol, pallar y ají: horticultura inicial. También textiles de fibra vegetal."
         },
         {
-          "dibujo": "fosil",
-          "texto": "Surgieron en América"
+          "id": "rivet",
+          "pregunta": "Según Paul Rivet, ¿cómo llegaron los melanesios y polinesios a América?",
+          "opciones": [
+            {
+              "dibujo": "bering",
+              "texto": "Por el estrecho de Bering"
+            },
+            {
+              "dibujo": "balsa",
+              "texto": "Cruzando el Pacífico en balsas"
+            },
+            {
+              "dibujo": "antartida",
+              "texto": "Por la Antártida"
+            },
+            {
+              "dibujo": "fosil",
+              "texto": "Surgieron en América"
+            }
+          ],
+          "correcta": 1,
+          "explica": "Teoría oceánica (múltiple): además de los asiáticos por Bering, Rivet propuso que melanesios y polinesios cruzaron el Pacífico en balsas y canoas."
+        },
+        {
+          "id": "mendez",
+          "pregunta": "Para Antonio Méndez Correa, ¿por dónde llegaron los australianos a América?",
+          "opciones": [
+            {
+              "dibujo": "balsa",
+              "texto": "En balsas por el Pacífico"
+            },
+            {
+              "dibujo": "bering",
+              "texto": "Por el estrecho de Bering"
+            },
+            {
+              "dibujo": "antartida",
+              "texto": "Por la Antártida"
+            },
+            {
+              "dibujo": "fosil",
+              "texto": "Surgieron en América"
+            }
+          ],
+          "correcta": 2,
+          "explica": "Teoría australiana: pasaron por islas y la Antártida (en un periodo más cálido, el Óptimo Climático) hasta llegar a la Patagonia."
+        },
+        {
+          "id": "ameghino",
+          "pregunta": "Florentino Ameghino defendió que el ser humano...",
+          "opciones": [
+            {
+              "dibujo": "bering",
+              "texto": "Llegó desde Asia por Bering"
+            },
+            {
+              "dibujo": "balsa",
+              "texto": "Llegó desde Oceanía"
+            },
+            {
+              "dibujo": "antartida",
+              "texto": "Llegó desde Australia"
+            },
+            {
+              "dibujo": "fosil",
+              "texto": "Surgió en América"
+            }
+          ],
+          "correcta": 3,
+          "explica": "Teoría autoctonista: Ameghino (argentino) creyó que el hombre se originó en la pampa americana. Hoy está descartada."
+        },
+        {
+          "id": "lauricocha",
+          "pregunta": "¿Qué se encontró en las cuevas de Lauricocha (Huánuco)?",
+          "opciones": [
+            {
+              "dibujo": "punta",
+              "texto": "Solo puntas de piedra"
+            },
+            {
+              "dibujo": "pintura",
+              "texto": "Pinturas de caza"
+            },
+            {
+              "dibujo": "craneo",
+              "texto": "Restos humanos muy antiguos"
+            },
+            {
+              "dibujo": "choza",
+              "texto": "Una aldea de chozas"
+            }
+          ],
+          "correcta": 2,
+          "explica": "Augusto Cardich halló en Lauricocha restos humanos de unos 8 000 a.C., de los más antiguos del Perú."
+        },
+        {
+          "id": "telarmachay",
+          "pregunta": "En Telarmachay (Junín) hay evidencias tempranas de...",
+          "opciones": [
+            {
+              "dibujo": "llama",
+              "texto": "Domesticación de camélidos"
+            },
+            {
+              "dibujo": "frijol",
+              "texto": "Plantas cultivadas"
+            },
+            {
+              "dibujo": "choza",
+              "texto": "Aldea en la costa"
+            },
+            {
+              "dibujo": "pintura",
+              "texto": "Arte rupestre"
+            }
+          ],
+          "correcta": 0,
+          "explica": "Danièle Lavallée encontró en Telarmachay restos que muestran la domesticación de llamas y alpacas (aprox. 5 000 a.C.)."
+        },
+        {
+          "id": "piquimachay",
+          "pregunta": "¿Qué hallazgo hizo famosa a la cueva de Piquimachay (Ayacucho)?",
+          "opciones": [
+            {
+              "dibujo": "frijol",
+              "texto": "Plantas cultivadas"
+            },
+            {
+              "dibujo": "punta",
+              "texto": "Instrumentos de piedra"
+            },
+            {
+              "dibujo": "llama",
+              "texto": "Corrales de camélidos"
+            },
+            {
+              "dibujo": "choza",
+              "texto": "Casas de caña"
+            }
+          ],
+          "correcta": 1,
+          "explica": "Richard MacNeish halló instrumentos líticos de unos 20 000 a.C., considerados de las evidencias humanas más antiguas del Perú."
+        },
+        {
+          "id": "chilca",
+          "pregunta": "En Chilca (Lima) se halló una de las primeras...",
+          "opciones": [
+            {
+              "dibujo": "choza",
+              "texto": "Aldeas de chozas"
+            },
+            {
+              "dibujo": "pintura",
+              "texto": "Pinturas rupestres"
+            },
+            {
+              "dibujo": "craneo",
+              "texto": "Tumbas de cazadores"
+            },
+            {
+              "dibujo": "punta",
+              "texto": "Fábrica de puntas"
+            }
+          ],
+          "correcta": 0,
+          "explica": "Frédéric Engel estudió Chilca: una aldea de chozas cónicas de caña y junco junto al mar (aprox. 4 000 a.C.), con pesca y recolección."
         }
-      ],
-      "correcta": 0,
-      "explica": "Teoría inmigracionista asiática: cruzaron Beringia durante la última glaciación (Wisconsin), cuando bajó el nivel del mar."
+      ]
     },
     {
       "id": "teoricos",
@@ -116,33 +337,6 @@
       "explica": "Rivet propuso un origen múltiple: además de asiáticos, llegaron melanesios y polinesios por el Pacífico (semejanzas en lenguas, hamaca, mazo, propulsor)."
     },
     {
-      "id": "toquepala",
-      "tipo": "imagen",
-      "titulo": "Elige la imagen correcta",
-      "sub": "Arte de Toquepala",
-      "pregunta": "¿Qué evidencia hizo famosa a Toquepala (Tacna)?",
-      "opciones": [
-        {
-          "dibujo": "punta",
-          "texto": "Puntas de proyectil"
-        },
-        {
-          "dibujo": "pintura",
-          "texto": "Pinturas rupestres de caza"
-        },
-        {
-          "dibujo": "frijol",
-          "texto": "Primeras plantas cultivadas"
-        },
-        {
-          "dibujo": "craneo",
-          "texto": "Restos humanos"
-        }
-      ],
-      "correcta": 1,
-      "explica": "En la cueva de Toquepala hay pinturas rupestres que muestran el chaco: la caza colectiva de guanacos y vicuñas (aprox. 9 500 a.C.)."
-    },
-    {
       "id": "linea-tiempo",
       "tipo": "ordenar",
       "titulo": "Ordena en el tiempo",
@@ -223,7 +417,7 @@
       "id": "vf",
       "tipo": "vf",
       "titulo": "¿Verdadero o falso?",
-      "sub": "Verdadero o falso · 45\u00a0s",
+      "sub": "Verdadero o falso · 45 s",
       "pregunta": "Responde antes de que se acabe el tiempo",
       "segundos": 45,
       "frases": [
@@ -291,33 +485,6 @@
           "Danièle Lavallée"
         ]
       ]
-    },
-    {
-      "id": "guitarrero",
-      "tipo": "imagen",
-      "titulo": "Elige la imagen correcta",
-      "sub": "Cueva del Guitarrero",
-      "pregunta": "En la cueva del Guitarrero (Áncash) se hallaron las primeras evidencias de...",
-      "opciones": [
-        {
-          "dibujo": "llama",
-          "texto": "Corrales de camélidos"
-        },
-        {
-          "dibujo": "pintura",
-          "texto": "Arte rupestre"
-        },
-        {
-          "dibujo": "frijol",
-          "texto": "Plantas cultivadas"
-        },
-        {
-          "dibujo": "punta",
-          "texto": "Puntas pedunculadas"
-        }
-      ],
-      "correcta": 2,
-      "explica": "Guitarrero (Callejón de Huaylas) tiene frijol, pallar y ají: horticultura inicial. También textiles de fibra vegetal."
     },
     {
       "id": "lauricocha",

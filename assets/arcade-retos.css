@@ -60,11 +60,19 @@
 @keyframes rtTiembla { 20%, 60% { transform: translateX(-7px); } 40%, 80% { transform: translateX(7px); } }
 
 /* Elige la imagen */
-.rt-img { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.rt-img .rt-t { gap: 8px; padding: 12px 8px 14px; align-content: start; }
-.rt-img .dib { width: 100%; max-width: 150px; aspect-ratio: 1; border-radius: 12px; background: radial-gradient(circle at 50% 40%, rgba(255,255,255,.16), rgba(255,255,255,.02) 70%); display: grid; place-items: center; }
-.rt-img .dib svg { width: 88%; height: 88%; }
-.rt-img .txt { font: 800 15px/1.2 var(--cuerpo); }
+.rt-img { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+/* Tarjeta de opción: ventana con la escena + letra A–D */
+.rt-img .rt-t { padding: 6px 6px 0; gap: 0; border-radius: 20px; background: linear-gradient(180deg, #3B2F8C, #2A1F6A); border: 3px solid #0A0620; box-shadow: 0 6px 0 #0A0620; overflow: hidden; align-content: stretch; }
+.rt-img .rt-t:active { box-shadow: 0 2px 0 #0A0620; }
+.rt-img .dib { width: 100%; aspect-ratio: 6/5; border-radius: 14px; overflow: hidden; box-shadow: inset 0 0 0 2px rgba(10,6,32,.4); }
+.rt-img .dib svg { width: 100%; height: 100%; display: block; }
+.rt-img .txt { display: flex; align-items: center; gap: 8px; min-height: 48px; padding: 6px 4px 8px; text-align: left; font: 400 15px/1.1 var(--fuente); letter-spacing: .01em; }
+.rt-img .let { flex: none; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 8px; font: 400 14px/1 var(--fuente); color: #1C2600; background: var(--lima); border: 2px solid #2A3300; box-shadow: 0 2px 0 #2A3300; }
+.rt-img .rt-t.sel { border-color: var(--lima); background: linear-gradient(180deg, #4A5A10, #2E3A08); box-shadow: 0 6px 0 #2A3300, 0 0 0 4px rgba(198,224,0,.35), 0 0 28px rgba(198,224,0,.4); translate: 0 -4px; }
+.rt-img .rt-t.bien { border-color: #8BEA5A; background: linear-gradient(180deg, #3FA80A, #237000); box-shadow: 0 6px 0 #124000; }
+.rt-img .rt-t.mal { border-color: #FF8A8A; background: linear-gradient(180deg, #E23A3A, #A51C1C); box-shadow: 0 6px 0 #5A0A0A; }
+.rt-img .rt-t.bien .let { background: #fff; } .rt-img .rt-t.mal .let { background: #FFD0D0; border-color: #5A0A0A; box-shadow: 0 2px 0 #5A0A0A; }
+@media (min-width: 900px) { .rt-img { grid-template-columns: repeat(4, 1fr); } }
 
 /* Toca los pares */
 .rt-rel { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
