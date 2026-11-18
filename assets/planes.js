@@ -9,6 +9,8 @@
 (function () {
   if (window.MCPlanes) return;
   var BASE = {
+    // Tienda de descargas (descargas.html): 'vip' = solo VIP Total (TODO-VIP), 'todos' o 'apagado'
+    tienda: { modo: 'vip' },
     preventa: { activa: true, ciclo: '2027-I', hasta: '30/11', cupos: 100, precio: 39.90 },
     planes: [
       { id: 'gratis', nombre: 'Gratis', sub: 'Para conocer la app y repasar lo del ciclo pasado.', mes: 0, ciclo: 0,
@@ -55,6 +57,7 @@
     if (v.ciclos) { b.ciclos = Object.assign(b.ciclos, v.ciclos); b.ciclos.descarga = Object.assign({ modo: 'auto', lista: [] }, v.ciclos.descarga || {}); }
     if (v.amigos) b.amigos = Object.assign(b.amigos, v.amigos);
     if (v.comparar) b.comparar = Object.assign(b.comparar, v.comparar);
+    if (v.tienda) b.tienda = Object.assign(b.tienda, v.tienda);
     if (Array.isArray(v.planes)) b.planes = b.planes.map(function (p) {
       var g = v.planes.filter(function (x) { return x && x.id === p.id; })[0];
       return g ? Object.assign(p, g) : p;

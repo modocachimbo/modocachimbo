@@ -64,6 +64,8 @@ body { font-family: "Nunito", system-ui, sans-serif; color: #fff; background: #1
     vf: ['Contrarreloj', 'Desliza la carta: verdadero o falso en 45 s.']
   };
   fetch('assets/arcade-retos/hp-01-poblamiento.json').then(function (r) { return r.json(); }).then(function (data) {
+    var ex = function (r) { return r.preguntas ? r.preguntas.map(function (q) { var x = Object.assign({}, r, q, { id: r.id + '-' + q.id }); delete x.preguntas; return x; }) : [r]; };
+    data.retos = [].concat.apply([], data.retos.map(ex));
     var grid = document.getElementById('grid'), todos = data.retos.concat(data.extra || []);
     document.getElementById('nota').textContent = data.nota;
     todos.forEach(function (r) {

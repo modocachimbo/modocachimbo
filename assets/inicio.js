@@ -246,7 +246,10 @@
     var C = window.MCColeccion, b = C && C.item(C.puesto('buho'));
     return b && b.img ? b.img : b && b.id === 'buho-antiguo' && window.MCBuho ? 'antiguo' : null;
   }
+  // Amigo del Búho que llevas puesto (Colección → El Búho y sus amigos; ej. 'rosa', 'rosa-navidad'); vacío = el Búho
+  function compa() { var C = window.MCColeccion, b = C && C.item(C.puesto('buho')); return b && b.pj && window.MCBuhoAmigos && MCBuhoAmigos[b.pj] ? b.pj : ''; }
   function crearBuho(p) {
+    var pj = compa(); if (pj) return MCBuhoVivo.crear(p, pj);
     var ar = disfraz();
     if (!ar) return MCBuhoVivo.crear(p);
     // El antiguo: el búho del logo (assets/buho.js), con su cara según el momento
@@ -267,7 +270,7 @@
     decir: function (t, tono, ms) { decir({ t: t, tipo: tono }, ms, true); },
     alTocar: function () { decir(frasesToque()[toqueN++ % frasesToque().length], 4500); }
   });
-  var buhoPuesto = disfraz();
+  var buhoPuesto = disfraz() + '|' + compa();
   // El escenario que llevas puesto en Mi colección: su cielo y su piso (Galaxia es el de siempre, con su modo claro)
   function pintarEscenario() {
     var C = window.MCColeccion, e = $('escena'); if (!C || !e) return;
@@ -279,14 +282,15 @@
       plat.innerHTML = id === 'escena-galaxia' ? '<i></i><i></i><i></i>' : C.piso(id);
     }
     if (id === 'escena-galaxia') { v.forEach(function (k) { e.style.removeProperty(k); }); return; }
-    e.style.setProperty('--esc-cielo', 'radial-gradient(120% 85% at 50% 30%, ' + t[0] + ' 0%, ' + t[3] + ' 42%, #0b0818 85%)');
+    var fi = C.fondoEscena && C.fondoEscena(id);
+    e.style.setProperty('--esc-cielo', fi ? 'url("' + fi + '") center bottom/cover no-repeat, ' + t[3] : 'radial-gradient(120% 85% at 50% 30%, ' + t[0] + ' 0%, ' + t[3] + ' 42%, #0b0818 85%)');
     e.style.setProperty('--plat-a', t[0]); e.style.setProperty('--plat-b', t[3]);
     e.style.setProperty('--esc-foco', 'rgba(255, 255, 255, .12)');
   }
   pintarEscenario();
   if (window.MCColeccion) MCColeccion.alCambiar(pintarEscenario);
   if (window.MCColeccion) MCColeccion.alCambiar(function () {
-    var ar = disfraz(); if (ar === buhoPuesto) return;
+    var ar = disfraz() + '|' + compa(); if (ar === buhoPuesto) return;
     buhoPuesto = ar;
     var v = $('buho').querySelector('.mcb'); if (v) v.remove();
     $('buho').append(crearBuho('vivo'));
@@ -441,7 +445,7 @@
       tema = C.tema(fo ? x.fondo : C.defecto.racha);
       if (at.av || at.img) img = C.avatar(at.id);
     }
-    var dentro = /^https:\/\//.test(img || '') || /assets\/buho\/avatar\//.test(img || '') ? '<img src="' + esc(img) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : inicial(x.apodo);
+    var dentro = /^https:\/\//.test(img || '') || /assets\/(buho\/avatar|temporadas)\//.test(img || '') ? '<img src="' + esc(img) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : inicial(x.apodo);
     var fondo = tema ? 'linear-gradient(135deg,' + tema[0] + ',' + tema[3] + ')' : AV[(x.puesto - 1) % AV.length];
     return '<span class="letra' + (marco ? ' con-m' : '') + (tema ? ' con-f' : '') + '" style="' + (marco ? '--m:' + marco + ';' : '') + '--lf:' + fondo + '"><span>' + dentro + '</span></span>';
   }

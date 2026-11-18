@@ -11,6 +11,22 @@
   if (window.MCRacha || !window.MCAuth) return;
   var CFG = window.MC_CONFIG || {};
   // Llama de dos capas: la de afuera y la de adentro titilan a distinto ritmo
+  /* Inicio (window.MC_RECURSOS_ARCADE): llama 3D con el formato de los recursos del Arcade
+     (contorno oscuro desplazado, degradado y brillo). Gris mientras hoy no se cumple la meta. */
+  var nFuego = 0;
+  function fuego3d() {
+    var g = 'mclFG' + (++nFuego), n = 'mclNG' + nFuego;
+    var ext = 'M12.3 1.4c.6 3.3 3.5 5 5.4 8 1.7 2.7 2 5.6.8 8.3-1.2 3-4 4.9-6.9 4.9-3.3 0-6.3-2.3-7.1-5.7-.5-2.3.1-4.6 1.5-6.4.2 1.6.9 2.7 2.1 3.2-.5-4.6 1.5-9 4.2-12.3z';
+    var nuc = 'M12.2 10.6c.5 1.8 2.4 2.8 2.9 4.8.6 2.6-1.1 5-3.3 5-2.1 0-3.6-1.7-3.4-3.7.1-1.1.7-2 1.4-2.6.1.8.5 1.4 1.1 1.6-.2-1.8.4-3.6 1.3-5.1z';
+    return '<svg class="mcl mcl3d" viewBox="0 0 24 24" aria-hidden="true"><defs>' +
+      '<linearGradient id="' + g + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--f1,#FFE066)"/><stop offset=".45" style="stop-color:var(--f2,#FF9600)"/><stop offset="1" style="stop-color:var(--f3,#E8380D)"/></linearGradient>' +
+      '<linearGradient id="' + n + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--f4,#FFFBE0)"/><stop offset="1" style="stop-color:var(--f5,#FFD21F)"/></linearGradient></defs>' +
+      '<g class="mcl-ext"><path d="' + ext + '" style="fill:var(--fo,#6A1E00);stroke:var(--fo,#6A1E00)" stroke-width="2.2" stroke-linejoin="round" transform="translate(.4 1.1)"/>' +
+      '<path d="' + ext + '" fill="url(#' + g + ')" style="stroke:var(--fs,#8A2A00)" stroke-width="1.1" stroke-linejoin="round"/>' +
+      '<ellipse cx="9.6" cy="10.5" rx="1.5" ry="2.6" fill="#fff" style="opacity:var(--fb,.75)" transform="rotate(25 9.6 10.5)"/></g>' +
+      '<g class="mcl-int"><path d="' + nuc + '" fill="url(#' + n + ')" style="stroke:var(--fs,#C25A00)" stroke-width=".6"/>' +
+      '<path d="M11.4 17.2c.1.9.7 1.5 1.4 1.6" stroke="#fff" stroke-width="1.1" stroke-linecap="round" fill="none" style="opacity:var(--fb,.8)"/></g></svg>';
+  }
   var ICONO = '<svg class="mcl" viewBox="0 0 24 24" aria-hidden="true"><g class="mcl-ext"><path fill="currentColor" d="M12.3 1.4c.6 3.3 3.5 5 5.4 8 1.7 2.7 2 5.6.8 8.3-1.2 3-4 4.9-6.9 4.9-3.3 0-6.3-2.3-7.1-5.7-.5-2.3.1-4.6 1.5-6.4.2 1.6.9 2.7 2.1 3.2-.5-4.6 1.5-9 4.2-12.3z"/><path class="mcl-sombra" fill="#E07000" d="M18.5 17.7c-1.2 3-4 4.9-6.9 4.9 3.6-1.4 6-4.5 5.9-8.8 0-1.6-.4-3.2-1.1-4.6.4.3.9.7 1.3 1.2 1.7 2.7 2 5.6.8 8.3z"/></g><g class="mcl-int"><path class="mcl-nucleo" fill="#FFD84D" d="M12.2 10.6c.5 1.8 2.4 2.8 2.9 4.8.6 2.6-1.1 5-3.3 5-2.1 0-3.6-1.7-3.4-3.7.1-1.1.7-2 1.4-2.6.1.8.5 1.4 1.1 1.6-.2-1.8.4-3.6 1.3-5.1z"/><path class="mcl-brillo" d="M11.4 17.2c.1.9.7 1.5 1.4 1.6" stroke="#fff" stroke-width="1.1" stroke-linecap="round" opacity=".8" fill="none"/></g></svg>';
 
   var estado = null, pendiente = 0, enviando = false, temporizador = null;
@@ -63,7 +79,7 @@
     var r = estado;
     Array.prototype.forEach.call(document.querySelectorAll('[data-mc-racha]'), function (el) {
       if (!r) { el.hidden = true; return; }
-      el.innerHTML = ICONO + '<span>' + (r.actual || 0) + '</span>';
+      el.innerHTML = (window.MC_RECURSOS_ARCADE && el.closest('.cab') ? fuego3d() : ICONO) + '<span>' + (r.actual || 0) + '</span>';
       el.classList.toggle('on', !!r.cumplido_hoy);
       el.title = (r.actual || 0) + (r.actual === 1 ? ' día' : ' días') + ' de racha · Hoy ' + Math.min(r.hoy || 0, r.meta || 20) + '/' + (r.meta || 20) + ' preguntas';
       el.setAttribute('aria-label', el.title);

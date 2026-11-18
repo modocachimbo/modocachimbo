@@ -28,8 +28,10 @@
     evento: { nom: 'Evento', c: '255,75,75' }
   };
   // Premios por rango: n es un tope de XP en una semana (el mismo de supabase/31-coleccion.sql)
-  var RANGO_XP = [20, 1500, 4000, 8000, 12000];
-  function rangoDe(n) { return window.MCRango ? MCRango.nombre(MCRango.nivel(RANGO_XP[n])) : ''; }
+  // 0..4: los premios de antes (se quedan con su XP). 5..11: los rangos de ahora
+  // (Bronce I, Plata I, Esmeralda I, Zafiro I, Amatista I, Mítico I, Leyenda I). Igual en supabase/96-rangos-premios.sql
+  var RANGO_XP = [20, 1500, 4000, 8000, 12000, 20, 900, 2300, 4700, 9000, 16000, 50000];
+  function rangoDe(n) { return window.MCRango ? MCRango.nombre(MCRango.nivel(RANGO_XP[n], '2026-11-09')) : ''; }   // RANGO_XP es la tabla de antes del 16-11
   var HALLOWEEN = 'Noche de Brujas 2026';  // en la cinta de la tarjeta sale «Halloween»
 
   // Espacios: dónde se pone cada cosa (pines: hasta 3 en tu vitrina)
@@ -53,6 +55,9 @@
     { id: 'buho-cervantes', espacio: 'buho', nom: 'Cervantes', rareza: 'raro', regla: { tipo: 'gratis' }, img: 'comunicacion', area: 'Comunicación', desc: 'El autor del Quijote. Te acompaña en Comunicación.' },
     { id: 'buho-einstein', espacio: 'buho', nom: 'Einstein', rareza: 'raro', regla: { tipo: 'gratis' }, img: 'ciencia-tecnologia', area: 'Ciencia y Tecnología', desc: 'El genio de la relatividad. Te acompaña en Ciencia y Tecnología.' },
     { id: 'buho-inca', espacio: 'buho', nom: 'Inca', rareza: 'epico', regla: { tipo: 'gratis' }, img: 'ciencias-sociales', area: 'Ciencias Sociales', desc: 'Con mascaipacha y unku. Te acompaña en Ciencias Sociales.' },
+    // Amigos del Búho (pj = personaje animado por capas, assets/buho/rosa-datos.js). Solo de regalo (panel → Regalos)
+    { id: 'buho-rosa', espacio: 'buho', nom: 'Búha Rosa', rareza: 'epico', regla: { tipo: 'regalo' }, pj: 'rosa', foto: 'rosa', desc: 'La mejor amiga del Búho. Lleva una flor y siempre saluda con alegría.' },
+    { id: 'buho-rosa-navidad', espacio: 'buho', nom: 'Búha Rosa · Navidad', rareza: 'evento', regla: { tipo: 'regalo' }, pj: 'rosa-navidad', foto: 'rosa-navidad', desc: 'Gorro de Papá Noel, bufanda y capa roja.' },
     { id: 'buho-birrete', espacio: 'buho', nom: 'Birrete de ingresante', rareza: 'legendario', regla: { tipo: 'regalo' }, desc: 'Para quien ya ingresó a la universidad. Te lo entregamos cuando nos cuentes que ingresaste.' },
 
     // Foto de perfil: la de tu tarjeta, tu perfil y los tops (el búho es la de siempre)
@@ -116,14 +121,67 @@
     { id: 'pin-fantasma', espacio: 'pines', nom: 'Fantasma', rareza: 'evento', regla: { tipo: 'evento', evento: HALLOWEEN }, pin: ['👻', '#14213f', '#A99FC8'] },
     { id: 'pin-telarana', espacio: 'pines', nom: 'Telaraña', rareza: 'evento', regla: { tipo: 'evento', evento: HALLOWEEN }, pin: ['🕸️', '#1d1a2e', '#6F6690'] },
 
-    // Top global: coronas del Top de la semana (XP). Desde el martes las llevan los 3 primeros;
-    // se quedan para siempre a quien cierra la semana (domingo) en ese puesto
-    { id: 'pin-corona-oro', espacio: 'pines', nom: 'Top global · 1.º', rareza: 'legendario', regla: { tipo: 'top', n: 1 }, img: BASE + 'assets/pines/corona-oro.webp', suelto: true, pin: ['', '#2a1d05', '#FFC800'], desc: 'Para el 1.º del Top de la semana.' },
-    { id: 'pin-corona-plata', espacio: 'pines', nom: 'Top global · 2.º', rareza: 'epico', regla: { tipo: 'top', n: 2 }, img: BASE + 'assets/pines/corona-plata.webp', suelto: true, pin: ['', '#1b2130', '#C9D1DC'], desc: 'Para el 2.º del Top de la semana.' },
-    { id: 'pin-corona-bronce', espacio: 'pines', nom: 'Top global · 3.º', rareza: 'raro', regla: { tipo: 'top', n: 3 }, img: BASE + 'assets/pines/corona-bronce.webp', suelto: true, pin: ['', '#26150a', '#E0995E'], desc: 'Para el 3.º del Top de la semana.' },
+    // Top global: premios del Top de la semana (XP). Se quedan para siempre a quien cierra la semana
+    // (domingo) en ese puesto. Cada semana el premio es de una familia (supabase/108-premios-top-semana.sql):
+    // hasta el 22-11-2026 el hexágono; luego corona, medalla y escudo, una semana cada una; después al azar
+    { id: 'pin-corona-oro', espacio: 'pines', nom: 'Top global · 1.º', rareza: 'legendario', regla: { tipo: 'top', n: 1 }, img: BASE + 'assets/pines/top-hex-oro.webp', suelto: true, pin: ['', '#2a1d05', '#FFC800'], desc: 'Para el 1.º del Top de la semana.' },
+    { id: 'pin-corona-plata', espacio: 'pines', nom: 'Top global · 2.º', rareza: 'epico', regla: { tipo: 'top', n: 2 }, img: BASE + 'assets/pines/top-hex-plata.webp', suelto: true, pin: ['', '#1b2130', '#C9D1DC'], desc: 'Para el 2.º del Top de la semana.' },
+    { id: 'pin-corona-bronce', espacio: 'pines', nom: 'Top global · 3.º', rareza: 'raro', regla: { tipo: 'top', n: 3 }, img: BASE + 'assets/pines/top-hex-bronce.webp', suelto: true, pin: ['', '#26150a', '#E0995E'], desc: 'Para el 3.º del Top de la semana.' },
+    { id: 'pin-corona-cachimbo-oro', espacio: 'pines', nom: 'Corona Cachimbo · 1.º', rareza: 'legendario', regla: { tipo: 'top', n: 1, fam: 'corona' }, img: BASE + 'assets/pines/top-corona-oro.webp', suelto: true, pin: ['', '#2a1d05', '#FFC800'], desc: 'Para el 1.º del Top de la semana.' },
+    { id: 'pin-corona-cachimbo-plata', espacio: 'pines', nom: 'Corona Cachimbo · 2.º', rareza: 'epico', regla: { tipo: 'top', n: 2, fam: 'corona' }, img: BASE + 'assets/pines/top-corona-plata.webp', suelto: true, pin: ['', '#1b2130', '#C9D1DC'], desc: 'Para el 2.º del Top de la semana.' },
+    { id: 'pin-corona-cachimbo-bronce', espacio: 'pines', nom: 'Corona Cachimbo · 3.º', rareza: 'raro', regla: { tipo: 'top', n: 3, fam: 'corona' }, img: BASE + 'assets/pines/top-corona-bronce.webp', suelto: true, pin: ['', '#26150a', '#E0995E'], desc: 'Para el 3.º del Top de la semana.' },
+    { id: 'pin-corona-medalla-oro', espacio: 'pines', nom: 'Medalla del Top · 1.º', rareza: 'legendario', regla: { tipo: 'top', n: 1, fam: 'medalla' }, img: BASE + 'assets/pines/top-medalla-oro.webp', suelto: true, pin: ['', '#2a1d05', '#FFC800'], desc: 'Para el 1.º del Top de la semana.' },
+    { id: 'pin-corona-medalla-plata', espacio: 'pines', nom: 'Medalla del Top · 2.º', rareza: 'epico', regla: { tipo: 'top', n: 2, fam: 'medalla' }, img: BASE + 'assets/pines/top-medalla-plata.webp', suelto: true, pin: ['', '#1b2130', '#C9D1DC'], desc: 'Para el 2.º del Top de la semana.' },
+    { id: 'pin-corona-medalla-bronce', espacio: 'pines', nom: 'Medalla del Top · 3.º', rareza: 'raro', regla: { tipo: 'top', n: 3, fam: 'medalla' }, img: BASE + 'assets/pines/top-medalla-bronce.webp', suelto: true, pin: ['', '#26150a', '#E0995E'], desc: 'Para el 3.º del Top de la semana.' },
+    { id: 'pin-corona-escudo-oro', espacio: 'pines', nom: 'Escudo del Top · 1.º', rareza: 'legendario', regla: { tipo: 'top', n: 1, fam: 'escudo' }, img: BASE + 'assets/pines/top-escudo-oro.webp', suelto: true, pin: ['', '#2a1d05', '#FFC800'], desc: 'Para el 1.º del Top de la semana.' },
+    { id: 'pin-corona-escudo-plata', espacio: 'pines', nom: 'Escudo del Top · 2.º', rareza: 'epico', regla: { tipo: 'top', n: 2, fam: 'escudo' }, img: BASE + 'assets/pines/top-escudo-plata.webp', suelto: true, pin: ['', '#1b2130', '#C9D1DC'], desc: 'Para el 2.º del Top de la semana.' },
+    { id: 'pin-corona-escudo-bronce', espacio: 'pines', nom: 'Escudo del Top · 3.º', rareza: 'raro', regla: { tipo: 'top', n: 3, fam: 'escudo' }, img: BASE + 'assets/pines/top-escudo-bronce.webp', suelto: true, pin: ['', '#26150a', '#E0995E'], desc: 'Para el 3.º del Top de la semana.' },
     // La V de verificado: solo para influencers (supabase/67-verificado-influencers.sql)
-    { id: 'pin-verificado', espacio: 'pines', nom: 'Verificado', rareza: 'legendario', regla: { tipo: 'grupo', g: 'influencer' }, img: BASE + 'assets/pines/verificado.webp', suelto: true, pin: ['', '#4A0A0A', '#FFC800'], desc: 'La V de verificado de Modo Cachimbo.' }
+    { id: 'pin-verificado', espacio: 'pines', nom: 'Verificado', rareza: 'legendario', regla: { tipo: 'grupo', g: 'influencer' }, img: BASE + 'assets/pines/verificado-v2.webp', suelto: true, pin: ['', '#1a2206', '#E4FF3A'], desc: 'La V de verificado de Modo Cachimbo.' }
   ];
+  // Temporadas de premios por rango: una por semana. Si en esa semana llegas a un rango, ganas su
+  // foto de perfil, su banner y su marco de esa temporada (regla rango con sem = lunes de esa semana).
+  // Imágenes: assets/temporadas/<t>/<rango>-foto|banner|marco.webp (el marco es un dibujo con alas o corona
+  // que va por encima de la foto: mo). El banner pinta el nombre del rango con su color (rg).
+  // Lo mismo en supabase/109-temporadas-rango.sql (para cada temporada nueva: sumarla aquí y en el SQL).
+  var TEMPORADAS = [
+    { t: 't1', nom: 'T1 Nazca', sem: '2026-11-16', fig: [['la', 'Lagartija'], ['la', 'Araña'], ['el', 'Árbol'], ['la', 'Ballena'], ['el', 'Mono'], ['el', 'Cóndor'], ['el', 'Colibrí']] },
+    // piezas: qué da la temporada (sin piezas: foto, banner y marco). bn: nombre del banner (sin bn: «Líneas de …»)
+    { t: 't2', nom: 'T2 Machu Picchu', sem: '2026-11-23', piezas: ['foto', 'banner'], bn: 'Cielo inca',
+      fig: [['la', 'Llama'], ['el', 'Quipu'], ['los', 'Andenes'], ['la', 'Chakana'], ['el', 'Tumi de oro'], ['el', 'Intihuatana'], ['', 'Machu Picchu']] }
+  ];
+  // rango, nombre, n de RANGO_XP, XP de la semana para llegar (tabla desde el 16-11-2026, assets/rango.js), rareza, colores (texto, fondo, borde, brillo)
+  var TRANGOS = [
+    ['bronce', 'Bronce', 5, 20, 'comun', '#E8A878', '#3a1e0e', '#9A5A30', '#FFD9B8'],
+    ['plata', 'Plata', 6, 1900, 'comun', '#D6DEEA', '#262c3a', '#8A96AA', '#FFFFFF'],
+    ['esmeralda', 'Esmeralda', 7, 4300, 'raro', '#5FF59A', '#06361a', '#0FA845', '#C9FFDD'],
+    ['zafiro', 'Zafiro', 8, 7700, 'raro', '#5FDAFF', '#06304a', '#1A6CC0', '#D6F6FF'],
+    ['amatista', 'Amatista', 9, 14000, 'epico', '#D79BFF', '#2a1050', '#8A36E0', '#F1DDFF'],
+    ['mitico', 'Mítico', 10, 23000, 'legendario', '#FF7AD9', '#3e0a34', '#C0399E', '#FFD6F3'],
+    ['leyenda', 'Leyenda', 11, 60000, 'legendario', '#FFC800', '#3e2400', '#D08A00', '#FFF3B0']
+  ];
+  var MES_L = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'setiembre', 'octubre', 'noviembre', 'diciembre'];
+  function semanaTxt(sem) {
+    var a = new Date(sem + 'T12:00:00'), b = new Date(a); b.setDate(b.getDate() + 6);
+    return 'del ' + a.getDate() + (a.getMonth() === b.getMonth() ? '' : ' de ' + MES_L[a.getMonth()]) + ' al ' + b.getDate() + ' de ' + MES_L[b.getMonth()];
+  }
+  TEMPORADAS.forEach(function (T) {
+    var dir = BASE + 'assets/temporadas/' + T.t + '/';
+    TRANGOS.forEach(function (r, k) {
+      var f = T.fig[k], regla = { tipo: 'rango', n: r[2], sem: T.sem, xp: r[3] }, base = { rareza: r[4], regla: regla, temporada: T.nom };
+      var d = 'Temporada ' + T.nom + ': llega a ' + r[1] + ' en la semana ' + semanaTxt(T.sem) + '.';
+      var pz = T.piezas || ['foto', 'banner', 'marco'];
+      if (pz.indexOf('foto') >= 0) CATALOGO.push(Object.assign({ id: T.t + '-foto-' + r[0], espacio: 'avatar', nom: T.nom + ' · ' + f[1], img: dir + r[0] + '-foto.webp', desc: d }, base));
+      if (pz.indexOf('banner') >= 0) CATALOGO.push(Object.assign({ id: T.t + '-banner-' + r[0], espacio: 'racha', nom: T.nom + ' · ' + (T.bn ? T.bn + ' · ' + f[1] : 'Líneas ' + (f[0] === 'el' ? 'del ' : 'de la ') + f[1]), img: dir + r[0] + '-banner.webp', tema: [r[5], r[7], r[7], r[6]], rg: r[5], desc: d }, base));
+      if (pz.indexOf('marco') >= 0) CATALOGO.push(Object.assign({ id: T.t + '-marco-' + r[0], espacio: 'marco', nom: T.nom + ' · Marco ' + r[1], marco: 'linear-gradient(135deg,' + r[8] + ',' + r[5] + ' 45%,' + r[7] + ')', mo: dir + r[0] + '-marco.webp', desc: d }, base));
+    });
+  });
+  // El lunes de esta semana (hora de Lima), como en xp_semana.semana
+  function lunesHoy() {
+    var d = new Date(Date.now() - 5 * 3600000), w = (d.getUTCDay() + 6) % 7;
+    d.setUTCDate(d.getUTCDate() - w);
+    return d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0') + '-' + String(d.getUTCDate()).padStart(2, '0');
+  }
   var PUESTO_TXT = { 1: '1.er', 2: '2.º', 3: '3.er' };
   // Tu foto (o inicial) para dibujar «Mi foto»; la pone la página con fijarFoto
   var miFoto = { src: '', letra: '', nombre: '' };
@@ -157,16 +215,17 @@
   };
   // Por ahora salen solo estos (los pines, todos). Los demás quedan guardados para más adelante:
   // si alguien llevaba uno de ellos, vuelve a lo de siempre.
-  var VISIBLES = ['buho-clasico', 'buho-antiguo', 'avatar-buho', 'avatar-foto', 'escena-galaxia', 'escena-nube',
+  var VISIBLES = ['buho-clasico', 'buho-antiguo', 'buho-rosa', 'buho-rosa-navidad', 'avatar-buho', 'avatar-foto', 'escena-galaxia', 'escena-nube',
     'racha-galaxia', 'racha-cielo', 'cuadro-galaxia', 'cuadro-cielo', 'marco-ninguno', 'marco-lima', 'titulo-cachimbo', 'titulo-constante'];
-  CATALOGO = CATALOGO.filter(function (x) { return x.espacio === 'pines' || VISIBLES.indexOf(x.id) >= 0; });
+  CATALOGO = CATALOGO.filter(function (x) { return x.espacio === 'pines' || x.temporada || VISIBLES.indexOf(x.id) >= 0; });
   var POR_ID = {};
   CATALOGO.forEach(function (x) { POR_ID[x.id] = x; });
 
   // Recursos: lo que se sube desde el panel (supabase/40-recursos.sql y 41-recursos-coleccion.sql):
   // fondos, fotos de perfil, pines, marcos, cuadros de racha y títulos.
   // Se suman al catálogo al llegar; se recuerdan en este equipo para no esperar la próxima vez.
-  var CLAVE_REC = 'mc_recursos2';   // 2: también trae lo de la web eliminado (66)
+  var CLAVE_REC = 'mc_recursos3';   // 2: también trae lo de la web eliminado (66); 3: pin PRO nuevo (todos lo piden de nuevo)
+  try { localStorage.removeItem('mc_recursos2'); localStorage.removeItem('mc_recursos2_t'); } catch (e) {}
   var IMG_REC = /^https:\/\/[a-z0-9.-]+\/storage\/v1\/object\/public\/recursos\/[A-Za-z0-9\/_.-]+$/;
   function colores(l, n) { return Array.isArray(l) && l.length === n && l.every(function (c) { return /^#[0-9a-fA-F]{6}$/.test(c); }); }
   function recurso(r) {
@@ -176,13 +235,15 @@
     if (r.descr) x.desc = r.descr;
     if (e === 'racha') { if (!img || !colores(r.tema, 4)) return null; x.tema = r.tema; x.img = img; }
     else if (e === 'avatar') { if (!img) return null; x.img = img; }
-    else if (e === 'pines') { if (!img || !colores(r.tema, 4)) return null; x.img = img; x.pin = ['', r.tema[3], r.tema[0]]; }
+    else if (e === 'pines') { if (!img || !colores(r.tema, 4)) return null; x.img = img; x.pin = ['', r.tema[3], r.tema[0]]; if (/-suelto\.[a-z]+$/.test(img)) x.suelto = true; }
     else if (e === 'marco') {
       if (img) x.marco = 'url(' + img + ') center/cover';
       else if (colores(r.tema, 3)) x.marco = 'conic-gradient(from 200deg,' + r.tema[0] + ',' + r.tema[1] + ',' + r.tema[2] + ',' + r.tema[0] + ')';
       else return null;
     }
     else if (e === 'cuadro') { if (!colores(r.tema, 4) || !colores(r.llama, 2)) return null; x.tema = r.tema; x.llama = r.llama; }
+    // Escenario subido desde el panel: la imagen es todo el fondo (cielo y piso); el búho se para abajo al centro
+    else if (e === 'escena') { if (!img || !colores(r.tema, 4)) return null; x.tema = r.tema; x.img = img; }
     else if (e !== 'titulo') return null;
     return x;
   }
@@ -203,11 +264,12 @@
     });
   }
   sumarRecursos(leer(CLAVE_REC));
-  // Menos tráfico: el catálogo de recursos se vuelve a pedir como mucho cada 6 horas
+  // Menos tráfico: el catálogo de recursos se vuelve a pedir como mucho cada hora
+  // (así un cambio de imagen desde el panel llega a todos en menos de 1 h)
   var pedidoRec = null;
   function cargarRecursos() {
     if (pedidoRec || !window.MCAuth) return pedidoRec;
-    if (leer(CLAVE_REC) && Date.now() - (+leer(CLAVE_REC + '_t') || 0) < 6 * 3600000) return (pedidoRec = Promise.resolve());
+    if (leer(CLAVE_REC) && Date.now() - (+leer(CLAVE_REC + '_t') || 0) < 3600000) return (pedidoRec = Promise.resolve());
     pedidoRec = MCAuth.listo.then(function (c) {
       return c.from('coleccion_item').select('id,espacio,regla,nom,rareza,img,tema,llama,descr,recurso,visible').or('and(recurso.eq.true,visible.eq.true),visible.eq.false').order('creado').then(function (r) {
         if (r.error) return; // todavía no se corrió supabase/40-recursos.sql
@@ -222,17 +284,17 @@
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function leer(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function guardar(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
-  var CLAVE = 'mc_coleccion', CLAVE_T = 'mc_coleccion_t';   // _t: cuándo se pidió cada cosa { u, col, rgo }
+  var CLAVE = 'mc_coleccion', CLAVE_T = 'mc_coleccion_t2';   // _t: cuándo se pidió cada cosa { u, col, rgo }
 
   // Estado: lo que tienes (mias), lo que llevas (puesto) y los datos para las reglas
-  var E = { mias: {}, puesto: copiar(DEFECTO), mejorRacha: 0, maxRango: -1, tops: {}, grupos: [], sql: false, listo: false, rachaOk: false };
+  var E = { mias: {}, puesto: copiar(DEFECTO), mejorRacha: 0, maxXp: 0, xpSem: {}, xpAhora: 0, tops: {}, grupos: [], sql: false, listo: false, rachaOk: false };
   var cache = leer(CLAVE);
-  if (cache) { E.mias = cache.mias || {}; E.puesto = mezclar(cache.puesto); E.mejorRacha = cache.mejorRacha || 0; E.maxRango = cache.maxRango == null ? -1 : cache.maxRango; E.tops = cache.tops || {}; E.grupos = cache.grupos || []; E.sql = !!cache.sql; }
+  if (cache) { E.mias = cache.mias || {}; E.puesto = mezclar(cache.puesto); E.mejorRacha = cache.mejorRacha || 0; E.maxXp = +cache.maxXp || 0; E.xpSem = cache.xpSem || {}; E.tops = cache.tops || {}; E.grupos = cache.grupos || []; E.sql = !!cache.sql; }
   function copiar(o) { return JSON.parse(JSON.stringify(o)); }
   function mezclar(p) { var r = copiar(DEFECTO); Object.keys(p || {}).forEach(function (k) { if (k in r) r[k] = p[k]; }); if (!Array.isArray(r.pines)) r.pines = []; return r; }
   var oyentes = [];
   function avisar() {
-    guardar(CLAVE, { mias: E.mias, puesto: E.puesto, mejorRacha: E.mejorRacha, maxRango: E.maxRango, tops: E.tops, grupos: E.grupos, sql: E.sql });
+    guardar(CLAVE, { mias: E.mias, puesto: E.puesto, mejorRacha: E.mejorRacha, maxXp: E.maxXp, xpSem: E.xpSem, tops: E.tops, grupos: E.grupos, sql: E.sql });
     oyentes.forEach(function (fn) { try { fn(E); } catch (e) {} });
   }
 
@@ -244,35 +306,56 @@
     if (E.mias[id]) return true;
     if (r.tipo === 'gratis') return true;
     if (r.tipo === 'racha') return E.mejorRacha >= r.n;
-    if (r.tipo === 'rango') return E.maxRango >= r.n;
-    if (r.tipo === 'top') return (+E.tops[r.n] || 0) > 0;   // solo al cerrar la semana en ese puesto (supabase/73)
+    if (r.tipo === 'rango') return (r.sem ? xpDe(r.sem) : E.maxXp) >= (r.xp || RANGO_XP[r.n] || Infinity);
+    if (r.tipo === 'top') return topVeces(r) > 0;   // solo al cerrar la semana en ese puesto (supabase/73 y 108)
     return false;
+  }
+  // Tu XP de una semana (la de esta semana llega en vivo con assets/corazones.js)
+  function xpDe(sem) { return Math.max(+E.xpSem[sem] || 0, sem === lunesHoy() ? E.xpAhora : 0); }
+  // Semanas cerradas en ese puesto con el premio de esa familia (sin 108 corrido: todo cuenta como hexágono)
+  function topVeces(r) {
+    var f = r.fam || 'hex';
+    if (E.tops.fam) return +((E.tops.fam[f] || {})[r.n]) || 0;
+    return f === 'hex' ? (+E.tops[r.n] || 0) : 0;
   }
   // Cuánto falta (0 a 1) para las reglas que se pueden medir
   function avance(id) {
     var r = (POR_ID[id] || {}).regla || {};
     if (r.tipo === 'racha') return Math.min(1, E.mejorRacha / r.n);
-    if (r.tipo === 'rango') return Math.min(1, (E.maxRango + 1) / (r.n + 1));
+    if (r.tipo === 'rango') return r.sem && r.sem !== lunesHoy() && !tiene(id) ? null : Math.min(1, (r.sem ? xpDe(r.sem) : E.maxXp) / (r.xp || RANGO_XP[r.n] || 1));
     return null;
   }
   function como(x) {
     var r = x.regla, ok = tiene(x.id);
     if (r.tipo === 'gratis') return 'Viene con tu cuenta.';
     if (r.tipo === 'racha') return ok ? 'Lo ganaste al llegar a ' + r.n + ' días de racha.' : 'Llega a una racha de ' + r.n + ' días (tu mejor: ' + E.mejorRacha + ').';
+    if (r.tipo === 'rango' && r.sem) {
+      var ya = r.sem < lunesHoy(), nom = (TRANGOS.filter(function (t) { return t[2] === r.n; })[0] || [])[1] || rangoDe(r.n);
+      if (ok) return 'Lo ganaste al llegar a ' + nom + ' en la Temporada ' + x.temporada + '. Es tuyo para siempre.';
+      if (r.sem > lunesHoy()) return 'Llega pronto: es el premio de la Temporada ' + x.temporada + ', la semana ' + semanaTxt(r.sem) + '.';
+      if (ya) return 'Era el premio de la Temporada ' + x.temporada + ' (semana ' + semanaTxt(r.sem) + ') para quien llegó a ' + nom + '.';
+      return 'Premio de esta semana: llega a ' + nom + ' antes del domingo y es tuyo para siempre (' + String(r.xp || RANGO_XP[r.n]).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' XP; llevas ' + String(xpDe(r.sem)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ').';
+    }
     if (r.tipo === 'rango') return ok ? 'Lo ganaste al llegar a ' + rangoDe(r.n) + ' en una semana.' : 'Llega a ' + rangoDe(r.n) + ' en una semana (' + (window.MCRango ? String(RANGO_XP[r.n]).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' XP' : '') + ').';
     if (r.tipo === 'top') {
-      var v = +E.tops[r.n] || 0, P = PUESTO_TXT[r.n];
-      if (E.mias[x.id] && !v) return 'Un regalo de Modo Cachimbo. Es tuya para siempre.';
-      if (v) return 'Es tuya para siempre: cerraste ' + (v > 1 ? v + ' semanas' : 'una semana') + ' en el ' + P + ' puesto del Top.';
-      if (+E.tops.ahora === r.n) return 'Vas en el ' + P + ' puesto del Top. Si cierras el domingo ahí, la corona es tuya para siempre y tú decides si te la pones.';
-      return 'Es tuya para siempre si cierras la semana en el ' + P + ' puesto del Top. Luego tú decides si te la pones.';
+      var v = topVeces(r), P = PUESTO_TXT[r.n], f = r.fam || 'hex', esta = (E.tops.fam_ahora || 'hex') === f;
+      if (E.mias[x.id] && !v) return 'Un regalo de Modo Cachimbo. Es tuyo para siempre.';
+      if (v) return 'Es tuyo para siempre: cerraste ' + (v > 1 ? v + ' semanas' : 'una semana') + ' en el ' + P + ' puesto del Top con este premio.';
+      if (!esta) return 'Es el premio del Top en algunas semanas. Si esa semana cierras en el ' + P + ' puesto, es tuyo para siempre.';
+      if (+E.tops.ahora === r.n) return 'Es el premio de esta semana y vas en el ' + P + ' puesto del Top. Si cierras el domingo ahí, es tuyo para siempre y tú decides si te lo pones.';
+      return 'Es el premio de esta semana: si la cierras en el ' + P + ' puesto del Top, es tuyo para siempre. Luego tú decides si te lo pones.';
     }
     if (r.tipo === 'grupo') return ok ? 'Es tuyo por ser influencer de Modo Cachimbo.' : 'Solo para los influencers de Modo Cachimbo.';
     if (r.tipo === 'evento') return ok ? 'Lo ganaste en ' + r.evento + '. Es tuyo para siempre.' : 'Se ganaba en ' + r.evento + '.';
     return ok ? 'Un regalo de Modo Cachimbo.' : 'Es un regalo especial: no se puede conseguir solo.';
   }
   // La corona «Top global» que llevas esta semana (desde el martes, si vas en el top 3)
-  var CORONA = { 1: 'pin-corona-oro', 2: 'pin-corona-plata', 3: 'pin-corona-bronce' };
+  var CORONA = {
+    hex: { 1: 'pin-corona-oro', 2: 'pin-corona-plata', 3: 'pin-corona-bronce' },
+    corona: { 1: 'pin-corona-cachimbo-oro', 2: 'pin-corona-cachimbo-plata', 3: 'pin-corona-cachimbo-bronce' },
+    medalla: { 1: 'pin-corona-medalla-oro', 2: 'pin-corona-medalla-plata', 3: 'pin-corona-medalla-bronce' },
+    escudo: { 1: 'pin-corona-escudo-oro', 2: 'pin-corona-escudo-plata', 3: 'pin-corona-escudo-bronce' }
+  };
   // Ya no se pone sola (supabase/73-corona-se-gana-al-cerrar.sql): se gana al cerrar la semana y tú decides si la usas
   function coronaAhora() { return ''; }
   function puesto(esp) {
@@ -314,12 +397,20 @@
         }).catch(function () { E.sql = false; }),
         !pedirRgo ? null : c.from('xp_semana').select('semana,xp').eq('usuario', u.id).limit(200).then(function (r) {
           if (r.error) return;
-          var max = -1, MIN = RANGO_XP;
-          (r.data || []).forEach(function (f) { for (var i = MIN.length - 1; i >= 0; i--) if (+f.xp >= MIN[i]) { max = Math.max(max, i); break; } });
-          E.maxRango = max; T.rgo = Date.now();
+          var max = 0, sem = {};   // tu mejor semana en XP y el XP de cada semana (para las temporadas)
+          (r.data || []).forEach(function (f) { max = Math.max(max, +f.xp || 0); sem[String(f.semana).slice(0, 10)] = +f.xp || 0; });
+          E.maxXp = max; E.xpSem = sem; T.rgo = Date.now();
         }).catch(function () {})
       ]);
     }).then(function () { guardar(CLAVE_T, T); E.listo = true; avisar(); avisoCorona(); return E; }, function () { E.listo = true; avisar(); return E; });
+    // El XP de esta semana en vivo (assets/corazones.js): así el premio de la temporada llega al momento
+    (function esperarXp(i) {
+      if (window.MCCorazones) MCCorazones.alCambiar(function (e) {
+        var v = +(e && e.xp_semana) || 0;
+        if (v !== E.xpAhora) { E.xpAhora = v; avisar(); }
+      });
+      else if (i < 60) setTimeout(function () { esperarXp(i + 1); }, 250);
+    })(0);
     // La mejor racha llega con assets/racha.js
     (function esperar(i) {
       if (window.MCRacha) MCRacha.alCambiar(function (r) {
@@ -338,18 +429,26 @@
   function avisoCorona() {
     var u = window.MCAuth && MCAuth.usuario();
     if (!u) return;
-    var k = 'mc_coronas_' + u.id, antes = leer(k) || {}, nuevo = 0, ahora = {};
-    [1, 2, 3].forEach(function (n) { ahora[n] = +E.tops[n] || 0; if (!nuevo && ahora[n] > (+antes[n] || 0) && POR_ID[CORONA[n]]) nuevo = n; });
-    guardar(k, ahora);
+    var k = 'mc_coronas_' + u.id, antes = leer(k) || {}, nuevo = null, ahora = {}, viejo = !antes.fam;
+    var fams = E.tops.fam || { hex: { 1: E.tops[1], 2: E.tops[2], 3: E.tops[3] } };
+    // viejo: lo guardado antes de 108 era { 1, 2, 3 } (todo hexágono)
+    Object.keys(CORONA).forEach(function (f) {
+      [1, 2, 3].forEach(function (n) {
+        var v = +((fams[f] || {})[n]) || 0, a = viejo ? (f === 'hex' ? +antes[n] || 0 : 0) : +antes.fam[f + n] || 0;
+        ahora[f + n] = v;
+        if (!nuevo && v > a && POR_ID[CORONA[f][n]]) nuevo = { f: f, n: n };
+      });
+    });
+    guardar(k, { fam: ahora });
     if (!nuevo) return;
-    var c = CORONA[nuevo];
+    var c = CORONA[nuevo.f][nuevo.n];
     function abrir() {
       MCSobre.abrir({ regalos: [{ tipo: 'item', id: c }], de: 'Modo Cachimbo',
-        nota: '¡Cerraste la semana en el ' + PUESTO_TXT[nuevo] + ' puesto del Top global! La corona ya es tuya para siempre. Si quieres lucirla, póntela en Mi colección → Pines.' });
+        nota: '¡Cerraste la semana en el ' + PUESTO_TXT[nuevo.n] + ' puesto del Top global! Tu premio ya es tuyo para siempre. Si quieres lucirlo, póntelo en Mi colección → Pines.' });
     }
     setTimeout(function () {
       if (window.MCSobre) return abrir();
-      var s = document.createElement('script'); s.src = BASE + 'assets/sobre.js?v=3'; s.onload = abrir; document.head.appendChild(s);
+      var s = document.createElement('script'); s.src = BASE + 'assets/sobre.js?v=5'; s.onload = abrir; document.head.appendChild(s);
     }, 1800);
   }
 
@@ -385,6 +484,8 @@
 
   /* ---------- Dibujos ---------- */
   function buhoImg(x, animo) {
+    // Amigos del Búho: su foto quieta (animados solo en el inicio y en Colección → El Búho y sus amigos)
+    if (x.pj) return '<img src="' + esc(BASE + 'assets/buho/' + x.foto + '.webp') + '" alt="" loading="lazy">';
     if (x.img) return '<img src="' + esc(D + x.img + '-' + (animo || 'feliz') + '.webp') + '" alt="" loading="lazy">';
     // El antiguo: el búho del logo (assets/buho.js)
     if (x.id === 'buho-antiguo' && window.MCBuho) return '<span class="mcc-antiguo">' + MCBuho.svg(animo === 'triste' ? 'triste' : 'feliz', 160) + '</span>';
@@ -396,13 +497,14 @@
   function dibujo(x) {
     if (x.espacio === 'buho') return buhoImg(x);
     // Escenario: un mini escenario con su piso
-    if (x.espacio === 'escena') return '<span class="mcc-esc" style="--r1:' + x.tema[0] + ';--r2:' + x.tema[3] + '">' + PISOS[x.id].replace(/mcp-([gh])/g, 'mcp-$1-' + x.id) + '<img class="mcc-esc-b" src="' + esc(D.replace(/disfraces\/$/, 'avatar/') + 'clasico-cuerpo.webp') + '" alt="" loading="lazy"></span>';
+    if (x.espacio === 'escena' && x.img) return '<span class="mcc-esc" style="background:url(&quot;' + esc(x.img) + '&quot;) center bottom/cover"><img class="mcc-esc-b" src="' + esc(D.replace(/disfraces\/$/, 'avatar/') + 'clasico-cuerpo.webp') + '" alt="" loading="lazy"></span>';
+    if (x.espacio === 'escena') return '<span class="mcc-esc" style="--r1:' + x.tema[0] + ';--r2:' + x.tema[3] + '">' + (PISOS[x.id] || '').replace(/mcp-([gh])/g, 'mcp-$1-' + x.id) + '<img class="mcc-esc-b" src="' + esc(D.replace(/disfraces\/$/, 'avatar/') + 'clasico-cuerpo.webp') + '" alt="" loading="lazy"></span>';
     // Fondo de perfil: una mini tarjeta como la de arriba
     if (x.espacio === 'racha') return '<span class="mcc-fp" style="--r1:' + x.tema[0] + ';--r2:' + x.tema[3] + '"><span class="mcc-fp-c"' + (x.img ? ' style="background:linear-gradient(90deg,rgba(10,6,28,.92) 0,rgba(10,6,28,.86) 48%,rgba(10,6,28,.45) 72%,rgba(10,6,28,0) 92%),url(&quot;' + esc(x.img) + '&quot;) center/cover"' : '') + '><i' + (avatarSrc() || miFoto.src ? ' style="background-image:url(&quot;' + esc(avatarSrc() || miFoto.src) + '&quot;)"' : '') + '>' + (avatarSrc() || miFoto.src ? '' : esc(miFoto.letra)) + '</i><b>' + esc(miFoto.nombre || 'Tu nombre') + '</b><small>Tu rango</small></span></span>';
     // Cuadro de racha: uno chiquito con su fuego
     if (x.espacio === 'cuadro') { var l = x.llama; return '<span class="mcc-cr" style="--r1:' + x.tema[0] + ';--r2:' + x.tema[1] + ';--rb:' + x.tema[2] + ';--rd:' + x.tema[3] + '"><span class="mcc-cr-c">' + llama(l) + '<b>7</b><i></i><i></i><i></i></span></span>'; }
     if (x.espacio === 'avatar') return avatarSvg(x, miFoto.src, miFoto.letra);
-    if (x.espacio === 'marco') return '<span class="mcc-marco" style="--m:' + (x.marco === 'none' ? 'transparent' : x.marco) + '"><span>' + (window.MCBuho ? MCBuho.svg('normal', 80) : '') + '</span></span>';
+    if (x.espacio === 'marco') return '<span class="mcc-marco' + (x.mo ? ' mc-mo' : '') + '" style="--m:' + (x.marco === 'none' ? 'transparent' : x.marco) + (x.mo ? ';--mo:url(&quot;' + esc(x.mo) + '&quot;)' : '') + '"><span>' + (window.MCBuho ? MCBuho.svg('normal', 80) : '') + '</span></span>';
     if (x.espacio === 'titulo') return '<span class="mcc-titulo">' + (x.svg ? tituloHtml(x) : '<span>★ ' + esc(x.nom) + '</span>') + '</span>';
     if (x.espacio === 'pines') return pinSvg(x);
     return '';
@@ -421,7 +523,7 @@
     return '<span class="mcc-av" style="--f1:' + t[0] + ';--f2:' + t[3] + '">' + (src ? '<img src="' + esc(src) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : '<b>' + esc(letra || '?') + '</b>') + '</span>';
   }
   function pinSvg(x) {
-    return '<span class="mcc-pin' + (x.suelto ? ' suelto' : '') + '" style="--pf:' + x.pin[1] + ';--pb:' + x.pin[2] + '">' + (x.img ? '<img src="' + esc(x.img) + '" alt="" loading="lazy">' : '<span>' + x.pin[0] + '</span>') + '</span>';
+    return '<span class="mcc-pin' + (x.suelto ? ' suelto' + (x.recurso ? ' rec' : '') : '') + '" style="--pf:' + x.pin[1] + ';--pb:' + x.pin[2] + '">' + (x.img ? '<img src="' + esc(x.img) + '" alt="" loading="lazy">' : '<span>' + x.pin[0] + '</span>') + '</span>';
   }
   function tarjeta(x, i) {
     var ok = tiene(x.id), R = RAREZA[x.rareza] || RAREZA.comun, av = ok ? null : avance(x.id);
@@ -516,69 +618,156 @@
       // Pin sin círculo (las coronas del Top 3): solo el dibujo, un poco más grande
       '.mcc-pin.suelto{background:none;border:0;box-shadow:none;border-radius:0;filter:drop-shadow(0 3px 0 rgba(0,0,0,.35))}.mcc-pin.suelto img,.mcc-dib .mcc-pin.suelto img{width:118%;height:118%;max-width:none}' +
       '.mcc-pin img,.mcc-dib .mcc-pin img{width:68%;height:68%;object-fit:contain;display:block}' +
+      '.mcc-pin.suelto.rec img,.mcc-dib .mcc-pin.suelto.rec img{width:100%;height:100%}' +
       '@keyframes mccEntra{from{opacity:0;transform:translateY(16px) scale(.92)}to{opacity:1;transform:none}}' +
       '@keyframes mccLate{50%{transform:scale(1.1)}}' +
       '@media (prefers-reduced-motion:reduce){.mcc-it,.mcc-etq.nuevo{animation:none}}';
     document.head.appendChild(st);
   }
 
-  /* ---------- Animación: ¡ganaste algo! ---------- */
-  function celebrar(ids, alPoner) {
-    css();
-    if (!ids.length) return;
-    var x = POR_ID[ids[0]], R = RAREZA[x.rareza] || RAREZA.comun;
-    var d = document.createElement('div'); d.className = 'mcc-gana'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true');
-    d.style.setProperty('--c', R.c);
-    var conf = ''; var col = ['#C6E000', '#FF9600', '#1CB0F6', '#CE82FF', '#FFC800'];
-    for (var i = 0; i < 24; i++) conf += '<i style="left:' + ((i * 37) % 100) + '%;background:' + col[i % 5] + ';animation-delay:' + (i % 8) * 60 + 'ms;--r:' + (i * 47) + 'deg"></i>';
-    var esp = ESPACIOS.filter(function (e) { return e.id === x.espacio; })[0];
-    d.innerHTML = '<div class="mcc-gana-c"><div class="mcc-rayos"></div><div class="mcc-conf">' + conf + '</div>' +
-      '<div class="mcc-cofre" aria-hidden="true">🎁</div>' +
-      '<div class="mcc-gana-it"><span class="mcc-dib">' + dibujo(x) + '</span></div>' +
-      '<small>' + R.nom + ' · ' + esp.uno + '</small><h2>' + esc(x.nom) + '</h2><p>' + esc(como(x)) + '</p>' +
-      '<div class="mcc-gana-bt"><button type="button" class="si">' + (x.espacio === 'pines' ? 'A mi vitrina' : 'Ponérmelo') + '</button><button type="button" class="no">' + (ids.length > 1 ? 'Siguiente' : 'Después') + '</button></div></div>';
-    if (!document.getElementById('mcc-gana-css')) {
-      var st = document.createElement('style'); st.id = 'mcc-gana-css';
-      st.textContent =
-        '.mcc-gana{position:fixed;inset:0;z-index:9999;background:rgba(8,6,18,.88);display:grid;place-items:center;padding:20px;opacity:0;transition:opacity .3s;font-family:Nunito,sans-serif}' +
-        '.mcc-gana.ver{opacity:1}' +
-        '.mcc-gana-c{position:relative;width:min(360px,100%);text-align:center;color:#EEEAF7;padding:24px 18px 20px;border-radius:26px;overflow:hidden;background:radial-gradient(circle at 50% 36%,rgba(var(--c),.45),#0B0818 64%);border:2.5px solid rgba(var(--c),.8);border-bottom-width:6px}' +
-        '.mcc-rayos{position:absolute;left:50%;top:36%;width:640px;height:640px;margin:-320px 0 0 -320px;border-radius:50%;background:repeating-conic-gradient(rgba(var(--c),.25) 0 8deg,transparent 8deg 20deg);-webkit-mask:radial-gradient(circle,#000 18%,transparent 58%);mask:radial-gradient(circle,#000 18%,transparent 58%);animation:mccGira 14s linear infinite}' +
-        '.mcc-cofre{position:absolute;left:50%;top:110px;font-size:96px;transform:translateX(-50%);animation:mccCofre 1s ease-in both;filter:drop-shadow(0 0 24px rgba(var(--c),.9))}' +
-        '.mcc-gana-it{position:relative;width:190px;margin:0 auto;animation:mccSale .6s cubic-bezier(.2,1.5,.4,1) .9s both}' +
-        '.mcc-gana-it .mcc-dib{display:grid;place-items:center;aspect-ratio:1}' +
-        '.mcc-gana-it .mcc-dib img,.mcc-gana-it .mcc-dib>svg{width:100%;height:100%;object-fit:contain}' +
-        '.mcc-gana-it .mcc-titulo span{font-size:17px}' +
-        '.mcc-gana small{position:relative;display:block;margin-top:8px;font-size:12px;font-weight:1000;letter-spacing:2px;text-transform:uppercase;color:rgb(var(--c))}' +
-        '.mcc-gana h2{position:relative;font:italic 900 34px/1 "Barlow Condensed","Arial Narrow",sans-serif;text-transform:uppercase;margin-top:2px}' +
-        '.mcc-gana p{position:relative;color:#A99FC8;font-size:13.5px;font-weight:700;margin:6px auto 0;max-width:280px;line-height:1.45}' +
-        '.mcc-gana small,.mcc-gana h2,.mcc-gana p,.mcc-gana-bt{animation:mccSube .4s ease-out 1.2s both}' +
-        '.mcc-gana-bt{position:relative;display:flex;gap:8px;justify-content:center;margin-top:16px}' +
-        '.mcc-gana-bt button{font:1000 13.5px Nunito,sans-serif;text-transform:uppercase;letter-spacing:.5px;border-radius:14px;padding:12px 16px;border:2px solid;border-bottom-width:5px;cursor:pointer}' +
-        '.mcc-gana-bt .si{background:#C6E000;color:#1a1f00;border-color:#8fa300}.mcc-gana-bt .no{background:#1D1834;color:#A99FC8;border-color:#352E58}' +
-        '.mcc-conf{position:absolute;inset:0;pointer-events:none}.mcc-conf i{position:absolute;top:-12px;width:8px;height:14px;border-radius:2px;animation:mccCae 2.2s ease-in 1s both}' +
-        '@keyframes mccGira{to{transform:rotate(360deg)}}' +
-        '@keyframes mccCofre{0%{transform:translateX(-50%) scale(.4);opacity:0}25%{transform:translateX(-50%) scale(1);opacity:1}35%,55%,75%{transform:translateX(-52%) rotate(-8deg)}45%,65%{transform:translateX(-48%) rotate(8deg)}90%{transform:translateX(-50%) scale(1.25);opacity:1}100%{transform:translateX(-50%) scale(1.6);opacity:0}}' +
-        '@keyframes mccSale{from{transform:scale(.2) rotate(-12deg);opacity:0}to{transform:none;opacity:1}}' +
-        '@keyframes mccSube{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}' +
-        '@keyframes mccCae{0%{transform:translateY(0) rotate(var(--r));opacity:1}100%{transform:translateY(560px) rotate(calc(var(--r) + 540deg));opacity:0}}' +
-        '@media (prefers-reduced-motion:reduce){.mcc-rayos,.mcc-conf{display:none}.mcc-cofre{display:none}.mcc-gana-it,.mcc-gana small,.mcc-gana h2,.mcc-gana p,.mcc-gana-bt{animation:none}}';
-      document.head.appendChild(st);
-    }
-    document.body.appendChild(d);
-    if (window.MCSonido && MCSonido.racha) setTimeout(function () { try { MCSonido.racha(); } catch (e) {} }, 900);
-    requestAnimationFrame(function () { requestAnimationFrame(function () { d.classList.add('ver'); }); });
-    function cerrar(sig) {
-      marcarVistos([x.id]);
-      d.classList.remove('ver');
-      setTimeout(function () { d.remove(); if (sig) celebrar(ids.slice(1), alPoner); }, 300);
-    }
-    d.querySelector('.si').addEventListener('click', function () {
-      poner(x.espacio, x.id).then(function () { if (alPoner) alPoner(x); }, function () {});
-      cerrar(true);
-    });
-    d.querySelector('.no').addEventListener('click', function () { cerrar(true); });
+  /* ---------- Regalos: todo lo nuevo junto, en una sola pantalla ---------- */
+  // Antes salía un cofre por cada cosa. Ahora: una ventana con todos los regalos
+  // y un botón «Recibir todos». Si quieres, tocas uno y te lo pones ahí mismo.
+  var ICO_REGALO = '<svg viewBox="0 0 64 64" aria-hidden="true">' +
+    '<path d="M32 20c-4-9-15-12-17-6-2 5 6 7 17 6z" fill="#C6E000" stroke="#5E6B00" stroke-width="2.5" stroke-linejoin="round"/>' +
+    '<path d="M32 20c4-9 15-12 17-6 2 5-6 7-17 6z" fill="#9DB300" stroke="#5E6B00" stroke-width="2.5" stroke-linejoin="round"/>' +
+    '<rect x="11" y="29" width="42" height="29" rx="4" fill="#7B4FE0" stroke="#2A1460" stroke-width="2.5"/>' +
+    '<rect x="11" y="29" width="42" height="8" fill="#5A34B8"/>' +
+    '<rect x="8" y="20" width="48" height="11" rx="3.5" fill="#9B72FF" stroke="#2A1460" stroke-width="2.5"/>' +
+    '<rect x="27.5" y="20" width="9" height="38" fill="#C6E000" stroke="#5E6B00" stroke-width="2"/>' +
+    '<path d="M13 23h10" stroke="#fff" stroke-opacity=".55" stroke-width="2.5" stroke-linecap="round"/></svg>';
+  var ICO_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="#1a1f00" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  var ICO_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  function cssRegalos() {
+    if (document.getElementById('mcr-regalos-css')) return;
+    var st = document.createElement('style'); st.id = 'mcr-regalos-css';
+    st.textContent =
+      '.mcr{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:16px;font-family:Nunito,sans-serif;color:#EEEAF7;background:rgba(8,6,18,.9);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;transition:opacity .25s;-webkit-tap-highlight-color:transparent}' +
+      '.mcr.ver{opacity:1}' +
+      '.mcr-c{position:relative;display:flex;flex-direction:column;width:min(780px,100%);max-height:calc(100dvh - 32px);background:#151127;border:2px solid #2A2346;border-bottom:5px solid #C6E000;border-radius:14px;overflow:hidden;transform:translateY(18px) scale(.97);transition:transform .35s cubic-bezier(.2,1.3,.4,1);box-shadow:0 24px 60px rgba(0,0,0,.55)}' +
+      '.mcr.ver .mcr-c{transform:none}' +
+      '.mcr-cab{position:relative;display:flex;align-items:center;gap:14px;padding:18px 54px 16px 18px;border-bottom:2px solid #221C3B;overflow:hidden;background:linear-gradient(100deg,rgba(198,224,0,.10),transparent 55%)}' +
+      '.mcr-cab::before{content:"";position:absolute;left:-60px;top:50%;width:240px;height:240px;margin-top:-120px;border-radius:50%;background:repeating-conic-gradient(rgba(198,224,0,.13) 0 9deg,transparent 9deg 22deg);-webkit-mask:radial-gradient(circle,#000 20%,transparent 66%);mask:radial-gradient(circle,#000 20%,transparent 66%);animation:mcrGira 18s linear infinite;pointer-events:none}' +
+      '.mcr-ico{position:relative;flex:none;width:58px;height:58px;filter:drop-shadow(0 4px 0 rgba(0,0,0,.35)) drop-shadow(0 0 14px rgba(198,224,0,.35));animation:mcrBota 2.4s ease-in-out infinite}' +
+      '.mcr-ico svg{width:100%;height:100%;display:block}' +
+      '.mcr-tx{position:relative;min-width:0}' +
+      '.mcr-tx small{display:block;font:1000 11px Nunito,sans-serif;letter-spacing:2.4px;text-transform:uppercase;color:#C6E000}' +
+      '.mcr-tx h2{margin:2px 0 0;font:italic 900 clamp(28px,7vw,38px)/1 "Barlow Condensed","Arial Narrow",sans-serif;text-transform:uppercase;color:#fff;letter-spacing:.01em}' +
+      '.mcr-tx h2 b{color:#C6E000}' +
+      '.mcr-tx p{margin:4px 0 0;font-size:13.5px;font-weight:700;color:#A99FC8}' +
+      '.mcr-x{position:absolute;right:12px;top:12px;width:34px;height:34px;display:grid;place-items:center;border-radius:9px;border:0;background:#221C3B;color:#A99FC8;cursor:pointer}' +
+      '.mcr-x:hover{color:#fff;background:#2A2346}.mcr-x svg{width:16px;height:16px}' +
+      '.mcr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(124px,1fr));grid-auto-rows:max-content;min-height:0;gap:10px;padding:16px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#352E58 transparent}' +
+      '.mcr-grid.uno{grid-template-columns:minmax(0,230px);justify-content:center}' +
+      '.mcr-it{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 8px 10px;text-align:center;font:inherit;color:inherit;cursor:pointer;border-radius:10px;overflow:hidden;' +
+        'background:linear-gradient(180deg,rgba(var(--c),.20),rgba(var(--c),0) 62%),#1D1834;border:2px solid rgba(var(--c),.35);border-bottom:4px solid rgb(var(--c));' +
+        'animation:mcrEntra .5s cubic-bezier(.2,1.4,.4,1) both;animation-delay:calc(120ms + var(--i) * 55ms);transition:transform .12s,border-color .2s,box-shadow .2s}' +
+      '.mcr-it:hover{border-color:rgba(var(--c),.7)}.mcr-it:active{transform:translateY(2px)}' +
+      '.mcr-it:focus-visible{outline:3px solid #fff;outline-offset:2px}' +
+      '.mcr-it::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.16) 50%,transparent 65%);background-size:250% 100%;background-position:150% 0;animation:mcrBrillo 3.2s ease-in-out infinite;animation-delay:calc(1s + var(--i) * 120ms);pointer-events:none}' +
+      '.mcr-it>*{flex:none}.mcr-it .mcc-dib{width:100%;aspect-ratio:1;display:grid;place-items:center}.mcr-it .mcc-cr-c{padding:10px 8px}.mcr-it .mcc-cr-c b{font-size:22px}' +
+      '.mcr-it .mcc-dib img,.mcr-it .mcc-dib>svg{width:100%;height:100%;object-fit:contain;display:block}' +
+      '.mcr-it b{display:block;width:100%;margin-top:6px;font-size:14px;font-weight:900;line-height:1.15;color:#fff;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}' +
+      '.mcr-it small{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:8px;font-size:10px;font-weight:1000;letter-spacing:.7px;text-transform:uppercase;color:rgb(var(--c))}' +
+      '.mcr-grid.uno .mcr-it b{font-size:18px}.mcr-grid.uno .mcr-it small{font-size:11.5px}' +
+      '.mcr-usar{margin-top:auto;padding:5px 0 4px;width:90%;border-radius:8px;font-size:11.5px;font-weight:1000;letter-spacing:.6px;text-transform:uppercase;color:#EEEAF7;background:#2A2346;box-shadow:0 3px 0 #120E24}' +
+      '.mcr-it.on{border-color:#C6E000;border-bottom-color:#C6E000;box-shadow:0 0 18px rgba(198,224,0,.25)}' +
+      '.mcr-it.on .mcr-usar{background:none;color:#C6E000;box-shadow:inset 0 0 0 2px #C6E000}' +
+      '.mcr-ok{position:absolute;left:50%;top:40%;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;display:grid;place-items:center;background:#C6E000;box-shadow:0 4px 0 #8fa300,0 0 24px rgba(198,224,0,.6);transform:scale(0);z-index:2}' +
+      '.mcr-ok svg{width:30px;height:30px}' +
+      '.mcr.recibe .mcr-it{animation:mcrRecibe .55s cubic-bezier(.4,0,.2,1) both;animation-delay:calc(var(--i) * 45ms)}' +
+      '.mcr.recibe .mcr-it .mcr-ok{animation:mcrPop .35s cubic-bezier(.2,1.6,.4,1) both;animation-delay:calc(var(--i) * 45ms)}' +
+      '.mcr-pie{display:flex;align-items:center;gap:12px;padding:14px 16px 16px;border-top:2px solid #221C3B;background:#120E22}' +
+      '.mcr-pie p{flex:1;margin:0;font-size:12.5px;font-weight:800;color:#8C82AE;line-height:1.35}' +
+      '.mcr-btn{flex:none;display:inline-flex;align-items:center;gap:10px;font:1000 15px Nunito,sans-serif;text-transform:uppercase;letter-spacing:.6px;padding:13px 26px;border-radius:12px;border:0;cursor:pointer;color:#1a1f00;background:#C6E000;box-shadow:0 5px 0 #8fa300;transition:transform .1s,box-shadow .1s}' +
+      '.mcr-btn:focus{outline:none}.mcr-btn:focus-visible{outline:3px solid #fff;outline-offset:3px}.mcr-btn:hover{filter:brightness(1.06)}.mcr-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #8fa300}' +
+      '.mcr-btn i{font-style:normal;min-width:24px;height:24px;padding:0 6px;border-radius:7px;display:grid;place-items:center;background:#1a1f00;color:#C6E000;font-size:13px}' +
+      '.mcr-conf{position:absolute;inset:0;pointer-events:none;overflow:hidden}.mcr-conf i{position:absolute;top:-14px;width:8px;height:13px;border-radius:2px;animation:mcrCae 2.4s ease-in .3s both}' +
+      '@media (max-width:560px){.mcr-grid:not(.uno) .mcr-rz{display:none}.mcr{padding:10px;align-items:end}.mcr-c{max-height:calc(100dvh - 20px)}.mcr-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px}.mcr-grid.uno{grid-template-columns:minmax(0,210px)}.mcr-it{padding:8px 5px}.mcr-it b{font-size:12.5px}.mcr-it small{font-size:9px;letter-spacing:.4px}.mcr-usar{font-size:10px}' +
+        '.mcr-cab{padding:14px 48px 13px 14px;gap:11px}.mcr-ico{width:48px;height:48px}.mcr-pie{flex-direction:column;align-items:stretch;gap:10px;padding:12px}.mcr-pie p{text-align:center}.mcr-btn{justify-content:center;padding:15px}}' +
+      '@keyframes mcrGira{to{transform:rotate(360deg)}}' +
+      '@keyframes mcrBota{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-4px) rotate(4deg)}}' +
+      '@keyframes mcrEntra{from{opacity:0;transform:translateY(18px) scale(.85)}to{opacity:1;transform:none}}' +
+      '@keyframes mcrBrillo{0%,65%{background-position:150% 0}100%{background-position:-60% 0}}' +
+      '@keyframes mcrPop{from{transform:scale(0)}to{transform:scale(1)}}' +
+      '@keyframes mcrRecibe{0%{transform:none}30%{transform:scale(1.06)}100%{transform:translateY(-14px) scale(.9);opacity:.35}}' +
+      '@keyframes mcrCae{0%{transform:translateY(0) rotate(var(--r));opacity:1}100%{transform:translateY(520px) rotate(calc(var(--r) + 540deg));opacity:0}}' +
+      '@media (prefers-reduced-motion:reduce){.mcr-cab::before,.mcr-conf,.mcr-it::after{display:none}.mcr-ico,.mcr-it,.mcr.recibe .mcr-it{animation:none}}';
+    document.head.appendChild(st);
   }
+  function celebrar(ids, alPoner) {
+    css(); cssRegalos();
+    ids = (ids || []).filter(function (id) { return POR_ID[id]; });
+    if (!ids.length || document.querySelector('.mcr')) return;
+    var n = ids.length;
+    var conf = '', col = ['#C6E000', '#FF9600', '#1CB0F6', '#CE82FF', '#FFC800'];
+    for (var i = 0; i < 26; i++) conf += '<i style="left:' + ((i * 37) % 100) + '%;background:' + col[i % 5] + ';animation-delay:' + (300 + (i % 9) * 70) + 'ms;--r:' + (i * 47) + 'deg"></i>';
+    var lleva = function (x) { return x.espacio === 'pines' ? puesto('pines').indexOf(x.id) >= 0 : puesto(x.espacio) === x.id; };
+    var tiles = ids.map(function (id, k) {
+      var x = POR_ID[id], R = RAREZA[x.rareza] || RAREZA.comun;
+      var esp = ESPACIOS.filter(function (e) { return e.id === x.espacio; })[0] || { uno: '' };
+      return '<button type="button" class="mcr-it' + (lleva(x) ? ' on' : '') + '" data-id="' + x.id + '" style="--c:' + R.c + ';--i:' + Math.min(k, 14) + '">' +
+        '<span class="mcr-ok">' + ICO_OK + '</span>' +
+        '<span class="mcc-dib">' + dibujo(x) + '</span>' +
+        '<b>' + esc(x.nom) + '</b><small><span class="mcr-rz">' + R.nom + ' · </span>' + esc(esp.uno) + '</small>' +
+        '<span class="mcr-usar">' + (lleva(x) ? 'Puesto' : x.espacio === 'pines' ? 'A mi vitrina' : 'Ponérmelo') + '</span></button>';
+    }).join('');
+    var d = document.createElement('div'); d.className = 'mcr'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true'); d.setAttribute('aria-labelledby', 'mcrTit');
+    d.innerHTML = '<div class="mcr-c"><div class="mcr-conf">' + conf + '</div>' +
+      '<div class="mcr-cab"><span class="mcr-ico">' + ICO_REGALO + '</span><div class="mcr-tx"><small>Mi colección</small>' +
+        '<h2 id="mcrTit">' + (n > 1 ? '¡Tienes <b>' + n + '</b> regalos!' : '¡Tienes un <b>regalo</b>!') + '</h2>' +
+        '<p>' + (n > 1 ? 'Todo esto ya es tuyo.' : 'Ya es tuyo.') + '</p></div>' +
+        '<button type="button" class="mcr-x" aria-label="Cerrar">' + ICO_X + '</button></div>' +
+      '<div class="mcr-grid' + (n === 1 ? ' uno' : '') + '">' + tiles + '</div>' +
+      '<div class="mcr-pie"><p>' + (n > 1 ? 'Toca uno para ponértelo ahora.<br>Los demás quedan guardados en tu colección.' : 'Tócalo para ponértelo ahora,<br>o recíbelo y queda en tu colección.') + '</p>' +
+        '<button type="button" class="mcr-btn">' + (n > 1 ? 'Recibir todos <i>' + n + '</i>' : 'Recibir') + '</button></div></div>';
+    document.body.appendChild(d);
+    if (window.MCSonido && MCSonido.racha) setTimeout(function () { try { MCSonido.racha(); } catch (e) {} }, 250);
+    requestAnimationFrame(function () { requestAnimationFrame(function () { d.classList.add('ver'); }); });
+    var hecho = false;
+    function pintarPuestos() {
+      [].forEach.call(d.querySelectorAll('.mcr-it'), function (b) {
+        var x = POR_ID[b.getAttribute('data-id')], on = lleva(x);
+        b.classList.toggle('on', on);
+        b.querySelector('.mcr-usar').textContent = on ? 'Puesto' : x.espacio === 'pines' ? 'A mi vitrina' : 'Ponérmelo';
+      });
+    }
+    function cerrar(animar) {
+      if (hecho) return; hecho = true;
+      marcarVistos(ids);
+      document.removeEventListener('keydown', tecla);
+      if (animar) d.classList.add('recibe');
+      var espera = animar ? Math.min(n, 14) * 45 + 650 : 0;
+      setTimeout(function () { d.classList.remove('ver'); setTimeout(function () { d.remove(); }, 260); }, espera);
+    }
+    function tecla(e) { if (e.key === 'Escape') cerrar(false); }
+    document.addEventListener('keydown', tecla);
+    d.querySelector('.mcr-btn').addEventListener('click', function () { cerrar(true); });
+    d.querySelector('.mcr-x').addEventListener('click', function () { cerrar(false); });
+    d.addEventListener('click', function (e) { if (e.target === d) cerrar(false); });
+    d.querySelector('.mcr-grid').addEventListener('click', function (e) {
+      var b = e.target.closest('.mcr-it'); if (!b || hecho) return;
+      var x = POR_ID[b.getAttribute('data-id')];
+      if (x.espacio !== 'pines' && lleva(x)) return;
+      poner(x.espacio, x.id).then(function () { pintarPuestos(); if (alPoner) alPoner(x); }, function () { pintarPuestos(); });
+      pintarPuestos();
+    });
+  }
+
+  // El dibujo del marco va por encima de la foto y la desborda (alas a los lados, corona arriba).
+  // En el dibujo, el borde ocupa el 60 % del centro: por eso sale un 33 % hacia cada lado.
+  (function () {
+    if (document.getElementById('mc-mo-css')) return;
+    var st = document.createElement('style'); st.id = 'mc-mo-css';
+    st.textContent = '.mc-mo{clip-path:none!important;overflow:visible!important;background:none!important}' +
+      '.mc-mo::after{content:"";position:absolute;inset:-33%;background:var(--mo) center/100% 100% no-repeat;pointer-events:none;z-index:3}' +
+      '.mcc-marco.mc-mo,.letra.mc-mo{position:relative}' +
+      // En Mi colección el cuadro es más chico para que entren las alas y la corona
+      '.mcc-marco.mc-mo{width:52%}' +
+      // En tu tarjeta de arriba (que no deja salir nada) la foto se achica para que el marco entre entero
+      '[data-mc-tarjeta] .mct-caja:has(.mc-mo){width:44px!important;height:44px!important;margin:0 4px 0 12px}';
+    (document.head || document.documentElement).appendChild(st);
+  })();
 
   window.MCColeccion = {
     catalogo: CATALOGO, espacios: ESPACIOS, rareza: RAREZA, defecto: DEFECTO,
@@ -591,6 +780,7 @@
     tarjeta: tarjeta, dibujo: dibujo, buho: buhoImg, pin: pinSvg, css: css,
     avatar: avatarSrc, avatarHtml: avatarSvg,
     piso: function (id) { return PISOS[id || puesto('escena')] || ''; },
+    fondoEscena: function (id) { var x = POR_ID[id || puesto('escena')]; return x && x.espacio === 'escena' && x.img || ''; },
     escena: function (id) { var x = POR_ID[id || puesto('escena')]; return x && x.tema || POR_ID['escena-galaxia'].tema; },
     fijarFoto: function (src, letra, nombre) { miFoto = { src: /^https:\/\//.test(src || '') ? src : '', letra: letra || '', nombre: nombre || miFoto.nombre || '' }; },
     tema: function (id) { var x = POR_ID[id || puesto('racha')]; return x && x.tema || POR_ID['racha-galaxia'].tema; },
@@ -600,6 +790,27 @@
     cuadro: function (id) { var x = POR_ID[id || puesto('cuadro')]; if (!x || x.espacio !== 'cuadro') x = POR_ID['cuadro-galaxia']; return { tema: x.tema, llama: x.llama }; },
     llama: llama, titulo: tituloHtml,
     marco: function (id) { var x = POR_ID[id || puesto('marco')]; return x && x.marco !== 'none' ? x.marco : ''; },
+    // Marco con dibujo por encima de la foto (alas, corona): la imagen, o ''
+    marcoImg: function (id) { var x = POR_ID[id || puesto('marco')]; return x && x.mo || ''; },
+    // Pone el marco en un elemento: --m (el borde) y, si tiene dibujo, --mo y la clase mc-mo
+    ponerMarco: function (el, id) {
+      if (!el) return;
+      var x = POR_ID[id || puesto('marco')], m = x && x.marco !== 'none' ? x.marco : '', mo = x && x.mo || '';
+      if (m) el.style.setProperty('--m', m); else el.style.removeProperty('--m');
+      if (mo) el.style.setProperty('--mo', 'url("' + mo + '")'); else el.style.removeProperty('--mo');
+      el.classList.toggle('mc-mo', !!mo);
+    },
+    // Lo mismo para armar HTML: { cls, st } (clase y estilo)
+    marcoAttr: function (id) {
+      var x = POR_ID[id || puesto('marco')], m = x && x.marco !== 'none' ? x.marco : '', mo = x && x.mo || '';
+      return { cls: mo ? ' mc-mo' : '', st: (m ? '--m:' + m + ';' : '') + (mo ? '--mo:url(&quot;' + esc(mo) + '&quot;);' : '') };
+    },
+    // La temporada de una semana (lunes 'AAAA-MM-DD'; sin nada, esta semana): { t, nom, sem } o null
+    temporada: function (sem) { sem = sem || lunesHoy(); return TEMPORADAS.filter(function (T) { return T.sem === sem; })[0] || null; },
+    // El premio de esa temporada para el rango k (0 = Bronce … 6 = Leyenda) y la pieza (foto, banner o marco)
+    premioTemporada: function (T, k, pieza) { var r = TRANGOS[k]; return T && r ? POR_ID[T.t + '-' + (pieza || 'foto') + '-' + r[0]] || null : null; },
+    // Color del nombre del rango con el banner que llevas (los banners de temporada lo traen), o ''
+    rangoColor: function (id) { var x = POR_ID[id || puesto('racha')]; return x && x.rg || ''; },
     nuevos: nuevos, marcarVistos: marcarVistos, celebrar: celebrar, refrescar: refrescar,
     contar: function () { var n = 0; CATALOGO.forEach(function (x) { if (tiene(x.id)) n++; }); return { tengo: n, total: CATALOGO.length }; }
   };

@@ -38,7 +38,10 @@
      biblioteca-VIP → la Biblioteca (todos sus libros)
      descarga-VIP   → Descargas en PDF (assets/descarga-pdf.js, supabase/54-descarga-aparte.sql).
                       Se vende aparte: TODO-VIP no la incluye
-     TODO-VIP       → todo, menos las Descargas PDF
+     laboratorio-VIP→ Laboratorio: todos los simuladores (supabase/97-laboratorio-rayos.sql).
+                      Va aparte, como las Descargas: TODO-VIP no lo incluye
+     offline-VIP    → Descargas sin internet (descargas.html). Va aparte: TODO-VIP no la incluye
+     TODO-VIP       → todo, menos las Descargas PDF, el Laboratorio y las Descargas sin internet
      Los códigos de antes (curso-x, repaso-VIP, fijas-x…) siguen abriendo lo suyo. */
   var AREAS = {
     'matematica': ['algebra', 'aritmetica', 'estadistica', 'geometria', 'trigonometria'],
@@ -112,7 +115,7 @@
     x = puerta(x);
     var cat = x.split('-')[0], resto = x.slice(cat.length + 1);
     return String(pc).split(',').some(function (u) {
-      if (u === x || (u === 'TODO-VIP' && cat !== 'descarga')) return true;
+      if (u === x || (u === 'TODO-VIP' && cat !== 'descarga' && cat !== 'laboratorio' && cat !== 'offline')) return true;
       if (cat === 'area') {
         if (u === 'general' || /^(repaso|fijas|tarjetas)-VIP$/.test(u)) return true;
         var m = /^(curso|repaso|fijas|tarjetas)-(.+)$/.exec(u);
@@ -123,6 +126,8 @@
       if (cat === 'vocabulario') return u === 'vocabulario-VIP';
       if (cat === 'biblioteca') return u === 'biblioteca-VIP';
       if (cat === 'descarga') return u === 'descarga-VIP';
+      if (cat === 'laboratorio') return u === 'laboratorio-VIP';
+      if (cat === 'offline') return u === 'offline-VIP';
       return false;
     });
   }
@@ -176,9 +181,27 @@
     escribir(K_ABIERTOS, JSON.stringify(a));
   }
 
+  /* ---- Sin internet ----
+     Lo bajado en Descargas (localStorage mc_paq, assets/paquetes.js) se usa sin pedir
+     código: sin red no hay cómo revisar, y la tienda de descargas ya decidió quién baja. */
+  function sinRed() { return navigator.onLine === false; }
+  function hayDescargas() {
+    try { var v = JSON.parse(leer('mc_paq') || 'null'); return !!(v && v.packs && Object.keys(v.packs).length); } catch (e) { return false; }
+  }
+  // Qué responder cuando no se pudo hablar con el servidor
+  function decidirSinRed(x) {
+    var a = accesos(), cods = codigosPara(x);
+    if (abiertoLocal(x) || idCubre(x)) return { acceso: true, motivo: 'sin-conexion' };
+    if (cods.some(function (c) { return Date.now() - (a[c].ok || 0) < 7 * DIA; })) return { acceso: true, motivo: 'sin-conexion' };
+    if (antiguo(x)) return { acceso: true, motivo: 'antiguo' };
+    if (hayDescargas()) return { acceso: true, motivo: 'descargas' };
+    return { acceso: false, error: 'conexion' };
+  }
+
   // Sin esperar al servidor: ¿hay un acceso reciente en este dispositivo?
   function accesoLocal(x) {
     if (LIBRE) return true;
+    if (sinRed() && hayDescargas()) return true;
     x = puerta(x);
     if (abiertoLocal(x)) return true;
     if (idCubre(x)) return true;
@@ -260,6 +283,8 @@
   function verificar(x) {
     if (LIBRE) return Promise.resolve({ acceso: true });
     x = puerta(x);
+    // Sin internet no se espera a nadie (antes tardaba ~30 s y terminaba pidiendo código)
+    if (sinRed()) return Promise.resolve(decidirSinRed(x));
     // Primero lo dado por ID (Supabase); si no lo cubre, los códigos de siempre
     return refrescarID(!idCubre(x)).then(function () {
       // Abierta por ID: si se lo quitan con la página abierta, se recarga (y el candado lo pide)
@@ -300,13 +325,7 @@
         if (av) escribir(K_AVISO, '');
         return { acceso: false, mensaje: mensaje || av || '' };
       })
-      .catch(function () {
-        var a = accesos();
-        var reciente = cods.some(function (c) { return Date.now() - (a[c].ok || 0) < 7 * DIA; });
-        if (reciente) return { acceso: true, motivo: 'sin-conexion' };
-        if (antiguo(x)) return { acceso: true, motivo: 'antiguo' };
-        return { acceso: false, error: 'conexion' };
-      });
+      .catch(function () { return decidirSinRed(x); });
   }
 
   // Activa un código. producto = página actual (o '' desde el inicio)
@@ -417,7 +436,7 @@
   function idEstado() { var c = cacheID(); return { lista: idActivos(), permitido: c.permitido !== false, equipos: c.equipos || 0, max: c.max || 0, t: c.ok || 0 }; }
 
   // «¡Acceso activado!» la primera vez que el alumno entra después de que se lo dieron
-  var NOM = { 'TODO-VIP': 'Acceso total', general: 'Acceso general', 'seminario-VIP': 'Seminarios + Banqueo', 'vocabulario-VIP': 'Vocabulario', 'biblioteca-VIP': 'Biblioteca', 'descarga-VIP': 'Descargas PDF', simulacro: 'Simulacro', duelo: 'Duelos', examenes: 'Exámenes',
+  var NOM = { 'TODO-VIP': 'Acceso total', general: 'Acceso general', 'seminario-VIP': 'Seminarios + Banqueo', 'vocabulario-VIP': 'Vocabulario', 'biblioteca-VIP': 'Biblioteca', 'descarga-VIP': 'Descargas PDF', 'offline-VIP': 'Descargas sin internet', 'laboratorio-VIP': 'Laboratorio', simulacro: 'Simulacro', duelo: 'Duelos', examenes: 'Exámenes',
     'area-matematica': 'Área Matemática', 'area-ciencia-tecnologia': 'Área Ciencia y Tecnología', 'area-comunicacion': 'Área Comunicación', 'area-ciencias-sociales': 'Área Ciencias Sociales' };
   function nombreProd(p) { return String(p || '').split(',').map(function (x) { return NOM[x] || x; }).join(' + '); }
   // El sobre del acceso (assets/pase.js): se carga solo la primera vez que hace falta

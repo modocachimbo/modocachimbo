@@ -1,7 +1,8 @@
 /* =========================================================
    Panel · Planes y precios (Web) — solo admin
    Edita la página precios.html: precios de cada plan, lo que incluye,
-   la preventa, «Trae 2 amigos» y la tabla de comparación.
+   la preventa, «Trae 2 amigos» y la tabla de comparación. También quién
+   usa la tienda de descargas (planes.tienda.modo: vip | todos | apagado; se edita en Panel → Descargas PDF).
    Se guarda en Supabase (tabla ajustes, clave 'planes'). Si nunca se
    guardó, se parte del ejemplo de assets/planes.js.
    ========================================================= */
@@ -213,6 +214,8 @@ async function guardarPlanes() {
   v.comparar.tabla = (v.comparar.tabla || []).filter(f => String(f[0] || '').trim()).map(f => [String(f[0]).trim(), plValor(f[1]), plValor(f[2])]).slice(0, 20);
   if (err.length) { renderPlanes(err); window.scrollTo(0, 0); toast('Revisa lo marcado en rojo', true); return; }
   const btn = $('plGuardar'); btn.disabled = true; plEstado('Guardando…');
+  // La tienda de Descargas se maneja en Panel → Descargas PDF: se guarda la que está ahora en Supabase
+  try { const g = await (await MCAuth.listo).from('ajustes').select('valor').eq('clave', 'planes').maybeSingle(); if (g.data && g.data.valor && g.data.valor.tienda) v.tienda = g.data.valor.tienda; } catch (e) { /* nada */ }
   const r = await (await MCAuth.listo).rpc('guardar_ajuste', { p_clave: 'planes', p_valor: v });
   if (r.error) {
     btn.disabled = false; plEstado('');

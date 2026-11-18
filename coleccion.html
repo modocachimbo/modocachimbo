@@ -188,7 +188,62 @@
   @media (max-width: 899px) { .p-esc { aspect-ratio: 1.5; } .p-buho { width: 32%; bottom: 20%; } }
 
   /* Dos modos grandes: Mi estilo y Rangos */
-  .modos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 16px; }
+  .modos { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 0 0 16px; }
+  @media (max-width: 560px) { .modos { gap: 6px; } .modo { height: 52px; gap: 6px; font-size: 14px; } .modo svg { width: 20px; height: 20px; } .modo .m-em { width: 26px; height: 26px; } }
+  .modo .m-cl { display: none; }
+  @media (max-width: 560px) { .modo .m-lg { display: none; } .modo .m-cl { display: inline; } }
+  .am-c .mcb-pj-rosa { width: 112%; margin-left: -6%; }
+  .modo.on[data-modo="amigos"] { background: linear-gradient(180deg, #ff8fb6, #E0457A); border-color: #a3245a; color: #fff; box-shadow: 0 0 22px rgba(255,105,160,.45); }
+  /* Amigos del Búho (temporada de Navidad) */
+  .am-hero { position: relative; overflow: hidden; text-align: center; padding: 26px 18px 22px; border-radius: 22px; margin-bottom: 14px;
+    background: radial-gradient(500px 200px at 50% 0%, rgba(255,90,120,.28), transparent 70%), linear-gradient(180deg, #1e1336, #120d24); border: 2px solid #3a2550; }
+  .am-hero::before, .am-hero::after { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 10px;
+    background: repeating-linear-gradient(90deg, #E8384F 0 18px, #fff 18px 36px, #2FB85A 36px 54px, #fff 54px 72px); opacity: .9; }
+  .am-hero::after { top: auto; bottom: 0; }
+  .am-hero small { position: relative; font: 900 12px Nunito, sans-serif; letter-spacing: .2em; text-transform: uppercase; color: #ff9ab8; }
+  .am-hero h2 { position: relative; font: italic 900 48px/1 var(--display); text-transform: uppercase; color: #fff; margin: 6px 0 8px; text-shadow: 0 0 24px rgba(255,120,160,.45); }
+  .am-hero p { position: relative; color: var(--text-dim); font-size: 14px; }
+  .am-nieve { position: absolute; inset: 0; pointer-events: none; }
+  .am-nieve i { position: absolute; top: -10px; width: 6px; height: 6px; border-radius: 50%; background: #fff; opacity: .8; animation: amCae linear infinite; }
+  @keyframes amCae { to { transform: translate(20px, 260px); opacity: 0; } }
+  .am-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+  .am-c { position: relative; border-radius: 22px; padding: 16px 16px 18px; text-align: center; overflow: hidden;
+    background: radial-gradient(240px 180px at 50% 30%, var(--ac, rgba(198,224,0,.2)), transparent 70%), linear-gradient(180deg, #1b1533, #120e22); border: 2px solid #2f2852; border-bottom-width: 5px; }
+  .am-c .am-esc { position: relative; width: 78%; max-width: 230px; margin: 4px auto 6px; cursor: pointer; }
+  .am-c .am-piso { position: absolute; left: 12%; right: 12%; bottom: -2%; height: 9%; border-radius: 50%; background: rgba(0,0,0,.45); filter: blur(6px); }
+  .am-c .mcb { position: relative; width: 100%; }
+  .am-c b { display: block; font: italic 900 28px/1 var(--display); text-transform: uppercase; color: #fff; }
+  .am-c .am-tag, .am-det .am-tag { display: inline-block; margin: 6px 0 8px; padding: 3px 10px; border-radius: 999px; font: 900 11px Nunito, sans-serif; letter-spacing: .1em; text-transform: uppercase; }
+  .am-c p { color: var(--text-dim); font-size: 13px; line-height: 1.5; }
+  .am-c .am-dice, .am-det .am-dice { position: absolute; left: 50%; top: 10px; transform: translateX(-50%); background: #fff; color: #1a1030; padding: 6px 12px; border-radius: 12px; font: 900 13px Nunito, sans-serif; white-space: nowrap; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 2; }
+  .am-c .am-dice.on, .am-det .am-dice.on { opacity: 1; }
+  .am-c.pronto .am-esc { filter: brightness(0) opacity(.55); cursor: default; }
+  .am-ver { margin-top: 10px; height: 38px; padding: 0 16px; border-radius: 11px; border: 0; border-bottom: 3px solid rgba(0,0,0,.35); background: var(--tc); color: #14101f; font: italic 900 16px/1 var(--display); text-transform: uppercase; cursor: pointer; }
+  .am-volver { background: none; border: 0; color: var(--text-dim); font: 900 14px Nunito, sans-serif; cursor: pointer; margin: 0 0 10px; padding: 6px 0; }
+  .am-det { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 18px; align-items: center; padding: 18px; border-radius: 24px; overflow: hidden;
+    background: radial-gradient(360px 260px at 25% 45%, var(--ac), transparent 70%), linear-gradient(180deg, #1b1533, #120e22); border: 2px solid #2f2852; border-bottom-width: 5px; }
+  .am-det .am-esc.grande { position: relative; width: 88%; max-width: 340px; margin: 0 auto; cursor: pointer; }
+  .am-det .am-esc .mcb, .am-det .am-esc .am-img { position: relative; width: 100%; }
+  .am-img img, .am-img svg, .am-mini img, .am-mini svg { width: 100%; height: auto; display: block; }
+  .am-der small { font: 900 12px Nunito, sans-serif; letter-spacing: .16em; text-transform: uppercase; }
+  .am-der b { display: block; font: italic 900 44px/1 var(--display); text-transform: uppercase; color: #fff; margin: 4px 0 6px; }
+  .am-der p { color: var(--text-dim); font-size: 14px; line-height: 1.5; margin: 8px 0 4px; }
+  .am-lb { display: block; font: 900 11px Nunito, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--text-dim); margin: 14px 0 8px; }
+  .am-asp { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+  .am-a { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 6px 7px; border-radius: 14px; cursor: pointer;
+    background: linear-gradient(180deg, rgba(var(--rc),.16), rgba(var(--rc),.04)); border: 2px solid rgba(var(--rc),.35); border-bottom-width: 4px; color: var(--text); }
+  .am-a.on { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(198,224,0,.18); }
+  .am-a .am-mini { width: 70px; height: 70px; display: grid; place-items: end center; }
+  .am-a .am-mini .mcb { position: relative; width: 100%; }
+  .am-a em { font: italic 900 14px/1 var(--display); text-transform: uppercase; font-style: italic; }
+  .am-nota { font-size: 12px !important; }
+  .am-usar { margin-top: 14px; height: 46px; padding: 0 20px; border-radius: 12px; border: 0; border-bottom: 4px solid rgba(0,0,0,.35); background: linear-gradient(180deg, #e2f75a, #C6E000); color: #14101f; font: italic 900 19px/1 var(--display); text-transform: uppercase; cursor: pointer; }
+  .am-usar:disabled { cursor: default; background: #241d44; color: var(--text-dim); border-bottom-color: #120E22; }
+  .am-usar.on { background: rgba(198,224,0,.14); color: var(--accent); border: 2px solid rgba(198,224,0,.5); }
+  .am-det .am-dice { top: 14px; left: 25%; }
+  @media (max-width: 700px) { .am-det { grid-template-columns: 1fr; padding: 14px; } .am-det .am-esc.grande { width: 70%; } .am-det .am-dice { left: 50%; } .am-der { text-align: center; } .am-der b { font-size: 36px; } }
+
+  @media (max-width: 560px) { .am-grid { grid-template-columns: 1fr 1fr; gap: 10px; } .am-c { padding: 12px 10px 14px; } .am-c b { font-size: 22px; } .am-c p { font-size: 12px; } .am-c .am-tag { font-size: 10px; } .am-hero h2 { font-size: 38px; } }
   .modo { position: relative; display: flex; align-items: center; justify-content: center; gap: 10px; height: 56px; padding: 0 10px; transform: skewX(-10deg); border-radius: 12px; cursor: pointer;
     background: linear-gradient(180deg, #221c3d, #18132c); border: 2px solid #2f2852; border-bottom-width: 5px; color: var(--text-dim); font: italic 900 23px/1 var(--display); text-transform: uppercase; letter-spacing: .04em; -webkit-tap-highlight-color: transparent; }
   .modo > * { transform: skewX(10deg); }
@@ -267,6 +322,12 @@
   .rg-pel .pts { display: flex; justify-content: center; gap: 3px; margin-top: 6px; }
   .rg-pel .pts u { width: 8px; height: 8px; border-radius: 2px; rotate: 45deg; background: rgba(255,255,255,.12); }
   .rg-pel .pts u.on { background: var(--c); }
+  /* Temporada: la foto que se gana en cada rango, y el nombre de la temporada */
+  .rg-h3 .rg-tp { font: italic 900 15px/1 var(--display); color: #14101f; background: linear-gradient(135deg, #FFF3B0, #FFC800); padding: 4px 9px 3px; border-radius: 6px; letter-spacing: .04em; }
+  .rg-pel .pz { display: block; width: 46%; max-width: 54px; aspect-ratio: 1; margin: 8px auto 0; border-radius: 8px; overflow: hidden; border: 2px solid color-mix(in srgb, var(--c) 70%, transparent); filter: grayscale(.85) brightness(.55); }
+  .rg-pel .pz.ok { filter: none; box-shadow: 0 0 12px color-mix(in srgb, var(--c) 60%, transparent); }
+  .rg-pel .pz img { width: 100%; height: 100%; display: block; }
+  .rg-sem .cab .tp { display: inline-block; margin-top: 4px; font: 900 10px/1 Nunito, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: #FFC800; border: 1px solid rgba(255,200,0,.5); border-radius: 4px; padding: 2px 5px; }
   /* El historial: una tarjeta por semana */
   .rg-hist { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; }
   .rg-sem { --c: #5FDAFF; flex: none; width: 150px; border-radius: 12px; border: 2px solid #4a3a20; background: linear-gradient(180deg, #1a1430, #120e22); text-align: center; overflow: hidden; }
@@ -306,10 +367,11 @@
 <script src="assets/acceso.js"></script>
 <script src="assets/auth.js"></script>
 <script src="assets/buho.js"></script>
-<script src="assets/rango.js?v=184"></script>
-<script src="assets/coleccion.js?v=196"></script>
-<script src="assets/tarjeta-perfil.js?v=207"></script>
+<script src="assets/rango.js?v=185"></script>
+<script src="assets/coleccion.js?v=209"></script>
+<script src="assets/tarjeta-perfil.js?v=210"></script>
 <script src="assets/buho/buho-datos.js"></script>
+<script src="assets/buho/rosa-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
 </head>
 <body>
@@ -332,6 +394,7 @@
       <nav class="modos" role="tablist">
         <button type="button" class="modo" data-modo="estilo" role="tab"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3l-5 3 2 5 2-1v11h10V10l2 1 2-5-5-3a4 4 0 0 1-8 0z"/></svg><span>Mi estilo</span></button>
         <button type="button" class="modo" data-modo="rangos" role="tab"><span class="m-em" id="mEm" aria-hidden="true"></span><span>Rangos</span></button>
+        <button type="button" class="modo" data-modo="amigos" role="tab"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4c1 1 2 1.5 3 1.5S12 5 13 4c1 1 2 1.5 3 1.5S18 5 19 4v6a6 6 0 0 1-12 0z" transform="translate(-3 3)"/><path d="M15 9c.6.6 1.3 1 2 1s1.4-.4 2-1v4a4 4 0 0 1-6 3.4"/></svg><span><span class="m-lg">El </span>Búho<span class="m-lg"> y sus amigos</span><span class="m-cl"> y amigos</span></span></button>
       </nav>
 
       <div id="vEstilo">
@@ -366,9 +429,18 @@
       </div>
 
       <!-- Rangos: tu semana, la escalera y tu historial -->
+      <div id="vAmigos" hidden>
+        <section class="am-hero">
+          <div class="am-nieve" aria-hidden="true"></div>
+          <small>Navidad en Modo Cachimbo</small>
+          <h2>El Búho y sus amigos</h2>
+          <p>Elige con quién estudias en el inicio y con qué aspecto. Toca a cada uno.</p>
+        </section>
+        <div class="am-grid" id="amGrid"></div>
+      </div>
       <div id="vRangos" hidden>
         <div class="rg-hero" id="rgHero"><p class="rg-nada">Cargando tus rangos…</p></div>
-        <div class="rg-h3">Escalera de rangos <small>gana XP en la semana para subir</small></div>
+        <div class="rg-h3" id="rgEscaT">Escalera de rangos <small>gana XP en la semana para subir</small></div>
         <div class="rg-esca" id="rgEsca"></div>
         <div class="rg-h3">Historial <small>el rango con el que cerraste cada semana</small></div>
         <div class="rg-hist" id="rgHist"></div>
@@ -381,8 +453,9 @@
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var C = window.MCColeccion, R = C.rareza;
-  var TAB = (location.hash || '').slice(1) || 'buho', FIL = 'todos', MODO = 'estilo';
-  if (TAB === 'rangos') { MODO = 'rangos'; TAB = 'buho'; }
+  var TAB = (location.hash || '').slice(1) || 'avatar', FIL = 'todos', MODO = 'estilo';
+  // El Búho y sus aspectos ahora viven en «El Búho y sus amigos»
+  if (TAB === 'rangos' || TAB === 'amigos' || TAB === 'buho') { MODO = TAB === 'buho' ? 'amigos' : TAB; TAB = 'avatar'; }
   var INTRO = {
     buho: 'El búho que sale en tu inicio. Toca uno para probarlo y dale «Usar» si te gusta.',
     avatar: 'Tu foto de perfil: sale en tu tarjeta de arriba, en tu perfil y en los tops.',
@@ -446,7 +519,7 @@
     var rg = c && c.querySelector('.mct-rg'), t = C.tema(P('racha')), fi = C.fondo ? C.fondo(P('racha')) : '', m = C.marco(P('marco')), src = C.avatar(P('avatar')) || miFoto();
     var nv = c && c.querySelector('.mct-nv'), pn = c && c.querySelector('.mct-pin');
     var h = '<div class="mcu-chip mct" style="' + esc(c ? c.getAttribute('style') || '' : '') + '">' +
-      '<span class="mct-caja"><span class="mct-marco"' + (m ? ' style="--m:' + m + '"' : '') + '>' +
+      '<span class="mct-caja"><span class="mct-marco' + C.marcoAttr(P('marco')).cls + '" style="' + C.marcoAttr(P('marco')).st + '">' +
       '<span class="mcu-av' + (C.avatar(P('avatar')) ? ' mct-buho' : '') + '" style="--f1:' + t[0] + ';--f2:' + t[3] + '">' + (src ? '<img src="' + esc(src) + '" alt="">' : esc(miLetra())) + '</span></span>' +
       '<span class="mct-nv">' + (nv ? nv.innerHTML : '') + '</span><span class="mct-pin">' + (pn ? pn.innerHTML : '') + '</span></span>' +
       '<span class="mct-tx"><span class="mcu-nom">' + esc(nom) + '</span><small class="mct-rg">' + (rg ? rg.innerHTML : '') + '</small></span></div>';
@@ -538,7 +611,7 @@
     pines: '<svg viewBox="0 0 24 24"><circle cx="12" cy="9.5" r="5.5"/><path d="M9 14.5l-2 6 5-2 5 2-2-6"/></svg>'
   };
   function pintarTabs() {
-    var ids = C.espacios.map(function (e) { return e.id; });
+    var ids = C.espacios.map(function (e) { return e.id; }).filter(function (id) { return id !== 'buho'; });
     $('tabs').innerHTML = ids.map(function (id) {
       var L = C.items(id), t = TABS[id] || [id, '#C6E000'];
       var nuevo = L.some(function (x) { return C.tiene(x.id) && C.nuevos().indexOf(x.id) >= 0; });
@@ -573,10 +646,88 @@
     MODO = m;
     $('vEstilo').hidden = m !== 'estilo';
     $('vRangos').hidden = m !== 'rangos';
+    $('vAmigos').hidden = m !== 'amigos';
+    if (m === 'amigos') pintarAmigos();
     document.querySelectorAll('.modo').forEach(function (b) { var on = b.dataset.modo === m; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
-    history.replaceState(null, '', '#' + (m === 'rangos' ? 'rangos' : TAB));
+    history.replaceState(null, '', '#' + (m === 'rangos' || m === 'amigos' ? m : TAB));
     if (m === 'rangos') pintarRangos();
   }
+  /* ---------- Amigos del Búho ----------
+     Cada amigo se arma y se mueve igual que el Búho (assets/buho/buho-vivo.js).
+     Para sumar uno: sus capas en assets/buho/<id>-datos.js (MCBuhoAmigos.<id>) y una fila aquí. */
+  var AMIGOS = [
+    { id: 'buho', pj: '', nom: 'Búho', tag: 'El de siempre', c: 'rgba(151,205,71,.28)', tc: '#C6E000', desc: 'Te acompaña desde el primer día. Le encanta cantar con sus lentes de sol.', dice: ['¡A estudiar!', '¿Otra práctica?', '¡Tú puedes!'],
+      // Sus aspectos son los del catálogo de Mi colección (espacio «buho»)
+      aspectos: function () { return C.items('buho').filter(function (x) { return !x.pj; }).map(function (x) { return { id: x.id, nom: x.nom, rareza: x.rareza, item: x, pj: x.id === 'buho-clasico' ? '' : null }; }); } },
+    { id: 'rosa', pj: 'rosa', nom: 'Búha Rosa', tag: 'Nueva · Navidad', c: 'rgba(255,120,170,.32)', tc: '#FF8FB6', desc: 'La mejor amiga del Búho. Lleva una flor y siempre saluda con alegría.', dice: ['¡Hola, cachimbo!', '¡Feliz Navidad!', '¡Vamos juntos!'],
+      // Sus aspectos son ítems de la colección que se regalan desde el panel (buho-rosa, buho-rosa-navidad)
+      aspectos: function () { return [['buho-rosa', 'Clásica'], ['buho-rosa-navidad', 'Navidad']].map(function (k) { var x = C.item(k[0]); return x && { id: x.id, nom: k[1], rareza: x.rareza, item: x, pj: x.pj, desc: x.desc }; }).filter(Boolean); } },
+    { id: '?', nom: 'Muy pronto', tag: 'Sorpresa', c: 'rgba(120,110,170,.2)', tc: '#A99FC8', desc: 'Un nuevo amigo llega esta Navidad. ¿Quién será?' }
+  ];
+  var amListo = false, amVer = null, amAsp = {};
+  // Un personaje: el animado por capas (pj) o la imagen del disfraz del catálogo
+  function amFigura(a, cont, x) {
+    cont.querySelectorAll('.mcb,.am-img').forEach(function (e) { e.remove(); });
+    if (!x || x.pj != null) {
+      var k = 0, carta = cont.closest('.am-c, .am-det'), globo = carta && carta.querySelector('.am-dice'), t = 0;
+      var poner = function (tx, ms) { if (!globo) return; globo.textContent = tx; globo.classList.add('on'); clearTimeout(t); t = setTimeout(function () { globo.classList.remove('on'); }, ms || 1800); };
+      if (cont._toques) { cont.append(MCBuhoVivo.crear('vivo', x ? x.pj || null : a.pj || null)); return; }
+      cont._toques = MCBuhoVivo.toques(cont, { pose: 'vivo', pj: x ? x.pj || null : a.pj || null,
+        decir: function (tx, tono, ms) { poner(tx, ms); }, alTocar: function () { poner(a.dice[k++ % a.dice.length]); } });
+    } else {
+      var w = document.createElement('div'); w.className = 'am-img'; w.innerHTML = C.buho(x.item); cont.append(w);
+    }
+  }
+  function pintarAmigos() {
+    var n = document.querySelector('.am-nieve');
+    if (!amListo) { amListo = true; var h = ''; for (var i = 0; i < 26; i++) h += '<i style="left:' + ((i * 37) % 100) + '%;animation-duration:' + (5 + (i % 5)) + 's;animation-delay:-' + (i % 7) + 's;width:' + (3 + i % 4) + 'px;height:' + (3 + i % 4) + 'px"></i>'; n.innerHTML = h; }
+    var g = $('amGrid'); g.innerHTML = ''; g.className = amVer ? 'am-uno' : 'am-grid';
+    if (amVer) return pintarAmigo(amVer);
+    AMIGOS.forEach(function (a) {
+      var c = document.createElement('div'); c.className = 'am-c' + (a.id === '?' ? ' pronto' : ''); c.style.setProperty('--ac', a.c);
+      var nA = a.aspectos ? a.aspectos().length : 0;
+      c.innerHTML = '<span class="am-dice"></span><div class="am-esc"><div class="am-piso"></div></div><b>' + esc(a.nom) + '</b><span class="am-tag" style="color:' + a.tc + ';background:' + a.tc + '22;border:1px solid ' + a.tc + '55">' + esc(a.tag) + '</span><p>' + esc(a.desc) + '</p>' +
+        (nA ? '<button type="button" class="am-ver" data-amigo="' + a.id + '" style="--tc:' + a.tc + '">Ver aspectos · ' + nA + '</button>' : '');
+      var e = c.querySelector('.am-esc');
+      if (a.id === '?') e.append(MCBuhoVivo.crear('oficial')); else amFigura(a, e, null);
+      g.append(c);
+    });
+  }
+  // Quién sale en el inicio: lo que llevas puesto en el espacio «buho» (el Búho con un aspecto o un amigo)
+  function enUso(x) { return C.puesto('buho') === (x.item ? x.item.id : 'buho-clasico'); }
+  function usarHtml(x) {
+    if (enUso(x)) return '<button type="button" class="am-usar on" disabled>✓ Lo tienes en el inicio</button>';
+    if (x.item && !C.tiene(x.item.id)) return '<button type="button" class="am-usar" disabled>' + ((x.item.regla || {}).tipo === 'regalo' ? '🎁 Solo de regalo' : 'Aún no lo tienes') + '</button>';
+    return '<button type="button" class="am-usar" data-usar="' + esc(x.id) + '">Usar en el inicio</button>';
+  }
+  function usarAmigo(x) {
+    try { localStorage.removeItem('mc_compa'); } catch (e) {}
+    var listo = function () { if (window.MCSonido && MCSonido.bien) MCSonido.bien(); pintarAmigo(amVer); };
+    var id = x.item ? x.item.id : 'buho-clasico';
+    if (C.puesto('buho') !== id) C.poner('buho', id).then(listo, listo); else listo();
+  }
+  function pintarAmigo(id) {
+    var a = AMIGOS.filter(function (x) { return x.id === id; })[0], L = a.aspectos(), sel = amAsp[id] || L[0].id, x = L.filter(function (y) { return y.id === sel; })[0] || L[0];
+    var RZ = C.rareza, rz = RZ[x.rareza] || RZ.comun, g = $('amGrid');
+    g.innerHTML = '<button type="button" class="am-volver" data-amvolver>‹ Todos los amigos</button>' +
+      '<div class="am-det" style="--ac:' + a.c + '"><span class="am-dice"></span><div class="am-izq"><div class="am-esc grande"><div class="am-piso"></div></div></div>' +
+      '<div class="am-der"><small style="color:' + a.tc + '">' + esc(a.nom) + '</small><b>' + esc(x.nom) + '</b><span class="am-tag" style="color:rgb(' + rz.c + ');background:rgba(' + rz.c + ',.14);border:1px solid rgba(' + rz.c + ',.45)">' + rz.nom + '</span>' +
+      '<p>' + esc(x.desc || (x.item && x.item.desc) || a.desc) + '</p>' +
+      '<span class="am-lb">Aspectos · ' + L.length + '</span><div class="am-asp">' + L.map(function (y) { var r = RZ[y.rareza] || RZ.comun;
+        return '<button type="button" class="am-a' + (y.id === x.id ? ' on' : '') + '" data-asp="' + esc(y.id) + '" style="--rc:' + r.c + '"><span class="am-mini" data-mini="' + esc(y.id) + '"></span><em>' + esc(y.nom) + '</em></button>'; }).join('') + '</div>' +
+      usarHtml(x) + '<p class="am-nota">Toca un aspecto para verlo y luego «Usar en el inicio» para estudiar con él.</p></div></div>';
+    amFigura(a, g.querySelector('.am-esc'), x.pj != null ? x : x);
+    L.forEach(function (y) {
+      var m = g.querySelector('[data-mini="' + y.id + '"]');
+      if (y.pj != null) m.append(MCBuhoVivo.crear('oficial', y.pj || null)); else m.innerHTML = C.buho(y.item);
+    });
+  }
+  $('amGrid').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-amigo]'); if (b) { amVer = b.dataset.amigo; pintarAmigos(); $('vAmigos').scrollIntoView({ behavior: 'smooth' }); return; }
+    if (e.target.closest('[data-amvolver]')) { amVer = null; pintarAmigos(); return; }
+    var s = e.target.closest('[data-asp]'); if (s) { amAsp[amVer] = s.dataset.asp; pintarAmigo(amVer); return; }
+    var u = e.target.closest('[data-usar]'); if (u) { var a = AMIGOS.filter(function (y) { return y.id === amVer; })[0]; var x = a.aspectos().filter(function (y) { return y.id === u.dataset.usar; })[0]; if (x) usarAmigo(x); }
+  });
   document.querySelector('.modos').addEventListener('click', function (e) { var b = e.target.closest('[data-modo]'); if (b) elegirModo(b.dataset.modo); });
 
   /* ---------- Rangos (assets/rango.js; tus filas de xp_semana) ----------
@@ -615,12 +766,15 @@
       '<div class="rg-reloj">Se cierra en<b>' + (d === 1 ? '1 día' : d + ' días') + '</b></div>';
     $('mEm').innerHTML = MCRango.svg(Math.max(0, n), { mini: true, quieto: true });
     // La escalera: un estandarte por rango, con un punto por cada nivel (I, II, III…)
-    var h = '';
-    MCRango.grupos().forEach(function (g) {
-      var yo = n >= g.desde && n <= g.hasta, pasado = n > g.hasta, pts = '';
+    var h = '', TP = C.temporada ? C.temporada(hoy) : null;
+    // Temporada de esta semana (T1 Nazca…): cada rango muestra la foto que se gana al llegar
+    $('rgEscaT').innerHTML = TP ? 'Escalera de rangos <em class="rg-tp">Temporada ' + esc(TP.nom) + '</em><small>llega a un rango esta semana y gana su foto, banner y marco</small>' : 'Escalera de rangos <small>gana XP en la semana para subir</small>';
+    MCRango.grupos().forEach(function (g, k) {
+      var yo = n >= g.desde && n <= g.hasta, pasado = n > g.hasta, pts = '', pz = TP && C.premioTemporada(TP, k);
       for (var i = g.desde; i <= g.hasta; i++) pts += '<u' + (i <= n ? ' class="on"' : '') + '></u>';
       h += '<div class="rg-pel' + (yo ? ' yo' : pasado ? '' : ' no') + '" style="--c:' + g.c + ';--t:' + g.t + '">' + emb(yo ? n : pasado ? g.hasta : g.desde) +
-        '<b>' + esc(yo ? MCRango.nombre(n) : g.nom) + '</b><small>' + miles(MIN[g.desde]) + ' XP</small><span class="pts">' + pts + '</span><i></i></div>';
+        '<b>' + esc(yo ? MCRango.nombre(n) : g.nom) + '</b><small>' + miles(MIN[g.desde]) + ' XP</small><span class="pts">' + pts + '</span>' +
+        (pz ? '<span class="pz' + (C.tiene(pz.id) ? ' ok' : '') + '" title="' + esc(pz.nom) + '"><img src="' + esc(pz.img) + '" alt="' + esc(pz.nom) + '" loading="lazy"></span>' : '') + '<i></i></div>';
     });
     $('rgEsca').innerHTML = h;
     // El historial: de la semana pasada hacia atrás, hasta tu primera semana (máximo 12)
@@ -638,7 +792,8 @@
       sem.push({ semana: key, xp: pas[key] || 0, num: Math.round((dd - f0) / 6048e5) + 1 });
     }
     $('rgHist').innerHTML = sem.map(function (x) {
-      var r = MCRango.nivel(x.xp, x.semana), cab = '<div class="cab"><b>Semana ' + x.num + '</b><small>' + MCRango.fechas(x.semana) + '</small></div>';
+      var tp = C.temporada ? C.temporada(x.semana) : null;
+      var r = MCRango.nivel(x.xp, x.semana), cab = '<div class="cab"><b>Semana ' + x.num + '</b><small>' + MCRango.fechas(x.semana) + '</small>' + (tp ? '<em class="tp">' + esc(tp.nom) + '</em>' : '') + '</div>';
       return r < 0
         ? '<div class="rg-sem sin">' + cab + '<div class="nm">Sin rango</div><span class="em vacio">—</span><div class="xp">' + (x.xp ? miles(x.xp) + ' XP' : 'Sin jugar') + '</div></div>'
         : '<div class="rg-sem" style="--c:' + MCRango.color(r).c + '">' + cab + '<div class="nm">' + esc(MCRango.nombre(r)) + '</div>' + emb(r) + '<div class="xp">' + miles(x.xp) + ' XP</div></div>';

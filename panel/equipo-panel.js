@@ -21,7 +21,7 @@ const EQ_PERMISOS = [
     ['agenda', 'Agenda', 'Programar fechas (seminarios, simulacros, exámenes) para todos los alumnos'],
     ['tematicas', 'Temáticas', 'Cambiar la temática de la web (Halloween…) y sus fechas'],
     ['codigos', 'Códigos', 'Crear, borrar y liberar códigos. Ojo: da acceso al contenido pagado'],
-    ['regalos', 'Regalos', 'Dar corazones, corazones infinitos, XP o ítems a un alumno por su ID'],
+    ['regalos', 'Regalos', 'Dar corazones, corazones infinitos, XP, rayos o ítems a un alumno por su ID'],
     ['descargas', 'Descargas PDF', 'Prender o apagar las descargas, sus límites, ver quién descargó qué y bloquear alumnos'],
     ['resenas', 'Reseñas', 'Publicar, ocultar, destacar y ordenar las reseñas de la app que dejan los alumnos'],
   ]],

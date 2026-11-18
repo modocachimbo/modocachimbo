@@ -274,6 +274,7 @@
       '.mcpdf .qt{margin:0 0 7px;overflow-wrap:break-word}.mcpdf .qt .mcq-p{display:block}.mcpdf .qt .mcq-p+.mcq-p{margin-top:6px}' +
       '.mcpdf .qt img,.mcpdf .g img{max-width:100%;height:auto;display:block;margin:6px auto}.mcpdf .g{margin:6px 0}.mcpdf .g svg{max-width:100%;height:auto}' +
       '.mcpdf table{border-collapse:collapse;margin:6px auto;font-size:.95em}.mcpdf th,.mcpdf td{border:1px solid #9aa3b5!important;padding:2px 6px!important;background:#fff!important;color:' + t + '!important}' +
+      '.mcpdf .mcq-tabla{overflow:visible}.mcpdf table.mcpdf-ajusta{width:100%;max-width:100%}.mcpdf table.mcpdf-ajusta th,.mcpdf table.mcpdf-ajusta td{white-space:normal!important;overflow-wrap:anywhere;padding:2px 4px!important}' +
       '.mcpdf td.mcpdf-alta,.mcpdf th.mcpdf-alta{padding:6px 7px 10px!important;line-height:1.7}' +
       '.mcpdf details{margin:4px 0 8px;border:1px solid #c9cfda;border-radius:6px;padding:6px 9px;background:#fff!important;color:' + t + '!important}.mcpdf summary{font:800 12px Barlow Condensed,Arial;letter-spacing:.08em;list-style:none;color:var(--o)}.mcpdf summary::-webkit-details-marker{display:none}' +
       '.mcpdf .lect details{margin:0;border:1.4px solid var(--c);border-left-width:5px;border-radius:8px;padding:8px 11px;background:var(--s)!important}.mcpdf .lect summary{font-size:13px;margin-bottom:4px}.mcpdf .lect p{margin:0 0 5px;text-align:justify}.mcpdf .lect .mcq-lec-pos{color:#4a5468;font-weight:700;letter-spacing:.02em;text-transform:none}' +
@@ -676,6 +677,8 @@
     achicar(Array.prototype.filter.call(b.querySelectorAll('.katex'), function (k) { return !k.closest('.katex-display') && !k.closest('.ops'); }), b);
     Array.prototype.forEach.call(b.querySelectorAll('table'), function (t) {
       var r = b.clientWidth / t.getBoundingClientRect().width; if (r < 1) t.style.fontSize = Math.round(Math.max(0.75, r * 0.97) * 100) + '%';
+      // Si aun así no entra, las celdas parten su texto en varias líneas y la tabla ocupa justo el ancho de la columna
+      if (t.getBoundingClientRect().width > b.clientWidth + 1) t.classList.add('mcpdf-ajusta');
     });
     var h = b.offsetHeight, cortes = puntosDeCorte(b), arriba = b.getBoundingClientRect().top, finImg = 0;
     Array.prototype.forEach.call(b.querySelectorAll('img'), function (im) { finImg = Math.max(finImg, im.getBoundingClientRect().bottom - arriba); });
@@ -1456,6 +1459,12 @@
         var equipoTxt = (function () { var u = navigator.userAgent || ''; return (/Android/i.test(u) ? 'Android' : /iPhone|iPad/i.test(u) ? 'iPhone/iPad' : /Windows/i.test(u) ? 'Windows' : /Mac/i.test(u) ? 'Mac' : 'Otro'); })();
         rpc('pedir_descarga', { p: { tipo: reg.tipo, ref: doc.ref || location.pathname, titulo: doc.titulo, equipo: equipoTxt } }).then(function (r) {
           if (!r || r.error) throw new Error((r && r.error) || 'No se pudo registrar la descarga.');
+          // Simulacro: el N.º sale de la cuenta (supabase/101), así es el mismo en el celular y en la PC.
+          // Sin ese SQL o sin respuesta, se queda el número guardado en el teléfono.
+          return (reg.tipo === 'simulacro' && doc.ref ? rpc('numero_simulacro', { p_ref: doc.ref }).then(function (n) {
+            n = +n; if (n > 0) { var nro = dos(n); doc = Object.assign({}, doc, { nro: nro, cabecera2: 'Simulacro N.º ' + nro }); }
+          }, function () {}) : Promise.resolve()).then(function () { return r; });
+        }).then(function (r) {
           est.textContent = 'Armando tu PDF…';
           return generar(doc, op, { apodo: r.apodo || 'Alumno', email: r.email || '', fecha: r.fecha || '', num: r.num }, function (i, n) {
             barra.style.width = Math.round(100 * i / n) + '%'; est.textContent = 'Armando la página ' + i + ' de ' + n + '…';

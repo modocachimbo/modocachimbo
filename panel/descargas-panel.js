@@ -87,8 +87,9 @@ function pintarDescargas(filas) {
       <div><b>${dscMil(d.alumnos_semana)}</b>alumnos en 7 días</div>
       <div><b>${dscMil(d.total)}</b>en total</div>
     </div>
+    <div class="dsc-card" id="dscTienda"><h3>Descargas sin internet</h3><p>La tienda Descargas del inicio: los alumnos bajan sus cursos del ciclo actual, simuladores y exámenes para estudiar sin internet. Se guarda al tocar.</p><div class="loader">Cargando…</div></div>
     <div class="dsc-card">
-      <h3>Ajustes</h3>
+      <h3>Ajustes de PDF</h3>
       <p>Lo que cambies aquí les llega a los alumnos en unos minutos. Tú (y el equipo con permiso) ven el botón aunque esté apagado, para probarlo.</p>
       ${sw('dscActivo', c.activo, 'Descargas prendidas', 'Apagadas: el botón PDF desaparece de toda la web.')}
       ${sw('dscAbierto', c.abierto, 'Abierto para todos', 'Cualquier alumno con su cuenta de Google puede descargar, sin código. Apagado: solo con el paquete Descargas PDF (descarga-VIP). El Acceso total no lo incluye: se vende aparte.')}
@@ -123,6 +124,7 @@ function pintarDescargas(filas) {
     </div>`;
 
   $('dscCuerpo').querySelectorAll('[data-t]').forEach(b => b.addEventListener('click', () => b.classList.toggle('on')));
+  pintarTienda();
   $('dscGuardar').addEventListener('click', guardarDescargas);  const buscar = () => { DSC.q = $('dscQ').value.trim(); cargarDescargas(); };
   $('dscIr').addEventListener('click', buscar);
   $('dscQ').addEventListener('keydown', e => { if (e.key === 'Enter') buscar(); });
@@ -162,4 +164,42 @@ function bloquearDescargas(usuario, email, bloquear) {
     toast(bloquear ? 'Bloqueado: ya no puede descargar' : 'Desbloqueado');
     cargarDescargas();
   }
+}
+
+/* ---- Descargas sin internet (descargas.html): ajustes 'planes'.tienda = { modo: vip | todos | apagado, abierto } ----
+   Se lee lo último guardado y solo se cambia «tienda», así no se pisa el resto de Planes y precios. */
+async function tiendaLeer() {
+  const r = await (await MCAuth.listo).from('ajustes').select('valor').eq('clave', 'planes').maybeSingle();
+  if (r.error) throw r.error;
+  return r.data && r.data.valor || null;
+}
+async function pintarTienda() {
+  const caja = $('dscTienda'); if (!caja) return;
+  let t;
+  try { const g = await tiendaLeer(); t = (window.MCPlanes ? MCPlanes.mezclar(g) : (g || {})).tienda || { modo: 'vip' }; }
+  catch (e) { caja.querySelector('.loader').outerHTML = '<div class="state-msg error">No se pudo leer. Intenta de nuevo.</div>'; return; }
+  const on = t.modo !== 'apagado', todos = t.modo === 'todos' || (t.modo === 'apagado' && t.abierto);
+  const sw = (id, v, tit, sub) => `<div class="dsc-sw"><div><b>${tit}</b><small>${sub}</small></div><label class="sw"><input type="checkbox" id="${id}" ${v ? 'checked' : ''}><span></span></label></div>`;
+  const est = !on ? '<span class="dsc-estado off"><i></i>Apagada</span>' : `<span class="dsc-estado on"><i></i>Prendida · ${todos ? 'abierta para todos' : 'solo con código'}</span>`;
+  caja.innerHTML = `<h3>Descargas sin internet</h3><p>La tienda Descargas del inicio: los alumnos bajan sus cursos del ciclo actual, simuladores y exámenes para estudiar sin internet. Se guarda al tocar.</p>
+    ${sw('tdaOn', on, 'Descargas sin internet prendidas', 'Apagadas: el botón Descargas desaparece del inicio y la tienda dice «cerradas por ahora».')}
+    ${sw('tdaTodos', todos, 'Abierto para todos', 'Cualquier alumno puede descargar, sin código. Apagado: solo con el paquete Descargas sin internet (Panel → Códigos). El Acceso total no lo incluye.')}
+    <div class="dsc-pie">${est}<span class="hint" id="tdaMsg"></span></div>`;
+  const guardar = async () => {
+    const a = $('tdaOn'), b = $('tdaTodos'), msg = $('tdaMsg');
+    a.disabled = b.disabled = true; msg.textContent = 'Guardando…';
+    try {
+      const g = await tiendaLeer();
+      const v = window.MCPlanes ? MCPlanes.mezclar(g) : (g || {});
+      v.tienda = { modo: !a.checked ? 'apagado' : b.checked ? 'todos' : 'vip', abierto: b.checked };
+      const r = await (await MCAuth.listo).rpc('guardar_ajuste', { p_clave: 'planes', p_valor: v });
+      if (r.error) throw r.error;
+      try { localStorage.removeItem('mc_planes'); } catch (e) {}
+      if (window.PL && PL.v) PL.v.tienda = v.tienda;
+      toast(v.tienda.modo === 'apagado' ? 'Descargas sin internet apagadas' : v.tienda.modo === 'todos' ? 'Descargas sin internet abiertas para todos' : 'Descargas sin internet solo con código');
+    } catch (e) { toast(/no autorizado/i.test(e.message || '') ? 'Tu correo no es administrador' : (e.message || 'No se pudo guardar'), true); }
+    pintarTienda();
+  };
+  $('tdaOn').addEventListener('change', guardar);
+  $('tdaTodos').addEventListener('change', guardar);
 }

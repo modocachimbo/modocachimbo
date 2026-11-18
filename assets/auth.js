@@ -21,7 +21,7 @@
     }
   } catch (e) {}
 
-  var cliente = null, sesion = null, perfilCache = null, perfilPedido = null, iniciado = false;
+  var cliente = null, sesion = null, perfilCache = null, perfilPedido = null, iniciado = false, sinRed = false;
   var oyentes = [];
 
   function cargarSDK() {
@@ -78,6 +78,7 @@
     })
     .then(function (r) {
       sesion = r.data.session;
+      sinRed = !sesion && (navigator.onLine === false || !!(r.error && /fetch|network|retryable/i.test((r.error.name || '') + ' ' + (r.error.message || ''))));
       // Quita el #access_token=… de la barra después de entrar
       if (/access_token=|error_description=/.test(location.hash) || location.href.slice(-1) === '#') {
         history.replaceState(null, '', location.pathname + location.search);
@@ -106,7 +107,7 @@
     if (rachaPedida || window.MCRacha || !usuario()) return;
     rachaPedida = true;
     var s = document.createElement('script');
-    s.src = BASE + 'assets/racha.js';
+    s.src = BASE + 'assets/racha.js?v=2';
     document.head.appendChild(s);
     // Progreso del estudiante (assets/progreso.js)
     var g = document.createElement('script');
@@ -122,7 +123,7 @@
     document.head.appendChild(n);
     // Corazones, misiones del día y XP (assets/corazones.js) y el búho que usa
     var cz = document.createElement('script');
-    cz.src = BASE + 'assets/corazones.js?v=6';
+    cz.src = BASE + 'assets/corazones.js?v=14';
     document.head.appendChild(cz);
     var pagina = location.href.replace(/[?#].*$/, '');
     // Cuenta suspendida desde el panel (assets/suspension.js); el panel no se bloquea
@@ -134,7 +135,7 @@
     // Rangos de la semana: tarjeta en el inicio, vitrina en el perfil (assets/rango.js)
     if (!window.MCRango && (pagina === BASE || pagina === BASE + 'index.html' || pagina === BASE + 'perfil.html')) {
       var rg = document.createElement('script');
-      rg.src = BASE + 'assets/rango.js';
+      rg.src = BASE + 'assets/rango.js?v=185';
       document.head.appendChild(rg);
     }
     if (!window.MCBuho && pagina !== BASE && pagina !== BASE + 'index.html') {
@@ -162,9 +163,22 @@
     }
   }
 
+  // Web en mantenimiento (Panel → Mantenimiento): en todas las páginas menos el panel, con o sin sesión
+  var mantPedido = false;
+  function cargarMantenimiento() {
+    if (mantPedido || window.MCMant) return;
+    mantPedido = true;
+    if (location.href.replace(/[?#].*$/, '').indexOf(BASE + 'panel/') === 0) return;
+    var m = document.createElement('script');
+    m.src = BASE + 'assets/mantenimiento.js?v=2';
+    document.head.appendChild(m);
+  }
+
   function avisar() {
     // Página privada sin sesión (venció o cerró sesión): a la bienvenida
-    if (window.MC_PRIVADA && cliente && iniciado && !usuario() && window.MC_BIENVENIDA) { window.MC_BIENVENIDA(); return; }
+    // Sin internet (paquetes de descarga del Laboratorio) la sesión no se puede renovar: no se saca a nadie
+    if (window.MC_PRIVADA && cliente && iniciado && !usuario() && window.MC_BIENVENIDA && !sinRed) { window.MC_BIENVENIDA(); return; }
+    cargarMantenimiento();
     cargarRacha();
     oyentes.forEach(function (fn) { try { fn(usuario()); } catch (e) {} });
     pintarWidgets();

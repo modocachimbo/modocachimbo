@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<script src="assets/guardia.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06040F">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="assets/app/icono-180.png">
+<title>Descargas · Modo Cachimbo</title>
+<script src="assets/app.js" defer></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,800;1,900&family=Nunito:wght@600;700;800;900&family=Sora:wght@700;800&family=Lilita+One&display=swap">
+<style>
+/* =========================================================
+   Modo Cachimbo · Tienda de descargas (assets/paquetes.js)
+   Cursos del ciclo actual, simuladores del Laboratorio y exámenes
+   de admisión para usar sin internet. Quién la usa: panel → Descargas
+   PDF → Descargas sin internet (planes.tienda.modo). Solo offline-VIP.
+   ========================================================= */
+:root{--bg:#06040F;--card:#151127;--card2:#1D1834;--borde:#2A2346;--lima:#C6E000;--lima-osc:#8fa300;--tx:#EEEAF7;--dim:#A99FC8;--faint:#6F6690}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:radial-gradient(120% 60% at 50% -10%,#1A1040 0%,#08051A 55%,#06040F 100%) no-repeat #06040F;color:var(--tx);font:700 15px/1.45 "Nunito",system-ui,sans-serif;min-height:100vh}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+a{color:inherit;text-decoration:none}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.wrap{max-width:1180px;margin:0 auto;padding:18px 24px 60px}
+.top{display:flex;align-items:center;gap:12px}
+.bt{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:rgba(21,17,39,.8);border:1px solid var(--borde);flex:none}
+.ttl small{display:block;font:800 12px/1 "Barlow Condensed";letter-spacing:.16em;text-transform:uppercase;color:var(--lima)}
+.ttl b{display:block;font:800 26px/1.1 "Sora";letter-spacing:-.02em}
+.uso{margin-left:auto;display:flex;align-items:center;gap:8px;height:44px;padding:0 14px;border-radius:14px;background:rgba(21,17,39,.8);border:1px solid var(--borde);font:800 14px "Nunito";color:var(--dim);white-space:nowrap}
+.uso b{color:var(--tx)}
+/* portada */
+.hero{margin-top:20px;position:relative;display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center;padding:26px 30px;border-radius:28px;overflow:hidden;background:linear-gradient(120deg,#26300a,#151127 45%,#0D0926);border:1px solid rgba(198,224,0,.3)}
+.hero:before{content:"";position:absolute;inset:-40% auto auto -10%;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(198,224,0,.18),transparent 65%);pointer-events:none}
+.hero .caja{position:relative;width:150px;height:150px}
+.hero .caja svg{width:100%;height:100%;filter:drop-shadow(0 14px 22px rgba(0,0,0,.55));animation:cajaA 3.2s ease-in-out infinite}
+@keyframes cajaA{0%,70%,100%{transform:translateY(0)}80%{transform:translateY(-6px) rotate(-3deg)}90%{transform:translateY(0) rotate(2deg)}}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:9px;font:800 12px/1 "Barlow Condensed";letter-spacing:.14em;text-transform:uppercase;background:rgba(58,180,240,.16);color:#7FD0FF}
+.hero h1{margin:10px 0 6px;font:800 34px/1.1 "Sora";letter-spacing:-.02em}
+.hero p{margin:0;color:var(--dim);font-weight:700;max-width:56ch}
+.hero .fila{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:18px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:52px;padding:0 24px;border-radius:16px;background:var(--lima);color:#151A03;font:800 16px "Sora";box-shadow:0 5px 0 var(--lima-osc)}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--lima-osc)}
+.btn[disabled]{background:#2A2346;color:var(--faint);box-shadow:0 5px 0 #1a1530;cursor:default}
+.hero .dato{font:800 13px "Nunito";color:var(--dim)}.hero .dato b{color:var(--tx)}
+/* candado VIP */
+.vip{margin-top:16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:16px 18px;border-radius:20px;background:linear-gradient(100deg,rgba(255,200,0,.14),rgba(21,17,39,.85) 60%);border:1px solid rgba(255,200,0,.4)}
+.vip .ic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:rgba(255,200,0,.16);color:#FFC800;flex:none}
+.vip .ic svg{width:26px;height:26px}
+.vip .tx{flex:1;min-width:220px}
+.vip b{display:block;font:800 17px "Sora"}.vip small{color:var(--dim);font-size:13.5px}
+.vip form{display:flex;gap:8px;flex:1;min-width:260px}
+.vip input{flex:1;min-width:0;height:46px;border-radius:12px;border:1px solid var(--borde);background:#0A0718;color:var(--tx);padding:0 12px;font:800 15px "Sora";text-transform:uppercase;letter-spacing:.06em}
+.vip form button{height:46px;padding:0 16px;border-radius:12px;background:#FFC800;color:#2A1D00;font:800 14px "Sora"}
+.vip .msg{width:100%;min-height:0;font:800 13px "Nunito";color:#FF7A85}.vip .msg.ok{color:var(--lima)}
+/* pestañas */
+.tabs{display:flex;gap:8px;margin:26px 0 4px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;display:flex;align-items:center;gap:8px;height:42px;padding:0 16px;border-radius:13px;background:rgba(21,17,39,.8);border:1px solid var(--borde);font:800 14px "Nunito";color:var(--dim)}
+.tab.on{background:var(--lima);color:#151A03;border-color:var(--lima)}
+.tab em{font:800 12px "Barlow Condensed";font-style:normal;opacity:.7}
+.sec{margin-top:22px}.sec.oculta{display:none}
+.sec h2{display:flex;align-items:center;gap:10px;margin:0 0 12px;font:800 15px "Barlow Condensed";letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.sec h2 span{margin-left:auto;font-size:13px;color:var(--faint);letter-spacing:.1em}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+/* paquete */
+.pk{--c:var(--lima);position:relative;display:flex;flex-direction:column;padding:14px;border-radius:20px;background:var(--card);border:1px solid var(--borde);overflow:hidden}
+.pk:before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--c);opacity:.85}
+.pk.listo{background:linear-gradient(160deg,color-mix(in srgb,var(--c) 13%,var(--card)),var(--card) 55%);border-color:color-mix(in srgb,var(--c) 40%,var(--borde))}
+.pk-f{display:flex;align-items:center;gap:12px}
+.pk-ic{position:relative;width:48px;height:48px;flex:none;border-radius:14px;display:grid;place-items:center;color:var(--c);background:color-mix(in srgb,var(--c) 18%,transparent)}
+.pk-ic i{display:block;width:30px;height:30px;background:var(--c);-webkit-mask:var(--m) center/contain no-repeat;mask:var(--m) center/contain no-repeat}
+.pk-ic svg{width:27px;height:27px}
+.pk-ok{position:absolute;right:-5px;bottom:-5px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--lima);color:#151A03;border:2px solid var(--card)}
+.pk-ok svg{width:12px;height:12px;stroke-width:3.4}
+.pk-t{flex:1;min-width:0}
+.pk-t b{display:block;font:800 16.5px/1.2 "Nunito"}
+.pk-t small{display:block;margin-top:2px;color:var(--dim);font:700 12.5px/1.3 "Nunito"}
+.pk-inc{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}
+.pk-inc span{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;font:800 11.5px/1.2 "Nunito";background:rgba(255,255,255,.05);color:var(--dim)}
+.pk-inc span.si{background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--tx)}
+.pk-inc span.ce{color:var(--faint)}
+.pk-inc svg{width:12px;height:12px;stroke-width:2.6}
+.pk-pie{display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:14px}
+.pk-tam{flex:1;min-width:0;font:800 13px "Nunito";color:var(--dim)}
+.pk-tam .okt{color:var(--lima)}
+.pk-bar{flex:1;min-width:0}
+.pk-bar div{height:10px;border-radius:10px;background:#2A2346;overflow:hidden}
+.pk-bar i{display:block;height:100%;width:0;border-radius:10px;background:linear-gradient(90deg,var(--lima),#E6FF4D);transition:width .25s;position:relative;overflow:hidden}
+.pk-bar i:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);transform:translateX(-100%);animation:brillo 1.1s linear infinite}
+@keyframes brillo{to{transform:translateX(100%)}}
+.pk-bar small{display:block;margin-top:5px;font:800 12px "Nunito";color:var(--lima)}
+.pk-b{flex:none;display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 14px;border-radius:12px;font:800 13.5px "Sora";background:var(--lima);color:#151A03;box-shadow:0 3px 0 var(--lima-osc)}
+.pk-b svg{width:17px;height:17px;stroke-width:2.6}
+.pk-b.act{background:#3AB4F0;color:#04223A;box-shadow:0 3px 0 #1F7DB0}
+.pk-b.no{background:#221C3E;color:var(--faint);box-shadow:none;cursor:default}
+.pk-b.vipb{background:rgba(255,200,0,.14);color:#FFC800;box-shadow:none;border:1px solid rgba(255,200,0,.35)}
+.pk-b.ya{background:transparent;color:var(--lima);box-shadow:none;border:1.5px solid rgba(198,224,0,.45);cursor:default}
+.pk-x{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--card2);color:var(--dim)}
+.pk-x svg{width:18px;height:18px}
+.pk-x.seguro{width:auto;padding:0 10px;color:#FF7A85;font:800 12.5px "Nunito"}
+/* áreas (como «Modos de estudio» del inicio) */
+.area{margin-top:22px}.area:first-of-type{margin-top:6px}
+.area h3{display:flex;align-items:center;gap:12px;margin:0 0 12px;font:italic 900 26px/1 "Barlow Condensed","Arial Narrow",sans-serif;text-transform:uppercase;letter-spacing:.02em;color:#fff}
+.area h3 i{width:6px;height:24px;border-radius:3px;background:var(--c);box-shadow:0 0 14px color-mix(in srgb,var(--c) 60%,transparent);transform:skewX(-12deg)}
+.area h3:after{content:"";flex:1;height:2px;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 45%,transparent),transparent);order:2}
+.area-b{order:4;flex:none;display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 13px;border-radius:11px;font:400 14px "Lilita One","Sora",sans-serif;font-style:normal;letter-spacing:.02em;text-transform:none;background:var(--c);color:#111;box-shadow:0 3px 0 color-mix(in srgb,var(--c) 55%,#000)}
+.area-b svg{width:16px;height:16px;stroke-width:2.6}
+.area-b b{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:7px;background:rgba(0,0,0,.22);font:inherit;font-size:12.5px}
+.area-b.ya{background:transparent;color:var(--c);box-shadow:none;border:1.5px solid color-mix(in srgb,var(--c) 50%,transparent)}
+.area-b.no{background:#221C3E;color:var(--faint);box-shadow:none}
+.pk-tam .nvt{color:#7FD0FF}
+.area h3 em{order:3;font:800 13px "Barlow Condensed";font-style:normal;letter-spacing:.12em;color:var(--c);opacity:.9}
+/* tarjeta estilo juego: degradado del color del área, borde inferior grueso */
+.pk{border-radius:20px!important;border-bottom:4px solid var(--c)!important;background:linear-gradient(150deg,color-mix(in srgb,var(--c) 22%,#151127),#151127 58%)!important}
+.pk:before{display:none}
+.pk.listo{background:linear-gradient(150deg,color-mix(in srgb,var(--c) 32%,#151127),#151127 65%)!important}
+.pk-ic{width:58px!important;height:58px!important;border-radius:16px!important;background:linear-gradient(160deg,color-mix(in srgb,var(--c) 34%,#0A0718),#0A0718)!important;box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--c) 55%,transparent),0 6px 14px rgba(0,0,0,.35)}
+.pk-ic i{width:34px!important;height:34px!important}
+.pk-t b{font:italic 900 23px/1.02 "Barlow Condensed","Arial Narrow",sans-serif!important;text-transform:uppercase;letter-spacing:.01em}
+.pk-t small{font:800 12.5px/1.3 "Nunito"!important;color:color-mix(in srgb,var(--c) 70%,#fff)!important;opacity:.95}
+.pk-inc span{background:rgba(0,0,0,.28)}
+.pk-b{font:400 15px "Lilita One","Sora",sans-serif!important;letter-spacing:.02em}
+@media (max-width:760px){.area h3{font-size:22px;flex-wrap:wrap;row-gap:8px}.area h3:after{display:none}.area h3 em{margin-left:auto}.area-b{width:100%;justify-content:center;height:42px}.pk-t b{font-size:21px!important}
+  .area .grid{gap:10px}.pk-curso .pk-inc{display:none}.pk-curso .pk-pie{padding-top:12px}.pk-curso .pk-ic{width:50px!important;height:50px!important}}
+/* pie */
+.pie2{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.caja2{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:18px;background:#0D0A1F;border:1px solid var(--borde);font:700 13.5px/1.4 "Nunito";color:var(--dim)}
+.caja2 svg{width:24px;height:24px;flex:none;color:#7FD0FF}
+.caja2 div{flex:1;min-width:0}.caja2 b{color:var(--tx)}
+.caja2 button{flex:none;height:38px;padding:0 12px;border-radius:10px;border:1px solid rgba(255,122,133,.45);color:#FF7A85;font:800 13px "Nunito"}
+.cerrada{max-width:440px;margin:80px auto 0;padding:30px 24px;text-align:center;border-radius:24px;background:var(--card);border:1px solid var(--borde);border-bottom:5px solid var(--lima)}
+.cerrada b{display:block;font:800 24px/1.2 "Sora"}.cerrada p{margin:10px 0 20px;color:var(--dim)}
+.aviso{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:.25s;padding:12px 18px;border-radius:14px;background:#1D1834;border:1px solid var(--borde);font:800 14px/1.3 "Nunito";max-width:calc(100vw - 32px);text-align:center;z-index:9}
+.aviso.on{opacity:1;transform:translate(-50%,0)}
+@media (max-width:1000px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:760px){
+  .wrap{padding:max(12px,env(safe-area-inset-top)) 16px 40px}
+  .ttl b{font-size:21px}.uso{padding:0 10px;font-size:13px}.uso span{display:none}
+  .hero{grid-template-columns:1fr;gap:6px;padding:20px 18px;text-align:left}
+  .hero .caja{width:96px;height:96px;position:absolute;right:12px;top:12px}
+  .hero h1{font-size:26px;padding-right:96px}.hero p{padding-right:0}
+  .hero .tag{margin-right:96px}
+  .hero .btn{width:100%}
+  .grid{grid-template-columns:1fr}
+  .sec h2{flex-wrap:wrap;row-gap:2px}.sec h2 span{margin-left:0;width:100%;font-size:12px}
+  .pie2{grid-template-columns:1fr}
+  .vip form{min-width:0;flex:1 1 100%}.vip .tx{min-width:0;flex:1 1 0}
+}
+@media (prefers-reduced-motion:reduce){.hero .caja svg,.pk-bar i:after{animation:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="ic-atras" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="ic-desc" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></symbol>
+<symbol id="ic-ok" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+<symbol id="ic-bote" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13M10 11v5.5M14 11v5.5"/></symbol>
+<symbol id="ic-act" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4h-4"/></symbol>
+<symbol id="ic-mem" viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2.5"/><path d="M10 17.5h4"/></symbol>
+<symbol id="ic-nube" viewBox="0 0 24 24"><path d="M7 18.5h10a4 4 0 0 0 .6-8A5.5 5.5 0 0 0 7 9.5a4.5 4.5 0 0 0 0 9z"/><path d="M4 4l16 16"/></symbol>
+<symbol id="ic-cand" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
+<symbol id="ic-corona" viewBox="0 0 24 24"><path d="M4 17.5 3 8l5 3.5L12 5l4 6.5L21 8l-1 9.5z"/><path d="M4.5 20.5h15"/></symbol>
+<symbol id="ic-micro" viewBox="0 0 24 24"><path d="M5 21h14M9 17.5h6"/><path d="M15.5 9.5a6 6 0 0 1-3.5 8"/><path d="M8 4.2l3-1.6 3.6 6.8-3 1.6z"/><path d="M10.4 11.6l1.6-.9"/></symbol>
+<symbol id="ic-examen" viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2.5"/><path d="M8.5 8.5h7M8.5 12h7M8.5 15.5h4"/></symbol>
+<symbol id="r-caja" viewBox="0 0 64 64"><path d="M32 6 56 18v28L32 58 8 46V18z" fill="#3B2A0F"/><path d="M8 18 32 30v28L8 46z" fill="#C98A3A"/><path d="M56 18 32 30v28l24-12z" fill="#A86C25"/><path d="M8 18 32 6l24 12-24 12z" fill="#E8B36A"/><path d="M20 12l24 12v8l-6-3v-8L14 9z" fill="#F7D9A4" opacity=".9"/><path d="M8 18 32 30 56 18M32 30v28" fill="none" stroke="#5A3B12" stroke-width="1.6" stroke-linejoin="round"/><path d="M32 6 56 18v28L32 58 8 46V18z" fill="none" stroke="#3B2A0F" stroke-width="2.4" stroke-linejoin="round"/><circle cx="44" cy="44" r="12.5" fill="#C6E000" stroke="#151A03" stroke-width="2.4"/><path d="M44 37.5v11M39.5 44.5 44 49l4.5-4.5" fill="none" stroke="#151A03" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs></svg>
+
+<div class="wrap" id="app">
+  <div class="top">
+    <a class="bt" href="index.html" aria-label="Volver al inicio"><svg class="i"><use href="#ic-atras"/></svg></a>
+    <div class="ttl"><small>Modo Cachimbo</small><b>Descargas</b></div>
+    <div class="uso"><svg class="i"><use href="#ic-mem"/></svg><span>En tu celular:</span><b id="uso">0 KB</b></div>
+  </div>
+
+  <section class="hero">
+    <div class="caja"><svg viewBox="0 0 64 64"><use href="#r-caja"/></svg></div>
+    <div>
+      <span class="tag" id="hTag">Sin internet · Ciclo actual</span>
+      <h1>Tu tienda de descargas</h1>
+      <p>Guarda en tu celular los cursos del ciclo actual, los simuladores y los exámenes. Después estudia donde sea, sin gastar datos.</p>
+      <div class="fila"><button class="btn" id="todo"><svg class="i"><use href="#ic-desc"/></svg><span>Descargar todo</span></button><span class="dato" id="hDato"></span></div>
+    </div>
+  </section>
+
+  <div id="vip"></div>
+
+  <div class="tabs" id="tabs"></div>
+  <div id="secs"></div>
+
+  <div class="pie2">
+    <div class="caja2"><svg class="i"><use href="#ic-mem"/></svg><div id="pUso">Todavía no descargaste nada.</div><button id="borrarTodo" hidden>Borrar todo</button></div>
+    <div class="caja2"><svg class="i"><use href="#ic-nube"/></svg><div>Sin internet puedes leer, practicar y usar los simuladores. Tu avance, la energía y los rankings se guardan solo con internet.</div></div>
+  </div>
+</div>
+<div class="aviso" id="aviso"></div>
+
+<script src="assets/mc-config.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/acceso.js?v=167"></script>
+<script src="assets/planes.js"></script>
+<script src="assets/lab-rayos.js"></script>
+<script src="assets/lab-catalogo.js"></script>
+<script src="assets/paquetes.js"></script>
+<script>
+var P=window.MCPaquetes&&MCPaquetes.soportado()?MCPaquetes:null, R=window.MCRayos;
+var LAB=window.MC_LAB_CUR||[], PRECIO0=window.MC_LAB_PRECIO0||{};
+var AREA_COL={'ciencia-tecnologia':'#C6E000','matematica':'#1CB0F6','comunicacion':'#CE82FF','ciencias-sociales':'#FF9600'};
+var SECCIONES=[['libros','Libros'],['seminarios','Seminarios'],['banqueo','Banqueo']];
+var AREAS=[], CURSOS=[], INFO={}, BAJA=null, NUEVO={}, MODO='vip', ES_VIP=false, TAB='cursos';
+var ST=R&&R.guardado()||null;
+
+function esc(t){ return String(t).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function mb(b){ return b<1048576?Math.max(1,Math.round(b/1024))+' KB':(b/1048576).toFixed(1).replace('.',',')+' MB'; }
+function hace(t){ var d=Math.floor((Date.now()-t)/86400000); return d<=0?'hoy':d===1?'ayer':'hace '+d+' días'; }
+function orden(id){ var x=String(id||'').match(/^(\d{4})-(III|II|I)$/); return x?+x[1]*10+{I:1,II:2,III:3}[x[2]]:0; }
+function nuevo(m){ var l=(Array.isArray(m)?m:[]).filter(function(x){ return orden(x&&x.id); }); l.sort(function(a,b){ return orden(b.id)-orden(a.id); }); return l[0]||null; }
+var av=document.getElementById('aviso'), tmA;
+function aviso(t){ av.innerHTML=t; av.classList.add('on'); clearTimeout(tmA); tmA=setTimeout(function(){ av.classList.remove('on'); },3000); }
+function sinRed(){ return navigator.onLine===false; }
+
+/* ---- ¿Quién puede descargar? (panel → Descargas PDF → Descargas sin internet) ---- */
+function vigente(x){ if(!x.vence) return true; var d=new Date(x.vence); return isNaN(d)||d.getTime()+86400000>Date.now(); }
+function revisarVip(){
+  var si=false;
+  try{ si=window.MCAcceso&&MCAcceso.activos().some(function(x){ return /(^|,)offline-VIP(,|$)/.test(x.producto||'')&&vigente(x); }); }catch(e){}
+  if(ST&&ST.equipo) si=true;
+  try{ if(localStorage.getItem('mc_desc_admin')==='1') si=true; }catch(e){}
+  ES_VIP=si;
+}
+function puede(){ return MODO==='todos'||(MODO==='vip'&&ES_VIP); }
+
+/* ---- Los paquetes ---- */
+function labAbierto(sim){
+  if(R&&R.puede(sim,ST)) return true;
+  var p=ST&&ST.precios&&ST.precios[sim]; return p?!!p.gratis:!!(PRECIO0[sim]||[0,0])[1];
+}
+function paquetes(){
+  var L=[];
+  CURSOS.forEach(function(c){
+    var inf=INFO[c.id]||{};
+    L.push({id:'curso-'+c.id, tipo:'curso', tab:'cursos', nombre:c.nombre, color:AREA_COL[c.area]||'#C6E000', icono:c.icono,
+      sub:inf.ciclo?'Ciclo '+inf.ciclo+(inf.temas?' · '+inf.temas+' temas':''):'Ciclo actual',
+      inc:[['Libros',1],['Seminarios',1],['Banqueo',1],['Repaso y Fijas',1]],
+      kb:420+(inf.temas||8)*14, curso:c});
+  });
+  LAB.forEach(function(c){
+    var listos=c[3].filter(function(s){ return s[3]!=='pronto'; }), ab=listos.filter(function(s){ return labAbierto(s[0]); });
+    var id='lab-'+c[0].normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+    L.push({id:id, tipo:'lab', tab:'simuladores', nombre:c[0], color:c[1], svg:'ic-micro', lab:c, listos:listos, ab:ab,
+      sub:!listos.length?'Llega pronto':ab.length+' de '+listos.length+' simuladores abiertos',
+      inc:c[3].map(function(s){ return [s[1], s[3]==='pronto'?0:labAbierto(s[0])?1:-1, s[0]]; }),
+      kb:ab.reduce(function(a,s){ return a+({celula:3900,mitosis:60,tabla:50}[s[0]]||32); },0)});
+  });
+  L.push({id:'examenes', tipo:'examenes', tab:'examenes', nombre:'Exámenes de admisión', color:'#FF6B9A', svg:'ic-examen',
+    sub:'Ordinario, CPU y Control CPU', inc:[['Ordinario',1],['CPU',1],['Control CPU',1]], kb:420});
+  return L;
+}
+function armar(k){
+  // Lista de páginas y datos de cada paquete (para cursos: solo el ciclo más nuevo de cada sección)
+  if(k.tipo==='lab'){
+    return Promise.resolve({nombre:'Simuladores de '+k.nombre, tipo:'lab', fijos:k.ab.map(function(s){ return s[4]; }), opc:[], propios:['lab-','assets/laboratorio/'], items:k.ab.map(function(s){ return s[0]; })});
+  }
+  if(k.tipo==='examenes'){
+    var tipos=['ordinario','cpu','control-cpu'];
+    return Promise.all(tipos.map(function(t){ return fetch('examenes/'+t+'/data/manifest.json',{cache:'no-cache'}).then(function(r){ return r.ok?r.json():[]; }).catch(function(){ return []; }); })).then(function(ms){
+      var opc=[];
+      tipos.forEach(function(t,i){
+        ['index.html','quiz.html','ver.html','data/manifest.json'].forEach(function(f){ opc.push('examenes/'+t+'/'+f); });
+        (ms[i]||[]).forEach(function(y){ (y.exams||[{id:y.id}]).forEach(function(e){ opc.push('examenes/'+t+'/data/'+e.id+'.json'); }); });
+      });
+      return {nombre:k.nombre, tipo:'examenes', fijos:['examenes/ordinario/index.html'], opc:opc, propios:['examenes/','assets/img/examenes'], items:tipos};
+    });
+  }
+  var id=k.curso.id;
+  return Promise.all(SECCIONES.map(function(s){ return fetch(id+'/'+s[0]+'/data/manifest.json',{cache:'no-cache'}).then(function(r){ return r.ok?r.json():null; }).catch(function(){ return null; }); })).then(function(ms){
+    var opc=[id+'/repaso.html', id+'/fijas.html'], ciclo='';
+    SECCIONES.forEach(function(s,i){
+      if(!ms[i]) return;
+      var d=id+'/'+s[0]+'/', n=nuevo(ms[i]);
+      ['index.html','temario.html','quiz.html','tema.html','data/manifest.json'].forEach(function(f){ opc.push(d+f); });
+      if(n){ opc.push(d+'data/'+n.id+'.json', d+'data/'+n.id+'-fijas.json'); if(s[0]==='libros') ciclo=n.id; }
+    });
+    return {nombre:k.nombre+(ciclo?' · '+ciclo:''), tipo:'curso', fijos:[id+'/index.html'], opc:opc, propios:[id+'/','assets/img/'+id+'/'], items:[ciclo], temas:(INFO[id]||{}).temas||0};
+  });
+}
+
+/* ---- Pintar ---- */
+function estadoDe(k){
+  var inf=P?P.info().packs[k.id]:null, baja=BAJA&&BAJA.id===k.id, falt=0;
+  if(inf&&k.tipo==='lab') falt=k.ab.filter(function(s){ return (inf.items||[]).indexOf(s[0])<0; }).length;
+  // Temas que subiste después de que el alumno descargó el curso (o un ciclo nuevo)
+  var tn=0, i2=k.tipo==='curso'&&INFO[k.curso.id];
+  if(inf&&i2){ if(inf.items&&inf.items[0]&&i2.ciclo&&inf.items[0]!==i2.ciclo) tn=-1; else if(inf.temas&&i2.temas>inf.temas) tn=i2.temas-inf.temas; }
+  return {inf:inf, baja:baja, falt:falt, tn:tn, nuevo:!!NUEVO[k.id]||!!tn};
+}
+function tarjeta(k){
+  var e=estadoDe(k), inf=e.inf, h='', bt='', pie='';
+  var ic=k.icono?'<i style="--m:url('+esc(k.icono)+')"></i>':'<svg class="i"><use href="#'+k.svg+'"/></svg>';
+  var listo=inf&&!e.falt&&!e.nuevo;
+  if(e.baja){
+    pie='<div class="pk-bar"><div><i style="width:'+BAJA.pct+'%"></i></div><small>'+(inf?'Bajando solo lo nuevo… ':'Descargando… ')+BAJA.pct+'%</small></div>';
+  } else {
+    if(k.tipo==='lab'&&!k.listos.length) bt='<span class="pk-b no">Pronto</span>';
+    else if(!P) bt='<span class="pk-b no">No disponible</span>';
+    else if(!puede()&&!inf) bt='<span class="pk-b vipb"><svg class="i"><use href="#ic-corona"/></svg>Con código</span>';
+    else if(inf&&(e.falt||e.nuevo)) bt=sinRed()||!puede()?'<span class="pk-b no">'+(sinRed()?'Sin internet':'Con código')+'</span>':'<button class="pk-b act" data-p="'+k.id+'"><svg class="i"><use href="#ic-act"/></svg>Actualizar</button>';
+    else if(inf) bt='<span class="pk-b ya"><svg class="i"><use href="#ic-ok"/></svg>Listo</span>';
+    else if(k.tipo==='lab'&&!k.ab.length) bt='<span class="pk-b no"><svg class="i"><use href="#ic-cand"/></svg>Cerrados</span>';
+    else bt=sinRed()?'<span class="pk-b no">Sin internet</span>':'<button class="pk-b" data-p="'+k.id+'"><svg class="i"><use href="#ic-desc"/></svg>Descargar</button>';
+    var tam=inf?(listo?'<span class="okt">Listo sin internet</span> · ':e.falt?'<span class="nvt">'+(e.falt===1?'1 simulador nuevo':e.falt+' simuladores nuevos')+'</span> · ':e.tn>0?'<span class="nvt">'+(e.tn===1?'1 tema nuevo':e.tn+' temas nuevos')+'</span> · ':e.tn<0?'<span class="nvt">Ciclo nuevo</span> · ':'<span class="nvt">Hay cambios nuevos</span> · ')+mb(inf.bytes)+' · '+hace(inf.t)
+      :k.tipo==='lab'&&!k.ab.length?(k.listos.length?'Ábrelos con energía en el Laboratorio':'')
+      :'aprox. '+mb(k.kb*1024);
+    pie='<div class="pk-tam">'+tam+'</div>'+bt+(inf?'<button class="pk-x" data-b="'+k.id+'" aria-label="Borrar '+esc(k.nombre)+'"><svg class="i"><use href="#ic-bote"/></svg></button>':'');
+  }
+  h='<div class="pk pk-'+k.tipo+(listo?' listo':'')+'" style="--c:'+k.color+'"><div class="pk-f"><div class="pk-ic">'+ic+(listo?'<span class="pk-ok"><svg class="i"><use href="#ic-ok"/></svg></span>':'')+'</div><div class="pk-t"><b>'+esc(k.nombre)+'</b><small>'+esc(k.sub)+'</small></div></div>';
+  h+='<div class="pk-inc">'+k.inc.map(function(x){
+    var en=inf&&k.tipo==='lab'&&(inf.items||[]).indexOf(x[2])>=0;
+    return '<span class="'+(en||(inf&&k.tipo!=='lab')?'si':x[1]<0||x[1]===0?'ce':'')+'">'+(en||(inf&&k.tipo!=='lab')?'<svg class="i"><use href="#ic-ok"/></svg>':x[1]<0?'<svg class="i"><use href="#ic-cand"/></svg>':'')+esc(x[0])+(x[1]===0?' · pronto':'')+'</span>';
+  }).join('')+'</div>';
+  h+='<div class="pk-pie">'+pie+'</div></div>';
+  return h;
+}
+var TABS=[['cursos','Cursos'],['simuladores','Simuladores'],['examenes','Exámenes']];
+function pintar(){
+  revisarVip();
+  var L=paquetes(), v=P?P.info():{packs:{}}, n=Object.keys(v.packs).length, uso=P?P.uso():0;
+  var ciclo=(INFO[(CURSOS[0]||{}).id]||{}).ciclo||'';
+  document.getElementById('hTag').textContent='Sin internet · Ciclo '+(ciclo||'actual');
+  document.getElementById('uso').textContent=uso?mb(uso):'0 KB';
+  document.getElementById('hDato').innerHTML=n?'<b>'+n+'</b> '+(n===1?'paquete listo':'paquetes listos')+' · <b>'+mb(uso)+'</b>':'Solo se descarga el ciclo actual de cada curso.';
+  var pend=L.filter(function(k){ var e=estadoDe(k); return (k.tipo!=='lab'||k.ab.length)&&(!e.inf||e.falt||e.nuevo); });
+  var bt=document.getElementById('todo');
+  bt.disabled=!P||!puede()||!!BAJA||sinRed()||!pend.length;
+  bt.querySelector('span').textContent=!puede()?'Solo con código':sinRed()?'Sin internet':BAJA?'Descargando…':pend.length?'Descargar todo ('+pend.length+')':'Todo descargado';
+  document.getElementById('tabs').innerHTML=TABS.map(function(t){ var c=L.filter(function(k){ return k.tab===t[0]; }); var ok=c.filter(function(k){ return estadoDe(k).inf; }).length;
+    return '<button class="tab'+(TAB===t[0]?' on':'')+'" data-t="'+t[0]+'">'+t[1]+(t[0]==='cursos'&&ciclo?' · '+ciclo:'')+' <em>'+(ok?ok+'/':'')+c.length+'</em></button>'; }).join('');
+  document.getElementById('secs').innerHTML=TABS.map(function(t){
+    var c=L.filter(function(k){ return k.tab===t[0]; });
+    var tit=t[0]==='cursos'?'Cursos del ciclo '+(ciclo||'actual'):t[0]==='simuladores'?'Simuladores del Laboratorio':'Exámenes de admisión';
+    var nota=t[0]==='cursos'?'Libros, seminarios, banqueo, repaso y fijas':t[0]==='simuladores'?'Solo los que tienes abiertos':'Todos los años';
+    var cuerpo=t[0]==='cursos'&&AREAS.length?AREAS.map(function(a){
+      var cs=c.filter(function(k){ return k.curso.area===a.id; }); if(!cs.length) return '';
+      var ok=cs.filter(function(k){ return estadoDe(k).inf; }).length;
+      var pend=cs.filter(function(k){ var e=estadoDe(k); return !e.inf||e.nuevo; }).length, upd=cs.filter(function(k){ var e=estadoDe(k); return e.inf&&e.nuevo; }).length;
+      var ab=!P?'':!puede()?'<span class="area-b no"><svg class="i"><use href="#ic-corona"/></svg>Con código</span>'
+        :!pend?'<span class="area-b ya"><svg class="i"><use href="#ic-ok"/></svg>Área lista</span>'
+        :BAJA||sinRed()?'<span class="area-b no">'+(BAJA?'Descargando…':'Sin internet')+'</span>'
+        :'<button class="area-b" data-area="'+a.id+'"><svg class="i"><use href="#'+(upd===pend?'ic-act':'ic-desc')+'"/></svg>'+(upd===pend?'Actualizar área':'Descargar área')+' <b>'+pend+'</b></button>';
+      return '<div class="area" style="--c:'+(AREA_COL[a.id]||'#C6E000')+'"><h3><i></i>'+esc(a.nombre)+'<em>'+(ok?ok+' de ':'')+cs.length+(cs.length===1?' curso':' cursos')+'</em>'+ab+'</h3><div class="grid">'+cs.map(tarjeta).join('')+'</div></div>';
+    }).join(''):'<div class="grid">'+c.map(tarjeta).join('')+'</div>';
+    return '<section class="sec'+(TAB===t[0]?'':' oculta')+'" id="s-'+t[0]+'"><h2>'+tit+'<span>'+nota+'</span></h2>'+cuerpo+'</section>';
+  }).join('');
+  document.getElementById('pUso').innerHTML=uso?'En tu celular: <b>'+mb(uso)+'</b>'+(v.base?'<br>Incluye lo común de la web ('+mb(v.base.bytes)+')':''):'Todavía no descargaste nada.';
+  document.getElementById('borrarTodo').hidden=!uso||!!BAJA;
+  pintarVip();
+  document.querySelectorAll('.tab').forEach(function(b){ b.onclick=function(){ TAB=b.dataset.t; try{ history.replaceState(null,'','#'+TAB); }catch(e){} pintar(); }; });
+  document.querySelectorAll('[data-p]').forEach(function(b){ b.onclick=function(){ bajar(b.dataset.p); }; });
+  document.querySelectorAll('[data-area]').forEach(function(b){ b.onclick=function(){
+    cola(paquetes().filter(function(k){ var e=estadoDe(k); return k.tipo==='curso'&&k.curso.area===b.dataset.area&&(!e.inf||e.nuevo); }).map(function(k){ return k.id; }));
+  }; });
+  document.querySelectorAll('[data-b]').forEach(function(b){ b.onclick=function(){
+    if(!b.classList.contains('seguro')){ b.classList.add('seguro'); b.textContent='¿Borrar?'; return; }
+    P.borrar(b.dataset.b).then(function(){ delete NUEVO[b.dataset.b]; pintar(); aviso('Paquete borrado'); });
+  }; });
+}
+function pintarVip(){
+  var box=document.getElementById('vip');
+  if(MODO!=='vip'||ES_VIP){ box.innerHTML=''; return; }
+  if(box.innerHTML) return;
+  box.innerHTML='<div class="vip"><div class="ic"><svg class="i"><use href="#ic-corona"/></svg></div><div class="tx"><b>Las descargas van con código</b><small>Con tu código Descargas sin internet bajas todo y estudias sin internet.</small></div>'+
+    '<form id="vCod"><input id="vIn" placeholder="Escribe tu código" autocomplete="off" maxlength="40"><button>Activar</button></form><div class="msg" id="vMsg"></div></div>';
+  document.getElementById('vCod').onsubmit=function(e){
+    e.preventDefault();
+    var cod=document.getElementById('vIn').value.trim(), msg=document.getElementById('vMsg');
+    if(!cod){ msg.textContent='Escribe tu código.'; return; }
+    if(!window.MCAcceso){ msg.textContent='No se pudo revisar el código.'; return; }
+    msg.className='msg ok'; msg.textContent='Revisando…';
+    MCAcceso.activar(cod,'').then(function(r){
+      if(!r||!r.ok){ msg.className='msg'; msg.textContent=(r&&(r.mensaje||r.error))||'Código inválido.'; return; }
+      if(MCAcceso.celebrar) MCAcceso.celebrar([{producto:r.producto||'',vence:r.vence||''}],{codigo:r.codigo});
+      revisarVip();
+      if(!ES_VIP){ msg.className='msg'; msg.textContent='Código activado, pero no abre las Descargas.'; return; }
+      box.innerHTML=''; pintar();
+    }).catch(function(){ msg.className='msg'; msg.textContent='Revisa tu internet e inténtalo otra vez.'; });
+  };
+}
+
+/* ---- Descargar ---- */
+function bajar(id,callado){
+  if(!P||BAJA||!puede()) return Promise.resolve(false);
+  var k=paquetes().filter(function(x){ return x.id===id; })[0]; if(!k) return Promise.resolve(false);
+  BAJA={id:id,pct:0,upd:!!(P.info().packs[id])}; pintar();
+  return armar(k).then(function(p){
+    if(!p.fijos.length) throw new Error('No hay nada abierto para descargar.');
+    return P.bajar(id,p,function(h,t,fase){
+      BAJA.pct=Math.min(99,Math.round(fase==='base'?h/t*30:30+h/t*70));
+      var bar=document.querySelector('.pk-bar i'), sm=document.querySelector('.pk-bar small');
+      if(bar) bar.style.width=BAJA.pct+'%'; if(sm) sm.textContent=(BAJA.upd?'Bajando solo lo nuevo… ':'Descargando… ')+BAJA.pct+'%';
+    });
+  }).then(function(){
+    var r=P.info().packs[id], upd=BAJA&&BAJA.upd;
+    BAJA=null; delete NUEVO[id]; try{ localStorage.removeItem('mc_paq_rev'); }catch(e){} pintar();
+    if(!callado) aviso(upd?'¡Actualizado! <b>'+esc(k.nombre)+'</b> · bajaste solo '+mb(r&&r.red||0):'¡Listo! <b>'+esc(k.nombre)+'</b> ya funciona sin internet');
+    return true;
+  },function(e){
+    BAJA=null; pintar(); aviso(esc(e&&e.message||'No se pudo descargar.')+' Inténtalo otra vez.'); return false;
+  });
+}
+// Baja varios paquetes uno tras otro (Descargar todo / Descargar área); cada tarjeta muestra su barrita
+function cola(ids){
+  var n=0;
+  (function sig(){ if(!ids.length){ if(n) aviso('¡Listo! Descargaste <b>'+n+'</b> '+(n===1?'curso':'cursos')+' para usar sin internet'); return; } bajar(ids.shift(),true).then(function(ok){ if(ok){ n++; sig(); } }); })();
+}
+document.getElementById('todo').onclick=function(){
+  cola(paquetes().filter(function(k){ var e=estadoDe(k); return (k.tipo!=='lab'||k.ab.length)&&(!e.inf||e.falt||e.nuevo); }).map(function(k){ return k.id; }));
+};
+document.getElementById('borrarTodo').onclick=function(){
+  var b=this; if(!b.classList.contains('seguro')){ b.classList.add('seguro'); b.textContent='¿Seguro? Toca otra vez'; return; }
+  P.borrarTodo().then(function(){ NUEVO={}; b.classList.remove('seguro'); b.textContent='Borrar todo'; pintar(); aviso('Borraste todas las descargas'); });
+};
+
+/* ---- Arranque ---- */
+var h0=location.hash.replace('#',''); if(['cursos','simuladores','examenes'].indexOf(h0)>=0) TAB=h0;
+try{ var g=JSON.parse(localStorage.getItem('mc_planes')||'null'); if(g&&g.tienda&&g.tienda.modo) MODO=g.tienda.modo; }catch(e){}
+function cerrada(){
+  document.getElementById('app').innerHTML='<div class="cerrada"><b>Descargas cerradas por ahora</b><p>Muy pronto podrás descargar tus cursos para estudiar sin internet.</p><a class="btn" href="index.html">Volver al inicio</a></div>';
+}
+fetch('assets/cursos.json',{cache:'no-cache'}).then(function(r){ return r.json(); }).then(function(d){
+  AREAS=d.areas||[];
+  CURSOS=(d.cursos||[]).filter(function(c){ return !c.oculto; }).sort(function(a,b){ return (a.orden||0)-(b.orden||0); });
+  if(MODO==='apagado') return cerrada();
+  pintar();
+  // Ciclo y número de temas de cada curso (manifest de Libros, pocos bytes)
+  return Promise.all(CURSOS.map(function(c){
+    return fetch(c.id+'/libros/data/manifest.json').then(function(r){ return r.ok?r.json():null; }).then(function(m){ var n=nuevo(m); if(n) INFO[c.id]={ciclo:n.id,temas:n.temas||0}; }).catch(function(){});
+  })).then(function(){ if(MODO!=='apagado') pintar(); });
+}).catch(function(){ if(MODO==='apagado') cerrada(); else pintar(); });
+if(MODO==='apagado') cerrada();
+// Lo último de Supabase: quién puede usar la tienda, energía/simuladores abiertos y si eres administrador
+if(window.MCPlanes) MCPlanes.cargar().then(function(v){ var m=v&&v.tienda&&v.tienda.modo||'vip'; if(m!==MODO){ var antes=MODO; MODO=m; if(m==='apagado') cerrada(); else if(antes==='apagado') location.reload(); else if(document.getElementById('secs')) pintar(); } });
+if(R) R.estado().then(function(s){ if(s&&!s.error){ ST=s; if(!BAJA&&MODO!=='apagado'&&document.getElementById('secs')) pintar(); } });
+if(window.MCAuth) MCAuth.listo.then(function(c){ return MCAuth.usuario()?c.rpc('es_admin'):null; }).then(function(r){
+  if(!r||r.error) return; try{ localStorage.setItem('mc_desc_admin',r.data?'1':'0'); }catch(e){}
+  if(r.data&&!ES_VIP&&!BAJA&&MODO!=='apagado'&&document.getElementById('secs')) pintar();
+}).catch(function(){});
+/* ---- Sin código, sin descargas ----
+   Si el alumno ya no tiene el código Descargas sin internet (se lo quitaron o venció) y la tienda
+   está «solo con código», al abrirla con internet se borra lo que bajó. Solo se borra cuando todo
+   lo confirma el servidor: el ajuste de la tienda, que no es administrador ni equipo, y sus accesos por ID. */
+function limpiarSinAcceso(){
+  if(!P||sinRed()||!window.MCAuth) return;
+  var i=P.info(); if(!Object.keys(i.packs||{}).length&&!i.base) return;
+  MCAuth.listo.then(function(c){
+    if(!MCAuth.usuario()) return;
+    return Promise.all([
+      c.from('ajustes').select('valor').eq('clave','planes').maybeSingle(),
+      c.rpc('es_admin'),
+      R?R.estado():Promise.resolve(null),
+      window.MCAcceso&&MCAcceso.refrescarID?MCAcceso.refrescarID(true):null
+    ]).then(function(r){
+      var pl=r[0], adm=r[1], st=r[2];
+      if(!pl||pl.error||!adm||adm.error||adm.data) return;
+      var v=pl.data&&pl.data.valor, m=v&&v.tienda&&v.tienda.modo||'vip';
+      if(m!=='vip') return;
+      if(R&&(!st||st.error)) return;
+      if(st&&st.equipo) return;
+      if(st) ST=st;
+      revisarVip();
+      if(ES_VIP||BAJA||sinRed()) return;
+      return P.borrarTodo().then(function(){ NUEVO={}; if(document.getElementById('secs')) pintar(); aviso('Tu acceso a Descargas terminó: se borró lo que habías bajado'); });
+    });
+  }).catch(function(){});
+}
+limpiarSinAcceso();
+// Con internet: ¿cambió algo de lo descargado? (solo cabeceras)
+if(P&&!sinRed()) Object.keys(P.info().packs).forEach(function(id){ P.revisar(id).then(function(si){ if(si){ NUEVO[id]=1; if(!BAJA&&document.getElementById('secs')) pintar(); } }); });
+['online','offline'].forEach(function(ev){ window.addEventListener(ev,function(){ if(document.getElementById('secs')) pintar(); }); });
+</script>
+</body>
+</html>
