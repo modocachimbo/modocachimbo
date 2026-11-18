@@ -17,7 +17,10 @@
      MCRetos.jugar({ titulo, retos: [...] }, {
        vidas: 5,
        alTerminar: function (r) { r.estrellas, r.errores, r.segundos, r.gano },
-       alCerrar: function () {}
+       alCerrar: function () {},
+       alReto: function (id) {},   // cada reto superado (para la estrella de cada minijuego)
+       solo: true,                 // un solo minijuego: pantalla final con 1 estrella
+       multXp: 2                   // XP doble (jugar todo mezclado)
      });
    Requiere assets/arcade-retos.css. Usa MCSonido si está cargado.
    Nunca emojis: todos los íconos y dibujos son SVG.
@@ -149,7 +152,7 @@
       '<div class="rt-vidas">' + IC.corazon + '<span></span></div></div><div class="rt-racha" aria-live="polite"></div><div class="rt-cab"></div><div class="rt-cuerpo"></div></div>' +
       '<div class="rt-pie"><div class="rt-pie-in"><button class="rt-btn" disabled>Comprobar</button></div>' +
       '<div class="rt-hoja"><div class="rt-hoja-in"><h3></h3><p></p><button class="rt-btn">Continuar</button></div></div></div>' +
-      '<div class="rt-salir"><div class="rt-salir-in"><b>¿Salir del nivel?</b><p>Tu avance queda guardado: la próxima vez sigues desde el reto donde te quedaste.</p>' +
+      '<div class="rt-salir"><div class="rt-salir-in">' + (opts.solo ? '<b>¿Salir del minijuego?</b><p>Si sales ahora, no ganas su estrella. Puedes volver a jugarlo cuando quieras.</p>' : '<b>¿Salir del nivel?</b><p>Tu avance queda guardado: la próxima vez sigues desde el reto donde te quedaste.</p>') +
       '<button class="rt-btn verde" data-a="seguir">Seguir jugando</button><button class="otra" data-a="salir">Salir</button></div></div></div>');
     document.body.appendChild(raiz);
     var $ = function (s) { return raiz.querySelector(s); };
@@ -205,7 +208,7 @@
     hojaBtn.onclick = function () {
       hoja.classList.remove('on');
       var r = resultado;
-      if (r.ok) { hechos++; listos.push(actual.reto.id); guardarAvance(); } else { vidas--; pintarVidas(); var v = $('.rt-vidas'); v.classList.remove('pierde'); void v.offsetWidth; v.classList.add('pierde'); cola.push(actual.reto); }
+      if (r.ok) { hechos++; listos.push(actual.reto.id); guardarAvance(); try { opts.alReto && opts.alReto(actual.reto.id); } catch (e) {} } else { vidas--; pintarVidas(); var v = $('.rt-vidas'); v.classList.remove('pierde'); void v.offsetWidth; v.classList.add('pierde'); cola.push(actual.reto); }
       pintarBarra();
       if (vidas <= 0) return setTimeout(fin, 350);
       siguiente();
@@ -271,19 +274,22 @@
       var fallados = Object.keys(primera).filter(function (k) { return primera[k] === false; }).length;
       var est = !gano ? 0 : fallados === 0 ? 3 : fallados <= 2 ? 2 : 1;
       var bono = gano ? est * 5 : 0; xp += bono;
+      // opts.solo: un solo minijuego (1 estrella); opts.multXp: XP doble al jugar todo mezclado
+      var solo = !!opts.solo; xp = Math.round(xp * (opts.multXp || 1));
       var prec = Math.max(0, Math.round((total - fallados) / total * 100));
       raiz.querySelector('.rt-col').remove(); raiz.querySelector('.rt-pie').remove();
       var mm = Math.floor(seg / 60) + ':' + ('0' + seg % 60).slice(-2);
       var f = h('<div class="rt-fin"><span class="cint">' + esc(ruta.titulo || 'Nivel') + '</span>' +
-        '<div class="rt-estrellas">' + [1, 2, 3].map(function (n, i) { return IC.estrella(n <= est).replace('<svg', '<svg style="animation-delay:' + (.25 + i * .25) + 's"'); }).join('') + '</div>' +
-        '<h2>' + (!gano ? 'Sin corazones' : est === 3 ? '¡Perfecto!' : '¡Nivel superado!') + '</h2>' +
-        (gano && est < 3 ? '<p class="rt-tip">' + (fallados === 1 ? 'Fallaste 1 reto.' : 'Fallaste ' + fallados + ' retos.') + ' Hazlos todos a la primera para las 3 estrellas.</p>' : '') +
-        (!gano ? '<p class="rt-tip">Tu avance quedó guardado: llevas <b>' + hechos + ' de ' + total + '</b> retos. Sigue con 5 corazones nuevos y termina el nivel para ganar tus estrellas.</p>' : '') +
+        '<div class="rt-estrellas">' + (solo ? [1] : [1, 2, 3]).map(function (n, i) { return IC.estrella(solo ? gano : n <= est).replace('<svg', '<svg style="animation-delay:' + (.25 + i * .25) + 's"'); }).join('') + '</div>' +
+        '<h2>' + (!gano ? 'Sin corazones' : solo ? (est === 3 ? '¡Perfecto!' : '¡Minijuego superado!') : est === 3 ? '¡Perfecto!' : '¡Nivel superado!') + '</h2>' +
+        (solo ? (gano ? '<p class="rt-tip">Ganaste la estrella de este minijuego.' + (opts.multXp > 1 ? '' : ' Con <b>Jugar todo</b> ganas XP doble.') + '</p>' : '<p class="rt-tip">Te quedaste sin corazones. Inténtalo otra vez: cada intento te enseña algo.</p>') : '') +
+        (!solo && gano && est < 3 ? '<p class="rt-tip">' + (fallados === 1 ? 'Fallaste 1 reto.' : 'Fallaste ' + fallados + ' retos.') + ' Hazlos todos a la primera para las 3 estrellas.</p>' : '') +
+        (!solo && !gano ? '<p class="rt-tip">Tu avance quedó guardado: llevas <b>' + hechos + ' de ' + total + '</b> retos. Sigue con 5 corazones nuevos y termina el nivel para ganar tus estrellas.</p>' : '') +
         '<div class="rt-stats"><div class="rt-stat" style="--c:#C6E000"><small>XP ganada</small><b>' + IC.rayo + xp + '</b></div>' +
         '<div class="rt-stat" style="--c:#FF8A00"><small>Mejor racha</small><b>' + IC.fuego + mejorRacha + '</b></div>' +
         '<div class="rt-stat" style="--c:#FF6B8A"><small>Precisión</small><b>' + IC.diana + prec + '%</b></div>' +
         '<div class="rt-stat" style="--c:#FFC800"><small>Tiempo</small><b>' + IC.reloj + mm + '</b></div></div>' +
-        '<button class="rt-btn verde">' + (gano ? 'Continuar' : 'Seguir desde aquí') + '</button>' +
+        '<button class="rt-btn verde">' + (gano ? 'Continuar' : solo ? 'Intentar otra vez' : 'Seguir desde aquí') + '</button>' +
         '<button class="otra">' + (gano ? 'Jugar otra vez' : 'Volver al mapa') + '</button></div>');
       raiz.appendChild(f);
       son(gano ? 'victoria' : 'mal');
