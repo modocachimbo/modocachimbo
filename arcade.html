@@ -608,6 +608,22 @@ body.en-inicio .cab { display: none; }
 /* Celulares bajitos: las tarjetas se deslizan dentro de la ventana para que la cinta y la X no se corten */
 @media (max-width: 380px) { .mj-c { grid-template-columns: 38px minmax(0, 1fr); gap: 7px; padding-left: 8px; } .mj-c .ico { width: 38px; height: 38px; } .mj-c .ico svg { width: 22px; height: 22px; } .mj-c b { font-size: 12.5px; } .mj-c small { font-size: 10px; } }
 @media (max-height: 700px) { .hoja.mj .mj-grid { max-height: calc(100dvh - 330px); overflow-y: auto; overscroll-behavior: contain; padding: 4px 2px 6px; } }
+/* Celular en horizontal: estrellas y JUGAR TODO a la izquierda, minijuegos a la derecha */
+@media (orientation: landscape) and (max-height: 520px) {
+  .hoja.mj { width: min(880px, calc(100% - 48px)); display: grid; grid-template-columns: minmax(210px, 36%) minmax(0, 1fr); grid-template-rows: auto auto 1fr auto; column-gap: 18px; row-gap: 8px;
+    align-items: start; padding: 24px 16px 14px; max-height: calc(100dvh - 28px); }
+  .hoja.mj .h-cint { left: 50%; translate: -50% 0; }
+  .hoja.mj .h-ctit { grid-column: 1; grid-row: 1; font-size: 22px; }
+  .hoja.mj .mj-meta { grid-column: 1; grid-row: 2; min-height: 0; }
+  .hoja.mj .st3 svg { width: 30px; height: 30px; } .hoja.mj .st3 svg:nth-child(2) { width: 38px; height: 38px; }
+  .hoja.mj .jugar { grid-column: 1; grid-row: 4; align-self: end; padding: 8px 0 9px; }
+  .hoja.mj .jugar .fila { font-size: 24px; } .hoja.mj .jugar small { font-size: 10.5px; }
+  .hoja.mj .mj-tit { grid-column: 2; grid-row: 1; align-self: end; }
+  .hoja.mj .mj-grid { grid-column: 2; grid-row: 2 / 5; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; max-height: calc(100dvh - 92px); overflow-y: auto; overscroll-behavior: contain; padding: 2px 2px 6px; }
+  .hoja.mj .mj-c { grid-template-columns: 38px minmax(0, 1fr); justify-items: start; text-align: left; padding: 8px 8px 30px; gap: 8px; }
+  .hoja.mj .mj-c .ico { width: 38px; height: 38px; border-radius: 11px; } .hoja.mj .mj-c .ico svg { width: 22px; height: 22px; }
+  .hoja.mj .mj-c b { font-size: 13.5px; }
+}
 
 /* ---------- Mapa de niveles del mundo (assets/arcade-mundo.js) ---------- */
 body.en-mundo { background: #1E86BE; }
