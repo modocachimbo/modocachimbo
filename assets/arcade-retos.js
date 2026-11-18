@@ -47,6 +47,7 @@
     fuego: '<svg viewBox="0 0 24 24"><path d="M12 2.5c1 3.6 5.8 5.6 5.8 11a5.8 5.8 0 0 1-11.6 0c0-2.6 1.2-4.2 2.6-5.6.2 1.6 1 2.8 2.2 3.2-.8-3.4.4-6.4 1-8.6z" fill="#FF8A00" stroke="#7A2E00" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 12.5c1.4 1.4 2.8 2.4 2.8 4.4a2.8 2.8 0 0 1-5.6 0c0-1.4.9-2.4 2.8-4.4z" fill="#FFD84D"/></svg>',
     pista: '<svg viewBox="0 0 24 24"><path d="M12 2.5a7 7 0 0 0-4.2 12.6c.7.6 1.2 1.4 1.2 2.4h6c0-1 .5-1.8 1.2-2.4A7 7 0 0 0 12 2.5z" fill="#FFD84D" stroke="#7A4A00" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 20h5M10.5 22.5h3" stroke="#7A4A00" stroke-width="2" stroke-linecap="round"/><path d="M9.5 8a3 3 0 0 1 2.5-2" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>',
     ojo: '<svg viewBox="0 0 24 24"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z" fill="#fff" stroke="#1A1046" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="#5A2FD0"/><circle cx="12" cy="12" r="1.8" fill="#1A1046"/><circle cx="13.4" cy="10.6" r="1" fill="#fff"/></svg>',
+    corRoto: '<svg viewBox="0 0 32 32"><path d="M16 28C8 22 3 17.5 3 11.5 3 7.4 6.2 4.5 9.8 4.5c2.6 0 4.6 1.4 6.2 3.6 1.6-2.2 3.6-3.6 6.2-3.6 3.6 0 6.8 2.9 6.8 7 0 6-5 10.5-13 16.5z" fill="#FF4B6E" stroke="#7A0A22" stroke-width="2.2"/><path d="M16 8l-2 6 4 3-3 7" stroke="#2A0610" stroke-width="2" fill="none" stroke-linejoin="round"/></svg>',
     xp: '<svg viewBox="0 0 40 40"><path d="M20 2l16 9v18l-16 9-16-9V11z" fill="#FFC800" stroke="#7A4A00" stroke-width="3" stroke-linejoin="round"/><text x="20" y="25.5" text-anchor="middle" font-family="Lilita One, sans-serif" font-size="14" fill="#5A2E00">XP</text></svg>',
     // Estrella 3D (la misma del Arcade), con su degradado propio para funcionar en cualquier página
     estrella3d: function (on, cls) { var P = 'M32.0,8.0 L39.6,24.5 L57.7,26.7 L44.4,39.0 L47.9,56.8 L32.0,48.0 L16.1,56.8 L19.6,39.0 L6.3,26.7 L24.4,24.5Z'; return '<svg viewBox="0 0 64 64" class="' + (cls || '') + (on ? '' : ' off') + '"><defs><linearGradient id="rtEstG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF7B8"/><stop offset=".45" stop-color="#FFD21F"/><stop offset="1" stop-color="#F08A00"/></linearGradient></defs><path d="' + P + '" fill="#7A3A00" stroke="#7A3A00" stroke-width="7" stroke-linejoin="round" transform="translate(0 2)"/><path d="' + P + '" fill="url(#rtEstG)" stroke="#9A4A00" stroke-width="4" stroke-linejoin="round"/><path d="M32 35 32 8 39.6 24.5ZM32 35 57.7 26.7 44.4 39ZM32 35 47.9 56.8 32 48ZM32 35 16.1 56.8 19.6 39ZM32 35 6.3 26.7 24.4 24.5Z" fill="#D06A00" opacity=".38"/><ellipse cx="24" cy="25" rx="5" ry="3" fill="#fff" opacity=".85" transform="rotate(-35 24 25)"/></svg>'; },
@@ -156,7 +157,7 @@
       '<div class="rt-col"><div class="rt-top"><button class="rt-x" aria-label="Salir">' + IC.x + '</button><div class="rt-barra"><i></i></div>' +
       '<div class="rt-vidas">' + IC.corazon + '<span></span></div></div><div class="rt-racha" aria-live="polite"></div><div class="rt-cab"></div><div class="rt-cuerpo"></div></div>' +
       '<div class="rt-pie"><div class="rt-pie-in"><button class="rt-btn" disabled>Comprobar</button></div>' +
-      '<div class="rt-hoja"><div class="rt-hoja-in"><h3></h3><p></p><button class="rt-btn">Continuar</button></div></div></div>' +
+      '<div class="rt-hoja"><div class="rt-hoja-in"><span class="rt-sello"></span><span class="rt-botin"></span><div class="rt-hoja-tx"></div><button class="rt-btn">Continuar</button></div></div></div>' +
       '<div class="rt-salir"><div class="rt-salir-in">' + (opts.solo ? '<b>¿Salir del minijuego?</b><p>Si sales ahora, no ganas su estrella. Puedes volver a jugarlo cuando quieras.</p>' : '<b>¿Salir del nivel?</b><p>Tu avance queda guardado: la próxima vez sigues desde el reto donde te quedaste.</p>') +
       '<button class="rt-btn verde" data-a="seguir">Seguir jugando</button><button class="otra" data-a="salir">Salir</button></div></div></div>');
     document.body.appendChild(raiz);
@@ -247,11 +248,19 @@
       try { window.MCCorazones && MCCorazones.respuesta && MCCorazones.respuesta(!!r.ok); } catch (e) {}
       pintarRacha(r.ok);
       pie.classList.remove('vacio');
+      // Aviso estilo Arcade: sello CORRECTO / INCORRECTO, fichas de lo ganado o perdido y la respuesta correcta
       hoja.className = 'rt-hoja on ' + (r.ok ? 'bien' : 'mal');
-      hoja.querySelector('h3').innerHTML = (r.ok ? IC.bien : IC.mal) + esc(r.titulo || (r.ok ? ELOGIOS[Math.floor(Math.random() * ELOGIOS.length)] : 'Respuesta correcta:')) +
-        (r.ok ? '<span class="xp">' + IC.rayo + '+' + (10 * (racha >= 5 ? 2 : 1)) + '</span>' : '');
-      hoja.querySelector('p').innerHTML = (r.msg || '') + (r.ok ? '' : '<span class="rt-vuelve">Este reto volverá al final del nivel.</span>');
-      hojaBtn.className = 'rt-btn ' + (r.ok ? 'verde' : 'rojo');
+      var CHK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>', EQ = '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+      hoja.querySelector('.rt-sello').innerHTML = '<i>' + (r.ok ? CHK : EQ) + '</i>' + (r.ok ? 'Correcto' : 'Incorrecto');
+      hoja.querySelector('.rt-botin').innerHTML = r.ok
+        ? (racha >= 2 ? '<span class="ra">' + IC.fuego + racha + '</span>' : '') + '<span class="xp">' + IC.xp + '+' + (10 * (racha >= 5 ? 2 : 1)) + '</span>'
+        : '<span class="cor">' + IC.corRoto + '−1</span>';
+      var titulo = r.titulo || (r.ok ? ELOGIOS[Math.floor(Math.random() * ELOGIOS.length)] : '');
+      hoja.querySelector('.rt-hoja-tx').innerHTML = (titulo ? '<b class="rt-hoja-tit">' + esc(titulo) + '</b>' : '') +
+        (r.correcta ? '<div class="rt-clave"><i>' + CHK + '</i><span><small>Respuesta correcta</small><b>' + r.correcta + '</b></span></div>' : '') +
+        (r.msg ? '<p>' + r.msg + '</p>' : '') +
+        (r.ok ? '' : '<span class="rt-vuelve"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v5h5"/></svg>Este reto volverá al final del nivel</span>');
+      hojaBtn.className = 'rt-btn ' + (r.ok ? 'lima' : 'morado');
       hojaBtn.textContent = r.ok ? 'Continuar' : 'Entendido';
       btn.disabled = true;
       setTimeout(function () { try { hojaBtn.focus({ preventScroll: true }); } catch (e) {} }, 50);
@@ -358,7 +367,7 @@
     a.alComprobar(function () {
       var ok = sel === r.correcta;
       g.querySelectorAll('.rt-t').forEach(function (x) { x.style.pointerEvents = 'none'; if (+x.dataset.i === r.correcta) x.classList.add('bien'); else if (+x.dataset.i === sel) x.classList.add('mal'); });
-      return { ok: ok, msg: (ok ? '' : '<b>' + esc(r.opciones[r.correcta].texto) + '</b>. ') + esc(r.explica || '') };
+      return { ok: ok, correcta: ok ? '' : esc(r.opciones[r.correcta].texto), msg: esc(r.explica || '') };
     });
   };
 
@@ -467,7 +476,7 @@
       var ok = true;
       huecos.forEach(function (hu) { var bien = hu.firstChild.dataset.w === r.respuestas[+hu.dataset.n]; hu.firstChild.classList.add(bien ? 'bien' : 'mal'); if (!bien) ok = false; });
       var sol = r.frase.replace(/\{(\d+)\}/g, function (m, n) { return '<b>' + esc(r.respuestas[+n]) + '</b>'; });
-      return { ok: ok, msg: ok ? esc(r.explica || '') : sol };
+      return { ok: ok, correcta: ok ? '' : sol, msg: esc(r.explica || '') };
     });
   };
 
@@ -507,7 +516,7 @@
         c.innerHTML = contenido(r.items[i], true); c.classList.add(bien ? 'bien' : 'mal'); if (!bien) ok = false;
       });
       var sol = r.items.map(function (it) { return '<b>' + esc(it.texto) + '</b> (' + esc(it.fecha) + ')'; }).join(' → ');
-      return { ok: ok, msg: ok ? esc(r.explica || '') : sol };
+      return { ok: ok, correcta: ok ? '' : sol, msg: esc(r.explica || '') };
     });
   };
 

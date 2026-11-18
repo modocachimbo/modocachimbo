@@ -392,3 +392,38 @@
   .fz-abre { padding: 7px 10px; } .fz-abre .cand { width: 34px; height: 34px; }
   .rt-fin .fz-bot .rt-btn, .fz-cua { height: 52px; } .fz-cua { width: 52px; }
 }
+
+/* ---------- Aviso de acierto / error estilo Arcade: tablero con sello ---------- */
+.rt-hoja, .rt-hoja.bien, .rt-hoja.mal { padding: 0 12px max(14px, env(safe-area-inset-bottom)); background: none; border-top: 0; }
+.rt-hoja-in { position: relative; max-width: 620px; margin: 34px auto 0; padding: 34px 16px 16px; display: grid; gap: 10px; border-radius: 20px 20px 22px 22px; background: linear-gradient(180deg, #2A1F6A, #150C3E); border: 3px solid #0A0620; box-shadow: 0 7px 0 #0A0620, 0 -10px 40px rgba(0,0,0,.35); }
+.rt-hoja-in::before { content: ""; position: absolute; left: 14px; right: 14px; top: 0; height: 5px; border-radius: 0 0 6px 6px; }
+.rt-hoja.bien .rt-hoja-in::before { background: var(--lima); box-shadow: 0 0 18px var(--lima); }
+.rt-hoja.mal .rt-hoja-in::before { background: #FF4B5E; box-shadow: 0 0 18px #FF4B5E; }
+.rt-sello { position: absolute; top: -30px; left: 14px; display: flex; align-items: center; gap: 8px; padding: 8px 16px 9px 9px; border-radius: 16px; rotate: -4deg; font: 400 22px/1 var(--fuente); letter-spacing: .06em; text-transform: uppercase; border: 3px solid #0A0620; box-shadow: 0 4px 0 #0A0620; }
+.rt-hoja.on .rt-sello { animation: rtSello .35s cubic-bezier(.3,1.8,.5,1) .12s both; }
+@keyframes rtSello { from { scale: 2.2; opacity: 0; rotate: -14deg; } }
+.rt-hoja.bien .rt-sello { color: #1C2600; background: linear-gradient(180deg, #F8FFB0, var(--lima) 55%, #9CB800); }
+.rt-hoja.mal .rt-sello { color: #fff; background: linear-gradient(180deg, #FF9A9A, #FF4B5E 55%, #C2183A); text-shadow: 0 2px 0 #6A0A1A; }
+.rt-sello i { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: #0A0620; }
+.rt-sello svg { width: 18px; height: 18px; fill: none; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.rt-hoja.bien .rt-sello svg { stroke: var(--lima); } .rt-hoja.mal .rt-sello svg { stroke: #FF6B7A; }
+.rt-botin { position: absolute; top: -22px; right: 14px; display: flex; gap: 6px; }
+.rt-botin span { display: flex; align-items: center; gap: 5px; padding: 6px 11px 6px 6px; border-radius: 12px; font: 400 18px/1 var(--fuente); background: #0A0620; border: 2px solid rgba(255,255,255,.18); box-shadow: 0 3px 0 rgba(0,0,0,.4); }
+.rt-botin svg { width: 24px; height: 24px; } .rt-botin .xp { color: #FFD24A; } .rt-botin .cor { color: #FF8A9A; } .rt-botin .ra { color: #FFB067; }
+.rt-hoja-tx { display: grid; gap: 8px; }
+.rt-hoja-tit { font: 400 19px/1.1 var(--fuente); color: #fff; }
+.rt-hoja-tx p { margin: 0; font: 700 14.5px/1.4 var(--cuerpo); color: #E2DBFF; } .rt-hoja-tx p b { color: #fff; }
+.rt-clave { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 14px; background: #F4F0FF; color: #1A1046; }
+.rt-clave i { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; background: var(--lima); border: 2px solid #2A3300; }
+.rt-clave i svg { width: 18px; height: 18px; fill: none; stroke: #1C2600; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.rt-clave small { display: block; margin-bottom: 2px; font: 900 10px/1 var(--cuerpo); letter-spacing: .08em; text-transform: uppercase; color: #6B5FB8; }
+.rt-clave b { font: 400 16px/1.2 var(--fuente); } .rt-clave b b { color: #3A1FB0; }
+.rt-vuelve { display: flex; align-items: center; gap: 6px; margin: 0; font: 800 12px/1.2 var(--cuerpo); color: #A99CE0; }
+.rt-vuelve svg { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; }
+.rt-hoja .rt-btn.lima { color: #1C2600 !important; text-shadow: none; background: linear-gradient(180deg, #F8FFB0 0, #E6FA4A 44%, var(--lima) 52%, #9CB800 100%) !important; border: 3px solid #2A3300 !important; box-shadow: 0 5px 0 #2A3300; }
+.rt-hoja .rt-btn.morado { color: #fff !important; text-shadow: 0 2px 0 #0A0620; background: linear-gradient(180deg, #7A6BE0, #4A3BB0 55%, #33258A) !important; border: 3px solid #0A0620 !important; box-shadow: 0 5px 0 #0A0620, inset 0 2px 0 rgba(255,255,255,.35); }
+.rt-hoja .rt-vf-sol { color: #E2DBFF; }
+@media (min-width: 900px) {
+  .rt-hoja-in { max-width: 760px; grid-template-columns: 1fr 240px; column-gap: 20px; align-items: center; }
+  .rt-hoja-tx { grid-column: 1; } .rt-hoja-in .rt-btn { grid-column: 2; grid-row: 1; }
+}
