@@ -163,10 +163,22 @@
     }
   }
 
+  // Web en mantenimiento (Panel → Mantenimiento): en todas las páginas menos el panel, con o sin sesión
+  var mantPedido = false;
+  function cargarMantenimiento() {
+    if (mantPedido || window.MCMant) return;
+    mantPedido = true;
+    if (location.href.replace(/[?#].*$/, '').indexOf(BASE + 'panel/') === 0) return;
+    var m = document.createElement('script');
+    m.src = BASE + 'assets/mantenimiento.js?v=1';
+    document.head.appendChild(m);
+  }
+
   function avisar() {
     // Página privada sin sesión (venció o cerró sesión): a la bienvenida
     // Sin internet (paquetes de descarga del Laboratorio) la sesión no se puede renovar: no se saca a nadie
     if (window.MC_PRIVADA && cliente && iniciado && !usuario() && window.MC_BIENVENIDA && !sinRed) { window.MC_BIENVENIDA(); return; }
+    cargarMantenimiento();
     cargarRacha();
     oyentes.forEach(function (fn) { try { fn(usuario()); } catch (e) {} });
     pintarWidgets();
