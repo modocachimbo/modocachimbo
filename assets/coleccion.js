@@ -145,7 +145,10 @@
   // que va por encima de la foto: mo). El banner pinta el nombre del rango con su color (rg).
   // Lo mismo en supabase/109-temporadas-rango.sql (para cada temporada nueva: sumarla aquí y en el SQL).
   var TEMPORADAS = [
-    { t: 't1', nom: 'T1 Nazca', sem: '2026-11-16', fig: [['la', 'Lagartija'], ['la', 'Araña'], ['el', 'Árbol'], ['la', 'Ballena'], ['el', 'Mono'], ['el', 'Cóndor'], ['el', 'Colibrí']] }
+    { t: 't1', nom: 'T1 Nazca', sem: '2026-11-16', fig: [['la', 'Lagartija'], ['la', 'Araña'], ['el', 'Árbol'], ['la', 'Ballena'], ['el', 'Mono'], ['el', 'Cóndor'], ['el', 'Colibrí']] },
+    // piezas: qué da la temporada (sin piezas: foto, banner y marco). bn: nombre del banner (sin bn: «Líneas de …»)
+    { t: 't2', nom: 'T2 Machu Picchu', sem: '2026-11-23', piezas: ['foto', 'banner'], bn: 'Cielo inca',
+      fig: [['la', 'Llama'], ['el', 'Quipu'], ['los', 'Andenes'], ['la', 'Chakana'], ['el', 'Tumi de oro'], ['el', 'Intihuatana'], ['', 'Machu Picchu']] }
   ];
   // rango, nombre, n de RANGO_XP, XP de la semana para llegar (tabla desde el 16-11-2026, assets/rango.js), rareza, colores (texto, fondo, borde, brillo)
   var TRANGOS = [
@@ -167,9 +170,10 @@
     TRANGOS.forEach(function (r, k) {
       var f = T.fig[k], regla = { tipo: 'rango', n: r[2], sem: T.sem, xp: r[3] }, base = { rareza: r[4], regla: regla, temporada: T.nom };
       var d = 'Temporada ' + T.nom + ': llega a ' + r[1] + ' en la semana ' + semanaTxt(T.sem) + '.';
-      CATALOGO.push(Object.assign({ id: T.t + '-foto-' + r[0], espacio: 'avatar', nom: T.nom + ' · ' + f[1], img: dir + r[0] + '-foto.webp', desc: d }, base));
-      CATALOGO.push(Object.assign({ id: T.t + '-banner-' + r[0], espacio: 'racha', nom: T.nom + ' · Líneas ' + (f[0] === 'el' ? 'del ' : 'de la ') + f[1], img: dir + r[0] + '-banner.webp', tema: [r[5], r[7], r[7], r[6]], rg: r[5], desc: d }, base));
-      CATALOGO.push(Object.assign({ id: T.t + '-marco-' + r[0], espacio: 'marco', nom: T.nom + ' · Marco ' + r[1], marco: 'linear-gradient(135deg,' + r[8] + ',' + r[5] + ' 45%,' + r[7] + ')', mo: dir + r[0] + '-marco.webp', desc: d }, base));
+      var pz = T.piezas || ['foto', 'banner', 'marco'];
+      if (pz.indexOf('foto') >= 0) CATALOGO.push(Object.assign({ id: T.t + '-foto-' + r[0], espacio: 'avatar', nom: T.nom + ' · ' + f[1], img: dir + r[0] + '-foto.webp', desc: d }, base));
+      if (pz.indexOf('banner') >= 0) CATALOGO.push(Object.assign({ id: T.t + '-banner-' + r[0], espacio: 'racha', nom: T.nom + ' · ' + (T.bn ? T.bn + ' · ' + f[1] : 'Líneas ' + (f[0] === 'el' ? 'del ' : 'de la ') + f[1]), img: dir + r[0] + '-banner.webp', tema: [r[5], r[7], r[7], r[6]], rg: r[5], desc: d }, base));
+      if (pz.indexOf('marco') >= 0) CATALOGO.push(Object.assign({ id: T.t + '-marco-' + r[0], espacio: 'marco', nom: T.nom + ' · Marco ' + r[1], marco: 'linear-gradient(135deg,' + r[8] + ',' + r[5] + ' 45%,' + r[7] + ')', mo: dir + r[0] + '-marco.webp', desc: d }, base));
     });
   });
   // El lunes de esta semana (hora de Lima), como en xp_semana.semana
