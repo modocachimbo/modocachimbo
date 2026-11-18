@@ -18,7 +18,7 @@ const INF = { datos: null, quitar: null, enviando: false };
   st.textContent = `
   .inf-items { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
   .inf-it { display: flex; align-items: center; gap: 8px; padding: 6px 10px 6px 6px; border-radius: 12px; background: #120e22; border: 2px solid #2A2346; font: 900 12.5px Nunito, sans-serif; }
-  .inf-it i { width: 30px; height: 30px; border-radius: 8px; background: #2A2346 center/cover; flex-shrink: 0; }
+  .inf-it i { width: 30px; height: 30px; border-radius: 8px; background: #2A2346 center/contain no-repeat; flex-shrink: 0; }
   .inf-it small { color: var(--text-dim); font-weight: 800; }
   .inf-fila { display: flex; align-items: center; gap: 12px; padding: 12px 4px; border-bottom: 1px solid #221C3C; }
   .inf-fila:last-child { border-bottom: 0; }
@@ -32,6 +32,8 @@ const INF = { datos: null, quitar: null, enviando: false };
   document.head.appendChild(st);
 })();
 
+// Sube este número cuando cambies una imagen de assets/ (así el panel no muestra la guardada)
+const INF_IMG_V = 2;
 const INF_ESP = { racha: 'Banner', avatar: 'Foto de perfil', pines: 'Pin', marco: 'Marco', cuadro: 'Cuadro de racha', titulo: 'Título' };
 function infFecha(s) { return new Date(s).toLocaleDateString('es-PE', { day: 'numeric', month: 'short', year: 'numeric' }); }
 function infCodigos(t) { return [...new Set((String(t || '').match(/\d+/g) || []).filter(x => x.length === 5).map(Number))]; }
@@ -74,7 +76,7 @@ function pintarInfluencers() {
     </div>
     <div class="agp-form">
       <h3>Lo que tienen los influencers</h3>
-      ${it.length ? `<div class="inf-items">${it.map(x => `<span class="inf-it"><i${x.img ? ` style="background-image:url('${esc(/^(https:|\/)/.test(x.img) ? x.img : '../' + x.img)}')"` : ''}></i><span>${esc(x.nom)}<br><small>${esc(INF_ESP[x.espacio] || x.espacio)}</small></span></span>`).join('')}</div>`
+      ${it.length ? `<div class="inf-items">${it.map(x => `<span class="inf-it"><i${x.img ? ` style="background-image:url('${esc(/^https:/.test(x.img) ? x.img : (/^\//.test(x.img) ? '..' : '../') + x.img + '?v=' + INF_IMG_V)}')"` : ''}></i><span>${esc(x.nom)}<br><small>${esc(INF_ESP[x.espacio] || x.espacio)}</small></span></span>`).join('')}</div>`
         : '<p class="hint" style="margin:0">Todavía nada.</p>'}
       <p class="hint" style="margin:10px 0 0">Para sumar más, en <b>Recursos</b> elige <b>Solo influencers</b> en «Cómo se gana». A los que ya son influencers les llega en un sobre.</p>
     </div>
