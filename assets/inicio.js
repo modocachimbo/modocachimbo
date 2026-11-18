@@ -445,7 +445,7 @@
       tema = C.tema(fo ? x.fondo : C.defecto.racha);
       if (at.av || at.img) img = C.avatar(at.id);
     }
-    var dentro = /^https:\/\//.test(img || '') || /assets\/buho\/avatar\//.test(img || '') ? '<img src="' + esc(img) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : inicial(x.apodo);
+    var dentro = /^https:\/\//.test(img || '') || /assets\/(buho\/avatar|temporadas)\//.test(img || '') ? '<img src="' + esc(img) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : inicial(x.apodo);
     var fondo = tema ? 'linear-gradient(135deg,' + tema[0] + ',' + tema[3] + ')' : AV[(x.puesto - 1) % AV.length];
     return '<span class="letra' + (marco ? ' con-m' : '') + (tema ? ' con-f' : '') + '" style="' + (marco ? '--m:' + marco + ';' : '') + '--lf:' + fondo + '"><span>' + dentro + '</span></span>';
   }

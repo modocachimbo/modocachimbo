@@ -123,7 +123,7 @@
     document.head.appendChild(n);
     // Corazones, misiones del día y XP (assets/corazones.js) y el búho que usa
     var cz = document.createElement('script');
-    cz.src = BASE + 'assets/corazones.js?v=11';
+    cz.src = BASE + 'assets/corazones.js?v=13';
     document.head.appendChild(cz);
     var pagina = location.href.replace(/[?#].*$/, '');
     // Cuenta suspendida desde el panel (assets/suspension.js); el panel no se bloquea
@@ -135,7 +135,7 @@
     // Rangos de la semana: tarjeta en el inicio, vitrina en el perfil (assets/rango.js)
     if (!window.MCRango && (pagina === BASE || pagina === BASE + 'index.html' || pagina === BASE + 'perfil.html')) {
       var rg = document.createElement('script');
-      rg.src = BASE + 'assets/rango.js';
+      rg.src = BASE + 'assets/rango.js?v=185';
       document.head.appendChild(rg);
     }
     if (!window.MCBuho && pagina !== BASE && pagina !== BASE + 'index.html') {

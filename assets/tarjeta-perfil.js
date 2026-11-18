@@ -273,10 +273,11 @@
           av.style.setProperty('--f1', tema[0]); av.style.setProperty('--f2', tema[3]);
         }
       }
-      var m = chip.querySelector('.mct-marco'), mv = marco || '';
+      var m = chip.querySelector('.mct-marco'), mv = (marco || '') + (C && C.marcoImg ? C.marcoImg() : '');
       if (m.getAttribute('data-m') !== mv) {
         m.setAttribute('data-m', mv);
-        if (mv) m.style.setProperty('--m', mv); else m.style.removeProperty('--m');
+        if (C && C.ponerMarco) C.ponerMarco(m);
+        else if (mv) m.style.setProperty('--m', mv); else m.style.removeProperty('--m');
       }
       // Nivel y pin personal
       var pv = yo ? avance(yo.xp_total).toFixed(3) : '0';
@@ -288,6 +289,8 @@
       // Rango de la semana e ID
       var r = chip.querySelector('.mct-rg'), n = miXp == null || !window.MCRango ? -1 : MCRango.nivel(miXp);
       var k = (miXp == null ? 'x' : String(n)) + '|' + (yo ? yo.codigo : ''), c = n < 0 ? '#cfc8e6' : MCRango.color(n).c;
+      // Con un banner de temporada, el rango se pinta con el color de ese banner
+      if (n >= 0 && C && C.rangoColor && C.rangoColor()) c = C.rangoColor();
       if (r.getAttribute('data-n') !== k) { r.setAttribute('data-n', k); r.innerHTML = rangoHtml(miXp); }
       if (chip.style.getPropertyValue('--rc') !== c) chip.style.setProperty('--rc', c);
     });
@@ -303,21 +306,24 @@
   var GALAXIA = ['#5b34b8', '#241452', '#4a2a9a', '#1a0f40'];
   // Lo que lleva puesto un alumno: de los tops ({avatar, marco, fondo}) o de ver_jugador ({puesto: {...}})
   function vista(x) {
-    var C = window.MCColeccion, img = x.foto || '', marco = '', tema = GALAXIA, fondo = '';
+    var C = window.MCColeccion, img = x.foto || '', marco = '', tema = GALAXIA, fondo = '', mo = '', rg = '';
     if (C && x.yo) {
       marco = C.marco(); tema = C.tema(); fondo = C.fondo ? C.fondo() : '';
+      mo = C.marcoImg ? C.marcoImg() : ''; rg = C.rangoColor ? C.rangoColor() : '';
       var mia = document.querySelector('[data-mc-tarjeta] .mcu-av img');
       img = C.avatar() || (mia ? mia.src : img);
     } else if (C) {
       var p = x.puesto && typeof x.puesto === 'object' ? x.puesto : { avatar: x.avatar, marco: x.marco, racha: x.fondo };
       // Sin nada puesto lleva lo predeterminado: la cara del búho sobre Galaxia
       var at = C.item(p.avatar) || C.item(C.defecto.avatar), fo = p.racha && C.item(p.racha);
-      if (p.marco && C.item(p.marco)) marco = C.marco(p.marco);
+      if (p.marco && C.item(p.marco)) { marco = C.marco(p.marco); mo = C.marcoImg ? C.marcoImg(p.marco) : ''; }
+      if (fo && C.rangoColor) rg = C.rangoColor(p.racha);
       tema = C.tema(fo ? p.racha : C.defecto.racha);
       fondo = fo && C.fondo ? C.fondo(p.racha) : '';
       if (at && (at.av || at.img)) img = C.avatar(at.id);
     }
-    return { img: /^https:\/\//.test(img) || /assets\/buho\/avatar\//.test(img) ? img : '', marco: marco, tema: tema, fondo: fondo };
+    // Las fotos de temporada (assets/temporadas/) también valen
+    return { img: /^https:\/\//.test(img) || /assets\/(buho\/avatar|temporadas)\//.test(img) ? img : '', marco: marco, tema: tema, fondo: fondo, mo: mo, rg: rg };
   }
   function inicial(nom) { return esc((String(nom || '?').trim()[0] || '?').toUpperCase()); }
   // Foto con marco y nivel; cls son las clases de cada página (le dan el tamaño).
@@ -329,7 +335,7 @@
     if (p && window.MCColeccion) MCColeccion.css();
     var cod = x.codigo || (x.yo && yo ? yo.codigo : ''), nom = x.yo ? 'tu perfil' : 'el perfil de ' + (x.apodo || 'este alumno');
     return '<span class="' + (cls || '') + ' mcj-f"' + (cod ? ' data-jug="' + esc(cod) + '" role="button" tabindex="0" aria-label="Ver ' + esc(nom) + '"' : '') +
-      ' style="--f1:' + v.tema[0] + ';--f2:' + v.tema[3] + (v.marco ? ';--m:' + v.marco : '') + '"><i class="mcj-fr"><i class="mcj-av">' +
+      ' style="--f1:' + v.tema[0] + ';--f2:' + v.tema[3] + (v.marco ? ';--m:' + v.marco : '') + (v.mo ? ';--mo:url(&quot;' + esc(v.mo) + '&quot;)' : '') + '"><i class="mcj-fr' + (v.mo ? ' mc-mo' : '') + '"><i class="mcj-av">' +
       (v.img ? '<img src="' + esc(v.img) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : inicial(x.apodo)) + '</i></i>' +
       (xt != null ? '<i class="mcj-nv">' + nivel(xt) + '</i>' : '') +
       (p ? pinHtml(p, 'mcj-pin') : '') + '</span>';
@@ -388,6 +394,7 @@
     var pinId = C && p.pines && p.pines[0] && C.item(p.pines[0]) ? p.pines[0] : '';
     var R = window.MCRango, n = R ? R.nivel(+d.xp_semana || 0) : -1;
     var rc = n < 0 ? '#cfc8e6' : (R.color && R.color(n) && R.color(n).c) || RC[n] || '#C6E000';
+    if (n >= 0 && v.rg) rc = v.rg;   // banner de temporada: el rango con su color
     var total = C ? C.contar().total : 0, col = +d.coleccion || 0;
     var ft = foto({ apodo: d.apodo, codigo: 0, xp_total: d.xp_total, foto: d.foto, puesto: p, pin: pinId }, 'mcp-ft');
     var st = function (ic, val, lab) { return '<span class="mcp-st">' + icono(ic) + '<b>' + val + '</b><small>' + lab + '</small></span>'; };

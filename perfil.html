@@ -502,12 +502,12 @@
 <script src="assets/auth.js"></script>
 <script src="assets/agenda.js"></script>
 <script src="assets/buho.js"></script>
-<script src="assets/coleccion.js?v=204"></script>
+<script src="assets/coleccion.js?v=208"></script>
 <link rel="stylesheet" href="assets/tarjeta-jugador.css?v=7">
-<script src="assets/tarjeta-perfil.js?v=209"></script>
+<script src="assets/tarjeta-perfil.js?v=210"></script>
 <link rel="stylesheet" href="assets/buho/buho.css">
 <link rel="stylesheet" href="assets/amigos.css?v=7">
-<script src="assets/rango.js?v=184"></script>
+<script src="assets/rango.js?v=185"></script>
 <script src="assets/buho/buho-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
 <script src="assets/amigos.js?v=5"></script>
@@ -1575,7 +1575,8 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
     var src = C.avatar(), t = C.tema();
     if (src) { av.innerHTML = '<img src="' + src + '" alt="">'; av.style.background = 'radial-gradient(120% 120% at 80% 0%,' + t[0] + ',' + t[3] + ' 70%,#0d0820)'; }
     else if (av.getAttribute('data-orig') != null) { av.innerHTML = av.getAttribute('data-orig'); av.style.background = ''; }
-    if (marco) caja.style.setProperty('--m', marco); else caja.style.removeProperty('--m');
+    if (C.ponerMarco) C.ponerMarco(caja); else if (marco) caja.style.setProperty('--m', marco); else caja.style.removeProperty('--m');
+    if (window.MCTarjeta && window.MCCorazones && MCCorazones.estado()) pintarRango(+MCCorazones.estado().xp_semana || 0);
     var ti = C.item(C.puesto('titulo'));
     $('pTitulo').innerHTML = C.titulo(ti); $('pTitulo').classList.toggle('con-svg', !!ti.svg);
     var pines = C.puesto('pines'), h = '';
@@ -1598,7 +1599,9 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
     if (!window.MCRango) return;
     var n = MCRango.nivel(xp), rk = $('pjRk');
     rk.classList.toggle('sin', n < 0);
-    $('pj').style.setProperty('--rc', n < 0 ? '#cfc8e6' : MCTarjeta.colores[n]);
+    // Con un banner de temporada, el nombre del rango va con el color de ese banner
+    var bc = n >= 0 && window.MCColeccion && MCColeccion.rangoColor ? MCColeccion.rangoColor() : '';
+    $('pj').style.setProperty('--rc', n < 0 ? '#cfc8e6' : bc || MCTarjeta.colores[n]);
     rk.innerHTML = '<span>' + MCRango.svg(Math.max(n, 0), { quieto: true }) + '</span><b>' + (n < 0 ? 'Sin rango' : MCRango.nombre(n)) + '</b><small>Rango semanal</small>';
   }
   // Nivel (de todo tu XP), ID y pin personal: mi_tarjeta() en assets/tarjeta-perfil.js

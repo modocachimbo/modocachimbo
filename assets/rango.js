@@ -21,23 +21,26 @@
   //     más arriba, menos XP (Leyenda ×0,25); debe coincidir con public.xp_mult.
   // antes: la tabla que regía hasta la semana del 26 oct 2026 (esas semanas se siguen viendo con ella)
   var DESDE = '2026-11-02';  // primer lunes con la tabla min y los nombres nuevos
+  // medio: la tabla de las semanas del 2 al 15 nov 2026. Desde el 16 nov (T1 Nazca) rige min: rangos altos más difíciles.
+  // Debe coincidir con public.xp_mult (supabase/110-rangos-mas-dificiles.sql) y con corazones.js → multXp
+  var DESDE2 = '2026-11-16';
   var NUEVO = clave() >= DESDE;
   var RANGOS = [
-    { id: 'bronce', nom: 'Bronce', c: '#E8A878', t: '#3a1e0e', b: '#9A5A30', o: '#7A3A1C', mu: 100, min: [20, 250, 500], antes: [20, 150, 300] },
-    { id: 'plata', nom: 'Plata', c: '#D6DEEA', t: '#262c3a', b: '#8A96AA', o: '#5A6478', mu: 100, min: [900, 1350, 1800], antes: [500, 750, 1000] },
-    { id: 'esmeralda', nom: 'Esmeralda', c: '#5FF59A', t: '#06361a', b: '#0FA845', o: '#0FA845', mu: 90, min: [2300, 2900, 3400, 4000], antes: [1300, 1600, 1900, 2200] },
-    { id: 'zafiro', nom: 'Zafiro', c: '#5FDAFF', t: '#06304a', b: '#1A6CC0', o: '#123FC0', mu: 80, min: [4700, 5400, 6300, 7200, 8100], antes: [2600, 3000, 3500, 4000, 4500] },
-    { id: 'amatista', nom: 'Amatista', c: '#D79BFF', t: '#2a1050', b: '#8A36E0', o: '#8A36E0', mu: 70, min: [9000, 10000, 11200, 12400, 13700], antes: [5000, 5600, 6200, 6900, 7600] },
-    { id: 'leyenda', nom: NUEVO ? 'Mítico' : 'Leyenda', c: '#FF7AD9', t: '#3e0a34', b: '#C0399E', o: '#E3263F', mu: 50, min: [16000, 20000, 24000, 30000, 36000], antes: [9000, 11000, 13500, 16500, 20000] },
-    { id: 'mitico', nom: NUEVO ? 'Leyenda' : 'Mítico', c: '#FFC800', t: '#3e2400', b: '#D08A00', o: '#E3263F', mu: 25, min: [50000, 62000, 75000], antes: [25000, 32000, 40000] }
+    { id: 'bronce', nom: 'Bronce', c: '#E8A878', t: '#3a1e0e', b: '#9A5A30', o: '#7A3A1C', mu: 100, min: [20, 250, 500], medio: [20, 250, 500], antes: [20, 150, 300] },
+    { id: 'plata', nom: 'Plata', c: '#D6DEEA', t: '#262c3a', b: '#8A96AA', o: '#5A6478', mu: 100, min: [1900, 2350, 2800], medio: [900, 1350, 1800], antes: [500, 750, 1000] },
+    { id: 'esmeralda', nom: 'Esmeralda', c: '#5FF59A', t: '#06361a', b: '#0FA845', o: '#0FA845', mu: 90, min: [4300, 4900, 5400, 6000], medio: [2300, 2900, 3400, 4000], antes: [1300, 1600, 1900, 2200] },
+    { id: 'zafiro', nom: 'Zafiro', c: '#5FDAFF', t: '#06304a', b: '#1A6CC0', o: '#123FC0', mu: 80, min: [7700, 8400, 9300, 10200, 11100], medio: [4700, 5400, 6300, 7200, 8100], antes: [2600, 3000, 3500, 4000, 4500] },
+    { id: 'amatista', nom: 'Amatista', c: '#D79BFF', t: '#2a1050', b: '#8A36E0', o: '#8A36E0', mu: 70, min: [14000, 15000, 16200, 17400, 18700], medio: [9000, 10000, 11200, 12400, 13700], antes: [5000, 5600, 6200, 6900, 7600] },
+    { id: 'leyenda', nom: NUEVO ? 'Mítico' : 'Leyenda', c: '#FF7AD9', t: '#3e0a34', b: '#C0399E', o: '#E3263F', mu: 50, min: [23000, 27000, 31000, 37000, 43000], medio: [16000, 20000, 24000, 30000, 36000], antes: [9000, 11000, 13500, 16500, 20000] },
+    { id: 'mitico', nom: NUEVO ? 'Leyenda' : 'Mítico', c: '#FFC800', t: '#3e2400', b: '#D08A00', o: '#E3263F', mu: 25, min: [60000, 75000, 90000], medio: [50000, 62000, 75000], antes: [25000, 32000, 40000] }
   ];
   var ROM = ['I', 'II', 'III', 'IV', 'V', 'VI'];
   // Todo en una lista de niveles: n = 0 es Bronce I, el último es el rango máximo III
-  var MIN = [], ANTES = [], MU = [], NOM = [], TXT = [], TINTE = [], BORDE = [], OSC = [], IMG = [], GRUPOS = [];
+  var MIN = [], MEDIO = [], ANTES = [], MU = [], NOM = [], TXT = [], TINTE = [], BORDE = [], OSC = [], IMG = [], GRUPOS = [];
   RANGOS.forEach(function (r) {
     GRUPOS.push({ nom: r.nom, desde: MIN.length, hasta: MIN.length + r.min.length - 1, c: r.c, t: r.t, b: r.b });
     r.min.forEach(function (m, k) {
-      MIN.push(m); ANTES.push(r.antes[k]); MU.push(r.mu); NOM.push(r.nom + ' ' + ROM[k]); IMG.push(r.id + '-' + (k + 1) + '.webp');
+      MIN.push(m); MEDIO.push(r.medio[k]); ANTES.push(r.antes[k]); MU.push(r.mu); NOM.push(r.nom + ' ' + ROM[k]); IMG.push(r.id + '-' + (k + 1) + '.webp');
       TXT.push(r.c); TINTE.push(r.t); BORDE.push(r.b); OSC.push(r.o);
     });
   });
@@ -46,7 +49,7 @@
   var BASE = (function () { var s = document.currentScript && document.currentScript.src; return s ? s.replace(/[^\/]*$/, '') + 'rangos/' : 'assets/rangos/'; })();
 
   // La tabla de una semana ('AAAA-MM-DD' del lunes; sin semana = esta)
-  function tabla(semana) { return (semana || clave()) < DESDE ? ANTES : MIN; }
+  function tabla(semana) { var w = semana || clave(); return w < DESDE ? ANTES : w < DESDE2 ? MEDIO : MIN; }
   // -1 = todavía sin rango (menos de 20 XP en la semana)
   function nivel(xp, semana) { var t = tabla(semana), n = -1; for (var i = 0; i < t.length; i++) if ((+xp || 0) >= t[i]) n = i; return n; }
   // Multiplicador de la correcta con ese XP de la semana (en %; sin rango = 100)
