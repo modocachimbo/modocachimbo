@@ -172,14 +172,10 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
         <button type="button" data-v="ranking"><svg viewBox="0 0 20 20"><rect x="2" y="3" width="11" height="3" rx="1.5"/><rect x="2" y="8.5" width="16" height="3" rx="1.5"/><rect x="2" y="14" width="7" height="3" rx="1.5"/></svg>Ranking</button>
         <button type="button" data-v="tabla"><svg viewBox="0 0 20 20"><path d="M3 2h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm1 2v3h3V4zm5 0v3h3V4zm5 0v3h2V4zM4 9v3h3V9zm5 0v3h3V9zm5 0v3h2V9zM4 14v2h3v-2zm5 0v2h3v-2zm5 0v2h2v-2z"/></svg>Tabla</button>
       </div>
-      <div class="seg" id="periodo">
-        <button type="button" data-p="2020">Desde 2020</button>
-        <button type="button" data-p="10">Últimos 10</button>
-        <button type="button" data-p="todo">Desde 2015</button>
-      </div>
+
     </div>
     <div id="cuerpo"></div>
-    <p class="nota">Conteo de los exámenes de admisión ordinarios (tenemos desde 2015-I). Que un tema haya venido mucho no asegura que venga el próximo, pero te ayuda a decidir qué repasar primero.</p>
+    <p class="nota">Conteo de los exámenes de admisión ordinarios desde 2020-I. Que un tema haya venido mucho no asegura que venga el próximo, pero te ayuda a decidir qué repasar primero.</p>
   </div>
 </div>
 
@@ -190,7 +186,7 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
 <script>
 (function () {
   var D = window.MC_TEMAS_FIJOS, ex = D.examenes, ULT = ex.length - 1;
-  var AREAS = [['todas', 'Todas'], ['ciencia-tecnologia', 'Ciencia y Tecnología'], ['matematica', 'Matemática'], ['comunicacion', 'Comunicación'], ['ciencias-sociales', 'Ciencias Sociales']];
+  var AREAS = [['ciencia-tecnologia', 'Ciencia y Tecnología'], ['matematica', 'Matemática'], ['comunicacion', 'Comunicación'], ['ciencias-sociales', 'Ciencias Sociales']];
   var CURSOS = [
     ['biologia', 'Biología', 'ciencia-tecnologia'], ['anatomia', 'Anatomía', 'ciencia-tecnologia'], ['quimica', 'Química', 'ciencia-tecnologia'], ['fisica', 'Física', 'ciencia-tecnologia'],
     ['algebra', 'Álgebra', 'matematica'], ['aritmetica', 'Aritmética', 'matematica'], ['geometria', 'Geometría', 'matematica'], ['trigonometria', 'Trigonometría', 'matematica'], ['estadistica', 'Estadística', 'matematica'],
@@ -199,8 +195,10 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
     ['economia', 'Economía', 'ciencias-sociales'], ['ciudadania', 'Ciudadanía', 'ciencias-sociales'], ['psicologia', 'Psicología', 'ciencias-sociales'], ['filosofia', 'Filosofía', 'ciencias-sociales']
   ];
   var q = new URLSearchParams(location.search);
-  var S = { area: q.get('area') || 'todas', curso: q.get('curso') || 'biologia', v: q.get('v') || 'ranking', p: q.get('p') || '2020' };
+  var S = { area: q.get('area') || '', curso: q.get('curso') || 'biologia', v: q.get('v') || 'ranking' };
   if (!D.cursos[S.curso]) S.curso = 'biologia';
+  if (!S.area) CURSOS.forEach(function (c) { if (c[0] === S.curso) S.area = c[2]; });
+  else if (!CURSOS.some(function (c) { return c[0] === S.curso && c[2] === S.area; })) { var pc = CURSOS.filter(function (c) { return c[2] === S.area; }); if (pc.length) S.curso = (pc.filter(function (c) { return D.cursos[c[0]]; })[0] || pc[0])[0]; }
   function $(id) { return document.getElementById(id); }
   function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function nombre(id) { for (var i = 0; i < CURSOS.length; i++) if (CURSOS[i][0] === id) return CURSOS[i][1]; return id; }
@@ -214,12 +212,11 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
 
   function pintarFiltros() {
     $('areas').innerHTML = AREAS.map(function (a) { return '<button type="button" data-a="' + a[0] + '"' + (a[0] === S.area ? ' class="on"' : '') + '>' + a[1] + '</button>'; }).join('');
-    $('chips').innerHTML = CURSOS.filter(function (c) { return S.area === 'todas' || c[2] === S.area; }).map(function (c) {
+    $('chips').innerHTML = CURSOS.filter(function (c) { return c[2] === S.area; }).map(function (c) {
       var hay = !!D.cursos[c[0]];
       return '<button type="button" class="chip' + (c[0] === S.curso ? ' on' : '') + '" data-c="' + c[0] + '"' + (hay ? '' : ' disabled') + '>' + esc(c[1]) + (hay ? '' : '<span class="pr">pronto</span>') + '</button>';
     }).join('');
     [].forEach.call(document.querySelectorAll('#vista button'), function (b) { b.classList.toggle('on', b.dataset.v === S.v); });
-    [].forEach.call(document.querySelectorAll('#periodo button'), function (b) { b.classList.toggle('on', b.dataset.p === S.p); });
   }
 
   function frec(p) { return p >= 45 ? ['f1', 'Muy frecuente'] : p >= 30 ? ['f2', 'Frecuente'] : ['f3', 'A veces']; }
@@ -229,8 +226,6 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
     var datos = D.cursos[S.curso];
     if (!datos) { $('sub').textContent = nombre(S.curso); $('cuerpo').innerHTML = '<div class="vacio"><b>Muy pronto</b>Estamos subiendo los temas de este curso.</div>'; return; }
     var idx = ex.map(function (_, i) { return i; });
-    if (S.p === '2020') idx = idx.filter(function (i) { return +ex[i].slice(0, 4) >= 2020; });
-    if (S.p === '10') idx = idx.slice(-10);
     var N = idx.length;
     $('sub').textContent = nombre(S.curso) + ' · ' + N + ' exámenes (' + ex[idx[0]] + ' a ' + ex[idx[N - 1]] + ')';
     var temas = datos.map(function (t) {
@@ -285,10 +280,9 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
 
   document.addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b || b.disabled) return;
-    if (b.dataset.a) { S.area = b.dataset.a; var primero = CURSOS.filter(function (c) { return (S.area === 'todas' || c[2] === S.area) && D.cursos[c[0]]; })[0]; if (primero && S.area !== 'todas') S.curso = primero[0]; }
+    if (b.dataset.a) { S.area = b.dataset.a; var primero = CURSOS.filter(function (c) { return c[2] === S.area && D.cursos[c[0]]; })[0]; S.curso = primero ? primero[0] : CURSOS.filter(function (c) { return c[2] === S.area; })[0][0]; }
     else if (b.dataset.c) S.curso = b.dataset.c;
     else if (b.dataset.v) S.v = b.dataset.v;
-    else if (b.dataset.p) S.p = b.dataset.p;
     else return;
     pintar();
   });
