@@ -801,6 +801,10 @@
       var x = POR_ID[id || puesto('marco')], m = x && x.marco !== 'none' ? x.marco : '', mo = x && x.mo || '';
       return { cls: mo ? ' mc-mo' : '', st: (m ? '--m:' + m + ';' : '') + (mo ? '--mo:url(&quot;' + esc(mo) + '&quot;);' : '') };
     },
+    // La temporada de una semana (lunes 'AAAA-MM-DD'; sin nada, esta semana): { t, nom, sem } o null
+    temporada: function (sem) { sem = sem || lunesHoy(); return TEMPORADAS.filter(function (T) { return T.sem === sem; })[0] || null; },
+    // El premio de esa temporada para el rango k (0 = Bronce … 6 = Leyenda) y la pieza (foto, banner o marco)
+    premioTemporada: function (T, k, pieza) { var r = TRANGOS[k]; return T && r ? POR_ID[T.t + '-' + (pieza || 'foto') + '-' + r[0]] || null : null; },
     // Color del nombre del rango con el banner que llevas (los banners de temporada lo traen), o ''
     rangoColor: function (id) { var x = POR_ID[id || puesto('racha')]; return x && x.rg || ''; },
     nuevos: nuevos, marcarVistos: marcarVistos, celebrar: celebrar, refrescar: refrescar,

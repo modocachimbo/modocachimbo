@@ -322,6 +322,12 @@
   .rg-pel .pts { display: flex; justify-content: center; gap: 3px; margin-top: 6px; }
   .rg-pel .pts u { width: 8px; height: 8px; border-radius: 2px; rotate: 45deg; background: rgba(255,255,255,.12); }
   .rg-pel .pts u.on { background: var(--c); }
+  /* Temporada: la foto que se gana en cada rango, y el nombre de la temporada */
+  .rg-h3 .rg-tp { font: italic 900 15px/1 var(--display); color: #14101f; background: linear-gradient(135deg, #FFF3B0, #FFC800); padding: 4px 9px 3px; border-radius: 6px; letter-spacing: .04em; }
+  .rg-pel .pz { display: block; width: 46%; max-width: 54px; aspect-ratio: 1; margin: 8px auto 0; border-radius: 8px; overflow: hidden; border: 2px solid color-mix(in srgb, var(--c) 70%, transparent); filter: grayscale(.85) brightness(.55); }
+  .rg-pel .pz.ok { filter: none; box-shadow: 0 0 12px color-mix(in srgb, var(--c) 60%, transparent); }
+  .rg-pel .pz img { width: 100%; height: 100%; display: block; }
+  .rg-sem .cab .tp { display: inline-block; margin-top: 4px; font: 900 10px/1 Nunito, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: #FFC800; border: 1px solid rgba(255,200,0,.5); border-radius: 4px; padding: 2px 5px; }
   /* El historial: una tarjeta por semana */
   .rg-hist { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; }
   .rg-sem { --c: #5FDAFF; flex: none; width: 150px; border-radius: 12px; border: 2px solid #4a3a20; background: linear-gradient(180deg, #1a1430, #120e22); text-align: center; overflow: hidden; }
@@ -362,7 +368,7 @@
 <script src="assets/auth.js"></script>
 <script src="assets/buho.js"></script>
 <script src="assets/rango.js?v=184"></script>
-<script src="assets/coleccion.js?v=205"></script>
+<script src="assets/coleccion.js?v=206"></script>
 <script src="assets/tarjeta-perfil.js?v=210"></script>
 <script src="assets/buho/buho-datos.js"></script>
 <script src="assets/buho/rosa-datos.js"></script>
@@ -434,7 +440,7 @@
       </div>
       <div id="vRangos" hidden>
         <div class="rg-hero" id="rgHero"><p class="rg-nada">Cargando tus rangos…</p></div>
-        <div class="rg-h3">Escalera de rangos <small>gana XP en la semana para subir</small></div>
+        <div class="rg-h3" id="rgEscaT">Escalera de rangos <small>gana XP en la semana para subir</small></div>
         <div class="rg-esca" id="rgEsca"></div>
         <div class="rg-h3">Historial <small>el rango con el que cerraste cada semana</small></div>
         <div class="rg-hist" id="rgHist"></div>
@@ -760,12 +766,15 @@
       '<div class="rg-reloj">Se cierra en<b>' + (d === 1 ? '1 día' : d + ' días') + '</b></div>';
     $('mEm').innerHTML = MCRango.svg(Math.max(0, n), { mini: true, quieto: true });
     // La escalera: un estandarte por rango, con un punto por cada nivel (I, II, III…)
-    var h = '';
-    MCRango.grupos().forEach(function (g) {
-      var yo = n >= g.desde && n <= g.hasta, pasado = n > g.hasta, pts = '';
+    var h = '', TP = C.temporada ? C.temporada(hoy) : null;
+    // Temporada de esta semana (T1 Nazca…): cada rango muestra la foto que se gana al llegar
+    $('rgEscaT').innerHTML = TP ? 'Escalera de rangos <em class="rg-tp">Temporada ' + esc(TP.nom) + '</em><small>llega a un rango esta semana y gana su foto, banner y marco</small>' : 'Escalera de rangos <small>gana XP en la semana para subir</small>';
+    MCRango.grupos().forEach(function (g, k) {
+      var yo = n >= g.desde && n <= g.hasta, pasado = n > g.hasta, pts = '', pz = TP && C.premioTemporada(TP, k);
       for (var i = g.desde; i <= g.hasta; i++) pts += '<u' + (i <= n ? ' class="on"' : '') + '></u>';
       h += '<div class="rg-pel' + (yo ? ' yo' : pasado ? '' : ' no') + '" style="--c:' + g.c + ';--t:' + g.t + '">' + emb(yo ? n : pasado ? g.hasta : g.desde) +
-        '<b>' + esc(yo ? MCRango.nombre(n) : g.nom) + '</b><small>' + miles(MIN[g.desde]) + ' XP</small><span class="pts">' + pts + '</span><i></i></div>';
+        '<b>' + esc(yo ? MCRango.nombre(n) : g.nom) + '</b><small>' + miles(MIN[g.desde]) + ' XP</small><span class="pts">' + pts + '</span>' +
+        (pz ? '<span class="pz' + (C.tiene(pz.id) ? ' ok' : '') + '" title="' + esc(pz.nom) + '"><img src="' + esc(pz.img) + '" alt="' + esc(pz.nom) + '" loading="lazy"></span>' : '') + '<i></i></div>';
     });
     $('rgEsca').innerHTML = h;
     // El historial: de la semana pasada hacia atrás, hasta tu primera semana (máximo 12)
@@ -783,7 +792,8 @@
       sem.push({ semana: key, xp: pas[key] || 0, num: Math.round((dd - f0) / 6048e5) + 1 });
     }
     $('rgHist').innerHTML = sem.map(function (x) {
-      var r = MCRango.nivel(x.xp, x.semana), cab = '<div class="cab"><b>Semana ' + x.num + '</b><small>' + MCRango.fechas(x.semana) + '</small></div>';
+      var tp = C.temporada ? C.temporada(x.semana) : null;
+      var r = MCRango.nivel(x.xp, x.semana), cab = '<div class="cab"><b>Semana ' + x.num + '</b><small>' + MCRango.fechas(x.semana) + '</small>' + (tp ? '<em class="tp">' + esc(tp.nom) + '</em>' : '') + '</div>';
       return r < 0
         ? '<div class="rg-sem sin">' + cab + '<div class="nm">Sin rango</div><span class="em vacio">—</span><div class="xp">' + (x.xp ? miles(x.xp) + ' XP' : 'Sin jugar') + '</div></div>'
         : '<div class="rg-sem" style="--c:' + MCRango.color(r).c + '">' + cab + '<div class="nm">' + esc(MCRango.nombre(r)) + '</div>' + emb(r) + '<div class="xp">' + miles(x.xp) + ' XP</div></div>';
