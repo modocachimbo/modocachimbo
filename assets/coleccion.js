@@ -761,6 +761,8 @@
     var st = document.createElement('style'); st.id = 'mc-mo-css';
     st.textContent = '.mc-mo{clip-path:none!important;overflow:visible!important;background:none!important}' +
       '.mc-mo::after{content:"";position:absolute;inset:-33%;background:var(--mo) center/100% 100% no-repeat;pointer-events:none;z-index:3}' +
+      // El nivel, el pin y la burbuja van por encima del marco (el marco queda debajo, para todos)
+      '.mc-mo~*{z-index:5!important}' +
       '.mcc-marco.mc-mo,.letra.mc-mo{position:relative}' +
       // En Mi colección el cuadro es más chico para que entren las alas y la corona
       '.mcc-marco.mc-mo{width:52%}' +
