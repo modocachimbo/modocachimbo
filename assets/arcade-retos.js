@@ -17,7 +17,12 @@
      MCRetos.jugar({ titulo, retos: [...] }, {
        vidas: 5,
        alTerminar: function (r) { r.estrellas, r.errores, r.segundos, r.gano },
-       alCerrar: function () {}
+       alCerrar: function () {},
+       alReto: function (id) {},   // cada reto superado (para la estrella de cada minijuego)
+       solo: true,                 // un solo minijuego: pantalla final con 1 estrella
+       multXp: 2,                  // XP doble (jugar todo mezclado)
+       finExtra: function (res) { return { estrellas, minis: [{ tipo, c, ok, nuevo }], abre, abreSub }; },
+       alMapa: function () {}      // botón Mapa de la pantalla final
      });
    Requiere assets/arcade-retos.css. Usa MCSonido si está cargado.
    Nunca emojis: todos los íconos y dibujos son SVG.
@@ -42,6 +47,9 @@
     fuego: '<svg viewBox="0 0 24 24"><path d="M12 2.5c1 3.6 5.8 5.6 5.8 11a5.8 5.8 0 0 1-11.6 0c0-2.6 1.2-4.2 2.6-5.6.2 1.6 1 2.8 2.2 3.2-.8-3.4.4-6.4 1-8.6z" fill="#FF8A00" stroke="#7A2E00" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 12.5c1.4 1.4 2.8 2.4 2.8 4.4a2.8 2.8 0 0 1-5.6 0c0-1.4.9-2.4 2.8-4.4z" fill="#FFD84D"/></svg>',
     pista: '<svg viewBox="0 0 24 24"><path d="M12 2.5a7 7 0 0 0-4.2 12.6c.7.6 1.2 1.4 1.2 2.4h6c0-1 .5-1.8 1.2-2.4A7 7 0 0 0 12 2.5z" fill="#FFD84D" stroke="#7A4A00" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 20h5M10.5 22.5h3" stroke="#7A4A00" stroke-width="2" stroke-linecap="round"/><path d="M9.5 8a3 3 0 0 1 2.5-2" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>',
     ojo: '<svg viewBox="0 0 24 24"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z" fill="#fff" stroke="#1A1046" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="#5A2FD0"/><circle cx="12" cy="12" r="1.8" fill="#1A1046"/><circle cx="13.4" cy="10.6" r="1" fill="#fff"/></svg>',
+    xp: '<svg viewBox="0 0 40 40"><path d="M20 2l16 9v18l-16 9-16-9V11z" fill="#FFC800" stroke="#7A4A00" stroke-width="3" stroke-linejoin="round"/><text x="20" y="25.5" text-anchor="middle" font-family="Lilita One, sans-serif" font-size="14" fill="#5A2E00">XP</text></svg>',
+    // Estrella 3D (la misma del Arcade), con su degradado propio para funcionar en cualquier página
+    estrella3d: function (on, cls) { var P = 'M32.0,8.0 L39.6,24.5 L57.7,26.7 L44.4,39.0 L47.9,56.8 L32.0,48.0 L16.1,56.8 L19.6,39.0 L6.3,26.7 L24.4,24.5Z'; return '<svg viewBox="0 0 64 64" class="' + (cls || '') + (on ? '' : ' off') + '"><defs><linearGradient id="rtEstG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF7B8"/><stop offset=".45" stop-color="#FFD21F"/><stop offset="1" stop-color="#F08A00"/></linearGradient></defs><path d="' + P + '" fill="#7A3A00" stroke="#7A3A00" stroke-width="7" stroke-linejoin="round" transform="translate(0 2)"/><path d="' + P + '" fill="url(#rtEstG)" stroke="#9A4A00" stroke-width="4" stroke-linejoin="round"/><path d="M32 35 32 8 39.6 24.5ZM32 35 57.7 26.7 44.4 39ZM32 35 47.9 56.8 32 48ZM32 35 16.1 56.8 19.6 39ZM32 35 6.3 26.7 24.4 24.5Z" fill="#D06A00" opacity=".38"/><ellipse cx="24" cy="25" rx="5" ry="3" fill="#fff" opacity=".85" transform="rotate(-35 24 25)"/></svg>'; },
     // Íconos de cada tipo de reto
     imagen: '<svg viewBox="0 0 24 24" fill="none" stroke="#C6E000" stroke-width="2.4" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 16l5-5 4 4 3-3 6 6" stroke-linecap="round"/><circle cx="16" cy="9" r="1.8" fill="#C6E000"/></svg>',
     relacionar: '<svg viewBox="0 0 24 24" fill="none" stroke="#C6E000" stroke-width="2.4" stroke-linecap="round"><rect x="2.5" y="4" width="7" height="5" rx="1.5"/><rect x="2.5" y="15" width="7" height="5" rx="1.5"/><rect x="14.5" y="4" width="7" height="5" rx="1.5"/><rect x="14.5" y="15" width="7" height="5" rx="1.5"/><path d="M9.5 6.5l5 11M9.5 17.5l5-11"/></svg>',
@@ -149,7 +157,7 @@
       '<div class="rt-vidas">' + IC.corazon + '<span></span></div></div><div class="rt-racha" aria-live="polite"></div><div class="rt-cab"></div><div class="rt-cuerpo"></div></div>' +
       '<div class="rt-pie"><div class="rt-pie-in"><button class="rt-btn" disabled>Comprobar</button></div>' +
       '<div class="rt-hoja"><div class="rt-hoja-in"><h3></h3><p></p><button class="rt-btn">Continuar</button></div></div></div>' +
-      '<div class="rt-salir"><div class="rt-salir-in"><b>¿Salir del nivel?</b><p>Tu avance queda guardado: la próxima vez sigues desde el reto donde te quedaste.</p>' +
+      '<div class="rt-salir"><div class="rt-salir-in">' + (opts.solo ? '<b>¿Salir del minijuego?</b><p>Si sales ahora, no ganas su estrella. Puedes volver a jugarlo cuando quieras.</p>' : '<b>¿Salir del nivel?</b><p>Tu avance queda guardado: la próxima vez sigues desde el reto donde te quedaste.</p>') +
       '<button class="rt-btn verde" data-a="seguir">Seguir jugando</button><button class="otra" data-a="salir">Salir</button></div></div></div>');
     document.body.appendChild(raiz);
     var $ = function (s) { return raiz.querySelector(s); };
@@ -205,7 +213,7 @@
     hojaBtn.onclick = function () {
       hoja.classList.remove('on');
       var r = resultado;
-      if (r.ok) { hechos++; listos.push(actual.reto.id); guardarAvance(); } else { vidas--; pintarVidas(); var v = $('.rt-vidas'); v.classList.remove('pierde'); void v.offsetWidth; v.classList.add('pierde'); cola.push(actual.reto); }
+      if (r.ok) { hechos++; listos.push(actual.reto.id); guardarAvance(); try { opts.alReto && opts.alReto(actual.reto.id); } catch (e) {} } else { vidas--; pintarVidas(); var v = $('.rt-vidas'); v.classList.remove('pierde'); void v.offsetWidth; v.classList.add('pierde'); cola.push(actual.reto); }
       pintarBarra();
       if (vidas <= 0) return setTimeout(fin, 350);
       siguiente();
@@ -271,29 +279,52 @@
       var fallados = Object.keys(primera).filter(function (k) { return primera[k] === false; }).length;
       var est = !gano ? 0 : fallados === 0 ? 3 : fallados <= 2 ? 2 : 1;
       var bono = gano ? est * 5 : 0; xp += bono;
+      // opts.solo: un solo minijuego (1 estrella); opts.multXp: XP doble al jugar todo mezclado
+      var solo = !!opts.solo; xp = Math.round(xp * (opts.multXp || 1));
       var prec = Math.max(0, Math.round((total - fallados) / total * 100));
       raiz.querySelector('.rt-col').remove(); raiz.querySelector('.rt-pie').remove();
       var mm = Math.floor(seg / 60) + ':' + ('0' + seg % 60).slice(-2);
-      var f = h('<div class="rt-fin"><span class="cint">' + esc(ruta.titulo || 'Nivel') + '</span>' +
-        '<div class="rt-estrellas">' + [1, 2, 3].map(function (n, i) { return IC.estrella(n <= est).replace('<svg', '<svg style="animation-delay:' + (.25 + i * .25) + 's"'); }).join('') + '</div>' +
-        '<h2>' + (!gano ? 'Sin corazones' : est === 3 ? '¡Perfecto!' : '¡Nivel superado!') + '</h2>' +
-        (gano && est < 3 ? '<p class="rt-tip">' + (fallados === 1 ? 'Fallaste 1 reto.' : 'Fallaste ' + fallados + ' retos.') + ' Hazlos todos a la primera para las 3 estrellas.</p>' : '') +
-        (!gano ? '<p class="rt-tip">Tu avance quedó guardado: llevas <b>' + hechos + ' de ' + total + '</b> retos. Sigue con 5 corazones nuevos y termina el nivel para ganar tus estrellas.</p>' : '') +
-        '<div class="rt-stats"><div class="rt-stat" style="--c:#C6E000"><small>XP ganada</small><b>' + IC.rayo + xp + '</b></div>' +
-        '<div class="rt-stat" style="--c:#FF8A00"><small>Mejor racha</small><b>' + IC.fuego + mejorRacha + '</b></div>' +
-        '<div class="rt-stat" style="--c:#FF6B8A"><small>Precisión</small><b>' + IC.diana + prec + '%</b></div>' +
-        '<div class="rt-stat" style="--c:#FFC800"><small>Tiempo</small><b>' + IC.reloj + mm + '</b></div></div>' +
-        '<button class="rt-btn verde">' + (gano ? 'Continuar' : 'Seguir desde aquí') + '</button>' +
-        '<button class="otra">' + (gano ? 'Jugar otra vez' : 'Volver al mapa') + '</button></div>');
+      var res = { gano: gano, estrellas: est, errores: errores, segundos: seg, precision: prec, xp: xp, racha: mejorRacha };
+      if (gano) { try { opts.alGanar && opts.alGanar(res); } catch (e) {} }
+      // Datos del juego que lo usa (estrellas grandes del nivel, sus minijuegos, nivel que se abre)
+      var ex = {}; try { ex = (opts.finExtra && opts.finExtra(res)) || {}; } catch (e) {}
+      var nEst = solo ? 1 : 3, eOn = solo ? (gano ? 1 : 0) : (ex.estrellas != null ? ex.estrellas : est);
+      var tit = !gano ? 'Sin<br><em>corazones</em>' : est === 3 && eOn === nEst ? '¡Perfecto!' : solo ? '¡Minijuego<br><em>superado!</em>' : '¡Nivel<br><em>superado!</em>';
+      var REP = '<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v5h5"/></svg>', MAPA = '<svg viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/></svg>';
+      var cuerpoFin = '';
+      if (gano) {
+        cuerpoFin = '<span class="fz-lb">Recompensas</span><div class="fz-prem">' +
+          '<div class="fz-p">' + (opts.multXp > 1 ? '<span class="x2">x' + opts.multXp + '</span>' : '') + IC.xp + '<b>+' + xp + '</b><small>XP</small></div>' +
+          '<div class="fz-p">' + IC.fuego + '<b>' + mejorRacha + '</b><small>Mejor racha</small></div>' +
+          '<div class="fz-p">' + IC.diana + '<b>' + prec + '%</b><small>Precisión</small></div></div>' +
+          '<div class="fz-datos"><span>Errores <b>' + errores + '</b></span><span>Tiempo <b>' + mm + '</b></span></div>';
+      } else {
+        cuerpoFin = '<span class="fz-lb">Tu avance</span><div class="fz-av"><i style="width:' + Math.round(hechos / total * 100) + '%"></i></div>' +
+          '<p class="fz-txt">' + (solo ? 'Te quedaste sin corazones. Inténtalo otra vez: cada intento te enseña algo.' : 'Llevas <b>' + hechos + ' de ' + total + '</b> retos y quedó guardado. Sigue con 5 corazones nuevos y termina el nivel.') + '</p>';
+      }
+      if (ex.minis && ex.minis.length) {
+        var nOk = ex.minis.filter(function (m) { return m.ok; }).length;
+        cuerpoFin += '<span class="fz-lb">Minijuegos · ' + nOk + ' de ' + ex.minis.length + '</span><div class="fz-mini" style="--n:' + ex.minis.length + '">' + ex.minis.map(function (m) {
+          return '<i class="' + (m.nuevo ? 'nuevo' : '') + '" style="--c:' + m.c + '">' + (IC[m.tipo] || '').replace(/#C6E000/g, '#fff') + IC.estrella3d(m.ok, 'e') + '</i>';
+        }).join('') + '</div>';
+      }
+      var f = h('<div class="rt-fin fz' + (gano ? '' : ' pierde') + '"><span class="fz-sol"></span><div class="izq"><span class="fz-cint">' + esc(ruta.titulo || 'Nivel') + '</span>' +
+        '<span class="fz-st n' + nEst + '">' + [1, 2, 3].slice(0, nEst).map(function (n, i) { return IC.estrella3d(n <= eOn).replace('<svg', '<svg style="animation-delay:' + (.2 + i * .22) + 's"'); }).join('') + '</span>' +
+        '<h2 class="fz-tit">' + tit + '</h2></div>' +
+        '<div class="fz-card">' + cuerpoFin + '</div>' +
+        (gano && ex.abre ? '<div class="fz-abre"><span class="cand"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.6-1.8"/></svg></span><span><b>' + esc(ex.abre) + '</b><small>' + esc(ex.abreSub || '') + '</small></span></div>' : '') +
+        '<div class="fz-bot"><button class="rt-btn verde">' + (gano ? 'Continuar' : solo ? 'Otra vez' : 'Seguir') + '</button>' +
+        (gano ? '<button class="fz-cua" data-a="otra" aria-label="Jugar otra vez">' + REP + '</button>' : '') +
+        '<button class="fz-cua" data-a="mapa" aria-label="Volver al mapa">' + MAPA + '</button></div></div>');
       raiz.appendChild(f);
       son(gano ? 'victoria' : 'mal');
       if (gano && est === 3) confeti(raiz);
-      var res = { gano: gano, estrellas: est, errores: errores, segundos: seg, precision: prec, xp: xp, racha: mejorRacha };
-      if (gano) { try { opts.alGanar && opts.alGanar(res); } catch (e) {} }
       var sigue = function () { var o = Object.assign({}, opts, { guardado: { hechos: listos.slice(), primera: Object.assign({}, primera), xp: xp } }); jugar(ruta, o); };
       if (gano) { try { opts.alGuardar && opts.alGuardar(null); } catch (e) {} }
       f.querySelector('.rt-btn').onclick = function () { cerrar(); if (gano) { opts.alTerminar && opts.alTerminar(res); } else sigue(); };
-      f.querySelector('.otra').onclick = function () { cerrar(); if (gano) jugar(opts.otraVez ? opts.otraVez() : ruta, Object.assign({}, opts, { guardado: null })); else { opts.alCerrar && opts.alCerrar(); } };
+      var bOtra = f.querySelector('[data-a="otra"]');
+      if (bOtra) bOtra.onclick = function () { son('tap'); cerrar(); jugar(opts.otraVez ? opts.otraVez() : ruta, Object.assign({}, opts, { guardado: null })); };
+      f.querySelector('[data-a="mapa"]').onclick = function () { son('tap'); cerrar(); var m = opts.alMapa || (gano ? opts.alTerminar : opts.alCerrar); if (m) m(res); };
     }
 
     siguiente();

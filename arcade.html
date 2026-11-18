@@ -570,6 +570,44 @@ body.en-inicio .cab { display: none; }
 .hoja .jugar[disabled] { filter: grayscale(.9) brightness(.8); font-size: 24px; box-shadow: 0 6px 0 #2A3300; }
 .hoja .nota { margin: 0; padding: 10px 12px; border-radius: 12px; background: rgba(10,6,32,.5); color: #DCD4FF; font: 800 13px/1.35 var(--cuerpo); }
 .hoja .ext-ico { font-size: 56px; filter: drop-shadow(0 0 18px rgba(255,200,0,.6)); }
+/* Ventana de nivel con minijuegos sueltos: tarjetas con franja Completado / Por jugar */
+.hoja.mj { gap: 10px; }
+.hoja.mj .st3 svg { width: 38px; height: 38px; } .hoja.mj .st3 svg:nth-child(2) { width: 48px; height: 48px; }
+.mj-meta { display: grid; gap: 5px; width: 100%; min-height: 70px; justify-items: center; align-content: start; }
+.mj-seg { display: flex; gap: 3px; width: min(230px, 80%); }
+.mj-seg i { flex: 1; height: 7px; border-radius: 4px; background: rgba(10,6,32,.7); border: 1px solid rgba(160,140,255,.25); }
+.mj-seg i.on { background: linear-gradient(180deg, #FFE27A, #FFB300); border-color: #9A4A00; }
+.mj-seg i:nth-child(3), .mj-seg i:nth-child(6) { margin-right: 4px; }
+.mj-meta small { font: 800 12px/1.2 var(--cuerpo); color: #BFB4F0; } .mj-meta small b { color: #FFD24A; }
+.mj-tit { display: flex; justify-content: space-between; align-items: baseline; width: 100%; }
+.mj-tit em { font: 800 11px/1 var(--cuerpo); color: #A99CE0; font-style: normal; }
+.mj-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: max-content; gap: 9px; width: 100%; min-height: 120px; }
+.mj-c { position: relative; overflow: hidden; display: grid; grid-template-columns: 44px minmax(0, 1fr); align-items: center; gap: 9px; padding: 9px 9px 31px 10px; text-align: left; border-radius: 14px; background: linear-gradient(180deg, #3B2F8C, #2A1F6A); border: 2px solid #0A0620; box-shadow: 0 4px 0 #0A0620, inset 0 1px 0 rgba(255,255,255,.12); color: #fff; cursor: pointer; font: inherit; min-height: min-content; transition: translate .12s, filter .12s; }
+.mj-c::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 32px; width: 3px; border-radius: 0 3px 3px 0; background: var(--c); }
+.mj-c:hover { filter: brightness(1.12); } .mj-c:active { translate: 0 3px; box-shadow: 0 1px 0 #0A0620; }
+.mj-c .ico { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 12px; background: linear-gradient(180deg, color-mix(in srgb, var(--c) 65%, #fff), var(--c) 55%, color-mix(in srgb, var(--c) 70%, #000)); border: 2px solid #0A0620; box-shadow: 0 3px 0 #0A0620, inset 0 2px 0 rgba(255,255,255,.4); }
+.mj-c .ico svg { width: 25px; height: 25px; }
+.mj-c b { display: block; font: 400 14px/1.05 "Lilita One", var(--cuerpo); letter-spacing: .02em; }
+.mj-c small { display: block; margin-top: 3px; font: 800 10.5px/1.15 var(--cuerpo); color: #BFB4F0; }
+.mj-c .franja { position: absolute; left: 0; right: 0; bottom: 0; height: 22px; display: flex; align-items: center; justify-content: center; gap: 5px; font: 900 10.5px/1 var(--cuerpo); letter-spacing: .04em; text-transform: uppercase; background: rgba(10,6,32,.55); color: #8C80C8; }
+.mj-c .franja svg { width: 15px; height: 15px; } .mj-c .franja svg.off { filter: grayscale(1) brightness(.5); }
+.mj-c.hecho { border-color: #6A4A00; }
+.mj-c.hecho .franja { background: linear-gradient(180deg, #FFD24A, #FFA800); color: #4A2600; }
+.hoja.mj .jugar { flex: none; height: auto; padding: 10px 0 11px; flex-direction: column; gap: 3px; }
+.hoja.mj .jugar .fila { display: flex; align-items: center; gap: 10px; font-size: 30px; }
+.hoja.mj .jugar small { font: 900 12px/1 var(--cuerpo); letter-spacing: .02em; color: #3A4A00; text-transform: none; }
+@media (min-width: 721px) {
+  .hoja.mj { width: min(640px, calc(100% - 48px)); padding: 34px 26px 22px; }
+  .mj-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  .mj-c { grid-template-columns: 1fr; justify-items: center; text-align: center; padding: 14px 8px 34px; gap: 8px; }
+  .mj-c::before { display: none; }
+  .mj-c .ico { width: 58px; height: 58px; border-radius: 16px; } .mj-c .ico svg { width: 32px; height: 32px; }
+  .mj-c b { font-size: 15px; }
+}
+@media (max-width: 720px) and (max-height: 760px) { .hoja.mj { padding-top: 28px; gap: 8px; } .hoja.mj .h-ctit { font-size: 22px; } }
+/* Celulares bajitos: las tarjetas se deslizan dentro de la ventana para que la cinta y la X no se corten */
+@media (max-width: 380px) { .mj-c { grid-template-columns: 38px minmax(0, 1fr); gap: 7px; padding-left: 8px; } .mj-c .ico { width: 38px; height: 38px; } .mj-c .ico svg { width: 22px; height: 22px; } .mj-c b { font-size: 12.5px; } .mj-c small { font-size: 10px; } }
+@media (max-height: 700px) { .hoja.mj .mj-grid { max-height: calc(100dvh - 330px); overflow-y: auto; overscroll-behavior: contain; padding: 4px 2px 6px; } }
 
 /* ---------- Mapa de niveles del mundo (assets/arcade-mundo.js) ---------- */
 body.en-mundo { background: #1E86BE; }
@@ -920,10 +958,10 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
   ];
 
   var $ = function (id) { return document.getElementById(id); };
-  var estado = { tema: null, juego: 0, xp: 0, combo: 0, mejor: 0, ok: 0, total: 0, est: {} };
+  var estado = { tema: null, juego: 0, xp: 0, combo: 0, mejor: 0, ok: 0, total: 0, est: {}, mini: {} };
   function leer() { try { return JSON.parse(localStorage.getItem('mc_arcade') || '{}'); } catch (e) { return {}; } }
-  function guardar() { try { localStorage.setItem('mc_arcade', JSON.stringify({ xp: estado.xp, est: estado.est, ultimo: estado.ultimo })); } catch (e) {} }
-  var g0 = leer(); estado.xp = g0.xp || 0; estado.est = g0.est || {}; estado.ultimo = g0.ultimo || null;
+  function guardar() { try { localStorage.setItem('mc_arcade', JSON.stringify({ xp: estado.xp, est: estado.est, mini: estado.mini, ultimo: estado.ultimo })); } catch (e) {} }
+  var g0 = leer(); estado.xp = g0.xp || 0; estado.est = g0.est || {}; estado.mini = g0.mini || {}; estado.ultimo = g0.ultimo || null;
   $('xpN').textContent = estado.xp;
   function mezclar(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
 
@@ -939,7 +977,10 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
   }
   // Juegos que tiene un tema (según los datos que trae); el jefe va al final
   /* Niveles con minijuegos estilo Duolingo (assets/arcade-retos.js + su JSON).
-     Todo el nivel vale 3 estrellas y se guarda en estado.est[tema + ':retos']. */
+     Cada minijuego da 1 estrella (estado.mini[tema][id del reto base]). Las 3 estrellas
+     grandes del nivel salen de cuántos hizo (3 → 1, 6 → 2, todos → 3) y se guardan en
+     estado.est[tema + ':retos'], así el mapa y la energía del Laboratorio siguen igual.
+     Con la 1.ª estrella grande se abre el nivel siguiente. */
   var RETOS = { hp01: 'assets/arcade-retos/hp-01-poblamiento.json' };
   var RETO_JUEGO = { id: 'retos', nom: 'Retos del nivel', sub: 'Minijuegos', ic: 'i-une', c: '#C6E000' };
   var RETO_COLOR = { imagen: '#1CB0F6', relacionar: '#A35CFF', parejas: '#FF4B8B', completar: '#2BC48A', ordenar: '#F07A1A', sopa: '#3E8BEA', vf: '#FF4B4B' };
@@ -958,12 +999,64 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
       if (k >= 0 && Math.random() < .5) return extra.splice(k, 1)[0];
       return r;
     });
-    return { titulo: 'Nivel ' + d.nivel + ' · ' + d.titulo, retos: retos };
+    return conSlot(d, { titulo: 'Nivel ' + d.nivel + ' · ' + d.titulo, retos: retos });
+  }
+  // slot[id del reto jugado] = id del reto base (los extra cuentan para el minijuego que reemplazan)
+  function conSlot(d, ruta) { ruta.slot = {}; ruta.retos.forEach(function (r, k) { if (d.retos[k]) ruta.slot[r.id] = d.retos[k].id; }); return ruta; }
+  function miniDe(t) { return estado.mini[t] || (estado.mini[t] = {}); }
+  function cuentaMini(t, d) { var m = estado.mini[t] || {}; return d.retos.filter(function (r) { return m[r.id]; }).length; }
+  function grandes(n, tot) { return n >= tot ? 3 : n >= Math.ceil(tot * .75) ? 2 : n >= Math.ceil(tot * .375) ? 1 : 0; }
+  function marcarMini(t, d, id) {
+    if (!id || miniDe(t)[id]) return false;
+    miniDe(t)[id] = 1;
+    var k = t + ':retos', g = grandes(cuentaMini(t, d), d.retos.length);
+    if (g > (estado.est[k] || 0)) estado.est[k] = g;
+    guardar(); return true;
+  }
+  // Lo que la pantalla final muestra del nivel: estrellas grandes, los minijuegos y el nivel que se abre
+  function finNivel(c, i, t, d, nuevos, yaHecho) {
+    var m = miniDe(t), sig = c.niveles[i + 1], abre = !yaHecho && (estado.est[t + ':retos'] || 0) > 0 && sig;
+    return {
+      estrellas: estado.est[t + ':retos'] || 0,
+      minis: d.retos.map(function (r) { return { tipo: r.tipo, c: RETO_COLOR[r.tipo] || '#A35CFF', ok: !!m[r.id], nuevo: nuevos.indexOf(r.id) >= 0 }; }),
+      abre: abre ? '¡Nivel ' + (i + 2) + ' desbloqueado!' : '',
+      abreSub: abre ? sig.n + (sig.t ? ' · ya puedes jugarlo' : ' · llega muy pronto') : ''
+    };
+  }
+  // Quien ya ganó el nivel con el sistema anterior tiene todos sus minijuegos hechos
+  function migrarMini(t, d) {
+    if ((estado.est[t + ':retos'] || 0) > 0 && !cuentaMini(t, d)) { d.retos.forEach(function (r) { miniDe(t)[r.id] = 1; }); estado.est[t + ':retos'] = 3; guardar(); }
   }
   // Avance a medio nivel (localStorage mc_retos_av): { tema: { ids: [retos de la ruta], hechos, primera, xp } }
   function leerAvance(t) { try { return (JSON.parse(localStorage.getItem('mc_retos_av') || '{}'))[t] || null; } catch (e) { return null; } }
   function guardarAvanceRetos(t, v) {
     try { var a = JSON.parse(localStorage.getItem('mc_retos_av') || '{}'); if (v) a[t] = v; else delete a[t]; localStorage.setItem('mc_retos_av', JSON.stringify(a)); } catch (e) {}
+  }
+  // Un solo minijuego (k = posición en d.retos). Si ya lo hizo, a veces sale su versión extra.
+  function jugarMini(c, i, nv, k) {
+    var t = nv.t;
+    cargarRetos(t).then(function (d) {
+      var base = d.retos[k]; if (!base) return;
+      if (window.MCSonido) MCSonido.ambiente(null);
+      var antes = nvMapa ? nvMapa.actual : i, yaHecho = !!estado.est[t + ':retos'];
+      function armar() {
+        var r = base, ex = (d.extra || []).filter(function (x) { return x.tipo === base.tipo; });
+        if (miniDe(t)[base.id] && ex.length && Math.random() < .5) r = ex[Math.floor(Math.random() * ex.length)];
+        var ruta = { titulo: (MCRetos.nombres[base.tipo] || 'Minijuego') + ' · ' + (base.sub || d.titulo), retos: [r], slot: {} };
+        ruta.slot[r.id] = base.id; return ruta;
+      }
+      var ruta = armar(), nuevos = [];
+      MCRetos.jugar(ruta, {
+        vidas: 3, solo: true,
+        alReto: function (id) { if (marcarMini(t, d, ruta.slot[id])) nuevos.push(ruta.slot[id]); },
+        finExtra: function () { return finNivel(c, i, t, d, nuevos, yaHecho); },
+        alMapa: function () { volverDeRetos(c, antes, !yaHecho && !!estado.est[t + ':retos'], i); },
+        otraVez: function () { ruta = armar(); nuevos = []; yaHecho = !!estado.est[t + ':retos']; return ruta; },
+        alGanar: function (r) { estado.xp += r.xp; $('xpN').textContent = estado.xp; guardar(); cobrarRayos(); },
+        alTerminar: function () { volverDeRetos(c, antes, !yaHecho && !!estado.est[t + ':retos'], i, true); },
+        alCerrar: function () { volverDeRetos(c, antes, false, i, true); }
+      });
+    }, function () { toast('No se pudo cargar el nivel. Revisa tu conexión.'); });
   }
   function jugarRetos(c, i, nv) {
     var t = nv.t, vez = estado.est[t + ':retos'] ? 1 : 0;
@@ -971,18 +1064,18 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
       if (window.MCSonido) MCSonido.ambiente(null);
       var antes = nvMapa ? nvMapa.actual : i, yaHecho = !!estado.est[t + ':retos'];
       // Si dejó el nivel a medias, se arma la misma ruta y sigue desde ahí
-      var av = leerAvance(t), ruta = armarRuta(d, vez), todos = d.retos.concat(d.extra || []);
+      var av = leerAvance(t), ruta = armarRuta(d, vez), todos = d.retos.concat(d.extra || []), nuevos = [];
       if (av && av.ids) {
         var rs = av.ids.map(function (id) { return todos.filter(function (x) { return x.id === id; })[0]; });
-        if (rs.every(Boolean)) ruta.retos = rs; else av = null;
+        if (rs.every(Boolean)) { ruta.retos = rs; conSlot(d, ruta); } else av = null;
       }
       MCRetos.jugar(ruta, {
-        vidas: 5, guardado: av,
+        vidas: 5, guardado: av, multXp: 2,
+        alReto: function (id) { if (marcarMini(t, d, ruta.slot[id])) nuevos.push(ruta.slot[id]); },
+        finExtra: function () { return finNivel(c, i, t, d, nuevos, yaHecho); },
         alGuardar: function (g) { guardarAvanceRetos(t, g && g.hechos.length ? { ids: ruta.retos.map(function (x) { return x.id; }), hechos: g.hechos, primera: g.primera, xp: g.xp } : null); },
-        otraVez: function () { ruta = armarRuta(d, 1); return ruta; },
+        otraVez: function () { ruta = armarRuta(d, 1); nuevos = []; yaHecho = !!estado.est[t + ':retos']; return ruta; },
         alGanar: function (r) {
-          var k = t + ':retos';
-          estado.est[k] = Math.max(estado.est[k] || 0, r.estrellas);
           estado.xp += r.xp; $('xpN').textContent = estado.xp; guardar(); cobrarRayos();
         },
         alTerminar: function () { volverDeRetos(c, antes, !yaHecho && !!estado.est[t + ':retos'], i); },
@@ -990,8 +1083,10 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
       });
     }, function () { toast('No se pudo cargar el nivel. Revisa tu conexión.'); });
   }
-  function volverDeRetos(c, antes, primeraVez, i) {
+  function volverDeRetos(c, antes, primeraVez, i, reabrir) {
     irMapa(c);
+    // Tras un minijuego suelto vuelve a la ventana del nivel para elegir el siguiente
+    if (reabrir && nvMapa) abrirHoja(c, i, c.niveles[i], nvMapa.estado[i], true);
     if (!primeraVez) return;
     var sig = c.niveles[i + 1];
     if (nvMapa && nvMapa.actual > antes) toast('¡Nivel ' + (nvMapa.actual + 1) + ' desbloqueado!');
@@ -1220,23 +1315,36 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     var tR; window.onresize = function () { clearTimeout(tR); tR = setTimeout(function () { if (nvMapa && $('mapa').classList.contains('niveles')) pintar(); }, 200); };
   }
   function abrirVentana(h) {
+    $('hoja').classList.remove('mj');
     $('hoja').innerHTML = h + '<button class="g-btn x" type="button" id="hojaX" aria-label="Cerrar"><svg class="ic"><use href="#i-x"/></svg></button>';
     $('hoja').classList.add('on'); $('hojaFondo').classList.add('on');
     $('hojaX').onclick = cerrarHoja;
   }
-  function abrirHoja(c, i, nv, s) {
-    if (window.MCSonido) MCSonido.efecto(nv.t && s.abierto ? 'tap' : 'bloq');
+  function abrirHoja(c, i, nv, s, mudo) {
+    if (window.MCSonido && !mudo) MCSonido.efecto(nv.t && s.abierto ? 'tap' : 'bloq');
     var ult = i === c.niveles.length - 1, h = '<span class="h-cint">' + (ult ? 'Jefe de la isla' : 'Nivel ' + (i + 1)) + '</span><b class="h-ctit" data-t="' + nv.n + '">' + nv.n + '</b>';
     if (nv.t && s.abierto && RETOS[nv.t]) {
-      var tr = nv.t, er = estado.est[tr + ':retos'] || 0, avR = leerAvance(tr);
-      h += '<span class="st3">' + [1, 2, 3].map(function (k) { return E3(k <= er); }).join('') + '</span><span class="lb">Ruta del nivel</span><div class="ruta-n r7" id="hojaRuta"></div>' +
-        '<div class="prem"><span>' + E3(true) + '3 si no fallas</span><span><svg viewBox="0 0 100 100"><use href="#r-corazon"/></svg>5 vidas</span></div>' +
-        (avR ? '<p class="nota">Vas en el reto ' + (avR.hechos.length + 1) + ' de ' + avR.ids.length + '. Sigues desde ahí.</p>' : '') +
-        '<button class="jugar" type="button" id="hojaJugar"><svg class="pl" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>' + (avR ? 'CONTINUAR' : s.hecho ? 'REPETIR' : 'JUGAR') + '</button>';
-      abrirVentana(h);
+      var tr = nv.t, avR = leerAvance(tr), PLAY = '<svg class="pl" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>';
+      h += '<div class="mj-meta" id="mjMeta"></div><div class="mj-tit"><span class="lb">Elige un minijuego</span><em>1 estrella cada uno</em></div><div class="mj-grid" id="hojaRuta"></div>' +
+        '<button class="jugar mj-todo" type="button" id="hojaJugar"><span class="fila">' + PLAY + (avR ? 'CONTINUAR' : 'JUGAR TODO') + '</span><small id="mjTodoSub">' +
+        (avR ? 'Vas en el reto ' + (avR.hechos.length + 1) + ' de ' + avR.ids.length + ' · sigues desde ahí' : 'Todos mezclados · 5 vidas · XP doble') + '</small></button>';
+      abrirVentana(h); $('hoja').classList.add('mj');
       cargarRetos(tr).then(function (d) {
         var el = $('hojaRuta'); if (!el || !window.MCRetos) return;
-        el.innerHTML = d.retos.map(function (r) { return '<div><i style="--c:' + (RETO_COLOR[r.tipo] || '#A35CFF') + '">' + (MCRetos.iconos[r.tipo] || '').replace(/#C6E000/g, '#fff') + '</i>' + (MCRetos.nombres[r.tipo] || r.tipo) + '</div>'; }).join('');
+        migrarMini(tr, d);
+        var m = miniDe(tr), n = cuentaMini(tr, d), tot = d.retos.length, g = estado.est[tr + ':retos'] || 0, para1 = Math.ceil(tot * .375);
+        $('mjMeta').innerHTML = '<span class="st3">' + [1, 2, 3].map(function (k) { return E3(k <= g); }).join('') + '</span>' +
+          '<span class="mj-seg">' + d.retos.map(function (r, k) { return '<i class="' + (k < n ? 'on' : '') + '"></i>'; }).join('') + '</span>' +
+          '<small><b>' + n + ' de ' + tot + '</b> minijuegos completos' + (g ? '' : c.niveles[i + 1] ? ' · con ' + para1 + ' abres el nivel ' + (i + 2) : '') + '</small>';
+        if (!avR) $('mjTodoSub').textContent = 'Los ' + tot + ' mezclados · 5 vidas · XP doble';
+        el.innerHTML = d.retos.map(function (r, k) {
+          var ok = !!m[r.id], E = '<svg class="' + (ok ? '' : 'off') + '" viewBox="0 0 100 100"><use href="#i-estrella3d"/></svg>';
+          return '<button type="button" class="mj-c' + (ok ? ' hecho' : '') + '" data-k="' + k + '" style="--c:' + (RETO_COLOR[r.tipo] || '#A35CFF') + '">' +
+            '<span class="ico">' + (MCRetos.iconos[r.tipo] || '').replace(/#C6E000/g, '#fff') + '</span>' +
+            '<span class="tx"><b>' + (MCRetos.nombres[r.tipo] || r.tipo) + '</b><small>' + (r.sub || r.titulo || '') + '</small></span>' +
+            '<span class="franja">' + E + (ok ? 'Completado' : 'Por jugar') + '</span></button>';
+        }).join('');
+        el.querySelectorAll('.mj-c').forEach(function (b) { b.onclick = function () { if (window.MCSonido) MCSonido.efecto('abrir'); cerrarHoja(); jugarMini(c, i, nv, +b.dataset.k); }; });
       }, function () {});
       $('hojaJugar').onclick = function () { if (window.MCSonido) MCSonido.efecto('abrir'); cerrarHoja(); jugarRetos(c, i, nv); };
       return;
