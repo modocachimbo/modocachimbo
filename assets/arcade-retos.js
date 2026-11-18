@@ -655,9 +655,10 @@
       };
       banco.appendChild(b);
     });
-    wrap.appendChild(h('<p class="rt-extremo">' + IC.antiguo + 'Más antiguo</p>'));
+    var ext = r.extremos || ['Más antiguo', 'Más reciente'];   // en pasos de un proceso: ["Primero", "Al final"]
+    wrap.appendChild(h('<p class="rt-extremo">' + IC.antiguo + esc(ext[0]) + '</p>'));
     wrap.appendChild(linea);
-    wrap.appendChild(h('<p class="rt-extremo fin">Más reciente</p>'));
+    wrap.appendChild(h('<p class="rt-extremo fin">' + esc(ext[1]) + '</p>'));
     wrap.appendChild(banco);
     a.cuerpo.appendChild(wrap);
     a.alComprobar(function () {
@@ -667,7 +668,7 @@
         var c = s.firstChild, i = +c.dataset.i, bien = i === k;
         c.innerHTML = contenido(r.items[i], true); c.classList.add(bien ? 'bien' : 'mal'); if (!bien) ok = false;
       });
-      var sol = r.items.map(function (it) { return '<b>' + esc(it.texto) + '</b> (' + esc(it.fecha) + ')'; }).join(' → ');
+      var sol = r.items.map(function (it) { return '<b>' + esc(it.texto) + '</b>' + (it.fecha ? ' (' + esc(it.fecha) + ')' : ''); }).join(' → ');
       return { ok: ok, correcta: ok ? '' : sol, msg: esc(r.explica || '') };
     });
   };

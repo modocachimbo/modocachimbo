@@ -1362,12 +1362,13 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
         $('mjMeta').innerHTML = '<span class="st3">' + [1, 2, 3].map(function (k) { return E3(k <= g); }).join('') + '</span>' +
           '<span class="mj-seg">' + d.retos.map(function (r, k) { return '<i class="' + (k < n ? 'on' : '') + '"></i>'; }).join('') + '</span>' +
           '<small><b>' + n + ' de ' + tot + '</b> minijuegos completos' + (g ? '' : c.niveles[i + 1] ? ' · con ' + para1 + ' abres el nivel ' + (i + 2) : '') + '</small>';
-        if (!avR) $('mjTodoSub').textContent = 'Los ' + tot + ' mezclados · 5 vidas · XP doble';
+        var nTodo = d.retos.reduce(function (a, r) { return a + (r.preguntas ? Math.min(MEZCLA_PREG, r.preguntas.length) : 1); }, 0);
+        if (!avR) $('mjTodoSub').textContent = nTodo + ' retos de los ' + tot + ' minijuegos · 5 vidas · XP doble';
         el.innerHTML = d.retos.map(function (r, k) {
           var ok = !!m[r.id], E = '<svg class="' + (ok ? '' : 'off') + '" viewBox="0 0 100 100"><use href="#i-estrella3d"/></svg>';
           return '<button type="button" class="mj-c' + (ok ? ' hecho' : '') + '" data-k="' + k + '" style="--c:' + (RETO_COLOR[r.tipo] || '#A35CFF') + '">' +
             '<span class="ico">' + (MCRetos.iconos[r.tipo] || '').replace(/#C6E000/g, '#fff') + '</span>' +
-            '<span class="tx"><b>' + (MCRetos.nombres[r.tipo] || r.tipo) + '</b><small>' + (r.sub || r.titulo || '') + (r.preguntas ? ' · ' + r.preguntas.length + ' preguntas' : '') + '</small></span>' +
+            '<span class="tx"><b>' + (MCRetos.nombres[r.tipo] || r.tipo) + '</b><small>' + (r.sub || r.titulo || '') + (r.preguntas ? ' · ' + r.preguntas.length + (/imagen|completar/.test(r.tipo) ? ' preguntas' : ' rondas') : '') + '</small></span>' +
             '<span class="franja">' + E + (ok ? 'Completado' : 'Por jugar') + '</span></button>';
         }).join('');
         el.querySelectorAll('.mj-c').forEach(function (b) { b.onclick = function () { if (window.MCSonido) MCSonido.efecto('abrir'); cerrarHoja(); jugarMini(c, i, nv, +b.dataset.k); }; });
