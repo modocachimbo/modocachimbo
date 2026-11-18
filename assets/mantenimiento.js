@@ -12,6 +12,11 @@
        parche: { id, titulo, notas: [..], fecha } }
    3) Al apagarla, sale "Parche completado" con lo que se agregó. Los que
       no estaban conectados lo ven una vez al entrar (hasta 3 días después).
+   Extras (todo en el mismo ajuste):
+     secciones: ['arcade','simulacro',…] → solo esas páginas se cierran (vacío = toda la web)
+     hasta: ISO → se abre sola a esa hora (programado); parche_auto: {titulo, notas} para ese momento
+     anunciar: true → franja en el inicio desde 24 h antes ("Hoy a las 11 p. m. habrá mantenimiento")
+     recarga: {id, fecha} → botón "Recargar a todos": las pestañas abiertas se recargan con lo nuevo
    Lo carga auth.js en todas las páginas menos el panel.
    Vista previa sin tocar nada: cualquier página con ?mant=aviso, ?mant=pantalla o ?mant=parche
    ========================================================= */
@@ -27,7 +32,7 @@
   var CADA = 2 * 60e3;        // se revisa cada 2 min mientras la página está abierta
   var CADA_BLOQ = 30e3;       // con la pantalla puesta, cada 30 s para volver rápido
   var cfg = null, timerAviso = null, timerPoll = null, adminPasa = false;
-  var demo = (location.search.match(/[?&]mant=(aviso|pantalla|parche)/) || [])[1];
+  var demo = (location.search.match(/[?&]mant=(aviso|pantalla|parche|programado|parte|recarga)/) || [])[1];
 
   /* ---------- datos ---------- */
   function guardado() {
@@ -65,6 +70,33 @@
   function mmss(ms) { var s = Math.ceil(ms / 1000), m = Math.floor(s / 60); s = s % 60; return m + ':' + (s < 10 ? '0' : '') + s; }
   function hora(iso) { try { return new Date(iso).toLocaleTimeString('es-PE', { hour: 'numeric', minute: '2-digit' }); } catch (e) { return ''; } }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  /* ---------- partes de la web ---------- */
+  var PARTES = {
+    arcade: { n: 'el Arcade', re: /^arcade/ },
+    simulacro: { n: 'el Simulacro', re: /^simulacro\.html/ },
+    laboratorio: { n: 'el Laboratorio', re: /^(laboratorio|lab-)/ },
+    duelos: { n: 'los Duelos', re: /^duelo\.html/ },
+    clanes: { n: 'los Clanes', re: /^(clanes|sala-clan)\.html/ },
+    examenes: { n: 'los Exámenes', re: /^examenes\// },
+    cursos: { n: 'los Libros y cursos', re: /^(?!examenes\/|assets\/|panel\/|areas\/)[a-z-]+\// },
+    vocabulario: { n: 'Vocabulario y Flashcards', re: /^(vocabulario|tarjetas)\.html/ }
+  };
+  var RUTA = (function () { var h = location.href.split(/[?#]/)[0]; return h.indexOf(BASE) === 0 ? h.slice(BASE.length) : location.pathname.replace(/^\/+/, ''); })();
+  var EN_INICIO = RUTA === '' || RUTA === 'index.html';
+  function partes(c) { return (c && c.secciones || []).filter(function (k) { return PARTES[k]; }); }
+  function aplicaAqui(c) {
+    var ps = partes(c);
+    if (!ps.length) return true;
+    return ps.some(function (k) { return PARTES[k].re.test(RUTA); });
+  }
+  function nombres(c) {
+    var ns = partes(c).map(function (k) { return PARTES[k].n; });
+    if (ns.length < 2) return ns[0] || '';
+    return ns.slice(0, -1).join(', ') + ' y ' + ns[ns.length - 1];
+  }
+  function mayus(t) { return t.charAt(0).toUpperCase() + t.slice(1); }
+  function esParcial() { return partes(cfg).length > 0; }
 
   /* ---------- estilos ---------- */
   function estilos() {
@@ -130,6 +162,14 @@
       '#mcMant .mcm-notas li svg{flex:0 0 20px;width:20px;height:20px;padding:3px;border-radius:7px;background:rgba(198,224,0,.15);color:#C6E000;margin-top:1px}',
       '#mcMant .mcm-fecha{margin-top:12px;font:800 12.5px Nunito,sans-serif;color:#7d739f}',
       '#mcMant.listo .mcm-g1,#mcMant.listo .mcm-g2,#mcMant.listo .mcm-g3{animation-duration:30s}',
+      '#mcMantAviso.suave .mcm-a{border-color:#7C6CF0}',
+      '#mcMantAviso.suave .mcm-ico{background:rgba(124,108,240,.14);color:#A99CFF}',
+      '#mcMantAviso.suave .mcm-ico svg{animation:none}',
+      '#mcMantAviso .mcm-x{flex:0 0 auto;width:34px;height:34px;border-radius:10px;border:0;background:#241E3E;color:#A99FC8;display:grid;place-items:center;cursor:pointer}',
+      '#mcMantAviso .mcm-x svg{width:16px;height:16px;animation:none}',
+      '#mcMantAviso .mcm-ya{flex:0 0 auto;border:0;border-radius:12px;padding:10px 12px;background:#C6E000;color:#151A03;font:900 13px Nunito,sans-serif;box-shadow:0 3px 0 #8fa300;cursor:pointer;white-space:nowrap}',
+      '#mcMantAviso .mcm-ya small{display:block;font-size:11px;color:#3b4500;margin:0}',
+      '#mcMant .mcm-sec{display:block;width:100%;margin-top:14px;border:2px solid #2A2346;border-bottom-width:4px;border-radius:14px;padding:12px;background:#151127;color:#EEEAF7;font:900 14px Nunito,sans-serif;text-decoration:none;text-transform:uppercase;letter-spacing:.5px;cursor:pointer}',
       '@media (max-height:640px){#mcMant .mcm-esc{width:140px;height:140px;margin-bottom:14px}#mcMant .mcm-buho{width:86px;height:86px;margin:-43px 0 0 -43px}#mcMant .mcm-logo{margin-bottom:12px;width:50px}#mcMant h2{font-size:24px}}',
       '@media (prefers-reduced-motion:reduce){#mcMant *,#mcMantAviso *{animation-duration:20s!important}}'
     ].join('');
@@ -153,6 +193,10 @@
   var ICO_PUNTO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
   var ICO_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="animation:none"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
 
+  var ICO_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+  var ICO_CAL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16.5" rx="3"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/><path d="M12 13.5v3l2 1"/></svg>';
+  var ICO_RECARGA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>';
+
   /* ---------- 1) aviso con cuenta regresiva ---------- */
   function ponerAviso() {
     if (document.getElementById('mcMant')) return;
@@ -166,9 +210,11 @@
       document.body.appendChild(a);
     }
     var total = Math.max(restante(), (Number(cfg.aviso) || 120) * 1000);
-    var que = esActualizacion() ? 'se va a actualizar' : 'entra en mantenimiento';
+    var que = esActualizacion() ? (esParcial() ? 'se van a actualizar' : 'se va a actualizar') : (esParcial() ? 'entran en mantenimiento' : 'entra en mantenimiento');
+    if (esParcial() && partes(cfg).length === 1) que = esActualizacion() ? 'se va a actualizar' : 'entra en mantenimiento';
+    a.className = '';
     a.innerHTML = '<div class="mcm-a"><div class="mcm-ico">' + ICO_LLAVE + '</div><div class="mcm-tx">' +
-      '<b>La web ' + que + '</b><small>Termina y guarda lo que estás haciendo. Tu progreso no se pierde.</small>' +
+      '<b>' + (esParcial() ? mayus(nombres(cfg)) : 'La web') + ' ' + que + '</b><small>Termina y guarda lo que estás haciendo. Tu progreso no se pierde.</small>' +
       '<div class="mcm-barra"><i></i></div></div><div class="mcm-reloj">0:00</div></div>';
     var reloj = a.querySelector('.mcm-reloj'), barra = a.querySelector('.mcm-barra i');
     function tic() {
@@ -217,7 +263,9 @@
       try { window.dispatchEvent(new CustomEvent('mc:mantenimiento')); } catch (e) {}
     }
     var act = esActualizacion();
-    var msg = cfg && cfg.mensaje ? esc(cfg.mensaje) : act
+    var msg = cfg && cfg.mensaje ? esc(cfg.mensaje) : esParcial()
+      ? 'Estamos mejorando esta parte de Modo Cachimbo. Mientras tanto, lo demás de la web funciona normal.'
+      : act
       ? 'Estamos subiendo mejoras a Modo Cachimbo. En unos minutos vuelves a estudiar con todo lo nuevo.'
       : 'Estamos arreglando y mejorando la web para que funcione más rápido. Tu progreso está guardado.';
     var vuelve = cfg && cfg.vuelve && new Date(cfg.vuelve) > Date.now()
@@ -229,10 +277,11 @@
       '<div class="mcm-g2">' + engranaje(10, 48, 38, 18) + '</div>' +
       '<div class="mcm-buho"><img src="' + BASE + 'assets/buho/avatar/clasico.webp" alt=""></div></div>' +
       '<div class="mcm-eti"><i></i>' + (act ? 'Actualizando' : 'En mantenimiento') + '</div>' +
-      '<h2>' + (act ? 'Estamos actualizando la web' : 'Volvemos en un ratito') + '</h2>' +
+      '<h2>' + (esParcial() ? mayus(nombres(cfg)) + (act ? ': actualizando' : ' vuelve en un ratito') : act ? 'Estamos actualizando la web' : 'Volvemos en un ratito') + '</h2>' +
       '<p>' + msg + '</p>' +
       '<div class="mcm-carga"><div class="mcm-paso">' + ICO_GIRA + '<span><em class="mcm-txt"></em><span class="d">.</span><span class="d">.</span><span class="d">.</span></span></div><div class="mcm-pista"><i></i></div></div>' +
       vuelve +
+      (esParcial() ? '<a class="mcm-sec" href="' + BASE + 'index.html">Volver al inicio</a>' : '') +
       (cfg && cfg.admin ? '<button type="button" class="mcm-adm" id="mcMantAdm">Eres administrador: entrar igual</button>' : '') +
       '</div>';
     var pasos = act ? PASOS_A : PASOS_M, i = 0, txt = o.querySelector('.mcm-txt');
@@ -291,17 +340,128 @@
   }
   function fechaCorta(iso) { try { return new Date(iso).toLocaleDateString('es-PE', { day: 'numeric', month: 'long' }); } catch (e) { return ''; } }
 
+  /* ---------- 3) aviso anticipado y parte cerrada (franja suave) ---------- */
+  var CERRADO = 'mc_mant_franja';
+  function franja(clave, icono, titulo, texto) {
+    try { if (sessionStorage.getItem(CERRADO) === clave) return; } catch (e) {}
+    if (document.getElementById('mcMant')) return;
+    estilos();
+    var a = document.getElementById('mcMantAviso');
+    if (!a) { a = document.createElement('div'); a.id = 'mcMantAviso'; a.setAttribute('role', 'status'); document.body.appendChild(a); }
+    clearInterval(timerAviso); timerAviso = null;
+    a.className = 'suave';
+    a.innerHTML = '<div class="mcm-a"><div class="mcm-ico">' + icono + '</div><div class="mcm-tx"><b>' + titulo + '</b><small>' + texto + '</small></div>' +
+      '<button type="button" class="mcm-x" aria-label="Cerrar">' + ICO_X + '</button></div>';
+    a.querySelector('.mcm-x').addEventListener('click', function () {
+      try { sessionStorage.setItem(CERRADO, clave); } catch (e) {}
+      a.remove();
+    });
+  }
+  function diaHora(iso) {
+    var d = new Date(iso), h = new Date(), m = new Date(); m.setDate(h.getDate() + 1);
+    var dia = d.toDateString() === h.toDateString() ? 'Hoy' : d.toDateString() === m.toDateString() ? 'Mañana'
+      : mayus(d.toLocaleDateString('es-PE', { weekday: 'long', day: 'numeric' }));
+    return dia + ' a las ' + hora(iso);
+  }
+  function duracion(c) {
+    if (!c.vuelve || !c.desde) return '';
+    var min = Math.round((new Date(c.vuelve) - new Date(c.desde)) / 60e3);
+    if (min <= 0) return '';
+    return min < 60 ? ' de ' + min + ' min' : ' de ' + (min % 60 ? (min / 60).toFixed(1).replace('.', ',') : min / 60) + (min === 60 ? ' hora' : ' horas');
+  }
+
+  /* ---------- 4) Recargar a todos ---------- */
+  var RECARGA = 'mc_recarga';
+  var CARGADA = Date.now() - (window.performance && performance.now ? performance.now() : 0);
+  var timerRecarga = null;
+  var A_MEDIAS = /^(simulacro\.html|duelo\.html|arcade-retos\.html|examenes\/)/;
+  function revisarRecarga(r) {
+    if (!r || !r.id || timerRecarga) return;
+    var visto; try { visto = localStorage.getItem(RECARGA); } catch (e) { return; }
+    if (visto === String(r.id)) return;
+    // Esta página se abrió después del botón: ya tiene lo nuevo
+    if (CARGADA > new Date(r.fecha).getTime() || Date.now() - new Date(r.fecha) > 864e5) {
+      try { localStorage.setItem(RECARGA, String(r.id)); } catch (e) {}
+      return;
+    }
+    if (document.getElementById('mcMant')) return;
+    function recargar() {
+      if (demo) { clearInterval(timerRecarga); timerRecarga = null; quitarAviso(); return; } // vista previa: no recarga
+      try { localStorage.setItem(RECARGA, String(r.id)); } catch (e) {}
+      location.reload();
+    }
+    estilos();
+    var a = document.getElementById('mcMantAviso');
+    if (!a) { a = document.createElement('div'); a.id = 'mcMantAviso'; a.setAttribute('role', 'status'); document.body.appendChild(a); }
+    a.className = '';
+    // En un simulacro, duelo, minijuego o examen no se recarga solo: el alumno decide cuándo
+    var auto = !A_MEDIAS.test(RUTA), seg = 10;
+    a.innerHTML = '<div class="mcm-a"><div class="mcm-ico">' + ICO_RECARGA + '</div><div class="mcm-tx"><b>Hay una versión nueva</b><small>' +
+      (auto ? 'Modo Cachimbo se actualiza en unos segundos. No pierdes nada.' : 'Cuando termines lo que estás haciendo, toca Actualizar.') + '</small></div>' +
+      '<button type="button" class="mcm-ya">Actualizar' + (auto ? '<small>en ' + seg + ' s</small>' : '') + '</button></div>';
+    var b = a.querySelector('.mcm-ya');
+    b.addEventListener('click', recargar);
+    if (!auto) { timerRecarga = 1; return; }
+    timerRecarga = setInterval(function () {
+      seg--;
+      var sm = b.querySelector('small'); if (sm) sm.textContent = 'en ' + Math.max(0, seg) + ' s';
+      if (seg <= 0) { clearInterval(timerRecarga); recargar(); }
+    }, 1000);
+  }
+
   /* ---------- ciclo ---------- */
+  var timerHora = null;
+  // Despierta justo cuando algo cambia (empieza el aviso, se abre sola…), sin esperar la revisión de 2 min
+  function despertarEn(ms) {
+    clearTimeout(timerHora);
+    if (ms > 0 && ms < 864e5) timerHora = setTimeout(function () { aplicar(crudo, esAdmin); }, ms + 50);
+  }
+  var crudo = null;
+  function terminado(d) {
+    return d && d.activo && d.hasta && Date.now() >= new Date(d.hasta).getTime();
+  }
   function aplicar(d, admin) {
+    crudo = d;
     var antes = cfg;
-    cfg = d && d.activo ? d : null;
-    if (cfg && admin) cfg.admin = true;
-    if (!cfg) {
-      quitarAviso();
-      var p = d && d.parche;
+    var off = !d || !d.activo || terminado(d);
+    if (d) revisarRecarga(d.recarga);
+    if (off) {
+      cfg = null;
+      clearTimeout(timerHora);
+      if (!timerRecarga) quitarAviso();
+      // Terminó sola a la hora programada: su parche preparado
+      var p = terminado(d) ? { id: 'auto-' + d.desde, fecha: d.hasta, titulo: d.parche_auto && d.parche_auto.titulo, notas: d.parche_auto && d.parche_auto.notas || [] } : d && d.parche;
       var reciente = p && p.id && p.fecha && Date.now() - new Date(p.fecha) < 3 * 864e5;
       if (antes && document.getElementById('mcMant')) yaVolvimos(p);
       else if (reciente && !parcheVisto(p.id) && !document.getElementById('mcMant')) mostrarParche(p, false);
+      programar(CADA);
+      return;
+    }
+    var empieza = new Date(d.desde).getTime() - (Number(d.aviso) || 0) * 1000;
+    if (d.hasta) despertarEn(new Date(d.hasta) - Date.now());
+    // Programado para más tarde: franja en el inicio (24 h antes) y se despierta a la hora
+    if (Date.now() < empieza) {
+      cfg = null;
+      if (!timerRecarga) quitarAviso();
+      despertarEn(empieza - Date.now());
+      if (d.anunciar && EN_INICIO && empieza - Date.now() < 864e5) {
+        var cual = partes(d).length ? mayus(nombresDe(d)) : 'Modo Cachimbo';
+        franja('prog-' + d.desde, ICO_CAL, diaHora(d.desde) + ' habrá ' + (d.tipo === 'actualizacion' ? 'actualización' : 'mantenimiento') + duracion(d),
+          (partes(d).length ? cual + ' no estará disponible' : 'La web no estará disponible') + ' por un rato. Planifica tu estudio.');
+      }
+      programar(CADA);
+      return;
+    }
+    cfg = d;
+    if (admin) cfg.admin = true;
+    // Solo una parte cerrada y no estamos en ella: en el inicio, una franja que lo cuenta
+    if (!aplicaAqui(cfg)) {
+      if (!timerRecarga) quitarAviso();
+      if (EN_INICIO && new Date(d.desde) <= Date.now())
+        franja('parte-' + d.desde, ICO_LLAVE, mayus(nombres(cfg)) + (partes(cfg).length > 1 ? ' están' : ' está') + ' en mantenimiento',
+          'Lo demás funciona normal.' + (d.vuelve && new Date(d.vuelve) > Date.now() ? ' Vuelve aprox. a las ' + esc(hora(d.vuelve)).replace(/\.$/, '') + '.' : ''));
+      cfg = null;
+      despertarEn(new Date(d.desde) - Date.now());
       programar(CADA);
       return;
     }
@@ -309,6 +469,7 @@
     if (restante() > 0) { ponerAviso(); programar(CADA); }
     else ponerPantalla();
   }
+  function nombresDe(c) { var g = cfg; cfg = c; var n = nombres(c); cfg = g; return n; }
   var esAdmin = null;
   function revisarAdmin() {
     if (esAdmin !== null) return Promise.resolve(esAdmin);
@@ -319,7 +480,7 @@
   function revisar(forzar) {
     if (demo) return;
     traer(forzar).then(function (d) {
-      if (!d || !d.activo) return aplicar(d);
+      if (!d || !d.activo) return aplicar(d, false);
       revisarAdmin().then(function (a) { aplicar(d, a); });
     });
   }
@@ -334,9 +495,24 @@
       mostrarParche({ id: 'demo', fecha: new Date().toISOString(), titulo: 'Parche de noviembre', notas: ['Nuevo minijuego en el Arcade: Elige la imagen', 'Simulacro más rápido en celulares', 'Arreglamos las fórmulas largas que se salían de la pantalla'] }, false);
       return;
     }
+    if (demo === 'programado') {
+      aplicar({ activo: true, anunciar: true, tipo: 'mantenimiento', aviso: 120, desde: new Date(Date.now() + 2 * 3600e3).toISOString(), vuelve: new Date(Date.now() + 2.5 * 3600e3).toISOString() }, false);
+      return;
+    }
+    if (demo === 'parte') {
+      aplicar({ activo: true, secciones: ['arcade'], tipo: 'mantenimiento', aviso: 0, desde: new Date(Date.now() - 1000).toISOString(), vuelve: new Date(Date.now() + 30 * 60e3).toISOString() }, false);
+      return;
+    }
+    if (demo === 'recarga') {
+      try { localStorage.removeItem(RECARGA); } catch (e) {}
+      CARGADA = 0;
+      revisarRecarga({ id: 'demo-' + Date.now(), fecha: new Date().toISOString() });
+      return;
+    }
     if (demo) {
       var t = (location.search.match(/[?&]tipo=(actualizacion)/) || [])[1] || 'mantenimiento';
-      cfg = { activo: true, tipo: t, aviso: demo === 'aviso' ? 120 : 0, desde: new Date(Date.now() + (demo === 'aviso' ? 120e3 : -1)).toISOString(), vuelve: new Date(Date.now() + 30 * 60e3).toISOString() };
+      var sec = (location.search.match(/[?&]sec=([a-z,]+)/) || [])[1];
+      cfg = { secciones: sec ? sec.split(',') : null, activo: true, tipo: t, aviso: demo === 'aviso' ? 120 : 0, desde: new Date(Date.now() + (demo === 'aviso' ? 120e3 : -1)).toISOString(), vuelve: new Date(Date.now() + 30 * 60e3).toISOString() };
       calcularFin();
       if (demo === 'aviso') ponerAviso(); else ponerPantalla();
       return;

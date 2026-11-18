@@ -170,7 +170,7 @@
     mantPedido = true;
     if (location.href.replace(/[?#].*$/, '').indexOf(BASE + 'panel/') === 0) return;
     var m = document.createElement('script');
-    m.src = BASE + 'assets/mantenimiento.js?v=1';
+    m.src = BASE + 'assets/mantenimiento.js?v=2';
     document.head.appendChild(m);
   }
 
