@@ -271,9 +271,6 @@ begin
       select o from generate_series(0, (q ->> 'k')::integer - 1) o
       where o <> (q ->> 'c')::integer order by random() limit least(2, (q ->> 'k')::integer - 2)) x;
     extra := jsonb_build_object('quita', coalesce(quita, '[]'));
-  elsif p_k = 'hielo' then
-    update public.duelo_jugadas x set visto = x.visto + interval '10 seconds' where x.duelo = d.id and x.usuario = uid;
-    extra := jsonb_build_object('lleva', (extract(epoch from (now() - j.visto - interval '10 seconds')) * 1000)::bigint);
   elsif p_k in ('doble', 'escudo', 'ladron') then
     update public.duelo_jugadas x set activo = p_k where x.duelo = d.id and x.usuario = uid;
   elsif p_k = 'apuesta' then
@@ -288,7 +285,7 @@ begin
     -- Pregunta nueva con el reloj desde cero
     update public.duelo_jugadas x set cambio_i = j.actual, visto = now(), activo = null where x.duelo = d.id and x.usuario = uid;
     extra := jsonb_build_object('reserva', d.reserva -> 0 ->> 'ref');
-  elsif p_k in ('robar', 'terremoto') then
+  elsif p_k in ('robar', 'terremoto', 'hielo') then
     extra := public.duelo_atacar(d, uid, p_k);
     update public.duelo_jugadas x set stats = public.duelo_stat(x.stats, 'ataques', 1) where x.duelo = d.id and x.usuario = uid;
     extra := extra || jsonb_build_object('robados', (extra ->> 'golpes')::integer);
