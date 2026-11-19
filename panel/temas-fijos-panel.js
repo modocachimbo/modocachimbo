@@ -130,6 +130,9 @@ function renderTemasFijos(errores) {
     <div class="tf-pie">
       <button class="btn-ghost" type="button" id="tfAgregaTema" ${ex.length ? '' : 'disabled'}>+ Agregar tema</button>
       <button class="btn-ghost" type="button" id="tfVerPegar" ${ex.length ? '' : 'disabled'}>Pegar desde Excel</button>
+      <button class="btn-ghost" type="button" id="tfBajarXlsx">Descargar Excel</button>
+      <button class="btn-ghost" type="button" id="tfSubirXlsx">Subir Excel</button>
+      <input type="file" id="tfArchivo" accept=".xlsx,.xls,.csv" hidden>
       <a class="btn-ghost" href="../temas-fijos.html?curso=${TF.curso}&mod=${TF.mod}" target="_blank" rel="noopener">Ver en la web</a>
     </div>
     <div class="pcard tf-pegar" id="tfPegar" hidden>
@@ -213,6 +216,8 @@ document.addEventListener('click', e => {
   if (b.id === 'tfVerPegar') { $('tfPegar').hidden = false; $('tfPegarTx').focus(); return; }
   if (b.id === 'tfPegarNo') { $('tfPegar').hidden = true; return; }
   if (b.id === 'tfPegarOk') return tfPegar();
+  if (b.id === 'tfBajarXlsx') return tfBajarExcel();
+  if (b.id === 'tfSubirXlsx') { $('tfArchivo').value = ''; return $('tfArchivo').click(); }
   const temas = tfTemas(false);
   if (d.t != null) {
     const t = temas[+d.t], k = +d.k, on = t[1][k] !== '1';
@@ -235,5 +240,85 @@ document.addEventListener('input', e => {
   if (i == null || !TF.datos) return;
   tfTemas(false)[+i][0] = e.target.value; tfCambio();
 });
+document.addEventListener('change', e => { if (e.target.id === 'tfArchivo' && e.target.files[0]) tfSubirExcel(e.target.files[0]); });
 document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'tfNuevoEx') { e.preventDefault(); tfAgregarExamen(); } });
 window.addEventListener('beforeunload', e => { if (TF.cambios) { e.preventDefault(); e.returnValue = ''; } });
+
+/* ---------- Excel: descargar y subir ----------
+   Un archivo por modalidad. Hoja "Cómo llenar" + una hoja por curso (con el nombre del curso).
+   En cada hoja: fila 1 = Tema y los exámenes (2020-I, 2020-II…); desde la fila 2, un tema por fila
+   y una X en cada examen donde vino. Al subir se reemplazan los temas de los cursos que traiga el archivo;
+   los exámenes que no existían se agregan solos. */
+const TF_XLSX = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+function tfLibXlsx() {
+  if (window.XLSX) return Promise.resolve(window.XLSX);
+  return new Promise((ok, mal) => { const sc = document.createElement('script'); sc.src = TF_XLSX; sc.onload = () => ok(window.XLSX); sc.onerror = () => mal(new Error('No se pudo cargar la herramienta de Excel. Revisa tu internet.')); document.head.appendChild(sc); });
+}
+function tfSinTilde(x) { return String(x || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(); }
+function tfHoja(nombre) { return nombre.replace(/[\\/?*[\]:]/g, '').slice(0, 31); }
+async function tfBajarExcel() {
+  let X; try { X = await tfLibXlsx(); } catch (e) { return tfEstado(e.message); }
+  const m = tfMod(), ex = m.examenes, modNom = TF.mod === 'cpu' ? 'CPU' : 'Ordinario', wb = X.utils.book_new();
+  const guia = [
+    ['Temas fijos · Modalidad ' + modNom],
+    [],
+    ['Cómo llenar este Excel'],
+    ['1. Cada hoja es un curso. No cambies el nombre de la hoja.'],
+    ['2. Fila 1: "Tema" y luego un examen por columna (2020-I, 2020-II, 2024-III…). Para agregar un examen, escríbelo en una columna nueva.'],
+    ['3. Desde la fila 2: un tema por fila. Escribe X en cada examen donde vino ese tema; deja vacío donde no vino.'],
+    ['4. Guarda el archivo y en el panel toca "Subir Excel". Se reemplazan los temas de los cursos que traiga el archivo.'],
+    ['5. Revisa la tabla y toca "Guardar y publicar".'],
+    [],
+    ['Exámenes de ' + modNom + ':', ex.join(', ') || '(ninguno todavía)']
+  ];
+  const g = X.utils.aoa_to_sheet(guia); g['!cols'] = [{ wch: 110 }, { wch: 60 }];
+  X.utils.book_append_sheet(wb, g, 'Cómo llenar');
+  TF_CURSOS.forEach(([c, nom]) => {
+    const temas = m.cursos[c] || [];
+    const filas = [['Tema'].concat(ex)].concat(temas.map(t => [t[0]].concat(ex.map((_, k) => t[1][k] === '1' ? 'X' : ''))));
+    const h = X.utils.aoa_to_sheet(filas);
+    h['!cols'] = [{ wch: 38 }].concat(ex.map(() => ({ wch: 9 })));
+    h['!freeze'] = { xSplit: 1, ySplit: 1 };
+    X.utils.book_append_sheet(wb, h, tfHoja(nom));
+  });
+  X.writeFile(wb, 'temas-fijos-' + TF.mod + '.xlsx');
+  tfEstado('Excel descargado: una hoja por curso.');
+}
+async function tfSubirExcel(archivo) {
+  let X; try { X = await tfLibXlsx(); } catch (e) { return tfEstado(e.message); }
+  let wb;
+  try { wb = X.read(await archivo.arrayBuffer(), { type: 'array' }); }
+  catch (e) { return renderTemasFijos(['No se pudo leer el archivo. Debe ser un Excel (.xlsx).']); }
+  const m = tfMod(), errores = [], cursos = {}, nuevosEx = new Set();
+  const porNombre = {}; TF_CURSOS.forEach(([c, nom]) => { porNombre[tfSinTilde(nom)] = c; porNombre[tfSinTilde(c)] = c; });
+  wb.SheetNames.forEach(hn => {
+    const c = porNombre[tfSinTilde(hn)]; if (!c) return;   // hojas que no son cursos (la guía) se saltan
+    const filas = X.utils.sheet_to_json(wb.Sheets[hn], { header: 1, defval: '', raw: false });
+    if (!filas.length) return;
+    const cab = filas[0].map(x => String(x).trim().toUpperCase().replace(/\s+/g, '').replace(/^(\d{4})-?(I{1,3}|IV|V)$/, '$1-$2'));
+    const cols = [];
+    cab.slice(1).forEach((e, i) => {
+      if (!e) return;
+      if (!/^\d{4}-(I|II|III|IV|V)$/.test(e)) { errores.push(hn + ': la columna "' + filas[0][i + 1] + '" no es un examen (escríbelo como 2026-I)'); return; }
+      cols.push([i + 1, e]); if (!m.examenes.includes(e)) nuevosEx.add(e);
+    });
+    const temas = filas.slice(1).filter(f => String(f[0] || '').trim()).map(f => ({ nombre: String(f[0]).trim().slice(0, 80), vino: new Set(cols.filter(([i]) => String(f[i] || '').trim()).map(([, e]) => e)) }));
+    cursos[c] = temas;
+  });
+  if (errores.length) return renderTemasFijos(errores);
+  const lista = Object.keys(cursos).filter(c => cursos[c].length);
+  if (!lista.length) return renderTemasFijos(['El archivo no trae temas. Usa el Excel de "Descargar Excel": una hoja por curso, fila 1 con los exámenes.']);
+  const nom = c => (TF_CURSOS.find(k => k[0] === c) || [, c])[1];
+  const resumen = lista.map(c => nom(c) + ': ' + cursos[c].length + ' temas').join('\n');
+  if (!confirm('Subir a ' + (TF.mod === 'cpu' ? 'CPU' : 'Ordinario') + ':\n\n' + resumen + (nuevosEx.size ? '\n\nExámenes nuevos: ' + [...nuevosEx].sort(tfOrden).join(', ') : '') + '\n\nSe reemplazan los temas de esos cursos. ¿Seguir?')) return;
+  // Exámenes nuevos: se insertan en su lugar en todos los cursos
+  [...nuevosEx].sort(tfOrden).forEach(v => {
+    const l = m.examenes.concat(v).sort(tfOrden), k = l.indexOf(v);
+    m.examenes = l;
+    Object.keys(m.cursos).forEach(cc => m.cursos[cc].forEach(t => { t[1] = t[1].slice(0, k) + '0' + t[1].slice(k); }));
+  });
+  lista.forEach(c => { m.cursos[c] = cursos[c].map(t => [t.nombre, m.examenes.map(e => t.vino.has(e) ? '1' : '0').join('')]); });
+  if (!lista.includes(TF.curso)) TF.curso = lista[0];
+  tfCambio(); renderTemasFijos();
+  tfEstado('Excel cargado (' + lista.length + (lista.length === 1 ? ' curso' : ' cursos') + '). Revisa y toca "Guardar y publicar".');
+}
