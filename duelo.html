@@ -994,6 +994,234 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   html[data-modo="claro"] .reac { background: #FFFFFF; }
   html[data-modo="claro"] .alts button.on { background: rgba(28,176,246,.1) !important; border-color: var(--azul) !important; }
 </style>
+<style id="duelo-v3">
+  /* =========================================================
+     Duelos v3: comodines elegidos, Llamarada / Volcán, ataques,
+     pantalla VS, niebla final, relámpago, amigos y sonido
+     ========================================================= */
+  /* Tipos de comodín: puntito de color en la esquina */
+  .cbtn { position: relative; }
+  .cbtn .ty { position: absolute; top: -5px; right: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--tc); box-shadow: 0 0 0 2px var(--bg); }
+  .cmds.v3 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  @media (max-width: 560px) { .cmds.v3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .cmd .tipo { display: inline-block; margin-top: 4px; font: 900 9.5px/1 Nunito, sans-serif; letter-spacing: .8px; text-transform: uppercase; color: #111; background: var(--tc); border-radius: 6px; padding: 2px 6px; }
+  .cmd.fue { background: radial-gradient(90% 70% at 50% 0%, rgba(255,140,0,.28), transparent 70%), var(--surface-2) !important; border-color: #FF9600 !important; }
+  .cmd.fue .ci { background: linear-gradient(#FFD84D, #FF6a00); color: #3a1200; }
+
+  /* Sala: elegir comodines */
+  .eleccion { margin-top: 18px; text-align: left; background: var(--surface-2); border: 2px solid var(--borde-g); border-bottom-width: 4px; border-radius: 18px; padding: 14px; }
+  .eleccion .ec-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  html body .eleccion h3:not(#z) { font: 800 20px/1 var(--display) !important; letter-spacing: .04em; text-transform: uppercase; margin: 0; }
+  .eleccion .ec-cuenta { font: 900 13px Nunito, sans-serif; color: var(--dim); }
+  .eleccion .ec-cuenta b { color: var(--lima); font-size: 16px; }
+  .eleccion .ec-cuenta.listo b { color: var(--verde); }
+  .eleccion p { font-size: 13px; color: var(--dim); margin: 6px 0 12px; }
+  .ec-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px 8px; padding-top: 6px; }
+  @media (max-width: 560px) { .ec-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .ec { position: relative; display: grid; justify-items: center; align-content: start; gap: 4px; text-align: center; background: color-mix(in srgb, var(--c) 7%, var(--surface)); border: 2px solid var(--borde-g); border-bottom-width: 4px; border-radius: 16px; padding: 14px 4px 9px; min-width: 0; color: var(--text); transition: transform .12s ease, border-color .12s, box-shadow .12s; -webkit-tap-highlight-color: transparent; }
+  .ec .ci { width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; background: var(--c); color: #111; box-shadow: 0 3px 0 color-mix(in srgb, var(--c) 55%, #070512); }
+  .ec .ci svg { width: 24px; height: 24px; }
+  .ec b { font: 900 13px/1.1 Nunito, sans-serif; }
+  .ec small { font: 700 10.5px/1.25 Nunito, sans-serif; color: var(--dim); }
+  .ec .tipo { position: absolute; top: -8px; font: 900 9px/1 Nunito, sans-serif; letter-spacing: .8px; text-transform: uppercase; color: #111; background: var(--tc); border-radius: 6px; padding: 2px 6px; }
+  .ec.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 16%, var(--surface)); transform: translateY(-3px); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 35%, transparent), 0 10px 20px rgba(0,0,0,.35); }
+  .ec.on::after { content: ''; position: absolute; bottom: -11px; width: 20px; height: 20px; border-radius: 50%; background: var(--lima) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23151a03' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/13px no-repeat; box-shadow: 0 0 0 3px var(--surface-2); animation: cae1 .35s cubic-bezier(.3,1.6,.5,1) both; }
+  .ec:disabled { opacity: .35; cursor: default; }
+  .ec-fuego { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding: 9px 11px; border-radius: 14px; background: linear-gradient(90deg, rgba(255,150,0,.14), rgba(255,75,75,.08)); border: 2px dashed rgba(255,150,0,.55); font: 800 12.5px/1.3 Nunito, sans-serif; color: #ffd9a8; }
+  .ec-fuego .ci { width: 32px; height: 32px; flex-shrink: 0; border-radius: 10px; display: grid; place-items: center; background: linear-gradient(#FFD84D, #FF6a00); color: #3a1200; }
+  .ec-fuego .ci svg { width: 20px; height: 20px; }
+  .puesto-sala .eligiendo { color: var(--dim); } .puesto-sala .eligio { color: var(--verde); }
+
+  /* Sala: invitar a tus amigos */
+  .amigos-inv { margin-top: 16px; text-align: left; }
+  html body .amigos-inv h3:not(#z) { font: 800 18px/1 var(--display) !important; letter-spacing: .04em; text-transform: uppercase; margin: 0 0 8px; display: flex; align-items: center; gap: 8px; }
+  .amigos-inv h3 svg { width: 20px; height: 20px; color: var(--azul); }
+  .ai-lista { display: grid; gap: 7px; max-height: 300px; overflow-y: auto; padding: 2px; }
+  .ai { display: flex; align-items: center; gap: 10px; background: var(--surface-2); border: 2px solid var(--borde-g); border-radius: 14px; padding: 7px 8px 7px 7px; }
+  .ai .ai-f { width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0; overflow: hidden; display: grid; place-items: center; font: 1000 16px Nunito, sans-serif; color: #111; background: var(--c, var(--azul)); position: relative; }
+  .ai .ai-f img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+  .ai .ai-t { flex: 1; min-width: 0; }
+  .ai .ai-t b { display: block; font: 900 14px/1.2 Nunito, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ai .ai-t small { font: 700 11.5px Nunito, sans-serif; color: var(--dim); }
+  .ai .ai-t small.hoy { color: var(--verde); }
+  .ai button { flex-shrink: 0; border: 2px solid var(--azul); border-bottom-width: 4px; border-bottom-color: #1283b8; background: var(--azul); color: #fff; border-radius: 12px; padding: 6px 12px; font: 800 15px/1 var(--display); letter-spacing: .05em; text-transform: uppercase; }
+  .ai button:disabled { background: transparent; color: var(--verde); border-color: var(--verde); cursor: default; }
+  .ai-vacio { font-size: 13px; color: var(--dim); }
+  .ai-vacio a { color: var(--azul); font-weight: 900; }
+
+  /* Pantalla VS antes de la cuenta */
+  .vs-esc { position: relative; width: min(100%, 560px); }
+  .vs-fila { display: grid; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr)); gap: 10px; align-items: start; position: relative; }
+  .vs-j { display: grid; justify-items: center; gap: 6px; text-align: center; min-width: 0; animation: vsEntra .55s cubic-bezier(.3,1.5,.5,1) both; }
+  .vs-j:nth-child(odd) { --dx: -60px; } .vs-j:nth-child(even) { --dx: 60px; }
+  .vs-j:nth-child(2) { animation-delay: .12s; } .vs-j:nth-child(3) { animation-delay: .24s; } .vs-j:nth-child(4) { animation-delay: .36s; }
+  @keyframes vsEntra { from { transform: translateX(var(--dx)) scale(.7); opacity: 0; } to { transform: none; opacity: 1; } }
+  html body .vs-j .av:not(#z) { width: 74px; height: 74px; border-radius: 20px; font-size: 30px; box-shadow: 0 0 0 3px var(--jc), 0 0 26px color-mix(in srgb, var(--jc) 55%, transparent); }
+  html body .vs-j > b:not(#z) { font: 800 20px/1 var(--display) !important; letter-spacing: .05em; text-transform: uppercase; color: var(--jc); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .vs-j .mano { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
+  .vs-j .mano i { width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; background: var(--c); color: #111; animation: cae1 .4s cubic-bezier(.3,1.6,.5,1) both; }
+  .vs-j .mano i svg { width: 17px; height: 17px; }
+  .vs-x { position: absolute; left: 50%; top: 38px; transform: translate(-50%, -50%); z-index: 2; font: italic 900 64px/1 var(--display); color: var(--lima); text-shadow: 0 4px 0 #3c4500, 0 0 30px rgba(198,224,0,.5); animation: vsChoque .5s .45s cubic-bezier(.3,1.8,.5,1) both; pointer-events: none; }
+  .vs-fila[style*="--n: 3"] .vs-x, .vs-fila[style*="--n: 4"] .vs-x { display: none; }
+  @keyframes vsChoque { from { transform: translate(-50%, -50%) scale(3) rotate(-12deg); opacity: 0; } to { transform: translate(-50%, -50%); opacity: 1; } }
+  .vs-raya { height: 4px; margin: 18px auto 0; width: 70%; border-radius: 4px; background: linear-gradient(90deg, transparent, var(--lima), transparent); animation: vsRaya .6s .5s ease-out both; }
+  @keyframes vsRaya { from { transform: scaleX(0); } to { transform: none; } }
+  .vs-tit { font: 800 15px/1 var(--display); letter-spacing: .12em; text-transform: uppercase; color: var(--dim); margin-bottom: 16px; }
+  .vs-reglas { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
+  .vs-reglas span { display: inline-flex; align-items: center; gap: 6px; font: 800 12.5px Nunito, sans-serif; color: var(--dim); background: var(--surface-2); border: 2px solid var(--borde-g); border-radius: 12px; padding: 5px 10px; }
+  .vs-reglas span svg { width: 16px; height: 16px; color: var(--c); }
+
+  /* Medidor de racha: Llamarada (3) y Volcán (5) */
+  .fuego-bar { display: flex; align-items: center; gap: 10px; background: linear-gradient(90deg, rgba(255,150,0,.12), rgba(255,75,75,.08)); border: 2px solid rgba(255,150,0,.55); border-bottom: 4px solid #b36a00; border-radius: 16px; padding: 7px 9px; margin: 0 0 12px; transition: box-shadow .3s, border-color .3s; }
+  .fuego-bar .fi { width: 38px; height: 38px; flex-shrink: 0; border-radius: 12px; display: grid; place-items: center; background: #2C2549; color: #6F6690; transition: background .3s, color .3s; }
+  .fuego-bar .fi svg { width: 24px; height: 24px; }
+  .fuego-bar .tx { flex: 1; min-width: 0; font: 800 17px/1 var(--display); letter-spacing: .04em; text-transform: uppercase; color: #ffd9a8; }
+  .fuego-bar .tx small { display: block; font: 700 11.5px/1.2 Nunito, sans-serif; letter-spacing: 0; text-transform: none; color: var(--dim); margin-top: 3px; }
+  .fuego-bar .seg { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; margin-top: 6px; }
+  .fuego-bar .seg i { height: 6px; border-radius: 6px; background: #2C2549; transition: background .3s; }
+  .fuego-bar .seg i:nth-child(3) { box-shadow: 2px 0 0 #FF9600; }
+  .fuego-bar .seg i.on { background: linear-gradient(90deg, #FFC800, #FF6a00); box-shadow: 0 0 8px rgba(255,140,0,.7); }
+  .fuego-bar .seg i.on.v { background: linear-gradient(90deg, #FF6a00, #FF2D2D); }
+  .fuego-bar .lanzar { border: 0; border-radius: 12px; padding: 9px 13px 8px; font: 900 18px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; color: #3a1200; background: linear-gradient(#FFD84D, #FF8A00); box-shadow: 0 4px 0 #a33f00, 0 0 16px rgba(255,140,0,.6); white-space: nowrap; animation: lanzaLate 1s ease-in-out infinite; }
+  .fuego-bar .lanzar:active { transform: translateY(3px); box-shadow: 0 1px 0 #a33f00; }
+  .fuego-bar .lanzar:disabled { animation: none; opacity: .5; }
+  @keyframes lanzaLate { 50% { transform: scale(1.06); box-shadow: 0 4px 0 #a33f00, 0 0 26px rgba(255,140,0,.9); } }
+  .fuego-bar.lista { border-color: #FFB000; box-shadow: 0 0 0 3px rgba(255,150,0,.22), 0 0 24px rgba(255,110,0,.35); }
+  .fuego-bar.lista .fi { background: linear-gradient(#FFC800, #FF6a00); color: #3a1200; box-shadow: 0 3px 0 #a33f00; animation: llamita .7s ease-in-out infinite alternate; }
+  .fuego-bar.volcan { border-color: #FF4B4B; border-bottom-color: #a32020; background: linear-gradient(90deg, rgba(255,75,75,.2), rgba(255,150,0,.12)); box-shadow: 0 0 0 3px rgba(255,75,75,.25), 0 0 30px rgba(255,60,0,.45); }
+  .fuego-bar.volcan .fi { background: linear-gradient(#FF8A00, #D61F1F); color: #2b0600; }
+  .fuego-bar.volcan .lanzar { background: linear-gradient(#FF8A00, #E02424); color: #fff; box-shadow: 0 4px 0 #8a1010, 0 0 20px rgba(255,60,0,.7); }
+  .fuego-bar.bonus { border-color: var(--oro); }
+  @keyframes llamita { from { transform: scale(1) rotate(-3deg); } to { transform: scale(1.08) rotate(3deg); } }
+
+  /* Llamas sobre las alternativas (cuando te lanzan una Llamarada o un Volcán) */
+  #pregCard { position: relative; }
+  .quema { position: absolute; inset: 0; z-index: 8; border-radius: 20px; overflow: hidden; cursor: pointer; -webkit-tap-highlight-color: transparent;
+    background: radial-gradient(130% 75% at 50% 112%, rgba(255,80,0,.7), rgba(255,140,0,.24) 55%, rgba(30,8,0,.45) 80%); animation: quemaEntra .35s ease-out both; }
+  .quema.volcan { background: radial-gradient(130% 80% at 50% 112%, rgba(255,40,0,.85), rgba(255,100,0,.35) 55%, rgba(40,4,0,.6) 82%); }
+  @keyframes quemaEntra { from { opacity: 0; } }
+  .quema.sale { animation: quemaSale .45s ease-in forwards; }
+  @keyframes quemaSale { to { opacity: 0; transform: translateY(18px); } }
+  .quema .ll { position: absolute; bottom: -6px; transform-origin: 50% 100%; animation: llama 0.5s ease-in-out infinite alternate; }
+  .quema .ll:nth-child(2n) { animation-duration: .38s; animation-delay: -.2s; }
+  .quema .ll:nth-child(3n) { animation-duration: .62s; animation-delay: -.1s; }
+  @keyframes llama { from { transform: scaleY(.88) skewX(-4deg); } to { transform: scaleY(1.1) skewX(4deg); } }
+  .quema .chispa { position: absolute; bottom: 10%; width: 5px; height: 5px; border-radius: 50%; background: #FFD84D; box-shadow: 0 0 8px #FF9600; animation: chispa 1.4s linear infinite; }
+  @keyframes chispa { from { transform: translate(0, 0); opacity: 1; } to { transform: translate(var(--x, 10px), -260px); opacity: 0; } }
+  .quema .apagar { position: absolute; left: 0; right: 0; margin: 0 auto; top: 30%; display: grid; justify-items: center; gap: 7px; text-align: center; width: min(88%, 310px); background: rgba(21,17,39,.93); border: 2px solid var(--naranja); border-bottom: 5px solid #b36a00; border-radius: 18px; padding: 12px 14px; box-shadow: 0 14px 34px rgba(0,0,0,.6); animation: cae1 .45s cubic-bezier(.3,1.6,.5,1) both; }
+  .quema.volcan .apagar { border-color: var(--rojo); border-bottom-color: #8a1010; }
+  html body .quema .apagar b:not(#z) { font: 800 20px/1.05 var(--display) !important; letter-spacing: .03em; text-transform: uppercase; color: #ffd9a8; }
+  .quema .apagar small { font: 800 12.5px Nunito, sans-serif; color: var(--dim); }
+  .quema .gotas { display: flex; gap: 7px; }
+  .quema .gotas span { width: 32px; height: 32px; border-radius: 11px; display: grid; place-items: center; background: #1F1936; border: 2px solid #322B52; color: var(--azul); transition: background .15s, transform .15s; }
+  .quema .gotas span.on { background: var(--azul); border-color: var(--azul); color: #06263a; transform: scale(1.12); }
+  .quema .gotas svg { width: 17px; height: 17px; }
+  .borde-fuego { position: fixed; inset: 0; pointer-events: none; z-index: 40; box-shadow: inset 0 0 70px 14px rgba(255,100,0,.5); animation: bordeF 1s ease-in-out infinite alternate; }
+  .borde-fuego.volcan { box-shadow: inset 0 0 90px 22px rgba(255,40,0,.6); }
+  @keyframes bordeF { from { opacity: .65; } to { opacity: 1; } }
+  /* Tu Llamarada saliendo (en tu pantalla) */
+  .lanzada { position: fixed; left: 50%; top: 45%; z-index: 70; pointer-events: none; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 4px; animation: lanzada 1.4s cubic-bezier(.3,1.4,.5,1) forwards; }
+  .lanzada .bola { width: 120px; height: 120px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 40% 35%, #FFE27A, #FF9600 45%, #E02424 80%); color: #3a1200; box-shadow: 0 0 60px 20px rgba(255,120,0,.6); }
+  .lanzada .bola svg { width: 66px; height: 66px; }
+  html body .lanzada b:not(#z) { font: italic 900 34px/1 var(--display) !important; text-transform: uppercase; color: #FFD84D; text-shadow: 0 3px 0 #7a2a00, 0 0 18px rgba(255,120,0,.8); }
+  @keyframes lanzada { 0% { transform: translate(-50%, -50%) scale(.2); opacity: 0; } 20% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; } 65% { transform: translate(-50%, -55%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -260%) scale(.4); opacity: 0; } }
+
+  /* Terremoto: tiembla la pregunta y las alternativas se reordenan */
+  .tiembla { animation: tiembla .09s linear infinite; }
+  .tiembla .alts li { animation: tiemblaAlt .14s linear infinite alternate; }
+  .tiembla .alts li:nth-child(2n) { animation-direction: alternate-reverse; animation-duration: .11s; }
+  @keyframes tiembla { 0% { transform: translate(0, 0) rotate(0); } 25% { transform: translate(-3px, 2px) rotate(-.4deg); } 50% { transform: translate(3px, -1px) rotate(.4deg); } 75% { transform: translate(-2px, -2px) rotate(-.2deg); } }
+  @keyframes tiemblaAlt { from { transform: translateX(-6px) rotate(-1deg); } to { transform: translateX(6px) rotate(1deg); } }
+  .grietas { position: absolute; inset: 0; z-index: 7; pointer-events: none; animation: quemaEntra .2s both; }
+  .grietas path { fill: none; stroke: rgba(255,75,75,.75); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 400; animation: grieta .5s ease-out both; }
+  @keyframes grieta { from { stroke-dashoffset: 400; } to { stroke-dashoffset: 0; } }
+
+  /* Robar tiempo: el reloj se rompe */
+  .reloj.roto svg { animation: roto .5s ease-out; }
+  .reloj .vidrio { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+  .reloj .vidrio path { fill: none; stroke: #fff; stroke-width: 1.6; stroke-linecap: round; opacity: .85; stroke-dasharray: 60; animation: grieta .35s ease-out both; }
+  @keyframes roto { 20% { transform: rotate(-90deg) scale(1.15); } 40% { transform: rotate(-96deg) scale(1.05); } 60% { transform: rotate(-86deg); } }
+  /* Congelar: escarcha sobre el reloj y la tarjeta */
+  .reloj.hielo::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; pointer-events: none; background: radial-gradient(circle, rgba(206,130,255,.0) 50%, rgba(220,190,255,.35) 70%, transparent 72%), conic-gradient(from 0deg, rgba(255,255,255,.0), rgba(255,255,255,.35), rgba(255,255,255,0) 30%, rgba(255,255,255,.3) 55%, rgba(255,255,255,0) 70%); animation: gira 3s linear infinite; }
+  @keyframes gira { to { transform: rotate(360deg); } }
+  #pregCard.escarcha { box-shadow: inset 0 0 0 2px rgba(206,130,255,.55), inset 0 0 40px rgba(206,130,255,.22); }
+  /* Espejo activo: brillo morado alrededor de tu cuadro */
+  .tile.espejo { box-shadow: 0 0 0 2px var(--morado), 0 0 18px rgba(206,130,255,.55); }
+  .tile.espejo::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.22) 45%, transparent 60%); background-size: 250% 100%; animation: brilloE 2.2s linear infinite; }
+  @keyframes brilloE { from { background-position: 120% 0; } to { background-position: -120% 0; } }
+  .rebote { position: fixed; left: 50%; top: 40%; z-index: 70; pointer-events: none; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 6px; animation: lanzada 1.6s cubic-bezier(.3,1.4,.5,1) forwards; }
+  .rebote .esp { width: 110px; height: 110px; border-radius: 28px; display: grid; place-items: center; background: linear-gradient(135deg, #f3e6ff, #CE82FF 50%, #8f4fc4); color: #2a0c45; box-shadow: 0 0 50px 14px rgba(206,130,255,.55); }
+  .rebote .esp svg { width: 60px; height: 60px; }
+  html body .rebote b:not(#z) { font: italic 900 30px/1 var(--display) !important; text-transform: uppercase; color: #f3e6ff; text-shadow: 0 3px 0 #4a1a75; }
+
+  /* Apuesta: elegir 1, 2 o 3 */
+  .apu { margin-top: 14px; background: color-mix(in srgb, var(--oro) 9%, transparent); border: 2px solid var(--oro); border-bottom: 4px solid #b38600; border-radius: 16px; padding: 12px; animation: cae1 .35s cubic-bezier(.3,1.6,.5,1) both; }
+  .apu .cab { display: flex; align-items: center; gap: 10px; font: 900 14px Nunito, sans-serif; color: #ffe9a3; }
+  .apu .cab .ci { width: 30px; height: 30px; border-radius: 10px; background: var(--oro); color: #2b2100; display: grid; place-items: center; flex-shrink: 0; }
+  .apu .cab .ci svg { width: 18px; height: 18px; }
+  .apu .op { display: grid; grid-template-columns: repeat(3, 1fr) auto; gap: 8px; margin-top: 10px; }
+  .apu .op button { background: var(--surface-2); border: 2px solid #3A3360; border-bottom-width: 4px; border-radius: 14px; padding: 8px 4px; display: grid; justify-items: center; gap: 1px; color: var(--text); }
+  .apu .op button b { font: italic 900 28px/1 var(--display); color: var(--oro); }
+  .apu .op button small { font: 800 11px Nunito, sans-serif; color: var(--dim); }
+  .apu .op button:active { transform: translateY(2px); border-bottom-width: 2px; }
+  .apu .op .no { padding: 8px 10px; font: 800 12px Nunito, sans-serif; color: var(--dim); }
+
+  /* Pregunta relámpago */
+  .relampago { display: flex; align-items: center; gap: 12px; background: linear-gradient(90deg, #1CB0F6, #CE82FF); color: #fff; border-radius: 16px; padding: 10px 14px; margin-bottom: 14px; box-shadow: 0 4px 0 #5a3d9a, 0 0 24px rgba(28,176,246,.35); animation: cae1 .45s cubic-bezier(.3,1.6,.5,1) both; }
+  .relampago .ri { width: 36px; height: 36px; flex-shrink: 0; border-radius: 11px; background: #FFC800; color: #2b2100; display: grid; place-items: center; animation: zap 1.1s ease-in-out infinite; }
+  .relampago .ri svg { width: 22px; height: 22px; }
+  html body .relampago b:not(#z) { display: block; font: italic 900 22px/1 var(--display) !important; letter-spacing: .03em; text-transform: uppercase; }
+  .relampago small { font: 800 12.5px Nunito, sans-serif; opacity: .95; }
+  .relampago .x3 { margin-left: auto; font: italic 900 26px/1 var(--display); background: #FFC800; color: #2b2100; padding: 5px 10px 3px; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); }
+  @keyframes zap { 0%, 100% { transform: none; } 10% { transform: scale(1.2) rotate(-8deg); } 20% { transform: scale(1) rotate(6deg); } }
+
+  /* Niebla final y duelo cerrado */
+  .tile.niebla .pt { filter: blur(6px); }
+  .tile.niebla .pos { visibility: hidden; }
+  .niebla-av { display: flex; align-items: center; gap: 10px; background: linear-gradient(90deg, rgba(169,159,200,.18), rgba(169,159,200,.05)); border: 2px solid rgba(169,159,200,.4); border-radius: 14px; padding: 8px 12px; margin-bottom: 12px; font: 800 13px/1.3 Nunito, sans-serif; color: #d9d2f0; animation: cae1 .4s both; }
+  .niebla-av svg { width: 22px; height: 22px; flex-shrink: 0; color: #cfc8e6; }
+  .niebla-av.cerrado { border-color: var(--rojo); background: linear-gradient(90deg, rgba(255,75,75,.22), rgba(255,75,75,.05)); color: #ffd0d0; animation: cerradoLate 1s ease-in-out infinite; }
+  .niebla-av.cerrado svg { color: var(--rojo); }
+  html body .niebla-av b:not(#z) { font: 800 17px/1 var(--display) !important; letter-spacing: .05em; text-transform: uppercase; }
+  @keyframes cerradoLate { 50% { box-shadow: 0 0 0 4px rgba(255,75,75,.18), 0 0 22px rgba(255,75,75,.3); } }
+  body.tension::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 35; box-shadow: inset 0 0 80px 10px rgba(255,40,40,.28); animation: latido 1s ease-in-out infinite; }
+  body.nublado::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 34; background: radial-gradient(120% 60% at 50% 0%, rgba(169,159,200,.08), transparent 60%), radial-gradient(120% 50% at 50% 100%, rgba(169,159,200,.10), transparent 60%); }
+  @keyframes latido { 0%, 100% { opacity: .35; } 12% { opacity: 1; } 24% { opacity: .5; } 36% { opacity: .9; } }
+
+  /* Botón de sonido de ambiente (arriba de la barra del juego) */
+  .amb-fila { display: flex; justify-content: flex-end; margin: -4px 0 8px; }
+  .amb { display: inline-flex; align-items: center; gap: 7px; border: 2px solid var(--borde-g); border-bottom-width: 4px; background: var(--surface); color: var(--dim); border-radius: 12px; padding: 5px 10px; font: 800 14px/1 var(--display); letter-spacing: .05em; text-transform: uppercase; }
+  .amb svg { width: 18px; height: 18px; }
+  .amb.on { color: var(--lima); border-color: color-mix(in srgb, var(--lima) 45%, var(--borde-g)); }
+  .amb .ondas i { display: inline-block; width: 3px; height: 10px; margin-left: 2px; border-radius: 2px; background: currentColor; transform-origin: bottom; }
+  .amb.on .ondas i { animation: onda .8s ease-in-out infinite alternate; }
+  .amb.on .ondas i:nth-child(2) { animation-delay: -.3s; } .amb.on .ondas i:nth-child(3) { animation-delay: -.55s; }
+  @keyframes onda { from { transform: scaleY(.3); } to { transform: scaleY(1.1); } }
+
+  /* Resultado: podio que se revela de a uno */
+  .podio.revela .lugar { animation: none; opacity: 0; }
+  .podio.revela .lugar.ya { animation: revelaL .7s cubic-bezier(.3,1.5,.5,1) both; }
+  .podio.revela .lugar.l1.ya { animation: revela1 .9s cubic-bezier(.3,1.6,.5,1) both; }
+  @keyframes revelaL { from { transform: translateY(40px) scale(.8); opacity: 0; } to { transform: none; opacity: 1; } }
+  @keyframes revela1 { 0% { transform: translateY(60px) scale(.6); opacity: 0; filter: brightness(3); } 60% { transform: translateY(-8px) scale(1.08); opacity: 1; } 100% { transform: none; filter: none; opacity: 1; } }
+  @keyframes redoble { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+  .redoble { position: absolute; left: 0; right: 0; margin: 0 auto; width: max-content; max-width: 90%; top: 34%; z-index: 5; font: italic 900 22px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; color: var(--oro); background: rgba(11,9,22,.85); padding: 8px 16px; border-radius: 12px; border: 2px solid rgba(255,200,0,.4); animation: redoble .6s ease-in-out infinite; white-space: nowrap; }
+  .podio .destello { position: absolute; inset: 0; z-index: -1; background: radial-gradient(circle at 50% 40%, rgba(255,230,140,.6), transparent 60%); animation: destello 1.2s ease-out both; }
+  @keyframes destello { from { opacity: 1; transform: scale(.4); } to { opacity: 0; transform: scale(1.6); } }
+  /* Jugada del duelo */
+  .jugada { display: flex; align-items: center; gap: 12px; text-align: left; max-width: 560px; margin: 16px auto 0; padding: 12px 14px; border-radius: 18px; border: 2px solid var(--c); border-bottom-width: 5px; background: radial-gradient(90% 120% at 0% 50%, color-mix(in srgb, var(--c) 22%, transparent), transparent 70%), var(--surface-2); animation: cae1 .5s both; }
+  .jugada .ci { width: 52px; height: 52px; flex-shrink: 0; border-radius: 16px; display: grid; place-items: center; background: var(--c); color: #111; box-shadow: 0 4px 0 color-mix(in srgb, var(--c) 55%, #070512); }
+  .jugada .ci svg { width: 30px; height: 30px; }
+  .jugada small { display: block; font: 800 12px/1 var(--display); letter-spacing: .12em; text-transform: uppercase; color: var(--c); }
+  html body .jugada b:not(#z) { display: block; font: 800 20px/1.1 var(--display) !important; letter-spacing: .03em; text-transform: uppercase; margin-top: 3px; }
+  .jugada span { font: 700 12.5px/1.35 Nunito, sans-serif; color: var(--dim); }
+  .meds.v3 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  @media (max-width: 560px) { .meds.v3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  /* Invitación de un amigo (aviso al centro) */
+  .inv-aviso { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 16px; background: rgba(11,8,24,.78); animation: quemaEntra .2s both; }
+  @media (prefers-reduced-motion: reduce) { .tiembla, .tiembla .alts li, .quema .ll, .quema .chispa, .borde-fuego, body.tension::before, .lanzar, .relampago .ri { animation: none !important; } }
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -1057,7 +1285,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
           </div>
         </div>
         <div class="campo" style="--c:var(--oro)">
-          <div class="cmd-cab"><span class="lbl" id="cmdLbl"><i class="li"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3.5" width="12" height="17" rx="2.5" transform="rotate(-8 10 12)"/><path d="M14.5 4.5 19 5.5a2 2 0 0 1 1.5 2.4L18 19"/><path d="m9 10 1.5 2L9 14l-1.5-2z"/></svg></i>Comodines al azar</span><button type="button" class="sw" id="cmdSw" role="switch" aria-checked="true" aria-labelledby="cmdLbl"></button></div>
+          <div class="cmd-cab"><span class="lbl" id="cmdLbl"><i class="li"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3.5" width="12" height="17" rx="2.5" transform="rotate(-8 10 12)"/><path d="M14.5 4.5 19 5.5a2 2 0 0 1 1.5 2.4L18 19"/><path d="m9 10 1.5 2L9 14l-1.5-2z"/></svg></i>Comodines</span><button type="button" class="sw" id="cmdSw" role="switch" aria-checked="true" aria-labelledby="cmdLbl"></button></div>
           <p class="nota" id="cmdNota" style="margin-top:0"></p>
           <div class="cmds" id="cmdLista"></div>
         </div>
@@ -1098,6 +1326,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       <div class="ficha" id="retoFicha"></div>
       <div class="cierre" id="retoCierre"><i></i><span></span></div>
       <div class="sala" id="retoSala"></div>
+      <div id="retoElegir"></div>
       <div id="retoCompartir">
         <div class="ticket">
           <small>Código de la sala</small>
@@ -1112,6 +1341,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       <div class="botones">
         <button class="btn" type="button" id="btnJugar">Entrar a la sala</button>
       </div>
+      <div id="retoAmigos"></div>
       <p class="nota" id="retoNota"></p>
       <p class="nota error" id="retoError" hidden></p>
     </div>
@@ -1120,6 +1350,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
 
   <!-- 3. Juego -->
   <section id="juego" hidden>
+    <div class="amb-fila"><button type="button" class="amb" id="ambBtn"></button></div>
     <div class="barra" id="barra">
       <div class="tiles" id="tiles"></div>
       <div class="reloj" id="reloj" role="timer" aria-label="Tiempo de la pregunta">
@@ -1128,6 +1359,8 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       </div>
       <div class="cam"><div class="camino" id="camino"></div><div class="camino-l"><span id="camTxt"></span><span id="pNum"></span></div></div>
     </div>
+    <div id="nieblaAv"></div>
+    <div id="fuegoBar"></div>
     <div class="cbar" id="cbar" hidden></div>
     <div class="card" id="pregCard">
       <div id="pFinal"></div>
@@ -1209,16 +1442,43 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   };
   const ORDEN_CARAS = ['risa', 'llanto', 'enojo', 'susto', 'genial', 'aplauso'];
   const NOM_CARA = { risa: 'Risa', llanto: 'Llanto', enojo: 'Enojo', susto: 'Susto', genial: 'Genial', aplauso: 'Aplauso' };
-  // Comodines: nombre, color, qué hace, cuándo
+  // Íconos de los comodines nuevos (v3), del fuego y de lo demás
+  Object.assign(IC, {
+    llama: svg('<path d="M12 2.5c.8 3.6 5.8 5.8 5.8 11.2a5.8 5.8 0 0 1-11.6 0c0-2.4 1.2-4.1 2.4-5.1.2 2 1.1 3.2 2.3 3.5-.5-3.5.2-6.8 1.1-9.6z"/><path d="M12 20.5c-1.6 0-2.7-1.1-2.7-2.6 0-1.5 1.3-2.5 2.7-4.2 1.4 1.7 2.7 2.7 2.7 4.2s-1.1 2.6-2.7 2.6z" fill="currentColor" stroke-width="1.5"/>', 2.4),
+    volcan: svg('<path d="M2.5 20.5 8 10h2.2l1.3 2 1.4-2H16l5.5 10.5z"/><path d="M9.5 6.5 8 3.5M12 5.5V2.5M14.5 6.5 16 3.5"/><path d="M10.5 13.5 12 16l1.5-2.5" stroke-width="2"/>', 2.4),
+    terremoto: svg('<path d="M3 20.5h18"/><path d="M12.5 3.5 10 9l3.5 2.5L10 16l2 4.5"/><path d="M6 8 3.5 11 6 14M18 8l2.5 3-2.5 3"/>', 2.6),
+    espejo: svg('<ellipse cx="12" cy="10" rx="6" ry="7.5"/><path d="M12 17.5V21M8.5 21h7"/><path d="M9 9l2.5-2.5M9.5 12.5l4.5-4.5"/>', 2.6),
+    apuesta: svg('<rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor"/>', 2.6),
+    ladron: svg('<path d="M9 3.5h6l-1.6 3.2h-2.8z"/><path d="M10.6 6.7C6.3 8.6 4.5 12.6 4.5 15.8A4.3 4.3 0 0 0 8.8 20h6.4a4.3 4.3 0 0 0 4.3-4.2c0-3.2-1.8-7.2-6.1-9.1"/><path d="M12 10.5v7M14 12h-2.8a1.4 1.4 0 0 0 0 2.8h1.6a1.4 1.4 0 0 1 0 2.8H10"/>', 2.3),
+    cambio: svg('<path d="M4.5 10a7.5 7.5 0 0 1 13.2-3.6L19.5 8M19.5 3.5V8H15"/><path d="M19.5 14a7.5 7.5 0 0 1-13.2 3.6L4.5 16M4.5 20.5V16H9"/>', 2.6),
+    gota: svg('<path d="M12 3.5c3 4 6 7.3 6 10.5a6 6 0 0 1-12 0c0-3.2 3-6.5 6-10.5z"/>', 2.6),
+    zap: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 2 4.5 13.5h6L9.5 22l10-12.5h-6.2z"/></svg>',
+    niebla: svg('<path d="M4 9h11a3 3 0 1 0-3-3"/><path d="M3 13h16"/><path d="M5 17h10a3 3 0 1 1-3 3"/>', 2.4),
+    amigos: svg('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.6"/><path d="M16 14.2a5 5 0 0 1 5.5 5"/>', 2.4),
+    altavoz: svg('<path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/>', 2.4),
+    mudo: svg('<path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><path d="M22 9l-6 6M16 9l6 6"/>', 2.4)
+  });
+  // Tipos de comodín (color del puntito y de la etiqueta)
+  const TIPOS = { ayuda: ['Ayuda', 'var(--azul)'], puntos: ['Puntos', 'var(--oro)'], defensa: ['Defensa', 'var(--morado)'], ataque: ['Ataque', 'var(--rojo)'] };
+  // Comodines: nombre, color, qué hace, cuándo, tipo
   const CMD = {
-    mitad: { nom: '50/50', c: 'var(--azul)', que: 'Quita 2 alternativas malas', cuando: 'Antes de responder' },
-    hielo: { nom: 'Congelar', c: 'var(--morado)', que: 'Tu reloj se para 10 s', cuando: 'Mientras corre el tiempo' },
-    doble: { nom: 'Doble', c: 'var(--oro)', que: 'Si aciertas, vale 2', cuando: 'No en la final' },
-    escudo: { nom: 'Escudo', c: 'var(--naranja)', que: 'Si fallas, eliges otra vez', cuando: 'Antes de responder' },
-    robar: { nom: 'Robar tiempo', c: 'var(--rojo)', que: 'Les quita 5 s a tus rivales', cuando: 'En cualquier momento' },
-    espia: { nom: 'Espía', c: 'var(--verde)', que: 'Ves si tus rivales ya acertaron', cuando: 'En cualquier pregunta' }
+    mitad: { nom: '50/50', c: 'var(--azul)', que: 'Quita 2 alternativas malas', cuando: 'Antes de responder', t: 'ayuda' },
+    hielo: { nom: 'Congelar', c: 'var(--morado)', que: 'Tu reloj se para 10 s', cuando: 'Mientras corre el tiempo', t: 'ayuda' },
+    espia: { nom: 'Espía', c: 'var(--verde)', que: 'Ves en vivo si tus rivales aciertan', cuando: 'En cualquier pregunta', t: 'ayuda' },
+    cambio: { nom: 'Cambio', c: 'var(--azul)', que: 'Te cambia la pregunta por otra', cuando: 'Antes de responder', t: 'ayuda' },
+    doble: { nom: 'Doble', c: 'var(--oro)', que: 'Si aciertas, vale 2', cuando: 'No en la final', t: 'puntos' },
+    apuesta: { nom: 'Apuesta', c: 'var(--oro)', que: 'Apuesta 1, 2 o 3 puntos: los ganas o los pierdes', cuando: 'No en la final', t: 'puntos' },
+    escudo: { nom: 'Escudo', c: 'var(--naranja)', que: 'Si fallas, eliges otra vez', cuando: 'Antes de responder', t: 'defensa' },
+    espejo: { nom: 'Espejo', c: 'var(--morado)', que: 'El próximo ataque rebota al que lo lanzó', cuando: 'Dura hasta que te ataquen', t: 'defensa' },
+    robar: { nom: 'Robar tiempo', c: 'var(--rojo)', que: 'Les quita 8 s a tus rivales', cuando: 'En cualquier momento', t: 'ataque' },
+    terremoto: { nom: 'Terremoto', c: 'var(--rojo)', que: 'Las alternativas de tus rivales tiemblan y se mezclan', cuando: 'En cualquier momento', t: 'ataque' },
+    ladron: { nom: 'Ladrón', c: 'var(--rojo)', que: 'Si aciertas, le quitas 1 punto al que va mejor', cuando: 'Antes de responder', t: 'ataque' }
   };
-  const ORDEN_CMD = ['mitad', 'hielo', 'doble', 'escudo', 'robar', 'espia'];
+  const ORDEN_CMD = ['mitad', 'hielo', 'espia', 'cambio', 'doble', 'apuesta', 'escudo', 'espejo', 'robar', 'terremoto', 'ladron'];
+  const FUEGO = {
+    llama: { nom: 'Llamarada', que: 'Quema las alternativas de tus rivales 5 s', c: 'var(--naranja)' },
+    volcan: { nom: 'Volcán', que: 'Quema a todos 8 s y tu próxima vale doble', c: 'var(--rojo)' }
+  };
   const cuantosCmd = n => n <= 10 ? 2 : n <= 20 ? 3 : 4;
 
   const FUENTES = [
@@ -1301,7 +1561,8 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   // Foto de perfil (ver_duelo la manda desde 30-duelo-fotos.sql); la tuya también sale de la tarjeta de arriba
   const fotoDe = j => { const f = (j && j.foto) || (j && j.yo && (document.querySelector('header .mcu-av img') || {}).src) || ''; return /^https:\/\//.test(f) ? f : ''; };
   const avatar = (j, extra) => { const f = fotoDe(j); return '<span class="av ' + colorDe(j) + (f ? ' con-foto' : '') + (extra || '') + '">' + esc(inicial(j.yo ? 'Tú' : j.apodo)) + (f ? '<img class="foto" src="' + esc(f) + '" alt="" referrerpolicy="no-referrer" onerror="this.parentNode.classList.remove(\'con-foto\');this.remove()">' : '') + rangoDe(j) + '</span>'; };
-  const cmdCard = k => '<div class="cmd" style="--c:' + CMD[k].c + '"><div class="ci">' + IC[k] + '</div><b>' + CMD[k].nom + '</b><small>' + CMD[k].que + '</small></div>';
+  const cmdCard = k => '<div class="cmd" style="--c:' + CMD[k].c + ';--tc:' + TIPOS[CMD[k].t][1] + '"><div class="ci">' + IC[k] + '</div><b>' + CMD[k].nom + '</b><small>' + CMD[k].que + '</small><span class="tipo">' + TIPOS[CMD[k].t][0] + '</span></div>';
+  const fuegoCard = () => '<div class="cmd fue" style="--c:var(--naranja);--tc:var(--naranja)"><div class="ci">' + IC.llama + '</div><b>Llamarada</b><small>3 seguidas: quema a tus rivales. 5 seguidas: Volcán</small><span class="tipo">Se gana jugando</span></div>';
   function toast(html, color, ic) {
     const t = document.createElement('div'); t.className = 'toast'; t.style.setProperty('--c', color || 'var(--rojo)');
     t.innerHTML = (ic ? '<span class="ci">' + ic + '</span>' : '') + '<span>' + html + '</span>';
@@ -1555,7 +1816,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     const k = cuantosCmd(sel.n);
     $('cmdSw').setAttribute('aria-checked', String(sel.comodines));
     $('cmdNota').innerHTML = sel.comodines
-      ? 'Antes de empezar, la ruleta reparte <b>' + k + ' comodines</b> de estos 6. Todos reciben los mismos y cada uno decide cuándo usarlos.'
+      ? 'En la sala, cada uno elige en secreto <b>' + k + ' comodines</b> de estos 11. La <b>Llamarada</b> no se elige: se carga acertando 3 seguidas.'
       : 'Sin comodines: gana el que más sabe, sin ayudas.';
     $('cmdLista').classList.toggle('off', !sel.comodines);
     // Reglas en cuatro cuadritos; el detalle va al pasar el mouse
@@ -1623,7 +1884,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   $('rngSeg').addEventListener('input', () => { sel.seg = TIEMPOS[+$('rngSeg').value]; pintarOpciones(); });
   $('segTicks').addEventListener('click', e => { const b = e.target.closest('[data-seg]'); if (b) { sel.seg = +b.dataset.seg; son('toque'); pintarOpciones(); } });
   $('cmdSw').addEventListener('click', () => { sel.comodines = !sel.comodines; son(sel.comodines ? 'comodin' : 'toque'); pintarOpciones(); });
-  $('cmdLista').innerHTML = ORDEN_CMD.map(cmdCard).join('');
+  $('cmdLista').innerHTML = ORDEN_CMD.map(cmdCard).join('') + fuegoCard(); $('cmdLista').classList.add('v3');
   function temasNom(o) { return (o.temas || []).map(k => (TEMAS.filter(t => t.k === k)[0] || {}).nom || o.temasNom && o.temasNom[k]).filter(Boolean); }
   function tituloDe(o, noms) {
     const partes = [o.cursos && o.cursos.length ? nombreCursos(o.cursos) : o.curso === 'todos' ? 'Todos los cursos' : (NOMBRE[o.curso] || o.curso)];
@@ -1633,7 +1894,9 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     return partes.join(' · ').slice(0, 80);
   }
   async function crearDuelo(o) {
-    const lst = await armarPreguntas(o);
+    // Una pregunta de más queda de reserva para el comodín Cambio
+    const todas = await armarPreguntas(Object.assign({}, o, { n: o.n + 1 }));
+    const lst = todas.slice(0, o.n), extra = todas.slice(o.n, o.n + 1);
     if (lst.length < o.n) {
       throw new Error(lst.length
         ? 'Con este filtro solo hay ' + plural(lst.length, 'pregunta', 'preguntas') + ' y elegiste ' + o.n + '. Elige menos preguntas o cambia el filtro.'
@@ -1645,7 +1908,8 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       tema: noms.length ? noms.join(' | ').slice(0, 80) : null,
       jugadores: o.jugadores || 2, auto: !!o.auto, revancha_de: o.revancha || null,
       seg: o.seg, comodines: !!o.comodines, final: true,
-      preguntas: lst.map(x => ({ ref: x.ref, c: x.q.correct, k: x.q.options.length }))
+      preguntas: lst.map(x => ({ ref: x.ref, c: x.q.correct, k: x.q.options.length })),
+      reserva: extra.map(x => ({ ref: x.ref, c: x.q.correct, k: x.q.options.length }))
     } });
   }
   $('btnCrear').addEventListener('click', async () => {
@@ -1783,7 +2047,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       const j = js[i];
       if (i === 1 && d.max === 2) html += '<div class="vs" aria-hidden="true">VS</div>';
       if (!j) { html += '<div class="puesto-sala libre"><span class="av">+</span><b>Libre</b><small>Esperando<i class="pts3"><i>.</i><i>.</i><i>.</i></i></small></div>'; continue; }
-      html += '<div class="puesto-sala ' + colorDe(j) + (j.yo ? ' yo' : '') + (VISTOS[j.apodo] ? '' : ' entra') + '">' + avatar(j) + '<b>' + esc(nombreDe(j)) + '</b><small>' + (j.xp != null && window.MCRango && MCRango.nivel(j.xp) >= 0 ? '<i class="rgo-n r' + MCRango.nivel(j.xp) + '">' + MCRango.nombre(MCRango.nivel(j.xp)) + '</i> · ' : '') + (j.creador ? 'Anfitrión' : 'Listo') + '</small></div>';
+      html += '<div class="puesto-sala ' + colorDe(j) + (j.yo ? ' yo' : '') + (VISTOS[j.apodo] ? '' : ' entra') + '">' + avatar(j) + '<b>' + esc(nombreDe(j)) + '</b><small>' + (j.xp != null && window.MCRango && MCRango.nivel(j.xp) >= 0 ? '<i class="rgo-n r' + MCRango.nivel(j.xp) + '">' + MCRango.nombre(MCRango.nivel(j.xp)) + '</i> · ' : '') + (d.cmd_cant > 0 && !d.empieza ? (j.eligio ? '<span class="eligio">Comodines listos</span>' : '<span class="eligiendo">Eligiendo…</span>') : j.creador ? 'Anfitrión' : 'Listo') + '</small></div>';
       VISTOS[j.apodo] = 1;
     }
     return html;
@@ -1813,7 +2077,8 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   function fichaHtml(d) {
     const c = d.comodines || [], f = (color, ic, txt) => '<span style="--c:' + color + '"><i class="fi">' + ic + '</i>' + txt + '</span>';
     return f('var(--lima)', IC.libro, '<b>' + esc(d.titulo) + '</b>') + f('var(--naranja)', IC.fijas, '<b>' + d.n + '</b> preguntas') + f('var(--morado)', IC.reloj, '<b>' + tiempoTxt(d.seg || 60) + '</b> cada una') +
-      (c.length ? f('var(--azul)', IC.mitad, '<b>' + c.length + '</b> comodines sorpresa') : '') + (d.final ? f('var(--oro)', IC.final, 'Final <b>×3</b>') : '');
+      (d.cmd_cant > 0 ? f('var(--azul)', IC.mitad, '<b>' + d.cmd_cant + '</b> comodines a elegir') : c.length ? f('var(--azul)', IC.mitad, '<b>' + c.length + '</b> comodines sorpresa') : '') +
+      (d.cmd_cant > 0 ? f('var(--naranja)', IC.llama, '<b>Llamarada</b> por racha') : '') + (d.relampago != null ? f('var(--azul)', IC.zap, 'Pregunta <b>relámpago</b>') : '') + (d.final ? f('var(--oro)', IC.final, 'Final <b>×3</b>') : '');
   }
   function pintarReto() {
     const d = V, soyCreador = d.soy_creador;
@@ -1831,6 +2096,8 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     $('retoEnlace').textContent = enlace(d.codigo);
     $('btnWa').href = 'https://wa.me/?text=' + encodeURIComponent('⚔️ Te reto a un duelo en Modo Cachimbo: ' + d.titulo + ', ' + d.n + ' preguntas de ' + tiempoTxt(d.seg || 60) + ((d.comodines || []).length ? ', con comodines' : '') + '. Entra a la sala: ' + enlace(d.codigo));
     pintarBoton();
+    pintarEleccion(true);
+    pintarAmigos(true);
     $('retoError').hidden = true;
     ver('reto');
     // Mientras espera: cuenta regresiva y quién va entrando
@@ -1846,9 +2113,86 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       $('retoSala').innerHTML = salaHtml(n);
       $('retoCompartir').hidden = n.cerrado;
       pintarBoton();
+      pintarEleccion(false);
+      pintarAmigos(false);
       pintarCierre($('retoCierre'));
     }).catch(() => {})), 3000);
   }
+  /* Elegir comodines en la sala: secreto, se guarda apenas completa la cantidad */
+  let mano = null, manoGuardada = '', guardandoMano = false;
+  function pintarEleccion(primera) {
+    const d = V, caja = $('retoElegir');
+    if (!d.yo || !(d.cmd_cant > 0) || d.empieza) { caja.innerHTML = ''; return; }
+    if (primera || mano == null) { mano = (d.yo.mano || []).slice(); manoGuardada = mano.slice().sort().join(','); }
+    if (!primera && caja.firstChild) return pintarCuentaMano();
+    const pool = ORDEN_CMD.filter(k => (d.comodines || []).indexOf(k) >= 0);
+    caja.innerHTML = '<div class="eleccion"><div class="ec-cab"><h3>Elige tus comodines</h3><span class="ec-cuenta" id="ecCuenta"></span></div>' +
+      '<p>Son secretos: tus rivales los verán recién en la pantalla VS. Si no eliges, te tocan al azar.</p>' +
+      '<div class="ec-grid" id="ecGrid">' + pool.map(k => '<button type="button" class="ec" data-k="' + k + '" style="--c:' + CMD[k].c + ';--tc:' + TIPOS[CMD[k].t][1] + '" aria-pressed="false"><span class="tipo">' + TIPOS[CMD[k].t][0] + '</span><span class="ci">' + IC[k] + '</span><b>' + CMD[k].nom + '</b><small>' + CMD[k].que + '</small></button>').join('') + '</div>' +
+      '<div class="ec-fuego"><span class="ci">' + IC.llama + '</span><div><b>Llamarada y Volcán no se eligen.</b> Acierta 3 seguidas para cargar la Llamarada y 5 para el Volcán. Si fallas, se apaga.</div></div></div>';
+    pintarCuentaMano();
+  }
+  function pintarCuentaMano() {
+    const n = V.cmd_cant, g = $('ecGrid'); if (!g) return;
+    g.querySelectorAll('.ec').forEach(b => {
+      const on = mano.indexOf(b.dataset.k) >= 0;
+      b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on));
+      b.disabled = !on && mano.length >= n;
+    });
+    const listo = mano.length === n && mano.slice().sort().join(',') === manoGuardada;
+    $('ecCuenta').className = 'ec-cuenta' + (listo ? ' listo' : '');
+    $('ecCuenta').innerHTML = '<b>' + mano.length + '/' + n + '</b> ' + (listo ? 'Guardados' : mano.length === n ? 'Guardando…' : 'elegidos');
+  }
+  $('retoElegir').addEventListener('click', async e => {
+    const b = e.target.closest('.ec'); if (!b || b.disabled || !V) return;
+    const k = b.dataset.k, i = mano.indexOf(k);
+    if (i >= 0) mano.splice(i, 1); else if (mano.length < V.cmd_cant) mano.push(k);
+    son(i >= 0 ? 'toque' : 'comodin');
+    pintarCuentaMano();
+    guardarMano();
+  });
+  async function guardarMano() {
+    if (!V || guardandoMano || mano.length !== V.cmd_cant || mano.slice().sort().join(',') === manoGuardada) return;
+    const enviar = mano.slice();
+    guardandoMano = true;
+    try {
+      const r = await rpc('elegir_comodines', { p_codigo: V.codigo, p_mano: enviar });
+      manoGuardada = ((r && r.mano) || enviar).slice().sort().join(',');
+      if (V.yo) V.yo.mano = enviar;
+    } catch (err) { $('retoError').textContent = textoError(err); $('retoError').hidden = false; guardandoMano = false; return; }
+    guardandoMano = false;
+    if ($('ecGrid')) pintarCuentaMano();
+    guardarMano();   // si cambió mientras guardaba, guarda lo último
+  }
+
+  /* Invitar a tus amigos directo desde la sala */
+  let amigosLista = null, invitados = {};
+  function pintarAmigos(primera) {
+    const d = V, caja = $('retoAmigos');
+    if (!d.yo || d.empieza || d.cerrado || quedaSala() <= 0 || libres(d) <= 0) { caja.innerHTML = ''; return; }
+    if (amigosLista === null && primera) {
+      amigosLista = 'cargando';
+      rpc('mis_amigos').then(r => { amigosLista = (r && r.amigos) || []; pintarAmigos(false); }).catch(() => { amigosLista = []; pintarAmigos(false); });
+    }
+    if (!Array.isArray(amigosLista)) { caja.innerHTML = ''; return; }
+    const enSala = {}; d.jugadores.forEach(j => { enSala[j.apodo] = 1; });
+    const hoy = new Date(Date.now() - 5 * 3600000).toISOString().slice(0, 10);
+    const L = amigosLista.filter(a => !enSala[a.apodo]).sort((a, b) => String(b.ultima || '').localeCompare(String(a.ultima || '')));
+    caja.innerHTML = '<div class="amigos-inv"><h3>' + IC.amigos + 'Invita a tus amigos</h3>' + (L.length
+      ? '<div class="ai-lista">' + L.slice(0, 30).map((a, i) => '<div class="ai"><span class="ai-f" style="--c:' + AV[i % AV.length] + '">' + esc(inicial(a.apodo)) +
+          (a.foto ? '<img src="' + esc(a.foto) + '" alt="" referrerpolicy="no-referrer" onerror="this.remove()">' : '') + '</span>' +
+          '<span class="ai-t"><b>' + esc(a.apodo) + '</b><small' + (a.ultima === hoy ? ' class="hoy">Estudió hoy' : '>' + (a.ultima ? 'Estudió el ' + esc(String(a.ultima).slice(8, 10) + '/' + String(a.ultima).slice(5, 7)) : 'ID ' + esc(a.codigo))) + '</small></span>' +
+          '<button type="button" data-inv="' + esc(a.codigo) + '"' + (invitados[a.codigo] ? ' disabled>Invitado' : '>Invitar') + '</button></div>').join('') + '</div>'
+      : '<p class="ai-vacio">' + (amigosLista.length ? 'Todos tus amigos ya están en la sala.' : 'Aún no tienes amigos agregados. <a href="amigos.html">Agrega amigos</a> para retarlos directo.') + '</p>') + '</div>';
+  }
+  $('retoAmigos').addEventListener('click', async e => {
+    const b = e.target.closest('[data-inv]'); if (!b || b.disabled) return;
+    const cod = b.dataset.inv;
+    b.disabled = true; b.textContent = '…';
+    try { await rpc('invitar_duelo', { p_codigo: V.codigo, p_amigo: +cod }); invitados[cod] = 1; b.textContent = 'Invitado'; son('comodin'); }
+    catch (err) { b.disabled = false; b.textContent = 'Invitar'; $('retoError').textContent = textoError(err); $('retoError').hidden = false; }
+  });
+
   $('btnJugar').addEventListener('click', async () => {
     const b = $('btnJugar'), accion = b.dataset.accion;
     b.disabled = true; $('retoError').hidden = true;
@@ -1872,6 +2216,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     const fin = new Date(V.empieza).getTime() - desfase;   // en el reloj de este celular
     if (fin - Date.now() <= 0) { $('cuenta').hidden = true; empezar(); return; }
     precarga = rpc('empezar_duelo', { p_codigo: V.codigo }).then(r => cargarRefs(r.preguntas)).catch(() => null);   // se cargan durante la cuenta
+    if (V.cmd_cant > 0) { pantallaVS(fin); return; }
     const cmds = V.comodines || [], c = $('cuenta');
     c.innerHTML = '<div>' + (cmds.length ? '<h2>¡Comodines del duelo!</h2><p>Todos tienen los mismos. Úsalos cuando quieras, una vez cada uno.</p><div class="par" id="ruleta">' +
       cmds.map(() => '<div class="cmd gira"><div class="ci"></div><b>&nbsp;</b><small>&nbsp;</small></div>').join('') + '</div>' : '') +
@@ -1902,6 +2247,32 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     paso();
   }
 
+  // Pantalla VS: cada jugador entra desde su lado con sus comodines (ya no son secretos) y luego 3, 2, 1
+  function pantallaVS(fin) {
+    const c = $('cuenta'), js = V.jugadores, n = js.length;
+    const reglas = [['var(--naranja)', IC.llama, '3 seguidas: Llamarada'], ['var(--rojo)', IC.volcan, '5 seguidas: Volcán']];
+    if (V.relampago != null) reglas.push(['var(--azul)', IC.zap, 'Pregunta ' + (V.relampago + 1) + ': relámpago +2']);
+    if (V.n >= 8) reglas.push(['var(--dim)', IC.niebla, 'Últimas 3: puntos ocultos']);
+    c.innerHTML = '<div class="vs-esc"><div class="vs-tit">' + esc(V.titulo || 'Duelo') + '</div><div class="vs-fila" style="--n: ' + n + '">' +
+      js.map((j, i) => '<div class="vs-j ' + colorDe(j) + '">' + avatar(j) + '<b>' + esc(nombreDe(j)) + '</b><span class="mano">' +
+        (j.mano || []).map((k, m) => CMD[k] ? '<i style="--c:' + CMD[k].c + ';animation-delay:' + (0.7 + i * 0.15 + m * 0.1).toFixed(2) + 's" title="' + esc(CMD[k].nom) + '">' + IC[k] + '</i>' : '').join('') + '</span></div>').join('') +
+      (n === 2 ? '<div class="vs-x">VS</div>' : '') + '</div><div class="vs-raya"></div>' +
+      '<div class="vs-reglas">' + reglas.map(r => '<span style="--c:' + r[0] + '">' + r[1] + r[2] + '</span>').join('') + '</div>' +
+      '<b class="num" id="cuentaNum" style="font-size:64px;margin-top:16px"></b><span class="txt" id="cuentaTxt"></span></div>';
+    c.hidden = false;
+    son('vs'); setTimeout(() => son('comodin'), 700);
+    if (window.MCSonido && MCSonido.ambiente) MCSonido.ambiente(ambOn(), 0);
+    const paso = () => {
+      const q = fin - Date.now();
+      if (q <= 0) { c.hidden = true; son('cuenta', 0); empezar(); return; }
+      const s = Math.ceil(q / 1000), txt = s > 3 ? '' : String(s), b = $('cuentaNum');
+      if (b.textContent !== txt) { b.textContent = txt; if (s <= 3) { son('cuenta', s); b.style.animation = 'none'; void b.offsetWidth; b.style.animation = ''; } }
+      $('cuentaTxt').textContent = s > 3 ? 'Prepárate…' : 'Empieza el duelo';
+      setTimeout(paso, 90);
+    };
+    paso();
+  }
+
   /* ---------- Pantalla: juego ---------- */
   async function empezar() {
     pararSondeo();
@@ -1916,13 +2287,23 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     const seg = +r.seg || +V.seg || 60;
     G = { codigo: V.codigo, qs, n: qs.length, seg, actual: r.actual, puntos: +r.puntos || 0, ok: (r.respuestas || []).map(x => !!x.ok),
           cmd: r.comodines || V.comodines || [], usados: r.usados || [], activo: r.activo || null, final: !!r.final,
-          fin: Date.now() + seg * 1000 - (+r.lleva || 0), hielo: 0, ocupado: false, ultimo: null, jug: null, espia: null, reac: 0 };
+          fin: Date.now() + seg * 1000 - (+r.lleva || 0), hielo: 0, ocupado: false, ultimo: null, jug: null, espia: null, reac: 0,
+          v3: +r.cmd_cant > 0, fuego: +r.fuego || 0, bonus: +r.bonus || 0, espejo: !!r.espejo, apuesta: r.apuesta || null,
+          relampago: r.relampago == null ? null : +r.relampago, cambioI: r.cambio_i == null ? null : +r.cambio_i, reservaQ: null, efecto: null };
+    // Pregunta de reserva (Cambio): se carga aparte, sin apuro
+    if (r.reserva && r.reserva.length) cargarRefs(r.reserva.slice(0, 1)).then(x => {
+      if (!G || G.codigo !== V.codigo || !x[0]) return;
+      G.reservaQ = mezclarDuelo([x[0]], V.codigo + '|r')[0];
+      if (G.cambioI === G.actual && !G.ocupado) pintarPregunta();
+    }).catch(() => {});
     $('barra').style.setProperty('--n', V.jugadores.length);
     $('camino').style.setProperty('--n', G.n);
     $('reac').innerHTML = '<span>Reaccionar</span>' + ORDEN_CARAS.map(k => '<button type="button" data-cara="' + k + '" aria-label="' + NOM_CARA[k] + '" title="' + NOM_CARA[k] + '">' + CARAS[k] + '</button>').join('');
     $('reac').hidden = V.jugadores.length < 2;
     pintarBarra();
     ver('juego');
+    pintarAmb();
+    if (window.MCSonido && MCSonido.ambiente) MCSonido.ambiente(ambOn(), 1);
     pintarPregunta();
     vivo(); sondeo = setInterval(siVisible(vivo), 3000);
   }
@@ -1932,36 +2313,86 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     if (G.jug) return G.jug.map((j, i) => Object.assign({ color: i, xp: xp[j.yo ? '' : j.apodo], foto: foto[j.yo ? '' : j.apodo] }, j));
     return V.jugadores.map(j => ({ apodo: j.apodo, yo: j.yo, color: j.color, xp: j.xp, foto: j.foto, actual: j.yo ? G.actual : j.actual, puntos: j.yo ? G.puntos : j.puntos || 0, racha: 0, usados: [], terminado: j.terminado }));
   }
+  // Niebla final: en las 3 últimas preguntas (duelos de 8 o más) no se ven los puntos de los demás
+  const enNiebla = () => G && G.v3 && G.n >= 8 && G.actual >= G.n - 3 && G.actual < G.n;
   function pintarBarra() {
-    const js = jugadores();
+    const js = jugadores(), niebla = enNiebla();
     const pos = j => 1 + js.filter(x => x.puntos > j.puntos).length;
     $('tiles').innerHTML = js.map(j => {
-      const p = pos(j), hecho = Math.min(j.actual, G.n), ev = (j.racha >= 3 ? '<span style="--c:var(--naranja)" title="Racha de ' + j.racha + '">' + IC.fuego + '</span>' : '') +
-        (j.usados || []).map(k => '<span style="--c:' + CMD[k].c + '" title="Usó ' + CMD[k].nom + '">' + IC[k] + '</span>').join('');
-      return '<div class="tile ' + colorDe(j) + (j.yo ? ' yo' : '') + (j.terminado && hecho < G.n ? ' fuera' : '') + '" data-apodo="' + esc(j.yo ? '' : j.apodo) + '"><span class="pos' + (p === 1 ? ' p1' : '') + '">' + p + '.º</span>' +
+      const p = pos(j), hecho = Math.min(j.actual, G.n), oculto = niebla && !j.yo;
+      const ev = (j.fuego > 0 && !j.yo ? '<span style="--c:' + (j.fuego > 1 ? 'var(--rojo)' : 'var(--naranja)') + '" title="Tiene ' + (j.fuego > 1 ? 'Volcán' : 'Llamarada') + ' cargada">' + IC[j.fuego > 1 ? 'volcan' : 'llama'] + '</span>'
+        : j.racha >= 3 ? '<span style="--c:var(--naranja)" title="Racha de ' + j.racha + '">' + IC.fuego + '</span>' : '') +
+        (j.espejo && !j.yo ? '<span style="--c:var(--morado)" title="Tiene Espejo">' + IC.espejo + '</span>' : '') +
+        (j.usados || []).slice(-2).map(k => CMD[k] ? '<span style="--c:' + CMD[k].c + '" title="Usó ' + CMD[k].nom + '">' + IC[k] + '</span>' : '').join('');
+      return '<div class="tile ' + colorDe(j) + (j.yo ? ' yo' : '') + (j.yo && G.espejo ? ' espejo' : '') + (oculto ? ' niebla' : '') + (j.terminado && hecho < G.n ? ' fuera' : '') + '" data-apodo="' + esc(j.yo ? '' : j.apodo) + '"><span class="pos' + (p === 1 ? ' p1' : '') + '">' + p + '.º</span>' +
         (ev ? '<span class="ev">' + ev + '</span>' : '') +
         '<div class="ring"><svg viewBox="0 0 46 46" aria-hidden="true"><path class="f" d="' + MARCO + '"/><path class="a" d="' + MARCO + '" pathLength="100" stroke-dasharray="100" stroke-dashoffset="' + (100 * (1 - hecho / G.n)).toFixed(1) + '"/></svg>' + avatar(j) + '</div>' +
-        '<span class="nm">' + esc(nombreDe(j)) + '</span><span class="pt">' + j.puntos + '</span><span class="rs">' + (j.terminado ? (hecho < G.n ? 'Fuera' : 'Terminó') : hecho + ' de ' + G.n) + '</span></div>';
+        '<span class="nm">' + esc(nombreDe(j)) + '</span><span class="pt">' + (oculto ? '?' : j.puntos) + '</span><span class="rs">' + (j.terminado ? (hecho < G.n ? 'Fuera' : 'Terminó') : hecho + ' de ' + G.n) + '</span></div>';
     }).join('');
     const ultima = G.final ? G.n - 1 : -1;
     $('camino').innerHTML = Array.from({ length: G.n }, (_, i) => '<i class="' + (i < G.ok.length ? (G.ok[i] ? 'ok' : 'mal') : i === G.actual ? 'ya' : '') + (i === ultima ? ' fin' : '') + '"></i>').join('');
     $('camTxt').textContent = 'Tu camino · ' + G.ok.filter(Boolean).length + ' de ' + G.ok.length;
     $('pNum').textContent = 'Pregunta ' + Math.min(G.actual + 1, G.n) + ' de ' + G.n;
+    pintarNiebla(js, niebla);
+    pintarFuego();
   }
+  // Aviso de niebla y "duelo cerrado" (alguien a 2 puntos o menos), con latido en la pantalla
+  let nieblaVista = false;
+  function pintarNiebla(js, niebla) {
+    const yo = js.filter(j => j.yo)[0] || { puntos: G.puntos }, otros = js.filter(j => !j.yo);
+    const cerrado = G.v3 && G.actual < G.n && G.actual >= Math.floor(G.n / 2) && otros.length && otros.some(j => Math.abs((j.puntos || 0) - (yo.puntos || 0)) <= 2);
+    const tension = niebla && cerrado;
+    document.body.classList.toggle('nublado', niebla);
+    document.body.classList.toggle('tension', !!tension);
+    if (niebla && !nieblaVista) { nieblaVista = true; son('niebla'); }
+    if (window.MCSonido && MCSonido.ambiente && ambOn() && G.actual < G.n) MCSonido.ambiente(true, tension ? 3 : niebla ? 2 : 1);
+    $('nieblaAv').innerHTML = !niebla ? '' : '<div class="niebla-av' + (cerrado ? ' cerrado' : '') + '">' + IC.niebla + '<div><b>' + (cerrado ? '¡Duelo cerrado!' : 'Niebla final') + '</b><br>' +
+      (cerrado ? 'Alguien está a 2 puntos o menos de ti. Cada pregunta decide.' : 'En las 3 últimas no ves los puntos de los demás. El podio lo revela todo.') + '</div></div>';
+  }
+  // Medidor de racha: 3 seguidas cargan la Llamarada, 5 el Volcán
+  function rachaMia() { let k = 0; for (let i = G.ok.length - 1; i >= 0 && G.ok[i]; i--) k++; return k; }
+  function pintarFuego() {
+    const caja = $('fuegoBar');
+    if (!G.v3 || G.actual >= G.n) { caja.innerHTML = ''; caja.dataset.h = ''; return; }
+    const r = rachaMia(), enCiclo = r === 0 ? 0 : (r % 5 || 5), f = G.fuego;
+    const tipo = f >= 2 ? 'volcan' : 'llama', lista = f > 0;
+    const tit = lista ? '¡' + FUEGO[tipo].nom + ' lista!' : G.bonus > 0 ? 'Volcán: la próxima vale doble' : 'Llamarada';
+    const sub = lista ? FUEGO[tipo].que + (tipo === 'llama' ? '. Aguanta hasta 5 seguidas para el Volcán.' : '')
+      : G.bonus > 0 ? 'Si aciertas esta, tus puntos se duplican.'
+      : enCiclo < 3 ? 'Acierta ' + (3 - enCiclo) + ' más ' + (3 - enCiclo === 1 ? 'seguida' : 'seguidas') + ' para cargarla. Si fallas, se apaga.'
+      : 'Acierta ' + (5 - enCiclo) + ' más para el Volcán.';
+    const prev = caja.firstChild && caja.firstChild.className;
+    const cls = 'fuego-bar' + (lista ? ' lista' : '') + (f >= 2 ? ' volcan' : '') + (G.bonus > 0 ? ' bonus' : '');
+    const html = '<div class="' + cls + '"><span class="fi">' + IC[tipo] + '</span><div class="tx">' + tit + '<small>' + sub + '</small><div class="seg">' +
+      [0, 1, 2, 3, 4].map(i => '<i class="' + (i < enCiclo || (f >= 2) ? 'on' + (i >= 3 ? ' v' : '') : '') + '"></i>').join('') + '</div></div>' +
+      (lista ? '<button type="button" class="lanzar" id="btnFuego"' + (G.ocupado || G.efecto ? ' disabled' : '') + '>Lanzar</button>' : '') + '</div>';
+    if (caja.dataset.h === html) return;   // sin cambios: no se repinta (no corta la animación ni el toque)
+    caja.dataset.h = html; caja.innerHTML = html;
+    if (lista && prev && prev.indexOf('lista') < 0) son('cargado');
+  }
+  // La pregunta que ve el jugador en i (la de reserva si usó Cambio ahí)
+  const qDe = i => G.cambioI === i && G.reservaQ ? G.reservaQ : G.qs[i];
   // Barra de comodines: los que quedan, el activo y los ya usados
   function pintarComodines() {
     const usados = G.usados.map(u => u.k), aqui = G.usados.some(u => u.i === G.actual), ultima = G.final && G.actual === G.n - 1;
     $('cbar').hidden = !G.cmd.length;
     $('cbar').innerHTML = '<span class="t">Tus comodines</span>' + G.cmd.map(k => {
-      const usado = usados.indexOf(k) >= 0, activo = G.usados.some(u => u.k === k && u.i === G.actual);
-      const no = usado || aqui || G.ocupado || (k === 'doble' && ultima);
-      return '<button type="button" class="cbtn' + (usado && !activo ? ' usado' : '') + (activo ? ' activo' : '') + '" data-cmd="' + k + '" style="--c:' + CMD[k].c + '"' + (no ? ' disabled' : '') +
-        ' title="' + esc(CMD[k].que + (k === 'doble' && ultima ? ' (no en la final: ya vale 3)' : '')) + '">' + IC[k] + CMD[k].nom.replace(' tiempo', '') + '</button>';
+      if (!CMD[k]) return '';
+      const usado = usados.indexOf(k) >= 0, activo = G.usados.some(u => u.k === k && u.i === G.actual) || (k === 'espejo' && G.espejo);
+      const no = usado || aqui || G.ocupado || ((k === 'doble' || k === 'apuesta') && ultima) || (k === 'cambio' && !G.reservaQ);
+      return '<button type="button" class="cbtn' + (usado && !activo ? ' usado' : '') + (activo ? ' activo' : '') + '" data-cmd="' + k + '" style="--c:' + CMD[k].c + ';--tc:' + TIPOS[CMD[k].t][1] + '"' + (no ? ' disabled' : '') +
+        ' title="' + esc(CMD[k].que + ((k === 'doble' || k === 'apuesta') && ultima ? ' (no en la final: ya vale 3)' : '')) + '">' + IC[k] + CMD[k].nom.replace(' tiempo', '') + (G.v3 ? '<span class="ty"></span>' : '') + '</button>';
     }).join('');
     // Lo que trae el comodín activo en esta pregunta
     const k = (G.usados.filter(u => u.i === G.actual)[0] || {}).k;
-    $('pExtra').innerHTML = k === 'doble' && G.activo === 'doble' ? '<span class="x2" style="--c:var(--oro)">' + IC.doble + 'Vale 2</span>'
-      : k === 'escudo' && G.activo === 'escudo' ? '<span class="x2" style="--c:var(--naranja)">' + IC.escudo + 'Escudo activo</span>' : '';
+    const tag = (c, ic, t) => '<span class="x2" style="--c:' + c + '">' + ic + t + '</span>';
+    $('pExtra').innerHTML = (k === 'doble' && G.activo === 'doble' ? tag('var(--oro)', IC.doble, 'Vale 2')
+      : k === 'escudo' && G.activo === 'escudo' ? tag('var(--naranja)', IC.escudo, 'Escudo activo')
+      : k === 'apuesta' && G.activo === 'apuesta' ? tag('var(--oro)', IC.apuesta, 'Apuesta ' + G.apuesta)
+      : k === 'ladron' && G.activo === 'ladron' ? tag('var(--rojo)', IC.ladron, 'Ladrón listo')
+      : k === 'cambio' ? tag('var(--azul)', IC.cambio, 'Pregunta cambiada') : '') +
+      (G.espejo ? tag('var(--morado)', IC.espejo, 'Espejo') : '') + (G.bonus > 0 ? tag('var(--rojo)', IC.volcan, 'Vale doble') : '');
+    pintarFuego();
   }
   function avisoJuego(html, color, ic) { $('pAviso').innerHTML = html ? '<div class="aviso-j" style="--c:' + color + '"><span class="ci">' + ic + '</span><div style="flex:1;min-width:0">' + html + '</div></div>' : ''; }
   function pintarEspia() {
@@ -1974,10 +2405,17 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   }
   let tic = null;
   function pintarPregunta() {
-    const i = G.actual, q = G.qs[i];
+    const i = G.actual, q = qDe(i);
     G.espia = null; avisoJuego('');
     $('veredicto').textContent = ''; $('veredicto').className = 'veredicto';
-    $('pFinal').innerHTML = G.final && i === G.n - 1 ? '<div class="final"><div><b>TODO O NADA</b><small>Última pregunta. Si aciertas, vale 3.</small></div><span class="x3">×3</span></div>' : '';
+    $('pFinal').innerHTML = G.final && i === G.n - 1 ? '<div class="final"><div><b>TODO O NADA</b><small>Última pregunta. Si aciertas, vale 3.</small></div><span class="x3">×3</span></div>'
+      : G.relampago === i ? '<div class="relampago"><span class="ri">' + IC.zap + '</span><div><b>Pregunta relámpago</b><small>El primero en acertarla gana +2</small></div><span class="x3">+2</span></div>' : '';
+    if (G.relampago === i) son('relampago');
+    // Si la pregunta trae un cartel (final o relámpago) y quedó debajo del marcador fijo, súbelo a la vista
+    if ($('pFinal').innerHTML) requestAnimationFrame(() => {
+      const b = document.querySelector('#juego .barra'), y = $('pFinal').getBoundingClientRect().top, h = b ? b.getBoundingClientRect().bottom + 10 : 0;
+      if (y < h) window.scrollBy({ top: y - h, behavior: 'smooth' });
+    });
     const lst = $('pAlts');
     if (!q) {
       // La pregunta cambió en la web desde que se creó el duelo
@@ -2003,7 +2441,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     clearInterval(tic); tic = setInterval(reloj, 200); reloj();
   }
   function quitarAlts(orig) {
-    const q = G.qs[G.actual], bs = $('pAlts').querySelectorAll('button[data-k]');
+    const q = qDe(G.actual), bs = $('pAlts').querySelectorAll('button[data-k]');
     (orig || []).forEach(o => { const b = bs[aVista(q, o)]; if (b) { b.classList.add('fuera'); b.disabled = true; } });
   }
   const PERIM = 157.1;
@@ -2030,7 +2468,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     pintarComodines();
     let r;
     for (let intento = 0; intento < 3 && !r; intento++) {
-      try { r = await rpc('responder_duelo', { p_codigo: G.codigo, p_i: G.actual, p_op: aOriginal(G.qs[G.actual], op) }); }
+      try { r = await rpc('responder_duelo', { p_codigo: G.codigo, p_i: G.actual, p_op: aOriginal(qDe(G.actual), op) }); }
       catch (e) {
         if (/terminaste/i.test(e.message || '')) { clearInterval(tic); await recargar(); mostrarResultado(); return; }
         if (intento === 2) { $('veredicto').textContent = textoError(e) + ' Toca para reintentar.'; $('veredicto').className = 'veredicto mal'; botones.forEach(x => { if (!x.classList.contains('fuera')) x.disabled = false; }); G.ocupado = false; return; }
@@ -2051,14 +2489,28 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     clearInterval(tic);
     cuentaRacha();
     if (window.MCCorazones) MCCorazones.respuesta(!!r.ok);   // XP de cada respuesta (assets/corazones.js)
-    G.actual = r.actual; G.puntos = r.puntos; G.ok.push(!!r.ok); G.activo = null;
+    const apostado = G.activo === 'apuesta' ? G.apuesta : 0, rachaAntes = rachaMia();
+    G.actual = r.actual; G.puntos = r.puntos; G.ok.push(!!r.ok); G.activo = null; G.apuesta = null;
+    if (r.fuego != null) G.fuego = +r.fuego;
+    if (r.op >= 0 || !r.ok) G.bonus = 0;
     if (G.jug) G.jug.forEach(j => { if (j.yo) { j.actual = r.actual; j.puntos = r.puntos; j.racha = r.ok ? (j.racha || 0) + 1 : 0; } });
-    const q = G.qs[G.actual - 1];
+    const q = qDe(G.actual - 1);
     if (q) {
       const vc = aVista(q, r.correcta), vo = aVista(q, r.op);
       botones.forEach((x, k) => { if (k === vc) x.classList.add('ok'); else if (k === vo) x.classList.add('mal'); x.classList.remove('on'); });
       const letra = esc(q.options[vc].letter || LETRAS[vc]);
-      $('veredicto').innerHTML = r.ok ? '¡Correcta! +' + r.p + (r.p === 3 ? ' · Todo o nada' : r.p === 2 ? ' · Doble' : '') : r.op < 0 ? 'Se acabó el tiempo. Era la ' + letra + '.' : 'Incorrecta. Era la ' + letra + '.';
+      const extras = [];
+      if (r.ok && apostado) extras.push('Apuesta ganada');
+      else if (r.ok && r.rel) extras.push('Relámpago');
+      else if (r.ok && r.p === 3) extras.push('Todo o nada');
+      else if (r.ok && r.p >= 2) extras.push(r.p >= 4 ? 'Volcán' : 'Doble');
+      if (r.robo) extras.push(r.robo.rebote ? esc(r.robo.a) + ' tenía Espejo: −1' : 'Le robaste 1 a ' + esc(r.robo.a));
+      $('veredicto').innerHTML = r.ok ? '¡Correcta! +' + r.p + (extras.length ? ' · ' + extras.join(' · ') : '')
+        : (r.op < 0 ? 'Se acabó el tiempo. Era la ' + letra + '.' : 'Incorrecta. Era la ' + letra + '.') + (apostado && r.p < 0 ? ' Pierdes ' + (-r.p) + '.' : '');
+      if (r.ok && r.rel) { son('relampago'); toast('¡Ganaste la pregunta relámpago! +2', 'var(--azul)', IC.zap); }
+      if (r.robo && !r.robo.rebote) son('ladron');
+      if (r.ok && (r.racha === 3 || r.racha === 5 || (r.racha > 5 && (r.racha % 5 === 0 || r.racha % 5 === 3)))) setTimeout(() => toast(r.fuego >= 2 ? '¡Volcán cargado! Lánzalo cuando quieras' : '¡Llamarada cargada!', r.fuego >= 2 ? 'var(--rojo)' : 'var(--naranja)', IC[r.fuego >= 2 ? 'volcan' : 'llama']), 350);
+      else if (!r.ok && G.ok.length > 1 && G.ok[G.ok.length - 2] && G.v3 && rachaAntes >= 2) toast('Se apagó tu fuego', 'var(--dim)', IC.llama);
       $('veredicto').className = 'veredicto ' + (r.ok ? 'ok' : 'mal');
       son(r.ok ? 'bien' : 'mal');
     }
@@ -2070,24 +2522,157 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     }, q ? 1300 : 0);
   }
   // Comodines
-  $('cbar').addEventListener('click', async e => {
+  $('cbar').addEventListener('click', e => {
     const b = e.target.closest('[data-cmd]'); if (!b || b.disabled || !G || G.ocupado) return;
-    const k = b.dataset.cmd, i = G.actual;
+    const k = b.dataset.cmd;
+    if (k === 'apuesta') { elegirApuesta(); return; }
+    usarComodin(k, 0);
+  });
+  // Apuesta: primero elige cuánto (1, 2 o 3)
+  function elegirApuesta() {
+    son('toque');
+    avisoJuego('');
+    $('pAviso').innerHTML = '<div class="apu"><div class="cab"><span class="ci">' + IC.apuesta + '</span><div>¿Cuánto apuestas a esta pregunta? Si aciertas los ganas; si fallas, los pierdes.</div></div><div class="op">' +
+      [1, 2, 3].map(n => '<button type="button" data-ap="' + n + '"><b>' + n + '</b><small>+' + n + ' / −' + n + '</small></button>').join('') + '<button type="button" class="no" data-ap="0">Mejor no</button></div></div>';
+  }
+  $('pAviso').addEventListener('click', e => {
+    const b = e.target.closest('[data-ap]'); if (!b || !G || G.ocupado) return;
+    const n = +b.dataset.ap; $('pAviso').innerHTML = '';
+    if (n > 0) usarComodin('apuesta', n);
+  });
+  async function usarComodin(k, n) {
+    const i = G.actual;
     $('cbar').querySelectorAll('button').forEach(x => { x.disabled = true; });
     let r;
-    try { r = await rpc('usar_comodin', { p_codigo: G.codigo, p_k: k, p_i: i }); }
+    try { r = await rpc('usar_comodin', n ? { p_codigo: G.codigo, p_k: k, p_i: i, p_n: n } : { p_codigo: G.codigo, p_k: k, p_i: i }); }
     catch (err) { toast(esc(textoError(err)), 'var(--rojo)', IC[k]); pintarComodines(); return; }
     if (!G || G.actual !== i) return;
     G.usados.push({ k, i, quita: r.quita });
-    son('comodin');
+    son(k === 'terremoto' ? 'terremoto' : k === 'espejo' ? 'espejo' : k === 'apuesta' ? 'apuesta' : k === 'robar' ? 'robado' : 'comodin');
+    const golpe = (txt, nadie) => toast(r.golpes || r.rebotes ? txt + (r.rebotes ? ' · ' + plural(r.rebotes, 'rival tenía', 'rivales tenían') + ' Espejo y te rebotó' : '') : nadie, 'var(--rojo)', IC[k]);
     if (k === 'mitad') quitarAlts(r.quita);
-    else if (k === 'hielo') { const ahora = Date.now(); G.fin = ahora + G.seg * 1000 - (+r.lleva || 0); G.hielo = ahora + 10000; toast('Tu reloj se congeló 10 segundos', 'var(--morado)', IC.hielo); }
-    else if (k === 'doble' || k === 'escudo') G.activo = k;
-    else if (k === 'robar') toast(r.robados ? 'Les robaste 5 segundos a tus rivales' : 'Tus rivales ya terminaron: no había tiempo que robar', 'var(--rojo)', IC.robar);
-    else if (k === 'espia') { G.espia = r.espia || []; pintarEspia(); }
+    else if (k === 'hielo') { const ahora = Date.now(); G.fin = ahora + G.seg * 1000 - (+r.lleva || 0); G.hielo = ahora + 10000; $('pregCard').classList.add('escarcha'); setTimeout(() => $('pregCard').classList.remove('escarcha'), 10000); toast('Tu reloj se congeló 10 segundos', 'var(--morado)', IC.hielo); }
+    else if (k === 'doble' || k === 'escudo' || k === 'ladron') G.activo = k;
+    else if (k === 'apuesta') { G.activo = 'apuesta'; G.apuesta = +r.apuesta || n; }
+    else if (k === 'espejo') { G.espejo = true; toast('Espejo activo: el próximo ataque rebota', 'var(--morado)', IC.espejo); }
+    else if (k === 'robar') golpe('Les robaste 8 segundos a tus rivales', 'Tus rivales ya terminaron: no había tiempo que robar');
+    else if (k === 'terremoto') golpe('¡Terremoto! Sus alternativas tiemblan y se mezclan', 'Tus rivales ya terminaron');
+    else if (k === 'espia') { G.espia = r.espia || []; pintarEspia(); espiaRapido(i); }
+    else if (k === 'cambio') {
+      G.cambioI = i; G.fin = Date.now() + G.seg * 1000; G.hielo = 0;
+      if (G.reservaQ) { son('cambioQ'); pintarPregunta(); toast('Pregunta nueva: el reloj empieza de cero', 'var(--azul)', IC.cambio); }
+    }
     if (G.jug) G.jug.forEach(j => { if (j.yo) j.usados = (j.usados || []).concat(k); });
     pintarComodines(); pintarBarra();
+  }
+  // Espía en vivo: mira cada 1,5 s mientras dura esa pregunta
+  function espiaRapido(i) {
+    const t = setInterval(() => { if (!G || G.actual !== i || G.ocupado) { clearInterval(t); return; } if (!document.hidden) vivo(); }, 1500);
+  }
+  // Sonido de ambiente del duelo (latido que se acelera al final): botón propio para silenciarlo
+  const ambOn = () => !!(window.MCSonido && MCSonido.activo && MCSonido.ambienteOn);
+  function pintarAmb() {
+    const b = $('ambBtn'), on = ambOn();
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-pressed', String(on));
+    b.innerHTML = (on ? IC.altavoz : IC.mudo) + (on ? 'Ambiente <span class="ondas"><i></i><i></i><i></i></span>' : window.MCSonido && !MCSonido.activo ? 'Sonido apagado' : 'Ambiente apagado');
+    b.title = on ? 'Silenciar el sonido de ambiente' : 'Activar el sonido de ambiente';
+  }
+  $('ambBtn').addEventListener('click', () => {
+    if (!window.MCSonido) return;
+    if (!MCSonido.activo) { MCSonido.cambiar(); MCSonido.ambienteCambiar(true); }
+    else MCSonido.ambienteCambiar();
+    pintarAmb();
+    if (G && G.actual < G.n) { const js = jugadores(); pintarNiebla(js, enNiebla()); if (ambOn() && !enNiebla()) MCSonido.ambiente(true, 1); }
   });
+  // Llamarada / Volcán
+  $('fuegoBar').addEventListener('click', async e => {
+    const b = e.target.closest('#btnFuego'); if (!b || b.disabled || !G) return;
+    b.disabled = true;
+    let r;
+    try { r = await rpc('lanzar_fuego', { p_codigo: G.codigo }); }
+    catch (err) { toast(esc(textoError(err)), 'var(--rojo)', IC.llama); pintarFuego(); return; }
+    G.fuego = 0;
+    if (r.tipo === 'volcan') G.bonus = 2;
+    G.ultFuego = r.tipo;
+    animLanzada(r.tipo);
+    if (!r.golpes && !r.rebotes) setTimeout(() => toast('Tus rivales ya terminaron: nadie se quemó', 'var(--dim)', IC.llama), 900);
+    pintarComodines(); pintarBarra();
+  });
+  function animLanzada(tipo) {
+    son(tipo === 'volcan' ? 'volcan' : 'llamarada');
+    const el = document.createElement('div'); el.className = 'lanzada';
+    el.innerHTML = '<span class="bola">' + IC[tipo] + '</span><b>¡' + FUEGO[tipo].nom + '!</b>';
+    document.body.appendChild(el); setTimeout(() => el.remove(), 1500);
+  }
+
+  /* ---------- Efectos de los ataques en tu pantalla ---------- */
+  // Llamas dibujadas con código (sin imágenes): varias lenguas de fuego al pie de la tarjeta
+  function llamaSvg(i, h) {
+    return '<svg viewBox="0 0 60 90" preserveAspectRatio="none" style="width:100%;height:100%"><defs><linearGradient id="lg' + i + '" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FF3D00"/><stop offset=".55" stop-color="#FF8A00"/><stop offset="1" stop-color="#FFD84D" stop-opacity=".9"/></linearGradient></defs>' +
+      '<path d="M30 ' + (90 - h) + 'c4 14 26 24 26 48a26 26 0 0 1-52 0c0-11 6-19 11-23 1 9 5 14 10 15-2-15 1-28 5-40z" fill="url(#lg' + i + ')"/>' +
+      '<path d="M30 ' + (90 - h * .55) + 'c3 8 13 13 13 24a13 13 0 0 1-26 0c0-7 6-12 13-24z" fill="#FFE27A"/></svg>';
+  }
+  function quemar(tipo, quien) {
+    const card = $('pregCard'); if (!card || G.actual >= G.n) return;
+    card.querySelectorAll('.quema').forEach(x => x.remove());
+    document.querySelectorAll('.borde-fuego').forEach(x => x.remove());
+    const volcan = tipo === 'volcan', ms = volcan ? 8000 : 5000, toques = volcan ? 5 : 3;
+    const el = document.createElement('div'); el.className = 'quema' + (volcan ? ' volcan' : '');
+    const lenguas = [[-6, 26, 82], [12, 22, 64], [27, 28, 88], [46, 22, 66], [60, 26, 86], [78, 26, 72], [92, 18, 60]];
+    el.innerHTML = lenguas.map((f, i) => '<span class="ll" style="left:' + f[0] + '%;width:' + f[1] + '%;height:' + (volcan ? f[2] * 0.75 + 20 : f[2] * 0.6) + '%">' + llamaSvg(i, f[2]) + '</span>').join('') +
+      Array.from({ length: 10 }, (_, i) => '<i class="chispa" style="left:' + (8 + i * 9) + '%;--x:' + (i % 2 ? '' : '-') + (10 + i * 3) + 'px;animation-delay:' + (i * 0.13).toFixed(2) + 's"></i>').join('') +
+      '<div class="apagar"><b>¡' + esc(quien) + ' te lanzó ' + (volcan ? 'un Volcán' : 'una Llamarada') + '!</b><small>Toca ' + toques + ' veces para apagarla o espera ' + (ms / 1000) + ' s</small><div class="gotas">' +
+      Array.from({ length: toques }, () => '<span>' + IC.gota + '</span>').join('') + '</div></div>';
+    card.appendChild(el);
+    const borde = document.createElement('div'); borde.className = 'borde-fuego' + (volcan ? ' volcan' : ''); document.body.appendChild(borde);
+    G.efecto = 'quema'; pintarFuego();
+    son(volcan ? 'volcan' : 'llamarada'); son('quemado');
+    let n = 0;
+    const apagar = () => { clearTimeout(t); el.classList.add('sale'); borde.remove(); setTimeout(() => el.remove(), 450); if (G) { G.efecto = null; pintarFuego(); } };
+    const t = setTimeout(apagar, ms);
+    el.addEventListener('click', ev => {
+      ev.stopPropagation();
+      const gs = el.querySelectorAll('.gotas span'); if (n >= gs.length) return;
+      gs[n].classList.add('on'); n++; son('gota', n);
+      if (n >= gs.length) apagar();
+    });
+  }
+  function terremoto(quien) {
+    const card = $('pregCard'), lst = $('pAlts'); if (!card || G.actual >= G.n) return;
+    card.classList.add('tiembla');
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    g.setAttribute('class', 'grietas'); g.setAttribute('viewBox', '0 0 100 100'); g.setAttribute('preserveAspectRatio', 'none');
+    g.innerHTML = '<path d="M50 0 46 18 53 30 44 46 52 60 47 78 50 100"/><path d="M46 18 30 24M44 46 62 52M47 78 30 86" />';
+    card.appendChild(g);
+    son('terremoto');
+    toast('<b>' + esc(quien) + '</b> te lanzó un Terremoto', 'var(--rojo)', IC.terremoto);
+    // Las alternativas cambian de lugar (cada botón sigue siendo la misma alternativa)
+    const mezclar = () => { const lis = Array.from(lst.children); barajar(lis).forEach(li => lst.appendChild(li)); };
+    mezclar(); const t2 = setTimeout(mezclar, 1200);
+    setTimeout(() => { clearTimeout(t2); card.classList.remove('tiembla'); g.remove(); }, 2600);
+  }
+  function relojRoto(quien, seg) {
+    const rl = $('reloj');
+    rl.classList.add('robado', 'roto');
+    rl.insertAdjacentHTML('beforeend', '<span class="menos">−' + seg + '</span><svg class="vidrio" viewBox="0 0 58 58"><path d="M29 8 25 22 33 28 27 40 31 52"/><path d="M25 22 12 26M33 28 47 24M27 40 15 46"/></svg>');
+    son('robado');
+    toast('<b>' + esc(quien) + '</b> te robó ' + seg + ' segundos', 'var(--rojo)', IC.robar);
+    setTimeout(() => { rl.classList.remove('robado', 'roto'); rl.querySelectorAll('.menos, .vidrio').forEach(x => x.remove()); }, 2200);
+  }
+  function animRebote(txt) {
+    son('espejo');
+    const el = document.createElement('div'); el.className = 'rebote';
+    el.innerHTML = '<span class="esp">' + IC.espejo + '</span><b>' + txt + '</b>';
+    document.body.appendChild(el); setTimeout(() => el.remove(), 1700);
+  }
+  // Un ataque te alcanza (o te rebota)
+  function recibirEfecto(tipo, quien) {
+    if (!G || G.actual >= G.n) return;
+    if (tipo === 'llama' || tipo === 'volcan') quemar(tipo, quien);
+    else if (tipo === 'terremoto') terremoto(quien);
+    else if (tipo === 'robar') relojRoto(quien, 8);
+  }
   // Reacciones: se ven sobre tu cuadro en todos los celulares
   // Reacción de cualquier jugador: carita grande al centro de la pantalla con su nombre y su color
   function sticker(apodo, cara, yo) {
@@ -2120,15 +2705,38 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     enVivo = false;
     if (!r || !G) return;
     G.jug = r.jugadores;
-    if (G.ultimo != null) (r.eventos || []).forEach(ev => {
-      if (ev.yo) return;
-      if (ev.tipo === 'reac') { sticker(ev.apodo, ev.dato, false); son('reaccion', ev.dato); }
-      else if (ev.tipo === 'robar' && G.actual < G.n) {
-        toast('<b>' + esc(ev.apodo) + '</b> te robó 5 segundos', 'var(--rojo)', IC.robar); son('robado');
-        const rl = $('reloj'); rl.classList.add('robado'); rl.insertAdjacentHTML('beforeend', '<span class="menos">−5</span>');
-        setTimeout(() => { rl.classList.remove('robado'); rl.querySelectorAll('.menos').forEach(x => x.remove()); }, 2200);
-      } else if (ev.tipo === 'comodin' && CMD[ev.dato]) toast('<b>' + esc(ev.apodo) + '</b> usó ' + CMD[ev.dato].nom, CMD[ev.dato].c, IC[ev.dato]);
-    });
+    if (G.ultimo != null) {
+      const fuegos = {};
+      (r.eventos || []).forEach(ev => {
+        const nom = CMD[ev.dato] ? CMD[ev.dato].nom : FUEGO[ev.dato] ? FUEGO[ev.dato].nom : ev.dato;
+        // Tu Espejo devolvió un ataque
+        if (ev.tipo === 'rebote' && ev.yo) {
+          G.espejo = false; animRebote('¡Rebotado!');
+          toast('Tu Espejo le devolvió ' + (ev.dato === 'ladron' ? 'el robo' : 'el ' + esc(nom)) + ' a <b>' + esc(ev.otro || '') + '</b>', 'var(--morado)', IC.espejo);
+          return;
+        }
+        if (ev.yo) return;
+        if (ev.tipo === 'reac') { sticker(ev.apodo, ev.dato, false); son('reaccion', ev.dato); }
+        else if (ev.tipo === 'ataque' && ev.para_mi) {
+          if (ev.dato === 'ladron') { toast('<b>' + esc(ev.apodo) + '</b> te robó 1 punto', 'var(--rojo)', IC.ladron); son('ladron'); }
+          else recibirEfecto(ev.dato, ev.apodo);
+        }
+        else if (ev.tipo === 'ataque' && (ev.dato === 'llama' || ev.dato === 'volcan') && !fuegos[ev.apodo]) {
+          fuegos[ev.apodo] = 1; toast('<b>' + esc(ev.apodo) + '</b> lanzó ' + (ev.dato === 'volcan' ? 'un Volcán' : 'una Llamarada'), 'var(--naranja)', IC[ev.dato]);
+        }
+        else if (ev.tipo === 'rebote' && ev.para_mi) {
+          animRebote('¡Te rebotó!');
+          toast('<b>' + esc(ev.apodo) + '</b> tenía Espejo: tu ' + esc(nom) + ' te rebotó', 'var(--morado)', IC.espejo);
+          if (ev.dato !== 'ladron') setTimeout(() => recibirEfecto(ev.dato, ev.apodo + ' (Espejo)'), 900);
+        }
+        else if (ev.tipo === 'relampago') { toast('<b>' + esc(ev.apodo) + '</b> ganó la pregunta relámpago', 'var(--azul)', IC.zap); }
+        else if (ev.tipo === 'robar' && G.actual < G.n) relojRoto(ev.apodo, 5);   // duelos de antes
+        else if (ev.tipo === 'comodin' && CMD[ev.dato]) toast('<b>' + esc(ev.apodo) + '</b> usó ' + CMD[ev.dato].nom, CMD[ev.dato].c, IC[ev.dato]);
+      });
+    }
+    if (r.espejo != null) G.espejo = !!r.espejo;
+    if (r.fuego != null && !G.ocupado && r.actual === G.actual) G.fuego = +r.fuego;
+    if (r.bonus != null && !G.ocupado && r.actual === G.actual) G.bonus = +r.bonus;
     G.ultimo = r.ultimo;
     // Reloj: el servidor manda (Congelar y Robar tiempo ya vienen aplicados)
     if (r.actual === G.actual && !G.ocupado) {
@@ -2168,11 +2776,52 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     const quien = q => q === yo ? 'Tú' : q;
     const md = (c, ic, nom, x, dato) => '<div class="md' + (x ? '' : ' nadie') + '" style="--c:' + c + '"><span class="ci">' + ic + '</span><b>' + nom + '</b><span>' + esc(x ? x : 'Nadie') + '</span><small>' + esc(dato) + '</small></div>';
     const f = m.francotirador || [];
-    return '<div class="ttl">Medallas del duelo</div><div class="meds">' +
+    return '<div class="ttl">Medallas del duelo</div><div class="meds' + ('piromano' in m ? ' v3' : '') + '">' +
       md('var(--azul)', IC.rayo, 'Rayo', m.rayo && quien(m.rayo.quien), m.rayo ? String(m.rayo.dato).replace('.', ',') + ' s por acierto' : 'El más rápido') +
       md('var(--naranja)', IC.fuego, 'Racha', m.racha && quien(m.racha.quien), m.racha ? m.racha.dato + ' seguidas' : '3 o más seguidas') +
       md('var(--morado)', IC.sube, 'Remontada', m.remontada && quien(m.remontada.quien), m.remontada ? 'De ' + m.remontada.dato + '.º a 1.º' : 'Ganar desde atrás') +
-      md('var(--verde)', IC.mira, 'Francotirador', f.length ? lista(f.map(quien)) : '', 'Sin fallar ninguna') + '</div>';
+      md('var(--verde)', IC.mira, 'Francotirador', f.length ? lista(f.map(quien)) : '', 'Sin fallar ninguna') +
+      ('piromano' in m ? md('var(--naranja)', IC.llama, 'Pirómano', m.piromano && quien(m.piromano.quien), m.piromano ? plural(m.piromano.dato, 'fuego lanzado', 'fuegos lanzados') : 'Lanzar Llamaradas') +
+        md('var(--morado)', IC.espejo, 'Intocable', m.intocable && quien(m.intocable.quien), m.intocable ? plural(m.intocable.dato, 'ataque rebotado', 'ataques rebotados') : 'Rebotar un ataque') +
+        md('var(--rojo)', IC.ladron, 'Ladrón de oro', m.ladron && quien(m.ladron.quien), m.ladron ? plural(m.ladron.dato, 'punto robado', 'puntos robados') : 'Robar puntos') +
+        md('var(--oro)', IC.apuesta, 'Apostador', m.apostador && quien(m.apostador.quien), m.apostador ? 'Ganó una Apuesta de 3' : 'Ganar una Apuesta de 3') : '') + '</div>';
+  }
+  // La jugada del duelo: lo que hizo el ganador para ganar
+  function jugadaHtml(m) {
+    const j = m && m.jugada; if (!j) return '';
+    const yo = (V.jugadores.filter(x => x.yo)[0] || {}).apodo, mia = j.quien === yo, q = j.quien;
+    const de = (art, cosa) => mia ? 'Tu ' + cosa : art + ' ' + cosa + ' de ' + q;
+    const D = {
+      llama: ['var(--naranja)', IC.llama, de('La', 'Llamarada'), (mia ? 'La lanzaste' : 'La lanzó') + ' en la pregunta ' + (j.i + 1) + (mia ? ' y quemaste' : ' y quemó') + ' a ' + (mia ? 'tus' : 'sus') + ' rivales.'],
+      volcan: ['var(--rojo)', IC.volcan, de('El', 'Volcán'), 'Explotó en la pregunta ' + (j.i + 1) + ' y ' + (mia ? 'tu' : 'su') + ' siguiente acierto valió doble.'],
+      remontada: ['var(--morado)', IC.sube, mia ? 'Tu remontada' : 'La remontada de ' + q, (mia ? 'Llegaste a estar ' : 'Llegó a estar ') + j.dato + (mia ? '.º y terminaste primero.' : '.º y terminó primero.')],
+      relampago: ['var(--azul)', IC.zap, de('El', 'relámpago'), (mia ? 'Fuiste' : 'Fue') + ' el primero en acertar la pregunta ' + (j.i + 1) + (mia ? ' y te llevaste +2.' : ' y se llevó +2.')],
+      ladron: ['var(--rojo)', IC.ladron, de('El', 'robo'), (mia ? 'Le quitaste ' : 'Le quitó ') + plural(j.dato, 'punto', 'puntos') + ' al que iba mejor.'],
+      espejo: ['var(--morado)', IC.espejo, de('El', 'Espejo'), (mia ? 'Devolviste ' : 'Devolvió ') + plural(j.dato, 'ataque', 'ataques') + ' a quien se lo lanzó.']
+    }[j.t];
+    if (!D) return '';
+    return '<div class="jugada" style="--c:' + D[0] + '"><span class="ci">' + D[1] + '</span><div><small>Jugada del duelo</small><b>' + esc(D[2]) + '</b><span>' + esc(D[3]) + '</span></div></div>';
+  }
+  // Podio que se revela de a uno: último lugar primero y, tras un redoble, el ganador
+  function revelarPodio(alFinal) {
+    const pod = $('resTabla').querySelector('.podio');
+    if (!pod || matchMedia('(prefers-reduced-motion: reduce)').matches) { alFinal(); return; }
+    pod.classList.add('revela');
+    const ls = Array.from(pod.querySelectorAll('.lugar')).sort((a, b) => +b.className.match(/l(\d)/)[1] - +a.className.match(/l(\d)/)[1]);
+    let t = 300;
+    ls.forEach((l, k) => {
+      const ultimo = k === ls.length - 1;
+      if (ultimo) {
+        setTimeout(() => { const r = document.createElement('div'); r.className = 'redoble'; r.textContent = 'Y el ganador es…'; pod.appendChild(r); son('redoble', 1.3); }, t);
+        t += 1500;
+      }
+      setTimeout(() => {
+        l.classList.add('ya');
+        if (ultimo) { pod.querySelectorAll('.redoble').forEach(x => x.remove()); const f = document.createElement('div'); f.className = 'destello'; pod.appendChild(f); alFinal(); }
+        else son('toque');
+      }, t);
+      t += 650;
+    });
   }
   function confeti(el) {
     if (el.querySelector('.confeti') || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -2203,6 +2852,9 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   let revPintada = '', vistoRes = '';
   async function mostrarResultado() {
     pararSondeo(); clearInterval(tic);
+    if (window.MCSonido && MCSonido.ambiente) MCSonido.ambiente(false);
+    document.body.classList.remove('tension', 'nublado');
+    document.querySelectorAll('.borde-fuego').forEach(x => x.remove());
     // Misión "termina un duelo" (assets/corazones.js)
     if (window.MCCorazones) setTimeout(MCCorazones.recargar, 600);
     const d = V, yo = d.yo || { aciertos: 0, puntos: 0, ms: 0 }, res = d.resultado;
@@ -2228,12 +2880,20 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     $('resTrofeo').hidden = !(res && res.gane);
     $('resCard').classList.toggle('perdio', perdio);
     const final = res && res.jugadores >= 2;
-    $('resTabla').innerHTML = final ? podioHtml(d) + medallasHtml(res.medallas)
+    $('resTabla').innerHTML = final ? podioHtml(d) + jugadaHtml(res.medallas) + medallasHtml(res.medallas)
       : '<ul class="tabla">' + d.jugadores.map(j => '<li class="' + colorDe(j) + '">' + avatar(j) + '<div><b>' + esc(nombreDe(j)) + '</b><small>' + esc(lineaDe(j, d.n)) + '</small></div>' + (j.terminado ? '<strong>' + puntosDe(j) + '</strong>' : '') + '</li>').join('') + '</ul>' +
         (!res && !d.cerrado ? '<div class="cierre" id="resCierre"><i></i><span></span></div>' : '');
     if (final) cobrarXp(d); else $('resXp').innerHTML = '';
-    if (res && res.gane && vistoRes !== d.codigo) confeti($('resCard'));
-    if (final && vistoRes !== d.codigo) son('fin', res.gane || (res.empate && res.puesto === 1) ? 100 : 0);
+    const festejar = () => {
+      if (res && res.gane) confeti($('resCard'));
+      if (final) son('fin', res.gane || (res.empate && res.puesto === 1) ? 100 : 0);
+    };
+    if (final && vistoRes !== d.codigo) revelarPodio(festejar);
+    else if (res && vistoRes !== d.codigo) festejar();
+    // Desempate por velocidad: se dice claro
+    if (final && !res.empate && d.jugadores.length > 1 && puntosDe(d.jugadores[0]) === puntosDe(d.jugadores[1])) {
+      $('resSub').textContent += ' Empataron en puntos: ' + (res.gane ? 'ganaste' : 'ganó ' + res.ganador) + ' por ser más rápido.';
+    }
     if (res) vistoRes = d.codigo;
 
     const bts = [];
@@ -2335,6 +2995,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
 </script>
 <script src="assets/tutorial.js" defer></script>
 <script src="assets/sonido.js"></script>
+<script src="assets/duelo-invita.js" defer></script>
 <script>
 // Selectores del duelo: el <select> real queda escondido (sigue mandando) y se muestra un botón con su lista en estilo grueso
 (function () {

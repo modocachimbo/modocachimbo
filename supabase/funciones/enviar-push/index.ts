@@ -14,6 +14,8 @@
 //   { accion: 'auto', secreto } → avisos automáticos (racha, temas nuevos,
 //     inactivos, corazones). La llama Supabase cada hora (pg_cron,
 //     supabase/93-notificaciones-auto.sql) con la clave secreta de push_ajustes.
+//   { accion: 'invitar', id, secreto } → un amigo te invita a su duelo
+//     (supabase/111-duelos-v3.sql, invitar_duelo). Llega al momento.
 // =========================================================
 import webpush from 'npm:web-push@3.6.7';
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
@@ -37,28 +39,31 @@ Deno.serve(async (req) => {
   try { body = await req.json(); } catch (_) { /* sin cuerpo */ }
 
   if (body.accion === 'clave') return json({ clave: pub });
-  if (body.accion !== 'enviar' && body.accion !== 'auto') return json({ error: 'acción no válida' }, 400);
+  if (body.accion !== 'enviar' && body.accion !== 'auto' && body.accion !== 'invitar') return json({ error: 'acción no válida' }, 400);
   if (!pub || !priv) return json({ error: 'Faltan las llaves VAPID en Secrets.' }, 500);
   webpush.setVapidDetails('mailto:' + correo, pub, priv);
 
   // Avisos automáticos: la base de datos dice a quién y qué mandar
-  if (body.accion === 'auto') {
+  // 'invitar': un amigo te invitó a su duelo (supabase/111-duelos-v3.sql → invitar_duelo)
+  if (body.accion === 'auto' || body.accion === 'invitar') {
     const anon = createClient(Deno.env.get('SUPABASE_URL')!, PUBLICA_SB, { auth: { persistSession: false } });
     const secreto = String(body.secreto || '');
-    const { data, error } = await anon.rpc('push_auto_lote', { p_secreto: secreto });
+    const { data, error } = body.accion === 'invitar'
+      ? await anon.rpc('push_invitacion', { p_secreto: secreto, p_id: Number(body.id) || 0 })
+      : await anon.rpc('push_auto_lote', { p_secreto: secreto });
     if (error) return json({ error: error.message }, 403);
     type Sub = { endpoint: string; p256dh: string; auth: string };
     const lote = (data || {}) as { mensajes?: { usuario: string; titulo: string; cuerpo: string; link: string }[]; subs?: Record<string, Sub[]> };
     const envios: { s: Sub; carga: string }[] = [];
     for (const m of lote.mensajes || []) {
-      const carga = JSON.stringify({ titulo: m.titulo, cuerpo: m.cuerpo, link: m.link || '' });
+      const carga = JSON.stringify({ titulo: m.titulo, cuerpo: m.cuerpo, link: m.link || '', tag: body.accion === 'invitar' ? 'duelo' : undefined });
       for (const s of (lote.subs || {})[m.usuario] || []) envios.push({ s, carga });
     }
     let enviados = 0, fallidos = 0;
     const muertos: string[] = [];
     for (let i = 0; i < envios.length; i += 50) {
       const r = await Promise.allSettled(envios.slice(i, i + 50).map(({ s, carga }) =>
-        webpush.sendNotification({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }, carga, { TTL: 14400, urgency: 'normal' })));
+        webpush.sendNotification({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }, carga, body.accion === 'invitar' ? { TTL: 300, urgency: 'high' } : { TTL: 14400, urgency: 'normal' })));
       r.forEach((x, j) => {
         if (x.status === 'fulfilled') { enviados++; return; }
         fallidos++;
