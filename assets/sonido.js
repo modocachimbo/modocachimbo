@@ -84,7 +84,7 @@
       activo = !activo;
       try { localStorage.setItem('mc_sonido', activo ? '1' : '0'); } catch (e) {}
       pintar();
-      if (activo) S.toque();
+      if (activo) S.toque(); else if (amb.on) { amb.on = false; ambParar(); }
       return activo;
     },
     toque: function () { nota(320, 0, 0.09, 'sine', 0.26, 1100); },
@@ -236,6 +236,79 @@
     '.mc-son:active{transform:translateY(1px);border-bottom-width:2px}.mc-son svg{width:16px;height:16px}.mc-son.mudo{color:#6b6b6b}';
   (document.head || document.documentElement).appendChild(css);
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', pintar); else pintar();
+
+  // ---------- Duelos v3: ataques, fuego y ambiente ----------
+  // Un golpe grave (bombo) para el latido y el redoble
+  function bombo(t, vol, f) {
+    var a = audio(); if (!a) return;
+    var o = a.createOscillator(), g = a.createGain(), t0 = a.currentTime + (t || 0);
+    o.type = 'sine'; o.frequency.setValueAtTime(f || 110, t0); o.frequency.exponentialRampToValueAtTime(42, t0 + 0.22);
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol || 0.3, t0 + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.28);
+    o.connect(g); g.connect(salida); o.start(t0); o.stop(t0 + 0.3);
+  }
+  // Fuego: un "fuush" que sube y chisporroteo
+  function crepita(dur, t) { for (var i = 0; i < Math.round(dur * 22); i++) soplo(0.025, 0.05 + Math.random() * 0.08, 2500 + Math.random() * 3000, 1500, (t || 0) + Math.random() * dur); }
+  S.vs = function () { soplo(0.5, 0.2, 300, 3200); bombo(0.42, 0.4, 130); nota(220, 0.42, 0.5, 'sawtooth', 0.06, 110); [DO, SOL, DO2].forEach(function (f, i) { nota(f, 0.5 + i * 0.05, 0.3, 'triangle', 0.1); }); };
+  S.cargado = function () { soplo(0.3, 0.12, 400, 2400); [SOL, DO2, MI2].forEach(function (f, i) { nota(f, 0.08 + i * 0.06, 0.2, 'triangle', 0.1); }); crepita(0.4, 0.1); };
+  S.llamarada = function () { soplo(0.6, 0.24, 250, 3600); nota(140, 0, 0.5, 'sawtooth', 0.07, 320); crepita(0.8, 0.15); };
+  S.volcan = function () { bombo(0, 0.45, 90); soplo(0.9, 0.28, 180, 2800); nota(80, 0, 0.9, 'sawtooth', 0.09, 50); crepita(1.1, 0.2); bombo(0.35, 0.3, 80); };
+  S.quemado = function () { crepita(1.2, 0.05); };
+  S.gota = function (n) { nota(900 + (n || 1) * 180, 0, 0.08, 'sine', 0.2, 1900 + (n || 1) * 200); soplo(0.08, 0.06, 4000, 2000, 0.02); };
+  S.terremoto = function () { for (var i = 0; i < 6; i++) bombo(i * 0.11, 0.22 - i * 0.02, 70 + Math.random() * 30); soplo(1.2, 0.14, 120, 260); };
+  S.espejo = function () { [MI2, SOL2, DO3, SOL2 * 1.5].forEach(function (f, i) { nota(f, i * 0.05, 0.35, 'sine', 0.07); }); soplo(0.3, 0.05, 6000, 9000); };
+  S.apuesta = function () { [0, 0.06, 0.12, 0.2].forEach(function (t) { nota(2200 + Math.random() * 600, t, 0.04, 'square', 0.04); }); nota(SOL, 0.25, 0.18, 'triangle', 0.12); };
+  S.ladron = function () { nota(1568, 0, 0.08, 'square', 0.05); nota(2093, 0.08, 0.25, 'square', 0.05); soplo(0.2, 0.06, 1200, 400, 0.05); };
+  S.relampago = function () { soplo(0.18, 0.2, 7000, 1500); nota(1800, 0, 0.12, 'sawtooth', 0.05, 300); bombo(0.12, 0.25, 160); };
+  S.niebla = function () { nota(196, 0, 1.4, 'sine', 0.08, 185); nota(233, 0.1, 1.4, 'sine', 0.06, 220); soplo(1.4, 0.06, 300, 900); };
+  S.cambioQ = function () { blup(0.2, 0.1, 500, 1400); blup(0.18, 0.1, 1400, 500, 0.12); };
+  // Redoble antes del ganador
+  S.redoble = function (dur) { for (var t = 0; t < (dur || 1.3); t += 0.055) soplo(0.045, 0.05 + t * 0.08, 1800, 900, t); bombo(dur || 1.3, 0.45, 120); };
+
+  // Ambiente del duelo: un zumbido grave y un pulso que se acelera (1 juego, 2 niebla, 3 duelo cerrado).
+  // Tiene su propio interruptor (mc_ambiente) y respeta el silencio general.
+  var amb = { on: false, nivel: 0, g: null, oscs: [], fl: null, t: null };
+  function ambParar() {
+    clearTimeout(amb.t); amb.t = null;
+    if (amb.g && ctx) { try { amb.g.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.3); } catch (e) {} }
+    var os = amb.oscs; amb.oscs = []; amb.g = null;
+    setTimeout(function () { os.forEach(function (o) { try { o.stop(); } catch (e) {} }); }, 1200);
+  }
+  function ambPulso() {
+    if (!amb.on || !activo) return;
+    var n = amb.nivel, a = audio(); if (!a) return;
+    if (!document.hidden) {
+      if (n >= 3) { bombo(0, 0.16, 95); bombo(0.18, 0.11, 85); }
+      else if (n >= 1) bombo(0, n >= 2 ? 0.1 : 0.06, 80);
+      if (n >= 2 && Math.random() < 0.35) nota(n >= 3 ? 1318 : 988, 0.4, 0.06, 'sine', 0.025);
+    }
+    amb.t = setTimeout(ambPulso, n >= 3 ? 760 : n >= 2 ? 1100 : n >= 1 ? 1500 : 2200);
+  }
+  S.ambiente = function (on, nivel) {
+    var quiere = !!on && activo && S.ambienteOn;
+    if (!quiere) { amb.on = false; ambParar(); return; }
+    amb.nivel = nivel || 0;
+    var a = audio(); if (!a) return;
+    if (!amb.g) {
+      amb.g = a.createGain(); amb.g.gain.value = 0.0001;
+      amb.fl = a.createBiquadFilter(); amb.fl.type = 'lowpass'; amb.fl.frequency.value = 300;
+      [55, 55.6, 82.4].forEach(function (f, i) {
+        var o = a.createOscillator(); o.type = i === 2 ? 'triangle' : 'sawtooth'; o.frequency.value = f;
+        o.connect(amb.fl); o.start(); amb.oscs.push(o);
+      });
+      amb.fl.connect(amb.g); amb.g.connect(salida);
+    }
+    amb.g.gain.setTargetAtTime([0.018, 0.026, 0.035, 0.045][Math.min(amb.nivel, 3)], a.currentTime, 0.8);
+    amb.fl.frequency.setTargetAtTime([260, 320, 480, 700][Math.min(amb.nivel, 3)], a.currentTime, 0.8);
+    if (!amb.on) { amb.on = true; clearTimeout(amb.t); ambPulso(); }
+  };
+  try { S.ambienteOn = localStorage.getItem('mc_ambiente') !== '0'; } catch (e) { S.ambienteOn = true; }
+  S.ambienteCambiar = function (v) {
+    S.ambienteOn = v == null ? !S.ambienteOn : !!v;
+    try { localStorage.setItem('mc_ambiente', S.ambienteOn ? '1' : '0'); } catch (e) {}
+    if (!S.ambienteOn) { amb.on = false; ambParar(); }
+    return S.ambienteOn;
+  };
+  document.addEventListener('visibilitychange', function () { if (document.hidden && amb.g && ctx) amb.g.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.2); else if (amb.on && amb.g && ctx) S.ambiente(true, amb.nivel); });
 
   // Para las temáticas (assets/tema.js): sus propios sonidos con el mismo motor
   S.motor = { audio: audio, nota: nota, soplo: soplo, hoot: hoot, aire: aire, salida: function () { return salida; } };
