@@ -1116,6 +1116,27 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   .quema .gotas span { width: 32px; height: 32px; border-radius: 11px; display: grid; place-items: center; background: #1F1936; border: 2px solid #322B52; color: var(--azul); transition: background .15s, transform .15s; }
   .quema .gotas span.on { background: var(--azul); border-color: var(--azul); color: #06263a; transform: scale(1.12); }
   .quema .gotas svg { width: 17px; height: 17px; }
+  /* Congelar: las alternativas quedan dentro de un bloque de hielo azul */
+  .quema.hielo { background: linear-gradient(160deg, rgba(150,225,255,.42), rgba(28,176,246,.34) 45%, rgba(120,210,255,.48)); backdrop-filter: blur(.6px) saturate(.8); -webkit-backdrop-filter: blur(.6px) saturate(.8);
+    box-shadow: inset 0 0 0 3px rgba(190,240,255,.75), inset 0 0 50px rgba(200,245,255,.55); animation: hieloEntra .4s cubic-bezier(.3,1.5,.5,1) both; }
+  @keyframes hieloEntra { from { opacity: 0; transform: scale(1.06); } }
+  .quema.hielo .cristal { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .quema.hielo .cristal path { fill: rgba(235,250,255,.28); stroke: rgba(255,255,255,.75); stroke-width: .35; }
+  .quema.hielo .cristal .gr { fill: none; stroke: rgba(255,255,255,.95); stroke-width: .5; stroke-dasharray: 60; stroke-dashoffset: 60; transition: stroke-dashoffset .25s ease-out; }
+  .quema.hielo .cristal .gr.on { stroke-dashoffset: 0; }
+  .quema.hielo .brillo { position: absolute; top: -30%; left: -40%; width: 30%; height: 160%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent); transform: rotate(20deg); animation: hieloBrillo 2.2s ease-in-out infinite; }
+  @keyframes hieloBrillo { from { left: -40%; } to { left: 130%; } }
+  .quema.hielo .copo { position: absolute; top: -10px; color: #E6F8FF; opacity: .9; animation: copo 3s linear infinite; }
+  .quema.hielo .copo svg { width: 100%; height: 100%; }
+  @keyframes copo { to { transform: translate(var(--x, 10px), 120vh) rotate(200deg); opacity: .2; } }
+  .quema.hielo .apagar { border-color: #8EE3FF; border-bottom-color: #1679a8; }
+  html body .quema.hielo .apagar b:not(#z) { color: #CFF3FF; }
+  .quema.hielo .gotas span { color: #8EE3FF; }
+  .quema.hielo .gotas span.on { background: #8EE3FF; border-color: #8EE3FF; color: #06324a; }
+  .quema.hielo.rompe { animation: hieloRompe .45s ease-in forwards; }
+  @keyframes hieloRompe { 40% { transform: scale(1.03); opacity: 1; } to { transform: scale(.94); opacity: 0; filter: blur(2px); } }
+  #pregCard.congelada #pAlts button { border-color: #8EE3FF !important; background: rgba(28,176,246,.22) !important; color: #E6F8FF !important; }
+  .borde-fuego.hielo { box-shadow: inset 0 0 70px 14px rgba(120,215,255,.5); }
   .borde-fuego { position: fixed; inset: 0; pointer-events: none; z-index: 40; box-shadow: inset 0 0 70px 14px rgba(255,100,0,.5); animation: bordeF 1s ease-in-out infinite alternate; }
   .borde-fuego.volcan { box-shadow: inset 0 0 90px 22px rgba(255,40,0,.6); }
   @keyframes bordeF { from { opacity: .65; } to { opacity: 1; } }
@@ -1463,7 +1484,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   // Comodines: nombre, color, qué hace, cuándo, tipo
   const CMD = {
     mitad: { nom: '50/50', c: 'var(--azul)', que: 'Quita 2 alternativas malas', cuando: 'Antes de responder', t: 'ayuda' },
-    hielo: { nom: 'Congelar', c: 'var(--morado)', que: 'Tu reloj se para 10 s', cuando: 'Mientras corre el tiempo', t: 'ayuda' },
+    hielo: { nom: 'Congelar', c: 'var(--azul)', que: 'Congela las alternativas de tus rivales 5 s', cuando: 'Mientras corre el tiempo', t: 'ataque' },
     espia: { nom: 'Espía', c: 'var(--verde)', que: 'Ves en vivo si tus rivales aciertan', cuando: 'En cualquier pregunta', t: 'ayuda' },
     cambio: { nom: 'Cambio', c: 'var(--azul)', que: 'Te cambia la pregunta por otra', cuando: 'Antes de responder', t: 'ayuda' },
     doble: { nom: 'Doble', c: 'var(--oro)', que: 'Si aciertas, vale 2', cuando: 'No en la final', t: 'puntos' },
@@ -1474,7 +1495,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     terremoto: { nom: 'Terremoto', c: 'var(--rojo)', que: 'Las alternativas de tus rivales tiemblan y se mezclan', cuando: 'En cualquier momento', t: 'ataque' },
     ladron: { nom: 'Ladrón', c: 'var(--rojo)', que: 'Si aciertas, le quitas 1 punto al que va mejor', cuando: 'Antes de responder', t: 'ataque' }
   };
-  const ORDEN_CMD = ['mitad', 'hielo', 'espia', 'cambio', 'doble', 'apuesta', 'escudo', 'espejo', 'robar', 'terremoto', 'ladron'];
+  const ORDEN_CMD = ['mitad', 'espia', 'cambio', 'doble', 'apuesta', 'escudo', 'espejo', 'hielo', 'robar', 'terremoto', 'ladron'];
   const FUEGO = {
     llama: { nom: 'Llamarada', que: 'Quema las alternativas de tus rivales 5 s', c: 'var(--naranja)' },
     volcan: { nom: 'Volcán', que: 'Quema a todos 8 s y tu próxima vale doble', c: 'var(--rojo)' }
@@ -2548,10 +2569,10 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     catch (err) { toast(esc(textoError(err)), 'var(--rojo)', IC[k]); pintarComodines(); return; }
     if (!G || G.actual !== i) return;
     G.usados.push({ k, i, quita: r.quita });
-    son(k === 'terremoto' ? 'terremoto' : k === 'espejo' ? 'espejo' : k === 'apuesta' ? 'apuesta' : k === 'robar' ? 'robado' : 'comodin');
+    son(k === 'terremoto' ? 'terremoto' : k === 'hielo' ? 'hielo' : k === 'espejo' ? 'espejo' : k === 'apuesta' ? 'apuesta' : k === 'robar' ? 'robado' : 'comodin');
     const golpe = (txt, nadie) => toast(r.golpes || r.rebotes ? txt + (r.rebotes ? ' · ' + plural(r.rebotes, 'rival tenía', 'rivales tenían') + ' Espejo y te rebotó' : '') : nadie, 'var(--rojo)', IC[k]);
     if (k === 'mitad') quitarAlts(r.quita);
-    else if (k === 'hielo') { const ahora = Date.now(); G.fin = ahora + G.seg * 1000 - (+r.lleva || 0); G.hielo = ahora + 10000; $('pregCard').classList.add('escarcha'); setTimeout(() => $('pregCard').classList.remove('escarcha'), 10000); toast('Tu reloj se congeló 10 segundos', 'var(--morado)', IC.hielo); }
+    else if (k === 'hielo') golpe('¡Congelaste las alternativas de tus rivales!', 'Tus rivales ya terminaron');
     else if (k === 'doble' || k === 'escudo' || k === 'ladron') G.activo = k;
     else if (k === 'apuesta') { G.activo = 'apuesta'; G.apuesta = +r.apuesta || n; }
     else if (k === 'espejo') { G.espejo = true; toast('Espejo activo: el próximo ataque rebota', 'var(--morado)', IC.espejo); }
@@ -2638,6 +2659,35 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       if (n >= gs.length) apagar();
     });
   }
+  // Congelar: bloque de hielo sobre las alternativas; 3 toques lo rompen o se derrite en 5 s
+  function congelar(quien) {
+    const card = $('pregCard'); if (!card || G.actual >= G.n) return;
+    card.querySelectorAll('.quema').forEach(x => x.remove());
+    document.querySelectorAll('.borde-fuego').forEach(x => x.remove());
+    const ms = 5000, toques = 3;
+    const el = document.createElement('div'); el.className = 'quema hielo';
+    const copo = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9"/></svg>';
+    el.innerHTML = '<svg class="cristal" viewBox="0 0 100 100" preserveAspectRatio="none">' +
+      '<path d="M0 0h38L22 30 0 22z"/><path d="M38 0h34L58 26 22 30z"/><path d="M72 0h28v30L58 26z"/><path d="M0 22l22 8-6 36L0 70z"/><path d="M22 30l36-4 6 34-48 6z"/><path d="M58 26l42 4v38l-36-8z"/><path d="M0 70l16-4 20 34H0z"/><path d="M16 66l48-6 4 40H36z"/><path d="M64 60l36 8v32H68z"/>' +
+      '<path class="gr" d="M50 50 38 32M50 50 70 40M50 50 46 72"/><path class="gr" d="M38 32 24 20M70 40 88 34M46 72 34 90"/><path class="gr" d="M50 50 62 64 76 80M24 20 8 30M88 34 96 52"/></svg>' +
+      '<span class="brillo"></span>' +
+      Array.from({ length: 9 }, (_, i) => '<i class="copo" style="left:' + (5 + i * 11) + '%;width:' + (10 + (i % 3) * 5) + 'px;height:' + (10 + (i % 3) * 5) + 'px;--x:' + (i % 2 ? '' : '-') + (8 + i * 2) + 'px;animation-delay:' + (i * 0.33).toFixed(2) + 's">' + copo + '</i>').join('') +
+      '<div class="apagar"><b>¡' + esc(quien) + ' te congeló!</b><small>Toca ' + toques + ' veces para romper el hielo o espera ' + (ms / 1000) + ' s</small><div class="gotas">' +
+      Array.from({ length: toques }, () => '<span>' + IC.hielo + '</span>').join('') + '</div></div>';
+    card.appendChild(el); card.classList.add('congelada');
+    const borde = document.createElement('div'); borde.className = 'borde-fuego hielo'; document.body.appendChild(borde);
+    G.efecto = 'quema'; pintarFuego();
+    son('hielo');
+    let n = 0;
+    const romper = () => { clearTimeout(t); el.classList.add('rompe'); borde.remove(); card.classList.remove('congelada'); setTimeout(() => el.remove(), 450); if (G) { G.efecto = null; pintarFuego(); } };
+    const t = setTimeout(romper, ms);
+    el.addEventListener('click', ev => {
+      ev.stopPropagation();
+      const gs = el.querySelectorAll('.gotas span'), gr = el.querySelectorAll('.cristal .gr'); if (n >= gs.length) return;
+      gs[n].classList.add('on'); if (gr[n]) gr[n].classList.add('on'); n++; son('crack', n);
+      if (n >= gs.length) { son('hieloRompe'); romper(); }
+    });
+  }
   function terremoto(quien) {
     const card = $('pregCard'), lst = $('pAlts'); if (!card || G.actual >= G.n) return;
     card.classList.add('tiembla');
@@ -2671,6 +2721,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     if (!G || G.actual >= G.n) return;
     if (tipo === 'llama' || tipo === 'volcan') quemar(tipo, quien);
     else if (tipo === 'terremoto') terremoto(quien);
+    else if (tipo === 'hielo') congelar(quien);
     else if (tipo === 'robar') relojRoto(quien, 8);
   }
   // Reacciones: se ven sobre tu cuadro en todos los celulares

@@ -254,6 +254,9 @@
   S.volcan = function () { bombo(0, 0.45, 90); soplo(0.9, 0.28, 180, 2800); nota(80, 0, 0.9, 'sawtooth', 0.09, 50); crepita(1.1, 0.2); bombo(0.35, 0.3, 80); };
   S.quemado = function () { crepita(1.2, 0.05); };
   S.gota = function (n) { nota(900 + (n || 1) * 180, 0, 0.08, 'sine', 0.2, 1900 + (n || 1) * 200); soplo(0.08, 0.06, 4000, 2000, 0.02); };
+  S.hielo = function () { soplo(0.5, 0.14, 5000, 1500); [DO3, SOL2 * 1.5, MI2 * 2, DO3 * 1.5].forEach(function (f, i) { nota(f, 0.05 + i * 0.07, 0.4, 'sine', 0.06); }); nota(180, 0, 0.6, 'triangle', 0.05, 120); };
+  S.crack = function (n) { soplo(0.05, 0.16, 6000 - (n || 1) * 600, 2500); nota(2600 + (n || 1) * 300, 0, 0.05, 'square', 0.03); };
+  S.hieloRompe = function () { for (var i = 0; i < 10; i++) nota(2000 + Math.random() * 3000, Math.random() * 0.25, 0.08, 'sine', 0.05); soplo(0.3, 0.2, 5000, 1200); };
   S.terremoto = function () { for (var i = 0; i < 6; i++) bombo(i * 0.11, 0.22 - i * 0.02, 70 + Math.random() * 30); soplo(1.2, 0.14, 120, 260); };
   S.espejo = function () { [MI2, SOL2, DO3, SOL2 * 1.5].forEach(function (f, i) { nota(f, i * 0.05, 0.35, 'sine', 0.07); }); soplo(0.3, 0.05, 6000, 9000); };
   S.apuesta = function () { [0, 0.06, 0.12, 0.2].forEach(function (t) { nota(2200 + Math.random() * 600, t, 0.04, 'square', 0.04); }); nota(SOL, 0.25, 0.18, 'triangle', 0.12); };
