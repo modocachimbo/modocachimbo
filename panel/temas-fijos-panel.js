@@ -67,7 +67,7 @@ const TF_IC = {
 
 function tfEstado(txt) { $('tfEstado').textContent = txt || ''; }
 function tfCambio() { TF.cambios = true; $('tfGuardar').disabled = false; tfEstado('Cambios sin guardar'); }
-function tfRomano(r) { return { I: 1, II: 2, III: 3 }[r] || 9; }
+function tfRomano(r) { return { I: 1, II: 2, III: 3, IV: 4, V: 5 }[r] || 9; }
 function tfOrden(a, b) { const [ya, ra] = a.split('-'), [yb, rb] = b.split('-'); return ya - yb || tfRomano(ra) - tfRomano(rb); }
 function tfNormal(v) {
   const d = {};
@@ -140,9 +140,9 @@ function renderTemasFijos(errores) {
 }
 
 function tfAgregarExamen() {
-  const inp = $('tfNuevoEx'), v = inp.value.trim().toUpperCase().replace(/\s+/g, '').replace(/^(\d{4})-?(I{1,3})$/, '$1-$2');
+  const inp = $('tfNuevoEx'), v = inp.value.trim().toUpperCase().replace(/\s+/g, '').replace(/^(\d{4})-?(I{1,3}|IV|V)$/, '$1-$2');
   const m = tfMod();
-  if (!/^\d{4}-(I|II|III)$/.test(v)) { tfEstado('Escribe el examen así: 2026-I, 2026-II o 2026-III'); inp.focus(); return; }
+  if (!/^\d{4}-(I|II|III|IV|V)$/.test(v)) { tfEstado('Escribe el examen así: 2026-I, 2026-II, 2026-III o 2026-IV'); inp.focus(); return; }
   if (m.examenes.includes(v)) { tfEstado(v + ' ya está'); return; }
   const lista = m.examenes.concat(v).sort(tfOrden), k = lista.indexOf(v);
   m.examenes = lista;
