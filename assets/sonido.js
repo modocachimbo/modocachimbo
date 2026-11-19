@@ -84,7 +84,7 @@
       activo = !activo;
       try { localStorage.setItem('mc_sonido', activo ? '1' : '0'); } catch (e) {}
       pintar();
-      if (activo) S.toque(); else if (amb.on) { amb.on = false; ambParar(); }
+      if (activo) S.toque(); else { if (amb.on) { amb.on = false; ambParar(); } if (S.fuegoParar) S.fuegoParar(); if (S.vientoParar) S.vientoParar(); }
       return activo;
     },
     toque: function () { nota(320, 0, 0.09, 'sine', 0.26, 1100); },
@@ -254,9 +254,45 @@
   S.volcan = function () { bombo(0, 0.45, 90); soplo(0.9, 0.28, 180, 2800); nota(80, 0, 0.9, 'sawtooth', 0.09, 50); crepita(1.1, 0.2); bombo(0.35, 0.3, 80); };
   S.quemado = function () { crepita(1.2, 0.05); };
   S.gota = function (n) { nota(900 + (n || 1) * 180, 0, 0.08, 'sine', 0.2, 1900 + (n || 1) * 200); soplo(0.08, 0.06, 4000, 2000, 0.02); };
-  S.hielo = function () { soplo(0.5, 0.14, 5000, 1500); [DO3, SOL2 * 1.5, MI2 * 2, DO3 * 1.5].forEach(function (f, i) { nota(f, 0.05 + i * 0.07, 0.4, 'sine', 0.06); }); nota(180, 0, 0.6, 'triangle', 0.05, 120); };
-  S.crack = function (n) { soplo(0.05, 0.16, 6000 - (n || 1) * 600, 2500); nota(2600 + (n || 1) * 300, 0, 0.05, 'square', 0.03); };
-  S.hieloRompe = function () { for (var i = 0; i < 10; i++) nota(2000 + Math.random() * 3000, Math.random() * 0.25, 0.08, 'sine', 0.05); soplo(0.3, 0.2, 5000, 1200); };
+  // Ruido largo filtrado que se puede cortar (fuego, viento)
+  function ruidoLargo(dur, vol, tipo, f, q, lfoF, lfoA) {
+    var a = audio(); if (!a) return null;
+    var n = Math.floor(a.sampleRate * Math.min(dur + 1, 12)), b = a.createBuffer(1, n, a.sampleRate), d = b.getChannelData(0);
+    for (var i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+    var src = a.createBufferSource(), fl = a.createBiquadFilter(), g = a.createGain(), t0 = a.currentTime;
+    src.buffer = b; src.loop = true; fl.type = tipo; fl.frequency.value = f; fl.Q.value = q || 1;
+    if (lfoF) { var lf = a.createOscillator(), lg = a.createGain(); lf.frequency.value = lfoF; lg.gain.value = lfoA; lf.connect(lg); lg.connect(fl.frequency); lf.start(t0); lf.stop(t0 + dur + 1); }
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol, t0 + 0.35);
+    g.gain.setValueAtTime(vol, t0 + Math.max(0.4, dur - 0.5)); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    src.connect(fl); fl.connect(g); g.connect(salida); src.start(t0); src.stop(t0 + dur + 0.05);
+    return { parar: function () { try { var t = a.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(Math.max(g.gain.value, 0.0001), t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.35); src.stop(t + 0.4); } catch (e) {} } };
+  }
+  var fuegoVivo = null, vientoVivo = null;
+  // Fuego que arde: rugido grave + chasquidos al azar mientras dura
+  S.fuego = function (dur) {
+    S.fuegoParar(); dur = dur || 5;
+    var r = ruidoLargo(dur, 0.09, 'lowpass', 520, 0.8, 7, 180), on = true, fin = Date.now() + dur * 1000;
+    (function chasquido() { if (!on || Date.now() > fin) return; nota(1200 + Math.random() * 2600, 0, 0.025, 'square', 0.025 + Math.random() * 0.03); if (Math.random() < .35) soplo(0.06, 0.05, 2500, 900); setTimeout(chasquido, 40 + Math.random() * 140); })();
+    fuegoVivo = { parar: function () { on = false; if (r) r.parar(); } };
+  };
+  S.fuegoParar = function () { if (fuegoVivo) { fuegoVivo.parar(); fuegoVivo = null; } };
+  // Agua sobre el fuego: siseo de vapor
+  S.vapor = function () { soplo(0.9, 0.16, 6000, 2500); soplo(0.5, 0.08, 1200, 400, 0.1); };
+  // Viento helado mientras dura el hielo
+  S.viento = function (dur) { S.vientoParar(); vientoVivo = ruidoLargo(dur || 5, 0.06, 'bandpass', 700, 3, 0.35, 380); };
+  S.vientoParar = function () { if (vientoVivo) { vientoVivo.parar(); vientoVivo = null; } };
+  // El hielo se forma: crujidos que suben y un brillo de cristal
+  S.hielo = function () {
+    soplo(0.7, 0.13, 7000, 1800);
+    for (var i = 0; i < 16; i++) nota(2400 + i * 160 + Math.random() * 400, i * 0.045, 0.03, 'square', 0.02 + i * 0.002);
+    [DO3, SOL2 * 1.5, MI2 * 2, DO3 * 1.5, SOL2 * 2].forEach(function (f, i) { nota(f, 0.75 + i * 0.08, 0.6, 'sine', 0.05); });
+    nota(160, 0, 0.8, 'triangle', 0.05, 90);
+  };
+  S.crack = function (n) { n = n || 1; soplo(0.08, 0.22, 7000 - n * 700, 2200); nota(3000 + n * 350, 0, 0.04, 'square', 0.04); nota(220 - n * 30, 0, 0.12, 'triangle', 0.12, 90); };
+  // Hielo que estalla en pedazos: vidrio
+  S.hieloRompe = function () { soplo(0.35, 0.26, 8000, 1500); for (var i = 0; i < 18; i++) nota(1800 + Math.random() * 4200, Math.random() * 0.45, 0.07 + Math.random() * 0.08, 'sine', 0.045); nota(140, 0, 0.25, 'triangle', 0.14, 60); };
+  // Se derrite solo: goteo suave
+  S.derrite = function () { [0, 0.18, 0.4].forEach(function (t, i) { nota(1300 - i * 150, t, 0.09, 'sine', 0.1, 2200 - i * 200); }); soplo(0.6, 0.04, 2000, 800); };
   S.terremoto = function () { for (var i = 0; i < 6; i++) bombo(i * 0.11, 0.22 - i * 0.02, 70 + Math.random() * 30); soplo(1.2, 0.14, 120, 260); };
   S.espejo = function () { [MI2, SOL2, DO3, SOL2 * 1.5].forEach(function (f, i) { nota(f, i * 0.05, 0.35, 'sine', 0.07); }); soplo(0.3, 0.05, 6000, 9000); };
   S.apuesta = function () { [0, 0.06, 0.12, 0.2].forEach(function (t) { nota(2200 + Math.random() * 600, t, 0.04, 'square', 0.04); }); nota(SOL, 0.25, 0.18, 'triangle', 0.12); };

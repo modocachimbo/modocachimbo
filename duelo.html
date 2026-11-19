@@ -1116,25 +1116,58 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   .quema .gotas span { width: 32px; height: 32px; border-radius: 11px; display: grid; place-items: center; background: #1F1936; border: 2px solid #322B52; color: var(--azul); transition: background .15s, transform .15s; }
   .quema .gotas span.on { background: var(--azul); border-color: var(--azul); color: #06263a; transform: scale(1.12); }
   .quema .gotas svg { width: 17px; height: 17px; }
-  /* Congelar: las alternativas quedan dentro de un bloque de hielo azul */
-  .quema.hielo { background: linear-gradient(160deg, rgba(150,225,255,.42), rgba(28,176,246,.34) 45%, rgba(120,210,255,.48)); backdrop-filter: blur(.6px) saturate(.8); -webkit-backdrop-filter: blur(.6px) saturate(.8);
-    box-shadow: inset 0 0 0 3px rgba(190,240,255,.75), inset 0 0 50px rgba(200,245,255,.55); animation: hieloEntra .4s cubic-bezier(.3,1.5,.5,1) both; }
-  @keyframes hieloEntra { from { opacity: 0; transform: scale(1.06); } }
-  .quema.hielo .cristal { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-  .quema.hielo .cristal path { fill: rgba(235,250,255,.28); stroke: rgba(255,255,255,.75); stroke-width: .35; }
-  .quema.hielo .cristal .gr { fill: none; stroke: rgba(255,255,255,.95); stroke-width: .5; stroke-dasharray: 60; stroke-dashoffset: 60; transition: stroke-dashoffset .25s ease-out; }
-  .quema.hielo .cristal .gr.on { stroke-dashoffset: 0; }
-  .quema.hielo .brillo { position: absolute; top: -30%; left: -40%; width: 30%; height: 160%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent); transform: rotate(20deg); animation: hieloBrillo 2.2s ease-in-out infinite; }
+  /* Llamarada: calor, humo, brasas y agua para apagar */
+  .quema .lenguas { position: absolute; inset: 0; transform-origin: 50% 100%; transform: scaleY(var(--baja, 1)); transition: transform .35s cubic-bezier(.3,1.4,.5,1); }
+  .quema .calor { position: absolute; inset: 0; background: radial-gradient(90% 55% at 50% 100%, rgba(255,190,80,.45), rgba(255,120,0,0) 70%); animation: calor .7s ease-in-out infinite alternate; mix-blend-mode: screen; }
+  @keyframes calor { from { opacity: .55; transform: scaleY(.94); } to { opacity: 1; transform: scaleY(1.06); } }
+  .quema .humo { position: absolute; bottom: 30%; width: 70px; height: 70px; margin-left: -35px; border-radius: 50%; background: radial-gradient(circle, rgba(90,70,70,.75), rgba(90,70,70,0) 70%); filter: blur(5px); animation: humo 2.6s ease-out infinite; }
+  @keyframes humo { from { transform: translate(0, 0) scale(.5); opacity: 0; } 20% { opacity: .9; } to { transform: translate(var(--x, 0), -230px) scale(2.2); opacity: 0; } }
+  #pregCard.chamuscada #pAlts button { border-color: rgba(255,140,0,.7) !important; box-shadow: 0 0 16px rgba(255,110,0,.35), inset 0 -10px 18px rgba(255,90,0,.18) !important; animation: chamusca .25s steps(2) infinite; }
+  @keyframes chamusca { 50% { filter: brightness(1.12) saturate(1.2); } }
+  .quema .salpica { position: absolute; width: 0; height: 0; z-index: 3; pointer-events: none; }
+  .quema .salpica i { position: absolute; left: -5px; top: -5px; width: 10px; height: 14px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; background: linear-gradient(#bff0ff, #1CB0F6); box-shadow: 0 0 8px rgba(28,176,246,.8); animation: salpica .6s ease-out forwards; }
+  @keyframes salpica { from { transform: rotate(var(--a)) translateY(0) scale(1.2); opacity: 1; } to { transform: rotate(var(--a)) translateY(calc(var(--d) * -1)) scale(.3); opacity: 0; } }
+  .quema .vapor { position: absolute; left: 50%; bottom: 10%; width: 120%; height: 80%; transform: translateX(-50%); background: radial-gradient(ellipse at 50% 80%, rgba(240,245,255,.8), rgba(240,245,255,0) 65%); filter: blur(10px); animation: vapor .7s ease-out forwards; }
+  @keyframes vapor { from { opacity: 0; transform: translate(-50%, 20px) scale(.6); } 40% { opacity: 1; } to { opacity: 0; transform: translate(-50%, -60px) scale(1.2); } }
+  .fx-pantalla { position: fixed; inset: 0; pointer-events: none; z-index: 41; overflow: hidden; transition: opacity .7s; }
+  .fx-pantalla.sale { opacity: 0; }
+  .fx-pantalla.brasas i { position: absolute; bottom: -12px; aspect-ratio: 1; border-radius: 50%; background: #FFD84D; box-shadow: 0 0 6px 2px #FF8A00, 0 0 14px 4px rgba(255,60,0,.5); animation: brasa linear infinite; }
+  .fx-pantalla.brasas.volcan i { background: #FF7A3D; box-shadow: 0 0 6px 2px #FF3D00, 0 0 16px 5px rgba(255,20,0,.55); }
+  @keyframes brasa { from { transform: translate(0, 0); opacity: 0; } 10% { opacity: 1; } 60% { transform: translate(calc(var(--x) * .6), -60vh); } to { transform: translate(var(--x), -105vh); opacity: 0; } }
+  /* Congelar: escarcha que crece, bloque de hielo, nieve y pedazos */
+  .quema.hielo { background: none; animation: none; }
+  .quema.hielo::before { content: ''; position: absolute; inset: 0; background: linear-gradient(160deg, rgba(170,232,255,.5), rgba(28,176,246,.32) 45%, rgba(140,218,255,.5)); backdrop-filter: blur(.6px) saturate(.8); -webkit-backdrop-filter: blur(.6px) saturate(.8);
+    box-shadow: inset 0 0 0 3px rgba(200,242,255,.8), inset 0 0 60px rgba(210,246,255,.6); -webkit-mask: radial-gradient(circle at 50% 50%, transparent var(--hueco, 0%), #000 calc(var(--hueco, 0%) + 18%)); mask: radial-gradient(circle at 50% 50%, transparent var(--hueco, 0%), #000 calc(var(--hueco, 0%) + 18%)); animation: hieloCrece 1s ease-out both; }
+  @property --hueco { syntax: '<percentage>'; inherits: false; initial-value: 0%; }
+  @keyframes hieloCrece { from { --hueco: 80%; opacity: .3; } to { --hueco: -20%; opacity: 1; } }
+  .quema.hielo .cristal { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+  .quema.hielo .fa { fill: rgba(225,248,255,.1); stroke: rgba(255,255,255,.16); stroke-width: 1; transform-box: fill-box; transform-origin: center; opacity: 0; animation: piezaEntra .35s .75s ease-out forwards; transition: transform .8s cubic-bezier(.3,.6,.6,1), opacity .8s; }
+  @keyframes piezaEntra { to { opacity: 1; } }
+  .quema.hielo .fr { fill: none; stroke: rgba(240,252,255,.95); stroke-width: 1.4; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; filter: drop-shadow(0 0 3px rgba(180,235,255,.9)); animation: escarcha 1.1s ease-out forwards; }
+  @keyframes escarcha { to { stroke-dashoffset: 0; } }
+  .quema.hielo .gr { fill: none; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; filter: drop-shadow(0 0 4px #9EE6FF); transition: stroke-dashoffset .22s ease-out; }
+  .quema.hielo .gr.on { stroke-dashoffset: 0; }
+  .quema.hielo .brillo { position: absolute; top: -30%; left: -40%; width: 30%; height: 160%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.5), transparent); transform: rotate(20deg); animation: hieloBrillo 2.2s 1s ease-in-out infinite; }
   @keyframes hieloBrillo { from { left: -40%; } to { left: 130%; } }
-  .quema.hielo .copo { position: absolute; top: -10px; color: #E6F8FF; opacity: .9; animation: copo 3s linear infinite; }
-  .quema.hielo .copo svg { width: 100%; height: 100%; }
-  @keyframes copo { to { transform: translate(var(--x, 10px), 120vh) rotate(200deg); opacity: .2; } }
-  .quema.hielo .apagar { border-color: #8EE3FF; border-bottom-color: #1679a8; }
+  .quema.hielo .copo { position: absolute; top: -24px; color: #F0FBFF; filter: drop-shadow(0 0 3px rgba(160,230,255,.9)); animation: copo 3s linear infinite; }
+  .quema.hielo .copo svg, .fx-pantalla.nieve svg { width: 100%; height: 100%; display: block; }
+  @keyframes copo { 0% { transform: translate(0, 0) rotate(0); opacity: 0; } 10% { opacity: 1; } 50% { transform: translate(var(--x, 10px), 55%) rotate(120deg); } to { transform: translate(0, 520px) rotate(260deg); opacity: .1; } }
+  .fx-pantalla.nieve i { position: absolute; top: -30px; color: #EAF9FF; filter: drop-shadow(0 0 4px rgba(150,225,255,.8)); animation: nieve linear infinite; }
+  @keyframes nieve { 0% { transform: translate(0, 0) rotate(0); } 25% { transform: translate(var(--x), 26vh) rotate(90deg); } 50% { transform: translate(0, 52vh) rotate(180deg); } 75% { transform: translate(calc(var(--x) * -1), 78vh) rotate(270deg); } to { transform: translate(0, 108vh) rotate(360deg); } }
+  .fx-pantalla.nieve { background: radial-gradient(130% 90% at 50% 50%, transparent 60%, rgba(150,220,255,.18)); }
+  .quema.hielo .apagar { border-color: #8EE3FF; border-bottom-color: #1679a8; animation-delay: .5s; }
   html body .quema.hielo .apagar b:not(#z) { color: #CFF3FF; }
   .quema.hielo .gotas span { color: #8EE3FF; }
   .quema.hielo .gotas span.on { background: #8EE3FF; border-color: #8EE3FF; color: #06324a; }
-  .quema.hielo.rompe { animation: hieloRompe .45s ease-in forwards; }
-  @keyframes hieloRompe { 40% { transform: scale(1.03); opacity: 1; } to { transform: scale(.94); opacity: 0; filter: blur(2px); } }
+  .quema.hielo.golpe { animation: golpeHielo .25s ease-out; }
+  @keyframes golpeHielo { 30% { transform: translate(3px, -2px); } 60% { transform: translate(-3px, 2px); } }
+  .quema .esquirlas { position: absolute; width: 0; height: 0; z-index: 3; pointer-events: none; }
+  .quema .esquirlas i { position: absolute; left: -4px; top: -4px; width: 8px; height: 12px; background: linear-gradient(135deg, #fff, #9EE6FF); clip-path: polygon(50% 0, 100% 60%, 40% 100%, 0 40%); animation: esquirla .6s ease-out forwards; }
+  @keyframes esquirla { from { transform: rotate(var(--a)) translateY(0); opacity: 1; } to { transform: rotate(var(--a)) translateY(calc(var(--d) * -1)) rotate(180deg); opacity: 0; } }
+  .quema.hielo.rompe::before { transition: opacity .25s; opacity: 0; }
+  .quema.hielo.rompe .fa { fill: rgba(170,230,255,.55); stroke: rgba(255,255,255,.95); stroke-width: 1.6; transform: translate(var(--dx), var(--dy)) rotate(var(--r)) scale(.8); opacity: 0; transition: transform .85s cubic-bezier(.25,.6,.55,1), opacity .85s ease-in, fill .05s, stroke .05s; }
+  .quema.hielo.rompe .fr, .quema.hielo.rompe .gr, .quema.hielo.rompe .copo, .quema.hielo.rompe .brillo, .quema.hielo.rompe .apagar { transition: opacity .2s; opacity: 0; }
+  .quema.hielo.derrite { transition: opacity .8s, filter .8s; opacity: 0; filter: blur(3px); }
   #pregCard.congelada #pAlts button { border-color: #8EE3FF !important; background: rgba(28,176,246,.22) !important; color: #E6F8FF !important; }
   .borde-fuego.hielo { box-shadow: inset 0 0 70px 14px rgba(120,215,255,.5); }
   .borde-fuego { position: fixed; inset: 0; pointer-events: none; z-index: 40; box-shadow: inset 0 0 70px 14px rgba(255,100,0,.5); animation: bordeF 1s ease-in-out infinite alternate; }
@@ -2634,58 +2667,133 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       '<path d="M30 ' + (90 - h) + 'c4 14 26 24 26 48a26 26 0 0 1-52 0c0-11 6-19 11-23 1 9 5 14 10 15-2-15 1-28 5-40z" fill="url(#lg' + i + ')"/>' +
       '<path d="M30 ' + (90 - h * .55) + 'c3 8 13 13 13 24a13 13 0 0 1-26 0c0-7 6-12 13-24z" fill="#FFE27A"/></svg>';
   }
+  // Capa de partículas sobre toda la pantalla (nieve, brasas, humo); se quita sola
+  function capaFx(clase) {
+    const c = document.createElement('div'); c.className = 'fx-pantalla ' + clase; c.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(c); return c;
+  }
+  // Copo de nieve de 6 brazos con ramitas, dibujado con código
+  function copoSvg() {
+    const brazo = '<path d="M12 12V1.6M12 7l-2.6-2.4M12 7l2.6-2.4M12 3.9l-1.7-1.6M12 3.9l1.7-1.6M12 9.6l-1.6-1.1M12 9.6l1.6-1.1"/>';
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round">' +
+      [0, 60, 120, 180, 240, 300].map(g => '<g transform="rotate(' + g + ' 12 12)">' + brazo + '</g>').join('') +
+      '<path d="M12 10.3l1.5.85v1.7L12 13.7l-1.5-.85v-1.7z" fill="currentColor" stroke="none"/></svg>';
+  }
+  // Escarcha tipo helecho: ramas que crecen desde un punto del borde
+  function helecho(x, y, ang, largo, nivel, out) {
+    const x2 = x + Math.cos(ang) * largo, y2 = y + Math.sin(ang) * largo;
+    out.push('M' + x.toFixed(1) + ' ' + y.toFixed(1) + 'L' + x2.toFixed(1) + ' ' + y2.toFixed(1));
+    if (nivel <= 0) return;
+    for (let k = 1; k <= 3; k++) {
+      const t = k / 4, px = x + (x2 - x) * t, py = y + (y2 - y) * t, l = largo * (0.42 - t * 0.12);
+      helecho(px, py, ang - 1.05 + (Math.random() - .5) * .25, l, nivel - 1, out);
+      helecho(px, py, ang + 1.05 + (Math.random() - .5) * .25, l, nivel - 1, out);
+    }
+    helecho(x2, y2, ang + (Math.random() - .5) * .5, largo * .5, nivel - 1, out);
+  }
   function quemar(tipo, quien) {
     const card = $('pregCard'); if (!card || G.actual >= G.n) return;
     card.querySelectorAll('.quema').forEach(x => x.remove());
-    document.querySelectorAll('.borde-fuego').forEach(x => x.remove());
+    document.querySelectorAll('.borde-fuego, .fx-pantalla').forEach(x => x.remove());
     const volcan = tipo === 'volcan', ms = volcan ? 8000 : 5000, toques = volcan ? 5 : 3;
     const el = document.createElement('div'); el.className = 'quema' + (volcan ? ' volcan' : '');
     const lenguas = [[-6, 26, 82], [12, 22, 64], [27, 28, 88], [46, 22, 66], [60, 26, 86], [78, 26, 72], [92, 18, 60]];
-    el.innerHTML = lenguas.map((f, i) => '<span class="ll" style="left:' + f[0] + '%;width:' + f[1] + '%;height:' + (volcan ? f[2] * 0.75 + 20 : f[2] * 0.6) + '%">' + llamaSvg(i, f[2]) + '</span>').join('') +
-      Array.from({ length: 10 }, (_, i) => '<i class="chispa" style="left:' + (8 + i * 9) + '%;--x:' + (i % 2 ? '' : '-') + (10 + i * 3) + 'px;animation-delay:' + (i * 0.13).toFixed(2) + 's"></i>').join('') +
+    el.innerHTML = '<span class="calor"></span>' +
+      Array.from({ length: 6 }, (_, i) => '<i class="humo" style="left:' + (6 + i * 16) + '%;animation-delay:' + (i * 0.45).toFixed(2) + 's;--x:' + (i % 2 ? 18 : -18) + 'px"></i>').join('') +
+      '<span class="lenguas">' + lenguas.map((f, i) => '<span class="ll" style="left:' + f[0] + '%;width:' + f[1] + '%;height:' + (volcan ? f[2] * 0.75 + 20 : f[2] * 0.6) + '%">' + llamaSvg(i, f[2]) + '</span>').join('') + '</span>' +
+      Array.from({ length: 14 }, (_, i) => '<i class="chispa" style="left:' + (4 + i * 7) + '%;--x:' + (i % 2 ? '' : '-') + (10 + i * 3) + 'px;animation-delay:' + (i * 0.11).toFixed(2) + 's"></i>').join('') +
       '<div class="apagar"><b>¡' + esc(quien) + ' te lanzó ' + (volcan ? 'un Volcán' : 'una Llamarada') + '!</b><small>Toca ' + toques + ' veces para apagarla o espera ' + (ms / 1000) + ' s</small><div class="gotas">' +
       Array.from({ length: toques }, () => '<span>' + IC.gota + '</span>').join('') + '</div></div>';
-    card.appendChild(el);
+    card.appendChild(el); card.classList.add('chamuscada');
     const borde = document.createElement('div'); borde.className = 'borde-fuego' + (volcan ? ' volcan' : ''); document.body.appendChild(borde);
+    // Brasas que suben por toda la pantalla
+    const fx = capaFx('brasas' + (volcan ? ' volcan' : ''));
+    fx.innerHTML = Array.from({ length: volcan ? 34 : 24 }, (_, i) => '<i style="left:' + (Math.random() * 100).toFixed(1) + '%;width:' + (3 + Math.random() * 5).toFixed(1) + 'px;animation-duration:' + (1.8 + Math.random() * 2).toFixed(2) + 's;animation-delay:' + (-Math.random() * 3).toFixed(2) + 's;--x:' + ((Math.random() - .5) * 120).toFixed(0) + 'px"></i>').join('');
     G.efecto = 'quema'; pintarFuego();
-    son(volcan ? 'volcan' : 'llamarada'); son('quemado');
+    son(volcan ? 'volcan' : 'llamarada'); son('fuego', ms / 1000);
     let n = 0;
-    const apagar = () => { clearTimeout(t); el.classList.add('sale'); borde.remove(); setTimeout(() => el.remove(), 450); if (G) { G.efecto = null; pintarFuego(); } };
-    const t = setTimeout(apagar, ms);
+    const apagar = (conAgua) => {
+      clearTimeout(t); el.classList.add('sale'); borde.remove(); card.classList.remove('chamuscada');
+      fx.classList.add('sale'); setTimeout(() => fx.remove(), 700);
+      if (conAgua) { el.insertAdjacentHTML('beforeend', '<span class="vapor"></span>'); son('vapor'); }
+      setTimeout(() => el.remove(), 650); if (G) { G.efecto = null; pintarFuego(); }
+      if (window.MCSonido && MCSonido.fuegoParar) MCSonido.fuegoParar();
+    };
+    const t = setTimeout(() => apagar(false), ms);
     el.addEventListener('click', ev => {
       ev.stopPropagation();
       const gs = el.querySelectorAll('.gotas span'); if (n >= gs.length) return;
       gs[n].classList.add('on'); n++; son('gota', n);
-      if (n >= gs.length) apagar();
+      // Chorro de agua donde tocaste y las llamas bajan
+      const r = el.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top;
+      const sp = document.createElement('span'); sp.className = 'salpica'; sp.style.left = x + 'px'; sp.style.top = y + 'px';
+      sp.innerHTML = Array.from({ length: 9 }, (_, i) => '<i style="--a:' + (i * 40) + 'deg;--d:' + (26 + Math.random() * 22).toFixed(0) + 'px"></i>').join('');
+      el.appendChild(sp); setTimeout(() => sp.remove(), 700);
+      el.style.setProperty('--baja', (1 - n / gs.length * 0.75).toFixed(2));
+      if (n >= gs.length) apagar(true);
     });
   }
-  // Congelar: bloque de hielo sobre las alternativas; 3 toques lo rompen o se derrite en 5 s
+  // Congelar: la escarcha crece desde los bordes, cae nieve y el hielo se rompe en pedazos
   function congelar(quien) {
     const card = $('pregCard'); if (!card || G.actual >= G.n) return;
     card.querySelectorAll('.quema').forEach(x => x.remove());
-    document.querySelectorAll('.borde-fuego').forEach(x => x.remove());
-    const ms = 5000, toques = 3;
+    document.querySelectorAll('.borde-fuego, .fx-pantalla').forEach(x => x.remove());
+    const ms = 5000, toques = 3, R = card.getBoundingClientRect(), W = Math.max(200, Math.round(R.width)), H = Math.max(200, Math.round(R.height));
+    // Escarcha: helechos desde las esquinas y los lados
+    const semillas = [[0, 0, .8], [W, 0, 2.35], [0, H, -.8], [W, H, -2.35], [0, H * .45, 0], [W, H * .55, Math.PI], [W * .5, 0, Math.PI / 2], [W * .45, H, -Math.PI / 2]];
+    const ramas = semillas.map((sd, i) => { const o = []; helecho(sd[0], sd[1], sd[2], Math.min(W, H) * (i < 4 ? .34 : .22), 2, o); return '<path class="fr" pathLength="1" style="animation-delay:' + (i * .07).toFixed(2) + 's" d="' + o.join('') + '"/>'; }).join('');
+    // Pedazos del bloque de hielo (triángulos irregulares que salen volando al romperse)
+    const cols = [0, .34, .67, 1], fils = [0, .26, .52, .77, 1], pts = fils.map((fy, fi) => cols.map((fx, ci) => [
+      (fx + (ci > 0 && ci < 3 ? (Math.random() - .5) * .12 : 0)) * W, (fy + (fi > 0 && fi < 4 ? (Math.random() - .5) * .1 : 0)) * H]));
+    const piezas = [], tri = (A, B, C, fi, ci) => {
+      const mx = (A[0] + B[0] + C[0]) / 3, my = (A[1] + B[1] + C[1]) / 3;
+      piezas.push('<path class="fa" style="--dx:' + ((mx / W - .5) * 160 + (Math.random() - .5) * 40).toFixed(0) + 'px;--dy:' + (30 + (my / H) * 120 + Math.random() * 50).toFixed(0) + 'px;--r:' + ((Math.random() - .5) * 120).toFixed(0) + 'deg;animation-delay:' + (.6 + Math.random() * .3).toFixed(2) + 's" d="M' + [A, B, C].map(q => q[0].toFixed(0) + ' ' + q[1].toFixed(0)).join('L') + 'Z"/>');
+    };
+    for (let fi = 0; fi < 4; fi++) for (let ci = 0; ci < 3; ci++) {
+      const p00 = pts[fi][ci], p10 = pts[fi][ci + 1], p01 = pts[fi + 1][ci], p11 = pts[fi + 1][ci + 1];
+      if ((fi + ci) % 2) { tri(p00, p10, p11); tri(p00, p11, p01); } else { tri(p00, p10, p01); tri(p10, p11, p01); }
+    }
+    const cx = W / 2, cy = H / 2;
+    const grietas = [
+      'M' + cx + ' ' + cy + 'l-' + (W * .14) + ' -' + (H * .17) + 'M' + cx + ' ' + cy + 'l' + (W * .2) + ' -' + (H * .09) + 'M' + cx + ' ' + cy + 'l-' + (W * .04) + ' ' + (H * .2),
+      'M' + (cx - W * .14) + ' ' + (cy - H * .17) + 'l-' + (W * .14) + ' -' + (H * .1) + 'M' + (cx + W * .2) + ' ' + (cy - H * .09) + 'l' + (W * .2) + ' -' + (H * .06) + 'M' + (cx - W * .04) + ' ' + (cy + H * .2) + 'l-' + (W * .1) + ' ' + (H * .16),
+      'M' + cx + ' ' + cy + 'l' + (W * .12) + ' ' + (H * .13) + 'l' + (W * .14) + ' ' + (H * .14) + 'M' + (cx - W * .28) + ' ' + (cy - H * .27) + 'l-' + (W * .16) + ' ' + (H * .1) + 'M' + (cx + W * .4) + ' ' + (cy - H * .15) + 'l' + (W * .08) + ' ' + (H * .17)
+    ];
     const el = document.createElement('div'); el.className = 'quema hielo';
-    const copo = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9"/></svg>';
-    el.innerHTML = '<svg class="cristal" viewBox="0 0 100 100" preserveAspectRatio="none">' +
-      '<path d="M0 0h38L22 30 0 22z"/><path d="M38 0h34L58 26 22 30z"/><path d="M72 0h28v30L58 26z"/><path d="M0 22l22 8-6 36L0 70z"/><path d="M22 30l36-4 6 34-48 6z"/><path d="M58 26l42 4v38l-36-8z"/><path d="M0 70l16-4 20 34H0z"/><path d="M16 66l48-6 4 40H36z"/><path d="M64 60l36 8v32H68z"/>' +
-      '<path class="gr" d="M50 50 38 32M50 50 70 40M50 50 46 72"/><path class="gr" d="M38 32 24 20M70 40 88 34M46 72 34 90"/><path class="gr" d="M50 50 62 64 76 80M24 20 8 30M88 34 96 52"/></svg>' +
+    el.innerHTML = '<svg class="cristal" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none"><g class="bloque">' + piezas.join('') + '</g><g class="escarcha">' + ramas + '</g>' +
+      grietas.map(d => '<path class="gr" pathLength="1" d="' + d + '"/>').join('') + '</svg>' +
       '<span class="brillo"></span>' +
-      Array.from({ length: 9 }, (_, i) => '<i class="copo" style="left:' + (5 + i * 11) + '%;width:' + (10 + (i % 3) * 5) + 'px;height:' + (10 + (i % 3) * 5) + 'px;--x:' + (i % 2 ? '' : '-') + (8 + i * 2) + 'px;animation-delay:' + (i * 0.33).toFixed(2) + 's">' + copo + '</i>').join('') +
+      Array.from({ length: 10 }, (_, i) => '<i class="copo" style="left:' + (3 + i * 10) + '%;width:' + (12 + (i % 3) * 6) + 'px;height:' + (12 + (i % 3) * 6) + 'px;--x:' + (i % 2 ? '' : '-') + (14 + i * 3) + 'px;animation-duration:' + (3 + (i % 4) * .6).toFixed(1) + 's;animation-delay:' + (i * 0.3).toFixed(2) + 's">' + copoSvg() + '</i>').join('') +
       '<div class="apagar"><b>¡' + esc(quien) + ' te congeló!</b><small>Toca ' + toques + ' veces para romper el hielo o espera ' + (ms / 1000) + ' s</small><div class="gotas">' +
       Array.from({ length: toques }, () => '<span>' + IC.hielo + '</span>').join('') + '</div></div>';
     card.appendChild(el); card.classList.add('congelada');
     const borde = document.createElement('div'); borde.className = 'borde-fuego hielo'; document.body.appendChild(borde);
+    // Nieve sobre toda la pantalla
+    const fx = capaFx('nieve');
+    fx.innerHTML = Array.from({ length: 26 }, () => { const z = 8 + Math.random() * 16; return '<i style="left:' + (Math.random() * 100).toFixed(1) + '%;width:' + z.toFixed(0) + 'px;height:' + z.toFixed(0) + 'px;opacity:' + (.45 + Math.random() * .5).toFixed(2) + ';animation-duration:' + (3.5 + Math.random() * 3).toFixed(2) + 's;animation-delay:' + (-Math.random() * 4).toFixed(2) + 's;--x:' + ((Math.random() - .5) * 90).toFixed(0) + 'px">' + copoSvg() + '</i>'; }).join('');
     G.efecto = 'quema'; pintarFuego();
-    son('hielo');
+    son('hielo'); son('viento', ms / 1000);
     let n = 0;
-    const romper = () => { clearTimeout(t); el.classList.add('rompe'); borde.remove(); card.classList.remove('congelada'); setTimeout(() => el.remove(), 450); if (G) { G.efecto = null; pintarFuego(); } };
-    const t = setTimeout(romper, ms);
+    const romper = (aGolpes) => {
+      clearTimeout(t); borde.remove(); card.classList.remove('congelada');
+      fx.classList.add('sale'); setTimeout(() => fx.remove(), 800);
+      if (window.MCSonido && MCSonido.vientoParar) MCSonido.vientoParar();
+      if (aGolpes) { el.classList.add('rompe'); son('hieloRompe'); }
+      else { el.classList.add('derrite'); son('derrite'); }
+      setTimeout(() => el.remove(), 900); if (G) { G.efecto = null; pintarFuego(); }
+    };
+    const t = setTimeout(() => romper(false), ms);
     el.addEventListener('click', ev => {
       ev.stopPropagation();
       const gs = el.querySelectorAll('.gotas span'), gr = el.querySelectorAll('.cristal .gr'); if (n >= gs.length) return;
       gs[n].classList.add('on'); if (gr[n]) gr[n].classList.add('on'); n++; son('crack', n);
-      if (n >= gs.length) { son('hieloRompe'); romper(); }
+      el.classList.remove('golpe'); void el.offsetWidth; el.classList.add('golpe');
+      // Esquirlas de hielo donde tocaste
+      const r = el.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top;
+      const sp = document.createElement('span'); sp.className = 'esquirlas'; sp.style.left = x + 'px'; sp.style.top = y + 'px';
+      sp.innerHTML = Array.from({ length: 8 }, (_, i) => '<i style="--a:' + (i * 45 + Math.random() * 20) + 'deg;--d:' + (30 + Math.random() * 30).toFixed(0) + 'px"></i>').join('');
+      el.appendChild(sp); setTimeout(() => sp.remove(), 700);
+      if (n >= gs.length) romper(true);
     });
   }
   function terremoto(quien) {
