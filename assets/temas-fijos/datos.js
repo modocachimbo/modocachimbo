@@ -1,11 +1,12 @@
 /* =========================================================
    Modo Cachimbo · Temas fijos (beta)
-   Qué temas vinieron en cada examen de admisión ordinario, desde 2020-I.
+   Qué temas vinieron en cada examen de admisión, por modalidad (CPU, Ordinario), desde 2020-I.
    Cada tema lleva una cadena de 1 y 0, una letra por examen, en el mismo
    orden que "examenes" (1 = vino, 0 = no vino).
    Por ahora los datos viven aquí; más adelante se pegarán desde el panel.
    ========================================================= */
 window.MC_TEMAS_FIJOS = {
+  cpu: {
   examenes: ['2020-I','2020-II','2021-I','2021-II','2022-I','2022-II','2023-I','2023-II','2024-I','2024-II','2024-III','2025-I','2025-II','2025-III','2026-I'],
   cursos: {
     biologia: [
@@ -24,4 +25,6 @@ window.MC_TEMAS_FIJOS = {
       ['Ecología',                     '100000000011001']
     ]
   }
+  },
+  ordinario: { examenes: [], cursos: {} }
 };

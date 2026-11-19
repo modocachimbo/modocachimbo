@@ -43,6 +43,13 @@ header.top{display:flex;align-items:center;gap:12px;padding:24px 0 10px;padding-
 .seg button{color:var(--text-dim);font:600 12.5px Inter,sans-serif;padding:7px 12px;border-radius:9px;display:flex;align-items:center;gap:6px}
 .seg button.on{background:var(--surface-2);color:var(--text);box-shadow:inset 0 0 0 1px var(--border)}
 .seg button svg{width:14px;height:14px;fill:currentColor}
+.filtro{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.filtro small{font:900 11px Nunito,sans-serif;color:var(--text-faint);text-transform:uppercase;letter-spacing:.8px}
+.barra{justify-content:flex-start;gap:12px 22px}
+tbody tr{transition:opacity .2s}
+table.res tbody tr:not(.hl){opacity:.32}
+table.res tbody tr.hl td.tema{box-shadow:inset 4px 0 0 var(--hlc)}
+table.res-ultimo{--hlc:var(--pink)}table.res-tiempo{--hlc:var(--amber)}
 .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
 .kpi{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px 16px;border-bottom:3px solid var(--accent);display:flex;gap:12px;align-items:flex-start}
 .kpi.p{border-bottom-color:var(--pink)}.kpi.a{border-bottom-color:var(--amber)}
@@ -140,14 +147,20 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
     <div class="areas" id="areas"></div>
     <div class="chips" id="chips"></div>
     <div class="barra">
-      <div class="seg" id="vista">
-        <button type="button" data-v="ranking"><svg viewBox="0 0 20 20"><rect x="2" y="3" width="11" height="3" rx="1.5"/><rect x="2" y="8.5" width="16" height="3" rx="1.5"/><rect x="2" y="14" width="7" height="3" rx="1.5"/></svg>Ranking</button>
-        <button type="button" data-v="tabla"><svg viewBox="0 0 20 20"><path d="M3 2h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm1 2v3h3V4zm5 0v3h3V4zm5 0v3h2V4zM4 9v3h3V9zm5 0v3h3V9zm5 0v3h2V9zM4 14v2h3v-2zm5 0v2h3v-2zm5 0v2h2v-2z"/></svg>Tabla</button>
-      </div>
+      <div class="filtro"><small>Modalidad</small><div class="seg" id="modalidad"></div></div>
+      <div class="filtro"><small>Ordenar</small><div class="seg" id="orden">
+        <button type="button" data-o="temario">Temario</button>
+        <button type="button" data-o="mas">Más vienen</button>
+      </div></div>
+      <div class="filtro"><small>Resaltar</small><div class="seg" id="resaltar">
+        <button type="button" data-r="no">Nada</button>
+        <button type="button" data-r="ultimo">Vino en el último</button>
+        <button type="button" data-r="tiempo">Hace tiempo no viene</button>
+      </div></div>
 
     </div>
     <div id="cuerpo"></div>
-    <p class="nota">Conteo de los exámenes de admisión ordinarios desde 2020-I. Que un tema haya venido mucho no asegura que venga el próximo, pero te ayuda a decidir qué repasar primero.</p>
+    <p class="nota">Conteo de los exámenes de admisión desde 2020-I, según la modalidad que elijas. Que un tema haya venido mucho no asegura que venga el próximo, pero te ayuda a decidir qué repasar primero.</p>
   </div>
 </div>
 
@@ -157,7 +170,8 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
 <script src="assets/temas-fijos/datos.js"></script>
 <script>
 (function () {
-  var D = window.MC_TEMAS_FIJOS, ex = D.examenes, ULT = ex.length - 1;
+  var M = window.MC_TEMAS_FIJOS, MODS = [['cpu', 'CPU'], ['ordinario', 'Ordinario']], D, ex, ULT;
+  function usar() { D = M[S.mod] || M.cpu; ex = D.examenes; ULT = ex.length - 1; }
   var AREAS = [['ciencia-tecnologia', 'Ciencia y Tecnología'], ['matematica', 'Matemática'], ['comunicacion', 'Comunicación'], ['ciencias-sociales', 'Ciencias Sociales']];
   var CURSOS = [
     ['biologia', 'Biología', 'ciencia-tecnologia'], ['anatomia', 'Anatomía', 'ciencia-tecnologia'], ['quimica', 'Química', 'ciencia-tecnologia'], ['fisica', 'Física', 'ciencia-tecnologia'],
@@ -167,8 +181,9 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
     ['economia', 'Economía', 'ciencias-sociales'], ['ciudadania', 'Ciudadanía', 'ciencias-sociales'], ['psicologia', 'Psicología', 'ciencias-sociales'], ['filosofia', 'Filosofía', 'ciencias-sociales']
   ];
   var q = new URLSearchParams(location.search);
-  var S = { area: q.get('area') || '', curso: q.get('curso') || 'biologia', v: q.get('v') || 'ranking' };
-  if (!D.cursos[S.curso]) S.curso = 'biologia';
+  var S = { area: q.get('area') || '', curso: q.get('curso') || 'biologia', mod: q.get('mod') || 'cpu', o: q.get('o') || 'temario', r: q.get('r') || 'no' };
+  usar();
+  if (!CURSOS.some(function (c) { return c[0] === S.curso; })) S.curso = 'biologia';
   if (!S.area) CURSOS.forEach(function (c) { if (c[0] === S.curso) S.area = c[2]; });
   else if (!CURSOS.some(function (c) { return c[0] === S.curso && c[2] === S.area; })) { var pc = CURSOS.filter(function (c) { return c[2] === S.area; }); if (pc.length) S.curso = (pc.filter(function (c) { return D.cursos[c[0]]; })[0] || pc[0])[0]; }
   function $(id) { return document.getElementById(id); }
@@ -188,18 +203,21 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
       var hay = !!D.cursos[c[0]];
       return '<button type="button" class="chip' + (c[0] === S.curso ? ' on' : '') + '" data-c="' + c[0] + '"' + (hay ? '' : ' disabled') + '>' + esc(c[1]) + (hay ? '' : '<span class="pr">pronto</span>') + '</button>';
     }).join('');
-    [].forEach.call(document.querySelectorAll('#vista button'), function (b) { b.classList.toggle('on', b.dataset.v === S.v); });
+    $('modalidad').innerHTML = MODS.map(function (m) { var hay = Object.keys(M[m[0]].cursos).length > 0; return '<button type="button" data-m="' + m[0] + '"' + (m[0] === S.mod ? ' class="on"' : '') + '>' + m[1] + (hay ? '' : ' <span style="font-size:10px;opacity:.7">pronto</span>') + '</button>'; }).join('');
+    [].forEach.call(document.querySelectorAll('#orden button'), function (b) { b.classList.toggle('on', b.dataset.o === S.o); });
+    [].forEach.call(document.querySelectorAll('#resaltar button'), function (b) { b.classList.toggle('on', b.dataset.r === S.r); });
   }
 
   function frec(p) { return p >= 45 ? ['f1', 'Muy frecuente'] : p >= 30 ? ['f2', 'Frecuente'] : ['f3', 'A veces']; }
 
   function pintar() {
+    usar();
     pintarFiltros();
     var datos = D.cursos[S.curso];
-    if (!datos) { $('sub').textContent = nombre(S.curso); $('cuerpo').innerHTML = '<div class="vacio"><b>Muy pronto</b>Estamos subiendo los temas de este curso.</div>'; return; }
+    if (!datos) { $('sub').textContent = nombre(S.curso) + ' · ' + (S.mod === 'cpu' ? 'CPU' : 'Ordinario'); $('cuerpo').innerHTML = '<div class="vacio"><b>Muy pronto</b>Estamos subiendo los temas de este curso.</div>'; return; }
     var idx = ex.map(function (_, i) { return i; });
     var N = idx.length;
-    $('sub').textContent = nombre(S.curso) + ' · ' + N + ' exámenes (' + ex[idx[0]] + ' a ' + ex[idx[N - 1]] + ')';
+    $('sub').textContent = nombre(S.curso) + ' · ' + (S.mod === 'cpu' ? 'CPU' : 'Ordinario') + ' · ' + N + ' exámenes (' + ex[idx[0]] + ' a ' + ex[idx[N - 1]] + ')';
     var temas = datos.map(function (t) {
       var veces = idx.filter(function (i) { return t[1][i] === '1'; }).length, u = t[1].lastIndexOf('1');
       return { nombre: t[0], s: t[1], veces: veces, pct: Math.round(veces * 100 / N), ultimo: u >= 0 ? ex[u] : '—', sinVenir: u >= 0 ? ULT - u : ex.length };
@@ -212,26 +230,20 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
       '<div class="kpi"><div class="ic">' + I.trofeo + '</div><div><small>El que más viene</small><b>' + esc(rk[0].nombre) + '</b><span>' + rk[0].veces + ' de ' + N + ' exámenes</span></div></div>' +
       '<div class="kpi p"><div class="ic">' + I.diana + '</div><div><small>Vino en el último (' + ex[ULT] + ')</small><b>' + enUlt.length + (enUlt.length === 1 ? ' tema' : ' temas') + '</b><span>' + esc(enUlt.join(', ') || 'Ninguno') + '</span></div></div>' +
       '<div class="kpi a"><div class="ic">' + I.reloj + '</div><div><small>Hace tiempo que no viene</small><b>' + esc(olv.nombre) + '</b><span>Último: ' + olv.ultimo + ' · ' + olv.sinVenir + ' exámenes sin venir</span></div></div></div>';
-    if (S.v === 'ranking') {
-      h += '<div class="lista">' + rk.map(function (t, i) {
-        var f = frec(t.pct);
-        return '<div class="fila' + (i < 3 ? ' top' : '') + '"><div class="n">' + (i + 1) + '</div><div class="t">' + esc(t.nombre) + '</div><div class="v">' + t.veces + '<em>/' + N + '</em></div>' +
-          '<div class="bar"><i style="width:' + t.pct + '%"></i></div><div class="tags"><span class="tag ' + f[0] + '">' + f[1] + ' · ' + t.pct + '%</span>' +
-          (t.s[ULT] === '1' ? '<span class="tag ult">Vino en ' + ex[ULT] + '</span>' : '<span class="tag">Último: ' + t.ultimo + '</span>') + '</div></div>';
-      }).join('') + '</div>';
-    } else {
+    {
       var anios = [], g = {};
       idx.forEach(function (i) { var a = ex[i].slice(0, 4); if (!g[a]) { g[a] = 0; anios.push(a); } g[a]++; });
       function nuevo(k) { return k === 0 || ex[idx[k - 1]].slice(0, 4) !== ex[idx[k]].slice(0, 4); }
-      h += '<div class="desliza">' + I.desliza + 'Desliza para ver todos los años</div><div class="tabla-box"><table><thead><tr class="anio"><th class="tema" rowspan="2">Tema</th>' +
+      h += '<div class="desliza">' + I.desliza + 'Desliza para ver todos los años</div><div class="tabla-box"><table' + (S.r !== 'no' ? ' class="res res-' + S.r + '"' : '') + '><thead><tr class="anio"><th class="tema" rowspan="2">Tema</th>' +
         anios.map(function (a, k) { return '<th colspan="' + g[a] + '"' + (k ? ' class="g"' : '') + '><span>' + a + '</span></th>'; }).join('') + '<th class="tot" rowspan="2">Veces</th></tr><tr class="ciclo">' +
         idx.map(function (i, k) { return '<th' + (nuevo(k) ? ' class="g"' : '') + '>' + ex[i].split('-')[1] + '</th>'; }).join('') + '</tr></thead><tbody>' +
-        temas.map(function (t, n) {
-          return '<tr' + (top3.indexOf(t) >= 0 ? ' class="top3"' : '') + '><td class="tema"><span class="tn"><span class="num">' + (n < 9 ? '0' : '') + (n + 1) + '</span>' + esc(t.nombre) + '</span></td>' + idx.map(function (i, k) {
+        (S.o === 'mas' ? rk : temas).map(function (t, n) {
+          var hl = (S.r === 'ultimo' && t.s[ULT] === '1') || (S.r === 'tiempo' && t.sinVenir >= 4);
+          return '<tr class="' + (top3.indexOf(t) >= 0 ? 'top3' : '') + (hl ? ' hl' : '') + '"><td class="tema"><span class="tn"><span class="num">' + (n < 9 ? '0' : '') + (n + 1) + '</span>' + esc(t.nombre) + '</span></td>' + idx.map(function (i, k) {
             var x = t.s[i] === '1';
             return '<td class="c' + (nuevo(k) ? ' g' : '') + (x ? ' x' : '') + (x && i === ULT ? ' ultimo' : '') + '" title="' + ex[i] + (x ? ': vino' : ': no vino') + '"><i></i></td>';
           }).join('') + '<td class="tot"><b>' + t.veces + '</b></td></tr>';
-        }).join('') + '</tbody></table></div><div class="leyenda"><span><i></i>Vino</span><span><i class="p"></i>Vino en el último examen</span><span><i class="e"></i>No vino</span></div>';
+        }).join('') + '</tbody></table></div><div class="leyenda"><span><i></i>Vino</span><span><i class="p"></i>Vino en el último examen</span><span><i class="e"></i>No vino</span>' + (S.r === 'tiempo' ? '<span>Resaltados: 4 exámenes o más sin venir</span>' : '') + '</div>';
     }
     $('cuerpo').innerHTML = h;
     var tb = document.querySelector('.tabla-box'); if (tb) tb.scrollLeft = tb.scrollWidth;   // en celular se ve primero lo más reciente
@@ -241,7 +253,9 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
     var b = e.target.closest('button'); if (!b || b.disabled) return;
     if (b.dataset.a) { S.area = b.dataset.a; var primero = CURSOS.filter(function (c) { return c[2] === S.area && D.cursos[c[0]]; })[0]; S.curso = primero ? primero[0] : CURSOS.filter(function (c) { return c[2] === S.area; })[0][0]; }
     else if (b.dataset.c) S.curso = b.dataset.c;
-    else if (b.dataset.v) S.v = b.dataset.v;
+    else if (b.dataset.m) S.mod = b.dataset.m;
+    else if (b.dataset.o) S.o = b.dataset.o;
+    else if (b.dataset.r) S.r = b.dataset.r;
     else return;
     pintar();
   });
