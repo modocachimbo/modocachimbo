@@ -46,6 +46,11 @@ header.top{display:flex;align-items:center;gap:12px;padding:24px 0 10px;padding-
 .filtro{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .filtro small{font:900 11px Nunito,sans-serif;color:var(--text-faint);text-transform:uppercase;letter-spacing:.8px}
 .barra{justify-content:flex-start;gap:12px 22px}
+/* Descargar PDF (assets/descarga-pdf.js lo pone si las descargas están activas) */
+.hero{position:relative}
+.hero .pdf{position:absolute;right:0;bottom:2px}
+.hero .pdf .mcd-solo{padding:9px 16px;border-radius:14px;font-size:14px}
+@media (max-width:760px){.hero .pdf{position:static;margin-top:12px}.hero .pdf .mcd-solo{padding:8px 14px;font-size:13px}}
 tbody tr{transition:opacity .2s}
 table.res tbody tr:not(.hl){opacity:.32}
 table.res tbody tr.hl td.tema{box-shadow:inset 4px 0 0 var(--hlc)}
@@ -139,6 +144,7 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
   <div class="hero">
     <h1>Temas fijos <span class="beta">BETA</span></h1>
     <p id="sub"></p>
+    <div class="pdf" id="pdfLugar"></div>
   </div>
 
   <div class="vacio cerrado"><b>Temas fijos está en prueba</b>Muy pronto lo abriremos para todos.</div>
@@ -168,6 +174,7 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
 <script src="assets/auth.js"></script>
 <script src="assets/arcade-beta.js"></script>
 <script src="assets/temas-fijos/datos.js"></script>
+<script src="assets/descarga-pdf.js" defer></script>
 <script>
 (function () {
   var M = window.MC_TEMAS_FIJOS, MODS = [['cpu', 'CPU'], ['ordinario', 'Ordinario']], D, ex, ULT;
@@ -214,14 +221,16 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
     usar();
     pintarFiltros();
     var datos = D.cursos[S.curso];
+    window.MC_TF = null;
     if (!datos) { $('sub').textContent = nombre(S.curso) + ' · ' + (S.mod === 'cpu' ? 'CPU' : 'Ordinario'); $('cuerpo').innerHTML = '<div class="vacio"><b>Muy pronto</b>Estamos subiendo los temas de este curso.</div>'; return; }
     var idx = ex.map(function (_, i) { return i; });
     var N = idx.length;
-    $('sub').textContent = nombre(S.curso) + ' · ' + (S.mod === 'cpu' ? 'CPU' : 'Ordinario') + ' · ' + N + ' exámenes (' + ex[idx[0]] + ' a ' + ex[idx[N - 1]] + ')';
+    $('sub').textContent = nombre(S.curso) + ' · ' + (S.mod === 'cpu' ? 'CPU' : 'Ordinario');
     var temas = datos.map(function (t) {
       var veces = idx.filter(function (i) { return t[1][i] === '1'; }).length, u = t[1].lastIndexOf('1');
       return { nombre: t[0], s: t[1], veces: veces, pct: Math.round(veces * 100 / N), ultimo: u >= 0 ? ex[u] : '—', sinVenir: u >= 0 ? ULT - u : ex.length };
     });
+    window.MC_TF = { curso: S.curso, nombre: nombre(S.curso), area: S.area, mod: S.mod, modalidad: S.mod === 'cpu' ? 'CPU' : 'Ordinario', orden: S.o, examenes: ex.slice(), temas: temas };
     var rk = temas.slice().sort(function (a, b) { return b.veces - a.veces || a.sinVenir - b.sinVenir; });
     var enUlt = temas.filter(function (t) { return t.s[ULT] === '1'; }).map(function (t) { return t.nombre; });
     var top3 = rk.slice(0, 3);
@@ -239,7 +248,7 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
         idx.map(function (i, k) { return '<th' + (nuevo(k) ? ' class="g"' : '') + '>' + ex[i].split('-')[1] + '</th>'; }).join('') + '</tr></thead><tbody>' +
         (S.o === 'mas' ? rk : temas).map(function (t, n) {
           var hl = (S.r === 'ultimo' && t.s[ULT] === '1') || (S.r === 'tiempo' && t.sinVenir >= 4);
-          return '<tr class="' + (top3.indexOf(t) >= 0 ? 'top3' : '') + (hl ? ' hl' : '') + '"><td class="tema"><span class="tn"><span class="num">' + (n < 9 ? '0' : '') + (n + 1) + '</span>' + esc(t.nombre) + '</span></td>' + idx.map(function (i, k) {
+          return '<tr data-t="' + esc(t.nombre) + '" class="' + (top3.indexOf(t) >= 0 ? 'top3' : '') + (hl ? ' hl' : '') + '"><td class="tema"><span class="tn"><span class="num">' + (n < 9 ? '0' : '') + (n + 1) + '</span>' + esc(t.nombre) + '</span></td>' + idx.map(function (i, k) {
             var x = t.s[i] === '1';
             return '<td class="c' + (nuevo(k) ? ' g' : '') + (x ? ' x' : '') + (x && i === ULT ? ' ultimo' : '') + '" title="' + ex[i] + (x ? ': vino' : ': no vino') + '"><i></i></td>';
           }).join('') + '<td class="tot"><b>' + t.veces + '</b></td></tr>';
@@ -257,7 +266,18 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
     else if (b.dataset.o) S.o = b.dataset.o;
     else if (b.dataset.r) S.r = b.dataset.r;
     else return;
+    // Al cambiar el orden, las filas se deslizan a su nuevo lugar (en vez de saltar)
+    var antes = {}, sb = document.querySelector('.tabla-box'), sl = sb ? sb.scrollLeft : 0;
+    if (b.dataset.o) [].forEach.call(document.querySelectorAll('tbody tr[data-t]'), function (tr) { antes[tr.dataset.t] = tr.getBoundingClientRect().top; });
     pintar();
+    var nb = document.querySelector('.tabla-box'); if (nb && sb) nb.scrollLeft = sl;
+    if (b.dataset.o) [].forEach.call(document.querySelectorAll('tbody tr[data-t]'), function (tr) {
+      var y = antes[tr.dataset.t]; if (y == null) return;
+      var d = y - tr.getBoundingClientRect().top; if (!d) return;
+      tr.style.transition = 'none'; tr.style.transform = 'translateY(' + d + 'px)';
+      tr.getBoundingClientRect();
+      tr.style.transition = 'transform .45s cubic-bezier(.2,.8,.2,1)'; tr.style.transform = '';
+    });
   });
   pintar();
 })();

@@ -360,6 +360,31 @@
     var t = ESTILO.tinta, BC = '"Barlow Condensed",Arial Narrow,sans-serif';
     return '' +
 
+      /* Temas fijos */
+      '.mcpdf .tfk{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}' +
+      '.mcpdf .tfk>div{border:1.4px solid #dde3ee;border-left:5px solid var(--c);border-radius:11px;padding:8px 12px 9px;display:flex;flex-direction:column;gap:1px}' +
+      '.mcpdf .tfk>div.p{border-left-color:#C2185B}.mcpdf .tfk>div.a{border-left-color:#C25400}' +
+      '.mcpdf .tfk small{font:900 8.5px Nunito,Arial;letter-spacing:.14em;text-transform:uppercase;color:#6b7388}' +
+      '.mcpdf .tfk b{font:800 17px/1.15 ' + BC + ';letter-spacing:.02em;color:#1B2A4A;text-transform:uppercase}' +
+      '.mcpdf .tfk span{font-size:10.5px;line-height:1.3;color:#4a5468}' +
+      '.mcpdf .tft{display:flex;align-items:baseline;gap:10px;border-bottom:2px solid var(--c);padding-bottom:4px}.mcpdf .tft b{font:800 17px/1 ' + BC + ';letter-spacing:.06em;text-transform:uppercase;color:#1B2A4A}.mcpdf .tft span{font-size:10.5px;color:#6b7388}' +
+      '.mcpdf .tftb{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed;font-size:11.5px;border:1.4px solid #dde3ee;border-radius:11px;overflow:hidden}' +
+      '.mcpdf .tftb th{background:#1B2A4A;color:#fff;font:900 9px Nunito,Arial;letter-spacing:.06em;text-align:center;padding:5px 0;text-transform:uppercase}' +
+      '.mcpdf .tftb tr.an th{font:800 12px ' + BC + ';letter-spacing:.04em;white-space:nowrap;overflow:visible}.mcpdf .tftb tr.an th.s1{font-size:10.5px;letter-spacing:0}.mcpdf .tftb tr.ci th{background:#2B3C5F;color:#c9d4ea;padding:3px 0;border-bottom:3px solid #A8D81E}' +
+      '.mcpdf .tftb th.g,.mcpdf .tftb td.g{border-left:1.4px solid #c7cfdd}.mcpdf .tftb thead th.g{border-left-color:#4a5a7d}' +
+      '.mcpdf .tftb th.tm{text-align:left;padding-left:8px}.mcpdf .tftb tr.ci th.u{background:#C2185B;color:#fff}' +
+      '.mcpdf .tftb td{text-align:center;height:26px;padding:0;border-top:1px solid #e3e7ee}.mcpdf .tftb tr.z td{background:#F7F9FC}.mcpdf .tftb td.u{background:#FCEFF4!important}' +
+      '.mcpdf .tftb td.n{font:800 12.5px ' + BC + ';color:var(--o)}.mcpdf .tftb td.tm{text-align:left;padding:0 6px 0 8px;font-weight:800;color:#1B2A4A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+      '.mcpdf .tftb td.v{border-left:1.4px solid #c7cfdd}.mcpdf .tftb td.v b{font:800 15px ' + BC + ';color:var(--o)}.mcpdf .tftb td.v small{font-size:9px;color:#8a93a6;margin-left:1px}' +
+      '.mcpdf .tftb i,.mcpdf .tfl i{display:inline-block;vertical-align:middle;width:15px;height:15px;border-radius:4px}.mcpdf .tftb i.x,.mcpdf .tfl i.x{background:var(--c)}.mcpdf .tftb i.x.ul,.mcpdf .tfl i.x.ul{background:#C2185B}' +
+      '.mcpdf .tftb i.x,.mcpdf .tfl i.x{position:relative}.mcpdf .tftb i.x:after,.mcpdf .tfl i.x:after{content:"";position:absolute;left:5px;top:2px;width:4px;height:8px;border:solid #fff;border-width:0 2.2px 2.2px 0;transform:rotate(45deg)}.mcpdf .tftb i.o,.mcpdf .tfl i.o{width:6px;height:6px;border-radius:50%;background:#d3d8e0}' +
+      '.mcpdf .tfl{display:flex;gap:18px;margin-top:7px;font-size:10.5px;color:#4a5468}.mcpdf .tfl span{display:flex;align-items:center;gap:6px}' +
+      '.mcpdf .tfr{display:grid;grid-template-columns:26px 168px 1fr 92px 100px;gap:0 10px;align-items:center;padding:4px 4px;border-bottom:1px solid #e3e7ee;font-size:11.5px}' +
+      '.mcpdf .tfr .n{font:800 13px/20px ' + BC + ';text-align:center;border-radius:6px;background:#EEF1F6;color:#4a5468}.mcpdf .tfr.top .n{background:var(--c);color:#fff}' +
+      '.mcpdf .tfr b{font-weight:800;color:#1B2A4A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+      '.mcpdf .tfr .br{height:12px;border-radius:6px;background:#EEF1F6;overflow:hidden}.mcpdf .tfr .br i{display:block;height:100%;border-radius:6px;background:var(--c);opacity:.55}.mcpdf .tfr.top .br i{opacity:1}' +
+      '.mcpdf .tfr .ct{font-weight:800;color:var(--o);text-align:right}.mcpdf .tfr .ul{font-size:10.5px;color:#6b7388}.mcpdf .tfr .ul.si{color:#C2185B;font-weight:800}' +
+      '.mcpdf .tfn{margin-top:14px;font-size:10.5px;line-height:1.45;color:#6b7388;border-top:1px dashed #c7cfdd;padding-top:8px}' +
       /* Vocabulario · Formato 1 (tabla con número en bloque) */
       '.mcpdf .vh1{display:grid;grid-template-columns:34px 132px 1fr 1fr;gap:0 12px;align-items:center;background:#1B2A4A;color:#fff;border-radius:11px 11px 0 0;padding:8px 10px;font:900 9.5px Nunito,Arial;letter-spacing:.14em;text-transform:uppercase;border-bottom:4px solid #A8D81E}' +
       '.mcpdf .vh1.def,.mcpdf .vr1.def{grid-template-columns:34px 132px 1fr 1fr 1.6fr}' +
@@ -1212,6 +1237,51 @@
       cartas.forEach(function (c, i) { A.columna('<div style="font-size:12px"><b style="color:var(--o)">' + (i + 1) + '.</b> ' + reverso(c) + '</div>', { gap: 6 }); });
     }
   }
+  /* ---------- Temas fijos: tabla de temas por examen de admisión + del que más viene al que menos ---------- */
+  function hacerTemasFijos(A) {
+    var d = A.doc, ex = d.examenes, N = ex.length, U = N - 1, temas = d.temas;
+    var CHK = '';   // el check se dibuja con CSS (muchos SVG en la tabla no salían en la imagen)
+    var rk = temas.slice().sort(function (a, b) { return b.veces - a.veces || a.sinVenir - b.sinVenir; });
+    var enUlt = temas.filter(function (t) { return t.s[U] === '1'; }).map(function (t) { return t.nombre; });
+    var olv = temas.slice().sort(function (a, b) { return b.sinVenir - a.sinVenir; })[0];
+    A.nuevaPagina();
+    A.ancho(cabeceraTema(A), { gap: 16 });
+    A.ancho('<div class="tfk">' +
+      '<div><small>El que más viene</small><b>' + esc(rk[0].nombre) + '</b><span>' + rk[0].veces + ' de ' + N + ' exámenes</span></div>' +
+      '<div class="p"><small>Vino en el último (' + esc(ex[U]) + ')</small><b>' + enUlt.length + (enUlt.length === 1 ? ' tema' : ' temas') + '</b><span>' + esc(enUlt.join(', ') || 'Ninguno') + '</span></div>' +
+      '<div class="a"><small>Hace tiempo que no viene</small><b>' + esc(olv.nombre) + '</b><span>Último: ' + esc(olv.ultimo) + ' · ' + olv.sinVenir + ' sin venir</span></div></div>', { gap: 16 });
+    if (A.op.tabla !== false) {
+      var anios = [], g = {};
+      ex.forEach(function (e) { var a = e.slice(0, 4); if (!g[a]) { g[a] = 0; anios.push(a); } g[a]++; });
+      var nuevo = function (k) { return k === 0 || ex[k - 1].slice(0, 4) !== ex[k].slice(0, 4); };
+      var cw = Math.max(18, Math.min(30, Math.floor((A.W - 36 - 168 - 56) / N)));
+      var lista = d.orden === 'mas' ? rk : temas;
+      A.ancho('<div class="tft"><b>Tabla de temas por examen</b><span>' + (d.orden === 'mas' ? 'Ordenado del que más viene al que menos' : 'En el orden del temario') + '</span></div>', { gap: 8 });
+      A.ancho('<table class="tftb"><colgroup><col style="width:36px"><col><' + ex.map(function () { return 'col style="width:' + cw + 'px"'; }).join('><') + '><col style="width:56px"></colgroup>' +
+        '<thead><tr class="an"><th rowspan="2">N.º</th><th rowspan="2" class="tm">Tema</th>' + anios.map(function (a, k) { return '<th colspan="' + g[a] + '" class="' + (k ? 'g' : '') + (g[a] === 1 ? ' s1' : '') + '">' + a + '</th>'; }).join('') + '<th rowspan="2" class="v">Veces</th></tr>' +
+        '<tr class="ci">' + ex.map(function (e, k) { return '<th class="' + (nuevo(k) ? 'g' : '') + (k === U ? ' u' : '') + '">' + esc(e.split('-')[1] || '') + '</th>'; }).join('') + '</tr></thead><tbody>' +
+        lista.map(function (t, n) {
+          return '<tr' + (n % 2 ? ' class="z"' : '') + '><td class="n">' + dos(n + 1) + '</td><td class="tm">' + esc(t.nombre) + '</td>' + ex.map(function (e, k) {
+            var x = t.s[k] === '1';
+            return '<td class="' + (nuevo(k) ? 'g' : '') + (k === U ? ' u' : '') + '">' + (x ? '<i class="x' + (k === U ? ' ul' : '') + '">' + CHK + '</i>' : '<i class="o"></i>') + '</td>';
+          }).join('') + '<td class="v"><b>' + t.veces + '</b><small>/' + N + '</small></td></tr>';
+        }).join('') + '</tbody></table>' +
+        '<div class="tfl"><span><i class="x">' + CHK + '</i>Vino</span><span><i class="x ul">' + CHK + '</i>Vino en el último examen (' + esc(ex[U]) + ')</span><span><i class="o"></i>No vino</span></div>', { gap: 20 });
+    }
+    if (A.op.ranking !== false) {
+      var mx = rk[0].veces || 1;
+      var filas = rk.map(function (t, i) {
+        var pct = Math.round(t.veces * 100 / N), w = Math.max(3, t.veces / mx * 100);
+        return '<div class="tfr' + (i < 3 ? ' top' : '') + '"><span class="n">' + (i + 1) + '</span><b>' + esc(t.nombre) + '</b><span class="br"><i style="width:' + w.toFixed(1) + '%"></i></span>' +
+          '<span class="ct">' + t.veces + ' de ' + N + ' · ' + pct + '%</span><span class="ul' + (t.s[U] === '1' ? ' si' : '') + '">' + (t.s[U] === '1' ? 'Vino en ' + esc(ex[U]) : 'Último: ' + esc(t.ultimo)) + '</span></div>';
+      });
+      A.ancho('<div class="tft"><b>Del que más viene al que menos</b><span>Veces que vino en los ' + N + ' exámenes</span></div>', { gap: 8, conSiguiente: 90 });
+      filas.forEach(function (f) { A.ancho(f, { gap: 0 }); });
+      A.ancho('<div style="height:6px"></div>', { gap: 0 });
+    }
+    A.ancho('<div class="tfn">Conteo de los exámenes de admisión de la UNJFSC desde ' + esc(ex[0]) + ', modalidad ' + esc(d.modalidad) + '. Que un tema haya venido mucho no asegura que venga en el próximo examen, pero te ayuda a decidir qué repasar primero.</div>', { gap: 0 });
+  }
+
 
   /* ---------- Generar el PDF ---------- */
   function prepararLibrerias() {
@@ -1279,6 +1349,7 @@
         else if (doc.formato === 'agrupado') hacerAgrupado(A);
         else if (doc.formato === 'vocabulario') hacerVocabulario(A);
         else if (doc.formato === 'tarjetas') hacerTarjetas(A);
+        else if (doc.formato === 'temas') hacerTemasFijos(A);
         else hacerTema(A);
         A.reglas(); A.cabeceraYPie();
       } catch (e) { A.taller.remove(); throw e; }
@@ -1386,6 +1457,9 @@
       ['palabras', 'Palabras', (doc.palabras || []).length + ' palabras con sinónimos y antónimos', true, true],
       ['definicion', 'Definición', 'Una columna más con el significado', true],
       ['ejemplos', 'Ejemplos', 'Un ejemplo de uso debajo de la definición', false]];
+    if (doc.formato === 'temas') return [
+      ['tabla', 'Tabla de temas', (doc.temas || []).length + ' temas en ' + (doc.examenes || []).length + ' exámenes, con check donde vino', true, true],
+      ['ranking', 'Del que más viene al que menos', 'Barras con las veces y el último examen en que vino', true]];
     if (doc.formato === 'tarjetas') return [
       ['cartas', 'Tarjetas', (doc.cartas || []).length + ' tarjetas, 8 por hoja para recortar', true, true],
       ['reverso', 'Reverso detrás', 'La respuesta en la hoja siguiente, para imprimir a doble cara', true]];
@@ -1704,6 +1778,24 @@
   }
   document.addEventListener('mc:tarjetas-listo', registrarTarjetas);
   if (window.MC_TARJETAS) registrarTarjetas();
+
+  // Temas fijos: la página deja window.MC_TF con el curso y la modalidad que se ven ahora
+  // (usa el mismo interruptor que Exámenes pasados: tipo 'examen', sin SQL nuevo)
+  if (archivo === 'temas-fijos.html') {
+    registrar({
+      tipo: 'examen', area: 'ciencia-tecnologia',
+      lugar: function () { var b = document.getElementById('pdfLugar'); return b && { padre: b, solo: true, clase: 'mcd-solo', texto: 'Descargar PDF' }; },
+      datos: function () {
+        var x = window.MC_TF;
+        if (!x || !x.temas || !x.temas.length) throw new Error('Este curso todavía no tiene temas para descargar.');
+        var ex = x.examenes;
+        return { formato: 'temas', tipo: 'examen', modelo: 1, area: x.area || 'general', etiqueta: 'TEMAS', numero: '', titulo: x.nombre,
+          subtitulo: 'Temas fijos · Admisión UNJFSC', chips: ['Modalidad ' + x.modalidad, ex.length + ' exámenes', ex[0] + ' a ' + ex[ex.length - 1]],
+          cabecera1: 'Temas fijos · ' + x.modalidad, cabecera2: x.nombre, ref: 'temas-fijos/' + x.mod + '/' + x.curso,
+          modalidad: x.modalidad, orden: x.orden, examenes: ex, temas: x.temas };
+      }
+    });
+  }
 
   window.MCDescarga = { registrar: registrar, abrir: abrir, generar: generar, cfg: cfg, ESTILO: ESTILO, _porAreaYCurso: porAreaYCurso };
 })();
