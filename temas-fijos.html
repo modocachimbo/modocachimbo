@@ -177,7 +177,7 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
 <script src="assets/descarga-pdf.js" defer></script>
 <script>
 (function () {
-  var M = window.MC_TEMAS_FIJOS, MODS = [['cpu', 'CPU'], ['ordinario', 'Ordinario']], D, ex, ULT;
+  var MODS = [['cpu', 'CPU'], ['ordinario', 'Ordinario']], M = normal(window.MC_TEMAS_FIJOS), D, ex, ULT;
   function usar() { D = M[S.mod] || M.cpu; ex = D.examenes; ULT = ex.length - 1; }
   var AREAS = [['ciencia-tecnologia', 'Ciencia y Tecnología'], ['matematica', 'Matemática'], ['comunicacion', 'Comunicación'], ['ciencias-sociales', 'Ciencias Sociales']];
   var CURSOS = [
@@ -279,7 +279,21 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
       tr.style.transition = 'transform .45s cubic-bezier(.2,.8,.2,1)'; tr.style.transform = '';
     });
   });
+  // Los datos se editan en Panel → Temas fijos (Supabase, ajustes 'temas_fijos').
+  // Primero se muestra lo guardado en el teléfono (o datos.js) y al llegar lo de Supabase se vuelve a pintar.
+  function normal(v) {
+    var d = {}; MODS.forEach(function (m) { var x = (v && v[m[0]]) || {}; d[m[0]] = { examenes: x.examenes || [], cursos: x.cursos || {} }; });
+    return d;
+  }
+  function valido(v) { return v && v.cpu && Array.isArray(v.cpu.examenes); }
+  try { var c = JSON.parse(localStorage.getItem('mc_temas_fijos') || 'null'); if (valido(c)) M = normal(c); } catch (e) {}
   pintar();
+  if (window.MCAuth && MCAuth.listo) MCAuth.listo.then(function (cl) { return cl.from('ajustes').select('valor').eq('clave', 'temas_fijos').maybeSingle(); }).then(function (r) {
+    var v = r && r.data && r.data.valor; if (!valido(v)) return;
+    try { localStorage.setItem('mc_temas_fijos', JSON.stringify(v)); } catch (e) {}
+    if (JSON.stringify(normal(v)) === JSON.stringify(M)) return;
+    M = normal(v); pintar();
+  }).catch(function () {});
 })();
 </script>
 </body>
