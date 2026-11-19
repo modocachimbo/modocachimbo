@@ -13,7 +13,7 @@
 <title>Temas fijos · Modo Cachimbo</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Nunito:wght@700;800;900&display=swap">
 <style>
-/* Temas fijos (beta): qué temas vinieron en los exámenes de admisión, por curso */
+/* Temas fijos: qué temas vinieron en los exámenes de admisión, por curso */
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#0B0818;--surface:#151127;--surface-2:#1D1834;--border:#2A2346;--accent:#C6E000;--accent-soft:rgba(198,224,0,.12);--text:#EEEAF7;--text-dim:#A99FC8;--text-faint:#6F6690;--pink:#FF5FA2;--amber:#FFB020}
 body{background:var(--bg);color:var(--text);font-family:Inter,sans-serif;min-height:100vh}
@@ -112,11 +112,6 @@ th.tot{font:900 11px Nunito,sans-serif;color:var(--text-faint);text-transform:up
 .desliza svg{width:14px;height:14px;fill:currentColor}
 .vacio{background:var(--surface);border:1px dashed var(--border);border-radius:16px;padding:34px 20px;text-align:center;color:var(--text-dim);font-size:14px;line-height:1.5}
 .vacio b{display:block;color:var(--text);font:700 17px Sora,sans-serif;margin-bottom:6px}
-/* Beta: solo admin + influencers (assets/arcade-beta.js) */
-.cerrado{display:none}
-html.arcade-no .cerrado{display:block}
-html.arcade-no #contenido{display:none}
-html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
 @media (max-width:760px){
   .wrap{padding:0 16px 40px}
   header.top{padding-top:max(16px,env(safe-area-inset-top))}
@@ -142,12 +137,11 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
   </header>
 
   <div class="hero">
-    <h1>Temas fijos <span class="beta">BETA</span></h1>
+    <h1>Temas fijos</h1>
     <p id="sub"></p>
     <div class="pdf" id="pdfLugar"></div>
   </div>
 
-  <div class="vacio cerrado"><b>Temas fijos está en prueba</b>Muy pronto lo abriremos para todos.</div>
 
   <div id="contenido">
     <div class="areas" id="areas"></div>
@@ -172,7 +166,6 @@ html:not(.arcade-si):not(.arcade-no) #contenido{visibility:hidden}
 
 <script src="assets/mc-config.js"></script>
 <script src="assets/auth.js"></script>
-<script src="assets/arcade-beta.js"></script>
 <script src="assets/temas-fijos/datos.js"></script>
 <script src="assets/descarga-pdf.js" defer></script>
 <script>
