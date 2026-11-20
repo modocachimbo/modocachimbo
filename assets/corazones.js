@@ -296,7 +296,7 @@
       if (c.h > 0) return rpc('perder_corazon').then(function (e) { var d = leerCola(); d.h = Math.max(0, d.h - 1); guardarCola(d); cambiar(e); return siguiente(); });
       if (!c.p.length) return;
       var x = c.p[0];
-      return rpc('sumar_xp', { p: { fuente: x.fuente, curso: x.curso, ok: x.ok, mal: x.mal, seguidas: x.seguidas } }).then(function (e) {
+      return rpc('sumar_xp', { p: { fuente: x.fuente, curso: x.curso, ok: x.ok, mal: x.mal, seguidas: x.seguidas, pend: true } }).then(function (e) {
         var d = leerCola(); d.p.shift(); guardarCola(d); cambiar(e); return siguiente();
       });
     }
@@ -326,6 +326,9 @@
   function enviar() {
     clearTimeout(tEnvio); tEnvio = null;
     if (enviando || !PAG || buf.ok + buf.mal === 0) return;
+    // Si hay XP guardados de cuando no había señal, esto va detrás de ellos en la
+    // misma cola (así la reserva anti-trampas no se gasta antes en lo de ahora)
+    if (leerCola().p.length) { while (buf.ok + buf.mal > 0) aCola(paquete()); vaciarCola(); return; }
     var p = paquete(); enviando = true; vuelo = valor(p.ok, p.mal);
     rpc('sumar_xp', { p: p }).then(function (e) { enviando = false; vuelo = 0; cambiar(e); if (buf.ok + buf.mal) enviar(); else vaciarCola(); },
       // No llegó (sin señal o error): queda guardado en el teléfono para mandarlo después
