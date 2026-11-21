@@ -1024,6 +1024,12 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     html body #juego.lateral > .barra .tile .pos:not(#z) { font-size: 11px !important; top: -8px; }
     #juego.lateral > .barra .camino-l { gap: 3px; margin-top: 4px; }
   }
+  /* Avance de cada jugador: se llena en el borde de abajo de su cuadro (ya no en un aro alrededor de la foto) */
+  html body .barra .tile:not(#z) { border-bottom-color: #2C2549; }
+  .barra .tile::after { content: ""; position: absolute; left: 10px; right: 10px; bottom: -4px; height: 4px; border-radius: 4px; pointer-events: none;
+    background: linear-gradient(90deg, var(--jc) calc(var(--pg, 0) * 100%), #3a3360 0); transition: background .4s; }
+  .barra .tile .ring svg { visibility: hidden; }
+  html body .barra .tile .ring .av:not(#z) { inset: 2px; }
   /* ===== Celular: ocultar rivales y dejar solo tu cuadro, el tiempo y tu camino (más espacio para la pregunta) ===== */
   .barra .plegar { display: none; }
   @media (max-width: 899px), (orientation: portrait) {
@@ -2571,7 +2577,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
         : j.racha >= 3 ? '<span style="--c:var(--naranja)" title="Racha de ' + j.racha + '">' + IC.fuego + '</span>' : '') +
         (j.espejo && !j.yo ? '<span style="--c:var(--morado)" title="Tiene Espejo">' + IC.espejo + '</span>' : '') +
         (j.usados || []).slice(-2).map(k => CMD[k] ? '<span style="--c:' + CMD[k].c + '" title="Usó ' + CMD[k].nom + '">' + IC[k] + '</span>' : '').join('');
-      return '<div class="tile ' + colorDe(j) + (j.yo ? ' yo' : '') + (j.yo && G.espejo ? ' espejo' : '') + (oculto ? ' niebla' : '') + (j.terminado && hecho < G.n ? ' fuera' : '') + '" data-apodo="' + esc(j.yo ? '' : j.apodo) + '"><span class="pos' + (niebla ? ' oculto' : p === 1 ? ' p1' : '') + '">' + (niebla ? '?' : p + '.º') + '</span>' +
+      return '<div class="tile ' + colorDe(j) + (j.yo ? ' yo' : '') + (j.yo && G.espejo ? ' espejo' : '') + (oculto ? ' niebla' : '') + (j.terminado && hecho < G.n ? ' fuera' : '') + '" data-apodo="' + esc(j.yo ? '' : j.apodo) + '" style="--pg:' + (hecho / G.n).toFixed(3) + '"><span class="pos' + (niebla ? ' oculto' : p === 1 ? ' p1' : '') + '">' + (niebla ? '?' : p + '.º') + '</span>' +
         (ev ? '<span class="ev">' + ev + '</span>' : '') +
         '<div class="ring"><svg viewBox="0 0 46 46" aria-hidden="true"><path class="f" d="' + MARCO + '"/><path class="a" d="' + MARCO + '" pathLength="100" stroke-dasharray="100" stroke-dashoffset="' + (100 * (1 - hecho / G.n)).toFixed(1) + '"/></svg>' + avatar(j) + '</div>' +
         '<span class="nm">' + esc(nombreDe(j)) + '</span><span class="pt">' + (oculto ? '?' : j.puntos) + '</span><span class="rs">' + (j.terminado ? (hecho < G.n ? 'Fuera' : 'Terminó') : hecho + ' de ' + G.n) + '</span></div>';
