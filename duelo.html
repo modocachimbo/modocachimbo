@@ -1554,6 +1554,9 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   }
   @media (max-width: 360px) { .sala-foto span { display: none; } }
   @media (prefers-reduced-motion: reduce) { .arena .bh, .arena .slot.entra .bh-w, .arena .slot.entra .plat, .arena .inv { animation: none; } }
+  /* Cámara en el resultado */
+  .res .res-foto { position: absolute; top: 14px; right: 14px; z-index: 5; }
+  @media (max-width: 520px) { .res .res-foto { top: 10px; right: 10px; } .res .res-foto span { display: none; } .res .res-foto { padding: 8px; } }
   /* Ventana de amigos (desde el «+») */
   .hoja-fondo { position: fixed; inset: 0; z-index: 70; background: rgba(5,3,12,.78); display: grid; place-items: end center; padding: 16px; animation: hojaF .2s ease-out; }
   @media (min-width: 701px) { .hoja-fondo { place-items: center; } }
@@ -1735,6 +1738,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   <section id="resultado" hidden>
     <div class="card res" id="resCard" style="margin-top:14px">
       <div class="trofeo" id="resTrofeo" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/><path d="M12 14v4M8 21h8M9 18h6"/></svg></div>
+      <button type="button" class="sala-foto res-foto" id="resFoto" hidden aria-label="Foto del resultado para tus estados" title="Foto del resultado para tus estados"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.8l1.4-2h4.6l1.4 2h1.8A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"/><circle cx="12" cy="12.4" r="3.6"/></svg><span>Foto</span></button>
       <div class="eyebrow" id="resEye"></div>
       <span class="tema" id="resTema"></span>
       <h1 id="resTit"></h1>
@@ -2632,19 +2636,20 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     } catch (e) { $('retoError').textContent = 'No se pudo armar la foto. Intenta otra vez.'; $('retoError').hidden = false; }
     btn.disabled = false;
   }
-  function mostrarFotoSala(bl) {
-    const url = URL.createObjectURL(bl), nombre = 'duelo-modo-cachimbo.png';
+  function mostrarFotoSala(bl, etiqueta, nombre, texto) {
+    const url = URL.createObjectURL(bl);
+    nombre = nombre || 'duelo-modo-cachimbo.png';
     let archivo = null; try { archivo = new File([bl], nombre, { type: 'image/png' }); } catch (e) {}
     const puede = archivo && navigator.canShare && navigator.canShare({ files: [archivo] });
     const f = document.createElement('div'); f.className = 'foto-fondo';
-    f.innerHTML = '<div class="foto-caja" role="dialog" aria-modal="true" aria-label="Foto de la sala"><img src="' + url + '" alt="Foto de la sala de duelo"><div class="bt">' +
+    f.innerHTML = '<div class="foto-caja" role="dialog" aria-modal="true" aria-label="' + (etiqueta || 'Foto de la sala') + '"><img src="' + url + '" alt="' + (etiqueta || 'Foto de la sala de duelo') + '"><div class="bt">' +
       (puede ? '<button type="button" class="fb comp" data-f="compartir">' + SALA_IC.comp + 'Compartir</button>' : '') +
       '<a class="fb baj" href="' + url + '" download="' + nombre + '">' + SALA_IC.baja + 'Descargar</a><button type="button" class="fb x" data-f="cerrar" aria-label="Cerrar">' + SALA_IC.x + '</button></div></div>';
     document.body.append(f);
     f.addEventListener('click', e => {
       const b = e.target.closest('[data-f]');
       if ((b && b.dataset.f === 'cerrar') || e.target === f) { f.remove(); URL.revokeObjectURL(url); return; }
-      if (b && b.dataset.f === 'compartir') navigator.share({ files: [archivo], title: 'Modo Cachimbo', text: '¿Te atreves? Entra a mi duelo: ' + enlace(V.codigo) }).catch(() => {});
+      if (b && b.dataset.f === 'compartir') navigator.share({ files: [archivo], title: 'Modo Cachimbo', text: texto || '¿Te atreves? Entra a mi duelo: ' + enlace(V.codigo) }).catch(() => {});
     });
   }
   function libres(d) { return d.max - d.jugadores.length; }
@@ -3644,6 +3649,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       : '<ul class="tabla">' + d.jugadores.map(j => '<li class="' + colorDe(j) + '">' + avatar(j) + '<div><b>' + esc(nombreDe(j)) + '</b><small>' + esc(lineaDe(j, d.n)) + '</small></div>' + (j.terminado ? '<strong>' + puntosDe(j) + '</strong>' : '') + '</li>').join('') + '</ul>' +
         (!res && !d.cerrado ? '<div class="cierre" id="resCierre"><i></i><span></span></div>' : '');
     if (final) cobrarXp(d); else $('resXp').innerHTML = '';
+    $('resFoto').hidden = !final;
     const festejar = () => {
       if (res && res.gane) confeti($('resCard'));
       if (final) son('fin', res.gane || (res.empate && res.puesto === 1) ? 100 : 0);
@@ -3693,6 +3699,79 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       if (JSON.stringify([V.jugadores, V.resultado, V.revancha, V.cerrado]) !== antes) mostrarResultado();
     }), res ? 15000 : 5000);
   }
+  /* Foto del resultado para estados (1080 × 1920): podio con los búhos */
+  const MEDALLA = [['#FFD84D', '#C99A00', '#3a2a00'], ['#E4E8F2', '#9AA3B8', '#22252e'], ['#F0A066', '#B5642B', '#2e1606']];
+  async function fotoResultado() {
+    const d = V, btn = $('resFoto'), res = d && d.resultado; if (!res || !btn || btn.disabled) return;
+    btn.disabled = true; son('toque');
+    try {
+      try { await Promise.all([document.fonts.load('italic 900 120px "Barlow Condensed"'), document.fonts.load('800 60px "Barlow Condensed"'), document.fonts.load('800 40px Nunito')]); } catch (e) {}
+      const W = 1080, H = 1920, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+      const x = cv.getContext('2d');
+      const js = d.jugadores.slice().sort((a, b) => (a.puesto || 99) - (b.puesto || 99));
+      // Fondo con luces y confeti
+      let g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#120b2c'); g.addColorStop(.55, '#1c1142'); g.addColorStop(1, '#0a0716');
+      x.fillStyle = g; x.fillRect(0, 0, W, H);
+      [[220, 'rgba(255,216,77,.16)', 1250], [860, 'rgba(206,130,255,.15)', 1250], [540, 'rgba(255,255,255,.10)', 1300]].forEach(([bx, col, largo]) => {
+        const lg = x.createLinearGradient(bx, 0, bx, largo); lg.addColorStop(0, col); lg.addColorStop(1, 'rgba(0,0,0,0)');
+        x.fillStyle = lg; x.beginPath(); x.moveTo(bx - 30, 0); x.lineTo(bx + 30, 0); x.lineTo(bx + 280, largo); x.lineTo(bx - 280, largo); x.closePath(); x.fill();
+      });
+      const CF = ['#C6E000', '#FFC800', '#1CB0F6', '#FF5FA2', '#CE82FF', '#2EE6C5'];
+      for (let i = 0; i < 70; i++) { const cx = (i * 397 + 41) % W, cy = 480 + (i * 263) % 460; x.save(); x.translate(cx, cy); x.rotate(i * .7); x.fillStyle = CF[i % 6]; x.globalAlpha = .55; x.fillRect(-7, -3, 14, 6); x.restore(); }
+      const logo = await cargaImg('assets/img/logo-modo-cachimbo-horizontal.svg');
+      if (logo) { const lw = 430, lh = logo.naturalWidth ? lw * logo.naturalHeight / logo.naturalWidth : 100; x.drawImage(logo, (W - lw) / 2, 70, lw, lh); }
+      // Título desde tu lado
+      const tit = res.gane ? '¡GANÉ EL DUELO!' : res.empate && res.puesto === 1 ? '¡EMPATE EN EL 1.º!' : 'QUEDÉ EN EL ' + res.puesto + '.º LUGAR';
+      x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+      x.font = 'italic 900 118px "Barlow Condensed", sans-serif'; x.fillStyle = res.gane ? '#FFC800' : '#C6E000';
+      x.shadowColor = res.gane ? 'rgba(255,200,0,.45)' : 'rgba(198,224,0,.4)'; x.shadowBlur = 40; x.fillText(corta(x, tit, 1000), W / 2, 318); x.shadowBlur = 0;
+      x.font = '800 44px Nunito, sans-serif'; x.fillStyle = '#fff'; x.fillText(corta(x, d.titulo || '', 980), W / 2, 390);
+      x.font = '800 32px Nunito, sans-serif'; x.fillStyle = '#A99FC8'; x.fillText('Duelo de ' + js.length + ' jugadores · ' + d.n + ' preguntas', W / 2, 442);
+      // Podio: 2.º a la izquierda, 1.º al centro, 3.º a la derecha
+      const top = js.slice(0, 3), pos = top.length === 2 ? [[1, 330], [0, 750]] : [[1, 190], [0, 540], [2, 890]];
+      const alto = [300, 230, 190], suelo = 1230, ancho = 320;
+      const B = await Promise.all(top.map((j, i) => capasBuho(pjDe(j), i === 0 ? 'logro' : 'oficial')));
+      const R = await Promise.all(top.map(j => nivelDe(j) >= 0 ? svgImg(MCRango.svg(nivelDe(j), { quieto: true })) : null));
+      pos.forEach(([i, cx]) => {
+        const j = top[i]; if (!j) return;
+        const m = MEDALLA[Math.min(i, 2)], h = alto[i], y = suelo - h, c = COLOR_J[(j.color || 0) % 6][0];
+        // Búho parado sobre su escalón
+        plataforma(x, cx, y + 2, ancho * .9, c);
+        dibBuho(x, B[i], cx, y + 8, i === 0 ? 400 : 320);
+        // Escalón
+        const eg = x.createLinearGradient(0, y, 0, suelo); eg.addColorStop(0, m[0]); eg.addColorStop(1, m[1]);
+        x.save(); rr(x, cx - ancho / 2, y + 10, ancho, h, 22); x.fillStyle = eg; x.fill();
+        x.globalAlpha = .18; x.fillStyle = '#fff'; x.fillRect(cx - ancho / 2 + 16, y + 18, ancho - 32, 10); x.restore();
+        x.textAlign = 'center'; x.fillStyle = m[2];
+        x.font = 'italic 900 ' + (i === 0 ? 120 : 96) + 'px "Barlow Condensed", sans-serif'; x.fillText(String(j.puesto || i + 1), cx, y + (i === 0 ? 130 : 108));
+        x.font = '800 34px "Barlow Condensed", sans-serif'; x.fillText(plural(puntosDe(j), 'PUNTO', 'PUNTOS'), cx, y + (i === 0 ? 190 : 165));
+        // Placa con nombre y rango debajo del podio
+        placaFoto(x, j, cx, suelo + 26, ancho - 16, 64, false, R[i]);
+        x.font = '800 30px Nunito, sans-serif'; x.fillStyle = '#A99FC8'; x.textAlign = 'center'; x.fillText(corta(x, lineaDe(j, d.n), ancho), cx, suelo + 130);
+      });
+      // Los demás (4.º a 6.º) en filas
+      let fy = suelo + 170;
+      js.slice(3).forEach(j => {
+        const c = COLOR_J[(j.color || 0) % 6];
+        x.save(); rr(x, 110, fy, W - 220, 70, 18); x.fillStyle = 'rgba(14,9,32,.9)'; x.fill(); x.lineWidth = 3; x.strokeStyle = c[0] + '99'; x.stroke(); x.restore();
+        x.textBaseline = 'middle'; x.textAlign = 'left';
+        x.font = 'italic 900 44px "Barlow Condensed", sans-serif'; x.fillStyle = '#A99FC8'; x.fillText(j.puesto + '.º', 140, fy + 37);
+        x.font = '800 38px "Barlow Condensed", sans-serif'; x.fillStyle = c[0]; x.fillText(corta(x, String(j.apodo || '').toUpperCase(), 480), 230, fy + 37);
+        x.textAlign = 'right'; x.font = '800 32px Nunito, sans-serif'; x.fillStyle = '#fff'; x.fillText(plural(puntosDe(j), 'punto', 'puntos'), W - 140, fy + 37);
+        x.textBaseline = 'alphabetic'; fy += 84;
+      });
+      // Reto final
+      const by = 1700;
+      rr(x, 70, by, W - 140, 150, 30); x.fillStyle = 'rgba(198,224,0,.08)'; x.fill(); x.lineWidth = 4; x.setLineDash([18, 12]); x.strokeStyle = 'rgba(198,224,0,.7)'; x.stroke(); x.setLineDash([]);
+      x.textAlign = 'center';
+      x.font = 'italic 900 70px "Barlow Condensed", sans-serif'; x.fillStyle = '#fff'; x.fillText('¿ME GANAS? RÉTAME EN', W / 2, by + 78);
+      x.font = '800 32px Nunito, sans-serif'; x.fillStyle = '#C6E000'; x.fillText(new URL('duelo.html', location.href).href.replace(/^https?:\/\//, ''), W / 2, by + 124);
+      const bl = await new Promise(r => cv.toBlob(r, 'image/png'));
+      if (bl) mostrarFotoSala(bl, 'Foto del resultado', 'duelo-resultado-modo-cachimbo.png', '¿Me ganas? Te reto en Modo Cachimbo: ' + new URL('duelo.html', location.href).href);
+    } catch (e) { $('resError').textContent = 'No se pudo armar la foto. Intenta otra vez.'; $('resError').hidden = false; }
+    btn.disabled = false;
+  }
+  $('resFoto').addEventListener('click', fotoResultado);
   // Cuando otro jugador pide la revancha: aviso grande al centro con su foto y el botón para entrar
   let revAvisada = '';
   async function avisoRevancha(cod) {
