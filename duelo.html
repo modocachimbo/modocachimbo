@@ -1625,6 +1625,13 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     .dura { font-size: 9.5px; }
     .eleccion.v4 .ec small, .cmds.v4 .cmd small { font-size: 10.5px; }
   }
+  /* Sin Furia (no hay barra de Llamarada): el sonido va como cuadrito al final de la fila de comodines */
+  #juego:has(> #fuegoBar:empty):has(> #cbar:not([hidden])) > #cbar { grid-row: 3; grid-column: 1; align-self: center; }
+  #juego:has(> #fuegoBar:empty):has(> #cbar:not([hidden])) > .amb-fila { grid-row: 3; grid-column: 2; align-self: center; margin: 0 0 12px; }
+  #juego:has(> #fuegoBar:empty):has(> #cbar:not([hidden])) .amb { width: 46px; height: 46px; min-height: 0; padding: 0; justify-content: center; border-radius: 14px; }
+  #juego:has(> #fuegoBar:empty):has(> #cbar:not([hidden])) .amb :is(.lg, .ondas, .ct) { display: none; }
+  #juego:has(> #fuegoBar:empty):has(> #cbar:not([hidden])) .amb svg { width: 22px; height: 22px; }
+  @media (max-width: 560px) { html body #juego:has(> #fuegoBar:empty) > #cbar .cbtn:not(#z) { font-size: 12.5px !important; gap: 4px; padding-right: 6px; } }
   .cbtn.atk:not(:disabled) svg { box-shadow: 0 0 0 2px color-mix(in srgb, var(--c) 40%, transparent); }
 </style>
 </head>
