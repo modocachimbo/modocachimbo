@@ -72,6 +72,12 @@
   .niv.on .ok { display: grid; }
   .niv:active { transform: translateY(2px); }
 
+  /* Etiqueta Preu / Universitario cuando la búsqueda mezcla las dos bibliotecas */
+  em.nv { display: inline-flex; align-self: flex-start; margin-top: 9px; padding: 2px 8px; border-radius: 7px; font: 1000 10.5px/1.5 Nunito, sans-serif; font-style: normal; letter-spacing: .05em; text-transform: uppercase; color: var(--accent); background: color-mix(in srgb, var(--accent) 15%, transparent); }
+  em.nv.u { color: #1CB0F6; background: color-mix(in srgb, #1CB0F6 16%, transparent); }
+  .renglon em.nv { margin: 0 0 3px; }
+  .libro > em.nv + b { margin-top: 5px; }
+
   /* Buscador + botón de filtros */
   .barra { display: flex; gap: 10px; }
   .buscar { position: relative; flex: 1; min-width: 0; display: flex; align-items: center; }
@@ -616,14 +622,16 @@
       (!op.limpia && l.acceso === 'codigo' ? '<span class="chapa cand" title="Con código de alumno">' + svg('i-candado') + '</span>' : '') +
       (p && est !== 'terminado' ? '<span class="av"><i style="width:' + pct(p) + '%"></i></span>' : '') + '</span>';
   }
+  var MARCA_NIVEL = false;
+  function marcaNivel(l) { return MARCA_NIVEL ? '<em class="nv' + (esUni(l) ? ' u' : '') + '">' + (esUni(l) ? 'Universitario' : 'Preu') + '</em>' : ''; }
   function tarjeta(l) {
     return '<button class="libro" type="button" data-libro="' + esc(l.id) + '" style="--c:' + color(l.curso) + '">' + portada(l) +
-      '<b>' + resaltar(nombre(l)) + '</b><small><i></i><span>' + esc(curso(l.curso).nombre) + (l.paginas ? ' · ' + l.paginas + ' págs' : '') + '</span></small></button>';
+      marcaNivel(l) + '<b>' + resaltar(nombre(l)) + '</b><small><i></i><span>' + esc(curso(l.curso).nombre) + (l.paginas ? ' · ' + l.paginas + ' págs' : '') + '</span></small></button>';
   }
   function renglon(l) {
     var r = S.lectura[l.id], p = avance(l), est = estado(l), tipo = l.tipo || 'libro';
     return '<button class="renglon" type="button" data-libro="' + esc(l.id) + '" style="--c:' + color(l.curso) + '">' + portada(l, { mini: true, limpia: true }) +
-      '<span class="tx"><b>' + resaltar(nombre(l)) + '</b><span class="meta"><span><i class="pt"></i>' + esc(curso(l.curso).nombre) + '</span><span>' + svg('t-' + tipo) + esc(TIPOS[tipo] || tipo) + '</span>' +
+      '<span class="tx">' + marcaNivel(l) + '<b>' + resaltar(nombre(l)) + '</b><span class="meta"><span><i class="pt"></i>' + esc(curso(l.curso).nombre) + '</span><span>' + svg('t-' + tipo) + esc(TIPOS[tipo] || tipo) + '</span>' +
       (l.paginas ? '<span>' + svg('i-paginas') + l.paginas + '</span>' : '') + (l.acceso === 'codigo' ? '<span style="color:#FFC800">' + svg('i-candado') + '</span>' : '') + '</span>' +
       (est === 'terminado' ? '<span class="meta"><span class="fin-l">' + svg('i-hecho') + 'Terminado</span></span>'
         : r ? '<span class="bar"><i style="width:' + pct(p) + '%"></i></span>' : '') + '</span>' + svg('i-der') + '</button>';
@@ -727,13 +735,17 @@
 
   /* ---------- Lista ---------- */
   function pintar() {
+    MARCA_NIVEL = false;
     aplicarNivel();
     pintarBarra();
     var html = '';
     if (!S.libros.length) html = vacio('Muy pronto', 'Estamos subiendo los primeros libros.');
     else if (hayFiltro()) {
       // Un área, un curso, una colección, filtros o lo que buscas: todo junto, en rejilla o en lista
-      var lista = ordenar(S.libros.filter(function (l) { return pasa(l); }));
+      // Si solo buscas (sin área, curso ni colección), se busca en las dos bibliotecas y cada libro lleva su etiqueta
+      var ambos = S.todos.some(esUni) && !!F.q && !F.area && !F.curso && !F.col;
+      var lista = ordenar((ambos ? S.todos : S.libros).filter(function (l) { return pasa(l); }));
+      MARCA_NIVEL = ambos;
       var col = F.col ? coleccion(F.col) : null, c, tit, ico = '', sv = '', sub = '';
       if (F.curso) { tit = curso(F.curso).nombre; c = color(F.curso); ico = icoCurso(F.curso); }
       else if (col) { tit = col.nombre; c = col.color || '#CE82FF'; sv = 'i-coleccion'; sub = col.descripcion || ''; }
@@ -743,6 +755,7 @@
       else if (F.tipo) { tit = TIPOS[F.tipo] || F.tipo; c = 'var(--bib)'; sv = 't-' + F.tipo; }
       else { tit = 'Toda la biblioteca'; c = 'var(--bib)'; sv = 'i-filtro'; }
       if (F.q && (F.curso || col || F.area)) sub = 'Buscando «' + F.q + '»';
+      if (ambos) sub = 'En Preuniversitaria y Universitaria';
       html += '<div class="res-cab" style="--c:' + esc(c) + ';--ico:' + (ico || 'none') + '"><span class="gi">' + (ico ? '<i></i>' : svg(sv)) + '</span><div class="tx"><b>' + esc(tit) + '</b><small>' +
         (sub ? esc(sub) + ' · ' : '') + libros(lista.length) + '</small></div><div class="ctrl">' +
         '<label class="sel">' + svg('i-orden') + '<select id="orden" aria-label="Ordenar">' + Object.keys(ORDENES).map(function (k) { return '<option value="' + k + '"' + (F.orden === k ? ' selected' : '') + '>' + ORDENES[k] + '</option>'; }).join('') + '</select>' + svg('i-abajo', 'fl2') + '</label>' +
