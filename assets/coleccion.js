@@ -50,7 +50,7 @@
   var CATALOGO = [
     // Búho: los disfraces de cada área ya acompañan en sus páginas, así que vienen con tu cuenta
     { id: 'buho-clasico', espacio: 'buho', nom: 'Clásico', rareza: 'comun', regla: { tipo: 'gratis' }, desc: 'El búho de siempre, con sus lentes de sol.' },
-    { id: 'buho-antiguo', espacio: 'buho', nom: 'Antiguo', rareza: 'comun', regla: { tipo: 'gratis' }, desc: 'El primer búho de Modo Cachimbo, el del logo.' },
+    { id: 'buho-antiguo', espacio: 'buho', nom: 'Antiguo', rareza: 'evento', regla: { tipo: 'evento', evento: 'los primeros días de Modo Cachimbo', cinta: 'Veterano' }, desc: 'El primer búho de Modo Cachimbo, el del logo. Solo lo tienen los veteranos.' },   // supabase/115: ya no viene con las cuentas nuevas
     { id: 'buho-al-juarismi', espacio: 'buho', nom: 'Al-Juarismi', rareza: 'raro', regla: { tipo: 'gratis' }, img: 'matematica', area: 'Matemática', desc: 'El padre del álgebra. Te acompaña en Matemática.' },
     { id: 'buho-cervantes', espacio: 'buho', nom: 'Cervantes', rareza: 'raro', regla: { tipo: 'gratis' }, img: 'comunicacion', area: 'Comunicación', desc: 'El autor del Quijote. Te acompaña en Comunicación.' },
     { id: 'buho-einstein', espacio: 'buho', nom: 'Einstein', rareza: 'raro', regla: { tipo: 'gratis' }, img: 'ciencia-tecnologia', area: 'Ciencia y Tecnología', desc: 'El genio de la relatividad. Te acompaña en Ciencia y Tecnología.' },

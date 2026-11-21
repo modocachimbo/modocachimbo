@@ -632,7 +632,7 @@
     if (k <= ya) return;
     g = {}; g[sem] = k;   // solo se recuerda esta semana
     try { localStorage.setItem(cl, JSON.stringify(g)); } catch (x) {}
-    js(BASE + 'assets/coleccion.js?v=210', function () { return window.MCColeccion; }).then(function () {
+    js(BASE + 'assets/coleccion.js?v=211', function () { return window.MCColeccion; }).then(function () {
       var C = window.MCColeccion, T = C.temporada && C.temporada(sem);
       if (!T) return;
       var regs = [];
@@ -659,7 +659,7 @@
     var ids = regs.filter(function (g) { return g.tipo === 'item' && g.item; }).map(function (g) { return g.item; });
     var pasos = [js(BASE + 'assets/sobre.js?v=5', function () { return window.MCSobre; })];
     // Los ítems: la colección se vuelve a pedir al toque (no los 10 min guardados)
-    if (ids.length) pasos.push(js(BASE + 'assets/coleccion.js?v=210', function () { return window.MCColeccion; })
+    if (ids.length) pasos.push(js(BASE + 'assets/coleccion.js?v=211', function () { return window.MCColeccion; })
       .then(function () { return MCColeccion.refrescar ? MCColeccion.refrescar() : null; }));
     var con = regs.filter(function (g) { return g.nota; })[0] || regs[0];
     Promise.all(pasos).then(function () {
