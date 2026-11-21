@@ -520,6 +520,10 @@
 <script src="assets/rango.js"></script>
 <script src="assets/coleccion.js?v=210"></script>
 <script src="assets/tarjeta-perfil.js?v=211"></script>
+<link rel="stylesheet" href="assets/buho/buho.css">
+<script src="assets/buho/buho-datos.js"></script>
+<script src="assets/buho/rosa-datos.js"></script>
+<script src="assets/buho/buho-vivo.js"></script>
 <style id="mc-claro">
 /* Modo claro de esta página (assets/claro.css trae lo común) */
 html[data-modo="claro"] .eyebrow { color: #6F8000 !important; }
@@ -1442,6 +1446,136 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   /* Invitación de un amigo (aviso al centro) */
   .inv-aviso { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 16px; background: rgba(11,8,24,.78); animation: quemaEntra .2s both; }
   @media (prefers-reduced-motion: reduce) { .tiembla, .tiembla .alts li, .quema .ll, .quema .chispa, .borde-fuego, body.tension::before, .lanzar, .relampago .ri { animation: none !important; } }
+  /* ===== Sala de espera: arena con el búho de cada jugador ===== */
+  #reto .centro:has(> .arena) { max-width: 1000px; margin-left: auto; margin-right: auto; }
+  #reto .centro:has(> .arena) > :not(.arena) { max-width: 612px; margin-left: auto; margin-right: auto; }
+  .arena { --bh0: 180px; position: relative; margin: 18px 0 0; border-radius: 24px; overflow: hidden; text-align: center; border: 2px solid #2a2350; border-bottom-width: 5px;
+    background: radial-gradient(120% 70% at 50% 108%, #3b1f7a 0%, transparent 55%), linear-gradient(180deg, #120b2c 0%, #1c1142 55%, #0e0922 100%); }
+  .arena.n2 { --bh0: 230px; } .arena.n3 { --bh0: 215px; } .arena.n4 { --bh0: 200px; } .arena.n5 { --bh0: 185px; } .arena.n6 { --bh0: 175px; }
+  .arena::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .55;
+    background: conic-gradient(from 200deg at 15% -10%, transparent 0 10deg, rgba(198,224,0,.16) 14deg, transparent 22deg),
+                conic-gradient(from 130deg at 85% -10%, transparent 0 10deg, rgba(206,130,255,.18) 14deg, transparent 22deg),
+                conic-gradient(from 165deg at 50% -20%, transparent 0 8deg, rgba(255,255,255,.10) 11deg, transparent 15deg); }
+  .arena .piso { position: absolute; left: -10%; right: -10%; bottom: 0; height: 36%; pointer-events: none; background: radial-gradient(60% 100% at 50% 0%, #2c1a5e, #120a29 70%);
+    border-top: 2px solid rgba(198,224,0,.22); transform: perspective(500px) rotateX(35deg); transform-origin: top; }
+  .arena .piso::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 2px, transparent 2px 60px); }
+  .arena .a-cab { position: relative; z-index: 3; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px 0 18px; }
+  html body .arena .a-tit:not(#z) { font: italic 900 22px/1 var(--display) !important; letter-spacing: .04em; text-transform: uppercase; color: #fff; opacity: .9; }
+  .sala-foto { display: inline-flex; align-items: center; gap: 7px; padding: 8px 13px 7px 10px; border-radius: 13px; cursor: pointer; color: var(--lima-tx);
+    background: rgba(0,0,0,.38); border: 2px solid #3a3360; border-bottom-width: 4px; font: 800 15px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; }
+  .sala-foto svg { width: 21px; height: 21px; }
+  .sala-foto:hover { border-color: color-mix(in srgb, var(--lima) 60%, #3a3360); }
+  .sala-foto:active { transform: translateY(2px); border-bottom-width: 2px; }
+  .sala-foto:disabled { opacity: .6; cursor: progress; }
+  .arena .fila { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(var(--c), minmax(0, 1fr)); gap: 8px; padding: 26px 16px 20px; align-items: end; }
+  .arena.n2 .fila { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); max-width: 600px; margin: 0 auto; }
+  .arena.n3 .fila { max-width: 760px; margin: 0 auto; }
+  .arena .vs { align-self: center; margin-bottom: 70px; }
+  .arena .slot { position: relative; display: flex; flex-direction: column; align-items: center; min-width: 0; container-type: inline-size; }
+  .arena .bh-w { position: relative; z-index: 2; width: 100%; height: min(var(--bh0), 118cqw); display: flex; align-items: flex-end; justify-content: center; }
+  .arena .slot.frente .bh-w { height: min(calc(var(--bh0) * 1.12), 128cqw); }
+  .arena .bh-w[data-jug] { cursor: pointer; }
+  .arena .bh { position: relative; height: 100%; display: flex; align-items: flex-end; justify-content: center; animation: vaiven 4s ease-in-out infinite; transform-origin: 50% 100%; }
+  .arena .slot:nth-child(2n) .bh { animation-delay: -1.3s; } .arena .slot:nth-child(3n) .bh { animation-delay: -2.4s; }
+  @keyframes vaiven { 0%, 100% { transform: rotate(-1.5deg); } 50% { transform: rotate(1.5deg); } }
+  .arena .bh .mcb { position: relative; height: 100%; width: auto; max-width: none; z-index: 1; cursor: inherit; }
+  .arena .slot.entra .bh-w { animation: caeArena .75s cubic-bezier(.3, 1.45, .5, 1) both; }
+  @keyframes caeArena { 0% { transform: translateY(-46px) scale(.85); opacity: 0; } 60% { opacity: 1; } }
+  .arena .plat { width: 92%; max-width: 180px; height: 30px; margin-top: -16px; border-radius: 50%; position: relative; z-index: 1;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--jc) 55%, transparent), color-mix(in srgb, var(--jc) 15%, transparent) 70%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--jc) 70%, transparent), 0 0 26px color-mix(in srgb, var(--jc) 60%, transparent); }
+  .arena .slot.yo .plat { box-shadow: 0 0 0 3px var(--jc), 0 0 40px var(--jc); }
+  .arena .slot.entra .plat { animation: platLuz 1s ease-out both; }
+  @keyframes platLuz { 0% { filter: brightness(2.2); } }
+  /* Placa: nombre y pin a la izquierda, rango a la derecha; abajo estado y nombre del rango */
+  .arena .placa { position: relative; margin-top: 12px; width: 100%; max-width: 190px; text-align: left; border-radius: 14px; padding: 7px 9px 6px;
+    background: linear-gradient(180deg, rgba(20,14,44,.94), rgba(12,8,28,.96)); border: 2px solid color-mix(in srgb, var(--jc) 55%, #322B52); border-bottom: 4px solid var(--jd); }
+  .arena .slot.yo .placa { border-color: var(--jc); border-bottom-color: var(--jd); }
+  .arena .placa .r1 { display: flex; align-items: center; gap: 5px; min-width: 0; }
+  html body .arena .placa .nm:not(#z) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 800 18px/1.1 var(--display) !important; letter-spacing: .04em; text-transform: uppercase; color: var(--jc); }
+  .arena .placa .pin { width: 20px; height: 20px; flex: none; display: grid; place-items: center; }
+  .arena .placa .pin > * { width: 100%; height: 100%; }
+  .arena .placa .rg { width: 24px; flex: none; margin-left: auto; } .arena .placa .rg svg { width: 100%; height: auto; display: block; }
+  .arena .placa .r2 { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: 4px; font: 800 11.5px/1.2 Nunito, sans-serif; color: var(--dim); }
+  .arena .placa .st { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .arena .placa .st.ok { color: #58CC02; } .arena .placa .st svg { width: 13px; height: 13px; flex: none; }
+  .arena .placa .rg2 { display: none; }
+  .arena .placa .st i { font-style: normal; }
+  .arena .placa .rn { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
+  html body .arena .placa .anf:not(#z) { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); font: 800 11px/1 var(--display) !important; font-style: normal; letter-spacing: .1em; text-transform: uppercase;
+    color: #2b2100; background: var(--oro); padding: 4px 8px 3px; border-radius: 6px; white-space: nowrap; }
+  .arena .slot.libre { --jc: #A99FC8; --jd: #3a3360; }
+  .arena .slot.libre .bh { animation: none; }
+  .arena .slot.libre .bh .mcb { filter: brightness(0) invert(1); opacity: .08; }
+  .arena .slot.libre .plat { box-shadow: 0 0 0 2px rgba(111,102,144,.6); background: none; }
+  .arena .slot.libre .placa { border-style: dashed; border-bottom-style: solid; background: rgba(12,8,28,.6); }
+  html body .arena .slot.libre .placa .nm:not(#z) { color: #A99FC8; }
+  .arena .inv { position: absolute; z-index: 3; top: calc(min(var(--bh0), 118cqw) * .45); left: 50%; transform: translate(-50%, -50%); width: 52px; height: 52px; border-radius: 16px; cursor: pointer;
+    display: grid; place-items: center; border: 2px dashed #8e85b8; color: #e6e1ff; background: rgba(0,0,0,.35); animation: invLate 1.8s ease-in-out infinite; }
+  .arena .inv svg { width: 24px; height: 24px; }
+  .arena .inv:hover { border-color: var(--lima); color: var(--lima-tx); }
+  @keyframes invLate { 50% { border-color: var(--lima); color: var(--lima-tx); transform: translate(-50%, -50%) scale(1.06); } }
+  /* Celular: tú adelante en grande, los demás detrás */
+  @media (max-width: 700px) {
+    .arena { margin-left: -6px; margin-right: -6px; border-radius: 20px; }
+    .arena.n2 { --bh0: 170px; } .arena.n3 { --bh0: 140px; }
+    .arena .fila { gap: 4px; padding: 18px 8px 16px; }
+    .arena.frente-on .fila { grid-template-columns: repeat(var(--r), minmax(0, 1fr)); gap: 3px; padding: 12px 6px 16px; }
+    .arena.frente-on .slot { order: 1; }
+    .arena.frente-on .bh-w { height: min(92px, 128cqw); }
+    .arena.frente-on .plat { height: 16px; margin-top: -8px; }
+    .arena.frente-on .placa { margin-top: 6px; padding: 4px 4px 3px; border-radius: 10px; border-bottom-width: 3px; }
+    html body .arena.frente-on .placa .nm:not(#z) { font-size: 12.5px !important; }
+    .arena.frente-on .placa .r1 { gap: 2px; }
+    .arena.frente-on .placa .pin { width: 13px; height: 13px; } .arena.frente-on .placa .rg { width: 15px; }
+    .arena.frente-on .placa .r2 { font-size: 9.5px; margin-top: 2px; }
+    .arena.frente-on .placa .st svg { width: 10px; height: 10px; }
+    .arena.frente-on .placa .rn, .arena.frente-on .placa .r1 .rg, .arena.frente-on .placa .st i { display: none; }
+    .arena.frente-on .placa .rg2 { display: block; }
+    .arena.frente-on .placa .st svg { width: 12px !important; height: 12px !important; }
+    html body .arena.frente-on .placa .anf:not(#z) { font-size: 9px !important; padding: 3px 5px 2px; top: -9px; }
+    .arena.frente-on .inv { width: 34px; height: 34px; border-radius: 11px; top: 46px; } .arena.frente-on .inv svg { width: 16px; height: 16px; }
+    .arena.frente-on .slot.frente { order: 2; grid-column: 1 / -1; margin-top: 10px; }
+    .arena.frente-on .slot.frente .bh-w { height: 196px; }
+    .arena.frente-on .slot.frente .plat { height: 30px; margin-top: -16px; width: 64%; max-width: 230px; }
+    .arena.frente-on .slot.frente .placa { max-width: 250px; margin-top: 12px; padding: 8px 11px 7px; border-radius: 14px; border-bottom-width: 4px; }
+    html body .arena.frente-on .slot.frente .placa .nm:not(#z) { font-size: 21px !important; }
+    .arena.frente-on .slot.frente .placa .r1 { gap: 6px; }
+    .arena.frente-on .slot.frente .placa .pin { width: 22px; height: 22px; } .arena.frente-on .slot.frente .placa .rg { width: 26px; }
+    .arena.frente-on .slot.frente .placa .r2 { font-size: 12px; margin-top: 4px; }
+    .arena.frente-on .slot.frente .placa .st svg { width: 13px; height: 13px; }
+    .arena.frente-on .slot.frente .placa .rn, .arena.frente-on .slot.frente .placa .r1 .rg { display: block; }
+    .arena.frente-on .slot.frente .placa .st i { display: inline; }
+    .arena.frente-on .slot.frente .placa .rg2 { display: none; }
+    html body .arena.frente-on .slot.frente .placa .anf:not(#z) { font-size: 11px !important; padding: 4px 8px 3px; top: -11px; }
+    .arena .piso { height: 44%; }
+    .sala-foto { padding: 7px 10px 6px 8px; font-size: 13px; } .sala-foto svg { width: 19px; height: 19px; }
+    html body .arena .a-tit:not(#z) { font-size: 19px !important; }
+  }
+  @media (max-width: 360px) { .sala-foto span { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .arena .bh, .arena .slot.entra .bh-w, .arena .slot.entra .plat, .arena .inv { animation: none; } }
+  /* Ventana de amigos (desde el «+») */
+  .hoja-fondo { position: fixed; inset: 0; z-index: 70; background: rgba(5,3,12,.78); display: grid; place-items: end center; padding: 16px; animation: hojaF .2s ease-out; }
+  @media (min-width: 701px) { .hoja-fondo { place-items: center; } }
+  @keyframes hojaF { from { opacity: 0; } }
+  .hoja { position: relative; width: min(480px, 100%); max-height: min(78vh, 640px); overflow-y: auto; background: var(--surface, #17122B); border: 2px solid var(--borde-g); border-bottom-width: 5px;
+    border-radius: 22px; padding: 6px 14px 14px; text-align: left; animation: hojaS .28s cubic-bezier(.3, 1.3, .5, 1); }
+  @keyframes hojaS { from { transform: translateY(40px); opacity: 0; } }
+  .hoja .amigos-inv { margin-top: 0; border: 0; background: none; padding: 8px 0 0; }
+  .hoja-x { position: absolute; top: 10px; right: 10px; z-index: 2; width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; cursor: pointer;
+    background: var(--surface-2, #1F1936); border: 2px solid var(--borde-g); color: var(--text, #fff); }
+  .hoja-x svg { width: 18px; height: 18px; }
+  .hoja .ai-vacio { padding: 18px 4px 8px; }
+  /* Foto para estados */
+  .foto-fondo { position: fixed; inset: 0; z-index: 80; background: rgba(5,3,12,.88); display: grid; place-items: center; padding: 16px; }
+  .foto-caja { width: min(380px, 100%); text-align: center; }
+  .foto-caja img { width: 100%; max-height: calc(100vh - 110px); object-fit: contain; border-radius: 18px; box-shadow: 0 20px 60px rgba(0,0,0,.6); display: block; margin: 0 auto; }
+  .foto-caja .bt { display: flex; gap: 10px; margin-top: 12px; }
+  .foto-caja .fb { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 13px 12px 11px; border-radius: 14px; cursor: pointer; text-decoration: none;
+    font: italic 900 19px/1 var(--display); letter-spacing: .04em; text-transform: uppercase; border: 2px solid var(--borde-g); border-bottom-width: 5px; background: var(--surface-2, #1F1936); color: var(--text, #fff); }
+  .foto-caja .fb svg { width: 19px; height: 19px; }
+  .foto-caja .fb.comp { background: var(--lima); color: #151A03; border-color: #8fa300; }
+  .foto-caja .fb.x { flex: 0 0 52px; padding: 0; }
 </style>
 </head>
 <body>
@@ -1546,7 +1680,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       <p class="hint" id="retoSub"></p>
       <div class="ficha" id="retoFicha"></div>
       <div class="cierre" id="retoCierre"><i></i><span></span></div>
-      <div class="sala" id="retoSala"></div>
+      <div class="arena" id="retoSala"></div>
       <div id="retoElegir"></div>
       <div id="retoCompartir">
         <div class="ticket">
@@ -1761,7 +1895,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   function son(n, x) { try { if (window.MCSonido && MCSonido.activo && MCSonido[n]) MCSonido[n](x); } catch (e) {} }
   // Sondeo: con la pestaña oculta no se pregunta nada (ahorra tráfico de Supabase)
   const siVisible = fn => () => { if (!document.hidden) return fn(); };
-  function pararSondeo() { if (sondeo) { clearInterval(sondeo); sondeo = null; } if (reloj1s) { clearInterval(reloj1s); reloj1s = null; } }
+  function pararSondeo() { cerrarHojaAmigos(); if (sondeo) { clearInterval(sondeo); sondeo = null; } if (reloj1s) { clearInterval(reloj1s); reloj1s = null; } }
   function cuentaRacha() {
     // Cada respuesta cuenta para la racha de estudio (assets/racha.js)
     window.MCRacha ? MCRacha.respondio() : (window.mcRachaPend = (window.mcRachaPend || 0) + 1);
@@ -2279,18 +2413,239 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     if (libres(d) <= 0) { aviso('Este duelo ya está lleno (' + d.max + ' jugadores). Crea el tuyo y reta a quien quieras.', 'Crear mi duelo'); return; }
     pintarReto();
   }
+  /* Sala de espera: escenario con el búho de cada jugador en su plataforma */
   const VISTOS = {};
-  function salaHtml(d) {
-    const js = d.jugadores;
-    let html = '';
-    for (let i = 0; i < d.max; i++) {
-      const j = js[i];
-      if (i === 1 && d.max === 2) html += '<div class="vs" aria-hidden="true">VS</div>';
-      if (!j) { html += '<div class="puesto-sala libre"><span class="av">+</span><b>Libre</b><small>Esperando<i class="pts3"><i>.</i><i>.</i><i>.</i></i></small></div>'; continue; }
-      html += '<div class="puesto-sala ' + colorDe(j) + (j.yo ? ' yo' : '') + (VISTOS[j.apodo] ? '' : ' entra') + '">' + avatar(j) + '<b>' + esc(nombreDe(j)) + '</b><small>' + (j.xp != null && window.MCRango && MCRango.nivel(j.xp) >= 0 ? '<i class="rgo-n r' + MCRango.nivel(j.xp) + '">' + MCRango.nombre(MCRango.nivel(j.xp)) + '</i> · ' : '') + (d.cmd_cant > 0 && !d.empieza ? (j.eligio ? '<span class="eligio">Comodines listos</span>' : '<span class="eligiendo">Eligiendo…</span>') : j.creador ? 'Anfitrión' : 'Listo') + '</small></div>';
-      VISTOS[j.apodo] = 1;
+  const SV = (p, w) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' + (w || 2.6) + '" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>';
+  const SALA_IC = {
+    ok: SV('<path d="M5 12l5 5 9-10"/>', 3.4),
+    reloj: SV('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
+    mas: SV('<path d="M12 5v14M5 12h14"/>', 3.2),
+    cam: SV('<path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.8l1.4-2h4.6l1.4 2h1.8A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"/><circle cx="12" cy="12.4" r="3.6"/>', 2.3),
+    x: SV('<path d="M6 6l12 12M18 6L6 18"/>', 3),
+    comp: SV('<path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/>', 2.4),
+    baja: SV('<path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 19h14"/>', 2.4)
+  };
+  // Búho que tiene puesto (Clásico, Rosa, Rosa navidad…). Sin dato: el de siempre.
+  function pjDe(j) {
+    const C = window.MCColeccion;
+    let id = j && j.buho;
+    if (!id && j && j.yo && C && C.estado && C.estado().listo) id = C.puesto('buho');
+    const x = id && C && C.item(id);
+    return x && x.pj && window.MCBuhoAmigos && MCBuhoAmigos[x.pj] ? x.pj : '';
+  }
+  const puedeInvitar = d => !!d.yo && !d.empieza && !d.cerrado && quedaSala() > 0 && libres(d) > 0;
+  // Orden: el del frente (tú, o el anfitrión si aún no entras) va al medio; en el celular pasa adelante
+  function salaOrden(d) {
+    const js = d.jugadores, frente = js.find(j => j.yo) || js.find(j => j.creador) || js[0] || null;
+    const L = js.filter(j => j !== frente);
+    while (L.length + (frente ? 1 : 0) < d.max) L.push(null);
+    const fila = L.slice();
+    if (frente) fila.splice(d.max === 2 ? 0 : Math.floor((d.max - 1) / 2), 0, frente);
+    return { frente, atras: L, fila };
+  }
+  function nivelDe(j) { return j && j.xp != null && window.MCRango ? MCRango.nivel(j.xp) : -1; }
+  function placaHtml(j, d) {
+    if (!j) return '<div class="r1"><span class="nm">Libre</span></div><div class="r2"><span class="st">' + (puedeInvitar(d) ? SALA_IC.mas + 'Invitar' : 'Esperando<i class="pts3"><i>.</i><i>.</i><i>.</i></i>') + '</span></div>';
+    const nv = nivelDe(j), p = window.MCTarjeta && MCTarjeta.pinDe ? MCTarjeta.pinDe(j) : null;
+    const ok = !(d.cmd_cant > 0 && !d.empieza) || j.eligio;
+    return (j.creador ? '<i class="anf">Anfitrión</i>' : '') +
+      '<div class="r1">' + (p ? '<span class="pin">' + p.html + '</span>' : '') + '<span class="nm">' + esc(j.apodo || nombreDe(j)) + '</span>' +
+      (nv >= 0 ? '<span class="rg" title="' + MCRango.nombre(nv) + '">' + MCRango.svg(nv, { mini: true, quieto: true }) + '</span>' : '') + '</div>' +
+      '<div class="r2"><span class="st' + (ok ? ' ok' : '') + '">' + (ok ? SALA_IC.ok + '<i>Listo</i>' : SALA_IC.reloj + '<i>Eligiendo</i>') + '</span>' +
+      (nv >= 0 ? '<span class="rn" style="color:' + MCRango.color(nv).c + '">' + MCRango.nombre(nv) + '</span><span class="rg rg2">' + MCRango.svg(nv, { mini: true, quieto: true }) + '</span>' : '') + '</div>';
+  }
+  function pintarSala(d) {
+    const caja = $('retoSala'); if (!caja) return;
+    const { fila } = salaOrden(d), inv = puedeInvitar(d), frenteOn = d.max >= 4;
+    const firma = d.max + '|' + (inv ? 1 : 0) + '|' + fila.map(j => j ? j.apodo + ':' + pjDe(j) : '-').join(',');
+    if (caja.dataset.firma === firma) {
+      // Solo cambian las placas (listo, eligiendo, rango): los búhos siguen con su animación
+      caja.querySelectorAll('.slot').forEach((s, i) => { const h = placaHtml(fila[i], d); if (s.lastChild.innerHTML !== h) s.lastChild.innerHTML = h; });
+      return;
     }
-    return html;
+    // Reusa los búhos que ya estaban para que no reinicien su animación
+    const viejos = {};
+    caja.querySelectorAll('.slot[data-k]').forEach(s => { const m = s.querySelector('.bh .mcb'); if (m) viejos[s.dataset.k] = m; });
+    caja.dataset.firma = firma;
+    caja.className = 'arena n' + d.max + (frenteOn ? ' frente-on' : '');
+    caja.style.setProperty('--c', d.max);
+    caja.style.setProperty('--r', Math.max(1, d.max - 1));
+    caja.innerHTML = '<div class="piso" aria-hidden="true"></div><div class="a-cab"><span class="a-tit">Sala de espera</span>' +
+      '<button type="button" class="sala-foto" id="salaFoto" aria-label="Foto para tus estados" title="Foto para tus estados">' + SALA_IC.cam + '<span>Foto</span></button></div><div class="fila"></div>';
+    const cont = caja.querySelector('.fila'), F = salaOrden(d).frente;
+    fila.forEach((j, i) => {
+      if (d.max === 2 && i === 1) { const v = document.createElement('div'); v.className = 'vs'; v.setAttribute('aria-hidden', 'true'); v.textContent = 'VS'; cont.append(v); }
+      const s = document.createElement('div'), pj = j ? pjDe(j) : '', k = j ? j.apodo + ':' + pj : '';
+      s.className = 'slot ' + (j ? colorDe(j) : 'libre') + (j && j.yo ? ' yo' : '') + (j && j === F ? ' frente' : '') + (j && !VISTOS[j.apodo] ? ' entra' : '');
+      if (k) s.dataset.k = k;
+      const w = document.createElement('div'); w.className = 'bh-w';
+      if (j && j.codigo && !j.yo) { w.dataset.jug = j.codigo; w.setAttribute('role', 'button'); w.setAttribute('tabindex', '0'); w.setAttribute('aria-label', 'Ver a ' + j.apodo); }
+      const bh = document.createElement('div'); bh.className = 'bh';
+      let m = k && viejos[k];
+      if (!m && window.MCBuhoVivo) { try { m = MCBuhoVivo.crear(j && j.yo ? 'saludando' : 'oficial', pj); } catch (e) { m = null; } }
+      if (m) bh.append(m);
+      w.append(bh); s.append(w);
+      if (!j && inv) { const b = document.createElement('button'); b.type = 'button'; b.className = 'inv'; b.dataset.invitar = '1'; b.setAttribute('aria-label', 'Invitar a un amigo'); b.innerHTML = SALA_IC.mas; s.append(b); }
+      const pl = document.createElement('div'); pl.className = 'plat'; pl.setAttribute('aria-hidden', 'true'); s.append(pl);
+      const pc = document.createElement('div'); pc.className = 'placa'; pc.innerHTML = placaHtml(j, d); s.append(pc);
+      cont.append(s);
+      if (j) VISTOS[j.apodo] = 1;
+    });
+    if (window.MCColeccion && MCColeccion.css) MCColeccion.css();
+  }
+  $('retoSala').addEventListener('click', e => {
+    if (e.target.closest('[data-invitar]')) { son('toque'); abrirHojaAmigos(); return; }
+    if (e.target.closest('#salaFoto')) fotoSala();
+  });
+
+  /* Foto de la sala para estados (1080 × 1920) */
+  function cargaImg(src) { return new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = src; }); }
+  // El emblema del rango viene como <img> (webp) o como <svg>
+  function svgImg(s) {
+    if (!s) return Promise.resolve(null);
+    const m = /^\s*<img[^>]*\ssrc="([^"]+)"/.exec(s);
+    if (m) return cargaImg(m[1].replace(/&amp;/g, '&'));
+    if (!/xmlns=/.test(s)) s = s.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+    return cargaImg('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s));
+  }
+  async function capasBuho(pj, pose) {
+    const am = pj && window.MCBuhoAmigos && MCBuhoAmigos[pj], DS = am ? am.datos : window.MCBuhoDatos;
+    if (!DS) return null;
+    const p = DS[pose] ? pose : 'oficial', dd = DS[p], base = ['feet', 'wings', 'body', 'mouth', 'brow'];
+    let L = [];
+    base.forEach(k => { if (k === 'mouth' && p === 'oficial') return; L = L.concat(dd.L.filter(l => l.k === k)); });
+    L = L.concat(dd.L.filter(l => base.indexOf(l.k) < 0));
+    const ims = await Promise.all(L.map(l => cargaImg('assets/buho/capas/' + l.f)));
+    return { dd, L, ims };
+  }
+  function dibBuho(x, b, cx, pie, h, sombra) {
+    if (!b) return;
+    const s = h / b.dd.H, x0 = cx - b.dd.W * s / 2, y0 = pie - b.dd.fb * s;
+    if (sombra) {
+      const t = document.createElement('canvas'); t.width = Math.ceil(b.dd.W * s); t.height = Math.ceil(b.dd.H * s);
+      const tx = t.getContext('2d');
+      b.L.forEach((l, i) => { if (b.ims[i]) tx.drawImage(b.ims[i], l.x * s, l.y * s, l.w * s, l.h * s); });
+      tx.globalCompositeOperation = 'source-in'; tx.fillStyle = '#fff'; tx.fillRect(0, 0, t.width, t.height);
+      x.save(); x.globalAlpha = .1; x.drawImage(t, x0, y0); x.restore(); return;
+    }
+    b.L.forEach((l, i) => { if (b.ims[i]) x.drawImage(b.ims[i], x0 + l.x * s, y0 + l.y * s, l.w * s, l.h * s); });
+  }
+  function rr(x, X, Y, w, h, r) { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); }
+  const COLOR_J = [['#C6E000', '#8fa300'], ['#1CB0F6', '#0f7fb8'], ['#FF9600', '#c46e00'], ['#CE82FF', '#9a4fd1'], ['#FF5FA2', '#b8336e'], ['#2EE6C5', '#149e86']];
+  function corta(x, t, w) { if (x.measureText(t).width <= w) return t; while (t.length > 1 && x.measureText(t + '…').width > w) t = t.slice(0, -1); return t + '…'; }
+  function plataforma(x, cx, y, w, c) {
+    const g = x.createRadialGradient(cx, y, 0, cx, y, w / 2);
+    g.addColorStop(0, c + 'AA'); g.addColorStop(.7, c + '30'); g.addColorStop(1, c + '00');
+    x.save(); x.beginPath(); x.ellipse(cx, y, w / 2, w * .1, 0, 0, Math.PI * 2); x.fillStyle = g; x.fill();
+    x.lineWidth = 5; x.strokeStyle = c + 'CC'; x.shadowColor = c; x.shadowBlur = 30; x.stroke(); x.restore();
+  }
+  // Placa con nombre a la izquierda y rango a la derecha
+  function placaFoto(x, j, cx, y, w, h, grande, rg) {
+    const c = j ? COLOR_J[((j.color || 0) % 6)] : ['#A99FC8', '#3a3360'];
+    x.save();
+    rr(x, cx - w / 2, y, w, h, grande ? 26 : 16); x.fillStyle = 'rgba(14,9,32,.94)'; x.fill();
+    x.lineWidth = grande ? 5 : 3; x.strokeStyle = j ? c[0] : '#4a4270'; if (!j) x.setLineDash([10, 8]); x.stroke(); x.setLineDash([]);
+    x.fillStyle = c[1]; x.fillRect(cx - w / 2 + 10, y + h - (grande ? 7 : 5), w - 20, grande ? 7 : 5);
+    const pad = grande ? 26 : 12, em = grande ? 64 : 38;
+    x.textBaseline = 'middle'; x.textAlign = 'left';
+    x.font = (grande ? '800 60px' : '800 32px') + ' "Barlow Condensed", sans-serif';
+    x.fillStyle = j ? c[0] : '#8b82ad';
+    const nm = j ? String(j.apodo || '').toUpperCase() : 'LIBRE';
+    const ty = grande ? y + h * .38 : y + h / 2;
+    x.fillText(corta(x, nm, w - pad * 2 - (rg ? em + 8 : 0)), cx - w / 2 + pad, ty);
+    if (rg) x.drawImage(rg, cx + w / 2 - pad - em, ty - em / 2, em, em);
+    if (grande && j && nivelDe(j) >= 0) {
+      const nv = nivelDe(j);
+      x.font = '800 30px Nunito, sans-serif'; x.fillStyle = '#A99FC8'; x.fillText(j.creador ? 'Anfitrión' : 'Retador', cx - w / 2 + pad, y + h * .76);
+      x.textAlign = 'right'; x.fillStyle = MCRango.color(nv).c; x.fillText(MCRango.nombre(nv), cx + w / 2 - pad, y + h * .76);
+    }
+    x.restore();
+  }
+  async function fotoSala() {
+    const d = V, btn = $('salaFoto'); if (!d || !btn || btn.disabled) return;
+    btn.disabled = true; son('toque');
+    try {
+      try { await Promise.all([document.fonts.load('italic 900 120px "Barlow Condensed"'), document.fonts.load('800 60px "Barlow Condensed"'), document.fonts.load('800 40px Nunito')]); } catch (e) {}
+      const W = 1080, H = 1920, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+      const x = cv.getContext('2d'), { frente, atras } = salaOrden(d);
+      // Fondo de arena con luces
+      let g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#120b2c'); g.addColorStop(.55, '#1c1142'); g.addColorStop(1, '#0a0716');
+      x.fillStyle = g; x.fillRect(0, 0, W, H);
+      [[150, 'rgba(198,224,0,.13)', 1300], [930, 'rgba(206,130,255,.15)', 1300], [540, 'rgba(255,255,255,.07)', 1500]].forEach(([bx, col, largo]) => {
+        const lg = x.createLinearGradient(bx, 0, bx, largo); lg.addColorStop(0, col); lg.addColorStop(1, 'rgba(0,0,0,0)');
+        x.fillStyle = lg; x.beginPath(); x.moveTo(bx - 30, 0); x.lineTo(bx + 30, 0); x.lineTo(bx + 260, largo); x.lineTo(bx - 260, largo); x.closePath(); x.fill();
+      });
+      for (let i = 0; i < 60; i++) { const sx = (i * 397) % W, sy = (i * 263) % 1100; x.fillStyle = 'rgba(255,255,255,' + (.15 + (i % 5) * .08) + ')'; x.beginPath(); x.arc(sx, sy, 1.5 + (i % 3), 0, 7); x.fill(); }
+      const piso = x.createRadialGradient(W / 2, 1480, 0, W / 2, 1480, 700); piso.addColorStop(0, 'rgba(91,52,180,.55)'); piso.addColorStop(1, 'rgba(18,10,41,0)');
+      x.fillStyle = piso; x.fillRect(0, 1000, W, 920);
+      // Logo y título
+      const logo = await cargaImg('assets/img/logo-modo-cachimbo-horizontal.svg');
+      if (logo) { const lw = 470, lh = logo.naturalWidth ? lw * logo.naturalHeight / logo.naturalWidth : 110; x.drawImage(logo, (W - lw) / 2, 80, lw, lh); }
+      x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+      x.font = 'italic 900 132px "Barlow Condensed", sans-serif'; x.fillStyle = '#C6E000';
+      x.shadowColor = 'rgba(198,224,0,.45)'; x.shadowBlur = 40; x.fillText('SALA DE DUELO', W / 2, 345); x.shadowBlur = 0;
+      x.font = '800 44px Nunito, sans-serif'; x.fillStyle = '#fff'; x.fillText(corta(x, d.titulo || '', 980), W / 2, 415);
+      x.font = '800 32px Nunito, sans-serif'; x.fillStyle = '#A99FC8';
+      x.fillText(d.n + ' preguntas · ' + tiempoTxt(d.seg || 60) + ' cada una · ' + d.jugadores.length + ' de ' + d.max + ' jugadores', W / 2, 468);
+      // Búhos y rangos (cargados antes de dibujar)
+      const pose = j => j && j.yo ? 'saludando' : 'oficial';
+      const todos = (frente ? [frente] : []).concat(atras);
+      const B = await Promise.all(todos.map(j => capasBuho(j ? pjDe(j) : '', pose(j))));
+      const R = await Promise.all(todos.map(j => nivelDe(j) >= 0 ? svgImg(MCRango.svg(nivelDe(j), { quieto: true })) : null));
+      if (d.max >= 4) {
+        // Fila de atrás
+        const r = atras.length, sw = Math.min(210, 1000 / r), h = Math.min(280, sw * 1.3), pie = 860;
+        atras.forEach((j, i) => {
+          const cx = W / 2 + (i - (r - 1) / 2) * sw;
+          if (j) plataforma(x, cx, pie - 4, sw * .95, COLOR_J[(j.color || 0) % 6][0]);
+          dibBuho(x, B[i + 1], cx, pie, h, !j);
+          placaFoto(x, j, cx, pie + 30, sw - 12, 58, false, R[i + 1]);
+        });
+        // Adelante: tú (o el anfitrión) en grande
+        if (frente) {
+          plataforma(x, W / 2, 1418, 560, COLOR_J[(frente.color || 0) % 6][0]);
+          dibBuho(x, B[0], W / 2, 1424, 540);
+          placaFoto(x, frente, W / 2, 1450, 600, 140, true, R[0]);
+        }
+      } else {
+        // 1 vs 1 o de 3: todos en una fila, del mismo tamaño
+        const fila = d.max === 2 ? [frente].concat(atras) : [atras[0], frente, atras[1]];
+        const bi = j => j === frente ? 0 : 1 + atras.indexOf(j);
+        const sw = d.max === 2 ? 470 : 340, h = d.max === 2 ? 540 : 420, pie = 1380;
+        fila.forEach((j, i) => {
+          const cx = W / 2 + (i - (fila.length - 1) / 2) * (sw + (d.max === 2 ? 60 : 0));
+          if (j) plataforma(x, cx, pie - 6, sw * .9, COLOR_J[(j.color || 0) % 6][0]);
+          dibBuho(x, B[bi(j)], cx, pie, h, !j);
+          placaFoto(x, j, cx, pie + 30, sw - 20, 130, true, R[bi(j)]);
+        });
+        if (d.max === 2) { x.font = 'italic 900 150px "Barlow Condensed", sans-serif'; x.fillStyle = '#FFC800'; x.textAlign = 'center'; x.shadowColor = 'rgba(0,0,0,.5)'; x.shadowBlur = 0; x.shadowOffsetY = 8; x.fillText('VS', W / 2, pie - 200); x.shadowOffsetY = 0; }
+      }
+      // Reto con el código
+      const by = 1630;
+      rr(x, 70, by, W - 140, 220, 30); x.fillStyle = 'rgba(198,224,0,.08)'; x.fill(); x.lineWidth = 4; x.setLineDash([18, 12]); x.strokeStyle = 'rgba(198,224,0,.7)'; x.stroke(); x.setLineDash([]);
+      x.textAlign = 'center';
+      x.font = 'italic 900 64px "Barlow Condensed", sans-serif'; x.fillStyle = '#fff'; x.fillText('¿TE ATREVES? ENTRA CON EL CÓDIGO', W / 2, by + 78);
+      x.font = 'italic 900 100px "Barlow Condensed", sans-serif'; x.fillStyle = '#C6E000'; x.fillText(String(d.codigo).split('').join(' '), W / 2, by + 178);
+      x.font = '800 28px Nunito, sans-serif'; x.fillStyle = '#A99FC8'; x.fillText(enlace(d.codigo).replace(/^https?:\/\//, ''), W / 2, by + 262);
+      const bl = await new Promise(r => cv.toBlob(r, 'image/png'));
+      if (bl) mostrarFotoSala(bl);
+    } catch (e) { $('retoError').textContent = 'No se pudo armar la foto. Intenta otra vez.'; $('retoError').hidden = false; }
+    btn.disabled = false;
+  }
+  function mostrarFotoSala(bl) {
+    const url = URL.createObjectURL(bl), nombre = 'duelo-modo-cachimbo.png';
+    let archivo = null; try { archivo = new File([bl], nombre, { type: 'image/png' }); } catch (e) {}
+    const puede = archivo && navigator.canShare && navigator.canShare({ files: [archivo] });
+    const f = document.createElement('div'); f.className = 'foto-fondo';
+    f.innerHTML = '<div class="foto-caja" role="dialog" aria-modal="true" aria-label="Foto de la sala"><img src="' + url + '" alt="Foto de la sala de duelo"><div class="bt">' +
+      (puede ? '<button type="button" class="fb comp" data-f="compartir">' + SALA_IC.comp + 'Compartir</button>' : '') +
+      '<a class="fb baj" href="' + url + '" download="' + nombre + '">' + SALA_IC.baja + 'Descargar</a><button type="button" class="fb x" data-f="cerrar" aria-label="Cerrar">' + SALA_IC.x + '</button></div></div>';
+    document.body.append(f);
+    f.addEventListener('click', e => {
+      const b = e.target.closest('[data-f]');
+      if ((b && b.dataset.f === 'cerrar') || e.target === f) { f.remove(); URL.revokeObjectURL(url); return; }
+      if (b && b.dataset.f === 'compartir') navigator.share({ files: [archivo], title: 'Modo Cachimbo', text: '¿Te atreves? Entra a mi duelo: ' + enlace(V.codigo) }).catch(() => {});
+    });
   }
   function libres(d) { return d.max - d.jugadores.length; }
   function pintarCierre(el) {
@@ -2328,8 +2683,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       ? 'Envíales el código o el enlace. Todos empiezan a la vez cuando la sala esté lista.'
       : 'Las mismas ' + d.n + ' preguntas para todos. Gana quien suma más puntos.';
     $('retoFicha').innerHTML = fichaHtml(d);
-    $('retoSala').style.setProperty('--n', d.max);
-    $('retoSala').innerHTML = salaHtml(d);
+    pintarSala(d);
     pintarCierre($('retoCierre'));
     $('retoCompartir').hidden = d.cerrado;
     $('retoCodigo').textContent = d.codigo;
@@ -2350,7 +2704,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       guardar(n);
       if (n.empieza && n.yo) { arrancar(); return; }
       if (n.empieza && !n.yo) { pararSondeo(); aviso('El duelo empezó sin ti. Crea el tuyo y reta a quien quieras.', 'Crear mi duelo'); return; }
-      $('retoSala').innerHTML = salaHtml(n);
+      pintarSala(n);
       $('retoCompartir').hidden = n.cerrado;
       pintarBoton();
       pintarEleccion(false);
@@ -2407,31 +2761,50 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
 
   /* Invitar a tus amigos directo desde la sala */
   let amigosLista = null, invitados = {};
-  function pintarAmigos(primera) {
-    const d = V, caja = $('retoAmigos');
-    if (!d.yo || d.empieza || d.cerrado || quedaSala() <= 0 || libres(d) <= 0) { caja.innerHTML = ''; return; }
-    if (amigosLista === null && primera) {
-      amigosLista = 'cargando';
-      rpc('mis_amigos').then(r => { amigosLista = (r && r.amigos) || []; pintarAmigos(false); }).catch(() => { amigosLista = []; pintarAmigos(false); });
-    }
-    if (!Array.isArray(amigosLista)) { caja.innerHTML = ''; return; }
+  function amigosHtml(d) {
     const enSala = {}; d.jugadores.forEach(j => { enSala[j.apodo] = 1; });
     const hoy = new Date(Date.now() - 5 * 3600000).toISOString().slice(0, 10);
     const L = amigosLista.filter(a => !enSala[a.apodo]).sort((a, b) => String(b.ultima || '').localeCompare(String(a.ultima || '')));
-    caja.innerHTML = '<div class="amigos-inv"><h3>' + IC.amigos + 'Invita a tus amigos</h3>' + (L.length
+    return '<div class="amigos-inv"><h3>' + IC.amigos + 'Invita a tus amigos</h3>' + (L.length
       ? '<div class="ai-lista">' + L.slice(0, 30).map((a, i) => '<div class="ai"><span class="ai-f" style="--c:' + AV[i % AV.length] + '">' + esc(inicial(a.apodo)) +
           (a.foto ? '<img src="' + esc(a.foto) + '" alt="" referrerpolicy="no-referrer" onerror="this.remove()">' : '') + '</span>' +
           '<span class="ai-t"><b>' + esc(a.apodo) + '</b><small' + (a.ultima === hoy ? ' class="hoy">Estudió hoy' : '>' + (a.ultima ? 'Estudió el ' + esc(String(a.ultima).slice(8, 10) + '/' + String(a.ultima).slice(5, 7)) : 'ID ' + esc(a.codigo))) + '</small></span>' +
           '<button type="button" data-inv="' + esc(a.codigo) + '"' + (invitados[a.codigo] ? ' disabled>Invitado' : '>Invitar') + '</button></div>').join('') + '</div>'
       : '<p class="ai-vacio">' + (amigosLista.length ? 'Todos tus amigos ya están en la sala.' : 'Aún no tienes amigos agregados. <a href="amigos.html">Agrega amigos</a> para retarlos directo.') + '</p>') + '</div>';
   }
-  $('retoAmigos').addEventListener('click', async e => {
+  function pintarAmigos(primera) {
+    const d = V, caja = $('retoAmigos');
+    if (!d.yo || d.empieza || d.cerrado || quedaSala() <= 0 || libres(d) <= 0) { caja.innerHTML = ''; cerrarHojaAmigos(); return; }
+    if (amigosLista === null && primera) {
+      amigosLista = 'cargando';
+      rpc('mis_amigos').then(r => { amigosLista = (r && r.amigos) || []; pintarAmigos(false); }).catch(() => { amigosLista = []; pintarAmigos(false); });
+    }
+    const h = Array.isArray(amigosLista) ? amigosHtml(d) : '';
+    caja.innerHTML = h;
+    if (hojaAmigos) hojaAmigos.querySelector('.hoja-c').innerHTML = h || '<p class="ai-vacio">Cargando tus amigos…</p>';
+  }
+  // «+» de un puesto libre: tu lista de amigos en una ventana, para invitar directo
+  var hojaAmigos = null;
+  function abrirHojaAmigos() {
+    if (!V || hojaAmigos) return;
+    hojaAmigos = document.createElement('div'); hojaAmigos.className = 'hoja-fondo';
+    hojaAmigos.innerHTML = '<div class="hoja" role="dialog" aria-modal="true" aria-label="Invitar amigos"><button type="button" class="hoja-x" data-cerrar aria-label="Cerrar">' + SALA_IC.x + '</button><div class="hoja-c"></div></div>';
+    document.body.append(hojaAmigos);
+    hojaAmigos.addEventListener('click', e => { if (e.target === hojaAmigos || e.target.closest('[data-cerrar]')) cerrarHojaAmigos(); else invitarClick(e); });
+    pintarAmigos(true);
+  }
+  function cerrarHojaAmigos() { if (hojaAmigos) { hojaAmigos.remove(); hojaAmigos = null; } }
+  async function invitarClick(e) {
     const b = e.target.closest('[data-inv]'); if (!b || b.disabled) return;
     const cod = b.dataset.inv;
     b.disabled = true; b.textContent = '…';
-    try { await rpc('invitar_duelo', { p_codigo: V.codigo, p_amigo: +cod }); invitados[cod] = 1; b.textContent = 'Invitado'; son('comodin'); }
+    try {
+      await rpc('invitar_duelo', { p_codigo: V.codigo, p_amigo: +cod }); invitados[cod] = 1; son('comodin');
+      document.querySelectorAll('[data-inv="' + cod + '"]').forEach(x => { x.disabled = true; x.textContent = 'Invitado'; });
+    }
     catch (err) { b.disabled = false; b.textContent = 'Invitar'; $('retoError').textContent = textoError(err); $('retoError').hidden = false; }
-  });
+  }
+  $('retoAmigos').addEventListener('click', invitarClick);
 
   $('btnJugar').addEventListener('click', async () => {
     const b = $('btnJugar'), accion = b.dataset.accion;

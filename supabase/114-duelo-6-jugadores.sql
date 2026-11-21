@@ -3,7 +3,7 @@
 -- Antes: 2, 3 o 4. Ahora también 5 y 6.
 -- Cómo usarlo: Supabase → SQL Editor → New query → pega todo → Run.
 -- Necesita 111-duelos-v3.sql. crear_duelo es copia de 111 con 5 y 6.
--- También: ver_duelo manda foto, marco y pin de cada jugador (parte 2).
+-- También: ver_duelo manda foto, marco, pin y búho de cada jugador (parte 2).
 -- =========================================================
 
 alter table public.duelos drop constraint if exists duelos_max_jug_check;
@@ -83,7 +83,7 @@ grant execute on function public.crear_duelo(jsonb) to authenticated;
 
 -- ---------------------------------------------------------------
 -- 2) Foto, marco y pin de cada jugador en el duelo (como en los tops)
---    ver_duelo igual que en 111, más avatar, marco, fondo, pin y
+--    ver_duelo igual que en 111, más avatar, marco, fondo, pin, buho (sala de espera) y
 --    codigo (para tocar su foto y ver su tarjeta).
 -- ---------------------------------------------------------------
 create or replace function public.ver_duelo(p_codigo text)
@@ -128,6 +128,7 @@ begin
            'marco', (select c.puesto ->> 'marco' from public.coleccion_puesto c where c.usuario = t.usuario),
            'fondo', (select c.puesto ->> 'racha' from public.coleccion_puesto c where c.usuario = t.usuario),
            'pin', (select c.puesto -> 'pines' ->> 0 from public.coleccion_puesto c where c.usuario = t.usuario),
+           'buho', (select c.puesto ->> 'buho' from public.coleccion_puesto c where c.usuario = t.usuario),
            'codigo', (select ji.codigo from public.jugador_id ji where ji.usuario = t.usuario),
            'eligio', jsonb_array_length(t.mano) > 0,
            -- Los comodines de cada uno son secretos hasta la pantalla VS
