@@ -524,6 +524,7 @@
 <script src="assets/buho/buho-datos.js"></script>
 <script src="assets/buho/rosa-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
+<script src="assets/buho.js"></script>
 <style id="mc-claro">
 /* Modo claro de esta página (assets/claro.css trae lo común) */
 html[data-modo="claro"] .eyebrow { color: #6F8000 !important; }
@@ -1478,6 +1479,8 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   .arena .bh { position: relative; height: 100%; display: flex; align-items: flex-end; justify-content: center; animation: vaiven 4s ease-in-out infinite; transform-origin: 50% 100%; }
   .arena .slot:nth-child(2n) .bh { animation-delay: -1.3s; } .arena .slot:nth-child(3n) .bh { animation-delay: -2.4s; }
   @keyframes vaiven { 0%, 100% { transform: rotate(-1.5deg); } 50% { transform: rotate(1.5deg); } }
+  .arena .bh .mcb-antiguo { aspect-ratio: 200 / 210; }
+  .arena .bh .mcb-antiguo svg { width: 100% !important; height: 100% !important; overflow: visible; }
   .arena .bh .mcb { position: relative; height: 100%; width: auto; max-width: none; z-index: 1; cursor: inherit; }
   .arena .slot.entra .bh-w { animation: caeArena .75s cubic-bezier(.3, 1.45, .5, 1) both; }
   @keyframes caeArena { 0% { transform: translateY(-46px) scale(.85); opacity: 0; } 60% { opacity: 1; } }
@@ -2434,6 +2437,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     const C = window.MCColeccion;
     let id = j && j.buho;
     if (!id && j && j.yo && C && C.estado && C.estado().listo) id = C.puesto('buho');
+    if (id === 'buho-antiguo' && window.MCBuho) return 'antiguo';   // el del logo (assets/buho.js), dibujado en SVG
     const x = id && C && C.item(id);
     return x && x.pj && window.MCBuhoAmigos && MCBuhoAmigos[x.pj] ? x.pj : '';
   }
@@ -2486,7 +2490,8 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       if (j && j.codigo && !j.yo) { w.dataset.jug = j.codigo; w.setAttribute('role', 'button'); w.setAttribute('tabindex', '0'); w.setAttribute('aria-label', 'Ver a ' + j.apodo); }
       const bh = document.createElement('div'); bh.className = 'bh';
       let m = k && viejos[k];
-      if (!m && window.MCBuhoVivo) { try { m = MCBuhoVivo.crear(j && j.yo ? 'saludando' : 'oficial', pj); } catch (e) { m = null; } }
+      if (!m && pj === 'antiguo') { m = document.createElement('div'); m.className = 'mcb mcb-antiguo'; m.innerHTML = MCBuho.svg(j && j.yo ? 'feliz' : 'normal', 200); }
+      else if (!m && window.MCBuhoVivo) { try { m = MCBuhoVivo.crear(j && j.yo ? 'saludando' : 'oficial', pj); } catch (e) { m = null; } }
       if (m) bh.append(m);
       w.append(bh); s.append(w);
       if (!j && inv) { const b = document.createElement('button'); b.type = 'button'; b.className = 'inv'; b.dataset.invitar = '1'; b.setAttribute('aria-label', 'Invitar a un amigo'); b.innerHTML = SALA_IC.mas; s.append(b); }
@@ -2513,6 +2518,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     return cargaImg('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s));
   }
   async function capasBuho(pj, pose) {
+    if (pj === 'antiguo') { const im = await svgImg(MCBuho.svg(pose === 'saludando' || pose === 'logro' ? 'feliz' : 'normal', 400)); return im ? { antiguo: im } : null; }
     const am = pj && window.MCBuhoAmigos && MCBuhoAmigos[pj], DS = am ? am.datos : window.MCBuhoDatos;
     if (!DS) return null;
     const p = DS[pose] ? pose : 'oficial', dd = DS[p], base = ['feet', 'wings', 'body', 'mouth', 'brow'];
@@ -2524,6 +2530,15 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   }
   function dibBuho(x, b, cx, pie, h, sombra) {
     if (!b) return;
+    if (b.antiguo) {
+      // viewBox 0 0 200 210, las patas llegan a y≈202
+      const w = h * 200 / 210, x0a = cx - w / 2, y0a = pie - h * 202 / 210;
+      if (!sombra) { x.drawImage(b.antiguo, x0a, y0a, w, h); return; }
+      const t = document.createElement('canvas'); t.width = Math.ceil(w); t.height = Math.ceil(h);
+      const tx = t.getContext('2d'); tx.drawImage(b.antiguo, 0, 0, w, h);
+      tx.globalCompositeOperation = 'source-in'; tx.fillStyle = '#fff'; tx.fillRect(0, 0, t.width, t.height);
+      x.save(); x.globalAlpha = .1; x.drawImage(t, x0a, y0a); x.restore(); return;
+    }
     const s = h / b.dd.H, x0 = cx - b.dd.W * s / 2, y0 = pie - b.dd.fb * s;
     if (sombra) {
       const t = document.createElement('canvas'); t.width = Math.ceil(b.dd.W * s); t.height = Math.ceil(b.dd.H * s);
