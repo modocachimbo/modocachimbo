@@ -1582,6 +1582,57 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   .foto-caja .fb svg { width: 19px; height: 19px; }
   .foto-caja .fb.comp { background: var(--lima); color: #151A03; border-color: #8fa300; }
   .foto-caja .fb.x { flex: 0 0 52px; padding: 0; }
+  /* ===== Comodines v4: 4 grupos (Sabiduría, Fortuna, Guardia, Asalto) ===== */
+  html body .cmds.v4:not(#z) { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .cmds.v4 .grupo .gfila:has(> :nth-child(4)) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  @media (max-width: 560px) { .cmds.v4 .grupo .gfila:has(> :nth-child(4)) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .grupo { --c: var(--accent); position: relative; border-radius: 18px; padding: 10px 10px 12px; background: linear-gradient(180deg, color-mix(in srgb, var(--c) 13%, transparent), color-mix(in srgb, var(--c) 3%, transparent) 70%); border: 2px solid color-mix(in srgb, var(--c) 32%, var(--borde-g)); }
+  .grupo .gfila { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .grupo .gfila:has(> :nth-child(4)) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .eleccion.v4 .gcab small { display: none; }
+  .eleccion.v4 .gcab .gcuenta { margin-left: auto; }
+  .gcab { --c: var(--accent); display: flex; align-items: center; gap: 9px; margin: 0 2px 9px; }
+  .gcab .gi { width: 30px; height: 30px; flex-shrink: 0; border-radius: 10px; display: grid; place-items: center; background: var(--c); color: #111; box-shadow: 0 3px 0 color-mix(in srgb, var(--c) 50%, #070512); }
+  .gcab .gi svg { width: 19px; height: 19px; }
+  html body .gcab b:not(#z) { font: 800 19px/1 var(--display, Nunito), sans-serif; letter-spacing: .05em; text-transform: uppercase; color: var(--c); }
+  .gcab small { font: 800 12px/1.2 Nunito, sans-serif; color: var(--dim); flex: 1; min-width: 0; }
+  .gcab .gcuenta { font: 900 12.5px Nunito, sans-serif; color: var(--dim); background: color-mix(in srgb, var(--c) 14%, var(--surface)); border-radius: 8px; padding: 3px 8px; }
+  .grupo.full .gcuenta { color: #111; background: var(--c); }
+  .cmds.v4 .cmd { padding: 11px 5px 9px; display: flex; flex-direction: column; align-items: center; }
+  .cmds.v4 .cmd small { flex: 1; }
+  .dura { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; font: 900 10px/1.1 Nunito, sans-serif; letter-spacing: .3px; color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent); border-radius: 7px; padding: 3px 6px; max-width: 100%; text-align: left; }
+  .dura svg { width: 11px; height: 11px; flex-shrink: 0; }
+  .eleccion.v4 .ec-grupos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 12px; padding-top: 4px; }
+  @media (max-width: 700px) { .eleccion.v4 .ec-grupos { grid-template-columns: 1fr; } }
+  .eleccion.v4 .gfila { gap: 8px 6px; padding-bottom: 8px; }
+  .eleccion.v4 .ec { padding: 12px 4px 9px; }
+  .eleccion.v4 .ec .dura { margin-top: 2px; }
+  .eleccion.v4 .ec.lleno { opacity: .3; }
+  .eleccion.v4 .ec-fuego { border-color: rgba(255,75,75,.55); background: linear-gradient(90deg, rgba(255,75,75,.14), rgba(255,150,0,.08)); }
+  .eleccion.v4 .ec-fuego .ci { background: var(--rojo); color: #111; }
+  .eleccion.v4 .ec-fuego .ci svg { width: 20px; height: 20px; }
+  /* Ojo de halcón: comodines que le quedan a cada rival */
+  .espia .qd { display: inline-flex; gap: 3px; margin-left: 4px; }
+  .espia .qd i { width: 20px; height: 20px; border-radius: 6px; display: grid; place-items: center; background: var(--c); color: #111; }
+  .espia .qd i svg { width: 14px; height: 14px; }
+  .espia .qd em { font: 700 11px Nunito, sans-serif; color: var(--dim); font-style: normal; }
+  /* Ataques: borde punteado para distinguirlos de los propios */
+  @media (max-width: 560px) {
+    .grupo { padding: 9px 8px 10px; }
+    .grupo .gfila:has(> :nth-child(4)) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .gcab small { display: none; }
+    .gcab .gcuenta { margin-left: auto; }
+    .dura { font-size: 9.5px; }
+    .eleccion.v4 .ec small, .cmds.v4 .cmd small { font-size: 10.5px; }
+  }
+  /* Sin Furia (no hay barra de Llamarada): el sonido va como cuadrito al final de la fila de comodines */
+  #juego:has(> #fuegoBar:empty):has(> #cbar:not([hidden])) > #cbar { grid-row: 3; grid-column: 1; align-self: center; }
+  #juego:has(> #fuegoBar:empty):has(> #cbar:not([hidden])) > .amb-fila { grid-row: 3; grid-column: 2; align-self: center; margin: 0 0 12px; }
+  #juego:has(> #fuegoBar:empty):has(> #cbar:not([hidden])) .amb { width: 46px; height: 46px; min-height: 0; padding: 0; justify-content: center; border-radius: 14px; }
+  #juego:has(> #fuegoBar:empty):has(> #cbar:not([hidden])) .amb :is(.lg, .ondas, .ct) { display: none; }
+  #juego:has(> #fuegoBar:empty):has(> #cbar:not([hidden])) .amb svg { width: 22px; height: 22px; }
+  @media (max-width: 560px) { html body #juego:has(> #fuegoBar:empty) > #cbar .cbtn:not(#z) { font-size: 12.5px !important; gap: 4px; padding-right: 6px; } }
+  .cbtn.atk:not(:disabled) svg { box-shadow: 0 0 0 2px color-mix(in srgb, var(--c) 40%, transparent); }
 </style>
 </head>
 <body>
@@ -1785,7 +1836,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     rayo: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 2L4.5 13.5h6L9.5 22l9-11.5h-6z"/></svg>',
     mira: svg('<circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/>', 2.6),
     sube: svg('<path d="M3 18l6-6 4 4 8-8"/><path d="M15 8h6v6"/>', 3),
-    reloj: svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>', 2.6),
+    tiempo: svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>', 2.6),
     final: svg('<path d="M12 2.5 14.6 8l6 .7-4.4 4.1 1.2 5.9L12 15.8l-5.4 2.9 1.2-5.9L3.4 8.7l6-.7z"/>', 2.4),
     copa: svg('<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v4M8 21h8M9 18h6"/>', 2.4),
     gema: svg('<path d="M12 2.5 20 7v10l-8 4.5L4 17V7z"/><path d="M13 7l-3.5 5h3l-.8 4.5L16 11h-3z" fill="currentColor" stroke-width="1"/>', 2.2),
@@ -1813,7 +1864,6 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     espejo: svg('<ellipse cx="12" cy="10" rx="6" ry="7.5"/><path d="M12 17.5V21M8.5 21h7"/><path d="M9 9l2.5-2.5M9.5 12.5l4.5-4.5"/>', 2.6),
     apuesta: svg('<rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor"/>', 2.6),
     ladron: svg('<path d="M9 3.5h6l-1.6 3.2h-2.8z"/><path d="M10.6 6.7C6.3 8.6 4.5 12.6 4.5 15.8A4.3 4.3 0 0 0 8.8 20h6.4a4.3 4.3 0 0 0 4.3-4.2c0-3.2-1.8-7.2-6.1-9.1"/><path d="M12 10.5v7M14 12h-2.8a1.4 1.4 0 0 0 0 2.8h1.6a1.4 1.4 0 0 1 0 2.8H10"/>', 2.3),
-    cambio: svg('<path d="M4.5 10a7.5 7.5 0 0 1 13.2-3.6L19.5 8M19.5 3.5V8H15"/><path d="M19.5 14a7.5 7.5 0 0 1-13.2 3.6L4.5 16M4.5 20.5V16H9"/>', 2.6),
     gota: svg('<path d="M12 3.5c3 4 6 7.3 6 10.5a6 6 0 0 1-12 0c0-3.2 3-6.5 6-10.5z"/>', 2.6),
     zap: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 2 4.5 13.5h6L9.5 22l10-12.5h-6.2z"/></svg>',
     niebla: svg('<path d="M4 9h11a3 3 0 1 0-3-3"/><path d="M3 13h16"/><path d="M5 17h10a3 3 0 1 1-3 3"/>', 2.4),
@@ -1821,28 +1871,62 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     altavoz: svg('<path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/>', 2.4),
     mudo: svg('<path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><path d="M22 9l-6 6M16 9l6 6"/>', 2.4)
   });
-  // Tipos de comodín (color del puntito y de la etiqueta)
-  const TIPOS = { ayuda: ['Ayuda', 'var(--azul)'], puntos: ['Puntos', 'var(--oro)'], defensa: ['Defensa', 'var(--morado)'], ataque: ['Ataque', 'var(--rojo)'] };
-  // Comodines: nombre, color, qué hace, cuándo, tipo
-  const CMD = {
-    mitad: { nom: '50/50', c: 'var(--azul)', que: 'Quita 2 alternativas malas', cuando: 'Antes de responder', t: 'ayuda' },
-    hielo: { nom: 'Congelar', c: 'var(--azul)', que: 'Congela las alternativas de tus rivales 5 s', cuando: 'Mientras corre el tiempo', t: 'ataque' },
-    espia: { nom: 'Espía', c: 'var(--verde)', que: 'Ves en vivo si tus rivales aciertan', cuando: 'En cualquier pregunta', t: 'ayuda' },
-    cambio: { nom: 'Cambio', c: 'var(--azul)', que: 'Te cambia la pregunta por otra', cuando: 'Antes de responder', t: 'ayuda' },
-    doble: { nom: 'Doble', c: 'var(--oro)', que: 'Si aciertas, vale 2', cuando: 'No en la final', t: 'puntos' },
-    apuesta: { nom: 'Apuesta', c: 'var(--oro)', que: 'Apuesta 1, 2 o 3 puntos: los ganas o los pierdes', cuando: 'No en la final', t: 'puntos' },
-    escudo: { nom: 'Escudo', c: 'var(--naranja)', que: 'Si fallas, eliges otra vez', cuando: 'Antes de responder', t: 'defensa' },
-    espejo: { nom: 'Espejo', c: 'var(--morado)', que: 'El próximo ataque rebota al que lo lanzó', cuando: 'Dura hasta que te ataquen', t: 'defensa' },
-    robar: { nom: 'Robar tiempo', c: 'var(--rojo)', que: 'Les quita 8 s a tus rivales', cuando: 'En cualquier momento', t: 'ataque' },
-    terremoto: { nom: 'Terremoto', c: 'var(--rojo)', que: 'Las alternativas de tus rivales tiemblan y se mezclan', cuando: 'En cualquier momento', t: 'ataque' },
-    ladron: { nom: 'Ladrón', c: 'var(--rojo)', que: 'Si aciertas, le quitas 1 punto al que va mejor', cuando: 'Antes de responder', t: 'ataque' }
+  // Íconos propios de los 13 comodines (v4): dos tonos, dibujados con código
+  const dos = (d, w) => svg(d.replace(/F"/g, '" fill="currentColor" fill-opacity=".28"'), w || 2.2);
+  Object.assign(IC, {
+    mitad: dos('<circle cx="12" cy="10.5" r="7" F"/><path d="M6 20.5h12M8.2 20.5l1.3-3.2M15.8 20.5l-1.3-3.2"/><path d="M12 6.3l1.1 2.6 2.6 1.1-2.6 1.1L12 13.7l-1.1-2.6-2.6-1.1 2.6-1.1z" fill="currentColor" stroke-width="1"/>'),
+    espia: dos('<path d="M2.5 13C5.5 8.3 9 6.5 12.5 6.5c3.6 0 6.6 2.2 9 5.6-2.6 3.8-6 6-9.6 6-3.6 0-6.8-1.7-9.4-5.1z" F"/><circle cx="12.6" cy="12.1" r="3.1" fill="currentColor"/><path d="M12.5 6.5 15 3M16.6 7.3l3-2.6M8.6 7.6 7.4 4.4"/>'),
+    reloj: dos('<path d="M6.5 3h11M6.5 21h11"/><path d="M8 3c0 5.2 4 6 4 9s-4 3.8-4 9M16 3c0 5.2-4 6-4 9s4 3.8 4 9"/><path d="M9.6 6.5h4.8c-.6 1.6-1.4 2.4-2.4 3.1-1-.7-1.8-1.5-2.4-3.1zM8.8 20c.4-1.9 1.5-3.1 3.2-3.9 1.7.8 2.8 2 3.2 3.9z" fill="currentColor" stroke-width="1"/>'),
+    doble: dos('<path d="M3.5 8.5 8 12.3 12 5.5l4 6.8 4.5-3.8-1.7 9.5H5.2z" F"/><path d="M5.2 21h13.6"/><circle cx="3.5" cy="7.5" r="1.3" fill="currentColor"/><circle cx="12" cy="4" r="1.3" fill="currentColor"/><circle cx="20.5" cy="7.5" r="1.3" fill="currentColor"/><path d="M10 14.5l2-2.3 2 2.3-2 2.3z" fill="currentColor" stroke-width="1"/>'),
+    apuesta: dos('<path d="M12 2.8l8.2 4.5v9.4L12 21.2l-8.2-4.5V7.3z" F"/><path d="M3.8 7.3 12 11.8l8.2-4.5M12 11.8v9.4"/><ellipse cx="12" cy="7.2" rx="1.5" ry="1" fill="currentColor" stroke="none"/><circle cx="7" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="9" cy="16.6" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="13" r="1.2" fill="currentColor" stroke="none"/><circle cx="17" cy="15.8" r="1.2" fill="currentColor" stroke="none"/>'),
+    ladron: dos('<path d="M8.5 3.5h6l-1.6 3h-2.8z"/><path d="M10.1 6.5C6.3 8.3 4 12 4 15.2 4 18 6 20 8.7 20h4.8" F"/><path d="M12.9 6.5c2.3 1.1 4 3 4.9 5"/><circle cx="17.5" cy="17" r="4" F"/><path d="M17.5 15v4"/>'),
+    escudo: dos('<path d="M12 12.8C8.6 12.8 5 10.6 3 5.8c2 1 4 1.3 5.4.9-1.1-1.3-1.4-2.8-1-4.3 1.4 1.6 3 2.8 4.6 3.3 1.6-.5 3.2-1.7 4.6-3.3.4 1.5.1 3-1 4.3 1.4.4 3.4.1 5.4-.9-2 4.8-5.6 7-9 7z" F"/><path d="M12 12.8v3M12 15.8l-3 5M12 15.8l3 5M12 15.8V21"/><circle cx="12" cy="9" r="1.5" fill="currentColor" stroke="none"/>'),
+    espejo: dos('<ellipse cx="10.5" cy="9.5" rx="5.8" ry="6.8" F"/><path d="M10.5 16.3V21M8 21h5"/><path d="M8 8.2l2-2M8.3 11.5l3.8-3.8"/><path d="M17.5 3.6a7.5 7.5 0 0 1 2.8 7.6M20.3 11.2l-2.5-.9M20.3 11.2l1.3-2.3"/>'),
+    elixir: dos('<path d="M9 3h6M10.3 3v5.2L5 17.4A2.4 2.4 0 0 0 7.1 21h9.8a2.4 2.4 0 0 0 2.1-3.6l-5.3-9.2V3"/><path d="M7.2 13.6h9.6l2.2 3.8a2.4 2.4 0 0 1-2.1 3.6H7.1A2.4 2.4 0 0 1 5 17.4z" F"/><circle cx="10.5" cy="16.5" r="1" fill="currentColor" stroke="none"/><circle cx="13.6" cy="18" r=".8" fill="currentColor" stroke="none"/><path d="M18.5 2.5v3M17 4h3"/>'),
+    hielo: dos('<path d="M2.5 21h19"/><path d="M4.5 21 8 10.5l2.6 2.2L13 4l3.8 7.4 2-1.6L21 21z" F"/><path d="M13 4l-1.3 7.5 2.5 2M8 10.5l1.3 4"/>'),
+    terremoto: dos('<path d="M2 12.5h3.2L7.4 7l3.1 11 3.2-14 3 11.5 1.9-3.5H22"/><path d="M3 21h18" opacity=".5"/>', 2.3),
+    robar: dos('<circle cx="10.5" cy="10.5" r="7.3" F"/><path d="M10.5 6.5v4.3l-2.6 1.8"/><path d="M14.8 4.6l2.2-1.6"/><circle cx="17.8" cy="17.2" r="1.15" fill="currentColor" stroke="none"/><circle cx="20" cy="19.6" r="1.15" fill="currentColor" stroke="none"/><circle cx="16.3" cy="20.8" r="1.15" fill="currentColor" stroke="none"/>'),
+    furia: dos('<path d="M12 2.5c.9 3.7 6.3 5.8 6.3 11.4a6.3 6.3 0 0 1-12.6 0c0-2.5 1.2-4.3 2.6-5.4.2 2 1.2 3.2 2.4 3.6-.6-3.6.3-6.9 1.3-9.6z" F"/><path d="M8.8 14.2l2.3 1.1M15.2 14.2l-2.3 1.1"/><path d="M10 18.2q2-1.3 4 0"/>'),
+    // Íconos de los grupos
+    copo: svg('<path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.5 4.5L12 7l2.5-2.5M9.5 19.5L12 17l2.5 2.5"/>'),
+    g_sab: dos('<path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.3V17h5v-.9c0-.9.4-1.7 1.1-2.3A6 6 0 0 0 12 3z" F"/><path d="M9.5 20.5h5"/>'),
+    g_for: dos('<circle cx="12" cy="12" r="8.5" F"/><circle cx="12" cy="12" r="5"/><path d="M12 9.5v5"/>'),
+    g_gua: dos('<path d="M12 3l7.5 3v5.5c0 4.5-3.2 8-7.5 9.5-4.3-1.5-7.5-5-7.5-9.5V6z" F"/>'),
+    g_asa: dos('<path d="M4 4l9.5 9.5M20 4l-9.5 9.5"/><path d="M4 4h3.5M4 4v3.5M20 4h-3.5M20 4v3.5"/><path d="M11 16l-4.5 4.5M13 16l4.5 4.5M8 13.5l2.5 2.5M16 13.5 13.5 16"/>')
+  });
+  // Grupos de comodines (color, nombre y qué hacen)
+  const TIPOS = {
+    sabiduria: ['Sabiduría', 'var(--azul)', 'Te ayudan a responder', 'g_sab'],
+    fortuna: ['Fortuna', 'var(--oro)', 'Más puntos', 'g_for'],
+    guardia: ['Guardia', 'var(--morado)', 'Te protegen', 'g_gua'],
+    asalto: ['Asalto', 'var(--rojo)', 'Atacan a tus rivales', 'g_asa']
   };
-  const ORDEN_CMD = ['mitad', 'espia', 'cambio', 'doble', 'apuesta', 'escudo', 'espejo', 'hielo', 'robar', 'terremoto', 'ladron'];
+  const ORDEN_TIPOS = ['sabiduria', 'fortuna', 'guardia', 'asalto'];
+  // Comodines: nombre, corto (botón), qué hace, cuánto dura, grupo. El color es el de su grupo.
+  const CMD = {
+    mitad: { nom: 'Oráculo', corto: 'Oráculo', que: 'Quita 3 alternativas malas: quedan 2', dura: 'Esta pregunta', t: 'sabiduria' },
+    espia: { nom: 'Ojo de halcón', corto: 'Halcón', que: 'Ves en vivo quién acierta y sus comodines. Quita la niebla', dura: 'Esta pregunta', t: 'sabiduria' },
+    reloj: { nom: 'Reloj de arena', corto: 'Reloj', que: '+10 s para ti y te salva de Arenas del tiempo', dura: 'Esta pregunta', t: 'sabiduria' },
+    doble: { nom: 'Corona doble', corto: 'Corona', que: 'Si aciertas, vale 2', dura: 'No en la final', t: 'fortuna' },
+    apuesta: { nom: 'Dado de oro', corto: 'Dado', que: 'Apuesta 1, 2 o 3 puntos: los ganas o los pierdes', dura: 'No en la final', t: 'fortuna' },
+    ladron: { nom: 'Botín', corto: 'Botín', que: 'Si aciertas, quitas 1 a cada uno que va delante (máx. 2) y te los quedas', dura: 'No si vas 1.º', t: 'fortuna' },
+    escudo: { nom: 'Fénix', corto: 'Fénix', que: 'Si fallas, eliges otra vez. Ningún ataque te toca', dura: 'Esta pregunta', t: 'guardia' },
+    espejo: { nom: 'Espejo', corto: 'Espejo', que: 'El próximo ataque rebota al que lo lanzó', dura: '2 preguntas', t: 'guardia' },
+    elixir: { nom: 'Elixir', corto: 'Elixir', que: 'Limpia el ataque que tengas encima y te protege', dura: '5 s de inmunidad', t: 'guardia' },
+    hielo: { nom: 'Glaciar', corto: 'Glaciar', que: 'Congela las alternativas de tus rivales', dura: '5 s o 3 toques', t: 'asalto' },
+    terremoto: { nom: 'Sismo', corto: 'Sismo', que: 'Las alternativas de tus rivales tiemblan y se mezclan', dura: '4 s', t: 'asalto' },
+    robar: { nom: 'Arenas del tiempo', corto: 'Arenas', que: 'Les quita 8 s a tus rivales (nunca les deja menos de 5 s)', dura: 'Al instante', t: 'asalto' },
+    furia: { nom: 'Furia', corto: 'Furia', que: '3 seguidas cargan la Llamarada; 5, el Volcán', dura: 'Se carga jugando', t: 'asalto' }
+  };
+  Object.keys(CMD).forEach(k => { CMD[k].c = TIPOS[CMD[k].t][1]; });
+  const ORDEN_CMD = ['mitad', 'espia', 'reloj', 'doble', 'apuesta', 'ladron', 'escudo', 'espejo', 'elixir', 'hielo', 'terremoto', 'robar', 'furia'];
+  const ATAQUES = ['hielo', 'terremoto', 'robar'];
+  const FUERZA = { terremoto: 1, llama: 2, hielo: 2, volcan: 3 };   // si dos ataques se juntan, queda el más fuerte
   const FUEGO = {
     llama: { nom: 'Llamarada', que: 'Quema las alternativas de tus rivales 5 s', c: 'var(--naranja)' },
     volcan: { nom: 'Volcán', que: 'Quema a todos 8 s y tu próxima vale doble', c: 'var(--rojo)' }
   };
-  const cuantosCmd = n => n <= 10 ? 2 : n <= 20 ? 3 : 4;
+  const cuantosCmd = n => n <= 5 ? 2 : n <= 15 ? 3 : n <= 25 ? 4 : 5;
 
   const FUENTES = [
     { id: 'mezcla', nom: 'De todo', c: '#e6e6e6' },
@@ -1942,8 +2026,10 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       (f ? '<img class="foto" src="' + esc(f) + '" alt="" referrerpolicy="no-referrer" onerror="this.parentNode.classList.remove(\'con-foto\');this.remove()">' : '') +
       (p ? '<i class="av-pin">' + p.html + '</i>' : '') + rangoDe(j) + '</span>';
   };
-  const cmdCard = k => '<div class="cmd" style="--c:' + CMD[k].c + ';--tc:' + TIPOS[CMD[k].t][1] + '"><div class="ci">' + IC[k] + '</div><b>' + CMD[k].nom + '</b><small>' + CMD[k].que + '</small><span class="tipo">' + TIPOS[CMD[k].t][0] + '</span></div>';
-  const fuegoCard = () => '<div class="cmd fue" style="--c:var(--naranja);--tc:var(--naranja)"><div class="ci">' + IC.llama + '</div><b>Llamarada</b><small>3 seguidas: quema a tus rivales. 5 seguidas: Volcán</small><span class="tipo">Se gana jugando</span></div>';
+  const cmdCard = k => '<div class="cmd" style="--c:' + CMD[k].c + ';--tc:' + TIPOS[CMD[k].t][1] + '"><div class="ci">' + IC[k] + '</div><b>' + CMD[k].nom + '</b><small>' + CMD[k].que + '</small><span class="dura">' + IC.tiempo + CMD[k].dura + '</span></div>';
+  // Cabecera de un grupo de comodines
+  const grupoCab = t => '<div class="gcab" style="--c:' + TIPOS[t][1] + '"><span class="gi">' + IC[TIPOS[t][3]] + '</span><b>' + TIPOS[t][0] + '</b><small>' + TIPOS[t][2] + '</small></div>';
+  const cmdGrupos = (lista, card) => ORDEN_TIPOS.map(t => { const ks = lista.filter(k => CMD[k] && CMD[k].t === t); return ks.length ? '<div class="grupo" style="--c:' + TIPOS[t][1] + '">' + grupoCab(t) + '<div class="gfila">' + ks.map(card).join('') + '</div></div>' : ''; }).join('');
   function toast(html, color, ic) {
     const t = document.createElement('div'); t.className = 'toast'; t.style.setProperty('--c', color || 'var(--rojo)');
     t.innerHTML = (ic ? '<span class="ci">' + ic + '</span>' : '') + '<span>' + html + '</span>';
@@ -2197,12 +2283,12 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     const k = cuantosCmd(sel.n);
     $('cmdSw').setAttribute('aria-checked', String(sel.comodines));
     $('cmdNota').innerHTML = sel.comodines
-      ? 'En la sala, cada uno elige en secreto <b>' + k + ' comodines</b> de estos 11. La <b>Llamarada</b> no se elige: se carga acertando 3 seguidas.'
+      ? 'En la sala, cada uno elige en secreto <b>' + k + ' comodines</b> de estos 13 (máximo 2 del mismo grupo). Cada uno se usa 1 vez; por pregunta, 1 propio y 1 ataque.'
       : 'Sin comodines: gana el que más sabe, sin ayudas.';
     $('cmdLista').classList.toggle('off', !sel.comodines);
     // Reglas en cuatro cuadritos; el detalle va al pasar el mouse
     $('reglas').innerHTML = [
-      ['var(--morado)', IC.reloj, tiempoTxt(s), 'por pregunta', 'Si se acaba el tiempo, cuenta como no respondida.'],
+      ['var(--morado)', IC.tiempo, tiempoTxt(s), 'por pregunta', 'Si se acaba el tiempo, cuenta como no respondida.'],
       ['var(--oro)', IC.final, 'Final x3', 'todo o nada', 'La última pregunta vale 3 puntos si aciertas.'],
       ['var(--azul)', IC.copa, 'Más puntos', 'gana el duelo', 'Si empatan, gana el más rápido. Todos empiezan a la vez.'],
       ['var(--lima)', IC.gema, '+80 XP', 'al 1.º lugar', '+80 XP el 1.º, +40 el 2.º y +20 el 3.º. Solo el 1.º suma al top de la semana.']
@@ -2265,7 +2351,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   $('rngSeg').addEventListener('input', () => { sel.seg = TIEMPOS[+$('rngSeg').value]; pintarOpciones(); });
   $('segTicks').addEventListener('click', e => { const b = e.target.closest('[data-seg]'); if (b) { sel.seg = +b.dataset.seg; son('toque'); pintarOpciones(); } });
   $('cmdSw').addEventListener('click', () => { sel.comodines = !sel.comodines; son(sel.comodines ? 'comodin' : 'toque'); pintarOpciones(); });
-  $('cmdLista').innerHTML = ORDEN_CMD.map(cmdCard).join('') + fuegoCard(); $('cmdLista').classList.add('v3');
+  $('cmdLista').innerHTML = cmdGrupos(ORDEN_CMD, cmdCard); $('cmdLista').classList.add('v3', 'v4');
   function temasNom(o) { return (o.temas || []).map(k => (TEMAS.filter(t => t.k === k)[0] || {}).nom || o.temasNom && o.temasNom[k]).filter(Boolean); }
   function tituloDe(o, noms) {
     const partes = [o.cursos && o.cursos.length ? nombreCursos(o.cursos) : o.curso === 'todos' ? 'Todos los cursos' : (NOMBRE[o.curso] || o.curso)];
@@ -2691,9 +2777,9 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   }
   function fichaHtml(d) {
     const c = d.comodines || [], f = (color, ic, txt) => '<span style="--c:' + color + '"><i class="fi">' + ic + '</i>' + txt + '</span>';
-    return f('var(--lima)', IC.libro, '<b>' + esc(d.titulo) + '</b>') + f('var(--naranja)', IC.fijas, '<b>' + d.n + '</b> preguntas') + f('var(--morado)', IC.reloj, '<b>' + tiempoTxt(d.seg || 60) + '</b> cada una') +
+    return f('var(--lima)', IC.libro, '<b>' + esc(d.titulo) + '</b>') + f('var(--naranja)', IC.fijas, '<b>' + d.n + '</b> preguntas') + f('var(--morado)', IC.tiempo, '<b>' + tiempoTxt(d.seg || 60) + '</b> cada una') +
       (d.cmd_cant > 0 ? f('var(--azul)', IC.mitad, '<b>' + d.cmd_cant + '</b> comodines a elegir') : c.length ? f('var(--azul)', IC.mitad, '<b>' + c.length + '</b> comodines sorpresa') : '') +
-      (d.cmd_cant > 0 ? f('var(--naranja)', IC.llama, '<b>Llamarada</b> por racha') : '') + (d.relampago != null ? f('var(--azul)', IC.zap, 'Pregunta <b>relámpago</b>') : '') + (d.final ? f('var(--oro)', IC.final, 'Final <b>×3</b>') : '');
+      (d.cmd_cant > 0 ? f('var(--rojo)', IC.furia, '<b>Furia</b>: Llamarada por racha') : '') + (d.relampago != null ? f('var(--azul)', IC.zap, 'Pregunta <b>relámpago</b>') : '') + (d.final ? f('var(--oro)', IC.final, 'Final <b>×3</b>') : '');
   }
   function pintarReto() {
     const d = V, soyCreador = d.soy_creador;
@@ -2740,19 +2826,23 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     if (primera || mano == null) { mano = (d.yo.mano || []).slice(); manoGuardada = mano.slice().sort().join(','); }
     if (!primera && caja.firstChild) return pintarCuentaMano();
     const pool = ORDEN_CMD.filter(k => (d.comodines || []).indexOf(k) >= 0);
-    caja.innerHTML = '<div class="eleccion"><div class="ec-cab"><h3>Elige tus comodines</h3><span class="ec-cuenta" id="ecCuenta"></span></div>' +
-      '<p>Son secretos: tus rivales los verán recién en la pantalla VS. Si no eliges, te tocan al azar.</p>' +
-      '<div class="ec-grid" id="ecGrid">' + pool.map(k => '<button type="button" class="ec" data-k="' + k + '" style="--c:' + CMD[k].c + ';--tc:' + TIPOS[CMD[k].t][1] + '" aria-pressed="false"><span class="tipo">' + TIPOS[CMD[k].t][0] + '</span><span class="ci">' + IC[k] + '</span><b>' + CMD[k].nom + '</b><small>' + CMD[k].que + '</small></button>').join('') + '</div>' +
-      '<div class="ec-fuego"><span class="ci">' + IC.llama + '</span><div><b>Llamarada y Volcán no se eligen.</b> Acierta 3 seguidas para cargar la Llamarada y 5 para el Volcán. Si fallas, se apaga.</div></div></div>';
+    const ecCard = k => '<button type="button" class="ec" data-k="' + k + '" data-t="' + CMD[k].t + '" style="--c:' + CMD[k].c + ';--tc:' + TIPOS[CMD[k].t][1] + '" aria-pressed="false"><span class="ci">' + IC[k] + '</span><b>' + CMD[k].nom + '</b><small>' + CMD[k].que + '</small><span class="dura">' + IC.tiempo + CMD[k].dura + '</span></button>';
+    caja.innerHTML = '<div class="eleccion v4"><div class="ec-cab"><h3>Elige tus comodines</h3><span class="ec-cuenta" id="ecCuenta"></span></div>' +
+      '<p>Son secretos: tus rivales los verán recién en la pantalla VS. Máximo <b>2 del mismo grupo</b>. Si no eliges, te tocan al azar.</p>' +
+      '<div class="ec-grupos" id="ecGrid">' + ORDEN_TIPOS.map(t => { const ks = pool.filter(k => CMD[k].t === t); return ks.length ? '<div class="grupo" data-g="' + t + '" style="--c:' + TIPOS[t][1] + '">' + grupoCab(t).replace('</small></div>', '</small><span class="gcuenta"></span></div>') + '<div class="gfila">' + ks.map(ecCard).join('') + '</div></div>' : ''; }).join('') + '</div>' +
+      '<div class="ec-fuego"><span class="ci">' + IC.furia + '</span><div><b>Llamarada y Volcán son de Furia.</b> Solo quien elige Furia los carga: 3 seguidas, Llamarada; 5, Volcán. Si fallas, se apaga.</div></div></div>';
     pintarCuentaMano();
   }
   function pintarCuentaMano() {
     const n = V.cmd_cant, g = $('ecGrid'); if (!g) return;
+    const enGrupo = t => mano.filter(k => CMD[k] && CMD[k].t === t).length;
     g.querySelectorAll('.ec').forEach(b => {
-      const on = mano.indexOf(b.dataset.k) >= 0;
+      const on = mano.indexOf(b.dataset.k) >= 0, lleno = enGrupo(b.dataset.t) >= 2;
       b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on));
-      b.disabled = !on && mano.length >= n;
+      b.disabled = !on && (mano.length >= n || lleno);
+      b.classList.toggle('lleno', !on && lleno && mano.length < n);
     });
+    g.querySelectorAll('.grupo').forEach(x => { const c = enGrupo(x.dataset.g); x.querySelector('.gcuenta').textContent = c + '/2'; x.classList.toggle('full', c >= 2); });
     const listo = mano.length === n && mano.slice().sort().join(',') === manoGuardada;
     $('ecCuenta').className = 'ec-cuenta' + (listo ? ' listo' : '');
     $('ecCuenta').innerHTML = '<b>' + mano.length + '/' + n + '</b> ' + (listo ? 'Guardados' : mano.length === n ? 'Guardando…' : 'elegidos');
@@ -2760,7 +2850,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   $('retoElegir').addEventListener('click', async e => {
     const b = e.target.closest('.ec'); if (!b || b.disabled || !V) return;
     const k = b.dataset.k, i = mano.indexOf(k);
-    if (i >= 0) mano.splice(i, 1); else if (mano.length < V.cmd_cant) mano.push(k);
+    if (i >= 0) mano.splice(i, 1); else if (mano.length < V.cmd_cant && mano.filter(x => CMD[x] && CMD[x].t === CMD[k].t).length < 2) mano.push(k);
     son(i >= 0 ? 'toque' : 'comodin');
     pintarCuentaMano();
     guardarMano();
@@ -2883,7 +2973,8 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   // Pantalla VS: cada jugador entra desde su lado con sus comodines (ya no son secretos) y luego 3, 2, 1
   function pantallaVS(fin) {
     const c = $('cuenta'), js = V.jugadores, n = js.length;
-    const reglas = [['var(--naranja)', IC.llama, '3 seguidas: Llamarada'], ['var(--rojo)', IC.volcan, '5 seguidas: Volcán']];
+    const reglas = [['var(--lima)', IC.check, 'Por pregunta: 1 propio + 1 ataque']];
+    if (js.some(j => (j.mano || []).indexOf('furia') >= 0)) reglas.push(['var(--rojo)', IC.furia, 'Furia: 3 seguidas Llamarada, 5 Volcán']);
     if (V.relampago != null) reglas.push(['var(--azul)', IC.zap, 'Pregunta ' + (V.relampago + 1) + ': relámpago +2']);
     if (V.n >= 8) reglas.push(['var(--dim)', IC.niebla, 'Últimas 3: puntos ocultos']);
     c.innerHTML = '<div class="vs-esc"><div class="vs-tit">' + esc(V.titulo || 'Duelo') + '</div><div class="vs-fila" style="--n: ' + n + '">' +
@@ -2948,7 +3039,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     return V.jugadores.map(j => ({ apodo: j.apodo, yo: j.yo, color: j.color, xp: j.xp, foto: j.foto, avatar: j.avatar, marco: j.marco, fondo: j.fondo, pin: j.pin, codigo: j.codigo, actual: j.yo ? G.actual : j.actual, puntos: j.yo ? G.puntos : j.puntos || 0, racha: 0, usados: [], terminado: j.terminado }));
   }
   // Niebla final: en las 3 últimas preguntas (duelos de 8 o más) no se ven los puntos de los demás
-  const enNiebla = () => G && G.v3 && G.n >= 8 && G.actual >= G.n - 3 && G.actual < G.n;
+  const enNiebla = () => G && G.v3 && G.n >= 8 && G.actual >= G.n - 3 && G.actual < G.n && !G.usados.some(u => u.k === 'espia' && u.i === G.actual);
   function pintarBarra() {
     const js0 = jugadores(), niebla = enNiebla(), muchos = js0.length >= 5;
     const pos = j => 1 + js0.filter(x => x.puntos > j.puntos).length;
@@ -3022,11 +3113,14 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   function rachaMia() { let k = 0; for (let i = G.ok.length - 1; i >= 0 && G.ok[i]; i--) k++; return k; }
   function pintarFuego() {
     const caja = $('fuegoBar');
-    if (!G.v3 || G.actual >= G.n) { caja.innerHTML = ''; caja.dataset.h = ''; return; }
+    if (!G.v3 || G.actual >= G.n || G.cmd.indexOf('furia') < 0) { caja.innerHTML = ''; caja.dataset.h = ''; caja.classList.add('sin'); return; }
+    caja.classList.remove('sin');
+    const enFinal = G.final && G.actual === G.n - 1;
     const r = rachaMia(), enCiclo = r === 0 ? 0 : (r % 5 || 5), f = G.fuego;
     const tipo = f >= 2 ? 'volcan' : 'llama', lista = f > 0;
     const tit = lista ? '¡' + FUEGO[tipo].nom + ' lista!' : G.bonus > 0 ? 'Volcán: la próxima vale doble' : 'Llamarada';
-    const sub = lista ? FUEGO[tipo].que + (tipo === 'llama' ? '. Aguanta hasta 5 seguidas para el Volcán.' : '')
+    const sub = lista && enFinal ? 'En la final no hay ataques.' : lista && usadoEn(true) ? 'Ya atacaste en esta pregunta: lánzala en la siguiente.'
+      : lista ? FUEGO[tipo].que + (tipo === 'llama' ? '. Aguanta hasta 5 seguidas para el Volcán.' : '')
       : G.bonus > 0 ? 'Si aciertas esta, tus puntos se duplican.'
       : enCiclo < 3 ? 'Acierta ' + (3 - enCiclo) + ' más ' + (3 - enCiclo === 1 ? 'seguida' : 'seguidas') + ' para cargarla. Si fallas, se apaga.'
       : 'Acierta ' + (5 - enCiclo) + ' más para el Volcán.';
@@ -3034,32 +3128,38 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     const cls = 'fuego-bar' + (lista ? ' lista' : '') + (f >= 2 ? ' volcan' : '') + (G.bonus > 0 ? ' bonus' : '');
     const html = '<div class="' + cls + '"><span class="fi">' + IC[tipo] + '</span><div class="tx">' + tit + '<small>' + sub + '</small><div class="seg">' +
       [0, 1, 2, 3, 4].map(i => '<i class="' + (i < enCiclo || (f >= 2) ? 'on' + (i >= 3 ? ' v' : '') : '') + '"></i>').join('') + '</div></div>' +
-      (lista ? '<button type="button" class="lanzar" id="btnFuego"' + (G.ocupado || G.efecto ? ' disabled' : '') + '>Lanzar</button>' : '') + '</div>';
+      (lista ? '<button type="button" class="lanzar" id="btnFuego"' + (G.ocupado || G.efecto || enFinal || usadoEn(true) ? ' disabled' : '') + '>Lanzar</button>' : '') + '</div>';
     if (caja.dataset.h === html) return;   // sin cambios: no se repinta (no corta la animación ni el toque)
     caja.dataset.h = html; caja.innerHTML = html;
     if (lista && prev && prev.indexOf('lista') < 0) son('cargado');
   }
   // La pregunta que ve el jugador en i (la de reserva si usó Cambio ahí)
   const qDe = i => G.cambioI === i && G.reservaQ ? G.reservaQ : G.qs[i];
-  // Barra de comodines: los que quedan, el activo y los ya usados
+  // ¿Ya usó en esta pregunta un comodín propio (false) o un ataque (true)? Llamarada y Volcán cuentan como ataque
+  function usadoEn(ataque) { return G.usados.some(u => u.i === G.actual && (ATAQUES.indexOf(u.k) >= 0) === ataque) || (ataque && G.fuegoI === G.actual); }
+  const usoAqui = k => G.usados.some(u => u.k === k && u.i === G.actual);
+  // Barra de comodines: los que quedan, el activo y los ya usados. Por pregunta: 1 propio + 1 ataque
   function pintarComodines() {
-    const usados = G.usados.map(u => u.k), aqui = G.usados.some(u => u.i === G.actual), ultima = G.final && G.actual === G.n - 1;
-    $('cbar').hidden = !G.cmd.length;
-    $('cbar').innerHTML = '<span class="t">Tus comodines</span>' + G.cmd.map(k => {
-      if (!CMD[k]) return '';
-      const usado = usados.indexOf(k) >= 0, activo = G.usados.some(u => u.k === k && u.i === G.actual) || (k === 'espejo' && G.espejo);
-      const no = usado || aqui || G.ocupado || ((k === 'doble' || k === 'apuesta') && ultima) || (k === 'cambio' && !G.reservaQ);
-      return '<button type="button" class="cbtn' + (usado && !activo ? ' usado' : '') + (activo ? ' activo' : '') + '" data-cmd="' + k + '" style="--c:' + CMD[k].c + ';--tc:' + TIPOS[CMD[k].t][1] + '"' + (no ? ' disabled' : '') +
-        ' title="' + esc(CMD[k].que + ((k === 'doble' || k === 'apuesta') && ultima ? ' (no en la final: ya vale 3)' : '')) + '">' + IC[k] + CMD[k].nom.replace(' tiempo', '') + (G.v3 ? '<span class="ty"></span>' : '') + '</button>';
+    const usados = G.usados.map(u => u.k), ultima = G.final && G.actual === G.n - 1, propioYa = usadoEn(false), ataqueYa = usadoEn(true);
+    const delante = !G.jug || G.jug.some(j => !j.yo && j.puntos > G.puntos);
+    const lista = G.cmd.filter(k => CMD[k] && k !== 'furia');   // Furia no se toca: es la barra de fuego
+    $('cbar').hidden = !lista.length;
+    $('cbar').innerHTML = '<span class="t">Tus comodines</span>' + lista.map(k => {
+      const usado = usados.indexOf(k) >= 0, atk = ATAQUES.indexOf(k) >= 0, activo = usoAqui(k) || (k === 'espejo' && G.espejo);
+      const motivo = (k === 'doble' || k === 'apuesta') && ultima ? ' (no en la final: ya vale 3)' : atk && ultima ? ' (en la final no hay ataques)'
+        : k === 'ladron' && !delante ? ' (vas primero: nadie va delante)' : !usado && (atk ? ataqueYa : propioYa) ? (atk ? ' (ya atacaste en esta pregunta)' : ' (ya usaste uno propio en esta pregunta)') : '';
+      const no = usado || G.ocupado || !!motivo;
+      return '<button type="button" class="cbtn' + (usado && !activo ? ' usado' : '') + (activo ? ' activo' : '') + (atk ? ' atk' : '') + '" data-cmd="' + k + '" style="--c:' + CMD[k].c + ';--tc:' + TIPOS[CMD[k].t][1] + '"' + (no ? ' disabled' : '') +
+        ' title="' + esc(CMD[k].nom + ': ' + CMD[k].que + ' · ' + CMD[k].dura + motivo) + '">' + IC[k] + CMD[k].corto + (G.v3 ? '<span class="ty"></span>' : '') + '</button>';
     }).join('');
-    // Lo que trae el comodín activo en esta pregunta
-    const k = (G.usados.filter(u => u.i === G.actual)[0] || {}).k;
+    // Lo que traen los comodines activos en esta pregunta
     const tag = (c, ic, t) => '<span class="x2" style="--c:' + c + '">' + ic + t + '</span>';
-    $('pExtra').innerHTML = (k === 'doble' && G.activo === 'doble' ? tag('var(--oro)', IC.doble, 'Vale 2')
-      : k === 'escudo' && G.activo === 'escudo' ? tag('var(--naranja)', IC.escudo, 'Escudo activo')
-      : k === 'apuesta' && G.activo === 'apuesta' ? tag('var(--oro)', IC.apuesta, 'Apuesta ' + G.apuesta)
-      : k === 'ladron' && G.activo === 'ladron' ? tag('var(--rojo)', IC.ladron, 'Ladrón listo')
-      : k === 'cambio' ? tag('var(--azul)', IC.cambio, 'Pregunta cambiada') : '') +
+    $('pExtra').innerHTML = (G.activo === 'doble' ? tag('var(--oro)', IC.doble, 'Vale 2') : '') +
+      (usoAqui('escudo') ? tag('var(--morado)', IC.escudo, 'Fénix: protegido') : '') +
+      (G.activo === 'apuesta' ? tag('var(--oro)', IC.apuesta, 'Dado ' + G.apuesta) : '') +
+      (G.activo === 'ladron' ? tag('var(--oro)', IC.ladron, 'Botín listo') : '') +
+      (usoAqui('reloj') ? tag('var(--azul)', IC.reloj, '+10 s') : '') +
+      (Date.now() < (G.inmune || 0) ? tag('var(--morado)', IC.elixir, 'Inmune') : '') +
       (G.espejo ? tag('var(--morado)', IC.espejo, 'Espejo') : '') + (G.bonus > 0 ? tag('var(--rojo)', IC.volcan, 'Vale doble') : '');
     pintarFuego();
   }
@@ -3068,9 +3168,12 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     const e = G.espia;
     if (!e) return;
     const ya = e.filter(x => x.estado !== 'pensando'), ok = e.filter(x => x.estado === 'acerto').length;
-    const col = {}; jugadores().forEach(j => { col[j.apodo] = j.color; });
+    const col = {}, usa = {}, mano = {};
+    jugadores().forEach(j => { col[j.apodo] = j.color; usa[j.apodo] = j.usados || []; });
+    ((V && V.jugadores) || []).forEach(j => { if (!j.yo) mano[j.apodo] = j.mano || []; });
+    const quedan = a => { const q = (mano[a] || []).filter(k => CMD[k] && (usa[a] || []).indexOf(k) < 0); return '<span class="qd" title="Comodines que le quedan">' + (q.length ? q.map(k => '<i style="--c:' + CMD[k].c + '" title="' + esc(CMD[k].nom) + '">' + IC[k] + '</i>').join('') : '<em>sin comodines</em>') + '</span>'; };
     avisoJuego('<div class="espia"><div>' + ya.length + ' de ' + plural(e.length, 'rival', 'rivales') + ' ya ' + (ya.length === 1 ? 'respondió' : 'respondieron') + ' · ' + ok + ' ' + (ok === 1 ? 'acertó' : 'acertaron') + '</div><div class="fil">' +
-      e.map(x => '<div>' + avatar({ apodo: x.apodo, color: col[x.apodo] }) + '<span class="' + (x.estado === 'acerto' ? 'ok">Acertó' : x.estado === 'fallo' ? 'mal">Falló' : 'pen">Pensando…') + '</span></div>').join('') + '</div></div>', 'var(--verde)', IC.espia);
+      e.map(x => '<div>' + avatar({ apodo: x.apodo, color: col[x.apodo] }) + '<span class="' + (x.estado === 'acerto' ? 'ok">Acertó' : x.estado === 'fallo' ? 'mal">Falló' : 'pen">Pensando…') + '</span>' + quedan(x.apodo) + '</div>').join('') + '</div></div>', 'var(--azul)', IC.espia);
   }
   let tic = null;
   function pintarPregunta() {
@@ -3127,7 +3230,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   }
   $('pAlts').addEventListener('click', e => {
     const b = e.target.closest('button[data-k]');
-    if (b && !b.disabled && G && !G.ocupado) responder(+b.dataset.k, b);
+    if (b && !b.disabled && G && !G.ocupado && !G.efecto && Date.now() >= (G.bloqueo || 0)) responder(+b.dataset.k, b);
   });
   async function responder(op, boton) {
     G.ocupado = true; G.ticVisto = 0;
@@ -3151,7 +3254,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       G.activo = null;
       if (boton) { boton.classList.remove('on'); boton.classList.add('mal', 'fuera'); }
       botones.forEach(x => { if (!x.classList.contains('fuera') && !x.classList.contains('mal')) x.disabled = false; });
-      avisoJuego('Tu escudo te salvó: esa no era. Elige otra.', 'var(--naranja)', IC.escudo);
+      avisoJuego('Tu Fénix te salvó: esa no era. Elige otra.', 'var(--morado)', IC.escudo);
       son('mal'); G.ocupado = false; pintarComodines();
       return;
     }
@@ -3169,17 +3272,20 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       botones.forEach((x, k) => { if (k === vc) x.classList.add('ok'); else if (k === vo) x.classList.add('mal'); x.classList.remove('on'); });
       const letra = esc(q.options[vc].letter || LETRAS[vc]);
       const extras = [];
-      if (r.ok && apostado) extras.push('Apuesta ganada');
+      const robos = Array.isArray(r.robo) ? r.robo : r.robo ? [r.robo] : [];
+      if (r.ok && apostado) extras.push('Dado de oro');
       else if (r.ok && r.rel) extras.push('Relámpago');
       else if (r.ok && r.p === 3) extras.push('Todo o nada');
       else if (r.ok && r.p >= 2) extras.push(r.p >= 4 ? 'Volcán' : 'Doble');
-      if (r.robo) extras.push(r.robo.rebote ? esc(r.robo.a) + ' tenía Espejo: −1' : 'Le robaste 1 a ' + esc(r.robo.a));
+      const quita = robos.filter(x => !x.rebote).map(x => esc(x.a));
+      if (quita.length) extras.push('Botín: −1 a ' + quita.join(' y '));
+      robos.filter(x => x.rebote).forEach(x => extras.push(esc(x.a) + ' tenía Espejo: −1'));
       $('veredicto').innerHTML = r.ok ? '¡Correcta! +' + r.p + (extras.length ? ' · ' + extras.join(' · ') : '')
         : (r.op < 0 ? 'Se acabó el tiempo. Era la ' + letra + '.' : 'Incorrecta. Era la ' + letra + '.') + (apostado && r.p < 0 ? ' Pierdes ' + (-r.p) + '.' : '');
       if (r.ok && r.rel) { son('relampago'); toast('¡Ganaste la pregunta relámpago! +2', 'var(--azul)', IC.zap); }
-      if (r.robo && !r.robo.rebote) son('ladron');
-      if (r.ok && (r.racha === 3 || r.racha === 5 || (r.racha > 5 && (r.racha % 5 === 0 || r.racha % 5 === 3)))) setTimeout(() => toast(r.fuego >= 2 ? '¡Volcán cargado! Lánzalo cuando quieras' : '¡Llamarada cargada!', r.fuego >= 2 ? 'var(--rojo)' : 'var(--naranja)', IC[r.fuego >= 2 ? 'volcan' : 'llama']), 350);
-      else if (!r.ok && G.ok.length > 1 && G.ok[G.ok.length - 2] && G.v3 && rachaAntes >= 2) toast('Se apagó tu fuego', 'var(--dim)', IC.llama);
+      if (quita.length) son('ladron');
+      if (r.ok && r.fuego > 0 && (r.racha === 3 || r.racha === 5 || (r.racha > 5 && (r.racha % 5 === 0 || r.racha % 5 === 3)))) setTimeout(() => toast(r.fuego >= 2 ? '¡Volcán cargado! Lánzalo cuando quieras' : '¡Llamarada cargada!', r.fuego >= 2 ? 'var(--rojo)' : 'var(--naranja)', IC[r.fuego >= 2 ? 'volcan' : 'llama']), 350);
+      else if (!r.ok && G.ok.length > 1 && G.ok[G.ok.length - 2] && G.v3 && G.cmd.indexOf('furia') >= 0 && rachaAntes >= 2) toast('Se apagó tu fuego', 'var(--dim)', IC.llama);
       $('veredicto').className = 'veredicto ' + (r.ok ? 'ok' : 'mal');
       son(r.ok ? 'bien' : 'mal');
     }
@@ -3218,19 +3324,18 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     if (!G || G.actual !== i) return;
     G.usados.push({ k, i, quita: r.quita });
     son(k === 'terremoto' ? 'terremoto' : k === 'hielo' ? 'hielo' : k === 'espejo' ? 'espejo' : k === 'apuesta' ? 'apuesta' : k === 'robar' ? 'robado' : 'comodin');
-    const golpe = (txt, nadie) => toast(r.golpes || r.rebotes ? txt + (r.rebotes ? ' · ' + plural(r.rebotes, 'rival tenía', 'rivales tenían') + ' Espejo y te rebotó' : '') : nadie, 'var(--rojo)', IC[k]);
+    const golpe = (txt, nadie) => toast(r.golpes || r.rebotes ? txt + (r.rebotes ? ' · ' + plural(r.rebotes, 'rival tenía', 'rivales tenían') + ' Espejo y te rebotó' : '') + (r.salvados ? ' · ' + plural(r.salvados, 'rival estaba protegido', 'rivales estaban protegidos') : '')
+      : r.salvados ? 'Tus rivales estaban protegidos: no les hizo nada' : nadie, 'var(--rojo)', IC[k]);
     if (k === 'mitad') quitarAlts(r.quita);
-    else if (k === 'hielo') golpe('¡Congelaste las alternativas de tus rivales!', 'Tus rivales ya terminaron');
-    else if (k === 'doble' || k === 'escudo' || k === 'ladron') G.activo = k;
+    else if (k === 'hielo') golpe('¡Glaciar! Congelaste las alternativas de tus rivales', 'Tus rivales ya terminaron');
+    else if (k === 'doble' || k === 'escudo' || k === 'ladron') { G.activo = k; if (k === 'escudo') toast('Fénix: si fallas, eliges otra vez y ningún ataque te toca', 'var(--morado)', IC.escudo); }
+    else if (k === 'reloj') { G.fin += 10000; toast('Reloj de arena: +10 segundos para ti', 'var(--azul)', IC.reloj); }
+    else if (k === 'elixir') { G.inmune = Date.now() + 5000; const habia = !!G.ef; if (G.ef) G.ef.quitar(); toast(habia ? 'Elixir: ataque limpio y 5 s de inmunidad' : 'Elixir: 5 s de inmunidad', 'var(--morado)', IC.elixir); setTimeout(() => { if (G) pintarComodines(); }, 5100); }
     else if (k === 'apuesta') { G.activo = 'apuesta'; G.apuesta = +r.apuesta || n; }
-    else if (k === 'espejo') { G.espejo = true; toast('Espejo activo: el próximo ataque rebota', 'var(--morado)', IC.espejo); }
-    else if (k === 'robar') golpe('Les robaste 8 segundos a tus rivales', 'Tus rivales ya terminaron: no había tiempo que robar');
-    else if (k === 'terremoto') golpe('¡Terremoto! Sus alternativas tiemblan y se mezclan', 'Tus rivales ya terminaron');
-    else if (k === 'espia') { G.espia = r.espia || []; pintarEspia(); espiaRapido(i); }
-    else if (k === 'cambio') {
-      G.cambioI = i; G.fin = Date.now() + G.seg * 1000; G.hielo = 0;
-      if (G.reservaQ) { son('cambioQ'); pintarPregunta(); toast('Pregunta nueva: el reloj empieza de cero', 'var(--azul)', IC.cambio); }
-    }
+    else if (k === 'espejo') { G.espejo = true; toast('Espejo activo 2 preguntas: el próximo ataque rebota', 'var(--morado)', IC.espejo); }
+    else if (k === 'robar') golpe('Arenas del tiempo: les quitaste hasta 8 segundos', 'Tus rivales ya terminaron: no había tiempo que quitar');
+    else if (k === 'terremoto') golpe('¡Sismo! Sus alternativas tiemblan y se mezclan', 'Tus rivales ya terminaron');
+    else if (k === 'espia') { G.espia = r.espia || []; pintarEspia(); espiaRapido(i); if (G.v3 && G.n >= 8 && i >= G.n - 3) toast('Ojo de halcón: la niebla se levanta en esta pregunta', 'var(--azul)', IC.espia); }
     if (G.jug) G.jug.forEach(j => { if (j.yo) j.usados = (j.usados || []).concat(k); });
     pintarComodines(); pintarBarra();
   }
@@ -3261,11 +3366,11 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     let r;
     try { r = await rpc('lanzar_fuego', { p_codigo: G.codigo }); }
     catch (err) { toast(esc(textoError(err)), 'var(--rojo)', IC.llama); pintarFuego(); return; }
-    G.fuego = 0;
+    G.fuego = 0; G.fuegoI = G.actual;
     if (r.tipo === 'volcan') G.bonus = 2;
     G.ultFuego = r.tipo;
     animLanzada(r.tipo);
-    if (!r.golpes && !r.rebotes) setTimeout(() => toast('Tus rivales ya terminaron: nadie se quemó', 'var(--dim)', IC.llama), 900);
+    if (!r.golpes && !r.rebotes) setTimeout(() => toast(r.salvados ? 'Tus rivales estaban protegidos: nadie se quemó' : 'Tus rivales ya terminaron: nadie se quemó', 'var(--dim)', IC.llama), 900);
     pintarComodines(); pintarBarra();
   });
   function animLanzada(tipo) {
@@ -3328,13 +3433,15 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     son(volcan ? 'volcan' : 'llamarada'); son('fuego', ms / 1000);
     let n = 0;
     const apagar = (conAgua) => {
+      if (el.dataset.fin) return; el.dataset.fin = '1';
       clearTimeout(t); el.classList.add('sale'); borde.remove(); card.classList.remove('chamuscada');
       fx.classList.add('sale'); setTimeout(() => fx.remove(), 700);
       if (conAgua) { el.insertAdjacentHTML('beforeend', '<span class="vapor"></span>'); son('vapor'); }
-      setTimeout(() => el.remove(), 650); if (G) { G.efecto = null; pintarFuego(); }
+      setTimeout(() => el.remove(), 650); if (G) { G.efecto = null; G.bloqueo = Date.now() + 500; if (G.ef && G.ef.el === el) G.ef = null; pintarFuego(); }
       if (window.MCSonido && MCSonido.fuegoParar) MCSonido.fuegoParar();
     };
     const t = setTimeout(() => apagar(false), ms);
+    G.ef = { el, f: FUERZA[tipo] || 2, quitar: () => apagar(true) };
     el.addEventListener('click', ev => {
       ev.stopPropagation();
       const gs = el.querySelectorAll('.gotas span'); if (n >= gs.length) return;
@@ -3379,8 +3486,8 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       grietas.map(d => '<path class="gr" pathLength="1" d="' + d + '"/>').join('') + '</svg>' +
       '<span class="brillo"></span>' +
       Array.from({ length: 10 }, (_, i) => '<i class="copo" style="left:' + (3 + i * 10) + '%;width:' + (12 + (i % 3) * 6) + 'px;height:' + (12 + (i % 3) * 6) + 'px;--x:' + (i % 2 ? '' : '-') + (14 + i * 3) + 'px;animation-duration:' + (3 + (i % 4) * .6).toFixed(1) + 's;animation-delay:' + (i * 0.3).toFixed(2) + 's">' + copoSvg() + '</i>').join('') +
-      '<div class="apagar"><b>¡' + esc(quien) + ' te congeló!</b><small>Toca ' + toques + ' veces para romper el hielo o espera ' + (ms / 1000) + ' s</small><div class="gotas">' +
-      Array.from({ length: toques }, () => '<span>' + IC.hielo + '</span>').join('') + '</div></div>';
+      '<div class="apagar"><b>¡' + esc(quien) + ' te lanzó un Glaciar!</b><small>Toca ' + toques + ' veces para romper el hielo o espera ' + (ms / 1000) + ' s</small><div class="gotas">' +
+      Array.from({ length: toques }, () => '<span>' + IC.copo + '</span>').join('') + '</div></div>';
     card.appendChild(el); card.classList.add('congelada');
     const borde = document.createElement('div'); borde.className = 'borde-fuego hielo'; document.body.appendChild(borde);
     // Nieve sobre toda la pantalla
@@ -3390,14 +3497,16 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     son('hielo'); son('viento', ms / 1000);
     let n = 0;
     const romper = (aGolpes) => {
+      if (el.dataset.fin) return; el.dataset.fin = '1';
       clearTimeout(t); borde.remove(); card.classList.remove('congelada');
       fx.classList.add('sale'); setTimeout(() => fx.remove(), 800);
       if (window.MCSonido && MCSonido.vientoParar) MCSonido.vientoParar();
       if (aGolpes) { el.classList.add('rompe'); son('hieloRompe'); }
       else { el.classList.add('derrite'); son('derrite'); }
-      setTimeout(() => el.remove(), 900); if (G) { G.efecto = null; pintarFuego(); }
+      setTimeout(() => el.remove(), 900); if (G) { G.efecto = null; G.bloqueo = Date.now() + 500; if (G.ef && G.ef.el === el) G.ef = null; pintarFuego(); }
     };
     const t = setTimeout(() => romper(false), ms);
+    G.ef = { el, f: FUERZA.hielo, quitar: () => romper(true) };
     el.addEventListener('click', ev => {
       ev.stopPropagation();
       const gs = el.querySelectorAll('.gotas span'), gr = el.querySelectorAll('.cristal .gr'); if (n >= gs.length) return;
@@ -3419,19 +3528,32 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     g.innerHTML = '<path d="M50 0 46 18 53 30 44 46 52 60 47 78 50 100"/><path d="M46 18 30 24M44 46 62 52M47 78 30 86" />';
     card.appendChild(g);
     son('terremoto');
-    toast('<b>' + esc(quien) + '</b> te lanzó un Terremoto', 'var(--rojo)', IC.terremoto);
-    // Las alternativas cambian de lugar (cada botón sigue siendo la misma alternativa)
+    toast('<b>' + esc(quien) + '</b> te lanzó un Sismo', 'var(--rojo)', IC.terremoto);
+    // Las alternativas cambian de lugar (cada botón sigue siendo la misma alternativa) durante 4 s
     const mezclar = () => { const lis = Array.from(lst.children); barajar(lis).forEach(li => lst.appendChild(li)); };
-    mezclar(); const t2 = setTimeout(mezclar, 1200);
-    setTimeout(() => { clearTimeout(t2); card.classList.remove('tiembla'); g.remove(); }, 2600);
+    mezclar(); const t2 = setTimeout(mezclar, 1300), t3 = setTimeout(mezclar, 2600);
+    const parar = () => { clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); card.classList.remove('tiembla'); g.remove(); if (G && G.ef && G.ef.el === g) G.ef = null; };
+    const t4 = setTimeout(parar, 4000);
+    G.ef = { el: g, f: FUERZA.terremoto, quitar: parar };
   }
   function relojRoto(quien, seg) {
     const rl = $('reloj');
+    if (seg === 8 && G) {   // Arenas del tiempo: nunca te deja con menos de 5 s
+      const q = G.fin - Date.now(), nuevo = Math.max(Math.min(q, 5000), q - 8000);
+      seg = Math.max(0, Math.round((q - nuevo) / 1000)); G.fin -= q - nuevo;
+      if (!seg) { toast('<b>' + esc(quien) + '</b> te lanzó Arenas del tiempo, pero ya te quedaba poco', 'var(--dim)', IC.robar); return; }
+    }
     rl.classList.add('robado', 'roto');
     rl.insertAdjacentHTML('beforeend', '<span class="menos">−' + seg + '</span><svg class="vidrio" viewBox="0 0 58 58"><path d="M29 8 25 22 33 28 27 40 31 52"/><path d="M25 22 12 26M33 28 47 24M27 40 15 46"/></svg>');
     son('robado');
-    toast('<b>' + esc(quien) + '</b> te robó ' + seg + ' segundos', 'var(--rojo)', IC.robar);
+    toast('<b>' + esc(quien) + '</b> te quitó ' + seg + ' s con Arenas del tiempo', 'var(--rojo)', IC.robar);
     setTimeout(() => { rl.classList.remove('robado', 'roto'); rl.querySelectorAll('.menos, .vidrio').forEach(x => x.remove()); }, 2200);
+  }
+  const NOM_ATAQUE = { llama: 'la Llamarada', volcan: 'el Volcán', hielo: 'el Glaciar', terremoto: 'el Sismo', robar: 'las Arenas del tiempo' };
+  function protegido(tipo, quien) {
+    const ic = usoAqui('reloj') && tipo === 'robar' ? IC.reloj : usoAqui('escudo') ? IC.escudo : IC.elixir;
+    toast('Te salvaste de ' + (NOM_ATAQUE[tipo] || 'un ataque') + ' de <b>' + esc(quien) + '</b>', 'var(--morado)', ic);
+    son('espejo');
   }
   function animRebote(txt) {
     son('espejo');
@@ -3442,6 +3564,14 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   // Un ataque te alcanza (o te rebota)
   function recibirEfecto(tipo, quien) {
     if (!G || G.actual >= G.n) return;
+    if (tipo !== 'robar') {
+      // Fénix o Elixir: no te toca (el servidor ya lo evita; esto es por si llega tarde)
+      if (usoAqui('escudo') || Date.now() < (G.inmune || 0)) { protegido(tipo, quien); return; }
+      // Dos ataques juntos: queda solo el más fuerte
+      const f = FUERZA[tipo] || 1;
+      if (G.ef && G.ef.f >= f) return;
+      if (G.ef) G.ef.quitar();
+    }
     if (tipo === 'llama' || tipo === 'volcan') quemar(tipo, quien);
     else if (tipo === 'terremoto') terremoto(quien);
     else if (tipo === 'hielo') congelar(quien);
@@ -3486,13 +3616,14 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
         // Tu Espejo devolvió un ataque
         if (ev.tipo === 'rebote' && ev.yo) {
           G.espejo = false; animRebote('¡Rebotado!');
-          toast('Tu Espejo le devolvió ' + (ev.dato === 'ladron' ? 'el robo' : 'el ' + esc(nom)) + ' a <b>' + esc(ev.otro || '') + '</b>', 'var(--morado)', IC.espejo);
+          toast('Tu Espejo le devolvió ' + (ev.dato === 'ladron' ? 'el Botín' : NOM_ATAQUE[ev.dato] || esc(nom)) + ' a <b>' + esc(ev.otro || '') + '</b>', 'var(--morado)', IC.espejo);
           return;
         }
         if (ev.yo) return;
         if (ev.tipo === 'reac') { sticker(ev.apodo, ev.dato, false); son('reaccion', ev.dato); }
+        else if (ev.tipo === 'ataque' && ev.para_mi && /^salvo:/.test(ev.dato)) protegido(ev.dato.slice(6), ev.apodo);
         else if (ev.tipo === 'ataque' && ev.para_mi) {
-          if (ev.dato === 'ladron') { toast('<b>' + esc(ev.apodo) + '</b> te robó 1 punto', 'var(--rojo)', IC.ladron); son('ladron'); }
+          if (ev.dato === 'ladron') { toast('<b>' + esc(ev.apodo) + '</b> te quitó 1 punto con Botín', 'var(--oro)', IC.ladron); son('ladron'); }
           else recibirEfecto(ev.dato, ev.apodo);
         }
         else if (ev.tipo === 'ataque' && (ev.dato === 'llama' || ev.dato === 'volcan') && !fuegos[ev.apodo]) {
@@ -3562,8 +3693,8 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       md('var(--verde)', IC.mira, 'Francotirador', f.length ? lista(f.map(quien)) : '', 'Sin fallar ninguna') +
       ('piromano' in m ? md('var(--naranja)', IC.llama, 'Pirómano', m.piromano && quien(m.piromano.quien), m.piromano ? plural(m.piromano.dato, 'fuego lanzado', 'fuegos lanzados') : 'Lanzar Llamaradas') +
         md('var(--morado)', IC.espejo, 'Intocable', m.intocable && quien(m.intocable.quien), m.intocable ? plural(m.intocable.dato, 'ataque rebotado', 'ataques rebotados') : 'Rebotar un ataque') +
-        md('var(--rojo)', IC.ladron, 'Ladrón de oro', m.ladron && quien(m.ladron.quien), m.ladron ? plural(m.ladron.dato, 'punto robado', 'puntos robados') : 'Robar puntos') +
-        md('var(--oro)', IC.apuesta, 'Apostador', m.apostador && quien(m.apostador.quien), m.apostador ? 'Ganó una Apuesta de 3' : 'Ganar una Apuesta de 3') : '') + '</div>';
+        md('var(--oro)', IC.ladron, 'Rey del botín', m.ladron && quien(m.ladron.quien), m.ladron ? plural(m.ladron.dato, 'punto ganado con Botín', 'puntos ganados con Botín') : 'Ganar puntos con Botín') +
+        md('var(--oro)', IC.apuesta, 'Apostador', m.apostador && quien(m.apostador.quien), m.apostador ? 'Ganó un Dado de oro de 3' : 'Ganar un Dado de oro de 3') : '') + '</div>';
   }
   // La jugada del duelo: lo que hizo el ganador para ganar
   function jugadaHtml(m) {
@@ -3575,7 +3706,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       volcan: ['var(--rojo)', IC.volcan, de('El', 'Volcán'), 'Explotó en la pregunta ' + (j.i + 1) + ' y ' + (mia ? 'tu' : 'su') + ' siguiente acierto valió doble.'],
       remontada: ['var(--morado)', IC.sube, mia ? 'Tu remontada' : 'La remontada de ' + q, (mia ? 'Llegaste a estar ' : 'Llegó a estar ') + j.dato + (mia ? '.º y terminaste primero.' : '.º y terminó primero.')],
       relampago: ['var(--azul)', IC.zap, de('El', 'relámpago'), (mia ? 'Fuiste' : 'Fue') + ' el primero en acertar la pregunta ' + (j.i + 1) + (mia ? ' y te llevaste +2.' : ' y se llevó +2.')],
-      ladron: ['var(--rojo)', IC.ladron, de('El', 'robo'), (mia ? 'Le quitaste ' : 'Le quitó ') + plural(j.dato, 'punto', 'puntos') + ' al que iba mejor.'],
+      ladron: ['var(--oro)', IC.ladron, de('El', 'Botín'), (mia ? 'Ganaste ' : 'Ganó ') + plural(j.dato, 'punto', 'puntos') + ' quitándoselos a los que iban delante.'],
       espejo: ['var(--morado)', IC.espejo, de('El', 'Espejo'), (mia ? 'Devolviste ' : 'Devolvió ') + plural(j.dato, 'ataque', 'ataques') + ' a quien se lo lanzó.']
     }[j.t];
     if (!D) return '';
