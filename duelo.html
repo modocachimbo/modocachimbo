@@ -3700,7 +3700,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     }), res ? 15000 : 5000);
   }
   /* Foto del resultado para estados (1080 × 1920): podio con los búhos */
-  const MEDALLA = [['#FFD84D', '#C99A00', '#3a2a00'], ['#E4E8F2', '#9AA3B8', '#22252e'], ['#F0A066', '#B5642B', '#2e1606']];
+  const MEDALLA = [['#FFC800', '#B98A00', '#5a4300', '#FFE680'], ['#C9CBD8', '#8C8FA3', '#55586a', '#ECEDF4'], ['#E88A45', '#B5642B', '#6e3a14', '#FFC9A0']];
   async function fotoResultado() {
     const d = V, btn = $('resFoto'), res = d && d.resultado; if (!res || !btn || btn.disabled) return;
     btn.disabled = true; son('toque');
@@ -3729,24 +3729,33 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       x.font = '800 32px Nunito, sans-serif'; x.fillStyle = '#A99FC8'; x.fillText('Duelo de ' + js.length + ' jugadores · ' + d.n + ' preguntas', W / 2, 442);
       // Podio: 2.º a la izquierda, 1.º al centro, 3.º a la derecha
       const top = js.slice(0, 3), pos = top.length === 2 ? [[1, 330], [0, 750]] : [[1, 190], [0, 540], [2, 890]];
-      const alto = [300, 230, 190], suelo = 1230, ancho = 320;
+      const alto = [330, 270, 230], suelo = 1230, ancho = 320;
       const B = await Promise.all(top.map((j, i) => capasBuho(pjDe(j), i === 0 ? 'logro' : 'oficial')));
       const R = await Promise.all(top.map(j => nivelDe(j) >= 0 ? svgImg(MCRango.svg(nivelDe(j), { quieto: true })) : null));
       pos.forEach(([i, cx]) => {
         const j = top[i]; if (!j) return;
         const m = MEDALLA[Math.min(i, 2)], h = alto[i], y = suelo - h;
-        // Búho parado sobre su escalón
-        dibBuho(x, B[i], cx, y + 14, i === 0 ? 400 : 320);
-        // Escalón
-        const eg = x.createLinearGradient(0, y, 0, suelo); eg.addColorStop(0, m[0]); eg.addColorStop(1, m[1]);
-        x.save(); rr(x, cx - ancho / 2, y + 10, ancho, h, 22); x.fillStyle = eg; x.fill();
-        x.globalAlpha = .18; x.fillStyle = '#fff'; x.fillRect(cx - ancho / 2 + 16, y + 18, ancho - 32, 10); x.restore();
-        x.textAlign = 'center'; x.fillStyle = m[2];
-        x.font = 'italic 900 ' + (i === 0 ? 120 : 96) + 'px "Barlow Condensed", sans-serif'; x.fillText(String(j.puesto || i + 1), cx, y + (i === 0 ? 130 : 108));
-        x.font = '800 34px "Barlow Condensed", sans-serif'; x.fillText(plural(puntosDe(j), 'PUNTO', 'PUNTOS'), cx, y + (i === 0 ? 190 : 165));
+        // Escalón en 3D como el de la pantalla: tapa clara arriba (donde se para el búho) y frente con el puesto
+        const tapa = 46, an = i === 0 ? ancho + 20 : ancho, x0 = cx - an / 2;
+        x.save();
+        x.beginPath(); x.moveTo(x0 + 22, y); x.lineTo(x0 + an - 22, y); x.lineTo(x0 + an, y + tapa); x.lineTo(x0, y + tapa); x.closePath();
+        x.fillStyle = m[3]; x.fill();
+        const eg = x.createLinearGradient(0, y + tapa, 0, suelo); eg.addColorStop(0, m[0]); eg.addColorStop(1, m[1]);
+        x.fillStyle = eg; x.fillRect(x0, y + tapa, an, suelo - y - tapa);
+        x.globalAlpha = .25; x.fillStyle = '#fff'; x.fillRect(x0, y + tapa, an, 4); x.restore();
+        dibBuho(x, B[i], cx, y + tapa * .62, i === 0 ? 400 : 320);
+        x.textAlign = 'center'; x.fillStyle = m[2]; x.globalAlpha = .75;
+        x.font = 'italic 900 ' + (i === 0 ? 130 : 110) + 'px "Barlow Condensed", sans-serif'; const fs = i === 0 ? 130 : 110; x.fillText(String(j.puesto || i + 1), cx, (y + tapa + suelo - 76) / 2 + fs * .36); x.globalAlpha = 1;
+        const xpP = XP_PUESTO[(j.puesto || i + 1) - 1];
+        if (xpP) {
+          const t = '+' + xpP + ' XP'; x.font = 'italic 900 38px "Barlow Condensed", sans-serif';
+          const tw = x.measureText(t).width + 36, ty = suelo - 68;
+          rr(x, cx - tw / 2, ty, tw, 52, 12); x.fillStyle = i === 0 ? '#2a2000' : '#FFE9A8'; x.fill();
+          x.fillStyle = i === 0 ? '#FFD84D' : '#3a2a00'; x.fillText(t, cx, ty + 40);
+        }
         // Placa con nombre y rango debajo del podio
         placaFoto(x, j, cx, suelo + 26, ancho - 16, 64, false, R[i]);
-        x.font = '800 30px Nunito, sans-serif'; x.fillStyle = '#A99FC8'; x.textAlign = 'center'; x.fillText(corta(x, lineaDe(j, d.n), ancho), cx, suelo + 130);
+        x.font = '800 30px Nunito, sans-serif'; x.fillStyle = '#A99FC8'; x.textAlign = 'center'; x.fillText(plural(puntosDe(j), 'punto', 'puntos') + (j.aciertos != null ? ' · ' + j.aciertos + '/' + d.n : ''), cx, suelo + 130);
       });
       // Los demás (4.º a 6.º) en filas
       let fy = suelo + 170;
