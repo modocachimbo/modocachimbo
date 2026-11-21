@@ -3734,10 +3734,9 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       const R = await Promise.all(top.map(j => nivelDe(j) >= 0 ? svgImg(MCRango.svg(nivelDe(j), { quieto: true })) : null));
       pos.forEach(([i, cx]) => {
         const j = top[i]; if (!j) return;
-        const m = MEDALLA[Math.min(i, 2)], h = alto[i], y = suelo - h, c = COLOR_J[(j.color || 0) % 6][0];
+        const m = MEDALLA[Math.min(i, 2)], h = alto[i], y = suelo - h;
         // Búho parado sobre su escalón
-        plataforma(x, cx, y + 2, ancho * .9, c);
-        dibBuho(x, B[i], cx, y + 8, i === 0 ? 400 : 320);
+        dibBuho(x, B[i], cx, y + 14, i === 0 ? 400 : 320);
         // Escalón
         const eg = x.createLinearGradient(0, y, 0, suelo); eg.addColorStop(0, m[0]); eg.addColorStop(1, m[1]);
         x.save(); rr(x, cx - ancho / 2, y + 10, ancho, h, 22); x.fillStyle = eg; x.fill();
