@@ -519,7 +519,7 @@
 <script src="assets/ranking.js"></script>
 <script src="assets/rango.js"></script>
 <script src="assets/coleccion.js?v=210"></script>
-<script src="assets/tarjeta-perfil.js?v=210"></script>
+<script src="assets/tarjeta-perfil.js?v=211"></script>
 <style id="mc-claro">
 /* Modo claro de esta página (assets/claro.css trae lo común) */
 html[data-modo="claro"] .eyebrow { color: #6F8000 !important; }
@@ -930,6 +930,18 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   .av .foto { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
   .av.con-foto { color: transparent; }
   .av .rgo { z-index: 1; }
+  /* Marco puesto (borde de color o degradado) y pin en la esquina, como en los tops */
+  html body .av.con-marco:not(.mc-mo):not(#z) { background: var(--m); box-shadow: 0 3px 0 rgba(0,0,0,.35); }
+  .av.con-marco:not(.mc-mo) .foto { inset: 2px; width: calc(100% - 4px); height: calc(100% - 4px); border-radius: 26%; }
+  .av.mc-mo .foto { border-radius: 30%; }
+  .av[data-jug] { cursor: pointer; }
+  .av .av-pin { position: absolute; z-index: 6; top: -22%; right: -26%; width: 52%; height: 52%; min-width: 14px; min-height: 14px; display: grid; place-items: center; font-style: normal; pointer-events: none; filter: drop-shadow(0 1px 2px rgba(0,0,0,.6)); }
+  .av .av-pin svg, .av .av-pin > * { width: 100%; height: 100%; display: block; }
+  .av .av-pin .mcc-pin { width: 100%; height: auto; border-width: 2px; box-shadow: none; }
+  .av .av-pin .mcc-pin span { font-size: 9px; line-height: 1; }
+  .av .av-pin .mcc-pin img { width: 70%; height: 70%; }
+  .av .av-pin img { width: 100%; height: 100%; object-fit: contain; }
+  .av .rgo { z-index: 6; }
   html body .tile .nm:not(#z) { grid-column: 2; margin: 0; font: 800 18px/1 var(--display) !important; letter-spacing: .04em; text-transform: uppercase; }
   html body .tile .rs:not(#z) { grid-column: 2; margin: 0; font: 700 11.5px/1.2 'Nunito', sans-serif !important; }
   html body .tile .pt:not(#z) { grid-column: 3; grid-row: 1 / span 2; font: italic 900 34px/1 var(--display) !important; }
@@ -1762,7 +1774,25 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   const MARCO = 'M23 4H32A10 10 0 0 1 42 14V32A10 10 0 0 1 32 42H14A10 10 0 0 1 4 32V14A10 10 0 0 1 14 4Z';
   // Foto de perfil (ver_duelo la manda desde 30-duelo-fotos.sql); la tuya también sale de la tarjeta de arriba
   const fotoDe = j => { const f = (j && j.foto) || (j && j.yo && (document.querySelector('header .mcu-av img') || {}).src) || ''; return /^https:\/\//.test(f) ? f : ''; };
-  const avatar = (j, extra) => { const f = fotoDe(j); return '<span class="av ' + colorDe(j) + (f ? ' con-foto' : '') + (extra || '') + '">' + esc(inicial(j.yo ? 'Tú' : j.apodo)) + (f ? '<img class="foto" src="' + esc(f) + '" alt="" referrerpolicy="no-referrer" onerror="this.parentNode.classList.remove(\'con-foto\');this.remove()">' : '') + rangoDe(j) + '</span>'; };
+  // Foto, marco y pin de cada jugador como en los tops (assets/tarjeta-perfil.js: vista y pinDe; ver_duelo los manda desde 114).
+  // Fuera del juego se puede tocar para ver su tarjeta; en pleno juego no (para no abrirla sin querer).
+  let cssCol = false;
+  const enJuego = () => { const s = document.getElementById('juego'); return !!(s && !s.hidden); };
+  const avatar = (j, extra) => {
+    const T = window.MCTarjeta, C = window.MCColeccion;
+    if (C && C.css && !cssCol) { cssCol = true; try { C.css(); } catch (e) {} }
+    const x = { apodo: j.apodo, yo: !!j.yo, foto: j.foto, avatar: j.avatar, marco: j.marco, fondo: j.fondo, pin: j.pin };
+    let v = null, p = null;
+    try { v = T && T.vista ? T.vista(x) : null; p = T && T.pinDe ? T.pinDe(x) : null; } catch (e) {}
+    const f = (v && v.img) || fotoDe(j), m = v && v.marco, mo = v && v.mo;
+    const cod = !enJuego() && (j.codigo || (j.yo && T && T.jugador() && T.jugador().codigo));
+    return '<span class="av ' + colorDe(j) + (f ? ' con-foto' : '') + (m ? ' con-marco' : '') + (mo ? ' mc-mo' : '') + (extra || '') + '"' +
+      (m || mo ? ' style="' + (m ? '--m:' + esc(m) + ';' : '') + (mo ? '--mo:url(&quot;' + esc(mo) + '&quot;);' : '') + '"' : '') +
+      (cod ? ' data-jug="' + esc(cod) + '" role="button" tabindex="0" aria-label="Ver el perfil de ' + esc(j.yo ? 'ti' : j.apodo) + '"' : '') + '>' +
+      esc(inicial(j.yo ? 'Tú' : j.apodo)) +
+      (f ? '<img class="foto" src="' + esc(f) + '" alt="" referrerpolicy="no-referrer" onerror="this.parentNode.classList.remove(\'con-foto\');this.remove()">' : '') +
+      (p ? '<i class="av-pin">' + p.html + '</i>' : '') + rangoDe(j) + '</span>';
+  };
   const cmdCard = k => '<div class="cmd" style="--c:' + CMD[k].c + ';--tc:' + TIPOS[CMD[k].t][1] + '"><div class="ci">' + IC[k] + '</div><b>' + CMD[k].nom + '</b><small>' + CMD[k].que + '</small><span class="tipo">' + TIPOS[CMD[k].t][0] + '</span></div>';
   const fuegoCard = () => '<div class="cmd fue" style="--c:var(--naranja);--tc:var(--naranja)"><div class="ci">' + IC.llama + '</div><b>Llamarada</b><small>3 seguidas: quema a tus rivales. 5 seguidas: Volcán</small><span class="tipo">Se gana jugando</span></div>';
   function toast(html, color, ic) {
@@ -2511,9 +2541,10 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   }
   // Marcador en vivo: un cuadro por jugador (puesto, puntos, anillo de avance, racha y comodines usados)
   function jugadores() {
-    const xp = {}, foto = {}; ((V && V.jugadores) || []).forEach(j => { xp[j.yo ? '' : j.apodo] = j.xp; foto[j.yo ? '' : j.apodo] = j.foto; });
-    if (G.jug) return G.jug.map((j, i) => Object.assign({ color: i, xp: xp[j.yo ? '' : j.apodo], foto: foto[j.yo ? '' : j.apodo] }, j));
-    return V.jugadores.map(j => ({ apodo: j.apodo, yo: j.yo, color: j.color, xp: j.xp, foto: j.foto, actual: j.yo ? G.actual : j.actual, puntos: j.yo ? G.puntos : j.puntos || 0, racha: 0, usados: [], terminado: j.terminado }));
+    // Lo que no cambia en el juego (rango, foto, marco, pin, ID) sale de ver_duelo; el avance, del sondeo
+    const fijo = {}; ((V && V.jugadores) || []).forEach(j => { fijo[j.yo ? '' : j.apodo] = { xp: j.xp, foto: j.foto, avatar: j.avatar, marco: j.marco, fondo: j.fondo, pin: j.pin, codigo: j.codigo }; });
+    if (G.jug) return G.jug.map((j, i) => Object.assign({ color: i }, fijo[j.yo ? '' : j.apodo] || {}, j));
+    return V.jugadores.map(j => ({ apodo: j.apodo, yo: j.yo, color: j.color, xp: j.xp, foto: j.foto, avatar: j.avatar, marco: j.marco, fondo: j.fondo, pin: j.pin, codigo: j.codigo, actual: j.yo ? G.actual : j.actual, puntos: j.yo ? G.puntos : j.puntos || 0, racha: 0, usados: [], terminado: j.terminado }));
   }
   // Niebla final: en las 3 últimas preguntas (duelos de 8 o más) no se ven los puntos de los demás
   const enNiebla = () => G && G.v3 && G.n >= 8 && G.actual >= G.n - 3 && G.actual < G.n;
