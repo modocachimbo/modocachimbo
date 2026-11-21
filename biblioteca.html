@@ -60,6 +60,18 @@
   .stat b { display: block; font-size: 17px; font-weight: 1000; line-height: 1; }
   .stat small { display: block; color: var(--text-dim); font-size: 11.5px; font-weight: 800; margin-top: 2px; }
 
+  /* Preuniversitaria / Universitaria: dos bibliotecas en una */
+  .nivel { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 14px; }
+  .niv { --c: var(--accent); position: relative; display: flex; align-items: center; gap: 12px; padding: 11px 14px 11px 11px; border-radius: 18px; border: 2px solid var(--border); border-bottom-width: 4px; background: var(--surface); cursor: pointer; text-align: left; transition: border-color .15s, background .15s; }
+  .niv .ni { flex: none; width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; font-size: 25px; color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent); }
+  .niv b { display: block; font-size: 16px; font-weight: 1000; line-height: 1.15; }
+  .niv small { display: block; color: var(--text-dim); font-size: 12.5px; font-weight: 800; margin-top: 2px; }
+  .niv.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 12%, var(--surface)); }
+  .niv.on .ni { background: var(--c); color: #120c20; }
+  .niv .ok { position: absolute; top: 9px; right: 10px; width: 20px; height: 20px; border-radius: 50%; background: var(--c); color: #120c20; display: none; place-items: center; font-size: 12px; }
+  .niv.on .ok { display: grid; }
+  .niv:active { transform: translateY(2px); }
+
   /* Buscador + botón de filtros */
   .barra { display: flex; gap: 10px; }
   .buscar { position: relative; flex: 1; min-width: 0; display: flex; align-items: center; }
@@ -316,6 +328,7 @@
     .buscar kbd { display: none; }
     .buscar input { padding-right: 50px; }
     .bt-f { padding: 0 14px; } .bt-f span { display: none; }
+    .nivel { gap: 8px; } .niv { gap: 9px; padding: 9px 10px 9px 9px; } .niv .ni { width: 36px; height: 36px; border-radius: 12px; font-size: 21px; } .niv b { font-size: 14px; } .niv small { font-size: 11.5px; } .niv.on .ok { display: none; }
     .fila { grid-auto-columns: 118px; gap: 12px; scroll-padding: 0 16px; padding: 6px 16px 10px; margin: 0 -16px; }
     .fila.anchas { grid-auto-columns: 280px; } .lee .play { display: none; }
     .tab { padding: 6px 12px 6px 7px; font-size: 13.5px; } .tab .ai { width: 26px; height: 26px; } .fila.cols { grid-auto-columns: 214px; }
@@ -426,6 +439,8 @@
   <symbol id="i-estrella" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z" fill="currentColor" fill-opacity=".3"/></symbol>
   <symbol id="i-reiniciar" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 3.5V8H9"/></symbol>
   <symbol id="i-compartir" viewBox="0 0 24 24"><circle cx="17.5" cy="5.5" r="2.5" fill="currentColor" fill-opacity=".3"/><circle cx="6.5" cy="12" r="2.5" fill="currentColor" fill-opacity=".3"/><circle cx="17.5" cy="18.5" r="2.5" fill="currentColor" fill-opacity=".3"/><path d="m8.7 10.8 6.6-4M8.7 13.2l6.6 4"/></symbol>
+  <symbol id="i-pre" viewBox="0 0 24 24"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 0 4 20.5z" fill="currentColor" fill-opacity=".3"/><path d="M4 20.5A1.5 1.5 0 0 0 5.5 22H11v-3M20 5.5A1.5 1.5 0 0 0 18.5 4H13v15h5.5a1.5 1.5 0 0 1 1.5 1.5zM20 20.5a1.5 1.5 0 0 1-1.5 1.5H13v-3M7 8h1.5M15.5 8H17"/></symbol>
+  <symbol id="i-uni" viewBox="0 0 24 24"><path d="M2.5 9 12 4.5 21.5 9 12 13.5z" fill="currentColor" fill-opacity=".3"/><path d="M6.5 11.2v4.6c0 1.6 2.5 3.2 5.5 3.2s5.5-1.6 5.5-3.2v-4.6M21.5 9v5.5"/><circle cx="21.5" cy="16" r="1.2" fill="currentColor"/></symbol>
   <symbol id="i-todo" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="2.2" fill="currentColor" fill-opacity=".3"/><circle cx="16.8" cy="7.2" r="3.7"/><circle cx="7.2" cy="16.8" r="3.7"/><rect x="13" y="13" width="7.5" height="7.5" rx="2.2" fill="currentColor" fill-opacity=".3"/></symbol>
   <symbol id="i-lectura" viewBox="0 0 24 24"><path d="M3.5 5.5h6a2.5 2.5 0 0 1 2.5 2.5v12a2 2 0 0 0-2-2H3.5z" fill="currentColor" fill-opacity=".22"/><path d="M20.5 5.5h-6A2.5 2.5 0 0 0 12 8v12a2 2 0 0 1 2-2h6.5z"/></symbol>
   <!-- Tipos de material -->
@@ -445,6 +460,7 @@
     <div class="tt"><h1>Biblioteca</h1><p id="cuenta">Libros en PDF para estudiar</p></div>
     <div class="stats" id="stats"></div>
   </div>
+  <div class="nivel" id="nivel" role="tablist" aria-label="Tipo de biblioteca" hidden></div>
   <div class="barra">
     <label class="buscar"><svg class="i"><use href="#i-buscar"/></svg>
       <input id="q" type="search" placeholder="Buscar libro o tema…" autocomplete="off" enterkeyhint="search" aria-label="Buscar en la biblioteca">
@@ -491,13 +507,17 @@
 (function () {
   var CFG = window.MC_CONFIG || {}, $ = function (id) { return document.getElementById(id); };
   var PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
-  var COLOR = { 'ciencia-tecnologia': '#C6E000', matematica: '#1CB0F6', comunicacion: '#CE82FF', 'ciencias-sociales': '#FF9600' };
+  var COLOR = { 'ciencia-tecnologia': '#C6E000', matematica: '#1CB0F6', comunicacion: '#CE82FF', 'ciencias-sociales': '#FF9600',
+    'u-basicas': '#1CB0F6', 'u-ingenieria': '#FF9600', 'u-salud': '#FF4B4B', 'u-negocios': '#FFC800', 'u-sociales': '#CE82FF' };
+  // Biblioteca universitaria: sus propias áreas (los cursos se escriben libres en el panel: «Cálculo I», «Anatomía Humana»…)
+  var AREAS_UNI = [{ id: 'u-basicas', nombre: 'Ciencias básicas' }, { id: 'u-ingenieria', nombre: 'Ingeniería' }, { id: 'u-salud', nombre: 'Ciencias de la salud' },
+    { id: 'u-negocios', nombre: 'Negocios y economía' }, { id: 'u-sociales', nombre: 'Sociales y humanidades' }];
   var TIPOS = { libro: 'Libro', formulario: 'Formulario', solucionario: 'Solucionario', fichas: 'Fichas', resumen: 'Resumen', examenes: 'Exámenes', separata: 'Separata' };
   var ESTADOS = { sin: ['Sin empezar', 'i-lectura', '#A99FC8'], leyendo: ['Leyendo', 'i-leer', '#1CB0F6'], terminado: ['Terminados', 'i-hecho', '#58CC02'], nuevo: ['Nuevos', 'i-chispa', '#FF4B4B'] };
   var ORDENES = { '': 'Recomendado', nuevos: 'Más nuevos', az: 'Título A–Z', cortos: 'Menos páginas', leidos: 'Leídos hace poco' };
-  var S = { libros: [], porId: {}, colecciones: [], lectura: {}, cursos: {}, areas: [], orden: {} };
+  var S = { libros: [], todos: [], porId: {}, colecciones: [], lectura: {}, cursos: {}, areas: [], areasPre: [], orden: {} };
   // Filtros: viven en la URL (?area=…&curso=…&tipo=…&estado=…&col=…&acceso=…&orden=…&q=…)
-  var CLAVES_F = ['area', 'curso', 'col', 'tipo', 'estado', 'acceso', 'orden', 'q'];
+  var CLAVES_F = ['nivel', 'area', 'curso', 'col', 'tipo', 'estado', 'acceso', 'orden', 'q'];
   var F = {}; CLAVES_F.forEach(function (k) { F[k] = ''; });
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function sinAcento(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
@@ -569,7 +589,7 @@
     if (k === 'curso' && F.curso) F.area = curso(F.curso).area || F.area;
     aUrl(); pintar();
   }
-  function limpiar() { CLAVES_F.forEach(function (k) { if (k !== 'orden') F[k] = ''; }); $('q').value = ''; aUrl(); pintar(); }
+  function limpiar() { CLAVES_F.forEach(function (k) { if (k !== 'orden' && k !== 'nivel') F[k] = ''; }); $('q').value = ''; aUrl(); pintar(); }
   function aUrl() {
     var p = new URLSearchParams(location.search);
     CLAVES_F.forEach(function (k) { if (F[k]) p.set(k, F[k]); else p.delete(k); });
@@ -636,7 +656,7 @@
     }).join('') + '</div>' + (lista.length > 1 ? '<div class="puntos" id="puntos">' + lista.map(function (x, i) { return '<button type="button" aria-label="Destacado ' + (i + 1) + '" data-hero="' + i + '"' + (i ? '' : ' class="on"') + '></button>'; }).join('') + '</div>' : '');
   }
   function seguir() {
-    var l = Object.keys(S.lectura).map(function (id) { var x = libro(id); return x && { l: x, r: S.lectura[id] }; }).filter(Boolean)
+    var uni = F.nivel === 'uni', l = Object.keys(S.lectura).map(function (id) { var x = libro(id); return x && esUni(x) === uni && { l: x, r: S.lectura[id] }; }).filter(Boolean)
       .filter(function (x) { return !x.l.paginas || x.r.pagina < x.l.paginas; })
       .sort(function (a, b) { return new Date(b.r.leido) - new Date(a.r.leido); }).slice(0, 8);
     return estante('Seguir leyendo', null, l, { cls: 'anchas', svg: 'i-play', c: 'var(--accent)', ver: l.length > 3 ? ['estado', 'leyendo'] : null, html: l.map(function (x) {
@@ -659,6 +679,22 @@
   }
 
   /* ---------- Barra: áreas, cursos, filtros activos ---------- */
+  function esUni(l) { return l.nivel === 'uni'; }
+  // Elige qué biblioteca se ve (preuniversitaria o universitaria); el switch sale solo si ya hay libros universitarios
+  function aplicarNivel() {
+    var hayUni = S.todos.some(esUni);
+    if (!hayUni) F.nivel = '';
+    var uni = F.nivel === 'uni';
+    S.libros = S.todos.filter(function (l) { return esUni(l) === uni; });
+    S.areas = uni ? AREAS_UNI : S.areasPre;
+    var nPre = S.todos.length - S.todos.filter(esUni).length, nUni = S.todos.length - nPre;
+    $('nivel').hidden = !hayUni;
+    $('nivel').innerHTML = hayUni ? [['', 'i-pre', 'Preuniversitaria', nPre, 'var(--accent)'], ['uni', 'i-uni', 'Universitaria', nUni, '#1CB0F6']].map(function (n) {
+      var on = F.nivel === n[0];
+      return '<button class="niv' + (on ? ' on' : '') + '" type="button" role="tab" aria-selected="' + on + '" data-nivel="' + n[0] + '" style="--c:' + n[4] + '"><span class="ni">' + svg(n[1]) + '</span><span><b>' + n[2] + '</b><small>' + libros(n[3]) + '</small></span><span class="ok">' + svg('i-check') + '</span></button>';
+    }).join('') : '';
+    $('q').placeholder = uni ? 'Buscar libro, curso o autor…' : 'Buscar libro o tema…';
+  }
   function pintarBarra() {
     var porArea = {}, porCurso = {};
     S.libros.forEach(function (l) { var a = curso(l.curso).area || 'otros'; porArea[a] = (porArea[a] || 0) + 1; porCurso[l.curso] = (porCurso[l.curso] || 0) + 1; });
@@ -672,7 +708,7 @@
     var cs = F.area ? Object.keys(porCurso).filter(function (id) { return (curso(id).area || 'otros') === F.area; }).sort(function (a, b) { return (S.orden[a] || 99) - (S.orden[b] || 99); }) : [];
     $('cursos').hidden = cs.length < 2;
     $('cursos').style.setProperty('--c', COLOR[F.area] || '#A99FC8');
-    $('cursos').innerHTML = cs.map(function (id) { return '<button class="cur' + (F.curso === id ? ' on' : '') + '" type="button" data-f="curso" data-v="' + id + '">' + esc(curso(id).nombre) + '<small>' + porCurso[id] + '</small></button>'; }).join('');
+    $('cursos').innerHTML = cs.map(function (id) { return '<button class="cur' + (F.curso === id ? ' on' : '') + '" type="button" data-f="curso" data-v="' + esc(id) + '">' + esc(curso(id).nombre) + '<small>' + porCurso[id] + '</small></button>'; }).join('');
     // Filtros del panel que están puestos, para quitarlos de un toque
     var pils = [];
     if (F.tipo) pils.push(['tipo', svg('t-' + F.tipo) + esc(TIPOS[F.tipo] || F.tipo)]);
@@ -691,6 +727,7 @@
 
   /* ---------- Lista ---------- */
   function pintar() {
+    aplicarNivel();
     pintarBarra();
     var html = '';
     if (!S.libros.length) html = vacio('Muy pronto', 'Estamos subiendo los primeros libros.');
@@ -799,6 +836,8 @@
     var or = t.closest('[data-orden]');
     if (or) { F.orden = or.dataset.orden; aUrl(); pintar(); return; }
     if (t.closest('[data-limpiar]')) { limpiar(); return; }
+    var nv = t.closest('[data-nivel]');
+    if (nv) { if (F.nivel !== nv.dataset.nivel) { F.nivel = nv.dataset.nivel; ['area', 'curso', 'col', 'tipo'].forEach(function (k) { F[k] = ''; }); aUrl(); pintar(); } return; }
     var fi = t.closest('[data-f]');
     if (fi && !fi.disabled) {
       var dentroPanel = !!fi.closest('#capaF'), arriba = !fi.closest('#tabs, #cursos, #activos');
@@ -873,21 +912,29 @@
     deUrl(); if (F.q) { $('qX').hidden = false; $('qKbd').hidden = true; }
     var reg = fetch('assets/cursos.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (d) {
       (d.cursos || []).forEach(function (c, i) { S.cursos[c.id] = { nombre: c.nombre, area: c.area, icono: c.icono || '' }; S.orden[c.id] = i + 1; });
-      S.areas = d.areas || [];
+      S.areasPre = d.areas || [];
     }).catch(function () {});
     MCAuth.listo.then(function (c) {
       var u = MCAuth.usuario();
       return Promise.all([reg,
-        c.from('biblioteca_libro').select('id,titulo,subtitulo,curso,drive,paginas,orden,creado,portada,tipo,autor,descr,coleccion,destacado,etiquetas,descarga,acceso').eq('visible', true).order('orden').order('creado'),
+        c.from('biblioteca_libro').select('*').eq('visible', true).order('orden').order('creado'),
         u ? c.from('biblioteca_lectura').select('libro,pagina,marcas,leido').eq('usuario', u.id) : Promise.resolve({ data: [] }),
         c.from('biblioteca_coleccion').select('id,nombre,descripcion,color,orden').eq('visible', true).order('orden')
       ]);
     }).then(function (r) {
       if (r[1].error) throw r[1].error;
-      S.libros = r[1].data || [];
+      S.todos = S.libros = r[1].data || [];
+      // Libros universitarios: su curso es texto libre y su área es de AREAS_UNI; se registran como cursos «u:…»
+      var ordU = 1000;
+      S.todos.forEach(function (l) {
+        if (!esUni(l)) return;
+        var nom = (l.curso_nombre || l.curso || 'Otros').trim(), id = 'u:' + sinAcento(nom);
+        if (!S.cursos[id]) { S.cursos[id] = { nombre: nom, area: l.area_uni || 'u-basicas', icono: 'assets/icons/' + (l.area_uni || 'u-basicas') + '.svg' }; S.orden[id] = ordU++; }
+        l.curso = id;
+      });
       S.colecciones = (r[3] && !r[3].error && r[3].data) || [];
       // Índice para buscar rápido: todo el texto del libro, sin tildes, una sola vez
-      S.libros.forEach(function (l) {
+      S.todos.forEach(function (l) {
         // La llave es de toda la Biblioteca (candado.js data-producto): adentro se abren todos los libros
         l.acceso = 'libre';
         S.porId[l.id] = l;
@@ -908,7 +955,7 @@
   /* ---------- Visor ---------- */
   var V = null;
   function abrir(id, sinHistorial) {
-    var l = S.libros.filter(function (x) { return x.id === id; })[0]; if (!l) return;
+    var l = S.porId[id]; if (!l) return;
     cerrarVisor(true);
     var r = S.lectura[id] || { pagina: 1, marcas: [] };
     V = { libro: l, pdf: null, zoom: 1, pagina: r.pagina || 1, marcas: (r.marcas || []).slice(), hojas: [], obs: null, guardo: null, tarea: null };

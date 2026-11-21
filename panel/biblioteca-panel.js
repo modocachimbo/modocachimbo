@@ -66,12 +66,27 @@ const BIB_COLORES = ['#CE82FF', '#1CB0F6', '#C6E000', '#FF9600', '#FF4B4B', '#14
   .bib-colores button { width: 24px; height: 24px; border-radius: 8px; border: 2px solid transparent; background: var(--c); cursor: pointer; }
   .bib-colores button.on { border-color: #fff; }
   .bib-h { font: 900 17px Nunito, sans-serif; margin: 22px 0 10px; display: flex; align-items: center; gap: 10px; }
+  .bib-nivel { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 4px 0 14px; }
+  .bib-niv { min-width: 0; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; border: 2px solid #2A2346; border-bottom-width: 4px; background: var(--surface); color: var(--text); font: 900 14px Nunito, sans-serif; cursor: pointer; text-align: left; }
+  .bib-niv svg { flex: none; width: 30px; height: 30px; padding: 5px; border-radius: 10px; color: var(--c); background: color-mix(in srgb, var(--c) 15%, transparent); fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .bib-niv small { display: block; color: var(--text-dim); font-weight: 700; font-size: 11.5px; }
+  .bib-niv.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 10%, var(--surface)); }
+  .bib-niv.on svg { background: var(--c); color: #120c20; }
   .bib-filtro { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
-  @media (max-width: 700px) { .bib-cuerpo { grid-template-columns: 1fr; } .bib-cuerpo > div:first-child { max-width: 170px; } .bib-sws { grid-template-columns: 1fr; } .bib-colform { grid-template-columns: 1fr; } .bib-it { flex-wrap: wrap; } .bib-it .bts { width: 100%; justify-content: flex-start; } }`;
+  @media (max-width: 700px) { .bib-niv small { display: none; } .bib-niv { font-size: 13px; gap: 7px; padding: 8px; } .bib-niv svg { width: 26px; height: 26px; } .bib-cuerpo { grid-template-columns: 1fr; } .bib-cuerpo > div:first-child { max-width: 170px; } .bib-sws { grid-template-columns: 1fr; } .bib-colform { grid-template-columns: 1fr; } .bib-it { flex-wrap: wrap; } .bib-it .bts { width: 100%; justify-content: flex-start; } }`;
   document.head.appendChild(st);
 })();
 
 const BIB_COLOR = { 'ciencia-tecnologia': '#C6E000', matematica: '#1CB0F6', comunicacion: '#CE82FF', 'ciencias-sociales': '#FF9600' };
+// Biblioteca universitaria: áreas propias (iguales a AREAS_UNI de biblioteca.html); el curso se escribe libre
+const BIB_AREAS_UNI = [['u-basicas', 'Ciencias básicas', '#1CB0F6'], ['u-ingenieria', 'Ingeniería', '#FF9600'], ['u-salud', 'Ciencias de la salud', '#FF4B4B'],
+  ['u-negocios', 'Negocios y economía', '#FFC800'], ['u-sociales', 'Sociales y humanidades', '#CE82FF']];
+const bibEsUni = x => x && x.nivel === 'uni';
+const bibSlug = t => 'uni-' + String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 36);
+const bibColorL = x => bibEsUni(x) ? (BIB_AREAS_UNI.find(a => a[0] === x.area_uni) || [, , '#1CB0F6'])[2] : bibColor(x.curso);
+const bibNombreL = x => bibEsUni(x) ? (x.curso_nombre || 'Universitario') : bibNombre(x.curso);
+const BIB_ICO = { pre: '<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 0 4 20.5zM4 20.5A1.5 1.5 0 0 0 5.5 22H11v-3M20 5.5A1.5 1.5 0 0 0 18.5 4H13v15h5.5a1.5 1.5 0 0 1 1.5 1.5zM20 20.5a1.5 1.5 0 0 1-1.5 1.5H13v-3"/>',
+  uni: '<path d="M2.5 9 12 4.5 21.5 9 12 13.5zM6.5 11.2v4.6c0 1.6 2.5 3.2 5.5 3.2s5.5-1.6 5.5-3.2v-4.6M21.5 9v6"/>' };
 const bibCurso = id => REG && (REG.cursos || []).find(x => x.id === id);
 const bibColor = id => { const c = bibCurso(id); return (c && BIB_COLOR[c.area]) || '#C6E000'; };
 const bibCursos = () => CURSOS.filter(([id]) => !/--/.test(id));
@@ -85,7 +100,7 @@ function bibDriveId(t) {
 }
 // Portada como en la biblioteca: la foto o una dibujada
 function bibTapa(x) {
-  return `<div class="bib-tapa" style="--c:${bibColor(x.curso)}">${x.portada ? `<img src="${esc(x.portada)}" alt="">`
+  return `<div class="bib-tapa" style="--c:${bibColorL(x)}">${x.portada ? `<img src="${esc(x.portada)}" alt="">`
     : `<span class="bib-gen"><u>MODO CACHIMBO</u><b>${esc(x.titulo || 'Título')}</b>${x.subtitulo ? `<em>${esc(x.subtitulo)}</em>` : ''}</span>`}</div>`;
 }
 
@@ -119,6 +134,10 @@ function pintarBiblioteca() {
       Pégala en <b>assets/mc-config.js → DRIVE_KEY</b>.</div>`}
     <div class="agp-form" id="bibForm">
       <h3>${e ? 'Editar «' + esc(e.titulo) + '»' : 'Nuevo libro'}</h3>
+      <div class="bib-nivel" role="group" aria-label="¿Para quién es?">
+        <button type="button" class="bib-niv" data-niv="pre" style="--c:#C6E000"><svg viewBox="0 0 24 24">${BIB_ICO.pre}</svg><span>Preuniversitario<small>Cursos del examen de admisión</small></span></button>
+        <button type="button" class="bib-niv" data-niv="uni" style="--c:#1CB0F6"><svg viewBox="0 0 24 24">${BIB_ICO.uni}</svg><span>Universitario<small>Cursos de la carrera</small></span></button>
+      </div>
       <p class="hint">En Drive: clic derecho al PDF → <b>Compartir</b> → «Cualquier persona con el enlace» → <b>Copiar enlace</b>, y pégalo aquí.</p>
       <label for="bibLink">Link de Google Drive</label>
       <input class="inp" id="bibLink" placeholder="https://drive.google.com/file/d/…/view?usp=sharing" autocomplete="off">
@@ -139,8 +158,14 @@ function pintarBiblioteca() {
             <div><label for="bibSub" style="margin-top:0">Subtítulo (opcional)</label><input class="inp" id="bibSub" maxlength="80" placeholder="Ej.: Cinemática y dinámica"></div>
           </div>
           <div class="agp-2">
-            <div><label for="bibCurso">Curso</label><select class="inp" id="bibCurso">${bibCursos().map(([id, n]) => `<option value="${id}">${esc(n)}</option>`).join('')}</select></div>
+            <div id="bibCursoPre"><label for="bibCurso">Curso</label><select class="inp" id="bibCurso">${bibCursos().map(([id, n]) => `<option value="${id}">${esc(n)}</option>`).join('')}</select></div>
+            <div id="bibAreaU" hidden><label for="bibArea">Área de la carrera</label><select class="inp" id="bibArea">${BIB_AREAS_UNI.map(a => `<option value="${a[0]}">${esc(a[1])}</option>`).join('')}</select></div>
             <div><label for="bibTipo">Tipo</label><select class="inp" id="bibTipo">${Object.keys(BIB_TIPOS).map(k => `<option value="${k}">${BIB_TIPOS[k]}</option>`).join('')}</select></div>
+          </div>
+          <div id="bibCursoU" hidden>
+            <label for="bibCursoN">Curso universitario</label>
+            <input class="inp" id="bibCursoN" maxlength="40" list="bibCursosU" placeholder="Ej.: Cálculo I, Anatomía Humana, Contabilidad General">
+            <datalist id="bibCursosU">${[...new Set(BIB.lista.filter(bibEsUni).map(x => x.curso_nombre).filter(Boolean))].map(n => `<option value="${esc(n)}">`).join('')}</datalist>
           </div>
           <div class="agp-2">
             <div><label for="bibCol">Colección (opcional)</label><select class="inp" id="bibCol"><option value="">Sin colección</option>${BIB.cols.map(c => `<option value="${esc(c.id)}">${esc(c.nombre)}</option>`).join('')}</select></div>
@@ -174,7 +199,13 @@ function pintarBiblioteca() {
   $('bibLink').value = e ? 'https://drive.google.com/file/d/' + e.drive + '/view' : '';
   $('bibTit').value = e ? e.titulo : '';
   $('bibSub').value = e ? e.subtitulo || '' : '';
-  $('bibCurso').value = e ? e.curso : (bibCursos()[0] || [''])[0];
+  BIB.nivel = e ? (bibEsUni(e) ? 'uni' : 'pre') : (BIB.nivel || 'pre');
+  if (!bibEsUni(e)) $('bibCurso').value = e ? e.curso : (bibCursos()[0] || [''])[0];
+  $('bibArea').value = e && e.area_uni ? e.area_uni : BIB_AREAS_UNI[0][0];
+  $('bibCursoN').value = e && bibEsUni(e) ? e.curso_nombre || '' : '';
+  bibPonerNivel();
+  document.querySelectorAll('.bib-niv').forEach(b => b.addEventListener('click', () => { BIB.nivel = b.dataset.niv; bibPonerNivel(); }));
+  $('bibArea').addEventListener('change', bibPintarTapa);
   $('bibTipo').value = e ? e.tipo || 'libro' : 'libro';
   $('bibCol').value = e ? e.coleccion || '' : '';
   $('bibPag').value = e && e.paginas ? e.paginas : '';
@@ -211,9 +242,15 @@ function bibPortadaActual() {
   if (BIB.quitarPortada) return '';
   return e ? e.portada || '' : '';
 }
+function bibPonerNivel() {
+  const uni = BIB.nivel === 'uni';
+  document.querySelectorAll('.bib-niv').forEach(b => b.classList.toggle('on', b.dataset.niv === BIB.nivel));
+  $('bibCursoPre').hidden = uni; $('bibAreaU').hidden = !uni; $('bibCursoU').hidden = !uni;
+  bibPintarTapa();
+}
 function bibPintarTapa() {
   const src = bibPortadaActual();
-  $('bibTapaC').innerHTML = bibTapa({ curso: $('bibCurso').value, titulo: $('bibTit').value.trim(), subtitulo: $('bibSub').value.trim(), portada: src });
+  $('bibTapaC').innerHTML = bibTapa({ curso: $('bibCurso').value, nivel: BIB.nivel, area_uni: $('bibArea').value, titulo: $('bibTit').value.trim(), subtitulo: $('bibSub').value.trim(), portada: src });
   $('bibQuitar').hidden = !src;
   $('bibSubirL').firstChild.textContent = src ? 'Cambiar foto' : 'Subir foto';
 }
@@ -291,17 +328,19 @@ async function recargarBiblioteca() {
 
 /* ---------- Lista ---------- */
 function bibPintarLista() {
-  const orden = bibCursos().map(c => c[0]);
+  const orden = bibCursos().map(c => c[0]).concat([...new Set(BIB.lista.filter(bibEsUni).map(x => x.curso))].sort());
+  const nom = id => { const x = BIB.lista.find(l => l.curso === id); return x ? bibNombreL(x) : bibNombre(id); };
+  const col = id => { const x = BIB.lista.find(l => l.curso === id); return x ? bibColorL(x) : bibColor(id); };
   const cursos = [...new Set(BIB.lista.map(x => x.curso))].sort((a, b) => orden.indexOf(a) - orden.indexOf(b));
   if (BIB.filtro && !cursos.includes(BIB.filtro)) BIB.filtro = '';
   $('bibFiltro').hidden = cursos.length < 2;
   $('bibFiltro').innerHTML = `<button type="button" class="agp-op${BIB.filtro ? '' : ' on'}" data-f="">Todos ${BIB.lista.length}</button>` +
-    cursos.map(id => `<button type="button" class="agp-op${BIB.filtro === id ? ' on' : ''}" data-f="${id}" style="--c:${bibColor(id)}">${esc(bibNombre(id))} ${BIB.lista.filter(x => x.curso === id).length}</button>`).join('');
+    cursos.map(id => `<button type="button" class="agp-op${BIB.filtro === id ? ' on' : ''}" data-f="${esc(id)}" style="--c:${col(id)}">${esc(nom(id))} ${BIB.lista.filter(x => x.curso === id).length}</button>`).join('');
   const l = BIB.lista.filter(x => !BIB.filtro || x.curso === BIB.filtro).sort((a, b) => (orden.indexOf(a.curso) - orden.indexOf(b.curso)) || (a.orden - b.orden));
   $('bibListaC').innerHTML = l.length ? '<div class="bib-lista">' + l.map(x => `<div class="bib-it${x.visible ? '' : ' oculto'}">
       ${bibTapa(x)}
       <div class="tx"><b>${esc(x.titulo)}${x.subtitulo ? ' · ' + esc(x.subtitulo) : ''}</b>
-        <small>${esc(bibNombre(x.curso))} · ${x.paginas ? x.paginas + ' págs' : 'páginas sin contar'} · ${x.lectores} lo abrieron</small>
+        <small>${bibEsUni(x) ? 'Universitario · ' : ''}${esc(bibNombreL(x))} · ${x.paginas ? x.paginas + ' págs' : 'páginas sin contar'} · ${x.lectores} lo abrieron</small>
         <span class="tag" style="--c:#A99FC8">${esc(BIB_TIPOS[x.tipo] || 'Libro')}</span>${x.coleccion ? `<span class="tag" style="--c:${esc((BIB.cols.find(c => c.id === x.coleccion) || {}).color || '#CE82FF')}">${esc(bibColNombre(x.coleccion))}</span>` : ''}${x.destacado ? '<span class="tag" style="--c:#C6E000">Destacado</span>' : ''}${x.portada ? '' : '<span class="tag" style="--c:#6F6690">Sin foto</span>'}${x.visible ? '' : '<span class="tag" style="--c:#8a83a8">Oculto</span>'}</div>
       <div class="bts">
         <button class="btn-ghost" type="button" data-sube="${esc(x.id)}" title="Subir en su curso">↑</button>
@@ -355,7 +394,9 @@ async function guardarLibro() {
   const e = BIB.editando, drive = bibDriveId($('bibLink').value), titulo = $('bibTit').value.trim();
   if (!drive) { toast('Pega el link de Drive del PDF', true); $('bibLink').focus(); return; }
   if (!titulo) { toast('Ponle un título', true); $('bibTit').focus(); return; }
-  const curso = $('bibCurso').value;
+  const uni = BIB.nivel === 'uni', cursoN = $('bibCursoN').value.trim().slice(0, 40);
+  if (uni && !cursoN) { toast('Escribe el curso universitario (ej.: Cálculo I)', true); $('bibCursoN').focus(); return; }
+  const curso = uni ? bibSlug(cursoN) : $('bibCurso').value;
   const orden = e && e.curso === curso ? e.orden : BIB.lista.filter(x => x.curso === curso).length;
   const bt = $('bibGuardar'); bt.disabled = true; bt.innerHTML = '<span class="spin-s"></span> ' + (BIB.img ? 'Subiendo portada…' : 'Guardando…');
   try {
@@ -370,7 +411,7 @@ async function guardarLibro() {
     }
     bt.innerHTML = '<span class="spin-s"></span> Guardando…';
     const r = await c.rpc('guardar_libro', { p: {
-      id: e ? e.id : null, titulo, subtitulo: $('bibSub').value.trim(), curso, drive, paginas: parseInt($('bibPag').value, 10) || null, orden,
+      id: e ? e.id : null, nivel: uni ? 'uni' : 'pre', area_uni: uni ? $('bibArea').value : null, curso_nombre: uni ? cursoN : null, titulo, subtitulo: $('bibSub').value.trim(), curso, drive, paginas: parseInt($('bibPag').value, 10) || null, orden,
       visible: $('bibVisible').checked, portada, tipo: $('bibTipo').value, autor: $('bibAutor').value.trim(), descr: $('bibDescr').value.trim(),
       coleccion: $('bibCol').value || null, destacado: $('bibDest').checked, descarga: $('bibDesc').checked, acceso: $('bibAcc').checked ? 'codigo' : 'libre',
       etiquetas: $('bibEtq').value.split(/[,;\n]+/).map(x => x.trim()).filter(Boolean).slice(0, 12) } });
