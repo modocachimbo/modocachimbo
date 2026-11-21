@@ -230,7 +230,7 @@
   @media (max-width: 480px) { .sala { grid-template-columns: repeat(min(var(--n, 4), 2), minmax(0, 1fr)); } }
 
   /* Colores de cada jugador (por orden de llegada, iguales para todos) */
-  .c0 { --jc: var(--lima); --jd: #8fa300; } .c1 { --jc: var(--azul); --jd: #1283b8; } .c2 { --jc: var(--naranja); --jd: #b36a00; } .c3 { --jc: var(--morado); --jd: #8f4fc4; }
+  .c0 { --jc: var(--lima); --jd: #8fa300; } .c1 { --jc: var(--azul); --jd: #1283b8; } .c2 { --jc: var(--naranja); --jd: #b36a00; } .c3 { --jc: var(--morado); --jd: #8f4fc4; } .c4 { --jc: #FF5FA2; --jd: #b8336e; } .c5 { --jc: #2EE6C5; --jd: #149e86; }
   .av .rgo { position: absolute; right: -32%; bottom: -30%; width: 72%; pointer-events: none; filter: drop-shadow(0 2px 2px rgba(0,0,0,.6)); }
   .rgo-n { font-style: normal; font-weight: 1000; } .rgo-n.r0 { color: #5FDAFF; } .rgo-n.r1 { color: #5FF59A; } .rgo-n.r2 { color: #D79BFF; } .rgo-n.r3 { color: #FF6E84; } .rgo-n.r4 { color: #FFC800; }
   .av { position: relative; width: 30px; height: 30px; border-radius: 50%; background: var(--jc, var(--lima)); color: #111; display: grid; place-items: center; font: 1000 14px Nunito, sans-serif; flex-shrink: 0; box-shadow: 0 3px 0 var(--jd, #8fa300); }
@@ -687,7 +687,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   /* Jugadores: cada opción muestra a los jugadores con sus colores */
   .chips button { border-radius: 14px; }
   html body .chips button:not(#z) { font: 800 19px/1 var(--display) !important; letter-spacing: .03em; text-transform: uppercase; padding: 9px 15px 8px; }
-  .chips.jug { display: grid; grid-template-columns: 1.3fr 1fr 1fr; }
+  .chips.jug { display: grid; grid-template-columns: repeat(auto-fit, minmax(98px, 1fr)); }
   .chips.jug button { display: flex; align-items: center; justify-content: center; gap: 9px; }
   .pj { display: flex; }
   .pj i { width: 16px; height: 16px; border-radius: 50%; background: var(--jc); border: 2px solid var(--surface-2); margin-left: -6px; }
@@ -867,6 +867,14 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     html body .sala[style*="--n: 3"] .puesto-sala b:not(#z) { font-size: 17px !important; }
     .sala[style*="--n: 3"] .puesto-sala small { font-size: 10.5px; line-height: 1.3; }
   }
+  /* Con 5 o 6: 3 por fila (en PC y en el celular) */
+  .sala[style*="--n: 5"], .sala[style*="--n: 6"] { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  @media (max-width: 480px) {
+    .sala[style*="--n: 5"] .puesto-sala, .sala[style*="--n: 6"] .puesto-sala { padding: 12px 3px 10px; }
+    .sala[style*="--n: 5"] .puesto-sala .av:not(#z), .sala[style*="--n: 6"] .puesto-sala .av:not(#z) { width: 46px; height: 46px; font-size: 21px; border-radius: 13px; }
+    html body .sala[style*="--n: 5"] .puesto-sala b:not(#z), html body .sala[style*="--n: 6"] .puesto-sala b:not(#z) { font-size: 16px !important; }
+    .sala[style*="--n: 5"] .puesto-sala small, .sala[style*="--n: 6"] .puesto-sala small { font-size: 10.5px; line-height: 1.3; }
+  }
   /* Cada jugador con el borde de su color */
   .puesto-sala:not(.libre) { border-color: color-mix(in srgb, var(--jc) 35%, var(--borde-g)) !important; border-bottom-color: var(--jd) !important; }
   .puesto-sala.yo { border-color: var(--jc) !important; }
@@ -947,6 +955,90 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     .barra[style*="--n: 3"] .tile > *, .barra[style*="--n: 4"] .tile > * { grid-column: 1 !important; }
     html body .barra[style*="--n: 4"] .tile .nm:not(#z) { font-size: 13px !important; max-width: 100%; }
   }
+  /* ===== Duelos de 5 o 6: celular = tú arriba + rivales en fila; PC/tablet horizontal = ranking al costado ===== */
+  .barra.muchos .tiles { grid-template-columns: repeat(var(--r, 5), minmax(0, 1fr)) !important; gap: 14px 5px !important; }
+  .barra.muchos .tile.yo { grid-column: 1 / -1; order: -1; display: grid !important; grid-template-columns: 44px minmax(0, 1fr) auto !important; justify-items: start !important; text-align: left !important; align-items: center; column-gap: 10px; padding: 9px 14px 7px !important; }
+  .barra.muchos .tile.yo > * { grid-column: auto !important; }
+  .barra.muchos .tile.yo .ring { grid-row: 1 / span 2 !important; grid-column: 1 !important; margin: 0; }
+  html body .barra.muchos .tile.yo .nm:not(#z) { grid-column: 2 !important; font-size: 17px !important; }
+  html body .barra.muchos .tile.yo .rs:not(#z) { display: block; grid-column: 2 !important; grid-row: 2; }
+  html body .barra.muchos .tile.yo .pt:not(#z) { grid-column: 3 !important; grid-row: 1 / span 2 !important; font-size: 32px !important; justify-self: end; }
+  .barra.muchos .tile:not(.yo) { display: grid !important; grid-template-columns: 1fr !important; justify-items: center !important; text-align: center !important; padding: 11px 2px 5px !important; gap: 1px !important; }
+  .barra.muchos .tile:not(.yo) > * { grid-column: 1 !important; grid-row: auto !important; }
+  .barra.muchos .tile:not(.yo) .ring, .barra.muchos .tile:not(.yo) .ring svg { width: 36px; height: 36px; margin: 0 auto; }
+  .barra.muchos .tile:not(.yo) .ring .av { inset: 5px; font-size: 11px; }
+  .barra.muchos .tile:not(.yo) .ring .av .rgo { width: 15px; right: -7px; bottom: -6px; }
+  html body .barra.muchos .tile:not(.yo) .nm:not(#z) { font-size: 11.5px !important; max-width: 100%; }
+  html body .barra.muchos .tile:not(.yo) .pt:not(#z) { font-size: 19px !important; }
+  html body .barra.muchos .tile:not(.yo) .rs:not(#z) { display: none; }
+  html body .barra.muchos .tile:not(.yo) .pos:not(#z) { font-size: 10.5px !important; left: 2px; padding: 2px 6px 1px 5px; }
+  .barra.muchos .tile:not(.yo) .ev { right: -2px; }
+  .barra.muchos .tile:not(.yo) .ev span { width: 16px; height: 16px; }
+  .barra.muchos .tile:not(.yo) .ev span:nth-child(n+2) { display: none; }
+  .barra.muchos .tile:not(.yo) .ev svg { width: 10px; height: 10px; }
+  /* Niebla: el orden queda congelado y los puestos en «?» */
+  html body .barra .tile .pos.oculto:not(#z) { background: #3a3360; color: #cfc8ff; }
+  /* Ranking al costado (PC y tablet horizontal) */
+  @media (min-width: 900px) and (orientation: landscape) {
+    #juego.lateral { display: grid; grid-template-columns: minmax(260px, 300px) minmax(0, 1fr); column-gap: 18px; align-items: start; }
+    #juego.lateral > * { grid-column: 2; }
+    #juego.lateral > .barra { grid-column: 1; grid-row: 1 / span 30; grid-template-areas: "r" "c" "t" !important; grid-template-columns: 1fr !important; justify-items: center; top: 12px; max-height: calc(100vh - 24px); overflow-y: auto; scrollbar-width: none; }
+    #juego.lateral > .barra .tiles { grid-template-columns: 1fr !important; width: 100%; gap: 14px !important; }
+    #juego.lateral > .barra .tile, #juego.lateral > .barra .tile.yo { grid-column: auto; order: 0; display: grid !important; grid-template-columns: 46px minmax(0, 1fr) auto !important; justify-items: start !important; text-align: left !important; align-items: center; gap: 4px 10px !important; padding: 8px 12px 7px 8px !important; }
+    #juego.lateral > .barra .tile > * { grid-column: auto !important; grid-row: auto !important; }
+    #juego.lateral > .barra .tile .ring, #juego.lateral > .barra .tile .ring svg { width: 46px; height: 46px; margin: 0; }
+    #juego.lateral > .barra .tile .ring { grid-row: 1 / span 2 !important; grid-column: 1 !important; }
+    #juego.lateral > .barra .tile .ring .av { inset: 7px; font-size: 14px; }
+    html body #juego.lateral > .barra .tile .nm:not(#z) { grid-column: 2 !important; grid-row: 1 !important; font-size: 18px !important; }
+    html body #juego.lateral > .barra .tile .rs:not(#z) { display: block; grid-column: 2 !important; grid-row: 2 !important; }
+    html body #juego.lateral > .barra .tile .pt:not(#z) { grid-column: 3 !important; grid-row: 1 / span 2 !important; font-size: 32px !important; justify-self: end; }
+    html body #juego.lateral > .barra .tile .pos:not(#z) { font-size: 13px !important; left: 10px; }
+    #juego.lateral > .barra .tile .ev span { width: 20px; height: 20px; }
+    #juego.lateral > .barra .tile .ev span:nth-child(n+2) { display: grid; }
+    #juego.lateral > .barra .tile .ev svg { width: 13px; height: 13px; }
+    #juego.lateral > .barra .camino-l { flex-direction: column; align-items: center; gap: 6px; }
+  }
+  /* Tablet horizontal (pantalla bajita): cuadros más compactos para que entren los 6 */
+  @media (min-width: 900px) and (orientation: landscape) and (max-height: 760px) {
+    #juego.lateral > .barra { padding: 8px 10px !important; }
+    #juego.lateral > .barra .reloj { transform: scale(.82); margin: -6px 0; }
+    #juego.lateral > .barra .tiles { gap: 9px !important; margin-top: 4px; }
+    #juego.lateral > .barra .tile, #juego.lateral > .barra .tile.yo { padding: 5px 10px 4px 6px !important; grid-template-columns: 36px minmax(0, 1fr) auto !important; }
+    #juego.lateral > .barra .tile .ring, #juego.lateral > .barra .tile .ring svg { width: 36px; height: 36px; }
+    #juego.lateral > .barra .tile .ring .av { inset: 5px; font-size: 12px; }
+    html body #juego.lateral > .barra .tile .nm:not(#z) { font-size: 15px !important; }
+    html body #juego.lateral > .barra .tile .rs:not(#z) { font-size: 10.5px !important; }
+    html body #juego.lateral > .barra .tile .pt:not(#z) { font-size: 26px !important; }
+    html body #juego.lateral > .barra .tile .pos:not(#z) { font-size: 11px !important; top: -8px; }
+    #juego.lateral > .barra .camino-l { gap: 3px; margin-top: 4px; }
+  }
+  /* ===== Celular: ocultar rivales y dejar solo tu cuadro, el tiempo y tu camino (más espacio para la pregunta) ===== */
+  .barra .plegar { display: none; }
+  @media (max-width: 899px), (orientation: portrait) {
+    .barra { margin-bottom: 22px; }
+    .barra .plegar { display: flex; align-items: center; gap: 5px; position: absolute; left: 50%; bottom: -15px; transform: translateX(-50%); z-index: 4;
+      background: #261F40; border: 2px solid var(--borde-g, #322B52); border-radius: 999px; padding: 4px 12px 3px 10px; color: #cfc8ff; cursor: pointer;
+      font: 800 11.5px/1 var(--display, Nunito), sans-serif; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+    .barra .plegar svg { width: 13px; height: 13px; transition: transform .25s; }
+    .barra.mini .plegar svg { transform: rotate(180deg); }
+    .barra .plegar .avs { display: none; }
+    .barra.mini .plegar .avs { display: flex; margin-left: 2px; }
+    .barra .plegar .avs i { width: 9px; height: 9px; border-radius: 3px; background: var(--jc); margin-left: -2px; border: 1.5px solid #261F40; }
+    .barra.mini { grid-template-areas: "r t" "c c" !important; grid-template-columns: auto minmax(0, 1fr) !important; padding: 10px 12px 12px !important; gap: 2px 10px !important; }
+    .barra.mini .tiles { grid-template-columns: 1fr !important; margin-top: 4px !important; }
+    html body .barra.mini .tile:not(.yo):not(#z) { display: none !important; }
+    html body .barra.mini .tile.yo:not(#z) { grid-column: 1 / -1; display: grid !important; grid-template-columns: 38px minmax(0, 1fr) auto !important; justify-items: start !important; text-align: left !important; align-items: center; gap: 1px 9px !important; padding: 6px 12px 5px 7px !important; }
+    html body .barra.mini .tile.yo > *:not(#z) { grid-column: auto !important; grid-row: auto !important; }
+    html body .barra.mini .tile.yo .ring:not(#z), html body .barra.mini .tile.yo .ring svg:not(#z) { width: 38px; height: 38px; margin: 0; }
+    html body .barra.mini .tile.yo .ring:not(#z) { grid-column: 1 !important; grid-row: 1 / span 2 !important; }
+    html body .barra.mini .tile.yo .ring .av:not(#z) { inset: 6px; font-size: 12px; }
+    html body .barra.mini .tile.yo .nm:not(#z) { grid-column: 2 !important; grid-row: 1 !important; font-size: 15px !important; }
+    html body .barra.mini .tile.yo .rs:not(#z) { display: block; grid-column: 2 !important; grid-row: 2 !important; }
+    html body .barra.mini .tile.yo .pt:not(#z) { grid-column: 3 !important; grid-row: 1 / span 2 !important; font-size: 28px !important; justify-self: end; }
+    .barra.mini .reloj { transform: scale(.8); margin: -6px -4px -6px -6px; }
+    .barra.mini .camino { margin-top: 8px; }
+    .barra.mini .camino-l { margin-top: 5px; }
+  }
   /* Comodines */
   .cbar { gap: 8px; }
   html body .cbar .t:not(#z) { font: 800 15px/1 var(--display) !important; letter-spacing: .06em; text-transform: uppercase; color: var(--dim); }
@@ -1001,6 +1093,12 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
      ========================================================= */
   /* Tipos de comodín: puntito de color en la esquina */
   .cbtn { position: relative; }
+  /* Celular: los 3 comodines en una sola fila */
+  @media (max-width: 560px) {
+    .cbar { flex-wrap: nowrap; gap: 6px; }
+    html body .cbtn:not(#z) { flex: 1 1 0; min-width: 0; justify-content: center; font-size: 14px !important; padding: 5px 8px 4px 5px; gap: 5px; letter-spacing: .02em; }
+    .cbtn svg { width: 22px; height: 22px; padding: 3px; flex-shrink: 0; }
+  }
   .cbtn .ty { position: absolute; top: -5px; right: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--tc); box-shadow: 0 0 0 2px var(--bg); }
   .cmds.v3 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   @media (max-width: 560px) { .cmds.v3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
@@ -1063,6 +1161,16 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   .vs-j .mano i svg { width: 17px; height: 17px; }
   .vs-x { position: absolute; left: 50%; top: 38px; transform: translate(-50%, -50%); z-index: 2; font: italic 900 64px/1 var(--display); color: var(--lima); text-shadow: 0 4px 0 #3c4500, 0 0 30px rgba(198,224,0,.5); animation: vsChoque .5s .45s cubic-bezier(.3,1.8,.5,1) both; pointer-events: none; }
   .vs-fila[style*="--n: 3"] .vs-x, .vs-fila[style*="--n: 4"] .vs-x { display: none; }
+  .vs-fila[style*="--n: 5"] .vs-x, .vs-fila[style*="--n: 6"] .vs-x { display: none; }
+  .vs-j:nth-child(5) { animation-delay: .48s; } .vs-j:nth-child(6) { animation-delay: .6s; }
+  /* 5 o 6 en el VS: en el celular 3 por fila, avatares más chicos */
+  @media (max-width: 700px), (orientation: portrait) {
+    .vs-fila[style*="--n: 5"], .vs-fila[style*="--n: 6"] { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 18px; }
+  }
+  .vs-fila[style*="--n: 5"] .vs-j .av:not(#z), .vs-fila[style*="--n: 6"] .vs-j .av:not(#z) { width: 58px; height: 58px; border-radius: 16px; font-size: 24px; }
+  html body .vs-fila[style*="--n: 5"] .vs-j > b:not(#z), html body .vs-fila[style*="--n: 6"] .vs-j > b:not(#z) { font-size: 16px !important; }
+  .vs-fila[style*="--n: 5"] .vs-j .mano i, .vs-fila[style*="--n: 6"] .vs-j .mano i { width: 24px; height: 24px; border-radius: 8px; }
+  .vs-fila[style*="--n: 5"] .vs-j .mano i svg, .vs-fila[style*="--n: 6"] .vs-j .mano i svg { width: 14px; height: 14px; }
   @keyframes vsChoque { from { transform: translate(-50%, -50%) scale(3) rotate(-12deg); opacity: 0; } to { transform: translate(-50%, -50%); opacity: 1; } }
   .vs-raya { height: 4px; margin: 18px auto 0; width: 70%; border-radius: 4px; background: linear-gradient(90deg, transparent, var(--lima), transparent); animation: vsRaya .6s .5s ease-out both; }
   @keyframes vsRaya { from { transform: scaleX(0); } to { transform: none; } }
@@ -1253,7 +1361,22 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   @keyframes onda { from { transform: scaleY(.3); } to { transform: scaleY(1.1); } }
 
   /* Resultado: podio que se revela de a uno */
-  .podio.revela .lugar { animation: none; opacity: 0; }
+  .podio.revela .lugar, .resto.revela .lugar { animation: none; opacity: 0; }
+  .resto.revela .lugar.ya { animation: revelaL .6s cubic-bezier(.3,1.5,.5,1) both; }
+  /* Del 4.º al 6.º: filas debajo del podio */
+  .res .resto { display: grid; gap: 8px; max-width: 520px; margin: 14px auto 0; }
+  .res .resto .lugar.fila { display: grid; grid-template-columns: 30px 40px minmax(0, 1fr) auto; grid-template-rows: auto auto; align-items: center; column-gap: 10px; text-align: left; background: #1F1936; border: 2px solid color-mix(in srgb, var(--jc) 35%, #322B52); border-bottom: 4px solid var(--jd); border-radius: 14px; padding: 8px 14px 7px 10px; }
+  .res .resto .lugar.fila.yo { border-color: var(--jc); }
+  html body .res .resto .lugar.fila:not(#z) { justify-items: start; text-align: left; column-gap: 18px; }
+  html body .res .resto .lugar.fila > b:not(#z) { grid-column: 3; grid-row: 1; justify-self: start; max-width: 100%; }
+  html body .res .resto .lugar.fila > small:not(#z) { grid-row: 2; justify-self: start; }
+  html body .res .resto .lugar.fila > strong:not(#z) { justify-self: end; }
+  html body .res .resto .np:not(#z) { grid-row: 1 / span 2; font: italic 900 22px/1 var(--display); color: var(--dim); font-style: italic; }
+  .res .resto .aro { grid-row: 1 / span 2; width: 40px; height: 40px; display: grid; place-items: center; }
+  html body .res .resto .aro .av:not(#z) { width: 40px; height: 40px; border-radius: 11px; font-size: 16px; }
+  html body .res .resto .lugar > b:not(#z) { font: 800 17px/1 var(--display) !important; letter-spacing: .04em; text-transform: uppercase; color: var(--jc); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .res .resto .lugar > small { grid-column: 3; font: 700 11.5px Nunito, sans-serif; color: var(--dim); }
+  html body .res .resto .lugar > strong:not(#z) { grid-column: 4; grid-row: 1 / span 2; font: italic 900 28px/1 var(--display) !important; color: var(--jc); }
   .podio.revela .lugar.ya { animation: revelaL .7s cubic-bezier(.3,1.5,.5,1) both; }
   .podio.revela .lugar.l1.ya { animation: revela1 .9s cubic-bezier(.3,1.6,.5,1) both; }
   @keyframes revelaL { from { transform: translateY(40px) scale(.8); opacity: 0; } to { transform: none; opacity: 1; } }
@@ -1323,7 +1446,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
         </div>
         <div class="campo" style="--c:var(--azul)">
           <span class="lbl"><i class="li"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.2a6.5 6.5 0 0 1 3.5 5.8"/></svg></i>Jugadores</span>
-          <div class="chips jug" id="jugadores"><button type="button" data-j="2" class="on"><span class="pj"><i class="c0"></i><i class="c1"></i></span>1 vs 1</button><button type="button" data-j="3"><span class="pj"><i class="c0"></i><i class="c1"></i><i class="c2"></i></span>3</button><button type="button" data-j="4"><span class="pj"><i class="c0"></i><i class="c1"></i><i class="c2"></i><i class="c3"></i></span>4</button></div>
+          <div class="chips jug" id="jugadores"><button type="button" data-j="2" class="on"><span class="pj"><i class="c0"></i><i class="c1"></i></span>1 vs 1</button><button type="button" data-j="3"><span class="pj"><i class="c0"></i><i class="c1"></i><i class="c2"></i></span>3</button><button type="button" data-j="4"><span class="pj"><i class="c0"></i><i class="c1"></i><i class="c2"></i><i class="c3"></i></span>4</button><button type="button" data-j="5"><span class="pj"><i class="c0"></i><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i></span>5</button><button type="button" data-j="6"><span class="pj"><i class="c0"></i><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i><i class="c5"></i></span>6</button></div>
           <label class="check auto"><input type="checkbox" id="chkAuto" checked role="switch"><span><b>Inicio automático</b><small>Empieza solo cuando se llena la sala. Si lo quitas, tú tocas Iniciar.</small></span></label>
         </div>
         <div class="campo" style="--c:var(--naranja)">
@@ -1412,6 +1535,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
         <span id="seg">30</span>
       </div>
       <div class="cam"><div class="camino" id="camino"></div><div class="camino-l"><span id="camTxt"></span><span id="pNum"></span></div></div>
+      <button type="button" class="plegar" id="plegar" aria-expanded="true"></button>
     </div>
     <div id="nieblaAv"></div>
     <div id="fuegoBar"></div>
@@ -1606,7 +1730,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   function quedaSala() { return V ? new Date(V.vence) - (Date.now() + desfase) : 0; }
   function mmss(ms) { const s = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
   // Color de cada jugador por orden de llegada (el mismo en todos los celulares)
-  const colorDe = j => 'c' + ((j && j.color) || 0) % 4;
+  const colorDe = j => 'c' + ((j && j.color) || 0) % 6;
   const nombreDe = j => j.yo ? 'Tú' : j.apodo;
   // Emblema del rango de la semana sobre la esquina del avatar (assets/rango.js; xp viene de ver_duelo, supabase/24)
   const rangoDe = j => j && j.xp != null && window.MCRango && MCRango.nivel(j.xp) >= 0 ? '<span class="rgo" title="' + MCRango.nombre(MCRango.nivel(j.xp)) + '">' + MCRango.svg(MCRango.nivel(j.xp), { mini: true }) + '</span>' : '';
@@ -2370,19 +2494,39 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   // Niebla final: en las 3 últimas preguntas (duelos de 8 o más) no se ven los puntos de los demás
   const enNiebla = () => G && G.v3 && G.n >= 8 && G.actual >= G.n - 3 && G.actual < G.n;
   function pintarBarra() {
-    const js = jugadores(), niebla = enNiebla();
-    const pos = j => 1 + js.filter(x => x.puntos > j.puntos).length;
+    const js0 = jugadores(), niebla = enNiebla(), muchos = js0.length >= 5;
+    const pos = j => 1 + js0.filter(x => x.puntos > j.puntos).length;
+    const clave = j => j.yo ? '' : j.apodo;
+    // Con 5 o 6 el marcador va ordenado por puesto; en la niebla el orden queda congelado (no da pistas)
+    let js = js0;
+    if (muchos) {
+      if (niebla) js = G.ordenFijo ? js0.slice().sort((a, b) => G.ordenFijo.indexOf(clave(a)) - G.ordenFijo.indexOf(clave(b))) : js0.slice().sort((a, b) => (a.color || 0) - (b.color || 0));
+      else { js = js0.slice().sort((a, b) => pos(a) - pos(b) || (a.color || 0) - (b.color || 0)); G.ordenFijo = js.map(clave); }
+    }
+    $('barra').classList.toggle('muchos', muchos);
+    pintarPlegar(js0);
+    $('barra').style.setProperty('--r', Math.max(1, js0.length - 1));
+    $('juego').classList.toggle('lateral', muchos);
+    // Animación: cada cuadro se desliza a su nuevo puesto
+    const antes = {};
+    if (muchos) $('tiles').querySelectorAll('.tile').forEach(t => { antes[t.dataset.apodo] = t.getBoundingClientRect(); });
     $('tiles').innerHTML = js.map(j => {
       const p = pos(j), hecho = Math.min(j.actual, G.n), oculto = niebla && !j.yo;
       const ev = (j.fuego > 0 && !j.yo ? '<span style="--c:' + (j.fuego > 1 ? 'var(--rojo)' : 'var(--naranja)') + '" title="Tiene ' + (j.fuego > 1 ? 'Volcán' : 'Llamarada') + ' cargada">' + IC[j.fuego > 1 ? 'volcan' : 'llama'] + '</span>'
         : j.racha >= 3 ? '<span style="--c:var(--naranja)" title="Racha de ' + j.racha + '">' + IC.fuego + '</span>' : '') +
         (j.espejo && !j.yo ? '<span style="--c:var(--morado)" title="Tiene Espejo">' + IC.espejo + '</span>' : '') +
         (j.usados || []).slice(-2).map(k => CMD[k] ? '<span style="--c:' + CMD[k].c + '" title="Usó ' + CMD[k].nom + '">' + IC[k] + '</span>' : '').join('');
-      return '<div class="tile ' + colorDe(j) + (j.yo ? ' yo' : '') + (j.yo && G.espejo ? ' espejo' : '') + (oculto ? ' niebla' : '') + (j.terminado && hecho < G.n ? ' fuera' : '') + '" data-apodo="' + esc(j.yo ? '' : j.apodo) + '"><span class="pos' + (p === 1 ? ' p1' : '') + '">' + p + '.º</span>' +
+      return '<div class="tile ' + colorDe(j) + (j.yo ? ' yo' : '') + (j.yo && G.espejo ? ' espejo' : '') + (oculto ? ' niebla' : '') + (j.terminado && hecho < G.n ? ' fuera' : '') + '" data-apodo="' + esc(j.yo ? '' : j.apodo) + '"><span class="pos' + (niebla ? ' oculto' : p === 1 ? ' p1' : '') + '">' + (niebla ? '?' : p + '.º') + '</span>' +
         (ev ? '<span class="ev">' + ev + '</span>' : '') +
         '<div class="ring"><svg viewBox="0 0 46 46" aria-hidden="true"><path class="f" d="' + MARCO + '"/><path class="a" d="' + MARCO + '" pathLength="100" stroke-dasharray="100" stroke-dashoffset="' + (100 * (1 - hecho / G.n)).toFixed(1) + '"/></svg>' + avatar(j) + '</div>' +
         '<span class="nm">' + esc(nombreDe(j)) + '</span><span class="pt">' + (oculto ? '?' : j.puntos) + '</span><span class="rs">' + (j.terminado ? (hecho < G.n ? 'Fuera' : 'Terminó') : hecho + ' de ' + G.n) + '</span></div>';
     }).join('');
+    if (muchos) $('tiles').querySelectorAll('.tile').forEach(t => {
+      const a = antes[t.dataset.apodo]; if (!a) return;
+      const b = t.getBoundingClientRect(), dx = a.left - b.left, dy = a.top - b.top;
+      if (Math.abs(dx) + Math.abs(dy) < 2) return;
+      t.animate([{ transform: 'translate(' + dx + 'px,' + dy + 'px)' }, { transform: 'none' }], { duration: 450, easing: 'cubic-bezier(.3,1.3,.5,1)' });
+    });
     const ultima = G.final ? G.n - 1 : -1;
     $('camino').innerHTML = Array.from({ length: G.n }, (_, i) => '<i class="' + (i < G.ok.length ? (G.ok[i] ? 'ok' : 'mal') : i === G.actual ? 'ya' : '') + (i === ultima ? ' fin' : '') + '"></i>').join('');
     $('camTxt').textContent = 'Tu camino · ' + G.ok.filter(Boolean).length + ' de ' + G.ok.length;
@@ -2390,6 +2534,21 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     pintarNiebla(js, niebla);
     pintarFuego();
   }
+  // Celular: ocultar rivales (queda tu cuadro, el tiempo y tu camino). Se recuerda para los siguientes duelos.
+  function miniOn() { try { return localStorage.getItem('mc_duelo_mini') === '1'; } catch (e) { return false; } }
+  function pintarPlegar(js0) {
+    const mini = miniOn(), otros = (js0 || jugadores()).filter(j => !j.yo), b = $('plegar');
+    $('barra').classList.toggle('mini', mini);
+    b.setAttribute('aria-expanded', mini ? 'false' : 'true');
+    b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+      (mini ? 'Ver rivales (' + otros.length + ')' : 'Ocultar rivales') +
+      '<span class="avs">' + otros.map(j => '<i class="' + colorDe(j) + '"></i>').join('') + '</span>';
+  }
+  $('plegar').addEventListener('click', () => {
+    try { localStorage.setItem('mc_duelo_mini', miniOn() ? '0' : '1'); } catch (e) {}
+    pintarPlegar();
+    son('toque');
+  });
   // Aviso de niebla y "duelo cerrado" (alguien a 2 puntos o menos), con latido en la pantalla
   let nieblaVista = false;
   function pintarNiebla(js, niebla) {
@@ -2918,7 +3077,8 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   const puntosDe = j => j.puntos != null ? j.puntos : j.aciertos;
   // Podio de escalones: solo salen los que jugaron (2: 2·1, 3: 2·1·3, 4: 4·2·1·3)
   function podioHtml(d) {
-    const js = d.jugadores.slice(0, 4), n = js.length, orden = n === 2 ? [2, 1] : n === 3 ? [2, 1, 3] : [4, 2, 1, 3];
+    const todos = d.jugadores, muchos = todos.length >= 5;
+    const js = todos.slice(0, muchos ? 3 : 4), n = js.length, orden = n === 2 ? [2, 1] : n === 3 ? [2, 1, 3] : [4, 2, 1, 3];
     const lugares = orden.map(p => {
       const j = js[p - 1], xp = XP_PUESTO[j.puesto - 1];   // con empate el escalón sigue el orden y el número, el puesto
       return '<div class="lugar l' + p + ' ' + colorDe(j) + (j.yo ? ' yo' : '') + '">' + (p === 1 ? CORONA : '') +
@@ -2926,7 +3086,11 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
         '<b>' + esc(j.yo ? 'Tú' : j.apodo) + '</b><strong>' + puntosDe(j) + '</strong><small>' + lineaDe(j, d.n).split(' · ').map(t => '<span>' + esc(t) + '</span>').join(' ') + '</small>' +
         '<span class="bloque"><i class="cara"></i><span class="frente"><i>' + j.puesto + '</i>' + (xp ? '<span class="xp">+' + xp + ' XP</span>' : '') + '</span></span></div>';
     }).join('');
-    return '<div class="podio' + (n === 2 ? ' dos' : n === 4 ? ' cuatro' : '') + '"><div class="foco" aria-hidden="true"></div>' + lugares + '</div>';
+    // Con 5 o 6: podio de 3 y debajo los demás en filas (también se revelan, del último al 4.º)
+    const resto = muchos ? '<div class="resto">' + todos.slice(3).map((j, k) =>
+      '<div class="lugar fila l' + (k + 4) + ' ' + colorDe(j) + (j.yo ? ' yo' : '') + '"><i class="np">' + j.puesto + '</i><span class="aro">' + avatar(j) + '</span>' +
+      '<b>' + esc(j.yo ? 'Tú' : j.apodo) + '</b><small>' + esc(lineaDe(j, d.n)) + '</small><strong>' + puntosDe(j) + '</strong></div>').join('') + '</div>' : '';
+    return '<div class="podio' + (n === 2 ? ' dos' : n === 4 ? ' cuatro' : '') + '"><div class="foco" aria-hidden="true"></div>' + lugares + '</div>' + resto;
   }
   // Medallas del duelo: Rayo, Racha, Remontada y Francotirador
   function medallasHtml(m) {
@@ -2966,7 +3130,8 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     const pod = $('resTabla').querySelector('.podio');
     if (!pod || matchMedia('(prefers-reduced-motion: reduce)').matches) { alFinal(); return; }
     pod.classList.add('revela');
-    const ls = Array.from(pod.querySelectorAll('.lugar')).sort((a, b) => +b.className.match(/l(\d)/)[1] - +a.className.match(/l(\d)/)[1]);
+    const rs = $('resTabla').querySelector('.resto'); if (rs) rs.classList.add('revela');
+    const ls = Array.from($('resTabla').querySelectorAll('.podio .lugar, .resto .lugar')).sort((a, b) => +b.className.match(/l(\d)/)[1] - +a.className.match(/l(\d)/)[1]);
     let t = 300;
     ls.forEach((l, k) => {
       const ultimo = k === ls.length - 1;
@@ -3071,7 +3236,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
         const fuente = fuenteAbierta(cursos.length ? cursos : d.curso, d.fuente) ? d.fuente : 'mezcla';  // sin el código de esa sección, sale de "De todo"
         const noms = d.tema ? d.tema.split(' | ') : [];
         const cod = await crearDuelo({ curso: d.curso, cursos, fuente, ciclo: d.ciclo || 'todos', temas: noms.map(normTema), temasLista: noms, n: d.n, seg: d.seg || 60,
-          comodines: (d.comodines || []).length > 0, jugadores: Math.min(Math.max(d.jugadores.length, 2), 4), auto: true, revancha: d.codigo });
+          comodines: (d.comodines || []).length > 0, jugadores: Math.min(Math.max(d.jugadores.length, 2), 6), auto: true, revancha: d.codigo });
         await abrirDuelo(cod);
       } catch (e) { rv.disabled = false; rv.textContent = 'Pedir revancha'; $('resError').textContent = textoError(e); $('resError').hidden = false; }
     });
