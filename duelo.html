@@ -230,7 +230,7 @@
   @media (max-width: 480px) { .sala { grid-template-columns: repeat(min(var(--n, 4), 2), minmax(0, 1fr)); } }
 
   /* Colores de cada jugador (por orden de llegada, iguales para todos) */
-  .c0 { --jc: var(--lima); --jd: #8fa300; } .c1 { --jc: var(--azul); --jd: #1283b8; } .c2 { --jc: var(--naranja); --jd: #b36a00; } .c3 { --jc: var(--morado); --jd: #8f4fc4; }
+  .c0 { --jc: var(--lima); --jd: #8fa300; } .c1 { --jc: var(--azul); --jd: #1283b8; } .c2 { --jc: var(--naranja); --jd: #b36a00; } .c3 { --jc: var(--morado); --jd: #8f4fc4; } .c4 { --jc: #FF5FA2; --jd: #b8336e; } .c5 { --jc: #2EE6C5; --jd: #149e86; }
   .av .rgo { position: absolute; right: -32%; bottom: -30%; width: 72%; pointer-events: none; filter: drop-shadow(0 2px 2px rgba(0,0,0,.6)); }
   .rgo-n { font-style: normal; font-weight: 1000; } .rgo-n.r0 { color: #5FDAFF; } .rgo-n.r1 { color: #5FF59A; } .rgo-n.r2 { color: #D79BFF; } .rgo-n.r3 { color: #FF6E84; } .rgo-n.r4 { color: #FFC800; }
   .av { position: relative; width: 30px; height: 30px; border-radius: 50%; background: var(--jc, var(--lima)); color: #111; display: grid; place-items: center; font: 1000 14px Nunito, sans-serif; flex-shrink: 0; box-shadow: 0 3px 0 var(--jd, #8fa300); }
@@ -518,8 +518,13 @@
 <script src="assets/auth.js"></script>
 <script src="assets/ranking.js"></script>
 <script src="assets/rango.js"></script>
-<script src="assets/coleccion.js?v=210"></script>
-<script src="assets/tarjeta-perfil.js?v=210"></script>
+<script src="assets/coleccion.js?v=211"></script>
+<script src="assets/tarjeta-perfil.js?v=211"></script>
+<link rel="stylesheet" href="assets/buho/buho.css">
+<script src="assets/buho/buho-datos.js"></script>
+<script src="assets/buho/rosa-datos.js"></script>
+<script src="assets/buho/buho-vivo.js"></script>
+<script src="assets/buho.js"></script>
 <style id="mc-claro">
 /* Modo claro de esta página (assets/claro.css trae lo común) */
 html[data-modo="claro"] .eyebrow { color: #6F8000 !important; }
@@ -687,7 +692,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   /* Jugadores: cada opción muestra a los jugadores con sus colores */
   .chips button { border-radius: 14px; }
   html body .chips button:not(#z) { font: 800 19px/1 var(--display) !important; letter-spacing: .03em; text-transform: uppercase; padding: 9px 15px 8px; }
-  .chips.jug { display: grid; grid-template-columns: 1.3fr 1fr 1fr; }
+  .chips.jug { display: grid; grid-template-columns: repeat(auto-fit, minmax(98px, 1fr)); }
   .chips.jug button { display: flex; align-items: center; justify-content: center; gap: 9px; }
   .pj { display: flex; }
   .pj i { width: 16px; height: 16px; border-radius: 50%; background: var(--jc); border: 2px solid var(--surface-2); margin-left: -6px; }
@@ -867,6 +872,14 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     html body .sala[style*="--n: 3"] .puesto-sala b:not(#z) { font-size: 17px !important; }
     .sala[style*="--n: 3"] .puesto-sala small { font-size: 10.5px; line-height: 1.3; }
   }
+  /* Con 5 o 6: 3 por fila (en PC y en el celular) */
+  .sala[style*="--n: 5"], .sala[style*="--n: 6"] { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  @media (max-width: 480px) {
+    .sala[style*="--n: 5"] .puesto-sala, .sala[style*="--n: 6"] .puesto-sala { padding: 12px 3px 10px; }
+    .sala[style*="--n: 5"] .puesto-sala .av:not(#z), .sala[style*="--n: 6"] .puesto-sala .av:not(#z) { width: 46px; height: 46px; font-size: 21px; border-radius: 13px; }
+    html body .sala[style*="--n: 5"] .puesto-sala b:not(#z), html body .sala[style*="--n: 6"] .puesto-sala b:not(#z) { font-size: 16px !important; }
+    .sala[style*="--n: 5"] .puesto-sala small, .sala[style*="--n: 6"] .puesto-sala small { font-size: 10.5px; line-height: 1.3; }
+  }
   /* Cada jugador con el borde de su color */
   .puesto-sala:not(.libre) { border-color: color-mix(in srgb, var(--jc) 35%, var(--borde-g)) !important; border-bottom-color: var(--jd) !important; }
   .puesto-sala.yo { border-color: var(--jc) !important; }
@@ -922,6 +935,18 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   .av .foto { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
   .av.con-foto { color: transparent; }
   .av .rgo { z-index: 1; }
+  /* Marco puesto (borde de color o degradado) y pin en la esquina, como en los tops */
+  html body .av.con-marco:not(.mc-mo):not(#z) { background: var(--m); box-shadow: 0 3px 0 rgba(0,0,0,.35); }
+  .av.con-marco:not(.mc-mo) .foto { inset: 2px; width: calc(100% - 4px); height: calc(100% - 4px); border-radius: 26%; }
+  .av.mc-mo .foto { border-radius: 30%; }
+  .av[data-jug] { cursor: pointer; }
+  .av .av-pin { position: absolute; z-index: 6; top: -22%; right: -26%; width: 52%; height: 52%; min-width: 14px; min-height: 14px; display: grid; place-items: center; font-style: normal; pointer-events: none; filter: drop-shadow(0 1px 2px rgba(0,0,0,.6)); }
+  .av .av-pin svg, .av .av-pin > * { width: 100%; height: 100%; display: block; }
+  .av .av-pin .mcc-pin { width: 100%; height: auto; border-width: 2px; box-shadow: none; }
+  .av .av-pin .mcc-pin span { font-size: 9px; line-height: 1; }
+  .av .av-pin .mcc-pin img { width: 70%; height: 70%; }
+  .av .av-pin img { width: 100%; height: 100%; object-fit: contain; }
+  .av .rgo { z-index: 6; }
   html body .tile .nm:not(#z) { grid-column: 2; margin: 0; font: 800 18px/1 var(--display) !important; letter-spacing: .04em; text-transform: uppercase; }
   html body .tile .rs:not(#z) { grid-column: 2; margin: 0; font: 700 11.5px/1.2 'Nunito', sans-serif !important; }
   html body .tile .pt:not(#z) { grid-column: 3; grid-row: 1 / span 2; font: italic 900 34px/1 var(--display) !important; }
@@ -946,6 +971,98 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     .barra[style*="--n: 3"] .tile .ring, .barra[style*="--n: 4"] .tile .ring { grid-row: auto; }
     .barra[style*="--n: 3"] .tile > *, .barra[style*="--n: 4"] .tile > * { grid-column: 1 !important; }
     html body .barra[style*="--n: 4"] .tile .nm:not(#z) { font-size: 13px !important; max-width: 100%; }
+  }
+  /* ===== Duelos de 5 o 6: celular = tú arriba + rivales en fila; PC/tablet horizontal = ranking al costado ===== */
+  .barra.muchos .tiles { grid-template-columns: repeat(var(--r, 5), minmax(0, 1fr)) !important; gap: 14px 5px !important; }
+  .barra.muchos .tile.yo { grid-column: 1 / -1; order: -1; display: grid !important; grid-template-columns: 44px minmax(0, 1fr) auto !important; justify-items: start !important; text-align: left !important; align-items: center; column-gap: 10px; padding: 9px 14px 7px !important; }
+  .barra.muchos .tile.yo > * { grid-column: auto !important; }
+  .barra.muchos .tile.yo .ring { grid-row: 1 / span 2 !important; grid-column: 1 !important; margin: 0; }
+  html body .barra.muchos .tile.yo .nm:not(#z) { grid-column: 2 !important; font-size: 17px !important; }
+  html body .barra.muchos .tile.yo .rs:not(#z) { display: block; grid-column: 2 !important; grid-row: 2; }
+  html body .barra.muchos .tile.yo .pt:not(#z) { grid-column: 3 !important; grid-row: 1 / span 2 !important; font-size: 32px !important; justify-self: end; }
+  .barra.muchos .tile:not(.yo) { display: grid !important; grid-template-columns: 1fr !important; justify-items: center !important; text-align: center !important; padding: 11px 2px 5px !important; gap: 1px !important; }
+  .barra.muchos .tile:not(.yo) > * { grid-column: 1 !important; grid-row: auto !important; }
+  .barra.muchos .tile:not(.yo) .ring, .barra.muchos .tile:not(.yo) .ring svg { width: 36px; height: 36px; margin: 0 auto; }
+  .barra.muchos .tile:not(.yo) .ring .av { inset: 5px; font-size: 11px; }
+  .barra.muchos .tile:not(.yo) .ring .av .rgo { width: 15px; right: -7px; bottom: -6px; }
+  html body .barra.muchos .tile:not(.yo) .nm:not(#z) { font-size: 11.5px !important; max-width: 100%; }
+  html body .barra.muchos .tile:not(.yo) .pt:not(#z) { font-size: 19px !important; }
+  html body .barra.muchos .tile:not(.yo) .rs:not(#z) { display: none; }
+  html body .barra.muchos .tile:not(.yo) .pos:not(#z) { font-size: 10.5px !important; left: 2px; padding: 2px 6px 1px 5px; }
+  .barra.muchos .tile:not(.yo) .ev { right: -2px; }
+  .barra.muchos .tile:not(.yo) .ev span { width: 16px; height: 16px; }
+  .barra.muchos .tile:not(.yo) .ev span:nth-child(n+2) { display: none; }
+  .barra.muchos .tile:not(.yo) .ev svg { width: 10px; height: 10px; }
+  /* Niebla: el orden queda congelado y los puestos en «?» */
+  html body .barra .tile .pos.oculto:not(#z) { background: #3a3360; color: #cfc8ff; }
+  /* Ranking al costado (PC y tablet horizontal) */
+  @media (min-width: 900px) and (orientation: landscape) {
+    #juego.lateral:not([hidden]) { display: grid; grid-template-columns: minmax(260px, 300px) minmax(0, 1fr); column-gap: 18px; align-items: start; }
+    #juego.lateral > * { grid-column: 2; }
+    #juego.lateral > .barra { grid-column: 1; grid-row: 1 / span 30; grid-template-areas: "r" "c" "t" !important; grid-template-columns: 1fr !important; justify-items: center; top: 12px; max-height: calc(100vh - 24px); overflow-y: auto; scrollbar-width: none; }
+    #juego.lateral > .barra .tiles { grid-template-columns: 1fr !important; width: 100%; gap: 14px !important; }
+    #juego.lateral > .barra .tile, #juego.lateral > .barra .tile.yo { grid-column: auto; order: 0; display: grid !important; grid-template-columns: 46px minmax(0, 1fr) auto !important; justify-items: start !important; text-align: left !important; align-items: center; gap: 4px 10px !important; padding: 8px 12px 7px 8px !important; }
+    #juego.lateral > .barra .tile > * { grid-column: auto !important; grid-row: auto !important; }
+    #juego.lateral > .barra .tile .ring, #juego.lateral > .barra .tile .ring svg { width: 46px; height: 46px; margin: 0; }
+    #juego.lateral > .barra .tile .ring { grid-row: 1 / span 2 !important; grid-column: 1 !important; }
+    #juego.lateral > .barra .tile .ring .av { inset: 7px; font-size: 14px; }
+    html body #juego.lateral > .barra .tile .nm:not(#z) { grid-column: 2 !important; grid-row: 1 !important; font-size: 18px !important; }
+    html body #juego.lateral > .barra .tile .rs:not(#z) { display: block; grid-column: 2 !important; grid-row: 2 !important; }
+    html body #juego.lateral > .barra .tile .pt:not(#z) { grid-column: 3 !important; grid-row: 1 / span 2 !important; font-size: 32px !important; justify-self: end; }
+    html body #juego.lateral > .barra .tile .pos:not(#z) { font-size: 13px !important; left: 10px; }
+    #juego.lateral > .barra .tile .ev span { width: 20px; height: 20px; }
+    #juego.lateral > .barra .tile .ev span:nth-child(n+2) { display: grid; }
+    #juego.lateral > .barra .tile .ev svg { width: 13px; height: 13px; }
+    #juego.lateral > .barra .camino-l { flex-direction: column; align-items: center; gap: 6px; }
+  }
+  /* Tablet horizontal (pantalla bajita): cuadros más compactos para que entren los 6 */
+  @media (min-width: 900px) and (orientation: landscape) and (max-height: 760px) {
+    #juego.lateral > .barra { padding: 8px 10px !important; }
+    #juego.lateral > .barra .reloj { transform: scale(.82); margin: -6px 0; }
+    #juego.lateral > .barra .tiles { gap: 9px !important; margin-top: 4px; }
+    #juego.lateral > .barra .tile, #juego.lateral > .barra .tile.yo { padding: 5px 10px 4px 6px !important; grid-template-columns: 36px minmax(0, 1fr) auto !important; }
+    #juego.lateral > .barra .tile .ring, #juego.lateral > .barra .tile .ring svg { width: 36px; height: 36px; }
+    #juego.lateral > .barra .tile .ring .av { inset: 5px; font-size: 12px; }
+    html body #juego.lateral > .barra .tile .nm:not(#z) { font-size: 15px !important; }
+    html body #juego.lateral > .barra .tile .rs:not(#z) { font-size: 10.5px !important; }
+    html body #juego.lateral > .barra .tile .pt:not(#z) { font-size: 26px !important; }
+    html body #juego.lateral > .barra .tile .pos:not(#z) { font-size: 11px !important; top: -8px; }
+    #juego.lateral > .barra .camino-l { gap: 3px; margin-top: 4px; }
+  }
+  /* Avance de cada jugador: se pinta en el borde grueso de abajo de su cuadro (con sus curvas);
+     al terminar queda como el borde completo del cuadro. Ya no hay aro alrededor de la foto. */
+  html body .barra .tile:not(#z) { --tb: var(--surface-2, #1F1936); border-bottom-color: transparent;
+    background: linear-gradient(var(--tb), var(--tb)) padding-box, linear-gradient(90deg, var(--jd, var(--jc)) calc(var(--pg, 0) * 100%), #2C2549 calc(var(--pg, 0) * 100%)) border-box; }
+  html body .barra .tile.yo:not(#z) { --tb: color-mix(in srgb, var(--jc) 8%, #1D1834); }
+  html body .barra .tile:not(.yo):not(#z) { border-bottom-width: 5px; }
+  .barra .tile .ring svg { visibility: hidden; }
+  html body .barra .tile .ring .av:not(#z) { inset: 2px; }
+  /* ===== Celular: ocultar rivales y dejar solo tu cuadro, el tiempo y tu camino (más espacio para la pregunta) ===== */
+  .barra .plegar { display: none; }
+  @media (max-width: 899px), (orientation: portrait) {
+    .barra { margin-bottom: 22px; }
+    .barra .plegar { display: flex; align-items: center; gap: 5px; position: absolute; left: 50%; bottom: -15px; transform: translateX(-50%); z-index: 4;
+      background: #261F40; border: 2px solid var(--borde-g, #322B52); border-radius: 999px; padding: 4px 12px 3px 10px; color: #cfc8ff; cursor: pointer;
+      font: 800 11.5px/1 var(--display, Nunito), sans-serif; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+    .barra .plegar svg { width: 13px; height: 13px; transition: transform .25s; }
+    .barra.mini .plegar svg { transform: rotate(180deg); }
+    .barra .plegar .avs { display: none; }
+    .barra.mini .plegar .avs { display: flex; margin-left: 2px; }
+    .barra .plegar .avs i { width: 9px; height: 9px; border-radius: 3px; background: var(--jc); margin-left: -2px; border: 1.5px solid #261F40; }
+    .barra.mini { grid-template-areas: "r t" "c c" !important; grid-template-columns: auto minmax(0, 1fr) !important; padding: 10px 12px 12px !important; gap: 2px 10px !important; }
+    .barra.mini .tiles { grid-template-columns: 1fr !important; margin-top: 4px !important; }
+    html body .barra.mini .tile:not(.yo):not(#z) { display: none !important; }
+    html body .barra.mini .tile.yo:not(#z) { grid-column: 1 / -1; display: grid !important; grid-template-columns: 38px minmax(0, 1fr) auto !important; justify-items: start !important; text-align: left !important; align-items: center; gap: 1px 9px !important; padding: 6px 12px 5px 7px !important; }
+    html body .barra.mini .tile.yo > *:not(#z) { grid-column: auto !important; grid-row: auto !important; }
+    html body .barra.mini .tile.yo .ring:not(#z), html body .barra.mini .tile.yo .ring svg:not(#z) { width: 38px; height: 38px; margin: 0; }
+    html body .barra.mini .tile.yo .ring:not(#z) { grid-column: 1 !important; grid-row: 1 / span 2 !important; }
+    html body .barra.mini .tile.yo .ring .av:not(#z) { inset: 6px; font-size: 12px; }
+    html body .barra.mini .tile.yo .nm:not(#z) { grid-column: 2 !important; grid-row: 1 !important; font-size: 15px !important; }
+    html body .barra.mini .tile.yo .rs:not(#z) { display: block; grid-column: 2 !important; grid-row: 2 !important; }
+    html body .barra.mini .tile.yo .pt:not(#z) { grid-column: 3 !important; grid-row: 1 / span 2 !important; font-size: 28px !important; justify-self: end; }
+    .barra.mini .reloj { transform: scale(.8); margin: -6px -4px -6px -6px; }
+    .barra.mini .camino { margin-top: 8px; }
+    .barra.mini .camino-l { margin-top: 5px; }
   }
   /* Comodines */
   .cbar { gap: 8px; }
@@ -1001,6 +1118,12 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
      ========================================================= */
   /* Tipos de comodín: puntito de color en la esquina */
   .cbtn { position: relative; }
+  /* Celular: los 3 comodines en una sola fila */
+  @media (max-width: 560px) {
+    .cbar { flex-wrap: nowrap; gap: 6px; }
+    html body .cbtn:not(#z) { flex: 1 1 0; min-width: 0; justify-content: center; font-size: 14px !important; padding: 5px 8px 4px 5px; gap: 5px; letter-spacing: .02em; }
+    .cbtn svg { width: 22px; height: 22px; padding: 3px; flex-shrink: 0; }
+  }
   .cbtn .ty { position: absolute; top: -5px; right: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--tc); box-shadow: 0 0 0 2px var(--bg); }
   .cmds.v3 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   @media (max-width: 560px) { .cmds.v3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
@@ -1063,6 +1186,16 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   .vs-j .mano i svg { width: 17px; height: 17px; }
   .vs-x { position: absolute; left: 50%; top: 38px; transform: translate(-50%, -50%); z-index: 2; font: italic 900 64px/1 var(--display); color: var(--lima); text-shadow: 0 4px 0 #3c4500, 0 0 30px rgba(198,224,0,.5); animation: vsChoque .5s .45s cubic-bezier(.3,1.8,.5,1) both; pointer-events: none; }
   .vs-fila[style*="--n: 3"] .vs-x, .vs-fila[style*="--n: 4"] .vs-x { display: none; }
+  .vs-fila[style*="--n: 5"] .vs-x, .vs-fila[style*="--n: 6"] .vs-x { display: none; }
+  .vs-j:nth-child(5) { animation-delay: .48s; } .vs-j:nth-child(6) { animation-delay: .6s; }
+  /* 5 o 6 en el VS: en el celular 3 por fila, avatares más chicos */
+  @media (max-width: 700px), (orientation: portrait) {
+    .vs-fila[style*="--n: 5"], .vs-fila[style*="--n: 6"] { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 18px; }
+  }
+  .vs-fila[style*="--n: 5"] .vs-j .av:not(#z), .vs-fila[style*="--n: 6"] .vs-j .av:not(#z) { width: 58px; height: 58px; border-radius: 16px; font-size: 24px; }
+  html body .vs-fila[style*="--n: 5"] .vs-j > b:not(#z), html body .vs-fila[style*="--n: 6"] .vs-j > b:not(#z) { font-size: 16px !important; }
+  .vs-fila[style*="--n: 5"] .vs-j .mano i, .vs-fila[style*="--n: 6"] .vs-j .mano i { width: 24px; height: 24px; border-radius: 8px; }
+  .vs-fila[style*="--n: 5"] .vs-j .mano i svg, .vs-fila[style*="--n: 6"] .vs-j .mano i svg { width: 14px; height: 14px; }
   @keyframes vsChoque { from { transform: translate(-50%, -50%) scale(3) rotate(-12deg); opacity: 0; } to { transform: translate(-50%, -50%); opacity: 1; } }
   .vs-raya { height: 4px; margin: 18px auto 0; width: 70%; border-radius: 4px; background: linear-gradient(90deg, transparent, var(--lima), transparent); animation: vsRaya .6s .5s ease-out both; }
   @keyframes vsRaya { from { transform: scaleX(0); } to { transform: none; } }
@@ -1250,10 +1383,49 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   .amb .ondas i { display: inline-block; width: 3px; height: 10px; margin-left: 2px; border-radius: 2px; background: currentColor; transform-origin: bottom; }
   .amb.on .ondas i { animation: onda .8s ease-in-out infinite alternate; }
   .amb.on .ondas i:nth-child(2) { animation-delay: -.3s; } .amb.on .ondas i:nth-child(3) { animation-delay: -.55s; }
+  .amb .ct { display: none; }
+  /* Llamarada y sonido en la misma fila; el sonido en un cuadro chico al lado (celular, tablet y PC) */
+  #juego:not([hidden]) { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; align-items: start; }
+  #juego > * { grid-column: 1 / -1; min-width: 0; }
+  #juego > .barra { grid-row: 1; }
+  #juego > #nieblaAv { grid-row: 2; }
+  #juego > #fuegoBar { grid-row: 3; grid-column: 1; }
+  #juego > .amb-fila { grid-row: 3; grid-column: 2; margin: 0 0 12px; align-self: stretch; }
+  #juego > #fuegoBar:empty { display: none; }
+  /* Sin Llamarada (duelo antiguo): el sonido vuelve a ser la pastilla de siempre */
+  #juego:has(> #fuegoBar:empty) > .amb-fila { grid-column: 1 / -1; align-self: start; margin: -4px 0 8px; }
+  #juego:not(:has(> #fuegoBar:empty)) .amb { flex-direction: column; justify-content: center; gap: 5px; width: 76px; min-height: 64px; padding: 6px 4px; border-radius: 16px; font-size: 11.5px; }
+  #juego:not(:has(> #fuegoBar:empty)) .amb svg { width: 26px; height: 26px; }
+  #juego:not(:has(> #fuegoBar:empty)) .amb .lg, #juego:not(:has(> #fuegoBar:empty)) .amb .ondas { display: none; }
+  #juego:not(:has(> #fuegoBar:empty)) .amb .ct { display: block; }
+  @media (min-width: 900px) and (orientation: landscape) {
+    #juego.lateral { grid-template-columns: minmax(260px, 300px) minmax(0, 1fr) auto; }
+    #juego.lateral > * { grid-column: 2 / 4; }
+    #juego.lateral > .amb-fila { grid-column: 3; grid-row: 1; }
+    #juego.lateral > #fuegoBar { grid-column: 2; grid-row: 1; }
+    #juego.lateral > #nieblaAv { grid-row: 2; }
+    #juego.lateral .amb { width: 92px; font-size: 12px; }
+    #juego.lateral:has(> #fuegoBar:empty) > .amb-fila { grid-column: 2 / 4; }
+  }
   @keyframes onda { from { transform: scaleY(.3); } to { transform: scaleY(1.1); } }
 
   /* Resultado: podio que se revela de a uno */
-  .podio.revela .lugar { animation: none; opacity: 0; }
+  .podio.revela .lugar, .resto.revela .lugar { animation: none; opacity: 0; }
+  .resto.revela .lugar.ya { animation: revelaL .6s cubic-bezier(.3,1.5,.5,1) both; }
+  /* Del 4.º al 6.º: filas debajo del podio */
+  .res .resto { display: grid; gap: 8px; max-width: 520px; margin: 14px auto 0; }
+  .res .resto .lugar.fila { display: grid; grid-template-columns: 30px 40px minmax(0, 1fr) auto; grid-template-rows: auto auto; align-items: center; column-gap: 10px; text-align: left; background: #1F1936; border: 2px solid color-mix(in srgb, var(--jc) 35%, #322B52); border-bottom: 4px solid var(--jd); border-radius: 14px; padding: 8px 14px 7px 10px; }
+  .res .resto .lugar.fila.yo { border-color: var(--jc); }
+  html body .res .resto .lugar.fila:not(#z) { justify-items: start; text-align: left; column-gap: 18px; }
+  html body .res .resto .lugar.fila > b:not(#z) { grid-column: 3; grid-row: 1; justify-self: start; max-width: 100%; }
+  html body .res .resto .lugar.fila > small:not(#z) { grid-row: 2; justify-self: start; }
+  html body .res .resto .lugar.fila > strong:not(#z) { justify-self: end; }
+  html body .res .resto .np:not(#z) { grid-row: 1 / span 2; font: italic 900 22px/1 var(--display); color: var(--dim); font-style: italic; }
+  .res .resto .aro { grid-row: 1 / span 2; width: 40px; height: 40px; display: grid; place-items: center; }
+  html body .res .resto .aro .av:not(#z) { width: 40px; height: 40px; border-radius: 11px; font-size: 16px; }
+  html body .res .resto .lugar > b:not(#z) { font: 800 17px/1 var(--display) !important; letter-spacing: .04em; text-transform: uppercase; color: var(--jc); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .res .resto .lugar > small { grid-column: 3; font: 700 11.5px Nunito, sans-serif; color: var(--dim); }
+  html body .res .resto .lugar > strong:not(#z) { grid-column: 4; grid-row: 1 / span 2; font: italic 900 28px/1 var(--display) !important; color: var(--jc); }
   .podio.revela .lugar.ya { animation: revelaL .7s cubic-bezier(.3,1.5,.5,1) both; }
   .podio.revela .lugar.l1.ya { animation: revela1 .9s cubic-bezier(.3,1.6,.5,1) both; }
   @keyframes revelaL { from { transform: translateY(40px) scale(.8); opacity: 0; } to { transform: none; opacity: 1; } }
@@ -1275,6 +1447,141 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   /* Invitación de un amigo (aviso al centro) */
   .inv-aviso { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 16px; background: rgba(11,8,24,.78); animation: quemaEntra .2s both; }
   @media (prefers-reduced-motion: reduce) { .tiembla, .tiembla .alts li, .quema .ll, .quema .chispa, .borde-fuego, body.tension::before, .lanzar, .relampago .ri { animation: none !important; } }
+  /* ===== Sala de espera: arena con el búho de cada jugador ===== */
+  #reto .centro:has(> .arena) { max-width: 1000px; margin-left: auto; margin-right: auto; }
+  #reto .centro:has(> .arena) > :not(.arena) { max-width: 612px; margin-left: auto; margin-right: auto; }
+  .arena { --bh0: 180px; position: relative; margin: 18px 0 0; border-radius: 24px; overflow: hidden; text-align: center; border: 2px solid #2a2350; border-bottom-width: 5px;
+    background: radial-gradient(120% 70% at 50% 108%, #3b1f7a 0%, transparent 55%), linear-gradient(180deg, #120b2c 0%, #1c1142 55%, #0e0922 100%); }
+  .arena.n2 { --bh0: 230px; } .arena.n3 { --bh0: 215px; } .arena.n4 { --bh0: 200px; } .arena.n5 { --bh0: 185px; } .arena.n6 { --bh0: 175px; }
+  .arena::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .55;
+    background: conic-gradient(from 200deg at 15% -10%, transparent 0 10deg, rgba(198,224,0,.16) 14deg, transparent 22deg),
+                conic-gradient(from 130deg at 85% -10%, transparent 0 10deg, rgba(206,130,255,.18) 14deg, transparent 22deg),
+                conic-gradient(from 165deg at 50% -20%, transparent 0 8deg, rgba(255,255,255,.10) 11deg, transparent 15deg); }
+  .arena .piso { position: absolute; left: -10%; right: -10%; bottom: 0; height: 36%; pointer-events: none; background: radial-gradient(60% 100% at 50% 0%, #2c1a5e, #120a29 70%);
+    border-top: 2px solid rgba(198,224,0,.22); transform: perspective(500px) rotateX(35deg); transform-origin: top; }
+  .arena .piso::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 2px, transparent 2px 60px); }
+  .arena .a-cab { position: relative; z-index: 3; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px 0 18px; }
+  html body .arena .a-tit:not(#z) { font: italic 900 22px/1 var(--display) !important; letter-spacing: .04em; text-transform: uppercase; color: #fff; opacity: .9; }
+  .sala-foto { display: inline-flex; align-items: center; gap: 7px; padding: 8px 13px 7px 10px; border-radius: 13px; cursor: pointer; color: var(--lima-tx);
+    background: rgba(0,0,0,.38); border: 2px solid #3a3360; border-bottom-width: 4px; font: 800 15px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; }
+  .sala-foto svg { width: 21px; height: 21px; }
+  .sala-foto:hover { border-color: color-mix(in srgb, var(--lima) 60%, #3a3360); }
+  .sala-foto:active { transform: translateY(2px); border-bottom-width: 2px; }
+  .sala-foto:disabled { opacity: .6; cursor: progress; }
+  .arena .fila { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(var(--c), minmax(0, 1fr)); gap: 8px; padding: 26px 16px 20px; align-items: end; }
+  .arena.n2 .fila { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); max-width: 600px; margin: 0 auto; }
+  .arena.n3 .fila { max-width: 760px; margin: 0 auto; }
+  .arena .vs { align-self: center; margin-bottom: 70px; }
+  .arena .slot { position: relative; display: flex; flex-direction: column; align-items: center; min-width: 0; container-type: inline-size; }
+  .arena .bh-w { position: relative; z-index: 2; width: 100%; height: min(var(--bh0), 118cqw); display: flex; align-items: flex-end; justify-content: center; }
+  .arena .slot.frente .bh-w { height: min(calc(var(--bh0) * 1.12), 128cqw); }
+  .arena .bh-w[data-jug] { cursor: pointer; }
+  .arena .bh { position: relative; height: 100%; display: flex; align-items: flex-end; justify-content: center; animation: vaiven 4s ease-in-out infinite; transform-origin: 50% 100%; }
+  .arena .slot:nth-child(2n) .bh { animation-delay: -1.3s; } .arena .slot:nth-child(3n) .bh { animation-delay: -2.4s; }
+  @keyframes vaiven { 0%, 100% { transform: rotate(-1.5deg); } 50% { transform: rotate(1.5deg); } }
+  .arena .bh .mcb-antiguo { aspect-ratio: 200 / 210; }
+  .arena .bh .mcb-antiguo svg { width: 100% !important; height: 100% !important; overflow: visible; }
+  .arena .bh .mcb { position: relative; height: 100%; width: auto; max-width: none; z-index: 1; cursor: inherit; }
+  .arena .slot.entra .bh-w { animation: caeArena .75s cubic-bezier(.3, 1.45, .5, 1) both; }
+  @keyframes caeArena { 0% { transform: translateY(-46px) scale(.85); opacity: 0; } 60% { opacity: 1; } }
+  .arena .plat { width: 92%; max-width: 180px; height: 30px; margin-top: -16px; border-radius: 50%; position: relative; z-index: 1;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--jc) 55%, transparent), color-mix(in srgb, var(--jc) 15%, transparent) 70%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--jc) 70%, transparent), 0 0 26px color-mix(in srgb, var(--jc) 60%, transparent); }
+  .arena .slot.yo .plat { box-shadow: 0 0 0 3px var(--jc), 0 0 40px var(--jc); }
+  .arena .slot.entra .plat { animation: platLuz 1s ease-out both; }
+  @keyframes platLuz { 0% { filter: brightness(2.2); } }
+  /* Placa: nombre y pin a la izquierda, rango a la derecha; abajo estado y nombre del rango */
+  .arena .placa { position: relative; margin-top: 12px; width: 100%; max-width: 190px; text-align: left; border-radius: 14px; padding: 7px 9px 6px;
+    background: linear-gradient(180deg, rgba(20,14,44,.94), rgba(12,8,28,.96)); border: 2px solid color-mix(in srgb, var(--jc) 55%, #322B52); border-bottom: 4px solid var(--jd); }
+  .arena .slot.yo .placa { border-color: var(--jc); border-bottom-color: var(--jd); }
+  .arena .placa .r1 { display: flex; align-items: center; gap: 5px; min-width: 0; }
+  html body .arena .placa .nm:not(#z) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 800 18px/1.1 var(--display) !important; letter-spacing: .04em; text-transform: uppercase; color: var(--jc); }
+  .arena .placa .pin { width: 20px; height: 20px; flex: none; display: grid; place-items: center; }
+  .arena .placa .pin > * { width: 100%; height: 100%; }
+  .arena .placa .rg { width: 24px; flex: none; margin-left: auto; } .arena .placa .rg svg { width: 100%; height: auto; display: block; }
+  .arena .placa .r2 { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: 4px; font: 800 11.5px/1.2 Nunito, sans-serif; color: var(--dim); }
+  .arena .placa .st { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .arena .placa .st.ok { color: #58CC02; } .arena .placa .st svg { width: 13px; height: 13px; flex: none; }
+  .arena .placa .rg2 { display: none; }
+  .arena .placa .st i { font-style: normal; }
+  .arena .placa .rn { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
+  html body .arena .placa .anf:not(#z) { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); font: 800 11px/1 var(--display) !important; font-style: normal; letter-spacing: .1em; text-transform: uppercase;
+    color: #2b2100; background: var(--oro); padding: 4px 8px 3px; border-radius: 6px; white-space: nowrap; }
+  .arena .slot.libre { --jc: #A99FC8; --jd: #3a3360; }
+  .arena .slot.libre .bh { animation: none; }
+  .arena .slot.libre .bh .mcb { filter: brightness(0) invert(1); opacity: .08; }
+  .arena .slot.libre .plat { box-shadow: 0 0 0 2px rgba(111,102,144,.6); background: none; }
+  .arena .slot.libre .placa { border-style: dashed; border-bottom-style: solid; background: rgba(12,8,28,.6); }
+  html body .arena .slot.libre .placa .nm:not(#z) { color: #A99FC8; }
+  .arena .inv { position: absolute; z-index: 3; top: calc(min(var(--bh0), 118cqw) * .45); left: 50%; transform: translate(-50%, -50%); width: 52px; height: 52px; border-radius: 16px; cursor: pointer;
+    display: grid; place-items: center; border: 2px dashed #8e85b8; color: #e6e1ff; background: rgba(0,0,0,.35); animation: invLate 1.8s ease-in-out infinite; }
+  .arena .inv svg { width: 24px; height: 24px; }
+  .arena .inv:hover { border-color: var(--lima); color: var(--lima-tx); }
+  @keyframes invLate { 50% { border-color: var(--lima); color: var(--lima-tx); transform: translate(-50%, -50%) scale(1.06); } }
+  /* Celular: tú adelante en grande, los demás detrás */
+  @media (max-width: 700px) {
+    .arena { margin-left: -6px; margin-right: -6px; border-radius: 20px; }
+    .arena.n2 { --bh0: 170px; } .arena.n3 { --bh0: 140px; }
+    .arena .fila { gap: 4px; padding: 18px 8px 16px; }
+    .arena.frente-on .fila { grid-template-columns: repeat(var(--r), minmax(0, 1fr)); gap: 3px; padding: 12px 6px 16px; }
+    .arena.frente-on .slot { order: 1; }
+    .arena.frente-on .bh-w { height: min(92px, 128cqw); }
+    .arena.frente-on .plat { height: 16px; margin-top: -8px; }
+    .arena.frente-on .placa { margin-top: 6px; padding: 4px 4px 3px; border-radius: 10px; border-bottom-width: 3px; }
+    html body .arena.frente-on .placa .nm:not(#z) { font-size: 12.5px !important; }
+    .arena.frente-on .placa .r1 { gap: 2px; }
+    .arena.frente-on .placa .pin { width: 13px; height: 13px; } .arena.frente-on .placa .rg { width: 15px; }
+    .arena.frente-on .placa .r2 { font-size: 9.5px; margin-top: 2px; }
+    .arena.frente-on .placa .st svg { width: 10px; height: 10px; }
+    .arena.frente-on .placa .rn, .arena.frente-on .placa .r1 .rg, .arena.frente-on .placa .st i { display: none; }
+    .arena.frente-on .placa .rg2 { display: block; }
+    .arena.frente-on .placa .st svg { width: 12px !important; height: 12px !important; }
+    html body .arena.frente-on .placa .anf:not(#z) { font-size: 9px !important; padding: 3px 5px 2px; top: -9px; }
+    .arena.frente-on .inv { width: 34px; height: 34px; border-radius: 11px; top: 46px; } .arena.frente-on .inv svg { width: 16px; height: 16px; }
+    .arena.frente-on .slot.frente { order: 2; grid-column: 1 / -1; margin-top: 10px; }
+    .arena.frente-on .slot.frente .bh-w { height: 196px; }
+    .arena.frente-on .slot.frente .plat { height: 30px; margin-top: -16px; width: 64%; max-width: 230px; }
+    .arena.frente-on .slot.frente .placa { max-width: 250px; margin-top: 12px; padding: 8px 11px 7px; border-radius: 14px; border-bottom-width: 4px; }
+    html body .arena.frente-on .slot.frente .placa .nm:not(#z) { font-size: 21px !important; }
+    .arena.frente-on .slot.frente .placa .r1 { gap: 6px; }
+    .arena.frente-on .slot.frente .placa .pin { width: 22px; height: 22px; } .arena.frente-on .slot.frente .placa .rg { width: 26px; }
+    .arena.frente-on .slot.frente .placa .r2 { font-size: 12px; margin-top: 4px; }
+    .arena.frente-on .slot.frente .placa .st svg { width: 13px; height: 13px; }
+    .arena.frente-on .slot.frente .placa .rn, .arena.frente-on .slot.frente .placa .r1 .rg { display: block; }
+    .arena.frente-on .slot.frente .placa .st i { display: inline; }
+    .arena.frente-on .slot.frente .placa .rg2 { display: none; }
+    html body .arena.frente-on .slot.frente .placa .anf:not(#z) { font-size: 11px !important; padding: 4px 8px 3px; top: -11px; }
+    .arena .piso { height: 44%; }
+    .sala-foto { padding: 7px 10px 6px 8px; font-size: 13px; } .sala-foto svg { width: 19px; height: 19px; }
+    html body .arena .a-tit:not(#z) { font-size: 19px !important; }
+  }
+  @media (max-width: 360px) { .sala-foto span { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .arena .bh, .arena .slot.entra .bh-w, .arena .slot.entra .plat, .arena .inv { animation: none; } }
+  /* Cámara en el resultado */
+  .res .res-foto { position: absolute; top: 14px; right: 14px; z-index: 5; }
+  @media (max-width: 520px) { .res .res-foto { top: 10px; right: 10px; } .res .res-foto span { display: none; } .res .res-foto { padding: 8px; } }
+  /* Ventana de amigos (desde el «+») */
+  .hoja-fondo { position: fixed; inset: 0; z-index: 70; background: rgba(5,3,12,.78); display: grid; place-items: end center; padding: 16px; animation: hojaF .2s ease-out; }
+  @media (min-width: 701px) { .hoja-fondo { place-items: center; } }
+  @keyframes hojaF { from { opacity: 0; } }
+  .hoja { position: relative; width: min(480px, 100%); max-height: min(78vh, 640px); overflow-y: auto; background: var(--surface, #17122B); border: 2px solid var(--borde-g); border-bottom-width: 5px;
+    border-radius: 22px; padding: 6px 14px 14px; text-align: left; animation: hojaS .28s cubic-bezier(.3, 1.3, .5, 1); }
+  @keyframes hojaS { from { transform: translateY(40px); opacity: 0; } }
+  .hoja .amigos-inv { margin-top: 0; border: 0; background: none; padding: 8px 0 0; }
+  .hoja-x { position: absolute; top: 10px; right: 10px; z-index: 2; width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; cursor: pointer;
+    background: var(--surface-2, #1F1936); border: 2px solid var(--borde-g); color: var(--text, #fff); }
+  .hoja-x svg { width: 18px; height: 18px; }
+  .hoja .ai-vacio { padding: 18px 4px 8px; }
+  /* Foto para estados */
+  .foto-fondo { position: fixed; inset: 0; z-index: 80; background: rgba(5,3,12,.88); display: grid; place-items: center; padding: 16px; }
+  .foto-caja { width: min(380px, 100%); text-align: center; }
+  .foto-caja img { width: 100%; max-height: calc(100vh - 110px); object-fit: contain; border-radius: 18px; box-shadow: 0 20px 60px rgba(0,0,0,.6); display: block; margin: 0 auto; }
+  .foto-caja .bt { display: flex; gap: 10px; margin-top: 12px; }
+  .foto-caja .fb { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 13px 12px 11px; border-radius: 14px; cursor: pointer; text-decoration: none;
+    font: italic 900 19px/1 var(--display); letter-spacing: .04em; text-transform: uppercase; border: 2px solid var(--borde-g); border-bottom-width: 5px; background: var(--surface-2, #1F1936); color: var(--text, #fff); }
+  .foto-caja .fb svg { width: 19px; height: 19px; }
+  .foto-caja .fb.comp { background: var(--lima); color: #151A03; border-color: #8fa300; }
+  .foto-caja .fb.x { flex: 0 0 52px; padding: 0; }
 </style>
 </head>
 <body>
@@ -1323,7 +1630,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
         </div>
         <div class="campo" style="--c:var(--azul)">
           <span class="lbl"><i class="li"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.2a6.5 6.5 0 0 1 3.5 5.8"/></svg></i>Jugadores</span>
-          <div class="chips jug" id="jugadores"><button type="button" data-j="2" class="on"><span class="pj"><i class="c0"></i><i class="c1"></i></span>1 vs 1</button><button type="button" data-j="3"><span class="pj"><i class="c0"></i><i class="c1"></i><i class="c2"></i></span>3</button><button type="button" data-j="4"><span class="pj"><i class="c0"></i><i class="c1"></i><i class="c2"></i><i class="c3"></i></span>4</button></div>
+          <div class="chips jug" id="jugadores"><button type="button" data-j="2" class="on"><span class="pj"><i class="c0"></i><i class="c1"></i></span>1 vs 1</button><button type="button" data-j="3"><span class="pj"><i class="c0"></i><i class="c1"></i><i class="c2"></i></span>3</button><button type="button" data-j="4"><span class="pj"><i class="c0"></i><i class="c1"></i><i class="c2"></i><i class="c3"></i></span>4</button><button type="button" data-j="5"><span class="pj"><i class="c0"></i><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i></span>5</button><button type="button" data-j="6"><span class="pj"><i class="c0"></i><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i><i class="c5"></i></span>6</button></div>
           <label class="check auto"><input type="checkbox" id="chkAuto" checked role="switch"><span><b>Inicio automático</b><small>Empieza solo cuando se llena la sala. Si lo quitas, tú tocas Iniciar.</small></span></label>
         </div>
         <div class="campo" style="--c:var(--naranja)">
@@ -1379,7 +1686,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       <p class="hint" id="retoSub"></p>
       <div class="ficha" id="retoFicha"></div>
       <div class="cierre" id="retoCierre"><i></i><span></span></div>
-      <div class="sala" id="retoSala"></div>
+      <div class="arena" id="retoSala"></div>
       <div id="retoElegir"></div>
       <div id="retoCompartir">
         <div class="ticket">
@@ -1412,6 +1719,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
         <span id="seg">30</span>
       </div>
       <div class="cam"><div class="camino" id="camino"></div><div class="camino-l"><span id="camTxt"></span><span id="pNum"></span></div></div>
+      <button type="button" class="plegar" id="plegar" aria-expanded="true"></button>
     </div>
     <div id="nieblaAv"></div>
     <div id="fuegoBar"></div>
@@ -1433,6 +1741,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   <section id="resultado" hidden>
     <div class="card res" id="resCard" style="margin-top:14px">
       <div class="trofeo" id="resTrofeo" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/><path d="M12 14v4M8 21h8M9 18h6"/></svg></div>
+      <button type="button" class="sala-foto res-foto" id="resFoto" hidden aria-label="Foto del resultado para tus estados" title="Foto del resultado para tus estados"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.8l1.4-2h4.6l1.4 2h1.8A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"/><circle cx="12" cy="12.4" r="3.6"/></svg><span>Foto</span></button>
       <div class="eyebrow" id="resEye"></div>
       <span class="tema" id="resTema"></span>
       <h1 id="resTit"></h1>
@@ -1593,7 +1902,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   function son(n, x) { try { if (window.MCSonido && MCSonido.activo && MCSonido[n]) MCSonido[n](x); } catch (e) {} }
   // Sondeo: con la pestaña oculta no se pregunta nada (ahorra tráfico de Supabase)
   const siVisible = fn => () => { if (!document.hidden) return fn(); };
-  function pararSondeo() { if (sondeo) { clearInterval(sondeo); sondeo = null; } if (reloj1s) { clearInterval(reloj1s); reloj1s = null; } }
+  function pararSondeo() { cerrarHojaAmigos(); if (sondeo) { clearInterval(sondeo); sondeo = null; } if (reloj1s) { clearInterval(reloj1s); reloj1s = null; } }
   function cuentaRacha() {
     // Cada respuesta cuenta para la racha de estudio (assets/racha.js)
     window.MCRacha ? MCRacha.respondio() : (window.mcRachaPend = (window.mcRachaPend || 0) + 1);
@@ -1606,7 +1915,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   function quedaSala() { return V ? new Date(V.vence) - (Date.now() + desfase) : 0; }
   function mmss(ms) { const s = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
   // Color de cada jugador por orden de llegada (el mismo en todos los celulares)
-  const colorDe = j => 'c' + ((j && j.color) || 0) % 4;
+  const colorDe = j => 'c' + ((j && j.color) || 0) % 6;
   const nombreDe = j => j.yo ? 'Tú' : j.apodo;
   // Emblema del rango de la semana sobre la esquina del avatar (assets/rango.js; xp viene de ver_duelo, supabase/24)
   const rangoDe = j => j && j.xp != null && window.MCRango && MCRango.nivel(j.xp) >= 0 ? '<span class="rgo" title="' + MCRango.nombre(MCRango.nivel(j.xp)) + '">' + MCRango.svg(MCRango.nivel(j.xp), { mini: true }) + '</span>' : '';
@@ -1614,7 +1923,25 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   const MARCO = 'M23 4H32A10 10 0 0 1 42 14V32A10 10 0 0 1 32 42H14A10 10 0 0 1 4 32V14A10 10 0 0 1 14 4Z';
   // Foto de perfil (ver_duelo la manda desde 30-duelo-fotos.sql); la tuya también sale de la tarjeta de arriba
   const fotoDe = j => { const f = (j && j.foto) || (j && j.yo && (document.querySelector('header .mcu-av img') || {}).src) || ''; return /^https:\/\//.test(f) ? f : ''; };
-  const avatar = (j, extra) => { const f = fotoDe(j); return '<span class="av ' + colorDe(j) + (f ? ' con-foto' : '') + (extra || '') + '">' + esc(inicial(j.yo ? 'Tú' : j.apodo)) + (f ? '<img class="foto" src="' + esc(f) + '" alt="" referrerpolicy="no-referrer" onerror="this.parentNode.classList.remove(\'con-foto\');this.remove()">' : '') + rangoDe(j) + '</span>'; };
+  // Foto, marco y pin de cada jugador como en los tops (assets/tarjeta-perfil.js: vista y pinDe; ver_duelo los manda desde 114).
+  // Fuera del juego se puede tocar para ver su tarjeta; en pleno juego no (para no abrirla sin querer).
+  let cssCol = false;
+  const enJuego = () => { const s = document.getElementById('juego'); return !!(s && !s.hidden); };
+  const avatar = (j, extra) => {
+    const T = window.MCTarjeta, C = window.MCColeccion;
+    if (C && C.css && !cssCol) { cssCol = true; try { C.css(); } catch (e) {} }
+    const x = { apodo: j.apodo, yo: !!j.yo, foto: j.foto, avatar: j.avatar, marco: j.marco, fondo: j.fondo, pin: j.pin };
+    let v = null, p = null;
+    try { v = T && T.vista ? T.vista(x) : null; p = T && T.pinDe ? T.pinDe(x) : null; } catch (e) {}
+    const f = (v && v.img) || fotoDe(j), m = v && v.marco, mo = v && v.mo;
+    const cod = !enJuego() && (j.codigo || (j.yo && T && T.jugador() && T.jugador().codigo));
+    return '<span class="av ' + colorDe(j) + (f ? ' con-foto' : '') + (m ? ' con-marco' : '') + (mo ? ' mc-mo' : '') + (extra || '') + '"' +
+      (m || mo ? ' style="' + (m ? '--m:' + esc(m) + ';' : '') + (mo ? '--mo:url(&quot;' + esc(mo) + '&quot;);' : '') + '"' : '') +
+      (cod ? ' data-jug="' + esc(cod) + '" role="button" tabindex="0" aria-label="Ver el perfil de ' + esc(j.yo ? 'ti' : j.apodo) + '"' : '') + '>' +
+      esc(inicial(j.yo ? 'Tú' : j.apodo)) +
+      (f ? '<img class="foto" src="' + esc(f) + '" alt="" referrerpolicy="no-referrer" onerror="this.parentNode.classList.remove(\'con-foto\');this.remove()">' : '') +
+      (p ? '<i class="av-pin">' + p.html + '</i>' : '') + rangoDe(j) + '</span>';
+  };
   const cmdCard = k => '<div class="cmd" style="--c:' + CMD[k].c + ';--tc:' + TIPOS[CMD[k].t][1] + '"><div class="ci">' + IC[k] + '</div><b>' + CMD[k].nom + '</b><small>' + CMD[k].que + '</small><span class="tipo">' + TIPOS[CMD[k].t][0] + '</span></div>';
   const fuegoCard = () => '<div class="cmd fue" style="--c:var(--naranja);--tc:var(--naranja)"><div class="ci">' + IC.llama + '</div><b>Llamarada</b><small>3 seguidas: quema a tus rivales. 5 seguidas: Volcán</small><span class="tipo">Se gana jugando</span></div>';
   function toast(html, color, ic) {
@@ -2093,18 +2420,252 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     if (libres(d) <= 0) { aviso('Este duelo ya está lleno (' + d.max + ' jugadores). Crea el tuyo y reta a quien quieras.', 'Crear mi duelo'); return; }
     pintarReto();
   }
+  /* Sala de espera: escenario con el búho de cada jugador en su plataforma */
   const VISTOS = {};
-  function salaHtml(d) {
-    const js = d.jugadores;
-    let html = '';
-    for (let i = 0; i < d.max; i++) {
-      const j = js[i];
-      if (i === 1 && d.max === 2) html += '<div class="vs" aria-hidden="true">VS</div>';
-      if (!j) { html += '<div class="puesto-sala libre"><span class="av">+</span><b>Libre</b><small>Esperando<i class="pts3"><i>.</i><i>.</i><i>.</i></i></small></div>'; continue; }
-      html += '<div class="puesto-sala ' + colorDe(j) + (j.yo ? ' yo' : '') + (VISTOS[j.apodo] ? '' : ' entra') + '">' + avatar(j) + '<b>' + esc(nombreDe(j)) + '</b><small>' + (j.xp != null && window.MCRango && MCRango.nivel(j.xp) >= 0 ? '<i class="rgo-n r' + MCRango.nivel(j.xp) + '">' + MCRango.nombre(MCRango.nivel(j.xp)) + '</i> · ' : '') + (d.cmd_cant > 0 && !d.empieza ? (j.eligio ? '<span class="eligio">Comodines listos</span>' : '<span class="eligiendo">Eligiendo…</span>') : j.creador ? 'Anfitrión' : 'Listo') + '</small></div>';
-      VISTOS[j.apodo] = 1;
+  const SV = (p, w) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' + (w || 2.6) + '" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>';
+  const SALA_IC = {
+    ok: SV('<path d="M5 12l5 5 9-10"/>', 3.4),
+    reloj: SV('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
+    mas: SV('<path d="M12 5v14M5 12h14"/>', 3.2),
+    cam: SV('<path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.8l1.4-2h4.6l1.4 2h1.8A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"/><circle cx="12" cy="12.4" r="3.6"/>', 2.3),
+    x: SV('<path d="M6 6l12 12M18 6L6 18"/>', 3),
+    comp: SV('<path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/>', 2.4),
+    baja: SV('<path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 19h14"/>', 2.4)
+  };
+  // Búho que tiene puesto (Clásico, Rosa, Rosa navidad…). Sin dato: el de siempre.
+  function pjDe(j) {
+    const C = window.MCColeccion;
+    let id = j && j.buho;
+    if (!id && j && j.yo && C && C.estado && C.estado().listo) id = C.puesto('buho');
+    if (id === 'buho-antiguo' && window.MCBuho) return 'antiguo';   // el del logo (assets/buho.js), dibujado en SVG
+    const x = id && C && C.item(id);
+    return x && x.pj && window.MCBuhoAmigos && MCBuhoAmigos[x.pj] ? x.pj : '';
+  }
+  const puedeInvitar = d => !!d.yo && !d.empieza && !d.cerrado && quedaSala() > 0 && libres(d) > 0;
+  // Orden: el del frente (tú, o el anfitrión si aún no entras) va al medio; en el celular pasa adelante
+  function salaOrden(d) {
+    const js = d.jugadores, frente = js.find(j => j.yo) || js.find(j => j.creador) || js[0] || null;
+    const L = js.filter(j => j !== frente);
+    while (L.length + (frente ? 1 : 0) < d.max) L.push(null);
+    const fila = L.slice();
+    if (frente) fila.splice(d.max === 2 ? 0 : Math.floor((d.max - 1) / 2), 0, frente);
+    return { frente, atras: L, fila };
+  }
+  function nivelDe(j) { return j && j.xp != null && window.MCRango ? MCRango.nivel(j.xp) : -1; }
+  function placaHtml(j, d) {
+    if (!j) return '<div class="r1"><span class="nm">Libre</span></div><div class="r2"><span class="st">' + (puedeInvitar(d) ? SALA_IC.mas + 'Invitar' : 'Esperando<i class="pts3"><i>.</i><i>.</i><i>.</i></i>') + '</span></div>';
+    const nv = nivelDe(j), p = window.MCTarjeta && MCTarjeta.pinDe ? MCTarjeta.pinDe(j) : null;
+    const ok = !(d.cmd_cant > 0 && !d.empieza) || j.eligio;
+    return (j.creador ? '<i class="anf">Anfitrión</i>' : '') +
+      '<div class="r1">' + (p ? '<span class="pin">' + p.html + '</span>' : '') + '<span class="nm">' + esc(j.apodo || nombreDe(j)) + '</span>' +
+      (nv >= 0 ? '<span class="rg" title="' + MCRango.nombre(nv) + '">' + MCRango.svg(nv, { mini: true, quieto: true }) + '</span>' : '') + '</div>' +
+      '<div class="r2"><span class="st' + (ok ? ' ok' : '') + '">' + (ok ? SALA_IC.ok + '<i>Listo</i>' : SALA_IC.reloj + '<i>Eligiendo</i>') + '</span>' +
+      (nv >= 0 ? '<span class="rn" style="color:' + MCRango.color(nv).c + '">' + MCRango.nombre(nv) + '</span><span class="rg rg2">' + MCRango.svg(nv, { mini: true, quieto: true }) + '</span>' : '') + '</div>';
+  }
+  function pintarSala(d) {
+    const caja = $('retoSala'); if (!caja) return;
+    const { fila } = salaOrden(d), inv = puedeInvitar(d), frenteOn = d.max >= 4;
+    const firma = d.max + '|' + (inv ? 1 : 0) + '|' + fila.map(j => j ? j.apodo + ':' + pjDe(j) : '-').join(',');
+    if (caja.dataset.firma === firma) {
+      // Solo cambian las placas (listo, eligiendo, rango): los búhos siguen con su animación
+      caja.querySelectorAll('.slot').forEach((s, i) => { const h = placaHtml(fila[i], d); if (s.lastChild.innerHTML !== h) s.lastChild.innerHTML = h; });
+      return;
     }
-    return html;
+    // Reusa los búhos que ya estaban para que no reinicien su animación
+    const viejos = {};
+    caja.querySelectorAll('.slot[data-k]').forEach(s => { const m = s.querySelector('.bh .mcb'); if (m) viejos[s.dataset.k] = m; });
+    caja.dataset.firma = firma;
+    caja.className = 'arena n' + d.max + (frenteOn ? ' frente-on' : '');
+    caja.style.setProperty('--c', d.max);
+    caja.style.setProperty('--r', Math.max(1, d.max - 1));
+    caja.innerHTML = '<div class="piso" aria-hidden="true"></div><div class="a-cab"><span class="a-tit">Sala de espera</span>' +
+      '<button type="button" class="sala-foto" id="salaFoto" aria-label="Foto para tus estados" title="Foto para tus estados">' + SALA_IC.cam + '<span>Foto</span></button></div><div class="fila"></div>';
+    const cont = caja.querySelector('.fila'), F = salaOrden(d).frente;
+    fila.forEach((j, i) => {
+      if (d.max === 2 && i === 1) { const v = document.createElement('div'); v.className = 'vs'; v.setAttribute('aria-hidden', 'true'); v.textContent = 'VS'; cont.append(v); }
+      const s = document.createElement('div'), pj = j ? pjDe(j) : '', k = j ? j.apodo + ':' + pj : '';
+      s.className = 'slot ' + (j ? colorDe(j) : 'libre') + (j && j.yo ? ' yo' : '') + (j && j === F ? ' frente' : '') + (j && !VISTOS[j.apodo] ? ' entra' : '');
+      if (k) s.dataset.k = k;
+      const w = document.createElement('div'); w.className = 'bh-w';
+      if (j && j.codigo && !j.yo) { w.dataset.jug = j.codigo; w.setAttribute('role', 'button'); w.setAttribute('tabindex', '0'); w.setAttribute('aria-label', 'Ver a ' + j.apodo); }
+      const bh = document.createElement('div'); bh.className = 'bh';
+      let m = k && viejos[k];
+      if (!m && pj === 'antiguo') { m = document.createElement('div'); m.className = 'mcb mcb-antiguo'; m.innerHTML = MCBuho.svg(j && j.yo ? 'feliz' : 'normal', 200); }
+      else if (!m && window.MCBuhoVivo) { try { m = MCBuhoVivo.crear(j && j.yo ? 'saludando' : 'oficial', pj); } catch (e) { m = null; } }
+      if (m) bh.append(m);
+      w.append(bh); s.append(w);
+      if (!j && inv) { const b = document.createElement('button'); b.type = 'button'; b.className = 'inv'; b.dataset.invitar = '1'; b.setAttribute('aria-label', 'Invitar a un amigo'); b.innerHTML = SALA_IC.mas; s.append(b); }
+      const pl = document.createElement('div'); pl.className = 'plat'; pl.setAttribute('aria-hidden', 'true'); s.append(pl);
+      const pc = document.createElement('div'); pc.className = 'placa'; pc.innerHTML = placaHtml(j, d); s.append(pc);
+      cont.append(s);
+      if (j) VISTOS[j.apodo] = 1;
+    });
+    if (window.MCColeccion && MCColeccion.css) MCColeccion.css();
+  }
+  $('retoSala').addEventListener('click', e => {
+    if (e.target.closest('[data-invitar]')) { son('toque'); abrirHojaAmigos(); return; }
+    if (e.target.closest('#salaFoto')) fotoSala();
+  });
+
+  /* Foto de la sala para estados (1080 × 1920) */
+  function cargaImg(src) { return new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = src; }); }
+  // El emblema del rango viene como <img> (webp) o como <svg>
+  function svgImg(s) {
+    if (!s) return Promise.resolve(null);
+    const m = /^\s*<img[^>]*\ssrc="([^"]+)"/.exec(s);
+    if (m) return cargaImg(m[1].replace(/&amp;/g, '&'));
+    if (!/xmlns=/.test(s)) s = s.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+    return cargaImg('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s));
+  }
+  async function capasBuho(pj, pose) {
+    if (pj === 'antiguo') { const im = await svgImg(MCBuho.svg(pose === 'saludando' || pose === 'logro' ? 'feliz' : 'normal', 400)); return im ? { antiguo: im } : null; }
+    const am = pj && window.MCBuhoAmigos && MCBuhoAmigos[pj], DS = am ? am.datos : window.MCBuhoDatos;
+    if (!DS) return null;
+    const p = DS[pose] ? pose : 'oficial', dd = DS[p], base = ['feet', 'wings', 'body', 'mouth', 'brow'];
+    let L = [];
+    base.forEach(k => { if (k === 'mouth' && p === 'oficial') return; L = L.concat(dd.L.filter(l => l.k === k)); });
+    L = L.concat(dd.L.filter(l => base.indexOf(l.k) < 0));
+    const ims = await Promise.all(L.map(l => cargaImg('assets/buho/capas/' + l.f)));
+    return { dd, L, ims };
+  }
+  function dibBuho(x, b, cx, pie, h, sombra) {
+    if (!b) return;
+    if (b.antiguo) {
+      // viewBox 0 0 200 210, las patas llegan a y≈202
+      const w = h * 200 / 210, x0a = cx - w / 2, y0a = pie - h * 202 / 210;
+      if (!sombra) { x.drawImage(b.antiguo, x0a, y0a, w, h); return; }
+      const t = document.createElement('canvas'); t.width = Math.ceil(w); t.height = Math.ceil(h);
+      const tx = t.getContext('2d'); tx.drawImage(b.antiguo, 0, 0, w, h);
+      tx.globalCompositeOperation = 'source-in'; tx.fillStyle = '#fff'; tx.fillRect(0, 0, t.width, t.height);
+      x.save(); x.globalAlpha = .1; x.drawImage(t, x0a, y0a); x.restore(); return;
+    }
+    const s = h / b.dd.H, x0 = cx - b.dd.W * s / 2, y0 = pie - b.dd.fb * s;
+    if (sombra) {
+      const t = document.createElement('canvas'); t.width = Math.ceil(b.dd.W * s); t.height = Math.ceil(b.dd.H * s);
+      const tx = t.getContext('2d');
+      b.L.forEach((l, i) => { if (b.ims[i]) tx.drawImage(b.ims[i], l.x * s, l.y * s, l.w * s, l.h * s); });
+      tx.globalCompositeOperation = 'source-in'; tx.fillStyle = '#fff'; tx.fillRect(0, 0, t.width, t.height);
+      x.save(); x.globalAlpha = .1; x.drawImage(t, x0, y0); x.restore(); return;
+    }
+    b.L.forEach((l, i) => { if (b.ims[i]) x.drawImage(b.ims[i], x0 + l.x * s, y0 + l.y * s, l.w * s, l.h * s); });
+  }
+  function rr(x, X, Y, w, h, r) { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); }
+  const COLOR_J = [['#C6E000', '#8fa300'], ['#1CB0F6', '#0f7fb8'], ['#FF9600', '#c46e00'], ['#CE82FF', '#9a4fd1'], ['#FF5FA2', '#b8336e'], ['#2EE6C5', '#149e86']];
+  function corta(x, t, w) { if (x.measureText(t).width <= w) return t; while (t.length > 1 && x.measureText(t + '…').width > w) t = t.slice(0, -1); return t + '…'; }
+  function plataforma(x, cx, y, w, c) {
+    const g = x.createRadialGradient(cx, y, 0, cx, y, w / 2);
+    g.addColorStop(0, c + 'AA'); g.addColorStop(.7, c + '30'); g.addColorStop(1, c + '00');
+    x.save(); x.beginPath(); x.ellipse(cx, y, w / 2, w * .1, 0, 0, Math.PI * 2); x.fillStyle = g; x.fill();
+    x.lineWidth = 5; x.strokeStyle = c + 'CC'; x.shadowColor = c; x.shadowBlur = 30; x.stroke(); x.restore();
+  }
+  // Placa con nombre a la izquierda y rango a la derecha
+  function placaFoto(x, j, cx, y, w, h, grande, rg) {
+    const c = j ? COLOR_J[((j.color || 0) % 6)] : ['#A99FC8', '#3a3360'];
+    x.save();
+    rr(x, cx - w / 2, y, w, h, grande ? 26 : 16); x.fillStyle = 'rgba(14,9,32,.94)'; x.fill();
+    x.lineWidth = grande ? 5 : 3; x.strokeStyle = j ? c[0] : '#4a4270'; if (!j) x.setLineDash([10, 8]); x.stroke(); x.setLineDash([]);
+    x.fillStyle = c[1]; x.fillRect(cx - w / 2 + 10, y + h - (grande ? 7 : 5), w - 20, grande ? 7 : 5);
+    const pad = grande ? 26 : 12, em = grande ? 64 : 38;
+    x.textBaseline = 'middle'; x.textAlign = 'left';
+    x.font = (grande ? '800 60px' : '800 32px') + ' "Barlow Condensed", sans-serif';
+    x.fillStyle = j ? c[0] : '#8b82ad';
+    const nm = j ? String(j.apodo || '').toUpperCase() : 'LIBRE';
+    const ty = grande ? y + h * .38 : y + h / 2;
+    x.fillText(corta(x, nm, w - pad * 2 - (rg ? em + 8 : 0)), cx - w / 2 + pad, ty);
+    if (rg) x.drawImage(rg, cx + w / 2 - pad - em, ty - em / 2, em, em);
+    if (grande && j && nivelDe(j) >= 0) {
+      const nv = nivelDe(j);
+      x.font = '800 30px Nunito, sans-serif'; x.fillStyle = '#A99FC8'; x.fillText(j.creador ? 'Anfitrión' : 'Retador', cx - w / 2 + pad, y + h * .76);
+      x.textAlign = 'right'; x.fillStyle = MCRango.color(nv).c; x.fillText(MCRango.nombre(nv), cx + w / 2 - pad, y + h * .76);
+    }
+    x.restore();
+  }
+  async function fotoSala() {
+    const d = V, btn = $('salaFoto'); if (!d || !btn || btn.disabled) return;
+    btn.disabled = true; son('toque');
+    try {
+      try { await Promise.all([document.fonts.load('italic 900 120px "Barlow Condensed"'), document.fonts.load('800 60px "Barlow Condensed"'), document.fonts.load('800 40px Nunito')]); } catch (e) {}
+      const W = 1080, H = 1920, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+      const x = cv.getContext('2d'), { frente, atras } = salaOrden(d);
+      // Fondo de arena con luces
+      let g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#120b2c'); g.addColorStop(.55, '#1c1142'); g.addColorStop(1, '#0a0716');
+      x.fillStyle = g; x.fillRect(0, 0, W, H);
+      [[150, 'rgba(198,224,0,.13)', 1300], [930, 'rgba(206,130,255,.15)', 1300], [540, 'rgba(255,255,255,.07)', 1500]].forEach(([bx, col, largo]) => {
+        const lg = x.createLinearGradient(bx, 0, bx, largo); lg.addColorStop(0, col); lg.addColorStop(1, 'rgba(0,0,0,0)');
+        x.fillStyle = lg; x.beginPath(); x.moveTo(bx - 30, 0); x.lineTo(bx + 30, 0); x.lineTo(bx + 260, largo); x.lineTo(bx - 260, largo); x.closePath(); x.fill();
+      });
+      for (let i = 0; i < 60; i++) { const sx = (i * 397) % W, sy = (i * 263) % 1100; x.fillStyle = 'rgba(255,255,255,' + (.15 + (i % 5) * .08) + ')'; x.beginPath(); x.arc(sx, sy, 1.5 + (i % 3), 0, 7); x.fill(); }
+      const piso = x.createRadialGradient(W / 2, 1480, 0, W / 2, 1480, 700); piso.addColorStop(0, 'rgba(91,52,180,.55)'); piso.addColorStop(1, 'rgba(18,10,41,0)');
+      x.fillStyle = piso; x.fillRect(0, 1000, W, 920);
+      // Logo y título
+      const logo = await cargaImg('assets/img/logo-modo-cachimbo-horizontal.svg');
+      if (logo) { const lw = 470, lh = logo.naturalWidth ? lw * logo.naturalHeight / logo.naturalWidth : 110; x.drawImage(logo, (W - lw) / 2, 80, lw, lh); }
+      x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+      x.font = 'italic 900 132px "Barlow Condensed", sans-serif'; x.fillStyle = '#C6E000';
+      x.shadowColor = 'rgba(198,224,0,.45)'; x.shadowBlur = 40; x.fillText('SALA DE DUELO', W / 2, 345); x.shadowBlur = 0;
+      x.font = '800 44px Nunito, sans-serif'; x.fillStyle = '#fff'; x.fillText(corta(x, d.titulo || '', 980), W / 2, 415);
+      x.font = '800 32px Nunito, sans-serif'; x.fillStyle = '#A99FC8';
+      x.fillText(d.n + ' preguntas · ' + tiempoTxt(d.seg || 60) + ' cada una · ' + d.jugadores.length + ' de ' + d.max + ' jugadores', W / 2, 468);
+      // Búhos y rangos (cargados antes de dibujar)
+      const pose = j => j && j.yo ? 'saludando' : 'oficial';
+      const todos = (frente ? [frente] : []).concat(atras);
+      const B = await Promise.all(todos.map(j => capasBuho(j ? pjDe(j) : '', pose(j))));
+      const R = await Promise.all(todos.map(j => nivelDe(j) >= 0 ? svgImg(MCRango.svg(nivelDe(j), { quieto: true })) : null));
+      if (d.max >= 4) {
+        // Fila de atrás
+        const r = atras.length, sw = Math.min(210, 1000 / r), h = Math.min(280, sw * 1.3), pie = 860;
+        atras.forEach((j, i) => {
+          const cx = W / 2 + (i - (r - 1) / 2) * sw;
+          if (j) plataforma(x, cx, pie - 4, sw * .95, COLOR_J[(j.color || 0) % 6][0]);
+          dibBuho(x, B[i + 1], cx, pie, h, !j);
+          placaFoto(x, j, cx, pie + 30, sw - 12, 58, false, R[i + 1]);
+        });
+        // Adelante: tú (o el anfitrión) en grande
+        if (frente) {
+          plataforma(x, W / 2, 1418, 560, COLOR_J[(frente.color || 0) % 6][0]);
+          dibBuho(x, B[0], W / 2, 1424, 540);
+          placaFoto(x, frente, W / 2, 1450, 600, 140, true, R[0]);
+        }
+      } else {
+        // 1 vs 1 o de 3: todos en una fila, del mismo tamaño
+        const fila = d.max === 2 ? [frente].concat(atras) : [atras[0], frente, atras[1]];
+        const bi = j => j === frente ? 0 : 1 + atras.indexOf(j);
+        const sw = d.max === 2 ? 470 : 340, h = d.max === 2 ? 540 : 420, pie = 1380;
+        fila.forEach((j, i) => {
+          const cx = W / 2 + (i - (fila.length - 1) / 2) * (sw + (d.max === 2 ? 60 : 0));
+          if (j) plataforma(x, cx, pie - 6, sw * .9, COLOR_J[(j.color || 0) % 6][0]);
+          dibBuho(x, B[bi(j)], cx, pie, h, !j);
+          placaFoto(x, j, cx, pie + 30, sw - 20, 130, true, R[bi(j)]);
+        });
+        if (d.max === 2) { x.font = 'italic 900 150px "Barlow Condensed", sans-serif'; x.fillStyle = '#FFC800'; x.textAlign = 'center'; x.shadowColor = 'rgba(0,0,0,.5)'; x.shadowBlur = 0; x.shadowOffsetY = 8; x.fillText('VS', W / 2, pie - 200); x.shadowOffsetY = 0; }
+      }
+      // Reto con el código
+      const by = 1630;
+      rr(x, 70, by, W - 140, 220, 30); x.fillStyle = 'rgba(198,224,0,.08)'; x.fill(); x.lineWidth = 4; x.setLineDash([18, 12]); x.strokeStyle = 'rgba(198,224,0,.7)'; x.stroke(); x.setLineDash([]);
+      x.textAlign = 'center';
+      x.font = 'italic 900 64px "Barlow Condensed", sans-serif'; x.fillStyle = '#fff'; x.fillText('¿TE ATREVES? ENTRA CON EL CÓDIGO', W / 2, by + 78);
+      x.font = 'italic 900 100px "Barlow Condensed", sans-serif'; x.fillStyle = '#C6E000'; x.fillText(String(d.codigo).split('').join(' '), W / 2, by + 178);
+      x.font = '800 28px Nunito, sans-serif'; x.fillStyle = '#A99FC8'; x.fillText(enlace(d.codigo).replace(/^https?:\/\//, ''), W / 2, by + 262);
+      const bl = await new Promise(r => cv.toBlob(r, 'image/png'));
+      if (bl) mostrarFotoSala(bl);
+    } catch (e) { $('retoError').textContent = 'No se pudo armar la foto. Intenta otra vez.'; $('retoError').hidden = false; }
+    btn.disabled = false;
+  }
+  function mostrarFotoSala(bl, etiqueta, nombre, texto) {
+    const url = URL.createObjectURL(bl);
+    nombre = nombre || 'duelo-modo-cachimbo.png';
+    let archivo = null; try { archivo = new File([bl], nombre, { type: 'image/png' }); } catch (e) {}
+    const puede = archivo && navigator.canShare && navigator.canShare({ files: [archivo] });
+    const f = document.createElement('div'); f.className = 'foto-fondo';
+    f.innerHTML = '<div class="foto-caja" role="dialog" aria-modal="true" aria-label="' + (etiqueta || 'Foto de la sala') + '"><img src="' + url + '" alt="' + (etiqueta || 'Foto de la sala de duelo') + '"><div class="bt">' +
+      (puede ? '<button type="button" class="fb comp" data-f="compartir">' + SALA_IC.comp + 'Compartir</button>' : '') +
+      '<a class="fb baj" href="' + url + '" download="' + nombre + '">' + SALA_IC.baja + 'Descargar</a><button type="button" class="fb x" data-f="cerrar" aria-label="Cerrar">' + SALA_IC.x + '</button></div></div>';
+    document.body.append(f);
+    f.addEventListener('click', e => {
+      const b = e.target.closest('[data-f]');
+      if ((b && b.dataset.f === 'cerrar') || e.target === f) { f.remove(); URL.revokeObjectURL(url); return; }
+      if (b && b.dataset.f === 'compartir') navigator.share({ files: [archivo], title: 'Modo Cachimbo', text: texto || '¿Te atreves? Entra a mi duelo: ' + enlace(V.codigo) }).catch(() => {});
+    });
   }
   function libres(d) { return d.max - d.jugadores.length; }
   function pintarCierre(el) {
@@ -2142,8 +2703,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       ? 'Envíales el código o el enlace. Todos empiezan a la vez cuando la sala esté lista.'
       : 'Las mismas ' + d.n + ' preguntas para todos. Gana quien suma más puntos.';
     $('retoFicha').innerHTML = fichaHtml(d);
-    $('retoSala').style.setProperty('--n', d.max);
-    $('retoSala').innerHTML = salaHtml(d);
+    pintarSala(d);
     pintarCierre($('retoCierre'));
     $('retoCompartir').hidden = d.cerrado;
     $('retoCodigo').textContent = d.codigo;
@@ -2164,7 +2724,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       guardar(n);
       if (n.empieza && n.yo) { arrancar(); return; }
       if (n.empieza && !n.yo) { pararSondeo(); aviso('El duelo empezó sin ti. Crea el tuyo y reta a quien quieras.', 'Crear mi duelo'); return; }
-      $('retoSala').innerHTML = salaHtml(n);
+      pintarSala(n);
       $('retoCompartir').hidden = n.cerrado;
       pintarBoton();
       pintarEleccion(false);
@@ -2221,31 +2781,50 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
 
   /* Invitar a tus amigos directo desde la sala */
   let amigosLista = null, invitados = {};
-  function pintarAmigos(primera) {
-    const d = V, caja = $('retoAmigos');
-    if (!d.yo || d.empieza || d.cerrado || quedaSala() <= 0 || libres(d) <= 0) { caja.innerHTML = ''; return; }
-    if (amigosLista === null && primera) {
-      amigosLista = 'cargando';
-      rpc('mis_amigos').then(r => { amigosLista = (r && r.amigos) || []; pintarAmigos(false); }).catch(() => { amigosLista = []; pintarAmigos(false); });
-    }
-    if (!Array.isArray(amigosLista)) { caja.innerHTML = ''; return; }
+  function amigosHtml(d) {
     const enSala = {}; d.jugadores.forEach(j => { enSala[j.apodo] = 1; });
     const hoy = new Date(Date.now() - 5 * 3600000).toISOString().slice(0, 10);
     const L = amigosLista.filter(a => !enSala[a.apodo]).sort((a, b) => String(b.ultima || '').localeCompare(String(a.ultima || '')));
-    caja.innerHTML = '<div class="amigos-inv"><h3>' + IC.amigos + 'Invita a tus amigos</h3>' + (L.length
+    return '<div class="amigos-inv"><h3>' + IC.amigos + 'Invita a tus amigos</h3>' + (L.length
       ? '<div class="ai-lista">' + L.slice(0, 30).map((a, i) => '<div class="ai"><span class="ai-f" style="--c:' + AV[i % AV.length] + '">' + esc(inicial(a.apodo)) +
           (a.foto ? '<img src="' + esc(a.foto) + '" alt="" referrerpolicy="no-referrer" onerror="this.remove()">' : '') + '</span>' +
           '<span class="ai-t"><b>' + esc(a.apodo) + '</b><small' + (a.ultima === hoy ? ' class="hoy">Estudió hoy' : '>' + (a.ultima ? 'Estudió el ' + esc(String(a.ultima).slice(8, 10) + '/' + String(a.ultima).slice(5, 7)) : 'ID ' + esc(a.codigo))) + '</small></span>' +
           '<button type="button" data-inv="' + esc(a.codigo) + '"' + (invitados[a.codigo] ? ' disabled>Invitado' : '>Invitar') + '</button></div>').join('') + '</div>'
       : '<p class="ai-vacio">' + (amigosLista.length ? 'Todos tus amigos ya están en la sala.' : 'Aún no tienes amigos agregados. <a href="amigos.html">Agrega amigos</a> para retarlos directo.') + '</p>') + '</div>';
   }
-  $('retoAmigos').addEventListener('click', async e => {
+  function pintarAmigos(primera) {
+    const d = V, caja = $('retoAmigos');
+    if (!d.yo || d.empieza || d.cerrado || quedaSala() <= 0 || libres(d) <= 0) { caja.innerHTML = ''; cerrarHojaAmigos(); return; }
+    if (amigosLista === null && primera) {
+      amigosLista = 'cargando';
+      rpc('mis_amigos').then(r => { amigosLista = (r && r.amigos) || []; pintarAmigos(false); }).catch(() => { amigosLista = []; pintarAmigos(false); });
+    }
+    const h = Array.isArray(amigosLista) ? amigosHtml(d) : '';
+    caja.innerHTML = h;
+    if (hojaAmigos) hojaAmigos.querySelector('.hoja-c').innerHTML = h || '<p class="ai-vacio">Cargando tus amigos…</p>';
+  }
+  // «+» de un puesto libre: tu lista de amigos en una ventana, para invitar directo
+  var hojaAmigos = null;
+  function abrirHojaAmigos() {
+    if (!V || hojaAmigos) return;
+    hojaAmigos = document.createElement('div'); hojaAmigos.className = 'hoja-fondo';
+    hojaAmigos.innerHTML = '<div class="hoja" role="dialog" aria-modal="true" aria-label="Invitar amigos"><button type="button" class="hoja-x" data-cerrar aria-label="Cerrar">' + SALA_IC.x + '</button><div class="hoja-c"></div></div>';
+    document.body.append(hojaAmigos);
+    hojaAmigos.addEventListener('click', e => { if (e.target === hojaAmigos || e.target.closest('[data-cerrar]')) cerrarHojaAmigos(); else invitarClick(e); });
+    pintarAmigos(true);
+  }
+  function cerrarHojaAmigos() { if (hojaAmigos) { hojaAmigos.remove(); hojaAmigos = null; } }
+  async function invitarClick(e) {
     const b = e.target.closest('[data-inv]'); if (!b || b.disabled) return;
     const cod = b.dataset.inv;
     b.disabled = true; b.textContent = '…';
-    try { await rpc('invitar_duelo', { p_codigo: V.codigo, p_amigo: +cod }); invitados[cod] = 1; b.textContent = 'Invitado'; son('comodin'); }
+    try {
+      await rpc('invitar_duelo', { p_codigo: V.codigo, p_amigo: +cod }); invitados[cod] = 1; son('comodin');
+      document.querySelectorAll('[data-inv="' + cod + '"]').forEach(x => { x.disabled = true; x.textContent = 'Invitado'; });
+    }
     catch (err) { b.disabled = false; b.textContent = 'Invitar'; $('retoError').textContent = textoError(err); $('retoError').hidden = false; }
-  });
+  }
+  $('retoAmigos').addEventListener('click', invitarClick);
 
   $('btnJugar').addEventListener('click', async () => {
     const b = $('btnJugar'), accion = b.dataset.accion;
@@ -2363,26 +2942,47 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   }
   // Marcador en vivo: un cuadro por jugador (puesto, puntos, anillo de avance, racha y comodines usados)
   function jugadores() {
-    const xp = {}, foto = {}; ((V && V.jugadores) || []).forEach(j => { xp[j.yo ? '' : j.apodo] = j.xp; foto[j.yo ? '' : j.apodo] = j.foto; });
-    if (G.jug) return G.jug.map((j, i) => Object.assign({ color: i, xp: xp[j.yo ? '' : j.apodo], foto: foto[j.yo ? '' : j.apodo] }, j));
-    return V.jugadores.map(j => ({ apodo: j.apodo, yo: j.yo, color: j.color, xp: j.xp, foto: j.foto, actual: j.yo ? G.actual : j.actual, puntos: j.yo ? G.puntos : j.puntos || 0, racha: 0, usados: [], terminado: j.terminado }));
+    // Lo que no cambia en el juego (rango, foto, marco, pin, ID) sale de ver_duelo; el avance, del sondeo
+    const fijo = {}; ((V && V.jugadores) || []).forEach(j => { fijo[j.yo ? '' : j.apodo] = { xp: j.xp, foto: j.foto, avatar: j.avatar, marco: j.marco, fondo: j.fondo, pin: j.pin, codigo: j.codigo }; });
+    if (G.jug) return G.jug.map((j, i) => Object.assign({ color: i }, fijo[j.yo ? '' : j.apodo] || {}, j));
+    return V.jugadores.map(j => ({ apodo: j.apodo, yo: j.yo, color: j.color, xp: j.xp, foto: j.foto, avatar: j.avatar, marco: j.marco, fondo: j.fondo, pin: j.pin, codigo: j.codigo, actual: j.yo ? G.actual : j.actual, puntos: j.yo ? G.puntos : j.puntos || 0, racha: 0, usados: [], terminado: j.terminado }));
   }
   // Niebla final: en las 3 últimas preguntas (duelos de 8 o más) no se ven los puntos de los demás
   const enNiebla = () => G && G.v3 && G.n >= 8 && G.actual >= G.n - 3 && G.actual < G.n;
   function pintarBarra() {
-    const js = jugadores(), niebla = enNiebla();
-    const pos = j => 1 + js.filter(x => x.puntos > j.puntos).length;
+    const js0 = jugadores(), niebla = enNiebla(), muchos = js0.length >= 5;
+    const pos = j => 1 + js0.filter(x => x.puntos > j.puntos).length;
+    const clave = j => j.yo ? '' : j.apodo;
+    // Con 5 o 6 el marcador va ordenado por puesto; en la niebla el orden queda congelado (no da pistas)
+    let js = js0;
+    if (muchos) {
+      if (niebla) js = G.ordenFijo ? js0.slice().sort((a, b) => G.ordenFijo.indexOf(clave(a)) - G.ordenFijo.indexOf(clave(b))) : js0.slice().sort((a, b) => (a.color || 0) - (b.color || 0));
+      else { js = js0.slice().sort((a, b) => pos(a) - pos(b) || (a.color || 0) - (b.color || 0)); G.ordenFijo = js.map(clave); }
+    }
+    $('barra').classList.toggle('muchos', muchos);
+    pintarPlegar(js0);
+    $('barra').style.setProperty('--r', Math.max(1, js0.length - 1));
+    $('juego').classList.toggle('lateral', muchos);
+    // Animación: cada cuadro se desliza a su nuevo puesto
+    const antes = {};
+    if (muchos) $('tiles').querySelectorAll('.tile').forEach(t => { antes[t.dataset.apodo] = t.getBoundingClientRect(); });
     $('tiles').innerHTML = js.map(j => {
       const p = pos(j), hecho = Math.min(j.actual, G.n), oculto = niebla && !j.yo;
       const ev = (j.fuego > 0 && !j.yo ? '<span style="--c:' + (j.fuego > 1 ? 'var(--rojo)' : 'var(--naranja)') + '" title="Tiene ' + (j.fuego > 1 ? 'Volcán' : 'Llamarada') + ' cargada">' + IC[j.fuego > 1 ? 'volcan' : 'llama'] + '</span>'
         : j.racha >= 3 ? '<span style="--c:var(--naranja)" title="Racha de ' + j.racha + '">' + IC.fuego + '</span>' : '') +
         (j.espejo && !j.yo ? '<span style="--c:var(--morado)" title="Tiene Espejo">' + IC.espejo + '</span>' : '') +
         (j.usados || []).slice(-2).map(k => CMD[k] ? '<span style="--c:' + CMD[k].c + '" title="Usó ' + CMD[k].nom + '">' + IC[k] + '</span>' : '').join('');
-      return '<div class="tile ' + colorDe(j) + (j.yo ? ' yo' : '') + (j.yo && G.espejo ? ' espejo' : '') + (oculto ? ' niebla' : '') + (j.terminado && hecho < G.n ? ' fuera' : '') + '" data-apodo="' + esc(j.yo ? '' : j.apodo) + '"><span class="pos' + (p === 1 ? ' p1' : '') + '">' + p + '.º</span>' +
+      return '<div class="tile ' + colorDe(j) + (j.yo ? ' yo' : '') + (j.yo && G.espejo ? ' espejo' : '') + (oculto ? ' niebla' : '') + (j.terminado && hecho < G.n ? ' fuera' : '') + '" data-apodo="' + esc(j.yo ? '' : j.apodo) + '" style="--pg:' + (hecho / G.n).toFixed(3) + '"><span class="pos' + (niebla ? ' oculto' : p === 1 ? ' p1' : '') + '">' + (niebla ? '?' : p + '.º') + '</span>' +
         (ev ? '<span class="ev">' + ev + '</span>' : '') +
         '<div class="ring"><svg viewBox="0 0 46 46" aria-hidden="true"><path class="f" d="' + MARCO + '"/><path class="a" d="' + MARCO + '" pathLength="100" stroke-dasharray="100" stroke-dashoffset="' + (100 * (1 - hecho / G.n)).toFixed(1) + '"/></svg>' + avatar(j) + '</div>' +
         '<span class="nm">' + esc(nombreDe(j)) + '</span><span class="pt">' + (oculto ? '?' : j.puntos) + '</span><span class="rs">' + (j.terminado ? (hecho < G.n ? 'Fuera' : 'Terminó') : hecho + ' de ' + G.n) + '</span></div>';
     }).join('');
+    if (muchos) $('tiles').querySelectorAll('.tile').forEach(t => {
+      const a = antes[t.dataset.apodo]; if (!a) return;
+      const b = t.getBoundingClientRect(), dx = a.left - b.left, dy = a.top - b.top;
+      if (Math.abs(dx) + Math.abs(dy) < 2) return;
+      t.animate([{ transform: 'translate(' + dx + 'px,' + dy + 'px)' }, { transform: 'none' }], { duration: 450, easing: 'cubic-bezier(.3,1.3,.5,1)' });
+    });
     const ultima = G.final ? G.n - 1 : -1;
     $('camino').innerHTML = Array.from({ length: G.n }, (_, i) => '<i class="' + (i < G.ok.length ? (G.ok[i] ? 'ok' : 'mal') : i === G.actual ? 'ya' : '') + (i === ultima ? ' fin' : '') + '"></i>').join('');
     $('camTxt').textContent = 'Tu camino · ' + G.ok.filter(Boolean).length + ' de ' + G.ok.length;
@@ -2390,6 +2990,21 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     pintarNiebla(js, niebla);
     pintarFuego();
   }
+  // Celular: ocultar rivales (queda tu cuadro, el tiempo y tu camino). Se recuerda para los siguientes duelos.
+  function miniOn() { try { return localStorage.getItem('mc_duelo_mini') === '1'; } catch (e) { return false; } }
+  function pintarPlegar(js0) {
+    const mini = miniOn(), otros = (js0 || jugadores()).filter(j => !j.yo), b = $('plegar');
+    $('barra').classList.toggle('mini', mini);
+    b.setAttribute('aria-expanded', mini ? 'false' : 'true');
+    b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+      (mini ? 'Ver rivales (' + otros.length + ')' : 'Ocultar rivales') +
+      '<span class="avs">' + otros.map(j => '<i class="' + colorDe(j) + '"></i>').join('') + '</span>';
+  }
+  $('plegar').addEventListener('click', () => {
+    try { localStorage.setItem('mc_duelo_mini', miniOn() ? '0' : '1'); } catch (e) {}
+    pintarPlegar();
+    son('toque');
+  });
   // Aviso de niebla y "duelo cerrado" (alguien a 2 puntos o menos), con latido en la pantalla
   let nieblaVista = false;
   function pintarNiebla(js, niebla) {
@@ -2629,7 +3244,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     const b = $('ambBtn'), on = ambOn();
     b.classList.toggle('on', on);
     b.setAttribute('aria-pressed', String(on));
-    b.innerHTML = (on ? IC.altavoz : IC.mudo) + (on ? 'Ambiente <span class="ondas"><i></i><i></i><i></i></span>' : window.MCSonido && !MCSonido.activo ? 'Sonido apagado' : 'Ambiente apagado');
+    b.innerHTML = (on ? IC.altavoz : IC.mudo) + (on ? '<span class="lg">Ambiente</span><span class="ondas"><i></i><i></i><i></i></span><span class="ct">Ambiente</span>' : '<span class="lg">' + (window.MCSonido && !MCSonido.activo ? 'Sonido apagado' : 'Ambiente apagado') + '</span><span class="ct">Apagado</span>');
     b.title = on ? 'Silenciar el sonido de ambiente' : 'Activar el sonido de ambiente';
   }
   $('ambBtn').addEventListener('click', () => {
@@ -2918,7 +3533,8 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   const puntosDe = j => j.puntos != null ? j.puntos : j.aciertos;
   // Podio de escalones: solo salen los que jugaron (2: 2·1, 3: 2·1·3, 4: 4·2·1·3)
   function podioHtml(d) {
-    const js = d.jugadores.slice(0, 4), n = js.length, orden = n === 2 ? [2, 1] : n === 3 ? [2, 1, 3] : [4, 2, 1, 3];
+    const todos = d.jugadores, muchos = todos.length >= 5;
+    const js = todos.slice(0, muchos ? 3 : 4), n = js.length, orden = n === 2 ? [2, 1] : n === 3 ? [2, 1, 3] : [4, 2, 1, 3];
     const lugares = orden.map(p => {
       const j = js[p - 1], xp = XP_PUESTO[j.puesto - 1];   // con empate el escalón sigue el orden y el número, el puesto
       return '<div class="lugar l' + p + ' ' + colorDe(j) + (j.yo ? ' yo' : '') + '">' + (p === 1 ? CORONA : '') +
@@ -2926,7 +3542,11 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
         '<b>' + esc(j.yo ? 'Tú' : j.apodo) + '</b><strong>' + puntosDe(j) + '</strong><small>' + lineaDe(j, d.n).split(' · ').map(t => '<span>' + esc(t) + '</span>').join(' ') + '</small>' +
         '<span class="bloque"><i class="cara"></i><span class="frente"><i>' + j.puesto + '</i>' + (xp ? '<span class="xp">+' + xp + ' XP</span>' : '') + '</span></span></div>';
     }).join('');
-    return '<div class="podio' + (n === 2 ? ' dos' : n === 4 ? ' cuatro' : '') + '"><div class="foco" aria-hidden="true"></div>' + lugares + '</div>';
+    // Con 5 o 6: podio de 3 y debajo los demás en filas (también se revelan, del último al 4.º)
+    const resto = muchos ? '<div class="resto">' + todos.slice(3).map((j, k) =>
+      '<div class="lugar fila l' + (k + 4) + ' ' + colorDe(j) + (j.yo ? ' yo' : '') + '"><i class="np">' + j.puesto + '</i><span class="aro">' + avatar(j) + '</span>' +
+      '<b>' + esc(j.yo ? 'Tú' : j.apodo) + '</b><small>' + esc(lineaDe(j, d.n)) + '</small><strong>' + puntosDe(j) + '</strong></div>').join('') + '</div>' : '';
+    return '<div class="podio' + (n === 2 ? ' dos' : n === 4 ? ' cuatro' : '') + '"><div class="foco" aria-hidden="true"></div>' + lugares + '</div>' + resto;
   }
   // Medallas del duelo: Rayo, Racha, Remontada y Francotirador
   function medallasHtml(m) {
@@ -2966,7 +3586,8 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     const pod = $('resTabla').querySelector('.podio');
     if (!pod || matchMedia('(prefers-reduced-motion: reduce)').matches) { alFinal(); return; }
     pod.classList.add('revela');
-    const ls = Array.from(pod.querySelectorAll('.lugar')).sort((a, b) => +b.className.match(/l(\d)/)[1] - +a.className.match(/l(\d)/)[1]);
+    const rs = $('resTabla').querySelector('.resto'); if (rs) rs.classList.add('revela');
+    const ls = Array.from($('resTabla').querySelectorAll('.podio .lugar, .resto .lugar')).sort((a, b) => +b.className.match(/l(\d)/)[1] - +a.className.match(/l(\d)/)[1]);
     let t = 300;
     ls.forEach((l, k) => {
       const ultimo = k === ls.length - 1;
@@ -3043,6 +3664,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       : '<ul class="tabla">' + d.jugadores.map(j => '<li class="' + colorDe(j) + '">' + avatar(j) + '<div><b>' + esc(nombreDe(j)) + '</b><small>' + esc(lineaDe(j, d.n)) + '</small></div>' + (j.terminado ? '<strong>' + puntosDe(j) + '</strong>' : '') + '</li>').join('') + '</ul>' +
         (!res && !d.cerrado ? '<div class="cierre" id="resCierre"><i></i><span></span></div>' : '');
     if (final) cobrarXp(d); else $('resXp').innerHTML = '';
+    $('resFoto').hidden = !final;
     const festejar = () => {
       if (res && res.gane) confeti($('resCard'));
       if (final) son('fin', res.gane || (res.empate && res.puesto === 1) ? 100 : 0);
@@ -3071,7 +3693,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
         const fuente = fuenteAbierta(cursos.length ? cursos : d.curso, d.fuente) ? d.fuente : 'mezcla';  // sin el código de esa sección, sale de "De todo"
         const noms = d.tema ? d.tema.split(' | ') : [];
         const cod = await crearDuelo({ curso: d.curso, cursos, fuente, ciclo: d.ciclo || 'todos', temas: noms.map(normTema), temasLista: noms, n: d.n, seg: d.seg || 60,
-          comodines: (d.comodines || []).length > 0, jugadores: Math.min(Math.max(d.jugadores.length, 2), 4), auto: true, revancha: d.codigo });
+          comodines: (d.comodines || []).length > 0, jugadores: Math.min(Math.max(d.jugadores.length, 2), 6), auto: true, revancha: d.codigo });
         await abrirDuelo(cod);
       } catch (e) { rv.disabled = false; rv.textContent = 'Pedir revancha'; $('resError').textContent = textoError(e); $('resError').hidden = false; }
     });
@@ -3092,6 +3714,87 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       if (JSON.stringify([V.jugadores, V.resultado, V.revancha, V.cerrado]) !== antes) mostrarResultado();
     }), res ? 15000 : 5000);
   }
+  /* Foto del resultado para estados (1080 × 1920): podio con los búhos */
+  const MEDALLA = [['#FFC800', '#B98A00', '#5a4300', '#FFE680'], ['#C9CBD8', '#8C8FA3', '#55586a', '#ECEDF4'], ['#E88A45', '#B5642B', '#6e3a14', '#FFC9A0']];
+  async function fotoResultado() {
+    const d = V, btn = $('resFoto'), res = d && d.resultado; if (!res || !btn || btn.disabled) return;
+    btn.disabled = true; son('toque');
+    try {
+      try { await Promise.all([document.fonts.load('italic 900 120px "Barlow Condensed"'), document.fonts.load('800 60px "Barlow Condensed"'), document.fonts.load('800 40px Nunito')]); } catch (e) {}
+      const W = 1080, H = 1920, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+      const x = cv.getContext('2d');
+      const js = d.jugadores.slice().sort((a, b) => (a.puesto || 99) - (b.puesto || 99));
+      // Fondo con luces y confeti
+      let g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#120b2c'); g.addColorStop(.55, '#1c1142'); g.addColorStop(1, '#0a0716');
+      x.fillStyle = g; x.fillRect(0, 0, W, H);
+      [[220, 'rgba(255,216,77,.16)', 1250], [860, 'rgba(206,130,255,.15)', 1250], [540, 'rgba(255,255,255,.10)', 1300]].forEach(([bx, col, largo]) => {
+        const lg = x.createLinearGradient(bx, 0, bx, largo); lg.addColorStop(0, col); lg.addColorStop(1, 'rgba(0,0,0,0)');
+        x.fillStyle = lg; x.beginPath(); x.moveTo(bx - 30, 0); x.lineTo(bx + 30, 0); x.lineTo(bx + 280, largo); x.lineTo(bx - 280, largo); x.closePath(); x.fill();
+      });
+      const CF = ['#C6E000', '#FFC800', '#1CB0F6', '#FF5FA2', '#CE82FF', '#2EE6C5'];
+      for (let i = 0; i < 70; i++) { const cx = (i * 397 + 41) % W, cy = 480 + (i * 263) % 460; x.save(); x.translate(cx, cy); x.rotate(i * .7); x.fillStyle = CF[i % 6]; x.globalAlpha = .55; x.fillRect(-7, -3, 14, 6); x.restore(); }
+      const logo = await cargaImg('assets/img/logo-modo-cachimbo-horizontal.svg');
+      if (logo) { const lw = 430, lh = logo.naturalWidth ? lw * logo.naturalHeight / logo.naturalWidth : 100; x.drawImage(logo, (W - lw) / 2, 70, lw, lh); }
+      // Título desde tu lado
+      const tit = res.gane ? '¡GANÉ EL DUELO!' : res.empate && res.puesto === 1 ? '¡EMPATE EN EL 1.º!' : 'QUEDÉ EN EL ' + res.puesto + '.º LUGAR';
+      x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+      x.font = 'italic 900 118px "Barlow Condensed", sans-serif'; x.fillStyle = res.gane ? '#FFC800' : '#C6E000';
+      x.shadowColor = res.gane ? 'rgba(255,200,0,.45)' : 'rgba(198,224,0,.4)'; x.shadowBlur = 40; x.fillText(corta(x, tit, 1000), W / 2, 318); x.shadowBlur = 0;
+      x.font = '800 44px Nunito, sans-serif'; x.fillStyle = '#fff'; x.fillText(corta(x, d.titulo || '', 980), W / 2, 390);
+      x.font = '800 32px Nunito, sans-serif'; x.fillStyle = '#A99FC8'; x.fillText('Duelo de ' + js.length + ' jugadores · ' + d.n + ' preguntas', W / 2, 442);
+      // Podio: 2.º a la izquierda, 1.º al centro, 3.º a la derecha
+      const top = js.slice(0, 3), pos = top.length === 2 ? [[1, 330], [0, 750]] : [[1, 190], [0, 540], [2, 890]];
+      const alto = [330, 270, 230], suelo = 1230, ancho = 320;
+      const B = await Promise.all(top.map((j, i) => capasBuho(pjDe(j), i === 0 ? 'logro' : 'oficial')));
+      const R = await Promise.all(top.map(j => nivelDe(j) >= 0 ? svgImg(MCRango.svg(nivelDe(j), { quieto: true })) : null));
+      pos.forEach(([i, cx]) => {
+        const j = top[i]; if (!j) return;
+        const m = MEDALLA[Math.min(i, 2)], h = alto[i], y = suelo - h;
+        // Escalón en 3D como el de la pantalla: tapa clara arriba (donde se para el búho) y frente con el puesto
+        const tapa = 46, an = i === 0 ? ancho + 20 : ancho, x0 = cx - an / 2;
+        x.save();
+        x.beginPath(); x.moveTo(x0 + 22, y); x.lineTo(x0 + an - 22, y); x.lineTo(x0 + an, y + tapa); x.lineTo(x0, y + tapa); x.closePath();
+        x.fillStyle = m[3]; x.fill();
+        const eg = x.createLinearGradient(0, y + tapa, 0, suelo); eg.addColorStop(0, m[0]); eg.addColorStop(1, m[1]);
+        x.fillStyle = eg; x.fillRect(x0, y + tapa, an, suelo - y - tapa);
+        x.globalAlpha = .25; x.fillStyle = '#fff'; x.fillRect(x0, y + tapa, an, 4); x.restore();
+        dibBuho(x, B[i], cx, y + tapa * .62, i === 0 ? 400 : 320);
+        x.textAlign = 'center'; x.fillStyle = m[2]; x.globalAlpha = .75;
+        x.font = 'italic 900 ' + (i === 0 ? 130 : 110) + 'px "Barlow Condensed", sans-serif'; const fs = i === 0 ? 130 : 110; x.fillText(String(j.puesto || i + 1), cx, (y + tapa + suelo - 76) / 2 + fs * .36); x.globalAlpha = 1;
+        const xpP = XP_PUESTO[(j.puesto || i + 1) - 1];
+        if (xpP) {
+          const t = '+' + xpP + ' XP'; x.font = 'italic 900 38px "Barlow Condensed", sans-serif';
+          const tw = x.measureText(t).width + 36, ty = suelo - 68;
+          rr(x, cx - tw / 2, ty, tw, 52, 12); x.fillStyle = i === 0 ? '#2a2000' : '#FFE9A8'; x.fill();
+          x.fillStyle = i === 0 ? '#FFD84D' : '#3a2a00'; x.fillText(t, cx, ty + 40);
+        }
+        // Placa con nombre y rango debajo del podio
+        placaFoto(x, j, cx, suelo + 26, ancho - 16, 64, false, R[i]);
+        x.font = '800 30px Nunito, sans-serif'; x.fillStyle = '#A99FC8'; x.textAlign = 'center'; x.fillText(plural(puntosDe(j), 'punto', 'puntos') + (j.aciertos != null ? ' · ' + j.aciertos + '/' + d.n : ''), cx, suelo + 130);
+      });
+      // Los demás (4.º a 6.º) en filas
+      let fy = suelo + 170;
+      js.slice(3).forEach(j => {
+        const c = COLOR_J[(j.color || 0) % 6];
+        x.save(); rr(x, 110, fy, W - 220, 70, 18); x.fillStyle = 'rgba(14,9,32,.9)'; x.fill(); x.lineWidth = 3; x.strokeStyle = c[0] + '99'; x.stroke(); x.restore();
+        x.textBaseline = 'middle'; x.textAlign = 'left';
+        x.font = 'italic 900 44px "Barlow Condensed", sans-serif'; x.fillStyle = '#A99FC8'; x.fillText(j.puesto + '.º', 140, fy + 37);
+        x.font = '800 38px "Barlow Condensed", sans-serif'; x.fillStyle = c[0]; x.fillText(corta(x, String(j.apodo || '').toUpperCase(), 480), 230, fy + 37);
+        x.textAlign = 'right'; x.font = '800 32px Nunito, sans-serif'; x.fillStyle = '#fff'; x.fillText(plural(puntosDe(j), 'punto', 'puntos'), W - 140, fy + 37);
+        x.textBaseline = 'alphabetic'; fy += 84;
+      });
+      // Reto final
+      const by = 1700;
+      rr(x, 70, by, W - 140, 150, 30); x.fillStyle = 'rgba(198,224,0,.08)'; x.fill(); x.lineWidth = 4; x.setLineDash([18, 12]); x.strokeStyle = 'rgba(198,224,0,.7)'; x.stroke(); x.setLineDash([]);
+      x.textAlign = 'center';
+      x.font = 'italic 900 70px "Barlow Condensed", sans-serif'; x.fillStyle = '#fff'; x.fillText('¿ME GANAS? RÉTAME EN', W / 2, by + 78);
+      x.font = '800 32px Nunito, sans-serif'; x.fillStyle = '#C6E000'; x.fillText(new URL('duelo.html', location.href).href.replace(/^https?:\/\//, ''), W / 2, by + 124);
+      const bl = await new Promise(r => cv.toBlob(r, 'image/png'));
+      if (bl) mostrarFotoSala(bl, 'Foto del resultado', 'duelo-resultado-modo-cachimbo.png', '¿Me ganas? Te reto en Modo Cachimbo: ' + new URL('duelo.html', location.href).href);
+    } catch (e) { $('resError').textContent = 'No se pudo armar la foto. Intenta otra vez.'; $('resError').hidden = false; }
+    btn.disabled = false;
+  }
+  $('resFoto').addEventListener('click', fotoResultado);
   // Cuando otro jugador pide la revancha: aviso grande al centro con su foto y el botón para entrar
   let revAvisada = '';
   async function avisoRevancha(cod) {
