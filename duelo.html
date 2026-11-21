@@ -1024,10 +1024,12 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     html body #juego.lateral > .barra .tile .pos:not(#z) { font-size: 11px !important; top: -8px; }
     #juego.lateral > .barra .camino-l { gap: 3px; margin-top: 4px; }
   }
-  /* Avance de cada jugador: se llena en el borde de abajo de su cuadro (ya no en un aro alrededor de la foto) */
-  html body .barra .tile:not(#z) { border-bottom-color: #2C2549; }
-  .barra .tile::after { content: ""; position: absolute; left: 10px; right: 10px; bottom: -4px; height: 4px; border-radius: 4px; pointer-events: none;
-    background: linear-gradient(90deg, var(--jc) calc(var(--pg, 0) * 100%), #3a3360 0); transition: background .4s; }
+  /* Avance de cada jugador: se pinta en el borde grueso de abajo de su cuadro (con sus curvas);
+     al terminar queda como el borde completo del cuadro. Ya no hay aro alrededor de la foto. */
+  html body .barra .tile:not(#z) { --tb: var(--surface-2, #1F1936); border-bottom-color: transparent;
+    background: linear-gradient(var(--tb), var(--tb)) padding-box, linear-gradient(90deg, var(--jd, var(--jc)) calc(var(--pg, 0) * 100%), #2C2549 calc(var(--pg, 0) * 100%)) border-box; }
+  html body .barra .tile.yo:not(#z) { --tb: color-mix(in srgb, var(--jc) 8%, #1D1834); }
+  html body .barra .tile:not(.yo):not(#z) { border-bottom-width: 5px; }
   .barra .tile .ring svg { visibility: hidden; }
   html body .barra .tile .ring .av:not(#z) { inset: 2px; }
   /* ===== Celular: ocultar rivales y dejar solo tu cuadro, el tiempo y tu camino (más espacio para la pregunta) ===== */
