@@ -87,7 +87,7 @@
   @media (min-width: 1100px) { .g { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
   @media (max-width: 899px) {
     .lay { grid-template-columns: minmax(0, 1fr); gap: 14px; }
-    .rail { position: static; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; }
+    .rail { position: static; grid-auto-flow: column; grid-auto-columns: minmax(84px, 1fr); gap: 6px; overflow-x: auto; scrollbar-width: none; margin-right: -16px; padding-right: 16px; }
     .rail .r { min-height: 0; height: 54px; padding: 0 4px; justify-content: center; flex-direction: column; gap: 4px; font-size: 13px; }
     .rail .r .tx small, .rail .r .n { display: none; }
     .rail .r svg { width: 20px; height: 20px; }
@@ -131,6 +131,21 @@
   .cd.on .rz::after { content: "Activo"; margin-left: 4px; padding: 1px 5px; border-radius: 4px; background: #14101f; color: var(--r); letter-spacing: .06em; }
   @media (max-width: 560px) { .pl p { display: none; } .in { height: calc(268 * var(--u)); } .act { flex-wrap: nowrap; overflow-x: auto; margin-right: -16px; padding-right: 16px; scrollbar-width: none; } .act span { flex: none; } }
 
+  /* ---------- Mis compras ---------- */
+  .lay h2:first-child { margin-top: 0; }
+  .mc-l { display: grid; gap: 10px; }
+  .mc-f { --c: #C6E000; display: flex; align-items: center; gap: 14px; padding: 10px 14px 10px 10px; border-radius: 16px; background: linear-gradient(90deg, color-mix(in srgb, var(--c) 20%, #151127), #151127 55%); border: 2px solid color-mix(in srgb, var(--c) 40%, #2a2346); border-bottom-width: 5px; }
+  .mc-i { flex: none; width: 70px; height: 62px; display: grid; place-items: center; background: radial-gradient(circle, color-mix(in srgb, var(--c) 50%, transparent), transparent 70%); }
+  .mc-i svg { width: 74px; height: 74px; overflow: visible; }
+  .mc-t { flex: 1; min-width: 0; } .mc-t b { display: block; font: italic 900 21px/1 var(--display); text-transform: uppercase; } .mc-t b em { color: var(--c); font-style: italic; }
+  .mc-t small { display: block; font: 800 12.5px/1.35 var(--cuerpo); color: var(--text-dim); margin-top: 4px; } .mc-t small b { display: inline; font: 900 12.5px var(--cuerpo); color: #fff; text-transform: none; }
+  .mc-x { font: italic 900 22px var(--display); color: var(--c); }
+  .mc-e .vivo { display: block; width: 10px; height: 10px; border-radius: 50%; background: var(--c); animation: vivo 1.6s ease-out infinite; box-shadow: 0 0 0 0 var(--c); }
+  .mc-b { flex: none; border: 0; border-radius: 12px; padding: 10px 16px; cursor: pointer; font: italic 900 19px var(--display); text-transform: uppercase; color: #14101f; background: linear-gradient(180deg, #E3FF3A, #C6E000); box-shadow: 0 4px 0 #7d8f00; }
+  .mc-b.gris { background: #2a2152; color: #e6dfff; box-shadow: 0 4px 0 #120e26; }
+  .mc-b:active { transform: translateY(2px); box-shadow: none; }
+  @media (max-width: 560px) { .mc-e .vivo { display: none; } .mc-f { flex-wrap: wrap; } .mc-t { flex-basis: calc(100% - 90px); } .mc-b { margin-left: auto; } .mc-i { width: 56px; height: 52px; } .mc-i svg { width: 60px; height: 60px; } }
+  .rail .r.mis { border-color: #6a3fd0; }
   /* ---------- Ventanas ---------- */
   .ov { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 16px; background: rgba(8,6,18,.82); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); animation: ovIn .2s ease-out; }
   @keyframes ovIn { from { opacity: 0; } }
@@ -243,7 +258,10 @@
     pocos_diamantes: 'No tienes diamantes suficientes.',
     escudo_tope: 'Ya tienes 3 protecciones guardadas. Úsalas primero.',
     sin_racha_revivir: 'No tienes una racha perdida en los últimos 7 días. No se cobró nada.',
-    item_no_existe: 'Eso ya no está en la tienda.'
+    item_no_existe: 'Eso ya no está en la tienda.',
+    sin_inventario: 'Ya no te queda de esa tarjeta.',
+    nada_activo: 'No hay nada activo para pausar.',
+    nada_pausado: 'No hay nada en pausa.'
   };
   var T = null, saldo = 0, ocupado = false;
 
@@ -297,20 +315,45 @@
   function pintar() {
     if (!T) return;
     if (T.error) { app.innerHTML = '<p class="estado">' + esc(T.error) + '</p>'; return; }
-    var a = [];
-    if (T.infinito_hasta) a.push(['#FF4B6E', 'Vidas ilimitadas', fecha(T.infinito_hasta)]);
-    if (T.doble_xp_hasta) a.push(['#FFC800', 'Doble XP', fecha(T.doble_xp_hasta)]);
-    if (T.fortuna_hasta) a.push(['#58CC02', 'Fortuna', fecha(T.fortuna_hasta)]);
-    if (+T.escudos) a.push(['#1CB0F6', 'Protección de racha', T.escudos + (T.escudos == 1 ? ' guardada' : ' guardadas')]);
-    var h = a.length ? '<div class="act">' + a.map(function (x) { return '<span style="--c:' + x[0] + '"><i></i>' + esc(x[1]) + ' <small>' + esc(x[2]) + '</small></span>'; }).join('') + '</div>' : '';
+    var h = '';
     var cnt = function (g) { return (T.items || []).filter(function (it) { return INFO[it.id] && INFO[it.id].g === g; }).length; };
-    if (!cnt(cat)) cat = GRUPOS[0][0];
+    if (cat !== 'mis' && !cnt(cat)) cat = GRUPOS[0][0];
     var G = GRUPOS.filter(function (g) { return g[0] === cat; })[0];
     var l = (T.items || []).filter(function (it) { return INFO[it.id] && INFO[it.id].g === cat; });
-    h += '<div class="lay"><nav class="rail" aria-label="Secciones de la tienda">' + GRUPOS.filter(function (g) { return cnt(g[0]); }).map(function (g) {
+    var nInv = 0, inv = T.inv || {}; for (var k in inv) nInv += +inv[k] || 0;
+    var nAct = (T.infinito_hasta ? 1 : 0) + (T.doble_xp_hasta ? 1 : 0) + (T.fortuna_hasta ? 1 : 0) + (+T.escudos ? 1 : 0);
+    h += '<div class="lay"><nav class="rail" aria-label="Secciones de la tienda"><button type="button" class="r mis' + (cat === 'mis' ? ' on' : '') + '" data-cat="mis">' + SVM + '<span class="tx"><span>Mis compras</span><small>' + (nAct ? nAct + (nAct === 1 ? ' activa' : ' activas') : 'Actívalas cuando quieras') + '</small></span>' + (nInv ? '<i class="n">' + nInv + '</i>' : '') + '</button>' + GRUPOS.filter(function (g) { return cnt(g[0]); }).map(function (g) {
         return '<button type="button" class="r' + (g[0] === cat ? ' on' : '') + '" data-cat="' + g[0] + '">' + g[3] + '<span class="tx"><span>' + g[1] + '</span><small>' + g[2] + '</small></span><i class="n">' + cnt(g[0]) + '</i></button>';
-      }).join('') + '</nav><div><div class="g">' + l.map(function (it, i) { return tarjeta(it, i); }).join('') + '</div></div></div>';
+      }).join('') + '</nav><div>' + (cat === 'mis' ? misVista() : '<div class="g">' + l.map(function (it, i) { return tarjeta(it, i); }).join('') + '</div>') + '</div></div>';
     app.innerHTML = h;
+  }
+  var SVM = '<svg viewBox="0 0 24 24"><path d="M4 8h16l-1.5 12h-13zM9 8V6a3 3 0 0 1 6 0v2"/></svg>';
+  var EFE = { infinito: ['vida1', 'Vidas ilimitadas', '#FF4B6E'], doblexp: ['doblexp', 'Doble XP', '#FFC800'], fortuna: ['fortuna', 'Fortuna', '#58CC02'] };
+  function dur(s) { s = +s || 0; if (s < 3600) return Math.max(1, Math.round(s / 60)) + ' min'; if (s < 172800) { var hh = Math.floor(s / 3600), mm = Math.round(s % 3600 / 60); return hh + ' h' + (mm ? ' ' + mm + ' min' : ''); } return Math.round(s / 86400) + ' días'; }
+  function fila(ico, col, tit, sub, est, bt) {
+    return '<div class="mc-f" style="--c:' + col + '"><span class="mc-i">' + ico + '</span><span class="mc-t"><b>' + tit + '</b><small>' + sub + '</small></span>' + (est ? '<span class="mc-e">' + est + '</span>' : '') + bt + '</div>';
+  }
+  function misVista() {
+    var h = '', a = '', ps = '', g = '', inv = T.inv || {}, pz = T.pausa || {};
+    [['infinito', T.infinito_hasta], ['doblexp', T.doble_xp_hasta], ['fortuna', T.fortuna_hasta]].forEach(function (x) {
+      if (!x[1]) return; var e = EFE[x[0]];
+      a += fila(IC[e[0]], e[2], esc(e[1]), 'Activa · quedan <b>' + dur((new Date(x[1]) - Date.now()) / 1000) + '</b>', '<i class="vivo"></i>', '<button type="button" class="mc-b gris" data-pausar="' + x[0] + '">Pausar</button>');
+    });
+    if (+T.escudos) a += fila(IC.escudo, '#1CB0F6', 'Protección de racha', '<b>' + T.escudos + '</b> cuidando tu racha. Se usa sola si un día no cumples.', '<i class="vivo"></i>', '<button type="button" class="mc-b gris" data-quitar>Quitar 1</button>');
+    for (var k in pz) if (EFE[k] && +pz[k] > 0) ps += fila(IC[EFE[k][0]], EFE[k][2], esc(EFE[k][1]), 'En pausa · te quedan <b>' + dur(pz[k]) + '</b>', '', '<button type="button" class="mc-b" data-reanudar="' + k + '">Reanudar</button>');
+    (T.items || []).forEach(function (it) {
+      var n = +inv[it.id] || 0, f = INFO[it.id]; if (!n || !f) return;
+      g += fila(IC[it.id], f.col, esc(f.t) + ' <em>' + esc(f.c) + '</em>', esc(f.d), '<span class="mc-x">x' + n + '</span>', '<button type="button" class="mc-b" data-usar="' + it.id + '">Activar</button>');
+    });
+    if (a) h += '<h2>Activas ahora</h2><div class="mc-l">' + a + '</div>';
+    if (ps) h += '<h2>En pausa <small>El tiempo no corre</small></h2><div class="mc-l">' + ps + '</div>';
+    h += '<h2>Guardadas <small>Actívalas cuando quieras</small></h2>' + (g ? '<div class="mc-l">' + g + '</div>' : '<p class="estado" style="text-align:left;padding:6px 0">Aún no tienes compras guardadas. Lo que compres llega aquí.</p>');
+    return h;
+  }
+  function accion(fn, args, btn, despues) {
+    if (ocupado) return; ocupado = true; if (btn) { btn.disabled = true; btn.textContent = '…'; }
+    rpc(fn, args).then(function (d) { ocupado = false; T = d; ponerSaldo(d.diamantes); pintar(); if (despues) despues(d); },
+      function (e) { ocupado = false; if (btn) btn.disabled = false; pintar(); toast(errTxt(e)); });
   }
   function cargar() {
     return rpc('tienda_ver').then(function (d) { T = d || { items: [] }; ponerSaldo(T.diamantes); pintar(); },
@@ -339,7 +382,7 @@
       var b = e.target.closest('[data-si]'); if (!b || ocupado) return;
       ocupado = true; b.disabled = true; b.innerHTML = 'Comprando…';
       rpc('tienda_comprar', { p_item: id }).then(function (d) {
-        ocupado = false; o.remove(); T = d; ponerSaldo(d.diamantes, true); pintar(); listo(id, d.premio || {});
+        ocupado = false; o.remove(); T = d; ponerSaldo(d.diamantes, true); pintar(); (d.premio && d.premio.tipo === 'guardado') ? guardado(id, d.premio) : listo(id, d.premio || {});
       }, function (e) {
         ocupado = false; b.disabled = false; b.innerHTML = 'Comprar ' + DIA + '<span>' + nf(it.precio) + '</span>';
         var er = o.querySelector('.err'); er.hidden = false; er.textContent = errTxt(e);
@@ -354,14 +397,27 @@
     rayos: ['energia', function (n) { return '+' + n + ' de energía'; }], corazones: ['corazones', function (n) { return '+' + n + ' corazones'; }],
     xp: ['doblexp', function (n) { return '+' + nf(n) + ' XP'; }], diamantes: [null, function (n) { return '+' + nf(n) + ' diamantes'; }],
     racha: ['revivir', function (n) { return 'Tu racha volvió: ' + n + (n == 1 ? ' día' : ' días'); }] };
-  function listo(id, pr) {
+  function listo(id, pr, act) {
     var p = PREMIO[pr.tipo] || [id, function () { return INFO[id].t; }], ico = id === 'sorpresa' ? (p[0] ? IC[p[0]] : '<svg viewBox="0 0 64 64"><use href="#r-diamante"/></svg>') : IC[id];
     var ch = ''; for (var i = 0; i < 14; i++) { var a = i / 14 * Math.PI * 2, r = 110 + (i % 3) * 30; ch += '<i style="--x:' + Math.round(Math.cos(a) * r) + 'px;--y:' + Math.round(Math.sin(a) * r) + 'px;--t:' + (.15 + (i % 4) * .06) + 's"></i>'; }
     var col = id === 'sorpresa' ? '#FFC93C' : INFO[id].col;
-    var o = ventana('<div class="ry"></div><div class="chs">' + ch + '</div><small class="tg">' + (id === 'sorpresa' ? 'Te salió' : '¡Comprado!') + '</small><div class="gi">' + ico + '</div><h3>' + esc(p[1](+pr.cantidad || 0)) + '</h3>' +
+    var o = ventana('<div class="ry"></div><div class="chs">' + ch + '</div><small class="tg">' + (act ? '¡Activado!' : id === 'sorpresa' ? 'Te salió' : '¡Comprado!') + '</small><div class="gi">' + ico + '</div><h3>' + esc(p[1](+pr.cantidad || 0)) + '</h3>' +
       '<p>' + (id === 'escudo' ? 'Se usa sola el día que no cumplas tu meta.' : id === 'fortuna' ? 'Abre tus cofres personales en Clanes → Misiones.' : id === 'ticket' || pr.tipo === 'ticket' ? 'Úsalo en Clanes → Guerra → Sala.' : '¡Aprovéchalo!') + '</p>' +
       '<button type="button" class="bt" data-ok>Genial</button>', 'ok-v', col);
     o.querySelector('[data-ok]').addEventListener('click', function () { o.remove(); });
+  }
+
+  // Comprado: se guardó en Mis compras (o activarlo ya)
+  function guardado(id, pr) {
+    var k = pr.item || id, f = INFO[k];
+    var ch = ''; for (var i = 0; i < 14; i++) { var a = i / 14 * Math.PI * 2, rr = 110 + (i % 3) * 30; ch += '<i style="--x:' + Math.round(Math.cos(a) * rr) + 'px;--y:' + Math.round(Math.sin(a) * rr) + 'px;--t:' + (.15 + (i % 4) * .06) + 's"></i>'; }
+    var o = ventana('<div class="ry"></div><div class="chs">' + ch + '</div><small class="tg">' + (id === 'sorpresa' ? 'Te salió' : '¡Comprado!') + '</small><div class="gi">' + IC[k] + '</div><h3>' + esc(f.t) + ' <em>' + esc(f.c) + '</em></h3>' +
+      '<p>Se guardó en <b>Mis compras</b>. Actívala cuando quieras.</p><button type="button" class="bt" data-ya>Activar ahora</button><button type="button" class="lnk" data-luego>Guardar para después</button>', 'ok-v', f.col);
+    o.addEventListener('click', function (e) {
+      if (e.target.closest('[data-luego]')) { o.remove(); return; }
+      var b = e.target.closest('[data-ya]'); if (!b) return;
+      o.remove(); accion('tienda_usar', { p_item: k }, null, function (d) { listo(k, d.premio || {}, true); });
+    });
   }
 
   // Cómo conseguir diamantes (el «+»)
@@ -383,7 +439,16 @@
     });
   }
 
-  app.addEventListener('click', function (e) { var cb = e.target.closest('[data-cat]'); if (cb) { cat = cb.dataset.cat; try { localStorage.setItem('mc_tienda_cat', cat); } catch (er) {} pintar(); return; } var c = e.target.closest('[data-item]'); if (c && T && !T.error) confirmar(c.dataset.item); });
+  app.addEventListener('click', function (e) {
+    var q = e.target.closest('[data-usar],[data-pausar],[data-reanudar],[data-quitar]');
+    if (q) {
+      if (q.dataset.usar) accion('tienda_usar', { p_item: q.dataset.usar }, q, function (d) { listo(q.dataset.usar, d.premio || {}, true); });
+      else if (q.dataset.pausar) accion('tienda_pausar', { p_efecto: q.dataset.pausar }, q, function () { toast('En pausa. El tiempo que te queda se guardó.'); });
+      else if (q.dataset.reanudar) accion('tienda_reanudar', { p_efecto: q.dataset.reanudar }, q, function () { toast('¡Activada otra vez!'); });
+      else accion('tienda_escudo_quitar', {}, q, function () { toast('Volvió a Mis compras.'); });
+      return;
+    }
+    var cb = e.target.closest('[data-cat]'); if (cb) { cat = cb.dataset.cat; try { localStorage.setItem('mc_tienda_cat', cat); } catch (er) {} pintar(); return; } var c = e.target.closest('[data-item]'); if (c && T && !T.error) confirmar(c.dataset.item); });
   recB.addEventListener('click', function () { if (T && !T.error) ganar(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { var o = document.querySelector('.ov'); if (o) o.remove(); } });
   cargar();
