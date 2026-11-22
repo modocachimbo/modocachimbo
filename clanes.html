@@ -428,7 +428,7 @@
   .cf-riel u.ok { background: var(--accent); border-color: #fff; box-shadow: 0 0 10px rgba(198,224,0,.8); }
   .cf-cajas { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
   .cfc { position: relative; display: flex; flex-direction: column; align-items: center; padding: 10px 4px 9px; border-radius: 14px; background: #120e22; border: 2px solid #2a2346; border-bottom-width: 4px; text-align: center; cursor: default; color: #fff; width: 100%; font: inherit; min-width: 0; }
-  .cfc .ic { width: 100%; max-width: 96px; aspect-ratio: 100 / 90; display: block; filter: drop-shadow(0 6px 8px rgba(0,0,0,.5)); }
+  .cfc .ic { width: 100%; max-width: 96px; aspect-ratio: 112 / 106; display: block; filter: drop-shadow(0 6px 8px rgba(0,0,0,.5)); }
   .cfc .ic svg { width: 100%; height: 100%; display: block; overflow: visible; }
   .cfc .nm { font: italic 900 17px/1 var(--display); text-transform: uppercase; margin-top: 4px; white-space: nowrap; }
   .cfc .mt { font: 900 11.5px/1 Nunito, sans-serif; color: var(--text-dim); margin-top: 4px; }
@@ -442,9 +442,27 @@
   .cfc.listo:hover { transform: translateY(-2px); }
   .cfc.listo:active { transform: translateY(2px); border-bottom-width: 2px; }
   .cfc.falta .tg { background: #2f2852; color: #d9d3ef; }
-  .cfc.bloq .ic { filter: grayscale(.55) brightness(.6) drop-shadow(0 6px 8px rgba(0,0,0,.5)); }
+  .cfc.bloq .ic, .cfc.falta .ic { filter: saturate(.7) brightness(.78) drop-shadow(0 6px 8px rgba(0,0,0,.5)); opacity: .8; }
+  .cfc.bloq:hover .ic { opacity: 1; filter: none; transition: .2s; }
+  .cfc { transition: transform .18s, box-shadow .18s; }
+  .cfc.listo { animation: cfBrilla 1.8s ease-in-out infinite; }
+  @keyframes cfBrilla { 50% { box-shadow: 0 0 34px rgba(255,200,0,.6), inset 0 0 18px rgba(255,200,0,.18); } }
+  .cf-pista.anim .cf-riel > i { animation: cfLlena 1.3s cubic-bezier(.2,.9,.3,1) both; }
+  @keyframes cfLlena { from { width: 0; } }
+  .cf-pista.anim .cf-riel u.ok { animation: cfMarca .4s cubic-bezier(.2,1.8,.4,1) both; }
+  .cf-pista.anim .cf-riel u.ok:nth-of-type(1) { animation-delay: .3s; } .cf-pista.anim .cf-riel u.ok:nth-of-type(2) { animation-delay: .6s; } .cf-pista.anim .cf-riel u.ok:nth-of-type(3) { animation-delay: .9s; } .cf-pista.anim .cf-riel u.ok:nth-of-type(4) { animation-delay: 1.1s; } .cf-pista.anim .cf-riel u.ok:nth-of-type(5) { animation-delay: 1.25s; }
+  @keyframes cfMarca { from { transform: translate(-50%, -50%) rotate(45deg) scale(0); } }
+  .cf-ch { transform-box: fill-box; transform-origin: center; animation: cfTw 1.8s ease-in-out infinite; }
+  @keyframes cfTw { 0%, 100% { opacity: .2; transform: scale(.5); } 50% { opacity: 1; transform: scale(1); } }
+  .cfc.bloq .cf-ch { display: none; }
   .cfc.bloq .nm { color: #b9b0d8; }
-  .cfc .sello { position: absolute; top: 34%; left: 50%; transform: translate(-50%, -50%) rotate(-12deg); font: italic 900 14px/1 var(--display); text-transform: uppercase; color: #0b2400; background: var(--ok); padding: 3px 7px; border-radius: 5px; border: 2px solid #fff; z-index: 2; box-shadow: 0 3px 8px rgba(0,0,0,.4); }
+  .cfc .bdg { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; z-index: 2; border: 2px solid #1a1030; }
+  .cfc .bdg svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  .cfc .bdg.ok { background: var(--ok); color: #0b2400; }
+  .cfc .bdg.lk { background: #2f2852; color: #c9bfe6; }
+  .cfc .bdg.lk svg { stroke-width: 2.6; }
+  .cfc.ok .tg { background: var(--ok); color: #0b2400; }
+  .cfc .sello { position: absolute; top: 46%; left: 50%; transform: translate(-50%, -50%) rotate(-12deg); font: italic 900 14px/1 var(--display); text-transform: uppercase; color: #0b2400; background: var(--ok); padding: 3px 7px; border-radius: 5px; border: 2px solid #fff; z-index: 2; box-shadow: 0 3px 8px rgba(0,0,0,.4); }
   @keyframes cfSalta { 0%, 100% { transform: translateY(0) rotate(0); } 15% { transform: translateY(-6px) rotate(-5deg); } 30% { transform: translateY(0) rotate(4deg); } 42% { transform: rotate(-2deg); } 52% { transform: rotate(0); } }
   @keyframes cfLate { 50% { transform: translateX(-50%) scale(1.08); } }
   .cf-yo { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding: 10px 12px; border-radius: 12px; font-size: 12.5px; color: #d9d3ef; background: rgba(88,204,2,.08); border: 1.5px solid rgba(88,204,2,.32); }
@@ -468,14 +486,14 @@
   .fi .mcj-nv, .fi .mcj-pin { display: none !important; }
   .fi p { flex: 1; min-width: 0; font-size: 13px; color: var(--text-dim); line-height: 1.3; }
   .fi p b { color: #fff; } .fi p em { font-style: normal; color: var(--oro); font-weight: 900; }
-  .fi .mc { width: 34px; height: 31px; flex: none; }
+  .fi .mc { width: 36px; height: 34px; flex: none; }
   .fi .mc svg { width: 100%; height: 100%; display: block; overflow: visible; }
   .fi time { font: 800 11px Nunito, sans-serif; color: var(--text-faint); white-space: nowrap; }
   .act .vm { display: block; width: 100%; text-align: right; padding: 10px 14px; background: none; border: 0; border-top: 1px solid #221c3d; font: italic 900 15px/1 var(--display); text-transform: uppercase; color: var(--oro); cursor: pointer; }
   /* Premios por cofre (vista Cofres) */
   .pz-l { display: grid; gap: 8px; }
   .pzr { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 14px; background: #120e22; border: 1.5px solid #2a2346; }
-  .pzr .ic { width: 64px; height: 58px; } .pzr .ic svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .pzr .ic { width: 64px; height: 61px; } .pzr .ic svg { width: 100%; height: 100%; display: block; overflow: visible; }
   .pzr .d { font-size: 20px; color: #fff; line-height: 1; }
   .pzr .ch { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
   .pzr .ch span { display: inline-flex; align-items: center; gap: 4px; padding: 3px 7px; border-radius: 7px; background: #1D1834; border: 1px solid #352E58; font: 900 12px/1 Nunito, sans-serif; color: #fff; }
@@ -514,10 +532,16 @@
   .cfv .ven > *:not(.rayos) { position: relative; }
   .cfv .eye { font: 900 11px Nunito, sans-serif; letter-spacing: .16em; text-transform: uppercase; color: var(--oro); }
   .cfv h3 { font: italic 900 36px/1 var(--display); text-transform: uppercase; color: #fff; margin: 6px 0 2px; }
-  .cfv .gr { width: 190px; height: 171px; margin: 38px auto 0; cursor: pointer; }
+  .cfv .gr { width: 200px; height: 189px; margin: 38px auto 0; cursor: pointer; }
   .cfv .gr svg { width: 100%; height: 100%; display: block; overflow: visible; }
-  .cfv .gr.tiembla { animation: cfTiembla .7s ease-in-out infinite; }
-  @keyframes cfTiembla { 0%, 100% { transform: rotate(0) scale(1); } 20% { transform: rotate(-7deg) scale(1.03); } 40% { transform: rotate(6deg) scale(1.05); } 60% { transform: rotate(-4deg) scale(1.03); } 80% { transform: rotate(3deg); } }
+  .cfv .gr { will-change: transform; filter: drop-shadow(0 10px 14px rgba(0,0,0,.5)); }
+  .cfv .gr.cae { animation: cfCae .5s cubic-bezier(.3,1.5,.5,1) both; }
+  @keyframes cfCae { 0% { transform: translateY(-140px) scale(.6); opacity: 0; } 60% { transform: translateY(8px) scale(1.05, .92); opacity: 1; } 100% { transform: none; } }
+  .cfv .gr.tiembla { animation: cfTiembla 1.4s cubic-bezier(.36,.07,.19,.97) both; }
+  .cfv .flash { position: fixed; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 2; }
+  .cfv.boom .flash { animation: cfFlash .6s ease-out; }
+  @keyframes cfFlash { 0% { opacity: .85; } 100% { opacity: 0; } }
+  @keyframes cfTiembla { 0% { transform: none; } 10% { transform: rotate(-3deg); } 20% { transform: rotate(3deg); } 30% { transform: rotate(-5deg) scale(1.03); } 40% { transform: rotate(5deg) scale(1.04); } 50% { transform: rotate(-7deg) scale(1.06); } 60% { transform: rotate(7deg) scale(1.08); } 70% { transform: rotate(-9deg) scale(1.1); } 80% { transform: rotate(9deg) scale(1.12); } 90% { transform: rotate(-4deg) scale(1.16); filter: drop-shadow(0 0 26px rgba(255,220,80,.95)); } 100% { transform: scale(1.18); filter: drop-shadow(0 0 34px rgba(255,240,160,1)); } }
   .cfv.abierto .gr { animation: cfBoom .5s cubic-bezier(.2,1.6,.4,1); filter: drop-shadow(0 0 30px rgba(255,200,0,.7)); }
   @keyframes cfBoom { 0% { transform: scale(1.25); } }
   .cfv .tip { font-size: 12.5px; color: var(--text-dim); margin-top: 4px; }
@@ -531,7 +555,7 @@
   .cfv .cb { margin-top: 14px; }
   .cfv .chispa { position: absolute; width: 8px; height: 8px; border-radius: 2px; pointer-events: none; animation: cfChispa 1.1s ease-out forwards; }
   @keyframes cfChispa { to { transform: translate(var(--x), var(--y)) rotate(400deg); opacity: 0; } }
-  @media (prefers-reduced-motion: reduce) { .cfc.listo .ic, .cfc.listo .tg, .cfv .rayos, .cfv .gr, .cf-riel > i::after, .estd .esc.grande { animation: none !important; } }
+  @media (prefers-reduced-motion: reduce) { .cfc.listo, .cf-pista.anim .cf-riel > i, .cf-pista.anim .cf-riel u, .cfv .flash, .cf-ch, .cfc.listo .ic, .cfc.listo .tg, .cfv .rayos, .cfv .gr, .cf-riel > i::after, .estd .esc.grande { animation: none !important; } }
 </style>
 <link rel="stylesheet" href="assets/amigos.css?v=7">
 <script src="assets/mc-config.js"></script>
@@ -705,37 +729,61 @@
 
   /* ---------- Cofres y misiones del clan (supabase/119-clan-cofres.sql) ---------- */
   var CF = null, abriendo = false;
+  // Cofre de aventura (propuesta A): contorno grueso, bandas de metal, cerradura en escudo, gemas desde Plata
+  var OL = '#1a1030';
   var TIER = [
-    { c1: '#C98A4B', c2: '#5c3414', c3: '#8a5426', met: '#E8C07A', mo: '#7a4a1c' },  // Madera
-    { c1: '#E08A3C', c2: '#6b3a10', c3: '#a85a1c', met: '#FFCF8A', mo: '#8a4a14' },  // Bronce
-    { c1: '#B8C3D9', c2: '#3c465a', c3: '#7d8aa6', met: '#F4F7FC', mo: '#56627c' },  // Plata
-    { c1: '#FFC800', c2: '#7a4f00', c3: '#d99a00', met: '#FFF3B0', mo: '#a87b00' },  // Oro
-    { c1: '#B07CFF', c2: '#3e1a80', c3: '#7a45d6', met: '#FFD6FF', mo: '#5a2aa8' }   // Leyenda
+    { a: '#C58A4E', b: '#8A5226', c: '#5e3412', m1: '#D9DEE8', m2: '#747c8e', gem: null },        // Madera
+    { a: '#F0A45A', b: '#C06A2A', c: '#7a3d12', m1: '#FFE1B0', m2: '#a8682a', gem: null },        // Bronce
+    { a: '#E6ECF7', b: '#A9B4CC', c: '#5d6880', m1: '#FFFFFF', m2: '#8792aa', gem: '#1CB0F6' },   // Plata
+    { a: '#FFE15A', b: '#FFB800', c: '#a86a00', m1: '#FFF7C8', m2: '#c98a00', gem: '#FF4B4B' },   // Oro
+    { a: '#C9A0FF', b: '#8247E5', c: '#3a1680', m1: '#FFE98a', m2: '#c99a1c', gem: '#2BD9C2' }    // Leyenda
   ];
   var cfUid = 0;
-  // Cofre dibujado (viewBox 100x90). n = 1..5, ab = abierto
+  function cfGema(x, y, r, col) {
+    return '<path d="M' + x + ' ' + (y - r) + 'L' + (x + r * .85) + ' ' + y + 'L' + x + ' ' + (y + r) + 'L' + (x - r * .85) + ' ' + y + 'z" fill="' + col + '" stroke="' + OL + '" stroke-width="2.2" stroke-linejoin="round"/>' +
+      '<path d="M' + x + ' ' + (y - r * .6) + 'L' + (x + r * .4) + ' ' + y + '" stroke="#fff" stroke-opacity=".8" stroke-width="1.6" stroke-linecap="round"/>';
+  }
+  function cfChispa(x, y, r, d) {
+    return '<path class="cf-ch" style="animation-delay:' + d + 's" d="M' + x + ' ' + (y - r) + 'Q' + x + ' ' + y + ' ' + (x + r) + ' ' + y + 'Q' + x + ' ' + y + ' ' + x + ' ' + (y + r) + 'Q' + x + ' ' + y + ' ' + (x - r) + ' ' + y + 'Q' + x + ' ' + y + ' ' + x + ' ' + (y - r) + 'z" fill="#fff"/>';
+  }
+  // n = 1..5, ab = abierto. viewBox 112x106
   function cofre(n, ab) {
-    var t = TIER[(n || 1) - 1] || TIER[0], id = 'cfg' + (cfUid++);
-    var defs = '<defs><linearGradient id="' + id + 'a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + t.c1 + '"/><stop offset="1" stop-color="' + t.c3 + '"/></linearGradient>' +
-      '<linearGradient id="' + id + 'm" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="' + t.mo + '"/><stop offset=".45" stop-color="' + t.met + '"/><stop offset="1" stop-color="' + t.mo + '"/></linearGradient>' +
-      '<radialGradient id="' + id + 'l" cx=".5" cy="1" r=".9"><stop offset="0" stop-color="#FFF6C0"/><stop offset=".5" stop-color="#FFC800" stop-opacity=".6"/><stop offset="1" stop-color="#FFC800" stop-opacity="0"/></radialGradient></defs>';
-    var tablas = n === 1 ? '<path d="M18 57h64M18 68h64" stroke="' + t.c2 + '" stroke-opacity=".45" stroke-width="2"/>' : '';
-    var cuerpo = '<ellipse cx="50" cy="85" rx="38" ry="4.5" fill="#000" opacity=".35"/>' +
-      '<rect x="14" y="44" width="72" height="38" rx="6" fill="url(#' + id + 'a)" stroke="' + t.c2 + '" stroke-width="3"/>' + tablas +
-      '<rect x="14" y="44" width="72" height="7" fill="' + t.c2 + '" opacity=".35"/>' +
-      '<rect x="22" y="44" width="9" height="38" fill="url(#' + id + 'm)" stroke="' + t.c2 + '" stroke-width="1.6"/><rect x="69" y="44" width="9" height="38" fill="url(#' + id + 'm)" stroke="' + t.c2 + '" stroke-width="1.6"/>' +
-      '<path d="M14 76h72" stroke="' + t.c2 + '" stroke-width="3"/>' +
-      '<rect x="40" y="47" width="20" height="19" rx="4" fill="url(#' + id + 'm)" stroke="' + t.c2 + '" stroke-width="2.4"/><circle cx="50" cy="55" r="3" fill="' + t.c2 + '"/><path d="M50 56v5" stroke="' + t.c2 + '" stroke-width="2.6" stroke-linecap="round"/>' +
-      (n === 5 ? '<path d="M50 70l4 4-4 4-4-4z" fill="#2BD9C2" stroke="#0e6b60" stroke-width="1.4"/>' : '');
-    var gemas = n === 5 ? '<path d="M50 18l6 6-6 6-6-6z" fill="#FF4B4B" stroke="#7a1010" stroke-width="1.5"/><circle cx="30" cy="30" r="3.2" fill="#2BD9C2" stroke="#0e6b60" stroke-width="1.2"/><circle cx="70" cy="30" r="3.2" fill="#2BD9C2" stroke="#0e6b60" stroke-width="1.2"/>' : n === 4 ? '<path d="M50 20l4 5-4 5-4-5z" fill="#FF4B4B" stroke="#7a1010" stroke-width="1.3"/>' : '';
-    var tapa = ab
-      ? '<path d="M18 46 L50 6 L82 46z" fill="url(#' + id + 'l)"/>' +
-        '<g transform="translate(0 -6) rotate(-28 14 40)"><path d="M14 40V30Q14 12 50 12Q86 12 86 30V40z" fill="url(#' + id + 'a)" stroke="' + t.c2 + '" stroke-width="3"/><rect x="22" y="14" width="9" height="26" fill="url(#' + id + 'm)"/><rect x="69" y="14" width="9" height="26" fill="url(#' + id + 'm)"/></g>' +
-        '<ellipse cx="50" cy="46" rx="33" ry="5" fill="#2b1600"/><circle cx="40" cy="44" r="5" fill="#FFC800" stroke="#a87b00" stroke-width="1.5"/><circle cx="52" cy="42" r="5" fill="#FFE066" stroke="#a87b00" stroke-width="1.5"/><circle cx="62" cy="45" r="4.5" fill="#FFC800" stroke="#a87b00" stroke-width="1.5"/>'
-      : '<path d="M14 46V34Q14 14 50 14Q86 14 86 34V46z" fill="url(#' + id + 'a)" stroke="' + t.c2 + '" stroke-width="3"/>' +
-        '<rect x="22" y="16" width="9" height="30" fill="url(#' + id + 'm)" stroke="' + t.c2 + '" stroke-width="1.6"/><rect x="69" y="16" width="9" height="30" fill="url(#' + id + 'm)" stroke="' + t.c2 + '" stroke-width="1.6"/>' +
-        '<path d="M19 36Q21 21 46 19" stroke="#fff" stroke-opacity=".45" stroke-width="3.5" fill="none" stroke-linecap="round"/>' + gemas;
-    return '<svg viewBox="0 0 100 90" aria-hidden="true">' + defs + (ab ? tapa + cuerpo : cuerpo + tapa) + '</svg>';
+    var k = Math.max(0, Math.min(4, (n || 1) - 1)), t = TIER[k], id = 'cfg' + (cfUid++);
+    var S = 'stroke="' + OL + '" stroke-width="3.6" stroke-linejoin="round"', S3 = 'stroke="' + OL + '" stroke-width="3" stroke-linejoin="round"', S2 = 'stroke="' + OL + '" stroke-width="2.4" stroke-linejoin="round"';
+    var defs = '<defs><linearGradient id="' + id + 'b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + t.a + '"/><stop offset="1" stop-color="' + t.b + '"/></linearGradient>' +
+      '<linearGradient id="' + id + 'm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + t.m1 + '"/><stop offset="1" stop-color="' + t.m2 + '"/></linearGradient>' +
+      '<linearGradient id="' + id + 'i" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + t.c + '"/><stop offset="1" stop-color="#140a1e"/></linearGradient>' +
+      '<radialGradient id="' + id + 'l" cx=".5" cy="1" r="1"><stop offset="0" stop-color="#FFFBE0"/><stop offset=".4" stop-color="#FFD84a" stop-opacity=".85"/><stop offset="1" stop-color="#FFC800" stop-opacity="0"/></radialGradient>' +
+      '<radialGradient id="' + id + 'au" cx=".5" cy=".55" r=".5"><stop offset="0" stop-color="' + (t.gem || t.a) + '" stop-opacity=".5"/><stop offset="1" stop-color="' + (t.gem || t.a) + '" stop-opacity="0"/></radialGradient></defs>';
+    var aura = k >= 3 || ab ? '<ellipse cx="57" cy="60" rx="58" ry="50" fill="url(#' + id + 'au)"/>' : '';
+    var tablas = k === 0 ? '<path d="M17 76h75M17 87h75" stroke="' + t.c + '" stroke-width="2.4" opacity=".7"/><path d="M40 66v10M70 76v11M32 87v9" stroke="' + t.c + '" stroke-width="2" opacity=".55"/>' : '';
+    var cuerpo = '<path d="M94 64l12-7v32l-12 9z" fill="' + t.c + '" ' + S + '/>' +
+      '<rect x="14" y="64" width="80" height="34" rx="5" fill="url(#' + id + 'b)" ' + S + '/>' + tablas +
+      '<path d="M18 68h72" stroke="#fff" stroke-opacity=".35" stroke-width="3" stroke-linecap="round"/>' +
+      '<path d="M14 82v11a5 5 0 0 0 5 5h9v-6h-8v-10z" fill="url(#' + id + 'm)" ' + S2 + '/><path d="M94 82v11a5 5 0 0 1-5 5h-9v-6h8v-10z" fill="url(#' + id + 'm)" ' + S2 + '/>' +
+      '<circle cx="21" cy="92" r="1.6" fill="' + OL + '"/><circle cx="87" cy="92" r="1.6" fill="' + OL + '"/>' +
+      '<path d="M44 ' + (ab ? 66 : 58) + 'h20v' + (ab ? 8 : 14) + 'c0 7-6 11-10 13-4-2-10-6-10-13z" fill="url(#' + id + 'm)" ' + S3 + '/>' +
+      (t.gem ? cfGema(54, ab ? 74 : 70, 6, t.gem) : '<path d="M54 ' + (ab ? 69 : 64) + 'a3.2 3.2 0 0 1 1.8 5.8l1.2 6h-6l1.2-6a3.2 3.2 0 0 1 1.8-5.8z" fill="' + OL + '"/>');
+    var tapa = '<path d="M106 57V44c0-12-6-20-14-23 4 5 6 12 6 21v20z" fill="' + t.c + '" ' + S + '/>' +
+      '<path d="M12 64V44c0-16 18-24 43-24s43 8 43 24v20z" fill="url(#' + id + 'b)" ' + S + '/>' +
+      '<path d="M20 44c1-11 14-17 32-17" stroke="#fff" stroke-opacity=".55" stroke-width="4" fill="none" stroke-linecap="round"/>' +
+      '<path d="M27 22.6Q29 22 33 21.6V64h-6z" fill="url(#' + id + 'm)" ' + S2 + '/><path d="M77 21.6Q81 22 83 22.6V64h-6z" fill="url(#' + id + 'm)" ' + S2 + '/>' +
+      '<rect x="8" y="58" width="94" height="10" rx="4" fill="url(#' + id + 'm)" ' + S3 + '/>' +
+      '<circle cx="16" cy="63" r="1.6" fill="' + OL + '"/><circle cx="94" cy="63" r="1.6" fill="' + OL + '"/>' +
+      (k === 4 ? '<path d="M36 22l4-9 5 7 10-11 10 11 5-7 4 9" fill="#FFD84a" stroke="' + OL + '" stroke-width="2.6" stroke-linejoin="round"/>' + cfGema(55, 13, 4, '#FF4B4B') : '') +
+      (k >= 3 ? cfGema(55, 38, 5.5, t.gem) : '');
+    // Abierto: la tapa cae hacia atrás (se ve por dentro), luz, monedas y gemas saliendo
+    var atras = '<path d="M14 64 20 22Q55 8 90 22l6 42z" fill="url(#' + id + 'i)" ' + S + '/>' +
+      '<path d="M20 22Q55 8 90 22l-2 7Q55 15 22 29z" fill="url(#' + id + 'm)" ' + S2 + '/>' +
+      '<path d="M30 18.5 33 64M80 18.5 77 64" stroke="' + t.m2 + '" stroke-width="5" opacity=".75"/>' +
+      '<path d="M18 64 55 0 92 64z" fill="url(#' + id + 'l)"/>';
+    var boca = '<path d="M10 66c0-6 20-9 45-9s45 3 45 9" fill="#2a1600" ' + S3 + '/>' +
+      '<circle cx="38" cy="60" r="6" fill="#FFC800" ' + S2 + '/><circle cx="51" cy="56" r="6.5" fill="#FFE15A" ' + S2 + '/><circle cx="66" cy="58" r="6" fill="#FFC800" ' + S2 + '/><circle cx="76" cy="62" r="4.5" fill="#FFE15A" ' + S2 + '/>' +
+      cfGema(45, 48, 5.5, t.gem || '#2BD9C2') + cfGema(62, 46, 4.5, '#FF86D0') +
+      '<rect x="8" y="62" width="94" height="8" rx="4" fill="url(#' + id + 'm)" ' + S3 + '/>';
+    var ch = k >= 3 || ab ? cfChispa(10, 24, 5, 0) + cfChispa(104, 30, 4, .5) + cfChispa(100, 100, 3.5, 1) : '';
+    return '<svg viewBox="0 0 112 106" aria-hidden="true">' + defs + aura + '<ellipse cx="58" cy="100" rx="46" ry="6" fill="#000" opacity=".4"/>' +
+      (ab ? atras + cuerpo + boca : cuerpo + tapa) + ch + '</svg>';
   }
   var PZ = {
     xp: '<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#cl-rayo"/></svg>',
@@ -771,14 +819,16 @@
     }
     return Math.min(100, 90 + 10 * (p - prev) / Math.max(1, prev * .2));
   }
+  var cfAnim = true;
   function cofresCard(completo) {
+    if (CF && !CF.error) setTimeout(function () { cfAnim = false; }, 50);
     if (!CF) return '<div class="card cf"><div class="cf-h"><div class="h2">Cofres <em>de la semana</em></div></div><p class="estado">Cargando cofres…</p></div>';
     if (CF.error) return '<div class="card cf"><div class="cf-h"><div class="h2">Cofres <em>de la semana</em></div></div><p class="estado">' + (CF.error === 'sql' ? 'Los cofres del clan se activan muy pronto.' : 'No se pudieron cargar los cofres. Revisa tu internet.') + '</p></div>';
     var sig = null; CF.cofres.forEach(function (c) { if (!sig && +CF.puntos < +c.meta) sig = c; });
     var cajas = CF.cofres.map(function (c) {
-      var e = cfEstado(c), tg = e === 'ok' ? '' : e === 'listo' ? '<span class="tg">¡Ábrelo!</span>' : e === 'falta' ? '<span class="tg">Te faltan ' + (CF.minimo - CF.mio) + '</span>' : '';
+      var e = cfEstado(c), tg = e === 'listo' ? '<span class="tg">¡Ábrelo!</span>' : e === 'ok' ? '<span class="tg">Abierto</span>' : e === 'falta' ? '<span class="tg">Te faltan ' + (CF.minimo - CF.mio) + '</span>' : '';
       return '<button type="button" class="cfc ' + e + '"' + (e === 'listo' ? ' data-cofre="' + c.n + '"' : ' tabindex="-1"') + ' aria-label="Cofre de ' + esc(c.nombre) + '">' + tg +
-        '<span class="ic">' + cofre(c.n, e === 'ok') + '</span>' + (e === 'ok' ? '<span class="sello">Abierto</span>' : '') +
+        '<span class="ic">' + cofre(c.n, e === 'ok') + '</span>' + (e === 'ok' ? '<span class="bdg ok">' + SV.check.replace(' class="i"', '') + '</span>' : e === 'bloq' || e === 'falta' ? '<span class="bdg lk"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>' : '') +
         '<span class="nm">' + esc(c.nombre) + '</span><span class="mt">' + nf(c.meta) + '</span></button>';
     }).join('');
     var marcas = CF.cofres.map(function (c, i) { return '<u class="' + (+CF.puntos >= +c.meta ? 'ok' : '') + '" style="left:' + (10 + 20 * i) + '%"></u>'; }).join('');
@@ -789,7 +839,7 @@
       '<div class="cf-top"><div class="cf-num"><b>' + nf(CF.puntos) + '</b><span>preguntas del clan</span>' +
       (+CF.bonus ? '<small>Incluye <em>+' + nf(CF.bonus) + '</em> de misiones cumplidas</small>' : '<small>Entre los ' + CF.miembros + ' miembros, esta semana</small>') + '</div>' +
       (sig ? '<div class="cf-sig">Faltan <b>' + nf(sig.meta - CF.puntos) + '</b> para<br>el cofre de <b>' + esc(sig.nombre) + '</b></div>' : '<div class="cf-sig"><b style="color:var(--accent)">¡Llegaron a todos!</b></div>') + '</div>' +
-      '<div class="cf-pista"><div class="cf-riel"><i style="width:' + cfPct().toFixed(1) + '%"></i>' + marcas + '</div></div>' +
+      '<div class="cf-pista' + (cfAnim ? ' anim' : '') + '"><div class="cf-riel"><i style="width:' + cfPct().toFixed(1) + '%"></i>' + marcas + '</div></div>' +
       '<div class="cf-cajas">' + cajas + '</div>' + yo + '</div></div>';
   }
   function hace(t) {
@@ -849,13 +899,14 @@
     if (abriendo) return; abriendo = true;
     var c = CF.cofres[n - 1], v = document.createElement('div');
     v.className = 'cfv'; v.setAttribute('role', 'dialog');
-    v.innerHTML = '<div class="ven"><div class="rayos"></div><div class="eye">Cofre de ' + esc(c.nombre) + ' · ' + esc(D.clan.nombre) + '</div><h3>Abriendo…</h3><div class="gr tiembla">' + cofre(n, false) + '</div><p class="tip">Un momento…</p><div class="pie"></div></div>';
+    v.innerHTML = '<div class="flash"></div><div class="ven"><div class="rayos"></div><div class="eye">Cofre de ' + esc(c.nombre) + ' · ' + esc(D.clan.nombre) + '</div><h3>Abriendo…</h3><div class="gr cae">' + cofre(n, false) + '</div><p class="tip">Un momento…</p><div class="pie"></div></div>';
     document.body.appendChild(v);
     try { window.MCSonido && MCSonido.cargado && MCSonido.cargado(); } catch (e) {}
-    var t0 = Date.now();
+    var t0 = Date.now(), grv = v.querySelector('.gr');
+    setTimeout(function () { grv.classList.remove('cae'); grv.classList.add('tiembla'); }, 480);
     K.rpc('clan_cofre_abrir', { p_n: n }).then(function (pr) {
       setTimeout(function () {
-        v.classList.add('abierto');
+        v.classList.add('abierto', 'boom'); setTimeout(function () { v.classList.remove('boom'); }, 700);
         try { window.MCSonido && MCSonido.efecto && MCSonido.efecto('abrir'); } catch (e) {}
         var gr = v.querySelector('.gr'); gr.classList.remove('tiembla'); gr.innerHTML = cofre(n, true);
         v.querySelector('h3').textContent = '¡Abriste el cofre!';
@@ -866,10 +917,14 @@
           s.className = 'chispa'; s.style.cssText = 'left:50%;top:150px;background:' + cols[i % 5] + ';--x:' + Math.round(Math.cos(a) * r) + 'px;--y:' + Math.round(Math.sin(a) * r) + 'px;animation-delay:' + (Math.random() * .15).toFixed(2) + 's';
           ven.appendChild(s);
         }
-        v.querySelector('.pie').innerHTML = '<div class="prem">' + premios(pr).map(function (p) { return '<div class="pz">' + PZ[p[0]] + '<b>' + p[1] + '</b><span>' + esc(p[2]) + '</span></div>'; }).join('') + '</div>' +
+        v.querySelector('.pie').innerHTML = '<div class="prem">' + premios(pr).map(function (p) { return '<div class="pz">' + PZ[p[0]] + '<b data-n="' + p[1].replace('+', '') + '">+0</b><span>' + esc(p[2]) + '</span></div>'; }).join('') + '</div>' +
           '<button type="button" class="cb l w" data-cerrar>Recibir</button>';
+        v.querySelectorAll('[data-n]').forEach(function (b, i) {
+          var fin = +b.dataset.n, t1 = performance.now() + 250 + i * 120;
+          (function paso(now) { var x = Math.min(1, Math.max(0, (now - t1) / 700)); b.textContent = '+' + Math.round(fin * (1 - Math.pow(1 - x, 3))); if (x < 1) requestAnimationFrame(paso); })(performance.now());
+        });
         c.abierto = true; c.abrieron = (+c.abrieron || 0) + 1;
-      }, Math.max(0, 1300 - (Date.now() - t0)));
+      }, Math.max(0, 1900 - (Date.now() - t0)));
     }, function (e) {
       v.querySelector('.gr').classList.remove('tiembla');
       v.querySelector('h3').textContent = 'No se pudo abrir';
