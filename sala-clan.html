@@ -352,30 +352,30 @@
   }
 
   /* ---------- Estado ---------- */
-  var verCursos = false, MIO = null, F = { curso: 'mezcla', n: 10, seg: 20, formato: 5 }, S = null, QS = null, desfase = 0, sondeo = 0, tic = 0, mios = {}, ultimaI = -1, enviando = false;
+  var verCursos = false, MIO = null, F = { curso: 'mezcla', n: 10, seg: 20, formato: 3 }, S = null, QS = null, desfase = 0, sondeo = 0, tic = 0, mios = {}, ultimaI = -1, enviando = false;
 
   /* ---------- Inicio: ticket, crear o entrar ---------- */
   function ticketHtml() {
     var t = +MIO.tickets || 0, p = +MIO.precio || 60, r = +MIO.rayos || 0;
     return '<div class="ticket">' + TK + '<div class="t"><b>' + t + '</b><span>' + (t === 1 ? 'Ticket de sala' : 'Tickets de sala') + '</span></div></div>' +
       '<div class="canje"><button type="button" class="cb g" data-canje' + (r < p ? ' disabled' : '') + '>Canjear 1 ticket · ' + p + ' ' + RAYO + '</button><span class="small">Tienes <span class="rayo">' + RAYO + r + '</span> rayos</span></div>' +
-      '<p class="small" style="margin-top:8px">Crear una sala gasta 1 ticket. Si nadie la acepta en 30 minutos o la cancelas antes de empezar, el ticket vuelve.</p>';
+      '<p class="small" style="margin-top:8px">Crear la sala es gratis: el ticket se usa recién cuando tu clan da «Empezar». Si se cierra sin empezar, no gastas nada.</p>';
   }
   function inicio() {
     var s = MIO.sala;
-    var abierta = s ? '<div class="card" style="border-color:rgba(198,224,0,.5)"><div class="h2"><span class="pulso"></span>Tu clan tiene una sala</div><p class="small" style="margin-bottom:10px">' + esc(s.titulo) + (s.rival ? ' · contra <b style="color:#fff">' + esc(s.rival) + '</b>' : ' · esperando rival') + '</p><a class="cb l w" href="sala-clan.html?c=' + s.codigo + '">Entrar a la sala ' + s.codigo + '</a></div>' : '';
+    var abierta = s ? '<div class="card" style="border-color:rgba(198,224,0,.5)"><div class="h2"><span class="pulso"></span>Tu clan tiene una sala</div><p class="small" style="margin-bottom:10px">' + esc(s.titulo) + (s.rival ? ' · contra <b style="color:#fff">' + esc(s.rival) + '</b>' : ' · esperando rival') + '</p><a class="cb l w" href="' + (s.codigo.length === 6 ? 'duelo.html?d=' : 'sala-clan.html?c=') + s.codigo + '">' + (s.empezo ? 'Ver la partida ' : 'Entrar a la sala ') + s.codigo + '</a></div>' : '';
     var cursos = [['mezcla', 'Mezcla de todo', '']].concat(AREAS.map(function (a) { return ['a:' + a.id, a.nombre, '']; })).concat(CURSOS.map(function (c) { return [c.id, c.nombre, c.icono]; }));
     return abierta + '<div class="dos"><div class="card"><div class="h2">Crear sala <em>clan vs clan</em></div>' + ticketHtml() +
       '<span class="lb">Preguntas de</span><div class="chips">' + cursos.filter(function (c, i) { return i < 5 || verCursos || F.curso === c[0]; }).map(function (c) { return '<button type="button" class="chip' + (F.curso === c[0] ? ' on' : '') + '" data-curso="' + c[0] + '">' + (c[2] ? '<img src="' + c[2] + '" alt="">' : '') + esc(c[1]) + '</button>'; }).join('') +
       '<button type="button" class="chip" data-vercursos style="color:var(--accent)">' + (verCursos ? 'Menos' : 'Un curso ▾') + '</button></div>' +
       '<span class="lb">Cuántas preguntas</span><div class="seg3">' + [10, 15, 20].map(function (n) { return '<button type="button" class="chip' + (F.n === n ? ' on' : '') + '" data-n="' + n + '">' + n + '<small>preguntas</small></button>'; }).join('') + '</div>' +
       '<span class="lb">Tiempo por pregunta</span><div class="seg3">' + [15, 20, 30].map(function (n) { return '<button type="button" class="chip' + (F.seg === n ? ' on' : '') + '" data-seg="' + n + '">' + n + 's<small>' + (n === 15 ? 'rápido' : n === 20 ? 'normal' : 'tranquilo') + '</small></button>'; }).join('') + '</div>' +
-      '<span class="lb">Jugadores por clan</span><div class="seg3">' + [[3, '3 vs 3'], [5, '5 vs 5'], [10, 'Todos']].map(function (x) { return '<button type="button" class="chip' + (F.formato === x[0] ? ' on' : '') + '" data-formato="' + x[0] + '">' + x[1] + '<small>' + (x[0] === 10 ? 'hasta 10' : 'por lado') + '</small></button>'; }).join('') + '</div>' +
-      '<button type="button" class="cb l w" style="margin-top:16px" data-crear' + (+MIO.tickets ? '' : ' disabled') + '>' + TK.replace('class="tk"', 'width="30" height="22"') + 'Crear sala · usa 1 ticket</button>' +
+      '<span class="lb">Jugadores por clan</span><div class="seg3" style="grid-template-columns:1fr 1fr">' + [[2, '2 vs 2'], [3, '3 vs 3']].map(function (x) { return '<button type="button" class="chip' + (F.formato === x[0] ? ' on' : '') + '" data-formato="' + x[0] + '">' + x[1] + '<small>por lado</small></button>'; }).join('') + '</div>' +
+      '<button type="button" class="cb l w" style="margin-top:16px" data-crear' + (+MIO.tickets ? '' : ' disabled') + '>' + TK.replace('class="tk"', 'width="30" height="22"') + 'Crear sala</button>' +
       (MIO.puedo ? '' : '<p class="small" style="margin-top:8px;text-align:center">Solo el líder o un sublíder crea la sala. Tú puedes entrar con el código.</p>') + '<p class="err" id="eCrear"></p></div>' +
-      '<div><div class="card"><div class="h2">Entrar con código</div><p class="small" style="margin-bottom:10px">Pídele el código de 5 letras a tu líder o al clan rival.</p>' +
-      '<input class="inp code" id="iCod" maxlength="5" autocomplete="off" autocapitalize="characters" placeholder="AB3K7"><button type="button" class="cb l w" style="margin-top:10px" data-entrar>Entrar</button><p class="err" id="eEntrar"></p></div>' +
-      '<div class="card"><div class="h2">Cómo se juega</div><p class="small">• Todos ven la <b style="color:#fff">misma pregunta al mismo tiempo</b>.<br>• Acierto: 50 puntos + hasta 50 más si respondes rápido.<br>• Gana el clan con <b style="color:#fff">mejor promedio por jugador</b>: un clan pequeño puede ganarle a uno grande.<br>• Es amistosa: nadie pone nada. Premio para cada jugador: <b style="color:var(--oro)">+20 XP por jugar, 5 XP por acierto y +60 XP si gana su clan</b>. Ese XP también sube a tu clan en el Top (si juegan 2 o más por lado; 3 salas al día).</p></div></div></div>';
+      '<div><div class="card"><div class="h2">Entrar con código</div><p class="small" style="margin-bottom:10px">Pídele el código de la sala a tu líder o al clan rival.</p>' +
+      '<input class="inp code" id="iCod" maxlength="6" autocomplete="off" autocapitalize="characters" placeholder="AB3K7Q"><button type="button" class="cb l w" style="margin-top:10px" data-entrar>Entrar</button><p class="err" id="eEntrar"></p></div>' +
+      '<div class="card"><div class="h2">Cómo se juega</div><p class="small">• Es un <b style="color:#fff">duelo entre clanes</b>: las mismas preguntas para todos, con los <b style="color:#fff">comodines del duelo</b>.<br>• Los ataques (Glaciar, Sismo, Arenas, Llamarada, Volcán y Botín) <b style="color:#fff">solo le pegan al clan rival</b>.<br>• Gana el clan con <b style="color:#fff">mejor promedio de puntos</b>.<br>• Cada jugador gana el XP del duelo por su puesto, y ese XP también sube a tu clan en el Top.</p></div></div></div>';
   }
 
   /* ---------- Sala ---------- */
@@ -686,14 +686,15 @@
       var nom = F.curso === 'mezcla' ? 'Mezcla de todo' : F.curso.indexOf('a:') === 0 ? (AREAS.filter(function (a) { return 'a:' + a.id === F.curso; })[0] || {}).nombre : NOMBRE[F.curso];
       armar(lista, F.n).then(function (L) {
         if (L.length < F.n) throw new Error('Con esa opción solo hay ' + L.length + ' preguntas. Elige otra.');
-        return rpc('clan_sala_crear', { p: { titulo: nom, n: F.n, seg: F.seg, formato: F.formato, preguntas: L.map(function (x) { return { ref: x.ref, c: x.q.correct, k: x.q.options.length }; }) } });
-      }).then(function (cod) { location.href = 'sala-clan.html?c=' + cod; }, function (x) { er.textContent = x && x.message && x.message.indexOf('Con esa') === 0 ? x.message : error(x); app.innerHTML = inicio(); document.getElementById('eCrear').textContent = er.textContent; });
+        return rpc('clan_duelo_crear', { p: { titulo: nom, curso: F.curso === 'mezcla' || F.curso.indexOf('a:') === 0 ? 'todos' : F.curso, fuente: 'libro', n: F.n, seg: F.seg, por_lado: String(F.formato), preguntas: L.map(function (x) { return { ref: x.ref, c: x.q.correct, k: x.q.options.length }; }) } });
+      }).then(function (cod) { location.href = 'duelo.html?d=' + cod; }, function (x) { er.textContent = x && x.message && x.message.indexOf('Con esa') === 0 ? x.message : error(x); app.innerHTML = inicio(); document.getElementById('eCrear').textContent = er.textContent; });
       return;
     }
     if ((el = e.target.closest('[data-entrar]'))) {
       var c = (document.getElementById('iCod').value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-      if (c.length !== 5) { document.getElementById('eEntrar').textContent = 'El código tiene 5 letras o números.'; return; }
+      if (c.length !== 5 && c.length !== 6) { document.getElementById('eEntrar').textContent = 'El código tiene 6 letras o números.'; return; }
       el.disabled = true;
+      if (c.length === 6) { rpc('entrar_duelo', { p_codigo: c }).then(function () { location.href = 'duelo.html?d=' + c; }, function (x) { document.getElementById('eEntrar').textContent = /No existe/.test(String(x && x.message)) ? ERR.sala_no_existe : error(x); el.disabled = false; }); return; }
       rpc('clan_sala_entrar', { p_codigo: c }).then(function () { location.href = 'sala-clan.html?c=' + c; }, function (x) { document.getElementById('eEntrar').textContent = error(x); el.disabled = false; });
       return;
     }
@@ -715,7 +716,7 @@
     if ((el = e.target.closest('[data-compartir]'))) { el.disabled = true; fotoVictoria().then(mostrarFoto, function () { toast('No se pudo armar la imagen.'); }).then(function () { el.disabled = false; }); return; }
     if ((el = e.target.closest('[data-copiar]'))) { A.copiar(el.dataset.copiar, 'Enlace copiado'); return; }
   });
-  app.addEventListener('input', function (e) { if (e.target.id === 'iCod') e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5); });
+  app.addEventListener('input', function (e) { if (e.target.id === 'iCod') e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6); });
 
   /* ---------- Arranque ---------- */
   var empezado = false;
@@ -725,7 +726,7 @@
       CURSOS = ((reg && reg.cursos) || []).filter(function (c) { return !c.oculto; }).sort(function (a, b) { return (a.orden || 0) - (b.orden || 0); });
       AREAS = (reg && reg.areas) || []; CURSOS.forEach(function (c) { NOMBRE[c.id] = c.nombre; });
       if (COD) return refrescar();
-      return Promise.all([rpc('clan_sala_mia'), rpc('mi_clan').catch(function () { return {}; })]).then(function (r) {
+      return Promise.all([rpc('clan_duelo_mio').catch(function () { return rpc('clan_sala_mia'); }), rpc('mi_clan').catch(function () { return {}; })]).then(function (r) {
         MIO = r[0] || {}; MIO.puedo = !!(r[1] && r[1].clan && r[1].rol !== 'miembro');
         if (!(r[1] && r[1].clan)) { app.innerHTML = '<div class="card estado"><div class="h2" style="justify-content:center">Primero únete a un clan</div><p class="small">Las salas son entre clanes.</p><a class="cb l" style="margin-top:14px" href="clanes.html">Ir a Clanes</a></div>'; return; }
         app.innerHTML = inicio();
