@@ -163,8 +163,11 @@
   var ERRORES = {
     cofre_ya_abierto: 'Ya abriste este cofre esta semana.', cofre_pocas_preguntas: 'Primero responde al menos 30 preguntas esta semana.', cofre_cerrado: 'Tu clan aún no llega a ese cofre.', cofre_no_existe: 'Ese cofre no existe.',
     ya_en_clan: 'Ya estás en un clan. Sal de él primero.',
+    nivel_bajo: 'Aún no tienes el nivel que pide ese clan. Sigue sumando XP.',
+    rango_bajo: 'Aún no tienes el rango que pide ese clan.',
+    premio_sin_puntos: 'Aún no tienes los puntos para esa recompensa.',
     espera: 'Saliste de un clan hace poco. Espera 24 horas para entrar a otro.',
-    no_existe: 'No hay ningún clan con ese código. Revisa las 4 letras.',
+    no_existe: 'No hay ningún clan con ese código o ID. Revísalo.',
     lleno: 'Ese clan ya tiene 20 miembros, el máximo.',
     nombre_usado: 'Ya hay un clan con ese nombre. Prueba otro.',
     nombre_feo: 'Ese nombre no está permitido. Elige uno sin groserías.',
