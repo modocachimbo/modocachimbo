@@ -131,6 +131,30 @@
   .cd.on .rz::after { content: "Activo"; margin-left: 4px; padding: 1px 5px; border-radius: 4px; background: #14101f; color: var(--r); letter-spacing: .06em; }
   @media (max-width: 560px) { .pl p { display: none; } .in { height: calc(268 * var(--u)); } .act { flex-wrap: nowrap; overflow-x: auto; margin-right: -16px; padding-right: 16px; scrollbar-width: none; } .act span { flex: none; } }
 
+  /* ---------- Tarjetas estilo C: el dibujo sale del marco ---------- */
+  .g { row-gap: 64px; padding-top: 50px; }
+  .tc { --c: #C6E000; position: relative; display: flex; flex-direction: column; align-items: center; width: 100%; border-radius: 18px; padding: 86px 14px 14px; text-align: center; cursor: pointer; color: #fff; -webkit-tap-highlight-color: transparent;
+    background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--c) 16%, transparent) 0 14px, transparent 14px 28px), linear-gradient(180deg, color-mix(in srgb, var(--c) 30%, #161130), #120e26);
+    border: 2px solid var(--c); box-shadow: 0 0 0 4px rgba(0,0,0,.35), 0 0 24px color-mix(in srgb, var(--c) 35%, transparent); transition: transform .15s; }
+  .tc:hover { transform: translateY(-4px); } .tc:active { transform: scale(.97); }
+  .tc:focus { outline: none; } .tc:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+  .tc::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: radial-gradient(60% 45% at 50% 0, color-mix(in srgb, var(--c) 45%, transparent), transparent); pointer-events: none; animation: brillaC 2.6s ease-in-out infinite; }
+  @keyframes brillaC { 50% { opacity: .5; } }
+  .tc::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(100deg, transparent 40%, rgba(255,255,255,.14) 50%, transparent 60%) no-repeat; background-size: 250% 100%; animation: barridoR 4.5s ease-in-out infinite; animation-delay: var(--d); pointer-events: none; }
+  .tc > * { position: relative; z-index: 1; }
+  .tc .ic { position: absolute; left: 50%; top: -52px; width: 132px; height: 132px; margin-left: -66px; filter: drop-shadow(0 10px 10px rgba(0,0,0,.55)) drop-shadow(0 0 14px color-mix(in srgb, var(--c) 45%, transparent)); animation: flotaC 3s ease-in-out infinite; animation-delay: var(--d); }
+  .tc .ic svg { width: 100%; height: 100%; overflow: visible; display: block; }
+  @keyframes flotaC { 50% { transform: translateY(-7px) rotate(2deg); } }
+  .tc .du { position: absolute; right: -6px; top: 10px; font: italic 900 15px var(--display); padding: 3px 10px; background: var(--c); color: #14101f; transform: rotate(6deg); border-radius: 6px; box-shadow: 0 3px 0 rgba(0,0,0,.35); }
+  .tc .rzc { display: inline-block; margin-bottom: 6px; font: 1000 9.5px var(--cuerpo); letter-spacing: 1px; text-transform: uppercase; padding: 3px 7px; border-radius: 6px; background: rgba(0,0,0,.45); color: var(--r); }
+  .tc.on .rzc::after { content: " · Activo"; color: #fff; }
+  .tc .ofc { position: absolute; right: -4px; top: 42px; font: italic 900 14px var(--display); padding: 2px 7px; border-radius: 6px; background: #FF4B4B; color: #fff; transform: rotate(-4deg); box-shadow: 0 3px 0 #8a1020; }
+  .tc b { display: block; font: italic 900 22px/1 var(--display); text-transform: uppercase; text-shadow: 0 2px 0 rgba(0,0,0,.4); }
+  .tc small { display: block; font: 800 12px/1.3 var(--cuerpo); color: #cfc6ee; margin: 5px 0 12px; min-height: 31px; }
+  .tc .pr { margin-top: auto; align-self: stretch; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; border-radius: 12px; background: linear-gradient(180deg, #E3FF3A, #C6E000); box-shadow: 0 4px 0 #7d8f00; color: #14101f; font: italic 900 24px/1 var(--display); }
+  .tc .pr svg { width: 26px; height: 26px; }
+  .tc.falta .pr { background: #2a2152; color: #d9d1f5; box-shadow: 0 4px 0 #120e26; }
+  @media (max-width: 560px) { .g { row-gap: 54px; padding-top: 42px; } .tc { padding: 66px 10px 10px; } .tc .ic { width: 104px; height: 104px; margin-left: -52px; top: -42px; } .tc b { font-size: 18px; } .tc small { display: none; } .tc .pr { font-size: 21px; margin-top: 10px; } .tc .du { font-size: 13px; } .tc .ofc { display: none; } }
   /* ---------- Mis compras ---------- */
   .lay h2:first-child { margin-top: 0; }
   .mc-l { display: grid; gap: 10px; }
@@ -144,8 +168,16 @@
   .mc-b { flex: none; border: 0; border-radius: 12px; padding: 10px 16px; cursor: pointer; font: italic 900 19px var(--display); text-transform: uppercase; color: #14101f; background: linear-gradient(180deg, #E3FF3A, #C6E000); box-shadow: 0 4px 0 #7d8f00; }
   .mc-b.gris { background: #2a2152; color: #e6dfff; box-shadow: 0 4px 0 #120e26; }
   .mc-b:active { transform: translateY(2px); box-shadow: none; }
-  @media (max-width: 560px) { .mc-e .vivo { display: none; } .mc-f { flex-wrap: wrap; } .mc-t { flex-basis: calc(100% - 90px); } .mc-b { margin-left: auto; } .mc-i { width: 56px; height: 52px; } .mc-i svg { width: 60px; height: 60px; } }
+  @media (max-width: 560px) { .tc.mc small { display: block; min-height: 0; margin: 4px 0 10px; } .tc.mc .mc-b { margin-left: 0; font-size: 19px; } }
   .rail .r.mis { border-color: #6a3fd0; }
+  .tc.mc { cursor: default; } .tc.mc:hover { transform: none; }
+  .tc.mc .du { display: inline-flex; align-items: center; gap: 5px; }
+  .tc.mc .du .vivo { width: 8px; height: 8px; border-radius: 50%; background: #14101f; animation: vivoN 1.2s ease-in-out infinite; }
+  @keyframes vivoN { 50% { opacity: .25; } }
+  .tc.mc small b { color: #fff; }
+  .tc.mc .mc-b { margin-top: auto; align-self: stretch; padding: 9px; font-size: 21px; }
+  .lay > div > h2 { margin-top: 0; }
+  .lay > div > .g + h2 { margin-top: 26px; }
   /* ---------- Ventanas ---------- */
   .ov { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 16px; background: rgba(8,6,18,.82); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); animation: ovIn .2s ease-out; }
   @keyframes ovIn { from { opacity: 0; } }
@@ -304,13 +336,11 @@
   }
   function tarjeta(it, i) {
     var f = INFO[it.id]; if (!f) return '';
-    var r = RZ[f.rz], st = ''; for (var s = 0; s < r[3]; s++) st += '<i></i>';
-    return '<button type="button" class="cd' + (saldo < it.precio ? ' falta' : '') + (activo(it.id) ? ' on' : '') + '" data-item="' + esc(it.id) + '" style="--c:' + f.col + ';--r:' + r[1] + ';--rd:' + r[2] + ';--d:' + (i * .4 % 3.6).toFixed(1) + 's" aria-label="' + esc(f.t + ' ' + f.c + ', ' + it.precio + ' diamantes') + '">' +
-      '<div class="fr"><div class="in"><div class="bg"><div class="tex"></div><div class="luz"></div><div class="piso"></div><s class="sp a"></s><s class="sp b"></s><s class="sp c"></s></div>' +
-      '<div class="rz"><span class="st">' + st + '</span>' + r[0] + '</div>' + (f.of ? '<span class="of">' + f.of + '</span>' : '') +
-      '<div class="ico">' + (IC[it.id] || '') + '</div><div class="cant"><span>' + esc(f.c) + '</span></div>' +
-      '<div class="pl"><b>' + esc(f.t) + '</b><p>' + esc(f.d) + '</p></div>' +
-      '<div class="pre">' + DIA + '<span>' + nf(it.precio) + '</span></div></div></div></button>';
+    var r = RZ[f.rz];
+    return '<button type="button" class="tc' + (saldo < it.precio ? ' falta' : '') + (activo(it.id) ? ' on' : '') + '" data-item="' + esc(it.id) + '" style="--c:' + f.col + ';--r:' + r[1] + ';--d:' + (i * .5 % 3).toFixed(1) + 's" aria-label="' + esc(f.t + ' ' + f.c + ', ' + it.precio + ' diamantes') + '">' +
+      '<span class="ic">' + (IC[it.id] || '') + '</span><span class="du">' + esc(f.c) + '</span>' +
+      '<span class="rzc">' + r[0] + '</span>' + (f.of ? '<span class="ofc">' + f.of + '</span>' : '') +
+      '<b>' + esc(f.t) + '</b><small>' + esc(f.d) + '</small><span class="pr">' + DIA + '<span>' + nf(it.precio) + '</span></span></button>';
   }
   function pintar() {
     if (!T) return;
@@ -331,23 +361,23 @@
   var EFE = { infinito: ['vida1', 'Vidas ilimitadas', '#FF4B6E'], doblexp: ['doblexp', 'Doble XP', '#FFC800'], fortuna: ['fortuna', 'Fortuna', '#58CC02'] };
   function dur(s) { s = +s || 0; if (s < 3600) return Math.max(1, Math.round(s / 60)) + ' min'; if (s < 172800) { var hh = Math.floor(s / 3600), mm = Math.round(s % 3600 / 60); return hh + ' h' + (mm ? ' ' + mm + ' min' : ''); } return Math.round(s / 86400) + ' días'; }
   function fila(ico, col, tit, sub, est, bt) {
-    return '<div class="mc-f" style="--c:' + col + '"><span class="mc-i">' + ico + '</span><span class="mc-t"><b>' + tit + '</b><small>' + sub + '</small></span>' + (est ? '<span class="mc-e">' + est + '</span>' : '') + bt + '</div>';
+    return '<div class="tc mc" style="--c:' + col + '"><span class="ic">' + ico + '</span>' + (est ? '<span class="du">' + est + '</span>' : '') + '<b>' + tit + '</b><small>' + sub + '</small>' + bt + '</div>';
   }
   function misVista() {
     var h = '', a = '', ps = '', g = '', inv = T.inv || {}, pz = T.pausa || {};
     [['infinito', T.infinito_hasta], ['doblexp', T.doble_xp_hasta], ['fortuna', T.fortuna_hasta]].forEach(function (x) {
       if (!x[1]) return; var e = EFE[x[0]];
-      a += fila(IC[e[0]], e[2], esc(e[1]), 'Activa · quedan <b>' + dur((new Date(x[1]) - Date.now()) / 1000) + '</b>', '<i class="vivo"></i>', '<button type="button" class="mc-b gris" data-pausar="' + x[0] + '">Pausar</button>');
+      a += fila(IC[e[0]], e[2], esc(e[1]), 'Quedan <b>' + dur((new Date(x[1]) - Date.now()) / 1000) + '</b>', '<i class="vivo"></i> Activa', '<button type="button" class="mc-b gris" data-pausar="' + x[0] + '">Pausar</button>');
     });
-    if (+T.escudos) a += fila(IC.escudo, '#1CB0F6', 'Protección de racha', '<b>' + T.escudos + '</b> cuidando tu racha. Se usa sola si un día no cumples.', '<i class="vivo"></i>', '<button type="button" class="mc-b gris" data-quitar>Quitar 1</button>');
-    for (var k in pz) if (EFE[k] && +pz[k] > 0) ps += fila(IC[EFE[k][0]], EFE[k][2], esc(EFE[k][1]), 'En pausa · te quedan <b>' + dur(pz[k]) + '</b>', '', '<button type="button" class="mc-b" data-reanudar="' + k + '">Reanudar</button>');
+    if (+T.escudos) a += fila(IC.escudo, '#1CB0F6', 'Protección de racha', 'Cuidando tu racha <b>' + T.escudos + (+T.escudos === 1 ? ' escudo' : ' escudos') + '</b>', '<i class="vivo"></i> Activa', '<button type="button" class="mc-b gris" data-quitar>Quitar 1</button>');
+    for (var k in pz) if (EFE[k] && +pz[k] > 0) ps += fila(IC[EFE[k][0]], EFE[k][2], esc(EFE[k][1]), 'Te quedan <b>' + dur(pz[k]) + '</b>', 'En pausa', '<button type="button" class="mc-b" data-reanudar="' + k + '">Reanudar</button>');
     (T.items || []).forEach(function (it) {
       var n = +inv[it.id] || 0, f = INFO[it.id]; if (!n || !f) return;
-      g += fila(IC[it.id], f.col, esc(f.t) + ' <em>' + esc(f.c) + '</em>', esc(f.d), '<span class="mc-x">x' + n + '</span>', '<button type="button" class="mc-b" data-usar="' + it.id + '">Activar</button>');
+      g += fila(IC[it.id], f.col, esc(f.t) + ' <em>' + esc(f.c) + '</em>', esc(f.d), 'x' + n, '<button type="button" class="mc-b" data-usar="' + it.id + '">Activar</button>');
     });
-    if (a) h += '<h2>Activas ahora</h2><div class="mc-l">' + a + '</div>';
-    if (ps) h += '<h2>En pausa <small>El tiempo no corre</small></h2><div class="mc-l">' + ps + '</div>';
-    h += '<h2>Guardadas <small>Actívalas cuando quieras</small></h2>' + (g ? '<div class="mc-l">' + g + '</div>' : '<p class="estado" style="text-align:left;padding:6px 0">Aún no tienes compras guardadas. Lo que compres llega aquí.</p>');
+    if (a) h += '<h2>Activas ahora</h2><div class="g">' + a + '</div>';
+    if (ps) h += '<h2>En pausa <small>El tiempo no corre</small></h2><div class="g">' + ps + '</div>';
+    h += '<h2>Guardadas <small>Actívalas cuando quieras</small></h2>' + (g ? '<div class="g">' + g + '</div>' : '<p class="estado" style="text-align:left;padding:6px 0">Aún no tienes compras guardadas. Lo que compres llega aquí.</p>');
     return h;
   }
   function accion(fn, args, btn, despues) {
