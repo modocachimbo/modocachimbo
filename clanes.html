@@ -1244,7 +1244,7 @@
       '<div class="fila2"><div class="campo"><label for="fNom">Nombre del clan</label><input class="inp" id="fNom" maxlength="24" placeholder="Los Imparables" value="' + esc(f.nombre) + '"></div>' +
       '<div class="campo"><label for="fTag">Sigla</label><input class="inp tag" id="fTag" maxlength="5" placeholder="IMP" value="' + esc(f.tag) + '"></div></div>' +
       '<div class="campo"><span class="lb">Forma del escudo</span><div class="picks">' + Object.keys(K.FORMAS).map(function (k) {
-        return '<button type="button" class="pk' + (k === f.forma ? ' on' : '') + '" data-forma="' + k + '" aria-label="' + K.NOMBRES_FORMA[k] + '">' + escudo({ forma: k, color: f.color }) + '</button>';
+        return '<button type="button" class="pk' + (k === f.forma ? ' on' : '') + '" data-forma="' + k + '" aria-label="' + K.NOMBRES_FORMA[k] + '">' + escudo({ forma: k, simbolo: f.simbolo, color: f.color }) + '</button>';
       }).join('') + '</div></div>' +
       '<div class="campo"><span class="lb">Símbolo</span><div class="picks">' + Object.keys(K.SIMB).map(function (k) {
         return '<button type="button" class="pk' + (k === f.simbolo ? ' on' : '') + '" data-simbolo="' + k + '" aria-label="' + k + '">' + K.simbolo(k, f.color) + '</button>';
