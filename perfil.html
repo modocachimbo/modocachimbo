@@ -511,6 +511,13 @@
 <script src="assets/buho/buho-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
 <script src="assets/amigos.js?v=5"></script>
+<script>
+  // Burbuja roja en «Amigos»: solicitudes pendientes (llega con mi_tarjeta, sin llamadas nuevas)
+  if (window.MCTarjeta) MCTarjeta.alJugador(function (y) {
+    var n = y && +y.solicitudes || 0;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-am-bdg]'), function (b) { b.hidden = !n; b.textContent = n > 9 ? '9+' : n; });
+  });
+</script>
 <style>
   /* Perfil estilo juego: menú a la izquierda; «Mi perfil» es tu búho con tu tarjeta (assets/amigos.js) */
   @media (min-width: 900px) { .wrap { max-width: 1280px; padding: 0 32px 60px; } }
@@ -708,6 +715,9 @@ html[data-modo="claro"] select option { background: #F1EFF6 !important; }
       <div class="ma-lay pf-lay">
       <nav class="ma-rail muchos bc" id="pfRail" aria-label="Secciones de tu perfil">
         <button type="button" class="r on" data-pf="vitrina"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Mi perfil</span></button>
+        <!-- Amigos y Mi clan: ya no están en los botones del inicio -->
+        <a class="r" href="amigos.html"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/></svg><span>Amigos</span><b class="bdg" data-am-bdg hidden></b></a>
+        <a class="r" href="clanes.html"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6z"/><path d="M12 9v6M9 12h6"/></svg><span>Mi clan</span></a>
         <button type="button" class="r" data-pf="stats"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Estadísticas</span></button>
         <button type="button" class="r" data-pf="estudio"><svg viewBox="0 0 24 24"><path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-5a2 2 0 0 0-2 2"/><path d="M20 4v14h-5a2 2 0 0 0-2 2"/></svg><span>Mi estudio</span></button>
         <button type="button" class="r" data-pf="agenda"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="1"/><path d="M4 10h16M8 3v4M16 3v4"/></svg><span>Agenda</span></button>

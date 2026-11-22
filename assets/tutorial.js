@@ -25,7 +25,7 @@
   // Partes que se pueden iluminar en cada tipo de página
   var OBJETIVOS = {
     inicio: [['hero', 'Búho y fechas importantes', '#escena'], ['fecha', 'Mi agenda', '#fechas'],
-      ['accesos', 'Misiones, Colección, Ranking, Agenda y Nuevo', '.escena .accesos'], ['rango', 'Tu rango de la semana', '#rangoBar'],
+      ['accesos', 'Misiones, Descargas y Nuevo', '.escena .accesos'], ['rango', 'Tu rango de la semana', '#rangoBar'],
       ['practicar', 'Botón "¡A practicar!" y modo', '.col-der .jugar'], ['racha', 'Meta de hoy (racha)', visible(['#salRacha', '.mcu-racha'])],
       ['examenes', 'Modos de estudio', '.modos'], ['duelos', 'Duelos', '.duelo-banner'], ['simulacro', 'Simulacro', '.modos .j-sim'],
       ['flashcards', 'Flashcards', '.modos .j-flash'], ['biblioteca', 'Biblioteca', '.modos .j-bib'],

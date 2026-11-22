@@ -1026,6 +1026,13 @@ button.juego { width: 100%; text-align: left; font: inherit; color: #fff; }
 .am-bdg { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--error, #FF4B4B); color: #fff; font: 900 12px/20px Nunito, sans-serif; text-align: center; box-shadow: 0 2px 0 #a71d1d; }
 .nav a .am-bdg { margin-left: auto; }
 .acceso .am-bdg { position: absolute; right: -6px; top: -6px; }
+/* Solicitudes de amistad y avisos del clan: ahora en Perfil (celular) y en el menú (PC) */
+.tabbar a { position: relative; }
+.tabbar .am-bdg { position: absolute; top: 6px; left: calc(50% + 8px); }
+.nav a.punto, .tabbar a.punto { position: relative; }
+.nav a.punto::after, .tabbar a.punto:not(:has(.am-bdg:not([hidden])))::after { content: ""; position: absolute; width: 7px; height: 7px; rotate: 45deg; background: var(--error); box-shadow: 0 0 0 2px var(--tarjeta), 0 0 8px rgba(255, 75, 75, .8); animation: aviso 2s ease-in-out infinite; }
+.nav a.punto::after { right: 14px; top: 50%; margin-top: -4px; }
+.tabbar a.punto::after { top: 10px; left: calc(50% + 12px); }
 
 /* Fechas importantes reales: color del tipo de fecha */
 .fecha { --fc: var(--info); }
@@ -1497,8 +1504,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
           <div class="fechas" id="fechas"></div>
           <nav class="accesos disp" aria-label="Accesos">
             <button class="acceso" type="button" id="accMisiones"><svg class="ic"><use href="#i-mision"/></svg><span>Misiones</span></button>
-            <a class="acceso" href="amigos.html"><svg class="ic"><use href="#i-amigos"/></svg><span>Amigos</span><b class="am-bdg" data-am-bdg hidden></b></a>
-            <a class="acceso" href="clanes.html"><svg class="ic"><use href="#i-clan"/></svg><span>Clanes</span></a>
+            <!-- Amigos, Clanes y Agenda: en el menú de la izquierda (PC), en Perfil y en «Mi agenda» -->
             <a class="acceso desc-acc" href="descargas.html" aria-label="Descargas sin internet"><svg class="ic"><use href="#i-bajar"/></svg><span>Descargas</span></a>
             <script>/* Punto rojo en Descargas si subiste temas nuevos a un curso que el alumno ya descargó (revisa cada 6 h, solo el manifest de Libros) */
             (function(){try{var b=document.currentScript.previousElementSibling,v=JSON.parse(localStorage.getItem('mc_paq')||'null'),ps=v&&v.packs||{},ids=Object.keys(ps).filter(function(k){return k.indexOf('curso-')===0&&ps[k].temas;});if(!ids.length)return;
@@ -1506,7 +1512,6 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
             if(Date.now()-(g.t||0)<21600000||navigator.onLine===false)return pon(g.si);
             function ord(id){var x=String(id||'').match(/^(\d{4})-(III|II|I)$/);return x?+x[1]*10+{I:1,II:2,III:3}[x[2]]:0;}
             Promise.all(ids.map(function(k){var c=k.slice(6),p=ps[k];return fetch(c+'/libros/data/manifest.json',{cache:'no-cache'}).then(function(r){return r.ok?r.json():[];}).then(function(m){var l=(m||[]).filter(function(x){return ord(x&&x.id);}).sort(function(a,b){return ord(b.id)-ord(a.id);})[0];return !!l&&((p.items&&p.items[0]&&l.id!==p.items[0])||(l.temas||0)>p.temas);}).catch(function(){return false;});})).then(function(r){var si=r.some(Boolean);try{localStorage.setItem('mc_paq_rev',JSON.stringify({t:Date.now(),si:si}));}catch(e){}pon(si);});}catch(e){}})();</script>
-            <a class="acceso" href="perfil.html#agenda"><svg class="ic"><use href="#i-agenda"/></svg><span>Agenda</span></a>
             <button class="acceso punto" type="button" id="novBtn" aria-label="Nuevo para ti" hidden><svg class="ic"><use href="#i-regalo"/></svg><span>Nuevo</span><b id="novPunto"></b></button>
           </nav>
           <a class="rango" id="rangoBar" href="coleccion.html#rangos" hidden><span class="em" id="rangoEm"></span><b class="disp" id="rangoNom"></b><span><small id="rangoTx"></small><span class="bar"><i id="rangoBarra"></i></span></span></a>
@@ -1592,7 +1597,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
   <a href="duelo.html" class="duelo solo-sin-arcade"><i><svg class="ic"><use href="#i-espadas"/></svg></i><span>Duelo</span></a>
   <a href="arcade.html" class="duelo arcade"><i><svg class="ic"><use href="#i-mando"/></svg></i><span>Arcade</span></a>
   <a href="coleccion.html"><svg class="ic"><use href="#i-cofre"/></svg>Colección</a>
-  <a href="perfil.html"><svg class="ic"><use href="#i-persona"/></svg>Perfil</a>
+  <a href="perfil.html"><svg class="ic"><use href="#i-persona"/></svg>Perfil<b class="am-bdg" data-am-bdg hidden></b></a>
 </nav>
 
 <div class="hoja-fondo" id="hojaFondo" hidden>
@@ -1633,7 +1638,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
 <script src="assets/buho.js"></script>
 <script src="assets/inicio.js?v=203"></script>
 <script src="assets/clanes.js?v=5"></script>
-<script src="assets/clanes-inicio.js?v=2"></script>
+<script src="assets/clanes-inicio.js?v=3"></script>
 <script>
   // Burbuja roja de Amigos: cuántas solicitudes tienes (llega con mi_tarjeta, sin llamadas nuevas)
   if (window.MCTarjeta) MCTarjeta.alJugador(function (y) {

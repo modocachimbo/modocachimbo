@@ -113,7 +113,7 @@
       if (!a || !a.clan) return;
       var h = avisoHtml(a);
       var punto = !!h;
-      if (punto) [].forEach.call(document.querySelectorAll('a.acceso[href="clanes.html"]'), function (x) { x.classList.add('punto'); });
+      if (punto) [].forEach.call(document.querySelectorAll('a.acceso[href="clanes.html"], .nav a[href="clanes.html"], .tabbar a[href="perfil.html"]'), function (x) { x.classList.add('punto'); });
       if (!h) return;
       lugares.forEach(function (l) {
         var d = document.createElement('div'); d.innerHTML = h;
