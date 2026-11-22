@@ -362,7 +362,11 @@
     .cl-rail .r { min-height: 46px; height: 46px; padding: 0 14px; font-size: 17px; }
     .cl-rail .r .tx small { display: none; }
     .cl-rail .r .cnt { margin-left: 2px; }
+    .cl-rail { grid-auto-columns: minmax(0, 1fr); overflow: visible; margin: 0; padding: 0; }
+    .cl-rail .r { justify-content: center; padding: 0 6px; }
+    .cl-rail .r .cnt { position: absolute; top: 3px; right: 3px; margin: 0; min-width: 18px; height: 18px; line-height: 18px; font-size: 11px; padding: 0 5px; }
   }
+  @media (max-width: 480px) { .cl-rail .r { font-size: 15px; gap: 0; } .cl-rail .r > svg { display: none; } }
   .res-lay { display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 22px; align-items: start; }
   @media (max-width: 1099px) { .res-lay { grid-template-columns: minmax(0, 1fr); } .estd .tela { padding-bottom: 46px; } .estd .marco, .estd .tela { clip-path: polygon(0 0, 100% 0, 100% 90%, 50% 100%, 0 90%); } }
   /* Estandarte */
@@ -639,11 +643,8 @@
       var hoy = D.miembros.filter(function (m) { return diasSin(m) === 0; }).length, lis = cfListos(), ms = CF && CF.misiones ? CF.misiones : null;
       it = [['clan', 'Resumen', SV.clan, 'Tu clan esta semana'],
         ['miembros', 'Miembros', SV.gente.replace(' class="i"', ''), '<i class="pt"></i>' + hoy + ' de ' + c.miembros + ' estudiaron hoy', SOL && SOL.length ? '<i class="cnt">' + SOL.length + '</i>' : ''],
-        ['cofres', 'Cofres', SV.cofre, CF && !CF.error ? (lis ? lis + (lis === 1 ? ' listo para abrir' : ' listos para abrir') : nf(CF.puntos) + ' preguntas') : 'Premios semanales', lis ? '<i class="cnt">' + lis + '</i>' : ''],
-        ['misiones', 'Misiones', SV.diana, ms ? ms.filter(function (m) { return +m.prog >= +m.meta && +m.meta > 0; }).length + ' de ' + ms.length + ' cumplidas' : 'En equipo'],
-        ['guerra', 'Guerra y salas', SV.guerra, 'Clan vs clan', D.guerra && (D.guerra.estado === 'activa' || !D.guerra.reto_mio) ? '<i class="vivo"></i>' : ''],
-        ['muro', 'Muro', SV.muro, 'Quién estudió hoy'],
-        ['tienda', 'Tienda del clan', SV.tienda, 'Muy pronto']];
+        ['misiones', 'Misiones', SV.cofre, lis ? lis + (lis === 1 ? ' cofre listo para abrir' : ' cofres listos para abrir') : ms ? 'Cofres · ' + ms.filter(function (m) { return +m.prog >= +m.meta && +m.meta > 0; }).length + ' de ' + ms.length + ' misiones' : 'Cofres y misiones', lis ? '<i class="cnt">' + lis + '</i>' : ''],
+        ['guerra', 'Guerra', SV.guerra, 'Clan vs clan y salas', D.guerra && (D.guerra.estado === 'activa' || !D.guerra.reto_mio) ? '<i class="vivo"></i>' : '']];
     } else it = [['clan', 'Unirme', SV.clan, 'Entra o crea un clan'], ['top', 'Top', SV.top, 'Clanes de la semana']];
     return '<nav class="cl-rail" aria-label="Clanes">' + it.map(function (x) {
       var pr = x[0] === 'tienda';
@@ -855,10 +856,10 @@
         ? '<b>' + nom + '</b> ' + (a.yo ? 'abriste' : 'abrió') + ' el <em>cofre de ' + esc(a.nombre) + '</em>'
         : '<b>' + nom + '</b> ' + (a.yo ? 'respondiste' : 'respondió') + ' <em>' + nf(a.preguntas) + ' preguntas</em> ' + (a.fecha === hoy ? 'hoy' : 'ayer');
       return '<div class="fi">' + A.foto(a) + '<p>' + tx + '</p>' + (a.tipo === 'cofre' ? '<span class="mc">' + cofre(a.n, true) + '</span>' : '<time>' + (a.fecha === hoy ? 'Hoy' : 'Ayer') + '</time>') + '</div>';
-    }).join('') + (max && (CF.actividad || []).length > max ? '<button type="button" class="vm" data-vista="cofres">Ver más ›</button>' : '') + '</div>';
+    }).join('') + (max && (CF.actividad || []).length > max ? '<button type="button" class="vm" data-vista="misiones">Ver más ›</button>' : '') + '</div>';
   }
-  function cofresVista() {
-    var h = cofresCard(true);
+  function cofresExtras() {
+    var h = '';
     if (!CF || CF.error) return h;
     h += '<div class="dos"><div class="card"><div class="h2">Premios <em>de cada cofre</em></div><div class="pz-l">' + CF.cofres.map(function (c) {
       var e = cfEstado(c);
@@ -885,14 +886,14 @@
   };
   function misionesVista() {
     if (!CF) return '<p class="estado">Cargando misiones…</p>';
-    if (CF.error) return cofresCard();
+    if (CF.error) return cofresCard(true);
     var ms = CF.misiones || [], hechas = ms.filter(function (m) { return +m.prog >= +m.meta && +m.meta > 0; }).length;
-    return '<div class="card"><div class="h2">Misiones <em>del clan</em><span class="sp"></span><span class="lado">' + hechas + ' de ' + ms.length + ' cumplidas</span></div>' +
+    return cofresCard(true) + '<div class="card"><div class="h2">Misiones <em>del clan</em><span class="sp"></span><span class="lado">' + hechas + ' de ' + ms.length + ' cumplidas</span></div>' +
       '<p class="small" style="margin-bottom:12px">Se hacen en equipo. Cada misión cumplida suma preguntas extra a la barra de cofres. Se reinician el lunes.</p><div class="mis">' + ms.map(function (m) {
         var ic = MIS_IC[m.id] || MIS_IC.todos, ok = +m.prog >= +m.meta && +m.meta > 0;
         return '<div class="msn' + (ok ? ' hecha' : '') + '" style="--c:' + ic[0] + '"><span class="i2"><svg viewBox="0 0 24 24">' + ic[1] + '</svg></span><div style="min-width:0"><b>' + esc(m.titulo) + '</b><div class="bb"><i style="width:' + Math.min(100, Math.round(100 * m.prog / Math.max(1, m.meta))) + '%"></i></div>' +
           '<small>' + (ok ? 'Cumplida' : m.prog + ' de ' + m.meta) + '</small></div><span class="pr">' + (ok ? '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>' : '+' + nf(m.bonus)) + '<span>' + (ok ? '+' + nf(m.bonus) + ' sumadas' : 'preguntas') + '</span></span></div>';
-      }).join('') + '</div></div>' + cofresCard();
+      }).join('') + '</div></div>' + cofresExtras();
   }
   // Abrir un cofre: tiembla, se abre y salen los premios
   function abrirCofre(n) {
@@ -962,8 +963,8 @@
   }
   function miembrosVista() {
     var c = D.clan;
-    return pedidosCard() + '<div class="dos"><div class="card"><div class="h2">Miembros <em>XP de la semana</em></div><div class="mbs">' + D.miembros.map(miembro).join('') + '</div></div>' +
-      '<div>' + (c.miembros < 20 ? invitar(c) : '') + metaCard(c) + '</div></div>';
+    return pedidosCard() + '<div class="dos"><div><div class="card"><div class="h2">Miembros <em>XP de la semana</em></div><div class="mbs">' + D.miembros.map(miembro).join('') + '</div></div>' + (c.miembros < 20 ? invitar(c) : '') + '</div>' +
+      '<div>' + muro() + metaCard(c) + '</div></div>';
   }
 
   /* ---------- Pedidos para entrar (los ve el líder y los sublíderes) ---------- */
@@ -1133,9 +1134,10 @@
 
   /* ---------- Pintar ---------- */
   function pintar() {
+    if (vista === 'cofres') vista = 'misiones'; if (vista === 'muro') vista = 'miembros';
     if (!D.clan && vista !== 'top') vista = 'clan';
     var cuerpo = vista === 'top' ? top() : !D.clan ? sinClan() : vista === 'ajustes' ? ajustes() : vista === 'guerra' ? guerraVista()
-      : vista === 'miembros' ? miembrosVista() : vista === 'cofres' ? cofresVista() : vista === 'misiones' ? misionesVista() : vista === 'muro' ? muro() : resumen();
+      : vista === 'miembros' ? miembrosVista() : vista === 'misiones' ? misionesVista() : resumen();
     var clave = vista + !!D.clan + (vista === 'guerra' ? !!G : ''); app.classList.toggle('quieto', pintar.ult === clave); pintar.ult = clave;
     app.innerHTML = '<div class="cl-lay">' + rail() + '<div>' + cuerpo + '</div></div>';
     var rl = app.querySelector('.cl-rail'), on = rl && rl.querySelector('.r.on');
@@ -1182,7 +1184,7 @@
   });
   app.addEventListener('click', function (e) {
     var el;
-    if ((el = e.target.closest('[data-vista]'))) { vista = el.getAttribute('data-vista'); seguro = ''; abierto = null; if (vista === 'top') TOP = null; if (vista === 'guerra') { G = null; RIV = null; SALA = null; } if ((vista === 'cofres' || vista === 'misiones') && CF) cargarCofres(); pintar(); try { history.replaceState(null, '', vista === 'clan' ? location.pathname + location.search : '#' + vista); } catch (x) {} window.scrollTo(0, 0); return; }
+    if ((el = e.target.closest('[data-vista]'))) { vista = el.getAttribute('data-vista'); seguro = ''; abierto = null; if (vista === 'top') TOP = null; if (vista === 'guerra') { G = null; RIV = null; SALA = null; } if (vista === 'misiones' && CF) cargarCofres(); pintar(); try { history.replaceState(null, '', vista === 'clan' ? location.pathname + location.search : '#' + vista); } catch (x) {} window.scrollTo(0, 0); return; }
     if ((el = e.target.closest('[data-cofre]'))) { abrirCofre(+el.dataset.cofre); return; }
     if ((el = e.target.closest('[data-copiar]'))) { A.copiar(el.dataset.copiar, 'Código copiado'); return; }
     if ((el = e.target.closest('[data-forma],[data-simbolo],[data-color]'))) {
