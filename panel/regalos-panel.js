@@ -23,6 +23,7 @@ const RG_TIPOS = {
   xp: { nom: 'XP', c: '#FFC800', ops: [[100, '+100'], [250, '+250'], [500, '+500'], [1000, '+1000']], min: 1, max: 10000, uni: 'XP' },
   rayos: { nom: 'Rayos', c: '#2FA8FF', ops: [[10, '+10'], [20, '+20'], [50, '+50'], [100, '+100']], min: 1, max: 1000, uni: 'rayos' },
   ticket: { nom: 'Ticket de sala', c: '#C6E000', ops: [[1, '+1'], [3, '+3'], [5, '+5'], [10, '+10']], min: 1, max: 50, uni: 'tickets' },
+  diamantes: { nom: 'Diamantes', c: '#C64DF0', ops: [[50, '+50'], [100, '+100'], [300, '+300'], [500, '+500']], min: 1, max: 10000, uni: 'diamantes' },
   item: { nom: 'Ítem de colección', c: '#1CB0F6' },
   // Solo a un alumno (supabase/117-devolver-racha.sql)
   racha: { nom: 'Recuperar racha', c: '#FF9600', solo: 'uno' }
@@ -114,6 +115,7 @@ const RG_IC = {
   todos: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17" cy="9" r="2.8"/><path d="M16.5 14.2c3 .2 5 2.3 5 5.3"/></svg>',
   uno: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>',
   vip: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18 2 7l5.5 4L12 4l4.5 7L22 7l-1 11z"/><path d="M3 21h18"/></svg>',
+  diamantes: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M7 3h10l5 6-10 12L2 9z"/><path d="M2 9h20M12 21 8 9l2-6M12 21l4-12-2-6"/></svg>',
   ticket: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 0 0-4z"/><path d="M15 5v14" stroke-dasharray="2 2"/></svg>',
   inf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.3l-5.2 2.8 1-5.8-4.3-4.1 5.9-.9z"/></svg>',
   quitar: '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
@@ -153,6 +155,7 @@ function rgTexto(x) {
   if (x.tipo === 'xp') return '+' + (+x.cantidad).toLocaleString('es-PE') + ' XP';
   if (x.tipo === 'rayos') return '+' + (+x.cantidad).toLocaleString('es-PE') + (+x.cantidad === 1 ? ' rayo' : ' rayos');
   if (x.tipo === 'racha') return 'Racha devuelta: ' + x.cantidad + (+x.cantidad === 1 ? ' día' : ' días');
+  if (x.tipo === 'diamantes') return '+' + (+x.cantidad).toLocaleString('es-PE') + (+x.cantidad === 1 ? ' diamante' : ' diamantes');
   if (x.tipo === 'ticket') return '+' + x.cantidad + (+x.cantidad === 1 ? ' ticket de sala' : ' tickets de sala');
   const it = (RG.items || []).find(i => i.id === x.item);
   return 'Ítem: ' + (it ? it.nom || it.id : x.item);
@@ -263,6 +266,7 @@ function rgAlumnoHtml(a) {
         <span style="color:#FFC800">${(+a.xp_total || 0).toLocaleString('es-PE')} XP en total</span>
         <span>${(+a.xp_saldo || 0).toLocaleString('es-PE')} XP para canjear</span>
         ${a.rayos != null ? `<span style="color:#5CBEFF">${(+a.rayos || 0).toLocaleString('es-PE')} rayos</span>` : ''}
+        ${a.diamantes != null ? `<span style="color:#E4B8FF">${(+a.diamantes || 0).toLocaleString('es-PE')} diamantes</span>` : ''}
       </div>
     </div></div>`;
 }

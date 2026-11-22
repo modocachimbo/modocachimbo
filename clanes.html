@@ -481,6 +481,9 @@
   .big small { display: block; font: 800 11.5px Nunito, sans-serif; color: var(--text-dim); font-style: normal; text-transform: none; margin-top: 3px; }
   .big.pronto { cursor: default; opacity: .7; }
   /* Cofres */
+  a.big { text-decoration: none; color: inherit; }
+  .cf-fo { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 10px 12px; border-radius: 12px; border: 1.5px dashed #6a3fd0; background: rgba(198,77,240,.08); color: var(--text-dim); font: 800 13px Nunito, sans-serif; text-decoration: none; }
+  .cf-fo svg { width: 24px; height: 24px; flex: none; } .cf-fo b { color: #E4B8FF; } .cf-fo.on { border-style: solid; border-color: #58CC02; background: rgba(88,204,2,.1); } .cf-fo.on b { color: #7BD84A; }
   .cf { padding: 0; overflow: hidden; }
   .cf-h { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; border-bottom: 1.5px solid #2a2346; background: linear-gradient(90deg, rgba(255,200,0,.16), transparent 70%); }
   .cf-h .h2 { margin: 0; }
@@ -930,6 +933,7 @@
       (ab ? '<ellipse class="cf-luz" cx="54" cy="66" rx="30" ry="10" fill="' + col + '"/>' : '') + ch + '</svg>';
   }
   var PZ = {
+    diamantes: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M18 8h28l14 16-28 34L4 24z" fill="#C64DF0" stroke="#3A0A6A" stroke-width="5" stroke-linejoin="round"/><path d="M4 24h56M24 24l8 34 8-34" fill="none" stroke="#5A1A9A" stroke-width="2.5" opacity=".6"/><path d="M18 8l6 16H4z" fill="#fff" opacity=".4"/></svg>',
     xp: '<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#cl-rayo"/></svg>',
     rayos: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 1.5 4 14h7l-1.5 8.5L20 10h-7z" fill="#1CB0F6" stroke="#0b5c96" stroke-width="1.4" stroke-linejoin="round"/><path d="M12.5 4.5 7 12" stroke="#bfe9ff" stroke-width="1.6" stroke-linecap="round"/></svg>',
     ticket: '<svg viewBox="0 0 58 42" aria-hidden="true"><path d="M3 8a5 5 0 0 1 5-5h42a5 5 0 0 1 5 5v7a6 6 0 0 0 0 12v7a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5v-7a6 6 0 0 0 0-12z" fill="#C6E000"/><path d="M39 6v30" stroke="#151A03" stroke-width="2.4" stroke-dasharray="3.5 3"/><path d="M11 15h20M11 22h14M11 29h17" stroke="#151A03" stroke-width="3.2" stroke-linecap="round"/></svg>',
@@ -940,6 +944,7 @@
     if (+c.xp) l.push(['xp', '+' + c.xp, 'XP']);
     if (+c.rayos) l.push(['rayos', '+' + c.rayos, 'Rayos']);
     if (+c.tickets) l.push(['ticket', '+' + c.tickets, c.tickets == 1 ? 'Ticket de sala' : 'Tickets de sala']);
+    if (+c.diamantes) l.push(['diamantes', '+' + c.diamantes, 'Diamantes']);
     if (c.item_nom) l.push(['item', '+1', c.item_nom]);
     return l;
   }
@@ -1124,7 +1129,9 @@
       '<div class="cf-top"><div class="cf-num"><b>' + nf(YO.puntos) + '</b><span>puntos tuyos</span><small>Solo cuenta lo que haces tú. Estos cofres son solo para ti.</small></div>' +
       (sig ? '<div class="cf-sig">Faltan <b>' + nf(sig.meta - YO.puntos) + ' pts</b><br>para tu cofre ' + sig.n + '</div>' : '<div class="cf-sig"><b style="color:var(--accent)">¡Llegaste a todos!</b></div>') + '</div>' +
       '<div class="cf-pista' + (cfAnim ? ' anim' : '') + '"><div class="cf-riel"><i style="width:' + yoPct().toFixed(1) + '%"></i>' + marcas + '</div></div>' +
-      '<div class="cf-cajas c4">' + cajas + '</div></div></div>';
+      '<div class="cf-cajas c4">' + cajas + '</div>' +
+      (YO.fortuna ? '<div class="cf-fo on">' + PZ.diamantes + '<span><b>Fortuna activa.</b> Tus cofres sueltan diamantes.</span></div>'
+        : '<a class="cf-fo" href="tienda.html?de=clanes">' + PZ.diamantes + '<span><b>Activa Fortuna</b> en la Tienda y tus cofres soltarán diamantes.</span></a>') + '</div></div>';
   }
   function yoFuentes() {
     if (!YO || YO.error) return '';
@@ -1245,7 +1252,7 @@
     return '<div class="res-lay"><div>' + estandarte(c) + '</div><div style="min-width:0">' + aviso + pedidosCard() + guerraMini() +
       '<div class="top2"><button type="button" class="big" data-vista="top"><span class="ib3"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M5 31h12v13H5zM31 34h12v10H31z" fill="#4B3A99"/><path d="M5 28h12v13H5zM31 31h12v10H31z" fill="#8F78FF"/><path d="M17 23h14v21H17z" fill="#7E9400"/><path d="M17 20h14v21H17z" fill="#C6E000"/><path d="M5 28h12v2.5H5zM31 31h12v2.5H31zM17 20h14v2.5H17z" fill="#fff" opacity=".4"/><path d="M20 25h2.6v11H20z" fill="#fff" opacity=".3"/><g class="a-cor"><path d="M15 17.5V9l4.5 4L24 6l4.5 7L33 9v8.5z" fill="#B87700"/><path d="M15 15.5V7l4.5 4L24 4l4.5 7L33 7v8.5z" fill="#FFC800"/><circle cx="15" cy="7" r="1.6" fill="#FFC800"/><circle cx="24" cy="4" r="1.8" fill="#FFC800"/><circle cx="33" cy="7" r="1.6" fill="#FFC800"/><path d="M17 12.5h3" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".7"/></g></svg></span><span>Clasificación<small>' + (c.puesto ? 'Puesto #' + c.puesto + ' · semana' : 'Top de clanes') + '</small></span></button>' +
       '<button type="button" class="big" data-historial><span class="ib3"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="27" r="19" fill="#4B3A99"/><circle cx="24" cy="24" r="19" fill="#8F78FF"/><circle cx="24" cy="24.6" r="13.4" fill="#2A1F5C"/><circle cx="24" cy="25.4" r="12.8" fill="#F4F1FF"/><g class="a-agu"><path d="M24 25.5l6.2 3.4" fill="none" stroke="#2A1F5C" stroke-width="3.4" stroke-linecap="round"/></g><g class="a-min"><path d="M24 16.5V25.5" fill="none" stroke="#2A1F5C" stroke-width="3.4" stroke-linecap="round"/></g><circle cx="24" cy="25.5" r="2.4" fill="#C6E000"/><path d="M10.5 15a16 16 0 0 1 7-6.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".5"/></svg></span><span>Historial<small>Actividad del clan</small></span></button>' +
-      '<div class="big pronto"><span class="ib3"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M9 25h30v19H9z" fill="#4B3A99"/><path d="M9 22h30v19H9z" fill="#8F78FF"/><path d="M13 28h9v13h-9z" fill="#2A1F5C"/><path d="M25 28h10v7H25z" fill="#F4F1FF"/><path d="M26.2 29.2h2.6v4.6h-2.6z" fill="#C6E000"/><g class="a-tol"><path d="M7 18h34v6H7z" fill="#5E7000"/><path d="M10 5H17L15.5 16v2a4.25 4.25 0 0 1-8.5 0V16z" fill="#C6E000" /><path d="M17 5H24L24.0 16v2a4.25 4.25 0 0 1-8.5 0V16z" fill="#FFFFFF" /><path d="M24 5H31L32.5 16v2a4.25 4.25 0 0 1-8.5 0V16z" fill="#C6E000" /><path d="M31 5H38L41.0 16v2a4.25 4.25 0 0 1-8.5 0V16z" fill="#FFFFFF" /><path d="M10 5h28" stroke="#fff" stroke-width="1.4" opacity=".5"/></g></svg></span><span>Tienda<small>Muy pronto</small></span></div></div>' +
+      '<a class="big" href="tienda.html?de=clanes"><span class="ib3"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M9 25h30v19H9z" fill="#4B3A99"/><path d="M9 22h30v19H9z" fill="#8F78FF"/><path d="M13 28h9v13h-9z" fill="#2A1F5C"/><path d="M25 28h10v7H25z" fill="#F4F1FF"/><path d="M26.2 29.2h2.6v4.6h-2.6z" fill="#C6E000"/><g class="a-tol"><path d="M7 18h34v6H7z" fill="#5E7000"/><path d="M10 5H17L15.5 16v2a4.25 4.25 0 0 1-8.5 0V16z" fill="#C6E000" /><path d="M17 5H24L24.0 16v2a4.25 4.25 0 0 1-8.5 0V16z" fill="#FFFFFF" /><path d="M24 5H31L32.5 16v2a4.25 4.25 0 0 1-8.5 0V16z" fill="#C6E000" /><path d="M31 5H38L41.0 16v2a4.25 4.25 0 0 1-8.5 0V16z" fill="#FFFFFF" /><path d="M10 5h28" stroke="#fff" stroke-width="1.4" opacity=".5"/></g></svg></span><span>Tienda<small>Gasta tus diamantes</small></span></a></div>' +
       cofresCard() + '</div></div>';
   }
   function miembrosVista() {

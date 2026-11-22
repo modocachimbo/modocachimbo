@@ -596,6 +596,7 @@
       : g.tipo === 'xp' ? '¡Te regalaron ' + g.cantidad + ' XP!'
       : g.tipo === 'rayos' ? '¡Te regalaron ' + g.cantidad + ' de energía!'
       : g.tipo === 'racha' ? '¡Recuperaste tu racha de ' + g.cantidad + (g.cantidad === 1 ? ' día!' : ' días!')
+      : g.tipo === 'diamantes' ? '¡Te regalaron ' + g.cantidad + (g.cantidad === 1 ? ' diamante!' : ' diamantes!')
       : g.tipo === 'ticket' ? '¡Te regalaron ' + g.cantidad + (g.cantidad === 1 ? ' ticket de sala!' : ' tickets de sala!')
       : '¡Te regalaron algo para tu colección!';
     var d = document.createElement('div'); d.className = 'mcz-toast'; d.setAttribute('role', 'status');
@@ -666,7 +667,7 @@
     if (!regs.length || abriendo) return;
     abriendo = true;
     var ids = regs.filter(function (g) { return g.tipo === 'item' && g.item; }).map(function (g) { return g.item; });
-    var pasos = [js(BASE + 'assets/sobre.js?v=6', function () { return window.MCSobre; })];
+    var pasos = [js(BASE + 'assets/sobre.js?v=7', function () { return window.MCSobre; })];
     // Los ítems: la colección se vuelve a pedir al toque (no los 10 min guardados)
     if (ids.length) pasos.push(js(BASE + 'assets/coleccion.js?v=212', function () { return window.MCColeccion; })
       .then(function () { return MCColeccion.refrescar ? MCColeccion.refrescar() : null; }));
