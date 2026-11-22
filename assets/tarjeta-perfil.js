@@ -494,6 +494,7 @@
 
   window.MCTarjeta = {
     pintar: pintar, arte: arte, icono: icono, nivel: nivel, avance: avance, foto: foto, ver: ver, pin: pin, colores: RC,
+    vista: vista, pinDe: pinDe,   // para pintar foto, marco y pin con otro diseño (duelo.html)
     jugador: function () { return yo; },
     alJugador: function (fn) { oyentes.push(fn); if (yo) fn(yo); }
   };

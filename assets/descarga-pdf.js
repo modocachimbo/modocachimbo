@@ -360,6 +360,31 @@
     var t = ESTILO.tinta, BC = '"Barlow Condensed",Arial Narrow,sans-serif';
     return '' +
 
+      /* Temas fijos */
+      '.mcpdf .tfk{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}' +
+      '.mcpdf .tfk>div{border:1.4px solid #dde3ee;border-left:5px solid var(--c);border-radius:11px;padding:8px 12px 9px;display:flex;flex-direction:column;gap:1px}' +
+      '.mcpdf .tfk>div.p{border-left-color:#C2185B}.mcpdf .tfk>div.a{border-left-color:#C25400}' +
+      '.mcpdf .tfk small{font:900 8.5px Nunito,Arial;letter-spacing:.14em;text-transform:uppercase;color:#6b7388}' +
+      '.mcpdf .tfk b{font:800 17px/1.15 ' + BC + ';letter-spacing:.02em;color:#1B2A4A;text-transform:uppercase}' +
+      '.mcpdf .tfk span{font-size:10.5px;line-height:1.3;color:#4a5468}' +
+      '.mcpdf .tft{display:flex;align-items:baseline;gap:10px;border-bottom:2px solid var(--c);padding-bottom:4px}.mcpdf .tft b{font:800 17px/1 ' + BC + ';letter-spacing:.06em;text-transform:uppercase;color:#1B2A4A}.mcpdf .tft span{font-size:10.5px;color:#6b7388}' +
+      '.mcpdf .tftb{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed;font-size:11.5px;border:1.4px solid #dde3ee;border-radius:11px;overflow:hidden}' +
+      '.mcpdf .tftb th{background:#1B2A4A;color:#fff;font:900 9px Nunito,Arial;letter-spacing:.06em;text-align:center;padding:5px 0;text-transform:uppercase}' +
+      '.mcpdf .tftb tr.an th{font:800 12px ' + BC + ';letter-spacing:.04em;white-space:nowrap;overflow:visible}.mcpdf .tftb tr.an th.s1{font-size:10.5px;letter-spacing:0}.mcpdf .tftb tr.ci th{background:#2B3C5F;color:#c9d4ea;padding:3px 0;border-bottom:3px solid #A8D81E}' +
+      '.mcpdf .tftb th.g,.mcpdf .tftb td.g{border-left:1.4px solid #c7cfdd}.mcpdf .tftb thead th.g{border-left-color:#4a5a7d}' +
+      '.mcpdf .tftb th.tm{text-align:left;padding-left:8px}.mcpdf .tftb tr.ci th.u{background:#C2185B;color:#fff}' +
+      '.mcpdf .tftb td{text-align:center;height:26px;padding:0;border-top:1px solid #e3e7ee}.mcpdf .tftb tr.z td{background:#F7F9FC}.mcpdf .tftb td.u{background:#FCEFF4!important}' +
+      '.mcpdf .tftb td.n{font:800 12.5px ' + BC + ';color:var(--o)}.mcpdf .tftb td.tm{text-align:left;padding:0 6px 0 8px;font-weight:800;color:#1B2A4A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+      '.mcpdf .tftb td.v{border-left:1.4px solid #c7cfdd}.mcpdf .tftb td.v b{font:800 15px ' + BC + ';color:var(--o)}.mcpdf .tftb td.v small{font-size:9px;color:#8a93a6;margin-left:1px}' +
+      '.mcpdf .tftb i,.mcpdf .tfl i{display:inline-block;vertical-align:middle;width:15px;height:15px;border-radius:4px}.mcpdf .tftb i.x,.mcpdf .tfl i.x{background:var(--c)}.mcpdf .tftb i.x.ul,.mcpdf .tfl i.x.ul{background:#C2185B}' +
+      '.mcpdf .tftb i.x,.mcpdf .tfl i.x{position:relative}.mcpdf .tftb i.x:after,.mcpdf .tfl i.x:after{content:"";position:absolute;left:5px;top:2px;width:4px;height:8px;border:solid #fff;border-width:0 2.2px 2.2px 0;transform:rotate(45deg)}.mcpdf .tftb i.o,.mcpdf .tfl i.o{width:6px;height:6px;border-radius:50%;background:#d3d8e0}' +
+      '.mcpdf .tfl{display:flex;gap:18px;margin-top:7px;font-size:10.5px;color:#4a5468}.mcpdf .tfl span{display:flex;align-items:center;gap:6px}' +
+      '.mcpdf .tfr{display:grid;grid-template-columns:26px 168px 1fr 92px 100px;gap:0 10px;align-items:center;padding:4px 4px;border-bottom:1px solid #e3e7ee;font-size:11.5px}' +
+      '.mcpdf .tfr .n{font:800 13px/20px ' + BC + ';text-align:center;border-radius:6px;background:#EEF1F6;color:#4a5468}.mcpdf .tfr.top .n{background:var(--c);color:#fff}' +
+      '.mcpdf .tfr b{font-weight:800;color:#1B2A4A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+      '.mcpdf .tfr .br{height:12px;border-radius:6px;background:#EEF1F6;overflow:hidden}.mcpdf .tfr .br i{display:block;height:100%;border-radius:6px;background:var(--c);opacity:.55}.mcpdf .tfr.top .br i{opacity:1}' +
+      '.mcpdf .tfr .ct{font-weight:800;color:var(--o);text-align:right}.mcpdf .tfr .ul{font-size:10.5px;color:#6b7388}.mcpdf .tfr .ul.si{color:#C2185B;font-weight:800}' +
+      '.mcpdf .tfn{margin-top:14px;font-size:10.5px;line-height:1.45;color:#6b7388;border-top:1px dashed #c7cfdd;padding-top:8px}' +
       /* Vocabulario · Formato 1 (tabla con número en bloque) */
       '.mcpdf .vh1{display:grid;grid-template-columns:34px 132px 1fr 1fr;gap:0 12px;align-items:center;background:#1B2A4A;color:#fff;border-radius:11px 11px 0 0;padding:8px 10px;font:900 9.5px Nunito,Arial;letter-spacing:.14em;text-transform:uppercase;border-bottom:4px solid #A8D81E}' +
       '.mcpdf .vh1.def,.mcpdf .vr1.def{grid-template-columns:34px 132px 1fr 1fr 1.6fr}' +
@@ -686,6 +711,7 @@
     return { el: b, h: h, cortes: cortes, finImg: finImg };
   };
   Armador.prototype.nuevaPagina = function (horizontal) {
+    if (horizontal == null) horizontal = this.horiz;   // un formato puede pedir todas sus hojas horizontales
     var H = ESTILO.hoja, p = this.D.createElement('div');
     p.className = 'mcpdf' + (horizontal ? ' h' : '') + (this.modelo ? ' m' + this.modelo : '');
     this.vars(p, this.pal);
@@ -1212,6 +1238,81 @@
       cartas.forEach(function (c, i) { A.columna('<div style="font-size:12px"><b style="color:var(--o)">' + (i + 1) + '.</b> ' + reverso(c) + '</div>', { gap: 6 }); });
     }
   }
+  /* ---------- Temas fijos: tabla de temas por examen de admisión + del que más viene al que menos ---------- */
+  // Rango de exámenes elegido (índices desde/hasta): recorta la marca de cada tema y recalcula veces y último
+  function temasEnRango(d, desde, hasta) {
+    var n = d.examenes.length;
+    desde = Math.max(0, Math.min(n - 1, desde == null ? 0 : +desde)); hasta = Math.max(desde, Math.min(n - 1, hasta == null ? n - 1 : +hasta));
+    var ex = d.examenes.slice(desde, hasta + 1), U = ex.length - 1;
+    var temas = d.temas.map(function (t) {
+      var s = String(t.s).slice(desde, hasta + 1), v = s.split('').filter(function (c) { return c === '1'; }).length, u = s.lastIndexOf('1');
+      return { nombre: t.nombre, s: s, veces: v, ultimo: u >= 0 ? ex[u] : '—', sinVenir: u >= 0 ? U - u : ex.length };
+    });
+    return { examenes: ex, temas: temas };
+  }
+  var TF_HORIZONTAL = 20;   // con más exámenes que esto, la hoja va horizontal
+  function hacerTemasFijos(A) {
+    var d = A.doc, H = ESTILO.hoja, R = temasEnRango(d, A.op.desde, A.op.hasta), ex = R.examenes, N = ex.length, U = N - 1, temas = R.temas;
+    if (N > TF_HORIZONTAL) { A.horiz = true; A.W = H.h - 2 * H.lado; }
+    var CHK = '';   // el check se dibuja con CSS (muchos SVG en la tabla no salían en la imagen)
+    var rk = temas.slice().sort(function (a, b) { return b.veces - a.veces || a.sinVenir - b.sinVenir; });
+    var enUlt = temas.filter(function (t) { return t.s[U] === '1'; }).map(function (t) { return t.nombre; });
+    var olv = temas.slice().sort(function (a, b) { return b.sinVenir - a.sinVenir; })[0];
+    A.doc = Object.assign({}, d, { chips: ['Modalidad ' + d.modalidad, N + ' exámenes', ex[0] + (N > 1 ? ' a ' + ex[U] : '')] });
+    A.nuevaPagina();
+    A.ancho(cabeceraTema(A), { gap: 16 });
+    A.ancho('<div class="tfk">' +
+      '<div><small>El que más viene</small><b>' + esc(rk[0].nombre) + '</b><span>' + rk[0].veces + ' de ' + N + ' exámenes</span></div>' +
+      '<div class="p"><small>Vino en el último (' + esc(ex[U]) + ')</small><b>' + enUlt.length + (enUlt.length === 1 ? ' tema' : ' temas') + '</b><span>' + esc((enUlt.length > 4 ? enUlt.slice(0, 4).join(', ') + ' y ' + (enUlt.length - 4) + ' más' : enUlt.join(', ')) || 'Ninguno') + '</span></div>' +
+      '<div class="a"><small>Hace tiempo que no viene</small><b>' + esc(olv.nombre) + '</b><span>' + (olv.ultimo === '—' ? 'No vino en ' + (N === 1 ? 'este examen' : 'estos ' + N + ' exámenes') : 'Último: ' + esc(olv.ultimo) + ' · ' + olv.sinVenir + ' sin venir') + '</span></div></div>', { gap: 16 });
+    if (A.op.tabla !== false) {
+      var anios = [], g = {};
+      ex.forEach(function (e) { var a = e.slice(0, 4); if (!g[a]) { g[a] = 0; anios.push(a); } g[a]++; });
+      var nuevo = function (k) { return k === 0 || ex[k - 1].slice(0, 4) !== ex[k].slice(0, 4); };
+      var temaW = A.horiz ? 220 : 168, cw = Math.max(18, Math.min(30, Math.floor((A.W - 36 - temaW - 56) / N)));
+      var lista = d.orden === 'mas' ? rk : temas;
+      var cabeza = '<table class="tftb"><colgroup><col style="width:36px"><col><' + ex.map(function () { return 'col style="width:' + cw + 'px"'; }).join('><') + '><col style="width:56px"></colgroup>' +
+        '<thead><tr class="an"><th rowspan="2">N.º</th><th rowspan="2" class="tm">Tema</th>' + anios.map(function (a, k) { return '<th colspan="' + g[a] + '" class="' + (k ? 'g' : '') + (g[a] === 1 ? ' s1' : '') + '">' + a + '</th>'; }).join('') + '<th rowspan="2" class="v">Veces</th></tr>' +
+        '<tr class="ci">' + ex.map(function (e, k) { return '<th class="' + (nuevo(k) ? 'g' : '') + (k === U ? ' u' : '') + '">' + esc(e.split('-')[1] || '') + '</th>'; }).join('') + '</tr></thead><tbody>';
+      var filas = lista.map(function (t, n) {
+        return '<tr' + (n % 2 ? ' class="z"' : '') + '><td class="n">' + dos(n + 1) + '</td><td class="tm">' + esc(t.nombre) + '</td>' + ex.map(function (e, k) {
+          var x = t.s[k] === '1';
+          return '<td class="' + (nuevo(k) ? 'g' : '') + (k === U ? ' u' : '') + '">' + (x ? '<i class="x' + (k === U ? ' ul' : '') + '">' + CHK + '</i>' : '<i class="o"></i>') + '</td>';
+        }).join('') + '<td class="v"><b>' + t.veces + '</b><small>/' + N + '</small></td></tr>';
+      });
+      var leyenda = '<div class="tfl"><span><i class="x">' + CHK + '</i>Vino</span><span><i class="x ul">' + CHK + '</i>Vino en el último examen (' + esc(ex[U]) + ')</span><span><i class="o"></i>No vino</span></div>';
+      var tit = function (sigue) { return '<div class="tft"><b>Tabla de temas por examen' + (sigue ? ' (sigue)' : '') + '</b><span>' + (d.orden === 'mas' ? 'Ordenado del que más viene al que menos' : 'En el orden del temario') + '</span></div>'; };
+      // Si no entran todos los temas, la tabla sigue en la hoja siguiente con la fila de años otra vez arriba
+      var hCab = this_h(A, cabeza + '</tbody></table>'), hFila = (this_h(A, cabeza + filas.join('') + '</tbody></table>') - hCab) / Math.max(1, filas.length);
+      var hTit = this_h(A, tit(false)) + 8, hLey = this_h(A, leyenda) + 20, i0 = 0, parte = 0;
+      while (i0 < filas.length) {
+        var y = Math.max(A.pg.y[0], A.pg.y[1]), libre = A.pg.h - y - hTit - hCab;
+        var caben = Math.floor((libre - (filas.length - i0 <= Math.floor(libre / hFila) ? hLey : 0)) / hFila);
+        if (caben < 3 && y > 0) { A.nuevaPagina(); continue; }
+        caben = Math.max(1, caben);
+        var fin = Math.min(filas.length, i0 + caben), ultima = fin >= filas.length;
+        A.ancho(tit(parte > 0), { gap: 8 });
+        A.ancho(cabeza + filas.slice(i0, fin).join('') + '</tbody></table>' + (ultima ? leyenda : ''), { gap: 20 });
+        i0 = fin; parte++;
+        if (!ultima) A.nuevaPagina();
+      }
+    }
+    if (A.op.ranking !== false) {
+      var mx = rk[0].veces || 1;
+      var filasR = rk.map(function (t, i) {
+        var pct = Math.round(t.veces * 100 / N), w = Math.max(3, t.veces / mx * 100);
+        return '<div class="tfr' + (i < 3 ? ' top' : '') + '"><span class="n">' + (i + 1) + '</span><b>' + esc(t.nombre) + '</b><span class="br"><i style="width:' + w.toFixed(1) + '%"></i></span>' +
+          '<span class="ct">' + t.veces + ' de ' + N + ' · ' + pct + '%</span><span class="ul' + (t.s[U] === '1' ? ' si' : '') + '">' + (t.s[U] === '1' ? 'Vino en ' + esc(ex[U]) : t.ultimo === '—' ? 'No vino' : 'Último: ' + esc(t.ultimo)) + '</span></div>';
+      });
+      A.ancho('<div class="tft"><b>Del que más viene al que menos</b><span>Veces que vino en los ' + N + ' exámenes</span></div>', { gap: 8, conSiguiente: 90 });
+      filasR.forEach(function (f) { A.ancho(f, { gap: 0 }); });
+      A.ancho('<div style="height:6px"></div>', { gap: 0 });
+    }
+    A.ancho('<div class="tfn">Conteo de los exámenes de admisión de la UNJFSC de ' + esc(ex[0]) + ' a ' + esc(ex[U]) + ', modalidad ' + esc(d.modalidad) + '. Que un tema haya venido mucho no asegura que venga en el próximo examen, pero te ayuda a decidir qué repasar primero.</div>', { gap: 0 });
+  }
+  function this_h(A, html) { return A.medir(html, A.W).h; }
+
+
 
   /* ---------- Generar el PDF ---------- */
   function prepararLibrerias() {
@@ -1279,6 +1380,7 @@
         else if (doc.formato === 'agrupado') hacerAgrupado(A);
         else if (doc.formato === 'vocabulario') hacerVocabulario(A);
         else if (doc.formato === 'tarjetas') hacerTarjetas(A);
+        else if (doc.formato === 'temas') hacerTemasFijos(A);
         else hacerTema(A);
         A.reglas(); A.cabeceraYPie();
       } catch (e) { A.taller.remove(); throw e; }
@@ -1343,6 +1445,17 @@
       '.mcd-top small{display:block;font:800 11px Nunito,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--ac)}' +
       '.mcd-top h3{margin:2px 0 3px;font:900 21px/1.15 Nunito,sans-serif;color:#EEEAF7}' +
       '.mcd-top p{margin:0;font-size:13px;color:#A99FC8}' +
+      '.mcd-rg{display:flex;align-items:flex-end;gap:10px}.mcd-rg label{flex:1;display:flex;flex-direction:column;gap:4px}.mcd-rg small{font:800 11px Nunito,sans-serif;color:#A99FC8}.mcd-rg .a{padding-bottom:11px;color:#6F6690;font-weight:800}' +
+      '.mcd-rg select{appearance:none;-webkit-appearance:none;width:100%;padding:10px 12px;border-radius:12px;border:1px solid #2F284E;background:#1D1834 url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 12 8%27%3E%3Cpath d=%27M1 1l5 5 5-5%27 fill=%27none%27 stroke=%27%23A99FC8%27 stroke-width=%272%27/%3E%3C/svg%3E") no-repeat right 12px center/12px;color:#EEEAF7;font:800 14px Nunito,sans-serif}' +
+      '.mcd-rapido{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}.mcd-rapido button{padding:5px 11px;border-radius:99px;border:1px solid #2F284E;background:transparent;color:#A99FC8;font:800 12px Nunito,sans-serif;cursor:pointer}.mcd-rapido button:hover,.mcd-rapido button.on{color:var(--ac);border-color:var(--ac)}.mcd-rapido button.on{background:rgba(198,224,0,.1)}' +
+      '.mcd-pv{display:flex;gap:14px;align-items:flex-start;padding:12px;border-radius:16px;background:#1D1834;border:1px solid #2A2346}' +
+      '.mcd-hj{flex:none;width:96px;min-height:136px;background:#fff;border-radius:6px;padding:7px;display:flex;flex-direction:column;gap:5px;box-shadow:0 4px 0 #0B0818}.mcd-hj.h{width:140px;min-height:99px}' +
+      '.mcd-hj .c{display:flex;gap:4px;align-items:center}.mcd-hj .c u{width:16px;height:16px;border-radius:3px;background:#1B2A4A}.mcd-hj .c span{flex:1;display:flex;flex-direction:column;gap:2px}.mcd-hj .c b{height:4px;width:70%;background:#4F7A00;border-radius:2px}.mcd-hj .c s{height:3px;width:45%;background:#c7cfdd;border-radius:2px}' +
+      '.mcd-hj .k{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px}.mcd-hj .k i{height:9px;border-radius:2px;border-left:2px solid #4F7A00;background:#EEF1F6}.mcd-hj .k i.p{border-color:#C2185B}.mcd-hj .k i.a{border-color:#C25400}' +
+      '.mcd-hj .g{display:grid;gap:1px;background:#fff;justify-content:start}.mcd-hj .g i{aspect-ratio:1;border-radius:1px;background:#EEF1F6}.mcd-hj .g i.x{background:#4F7A00}.mcd-hj .g i.u{background:#C2185B}' +
+      '.mcd-hj .b{display:flex;flex-direction:column;gap:2px;margin-top:2px}.mcd-hj .b i{height:3px;border-radius:2px;background:#4F7A00}' +
+      '.mcd-pt{min-width:0;display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:#A99FC8;line-height:1.4}.mcd-pt b{font:900 15px Nunito,sans-serif;color:#EEEAF7}' +
+      '.mcd-pt .o{display:flex;align-items:center;gap:5px;color:var(--ac);font-weight:800}.mcd-pt .o svg{width:15px;height:15px}.mcd-pt ul{margin:4px 0 0;padding-left:16px}.mcd-pt li{margin:1px 0}' +
       '.mcd-sec{margin:18px 0 8px;font:900 11px Nunito,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#6F6690}' +
       '.mcd-op{display:flex;align-items:center;gap:12px;padding:11px 12px;border:1px solid #2A2346;border-radius:14px;background:#1D1834;margin-bottom:8px;cursor:pointer;user-select:none}' +
       '.mcd-op b{display:block;font-size:14.5px;font-weight:800;color:#EEEAF7}.mcd-op small{display:block;font-size:12px;color:#A99FC8;margin-top:1px}' +
@@ -1386,6 +1499,9 @@
       ['palabras', 'Palabras', (doc.palabras || []).length + ' palabras con sinónimos y antónimos', true, true],
       ['definicion', 'Definición', 'Una columna más con el significado', true],
       ['ejemplos', 'Ejemplos', 'Un ejemplo de uso debajo de la definición', false]];
+    if (doc.formato === 'temas') return [
+      ['tabla', 'Tabla de temas', (doc.temas || []).length + ' temas en ' + (doc.examenes || []).length + ' exámenes, con check donde vino', true, true],
+      ['ranking', 'Del que más viene al que menos', 'Barras con las veces y el último examen en que vino', true]];
     if (doc.formato === 'tarjetas') return [
       ['cartas', 'Tarjetas', (doc.cartas || []).length + ' tarjetas, 8 por hoja para recortar', true, true],
       ['reverso', 'Reverso detrás', 'La respuesta en la hoja siguiente, para imprimir a doble cara', true]];
@@ -1395,6 +1511,45 @@
     if (hayMcq && e.ficha !== false) o.push(['ficha', 'Ficha óptica <span class="mcd-tag">OptiCheck</span>', qs.length > 80 ? 'Dos hojas horizontales (80 + ' + (qs.length - 80) + ')' : 'Hoja horizontal para calificar con la app', doc.formato === 'simulacro']);
     return o;
   }
+
+  /* ---------- Ventana de Temas fijos: rango de exámenes + vista previa del formato ---------- */
+  function ventanaTemas(doc) {
+    var ex = doc.examenes, n = ex.length, ops = function (sel) { return ex.map(function (e, i) { return '<option value="' + i + '"' + (i === sel ? ' selected' : '') + '>' + esc(e) + '</option>'; }).join(''); };
+    return '<div class="mcd-sec">Rango de exámenes</div><div class="mcd-rg"><label><small>Desde</small><select id="mcdDesde">' + ops(0) + '</select></label><span class="a">a</span>' +
+      '<label><small>Hasta</small><select id="mcdHasta">' + ops(n - 1) + '</select></label></div>' +
+      '<div class="mcd-rapido">' + [['Todos', n], ['Últimos 10', 10], ['Últimos 5', 5]].filter(function (r) { return r[1] <= n; }).map(function (r) { return '<button type="button" data-n="' + r[1] + '">' + r[0] + '</button>'; }).join('') + '</div>' +
+      '<div class="mcd-sec">Así sale tu PDF</div><div class="mcd-pv"><div class="mcd-hj"></div><div class="mcd-pt"></div></div>';
+  }
+  function vivoTemas(caja, doc) {
+    var de = caja.querySelector('#mcdDesde'), ha = caja.querySelector('#mcdHasta'), n = doc.examenes.length;
+    function pintar() {
+      if (+ha.value < +de.value) ha.value = de.value;
+      var R = temasEnRango(doc, +de.value, +ha.value), ex = R.examenes, N = ex.length, U = N - 1, horiz = N > TF_HORIZONTAL;
+      var conTabla = !caja.querySelector('.mcd-op[data-k="tabla"]') || caja.querySelector('.mcd-op[data-k="tabla"]').classList.contains('on');
+      var conRk = caja.querySelector('.mcd-op[data-k="ranking"]') && caja.querySelector('.mcd-op[data-k="ranking"]').classList.contains('on');
+      var lista = doc.orden === 'mas' ? R.temas.slice().sort(function (a, b) { return b.veces - a.veces || a.sinVenir - b.sinVenir; }) : R.temas;
+      var mx = Math.max.apply(null, R.temas.map(function (t) { return t.veces; }).concat([1]));
+      var grid = conTabla ? '<div class="g" style="grid-template-columns:repeat(' + N + ',' + Math.max(2, Math.min(7, Math.floor(((horiz ? 126 : 82) - N) / N))) + 'px)">' + lista.map(function (t) {
+        return t.s.split('').map(function (c, k) { return '<i class="' + (c === '1' ? (k === U ? 'u' : 'x') : '') + '"></i>'; }).join('');
+      }).join('') + '</div>' : '';
+      var barras = conRk ? '<div class="b">' + R.temas.slice().sort(function (a, b) { return b.veces - a.veces; }).slice(0, 6).map(function (t) { return '<i style="width:' + Math.max(6, t.veces / mx * 100) + '%"></i>'; }).join('') + '</div>' : '';
+      var opT = caja.querySelector('.mcd-op[data-k="tabla"] small'); if (opT) opT.textContent = R.temas.length + ' temas en ' + N + (N === 1 ? ' examen' : ' exámenes') + ', con check donde vino';
+      Array.prototype.forEach.call(caja.querySelectorAll('.mcd-rapido button'), function (b) { b.classList.toggle('on', +ha.value === n - 1 && +de.value === Math.max(0, n - +b.dataset.n)); });
+      caja.querySelector('.mcd-hj').className = 'mcd-hj' + (horiz ? ' h' : '');
+      caja.querySelector('.mcd-hj').innerHTML = '<div class="c"><u></u><span><b></b><s></s></span></div><div class="k"><i></i><i class="p"></i><i class="a"></i></div>' + grid + barras;
+      caja.querySelector('.mcd-pt').innerHTML = '<b>' + N + (N === 1 ? ' examen' : ' exámenes') + ' · ' + R.temas.length + ' temas</b>' +
+        '<span>' + esc(ex[0]) + (N > 1 ? ' a ' + esc(ex[U]) : '') + ' · ' + esc(doc.modalidad) + '</span>' +
+        '<span class="o">' + IC_HOJA(horiz) + (horiz ? 'Hoja horizontal (son muchos exámenes)' : 'Hoja vertical') + '</span>' +
+        '<ul><li>Resumen: el que más viene, el del último y el olvidado</li>' + (conTabla ? '<li>Tabla con check en cada examen' + (doc.orden === 'mas' ? ', del que más viene al que menos' : ', en orden del temario') + '</li>' : '') + (conRk ? '<li>Barras del que más viene al que menos</li>' : '') + '</ul>';
+    }
+    de.addEventListener('change', pintar); ha.addEventListener('change', function () { if (+ha.value < +de.value) de.value = ha.value; pintar(); });
+    Array.prototype.forEach.call(caja.querySelectorAll('.mcd-rapido button'), function (b) {
+      b.addEventListener('click', function () { ha.value = n - 1; de.value = Math.max(0, n - +b.dataset.n); pintar(); });
+    });
+    Array.prototype.forEach.call(caja.querySelectorAll('.mcd-op'), function (o) { o.addEventListener('click', function () { setTimeout(pintar, 0); }); });
+    pintar();
+  }
+  function IC_HOJA(h) { return '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="' + (h ? 3 : 6) + '" y="' + (h ? 6 : 3) + '" width="' + (h ? 18 : 12) + '" height="' + (h ? 12 : 18) + '" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></svg>'; }
 
   function abrir(reg) {
     cssVentana();
@@ -1434,7 +1589,7 @@
         return '<button type="button" class="mcd-fm' + (+k === modelo ? ' on' : '') + '" data-m="' + k + '" role="radio" aria-checked="' + (+k === modelo) + '"><span class="mcd-mini f' + k + '">' + mini + '</span><span><b>' + MODELOS[k].nombre + '</b><small>' + MODELOS[k].desc + '</small></span></button>';
       }).join('') + '</div>';
       var cupo = e.quedan_dia == null ? '' : '<div class="mcd-cupo"><span>' + Array.from({ length: Math.min(e.limite_dia, 20) }, function (_, i) { return '<i' + (i < e.usadas_dia ? ' class="usado"' : '') + '></i>'; }).join('') + '</span>Te quedan ' + e.quedan_dia + ' de ' + e.limite_dia + ' hoy</div>';
-      caja.innerHTML = cab(doc) + fms + '<div class="mcd-sec">¿Qué incluye?</div>' +
+      caja.innerHTML = cab(doc) + fms + (doc.formato === 'temas' ? ventanaTemas(doc) : '') + '<div class="mcd-sec">¿Qué incluye?</div>' +
         ops.map(function (o) { return '<div class="mcd-op' + (o[3] ? ' on' : '') + (o[4] ? ' fijo' : '') + '" data-k="' + o[0] + '" role="switch" aria-checked="' + !!o[3] + '" tabindex="0"><span class="tx"><b>' + o[1] + '</b><small>' + o[2] + '</small></span><span class="mcd-sw"></span></div>'; }).join('') +
         '<div class="mcd-info">' + IC.escudo + '<span>Lleva tu apodo y correo como marca de agua y un N.º único. Es solo para ti: no lo compartas.</span></div>' + cupo +
         '<button class="mcd-go" type="button"' + (e.quedan_dia === 0 ? ' disabled' : '') + '>' + IC.pdf + 'Descargar PDF</button><div class="mcd-msg"></div>';
@@ -1448,9 +1603,11 @@
           guardar(K_MODELO, b.dataset.m);
         });
       });
+      if (doc.formato === 'temas') vivoTemas(caja, doc);
       if (e.quedan_dia === 0) caja.querySelector('.mcd-msg').innerHTML = '<div class="mcd-err">Ya usaste tus ' + e.limite_dia + ' descargas de hoy. Mañana tienes más.</div>';
       caja.querySelector('.mcd-go').addEventListener('click', function () {
         var op = {}; Array.prototype.forEach.call(caja.querySelectorAll('.mcd-op'), function (o) { op[o.dataset.k] = o.classList.contains('on'); });
+        if (doc.formato === 'temas') { op.desde = +caja.querySelector('#mcdDesde').value; op.hasta = +caja.querySelector('#mcdHasta').value; }
         var fm = caja.querySelector('.mcd-fm.on'); if (fm) op.modelo = +fm.dataset.m;
         var btn = this, msg = caja.querySelector('.mcd-msg');
         btn.disabled = true; ocupado = true;
@@ -1704,6 +1861,24 @@
   }
   document.addEventListener('mc:tarjetas-listo', registrarTarjetas);
   if (window.MC_TARJETAS) registrarTarjetas();
+
+  // Temas fijos: la página deja window.MC_TF con el curso y la modalidad que se ven ahora
+  // (usa el mismo interruptor que Exámenes pasados: tipo 'examen', sin SQL nuevo)
+  if (archivo === 'temas-fijos.html') {
+    registrar({
+      tipo: 'examen', area: 'ciencia-tecnologia',
+      lugar: function () { var b = document.getElementById('pdfLugar'); return b && { padre: b, solo: true, clase: 'mcd-solo', texto: 'Descargar PDF' }; },
+      datos: function () {
+        var x = window.MC_TF;
+        if (!x || !x.temas || !x.temas.length) throw new Error('Este curso todavía no tiene temas para descargar.');
+        var ex = x.examenes;
+        return { formato: 'temas', tipo: 'examen', modelo: 1, area: x.area || 'general', etiqueta: 'TEMAS', numero: '', titulo: x.nombre,
+          subtitulo: 'Temas fijos · Admisión UNJFSC', chips: ['Modalidad ' + x.modalidad, ex.length + ' exámenes', ex[0] + ' a ' + ex[ex.length - 1]],
+          cabecera1: 'Temas fijos · ' + x.modalidad, cabecera2: x.nombre, ref: 'temas-fijos/' + x.mod + '/' + x.curso,
+          modalidad: x.modalidad, orden: x.orden, examenes: ex, temas: x.temas };
+      }
+    });
+  }
 
   window.MCDescarga = { registrar: registrar, abrir: abrir, generar: generar, cfg: cfg, ESTILO: ESTILO, _porAreaYCurso: porAreaYCurso };
 })();

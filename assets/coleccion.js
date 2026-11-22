@@ -50,7 +50,7 @@
   var CATALOGO = [
     // Búho: los disfraces de cada área ya acompañan en sus páginas, así que vienen con tu cuenta
     { id: 'buho-clasico', espacio: 'buho', nom: 'Clásico', rareza: 'comun', regla: { tipo: 'gratis' }, desc: 'El búho de siempre, con sus lentes de sol.' },
-    { id: 'buho-antiguo', espacio: 'buho', nom: 'Antiguo', rareza: 'comun', regla: { tipo: 'gratis' }, desc: 'El primer búho de Modo Cachimbo, el del logo.' },
+    { id: 'buho-antiguo', espacio: 'buho', nom: 'Antiguo', rareza: 'evento', regla: { tipo: 'evento', evento: 'los primeros días de Modo Cachimbo', cinta: 'Veterano' }, desc: 'El primer búho de Modo Cachimbo, el del logo. Solo lo tienen los veteranos.' },   // supabase/115: ya no viene con las cuentas nuevas
     { id: 'buho-al-juarismi', espacio: 'buho', nom: 'Al-Juarismi', rareza: 'raro', regla: { tipo: 'gratis' }, img: 'matematica', area: 'Matemática', desc: 'El padre del álgebra. Te acompaña en Matemática.' },
     { id: 'buho-cervantes', espacio: 'buho', nom: 'Cervantes', rareza: 'raro', regla: { tipo: 'gratis' }, img: 'comunicacion', area: 'Comunicación', desc: 'El autor del Quijote. Te acompaña en Comunicación.' },
     { id: 'buho-einstein', espacio: 'buho', nom: 'Einstein', rareza: 'raro', regla: { tipo: 'gratis' }, img: 'ciencia-tecnologia', area: 'Ciencia y Tecnología', desc: 'El genio de la relatividad. Te acompaña en Ciencia y Tecnología.' },
@@ -448,7 +448,7 @@
     }
     setTimeout(function () {
       if (window.MCSobre) return abrir();
-      var s = document.createElement('script'); s.src = BASE + 'assets/sobre.js?v=5'; s.onload = abrir; document.head.appendChild(s);
+      var s = document.createElement('script'); s.src = BASE + 'assets/sobre.js?v=6'; s.onload = abrir; document.head.appendChild(s);
     }, 1800);
   }
 
@@ -761,6 +761,8 @@
     var st = document.createElement('style'); st.id = 'mc-mo-css';
     st.textContent = '.mc-mo{clip-path:none!important;overflow:visible!important;background:none!important}' +
       '.mc-mo::after{content:"";position:absolute;inset:-33%;background:var(--mo) center/100% 100% no-repeat;pointer-events:none;z-index:3}' +
+      // El nivel, el pin y la burbuja van por encima del marco (el marco queda debajo, para todos)
+      '.mc-mo~*{z-index:5!important}' +
       '.mcc-marco.mc-mo,.letra.mc-mo{position:relative}' +
       // En Mi colección el cuadro es más chico para que entren las alas y la corona
       '.mcc-marco.mc-mo{width:52%}' +

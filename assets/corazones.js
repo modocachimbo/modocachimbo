@@ -207,6 +207,8 @@
     premioRango(+e.xp_semana || 0);
     // Rayos regalados: el contador del Arcade o del Laboratorio se pone al día
     if (window.MCRayos && regs.some(function (g) { return g.tipo === 'rayos'; })) MCRayos.estado();
+    // Racha devuelta (supabase/117-devolver-racha.sql): el fueguito se pone al día
+    if (window.MCRacha && MCRacha.recargar && regs.some(function (g) { return g.tipo === 'racha'; })) MCRacha.recargar();
     if (antes && antes.quedan === 0 && e.quedan > 0) cerrarBloqueo();
   }
 
@@ -296,7 +298,7 @@
       if (c.h > 0) return rpc('perder_corazon').then(function (e) { var d = leerCola(); d.h = Math.max(0, d.h - 1); guardarCola(d); cambiar(e); return siguiente(); });
       if (!c.p.length) return;
       var x = c.p[0];
-      return rpc('sumar_xp', { p: { fuente: x.fuente, curso: x.curso, ok: x.ok, mal: x.mal, seguidas: x.seguidas } }).then(function (e) {
+      return rpc('sumar_xp', { p: { fuente: x.fuente, curso: x.curso, ok: x.ok, mal: x.mal, seguidas: x.seguidas, pend: true } }).then(function (e) {
         var d = leerCola(); d.p.shift(); guardarCola(d); cambiar(e); return siguiente();
       });
     }
@@ -326,6 +328,9 @@
   function enviar() {
     clearTimeout(tEnvio); tEnvio = null;
     if (enviando || !PAG || buf.ok + buf.mal === 0) return;
+    // Si hay XP guardados de cuando no había señal, esto va detrás de ellos en la
+    // misma cola (así la reserva anti-trampas no se gasta antes en lo de ahora)
+    if (leerCola().p.length) { while (buf.ok + buf.mal > 0) aCola(paquete()); vaciarCola(); return; }
     var p = paquete(); enviando = true; vuelo = valor(p.ok, p.mal);
     rpc('sumar_xp', { p: p }).then(function (e) { enviando = false; vuelo = 0; cambiar(e); if (buf.ok + buf.mal) enviar(); else vaciarCola(); },
       // No llegó (sin señal o error): queda guardado en el teléfono para mandarlo después
@@ -590,6 +595,7 @@
       : g.tipo === 'infinito' ? '¡Corazones infinitos por ' + (g.cantidad % 24 ? g.cantidad + (g.cantidad === 1 ? ' hora!' : ' horas!') : g.cantidad / 24 + (g.cantidad === 24 ? ' día!' : ' días!'))
       : g.tipo === 'xp' ? '¡Te regalaron ' + g.cantidad + ' XP!'
       : g.tipo === 'rayos' ? '¡Te regalaron ' + g.cantidad + ' de energía!'
+      : g.tipo === 'racha' ? '¡Recuperaste tu racha de ' + g.cantidad + (g.cantidad === 1 ? ' día!' : ' días!')
       : g.tipo === 'ticket' ? '¡Te regalaron ' + g.cantidad + (g.cantidad === 1 ? ' ticket de sala!' : ' tickets de sala!')
       : '¡Te regalaron algo para tu colección!';
     var d = document.createElement('div'); d.className = 'mcz-toast'; d.setAttribute('role', 'status');
@@ -629,7 +635,7 @@
     if (k <= ya) return;
     g = {}; g[sem] = k;   // solo se recuerda esta semana
     try { localStorage.setItem(cl, JSON.stringify(g)); } catch (x) {}
-    js(BASE + 'assets/coleccion.js?v=209', function () { return window.MCColeccion; }).then(function () {
+    js(BASE + 'assets/coleccion.js?v=212', function () { return window.MCColeccion; }).then(function () {
       var C = window.MCColeccion, T = C.temporada && C.temporada(sem);
       if (!T) return;
       var regs = [];
@@ -654,9 +660,9 @@
     if (!regs.length || abriendo) return;
     abriendo = true;
     var ids = regs.filter(function (g) { return g.tipo === 'item' && g.item; }).map(function (g) { return g.item; });
-    var pasos = [js(BASE + 'assets/sobre.js?v=5', function () { return window.MCSobre; })];
+    var pasos = [js(BASE + 'assets/sobre.js?v=6', function () { return window.MCSobre; })];
     // Los ítems: la colección se vuelve a pedir al toque (no los 10 min guardados)
-    if (ids.length) pasos.push(js(BASE + 'assets/coleccion.js?v=209', function () { return window.MCColeccion; })
+    if (ids.length) pasos.push(js(BASE + 'assets/coleccion.js?v=212', function () { return window.MCColeccion; })
       .then(function () { return MCColeccion.refrescar ? MCColeccion.refrescar() : null; }));
     var con = regs.filter(function (g) { return g.nota; })[0] || regs[0];
     Promise.all(pasos).then(function () {

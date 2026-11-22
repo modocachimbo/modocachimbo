@@ -34,12 +34,38 @@
     document.head.appendChild(tema);
   }
 
+  // Sin internet: sw.js guarda lo que pasa por él. Antes se registraba al terminar de cargar
+  // la página (evento load), que con señal lenta a veces nunca llega, y en la primera visita
+  // la página y sus scripts ya se habían bajado sin pasar por sw.js: si el alumno cerraba la
+  // app y luego la abría sin internet, Chrome mostraba «No se puede acceder a este sitio».
+  // Ahora: se registra al toque y, apenas sw.js toma el control por primera vez, se vuelven a
+  // pedir la página y sus archivos (casi sin datos: el servidor responde «no cambió») para
+  // que queden guardados. También se pide a Chrome que no borre lo guardado si falta espacio.
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
-    window.addEventListener('load', function () {
-      navigator.serviceWorker.register(BASE + 'sw.js', { scope: BASE }).then(function (reg) {
-        document.addEventListener('visibilitychange', function () { if (!document.hidden) reg.update().catch(function () {}); });
-      }).catch(function () {});
-    });
+    var sinControl = !navigator.serviceWorker.controller;
+    var guardarLoVisto = function () {
+      var urls = [location.href.split('#')[0]];
+      try {
+        performance.getEntriesByType('resource').forEach(function (r) {
+          if (r.name.indexOf(BASE) === 0 && urls.indexOf(r.name) < 0) urls.push(r.name);
+        });
+      } catch (e) {}
+      urls.forEach(function (u) { fetch(u, { credentials: 'same-origin' }).catch(function () {}); });
+    };
+    if (sinControl) {
+      navigator.serviceWorker.addEventListener('controllerchange', function una() {
+        navigator.serviceWorker.removeEventListener('controllerchange', una);
+        if (document.readyState === 'complete') guardarLoVisto();
+        else window.addEventListener('load', guardarLoVisto);
+      });
+    }
+    navigator.serviceWorker.register(BASE + 'sw.js', { scope: BASE }).then(function (reg) {
+      document.addEventListener('visibilitychange', function () { if (!document.hidden) reg.update().catch(function () {}); });
+    }).catch(function () {});
+    try {
+      var instalada = window.MCEnApp || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
+      if (instalada && navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () {});
+    } catch (e) {}
   }
 
   // App abierta por días (celular): una página que se queda abierta sigue con el código viejo.

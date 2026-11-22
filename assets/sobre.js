@@ -148,6 +148,9 @@
     } else if (g.tipo === 'ticket') {
       d = '<svg viewBox="0 0 48 48" width="40" height="40" aria-hidden="true"><path d="M6 14a4 4 0 0 1 4-4h28a4 4 0 0 1 4 4v5a5 5 0 0 0 0 10v5a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4v-5a5 5 0 0 0 0-10z" fill="#C6E000" stroke="#151A03" stroke-width="2.5"/><path d="M30 12v24" stroke="#151A03" stroke-width="2.5" stroke-dasharray="3 3"/><path d="M14 20h10M14 28h7" stroke="#151A03" stroke-width="3" stroke-linecap="round"/></svg>';
       nom = '+' + g.cantidad + (g.cantidad === 1 ? ' ticket' : ' tickets'); sub = 'Sala de clan'; c = '198,224,0';
+    } else if (g.tipo === 'racha') {
+      d = '<svg viewBox="0 0 48 48" width="40" height="40" aria-hidden="true"><path d="M24 4c2 7 10 11 10 22a10 10 0 0 1-20 0c0-5 2-8 5-11 0 4 2 6 4 6-2-6 0-12 1-17z" fill="#FF9600" stroke="#7a3a00" stroke-width="2.5" stroke-linejoin="round"/><path d="M24 26c2 3 5 4 5 8a5 5 0 0 1-10 0c0-3 3-5 5-8z" fill="#FFC800"/></svg>';
+      nom = g.cantidad + (g.cantidad === 1 ? ' día de racha' : ' días de racha'); sub = 'Racha recuperada'; c = '255,150,0';
     } else if (g.tipo === 'infinito') {
       var h = +g.cantidad || 0;
       d = iconos.corazon || '❤'; nom = 'Corazones ∞'; sub = h % 24 ? h + (h === 1 ? ' hora' : ' horas') : h / 24 + (h === 24 ? ' día' : ' días'); c = '255,75,75';

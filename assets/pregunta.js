@@ -1864,3 +1864,52 @@
     esAbierta: esAbierta, acierta: acierta, burbuja: burbuja, normal: normal, numero: numero, cuadroAbierto: cuadroAbierto, solucion: solucion, llenarHuecos: llenarHuecos, nombreTipo: nombreTipo, tipoDe: tipoDe, analogias: analogias, esPar: esPar, armar: armar, pintar: pintar, alternativas: alternativas, cortas: cortas, formato: formato, sinLectura: sinLectura, mezclar: mezclar, rangos: rangos,
     ordenAlt: ordenAlt, conOrden: conOrden, mezclarAlt: mezclarAlt, sePuedeMezclar: sePuedeMezclar, raiz: RAIZ };
 })();
+
+/* =========================================================
+   Modo Cachimbo · No copiar preguntas ni claves
+   Solo en práctica (quiz), Repaso, Fijas, Repaso mixto, Falladas y
+   Simulacro: no se puede seleccionar texto, copiar, cortar, abrir el
+   menú del clic derecho, mantener presionado en el celular, arrastrar
+   imágenes ni imprimir la página. Las cajas donde el alumno escribe
+   (preguntas abiertas, buscadores) siguen funcionando normal.
+   Las capturas de pantalla no se pueden evitar desde una página web.
+   ========================================================= */
+(function () {
+  var PAGINAS = /\/(quiz|repaso|fijas|repaso-mixto|falladas|simulacro)\.html$/i;
+  if (!PAGINAS.test(location.pathname)) return;
+
+  var css = document.createElement('style');
+  css.id = 'mc-anticopia';
+  css.textContent =
+    'html, body, body * { -webkit-user-select: none !important; user-select: none !important; -webkit-touch-callout: none !important; }' +
+    'input, textarea, select, [contenteditable="true"], input *, textarea * { -webkit-user-select: text !important; user-select: text !important; -webkit-touch-callout: default !important; }' +
+    'img, svg, canvas { -webkit-user-drag: none; user-drag: none; }' +
+    '@media print { body { display: none !important; } }';
+  (document.head || document.documentElement).appendChild(css);
+
+  function escribible(el) {
+    if (!el || el.nodeType !== 1) el = el && el.parentElement;
+    if (!el || !el.closest) return false;
+    return !!el.closest('input, textarea, select, [contenteditable="true"]');
+  }
+  function bloquear(e) {
+    if (escribible(e.target)) return;
+    e.preventDefault();
+    if (e.clipboardData) { try { e.clipboardData.setData('text/plain', ''); } catch (_) {} }
+  }
+  ['copy', 'cut', 'contextmenu', 'selectstart', 'dragstart'].forEach(function (ev) {
+    document.addEventListener(ev, bloquear, true);
+  });
+  // Ctrl/Cmd + C, X, A, S, P fuera de las cajas de texto
+  document.addEventListener('keydown', function (e) {
+    if (!(e.ctrlKey || e.metaKey) || escribible(e.target)) return;
+    var k = String(e.key || '').toLowerCase();
+    if (k === 'c' || k === 'x' || k === 'a' || k === 's' || k === 'p') e.preventDefault();
+  }, true);
+  // Si algo quedó seleccionado (por ejemplo con el teclado), se borra
+  document.addEventListener('selectionchange', function () {
+    var sel = window.getSelection && window.getSelection();
+    if (!sel || sel.isCollapsed || escribible(sel.anchorNode)) return;
+    sel.removeAllRanges();
+  });
+})();

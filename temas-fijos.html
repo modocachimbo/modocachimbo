@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script src="assets/guardia.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0B0818">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="assets/app/icono-180.png">
+<script src="assets/app.js" defer></script>
+<title>Temas fijos · Modo Cachimbo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Nunito:wght@700;800;900&display=swap">
+<style>
+/* Temas fijos: qué temas vinieron en los exámenes de admisión, por curso */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0B0818;--surface:#151127;--surface-2:#1D1834;--border:#2A2346;--accent:#C6E000;--accent-soft:rgba(198,224,0,.12);--text:#EEEAF7;--text-dim:#A99FC8;--text-faint:#6F6690;--pink:#FF5FA2;--amber:#FFB020}
+body{background:var(--bg);color:var(--text);font-family:Inter,sans-serif;min-height:100vh}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px 60px}
+header.top{display:flex;align-items:center;gap:12px;padding:24px 0 10px;padding-top:max(24px,env(safe-area-inset-top))}
+.back{display:flex;align-items:center;gap:8px;color:var(--text);text-decoration:none;font:800 22px Sora,sans-serif}
+.back:hover{color:var(--accent)}
+.back svg{width:20px;height:20px}
+.home-btn{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:12px;border:1px solid var(--border);color:var(--text)}
+.home-btn svg{width:17px;height:17px;fill:currentColor}
+.hero{margin:14px 0 16px}
+.hero h1{font:800 30px Sora,sans-serif;color:var(--accent);line-height:1.1;display:flex;align-items:center;gap:10px}
+.beta{background:var(--pink);color:#fff;font:800 11px Sora,sans-serif;padding:4px 8px;border-radius:7px;letter-spacing:.5px}
+.hero p{color:var(--text-dim);font-size:14px;margin-top:6px}
+.areas{display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none}
+.areas::-webkit-scrollbar,.chips::-webkit-scrollbar,.kpis::-webkit-scrollbar{display:none}
+.areas button{flex:none;font:700 12.5px Inter,sans-serif;color:var(--text-faint);padding:6px 4px;margin-right:10px;border-bottom:2px solid transparent;white-space:nowrap}
+.areas button.on{color:var(--text);border-color:var(--accent)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin-bottom:14px}
+.chip{flex:none;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);font:600 13px Inter,sans-serif;padding:8px 14px;border-radius:100px;white-space:nowrap}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#0e0e0e;font-weight:700}
+.chip:disabled{cursor:default;opacity:.75}
+.chip .pr{font-size:10.5px;color:var(--text-faint);margin-left:4px}
+.barra{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:3px}
+.seg button{color:var(--text-dim);font:600 12.5px Inter,sans-serif;padding:7px 12px;border-radius:9px;display:flex;align-items:center;gap:6px}
+.seg button.on{background:var(--surface-2);color:var(--text);box-shadow:inset 0 0 0 1px var(--border)}
+.seg button svg{width:14px;height:14px;fill:currentColor}
+.filtro{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.filtro small{font:900 11px Nunito,sans-serif;color:var(--text-faint);text-transform:uppercase;letter-spacing:.8px}
+.barra{justify-content:flex-start;gap:12px 22px}
+/* Descargar PDF (assets/descarga-pdf.js lo pone si las descargas están activas) */
+.hero{position:relative}
+.hero .pdf{position:absolute;right:0;bottom:2px}
+.hero .pdf .mcd-solo{padding:9px 16px;border-radius:14px;font-size:14px}
+@media (max-width:760px){.hero .pdf{position:static;margin-top:12px}.hero .pdf .mcd-solo{padding:8px 14px;font-size:13px}}
+tbody tr{transition:opacity .2s}
+table.res tbody tr:not(.hl){opacity:.32}
+table.res tbody tr.hl td.tema{box-shadow:inset 4px 0 0 var(--hlc)}
+table.res-ultimo{--hlc:var(--pink)}table.res-tiempo{--hlc:var(--amber)}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px 16px;border-bottom:3px solid var(--accent);display:flex;gap:12px;align-items:flex-start}
+.kpi.p{border-bottom-color:var(--pink)}.kpi.a{border-bottom-color:var(--amber)}
+.kpi .ic{width:38px;height:38px;flex:none;border-radius:11px;display:flex;align-items:center;justify-content:center;background:var(--accent-soft);color:var(--accent)}
+.kpi.p .ic{background:rgba(255,95,162,.12);color:var(--pink)}.kpi.a .ic{background:rgba(255,176,32,.12);color:var(--amber)}
+.kpi .ic svg{width:21px;height:21px;fill:currentColor}
+.kpi small{display:block;color:var(--text-faint);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+.kpi b{display:block;font:700 15px Sora,sans-serif;margin-top:3px}
+.kpi span{display:block;color:var(--text-dim);font-size:12px;margin-top:2px}
+.lista{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fila{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px;display:grid;grid-template-columns:30px 1fr auto;gap:4px 12px;align-items:center}
+.fila .n{font:800 15px Sora,sans-serif;color:var(--text-faint);text-align:center;grid-row:span 2}
+.fila.top .n{color:var(--accent)}
+.fila .t{font-weight:700;font-size:14px}
+.fila .v{font:800 15px Sora,sans-serif;text-align:right}
+.fila .v em{font-style:normal;font-size:11px;color:var(--text-faint);font-weight:600;margin-left:2px}
+.fila .bar{grid-column:2/4;height:7px;border-radius:9px;background:var(--surface-2);overflow:hidden}
+.fila .bar i{display:block;height:100%;border-radius:9px;background:var(--accent)}
+.fila .tags{grid-column:2/4;display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.tag{font-size:11px;font-weight:600;padding:3px 8px;border-radius:7px;background:var(--surface-2);color:var(--text-dim)}
+.tag.f1{background:var(--accent-soft);color:var(--accent)}
+.tag.f3{background:rgba(255,176,32,.12);color:var(--amber)}
+.tag.ult{background:rgba(255,95,162,.12);color:var(--pink)}
+.tabla-box{background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:auto;max-width:100%;padding:0 0 6px}
+table{border-collapse:separate;border-spacing:0;width:100%;font-family:Nunito,sans-serif}
+th,td{padding:0;text-align:center;vertical-align:middle}
+thead th{background:var(--surface)}
+th.tema,td.tema{position:sticky;left:0;background:var(--surface);z-index:3;text-align:left;padding:0 14px 0 14px;min-width:240px;border-right:1px solid var(--border);height:44px}
+thead th.tema{z-index:4;font:900 12px Nunito,sans-serif;color:var(--text-faint);text-transform:uppercase;letter-spacing:.8px;padding-left:12px}
+td.tema .tn{display:flex;align-items:center;gap:10px;font:800 14.5px/1.2 Nunito,sans-serif;color:var(--text)}
+td.tema .num{flex:none;width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--surface-2);border:1px solid var(--border);font:900 12.5px Nunito,sans-serif;color:var(--text-dim)}
+tr.top3 td.tema .num{background:var(--accent);border-color:var(--accent);color:#11130a}
+.anio th{padding:12px 2px 0}
+.anio th span{display:inline-block;font:800 12.5px Sora,sans-serif;color:var(--text);background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:4px 9px}
+.ciclo th{font:900 11px Nunito,sans-serif;color:var(--text-faint);padding:6px 0 10px;min-width:34px;border-bottom:1px solid var(--border)}
+.ciclo th.g,.anio th.g,td.c.g{border-left:1px solid rgba(42,35,70,.9)}
+td.c{min-width:34px;height:44px;border-top:1px solid rgba(42,35,70,.55)}
+tbody tr:first-child td{border-top:0}
+tbody tr:hover td{background:rgba(198,224,0,.04)}
+tbody tr:hover td.tema{background:#191430}
+td.c i{display:block;width:20px;height:20px;margin:auto;border-radius:7px;background:rgba(111,102,144,.13)}
+td.c.x i{background:var(--accent);box-shadow:0 0 12px rgba(198,224,0,.35);position:relative}
+td.c.x i:after{content:"";position:absolute;left:6px;top:4px;width:5px;height:9px;border:solid #1a1f00;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+td.c.x.ultimo i{background:var(--pink);box-shadow:0 0 12px rgba(255,95,162,.45)}
+td.c.x.ultimo i:after{border-color:#3a0018}
+td.tot{border-left:1px solid var(--border);border-top:1px solid rgba(42,35,70,.55);padding:0 12px}
+td.tot b{display:inline-grid;place-items:center;min-width:34px;height:28px;border-radius:9px;background:var(--accent-soft);color:var(--accent);font:900 14px Nunito,sans-serif}
+th.tot{font:900 11px Nunito,sans-serif;color:var(--text-faint);text-transform:uppercase;letter-spacing:.6px;padding:0 12px;border-left:1px solid var(--border)}
+.leyenda{display:flex;gap:16px;color:var(--text-dim);font-size:12px;margin:12px 2px 0;flex-wrap:wrap}
+.leyenda span{display:flex;align-items:center;gap:6px}
+.leyenda i{width:13px;height:13px;border-radius:4px;background:var(--accent)}
+.leyenda i.p{background:var(--pink)}.leyenda i.e{background:rgba(111,102,144,.25)}
+.nota{margin-top:18px;color:var(--text-faint);font-size:12px;line-height:1.5}
+.desliza{display:none;color:var(--text-faint);font-size:11.5px;margin:0 0 8px 2px;align-items:center;gap:6px}
+.desliza svg{width:14px;height:14px;fill:currentColor}
+.vacio{background:var(--surface);border:1px dashed var(--border);border-radius:16px;padding:34px 20px;text-align:center;color:var(--text-dim);font-size:14px;line-height:1.5}
+.vacio b{display:block;color:var(--text);font:700 17px Sora,sans-serif;margin-bottom:6px}
+@media (max-width:760px){
+  .wrap{padding:0 16px 40px}
+  header.top{padding-top:max(16px,env(safe-area-inset-top))}
+  .back{font-size:18px}
+  .hero{margin:10px 0 14px}.hero h1{font-size:24px}.hero p{font-size:13px}
+  .kpis{display:flex;overflow-x:auto;gap:8px;scrollbar-width:none;margin:0 -16px 16px;padding:0 16px}
+  .kpis .kpi{flex:none;width:78%}
+  .lista{grid-template-columns:1fr}
+  .seg button{padding:7px 10px;font-size:12px}
+  .desliza{display:flex}
+  th.tema,td.tema{min-width:156px;max-width:156px;padding:0 8px 0 10px}
+  td.tema .tn{font-size:12.5px;gap:7px}
+  td.tema .num{width:24px;height:24px;font-size:11px;border-radius:8px}
+  td.c,.ciclo th{min-width:32px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="back" href="index.html#mis-cursos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Mis cursos</a>
+    <a class="home-btn" href="index.html" title="Ir al inicio" aria-label="Ir al inicio"><svg viewBox="0 0 24 24"><path d="M12 2.5 1.8 11.4c-.6.5-.2 1.4.6 1.4H4v8.2c0 .6.4 1 1 1h4.6v-6h4.8v6H19c.6 0 1-.4 1-1v-8.2h1.6c.8 0 1.2-.9.6-1.4z"/></svg></a>
+  </header>
+
+  <div class="hero">
+    <h1>Temas fijos</h1>
+    <p id="sub"></p>
+    <div class="pdf" id="pdfLugar"></div>
+  </div>
+
+
+  <div id="contenido">
+    <div class="areas" id="areas"></div>
+    <div class="chips" id="chips"></div>
+    <div class="barra">
+      <div class="filtro"><small>Modalidad</small><div class="seg" id="modalidad"></div></div>
+      <div class="filtro"><small>Ordenar</small><div class="seg" id="orden">
+        <button type="button" data-o="temario">Temario</button>
+        <button type="button" data-o="mas">Más vienen</button>
+      </div></div>
+      <div class="filtro"><small>Resaltar</small><div class="seg" id="resaltar">
+        <button type="button" data-r="no">Nada</button>
+        <button type="button" data-r="ultimo">Vino en el último</button>
+        <button type="button" data-r="tiempo">Hace tiempo no viene</button>
+      </div></div>
+
+    </div>
+    <div id="cuerpo"></div>
+    <p class="nota">Conteo de los exámenes de admisión desde 2020-I, según la modalidad que elijas. Que un tema haya venido mucho no asegura que venga el próximo, pero te ayuda a decidir qué repasar primero.</p>
+  </div>
+</div>
+
+<script src="assets/mc-config.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/temas-fijos/datos.js"></script>
+<script src="assets/descarga-pdf.js" defer></script>
+<script>
+(function () {
+  var MODS = [['cpu', 'CPU'], ['ordinario', 'Ordinario']], M = normal(window.MC_TEMAS_FIJOS), D, ex, ULT;
+  function usar() { D = M[S.mod] || M.cpu; ex = D.examenes; ULT = ex.length - 1; }
+  var AREAS = [['ciencia-tecnologia', 'Ciencia y Tecnología'], ['matematica', 'Matemática'], ['comunicacion', 'Comunicación'], ['ciencias-sociales', 'Ciencias Sociales']];
+  var CURSOS = [
+    ['biologia', 'Biología', 'ciencia-tecnologia'], ['anatomia', 'Anatomía', 'ciencia-tecnologia'], ['quimica', 'Química', 'ciencia-tecnologia'], ['fisica', 'Física', 'ciencia-tecnologia'],
+    ['algebra', 'Álgebra', 'matematica'], ['aritmetica', 'Aritmética', 'matematica'], ['geometria', 'Geometría', 'matematica'], ['trigonometria', 'Trigonometría', 'matematica'], ['estadistica', 'Estadística', 'matematica'],
+    ['raz-verbal', 'Razonamiento Verbal', 'comunicacion'], ['literatura', 'Literatura', 'comunicacion'], ['lenguaje', 'Lenguaje', 'comunicacion'],
+    ['historia-peru', 'Historia del Perú', 'ciencias-sociales'], ['historia-universal', 'Historia Universal', 'ciencias-sociales'], ['geografia', 'Espacio Geográfico', 'ciencias-sociales'],
+    ['economia', 'Economía', 'ciencias-sociales'], ['ciudadania', 'Ciudadanía', 'ciencias-sociales'], ['psicologia', 'Psicología', 'ciencias-sociales'], ['filosofia', 'Filosofía', 'ciencias-sociales']
+  ];
+  var q = new URLSearchParams(location.search);
+  var S = { area: q.get('area') || '', curso: q.get('curso') || 'biologia', mod: q.get('mod') || 'cpu', o: q.get('o') || 'temario', r: q.get('r') || 'no' };
+  usar();
+  if (!CURSOS.some(function (c) { return c[0] === S.curso; })) S.curso = 'biologia';
+  if (!S.area) CURSOS.forEach(function (c) { if (c[0] === S.curso) S.area = c[2]; });
+  else if (!CURSOS.some(function (c) { return c[0] === S.curso && c[2] === S.area; })) { var pc = CURSOS.filter(function (c) { return c[2] === S.area; }); if (pc.length) S.curso = (pc.filter(function (c) { return D.cursos[c[0]]; })[0] || pc[0])[0]; }
+  function $(id) { return document.getElementById(id); }
+  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function nombre(id) { for (var i = 0; i < CURSOS.length; i++) if (CURSOS[i][0] === id) return CURSOS[i][1]; return id; }
+
+  var I = {
+    trofeo: '<svg viewBox="0 0 24 24"><path d="M6 2h12v2h3v3a5 5 0 0 1-4.4 5 6 6 0 0 1-3.6 3.8V18h3a2 2 0 0 1 2 2v2H6v-2a2 2 0 0 1 2-2h3v-2.2A6 6 0 0 1 7.4 12 5 5 0 0 1 3 7V4h3zm0 4H5v1a3 3 0 0 0 1.4 2.5A6 6 0 0 1 6 8zm12 0v2c0 .5 0 1-.1 1.5A3 3 0 0 0 19 7V6z"/></svg>',
+    reloj: '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm-1 4v7l5.5 3.3 1-1.7-4.5-2.7V6z"/></svg>',
+    diana: '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 3a7 7 0 1 0 0 14 7 7 0 0 0 0-14zm0 3a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm0 2.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg>',
+    desliza: '<svg viewBox="0 0 20 20"><path d="M13 5l5 5-5 5v-3.5H7V15l-5-5 5-5v3.5h6z"/></svg>'
+  };
+
+  function pintarFiltros() {
+    $('areas').innerHTML = AREAS.map(function (a) { return '<button type="button" data-a="' + a[0] + '"' + (a[0] === S.area ? ' class="on"' : '') + '>' + a[1] + '</button>'; }).join('');
+    $('chips').innerHTML = CURSOS.filter(function (c) { return c[2] === S.area; }).map(function (c) {
+      var hay = !!D.cursos[c[0]];
+      return '<button type="button" class="chip' + (c[0] === S.curso ? ' on' : '') + '" data-c="' + c[0] + '"' + (hay ? '' : ' disabled') + '>' + esc(c[1]) + (hay ? '' : '<span class="pr">pronto</span>') + '</button>';
+    }).join('');
+    $('modalidad').innerHTML = MODS.map(function (m) { var hay = Object.keys(M[m[0]].cursos).length > 0; return '<button type="button" data-m="' + m[0] + '"' + (m[0] === S.mod ? ' class="on"' : '') + '>' + m[1] + (hay ? '' : ' <span style="font-size:10px;opacity:.7">pronto</span>') + '</button>'; }).join('');
+    [].forEach.call(document.querySelectorAll('#orden button'), function (b) { b.classList.toggle('on', b.dataset.o === S.o); });
+    [].forEach.call(document.querySelectorAll('#resaltar button'), function (b) { b.classList.toggle('on', b.dataset.r === S.r); });
+  }
+
+  function frec(p) { return p >= 45 ? ['f1', 'Muy frecuente'] : p >= 30 ? ['f2', 'Frecuente'] : ['f3', 'A veces']; }
+
+  function pintar() {
+    usar();
+    pintarFiltros();
+    var datos = D.cursos[S.curso];
+    window.MC_TF = null;
+    if (!datos) { $('sub').textContent = nombre(S.curso) + ' · ' + (S.mod === 'cpu' ? 'CPU' : 'Ordinario'); $('cuerpo').innerHTML = '<div class="vacio"><b>Muy pronto</b>Estamos subiendo los temas de este curso.</div>'; return; }
+    var idx = ex.map(function (_, i) { return i; });
+    var N = idx.length;
+    $('sub').textContent = nombre(S.curso) + ' · ' + (S.mod === 'cpu' ? 'CPU' : 'Ordinario');
+    var temas = datos.map(function (t) {
+      var veces = idx.filter(function (i) { return t[1][i] === '1'; }).length, u = t[1].lastIndexOf('1');
+      return { nombre: t[0], s: t[1], veces: veces, pct: Math.round(veces * 100 / N), ultimo: u >= 0 ? ex[u] : '—', sinVenir: u >= 0 ? ULT - u : ex.length };
+    });
+    window.MC_TF = { curso: S.curso, nombre: nombre(S.curso), area: S.area, mod: S.mod, modalidad: S.mod === 'cpu' ? 'CPU' : 'Ordinario', orden: S.o, examenes: ex.slice(), temas: temas };
+    var rk = temas.slice().sort(function (a, b) { return b.veces - a.veces || a.sinVenir - b.sinVenir; });
+    var enUlt = temas.filter(function (t) { return t.s[ULT] === '1'; }).map(function (t) { return t.nombre; });
+    var top3 = rk.slice(0, 3);
+    var olv = temas.slice().sort(function (a, b) { return b.sinVenir - a.sinVenir; })[0];
+    var h = '<div class="kpis">' +
+      '<div class="kpi"><div class="ic">' + I.trofeo + '</div><div><small>El que más viene</small><b>' + esc(rk[0].nombre) + '</b><span>' + rk[0].veces + ' de ' + N + ' exámenes</span></div></div>' +
+      '<div class="kpi p"><div class="ic">' + I.diana + '</div><div><small>Vino en el último (' + ex[ULT] + ')</small><b>' + enUlt.length + (enUlt.length === 1 ? ' tema' : ' temas') + '</b><span>' + esc(enUlt.join(', ') || 'Ninguno') + '</span></div></div>' +
+      '<div class="kpi a"><div class="ic">' + I.reloj + '</div><div><small>Hace tiempo que no viene</small><b>' + esc(olv.nombre) + '</b><span>Último: ' + olv.ultimo + ' · ' + olv.sinVenir + ' exámenes sin venir</span></div></div></div>';
+    {
+      var anios = [], g = {};
+      idx.forEach(function (i) { var a = ex[i].slice(0, 4); if (!g[a]) { g[a] = 0; anios.push(a); } g[a]++; });
+      function nuevo(k) { return k === 0 || ex[idx[k - 1]].slice(0, 4) !== ex[idx[k]].slice(0, 4); }
+      h += '<div class="desliza">' + I.desliza + 'Desliza para ver todos los años</div><div class="tabla-box"><table' + (S.r !== 'no' ? ' class="res res-' + S.r + '"' : '') + '><thead><tr class="anio"><th class="tema" rowspan="2">Tema</th>' +
+        anios.map(function (a, k) { return '<th colspan="' + g[a] + '"' + (k ? ' class="g"' : '') + '><span>' + a + '</span></th>'; }).join('') + '<th class="tot" rowspan="2">Veces</th></tr><tr class="ciclo">' +
+        idx.map(function (i, k) { return '<th' + (nuevo(k) ? ' class="g"' : '') + '>' + ex[i].split('-')[1] + '</th>'; }).join('') + '</tr></thead><tbody>' +
+        (S.o === 'mas' ? rk : temas).map(function (t, n) {
+          var hl = (S.r === 'ultimo' && t.s[ULT] === '1') || (S.r === 'tiempo' && t.sinVenir >= 4);
+          return '<tr data-t="' + esc(t.nombre) + '" class="' + (top3.indexOf(t) >= 0 ? 'top3' : '') + (hl ? ' hl' : '') + '"><td class="tema"><span class="tn"><span class="num">' + (n < 9 ? '0' : '') + (n + 1) + '</span>' + esc(t.nombre) + '</span></td>' + idx.map(function (i, k) {
+            var x = t.s[i] === '1';
+            return '<td class="c' + (nuevo(k) ? ' g' : '') + (x ? ' x' : '') + (x && i === ULT ? ' ultimo' : '') + '" title="' + ex[i] + (x ? ': vino' : ': no vino') + '"><i></i></td>';
+          }).join('') + '<td class="tot"><b>' + t.veces + '</b></td></tr>';
+        }).join('') + '</tbody></table></div><div class="leyenda"><span><i></i>Vino</span><span><i class="p"></i>Vino en el último examen</span><span><i class="e"></i>No vino</span>' + (S.r === 'tiempo' ? '<span>Resaltados: 4 exámenes o más sin venir</span>' : '') + '</div>';
+    }
+    $('cuerpo').innerHTML = h;
+    var tb = document.querySelector('.tabla-box'); if (tb) tb.scrollLeft = tb.scrollWidth;   // en celular se ve primero lo más reciente
+  }
+
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b || b.disabled) return;
+    if (b.dataset.a) { S.area = b.dataset.a; var primero = CURSOS.filter(function (c) { return c[2] === S.area && D.cursos[c[0]]; })[0]; S.curso = primero ? primero[0] : CURSOS.filter(function (c) { return c[2] === S.area; })[0][0]; }
+    else if (b.dataset.c) S.curso = b.dataset.c;
+    else if (b.dataset.m) S.mod = b.dataset.m;
+    else if (b.dataset.o) S.o = b.dataset.o;
+    else if (b.dataset.r) S.r = b.dataset.r;
+    else return;
+    // Al cambiar el orden, las filas se deslizan a su nuevo lugar (en vez de saltar)
+    var antes = {}, sb = document.querySelector('.tabla-box'), sl = sb ? sb.scrollLeft : 0;
+    if (b.dataset.o) [].forEach.call(document.querySelectorAll('tbody tr[data-t]'), function (tr) { antes[tr.dataset.t] = tr.getBoundingClientRect().top; });
+    pintar();
+    var nb = document.querySelector('.tabla-box'); if (nb && sb) nb.scrollLeft = sl;
+    if (b.dataset.o) [].forEach.call(document.querySelectorAll('tbody tr[data-t]'), function (tr) {
+      var y = antes[tr.dataset.t]; if (y == null) return;
+      var d = y - tr.getBoundingClientRect().top; if (!d) return;
+      tr.style.transition = 'none'; tr.style.transform = 'translateY(' + d + 'px)';
+      tr.getBoundingClientRect();
+      tr.style.transition = 'transform .45s cubic-bezier(.2,.8,.2,1)'; tr.style.transform = '';
+    });
+  });
+  // Los datos se editan en Panel → Temas fijos (Supabase, ajustes 'temas_fijos').
+  // Primero se muestra lo guardado en el teléfono (o datos.js) y al llegar lo de Supabase se vuelve a pintar.
+  function normal(v) {
+    var d = {}; MODS.forEach(function (m) { var x = (v && v[m[0]]) || {}; d[m[0]] = { examenes: x.examenes || [], cursos: x.cursos || {} }; });
+    return d;
+  }
+  function valido(v) { return v && v.cpu && Array.isArray(v.cpu.examenes); }
+  try { var c = JSON.parse(localStorage.getItem('mc_temas_fijos') || 'null'); if (valido(c)) M = normal(c); } catch (e) {}
+  pintar();
+  if (window.MCAuth && MCAuth.listo) MCAuth.listo.then(function (cl) { return cl.from('ajustes').select('valor').eq('clave', 'temas_fijos').maybeSingle(); }).then(function (r) {
+    var v = r && r.data && r.data.valor; if (!valido(v)) return;
+    try { localStorage.setItem('mc_temas_fijos', JSON.stringify(v)); } catch (e) {}
+    if (JSON.stringify(normal(v)) === JSON.stringify(M)) return;
+    M = normal(v); pintar();
+  }).catch(function () {});
+})();
+</script>
+</body>
+</html>

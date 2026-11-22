@@ -23,7 +23,9 @@ const RG_TIPOS = {
   xp: { nom: 'XP', c: '#FFC800', ops: [[100, '+100'], [250, '+250'], [500, '+500'], [1000, '+1000']], min: 1, max: 10000, uni: 'XP' },
   rayos: { nom: 'Rayos', c: '#2FA8FF', ops: [[10, '+10'], [20, '+20'], [50, '+50'], [100, '+100']], min: 1, max: 1000, uni: 'rayos' },
   ticket: { nom: 'Ticket de sala', c: '#C6E000', ops: [[1, '+1'], [3, '+3'], [5, '+5'], [10, '+10']], min: 1, max: 50, uni: 'tickets' },
-  item: { nom: 'Ítem de colección', c: '#1CB0F6' }
+  item: { nom: 'Ítem de colección', c: '#1CB0F6' },
+  // Solo a un alumno (supabase/117-devolver-racha.sql)
+  racha: { nom: 'Recuperar racha', c: '#FF9600', solo: 'uno' }
 };
 const RG_ESP = { racha: 'Banner', avatar: 'Foto de perfil', pines: 'Pin', marco: 'Marco', cuadro: 'Cuadro de racha', titulo: 'Título', buho: 'Búho', escena: 'Escenario' };
 
@@ -118,6 +120,7 @@ const RG_IC = {
   ticket: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 0 0-4z"/><path d="M15 5v14" stroke-dasharray="2 2"/></svg>',
   inf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.3l-5.2 2.8 1-5.8-4.3-4.1 5.9-.9z"/></svg>',
   quitar: '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  racha: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 1.5-5 3-6.5 0 2.5 1 3.5 2 3.5-1-3.5 0-6.5 1-9z"/></svg>',
   item: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M20 12v9H4v-9M2 7h20v5H2zM12 21V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zm0 0h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>'
 };
 
@@ -152,6 +155,7 @@ function rgTexto(x) {
   if (x.tipo === 'infinito') return 'Corazones infinitos por ' + rgHoras(x.cantidad);
   if (x.tipo === 'xp') return '+' + (+x.cantidad).toLocaleString('es-PE') + ' XP';
   if (x.tipo === 'rayos') return '+' + (+x.cantidad).toLocaleString('es-PE') + (+x.cantidad === 1 ? ' rayo' : ' rayos');
+  if (x.tipo === 'racha') return 'Racha devuelta: ' + x.cantidad + (+x.cantidad === 1 ? ' día' : ' días');
   if (x.tipo === 'ticket') return '+' + x.cantidad + (+x.cantidad === 1 ? ' ticket de sala' : ' tickets de sala');
   const it = (RG.items || []).find(i => i.id === x.item);
   return 'Ítem: ' + (it ? it.nom || it.id : x.item);
@@ -201,9 +205,10 @@ function rgModosEventos() {
 
 // Lo de abajo (tipo, cantidad, nota, botón) es igual en los dos modos
 function rgFormHtml(oculto, titulo, boton) {
+  if (RG_TIPOS[RG.tipo].solo && RG_TIPOS[RG.tipo].solo !== RG.modo) RG.tipo = 'corazones';
   return `<div class="agp-form" id="rgForm"${oculto ? ' hidden' : ''}>
       <h3>${titulo}</h3>
-      <div class="rg-tipos">${Object.entries(RG_TIPOS).map(([k, t]) => `<button class="rg-tipo${RG.tipo === k ? ' on' : ''}" type="button" data-rgt="${k}" style="--c:${t.c}">${RG_IC[k]}${t.nom}</button>`).join('')}</div>
+      <div class="rg-tipos">${Object.entries(RG_TIPOS).filter(([, t]) => !t.solo || t.solo === RG.modo).map(([k, t]) => `<button class="rg-tipo${RG.tipo === k ? ' on' : ''}" type="button" data-rgt="${k}" style="--c:${t.c}">${RG_IC[k]}${t.nom}</button>`).join('')}</div>
       <div id="rgOpc"></div>
       <label for="rgNota">Nota para ${RG.modo === 'uno' ? 'el alumno' : 'los alumnos'} (opcional)</label>
       <input class="inp" id="rgNota" maxlength="140" placeholder="${RG.modo === 'vip' ? '¡Tu regalo VIP del día!' : RG.modo === 'inf' ? '¡Para ti antes que nadie!' : RG.modo === 'todos' ? '¡Un regalo para todos por el fin de semana!' : '¡Bien hecho en el simulacro!'}">
@@ -238,7 +243,7 @@ function pintarRegalos() {
       <div id="rgAl">${a ? rgAlumnoHtml(a) : ''}</div>
     </div>
     ${rgFormHtml(!a, '¿Qué le regalas?', 'Regalar')}
-    ${a && a.historial && a.historial.length ? `<div class="agp-form"><h3>Regalos que recibió</h3>${a.historial.map(x => `<div class="rg-h" style="--c:${RG_TIPOS[x.tipo].c}"><i></i><div><b>${esc(rgTexto(x))}</b>${x.nota ? ' · «' + esc(x.nota) + '»' : ''}<br><small>${esc(x.de || 'Admin')} · ${rgFecha(x.creado)}</small></div></div>`).join('')}</div>` : ''}`;
+    ${a && a.historial && a.historial.length ? `<div class="agp-form"><h3>Regalos que recibió</h3>${a.historial.map(x => `<div class="rg-h" style="--c:${(RG_TIPOS[x.tipo] || { c: '#FF9600' }).c}"><i></i><div><b>${esc(rgTexto(x))}</b>${x.nota ? ' · «' + esc(x.nota) + '»' : ''}<br><small>${esc(x.de || 'Admin')} · ${rgFecha(x.creado)}</small></div></div>`).join('')}</div>` : ''}`;
   $('rgId').addEventListener('keydown', e => { if (e.key === 'Enter') rgBuscar(); });
   $('rgId').addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 5); });
   $('rgBuscar').addEventListener('click', rgBuscar);
@@ -267,6 +272,10 @@ function rgAlumnoHtml(a) {
 
 function rgOpciones() {
   const t = RG_TIPOS[RG.tipo], caja = $('rgOpc');
+  if (RG.tipo === 'racha') {
+    caja.innerHTML = `<div class="rg-aviso" style="margin:4px 0 14px;--c:#FF9600">Busca el último corte de su racha (hasta 21 días seguidos sin estudiar) y esos días cuentan como cumplidos. Si ya empezó otra racha, se juntan. Le llega el sobre <b>«Racha recuperada»</b>.<br><small>Úsalo como excepción: esos días le salen en sus estadísticas con su meta diaria. No le da XP.</small></div>`;
+    rgResumen(); return;
+  }
   if (RG.tipo === 'item') {
     const lista = RG.items.filter(i => i.visible !== false || (i.regla || {}).tipo === 'regalo');
     RG.sel = RG.sel.filter(id => lista.some(i => i.id === id));
@@ -296,10 +305,12 @@ function rgResumen() {
   if (RG.modo === 'todos') { rgTodosResumen(); return; }
   const a = RG.alumno, t = RG_TIPOS[RG.tipo];
   let ok = !!a, txt = '';
-  if (RG.tipo === 'item') { ok = ok && RG.sel.length > 0; txt = rgSelTexto(); }
+  if (RG.tipo === 'racha') txt = 'Recuperar su racha';
+  else if (RG.tipo === 'item') { ok = ok && RG.sel.length > 0; txt = rgSelTexto(); }
   else if (t.max && !(RG.cant >= t.min && RG.cant <= t.max)) { ok = false; txt = 'Elige de ' + t.min + ' a ' + t.max.toLocaleString('es-PE') + ' ' + t.uni; }
   else txt = rgTexto({ tipo: RG.tipo, cantidad: RG.cant });
   $('rgDar').disabled = !ok || RG.enviando;
+  if (!RG.enviando) $('rgDar').textContent = RG.tipo === 'racha' ? 'Recuperar racha' : 'Regalar';
   $('rgRes').innerHTML = a ? esc(txt) + (ok ? ' para <b>' + esc(a.apodo || 'ID ' + a.codigo) + '</b>' : '') : '';
 }
 
@@ -323,7 +334,8 @@ async function rgDar() {
   const a = RG.alumno;
   if (!a || RG.enviando) return;
   RG.enviando = true; rgResumen();
-  const btn = $('rgDar'); btn.textContent = 'Regalando…';
+  const btn = $('rgDar'); btn.textContent = RG.tipo === 'racha' ? 'Recuperando…' : 'Regalando…';
+  if (RG.tipo === 'racha') { await rgRacha(a); return; }
   const c = await MCAuth.listo, nota = $('rgNota').value.trim() || null, txt = RG.tipo === 'item' ? rgSelTexto() : rgTexto({ tipo: RG.tipo, cantidad: RG.cant });
   const r = await rgEnviar(it => c.rpc('regalar', { p_codigo: a.codigo, p_tipo: RG.tipo, p_cantidad: RG.tipo === 'item' ? null : RG.cant, p_item: it, p_nota: nota }));
   RG.enviando = false;
@@ -333,13 +345,30 @@ async function rgDar() {
   pintarRegalos();
 }
 
+// Recuperar la racha (supabase/117-devolver-racha.sql): rellena el último corte y le manda el sobre
+async function rgRacha(a) {
+  const c = await MCAuth.listo;
+  const r = await c.rpc('racha_devolver', { p_codigo: a.codigo, p_nota: $('rgNota').value.trim() || null });
+  RG.enviando = false;
+  if (r.error) {
+    const m = r.error.message || '';
+    rgResumen();
+    toast(/racha_devolver|does not exist|schema cache|regalos_tipo_check/i.test(m) ? 'Falta correr supabase/117-devolver-racha.sql en Supabase.'
+      : /no autorizado/i.test(m) ? 'Tu cuenta no tiene permiso para dar regalos.' : m.replace(/ Nada cambió\.$/, '') + ' No se cambió nada.');
+    return;
+  }
+  const d = r.data || {};
+  toast('Racha recuperada: ' + d.antes + ' → ' + d.despues + ' días para ' + (a.apodo || 'ID ' + a.codigo));
+  rgBuscar();
+}
+
 /* ---------- Grupo VIP: una lista de IDs guardada y el mismo regalo a todos ---------- */
 const RG_GRUPO = 'vip';
 
 function rgVipError(e) {
   const m = (e && e.message) || '';
   return /no autorizado/i.test(m) ? 'Tu cuenta no tiene permiso para dar regalos.'
-    : /grupo_regalo_anular|nuevos|regalo_grupo_dado/i.test(m) ? 'Falta correr supabase/111-grupo-vip-mientras.sql en Supabase.'
+    : /grupo_regalo_anular|nuevos|regalo_grupo_dado/i.test(m) ? 'Falta correr supabase/118-grupo-vip-mientras.sql en Supabase.'
     : /function|does not exist|schema cache/i.test(m) ? 'Falta correr supabase/93-grupo-vip.sql en Supabase.'
     : /ya es del grupo/i.test(m) ? 'Ese ítem ya es del grupo: lo tienen todos y lo reciben los que entran.'
     : m || 'No se pudo.';
