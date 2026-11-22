@@ -149,6 +149,7 @@ function rgTexto(x) {
   if (x.tipo === 'infinito') return 'Corazones infinitos por ' + rgHoras(x.cantidad);
   if (x.tipo === 'xp') return '+' + (+x.cantidad).toLocaleString('es-PE') + ' XP';
   if (x.tipo === 'rayos') return '+' + (+x.cantidad).toLocaleString('es-PE') + (+x.cantidad === 1 ? ' rayo' : ' rayos');
+  if (x.tipo === 'racha') return 'Racha devuelta: ' + x.cantidad + (+x.cantidad === 1 ? ' día' : ' días');
   if (x.tipo === 'ticket') return '+' + x.cantidad + (+x.cantidad === 1 ? ' ticket de sala' : ' tickets de sala');
   const it = (RG.items || []).find(i => i.id === x.item);
   return 'Ítem: ' + (it ? it.nom || it.id : x.item);
@@ -235,7 +236,7 @@ function pintarRegalos() {
       <div id="rgAl">${a ? rgAlumnoHtml(a) : ''}</div>
     </div>
     ${rgFormHtml(!a, '¿Qué le regalas?', 'Regalar')}
-    ${a && a.historial && a.historial.length ? `<div class="agp-form"><h3>Regalos que recibió</h3>${a.historial.map(x => `<div class="rg-h" style="--c:${RG_TIPOS[x.tipo].c}"><i></i><div><b>${esc(rgTexto(x))}</b>${x.nota ? ' · «' + esc(x.nota) + '»' : ''}<br><small>${esc(x.de || 'Admin')} · ${rgFecha(x.creado)}</small></div></div>`).join('')}</div>` : ''}`;
+    ${a && a.historial && a.historial.length ? `<div class="agp-form"><h3>Regalos que recibió</h3>${a.historial.map(x => `<div class="rg-h" style="--c:${(RG_TIPOS[x.tipo] || { c: '#FF9600' }).c}"><i></i><div><b>${esc(rgTexto(x))}</b>${x.nota ? ' · «' + esc(x.nota) + '»' : ''}<br><small>${esc(x.de || 'Admin')} · ${rgFecha(x.creado)}</small></div></div>`).join('')}</div>` : ''}`;
   $('rgId').addEventListener('keydown', e => { if (e.key === 'Enter') rgBuscar(); });
   $('rgId').addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 5); });
   $('rgBuscar').addEventListener('click', rgBuscar);
