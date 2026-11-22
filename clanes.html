@@ -465,6 +465,19 @@
   .big:hover:not(.pronto) { border-color: #4a3f78; }
   .big .ib { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; flex: none; }
   .big .ib svg { width: 23px; height: 23px; }
+  .big .ib3 { width: 50px; height: 50px; margin: -6px 0; flex: none; display: grid; place-items: center; transition: transform .15s; }
+  .big .ib3 svg { width: 50px; height: 50px; display: block; }
+  /* Íconos animados (Clasificación, Historial, Tienda) */
+  .ib3 .a-cor { transform-box: fill-box; transform-origin: 50% 100%; animation: aCor 2.6s ease-in-out infinite; }
+  @keyframes aCor { 0%, 100% { transform: translateY(0) rotate(0); } 25% { transform: translateY(-2px) rotate(-6deg); } 50% { transform: translateY(-3px) rotate(0); } 75% { transform: translateY(-2px) rotate(6deg); } }
+  .ib3 .a-min { transform-origin: 24px 25.5px; animation: aGira 6s linear infinite; }
+  .ib3 .a-agu { transform-origin: 24px 25.5px; animation: aGira 60s linear infinite; }
+  @keyframes aGira { to { transform: rotate(360deg); } }
+  .ib3 .a-tol { transform-box: fill-box; transform-origin: 50% 0; animation: aTol 3s ease-in-out infinite; }
+  @keyframes aTol { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.08); } }
+  @media (prefers-reduced-motion: reduce) { .ib3 * { animation: none !important; } }
+  .big:hover .ib3 { transform: translateY(-2px) rotate(-4deg); }
+  .big.pronto .ib3 { opacity: .6; }
   .big small { display: block; font: 800 11.5px Nunito, sans-serif; color: var(--text-dim); font-style: normal; text-transform: none; margin-top: 3px; }
   .big.pronto { cursor: default; opacity: .7; }
   /* Cofres */
@@ -1270,9 +1283,9 @@
   function resumen() {
     var c = D.clan, aviso = (D.me_empujaron || []).length ? '<div class="empuje">' + SV.empujar + '<span><b>' + esc(D.me_empujaron.slice(0, 3).join(', ')) + '</b> ' + (D.me_empujaron.length === 1 ? 'te empujó' : 'te empujaron') + ' a estudiar hoy. ¡No los dejes solos!</span></div>' : '';
     return '<div class="res-lay"><div>' + estandarte(c) + '</div><div style="min-width:0">' + aviso + pedidosCard() + guerraMini() +
-      '<div class="top2"><button type="button" class="big" data-vista="top"><span class="ib" style="background:rgba(28,176,246,.15);color:#1CB0F6"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20h4V10H3zM10 20h4V4h-4zM17 20h4v-7h-4z"/></svg></span><span>Clasificación<small>' + (c.puesto ? 'Puesto #' + c.puesto + ' · semana' : 'Top de clanes') + '</small></span></button>' +
-      '<button type="button" class="big" data-historial><span class="ib" style="background:rgba(255,150,0,.15);color:#FF9600"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg></span><span>Historial<small>Actividad del clan</small></span></button>' +
-      '<div class="big pronto"><span class="ib" style="background:rgba(206,130,255,.15);color:#CE82FF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M4 9h16l-1 11H5zM8 9V7a4 4 0 0 1 8 0v2"/></svg></span><span>Tienda del clan<small>Muy pronto</small></span></div></div>' +
+      '<div class="top2"><button type="button" class="big" data-vista="top"><span class="ib3"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M5 31h12v13H5zM31 34h12v10H31z" fill="#4B3A99"/><path d="M5 28h12v13H5zM31 31h12v10H31z" fill="#8F78FF"/><path d="M17 23h14v21H17z" fill="#7E9400"/><path d="M17 20h14v21H17z" fill="#C6E000"/><path d="M5 28h12v2.5H5zM31 31h12v2.5H31zM17 20h14v2.5H17z" fill="#fff" opacity=".4"/><path d="M20 25h2.6v11H20z" fill="#fff" opacity=".3"/><g class="a-cor"><path d="M15 17.5V9l4.5 4L24 6l4.5 7L33 9v8.5z" fill="#B87700"/><path d="M15 15.5V7l4.5 4L24 4l4.5 7L33 7v8.5z" fill="#FFC800"/><circle cx="15" cy="7" r="1.6" fill="#FFC800"/><circle cx="24" cy="4" r="1.8" fill="#FFC800"/><circle cx="33" cy="7" r="1.6" fill="#FFC800"/><path d="M17 12.5h3" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".7"/></g></svg></span><span>Clasificación<small>' + (c.puesto ? 'Puesto #' + c.puesto + ' · semana' : 'Top de clanes') + '</small></span></button>' +
+      '<button type="button" class="big" data-historial><span class="ib3"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="27" r="19" fill="#4B3A99"/><circle cx="24" cy="24" r="19" fill="#8F78FF"/><circle cx="24" cy="24.6" r="13.4" fill="#2A1F5C"/><circle cx="24" cy="25.4" r="12.8" fill="#F4F1FF"/><g class="a-agu"><path d="M24 25.5l6.2 3.4" fill="none" stroke="#2A1F5C" stroke-width="3.4" stroke-linecap="round"/></g><g class="a-min"><path d="M24 16.5V25.5" fill="none" stroke="#2A1F5C" stroke-width="3.4" stroke-linecap="round"/></g><circle cx="24" cy="25.5" r="2.4" fill="#C6E000"/><path d="M10.5 15a16 16 0 0 1 7-6.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".5"/></svg></span><span>Historial<small>Actividad del clan</small></span></button>' +
+      '<div class="big pronto"><span class="ib3"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M9 25h30v19H9z" fill="#4B3A99"/><path d="M9 22h30v19H9z" fill="#8F78FF"/><path d="M13 28h9v13h-9z" fill="#2A1F5C"/><path d="M25 28h10v7H25z" fill="#F4F1FF"/><path d="M26.2 29.2h2.6v4.6h-2.6z" fill="#C6E000"/><g class="a-tol"><path d="M7 18h34v6H7z" fill="#5E7000"/><path d="M10 5H17L15.5 16v2a4.25 4.25 0 0 1-8.5 0V16z" fill="#C6E000" /><path d="M17 5H24L24.0 16v2a4.25 4.25 0 0 1-8.5 0V16z" fill="#FFFFFF" /><path d="M24 5H31L32.5 16v2a4.25 4.25 0 0 1-8.5 0V16z" fill="#C6E000" /><path d="M31 5H38L41.0 16v2a4.25 4.25 0 0 1-8.5 0V16z" fill="#FFFFFF" /><path d="M10 5h28" stroke="#fff" stroke-width="1.4" opacity=".5"/></g></svg></span><span>Tienda<small>Muy pronto</small></span></div></div>' +
       cofresCard() + '</div></div>';
   }
   function miembrosVista() {
