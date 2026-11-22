@@ -753,7 +753,7 @@
 <script src="assets/coleccion.js?v=212"></script>
 <script src="assets/tarjeta-perfil.js?v=210"></script>
 <script src="assets/amigos.js?v=5"></script>
-<script src="assets/clanes.js?v=8"></script>
+<script src="assets/clanes.js?v=9"></script>
 </head>
 <body>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -973,16 +973,16 @@
       var e = cfEstado(c), tg = e === 'listo' ? '<span class="tg">¡Ábrelo!</span>' : e === 'ok' ? '<span class="tg">Abierto</span>' : e === 'falta' ? '<span class="tg">Te faltan ' + (CF.minimo - CF.mio) + '</span>' : '';
       return '<button type="button" class="cfc ' + e + '"' + (e === 'listo' ? ' data-cofre="' + c.n + '"' : ' tabindex="-1"') + ' aria-label="Cofre de ' + esc(c.nombre) + '">' + tg +
         '<span class="ic">' + cofre(c.n, e === 'ok') + '</span>' + (e === 'ok' ? '<span class="bdg ok">' + SV.check.replace(' class="i"', '') + '</span>' : e === 'bloq' || e === 'falta' ? '<span class="bdg lk"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>' : '') +
-        '<span class="nm">' + esc(c.nombre) + '</span><span class="mt">' + nf(c.meta) + '</span></button>';
+        '<span class="nm">' + esc(c.nombre) + '</span><span class="mt">' + fk(c.meta) + ' XP</span></button>';
     }).join('');
     var marcas = CF.cofres.map(function (c, i) { return '<u class="' + (+CF.puntos >= +c.meta ? 'ok' : '') + '" style="left:' + (10 + 20 * i) + '%"></u>'; }).join('');
     var yo = +CF.mio >= +CF.minimo
-      ? '<div class="cf-yo"><span class="o">' + SV.check.replace(' class="i"', '') + '</span><span>Aportaste <b>' + nf(CF.mio) + ' preguntas</b> esta semana. ' + (cfListos() ? '<b>¡Tienes ' + cfListos() + (cfListos() === 1 ? ' cofre listo' : ' cofres listos') + ' para abrir!</b>' : 'Ya puedes abrir los cofres que llegue tu clan.') + '</span></div>'
-      : '<div class="cf-yo no"><span class="o">' + SV.alerta.replace(' class="i"', '') + '</span><span>Aportaste <b>' + nf(CF.mio) + '</b>. Responde <b>' + (CF.minimo - CF.mio) + ' preguntas más</b> esta semana para poder abrir los cofres.</span>' + (completo ? '' : '<a class="mini" href="index.html" style="display:inline-flex;align-items:center;text-decoration:none">Practicar</a>') + '</div>';
+      ? '<div class="cf-yo"><span class="o">' + SV.check.replace(' class="i"', '') + '</span><span>Aportaste <b>' + nf(CF.mio) + ' XP</b> esta semana. ' + (cfListos() ? '<b>¡Tienes ' + cfListos() + (cfListos() === 1 ? ' cofre listo' : ' cofres listos') + ' para abrir!</b>' : 'Ya puedes abrir los cofres que llegue tu clan.') + '</span></div>'
+      : '<div class="cf-yo no"><span class="o">' + SV.alerta.replace(' class="i"', '') + '</span><span>Aportaste <b>' + nf(CF.mio) + ' XP</b>. Gana <b>' + nf(CF.minimo - CF.mio) + ' XP más</b> esta semana para poder abrir los cofres.</span>' + (completo ? '' : '<a class="mini" href="index.html" style="display:inline-flex;align-items:center;text-decoration:none">Practicar</a>') + '</div>';
     return '<div class="card cf"><div class="cf-h"><div class="h2">Cofres <em>de la semana</em></div><span class="ci">' + SV.reloj.replace(' class="i"', '') + 'Cierra en <span data-reloj="' + esc(CF.cierra) + '" data-corto>…</span></span></div><div class="cf-b">' +
-      '<div class="cf-top"><div class="cf-num"><b>' + nf(CF.puntos) + '</b><span>preguntas del clan</span>' +
+      '<div class="cf-top"><div class="cf-num"><b>' + nf(CF.puntos) + '</b><span>XP del clan</span>' +
       (+CF.bonus ? '<small>Incluye <em>+' + nf(CF.bonus) + '</em> de misiones cumplidas</small>' : '<small>Entre los ' + CF.miembros + ' miembros, esta semana</small>') + '</div>' +
-      (sig ? '<div class="cf-sig">Faltan <b>' + nf(sig.meta - CF.puntos) + '</b> para<br>el cofre de <b>' + esc(sig.nombre) + '</b></div>' : '<div class="cf-sig"><b style="color:var(--accent)">¡Llegaron a todos!</b></div>') + '</div>' +
+      (sig ? '<div class="cf-sig">Faltan <b>' + nf(sig.meta - CF.puntos) + ' XP</b> para<br>el cofre de <b>' + esc(sig.nombre) + '</b></div>' : '<div class="cf-sig"><b style="color:var(--accent)">¡Llegaron a todos!</b></div>') + '</div>' +
       '<div class="cf-pista' + (cfAnim ? ' anim' : '') + '"><div class="cf-riel"><i style="width:' + cfPct().toFixed(1) + '%"></i>' + marcas + '</div></div>' +
       '<div class="cf-cajas">' + cajas + '</div>' + yo + '</div></div>';
   }
@@ -1006,18 +1006,18 @@
     if (!CF || CF.error) return h;
     h += '<div class="dos"><div class="card"><div class="h2">Premios <em>de cada cofre</em></div><div class="pz-l">' + CF.cofres.map(function (c) {
       var e = cfEstado(c);
-      return '<div class="pzr' + (e === 'listo' ? ' li' : '') + '"><span class="ic">' + cofre(c.n, e === 'ok') + '</span><div style="min-width:0"><div class="d">' + esc(c.nombre) + '</div><div class="small">Meta: ' + nf(c.meta) + ' preguntas' + (+c.abrieron ? ' · lo abrieron ' + c.abrieron : '') + '</div>' +
+      return '<div class="pzr' + (e === 'listo' ? ' li' : '') + '"><span class="ic">' + cofre(c.n, e === 'ok') + '</span><div style="min-width:0"><div class="d">' + esc(c.nombre) + '</div><div class="small">Meta: ' + nf(c.meta) + ' XP' + (+c.abrieron ? ' · lo abrieron ' + c.abrieron : '') + '</div>' +
         '<div class="ch">' + premios(c).map(function (p) { return '<span>' + PZ[p[0]] + p[1] + ' ' + esc(p[2]) + '</span>'; }).join('') + '</div></div>' +
-        (e === 'ok' ? '<span class="es ok">Abierto</span>' : e === 'listo' ? '<button type="button" class="es li" data-cofre="' + c.n + '">Abrir</button>' : '<span class="es no">' + (e === 'falta' ? 'Te faltan ' + (CF.minimo - CF.mio) : 'Faltan ' + nf(c.meta - CF.puntos)) + '</span>') + '</div>';
+        (e === 'ok' ? '<span class="es ok">Abierto</span>' : e === 'listo' ? '<button type="button" class="es li" data-cofre="' + c.n + '">Abrir</button>' : '<span class="es no">' + (e === 'falta' ? 'Te faltan ' + nf(CF.minimo - CF.mio) + ' XP' : 'Faltan ' + nf(c.meta - CF.puntos)) + '</span>') + '</div>';
     }).join('') + '</div></div><div><div class="card"><div class="h2">Quién aporta <em>esta semana</em></div>' + (CF.aportes || []).map(function (m, i) {
-      var top = Math.max(1, +(CF.aportes[0] || {}).preguntas || 1);
-      return '<div class="apo' + (m.yo ? ' yo' : '') + '"><span class="pos">' + (i + 1) + '</span>' + A.foto(m) + '<div style="min-width:0"><div class="d">' + (m.yo ? 'Tú' : esc(m.apodo || 'Cachimbo')) + '</div><div class="bb"><i style="width:' + Math.round(100 * (+m.preguntas || 0) / top) + '%"></i></div></div>' +
-        '<div class="n">' + nf(m.preguntas) + '<small class="' + (+m.preguntas >= +CF.minimo ? 'ok' : '') + '">' + (+m.preguntas >= +CF.minimo ? 'Puede abrir' : 'Le faltan ' + (CF.minimo - m.preguntas)) + '</small></div></div>';
+      var top = Math.max(1, +(CF.aportes[0] || {}).xp || 1);
+      return '<div class="apo' + (m.yo ? ' yo' : '') + '"><span class="pos">' + (i + 1) + '</span>' + A.foto(m) + '<div style="min-width:0"><div class="d">' + (m.yo ? 'Tú' : esc(m.apodo || 'Cachimbo')) + '</div><div class="bb"><i style="width:' + Math.round(100 * (+m.xp || 0) / top) + '%"></i></div></div>' +
+        '<div class="n">' + nf(m.xp) + '<small class="' + (+m.xp >= +CF.minimo ? 'ok' : '') + '">' + (+m.xp >= +CF.minimo ? 'Puede abrir' : 'Le faltan ' + nf(CF.minimo - (+m.xp || 0)) + ' XP') + '</small></div></div>';
     }).join('') + '</div>' + actividad(12) + '</div></div>' +
       '<div class="card reglas"><div class="h2">Cómo funciona</div>' +
-      '<div>' + SV.check + 'Cada pregunta que responde alguien del clan suma a la barra. Las misiones cumplidas suman extra.</div>' +
+      '<div>' + SV.check + 'Todo el XP que gana alguien del clan suma a la barra. Las misiones cumplidas suman extra.</div>' +
       '<div>' + SV.check + 'Al llegar a cada marca se puede abrir ese cofre. La meta crece según cuántos son en el clan.</div>' +
-      '<div>' + SV.check + 'Lo abre cada miembro que respondió al menos ' + CF.minimo + ' preguntas esa semana. Cada uno recibe sus premios.</div>' +
+      '<div>' + SV.check + 'Lo abre cada miembro que ganó al menos ' + nf(CF.minimo) + ' XP esa semana. Cada uno recibe sus premios.</div>' +
       '<div>' + SV.check + 'Todo vuelve a empezar el lunes. Los cofres que no abras se pierden.</div></div>';
     return h;
   }
@@ -1034,10 +1034,10 @@
     if (!CF || CF.error) return yoVista() + yoFuentes();
     var ms = CF.misiones || [], hechas = ms.filter(function (m) { return +m.prog >= +m.meta && +m.meta > 0; }).length;
     return yoVista() + yoFuentes() + '<div class="card"><div class="h2">Misiones <em>del clan</em><span class="sp"></span><span class="lado">' + hechas + ' de ' + ms.length + ' cumplidas</span></div>' +
-      '<p class="small" style="margin-bottom:12px">Se hacen en equipo. Cada misión cumplida suma preguntas extra a la barra de cofres. Se reinician el lunes.</p><div class="mis">' + ms.map(function (m) {
+      '<p class="small" style="margin-bottom:12px">Se hacen en equipo. Cada misión cumplida suma XP extra a la barra de cofres. Se reinician el lunes.</p><div class="mis">' + ms.map(function (m) {
         var ic = MIS_IC[m.id] || MIS_IC.todos, ok = +m.prog >= +m.meta && +m.meta > 0;
         return '<div class="msn' + (ok ? ' hecha' : '') + '" style="--c:' + ic[0] + '"><span class="i2"><svg viewBox="0 0 24 24">' + ic[1] + '</svg></span><div style="min-width:0"><b>' + esc(m.titulo) + '</b><div class="bb"><i style="width:' + Math.min(100, Math.round(100 * m.prog / Math.max(1, m.meta))) + '%"></i></div>' +
-          '<small>' + (ok ? 'Cumplida' : m.prog + ' de ' + m.meta) + '</small></div><span class="pr">' + (ok ? '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>' : '+' + nf(m.bonus)) + '<span>' + (ok ? '+' + nf(m.bonus) + ' sumadas' : 'preguntas') + '</span></span></div>';
+          '<small>' + (ok ? 'Cumplida' : m.prog + ' de ' + m.meta) + '</small></div><span class="pr">' + (ok ? '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>' : '+' + nf(m.bonus)) + '<span>' + (ok ? '+' + nf(m.bonus) + ' sumados' : 'XP') + '</span></span></div>';
       }).join('') + '</div></div>';
   }
   // Abrir un cofre: tiembla, se abre y salen los premios
@@ -1118,7 +1118,7 @@
       return '<button type="button" class="cfc yo ' + e + '"' + (e === 'listo' ? ' data-premio="' + p.n + '"' : ' tabindex="-1"') + ' aria-label="Cofre personal ' + p.n + '">' +
         (e === 'listo' ? '<span class="tg">¡Ábrelo!</span>' : e === 'ok' ? '<span class="tg">Abierto</span>' : '<span class="bdg lk"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>') +
         '<span class="ic">' + regalo(p.n, e === 'ok') + '</span>' + (e === 'ok' ? '<span class="bdg ok">' + SV.check.replace(' class="i"', '') + '</span>' : '') +
-        '<span class="nm">' + nf(p.meta) + '<small>pts</small></span><span class="pzm">' + premios(p).map(function (z) { return '<i>' + PZ[z[0]] + z[1].replace('+', '') + '</i>'; }).join('') + '</span></button>';
+        '<span class="nm">' + fk(p.meta) + '<small>pts</small></span><span class="pzm">' + premios(p).map(function (z) { return '<i>' + PZ[z[0]] + z[1].replace('+', '') + '</i>'; }).join('') + '</span></button>';
     }).join('');
     return '<div class="card cf yo-c"><div class="cf-h"><div class="h2">Mis cofres <em>personales</em></div><span class="ci">' + SV.reloj.replace(' class="i"', '') + 'Cierra en <span data-reloj="' + esc(YO.cierra) + '" data-corto>…</span></span></div><div class="cf-b">' +
       '<div class="cf-top"><div class="cf-num"><b>' + nf(YO.puntos) + '</b><span>puntos tuyos</span><small>Solo cuenta lo que haces tú. Estos cofres son solo para ti.</small></div>' +

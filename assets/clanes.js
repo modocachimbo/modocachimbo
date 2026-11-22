@@ -133,7 +133,7 @@
   function sinSql(e) { return e && /clan|function .* does not exist|Could not find the function/i.test(String(e.message || e)); }
 
   var ERRORES = {
-    cofre_ya_abierto: 'Ya abriste este cofre esta semana.', cofre_pocas_preguntas: 'Primero responde al menos 30 preguntas esta semana.', cofre_cerrado: 'Tu clan aún no llega a ese cofre.', cofre_no_existe: 'Ese cofre no existe.',
+    cofre_ya_abierto: 'Ya abriste este cofre esta semana.', cofre_pocas_preguntas: 'Primero responde al menos 30 preguntas esta semana.', cofre_poco_xp: 'Primero gana al menos 1 500 XP esta semana.', cofre_cerrado: 'Tu clan aún no llega a ese cofre.', cofre_no_existe: 'Ese cofre no existe.',
     ya_en_clan: 'Ya estás en un clan. Sal de él primero.',
     nivel_bajo: 'Aún no tienes el nivel que pide ese clan. Sigue sumando XP.',
     rango_bajo: 'Aún no tienes el rango que pide ese clan.',
