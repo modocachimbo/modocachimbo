@@ -816,7 +816,7 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     <div class="h-top">
       <button type="button" class="rec ry" id="recRy"><svg class="ri"><use href="#r-rayo"/></svg><b id="recRayo">0</b><i class="chis"></i><i class="chis"></i><i class="mas">+</i></button>
       <button type="button" class="rec co" id="recCor" aria-label="Corazones"><svg class="ri"><use href="#r-corazon"/></svg><b id="recCorN">5</b><i class="chis"></i><i class="chis"></i><i class="mas">+</i></button>
-      <button type="button" class="rec di" data-pronto="Diamantes: para la tienda del Arcade"><svg class="ri"><use href="#r-diamante"/></svg><b id="recDia">0</b><i class="chis"></i><i class="chis"></i><i class="mas">+</i></button>
+      <button type="button" class="rec di" id="recDi" aria-label="Diamantes: abrir la Tienda"><svg class="ri"><use href="#r-diamante"/></svg><b id="recDia">0</b><i class="chis"></i><i class="chis"></i><i class="mas">+</i></button>
       <button type="button" class="g-btn h-aj" id="hAj" aria-label="Ajustes"><svg class="ic"><use href="#i-ajustes"/></svg></button>
     </div>
     <div class="h-ajustes" id="hAjustes" role="dialog" aria-label="Ajustes">
@@ -1236,6 +1236,9 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
   $('recRy').onclick = function () { if (window.MCSonido) MCSonido.efecto('tap'); toast('Energía: +3 por nivel, +5 con 3 estrellas<br><small>Úsala para abrir simuladores del Laboratorio</small>'); };
   function cobrarRayos() { if (!window.MCRayos) return; pintarRayos(MCRayos.guardado()); MCRayos.estado().then(function (st) { if (st && st.nuevos > 0) toast('+' + st.nuevos + ' de energía'); pintarRayos(st); }); }
   setTimeout(cobrarRayos, 400);
+  // Diamantes: saldo real (supabase/127-tienda.sql) y el botón abre la Tienda
+  $('recDi').onclick = function () { if (window.MCSonido) MCSonido.efecto('tap'); location.href = 'tienda.html?de=arcade'; };
+  setTimeout(function () { if (window.MCAuth && MCAuth.listo) MCAuth.listo.then(function (c) { return c.rpc('mis_diamantes'); }).then(function (r) { if (r && !r.error && r.data != null) $('recDia').textContent = (+r.data).toLocaleString('es-PE'); }, function () {}); }, 500);
   document.querySelectorAll('[data-pronto]').forEach(function (b) { b.onclick = function () { if (window.MCSonido) MCSonido.efecto('tap'); toast(b.dataset.pronto + '<br><small>¡Muy pronto!</small>'); }; });
   // Cielo: nubes, estrellitas y luces con tamaños y tiempos al azar
   (function () {

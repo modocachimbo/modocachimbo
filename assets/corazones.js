@@ -596,6 +596,7 @@
       : g.tipo === 'xp' ? '¡Te regalaron ' + g.cantidad + ' XP!'
       : g.tipo === 'rayos' ? '¡Te regalaron ' + g.cantidad + ' de energía!'
       : g.tipo === 'racha' ? '¡Recuperaste tu racha de ' + g.cantidad + (g.cantidad === 1 ? ' día!' : ' días!')
+      : g.tipo === 'diamantes' ? '¡Te regalaron ' + g.cantidad + (g.cantidad === 1 ? ' diamante!' : ' diamantes!')
       : g.tipo === 'ticket' ? '¡Te regalaron ' + g.cantidad + (g.cantidad === 1 ? ' ticket de sala!' : ' tickets de sala!')
       : '¡Te regalaron algo para tu colección!';
     var d = document.createElement('div'); d.className = 'mcz-toast'; d.setAttribute('role', 'status');
@@ -635,7 +636,13 @@
     if (k <= ya) return;
     g = {}; g[sem] = k;   // solo se recuerda esta semana
     try { localStorage.setItem(cl, JSON.stringify(g)); } catch (x) {}
-    js(BASE + 'assets/coleccion.js?v=212', function () { return window.MCColeccion; }).then(function () {
+    // Supabase recuerda qué pack ya se mostró (supabase/126): así no vuelve a llegar si borra la caché
+    rpc('aviso_marcar', { p_clave: 'tpremio:' + sem, p_valor: k }).then(function (antes) { return Math.max(ya, antes == null ? -1 : +antes); }, function () { return ya; }).then(function (y) {
+      if (k <= y) return false;
+      ya = y;
+      return js(BASE + 'assets/coleccion.js?v=212', function () { return window.MCColeccion; }).then(function () { return true; });
+    }).then(function (seguir) {
+      if (!seguir || !window.MCColeccion) return;
       var C = window.MCColeccion, T = C.temporada && C.temporada(sem);
       if (!T) return;
       var regs = [];
@@ -660,7 +667,7 @@
     if (!regs.length || abriendo) return;
     abriendo = true;
     var ids = regs.filter(function (g) { return g.tipo === 'item' && g.item; }).map(function (g) { return g.item; });
-    var pasos = [js(BASE + 'assets/sobre.js?v=6', function () { return window.MCSobre; })];
+    var pasos = [js(BASE + 'assets/sobre.js?v=7', function () { return window.MCSobre; })];
     // Los ítems: la colección se vuelve a pedir al toque (no los 10 min guardados)
     if (ids.length) pasos.push(js(BASE + 'assets/coleccion.js?v=212', function () { return window.MCColeccion; })
       .then(function () { return MCColeccion.refrescar ? MCColeccion.refrescar() : null; }));

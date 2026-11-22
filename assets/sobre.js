@@ -148,6 +148,9 @@
     } else if (g.tipo === 'ticket') {
       d = '<svg viewBox="0 0 48 48" width="40" height="40" aria-hidden="true"><path d="M6 14a4 4 0 0 1 4-4h28a4 4 0 0 1 4 4v5a5 5 0 0 0 0 10v5a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4v-5a5 5 0 0 0 0-10z" fill="#C6E000" stroke="#151A03" stroke-width="2.5"/><path d="M30 12v24" stroke="#151A03" stroke-width="2.5" stroke-dasharray="3 3"/><path d="M14 20h10M14 28h7" stroke="#151A03" stroke-width="3" stroke-linecap="round"/></svg>';
       nom = '+' + g.cantidad + (g.cantidad === 1 ? ' ticket' : ' tickets'); sub = 'Sala de clan'; c = '198,224,0';
+    } else if (g.tipo === 'diamantes') {
+      d = '<svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true"><defs><linearGradient id="mcsDiaG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F7B8FF"/><stop offset=".5" stop-color="#C64DF0"/><stop offset="1" stop-color="#7A1FC2"/></linearGradient></defs><path d="M18 8h28l14 16-28 34L4 24z" fill="#3A0A6A" stroke="#3A0A6A" stroke-width="6" stroke-linejoin="round" transform="translate(1 3)"/><path d="M18 8h28l14 16-28 34L4 24z" fill="url(#mcsDiaG)" stroke="#5A1A9A" stroke-width="3" stroke-linejoin="round"/><path d="M4 24h56M18 8l6 16 8-16 8 16 6-16M24 24l8 34 8-34" fill="none" stroke="#5A1A9A" stroke-width="2" stroke-linejoin="round" opacity=".55"/><path d="M18 8l6 16H4z" fill="#fff" opacity=".35"/></svg>';
+      nom = '+' + g.cantidad + (g.cantidad === 1 ? ' diamante' : ' diamantes'); sub = 'Para la Tienda'; c = '198,77,240';
     } else if (g.tipo === 'racha') {
       d = '<svg viewBox="0 0 48 48" width="40" height="40" aria-hidden="true"><path d="M24 4c2 7 10 11 10 22a10 10 0 0 1-20 0c0-5 2-8 5-11 0 4 2 6 4 6-2-6 0-12 1-17z" fill="#FF9600" stroke="#7a3a00" stroke-width="2.5" stroke-linejoin="round"/><path d="M24 26c2 3 5 4 5 8a5 5 0 0 1-10 0c0-3 3-5 5-8z" fill="#FFC800"/></svg>';
       nom = g.cantidad + (g.cantidad === 1 ? ' día de racha' : ' días de racha'); sub = 'Racha recuperada'; c = '255,150,0';
