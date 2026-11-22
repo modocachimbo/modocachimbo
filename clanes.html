@@ -595,12 +595,12 @@
   /* Sala de clan (en vivo, con ticket): sala-clan.html · supabase/104-clanes-sala.sql */
   var SALA = null;
   function salaCard() {
-    if (SALA === null) { SALA = false; K.rpc('clan_sala_mia').then(function (d) { SALA = d || false; if (vista === 'guerra') pintar(); }, function () { SALA = false; }); }
+    if (SALA === null) { SALA = false; K.rpc('clan_duelo_mio').catch(function () { return K.rpc('clan_sala_mia'); }).then(function (d) { SALA = d || false; if (vista === 'guerra') pintar(); }, function () { SALA = false; }); }
     var s = SALA && SALA.sala, t = SALA ? +SALA.tickets || 0 : null;
     return '<div class="card salac"><div class="sc-tx"><div class="h2">' + (s ? '<i class="vivo"></i>' : '') + 'Sala de clan <em>en vivo</em></div>' +
-      '<p class="small">' + (s ? esc(s.titulo) + (s.rival ? ' · contra <b style="color:#fff">' + esc(s.rival) + '</b>' : ' · esperando rival') : 'Clan vs clan al instante: todos responden la misma pregunta al mismo tiempo. Crear una sala usa 1 ticket.') + '</p>' +
-      (t != null ? '<span class="sc-tk">🎟 ' + t + (t === 1 ? ' ticket' : ' tickets') + '</span>' : '') + '</div>' +
-      '<a class="cb l" href="sala-clan.html' + (s ? '?c=' + s.codigo : '') + '">' + (s ? 'Entrar a la sala' : 'Ir a salas') + '</a></div>';
+      '<p class="small">' + (s ? esc(s.titulo) + (s.rival ? ' · contra <b style="color:#fff">' + esc(s.rival) + '</b>' : ' · esperando rival') : 'Duelo entre clanes con los comodines del duelo, 2 vs 2 o 3 vs 3. Al empezar se usa 1 ticket.') + '</p>' +
+      (t != null ? '<span class="sc-tk"><svg viewBox="0 0 58 42" width="20" height="15" aria-hidden="true" style="vertical-align:-2px;margin-right:4px"><path d="M3 8a5 5 0 0 1 5-5h42a5 5 0 0 1 5 5v7a6 6 0 0 0 0 12v7a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5v-7a6 6 0 0 0 0-12z" fill="#C6E000"/><path d="M39 6v30" stroke="#151A03" stroke-width="2.4" stroke-dasharray="3.5 3"/></svg>' + t + (t === 1 ? ' ticket' : ' tickets') + '</span>' : '') + '</div>' +
+      '<a class="cb l" href="' + (s ? (s.codigo.length === 6 ? 'duelo.html?d=' : 'sala-clan.html?c=') + s.codigo : 'sala-clan.html') + '">' + (s ? 'Entrar a la sala' : 'Ir a salas') + '</a></div>';
   }
   function guerraVista() {
     if (!G) { K.rpc('clan_guerra').then(function (d) { G = d || {}; if (vista === 'guerra') pintar(); }, function (e) { G = { error: K.error(e) }; if (vista === 'guerra') pintar(); }); return '<p class="estado">Cargando la guerra…</p>'; }

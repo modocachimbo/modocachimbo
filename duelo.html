@@ -525,6 +525,7 @@
 <script src="assets/buho/rosa-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
 <script src="assets/buho.js"></script>
+<script src="assets/clanes.js?v=6"></script>
 <style id="mc-claro">
 /* Modo claro de esta página (assets/claro.css trae lo común) */
 html[data-modo="claro"] .eyebrow { color: #6F8000 !important; }
@@ -1557,6 +1558,91 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   }
   @media (max-width: 360px) { .sala-foto span { display: none; } }
   @media (prefers-reduced-motion: reduce) { .arena .bh, .arena .slot.entra .bh-w, .arena .slot.entra .plat, .arena .inv { animation: none; } }
+  /* ===== Clan vs clan: un lado por clan con su escudo y su color ===== */
+  .ka { --jc: var(--ca, #C6E000); --jd: color-mix(in srgb, var(--ca, #C6E000) 62%, #000); } .kb { --jc: var(--cb, #1CB0F6); --jd: color-mix(in srgb, var(--cb, #1CB0F6) 62%, #000); }
+  .arena.clan { --bh0: 150px; }
+  .arena.clan::before { background: conic-gradient(from 200deg at 15% -10%, transparent 0 10deg, color-mix(in srgb, var(--ca) 22%, transparent) 14deg, transparent 22deg),
+                conic-gradient(from 130deg at 85% -10%, transparent 0 10deg, color-mix(in srgb, var(--cb) 22%, transparent) 14deg, transparent 22deg); }
+  .arena.clan .franja { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, color-mix(in srgb, var(--ca) 11%, transparent), transparent 45%, transparent 55%, color-mix(in srgb, var(--cb) 12%, transparent)); }
+  .arena.clan .lados { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 6px; padding: 8px 14px 18px; align-items: end; }
+  .arena.clan .ld { position: relative; min-width: 0; border-radius: 20px; padding: 6px 4px 0; background: radial-gradient(90% 70% at 50% 100%, color-mix(in srgb, var(--jc) 20%, transparent), transparent 70%); }
+  .arena.clan .lcab { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 6px; min-width: 0; }
+  .arena.clan .lcab .e { width: 58px; height: 65px; flex: none; filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--jc) 55%, transparent)); }
+  .arena.clan .lcab .e svg { width: 100%; height: 100%; }
+  .arena.clan .lcab .t { min-width: 0; text-align: left; }
+  html body .arena.clan .lcab b:not(#z) { display: block; font: italic 900 26px/1 var(--display) !important; text-transform: uppercase; color: var(--jc); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .arena.clan .lcab small { display: block; font: 800 12px/1.3 Nunito, sans-serif; color: var(--dim); margin-top: 3px; }
+  .arena.clan .lcab small i { font-style: normal; color: #58CC02; }
+  .arena.clan .ld.vacio .lcab .e { opacity: .3; filter: grayscale(1); }
+  html body .arena.clan .ld.vacio .lcab b:not(#z) { color: #6F6690; }
+  .arena.clan .jgs { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 6px; align-items: end; }
+  html body .arena.clan .vsx:not(#z) { align-self: center; margin-bottom: 90px; font: italic 900 64px/1 var(--display) !important; color: #fff; text-shadow: 0 0 24px rgba(198,224,0,.7), 0 4px 0 rgba(0,0,0,.5); padding: 0 6px; }
+  .arena.clan .ld.kb .bh { scale: -1 1; }
+  .arena.clan .espera-rival { display: flex; align-items: flex-end; justify-content: center; min-height: calc(var(--bh0) + 70px); padding: 0 10px 10px; color: var(--dim); font-size: 13px; line-height: 1.4; }
+  @media (max-width: 700px) {
+    .arena.clan { --bh0: 100px; }
+    .arena.clan .lados { grid-template-columns: 1fr; padding: 4px 8px 14px; gap: 0; }
+    html body .arena.clan .vsx:not(#z) { margin: 0 auto; font-size: 40px; padding: 4px 0; }
+    .arena.clan .piso { height: 20%; }
+    .arena.clan .lcab .e { width: 44px; height: 50px; } html body .arena.clan .lcab b:not(#z) { font-size: 21px !important; }
+    .arena.clan .plat { height: 16px; margin-top: -8px; }
+    .arena.clan .placa { margin-top: 6px; padding: 4px 5px 3px; border-radius: 10px; border-bottom-width: 3px; }
+    html body .arena.clan .placa .nm:not(#z) { font-size: 13px !important; }
+    .arena.clan .placa .rn, .arena.clan .placa .r1 .rg { display: none; }
+    .arena.clan .placa .r2 { font-size: 10px; margin-top: 2px; }
+    .arena.clan .placa .st i { display: none; }
+    .arena.clan .placa .rg2 { display: block; }
+    html body .arena.clan .placa .anf:not(#z) { font-size: 9px !important; padding: 3px 5px 2px; top: -9px; }
+    .arena.clan .inv { width: 34px; height: 34px; border-radius: 11px; } .arena.clan .inv svg { width: 16px; height: 16px; }
+    .arena.clan .espera-rival { min-height: 0; padding: 4px 10px 6px; }
+  }
+  /* Pantalla VS con escudos */
+  .vs-clanes { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 6px 0 14px; }
+  .vs-clanes .vc { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; flex: 1; max-width: 220px; animation: vcEntra .6s cubic-bezier(.3,1.4,.5,1) both; }
+  .vs-clanes .vc.kb { animation-name: vcEntra2; }
+  .vs-clanes .vc .e { width: 96px; height: 108px; filter: drop-shadow(0 8px 20px color-mix(in srgb, var(--jc) 60%, transparent)); }
+  .vs-clanes .vc .e svg { width: 100%; height: 100%; }
+  html body .vs-clanes .vc b:not(#z) { font: italic 900 24px/1 var(--display) !important; text-transform: uppercase; color: var(--jc); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  html body .vs-clanes .x:not(#z) { font: italic 900 56px/1 var(--display) !important; color: #fff; text-shadow: 0 0 24px rgba(198,224,0,.7); animation: vcChoque .5s .45s both; }
+  @keyframes vcEntra { from { transform: translateX(-80px) scale(.7); opacity: 0; } }
+  @keyframes vcEntra2 { from { transform: translateX(80px) scale(.7); opacity: 0; } }
+  @keyframes vcChoque { from { transform: scale(2.4); opacity: 0; } }
+  @media (max-width: 520px) { .vs-clanes .vc .e { width: 70px; height: 79px; } html body .vs-clanes .vc b:not(#z) { font-size: 18px !important; } html body .vs-clanes .x:not(#z) { font-size: 40px !important; } }
+  /* Marcador de clanes en el juego: la barra se va hacia el clan que gana */
+  .tira { display: none; }
+  .modo-clan .tira { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; margin: 0 0 10px; padding: 8px 10px; border-radius: 16px; background: #151127; border: 2px solid #2a2346; }
+  .tira .tl { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .tira .tl.kb { flex-direction: row-reverse; }
+  .tira .tl .e { width: 30px; height: 34px; flex: none; } .tira .tl .e svg { width: 100%; height: 100%; }
+  html body .tira .tl b:not(#z) { font: italic 900 22px/1 var(--display) !important; color: var(--jc); }
+  .tira .tl small { display: block; font: 800 10.5px/1.1 Nunito, sans-serif; color: var(--dim); max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tira .bar { position: relative; height: 14px; border-radius: 99px; overflow: hidden; background: var(--cb); box-shadow: inset 0 2px 0 rgba(0,0,0,.25); }
+  .tira .bar i { position: absolute; inset: 0 auto 0 0; width: 50%; background: var(--ca); transition: width .6s cubic-bezier(.3,1.3,.5,1); border-right: 3px solid #fff; }
+  /* Resultado: qué clan ganó */
+  .res-clan { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 14px auto 4px; max-width: 520px; }
+  .res-clan .vc { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; opacity: .55; }
+  .res-clan .vc.gano { opacity: 1; }
+  .res-clan .vc .e { width: 74px; height: 83px; } .res-clan .vc.gano .e { width: 96px; height: 108px; filter: drop-shadow(0 0 22px color-mix(in srgb, var(--jc) 70%, transparent)); }
+  .res-clan .vc .e svg { width: 100%; height: 100%; }
+  html body .res-clan .vc b:not(#z) { font: italic 900 20px/1 var(--display) !important; text-transform: uppercase; color: var(--jc); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  html body .res-clan .vc strong:not(#z) { font: italic 900 34px/1 var(--display) !important; color: #fff; }
+  .res-clan .vc small { font: 800 11px/1 Nunito, sans-serif; color: var(--dim); text-transform: uppercase; letter-spacing: .06em; }
+  html body .res-clan .x:not(#z) { font: italic 900 34px/1 var(--display) !important; color: #fff; }
+  /* Frases rápidas del clan */
+  .frases { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; align-items: center; margin: 10px auto 0; max-width: 640px; padding: 8px 10px; border-radius: 18px; background: var(--surface); border: 2px solid #2a2346; border-bottom-width: 4px; }
+  html body .frases > span:not(#z) { font: 800 15px/1 var(--display) !important; letter-spacing: .06em; text-transform: uppercase; color: var(--dim); margin-right: 2px; }
+  .frases button { display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 11px 0 9px; border-radius: 12px; cursor: pointer; background: #1F1936; color: #fff; border: 2px solid #322B52; border-bottom-width: 4px; font: 800 13px/1 Nunito, sans-serif; }
+  .frases button svg { width: 18px; height: 18px; color: var(--lima); flex: none; }
+  .frases button i { font-style: normal; }
+  .frases button:disabled { opacity: .4; }
+  .frases button:not(:disabled):active { transform: translateY(2px); border-bottom-width: 2px; }
+  .frase-burbuja { position: fixed; z-index: 70; left: 50%; top: 84px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; padding: 10px 16px 10px 12px; border-radius: 16px; pointer-events: none;
+    background: #1b1533; border: 2px solid var(--jc); border-bottom-width: 5px; box-shadow: 0 10px 30px rgba(0,0,0,.5), 0 0 24px color-mix(in srgb, var(--jc) 35%, transparent); animation: burbuja 3.2s ease both; }
+  .frase-burbuja svg { width: 28px; height: 28px; color: var(--jc); }
+  .frase-burbuja small { display: block; font: 800 11px/1.2 Nunito, sans-serif; color: var(--dim); }
+  html body .frase-burbuja b:not(#z) { display: block; font: italic 900 22px/1 var(--display) !important; text-transform: uppercase; color: #fff; }
+  @keyframes burbuja { 0% { opacity: 0; transform: translate(-50%, -20px) scale(.8); } 10%, 85% { opacity: 1; transform: translate(-50%, 0) scale(1); } 100% { opacity: 0; transform: translate(-50%, -10px); } }
+  @media (max-width: 560px) { html body .frases > span:not(#z) { width: 100%; text-align: center; margin: 0 0 2px; } .frases button { flex: 1 1 30%; justify-content: center; gap: 4px; padding: 0 6px; font-size: 11.5px; } .frases button svg { width: 15px; height: 15px; } }
   /* Cámara en el resultado */
   .res .res-foto { position: absolute; top: 14px; right: 14px; z-index: 5; }
   @media (max-width: 520px) { .res .res-foto { top: 10px; right: 10px; } .res .res-foto span { display: none; } .res .res-foto { padding: 8px; } }
@@ -1763,6 +1849,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   <!-- 3. Juego -->
   <section id="juego" hidden>
     <div class="amb-fila"><button type="button" class="amb" id="ambBtn"></button></div>
+    <div class="tira" id="tira" aria-live="polite"></div>
     <div class="barra" id="barra">
       <div class="tiles" id="tiles"></div>
       <div class="reloj" id="reloj" role="timer" aria-label="Tiempo de la pregunta">
@@ -1785,6 +1872,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       <div class="veredicto" id="veredicto" role="status"></div>
     </div>
     <div class="reac" id="reac" role="group" aria-label="Reaccionar"></div>
+    <div class="frases" id="frases" role="group" aria-label="Frases para tu clan" hidden></div>
   </section>
   <div class="toasts" id="toasts" aria-live="polite"></div>
 
@@ -1797,6 +1885,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       <span class="tema" id="resTema"></span>
       <h1 id="resTit"></h1>
       <p class="hint" id="resSub"></p>
+      <div id="resClan"></div>
       <div id="resXp"></div>
       <div id="resTabla"></div>
       <div class="botones dos" id="resBotones"></div>
@@ -1964,7 +2053,8 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     ['cargando', 'crear', 'reto', 'juego', 'resultado'].forEach(x => { $(x).hidden = x !== id; });
     // La flecha de arriba vuelve al inicio desde Crear, y a Duelos desde la sala o el resultado
     const atras = document.querySelector('header.top .back'), aDuelos = id !== 'crear' && id !== 'cargando';
-    atras.href = aDuelos ? 'duelo.html' : 'index.html'; atras.lastChild.textContent = aDuelos ? ' Duelos' : ' Inicio';
+    const clan = aDuelos && V && V.clan;
+    atras.href = clan ? 'clanes.html#guerra' : aDuelos ? 'duelo.html' : 'index.html'; atras.lastChild.textContent = clan ? ' Clanes' : aDuelos ? ' Duelos' : ' Inicio';
     window.scrollTo(0, 0);
   }
   function aviso(texto, boton) {
@@ -1979,6 +2069,10 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     const m = String((e && e.message) || e || '');
     if (/Could not find the function|does not exist|PGRST202/i.test(m + (e && e.code))) return 'Los duelos aún no están activados. Avísale a Modo Cachimbo.';
     if (/Failed to fetch|NetworkError|Load failed/i.test(m)) return 'No hay conexión. Revisa tu internet e intenta de nuevo.';
+    const CLAN = { sala_sin_clan: 'Esta sala es de clanes: primero únete a un clan.', sala_sin_rival: 'Aún no hay clan rival. Solo el líder o un sublíder de otro clan puede aceptar la sala.',
+      sala_otro_clan: 'Esta sala es entre otros dos clanes.', sala_llena: 'Ya están todos los lugares de tu clan.', sala_pocos: 'Falta al menos un jugador de cada clan.',
+      sin_ticket: 'No tienes tickets de sala. Canjea uno con tus rayos en la sala de clan.' };
+    for (const k in CLAN) if (m.indexOf(k) >= 0) return CLAN[k];
     return m || 'Algo falló. Intenta de nuevo.';
   }
   function enlace(cod) { return new URL('duelo.html?d=' + cod, location.href).href; }
@@ -1994,12 +2088,18 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   function guardar(d) {
     if (d && d.ahora) desfase = new Date(d.ahora) - Date.now();
     V = d;
+    // Clan vs clan: cada lado con el color de su escudo
+    const cl = d && d.clan && d.clan.clanes;
+    document.body.classList.toggle('modo-clan', !!cl);
+    if (cl) { document.documentElement.style.setProperty('--ca', (cl[0] && cl[0].color) || '#C6E000'); document.documentElement.style.setProperty('--cb', (cl[1] && cl[1].color) || '#1CB0F6'); }
   }
   // Milisegundos que le quedan a la sala para cerrarse
   function quedaSala() { return V ? new Date(V.vence) - (Date.now() + desfase) : 0; }
   function mmss(ms) { const s = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
   // Color de cada jugador por orden de llegada (el mismo en todos los celulares)
-  const colorDe = j => 'c' + ((j && j.color) || 0) % 6;
+  const colorDe = j => V && V.clan && V.clan.clanes && j && j.clan != null ? (j.clan === (V.clan.clanes[0] || {}).id ? 'ka' : 'kb') : 'c' + ((j && j.color) || 0) % 6;
+  // Clan vs clan: de qué lado está cada uno (0 = el que creó la sala, 1 = el rival)
+  const ladoDe = j => V && V.clan && j && j.clan != null && j.clan !== (V.clan.clanes[0] || {}).id ? 1 : 0;
   const nombreDe = j => j.yo ? 'Tú' : j.apodo;
   // Emblema del rango de la semana sobre la esquina del avatar (assets/rango.js; xp viene de ver_duelo, supabase/24)
   const rangoDe = j => j && j.xp != null && window.MCRango && MCRango.nivel(j.xp) >= 0 ? '<span class="rgo" title="' + MCRango.nombre(MCRango.nivel(j.xp)) + '">' + MCRango.svg(MCRango.nivel(j.xp), { mini: true }) + '</span>' : '';
@@ -2538,8 +2638,8 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     return { frente, atras: L, fila };
   }
   function nivelDe(j) { return j && j.xp != null && window.MCRango ? MCRango.nivel(j.xp) : -1; }
-  function placaHtml(j, d) {
-    if (!j) return '<div class="r1"><span class="nm">Libre</span></div><div class="r2"><span class="st">' + (puedeInvitar(d) ? SALA_IC.mas + 'Invitar' : 'Esperando<i class="pts3"><i>.</i><i>.</i><i>.</i></i>') + '</span></div>';
+  function placaHtml(j, d, ajeno) {
+    if (!j) return '<div class="r1"><span class="nm">Libre</span></div><div class="r2"><span class="st">' + (puedeInvitar(d) && !ajeno ? SALA_IC.mas + 'Invitar' : 'Esperando<i class="pts3"><i>.</i><i>.</i><i>.</i></i>') + '</span></div>';
     const nv = nivelDe(j), p = window.MCTarjeta && MCTarjeta.pinDe ? MCTarjeta.pinDe(j) : null;
     const ok = !(d.cmd_cant > 0 && !d.empieza) || j.eligio;
     return (j.creador ? '<i class="anf">Anfitrión</i>' : '') +
@@ -2548,8 +2648,58 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       '<div class="r2"><span class="st' + (ok ? ' ok' : '') + '">' + (ok ? SALA_IC.ok + '<i>Listo</i>' : SALA_IC.reloj + '<i>Eligiendo</i>') + '</span>' +
       (nv >= 0 ? '<span class="rn" style="color:' + MCRango.color(nv).c + '">' + MCRango.nombre(nv) + '</span><span class="rg rg2">' + MCRango.svg(nv, { mini: true, quieto: true }) + '</span>' : '') + '</div>';
   }
+  // Clan vs clan: un lado por clan, con su escudo y su color; VS al centro
+  function pintarSalaClan(d) {
+    const caja = $('retoSala'), C = d.clan, cl = C.clanes, L = C.por_lado || 3, inv = puedeInvitar(d);
+    const mio = (d.jugadores.find(j => j.yo) || {}).clan;
+    const lados = [0, 1].map(i => d.jugadores.filter(j => cl[i] && j.clan === cl[i].id));
+    const firma = 'clan|' + L + '|' + (inv ? 1 : 0) + '|' + (cl[1] ? cl[1].id : '-') + '|' + lados.map(x => x.map(j => j.apodo + ':' + pjDe(j)).join(',')).join('/');
+    if (caja.dataset.firma === firma) {
+      caja.querySelectorAll('.slot').forEach(s => { const j = lados[+s.dataset.lado][+s.dataset.i] || null, h = placaHtml(j, d, cl[+s.dataset.lado].id !== mio); if (s.lastChild.innerHTML !== h) s.lastChild.innerHTML = h; });
+      return;
+    }
+    const viejos = {};
+    caja.querySelectorAll('.slot[data-k]').forEach(s => { const m = s.querySelector('.bh .mcb'); if (m) viejos[s.dataset.k] = m; });
+    caja.dataset.firma = firma;
+    caja.className = 'arena clan n' + (L * 2);
+    caja.innerHTML = '<div class="franja" aria-hidden="true"></div><div class="piso" aria-hidden="true"></div><div class="a-cab"><span class="a-tit">Sala de clan</span>' +
+      '<button type="button" class="sala-foto" id="salaFoto" aria-label="Foto para tus estados" title="Foto para tus estados">' + SALA_IC.cam + '<span>Foto</span></button></div><div class="lados"></div>';
+    const cont = caja.querySelector('.lados');
+    [0, 1].forEach(li => {
+      const c = cl[li], dv = document.createElement('div');
+      if (li === 1) { const v = document.createElement('div'); v.className = 'vsx'; v.setAttribute('aria-hidden', 'true'); v.textContent = 'VS'; cont.append(v); }
+      dv.className = 'ld ' + (li ? 'kb' : 'ka') + (c ? '' : ' vacio');
+      const listos = lados[li].filter(j => !(d.cmd_cant > 0) || j.eligio).length;
+      dv.innerHTML = '<div class="lcab"><span class="e">' + (window.MCClanes ? MCClanes.escudo(c || { forma: 'punta', color: '#3a3266' }) : '') + '</span><div class="t"><b>' + esc(c ? c.nombre : 'Rival') + '</b><small>' +
+        (c ? lados[li].length + '/' + L + ' · <i>' + listos + ' listo' + (listos === 1 ? '' : 's') + '</i>' : 'Esperando rival') + '</small></div></div>';
+      if (!c) { dv.insertAdjacentHTML('beforeend', '<div class="espera-rival">Comparte el código con el líder o un sublíder de otro clan. Cuando entre, su clan será el rival.</div>'); cont.append(dv); return; }
+      const g = document.createElement('div'); g.className = 'jgs'; g.style.setProperty('--n', L);
+      for (let i = 0; i < L; i++) {
+        const j = lados[li][i] || null, pj = j ? pjDe(j) : '', k = j ? j.apodo + ':' + pj : '';
+        const sl = document.createElement('div');
+        sl.className = 'slot' + (j ? '' : ' libre') + (j && j.yo ? ' yo' : '') + (j && !VISTOS[j.apodo] ? ' entra' : '');
+        sl.dataset.lado = li; sl.dataset.i = i; if (k) sl.dataset.k = k;
+        const w = document.createElement('div'); w.className = 'bh-w';
+        if (j && j.codigo && !j.yo) { w.dataset.jug = j.codigo; w.setAttribute('role', 'button'); w.setAttribute('tabindex', '0'); w.setAttribute('aria-label', 'Ver a ' + j.apodo); }
+        const bh = document.createElement('div'); bh.className = 'bh';
+        let m = k && viejos[k];
+        if (!m && pj === 'antiguo') { m = document.createElement('div'); m.className = 'mcb mcb-antiguo'; m.innerHTML = MCBuho.svg(j && j.yo ? 'feliz' : 'normal', 200); }
+        else if (!m && window.MCBuhoVivo) { try { m = MCBuhoVivo.crear(j && j.yo ? 'saludando' : 'oficial', pj); } catch (e) { m = null; } }
+        if (m) bh.append(m);
+        w.append(bh); sl.append(w);
+        if (!j && inv && c.id === mio) { const b = document.createElement('button'); b.type = 'button'; b.className = 'inv'; b.dataset.invitar = '1'; b.setAttribute('aria-label', 'Invitar a alguien de tu clan'); b.innerHTML = SALA_IC.mas; sl.append(b); }
+        const pl = document.createElement('div'); pl.className = 'plat'; pl.setAttribute('aria-hidden', 'true'); sl.append(pl);
+        const pc = document.createElement('div'); pc.className = 'placa'; pc.innerHTML = placaHtml(j, d, c.id !== mio); sl.append(pc);
+        g.append(sl);
+        if (j) VISTOS[j.apodo] = 1;
+      }
+      dv.append(g); cont.append(dv);
+    });
+    if (window.MCColeccion && MCColeccion.css) MCColeccion.css();
+  }
   function pintarSala(d) {
     const caja = $('retoSala'); if (!caja) return;
+    if (d.clan && d.clan.clanes) { pintarSalaClan(d); return; }
     const { fila } = salaOrden(d), inv = puedeInvitar(d), frenteOn = d.max >= 4;
     const firma = d.max + '|' + (inv ? 1 : 0) + '|' + fila.map(j => j ? j.apodo + ':' + pjDe(j) : '-').join(',');
     if (caja.dataset.firma === firma) {
@@ -2766,6 +2916,12 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     const d = V, b = $('btnJugar'), dentro = !!d.yo, hay = d.jugadores.length;
     b.hidden = false; b.disabled = false;
     if (!dentro) { b.dataset.accion = 'entrar'; b.textContent = 'Entrar a la sala'; b.disabled = libres(d) <= 0 || quedaSala() <= 0; }
+    else if (d.soy_creador && d.clan && d.clan.clanes) {
+      const C = d.clan.clanes, ok = C[1] && [0, 1].every(i => d.jugadores.some(j => j.clan === C[i].id));
+      b.dataset.accion = 'iniciar';
+      b.textContent = ok ? '¡Empezar! · usa 1 ticket' : C[1] ? 'Esperando jugadores del rival…' : 'Esperando al clan rival…';
+      b.disabled = !ok || quedaSala() <= 0;
+    }
     else if (d.soy_creador) {
       b.dataset.accion = 'iniciar';
       b.textContent = hay < 2 ? 'Iniciar (esperando amigos…)' : 'Iniciar duelo con ' + hay + ' jugadores';
@@ -2773,6 +2929,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     } else b.hidden = true;
     $('retoNota').textContent = !dentro ? 'Al entrar esperas en la sala. Todos empiezan a la vez con una cuenta 3, 2, 1.'
       : d.auto ? 'Empieza solo apenas entren los ' + d.max + '.' + (d.soy_creador ? ' Si alguien no llega, puedes iniciarlo tú.' : ' ' + d.creador + ' también puede iniciarlo antes.')
+      : d.clan && d.soy_creador ? 'Toca Empezar cuando estén todos. Si se cierra sin empezar, no se gasta el ticket.'
       : d.soy_creador ? 'Toca Iniciar cuando estén todos.' : 'Esperando a que ' + d.creador + ' inicie el duelo.';
   }
   function fichaHtml(d) {
@@ -2783,10 +2940,12 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   }
   function pintarReto() {
     const d = V, soyCreador = d.soy_creador;
-    $('retoEye').textContent = d.max === 2 ? 'Duelo 1 vs 1' : 'Duelo de ' + d.max + ' jugadores';
-    $('retoTit').textContent = soyCreador ? '¡Listo! Invita a tus amigos' : d.yo ? 'Estás en la sala' : '¡' + d.creador + ' te reta a un duelo!';
-    $('retoSub').textContent = soyCreador
-      ? 'Envíales el código o el enlace. Todos empiezan a la vez cuando la sala esté lista.'
+    const C = d.clan && d.clan.clanes;
+    $('retoEye').textContent = C ? 'Clan vs clan · ' + d.clan.por_lado + ' vs ' + d.clan.por_lado : d.max === 2 ? 'Duelo 1 vs 1' : 'Duelo de ' + d.max + ' jugadores';
+    $('retoTit').textContent = C ? (C[1] ? C[0].nombre + ' vs ' + C[1].nombre : soyCreador ? '¡Sala de clan lista!' : '¡' + C[0].nombre + ' busca rival!') : soyCreador ? '¡Listo! Invita a tus amigos' : d.yo ? 'Estás en la sala' : '¡' + d.creador + ' te reta a un duelo!';
+    $('retoSub').textContent = C
+      ? 'Comparte el código con tu clan. Los ataques solo le pegan al clan rival. Gana el clan con mejor promedio de puntos.'
+      : soyCreador ? 'Envíales el código o el enlace. Todos empiezan a la vez cuando la sala esté lista.'
       : 'Las mismas ' + d.n + ' preguntas para todos. Gana quien suma más puntos.';
     $('retoFicha').innerHTML = fichaHtml(d);
     pintarSala(d);
@@ -2971,13 +3130,29 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   }
 
   // Pantalla VS: cada jugador entra desde su lado con sus comodines (ya no son secretos) y luego 3, 2, 1
+  const escudoDe = c => window.MCClanes ? MCClanes.escudo(c || { forma: 'punta', color: '#3a3266' }) : '';
+  // Marcador de clanes: promedio de puntos de cada lado
+  function promClanes(js) {
+    return [0, 1].map(i => { const L = js.filter(j => ladoDe(j) === i); return L.length ? L.reduce((a, j) => a + (+j.puntos || 0), 0) / L.length : 0; });
+  }
+  function pintarTira(js, niebla) {
+    const t = $('tira'), C = V && V.clan && V.clan.clanes;
+    if (!t || !C || !C[1]) { if (t) t.innerHTML = ''; return; }
+    const p = promClanes(js), tot = p[0] + p[1], pc = tot > 0 ? Math.max(8, Math.min(92, p[0] / tot * 100)) : 50, f = x => niebla ? '?' : (Math.round(x * 10) / 10);
+    if (!t.firstChild) t.innerHTML = [0, 1].map(i => '<div class="tl ' + (i ? 'kb' : 'ka') + '"><span class="e">' + escudoDe(C[i]) + '</span><div><b></b><small>' + esc(C[i].nombre) + '</small></div></div>').join('<div class="bar"><i></i></div>');
+    t.querySelectorAll('.tl b').forEach((b, i) => { b.textContent = f(p[i]); });
+    t.querySelector('.bar i').style.width = (niebla ? 50 : pc) + '%';
+  }
   function pantallaVS(fin) {
-    const c = $('cuenta'), js = V.jugadores, n = js.length;
+    const c = $('cuenta'), C = V.clan && V.clan.clanes, js = C ? V.jugadores.slice().sort((a, b) => ladoDe(a) - ladoDe(b)) : V.jugadores, n = js.length;
     const reglas = [['var(--lima)', IC.check, 'Por pregunta: 1 propio + 1 ataque']];
     if (js.some(j => (j.mano || []).indexOf('furia') >= 0)) reglas.push(['var(--rojo)', IC.furia, 'Furia: 3 seguidas Llamarada, 5 Volcán']);
     if (V.relampago != null) reglas.push(['var(--azul)', IC.zap, 'Pregunta ' + (V.relampago + 1) + ': relámpago +2']);
     if (V.n >= 8) reglas.push(['var(--dim)', IC.niebla, 'Últimas 3: puntos ocultos']);
-    c.innerHTML = '<div class="vs-esc"><div class="vs-tit">' + esc(V.titulo || 'Duelo') + '</div><div class="vs-fila" style="--n: ' + n + '">' +
+    if (C) reglas.unshift(['var(--lima)', IC.check, 'Gana el clan con mejor promedio']);
+    c.innerHTML = '<div class="vs-esc"><div class="vs-tit">' + esc(V.titulo || 'Duelo') + '</div>' +
+      (C && C[1] ? '<div class="vs-clanes"><div class="vc ka"><span class="e">' + escudoDe(C[0]) + '</span><b>' + esc(C[0].nombre) + '</b></div><div class="x">VS</div><div class="vc kb"><span class="e">' + escudoDe(C[1]) + '</span><b>' + esc(C[1].nombre) + '</b></div></div>' : '') +
+      '<div class="vs-fila" style="--n: ' + n + '">' +
       js.map((j, i) => '<div class="vs-j ' + colorDe(j) + '">' + avatar(j) + '<b>' + esc(nombreDe(j)) + '</b><span class="mano">' +
         (j.mano || []).map((k, m) => CMD[k] ? '<i style="--c:' + CMD[k].c + ';animation-delay:' + (0.7 + i * 0.15 + m * 0.1).toFixed(2) + 's" title="' + esc(CMD[k].nom) + '">' + IC[k] + '</i>' : '').join('') + '</span></div>').join('') +
       (n === 2 ? '<div class="vs-x">VS</div>' : '') + '</div><div class="vs-raya"></div>' +
@@ -3024,6 +3199,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     $('camino').style.setProperty('--n', G.n);
     $('reac').innerHTML = '<span>Reaccionar</span>' + ORDEN_CARAS.map(k => '<button type="button" data-cara="' + k + '" aria-label="' + NOM_CARA[k] + '" title="' + NOM_CARA[k] + '">' + CARAS[k] + '</button>').join('');
     $('reac').hidden = V.jugadores.length < 2;
+    pintarFrases();
     pintarBarra();
     ver('juego');
     pintarAmb();
@@ -3034,9 +3210,9 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   // Marcador en vivo: un cuadro por jugador (puesto, puntos, anillo de avance, racha y comodines usados)
   function jugadores() {
     // Lo que no cambia en el juego (rango, foto, marco, pin, ID) sale de ver_duelo; el avance, del sondeo
-    const fijo = {}; ((V && V.jugadores) || []).forEach(j => { fijo[j.yo ? '' : j.apodo] = { xp: j.xp, foto: j.foto, avatar: j.avatar, marco: j.marco, fondo: j.fondo, pin: j.pin, codigo: j.codigo }; });
+    const fijo = {}; ((V && V.jugadores) || []).forEach(j => { fijo[j.yo ? '' : j.apodo] = { clan: j.clan, xp: j.xp, foto: j.foto, avatar: j.avatar, marco: j.marco, fondo: j.fondo, pin: j.pin, codigo: j.codigo }; });
     if (G.jug) return G.jug.map((j, i) => Object.assign({ color: i }, fijo[j.yo ? '' : j.apodo] || {}, j));
-    return V.jugadores.map(j => ({ apodo: j.apodo, yo: j.yo, color: j.color, xp: j.xp, foto: j.foto, avatar: j.avatar, marco: j.marco, fondo: j.fondo, pin: j.pin, codigo: j.codigo, actual: j.yo ? G.actual : j.actual, puntos: j.yo ? G.puntos : j.puntos || 0, racha: 0, usados: [], terminado: j.terminado }));
+    return V.jugadores.map(j => ({ apodo: j.apodo, yo: j.yo, color: j.color, clan: j.clan, xp: j.xp, foto: j.foto, avatar: j.avatar, marco: j.marco, fondo: j.fondo, pin: j.pin, codigo: j.codigo, actual: j.yo ? G.actual : j.actual, puntos: j.yo ? G.puntos : j.puntos || 0, racha: 0, usados: [], terminado: j.terminado }));
   }
   // Niebla final: en las 3 últimas preguntas (duelos de 8 o más) no se ven los puntos de los demás
   const enNiebla = () => G && G.v3 && G.n >= 8 && G.actual >= G.n - 3 && G.actual < G.n && !G.usados.some(u => u.k === 'espia' && u.i === G.actual);
@@ -3079,6 +3255,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     $('camTxt').textContent = 'Tu camino · ' + G.ok.filter(Boolean).length + ' de ' + G.ok.length;
     $('pNum').textContent = 'Pregunta ' + Math.min(G.actual + 1, G.n) + ' de ' + G.n;
     pintarNiebla(js, niebla);
+    pintarTira(js0, niebla);
     pintarFuego();
   }
   // Celular: ocultar rivales (queda tu cuadro, el tiempo y tu camino). Se recuerda para los siguientes duelos.
@@ -3590,6 +3767,34 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     caja.appendChild(s);
     setTimeout(() => s.remove(), 2300);
   }
+  // Frases rápidas del clan: solo las ven tus compañeros (clan_frase en supabase/118)
+  const FRASES = {
+    vamos: ['¡Vamos, clan!', SV('<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>')],
+    ataquen: ['¡Ataquen ya!', SV('<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>')],
+    bien: ['¡Bien ahí!', SV('<path d="M7 11v9H4v-9zM7 11l4-8a2 2 0 0 1 3 2l-1 5h5a2 2 0 0 1 2 2l-2 7a2 2 0 0 1-2 1H7"/>')],
+    cuidado: ['¡Nos alcanzan!', SV('<path d="M12 3 2 20h20zM12 10v4M12 17.5v.01"/>')],
+    remonta: ['¡Sí se puede!', SV('<path d="M3 17l6-6 4 4 8-8M15 7h6v6"/>')],
+    gg: ['¡Buen juego!', SV('<path d="M7 4h10v4a5 5 0 0 1-10 0zM5 5H3v2a3 3 0 0 0 4 3M19 5h2v2a3 3 0 0 1-4 3M12 13v4M8 21h8M9 17h6"/>')]
+  };
+  function pintarFrases() {
+    const f = $('frases'), C = V && V.clan && V.clan.clanes;
+    f.hidden = !(C && C[1] && V.jugadores.filter(j => j.clan === (V.jugadores.find(x => x.yo) || {}).clan).length > 1);
+    if (f.hidden) return;
+    f.innerHTML = '<span>Tu clan</span>' + Object.keys(FRASES).map(k => '<button type="button" data-frase="' + k + '">' + FRASES[k][1] + '<i>' + FRASES[k][0] + '</i></button>').join('');
+  }
+  function burbujaFrase(apodo, k, yo) {
+    if (!FRASES[k]) return;
+    const b = document.createElement('div'); b.className = 'frase-burbuja ' + (ladoDe(V.jugadores.find(j => j.yo) || {}) ? 'kb' : 'ka');
+    b.innerHTML = FRASES[k][1] + '<div><small>' + esc(yo ? 'Tú, a tu clan' : apodo) + '</small><b>' + FRASES[k][0] + '</b></div>';
+    document.body.appendChild(b); setTimeout(() => b.remove(), 3200);
+  }
+  $('frases').addEventListener('click', e => {
+    const b = e.target.closest('[data-frase]'); if (!b || b.disabled || !G) return;
+    burbujaFrase('', b.dataset.frase, true); son('toque');
+    const bs = $('frases').querySelectorAll('button'); bs.forEach(x => { x.disabled = true; });
+    setTimeout(() => bs.forEach(x => { x.disabled = false; }), 3000);
+    rpc('clan_frase', { p_codigo: G.codigo, p_k: b.dataset.frase }).catch(() => {});
+  });
   $('reac').addEventListener('click', async e => {
     const b = e.target.closest('[data-cara]'); if (!b || b.disabled || !G) return;
     const cara = b.dataset.cara;
@@ -3621,6 +3826,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
         }
         if (ev.yo) return;
         if (ev.tipo === 'reac') { sticker(ev.apodo, ev.dato, false); son('reaccion', ev.dato); }
+        else if (ev.tipo === 'frase') { if (ev.para_mi) { burbujaFrase(ev.apodo, ev.dato, false); son('toque'); } }
         else if (ev.tipo === 'ataque' && ev.para_mi && /^salvo:/.test(ev.dato)) protegido(ev.dato.slice(6), ev.apodo);
         else if (ev.tipo === 'ataque' && ev.para_mi) {
           if (ev.dato === 'ladron') { toast('<b>' + esc(ev.apodo) + '</b> te quitó 1 punto con Botín', 'var(--oro)', IC.ladron); son('ladron'); }
@@ -3787,8 +3993,18 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
         : !d.cerrado ? 'La sala sigue abierta y alguien más puede entrar. El podio sale cuando se cierre.'
         : 'Calculando el podio…';
     }
+    // Clan vs clan: gana el clan con mejor promedio (el XP de cada uno sigue siendo por su puesto)
+    const CL = d.clan && d.clan.clanes;
+    if (CL && CL[1] && res && res.jugadores >= 2) {
+      const g = d.clan.ganador, mio = ladoDe(d.jugadores.find(j => j.yo) || {}), gl = g == null ? -1 : g === CL[0].id ? 0 : 1;
+      eye = 'Clan vs clan terminado';
+      tit = gl < 0 ? '¡Empate entre clanes!' : gl === mio ? '¡Ganó tu clan!' : '¡Ganó ' + CL[gl].nombre + '!';
+      perdio = gl >= 0 && gl !== mio;
+      sub = 'Quedaste en el ' + res.puesto + '.º lugar del duelo. ' + (gl === mio ? 'Tu clan suma una victoria.' : gl < 0 ? 'Mismo promedio: toca la revancha.' : 'La próxima la ganan ustedes.');
+      $('resClan').innerHTML = '<div class="res-clan">' + [0, 1].map(i => '<div class="vc ' + (i ? 'kb' : 'ka') + (gl === i ? ' gano' : '') + '"><span class="e">' + escudoDe(CL[i]) + '</span><b>' + esc(CL[i].nombre) + '</b><strong>' + (d.clan.prom[i] || 0) + '</strong><small>promedio</small></div>').join('<div class="x">VS</div>') + '</div>';
+    } else $('resClan').innerHTML = '';
     $('resEye').textContent = eye; $('resTema').textContent = d.titulo || ''; $('resTit').textContent = tit; $('resSub').textContent = sub;
-    $('resTrofeo').hidden = !(res && res.gane);
+    $('resTrofeo').hidden = !(res && (CL ? d.clan.ganador != null && d.clan.ganador === (d.jugadores.find(j => j.yo) || {}).clan : res.gane));
     $('resCard').classList.toggle('perdio', perdio);
     const final = res && res.jugadores >= 2;
     $('resTabla').innerHTML = final ? podioHtml(d) + jugadaHtml(res.medallas) + medallasHtml(res.medallas)
@@ -3797,7 +4013,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     if (final) cobrarXp(d); else $('resXp').innerHTML = '';
     $('resFoto').hidden = !final;
     const festejar = () => {
-      if (res && res.gane) confeti($('resCard'));
+      if (res && (CL && CL[1] ? !perdio && d.clan.ganador != null : res.gane)) confeti($('resCard'));
       if (final) son('fin', res.gane || (res.empate && res.puesto === 1) ? 100 : 0);
     };
     if (final && vistoRes !== d.codigo) revelarPodio(festejar);
@@ -3811,8 +4027,8 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     const bts = [];
     if (!d.cerrado) bts.push('<a class="btn wa" target="_blank" rel="noopener noreferrer" href="https://wa.me/?text=' + esc(encodeURIComponent('⚔️ Sumé ' + plural(misPts, 'punto', 'puntos') + ' en un duelo de Modo Cachimbo (' + d.titulo + '). ¿Me ganas? Entra rápido, la sala se cierra pronto: ' + enlace(d.codigo))) + '">Invitar por WhatsApp</a>');
     if (d.revancha) bts.push('<a class="btn ir" href="duelo.html?d=' + esc(d.revancha) + '">Ir a la revancha</a>');
-    else if (final) bts.push('<button class="btn" type="button" id="btnRevancha">Pedir revancha</button>');
-    bts.push('<a class="btn sec" href="duelo.html">Nuevo duelo</a>');
+    else if (final && !CL) bts.push('<button class="btn" type="button" id="btnRevancha">Pedir revancha</button>');
+    bts.push(CL ? '<a class="btn sec" href="sala-clan.html">Otra sala de clan</a>' : '<a class="btn sec" href="duelo.html">Nuevo duelo</a>');
     $('resBotones').innerHTML = bts.join('');
     $('resBotones').classList.toggle('dos', bts.length > 1);
     const rv = $('btnRevancha');
