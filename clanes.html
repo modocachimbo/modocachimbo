@@ -927,7 +927,7 @@
         ? '<b>' + nom + '</b> ' + (a.yo ? 'abriste' : 'abrió') + ' el <em>cofre de ' + esc(a.nombre) + '</em>'
         : '<b>' + nom + '</b> ' + (a.yo ? 'respondiste' : 'respondió') + ' <em>' + nf(a.preguntas) + ' preguntas</em> ' + (a.fecha === hoy ? 'hoy' : 'ayer');
       return '<div class="fi">' + A.foto(a) + '<p>' + tx + '</p>' + (a.tipo === 'cofre' ? '<span class="mc">' + cofre(a.n, true) + '</span>' : '<time>' + (a.fecha === hoy ? 'Hoy' : 'Ayer') + '</time>') + '</div>';
-    }).join('') + (max && (CF.actividad || []).length > max ? '<button type="button" class="vm" data-vista="misiones">Ver más ›</button>' : '') + '</div>';
+    }).join('') + '' + '</div>';
   }
   function cofresExtras() {
     var h = '';
@@ -959,15 +959,14 @@
     return clanRecompensas();
   }
   function clanRecompensas() {
-    if (!CF) return '<p class="estado">Cargando misiones…</p>';
-    if (CF.error) return cofresCard(true);
+    if (!CF || CF.error) return yoVista() + yoFuentes();
     var ms = CF.misiones || [], hechas = ms.filter(function (m) { return +m.prog >= +m.meta && +m.meta > 0; }).length;
-    return cofresCard(true) + yoVista() + '<div class="card"><div class="h2">Misiones <em>del clan</em><span class="sp"></span><span class="lado">' + hechas + ' de ' + ms.length + ' cumplidas</span></div>' +
+    return yoVista() + yoFuentes() + '<div class="card"><div class="h2">Misiones <em>del clan</em><span class="sp"></span><span class="lado">' + hechas + ' de ' + ms.length + ' cumplidas</span></div>' +
       '<p class="small" style="margin-bottom:12px">Se hacen en equipo. Cada misión cumplida suma preguntas extra a la barra de cofres. Se reinician el lunes.</p><div class="mis">' + ms.map(function (m) {
         var ic = MIS_IC[m.id] || MIS_IC.todos, ok = +m.prog >= +m.meta && +m.meta > 0;
         return '<div class="msn' + (ok ? ' hecha' : '') + '" style="--c:' + ic[0] + '"><span class="i2"><svg viewBox="0 0 24 24">' + ic[1] + '</svg></span><div style="min-width:0"><b>' + esc(m.titulo) + '</b><div class="bb"><i style="width:' + Math.min(100, Math.round(100 * m.prog / Math.max(1, m.meta))) + '%"></i></div>' +
           '<small>' + (ok ? 'Cumplida' : m.prog + ' de ' + m.meta) + '</small></div><span class="pr">' + (ok ? '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>' : '+' + nf(m.bonus)) + '<span>' + (ok ? '+' + nf(m.bonus) + ' sumadas' : 'preguntas') + '</span></span></div>';
-      }).join('') + '</div></div>' + yoFuentes() + cofresExtras();
+      }).join('') + '</div></div>';
   }
   // Abrir un cofre: tiembla, se abre y salen los premios
   function abrirCofre(n, yo) {
@@ -1064,7 +1063,7 @@
         (f.max != null ? '<div class="bb"><i style="width:' + Math.min(100, Math.round(100 * f.cant / Math.max(1, f.max))) + '%"></i></div><small class="pg">' + f.cant + ' / ' + f.max + '</small>' : '<small class="pg">' + nf(f.cant) + ' esta semana</small>') +
         '</div><div class="pt"><b>+' + nf(f.puntos) + '</b><span>pts</span>' + (lleno ? '<em>Completo</em>' : ir) + '</div></div>';
     }).join('');
-    return '<div class="card"><div class="h2">Cómo sumar <em>tus puntos</em></div><div class="fnts">' + fu + '</div></div>';
+    return '<div class="card"><div class="h2">Mis misiones <em>de la semana</em></div><div class="fnts">' + fu + '</div></div>';
   }
 
   /* ---------- Ingreso al clan: nivel y rango ---------- */
@@ -1122,7 +1121,7 @@
     return '<div class="res-lay"><div>' + estandarte(c) + '</div><div style="min-width:0">' + aviso + pedidosCard() + guerraMini() +
       '<div class="top2"><button type="button" class="big" data-vista="top"><span class="ib" style="background:rgba(28,176,246,.15);color:#1CB0F6"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20h4V10H3zM10 20h4V4h-4zM17 20h4v-7h-4z"/></svg></span><span>Clasificación<small>' + (c.puesto ? 'Puesto #' + c.puesto + ' esta semana' : 'Top de clanes') + '</small></span></button>' +
       '<div class="big pronto"><span class="ib" style="background:rgba(206,130,255,.15);color:#CE82FF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M4 9h16l-1 11H5zM8 9V7a4 4 0 0 1 8 0v2"/></svg></span><span>Tienda del clan<small>Muy pronto</small></span></div></div>' +
-      cofresCard() + actividad(4) + '</div></div>';
+      cofresCard() + actividad(6) + '</div></div>';
   }
   function miembrosVista() {
     var c = D.clan;
