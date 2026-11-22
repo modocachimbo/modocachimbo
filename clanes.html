@@ -127,6 +127,56 @@
   .hoy .p.no { filter: grayscale(1) brightness(.5); }
   .hoy .p.no::after { background: #3a3360; }
 
+  /* Miembros: el personaje de cada uno (lado derecho) y el rango junto al nombre */
+  .mb[data-ver] { cursor: pointer; transition: border-color .15s, background .15s; }
+  .mb[data-ver]:hover { border-color: #4a3f78; }
+  .mb.sel { background: #1b1534; border-color: #8a7fd0; }
+  .mb.yo.sel { border-color: var(--accent); }
+  .rgc b { font: inherit; }
+  .mb .rgc { display: inline-flex; align-items: center; gap: 3px; flex: none; font: 900 10px/1 Nunito, sans-serif; font-style: normal; text-transform: none; letter-spacing: 0; padding: 2px 6px 2px 3px; border-radius: 6px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08); }
+  .rgc .mc-rgo-mini { width: 18px !important; height: 18px; display: inline-grid; place-items: center; }
+  .rgc .mc-rgo-mini svg { width: 18px !important; height: 18px !important; display: block; }
+  .pjc .rgc .mc-rgo-mini, .pjc .rgc .mc-rgo-mini svg { width: 22px !important; height: 22px !important; }
+  @media (max-width: 899px) { .mb .rgc { padding: 2px; } .mb .rgc b { display: none; } }
+  .mbs-cab { display: flex; align-items: center; gap: 10px; }
+  .mbs-cab .sp { flex: 1; }
+  .puerta { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 9px; border: 1.5px solid #5a2a3a; background: #2a1420; color: #ff8a8a; font: 900 12px/1 Nunito, sans-serif; text-transform: uppercase; letter-spacing: .04em; cursor: pointer; }
+  .puerta:hover { background: #3a1828; }
+  .puerta svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .pjc { position: relative; overflow: hidden; padding: 0 !important; }
+  .pjc .esc { position: relative; height: 430px; background: radial-gradient(120% 80% at 50% 100%, color-mix(in srgb, var(--cc, #C6E000) 22%, #2b1f5c), #160f30 70%); display: flex; align-items: flex-end; justify-content: center; }
+  .pjc .esc::before { content: ""; position: absolute; left: 50%; top: 0; width: 46%; height: 100%; transform: translateX(-50%); background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,0) 85%); clip-path: polygon(38% 0, 62% 0, 100% 100%, 0 100%); pointer-events: none; }
+  .pjc .piso { position: absolute; left: 50%; bottom: 84px; width: 62%; height: 46px; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--cc, #C6E000) 45%, transparent), transparent); }
+  .pjc .bh { position: relative; width: 44%; max-width: 230px; margin-bottom: 96px; z-index: 1; }
+  .pjc .bh > img { width: 100%; display: block; }
+  .pjc .cab { position: absolute; left: 0; right: 0; top: 0; z-index: 2; padding: 14px 16px; display: flex; align-items: flex-start; gap: 10px; background: linear-gradient(180deg, rgba(10,7,22,.85), transparent); }
+  .pjc .cab .n { font: italic 900 24px/1 var(--display); text-transform: uppercase; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pjc .cab .l { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; }
+  .pjc .rgc { display: inline-flex; align-items: center; gap: 4px; font: 900 11px/1 Nunito, sans-serif; padding: 3px 8px 3px 4px; border-radius: 7px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); }
+  .pjc .dat { position: absolute; left: 12px; right: 12px; bottom: 10px; z-index: 2; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .pjc .dat span { background: rgba(10,7,22,.7); border: 1px solid #2a2346; border-radius: 10px; padding: 7px 6px; text-align: center; font: 900 15px/1.1 Nunito, sans-serif; color: #fff; }
+  .pjc .dat small { display: block; font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: .05em; margin-top: 2px; }
+  @media (max-width: 899px) {
+    .mbv .pj-col { order: -1; }
+    .pjc .esc { height: 330px; }
+    .pjc .bh { width: 36%; margin-bottom: 92px; }
+  }
+  .pjn { position: absolute; top: 46%; z-index: 3; width: 40px; height: 52px; border-radius: 12px; border: 1.5px solid #3b3270; background: rgba(16,11,34,.75); color: #fff; font: 900 30px/1 Nunito, sans-serif; cursor: pointer; display: grid; place-items: center; padding-bottom: 4px; }
+  .pjn:hover { border-color: var(--accent); color: var(--accent); }
+  .pjn.iz { left: 10px; } .pjn.de { right: 10px; }
+  .pjd { position: absolute; left: 0; right: 0; bottom: 70px; z-index: 3; display: flex; justify-content: center; gap: 6px; }
+  .pjd button { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 99px; background: rgba(255,255,255,.3); cursor: pointer; transition: width .2s; }
+  .pjd button.on { width: 20px; background: var(--accent); }
+  .pjc .bh { animation: pjIn .35s ease both; }
+  @keyframes pjIn { from { opacity: 0; transform: translateY(10px) scale(.96); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .pjc .bh { animation: none; } }
+  .cf-fondo { position: fixed; inset: 0; z-index: 60; background: rgba(5,3,12,.72); display: grid; place-items: center; padding: 16px; }
+  .cf-caja { width: min(380px, 100%); background: #1a1530; border: 1.5px solid #352E58; border-radius: 16px; padding: 22px 20px 18px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.6); }
+  .cf-caja .ic { width: 56px; height: 56px; margin: 0 auto 10px; border-radius: 14px; background: #2a1420; color: #ff8a8a; display: grid; place-items: center; }
+  .cf-caja .ic svg { width: 30px; height: 30px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .cf-caja b { display: block; font: italic 900 24px/1.1 var(--display); text-transform: uppercase; color: #fff; }
+  .cf-caja p { font-size: 13.5px; color: var(--text-dim); margin: 8px 0 16px; }
+  .cf-caja .bt { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   /* Miembros */
   .mbs { display: grid; gap: 6px; }
   .mb { display: grid; grid-template-columns: 24px auto minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 10px; background: #120e24; border: 1px solid #2a2346; position: relative; }
@@ -658,6 +708,9 @@
 <script src="assets/auth.js"></script>
 <script src="assets/buho.js"></script>
 <script src="assets/rango.js?v=185"></script>
+<script src="assets/buho/buho-datos.js"></script>
+<script src="assets/buho/rosa-datos.js"></script>
+<script src="assets/buho/buho-vivo.js"></script>
 <script src="assets/coleccion.js?v=212"></script>
 <script src="assets/tarjeta-perfil.js?v=210"></script>
 <script src="assets/amigos.js?v=5"></script>
@@ -688,7 +741,7 @@
   var app = document.getElementById('app');
   var Q = new URLSearchParams(location.search);
   var UNIRSE = (Q.get('unirse') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 7);
-  var SOL = null, D = null, TOP = null, G = null, RIV = null, OFI = null, horasReto = 24, vista = 'clan', abierto = null, seguro = '', previa = null, previaCod = '', relojT = 0, recien = 0;
+  var SOL = null, D = null, TOP = null, G = null, RIV = null, OFI = null, horasReto = 24, vista = 'clan', abierto = null, seguro = '', SEL = null, previa = null, previaCod = '', relojT = 0, recien = 0;
   var F = { nombre: '', tag: '', forma: 'punta', simbolo: 'rayo', color: '#C6E000' };
 
   var SV = {
@@ -703,6 +756,7 @@
     alerta: '<svg class="i" viewBox="0 0 24 24"><path d="M12 3 2 20h20zM12 10v4M12 17h.01"/></svg>',
     link: '<svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
     wa: '<svg viewBox="0 0 24 24"><path d="M4 20l1.3-4A8 8 0 1 1 8 18.7z"/><path d="M9 9.5c.3 2 2.5 4.6 5 5l1.2-1.3 1.8.9c-.3 1.3-1.3 2-2.6 1.8-3.2-.6-6-3.4-6.5-6.6-.2-1.3.5-2.3 1.8-2.6l.9 1.8z"/></svg>',
+    puerta: '<svg viewBox="0 0 24 24"><path d="M4 21h16"/><path d="M6 21V4.5L14 3v18"/><path d="M14 5h4v16"/><circle cx="11.5" cy="12" r=".9" fill="currentColor"/><path d="M20 9l2 2-2 2"/></svg>',
     salir: '<svg viewBox="0 0 24 24"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg>',
     basura: '<svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>',
     guerra: '<svg viewBox="0 0 24 24"><path d="M5 3l14 14M19 3 5 17M3 21l4-4M21 21l-4-4"/></svg>',
@@ -807,8 +861,8 @@
       b.push('<button type="button" class="rj' + (seguro === 'sacar' ? ' seguro' : '') + '" data-sacar>' + (seguro === 'sacar' ? '¿Seguro? Toca otra vez' : 'Sacar del clan') + '</button>');
       acc = '<div class="acc" data-cod="' + m.codigo + '">' + b.join('') + '</div>';
     }
-    return '<div class="mb' + (m.yo ? ' yo' : '') + '"><span class="pos">' + (i + 1) + '</span>' + A.foto(m) +
-      '<div style="min-width:0"><div class="nm"><span class="t">' + (m.yo ? 'Tú' : esc(m.apodo || 'Cachimbo')) + '</span></div>' +
+    return '<div class="mb' + (m.yo ? ' yo' : '') + (m.codigo === selCod() ? ' sel' : '') + '" data-ver="' + m.codigo + '"><span class="pos">' + (i + 1) + '</span>' + A.foto(m) +
+      '<div style="min-width:0"><div class="nm"><span class="t">' + (m.yo ? 'Tú' : esc(m.apodo || 'Cachimbo')) + '</span>' + rangoChip(m.xp_semana) + '</div>' +
       '<div class="s2">' + rolHtml(m.rol) + (+m.racha ? '<span class="fl"><svg><use href="#cl-llama"/></svg>' + m.racha + '&nbsp;días</span>' : '<span>Sin racha</span>') + est + '</div></div>' +
       '<div class="der"><span class="xp">' + xpIco() + nf(m.xp_semana) + '</span>' + (puede ? '<button type="button" class="mas" data-abrir="' + m.codigo + '" aria-label="Opciones">' + SV.mas + '</button>' : '') + '</div>' + acc + '</div>';
   }
@@ -1200,12 +1254,79 @@
     return '<div class="res-lay"><div>' + estandarte(c) + '</div><div style="min-width:0">' + aviso + pedidosCard() + guerraMini() +
       '<div class="top2"><button type="button" class="big" data-vista="top"><span class="ib" style="background:rgba(28,176,246,.15);color:#1CB0F6"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20h4V10H3zM10 20h4V4h-4zM17 20h4v-7h-4z"/></svg></span><span>Clasificación<small>' + (c.puesto ? 'Puesto #' + c.puesto + ' esta semana' : 'Top de clanes') + '</small></span></button>' +
       '<div class="big pronto"><span class="ib" style="background:rgba(206,130,255,.15);color:#CE82FF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M4 9h16l-1 11H5zM8 9V7a4 4 0 0 1 8 0v2"/></svg></span><span>Tienda del clan<small>Muy pronto</small></span></div></div>' +
-      cofresCard() + actividad(6) + '</div></div>';
+      cofresCard() + muro() + actividad(6) + '</div></div>';
   }
   function miembrosVista() {
     var c = D.clan;
-    return pedidosCard() + '<div class="dos"><div><div class="card"><div class="h2">Miembros <em>XP de la semana</em></div><div class="mbs">' + D.miembros.map(miembro).join('') + '</div></div>' + (c.miembros < 20 ? invitar(c) : '') + '</div>' +
-      '<div>' + muro() + metaCard(c) + '</div></div>';
+    return pedidosCard() + '<div class="dos mbv"><div><div class="card"><div class="h2 mbs-cab">Miembros <em>XP de la semana</em><span class="sp"></span>' +
+      '<button type="button" class="puerta" data-salir-ask title="Salir del clan">' + SV.puerta + 'Salir</button></div><div class="mbs">' + D.miembros.map(miembro).join('') + '</div></div></div>' +
+      '<div class="pj-col">' + personaje(c) + '</div></div>';
+  }
+  // El miembro que se ve a la derecha (por defecto, tú)
+  function selCod() {
+    var ms = D && D.miembros || [];
+    if (SEL && ms.some(function (m) { return m.codigo === SEL; })) return SEL;
+    var y = ms.filter(function (m) { return m.yo; })[0] || ms[0];
+    return y ? y.codigo : null;
+  }
+  // Rango de la semana (assets/rango.js), como en el Top
+  function rangoChip(xp) {
+    var R = window.MCRango; xp = +xp || 0;
+    if (!R || R.nivel(xp) < 0) return '';
+    return '<span class="rgc" title="' + esc(R.nombre(R.nivel(xp))) + '">' + R.mini(xp) + '<b>' + esc(R.nombre(R.nivel(xp))) + '</b></span>';
+  }
+  // Su personaje: el Búho (con su aspecto) o el amigo que lleva puesto en Colección
+  function buhoDe(m) {
+    var C = window.MCColeccion, id = (m.puesto || {}).buho || 'buho-clasico', x = C && C.item(id);
+    try {
+      if (x && x.pj && window.MCBuhoVivo && window.MCBuhoAmigos && MCBuhoAmigos[x.pj]) return MCBuhoVivo.crear('vivo', x.pj).outerHTML;
+      if (x && C.buho) return C.buho(x);
+      if (window.MCBuhoVivo && window.MCBuhoDatos) return MCBuhoVivo.crear('vivo').outerHTML;
+    } catch (e) {}
+    return window.MCBuho ? MCBuho.svg('feliz', 200) : '';
+  }
+  function personaje(c) {
+    var ms = D.miembros || [], cod = selCod(), k = 0, m;
+    ms.forEach(function (x, i) { if (x.codigo === cod) k = i; });
+    m = ms[k]; if (!m) return '';
+    var nav = ms.length > 1 ? '<button type="button" class="pjn iz" data-pjnav="-1" aria-label="Anterior">‹</button><button type="button" class="pjn de" data-pjnav="1" aria-label="Siguiente">›</button>' +
+      '<div class="pjd">' + ms.map(function (x, i) { return '<button type="button" class="' + (i === k ? 'on' : '') + '" data-pjir="' + x.codigo + '" aria-label="' + esc(x.apodo || 'Miembro') + '"></button>'; }).join('') + '</div>' : '';
+    return '<div class="card pjc" style="--cc:' + esc(c.color || '#C6E000') + '"><div class="esc"><div class="cab"><div style="min-width:0;flex:1"><div class="n">' + (m.yo ? 'Tú' : esc(m.apodo || 'Cachimbo')) + '</div>' +
+      '<div class="l">' + rolHtml(m.rol) + rangoChip(m.xp_semana) + '</div></div></div><span class="piso"></span><div class="bh">' + buhoDe(m) + '</div>' +
+      '<div class="dat"><span>' + (+m.racha || 0) + '<small>Racha</small></span><span>' + nf(m.xp_semana) + '<small>XP semana</small></span><span>' + (k + 1) + '/' + ms.length + '<small>Puesto</small></span></div>' + nav + '</div></div>';
+  }
+  // Slider del personaje: flechas, puntitos y deslizar con el dedo
+  function pjMover(v, directo) {
+    var ms = D && D.miembros || []; if (!ms.length) return;
+    if (directo) SEL = v;
+    else { var k = 0, cod = selCod(); ms.forEach(function (x, i) { if (x.codigo === cod) k = i; }); SEL = ms[(k + v + ms.length) % ms.length].codigo; }
+    pintar();
+  }
+  (function () {
+    var x0 = null, y0 = 0;
+    document.addEventListener('touchstart', function (e) { var t = e.target.closest && e.target.closest('.pjc'); x0 = t ? e.touches[0].clientX : null; y0 = t ? e.touches[0].clientY : 0; }, { passive: true });
+    document.addEventListener('touchend', function (e) {
+      if (x0 == null) return;
+      var dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4) pjMover(dx < 0 ? 1 : -1);
+    }, { passive: true });
+  })();
+  // Salir del clan: con ventana para confirmar (que no sea por error)
+  function confirmarSalir() {
+    var c = D.clan, o = document.createElement('div');
+    o.className = 'cf-fondo';
+    o.innerHTML = '<div class="cf-caja" role="dialog" aria-modal="true"><span class="ic">' + SV.puerta + '</span><b>¿Salir del clan?</b><p>Vas a salir de <b style="display:inline;font:inherit;color:#fff">' + esc(c.nombre) + '</b>.' +
+      (D.rol === 'lider' ? ' El liderazgo pasa a un sublíder o al miembro más antiguo.' : '') + ' Tu XP de esta semana deja de sumar para el clan.</p>' +
+      '<div class="bt"><button type="button" class="cb g" data-cf="no">Cancelar</button><button type="button" class="cb r" data-cf="si">' + SV.salir + 'Sí, salir</button></div></div>';
+    document.body.appendChild(o);
+    o.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-cf]');
+      if (e.target === o || (b && b.dataset.cf === 'no')) { o.remove(); return; }
+      if (!b) return;
+      b.disabled = true; b.textContent = 'Saliendo…';
+      K.rpc('clan_salir').then(function () { o.remove(); toast('Saliste del clan'); vista = 'clan'; SEL = null; F = { nombre: '', tag: '', forma: 'punta', simbolo: 'rayo', color: '#C6E000' }; refrescar(); },
+        function (x) { o.remove(); toast(K.error(x)); });
+    });
   }
 
   /* ---------- Pedidos para entrar (los ve el líder y los sublíderes) ---------- */
@@ -1505,6 +1626,9 @@
       K.rpc('clan_cancelar_reto', { p_guerra: +el.dataset.cancelar }).then(function () { toast('Reto cancelado'); vista = 'guerra'; refrescar(); }, function (x) { toast(K.error(x)); el.disabled = false; });
       return;
     }
+    if ((el = e.target.closest('[data-salir-ask]'))) { confirmarSalir(); return; }
+    if ((el = e.target.closest('[data-pjnav],[data-pjir]'))) { pjMover(el.dataset.pjir ? +el.dataset.pjir : +el.dataset.pjnav, !!el.dataset.pjir); return; }
+    if ((el = e.target.closest('[data-ver]')) && !e.target.closest('[data-abrir],.acc,button,a')) { SEL = +el.dataset.ver; pintar(); return; }
     if ((el = e.target.closest('[data-abrir]'))) { var cod = +el.dataset.abrir; abierto = abierto === cod ? null : cod; seguro = ''; pintar(); return; }
     if ((el = e.target.closest('[data-rol]'))) {
       var r = el.dataset.rol, jc = +el.closest('[data-cod]').dataset.cod;
