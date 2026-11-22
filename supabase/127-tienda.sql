@@ -6,7 +6,7 @@
 --
 -- Lo que se vende (precio en diamantes; se cambia en la tabla tienda_items):
 --   vida1 / vida2 / vida3  Vidas ilimitadas 1 / 2 / 3 días ....... 60 / 110 / 150
---   doblexp                Doble XP por 1 hora ..................... 50
+--   doblexp                Doble XP por 1 día ..................... 100
 --   escudo                 Protección de racha (cubre 1 día) ....... 50
 --   fortuna                Fortuna 7 días (cofres personales dan diamantes) 80
 --   ticket                 Ticket de sala de clan .................. 30
@@ -38,7 +38,7 @@ insert into public.tienda_items (id, nom, precio, orden) values
   ('vida1', 'Vidas ilimitadas 1 día', 60, 1),
   ('vida2', 'Vidas ilimitadas 2 días', 110, 2),
   ('vida3', 'Vidas ilimitadas 3 días', 150, 3),
-  ('doblexp', 'Doble XP 1 hora', 50, 4),
+  ('doblexp', 'Doble XP 1 día', 100, 4),
   ('escudo', 'Protección de racha', 50, 5),
   ('fortuna', 'Fortuna 7 días', 80, 6),
   ('ticket', 'Ticket de sala', 30, 7),
@@ -47,6 +47,7 @@ insert into public.tienda_items (id, nom, precio, orden) values
   ('sorpresa', 'Cofre sorpresa', 70, 10),
   ('revivir', 'Revivir racha', 120, 11)
 on conflict (id) do nothing;
+update public.tienda_items set nom = 'Doble XP 1 día', precio = 100 where id = 'doblexp' and nom = 'Doble XP 1 hora';
 
 create table if not exists public.tienda_compras (
   id      bigint generated always as identity primary key,
@@ -141,7 +142,7 @@ begin
   r.xp_cubo := r.xp_cubo - xp;
 
   if auto then r.xp_auto_hoy := r.xp_auto_hoy + xp; end if;
-  -- Tienda: tarjeta Doble XP activa (1 hora)
+  -- Tienda: tarjeta Doble XP activa (1 día)
   if r.doble_xp_hasta is not null and r.doble_xp_hasta > now() then xp := xp * 2; end if;
 
   -- Avance de misiones (+40 cada una, sin multiplicador)
@@ -617,8 +618,8 @@ begin
     update public.corazones set infinito_hasta = greatest(coalesce(infinito_hasta, now()), now()) + n * interval '1 day', actualizado = now() where usuario = u;
     return jsonb_build_object('tipo', 'infinito', 'cantidad', n * 24);
   elsif k = 'doblexp' then
-    update public.corazones set doble_xp_hasta = greatest(coalesce(doble_xp_hasta, now()), now()) + interval '1 hour', actualizado = now() where usuario = u;
-    return jsonb_build_object('tipo', 'doblexp', 'cantidad', 60);
+    update public.corazones set doble_xp_hasta = greatest(coalesce(doble_xp_hasta, now()), now()) + interval '1 day', actualizado = now() where usuario = u;
+    return jsonb_build_object('tipo', 'doblexp', 'cantidad', 24);
   elsif k = 'fortuna' then
     update public.corazones set fortuna_hasta = greatest(coalesce(fortuna_hasta, now()), now()) + interval '7 days', actualizado = now() where usuario = u;
     return jsonb_build_object('tipo', 'fortuna', 'cantidad', 7);

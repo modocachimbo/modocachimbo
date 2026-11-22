@@ -204,7 +204,7 @@
     vida1: { t: 'Vidas ilimitadas', c: '1 día', d: 'Juega sin perder corazones por 24 horas.', col: '#FF4B6E', rz: 'raro', g: 'pot' },
     vida2: { t: 'Vidas ilimitadas', c: '2 días', d: 'Corazones infinitos por 48 horas.', col: '#FF4B6E', rz: 'epico', g: 'pot', of: '-8%' },
     vida3: { t: 'Vidas ilimitadas', c: '3 días', d: 'Corazones infinitos por 72 horas.', col: '#FFC93C', rz: 'leg', g: 'pot', of: '-17%' },
-    doblexp: { t: 'Doble XP', c: '1 hora', d: 'Todo el XP que ganes vale el doble por 1 hora.', col: '#FFC800', rz: 'raro', g: 'pot' },
+    doblexp: { t: 'Doble XP', c: '1 día', d: 'Todo el XP que ganes vale el doble por 24 horas.', col: '#FFC800', rz: 'raro', g: 'pot' },
     corazones: { t: '+5 corazones', c: '+5', d: '5 corazones extra para seguir practicando.', col: '#FF4B6E', rz: 'comun', g: 'pot' },
     energia: { t: 'Energía', c: '+20', d: 'Más energía para el Arcade y el Laboratorio.', col: '#1CB0F6', rz: 'comun', g: 'pot' },
     escudo: { t: 'Protección de racha', c: '1 día', d: 'Si un día no cumples tu meta, tu racha no se pierde.', col: '#1CB0F6', rz: 'raro', g: 'rac' },
@@ -319,7 +319,7 @@
   }
   // Qué se llevó (el cofre sorpresa dice qué salió)
   var PREMIO = { infinito: ['vida1', function (n) { return 'Vidas ilimitadas por ' + (n % 24 ? n + ' horas' : n / 24 + (n === 24 ? ' día' : ' días')); }],
-    doblexp: ['doblexp', function () { return 'Doble XP por 1 hora'; }], fortuna: ['fortuna', function () { return 'Fortuna por 7 días'; }],
+    doblexp: ['doblexp', function () { return 'Doble XP por 1 día'; }], fortuna: ['fortuna', function () { return 'Fortuna por 7 días'; }],
     escudo: ['escudo', function (n) { return n + (n == 1 ? ' protección guardada' : ' protecciones guardadas'); }],
     ticket: ['ticket', function (n) { return '+' + n + (n == 1 ? ' ticket de sala' : ' tickets de sala'); }],
     rayos: ['energia', function (n) { return '+' + n + ' de energía'; }], corazones: ['corazones', function (n) { return '+' + n + ' corazones'; }],
