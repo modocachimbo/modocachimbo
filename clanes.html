@@ -372,7 +372,7 @@
   /* Estandarte */
   .estd { position: relative; width: 100%; max-width: 360px; margin: 0 auto; filter: drop-shadow(0 18px 30px rgba(0,0,0,.45)); }
   .estd .marco { position: relative; padding: 3px; background: linear-gradient(180deg, var(--cc), #3a2d66 26%, #3a2d66 72%, var(--cc)); clip-path: polygon(0 0, 100% 0, 100% 86%, 50% 100%, 0 86%); }
-  .estd .tela { position: relative; overflow: hidden; text-align: center; padding: 18px 18px 64px; clip-path: polygon(0 0, 100% 0, 100% 86%, 50% 100%, 0 86%);
+  .estd .tela { position: relative; overflow: hidden; text-align: center; padding: 18px 18px 84px; clip-path: polygon(0 0, 100% 0, 100% 86%, 50% 100%, 0 86%);
     background: radial-gradient(220px 190px at 50% 30%, color-mix(in srgb, var(--cc) 32%, transparent), transparent 70%), linear-gradient(180deg, #251c4a 0%, #18122f 60%, #120d24 100%); }
   .estd .tela::before { content: ""; position: absolute; inset: 0; opacity: .5; pointer-events: none; background: repeating-linear-gradient(135deg, rgba(255,255,255,.025) 0 2px, transparent 2px 16px); }
   .estd .tela::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 22%; pointer-events: none; background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--cc) 40%, transparent)); }
@@ -624,6 +624,32 @@
   .vreq p.no .vo { background: #FF4B4B; color: #2a0505; }
   .vreq p.no { color: #ffb3b3; }
   .vesl { font: italic 800 12.5px/1.3 Nunito, sans-serif; color: #e6e0f6; margin-top: 4px; }
+  /* Insignia de nivel + barra de nivel con pico */
+  .estd .nv { right: 8px; top: 6px; width: 74px; filter: drop-shadow(0 4px 8px rgba(0,0,0,.5)); }
+  .estd .nv svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .estd .aj.ed { width: 40px; height: 40px; border-color: var(--accent); background: rgba(198,224,0,.12); color: var(--accent); box-shadow: 0 0 12px rgba(198,224,0,.25); }
+  .estd .aj.ed:hover { background: var(--accent); color: #14101f; }
+  .estd .aj.ed svg { width: 20px; height: 20px; stroke-linejoin: round; }
+  .lvl { margin: 14px auto 0; max-width: 290px; text-align: left; }
+  .lvl .lvt { display: flex; justify-content: space-between; align-items: baseline; }
+  .lvl .lvt span { font: italic 900 15px/1 var(--display); text-transform: uppercase; color: #fff; }
+  .lvl .lvt b { font: italic 900 20px/1 var(--display); color: var(--oro); text-shadow: 0 0 10px rgba(255,200,0,.4); }
+  .lvl .lvb { position: relative; height: 44px; margin: 36px 14px 0; }
+  .lvl .lvtr { position: absolute; left: 0; right: 0; top: 7px; height: 10px; border-radius: 99px; background: #0b0818; border: 1.5px solid #352E58; overflow: hidden; }
+  .lvl .lvtr i { display: block; height: 100%; background: linear-gradient(90deg, #C77A00, #FFC800 70%, #FFE98a); box-shadow: 0 0 10px rgba(255,200,0,.6); position: relative; animation: cfLlena 1.3s cubic-bezier(.2,.9,.3,1) both; }
+  .lvl .lvtr i::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(115deg, rgba(255,255,255,.22) 0 6px, transparent 6px 12px); animation: cfRayas 1.2s linear infinite; }
+  .lvl .lvn { position: absolute; top: 0; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; z-index: 1; }
+  .lvl .lvn b { width: 24px; height: 24px; display: grid; place-items: center; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); background: #2f2852; color: #8f86b3; font: italic 900 13px/1 var(--display); }
+  .lvl .lvn.ok b { background: linear-gradient(180deg, #FFE98a, #FFB800); color: #3b2500; }
+  .lvl .lvn.yo b { box-shadow: 0 0 0 2px #fff inset; transform: scale(1.15); }
+  .lvl .lvn small { margin-top: 5px; font: 900 10px/1 Nunito, sans-serif; color: var(--text-dim); white-space: nowrap; }
+  .lvl .lvn.ok small { color: #FFE98a; }
+  .lvl .lvp { position: absolute; bottom: 100%; transform: translateX(-50%); margin-bottom: -4px; z-index: 2; animation: lvPk 2s ease-in-out infinite; }
+  .lvl .lvp em { display: block; position: relative; padding: 4px 8px; border-radius: 7px; background: #fff; color: #14101f; font: italic 900 13px/1 var(--display); white-space: nowrap; box-shadow: 0 3px 10px rgba(0,0,0,.4); }
+  .lvl .lvp em::after { content: ""; position: absolute; left: 50%; top: 100%; margin-left: -6px; border: 6px solid transparent; border-top: 7px solid #fff; border-bottom: 0; }
+  @keyframes lvPk { 50% { transform: translate(-50%, -3px); } }
+  .lvl .lvf { display: block; font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+  .lvl .lvf b { color: #fff; }
 </style>
 <link rel="stylesheet" href="assets/amigos.css?v=7">
 <script src="assets/mc-config.js"></script>
@@ -730,8 +756,8 @@
     var pct = Math.min(100, Math.round(100 * (+c.xp || 0) / Math.max(1, +c.meta))), ok = +c.xp >= +c.meta;
     return '<div class="card"><div class="h2">Meta del clan <em>esta semana</em></div>' +
       '<div class="bar"><i style="width:' + pct + '%"></i><b>' + nf(c.xp) + ' / ' + nf(c.meta) + ' XP</b></div>' +
-      '<div class="meta-lr"><span class="small">' + (ok ? '' : 'Faltan ' + nf(c.meta - c.xp) + ' XP para subir al nivel ' + ((+c.nivel || 1) + 1) + ' · ') + faltan() + '</span>' +
-      (ok ? '<span class="meta-ok">¡Meta cumplida! El lunes suben al nivel ' + ((+c.nivel || 1) + 1) + '</span>' : '') + '</div></div>';
+      '<div class="meta-lr"><span class="small">' + (ok ? '' : 'Faltan ' + nf(c.meta - c.xp) + ' XP para la meta · ') + faltan() + '</span>' +
+      (ok ? '<span class="meta-ok">¡Meta de la semana cumplida!</span>' : '') + '</div></div>';
   }
   function diasSin(m) {
     var f = String(m.ultima || '').slice(0, 10); if (!f) return 99;
@@ -1079,7 +1105,7 @@
   var SV_AB = '<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></svg>';
   function ingresoChips(c) {
     var h = '<span class="ing ' + (c.aprobacion === 'solicitud' ? 'ap' : 'ab') + '">' + (c.aprobacion === 'solicitud' ? SV_LK + 'Con aprobación' : SV_AB + 'Abierto') + '</span>';
-    if (+c.min_nivel) h += '<span class="ing rq">Nivel ' + c.min_nivel + '+</span>';
+    if (+c.min_nivel) h += '<span class="ing rq">Alumno nivel ' + c.min_nivel + '+</span>';
     if (+c.min_rango) h += '<span class="ing rq">' + rgIco(+c.min_rango) + RG_NOM[c.min_rango] + '+</span>';
     return h;
   }
@@ -1098,24 +1124,53 @@
 
   /* ---------- Resumen: estandarte + cofres + actividad ---------- */
   var SV_CP = '<svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>';
+  var NIV = [0, 50000, 200000, 500000, 1000000];
+  function fk(n) { n = +n || 0; return n >= 1e6 ? String(Math.round(n / 1e5) / 10).replace('.', ',') + ' M' : n >= 1000 ? String(Math.round(n / 100) / 10).replace('.', ',').replace(/,0$/, '') + ' mil' : String(n); }
+  // Insignia de nivel: hexágono dorado con cinta y 5 rombos (niveles alcanzados)
+  function insignia(n) {
+    var pips = '';
+    for (var i = 0; i < 5; i++) pips += '<path d="M' + (22 + i * 9) + ' 84l3.4-3.4 3.4 3.4-3.4 3.4z" fill="' + (i < n ? '#FFD84a' : '#3a2f6b') + '" stroke="#1a1030" stroke-width="1.2"/>';
+    return '<svg viewBox="0 0 80 92" aria-hidden="true"><defs>' +
+      '<linearGradient id="nvO" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF0A0"/><stop offset=".45" stop-color="#FFC800"/><stop offset="1" stop-color="#C77A00"/></linearGradient>' +
+      '<linearGradient id="nvI" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b2a7a"/><stop offset="1" stop-color="#150d33"/></linearGradient>' +
+      '<linearGradient id="nvC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8B6CF0"/><stop offset="1" stop-color="#4A2FA8"/></linearGradient>' +
+      '<radialGradient id="nvG" cx=".5" cy=".4" r=".6"><stop offset="0" stop-color="#FFC800" stop-opacity=".55"/><stop offset="1" stop-color="#FFC800" stop-opacity="0"/></radialGradient></defs>' +
+      '<circle cx="40" cy="34" r="38" fill="url(#nvG)"/>' +
+      '<path d="M12 22 4 16l6 16zM68 22l8-6-6 16z" fill="url(#nvO)" stroke="#1a1030" stroke-width="2.2" stroke-linejoin="round"/>' +
+      '<path d="M40 3l28 15v32L40 66 12 50V18z" fill="url(#nvO)" stroke="#1a1030" stroke-width="3" stroke-linejoin="round"/>' +
+      '<path d="M40 10l21.5 11.5v25L40 58.5 18.5 46.5v-25z" fill="url(#nvI)" stroke="#8a5a00" stroke-width="1.6"/>' +
+      '<path d="M22 22.5 40 12.5l18 10" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="2" stroke-linecap="round"/>' +
+      '<text x="40" y="45" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-style="italic" font-weight="900" font-size="30" fill="#fff" stroke="#1a1030" stroke-width="1" paint-order="stroke">' + n + '</text>' +
+      '<path d="M8 62h64l-5 6 5 6H8l5-6z" fill="url(#nvC)" stroke="#1a1030" stroke-width="2.4" stroke-linejoin="round"/>' +
+      '<text x="40" y="71.5" text-anchor="middle" font-family="Nunito, sans-serif" font-weight="900" font-size="9" letter-spacing="1.6" fill="#FFE98a">NIVEL</text>' + pips + '</svg>';
+  }
+  // Barra de nivel: 5 nodos, relleno dorado y un pico (triángulo invertido) con los puntos del clan
+  function barraNivel(c) {
+    var p = +c.puntos || 0, L = c.niveles || NIV, n = Math.max(1, Math.min(5, +c.nivel || 1)), x = 100;
+    for (var i = 1; i < L.length; i++) if (p < L[i]) { x = 25 * (i - 1) + 25 * (p - L[i - 1]) / Math.max(1, L[i] - L[i - 1]); break; }
+    x = Math.max(0, Math.min(100, x));
+    var nodos = L.map(function (v, k) { return '<span class="lvn' + (k < n ? ' ok' : '') + (k === n - 1 ? ' yo' : '') + '" style="left:' + (25 * k) + '%"><b>' + (k + 1) + '</b><small>' + fk(v) + '</small></span>'; }).join('');
+    var sig = n < 5 ? L[n] : null;
+    return '<div class="lvl"><div class="lvt"><span>Puntos del clan</span><b>' + nf(p) + '</b></div>' +
+      '<small class="lvf">' + (sig ? 'Faltan <b>' + nf(sig - p) + '</b> para el nivel ' + (n + 1) : '<b>¡Nivel máximo!</b>') + ' · semana <b>+' + nf(c.xp) + '</b></small>' +
+      '<div class="lvb"><div class="lvtr"><i style="width:' + x.toFixed(1) + '%"></i></div><div class="lvp" style="left:' + x.toFixed(1) + '%"><em>' + fk(p) + '</em></div>' + nodos + '</div></div>';
+  }
   function estandarte(c) {
-    var pct = Math.min(100, Math.round(100 * (+c.xp || 0) / Math.max(1, +c.meta))), ok = +c.xp >= +c.meta, hoy = D.miembros.filter(function (m) { return diasSin(m) === 0; }).length;
+    var hoy = D.miembros.filter(function (m) { return diasSin(m) === 0; }).length, lider = D.rol === 'lider';
     return '<div class="estd" style="--cc:' + esc(c.color || '#C6E000') + '"><div class="marco"><div class="tela">' +
-      '<button type="button" class="aj" data-vista="ajustes" aria-label="Ajustes del clan">' + SV.cfg + '</button>' +
-      '<div class="nv"><div class="hexn"><svg viewBox="0 0 58 64"><path d="M29 2l25 14v32L29 62 4 48V16z" fill="#FFC800" stroke="#8a5a00" stroke-width="3"/><path d="M29 9l19 11v24L29 55 10 44V20z" fill="none" stroke="#FFE98a" stroke-width="1.5"/></svg><b>' + (+c.nivel || 1) + '</b></div><small>NIVEL</small></div>' +
+      '<button type="button" class="aj' + (lider ? ' ed' : '') + '" data-vista="ajustes" aria-label="' + (lider ? 'Editar el clan' : 'Ajustes del clan') + '" title="' + (lider ? 'Editar el clan' : 'Ajustes') + '">' + (lider ? SV_LAPIZ : SV.cfg) + '</button>' +
+      '<div class="nv">' + insignia(Math.max(1, Math.min(5, +c.nivel || 1))) + '</div>' +
       escudo(c, 'grande') + '<div class="nm">' + esc(c.nombre) + '</div>' + (c.oficial ? '<span class="ofi">' + SV.sello + 'Clan oficial</span><br>' : '') +
       (c.eslogan ? '<p class="esl">' + esc(c.eslogan) + '</p>' : '') +
-      '<div class="ids">' + (c.id_publico ? '<button type="button" class="cod" data-copiar="' + c.id_publico + '" data-que="ID">ID <b>' + c.id_publico + '</b>' + SV_CP + '</button>' : '') +
-      '<button type="button" class="cod" data-copiar="' + esc(c.codigo) + '">#' + esc(c.tag) + ' · <b>' + esc(c.codigo) + '</b>' + SV_CP + '</button></div>' + etqHtml(c.etiquetas) +
+      '<div class="ids">' + (c.id_publico ? '<button type="button" class="cod" data-copiar="' + c.id_publico + '" data-que="ID">#' + esc(c.tag) + ' · ID <b>' + c.id_publico + '</b>' + SV_CP + '</button>' : '<span class="cod">#' + esc(c.tag) + '</span>') + '</div>' + etqHtml(c.etiquetas) +
       '<div class="ingr">' + ingresoChips(c) + '</div>' +
       '<div class="chips"><span>' + SV.gente.replace(' class="i"', '') + '<b>' + c.miembros + '</b>/20</span>' +
       '<span><i style="width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 6px var(--ok)"></i><b>' + hoy + '</b> hoy</span>' +
       (+c.copas ? '<span><svg viewBox="0 0 40 40"><use href="#cl-copa"/></svg><b>' + c.copas + '</b></span>' : '') +
       (+c.victorias ? '<span><svg viewBox="0 0 24 24" fill="none" stroke="#1CB0F6" stroke-width="2.4" stroke-linecap="round"><path d="M5 3l14 14M19 3 5 17"/></svg><b>' + c.victorias + '</b></span>' : '') + '</div>' +
-      '<div class="met"><div class="t">Rumbo al nivel ' + ((+c.nivel || 1) + 1) + '<span>' + nf(c.xp) + ' / ' + nf(c.meta) + ' XP</span></div><div class="br"><i style="width:' + Math.max(2, pct) + '%"></i></div>' +
-      '<small>' + (ok ? '¡Meta cumplida! El lunes suben de nivel' : 'Meta de XP de la semana · ' + faltan()) + '</small></div>' +
-      '</div></div></div>';
+      barraNivel(c) + '</div></div></div>';
   }
+  var SV_LAPIZ = '<svg viewBox="0 0 24 24"><path d="M4 20l1-4.5L16 4.5a2.1 2.1 0 0 1 3 3L8 18.5z"/><path d="M14 6.5l3 3M4 20l4.5-1.5"/></svg>';
   function resumen() {
     var c = D.clan, aviso = (D.me_empujaron || []).length ? '<div class="empuje">' + SV.empujar + '<span><b>' + esc(D.me_empujaron.slice(0, 3).join(', ')) + '</b> ' + (D.me_empujaron.length === 1 ? 'te empujó' : 'te empujaron') + ' a estudiar hoy. ¡No los dejes solos!</span></div>' : '';
     return '<div class="res-lay"><div>' + estandarte(c) + '</div><div style="min-width:0">' + aviso + pedidosCard() + guerraMini() +
