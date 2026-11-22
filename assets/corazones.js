@@ -635,7 +635,13 @@
     if (k <= ya) return;
     g = {}; g[sem] = k;   // solo se recuerda esta semana
     try { localStorage.setItem(cl, JSON.stringify(g)); } catch (x) {}
-    js(BASE + 'assets/coleccion.js?v=212', function () { return window.MCColeccion; }).then(function () {
+    // Supabase recuerda qué pack ya se mostró (supabase/126): así no vuelve a llegar si borra la caché
+    rpc('aviso_marcar', { p_clave: 'tpremio:' + sem, p_valor: k }).then(function (antes) { return Math.max(ya, antes == null ? -1 : +antes); }, function () { return ya; }).then(function (y) {
+      if (k <= y) return false;
+      ya = y;
+      return js(BASE + 'assets/coleccion.js?v=212', function () { return window.MCColeccion; }).then(function () { return true; });
+    }).then(function (seguir) {
+      if (!seguir || !window.MCColeccion) return;
       var C = window.MCColeccion, T = C.temporada && C.temporada(sem);
       if (!T) return;
       var regs = [];
