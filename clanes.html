@@ -452,7 +452,15 @@
   .estd .met .br i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, #FFC800, #FFE066); box-shadow: 0 0 10px rgba(255,200,0,.5); }
   .estd .met small { display: block; font-size: 11px; color: var(--text-dim); margin-top: 5px; }
   /* Botones grandes de la derecha */
-  .top2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .top2 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 12px; }
+  @media (max-width: 600px) { .top2 { grid-template-columns: 1fr 1fr; } .top2 > :last-child { grid-column: 1 / -1; } }
+  .hist-caja { width: min(560px, 100%); max-height: 82vh; display: flex; flex-direction: column; background: #1a1530; border: 1.5px solid #352E58; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.6); }
+  .hist-caja .hc { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid #2a2346; font: italic 900 22px/1 var(--display); text-transform: uppercase; color: #fff; }
+  .hist-caja .hc button { width: 34px; height: 34px; border-radius: 9px; border: 1.5px solid #352E58; background: #1D1834; color: #fff; font: 900 18px/1 Nunito, sans-serif; cursor: pointer; }
+  .hist-caja .hb { overflow-y: auto; }
+  .hist-caja .card { border: 0; border-radius: 0; margin: 0; background: transparent; }
+  .hist-caja .card .h2 { display: none; }
+  .pjc .cab .emp { flex: none; }
   .big { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 14px; background: linear-gradient(180deg, #221a44, #181230); border: 2px solid #2f2852; border-bottom-width: 4px; color: #fff; font: italic 900 18px/1 var(--display); text-transform: uppercase; cursor: pointer; text-align: left; width: 100%; }
   .big:hover:not(.pronto) { border-color: #4a3f78; }
   .big .ib { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; flex: none; }
@@ -687,6 +695,16 @@
   .lvl .lvf { display: block; font-size: 11px; color: var(--text-dim); margin-top: 4px; }
   .lvl .lvf b { color: #fff; }
   .lvl .lvb { position: relative; margin: 40px 8px 0; }
+  /* PC: el Resumen entra en una sola pantalla */
+  @media (min-width: 1100px) {
+    .estd .tela { padding: 14px 16px 62px; }
+    .estd .esc.grande { width: 118px; height: 132px; margin-top: 4px; }
+    .estd .nm { font-size: 28px; margin-top: 6px; }
+    .estd .chips { margin-top: 8px; }
+    .lvl { margin-top: 10px; }
+    .lvl .lvb { margin-top: 28px; }
+    .top2 .big { padding: 9px 11px; }
+  }
   .lvl .lvr { position: relative; height: 10px; border-radius: 99px; background: #07050f; box-shadow: inset 0 1px 3px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.06); }
   .lvl .lvr i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 99px; background: linear-gradient(90deg, color-mix(in srgb, var(--cc) 45%, #000), var(--cc) 60%, color-mix(in srgb, var(--cc) 45%, #fff)); box-shadow: 0 0 12px color-mix(in srgb, var(--cc) 60%, transparent); animation: cfLlena 1.3s cubic-bezier(.2,.9,.3,1) both; }
   .lvl .lvr s { position: absolute; top: 50%; width: 14px; height: 14px; transform: translate(-50%, -50%) rotate(45deg); background: #241d44; border: 2px solid #5a4f8a; }
@@ -1252,9 +1270,10 @@
   function resumen() {
     var c = D.clan, aviso = (D.me_empujaron || []).length ? '<div class="empuje">' + SV.empujar + '<span><b>' + esc(D.me_empujaron.slice(0, 3).join(', ')) + '</b> ' + (D.me_empujaron.length === 1 ? 'te empujó' : 'te empujaron') + ' a estudiar hoy. ¡No los dejes solos!</span></div>' : '';
     return '<div class="res-lay"><div>' + estandarte(c) + '</div><div style="min-width:0">' + aviso + pedidosCard() + guerraMini() +
-      '<div class="top2"><button type="button" class="big" data-vista="top"><span class="ib" style="background:rgba(28,176,246,.15);color:#1CB0F6"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20h4V10H3zM10 20h4V4h-4zM17 20h4v-7h-4z"/></svg></span><span>Clasificación<small>' + (c.puesto ? 'Puesto #' + c.puesto + ' esta semana' : 'Top de clanes') + '</small></span></button>' +
+      '<div class="top2"><button type="button" class="big" data-vista="top"><span class="ib" style="background:rgba(28,176,246,.15);color:#1CB0F6"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20h4V10H3zM10 20h4V4h-4zM17 20h4v-7h-4z"/></svg></span><span>Clasificación<small>' + (c.puesto ? 'Puesto #' + c.puesto + ' · semana' : 'Top de clanes') + '</small></span></button>' +
+      '<button type="button" class="big" data-historial><span class="ib" style="background:rgba(255,150,0,.15);color:#FF9600"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg></span><span>Historial<small>Actividad del clan</small></span></button>' +
       '<div class="big pronto"><span class="ib" style="background:rgba(206,130,255,.15);color:#CE82FF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M4 9h16l-1 11H5zM8 9V7a4 4 0 0 1 8 0v2"/></svg></span><span>Tienda del clan<small>Muy pronto</small></span></div></div>' +
-      cofresCard() + muro() + actividad(6) + '</div></div>';
+      cofresCard() + '</div></div>';
   }
   function miembrosVista() {
     var c = D.clan;
@@ -1292,7 +1311,7 @@
     var nav = ms.length > 1 ? '<button type="button" class="pjn iz" data-pjnav="-1" aria-label="Anterior">‹</button><button type="button" class="pjn de" data-pjnav="1" aria-label="Siguiente">›</button>' +
       '<div class="pjd">' + ms.map(function (x, i) { return '<button type="button" class="' + (i === k ? 'on' : '') + '" data-pjir="' + x.codigo + '" aria-label="' + esc(x.apodo || 'Miembro') + '"></button>'; }).join('') + '</div>' : '';
     return '<div class="card pjc" style="--cc:' + esc(c.color || '#C6E000') + '"><div class="esc"><div class="cab"><div style="min-width:0;flex:1"><div class="n">' + (m.yo ? 'Tú' : esc(m.apodo || 'Cachimbo')) + '</div>' +
-      '<div class="l">' + rolHtml(m.rol) + rangoChip(m.xp_semana) + '</div></div></div><span class="piso"></span><div class="bh">' + buhoDe(m) + '</div>' +
+      '<div class="l">' + rolHtml(m.rol) + rangoChip(m.xp_semana) + '</div></div>' + empujarPj(m) + '</div><span class="piso"></span><div class="bh">' + buhoDe(m) + '</div>' +
       '<div class="dat"><span>' + (+m.racha || 0) + '<small>Racha</small></span><span>' + nf(m.xp_semana) + '<small>XP semana</small></span><span>' + (k + 1) + '/' + ms.length + '<small>Puesto</small></span></div>' + nav + '</div></div>';
   }
   // Slider del personaje: flechas, puntitos y deslizar con el dedo
@@ -1311,6 +1330,20 @@
       if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4) pjMover(dx < 0 ? 1 : -1);
     }, { passive: true });
   })();
+  // Empujar al que no estudió hoy (antes estaba en el Muro del clan)
+  function empujarPj(m) {
+    if (m.yo || diasSin(m) === 0) return '';
+    return m.empujado ? '<span class="emp ya' + (recien === m.codigo ? ' pop' : '') + '">' + SV.check + 'Empujado</span>' : '<button type="button" class="emp" data-empujar="' + m.codigo + '">' + SV.empujar + 'Empujar</button>';
+  }
+  // Historial: la actividad del clan en una ventana
+  function verHistorial() {
+    var o = document.createElement('div'), h = actividad(40);
+    o.className = 'cf-fondo';
+    o.innerHTML = '<div class="hist-caja" role="dialog" aria-modal="true"><div class="hc">Historial del clan<button type="button" data-hx aria-label="Cerrar">✕</button></div><div class="hb">' +
+      (h || '<p class="small" style="padding:16px">Cargando…</p>') + '</div></div>';
+    document.body.appendChild(o);
+    o.addEventListener('click', function (e) { if (e.target === o || e.target.closest('[data-hx]')) o.remove(); });
+  }
   // Salir del clan: con ventana para confirmar (que no sea por error)
   function confirmarSalir() {
     var c = D.clan, o = document.createElement('div');
@@ -1627,6 +1660,7 @@
       return;
     }
     if ((el = e.target.closest('[data-salir-ask]'))) { confirmarSalir(); return; }
+    if ((el = e.target.closest('[data-historial]'))) { verHistorial(); return; }
     if ((el = e.target.closest('[data-pjnav],[data-pjir]'))) { pjMover(el.dataset.pjir ? +el.dataset.pjir : +el.dataset.pjnav, !!el.dataset.pjir); return; }
     if ((el = e.target.closest('[data-ver]')) && !e.target.closest('[data-abrir],.acc,button,a')) { SEL = +el.dataset.ver; pintar(); return; }
     if ((el = e.target.closest('[data-abrir]'))) { var cod = +el.dataset.abrir; abierto = abierto === cod ? null : cod; seguro = ''; pintar(); return; }
