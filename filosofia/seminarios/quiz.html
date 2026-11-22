@@ -260,6 +260,7 @@
 <script src="../../assets/mc-config.js"></script>
 <script src="../../assets/pregunta.js"></script>
 <script src="../../assets/sonido.js"></script>
+<script src="../../assets/siguiente-tema.js?v=1" defer></script>
 <script src="../../assets/auth.js"></script>
 <script src="../../assets/acceso.js"></script>
 <script src="../../assets/candado.js"></script>
@@ -635,6 +636,8 @@
     finalScore.textContent = `${score} pts`;
     // El búho reacciona al resultado (assets/buho/escena.js)
     const aciertos = answers.filter((a, i) => activeQuestions[i] && a === activeQuestions[i].correct).length;
+    // «Siguiente tema» debajo de «Repetir ronda» si respondió todas bien (assets/siguiente-tema.js)
+    document.dispatchEvent(new CustomEvent('mc:fin-ronda', { detail: { anio: year, tema: temaParam, todas: answers.length === activeQuestions.length && aciertos === activeQuestions.length } }));
     if (window.MCEscena) MCEscena.fin(document.getElementById('finEscena'), MCEscena.area('filosofia'), { vidas: lives, pct: aciertos / Math.max(1, answers.length) });
     endMessage.textContent = lives <= 0 ? 'Se acabaron tus vidas. ¡Sigue practicando!' : 'Así te fue en esta práctica';
     // Progreso del estudiante (assets/progreso.js), una sola vez por ronda
