@@ -241,5 +241,5 @@
     return { actual: ACT, estado: est, hechos: est.filter(function (s) { return s.hecho; }).length, total: n };
   }
 
-  window.MCIslas = { abrir: abrir, isla: islaSVG, extra: extraSVG };
+  window.MCIslas = { abrir: abrir, isla: islaSVG, extra: extraSVG, estados: estados };
 })();
