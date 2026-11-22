@@ -372,7 +372,7 @@
   /* Estandarte */
   .estd { position: relative; width: 100%; max-width: 360px; margin: 0 auto; filter: drop-shadow(0 18px 30px rgba(0,0,0,.45)); }
   .estd .marco { position: relative; padding: 3px; background: linear-gradient(180deg, var(--cc), #3a2d66 26%, #3a2d66 72%, var(--cc)); clip-path: polygon(0 0, 100% 0, 100% 86%, 50% 100%, 0 86%); }
-  .estd .tela { position: relative; overflow: hidden; text-align: center; padding: 18px 18px 64px; clip-path: polygon(0 0, 100% 0, 100% 86%, 50% 100%, 0 86%);
+  .estd .tela { position: relative; overflow: hidden; text-align: center; padding: 18px 18px 84px; clip-path: polygon(0 0, 100% 0, 100% 86%, 50% 100%, 0 86%);
     background: radial-gradient(220px 190px at 50% 30%, color-mix(in srgb, var(--cc) 32%, transparent), transparent 70%), linear-gradient(180deg, #251c4a 0%, #18122f 60%, #120d24 100%); }
   .estd .tela::before { content: ""; position: absolute; inset: 0; opacity: .5; pointer-events: none; background: repeating-linear-gradient(135deg, rgba(255,255,255,.025) 0 2px, transparent 2px 16px); }
   .estd .tela::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 22%; pointer-events: none; background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--cc) 40%, transparent)); }
@@ -624,6 +624,33 @@
   .vreq p.no .vo { background: #FF4B4B; color: #2a0505; }
   .vreq p.no { color: #ffb3b3; }
   .vesl { font: italic 800 12.5px/1.3 Nunito, sans-serif; color: #e6e0f6; margin-top: 4px; }
+  /* Insignia de nivel + barra de nivel con pico */
+  .estd .nv { right: 4px; top: 2px; width: 92px; filter: drop-shadow(0 4px 8px rgba(0,0,0,.5)); }
+  .estd .nv svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .estd .aj.ed { width: 40px; height: 40px; border-color: var(--accent); background: rgba(198,224,0,.12); color: var(--accent); box-shadow: 0 0 12px rgba(198,224,0,.25); }
+  .estd .aj.ed:hover { background: var(--accent); color: #14101f; }
+  .estd .aj.ed svg { width: 20px; height: 20px; stroke-linejoin: round; }
+  .lvl { margin: 14px auto 0; max-width: 290px; text-align: left; }
+  .lvl .lvt { display: flex; justify-content: space-between; align-items: baseline; }
+  .lvl .lvt span { font: italic 900 15px/1 var(--display); text-transform: uppercase; color: #fff; }
+  .lvl .lvt b { font: italic 900 22px/1 var(--display); color: var(--cc); text-shadow: 0 0 12px color-mix(in srgb, var(--cc) 45%, transparent); }
+  .lvl .lvf { display: block; font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+  .lvl .lvf b { color: #fff; }
+  .lvl .lvb { position: relative; margin: 40px 8px 0; }
+  .lvl .lvr { position: relative; height: 10px; border-radius: 99px; background: #07050f; box-shadow: inset 0 1px 3px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.06); }
+  .lvl .lvr i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 99px; background: linear-gradient(90deg, color-mix(in srgb, var(--cc) 45%, #000), var(--cc) 60%, color-mix(in srgb, var(--cc) 45%, #fff)); box-shadow: 0 0 12px color-mix(in srgb, var(--cc) 60%, transparent); animation: cfLlena 1.3s cubic-bezier(.2,.9,.3,1) both; }
+  .lvl .lvr s { position: absolute; top: 50%; width: 14px; height: 14px; transform: translate(-50%, -50%) rotate(45deg); background: #241d44; border: 2px solid #5a4f8a; }
+  .lvl .lvr s.ok { background: linear-gradient(135deg, color-mix(in srgb, var(--cc) 25%, #fff), color-mix(in srgb, var(--cc) 75%, #000)); border-color: color-mix(in srgb, var(--cc) 40%, #fff); box-shadow: 0 0 8px color-mix(in srgb, var(--cc) 70%, transparent); }
+  .lvl .lvb { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .lvl .lvp { position: absolute; bottom: 100%; margin-bottom: 5px; transform: translateX(-50%); z-index: 2; filter: drop-shadow(0 3px 6px rgba(0,0,0,.5)); opacity: 0; visibility: hidden; transition: opacity .25s, visibility .25s; }
+  .lvl .lvb.ver .lvp { opacity: 1; visibility: visible; animation: lvPk 2s ease-in-out infinite; }
+  .lvl .lvp em { display: block; position: relative; padding: 4px 9px; border-radius: 7px; background: linear-gradient(180deg, color-mix(in srgb, var(--cc) 40%, #fff), var(--cc)); border: 1.5px solid color-mix(in srgb, var(--cc) 20%, #fff); color: #14101f; font: italic 900 13px/1 var(--display); white-space: nowrap; }
+  .lvl .lvp em::after { content: ""; position: absolute; left: 50%; top: 100%; margin-left: -6px; border: 6px solid transparent; border-top: 7px solid var(--cc); border-bottom: 0; }
+  @keyframes lvPk { 50% { transform: translate(-50%, -3px); } }
+  .lvl .lvl5 { display: flex; justify-content: space-between; margin: 10px -14px 0; }
+  .lvl .lvl5 span { width: 44px; text-align: center; font: 900 10px/1.1 Nunito, sans-serif; color: #8f86b3; white-space: nowrap; }
+  .lvl .lvl5 span b { display: block; font: italic 900 14px/1 var(--display); color: #5a4f8a; }
+  .lvl .lvl5 span.ok { color: color-mix(in srgb, var(--cc) 50%, #fff); } .lvl .lvl5 span.ok b { color: var(--cc); }
 </style>
 <link rel="stylesheet" href="assets/amigos.css?v=7">
 <script src="assets/mc-config.js"></script>
@@ -730,8 +757,8 @@
     var pct = Math.min(100, Math.round(100 * (+c.xp || 0) / Math.max(1, +c.meta))), ok = +c.xp >= +c.meta;
     return '<div class="card"><div class="h2">Meta del clan <em>esta semana</em></div>' +
       '<div class="bar"><i style="width:' + pct + '%"></i><b>' + nf(c.xp) + ' / ' + nf(c.meta) + ' XP</b></div>' +
-      '<div class="meta-lr"><span class="small">' + (ok ? '' : 'Faltan ' + nf(c.meta - c.xp) + ' XP para subir al nivel ' + ((+c.nivel || 1) + 1) + ' · ') + faltan() + '</span>' +
-      (ok ? '<span class="meta-ok">¡Meta cumplida! El lunes suben al nivel ' + ((+c.nivel || 1) + 1) + '</span>' : '') + '</div></div>';
+      '<div class="meta-lr"><span class="small">' + (ok ? '' : 'Faltan ' + nf(c.meta - c.xp) + ' XP para la meta · ') + faltan() + '</span>' +
+      (ok ? '<span class="meta-ok">¡Meta de la semana cumplida!</span>' : '') + '</div></div>';
   }
   function diasSin(m) {
     var f = String(m.ultima || '').slice(0, 10); if (!f) return 99;
@@ -1079,7 +1106,7 @@
   var SV_AB = '<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></svg>';
   function ingresoChips(c) {
     var h = '<span class="ing ' + (c.aprobacion === 'solicitud' ? 'ap' : 'ab') + '">' + (c.aprobacion === 'solicitud' ? SV_LK + 'Con aprobación' : SV_AB + 'Abierto') + '</span>';
-    if (+c.min_nivel) h += '<span class="ing rq">Nivel ' + c.min_nivel + '+</span>';
+    if (+c.min_nivel) h += '<span class="ing rq">Alumno nivel ' + c.min_nivel + '+</span>';
     if (+c.min_rango) h += '<span class="ing rq">' + rgIco(+c.min_rango) + RG_NOM[c.min_rango] + '+</span>';
     return h;
   }
@@ -1098,24 +1125,76 @@
 
   /* ---------- Resumen: estandarte + cofres + actividad ---------- */
   var SV_CP = '<svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>';
+  var NIV = [0, 50000, 200000, 500000, 1000000];
+  function fk(n) { n = +n || 0; return n >= 1e6 ? String(Math.round(n / 1e5) / 10).replace('.', ',') + ' M' : n >= 1000 ? String(Math.round(n / 100) / 10).replace('.', ',').replace(/,0$/, '') + ' mil' : String(n); }
+  // Insignia de nivel: medallón lima con laureles, corona y cinta NIVEL; 5 rombos = niveles alcanzados
+  // Mezcla un color #rrggbb con blanco (t > 0) o negro (t < 0)
+  function tono(hex, t) {
+    var m = /^#?([0-9a-f]{6})$/i.exec(hex || ''), v = parseInt(m ? m[1] : 'C6E000', 16), c = [v >> 16, (v >> 8) & 255, v & 255];
+    return '#' + c.map(function (x) { x = t > 0 ? x + (255 - x) * t : x * (1 + t); return ('0' + Math.round(x).toString(16)).slice(-2); }).join('');
+  }
+  function insignia(n, col) {
+    var OL = '#1a1030', h = '', C = col || '#C6E000', c0 = tono(C, .8), c1 = tono(C, .15), c2 = tono(C, -.25), c3 = tono(C, -.55), c4 = tono(C, .55), c5 = tono(C, .3);
+    function hoja(R, a, rot, sc) { var r = a * Math.PI / 180, x = 60 + R * Math.cos(r), y = 70 + R * Math.sin(r);
+      return '<ellipse cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" rx="' + (4.4 * sc).toFixed(1) + '" ry="' + (9.5 * sc).toFixed(1) + '" transform="rotate(' + rot.toFixed(0) + ' ' + x.toFixed(1) + ' ' + y.toFixed(1) + ')" fill="url(#nvO)" stroke="' + OL + '" stroke-width="1.5"/>'; }
+    h += '<path d="M60 112C34 110 18 92 17 64M60 112c26-2 42-20 43-48" fill="none" stroke="' + c3 + '" stroke-width="2.4" stroke-linecap="round"/>';
+    for (var k = 0; k < 7; k++) { var a = 72 - k * 19, sc = 1 - k * .06; h += hoja(43, a, a + 25, sc) + hoja(43, 180 - a, 180 - a - 25, sc); }
+    var pips = '';
+    for (var i = 0; i < 5; i++) pips += '<path d="M' + (42 + i * 9) + ' 129l3.4-3.4 3.4 3.4-3.4 3.4z" fill="' + (i < n ? c5 : '#3a2f6b') + '" stroke="' + OL + '" stroke-width="1.2"/>';
+    return '<svg viewBox="0 0 120 136" aria-hidden="true"><defs>' +
+      '<linearGradient id="nvO" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + c0 + '"/><stop offset=".4" stop-color="' + c1 + '"/><stop offset=".75" stop-color="' + c2 + '"/><stop offset="1" stop-color="' + c3 + '"/></linearGradient>' +
+      '<linearGradient id="nvD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + c3 + '"/><stop offset="1" stop-color="' + c4 + '"/></linearGradient>' +
+      '<radialGradient id="nvI" cx=".5" cy=".3" r=".75"><stop offset="0" stop-color="#5a40b8"/><stop offset=".6" stop-color="#2a1a66"/><stop offset="1" stop-color="#120a2c"/></radialGradient>' +
+      '<linearGradient id="nvT" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="' + c4 + '"/><stop offset="1" stop-color="' + C + '"/></linearGradient>' +
+      '<linearGradient id="nvC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a2a7a"/><stop offset="1" stop-color="#1d1440"/></linearGradient>' +
+      '<radialGradient id="nvG" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="' + C + '" stop-opacity=".45"/><stop offset="1" stop-color="' + C + '" stop-opacity="0"/></radialGradient></defs>' +
+      '<circle cx="60" cy="70" r="58" fill="url(#nvG)"/>' + h +
+      '<circle cx="60" cy="70" r="34" fill="url(#nvO)" stroke="' + OL + '" stroke-width="3"/>' +
+      '<circle cx="60" cy="70" r="29.5" fill="url(#nvD)"/>' +
+      '<circle cx="60" cy="70" r="25.5" fill="url(#nvI)" stroke="' + c3 + '" stroke-width="2"/>' +
+      '<path d="M41 60a22 22 0 0 1 32-7" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="4.5" stroke-linecap="round"/>' +
+      '<path d="M40 31l6 8 7-12 7 10 7-10 7 12 6-8-3 13H43z" fill="url(#nvO)" stroke="' + OL + '" stroke-width="2.4" stroke-linejoin="round"/>' +
+      '<path d="M60 35l3.4 3.4-3.4 3.4-3.4-3.4z" fill="#FF4B6E" stroke="' + OL + '" stroke-width="1.3"/>' +
+      '<circle cx="40" cy="31" r="2.4" fill="' + c0 + '" stroke="' + OL + '" stroke-width="1.1"/><circle cx="80" cy="31" r="2.4" fill="' + c0 + '" stroke="' + OL + '" stroke-width="1.1"/><circle cx="60" cy="23" r="2.6" fill="' + c0 + '" stroke="' + OL + '" stroke-width="1.1"/>' +
+      '<text x="60" y="83" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-style="italic" font-weight="900" font-size="34" fill="url(#nvT)" stroke="' + OL + '" stroke-width="2" paint-order="stroke">' + n + '</text>' +
+      '<path d="M22 104h16v14H22l5-7zM98 104H82v14h16l-5-7z" fill="#2a1a66" stroke="' + OL + '" stroke-width="2" stroke-linejoin="round"/>' +
+      '<path d="M32 100h56v14H32z" fill="url(#nvC)" stroke="' + OL + '" stroke-width="2.2"/><path d="M34 102.5h52" stroke="' + C + '" stroke-opacity=".5" stroke-width="1.2"/>' +
+      '<text x="60" y="110.5" text-anchor="middle" font-family="Nunito, sans-serif" font-weight="900" font-size="9" letter-spacing="2" fill="' + c5 + '">NIVEL</text>' + pips + '</svg>';
+  }
+  // Barra de nivel: riel fino lima con rombos por nivel y un pico con los puntos del clan
+  // Tocar la barra muestra los puntos exactos 30 s
+  window.lvVer = function (el) {
+    el.classList.add('ver'); clearTimeout(el._t);
+    el._t = setTimeout(function () { el.classList.remove('ver'); }, 30000);
+  };
+  function barraNivel(c) {
+    var p = +c.puntos || 0, L = c.niveles || NIV, n = Math.max(1, Math.min(5, +c.nivel || 1)), x = 100;
+    for (var i = 1; i < L.length; i++) if (p < L[i]) { x = 25 * (i - 1) + 25 * (p - L[i - 1]) / Math.max(1, L[i] - L[i - 1]); break; }
+    x = Math.max(0, Math.min(100, x));
+    var rombos = L.map(function (v, k) { return '<s class="' + (k < n ? 'ok' : '') + '" style="left:' + (25 * k) + '%"></s>'; }).join('');
+    var lbl = L.map(function (v, k) { return '<span class="' + (k < n ? 'ok' : '') + '"><b>' + (k + 1) + '</b>' + fk(v) + '</span>'; }).join('');
+    var sig = n < 5 ? L[n] : null;
+    return '<div class="lvl"><div class="lvt"><span>Puntos del clan</span><b>' + nf(p) + '</b></div>' +
+      '<small class="lvf">' + (sig ? 'Faltan <b>' + nf(sig - p) + '</b> para el nivel ' + (n + 1) : '<b>¡Nivel máximo!</b>') + ' · semana <b>+' + nf(c.xp) + '</b></small>' +
+      '<div class="lvb" role="button" tabindex="0" aria-label="Ver puntos exactos" onclick="lvVer(this)"><div class="lvp" style="left:' + x.toFixed(1) + '%"><em>' + nf(p) + '</em></div><div class="lvr"><i style="width:' + x.toFixed(1) + '%"></i>' + rombos + '</div></div>' +
+      '<div class="lvl5">' + lbl + '</div></div>';
+  }
   function estandarte(c) {
-    var pct = Math.min(100, Math.round(100 * (+c.xp || 0) / Math.max(1, +c.meta))), ok = +c.xp >= +c.meta, hoy = D.miembros.filter(function (m) { return diasSin(m) === 0; }).length;
+    var hoy = D.miembros.filter(function (m) { return diasSin(m) === 0; }).length, lider = D.rol === 'lider';
     return '<div class="estd" style="--cc:' + esc(c.color || '#C6E000') + '"><div class="marco"><div class="tela">' +
-      '<button type="button" class="aj" data-vista="ajustes" aria-label="Ajustes del clan">' + SV.cfg + '</button>' +
-      '<div class="nv"><div class="hexn"><svg viewBox="0 0 58 64"><path d="M29 2l25 14v32L29 62 4 48V16z" fill="#FFC800" stroke="#8a5a00" stroke-width="3"/><path d="M29 9l19 11v24L29 55 10 44V20z" fill="none" stroke="#FFE98a" stroke-width="1.5"/></svg><b>' + (+c.nivel || 1) + '</b></div><small>NIVEL</small></div>' +
+      '<button type="button" class="aj' + (lider ? ' ed' : '') + '" data-vista="ajustes" aria-label="' + (lider ? 'Editar el clan' : 'Ajustes del clan') + '" title="' + (lider ? 'Editar el clan' : 'Ajustes') + '">' + (lider ? SV_LAPIZ : SV.cfg) + '</button>' +
+      '<div class="nv">' + insignia(Math.max(1, Math.min(5, +c.nivel || 1)), c.color) + '</div>' +
       escudo(c, 'grande') + '<div class="nm">' + esc(c.nombre) + '</div>' + (c.oficial ? '<span class="ofi">' + SV.sello + 'Clan oficial</span><br>' : '') +
       (c.eslogan ? '<p class="esl">' + esc(c.eslogan) + '</p>' : '') +
-      '<div class="ids">' + (c.id_publico ? '<button type="button" class="cod" data-copiar="' + c.id_publico + '" data-que="ID">ID <b>' + c.id_publico + '</b>' + SV_CP + '</button>' : '') +
-      '<button type="button" class="cod" data-copiar="' + esc(c.codigo) + '">#' + esc(c.tag) + ' · <b>' + esc(c.codigo) + '</b>' + SV_CP + '</button></div>' + etqHtml(c.etiquetas) +
+      '<div class="ids">' + (c.id_publico ? '<button type="button" class="cod" data-copiar="' + c.id_publico + '" data-que="ID">ID <b>' + c.id_publico + '</b>' + SV_CP + '</button>' : '<span class="cod">#' + esc(c.tag) + '</span>') + '</div>' + etqHtml(c.etiquetas) +
       '<div class="ingr">' + ingresoChips(c) + '</div>' +
       '<div class="chips"><span>' + SV.gente.replace(' class="i"', '') + '<b>' + c.miembros + '</b>/20</span>' +
       '<span><i style="width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 6px var(--ok)"></i><b>' + hoy + '</b> hoy</span>' +
       (+c.copas ? '<span><svg viewBox="0 0 40 40"><use href="#cl-copa"/></svg><b>' + c.copas + '</b></span>' : '') +
       (+c.victorias ? '<span><svg viewBox="0 0 24 24" fill="none" stroke="#1CB0F6" stroke-width="2.4" stroke-linecap="round"><path d="M5 3l14 14M19 3 5 17"/></svg><b>' + c.victorias + '</b></span>' : '') + '</div>' +
-      '<div class="met"><div class="t">Rumbo al nivel ' + ((+c.nivel || 1) + 1) + '<span>' + nf(c.xp) + ' / ' + nf(c.meta) + ' XP</span></div><div class="br"><i style="width:' + Math.max(2, pct) + '%"></i></div>' +
-      '<small>' + (ok ? '¡Meta cumplida! El lunes suben de nivel' : 'Meta de XP de la semana · ' + faltan()) + '</small></div>' +
-      '</div></div></div>';
+      barraNivel(c) + '</div></div></div>';
   }
+  var SV_LAPIZ = '<svg viewBox="0 0 24 24"><path d="M4 20l1-4.5L16 4.5a2.1 2.1 0 0 1 3 3L8 18.5z"/><path d="M14 6.5l3 3M4 20l4.5-1.5"/></svg>';
   function resumen() {
     var c = D.clan, aviso = (D.me_empujaron || []).length ? '<div class="empuje">' + SV.empujar + '<span><b>' + esc(D.me_empujaron.slice(0, 3).join(', ')) + '</b> ' + (D.me_empujaron.length === 1 ? 'te empujó' : 'te empujaron') + ' a estudiar hoy. ¡No los dejes solos!</span></div>' : '';
     return '<div class="res-lay"><div>' + estandarte(c) + '</div><div style="min-width:0">' + aviso + pedidosCard() + guerraMini() +
