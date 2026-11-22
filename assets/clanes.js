@@ -161,6 +161,7 @@
   function sinSql(e) { return e && /clan|function .* does not exist|Could not find the function/i.test(String(e.message || e)); }
 
   var ERRORES = {
+    cofre_ya_abierto: 'Ya abriste este cofre esta semana.', cofre_pocas_preguntas: 'Primero responde al menos 30 preguntas esta semana.', cofre_cerrado: 'Tu clan aún no llega a ese cofre.', cofre_no_existe: 'Ese cofre no existe.',
     ya_en_clan: 'Ya estás en un clan. Sal de él primero.',
     espera: 'Saliste de un clan hace poco. Espera 24 horas para entrar a otro.',
     no_existe: 'No hay ningún clan con ese código. Revisa las 4 letras.',
