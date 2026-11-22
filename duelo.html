@@ -1628,6 +1628,21 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   html body .res-clan .vc strong:not(#z) { font: italic 900 34px/1 var(--display) !important; color: #fff; }
   .res-clan .vc small { font: 800 11px/1 Nunito, sans-serif; color: var(--dim); text-transform: uppercase; letter-spacing: .06em; }
   html body .res-clan .x:not(#z) { font: italic 900 34px/1 var(--display) !important; color: #fff; }
+  /* Frases rápidas del clan */
+  .frases { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; align-items: center; margin: 10px auto 0; max-width: 640px; padding: 8px 10px; border-radius: 18px; background: var(--surface); border: 2px solid #2a2346; border-bottom-width: 4px; }
+  html body .frases > span:not(#z) { font: 800 15px/1 var(--display) !important; letter-spacing: .06em; text-transform: uppercase; color: var(--dim); margin-right: 2px; }
+  .frases button { display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 11px 0 9px; border-radius: 12px; cursor: pointer; background: #1F1936; color: #fff; border: 2px solid #322B52; border-bottom-width: 4px; font: 800 13px/1 Nunito, sans-serif; }
+  .frases button svg { width: 18px; height: 18px; color: var(--lima); flex: none; }
+  .frases button i { font-style: normal; }
+  .frases button:disabled { opacity: .4; }
+  .frases button:not(:disabled):active { transform: translateY(2px); border-bottom-width: 2px; }
+  .frase-burbuja { position: fixed; z-index: 70; left: 50%; top: 84px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; padding: 10px 16px 10px 12px; border-radius: 16px; pointer-events: none;
+    background: #1b1533; border: 2px solid var(--jc); border-bottom-width: 5px; box-shadow: 0 10px 30px rgba(0,0,0,.5), 0 0 24px color-mix(in srgb, var(--jc) 35%, transparent); animation: burbuja 3.2s ease both; }
+  .frase-burbuja svg { width: 28px; height: 28px; color: var(--jc); }
+  .frase-burbuja small { display: block; font: 800 11px/1.2 Nunito, sans-serif; color: var(--dim); }
+  html body .frase-burbuja b:not(#z) { display: block; font: italic 900 22px/1 var(--display) !important; text-transform: uppercase; color: #fff; }
+  @keyframes burbuja { 0% { opacity: 0; transform: translate(-50%, -20px) scale(.8); } 10%, 85% { opacity: 1; transform: translate(-50%, 0) scale(1); } 100% { opacity: 0; transform: translate(-50%, -10px); } }
+  @media (max-width: 560px) { html body .frases > span:not(#z) { width: 100%; text-align: center; margin: 0 0 2px; } .frases button { flex: 1 1 30%; justify-content: center; gap: 4px; padding: 0 6px; font-size: 11.5px; } .frases button svg { width: 15px; height: 15px; } }
   /* Cámara en el resultado */
   .res .res-foto { position: absolute; top: 14px; right: 14px; z-index: 5; }
   @media (max-width: 520px) { .res .res-foto { top: 10px; right: 10px; } .res .res-foto span { display: none; } .res .res-foto { padding: 8px; } }
@@ -1857,6 +1872,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       <div class="veredicto" id="veredicto" role="status"></div>
     </div>
     <div class="reac" id="reac" role="group" aria-label="Reaccionar"></div>
+    <div class="frases" id="frases" role="group" aria-label="Frases para tu clan" hidden></div>
   </section>
   <div class="toasts" id="toasts" aria-live="polite"></div>
 
@@ -3183,6 +3199,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     $('camino').style.setProperty('--n', G.n);
     $('reac').innerHTML = '<span>Reaccionar</span>' + ORDEN_CARAS.map(k => '<button type="button" data-cara="' + k + '" aria-label="' + NOM_CARA[k] + '" title="' + NOM_CARA[k] + '">' + CARAS[k] + '</button>').join('');
     $('reac').hidden = V.jugadores.length < 2;
+    pintarFrases();
     pintarBarra();
     ver('juego');
     pintarAmb();
@@ -3750,6 +3767,34 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     caja.appendChild(s);
     setTimeout(() => s.remove(), 2300);
   }
+  // Frases rápidas del clan: solo las ven tus compañeros (clan_frase en supabase/118)
+  const FRASES = {
+    vamos: ['¡Vamos, clan!', SV('<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>')],
+    ataquen: ['¡Ataquen ya!', SV('<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>')],
+    bien: ['¡Bien ahí!', SV('<path d="M7 11v9H4v-9zM7 11l4-8a2 2 0 0 1 3 2l-1 5h5a2 2 0 0 1 2 2l-2 7a2 2 0 0 1-2 1H7"/>')],
+    cuidado: ['¡Nos alcanzan!', SV('<path d="M12 3 2 20h20zM12 10v4M12 17.5v.01"/>')],
+    remonta: ['¡Sí se puede!', SV('<path d="M3 17l6-6 4 4 8-8M15 7h6v6"/>')],
+    gg: ['¡Buen juego!', SV('<path d="M7 4h10v4a5 5 0 0 1-10 0zM5 5H3v2a3 3 0 0 0 4 3M19 5h2v2a3 3 0 0 1-4 3M12 13v4M8 21h8M9 17h6"/>')]
+  };
+  function pintarFrases() {
+    const f = $('frases'), C = V && V.clan && V.clan.clanes;
+    f.hidden = !(C && C[1] && V.jugadores.filter(j => j.clan === (V.jugadores.find(x => x.yo) || {}).clan).length > 1);
+    if (f.hidden) return;
+    f.innerHTML = '<span>Tu clan</span>' + Object.keys(FRASES).map(k => '<button type="button" data-frase="' + k + '">' + FRASES[k][1] + '<i>' + FRASES[k][0] + '</i></button>').join('');
+  }
+  function burbujaFrase(apodo, k, yo) {
+    if (!FRASES[k]) return;
+    const b = document.createElement('div'); b.className = 'frase-burbuja ' + (ladoDe(V.jugadores.find(j => j.yo) || {}) ? 'kb' : 'ka');
+    b.innerHTML = FRASES[k][1] + '<div><small>' + esc(yo ? 'Tú, a tu clan' : apodo) + '</small><b>' + FRASES[k][0] + '</b></div>';
+    document.body.appendChild(b); setTimeout(() => b.remove(), 3200);
+  }
+  $('frases').addEventListener('click', e => {
+    const b = e.target.closest('[data-frase]'); if (!b || b.disabled || !G) return;
+    burbujaFrase('', b.dataset.frase, true); son('toque');
+    const bs = $('frases').querySelectorAll('button'); bs.forEach(x => { x.disabled = true; });
+    setTimeout(() => bs.forEach(x => { x.disabled = false; }), 3000);
+    rpc('clan_frase', { p_codigo: G.codigo, p_k: b.dataset.frase }).catch(() => {});
+  });
   $('reac').addEventListener('click', async e => {
     const b = e.target.closest('[data-cara]'); if (!b || b.disabled || !G) return;
     const cara = b.dataset.cara;
@@ -3781,6 +3826,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
         }
         if (ev.yo) return;
         if (ev.tipo === 'reac') { sticker(ev.apodo, ev.dato, false); son('reaccion', ev.dato); }
+        else if (ev.tipo === 'frase') { if (ev.para_mi) { burbujaFrase(ev.apodo, ev.dato, false); son('toque'); } }
         else if (ev.tipo === 'ataque' && ev.para_mi && /^salvo:/.test(ev.dato)) protegido(ev.dato.slice(6), ev.apodo);
         else if (ev.tipo === 'ataque' && ev.para_mi) {
           if (ev.dato === 'ladron') { toast('<b>' + esc(ev.apodo) + '</b> te quitó 1 punto con Botín', 'var(--oro)', IC.ladron); son('ladron'); }

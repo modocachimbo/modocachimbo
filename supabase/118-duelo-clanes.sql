@@ -483,3 +483,30 @@ begin
 end $$;
 revoke all on function public.ver_duelo(text) from public, anon;
 grant execute on function public.ver_duelo(text) to authenticated;
+
+-- ---------- Frases rápidas del clan (solo las ven tus compañeros) ----------
+alter table public.duelo_eventos drop constraint if exists duelo_eventos_tipo_check;
+alter table public.duelo_eventos add constraint duelo_eventos_tipo_check
+  check (tipo in ('robar', 'comodin', 'reac', 'ataque', 'rebote', 'relampago', 'frase'));
+
+create or replace function public.clan_frase(p_codigo text, p_k text)
+returns jsonb language plpgsql volatile security definer set search_path = '' as $$
+declare uid uuid := auth.uid(); d public.duelos; yo public.duelo_jugadas; n integer;
+begin
+  if uid is null then raise exception 'sin sesión'; end if;
+  if p_k not in ('vamos', 'ataquen', 'bien', 'cuidado', 'remonta', 'gg') then raise exception 'Frase no válida.'; end if;
+  select * into d from public.duelos x where x.codigo = upper(trim(p_codigo));
+  if d.id is null or d.clan_a is null then raise exception 'Solo en clan vs clan.'; end if;
+  select * into yo from public.duelo_jugadas j where j.duelo = d.id and j.usuario = uid;
+  if yo.duelo is null then raise exception 'No estás en este duelo.'; end if;
+  if exists (select 1 from public.duelo_eventos e where e.duelo = d.id and e.usuario = uid and e.tipo = 'frase' and e.creado > now() - interval '3 seconds') then
+    return jsonb_build_object('ok', false, 'espera', true);
+  end if;
+  -- Una fila por compañero (para = él): duelo_vivo solo se la muestra a él
+  insert into public.duelo_eventos (duelo, usuario, tipo, dato, para)
+    select d.id, uid, 'frase', p_k, j.usuario from public.duelo_jugadas j where j.duelo = d.id and j.clan = yo.clan and j.usuario <> uid;
+  get diagnostics n = row_count;
+  return jsonb_build_object('ok', true, 'a', n);
+end $$;
+revoke all on function public.clan_frase(text, text) from public, anon;
+grant execute on function public.clan_frase(text, text) to authenticated;
