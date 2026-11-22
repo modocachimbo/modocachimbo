@@ -213,7 +213,19 @@
   @keyframes chs { from { transform: translate(0, 0) scale(.3); opacity: 1; } to { transform: translate(var(--x), var(--y)) scale(1) rotate(180deg); opacity: 0; } }
 
   /* Conseguir diamantes */
-  .gan { text-align: left; margin-top: 14px; display: grid; gap: 10px; }
+  .pq-h { margin: 16px 0 8px; text-align: left; font: 1000 11px var(--cuerpo); letter-spacing: 2px; text-transform: uppercase; color: var(--text-faint); }
+  .pq { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .pq-c { position: relative; display: flex; flex-direction: column; align-items: center; padding: 14px 4px 0; border-radius: 14px; border: 2px solid #6a3fd0; background: repeating-linear-gradient(135deg, #2a1a52 0 12px, #241647 12px 24px); box-shadow: 0 0 16px rgba(160,90,255,.25); cursor: pointer; overflow: hidden; color: #fff; transition: transform .12s; }
+  .pq-c:hover { transform: translateY(-3px); } .pq-c:active { transform: translateY(1px); }
+  .pq-t { position: absolute; top: 0; left: 0; right: 0; padding: 2px 0; background: #ff3d8a; font: italic 900 11px var(--display); text-transform: uppercase; letter-spacing: .5px; }
+  .pq-i { width: 96px; height: 96px; margin-top: 8px; }
+  .pq-i img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,.5)); }
+  .pq-c b { font: 400 24px "Lilita One", var(--cuerpo); margin-top: 4px; }
+  .pq-c small { font: 800 11px var(--cuerpo); color: #cfc6ee; }
+  .pq-p { align-self: stretch; margin-top: 8px; padding: 7px 0; background: linear-gradient(180deg, #E3FF3A, #C6E000); color: #14101f; font: italic 900 19px var(--display); }
+  .pq-n { margin-top: 8px; font: 700 12px/1.35 var(--cuerpo); color: var(--text-dim); }
+  @media (max-width: 480px) { .pq { gap: 7px; } .pq-i { width: 74px; height: 74px; } .pq-c b { font-size: 20px; } .pq-p { font-size: 17px; } .pq-t { font-size: 9.5px; } }
+  .gan { text-align: left; margin-top: 4px; display: grid; gap: 10px; }
   .gan > div { display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: 14px; background: #191433; border: 1.5px solid #2f2756; }
   .gan .gi2 { flex: none; width: 46px; height: 46px; display: grid; place-items: center; }
   .gan .gi2 svg, .gan .gi2 img { width: 46px; height: 46px; object-fit: contain; }
@@ -451,21 +463,37 @@
   }
 
   // Cómo conseguir diamantes (el «+»)
+  // Paquetes de diamantes (se pagan por Yape y se recargan por ID). Cambia aquí cantidades y precios.
+  var PAQ = [
+    { n: 50, s: 1, f: 'bandeja' },
+    { n: 110, s: 2, f: 'bolsa', tag: '+10%' },
+    { n: 300, s: 5, f: 'saco', tag: 'Popular' },
+    { n: 650, s: 10, f: 'cofre', tag: '+30%' },
+    { n: 1050, s: 15, f: 'carrito', tag: '+40%' },
+    { n: 2000, s: 25, f: 'mina', tag: 'Mejor precio' }
+  ];
+  var WSP = '51917797543';
+  function paqIco(i) { return '<span class="pq-i"><img src="assets/diamantes/' + PAQ[i].f + '.webp" alt="" loading="lazy"></span>'; }
   function ganar() {
     var img = function (f) { return '<img src="assets/cofres/' + f + '-cerrado.webp" alt="">'; };
     var his = (T && T.historial || []).slice(0, 6);
     var o = ventana('<div class="gi" style="width:110px;height:110px">' + DIA + '</div><h3>Consigue <em>diamantes</em></h3>' +
-      '<div class="gan">' +
+      '<h4 class="pq-h">Recarga con Yape</h4><div class="pq">' + PAQ.map(function (p, i) {
+        return '<button type="button" class="pq-c" data-paq="' + i + '">' + (p.tag ? '<span class="pq-t">' + p.tag + '</span>' : '') + paqIco(i) +
+          '<b>' + nf(p.n) + '</b><small>diamantes</small><span class="pq-p">S/ ' + p.s + '</span></button>';
+      }).join('') + '</div>' +
+      '<p class="pq-n">Al tocar un paquete se abre WhatsApp con tu ID y el monto. Yapeas, mandas la captura y te recargamos.</p>' +
+      '<h4 class="pq-h">Gratis jugando</h4><div class="gan">' +
         '<div><span class="gi2">' + img('leyenda') + '</span><span><b>Cofres del clan</b><small>Cada semana: Oro <em>20</em> · Amatista <em>40</em> · Leyenda <em>80</em> diamantes.</small></span></div>' +
         '<div><span class="gi2">' + (IC.fortuna || '') + '</span><span><b>Cofres personales con Fortuna</b><small>Con Fortuna activa: <em>10 · 15 · 25 · 50</em> diamantes por cofre.</small></span></div>' +
-        '<div><span class="gi2">' + DIA + '</span><span><b>Recarga con tu ID</b><small>Envía tu ID a Modo Cachimbo y te recargamos.</small>' +
-          (T && T.id ? '<span class="idb"><code>' + esc(T.id) + '</code><button type="button" data-copiar>Copiar</button></span>' : '') + '</span></div>' +
       '</div>' +
       (his.length ? '<div class="his"><h4>Tus últimos movimientos</h4>' + his.map(function (x) { return '<div><span>' + esc(x.motivo) + '</span><b class="' + (x.cantidad < 0 ? 'm' : '') + '">' + (x.cantidad > 0 ? '+' : '') + nf(x.cantidad) + '</b></div>'; }).join('') + '</div>' : ''));
-    var c = o.querySelector('[data-copiar]');
-    if (c) c.addEventListener('click', function () {
-      var t = String(T.id);
-      (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { c.textContent = 'Copiado'; }, function () { c.textContent = t; });
+    o.querySelectorAll('[data-paq]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var p = PAQ[+b.dataset.paq];
+        var msg = 'Hola Modo Cachimbo, quiero recargar ' + nf(p.n) + ' diamantes por S/ ' + p.s + '.\nMi ID: ' + (T && T.id ? T.id : '(sin ID)') + '\nTe paso la captura del Yape.';
+        window.open('https://wa.me/' + WSP + '?text=' + encodeURIComponent(msg), '_blank');
+      });
     });
   }
 
