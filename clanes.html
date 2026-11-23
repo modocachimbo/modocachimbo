@@ -151,6 +151,10 @@
   .pjc .bh > img { width: 100%; display: block; }
   .pjc .cab { position: absolute; left: 0; right: 0; top: 0; z-index: 2; padding: 14px 16px; display: flex; align-items: flex-start; gap: 10px; background: linear-gradient(180deg, rgba(10,7,22,.85), transparent); }
   .pjc .cab .n { font: italic 900 24px/1 var(--display); text-transform: uppercase; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pjc .pj-id { display: inline-flex; align-items: center; gap: 6px; margin-top: 7px; padding: 5px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,.16); background: rgba(0,0,0,.35); color: var(--text-dim); font: 800 12px/1 Nunito, sans-serif; cursor: pointer; }
+  .pjc .pj-id b { color: #fff; letter-spacing: .08em; font-weight: 900; }
+  .pjc .pj-id svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.4; }
+  .pjc .pj-id:hover { color: #fff; border-color: var(--cc); }
   .pjc .cab .l { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; }
   .pjc .rgc { display: inline-flex; align-items: center; gap: 4px; font: 900 11px/1 Nunito, sans-serif; padding: 3px 8px 3px 4px; border-radius: 7px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); }
   .pjc .dat { position: absolute; left: 12px; right: 12px; bottom: 10px; z-index: 2; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
@@ -1413,7 +1417,7 @@
     var nav = ms.length > 1 ? '<button type="button" class="pjn iz" data-pjnav="-1" aria-label="Anterior">‹</button><button type="button" class="pjn de" data-pjnav="1" aria-label="Siguiente">›</button>' +
       '<div class="pjd">' + ms.map(function (x, i) { return '<button type="button" class="' + (i === k ? 'on' : '') + '" data-pjir="' + x.codigo + '" aria-label="' + esc(x.apodo || 'Miembro') + '"></button>'; }).join('') + '</div>' : '';
     return '<div class="card pjc" style="--cc:' + esc(c.color || '#C6E000') + '"><div class="esc"><div class="cab"><div style="min-width:0;flex:1"><div class="n">' + (m.yo ? 'Tú' : esc(m.apodo || 'Cachimbo')) + '</div>' +
-      '<div class="l">' + rolHtml(m.rol) + rangoChip(m.xp_semana) + '</div></div>' + empujarPj(m) + '</div><span class="piso"></span><div class="bh">' + buhoDe(m) + '</div>' +
+      '<div class="l">' + rolHtml(m.rol) + rangoChip(m.xp_semana) + '</div>' + (m.codigo ? '<button type="button" class="pj-id" data-copiar="' + m.codigo + '" data-que="ID" title="Copiar ID">ID <b>' + m.codigo + '</b>' + SV_CP + '</button>' : '') + '</div>' + empujarPj(m) + '</div><span class="piso"></span><div class="bh">' + buhoDe(m) + '</div>' +
       '<div class="dat"><span>' + (+m.racha || 0) + '<small>Racha</small></span><span>' + nf(m.xp_semana) + '<small>XP semana</small></span><span>' + (k + 1) + '/' + ms.length + '<small>Puesto</small></span></div>' + nav + '</div></div>';
   }
   // Slider del personaje: flechas, puntitos y deslizar con el dedo
