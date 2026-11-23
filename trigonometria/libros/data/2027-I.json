@@ -2495,5 +2495,281 @@
         "correct": 3
       }
     ]
+  },
+  {
+    "num": "10",
+    "name": "Funciones",
+    "questions": [
+      {
+        "text": "Calcula:\n$B = 2\\text{ArcSen}\\frac{\\sqrt{2}}{2} + 3\\text{ArcSen}{\\sqrt{3}}{}$",
+        "topic": "Trigonometría · Funciones",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$\\pi/2$"
+          },
+          {
+            "letter": "B",
+            "text": "$2\\pi/3$"
+          },
+          {
+            "letter": "C",
+            "text": "$5\\pi/4$"
+          },
+          {
+            "letter": "D",
+            "text": "$5\\pi/6$"
+          },
+          {
+            "letter": "E",
+            "text": "$3\\pi/2$"
+          }
+        ],
+        "correct": 4
+      },
+      {
+        "text": "Calcular:\n$m = \\text{Cot}^2\\left[\\text{ArcCsc}\\left(\\frac{2}{\\sqrt{3}}\\right)\\right]$",
+        "topic": "Trigonometría · Funciones",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$1/3$"
+          },
+          {
+            "letter": "B",
+            "text": "$3$"
+          },
+          {
+            "letter": "C",
+            "text": "$3/4$"
+          },
+          {
+            "letter": "D",
+            "text": "$4/9$"
+          },
+          {
+            "letter": "E",
+            "text": "$4/3$"
+          }
+        ],
+        "correct": 0
+      },
+      {
+        "text": "Calcular:\n$N = \\text{Tan}\\left[\\text{ArcSec}(\\sqrt{10}) - \\text{ArcSec}(\\sqrt{17})\\right]$",
+        "topic": "Trigonometría · Funciones",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$-1/13$"
+          },
+          {
+            "letter": "B",
+            "text": "$-2/13$"
+          },
+          {
+            "letter": "C",
+            "text": "$-3/13$"
+          },
+          {
+            "letter": "D",
+            "text": "$-4/13$"
+          },
+          {
+            "letter": "E",
+            "text": "$-5/13$"
+          }
+        ],
+        "correct": 0
+      },
+      {
+        "text": "Hallar el rango de:\n$f(x) = 4\\text{ArcSen}(3x - 1) + \\pi$",
+        "topic": "Trigonometría · Funciones",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$[0; 2\\pi]$"
+          },
+          {
+            "letter": "B",
+            "text": "$[-\\pi; 3\\pi]$"
+          },
+          {
+            "letter": "C",
+            "text": "$[-2\\pi; 3\\pi]$"
+          },
+          {
+            "letter": "D",
+            "text": "$[2\\pi; 4\\pi]$"
+          },
+          {
+            "letter": "E",
+            "text": "$[\\pi; 2\\pi]$"
+          }
+        ],
+        "correct": 1
+      },
+      {
+        "text": "Calcula:\n$M = \\frac{\\text{ArcSen}\\frac{1}{2} + \\text{ArcCos}\\frac{\\sqrt{2}}{2}}{\\text{ArcCos}\\left(-\\frac{1}{2}\\right) + \\text{ArcTan}\\left(-\\frac{\\sqrt{3}}{3}\\right)}$",
+        "topic": "Trigonometría · Funciones",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$5/3$"
+          },
+          {
+            "letter": "B",
+            "text": "$1/6$"
+          },
+          {
+            "letter": "C",
+            "text": "$6/7$"
+          },
+          {
+            "letter": "D",
+            "text": "$5/6$"
+          },
+          {
+            "letter": "E",
+            "text": "$2/3$"
+          }
+        ],
+        "correct": 3
+      },
+      {
+        "text": "Un brazo robótico utilizado en el ensamblaje de microchips calcula sus ángulos de rotación en radianes mediante el procesador óptico. Para calibrar la precisión del eje principal, el sistema operativo debe resolver la siguiente expresión:\n$M = \\frac{\\text{ArcSen}(-0,5) + \\text{ArcCos}\\frac{\\sqrt{2}}{2}}{\\text{ArcTan}\\sqrt{3}}$\nDetermine el valor numérico decimal de $M$ que permita completar la calibración del robot.",
+        "topic": "Trigonometría · Funciones",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$0,2$"
+          },
+          {
+            "letter": "B",
+            "text": "$0,5$"
+          },
+          {
+            "letter": "C",
+            "text": "$0,75$"
+          },
+          {
+            "letter": "D",
+            "text": "$0,25$"
+          },
+          {
+            "letter": "E",
+            "text": "$0,55$"
+          }
+        ],
+        "correct": 3
+      },
+      {
+        "text": "Un ingeniero civil calcula el ángulo de inclinación $\\theta$ de una rampa de acceso para vehículos pesados en un centro logístico. El software de estructuras determina dicho ángulo mediante la siguiente expresión matemática:\n$\\theta = \\text{ArcSen}\\left(-\\frac{1}{2}\\right) + 2\\text{ArcCos}\\left(-\\frac{1}{2}\\right) - \\frac{1}{3}\\text{ArcTan}\\,1$\nHallar el valor de \"$\\theta$\" en grados sexagesimales para proceder con la construcción de la rampa.",
+        "topic": "Trigonometría · Funciones",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$45^{\\circ}$"
+          },
+          {
+            "letter": "B",
+            "text": "$185^{\\circ}$"
+          },
+          {
+            "letter": "C",
+            "text": "$225^{\\circ}$"
+          },
+          {
+            "letter": "D",
+            "text": "$95^{\\circ}$"
+          },
+          {
+            "letter": "E",
+            "text": "$195^{\\circ}$"
+          }
+        ],
+        "correct": 4
+      },
+      {
+        "text": "Un ingeniero civil está diseñando la rampa de acceso para un nuevo centro comercial. Para garantizar la seguridad de los peatones y carritos de compras, el ángulo de inclinación de la rampa inicial respecto a la horizontal, expresado en radianes como $\\theta_1 = \\text{ArcTan}\\,x$ y el ángulo complementario de diseño estructural, $\\theta_2 = \\text{ArcCos}$ deben cumplir con estándar de resistencia sísmica y distribución de cargas modelado por la siguiente relación:\n$3\\text{ArcTan}\\,x - \\frac{9\\pi}{8} - 2\\text{ArcCotx}$\nSi para la construcción se requiere calcular el valor del parámetro de diseño $x$, determine dicho valor.",
+        "topic": "Trigonometría · Funciones",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$\\sqrt{2} - 1$"
+          },
+          {
+            "letter": "B",
+            "text": "$2 - \\sqrt{3}$"
+          },
+          {
+            "letter": "C",
+            "text": "$1$"
+          },
+          {
+            "letter": "D",
+            "text": "$2 + \\sqrt{2}$"
+          },
+          {
+            "letter": "E",
+            "text": "$2 + \\sqrt{3}$"
+          }
+        ],
+        "correct": 0
+      },
+      {
+        "text": "Los valores de resistencia de un potenciómetro, están modelados mediante la función real $H$ definida por:\n$H(x) = 2 - x + \\frac{3}{2\\pi}\\text{ArcCos}(2x - 1)$,        $0 \\le x \\le \\frac{3}{4}$\nDetermine el máximo valor de la resistencia del potenciómetro.",
+        "topic": "Trigonometría · Funciones",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$3,5$"
+          },
+          {
+            "letter": "B",
+            "text": "$3$"
+          },
+          {
+            "letter": "C",
+            "text": "$2,75$"
+          },
+          {
+            "letter": "D",
+            "text": "$2,25$"
+          },
+          {
+            "letter": "E",
+            "text": "$1,75$"
+          }
+        ],
+        "correct": 0
+      },
+      {
+        "text": "El ingreso semanal de una ferretería viene dado por la función real definida por\n$f(x) = \\frac{20\\pi}{6\\text{ArcTan}\\,x + \\frac{5\\pi}{2}}$, $-\\sqrt{3} \\le x \\le 1$\nen miles de soles. Si el gasto total de operatividad semanal es $5000\\text{Sen}[2\\text{ArcTan}(1/3)]$ soles, determine la menor utilidad semanal de dicha ferretería.",
+        "topic": "Trigonometría · Funciones",
+        "options": [
+          {
+            "letter": "A",
+            "text": "S/ 1 600"
+          },
+          {
+            "letter": "B",
+            "text": "S/ 1 800"
+          },
+          {
+            "letter": "C",
+            "text": "S/ 2 000"
+          },
+          {
+            "letter": "D",
+            "text": "S/ 2 400"
+          },
+          {
+            "letter": "E",
+            "text": "S/ 2 500"
+          }
+        ],
+        "correct": 2
+      }
+    ]
   }
 ]
