@@ -23,14 +23,14 @@
 create or replace function public.clan_sin_adornos(t text)
 returns text language sql immutable set search_path = '' as $$
   select regexp_replace(coalesce(t, ''),
-    '[̀-ͯ҃-҉᪰-᫿᷀-᷿⃐-⃿︠-︯︀-️‍]', '', 'g');
+    '[\u0300-\u036F\u0483-\u0489\u1AB0-\u1AFF\u1DC0-\u1DFF\u20D0-\u20FF\uFE20-\uFE2F\uFE00-\uFE0F\u200D]', '', 'g');
 $$;
 
 -- Limpia el nombre: sin caracteres que voltean el texto ni invisibles, sin espacios de más
 create or replace function public.clan_nombre_limpio(t text)
 returns text language sql immutable set search_path = '' as $$
   select trim(regexp_replace(
-           regexp_replace(coalesce(t, ''), '[​‌‎‏‪-‮⁠-⁤⁦-⁩﻿­\r\n\t]', '', 'g'),
+           regexp_replace(coalesce(t, ''), '[\u200B\u200C\u200E\u200F\u202A-\u202E\u2060-\u2064\u2066-\u2069\uFEFF\u00AD\r\n\t]', '', 'g'),
            '\s{2,}', ' ', 'g'));
 $$;
 
@@ -41,7 +41,7 @@ returns integer language sql immutable set search_path = '' as $$
 $$;
 create or replace function public.clan_nombre_visibles(t text)
 returns integer language sql immutable set search_path = '' as $$
-  select char_length(regexp_replace(public.clan_sin_adornos(t), '[\sㅤᅟᅠ⠀ﾠ⠀᠎]', '', 'g'));
+  select char_length(regexp_replace(public.clan_sin_adornos(t), '[\s\u3164\u115F\u1160\u2800\uFFA0\u2800\u180E]', '', 'g'));
 $$;
 
 -- Pasa las letras de diseño a letras normales (para el filtro y para comparar nombres)
