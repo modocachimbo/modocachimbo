@@ -383,7 +383,7 @@ html[data-modo="claro"] .badge .curso { color: #1A1626 !important; }
       <div class="paso">
         <div class="paso-lbl">3. Cantidad de preguntas</div>
         <div class="cant" id="cant">
-          <button type="button" data-n="10">10<small>preguntas</small></button><button type="button" data-n="20" class="on"><span class="rec">Recomendado</span>20<small>preguntas</small></button><button type="button" data-n="30">30<small>preguntas</small></button><button type="button" data-n="40">40<small>preguntas</small></button>
+          <button type="button" data-n="20" class="on"><span class="rec">Recomendado</span>20<small>preguntas</small></button><button type="button" data-n="30">30<small>preguntas</small></button><button type="button" data-n="40">40<small>preguntas</small></button><button type="button" data-n="0">Todo<small>las disponibles</small></button>
         </div>
         <p class="resumen" id="resumen"></p>
       </div>
@@ -563,8 +563,10 @@ html[data-modo="claro"] .badge .curso { color: #1A1626 !important; }
     // Cantidad y resumen
     const P = pool().length;
     $('cant').querySelectorAll('button').forEach(b => { b.classList.toggle('on', +b.dataset.n === SEL.n); });
-    const n = Math.min(SEL.n, P);
-    $('resumen').innerHTML = P ? 'Saldrán <b>' + n + '</b> preguntas al azar de <b>' + P + '</b> disponibles' + (n < SEL.n ? ' (no hay más con lo que elegiste)' : '') + ' · 5 vidas' : 'No hay preguntas con lo que elegiste.';
+    // data-n="0" = «Todo»: todas las preguntas disponibles, en orden al azar
+    const n = SEL.n ? Math.min(SEL.n, P) : P;
+    $('resumen').innerHTML = !P ? 'No hay preguntas con lo que elegiste.' : !SEL.n ? 'Saldrán las <b>' + P + '</b> preguntas disponibles, en orden al azar · 5 vidas'
+      : 'Saldrán <b>' + n + '</b> preguntas al azar de <b>' + P + '</b> disponibles' + (n < SEL.n ? ' (no hay más con lo que elegiste)' : '') + ' · 5 vidas';
     btnStart.disabled = !P;
   }
 
@@ -646,7 +648,7 @@ html[data-modo="claro"] .badge .curso { color: #1A1626 !important; }
 
   function armarRonda(lista) {
     const mezcla = window.MCPregunta ? MCPregunta.mezclar : shuffle;
-    return mezcla(lista).slice(0, Math.min(SEL.n, lista.length));
+    return mezcla(lista).slice(0, SEL.n ? Math.min(SEL.n, lista.length) : lista.length);
   }
 
   function setupHeaderAndBody() {
