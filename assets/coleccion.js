@@ -217,6 +217,14 @@
   // si alguien llevaba uno de ellos, vuelve a lo de siempre.
   var VISIBLES = ['buho-clasico', 'buho-antiguo', 'buho-rosa', 'buho-rosa-navidad', 'avatar-buho', 'avatar-foto', 'escena-galaxia', 'escena-nube',
     'racha-galaxia', 'racha-cielo', 'cuadro-galaxia', 'cuadro-cielo', 'marco-ninguno', 'marco-lima', 'titulo-cachimbo', 'titulo-constante'];
+  // Guerra de clanes: emblemas de cada temporada (supabase/134-guerra-clanes.sql). Solo hasta la temporada en curso.
+  (function () {
+    var t0 = Date.UTC(2026, 10, 23), hoy = Date.now() - 5 * 3600e3, tn = Math.max(1, Math.min(12, Math.floor((hoy - t0) / 864e5 / 28) + 1));
+    for (var t = 1; t <= tn; t++) {
+      CATALOGO.push({ id: 'pin-guerra-t' + t, espacio: 'pines', nom: 'Guerrero T' + t, rareza: 'evento', regla: { tipo: 'evento', evento: 'la Guerra de clanes T' + t }, pin: ['⚔️', '#2a1650', '#C6E000'], desc: 'Jugaste la Guerra de clanes de la Temporada ' + t + '.' });
+      CATALOGO.push({ id: 'pin-guerra-campeon-t' + t, espacio: 'pines', nom: 'Campeón T' + t, rareza: 'legendario', regla: { tipo: 'evento', evento: 'la Guerra de clanes T' + t, cinta: 'Campeón' }, pin: ['🏆', '#3a2a04', '#FFC800'], desc: 'Tu clan ganó la Guerra de clanes de la Temporada ' + t + '.' });
+    }
+  })();
   CATALOGO = CATALOGO.filter(function (x) { return x.espacio === 'pines' || x.temporada || VISIBLES.indexOf(x.id) >= 0; });
   var POR_ID = {};
   CATALOGO.forEach(function (x) { POR_ID[x.id] = x; });

@@ -251,6 +251,89 @@
   .pod .p2 .ped { height: 54px; background: linear-gradient(180deg, #eef0f6, #b9bfd0); }
   .pod .p3 .ped { height: 42px; background: linear-gradient(180deg, #f0b27a, #c47a3c); }
   .pod .vac .ped { background: #1D1834 !important; color: #3a3360; }
+  /* ===== Guerra de clanes: portada, rondas, ranking y premios ===== */
+  .gport { position: relative; overflow: hidden; display: grid; grid-template-columns: 230px minmax(0, 1fr); align-items: center; gap: 10px 22px; padding: 22px 26px; border-color: rgba(198,224,0,.4);
+    background: radial-gradient(60% 90% at 20% 50%, rgba(138,92,240,.45), transparent 70%), linear-gradient(135deg, #2a1660, #160f30 55%, #1a1233); }
+  .gport .gp-ray { position: absolute; left: 115px; top: 50%; width: 900px; height: 900px; margin: -450px 0 0 -450px; border-radius: 50%; background: repeating-conic-gradient(rgba(198,224,0,.07) 0 8deg, transparent 8deg 18deg); animation: gpGira 40s linear infinite; pointer-events: none; }
+  @keyframes gpGira { to { transform: rotate(360deg); } }
+  .gport .gp-emb { position: relative; width: 230px; height: 265px; animation: gpFlota 3.4s ease-in-out infinite; filter: drop-shadow(0 14px 24px rgba(0,0,0,.5)); }
+  .gport .gp-emb svg { width: 100%; height: 100%; }
+  @keyframes gpFlota { 50% { transform: translateY(-7px); } }
+  .gport .gp-tx { position: relative; min-width: 0; }
+  .gport .gp-t { font: italic 900 52px/.92 var(--display); text-transform: uppercase; color: #fff; filter: drop-shadow(0 4px 0 rgba(0,0,0,.45)); background: linear-gradient(180deg, #fff 45%, #FFE27A); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .gport .gp-s { font: italic 900 22px/1 var(--display); text-transform: uppercase; color: var(--accent); margin-top: 6px; letter-spacing: .04em; }
+  .gport .gp-vivo, .gport .gp-prox { display: inline-flex; align-items: center; gap: 7px; margin-top: 14px; padding: 6px 12px; border-radius: 99px; font: 900 13px/1 Nunito, sans-serif; }
+  .gport .gp-vivo { background: rgba(255,75,75,.16); border: 1.5px solid rgba(255,75,75,.5); color: #ffb3b3; }
+  .gport .gp-vivo i { width: 9px; height: 9px; border-radius: 50%; background: var(--rojo); box-shadow: 0 0 0 4px rgba(255,75,75,.25); animation: gpLat 1.2s ease-in-out infinite; }
+  @keyframes gpLat { 50% { box-shadow: 0 0 0 7px rgba(255,75,75,0); } }
+  .gport .gp-prox { background: rgba(198,224,0,.12); border: 1.5px solid rgba(198,224,0,.4); color: var(--accent); }
+  .gport .gp-cuenta { margin-top: 8px; font: 800 13px/1 Nunito, sans-serif; color: #d9d3ef; }
+  .gport .gp-cuenta b { font: italic 900 20px/1 var(--display); color: #fff; margin-left: 4px; }
+  .gport .gp-hor { display: flex; align-items: center; gap: 6px; margin-top: 10px; font: 800 12.5px/1 Nunito, sans-serif; color: var(--text-dim); }
+  .gport .gp-hor svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+  .gport .gp-btns { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .gport .gp-b { display: inline-grid; place-items: center; min-width: 140px; height: 48px; padding: 0 22px; border: 0; text-decoration: none; font: italic 900 21px/1 var(--display); text-transform: uppercase; letter-spacing: .03em; clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%); cursor: pointer; }
+  .gport .gp-b.cl { background: linear-gradient(180deg, #fff, #d9d4ec); color: #1a1030; }
+  .gport .gp-b.jg { background: linear-gradient(180deg, #ffe066, #FFC800); color: #2a1d00; }
+  .gport .gp-b.jg.off { filter: grayscale(1); opacity: .55; cursor: default; }
+  .gport .gp-vid { display: flex; align-items: center; gap: 5px; margin-top: 12px; font: 800 12px/1 Nunito, sans-serif; color: var(--text-dim); }
+  .gport .gp-vid i { width: 22px; height: 8px; border-radius: 4px; background: var(--accent); box-shadow: 0 0 8px rgba(198,224,0,.5); }
+  .gport .gp-vid i.usada { background: #2a2346; box-shadow: none; }
+  .gport .gp-vid b { color: #fff; margin-left: 4px; }
+  @media (max-width: 760px) {
+    .gport { grid-template-columns: 1fr; text-align: center; padding: 18px 16px 20px; }
+    .gport .gp-emb { width: 170px; height: 196px; margin: 0 auto -4px; }
+    .gport .gp-ray { left: 50%; top: 110px; }
+    .gport .gp-t { font-size: 40px; }
+    .gport .gp-hor, .gport .gp-btns, .gport .gp-vid { justify-content: center; }
+    .gport .gp-b { min-width: 0; flex: 1; }
+  }
+  .grondas .gr-l { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px; margin-top: 10px; }
+  .grondas .gr { position: relative; padding: 9px 2px 8px; border-radius: 12px; background: #120e24; border: 1.5px solid #2a2346; text-align: center; }
+  .grondas .gr b { display: block; font: italic 900 20px/1 var(--display); color: var(--text-dim); }
+  .grondas .gr small { display: block; font: 800 10.5px/1 Nunito, sans-serif; color: var(--text-faint); margin-top: 4px; text-transform: capitalize; white-space: nowrap; }
+  .grondas .gr i { display: block; font: 900 9.5px/1 Nunito, sans-serif; font-style: normal; margin-top: 5px; color: var(--ok); text-transform: uppercase; letter-spacing: .04em; }
+  .grondas .gr.viva { border-color: var(--rojo); background: rgba(255,75,75,.1); } .grondas .gr.viva b { color: #fff; } .grondas .gr.viva i { color: #ff8a8a; }
+  .grondas .gr.cerrada b { color: #fff; }
+  @media (max-width: 560px) { .grondas .gr-l { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .gcof .gc-l { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 10px; }
+  .gcof .gc { display: grid; justify-items: center; gap: 3px; padding: 10px; border-radius: 14px; background: radial-gradient(120% 80% at 50% 0%, rgba(255,200,0,.14), transparent 70%), #120e24; border: 1.5px solid #3a2f6b; color: #fff; }
+  .gcof .gc img { width: 96px; height: 90px; object-fit: contain; animation: gpFlota 2.6s ease-in-out infinite; }
+  .gcof .gc b { font: italic 900 19px/1 var(--display); text-transform: uppercase; }
+  .gcof .gc small { font: 800 11.5px/1.2 Nunito, sans-serif; color: var(--text-dim); }
+  .gcof .gc span { margin-top: 6px; padding: 7px 16px; border-radius: 10px; background: var(--accent); color: #14101f; font: italic 900 15px/1 var(--display); text-transform: uppercase; border-bottom: 3px solid #7f9200; }
+  .granking { padding: 0; overflow: hidden; display: block !important; }
+  .gk-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 10px; background: #221C3D; }
+  .gk-tabs button { height: 38px; border-radius: 10px; border: 1.5px solid #3a2f6b; background: rgba(0,0,0,.25); color: var(--text-dim); font: italic 900 16px/1 var(--display); text-transform: uppercase; cursor: pointer; }
+  .gk-tabs button.on { background: var(--accent); color: #14101f; border-color: var(--accent); }
+  .ctop .tc-lista .der svg.gesp { width: 15px; height: 15px; fill: none; }
+  .ctop .tc-lista .der > span { color: #fff; }
+  .granking .tc-lista .ft, .granking .tc-lista .mc-av { width: 34px; height: 34px; }
+  .gmio .gm-n { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+  .gmio .gm-n div { padding: 10px 6px; border-radius: 12px; background: #120e24; border: 1px solid #2a2346; text-align: center; }
+  .gmio .gm-n b { display: block; font: italic 900 26px/1 var(--display); color: var(--accent); }
+  .gmio .gm-n small { display: block; font: 800 11px/1.2 Nunito, sans-serif; color: var(--text-dim); margin-top: 4px; }
+  .gmio .gm-ap { margin-top: 10px; }
+  .gmio .apo { grid-template-columns: minmax(0, 1fr) auto; }
+  .gmio .apo .t b { display: block; font-size: 14px; color: #fff; }
+  .gmio .apo .bb { display: block; }
+  .g2 { display: grid; gap: 0 14px; align-items: start; }
+  @media (min-width: 1100px) { .g2 { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); } }
+  .gprem .gpr-l { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+  .gprem .gpr { position: relative; padding: 12px 8px; border-radius: 14px; background: radial-gradient(100% 70% at 50% 0%, color-mix(in srgb, var(--c) 22%, transparent), transparent 70%), #120e24; border: 1.5px solid color-mix(in srgb, var(--c) 55%, #2a2346); text-align: center; }
+  .gprem .gpr .ps { position: absolute; top: 8px; left: 10px; font: italic 900 20px/1 var(--display); color: var(--c); }
+  .gprem .gpr svg:not(.gdia) { width: 46px; height: 46px; display: block; margin: 0 auto; }
+  .gprem .gpr b { display: inline-flex; align-items: center; gap: 4px; font: 900 17px/1 Nunito, sans-serif; color: #fff; margin-top: 6px; }
+  .gprem svg.gdia { width: 16px; height: 16px; vertical-align: -3px; }
+  .gprem .gpr small { display: block; font: 800 11px/1.25 Nunito, sans-serif; color: var(--text-dim); margin-top: 4px; }
+  .gprem .gpr-x { display: grid; gap: 6px; margin-top: 10px; }
+  .gprem .gpr-x div { padding: 9px 12px; border-radius: 12px; background: #120e24; border: 1px solid #2a2346; }
+  .gprem .gpr-x b { display: block; font-size: 13.5px; color: #fff; }
+  .gprem .gpr-x small { display: block; font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+  .gpz .ge { display: block; width: 150px; height: 173px; margin: -4px auto 4px; }
+  .gpz .ge svg { width: 100%; height: 100%; }
+  .gpz .gci { width: 150px; height: 140px; object-fit: contain; display: block; margin: 0 auto 6px; }
+  .gpz p b { display: inline; font: inherit; color: #fff; }
   /* ===== Top de clanes: mismo podio y lista que el Top simulacro ===== */
   .ctop { padding: 0; overflow: hidden; }
   .ctop .tc-cab { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 16px; background: #221C3D; font: 800 17px/1 var(--display); text-transform: uppercase; letter-spacing: .04em; color: #fff; }
@@ -862,10 +945,11 @@
 <script src="assets/buho/buho-datos.js"></script>
 <script src="assets/buho/rosa-datos.js"></script>
 <script src="assets/buho/buho-vivo.js"></script>
-<script src="assets/coleccion.js?v=212"></script>
+<script src="assets/coleccion.js?v=213"></script>
 <script src="assets/tarjeta-perfil.js?v=210"></script>
 <script src="assets/amigos.js?v=5"></script>
 <script src="assets/clanes.js?v=9"></script>
+<script src="assets/guerra-emblema.js?v=1"></script>
 </head>
 <body>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -896,6 +980,8 @@
   var F = { nombre: '', tag: '', forma: 'punta', simbolo: 'rayo', color: '#C6E000' };
 
   var SV = {
+    espadas: '<svg class="gesp" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3l9 9M20 3l-9 9" stroke="#C6E000" stroke-width="3" stroke-linecap="round"/><path d="M3 21l5-5M21 21l-5-5M6 14l4 4M18 14l-4 4" stroke="#FFC800" stroke-width="3" stroke-linecap="round"/></svg>',
+    dia: '<svg class="gdia" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12l4 6-10 12L2 9z" fill="#3FD0FF" stroke="#0b4a66" stroke-width="1.6" stroke-linejoin="round"/></svg>',
     clan: '<svg viewBox="0 0 24 24"><path d="M12 2 20 5v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z"/></svg>',
     top: '<svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4c0 3 1.5 4.5 3.5 4.8M17 6h3c0 3-1.5 4.5-3.5 4.8"/></svg>',
     cfg: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>',
@@ -957,7 +1043,7 @@
       it = [['clan', 'Resumen', SV.clan, 'Tu clan esta semana'],
         ['miembros', 'Miembros', SV.gente.replace(' class="i"', ''), '<i class="pt"></i>' + hoy + ' de ' + c.miembros + ' estudiaron hoy', SOL && SOL.length ? '<i class="cnt">' + SOL.length + '</i>' : ''],
         ['misiones', 'Misiones', SV.cofre, (lis += yoListos()) ? lis + (lis === 1 ? ' cofre listo' : ' cofres listos') + ' para abrir' : 'Cofres y misiones', lis ? '<i class="cnt">' + lis + '</i>' : ''],
-        ['guerra', 'Guerra', SV.guerra, 'Clan vs clan y salas', D.guerra && (D.guerra.estado === 'activa' || !D.guerra.reto_mio) ? '<i class="vivo"></i>' : '']];
+        ['guerra', 'Guerra', SV.guerra, guerraViva() ? 'Ronda en vivo · hasta 20:00' : 'Mar y jue · 8:00 a 20:00', guerraViva() ? '<i class="vivo"></i>' : '']];
     } else it = [['clan', 'Unirme', SV.clan, 'Entra o crea un clan'], ['top', 'Top', SV.top, 'Clanes de la semana']];
     return '<nav class="cl-rail" aria-label="Clanes">' + it.map(function (x) {
       var pr = x[0] === 'tienda';
@@ -1010,6 +1096,7 @@
       }).join('') + '</div></div>';
   }
   function guerraMini() {
+    return '';   // Los retos 1 vs 1 ya no se muestran (ahora: Guerra de clanes por rondas)
     var g = D.guerra; if (!g) return '';
     if (g.estado === 'pendiente') return '<div class="gmini pend" data-vista="guerra" role="button" tabindex="0">' + SV.guerra + '<span><b>' + (g.reto_mio ? 'Retaron a ' + esc(g.rival) : esc(g.rival) + ' los retó a una guerra') + '</b><small>' + (g.reto_mio ? 'Esperando que acepten' : 'Tu líder o sublíder puede aceptar') + '</small></span><span class="ver">Ver ›</span></div>';
     var tot = Math.max(1, (+g.xp_mio || 0) + (+g.xp_rival || 0)), p = Math.round(100 * (+g.xp_mio || 0) / tot);
@@ -1624,47 +1711,94 @@
       (t != null ? '<span class="sc-tk"><svg viewBox="0 0 58 42" width="20" height="15" aria-hidden="true" style="vertical-align:-2px;margin-right:4px"><path d="M3 8a5 5 0 0 1 5-5h42a5 5 0 0 1 5 5v7a6 6 0 0 0 0 12v7a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5v-7a6 6 0 0 0 0-12z" fill="#C6E000"/><path d="M39 6v30" stroke="#151A03" stroke-width="2.4" stroke-dasharray="3.5 3"/></svg>' + t + (t === 1 ? ' ticket' : ' tickets') + '</span>' : '') + '</div>' +
       '<a class="cb l" href="' + (s ? (s.codigo.length === 6 ? 'duelo.html?d=' : 'sala-clan.html?c=') + s.codigo : 'sala-clan.html') + '">' + (s ? 'Entrar a la sala' : 'Ir a salas') + '</a></div>';
   }
+  /* ---------- Guerra de clanes: temporadas y rondas (supabase/134-guerra-clanes.sql · guerra.html) ---------- */
+  var GT = 'ronda';   // pestaña del ranking: ronda | temp | jug
+  var DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+  function fechaR(d) { var x = new Date(d + 'T12:00:00'); return DIAS[x.getDay()] + ' ' + x.getDate() + '/' + (x.getMonth() + 1); }
+  // Hora de Lima → instante (para las cuentas regresivas)
+  function limaISO(d, h) { return d + 'T' + h + ':00-05:00'; }
+  function guerraViva() { var l = new Date(Date.now() - 5 * 36e5), d = l.getUTCDay(), h = l.getUTCHours(); return (d === 2 || d === 4) && h >= 8 && h < 20; }
+  function gFila(c, i, campo) {
+    return '<li' + (c.mio ? ' class="tu"' : '') + '><span class="num">' + (c.puesto || i + 1) + '</span>' + escudo(c) + '<span class="q"><b>' + esc(c.nombre) + '</b><small>' + (c.mio ? 'Tu clan · ' : '') + c.jugadores + (c.jugadores === 1 ? ' jugador' : ' jugadores') + '</small></span><span class="der"><span>' + SV.espadas + nf(c[campo || 'puntos']) + '</span></span></li>';
+  }
+  function gJug(x, i) {
+    return '<li' + (x.yo ? ' class="tu"' : '') + '><span class="num">' + (x.puesto || i + 1) + '</span>' + A.foto(x) + '<span class="q"><b>' + esc(x.yo ? 'Tú' : x.apodo) + '</b><small>' + esc(x.clan || '') + ' · ' + x.partidas + (x.partidas === 1 ? ' partida' : ' partidas') + '</small></span><span class="der"><span>' + SV.espadas + nf(x.puntos) + '</span></span></li>';
+  }
   function guerraVista() {
-    if (!G) { K.rpc('clan_guerra').then(function (d) { G = d || {}; if (vista === 'guerra') pintar(); }, function (e) { G = { error: K.error(e) }; if (vista === 'guerra') pintar(); }); return '<p class="estado">Cargando la guerra…</p>'; }
-    if (G.error) return '<p class="estado">' + esc(G.error) + '</p>';
-    var g = G.guerra, h = '';
-    (G.retos || []).forEach(function (r) {
-      h += '<div class="card reto"><div class="h2">' + SV.guerra + '¡Los retaron!</div><div class="vista" style="margin-top:0">' + escudo(r.clan) + '<div style="flex:1;min-width:0"><div class="d">' + esc(r.clan.nombre) + '</div><div class="small">' + r.clan.miembros + ' miembros · ' + nf(r.clan.xp) + ' XP esta semana · guerra de ' + r.horas + ' h</div></div></div>' +
-        (puedoMandar() && !(g && g.estado === 'activa') ? '<div class="btns"><button type="button" class="cb l" data-aceptar="' + r.id + '">Aceptar guerra</button><button type="button" class="cb g" data-rechazar="' + r.id + '">No, gracias</button></div>' : '<p class="small" style="margin-top:8px">' + (g && g.estado === 'activa' ? 'Ya están en una guerra.' : 'Tu líder o sublíder puede aceptar.') + ' El reto vence en 24 horas.</p>') + '</div>';
-    });
-    if (g && g.estado !== 'pendiente') {
-      var vivo = g.estado === 'activa', tot = Math.max(1, (+g.xp_mio || 0) + (+g.xp_rival || 0)), p = tot > 1 ? Math.round(100 * g.xp_mio / tot) : 50;
-      var res = vivo ? '<div class="reloj" data-reloj="' + esc(g.fin) + '"></div><p class="small" style="text-align:center">Gana el clan que sume más XP antes de que acabe el tiempo</p>'
-        : '<div class="res ' + (g.gane ? 'win' : g.empate ? 'emp' : 'lose') + '">' + (g.gane ? '¡Ganaron la guerra!' : g.empate ? 'Quedaron empatados' : 'Esta vez ganó ' + esc(g.rival.nombre)) + '</div>';
-      h += '<div class="gbig' + (vivo ? '' : ' fin') + (g.gane ? ' gano' : '') + '">'+ (g.gane ? '<div class="brillo"></div>' : '') + '<div class="vs2"><div>' + escudo(g.mio) + '<div class="n">' + esc(g.mio.nombre) + '</div><div class="pts" style="color:var(--accent)">' + nf(g.xp_mio) + '</div><div class="small">XP</div></div>' +
-        '<div class="vsb">VS</div><div>' + escudo(g.rival) + '<div class="n">' + esc(g.rival.nombre) + '</div><div class="pts" style="color:var(--azul)">' + nf(g.xp_rival) + '</div><div class="small">XP</div></div></div>' +
-        '<div class="tug big"><i style="--p:' + p + '%;width:' + p + '%"></i></div>' + res + '</div>';
-      h += '<div class="card"><div class="h2">Quién está aportando</div>' + (vivo && !g.yo_cuento ? '<p class="small" style="margin-bottom:8px">Entraste al clan cuando la guerra ya había empezado: tu XP cuenta desde la próxima.</p>' : '') +
-        '<div class="aporte"><div><h4 style="color:var(--accent)">Tu clan</h4>' + lado(g.aporte_mio, 'var(--accent)') + '</div><div><h4 style="color:var(--azul)">Rival</h4>' + lado(g.aporte_rival, 'var(--azul)') + '</div></div>' +
-        '<p class="small" style="margin-top:8px">Cada uno suma hasta ' + nf(g.tope) + ' XP en esta guerra, para que no gane uno solo.</p></div>';
-    } else if (g && g.estado === 'pendiente') {
-      h += '<div class="card"><div class="h2">' + SV.guerra + 'Reto enviado</div><div class="vista" style="margin-top:0">' + escudo(g.rival) + '<div style="flex:1;min-width:0"><div class="d">' + esc(g.rival.nombre) + '</div><div class="small">Guerra de ' + g.horas + ' h · esperando que acepten (vence en 24 h)</div></div></div>' +
-        (puedoMandar() ? '<div class="btns"><button type="button" class="cb g" data-cancelar="' + g.id + '">Cancelar reto</button></div>' : '') + '</div>';
-    }
-    if (!g || g.estado === 'terminada') {
-      if (puedoMandar()) {
-        if (RIV == null) { RIV = false; K.rpc('clan_rivales').then(function (l) { RIV = l || []; if (vista === 'guerra') pintar(); }, function () { RIV = []; if (vista === 'guerra') pintar(); }); }
-        h += '<div class="card"><div class="h2">Retar a otro clan</div>' + (D.clan.miembros < 3 ? '<p class="small">Necesitan al menos 3 miembros para ir a la guerra. Invita a tus compañeros.</p>' :
-          '<div class="seg"><button type="button" class="' + (horasReto === 24 ? 'on' : '') + '" data-horas="24">1 día</button><button type="button" class="' + (horasReto === 48 ? 'on' : '') + '" data-horas="48">2 días</button></div>' +
-          (RIV === false ? '<p class="estado" style="padding:10px">Buscando clanes…</p>' : !RIV.length ? '<p class="small">Por ahora no hay clanes libres para retar (con 3 miembros o más y sin guerra).</p>' :
-            RIV.map(function (c) { return '<div class="riv">' + escudo(c) + '<div style="min-width:0"><div class="d">' + esc(c.nombre) + '</div><div class="small">' + c.miembros + ' miembros · ' + nf(c.xp) + ' XP' + (+c.victorias ? ' · ' + c.victorias + ' victorias' : '') + '</div></div><button type="button" class="mini" data-retar="' + c.id + '">Retar</button></div>'; }).join(''))) + '</div>';
-      } else if (!g) h += '<div class="card"><div class="h2">Sin guerra por ahora</div><p class="small">Tu líder o sublíder puede retar a otro clan. Mientras tanto, cada XP que ganes suma para la meta de la semana.</p></div>';
-    }
-    if ((G.historial || []).length) h += '<div class="card"><div class="h2">Últimas guerras <em>' + (+G.victorias || 0) + ' ganadas</em></div>' + G.historial.map(function (x) {
-      return '<div class="hist"><span class="rs ' + (x.gane ? 'win' : x.empate ? 'emp' : 'lose') + '">' + (x.gane ? 'Ganaron' : x.empate ? 'Empate' : 'Perdieron') + '</span><span class="t">vs ' + esc(x.rival || 'clan cerrado') + '</span><span class="small">' + nf(x.xp_mio) + ' – ' + nf(x.xp_rival) + '</span></div>';
-    }).join('') + '</div>';
+    if (!G) { K.rpc('guerra_ver').then(function (d) { G = d || {}; if (vista === 'guerra') { pintar(); premioGuerra(); } }, function (e) { G = { error: /guerra_ver|function|schema cache/i.test(String(e && e.message)) ? 'Falta correr el SQL 134-guerra-clanes.sql en Supabase.' : K.error(e) }; if (vista === 'guerra') pintar(); }); return '<p class="estado">Cargando la guerra…</p>'; }
+    if (G.error) return '<p class="estado">' + esc(G.error) + '</p>' + salaCard();
+    var g = G, h = '', y = g.yo || {}, mc = g.mi_clan, usadas = +y.partidas_hoy || 0, max = +g.max_partidas || 5;
+    // Portada
+    var estado = g.viva
+      ? '<span class="gp-vivo"><i></i>Ronda ' + g.viva_n + ' en vivo</span><div class="gp-cuenta">Cierra en <b data-reloj="' + limaISO(g.viva, '20:00') + '" data-corto>…</b></div>'
+      : g.proxima ? '<span class="gp-prox">Próxima: ronda ' + (g.proxima_n || 1) + ' · ' + fechaR(g.proxima) + ' 8:00</span><div class="gp-cuenta">Empieza en <b data-reloj="' + limaISO(g.proxima, '08:00') + '" data-corto>…</b></div>' : '';
+    var vid = ''; for (var k = 0; k < max; k++) vid += '<i' + (k < usadas ? ' class="usada"' : '') + '></i>';
+    h += '<div class="card gport"><div class="gp-ray"></div><div class="gp-emb">' + (window.MCGuerraEmblema ? MCGuerraEmblema(g.temporada) : '') + '</div>' +
+      '<div class="gp-tx"><div class="gp-t">Guerra de clanes</div><div class="gp-s">Temporada ' + g.temporada + (g.viva ? ' · Ronda ' + g.viva_n : '') + '</div>' + estado +
+      '<div class="gp-hor">' + SV.reloj.replace(' class="i"', '') + 'Martes y jueves · 8:00 a 20:00</div>' +
+      '<div class="gp-btns"><button type="button" class="gp-b cl" data-gtab="ronda" data-gir>Clan</button>' +
+      (g.viva && g.tengo_clan && usadas < max ? '<a class="gp-b jg" href="guerra.html">Jugar</a>' : '<span class="gp-b jg off">' + (g.viva ? 'Sin partidas' : 'Jugar') + '</span>') + '</div>' +
+      (g.viva ? '<div class="gp-vid"><span>Partidas</span>' + vid + '<b>' + (max - usadas) + '/' + max + '</b></div>' : '') + '</div></div>';
+    // Las 8 rondas
+    h += '<div class="card grondas"><div class="h2">Rondas <em>Temporada ' + g.temporada + '</em></div><div class="gr-l">' + (g.rondas || []).map(function (r) {
+      return '<div class="gr ' + r.estado + '"><b>R' + r.n + '</b><small>' + fechaR(r.fecha).replace(/^(\w{3})\w*/, '$1') + '</small>' + (r.estado === 'viva' ? '<i>En vivo</i>' : r.estado === 'cerrada' ? '<i>✓</i>' : '') + '</div>';
+    }).join('') + '</div></div>';
+    var cofH = '';
+    // Cofres de guerra por abrir
+    if ((g.cofres || []).length) cofH = '<div class="card gcof"><div class="h2">Cofres de guerra <em>' + g.cofres.length + ' por abrir</em></div><div class="gc-l">' + g.cofres.map(function (c) {
+      return '<button type="button" class="gc" data-gcofre="' + esc(c.ronda) + '"><img src="assets/cofres/' + c.nivel + '-cerrado.webp" alt=""><b>' + esc(c.nivel.charAt(0).toUpperCase() + c.nivel.slice(1)) + '</b><small>Ronda ' + c.n + ' · ' + nf(c.puntos) + ' pts</small><span>Abrir</span></button>';
+    }).join('') + '</div></div>';
+    var rankH = '';
+    // Ranking
+    var lista = GT === 'jug' ? (g.temp_jugadores || []) : GT === 'temp' ? (g.temp_clanes || []) : (g.ronda_clanes || []);
+    var vacio = GT === 'ronda' ? (g.ronda_de ? 'Aún nadie suma puntos en la ronda ' + g.ronda_de_n + '.' : 'La ronda 1 empieza el ' + fechaR(g.proxima || g.inicio) + ' a las 8:00.') : 'Aún nadie suma puntos esta temporada.';
+    var mioFuera = GT !== 'jug' && mc && !lista.some(function (c) { return c.mio; }) && (GT === 'temp' ? mc.puntos_temp : mc.puntos_ronda) > 0;
+    rankH = '<div class="card ctop granking" id="gRank"><div class="gk-tabs"><button type="button" class="' + (GT === 'ronda' ? 'on' : '') + '" data-gtab="ronda">' + (g.ronda_de ? 'Ronda ' + g.ronda_de_n : 'Ronda') + '</button><button type="button" class="' + (GT === 'temp' ? 'on' : '') + '" data-gtab="temp">Temporada</button><button type="button" class="' + (GT === 'jug' ? 'on' : '') + '" data-gtab="jug">Jugadores</button></div>' +
+      (lista.length ? '<ol class="tc-lista">' + lista.map(GT === 'jug' ? gJug : function (c, i) { return gFila(c, i); }).join('') +
+        (mioFuera ? '<li class="sep">···</li>' + gFila(Object.assign({}, mc, { mio: true, puesto: GT === 'temp' ? mc.puesto_temp : mc.puesto_ronda, puntos: GT === 'temp' ? mc.puntos_temp : mc.puntos_ronda, jugadores: (mc.aporte || []).length })) : '') + '</ol>'
+        : '<p class="estado" style="padding:18px">' + vacio + '</p>') + '</div>';
+    var mioH = '';
+    // Mi clan
+    if (mc) mioH = '<div class="card gmio"><div class="h2">' + esc(mc.nombre) + ' <em>en la guerra</em></div><div class="gm-n"><div><b>' + nf(mc.puntos_ronda) + '</b><small>' + (g.ronda_de ? 'Ronda ' + g.ronda_de_n : 'Ronda') + (mc.puesto_ronda ? ' · #' + mc.puesto_ronda : '') + '</small></div><div><b>' + nf(mc.puntos_temp) + '</b><small>Temporada' + (mc.puesto_temp ? ' · #' + mc.puesto_temp : '') + '</small></div><div><b>' + nf(y.puntos_temp) + '</b><small>Tus puntos</small></div></div>' +
+      ((mc.aporte || []).length ? '<div class="gm-ap">' + mc.aporte.slice(0, 10).map(function (a) { var top = +mc.aporte[0].puntos || 1; return '<div class="apo"><span class="t"><b>' + esc(a.yo ? 'Tú' : a.apodo) + '</b><span class="bb"><i style="width:' + Math.round(100 * a.puntos / top) + '%"></i></span></span><span class="n">' + nf(a.puntos) + '<small>' + a.partidas + ' part.</small></span></div>'; }).join('') + '</div>'
+        : '<p class="small" style="margin-top:10px">Nadie de tu clan jugó aún esta temporada. ¡Sé el primero!</p>') + '</div>';
+    else mioH = '<div class="card"><div class="h2">Sin clan</div><p class="small">Únete a un clan para jugar la guerra.</p></div>';
+    h += '<div class="g2"><div>' + rankH + '</div><div>' + cofH + mioH + '</div></div>';
+    // Premios
+    h += '<div class="g2"><div class="card gprem"><div class="h2">Premios <em>al terminar la temporada</em></div><div class="gpr-l">' +
+      [['1', '#FFC800', 150, 'Copa de oro'], ['2', '#C9C6D6', 100, 'Copa de plata'], ['3', '#E58A45', 50, 'Copa de bronce']].map(function (x) {
+        return '<div class="gpr" style="--c:' + x[1] + '"><span class="ps">' + x[0] + '°</span><svg viewBox="0 0 40 40"><use href="#cl-copa"/></svg><b>' + x[2] + ' ' + SV.dia + '</b><small>a cada miembro que jugó · ' + x[3] + ' en el escudo</small></div>';
+      }).join('') + '</div><div class="gpr-x"><div><b>Top 3 jugadores</b><small>80, 50 y 30 ' + SV.dia + '</small></div><div><b>Emblema de temporada</b><small>Pin «Guerrero T' + g.temporada + '» para todos los que jueguen; «Campeón T' + g.temporada + '» para el clan ganador</small></div><div><b>Cofre de guerra</b><small>Al cerrar cada ronda: Bronce, Plata (3 000 pts), Oro (6 000) o Leyenda (10 000)</small></div></div></div>';
     h += '<div class="card reglas"><div class="h2">Cómo funciona</div>' +
-      '<div>' + SV.check + 'El líder o sublíder reta a otro clan. El otro tiene 24 horas para aceptar.</div>' +
-      '<div>' + SV.check + 'Dura 1 o 2 días. Cuenta el XP que ganan practicando, en duelos, simulacro y más.</div>' +
-      '<div>' + SV.check + 'Cada persona suma hasta 3 000 XP por día de guerra, para que no gane uno solo.</div>' +
-      '<div>' + SV.check + 'El clan que gana suma una victoria a su escudo.</div></div>';
-    h = salaCard() + h;
+      '<div>' + SV.check + 'Cada temporada dura 4 semanas: 8 rondas, martes y jueves de 8:00 a 20:00.</div>' +
+      '<div>' + SV.check + 'En cada ronda juegas hasta 5 partidas de 10 preguntas al azar del ciclo más nuevo.</div>' +
+      '<div>' + SV.check + 'Acierto = 100 pts + rapidez (hasta 50) + combo por aciertos seguidos (hasta 100).</div>' +
+      '<div>' + SV.check + 'Tus puntos suman para tu clan. Gana el clan con más puntos en la temporada.</div></div></div>';
+    h += salaCard();
     return h;
+  }
+  // Ventana de premios de la temporada que terminó (una sola vez)
+  function premioGuerra() {
+    var p = G && G.premio; if (!p) return;
+    var o = document.createElement('div'); o.className = 'cf-fondo';
+    var l = '';
+    if (p.clan_puesto) l += '<p>Tu clan <b>' + esc(p.clan) + '</b> quedó <b>' + p.clan_puesto + '.°</b>: +' + p.diamantes + ' diamantes y una copa en su escudo.</p>';
+    if (p.ind_puesto) l += '<p>Quedaste <b>' + p.ind_puesto + '.°</b> entre todos los jugadores: +' + p.ind_diamantes + ' diamantes.</p>';
+    if (p.emblema) l += '<p>Ganaste el emblema <b>Guerrero T' + p.temporada + '</b>' + (p.clan_puesto === 1 ? ' y <b>Campeón T' + p.temporada + '</b>' : '') + '. Póntelo en Colección → Pines.</p>';
+    o.innerHTML = '<div class="cf-caja gpz" role="dialog" aria-modal="true"><span class="ge">' + (window.MCGuerraEmblema ? MCGuerraEmblema(p.temporada) : '') + '</span><b>¡Terminó la Temporada ' + p.temporada + '!</b>' + l + '<button type="button" class="cb l w" data-gpok>¡Genial!</button></div>';
+    document.body.appendChild(o);
+    o.addEventListener('click', function (e) { if (e.target === o || e.target.closest('[data-gpok]')) { o.remove(); K.rpc('guerra_premio_visto', { p_temp: p.temporada }).catch(function () {}); G.premio = null; } });
+  }
+  // Abrir un cofre de guerra
+  function abrirCofreGuerra(ronda, btn) {
+    btn.disabled = true;
+    K.rpc('guerra_cofre_abrir', { p_ronda: ronda }).then(function (d) {
+      var a = d.abierto || {}; G = d; pintar();
+      var o = document.createElement('div'); o.className = 'cf-fondo';
+      o.innerHTML = '<div class="cf-caja gpz" role="dialog" aria-modal="true"><img class="gci" src="assets/cofres/' + a.nivel + '-abierto.webp" alt=""><b>Cofre ' + esc(a.nivel) + '</b><p><b>+' + a.diamantes + '</b> diamantes y <b>+' + a.xp + '</b> XP</p><div class="cf-btns"><button type="button" class="ok" data-gpok>¡Genial!</button></div></div>';
+      document.body.appendChild(o);
+      o.addEventListener('click', function (e) { if (e.target === o || e.target.closest('[data-gpok]')) o.remove(); });
+    }, function (x) { btn.disabled = false; toast(K.error(x)); });
   }
   // Cuenta regresiva de las guerras
   function relojes() {
@@ -1816,6 +1950,8 @@
       }, function (x) { toast(K.error(x)); SOL = null; pedidos(); });
       return;
     }
+    if ((el = e.target.closest('[data-gtab]'))) { GT = el.dataset.gtab; pintar(); if (el.hasAttribute('data-gir')) { var rk = document.getElementById('gRank'); if (rk) rk.scrollIntoView({ behavior: 'smooth', block: 'start' }); } return; }
+    if ((el = e.target.closest('[data-gcofre]'))) { abrirCofreGuerra(el.dataset.gcofre, el); return; }
     if ((el = e.target.closest('[data-horas]'))) { horasReto = +el.dataset.horas; pintar(); return; }
     if ((el = e.target.closest('[data-retar]'))) {
       el.disabled = true;

@@ -640,7 +640,7 @@
     rpc('aviso_marcar', { p_clave: 'tpremio:' + sem, p_valor: k }).then(function (antes) { return Math.max(ya, antes == null ? -1 : +antes); }, function () { return ya; }).then(function (y) {
       if (k <= y) return false;
       ya = y;
-      return js(BASE + 'assets/coleccion.js?v=212', function () { return window.MCColeccion; }).then(function () { return true; });
+      return js(BASE + 'assets/coleccion.js?v=213', function () { return window.MCColeccion; }).then(function () { return true; });
     }).then(function (seguir) {
       if (!seguir || !window.MCColeccion) return;
       var C = window.MCColeccion, T = C.temporada && C.temporada(sem);
@@ -669,7 +669,7 @@
     var ids = regs.filter(function (g) { return g.tipo === 'item' && g.item; }).map(function (g) { return g.item; });
     var pasos = [js(BASE + 'assets/sobre.js?v=7', function () { return window.MCSobre; })];
     // Los ítems: la colección se vuelve a pedir al toque (no los 10 min guardados)
-    if (ids.length) pasos.push(js(BASE + 'assets/coleccion.js?v=212', function () { return window.MCColeccion; })
+    if (ids.length) pasos.push(js(BASE + 'assets/coleccion.js?v=213', function () { return window.MCColeccion; })
       .then(function () { return MCColeccion.refrescar ? MCColeccion.refrescar() : null; }));
     var con = regs.filter(function (g) { return g.nota; })[0] || regs[0];
     Promise.all(pasos).then(function () {
