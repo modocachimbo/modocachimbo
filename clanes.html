@@ -314,8 +314,41 @@
     .ctop .podio { grid-column: 1; padding-bottom: 0; }
     .ctop .tc-lista { grid-column: 2; border-top: 0; border-left: 1px solid #2a2346; align-self: stretch; }
     .ctop .podio:has(.vacio-t) { grid-column: 1 / -1; }
+    .ctop:not(.tdv) { grid-template-rows: auto auto 1fr auto; }
+    .ctop .tc-aviso { grid-row: 2; }
+    .ctop:not(.tdv) .tc-lista { grid-row: 3 / span 2; }
+    .ctop:not(.tdv) .podio { grid-row: 3; align-self: stretch; padding-top: 18px; }
+    .ctop .tc-lista + .tc-todos { grid-column: 1; grid-row: 4; align-self: end; border-top: 1px solid #2a2346; }
+    .ctop .podio .halo { width: 64px; height: 70px; } .ctop .podio .halo .esc { width: 54px; height: 61px; }
+    .ctop .podio .l1 .halo { width: 80px; height: 88px; } .ctop .podio .l1 .halo .esc { width: 70px; height: 78px; }
+    .ctop .podio .corona { width: 34px; }
+    .ctop .podio .l1 .frente { height: 92px; } .ctop .podio .l2 .frente { height: 66px; } .ctop .podio .l3 .frente { height: 50px; }
+    .ctop .podio .frente { font-size: 40px; }
   }
   @media (prefers-reduced-motion: reduce) { .ctop .corona, .ctop .frente::before, .ctop .frente::after { animation: none !important; } }
+  /* Todos los clanes */
+  .tc-todos { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px; background: none; border: 0; border-top: 1px solid #2a2346; color: var(--accent); font: italic 900 17px/1 var(--display); text-transform: uppercase; letter-spacing: .04em; cursor: pointer; grid-column: 1 / -1; }
+  .tc-todos:hover { background: rgba(198,224,0,.06); }
+  .tc-todos svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .td-cab { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: #221C3D; }
+  .td-cab .vol { flex: none; display: inline-flex; align-items: center; gap: 4px; height: 36px; padding: 0 12px; border-radius: 10px; border: 1.5px solid #3a2f6b; background: rgba(0,0,0,.25); color: #fff; font: 900 14px/1 Nunito, sans-serif; cursor: pointer; }
+  .td-cab h3 { flex: 1; margin: 0; font: italic 900 22px/1 var(--display); text-transform: uppercase; color: #fff; }
+  .td-cab small { color: var(--text-dim); font: 800 12.5px/1 Nunito, sans-serif; }
+  .td-bus { position: relative; padding: 12px 14px; border-bottom: 1px solid #2a2346; }
+  .td-bus svg { position: absolute; left: 27px; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); fill: none; stroke: var(--text-dim); stroke-width: 2.2; stroke-linecap: round; }
+  .td-bus input { width: 100%; box-sizing: border-box; height: 44px; padding: 0 14px 0 40px; border-radius: 12px; border: 1.5px solid #352E58; background: #0f0b1f; color: #fff; font: 800 15px Nunito, sans-serif; outline: none; }
+  .td-bus input:focus { border-color: var(--accent); }
+  .ctop .tc-lista li.td-f { cursor: pointer; }
+  .ctop .tc-lista li.td-f:hover { background: rgba(255,255,255,.03); }
+  .ctop .tc-lista li.td-f.tu:hover { background: linear-gradient(90deg, rgba(198,224,0,.2), transparent 80%); }
+  .ctop .tc-lista .q small .idp { color: #cfc8ef; font-weight: 900; }
+  .ctop .tc-lista .der .gris { color: var(--text-dim); }
+  .ctop .tc-lista li.td-ab { display: block; padding: 0 14px 12px; background: #120e24; cursor: default; }
+  .ctop .tc-lista li.td-ab .vista { margin-top: 0; }
+  .td-mas { display: block; width: 100%; padding: 14px; background: none; border: 0; color: #FFC800; font: italic 900 16px/1 var(--display); text-transform: uppercase; letter-spacing: .04em; cursor: pointer; }
+  .ctop.tdv { display: block; }
+  .ctop .tc-lista .der > span.gris { color: var(--text-dim); }
+  .ctop .tc-lista li.td-f .q small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .copa { width: 34px; height: 34px; margin: 0 auto -4px; display: block; }
   .lt { display: grid; grid-template-columns: 28px 40px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 7px 10px; border-radius: 10px; background: #120e24; border: 1px solid #2a2346; margin-bottom: 6px; }
   .lt .esc { width: 36px; height: 41px; }
@@ -852,7 +885,7 @@
   var app = document.getElementById('app');
   var Q = new URLSearchParams(location.search);
   var UNIRSE = (Q.get('unirse') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 7);
-  var SOL = null, D = null, TOP = null, G = null, RIV = null, OFI = null, horasReto = 24, vista = 'clan', abierto = null, seguro = '', SEL = null, previa = null, previaCod = '', relojT = 0, recien = 0;
+  var SOL = null, D = null, TOP = null, G = null, RIV = null, OFI = null, horasReto = 24, vista = 'clan', abierto = null, seguro = '', SEL = null, previa = null, previaCod = '', relojT = 0, recien = 0, TD = null;
   var F = { nombre: '', tag: '', forma: 'punta', simbolo: 'rayo', color: '#C6E000' };
 
   var SV = {
@@ -1428,12 +1461,12 @@
   }
 
   /* ---------- Sin clan: unirse o crear ---------- */
-  function vistaPrevia(c) {
+  function vistaPrevia(c, soloVer) {
     var ok = '<span class="vo"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></span>', no = '<span class="vo"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></span>', req = '';
     if (+c.min_nivel) { var sn = +c.mi_nivel >= +c.min_nivel; req += '<p class="' + (sn ? 'si' : 'no') + '">' + (sn ? ok : no) + '<span>Pide <b>nivel ' + c.min_nivel + '</b> · tú eres nivel ' + (+c.mi_nivel || 1) + '</span></p>'; }
     if (+c.min_rango) { var sr = +c.mi_rango >= +c.min_rango; req += '<p class="' + (sr ? 'si' : 'no') + '">' + (sr ? ok : no) + '<span>Pide rango <b>' + RG_NOM[c.min_rango] + '</b> o más · tú: ' + RG_NOM[+c.mi_rango || 0].replace('Cualquiera', 'sin rango') + '</span></p>'; }
     req += '<p class="si">' + ok + '<span>' + (c.aprobacion === 'solicitud' ? 'El líder <b>aprueba</b> cada pedido' : 'Clan <b>abierto</b>: entras al toque') + '</span></p>';
-    var bt = c.miembros >= 20 ? '<p class="err">Ese clan está lleno.</p>'
+    var bt = soloVer ? '' : c.miembros >= 20 ? '<p class="err">Ese clan está lleno.</p>'
       : c.no_cumple ? '<button type="button" class="cb g w" style="margin-top:10px" disabled>Aún no cumples los requisitos</button>'
       : c.pedido ? '<button type="button" class="cb g w" style="margin-top:10px" disabled>Pedido enviado · el líder decide</button>'
       : '<button type="button" class="cb l w" style="margin-top:10px" data-unirse>' + (c.aprobacion === 'solicitud' ? 'Pedir entrar a ' : 'Unirme a ') + esc(c.nombre) + '</button>';
@@ -1474,6 +1507,7 @@
 
   /* ---------- Top ---------- */
   function top() {
+    if (TD) return todos();
     if (!TOP) { K.ranking(true).then(function (d) { TOP = d; if (vista === 'top') pintar(); }, function (e) { TOP = { top: [], error: true }; if (vista === 'top') pintar(); }); return '<p class="estado">Cargando el top…</p>'; }
     if (TOP.error) return '<p class="estado">No se pudo cargar el top. Revisa tu internet.</p>';
     var t = TOP.top || [], p = [t[1], t[0], t[2]], cls = ['p2', 'p1', 'p3'];
@@ -1500,7 +1534,7 @@
     if (TOP.mio && TOP.mio.puesto > 10) resto += '<li class="sep">···</li>' + fila(TOP.mio);
     var aviso = !TOP.tengo_clan && t.length ? '<p class="small tc-aviso">¿Aún sin clan? Toca <b style="color:var(--accent)">Pedir entrar</b> y el líder decide. Hasta 3 pedidos a la vez.</p>' : '';
     return '<div class="card ctop"><div class="tc-cab"><span>Top de clanes · semana</span><span class="cierra"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M10 2h4"/></svg>' + cierra() + '</span></div>' +
-      aviso + pod + (resto ? '<ol class="tc-lista">' + resto + '</ol>' : '') + '</div>' +
+      aviso + pod + (resto ? '<ol class="tc-lista">' + resto + '</ol>' : '') + '<button type="button" class="tc-todos" data-todos>Ver todos los clanes<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>' +
       '<div class="card nota"><svg width="46" height="46"><use href="#cl-copa"/></svg><span>Cada semana que tu clan termina en el <b style="color:var(--oro)">Top 3</b> gana una copa que queda en su escudo. Cuentan todos los XP de la semana de sus miembros.</span></div>';
   }
   // Cierra el lunes a las 00:00 (hora de Lima)
@@ -1509,6 +1543,45 @@
     var lunes = Date.UTC(lima.getUTCFullYear(), lima.getUTCMonth(), lima.getUTCDate() + f) + 5 * 3600000;
     var h = Math.max(0, Math.floor((lunes - ahora) / 3600000)), d = Math.floor(h / 24);
     return 'Cierra en ' + (d ? d + ' d ' + (h % 24) + ' h' : h + ' h');
+  }
+
+  /* ---------- Todos los clanes (supabase/131-clanes-todos.sql) ---------- */
+  function cargarTodos(mas) {
+    var b = TD.buscar, desde = mas ? TD.lista.length : 0, yo = ++TD.pide;
+    TD.cargando = true;
+    K.rpc('clanes_todos', { p_buscar: b || null, p_desde: desde }).then(function (d) {
+      if (!TD || yo !== TD.pide) return;
+      d = d || {};
+      TD.lista = (mas ? TD.lista : []).concat(d.clanes || []); TD.total = d.total || 0; TD.mas = !!d.mas; TD.tengo_clan = !!d.tengo_clan; TD.cargando = false; TD.error = '';
+      if (!mas) TD.abierto = null;
+      pintarTodos();
+    }, function (e) { if (!TD || yo !== TD.pide) return; TD.cargando = false; TD.error = /clanes_todos|Could not find the function/i.test(String(e && e.message || e)) ? 'Falta correr el SQL 131-clanes-todos.sql en Supabase.' : K.error(e); pintarTodos(); });
+  }
+  function filaTodos(c) {
+    var der = '<span' + (c.xp ? '' : ' class="gris"') + '>' + xpIco() + nf(c.xp) + '</span>';
+    if (!TD.tengo_clan && !c.mio) der += c.pedido ? '<button type="button" class="pedir ya" data-nopedir="' + c.id + '" title="Toca para cancelar el pedido">✓ Pedido</button>' : c.lleno ? '<span class="pedir lleno">Lleno</span>' : '<button type="button" class="pedir" data-pedir="' + c.id + '">' + (c.aprobacion === 'solicitud' ? 'Pedir entrar' : 'Unirme') + '</button>';
+    var li = '<li class="td-f' + (c.mio ? ' tu' : '') + '" data-verclan="' + c.id_publico + '"><span class="num">' + (c.puesto || '–') + '</span>' + escudo(c) +
+      '<span class="q"><b>' + esc(c.nombre) + '</b><small><span class="idp">ID ' + c.id_publico + '</span> · ' + (c.mio ? 'Tu clan · ' : '') + c.miembros + '/20</small></span><span class="der">' + der + '</span></li>';
+    if (TD.abierto === c.id_publico) li += '<li class="td-ab">' + (TD.previa ? vistaPrevia(TD.previa, TD.tengo_clan || c.mio) + '<p class="err" id="cErr"></p>' : '<p class="estado" style="padding:10px">Cargando…</p>') + '</li>';
+    return li;
+  }
+  function listaTodos() {
+    if (TD.error) return '<p class="estado">' + esc(TD.error) + '</p>';
+    if (!TD.lista && TD.cargando) return '<p class="estado">Cargando clanes…</p>';
+    if (!TD.lista.length) return '<p class="estado">' + (TD.buscar ? 'No hay ningún clan con «' + esc(TD.buscar) + '».' : 'Aún no hay clanes. ¡Crea el primero!') + '</p>';
+    return '<ol class="tc-lista">' + TD.lista.map(filaTodos).join('') + '</ol>' + (TD.mas ? '<button type="button" class="td-mas" data-tdmas' + (TD.cargando ? ' disabled' : '') + '>' + (TD.cargando ? 'Cargando…' : 'Ver más clanes ▾') + '</button>' : '');
+  }
+  function pintarTodos() {
+    var l = document.getElementById('tdLista'), n = document.getElementById('tdN');
+    if (!l) { pintar(); return; }
+    l.innerHTML = listaTodos();
+    if (n) n.textContent = TD.total ? nf(TD.total) + (TD.total === 1 ? ' clan' : ' clanes') : '';
+  }
+  function todos() {
+    if (!TD.lista && !TD.cargando) cargarTodos(false);
+    return '<div class="card ctop tdv"><div class="td-cab"><button type="button" class="vol" data-tdvolver>‹ Top</button><h3>Todos los clanes</h3><small id="tdN">' + (TD.total ? nf(TD.total) + (TD.total === 1 ? ' clan' : ' clanes') : '') + '</small></div>' +
+      '<div class="td-bus"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="tdBus" type="search" autocomplete="off" placeholder="Busca por nombre, sigla o ID" value="' + esc(TD.buscar) + '"></div>' +
+      '<div id="tdLista">' + listaTodos() + '</div></div>';
   }
 
   /* ---------- Guerra ---------- */
@@ -1636,6 +1709,7 @@
   }
 
   app.addEventListener('input', function (e) {
+    if (e.target.id === 'tdBus' && TD) { var tv = e.target.value.trim(); clearTimeout(TD.t); TD.t = setTimeout(function () { if (!TD || TD.buscar === tv) return; TD.buscar = tv; cargarTodos(false); }, 300); return; }
     if (e.target.id === 'cCod') { var v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 7); e.target.value = v; buscarCodigo(v); return; }
     if (e.target.id === 'fElim') {
       var b = app.querySelector('[data-eliminar]');
@@ -1651,7 +1725,7 @@
   });
   app.addEventListener('click', function (e) {
     var el;
-    if ((el = e.target.closest('[data-vista]'))) { vista = el.getAttribute('data-vista'); seguro = ''; CFG = null; abierto = null; if (vista === 'top') TOP = null; if (vista === 'guerra') { G = null; RIV = null; SALA = null; } if (vista === 'misiones' && CF) { cargarCofres(); cargarYo(); } pintar(); try { history.replaceState(null, '', vista === 'clan' ? location.pathname + location.search : '#' + vista); } catch (x) {} window.scrollTo(0, 0); return; }
+    if ((el = e.target.closest('[data-vista]'))) { vista = el.getAttribute('data-vista'); seguro = ''; CFG = null; abierto = null; if (vista === 'top') { TOP = null; TD = null; } if (vista === 'guerra') { G = null; RIV = null; SALA = null; } if (vista === 'misiones' && CF) { cargarCofres(); cargarYo(); } pintar(); try { history.replaceState(null, '', vista === 'clan' ? location.pathname + location.search : '#' + vista); } catch (x) {} window.scrollTo(0, 0); return; }
     if ((el = e.target.closest('[data-cofre]'))) { abrirCofre(+el.dataset.cofre); return; }
     if ((el = e.target.closest('[data-copiar]'))) { A.copiar(el.dataset.copiar, (el.dataset.que || 'Código') + ' copiado'); return; }
     if ((el = e.target.closest('[data-premio]'))) { abrirCofre(+el.dataset.premio, true); return; }
@@ -1692,10 +1766,21 @@
     if ((el = e.target.closest('[data-pedir],[data-nopedir]'))) {
       var pid = +(el.dataset.pedir || el.dataset.nopedir), pide = el.hasAttribute('data-pedir'); el.disabled = true;
       K.rpc(pide ? 'clan_pedir' : 'clan_cancelar_pedido', { p_clan: pid }).then(function (r) {
-        if (pide && r && r.unido) { toast('¡Ya eres parte de ' + r.nombre + '!'); vista = 'clan'; try { history.replaceState(null, '', 'clanes.html'); } catch (z) {} refrescar(); return; }
+        if (pide && r && r.unido) { toast('¡Ya eres parte de ' + r.nombre + '!'); vista = 'clan'; TD = null; try { history.replaceState(null, '', 'clanes.html'); } catch (z) {} refrescar(); return; }
         toast(pide ? '¡Pedido enviado a ' + (r && r.nombre || 'el clan') + '! El líder lo verá en su clan' : 'Pedido cancelado');
-        (TOP.top || []).concat(TOP.mio ? [TOP.mio] : []).forEach(function (c) { if (c.id === pid) c.pedido = pide; }); K.olvidar(); pintar();
+        (TOP && TOP.top || []).concat(TOP && TOP.mio ? [TOP.mio] : [], TD && TD.lista || []).forEach(function (c) { if (c.id === pid) c.pedido = pide; }); if (TD && TD.previa && TD.previa.id === pid) TD.previa.pedido = pide; K.olvidar(); if (TD) pintarTodos(); else pintar();
       }, function (x) { toast(K.error(x)); el.disabled = false; });
+      return;
+    }
+    if (e.target.closest('[data-todos]')) { TD = { buscar: '', lista: null, pide: 0, total: 0 }; pintar(); window.scrollTo(0, 0); return; }
+    if (e.target.closest('[data-tdvolver]')) { TD = null; pintar(); window.scrollTo(0, 0); return; }
+    if ((el = e.target.closest('[data-tdmas]'))) { el.disabled = true; el.textContent = 'Cargando…'; cargarTodos(true); return; }
+    if (TD && (el = e.target.closest('[data-verclan]'))) {
+      var ip = +el.dataset.verclan;
+      if (TD.abierto === ip) { TD.abierto = null; pintarTodos(); return; }
+      TD.abierto = ip; TD.previa = null; previaCod = String(ip); previa = null; pintarTodos();
+      K.rpc('clan_por_codigo', { p_codigo: String(ip) }).then(function (c) { if (!TD || TD.abierto !== ip) return; TD.previa = c; previa = c; pintarTodos(); },
+        function (x) { if (TD && TD.abierto === ip) { TD.abierto = null; pintarTodos(); toast(K.error(x)); } });
       return;
     }
     if ((el = e.target.closest('[data-solok],[data-solno]'))) {
@@ -1743,8 +1828,8 @@
     if (e.target.closest('[data-unirse]')) {
       el = e.target.closest('[data-unirse]'); el.disabled = true;
       K.rpc('clan_unirse', { p_codigo: previaCod }).then(function (r) {
-          if (r && r.pendiente) { toast('¡Pedido enviado a ' + r.nombre + '! El líder decide'); if (previa) previa.pedido = true; pintar(); return; }
-          toast('¡Ya eres parte de ' + r.nombre + '!'); vista = 'clan'; history.replaceState(null, '', 'clanes.html'); refrescar(); },
+          if (r && r.pendiente) { toast('¡Pedido enviado a ' + r.nombre + '! El líder decide'); if (previa) previa.pedido = true; if (TD) { (TD.lista || []).forEach(function (c) { if (previa && c.id === previa.id) c.pedido = true; }); pintarTodos(); } else pintar(); return; }
+          toast('¡Ya eres parte de ' + r.nombre + '!'); vista = 'clan'; TD = null; history.replaceState(null, '', 'clanes.html'); refrescar(); },
         function (x) { el.disabled = false; var m = document.getElementById('cErr'); if (m) m.textContent = K.error(x); });
       return;
     }
