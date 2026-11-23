@@ -221,6 +221,7 @@
   .salac { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; border-color: rgba(198,224,0,.45); background: radial-gradient(300px 140px at 0% 0%, rgba(198,224,0,.14), transparent 70%), linear-gradient(180deg, #1b1533, #141027); }
   .salac .sc-tx { flex: 1; min-width: 220px; }
   .salac .h2 { margin-bottom: 6px; } .salac .h2 em { font-size: 16px; color: var(--accent); }
+  .salac .sc-tk svg.gesp { width: 15px; height: 15px; vertical-align: -3px; margin-right: 5px; fill: none; }
   .salac .vivo { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--rojo); box-shadow: 0 0 0 4px rgba(255,75,75,.25); }
   .sc-tk { display: inline-block; margin-top: 8px; padding: 4px 10px; border-radius: 999px; background: rgba(198,224,0,.12); border: 1px solid rgba(198,224,0,.35); font: 900 12px Nunito, sans-serif; color: var(--accent); }
   .pedir { display: inline-flex; align-items: center; gap: 5px; height: 30px; padding: 0 11px; border-radius: 9px; border: 0; border-bottom: 3px solid rgba(0,0,0,.35); background: linear-gradient(180deg, #e2f75a, #C6E000); color: #14101f; font: italic 900 14px/1 var(--display); text-transform: uppercase; letter-spacing: .02em; cursor: pointer; white-space: nowrap; flex: none; }
@@ -1705,10 +1706,10 @@
   var SALA = null;
   function salaCard() {
     if (SALA === null) { SALA = false; K.rpc('clan_duelo_mio').catch(function () { return K.rpc('clan_sala_mia'); }).then(function (d) { SALA = d || false; if (vista === 'guerra') pintar(); }, function () { SALA = false; }); }
-    var s = SALA && SALA.sala, t = SALA ? +SALA.tickets || 0 : null;
-    return '<div class="card salac"><div class="sc-tx"><div class="h2">' + (s ? '<i class="vivo"></i>' : '') + 'Sala de clan <em>en vivo</em></div>' +
-      '<p class="small">' + (s ? esc(s.titulo) + (s.rival ? ' · contra <b style="color:#fff">' + esc(s.rival) + '</b>' : ' · esperando rival') : 'Duelo entre clanes con los comodines del duelo, 2 vs 2 o 3 vs 3. Al empezar se usa 1 ticket.') + '</p>' +
-      (t != null ? '<span class="sc-tk"><svg viewBox="0 0 58 42" width="20" height="15" aria-hidden="true" style="vertical-align:-2px;margin-right:4px"><path d="M3 8a5 5 0 0 1 5-5h42a5 5 0 0 1 5 5v7a6 6 0 0 0 0 12v7a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5v-7a6 6 0 0 0 0-12z" fill="#C6E000"/><path d="M39 6v30" stroke="#151A03" stroke-width="2.4" stroke-dasharray="3.5 3"/></svg>' + t + (t === 1 ? ' ticket' : ' tickets') + '</span>' : '') + '</div>' +
+    var s = SALA && SALA.sala;
+    return '<div class="card salac"><div class="sc-tx"><div class="h2">' + (s ? '<i class="vivo"></i>' : '') + 'Sala de clan <em>gratis · hasta 6 vs 6</em></div>' +
+      '<p class="small">' + (s ? esc(s.titulo) + (s.rival ? ' · contra <b style="color:#fff">' + esc(s.rival) + '</b>' : ' · esperando rival') : 'Duelo en vivo contra otro clan, con comodines y preguntas al azar.') + '</p>' +
+      '<span class="sc-tk">' + SV.espadas + 'En ronda: gana +3 000 · empate +2 000 · pierde +1 000 por jugador</span></div>' +
       '<a class="cb l" href="' + (s ? (s.codigo.length === 6 ? 'duelo.html?d=' : 'sala-clan.html?c=') + s.codigo : 'sala-clan.html') + '">' + (s ? 'Entrar a la sala' : 'Ir a salas') + '</a></div>';
   }
   /* ---------- Guerra de clanes: temporadas y rondas (supabase/134-guerra-clanes.sql · guerra.html) ---------- */
@@ -1722,7 +1723,7 @@
     return '<li' + (c.mio ? ' class="tu"' : '') + '><span class="num">' + (c.puesto || i + 1) + '</span>' + escudo(c) + '<span class="q"><b>' + esc(c.nombre) + '</b><small>' + (c.mio ? 'Tu clan · ' : '') + c.jugadores + (c.jugadores === 1 ? ' jugador' : ' jugadores') + '</small></span><span class="der"><span>' + SV.espadas + nf(c[campo || 'puntos']) + '</span></span></li>';
   }
   function gJug(x, i) {
-    return '<li' + (x.yo ? ' class="tu"' : '') + '><span class="num">' + (x.puesto || i + 1) + '</span>' + A.foto(x) + '<span class="q"><b>' + esc(x.yo ? 'Tú' : x.apodo) + '</b><small>' + esc(x.clan || '') + ' · ' + x.partidas + (x.partidas === 1 ? ' partida' : ' partidas') + '</small></span><span class="der"><span>' + SV.espadas + nf(x.puntos) + '</span></span></li>';
+    return '<li' + (x.yo ? ' class="tu"' : '') + '><span class="num">' + (x.puesto || i + 1) + '</span>' + A.foto(x) + '<span class="q"><b>' + esc(x.yo ? 'Tú' : x.apodo) + '</b><small>' + esc(x.clan || '') + ' · ' + x.partidas + (x.partidas === 1 ? ' partida' : ' partidas') + (+x.duelos ? ' · ' + x.duelos + (+x.duelos === 1 ? ' duelo' : ' duelos') : '') + '</small></span><span class="der"><span>' + SV.espadas + nf(x.puntos) + '</span></span></li>';
   }
   function guerraVista() {
     if (!G) { K.rpc('guerra_ver').then(function (d) { G = d || {}; if (vista === 'guerra') { pintar(); premioGuerra(); } }, function (e) { G = { error: /guerra_ver|function|schema cache/i.test(String(e && e.message)) ? 'Falta correr el SQL 134-guerra-clanes.sql en Supabase.' : K.error(e) }; if (vista === 'guerra') pintar(); }); return '<p class="estado">Cargando la guerra…</p>'; }
@@ -1743,6 +1744,7 @@
     h += '<div class="card grondas"><div class="h2">Rondas <em>Temporada ' + g.temporada + '</em></div><div class="gr-l">' + (g.rondas || []).map(function (r) {
       return '<div class="gr ' + r.estado + '"><b>R' + r.n + '</b><small>' + fechaR(r.fecha).replace(/^(\w{3})\w*/, '$1') + '</small>' + (r.estado === 'viva' ? '<i>En vivo</i>' : r.estado === 'cerrada' ? '<i>✓</i>' : '') + '</div>';
     }).join('') + '</div></div>';
+    h += salaCard();
     var cofH = '';
     // Cofres de guerra por abrir
     if ((g.cofres || []).length) cofH = '<div class="card gcof"><div class="h2">Cofres de guerra <em>' + g.cofres.length + ' por abrir</em></div><div class="gc-l">' + g.cofres.map(function (c) {
@@ -1760,7 +1762,7 @@
     var mioH = '';
     // Mi clan
     if (mc) mioH = '<div class="card gmio"><div class="h2">' + esc(mc.nombre) + ' <em>en la guerra</em></div><div class="gm-n"><div><b>' + nf(mc.puntos_ronda) + '</b><small>' + (g.ronda_de ? 'Ronda ' + g.ronda_de_n : 'Ronda') + (mc.puesto_ronda ? ' · #' + mc.puesto_ronda : '') + '</small></div><div><b>' + nf(mc.puntos_temp) + '</b><small>Temporada' + (mc.puesto_temp ? ' · #' + mc.puesto_temp : '') + '</small></div><div><b>' + nf(y.puntos_temp) + '</b><small>Tus puntos</small></div></div>' +
-      ((mc.aporte || []).length ? '<div class="gm-ap">' + mc.aporte.slice(0, 10).map(function (a) { var top = +mc.aporte[0].puntos || 1; return '<div class="apo"><span class="t"><b>' + esc(a.yo ? 'Tú' : a.apodo) + '</b><span class="bb"><i style="width:' + Math.round(100 * a.puntos / top) + '%"></i></span></span><span class="n">' + nf(a.puntos) + '<small>' + a.partidas + ' part.</small></span></div>'; }).join('') + '</div>'
+      ((mc.aporte || []).length ? '<div class="gm-ap">' + mc.aporte.slice(0, 10).map(function (a) { var top = +mc.aporte[0].puntos || 1; return '<div class="apo"><span class="t"><b>' + esc(a.yo ? 'Tú' : a.apodo) + '</b><span class="bb"><i style="width:' + Math.round(100 * a.puntos / top) + '%"></i></span></span><span class="n">' + nf(a.puntos) + '<small>' + a.partidas + ' part.' + (+a.duelos ? ' · ' + a.duelos + ' duelo' + (+a.duelos === 1 ? '' : 's') : '') + '</small></span></div>'; }).join('') + '</div>'
         : '<p class="small" style="margin-top:10px">Nadie de tu clan jugó aún esta temporada. ¡Sé el primero!</p>') + '</div>';
     else mioH = '<div class="card"><div class="h2">Sin clan</div><p class="small">Únete a un clan para jugar la guerra.</p></div>';
     h += '<div class="g2"><div>' + rankH + '</div><div>' + cofH + mioH + '</div></div>';
@@ -1773,8 +1775,8 @@
       '<div>' + SV.check + 'Cada temporada dura 4 semanas: 8 rondas, martes y jueves de 8:00 a 20:00.</div>' +
       '<div>' + SV.check + 'En cada ronda juegas hasta 5 partidas de 10 preguntas al azar del ciclo más nuevo.</div>' +
       '<div>' + SV.check + 'Acierto = 100 pts + rapidez (hasta 50) + combo por aciertos seguidos (hasta 100).</div>' +
+      '<div>' + SV.check + 'Duelo en la Sala de clan (gratis, hasta 6 vs 6): cada jugador suma 3 000 si gana, 2 000 si empatan y 1 000 si pierde (hasta 3 duelos por ronda).</div>' +
       '<div>' + SV.check + 'Tus puntos suman para tu clan. Gana el clan con más puntos en la temporada.</div></div></div>';
-    h += salaCard();
     return h;
   }
   // Ventana de premios de la temporada que terminó (una sola vez)

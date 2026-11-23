@@ -1558,6 +1558,21 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
   }
   @media (max-width: 360px) { .sala-foto span { display: none; } }
   @media (prefers-reduced-motion: reduce) { .arena .bh, .arena .slot.entra .bh-w, .arena .slot.entra .plat, .arena .inv { animation: none; } }
+  /* Lo que el duelo sumó a la Guerra de clanes */
+  .res-guerra { display: flex; align-items: center; justify-content: center; gap: 8px; max-width: 460px; margin: 10px auto 0; padding: 10px 14px; border-radius: 14px; background: linear-gradient(90deg, rgba(255,200,0,.14), rgba(138,92,240,.14)); border: 1.5px solid rgba(255,200,0,.45); font: 800 14px/1.35 Nunito, sans-serif; color: #f1ecff; text-align: left; }
+  .res-guerra b { color: #FFC800; font-weight: 900; }
+  .res-guerra svg { flex: none; width: 26px; height: 26px; }
+  /* Sala de clan grande (hasta 6 por lado) */
+  .arena.clan.n10 .jgs, .arena.clan.n12 .jgs, .arena.clan.n8 .jgs { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 4px; }
+  .arena.clan.n10, .arena.clan.n12, .arena.clan.n8 { --bh0: 96px; }
+  html body .arena.clan.n12 .placa .nm:not(#z), html body .arena.clan.n10 .placa .nm:not(#z) { font-size: 12.5px !important; }
+  .vs-fila.grande { grid-template-columns: repeat(6, minmax(0, 1fr)) !important; row-gap: 12px; }
+  .vs-fila.grande .vs-j .av:not(#z) { width: 46px !important; height: 46px !important; font-size: 19px !important; border-radius: 13px !important; }
+  html body .vs-fila.grande .vs-j > b:not(#z) { font-size: 13px !important; }
+  .vs-fila.grande .vs-j .mano i { width: 18px !important; height: 18px !important; border-radius: 6px !important; }
+  .vs-fila.grande .vs-j .mano i svg { width: 11px !important; height: 11px !important; }
+  @media (max-width: 560px) { .vs-fila.grande { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; } }
+  @media (min-width: 900px) { #juego.lateral > .barra.mas6 .tiles { grid-template-columns: 1fr 1fr !important; gap: 8px !important; } }
   /* ===== Clan vs clan: un lado por clan con su escudo y su color ===== */
   .ka { --jc: var(--ca, #C6E000); --jd: color-mix(in srgb, var(--ca, #C6E000) 62%, #000); } .kb { --jc: var(--cb, #1CB0F6); --jd: color-mix(in srgb, var(--cb, #1CB0F6) 62%, #000); }
   .arena.clan { --bh0: 150px; }
@@ -2648,6 +2663,22 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       '<div class="r2"><span class="st' + (ok ? ' ok' : '') + '">' + (ok ? SALA_IC.ok + '<i>Listo</i>' : SALA_IC.reloj + '<i>Eligiendo</i>') + '</span>' +
       (nv >= 0 ? '<span class="rn" style="color:' + MCRango.color(nv).c + '">' + MCRango.nombre(nv) + '</span><span class="rg rg2">' + MCRango.svg(nv, { mini: true, quieto: true }) + '</span>' : '') + '</div>';
   }
+  // Clan vs clan en una ronda de la Guerra: suma puntos al clan (supabase/135-sala-clan-guerra.sql)
+  let GUERRA_RES = '', guerraPedida = '';
+  function guerraDuelo(d) {
+    if (d && guerraPedida && guerraPedida !== d.codigo) { GUERRA_RES = ''; }
+    if (!d || !d.codigo || guerraPedida === d.codigo || !window.MCAuth) return;
+    guerraPedida = d.codigo;
+    MCAuth.listo.then(c => c.rpc('guerra_duelo_cerrar', { p_codigo: d.codigo })).then(r => {
+      const x = r && r.data;
+      if (!x || !x.cuenta) return;
+      if (!x.listo) { guerraPedida = ''; return; }
+      const m = x.mio;
+      GUERRA_RES = '<div class="res-guerra"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3l9 9M20 3l-9 9" stroke="#C6E000" stroke-width="3" stroke-linecap="round"/><path d="M3 21l5-5M21 21l-5-5M6 14l4 4M18 14l-4 4" stroke="#FFC800" stroke-width="3" stroke-linecap="round"/></svg><span>' +
+        (m ? 'Guerra de clanes · Ronda ' + x.ronda + ': sumaste <b>+' + Number(m.puntos).toLocaleString('en-US') + '</b> para tu clan.' : 'Guerra de clanes: ya jugaste tus 3 duelos de esta ronda; este no suma puntos.') + '</span></div>';
+      const box = document.getElementById('resGuerra'); if (box) box.outerHTML = GUERRA_RES;
+    }).catch(() => { guerraPedida = ''; });
+  }
   // Clan vs clan: un lado por clan, con su escudo y su color; VS al centro
   function pintarSalaClan(d) {
     const caja = $('retoSala'), C = d.clan, cl = C.clanes, L = C.por_lado || 3, inv = puedeInvitar(d);
@@ -2672,7 +2703,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       const listos = lados[li].filter(j => !(d.cmd_cant > 0) || j.eligio).length;
       dv.innerHTML = '<div class="lcab"><span class="e">' + (window.MCClanes ? MCClanes.escudo(c || { forma: 'punta', color: '#3a3266' }) : '') + '</span><div class="t"><b>' + esc(c ? c.nombre : 'Rival') + '</b><small>' +
         (c ? lados[li].length + '/' + L + ' · <i>' + listos + ' listo' + (listos === 1 ? '' : 's') + '</i>' : 'Esperando rival') + '</small></div></div>';
-      if (!c) { dv.insertAdjacentHTML('beforeend', '<div class="espera-rival">Comparte el código con el líder o un sublíder de otro clan. Cuando entre, su clan será el rival.</div>'); cont.append(dv); return; }
+      if (!c) { dv.insertAdjacentHTML('beforeend', '<div class="espera-rival">Comparte el código con otro clan. El primero que entre deja a su clan de rival.</div>'); cont.append(dv); return; }
       const g = document.createElement('div'); g.className = 'jgs'; g.style.setProperty('--n', L);
       for (let i = 0; i < L; i++) {
         const j = lados[li][i] || null, pj = j ? pjDe(j) : '', k = j ? j.apodo + ':' + pj : '';
@@ -2919,7 +2950,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     else if (d.soy_creador && d.clan && d.clan.clanes) {
       const C = d.clan.clanes, ok = C[1] && [0, 1].every(i => d.jugadores.some(j => j.clan === C[i].id));
       b.dataset.accion = 'iniciar';
-      b.textContent = ok ? '¡Empezar! · usa 1 ticket' : C[1] ? 'Esperando jugadores del rival…' : 'Esperando al clan rival…';
+      b.textContent = ok ? '¡Empezar!' : C[1] ? 'Esperando jugadores del rival…' : 'Esperando al clan rival…';
       b.disabled = !ok || quedaSala() <= 0;
     }
     else if (d.soy_creador) {
@@ -2929,7 +2960,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     } else b.hidden = true;
     $('retoNota').textContent = !dentro ? 'Al entrar esperas en la sala. Todos empiezan a la vez con una cuenta 3, 2, 1.'
       : d.auto ? 'Empieza solo apenas entren los ' + d.max + '.' + (d.soy_creador ? ' Si alguien no llega, puedes iniciarlo tú.' : ' ' + d.creador + ' también puede iniciarlo antes.')
-      : d.clan && d.soy_creador ? 'Toca Empezar cuando estén todos. Si se cierra sin empezar, no se gasta el ticket.'
+      : d.clan && d.soy_creador ? 'Toca Empezar cuando estén todos. Entre martes y jueves de 8:00 a 20:00 el duelo suma a la Guerra de clanes.'
       : d.soy_creador ? 'Toca Iniciar cuando estén todos.' : 'Esperando a que ' + d.creador + ' inicie el duelo.';
   }
   function fichaHtml(d) {
@@ -3152,7 +3183,7 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     if (C) reglas.unshift(['var(--lima)', IC.check, 'Gana el clan con mejor promedio']);
     c.innerHTML = '<div class="vs-esc"><div class="vs-tit">' + esc(V.titulo || 'Duelo') + '</div>' +
       (C && C[1] ? '<div class="vs-clanes"><div class="vc ka"><span class="e">' + escudoDe(C[0]) + '</span><b>' + esc(C[0].nombre) + '</b></div><div class="x">VS</div><div class="vc kb"><span class="e">' + escudoDe(C[1]) + '</span><b>' + esc(C[1].nombre) + '</b></div></div>' : '') +
-      '<div class="vs-fila" style="--n: ' + n + '">' +
+      '<div class="vs-fila' + (n > 6 ? ' grande' : '') + '" style="--n: ' + n + '">' +
       js.map((j, i) => '<div class="vs-j ' + colorDe(j) + '">' + avatar(j) + '<b>' + esc(nombreDe(j)) + '</b><span class="mano">' +
         (j.mano || []).map((k, m) => CMD[k] ? '<i style="--c:' + CMD[k].c + ';animation-delay:' + (0.7 + i * 0.15 + m * 0.1).toFixed(2) + 's" title="' + esc(CMD[k].nom) + '">' + IC[k] + '</i>' : '').join('') + '</span></div>').join('') +
       (n === 2 ? '<div class="vs-x">VS</div>' : '') + '</div><div class="vs-raya"></div>' +
@@ -3228,7 +3259,8 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
     }
     $('barra').classList.toggle('muchos', muchos);
     pintarPlegar(js0);
-    $('barra').style.setProperty('--r', Math.max(1, js0.length - 1));
+    $('barra').style.setProperty('--r', Math.min(6, Math.max(1, js0.length - 1)));
+    $('barra').classList.toggle('mas6', js0.length > 6);
     $('juego').classList.toggle('lateral', muchos);
     // Animación: cada cuadro se desliza a su nuevo puesto
     const antes = {};
@@ -4001,7 +4033,8 @@ html[data-modo="claro"] .tabla li { background: #F1EFF6 !important; border: 2px 
       tit = gl < 0 ? '¡Empate entre clanes!' : gl === mio ? '¡Ganó tu clan!' : '¡Ganó ' + CL[gl].nombre + '!';
       perdio = gl >= 0 && gl !== mio;
       sub = 'Quedaste en el ' + res.puesto + '.º lugar del duelo. ' + (gl === mio ? 'Tu clan suma una victoria.' : gl < 0 ? 'Mismo promedio: toca la revancha.' : 'La próxima la ganan ustedes.');
-      $('resClan').innerHTML = '<div class="res-clan">' + [0, 1].map(i => '<div class="vc ' + (i ? 'kb' : 'ka') + (gl === i ? ' gano' : '') + '"><span class="e">' + escudoDe(CL[i]) + '</span><b>' + esc(CL[i].nombre) + '</b><strong>' + (d.clan.prom[i] || 0) + '</strong><small>promedio</small></div>').join('<div class="x">VS</div>') + '</div>';
+      $('resClan').innerHTML = '<div class="res-clan">' + [0, 1].map(i => '<div class="vc ' + (i ? 'kb' : 'ka') + (gl === i ? ' gano' : '') + '"><span class="e">' + escudoDe(CL[i]) + '</span><b>' + esc(CL[i].nombre) + '</b><strong>' + (d.clan.prom[i] || 0) + '</strong><small>promedio</small></div>').join('<div class="x">VS</div>') + '</div>' + (GUERRA_RES ? GUERRA_RES : '<div id="resGuerra"></div>');
+      guerraDuelo(d);
     } else $('resClan').innerHTML = '';
     $('resEye').textContent = eye; $('resTema').textContent = d.titulo || ''; $('resTit').textContent = tit; $('resSub').textContent = sub;
     $('resTrofeo').hidden = !(res && (CL ? d.clan.ganador != null && d.clan.ganador === (d.jugadores.find(j => j.yo) || {}).clan : res.gane));
