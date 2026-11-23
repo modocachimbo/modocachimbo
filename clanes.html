@@ -362,6 +362,9 @@
 
   /* Crear / unirse */
   .campo { margin-bottom: 14px; }
+  .campo label #nomN { float: right; letter-spacing: 0; color: var(--text-dim); }
+  .campo label #nomN.mal { color: #ff8a8a; }
+  .nom-tip { margin: 6px 0 0; font: 700 11.5px/1.35 Nunito, sans-serif; color: var(--text-dim); }
   .campo label, .campo .lb { display: block; font: 900 11.5px/1 Nunito, sans-serif; letter-spacing: .1em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 7px; }
   .inp { width: 100%; height: 46px; border-radius: 12px; background: #0f0b1e; border: 2px solid #352E58; padding: 0 12px; color: #fff; font: 800 16px Nunito, sans-serif; outline: none; }
   .inp:focus { border-color: var(--accent); }
@@ -925,6 +928,23 @@
     return d === 1 ? 'se reinicia mañana lunes' : 'se reinicia el lunes · faltan ' + d + ' días';
   }
 
+  /* Nombres con letras de diseño (igual que supabase/132-clanes-nombre-diseno.sql) */
+  var RX_ADORNO = /[\u0300-\u036F\u0483-\u0489\u1AB0-\u1AFF\u1DC0-\u1DFF\u20D0-\u20FF\uFE20-\uFE2F\uFE00-\uFE0F\u200D]/g;
+  function nomLimpio(t) { return String(t || '').replace(/[\u200B\u200C\u200E\u200F\u202A-\u202E\u2060-\u2064\u2066-\u2069\uFEFF\u00AD\r\n\t]/g, '').replace(/\s{2,}/g, ' ').trim(); }
+  function nomLargo(t) { return Array.from(String(t || '').replace(RX_ADORNO, '')).length; }
+  function nomVisibles(t) { return Array.from(String(t || '').replace(RX_ADORNO, '').replace(/[\s\u3164\u115F\u1160\u2800\uFFA0\u180E]/g, '')).length; }
+  function nomClave(t) {
+    var x = String(t || '').replace(RX_ADORNO, '');
+    try { x = x.normalize('NFKC'); } catch (e) {}
+    x = x.toLowerCase(); var de = 'ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀꜱᴛᴜᴠᴡʏᴢ', a = 'abcdefghijklmnopqrstuvwyz';
+    x = Array.from(x).map(function (ch) { var i = de.indexOf(ch); return i < 0 ? ch : a[i]; }).join('');
+    try { return x.replace(/[^\p{L}\p{N}]/gu, ''); } catch (e) { return x.replace(/[^a-z0-9ñáéíóú]/g, ''); }
+  }
+  function nomCuenta() {
+    var n = document.getElementById('nomN'); if (!n) return;
+    var l = nomLargo(nomLimpio(F.nombre)); n.textContent = l + '/24'; n.className = l > 24 ? 'mal' : '';
+  }
+
   /* ---------- Menú ---------- */
   function rail() {
     var c = D && D.clan, it;
@@ -1477,7 +1497,7 @@
   function formEscudo(boton) {
     var f = F;
     return '<div class="prev">' + escudo(f) + '<div style="min-width:0"><div class="d" id="pvNom">' + esc(f.nombre || 'Tu clan') + '</div><span class="tag" id="pvTag" style="color:' + f.color + ';border-color:' + f.color + '66;background:' + f.color + '22">#' + esc(f.tag || 'TAG') + '</span></div></div>' +
-      '<div class="fila2"><div class="campo"><label for="fNom">Nombre del clan</label><input class="inp" id="fNom" maxlength="24" placeholder="Los Imparables" value="' + esc(f.nombre) + '"></div>' +
+      '<div class="fila2"><div class="campo"><label for="fNom">Nombre del clan <span id="nomN">' + nomLargo(nomLimpio(f.nombre)) + '/24</span></label><input class="inp" id="fNom" maxlength="80" autocomplete="off" placeholder="Los Imparables" value="' + esc(f.nombre) + '"><p class="nom-tip">✨ Puedes pegar letras con diseño, símbolos y emojis: 𝓛𝓸𝓼 ★ ꜱᴀɴ ᴍᴀʀᴄᴏꜱ</p></div>' +
       '<div class="campo"><label for="fTag">Sigla</label><input class="inp tag" id="fTag" maxlength="5" placeholder="IMP" value="' + esc(f.tag) + '"></div></div>' +
       '<div class="campo"><span class="lb">Forma del escudo</span><div class="picks">' + Object.keys(K.FORMAS).map(function (k) {
         return '<button type="button" class="pk' + (k === f.forma ? ' on' : '') + '" data-forma="' + k + '" aria-label="' + K.NOMBRES_FORMA[k] + '">' + escudo({ forma: k, simbolo: f.simbolo, color: f.color }) + '</button>';
@@ -1665,7 +1685,7 @@
     h += '<div class="card"><div class="h2">Salir del clan</div><p class="small" style="margin-bottom:10px">' + (D.rol === 'lider' ? 'Si sales, el liderazgo pasa a un sublíder (o al miembro más antiguo). ' : '') + 'Después tendrás que esperar 24 horas para entrar a otro clan.</p>' +
       '<button type="button" class="cb r" data-salir>' + SV.salir + (seguro === 'salir' ? '¿Seguro? Toca otra vez' : 'Salir del clan') + '</button></div>';
     if (D.rol === 'lider') h += '<div class="card peligro"><div class="h2">Eliminar clan</div><p class="small" style="margin-bottom:10px">Se borra el clan para todos: ' + c.miembros + (c.miembros === 1 ? ' miembro queda libre' : ' miembros quedan libres') + ' y se cancela cualquier guerra o reto. No se puede deshacer. Tú tendrás que esperar 24 horas para crear o entrar a otro clan.</p>' +
-      '<label class="small" for="fElim" style="display:block;margin-bottom:6px">Para confirmar, escribe el nombre del clan: <b style="color:#fff">' + esc(c.nombre) + '</b></label>' +
+      '<label class="small" for="fElim" style="display:block;margin-bottom:6px">Para confirmar, escribe el nombre del clan (con letras normales también vale): <b style="color:#fff">' + esc(c.nombre) + '</b></label>' +
       '<input class="inp" id="fElim" autocomplete="off" placeholder="' + esc(c.nombre) + '">' +
       '<button type="button" class="cb r w" style="margin-top:10px" data-eliminar disabled>' + SV.basura + 'Eliminar el clan para siempre</button><p class="err" id="eErr"></p></div>';
     return '<div class="dos">' + h + '</div>';
@@ -1713,13 +1733,14 @@
     if (e.target.id === 'cCod') { var v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 7); e.target.value = v; buscarCodigo(v); return; }
     if (e.target.id === 'fElim') {
       var b = app.querySelector('[data-eliminar]');
-      if (b) b.disabled = e.target.value.trim().toLowerCase() !== String(D.clan.nombre).toLowerCase();
+      var tv2 = e.target.value.trim(), ck = nomClave(D.clan.nombre);
+      if (b) b.disabled = !(tv2.toLowerCase() === String(D.clan.nombre).toLowerCase() || (ck && nomClave(tv2) === ck));
       return;
     }
     if (e.target.id === 'fNom' || e.target.id === 'fTag') {
       leerForm();
       if (e.target.id === 'fTag') e.target.value = F.tag;
-      document.getElementById('pvNom').textContent = F.nombre || 'Tu clan';
+      document.getElementById('pvNom').textContent = nomLimpio(F.nombre) || 'Tu clan'; nomCuenta();
       document.getElementById('pvTag').textContent = '#' + (F.tag || 'TAG');
     }
   });
@@ -1835,11 +1856,12 @@
     }
     if ((el = e.target.closest('[data-crear],[data-guardar]'))) {
       leerForm();
-      if (F.nombre.trim().length < 3) { errForm('Ponle un nombre de al menos 3 letras.'); return; }
+      if (nomVisibles(nomLimpio(F.nombre)) < 3) { errForm('Ponle un nombre de al menos 3 letras que se vean.'); return; }
+      if (nomLargo(nomLimpio(F.nombre)) > 24) { errForm('El nombre puede tener hasta 24 letras.'); return; }
       if (F.tag.length < 2) { errForm('Ponle una sigla de 2 a 5 letras.'); return; }
       el.disabled = true;
       var crear = el.hasAttribute('data-crear');
-      K.rpc(crear ? 'clan_crear' : 'clan_editar', { p_nombre: F.nombre.trim(), p_tag: F.tag, p_forma: F.forma, p_simbolo: F.simbolo, p_color: F.color }).then(function () {
+      K.rpc(crear ? 'clan_crear' : 'clan_editar', { p_nombre: nomLimpio(F.nombre), p_tag: F.tag, p_forma: F.forma, p_simbolo: F.simbolo, p_color: F.color }).then(function () {
         toast(crear ? '¡Clan creado! Invita a tus compañeros' : 'Cambios guardados'); vista = 'clan'; refrescar();
       }, function (x) { el.disabled = false; errForm(K.error(x)); });
       return;
@@ -1851,6 +1873,7 @@
     }
     if ((el = e.target.closest('[data-eliminar]'))) {
       var nom = (document.getElementById('fElim') || {}).value || '';
+      if (nomClave(nom) && nomClave(nom) === nomClave(D.clan.nombre)) nom = D.clan.nombre; // con letras normales también vale
       el.disabled = true;
       K.rpc('clan_eliminar', { p_nombre: nom }).then(function () { toast('Clan eliminado'); vista = 'clan'; F = { nombre: '', tag: '', forma: 'punta', simbolo: 'rayo', color: '#C6E000' }; refrescar(); },
         function (x) { var r = document.getElementById('eErr'); if (r) r.textContent = /function|schema cache/i.test(String(x && x.message)) ? 'Falta activar esta opción en el servidor. Avísale al profe.' : K.error(x); el.disabled = false; });
