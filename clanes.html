@@ -887,7 +887,7 @@
   var K = window.MCClanes, A = window.MCAmigos, esc = A.esc, nf = A.nf;
   var app = document.getElementById('app');
   var Q = new URLSearchParams(location.search);
-  var UNIRSE = (Q.get('unirse') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 7);
+  var UNIRSE = (Q.get('unirse') || '').replace(/\D/g, '').slice(0, 7);
   var SOL = null, D = null, TOP = null, G = null, RIV = null, OFI = null, horasReto = 24, vista = 'clan', abierto = null, seguro = '', SEL = null, previa = null, previaCod = '', relojT = 0, recien = 0, TD = null;
   var F = { nombre: '', tag: '', forma: 'punta', simbolo: 'rayo', color: '#C6E000' };
 
@@ -965,7 +965,7 @@
   function rolHtml(r) { return r === 'lider' ? '<span class="rol lider">' + SV.corona + 'LÍDER</span>' : r === 'sub' ? '<span class="rol sub">SUBLÍDER</span>' : ''; }
   function hero(c) {
     return '<div class="hero"><div class="nivel"><div class="n">' + (+c.nivel || 1) + '</div><small>NIVEL</small></div><div class="row">' + escudo(c) +
-      '<div style="min-width:0"><div class="nm">' + esc(c.nombre) + '</div>' + (c.oficial ? '<span class="ofi">' + SV.sello + 'Clan oficial</span> ' : '') + '<span class="tag">#' + esc(c.tag) + ' · CÓDIGO ' + esc(c.codigo) + '</span>' +
+      '<div style="min-width:0"><div class="nm">' + esc(c.nombre) + '</div>' + (c.oficial ? '<span class="ofi">' + SV.sello + 'Clan oficial</span> ' : '') + '<span class="tag">#' + esc(c.tag) + (c.id_publico ? ' · ID ' + c.id_publico : '') + '</span>' +
       '<div class="meta"><span>' + SV.gente + '<b>' + c.miembros + '</b>/20</span>' +
       (c.puesto ? '<span>' + SV.copaL + 'Top <b>#' + c.puesto + '</b></span>' : '') +
       (+c.copas ? '<span><svg class="i" viewBox="0 0 40 40" style="width:18px;height:18px"><use href="#cl-copa"/></svg><b>' + c.copas + '</b> copa' + (+c.copas === 1 ? '' : 's') + '</span>' : '') +
@@ -1031,7 +1031,7 @@
       '<div class="der"><span class="xp">' + xpIco() + nf(m.xp_semana) + '</span>' + (puede ? '<button type="button" class="mas" data-abrir="' + m.codigo + '" aria-label="Opciones">' + SV.mas + '</button>' : '') + '</div>' + acc + '</div>';
   }
   function invitar(c) {
-    return '<div class="card"><div class="h2">Invita a tus compañeros</div><div class="inv"><span class="cod">' + esc(c.codigo) + '</span><span class="sp"></span>' +
+    return '<div class="card"><div class="h2">Invita a tus compañeros</div><div class="inv"><span class="cod">' + esc(c.id_publico || '') + '</span><span class="sp"></span>' +
       '<button type="button" class="cb g" data-inv="link">' + SV.link + 'Copiar enlace</button><button type="button" class="cb wa" data-inv="wa">' + SV.wa + 'WhatsApp</button></div>' +
       '<p class="small" style="margin-top:8px">Hasta 20 miembros. El XP que cada uno gana en la semana suma para el clan.</p></div>';
   }
@@ -1520,7 +1520,7 @@
     var esp = D && D.espera ? '<div class="aviso">' + SV.alerta + '<span>Saliste de un clan hace poco. Podrás entrar o crear otro en ' + D.espera + ' hora' + (D.espera == 1 ? '' : 's') + '.</span></div>' : '';
     return esp + '<div class="dos"><div class="card"><div class="h2">Unirme con ID</div>' +
       '<p class="small" style="margin-bottom:10px">Escribe el ID de 7 números del clan, o <a href="#top" data-vista="top" style="color:var(--accent);font-weight:900">pide entrar a un clan del Top</a>.</p>' +
-      '<input class="inp code" id="cCod" maxlength="7" autocomplete="off" autocapitalize="characters" inputmode="numeric" placeholder="1000123" value="' + esc(previaCod) + '">' +
+      '<input class="inp code" id="cCod" maxlength="7" autocomplete="off" inputmode="numeric" pattern="[0-9]*" placeholder="1000123" value="' + esc(previaCod) + '">' +
       '<div id="cPrev">' + (previa ? vistaPrevia(previa) : previa === false ? '<p class="err">No hay ningún clan con ese ID.</p>' : '') + '</div><p class="err" id="cErr"></p>' + oficiales() + '</div>' +
       '<div class="card"><div class="h2">O crea el tuyo</div>' + formEscudo('<button type="button" class="cb l w" data-crear>Crear clan</button><p class="small" style="text-align:center;margin-top:8px">Hasta 20 miembros · Tú serás el líder</p>') + '</div></div>';
   }
@@ -1681,7 +1681,7 @@
   function ajustes() {
     var c = D.clan, h = '';
     if (D.rol === 'lider') h += '<div class="card"><div class="h2">Escudo y nombre</div>' + formEscudo('<button type="button" class="cb l w" data-guardar>Guardar cambios</button>') + '</div>' + ingresoCard();
-    if (D.rol !== 'miembro') h += '<div class="card"><div class="h2">Código del clan' + (c.id_publico ? '<span class="sp"></span><span class="lado">ID ' + c.id_publico + '</span>' : '') + '</div><div class="inv"><span class="cod">' + esc(c.codigo) + '</span><span class="sp"></span><button type="button" class="cb g" data-nuevocod>Cambiar código</button></div><p class="small" style="margin-top:8px">Si lo cambias, el código anterior deja de servir. El ID del clan no cambia nunca.</p></div>';
+    if (c.id_publico) h += '<div class="card"><div class="h2">ID del clan</div><div class="inv"><span class="cod">' + c.id_publico + '</span><span class="sp"></span><button type="button" class="cb g" data-copiar="' + c.id_publico + '" data-que="ID">' + SV.link + 'Copiar ID</button></div><p class="small" style="margin-top:8px">Compártelo para que entren con «Unirme con ID». El ID de tu clan no cambia nunca.</p></div>';
     h += '<div class="card"><div class="h2">Salir del clan</div><p class="small" style="margin-bottom:10px">' + (D.rol === 'lider' ? 'Si sales, el liderazgo pasa a un sublíder (o al miembro más antiguo). ' : '') + 'Después tendrás que esperar 24 horas para entrar a otro clan.</p>' +
       '<button type="button" class="cb r" data-salir>' + SV.salir + (seguro === 'salir' ? '¿Seguro? Toca otra vez' : 'Salir del clan') + '</button></div>';
     if (D.rol === 'lider') h += '<div class="card peligro"><div class="h2">Eliminar clan</div><p class="small" style="margin-bottom:10px">Se borra el clan para todos: ' + c.miembros + (c.miembros === 1 ? ' miembro queda libre' : ' miembros quedan libres') + ' y se cancela cualquier guerra o reto. No se puede deshacer. Tú tendrás que esperar 24 horas para crear o entrar a otro clan.</p>' +
@@ -1719,8 +1719,8 @@
   function errForm(m) { var e = document.getElementById('fErr'); if (e) e.textContent = m; }
   function buscarCodigo(cod) {
     previaCod = cod; previa = null;
-    // Solo el ID de 7 números (un código de 4 letras de una invitación vieja también sirve)
-    if (!((cod.length === 4 && /[A-Z]/.test(cod)) || /^\d{7}$/.test(cod))) { var p = document.getElementById('cPrev'); if (p) p.innerHTML = ''; return; }
+    // Solo el ID de 7 números
+    if (!/^\d{7}$/.test(cod)) { var p = document.getElementById('cPrev'); if (p) p.innerHTML = ''; return; }
     K.rpc('clan_por_codigo', { p_codigo: cod }).then(function (c) {
       if (previaCod !== cod) return;
       previa = c || false;
@@ -1730,7 +1730,7 @@
 
   app.addEventListener('input', function (e) {
     if (e.target.id === 'tdBus' && TD) { var tv = e.target.value.trim(); clearTimeout(TD.t); TD.t = setTimeout(function () { if (!TD || TD.buscar === tv) return; TD.buscar = tv; cargarTodos(false); }, 300); return; }
-    if (e.target.id === 'cCod') { var v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 7); e.target.value = v; buscarCodigo(v); return; }
+    if (e.target.id === 'cCod') { var v = e.target.value.replace(/\D/g, '').slice(0, 7); e.target.value = v; buscarCodigo(v); return; }
     if (e.target.id === 'fElim') {
       var b = app.querySelector('[data-eliminar]');
       var tv2 = e.target.value.trim(), ck = nomClave(D.clan.nombre);
@@ -1771,7 +1771,7 @@
       pintar(); return;
     }
     if ((el = e.target.closest('[data-inv]'))) {
-      var c = D.clan, l = enlace(c.codigo), txt = 'Únete a mi clan «' + c.nombre + '» en Modo Cachimbo. Código: ' + c.codigo + ' ' + l;
+      var c = D.clan, l = enlace(c.id_publico), txt = 'Únete a mi clan «' + c.nombre + '» en Modo Cachimbo. ID del clan: ' + c.id_publico + ' ' + l;
       if (el.dataset.inv === 'wa') window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
       else A.copiar(l, 'Enlace copiado');
       return;
