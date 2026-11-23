@@ -970,7 +970,7 @@
   function hero(c) {
     return '<div class="hero"><div class="nivel"><div class="n">' + (+c.nivel || 1) + '</div><small>NIVEL</small></div><div class="row">' + escudo(c) +
       '<div style="min-width:0"><div class="nm">' + esc(c.nombre) + '</div>' + (c.oficial ? '<span class="ofi">' + SV.sello + 'Clan oficial</span> ' : '') + '<span class="tag">#' + esc(c.tag) + (c.id_publico ? ' · ID ' + c.id_publico : '') + '</span>' +
-      '<div class="meta"><span>' + SV.gente + '<b>' + c.miembros + '</b>/20</span>' +
+      '<div class="meta"><span>' + SV.gente + '<b>' + c.miembros + '</b>/' + (c.cupo || 20) + '</span>' +
       (c.puesto ? '<span>' + SV.copaL + 'Top <b>#' + c.puesto + '</b></span>' : '') +
       (+c.copas ? '<span><svg class="i" viewBox="0 0 40 40" style="width:18px;height:18px"><use href="#cl-copa"/></svg><b>' + c.copas + '</b> copa' + (+c.copas === 1 ? '' : 's') + '</span>' : '') +
       (+c.victorias ? '<span><svg class="i" viewBox="0 0 24 24" style="color:var(--azul)"><path d="M5 3l14 14M19 3 5 17"/></svg><b>' + c.victorias + '</b> guerra' + (+c.victorias === 1 ? '' : 's') + ' ganada' + (+c.victorias === 1 ? '' : 's') + '</span>' : '') + '</div></div></div></div>';
@@ -1037,7 +1037,7 @@
   function invitar(c) {
     return '<div class="card"><div class="h2">Invita a tus compañeros</div><div class="inv"><span class="cod">' + esc(c.id_publico || '') + '</span><span class="sp"></span>' +
       '<button type="button" class="cb g" data-inv="link">' + SV.link + 'Copiar enlace</button><button type="button" class="cb wa" data-inv="wa">' + SV.wa + 'WhatsApp</button></div>' +
-      '<p class="small" style="margin-top:8px">Hasta 20 miembros. El XP que cada uno gana en la semana suma para el clan.</p></div>';
+      '<p class="small" style="margin-top:8px">Hasta ' + (c.cupo || 20) + ' miembros (súbelo con «+5 integrantes» en la Tienda). El XP que cada uno gana en la semana suma para el clan.</p></div>';
   }
 
 
@@ -1366,7 +1366,7 @@
       (c.eslogan ? '<p class="esl">' + esc(c.eslogan) + '</p>' : '') +
       '<div class="ids">' + (c.id_publico ? '<button type="button" class="cod" data-copiar="' + c.id_publico + '" data-que="ID">ID <b>' + c.id_publico + '</b>' + SV_CP + '</button>' : '<span class="cod">#' + esc(c.tag) + '</span>') + '</div>' + etqHtml(c.etiquetas) +
       '<div class="ingr">' + ingresoChips(c) + '</div>' +
-      '<div class="chips"><span>' + SV.gente.replace(' class="i"', '') + '<b>' + c.miembros + '</b>/20</span>' +
+      '<div class="chips"><span>' + SV.gente.replace(' class="i"', '') + '<b>' + c.miembros + '</b>/' + (c.cupo || 20) + '</span>' +
       '<span><i style="width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 6px var(--ok)"></i><b>' + hoy + '</b> hoy</span>' +
       (+c.copas ? '<span><svg viewBox="0 0 40 40"><use href="#cl-copa"/></svg><b>' + c.copas + '</b></span>' : '') +
       (+c.victorias ? '<span><svg viewBox="0 0 24 24" fill="none" stroke="#1CB0F6" stroke-width="2.4" stroke-linecap="round"><path d="M5 3l14 14M19 3 5 17"/></svg><b>' + c.victorias + '</b></span>' : '') + '</div>' +
@@ -1475,9 +1475,9 @@
   }
   function pedidosCard() {
     if (!SOL || !SOL.length) return '';
-    var lleno = D.clan.miembros >= 20;
+    var lleno = D.clan.miembros >= (D.clan.cupo || 20);
     return '<div class="card sol"><div class="h2">Quieren entrar a tu clan<b>' + SOL.length + '</b></div>' +
-      (lleno ? '<p class="small" style="margin-bottom:6px">El clan está lleno (20/20). Saca a alguien para aceptar.</p>' : '') +
+      (lleno ? '<p class="small" style="margin-bottom:6px">El clan está lleno (' + D.clan.miembros + '/' + (D.clan.cupo || 20) + '). Saca a alguien o compra «+5 integrantes» en la Tienda.</p>' : '') +
       SOL.map(function (x) {
         return '<div class="sq" data-cod="' + x.codigo + '">' + A.foto(x) + '<div class="t"><b>' + esc(x.apodo || 'Cachimbo') + '</b><span class="small">' + nf(x.xp) + ' XP esta semana' + (+x.racha ? ' · racha ' + x.racha : '') + '</span></div>' +
           '<div class="bt"><button type="button" class="cb l" data-solok' + (lleno ? ' disabled' : '') + '>Aceptar</button><button type="button" class="cb g" data-solno>No</button></div></div>';
@@ -1490,11 +1490,11 @@
     if (+c.min_nivel) { var sn = +c.mi_nivel >= +c.min_nivel; req += '<p class="' + (sn ? 'si' : 'no') + '">' + (sn ? ok : no) + '<span>Pide <b>nivel ' + c.min_nivel + '</b> · tú eres nivel ' + (+c.mi_nivel || 1) + '</span></p>'; }
     if (+c.min_rango) { var sr = +c.mi_rango >= +c.min_rango; req += '<p class="' + (sr ? 'si' : 'no') + '">' + (sr ? ok : no) + '<span>Pide rango <b>' + RG_NOM[c.min_rango] + '</b> o más · tú: ' + RG_NOM[+c.mi_rango || 0].replace('Cualquiera', 'sin rango') + '</span></p>'; }
     req += '<p class="si">' + ok + '<span>' + (c.aprobacion === 'solicitud' ? 'El líder <b>aprueba</b> cada pedido' : 'Clan <b>abierto</b>: entras al toque') + '</span></p>';
-    var bt = soloVer ? '' : c.miembros >= 20 ? '<p class="err">Ese clan está lleno.</p>'
+    var bt = soloVer ? '' : c.miembros >= (c.cupo || 20) ? '<p class="err">Ese clan está lleno.</p>'
       : c.no_cumple ? '<button type="button" class="cb g w" style="margin-top:10px" disabled>Aún no cumples los requisitos</button>'
       : c.pedido ? '<button type="button" class="cb g w" style="margin-top:10px" disabled>Pedido enviado · el líder decide</button>'
       : '<button type="button" class="cb l w" style="margin-top:10px" data-unirse>' + (c.aprobacion === 'solicitud' ? 'Pedir entrar a ' : 'Unirme a ') + esc(c.nombre) + '</button>';
-    return '<div class="vista" style="--cc:' + esc(c.color || '#C6E000') + '">' + escudo(c) + '<div style="flex:1;min-width:0"><div class="d">' + esc(c.nombre) + '</div><div class="small">' + (c.id_publico ? '<b class="idp">ID ' + c.id_publico + '</b> · ' : '') + '#' + esc(c.tag) + ' · ' + c.miembros + '/20 · nivel ' + (c.nivel || 1) + '</div>' +
+    return '<div class="vista" style="--cc:' + esc(c.color || '#C6E000') + '">' + escudo(c) + '<div style="flex:1;min-width:0"><div class="d">' + esc(c.nombre) + '</div><div class="small">' + (c.id_publico ? '<b class="idp">ID ' + c.id_publico + '</b> · ' : '') + '#' + esc(c.tag) + ' · ' + c.miembros + '/' + (c.cupo || 20) + ' · nivel ' + (c.nivel || 1) + '</div>' +
       (c.eslogan ? '<div class="vesl">«' + esc(c.eslogan) + '»</div>' : '') + (c.etiquetas && c.etiquetas.length ? etqHtml(c.etiquetas).replace('class="etq"', 'class="etq" style="justify-content:flex-start"') : '') + '</div></div>' +
       '<div class="vreq">' + req + '</div>' + bt;
   }
@@ -1517,7 +1517,7 @@
     if (OFI == null) { OFI = []; K.rpc('clanes_oficiales').then(function (l) { OFI = l || []; if (!D.clan && vista === 'clan' && OFI.length) pintar(); }, function () {}); return ''; }
     if (!OFI.length) return '';
     return '<div class="o">CLANES OFICIALES</div><p class="small" style="margin-bottom:8px">De academias y profes. Pídeles su código para entrar.</p>' + OFI.map(function (c) {
-      return '<div class="ofc">' + escudo(c) + '<div style="min-width:0"><div class="d">' + esc(c.nombre) + '</div><span class="ofi">' + SV.sello + 'Oficial</span> <span class="small">· ' + c.miembros + '/20 miembros</span></div>' + (c.miembros >= 20 ? '<span class="small">Lleno</span>' : '') + '</div>';
+      return '<div class="ofc">' + escudo(c) + '<div style="min-width:0"><div class="d">' + esc(c.nombre) + '</div><span class="ofi">' + SV.sello + 'Oficial</span> <span class="small">· ' + c.miembros + '/' + (c.cupo || 20) + ' miembros</span></div>' + (c.miembros >= (c.cupo || 20) ? '<span class="small">Lleno</span>' : '') + '</div>';
     }).join('');
   }
   function sinClan() {
@@ -1585,7 +1585,7 @@
     var der = '<span' + (c.xp ? '' : ' class="gris"') + '>' + xpIco() + nf(c.xp) + '</span>';
     if (!TD.tengo_clan && !c.mio) der += c.pedido ? '<button type="button" class="pedir ya" data-nopedir="' + c.id + '" title="Toca para cancelar el pedido">✓ Pedido</button>' : c.lleno ? '<span class="pedir lleno">Lleno</span>' : '<button type="button" class="pedir" data-pedir="' + c.id + '">' + (c.aprobacion === 'solicitud' ? 'Pedir entrar' : 'Unirme') + '</button>';
     var li = '<li class="td-f' + (c.mio ? ' tu' : '') + '" data-verclan="' + c.id_publico + '"><span class="num">' + (c.puesto || '–') + '</span>' + escudo(c) +
-      '<span class="q"><b>' + esc(c.nombre) + '</b><small><span class="idp">ID ' + c.id_publico + '</span> · ' + (c.mio ? 'Tu clan · ' : '') + c.miembros + '/20</small></span><span class="der">' + der + '</span></li>';
+      '<span class="q"><b>' + esc(c.nombre) + '</b><small><span class="idp">ID ' + c.id_publico + '</span> · ' + (c.mio ? 'Tu clan · ' : '') + c.miembros + '/' + (c.cupo || 20) + '</small></span><span class="der">' + der + '</span></li>';
     if (TD.abierto === c.id_publico) li += '<li class="td-ab">' + (TD.previa ? vistaPrevia(TD.previa, TD.tengo_clan || c.mio) + '<p class="err" id="cErr"></p>' : '<p class="estado" style="padding:10px">Cargando…</p>') + '</li>';
     return li;
   }
