@@ -422,6 +422,12 @@ html:not(.arcade-si) .solo-beta { display: none !important; }
 .acceso { position: relative; width: 68px; height: 68px; display: grid; place-items: center; align-content: center; gap: 6px; background: var(--tarjeta); border: 1px solid var(--borde); color: var(--texto); box-shadow: var(--sombra-tarjeta); }
 .acceso svg { font-size: 26px; }
 .acceso span { font-size: 11px; letter-spacing: .06em; }
+/* Tienda (antes en Clanes → Resumen): su ícono de color con el toldo que se mueve */
+.acceso.tnd { border-color: rgba(198,224,0,.45); }
+.acceso svg.tnd-ic { width: 1.45em; height: 1.45em; display: block; overflow: visible; margin: -3px 0; }
+.tnd-ic .a-tol { transform-box: fill-box; transform-origin: 50% 0; animation: tndTol 3s ease-in-out infinite; }
+@keyframes tndTol { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.08); } }
+@media (prefers-reduced-motion: reduce) { .tnd-ic .a-tol { animation: none; } }
 .acceso.desc-acc { color: var(--lima); border-color: rgba(198,224,0,.45); }
 .acceso.desc-acc span { font-size: 8.5px; letter-spacing: 0; }
 .acceso.punto::after { content: ""; position: absolute; right: 5px; top: 5px; width: 7px; height: 7px; rotate: 45deg; background: var(--error); box-shadow: 0 0 0 2px var(--tarjeta), 0 0 8px rgba(255, 75, 75, .8); animation: aviso 2s ease-in-out infinite; }
@@ -1504,6 +1510,7 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
           <div class="fechas" id="fechas"></div>
           <nav class="accesos disp" aria-label="Accesos">
             <button class="acceso" type="button" id="accMisiones"><svg class="ic"><use href="#i-mision"/></svg><span>Misiones</span></button>
+            <a class="acceso tnd" href="tienda.html?de=inicio" aria-label="Tienda"><svg class="tnd-ic" viewBox="0 0 48 48" aria-hidden="true"><path d="M9 25h30v19H9z" fill="#4B3A99"/><path d="M9 22h30v19H9z" fill="#8F78FF"/><path d="M13 28h9v13h-9z" fill="#2A1F5C"/><path d="M25 28h10v7H25z" fill="#F4F1FF"/><path d="M26.2 29.2h2.6v4.6h-2.6z" fill="#C6E000"/><g class="a-tol"><path d="M7 18h34v6H7z" fill="#5E7000"/><path d="M10 5H17L15.5 16v2a4.25 4.25 0 0 1-8.5 0V16z" fill="#C6E000" /><path d="M17 5H24L24.0 16v2a4.25 4.25 0 0 1-8.5 0V16z" fill="#FFFFFF" /><path d="M24 5H31L32.5 16v2a4.25 4.25 0 0 1-8.5 0V16z" fill="#C6E000" /><path d="M31 5H38L41.0 16v2a4.25 4.25 0 0 1-8.5 0V16z" fill="#FFFFFF" /><path d="M10 5h28" stroke="#fff" stroke-width="1.4" opacity=".5"/></g></svg><span>Tienda</span></a>
             <!-- Amigos, Clanes y Agenda: en el menú de la izquierda (PC), en Perfil y en «Mi agenda» -->
             <a class="acceso desc-acc" href="descargas.html" aria-label="Descargas sin internet"><svg class="ic"><use href="#i-bajar"/></svg><span>Descargas</span></a>
             <script>/* Punto rojo en Descargas si subiste temas nuevos a un curso que el alumno ya descargó (revisa cada 6 h, solo el manifest de Libros) */
