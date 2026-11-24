@@ -1768,9 +1768,9 @@
     h += '<div class="g2"><div>' + rankH + '</div><div>' + cofH + mioH + '</div></div>';
     // Premios
     h += '<div class="g2"><div class="card gprem"><div class="h2">Premios <em>al terminar la temporada</em></div><div class="gpr-l">' +
-      [['1', '#FFC800', 150, 'Copa de oro'], ['2', '#C9C6D6', 100, 'Copa de plata'], ['3', '#E58A45', 50, 'Copa de bronce']].map(function (x) {
-        return '<div class="gpr" style="--c:' + x[1] + '"><span class="ps">' + x[0] + '°</span><svg viewBox="0 0 40 40"><use href="#cl-copa"/></svg><b>' + x[2] + ' ' + SV.dia + '</b><small>a cada miembro que jugó · ' + x[3] + ' en el escudo</small></div>';
-      }).join('') + '</div><div class="gpr-x"><div><b>Top 3 jugadores</b><small>80, 50 y 30 ' + SV.dia + '</small></div><div><b>Emblema de temporada</b><small>Pin «Guerrero T' + g.temporada + '» para todos los que jueguen; «Campeón T' + g.temporada + '» para el clan ganador</small></div><div><b>Cofre de guerra</b><small>Al cerrar cada ronda: Bronce, Plata (3 000 pts), Oro (6 000) o Leyenda (10 000)</small></div></div></div>';
+      [['1', '#FFC800', 300, 'Copa de oro', '1 000 XP · 30 rayos'], ['2', '#C9C6D6', 150, 'Copa de plata', '700 XP · 20 rayos'], ['3', '#E58A45', 80, 'Copa de bronce', '500 XP · 15 rayos']].map(function (x) {
+        return '<div class="gpr" style="--c:' + x[1] + '"><span class="ps">' + x[0] + '°</span><svg viewBox="0 0 40 40"><use href="#cl-copa"/></svg><b>' + x[2] + ' ' + SV.dia + '</b><small>+ ' + x[4] + '<br>a cada miembro que jugó · ' + x[3] + ' en el escudo</small></div>';
+      }).join('') + '</div><div class="gpr-x"><div><b>Los demás clanes que jugaron</b><small>40 ' + SV.dia + ' + 200 XP + 5 rayos a cada miembro que jugó: nadie juega en vano. El XP sube el nivel y el Top de tu clan.</small></div><div><b>Top 3 jugadores</b><small>80, 50 y 30 ' + SV.dia + '</small></div><div><b>Emblema de temporada</b><small>Pin «Guerrero T' + g.temporada + '» para todos los que jueguen; «Campeón T' + g.temporada + '» para el clan ganador</small></div><div><b>Cofre de guerra</b><small>Al cerrar cada ronda: Bronce, Plata (3 000 pts), Oro (6 000) o Leyenda (10 000)</small></div></div></div>';
     h += '<div class="card reglas"><div class="h2">Cómo funciona</div>' +
       '<div>' + SV.check + 'Cada temporada dura 4 semanas: 8 rondas, martes y jueves de 8:00 a 20:00.</div>' +
       '<div>' + SV.check + 'En cada ronda juegas hasta 5 partidas de 10 preguntas al azar del ciclo más nuevo.</div>' +
@@ -1784,7 +1784,7 @@
     var p = G && G.premio; if (!p) return;
     var o = document.createElement('div'); o.className = 'cf-fondo';
     var l = '';
-    if (p.clan_puesto) l += '<p>Tu clan <b>' + esc(p.clan) + '</b> quedó <b>' + p.clan_puesto + '.°</b>: +' + p.diamantes + ' diamantes y una copa en su escudo.</p>';
+    if (p.clan_puesto) l += '<p>Tu clan <b>' + esc(p.clan) + '</b> quedó <b>' + p.clan_puesto + '.°</b>: +' + p.diamantes + ' diamantes' + (p.xp ? ', +' + nf(p.xp) + ' XP' : '') + (p.rayos ? ' y +' + p.rayos + ' rayos' : '') + (p.clan_puesto <= 3 ? ', y una copa en su escudo' : '') + '.</p>';
     if (p.ind_puesto) l += '<p>Quedaste <b>' + p.ind_puesto + '.°</b> entre todos los jugadores: +' + p.ind_diamantes + ' diamantes.</p>';
     if (p.emblema) l += '<p>Ganaste el emblema <b>Guerrero T' + p.temporada + '</b>' + (p.clan_puesto === 1 ? ' y <b>Campeón T' + p.temporada + '</b>' : '') + '. Póntelo en Colección → Pines.</p>';
     o.innerHTML = '<div class="cf-caja gpz" role="dialog" aria-modal="true"><span class="ge">' + (window.MCGuerraEmblema ? MCGuerraEmblema(p.temporada) : '') + '</span><b>¡Terminó la Temporada ' + p.temporada + '!</b>' + l + '<button type="button" class="cb l w" data-gpok>¡Genial!</button></div>';
