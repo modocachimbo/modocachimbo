@@ -718,6 +718,7 @@ html[data-modo="claro"] .badge .curso { color: #1A1626 !important; }
     if (mcq) MCPregunta.alternativas(optionsList, q, mcq);
     renderMath(quizBody);
     const prevAnswer = answers[current];
+    answered = prevAnswer !== undefined;   // Ya respondida: al volver con «Atrás» se ve, pero no se puede cambiar
     if (prevAnswer !== undefined) lockOptions(prevAnswer);
     btnBack.disabled = current === 0;
     btnNext.disabled = prevAnswer === undefined;

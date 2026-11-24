@@ -524,6 +524,7 @@ html[data-modo="claro"] #lockInput { border: 2px solid #DCD8E8 !important; }
     renderMath(questionText.parentElement.parentElement || document.body);
 
     const prevAnswer = answers[current];
+    answered = prevAnswer !== undefined;   // Ya respondida: al volver con «Atrás» se ve, pero no se puede cambiar
     if (prevAnswer !== undefined && !abierta) lockOptions(prevAnswer);
 
     btnBack.disabled = current === 0;
