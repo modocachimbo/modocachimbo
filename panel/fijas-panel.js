@@ -19,6 +19,27 @@ function abrirModal(html, ancho) {
   return { o, cerrar };
 }
 
+/* Borra el Banco de Fijas de un año (<año>-fijas.json). Los temas del Libro no se tocan.
+   Si la web usaba ese banco, Fijas queda en "Próximamente" (Apps Script v23: borrarFijas). */
+async function borrarBancoFijas(c, anio, nPreg) {
+  const r = await pedirTexto({ titulo: `Borrar Fijas ${anio} · ${c.nombre}`,
+    sub: `Se borrará el banco de Fijas de ${anio}${nPreg ? ` (<b>${nPreg} pregunta${nPreg === 1 ? '' : 's'}</b>)` : ''}. Los temas del Libro no se tocan.` +
+      `${c.fijas && c.fijas.anio === anio && c.fijas.modo === 'banco' ? '<br><br>La web usa este banco: Fijas quedará en <b>Próximamente</b> hasta que armes otro.' : ''}` +
+      '<br><br>GitHub guarda el historial. Escribe <b>BORRAR</b> para confirmar.',
+    placeholder: 'BORRAR', boton: 'Borrar Fijas', peligro: true, exacto: 'BORRAR' });
+  if (r !== 'BORRAR') return false;
+  try {
+    await api('borrarFijas', { carpeta: c.id, anio, confirmar: 'BORRAR' });
+  } catch (e) {
+    toast(e.message === 'Acción no válida' ? 'Falta actualizar el Apps Script (v23) para poder borrar Fijas.' : e.message, true);
+    return false;
+  }
+  delete cacheArchivos[c.id + '|' + anio + '-fijas'];
+  toast(`Fijas ${anio} borradas · se verá en la web en 1 a 10 minutos`);
+  try { await cargarCursos(); } catch (e) {}
+  return true;
+}
+
 /* ---------- Orden de tarjetas ---------- */
 function ordenTarjetas(c) {
   const manual = Array.isArray(c.ordenTarjetas) && c.ordenTarjetas.length;
@@ -106,7 +127,7 @@ async function armarFijas(c) {
         <div class="af-preg" id="afPreg"></div>
         <div class="mfoot" style="margin-top:10px;"><button type="button" class="rbtn" id="afTodas">Marcar todas</button><button type="button" class="btn-main" id="afAgregar" disabled>Agregar a Fijas</button></div>
       </div>
-      <div class="rf-box"><div class="rf-tit">Banco de Fijas ${esc(st.anio)}</div><div id="afBanco"></div></div>
+      <div class="rf-box"><div class="rf-tit af-btit">Banco de Fijas ${esc(st.anio)}${st.original !== '[]' ? '<button type="button" class="rbtn danger" id="afBorrar">Borrar Fijas</button>' : ''}</div><div id="afBanco"></div></div>
       <div class="err" id="afErr"></div>
       <div class="mfoot"><button type="button" class="btn-ghost" data-x>Cerrar</button><button type="button" class="btn-main" id="afPub">Publicar en Fijas</button></div>`;
     body.querySelector('[data-x]').addEventListener('click', cerrar);
@@ -128,6 +149,13 @@ async function armarFijas(c) {
     });
     body.querySelector('#afAgregar').addEventListener('click', agregar);
     body.querySelector('#afPub').addEventListener('click', publicar);
+    const bb = body.querySelector('#afBorrar');
+    if (bb) bb.addEventListener('click', async () => {
+      bb.disabled = true;
+      const n = JSON.parse(st.original).reduce((s, t) => s + (t.questions || []).length, 0);
+      if (await borrarBancoFijas(c, st.anio, n)) { c = ((REG && REG.cursos) || []).find(x => x.id === c.id) || c; cargarBanco(); }
+      else bb.disabled = false;
+    });
     pintarBanco();
   }
   let saltoOk = false;

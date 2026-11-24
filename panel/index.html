@@ -469,6 +469,8 @@
   .af-tema + .af-tema { margin-top: 14px; }
   .af-tt { font-weight: 900; margin-bottom: 6px; display: flex; gap: 8px; }
   .af-tt em { margin-left: auto; }
+  .af-btit { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .rf-borrar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px dashed #2E2650; font-size: 13px; color: var(--muted, #9a93b8); font-weight: 700; }
   .af-q { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-top: 1px solid #241E3E; font-size: 13px; color: var(--text-dim); }
   .af-q span { flex: 1; min-width: 0; }
   @media (max-width: 560px) { .af-sel { grid-template-columns: 1fr; } }
@@ -1534,7 +1536,7 @@ E) Alternativa"></textarea>
      unos segundos entre cada uno. Dos commits en el mismo segundo hacían que GitHub Pages
      se trabara y la web se quedara con la versión anterior. Después, el vigía revisa que
      la web publicada quede al día (ver vigiaPublicacion). */
-  const COMMITS = /^(corregir|corregirExamen|publicarTema|publicarExamen|borrarPregunta|borrarTema|renombrarTema|crearAnio|eliminarAnio|editarCurso|ordenarCursos|configCurso|reaplicar|restaurarArchivo|repararAnios|creditoTema)$/;
+  const COMMITS = /^(corregir|corregirExamen|publicarTema|publicarExamen|borrarPregunta|borrarTema|renombrarTema|crearAnio|eliminarAnio|borrarFijas|editarCurso|ordenarCursos|configCurso|reaplicar|restaurarArchivo|repararAnios|creditoTema)$/;
   let colaCommits = Promise.resolve(), ultimoCommit = 0;
   function api(action, data = {}, pass = PASS) {
     if (!COMMITS.test(action)) return apiDirecta(action, data, pass);
@@ -2662,8 +2664,8 @@ E) Alternativa"></textarea>
 <script src="novedades-panel.js"></script>
 <script src="mantenimiento.js"></script>
 <script src="../assets/cursos.js"></script>
-<script src="cursos-panel.js"></script>
-<script src="fijas-panel.js"></script>
+<script src="cursos-panel.js?v=2"></script>
+<script src="fijas-panel.js?v=2"></script>
 <script src="formato-barra.js"></script>
 <script src="practica-panel.js"></script>
 <script src="tarjetas-panel.js"></script>
