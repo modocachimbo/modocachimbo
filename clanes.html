@@ -1709,7 +1709,7 @@
     var s = SALA && SALA.sala;
     return '<div class="card salac"><div class="sc-tx"><div class="h2">' + (s ? '<i class="vivo"></i>' : '') + 'Sala de clan <em>gratis · hasta 6 vs 6</em></div>' +
       '<p class="small">' + (s ? esc(s.titulo) + (s.rival ? ' · contra <b style="color:#fff">' + esc(s.rival) + '</b>' : ' · esperando rival') : 'Duelo en vivo contra otro clan, con comodines y preguntas al azar.') + '</p>' +
-      '<span class="sc-tk">' + SV.espadas + 'En ronda: gana +3 000 · empate +2 000 · pierde +1 000 por jugador</span></div>' +
+      '<span class="sc-tk">' + SV.espadas + 'En ronda: hasta +5 000 por jugador (según las preguntas)</span></div>' +
       '<a class="cb l" href="' + (s ? (s.codigo.length === 6 ? 'duelo.html?d=' : 'sala-clan.html?c=') + s.codigo : 'sala-clan.html') + '">' + (s ? 'Entrar a la sala' : 'Ir a salas') + '</a></div>';
   }
   /* ---------- Guerra de clanes: temporadas y rondas (supabase/134-guerra-clanes.sql · guerra.html) ---------- */
@@ -1775,7 +1775,7 @@
       '<div>' + SV.check + 'Cada temporada dura 4 semanas: 8 rondas, martes y jueves de 8:00 a 20:00.</div>' +
       '<div>' + SV.check + 'En cada ronda juegas hasta 5 partidas de 10 preguntas al azar del ciclo más nuevo.</div>' +
       '<div>' + SV.check + 'Acierto = 100 pts + rapidez (hasta 50) + combo por aciertos seguidos (hasta 100).</div>' +
-      '<div>' + SV.check + 'Duelo en la Sala de clan (gratis, hasta 6 vs 6): cada jugador suma 3 000 si gana, 2 000 si empatan y 1 000 si pierde (hasta 3 duelos por ronda).</div>' +
+      '<div>' + SV.check + 'Duelo en la Sala de clan (gratis, hasta 6 vs 6, de 10 a 40 preguntas): cada jugador suma según las preguntas, hasta 5 000 si gana con 40 (empate 3 000, pierde 2 000). Hasta 3 duelos por ronda.</div>' +
       '<div>' + SV.check + 'Tus puntos suman para tu clan. Gana el clan con más puntos en la temporada.</div></div></div>';
     return h;
   }

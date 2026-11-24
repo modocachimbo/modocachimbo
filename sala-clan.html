@@ -48,6 +48,11 @@
   .h2 em { font-style: italic; color: var(--text-dim); font-size: 17px; }
   .small { font-size: 12.5px; color: var(--text-dim); line-height: 1.45; }
   .lb { display: block; font: 900 11px/1 Nunito, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--text-dim); margin: 14px 0 8px; }
+  .sc-n { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .sc-n .chip { display: grid; justify-items: center; gap: 3px; height: auto; padding: 10px 4px; font: italic 900 24px/1 var(--display); }
+  .sc-n .chip small { font: 800 10.5px/1.1 Nunito, sans-serif; font-style: normal; color: var(--text-dim); }
+  .sc-n .chip.on small { color: inherit; }
+  .sc-crear .lb { display: block; margin-top: 12px; }
   .sc-ch { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
   .sc-ch span { padding: 10px 6px; border-radius: 12px; background: #120e24; border: 1.5px solid #2a2346; text-align: center; font: 800 11px/1.25 Nunito, sans-serif; color: var(--text-dim); }
   .sc-ch b { display: block; font: italic 900 22px/1 var(--display); color: var(--accent); margin-bottom: 3px; text-transform: uppercase; }
@@ -388,9 +393,10 @@
     var s = MIO.sala;
     var abierta = s ? '<div class="card" style="border-color:rgba(198,224,0,.5)"><div class="h2"><span class="pulso"></span>Tu clan tiene una sala</div><p class="small" style="margin-bottom:10px">' + esc(s.titulo) + (s.rival ? ' · contra <b style="color:#fff">' + esc(s.rival) + '</b>' : ' · esperando rival') + '</p><a class="cb l w" href="' + (s.codigo.length === 6 ? 'duelo.html?d=' : 'sala-clan.html?c=') + s.codigo + '">' + (s.empezo ? 'Ver la partida ' : 'Entrar a la sala ') + s.codigo + '</a></div>' : '';
     return abierta + '<div class="dos"><div class="card sc-crear"><div class="h2">Crear sala <em>clan vs clan</em></div>' +
-      '<div class="sc-ch"><span><b>Gratis</b>sin ticket</span><span><b>6 vs 6</b>hasta 6 por clan</span><span><b>10</b>preguntas al azar</span><span><b>20 s</b>por pregunta</span></div>' +
-      '<p class="small" style="margin:12px 0 4px">Las preguntas salen solas, al azar, del ciclo más nuevo de todos los cursos. Comparte el código con tu clan y con otro clan: el primero de otro clan que entra queda de rival.</p>' +
-      '<div class="sc-gu">' + '<b>Martes y jueves de 8:00 a 20:00</b> el duelo suma a la <b>Guerra de clanes</b>: cada jugador del clan que gana suma <b>3 000</b>, empate <b>2 000</b> y el que pierde <b>1 000</b> (hasta 3 duelos por ronda).</div>' +
+      '<div class="sc-ch"><span><b>Gratis</b>sin ticket</span><span><b>6 vs 6</b>hasta 6 por clan</span><span><b>60 s</b>por pregunta</span><span><b>1:30</b>cuando la mayoría terminó</span></div>' +
+      '<span class="lb">Cuántas preguntas</span><div class="sc-n">' + [10, 20, 30, 40].map(function (n) { return '<button type="button" class="chip' + (F.n === n ? ' on' : '') + '" data-n="' + n + '">' + n + '<small>+' + (n * 125).toLocaleString('en-US').replace(/,/g, ' ') + ' si ganan</small></button>'; }).join('') + '</div>' +
+      '<p class="small" style="margin:12px 0 4px">Las preguntas salen solas, al azar, del ciclo más nuevo de todos los cursos. Comparte el código con tu clan y con otro clan: el primero de otro clan que entra queda de rival. Cuando más de la mitad termina, los demás tienen 1 minuto y medio para acabar.</p>' +
+      '<div class="sc-gu">' + '<b>Martes y jueves de 8:00 a 20:00</b> el duelo suma a la <b>Guerra de clanes</b>. Más preguntas, más puntos (máximo 5 000 con 40). Con ' + F.n + ' preguntas, cada jugador del clan que gana suma <b>' + (F.n * 125).toLocaleString('en-US').replace(/,/g, ' ') + '</b>, empate <b>' + (F.n * 75).toLocaleString('en-US').replace(/,/g, ' ') + '</b> y el que pierde <b>' + (F.n * 50).toLocaleString('en-US').replace(/,/g, ' ') + '</b> (hasta 3 duelos por ronda).</div>' +
       '<button type="button" class="cb l w" style="margin-top:14px" data-crear>Crear sala</button><p class="err" id="eCrear"></p></div>' +
       '<div><div class="card"><div class="h2">Entrar con código</div><p class="small" style="margin-bottom:10px">Pide el código de la sala a tu clan o al clan rival.</p>' +
       '<input class="inp code" id="iCod" maxlength="6" autocomplete="off" autocapitalize="characters" placeholder="AB3K7Q"><button type="button" class="cb l w" style="margin-top:10px" data-entrar>Entrar</button><p class="err" id="eEntrar"></p></div>' +
@@ -701,9 +707,9 @@
     }
     if ((el = e.target.closest('[data-crear]'))) {
       el.disabled = true; el.textContent = 'Armando preguntas…';
-      armarAzar(10).then(function (L) {
-        if (L.length < 5) throw new Error('sin_preguntas');
-        return rpc('clan_duelo_crear', { p: { titulo: 'Sala de clan', curso: 'todos', fuente: 'mezcla', n: L.length, seg: 20, por_lado: '6', preguntas: L.map(function (x) { return { ref: x.ref, c: x.q.correct, k: x.q.options.length }; }) } });
+      armarAzar(F.n).then(function (L) {
+        if (L.length < F.n) throw new Error('sin_preguntas');
+        return rpc('clan_duelo_crear', { p: { titulo: 'Sala de clan', curso: 'todos', fuente: 'mezcla', n: L.length, seg: 60, por_lado: '6', preguntas: L.map(function (x) { return { ref: x.ref, c: x.q.correct, k: x.q.options.length }; }) } });
       }).then(function (cod) { location.href = 'duelo.html?d=' + cod; }, function (x) { var m = x && x.message === 'sin_preguntas' ? 'No se pudieron cargar las preguntas. Revisa tu internet.' : error(x); app.innerHTML = inicio(); document.getElementById('eCrear').textContent = m; });
       return;
     }
