@@ -22,6 +22,19 @@
   } catch (e) {}
 
   var cliente = null, sesion = null, perfilCache = null, perfilPedido = null, iniciado = false, sinRed = false;
+  var sinRedConCuenta = false;
+  function sesionGuardada() {
+    try {
+      var ref = new URL(CFG.SUPABASE_URL).hostname.split('.')[0];
+      var g = JSON.parse(localStorage.getItem('sb-' + ref + '-auth-token') || 'null');
+      if (g && g.currentSession) g = g.currentSession;
+      return g && g.user && g.user.id && g.refresh_token ? g : null;
+    } catch (e) { return null; }
+  }
+  // Al volver la señal: que supabase renueve la sesión ya (y avise con onAuthStateChange)
+  window.addEventListener('online', function () {
+    if (sinRedConCuenta && cliente) cliente.auth.getSession().then(function (r) { if (r && r.data && r.data.session) { sesion = r.data.session; sinRedConCuenta = false; } }, function () {});
+  });
   var oyentes = [];
 
   function cargarSDK() {
@@ -70,15 +83,30 @@
         global: { fetch: fetchConRenovar }
       });
       cliente.auth.onAuthStateChange(function (evento, s) {
+        // Sin señal con la sesión guardada: un «sin sesión» por falta de internet no la borra
+        if (!s && sinRedConCuenta && evento !== 'SIGNED_OUT') return;
+        if (s) sinRedConCuenta = false;
         var antes = sesion && sesion.user.id, ahora = s && s.user.id;
         sesion = s;
         if (antes !== ahora) { perfilCache = null; recordarPerfil(null); if (iniciado) { avisar(); marcarVisto(); } }
       });
-      return cliente.auth.getSession();
+      // Sesión vencida: supabase la renueva por internet (y sin señal reintenta varios
+      // segundos). Si en 3 s no hay respuesta (o no hay señal), se sigue con la guardada.
+      var pedido = cliente.auth.getSession(), g = sesionGuardada();
+      if (!g || !g.expires_at || g.expires_at * 1000 > Date.now() + 10000) return pedido;
+      pedido.then(function (r) { if (r && r.data && r.data.session) { sesion = r.data.session; sinRedConCuenta = false; } }, function () {});
+      return Promise.race([pedido, new Promise(function (ok) {
+        setTimeout(function () { ok({ data: { session: null }, error: { name: 'AuthRetryableFetchError', message: 'sin respuesta' } }); }, navigator.onLine === false ? 300 : 3000);
+      })]);
     })
     .then(function (r) {
       sesion = r.data.session;
       sinRed = !sesion && (navigator.onLine === false || !!(r.error && /fetch|network|retryable/i.test((r.error.name || '') + ' ' + (r.error.message || ''))));
+      // Sin internet y con la sesión vencida (más de 1 h sin abrir la app), supabase no la
+      // puede renovar y devuelve «sin sesión», pero el alumno sigue siendo el mismo: se usa la
+      // sesión guardada en el teléfono para que sus respuestas se anoten (XP, corazones, racha)
+      // y se manden solas cuando vuelva la señal (supabase la renueva sola al reconectar).
+      if (sinRed) { var g = sesionGuardada(); if (g) { sesion = g; sinRedConCuenta = true; } }
       // Quita el #access_token=… de la barra después de entrar
       if (/access_token=|error_description=/.test(location.hash) || location.href.slice(-1) === '#') {
         history.replaceState(null, '', location.pathname + location.search);
@@ -123,7 +151,7 @@
     document.head.appendChild(n);
     // Corazones, misiones del día y XP (assets/corazones.js) y el búho que usa
     var cz = document.createElement('script');
-    cz.src = BASE + 'assets/corazones.js?v=19';
+    cz.src = BASE + 'assets/corazones.js?v=20';
     document.head.appendChild(cz);
     var pagina = location.href.replace(/[?#].*$/, '');
     // Cuenta suspendida desde el panel (assets/suspension.js); el panel no se bloquea

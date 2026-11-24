@@ -241,7 +241,7 @@
   }
 
   /* ---------- Respuestas: XP y corazones ---------- */
-  var buf = { ok: 0, mal: 0, seguidas: 0 }, racha = 0, tEnvio = null, enviando = false, vuelo = 0;
+  var racha = 0, tEnvio = null;
   // XP por respuesta: el mismo cálculo que sumar_xp en supabase/81-xp-error-0-multiplicadores.sql (cortes de xp_mult en 110).
   // [correcta, incorrecta]: 15 donde se gasta corazón, 10 en lo demás; la incorrecta da 0;
   // la correcta se multiplica por el rango de la semana (xp_mult, en %, lo manda el servidor).
@@ -264,20 +264,25 @@
   function claveRonda() { return location.pathname + location.search; }
   function repite() { return (rondasHoy().r[claveRonda()] || 0) >= 2; }
   document.addEventListener('mc:fin-ronda', function () {
-    try { enviar(); } catch (e) {}   // lo de esta ronda sale con el XP normal
+    try { cerrarTanda(); vaciarCola(); } catch (e) {}   // lo de esta ronda sale con el XP normal
     var o = rondasHoy(), k = claveRonda(); o.r[k] = (o.r[k] || 0) + 1;
     try { localStorage.setItem('mc_rondas_dia', JSON.stringify(o)); } catch (e) {}
   });
-  // XP que ya ganó pero el servidor todavía no anotó (se ve al instante)
-  function pendiente() { return valor(buf.ok, buf.mal) + vuelo; }
-  function verXp() { return ((estado && estado.xp_semana) || 0) + pendiente() + enCola(); }
+  function verXp() { return ((estado && estado.xp_semana) || 0) + enCola(); }
 
-  /* ---------- Sin internet: lo que no se pudo mandar queda en el teléfono ----------
-     Si un envío de XP o un corazón perdido no llega al servidor (sin señal, o la
-     página se cerró sin internet), se guarda aquí y se manda solo cuando vuelve la
-     conexión (al abrir cualquier página o al recuperar la señal). Lo de hace más de
-     7 días se descarta. Un candado evita que dos pestañas lo manden a la vez. */
-  var K_COLA = 'mc_cz_cola_' + uid, K_CANDADO = K_COLA + '_candado';
+  /* ---------- Cada respuesta se guarda primero en el teléfono ----------
+     Ninguna respuesta vive solo en la memoria de la página: apenas el alumno
+     responde, se anota en una cola guardada en el teléfono (localStorage) y de ahí
+     se manda al servidor. Si no hay señal, si la conexión se cuelga, si cierra la
+     app o Android la mata, lo respondido sigue ahí y se manda solo en cuanto hay
+     internet (al abrir cualquier página, al volver la señal o cada minuto).
+     - Cada tanda lleva una clave única: si el servidor ya la anotó (por ejemplo,
+       llegó pero la respuesta se perdió), no la vuelve a sumar (supabase/139).
+     - Una tanda que ya se intentó mandar no recibe más respuestas.
+     - Lo de hace más de 14 días se descarta. Un candado evita que dos pestañas
+       manden a la vez. */
+  var K_COLA = 'mc_cz_cola_' + uid, K_CANDADO = K_COLA + '_candado', K_CLAVE_OK = 'mc_xp_clave_ok';
+  var TAB = Math.random().toString(36).slice(2, 9);
   function leerCola() {
     try { var c = JSON.parse(localStorage.getItem(K_COLA) || 'null'); if (c && Array.isArray(c.p)) return { p: c.p, h: +c.h || 0 }; } catch (e) {}
     return { p: [], h: 0 };
@@ -285,18 +290,52 @@
   function guardarCola(c) {
     try { if (!c.p.length && !c.h) localStorage.removeItem(K_COLA); else localStorage.setItem(K_COLA, JSON.stringify(c)); } catch (e) {}
   }
-  function aCola(p) {
-    if (!p || p.ok + p.mal === 0) return;
-    var c = leerCola();
-    c.p.push({ fuente: p.fuente, curso: p.curso, ok: p.ok, mal: p.mal, seguidas: p.seguidas || 0, t: Date.now(), xp: valor(p.ok, p.mal) });
+  function nuevaClave() { return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10); }
+  // ¿Se puede seguir sumando a esta tanda? (de esta pestaña, misma práctica, nunca enviada, < 50)
+  function abierta(u, ok, mal, rep) {
+    return u && !u.v && !u.cerrada && u.tab === TAB && u.fuente === PAG.fuente && u.curso === (PAG.curso || '') &&
+      !!u.rep === rep && u.ok + ok <= 50 && u.mal + mal <= 50 && Date.now() - (+u.t || 0) < 10 * 60000;
+  }
+  function anotar(ok, mal) {
+    if (!PAG || ok + mal <= 0) return;
+    var c = leerCola(), rep = repite();
+    while (ok + mal > 0) {
+      var a = Math.min(ok, 50), b = Math.min(mal, 50), u = c.p[c.p.length - 1];
+      if (abierta(u, a, b, rep)) {
+        u.ok += a; u.mal += b; u.seguidas = Math.max(u.seguidas || 0, racha); u.xp = (+u.xp || 0) + valor(a, b);
+      } else {
+        c.p.push({ k: nuevaClave(), tab: TAB, fuente: PAG.fuente, curso: PAG.curso || '', ok: a, mal: b, seguidas: racha, rep: rep, t: Date.now(), xp: valor(a, b) });
+      }
+      ok -= a; mal -= b;
+    }
     guardarCola(c);
   }
+  // La tanda de esta pestaña ya no recibe más (fin de ronda o al salir)
+  function cerrarTanda() {
+    var c = leerCola(), u = c.p[c.p.length - 1];
+    if (u && u.tab === TAB && !u.cerrada) { u.cerrada = true; guardarCola(c); }
+  }
   function enCola() { return leerCola().p.reduce(function (a, x) { return a + (+x.xp || 0); }, 0); }
-  var vaciando = false;
+  // Cortes de red que no deben colgar la cola: si en 15 s no contesta, se reintenta después
+  function conTiempo(prom, ms) {
+    return new Promise(function (ok, mal) {
+      var t = setTimeout(function () { mal({ red: true, message: 'tiempo' }); }, ms);
+      prom.then(function (v) { clearTimeout(t); ok(v); }, function (e) { clearTimeout(t); mal(e); });
+    });
+  }
+  // ¿El servidor la rechazó de verdad (y no fue la señal ni la sesión)?
+  function rechazo(e) {
+    if (!e || e.red || navigator.onLine === false) return false;
+    var m = String((e.name || '') + ' ' + (e.message || '') + ' ' + (e.code || ''));
+    if (/fetch|network|load failed|timeout|tiempo|abort|jwt|sesi[oó]n|auth|PGRST30|401|403/i.test(m)) return false;
+    return !!e.code;
+  }
+  var vaciando = false, saliendo = false;
   function vaciarCola() {
-    if (vaciando || navigator.onLine === false) return;
+    clearTimeout(tEnvio); tEnvio = null;
+    if (vaciando || saliendo || navigator.onLine === false) return;
     var c = leerCola();
-    c.p = c.p.filter(function (x) { return Date.now() - (+x.t || 0) < 7 * 864e5; });
+    c.p = c.p.filter(function (x) { return Date.now() - (+x.t || 0) < 14 * 864e5; });
     guardarCola(c);
     if (!c.p.length && !c.h) return;
     try {
@@ -308,61 +347,70 @@
     function siguiente() {
       var c = leerCola();
       try { localStorage.setItem(K_CANDADO, String(Date.now())); } catch (e) {}
-      if (c.h > 0) return rpc('perder_corazon').then(function (e) { var d = leerCola(); d.h = Math.max(0, d.h - 1); guardarCola(d); cambiar(e); return siguiente(); });
+      if (c.h > 0) return conTiempo(rpc('perder_corazon'), 15000).then(function (e) { var d = leerCola(); d.h = Math.max(0, d.h - 1); guardarCola(d); cambiar(e); return siguiente(); });
       if (!c.p.length) return;
       var x = c.p[0];
-      return rpc('sumar_xp', { p: { fuente: x.fuente, curso: x.curso, ok: x.ok, mal: x.mal, seguidas: x.seguidas, pend: true } }).then(function (e) {
-        var d = leerCola(); d.p.shift(); guardarCola(d); cambiar(e); return siguiente();
+      x.v = (x.v || 0) + 1; guardarCola(c);   // ya se intentó: no recibe más respuestas
+      var p = { fuente: x.fuente, curso: x.curso, ok: x.ok, mal: x.mal, seguidas: x.seguidas || 0, clave: x.k };
+      if (x.rep) p.repite = true;
+      if (Date.now() - (+x.t || 0) > 60000 || x.v > 1) p.pend = true;   // jugado antes: el servidor le da más reserva
+      return conTiempo(rpc('sumar_xp', { p: p }), 15000).then(function (e) {
+        var d = leerCola(); d.p = d.p.filter(function (y) { return y.k !== x.k; }); guardarCola(d);
+        if (e && e.clave_ok) try { localStorage.setItem(K_CLAVE_OK, '1'); } catch (er) {}
+        cambiar(e); return siguiente();
+      }, function (er) {
+        // El servidor la rechazó 5 veces (no por señal ni sesión): se descarta para no trabar la cola
+        if (rechazo(er)) { var d = leerCola(); d.p = d.p.filter(function (y) { if (y.k !== x.k) return true; y.f = (y.f || 0) + 1; return y.f < 5; }); guardarCola(d); }
+        throw er;
       });
     }
     siguiente().then(fin, fin);
   }
+  function programar() {
+    var c = leerCola(), u = c.p[c.p.length - 1];
+    if (u && u.tab === TAB && u.ok + u.mal >= 10) { cerrarTanda(); vaciarCola(); }
+    else if (!tEnvio) tEnvio = setTimeout(function () { tEnvio = null; cerrarTanda(); vaciarCola(); }, 4000);
+  }
   function respuesta(ok) {
     if (!PAG) return;
-    if (ok) { buf.ok++; racha++; buf.seguidas = Math.max(buf.seguidas, racha); }
-    else { buf.mal++; racha = 0; if (PAG.gasta) perder(); }
+    if (ok) racha++; else { racha = 0; if (PAG.gasta) perder(); }
+    anotar(ok ? 1 : 0, ok ? 0 : 1);
     ganaXp(ok ? valor(1, 0) : valor(0, 1));
-    if (buf.ok + buf.mal >= 10) enviar(); else if (!tEnvio) tEnvio = setTimeout(enviar, 4000);
+    programar();
   }
   // Varias respuestas juntas (el simulacro las manda al terminar)
   function sumar(ok, mal) {
     if (!PAG) return;
     ok = Math.max(0, ok | 0); mal = Math.max(0, mal | 0);
-    buf.ok += ok; buf.mal += mal;
+    cerrarTanda(); anotar(ok, mal); cerrarTanda();
     ganaXp(valor(ok, mal));
-    enviar();
+    vaciarCola();
   }
-  // El servidor acepta hasta 50 de cada una por envío; lo demás queda para el siguiente
-  function paquete() {
-    var p = { fuente: PAG.fuente, curso: PAG.curso || '', ok: Math.min(buf.ok, 50), mal: Math.min(buf.mal, 50), seguidas: buf.seguidas };
-    if (repite()) p.repite = true;
-    buf = { ok: buf.ok - p.ok, mal: buf.mal - p.mal, seguidas: racha };
-    return p;
-  }
-  function enviar() {
-    clearTimeout(tEnvio); tEnvio = null;
-    if (enviando || !PAG || buf.ok + buf.mal === 0) return;
-    // Si hay XP guardados de cuando no había señal, esto va detrás de ellos en la
-    // misma cola (así la reserva anti-trampas no se gasta antes en lo de ahora)
-    if (leerCola().p.length) { while (buf.ok + buf.mal > 0) aCola(paquete()); vaciarCola(); return; }
-    var p = paquete(); enviando = true; vuelo = valor(p.ok, p.mal);
-    rpc('sumar_xp', { p: p }).then(function (e) { enviando = false; vuelo = 0; cambiar(e); if (buf.ok + buf.mal) enviar(); else vaciarCola(); },
-      // No llegó (sin señal o error): queda guardado en el teléfono para mandarlo después
-      function () { enviando = false; vuelo = 0; aCola(p); });
-  }
-  // Al cerrar la página se manda lo que falte
-  window.addEventListener('pagehide', function () {
-    if (!PAG || buf.ok + buf.mal === 0) return;
-    // Sin internet: se guarda en el teléfono y se manda al volver la conexión
-    if (navigator.onLine === false || !MCAuth.token || !MCAuth.token()) { while (buf.ok + buf.mal > 0) aCola(paquete()); return; }
-    try {
-      fetch(CFG.SUPABASE_URL + '/rest/v1/rpc/sumar_xp', {
-        method: 'POST', keepalive: true,
-        headers: { apikey: CFG.SUPABASE_KEY, Authorization: 'Bearer ' + MCAuth.token(), 'Content-Type': 'application/json' },
-        body: JSON.stringify({ p: paquete() })
-      });
-    } catch (e) {}
+  // Al cerrar la página: lo respondido YA está guardado en el teléfono. Si el servidor
+  // ya sabe de claves (SQL 139), además se intenta mandar al vuelo; si llega, al
+  // reenviarlo después el servidor lo reconoce y no lo suma dos veces.
+  window.addEventListener('pageshow', function (ev) { if (ev.persisted) { saliendo = false; setTimeout(vaciarCola, 800); } });
+  window.addEventListener('pagehide', function (ev) {
+    cerrarTanda();
+    saliendo = true;
+    // Si esta página estaba mandando, suelta el candado: la siguiente página sigue al toque
+    if (vaciando) { vaciando = false; try { localStorage.removeItem(K_CANDADO); } catch (e) {} }
+    try { if (localStorage.getItem(K_CLAVE_OK) !== '1') return; } catch (e) { return; }
+    if (navigator.onLine === false || !MCAuth.token || !MCAuth.token()) return;
+    leerCola().p.filter(function (x) { return x.tab === TAB; }).slice(0, 3).forEach(function (x) {
+      var p = { fuente: x.fuente, curso: x.curso, ok: x.ok, mal: x.mal, seguidas: x.seguidas || 0, clave: x.k };
+      if (x.rep) p.repite = true;
+      try {
+        fetch(CFG.SUPABASE_URL + '/rest/v1/rpc/sumar_xp', {
+          method: 'POST', keepalive: true,
+          headers: { apikey: CFG.SUPABASE_KEY, Authorization: 'Bearer ' + MCAuth.token(), 'Content-Type': 'application/json' },
+          body: JSON.stringify({ p: p })
+        });
+      } catch (e) {}
+    });
   });
+  // Mientras quede algo sin mandar, se reintenta cada minuto
+  setInterval(function () { if (document.visibilityState === 'visible' && leerCola().p.length) vaciarCola(); }, 60000);
 
   var cola = Promise.resolve();
   function perder() {
@@ -375,7 +423,7 @@
       if (e.quedan === 0) setTimeout(bloqueo, 1300);
     }
     // Si no llega, el corazón perdido queda anotado y se descuenta al volver la conexión
-    cola = cola.then(function () { return rpc('perder_corazon').then(cambiar, function () { var c = leerCola(); c.h++; guardarCola(c); }); });
+    cola = cola.then(function () { return conTiempo(rpc('perder_corazon'), 15000).then(cambiar, function () { var c = leerCola(); c.h++; guardarCola(c); }); });
   }
 
   function vidasInicio(max) {
@@ -745,7 +793,7 @@
   if (!PAG && uid) setTimeout(abrirSobre, 1500);
   // Lo que quedó guardado sin internet se manda en cuanto hay conexión
   MCAuth.listo.then(function () { setTimeout(vaciarCola, 1500); }, function () {});
-  window.addEventListener('online', function () { setTimeout(function () { enviar(); vaciarCola(); }, 1000); });
+  window.addEventListener('online', function () { setTimeout(vaciarCola, 1000); });
   // Al volver a la pestaña (por ejemplo, después de una misión) se actualiza
-  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { cargar(); vaciarCola(); } else enviar(); });
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { cargar(); vaciarCola(); } else { cerrarTanda(); vaciarCola(); } });
 })();
