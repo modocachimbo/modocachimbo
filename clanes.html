@@ -1738,7 +1738,7 @@
       '<div class="gp-tx"><div class="gp-t">Guerra de clanes</div><div class="gp-s">Temporada ' + g.temporada + (g.viva ? ' · Ronda ' + g.viva_n : '') + '</div>' + estado +
       '<div class="gp-hor">' + SV.reloj.replace(' class="i"', '') + 'Martes y jueves · 8:00 a 20:00</div>' +
       '<div class="gp-btns"><button type="button" class="gp-b cl" data-gtab="ronda" data-gir>Clan</button>' +
-      (g.viva && g.tengo_clan && usadas < max ? '<a class="gp-b jg" href="guerra.html">Jugar</a>' : '<span class="gp-b jg off">' + (g.viva ? 'Sin partidas' : 'Jugar') + '</span>') + '</div>' +
+      (y.abierta ? '<a class="gp-b jg" href="guerra.html">Continuar</a>' : g.viva && g.tengo_clan && usadas < max ? '<a class="gp-b jg" href="guerra.html">Jugar</a>' : '<span class="gp-b jg off">' + (g.viva ? 'Sin partidas' : 'Jugar') + '</span>') + '</div>' +
       (g.viva ? '<div class="gp-vid"><span>Partidas</span>' + vid + '<b>' + (max - usadas) + '/' + max + '</b></div>' : '') + '</div></div>';
     // Las 8 rondas
     h += '<div class="card grondas"><div class="h2">Rondas <em>Temporada ' + g.temporada + '</em></div><div class="gr-l">' + (g.rondas || []).map(function (r) {

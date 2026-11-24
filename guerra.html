@@ -73,6 +73,7 @@
   .hud .pts small { font: 800 11px/1 Nunito, sans-serif; color: var(--text-dim); font-style: normal; margin-left: 3px; }
   .pasos { display: flex; gap: 4px; }
   .pasos i { flex: 1; height: 8px; border-radius: 4px; background: #241d44; }
+  .pasos i.hecha { background: #6b6390; }
   .pasos i.ok { background: var(--ok); } .pasos i.no { background: var(--rojo); } .pasos i.ya { background: #fff; }
   .reloj { position: relative; height: 12px; border-radius: 6px; background: #1a1433; overflow: hidden; border: 1.5px solid #2c2550; margin-bottom: 12px; }
   .reloj i { position: absolute; inset: 0; transform-origin: left; background: linear-gradient(90deg, var(--accent), #e7fb62); }
@@ -152,7 +153,7 @@
     if (!window.MCAuth) return Promise.reject(new Error('sin-auth'));
     return MCAuth.listo.then(function (c) { return c.rpc(n, a || {}); }).then(function (r) { if (r.error) throw r.error; return r.data; });
   }
-  var ERR = { sin_clan: 'Únete a un clan para jugar la guerra.', guerra_cerrada: 'La ronda está cerrada. Abre martes y jueves de 8:00 a 20:00.', sin_partidas: 'Ya jugaste tus 5 partidas de esta ronda.', partida_cerrada: 'Esa partida ya se guardó.' };
+  var ERR = { sin_clan: 'Únete a un clan para jugar la guerra.', guerra_cerrada: 'La ronda está cerrada. Abre martes y jueves de 8:00 a 20:00.', partida_no_existe: 'Esa partida ya se cerró.', sin_partidas: 'Ya jugaste tus 5 partidas de esta ronda.', partida_cerrada: 'Esa partida ya se guardó.' };
   function errTxt(e) { var m = String(e && (e.message || e) || ''); for (var k in ERR) if (m.indexOf(k) >= 0) return ERR[k]; if (/function|schema cache/i.test(m)) return 'La guerra se activa muy pronto.'; return 'No se pudo conectar. Revisa tu internet.'; }
   function son(k) { try { if (window.MCSonido && MCSonido[k]) MCSonido[k](); } catch (e) {} }
   function math(el) {
@@ -221,15 +222,16 @@
   function portada(msg) {
     cabecera();
     var v = V, usadas = v && v.yo ? +v.yo.partidas_hoy || 0 : 0, max = v ? +v.max_partidas || 5 : 5, quedan = Math.max(0, max - usadas);
-    var puede = v && v.viva && v.tengo_clan && quedan > 0;
+    var ab = v && v.yo && v.yo.abierta;   // partida a medias (se cortó): se sigue sin gastar otra
+    var puede = ab || (v && v.viva && v.tengo_clan && quedan > 0);
     var vid = ''; for (var k = 0; k < max; k++) vid += '<i' + (k < usadas ? ' class="usada"' : '') + '></i>';
     app.innerHTML = '<section class="ini"><div class="emb">' + (window.MCGuerraEmblema ? MCGuerraEmblema(v ? v.temporada : 1) : '') + '</div>' +
       '<h2>¡A la <em>guerra</em>!</h2>' +
       '<p>' + (v && v.mi_clan ? 'Juegas por <b style="color:#fff">' + esc(v.mi_clan.nombre) + '</b>. ' : '') + 'Cada punto que ganes suma para tu clan.</p>' +
       '<div class="reglas3"><div><b>10</b><span>preguntas al azar de todos los cursos</span></div><div><b>20 s</b><span>por pregunta; más rápido, más puntos</span></div><div><b>Combo</b><span>aciertos seguidos suman extra</span></div></div>' +
       '<div class="vidas" aria-label="Partidas">' + vid + '</div>' +
-      '<button type="button" class="big" id="go"' + (puede ? '' : ' disabled') + '>' + (puede ? 'Jugar partida' : !v ? 'Cargando…' : !v.tengo_clan ? 'Necesitas un clan' : !v.viva ? 'Ronda cerrada' : 'Sin partidas') + '</button>' +
-      '<p class="nota">' + (v && v.viva ? 'Te quedan <b style="color:#fff">' + quedan + ' de ' + max + '</b> partidas en esta ronda.' : 'Las rondas son martes y jueves de 8:00 a 20:00.') + '</p>' +
+      '<button type="button" class="big" id="go"' + (puede ? '' : ' disabled') + '>' + (ab ? 'Continuar partida' : puede ? 'Jugar partida' : !v ? 'Cargando…' : !v.tengo_clan ? 'Necesitas un clan' : !v.viva ? 'Ronda cerrada' : 'Sin partidas') + '</button>' +
+      '<p class="nota">' + (ab ? 'Se cortó tu partida: sigues en la pregunta <b style="color:#fff">' + (Math.min(9, +ab.n || 0) + 1) + ' de 10</b> con <b style="color:#FFC800">' + nf(ab.puntos) + ' pts</b>. No gasta otra partida.' : v && v.viva ? 'Te quedan <b style="color:#fff">' + quedan + ' de ' + max + '</b> partidas en esta ronda.' : 'Las rondas son martes y jueves de 8:00 a 20:00.') + '</p>' +
       (msg ? '<p class="err">' + esc(msg) + '</p>' : '') + '</section>';
     var b = document.getElementById('go');
     if (b) b.onclick = empezar;
@@ -241,6 +243,12 @@
       return elegir(p.semilla);
     }).then(function (qs) {
       Q = qs; i = 0; pts = 0; combo = 0; maxCombo = 0; buenas = 0; marcas = [];
+      // Partida que se cortó: sigue donde iba, con sus puntos
+      if (P.reanudar) {
+        i = Math.min(+P.n || 0, Q.length); pts = +P.puntos || 0; buenas = +P.correctas || 0; combo = maxCombo = +P.combo || 0;
+        for (var k = 0; k < i; k++) marcas[k] = 'hecha';
+        if (i >= Q.length) { terminar(); return; }
+      }
       cuenta(3);
     }, function (e) { portada(/sin_preguntas/.test(String(e && e.message)) ? 'No se pudieron cargar las preguntas. Revisa tu internet.' : errTxt(e)); });
   }
@@ -294,6 +302,8 @@
       flot(k < 0 ? '¡Tiempo!' : 'Fallaste', true);
     }
     var e = document.getElementById('pts'); if (e) e.innerHTML = nf(pts) + '<small>pts</small>';
+    // Guarda el avance: si la app se cierra, al volver sigue aquí
+    rpc('guerra_avance', { p_id: P.id, p_n: i + 1, p_puntos: pts, p_correctas: buenas, p_combo: combo }).catch(function () {});
     setTimeout(function () { i++; if (i < Q.length) pregunta(); else terminar(); }, ok ? 1100 : 1700);
   }
   function terminar() {

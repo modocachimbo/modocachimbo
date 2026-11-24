@@ -602,11 +602,11 @@
     const e = escritas[current];
     if (!e || answers[current] !== -1) return;
     e.vale = true; answers[current] = 0;
-    score += 10; lives = Math.min(MAX_LIVES, lives + 1);
+    score += 10;   // Cuenta como acierto, pero ya no devuelve el corazón
     if (window.MCSonido) MCSonido.bien();
     renderLives();
     scoreEl.textContent = `${score} pts`;
-    btnNext.textContent = current === activeQuestions.length - 1 ? 'Finalizar' : 'Siguiente';
+    btnNext.textContent = lives <= 0 ? 'Ver resultado' : current === activeQuestions.length - 1 ? 'Finalizar' : 'Siguiente';
   }
 
   function selectAnswer(index, el) {

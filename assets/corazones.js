@@ -253,8 +253,21 @@
   function valor(ok, mal) {
     var b = (PAG && XP_MODO[PAG.fuente]) || [14, 0];
     var mu = estado && estado.xp_mult != null ? +estado.xp_mult : multXp((estado && estado.xp_semana) || 0);
-    return ok * Math.round(b[0] * mu / 100) + mal * b[1];
+    var x = ok * Math.round(b[0] * mu / 100);
+    return (repite() ? Math.floor(x / 2) : x) + mal * b[1];
   }
+  // Mismo tema terminado 2 veces hoy: desde la 3.ª ronda las correctas dan la mitad de XP
+  // (cuenta por página + ?año/tema; lo anota el evento 'mc:fin-ronda' de cada práctica)
+  function rondasHoy() {
+    try { var o = JSON.parse(localStorage.getItem('mc_rondas_dia') || 'null'); var d = new Date(Date.now() - 5 * 36e5).toISOString().slice(0, 10); return o && o.d === d ? o : { d: d, r: {} }; } catch (e) { return { d: '', r: {} }; }
+  }
+  function claveRonda() { return location.pathname + location.search; }
+  function repite() { return (rondasHoy().r[claveRonda()] || 0) >= 2; }
+  document.addEventListener('mc:fin-ronda', function () {
+    try { enviar(); } catch (e) {}   // lo de esta ronda sale con el XP normal
+    var o = rondasHoy(), k = claveRonda(); o.r[k] = (o.r[k] || 0) + 1;
+    try { localStorage.setItem('mc_rondas_dia', JSON.stringify(o)); } catch (e) {}
+  });
   // XP que ya ganó pero el servidor todavía no anotó (se ve al instante)
   function pendiente() { return valor(buf.ok, buf.mal) + vuelo; }
   function verXp() { return ((estado && estado.xp_semana) || 0) + pendiente() + enCola(); }
@@ -322,6 +335,7 @@
   // El servidor acepta hasta 50 de cada una por envío; lo demás queda para el siguiente
   function paquete() {
     var p = { fuente: PAG.fuente, curso: PAG.curso || '', ok: Math.min(buf.ok, 50), mal: Math.min(buf.mal, 50), seguidas: buf.seguidas };
+    if (repite()) p.repite = true;
     buf = { ok: buf.ok - p.ok, mal: buf.mal - p.mal, seguidas: racha };
     return p;
   }
