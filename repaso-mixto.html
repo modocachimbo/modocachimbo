@@ -759,7 +759,7 @@ html[data-modo="claro"] .badge .curso { color: #1A1626 !important; }
     lockOptions(index); renderLives();
     scoreEl.textContent = `${score} pts`;
     btnNext.disabled = false;
-    if (lives <= 0) setTimeout(showEnd, 900);
+    if (lives <= 0) { btnNext.disabled = true; btnBack.disabled = true; setTimeout(showEnd, 900); }   // Sin vidas: no deja seguir respondiendo mientras sale el final
   }
 
   function showEnd() {
