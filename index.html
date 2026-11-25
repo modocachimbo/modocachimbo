@@ -528,6 +528,37 @@ html.desc-off .nav .desc, html.desc-off .desc-acc { display: none !important; }
 .solo-cel { display: none; }
 .tabbar { display: none; }
 
+/* Dos mundos (beta, solo admin + influencers): CPU = este inicio con los libros; Ordinario = ordinario.html con el prospecto */
+.mundos { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 16px; padding: 5px; }
+.mundo { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 10px; border-radius: 12px; color: var(--suave); }
+.mundo svg { width: 24px; height: 24px; flex: none; }
+.mundo b { display: block; font: 800 18px/1.1 var(--display); letter-spacing: .03em; text-transform: uppercase; }
+.mundo small { font-size: 12.5px; font-weight: 700; }
+.mundo.on { background: var(--lima); color: var(--sobre-lima); }
+.mundo .nv-b { margin-left: 2px; padding: 3px 6px; border-radius: 6px; background: #FF5FA2; color: #fff; font: 800 10px/1 var(--display); letter-spacing: .06em; }
+.puertas { position: fixed; inset: 0; z-index: 90; background: rgba(5, 3, 14, .86); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.puertas[hidden], html:not(.arcade-si) .puertas { display: none; }
+.puertas-caja { width: 100%; max-width: 760px; }
+.puertas-caja h2 { font: 900 30px/1.1 var(--cuerpo); text-align: center; }
+.puertas-caja > p { color: var(--suave); text-align: center; font-weight: 700; margin: 6px 0 18px; }
+.puertas-g { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.puerta { display: flex; flex-direction: column; text-align: left; border-radius: 20px; padding: 20px; border: 2px solid var(--c); background: linear-gradient(160deg, #1D1834, #151127); color: var(--texto); min-height: 250px; font: inherit; cursor: pointer; }
+.puerta .ic { width: 60px; height: 60px; border-radius: 16px; background: rgba(255,255,255,.05); display: grid; place-items: center; color: var(--c); }
+.puerta .ic svg { width: 36px; height: 36px; }
+.puerta b { font: 800 32px/1 var(--display); text-transform: uppercase; margin-top: 12px; }
+.puerta small { color: var(--suave); font-size: 14px; font-weight: 700; margin-top: 6px; }
+.puerta .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 14px; }
+.puerta .chips i { font-style: normal; font-size: 12.5px; font-weight: 800; background: #0B0818; border: 1px solid var(--borde); border-radius: 99px; padding: 3px 10px; }
+.puerta .ir { margin-top: auto; background: var(--c); color: var(--sobre-lima); font: 800 16px/1 var(--display); text-transform: uppercase; letter-spacing: .04em; text-align: center; border-radius: 12px; padding: 13px; }
+@media (max-width: 900px) {
+  .mundos { order: -1; }
+  .mundo small { display: none; }
+  .puertas { align-items: flex-start; overflow: auto; }
+  .puertas-g { grid-template-columns: 1fr; }
+  .puerta { min-height: 0; }
+  .puertas-caja h2 { font-size: 26px; margin-top: 8px; }
+}
+
 /* ---------- celular ---------- */
 @media (max-width: 900px) {
   .app { grid-template-columns: 1fr; }
@@ -1542,6 +1573,27 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
         <div data-mc-auth data-mc-tarjeta></div>
       </div>
     </header>
+
+    <!-- Dos mundos (beta): CPU (este inicio) y Ordinario (ordinario.html). Solo admin + influencers -->
+    <nav class="mundos solo-beta" aria-label="Para qué estudias">
+      <a class="mundo on" href="index.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.2 5.6c3.4-1 6.7-.6 9.3 1.3v13.6c-2.6-1.9-5.9-2.3-9.3-1.3z" fill="currentColor" opacity=".45"/><path d="M21.8 5.6c-3.4-1-6.7-.6-9.3 1.3v13.6c2.6-1.9 5.9-2.3 9.3-1.3z" fill="currentColor"/></svg><span><b>CPU</b><small>Libros del ciclo</small></span></a>
+      <a class="mundo" href="ordinario.html" data-mundo="ordinario"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2 1.8 8.1 12 13l10.2-4.9z" fill="currentColor"/><path d="M5.6 10.6v4.3c0 1.9 2.9 3.5 6.4 3.5s6.4-1.6 6.4-3.5v-4.3L12 13.7z" fill="currentColor" opacity=".45"/><path d="M20.6 8.8v6.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="20.6" cy="16.3" r="1.6" fill="currentColor"/></svg><span><b>Ordinario</b><small>Temario del prospecto</small></span><i class="nv-b">BETA</i></a>
+    </nav>
+    <div class="puertas" id="puertas" hidden>
+      <div class="puertas-caja" role="dialog" aria-modal="true" aria-labelledby="puertasTit">
+        <h2 id="puertasTit">¿Para qué estudias?</h2>
+        <p>Elige tu camino. Puedes cambiarlo cuando quieras desde arriba del inicio.</p>
+        <div class="puertas-g">
+          <button type="button" class="puerta" data-mundo="cpu" style="--c:var(--info)"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.2 5.6c3.4-1 6.7-.6 9.3 1.3v13.6c-2.6-1.9-5.9-2.3-9.3-1.3z" fill="currentColor" opacity=".45"/><path d="M21.8 5.6c-3.4-1-6.7-.6-9.3 1.3v13.6c2.6-1.9 5.9-2.3 9.3-1.3z" fill="currentColor"/></svg></span><b>CPU</b><small>Centro Preuniversitario. Sigues los libros semana a semana.</small><span class="chips"><i>Libros</i><i>Repaso</i><i>Fijas</i><i>Seminarios</i><i>Control CPU</i></span><span class="ir">Entrar a CPU</span></button>
+          <button type="button" class="puerta" data-mundo="ordinario" style="--c:var(--lima)"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2 1.8 8.1 12 13l10.2-4.9z" fill="currentColor"/><path d="M5.6 10.6v4.3c0 1.9 2.9 3.5 6.4 3.5s6.4-1.6 6.4-3.5v-4.3L12 13.7z" fill="currentColor" opacity=".45"/><path d="M20.6 8.8v6.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="20.6" cy="16.3" r="1.6" fill="currentColor"/></svg></span><b>Ordinario</b><small>Examen de admisión ordinario. Sigues el temario del prospecto.</small><span class="chips"><i>Prospecto</i><i>Exámenes</i><i>Temas fijos</i><i>Simulacro</i></span><span class="ir">Entrar a Ordinario</span></button>
+        </div>
+      </div>
+    </div>
+    <script>/* La primera vez que un beta entra al inicio elige su mundo; se recuerda en mc_mundo */
+    (function(){var d=document.getElementById('puertas'),M='mc_mundo';function ver(){try{if(!localStorage.getItem(M)&&document.documentElement.classList.contains('arcade-si'))d.hidden=false;}catch(e){}}
+    document.addEventListener('mc-arcade',ver);ver();
+    d.addEventListener('click',function(e){var b=e.target.closest('[data-mundo]');if(!b)return;try{localStorage.setItem(M,b.dataset.mundo);}catch(x){}if(b.dataset.mundo==='ordinario')location.href='ordinario.html';else d.hidden=true;});
+    document.querySelector('.mundos [data-mundo="ordinario"]').addEventListener('click',function(){try{localStorage.setItem(M,'ordinario');}catch(x){}});})();</script>
 
     <div class="fila1">
       <div class="col-izq">

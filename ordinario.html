@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script src="assets/guardia.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0B0818">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="assets/app/icono-180.png">
+<script src="assets/app.js" defer></script>
+<title>Ordinario · Modo Cachimbo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Nunito:wght@700;800;900&display=swap">
+<style>
+/* Mundo Ordinario (beta): el examen de admisión ordinario se estudia con el prospecto, no con los libros del CPU */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0B0818;--card:#151127;--card2:#1D1834;--borde:#2A2346;--lima:#C6E000;--lima-osc:#8fa300;--sobre-lima:#151A03;--tx:#EEEAF7;--dim:#A99FC8;--faint:#6F6690;--azul:#1CB0F6;--morado:#CE82FF;--naranja:#FF9600;--oro:#FFC800;--rosa:#FF5FA2}
+body{background:var(--bg);color:var(--tx);font-family:Nunito,system-ui,sans-serif;min-height:100vh}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.wrap{max-width:1080px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-right)) 60px max(16px,env(safe-area-inset-left))}
+header.top{display:flex;align-items:center;gap:12px;padding:22px 0 10px;padding-top:max(22px,env(safe-area-inset-top))}
+.home-btn{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;border:1px solid var(--borde);background:var(--card);flex:none}
+.home-btn svg{width:18px;height:18px;fill:currentColor}
+.top h1{font:800 24px Sora,sans-serif;display:flex;align-items:center;gap:10px}
+.beta{background:var(--rosa);color:#fff;font:800 11px Sora,sans-serif;padding:4px 8px;border-radius:7px;letter-spacing:.5px}
+
+/* Cambiar de mundo: CPU | Ordinario */
+.mundos{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--card);border:1px solid var(--borde);border-radius:16px;padding:5px;margin:6px 0 18px}
+.mundo{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px;border-radius:12px;color:var(--dim)}
+.mundo svg{width:24px;height:24px;flex:none}
+.mundo b{display:block;font:800 16px Sora,sans-serif;line-height:1.1}
+.mundo small{font-size:12px;font-weight:700}
+.mundo.on{background:var(--lima);color:var(--sobre-lima)}
+
+.hero{display:flex;gap:16px;align-items:center;background:linear-gradient(135deg,#22164a,var(--card));border:1px solid var(--borde);border-bottom:4px solid var(--lima);border-radius:20px;padding:18px 20px;margin-bottom:22px}
+.hero .ic{width:58px;height:58px;border-radius:16px;background:rgba(198,224,0,.12);display:grid;place-items:center;color:var(--lima);flex:none}
+.hero .ic svg{width:34px;height:34px}
+.hero b{font:800 22px Sora,sans-serif;display:block}
+.hero p{color:var(--dim);font-size:14.5px;font-weight:700;margin-top:4px}
+
+h2{font:800 19px Sora,sans-serif;margin:0 0 12px;display:flex;align-items:baseline;gap:10px}
+h2 small{font:700 13px Nunito,sans-serif;color:var(--faint)}
+.sec{margin-bottom:26px}
+
+/* Practica como el examen */
+.modos{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.modo{position:relative;display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--borde);border-bottom:3px solid var(--c);border-radius:16px;padding:14px}
+.modo .ic{width:46px;height:46px;border-radius:12px;background:var(--card2);display:grid;place-items:center;color:var(--c);flex:none}
+.modo .ic svg{width:26px;height:26px}
+.modo b{display:block;font-size:16px}
+.modo small{color:var(--dim);font-size:12.5px;font-weight:700}
+.modo .chev{margin-left:auto;color:var(--faint);font-size:22px}
+.modo.pronto{opacity:.6;cursor:default}
+.tag{position:absolute;top:10px;right:12px;font:800 10.5px Sora,sans-serif;padding:3px 7px;border-radius:6px;background:var(--card2);color:var(--dim);letter-spacing:.4px}
+
+/* Cursos por área */
+.area{margin-bottom:16px}
+.area h3{font:800 13px Sora,sans-serif;color:var(--faint);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.cursos{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.curso{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--borde);border-radius:14px;padding:12px;text-align:left;width:100%}
+.curso .ic-m{width:26px;height:26px;background:var(--lima);-webkit-mask:var(--m) center/contain no-repeat;mask:var(--m) center/contain no-repeat;flex:none}
+.curso b{display:block;font-size:14.5px;line-height:1.15}
+.curso small{color:var(--faint);font-size:12px;font-weight:700}
+.curso:hover{border-color:#4B3D85}
+
+/* Hoja del curso: temas del prospecto */
+.hoja-fondo{position:fixed;inset:0;background:rgba(5,3,14,.72);display:flex;align-items:flex-end;justify-content:center;z-index:50}
+.hoja-fondo[hidden]{display:none}
+.hoja{background:var(--bg);border:1px solid var(--borde);border-bottom:0;border-radius:22px 22px 0 0;width:100%;max-width:620px;max-height:86vh;overflow:auto;padding:20px 18px calc(24px + env(safe-area-inset-bottom))}
+@media (min-width:700px){.hoja-fondo{align-items:center}.hoja{border-radius:22px;border-bottom:1px solid var(--borde)}}
+.hoja-cab{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.hoja-cab b{font:800 22px Sora,sans-serif}
+.hoja-cab button{margin-left:auto;width:38px;height:38px;border-radius:11px;background:var(--card);border:1px solid var(--borde);display:grid;place-items:center}
+.hoja-cab button svg{width:16px;height:16px}
+.hoja .sub{color:var(--dim);font-size:13.5px;font-weight:700;margin-bottom:14px}
+.tema{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--borde);border-radius:12px;padding:11px 12px;margin-bottom:8px;font-weight:800;font-size:14.5px}
+.tema .n{width:28px;height:28px;border-radius:8px;background:var(--card2);display:grid;place-items:center;font-size:12px;color:var(--dim);flex:none}
+.vacio{text-align:center;background:var(--card);border:1px dashed #4B3D85;border-radius:16px;padding:26px 18px;color:var(--dim);font-weight:700;font-size:14px}
+.vacio svg{width:42px;height:42px;color:var(--lima);margin-bottom:8px}
+.vacio b{display:block;color:var(--tx);font:800 17px Sora,sans-serif;margin-bottom:4px}
+.hoja .ir{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.hoja .ir a{flex:1 1 160px;display:flex;align-items:center;justify-content:center;height:46px;border-radius:13px;background:var(--card2);border:1px solid var(--borde);font:800 14px Sora,sans-serif;color:var(--lima)}
+
+/* Beta: solo admin + influencers (assets/arcade-beta.js) */
+.beta-aviso{display:none;max-width:420px;margin:90px auto 0;padding:30px 24px;text-align:center;border-radius:24px;background:var(--card);border:1px solid var(--borde);border-bottom:5px solid var(--lima)}
+.beta-aviso b{display:block;font:800 24px/1.2 Sora,sans-serif}
+.beta-aviso p{margin:10px 0 20px;color:var(--dim);font-weight:700}
+.beta-aviso a{display:inline-flex;align-items:center;height:48px;padding:0 22px;border-radius:14px;background:var(--lima);color:var(--sobre-lima);font:800 15px/1 Sora,sans-serif}
+.cargando{display:none;margin:120px auto;width:40px;height:40px;border-radius:50%;border:4px solid var(--borde);border-top-color:var(--lima);animation:gira .8s linear infinite}
+@keyframes gira{to{transform:rotate(1turn)}}
+html:not(.arcade-si):not(.arcade-no) .cargando{display:block}
+html:not(.arcade-si) #mundo{display:none}
+html.arcade-no .beta-aviso{display:block}
+
+@media (max-width:600px){
+  .top h1{font-size:21px}
+  .hero{padding:14px}
+  .hero .ic{width:48px;height:48px}
+  .hero b{font-size:19px}
+  .mundo small{display:none}
+  .cursos{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-gorro" viewBox="0 0 24 24"><path d="M12 3.2 1.8 8.1 12 13l10.2-4.9z" fill="currentColor"/><path d="M5.6 10.6v4.3c0 1.9 2.9 3.5 6.4 3.5s6.4-1.6 6.4-3.5v-4.3L12 13.7z" fill="currentColor" opacity=".45"/><path d="M20.6 8.8v6.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="20.6" cy="16.3" r="1.6" fill="currentColor"/></symbol>
+  <symbol id="i-libro" viewBox="0 0 24 24"><path d="M2.2 5.6c3.4-1 6.7-.6 9.3 1.3v13.6c-2.6-1.9-5.9-2.3-9.3-1.3z" fill="currentColor" opacity=".45"/><path d="M21.8 5.6c-3.4-1-6.7-.6-9.3 1.3v13.6c2.6-1.9 5.9-2.3 9.3-1.3z" fill="currentColor"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><rect x="4" y="2.5" width="16" height="19" rx="2.5" fill="currentColor" opacity=".45"/><path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-banco" viewBox="0 0 24 24"><rect x="6" y="2.5" width="14" height="15" rx="2.5" fill="currentColor" opacity=".45"/><rect x="3" y="6" width="14" height="15.5" rx="2.5" fill="currentColor"/></symbol>
+  <symbol id="i-reloj" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8.5" fill="currentColor" opacity=".45"/><path d="M12 8.5V13l3 2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/><rect x="9" y="1.5" width="6" height="2.5" rx="1" fill="currentColor"/></symbol>
+  <symbol id="i-barras" viewBox="0 0 24 24"><rect x="3" y="12" width="4" height="9" rx="1" fill="currentColor" opacity=".45"/><rect x="10" y="7" width="4" height="14" rx="1" fill="currentColor"/><rect x="17" y="3" width="4" height="18" rx="1" fill="currentColor" opacity=".7"/></symbol>
+</svg>
+
+<div class="cargando"></div>
+<section class="beta-aviso"><b>Ordinario en prueba</b><p>Esta sección está en beta. Muy pronto se abre para todos.</p><a href="index.html">Volver al inicio</a></section>
+
+<div class="wrap" id="mundo">
+  <header class="top">
+    <a class="home-btn" href="index.html" aria-label="Inicio"><svg viewBox="0 0 24 24"><path d="M3 11 12 3l9 8v10h-6v-6H9v6H3z"/></svg></a>
+    <h1>Modo Ordinario <span class="beta">BETA</span></h1>
+  </header>
+
+  <nav class="mundos" aria-label="Para qué estudias">
+    <a class="mundo" href="index.html" data-mundo="cpu"><svg><use href="#i-libro"/></svg><span><b>CPU</b><small>Libros del ciclo</small></span></a>
+    <a class="mundo on" href="ordinario.html" aria-current="page"><svg><use href="#i-gorro"/></svg><span><b>Ordinario</b><small>Temario del prospecto</small></span></a>
+  </nav>
+
+  <section class="hero">
+    <span class="ic"><svg><use href="#i-gorro"/></svg></span>
+    <div><b>Examen de admisión ordinario</b><p>Aquí estudias con el temario del prospecto, tema por tema, y no con las semanas del libro del CPU.</p></div>
+  </section>
+
+  <section class="sec">
+    <h2>Practica como el examen</h2>
+    <div class="modos">
+      <a class="modo" href="examenes/ordinario/index.html" style="--c:var(--morado)"><span class="ic"><svg><use href="#i-gorro"/></svg></span><span><b>Exámenes Ordinario</b><small id="exDat">Exámenes reales con su clave</small></span><span class="chev">›</span></a>
+      <a class="modo" href="temas-fijos.html?mod=ordinario" style="--c:var(--oro)"><span class="ic"><svg><use href="#i-barras"/></svg></span><span><b>Temas fijos Ordinario</b><small>Lo que más vino en admisión</small></span><span class="chev">›</span></a>
+      <div class="modo pronto" style="--c:var(--naranja)"><span class="tag">PRONTO</span><span class="ic"><svg><use href="#i-reloj"/></svg></span><span><b>Simulacro Ordinario</b><small>Repartido como el examen ordinario</small></span></div>
+      <div class="modo pronto" style="--c:var(--azul)"><span class="tag">PRONTO</span><span class="ic"><svg><use href="#i-banco"/></svg></span><span><b>Banco Ordinario</b><small>Preguntas tipo admisión por tema</small></span></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Temario del prospecto <small id="prosp"></small></h2>
+    <div id="areas"></div>
+  </section>
+</div>
+
+<div class="hoja-fondo" id="hFondo" hidden>
+  <div class="hoja" role="dialog" aria-modal="true" aria-labelledby="hTit">
+    <div class="hoja-cab"><b id="hTit"></b><button type="button" id="hCerrar" aria-label="Cerrar"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button></div>
+    <p class="sub">Temas oficiales del prospecto de admisión</p>
+    <div id="hCuerpo"></div>
+  </div>
+</div>
+
+<script src="assets/mc-config.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/arcade-beta.js"></script>
+<script src="assets/ordinario/temario.js"></script>
+<script>
+(function () {
+  try { localStorage.setItem('mc_mundo', 'ordinario'); } catch (e) {}
+  document.querySelector('[data-mundo="cpu"]').addEventListener('click', function () { try { localStorage.setItem('mc_mundo', 'cpu'); } catch (e) {} });
+  var P = window.MC_PROSPECTO || { cursos: {} };
+  function $(id) { return document.getElementById(id); }
+  function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  if (P.prospecto) $('prosp').textContent = P.prospecto;
+
+  var cursos = [];
+  fetch('assets/cursos.json').then(function (r) { return r.json(); }).then(function (d) {
+    var html = '';
+    (d.areas || []).forEach(function (a) {
+      var cs = (d.cursos || []).filter(function (c) { return c.area === a.id && !c.oculto; }).sort(function (x, y) { return (x.orden || 0) - (y.orden || 0); });
+      if (!cs.length) return;
+      cursos = cursos.concat(cs);
+      html += '<div class="area"><h3>' + esc(a.nombre) + '</h3><div class="cursos">' + cs.map(function (c) {
+        var n = (P.cursos[c.id] || []).length;
+        return '<button type="button" class="curso" data-c="' + esc(c.id) + '">' + (c.icono ? '<i class="ic-m" style="--m:url(' + esc(c.icono) + ')"></i>' : '') +
+          '<span><b>' + esc(c.nombre) + '</b><small>' + (n ? n + (n === 1 ? ' tema' : ' temas') : 'Muy pronto') + '</small></span></button>';
+      }).join('') + '</div></div>';
+    });
+    $('areas').innerHTML = html;
+  });
+
+  $('areas').addEventListener('click', function (e) {
+    var b = e.target.closest('.curso'); if (!b) return;
+    var c = cursos.filter(function (x) { return x.id === b.dataset.c; })[0]; if (!c) return;
+    var temas = P.cursos[c.id] || [];
+    $('hTit').textContent = c.nombre;
+    $('hCuerpo').innerHTML = (temas.length
+      ? temas.map(function (t, i) { return '<div class="tema"><span class="n">' + (i + 1) + '</span>' + esc(t) + '</div>'; }).join('')
+      : '<div class="vacio"><svg><use href="#i-doc"/></svg><b>Temario muy pronto</b>Estamos pasando los temas del prospecto de este curso.</div>') +
+      '<div class="ir"><a href="temas-fijos.html?mod=ordinario&curso=' + encodeURIComponent(c.id) + '">Temas fijos</a><a href="examenes/ordinario/index.html">Exámenes Ordinario</a></div>';
+    $('hFondo').hidden = false;
+  });
+  function cerrar() { $('hFondo').hidden = true; }
+  $('hCerrar').addEventListener('click', cerrar);
+  $('hFondo').addEventListener('click', function (e) { if (e.target === this) cerrar(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') cerrar(); });
+
+  // Cuántos exámenes y preguntas de Ordinario hay
+  fetch('examenes/ordinario/data/manifest.json').then(function (r) { return r.json(); }).then(function (l) {
+    var ex = 0, pr = 0;
+    (l || []).forEach(function (c) { (c.exams || [{ count: c.count }]).forEach(function (x) { ex++; pr += x.count || 0; }); });
+    if (ex) $('exDat').textContent = ex + (ex === 1 ? ' examen' : ' exámenes') + ' · ' + pr + ' preguntas';
+  }).catch(function () {});
+})();
+</script>
+</body>
+</html>
