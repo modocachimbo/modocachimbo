@@ -948,6 +948,11 @@ E) Alternativa"></textarea>
                 <option value="seminario">Seminarios del ciclo</option>
                 <option value="banqueo">Banqueo del ciclo</option>
                 <option value="fijas">Banco de Fijas propio del año</option>
+                <optgroup label="Ordinario (prospecto) · beta">
+                  <option value="prospecto">Ordinario · Prospecto — temas del prospecto (también los usa su Repaso)</option>
+                  <option value="banqueo-ord">Ordinario · Banqueo</option>
+                  <option value="fijas-ord">Ordinario · Banco de Fijas propio</option>
+                </optgroup>
               </select>
             </label>
             <label class="dest" id="subCreditoBox" hidden>Crédito del tema (opcional)
@@ -1472,12 +1477,12 @@ E) Alternativa"></textarea>
   ];
   // Secciones de cada curso: la "carpeta" del Libro es el curso (quimica);
   // Seminarios y Banqueo usan quimica--seminarios / quimica--banqueo
-  const SECCIONES = [['libros', 'Libro'], ['seminarios', 'Seminarios'], ['banqueo', 'Banqueo']];
+  const SECCIONES = [['libros', 'Libro'], ['seminarios', 'Seminarios'], ['banqueo', 'Banqueo'], ['prospecto', 'Ordinario · Prospecto'], ['banqueo-ord', 'Ordinario · Banqueo']];
   function claveSeccion(curso, sec) { return sec && sec !== 'libros' ? curso + '--' + sec : curso; }
-  function partesCarpeta(c) { const m = String(c || '').match(/^(.+?)(?:--(seminarios|banqueo))?$/); return { curso: m[1], seccion: m[2] || 'libros' }; }
+  function partesCarpeta(c) { const m = String(c || '').match(/^(.+?)(?:--(seminarios|banqueo-ord|banqueo|prospecto))?$/); return { curso: m[1], seccion: m[2] || 'libros' }; }
   function rutaWeb(c) { const x = partesCarpeta(c); return x.curso + '/' + x.seccion; }
   function conSecciones(n) {
-    Object.keys(n).forEach(id => { if (!/--/.test(id)) { n[id + '--seminarios'] = n[id] + ' · Seminarios'; n[id + '--banqueo'] = n[id] + ' · Banqueo'; } });
+    Object.keys(n).forEach(id => { if (!/--/.test(id)) { n[id + '--seminarios'] = n[id] + ' · Seminarios'; n[id + '--banqueo'] = n[id] + ' · Banqueo'; n[id + '--prospecto'] = n[id] + ' · Ordinario · Prospecto'; n[id + '--banqueo-ord'] = n[id] + ' · Ordinario · Banqueo'; } });
     return n;
   }
   let NOMBRE = conSecciones(Object.fromEntries(CURSOS));
@@ -2025,7 +2030,7 @@ E) Alternativa"></textarea>
   function renderPreguntas(temas) {
     const t = temas.find(x => pad2(x.num) === sel.tema);
     if (!t) { $('qlist').innerHTML = '<div class="state-msg">Elige un tema.</div>'; return; }
-    const conCredito = /--(seminarios|banqueo)$/.test(sel.carpeta);
+    const conCredito = /--(seminarios|banqueo|banqueo-ord)$/.test(sel.carpeta);
     const url = SITE_ROOT + rutaWeb(sel.carpeta) + '/tema.html?year=' + encodeURIComponent(sel.anio) + '&tema=' + encodeURIComponent(t.num);
     $('qlist').innerHTML = `
       <div class="tema-acc">

@@ -65,24 +65,6 @@ h2 small{font:700 13px Nunito,sans-serif;color:var(--faint)}
 .curso small{color:var(--faint);font-size:12px;font-weight:700}
 .curso:hover{border-color:#4B3D85}
 
-/* Hoja del curso: temas del prospecto */
-.hoja-fondo{position:fixed;inset:0;background:rgba(5,3,14,.72);display:flex;align-items:flex-end;justify-content:center;z-index:50}
-.hoja-fondo[hidden]{display:none}
-.hoja{background:var(--bg);border:1px solid var(--borde);border-bottom:0;border-radius:22px 22px 0 0;width:100%;max-width:620px;max-height:86vh;overflow:auto;padding:20px 18px calc(24px + env(safe-area-inset-bottom))}
-@media (min-width:700px){.hoja-fondo{align-items:center}.hoja{border-radius:22px;border-bottom:1px solid var(--borde)}}
-.hoja-cab{display:flex;align-items:center;gap:10px;margin-bottom:4px}
-.hoja-cab b{font:800 22px Sora,sans-serif}
-.hoja-cab button{margin-left:auto;width:38px;height:38px;border-radius:11px;background:var(--card);border:1px solid var(--borde);display:grid;place-items:center}
-.hoja-cab button svg{width:16px;height:16px}
-.hoja .sub{color:var(--dim);font-size:13.5px;font-weight:700;margin-bottom:14px}
-.tema{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--borde);border-radius:12px;padding:11px 12px;margin-bottom:8px;font-weight:800;font-size:14.5px}
-.tema .n{width:28px;height:28px;border-radius:8px;background:var(--card2);display:grid;place-items:center;font-size:12px;color:var(--dim);flex:none}
-.vacio{text-align:center;background:var(--card);border:1px dashed #4B3D85;border-radius:16px;padding:26px 18px;color:var(--dim);font-weight:700;font-size:14px}
-.vacio svg{width:42px;height:42px;color:var(--lima);margin-bottom:8px}
-.vacio b{display:block;color:var(--tx);font:800 17px Sora,sans-serif;margin-bottom:4px}
-.hoja .ir{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.hoja .ir a{flex:1 1 160px;display:flex;align-items:center;justify-content:center;height:46px;border-radius:13px;background:var(--card2);border:1px solid var(--borde);font:800 14px Sora,sans-serif;color:var(--lima)}
-
 /* Beta: solo admin + influencers (assets/arcade-beta.js) */
 .beta-aviso{display:none;max-width:420px;margin:90px auto 0;padding:30px 24px;text-align:center;border-radius:24px;background:var(--card);border:1px solid var(--borde);border-bottom:5px solid var(--lima)}
 .beta-aviso b{display:block;font:800 24px/1.2 Sora,sans-serif}
@@ -144,63 +126,33 @@ html.arcade-no .beta-aviso{display:block}
   </section>
 
   <section class="sec">
-    <h2>Temario del prospecto <small id="prosp"></small></h2>
+    <h2>Tus cursos <small>Prospecto, Repaso, Fijas y Banqueo de Ordinario</small></h2>
     <div id="areas"></div>
   </section>
-</div>
-
-<div class="hoja-fondo" id="hFondo" hidden>
-  <div class="hoja" role="dialog" aria-modal="true" aria-labelledby="hTit">
-    <div class="hoja-cab"><b id="hTit"></b><button type="button" id="hCerrar" aria-label="Cerrar"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button></div>
-    <p class="sub">Temas oficiales del prospecto de admisión</p>
-    <div id="hCuerpo"></div>
-  </div>
 </div>
 
 <script src="assets/mc-config.js"></script>
 <script src="assets/auth.js"></script>
 <script src="assets/arcade-beta.js"></script>
-<script src="assets/ordinario/temario.js"></script>
 <script>
 (function () {
   try { localStorage.setItem('mc_mundo', 'ordinario'); } catch (e) {}
   document.querySelector('[data-mundo="cpu"]').addEventListener('click', function () { try { localStorage.setItem('mc_mundo', 'cpu'); } catch (e) {} });
-  var P = window.MC_PROSPECTO || { cursos: {} };
   function $(id) { return document.getElementById(id); }
   function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-  if (P.prospecto) $('prosp').textContent = P.prospecto;
-
-  var cursos = [];
+  // Los cursos son los mismos que en CPU; cada uno abre su página de Ordinario (<curso>/ordinario.html)
   fetch('assets/cursos.json').then(function (r) { return r.json(); }).then(function (d) {
     var html = '';
     (d.areas || []).forEach(function (a) {
       var cs = (d.cursos || []).filter(function (c) { return c.area === a.id && !c.oculto; }).sort(function (x, y) { return (x.orden || 0) - (y.orden || 0); });
       if (!cs.length) return;
-      cursos = cursos.concat(cs);
       html += '<div class="area"><h3>' + esc(a.nombre) + '</h3><div class="cursos">' + cs.map(function (c) {
-        var n = (P.cursos[c.id] || []).length;
-        return '<button type="button" class="curso" data-c="' + esc(c.id) + '">' + (c.icono ? '<i class="ic-m" style="--m:url(' + esc(c.icono) + ')"></i>' : '') +
-          '<span><b>' + esc(c.nombre) + '</b><small>' + (n ? n + (n === 1 ? ' tema' : ' temas') : 'Muy pronto') + '</small></span></button>';
+        return '<a class="curso" href="' + esc(c.id) + '/ordinario.html">' + (c.icono ? '<i class="ic-m" style="--m:url(' + esc(c.icono) + ')"></i>' : '') +
+          '<span><b>' + esc(c.nombre) + '</b><small>Prospecto · Repaso · Fijas</small></span></a>';
       }).join('') + '</div></div>';
     });
     $('areas').innerHTML = html;
   });
-
-  $('areas').addEventListener('click', function (e) {
-    var b = e.target.closest('.curso'); if (!b) return;
-    var c = cursos.filter(function (x) { return x.id === b.dataset.c; })[0]; if (!c) return;
-    var temas = P.cursos[c.id] || [];
-    $('hTit').textContent = c.nombre;
-    $('hCuerpo').innerHTML = (temas.length
-      ? temas.map(function (t, i) { return '<div class="tema"><span class="n">' + (i + 1) + '</span>' + esc(t) + '</div>'; }).join('')
-      : '<div class="vacio"><svg><use href="#i-doc"/></svg><b>Temario muy pronto</b>Estamos pasando los temas del prospecto de este curso.</div>') +
-      '<div class="ir"><a href="temas-fijos.html?mod=ordinario&curso=' + encodeURIComponent(c.id) + '">Temas fijos</a><a href="examenes/ordinario/index.html">Exámenes Ordinario</a></div>';
-    $('hFondo').hidden = false;
-  });
-  function cerrar() { $('hFondo').hidden = true; }
-  $('hCerrar').addEventListener('click', cerrar);
-  $('hFondo').addEventListener('click', function (e) { if (e.target === this) cerrar(); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') cerrar(); });
 
   // Cuántos exámenes y preguntas de Ordinario hay
   fetch('examenes/ordinario/data/manifest.json').then(function (r) { return r.json(); }).then(function (l) {

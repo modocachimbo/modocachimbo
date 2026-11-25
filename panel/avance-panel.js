@@ -244,7 +244,7 @@ function avQueSubo() {
     const curso = $('subCurso').value, tema = $('subNum').value.trim(), ciclo = normalizarCiclo($('subCiclo').value);
     if (!curso || !tema || $('subPaso2').hidden) return null;
     const x = partesCarpeta(carpetaDestino(curso, $('subDestino').value));
-    if ($('subDestino').value === 'fijas') return null;
+    if ($('subDestino').value === 'fijas' || $('subDestino').value === 'fijas-ord') return null;
     return { curso: x.curso, seccion: x.seccion, ciclo, tema: pad2(tema) };
   } catch (e) { return null; }
 }

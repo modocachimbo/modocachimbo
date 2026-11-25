@@ -270,7 +270,7 @@
     if (r === 'tarjetas.html') return CURSOS[q('curso')] ? 'tarjetas-' + q('curso') : null;
     if (r === 'repaso-mixto.html') return q('area') === 'global' ? null : MCAcceso.AREAS[q('area')] ? 'area-' + q('area') : 'area-matematica';   // el global revisa curso por curso adentro
     if (r === 'vocabulario.html') return 'vocabulario-' + (q('curso') || 'raz-verbal');
-    if ((m = /^([a-z-]+)\/(seminarios|banqueo)\//.exec(r)) && CURSOS[m[1]]) return (m[2] === 'banqueo' ? 'banqueo-' : 'seminario-') + m[1];
+    if ((m = /^([a-z-]+)\/(seminarios|banqueo)(?:-ord)?\//.exec(r)) && CURSOS[m[1]]) return (m[2] === 'banqueo' ? 'banqueo-' : 'seminario-') + m[1];
     if ((m = /^([a-z-]+)\//.exec(r)) && CURSOS[m[1]]) return 'curso-' + m[1];
     return null;
   }
