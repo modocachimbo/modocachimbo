@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script src="assets/guardia.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0B0818">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="assets/app/icono-180.png">
+<script src="assets/app.js" defer></script>
+<title>Tema · Ordinario · Modo Cachimbo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900;1000&family=Barlow+Condensed:ital,wght@1,800;1,900&display=swap">
+<style>
+/* Tema de Ordinario (beta): Teoría animada, Ejercicios Modo Cachimbo, Material extra y Practicar.
+   Lee <curso>/prospecto/teoria/<tema>.json (formato en ese archivo). Solo admin + influencers (assets/arcade-beta.js). */
+:root{--bg:#0B0818;--s:#151127;--s2:#1D1834;--b:#2C2549;--lima:#C6E000;--dim:#A99FC8;--faint:#6F6690;--t:#EEEAF7;--azul:#1CB0F6;--rosa:#FF5FA2;--nar:#FF9600;--mor:#9B6BFF;--verde:#58CC02;--rojo:#E03C3C}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t);font-family:Nunito,system-ui,sans-serif;font-weight:700;min-height:100vh}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:1080px;margin:0 auto;padding:18px max(16px,env(safe-area-inset-right)) 48px max(16px,env(safe-area-inset-left));padding-top:max(18px,env(safe-area-inset-top))}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.top .back{font-weight:900;font-size:17px;display:flex;align-items:center;gap:8px;min-width:0}
+.top .back span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top svg{width:18px;height:18px;flex:none}
+.home{margin-left:4px;width:36px;height:36px;flex:none;border-radius:12px;border:2px solid #322B52;border-bottom-width:4px;display:grid;place-items:center;background:var(--s2)}
+.home svg{width:16px;height:16px}
+.beta{margin-left:auto;font:900 11px Nunito;background:var(--rosa);color:#fff;padding:4px 8px;border-radius:8px;letter-spacing:.05em}
+.disp{font-family:'Barlow Condensed','Arial Narrow',Impact,sans-serif;font-style:italic;font-weight:900;text-transform:uppercase;line-height:.95}
+.hl{color:var(--lima)}
+b,strong{font-weight:900}
+mark{background:none;color:var(--lima);font-weight:900}
+/* inicio del tema */
+.hero{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:linear-gradient(135deg,#1F1840,#151127);border:2px solid var(--b);border-bottom-width:5px;border-radius:24px;padding:18px;position:relative;overflow:hidden}
+.hero .num{color:var(--lima);font-size:22px}
+.hero h1{font-size:40px;margin:2px 0 10px}
+.chip{display:inline-flex;align-items:center;gap:6px;font:900 12px Nunito;padding:5px 10px;border-radius:999px;border:2px solid rgba(198,224,0,.3);color:#D6F23A;background:rgba(198,224,0,.08)}
+.barra{height:12px;border-radius:99px;background:#292245;margin-top:12px;overflow:hidden}
+.barra i{display:block;height:100%;min-width:12px;background:var(--lima);border-radius:99px;position:relative;transition:width .6s ease}
+.barra i::after{content:'';position:absolute;left:6px;right:6px;top:3px;height:3px;border-radius:99px;background:rgba(255,255,255,.35)}
+.prog{font:800 12px Nunito;color:var(--dim);margin-top:6px}
+.hero img{width:110px;filter:drop-shadow(0 8px 10px rgba(0,0,0,.4))}
+.globo{position:absolute;right:170px;top:18px;background:var(--s);border:2px solid var(--b);border-bottom:4px solid var(--lima);border-radius:14px;padding:8px 10px;font-size:12.5px;max-width:170px;display:none}
+.demo{margin-top:12px;font-size:12.5px;color:var(--dim);background:var(--s);border:2px dashed #3a3360;border-radius:14px;padding:10px 12px}
+.sec{display:flex;align-items:center;gap:10px;margin:22px 0 12px}
+.sec h2{font-size:24px}
+.sec::after{content:'';flex:1;height:2px;background:linear-gradient(90deg,#3a3360,transparent)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{position:relative;background:var(--s);border:2px solid var(--b);border-bottom:5px solid var(--ac);border-radius:20px;padding:16px 14px 14px;display:flex;flex-direction:column;gap:8px;overflow:hidden;transition:transform .1s}
+.card:active{transform:translateY(3px)}
+.card::before{content:'';position:absolute;top:0;right:0;width:90px;height:90px;background:linear-gradient(225deg,color-mix(in srgb,var(--ac) 25%,transparent),transparent 60%);pointer-events:none}
+.card .ic{width:52px;height:52px}
+.card h3{font-size:24px;line-height:1}
+.card p{font-size:13px;color:var(--dim)}
+.mini{height:8px;border-radius:99px;background:#292245;overflow:hidden}.mini i{display:block;height:100%;background:var(--ac);border-radius:99px}
+.btn{margin-top:auto;text-align:center;font:900 14px Nunito;text-transform:uppercase;letter-spacing:.04em;padding:10px;border-radius:14px;background:var(--ac);color:#140F22;border-bottom:4px solid color-mix(in srgb,var(--ac) 60%,#000)}
+.btn.o{background:transparent;color:var(--ac);border:2px solid var(--ac);border-bottom-width:4px}
+.fuentes{display:grid;gap:10px}
+.fu{display:flex;align-items:center;gap:12px;background:var(--s);border:2px solid var(--b);border-bottom-width:4px;border-radius:16px;padding:12px;width:100%;text-align:left}
+.fu .lg{width:44px;height:44px;flex:none;border-radius:12px;display:grid;place-items:center;font:1000 16px Nunito;color:#140F22}
+.fu b{display:block;font-size:15px}.fu small{color:var(--dim);font-size:12px}
+.fu .go{margin-left:auto;color:var(--dim);font-size:20px}
+/* teoría */
+.pasos{display:flex;gap:5px;margin:4px 0 6px}.pasos i{flex:1;height:8px;border-radius:99px;background:#292245;transition:background .3s}.pasos i.on{background:var(--lima)}
+.lec{font-size:30px;margin:12px 0 14px}
+.lec small{display:block;font:900 12px Nunito;font-style:normal;letter-spacing:.08em;color:var(--dim);margin-bottom:4px}
+.blk{background:var(--s);border:2px solid var(--b);border-bottom-width:5px;border-radius:22px;padding:16px;margin-bottom:14px;opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
+.blk.ver{opacity:1;transform:none}
+.blk .et{font:900 12px Nunito;letter-spacing:.08em;text-transform:uppercase;color:var(--lima);display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.blk .et b{background:var(--lima);color:#151A03;min-width:22px;height:22px;padding:0 5px;border-radius:7px;display:grid;place-items:center}
+.blk p{font-size:16px;line-height:1.55;font-weight:800}
+.fig{background:#100C22;border-radius:16px;margin-top:12px;padding:10px;display:grid;place-items:center}
+.fig svg{width:100%;max-width:440px;height:auto;overflow:visible}
+.tjs{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:4px}
+.tj{background:var(--s2);border:2px solid var(--b);border-bottom:4px solid var(--c);border-radius:14px;padding:10px 12px;opacity:0;transform:scale(.9)}
+.tj b{display:block;font-size:15px;color:var(--c)}.tj small{font-size:12px;color:var(--dim);line-height:1.35;display:block;margin-top:3px}
+.ver .tj{animation:pop .4s ease forwards}
+.arbol{display:grid;gap:8px;margin-top:12px;position:relative}
+.raiz{justify-self:center;background:var(--lima);color:#151A03;font:900 14px Nunito;padding:8px 16px;border-radius:12px;opacity:0}
+.ver .raiz{animation:pop .4s ease forwards}
+.ramas{display:grid;gap:8px;position:relative;padding-top:14px}
+.ramas::before{content:'';position:absolute;top:2px;left:12%;right:12%;height:3px;border-radius:3px;background:#3a3360;transform:scaleX(0);transition:transform .6s .3s ease}
+.ver .ramas::before{transform:scaleX(1)}
+.ramas .tj{text-align:center}
+.ojo{border-color:#5a3a10;background:linear-gradient(180deg,#2a1c0c,#1b1328);border-bottom-color:var(--nar)}
+.ojo .et{color:var(--nar)}.ojo .et b{background:var(--nar)}
+.ojo mark{color:#FFC87A}
+.check{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center}
+.check img{width:84px}
+.check .q{font-size:15.5px;font-weight:900;margin-bottom:4px}
+.op{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--s2);border:2px solid #2F284E;border-bottom-width:4px;border-radius:14px;padding:10px 12px;margin-top:8px;font-size:14.5px;font-weight:900;transition:transform .08s}
+.op:active:not([disabled]){transform:translateY(2px)}
+.op .l{width:26px;height:26px;flex:none;border-radius:8px;border:2px solid #3A3360;display:grid;place-items:center;font-size:12px}
+.op.ok{border-color:var(--verde);background:rgba(88,204,2,.12)}.op.ok .l{background:var(--verde);border-color:var(--verde);color:#fff}
+.op.mal{border-color:var(--rojo);background:rgba(224,60,60,.1)}.op.mal .l{background:var(--rojo);border-color:var(--rojo);color:#fff}
+.op[disabled]:not(.ok):not(.mal){opacity:.55}
+.fb{margin-top:10px;font-size:13.5px;border-radius:12px;padding:10px 12px;display:none}
+.fb.si{display:block;background:rgba(88,204,2,.1);color:#9BEA5A}.fb.no{display:block;background:rgba(224,60,60,.1);color:#ffb3b3}
+.nav{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;margin-top:6px}
+.nav button,.nav a{text-align:center;padding:13px;border-radius:16px;font:900 14px Nunito;text-transform:uppercase;border:2px solid #322B52;border-bottom-width:5px;color:#cfcfcf;background:#1F1936}
+.nav .p{background:var(--lima);color:#151A03;border-color:var(--lima);border-bottom-color:#8fa300}
+.nav button:disabled{opacity:.35}
+/* ejercicios y extra */
+.ej{border-bottom-color:var(--azul)}
+.ej .et{color:var(--azul)}.ej .et b{background:var(--azul);color:#fff}
+.alts{display:grid;gap:6px;margin-top:10px}
+.alt{display:flex;gap:10px;align-items:center;background:var(--s2);border:2px solid #2F284E;border-radius:12px;padding:8px 10px;font-size:14px}
+.alt i{font-style:normal;width:24px;height:24px;flex:none;border-radius:7px;border:2px solid #3A3360;display:grid;place-items:center;font-size:12px;font-weight:900}
+.alt.clave{border-color:var(--verde);background:rgba(88,204,2,.1)}.alt.clave i{background:var(--verde);border-color:var(--verde);color:#fff}
+.paso{display:flex;gap:10px;margin-top:10px;align-items:flex-start}
+.paso>i{flex:none;width:26px;height:26px;border-radius:50%;background:var(--azul);color:#fff;display:grid;place-items:center;font:900 13px Nunito;font-style:normal}
+.paso p{font-size:14.5px}
+.paso.off{display:none}
+.paso.nuevo{animation:sube .4s ease}
+.ej .nav{margin-top:14px}
+.ej .nav .p{background:var(--azul);border-color:var(--azul);border-bottom-color:#0A6FB0;color:#fff}
+.ex{border-bottom-color:var(--c)}
+.ex .et{color:var(--c)}.ex .et b{background:var(--c);color:#140F22}
+.aviso{display:none;max-width:420px;margin:60px auto 0;padding:30px 24px;text-align:center;border-radius:24px;background:var(--s);border:2px solid #322B52;border-bottom:5px solid var(--lima)}
+.aviso b{display:block;font-size:24px;font-weight:900}.aviso p{color:var(--dim);margin:8px 0 16px}
+.aviso a{display:inline-block;background:var(--lima);color:#151A03;font-weight:900;padding:10px 18px;border-radius:12px}
+html.arcade-no #app{display:none}html.arcade-no .aviso{display:block}
+.cargando{color:var(--dim);text-align:center;padding:60px 0}
+/* animaciones de las figuras */
+.fig .dib{stroke-dasharray:900;stroke-dashoffset:900}
+.ver .fig .dib{animation:dibuja 1.6s ease forwards}
+.fig .ap{opacity:0}
+.ver .fig .ap{animation:aparece .5s ease forwards}
+.ver .fig .gota{animation:gota 2.4s 1.6s ease-in-out infinite}
+@keyframes dibuja{to{stroke-dashoffset:0}}
+@keyframes aparece{to{opacity:1}}
+@keyframes pop{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
+@keyframes sube{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes gota{0%{transform:translate(0,0);opacity:1}70%{transform:translate(0,34px);opacity:1}100%{transform:translate(0,40px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.blk,.tj,.raiz,.fig .ap{opacity:1!important;transform:none!important;animation:none!important}.fig .dib{stroke-dashoffset:0!important;animation:none!important}}
+@media(min-width:900px){
+ .grid{grid-template-columns:repeat(4,1fr)}
+ .hero{padding:24px 28px}.hero h1{font-size:54px}.hero img{width:150px}.globo{display:block}
+ .cols{display:grid;grid-template-columns:1.15fr 1fr;gap:16px;align-items:start}
+ .fuentes{grid-template-columns:repeat(3,1fr)}
+ .ramas.n3{grid-template-columns:repeat(3,1fr)}.ramas.n2{grid-template-columns:repeat(2,1fr)}
+}
+@media(min-width:520px){.ramas.n3{grid-template-columns:repeat(3,1fr)}.ramas.n2{grid-template-columns:repeat(2,1fr)}}
+</style>
+<script src="assets/mc-config.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/arcade-beta.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <section class="aviso"><b>Ordinario en prueba</b><p>Esta sección está en beta. Muy pronto se abre para todos.</p><a href="index.html">Ir al inicio</a></section>
+  <div id="app"><p class="cargando">Cargando tema…</p></div>
+</div>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var CURSO = (q.get('curso') || '').replace(/[^a-z0-9-]/g, '');
+  var TEMA = (q.get('t') || '').replace(/[^a-z0-9-]/g, '');
+  var app = document.getElementById('app');
+  var D = null, NOMBRE = '';
+  var K = 'mc_teo_' + CURSO + '_' + TEMA;
+  function leer() { try { return JSON.parse(localStorage.getItem(K) || '{}'); } catch (e) { return {}; } }
+  function guardar(o) { try { localStorage.setItem(K, JSON.stringify(o)); } catch (e) {} }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  // **negrita** y ==resaltado== (lima)
+  function tx(s) { return esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/==(.+?)==/g, '<mark>$1</mark>'); }
+  function son(n) { try { if (window.MCSonido && MCSonido[n]) MCSonido[n](); } catch (e) {} }
+  var LET = 'ABCDE';
+
+  var IC = {
+    teo: '<svg class="ic" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 14c8-4 16-4 24 2v38c-8-6-16-6-24-2z" fill="#7A8C00" stroke="#2E3600" stroke-width="3" stroke-linejoin="round"/><path d="M56 14c-8-4-16-4-24 2v38c8-6 16-6 24-2z" fill="#C6E000" stroke="#2E3600" stroke-width="3" stroke-linejoin="round"/><path d="M38 24c4-2 8-2 12 0M38 31c4-2 8-2 12 0M38 38c4-2 8-2 12 0" stroke="#2E3600" stroke-width="2.6" stroke-linecap="round" fill="none"/><circle cx="48" cy="10" r="6" fill="#FFC800" stroke="#8A5A00" stroke-width="2"/><path d="M48 6v8M44 10h8" stroke="#8A5A00" stroke-width="2" stroke-linecap="round"/></svg>',
+    ej: '<svg class="ic" viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="8" width="40" height="50" rx="7" fill="#1CB0F6" stroke="#06385C" stroke-width="3"/><rect x="20" y="4" width="20" height="9" rx="3" fill="#8FE0FF" stroke="#06385C" stroke-width="2.6"/><path d="M18 26l5 5 9-10" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 42h22M18 49h14" stroke="#06385C" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="48" r="11" fill="#C6E000" stroke="#2E3600" stroke-width="3"/><text x="50" y="52.5" text-anchor="middle" font-family="Nunito" font-weight="1000" font-size="11" fill="#2E3600">MC</text></svg>',
+    ex: '<svg class="ic" viewBox="0 0 64 64" aria-hidden="true"><rect x="16" y="6" width="38" height="46" rx="6" fill="#5A3AB0" stroke="#1A0F44" stroke-width="3" transform="rotate(8 35 29)"/><rect x="12" y="10" width="38" height="46" rx="6" fill="#9B6BFF" stroke="#1A0F44" stroke-width="3"/><path d="M20 22h22M20 30h22M20 38h14" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".85"/><path d="M42 40l10 0 0 16-5-4-5 4z" fill="#FFC800" stroke="#8A5A00" stroke-width="2.4" stroke-linejoin="round"/></svg>',
+    pr: '<svg class="ic" viewBox="0 0 64 64" aria-hidden="true"><circle cx="30" cy="34" r="22" fill="#FF5FA2" stroke="#6A0F36" stroke-width="3"/><circle cx="30" cy="34" r="14" fill="#fff" stroke="#6A0F36" stroke-width="3"/><circle cx="30" cy="34" r="6" fill="#FF5FA2" stroke="#6A0F36" stroke-width="3"/><path d="M30 34 54 10" stroke="#2E3600" stroke-width="4" stroke-linecap="round"/><path d="M50 6l8 0-2 8z" fill="#C6E000" stroke="#2E3600" stroke-width="2.4" stroke-linejoin="round"/></svg>'
+  };
+  var FLECHA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>';
+  var CASA = '<svg viewBox="0 0 24 24" fill="#e6e6e6"><path d="M12 2 1 12h3v9h6v-6h4v6h6v-9h3z"/></svg>';
+
+  // ---------- Figuras animadas en código ----------
+  function ap(d) { return ' class="ap" style="animation-delay:' + d + 's"'; }
+  var FIG = {
+    glucosa: function () {
+      var ys = [50, 72, 94, 116, 138, 160], s = '<svg viewBox="0 0 440 210" role="img" aria-label="La glucosa pasa de cadena abierta a anillo">';
+      s += '<path class="dib" d="M46 50V160" stroke="#3a3360" stroke-width="4" fill="none"/>';
+      ys.forEach(function (y, i) { s += '<g' + ap(.15 * i) + '><circle cx="46" cy="' + y + '" r="7" fill="#1CB0F6"/><text x="14" y="' + (y + 5) + '" font-family="Nunito" font-weight="900" font-size="13" fill="#A99FC8">C' + (i + 1) + '</text></g>'; });
+      s += '<text x="58" y="42" font-family="Nunito" font-weight="1000" font-size="13" fill="#FF9600"' + ap(1) + '>CHO</text><text x="10" y="196" font-family="Nunito" font-weight="900" font-size="12" fill="#A99FC8">Cadena abierta</text>';
+      s += '<g' + ap(1.1) + '><path d="M104 105h66" stroke="#C6E000" stroke-width="4" stroke-linecap="round"/><path d="M162 94l12 11-12 11" stroke="#C6E000" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><text x="104" y="88" font-family="Nunito" font-weight="900" font-size="12" fill="#C6E000">en agua</text></g>';
+      s += '<g transform="translate(310 100)"><path class="dib" style="animation-delay:1.3s" d="M-62 -6 L-32 -44 L32 -44 L62 -6 L32 30 L-32 30 Z" fill="none" stroke="#C6E000" stroke-width="5" stroke-linejoin="round"/>';
+      s += '<path d="M-62 -6 L-32 -44 L32 -44 L62 -6 L32 30 L-32 30 Z" fill="#C6E000" fill-opacity=".12"' + ap(2.6) + '/>';
+      s += '<g' + ap(2.4) + '><circle cx="32" cy="-44" r="10" fill="#FF5FA2"/><text x="32" y="-40" text-anchor="middle" font-family="Nunito" font-weight="1000" font-size="12" fill="#fff">O</text></g>';
+      s += '<g font-family="Nunito" font-weight="900" font-size="12" fill="#7FD8FF"' + ap(2.6) + '><text x="68" y="-2">C1</text><text x="36" y="48">C2</text><text x="-52" y="48">C3</text><text x="-90" y="-2">C4</text><text x="-50" y="-52">C5</text></g>';
+      s += '<g' + ap(2.9) + '><path d="M-32 -44 L-40 -70" stroke="#A99FC8" stroke-width="2.5"/><text x="-78" y="-74" font-family="Nunito" font-weight="900" font-size="12" fill="#EEEAF7">CH₂OH</text></g>';
+      s += '<text x="-50" y="80" font-family="Nunito" font-weight="900" font-size="12" fill="#A99FC8"' + ap(2.9) + '>Anillo de glucosa</text></g></svg>';
+      return s;
+    },
+    enlace: function () {
+      function hexa(x, col, txt, d) {
+        return '<g transform="translate(' + x + ' 92)"' + ap(d) + '><path d="M-40 -4 L-20 -30 L20 -30 L40 -4 L20 22 L-20 22 Z" fill="' + col + '" fill-opacity=".18" stroke="' + col + '" stroke-width="4" stroke-linejoin="round"/><text y="2" text-anchor="middle" font-family="Nunito" font-weight="1000" font-size="12" fill="#EEEAF7">' + txt + '</text></g>';
+      }
+      var s = '<svg viewBox="0 0 440 190" role="img" aria-label="Dos monosacáridos se unen y sale agua">';
+      s += hexa(110, '#C6E000', 'Glucosa', 0) + hexa(330, '#FF9600', 'Fructosa', .3);
+      s += '<path class="dib" style="animation-delay:.8s" d="M150 88 H290" stroke="#EEEAF7" stroke-width="5" stroke-linecap="round" fill="none"/>';
+      s += '<g' + ap(1.6) + '><circle cx="220" cy="88" r="11" fill="#FF5FA2"/><text x="220" y="92" text-anchor="middle" font-family="Nunito" font-weight="1000" font-size="12" fill="#fff">O</text><text x="220" y="62" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="12" fill="#FF5FA2">enlace glucosídico</text></g>';
+      s += '<g class="gota"' + ap(1.6) + '><path d="M220 112 c-8 12 -10 18 -10 22 a10 10 0 0 0 20 0 c0-4 -2-10 -10-22z" fill="#1CB0F6"/><text x="238" y="132" font-family="Nunito" font-weight="1000" font-size="13" fill="#7FD8FF">H₂O</text></g>';
+      s += '<text x="220" y="184" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="12" fill="#A99FC8"' + ap(2) + '>= Sacarosa + agua</text></svg>';
+      return s;
+    },
+    trigliceridos: function () {
+      var s = '<svg viewBox="0 0 440 200" role="img" aria-label="Glicerol unido a tres ácidos grasos">';
+      s += '<g' + ap(0) + '><rect x="30" y="30" width="70" height="140" rx="14" fill="#FF9600" fill-opacity=".18" stroke="#FF9600" stroke-width="4"/><text x="65" y="105" text-anchor="middle" font-family="Nunito" font-weight="1000" font-size="13" fill="#FFC87A">Glicerol</text></g>';
+      [55, 100, 145].forEach(function (y, i) {
+        var zz = 'M110 ' + y;
+        for (var k = 0; k < 9; k++) zz += ' L' + (140 + k * 30) + ' ' + (y + (k % 2 ? 10 : -10));
+        s += '<g' + ap(.4 + .3 * i) + '><circle cx="112" cy="' + y + '" r="8" fill="#FF5FA2"/></g>';
+        s += '<path class="dib" style="animation-delay:' + (.5 + .3 * i) + 's" d="' + zz + '" stroke="#C6E000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
+      });
+      s += '<text x="112" y="24" font-family="Nunito" font-weight="900" font-size="12" fill="#FF5FA2"' + ap(1.4) + '>enlaces éster</text>';
+      s += '<text x="400" y="190" text-anchor="end" font-family="Nunito" font-weight="900" font-size="12" fill="#C6E000"' + ap(1.6) + '>3 ácidos grasos</text></svg>';
+      return s;
+    }
+  };
+
+  // ---------- Pantallas ----------
+  function cab(t, atras) {
+    return '<div class="top"><a class="back" href="' + atras + '">' + FLECHA + '<span>' + esc(t) + '</span></a><a class="home" href="index.html" aria-label="Ir al inicio">' + CASA + '</a><span class="beta">BETA</span></div>';
+  }
+  function avance() {
+    var p = leer(), n = D.teoria.length, vist = Math.min(n, p.teo || 0);
+    var ej = Math.min(D.ejercicios.length, (p.ej || []).length), totEx = 0, ex = Object.keys(p.ex || {}).length;
+    D.extra.forEach(function (f) { totEx += f.preguntas.length; });
+    var tot = n + D.ejercicios.length + totEx, hecho = vist + ej + Math.min(ex, totEx);
+    return { teo: vist, n: n, ej: ej, ex: ex, totEx: totEx, pct: tot ? Math.round(hecho / tot * 100) : 0 };
+  }
+  function inicio() {
+    var a = avance(), buho = 'assets/buho/disfraces/' + (D.area || 'ciencia-tecnologia') + '-feliz.webp';
+    var H = cab(NOMBRE + ' · Ordinario', CURSO + '/ordinario.html');
+    H += '<div class="hero"><div><div class="disp num">Tema ' + esc(D.num) + ' · Prospecto</div><h1 class="disp">' + esc(D.titulo) + '</h1>' + (D.chip ? '<span class="chip">' + esc(D.chip) + '</span>' : '') +
+      '<div class="barra"><i style="width:' + a.pct + '%"></i></div><div class="prog">' + a.pct + '% del tema · Teoría ' + a.teo + ' de ' + a.n + '</div></div><img src="' + buho + '" alt="">' +
+      '<div class="globo">' + (a.teo < a.n ? 'Sigue con la <b class="hl">teoría</b>: te faltan ' + (a.n - a.teo) + (a.n - a.teo === 1 ? ' parte.' : ' partes.') : '¡Teoría completa! Ahora a <b class="hl">practicar</b>.') + '</div></div>';
+    if (D.demo) H += '<div class="demo">Tema de ejemplo para ver cómo queda. Los ejercicios y el material extra son de muestra.</div>';
+    H += '<div class="sec"><h2 class="disp">Estudia el tema</h2></div><div class="grid">';
+    H += '<a class="card" style="--ac:#C6E000" href="#teoria/' + Math.min(a.teo, a.n - 1) + '">' + IC.teo + '<h3 class="disp">Teoría</h3><p>' + a.n + ' partes con gráficos y animaciones</p><div class="mini"><i style="width:' + (a.teo / a.n * 100) + '%"></i></div><span class="btn">' + (a.teo ? (a.teo >= a.n ? 'Repasar' : 'Continuar') : 'Empezar') + '</span></a>';
+    H += '<a class="card" style="--ac:#1CB0F6" href="#ejercicios">' + IC.ej + '<h3 class="disp">Ejercicios MC</h3><p>' + D.ejercicios.length + ' resueltos paso a paso por Modo Cachimbo</p><div class="mini"><i style="width:' + (a.ej / Math.max(1, D.ejercicios.length) * 100) + '%"></i></div><span class="btn o">Ver</span></a>';
+    H += '<a class="card" style="--ac:#9B6BFF" href="#extra">' + IC.ex + '<h3 class="disp">Material extra</h3><p>' + a.totEx + ' preguntas de ' + D.extra.length + (D.extra.length === 1 ? ' academia' : ' academias') + ' del mismo tema</p><div class="mini"><i style="width:' + (a.ex / Math.max(1, a.totEx) * 100) + '%"></i></div><span class="btn o">Ver</span></a>';
+    H += '<a class="card" style="--ac:#FF5FA2" href="' + esc(D.practicar || '#') + '">' + IC.pr + '<h3 class="disp">Practicar</h3><p>Quiz con corazones del mismo tema</p><div class="mini"><i style="width:0"></i></div><span class="btn o">Jugar</span></a>';
+    H += '</div>';
+    if (D.extra.length) {
+      H += '<div class="sec"><h2 class="disp">Material extra por academia</h2></div><div class="fuentes">';
+      D.extra.forEach(function (f, i) { H += '<a class="fu" href="#extra/' + i + '"><span class="lg" style="background:' + esc(f.c || '#FFC800') + '">' + esc((f.fuente || '?').replace(/^Academia\s+/i, '').charAt(0)) + '</span><div><b>' + esc(f.fuente) + '</b><small>' + esc(f.detalle || (f.preguntas.length + ' preguntas')) + '</small></div><span class="go">›</span></a>'; });
+      H += '</div>';
+    }
+    return H;
+  }
+  function bloque(b, i) {
+    var et = function (n, t) { return '<div class="et"><b>' + n + '</b>' + esc(t) + '</div>'; };
+    if (b.tipo === 'ojo') return '<div class="blk ojo">' + et('!', b.titulo || 'Ojo, cae en el examen') + '<p>' + tx(b.texto) + '</p></div>';
+    if (b.tipo === 'check') {
+      var buho = 'assets/buho/disfraces/' + (D.area || 'ciencia-tecnologia') + '-pensativo.webp';
+      return '<div class="blk" data-check="' + i + '">' + et('?', '¿Entendiste?') + '<div class="check"><img src="' + buho + '" alt=""><div><div class="q">' + tx(b.pregunta) + '</div>' +
+        b.opciones.map(function (o, k) { return '<button class="op" data-k="' + k + '"><span class="l">' + LET[k] + '</span>' + tx(o) + '</button>'; }).join('') + '</div></div><div class="fb"></div></div>';
+    }
+    var H = '<div class="blk">' + et(i + 1, b.titulo || '') + (b.texto ? '<p>' + tx(b.texto) + '</p>' : '');
+    if (b.tipo === 'figura' && FIG[b.figura]) H += '<div class="fig">' + FIG[b.figura]() + '</div>';
+    if (b.tipo === 'tarjetas') H += '<div class="tjs">' + b.items.map(function (t, k) { return '<div class="tj" style="--c:' + esc(t.c) + ';animation-delay:' + (.12 * k) + 's"><b>' + esc(t.t) + '</b><small>' + esc(t.d) + '</small></div>'; }).join('') + '</div>';
+    if (b.tipo === 'arbol') H += '<div class="arbol"><span class="raiz">' + esc(b.raiz) + '</span><div class="ramas n' + b.items.length + '">' + b.items.map(function (t, k) { return '<div class="tj" style="--c:' + esc(t.c) + ';animation-delay:' + (.5 + .15 * k) + 's"><b>' + esc(t.t) + '</b><small>' + esc(t.d) + '</small></div>'; }).join('') + '</div></div>';
+    return H + '</div>';
+  }
+  function teoria(n) {
+    var L = D.teoria[n]; if (!L) return inicio();
+    var p = leer(); if ((p.teo || 0) < n + 1) { p.teo = n + 1; guardar(p); }
+    var H = cab('Teoría · ' + D.titulo, '#');
+    H += '<div class="pasos">' + D.teoria.map(function (x, k) { return '<i class="' + (k <= n ? 'on' : '') + '"></i>'; }).join('') + '</div>';
+    H += '<h2 class="disp lec"><small>Parte ' + (n + 1) + ' de ' + D.teoria.length + '</small>' + esc(L.titulo) + '</h2>';
+    var bl = L.bloques.map(bloque);
+    // En PC: lo de "ojo" y "¿entendiste?" a la derecha
+    var izq = [], der = [];
+    L.bloques.forEach(function (b, k) { (b.tipo === 'ojo' || b.tipo === 'check' ? der : izq).push(bl[k]); });
+    var ult = n === D.teoria.length - 1;
+    var nav = '<div class="nav"><button data-ir="' + (n - 1) + '"' + (n ? '' : ' disabled') + '>Anterior</button>' + (ult ? '<a class="p" href="#ejercicios">A los ejercicios</a>' : '<button class="p" data-ir="' + (n + 1) + '">Siguiente parte</button>') + '</div>';
+    H += '<div class="cols"><div>' + izq.join('') + '</div><div>' + der.join('') + nav + '</div></div>';
+    return H;
+  }
+  function ejercicios() {
+    var H = cab('Ejercicios MC · ' + D.titulo, '#');
+    H += '<h2 class="disp lec"><small>Resueltos por Modo Cachimbo</small>Ejercicios paso a paso</h2><div class="cols"><div>';
+    var mitad = Math.ceil(D.ejercicios.length / 2);
+    D.ejercicios.forEach(function (e, i) {
+      if (i === mitad) H += '</div><div>';
+      H += '<div class="blk ej" data-ej="' + i + '"><div class="et"><b>' + (i + 1) + '</b>Ejercicio</div><p>' + tx(e.enunciado) + '</p>';
+      H += '<div class="alts">' + e.opciones.map(function (o, k) { return '<div class="alt" data-k="' + k + '"><i>' + LET[k] + '</i>' + tx(o) + '</div>'; }).join('') + '</div>';
+      H += e.pasos.map(function (s, k) { return '<div class="paso' + (k ? ' off' : '') + '"><i>' + (k + 1) + '</i><p>' + tx(s) + '</p></div>'; }).join('');
+      H += '<div class="nav"><button data-todo="' + i + '">Ver todo</button><button class="p" data-paso="' + i + '">Siguiente paso</button></div></div>';
+    });
+    return H + '</div></div>';
+  }
+  function extra(sel) {
+    var H = cab('Material extra · ' + D.titulo, '#'), p = leer();
+    H += '<h2 class="disp lec"><small>Del mismo tema</small>Material extra</h2><div class="cols"><div>';
+    var lista = sel != null && D.extra[sel] ? [[D.extra[sel], sel]] : D.extra.map(function (f, i) { return [f, i]; });
+    var n = 0, total = 0; lista.forEach(function (x) { total += x[0].preguntas.length; });
+    lista.forEach(function (x) {
+      var f = x[0], fi = x[1];
+      f.preguntas.forEach(function (q2, qi) {
+        if (n === Math.ceil(total / 2)) H += '</div><div>';
+        n++;
+        var id = fi + '-' + qi, r = (p.ex || {})[id];
+        H += '<div class="blk ex" style="--c:' + esc(f.c || '#9B6BFF') + '" data-ex="' + id + '" data-c="' + q2.correcta + '"><div class="et"><b>' + n + '</b>' + esc(f.fuente) + '</div><p>' + tx(q2.texto) + '</p>' +
+          q2.opciones.map(function (o, k) { return '<button class="op' + (r != null ? (k === q2.correcta ? ' ok' : k === r ? ' mal' : '') : '') + '" data-k="' + k + '"' + (r != null ? ' disabled' : '') + '><span class="l">' + LET[k] + '</span>' + tx(o) + '</button>'; }).join('') + '</div>';
+      });
+    });
+    return H + '</div></div>';
+  }
+
+  // ---------- Router por #hash ----------
+  var vigia = null;
+  function mostrar() {
+    if (!D) return;
+    var h = location.hash.slice(1).split('/'), H;
+    if (h[0] === 'teoria') H = teoria(+h[1] || 0);
+    else if (h[0] === 'ejercicios') H = ejercicios();
+    else if (h[0] === 'extra') H = extra(h[1] != null ? +h[1] : null);
+    else H = inicio();
+    app.innerHTML = '<div class="vista">' + H + '</div>';
+    window.scrollTo(0, 0);
+    // Cada bloque se anima al aparecer en pantalla
+    if (vigia) vigia.disconnect();
+    var bl = app.querySelectorAll('.blk');
+    if ('IntersectionObserver' in window) {
+      vigia = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('ver'); vigia.unobserve(e.target); } }); }, { threshold: .15 });
+      bl.forEach(function (b) { vigia.observe(b); });
+    } else bl.forEach(function (b) { b.classList.add('ver'); });
+  }
+  app.addEventListener('click', function (e) {
+    var t = e.target.closest('button,a'); if (!t) return;
+    if (t.matches('.top .back') && t.getAttribute('href') === '#') { e.preventDefault(); location.hash = ''; return; }
+    if (t.hasAttribute('data-ir')) { location.hash = 'teoria/' + t.getAttribute('data-ir'); son('toque'); return; }
+    var blk = t.closest('.blk');
+    if (t.classList.contains('op') && blk && blk.hasAttribute('data-check')) {
+      var L = D.teoria[+(location.hash.split('/')[1] || 0)], b = L.bloques[+blk.getAttribute('data-check')], k = +t.getAttribute('data-k');
+      blk.querySelectorAll('.op').forEach(function (o, j) { o.disabled = true; if (j === b.correcta) o.classList.add('ok'); });
+      var fb = blk.querySelector('.fb');
+      if (k === b.correcta) { fb.className = 'fb si'; fb.innerHTML = '<b>¡Bien!</b> ' + tx(b.explica || ''); son('bien'); }
+      else { t.classList.add('mal'); fb.className = 'fb no'; fb.innerHTML = '<b>Casi.</b> ' + tx(b.explica || ''); son('mal'); }
+      return;
+    }
+    if (t.classList.contains('op') && blk && blk.hasAttribute('data-ex')) {
+      var c = +blk.getAttribute('data-c'), k2 = +t.getAttribute('data-k');
+      blk.querySelectorAll('.op').forEach(function (o, j) { o.disabled = true; if (j === c) o.classList.add('ok'); });
+      if (k2 !== c) t.classList.add('mal');
+      son(k2 === c ? 'bien' : 'mal');
+      var p = leer(); p.ex = p.ex || {}; p.ex[blk.getAttribute('data-ex')] = k2; guardar(p);
+      return;
+    }
+    if (t.hasAttribute('data-paso') || t.hasAttribute('data-todo')) {
+      var i = +(t.getAttribute('data-paso') || t.getAttribute('data-todo')), caja = app.querySelector('[data-ej="' + i + '"]');
+      var ocultos = caja.querySelectorAll('.paso.off');
+      var cuantos = t.hasAttribute('data-todo') ? ocultos.length : 1;
+      for (var k3 = 0; k3 < cuantos && k3 < ocultos.length; k3++) { ocultos[k3].classList.remove('off'); ocultos[k3].classList.add('nuevo'); }
+      son('toque');
+      if (!caja.querySelector('.paso.off')) {
+        var e2 = D.ejercicios[i]; caja.querySelector('.alt[data-k="' + e2.correcta + '"]').classList.add('clave');
+        caja.querySelectorAll('.nav button').forEach(function (b2) { b2.disabled = true; });
+        var p2 = leer(); p2.ej = p2.ej || []; if (p2.ej.indexOf(i) < 0) { p2.ej.push(i); guardar(p2); }
+      }
+    }
+  });
+  window.addEventListener('hashchange', mostrar);
+
+  if (!CURSO || !TEMA) { app.innerHTML = '<p class="cargando">Falta el tema.</p>'; return; }
+  Promise.all([
+    fetch(CURSO + '/prospecto/teoria/' + TEMA + '.json').then(function (r) { if (!r.ok) throw 0; return r.json(); }),
+    fetch('assets/cursos.json').then(function (r) { return r.json(); }).catch(function () { return {}; })
+  ]).then(function (res) {
+    D = res[0]; D.teoria = D.teoria || []; D.ejercicios = D.ejercicios || []; D.extra = D.extra || [];
+    var c = ((res[1] || {}).cursos || []).filter(function (x) { return x.id === CURSO; })[0];
+    NOMBRE = c ? (c.corto || c.nombre) : CURSO;
+    if (c && !D.area) D.area = c.area;
+    document.title = D.titulo + ' · Ordinario · Modo Cachimbo';
+    mostrar();
+  }).catch(function () { app.innerHTML = '<p class="cargando">No se encontró este tema.</p>'; });
+})();
+</script>
+<script src="assets/sonido.js"></script>
+</body>
+</html>
