@@ -353,9 +353,9 @@ function jsonpRequest(url) {
     if (href) { a.setAttribute('href', href); a.textContent = 'Entrar'; card.classList.remove('disabled'); card.classList.add('active'); }
     else { a.removeAttribute('href'); a.textContent = 'Próximamente'; card.classList.remove('active'); card.classList.add('disabled'); }
   }
-  Promise.all([leer('prospecto/data/manifest.json'), leer('banqueo-ord/data/manifest.json')]).then(function (r) {
+  Promise.all([leer('prospecto/data/manifest.json'), leer('banqueo-ord/data/manifest.json'), leer('prospecto/teoria/index.json')]).then(function (r) {
     var p = ultimo(r[0]), b = ultimo(r[1]);
-    poner('prospecto', p ? 'prospecto/index.html' : null);
+    poner('prospecto', p ? 'prospecto/index.html' : (r[2].length ? 'prospecto/temario.html' : null));
     poner('repaso', p ? 'repaso-ord.html?year=' + encodeURIComponent(p.id) : null, p ? 'Repaso ' + p.id : 'Repaso');
     poner('fijas', p ? 'fijas-ord.html?year=' + encodeURIComponent(p.id) : null, p ? 'Fijas ' + p.id : 'Fijas');
     poner('banqueo', b ? 'banqueo-ord/index.html' : null);
@@ -365,6 +365,5 @@ function jsonpRequest(url) {
 <script src="../assets/sonido.js"></script>
 <script>if (window.MCCandado) MCCandado.vigilar({ cintas: '.course.active' });</script>
 <script src="../assets/arcade-beta.js"></script>
-<script src="../assets/ordinario-temas.js"></script>
 </body>
 </html>

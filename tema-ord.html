@@ -235,7 +235,7 @@ html.arcade-no #app{display:none}html.arcade-no .aviso{display:block}
   }
   function inicio() {
     var a = avance(), buho = 'assets/buho/disfraces/' + (D.area || 'ciencia-tecnologia') + '-feliz.webp';
-    var H = cab(NOMBRE + ' · Ordinario', CURSO + '/ordinario.html');
+    var H = cab(NOMBRE + ' · Prospecto', CURSO + '/prospecto/temario.html');
     H += '<div class="hero"><div><div class="disp num">Tema ' + esc(D.num) + ' · Prospecto</div><h1 class="disp">' + esc(D.titulo) + '</h1>' + (D.chip ? '<span class="chip">' + esc(D.chip) + '</span>' : '') +
       '<div class="barra"><i style="width:' + a.pct + '%"></i></div><div class="prog">' + a.pct + '% del tema · Teoría ' + a.teo + ' de ' + a.n + '</div></div><img src="' + buho + '" alt="">' +
       '<div class="globo">' + (a.teo < a.n ? 'Sigue con la <b class="hl">teoría</b>: te faltan ' + (a.n - a.teo) + (a.n - a.teo === 1 ? ' parte.' : ' partes.') : '¡Teoría completa! Ahora a <b class="hl">practicar</b>.') + '</div></div>';
