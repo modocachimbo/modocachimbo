@@ -3,7 +3,7 @@
 -- Cómo usarlo: Supabase → SQL Editor → New query → pega todo
 -- este archivo → Run. Se puede volver a correr sin problema.
 -- Necesita 93, 94, 100-regalar-todos-rayos.sql, 104-clanes-sala.sql
--- y 107-regalos-influencers.sql.
+-- 107-regalos-influencers.sql y 127-tienda.sql (diamantes).
 --
 --   · regalo_grupo_dado: qué le dio el grupo a cada alumno.
 --   · Si quitas a un alumno del grupo (Guardar grupo), se le quita lo que
@@ -12,11 +12,11 @@
 --       - corazones infinitos: se le quita el tiempo que le quedaba;
 --       - corazones extra: se le quitan los que todavía no usó;
 --       - XP: se le resta de esa semana y de su saldo para canjear;
---       - rayos y tickets de sala: se le restan (sin bajar de 0).
+--       - rayos, tickets de sala y diamantes: se le restan (sin bajar de 0).
 --   · Si agregas a un alumno, recibe lo que el grupo tiene vigente:
 --       - todos los ítems que regalaste al grupo;
 --       - los infinitos que todavía no vencen (hasta la misma hora);
---       - los corazones, XP, rayos y tickets que regalaste HOY.
+--       - los corazones, XP, rayos, tickets y diamantes que regalaste HOY.
 --   · Los regalos al grupo de antes de este archivo no se cuentan.
 --   · Solo para Grupo VIP (los influencers se manejan en Panel → Influencers).
 -- =========================================================
@@ -88,6 +88,11 @@ begin
       end if;
     elsif r.tipo = 'ticket' then
       perform public.sala_tickets_sumar(u, -coalesce(r.cantidad, 0));
+    elsif r.tipo = 'diamantes' then
+      declare d integer := least(coalesce(r.cantidad, 0), (select coalesce(sum(m.cantidad), 0)::integer from public.diamantes_mov m where m.usuario = u));
+      begin
+        if d > 0 then perform public.diamantes_dar(u, -d, 'Salió del grupo ' || upper(p_grupo)); end if;
+      end;
     elsif r.tipo = 'item' then
       delete from public.coleccion_mia m where m.usuario = u and m.item = r.item and m.origen = 'grupo';
       quitados := array_append(quitados, r.item);
@@ -119,7 +124,7 @@ begin
   for e in select * from public.regalo_grupo_envio x where x.grupo = p_grupo and (
              x.tipo = 'item'
           or (x.tipo = 'infinito' and x.hasta > now())
-          or (x.tipo in ('corazones', 'xp', 'rayos', 'ticket') and (x.creado at time zone 'America/Lima')::date = hoy))
+          or (x.tipo in ('corazones', 'xp', 'rayos', 'ticket', 'diamantes') and (x.creado at time zone 'America/Lima')::date = hoy))
            order by x.id loop
     if public.regalo_grupo_aplicar(p_grupo, e.id, u, e.tipo, e.cantidad, e.item, e.hasta, e.nota, yo, nom) then
       c := c + 1;
@@ -270,7 +275,7 @@ begin
     'envios', coalesce((select jsonb_agg(jsonb_build_object('id', e.id, 'tipo', e.tipo, 'cantidad', e.cantidad, 'item', e.item, 'nota', e.nota,
         'recibieron', e.recibieron, 'saltados', e.saltados, 'nuevos', e.nuevos, 'hasta', e.hasta,
         'vigente', e.tipo = 'item' or (e.tipo = 'infinito' and e.hasta > now())
-                   or (e.tipo in ('corazones', 'xp', 'rayos', 'ticket') and (e.creado at time zone 'America/Lima')::date = (now() at time zone 'America/Lima')::date),
+                   or (e.tipo in ('corazones', 'xp', 'rayos', 'ticket', 'diamantes') and (e.creado at time zone 'America/Lima')::date = (now() at time zone 'America/Lima')::date),
         'de', coalesce(e.de_nombre, e.de_email), 'creado', e.creado) order by e.id desc)
       from (select * from public.regalo_grupo_envio x where x.grupo = p_grupo
              order by (x.tipo = 'item') desc, x.id desc limit 30) e), '[]'::jsonb));

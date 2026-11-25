@@ -372,7 +372,7 @@ const RG_GRUPO = 'vip';
 function rgVipError(e) {
   const m = (e && e.message) || '';
   return /no autorizado/i.test(m) ? 'Tu cuenta no tiene permiso para dar regalos.'
-    : /grupo_regalo_anular|nuevos|regalo_grupo_dado/i.test(m) ? 'Falta correr supabase/118-grupo-vip-mientras.sql en Supabase.'
+    : /grupo_regalo_anular|nuevos|regalo_grupo_dado/i.test(m) ? 'Falta correr supabase/140-grupo-vip-mientras.sql en Supabase.'
     : /function|does not exist|schema cache/i.test(m) ? 'Falta correr supabase/93-grupo-vip.sql en Supabase.'
     : /ya es del grupo/i.test(m) ? 'Ese ítem ya es del grupo: lo tienen todos y lo reciben los que entran.'
     : m || 'No se pudo.';
@@ -451,7 +451,7 @@ function pintarVip() {
     ${rgFormHtml(!guardados, '¿Qué les regalas a todos?', 'Regalar a todos')}
     ${ult && rgHoyLima(ult.creado) ? `<div class="rg-aviso" style="margin:-4px 0 16px">Hoy ya le diste al grupo: <b>${esc(rgTexto(ult))}</b> (${rgFecha(ult.creado)}).</div>` : ''}
     ${RG.grupo.envios.length ? `<div class="agp-form"><h3>Regalos al grupo</h3>
-      <p class="hint">Valen solo mientras estén en el grupo: si quitas a alguien, se le quita lo que le dio el grupo (ítems, infinitos que le quedan, corazones que no usó, XP, rayos y tickets). Si agregas a alguien, recibe los ítems del grupo, los infinitos que siguen vigentes y los corazones, XP, rayos y tickets de hoy.</p>
+      <p class="hint">Valen solo mientras estén en el grupo: si quitas a alguien, se le quita lo que le dio el grupo (ítems, infinitos que le quedan, corazones que no usó, XP, rayos, tickets y diamantes). Si agregas a alguien, recibe los ítems del grupo, los infinitos que siguen vigentes y los corazones, XP, rayos, tickets y diamantes de hoy.</p>
       ${RG.grupo.envios.map(rgEnvioHtml).join('')}</div>` : ''}`;
   rgModosEventos();
   const add = () => {
