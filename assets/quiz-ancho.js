@@ -48,9 +48,12 @@
       'html body .qa-split.qa-graf>.qa-izq>.q-graphic{grid-column:2;grid-row:1/3;align-self:start;margin:0 0 12px!important}' +
       'html body .qa-split.qa-graf>.qa-der{grid-column:1/-1;grid-row:3}' +
       'html body .qa-split.qa-graf>.qa-der>.options{padding:4px 0 0!important}' +
-      'html body .qa-split.qa-graf>.qa-der>.options.op-2{grid-template-columns:repeat(2,minmax(0,1fr))}' +
+      'html body .qa-split.qa-graf>.qa-der>.options.op-2{grid-template-columns:repeat(3,minmax(0,1fr))}' +
       'html body .qa-split.qa-graf>.qa-der>.options.mcq-cortas{grid-template-columns:repeat(3,minmax(0,1fr))!important}' +
       'html body .qa-split.qa-graf>.qa-der>.navrow{max-width:560px;margin-left:auto!important}' +
+      'html body .qa-split .qa-oculta{display:none!important}' +
+      'html body .qa-split .qa-fig{display:flex;justify-content:center}' +
+      'html body .qa-split .qa-fig .mcq-graf{width:100%;margin:0}' +
       'html body .qa-split .option{padding:12px 16px!important}' +
       'html body .qa-split .option span.text{font-size:16.5px!important}' +
       'html body .qa-split .question{padding:18px 22px!important}' +
@@ -138,8 +141,29 @@
   // El gráfico usa el alto que queda desde donde empieza hasta el borde de la pantalla
   // (mínimo 200 px), así en una laptop se ve completo sin bajar
   var ECHADA = window.matchMedia ? window.matchMedia('(min-width:900px) and (min-aspect-ratio:4/3)') : null;
+  // Imagen [IMG-DER] (pregunta.js la pone dentro de la lista de alternativas, a su lado): en PC
+  // echada se pasa al lado derecho de la pregunta, igual que el gráfico, y las alternativas abajo
+  function imagenDerecha() {
+    var caja = document.querySelector('.qa-split');
+    if (!caja) return;
+    var ops = caja.querySelector('.options'), fig = ops && ops.querySelector(':scope > .mcq-der');
+    var hold = caja.querySelector('.qa-fig'), q = caja.querySelector('.question');
+    if (!fig || !ECHADA || !ECHADA.matches) {
+      if (hold) hold.remove();
+      if (fig) { fig.classList.remove('qa-oculta'); ops.classList.add('mcq-con-der'); }
+      return;
+    }
+    if (!fig.classList.contains('qa-oculta') || !hold) {
+      if (!hold) { hold = document.createElement('div'); hold.className = 'q-graphic qa-fig'; }
+      if (q && hold.previousSibling !== q) q.parentNode.insertBefore(hold, q.nextSibling);
+      hold.innerHTML = fig.innerHTML;
+      fig.classList.add('qa-oculta');
+    }
+    ops.classList.remove('mcq-con-der');
+  }
   function altoGrafico() {
-    var g = document.querySelector('.qa-split .q-graphic');
+    imagenDerecha();
+    var g = document.querySelector('.qa-split .qa-fig') || document.querySelector('.qa-split .q-graphic');
     if (!g) return;
     var caja = g.closest('.qa-split'), hay = g.style.display !== 'none' && !!g.innerHTML.trim();
     if (caja) caja.classList.toggle('qa-graf', hay);
