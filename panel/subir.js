@@ -447,7 +447,7 @@ function revisarTexto() {
       ${q.errores.length ? `<div class="perr">⚠ ${q.errores.map(esc).join(' · ')}</div>` : ''}
       <div class="ptext">${v.html}</div>
       ${q.marcasImg ? '' : `<div class="pimg" data-z="${i}|g"></div>`}
-      ${v.derecha ? `<div class="pder"><div>${opts}</div><div><div class="hint">Al lado de las alternativas</div>${v.derecha}</div></div>` : `<div class="popts ${!q.abierta && MCPregunta.cortas(q.options) ? 'popts-cortas' : ''}">${opts}</div>`}
+      ${v.derecha ? `<div class="pder"><div>${opts}</div><div><div class="hint">Al lado de las alternativas</div>${v.derecha}</div></div>` : `<div class="popts ${!q.abierta && MCPregunta.cortas(q.options) ? 'popts-cortas mcq-cortas' : ''}">${opts}</div>`}
       ${vistaRes(q.res)}
     </article>`;
   }).join('');

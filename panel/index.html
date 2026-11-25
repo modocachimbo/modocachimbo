@@ -221,6 +221,24 @@
   .ed-add { margin: 2px 0 6px; }
   .ed-prev { margin-top: 4px; background: #151127; }
   .ed-prev .pimg-ver { margin: 10px 0; text-align: center; }
+  .ed-pub { margin-top: 14px; }
+  .ed-pub-top { display: flex; align-items: center; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; }
+  .ed-pub-t { font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); }
+  .ed-pos { display: inline-flex; background: #1E1935; border: 1px solid #302950; border-radius: 999px; padding: 3px; }
+  .ed-pos button { border: 0; background: none; color: var(--text-faint); font: 800 12px 'Nunito', sans-serif; padding: 6px 11px; border-radius: 999px; cursor: pointer; }
+  .ed-pos button.on { background: var(--accent); color: #1b2000; }
+  .ed-lado:not(:empty) { margin-top: 10px; }
+  .ed-pub .iz-prev img, #edImg .iz-prev img, #edMarcas .iz-prev img { max-height: 200px; width: auto; max-width: 100%; object-fit: contain; }
+  /* Vista del alumno en Editar: imagen al lado en un recuadro blanco cuadrado de la A a la E */
+  .ed-prev .pder { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: stretch; margin: 14px 0 0; }
+  .ed-prev .pder > .popts { display: flex; flex-direction: column; justify-content: space-between; gap: 4px; }
+  .ed-prev .pder > .popts > .popt + .popt { margin-top: 0; }
+  .ed-prev .pder .popt { padding: 4px 12px; font-size: 14px; }
+  .ed-prev .pder .popt .l { width: 26px; height: 26px; font-size: 12px; }
+  .ed-prev .pder > div:last-child { min-width: 0; width: 100%; position: relative; aspect-ratio: 1 / 1; background: #fff; border-radius: 14px; overflow: hidden; }
+  .ed-prev .pder > div:last-child img { position: absolute; top: 10px; left: 10px; width: calc(100% - 20px) !important; height: calc(100% - 20px) !important; max-width: none !important; object-fit: contain; padding: 0 !important; margin: 0 !important; background: none !important; border-radius: 0 !important; }
+  .ed-prev .pder > div:last-child > .hint { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center; padding: 12px; color: #6b6585; margin: 0; }
+  @media (max-width: 600px) { .ed-prev .pder { grid-template-columns: 1fr; } }
   .ed-prev .pimg-ver img, .ed-prev .ptext img { max-width: 100%; height: auto; background: #fff; border-radius: 10px; padding: 8px; }
   .hint { font-size: 12px; color: var(--text-faint); margin-top: 6px; line-height: 1.5; }
   .mfoot { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; flex-wrap: wrap; }
@@ -2312,9 +2330,11 @@ E) Alternativa"></textarea>
       <textarea class="ta" id="edText">${esc(textoEd)}</textarea>
       ${tipo === 'completar' ? '<div class="hint">Completar espacios: cada espacio va entre [[ ]] con su respuesta; con | separas otras que también valen.</div>' : ''}
       <details class="hint ed-ayuda"><summary>Cómo dar formato (negrita, ecuaciones, imágenes)</summary>Puedes usar *cursiva*, **negrita**, &lt;u&gt;subrayado&lt;/u&gt; (y combinarlos: **&lt;i&gt;negrita cursiva&lt;/i&gt;**) y ecuaciones entre $…$ (ej.: $x^2$). Los saltos de línea se respetan. Para una imagen nueva en medio del texto escribe <b>[IMAGEN]</b> (o <b>[IMAGEN DERECHA]</b>) en su propia línea; las ya publicadas se ven como [IMG:…], muévelas o bórralas como texto.</details>
-      <div id="edMarcas"></div>
       <label class="fld">Imagen o gráfico <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— debajo del enunciado</span></label>
       <div id="edImg"></div>
+      <div id="edPub"></div>
+      <div id="edMarcas"></div>
+      <div class="ed-lado" id="edLado"></div>
       ${lineasEsp ? `<label class="fld">${esc(MCPregunta.nombreTipo(q))} <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— ${AYUDA_ED[tipo]}</span></label>
       <textarea class="ta" id="edEsp" style="min-height:120px;">${esc(lineasEsp.join('\n'))}</textarea>`
       : tipo === 'tocar' ? `<label class="fld">Tocar en la imagen <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— toca la imagen para mover el círculo</span></label>
@@ -2366,7 +2386,7 @@ E) Alternativa"></textarea>
     }
     function leer() {
       const v = {
-        text: body.querySelector('#edText').value,
+        text: sinQuitadas(body.querySelector('#edText').value),
         options: ops.map((o, i) => ({ letter: LETRAS[i], text: o.text })),
         correct
       };
@@ -2389,7 +2409,7 @@ E) Alternativa"></textarea>
         (respEl && v.respuestas.join('|') !== (q.respuestas || []).join('|')) ||
         (tipo && firma(v) !== firma(q)) ||
         firmaRes(v.res) !== firmaRes(q.res && Object.keys(q.res).length ? q.res : null) ||
-        zonaImg.estado().cambio !== 'igual';
+        zonaImg.estado().cambio !== 'igual' || Object.values(zonasPub).some(z => z.estado().cambio === 'nueva');
       save.disabled = !dif;
       clearTimeout(tPrev); tPrev = setTimeout(pintarPrev, 250);
     }
@@ -2446,14 +2466,89 @@ E) Alternativa"></textarea>
         try { MCPregunta.cuadroAbierto(lista, pq, {}, r); } catch (e) { lista.innerHTML = '<div class="hint">Revisa el formato para ver la vista previa.</div>'; }
       } else {
         lista.classList.toggle('popts-cortas', !r.derecha && MCPregunta.cortas(v.options));
+        lista.classList.toggle('mcq-cortas', !r.derecha && MCPregunta.cortas(v.options)); // si no caben, pasan solas a 2 o 1 columna
         lista.innerHTML = v.options.map((o, i) => `<div class="popt ${i === v.correct ? 'ok' : ''}"><span class="l">${esc(o.letter)}</span><span class="text">${formatQText(o.text)}</span>${i === v.correct ? '<span class="chk">✓</span>' : ''}</div>`).join('');
         MCPregunta.analogias(lista, v);
         if (r.derecha) lista.outerHTML = `<div class="pder"><div class="popts">${lista.innerHTML}</div><div>${r.derecha}</div></div>`;
       }
+      Object.keys(zonasPub).forEach(p => {
+        const st = zonasPub[p].estado(); if (st.cambio !== 'nueva') return;
+        prev.querySelectorAll('img').forEach(im => { if ((im.getAttribute('src') || '').endsWith(p)) im.src = st.img.dataUrl; });
+      });
       if (typeof vistaRes === 'function' && v.res) { prev.insertAdjacentHTML('beforeend', vistaRes(v.res)); const d = prev.querySelector('.pres'); if (d) d.open = true; }
       renderMath(prev);
     }
-    const zonaImg = crearZonaImagen(body.querySelector('#edImg'), { actual: q.graphic || '', onChange: () => cambio() });
+    const zonaImg = crearZonaImagen(body.querySelector('#edImg'), { actual: q.graphic || '', onChange: () => { cambio(); pintarLado(); } });
+
+    // Imágenes ya publicadas dentro del texto ([IMG:…] debajo del texto, [IMG-DER:…] al lado de las
+    // alternativas): se pueden cambiar, quitar o mover de un lado a otro sin tocar el texto a mano
+    const RX_PUB = /^\[IMG(-DER)?:\s*([^\]\s]+)\s*\]$/i;
+    const pubEl = body.querySelector('#edPub'), txtEl = body.querySelector('#edText');
+    let zonasPub = {}, pubFirma = null;
+    const lineasPub = () => txtEl.value.split('\n').map(l => l.trim().match(RX_PUB)).filter(Boolean).map(m => ({ der: !!m[1], path: m[2] }));
+    function pintarPub() {
+      const L = lineasPub(), f = JSON.stringify(L);
+      if (f === pubFirma) return;
+      pubFirma = f;
+      const viejas = {};
+      Object.keys(zonasPub).forEach(p => { viejas[p] = zonasPub[p].estado(); });
+      zonasPub = {};
+      pubEl.innerHTML = L.map((x, i) => `<div class="ed-pub">
+          <div class="ed-pub-top"><span class="ed-pub-t">Imagen${L.length > 1 ? ' ' + (i + 1) : ''} del enunciado</span>
+            <div class="ed-pos" role="group" aria-label="Dónde va la imagen"><button type="button" class="${x.der ? '' : 'on'}" data-pos="${i}|0">Debajo del texto</button><button type="button" class="${x.der ? 'on' : ''}" data-pos="${i}|1">Al lado de las alternativas</button></div></div>
+          <div data-pub="${i}"></div></div>`).join('');
+      L.forEach((x, i) => {
+        const caja = pubEl.querySelector(`[data-pub="${i}"]`);
+        const z = crearZonaImagen(caja, { actual: imgHtml(x.path), onChange: () => cambio() });
+        zonasPub[x.path] = z;
+        const v = viejas[x.path];
+        if (v && v.cambio === 'nueva') z.recibirPreparada(v.img);
+        else if (v && v.cambio === 'quitar') { const q2 = caja.querySelector('[data-z="quitar"]'); if (q2) q2.click(); }
+      });
+      pintarLado();
+    }
+    pubEl.addEventListener('click', e => {
+      const b = e.target.closest('[data-pos]'); if (!b) return;
+      const [i, der] = b.dataset.pos.split('|').map(Number);
+      let k = -1;
+      txtEl.value = txtEl.value.split('\n').map(l => {
+        const m = l.trim().match(RX_PUB); if (!m || ++k !== i) return l;
+        return '[IMG' + (der ? '-DER' : '') + ':' + m[2] + ']';
+      }).join('\n');
+      txtEl.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    // Texto sin las imágenes publicadas que se quitaron
+    function sinQuitadas(text) {
+      return text.split('\n').filter(l => { const m = l.trim().match(RX_PUB); const z = m && zonasPub[m[2]]; return !(z && z.estado().cambio === 'quitar'); }).join('\n');
+    }
+    // «Al lado de las alternativas» para la imagen de abajo o una nueva
+    const ladoEl = body.querySelector('#edLado');
+    function pintarLado() {
+      if (q.abierta || tipo) { ladoEl.innerHTML = ''; return; }
+      const hayDer = lineasPub().some(x => x.der) || /^\s*\[\s*imagen\s+(a\s+la\s+)?derecha\s*\]\s*$/im.test(sinTildes(txtEl.value));
+      const sg = zonaImg.estado();
+      const grafImg = sg.cambio === 'nueva' || (sg.cambio === 'igual' && /assets\/img\/[^"'\s>]+/.test(q.graphic || ''));
+      ladoEl.innerHTML = hayDer ? ''
+        : grafImg ? '<button type="button" class="rbtn" data-lado="mover">Mover esta imagen al lado de las alternativas →</button>'
+        : '<button type="button" class="rbtn" data-lado="nueva">＋ Imagen al lado de las alternativas</button>';
+    }
+    ladoEl.addEventListener('click', e => {
+      const b = e.target.closest('[data-lado]'); if (!b) return;
+      const sg = zonaImg.estado();
+      const quitarGraf = () => { const x = body.querySelector('#edImg [data-z="quitar"]'); if (x) x.click(); };
+      if (b.dataset.lado === 'mover' && sg.cambio === 'igual') {
+        const path = (q.graphic.match(/assets\/img\/[^"'\s>]+/) || [])[0];
+        txtEl.value = txtEl.value.replace(/\s+$/, '') + '\n[IMG-DER:' + path + ']';
+        quitarGraf();
+      } else {
+        txtEl.value = txtEl.value.replace(/\s+$/, '') + '\n[IMAGEN DERECHA]';
+      }
+      txtEl.dispatchEvent(new Event('input', { bubbles: true }));
+      const zm = zonasMarca[zonasMarca.length - 1];
+      if (b.dataset.lado === 'mover' && sg.cambio === 'nueva' && zm) { zm.zona.recibirPreparada(sg.img); quitarGraf(); }
+      else if (b.dataset.lado === 'nueva') { const a = [...marcasEl.querySelectorAll('[data-z="armar"]')].pop(); if (a) a.click(); }
+      cambio();
+    });
     if (tipo === 'tocar') {
       const toc = body.querySelector('#edToc'), c = toc.querySelector('.ptoc-c'), rr = body.querySelector('#edTocR');
       const dibujar = () => { c.style.left = zonaEd.x * 100 + '%'; c.style.top = zonaEd.y * 100 + '%'; c.style.width = zonaEd.r * 200 + '%'; rr.value = Math.round(zonaEd.r * 100); };
@@ -2473,14 +2568,16 @@ E) Alternativa"></textarea>
       const lista = body.querySelector('#edText').value.split('\n').map(l => marcaImagen(l.trim())).filter(Boolean);
       if (lista.length === zonasMarca.length && lista.every((m, i) => zonasMarca[i].marca === m)) return;
       const viejas = zonasMarca.map(z => z.zona.estado());
-      marcasEl.innerHTML = lista.map((m, i) => `<label class="fld">${esc(m)} ${i + 1}</label><div data-m="${i}"></div>`).join('');
+      const NOM_M = { '[IMAGEN DERECHA]': 'Imagen nueva · al lado de las alternativas', '[IMAGEN]': 'Imagen nueva · en el texto', '[IMAGEN TOCAR]': 'Imagen para tocar' };
+      marcasEl.innerHTML = lista.map((m, i) => `<div class="ed-pub-t" style="margin-top:14px;">${esc(NOM_M[m] || m)}${lista.length > 1 ? ' ' + (i + 1) : ''}</div><div data-m="${i}"></div>`).join('');
       zonasMarca = lista.map((m, i) => {
         const zona = crearZonaImagen(marcasEl.querySelector(`[data-m="${i}"]`), { actual: '', onChange: () => cambio() });
         if (viejas[i] && viejas[i].cambio === 'nueva') zona.recibirPreparada(viejas[i].img);
         return { marca: m, zona };
       });
     }
-    body.querySelector('#edText').addEventListener('input', pintarMarcas);
+    body.querySelector('#edText').addEventListener('input', () => { pintarMarcas(); pintarPub(); pintarLado(); });
+    pintarPub();
     body.addEventListener('input', cambio);
     pintarPrev();
     body.querySelector('#edCancel').addEventListener('click', cerrarModal);
@@ -2523,6 +2620,13 @@ E) Alternativa"></textarea>
         const path = ex ? imgRuta('examen-' + ex.tipo, ex.id, t.num, st.img.ext) : imgRuta(ctx.carpeta, ctx.anio, ctx.tema, st.img.ext);
         imagenes.push({ path, data: st.img.dataUrl });
         return '[IMG' + (m === '[IMAGEN DERECHA]' ? '-DER' : '') + ':' + path + ']';
+      }).join('\n');
+      v.text = v.text.split('\n').map(l => {
+        const m = l.trim().match(RX_PUB); const z = m && zonasPub[m[2]]; const s2 = z && z.estado();
+        if (!s2 || s2.cambio !== 'nueva') return l;
+        const path = ex ? imgRuta('examen-' + ex.tipo, ex.id, t.num, s2.img.ext) : imgRuta(ctx.carpeta, ctx.anio, ctx.tema, s2.img.ext);
+        imagenes.push({ path, data: s2.img.dataUrl });
+        return '[IMG' + (m[1] ? '-DER' : '') + ':' + path + ']';
       }).join('\n');
       const st = zonaImg.estado();
       if (st.cambio === 'quitar') v.graphic = null;
