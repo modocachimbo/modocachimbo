@@ -25,16 +25,32 @@
     /* Pantalla echada (tablet horizontal, PC): pregunta a la izquierda, alternativas a la derecha */
     '@media (min-width:900px) and (min-aspect-ratio:4/3){' +
       'html body .card{max-width:min(1240px,calc(100vw - 48px))!important}' +
-      'html body .qa-split:not([style*="none"]){display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);column-gap:26px;align-items:start;padding:0 28px}' +
-      'html body .qa-split>*{grid-column:1/-1;margin-left:0!important;margin-right:0!important}' +
-      'html body .qa-split>.badge{grid-column:1;grid-row:1;justify-self:start}' +
-      'html body .qa-split>.question{grid-column:1;grid-row:2/5;margin-bottom:8px!important}' +
-      'html body .qa-split>.q-graphic{grid-column:1;grid-row:5}' +
-      'html body .qa-split>.options{grid-column:2;grid-row:1/3;padding:14px 0 0!important}' +
-      'html body .qa-split>.feedback{grid-column:2;grid-row:3}' +
-      'html body .qa-split>.navrow{grid-column:2;grid-row:4;padding-left:0!important;padding-right:0!important}' +
-      'html body .qa-split>.options.mcq-cortas{grid-template-columns:repeat(2,minmax(0,1fr))!important}' +
-      'html body .qa-split>.options.op-2{grid-template-columns:1fr}' +
+      /* Dos columnas independientes: izquierda = tema + pregunta + gráfico; derecha = alternativas + aviso +
+         botones. Así el gráfico va pegado debajo de la pregunta (antes quedaba abajo de todo, fuera de la
+         pantalla) y los botones no bajan aunque el gráfico sea alto. */
+      'html body .qa-split.qa-dos:not([style*="none"]){display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);column-gap:26px;align-items:start;padding:0 28px}' +
+      'html body .qa-split>.qa-col>*{margin-left:0!important;margin-right:0!important}' +
+      'html body .qa-split>.qa-izq>.badge{display:inline-flex}' +
+      'html body .qa-split>.qa-izq>.question{margin-bottom:12px!important}' +
+      'html body .qa-split>.qa-izq>.q-graphic{margin:0!important}' +
+      /* El gráfico entra en la pantalla: alto máximo según el alto de la ventana, sin deformarse */
+      'html body .qa-split .q-graphic img,html body .qa-split .q-graphic svg{max-height:var(--qa-graf-alto,max(220px,calc(100vh - 330px)))!important;width:auto!important;max-width:100%!important;height:auto!important;object-fit:contain}' +
+      'html body .qa-split>.qa-der>.options{padding:14px 0 0!important}' +
+      'html body .qa-split>.qa-der>.navrow{padding-left:0!important;padding-right:0!important}' +
+      'html body .qa-split>.qa-der>.options.mcq-cortas{grid-template-columns:repeat(2,minmax(0,1fr))!important}' +
+      'html body .qa-split>.qa-der>.options.op-2{grid-template-columns:1fr}' +
+      /* Con gráfico (como en el examen): pregunta a la izquierda, gráfico a la derecha y las
+         alternativas debajo, a todo el ancho */
+      'html body .qa-split.qa-dos.qa-graf:not([style*="none"]){grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);row-gap:0}' +
+      'html body .qa-split.qa-graf>.qa-izq{display:contents}' +
+      'html body .qa-split.qa-graf>.qa-izq>.badge{grid-column:1;grid-row:1;justify-self:start}' +
+      'html body .qa-split.qa-graf>.qa-izq>.question{grid-column:1;grid-row:2}' +
+      'html body .qa-split.qa-graf>.qa-izq>.q-graphic{grid-column:2;grid-row:1/3;align-self:start;margin:0 0 12px!important}' +
+      'html body .qa-split.qa-graf>.qa-der{grid-column:1/-1;grid-row:3}' +
+      'html body .qa-split.qa-graf>.qa-der>.options{padding:4px 0 0!important}' +
+      'html body .qa-split.qa-graf>.qa-der>.options.op-2{grid-template-columns:repeat(2,minmax(0,1fr))}' +
+      'html body .qa-split.qa-graf>.qa-der>.options.mcq-cortas{grid-template-columns:repeat(3,minmax(0,1fr))!important}' +
+      'html body .qa-split.qa-graf>.qa-der>.navrow{max-width:560px;margin-left:auto!important}' +
       'html body .qa-split .option{padding:12px 16px!important}' +
       'html body .qa-split .option span.text{font-size:16.5px!important}' +
       'html body .qa-split .question{padding:18px 22px!important}' +
@@ -107,7 +123,11 @@
     }
     box.classList.toggle('op-2', ok && !box.classList.contains('mcq-cortas'));
     var padre = box.parentElement;
-    if (padre && padre.querySelector(':scope > .question')) padre.classList.add('qa-split');
+    if (padre && padre.querySelector(':scope > .question')) {
+      padre.classList.add('qa-split');
+      // Izquierda: todo lo que va antes de las alternativas; derecha: desde las alternativas
+      dosColumnas(padre, function (h) { return h === box; });
+    }
   }
   function vigilar(box) {
     if (box._qa) return;
@@ -115,11 +135,28 @@
     revisar(box);
     new MutationObserver(function () { revisar(box); }).observe(box, { childList: true, subtree: true, characterData: true });
   }
+  // El gráfico usa el alto que queda desde donde empieza hasta el borde de la pantalla
+  // (mínimo 200 px), así en una laptop se ve completo sin bajar
+  var ECHADA = window.matchMedia ? window.matchMedia('(min-width:900px) and (min-aspect-ratio:4/3)') : null;
+  function altoGrafico() {
+    var g = document.querySelector('.qa-split .q-graphic');
+    if (!g) return;
+    var caja = g.closest('.qa-split'), hay = g.style.display !== 'none' && !!g.innerHTML.trim();
+    if (caja) caja.classList.toggle('qa-graf', hay);
+    if (!ECHADA || !ECHADA.matches || !hay) { g.style.removeProperty('--qa-graf-alto'); return; }
+    // Al lado de la pregunta: alto de lo que queda de pantalla menos lo que ocupan las alternativas (mín. 200)
+    var arriba = g.getBoundingClientRect().top + (window.scrollY || 0);
+    var der = caja && caja.querySelector('.qa-der'), abajo = der ? der.offsetHeight : 0;
+    var alto = Math.max(200, Math.min(Math.round(window.innerHeight * 0.6), Math.round(window.innerHeight - arriba - abajo - 40)));
+    g.style.setProperty('--qa-graf-alto', alto + 'px');
+  }
+  window.addEventListener('resize', altoGrafico);
   // La pregunta se vuelve a pintar (innerHTML) al empezar: se buscan las cajas nuevas
   function buscar() {
     var cajas = document.querySelectorAll('.card .options');
     for (var i = 0; i < cajas.length; i++) vigilar(cajas[i]);
     pantallas();
+    altoGrafico();
   }
   var pend = false;
   function iniciar() {
