@@ -216,3 +216,17 @@ html[data-area]:not(:has(.courses)) .title:not(#z) { font: italic 900 34px/1 var
   html[data-area]:not(:has(.courses)) .title:not(#z) { font-size: 28px !important; }
 }
 html[data-area]:not(:has(.courses)) .startscreen h1 .accent:not(#z), html[data-area]:not(:has(.courses)) .title .accent:not(#z), html[data-area]:not(:has(.courses)) .lockscreen h1 .accent:not(#z) { font: inherit !important; }
+
+/* Página de un curso (Libro, Repaso, Flashcards, Fijas, Seminarios, Banqueo) en PC y tablet
+   echada: el mismo diseño, solo más compacto, para que las 6 tarjetas entren en una sola
+   pantalla sin bajar. Las páginas de área (tienen .mixto) quedan igual. */
+@media (min-width: 900px) and (min-aspect-ratio: 4/3) {
+  html[data-area]:has(.courses):not(:has(.mixto)) header.top { padding: 16px 0; }
+  html[data-area]:has(.courses):not(:has(.mixto)) .section-title:not(#z) { padding: 2px 0 12px; margin-bottom: 16px; }
+  html[data-area]:has(.courses):not(:has(.mixto)) .courses { gap: 14px; }
+  html[data-area]:has(.courses):not(:has(.mixto)) .course { padding: 18px 22px; }
+  html[data-area]:has(.courses):not(:has(.mixto)) .course .icon { width: 56px; height: 56px; margin-bottom: 12px; }
+  html[data-area]:has(.courses):not(:has(.mixto)) .course h3:not(#z) { font-size: 22px !important; }
+  html[data-area]:has(.courses):not(:has(.mixto)) .course .rule { margin-top: 7px; }
+  html[data-area]:has(.courses):not(:has(.mixto)) .course .btn:not(#z) { margin-top: 12px; padding: 9px 18px 7px; }
+}
