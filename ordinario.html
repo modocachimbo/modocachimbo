@@ -57,6 +57,8 @@ h2 small{font:700 13px Nunito,sans-serif;color:var(--faint)}
 
 /* Cursos por área */
 .area{margin-bottom:16px}
+.area{scroll-margin-top:16px}
+.area.area-ir h3{color:var(--lima)}
 .area h3{font:800 13px Sora,sans-serif;color:var(--faint);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
 .cursos{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
 .curso{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--borde);border-radius:14px;padding:12px;text-align:left;width:100%}
@@ -141,12 +143,15 @@ html.arcade-no .beta-aviso{display:block}
     (d.areas || []).forEach(function (a) {
       var cs = (d.cursos || []).filter(function (c) { return c.area === a.id && !c.oculto; }).sort(function (x, y) { return (x.orden || 0) - (y.orden || 0); });
       if (!cs.length) return;
-      html += '<div class="area"><h3>' + esc(a.nombre) + '</h3><div class="cursos">' + cs.map(function (c) {
+      html += '<div class="area" id="area-' + esc(a.id) + '"><h3>' + esc(a.nombre) + '</h3><div class="cursos">' + cs.map(function (c) {
         return '<a class="curso" href="' + esc(c.id) + '/ordinario.html">' + (c.icono ? '<i class="ic-m" style="--m:url(' + esc(c.icono) + ')"></i>' : '') +
           '<span><b>' + esc(c.nombre) + '</b><small>Prospecto · Repaso · Fijas</small></span></a>';
       }).join('') + '</div></div>';
     });
     $('areas').innerHTML = html;
+    // Viene de tocar un área en Cursos (modo Ordinario): baja a sus cursos
+    var dest = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    if (dest) setTimeout(function () { dest.scrollIntoView({ block: 'start', behavior: 'smooth' }); dest.classList.add('area-ir'); }, 60);
   });
 
   // Cuántos exámenes y preguntas de Ordinario hay
