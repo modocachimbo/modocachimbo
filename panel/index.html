@@ -773,6 +773,7 @@
         <button class="tab disp" data-tab="corr" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span>Correcciones</span><span class="badge" id="badgeRev" hidden>0</span></button>
         <button class="tab disp" data-tab="verif" type="button"><svg class="vf-tabic" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 1.6l2.3 1.7 2.8-.3 1.1 2.6 2.6 1.1-.3 2.8 1.7 2.3-1.7 2.3.3 2.8-2.6 1.1-1.1 2.6-2.8-.3L12 22.4l-2.3-1.7-2.8.3-1.1-2.6-2.6-1.1.3-2.8L1.8 12l1.7-2.3-.3-2.8 2.6-1.1 1.1-2.6 2.8.3z"/><path d="m7.6 12.3 3 3 5.8-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Verificar claves</span></button>
         <button class="tab disp" data-tab="resenas" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="m12 6.5 1.1 2.3 2.5.3-1.8 1.7.5 2.5-2.3-1.3-2.3 1.3.5-2.5-1.8-1.7 2.5-.3z"/></svg><span>Reseñas</span><span class="badge" id="badgeResenas" hidden>0</span></button>
+        <button class="tab disp" data-tab="yape" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="m9.5 7 2.5 3 2.5-3M12 10v4"/><path d="M11 18h2"/></svg><span>Recargas Yape</span><span class="badge" id="badgeYape" hidden>0</span></button>
         <div class="menu-grupo">Alumnos</div>
         <button class="tab disp" data-tab="alumnos" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Alumnos</span></button>
         <button class="tab disp" data-tab="porvencer" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M9 2h6"/></svg><span>Por vencer</span></button>
@@ -1237,6 +1238,22 @@ E) Alternativa"></textarea>
           </div>
         </div>
         <div id="simList"></div>
+      </div>
+      <!-- Recargas de diamantes por Yape (yape-panel.js) -->
+      <div id="tab-yape" hidden>
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Diamantes</div>
+            <h1 class="disp">Recargas Yape</h1>
+            <p id="ypStats">Las que calzan con el aviso de Yape se aprueban solas.</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn-ghost" id="ypRecargar" type="button">↻ Actualizar</button>
+          </div>
+        </div>
+        <div class="yp-aj" id="ypAjustes"></div>
+        <div class="chips last" id="ypChips"></div>
+        <div id="ypList"></div>
       </div>
       <!-- Reseñas de la app que dejan los alumnos (resenas-panel.js) -->
       <div id="tab-resenas" hidden>
@@ -1791,7 +1808,7 @@ E) Alternativa"></textarea>
   const CARGAR = {
     cursos: f => { cargarCursos(); cargarPractica(); }, perfil: f => cargarPerfilCfg(), frases: f => cargarFrases(), temasfijos: f => cargarTemasFijos(), planes: f => cargarPlanes(), vocab: f => cargarVocabulario(),
     ciclos: f => cargarCiclos(f), alumnos: f => cargarAlumnos(f), porvencer: f => cargarPorVencer(f), codigos: () => cargarCodigos(), simulacro: () => cargarTopSimulacro(), topxp: () => cargarTopXp(), clanes: () => cargarClanes(),
-    agenda: () => cargarAgenda(), tematicas: () => cargarTematicas(), recursos: () => cargarRecursos(), biblioteca: () => cargarBiblioteca(), regalos: () => cargarRegalos(), influencers: () => cargarInfluencers(), descargas: () => cargarDescargas(), resenas: () => cargarResenas(), alertas: () => cargarAlertas(), anuncios: () => cargarAnuncios(), notif: () => cargarNotificaciones(), corr: () => cargarCorrecciones(),
+    agenda: () => cargarAgenda(), tematicas: () => cargarTematicas(), recursos: () => cargarRecursos(), biblioteca: () => cargarBiblioteca(), regalos: () => cargarRegalos(), influencers: () => cargarInfluencers(), descargas: () => cargarDescargas(), resenas: () => cargarResenas(), yape: () => cargarYape(), alertas: () => cargarAlertas(), anuncios: () => cargarAnuncios(), notif: () => cargarNotificaciones(), corr: () => cargarCorrecciones(),
     pausa: () => cargarPausa(), equipo: () => cargarEquipo(), historial: () => cargarHistorial(), avance: () => cargarAvance(), verif: f => cargarVerificar(f)
   };
   function cargarSeccion(tab, forzar) {
@@ -1808,7 +1825,7 @@ E) Alternativa"></textarea>
     window.scrollTo(0, 0);
     document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
     const pestana = t.dataset.tab === 'examen' ? 'subir' : t.dataset.tab; // "Subir examen" usa la misma pantalla que "Subir tema"
-    ['reportes', 'subir', 'editar', 'cursos', 'ciclos', 'temasfijos', 'vocab', 'perfil', 'frases', 'alertas', 'tutorial', 'codigos', 'alumnos', 'porvencer', 'corr', 'simulacro', 'topxp', 'clanes', 'agenda', 'tematicas', 'recursos', 'biblioteca', 'regalos', 'influencers', 'descargas', 'resenas', 'equipo', 'historial', 'avance', 'verif', 'anuncios', 'notif', 'planes', 'pausa'].forEach(id => { $('tab-' + id).hidden = id !== pestana; });
+    ['reportes', 'subir', 'editar', 'cursos', 'ciclos', 'temasfijos', 'vocab', 'perfil', 'frases', 'alertas', 'tutorial', 'codigos', 'alumnos', 'porvencer', 'corr', 'simulacro', 'topxp', 'clanes', 'agenda', 'tematicas', 'recursos', 'biblioteca', 'regalos', 'influencers', 'descargas', 'resenas', 'yape', 'equipo', 'historial', 'avance', 'verif', 'anuncios', 'notif', 'planes', 'pausa'].forEach(id => { $('tab-' + id).hidden = id !== pestana; });
     if (t.dataset.tab === 'tutorial' && !TU.datos) cargarTutorial();
     // Las que tienen textos por guardar (Perfil, Frases, Vocabulario) no se recargan solas al tocarlas otra vez
     cargarSeccion(t.dataset.tab, yaEstaba && !['perfil', 'frases', 'vocab', 'planes', 'temasfijos'].includes(t.dataset.tab));
@@ -1820,7 +1837,7 @@ E) Alternativa"></textarea>
   let tabRestaurada = false;
   function restaurarTab() {
     if (tabRestaurada) return; tabRestaurada = true;
-    const t = document.querySelector(`.tab[data-tab="${ss('get', 'mc_panel_tab')}"]`);
+    const t = document.querySelector(`.tab[data-tab="${location.hash === '#yape' ? 'yape' : ss('get', 'mc_panel_tab')}"]`);
     if (t && !t.hidden && !t.classList.contains('on')) setTimeout(() => t.click(), 0);
   }
 
@@ -2865,6 +2882,7 @@ E) Alternativa"></textarea>
 <script src="ficha-panel.js?v=5"></script>
 <script src="../assets/resenas.js?v=5"></script>
 <script src="resenas-panel.js"></script>
+<script src="yape-panel.js"></script>
 <script src="descargas-panel.js?v=169"></script>
 <script src="verificar-panel.js?v=1"></script>
 <script src="reportes-alumno.js"></script>
