@@ -604,18 +604,12 @@
       }).join('') + '</div>');
     });
   }
-  // Ordinario (beta, solo admin + influencers): al tocar Cursos se elige CPU u Ordinario cada vez; los cursos son los mismos
+  // Ordinario (beta, solo admin + influencers): Cursos abre la lista con la barra CPU | Ordinario (recuerda la última); los cursos son los mismos
   var modoCursos = 'cpu';
   function esBetaOrd() { return document.documentElement.classList.contains('arcade-si'); }
   var ICO_CPU = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.2 5.6c3.4-1 6.7-.6 9.3 1.3v13.6c-2.6-1.9-5.9-2.3-9.3-1.3z" fill="currentColor" opacity=".45"/><path d="M21.8 5.6c-3.4-1-6.7-.6-9.3 1.3v13.6c2.6-1.9 5.9-2.3 9.3-1.3z" fill="currentColor"/></svg>';
   var ICO_ORD = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2 1.8 8.1 12 13l10.2-4.9z" fill="currentColor"/><path d="M5.6 10.6v4.3c0 1.9 2.9 3.5 6.4 3.5s6.4-1.6 6.4-3.5v-4.3L12 13.7z" fill="currentColor" opacity=".45"/><path d="M20.6 8.8v6.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="20.6" cy="16.3" r="1.6" fill="currentColor"/></svg>';
-  function elegirModalidad() {
-    hSub.textContent = '¿Para qué estudias? Elige tu modalidad.';
-    hLista.innerHTML = '<div class="mod-elige">' +
-      '<button type="button" class="puerta" data-modo="cpu" style="--c:var(--info)"><span class="ic">' + ICO_CPU + '</span><b>CPU</b><small>Centro Preuniversitario. Sigues los libros semana a semana.</small><span class="chips"><i>Libro</i><i>Repaso</i><i>Fijas</i><i>Seminarios</i><i>Banqueo</i></span><span class="ir">Entrar a CPU</span></button>' +
-      '<button type="button" class="puerta" data-modo="ordinario" style="--c:var(--lima)"><span class="ic">' + ICO_ORD + '</span><b>Ordinario</b><small>Examen de admisión ordinario. Sigues los temas del prospecto.</small><span class="chips"><i>Prospecto</i><i>Repaso</i><i>Fijas</i><i>Banqueo</i></span><span class="ir">Entrar a Ordinario</span></button></div>';
-  }
-  function cursosDe(modo) {
+  function cursosDe(modo, callado) {
     modoCursos = modo;
     try { localStorage.setItem('mc_mundo', modo); } catch (e) {}
     hSub.textContent = modo === 'ordinario' ? 'Ordinario: entra a un curso y estudia con los temas del prospecto.' : 'CPU: elige un área o entra directo a un curso.';
@@ -625,7 +619,7 @@
       $('tplAreas').innerHTML;
     if (modo === 'ordinario') Array.prototype.forEach.call(hLista.querySelectorAll('.tfijos'), function (t) { if (t.classList.contains('rglobal')) t.remove(); else t.setAttribute('href', 'temas-fijos.html?mod=ordinario'); });   // el Repaso global es del CPU
     pintarAreas();
-    sonar('toque');
+    if (!callado) sonar('toque');
   }
   hLista.addEventListener('click', function (e) {
     var b = e.target.closest && e.target.closest('[data-modo]');
@@ -676,7 +670,7 @@
     hFondo.classList.remove('ex', 'fc'); document.body.classList.remove('en-examenes', 'en-flashcards');
     if (cual === 'cursos') {
       hTit.textContent = 'Mis cursos';
-      if (esBetaOrd()) elegirModalidad();
+      if (esBetaOrd()) { var mg = 'cpu'; try { mg = localStorage.getItem('mc_mundo') === 'ordinario' ? 'ordinario' : 'cpu'; } catch (e) {} cursosDe(mg, true); }
       else { modoCursos = 'cpu'; hSub.textContent = 'Elige un área o entra directo a un curso.'; hLista.innerHTML = $('tplAreas').innerHTML; pintarAreas(); }
       hFondo.classList.add('full'); document.body.classList.add('en-cursos');
     } else if (cual === 'examenes') {
