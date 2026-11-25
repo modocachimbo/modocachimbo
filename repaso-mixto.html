@@ -233,6 +233,9 @@
   .paso-lbl button { background: none; border: 0; color: var(--ac); font: 900 13px 'Nunito', sans-serif; letter-spacing: 0; text-transform: none; cursor: pointer; padding: 0; }
   .paso-lbl small { font: 800 12.5px 'Nunito', sans-serif; letter-spacing: 0; text-transform: none; color: #7a7a7a; }
   .cursos { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  /* Repaso global: 19 cursos, en dos columnas también en celular */
+  html.mc-global .cursos { grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 8px; }
+  html.mc-global .cur { padding: 9px 10px; font-size: 14px; gap: 8px; }
   .cur { display: flex; align-items: center; gap: 10px; background: #1D1834; border: 2px solid #2F284E; border-bottom-width: 5px; border-radius: 16px; padding: 11px 12px; color: #f2f2f2; text-align: left; cursor: pointer; font: 900 15px 'Nunito', sans-serif; -webkit-tap-highlight-color: transparent; transition: transform .08s ease; min-width: 0; }
   .cur:active { transform: translateY(2px); }
   .cur > div { min-width: 0; }
@@ -278,6 +281,7 @@
 <script src="assets/mc-config.js"></script>
 <script src="assets/acceso.js"></script>
 <script src="assets/pregunta.js"></script>
+<script src="assets/partida.js"></script>
 <script src="assets/sonido.js"></script>
 <script src="assets/auth.js"></script>
 <script src="assets/buho/buho-datos.js"></script>
@@ -454,6 +458,9 @@ html[data-modo="claro"] .badge .curso { color: #1A1626 !important; }
     'ciencia-tecnologia': { nom: 'Ciencia y Tecnología', c: ['#C6E000', '198,224,0', '#8fa300'], cursos: ['biologia', 'anatomia', 'quimica', 'fisica'] },
     'ciencias-sociales': { nom: 'Ciencias Sociales', c: ['#FF9600', '255,150,0', '#c77400'], cursos: ['historia-peru', 'historia-universal', 'geografia', 'economia', 'ciudadania', 'psicologia', 'filosofia'] }
   };
+  // Repaso global (botón en Mis cursos, junto a Temas fijos): todos los cursos de todas las áreas
+  AREAS.global = { nom: 'todos tus cursos', c: ['#FF5FA2', '255,95,162', '#c9437f'], global: true,
+    cursos: [].concat(AREAS['ciencia-tecnologia'].cursos, AREAS.matematica.cursos, AREAS.comunicacion.cursos, AREAS['ciencias-sociales'].cursos) };
   const FUENTES = [['libros', 'Libros'], ['banqueo', 'Banqueo'], ['seminarios', 'Seminarios']];
   const params = new URLSearchParams(location.search);
   const AREA_ID = AREAS[params.get('area')] ? params.get('area') : 'matematica';
@@ -468,10 +475,12 @@ html[data-modo="claro"] .badge .curso { color: #1A1626 !important; }
   document.documentElement.style.setProperty('--ac', AREA.c[0]);
   document.documentElement.style.setProperty('--ac-rgb', AREA.c[1]);
   document.documentElement.style.setProperty('--ac-d', AREA.c[2]);
-  $('volver').href = 'areas/' + AREA_ID + '.html'; $('volverTxt').textContent = AREA.nom;
-  $('elTit').innerHTML = 'Mezcla tus cursos de <span>' + esc(AREA.nom) + '</span>';
+  $('volver').href = AREA.global ? 'index.html#mis-cursos' : 'areas/' + AREA_ID + '.html'; $('volverTxt').textContent = AREA.global ? 'Mis cursos' : AREA.nom;
+  $('elTit').innerHTML = AREA.global ? 'Mezcla <span>todos tus cursos</span>' : 'Mezcla tus cursos de <span>' + esc(AREA.nom) + '</span>';
+  if (AREA.global) { document.querySelector('.el-eb').textContent = 'Repaso global'; document.documentElement.classList.add('mc-global'); }
+  const ESCENA_AREA = AREA.global ? null : AREA_ID;   // el global usa el búho sin disfraz
   // Búho disfrazado del área con frases de ánimo (assets/buho/escena.js)
-  if (window.MCEscena) MCEscena.inicio({ escena: $('rpEscena'), globo: $('rpGlobo'), area: AREA_ID, frases: [
+  if (window.MCEscena) MCEscena.inicio({ escena: $('rpEscena'), globo: $('rpGlobo'), area: ESCENA_AREA, frases: [
     ['saludando', 'feliz', '¿Listo para repasar <b>' + esc(AREA.nom) + '</b>? ¡Tú puedes!'],
     ['pensativo', 'pensativo', 'Elige tus cursos y temas: <b>tú armas</b> tu propio repaso.'],
     ['logro', 'asombrado', 'Mezclar cursos es <b>como el examen</b> de verdad. ¡A practicar!'],
@@ -480,7 +489,7 @@ html[data-modo="claro"] .badge .curso { color: #1A1626 !important; }
     ['sorprendido', 'asombrado', '¡Wow! Solo por estar aquí ya vas <b>un paso adelante</b>.'],
     ['vivo', 'feliz', '¡Yo creo en ti! <b>Vamos juntos</b> pregunta por pregunta.']
   ] });
-  document.title = 'Repaso mixto · ' + AREA.nom + ' · Modo Cachimbo';
+  document.title = (AREA.global ? 'Repaso global' : 'Repaso mixto · ' + AREA.nom) + ' · Modo Cachimbo';
 
   const NOMBRE = {}, MAN = {};          // MAN[fuente][curso] = manifest
   const ACCESO = {};                    // curso → 'ok' | 'no' | 'revisando'
@@ -653,7 +662,7 @@ html[data-modo="claro"] .badge .curso { color: #1A1626 !important; }
 
   function setupHeaderAndBody() {
     quizHeader.innerHTML = `
-      <div class="title">Repaso <span class="accent">mixto</span></div>
+      <div class="title">Repaso <span class="accent">${AREA.global ? 'global' : 'mixto'}</span></div>
       <div class="topbar">
         <div class="lives" id="lives"></div>
         <div class="stat"><span id="score">0 pts</span><button class="mc-son" type="button" data-mc-son></button></div>
@@ -687,9 +696,9 @@ html[data-modo="claro"] .badge .curso { color: #1A1626 !important; }
     btnBack = $('btnBack'); btnNext = $('btnNext');
     btnNext.addEventListener('click', () => {
       if (current === activeQuestions.length - 1) { progressFill.style.width = '100%'; showEnd(); return; }
-      current += 1; renderQuestion();
+      current += 1; renderQuestion(); pgGuardar();
     });
-    btnBack.addEventListener('click', () => { if (current === 0) return; current -= 1; renderQuestion(); });
+    btnBack.addEventListener('click', () => { if (current === 0) return; current -= 1; renderQuestion(); pgGuardar(); });
   }
 
   function renderLives() { livesEl.innerHTML = Array.from({ length: MAX_LIVES }, (_, i) => heartSVG(i < lives)).join(''); }
@@ -759,23 +768,25 @@ html[data-modo="claro"] .badge .curso { color: #1A1626 !important; }
     lockOptions(index); renderLives();
     scoreEl.textContent = `${score} pts`;
     btnNext.disabled = false;
+    pgGuardar();
     if (lives <= 0) { btnNext.disabled = true; btnBack.disabled = true; setTimeout(showEnd, 900); }   // Sin vidas: no deja seguir respondiendo mientras sale el final
   }
 
   function showEnd() {
+    if (window.MCPartida) MCPartida.borrar(PG_ID);   // terminó: ya no hay partida a medias
     quizHeader.style.display = 'none'; quizBody.style.display = 'none';
     endScreen.classList.add('show');
     finalScore.textContent = `${score} pts`;
     // El búho reacciona al resultado (assets/buho/escena.js)
     const aciertos = answers.filter((a, i) => activeQuestions[i] && a === activeQuestions[i].correct).length;
-    if (window.MCEscena) MCEscena.fin($('finEscena'), AREA_ID, { vidas: lives, pct: aciertos / Math.max(1, answers.length) });
+    if (window.MCEscena) MCEscena.fin($('finEscena'), ESCENA_AREA, { vidas: lives, pct: aciertos / Math.max(1, answers.length) });
     endMessage.textContent = lives <= 0 ? 'Se acabaron tus vidas. ¡Sigue practicando!' : 'Así te fue en esta práctica';
     if (showEnd.ronda === activeQuestions) return;
     showEnd.ronda = activeQuestions;
     if (window.MCSonido) lives <= 0 ? MCSonido.perder() : MCSonido.fin(Math.round(answers.filter((a, i) => activeQuestions[i] && a === activeQuestions[i].correct).length / activeQuestions.length * 100));
     // Progreso: una práctica "Repaso mixto" del área; cada fallada queda con su curso (Repasar mis falladas)
     if (!window.MCProgreso || !window.MCAuth || !MCAuth.usuario()) return;
-    const d = MCProgreso.armar({ tipo: 'repaso', clave: 'repaso-mixto|' + AREA_ID, carpeta: '', anio: ciclosSel().join(','), titulo: 'Repaso mixto · ' + AREA.nom, preguntas: activeQuestions, respuestas: answers });
+    const d = MCProgreso.armar({ tipo: 'repaso', clave: 'repaso-mixto|' + AREA_ID, carpeta: '', anio: ciclosSel().join(','), titulo: AREA.global ? 'Repaso global' : 'Repaso mixto · ' + AREA.nom, preguntas: activeQuestions, respuestas: answers });
     if (!d.total) return;
     const porRef = {}; activeQuestions.forEach(q => { porRef[q._ref] = q._curso; });
     d.falladas.forEach(f => { f.carpeta = porRef[f.ref] || ''; });
@@ -785,6 +796,7 @@ html[data-modo="claro"] .badge .curso { color: #1A1626 !important; }
   function empezar(lista) {
     lives = window.MCCorazones ? MCCorazones.vidasInicio(MAX_LIVES) : MAX_LIVES;
     if (!lives) return false;
+    if (window.MCPartida) MCPartida.borrar(PG_ID);
     activeQuestions = armarRonda(lista);
     current = 0; score = 0; answers.length = 0;
     elegir.classList.remove('show'); endScreen.classList.remove('show');
@@ -804,6 +816,62 @@ html[data-modo="claro"] .badge .curso { color: #1A1626 !important; }
     endScreen.classList.remove('show'); quizHeader.style.display = 'none'; quizBody.style.display = 'none';
     elegir.classList.add('show'); pintar(); window.scrollTo(0, 0);
   });
+
+  /* ---------- Partida a medias: igual que el Repaso de cada curso (assets/partida.js) ----------
+     Se guarda en este teléfono después de cada respuesta, con los cursos, ciclos, fuentes y temas
+     elegidos. Al volver sale «Seguir donde quedé»: lo ya respondido queda igual y lo que falta se
+     vuelve a mezclar con esa misma elección (si se subieron temas nuevos, entran). */
+  const PG_ID = 'repaso-mixto:' + AREA_ID;
+  function pgGuardar() {
+    if (!window.MCPartida || !activeQuestions.length || !answers.length) return;
+    MCPartida.guardar(PG_ID, activeQuestions, { current, score, lives, answers: answers.slice(),
+      sel: { cursos: SEL.cursos, ciclos: SEL.ciclos, fuentes: SEL.fuentes, temas: SEL.temas, n: SEL.n } });
+  }
+  async function pgSeguir(s) {
+    const e = s.e, sel = e.sel || {};
+    ['cursos', 'ciclos', 'fuentes', 'temas'].forEach(k => { if (sel[k]) SEL[k] = Object.assign({}, sel[k]); });
+    if (sel.n != null) SEL.n = sel.n;
+    await cargarTemas();
+    // Las preguntas de esa elección (aunque el acceso aún se esté revisando: ya tenía acceso al jugarla)
+    const lista = [];
+    AREA.cursos.forEach(c => {
+      if (!SEL.cursos[c]) return;
+      const temas = TEMAS[c] || [], marcados = temas.filter(t => SEL.temas[c + '|' + t.k]);
+      (marcados.length ? marcados : temas).forEach(t => lista.push.apply(lista, t.qs));
+    });
+    const r = lista.length && MCPartida.armar(lista, s, (window.MCPregunta ? MCPregunta.mezclar : shuffle)(lista), false);
+    if (!r) { MCPartida.borrar(PG_ID); return false; }
+    const v = window.MCCorazones ? MCCorazones.vidasInicio(MAX_LIVES) : MAX_LIVES;
+    lives = Math.min(e.lives, v);
+    if (!lives) return false;
+    activeQuestions = r.preguntas.slice(0, SEL.n ? Math.max(SEL.n, r.respuestas.length) : r.preguntas.length);
+    ultimoPool = lista;
+    answers.length = 0; r.respuestas.forEach((a, i) => { answers[i] = a; });
+    current = Math.min(r.current, activeQuestions.length - 1); score = e.score | 0;
+    elegir.classList.remove('show'); endScreen.classList.remove('show');
+    setupHeaderAndBody();
+    quizHeader.style.display = 'block'; quizBody.style.display = 'block';
+    renderQuestion();
+    window.scrollTo(0, 0);
+    if (window.MCSonido) MCSonido.empezar();
+    return true;
+  }
+  (function pgOfrecer() {
+    const s = window.MCPartida && MCPartida.leer(PG_ID);
+    if (!s || !(s.e.lives > 0)) return;
+    const n = Math.min(Math.max(0, s.e.current | 0), s.q.length - 1);
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'btn primary el-go'; b.style.cssText = 'margin-bottom:10px;line-height:1.25';
+    b.innerHTML = 'Seguir donde quedé<br><small style="font-weight:600;opacity:.75">Pregunta ' + (n + 1) + ' de ' + s.q.length + ' · ' + (s.e.score | 0) + ' pts</small>';
+    btnStart.parentNode.insertBefore(b, btnStart);
+    btnStart.classList.remove('primary'); btnStart.textContent = 'Empezar de nuevo';
+    b.addEventListener('click', async () => {
+      b.disabled = true;
+      const ok = await pgSeguir(s).catch(() => false);
+      if (ok) { b.remove(); btnStart.classList.add('primary'); btnStart.textContent = 'Empezar repaso'; }
+      else { b.remove(); btnStart.classList.add('primary'); btnStart.textContent = 'Empezar repaso'; }
+    });
+  })();
 
   iniciar();
 </script>

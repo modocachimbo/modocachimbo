@@ -1247,11 +1247,55 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
 .tfijos small { color: var(--suave); font: 700 14px/1.3 var(--cuerpo); }
 .tfijos .ir { flex-shrink: 0; background: var(--lima); color: var(--sobre-lima); font: 900 15px/1 var(--cuerpo); padding: 12px 20px; border-radius: 999px; }
 .tfijos .nv { position: absolute; top: -10px; left: 22px; background: #FF5FA2; color: #fff; font: 900 11px/1 var(--cuerpo); padding: 4px 9px; border-radius: 7px; letter-spacing: .06em; }
-@media (max-width: 600px) {
-  .tfijos { flex-wrap: wrap; padding: 18px; gap: 14px; }
-  .tfijos .ic { width: 54px; height: 54px; }
-  .tfijos b { font-size: 19px; }
-  .tfijos .ir { width: 100%; text-align: center; }
+/* Temas fijos y Repaso global: uno al lado del otro, más compactos (todo «Mis cursos» entra sin bajar en PC) */
+.hoja-lista .tfijos { grid-column: auto; padding: 16px 18px; gap: 14px; margin-top: 4px; }
+.tfijos .ic { width: 52px; height: 52px; border-radius: 14px; }
+.tfijos .ic svg { width: 30px; height: 30px; }
+.tfijos b { font-size: 19px; }
+.tfijos small { font-size: 13px; }
+.tfijos .ir { font-size: 14px; padding: 10px 16px; }
+.rglobal { --rg: #FF5FA2; background: linear-gradient(100deg, color-mix(in srgb, var(--rg) 16%, var(--tarjeta)), var(--tarjeta) 60%); border-color: color-mix(in srgb, var(--rg) 45%, var(--borde)); border-bottom-color: var(--rg); }
+.rglobal .ic { background: var(--rg); color: #fff; }
+.rglobal .ic svg { fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.rglobal .ir { background: var(--rg); color: #fff; }
+.rglobal .nv { background: var(--lima); color: var(--sobre-lima); }
+@media (min-width: 901px) {
+  .hoja-fondo.full .hoja { padding: 24px 34px 28px; }
+  .hoja-fondo.full .hoja-cab b { font-size: 42px; }
+  .hoja-fondo.full .hoja-sub { margin: 0 0 16px; font-size: 15px; }
+  .hoja-fondo.full .hoja-lista { gap: 14px; }
+  .hoja-lista .area-card { padding: 16px 18px; gap: 12px; }
+  .hoja-lista .area-link { gap: 14px; }
+  .hoja-lista .area-link .ic { width: 54px; height: 54px; border-radius: 15px; }
+  .hoja-lista .area-link .ic svg { width: 30px; height: 30px; }
+  .hoja-lista .area-link b { font-size: 20px; }
+  .hoja-lista .area-link small { font-size: 13px; }
+  .hoja-lista .area-cursos { gap: 6px; }
+  .hoja-lista .area-cursos a { font-size: 13px; padding: 6px 11px; gap: 6px; }
+  .hoja-lista .area-cursos .ic-m { width: 16px; height: 16px; }
+}
+/* Celular: tarjetas más bajas y los dos botones de abajo lado a lado */
+@media (max-width: 900px) {
+  .hoja-lista .area-card { padding: 14px; gap: 10px; border-radius: 18px; }
+  .hoja-lista .area-link { gap: 12px; }
+  .hoja-lista .area-link .ic { width: 46px; height: 46px; border-radius: 13px; }
+  .hoja-lista .area-link .ic svg { width: 26px; height: 26px; }
+  .hoja-lista .area-link b { font-size: 17px; }
+  .hoja-lista .area-link small { font-size: 12.5px; }
+  .hoja-lista .area-link .chev { width: 22px; height: 22px; }
+  .hoja-lista .area-cursos { gap: 6px; }
+  .hoja-lista .area-cursos a { font-size: 12.5px; padding: 6px 10px; gap: 6px; }
+  .hoja-lista .area-cursos .ic-m { width: 15px; height: 15px; }
+  .hoja-fondo.full .hoja-lista { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .hoja-fondo.full .hoja-lista > :not(.tfijos) { grid-column: 1 / -1; }
+  .hoja-lista .tfijos { flex-direction: column; align-items: flex-start; padding: 16px 12px 12px; gap: 8px; border-radius: 18px; }
+  .hoja-lista .tfijos .ic { width: 42px; height: 42px; border-radius: 12px; }
+  .hoja-lista .tfijos .ic svg { width: 24px; height: 24px; }
+  .hoja-lista .tfijos .tx { gap: 3px; align-content: start; }
+  .hoja-lista .tfijos b { font-size: 16px; }
+  .hoja-lista .tfijos small { font-size: 11.5px; }
+  .hoja-lista .tfijos .ir { width: 100%; text-align: center; font-size: 13px; padding: 9px 10px; margin-top: auto; }
+  .hoja-lista .tfijos .nv { left: 12px; }
 }
 /* Tira al simulacro, debajo de las modalidades */
 .ex-sim { grid-column: 1 / -1; position: relative; display: flex; align-items: center; gap: 14px; padding: 14px 16px 14px 28px; color: inherit; border-radius: 18px; overflow: hidden;
@@ -1634,6 +1678,8 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
       </a>
       <!-- Temas fijos (abierto a todos desde 2026-11-18) -->
       <a class="tfijos" href="temas-fijos.html"><span class="nv">NUEVO</span><span class="ic"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M10 84h80a4 4 0 0 1 0 8H10a4 4 0 0 1-4-4V12a4 4 0 0 1 8 0z"/><rect x="22" y="52" width="14" height="26" rx="3"/><rect x="42" y="36" width="14" height="42" rx="3"/><rect x="62" y="46" width="14" height="32" rx="3"/><path d="M84 8a4 4 0 0 1 4 4v14a4 4 0 0 1-8 0v-4.3L63.6 38.1a4 4 0 0 1-5.4.3L44.6 27.3 27.7 43.4a4 4 0 1 1-5.5-5.8l19.5-18.6a4 4 0 0 1 5.3-.2L60.6 29.8 74.3 16H70a4 4 0 0 1 0-8z"/></svg></span><span class="tx"><b>Temas fijos</b><small>Qué temas salieron en los exámenes de admisión desde 2020, curso por curso</small></span><span class="ir">Ver temas</span></a>
+      <!-- Repaso global: preguntas de todos los cursos mezcladas (repaso-mixto.html?area=global) -->
+      <a class="tfijos rglobal" href="repaso-mixto.html?area=global"><span class="nv">NUEVO</span><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg></span><span class="tx"><b>Repaso global</b><small>Preguntas de todos tus cursos, mezcladas</small></span><span class="ir">Empezar</span></a>
 </template>
 
 <script src="assets/rango.js"></script>
