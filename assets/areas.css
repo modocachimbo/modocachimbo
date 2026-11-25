@@ -223,7 +223,7 @@ html[data-area]:not(:has(.courses)) .startscreen h1 .accent:not(#z), html[data-a
 @media (min-width: 900px) and (min-aspect-ratio: 4/3) {
   html[data-area]:has(.courses):not(:has(.mixto)) header.top { padding: 16px 0; }
   html[data-area]:has(.courses):not(:has(.mixto)) .section-title:not(#z) { padding: 2px 0 12px; margin-bottom: 16px; }
-  html[data-area]:has(.courses):not(:has(.mixto)) .courses { gap: 14px; }
+  html[data-area]:has(.courses):not(:has(.mixto)) .courses { gap: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
   html[data-area]:has(.courses):not(:has(.mixto)) .course { padding: 18px 22px; }
   html[data-area]:has(.courses):not(:has(.mixto)) .course .icon { width: 56px; height: 56px; margin-bottom: 12px; }
   html[data-area]:has(.courses):not(:has(.mixto)) .course h3:not(#z) { font-size: 22px !important; }
