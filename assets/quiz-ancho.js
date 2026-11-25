@@ -25,7 +25,7 @@
     /* Pantalla echada (tablet horizontal, PC): pregunta a la izquierda, alternativas a la derecha */
     '@media (min-width:900px) and (min-aspect-ratio:4/3){' +
       'html body .card{max-width:min(1240px,calc(100vw - 48px))!important}' +
-      'html body .qa-split{display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);column-gap:26px;align-items:start;padding:0 28px}' +
+      'html body .qa-split:not([style*="none"]){display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);column-gap:26px;align-items:start;padding:0 28px}' +
       'html body .qa-split>*{grid-column:1/-1;margin-left:0!important;margin-right:0!important}' +
       'html body .qa-split>.badge{grid-column:1;grid-row:1;justify-self:start}' +
       'html body .qa-split>.question{grid-column:1;grid-row:2/5;margin-bottom:8px!important}' +
@@ -44,6 +44,13 @@
       'html body .card .topbar{margin-top:8px}' +
       'html body .card .progress-track{margin-top:10px}' +
       'html body .card .footer{padding:12px 28px 14px!important}' +
+      /* Pantalla de inicio (búho + título | cuadros + Empezar + Cómo funciona) y pantalla final (búho | puntaje) */
+      'html body .qa-dos.show{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);column-gap:34px;align-items:center;padding:26px 32px!important}' +
+      'html body .qa-dos>.qa-col{display:block;min-width:0}' +
+      'html body .qa-dos .rp-hero{margin-top:0!important}' +
+      'html body .qa-dos .qa-izq .rp-buho{margin:0 auto!important}' +
+      'html body .endscreen.qa-dos{grid-template-columns:minmax(0,.8fr) minmax(0,1fr)}' +
+      'html body .endscreen.qa-dos .qa-izq .rp-buho{transform:scale(1.35);margin:34px auto!important}' +
     '}' +
     '@media (min-width:1280px){' +
       'html body .card{max-width:980px!important}' +
@@ -54,6 +61,40 @@
   st.id = 'quiz-ancho';
   st.textContent = css;
   (document.head || document.documentElement).appendChild(st);
+
+  // Columnas para inicio y final: fuera de la pantalla echada son display:contents (no cambian nada)
+  st.textContent += '.qa-col{display:contents}';
+  function col(caja, cls, hijos) {
+    var c = document.createElement('div');
+    c.className = 'qa-col ' + cls;
+    caja.insertBefore(c, hijos[0]);
+    for (var i = 0; i < hijos.length; i++) c.appendChild(hijos[i]);
+    return c;
+  }
+  function dosColumnas(caja, corte) {
+    if (!caja || caja._qaCol) return;
+    var hijos = [].slice.call(caja.children);
+    var k = -1;
+    for (var i = 0; i < hijos.length; i++) if (corte(hijos[i], i)) { k = i; break; }
+    if (k <= 0) return;
+    caja._qaCol = true;
+    col(caja, 'qa-izq', hijos.slice(0, k));
+    var der = col(caja, 'qa-der', hijos.slice(k));
+    caja.classList.add('qa-dos');
+    // Lo que se agregue después (ej. «Siguiente tema») va a la columna derecha
+    new MutationObserver(function () {
+      if (!der.parentNode) { caja._qaCol = false; caja.classList.remove('qa-dos'); return; }
+      [].slice.call(caja.children).forEach(function (h) { if (!h.classList.contains('qa-col')) der.appendChild(h); });
+    }).observe(caja, { childList: true });
+  }
+  function pantallas() {
+    var ini = document.querySelector('.card .startscreen');
+    if (ini && ini.querySelector(':scope > .rp-hero') && ini.querySelector(':scope > .rp-stats'))
+      dosColumnas(ini, function (h) { return h.classList.contains('rp-stats'); });
+    var fin = document.querySelector('.card .endscreen');
+    if (fin && fin.firstElementChild && fin.firstElementChild.classList.contains('rp-buho') && fin.children.length > 1)
+      dosColumnas(fin, function (h, i) { return i === 1; });
+  }
 
   var CORTA = 34;
   function revisar(box) {
@@ -78,6 +119,7 @@
   function buscar() {
     var cajas = document.querySelectorAll('.card .options');
     for (var i = 0; i < cajas.length; i++) vigilar(cajas[i]);
+    pantallas();
   }
   var pend = false;
   function iniciar() {
