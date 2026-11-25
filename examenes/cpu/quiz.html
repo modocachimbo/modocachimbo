@@ -444,7 +444,7 @@
     });
     if (mcq) MCPregunta.alternativas(optionsList, q, mcq);
 
-    renderMath(questionText.parentElement.parentElement || document.body);
+    renderMath(document.getElementById('quizBody') || document.body); // toda la tarjeta: quiz-ancho.js mete la pregunta y las claves en columnas distintas
 
     const prevAnswer = answers[current];
     answered = prevAnswer !== undefined;   // Ya respondida: al volver con «Atrás» se ve, pero no se puede cambiar
