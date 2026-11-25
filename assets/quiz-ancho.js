@@ -37,32 +37,40 @@
       'html body .qa-split .q-graphic img,html body .qa-split .q-graphic svg{max-height:var(--qa-graf-alto,max(220px,calc(100vh - 330px)))!important;width:auto!important;max-width:100%!important;height:auto!important;object-fit:contain}' +
       'html body .qa-split>.qa-der>.options{padding:0!important}' +
       'html body .qa-split>.qa-der>.navrow{padding-left:0!important;padding-right:0!important}' +
-      'html body .qa-split>.qa-der>.options.mcq-cortas{grid-template-columns:repeat(2,minmax(0,1fr))!important}' +
       'html body .qa-split>.qa-der>.options.op-2{grid-template-columns:1fr}' +
       /* Con gráfico (como en el examen): pregunta a la izquierda, gráfico a la derecha y las
          alternativas debajo, a todo el ancho */
-      'html body .qa-split.qa-dos.qa-graf:not([style*="none"]){grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);row-gap:0}' +
+      'html body .qa-split.qa-dos.qa-graf:not([style*="none"]){grid-template-columns:minmax(0,1fr) minmax(0,.9fr);column-gap:22px;row-gap:0}' +
       'html body .qa-split.qa-graf>.qa-izq{display:contents}' +
-      'html body .qa-split.qa-graf>.qa-izq>.badge{grid-column:1;grid-row:1;justify-self:start}' +
-      'html body .qa-split.qa-graf>.qa-izq>.question{grid-column:1;grid-row:2}' +
-      'html body .qa-split.qa-graf>.qa-izq>.q-graphic{grid-column:2;grid-row:1/3;align-self:start;margin:0 0 12px!important}' +
-      'html body .qa-split.qa-graf>.qa-der{grid-column:1/-1;grid-row:3}' +
+      'html body .qa-split.qa-graf>.qa-izq>.badge{grid-column:1/-1;grid-row:1;justify-self:start}' +
+      'html body .qa-split.qa-graf>.qa-izq>.question{grid-column:1/-1;grid-row:2}' +
+      'html body .qa-split.qa-graf>.qa-izq>.q-graphic{grid-column:2;grid-row:3;align-self:start;margin:4px 0 0!important}' +
+      'html body .qa-split.qa-graf>.qa-der{grid-column:1;grid-row:3}' +
       'html body .qa-split.qa-graf>.qa-der>.options{padding:4px 0 0!important}' +
-      'html body .qa-split.qa-graf>.qa-der>.options.op-2{grid-template-columns:repeat(3,minmax(0,1fr))}' +
-      'html body .qa-split.qa-graf>.qa-der>.options.mcq-cortas{grid-template-columns:repeat(3,minmax(0,1fr))!important}' +
       /* Atrás / Siguiente: abajo del todo, a la derecha (debajo de la pregunta y de las claves) */
       'html body .qa-split.qa-dos>.navrow{grid-column:1/-1;width:min(560px,100%);justify-self:end;margin:14px 0 0!important;padding-left:0!important;padding-right:0!important}' +
       'html body .qa-split>.qa-der>.navrow{padding-left:0!important;padding-right:0!important}' +
       'html body .qa-split .qa-oculta{display:none!important}' +
+      /* Gráfico aparte: al centro, debajo de la pregunta (las claves debajo, en columnas) */
+      'html body .qa-split.qa-centro .q-graphic{display:flex!important;justify-content:center;align-items:center;width:100%;margin:0 0 14px!important;box-sizing:border-box;background:#fff;border-radius:14px;padding:14px}' +
+      /* Imagen derecha: el recuadro blanco ocupa todo el alto de las claves y la imagen lo llena, centrada */
+      'html body .qa-split.qa-graf>.qa-izq>.qa-fig{align-self:stretch!important;position:relative;min-height:240px;background:#fff;border-radius:14px;padding:0!important;margin:4px 0 0!important;box-sizing:border-box}' +
+      'html body .qa-split.qa-graf>.qa-izq>.qa-fig>img,html body .qa-split.qa-graf>.qa-izq>.qa-fig>svg{position:absolute;top:12px;left:12px;width:calc(100% - 24px)!important;height:calc(100% - 24px)!important;max-width:none!important;max-height:none!important;object-fit:contain;margin:0!important;border-radius:0!important}' +
       /* Sin gráfico: alternativas en UNA columna (A, B, C, D, E una debajo de otra) a la derecha */
       'html body .qa-split:not(.qa-graf):not(.qa-apilada)>.qa-der>.options{display:grid!important;grid-template-columns:minmax(0,1fr)!important}' +
       /* Pregunta corta con alternativas largas: pregunta arriba a todo el ancho y alternativas abajo */
       'html body .qa-split.qa-dos.qa-apilada:not([style*="none"]){grid-template-columns:minmax(0,1fr)}' +
       'html body .qa-split.qa-apilada>.qa-col{grid-column:1}' +
-      'html body .qa-split.qa-apilada>.qa-der>.options{display:grid!important;grid-template-columns:minmax(0,1fr)!important;padding:4px 0 0!important}' +
+      'html body .qa-split.qa-apilada>.qa-der>.options{padding:4px 0 0!important}' +
 
-      'html body .qa-split.qa-apilada.qa-ap2>.qa-der>.options{grid-template-columns:repeat(2,minmax(0,1fr))!important}' +
-      'html body .qa-split.qa-apilada.qa-ap5>.qa-der>.options{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))!important}' +
+      'html body .qa-split.qa-ap2>.qa-der>.options{grid-template-columns:repeat(2,minmax(0,1fr))!important}' +
+      'html body .qa-split.qa-ap5>.qa-der>.options{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))!important}' +
+      'html body .qa-split.qa-ap3>.qa-der>.options{grid-template-columns:repeat(3,minmax(0,1fr))!important}' +
+      'html body .qa-split.qa-ap5>.qa-der>.options,html body .qa-split.qa-ap3>.qa-der>.options,html body .qa-split.qa-ap2>.qa-der>.options{display:grid!important}' +
+      'html body .qa-split.qa-ap1>.qa-der>.options{display:grid!important;grid-template-columns:minmax(0,1fr)!important}' +
+      /* Con imagen, igual que en el panel: pregunta arriba a todo el ancho, claves a la izquierda
+         (una debajo de otra) y la imagen a su lado */
+      'html body .qa-split.qa-graf>.qa-der>.options{display:grid!important;grid-template-columns:minmax(0,1fr)!important}' +
       'html body .qa-split .qa-fig{display:flex;justify-content:center}' +
       'html body .qa-split .qa-fig .mcq-graf{width:100%;margin:0}' +
       'html body .qa-split .option{padding:12px 16px!important}' +
@@ -135,7 +143,7 @@
       if (t.querySelector('img, table, svg, .katex-display, .mcq-base-ancha')) ok = false;
       else if ((t.textContent || '').replace(/\s+/g, ' ').trim().length > CORTA) ok = false;
     }
-    box.classList.toggle('op-2', ok && !box.classList.contains('mcq-cortas'));
+    box.classList.remove('op-2');   // las claves se ven igual que en el panel (sin columnas extra)
     var padre = box.parentElement;
     if (padre && padre.querySelector(':scope > .question')) {
       padre.classList.add('qa-split');
@@ -176,10 +184,18 @@
   function forma(caja, conGraf) {
     if (!caja) return;
     var q = caja.querySelector('.question'), ops = caja.querySelectorAll('.options .option');
-    var lq = q ? (q.textContent || '').replace(/\s+/g, ' ').trim().length : 0, mx = 0, larga = false;
+    // Largo de lo que se VE (sin la copia oculta que KaTeX guarda de cada fórmula)
+    function largo(el) {
+      if (!el) return 0;
+      var n = (el.textContent || '').replace(/\s+/g, ' ').trim().length;
+      var ms = el.querySelectorAll('.katex-mathml');
+      for (var k = 0; k < ms.length; k++) n -= (ms[k].textContent || '').replace(/\s+/g, ' ').trim().length;
+      return Math.max(0, n);
+    }
+    var lq = largo(q), mx = 0, larga = false;
     for (var i = 0; i < ops.length; i++) {
       var t = ops[i].querySelector('.text') || ops[i];
-      mx = Math.max(mx, (t.textContent || '').replace(/\s+/g, ' ').trim().length);
+      mx = Math.max(mx, largo(t));
       if (t.querySelector('table, .katex-display, .mcq-base-ancha')) larga = true;
     }
     // Claves a la derecha: empiezan a la altura de la pregunta (no del rótulo del tema)
@@ -187,38 +203,58 @@
     if (der) der.style.marginTop = '';
     // Pregunta con tabla (Estadística): a todo el ancho para que la tabla entre completa
     var tabla = !!(q && q.querySelector('table'));
-    // Lado a lado solo cuando vale la pena: con gráfico (va a la derecha) o con una pregunta larga
-    // (lectura de más de ~350 letras) y claves cortas. Lo demás: pregunta arriba y claves abajo.
-    var ap = !conGraf && (tabla || lq < 350 || larga || mx > 55);
-    // Botones: con claves a la derecha, justo debajo de ellas (siempre a la vista aunque la
-    // pregunta sea larga); con claves abajo (gráfico o claves largas), al final, a la derecha
-    var nav = caja.querySelector(':scope > .navrow') || caja.querySelector(':scope > .qa-col > .navrow');
-    if (nav && der) {
-      if (ap || conGraf) { if (nav.parentNode !== caja) caja.appendChild(nav); }
-      else if (nav.parentNode !== der) der.appendChild(nav);
+    function aplicar(ap) {
+      if (der) der.style.marginTop = '';
+      // Botones: con claves a la derecha, justo debajo de ellas; con claves abajo, al final a la derecha
+      var nav = caja.querySelector(':scope > .navrow') || caja.querySelector(':scope > .qa-col > .navrow');
+      if (nav && der) {
+        if (ap || conGraf) { if (nav.parentNode !== caja) caja.appendChild(nav); }
+        else if (nav.parentNode !== der) der.appendChild(nav);
+      }
+      caja.classList.toggle('qa-apilada', ap);
+      // Claves de hasta ~110 letras: en dos columnas; cortas (hasta ~30): todas en una fila
+      // Claves abajo: muy cortas (números, fracciones) en una fila; cortas en 3 columnas;
+      // medianas en 2; largas una debajo de otra
+      // Claves según su largo: muy cortas (números, fracciones) las 5 en una fila; cortas en 3
+      // columnas; medianas en 2; largas una debajo de otra (también con gráfico)
+      caja.classList.toggle('qa-ap5', !larga && mx <= 14);
+      caja.classList.toggle('qa-ap3', !larga && mx > 14 && mx <= 40);
+      caja.classList.toggle('qa-ap2', !larga && mx > 40 && mx <= 110 && ops.length >= 4);
+      caja.classList.toggle('qa-ap1', larga || mx > 110 || (mx > 40 && ops.length < 4));
+      if (der && q && izq && !ap && !conGraf && ECHADA && ECHADA.matches) {
+        var dy = q.getBoundingClientRect().top - izq.getBoundingClientRect().top;
+        if (dy > 0) der.style.marginTop = Math.round(dy) + 'px';
+      }
     }
-    caja.classList.toggle('qa-apilada', ap);
-    // Si no son tan largas (hasta ~110 letras), en dos columnas para que entren sin bajar
-    caja.classList.toggle('qa-ap2', ap && !larga && mx > 30 && mx <= 110 && ops.length >= 4);
-    // Claves cortas debajo de una tabla: todas en una fila (A B C D E)
-    caja.classList.toggle('qa-ap5', ap && !larga && mx <= 30);
-    if (der && q && izq && !ap && !conGraf && ECHADA && ECHADA.matches) {
-      var dy = q.getBoundingClientRect().top - izq.getBoundingClientRect().top;
-      if (dy > 0) der.style.marginTop = Math.round(dy) + 'px';
-    }
+    // Igual que en el panel: la pregunta completa arriba y las claves debajo (en 1, 2, 3 o 5
+    // columnas según su largo). Solo con gráfico o imagen: pregunta a la izquierda, imagen a la
+    // derecha y claves abajo.
+    var clave = '', ap = !conGraf;
+    caja._qaClave = clave; caja._qaAp = ap;
+    aplicar(ap);
   }
   function altoGrafico() {
     imagenDerecha();
-    var g = document.querySelector('.qa-split .qa-fig') || document.querySelector('.qa-split .q-graphic');
-    if (!g) return;
-    var caja = g.closest('.qa-split'), hay = g.style.display !== 'none' && !!g.innerHTML.trim();
-    if (caja) caja.classList.toggle('qa-graf', hay);
-    forma(caja, hay);
-    if (!ECHADA || !ECHADA.matches || !hay) { g.style.removeProperty('--qa-graf-alto'); return; }
-    // Al lado de la pregunta: alto de lo que queda de pantalla menos lo que ocupan las alternativas (mín. 200)
-    var arriba = g.getBoundingClientRect().top + (window.scrollY || 0);
-    var der = caja && caja.querySelector('.qa-der'), abajo = der ? der.offsetHeight : 0;
-    var alto = Math.max(200, Math.min(Math.round(window.innerHeight * 0.6), Math.round(window.innerHeight - arriba - abajo - 40)));
+    var fig = document.querySelector('.qa-split .qa-fig');               // [IMG-DER]: al lado de las claves
+    var gc = document.querySelector('.qa-split .q-graphic:not(.qa-fig)'); // gráfico aparte: al centro
+    var caja = (fig || gc) && (fig || gc).closest('.qa-split');
+    if (!caja) return;
+    var der = !!fig && !!fig.innerHTML.trim();
+    var centro = !der && !!gc && gc.style.display !== 'none' && !!gc.innerHTML.trim();
+    caja.classList.toggle('qa-graf', der);
+    caja.classList.toggle('qa-centro', centro);
+    forma(caja, der);
+    var g = der ? fig : centro ? gc : null;
+    [fig, gc].forEach(function (x) { if (x && x !== g) x.style.removeProperty('--qa-graf-alto'); });
+    if (!g || !ECHADA || !ECHADA.matches) { if (g) g.style.removeProperty('--qa-graf-alto'); return; }
+    var arriba = g.getBoundingClientRect().top + (window.scrollY || 0), alto;
+    if (der) {
+      // Al lado de las claves: lo que queda de pantalla (menos los botones)
+      alto = Math.max(220, Math.min(Math.round(window.innerHeight * 0.62), Math.round(window.innerHeight - arriba - 90)));
+    } else {
+      // Al centro, entre la pregunta y las claves: que deje ver las claves
+      alto = Math.max(260, Math.min(Math.round(window.innerHeight * 0.55), Math.round(window.innerHeight - arriba - 200)));
+    }
     g.style.setProperty('--qa-graf-alto', alto + 'px');
   }
   window.addEventListener('resize', altoGrafico);
