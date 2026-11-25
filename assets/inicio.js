@@ -595,7 +595,7 @@
       var card = document.createElement('div');
       card.className = 'area-card'; card.setAttribute('data-area', area);
       a.className = 'area-link';
-      if (modoCursos === 'ordinario') a.setAttribute('href', 'ordinario.html#area-' + encodeURIComponent(area));   // la página del área es del CPU: va a sus cursos en Modo Ordinario
+      if (modoCursos === 'ordinario') a.setAttribute('href', a.getAttribute('href') + '?mod=ordinario');   // misma página del área, con sus cursos abriendo su Ordinario (assets/area-ordinario.js)
       a.querySelector('small').textContent = cs.length + (cs.length === 1 ? ' curso' : ' cursos');
       a.parentNode.replaceChild(card, a);
       card.appendChild(a);
