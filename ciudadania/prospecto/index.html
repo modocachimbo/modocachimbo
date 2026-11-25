@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es" data-area="ciencias-sociales">
+<head>
+<meta charset="UTF-8">
+<script src="../../assets/guardia.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#0B0818">
+<link rel="icon" type="image/png" sizes="32x32" href="../../assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="../../assets/app/icono-180.png">
+<meta name="apple-mobile-web-app-title" content="Modo Cachimbo">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<script src="../../assets/app.js" defer></script>
+<title>Prospecto · Ciudadanía Ordinario · Modo Cachimbo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;0,1000;1,600;1,700;1,800;1,900;1,1000&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0B0818; --surface: #151127; --surface-2: #1D1834;
+    --border: #2A2346; --accent: #C6E000; --accent-soft: rgba(198,224,0,0.1);
+    --text: #EEEAF7; --text-dim: #A99FC8; --text-faint: #6F6690;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px 60px; }
+  header.top { display: flex; align-items: center; justify-content: space-between; padding: 26px 0; }
+  .back { display: flex; align-items: center; gap: 8px; color: var(--text-dim); text-decoration: none; font-size: 14px; font-weight: 500; }
+  .home-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 9px;
+    border: 1px solid var(--border); color: var(--text-dim);
+    text-decoration: none; margin-left: 12px; flex-shrink: 0;
+  }
+  .home-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .home-btn svg { width: 15px; height: 15px; }
+  .back-row { display: flex; align-items: center; }
+
+  .back:hover { color: var(--accent); }
+  .back svg { width: 16px; height: 16px; }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+  .logo span { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 15px; }
+  .page-title { padding: 20px 0 8px; }
+  .page-title .eyebrow { font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .page-title h1 { font-family: 'Sora', sans-serif; font-weight: 800; font-size: clamp(28px, 5vw, 42px); margin-top: 8px; }
+  .page-title p { color: var(--text-dim); font-size: 14px; margin-top: 10px; max-width: 560px; line-height: 1.6; }
+
+  .years-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 30px 0 20px; }
+  @media (max-width: 760px) { .years-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .year-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    padding: 20px 18px; text-decoration: none; color: inherit;
+    display: flex; flex-direction: column; gap: 8px;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  .year-card.active:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .year-card .yr { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 800; }
+  .year-card .count { font-size: 12px; color: var(--accent); font-weight: 600; }
+  .year-card.disabled { opacity: 0.38; cursor: default; pointer-events: none; }
+  .year-card.disabled .count { color: var(--text-faint); }
+  /* Tarjetas gruesas estilo Duolingo con sombrita verde: se hunden al tocarlas */
+  .year-card { border: 2px solid #322B52; border-radius: 18px; padding: 18px 18px 16px; -webkit-tap-highlight-color: transparent; }
+  .year-card.active { background: #1A1630; border-color: #3a4a00; box-shadow: 0 5px 0 #6f7f00; transition: transform .08s ease, box-shadow .08s ease, border-color .15s ease; }
+  .year-card.active:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 7px 0 #8fa300; }
+  .year-card.active:active { transform: translateY(5px); box-shadow: 0 0 0 transparent; }
+  .year-card .yr { font-family: 'Nunito', 'Sora', sans-serif; font-weight: 900; font-size: 22px; }
+  .year-card .count { font: 800 13px 'Nunito', 'Inter', sans-serif; }
+  .year-card.active .count { display: inline-block; align-self: flex-start; background: var(--accent-soft); border-radius: 10px; padding: 3px 9px; }
+  .year-card.disabled { opacity: .45; border-style: dashed; border-color: #2C2549; background: transparent; }
+
+  /* Casita con estilo grueso: se hunde al tocarla */
+  .home-btn { border: 2px solid #322B52; border-bottom-width: 4px; border-radius: 12px; background: #1D1834; width: 36px; height: 36px; color: #e6e6e6;
+    transition: transform .08s ease, border-color .15s ease, color .15s ease; -webkit-tap-highlight-color: transparent; }
+  .home-btn:hover { border-color: var(--accent, #C6E000); border-bottom-color: #8fa300; color: var(--accent, #C6E000); }
+  .home-btn:active { transform: translateY(2px); border-bottom-width: 2px; margin-bottom: 2px; }
+
+  /* Letra gruesita en toda la web (Nunito); las fórmulas y el código conservan su letra */
+  body, body :not(.katex):not(.katex *):not(code):not(pre):not(kbd):not(samp):not(.formato):not(.ta.big):not(.cdnuevos code) { font-family: 'Nunito', 'Inter', system-ui, sans-serif !important; }
+  body { font-weight: 600; }
+</style>
+<link rel="stylesheet" href="../../assets/areas.css">
+<script src="../../assets/mc-config.js"></script>
+<script src="../../assets/auth.js"></script>
+<script src="../../assets/ciclos.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div class="back-row">
+        <a class="back" href="../ordinario.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Ciudadanía</a>
+        <a class="home-btn" href="../../index.html" title="Ir al inicio" aria-label="Ir al inicio"><svg viewBox="0 0 24.66 24.65" fill="currentColor" aria-hidden="true"><path d="M11.88,0h.87a2.91,2.91,0,0,1,1.39.84l9.64,9.65a3.33,3.33,0,0,1,.36.39,2.2,2.2,0,0,1,.31,2.35,2.14,2.14,0,0,1-1.82,1.35c-.68.08-.6,0-.61.67,0,2.28,0,4.57,0,6.85a2.63,2.63,0,0,1-2.65,2.54H15.57c-.65,0-.92-.26-.92-.91V18.19a1.16,1.16,0,0,0-1.24-1.25c-.71,0-1.43,0-2.14,0A1.17,1.17,0,0,0,10,18.25v5.56a.74.74,0,0,1-.83.83H5.27A2.6,2.6,0,0,1,3,23.39a3,3,0,0,1-.42-1.71V14.86a.23.23,0,0,0-.23-.25,2.64,2.64,0,0,1-.74-.1A2.32,2.32,0,0,1,0,12.75v-.87a2.91,2.91,0,0,1,.86-1.42Q5.66,5.67,10.45.88A2.86,2.86,0,0,1,11.88,0Z"/></svg></a>
+      </div>
+      <div class="logo"><div class="dot"></div><span>Prospecto</span></div>
+    </header>
+
+    <div class="page-title">
+      <div class="eyebrow">Ciudadanía · Prospecto Ordinario</div>
+      <h1>Elige un ciclo</h1>
+      <p>Los temas del prospecto de admisión (modalidad Ordinario). Dentro de cada tema hay preguntas con su respuesta marcada y un botón para practicar.</p>
+    </div>
+
+    <div class="years-grid" id="yearsGrid"></div>
+  </div>
+
+<script>
+  const allYears = []; // solo los ciclos creados en el panel (assets/ciclos.js)
+
+  const grid = document.getElementById('yearsGrid');
+
+  fetch('data/manifest.json')
+    .then(r => r.json())
+    .then(m => window.MCCiclos ? MCCiclos.filtrar(m) : m)
+    .then(manifest => {
+      const activeMap = {};
+      manifest.forEach(m => { activeMap[m.id] = m; });
+      // años nuevos publicados desde el panel que aún no están en la lista
+      const rom = { I: 1, II: 2, III: 3 };
+      const orden = id => { const x = String(id).match(/^(\d{4})-(III|II|I)$/); return x ? +x[1] * 10 + rom[x[2]] : 0; };
+      manifest.forEach(m => { if (!allYears.includes(m.id)) allYears.push(m.id); });
+      allYears.sort((a, b) => orden(b) - orden(a));
+
+      allYears.forEach(id => {
+        const info = activeMap[id];
+        const active = !!info && info.temas > 0; // año sin temas = Próximamente
+        const a = document.createElement(active ? 'a' : 'div');
+        a.className = 'year-card ' + (active ? 'active' : 'disabled');
+        if (active) a.href = 'temario.html?year=' + encodeURIComponent(id);
+        a.innerHTML = `<div class="yr">${String((info && info.label) || id).replace(/</g, '&lt;')}</div><div class="count">${active ? info.temas + (info.temas === 1 ? ' tema' : ' temas') : 'Próximamente'}</div>`;
+        grid.appendChild(a);
+      });
+      if (!grid.children.length) grid.innerHTML = '<div class="state-msg" style="grid-column:1/-1;">Aún no hay ciclos publicados. Vuelve pronto.</div>';
+    })
+    .catch(() => {
+      grid.innerHTML = '<div class="state-msg" style="grid-column:1/-1;">No se pudo cargar la lista del prospecto.</div>';
+    });
+</script>
+<script src="../../assets/alertas.js" defer></script>
+<script src="../../assets/tutorial.js" defer></script>
+<script src="../../assets/sonido.js"></script>
+</body>
+</html>

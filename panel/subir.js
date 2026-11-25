@@ -552,10 +552,14 @@ function validarMeta() {
 
 // Carpeta donde se guarda según el destino: quimica · quimica--seminarios · quimica--banqueo
 function carpetaDestino(curso, destino) {
+  // Ordinario (prospecto): quimica--prospecto (su Banco de Fijas también va ahí) · quimica--banqueo-ord
+  if (destino === 'prospecto' || destino === 'fijas-ord') return curso + '--prospecto';
+  if (destino === 'banqueo-ord') return curso + '--banqueo-ord';
   return destino === 'seminario' ? curso + '--seminarios' : destino === 'banqueo' ? curso + '--banqueo' : curso;
 }
-function conCredito() { return ['seminario', 'banqueo'].indexOf($('subDestino').value) >= 0; }
-const DESTINO_TXT = { fijas: ' · Banco de Fijas', seminario: ' · Seminarios', banqueo: ' · Banqueo' };
+function conCredito() { return ['seminario', 'banqueo', 'banqueo-ord'].indexOf($('subDestino').value) >= 0; }
+function esFijas(d) { return d === 'fijas' || d === 'fijas-ord'; }
+const DESTINO_TXT = { fijas: ' · Banco de Fijas', seminario: ' · Seminarios', banqueo: ' · Banqueo', prospecto: ' · Ordinario · Prospecto', 'banqueo-ord': ' · Ordinario · Banqueo', 'fijas-ord': ' · Ordinario · Banco de Fijas' };
 
 // ruta(q, ext) → dónde va cada imagen; base(q) → campos de la pregunta además de text/options/correct
 function armarPreguntas(carpeta, anio, tema, nombre) {
@@ -603,7 +607,7 @@ async function publicarTema() {
   try {
     // ¿Ya existe el tema?
     let existente = null, temasCurso = null;
-    if (destino === 'fijas') {
+    if (esFijas(destino)) {
       try { existente = ((await api('archivo', { carpeta, anio: anio + '-fijas' })).temas || []).find(t => pad2(t.num) === tema) || null; } catch (e) { existente = null; }
     } else {
       const man = await api('archivo', { carpeta });
@@ -624,7 +628,7 @@ async function publicarTema() {
     btn.innerHTML = '<span class="spin-s"></span> ' + (imagenes.length ? `Subiendo ${imagenes.length} imagen${imagenes.length > 1 ? 'es' : ''} y publicando…` : 'Publicando…');
     const credito = conCredito() ? $('subCredito').value.replace(/\s+/g, ' ').trim().slice(0, 80) : '';
     if (conCredito()) { try { localStorage.setItem('mc_panel_credito', credito); } catch (e) {} }
-    const r = await api('publicarTema', { carpeta, curso: NOMBRE[carpeta], anio, tema, nombre, credito, modo, destino: destino === 'fijas' ? 'fijas' : 'libro', preguntas: JSON.stringify(preguntas), imagenes: JSON.stringify(imagenes) });
+    const r = await api('publicarTema', { carpeta, curso: NOMBRE[carpeta], anio, tema, nombre, credito, modo, destino: esFijas(destino) ? 'fijas' : 'libro', preguntas: JSON.stringify(preguntas), imagenes: JSON.stringify(imagenes) });
     delete cacheManifest[carpeta]; delete cacheArchivos[carpeta + '|' + anio];
     ss('del', SUB.borrador);
     SUB.agregar = null; pintarAgregando();
@@ -637,13 +641,14 @@ async function publicarTema() {
         <h3>¡Tema ${esc(tema)} publicado!</h3>
         <p><b style="color:#f5ffcc">${esc(NOMBRE[partesCarpeta(carpeta).curso])} · ${esc(anio)}${DESTINO_TXT[destino] || ''} · ${esc(nombre)}</b><br>
         ${modo === 'agregar' ? (preguntas.length === 1 ? 'Se agregó 1 pregunta' : 'Se agregaron ' + preguntas.length + ' preguntas') + '; el tema ahora tiene ' + r.preguntasTema + '.' : r.preguntasTema + ' preguntas' + (imagenes.length ? ' y ' + imagenes.length + ' imagen' + (imagenes.length > 1 ? 'es' : '') : '') + '.'}
-        ${destino === 'fijas' ? 'Para usarlo, en <b>Cursos → Repaso y Fijas</b> elige "Banco de Fijas propio".' : `El año ${esc(anio)} tiene ${r.temas} tema${r.temas > 1 ? 's' : ''}.`}<br>Los alumnos lo verán en 1 a 10 minutos.</p>
+        ${destino === 'fijas-ord' ? 'Lo usan las Fijas de Ordinario del curso.' : destino === 'fijas' ? 'Para usarlo, en <b>Cursos → Repaso y Fijas</b> elige "Banco de Fijas propio".' : `El año ${esc(anio)} tiene ${r.temas} tema${r.temas > 1 ? 's' : ''}.`}<br>Los alumnos lo verán en 1 a 10 minutos.</p>
         <div class="mfoot" style="justify-content:center;">
           <a class="rbtn link" href="${esc(url)}" target="_blank" rel="noopener">Ver en la web ${ICON_EXT}</a>
           <button type="button" class="btn-main" id="subOtro">Subir otro tema</button>
         </div></div>`;
     // Aviso a los alumnos: solo temas nuevos (no Fijas). El primer tema de un curso avisa "curso nuevo".
-    if (modo === 'nuevo' && destino !== 'fijas') {
+    // Ordinario está en beta: sus temas no avisan a todos los alumnos
+    if (modo === 'nuevo' && !esFijas(destino) && !/--(prospecto|banqueo-ord)$/.test(carpeta)) {
       const res = document.createElement('div'); res.className = 'nv-res'; res.textContent = 'Avisando a los alumnos…';
       $('subListo').querySelector('.mfoot').before(res);
       const d = { tipo: temasCurso === 0 && !/--/.test(carpeta) ? 'curso' : 'tema', carpeta, curso: NOMBRE[carpeta], anio, tema, nombre };

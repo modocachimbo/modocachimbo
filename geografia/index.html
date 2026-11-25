@@ -202,6 +202,9 @@
       </div>
     </header>
 
+<style>/* CPU | Ordinario (beta: solo admin + influencers, assets/arcade-beta.js) */.c-mundos{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#151127;border:2px solid #322B52;border-bottom-width:4px;border-radius:16px;padding:5px;margin:4px 0 18px}html:not(.arcade-si) .c-mundos{display:none}.c-mundo{display:flex;align-items:center;justify-content:center;gap:9px;padding:10px;border-radius:12px;color:#A99FC8;text-decoration:none;font-weight:900;font-size:16px}.c-mundo svg{width:22px;height:22px;flex:none}.c-mundo.on{background:#C6E000;color:#151A03}.c-mundo i{font-style:normal;font-size:10px;padding:3px 6px;border-radius:6px;background:#FF5FA2;color:#fff;letter-spacing:.05em}</style>
+    <nav class="c-mundos" aria-label="Modalidad"><a class="c-mundo on" href="index.html" data-mundo="cpu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.2 5.6c3.4-1 6.7-.6 9.3 1.3v13.6c-2.6-1.9-5.9-2.3-9.3-1.3z" fill="currentColor" opacity=".45"/><path d="M21.8 5.6c-3.4-1-6.7-.6-9.3 1.3v13.6c2.6-1.9 5.9-2.3 9.3-1.3z" fill="currentColor"/></svg>CPU</a><a class="c-mundo" href="ordinario.html" data-mundo="ordinario"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2 1.8 8.1 12 13l10.2-4.9z" fill="currentColor"/><path d="M5.6 10.6v4.3c0 1.9 2.9 3.5 6.4 3.5s6.4-1.6 6.4-3.5v-4.3L12 13.7z" fill="currentColor" opacity=".45"/><path d="M20.6 8.8v6.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="20.6" cy="16.3" r="1.6" fill="currentColor"/></svg>Ordinario <i>BETA</i></a></nav>
+    <script>document.querySelectorAll('.c-mundo').forEach(function(a){a.addEventListener('click',function(){try{localStorage.setItem('mc_mundo',a.dataset.mundo);}catch(e){}});});</script>
     <div class="section-title">Espacio Geográfico</div>
 
     <div class="courses">
@@ -347,5 +350,6 @@ function jsonpRequest(url) {
 <script src="../assets/tutorial.js" defer></script>
 <script src="../assets/sonido.js"></script>
 <script>if (window.MCCandado) MCCandado.vigilar({ cintas: '.course.active' });</script>
+<script src="../assets/arcade-beta.js"></script>
 </body>
 </html>
