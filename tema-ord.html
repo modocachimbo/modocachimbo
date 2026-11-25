@@ -51,7 +51,7 @@ mark{background:none;color:var(--lima);font-weight:900}
 .card{position:relative;background:var(--s);border:2px solid var(--b);border-bottom:5px solid var(--ac);border-radius:20px;padding:16px 14px 14px;display:flex;flex-direction:column;gap:8px;overflow:hidden;transition:transform .1s}
 .card:active{transform:translateY(3px)}
 .card::before{content:'';position:absolute;top:0;right:0;width:90px;height:90px;background:linear-gradient(225deg,color-mix(in srgb,var(--ac) 25%,transparent),transparent 60%);pointer-events:none}
-.card .ic{width:52px;height:52px}
+.card .ic{width:52px;height:52px;fill:var(--ac)}
 .card h3{font-size:24px;line-height:1}
 .card p{font-size:13px;color:var(--dim)}
 .mini{height:8px;border-radius:99px;background:#292245;overflow:hidden}.mini i{display:block;height:100%;background:var(--ac);border-radius:99px}
@@ -169,11 +169,12 @@ html.arcade-no #app{display:none}html.arcade-no .aviso{display:block}
   function son(n) { try { if (window.MCSonido && MCSonido[n]) MCSonido[n](); } catch (e) {} }
   var LET = 'ABCDE';
 
+  // Íconos de un solo color (como los de los cursos en CPU): toman el color de la tarjeta
   var IC = {
-    teo: '<svg class="ic" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 14c8-4 16-4 24 2v38c-8-6-16-6-24-2z" fill="#7A8C00" stroke="#2E3600" stroke-width="3" stroke-linejoin="round"/><path d="M56 14c-8-4-16-4-24 2v38c8-6 16-6 24-2z" fill="#C6E000" stroke="#2E3600" stroke-width="3" stroke-linejoin="round"/><path d="M38 24c4-2 8-2 12 0M38 31c4-2 8-2 12 0M38 38c4-2 8-2 12 0" stroke="#2E3600" stroke-width="2.6" stroke-linecap="round" fill="none"/><circle cx="48" cy="10" r="6" fill="#FFC800" stroke="#8A5A00" stroke-width="2"/><path d="M48 6v8M44 10h8" stroke="#8A5A00" stroke-width="2" stroke-linecap="round"/></svg>',
-    ej: '<svg class="ic" viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="8" width="40" height="50" rx="7" fill="#1CB0F6" stroke="#06385C" stroke-width="3"/><rect x="20" y="4" width="20" height="9" rx="3" fill="#8FE0FF" stroke="#06385C" stroke-width="2.6"/><path d="M18 26l5 5 9-10" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 42h22M18 49h14" stroke="#06385C" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="48" r="11" fill="#C6E000" stroke="#2E3600" stroke-width="3"/><text x="50" y="52.5" text-anchor="middle" font-family="Nunito" font-weight="1000" font-size="11" fill="#2E3600">MC</text></svg>',
-    ex: '<svg class="ic" viewBox="0 0 64 64" aria-hidden="true"><rect x="16" y="6" width="38" height="46" rx="6" fill="#5A3AB0" stroke="#1A0F44" stroke-width="3" transform="rotate(8 35 29)"/><rect x="12" y="10" width="38" height="46" rx="6" fill="#9B6BFF" stroke="#1A0F44" stroke-width="3"/><path d="M20 22h22M20 30h22M20 38h14" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".85"/><path d="M42 40l10 0 0 16-5-4-5 4z" fill="#FFC800" stroke="#8A5A00" stroke-width="2.4" stroke-linejoin="round"/></svg>',
-    pr: '<svg class="ic" viewBox="0 0 64 64" aria-hidden="true"><circle cx="30" cy="34" r="22" fill="#FF5FA2" stroke="#6A0F36" stroke-width="3"/><circle cx="30" cy="34" r="14" fill="#fff" stroke="#6A0F36" stroke-width="3"/><circle cx="30" cy="34" r="6" fill="#FF5FA2" stroke="#6A0F36" stroke-width="3"/><path d="M30 34 54 10" stroke="#2E3600" stroke-width="4" stroke-linecap="round"/><path d="M50 6l8 0-2 8z" fill="#C6E000" stroke="#2E3600" stroke-width="2.4" stroke-linejoin="round"/></svg>'
+    teo: '<svg class="ic" viewBox="0 0 64 64" aria-hidden="true"><path fill-rule="evenodd" d="M4 12.5C12 8 21 8 30 13v41c-8.5-4.5-17.5-4.5-26-1zM60 12.5C52 8 43 8 34 13v41c8.5-4.5 17.5-4.5 26-1zM39 21.5c4.5-1.6 9-2 14-.8v4c-5-1.1-9.5-.8-14 .8zM39 30.5c4.5-1.6 9-2 14-.8v4c-5-1.1-9.5-.8-14 .8zM39 39.5c4.5-1.6 9-2 14-.8v4c-5-1.1-9.5-.8-14 .8z"/></svg>',
+    ej: '<svg class="ic" viewBox="0 0 64 64" aria-hidden="true"><path fill-rule="evenodd" d="M22 4h20a4 4 0 0 1 4 4v2h4a6 6 0 0 1 6 6v38a6 6 0 0 1-6 6H14a6 6 0 0 1-6-6V16a6 6 0 0 1 6-6h4V8a4 4 0 0 1 4-4zm2 6v4h16v-4zM18 35.5l4-4 6.5 6.5L44 22.5l4 4L28.5 46z"/></svg>',
+    ex: '<svg class="ic" viewBox="0 0 64 64" aria-hidden="true"><path d="M22 4h30a6 6 0 0 1 6 6v36a6 6 0 0 1-6 6h-2V12a4 4 0 0 0-4-4H16.5A6 6 0 0 1 22 4z"/><path fill-rule="evenodd" d="M12 12h32a6 6 0 0 1 6 6v40a4 4 0 0 1-6.2 3.3L40 58.7l-3.8 2.6A4 4 0 0 1 30 58V60H12a6 6 0 0 1-6-6V18a6 6 0 0 1 6-6zm4 10v5h24v-5zm0 10v5h24v-5zm0 10v5h14v-5z"/></svg>',
+    pr: '<svg class="ic" viewBox="0 0 64 64" aria-hidden="true"><path fill-rule="evenodd" d="M30 8a26 26 0 1 0 25.6 30.4l-6-.1A20 20 0 1 1 30 14V8zm0 12a14 14 0 1 0 13.8 16.3l-6.1-.1A8 8 0 1 1 30 26z"/><path d="M27.2 33.2 50 10.4V4l6-6v8h8l-6 6h-6.4L31.4 37.4a3 3 0 0 1-4.2-4.2z" transform="translate(-2 6)"/></svg>'
   };
   var FLECHA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>';
   var CASA = '<svg viewBox="0 0 24 24" fill="#e6e6e6"><path d="M12 2 1 12h3v9h6v-6h4v6h6v-9h3z"/></svg>';
