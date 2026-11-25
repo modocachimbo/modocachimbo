@@ -247,11 +247,6 @@ html.arcade-no #app{display:none}html.arcade-no .aviso{display:block}
     H += '<a class="card" style="--ac:#9B6BFF" href="#extra">' + IC.ex + '<h3 class="disp">Material extra</h3><p>' + a.totEx + ' preguntas de ' + D.extra.length + (D.extra.length === 1 ? ' academia' : ' academias') + ' del mismo tema</p><div class="mini"><i style="width:' + (a.ex / Math.max(1, a.totEx) * 100) + '%"></i></div><span class="btn o">Ver</span></a>';
     H += '<a class="card" style="--ac:#FF5FA2" href="' + esc(D.practicar || '#') + '">' + IC.pr + '<h3 class="disp">Practicar</h3><p>Quiz con corazones del mismo tema</p><div class="mini"><i style="width:0"></i></div><span class="btn o">Jugar</span></a>';
     H += '</div>';
-    if (D.extra.length) {
-      H += '<div class="sec"><h2 class="disp">Material extra por academia</h2></div><div class="fuentes">';
-      D.extra.forEach(function (f, i) { H += '<a class="fu" href="#extra/' + i + '"><span class="lg" style="background:' + esc(f.c || '#FFC800') + '">' + esc((f.fuente || '?').replace(/^Academia\s+/i, '').charAt(0)) + '</span><div><b>' + esc(f.fuente) + '</b><small>' + esc(f.detalle || (f.preguntas.length + ' preguntas')) + '</small></div><span class="go">›</span></a>'; });
-      H += '</div>';
-    }
     return H;
   }
   function bloque(b, i) {
@@ -297,8 +292,15 @@ html.arcade-no #app{display:none}html.arcade-no .aviso{display:block}
     return H + '</div></div>';
   }
   function extra(sel) {
-    var H = cab('Material extra · ' + D.titulo, '#'), p = leer();
-    H += '<h2 class="disp lec"><small>Del mismo tema</small>Material extra</h2><div class="cols"><div>';
+    var sola = sel != null && D.extra[sel];
+    var H = cab('Material extra · ' + D.titulo, sola ? '#extra' : '#'), p = leer();
+    H += '<h2 class="disp lec"><small>Del mismo tema</small>' + (sola ? esc(D.extra[sel].fuente) : 'Material extra') + '</h2>';
+    if (!sola && D.extra.length > 1) {
+      H += '<div class="sec" style="margin-top:0"><h2 class="disp">Por academia</h2></div><div class="fuentes" style="margin-bottom:6px">';
+      D.extra.forEach(function (f, i) { H += '<a class="fu" href="#extra/' + i + '"><span class="lg" style="background:' + esc(f.c || '#FFC800') + '">' + esc((f.fuente || '?').replace(/^Academia\s+/i, '').charAt(0)) + '</span><div><b>' + esc(f.fuente) + '</b><small>' + esc(f.detalle || (f.preguntas.length + ' preguntas')) + '</small></div><span class="go">›</span></a>'; });
+      H += '</div><div class="sec"><h2 class="disp">Todas las preguntas</h2></div>';
+    }
+    H += '<div class="cols"><div>';
     var lista = sel != null && D.extra[sel] ? [[D.extra[sel], sel]] : D.extra.map(function (f, i) { return [f, i]; });
     var n = 0, total = 0; lista.forEach(function (x) { total += x[0].preguntas.length; });
     lista.forEach(function (x) {
