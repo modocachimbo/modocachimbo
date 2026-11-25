@@ -225,6 +225,22 @@
   .fin .botones { display: flex; flex-direction: column; gap: 14px; margin-top: 20px; }
   .fin .stats { display: flex; justify-content: center; gap: 10px; margin: 6px 0 14px; flex-wrap: wrap; }
   .fin p { color: var(--text-dim); font-size: 13px; line-height: 1.6; }
+  /* PC y tablet echada: la pantalla final entra entera, sin bajar.
+     Búho y título a la izquierda, anillo a la derecha; debajo lo demás y los botones lado a lado. */
+  @media (min-width: 900px) and (min-aspect-ratio: 4/3) {
+    .wrap:has(#fin:not([hidden])) { max-width: 760px; }
+    .fin:not([hidden]) { display: grid; grid-template-columns: 1fr 1fr; grid-template-areas: "buho anillo" "titulo anillo" "stats stats" "texto texto" "botones botones";
+      column-gap: 24px; align-items: center; margin-top: 16px; padding: 22px 30px 24px; }
+    .fin .fin-buho { grid-area: buho; width: 124px; height: 124px; margin: 0 auto; }
+    .fin .fin-buho .mcb { width: 106px; }
+    .fin h2 { grid-area: titulo; margin-top: 8px; }
+    .fin .anillo { grid-area: anillo; width: 160px; height: 160px; margin: 0 auto; }
+    .fin .stats { grid-area: stats; margin: 18px 0 8px; }
+    .fin p { grid-area: texto; max-width: 560px; margin: 0 auto; }
+    .fin .botones { grid-area: botones; flex-direction: row; justify-content: center; margin-top: 16px; }
+    .fin .botones .btn { flex: 1; max-width: 300px; }
+    .fin .botones .btn[hidden] { display: none; }
+  }
   .confeti { position: absolute; top: -12px; width: 8px; height: 14px; border-radius: 2px; animation: cae linear forwards; pointer-events: none; }
   @keyframes cae { to { transform: translate(var(--dx), 620px) rotate(var(--r)); opacity: .2; } }
 
