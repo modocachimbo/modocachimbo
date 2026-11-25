@@ -469,6 +469,8 @@
   .af-tema + .af-tema { margin-top: 14px; }
   .af-tt { font-weight: 900; margin-bottom: 6px; display: flex; gap: 8px; }
   .af-tt em { margin-left: auto; }
+  .af-btit { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .rf-borrar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px dashed #2E2650; font-size: 13px; color: var(--muted, #9a93b8); font-weight: 700; }
   .af-q { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-top: 1px solid #241E3E; font-size: 13px; color: var(--text-dim); }
   .af-q span { flex: 1; min-width: 0; }
   @media (max-width: 560px) { .af-sel { grid-template-columns: 1fr; } }
@@ -946,6 +948,11 @@ E) Alternativa"></textarea>
                 <option value="seminario">Seminarios del ciclo</option>
                 <option value="banqueo">Banqueo del ciclo</option>
                 <option value="fijas">Banco de Fijas propio del año</option>
+                <optgroup label="Ordinario (prospecto) · beta">
+                  <option value="prospecto">Ordinario · Prospecto — temas del prospecto (también los usa su Repaso)</option>
+                  <option value="banqueo-ord">Ordinario · Banqueo</option>
+                  <option value="fijas-ord">Ordinario · Banco de Fijas propio</option>
+                </optgroup>
               </select>
             </label>
             <label class="dest" id="subCreditoBox" hidden>Crédito del tema (opcional)
@@ -1470,12 +1477,12 @@ E) Alternativa"></textarea>
   ];
   // Secciones de cada curso: la "carpeta" del Libro es el curso (quimica);
   // Seminarios y Banqueo usan quimica--seminarios / quimica--banqueo
-  const SECCIONES = [['libros', 'Libro'], ['seminarios', 'Seminarios'], ['banqueo', 'Banqueo']];
+  const SECCIONES = [['libros', 'Libro'], ['seminarios', 'Seminarios'], ['banqueo', 'Banqueo'], ['prospecto', 'Ordinario · Prospecto'], ['banqueo-ord', 'Ordinario · Banqueo']];
   function claveSeccion(curso, sec) { return sec && sec !== 'libros' ? curso + '--' + sec : curso; }
-  function partesCarpeta(c) { const m = String(c || '').match(/^(.+?)(?:--(seminarios|banqueo))?$/); return { curso: m[1], seccion: m[2] || 'libros' }; }
+  function partesCarpeta(c) { const m = String(c || '').match(/^(.+?)(?:--(seminarios|banqueo-ord|banqueo|prospecto))?$/); return { curso: m[1], seccion: m[2] || 'libros' }; }
   function rutaWeb(c) { const x = partesCarpeta(c); return x.curso + '/' + x.seccion; }
   function conSecciones(n) {
-    Object.keys(n).forEach(id => { if (!/--/.test(id)) { n[id + '--seminarios'] = n[id] + ' · Seminarios'; n[id + '--banqueo'] = n[id] + ' · Banqueo'; } });
+    Object.keys(n).forEach(id => { if (!/--/.test(id)) { n[id + '--seminarios'] = n[id] + ' · Seminarios'; n[id + '--banqueo'] = n[id] + ' · Banqueo'; n[id + '--prospecto'] = n[id] + ' · Ordinario · Prospecto'; n[id + '--banqueo-ord'] = n[id] + ' · Ordinario · Banqueo'; } });
     return n;
   }
   let NOMBRE = conSecciones(Object.fromEntries(CURSOS));
@@ -1534,7 +1541,7 @@ E) Alternativa"></textarea>
      unos segundos entre cada uno. Dos commits en el mismo segundo hacían que GitHub Pages
      se trabara y la web se quedara con la versión anterior. Después, el vigía revisa que
      la web publicada quede al día (ver vigiaPublicacion). */
-  const COMMITS = /^(corregir|corregirExamen|publicarTema|publicarExamen|borrarPregunta|borrarTema|renombrarTema|crearAnio|eliminarAnio|editarCurso|ordenarCursos|configCurso|reaplicar|restaurarArchivo|repararAnios|creditoTema)$/;
+  const COMMITS = /^(corregir|corregirExamen|publicarTema|publicarExamen|borrarPregunta|borrarTema|renombrarTema|crearAnio|eliminarAnio|borrarFijas|editarCurso|ordenarCursos|configCurso|reaplicar|restaurarArchivo|repararAnios|creditoTema)$/;
   let colaCommits = Promise.resolve(), ultimoCommit = 0;
   function api(action, data = {}, pass = PASS) {
     if (!COMMITS.test(action)) return apiDirecta(action, data, pass);
@@ -2023,7 +2030,7 @@ E) Alternativa"></textarea>
   function renderPreguntas(temas) {
     const t = temas.find(x => pad2(x.num) === sel.tema);
     if (!t) { $('qlist').innerHTML = '<div class="state-msg">Elige un tema.</div>'; return; }
-    const conCredito = /--(seminarios|banqueo)$/.test(sel.carpeta);
+    const conCredito = /--(seminarios|banqueo|banqueo-ord)$/.test(sel.carpeta);
     const url = SITE_ROOT + rutaWeb(sel.carpeta) + '/tema.html?year=' + encodeURIComponent(sel.anio) + '&tema=' + encodeURIComponent(t.num);
     $('qlist').innerHTML = `
       <div class="tema-acc">
@@ -2631,8 +2638,8 @@ E) Alternativa"></textarea>
 <script src="simulacro-panel.js"></script>
 <script src="../assets/rango.js"></script>
 <script src="topxp-panel.js?v=3"></script>
-<script src="../assets/clanes.js?v=5"></script>
-<script src="clanes-panel.js?v=1"></script>
+<script src="../assets/clanes.js?v=8"></script>
+<script src="clanes-panel.js?v=2"></script>
 <script src="agenda-panel.js"></script>
 <script src="tematicas-panel.js"></script>
 <script src="recursos-panel.js?v=9"></script>
@@ -2662,8 +2669,8 @@ E) Alternativa"></textarea>
 <script src="novedades-panel.js"></script>
 <script src="mantenimiento.js"></script>
 <script src="../assets/cursos.js"></script>
-<script src="cursos-panel.js"></script>
-<script src="fijas-panel.js"></script>
+<script src="cursos-panel.js?v=2"></script>
+<script src="fijas-panel.js?v=2"></script>
 <script src="formato-barra.js"></script>
 <script src="practica-panel.js"></script>
 <script src="tarjetas-panel.js"></script>

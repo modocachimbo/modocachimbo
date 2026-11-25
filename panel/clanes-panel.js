@@ -5,7 +5,7 @@
    Datos: supabase/89-clanes-guerras.sql (admin_clanes, admin_clan_*).
    Escudos: ../assets/clanes.js
    ========================================================= */
-const CLP = { datos: null, filtro: 'todos', abierto: null, editando: null, seguro: null, nuevo: { forma: 'corona', simbolo: 'buho', color: '#FFC800' } };
+const CLP = { guerra: null, gSeguro: null, datos: null, filtro: 'todos', abierto: null, editando: null, seguro: null, nuevo: { forma: 'corona', simbolo: 'buho', color: '#FFC800' } };
 
 (function estilosClanes() {
   const st = document.createElement('style');
@@ -118,7 +118,7 @@ function clpFila(c) {
     <td><div class="clp-nom"><span class="clp-esc">${K ? K.escudo(c) : ''}</span><div><b>${esc(c.nombre)}</b> <small>[${esc(c.tag)}] · código ${esc(c.codigo)}</small>${chips}
       ${ed ? `<div class="clp-edit"><input name="n" id="clpEdN" maxlength="24" value="${esc(c.nombre)}"><input name="t" id="clpEdT" maxlength="5" value="${esc(c.tag)}"><button class="btn-main" type="button" data-clpguardar="${c.id}">Guardar</button><button class="btn-ghost" type="button" data-clpcancel>Cancelar</button></div>` : ''}</div></div></td>
     <td>${esc(c.lider || '—')}<small style="display:block;color:var(--text-dim);font-size:12px">${c.lider_id ? 'ID ' + c.lider_id : ''}${c.lider_email ? ' · ' + esc(c.lider_email) : ''}</small></td>
-    <td class="num">${c.miembros}/20</td>
+    <td class="num">${c.miembros}/${c.cupo || 20}</td>
     <td class="num">${clpMil(c.xp)}</td>
     <td class="num">${c.victorias || 0}</td>
     <td><div class="clp-acc">
@@ -151,8 +151,10 @@ function pintarClanes() {
       <thead><tr><th>Clan</th><th>Líder</th><th class="num">Miembros</th><th class="num">XP semana</th><th class="num">Victorias</th><th></th></tr></thead>
       <tbody>${ver.map(clpFila).join('')}</tbody></table></div>`}
     <p class="hint" style="margin:8px 0 18px">«Revisar nombre» sale cuando el nombre o la sigla parecen una grosería. «Nuevo» = creado en las últimas 48 horas. Cerrar un clan deja libres a sus miembros (pueden entrar a otro al instante) y cancela su guerra.</p>
-    ${clpFormulario()}`;
+    ${clpFormulario()}
+    <div id="clpGuerra"></div>`;
   if (CLP.abierto) clpMiembros(CLP.abierto);
+  clpGuerraPintar();
 }
 
 async function clpMiembros(id) {
@@ -164,6 +166,36 @@ async function clpMiembros(id) {
   } catch (e) { td.innerHTML = '<div class="state-msg error">' + esc(clpErr(e)) + '</div>'; }
 }
 
+/* ---------- Guerra de clanes: partidas más altas y anular las sospechosas (supabase/138) ---------- */
+async function clpGuerraCargar() {
+  try { CLP.guerra = await clpRpc('guerra_admin_partidas', { p_lim: 60 }); }
+  catch (e) { CLP.guerra = { error: /guerra_admin|function|schema cache/i.test(String(e.message)) ? 'Falta correr supabase/138-guerra-reanudar-xp-repite.sql.' : clpErr(e) }; }
+  clpGuerraPintar();
+}
+function clpGuerraPintar() {
+  const box = $('clpGuerra'); if (!box) return;
+  const g = CLP.guerra;
+  if (!g) { box.innerHTML = '<div class="clp-nuevo"><h3>Guerra de clanes</h3><div class="loader">Cargando partidas…</div></div>'; clpGuerraCargar(); return; }
+  if (g.error) { box.innerHTML = '<div class="clp-nuevo"><h3>Guerra de clanes</h3><div class="state-msg error">' + esc(g.error) + '</div></div>'; return; }
+  const L = g.partidas || [];
+  box.innerHTML = `<div class="clp-nuevo"><h3>Guerra de clanes · Temporada ${g.temporada}: partidas más altas</h3>
+    <p>Lo normal es de 1 000 a 2 000 puntos y más de 1 minuto. Si ves algo raro (2 500 en pocos segundos, siempre el máximo), toca «Anular»: la partida queda en 0 y se le restan esos puntos al clan.</p>
+    ${!L.length ? '<div class="state-msg">Aún no hay partidas esta temporada.</div>' : `<div class="al-tabla-wrap"><table class="al-tabla clp-tabla">
+      <thead><tr><th>Alumno</th><th>Clan</th><th class="num">Puntos</th><th class="num">Aciertos</th><th class="num">Tiempo</th><th>Ronda</th><th></th></tr></thead>
+      <tbody>${L.map(x => `<tr${x.anulada ? ' style="opacity:.5"' : ''}><td><b>${esc(x.apodo || '—')}</b><small style="display:block;color:var(--text-dim)">ID ${x.jugador || '—'}</small></td><td>${esc(x.clan || '—')}</td>
+        <td class="num">${x.anulada ? 'Anulada' : clpMil(x.puntos)}</td><td class="num">${x.correctas}/10</td><td class="num">${Math.floor(x.segundos / 60)}:${String(x.segundos % 60).padStart(2, '0')}</td><td>R${x.ronda || '?'}</td>
+        <td>${x.anulada ? '' : `<button class="btn-ghost peligro${CLP.gSeguro === x.id ? ' seguro' : ''}" type="button" data-clpanular="${x.id}">${CLP.gSeguro === x.id ? '¿Seguro?' : 'Anular'}</button>`}</td></tr>`).join('')}</tbody></table></div>`}</div>`;
+}
+document.addEventListener('click', async e => {
+  const t = e.target.closest('[data-clpanular]');
+  if (!t || !$('tab-clanes') || $('tab-clanes').hidden) return;
+  const id = +t.dataset.clpanular;
+  if (CLP.gSeguro !== id) { CLP.gSeguro = id; clpGuerraPintar(); setTimeout(() => { if (CLP.gSeguro === id) { CLP.gSeguro = null; clpGuerraPintar(); } }, 4000); return; }
+  CLP.gSeguro = null; t.disabled = true;
+  try { await clpRpc('guerra_admin_anular', { p_id: id }); toast('Partida anulada'); CLP.guerra = null; clpGuerraPintar(); }
+  catch (x) { toast(clpErr(x), true); t.disabled = false; }
+});
+
 function clpPrevia() {
   const p = $('clpPrev'); if (p && window.MCClanes) p.innerHTML = MCClanes.escudo(CLP.nuevo);
 }
@@ -172,7 +204,7 @@ document.addEventListener('click', async e => {
   const t = e.target.closest('[data-clpfiltro],[data-clpver],[data-clpedit],[data-clpcancel],[data-clpguardar],[data-clpofi],[data-clpcerrar],[data-clpforma],[data-clpsimb],[data-clpcolor],#clpCrear,#clpRecargar');
   if (!t || !$('tab-clanes') || $('tab-clanes').hidden) return;
   const d = t.dataset;
-  if (t.id === 'clpRecargar') { CLP.seguro = null; return cargarClanes(); }
+  if (t.id === 'clpRecargar') { CLP.seguro = null; CLP.guerra = null; return cargarClanes(); }
   if (d.clpfiltro) { CLP.filtro = d.clpfiltro; return pintarClanes(); }
   if (d.clpver) { CLP.abierto = CLP.abierto === +d.clpver ? null : +d.clpver; return pintarClanes(); }
   if (d.clpedit) { CLP.editando = +d.clpedit; pintarClanes(); const i = $('clpEdN'); if (i) i.focus(); return; }

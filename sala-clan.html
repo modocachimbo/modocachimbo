@@ -48,6 +48,17 @@
   .h2 em { font-style: italic; color: var(--text-dim); font-size: 17px; }
   .small { font-size: 12.5px; color: var(--text-dim); line-height: 1.45; }
   .lb { display: block; font: 900 11px/1 Nunito, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--text-dim); margin: 14px 0 8px; }
+  .sc-n { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .sc-n .chip { display: grid; justify-items: center; gap: 3px; height: auto; padding: 10px 4px; font: italic 900 24px/1 var(--display); }
+  .sc-n .chip small { font: 800 10.5px/1.1 Nunito, sans-serif; font-style: normal; color: var(--text-dim); }
+  .sc-n .chip.on small { color: inherit; }
+  .sc-crear .lb { display: block; margin-top: 12px; }
+  .sc-ch { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+  .sc-ch span { padding: 10px 6px; border-radius: 12px; background: #120e24; border: 1.5px solid #2a2346; text-align: center; font: 800 11px/1.25 Nunito, sans-serif; color: var(--text-dim); }
+  .sc-ch b { display: block; font: italic 900 22px/1 var(--display); color: var(--accent); margin-bottom: 3px; text-transform: uppercase; }
+  .sc-gu { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: linear-gradient(90deg, rgba(255,200,0,.12), rgba(138,92,240,.12)); border: 1.5px solid rgba(255,200,0,.4); font: 700 13px/1.45 Nunito, sans-serif; color: #e9e3f8; }
+  .sc-gu b { color: #FFC800; }
+  @media (max-width: 520px) { .sc-ch { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   .dos { display: grid; gap: 14px; }
   @media (min-width: 860px) { .dos { grid-template-columns: 1.25fr 1fr; align-items: start; } }
 
@@ -171,6 +182,103 @@
   .foto-caja img { width: 100%; border-radius: 18px; box-shadow: 0 20px 60px rgba(0,0,0,.6); }
   .foto-caja .bt { display: flex; gap: 10px; margin-top: 12px; }
   .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #241d44; border: 1.5px solid #3a3266; padding: 12px 18px; border-radius: 14px; font-weight: 900; z-index: 50; box-shadow: 0 10px 30px rgba(0,0,0,.5); max-width: 92vw; }
+  /* ===== Sala de espera: arena con el búho de cada jugador, un lado por clan (como la del duelo) ===== */
+  .arena { --lima: #C6E000; --dim: #A99FC8; --bh0: 150px; position: relative; margin: 0 0 14px; border-radius: 24px; overflow: hidden; text-align: center; border: 2px solid #2a2350; border-bottom-width: 5px;
+    background: radial-gradient(120% 70% at 50% 108%, #3b1f7a 0%, transparent 55%), linear-gradient(180deg, #120b2c 0%, #1c1142 55%, #0e0922 100%); }
+  .arena::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .55;
+    background: conic-gradient(from 200deg at 15% -10%, transparent 0 10deg, color-mix(in srgb, var(--ca) 22%, transparent) 14deg, transparent 22deg),
+                conic-gradient(from 130deg at 85% -10%, transparent 0 10deg, color-mix(in srgb, var(--cb) 22%, transparent) 14deg, transparent 22deg),
+                conic-gradient(from 165deg at 50% -20%, transparent 0 8deg, rgba(255,255,255,.10) 11deg, transparent 15deg); }
+  .arena .franja { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, color-mix(in srgb, var(--ca) 11%, transparent), transparent 45%, transparent 55%, color-mix(in srgb, var(--cb) 12%, transparent)); }
+  .arena .piso { position: absolute; left: -10%; right: -10%; bottom: 0; height: 34%; pointer-events: none; background: radial-gradient(60% 100% at 50% 0%, #2c1a5e, #120a29 70%);
+    border-top: 2px solid rgba(198,224,0,.22); transform: perspective(500px) rotateX(35deg); transform-origin: top; }
+  .arena .piso::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 2px, transparent 2px 60px); }
+  .arena .a-cab { position: relative; z-index: 3; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px 0 18px; }
+  .arena .a-tit { font: italic 900 22px/1 var(--display); letter-spacing: .04em; text-transform: uppercase; color: #fff; opacity: .9; }
+  .arena .a-tit b { color: var(--accent); letter-spacing: .12em; }
+  .arena .lados { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 6px; padding: 10px 14px 18px; align-items: end; }
+  .arena .ld { position: relative; min-width: 0; border-radius: 20px; padding: 6px 4px 0; background: radial-gradient(90% 70% at 50% 100%, color-mix(in srgb, var(--k) 20%, transparent), transparent 70%); }
+  .arena .lcab { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 6px; min-width: 0; }
+  .arena .lcab .e { width: 58px; height: 65px; flex: none; filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--k) 55%, transparent)); }
+  .arena .lcab .e svg { width: 100%; height: 100%; }
+  .arena .lcab .t { min-width: 0; text-align: left; }
+  .arena .lcab b { display: block; font: italic 900 26px/1 var(--display); text-transform: uppercase; color: var(--k); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .arena .lcab small { display: block; font: 800 12px/1.3 Nunito, sans-serif; color: var(--dim); margin-top: 3px; }
+  .arena .lcab small i { font-style: normal; color: #58CC02; }
+  .arena .ld.vacio .lcab .e { opacity: .3; filter: grayscale(1); }
+  .arena .ld.vacio .lcab b { color: var(--text-faint); }
+  .arena .jgs { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 6px; align-items: end; }
+  .arena .vsx { align-self: center; margin-bottom: 90px; font: italic 900 64px/1 var(--display); color: #fff; text-shadow: 0 0 24px rgba(198,224,0,.7), 0 4px 0 rgba(0,0,0,.5); padding: 0 6px; }
+  .arena .sl { --jc: var(--k); position: relative; display: flex; flex-direction: column; align-items: center; min-width: 0; container-type: inline-size; }
+  .arena .bh-w { position: relative; z-index: 2; width: 100%; height: min(var(--bh0), 118cqw); display: flex; align-items: flex-end; justify-content: center; }
+  .arena .bh-w[data-jug] { cursor: pointer; }
+  .arena .bh { position: relative; height: 100%; display: flex; align-items: flex-end; justify-content: center; animation: vaiven 4s ease-in-out infinite; transform-origin: 50% 100%; }
+  .arena .ld.b .bh { scale: -1 1; }
+  .arena .sl:nth-child(2n) .bh { animation-delay: -1.3s; } .arena .sl:nth-child(3n) .bh { animation-delay: -2.4s; }
+  @keyframes vaiven { 0%, 100% { transform: rotate(-1.5deg); } 50% { transform: rotate(1.5deg); } }
+  .arena .bh .mcb-antiguo { aspect-ratio: 200 / 210; }
+  .arena .bh .mcb-antiguo svg { width: 100% !important; height: 100% !important; overflow: visible; }
+  .arena .bh .mcb { position: relative; height: 100%; width: auto; max-width: none; z-index: 1; cursor: inherit; }
+  .arena .sl.entra .bh-w { animation: caeArena .75s cubic-bezier(.3, 1.45, .5, 1) both; }
+  @keyframes caeArena { 0% { transform: translateY(-46px) scale(.85); opacity: 0; } 60% { opacity: 1; } }
+  .arena .plat { width: 92%; max-width: 170px; height: 28px; margin-top: -15px; border-radius: 50%; position: relative; z-index: 1;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--jc) 55%, transparent), color-mix(in srgb, var(--jc) 15%, transparent) 70%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--jc) 70%, transparent), 0 0 26px color-mix(in srgb, var(--jc) 60%, transparent); }
+  .arena .sl.yo .plat { box-shadow: 0 0 0 3px var(--jc), 0 0 40px var(--jc); }
+  .arena .sl.entra .plat { animation: platLuz 1s ease-out both; }
+  @keyframes platLuz { 0% { filter: brightness(2.2); } }
+  .arena .placa { position: relative; margin-top: 12px; width: 100%; max-width: 180px; text-align: left; border-radius: 14px; padding: 7px 9px 6px;
+    background: linear-gradient(180deg, rgba(20,14,44,.94), rgba(12,8,28,.96)); border: 2px solid color-mix(in srgb, var(--jc) 55%, #322B52); border-bottom: 4px solid color-mix(in srgb, var(--jc) 60%, #000); }
+  .arena .sl.yo .placa { border-color: var(--jc); }
+  .arena .placa .r1 { display: flex; align-items: center; gap: 5px; min-width: 0; }
+  .arena .placa .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 800 18px/1.1 var(--display); letter-spacing: .04em; text-transform: uppercase; color: var(--jc); }
+  .arena .placa .pin { width: 20px; height: 20px; flex: none; display: grid; place-items: center; }
+  .arena .placa .pin > * { width: 100%; height: 100%; }
+  .arena .placa .rg { width: 24px; flex: none; margin-left: auto; } .arena .placa .rg svg, .arena .placa .rg img { width: 100%; height: auto; display: block; }
+  .arena .placa .r2 { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: 4px; font: 800 11.5px/1.2 Nunito, sans-serif; color: var(--dim); }
+  .arena .placa .st { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; color: #58CC02; }
+  .arena .placa .st svg { width: 13px; height: 13px; flex: none; fill: none; stroke: currentColor; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+  .arena .placa .rn { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
+  .arena .placa .anf { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); font: 800 11px/1 var(--display); letter-spacing: .1em; text-transform: uppercase;
+    color: #2b2100; background: var(--oro); padding: 4px 8px 3px; border-radius: 6px; white-space: nowrap; }
+  .arena .sl.libre { --jc: #A99FC8; }
+  .arena .sl.libre .bh { animation: none; }
+  .arena .sl.libre .bh .mcb { filter: brightness(0) invert(1); opacity: .08; }
+  .arena .sl.libre .plat { box-shadow: 0 0 0 2px rgba(111,102,144,.6); background: none; }
+  .arena .sl.libre .placa { border-style: dashed; border-bottom-style: solid; background: rgba(12,8,28,.6); }
+  .arena .sl.libre .placa .nm { color: #A99FC8; }
+  .arena .sl.libre .placa .st { color: var(--dim); }
+  .arena .inv { position: absolute; z-index: 3; top: calc(min(var(--bh0), 118cqw) * .45); left: 50%; transform: translate(-50%, -50%); width: 52px; height: 52px; border-radius: 16px; cursor: pointer;
+    display: grid; place-items: center; border: 2px dashed #8e85b8; color: #e6e1ff; background: rgba(0,0,0,.35); animation: invLate 1.8s ease-in-out infinite; }
+  .arena .inv svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 3.2; stroke-linecap: round; }
+  @keyframes invLate { 50% { border-color: var(--lima); color: var(--lima); transform: translate(-50%, -50%) scale(1.06); } }
+  .arena .espera-rival { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 10px; min-height: calc(var(--bh0) + 70px); padding: 0 10px 10px; color: var(--dim); font-size: 13px; line-height: 1.4; }
+  .arena .espera-rival .e { width: 84px; height: 94px; opacity: .25; filter: grayscale(1); animation: invLate2 2.2s ease-in-out infinite; }
+  @keyframes invLate2 { 50% { opacity: .45; } }
+  @media (max-width: 700px) {
+    .arena { --bh0: 96px; margin-left: -6px; margin-right: -6px; border-radius: 20px; }
+    .arena .lados { grid-template-columns: 1fr; padding: 4px 8px 14px; gap: 0; }
+    .arena .piso { height: 20%; }
+    .arena .vsx { margin: 0 auto; font-size: 40px; padding: 4px 0; }
+    .arena .lcab .e { width: 44px; height: 50px; } .arena .lcab b { font-size: 21px; }
+    .arena .jgs { gap: 4px; }
+    .arena .plat { height: 16px; margin-top: -8px; }
+    .arena .placa { margin-top: 6px; padding: 4px 5px 3px; border-radius: 10px; border-bottom-width: 3px; }
+    .arena .placa .nm { font-size: 13px; }
+    .arena .placa .rn, .arena .placa .r1 .rg { display: none; }
+    .arena .placa .r2 { font-size: 10px; margin-top: 2px; }
+    .arena .placa .pin { width: 14px; height: 14px; }
+    .arena .placa .anf { font-size: 9px; padding: 3px 5px 2px; top: -9px; }
+    .arena .inv { width: 34px; height: 34px; border-radius: 11px; } .arena .inv svg { width: 16px; height: 16px; }
+    .arena .espera-rival { min-height: 0; padding: 4px 10px 6px; } .arena .espera-rival .e { width: 54px; height: 60px; }
+    .arena .a-tit { font-size: 18px; }
+  }
+  .arena .placa .st i { font-style: normal; }
+  .wrap:has(#arenaClan) { max-width: 1240px; }
+  .arena .apretado .placa { padding: 6px 7px 5px; } .arena .apretado .placa .nm { font-size: 16px; }
+  .arena .apretado .placa .st i, .arena .apretado .placa .rn { display: none; }
+  .arena .apretado .placa .r1 .rg { width: 20px; }
+  @media (prefers-reduced-motion: reduce) { .arena .bh, .arena .sl.entra .bh-w, .arena .sl.entra .plat, .arena .inv, .arena .espera-rival .e { animation: none; } }
 </style>
 </head>
 <body>
@@ -189,10 +297,15 @@
 <script src="assets/auth.js"></script>
 <script src="assets/pregunta.js"></script>
 <script src="assets/rango.js?v=185"></script>
-<script src="assets/coleccion.js?v=212"></script>
+<script src="assets/coleccion.js?v=213"></script>
 <script src="assets/tarjeta-perfil.js?v=210"></script>
 <script src="assets/amigos.js?v=5"></script>
-<script src="assets/clanes.js?v=6"></script>
+<script src="assets/clanes.js?v=8"></script>
+<link rel="stylesheet" href="assets/buho/buho.css">
+<script src="assets/buho/buho-datos.js"></script>
+<script src="assets/buho/rosa-datos.js"></script>
+<script src="assets/buho/buho-vivo.js"></script>
+<script src="assets/buho.js"></script>
 <script>
 (function () {
   var K = window.MCClanes, A = window.MCAmigos, esc = A.esc;
@@ -205,7 +318,7 @@
   var ERR = {
     sin_ticket: 'No tienes tickets de sala. Canjea uno con tus rayos.', pocos_rayos: 'Te faltan rayos para canjear un ticket. Gana rayos estudiando.',
     sala_abierta: 'Tu clan ya tiene una sala abierta. Termínala o espera a que venza.', sala_no_existe: 'No hay ninguna sala con ese código.',
-    sala_cerrada: 'Esa sala ya empezó o terminó.', sala_sin_rival: 'Aún no hay clan rival. Solo el líder o un sublíder de otro clan puede aceptar la sala.',
+    sala_cerrada: 'Esa sala ya empezó o terminó.', sala_sin_rival: 'Aún no hay clan rival.',
     sala_otro_clan: 'Esta sala es entre otros dos clanes.', sala_llena: 'Ya están todos los lugares de tu clan.', sala_pocos: 'Falta al menos un jugador por clan.',
     no_lider: 'Solo el líder o un sublíder puede hacer eso.', sin_clan: 'Primero únete a un clan.', sala_no_juegas: 'No estás en esta sala.', fuera_de_tiempo: 'Se acabó el tiempo de esa pregunta.'
   };
@@ -242,6 +355,23 @@
       return barajar(out);
     });
   }
+  // Preguntas al azar del ciclo más nuevo: Libros, Seminarios y Banqueo de todos los cursos
+  function ordenCiclo(id) { var m = String(id).match(/^(\d{4})-([IVX]+)$/), R = { I: 1, II: 2, III: 3 }; return m ? +m[1] * 10 + (R[m[2]] || 0) : 0; }
+  function armarAzar(n) {
+    var pares = []; CURSOS.forEach(function (c) { ['libros', 'seminarios', 'banqueo'].forEach(function (f) { pares.push([c.id, f]); }); });
+    return Promise.all(pares.map(function (p) { return archivo(p[0] + '/' + p[1] + '/data/manifest.json').then(function (m) { return { c: p[0], f: p[1], ids: m.filter(function (x) { return x && /^\d{4}-(I|II|III)$/.test(x.id) && (x.temas == null || x.temas > 0); }).map(function (x) { return x.id; }) }; }); }))
+      .then(function (L) {
+        var todos = {}; L.forEach(function (x) { x.ids.forEach(function (id) { todos[id] = 1; }); });
+        var ult = Object.keys(todos).sort(function (a, b) { return ordenCiclo(a) - ordenCiclo(b); }).pop();
+        var rutas = barajar(L.filter(function (x) { return x.ids.indexOf(ult) >= 0; }).map(function (x) { return x.c + '/' + x.f + '/data/' + ult + '.json'; })).slice(0, n + 4);
+        return Promise.all(rutas.map(function (ruta) { return archivo(ruta).then(function (T) { var out = []; T.forEach(function (t) { (t.questions || []).forEach(function (q, i) { if (valida(q) && !q.abierta && !/\[(TEXTO|LECTURA)/i.test(q.text) && /^[A-Za-z0-9._-]{1,12}$/.test(String(t.num))) out.push({ ref: ruta + '#' + t.num + '#' + i, q: q }); }); }); return barajar(out); }); }));
+      }).then(function (P) {
+        P = P.filter(function (p) { return p.length; });
+        var out = [];
+        while (out.length < n && P.some(function (p) { return p.length; })) P.forEach(function (p) { if (out.length < n && p.length) out.push(p.pop()); });
+        return barajar(out);
+      });
+  }
   function cargarRefs(L) {
     return Promise.all((L || []).map(function (x) {
       var m = String(x.ref).match(/^(.+\.json)#([^#]+)#(\d+)$/); if (!m) return null;
@@ -250,30 +380,27 @@
   }
 
   /* ---------- Estado ---------- */
-  var verCursos = false, MIO = null, F = { curso: 'mezcla', n: 10, seg: 20, formato: 5 }, S = null, QS = null, desfase = 0, sondeo = 0, tic = 0, mios = {}, ultimaI = -1, enviando = false;
+  var verCursos = false, MIO = null, F = { curso: 'mezcla', n: 10, seg: 20, formato: 3 }, S = null, QS = null, desfase = 0, sondeo = 0, tic = 0, mios = {}, ultimaI = -1, enviando = false;
 
   /* ---------- Inicio: ticket, crear o entrar ---------- */
   function ticketHtml() {
     var t = +MIO.tickets || 0, p = +MIO.precio || 60, r = +MIO.rayos || 0;
     return '<div class="ticket">' + TK + '<div class="t"><b>' + t + '</b><span>' + (t === 1 ? 'Ticket de sala' : 'Tickets de sala') + '</span></div></div>' +
       '<div class="canje"><button type="button" class="cb g" data-canje' + (r < p ? ' disabled' : '') + '>Canjear 1 ticket · ' + p + ' ' + RAYO + '</button><span class="small">Tienes <span class="rayo">' + RAYO + r + '</span> rayos</span></div>' +
-      '<p class="small" style="margin-top:8px">Crear una sala gasta 1 ticket. Si nadie la acepta en 30 minutos o la cancelas antes de empezar, el ticket vuelve.</p>';
+      '<p class="small" style="margin-top:8px">Crear la sala es gratis: el ticket se usa recién cuando tu clan da «Empezar». Si se cierra sin empezar, no gastas nada.</p>';
   }
   function inicio() {
     var s = MIO.sala;
-    var abierta = s ? '<div class="card" style="border-color:rgba(198,224,0,.5)"><div class="h2"><span class="pulso"></span>Tu clan tiene una sala</div><p class="small" style="margin-bottom:10px">' + esc(s.titulo) + (s.rival ? ' · contra <b style="color:#fff">' + esc(s.rival) + '</b>' : ' · esperando rival') + '</p><a class="cb l w" href="sala-clan.html?c=' + s.codigo + '">Entrar a la sala ' + s.codigo + '</a></div>' : '';
-    var cursos = [['mezcla', 'Mezcla de todo', '']].concat(AREAS.map(function (a) { return ['a:' + a.id, a.nombre, '']; })).concat(CURSOS.map(function (c) { return [c.id, c.nombre, c.icono]; }));
-    return abierta + '<div class="dos"><div class="card"><div class="h2">Crear sala <em>clan vs clan</em></div>' + ticketHtml() +
-      '<span class="lb">Preguntas de</span><div class="chips">' + cursos.filter(function (c, i) { return i < 5 || verCursos || F.curso === c[0]; }).map(function (c) { return '<button type="button" class="chip' + (F.curso === c[0] ? ' on' : '') + '" data-curso="' + c[0] + '">' + (c[2] ? '<img src="' + c[2] + '" alt="">' : '') + esc(c[1]) + '</button>'; }).join('') +
-      '<button type="button" class="chip" data-vercursos style="color:var(--accent)">' + (verCursos ? 'Menos' : 'Un curso ▾') + '</button></div>' +
-      '<span class="lb">Cuántas preguntas</span><div class="seg3">' + [10, 15, 20].map(function (n) { return '<button type="button" class="chip' + (F.n === n ? ' on' : '') + '" data-n="' + n + '">' + n + '<small>preguntas</small></button>'; }).join('') + '</div>' +
-      '<span class="lb">Tiempo por pregunta</span><div class="seg3">' + [15, 20, 30].map(function (n) { return '<button type="button" class="chip' + (F.seg === n ? ' on' : '') + '" data-seg="' + n + '">' + n + 's<small>' + (n === 15 ? 'rápido' : n === 20 ? 'normal' : 'tranquilo') + '</small></button>'; }).join('') + '</div>' +
-      '<span class="lb">Jugadores por clan</span><div class="seg3">' + [[3, '3 vs 3'], [5, '5 vs 5'], [10, 'Todos']].map(function (x) { return '<button type="button" class="chip' + (F.formato === x[0] ? ' on' : '') + '" data-formato="' + x[0] + '">' + x[1] + '<small>' + (x[0] === 10 ? 'hasta 10' : 'por lado') + '</small></button>'; }).join('') + '</div>' +
-      '<button type="button" class="cb l w" style="margin-top:16px" data-crear' + (+MIO.tickets ? '' : ' disabled') + '>' + TK.replace('class="tk"', 'width="30" height="22"') + 'Crear sala · usa 1 ticket</button>' +
-      (MIO.puedo ? '' : '<p class="small" style="margin-top:8px;text-align:center">Solo el líder o un sublíder crea la sala. Tú puedes entrar con el código.</p>') + '<p class="err" id="eCrear"></p></div>' +
-      '<div><div class="card"><div class="h2">Entrar con código</div><p class="small" style="margin-bottom:10px">Pídele el código de 5 letras a tu líder o al clan rival.</p>' +
-      '<input class="inp code" id="iCod" maxlength="5" autocomplete="off" autocapitalize="characters" placeholder="AB3K7"><button type="button" class="cb l w" style="margin-top:10px" data-entrar>Entrar</button><p class="err" id="eEntrar"></p></div>' +
-      '<div class="card"><div class="h2">Cómo se juega</div><p class="small">• Todos ven la <b style="color:#fff">misma pregunta al mismo tiempo</b>.<br>• Acierto: 50 puntos + hasta 50 más si respondes rápido.<br>• Gana el clan con <b style="color:#fff">mejor promedio por jugador</b>: un clan pequeño puede ganarle a uno grande.<br>• Es amistosa: nadie pone nada. Premio para cada jugador: <b style="color:var(--oro)">+20 XP por jugar, 5 XP por acierto y +60 XP si gana su clan</b>. Ese XP también sube a tu clan en el Top (si juegan 2 o más por lado; 3 salas al día).</p></div></div></div>';
+    var abierta = s ? '<div class="card" style="border-color:rgba(198,224,0,.5)"><div class="h2"><span class="pulso"></span>Tu clan tiene una sala</div><p class="small" style="margin-bottom:10px">' + esc(s.titulo) + (s.rival ? ' · contra <b style="color:#fff">' + esc(s.rival) + '</b>' : ' · esperando rival') + '</p><a class="cb l w" href="' + (s.codigo.length === 6 ? 'duelo.html?d=' : 'sala-clan.html?c=') + s.codigo + '">' + (s.empezo ? 'Ver la partida ' : 'Entrar a la sala ') + s.codigo + '</a></div>' : '';
+    return abierta + '<div class="dos"><div class="card sc-crear"><div class="h2">Crear sala <em>clan vs clan</em></div>' +
+      '<div class="sc-ch"><span><b>Gratis</b>sin ticket</span><span><b>6 vs 6</b>hasta 6 por clan</span><span><b>60 s</b>por pregunta</span><span><b>1:30</b>cuando la mayoría terminó</span></div>' +
+      '<span class="lb">Cuántas preguntas</span><div class="sc-n">' + [10, 20, 30, 40].map(function (n) { return '<button type="button" class="chip' + (F.n === n ? ' on' : '') + '" data-n="' + n + '">' + n + '<small>+' + (n * 125).toLocaleString('en-US').replace(/,/g, ' ') + ' si ganan</small></button>'; }).join('') + '</div>' +
+      '<p class="small" style="margin:12px 0 4px">Las preguntas salen solas, al azar, del ciclo más nuevo de todos los cursos. Comparte el código con tu clan y con otro clan: el primero de otro clan que entra queda de rival. Cuando más de la mitad termina, los demás tienen 1 minuto y medio para acabar.</p>' +
+      '<div class="sc-gu">' + '<b>Martes y jueves de 8:00 a 20:00</b> el duelo suma a la <b>Guerra de clanes</b>. Más preguntas, más puntos (máximo 5 000 con 40). Con ' + F.n + ' preguntas, cada jugador del clan que gana suma <b>' + (F.n * 125).toLocaleString('en-US').replace(/,/g, ' ') + '</b>, empate <b>' + (F.n * 75).toLocaleString('en-US').replace(/,/g, ' ') + '</b> y el que pierde <b>' + (F.n * 50).toLocaleString('en-US').replace(/,/g, ' ') + '</b> (hasta 3 duelos por ronda).</div>' +
+      '<button type="button" class="cb l w" style="margin-top:14px" data-crear>Crear sala</button><p class="err" id="eCrear"></p></div>' +
+      '<div><div class="card"><div class="h2">Entrar con código</div><p class="small" style="margin-bottom:10px">Pide el código de la sala a tu clan o al clan rival.</p>' +
+      '<input class="inp code" id="iCod" maxlength="6" autocomplete="off" autocapitalize="characters" placeholder="AB3K7Q"><button type="button" class="cb l w" style="margin-top:10px" data-entrar>Entrar</button><p class="err" id="eEntrar"></p></div>' +
+      '<div class="card"><div class="h2">Cómo se juega</div><p class="small">• Es un <b style="color:#fff">duelo entre clanes</b>: las mismas preguntas para todos, con los <b style="color:#fff">comodines del duelo</b>.<br>• Los ataques (Glaciar, Sismo, Arenas, Llamarada, Volcán y Botín) <b style="color:#fff">solo le pegan al clan rival</b>.<br>• Gana el clan con <b style="color:#fff">mejor promedio de puntos</b>.<br>• Cada jugador gana el XP del duelo por su puesto, y ese XP también sube a tu clan en el Top.</p></div></div></div>';
   }
 
   /* ---------- Sala ---------- */
@@ -299,18 +426,92 @@
     return '<div class="eq" style="border-color:' + (c ? c.color + '55' : '#2a2346') + '"><h3><b style="color:' + (c ? c.color : 'var(--text-faint)') + '">' + (c ? esc(c.nombre) : 'Rival') + '</b><span>' + L.length + '/' + S.formato + '</span></h3>' + (c ? h : '<p class="small">Comparte el código con el líder o sublíder de otro clan. Cuando entre, su clan será el rival.</p>') + '</div>';
   }
   function lobby() {
-    var dentro = !!S.yo, puedoEmpezar = S.creador || (S.mi_clan === (lado(0) || {}).id && S.mi_rol !== 'miembro');
-    var listo = lado(1) && jugadoresDe(lado(0)).length && jugadoresDe(lado(1)).length;
     var enlace = location.origin + location.pathname + '?c=' + S.codigo;
-    return vs(false) +
+    return '<div id="arenaClan"></div>' +
       '<div class="card"><div class="codigo"><div><span class="lb" style="margin-top:0">Código de la sala</span><div class="c">' + S.codigo + '</div></div><span class="sp"></span>' +
       '<button type="button" class="cb g" data-copiar="' + esc(enlace) + '"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>Copiar</button>' +
       '<a class="cb wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent('¡Sala de clan en Modo Cachimbo! Entra con el código ' + S.codigo + ' ' + enlace) + '">WhatsApp</a></div>' +
       '<div class="info"><span>' + esc(S.titulo) + '</span><span>' + S.n + ' preguntas</span><span>' + S.seg + ' s cada una</span><span>' + (S.formato === 10 ? 'Todos (hasta 10)' : S.formato + ' vs ' + S.formato) + '</span></div></div>' +
-      '<div class="equipos">' + equipo(lado(0), 0) + equipo(lado(1), 1) + '</div>' +
-      '<div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">' +
+      '<div id="lbBtns">' + lobbyBtns() + '</div>';
+  }
+  function lobbyBtns() {
+    var dentro = !!S.yo, puedoEmpezar = S.creador || (S.mi_clan === (lado(0) || {}).id && S.mi_rol !== 'miembro');
+    var listo = lado(1) && jugadoresDe(lado(0)).length && jugadoresDe(lado(1)).length;
+    return '<div style="display:flex;gap:10px;flex-wrap:wrap">' +
       (!dentro ? '<button type="button" class="cb l" style="flex:1" data-unirme>Entrar a la sala</button>' : puedoEmpezar ? '<button type="button" class="cb l" style="flex:1" data-empezar' + (listo ? '' : ' disabled') + '>' + (listo ? '¡Empezar!' : 'Esperando al rival…') + '</button>' : '<div class="cb g" style="flex:1;cursor:default">Esperando que el líder empiece…</div>') +
       (dentro ? '<button type="button" class="cb r" data-salir>' + (S.creador ? 'Cancelar sala' : 'Salir') + '</button>' : '') + '</div><p class="err" id="eSala"></p>';
+  }
+
+  /* Arena de la sala de espera: el búho de cada jugador en su plataforma, un lado por clan */
+  var VISTOS = {}, IC_OK = '<svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg>', IC_MAS = '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>', IC_RELOJ = '<svg viewBox="0 0 24 24" style="stroke-width:2.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+  function pjDe(j) {
+    var C = window.MCColeccion, id = j && j.puesto && j.puesto.buho;
+    if (!id && j && j.yo && C && C.estado && C.estado().listo) id = C.puesto('buho');
+    if (id === 'buho-antiguo' && window.MCBuho) return 'antiguo';
+    var x = id && C && C.item(id);
+    return x && x.pj && window.MCBuhoAmigos && MCBuhoAmigos[x.pj] ? x.pj : '';
+  }
+  function cuposDe(c) {
+    var L = jugadoresDe(c), max = Math.min(S.formato, 5);
+    return Math.max(Math.min(L.length, 5), S.formato === 10 ? Math.min(5, Math.max(3, L.length + 1)) : max);
+  }
+  function placaHtml(j, c) {
+    var pued = S.yo && c && S.yo.clan === c.id;
+    if (!j) return '<div class="r1"><span class="nm">Libre</span></div><div class="r2"><span class="st">' + (pued ? IC_MAS + '<i>Invitar</i>' : IC_RELOJ + '<i>Esperando</i>') + '</span></div>';
+    var nv = j.xp_total != null && window.MCRango ? MCRango.nivel(j.xp_total) : -1;
+    var p = window.MCTarjeta && MCTarjeta.pinDe ? MCTarjeta.pinDe({ yo: j.yo, pin: ((j.puesto || {}).pines || [])[0], puesto: j.puesto }) : null;
+    return (j.yo && S.creador ? '<i class="anf">Anfitrión</i>' : '') +
+      '<div class="r1">' + (p ? '<span class="pin">' + p.html + '</span>' : '') + '<span class="nm">' + (j.yo ? 'Tú' : esc(j.apodo || 'Cachimbo')) + '</span>' +
+      (nv >= 0 ? '<span class="rg" title="' + MCRango.nombre(nv) + '">' + MCRango.svg(nv, { mini: true, quieto: true }) + '</span>' : '') + '</div>' +
+      '<div class="r2"><span class="st">' + IC_OK + '<i>En la sala</i></span>' + (nv >= 0 ? '<span class="rn" style="color:' + MCRango.color(nv).c + '">' + MCRango.nombre(nv) + '</span>' : '') + '</div>';
+  }
+  function pintarArena() {
+    var caja = document.getElementById('arenaClan'); if (!caja) return;
+    var a = lado(0), b = lado(1);
+    document.documentElement.style.setProperty('--ca', (a && a.color) || '#C6E000');
+    document.documentElement.style.setProperty('--cb', (b && b.color) || '#1CB0F6');
+    var filas = [a, b].map(function (c) { return c ? jugadoresDe(c).slice(0, 5) : null; });
+    var firma = [a, b].map(function (c, i) { return c ? c.id + ':' + cuposDe(c) + ':' + filas[i].map(function (j) { return j.apodo + '/' + pjDe(j); }).join(',') : '-'; }).join('|') + '|' + (S.yo ? S.yo.clan : '');
+    if (caja.dataset.firma === firma) {
+      caja.querySelectorAll('.sl').forEach(function (s) { var c = s.dataset.lado === 'b' ? b : a, j = filas[s.dataset.lado === 'b' ? 1 : 0][+s.dataset.i], h = placaHtml(j, c); if (s.lastChild.innerHTML !== h) s.lastChild.innerHTML = h; });
+      return;
+    }
+    // Reusa los búhos que ya estaban para que no reinicien su animación
+    var viejos = {};
+    caja.querySelectorAll('.sl[data-k]').forEach(function (s) { var m = s.querySelector('.bh .mcb'); if (m) viejos[s.dataset.k] = m; });
+    caja.dataset.firma = firma;
+    caja.className = 'arena';
+    caja.innerHTML = '<div class="franja" aria-hidden="true"></div><div class="piso" aria-hidden="true"></div><div class="a-cab"><span class="a-tit">Sala de clan · <b>' + S.codigo + '</b></span></div><div class="lados"></div>';
+    var cont = caja.querySelector('.lados');
+    [a, b].forEach(function (c, li) {
+      if (li === 1) { var v = document.createElement('div'); v.className = 'vsx'; v.setAttribute('aria-hidden', 'true'); v.textContent = 'VS'; cont.append(v); }
+      var d = document.createElement('div'); d.className = 'ld ' + (li ? 'b' : 'a') + (c ? '' : ' vacio');
+      d.style.setProperty('--k', (c && c.color) || '#6F6690');
+      var L = c ? jugadoresDe(c) : [], extra = L.length > 5 ? ' · +' + (L.length - 5) + ' más' : '';
+      d.innerHTML = '<div class="lcab"><span class="e">' + K.escudo(c || { forma: 'punta', color: '#3a3266' }) + '</span><div class="t"><b>' + (c ? esc(c.nombre) : 'Rival') + '</b><small>' +
+        (c ? L.length + '/' + S.formato + ' en la sala' + extra : 'Esperando rival') + '</small></div></div>';
+      if (!c) { d.innerHTML += '<div class="espera-rival">Comparte el código con el líder o un sublíder de otro clan. Cuando entre, su clan será el rival.</div>'; cont.append(d); return; }
+      var g = document.createElement('div'); g.className = 'jgs'; var n = cuposDe(c); g.style.setProperty('--n', n); if (n >= 4) g.classList.add('apretado');
+      for (var i = 0; i < n; i++) {
+        var j = filas[li][i] || null, pj = j ? pjDe(j) : '', k = j ? j.apodo + ':' + pj : '';
+        var s = document.createElement('div'); s.className = 'sl' + (j ? '' : ' libre') + (j && j.yo ? ' yo' : '') + (j && !VISTOS[j.apodo] ? ' entra' : '');
+        s.dataset.lado = li ? 'b' : 'a'; s.dataset.i = i; if (k) s.dataset.k = k;
+        var w = document.createElement('div'); w.className = 'bh-w';
+        if (j && j.codigo && !j.yo) { w.dataset.jug = j.codigo; w.setAttribute('role', 'button'); w.setAttribute('tabindex', '0'); w.setAttribute('aria-label', 'Ver a ' + (j.apodo || '')); }
+        var bh = document.createElement('div'); bh.className = 'bh', m = k && viejos[k];
+        if (!m && pj === 'antiguo') { m = document.createElement('div'); m.className = 'mcb mcb-antiguo'; m.innerHTML = MCBuho.svg(j && j.yo ? 'feliz' : 'normal', 200); }
+        else if (!m && window.MCBuhoVivo) { try { m = MCBuhoVivo.crear(j && j.yo ? 'saludando' : 'oficial', pj); } catch (e) { m = null; } }
+        if (m) bh.append(m);
+        w.append(bh); s.append(w);
+        if (!j && S.yo && S.yo.clan === c.id) { var bi = document.createElement('button'); bi.type = 'button'; bi.className = 'inv'; bi.dataset.invitar = '1'; bi.setAttribute('aria-label', 'Invitar a alguien de tu clan'); bi.innerHTML = IC_MAS; s.append(bi); }
+        var pl = document.createElement('div'); pl.className = 'plat'; pl.setAttribute('aria-hidden', 'true'); s.append(pl);
+        var pc = document.createElement('div'); pc.className = 'placa'; pc.innerHTML = placaHtml(j, c); s.append(pc);
+        g.append(s);
+        if (j) VISTOS[j.apodo] = 1;
+      }
+      d.append(g); cont.append(d);
+    });
+    if (window.MCColeccion && MCColeccion.css) MCColeccion.css();
   }
 
   /* ---------- Juego ---------- */
@@ -360,7 +561,7 @@
     pintarBarra(f);
     var rl = document.getElementById('reloj'), v = rl.querySelector('.v');
     v.style.strokeDashoffset = (150.8 * (1 - f.queda / S.seg)).toFixed(1);
-    rl.querySelector('b').textContent = f.tipo === 'pregunta' ? Math.ceil(f.queda) : '✓';
+    var rb = rl.querySelector('b'); if (f.tipo === 'pregunta') rb.textContent = Math.ceil(f.queda); else if (!rb.firstElementChild) rb.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>';
     rl.classList.toggle('poco', f.tipo === 'pregunta' && f.queda <= 5);
     var ver = document.getElementById('ver'), m = mios[f.i];
     if (f.tipo === 'pausa') {
@@ -415,6 +616,11 @@
       function txt(t, x, y, font, col, al, sombra) { c.font = font; c.textAlign = al || 'center'; c.fillStyle = col; if (sombra) { c.shadowColor = sombra; c.shadowBlur = 40; } c.fillText(t, x, y); c.shadowBlur = 0; }
       function ajusta(t, max, size, base) { var s = size; c.font = base.replace('{s}', s); while (c.measureText(t).width > max && s > 20) { s -= 2; c.font = base.replace('{s}', s); } return base.replace('{s}', s); }
       var D = '"Barlow Condensed", Impact, sans-serif', N = 'Nunito, sans-serif';
+      // Corona y estrella dibujadas (sin emojis)
+      function corona(cx, base) { c.save(); c.translate(cx, base); c.fillStyle = '#FFC800'; c.strokeStyle = '#8a5a00'; c.lineWidth = 5; c.lineJoin = 'round'; c.shadowColor = 'rgba(255,200,0,.6)'; c.shadowBlur = 24;
+        c.beginPath(); c.moveTo(-60, 0); c.lineTo(-68, -62); c.lineTo(-32, -30); c.lineTo(0, -78); c.lineTo(32, -30); c.lineTo(68, -62); c.lineTo(60, 0); c.closePath(); c.fill(); c.shadowBlur = 0; c.stroke();
+        c.fillStyle = '#8a5a00'; c.fillRect(-60, 4, 120, 14); [-68, 0, 68].forEach(function (x, i) { c.fillStyle = '#FFF3B0'; c.beginPath(); c.arc(x, i === 1 ? -82 : -66, 9, 0, 7); c.fill(); }); c.restore(); }
+      function estrella(cx, cy, r) { c.save(); c.fillStyle = '#C6E000'; c.beginPath(); for (var i = 0; i < 10; i++) { var a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .45 : r; c.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr); } c.closePath(); c.fill(); c.restore(); }
       txt('MODO CACHIMBO · SALA DE CLAN', W / 2, 92, 'italic 900 38px ' + D, '#C6E000');
       var tit = gan ? (yo && yo.clan === gan.id ? '¡VICTORIA!' : '¡GANÓ ' + gan.nombre.toUpperCase() + '!') : '¡EMPATE!';
       txt(tit, W / 2, 230, ajusta(tit, 960, 150, 'italic 900 {s}px ' + D), gan ? '#FFC800' : '#FFFFFF', 'center', gan ? 'rgba(255,200,0,.6)' : null);
@@ -425,7 +631,7 @@
         txt(x[0].nombre.toUpperCase(), x[2], 760, ajusta(x[0].nombre.toUpperCase(), 420, 52, 'italic 900 {s}px ' + D), '#FFFFFF');
         txt(String(prom(x[0])), x[2], 870, 'italic 900 110px ' + D, x[0].color || '#fff');
         txt('PROMEDIO', x[2], 912, '900 26px ' + N, '#A99FC8');
-        if (es) txt('👑', x[2], 300, '70px sans-serif', '#fff');
+        if (es) corona(x[2], 300);
       });
       txt('VS', W / 2, 545, 'italic 900 110px ' + D, '#FFFFFF', 'center', 'rgba(198,224,0,.7)');
       // Tarjeta del jugador
@@ -435,7 +641,7 @@
       var L = (S.jugadores || []).slice().sort(function (x, y) { return y.puntos - x.puntos; }), mvp = L[0];
       txt(me ? (me.apodo || 'Yo').toUpperCase() : 'MVP: ' + ((mvp && mvp.apodo) || '').toUpperCase(), W / 2, 1050, 'italic 900 56px ' + D, '#FFFFFF');
       txt(me ? me.puntos + ' pts · ' + me.aciertos + ' de ' + S.n + ' aciertos' + (yo && yo.premio ? ' · +' + yo.premio + ' XP' : '') : '', W / 2, 1105, '900 34px ' + N, '#FFC800');
-      if (mvp && me && mvp.yo) txt('⭐ MVP DE LA SALA', W / 2, 1155, 'italic 900 38px ' + D, '#C6E000');
+      if (mvp && me && mvp.yo) { txt('MVP DE LA SALA', W / 2 + 26, 1155, 'italic 900 38px ' + D, '#C6E000'); c.font = 'italic 900 38px ' + D; estrella(W / 2 - c.measureText('MVP DE LA SALA').width / 2 - 8, 1142, 22); }
       else txt(S.titulo + ' · ' + S.n + ' preguntas', W / 2, 1155, '800 28px ' + N, '#A99FC8');
       txt('modocachimbo.github.io', W / 2, 1270, '900 30px ' + N, '#6F6690');
       var f = new Date(); txt(f.toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' }), W / 2, 1310, '700 24px ' + N, '#6F6690');
@@ -448,7 +654,7 @@
     var puede = archivo && navigator.canShare && navigator.canShare({ files: [archivo] });
     var d = document.createElement('div'); d.className = 'foto-fondo';
     d.innerHTML = '<div class="foto-caja"><img src="' + url + '" alt="Tu resultado"><div class="bt">' + (puede ? '<button type="button" class="cb comp" style="flex:1" data-f="compartir">Compartir</button>' : '') +
-      '<a class="cb l" style="flex:1" href="' + url + '" download="' + nombre + '">Descargar</a><button type="button" class="cb g" data-f="cerrar">✕</button></div></div>';
+      '<a class="cb l" style="flex:1" href="' + url + '" download="' + nombre + '">Descargar</a><button type="button" class="cb g" data-f="cerrar" aria-label="Cerrar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>';
     document.body.appendChild(d);
     d.addEventListener('click', function (e) {
       var b = e.target.closest('[data-f]');
@@ -462,7 +668,11 @@
   function pintarSala() {
     clearInterval(sondeo); sondeo = 0;
     if (S.estado === 'cancelada') { app.innerHTML = '<div class="card estado"><div class="h2" style="justify-content:center">Sala cerrada</div><p class="small">La sala se canceló o venció sin empezar. Si era tuya, el ticket volvió.</p><a class="cb l" style="margin-top:14px" href="sala-clan.html">Volver</a></div>'; return; }
-    if (S.estado === 'espera') { app.innerHTML = lobby(); sondeo = setInterval(visible(refrescar), 3000); return; }
+    if (S.estado === 'espera') {
+      // Si ya está la sala en pantalla, solo se actualizan la arena y los botones (los búhos no se reinician)
+      if (document.getElementById('arenaClan') && document.getElementById('lbBtns')) document.getElementById('lbBtns').innerHTML = lobbyBtns(); else app.innerHTML = lobby();
+      pintarArena(); sondeo = setInterval(visible(refrescar), 3000); return;
+    }
     if (S.estado === 'fin') { clearInterval(tic); tic = 0; app.innerHTML = resultado(); son('bien'); if (S.yo && S.yo.premio == null) setTimeout(refrescar, 2500); return; }
     // En juego: preguntas cargadas una sola vez; marcador cada 4 s
     var seguir = function () { if (!tic) { tic = setInterval(bucle, 200); bucle(); } sondeo = setInterval(visible(refrescar), 4000); };
@@ -483,6 +693,8 @@
   app.addEventListener('click', function (e) {
     var el;
     if ((el = e.target.closest('#alts button'))) { responder(+el.dataset.k); return; }
+    if ((el = e.target.closest('[data-invitar]'))) { var en = location.origin + location.pathname + '?c=' + S.codigo; if (navigator.share) navigator.share({ title: 'Modo Cachimbo', text: '¡Sala de clan! Entra con el código ' + S.codigo, url: en }).catch(function () {}); else A.copiar(en, 'Enlace copiado: pásalo a tu clan'); return; }
+    if ((el = e.target.closest('[data-jug]')) && window.MCTarjeta && MCTarjeta.ver) { MCTarjeta.ver(+el.dataset.jug); return; }
     if ((el = e.target.closest('[data-vercursos]'))) { verCursos = !verCursos; app.innerHTML = inicio(); return; }
     if ((el = e.target.closest('[data-curso]'))) { F.curso = el.dataset.curso; app.innerHTML = inicio(); return; }
     if ((el = e.target.closest('[data-n]'))) { F.n = +el.dataset.n; app.innerHTML = inicio(); return; }
@@ -494,19 +706,18 @@
       return;
     }
     if ((el = e.target.closest('[data-crear]'))) {
-      var er = document.getElementById('eCrear'); el.disabled = true; el.textContent = 'Armando preguntas…';
-      var lista = F.curso === 'mezcla' ? CURSOS.map(function (c) { return c.id; }) : F.curso.indexOf('a:') === 0 ? CURSOS.filter(function (c) { return c.area === F.curso.slice(2); }).map(function (c) { return c.id; }) : [F.curso];
-      var nom = F.curso === 'mezcla' ? 'Mezcla de todo' : F.curso.indexOf('a:') === 0 ? (AREAS.filter(function (a) { return 'a:' + a.id === F.curso; })[0] || {}).nombre : NOMBRE[F.curso];
-      armar(lista, F.n).then(function (L) {
-        if (L.length < F.n) throw new Error('Con esa opción solo hay ' + L.length + ' preguntas. Elige otra.');
-        return rpc('clan_sala_crear', { p: { titulo: nom, n: F.n, seg: F.seg, formato: F.formato, preguntas: L.map(function (x) { return { ref: x.ref, c: x.q.correct, k: x.q.options.length }; }) } });
-      }).then(function (cod) { location.href = 'sala-clan.html?c=' + cod; }, function (x) { er.textContent = x && x.message && x.message.indexOf('Con esa') === 0 ? x.message : error(x); app.innerHTML = inicio(); document.getElementById('eCrear').textContent = er.textContent; });
+      el.disabled = true; el.textContent = 'Armando preguntas…';
+      armarAzar(F.n).then(function (L) {
+        if (L.length < F.n) throw new Error('sin_preguntas');
+        return rpc('clan_duelo_crear', { p: { titulo: 'Sala de clan', curso: 'todos', fuente: 'mezcla', n: L.length, seg: 60, por_lado: '6', preguntas: L.map(function (x) { return { ref: x.ref, c: x.q.correct, k: x.q.options.length }; }) } });
+      }).then(function (cod) { location.href = 'duelo.html?d=' + cod; }, function (x) { var m = x && x.message === 'sin_preguntas' ? 'No se pudieron cargar las preguntas. Revisa tu internet.' : error(x); app.innerHTML = inicio(); document.getElementById('eCrear').textContent = m; });
       return;
     }
     if ((el = e.target.closest('[data-entrar]'))) {
       var c = (document.getElementById('iCod').value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-      if (c.length !== 5) { document.getElementById('eEntrar').textContent = 'El código tiene 5 letras o números.'; return; }
+      if (c.length !== 5 && c.length !== 6) { document.getElementById('eEntrar').textContent = 'El código tiene 6 letras o números.'; return; }
       el.disabled = true;
+      if (c.length === 6) { rpc('entrar_duelo', { p_codigo: c }).then(function () { location.href = 'duelo.html?d=' + c; }, function (x) { document.getElementById('eEntrar').textContent = /No existe/.test(String(x && x.message)) ? ERR.sala_no_existe : error(x); el.disabled = false; }); return; }
       rpc('clan_sala_entrar', { p_codigo: c }).then(function () { location.href = 'sala-clan.html?c=' + c; }, function (x) { document.getElementById('eEntrar').textContent = error(x); el.disabled = false; });
       return;
     }
@@ -528,7 +739,7 @@
     if ((el = e.target.closest('[data-compartir]'))) { el.disabled = true; fotoVictoria().then(mostrarFoto, function () { toast('No se pudo armar la imagen.'); }).then(function () { el.disabled = false; }); return; }
     if ((el = e.target.closest('[data-copiar]'))) { A.copiar(el.dataset.copiar, 'Enlace copiado'); return; }
   });
-  app.addEventListener('input', function (e) { if (e.target.id === 'iCod') e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5); });
+  app.addEventListener('input', function (e) { if (e.target.id === 'iCod') e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6); });
 
   /* ---------- Arranque ---------- */
   var empezado = false;
@@ -538,7 +749,7 @@
       CURSOS = ((reg && reg.cursos) || []).filter(function (c) { return !c.oculto; }).sort(function (a, b) { return (a.orden || 0) - (b.orden || 0); });
       AREAS = (reg && reg.areas) || []; CURSOS.forEach(function (c) { NOMBRE[c.id] = c.nombre; });
       if (COD) return refrescar();
-      return Promise.all([rpc('clan_sala_mia'), rpc('mi_clan').catch(function () { return {}; })]).then(function (r) {
+      return Promise.all([rpc('clan_duelo_mio').catch(function () { return rpc('clan_sala_mia'); }), rpc('mi_clan').catch(function () { return {}; })]).then(function (r) {
         MIO = r[0] || {}; MIO.puedo = !!(r[1] && r[1].clan && r[1].rol !== 'miembro');
         if (!(r[1] && r[1].clan)) { app.innerHTML = '<div class="card estado"><div class="h2" style="justify-content:center">Primero únete a un clan</div><p class="small">Las salas son entre clanes.</p><a class="cb l" style="margin-top:14px" href="clanes.html">Ir a Clanes</a></div>'; return; }
         app.innerHTML = inicio();

@@ -15,9 +15,14 @@
      internet, el paquete se actualiza solo.
    - Notificaciones push (panel → Web → Notificaciones): las muestra
      y al tocarlas abre el link (o el inicio).
-   Al cambiar este archivo, sube VERSION para limpiar lo viejo.
+   - Señal mala o datos sin saldo (el operador redirige a su página o la
+     conexión se queda colgada): si en 4 s no responde, o responde con
+     una redirección a otro sitio o un error 5xx, sale lo guardado.
+   - «./» e «index.html» son la misma página (la app abre en «./»).
+   Cambiar este archivo NO necesita subir VERSION (el navegador ya trae el sw.js nuevo);
+   subirla borra todo lo guardado y deja a los alumnos sin nada hasta que vuelvan a abrir cada página con internet.
    ========================================================= */
-const VERSION = 'mc-v5';
+const VERSION = 'mc-v5';   // No subirla sin necesidad: al cambiarla se borra lo guardado y sin internet no abriría nada hasta volver a visitarlo
 const PAQ = 'mc-pack-';
 const OFFLINE = 'offline.html';
 const CDN = /^https:\/\/(cdn\.jsdelivr\.net\/npm\/(katex@|@supabase\/supabase-js@)|fonts\.(googleapis|gstatic)\.com\/)/;
@@ -75,22 +80,57 @@ async function primeroGuardado(req) {
   return r;
 }
 
+// Lo guardado para esta página: exacta, sin ?…, y «./» ↔ «index.html»
+async function guardadaDe(req, c) {
+  const pagina = req.mode === 'navigate';
+  let hit = await c.match(req) || await enPaquete(req);
+  if (hit || !pagina) return hit;
+  hit = await c.match(req, { ignoreSearch: true }) || await enPaquete(req, { ignoreSearch: true });
+  if (hit) return hit;
+  const u = new URL(req.url);
+  const otra = u.pathname.endsWith('/') ? u.pathname + 'index.html' : u.pathname.endsWith('/index.html') ? u.pathname.slice(0, -10) : null;
+  if (!otra) return undefined;
+  const alt = new URL(otra, u.origin).href;
+  return await c.match(alt, { ignoreSearch: true }) || await enPaquete(new Request(alt), { ignoreSearch: true });
+}
+
+// ¿La respuesta sirve? (no: redirección del operador a otro sitio, error del servidor)
+function sirve(r) {
+  if (!r || r.type === 'opaqueredirect' || r.type === 'error') return false;
+  if (r.status >= 500) return false;
+  try { if (r.redirected && new URL(r.url).origin !== location.origin) return false; } catch (e) {}
+  return true;
+}
+
+// Si la página ya vio que la red está mala, sus archivos salen de lo guardado sin esperar (30 s)
+let malaHasta = 0;
 async function primeroInternet(req) {
   const c = await caches.open(VERSION);
-  try {
-    // no-cache: revisa con el servidor (si no cambió responde 304, casi sin datos)
-    const r = await fetch(req, { cache: 'no-cache' });
-    if (r.ok && r.type === 'basic') { c.put(req, r.clone()); if ((await paquetes()).length) alPaquete(req, r.clone()); }
-    return sinGuardar(r);
-  } catch (err) {
-    const pagina = req.mode === 'navigate';
-    // Una página (quiz.html?year=…) es la misma con cualquier ?…: vale la última guardada
-    const hit = await c.match(req) || await enPaquete(req) ||
-      (pagina && (await c.match(req, { ignoreSearch: true }) || await enPaquete(req, { ignoreSearch: true })));
-    if (hit) return hit;
-    if (pagina) return (await c.match(OFFLINE)) || Response.error();
-    throw err;
+  const pagina = req.mode === 'navigate';
+  if (!pagina && Date.now() < malaHasta) {
+    const ya = await guardadaDe(req, c);
+    if (ya) { fetch(req, { cache: 'no-cache' }).then(r => { if (r.ok && r.type === 'basic' && !r.redirected) c.put(req, r); }).catch(() => {}); return ya; }
   }
+  // Pide al servidor (no-cache: si no cambió responde 304, casi sin datos) y guarda lo bueno
+  const red = fetch(req, { cache: 'no-cache' }).then(async r => {
+    if (r.ok && r.type === 'basic' && !r.redirected) { c.put(req, r.clone()); if ((await paquetes()).length) alPaquete(req, r.clone()); }
+    return r;
+  });
+  // Sin señal clara: si en 4 s no hay respuesta, sale lo guardado (la descarga sigue por detrás)
+  let reloj;
+  const espera = new Promise(ok => { reloj = setTimeout(() => ok('lento'), pagina ? 4000 : 3000); });
+  let r = null;
+  try { r = await Promise.race([red, espera]); } catch (err) { r = null; }
+  clearTimeout(reloj);
+  if (r && r !== 'lento' && sirve(r)) { malaHasta = 0; return sinGuardar(r); }
+  malaHasta = Date.now() + 30000;
+  const hit = await guardadaDe(req, c);
+  if (hit) { if (r === 'lento') red.catch(() => {}); return hit; }
+  // Nada guardado: espera a la red (si estaba lenta) o muestra la página sin internet
+  if (r === 'lento') { try { const r2 = await red; if (sirve(r2)) return sinGuardar(r2); } catch (err) {} }
+  else if (r && r.type !== 'error') return r.type === 'opaqueredirect' ? r : sinGuardar(r);
+  if (pagina) return (await c.match(OFFLINE)) || Response.error();
+  return Response.error();
 }
 
 // ---------- Paquetes de descarga (cachés mc-pack-…) ----------

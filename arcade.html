@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,800;1,900&family=Nunito:wght@600;800;900&family=Lilita+One&display=swap">
 <script src="assets/app.js" defer></script>
 <script src="assets/arcade-islas.js"></script>
+<script src="assets/arcade-valle.js"></script>
 <link rel="stylesheet" href="assets/arcade-retos.css">
 <script src="assets/arcade-retos.js"></script>
 <script src="assets/arcade-sonido.js"></script>
@@ -543,6 +544,56 @@ body.en-inicio .cab { display: none; }
   .mapa.niveles #jugar { min-width: 360px; height: 84px; } .mapa.niveles #jugar b { font-size: 42px; }
 }
 @media (min-width: 721px) and (max-height: 700px) { .nv-cab .nv-isla { width: 150px; } .nv-cab .h-ctit { font-size: 34px; } }
+/* ---------- Mapa pintado ("valle", assets/arcade-valle.js): bloques de hielo = niveles, torres = extras ---------- */
+.mapa.valle .cielo, .mapa.valle .chispas, .mapa.valle .vtx, .mapa.valle .nv-cab .nv-isla { display: none; }
+.mapa.valle::before { display: none !important; }
+.nv-capa.valle { overflow: hidden; -webkit-mask: none; mask: none; background: #CFE3F2; }
+.vl { position: absolute; left: 50%; top: 50%; translate: -50% -50%; background-size: 100% 100%; }
+.vl-ruta { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.vl-n, .vl-t { position: absolute; padding: 0; background: none; border: 0; color: #fff; cursor: pointer; width: var(--w); -webkit-tap-highlight-color: transparent; }
+.vl-n { translate: -50% -62%; }
+.vl-n img, .vl-t img { display: block; width: 100%; height: auto; pointer-events: none; transition: transform .15s; }
+.vl-n img { filter: drop-shadow(0 6px 4px rgba(20,30,60,.45)); }
+.vl-n:active img, .vl-t:active img { transform: scale(.94); }
+.vl-n .num { position: absolute; left: 50%; top: 40%; translate: -50% -50%; font: 400 calc(var(--w) * .42)/1 "Lilita One", var(--cuerpo); color: #fff; -webkit-text-stroke: calc(var(--w) * .06) #16325C; paint-order: stroke fill; text-shadow: 0 3px 0 #16325C; }
+.vl-n .num svg { display: block; width: calc(var(--w) * .42); height: calc(var(--w) * .42); fill: #FFC800; stroke: #5A2A00; stroke-width: 2; filter: drop-shadow(0 2px 0 #5A2A00); }
+.vl-n .vl-cand { position: absolute; left: 50%; top: 38%; translate: -50% -50%; width: 38%; }
+.vl-n .st { position: absolute; left: 50%; bottom: 92%; translate: -50% 0; display: flex; gap: 1px; align-items: flex-end; pointer-events: none; }
+.vl-n .st svg { width: calc(var(--w) * .32); height: calc(var(--w) * .32); filter: drop-shadow(0 2px 1px rgba(0,0,0,.35)); }
+.vl-n .st svg:nth-child(2) { translate: 0 -22%; }
+.vl-n .st .off { filter: grayscale(1) brightness(.5); }
+.vl-n.act::before { content: ""; position: absolute; left: 50%; top: 64%; width: 160%; aspect-ratio: 2 / 1; translate: -50% -50%; border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, rgba(198,224,0,.9), rgba(198,224,0,.3) 60%, transparent); animation: vlLat 1.4s ease-in-out infinite; }
+.vl-n.act img { animation: vlSalta 1.4s ease-in-out infinite; }
+.vl-n.act .num { color: #1C2600; -webkit-text-stroke-color: #fff; text-shadow: 0 3px 0 #7A8C00; }
+.vl-n .bur { position: absolute; left: 50%; bottom: 102%; translate: -50% 0; white-space: nowrap; font: 400 calc(var(--w) * .25)/1 "Lilita One", var(--cuerpo); letter-spacing: .06em; color: #1C2600; background: linear-gradient(180deg, #F4FF8A, #C6E000 60%, #A8C000); border: 2px solid #1F2600; border-radius: 10px; padding: 5px 10px 6px; box-shadow: 0 4px 0 #1F2600; animation: vlFlota 1.4s ease-in-out infinite; }
+.vl-n .bur::after { content: ""; position: absolute; left: 50%; top: 100%; translate: -50% 0; border: 7px solid transparent; border-top-color: #1F2600; }
+.vl-n .nm { position: absolute; left: 50%; top: 92%; translate: -50% 0; white-space: nowrap; padding: 4px 9px; border-radius: 8px; background: #1C2600; border: 1.5px solid var(--lima); color: var(--lima); font: 900 11.5px/1.15 var(--cuerpo); box-shadow: 0 3px 0 rgba(10,6,32,.5); }
+.vl-n.jefe .cinta { position: absolute; left: 50%; top: -4%; translate: -50% 0; font: 400 calc(var(--w) * .16)/1 "Lilita One", var(--cuerpo); letter-spacing: .12em; background: linear-gradient(180deg, #FF5A6A, #D7263D); border: 2px solid #4A0A14; border-radius: 6px; padding: 4px 9px; box-shadow: 0 3px 0 #4A0A14; }
+.vl-t { translate: -50% -80%; }
+.vl-t img { filter: drop-shadow(0 8px 6px rgba(20,30,60,.5)); }
+.vl-t.bloq img { filter: grayscale(.85) brightness(.85) drop-shadow(0 8px 6px rgba(20,30,60,.5)); }
+.vl-t.abierta::before { content: ""; position: absolute; left: 50%; top: 55%; width: 120%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, rgba(255,200,60,.55), transparent); animation: vlLat 2s ease-in-out infinite; }
+.vl-t .eti { position: absolute; left: 50%; top: 100%; translate: -50% -4px; display: flex; align-items: center; gap: 5px; white-space: nowrap; padding: 5px 10px 6px; border-radius: 9px; font: 400 12px/1.1 "Lilita One", var(--cuerpo); letter-spacing: .04em; background: rgba(23,12,70,.88); border: 2px solid #8C6CFF; color: #fff; }
+.vl-t.abierta .eti { background: linear-gradient(180deg, #FFD86A, #F2A81E); color: #4A2600; border-color: #6A3A00; }
+.vl-t .eti svg { width: 12px; height: 13px; color: #FFC800; flex: none; }
+.vl-nieve { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.vl-nieve i { position: absolute; top: -12px; width: var(--s); height: var(--s); border-radius: 50%; background: #fff; opacity: .85; box-shadow: 0 0 4px rgba(255,255,255,.8); animation: vlCae var(--t) linear infinite; animation-delay: var(--d); }
+@keyframes vlCae { to { transform: translate(30px, 105vh); } }
+@keyframes vlSalta { 50% { transform: translateY(-6%); } }
+@keyframes vlFlota { 50% { translate: -50% -5px; } }
+@keyframes vlLat { 50% { opacity: .55; scale: 1.1; } }
+@media (prefers-reduced-motion: reduce) { .vl *, .vl-nieve { animation: none !important; } .vl-nieve { display: none; } }
+@media (max-width: 720px) {
+  .mapa.valle .nv-cab { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; column-gap: 12px; padding: max(78px, calc(env(safe-area-inset-top) + 64px)) 12px 34px; background: linear-gradient(180deg, rgba(23,12,70,.92), rgba(23,12,70,.6) 72%, rgba(23,12,70,0)); }
+  .mapa.valle .nv-cab > * { margin: 0; }
+  .mapa.valle .nv-cab .h-cint { display: none; }
+  .mapa.valle .nv-cab .h-ctit { font-size: 24px; margin: 0; }
+  .mapa.valle .nv-est { margin: 0; height: 30px; }
+  .vl-t .eti { white-space: normal; width: max-content; max-width: 96px; justify-content: center; text-align: center; font-size: 11.5px; }
+}
+@media (min-width: 721px) {
+  .mapa.valle .nv-cab { padding: 14px 20px 18px; border-radius: 20px; width: auto; max-width: 420px; background: linear-gradient(180deg, rgba(23,12,70,.82), rgba(23,12,70,.6)); }
+}
 /* Ventana al tocar un nivel: tarjeta morada al centro, con el estilo del home */
 .hoja-fondo { position: fixed; inset: 0; z-index: 60; opacity: 0; pointer-events: none; transition: opacity .25s; }
 .hoja-fondo.on { opacity: 1; pointer-events: auto; }
@@ -816,7 +867,7 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     <div class="h-top">
       <button type="button" class="rec ry" id="recRy"><svg class="ri"><use href="#r-rayo"/></svg><b id="recRayo">0</b><i class="chis"></i><i class="chis"></i><i class="mas">+</i></button>
       <button type="button" class="rec co" id="recCor" aria-label="Corazones"><svg class="ri"><use href="#r-corazon"/></svg><b id="recCorN">5</b><i class="chis"></i><i class="chis"></i><i class="mas">+</i></button>
-      <button type="button" class="rec di" data-pronto="Diamantes: para la tienda del Arcade"><svg class="ri"><use href="#r-diamante"/></svg><b id="recDia">0</b><i class="chis"></i><i class="chis"></i><i class="mas">+</i></button>
+      <button type="button" class="rec di" id="recDi" aria-label="Diamantes: abrir la Tienda"><svg class="ri"><use href="#r-diamante"/></svg><b id="recDia">0</b><i class="chis"></i><i class="chis"></i><i class="mas">+</i></button>
       <button type="button" class="g-btn h-aj" id="hAj" aria-label="Ajustes"><svg class="ic"><use href="#i-ajustes"/></svg></button>
     </div>
     <div class="h-ajustes" id="hAjustes" role="dialog" aria-label="Ajustes">
@@ -942,6 +993,8 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
   var AREAS = [['todos', 'Todos'], ['ciencias', 'Ciencias'], ['letras', 'Letras'], ['sociales', 'Sociales']];
   var CURSOS = [
     { id: 'hp', nom: 'Historia del Perú', area: 'sociales', arte: 'a-historia', img: 'historia', c: '#F28A1E', c2: '#7A2E0A', temas: ['hp01'], mapa: 'cusco',
+      // valle = mapa pintado (assets/arcade-valle.js): bloques de hielo = niveles, torres = extras
+      valle: 'hielo',
       // Niveles del mundo: cada uno es un tema (t: null = aún sin juegos). El último es el jefe del mundo.
       niveles: [
         // d = adornos de su isla (assets/arcade-islas.js, DECOS)
@@ -1166,7 +1219,7 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     return h + '</div>';
   }
   function irInicio() {
-    $('mapa').classList.remove('niveles'); nvMapa = null;
+    $('mapa').classList.remove('niveles', 'valle'); $('nvCapa').classList.remove('valle'); nvMapa = null;
     ver('v-inicio', 'Arcade'); $('volver').onclick = null; $('volver').href = 'index.html';
     var tot = 0; CURSOS.forEach(function (c) { c.temas.forEach(function (t) { tot += estrellasTema(t); }); });
     mundos = ordenMundos();
@@ -1236,6 +1289,9 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
   $('recRy').onclick = function () { if (window.MCSonido) MCSonido.efecto('tap'); toast('Energía: +3 por nivel, +5 con 3 estrellas<br><small>Úsala para abrir simuladores del Laboratorio</small>'); };
   function cobrarRayos() { if (!window.MCRayos) return; pintarRayos(MCRayos.guardado()); MCRayos.estado().then(function (st) { if (st && st.nuevos > 0) toast('+' + st.nuevos + ' de energía'); pintarRayos(st); }); }
   setTimeout(cobrarRayos, 400);
+  // Diamantes: saldo real (supabase/127-tienda.sql) y el botón abre la Tienda
+  $('recDi').onclick = function () { if (window.MCSonido) MCSonido.efecto('tap'); location.href = 'tienda.html?de=arcade'; };
+  setTimeout(function () { if (window.MCAuth && MCAuth.listo) MCAuth.listo.then(function (c) { return c.rpc('mis_diamantes'); }).then(function (r) { if (r && !r.error && r.data != null) $('recDia').textContent = (+r.data).toLocaleString('es-PE'); }, function () {}); }, 500);
   document.querySelectorAll('[data-pronto]').forEach(function (b) { b.onclick = function () { if (window.MCSonido) MCSonido.efecto('tap'); toast(b.dataset.pronto + '<br><small>¡Muy pronto!</small>'); }; });
   // Cielo: nubes, estrellitas y luces con tamaños y tiempos al azar
   (function () {
@@ -1333,10 +1389,13 @@ html:not(.arcade-si):not(.arcade-no) .cargando { display: block; }
     $('nvCab').innerHTML = '<span class="h-cint">Isla ' + (num || 1) + '</span><b class="h-ctit" data-t="' + c.nom + '">' + c.nom + '</b>' +
       '<span class="nv-est" id="nvEst"></span>' + (c.img ? '<img class="nv-isla" src="assets/arcade/mundo-' + c.img + '.webp" alt="">' : '');
     $('mapa').classList.add('niveles');
-    $('nvVolver').onclick = function () { if (window.MCSonido) MCSonido.efecto('tap'); cerrarHoja(); $('mapa').classList.remove('niveles'); nvMapa = null; irInicio(); };
+    $('nvVolver').onclick = function () { if (window.MCSonido) MCSonido.efecto('tap'); cerrarHoja(); $('mapa').classList.remove('niveles', 'valle'); $('nvCapa').classList.remove('valle'); nvMapa = null; irInicio(); };
     function pintar() {
-      nvMapa = MCIslas.abrir($('nvCapa'), {
-        niveles: c.niveles, extras: c.extras, etapas: ETAPAS[c.id],
+      var enValle = !!(c.valle && window.MCValle);
+      $('mapa').classList.toggle('valle', enValle);
+      if (!enValle) $('nvCapa').classList.remove('valle');
+      nvMapa = (enValle ? MCValle : MCIslas).abrir($('nvCapa'), {
+        valle: c.valle, niveles: c.niveles, extras: c.extras, etapas: ETAPAS[c.id],
         estrellas: estrellasTema, max: maxTema, completo: temaCompleto,
         tocar: function (i, nv, s) { abrirHoja(c, i, nv, s); },
         tocarExtra: function (x, s) {

@@ -2482,5 +2482,282 @@
         "correct": 3
       }
     ]
+  },
+  {
+    "num": "10",
+    "name": "Funciones",
+    "questions": [
+      {
+        "text": "Dado el conjunto $T = \\{1; 2; 4; 6; 7; 8; 12; 19\\}$ y las funciones\n$f = \\{(8; 5), (6; 19), (8; m + 3), (7; n), (12; p + 5), (12; 6)\\}$\n$g = \\{(x; y) \\in T \\times T / y = px^2 + kx + n\\}$\nde modo que $f(8) = g(1)$, $f(6) = g(2)$, calcule el valor de:\n$L = m + n + p + k$.",
+        "topic": "Álgebra · Funciones",
+        "options": [
+          {
+            "letter": "A",
+            "text": "12"
+          },
+          {
+            "letter": "B",
+            "text": "14"
+          },
+          {
+            "letter": "C",
+            "text": "7"
+          },
+          {
+            "letter": "D",
+            "text": "12"
+          },
+          {
+            "letter": "E",
+            "text": "17"
+          }
+        ],
+        "correct": 2
+      },
+      {
+        "text": "La edad de Roberto es \"$J$\" años, donde: $J = 1 + 3a + 15b + 45ab$ y $\\langle a; b \\rangle$ es el rango de la función: $f: \\mathbb{R} \\rightarrow \\mathbb{R}$, definida por:\n$f(x) = \\frac{4x^2 - 4x + 9}{12x^2 - 12x + 8}$\n¿Qué edad tendrá Roberto dentro de 4 años?",
+        "topic": "Álgebra · Funciones",
+        "options": [
+          {
+            "letter": "A",
+            "text": "12 años"
+          },
+          {
+            "letter": "B",
+            "text": "16 años"
+          },
+          {
+            "letter": "C",
+            "text": "54 años"
+          },
+          {
+            "letter": "D",
+            "text": "22 años"
+          },
+          {
+            "letter": "E",
+            "text": "50 años"
+          }
+        ],
+        "correct": 2
+      },
+      {
+        "text": "El administrador de un centro de entretenimiento para niños, ha notado que la asistencia disminuye en forma lineal con el precio. Además, sabe que si cobra 40 soles, la entrada asistirán 20 niños; pero si cobra 45 soles, asistirán 15 niños. Si $f(x)$ representa la regla de correspondencia que determina el número de asistentes en función del precio $x$, en soles, determine el dominio de la función $g$, definida por $g(x) = \\sqrt{f(x)} + 30$.",
+        "topic": "Álgebra · Funciones",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$\\langle 0; 90 \\rangle$"
+          },
+          {
+            "letter": "B",
+            "text": "$\\langle 0; 60 \\rangle$"
+          },
+          {
+            "letter": "C",
+            "text": "$\\langle 0; 120 \\rangle$"
+          },
+          {
+            "letter": "D",
+            "text": "$\\langle 0; 60 ]$"
+          },
+          {
+            "letter": "E",
+            "text": "$\\langle 0; 90 ]$"
+          }
+        ],
+        "correct": 4
+      },
+      {
+        "text": "En la figura, se muestra la gráfica de la función $f$ definida por:\n$f(x) = a + \\sqrt{x - b}$; $\\{a; b\\} \\subset \\mathbb{Z}$.\nCalcule el valor de $L = \\frac{a + 2b + 3k}{f(5) \\cdot (1 - \\sqrt{6})}$",
+        "topic": "Álgebra · Funciones",
+        "options": [
+          {
+            "letter": "A",
+            "text": "1"
+          },
+          {
+            "letter": "B",
+            "text": "-3"
+          },
+          {
+            "letter": "C",
+            "text": "-2"
+          },
+          {
+            "letter": "D",
+            "text": "3"
+          },
+          {
+            "letter": "E",
+            "text": "4"
+          }
+        ],
+        "correct": 1,
+        "graphic": "<img class=\"mc-img\" src=\"/modocachimbo/assets/img/algebra/2027-I/t10-rzhn5l2ue9.webp\" alt=\"Figura de la pregunta\" loading=\"lazy\" style=\"max-width:100%;height:auto;display:block;margin:0 auto;border-radius:6px;\">"
+      },
+      {
+        "text": "En un examen de Estadística Inferencial, se presentaron \"$m$\" estudiantes y desaprobaron \"$d$\" estudiantes. Determinar el número de estudiantes que aprobaron dicho examen, si \"$m$\" representa la suma de los elementos del $Ran(f)$ y \"$d$\" representa la suma de los dos mayores elementos enteros del $Ran(f)$, siendo la función \"$f$\", definida por la regla:\n$f(x) = \\frac{9x^2 - 6}{x^2 + 4}$",
+        "topic": "Álgebra · Funciones",
+        "options": [
+          {
+            "letter": "A",
+            "text": "18"
+          },
+          {
+            "letter": "B",
+            "text": "14"
+          },
+          {
+            "letter": "C",
+            "text": "20"
+          },
+          {
+            "letter": "D",
+            "text": "27"
+          },
+          {
+            "letter": "E",
+            "text": "10"
+          }
+        ],
+        "correct": 2
+      },
+      {
+        "text": "La edad de José es la suma de los elementos impares del conjunto $M = Ran(f) \\cap Ran(g)$ y la edad de Junior es la suma de los elementos pares del conjunto $M$. Si las funciones $f$ y $g$ son definidas por $f(x) = 7 + 4x - x^2$ y $g(x) = 2 - 2x + x^2$ respectivamente, halle la diferencia positiva de las edades de José y Junior.",
+        "topic": "Álgebra · Funciones",
+        "options": [
+          {
+            "letter": "A",
+            "text": "9 años"
+          },
+          {
+            "letter": "B",
+            "text": "8 años"
+          },
+          {
+            "letter": "C",
+            "text": "7 años"
+          },
+          {
+            "letter": "D",
+            "text": "6 años"
+          },
+          {
+            "letter": "E",
+            "text": "10 años"
+          }
+        ],
+        "correct": 3
+      },
+      {
+        "text": "Dadas las funciones reales \"$f$\" y \"$g$\", definidas por:\n$f(x) = \\sqrt{42 - x - x^2}$\n$g(x) = \\sqrt{x^2 + 7x - 8}$\nSi Joel nació el día \"$a$\" del mes \"$2a$\" del año 2026; siendo \"$a$\" el número de elementos enteros impares del $(Dom(f) \\cap Dom(g))$, determine el día y mes en que nació Joel.",
+        "topic": "Álgebra · Funciones",
+        "options": [
+          {
+            "letter": "A",
+            "text": "6 de diciembre"
+          },
+          {
+            "letter": "B",
+            "text": "1 de febrero"
+          },
+          {
+            "letter": "C",
+            "text": "3 de junio"
+          },
+          {
+            "letter": "D",
+            "text": "5 de octubre"
+          },
+          {
+            "letter": "E",
+            "text": "18 de mayo"
+          }
+        ],
+        "correct": 2
+      },
+      {
+        "text": "La temperatura $T$ de un objeto (en grados Celsius) está determinada por $T(t) = \\sqrt{-t^2 + 4t + 21} - 4$, donde $t$ (en grados Celsius) representa la temperatura del medio ambiente. Si $t \\in [-3; 7]$, halle el intervalo que represente la variación de la temperatura $T$.",
+        "topic": "Álgebra · Funciones",
+        "options": [
+          {
+            "letter": "A",
+            "text": "$[1; 4]$"
+          },
+          {
+            "letter": "B",
+            "text": "$[-4; 4]$"
+          },
+          {
+            "letter": "C",
+            "text": "$[-4; 1]$"
+          },
+          {
+            "letter": "D",
+            "text": "$[-2; 4]$"
+          },
+          {
+            "letter": "E",
+            "text": "$[-1; 4]$"
+          }
+        ],
+        "correct": 2
+      },
+      {
+        "text": "El administrador de una distribuidora de artículos de limpieza ha registrado los ingresos (en cientos de soles) obtenidos durante cada uno de los primeros \"$m$\" días de esta semana y observa que dicho ingreso es la imagen de \"$m$\" bajo la función \"$f$\" definida por\n$f(x) = \\frac{\\sqrt{x^2 - 2x - 3}}{(x - 2) \\sqrt{\\lvert x \\rvert - 1}} + 5x$\nSi \"$m$\" es el elemento entero del $Dom(f)$, ¿a cuánto asciende el total del ingreso obtenido por la distribuidora al cabo de estos primeros \"$m$\" días de la semana en curso?",
+        "topic": "Álgebra · Funciones",
+        "options": [
+          {
+            "letter": "A",
+            "text": "S/ 6000"
+          },
+          {
+            "letter": "B",
+            "text": "S/ 4800"
+          },
+          {
+            "letter": "C",
+            "text": "S/ 3200"
+          },
+          {
+            "letter": "D",
+            "text": "S/ 4500"
+          },
+          {
+            "letter": "E",
+            "text": "S/ 5200"
+          }
+        ],
+        "correct": 3
+      },
+      {
+        "text": "Se desea formar una empresa de repuestos de automóviles por lo que se establece el siguiente estudio sobre la utilidad, en miles de soles, dentro de \"$x$\" días. La cual es modelada por $U(x) = -x^3 + bx^2 - cx + d$. Inicialmente la empresa obtendrá 63 mil soles de ganancia. Y dentro de 7 días su utilidad será nula. Además 3 días después del inicio de la empresa, no obtendrá ganancia ni pérdida. Determine la utilidad dentro de 13 días.",
+        "topic": "Álgebra · Funciones",
+        "options": [
+          {
+            "letter": "A",
+            "text": "Ganará 600 soles"
+          },
+          {
+            "letter": "B",
+            "text": "Perderá 500 soles"
+          },
+          {
+            "letter": "C",
+            "text": "Perderá 600 soles"
+          },
+          {
+            "letter": "D",
+            "text": "Ganará 500 soles"
+          },
+          {
+            "letter": "E",
+            "text": "Perderá 400 soles"
+          }
+        ],
+        "correct": 2
+      }
+    ]
   }
 ]

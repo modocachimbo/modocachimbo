@@ -231,8 +231,17 @@ async function repasoFijas(c) {
           <button type="button" class="chip ${st.porTema === 1 ? 'on' : ''}" data-p="1">1 pregunta al azar por tema</button>
           <button type="button" class="chip ${st.porTema === 0 ? 'on' : ''}" data-p="0">Todas las preguntas de cada tema</button>
         </div>` : '<p class="hint" style="margin-top:10px;">Este año aún no tiene temas. Las Fijas se verán como "Próximamente" hasta que subas alguno.</p>')
-      : '<p class="hint" style="margin-top:10px;">Se usan todas las preguntas del banco de Fijas propio de este año.</p>'}`;
+      : '<p class="hint" style="margin-top:10px;">Se usan todas las preguntas del banco de Fijas propio de este año.</p>'}
+      ${banco && banco.length ? `<div class="rf-borrar"><span>Banco de Fijas ${esc(anio)} · ${banco.reduce((s, t) => s + (t.questions || []).length, 0)} preg.</span><button type="button" class="rbtn danger" id="rfBorrar">Borrar Fijas</button></div>` : ''}`;
     box.querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', () => { st.modo = b.dataset.m; pintarFijas(); }));
+    const bb = box.querySelector('#rfBorrar');
+    if (bb) bb.addEventListener('click', async () => {
+      bb.disabled = true;
+      if (!(await borrarBancoFijas(c, anio, banco.reduce((s, t) => s + (t.questions || []).length, 0)))) { bb.disabled = false; return; }
+      c = ((REG && REG.cursos) || []).find(x => x.id === c.id) || c;
+      if (st.modo === 'banco') st.modo = 'temas';
+      pintarFijas();
+    });
     box.querySelectorAll('[data-p]').forEach(b => b.addEventListener('click', () => { st.porTema = +b.dataset.p; box.querySelectorAll('[data-p]').forEach(x => x.classList.toggle('on', x === b)); }));
     const todos = box.querySelector('#rfTodos');
     if (todos) todos.addEventListener('change', () => {

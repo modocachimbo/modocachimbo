@@ -1,7 +1,7 @@
 -- =========================================================
 -- Modo Cachimbo · Clanes: más formas de escudo y más símbolos
 -- Correr después de 88-clanes.sql. Se puede correr varias veces.
--- Formas y símbolos se dibujan en assets/clanes.js (mantener las dos listas iguales).
+-- Formas y símbolos se dibujan en assets/clanes.js (mantener las dos listas iguales; la lista vigente está en 122-clanes-escudos-menos.sql).
 -- =========================================================
 
 alter table public.clanes drop constraint if exists clanes_forma_check;

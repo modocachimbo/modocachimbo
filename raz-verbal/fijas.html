@@ -262,8 +262,10 @@
 <script src="../assets/candado.js"></script>
 <script src="../assets/cursos.js"></script>
 <script src="../assets/pregunta.js"></script>
+<script src="../assets/partida.js"></script>
 <script src="../assets/sonido.js"></script>
 <script src="../assets/auth.js"></script>
+<script src="../assets/quiz-ancho.js"></script>
 </head>
 <body>
 
@@ -537,6 +539,7 @@
 
     activeQuestions = (window.MCPregunta ? MCPregunta.mezclar : shuffle)(questions);
     setupHeaderAndBody();
+    pgOfrecer();
   }
 
   function setupHeaderAndBody() {
@@ -589,12 +592,14 @@
       }
       current += 1;
       renderQuestion();
+      pgGuardar();
     });
 
     btnBack.addEventListener('click', () => {
       if (current === 0) return;
       current -= 1;
       renderQuestion();
+      pgGuardar();
     });
   }
 
@@ -631,6 +636,7 @@
     renderMath(quizBody);
 
     const prevAnswer = answers[current];
+    answered = prevAnswer !== undefined;   // Ya respondida: al volver con «Atrás» se ve, pero no se puede cambiar
     if (prevAnswer !== undefined) lockOptions(prevAnswer);
 
     btnBack.disabled = current === 0;
@@ -682,10 +688,47 @@
     scoreEl.textContent = `${score} pts`;
     btnNext.disabled = false;
 
-    if (lives <= 0) setTimeout(showEnd, 900);
+    pgGuardar();
+    if (lives <= 0) { btnNext.disabled = true; btnBack.disabled = true; setTimeout(showEnd, 900); }   // Sin vidas: no deja seguir respondiendo mientras sale el final
+  }
+
+  // Partida a medias: se guarda en este celular y al volver sigue donde quedó (assets/partida.js)
+  const PG_ID = location.pathname + '?' + year;
+  function pgGuardar() {
+    if (window.MCPartida && activeQuestions.length && answers.length) MCPartida.guardar(PG_ID, activeQuestions, { current: current, score: score, lives: lives, answers: answers.slice() });
+  }
+  function pgOfrecer() {
+    const s = window.MCPartida && MCPartida.leer(PG_ID);
+    if (!s || !(s.e.lives > 0)) return;
+    // Lo ya respondido queda; lo que falta se vuelve a mezclar con el temario de hoy (entran los temas nuevos)
+    const r = MCPartida.armar((typeof temasData !== 'undefined' && temasData ? pickAllFromTemas(temasData) : questions), s, activeQuestions, !fixedMode);
+    if (!r) { MCPartida.borrar(PG_ID); return; }
+    const arr = r.preguntas, n = r.current;
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = btnStart.className; b.style.cssText = 'width:100%;margin-bottom:10px;line-height:1.25';
+    b.innerHTML = 'Seguir donde quedé<br><small style="font-weight:600;opacity:.75">Pregunta ' + (n + 1) + ' de ' + arr.length + ' · ' + (s.e.score | 0) + ' pts</small>';
+    btnStart.parentNode.insertBefore(b, btnStart);
+    btnStart.className = 'btn'; btnStart.textContent = 'Empezar de nuevo';
+    b.addEventListener('click', () => {
+      // Los corazones que perdió ya se gastaron: sigue con los que tenía (o menos si ahora tiene menos)
+      const v = window.MCCorazones ? MCCorazones.vidasInicio(MAX_LIVES) : MAX_LIVES;
+      lives = Math.min(s.e.lives, v);
+      if (!lives) return;
+      activeQuestions = arr;
+      answers.length = 0;
+      r.respuestas.forEach((a, i) => { answers[i] = a; });
+      current = n; score = s.e.score | 0;
+      b.remove();
+      if (window.MCSonido) MCSonido.empezar();
+      startScreen.classList.remove('show');
+      quizHeader.style.display = 'block';
+      quizBody.style.display = 'block';
+      renderQuestion();
+    });
   }
 
   function showEnd() {
+    if (window.MCPartida) MCPartida.borrar(PG_ID);   // terminó: ya no hay partida a medias
     quizHeader.style.display = 'none';
     quizBody.style.display = 'none';
     endScreen.classList.add('show');
@@ -694,6 +737,7 @@
     // Progreso del estudiante (assets/progreso.js), una sola vez por ronda
     if (showEnd.ronda === activeQuestions) return;
     showEnd.ronda = activeQuestions;
+    document.dispatchEvent(new CustomEvent('mc:fin-ronda', { detail: { anio: year } }));   // cuenta las rondas del día (assets/corazones.js)
     if (window.MCSonido) lives <= 0 ? MCSonido.perder() : MCSonido.fin(Math.round(answers.filter((a, i) => activeQuestions[i] && a === activeQuestions[i].correct).length / activeQuestions.length * 100));
     const prog = { tipo: 'fijas', carpeta: 'raz-verbal', anio: year, titulo: 'Razonamiento Verbal · Fijas ' + year, preguntas: activeQuestions, respuestas: answers };
     window.MCProgreso ? MCProgreso.terminar(prog) : (window.mcProgresoPend = (window.mcProgresoPend || []).concat([prog]));
@@ -714,6 +758,7 @@
     // Sin corazones no se empieza (solo Repaso, Fijas, Seminarios y Banqueo los gastan)
     lives = window.MCCorazones ? MCCorazones.vidasInicio(MAX_LIVES) : MAX_LIVES;
     if (!lives) return;
+    if (window.MCPartida) MCPartida.borrar(PG_ID);
     if (window.MCSonido) MCSonido.empezar();
     startScreen.classList.remove('show');
     quizHeader.style.display = 'block';

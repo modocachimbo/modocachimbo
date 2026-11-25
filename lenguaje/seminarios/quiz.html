@@ -260,6 +260,7 @@
 <script src="../../assets/mc-config.js"></script>
 <script src="../../assets/pregunta.js"></script>
 <script src="../../assets/sonido.js"></script>
+<script src="../../assets/siguiente-tema.js?v=2" defer></script>
 <script src="../../assets/auth.js"></script>
 <script src="../../assets/acceso.js"></script>
 <script src="../../assets/candado.js"></script>
@@ -268,6 +269,7 @@
 <script src="../../assets/buho/escena.js"></script>
 <link rel="stylesheet" href="../../assets/buho/buho.css">
 <link rel="stylesheet" href="../../assets/buho/escena.css">
+<script src="../../assets/quiz-ancho.js"></script>
 </head>
 <body>
 
@@ -547,6 +549,7 @@
     renderMath(quizBody);
 
     const prevAnswer = answers[current];
+    answered = prevAnswer !== undefined;   // Ya respondida: al volver con «Atrás» se ve, pero no se puede cambiar
     if (prevAnswer !== undefined && !abierta) lockOptions(prevAnswer);
 
     btnBack.disabled = current === 0;
@@ -600,11 +603,11 @@
     const e = escritas[current];
     if (!e || answers[current] !== -1) return;
     e.vale = true; answers[current] = 0;
-    score += 10; lives = Math.min(MAX_LIVES, lives + 1);
+    score += 10;   // Cuenta como acierto, pero ya no devuelve el corazón
     if (window.MCSonido) MCSonido.bien();
     renderLives();
     scoreEl.textContent = `${score} pts`;
-    btnNext.textContent = current === activeQuestions.length - 1 ? 'Finalizar' : 'Siguiente';
+    btnNext.textContent = lives <= 0 ? 'Ver resultado' : current === activeQuestions.length - 1 ? 'Finalizar' : 'Siguiente';
   }
 
   function selectAnswer(index, el) {
@@ -625,7 +628,7 @@
     scoreEl.textContent = `${score} pts`;
     btnNext.disabled = false;
 
-    if (lives <= 0) setTimeout(showEnd, 900);
+    if (lives <= 0) { btnNext.disabled = true; btnBack.disabled = true; setTimeout(showEnd, 900); }   // Sin vidas: no deja seguir respondiendo mientras sale el final
   }
 
   function showEnd() {
@@ -635,6 +638,8 @@
     finalScore.textContent = `${score} pts`;
     // El búho reacciona al resultado (assets/buho/escena.js)
     const aciertos = answers.filter((a, i) => activeQuestions[i] && a === activeQuestions[i].correct).length;
+    // «Siguiente tema» debajo de «Repetir ronda» si respondió todas bien (assets/siguiente-tema.js)
+    document.dispatchEvent(new CustomEvent('mc:fin-ronda', { detail: { anio: year, tema: temaParam, todas: answers.length === activeQuestions.length && aciertos === activeQuestions.length } }));
     if (window.MCEscena) MCEscena.fin(document.getElementById('finEscena'), MCEscena.area('lenguaje'), { vidas: lives, pct: aciertos / Math.max(1, answers.length) });
     endMessage.textContent = lives <= 0 ? 'Se acabaron tus vidas. ¡Sigue practicando!' : 'Así te fue en esta práctica';
     // Progreso del estudiante (assets/progreso.js), una sola vez por ronda

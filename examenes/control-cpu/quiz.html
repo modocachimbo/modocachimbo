@@ -231,6 +231,7 @@
 <script src="../../assets/sonido.js"></script>
 <script src="../../assets/auth.js"></script>
 <script src="../../assets/claves-verificadas.js"></script>
+<script src="../../assets/quiz-ancho.js"></script>
 </head>
 <body class="ex-quiz">
 
@@ -448,6 +449,7 @@
     renderMath(questionText.parentElement.parentElement || document.body);
 
     const prevAnswer = answers[current];
+    answered = prevAnswer !== undefined;   // Ya respondida: al volver con «Atrás» se ve, pero no se puede cambiar
     if (prevAnswer !== undefined) lockOptions(prevAnswer);
 
     btnBack.disabled = current === 0;
@@ -500,7 +502,7 @@
     scoreEl.textContent = `${score} pts`;
     btnNext.disabled = false;
 
-    if (lives <= 0) setTimeout(showEnd, 900);
+    if (lives <= 0) { btnNext.disabled = true; btnBack.disabled = true; setTimeout(showEnd, 900); }   // Sin vidas: no deja seguir respondiendo mientras sale el final
   }
 
   function showEnd() {

@@ -1875,7 +1875,7 @@
    Las capturas de pantalla no se pueden evitar desde una página web.
    ========================================================= */
 (function () {
-  var PAGINAS = /\/(quiz|repaso|fijas|repaso-mixto|falladas|simulacro)\.html$/i;
+  var PAGINAS = /\/(quiz|repaso|fijas|repaso-mixto|falladas|simulacro|guerra)\.html$/i;
   if (!PAGINAS.test(location.pathname)) return;
 
   var css = document.createElement('style');

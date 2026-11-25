@@ -595,14 +595,55 @@
       var card = document.createElement('div');
       card.className = 'area-card'; card.setAttribute('data-area', area);
       a.className = 'area-link';
+      if (modoCursos === 'ordinario') a.setAttribute('href', a.getAttribute('href') + '?mod=ordinario');   // misma página del área, con sus cursos abriendo su Ordinario (assets/area-ordinario.js)
       a.querySelector('small').textContent = cs.length + (cs.length === 1 ? ' curso' : ' cursos');
       a.parentNode.replaceChild(card, a);
       card.appendChild(a);
       card.insertAdjacentHTML('beforeend', '<div class="area-cursos">' + cs.map(function (c) {
-        return '<a href="' + esc(c.id) + '/index.html">' + (c.icono ? '<i class="ic-m" style="-webkit-mask-image:url(' + esc(c.icono) + ');mask-image:url(' + esc(c.icono) + ')"></i>' : '') + esc(c.nombre) + '</a>';
+        return '<a href="' + esc(c.id) + (modoCursos === 'ordinario' ? '/ordinario.html' : '/index.html') + '">' + (c.icono ? '<i class="ic-m" style="-webkit-mask-image:url(' + esc(c.icono) + ');mask-image:url(' + esc(c.icono) + ')"></i>' : '') + esc(c.nombre) + '</a>';
       }).join('') + '</div>');
     });
   }
+  // Ordinario (beta, solo admin + influencers): Cursos abre la lista con la barra CPU | Ordinario (recuerda la última); los cursos son los mismos
+  var modoCursos = 'cpu';
+  function esBetaOrd() { return document.documentElement.classList.contains('arcade-si'); }
+  // Íconos 3D propios de CPU (libro azul con marcador lima) y Ordinario (birrete lima con borla dorada)
+  function icoCPU(id){var g='mcLibG'+id;return '<svg class="ico3d" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="'+g+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FE0FF"/><stop offset=".5" stop-color="#1CB0F6"/><stop offset="1" stop-color="#0A6FB0"/></linearGradient></defs>'+
+'<path d="M14 10a5 5 0 0 1 5-5h29a4 4 0 0 1 4 4v42a4 4 0 0 1-4 4H19a5 5 0 0 1-5-5z" fill="#06385C" transform="translate(1 3)"/>'+
+'<path d="M14 50a5 5 0 0 1 5-5h33v10H19a5 5 0 0 1-5-5z" fill="#F4F1FF" stroke="#06385C" stroke-width="3" stroke-linejoin="round"/>'+
+'<path d="M20 49h28M20 52h22" stroke="#B9B0D8" stroke-width="1.6" stroke-linecap="round"/>'+
+'<path d="M14 10a5 5 0 0 1 5-5h29a4 4 0 0 1 4 4v36H19a5 5 0 0 0-5 5z" fill="url(#'+g+')" stroke="#06385C" stroke-width="3" stroke-linejoin="round"/>'+
+'<path d="M14 10a5 5 0 0 1 5-5h3v40h-3a5 5 0 0 0-5 5z" fill="#06385C" opacity=".35"/>'+
+'<path d="M22 5h26a4 4 0 0 1 4 4v6H22z" fill="#fff" opacity=".25"/>'+
+'<rect x="27" y="16" width="18" height="4" rx="2" fill="#fff" opacity=".85"/><rect x="27" y="24" width="12" height="3.4" rx="1.7" fill="#fff" opacity=".6"/>'+
+'<path d="M38 3h9v22l-4.5-3.6L38 25z" fill="#C6E000" stroke="#4A5800" stroke-width="2.4" stroke-linejoin="round"/><path d="M40 4h3v17l-3 2z" fill="#F2FF8A" opacity=".8"/></svg>';}
+  function icoORD(id){var g='mcGorG'+id,g2='mcGorB'+id;return '<svg class="ico3d" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="'+g+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E6FF6A"/><stop offset=".5" stop-color="#C6E000"/><stop offset="1" stop-color="#7E9200"/></linearGradient><linearGradient id="'+g2+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7A5CE0"/><stop offset="1" stop-color="#3A2290"/></linearGradient></defs>'+
+'<path d="M15 30v11c0 6 7.6 11 17 11s17-5 17-11V30" fill="#1A0F44" transform="translate(1 3)"/>'+
+'<path d="M15 30v11c0 6 7.6 11 17 11s17-5 17-11V30L32 38z" fill="url(#'+g2+')" stroke="#1A0F44" stroke-width="3" stroke-linejoin="round"/>'+
+'<path d="M19 42c3 3.6 8 5 13 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".35" fill="none"/>'+
+'<path d="M32 8 61 22 32 36 3 22z" fill="#2E3600" transform="translate(1 3)"/>'+
+'<path d="M32 8 61 22 32 36 3 22z" fill="url(#'+g+')" stroke="#3A4500" stroke-width="3" stroke-linejoin="round"/>'+
+'<path d="M32 8 61 22 47 28.8 18 14.8z" fill="#fff" opacity=".3"/>'+
+'<path d="M32 22 53 27v14" stroke="#FFC800" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'+
+'<path d="M49.5 40h7l1.6 11h-10.2z" fill="#FFC800" stroke="#8A5A00" stroke-width="2.2" stroke-linejoin="round"/><path d="M51.5 41h2.4l.6 8h-3.4z" fill="#FFF0A0"/>'+
+'<ellipse cx="32" cy="22" rx="4.2" ry="2.4" fill="#FFC800" stroke="#8A5A00" stroke-width="1.8"/></svg>';}
+  var nIcoMod = 0;
+  function cursosDe(modo, callado) {
+    modoCursos = modo;
+    try { localStorage.setItem('mc_mundo', modo); } catch (e) {}
+    hSub.textContent = modo === 'ordinario' ? 'Ordinario: entra a un curso y estudia con los temas del prospecto.' : 'CPU: elige un área o entra directo a un curso.';
+    hLista.innerHTML = '<nav class="mundos mod-barra" aria-label="Modalidad">' +
+      '<button type="button" class="mundo' + (modo === 'cpu' ? ' on' : '') + '" data-modo="cpu">' + icoCPU(++nIcoMod) + '<span><b>CPU</b><small>Libros del ciclo</small></span></button>' +
+      '<button type="button" class="mundo' + (modo === 'ordinario' ? ' on' : '') + '" data-modo="ordinario">' + icoORD(++nIcoMod) + '<span><b>Ordinario</b><small>Temas del prospecto</small></span><i class="nv-b">BETA</i></button></nav>' +
+      $('tplAreas').innerHTML;
+    if (modo === 'ordinario') Array.prototype.forEach.call(hLista.querySelectorAll('.tfijos'), function (t) { if (t.classList.contains('rglobal')) t.remove(); else t.setAttribute('href', 'temas-fijos.html?mod=ordinario'); });   // el Repaso global es del CPU
+    pintarAreas();
+    if (!callado) sonar('toque');
+  }
+  hLista.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('[data-modo]');
+    if (b && hLista.contains(b)) cursosDe(b.getAttribute('data-modo'));
+  });
   // "Exámenes" también es una pantalla propia: una tarjeta por modalidad con sus exámenes a la mano
   var EXAMENES = [
     { id: 'ordinario', nombre: 'Ordinario', sub: 'Exámenes de admisión de la UNJFSC',
@@ -647,9 +688,10 @@
     hFondo.classList.remove('full'); document.body.classList.remove('en-cursos');
     hFondo.classList.remove('ex', 'fc'); document.body.classList.remove('en-examenes', 'en-flashcards');
     if (cual === 'cursos') {
-      hTit.textContent = 'Mis cursos'; hSub.textContent = 'Elige un área o entra directo a un curso.';
-      hLista.innerHTML = $('tplAreas').innerHTML;
-      pintarAreas(); hFondo.classList.add('full'); document.body.classList.add('en-cursos');
+      hTit.textContent = 'Mis cursos';
+      if (esBetaOrd()) { var mg = 'cpu'; try { mg = localStorage.getItem('mc_mundo') === 'ordinario' ? 'ordinario' : 'cpu'; } catch (e) {} cursosDe(mg, true); }
+      else { modoCursos = 'cpu'; hSub.textContent = 'Elige un área o entra directo a un curso.'; hLista.innerHTML = $('tplAreas').innerHTML; pintarAreas(); }
+      hFondo.classList.add('full'); document.body.classList.add('en-cursos');
     } else if (cual === 'examenes') {
       hTit.textContent = 'Exámenes';
       hSub.textContent = 'Exámenes reales con su clave: estúdialos o practícalos.';
