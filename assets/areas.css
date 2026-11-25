@@ -127,8 +127,8 @@ html[data-area]:has(.courses) { --display: "Barlow Condensed", "Arial Narrow", I
 html[data-area]:has(.courses) .home-btn { border-radius: 12px; background: var(--surface, #151127); border-color: var(--border, #2C2549); }
 html[data-area]:has(.courses) .auth-row .mcu-user .mcz-pill, html[data-area]:has(.courses) .auth-row .mcu-user .mcu-racha {
   border-radius: 12px !important; border: 1px solid var(--border, #2C2549) !important; background: var(--surface, #151127) !important; height: 44px; padding: 0 14px 0 12px; }
-html[data-area]:has(.courses) .auth-row .mcu-chip { border-radius: 12px !important; border: 1px solid var(--border, #2C2549) !important; background: var(--surface, #151127) !important; height: 44px; padding: 4px 16px 4px 4px; }
-html[data-area]:has(.courses) .auth-row .mcu-chip .mcu-av { border-radius: 8px; }
+html[data-area]:has(.courses) .auth-row .mcu-chip:not(.mct) { border-radius: 12px !important; border: 1px solid var(--border, #2C2549) !important; background: var(--surface, #151127) !important; height: 44px; padding: 4px 16px 4px 4px; }
+html[data-area]:has(.courses) .auth-row .mcu-chip:not(.mct) .mcu-av { border-radius: 8px; }
 html[data-area]:has(.courses) #vipToggle.vip-active { border-radius: 12px !important; }
 
 /* Título del área o del curso, con su raya al costado como "Cursos populares" */
@@ -230,3 +230,7 @@ html[data-area]:not(:has(.courses)) .startscreen h1 .accent:not(#z), html[data-a
   html[data-area]:has(.courses):not(:has(.mixto)) .course .rule { margin-top: 7px; }
   html[data-area]:has(.courses):not(:has(.mixto)) .course .btn:not(#z) { margin-top: 12px; padding: 9px 18px 7px; }
 }
+
+/* Con un código ya activo no sale el botón «Código activo» arriba (sin código sigue «Ingresar código») */
+html[data-area] .vip-widget:has(#vipToggle.vip-active) { display: none !important; }
+
