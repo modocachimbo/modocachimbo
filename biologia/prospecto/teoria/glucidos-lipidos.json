@@ -1,0 +1,71 @@
+{
+  "num": "01",
+  "titulo": "Glúcidos y lípidos",
+  "chip": "Biomoléculas orgánicas",
+  "area": "ciencia-tecnologia",
+  "demo": true,
+  "practicar": "biologia/libros/quiz.html?year=2027-I&tema=01",
+  "teoria": [
+    { "titulo": "¿Qué son los glúcidos?", "bloques": [
+      { "tipo": "concepto", "titulo": "Concepto clave", "texto": "Los **glúcidos** (carbohidratos o azúcares) son biomoléculas orgánicas formadas por **C, H y O**. Su fórmula general es ==(CH₂O)ₙ==. Son la **fuente de energía rápida** de la célula: 1 g aporta unas ==4 kcal==." },
+      { "tipo": "tarjetas", "titulo": "Sus funciones", "items": [
+        { "t": "Energética", "d": "glucosa", "c": "#C6E000" },
+        { "t": "Reserva", "d": "almidón y glucógeno", "c": "#1CB0F6" },
+        { "t": "Estructural", "d": "celulosa y quitina", "c": "#9B6BFF" },
+        { "t": "Reconocimiento", "d": "glucocálix de la membrana", "c": "#FF5FA2" } ] },
+      { "tipo": "check", "pregunta": "¿Cuál es la función principal de los glúcidos?", "opciones": ["Estructural", "Energética", "Catalítica"], "correcta": 1, "explica": "La glucosa es el combustible inmediato de la célula." } ] },
+    { "titulo": "Monosacáridos", "bloques": [
+      { "tipo": "concepto", "titulo": "Los más simples", "texto": "Los **monosacáridos** no se pueden hidrolizar. Según su grupo funcional son **aldosas** (aldehído, –CHO) o **cetosas** (cetona, C=O). Según sus carbonos: ==triosas (3)==, ==pentosas (5)== y ==hexosas (6)==." },
+      { "tipo": "figura", "titulo": "La glucosa se cierra", "figura": "glucosa", "texto": "La **glucosa** es una ==aldohexosa==. En agua su cadena se cierra y forma un **anillo de 6 lados** (5 carbonos y 1 oxígeno)." },
+      { "tipo": "tarjetas", "titulo": "Los que más caen", "items": [
+        { "t": "Glucosa", "d": "aldohexosa · energía", "c": "#C6E000" },
+        { "t": "Fructosa", "d": "cetohexosa · frutas y miel", "c": "#FF9600" },
+        { "t": "Galactosa", "d": "aldohexosa · en la leche", "c": "#1CB0F6" },
+        { "t": "Ribosa", "d": "aldopentosa · ARN", "c": "#9B6BFF" },
+        { "t": "Desoxirribosa", "d": "aldopentosa · ADN", "c": "#FF5FA2" } ] },
+      { "tipo": "ojo", "texto": "La **fructosa** (levulosa) es una ==cetosa==; glucosa y galactosa son ==aldosas==. Las tres son hexosas isómeras: **C₆H₁₂O₆**." },
+      { "tipo": "check", "pregunta": "La levulosa (fructosa) se clasifica como:", "opciones": ["Aldohexosa", "Cetohexosa", "Aldopentosa"], "correcta": 1, "explica": "Tiene 6 carbonos y un grupo cetona." } ] },
+    { "titulo": "Disacáridos y polisacáridos", "bloques": [
+      { "tipo": "arbol", "titulo": "Clasificación", "texto": "Según cuántas unidades tienen:", "raiz": "Glúcidos", "items": [
+        { "t": "Monosacáridos", "d": "1 unidad · glucosa, fructosa", "c": "#C6E000" },
+        { "t": "Disacáridos", "d": "2 unidades · sacarosa, lactosa", "c": "#1CB0F6" },
+        { "t": "Polisacáridos", "d": "muchas · almidón, celulosa", "c": "#9B6BFF" } ] },
+      { "tipo": "figura", "titulo": "El enlace glucosídico", "figura": "enlace", "texto": "Dos monosacáridos se unen por un **enlace O-glucosídico** y sale una molécula de ==agua== (deshidratación). Para romperlo se necesita agua: **hidrólisis**." },
+      { "tipo": "tarjetas", "titulo": "Disacáridos", "items": [
+        { "t": "Sacarosa", "d": "glucosa + fructosa · azúcar de mesa", "c": "#FF9600" },
+        { "t": "Maltosa", "d": "glucosa + glucosa · α(1→4)", "c": "#C6E000" },
+        { "t": "Lactosa", "d": "glucosa + galactosa · leche", "c": "#1CB0F6" } ] },
+      { "tipo": "ojo", "texto": "La **sacarosa no es reductora**: su enlace α(1→2)β une los dos carbonos anoméricos (C1 de la glucosa y C2 de la fructosa)." },
+      { "tipo": "tarjetas", "titulo": "Polisacáridos", "items": [
+        { "t": "Almidón", "d": "reserva vegetal · amilosa + amilopectina", "c": "#C6E000" },
+        { "t": "Glucógeno", "d": "reserva animal · hígado y músculo", "c": "#FF5FA2" },
+        { "t": "Celulosa", "d": "pared vegetal · β(1→4)", "c": "#1CB0F6" },
+        { "t": "Quitina", "d": "exoesqueleto y pared de hongos", "c": "#9B6BFF" } ] },
+      { "tipo": "check", "pregunta": "¿Cuál es el polisacárido de reserva en los animales?", "opciones": ["Almidón", "Celulosa", "Glucógeno"], "correcta": 2, "explica": "Se guarda en el hígado y en los músculos." } ] },
+    { "titulo": "Lípidos", "bloques": [
+      { "tipo": "concepto", "titulo": "Concepto clave", "texto": "Los **lípidos** son **insolubles en agua** y solubles en solventes orgánicos (éter, cloroformo). Aportan ==9 kcal/g==: más del doble que los glúcidos." },
+      { "tipo": "arbol", "titulo": "Clasificación", "texto": "¿Tienen ácidos grasos?", "raiz": "Lípidos", "items": [
+        { "t": "Saponificables", "d": "con ácidos grasos · triglicéridos, fosfolípidos, ceras", "c": "#C6E000" },
+        { "t": "Insaponificables", "d": "sin ácidos grasos · esteroides (colesterol), terpenos", "c": "#FF9600" } ] },
+      { "tipo": "figura", "titulo": "El triglicérido", "figura": "trigliceridos", "texto": "Un **glicerol** unido a **3 ácidos grasos** por enlaces ==éster==. Es la grasa de reserva." },
+      { "tipo": "ojo", "texto": "Los **fosfolípidos** son ==anfipáticos==: cabeza polar (le gusta el agua) y colas apolares (la evitan). Por eso forman la **bicapa** de la membrana." },
+      { "tipo": "check", "pregunta": "¿Qué lípido forma la bicapa de las membranas?", "opciones": ["Triglicérido", "Fosfolípido", "Cera"], "correcta": 1, "explica": "Su cabeza polar mira al agua y sus colas se esconden en el centro." } ] }
+  ],
+  "ejercicios": [
+    { "enunciado": "Un disacárido no reductor que al hidrolizarse da glucosa y fructosa es:", "opciones": ["Maltosa", "Lactosa", "Sacarosa", "Celobiosa", "Trehalosa"], "correcta": 2,
+      "pasos": ["Glucosa + fructosa forman **sacarosa**.", "Su enlace α(1→2)β usa los dos carbonos anoméricos, por eso **no es reductora**.", "Clave: **C) Sacarosa**."] },
+    { "enunciado": "Polisacárido estructural de la pared celular vegetal, formado por glucosas unidas por enlaces β(1→4):", "opciones": ["Almidón", "Glucógeno", "Quitina", "Celulosa", "Amilopectina"], "correcta": 3,
+      "pasos": ["Pared celular **vegetal** y función **estructural**: descarta almidón, glucógeno y amilopectina (son de reserva).", "La quitina es de hongos y artrópodos, no de plantas.", "Clave: **D) Celulosa**."] },
+    { "enunciado": "¿Cuántas kilocalorías aportan aproximadamente 10 g de grasa?", "opciones": ["40", "90", "45", "900", "9"], "correcta": 1,
+      "pasos": ["Cada gramo de lípido aporta **9 kcal**.", "10 g × 9 kcal/g = **90 kcal**.", "Clave: **B) 90**."] }
+  ],
+  "extra": [
+    { "fuente": "Academia A", "detalle": "Ejemplo · 3 preguntas", "c": "#FFC800", "preguntas": [
+      { "texto": "Es una cetopentosa:", "opciones": ["Ribosa", "Ribulosa", "Glucosa", "Fructosa", "Desoxirribosa"], "correcta": 1 },
+      { "texto": "El glucógeno se almacena principalmente en:", "opciones": ["Hígado y músculo", "Páncreas", "Riñón", "Piel", "Cerebro"], "correcta": 0 },
+      { "texto": "Monosacárido presente en el ARN:", "opciones": ["Desoxirribosa", "Ribosa", "Glucosa", "Galactosa", "Fructosa"], "correcta": 1 } ] },
+    { "fuente": "Academia B", "detalle": "Ejemplo · 2 preguntas", "c": "#1CB0F6", "preguntas": [
+      { "texto": "Es un lípido insaponificable:", "opciones": ["Triglicérido", "Cera", "Colesterol", "Fosfolípido", "Esfingolípido"], "correcta": 2 },
+      { "texto": "La lactosa está formada por:", "opciones": ["Glucosa + glucosa", "Glucosa + fructosa", "Glucosa + galactosa", "Galactosa + fructosa", "Fructosa + fructosa"], "correcta": 2 } ] }
+  ]
+}
