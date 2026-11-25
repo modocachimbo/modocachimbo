@@ -1216,6 +1216,19 @@
     return tex.replace(RX_PER, function (x, a, b) { return '\\htmlClass{mcq-per}{' + (a || b) + '}'; });
   }
   function confiarPer(ctx) { return ctx.command === '\\htmlClass' && ctx['class'] === 'mcq-per'; }
+  // Textos con $…$ que siguen sin dibujar: se pasan uno por uno
+  var CRUDO = /\$[^$]+\$/;
+  function reintentar(fn, raiz, op) {
+    if (!raiz || !raiz.nodeType || !document.createTreeWalker) return;
+    var w = document.createTreeWalker(raiz, NodeFilter.SHOW_TEXT, null), n, cajas = [];
+    while ((n = w.nextNode())) {
+      var p = n.parentElement;
+      if (!p || !CRUDO.test(n.nodeValue + (n.nextSibling && n.nextSibling.nodeType === 3 ? n.nextSibling.nodeValue : ''))) continue;
+      if (p.closest('.katex, script, style, textarea, pre, code, input, [contenteditable="true"]')) continue;
+      if (cajas.indexOf(p) < 0) cajas.push(p);
+    }
+    cajas.forEach(function (c) { try { fn.call(null, c, op); } catch (e) {} });
+  }
   function conFracciones(fn) {
     if (typeof fn !== 'function' || fn._mcFrac) return fn;
     var w = function (el, op) {
@@ -1223,7 +1236,12 @@
       var antes = op.preProcess;
       op.preProcess = function (t) { t = periodicos(sinLeftRight(fraccionesGrandes(t))); return antes ? antes(t) : t; };
       if (op.trust == null) op.trust = confiarPer;
-      var r = fn.call(this, el, op);
+      // Si una fórmula hace fallar a KaTeX, antes se cortaba todo lo que venía
+      // después (la pregunta salía bien y las alternativas con el código crudo).
+      // Ahora se sigue y se reintenta caja por caja lo que quedó sin dibujar.
+      var r;
+      try { r = fn.call(this, el, op); } catch (e) { try { console.warn('KaTeX:', e); } catch (_) {} }
+      try { reintentar(fn, el, op); } catch (e) {}
       try {
         ajustarAnchos(el);
         if (el && porAjustar.indexOf(el) < 0) porAjustar.push(el);
