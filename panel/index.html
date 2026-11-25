@@ -227,7 +227,13 @@
   .ed-pos { display: inline-flex; background: #1E1935; border: 1px solid #302950; border-radius: 999px; padding: 3px; }
   .ed-pos button { border: 0; background: none; color: var(--text-faint); font: 800 12px 'Nunito', sans-serif; padding: 6px 11px; border-radius: 999px; cursor: pointer; }
   .ed-pos button.on { background: var(--accent); color: #1b2000; }
-  .ed-lado:not(:empty) { margin-top: 10px; }
+  .ed-lado:not(:empty) { margin-top: 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+  .ed-agraf { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12.5px; font-weight: 700; color: var(--text-dim); margin-top: 8px; }
+  .ed-lado .ed-agraf { margin-top: 0; }
+  .ed-sel { background: #1E1935; color: var(--text); border: 1px solid #302950; border-radius: 10px; padding: 7px 10px; font: 700 13px 'Nunito', sans-serif; }
+  .ed-gcard { border: 1px dashed #302950; border-radius: 12px; padding: 10px 12px; }
+  .ed-gbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .ed-gbar .hint { flex: 1; min-width: 180px; margin: 0; }
   .ed-pub .iz-prev img, #edImg .iz-prev img, #edMarcas .iz-prev img { max-height: 200px; width: auto; max-width: 100%; object-fit: contain; }
   /* Vista del alumno en Editar: imagen al lado en un recuadro blanco cuadrado de la A a la E */
   .ed-prev .pder { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: stretch; margin: 14px 0 0; }
@@ -239,6 +245,11 @@
   .ed-prev .pder > div:last-child img { position: absolute; top: 10px; left: 10px; width: calc(100% - 20px) !important; height: calc(100% - 20px) !important; max-width: none !important; object-fit: contain; padding: 0 !important; margin: 0 !important; background: none !important; border-radius: 0 !important; }
   .ed-prev .pder > div:last-child > .hint { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center; padding: 12px; color: #6b6585; margin: 0; }
   @media (max-width: 600px) { .ed-prev .pder { grid-template-columns: 1fr; } }
+  /* Gráfico en código al lado: mismo recuadro, pero con el fondo oscuro del gráfico (como lo ve el alumno) */
+  .pder > div:last-child:has(.mcq-graf) { background: #18132B !important; border: 1px solid #2F284E; border-radius: 14px; display: flex; align-items: center; justify-content: center; padding: 8px; box-sizing: border-box; }
+  .pder > div:last-child:has(.mcq-graf) > .hint { position: static; }
+  .pder .mcq-graf { margin: 0; width: 100%; }
+  .pder .mcq-graf svg { width: 100%; height: auto; max-height: 100%; }
   .ed-prev .pimg-ver img, .ed-prev .ptext img { max-width: 100%; height: auto; background: #fff; border-radius: 10px; padding: 8px; }
   .hint { font-size: 12px; color: var(--text-faint); margin-top: 6px; line-height: 1.5; }
   .mfoot { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; flex-wrap: wrap; }
@@ -2333,6 +2344,7 @@ E) Alternativa"></textarea>
       <label class="fld">Imagen o gráfico <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— debajo del enunciado</span></label>
       <div id="edImg"></div>
       <div id="edPub"></div>
+      <div id="edGraf"></div>
       <div id="edMarcas"></div>
       <div class="ed-lado" id="edLado"></div>
       ${lineasEsp ? `<label class="fld">${esc(MCPregunta.nombreTipo(q))} <span style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--text-faint);">— ${AYUDA_ED[tipo]}</span></label>
@@ -2496,7 +2508,8 @@ E) Alternativa"></textarea>
       pubEl.innerHTML = L.map((x, i) => `<div class="ed-pub">
           <div class="ed-pub-top"><span class="ed-pub-t">Imagen${L.length > 1 ? ' ' + (i + 1) : ''} del enunciado</span>
             <div class="ed-pos" role="group" aria-label="Dónde va la imagen"><button type="button" class="${x.der ? '' : 'on'}" data-pos="${i}|0">Debajo del texto</button><button type="button" class="${x.der ? 'on' : ''}" data-pos="${i}|1">Al lado de las alternativas</button></div></div>
-          <div data-pub="${i}"></div></div>`).join('');
+          <div data-pub="${i}"></div>
+          <label class="ed-agraf">Cambiar por gráfico en código: ${selGraf('data-agraf="' + i + '"')}</label></div>`).join('');
       L.forEach((x, i) => {
         const caja = pubEl.querySelector(`[data-pub="${i}"]`);
         const z = crearZonaImagen(caja, { actual: imgHtml(x.path), onChange: () => cambio() });
@@ -2507,6 +2520,16 @@ E) Alternativa"></textarea>
       });
       pintarLado();
     }
+    pubEl.addEventListener('change', e => {
+      const sl = e.target.closest('[data-agraf]'); if (!sl || !sl.value) return;
+      const i = +sl.dataset.agraf; let k = -1;
+      txtEl.value = txtEl.value.split('\n').map(l => {
+        const m = l.trim().match(RX_PUB); if (!m || ++k !== i) return l;
+        return bloqueGraf(sl.value, !!m[1]);
+      }).join('\n');
+      txtEl.dispatchEvent(new Event('input', { bubbles: true }));
+      enfocarGraf(sl.value);
+    });
     pubEl.addEventListener('click', e => {
       const b = e.target.closest('[data-pos]'); if (!b) return;
       const [i, der] = b.dataset.pos.split('|').map(Number);
@@ -2516,6 +2539,70 @@ E) Alternativa"></textarea>
         return '[IMG' + (der ? '-DER' : '') + ':' + m[2] + ']';
       }).join('\n');
       txtEl.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    // Gráficos en código ([GRÁFICO: barras] … [/GRÁFICO], assets/pregunta.js): estadística, funciones…
+    // Se eligen de una lista y se escribe una plantilla en el texto para completar los datos.
+    const GRAF_TIPOS = [
+      ['histograma', 'Histograma', 'eje x: I_i\neje y: f_i\nx: 20, 40, 60, 80\nalturas: 10, 25, 15'],
+      ['polígono', 'Polígono de frecuencias', 'eje x: I_i\neje y: f_i\nx: 20, 40, 60, 80\nalturas: 10, 25, 15'],
+      ['barras', 'Barras', 'A: 10\nB: 20\nC: 15'],
+      ['barras horizontales', 'Barras horizontales', 'A: 10\nB: 20\nC: 15'],
+      ['barras agrupadas', 'Barras agrupadas', 'series: Hombres, Mujeres\nLunes: 12, 15\nMartes: 10, 8'],
+      ['circular', 'Circular', 'A: 90°\nB: 120°\nC: resto'],
+      ['línea', 'Línea / ojiva', 'x: 1, 2, 3, 4\ny: 5, 8, 6, 9'],
+      ['caja', 'Diagrama de caja', 'mín: 2\nQ1: 5\nmediana: 8\nQ3: 11\nmáx: 15'],
+      ['dispersión', 'Dispersión', 'puntos: (1; 6), (2; 8), (3; 7)'],
+      ['pictograma', 'Pictograma', 'cada: 10\nLunes: 40\nMartes: 30'],
+      ['tallo y hojas', 'Tallo y hojas', '1 | 2 4 7\n2 | 0 3 5'],
+      ['venn', 'Diagrama de Venn', 'conjuntos: A, B\nregiones: A=12, AB=5, B=8'],
+      ['función', 'Función', 'f: y = x^2 - 4'],
+      ['plano', 'Plano cartesiano', 'puntos: P(-3; 4)']
+    ];
+    function selGraf(attr) { return `<select class="ed-sel" ${attr}><option value="">Elegir…</option>${GRAF_TIPOS.map(g => `<option value="${g[0]}">${g[1]}</option>`).join('')}</select>`; }
+    function bloqueGraf(tipoG, der) { const g = GRAF_TIPOS.find(x => x[0] === tipoG) || GRAF_TIPOS[2]; return '[GRÁFICO' + (der ? ' DERECHA' : '') + ': ' + g[0] + ']\n' + g[2] + '\n[/GRÁFICO]'; }
+    function enfocarGraf(tipoG) {
+      const v = txtEl.value, i = v.search(new RegExp('\\[GR[AÁ]FICO(\\s+DERECHA)?\\s*:\\s*' + tipoG.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\]', 'i'));
+      if (i < 0) return;
+      const ini = v.indexOf('\n', i) + 1, fin = v.indexOf('[/GR', ini);
+      txtEl.focus(); txtEl.setSelectionRange(ini, fin > ini ? fin - 1 : ini);
+      const linea = v.slice(0, i).split('\n').length - 1, lh = parseFloat(getComputedStyle(txtEl).lineHeight) || 22;
+      txtEl.scrollTop = Math.max(0, linea * lh - 20);
+    }
+    const RX_GRAF_ED = /^\[\s*GR[AÁ]FICO(\s+DERECHA)?\s*:\s*([^\]]+)\]$/i;
+    const grafEl = body.querySelector('#edGraf');
+    let grafFirma = null;
+    const bloquesGraf = () => txtEl.value.split('\n').map(l => l.trim().match(RX_GRAF_ED)).filter(Boolean).map(m => ({ der: !!m[1], tipo: m[2].trim() }));
+    function pintarGraf() {
+      const L = bloquesGraf(), f = JSON.stringify(L);
+      if (f === grafFirma) return;
+      grafFirma = f;
+      grafEl.innerHTML = L.map((x, i) => `<div class="ed-pub ed-gcard">
+          <div class="ed-pub-top"><span class="ed-pub-t">Gráfico en código · ${esc(x.tipo)}</span>
+            <div class="ed-pos" role="group" aria-label="Dónde va el gráfico"><button type="button" class="${x.der ? '' : 'on'}" data-gpos="${i}|0">Debajo del texto</button><button type="button" class="${x.der ? 'on' : ''}" data-gpos="${i}|1">Al lado de las alternativas</button></div></div>
+          <div class="ed-gbar"><span class="hint">Los datos se escriben en el texto, entre [GRÁFICO: ${esc(x.tipo)}] y [/GRÁFICO].</span>
+            <button type="button" class="rbtn" data-gver="${i}">Ver datos</button><button type="button" class="rbtn" data-gimg="${i}">Cambiar por imagen</button></div></div>`).join('');
+    }
+    // Cambia la cabecera del bloque i, o el bloque entero (hasta [/GRÁFICO]) por otra cosa
+    function editarBloque(i, fn) {
+      const ls = txtEl.value.split('\n'); let k = -1, out = [];
+      for (let j = 0; j < ls.length; j++) {
+        const m = ls[j].trim().match(RX_GRAF_ED);
+        if (!m || ++k !== i) { out.push(ls[j]); continue; }
+        let fin = j; while (fin < ls.length && !/^\[\/GR[AÁ]FICO\]$/i.test(ls[fin].trim())) fin++;
+        out = out.concat(fn(m, ls.slice(j, fin + 1)));
+        j = fin;
+      }
+      txtEl.value = out.join('\n');
+      txtEl.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    grafEl.addEventListener('click', e => {
+      const p = e.target.closest('[data-gpos]'), im = e.target.closest('[data-gimg]'), vr = e.target.closest('[data-gver]');
+      if (p) { const [i, der] = p.dataset.gpos.split('|').map(Number); editarBloque(i, (m, bl) => ['[GRÁFICO' + (der ? ' DERECHA' : '') + ': ' + m[2].trim() + ']'].concat(bl.slice(1))); }
+      if (im) {
+        editarBloque(+im.dataset.gimg, m => [m[1] ? '[IMAGEN DERECHA]' : '[IMAGEN]']);
+        const a = [...marcasEl.querySelectorAll('[data-z="armar"]')].pop(); if (a) a.click();
+      }
+      if (vr) enfocarGraf(bloquesGraf()[+vr.dataset.gver].tipo);
     });
     // Texto sin las imágenes publicadas que se quitaron
     function sinQuitadas(text) {
@@ -2528,10 +2615,19 @@ E) Alternativa"></textarea>
       const hayDer = lineasPub().some(x => x.der) || /^\s*\[\s*imagen\s+(a\s+la\s+)?derecha\s*\]\s*$/im.test(sinTildes(txtEl.value));
       const sg = zonaImg.estado();
       const grafImg = sg.cambio === 'nueva' || (sg.cambio === 'igual' && /assets\/img\/[^"'\s>]+/.test(q.graphic || ''));
-      ladoEl.innerHTML = hayDer ? ''
+      const hayGrafDer = bloquesGraf().some(x => x.der);
+      ladoEl.innerHTML = (hayDer || hayGrafDer ? ''
         : grafImg ? '<button type="button" class="rbtn" data-lado="mover">Mover esta imagen al lado de las alternativas →</button>'
-        : '<button type="button" class="rbtn" data-lado="nueva">＋ Imagen al lado de las alternativas</button>';
+        : '<button type="button" class="rbtn" data-lado="nueva">＋ Imagen al lado de las alternativas</button>') +
+        `<label class="ed-agraf">＋ Gráfico en código: ${selGraf('data-ngraf')}<select class="ed-sel" data-ngpos><option value="0">debajo del texto</option>${hayDer || hayGrafDer ? '' : '<option value="1">al lado de las alternativas</option>'}</select></label>`;
     }
+    ladoEl.addEventListener('change', e => {
+      const sl = e.target.closest('[data-ngraf]'); if (!sl || !sl.value) return;
+      const der = (ladoEl.querySelector('[data-ngpos]') || {}).value === '1';
+      txtEl.value = txtEl.value.replace(/\s+$/, '') + '\n' + bloqueGraf(sl.value, der);
+      txtEl.dispatchEvent(new Event('input', { bubbles: true }));
+      enfocarGraf(sl.value);
+    });
     ladoEl.addEventListener('click', e => {
       const b = e.target.closest('[data-lado]'); if (!b) return;
       const sg = zonaImg.estado();
@@ -2576,8 +2672,8 @@ E) Alternativa"></textarea>
         return { marca: m, zona };
       });
     }
-    body.querySelector('#edText').addEventListener('input', () => { pintarMarcas(); pintarPub(); pintarLado(); });
-    pintarPub();
+    body.querySelector('#edText').addEventListener('input', () => { pintarMarcas(); pintarPub(); pintarGraf(); pintarLado(); });
+    pintarPub(); pintarGraf();
     body.addEventListener('input', cambio);
     pintarPrev();
     body.querySelector('#edCancel').addEventListener('click', cerrarModal);
