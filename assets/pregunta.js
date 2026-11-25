@@ -1276,7 +1276,9 @@
     '.mcq-con-der{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,42%);column-gap:16px;align-items:start}' +
     '.mcq-con-der>*{grid-column:1}.mcq-con-der>.mcq-der{grid-column:2;align-self:stretch;background:#fff;border-radius:12px;padding:10px;display:flex;justify-content:center;align-items:center;box-sizing:border-box}' +
     // La imagen derecha toma el alto de las alternativas (no las estira ni las deja pegadas arriba)
-    '@media (min-width:601px){.mcq-con-der>.mcq-der{position:relative;min-height:140px;background:none;padding:0}.mcq-con-der>.mcq-der img{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:100%;max-height:100%;width:auto;height:auto;box-sizing:border-box;background:#fff;padding:10px;border-radius:12px}}' +
+    // y el recuadro blanco va justo de la A a la E (igual que la vista previa del panel)
+    '@media (min-width:601px){.mcq-con-der{align-items:stretch;grid-template-columns:minmax(0,1fr) auto}.mcq-con-der>.mcq-der{position:relative;min-height:140px;padding:0;border-radius:14px;aspect-ratio:1/1;max-width:46vw}.mcq-con-der>.opts{display:flex;flex-direction:column;justify-content:space-between}.mcq-con-der>.opts.mcq-cortas{display:grid}.mcq-con-der>.mcq-der img{position:absolute;top:12px;left:12px;width:calc(100% - 24px);height:calc(100% - 24px);max-width:none;max-height:none;object-fit:contain;border-radius:0}' +
+    '.mcq-con-der>.opts>:last-child{margin-bottom:0}}' +
     '.katex-display{overflow-x:auto;overflow-y:hidden;max-width:100%}.katex .base.mcq-base-ancha{display:block;max-width:100%;overflow-x:auto;overflow-y:hidden;padding-bottom:2px}'+
     '@media (max-width:600px){.mcq-ecs .katex-display{font-size:.85em}}' +
     '.mcq-ecs{display:flex;flex-wrap:wrap;justify-content:center;column-gap:2.5em}.mcq-ecs>span{max-width:100%;min-width:0}' +
@@ -1286,7 +1288,9 @@
     '.mcq-lec:not([open]) summary::after{content:" · toca para leer";font-weight:400;letter-spacing:0;opacity:.7}' +
     '.mcq-lec p{margin:8px 0 0;line-height:1.6}' +
     '@media (max-width:600px){.mcq-cortas{grid-template-columns:repeat(2,minmax(0,1fr))}' +
-    '.mcq-con-der{grid-template-columns:minmax(0,1fr)}.mcq-con-der>.mcq-der{grid-column:1;grid-row:auto!important;order:-1}}';
+    '.mcq-con-der{grid-template-columns:minmax(0,1fr)}.mcq-con-der>.mcq-der{grid-column:1;grid-row:auto!important;order:-1;margin-bottom:12px!important}' +
+    // En celular el recuadro de la imagen también es cuadrado (la imagen entra completa, sin deformarse)
+    '.mcq-con-der>.mcq-der:not(:has(.mcq-graf)){position:relative;aspect-ratio:1/1;padding:0;border-radius:14px}.mcq-con-der>.mcq-der:not(:has(.mcq-graf)) img{position:absolute;top:12px;left:12px;width:calc(100% - 24px);height:calc(100% - 24px);max-width:none;object-fit:contain;border-radius:0}}';
   document.head.appendChild(st);
 
   // Alternativas cortas en columnas: si alguna no cabe (palabra larga, letra grande),

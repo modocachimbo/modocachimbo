@@ -330,11 +330,23 @@
     .pder { align-items: stretch; }
     .pder > div:last-child { display: flex; flex-direction: column; min-height: 0; }
     .pder > div:last-child > .pimg { flex: 1; display: flex; flex-direction: column; margin: 0; min-height: 0; }
-    .pder .iz-prev { flex: 1; position: relative; min-height: 140px; padding: 0; background: none; }
-    .pder .iz-prev img, .pder .iz-prev svg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 100%; max-height: 100%; width: auto; height: auto; box-sizing: border-box; background: #fff; padding: 10px; border-radius: 12px; }
+    .pder .iz-prev { flex: 1 0 auto; aspect-ratio: 1 / 1; position: relative; min-height: 140px; padding: 0; background: #fff; border-radius: 14px; }
+    /* Cuadrado: el recuadro manda el alto y las claves se reparten de la A a la E */
+    .pder > div:first-child { display: flex; flex-direction: column; justify-content: space-between; }
+    .pder > div:first-child > .popt + .popt { margin-top: 10px; }
+    .pder .iz-prev img, .pder .iz-prev svg { position: absolute; top: 12px; left: 12px; width: calc(100% - 24px); height: calc(100% - 24px); max-width: none; max-height: none; object-fit: contain; box-sizing: border-box; background: none; padding: 0; border-radius: 0; }
+    /* La imagen ocupa exactamente el alto de las 5 claves (de la A a la E): el rótulo va encima
+       y la barra de Cambiar / Quitar debajo, fuera de ese alto (igual que lo ve el alumno en PC) */
+    .pder { margin: 22px 0 46px; }
+    .pder > div:last-child { position: relative; }
+    .pder > div:last-child > .hint { position: absolute; top: -22px; left: 0; margin: 0; }
+    .pder > div:last-child .iz-bar { position: absolute; left: 0; right: 0; top: 100%; margin-top: 8px; flex-wrap: nowrap; }
+    /* En PC las claves al lado de la imagen son más bajitas, para que el recuadro de la imagen quede casi cuadrado */
+    .pder .popt { padding-top: 9px; padding-bottom: 9px; }
+    .pder > div:last-child .iz-info { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   }
   .popts-cortas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 14px; }
-  @media (max-width: 600px) { .pder { grid-template-columns: 1fr; } .popts-cortas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 600px) { .pder { grid-template-columns: 1fr; } .pder > div:last-child { order: -1; } .pder .iz-prev { position: relative; aspect-ratio: 1 / 1; padding: 0; border-radius: 14px; } .pder .iz-prev img, .pder .iz-prev svg { position: absolute; top: 12px; left: 12px; width: calc(100% - 24px); height: calc(100% - 24px); max-width: none; object-fit: contain; } .popts-cortas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   .pubbar { position: sticky; bottom: 0; z-index: 15; margin-top: 16px; background: rgba(11,8,24,0.94); backdrop-filter: blur(6px); border-top: 1px solid #221C3B; padding: 14px 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .pubbar #subResumen { font-size: 13.5px; color: var(--text-dim); }
   .pubbar #subResumen .bad { color: var(--red); }
@@ -656,7 +668,7 @@
   .ed-res > summary { cursor: pointer; padding: 8px 0; font: 800 14px 'Nunito', 'Inter', sans-serif; color: var(--accent); }
   .ed-res .ta { min-height: 110px; }
   .popts.popts-cortas { display: grid; gap: 10px; }
-  .popt { gap: 12px; padding: 12px 14px; border: 2px solid #2F284E; border-bottom-width: 5px; border-radius: 16px; background: #1E1935;
+  .popt { gap: 12px; padding: 10px 14px; border: 2px solid #2F284E; border-bottom-width: 5px; border-radius: 16px; background: #1E1935;
     font: 800 15px/1.4 'Nunito', 'Inter', sans-serif; color: #dcdcdc; }
   .pder .popt + .popt { margin-top: 10px; }
   .popt .l { width: 30px; height: 30px; border-radius: 10px; border: 2px solid #3A3360; background: transparent; color: #cfcfcf; font: 900 13px 'Nunito', sans-serif; }
