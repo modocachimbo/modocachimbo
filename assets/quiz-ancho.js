@@ -35,7 +35,7 @@
       'html body .qa-split>.qa-izq>.q-graphic{margin:0!important}' +
       /* El gráfico entra en la pantalla: alto máximo según el alto de la ventana, sin deformarse */
       'html body .qa-split .q-graphic img,html body .qa-split .q-graphic svg{max-height:var(--qa-graf-alto,max(220px,calc(100vh - 330px)))!important;width:auto!important;max-width:100%!important;height:auto!important;object-fit:contain}' +
-      'html body .qa-split>.qa-der>.options{padding:14px 0 0!important}' +
+      'html body .qa-split>.qa-der>.options{padding:0!important}' +
       'html body .qa-split>.qa-der>.navrow{padding-left:0!important;padding-right:0!important}' +
       'html body .qa-split>.qa-der>.options.mcq-cortas{grid-template-columns:repeat(2,minmax(0,1fr))!important}' +
       'html body .qa-split>.qa-der>.options.op-2{grid-template-columns:1fr}' +
@@ -50,8 +50,19 @@
       'html body .qa-split.qa-graf>.qa-der>.options{padding:4px 0 0!important}' +
       'html body .qa-split.qa-graf>.qa-der>.options.op-2{grid-template-columns:repeat(3,minmax(0,1fr))}' +
       'html body .qa-split.qa-graf>.qa-der>.options.mcq-cortas{grid-template-columns:repeat(3,minmax(0,1fr))!important}' +
-      'html body .qa-split.qa-graf>.qa-der>.navrow{max-width:560px;margin-left:auto!important}' +
+      /* Atrás / Siguiente: abajo del todo, a la derecha (debajo de la pregunta y de las claves) */
+      'html body .qa-split.qa-dos>.navrow{grid-column:1/-1;width:min(560px,100%);justify-self:end;margin:14px 0 0!important;padding-left:0!important;padding-right:0!important}' +
+      'html body .qa-split>.qa-der>.navrow{padding-left:0!important;padding-right:0!important}' +
       'html body .qa-split .qa-oculta{display:none!important}' +
+      /* Sin gráfico: alternativas en UNA columna (A, B, C, D, E una debajo de otra) a la derecha */
+      'html body .qa-split:not(.qa-graf):not(.qa-apilada)>.qa-der>.options{display:grid!important;grid-template-columns:minmax(0,1fr)!important}' +
+      /* Pregunta corta con alternativas largas: pregunta arriba a todo el ancho y alternativas abajo */
+      'html body .qa-split.qa-dos.qa-apilada:not([style*="none"]){grid-template-columns:minmax(0,1fr)}' +
+      'html body .qa-split.qa-apilada>.qa-col{grid-column:1}' +
+      'html body .qa-split.qa-apilada>.qa-der>.options{display:grid!important;grid-template-columns:minmax(0,1fr)!important;padding:4px 0 0!important}' +
+
+      'html body .qa-split.qa-apilada.qa-ap2>.qa-der>.options{grid-template-columns:repeat(2,minmax(0,1fr))!important}' +
+      'html body .qa-split.qa-apilada.qa-ap5>.qa-der>.options{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))!important}' +
       'html body .qa-split .qa-fig{display:flex;justify-content:center}' +
       'html body .qa-split .qa-fig .mcq-graf{width:100%;margin:0}' +
       'html body .qa-split .option{padding:12px 16px!important}' +
@@ -103,7 +114,7 @@
     // Lo que se agregue después (ej. «Siguiente tema») va a la columna derecha
     new MutationObserver(function () {
       if (!der.parentNode) { caja._qaCol = false; caja.classList.remove('qa-dos'); return; }
-      [].slice.call(caja.children).forEach(function (h) { if (!h.classList.contains('qa-col')) der.appendChild(h); });
+      [].slice.call(caja.children).forEach(function (h) { if (!h.classList.contains('qa-col') && !h.classList.contains('navrow')) der.appendChild(h); });
     }).observe(caja, { childList: true });
   }
   function pantallas() {
@@ -161,12 +172,46 @@
     }
     ops.classList.remove('mcq-con-der');
   }
+  // ¿Pregunta corta y alternativas largas? Entonces van una debajo de la otra (no lado a lado)
+  function forma(caja, conGraf) {
+    if (!caja) return;
+    var q = caja.querySelector('.question'), ops = caja.querySelectorAll('.options .option');
+    var lq = q ? (q.textContent || '').replace(/\s+/g, ' ').trim().length : 0, mx = 0, larga = false;
+    for (var i = 0; i < ops.length; i++) {
+      var t = ops[i].querySelector('.text') || ops[i];
+      mx = Math.max(mx, (t.textContent || '').replace(/\s+/g, ' ').trim().length);
+      if (t.querySelector('table, .katex-display, .mcq-base-ancha')) larga = true;
+    }
+    // Claves a la derecha: empiezan a la altura de la pregunta (no del rótulo del tema)
+    var der = caja.querySelector(':scope > .qa-der'), izq = caja.querySelector(':scope > .qa-izq');
+    if (der) der.style.marginTop = '';
+    // Pregunta con tabla (Estadística): a todo el ancho para que la tabla entre completa
+    var tabla = !!(q && q.querySelector('table'));
+    var ap = !conGraf && (tabla || (lq < 260 && (larga || mx > 55)));
+    // Botones: con claves a la derecha, justo debajo de ellas (siempre a la vista aunque la
+    // pregunta sea larga); con claves abajo (gráfico o claves largas), al final, a la derecha
+    var nav = caja.querySelector(':scope > .navrow') || caja.querySelector(':scope > .qa-col > .navrow');
+    if (nav && der) {
+      if (ap || conGraf) { if (nav.parentNode !== caja) caja.appendChild(nav); }
+      else if (nav.parentNode !== der) der.appendChild(nav);
+    }
+    caja.classList.toggle('qa-apilada', ap);
+    // Si no son tan largas (hasta ~110 letras), en dos columnas para que entren sin bajar
+    caja.classList.toggle('qa-ap2', ap && !larga && mx > 30 && mx <= 110 && ops.length >= 4);
+    // Claves cortas debajo de una tabla: todas en una fila (A B C D E)
+    caja.classList.toggle('qa-ap5', ap && !larga && mx <= 30);
+    if (der && q && izq && !ap && !conGraf && ECHADA && ECHADA.matches) {
+      var dy = q.getBoundingClientRect().top - izq.getBoundingClientRect().top;
+      if (dy > 0) der.style.marginTop = Math.round(dy) + 'px';
+    }
+  }
   function altoGrafico() {
     imagenDerecha();
     var g = document.querySelector('.qa-split .qa-fig') || document.querySelector('.qa-split .q-graphic');
     if (!g) return;
     var caja = g.closest('.qa-split'), hay = g.style.display !== 'none' && !!g.innerHTML.trim();
     if (caja) caja.classList.toggle('qa-graf', hay);
+    forma(caja, hay);
     if (!ECHADA || !ECHADA.matches || !hay) { g.style.removeProperty('--qa-graf-alto'); return; }
     // Al lado de la pregunta: alto de lo que queda de pantalla menos lo que ocupan las alternativas (mín. 200)
     var arriba = g.getBoundingClientRect().top + (window.scrollY || 0);
