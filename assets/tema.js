@@ -13,7 +13,7 @@
 (function () {
   if (window.MCTema || /\/panel\//.test(location.pathname)) return;
   var CLAVE = 'mc_tema', VER = 'mc_tema_ver', AMB = 'mc_tema_amb';
-  var TEMAS = { halloween: 1 };
+  var TEMAS = { halloween: 1, navidad: 1 };
   var BASE = (document.currentScript && document.currentScript.src || 'assets/tema.js').replace(/tema\.js(\?.*)?$/, '');
   window.MCTemas = window.MCTemas || {};
   var actual = null, quitar = null;

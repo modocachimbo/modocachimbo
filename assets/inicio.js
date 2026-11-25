@@ -180,7 +180,8 @@
   /* ---------- Escena: fechas importantes (temática + tu agenda) ---------- */
   var fechas = [], evento = null;
   var CALABAZA = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 9c-2-3-1-6 2-7" fill="none" stroke="#3f8a1e" stroke-width="2.6" stroke-linecap="round"/><ellipse cx="11" cy="19" rx="7.5" ry="9" fill="#e86a10"/><ellipse cx="21" cy="19" rx="7.5" ry="9" fill="#e86a10"/><ellipse cx="16" cy="19" rx="7" ry="9.6" fill="#ff8a1f"/><path d="M10 16l3 2-3 1zM22 16l-3 2 3 1zM10.5 23q5.5 4 11 0l-2 1-1.5-1.5-2 1.5-2-1.5-1.5 1.5z" fill="#3a1500"/></svg>';
-  var EVENTOS = { halloween: { nombre: 'Halloween', ico: CALABAZA, cls: 'f-hallo', emoji: '' } };
+  var REGALO = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 10c-3-5-9-6-9-2 0 2.5 4.5 3 9 2zM16 10c3-5 9-6 9-2 0 2.5-4.5 3-9 2z" fill="#FFC83D"/><rect x="5" y="10" width="22" height="6" rx="1" fill="#E8323C"/><rect x="6.5" y="16" width="19" height="12" rx="1" fill="#C41E2A"/><rect x="14" y="10" width="4" height="18" fill="#FFC83D"/></svg>';
+  var EVENTOS = { halloween: { nombre: 'Halloween', ico: CALABAZA, cls: 'f-hallo', emoji: '' }, navidad: { nombre: 'Navidad', ico: REGALO, cls: 'f-navi', emoji: '', hasta: '12-25' } };
   function hoyLima() {
     try { return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Lima' }).format(new Date()); } catch (e) { return new Date().toISOString().slice(0, 10); }
   }
@@ -188,8 +189,12 @@
     var t = window.MCTema && MCTema.actual, ev = EVENTOS[t];
     if (!ev) return null;
     var c = null; try { c = JSON.parse(sessionStorage.getItem('mc_tema_ver') || localStorage.getItem('mc_tema') || 'null'); } catch (e) {}
-    var d = c && c.fin ? Math.round((new Date(c.fin + 'T12:00:00') - new Date(hoyLima() + 'T12:00:00')) / 864e5) : null;
-    return { nombre: ev.nombre, ico: ev.ico, cls: ev.cls, emoji: ev.emoji, dias: d };
+    var hoy = hoyLima(), fin = c && c.fin;
+    // Navidad: cuenta hasta el 25 de diciembre (después, hasta el fin del evento)
+    if (ev.hasta && hoy.slice(5) < ev.hasta && hoy.slice(5) >= '06') fin = hoy.slice(0, 4) + '-' + ev.hasta;
+    var d = fin ? Math.round((new Date(fin + 'T12:00:00') - new Date(hoy + 'T12:00:00')) / 864e5) : null;
+    var falta = !!(ev.hasta && fin && fin.slice(5) === ev.hasta);
+    return { nombre: ev.nombre, ico: ev.ico, cls: ev.cls, emoji: ev.emoji, dias: d, falta: falta };
   }
   function cuandoTx(e) {
     var A = window.MCAgenda, d = A.dias(e.fecha);
@@ -200,7 +205,7 @@
     var html = '';
     evento = leerEvento();
     if (evento) html += '<a class="fecha ' + evento.cls + '" href="#" data-ev><span class="fi">' + evento.ico + '</span><span class="ft"><b class="disp">' + esc(evento.nombre) + '</b><small>' +
-      (evento.dias == null ? 'Evento de la semana' : evento.dias <= 0 ? 'Último día' : 'Quedan ' + evento.dias + (evento.dias === 1 ? ' día' : ' días')) + '</small></span></a>';
+      (evento.dias == null ? 'Evento de la semana' : evento.falta ? (evento.dias <= 0 ? '¡Feliz Navidad!' : 'Faltan ' + evento.dias + (evento.dias === 1 ? ' día' : ' días')) : evento.dias <= 0 ? 'Último día' : 'Quedan ' + evento.dias + (evento.dias === 1 ? ' día' : ' días')) + '</small></span></a>';
     var A = window.MCAgenda;
     if (A && fechas.length) {
       fechas.slice(0, evento ? 2 : 3).forEach(function (e) {
@@ -308,6 +313,7 @@
   }
   function avisoEvento() {
     if (!evento) return null;
+    if (evento.falta) return { tipo: 'evento', ico: evento.ico, k: 'Navidad', t: evento.dias <= 0 ? '¡<em>Feliz Navidad</em>, cachimbo! Hoy también se estudia un poquito.' : '¡Faltan <em>' + evento.dias + (evento.dias === 1 ? ' día' : ' días') + '</em> para Navidad! Cada acierto suena a campanita.' };
     return { tipo: 'evento', ico: evento.ico, k: 'Evento', t: evento.dias == null ? '¡Es semana de <em>' + esc(evento.nombre) + '</em>! ' + evento.emoji
       : evento.dias <= 0 ? '¡Hoy es el último día de <em>' + esc(evento.nombre) + '</em>! ' + evento.emoji
       : '¡' + esc(evento.nombre) + ' termina en <em>' + evento.dias + (evento.dias === 1 ? ' día' : ' días') + '</em>! ' + evento.emoji };

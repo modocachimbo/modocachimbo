@@ -13,7 +13,11 @@ const TMP_TEMAS = {
     fondo: 'radial-gradient(70px 70px at 80% 25%,#FFE7B0 0 30%,rgba(255,214,140,.25) 31%,transparent 60%),linear-gradient(160deg,#2c1152,#0e0719 60%,#3a1606)', acento: '#FF8A1F',
     sugerido: () => { const y = new Date().getFullYear(); return [y + '-10-24', y + '-11-01']; }
   },
-  navidad: { nombre: 'Navidad', desc: 'Pronto.', fondo: 'linear-gradient(160deg,#0b2a1c,#06140e 60%,#3a0a0a)', acento: '#FF4B4B', pronto: true }
+  navidad: {
+    nombre: 'Navidad', desc: 'Noche nevada, luces de colores, búho con gorro navideño, cuenta regresiva y campanitas al acertar.',
+    fondo: 'radial-gradient(40px 40px at 82% 28%,#FFF6DD 0 35%,transparent 38%),radial-gradient(2px 2px at 20% 30%,#fff 50%,transparent 51%),radial-gradient(2px 2px at 45% 60%,#fff 50%,transparent 51%),radial-gradient(2px 2px at 65% 20%,#fff 50%,transparent 51%),linear-gradient(180deg,#0b1730,#1b3d78 70%,#DCEBFA 71%)', acento: '#E8323C',
+    sugerido: () => { const y = new Date().getFullYear(); return [y + '-12-01', (y + 1) + '-01-06']; }
+  }
 };
 const TMP_MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'set', 'oct', 'nov', 'dic'];
 
