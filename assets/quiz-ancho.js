@@ -187,7 +187,9 @@
     if (der) der.style.marginTop = '';
     // Pregunta con tabla (Estadística): a todo el ancho para que la tabla entre completa
     var tabla = !!(q && q.querySelector('table'));
-    var ap = !conGraf && (tabla || (lq < 260 && (larga || mx > 55)));
+    // Lado a lado solo cuando vale la pena: con gráfico (va a la derecha) o con una pregunta larga
+    // (lectura de más de ~350 letras) y claves cortas. Lo demás: pregunta arriba y claves abajo.
+    var ap = !conGraf && (tabla || lq < 350 || larga || mx > 55);
     // Botones: con claves a la derecha, justo debajo de ellas (siempre a la vista aunque la
     // pregunta sea larga); con claves abajo (gráfico o claves largas), al final, a la derecha
     var nav = caja.querySelector(':scope > .navrow') || caja.querySelector(':scope > .qa-col > .navrow');
