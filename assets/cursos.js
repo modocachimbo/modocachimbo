@@ -63,14 +63,16 @@
       return Promise.all(lista.map(function (c) { return icono(c.icono); })).then(function (iconos) {
         [].slice.call(cont.querySelectorAll('.course')).forEach(function (el) {
           var a = el.querySelector('a.btn');
-          if (a && /^\.\.\/[a-z0-9-]+\/index\.html$/.test(a.getAttribute('href') || '')) el.remove();
+          if (a && /^\.\.\/[a-z0-9-]+\/(index|ordinario)\.html$/.test(a.getAttribute('href') || '')) el.remove();
         });
         var ref = cont.firstElementChild;
+        // Modo Ordinario (areas/<area>.html?mod=ordinario): cada curso abre su página de Ordinario
+        var pag = /[?&]mod=ordinario\b/.test(location.search) ? '/ordinario.html' : '/index.html';
         lista.forEach(function (c, i) {
           var d = document.createElement('div');
           d.className = 'course active';
           d.innerHTML = '<div class="icon">' + iconos[i] + '</div><h3>' + esc(c.corto || c.nombre) + '</h3><div class="rule"></div>' +
-            '<a class="btn" href="../' + esc(c.id) + '/index.html">Ver Curso</a>';
+            '<a class="btn" href="../' + esc(c.id) + pag + '">Ver Curso</a>';
           cont.insertBefore(d, ref);
         });
       });
