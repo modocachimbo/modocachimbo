@@ -624,11 +624,11 @@
     var img = function (f) { return '<img src="assets/cofres/' + f + '-cerrado.webp" alt="">'; };
     var his = (T && T.historial || []).slice(0, 6);
     var o = ventana('<div class="gi" style="width:110px;height:110px">' + DIA + '</div><h3>Consigue <em>diamantes</em></h3>' +
-      '<div data-compra><h4 class="pq-h">Recarga con Yape</h4><div class="pq">' + PAQ.map(function (p, i) {
+      '<h4 class="pq-h">' + (window.MCEnApp ? 'Paquetes de diamantes' : 'Recarga con Yape') + '</h4><div class="pq">' + PAQ.map(function (p, i) {
         return '<button type="button" class="pq-c' + (p.tag === 'Mejor precio' || p.tag === 'Popular' ? ' top' : '') + '" data-paq="' + i + '">' + (p.tag ? '<span class="pq-t">' + p.tag + '</span>' : '') + paqIco(i) +
           '<b>' + nf(p.n) + '</b><small>diamantes</small><span class="pq-p">S/ ' + p.s + '</span></button>';
       }).join('') + '</div>' +
-      '<div class="ym" id="ymMias"></div>' +
+      '<div data-compra><div class="ym" id="ymMias"></div>' +
       '<p class="pq-n">¿Algún problema? <a href="#" data-captura>Escríbenos por WhatsApp</a>.</p></div>' +
       '<h4 class="pq-h">Gratis jugando</h4><div class="gan">' +
         '<div><span class="gi2">' + img('leyenda') + '</span><span><b>Cofres del clan</b><small>Cada semana: Oro <em>20</em> · Amatista <em>40</em> · Leyenda <em>80</em> diamantes.</small></span></div>' +
@@ -682,6 +682,13 @@
   var IC_SUBE = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg>';
   var IC_RELOJ = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
   function pagar(i) {
+    // Dentro de la app de Play Store no se puede cobrar fuera de Google Play: los paquetes se ven,
+    // pero aún no se compran ahí (más adelante: Google Play Billing).
+    if (window.MCEnApp) {
+      ventana('<div class="yq-est"><div class="ic">' + IC_RELOJ + '</div><h3>Muy <em>pronto</em></h3><p>Muy pronto podrás comprar diamantes aquí en la app. Mientras tanto, consíguelos gratis con los cofres del clan.</p><button type="button" class="bt" data-cerrar>Entendido</button></div>', '', '#C07BFF')
+        .addEventListener('click', function (e) { if (e.target.closest('[data-cerrar]')) e.currentTarget.remove(); });
+      return;
+    }
     var p = PAQ[i], archivo = null;
     var o = ventana('<div class="yq"><div class="yq-top"><img src="assets/diamantes/' + p.f + '.webp" alt=""><div><b>' + nf(p.n) + '</b><span>diamantes</span></div><span class="yq-precio">S/ ' + p.s + '</span></div>' +
       '<div class="yq-paso"><span class="yq-n">1</span><div class="yq-c"><h4>Yapea S/ ' + p.s + '</h4><div class="yq-num"><div><b>' + YAPE + '</b><small>A nombre de ' + YAPE_NOMBRE + '</small></div><button type="button" class="yp-b" data-copiar>Copiar</button></div></div></div>' +
