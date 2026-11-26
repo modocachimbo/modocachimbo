@@ -766,7 +766,7 @@
         ven.innerHTML = '<div class="yq-est"><div class="ic">' + IC_RELOJ + '</div><h3>No se <em>recargó</em></h3><p>' + esc(d.nota || 'No encontramos ese pago.') + '</p><button type="button" class="bt" data-wsp>Escribir por WhatsApp</button></div>';
       } else if (d.estado === 'revision' || n >= 15) {
         fin = true;
-        ven.innerHTML = '<div class="yq-est"><div class="ic">' + IC_RELOJ + '</div><h3>Pago en <em>revisión</em></h3><p>Aún no vemos tu Yape de S/ ' + p.s + '. Lo revisamos y tus diamantes llegan apenas se confirme. Puedes cerrar esta ventana.</p><button type="button" class="bt" data-cerrar>Entendido</button></div>';
+        ven.innerHTML = '<div class="yq-est"><div class="ic">' + IC_RELOJ + '</div><h3>Pago en <em>revisión</em></h3><p>Estamos revisando tu Yape de S/ ' + p.s + '. Tus diamantes llegan apenas lo confirmemos, normalmente en unos minutos. Puedes cerrar esta ventana.</p><button type="button" class="bt" data-cerrar>Entendido</button></div>';
       } else {
         ven.innerHTML = '<div class="yq-est"><div class="yq-gira" aria-hidden="true"></div><h3>Verificando tu <em>pago</em></h3><p>Estamos buscando tu Yape de S/ ' + p.s + '. Suele tardar menos de un minuto.</p></div>';
       }
