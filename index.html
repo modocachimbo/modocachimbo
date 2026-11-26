@@ -1588,8 +1588,10 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
             <a class="acceso tnd" href="tienda.html?de=inicio" aria-label="Tienda"><svg class="tnd-ic" viewBox="0 0 48 48" aria-hidden="true"><path d="M9 25h30v19H9z" fill="#4B3A99"/><path d="M9 22h30v19H9z" fill="#8F78FF"/><path d="M13 28h9v13h-9z" fill="#2A1F5C"/><path d="M25 28h10v7H25z" fill="#F4F1FF"/><path d="M26.2 29.2h2.6v4.6h-2.6z" fill="#C6E000"/><g class="a-tol"><path d="M7 18h34v6H7z" fill="#5E7000"/><path d="M10 5H17L15.5 16v2a4.25 4.25 0 0 1-8.5 0V16z" fill="#C6E000" /><path d="M17 5H24L24.0 16v2a4.25 4.25 0 0 1-8.5 0V16z" fill="#FFFFFF" /><path d="M24 5H31L32.5 16v2a4.25 4.25 0 0 1-8.5 0V16z" fill="#C6E000" /><path d="M31 5H38L41.0 16v2a4.25 4.25 0 0 1-8.5 0V16z" fill="#FFFFFF" /><path d="M10 5h28" stroke="#fff" stroke-width="1.4" opacity=".5"/></g></svg><span>Tienda</span></a>
             <!-- Amigos, Clanes y Agenda: en el menú de la izquierda (PC), en Perfil y en «Mi agenda» -->
             <a class="acceso desc-acc" href="descargas.html" aria-label="Descargas sin internet"><svg class="ic"><use href="#i-bajar"/></svg><span>Descargas</span></a>
-            <script>/* Punto rojo en Descargas si subiste temas nuevos a un curso que el alumno ya descargó (revisa cada 6 h, solo el manifest de Libros) */
-            (function(){try{var b=document.currentScript.previousElementSibling,v=JSON.parse(localStorage.getItem('mc_paq')||'null'),ps=v&&v.packs||{},ids=Object.keys(ps).filter(function(k){return k.indexOf('curso-')===0&&ps[k].temas;});if(!ids.length)return;
+            <script>/* Punto rojo en Descargas si subiste temas nuevos a un curso que el alumno ya descargó (revisa cada 6 h, solo el manifest de Libros)
+               o si lo descargado tiene una base vieja (BASE_VER de assets/paquetes.js: cambiar los dos) */
+            (function(){try{var b=document.currentScript.previousElementSibling,v=JSON.parse(localStorage.getItem('mc_paq')||'null'),ps=v&&v.packs||{},ids=Object.keys(ps).filter(function(k){return k.indexOf('curso-')===0&&ps[k].temas;});
+            if(Object.keys(ps).length&&(!v.base||v.base.ver!==2)){b.classList.add('punto');return;}if(!ids.length)return;
             var g=JSON.parse(localStorage.getItem('mc_paq_rev')||'{}');function pon(si){b.classList.toggle('punto',!!si);}
             if(Date.now()-(g.t||0)<21600000||navigator.onLine===false)return pon(g.si);
             function ord(id){var x=String(id||'').match(/^(\d{4})-(III|II|I)$/);return x?+x[1]*10+{I:1,II:2,III:3}[x[2]]:0;}

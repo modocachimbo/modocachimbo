@@ -296,7 +296,10 @@ function estadoDe(k){
   // Temas que subiste después de que el alumno descargó el curso (o un ciclo nuevo)
   var tn=0, i2=k.tipo==='curso'&&INFO[k.curso.id];
   if(inf&&i2){ if(inf.items&&inf.items[0]&&i2.ciclo&&inf.items[0]!==i2.ciclo) tn=-1; else if(inf.temas&&i2.temas>inf.temas) tn=i2.temas-inf.temas; }
-  return {inf:inf, baja:baja, falt:falt, tn:tn, nuevo:!!NUEVO[k.id]||!!tn};
+  // Mejora de la base (ej. el Repaso global entra sin internet): todos los paquetes piden Actualizar;
+  // al actualizar uno se renueva la base y los demás vuelven a «Listo»
+  var bv=!!(inf&&P&&P.baseVieja&&P.baseVieja());
+  return {inf:inf, baja:baja, falt:falt, tn:tn, bv:bv, nuevo:!!NUEVO[k.id]||!!tn||bv};
 }
 function tarjeta(k){
   var e=estadoDe(k), inf=e.inf, h='', bt='', pie='';
@@ -312,7 +315,7 @@ function tarjeta(k){
     else if(inf) bt='<span class="pk-b ya"><svg class="i"><use href="#ic-ok"/></svg>Listo</span>';
     else if(k.tipo==='lab'&&!k.ab.length) bt='<span class="pk-b no"><svg class="i"><use href="#ic-cand"/></svg>Cerrados</span>';
     else bt=sinRed()?'<span class="pk-b no">Sin internet</span>':'<button class="pk-b" data-p="'+k.id+'"><svg class="i"><use href="#ic-desc"/></svg>Descargar</button>';
-    var tam=inf?(listo?'<span class="okt">Listo sin internet</span> · ':e.falt?'<span class="nvt">'+(e.falt===1?'1 simulador nuevo':e.falt+' simuladores nuevos')+'</span> · ':e.tn>0?'<span class="nvt">'+(e.tn===1?'1 tema nuevo':e.tn+' temas nuevos')+'</span> · ':e.tn<0?'<span class="nvt">Ciclo nuevo</span> · ':'<span class="nvt">Hay cambios nuevos</span> · ')+mb(inf.bytes)+' · '+hace(inf.t)
+    var tam=inf?(listo?'<span class="okt">Listo sin internet</span> · ':e.falt?'<span class="nvt">'+(e.falt===1?'1 simulador nuevo':e.falt+' simuladores nuevos')+'</span> · ':e.tn>0?'<span class="nvt">'+(e.tn===1?'1 tema nuevo':e.tn+' temas nuevos')+'</span> · ':e.tn<0?'<span class="nvt">Ciclo nuevo</span> · ':e.bv&&!NUEVO[k.id]?'<span class="nvt">Mejora para usar sin internet</span> · ':'<span class="nvt">Hay cambios nuevos</span> · ')+mb(inf.bytes)+' · '+hace(inf.t)
       :k.tipo==='lab'&&!k.ab.length?(k.listos.length?'Ábrelos con energía en el Laboratorio':'')
       :'aprox. '+mb(k.kb*1024);
     pie='<div class="pk-tam">'+tam+'</div>'+bt+(inf?'<button class="pk-x" data-b="'+k.id+'" aria-label="Borrar '+esc(k.nombre)+'"><svg class="i"><use href="#ic-bote"/></svg></button>':'');
@@ -414,7 +417,10 @@ function bajar(id,callado){
 // Baja varios paquetes uno tras otro (Descargar todo / Descargar área); cada tarjeta muestra su barrita
 function cola(ids){
   var n=0;
-  (function sig(){ if(!ids.length){ if(n) aviso('¡Listo! Descargaste <b>'+n+'</b> '+(n===1?'curso':'cursos')+' para usar sin internet'); return; } bajar(ids.shift(),true).then(function(ok){ if(ok){ n++; sig(); } }); })();
+  (function sig(){ if(!ids.length){ if(n) aviso('¡Listo! Descargaste <b>'+n+'</b> '+(n===1?'curso':'cursos')+' para usar sin internet'); return; } var id=ids.shift(), k=paquetes().filter(function(x){ return x.id===id; })[0], e=k&&estadoDe(k);
+    // Ya quedó al día (ej. la mejora de la base se bajó con el paquete anterior): se salta
+    if(e&&e.inf&&!e.falt&&!e.nuevo){ sig(); return; }
+    bajar(id,true).then(function(ok){ if(ok){ n++; sig(); } }); })();
 }
 document.getElementById('todo').onclick=function(){
   cola(paquetes().filter(function(k){ var e=estadoDe(k); return (k.tipo!=='lab'||k.ab.length)&&(!e.inf||e.falt||e.nuevo); }).map(function(k){ return k.id; }));
