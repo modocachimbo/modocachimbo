@@ -1,9 +1,10 @@
 /* =========================================================
    Panel · Recargas Yape
    Los alumnos yapean, suben su captura y escriben el código de seguridad
-   (tienda.html). MacroDroid, en el celular de Javier, manda cada aviso
-   «Te yapearon» y si calzan monto + código los diamantes caen solos.
-   Lo que no calza en 10 minutos queda «En revisión» y llega notificación.
+   (tienda.html). Montos bajos: se aprueban solos (WhatsApp con «No me
+   llegó»). Montos altos o raros: «En revisión» + WhatsApp con Aprobar /
+   Rechazar (yape.html) + notificación. MacroDroid es opcional.
+   SQL: 141-yape-recargas.sql y 142-yape-semiauto.sql.
    Aquí: Aprobar / Rechazar, ver la captura, ver los avisos que llegaron,
    prender o apagar lo automático y la clave para MacroDroid.
    Datos: supabase/141-yape-recargas.sql (yape_admin, yape_resolver, yape_config).
@@ -25,6 +26,16 @@ const YP_LLAVE = 'sb_publishable_clm6obUTs_391NA7FGG1YA_-eNuj7dU';
   .yp-clave { display: flex; gap: 8px; align-items: center; }
   .yp-clave button { flex: none; }
   .yp-clave code { display: block; flex: 1; min-width: 0; word-break: break-all; padding: 9px 11px; border-radius: 10px; background: #120e22; border: 1px solid #2A2346; font-size: 12.5px; color: var(--text); }
+  .yp-num { display: grid; gap: 8px; }
+  .yp-num label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-dim); }
+  .yp-num span { margin-left: auto; color: var(--text); font-weight: 900; }
+  .yp-num input, .yp-in { width: 80px; padding: 8px 10px; border-radius: 10px; border: 1px solid #2A2346; background: #120e22; color: var(--text); font: 800 14px Nunito, sans-serif; }
+  .yp-in { flex: 1; width: 100%; min-width: 0; }
+  .yp-aj > * { min-width: 0; }
+  .yp-mdro summary { cursor: pointer; list-style: none; }
+  .yp-mdro summary::-webkit-details-marker { display: none; }
+  .yp-mdro summary::after { content: ' +'; color: var(--text-dim); font-weight: 900; }
+  .yp-mdro[open] { display: grid; gap: 8px; grid-column: 1 / -1; }
   .yp-sw { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .yp-sw button { width: 52px; height: 30px; border-radius: 99px; border: 0; background: #3a3260; position: relative; cursor: pointer; flex: none; }
   .yp-sw button::after { content: ''; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; transition: left .15s; }
@@ -96,21 +107,32 @@ function pintarYape() {
   const vivo = A.ultimo && Date.now() - new Date(A.ultimo) < 3 * 86400e3;
   $('ypAjustes').innerHTML = `
     <div class="rcard">
-      <div class="yp-sw"><h3>Recarga automática</h3><button type="button" class="${A.auto ? 'on' : ''}" id="ypAuto" aria-label="Recarga automática"></button></div>
-      <p>${A.auto ? 'Encendida: si el aviso de Yape calza (monto + código), los diamantes caen solos. Si no aparece en ' + (A.espera || 10) + ' minutos, queda en revisión y te llega una notificación.' : 'Apagada: todas las recargas te llegan a revisión.'}</p>
+      <div class="yp-sw"><h3>Aprobar solas las recargas bajas</h3><button type="button" class="${A.auto ? 'on' : ''}" id="ypAuto" aria-label="Aprobar solas las recargas bajas"></button></div>
+      <p>${A.auto ? 'Encendido: hasta el monto de abajo se aprueban al instante y te llega un WhatsApp con «No me llegó» por si acaso. Lo más alto o raro va a revisión.' : 'Apagado: todas las recargas te llegan a revisión.'}</p>
+      <div class="yp-num"><label>Aprobar solas hasta <span>S/</span><input id="ypTope" type="number" min="0" max="100" step="1" value="${+A.tope || 0}"></label>
+        <label>Máximo por alumno al día <span>S/</span><input id="ypTopeDia" type="number" min="0" max="500" step="1" value="${+A.tope_dia || 0}"></label></div>
+      <button class="btn-ghost" type="button" id="ypGuardarTope" style="justify-self:start">Guardar montos</button>
     </div>
     <div class="rcard">
-      <h3>MacroDroid (tu celular)</h3>
+      <h3>Avisos a tu WhatsApp</h3>
+      <div class="yp-md${A.wsp ? ' ok' : ''}"><i></i>${A.wsp ? 'Activo: te llegan a ' + esc(A.wsp_tel || '') : 'Falta la clave de CallMeBot'}</div>
+      <p>Te llega un WhatsApp con enlaces para <b>Aprobar</b>, <b>Rechazar</b> o <b>Quitar</b>. Servicio gratuito CallMeBot.</p>
+      <div class="yp-clave"><input id="ypWspTel" class="yp-in" value="${esc(A.wsp_tel || '')}" placeholder="+51928030708" aria-label="Tu número de WhatsApp"></div>
+      <div class="yp-clave"><input id="ypWspKey" class="yp-in" placeholder="${A.wsp ? 'Clave guardada · pega otra para cambiar' : 'Pega aquí la clave (apikey) de CallMeBot'}" aria-label="Clave de CallMeBot"><button class="btn-main" type="button" id="ypWspGuardar">Guardar</button></div>
+      <button class="btn-ghost" type="button" id="ypWspProbar" style="justify-self:start"${A.wsp ? '' : ' disabled'}>Mandarme un WhatsApp de prueba</button>
+    </div>
+    <details class="rcard yp-mdro">
+      <summary><h3 style="display:inline">MacroDroid (opcional, solo Android)</h3></summary>
       <div class="yp-md${vivo ? ' ok' : ''}"><i></i>${A.ultimo ? 'Último aviso de Yape: ' + ypHora(A.ultimo) : 'Aún no llegó ningún aviso de Yape'}</div>
-      <p>Datos para la acción «Petición HTTP» de MacroDroid:</p>
+      <p>Si tu Yape está en un Android, MacroDroid puede mandar cada «Te yapearon» y así se aprueban solos hasta los montos altos. Datos para la acción «Petición HTTP»:</p>
       <div class="yp-clave"><code>${esc(YP_URL_AVISO)}</code><button class="btn-ghost" type="button" data-copiar="${esc(YP_URL_AVISO)}">Copiar</button></div>
       <div class="yp-clave"><code>apikey: ${esc(YP_LLAVE)}</code><button class="btn-ghost" type="button" data-copiar="${esc(YP_LLAVE)}">Copiar</button></div>
       <div class="yp-clave"><code>{"p_secreto":"${esc(A.secreto || '')}","p_texto":"[notification_title] [notification]"}</code><button class="btn-ghost" type="button" data-copiar='${esc(JSON.stringify({ p_secreto: A.secreto || '', p_texto: '[notification_title] [notification]' }))}'>Copiar</button></div>
       <button class="btn-ghost" type="button" id="ypClave" style="justify-self:start">Cambiar clave secreta</button>
-    </div>`;
+    </details>`;
   const chip = (v, nom, n) => `<button class="chip${YP.ver === v ? ' on' : ''}" data-v="${v}" type="button">${nom} <span class="c">${n}</span></button>`;
   const L = D.recargas || [];
-  $('ypChips').innerHTML = chip('revision', 'En revisión', C.revision || 0) + chip('todas', 'Todas', L.length) + chip('avisos', 'Avisos de Yape', (D.avisos || []).length);
+  $('ypChips').innerHTML = chip('revision', 'En revisión', C.revision || 0) + chip('solas', 'Aprobadas solas', C.solas || 0) + chip('todas', 'Todas', L.length) + chip('avisos', 'Avisos de Yape', (D.avisos || []).length);
   $('ypStats').textContent = `${C.revision || 0} en revisión · ${C.esperando || 0} verificándose ahora.`;
   const caja = $('ypList');
   if (YP.ver === 'avisos') {
@@ -120,18 +142,20 @@ function pintarYape() {
       : '<div class="state-msg">Aún no llegó ningún aviso de Yape. Revisa que MacroDroid esté configurado.</div>';
     return;
   }
-  const F = YP.ver === 'revision' ? L.filter(x => x.estado === 'revision') : L;
-  if (!F.length) { caja.innerHTML = `<div class="state-msg">${YP.ver === 'revision' ? 'No hay recargas por revisar.' : 'Aún no hay recargas.'}</div>`; return; }
+  const F = YP.ver === 'revision' ? L.filter(x => x.estado === 'revision') : YP.ver === 'solas' ? L.filter(x => x.como === 'confianza' && x.estado === 'aprobada') : L;
+  if (!F.length) { caja.innerHTML = `<div class="state-msg">${YP.ver === 'revision' ? 'No hay recargas por revisar.' : YP.ver === 'solas' ? 'No hay recargas aprobadas solas esta semana.' : 'Aún no hay recargas.'}</div>`; return; }
   caja.innerHTML = F.map(x => `<div class="rcard yp-card" data-id="${x.id}">
       <div class="yp-cap" data-cap="${esc(x.captura || '')}">${x.captura ? 'Cargando…' : 'Sin captura'}</div>
       <div class="yp-info">
         <div class="yp-l1"><span class="yp-monto">${ypSol(x.monto)} <small>→ ${(+x.diamantes).toLocaleString('es-PE')} diamantes</small></span>
-          <span class="yp-tag ${x.estado}">${ypEst[x.estado] || x.estado}${x.como === 'auto' ? ' · solo' : x.como === 'admin' ? ' · por ti' : ''}</span>
+          <span class="yp-tag ${x.estado}">${ypEst[x.estado] || x.estado}${x.como === 'auto' ? ' · verificada' : x.como === 'confianza' ? ' · sola' : x.como === 'admin' ? ' · por ti' : ''}</span>
           <span class="yp-hora">#${x.id} · ${ypHora(x.creado)}</span></div>
         <div class="yp-al"><b>${esc(x.apodo || 'Sin apodo')}</b>${x.jid ? ' · ID ' + x.jid : ''} · ${esc(x.email || '')}</div>
         <div class="yp-al">Código de seguridad: <span class="yp-cod">${String(x.codigo || '').split('').map(d => '<span>' + esc(d) + '</span>').join('')}</span></div>
         ${x.aviso ? `<div class="yp-avtx">Aviso de Yape: ${esc(x.aviso)}</div>` : ''}
+        ${x.motivo && x.estado === 'revision' ? `<div class="yp-al">Por qué: <b>${esc(x.motivo)}</b></div>` : ''}
         ${x.nota ? `<div class="yp-al">Nota: ${esc(x.nota)}</div>` : ''}
+        ${x.estado === 'aprobada' && x.como === 'confianza' ? '<div class="yp-acc"><button class="btn-ghost rech" type="button" data-yp="quitar">No me llegó · Quitar diamantes</button></div>' : ''}
         ${x.estado !== 'aprobada' ? `<div class="yp-acc">
           <button class="btn-main" type="button" data-yp="aprobar">Sí me llegó · Aprobar</button>
           ${x.estado !== 'rechazada' ? '<button class="btn-ghost rech" type="button" data-yp="rechazar">No me llegó · Rechazar</button>' : ''}
@@ -165,7 +189,7 @@ async function ypResolver(id, aprobar, btn) {
     const c = await MCAuth.listo;
     const r = await c.rpc('yape_resolver', { p_id: id, p_aprobar: aprobar, p_nota: null });
     if (r.error) throw r.error;
-    toast(aprobar ? 'Aprobada: los diamantes ya están en su cuenta' : 'Recarga rechazada');
+    toast(aprobar ? 'Aprobada: los diamantes ya están en su cuenta' : btn.dataset.yp === 'quitar' ? 'Se quitaron los diamantes' : 'Recarga rechazada');
     YP.ocupado = false;
     await cargarYape();
   } catch (e) {
@@ -180,7 +204,7 @@ async function ypConfig(p) {
     const r = await c.rpc('yape_config', { p });
     if (r.error) throw r.error;
     YP.d = r.data || YP.d; pintarYape();
-  } catch (e) { toast(e.message || 'No se pudo guardar.', true); }
+  } catch (e) { toast(e.message || 'No se pudo guardar.', true); throw e; }
 }
 
 document.addEventListener('click', e => {
@@ -189,15 +213,21 @@ document.addEventListener('click', e => {
   const ch = e.target.closest('#ypChips .chip'); if (ch) { YP.ver = ch.dataset.v; pintarYape(); return; }
   const b = e.target.closest('[data-yp]');
   if (b) { ypResolver(+b.closest('[data-id]').dataset.id, b.dataset.yp === 'aprobar', b); return; }
+  if (e.target.closest('#ypGuardarTope')) { ypConfig({ tope: +$('ypTope').value || 0, tope_dia: +$('ypTopeDia').value || 0 }).then(() => toast('Montos guardados'), () => {}); return; }
+  if (e.target.closest('#ypWspGuardar')) {
+    const p = { wsp_tel: $('ypWspTel').value.trim() }; const k = $('ypWspKey').value.trim(); if (k) p.wsp_key = k;
+    ypConfig(p).then(() => toast('WhatsApp guardado'), () => {}); return;
+  }
+  if (e.target.closest('#ypWspProbar')) { ypConfig({ probar: true }).then(() => toast('Mensaje de prueba enviado. Revisa tu WhatsApp.'), () => {}); return; }
   const cap = e.target.closest('.yp-cap');
   if (cap && YP.urls[cap.dataset.cap]) { const o = document.createElement('div'); o.className = 'yp-ver'; o.innerHTML = `<img src="${YP.urls[cap.dataset.cap]}" alt="Captura del Yape">`; document.body.appendChild(o); return; }
   const cp = e.target.closest('[data-copiar]');
   if (cp) { navigator.clipboard.writeText(cp.dataset.copiar).then(() => toast('Copiado'), () => toast('No se pudo copiar', true)); return; }
-  if (e.target.closest('#ypAuto')) { ypConfig({ auto: !(YP.d.ajustes || {}).auto }); return; }
+  if (e.target.closest('#ypAuto')) { ypConfig({ auto: !(YP.d.ajustes || {}).auto }).catch(() => {}); return; }
   const cl = e.target.closest('#ypClave');
   if (cl) {
     if (cl.dataset.seguro !== '1') { cl.dataset.seguro = '1'; cl.textContent = 'Tendrás que cambiarla en MacroDroid. ¿Seguro?'; return; }
-    ypConfig({ nueva_clave: true }); return;
+    ypConfig({ nueva_clave: true }).catch(() => {}); return;
   }
   if (e.target.closest('#ypRecargar')) cargarYape();
 });

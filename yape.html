@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0B0818">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<title>Recarga Yape · Modo Cachimbo</title>
+<!-- Página del enlace que llega por WhatsApp a Javier (supabase/142-yape-semiauto.sql).
+     El enlace trae una clave larga de esa recarga; nunca hace nada solo al abrir:
+     siempre hay que tocar el botón (los visores de enlaces de WhatsApp abren la página). -->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Lilita+One&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg: #0B0818; --s: #151127; --b: #2A2346; --l: #D4F000; --t: #EEEAF7; --d: #A99FC8; color-scheme: dark; }
+  body { min-height: 100vh; background: var(--bg); color: var(--t); font: 700 15px/1.5 Nunito, system-ui, sans-serif; display: grid; place-items: center; padding: 20px 16px; }
+  .c { width: min(420px, 100%); background: linear-gradient(180deg, #1F1840, #120E26); border: 2px solid #3a2f6b; border-bottom-width: 7px; border-radius: 22px; padding: 22px 20px; text-align: center; }
+  .logo { display: block; height: 34px; margin: 0 auto 14px; }
+  .tag { display: inline-block; padding: 4px 12px; border-radius: 99px; font: 900 12px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .6px; }
+  .tag.revision, .tag.esperando { background: rgba(255,200,0,.15); color: #FFC800; }
+  .tag.aprobada { background: rgba(88,204,2,.15); color: #7BE04A; }
+  .tag.rechazada { background: rgba(255,75,110,.15); color: #ff8aa0; }
+  .monto { font: 400 54px/1.05 "Lilita One", Nunito, sans-serif; margin-top: 10px; }
+  .dia { color: var(--d); font-weight: 800; }
+  .datos { display: grid; gap: 8px; margin: 16px 0 4px; text-align: left; }
+  .datos div { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); }
+  .datos span { color: var(--d); font-size: 13.5px; }
+  .cod { display: inline-flex; gap: 4px; }
+  .cod i { font-style: normal; display: inline-grid; place-items: center; width: 30px; height: 34px; border-radius: 8px; background: #e9e6f2; color: #2a2152; font: 900 18px Nunito, sans-serif; }
+  .tip { margin-top: 12px; color: var(--d); font-size: 13.5px; }
+  .bt { display: block; width: 100%; margin-top: 12px; padding: 15px; border: 0; border-radius: 14px; cursor: pointer; font: 900 16px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .4px; }
+  .si { background: linear-gradient(180deg, #F0FF6A, #D4F000 55%, #B5D000); color: #14101f; box-shadow: 0 4px 0 #8fa300; }
+  .no { background: #2a2152; color: #ff8aa0; border: 2px solid rgba(255,110,110,.45); }
+  .bt:disabled { opacity: .5; }
+  .msg { margin-top: 16px; font-size: 15px; }
+  .err { color: #ff8aa0; }
+  .ok svg { width: 64px; height: 64px; }
+</style>
+</head>
+<body>
+  <div class="c" id="c"><img class="logo" src="assets/img/logo-modo-cachimbo-horizontal.svg" alt="Modo Cachimbo"><p class="msg">Cargando…</p></div>
+<script>
+(function () {
+  var URL_SB = 'https://tvcrhogybfxphpzpjnis.supabase.co/rest/v1/rpc/';
+  var KEY = 'sb_publishable_clm6obUTs_391NA7FGG1YA_-eNuj7dU';
+  var Q = new URLSearchParams(location.search), tok = Q.get('t') || '', a = Q.get('a') || '';
+  var c = document.getElementById('c'), LOGO = '<img class="logo" src="assets/img/logo-modo-cachimbo-horizontal.svg" alt="Modo Cachimbo">';
+  var EST = { esperando: 'Verificando', revision: 'En revisión', aprobada: 'Aprobada', rechazada: 'Rechazada' };
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (x) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[x]; }); }
+  function rpc(n, b) {
+    return fetch(URL_SB + n, { method: 'POST', headers: { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(b) })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j && j.message || 'No se pudo.'); return j; }); });
+  }
+  function sol(m) { return 'S/ ' + (+m).toLocaleString('es-PE', { maximumFractionDigits: 2 }); }
+  function pintar(r, aviso) {
+    if (!r) { c.innerHTML = LOGO + '<p class="msg err">Este enlace no es válido.</p>'; return; }
+    var b = '';
+    if (r.estado === 'revision' || r.estado === 'esperando') {
+      b = (a === 'no' ? '' : '<button class="bt si" data-a="si">Sí me llegó · Aprobar</button>') +
+          '<button class="bt no" data-a="no">No me llegó · Rechazar</button>' +
+          (a === 'no' ? '<button class="bt si" data-a="si">Sí me llegó · Aprobar</button>' : '');
+    } else if (r.estado === 'aprobada') {
+      b = '<button class="bt no" data-a="quitar">No me llegó · Quitar diamantes</button>';
+    }
+    c.innerHTML = LOGO + '<span class="tag ' + r.estado + '">' + (EST[r.estado] || r.estado) + (r.como === 'confianza' && r.estado === 'aprobada' ? ' sola' : '') + '</span>' +
+      '<div class="monto">' + sol(r.monto) + '</div><div class="dia">' + (+r.diamantes).toLocaleString('es-PE') + ' diamantes</div>' +
+      '<div class="datos"><div><span>Alumno</span><b>' + esc(r.apodo || 'Sin apodo') + (r.jid ? ' · ID ' + r.jid : '') + '</b></div>' +
+      '<div><span>Código de seguridad</span><b class="cod">' + String(r.codigo || '').split('').map(function (d) { return '<i>' + esc(d) + '</i>'; }).join('') + '</b></div>' +
+      '<div><span>Pidió</span><b>' + new Date(r.creado).toLocaleString('es-PE', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) + '</b></div>' +
+      (r.motivo ? '<div><span>Por qué</span><b style="text-align:right">' + esc(r.motivo) + '</b></div>' : '') + '</div>' +
+      (b ? '<p class="tip">Abre tu Yape y busca un pago de ' + sol(r.monto) + ' con ese código.</p>' + b : '') +
+      (aviso ? '<p class="msg">' + aviso + '</p>' : '');
+  }
+  c.addEventListener('click', function (e) {
+    var x = e.target.closest('[data-a]'); if (!x) return;
+    if (x.dataset.a !== 'si' && x.dataset.seguro !== '1') { x.dataset.seguro = '1'; x.textContent = '¿Seguro? Toca otra vez'; return; }
+    [].forEach.call(c.querySelectorAll('.bt'), function (y) { y.disabled = true; });
+    rpc('yape_por_token_resolver', { p_token: tok, p_accion: x.dataset.a }).then(function (r) {
+      a = '';
+      pintar(r, { si: 'Listo: los diamantes ya están en su cuenta.', no: 'Listo: la recarga quedó rechazada.', quitar: 'Listo: se quitaron los diamantes.' }[x.dataset.a]);
+    }, function (er) {
+      [].forEach.call(c.querySelectorAll('.bt'), function (y) { y.disabled = false; });
+      var m = c.querySelector('.msg') || c.appendChild(document.createElement('p')); m.className = 'msg err'; m.textContent = er.message;
+    });
+  });
+  if (tok.length < 40) { pintar(null); return; }
+  rpc('yape_por_token', { p_token: tok }).then(function (r) { pintar(r); }, function (er) { c.innerHTML = LOGO + '<p class="msg err">' + esc(er.message) + '</p>'; });
+})();
+</script>
+</body>
+</html>
