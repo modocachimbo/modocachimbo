@@ -710,8 +710,11 @@
     // Dentro de la app de Play Store no se puede cobrar fuera de Google Play: los paquetes se ven,
     // pero aún no se compran ahí (más adelante: Google Play Billing).
     if (window.MCEnApp) {
-      ventana('<div class="yq-est"><div class="ic">' + IC_RELOJ + '</div><h3>Muy <em>pronto</em></h3><p>Muy pronto podrás comprar diamantes aquí en la app. Mientras tanto, consíguelos gratis con los cofres del clan.</p><button type="button" class="bt" data-cerrar>Entendido</button></div>', '', '#C07BFF')
-        .addEventListener('click', function (e) { if (e.target.closest('[data-cerrar]')) e.currentTarget.remove(); });
+      ventana('<div class="yq-est"><div class="ic">' + IC_RELOJ + '</div><h3>Muy <em>pronto</em></h3><p>Muy pronto podrás comprar diamantes aquí en la app. Mientras tanto, consíguelos gratis con los cofres del clan.</p><button type="button" class="bt" data-cerrar>Entendido</button><p class="pq-n" style="margin-top:12px">¿Necesitas ayuda? <a href="#" data-ayuda>Escríbenos por WhatsApp</a>.</p></div>', '', '#C07BFF')
+        .addEventListener('click', function (e) {
+          if (e.target.closest('[data-ayuda]')) { e.preventDefault(); window.open('https://wa.me/' + WSP + '?text=' + encodeURIComponent('Hola Modo Cachimbo, necesito ayuda con mi código.\nMi ID: ' + (T && T.id ? T.id : '(sin ID)')), '_blank'); return; }
+          if (e.target.closest('[data-cerrar]')) e.currentTarget.remove();
+        });
       return;
     }
     var p = PAQ[i], archivo = null;
