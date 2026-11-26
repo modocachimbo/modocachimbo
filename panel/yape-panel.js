@@ -32,6 +32,8 @@ const YP_LLAVE = 'sb_publishable_clm6obUTs_391NA7FGG1YA_-eNuj7dU';
   .yp-num input, .yp-in { width: 80px; padding: 8px 10px; border-radius: 10px; border: 1px solid #2A2346; background: #120e22; color: var(--text); font: 800 14px Nunito, sans-serif; }
   .yp-in { flex: 1; width: 100%; min-width: 0; }
   .yp-aj > * { min-width: 0; }
+  .yp-sub { display: grid; gap: 8px; }
+  .yp-sub summary { cursor: pointer; font-size: 13px; color: var(--text-dim); font-weight: 800; }
   .yp-mdro summary { cursor: pointer; list-style: none; }
   .yp-mdro summary::-webkit-details-marker { display: none; }
   .yp-mdro summary::after { content: ' +'; color: var(--text-dim); font-weight: 900; }
@@ -114,12 +116,15 @@ function pintarYape() {
       <button class="btn-ghost" type="button" id="ypGuardarTope" style="justify-self:start">Guardar montos</button>
     </div>
     <div class="rcard">
-      <h3>Avisos a tu WhatsApp</h3>
-      <div class="yp-md${A.wsp ? ' ok' : ''}"><i></i>${A.wsp ? 'Activo: te llegan a ' + esc(A.wsp_tel || '') : 'Falta la clave de CallMeBot'}</div>
-      <p>Te llega un WhatsApp con enlaces para <b>Aprobar</b>, <b>Rechazar</b> o <b>Quitar</b>. Servicio gratuito CallMeBot.</p>
-      <div class="yp-clave"><input id="ypWspTel" class="yp-in" value="${esc(A.wsp_tel || '')}" placeholder="+51928030708" aria-label="Tu número de WhatsApp"></div>
-      <div class="yp-clave"><input id="ypWspKey" class="yp-in" placeholder="${A.wsp ? 'Clave guardada · pega otra para cambiar' : 'Pega aquí la clave (apikey) de CallMeBot'}" aria-label="Clave de CallMeBot"><button class="btn-main" type="button" id="ypWspGuardar">Guardar</button></div>
-      <button class="btn-ghost" type="button" id="ypWspProbar" style="justify-self:start"${A.wsp ? '' : ' disabled'}>Mandarme un WhatsApp de prueba</button>
+      <h3>Avisos a tu celular</h3>
+      <div class="yp-md${A.tg || A.wsp ? ' ok' : ''}"><i></i>${A.tg ? 'Telegram conectado' : 'Telegram sin conectar'}${A.wsp ? ' · WhatsApp activo' : ''}</div>
+      <p>Te llega un mensaje con enlaces para <b>Aprobar</b>, <b>Rechazar</b> o <b>Quitar</b>.</p>
+      <div class="yp-clave"><input id="ypTgToken" class="yp-in" placeholder="${A.tg ? 'Bot guardado · pega otro token para cambiar' : 'Token de tu bot (te lo da @BotFather)'}" aria-label="Token del bot de Telegram"><button class="btn-main" type="button" id="ypTgConectar">Conectar</button></div>
+      <button class="btn-ghost" type="button" id="ypWspProbar" style="justify-self:start"${A.tg || A.wsp ? '' : ' disabled'}>Mandarme un mensaje de prueba</button>
+      <details class="yp-sub"><summary>WhatsApp (CallMeBot, cuando abra cupos)</summary>
+        <div class="yp-clave"><input id="ypWspTel" class="yp-in" value="${esc(A.wsp_tel || '')}" placeholder="+51928030708" aria-label="Tu número de WhatsApp"></div>
+        <div class="yp-clave"><input id="ypWspKey" class="yp-in" placeholder="${A.wsp ? 'Clave guardada · pega otra para cambiar' : 'Clave (apikey) de CallMeBot'}" aria-label="Clave de CallMeBot"><button class="btn-ghost" type="button" id="ypWspGuardar">Guardar</button></div>
+      </details>
     </div>
     <details class="rcard yp-mdro">
       <summary><h3 style="display:inline">MacroDroid (opcional, solo Android)</h3></summary>
@@ -218,7 +223,8 @@ document.addEventListener('click', e => {
     const p = { wsp_tel: $('ypWspTel').value.trim() }; const k = $('ypWspKey').value.trim(); if (k) p.wsp_key = k;
     ypConfig(p).then(() => toast('WhatsApp guardado'), () => {}); return;
   }
-  if (e.target.closest('#ypWspProbar')) { ypConfig({ probar: true }).then(() => toast('Mensaje de prueba enviado. Revisa tu WhatsApp.'), () => {}); return; }
+  if (e.target.closest('#ypTgConectar')) { ypTelegram(e.target.closest('#ypTgConectar')); return; }
+  if (e.target.closest('#ypWspProbar')) { ypConfig({ probar: true }).then(() => toast('Mensaje de prueba enviado. Revisa tu celular.'), () => {}); return; }
   const cap = e.target.closest('.yp-cap');
   if (cap && YP.urls[cap.dataset.cap]) { const o = document.createElement('div'); o.className = 'yp-ver'; o.innerHTML = `<img src="${YP.urls[cap.dataset.cap]}" alt="Captura del Yape">`; document.body.appendChild(o); return; }
   const cp = e.target.closest('[data-copiar]');
@@ -244,3 +250,22 @@ document.addEventListener('click', e => {
   }
   document.addEventListener('DOMContentLoaded', () => { setTimeout(contar, 2500); setInterval(contar, 120e3); });
 })();
+
+// Telegram: con el token del bot, busca tu chat (después de que le escribiste al bot) y lo guarda
+async function ypTelegram(btn) {
+  const tok = $('ypTgToken').value.trim();
+  if (!/^\d+:[\w-]{20,}$/.test(tok)) { toast('Pega el token completo que te dio @BotFather (números, dos puntos y letras).', true); return; }
+  btn.disabled = true; btn.textContent = 'Buscando…';
+  try {
+    const yo = await (await fetch(`https://api.telegram.org/bot${tok}/getMe`)).json();
+    if (!yo.ok) throw new Error('Ese token no es válido. Cópialo otra vez de @BotFather.');
+    const up = await (await fetch(`https://api.telegram.org/bot${tok}/getUpdates`)).json();
+    const msgs = (up.result || []).map(u => u.message || u.edited_message).filter(m => m && m.chat && m.chat.type === 'private');
+    if (!msgs.length) throw new Error(`Abre tu bot @${yo.result.username} en Telegram, toca INICIAR (o escríbele «hola») y vuelve a tocar Conectar.`);
+    const chat = msgs[msgs.length - 1].chat;
+    await ypConfig({ tg_token: tok, tg_chat: String(chat.id), probar: true });
+    toast('Telegram conectado. Te mandé un mensaje de prueba.');
+  } catch (e) {
+    toast(e.message && !/Failed to fetch|NetworkError/i.test(e.message) ? e.message : 'No se pudo hablar con Telegram. Revisa tu internet.', true);
+  } finally { if (document.body.contains(btn)) { btn.disabled = false; btn.textContent = 'Conectar'; } }
+}
