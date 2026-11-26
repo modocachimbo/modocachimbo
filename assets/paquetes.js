@@ -20,6 +20,11 @@
   // (mezcla las preguntas de los cursos que bajó)
   var BASE = ['index.html', 'descargas.html', 'offline.html', 'repaso-mixto.html', 'manifest.webmanifest', 'assets/app/icono-192.png'];
   // Si hay simuladores, también el Laboratorio y lo común de sus páginas
+  // Versión de la base: SUBIRLA cuando cambie BASE (o algo común que los paquetes ya bajados deban volver a bajar).
+  // Así descargas.html marca «Mejora para usar sin internet · Actualizar» y el inicio pone el punto rojo en Descargas.
+  // (El inicio repite este número en su script del punto rojo: cambiar los dos.)
+  // 2: entra repaso-mixto.html (Repaso global sin internet)
+  var BASE_VER = 2;
   var BASE_LAB = ['laboratorio.html', 'assets/lab-plano.js', 'assets/lab-mate.css', 'assets/lab-reto.js'];
   var CDN = /^https:\/\/(fonts\.(googleapis|gstatic)\.com|cdn\.jsdelivr\.net)\//;
 
@@ -146,7 +151,7 @@
       bajando = id;
       // 1) Base: el inicio y todo lo común. Se vuelve a bajar si tiene más de 30 min (así queda al día),
       //    pero no en cada paquete de «Descargar todo»
-      var fresca = v.base && Date.now() - v.base.t < 1800000 && (!conLab || v.base.lab);
+      var fresca = v.base && v.base.ver === BASE_VER && Date.now() - v.base.t < 1800000 && (!conLab || v.base.lab);
       var pb = fresca ? Promise.resolve({ bytes: v.base.bytes, archivos: [] })
         : llenar(PRE + 'base', BASE.concat(conLab ? BASE_LAB : []), [], null, function (h, t) { if (alAvance) alAvance(h, t, 'base'); });
       return pb
@@ -178,7 +183,7 @@
           return etiquetas(pags).catch(function () { return []; }).then(function (et) {
             v = leer();
             var vb = v.base && v.base.bytes || 0;
-            v.base = { bytes: (vb || base.bytes) + (rc.comun || 0), t: Date.now(), lab: conLab };
+            v.base = { bytes: (vb || base.bytes) + (rc.comun || 0), t: Date.now(), lab: conLab, ver: BASE_VER };
             v.packs[id] = { nombre: p.nombre, tipo: p.tipo, items: p.items || [], temas: p.temas || 0, pags: pags, bytes: rc.bytes, t: Date.now(), ver: et.join('|'), et: et, red: rc.red };
             guardar(v); bajando = null;
             return v.packs[id];
@@ -198,6 +203,8 @@
       guardar({ base: null, packs: {} });
       return caches.keys().then(function (ks) { return Promise.all(ks.filter(function (k) { return k.indexOf(PRE) === 0; }).map(function (k) { return caches.delete(k); })); });
     },
+    // true si lo común (inicio, Repaso global, scripts…) se bajó con una versión anterior: hay que actualizar
+    baseVieja: function () { var v = leer(); return Object.keys(v.packs).length > 0 && (!v.base || v.base.ver !== BASE_VER); },
     // true si cambió alguna página o dato del paquete (solo con internet; sin internet: false)
     revisar: function (id) {
       var c = leer().packs[id];
