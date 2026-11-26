@@ -199,6 +199,7 @@
     delete e.regalos;
     estado = e; recibido = Date.now();
     guardar(CLAVE, JSON.stringify(e)); guardar(CLAVE + '_t', String(recibido));
+    if (e.xp_mult != null) try { localStorage.setItem(K_MULT, JSON.stringify({ m: +e.xp_mult, s: lunesLima() })); } catch (x) {}
     pintar();
     oyentes.forEach(function (fn) { try { fn(estado); } catch (x) {} });
     (e.nuevas || []).forEach(function (t) { celebrar(t); });
@@ -250,9 +251,19 @@
   function multXp(xp) {  // respaldo si el servidor aún no manda xp_mult (mismos cortes que rango.js)
     return xp >= 60000 ? 25 : xp >= 23000 ? 50 : xp >= 14000 ? 70 : xp >= 7700 ? 80 : xp >= 4300 ? 90 : 100;
   }
+  var K_MULT = 'mc_cz_mult_' + uid;
+  function multGuardado() {
+    try { var m = JSON.parse(localStorage.getItem(K_MULT) || 'null'); return m && m.s === lunesLima() && m.m != null ? +m.m : null; } catch (e) { return null; }
+  }
+  // Lunes de esta semana (hora de Lima): el multiplicador vale para la semana en que se guardó
+  function lunesLima() { var d = new Date(Date.now() - 5 * 36e5); d.setUTCDate(d.getUTCDate() - (d.getUTCDay() + 6) % 7); return d.toISOString().slice(0, 10); }
   function valor(ok, mal) {
     var b = (PAG && XP_MODO[PAG.fuente]) || [14, 0];
-    var mu = estado && estado.xp_mult != null ? +estado.xp_mult : multXp((estado && estado.xp_semana) || 0);
+    // Sin internet y recién abierta la app no hay estado del servidor: se usa el último multiplicador
+    // que mandó (guardado en el teléfono). Antes se asumía 100 % y el XP de arriba subía de más
+    // (ej. 15 por correcta en vez de 8 en Mítico) y al volver la señal se veía «bajar».
+    var mu = estado && estado.xp_mult != null ? +estado.xp_mult : multGuardado();
+    if (mu == null) mu = multXp((estado && estado.xp_semana) || 0);
     var x = ok * Math.round(b[0] * mu / 100);
     return (repite() ? Math.floor(x / 2) : x) + mal * b[1];
   }
@@ -294,7 +305,7 @@
   // ¿Se puede seguir sumando a esta tanda? (de esta pestaña, misma práctica, nunca enviada, < 50)
   function abierta(u, ok, mal, rep) {
     return u && !u.v && !u.cerrada && u.tab === TAB && u.fuente === PAG.fuente && u.curso === (PAG.curso || '') &&
-      !!u.rep === rep && u.ok + ok <= 50 && u.mal + mal <= 50 && Date.now() - (+u.t || 0) < 10 * 60000;
+      !!u.rep === rep && !!u.o === sinRed() && u.ok + ok <= 50 && u.mal + mal <= 50 && Date.now() - (+u.t || 0) < 10 * 60000;
   }
   function anotar(ok, mal) {
     if (!PAG || ok + mal <= 0) return;
@@ -304,7 +315,9 @@
       if (abierta(u, a, b, rep)) {
         u.ok += a; u.mal += b; u.seguidas = Math.max(u.seguidas || 0, racha); u.xp = (+u.xp || 0) + valor(a, b);
       } else {
-        c.p.push({ k: nuevaClave(), tab: TAB, fuente: PAG.fuente, curso: PAG.curso || '', ok: a, mal: b, seguidas: racha, rep: rep, t: Date.now(), xp: valor(a, b) });
+        var t = { k: nuevaClave(), tab: TAB, fuente: PAG.fuente, curso: PAG.curso || '', ok: a, mal: b, seguidas: racha, rep: rep, t: Date.now(), xp: valor(a, b) };
+        if (sinRed()) t.o = 1;   // jugada sin internet: no se muestra hasta que el servidor la sume
+        c.p.push(t);
       }
       ok -= a; mal -= b;
     }
@@ -315,7 +328,10 @@
     var c = leerCola(), u = c.p[c.p.length - 1];
     if (u && u.tab === TAB && !u.cerrada) { u.cerrada = true; guardarCola(c); }
   }
-  function enCola() { return leerCola().p.reduce(function (a, x) { return a + (+x.xp || 0); }, 0); }
+  // Sin internet el XP de arriba NO sube: las respuestas se guardan en el teléfono y el XP
+  // sube cuando vuelve la señal y el servidor las suma (así nunca se ve «bajar»).
+  function sinRed() { return navigator.onLine === false; }
+  function enCola() { return leerCola().p.reduce(function (a, x) { return a + (x.o ? 0 : (+x.xp || 0)); }, 0); }
   // Cortes de red que no deben colgar la cola: si en 15 s no contesta, se reintenta después
   function conTiempo(prom, ms) {
     return new Promise(function (ok, mal) {
@@ -435,7 +451,7 @@
   /* ---------- "+10 XP": que se note lo que gana ---------- */
   var chipXp = null, tChip = null, sumaChip = 0;
   function ganaXp(n) {
-    if (!n || !estado) return;
+    if (!n || !estado || sinRed()) return;
     css();
     // La gema de arriba sube al instante
     Array.prototype.forEach.call(document.querySelectorAll('.mcz-xp span'), function (s) { s.textContent = verXp(); });

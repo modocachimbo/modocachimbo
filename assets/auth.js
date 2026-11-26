@@ -163,7 +163,7 @@
     document.head.appendChild(n);
     // Corazones, misiones del día y XP (assets/corazones.js) y el búho que usa
     var cz = document.createElement('script');
-    cz.src = BASE + 'assets/corazones.js?v=20';
+    cz.src = BASE + 'assets/corazones.js?v=21';
     document.head.appendChild(cz);
     // Pantalla echada (PC, tablet o celular en horizontal): la misma tarjeta del inicio (búho, marco,
     // banner y rango), en chiquito, en todas las páginas que tienen el botón de la cuenta.
