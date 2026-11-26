@@ -430,7 +430,7 @@ html:not(.arcade-si) .solo-beta { display: none !important; }
 @media (prefers-reduced-motion: reduce) { .tnd-ic .a-tol { animation: none; } }
 .acceso.desc-acc { color: var(--lima); border-color: rgba(198,224,0,.45); }
 .acceso.desc-acc span { font-size: 8.5px; letter-spacing: 0; }
-.acceso.punto::after { content: ""; position: absolute; right: 5px; top: 5px; width: 7px; height: 7px; rotate: 45deg; background: var(--error); box-shadow: 0 0 0 2px var(--tarjeta), 0 0 8px rgba(255, 75, 75, .8); animation: aviso 2s ease-in-out infinite; }
+.acceso.punto::after { content: ""; position: absolute; right: 6px; top: 6px; width: 5px; height: 5px; rotate: 45deg; background: var(--error); animation: aviso 2s ease-in-out infinite; }
 @keyframes aviso { 50% { scale: 1.3; } }
 
 .rango { position: absolute; left: 50%; bottom: 0; translate: -50% 0; display: flex; align-items: center; gap: 12px; padding: 8px 20px 10px; background: linear-gradient(90deg, transparent, rgba(11, 8, 24, .82) 12%, rgba(11, 8, 24, .82) 88%, transparent); color: #EEEAF7; border-top: 2px solid #58CC02; white-space: nowrap; z-index: 2; }
@@ -1589,9 +1589,9 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
             <!-- Amigos, Clanes y Agenda: en el menú de la izquierda (PC), en Perfil y en «Mi agenda» -->
             <a class="acceso desc-acc" href="descargas.html" aria-label="Descargas sin internet"><svg class="ic"><use href="#i-bajar"/></svg><span>Descargas</span></a>
             <script>/* Punto rojo en Descargas si subiste temas nuevos a un curso que el alumno ya descargó (revisa cada 6 h, solo el manifest de Libros)
-               o si lo descargado tiene una base vieja (BASE_VER de assets/paquetes.js: cambiar los dos) */
+               o si algún curso descargado es de una versión anterior (pack.bv ≠ BASE_VER de assets/paquetes.js: cambiar los dos) */
             (function(){try{var b=document.currentScript.previousElementSibling,v=JSON.parse(localStorage.getItem('mc_paq')||'null'),ps=v&&v.packs||{},ids=Object.keys(ps).filter(function(k){return k.indexOf('curso-')===0&&ps[k].temas;});
-            if(Object.keys(ps).length&&(!v.base||v.base.ver!==2)){b.classList.add('punto');return;}if(!ids.length)return;
+            if(Object.keys(ps).some(function(k){return ps[k].bv!==3;})){b.classList.add('punto');return;}if(!ids.length)return;
             var g=JSON.parse(localStorage.getItem('mc_paq_rev')||'{}');function pon(si){b.classList.toggle('punto',!!si);}
             if(Date.now()-(g.t||0)<21600000||navigator.onLine===false)return pon(g.si);
             function ord(id){var x=String(id||'').match(/^(\d{4})-(III|II|I)$/);return x?+x[1]*10+{I:1,II:2,III:3}[x[2]]:0;}

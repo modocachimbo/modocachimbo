@@ -24,7 +24,7 @@
   // Así descargas.html marca «Mejora para usar sin internet · Actualizar» y el inicio pone el punto rojo en Descargas.
   // (El inicio repite este número en su script del punto rojo: cambiar los dos.)
   // 2: entra repaso-mixto.html (Repaso global sin internet)
-  var BASE_VER = 2;
+  var BASE_VER = 3;  // 3: ojo de claves en Modo estudio (cada curso pide Actualizar hasta bajar su tema.html nuevo)
   var BASE_LAB = ['laboratorio.html', 'assets/lab-plano.js', 'assets/lab-mate.css', 'assets/lab-reto.js'];
   var CDN = /^https:\/\/(fonts\.(googleapis|gstatic)\.com|cdn\.jsdelivr\.net)\//;
 
@@ -184,7 +184,7 @@
             v = leer();
             var vb = v.base && v.base.bytes || 0;
             v.base = { bytes: (vb || base.bytes) + (rc.comun || 0), t: Date.now(), lab: conLab, ver: BASE_VER };
-            v.packs[id] = { nombre: p.nombre, tipo: p.tipo, items: p.items || [], temas: p.temas || 0, pags: pags, bytes: rc.bytes, t: Date.now(), ver: et.join('|'), et: et, red: rc.red };
+            v.packs[id] = { bv: BASE_VER, nombre: p.nombre, tipo: p.tipo, items: p.items || [], temas: p.temas || 0, pags: pags, bytes: rc.bytes, t: Date.now(), ver: et.join('|'), et: et, red: rc.red };
             guardar(v); bajando = null;
             return v.packs[id];
           });
@@ -205,6 +205,9 @@
     },
     // true si lo común (inicio, Repaso global, scripts…) se bajó con una versión anterior: hay que actualizar
     baseVieja: function () { var v = leer(); return Object.keys(v.packs).length > 0 && (!v.base || v.base.ver !== BASE_VER); },
+    // true si ESTE paquete se bajó con una versión anterior (sus páginas pueden ser viejas): pide Actualizar
+    // hasta que se actualice él mismo (no basta con actualizar otro curso)
+    packViejo: function (id) { var p = leer().packs[id]; return !!p && p.bv !== BASE_VER; },
     // true si cambió alguna página o dato del paquete (solo con internet; sin internet: false)
     revisar: function (id) {
       var c = leer().packs[id];
