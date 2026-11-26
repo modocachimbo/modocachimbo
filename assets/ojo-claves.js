@@ -6,15 +6,35 @@
    - Ojo tachado: las claves se esconden para que el alumno se ponga
      a prueba. Al tocar una alternativa de una pregunta se muestra la
      clave de ESA pregunta (y se puede volver a esconder tocando otra vez).
-   Recuerda la elección en localStorage 'mc_ojo_claves' (la misma del
-   ojo de Ejercicios MC en tema-ord.html).
+   Recuerda la elección del alumno en localStorage 'mc_ojo_claves' (la misma
+   del ojo de Ejercicios MC en tema-ord.html, que también carga este archivo).
+   Si el alumno nunca tocó el ojo, manda el panel: Panel → Editar preguntas →
+   «Claves visibles al entrar» (ajustes clave 'ojo_claves' = {visibles:bool}).
+   Sin ajuste guardado: claves OCULTAS. Se guarda en 'mc_ojo_def' para no esperar.
    ============================================================ */
 (function () {
   var KEY = 'mc_ojo_claves';
   var OJO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
   var OJO_NO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.6 5.1A10.7 10.7 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-2.6 3.5M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.8 9.8 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="M3 3l18 18"/></svg>';
 
-  function ver() { try { return localStorage.getItem(KEY) !== 'no'; } catch (e) { return true; } }
+  function porDefecto() { try { return localStorage.getItem('mc_ojo_def') === 'si'; } catch (e) { return false; } }
+  function ver() {
+    try { var v = localStorage.getItem(KEY); if (v === 'si' || v === 'no') return v === 'si'; } catch (e) {}
+    return porDefecto();
+  }
+  window.MCOjoClaves = { ver: ver };
+
+  // Lo que dice el panel (una vez por página); si cambió y el alumno no eligió, se vuelve a pintar
+  try {
+    if (window.MCAuth && MCAuth.listo) MCAuth.listo
+      .then(function (c) { return c.from('ajustes').select('valor').eq('clave', 'ojo_claves').maybeSingle(); })
+      .then(function (r) {
+        if (!r || r.error) return;
+        var antes = ver(), d = !!(r.data && r.data.valor && r.data.valor.visibles);
+        try { localStorage.setItem('mc_ojo_def', d ? 'si' : 'no'); } catch (e) {}
+        if (ver() !== antes) { aplicar(); document.dispatchEvent(new CustomEvent('mc:ojo-claves')); }
+      }, function () {});
+  } catch (e) {}
   function guardar(v) { try { localStorage.setItem(KEY, v ? 'si' : 'no'); } catch (e) {} }
 
   var st = document.createElement('style');
@@ -50,6 +70,7 @@
     }
   }
   function aplicar() {
+    if (!document.querySelector('#qlist')) return;
     var v = ver();
     document.body.classList.toggle('mc-sin-claves', !v);
     var cards = document.querySelectorAll('#qlist .qcard');

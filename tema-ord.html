@@ -161,6 +161,7 @@ html.arcade-no #app{display:none}html.arcade-no .aviso{display:block}
 </style>
 <script src="assets/mc-config.js"></script>
 <script src="assets/auth.js"></script>
+<script src="assets/ojo-claves.js"></script>
 <script src="assets/arcade-beta.js"></script>
 </head>
 <body>
@@ -297,7 +298,13 @@ html.arcade-no #app{display:none}html.arcade-no .aviso{display:block}
   var OJO_NO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10.6 5.1A10.7 10.7 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-2.6 3.5M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.8 9.8 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="M3 3l18 18"/></svg>';
   var IC_EST = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/></svg>';
   var IC_PRA = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>';
-  function claves() { try { return localStorage.getItem('mc_ojo_claves') !== 'no'; } catch (e) { return true; } }
+  // Claves visibles o no: elección del alumno o, si nunca tocó el ojo, lo del panel (assets/ojo-claves.js)
+  function claves() { if (window.MCOjoClaves) return MCOjoClaves.ver(); try { return localStorage.getItem('mc_ojo_claves') === 'si'; } catch (e) { return false; } }
+  document.addEventListener('mc:ojo-claves', function () {
+    var v = claves(), t = app.querySelector('[data-ojo]');
+    app.classList.toggle('sin-claves', !v);
+    if (t) { t.classList.toggle('off', !v); t.innerHTML = v ? OJO : OJO_NO; t.setAttribute('aria-label', v ? 'Ocultar claves' : 'Mostrar claves'); t.title = t.getAttribute('aria-label'); }
+  });
   function ejercicios(modo) {
     var pr = modo === 'practicar', ver = claves();
     var H = cab('Ejercicios MC · ' + D.titulo, '#');
