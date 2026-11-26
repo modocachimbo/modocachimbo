@@ -8,6 +8,7 @@
    Aquí: Aprobar / Rechazar, ver la captura, ver los avisos que llegaron,
    prender o apagar lo automático y la clave para MacroDroid.
    Datos: supabase/141-yape-recargas.sql (yape_admin, yape_resolver, yape_config).
+   Pestaña «Códigos de diamantes»: supabase/144-diamantes-codigos.sql.
    ========================================================= */
 const YP = { d: null, ver: 'revision', ocupado: false, urls: {} };
 const YP_URL_AVISO = 'https://tvcrhogybfxphpzpjnis.supabase.co/rest/v1/rpc/yape_aviso';
@@ -43,6 +44,19 @@ const YP_LLAVE = 'sb_publishable_clm6obUTs_391NA7FGG1YA_-eNuj7dU';
   .yp-sw button::after { content: ''; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; transition: left .15s; }
   .yp-sw button.on { background: #58CC02; }
   .yp-sw button.on::after { left: 25px; }
+  .yp-cform { display: grid; gap: 10px; margin-bottom: 4px; }
+  .yp-cform h3 { margin: 0; font: 900 15px Nunito, sans-serif; }
+  .yp-cform p { margin: 0; color: var(--text-dim); font-size: 13px; }
+  .yp-cfila { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; }
+  .yp-cfila label { display: grid; gap: 4px; font-size: 12px; color: var(--text-dim); font-weight: 800; }
+  .yp-cfila select { padding: 8px 10px; border-radius: 10px; border: 1px solid #2A2346; background: #120e22; color: var(--text); font: 800 14px Nunito, sans-serif; }
+  .rcard.yp-dc { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; width: 100%; box-sizing: border-box; }
+  .yp-usado { flex: none; font: 900 11px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .5px; padding: 4px 11px; border-radius: 99px; color: #58CC02; border: 1px solid rgba(88,204,2,.45); }
+  .yp-dc code { font: 900 16px ui-monospace, Menlo, monospace; letter-spacing: 1px; padding: 8px 12px; border-radius: 10px; background: #120e22; border: 1px solid #2A2346; color: #D4F000; }
+  .yp-dc.usado code { color: var(--text-faint); text-decoration: line-through; }
+  .yp-dc.nuevo { border-color: #D4F000; }
+  .yp-ctx { flex: 1; min-width: 160px; font-size: 13.5px; }
+  .yp-ctx small { color: var(--text-faint); }
   .yp-card { display: grid; grid-template-columns: 84px 1fr; gap: 14px; }
   .yp-cap { width: 84px; height: 140px; border-radius: 12px; background: #120e22 center/cover; border: 1px solid #2A2346; cursor: zoom-in; display: grid; place-items: center; color: var(--text-faint); font-size: 11px; text-align: center; }
   .yp-info { display: grid; gap: 8px; min-width: 0; }
@@ -137,9 +151,10 @@ function pintarYape() {
     </details>`;
   const chip = (v, nom, n) => `<button class="chip${YP.ver === v ? ' on' : ''}" data-v="${v}" type="button">${nom} <span class="c">${n}</span></button>`;
   const L = D.recargas || [];
-  $('ypChips').innerHTML = chip('revision', 'En revisión', C.revision || 0) + chip('solas', 'Aprobadas solas', C.solas || 0) + chip('todas', 'Todas', L.length) + chip('avisos', 'Avisos de Yape', (D.avisos || []).length);
+  $('ypChips').innerHTML = chip('revision', 'En revisión', C.revision || 0) + chip('solas', 'Aprobadas solas', C.solas || 0) + chip('todas', 'Todas', L.length) + chip('avisos', 'Avisos de Yape', (D.avisos || []).length) + chip('codigos', 'Códigos de diamantes', YP.cods ? YP.cods.filter(x => !x.usado).length : '·');
   $('ypStats').textContent = `${C.revision || 0} en revisión · ${C.esperando || 0} verificándose ahora.`;
   const caja = $('ypList');
+  if (YP.ver === 'codigos') { ypCodigos(); return; }
   if (YP.ver === 'avisos') {
     const V = D.avisos || [];
     caja.innerHTML = V.length ? V.map(v => `<div class="rcard yp-av"><div class="yp-avtx">${esc(v.texto)}</div>
@@ -202,6 +217,71 @@ async function ypResolver(id, aprobar, btn) {
     toast(e.message || 'No se pudo.', true);
   }
 }
+
+// ---------- Códigos de diamantes (supabase/144-diamantes-codigos.sql) ----------
+// Javier crea un código, se lo pasa al alumno por WhatsApp y el alumno lo canjea en la Tienda
+// («Canjear código»). Funciona también dentro de la app de Play Store.
+async function ypCodigos(nuevos) {
+  const caja = $('ypList');
+  if (!YP.cods) {
+    caja.innerHTML = '<div class="loader">Cargando…</div>';
+    try {
+      const c = await MCAuth.listo; const r = await c.rpc('diamantes_codigos_admin');
+      if (r.error) throw r.error;
+      YP.cods = r.data || [];
+    } catch (e) { caja.innerHTML = `<div class="state-msg error">${esc(e.message || 'No se pudo cargar.')}<br>¿Ya corriste el archivo supabase/144-diamantes-codigos.sql?</div>`; return; }
+    if (YP.ver !== 'codigos') return;
+    const ch = document.querySelector('#ypChips [data-v="codigos"] .c'); if (ch) ch.textContent = YP.cods.filter(x => !x.usado).length;
+  }
+  const N = new Set(nuevos || []);
+  caja.innerHTML = `<div class="rcard yp-cform">
+      <h3>Crear código</h3>
+      <div class="yp-cfila">
+        <label>Diamantes<select id="ypcDia">${[50, 110, 300, 650, 1050, 2000].map(n => `<option value="${n}"${n === 300 ? ' selected' : ''}>${n.toLocaleString('es-PE')}</option>`).join('')}<option value="otro">Otro…</option></select></label>
+        <label id="ypcOtroL" hidden>Cantidad<input id="ypcOtro" type="number" min="1" max="100000" class="yp-in"></label>
+        <label>Cuántos<input id="ypcCuantos" type="number" min="1" max="50" value="1" class="yp-in" style="width:70px"></label>
+        <label style="flex:1;min-width:160px">Nota (opcional)<input id="ypcNota" class="yp-in" maxlength="80" placeholder="Ej.: Ana, Yape S/ 5"></label>
+        <button class="btn-main" type="button" id="ypcCrear">Crear</button>
+      </div>
+      <p>El alumno lo escribe en <b>Tienda → Consigue diamantes → Canjear código</b>. Cada código sirve una sola vez.</p>
+    </div>` +
+    (YP.cods.length ? YP.cods.map(x => `<div class="rcard yp-dc${x.usado ? ' usado' : ''}${N.has(x.codigo) ? ' nuevo' : ''}">
+      <code>${esc(x.codigo)}</code>
+      <div class="yp-ctx"><b>${(+x.diamantes).toLocaleString('es-PE')} diamantes</b>${x.nota ? ' · ' + esc(x.nota) : ''}<br>
+        <small>${x.usado ? 'Canjeado por ' + esc(x.apodo || 'un alumno') + (x.jid ? ' · ID ' + x.jid : '') + ' · ' + ypHora(x.usado) : 'Sin usar · creado ' + ypHora(x.creado)}</small></div>
+      ${x.usado ? '<span class="yp-usado">Usado</span>' : `<button class="btn-ghost" type="button" data-ccopiar="${esc(x.codigo)}" data-cdia="${x.diamantes}">Copiar mensaje</button><button class="btn-ghost" type="button" data-cborrar="${esc(x.codigo)}" style="color:#ff8aa0">Borrar</button>`}
+    </div>`).join('') : '<div class="state-msg">Aún no creaste códigos.</div>');
+}
+const ypcMensaje = (cod, n) => `Tu código de ${(+n).toLocaleString('es-PE')} diamantes: ${cod}\nCanjéalo en Modo Cachimbo: Tienda → Consigue diamantes → Canjear código.`;
+async function ypcRpc(fn, args) {
+  const c = await MCAuth.listo; const r = await c.rpc(fn, args);
+  if (r.error) throw r.error; return r.data;
+}
+document.addEventListener('change', e => { if (e.target.id === 'ypcDia') $('ypcOtroL').hidden = e.target.value !== 'otro'; });
+document.addEventListener('click', async e => {
+  if (!e.target.closest('#tab-yape')) return;
+  const cr = e.target.closest('#ypcCrear');
+  if (cr) {
+    const n = $('ypcDia').value === 'otro' ? +$('ypcOtro').value : +$('ypcDia').value;
+    if (!(n >= 1)) { toast('Escribe cuántos diamantes', true); return; }
+    cr.disabled = true;
+    try {
+      const l = await ypcRpc('diamantes_codigos_crear', { p_diamantes: n, p_cuantos: Math.max(1, Math.min(50, +$('ypcCuantos').value || 1)), p_nota: $('ypcNota').value.trim() || null });
+      YP.cods = null; await ypCodigos(l);
+      if (l && l.length === 1) navigator.clipboard.writeText(ypcMensaje(l[0], n)).then(() => toast('Código creado y mensaje copiado. Pégalo en WhatsApp.'), () => toast('Código creado'));
+      else toast((l || []).length + ' códigos creados');
+    } catch (er) { cr.disabled = false; toast(er.message || 'No se pudo crear.', true); }
+    return;
+  }
+  const cp = e.target.closest('[data-ccopiar]');
+  if (cp) { navigator.clipboard.writeText(ypcMensaje(cp.dataset.ccopiar, cp.dataset.cdia)).then(() => toast('Mensaje copiado. Pégalo en WhatsApp.'), () => toast('No se pudo copiar', true)); return; }
+  const bo = e.target.closest('[data-cborrar]');
+  if (bo) {
+    if (bo.dataset.seguro !== '1') { bo.dataset.seguro = '1'; bo.textContent = '¿Seguro?'; return; }
+    try { await ypcRpc('diamantes_codigos_borrar', { p_codigo: bo.dataset.cborrar }); YP.cods = null; ypCodigos(); toast('Código borrado'); }
+    catch (er) { toast(er.message || 'No se pudo borrar.', true); }
+  }
+});
 
 async function ypConfig(p) {
   try {
