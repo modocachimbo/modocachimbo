@@ -938,6 +938,7 @@
   // Preguntas seguidas del mismo TEXTO: marca q.lecPos = 'preguntas 6 a 8' (posiciones en arr)
   // y q.lecSigue en las que no son la primera del grupo.
   function rangos(arr) {
+    if (Array.isArray(arr) && arr.length) ronda = arr;   // la ronda que se está jugando (para precargar imágenes)
     var i = 0;
     while (i < arr.length) {
       var k = claveLectura(arr[i] && arr[i].text), j = i + 1;
@@ -1049,6 +1050,31 @@
     return rangos(out);
   }
 
+  /* Imágenes de las preguntas que vienen: mientras el alumno responde una, se bajan las de las
+     3 siguientes (pasan por sw.js y quedan guardadas). Así no salen en blanco con señal lenta
+     y, si después se queda sin internet, ya las tiene. */
+  var ronda = [], yaPedidas = {};
+  function rutasImg(q) {
+    var t = String(q && q.text || '') + ' ' + String(q && q.graphic || ''), l = [], m,
+      rx = /(?:\/[\w-]+\/)?(assets\/img\/[\w\-.\/]+\.(?:webp|jpe?g|png|gif|svg))/gi;
+    while ((m = rx.exec(t))) l.push(RAIZ + m[1]);
+    return l;
+  }
+  function precargar(q) {
+    if (navigator.onLine === false) return;
+    var i = ronda.indexOf(q);
+    if (i < 0) return;
+    ronda.slice(i + 1, i + 4).forEach(function (s) {
+      rutasImg(s).forEach(function (u) {
+        if (yaPedidas[u]) return;
+        yaPedidas[u] = 1;
+        var im = new Image(); im.decoding = 'async';
+        im.onerror = function () { delete yaPedidas[u]; };
+        im.src = u;
+      });
+    });
+  }
+
   // ¿Las alternativas son tan cortas que caben en columnas?
   function cortas(options) {
     if (!options || options.length < 3) return false;
@@ -1069,6 +1095,7 @@
       if (q.graphic) { el.grafico.innerHTML = q.graphic; el.grafico.style.display = 'block'; }
       else { el.grafico.innerHTML = ''; el.grafico.style.display = 'none'; }
     }
+    try { precargar(q); } catch (e) {}
     return r;
   }
   // Burbuja con el tipo de pregunta ([ETIQUETA: Sinónimos]); sin etiqueta no sale nada
@@ -1874,6 +1901,51 @@
     '.mcq-sol .mcq-tocar{display:inline-block}' +
     '@media (max-width:420px){.mcq-rel button{font-size:13.5px;padding:8px}.mcq-vf-bt button{width:38px;height:38px}}';
   document.head.appendChild(st3);
+
+  /* Imagen de la pregunta que no cargó (señal mala o sin internet y nunca se vio):
+     en vez del ícono roto sale un recuadro «No se pudo cargar la figura · Toca para volver a intentar».
+     Al volver el internet se reintenta sola. */
+  var stImg = document.createElement('style');
+  stImg.textContent = 'img.mc-img.mc-img-falla{display:none!important}' +
+    '.mc-img-re{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;min-height:120px;margin:4px 0;padding:14px;box-sizing:border-box;border:2px dashed #a8bf00;border-radius:12px;background:#f6fbe0;color:#2f3a00;font:900 14.5px/1.35 Nunito,Inter,sans-serif;text-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent}' +
+    '.mc-img-re svg{width:32px;height:32px;fill:none;stroke:#6b7d00;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}' +
+    '.mc-img-re small{font-weight:700;font-size:12.5px;color:#55610f}';
+  document.head.appendChild(stImg);
+  var ICO_IMG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="m21 16-5-5-8 9"/></svg>';
+  function textoFalla() {
+    return navigator.onLine === false
+      ? 'No se pudo cargar la figura<small>Estás sin internet. Conéctate y toca aquí para verla.</small>'
+      : 'No se pudo cargar la figura<small>Toca aquí para volver a intentar.</small>';
+  }
+  function reintentar(im) {
+    var b = im.nextElementSibling;
+    if (b && b.classList.contains('mc-img-re')) b.innerHTML = ICO_IMG + 'Cargando la figura…';
+    var u = im.getAttribute('src');
+    im.removeAttribute('loading');
+    im.src = ''; im.src = u;
+  }
+  document.addEventListener('error', function (e) {
+    var im = e.target;
+    if (!im || im.tagName !== 'IMG' || !im.classList.contains('mc-img') || !im.getAttribute('src')) return;
+    im.classList.add('mc-img-falla');
+    var b = im.nextElementSibling;
+    if (!b || !b.classList.contains('mc-img-re')) {
+      b = document.createElement('button'); b.type = 'button'; b.className = 'mc-img-re';
+      b.addEventListener('click', function (ev) { ev.stopPropagation(); reintentar(im); });
+      im.parentNode.insertBefore(b, im.nextSibling);
+    }
+    b.innerHTML = ICO_IMG + textoFalla();
+  }, true);
+  document.addEventListener('load', function (e) {
+    var im = e.target;
+    if (!im || im.tagName !== 'IMG' || !im.classList.contains('mc-img-falla')) return;
+    im.classList.remove('mc-img-falla');
+    var b = im.nextElementSibling;
+    if (b && b.classList.contains('mc-img-re')) b.remove();
+  }, true);
+  window.addEventListener('online', function () {
+    [].forEach.call(document.querySelectorAll('img.mc-img.mc-img-falla'), reintentar);
+  });
 
   // Búho tutor: resolución guardada de cada pregunta (assets/buho-tutor.js)
   if (!window.MCBuhoTutor && !document.querySelector('script[src*="buho-tutor.js"]')) {

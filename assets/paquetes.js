@@ -16,8 +16,9 @@
   if (window.MCPaquetes) return;
   var K = 'mc_paq', PRE = 'mc-pack-';
   var RAIZ = (document.currentScript && document.currentScript.src || location.href).replace(/assets\/paquetes\.js(\?.*)?$/, '');
-  // Comunes a todos los paquetes: el inicio, esta tienda y la página sin internet
-  var BASE = ['index.html', 'descargas.html', 'offline.html', 'manifest.webmanifest', 'assets/app/icono-192.png'];
+  // Comunes a todos los paquetes: el inicio, esta tienda, la página sin internet y el Repaso global/mixto
+  // (mezcla las preguntas de los cursos que bajó)
+  var BASE = ['index.html', 'descargas.html', 'offline.html', 'repaso-mixto.html', 'manifest.webmanifest', 'assets/app/icono-192.png'];
   // Si hay simuladores, también el Laboratorio y lo común de sus páginas
   var BASE_LAB = ['laboratorio.html', 'assets/lab-plano.js', 'assets/lab-mate.css', 'assets/lab-reto.js'];
   var CDN = /^https:\/\/(fonts\.(googleapis|gstatic)\.com|cdn\.jsdelivr\.net)\//;
