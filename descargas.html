@@ -296,9 +296,9 @@ function estadoDe(k){
   // Temas que subiste después de que el alumno descargó el curso (o un ciclo nuevo)
   var tn=0, i2=k.tipo==='curso'&&INFO[k.curso.id];
   if(inf&&i2){ if(inf.items&&inf.items[0]&&i2.ciclo&&inf.items[0]!==i2.ciclo) tn=-1; else if(inf.temas&&i2.temas>inf.temas) tn=i2.temas-inf.temas; }
-  // Mejora de la base (ej. el Repaso global entra sin internet): todos los paquetes piden Actualizar;
-  // al actualizar uno se renueva la base y los demás vuelven a «Listo»
-  var bv=!!(inf&&P&&P.baseVieja&&P.baseVieja());
+  // Mejora (BASE_VER de assets/paquetes.js): cada paquete bajado con una versión anterior pide Actualizar
+  // hasta que se actualice él mismo
+  var bv=!!(inf&&P&&(P.packViejo?P.packViejo(k.id):P.baseVieja&&P.baseVieja()));
   return {inf:inf, baja:baja, falt:falt, tn:tn, bv:bv, nuevo:!!NUEVO[k.id]||!!tn||bv};
 }
 function tarjeta(k){

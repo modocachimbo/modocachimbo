@@ -1589,9 +1589,9 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
             <!-- Amigos, Clanes y Agenda: en el menú de la izquierda (PC), en Perfil y en «Mi agenda» -->
             <a class="acceso desc-acc" href="descargas.html" aria-label="Descargas sin internet"><svg class="ic"><use href="#i-bajar"/></svg><span>Descargas</span></a>
             <script>/* Punto rojo en Descargas si subiste temas nuevos a un curso que el alumno ya descargó (revisa cada 6 h, solo el manifest de Libros)
-               o si lo descargado tiene una base vieja (BASE_VER de assets/paquetes.js: cambiar los dos) */
+               o si algún curso descargado es de una versión anterior (pack.bv ≠ BASE_VER de assets/paquetes.js: cambiar los dos) */
             (function(){try{var b=document.currentScript.previousElementSibling,v=JSON.parse(localStorage.getItem('mc_paq')||'null'),ps=v&&v.packs||{},ids=Object.keys(ps).filter(function(k){return k.indexOf('curso-')===0&&ps[k].temas;});
-            if(Object.keys(ps).length&&(!v.base||v.base.ver!==2)){b.classList.add('punto');return;}if(!ids.length)return;
+            if(Object.keys(ps).some(function(k){return ps[k].bv!==3;})){b.classList.add('punto');return;}if(!ids.length)return;
             var g=JSON.parse(localStorage.getItem('mc_paq_rev')||'{}');function pon(si){b.classList.toggle('punto',!!si);}
             if(Date.now()-(g.t||0)<21600000||navigator.onLine===false)return pon(g.si);
             function ord(id){var x=String(id||'').match(/^(\d{4})-(III|II|I)$/);return x?+x[1]*10+{I:1,II:2,III:3}[x[2]]:0;}
