@@ -276,6 +276,14 @@
   .yp-w .yp-b { background: #D4F000; }
   @media (max-width: 640px) { .yp { grid-template-columns: 1fr; } }
   .pq-n a { color: #D4F000; font-weight: 900; }
+  .cj { display: flex; align-items: center; gap: 10px; max-width: 460px; margin: 14px auto 0; padding: 7px 7px 7px 12px; border-radius: 16px; background: rgba(255,255,255,.04); border: 1.5px solid rgba(192,123,255,.45); }
+  .cj-ic { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: rgba(192,123,255,.18); color: #C07BFF; }
+  .cj-ic svg { width: 22px; height: 22px; }
+  .cj input { flex: 1; min-width: 0; background: none; border: 0; outline: 0; color: #fff; font: 900 15px var(--cuerpo); letter-spacing: 1px; text-transform: uppercase; }
+  .cj input::placeholder { color: var(--text-faint); text-transform: none; letter-spacing: 0; font-weight: 800; }
+  .cj .yp-b { background: #D4F000; }
+  .cj .yp-b:disabled { opacity: .5; }
+  .cj-m.ok { color: #7BE04A; font-weight: 900; } .cj-m.err { color: #ff8aa0; font-weight: 900; }
   .ym { display: grid; gap: 6px; margin-top: 12px; text-align: left; }
   .ym div { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 12px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); font: 800 13px var(--cuerpo); }
   .ym em { margin-left: auto; font-style: normal; font: 900 11px var(--cuerpo); text-transform: uppercase; letter-spacing: .5px; padding: 3px 9px; border-radius: 999px; }
@@ -618,18 +626,21 @@
   ];
   var WSP = '51928030708', YAPE = '928 030 708', YAPE_NOMBRE = 'Javier R.';
   var IC_YAPE = '<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="7" y="3" width="18" height="26" rx="4" fill="none" stroke="#fff" stroke-width="2.4"/><path d="M12 10l4 5 4-5M16 15v6" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="25" r="1.3" fill="#fff"/></svg>';
+  var IC_TICKET = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M14 7v10" stroke="currentColor" stroke-width="2" stroke-dasharray="2 2"/></svg>';
   var IC_CAP = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4C9.4 4 4 8.9 4 15c0 2.4.8 4.6 2.3 6.4L5 28l6.4-2.3c1.4.5 3 .8 4.6.8 6.6 0 12-4.9 12-11S22.6 4 16 4z" fill="none" stroke="#14101f" stroke-width="2.4" stroke-linejoin="round"/><rect x="11" y="10" width="10" height="10" rx="2" fill="none" stroke="#14101f" stroke-width="2.2"/><path d="M13 18l2.5-3 2 2 1.5-2" fill="none" stroke="#14101f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   function paqIco(i) { return '<span class="pq-i"><i class="pq-s a"></i><i class="pq-s b"></i><i class="pq-s c"></i><img src="assets/diamantes/' + PAQ[i].f + '.webp" alt="" loading="lazy"></span>'; }
   function ganar() {
     var img = function (f) { return '<img src="assets/cofres/' + f + '-cerrado.webp" alt="">'; };
     var his = (T && T.historial || []).slice(0, 6);
     var o = ventana('<div class="gi" style="width:110px;height:110px">' + DIA + '</div><h3>Consigue <em>diamantes</em></h3>' +
-      '<div data-compra><h4 class="pq-h">Recarga con Yape</h4><div class="pq">' + PAQ.map(function (p, i) {
+      '<h4 class="pq-h">' + (window.MCEnApp ? 'Paquetes de diamantes' : 'Recarga con Yape') + '</h4><div class="pq">' + PAQ.map(function (p, i) {
         return '<button type="button" class="pq-c' + (p.tag === 'Mejor precio' || p.tag === 'Popular' ? ' top' : '') + '" data-paq="' + i + '">' + (p.tag ? '<span class="pq-t">' + p.tag + '</span>' : '') + paqIco(i) +
           '<b>' + nf(p.n) + '</b><small>diamantes</small><span class="pq-p">S/ ' + p.s + '</span></button>';
       }).join('') + '</div>' +
-      '<div class="ym" id="ymMias"></div>' +
-      '<p class="pq-n">¿Algún problema? <a href="#" data-captura>Escríbenos por WhatsApp</a>.</p></div>' +
+      '<div data-compra><div class="ym" id="ymMias"></div></div>' +
+      '<form class="cj" id="cjForm" autocomplete="off"><span class="cj-ic">' + IC_TICKET + '</span><input id="cjIn" maxlength="20" placeholder="Canjear código" aria-label="Código de diamantes" autocapitalize="characters" spellcheck="false"><button type="submit" class="yp-b">Canjear</button></form>' +
+      '<p class="pq-n cj-m" id="cjMsg" hidden></p>' +
+      '<p class="pq-n">¿Necesitas ayuda? <a href="#" data-captura>Escríbenos por WhatsApp</a>.</p>' +
       '<h4 class="pq-h">Gratis jugando</h4><div class="gan">' +
         '<div><span class="gi2">' + img('leyenda') + '</span><span><b>Cofres del clan</b><small>Cada semana: Oro <em>20</em> · Amatista <em>40</em> · Leyenda <em>80</em> diamantes.</small></span></div>' +
         '<div><span class="gi2">' + (IC.fortuna || '') + '</span><span><b>Cofres personales con Fortuna</b><small>Con Fortuna activa: <em>10 · 15 · 25 · 50</em> diamantes por cofre.</small></span></div>' +
@@ -638,8 +649,22 @@
     var miId = function () { return T && T.id ? T.id : '(sin ID)'; };
     o.querySelector('[data-captura]').addEventListener('click', function () {
       if (arguments[0] && arguments[0].preventDefault) arguments[0].preventDefault();
-      var msg = 'Hola Modo Cachimbo, tengo un problema con mi recarga de diamantes por Yape.\nMi ID: ' + miId();
+      var msg = 'Hola Modo Cachimbo, necesito ayuda con mi código.\nMi ID: ' + miId();
       window.open('https://wa.me/' + WSP + '?text=' + encodeURIComponent(msg), '_blank');
+    });
+    // Canjear código de diamantes (supabase/144-diamantes-codigos.sql). Sirve también en la app.
+    var cjIn = o.querySelector('#cjIn'), cjMsg = o.querySelector('#cjMsg'), cjB = o.querySelector('#cjForm button');
+    o.querySelector('#cjForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = cjIn.value.trim(); if (v.length < 4) { cjIn.focus(); return; }
+      cjB.disabled = true; cjMsg.hidden = true;
+      rpc('diamantes_canjear', { p_codigo: v }).then(function (r) {
+        cjB.disabled = false; cjMsg.hidden = false;
+        if (r && r.ok) {
+          cjIn.value = ''; cjMsg.className = 'pq-n cj-m ok'; cjMsg.textContent = '¡Listo! Recibiste ' + nf(r.diamantes) + ' diamantes.';
+          if (T) T.diamantes = r.saldo; ponerSaldo(r.saldo);
+        } else { cjMsg.className = 'pq-n cj-m err'; cjMsg.textContent = (r && r.error) || 'No se pudo canjear.'; }
+      }, function () { cjB.disabled = false; cjMsg.hidden = false; cjMsg.className = 'pq-n cj-m err'; cjMsg.textContent = 'No se pudo canjear. Revisa tu internet.'; });
     });
     o.querySelectorAll('[data-paq]').forEach(function (b) {
       b.addEventListener('click', function () {
@@ -682,6 +707,13 @@
   var IC_SUBE = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg>';
   var IC_RELOJ = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
   function pagar(i) {
+    // Dentro de la app de Play Store no se puede cobrar fuera de Google Play: los paquetes se ven,
+    // pero aún no se compran ahí (más adelante: Google Play Billing).
+    if (window.MCEnApp) {
+      ventana('<div class="yq-est"><div class="ic">' + IC_RELOJ + '</div><h3>Muy <em>pronto</em></h3><p>Muy pronto podrás comprar diamantes aquí en la app. Mientras tanto, consíguelos gratis con los cofres del clan.</p><button type="button" class="bt" data-cerrar>Entendido</button></div>', '', '#C07BFF')
+        .addEventListener('click', function (e) { if (e.target.closest('[data-cerrar]')) e.currentTarget.remove(); });
+      return;
+    }
     var p = PAQ[i], archivo = null;
     var o = ventana('<div class="yq"><div class="yq-top"><img src="assets/diamantes/' + p.f + '.webp" alt=""><div><b>' + nf(p.n) + '</b><span>diamantes</span></div><span class="yq-precio">S/ ' + p.s + '</span></div>' +
       '<div class="yq-paso"><span class="yq-n">1</span><div class="yq-c"><h4>Yapea S/ ' + p.s + '</h4><div class="yq-num"><div><b>' + YAPE + '</b><small>A nombre de ' + YAPE_NOMBRE + '</small></div><button type="button" class="yp-b" data-copiar>Copiar</button></div></div></div>' +
