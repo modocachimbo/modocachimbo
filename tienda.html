@@ -628,8 +628,6 @@
         return '<button type="button" class="pq-c' + (p.tag === 'Mejor precio' || p.tag === 'Popular' ? ' top' : '') + '" data-paq="' + i + '">' + (p.tag ? '<span class="pq-t">' + p.tag + '</span>' : '') + paqIco(i) +
           '<b>' + nf(p.n) + '</b><small>diamantes</small><span class="pq-p">S/ ' + p.s + '</span></button>';
       }).join('') + '</div>' +
-      '<div class="yp"><div class="yp-y"><span class="yp-ic">' + IC_YAPE + '</span><span class="yp-tx"><small>Yapea a</small><b>' + YAPE + '</b><span>A nombre de <em>' + YAPE_NOMBRE + '</em></span></span><button type="button" class="yp-b" data-copiar>Copiar</button></div>' +
-        '<div class="yp-w"><span class="yp-ic">' + IC_CAP + '</span><span class="yp-tx"><small>Recarga automática</small><span>Toca un paquete, yapea y <em>sube tu captura</em>. Tus diamantes llegan solos.</span></span></div></div>' +
       '<div class="ym" id="ymMias"></div>' +
       '<p class="pq-n">¿Algún problema? Escríbenos por <a href="#" data-captura>WhatsApp al ' + YAPE + '</a>.</p></div>' +
       '<h4 class="pq-h">Gratis jugando</h4><div class="gan">' +
@@ -638,10 +636,6 @@
       '</div>' +
       (his.length ? '<div class="his"><h4>Tus últimos movimientos</h4>' + his.map(function (x) { return '<div><span>' + esc(x.motivo) + '</span><b class="' + (x.cantidad < 0 ? 'm' : '') + '">' + (x.cantidad > 0 ? '+' : '') + nf(x.cantidad) + '</b></div>'; }).join('') + '</div>' : ''), 'ancha');
     var miId = function () { return T && T.id ? T.id : '(sin ID)'; };
-    o.querySelector('[data-copiar]').addEventListener('click', function () {
-      var num = YAPE.replace(/\s/g, '');
-      try { navigator.clipboard.writeText(num).then(function () { toast('Número copiado: ' + YAPE); }, function () { toast('Yape: ' + YAPE); }); } catch (e) { toast('Yape: ' + YAPE); }
-    });
     o.querySelector('[data-captura]').addEventListener('click', function () {
       if (arguments[0] && arguments[0].preventDefault) arguments[0].preventDefault();
       var msg = 'Hola Modo Cachimbo, tengo un problema con mi recarga de diamantes por Yape.\nMi ID: ' + miId();
