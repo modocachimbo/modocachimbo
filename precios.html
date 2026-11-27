@@ -64,7 +64,9 @@
   .plan .cab { display: flex; align-items: center; gap: 10px; }
   .plan .cab .ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--s2); color: var(--c, var(--d)); }
   .plan .cab .ic svg { width: 22px; height: 22px; }
-  .plan h2 { font: 900 21px Nunito, sans-serif; }
+  .plan h2 { font: 900 21px Nunito, sans-serif; color: var(--c, var(--t)); }
+  .plan .nom { display: flex; flex-direction: column; line-height: 1.1; }
+  .plan .nom small { color: var(--d); font: 800 12.5px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
   .plan .sub { color: var(--d); font-size: 13.5px; margin: 6px 0 12px; min-height: 2.6em; }
   .precio { display: flex; align-items: baseline; gap: 6px; margin-bottom: 2px; }
   .precio b { font: 900 36px/1 Nunito, sans-serif; color: var(--c, var(--t)); }
@@ -82,7 +84,7 @@
   .btn2 { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: transparent; border: 2px solid var(--b); border-radius: 16px; padding: 12px; font: 800 16px Nunito, sans-serif; color: var(--d); }
   .area-sel { display: flex; flex-wrap: wrap; gap: 6px; margin: -4px 0 12px; }
   .area-sel button { border: 1px solid var(--b); background: var(--s2); color: var(--d); border-radius: 99px; padding: 4px 10px; font: 800 12.5px Nunito, sans-serif; }
-  .area-sel button.on { border-color: var(--cel); color: var(--cel); background: rgba(28,176,246,.1); }
+  .area-sel button.on { border-color: var(--c); color: var(--c); background: rgba(215,155,255,.12); }
 
   .amigos { display: flex; align-items: center; gap: 14px; background: var(--s); border: 1px dashed var(--b); border-radius: 20px; padding: 14px 16px; margin: 22px 0 0; }
   .amigos .ic { width: 46px; height: 46px; border-radius: 14px; background: rgba(28,176,246,.14); color: var(--cel); display: grid; place-items: center; flex: none; }
@@ -132,6 +134,41 @@
   .oferta { display: flex; align-items: center; justify-content: center; gap: 8px; margin: -6px auto 16px; width: fit-content; max-width: 100%; padding: 7px 14px; border-radius: 99px; background: rgba(255,111,168,.14); border: 1px solid rgba(255,111,168,.45); color: #FFC2DA; font: 800 13.5px Nunito, sans-serif; }
   .oferta svg { color: var(--rosa); }
   .precio s { color: var(--f); font-size: 15px; font-weight: 700; margin-right: 2px; }
+
+  /* ---------- Diseño compacto (2026-11-27): pasos arriba, Gratis en franja, tarjetas más bajas ---------- */
+  .wrap { padding-top: 14px; }
+  .hero { margin: 0 0 12px; }
+  .hero h1 { font-size: 26px; }
+  .hero p { font-size: 13.5px; margin-top: 4px; }
+  .pasos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-width: 1100px; margin: 0 auto 14px; }
+  .pasos div { display: flex; align-items: center; gap: 9px; padding: 9px 11px; border-radius: 14px; background: var(--s); border: 1px solid var(--b); font-size: 12.5px; line-height: 1.3; color: var(--d); }
+  .pasos b { display: block; color: var(--t); font: 900 13.5px Nunito, sans-serif; }
+  .pasos .n { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--l); color: var(--lt); font: 900 13px Nunito, sans-serif; }
+  @media (max-width: 640px) { .pasos { grid-template-columns: 1fr; gap: 6px; } .pasos div { padding: 8px 10px; } }
+  .barra { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; max-width: 1100px; margin: 0 auto 14px; }
+  .barra .periodo { margin: 0; }
+  .barra .preventa { margin: 0; padding: 7px 12px; border-radius: 99px; gap: 10px; flex: 1 1 360px; max-width: 560px; }
+  .barra .preventa .ic { width: 30px; height: 30px; border-radius: 50%; }
+  .barra .preventa .ic svg { width: 17px; height: 17px; }
+  .barra .preventa b { font-size: 14px; }
+  .barra .preventa small { font-size: 12px; }
+  .barra .preventa .pr strong { font-size: 18px; }
+  .barra .preventa .pr s { font-size: 11.5px; }
+  .barra .oferta { margin: 0; }
+  .planes { max-width: 1100px; margin: 0 auto; }
+  .plan.top-plan { order: -1; }
+  @media (min-width: 720px) { .planes { grid-template-columns: repeat(3, 1fr); } .plan.top-plan { order: 0; margin-top: 0; } }
+  .plan { padding: 16px; border-radius: 20px; }
+  .plan .sub { min-height: 0; margin: 4px 0 8px; font-size: 13px; }
+  .precio b { font-size: 30px; }
+  .ahorro { margin-bottom: 8px; }
+  .lista { gap: 6px; margin-bottom: 12px; }
+  .lista li { font-size: 13.5px; }
+  .btn { padding: 12px; }
+  .btn2 { padding: 10px; }
+  #secExtras, .amigos, #comparar { max-width: 1100px; margin-left: auto; margin-right: auto; }
+  h3.sec { font-size: 19px; margin-top: 24px; }
+  p.sec { margin-bottom: 10px; }
 </style>
 </head>
 <body>
@@ -142,22 +179,28 @@
 
 <main class="wrap">
   <section class="hero">
-    <h1>Ingresa con <em>Modo Cachimbo</em></h1>
-    <p>Lo del ciclo pasado es gratis para siempre. Paga solo por el material nuevo del ciclo que estás preparando.</p>
+    <h1>Planes <em>Modo Cachimbo</em></h1>
+    <p>Lo del ciclo pasado es gratis para siempre. Paga solo por el material nuevo.</p>
   </section>
 
-  <div class="preventa" id="preventa">
-    <span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg></span>
-    <span><b>Preventa ciclo <span id="pvCiclo">2027-I</span></b><small id="pvTxt">Hasta el 30/11 o los primeros 100 alumnos</small></span>
-    <span class="pr"><s id="pvAntes">S/ 49.90</s><strong id="pvPrecio">S/ 39.90</strong></span>
+  <div class="pasos">
+    <div><span class="n">1</span><span><b>Elige tu plan</b>Toca «Lo quiero».</span></div>
+    <div><span class="n">2</span><span><b>Yapea y sube tu captura</b>Al 928 030 708, con el código de seguridad.</span></div>
+    <div><span class="n">3</span><span><b>Listo</b>Se activa en tu cuenta al instante o con prueba.</span></div>
   </div>
 
-  <div class="periodo"><div role="tablist">
-    <button type="button" data-p="mes">Mensual</button>
-    <button type="button" data-p="ciclo" class="on">Ciclo · 3 meses <span>AHORRA</span></button>
-  </div></div>
-
-  <div class="oferta" id="oferta" hidden><svg class="i" viewBox="0 0 24 24"><path d="M20.5 13.5l-7 7a2 2 0 0 1-2.8 0L3 12.8V3h9.8l7.7 7.7a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg><span id="ofTxt"></span></div>
+  <div class="barra">
+    <div class="periodo"><div role="tablist">
+      <button type="button" data-p="mes">Mensual</button>
+      <button type="button" data-p="ciclo" class="on">Ciclo · 3 meses <span>AHORRA</span></button>
+    </div></div>
+    <div class="preventa" id="preventa">
+      <span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg></span>
+      <span><b>Preventa ciclo <span id="pvCiclo">2027-I</span></b><small id="pvTxt">Hasta el 30/11 o los primeros 100 alumnos</small></span>
+      <span class="pr"><s id="pvAntes">S/ 49.90</s><strong id="pvPrecio">S/ 39.90</strong></span>
+    </div>
+    <div class="oferta" id="oferta" hidden><svg class="i" viewBox="0 0 24 24"><path d="M20.5 13.5l-7 7a2 2 0 0 1-2.8 0L3 12.8V3h9.8l7.7 7.7a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg><span id="ofTxt"></span></div>
+  </div>
 
   <section class="planes" id="planes"></section>
 
@@ -179,24 +222,17 @@
   <p class="nota" id="cmNota"></p>
   </section>
 
-  <h3 class="sec">Cómo activar tu plan</h3>
-  <p class="sec">En menos de 5 minutos.</p>
-  <div class="como">
-    <div class="paso"><span class="n">1</span><span><b>Elige tu plan</b><span>Toca «Lo quiero» y yapea el monto al 928 030 708.</span></span></div>
-    <div class="paso"><span class="n">2</span><span><b>Sube tu captura</b><span>Y escribe los 3 números del código de seguridad de tu Yape.</span></span></div>
-    <div class="paso"><span class="n">3</span><span><b>Listo</b><span>Tu plan se activa en tu cuenta. Si el pago está en revisión, estudias desde ya con acceso de prueba.</span></span></div>
-  </div>
 </main>
 
 <script src="assets/mc-config.js"></script>
 <script src="assets/auth.js"></script>
-<script src="assets/planes.js?v=2"></script>
+<script src="assets/planes.js?v=3"></script>
 <script src="assets/yape-plan.js"></script>
 <script>
 (function () {
   // Precios y textos: Panel → Web → Planes y precios (assets/planes.js)
   var CFG = MCPlanes.base();
-  var COLOR = { gratis: 'var(--d)', area: 'var(--cel)', total: 'var(--l)' };
+  var COLOR = { gratis: '#E8A878', area: '#D79BFF', total: 'var(--l)' };
   var WA = (window.MC_CONFIG && MC_CONFIG.WHATSAPP) || '51917797543';
   var AREAS = [['matematica', 'Matemática'], ['ciencia-tecnologia', 'Ciencia y Tecnología'], ['comunicacion', 'Comunicación'], ['ciencias-sociales', 'Ciencias Sociales']];
   var ICO = {
@@ -223,7 +259,7 @@
   // Precio que se cobra (preventa o descuento ya aplicados) · assets/planes.js
   function pr(id) { return MCPlanes.precio(CFG, id, periodo) || { monto: 0, antes: null, preventa: false }; }
   function wa(p) {
-    var t = p.id === 'area' ? 'Un área (' + AREAS.filter(function (a) { return a[0] === area; })[0][1] + ')' : p.nombre;
+    var t = (p.rango ? 'el plan ' + p.rango + ' - ' : '') + (p.id === 'area' ? 'Un área (' + AREAS.filter(function (a) { return a[0] === area; })[0][1] + ')' : p.nombre);
     var x = pr(p.id);
     return 'https://wa.me/' + WA + '?text=' + encodeURIComponent('Hola! Quiero ' + t + ' de Modo Cachimbo, ' + (periodo === 'mes' ? 'mensual' : 'por ciclo (3 meses)') + (x.preventa ? ' en preventa' : '') + ': ' + sol(x.monto));
   }
@@ -235,7 +271,7 @@
     else if (p.mes) ahorro = 'O ' + sol(MCPlanes.precio(CFG, p.id, 'ciclo').monto) + ' por todo el ciclo';
     return '<article class="plan' + (p.top ? ' top-plan' : '') + '" style="--c:' + COLOR[p.id] + '">' +
       (p.top ? '<span class="tag">' + (x.preventa ? 'Preventa' : 'El más completo') + '</span>' : '') +
-      '<div class="cab"><span class="ic"><svg class="i" viewBox="0 0 24 24">' + ICO[p.id] + '</svg></span><h2>' + esc(p.nombre) + '</h2></div>' +
+      '<div class="cab"><span class="ic"><svg class="i" viewBox="0 0 24 24">' + ICO[p.id] + '</svg></span><span class="nom"><h2>' + esc(p.rango || p.nombre) + '</h2>' + (p.rango ? '<small>' + esc(p.nombre) + '</small>' : '') + '</span></div>' +
       '<p class="sub">' + esc(p.sub) + '</p>' +
       '<div class="precio">' + (precio && x.antes ? '<s>' + sol(x.antes) + '</s>' : '') + '<b>' + (precio ? sol(precio) : 'S/ 0') + '</b><span>' + (precio ? (periodo === 'mes' ? '/ mes' : '/ ciclo') : 'para siempre') + '</span></div>' +
       '<div class="ahorro">' + ahorro + '</div>' +
@@ -259,7 +295,10 @@
     return '<span>' + esc(v) + '</span>';
   }
   function pintar() {
-    document.getElementById('planes').innerHTML = CFG.planes.map(plan).join('');
+    // Bronce · Amatista · Leyenda (en celular Leyenda va primero, por CSS)
+    var orden = { gratis: 0, area: 1, total: 2 };
+    var todos = CFG.planes.slice().sort(function (a, b) { return (orden[a.id] || 0) - (orden[b.id] || 0); });
+    document.getElementById('planes').innerHTML = todos.map(plan).join('');
     var ex = (CFG.extras || []).filter(function (x) { return x.activa !== false; });
     document.getElementById('secExtras').hidden = !ex.length;
     document.getElementById('extras').innerHTML = ex.map(extra).join('');
@@ -277,7 +316,7 @@
     var p = CFG.planes.concat(CFG.extras || []).filter(function (x) { return x.id === id; })[0]; if (!p || !window.MCYapePlan) return false;
     var an = AREAS.filter(function (x) { return x[0] === area; })[0];
     MCYapePlan.abrir({ plan: id, periodo: periodo, area: id === 'area' ? area : null, color: COLOR[id] || COLOR_X[id],
-      nombre: id === 'area' ? 'Plan ' + an[1] : id === 'total' ? 'Plan ' + p.nombre : p.nombre, precio: pr(id).monto });
+      nombre: id === 'area' ? 'Plan ' + (p.rango || '') + ' · ' + an[1] : id === 'total' ? 'Plan ' + (p.rango ? p.rango + ' · ' : '') + p.nombre : p.nombre, precio: pr(id).monto });
     return true;
   }
   document.querySelector('main').addEventListener('click', function (e) {
