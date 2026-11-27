@@ -153,7 +153,7 @@
     return COLOR_AREA[area] || (!afuera && cs.getPropertyValue('--accent').trim()) || def;
   }
 
-  /* ---- Comprar con Yape: Tienda → Accesos con el plan que abre este candado (solo web, no en la app) ---- */
+  /* ---- Comprar con Yape: página Planes (precios.html) con la compra que abre este candado (solo web, no en la app) ---- */
   var YAPE_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M9.5 8l2.5 3 2.5-3M12 11v4.5"/></svg>';
   function enlaceTienda(producto) {
     if (document.documentElement.classList.contains('mc-app') || window.MCEnApp) return '';
@@ -163,7 +163,7 @@
     if (m && MCAcceso.AREAS[m[1]]) q = 'acc=area&a=' + m[1];
     else if (cat === 'descarga' || cat === 'laboratorio' || cat === 'offline') q = 'acc=' + cat;
     else q = 'acc=total';
-    return raiz + 'tienda.html?' + q + '&p=ciclo';
+    return raiz + 'precios.html?' + q + '&p=ciclo';
   }
 
   /* ---- La hoja: el candado, lo que trae el paquete y la cajita del código ----

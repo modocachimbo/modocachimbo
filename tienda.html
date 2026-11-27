@@ -346,61 +346,18 @@
   .estado { color: var(--text-dim); padding: 30px 0; text-align: center; }
   .toast { position: fixed; left: 50%; bottom: 24px; z-index: 60; transform: translateX(-50%); background: #2a2152; border: 1.5px solid #4a3f78; border-radius: 12px; padding: 10px 16px; font: 900 14px var(--cuerpo); animation: ovIn .2s; }
 
-  /* ---------- Accesos: planes y extras con Yape (solo web · assets/yape-plan.js) ---------- */
+  /* ---------- Accesos: ventana con la página Planes (precios.html?embed=1) ---------- */
   .rail .r.acc:not(.on) { border-color: rgba(198,224,0,.45); color: #E8F77A; }
-  .acc-top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 16px; }
-  .acc-per { display: inline-flex; padding: 4px; border-radius: 12px; background: #151127; border: 2px solid #2A2346; }
-  .acc-per button { border: 0; background: none; cursor: pointer; padding: 8px 16px; border-radius: 9px; font: italic 900 19px/1 var(--display); text-transform: uppercase; color: var(--text-dim); }
-  .acc-per button.on { background: linear-gradient(180deg, #e2f75a, #C6E000); color: #14101f; }
-  .acc-per button small { font: 900 11px var(--cuerpo); font-style: normal; color: #FF6FA8; margin-left: 4px; text-transform: none; }
-  .acc-per button.on small { color: #3d4a00; }
-  .acc-of { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 12px; background: linear-gradient(100deg, rgba(255,111,168,.22), rgba(255,111,168,.06)); border: 1.5px solid rgba(255,111,168,.55); font: 900 13.5px var(--cuerpo); color: #FFC2DA; }
-  .acc-of svg { width: 18px; height: 18px; fill: none; stroke: #FF6FA8; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
-  .acc-g { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-  .acc-g.ex { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-  .acc-g + h2 { margin-top: 30px; }
-  @media (max-width: 760px) { .acc-g, .acc-g.ex { grid-template-columns: minmax(0, 1fr); } }
-  .acp { --c: #C6E000; position: relative; display: flex; flex-direction: column; padding: 18px; border-radius: 18px; text-align: left; color: #fff;
-    background: linear-gradient(180deg, color-mix(in srgb, var(--c) 14%, #1F1840), #120E26 70%); border: 2px solid color-mix(in srgb, var(--c) 55%, #2A2346); border-bottom-width: 6px; }
-  .acp.top { border-color: var(--c); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 14%, transparent), 0 18px 40px rgba(0,0,0,.35); }
-  .acp .tag { position: absolute; top: -13px; left: 18px; padding: 4px 10px; border-radius: 8px; background: var(--c); color: #14101f; font: italic 900 14px/1 var(--display); text-transform: uppercase; letter-spacing: .04em; }
-  .acp .acp-cab { display: flex; align-items: center; gap: 12px; }
-  .acp .acp-i { flex: none; width: 54px; height: 54px; border-radius: 14px; display: grid; place-items: center; background: color-mix(in srgb, var(--c) 18%, #151127); border: 2px solid color-mix(in srgb, var(--c) 50%, transparent); color: var(--c); }
-  .acp .acp-i svg { width: 30px; height: 30px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-  .acp h3 { font: italic 900 30px/1 var(--display); text-transform: uppercase; }
-  .acp .sub { margin-top: 3px; font: 700 13px/1.35 var(--cuerpo); color: var(--text-dim); }
-  .acp ul { list-style: none; display: grid; gap: 6px; margin: 14px 0 4px; flex: 1; }
-  .acp li { display: flex; gap: 8px; font: 700 13.5px/1.35 var(--cuerpo); color: #E4DEF5; }
-  .acp li svg { flex: none; width: 16px; height: 16px; margin-top: 2px; fill: none; stroke: var(--c); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
-  .acp .areas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-  .acp .areas button { cursor: pointer; padding: 6px 10px; border-radius: 9px; border: 1.5px solid #3a3360; background: #151127; color: var(--text-dim); font: 800 12.5px var(--cuerpo); }
-  .acp .areas button.on { border-color: var(--c); color: #fff; background: color-mix(in srgb, var(--c) 22%, #151127); }
-  .acp .pie { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: 14px; }
-  .acp .pr { display: flex; flex-direction: column; }
-  .acp .pr s { font: 800 13px var(--cuerpo); color: var(--text-faint); }
-  .acp .pr b { font: italic 900 36px/1 var(--display); color: var(--c); white-space: nowrap; }
-  .acp .pr small { font: 800 12px var(--cuerpo); color: var(--text-dim); }
-  .acp .bt { width: auto; margin: 0; padding: 10px 18px; font-size: 22px; flex: none; }
-  .acp .bt.tengo { background: #2a2152; color: #d9d1f5; box-shadow: inset 0 -4px 0 rgba(0,0,0,.3); font-size: 18px; }
-  .acc-g.ex .acp { padding: 16px; }
-  .acc-g.ex .acp h3 { font-size: 24px; }
-  .acc-g.ex .acp .acp-i { width: 46px; height: 46px; }
-  .acc-g.ex .acp .acp-i svg { width: 26px; height: 26px; }
-  .acc-g.ex .acp .pr b { font-size: 30px; }
-  .acc-g.ex .acp .bt { font-size: 19px; padding: 9px 14px; }
-  .acc-como { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 6px; }
-  .acc-como div { display: flex; gap: 10px; padding: 12px; border-radius: 14px; background: #151127; border: 1.5px solid #2A2346; font: 700 13px/1.35 var(--cuerpo); color: var(--text-dim); }
-  .acc-como b { display: block; color: #fff; font: 900 14px var(--cuerpo); }
-  .acc-como i { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: #C6E000; color: #14101f; font: 900 13px var(--cuerpo); font-style: normal; }
-  @media (max-width: 760px) { .acc-como { grid-template-columns: minmax(0, 1fr); } .acp h3 { font-size: 26px; } }
+  .ven.planes { width: min(1100px, 100%); height: calc(100vh - 32px); height: calc(100dvh - 32px); max-height: none; padding: 0; overflow: hidden; background: #0B0818; }
+  .ven.planes iframe { display: block; width: 100%; height: 100%; border: 0; border-radius: inherit; background: #0B0818; }
+  .ven.planes .x { z-index: 2; }
+  @media (max-width: 560px) { .ov.planes-ov { padding: 8px; } .ven.planes { height: calc(100vh - 16px); height: calc(100dvh - 16px); } }
   @media (prefers-reduced-motion: reduce) { .cd *, .rec, .rec *, .rec::after, .ven *, .act * { animation: none !important; } }
 </style>
 <script src="assets/mc-config.js"></script>
 <script src="assets/acceso.js"></script>
 <script src="assets/auth.js"></script>
 <script src="assets/tienda-iconos.js?v=3"></script>
-<script src="assets/planes.js?v=2"></script>
-<script src="assets/yape-plan.js"></script>
 </head>
 <body>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -453,14 +410,13 @@
     ['sor', 'Sorpresas', 'Cofre al azar', '<svg viewBox="0 0 24 24"><path d="M3 10h18v10H3zM2 6h20v4H2zM12 6v14M12 6s-1-4-4-4-3 4 0 4h4zm0 0s1-4 4-4 3 4 0 4h-4z"/></svg>']];
   // Accesos (planes y extras con Yape): solo en el navegador, nunca en la app de Play Store
   var EN_APP = document.documentElement.classList.contains('mc-app') || !!window.MCEnApp;
-  var ACC_ON = !EN_APP && !!window.MCYapePlan && !!window.MCPlanes;
+  var ACC_ON = !EN_APP;
   var SV_ACC = '<svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0"/><circle cx="12" cy="15.5" r="1.6"/></svg>';
   var cat = 'vid';
   try { cat = localStorage.getItem('mc_tienda_cat') || 'vid'; } catch (e) {}
   // tienda.html?acc=total&p=ciclo&a=matematica → abre Accesos (y la compra de ese plan)
   var QS = new URLSearchParams(location.search), ACC_PEDIDO = QS.get('acc');
-  if (ACC_ON && (ACC_PEDIDO || QS.has('accesos'))) cat = 'acc';
-  if (!ACC_ON && cat === 'acc') cat = 'vid';
+  if (cat === 'acc') cat = 'vid';
   var ERR = {
     pocos_diamantes: 'No tienes diamantes suficientes.',
     escudo_tope: 'Ya tienes 3 protecciones guardadas. Úsalas primero.',
@@ -525,80 +481,31 @@
   }
   function pintar() {
     if (!T) return;
-    if (T.error && cat !== 'acc') { app.innerHTML = '<p class="estado">' + esc(T.error) + '</p>' + (ACC_ON ? '<p class="estado"><a href="#" data-cat="acc" style="color:var(--accent)">Ver Accesos</a></p>' : ''); return; }
-    if (T.error) T = { items: [], error: T.error };
+    if (T.error) { app.innerHTML = '<p class="estado">' + esc(T.error) + '</p>' + (ACC_ON ? '<p class="estado"><a href="#" data-acc-abrir style="color:var(--accent)">Ver planes y accesos</a></p>' : ''); return; }
     var h = '';
     var cnt = function (g) { return (T.items || []).filter(function (it) { return INFO[it.id] && INFO[it.id].g === g; }).length; };
-    if (cat !== 'mis' && cat !== 'acc' && !cnt(cat)) cat = GRUPOS[0][0];
+    if (cat !== 'mis' && !cnt(cat)) cat = GRUPOS[0][0];
     var G = GRUPOS.filter(function (g) { return g[0] === cat; })[0];
     var l = (T.items || []).filter(function (it) { return INFO[it.id] && INFO[it.id].g === cat; });
     var nInv = 0, inv = T.inv || {}; for (var k in inv) nInv += +inv[k] || 0;
     var nAct = (T.infinito_hasta ? 1 : 0) + (T.doble_xp_hasta ? 1 : 0) + (T.fortuna_hasta ? 1 : 0) + (+T.escudos ? 1 : 0);
-    h += '<div class="lay"><nav class="rail" aria-label="Secciones de la tienda"><button type="button" class="r mis' + (cat === 'mis' ? ' on' : '') + '" data-cat="mis">' + SVM + '<span class="tx"><span>Mis compras</span><small>' + (nAct ? nAct + (nAct === 1 ? ' activa' : ' activas') : 'Actívalas cuando quieras') + '</small></span>' + (nInv ? '<i class="n">' + nInv + '</i>' : '') + '</button>' + (ACC_ON ? '<button type="button" class="r acc' + (cat === 'acc' ? ' on' : '') + '" data-cat="acc">' + SV_ACC + '<span class="tx"><span>Accesos</span><small>Planes y extras con Yape</small></span></button>' : '') + GRUPOS.filter(function (g) { return cnt(g[0]); }).map(function (g) {
+    h += '<div class="lay"><nav class="rail" aria-label="Secciones de la tienda"><button type="button" class="r mis' + (cat === 'mis' ? ' on' : '') + '" data-cat="mis">' + SVM + '<span class="tx"><span>Mis compras</span><small>' + (nAct ? nAct + (nAct === 1 ? ' activa' : ' activas') : 'Actívalas cuando quieras') + '</small></span>' + (nInv ? '<i class="n">' + nInv + '</i>' : '') + '</button>' + (ACC_ON ? '<button type="button" class="r acc" data-acc-abrir>' + SV_ACC + '<span class="tx"><span>Accesos</span><small>Planes y extras con Yape</small></span></button>' : '') + GRUPOS.filter(function (g) { return cnt(g[0]); }).map(function (g) {
         return '<button type="button" class="r' + (g[0] === cat ? ' on' : '') + '" data-cat="' + g[0] + '">' + g[3] + '<span class="tx"><span>' + g[1] + '</span><small>' + g[2] + '</small></span><i class="n">' + cnt(g[0]) + '</i></button>';
-      }).join('') + '</nav><div>' + (cat === 'acc' ? accVista() : cat === 'mis' ? misVista() : '<div class="g">' + l.map(function (it, i) { return tarjeta(it, i); }).join('') + '</div>') + '</div></div>';
+      }).join('') + '</nav><div>' + (cat === 'mis' ? misVista() : '<div class="g">' + l.map(function (it, i) { return tarjeta(it, i); }).join('') + '</div>') + '</div></div>';
     app.innerHTML = h;
   }
-  // ---------- Accesos: planes y extras (supabase/146-yape-planes.sql) ----------
-  var PCFG = window.MCPlanes ? MCPlanes.base() : null, ACC = { periodo: QS.get('p') === 'mes' ? 'mes' : 'ciclo', area: QS.get('a') || 'matematica' };
-  var ACC_AREAS = [['matematica', 'Matemática'], ['ciencia-tecnologia', 'Ciencia y Tecnología'], ['comunicacion', 'Comunicación'], ['ciencias-sociales', 'Ciencias Sociales']];
-  var ACC_COL = { area: '#1CB0F6', total: '#C6E000', descarga: '#FF9600', laboratorio: '#58CC02', offline: '#C07BFF' };
-  var ACC_IC = {
-    area: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/>',
-    total: '<path d="M5 18h14l1.5-10-5 3.5L12 5l-3.5 6.5-5-3.5z"/><path d="M5 21h14"/>',
-    descarga: '<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M12 10v7M9 14l3 3 3-3"/>',
-    laboratorio: '<path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/>',
-    offline: '<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M12 7v7M9.5 11.5 12 14l2.5-2.5M10.5 18.5h3"/>'
-  };
-  var SV_OK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
-  var SV_OF = '<svg viewBox="0 0 24 24"><path d="M20.5 13.5l-7 7a2 2 0 0 1-2.8 0L3 12.8V3h9.8l7.7 7.7a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>';
-  function sol(n) { return 'S/ ' + (+n).toFixed(2); }
-  // ¿Ya lo tiene? (código o ID)
-  function tiene(prod) {
-    try {
-      var hoy = new Date().toISOString().slice(0, 10);
-      return !!(window.MCAcceso && MCAcceso.activos().some(function (a) { return (!a.vence || a.vence >= hoy) && MCAcceso.cubre(a.producto, prod); }));
-    } catch (e) { return false; }
+  // ---------- Accesos: ventana con la página Planes (precios.html?embed=1 · se paga con Yape ahí) ----------
+  function abrirPlanes(q) {
+    var o = document.createElement('div'); o.className = 'ov planes-ov';
+    o.innerHTML = '<div class="ven planes" role="dialog" aria-modal="true" aria-label="Planes y accesos"><button type="button" class="x" aria-label="Cerrar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>' +
+      '<iframe src="precios.html?embed=1' + (q || '') + '" title="Planes y accesos"></iframe></div>';
+    o.addEventListener('click', function (e) { if (e.target === o || e.target.closest('.x')) o.remove(); });
+    document.body.appendChild(o);
   }
-  function accTarjeta(p, extra) {
-    var pr = MCPlanes.precio(PCFG, p.id, ACC.periodo); if (!pr || !pr.monto) return '';
-    var prod = p.id === 'area' ? 'area-' + ACC.area : { total: 'TODO-VIP', descarga: 'descarga-VIP', laboratorio: 'laboratorio-VIP', offline: 'offline-VIP' }[p.id];
-    var ya = tiene(prod), top = p.id === 'total';
-    var lista = extra ? [] : (p.si || []).slice(0, top ? 6 : 4);
-    return '<div class="acp' + (top ? ' top' : '') + '" style="--c:' + ACC_COL[p.id] + '">' +
-      (top ? '<span class="tag">' + (pr.preventa ? 'Preventa' : 'El más completo') + '</span>' : '') +
-      '<div class="acp-cab"><span class="acp-i"><svg viewBox="0 0 24 24">' + ACC_IC[p.id] + '</svg></span><div><h3>' + esc(p.nombre) + '</h3><p class="sub">' + esc(p.sub || '') + '</p></div></div>' +
-      (p.id === 'area' ? '<div class="areas">' + ACC_AREAS.map(function (a) { return '<button type="button" data-area="' + a[0] + '"' + (a[0] === ACC.area ? ' class="on"' : '') + '>' + a[1] + '</button>'; }).join('') + '</div>' : '') +
-      (lista.length ? '<ul>' + lista.map(function (x) { return '<li>' + SV_OK + '<span>' + esc(x) + '</span></li>'; }).join('') + '</ul>' : '<div style="flex:1"></div>') +
-      '<div class="pie"><div class="pr">' + (pr.antes ? '<s>' + sol(pr.antes) + '</s>' : '') + '<b>' + sol(pr.monto) + '</b><small>' + (ACC.periodo === 'mes' ? 'por 30 días' : 'por el ciclo · 90 días') + '</small></div>' +
-        '<button type="button" class="bt' + (ya ? ' tengo' : '') + '" data-acc="' + p.id + '"' + (ya ? ' title="Ya lo tienes: se suman los días"' : '') + '>' + (ya ? 'Renovar' : 'Comprar') + '</button>' + '</div></div>';
+  if (ACC_ON && (ACC_PEDIDO || QS.has('accesos'))) {
+    abrirPlanes(ACC_PEDIDO && /^(area|total|descarga|laboratorio|offline)$/.test(ACC_PEDIDO)
+      ? '&acc=' + ACC_PEDIDO + '&p=' + (QS.get('p') === 'mes' ? 'mes' : 'ciclo') + (QS.get('a') ? '&a=' + encodeURIComponent(QS.get('a')) : '') : '');
   }
-  function accVista() {
-    if (!PCFG) return '<p class="estado">Cargando…</p>';
-    var pv = PCFG.preventa || {}, de = PCFG.descuento || {}, of = '';
-    if (pv.activa && ACC.periodo === 'ciclo') of += '<span class="acc-of">' + SV_OF + 'Preventa ' + esc(pv.ciclo || '') + ': Total por ciclo a ' + sol(pv.precio) + (pv.hasta ? ' · hasta el ' + esc(pv.hasta) : '') + '</span>';
-    if (de.activa && +de.pct) of += '<span class="acc-of">' + SV_OF + esc(de.texto || 'Oferta') + ': -' + (+de.pct) + '%</span>';
-    var planes = (PCFG.planes || []).filter(function (p) { return p.id !== 'gratis'; }).sort(function (a, b) { return a.id === 'total' ? -1 : b.id === 'total' ? 1 : 0; });
-    var extras = (PCFG.extras || []).filter(function (x) { return x.activa !== false; });
-    return '<div class="acc-top"><div class="acc-per" role="tablist"><button type="button" data-per="mes"' + (ACC.periodo === 'mes' ? ' class="on"' : '') + '>Mensual</button><button type="button" data-per="ciclo"' + (ACC.periodo === 'ciclo' ? ' class="on"' : '') + '>Ciclo<small>Ahorra</small></button></div>' + of + '</div>' +
-      '<div class="acc-g">' + planes.map(function (p) { return accTarjeta(p, false); }).join('') + '</div>' +
-      (extras.length ? '<h2>Extras <small>Se suman a tu plan</small></h2><div class="acc-g ex">' + extras.map(function (p) { return accTarjeta(p, true); }).join('') + '</div>' : '') +
-      '<h2>Cómo se paga <small>Con Yape, en 2 minutos</small></h2><div class="acc-como">' +
-        '<div><i>1</i><span><b>Yapea el monto</b>Al 928 030 708, a nombre de Javier R.</span></div>' +
-        '<div><i>2</i><span><b>Sube tu captura</b>Y escribe los 3 números del código de seguridad.</span></div>' +
-        '<div><i>3</i><span><b>Listo</b>Se activa en tu cuenta. Si queda en revisión, estudias desde ya con acceso de prueba.</span></div></div>';
-  }
-  function accComprar(id) {
-    var p = (PCFG.planes || []).concat(PCFG.extras || []).filter(function (x) { return x.id === id; })[0]; if (!p) return;
-    var pr = MCPlanes.precio(PCFG, id, ACC.periodo) || {};
-    var an = ACC_AREAS.filter(function (a) { return a[0] === ACC.area; })[0] || ACC_AREAS[0];
-    MCYapePlan.abrir({ plan: id, periodo: ACC.periodo, area: id === 'area' ? an[0] : null, color: ACC_COL[id],
-      nombre: id === 'area' ? 'Plan ' + an[1] : id === 'total' ? 'Plan ' + p.nombre : p.nombre, precio: pr.monto });
-  }
-  if (ACC_ON) MCPlanes.cargar().then(function (v) {
-    PCFG = v; if (cat === 'acc') pintar();
-    if (ACC_PEDIDO && /^(area|total|descarga|laboratorio|offline)$/.test(ACC_PEDIDO)) { var id = ACC_PEDIDO; ACC_PEDIDO = null; accComprar(id); }
-  });
   var SVM = '<svg viewBox="0 0 24 24"><path d="M4 8h16l-1.5 12h-13zM9 8V6a3 3 0 0 1 6 0v2"/></svg>';
   var EFE = { infinito: ['vida1', 'Vidas ilimitadas', '#FF4B6E'], doblexp: ['doblexp', 'Doble XP', '#FFC800'], fortuna: ['fortuna', 'Fortuna', '#58CC02'] };
   function dur(s) { s = +s || 0; if (s < 3600) return Math.max(1, Math.round(s / 60)) + ' min'; if (s < 172800) { var hh = Math.floor(s / 3600), mm = Math.round(s % 3600 / 60); return hh + ' h' + (mm ? ' ' + mm + ' min' : ''); } return Math.round(s / 86400) + ' días'; }
@@ -944,13 +851,7 @@
       else accion('tienda_escudo_quitar', {}, q, function () { toast('Volvió a Mis compras.'); });
       return;
     }
-    var ac = e.target.closest('[data-acc],[data-per],[data-area]');
-    if (ac) {
-      if (ac.dataset.per) { ACC.periodo = ac.dataset.per; pintar(); }
-      else if (ac.dataset.area) { ACC.area = ac.dataset.area; pintar(); }
-      else accComprar(ac.dataset.acc);
-      return;
-    }
+    if (e.target.closest('[data-acc-abrir]')) { e.preventDefault(); abrirPlanes(''); return; }
     var cb = e.target.closest('[data-cat]'); if (cb) { cat = cb.dataset.cat; try { localStorage.setItem('mc_tienda_cat', cat); } catch (er) {} pintar(); return; } var c = e.target.closest('[data-item]'); if (c && T && !T.error) { if (sinClan(c.dataset.item)) { toast('Únete a un clan para comprar esto.'); return; } confirmar(c.dataset.item); } });
   recB.addEventListener('click', function () { if (T && !T.error) ganar(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { var o = document.querySelector('.ov'); if (o) o.remove(); } });

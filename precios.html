@@ -14,6 +14,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <script src="assets/app.js" defer></script>
 <title>Planes · Modo Cachimbo</title>
+<script>if (/[?&]embed=1/.test(location.search)) document.documentElement.classList.add('embed');</script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;1,800&family=Inter:wght@400;500;600;700&family=Nunito:wght@700;800;900&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -111,21 +112,33 @@
   .paso .n { width: 30px; height: 30px; border-radius: 50%; background: var(--l); color: var(--lt); font: 900 15px Nunito, sans-serif; display: grid; place-items: center; flex: none; }
   .paso b { font: 900 15px Nunito, sans-serif; display: block; }
   .paso span { color: var(--d); font-size: 13px; }
-  /* Beta: solo el admin ve la página mientras se prueba (RPC es_admin) */
-  html:not(.beta-si) main.wrap { display: none; }
-  .beta-aviso { max-width: 420px; margin: 60px auto; padding: 0 16px; text-align: center; color: var(--d); }
-  .beta-aviso b { display: block; font: 900 20px Nunito, sans-serif; color: var(--t); margin-bottom: 6px; }
-  html.beta-si .beta-aviso, html:not(.beta-no) .beta-aviso { display: none; }
-  .beta-tag { margin-left: auto; font: 900 11px Nunito, sans-serif; letter-spacing: .06em; color: var(--rosa); border: 1px solid var(--rosa); border-radius: 99px; padding: 2px 8px; }
+  /* Dentro de la ventana de la Tienda (tienda.html → Accesos): sin cabecera */
+  html.embed .top { display: none; }
+  html.embed body { background: transparent; }
+  html.embed .wrap { padding-top: 22px; }
+  /* Extras */
+  .extras { display: grid; gap: 12px; grid-template-columns: 1fr; margin-top: 8px; }
+  @media (min-width: 720px) { .extras { grid-template-columns: repeat(3, 1fr); } }
+  .extra { --c: var(--l); display: flex; flex-direction: column; gap: 6px; background: var(--s); border: 1px solid var(--b); border-radius: 20px; padding: 16px; }
+  .extra .cab { display: flex; align-items: center; gap: 10px; }
+  .extra .cab .ic { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: var(--s2); color: var(--c); flex: none; }
+  .extra h2 { font: 900 18px Nunito, sans-serif; }
+  .extra p { color: var(--d); font-size: 13px; flex: 1; }
+  .extra .fila2 { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 4px; }
+  .extra .fila2 b { font: 900 24px/1 Nunito, sans-serif; color: var(--c); }
+  .extra .fila2 s { display: block; color: var(--f); font-size: 12px; }
+  .extra .fila2 small { display: block; color: var(--f); font-size: 12px; }
+  .extra .btn2 { width: auto; padding: 9px 16px; font-size: 15px; }
+  .oferta { display: flex; align-items: center; justify-content: center; gap: 8px; margin: -6px auto 16px; width: fit-content; max-width: 100%; padding: 7px 14px; border-radius: 99px; background: rgba(255,111,168,.14); border: 1px solid rgba(255,111,168,.45); color: #FFC2DA; font: 800 13.5px Nunito, sans-serif; }
+  .oferta svg { color: var(--rosa); }
+  .precio s { color: var(--f); font-size: 15px; font-weight: 700; margin-right: 2px; }
 </style>
 </head>
 <body>
 <header class="top">
   <a class="x" href="index.html" aria-label="Volver"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></a>
   <b>Planes</b>
-  <span class="beta-tag">BETA</span>
 </header>
-<div class="beta-aviso"><b>Muy pronto</b>Esta página todavía está en prueba.</div>
 
 <main class="wrap">
   <section class="hero">
@@ -144,7 +157,15 @@
     <button type="button" data-p="ciclo" class="on">Ciclo · 3 meses <span>AHORRA</span></button>
   </div></div>
 
+  <div class="oferta" id="oferta" hidden><svg class="i" viewBox="0 0 24 24"><path d="M20.5 13.5l-7 7a2 2 0 0 1-2.8 0L3 12.8V3h9.8l7.7 7.7a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg><span id="ofTxt"></span></div>
+
   <section class="planes" id="planes"></section>
+
+  <section id="secExtras" hidden>
+  <h3 class="sec">Extras</h3>
+  <p class="sec">Se compran aparte y se suman a tu plan.</p>
+  <div class="extras" id="extras"></div>
+  </section>
 
   <div class="amigos" id="amigos">
     <span class="ic"><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 4.5a3 3 0 010 6"/><path d="M18 14c2 .6 3.5 2.8 3.5 6"/></svg></span>
@@ -161,7 +182,7 @@
   <h3 class="sec">Cómo activar tu plan</h3>
   <p class="sec">En menos de 5 minutos.</p>
   <div class="como">
-    <div class="paso"><span class="n">1</span><span><b>Elige tu plan</b><span>Toca «Lo quiero»: se abre la Tienda y yapeas al 928 030 708.</span></span></div>
+    <div class="paso"><span class="n">1</span><span><b>Elige tu plan</b><span>Toca «Lo quiero» y yapea el monto al 928 030 708.</span></span></div>
     <div class="paso"><span class="n">2</span><span><b>Sube tu captura</b><span>Y escribe los 3 números del código de seguridad de tu Yape.</span></span></div>
     <div class="paso"><span class="n">3</span><span><b>Listo</b><span>Tu plan se activa en tu cuenta. Si el pago está en revisión, estudias desde ya con acceso de prueba.</span></span></div>
   </div>
@@ -170,18 +191,7 @@
 <script src="assets/mc-config.js"></script>
 <script src="assets/auth.js"></script>
 <script src="assets/planes.js?v=2"></script>
-<script>
-// Beta: solo el admin (public.es_admin) ve los planes
-(function () {
-  var r = document.documentElement;
-  function poner(ok) { r.classList.toggle('beta-si', ok); r.classList.toggle('beta-no', !ok); }
-  if (!window.MCAuth) { poner(false); return; }
-  MCAuth.listo.then(function (c) {
-    if (!MCAuth.usuario()) { poner(false); return; }
-    return c.rpc('es_admin').then(function (x) { poner(!x.error && x.data === true); });
-  }).catch(function () { poner(false); });
-})();
-</script>
+<script src="assets/yape-plan.js"></script>
 <script>
 (function () {
   // Precios y textos: Panel → Web → Planes y precios (assets/planes.js)
@@ -196,35 +206,50 @@
   };
   var SI = '<svg class="i" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
   var NO = '<svg class="i" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg>';
-  var periodo = 'ciclo', area = 'matematica';
+  var QS = new URLSearchParams(location.search);
+  var periodo = QS.get('p') === 'mes' ? 'mes' : 'ciclo', area = QS.get('a') || 'matematica', PEDIDO = QS.get('acc');
+  if (!AREAS.some(function (a) { return a[0] === area; })) area = 'matematica';
+  var COLOR_X = { descarga: '#FF9600', laboratorio: '#58CC02', offline: '#CE82FF' };
+  var ICO_X = {
+    descarga: '<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M12 10v7M9 14l3 3 3-3"/>',
+    laboratorio: '<path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/>',
+    offline: '<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M12 7v7M9.5 11.5 12 14l2.5-2.5M10.5 18.5h3"/>'
+  };
 
-  function sol(n) { return 'S/ ' + n.toFixed(2); }
+  function sol(n) { return 'S/ ' + (+n).toFixed(2); }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  // Precio que se cobra (preventa o descuento ya aplicados) · assets/planes.js
+  function pr(id) { return MCPlanes.precio(CFG, id, periodo) || { monto: 0, antes: null, preventa: false }; }
   function wa(p) {
     var t = p.id === 'area' ? 'Un área (' + AREAS.filter(function (a) { return a[0] === area; })[0][1] + ')' : p.nombre;
-    var pv = CFG.preventa.activa && p.id === 'total' && periodo === 'ciclo';
-    var precio = pv ? CFG.preventa.precio : p[periodo];
-    return 'https://wa.me/' + WA + '?text=' + encodeURIComponent('Hola! Quiero el plan ' + t + ' de Modo Cachimbo, ' + (periodo === 'mes' ? 'mensual' : 'por ciclo (3 meses)') + (pv ? ' en preventa' : '') + ': ' + sol(precio));
+    var x = pr(p.id);
+    return 'https://wa.me/' + WA + '?text=' + encodeURIComponent('Hola! Quiero ' + t + ' de Modo Cachimbo, ' + (periodo === 'mes' ? 'mensual' : 'por ciclo (3 meses)') + (x.preventa ? ' en preventa' : '') + ': ' + sol(x.monto));
   }
 
   function plan(p) {
-    var pv = CFG.preventa.activa && p.id === 'total' && periodo === 'ciclo';
-    var precio = pv ? CFG.preventa.precio : p[periodo];
+    var x = pr(p.id), precio = p.id === 'gratis' ? 0 : x.monto;
     var ahorro = '';
-    if (p.mes && periodo === 'ciclo') ahorro = 'Equivale a ' + sol(precio / 3) + ' al mes · <em>ahorras ' + sol(p.mes * 3 - precio) + '</em>';
-    else if (p.mes) ahorro = 'O ' + sol(p.ciclo) + ' por todo el ciclo';
+    if (p.mes && periodo === 'ciclo') ahorro = 'Equivale a ' + sol(precio / 3) + ' al mes · <em>ahorras ' + sol(MCPlanes.precio(CFG, p.id, 'mes').monto * 3 - precio) + '</em>';
+    else if (p.mes) ahorro = 'O ' + sol(MCPlanes.precio(CFG, p.id, 'ciclo').monto) + ' por todo el ciclo';
     return '<article class="plan' + (p.top ? ' top-plan' : '') + '" style="--c:' + COLOR[p.id] + '">' +
-      (p.top ? '<span class="tag">' + (pv ? 'Preventa' : 'El más completo') + '</span>' : '') +
+      (p.top ? '<span class="tag">' + (x.preventa ? 'Preventa' : 'El más completo') + '</span>' : '') +
       '<div class="cab"><span class="ic"><svg class="i" viewBox="0 0 24 24">' + ICO[p.id] + '</svg></span><h2>' + esc(p.nombre) + '</h2></div>' +
       '<p class="sub">' + esc(p.sub) + '</p>' +
-      '<div class="precio"><b>' + (precio ? sol(precio) : 'S/ 0') + '</b><span>' + (precio ? (periodo === 'mes' ? '/ mes' : '/ ciclo') : 'para siempre') + '</span></div>' +
+      '<div class="precio">' + (precio && x.antes ? '<s>' + sol(x.antes) + '</s>' : '') + '<b>' + (precio ? sol(precio) : 'S/ 0') + '</b><span>' + (precio ? (periodo === 'mes' ? '/ mes' : '/ ciclo') : 'para siempre') + '</span></div>' +
       '<div class="ahorro">' + ahorro + '</div>' +
       (p.id === 'area' ? '<div class="area-sel">' + AREAS.map(function (a) { return '<button type="button" data-a="' + a[0] + '"' + (a[0] === area ? ' class="on"' : '') + '>' + a[1] + '</button>'; }).join('') + '</div>' : '') +
       '<ul class="lista">' + p.si.map(function (x) { return '<li class="si">' + SI + '<span>' + esc(x) + '</span></li>'; }).join('') +
         p.no.map(function (x) { return '<li class="no">' + NO + '<span>' + esc(x) + '</span></li>'; }).join('') + '</ul>' +
       (precio ? '<a class="' + (p.top ? 'btn' : 'btn2') + '" href="' + wa(p) + '" target="_blank" rel="noopener" data-comprar="' + esc(p.id) + '">Lo quiero</a>'
-              : '<a class="btn2" href="index.html">Ya lo tienes</a>') +
+              : '<a class="btn2" href="index.html" target="_top">Ya lo tienes</a>') +
       '</article>';
+  }
+  function extra(p) {
+    var x = pr(p.id); if (!x.monto) return '';
+    return '<article class="extra" style="--c:' + (COLOR_X[p.id] || 'var(--l)') + '"><div class="cab"><span class="ic"><svg class="i" viewBox="0 0 24 24">' + (ICO_X[p.id] || '') + '</svg></span><h2>' + esc(p.nombre) + '</h2></div>' +
+      '<p>' + esc(p.sub || '') + '</p>' +
+      '<div class="fila2"><span>' + (x.antes ? '<s>' + sol(x.antes) + '</s>' : '') + '<b>' + sol(x.monto) + '</b><small>' + (periodo === 'mes' ? 'por 30 días' : 'por el ciclo · 90 días') + '</small></span>' +
+      '<a class="btn2" href="' + wa(p) + '" target="_blank" rel="noopener" data-comprar="' + esc(p.id) + '">Lo quiero</a></div></article>';
   }
   function celda(v) {
     if (v === true) return '<span class="ok">' + SI + 'Sí</span>';
@@ -233,17 +258,29 @@
   }
   function pintar() {
     document.getElementById('planes').innerHTML = CFG.planes.map(plan).join('');
+    var ex = (CFG.extras || []).filter(function (x) { return x.activa !== false; });
+    document.getElementById('secExtras').hidden = !ex.length;
+    document.getElementById('extras').innerHTML = ex.map(extra).join('');
+    var d = CFG.descuento || {};
+    document.getElementById('oferta').hidden = !(d.activa && +d.pct);
+    document.getElementById('ofTxt').textContent = (d.texto || 'Oferta') + ': -' + (+d.pct || 0) + '% en todo' + (CFG.preventa.activa ? ' (menos la preventa)' : '');
     document.querySelectorAll('.periodo button').forEach(function (b) { b.classList.toggle('on', b.dataset.p === periodo); });
     document.querySelectorAll('.area-sel button').forEach(function (b) {
       b.onclick = function () { area = b.dataset.a; pintar(); };
     });
   }
   document.querySelectorAll('.periodo button').forEach(function (b) { b.onclick = function () { periodo = b.dataset.p; pintar(); }; });
-  // «Lo quiero» → Tienda → Accesos con ese plan (ahí se paga con Yape). En la app sigue WhatsApp.
-  document.getElementById('planes').addEventListener('click', function (e) {
-    var a = e.target.closest('[data-comprar]'); if (!a || window.MCEnApp || document.documentElement.classList.contains('mc-app')) return;
-    e.preventDefault();
-    location.href = 'tienda.html?acc=' + encodeURIComponent(a.dataset.comprar) + '&p=' + periodo + (a.dataset.comprar === 'area' ? '&a=' + area : '');
+  // «Lo quiero» → ventana de Yape (assets/yape-plan.js). En la app sale «Muy pronto».
+  function comprar(id) {
+    var p = CFG.planes.concat(CFG.extras || []).filter(function (x) { return x.id === id; })[0]; if (!p || !window.MCYapePlan) return false;
+    var an = AREAS.filter(function (x) { return x[0] === area; })[0];
+    MCYapePlan.abrir({ plan: id, periodo: periodo, area: id === 'area' ? area : null, color: COLOR[id] || COLOR_X[id],
+      nombre: id === 'area' ? 'Plan ' + an[1] : id === 'total' ? 'Plan ' + p.nombre : p.nombre, precio: pr(id).monto });
+    return true;
+  }
+  document.querySelector('main').addEventListener('click', function (e) {
+    var a = e.target.closest('[data-comprar]'); if (!a) return;
+    if (comprar(a.dataset.comprar)) e.preventDefault();
   });
   function todo() {
     CFG.planes.forEach(function (p) { p.top = p.id === 'total'; p.mes = +p.mes || 0; p.ciclo = +p.ciclo || 0; p.si = p.si || []; p.no = p.no || []; });
@@ -252,7 +289,7 @@
     document.getElementById('preventa').hidden = !P.activa;
     document.getElementById('pvCiclo').textContent = P.ciclo || '';
     document.getElementById('pvTxt').textContent = 'Plan Total por todo el ciclo' + (P.hasta ? ' · hasta el ' + P.hasta : '') + (+P.cupos ? (P.hasta ? ' o ' : ' · ') + 'los primeros ' + P.cupos + ' alumnos' : '');
-    document.getElementById('pvAntes').textContent = sol(tot.ciclo);
+    document.getElementById('pvAntes').textContent = sol(+tot.ciclo || 0);
     document.getElementById('pvPrecio').textContent = sol(P.precio);
     var A = CFG.amigos;
     document.getElementById('amigos').hidden = !A.activa;
@@ -268,7 +305,11 @@
     pintar();
   }
   todo();
-  MCPlanes.cargar().then(function (v) { CFG = v; todo(); });
+  MCPlanes.cargar().then(function (v) {
+    CFG = v; todo();
+    // precios.html?acc=total&p=ciclo&a=… (candados) → abre la compra de ese plan
+    if (PEDIDO && /^(area|total|descarga|laboratorio|offline)$/.test(PEDIDO)) { var id = PEDIDO; PEDIDO = null; comprar(id); }
+  });
 })();
 </script>
 </body>
