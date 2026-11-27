@@ -14,7 +14,7 @@
     preventa: { activa: true, ciclo: '2027-I', hasta: '30/11', cupos: 100, precio: 39.90 },
     planes: [
       { id: 'gratis', rango: 'Bronce', nombre: 'Gratis', sub: 'Para conocer la app y repasar lo del ciclo pasado.', mes: 0, ciclo: 0,
-        si: ['Libros y exámenes pasados', 'Practicar el material de ciclos anteriores', 'Racha, amigos y test vocacional'],
+        si: ['Leer los Libros', 'Practicar el material de ciclos anteriores', 'Temas fijos de admisión', 'Racha, amigos, clanes y test vocacional', 'Laboratorio: Célula y Tabla periódica'],
         no: ['Material del ciclo nuevo', 'Repaso, Fijas y Simulacro', 'Descargas PDF'] },
       { id: 'area', rango: 'Amatista', nombre: 'Un área', sub: 'Refuerza solo el área que más te cuesta.', mes: 12.90, ciclo: 34.90,
         si: ['Todo lo gratis', 'Material nuevo de los cursos del área', 'Repaso, Fijas y Flashcards del área', 'Búho tutor en sus preguntas'],
