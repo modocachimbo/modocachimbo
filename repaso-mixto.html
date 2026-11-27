@@ -857,11 +857,12 @@ html[data-modo="claro"] .badge .curso { color: #1A1626 !important; }
     if (window.MCSonido) MCSonido.empezar();
     return true;
   }
-  (function pgOfrecer() {
+  function pgOfrecer() {
     const s = window.MCPartida && MCPartida.leer(PG_ID);
     if (!s || !(s.e.lives > 0)) return;
     const n = Math.min(Math.max(0, s.e.current | 0), s.q.length - 1);
     const b = document.createElement('button');
+    b.id = 'pgSeguirBtn';
     b.type = 'button'; b.className = 'btn primary el-go'; b.style.cssText = 'margin-bottom:10px;line-height:1.25';
     b.innerHTML = 'Seguir donde quedé<br><small style="font-weight:600;opacity:.75">Pregunta ' + (n + 1) + ' de ' + s.q.length + ' · ' + (s.e.score | 0) + ' pts</small>';
     btnStart.parentNode.insertBefore(b, btnStart);
@@ -872,7 +873,10 @@ html[data-modo="claro"] .badge .curso { color: #1A1626 !important; }
       if (ok) { b.remove(); btnStart.classList.add('primary'); btnStart.textContent = 'Empezar repaso'; }
       else { b.remove(); btnStart.classList.add('primary'); btnStart.textContent = 'Empezar repaso'; }
     });
-  })();
+  }
+  pgOfrecer();
+  // La jugó en otro dispositivo y llegó de la cuenta (assets/partida.js): se ofrece seguir
+  document.addEventListener('mc:partida-nube', ev => { if (ev.detail === PG_ID && elegir.classList.contains('show') && !document.getElementById('pgSeguirBtn')) pgOfrecer(); });
 
   iniciar();
 </script>

@@ -694,6 +694,8 @@
 
   // Partida a medias: se guarda en este celular y al volver sigue donde quedó (assets/partida.js)
   const PG_ID = location.pathname + '?' + year;
+  // La jugó en otro dispositivo y llegó de la cuenta (assets/partida.js): se ofrece seguir
+  document.addEventListener('mc:partida-nube', ev => { if (ev.detail === PG_ID && startScreen.classList.contains('show') && !document.getElementById('pgSeguirBtn')) pgOfrecer(); });
   function pgGuardar() {
     if (window.MCPartida && activeQuestions.length && answers.length) MCPartida.guardar(PG_ID, activeQuestions, { current: current, score: score, lives: lives, answers: answers.slice() });
   }
@@ -707,6 +709,7 @@
     const b = document.createElement('button');
     b.type = 'button'; b.className = btnStart.className; b.style.cssText = 'width:100%;margin-bottom:10px;line-height:1.25';
     b.innerHTML = 'Seguir donde quedé<br><small style="font-weight:600;opacity:.75">Pregunta ' + (n + 1) + ' de ' + arr.length + ' · ' + (s.e.score | 0) + ' pts</small>';
+    b.id = 'pgSeguirBtn';
     btnStart.parentNode.insertBefore(b, btnStart);
     btnStart.className = 'btn'; btnStart.textContent = 'Empezar de nuevo';
     b.addEventListener('click', () => {
