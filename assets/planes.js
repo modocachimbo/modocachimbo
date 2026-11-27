@@ -20,8 +20,8 @@
         si: ['Todo lo gratis', 'Material nuevo de los cursos del área', 'Repaso, Fijas y Flashcards del área', 'Búho tutor en sus preguntas (beta)'],
         no: ['Simulacro y duelos', 'Descargas PDF (paquete aparte)'] },
       { id: 'total', rango: 'Leyenda', nombre: 'Total', sub: 'Las 4 áreas y todo lo que tiene Modo Cachimbo.', mes: 19.90, ciclo: 49.90,
-        si: ['Las 4 áreas con todo el material nuevo', 'Repaso, Fijas, Flashcards y Banqueo', 'Simulacro de 80 preguntas con puntaje por bloque', 'Duelos con amigos', 'Seminarios, Vocabulario y Biblioteca', 'Descargas PDF y Descargas sin internet'],
-        no: [] }
+        si: ['Las 4 áreas con todo el material nuevo', 'Repaso, Fijas, Flashcards y Banqueo', 'Simulacro de 80 preguntas con puntaje por bloque', 'Duelos con amigos', 'Seminarios, Vocabulario y Biblioteca', 'Descargas sin internet'],
+        no: ['Descargas PDF (paquete aparte)'] }
     ],
     // Extras que se compran aparte en Tienda → Accesos (solo web). Laboratorio es gratis y Sin internet va con Leyenda
     extras: [
@@ -64,7 +64,7 @@
           ['Laboratorio: todos los simuladores', true, true, true],
           ['Test vocacional', true, true, true],
           ['Descargas sin internet', false, false, true],
-          ['Descargas PDF', 'Paquete aparte', 'Paquete aparte', true]
+          ['Descargas PDF', 'Paquete aparte', 'Paquete aparte', 'Paquete aparte']
         ] }
       ]
     },

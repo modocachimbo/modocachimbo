@@ -8,7 +8,8 @@
 --   · Descargas PDF se vende en paquetes de 30 días: 3 PDF al día
 --     S/ 4.90, 7 al día S/ 6.90 y 12 al día S/ 9.90 (se cambian en Panel →
 --     Planes y precios). El límite va en accesos_id.limite_dia.
---   · Plan Leyenda (Total) ahora abre también Descargas sin internet.
+--   · Plan Leyenda (Total) abre también Descargas sin internet. Las
+--     Descargas PDF NO van en ningún plan: se compran aparte.
 --   · Laboratorio y Sin internet ya no se venden como extra.
 --   · Laboratorio: todos los simuladores gratis.
 -- =========================================================
@@ -65,7 +66,7 @@ begin
     producto := 'area-' || p_area; nombre := 'Plan ' || nom[k];
   else
     -- Leyenda (Total) trae también las Descargas sin internet
-    producto := case p_plan when 'total' then 'TODO-VIP,descarga-VIP,offline-VIP' else 'descarga-VIP' end;
+    producto := case p_plan when 'total' then 'TODO-VIP,offline-VIP' else 'descarga-VIP' end;
     nombre := case p_plan when 'total' then 'Plan Total' else 'Descargas PDF' end;
   end if;
   detalle := nombre || ' · ' || case when extra then n || ' al día, 30 días' when p_periodo = 'mes' then 'mes' else 'ciclo' end;
