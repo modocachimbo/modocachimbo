@@ -3,7 +3,7 @@
    Lo edita el admin en Panel → Web → Planes y precios, y se guarda en
    Supabase (tabla ajustes, clave 'planes'). Si nunca se guardó, o no hay
    internet, se usa el ejemplo de abajo (BASE).
-   Cada plan: { id, nombre, sub, mes, ciclo, si: [...], no: [...] }
+   Cada plan: { id, rango (nombre grande: Bronce/Amatista/Leyenda), nombre, sub, mes, ciclo, si: [...], no: [...] }
    tabla: [[texto, modo, otro]]  → true = Sí, false = No, texto = detalle
    ========================================================= */
 (function () {
@@ -13,13 +13,13 @@
     tienda: { modo: 'vip' },
     preventa: { activa: true, ciclo: '2027-I', hasta: '30/11', cupos: 100, precio: 39.90 },
     planes: [
-      { id: 'gratis', nombre: 'Gratis', sub: 'Para conocer la app y repasar lo del ciclo pasado.', mes: 0, ciclo: 0,
+      { id: 'gratis', rango: 'Bronce', nombre: 'Gratis', sub: 'Para conocer la app y repasar lo del ciclo pasado.', mes: 0, ciclo: 0,
         si: ['Libros y exámenes pasados', 'Practicar el material de ciclos anteriores', 'Racha, amigos y test vocacional'],
         no: ['Material del ciclo nuevo', 'Repaso, Fijas y Simulacro', 'Descargas PDF'] },
-      { id: 'area', nombre: 'Un área', sub: 'Refuerza solo el área que más te cuesta.', mes: 12.90, ciclo: 34.90,
+      { id: 'area', rango: 'Amatista', nombre: 'Un área', sub: 'Refuerza solo el área que más te cuesta.', mes: 12.90, ciclo: 34.90,
         si: ['Todo lo gratis', 'Material nuevo de los cursos del área', 'Repaso, Fijas y Flashcards del área', 'Búho tutor en sus preguntas'],
         no: ['Simulacro y duelos', 'Descargas PDF'] },
-      { id: 'total', nombre: 'Total', sub: 'Las 4 áreas y todo lo que tiene Modo Cachimbo.', mes: 19.90, ciclo: 49.90,
+      { id: 'total', rango: 'Leyenda', nombre: 'Total', sub: 'Las 4 áreas y todo lo que tiene Modo Cachimbo.', mes: 19.90, ciclo: 49.90,
         si: ['Las 4 áreas con todo el material nuevo', 'Repaso, Fijas, Flashcards y Banqueo', 'Simulacro de 80 preguntas con puntaje por bloque', 'Duelos y Top de la semana', 'Seminarios, Vocabulario y Biblioteca', 'Descarga en PDF del material nuevo'],
         no: [] }
     ],
