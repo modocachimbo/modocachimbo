@@ -131,6 +131,9 @@
       '#mckHoja .mck-wa{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;padding:12px;border-radius:14px;' +
         'background:rgba(37,211,102,.1);border:2px solid rgba(37,211,102,.25);color:#25D366;text-decoration:none;font-size:14px;font-weight:900}' +
       '#mckHoja .mck-wa svg{width:18px;height:18px}' +
+      '#mckHoja .mck-yape{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;padding:12px;border-radius:14px;' +
+        'background:linear-gradient(135deg,rgba(116,33,163,.55),rgba(116,33,163,.2));border:2px solid rgba(170,80,230,.9);color:#fff;text-decoration:none;font-size:15px;font-weight:900}' +
+      '#mckHoja .mck-yape svg{width:18px;height:18px}' +
       '#mckHoja .mck-luego{display:inline-block;margin-top:14px;padding:6px;border:0;background:none;color:#8a84ad;font-size:14px;font-weight:800;text-decoration:none;cursor:pointer}' +
       'html.mc-cerrado body>*:not(#mckFondo){visibility:hidden}';
     document.head.appendChild(st);
@@ -150,6 +153,19 @@
     return COLOR_AREA[area] || (!afuera && cs.getPropertyValue('--accent').trim()) || def;
   }
 
+  /* ---- Comprar con Yape: Tienda → Accesos con el plan que abre este candado (solo web, no en la app) ---- */
+  var YAPE_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M9.5 8l2.5 3 2.5-3M12 11v4.5"/></svg>';
+  function enlaceTienda(producto) {
+    if (document.documentElement.classList.contains('mc-app') || window.MCEnApp) return '';
+    var raiz = yo && yo.src ? yo.src.replace(/assets\/candado\.js.*$/, '') : '';
+    if (!raiz) return '';
+    var x = MCAcceso.puerta(producto || ''), m = /^area-(.+)$/.exec(x), cat = x.split('-')[0], q;
+    if (m && MCAcceso.AREAS[m[1]]) q = 'acc=area&a=' + m[1];
+    else if (cat === 'descarga' || cat === 'laboratorio' || cat === 'offline') q = 'acc=' + cat;
+    else q = 'acc=total';
+    return raiz + 'tienda.html?' + q + '&p=ciclo';
+  }
+
   /* ---- La hoja: el candado, lo que trae el paquete y la cajita del código ----
      op: { nombre, pagina (página completa, sin «Ahora no»), volver, alAbrir } */
   function hoja(producto, op) {
@@ -159,6 +175,7 @@
     var color = colorPagina(producto, p.color, !op.pagina);
     if (viejo) viejo.remove();
     var wa = 'https://wa.me/' + WA_NUM + '?text=' + encodeURIComponent('¡Hola! Quiero el paquete ' + p.nombre + ' de Modo Cachimbo' + (op.nombre ? ' (para ' + op.nombre + ')' : '') + ' 🎓');
+    var tienda = enlaceTienda(producto);
     var f = document.createElement('div'); f.id = 'mckFondo'; if (op.pagina) f.className = 'pagina';
     f.innerHTML = '<div id="mckHoja" role="dialog" aria-modal="true" aria-labelledby="mckTit" style="--kc:' + esc(color) + '">' +
       (op.pagina ? '' : '<button class="mck-x" type="button" aria-label="Cerrar">✕</button>') +
@@ -170,6 +187,7 @@
       '<input type="text" id="mckCod" placeholder="Ej.: MC-7K3P-Q9XR" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Código de acceso">' +
       '<button class="mck-btn" type="button" id="mckBtn">' + CANDADO + '<span>Desbloquear</span></button>' +
       '<div class="mck-err" id="mckErr" role="status"></div>' +
+      (tienda ? '<a class="mck-yape" href="' + esc(tienda) + '">' + YAPE_ICO + 'Comprar con Yape</a>' : '') +
       '<a class="mck-wa" href="' + wa + '" target="_blank" rel="noopener noreferrer">' + WA_ICO + 'Pide tu código por WhatsApp</a>' +
       (op.pagina ? '<a class="mck-luego" href="' + esc(op.volver || '../index.html') + '">Volver</a>' : '<button class="mck-luego" type="button" data-x>Ahora no</button>') +
       '</div>';

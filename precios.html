@@ -161,7 +161,7 @@
   <h3 class="sec">Cómo activar tu plan</h3>
   <p class="sec">En menos de 5 minutos.</p>
   <div class="como">
-    <div class="paso"><span class="n">1</span><span><b>Elige tu plan</b><span>Toca «Lo quiero» y yapea el monto al 928 030 708.</span></span></div>
+    <div class="paso"><span class="n">1</span><span><b>Elige tu plan</b><span>Toca «Lo quiero»: se abre la Tienda y yapeas al 928 030 708.</span></span></div>
     <div class="paso"><span class="n">2</span><span><b>Sube tu captura</b><span>Y escribe los 3 números del código de seguridad de tu Yape.</span></span></div>
     <div class="paso"><span class="n">3</span><span><b>Listo</b><span>Tu plan se activa en tu cuenta. Si el pago está en revisión, estudias desde ya con acceso de prueba.</span></span></div>
   </div>
@@ -169,8 +169,7 @@
 
 <script src="assets/mc-config.js"></script>
 <script src="assets/auth.js"></script>
-<script src="assets/planes.js"></script>
-<script src="assets/yape-plan.js"></script>
+<script src="assets/planes.js?v=2"></script>
 <script>
 // Beta: solo el admin (public.es_admin) ve los planes
 (function () {
@@ -240,15 +239,11 @@
     });
   }
   document.querySelectorAll('.periodo button').forEach(function (b) { b.onclick = function () { periodo = b.dataset.p; pintar(); }; });
-  // «Lo quiero» → ventana de Yape (assets/yape-plan.js). Sin ella, sigue abriendo WhatsApp.
+  // «Lo quiero» → Tienda → Accesos con ese plan (ahí se paga con Yape). En la app sigue WhatsApp.
   document.getElementById('planes').addEventListener('click', function (e) {
-    var a = e.target.closest('[data-comprar]'); if (!a || !window.MCYapePlan) return;
-    var p = CFG.planes.filter(function (x) { return x.id === a.dataset.comprar; })[0]; if (!p) return;
+    var a = e.target.closest('[data-comprar]'); if (!a || window.MCEnApp || document.documentElement.classList.contains('mc-app')) return;
     e.preventDefault();
-    var pv = CFG.preventa.activa && p.id === 'total' && periodo === 'ciclo';
-    var an = AREAS.filter(function (x) { return x[0] === area; })[0];
-    MCYapePlan.abrir({ plan: p.id, periodo: periodo, area: p.id === 'area' ? area : null, color: COLOR[p.id],
-      nombre: p.id === 'area' ? 'Plan ' + an[1] : 'Plan ' + p.nombre, precio: pv ? CFG.preventa.precio : p[periodo] });
+    location.href = 'tienda.html?acc=' + encodeURIComponent(a.dataset.comprar) + '&p=' + periodo + (a.dataset.comprar === 'area' ? '&a=' + area : '');
   });
   function todo() {
     CFG.planes.forEach(function (p) { p.top = p.id === 'total'; p.mes = +p.mes || 0; p.ciclo = +p.ciclo || 0; p.si = p.si || []; p.no = p.no || []; });

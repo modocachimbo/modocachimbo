@@ -1,9 +1,11 @@
 -- =========================================================
--- Modo Cachimbo · 146 · Comprar PLANES de acceso con Yape (solo web)
+-- Modo Cachimbo · 146 · Comprar ACCESOS con Yape (Tienda → Accesos, solo web)
 -- (va después de 141, 142 y 143)
 --
--- Igual que las recargas de diamantes, pero el alumno compra un plan
--- de la página Planes (precios.html): Un área o Total, por mes o ciclo.
+-- Igual que las recargas de diamantes, pero el alumno compra un acceso en
+-- Tienda → Accesos: planes (Un área, Total) o extras (Descargas PDF,
+-- Laboratorio, Sin internet), por mes o ciclo. Preventa y descuento salen
+-- de Panel → Web → Planes y precios.
 --   · El precio lo pone el servidor (Panel → Web → Planes y precios).
 --     El alumno no puede cambiarlo.
 --   · Monto bajo (hasta el «tope» del panel → Recargas Yape) y todo normal:
@@ -41,40 +43,55 @@ returns text language sql immutable set search_path = '' as $$
   select coalesce(r.detalle, r.diamantes || ' diamantes')
 $$;
 
--- ---------- Precio y producto de un plan (lo manda el servidor) ----------
+-- ---------- Precio y producto de un plan o extra (lo manda el servidor) ----------
+-- Planes: area (con p_area) · total. Extras: descarga · laboratorio · offline.
+-- Precios: ajustes 'planes' (Panel → Web → Planes y precios). Preventa: Total por ciclo.
+-- Descuento: ajustes planes.descuento {activa, pct} para todo, menos la preventa.
+drop function if exists public.yape_plan_precio(text, text, text) cascade;
 create or replace function public.yape_plan_precio(p_plan text, p_periodo text, p_area text)
-returns table (monto numeric, producto text, dias integer, detalle text)
+returns table (monto numeric, producto text, dias integer, detalle text, antes numeric)
 language plpgsql stable security definer set search_path = '' as $$
 declare
   v jsonb := coalesce((select a.valor from public.ajustes a where a.clave = 'planes'), '{}'::jsonb);
-  pl jsonb; x text; m numeric; pv jsonb := coalesce(v -> 'preventa', '{}'::jsonb);
+  pl jsonb; x text; m numeric; pv jsonb := coalesce(v -> 'preventa', '{}'::jsonb); de jsonb := coalesce(v -> 'descuento', '{}'::jsonb);
   areas text[] := array['matematica', 'ciencia-tecnologia', 'comunicacion', 'ciencias-sociales'];
   nom text[] := array['Matemática', 'Ciencia y Tecnología', 'Comunicación', 'Ciencias Sociales'];
-  k integer;
+  k integer; nombre text; extra boolean := p_plan in ('descarga', 'laboratorio', 'offline'); pct numeric;
 begin
-  if p_plan not in ('area', 'total') or p_periodo not in ('mes', 'ciclo') then return; end if;
-  select e into pl from jsonb_array_elements(case when jsonb_typeof(v -> 'planes') = 'array' then v -> 'planes' else '[]'::jsonb end) e
+  if not (p_plan in ('area', 'total') or extra) or p_periodo not in ('mes', 'ciclo') then return; end if;
+  select e into pl from jsonb_array_elements(case when jsonb_typeof(v -> case when extra then 'extras' else 'planes' end) = 'array'
+                                                  then v -> case when extra then 'extras' else 'planes' end else '[]'::jsonb end) e
    where e ->> 'id' = p_plan limit 1;
+  if extra and coalesce(pl ->> 'activa', 'true') = 'false' then return; end if;
   x := pl ->> p_periodo;
   if x ~ '^\d+(\.\d+)?$' then m := x::numeric;
-  else m := case p_plan || ':' || p_periodo when 'area:mes' then 12.90 when 'area:ciclo' then 34.90 when 'total:mes' then 19.90 else 49.90 end;
-  end if;
-  -- Preventa: Total por ciclo
-  if p_plan = 'total' and p_periodo = 'ciclo' and coalesce(pv ->> 'activa', 'true') = 'true' then
-    x := pv ->> 'precio';
-    m := case when x ~ '^\d+(\.\d+)?$' then x::numeric else 39.90 end;
+  else m := case p_plan || ':' || p_periodo
+    when 'area:mes' then 12.90 when 'area:ciclo' then 34.90 when 'total:mes' then 19.90 when 'total:ciclo' then 49.90
+    when 'descarga:mes' then 5.90 when 'descarga:ciclo' then 14.90 when 'laboratorio:mes' then 4.90 when 'laboratorio:ciclo' then 12.90
+    when 'offline:mes' then 5.90 else 14.90 end;
   end if;
   if m is null or m <= 0 then return; end if;
+  antes := null;
+  if p_plan = 'total' and p_periodo = 'ciclo' and coalesce(pv ->> 'activa', 'true') = 'true' and coalesce(pv ->> 'precio', '39.90') ~ '^\d+(\.\d+)?$' then
+    -- Preventa: Total por ciclo
+    if (coalesce(pv ->> 'precio', '39.90'))::numeric > 0 then
+      if m > (coalesce(pv ->> 'precio', '39.90'))::numeric then antes := m; end if;
+      m := (coalesce(pv ->> 'precio', '39.90'))::numeric;
+    end if;
+  elsif coalesce(de ->> 'activa', 'false') = 'true' and coalesce(de ->> 'pct', '') ~ '^\d+(\.\d+)?$' then
+    pct := (de ->> 'pct')::numeric;
+    if pct > 0 and pct < 91 then antes := m; m := round(m * (100 - pct) / 100, 2); end if;
+  end if;
   dias := case p_periodo when 'mes' then 30 else 90 end;
-  if p_plan = 'total' then
-    producto := 'TODO-VIP,descarga-VIP';
-    detalle := 'Plan Total · ' || case p_periodo when 'mes' then 'mes' else 'ciclo' end;
-  else
+  if p_plan = 'area' then
     k := array_position(areas, p_area);
     if k is null then return; end if;
-    producto := 'area-' || p_area;
-    detalle := 'Plan ' || nom[k] || ' · ' || case p_periodo when 'mes' then 'mes' else 'ciclo' end;
+    producto := 'area-' || p_area; nombre := 'Plan ' || nom[k];
+  else
+    producto := case p_plan when 'total' then 'TODO-VIP,descarga-VIP' when 'descarga' then 'descarga-VIP' when 'laboratorio' then 'laboratorio-VIP' else 'offline-VIP' end;
+    nombre := case p_plan when 'total' then 'Plan Total' when 'descarga' then 'Descargas PDF' when 'laboratorio' then 'Laboratorio' else 'Sin internet' end;
   end if;
+  detalle := nombre || ' · ' || case p_periodo when 'mes' then 'mes' else 'ciclo' end;
   monto := round(m, 2);
   return next;
 end $$;
@@ -248,7 +265,7 @@ grant execute on function public.yape_pedir_plan(text, text, text, text, text) t
 -- Precio que verá el alumno antes de pagar (el mismo que cobra el servidor)
 create or replace function public.yape_plan_ver(p_plan text, p_periodo text, p_area text)
 returns jsonb language sql stable security definer set search_path = '' as $$
-  select jsonb_build_object('monto', x.monto, 'detalle', x.detalle, 'dias', x.dias, 'id', (select j.codigo from public.jugador_id j where j.usuario = auth.uid()))
+  select jsonb_build_object('monto', x.monto, 'antes', x.antes, 'detalle', x.detalle, 'dias', x.dias, 'id', (select j.codigo from public.jugador_id j where j.usuario = auth.uid()))
   from public.yape_plan_precio(p_plan, p_periodo, p_area) x
 $$;
 revoke all on function public.yape_plan_ver(text, text, text) from public, anon;
