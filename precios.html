@@ -169,6 +169,29 @@
   #secExtras, .amigos, #comparar { max-width: 1100px; margin-left: auto; margin-right: auto; }
   h3.sec { font-size: 19px; margin-top: 24px; }
   p.sec { margin-bottom: 10px; }
+  /* Qué incluye cada plan (4 columnas) */
+  #detalle { max-width: 1100px; margin-left: auto; margin-right: auto; }
+  .t4 .fila { grid-template-columns: 1.6fr 1fr 1fr 1fr; }
+  .t4 .fila > div:nth-child(2), .t4 .fila > div:nth-child(3) { background: none; text-align: center; color: var(--t); }
+  .t4 .fila > div:nth-child(4) { background: rgba(198,224,0,.06); text-align: center; }
+  .t4 .fila.cab > div { line-height: 1.1; flex-direction: column; }
+  @media (max-width: 560px) { .t4 .fila.cab b { font-size: 13px; } .t4 .fila.cab small { font-size: 9px; } }
+  .t4 .fila.cab b { display: block; font: 900 15px Nunito, sans-serif; }
+  .t4 .fila.cab small { color: var(--d); font: 800 10.5px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .06em; }
+  .t4 .fila > div > span:not(.ok):not(.nn):not(.beta) { color: var(--d); font-size: 12.5px; font-weight: 700; }
+  .t4 .grupo { padding: 9px 12px; font: 900 12px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .08em; color: var(--l); background: var(--s2); border-top: 1px solid var(--b); }
+  .fila em { font-style: normal; }
+  .fila { align-items: stretch; }
+  .fila > div { display: flex; align-items: center; }
+  .fila > div:not(:first-child) { justify-content: center; text-align: center; }
+  .fila > div:first-child { display: block; align-self: center; }
+  .beta { display: inline-block; vertical-align: 1px; margin-left: 4px; padding: 1px 7px; border-radius: 99px; background: rgba(206,130,255,.16); color: #CE82FF; font: 900 10px Nunito, sans-serif; text-transform: uppercase; letter-spacing: .06em; }
+  @media (max-width: 560px) {
+    .t4 .fila { grid-template-columns: 1.3fr .9fr .9fr .9fr; }
+    .t4 .fila > div { padding: 9px 6px; font-size: 12px; }
+    .t4 .fila > div:first-child { padding-left: 10px; }
+    .t4 .fila .ok em, .t4 .fila .nn em { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -214,6 +237,12 @@
     <span class="ic"><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 4.5a3 3 0 010 6"/><path d="M18 14c2 .6 3.5 2.8 3.5 6"/></svg></span>
     <span><b id="amTit"></b><p id="amTxt"></p></span>
   </div>
+
+  <section id="detalle">
+  <h3 class="sec" id="dtTit"></h3>
+  <p class="sec" id="dtSub"></p>
+  <div class="tabla t4" id="dtTabla"></div>
+  </section>
 
   <section id="comparar">
   <h3 class="sec" id="cmTit"></h3>
@@ -290,8 +319,8 @@
       '<a class="btn2" href="' + wa(p) + '" target="_blank" rel="noopener" data-comprar="' + esc(p.id) + '">Lo quiero</a></div></article>';
   }
   function celda(v) {
-    if (v === true) return '<span class="ok">' + SI + 'Sí</span>';
-    if (v === false) return '<span class="nn">' + NO + 'No</span>';
+    if (v === true) return '<span class="ok">' + SI + '<em>Sí</em></span>';
+    if (v === false) return '<span class="nn">' + NO + '<em>No</em></span>';
     return '<span>' + esc(v) + '</span>';
   }
   function pintar() {
@@ -336,6 +365,17 @@
     document.getElementById('amigos').hidden = !A.activa;
     document.getElementById('amTit').textContent = A.titulo || '';
     document.getElementById('amTxt').textContent = A.texto || '';
+    var D = CFG.detalle || {};
+    document.getElementById('detalle').hidden = !D.activa;
+    document.getElementById('dtTit').textContent = D.titulo || '';
+    document.getElementById('dtSub').textContent = D.sub || '';
+    var nomP = function (id) { var p = CFG.planes.filter(function (x) { return x.id === id; })[0] || {}; return '<b style="color:' + COLOR[id] + '">' + esc(p.rango || p.nombre || '') + '</b><small>' + esc(p.rango ? p.nombre : '') + '</small>'; };
+    document.getElementById('dtTabla').innerHTML = '<div class="fila cab"><div></div><div>' + nomP('gratis') + '</div><div>' + nomP('area') + '</div><div>' + nomP('total') + '</div></div>' +
+      (D.grupos || []).map(function (g) {
+        return '<div class="grupo">' + esc(g.nombre || '') + '</div>' + (g.filas || []).map(function (r) {
+          return '<div class="fila"><div>' + esc(r[0]) + (r[4] === 'beta' ? ' <span class="beta">Beta</span>' : '') + '</div><div>' + celda(r[1]) + '</div><div>' + celda(r[2]) + '</div><div>' + celda(r[3]) + '</div></div>';
+        }).join('');
+      }).join('');
     var C = CFG.comparar;
     document.getElementById('comparar').hidden = !C.activa;
     document.getElementById('cmTit').textContent = C.titulo || '';

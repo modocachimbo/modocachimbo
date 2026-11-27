@@ -14,26 +14,58 @@
     preventa: { activa: true, ciclo: '2027-I', hasta: '30/11', cupos: 100, precio: 39.90 },
     planes: [
       { id: 'gratis', rango: 'Bronce', nombre: 'Gratis', sub: 'Para conocer la app y repasar lo del ciclo pasado.', mes: 0, ciclo: 0,
-        si: ['Leer los Libros', 'Practicar el material de ciclos anteriores', 'Temas fijos de admisión', 'Racha, amigos, clanes y test vocacional', 'Laboratorio: Célula y Tabla periódica'],
-        no: ['Material del ciclo nuevo', 'Repaso, Fijas y Simulacro', 'Descargas PDF'] },
+        si: ['Leer los Libros y practicar ciclos pasados', 'Exámenes pasados y Temas fijos', 'Ranking, racha, amigos y clanes', 'Laboratorio completo y test vocacional'],
+        no: ['Material del ciclo actual', 'Simulacro y duelos', 'Descargas PDF (paquete aparte)'] },
       { id: 'area', rango: 'Amatista', nombre: 'Un área', sub: 'Refuerza solo el área que más te cuesta.', mes: 12.90, ciclo: 34.90,
-        si: ['Todo lo gratis', 'Material nuevo de los cursos del área', 'Repaso, Fijas y Flashcards del área', 'Búho tutor en sus preguntas'],
-        no: ['Simulacro y duelos', 'Descargas PDF'] },
+        si: ['Todo lo gratis', 'Material nuevo de los cursos del área', 'Repaso, Fijas y Flashcards del área', 'Búho tutor en sus preguntas (beta)'],
+        no: ['Simulacro y duelos', 'Descargas PDF (paquete aparte)'] },
       { id: 'total', rango: 'Leyenda', nombre: 'Total', sub: 'Las 4 áreas y todo lo que tiene Modo Cachimbo.', mes: 19.90, ciclo: 49.90,
-        si: ['Las 4 áreas con todo el material nuevo', 'Repaso, Fijas, Flashcards y Banqueo', 'Simulacro de 80 preguntas con puntaje por bloque', 'Duelos y Top de la semana', 'Seminarios, Vocabulario y Biblioteca', 'Descarga en PDF del material nuevo'],
+        si: ['Las 4 áreas con todo el material nuevo', 'Repaso, Fijas, Flashcards y Banqueo', 'Simulacro de 80 preguntas con puntaje por bloque', 'Duelos con amigos', 'Seminarios, Vocabulario y Biblioteca', 'Descargas PDF y Descargas sin internet'],
         no: [] }
     ],
     // Extras que se compran aparte en Tienda → Accesos (solo web). producto: lo que abre (assets/acceso.js)
     extras: [
-      { id: 'descarga', nombre: 'Descargas PDF', sub: 'Descarga tus temas, Fijas y simulacros en PDF, con claves y ficha óptica.', mes: 5.90, ciclo: 14.90, activa: true },
-      { id: 'laboratorio', nombre: 'Laboratorio', sub: 'Todos los simuladores de Física, Química, Matemática y Biología.', mes: 4.90, ciclo: 12.90, activa: true },
-      { id: 'offline', nombre: 'Sin internet', sub: 'Descarga tus cursos al celular y estudia sin señal.', mes: 5.90, ciclo: 14.90, activa: true }
+      { id: 'descarga', nombre: 'Descargas PDF', sub: 'Descarga tus temas, Fijas y simulacros en PDF, con claves y ficha óptica.', mes: 5.90, ciclo: 14.90, activa: true }
     ],
     // Descuento para todo lo de Tienda → Accesos (menos la preventa, que ya tiene su precio)
     descuento: { activa: false, pct: 10, texto: 'Oferta por tiempo limitado' },
     // Ciclos que se cobran y ciclos que se descargan (assets/acceso.js · cicloAnterior / cicloDescarga)
     ciclos: { modo: 'auto', cobrados: [], descarga: { modo: 'auto', lista: [] } },
     amigos: { activa: true, titulo: 'Trae 2 amigos y te regalamos 1 mes', texto: 'Cuando 2 amigos que agregaste en Modo Cachimbo activen un plan, tu acceso suma 30 días más.' },
+    // Qué incluye cada plan (tabla de abajo). Cada fila: [texto, Bronce, Amatista, Leyenda, 'beta'?]
+    // true = sí · false = no · texto = sí, con condición
+    detalle: {
+      activa: true,
+      titulo: 'Qué incluye cada plan',
+      sub: 'Lo de ciclos pasados es gratis para todos. Solo se paga el material del ciclo actual.',
+      grupos: [
+        { nombre: 'Estudiar', filas: [
+          ['Leer los Libros', true, true, true],
+          ['Practicar el material de ciclos pasados', true, true, true],
+          ['Exámenes de admisión pasados', true, true, true],
+          ['Temas fijos de admisión', true, true, true],
+          ['Material del ciclo actual', false, 'Su área', 'Las 4 áreas'],
+          ['Repaso, Fijas y Flashcards', 'Ciclos pasados', 'Su área', 'Las 4 áreas'],
+          ['Búho tutor: resolución paso a paso', 'Ciclos pasados', 'Su área', 'Las 4 áreas', 'beta'],
+          ['Seminarios y Banqueo', false, false, true],
+          ['Vocabulario', false, false, true],
+          ['Biblioteca universitaria', false, false, true],
+          ['Simulacro de 80 preguntas con puntaje por bloque', false, false, true]
+        ] },
+        { nombre: 'Competir', filas: [
+          ['Ranking y Top de la semana', true, true, true],
+          ['Racha, XP y Mi colección', true, true, true],
+          ['Amigos y Clanes', true, true, true],
+          ['Duelos con amigos', false, false, true]
+        ] },
+        { nombre: 'Herramientas', filas: [
+          ['Laboratorio: todos los simuladores', true, true, true],
+          ['Test vocacional', true, true, true],
+          ['Descargas sin internet', false, false, true],
+          ['Descargas PDF', 'Paquete aparte', 'Paquete aparte', true]
+        ] }
+      ]
+    },
     comparar: {
       activa: true,
       titulo: '¿Por qué no un banco en Quizizz?',
@@ -64,6 +96,7 @@
     if (v.preventa) b.preventa = Object.assign(b.preventa, v.preventa);
     if (v.ciclos) { b.ciclos = Object.assign(b.ciclos, v.ciclos); b.ciclos.descarga = Object.assign({ modo: 'auto', lista: [] }, v.ciclos.descarga || {}); }
     if (v.amigos) b.amigos = Object.assign(b.amigos, v.amigos);
+    if (v.detalle) b.detalle = Object.assign(b.detalle, v.detalle);
     if (v.comparar) b.comparar = Object.assign(b.comparar, v.comparar);
     if (v.tienda) b.tienda = Object.assign(b.tienda, v.tienda);
     if (v.descuento) b.descuento = Object.assign(b.descuento, v.descuento);
