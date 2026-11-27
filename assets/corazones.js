@@ -42,6 +42,33 @@
   var estado = null, oyentes = [], nombres = {}, areas = {}, cursosLista = null, conRepaso = false;
   try { estado = JSON.parse(leer(CLAVE) || 'null'); } catch (e) {}
 
+  /* ---------- Corazones infinitos sin internet ----------
+     El estado de arriba vive en sessionStorage: se borra al cerrar la app. Si el alumno tiene
+     infinitos, además se guarda en el teléfono (localStorage) con su fecha de vencimiento, así al
+     abrir la app sin internet los sigue usando hasta esa fecha. Al volver la señal manda el servidor. */
+  var K_INF = 'mc_cz_inf_' + uid;
+  function esInf(e) { return !!(e && e.infinito && e.infinito_hasta && new Date(e.infinito_hasta).getTime() > Date.now()); }
+  function guardarInf(e, t) {
+    try {
+      if (esInf(e)) localStorage.setItem(K_INF, JSON.stringify({ e: e, t: t }));
+      else localStorage.removeItem(K_INF);
+    } catch (x) {}
+  }
+  if (!estado && uid) try {
+    var gi = JSON.parse(localStorage.getItem(K_INF) || 'null');
+    // Si la hora del celular quedó antes de cuando se guardó, la cambiaron: no vale
+    if (gi && esInf(gi.e) && Date.now() > (+gi.t || 0) - 10 * 60000) { estado = gi.e; estado.nuevas = []; }
+    else if (gi) localStorage.removeItem(K_INF);
+  } catch (e) {}
+  // Cuando vencen sin internet, el ∞ vuelve a ser el número de corazones
+  var tVence = null;
+  function vigilarVence() {
+    clearTimeout(tVence);
+    if (!esInf(estado)) return;
+    var falta = new Date(estado.infinito_hasta).getTime() - Date.now();
+    if (falta < 864e5) tVence = setTimeout(function () { if (estado) estado.infinito = false; guardarInf(null); pintar(); cargar(true); }, falta + 1000);
+  }
+
   /* ---------- Íconos propios ---------- */
   var SVG = {
     corazon: '<svg class="mcz-i-cor" viewBox="0 0 24 24" aria-hidden="true"><g class="mcz-late"><path fill="var(--c1,#FF4B4B)" d="M12 21.4s-8.2-4.9-10.1-10C.4 7.3 2.9 3.4 6.7 3.4c2.3 0 3.9 1.3 5.3 3.1 1.4-1.8 3-3.1 5.3-3.1 3.8 0 6.3 3.9 4.8 8-1.9 5.1-10.1 10-10.1 10z"/><path fill="var(--c2,#D93636)" d="M12 21.4s8.2-4.9 10.1-10c.6-1.6.6-3.2.1-4.5-.2 4.3-5 9.6-10.2 12.4-5.2-2.8-10-8.1-10.2-12.4-.5 1.3-.5 2.9.1 4.5C3.8 16.5 12 21.4 12 21.4z"/><path fill="#fff" opacity="var(--c3,.7)" d="M6.5 6.2c-1.7.1-2.8 1.6-2.6 3.3.1.7.9.8 1.1 0 .3-1.1 1-1.8 1.9-2.1.8-.3.5-1.3-.4-1.2z"/><circle fill="#fff" opacity="var(--c3,.7)" cx="8.6" cy="5.6" r=".9"/></g></svg>',
@@ -199,6 +226,7 @@
     delete e.regalos;
     estado = e; recibido = Date.now();
     guardar(CLAVE, JSON.stringify(e)); guardar(CLAVE + '_t', String(recibido));
+    guardarInf(e, recibido); vigilarVence();
     if (e.xp_mult != null) try { localStorage.setItem(K_MULT, JSON.stringify({ m: +e.xp_mult, s: lunesLima() })); } catch (x) {}
     pintar();
     oyentes.forEach(function (fn) { try { fn(estado); } catch (x) {} });
@@ -435,7 +463,13 @@
 
   var cola = Promise.resolve();
   function perder() {
-    if (estado && !estado.infinito) {
+    if (esInf(estado)) {
+      // Infinitos: no se gasta. Sin internet no se anota para después (si llegara cuando ya
+      // vencieron, el servidor lo descontaría de los corazones normales).
+      cola = cola.then(function () { return conTiempo(rpc('perder_corazon'), 15000).then(cambiar, function () {}); });
+      return;
+    }
+    if (estado) {
       var e = {}; for (var k in estado) e[k] = estado[k];
       if (e.quedan === 5) e.proximo = 10800;
       e.quedan = Math.max(0, (e.quedan || 0) - 1);
@@ -448,7 +482,7 @@
   }
 
   function vidasInicio(max) {
-    if (!PAG || !PAG.gasta || !estado) return max;
+    if (!PAG || !PAG.gasta || !estado || esInf(estado)) return max;
     if (estado.quedan <= 0) { bloqueo(); return 0; }
     return Math.min(max, estado.quedan);
   }
@@ -487,8 +521,8 @@
         cont.insertBefore(xp, cont.firstChild); cont.insertBefore(cor, cont.firstChild);
       }
       var arc = window.MC_RECURSOS_ARCADE && cor.closest('.cab');
-      cor.innerHTML = (arc ? icoCorazon() : SVG.corazon) + '<span>' + (estado.infinito ? (arc ? icoInf() : '∞') : estado.quedan) + '</span>';
-      cor.setAttribute('aria-label', (estado.infinito ? 'Corazones infinitos' : estado.quedan + ' corazones') + '. Ver misiones');
+      cor.innerHTML = (arc ? icoCorazon() : SVG.corazon) + '<span>' + (esInf(estado) ? (arc ? icoInf() : '∞') : estado.quedan) + '</span>';
+      cor.setAttribute('aria-label', (esInf(estado) ? 'Corazones infinitos' : estado.quedan + ' corazones') + '. Ver misiones');
       xp.innerHTML = (window.MC_RECURSOS_ARCADE && xp.closest('.cab') ? icoXp() : SVG.xp) + '<span>' + verXp() + '</span>';
       xp.setAttribute('aria-label', verXp() + ' XP esta semana. Canjear');
       cor.classList.toggle('cero', !estado.quedan);
@@ -560,7 +594,7 @@
     Array.prototype.forEach.call(raiz.querySelectorAll('.bc'), function (e) { e.style.setProperty('font-family', "'Barlow Condensed', Nunito, sans-serif", 'important'); });
   }
   function reloj() {
-    if (estado.infinito) return '<div class="mcz-rec lleno">' + SVG.check + 'Corazones infinitos hasta el <b class="bc">' + esc(new Date(estado.infinito_hasta).toLocaleString('es-PE', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })) + '</b></div>';
+    if (esInf(estado)) return '<div class="mcz-rec lleno">' + SVG.check + 'Corazones infinitos hasta el <b class="bc">' + esc(new Date(estado.infinito_hasta).toLocaleString('es-PE', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })) + '</b></div>';
     if (estado.extra) return '<div class="mcz-rec lleno">' + SVG.check + 'Tienes <b class="bc">' + estado.extra + (estado.extra === 1 ? ' corazón extra' : ' corazones extra') + '</b>: se gastan primero y no se pierden a medianoche</div>';
     return estado.quedan < 5 ? '<div class="mcz-rec">' + SVG.reloj + 'Próximo corazón en <b class="bc" id="mczReloj">' + tiempo(estado.proximo) + '</b></div>' : '<div class="mcz-rec lleno">' + SVG.check + 'Tienes tus 5 corazones</div>';
   }
@@ -783,7 +817,7 @@
 
   window.MCCorazones = {
     respuesta: respuesta, sumar: sumar, vidasInicio: vidasInicio, perder: perder, estado: function () { return estado; },
-    infinito: function () { return !!(estado && estado.infinito && new Date(estado.infinito_hasta) > new Date()); },
+    infinito: function () { return esInf(estado); },
     alCambiar: function (fn) { oyentes.push(fn); if (estado) fn(estado); },
     abrirMisiones: abrirMisiones, abrirCanje: abrirCanje, recargar: function () { return cargar(true); }, gasta: !!(PAG && PAG.gasta)
   };
@@ -796,6 +830,7 @@
   })
     .observe(document.body, { childList: true, subtree: true });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { pintar(); }); else pintar();
+  vigilarVence();
   cargar();
   // Regalos al toque: el servidor avisa cuando le dejan uno (supabase/63-regalos-con-aviso.sql
   // pone la tabla regalos en Realtime). Si eso no conecta, se pregunta cada 90 s mientras mira la web.
