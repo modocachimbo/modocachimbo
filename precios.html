@@ -207,6 +207,8 @@
   var SI = '<svg class="i" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
   var NO = '<svg class="i" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg>';
   var QS = new URLSearchParams(location.search);
+  // Vino de la Tienda → «Volver» regresa a la Tienda
+  if (QS.get('de') === 'tienda') { var vb = document.querySelector('.top .x'); if (vb) vb.href = 'tienda.html'; }
   var periodo = QS.get('p') === 'mes' ? 'mes' : 'ciclo', area = QS.get('a') || 'matematica', PEDIDO = QS.get('acc');
   if (!AREAS.some(function (a) { return a[0] === area; })) area = 'matematica';
   var COLOR_X = { descarga: '#FF9600', laboratorio: '#58CC02', offline: '#CE82FF' };
