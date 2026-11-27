@@ -348,10 +348,6 @@
 
   /* ---------- Accesos: ventana con la página Planes (precios.html?embed=1) ---------- */
   .rail .r.acc:not(.on) { border-color: rgba(198,224,0,.45); color: #E8F77A; }
-  .ven.planes { width: min(1100px, 100%); height: calc(100vh - 32px); height: calc(100dvh - 32px); max-height: none; padding: 0; overflow: hidden; background: #0B0818; }
-  .ven.planes iframe { display: block; width: 100%; height: 100%; border: 0; border-radius: inherit; background: #0B0818; }
-  .ven.planes .x { z-index: 2; }
-  @media (max-width: 560px) { .ov.planes-ov { padding: 8px; } .ven.planes { height: calc(100vh - 16px); height: calc(100dvh - 16px); } }
   @media (prefers-reduced-motion: reduce) { .cd *, .rec, .rec *, .rec::after, .ven *, .act * { animation: none !important; } }
 </style>
 <script src="assets/mc-config.js"></script>
@@ -494,14 +490,9 @@
       }).join('') + '</nav><div>' + (cat === 'mis' ? misVista() : '<div class="g">' + l.map(function (it, i) { return tarjeta(it, i); }).join('') + '</div>') + '</div></div>';
     app.innerHTML = h;
   }
-  // ---------- Accesos: ventana con la página Planes (precios.html?embed=1 · se paga con Yape ahí) ----------
-  function abrirPlanes(q) {
-    var o = document.createElement('div'); o.className = 'ov planes-ov';
-    o.innerHTML = '<div class="ven planes" role="dialog" aria-modal="true" aria-label="Planes y accesos"><button type="button" class="x" aria-label="Cerrar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>' +
-      '<iframe src="precios.html?embed=1' + (q || '') + '" title="Planes y accesos"></iframe></div>';
-    o.addEventListener('click', function (e) { if (e.target === o || e.target.closest('.x')) o.remove(); });
-    document.body.appendChild(o);
-  }
+  // ---------- Accesos: página Planes (precios.html · se paga con Yape ahí) ----------
+  // Accesos → la página Planes completa (con «Volver» a la Tienda)
+  function abrirPlanes(q) { location.href = 'precios.html?de=tienda' + (q || ''); }
   if (ACC_ON && (ACC_PEDIDO || QS.has('accesos'))) {
     abrirPlanes(ACC_PEDIDO && /^(area|total|descarga|laboratorio|offline)$/.test(ACC_PEDIDO)
       ? '&acc=' + ACC_PEDIDO + '&p=' + (QS.get('p') === 'mes' ? 'mes' : 'ciclo') + (QS.get('a') ? '&a=' + encodeURIComponent(QS.get('a')) : '') : '');
