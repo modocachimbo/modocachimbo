@@ -10,17 +10,47 @@ const PROD_TODOS = [
   ['TODO-VIP', 'Acceso total'], ['general', 'Acceso general'], ['seminario-VIP', 'Seminarios + Banqueo'], ['vocabulario-VIP', 'Vocabulario'], ['biblioteca-VIP', 'Biblioteca'], ['descarga-VIP', 'Descargas PDF'], ['laboratorio-VIP', 'Laboratorio'], ['offline-VIP', 'Descargas sin internet']
 ];
 const EXTRAS = ['descarga-VIP', 'laboratorio-VIP', 'offline-VIP']; // van aparte: se pueden sumar al Acceso total
+// Cómo se muestran (2026-11-27): planes arriba (Leyenda = Acceso total, que ya trae Sin internet;
+// Amatista = un área), Descargas PDF aparte con 3, 7 o 12 al día, y lo suelto en «Otros accesos».
+// Laboratorio ya no se da: es gratis (supabase/147). Los códigos viejos que lo tengan lo conservan.
+const PROD_PLAN = [['TODO-VIP', 'Leyenda <small>todo + sin internet</small>']];
+const PROD_PDF = [['descarga-VIP', 'Descargas PDF']];
+const PROD_OTROS = [['general', 'Acceso general'], ['seminario-VIP', 'Seminarios + Banqueo'], ['vocabulario-VIP', 'Vocabulario'], ['biblioteca-VIP', 'Biblioteca'], ['offline-VIP', 'Sin internet (solo)']];
+const PDF_DIA = [3, 7, 12];
+// El bloque «¿Qué abre?» de Crear códigos y de Dar acceso por ID
+function bloquePaquetes(multi, pre) {
+  return `<div class="hint pk-t">Plan Leyenda</div>${multi('todos', PROD_PLAN)}
+    <div class="hint pk-t">Plan Amatista · un área <span>(sin Simulacro ni Duelos)</span></div>${multi('areas', AREAS_COD)}
+    <div class="hint pk-t">Descargas PDF <span>(aparte: se suma a cualquier plan)</span></div>${multi('todos', PROD_PDF)}
+    <div class="hint pk-t">Otros accesos</div>${multi('todos', PROD_OTROS)}
+    <div class="hint" id="${pre}Ayuda" style="margin:6px 0 0;"></div>`;
+}
+function chipsPdfDia(pre) {
+  return `<div class="chips" data-pdfdia="${pre}">` + PDF_DIA.map(n => `<button type="button" class="chip" data-n="${n}">${n} al día</button>`).join('') + '</div>';
+}
+function enlazarPdfDia(o, pre) {
+  const inp = o.querySelector('#' + pre + 'LimDia'), box = o.querySelector('[data-pdfdia]');
+  if (!inp || !box) return;
+  const marcar = () => box.querySelectorAll('.chip').forEach(b => b.classList.toggle('on', b.dataset.n === String(inp.value)));
+  box.addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; inp.value = b.dataset.n; marcar(); });
+  inp.addEventListener('input', marcar); marcar();
+}
+if (!document.getElementById('pkCss')) {
+  const css = document.createElement('style'); css.id = 'pkCss';
+  css.textContent = '.pk-t{margin:12px 0 6px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text,#fff)}.pk-t span{font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted,#9a9ab0)}.chip small{font-weight:500;opacity:.7;margin-left:4px}';
+  document.head.appendChild(css);
+}
 const PROD_DESCARGA = 'descarga-VIP';
 const esDescarga = c => String(c && c.producto || '').split(',').includes(PROD_DESCARGA);
 const PROD_AYUDA = {
-  'TODO-VIP': 'Todo: el acceso general, Seminarios, Banqueo, Vocabulario y Biblioteca (las Descargas PDF y el Laboratorio van aparte)',
+  'TODO-VIP': 'Plan Leyenda: todo (las 4 áreas, Simulacro, Duelos, Exámenes, Seminarios, Banqueo, Vocabulario, Biblioteca) y Descargas sin internet. Las Descargas PDF van aparte',
   general: 'Las 4 áreas con todo lo de adentro (práctica, Repaso, Fijas, Libros, Flashcards), Simulacro, Duelos y Exámenes',
   'seminario-VIP': 'Seminarios y Banqueo de todos los cursos',
   'vocabulario-VIP': 'Vocabulario de todos los cursos',
   'biblioteca-VIP': 'Solo la Biblioteca: entrar y leer todos sus libros',
   'laboratorio-VIP': 'Todos los simuladores del Laboratorio sin gastar energía. Va aparte: no viene en el Acceso total',
-  'offline-VIP': 'La tienda de Descargas: bajar los cursos del ciclo actual, simuladores y exámenes para estudiar sin internet. Va aparte: no viene en el Acceso total',
-  'descarga-VIP': 'Descargar en PDF (con marca de agua y N.º único) lo que permitas en Panel → Descargas PDF. Va aparte: no viene en el Acceso total ni abre los temas'
+  'offline-VIP': 'Solo la tienda de Descargas sin internet (Leyenda ya la trae)',
+  'descarga-VIP': 'Descargar en PDF (con marca de agua y N.º único). Va aparte: no viene en ningún plan. Elige 3, 7 o 12 al día abajo'
 };
 const AREAS_COD = [['matematica', 'Matemática'], ['ciencia-tecnologia', 'Ciencia y Tecnología'], ['comunicacion', 'Comunicación'], ['ciencias-sociales', 'Ciencias Sociales']];
 // Link oficial fijo: así el mensaje no muestra el link de una vista previa.
@@ -39,9 +69,9 @@ function mensajeCodigo(c) {
     `\nActívalo aquí: ${SITE_URL} → «Ingresar código»`;
 }
 function etiquetaUno(p) {
-  const fijos = { 'TODO-VIP': 'Acceso total', general: 'Acceso general', 'seminario-VIP': 'Seminarios + Banqueo', duelo: 'Duelos', examenes: 'Exámenes', 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'banqueo-VIP': 'Todo el Banqueo', 'tarjetas-VIP': 'Todas las Flashcards', 'vocabulario-VIP': 'Vocabulario', 'biblioteca-VIP': 'Biblioteca', 'descarga-VIP': 'Descargas PDF', 'offline-VIP': 'Descargas sin internet', 'laboratorio-VIP': 'Laboratorio', simulacro: 'Simulacro' };
+  const fijos = { 'TODO-VIP': 'Leyenda (Acceso total)', general: 'Acceso general', 'seminario-VIP': 'Seminarios + Banqueo', duelo: 'Duelos', examenes: 'Exámenes', 'repaso-VIP': 'Todos los Repasos', 'fijas-VIP': 'Todas las Fijas', 'banqueo-VIP': 'Todo el Banqueo', 'tarjetas-VIP': 'Todas las Flashcards', 'vocabulario-VIP': 'Vocabulario', 'biblioteca-VIP': 'Biblioteca', 'descarga-VIP': 'Descargas PDF', 'offline-VIP': 'Descargas sin internet', 'laboratorio-VIP': 'Laboratorio', simulacro: 'Simulacro' };
   if (fijos[p]) return fijos[p];
-  const ar = AREAS_COD.find(([id]) => 'area-' + id === p); if (ar) return 'Área ' + ar[1];
+  const ar = AREAS_COD.find(([id]) => 'area-' + id === p); if (ar) return 'Amatista · ' + ar[1];
   const m = String(p).match(/^(curso|repaso|fijas|seminario|banqueo|tarjetas|vocabulario)-(.+)$/); if (!m) return p;
   const n = NOMBRE[m[2]] || m[2];
   return { curso: n + ' completo', repaso: 'Repaso de ' + n, fijas: 'Fijas de ' + n, seminario: 'Seminarios de ' + n, banqueo: 'Banqueo de ' + n, tarjetas: 'Flashcards de ' + n, vocabulario: 'Vocabulario de ' + n }[m[1]];
@@ -552,7 +582,7 @@ async function limpiarCuentas() {
 function editarCodigo(orig) {
   // st.todos: paquetes · st.areas: áreas sueltas · st.antes: productos de antes (curso-x, repaso-VIP…), se conservan
   const st = { todos: [], areas: [], antes: [] };
-  String(orig ? orig.producto : 'general').split(',').filter(Boolean).forEach(p => {
+  String(orig ? orig.producto : 'TODO-VIP').split(',').filter(Boolean).forEach(p => {
     if (PROD_TODOS.some(([v]) => v === p)) st.todos.push(p);
     else if (/^area-/.test(p)) st.areas.push(p.slice(5));
     else st.antes.push(p);
@@ -564,14 +594,13 @@ function editarCodigo(orig) {
   o.innerHTML = `<div class="mcard" style="max-width:620px;"><button class="mx" type="button" aria-label="Cerrar">✕</button>
     <div class="eyebrow">${orig ? 'Editar código' : 'Nuevos códigos'}</div>
     <h3>${orig ? esc(orig.codigo) : 'Crear códigos'}</h3>
-    <label class="fld">¿Qué abre? <span class="hint">Puedes marcar varios paquetes</span></label>
-    ${multi('todos', PROD_TODOS, st.todos)}
-    <div class="hint" id="cdAyuda" style="margin:6px 0 0;"></div>
-    <div class="hint" style="margin:12px 0 6px;">O solo un área (sin Simulacro ni Duelos)</div>${multi('areas', AREAS_COD, st.areas)}
+    <label class="fld">¿Qué abre? <span class="hint">Puedes marcar varios</span></label>
+    ${bloquePaquetes((g, ops) => multi(g, ops, g === 'areas' ? st.areas : st.todos), 'cd')}
     ${st.antes.length ? `<div class="hint" style="margin:10px 0 0;">Además abre (de antes): <b>${esc(etiquetaProd(st.antes.join(',')))}</b></div>` : ''}
     <div class="hint" id="cdResumen" style="margin-top:10px;"></div>
     <div id="cdLimBox">
-      <label class="fld">Descargas PDF por día <span class="hint">por alumno · vacío = el límite general de Panel → Descargas PDF</span></label>
+      <label class="fld">Descargas PDF por día <span class="hint">paquete de 3, 7 o 12 · vacío = el límite general de Panel → Descargas PDF</span></label>
+      ${chipsPdfDia('cd')}
       <input class="inp" id="cdLimDia" type="number" min="1" max="500" placeholder="Ej.: 20" value="${orig && CD.limites[orig.codigo] ? CD.limites[orig.codigo] : ''}">
       ${CD.limErr ? `<div class="hint" style="color:var(--red);margin-top:6px;">${esc(CD.limErr)}</div>` : ''}
     </div>
@@ -604,7 +633,7 @@ function editarCodigo(orig) {
     const p = producto(); o.querySelector('#cdResumen').innerHTML = p ? 'Abrirá: <b style="color:#f5ffcc">' + esc(etiquetaProd(p)) + '</b>' : '';
     o.querySelector('#cdLimBox').hidden = !esDescarga({ producto: p });
   };
-  o.querySelector('[data-g="todos"]').addEventListener('click', e => {
+  o.querySelectorAll('[data-g="todos"]').forEach(g => g.addEventListener('click', e => {
     const b = e.target.closest('.chip'); if (!b) return;
     const v = b.dataset.v, i = st.todos.indexOf(v);
     if (i >= 0) st.todos.splice(i, 1); else st.todos.push(v);
@@ -613,7 +642,7 @@ function editarCodigo(orig) {
     else if (v !== 'TODO-VIP' && !EXTRAS.includes(v)) st.todos = st.todos.filter(x => x !== 'TODO-VIP');
     if (v === 'general' && i < 0) st.areas = [];
     pintar();
-  });
+  }));
   o.querySelector('[data-g="areas"]').addEventListener('click', e => {
     const b = e.target.closest('.chip'); if (!b) return;
     const v = b.dataset.v, i = st.areas.indexOf(v);
@@ -622,6 +651,7 @@ function editarCodigo(orig) {
   });
   const sinLim = o.querySelector('#cdSinLim'), max = o.querySelector('#cdMax');
   const syncLim = () => { max.disabled = sinLim.checked; }; sinLim.addEventListener('change', syncLim); syncLim();
+  enlazarPdfDia(o, 'cd');
   pintar();
 
   o.querySelector('#cdSave').addEventListener('click', async () => {
@@ -801,7 +831,7 @@ function darPorId(orig, opts) {
   // opts (desde la Ficha del alumno): { ids: [48213], despues: fn }
   opts = opts || {};
   // orig: editar un acceso ya dado (cambia paquete, fecha, nota o límite sin quitarlo)
-  const st = { todos: orig ? [] : ['seminario-VIP'], areas: [] };
+  const st = { todos: orig ? [] : ['TODO-VIP'], areas: [] };
   if (orig) String(orig.producto || '').split(',').filter(Boolean).forEach(p => {
     if (/^area-/.test(p)) st.areas.push(p.slice(5)); else st.todos.push(p);
   });
@@ -814,13 +844,12 @@ function darPorId(orig, opts) {
     <label class="fld">ID del alumno <span class="hint">Uno o varios: el número de 5 cifras de su tarjeta (Perfil)</span></label>
     <textarea class="inp" id="pidIds" rows="2" placeholder="Ej.: 48217, 10593"></textarea>
     <div class="hint" id="pidQuien" style="margin-top:6px;line-height:1.6;"></div>`}
-    <label class="fld">¿Qué le das? <span class="hint">Puedes marcar varios paquetes</span></label>
-    ${multi('todos', PROD_TODOS)}
-    <div class="hint" id="pidAyuda" style="margin:6px 0 0;"></div>
-    <div class="hint" style="margin:12px 0 6px;">O solo un área (sin Simulacro ni Duelos)</div>${multi('areas', AREAS_COD)}
+    <label class="fld">¿Qué le das? <span class="hint">Puedes marcar varios</span></label>
+    ${bloquePaquetes(multi, 'pid')}
     <div class="hint" id="pidResumen" style="margin-top:10px;"></div>
     <div id="pidLimBox" hidden>
-      <label class="fld">Descargas PDF por día <span class="hint">por alumno · vacío = el límite general de Panel → Descargas PDF</span></label>
+      <label class="fld">Descargas PDF por día <span class="hint">paquete de 3, 7 o 12 · vacío = el límite general de Panel → Descargas PDF</span></label>
+      ${chipsPdfDia('pid')}
       <input class="inp" id="pidLimDia" type="number" min="1" max="500" placeholder="Ej.: 20" value="${orig && orig.limite_dia ? orig.limite_dia : ''}">
     </div>
     <div class="cdgrid">
@@ -867,7 +896,7 @@ function darPorId(orig, opts) {
       catch (er) { o.querySelector('#pidQuien').innerHTML = `<span style="color:var(--red)">${esc(pidError(er))}</span>`; }
     }, 350);
   });
-  o.querySelector('[data-g="todos"]').addEventListener('click', e => {
+  o.querySelectorAll('[data-g="todos"]').forEach(g => g.addEventListener('click', e => {
     const b = e.target.closest('.chip'); if (!b) return;
     const v = b.dataset.v, i = st.todos.indexOf(v);
     if (i >= 0) st.todos.splice(i, 1); else st.todos.push(v);
@@ -875,7 +904,7 @@ function darPorId(orig, opts) {
     else if (v !== 'TODO-VIP' && !EXTRAS.includes(v)) st.todos = st.todos.filter(x => x !== 'TODO-VIP');
     if (v === 'general' && i < 0) st.areas = [];
     pintar();
-  });
+  }));
   o.querySelector('[data-g="areas"]').addEventListener('click', e => {
     const b = e.target.closest('.chip'); if (!b) return;
     const v = b.dataset.v, i = st.areas.indexOf(v);
@@ -884,6 +913,7 @@ function darPorId(orig, opts) {
   });
   const syncMax = () => { const sl = o.querySelector('#pidSinLim').checked, m = o.querySelector('#pidMax'); m.disabled = sl; if (sl) m.value = ''; };
   o.querySelector('#pidSinLim').addEventListener('change', syncMax); syncMax();
+  enlazarPdfDia(o, 'pid');
   pintar();
   if (!orig && opts.ids && opts.ids.length) { const t = o.querySelector('#pidIds'); t.value = opts.ids.join(', '); t.dispatchEvent(new Event('input')); }
   if (!orig) o.querySelector('#pidIds').focus();

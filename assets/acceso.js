@@ -40,8 +40,8 @@
                       Se vende aparte: TODO-VIP no la incluye
      laboratorio-VIP→ Laboratorio: todos los simuladores (supabase/97-laboratorio-rayos.sql).
                       Va aparte, como las Descargas: TODO-VIP no lo incluye
-     offline-VIP    → Descargas sin internet (descargas.html). Va aparte: TODO-VIP no la incluye
-     TODO-VIP       → todo, menos las Descargas PDF, el Laboratorio y las Descargas sin internet
+     offline-VIP    → Descargas sin internet (descargas.html). TODO-VIP (Plan Leyenda) también la abre (2026-11-27)
+     TODO-VIP       → todo (Plan Leyenda), con Descargas sin internet; menos las Descargas PDF y el Laboratorio
      Los códigos de antes (curso-x, repaso-VIP, fijas-x…) siguen abriendo lo suyo. */
   var AREAS = {
     'matematica': ['algebra', 'aritmetica', 'estadistica', 'geometria', 'trigonometria'],
@@ -115,7 +115,7 @@
     x = puerta(x);
     var cat = x.split('-')[0], resto = x.slice(cat.length + 1);
     return String(pc).split(',').some(function (u) {
-      if (u === x || (u === 'TODO-VIP' && cat !== 'descarga' && cat !== 'laboratorio' && cat !== 'offline')) return true;
+      if (u === x || (u === 'TODO-VIP' && cat !== 'descarga' && cat !== 'laboratorio')) return true;
       if (cat === 'area') {
         if (u === 'general' || /^(repaso|fijas|tarjetas)-VIP$/.test(u)) return true;
         var m = /^(curso|repaso|fijas|tarjetas)-(.+)$/.exec(u);
@@ -127,7 +127,7 @@
       if (cat === 'biblioteca') return u === 'biblioteca-VIP';
       if (cat === 'descarga') return u === 'descarga-VIP';
       if (cat === 'laboratorio') return u === 'laboratorio-VIP';
-      if (cat === 'offline') return u === 'offline-VIP';
+      if (cat === 'offline') return u === 'offline-VIP' || u === 'TODO-VIP';
       return false;
     });
   }
