@@ -17,7 +17,7 @@
    Modo Cachimbo · Tienda de descargas (assets/paquetes.js)
    Cursos del ciclo actual, simuladores del Laboratorio y exámenes
    de admisión para usar sin internet. Quién la usa: panel → Descargas
-   PDF → Descargas sin internet (planes.tienda.modo). Solo offline-VIP.
+   PDF → Descargas sin internet (planes.tienda.modo). offline-VIP o TODO-VIP (Plan Leyenda).
    ========================================================= */
 :root{--bg:#06040F;--card:#151127;--card2:#1D1834;--borde:#2A2346;--lima:#C6E000;--lima-osc:#8fa300;--tx:#EEEAF7;--dim:#A99FC8;--faint:#6F6690}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -201,7 +201,7 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
 
 <script src="assets/mc-config.js"></script>
 <script src="assets/auth.js"></script>
-<script src="assets/acceso.js?v=167"></script>
+<script src="assets/acceso.js?v=168"></script>
 <script src="assets/planes.js"></script>
 <script src="assets/lab-rayos.js"></script>
 <script src="assets/lab-catalogo.js"></script>
@@ -227,7 +227,7 @@ function sinRed(){ return navigator.onLine===false; }
 function vigente(x){ if(!x.vence) return true; var d=new Date(x.vence); return isNaN(d)||d.getTime()+86400000>Date.now(); }
 function revisarVip(){
   var si=false;
-  try{ si=window.MCAcceso&&MCAcceso.activos().some(function(x){ return /(^|,)offline-VIP(,|$)/.test(x.producto||'')&&vigente(x); }); }catch(e){}
+  try{ si=window.MCAcceso&&MCAcceso.activos().some(function(x){ return /(^|,)(offline|TODO)-VIP(,|$)/.test(x.producto||'')&&vigente(x); }); }catch(e){}
   if(ST&&ST.equipo) si=true;
   try{ if(localStorage.getItem('mc_desc_admin')==='1') si=true; }catch(e){}
   ES_VIP=si;
