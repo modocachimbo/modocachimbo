@@ -92,7 +92,7 @@
         var ok = i === q.correct;
         return '<div class="opt-row ' + (ok ? 'correct' : '') + '"><div class="letter">' + o.letter + '</div><span class="opt-text">' + formatQText(o.text) + '</span>' + (ok ? CHECK : '') + '</div>';
       }).join('') + '</div>';
-      if (r.derecha) ops = '<div class="mcq-con-der">' + ops + '<div class="mcq-der" style="margin:0;">' + r.derecha + '</div></div>';
+      if (r.derecha) ops = '<div class="mcq-con-der">' + ops + '<div class="mcq-der ' + (/mcq-graf/.test(r.derecha) ? 'mcq-der-graf' : 'mcq-der-img') + '" style="margin:0;">' + r.derecha + '</div></div>';
     }
     var tag = modo === 'examen' && q.asignatura ? (q.tema ? '<div class="qtema con-t"><span class="qtema-x"><span>' + q.asignatura + '</span><small class="qtema-t">' + q.tema + '</small></span></div>' : '<div class="qtema">' + q.asignatura + '</div>') : '';
     div.innerHTML = tag + '<div class="qnum">' + (q.num || idx + 1) + '</div><div class="qtext">' + r.html + '</div>' + (graf ? '<div class="q-graphic">' + graf + '</div>' : '') + ops;

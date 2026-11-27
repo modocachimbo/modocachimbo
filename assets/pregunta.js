@@ -1115,7 +1115,7 @@
     lista.classList.toggle('mcq-cortas', !der && cortas(q.options));
     lista.classList.toggle('mcq-con-der', der);
     if (der) {
-      var fig = document.createElement('div'); fig.className = 'mcq-der'; fig.innerHTML = r.derecha;
+      var fig = document.createElement('div'); fig.className = 'mcq-der ' + (/mcq-graf/.test(r.derecha) ? 'mcq-der-graf' : 'mcq-der-img'); fig.innerHTML = r.derecha;
       fig.style.gridRow = '1 / span ' + Math.max(1, q.options.length);
       lista.appendChild(fig);
     }
@@ -1322,7 +1322,9 @@
     '.mcq-con-der>*{grid-column:1}.mcq-con-der>.mcq-der{grid-column:2;align-self:stretch;background:#fff;border-radius:12px;padding:10px;display:flex;justify-content:center;align-items:center;box-sizing:border-box}' +
     // La imagen derecha toma el alto de las alternativas (no las estira ni las deja pegadas arriba)
     // y el recuadro blanco va justo de la A a la E (igual que la vista previa del panel)
-    '@media (min-width:601px){.mcq-con-der{align-items:stretch;grid-template-columns:minmax(0,1fr) auto}.mcq-con-der>.mcq-der{position:relative;min-height:140px;padding:0;border-radius:14px;aspect-ratio:1/1;max-width:46vw}.mcq-con-der>.opts{display:flex;flex-direction:column;justify-content:space-between}.mcq-con-der>.opts.mcq-cortas{display:grid}.mcq-con-der>.mcq-der img{position:absolute;top:12px;left:12px;width:calc(100% - 24px);height:calc(100% - 24px);max-width:none;max-height:none;object-fit:contain;border-radius:0}' +
+    // Cuadrado con ::before (padding-top:100% = alto igual al ancho): aspect-ratio NO sirve aquí porque
+    // Safari (iPhone/iPad) lo ignora en un elemento estirado de la grilla y la imagen salía con alto 0
+    '@media (min-width:601px){.mcq-con-der{align-items:stretch;grid-template-columns:minmax(0,1fr) minmax(0,43%)}.mcq-con-der>.mcq-der{position:relative;min-height:140px;padding:0;border-radius:14px;display:block}.mcq-con-der>.mcq-der-img::before{content:"";display:block;padding-top:100%}.mcq-con-der>.opts{display:flex;flex-direction:column;justify-content:space-between}.mcq-con-der>.opts.mcq-cortas{display:grid}.mcq-con-der>.mcq-der img{position:absolute;top:12px;left:12px;width:calc(100% - 24px);height:calc(100% - 24px);max-width:none;max-height:none;object-fit:contain;border-radius:0}' +
     '.mcq-con-der>.opts>:last-child{margin-bottom:0}}' +
     '.katex-display{overflow-x:auto;overflow-y:hidden;max-width:100%}.katex .base.mcq-base-ancha{display:block;max-width:100%;overflow-x:auto;overflow-y:hidden;padding-bottom:2px}'+
     '@media (max-width:600px){.mcq-ecs .katex-display{font-size:.85em}}' +
@@ -1335,7 +1337,7 @@
     '@media (max-width:600px){.mcq-cortas{grid-template-columns:repeat(2,minmax(0,1fr))}' +
     '.mcq-con-der{grid-template-columns:minmax(0,1fr)}.mcq-con-der>.mcq-der{grid-column:1;grid-row:auto!important;order:-1;margin-bottom:12px!important}' +
     // En celular el recuadro de la imagen también es cuadrado (la imagen entra completa, sin deformarse)
-    '.mcq-con-der>.mcq-der:not(:has(.mcq-graf)){position:relative;aspect-ratio:1/1;padding:0;border-radius:14px}.mcq-con-der>.mcq-der:not(:has(.mcq-graf)) img{position:absolute;top:12px;left:12px;width:calc(100% - 24px);height:calc(100% - 24px);max-width:none;object-fit:contain;border-radius:0}}';
+    '.mcq-con-der>.mcq-der-img{position:relative;padding:0;border-radius:14px;display:block;align-self:start}.mcq-con-der>.mcq-der-img::before{content:"";display:block;padding-top:100%}.mcq-con-der>.mcq-der-img img{position:absolute;top:12px;left:12px;width:calc(100% - 24px);height:calc(100% - 24px);max-width:none;object-fit:contain;border-radius:0}}';
   document.head.appendChild(st);
 
   // Alternativas cortas en columnas: si alguna no cabe (palabra larga, letra grande),
