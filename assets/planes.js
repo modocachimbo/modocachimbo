@@ -23,9 +23,11 @@
         si: ['Las 4 áreas con todo el material nuevo', 'Repaso, Fijas, Flashcards y Banqueo', 'Simulacro de 80 preguntas con puntaje por bloque', 'Duelos con amigos', 'Seminarios, Vocabulario y Biblioteca', 'Descargas PDF y Descargas sin internet'],
         no: [] }
     ],
-    // Extras que se compran aparte en Tienda → Accesos (solo web). producto: lo que abre (assets/acceso.js)
+    // Extras que se compran aparte en Tienda → Accesos (solo web). Laboratorio es gratis y Sin internet va con Leyenda
     extras: [
-      { id: 'descarga', nombre: 'Descargas PDF', sub: 'Descarga tus temas, Fijas y simulacros en PDF, con claves y ficha óptica.', mes: 5.90, ciclo: 14.90, activa: true }
+      { id: 'descarga', nombre: 'Descargas PDF', sub: 'Descarga tus temas, Fijas y simulacros en PDF, con claves y ficha óptica.', activa: true,
+        // Paquetes de 30 días: n = PDF al día (igual que supabase/147-planes-paquetes-pdf.sql)
+        paquetes: [{ n: 3, precio: 4.90 }, { n: 7, precio: 6.90, tag: 'El más elegido' }, { n: 12, precio: 9.90, tag: 'Mejor precio' }] }
     ],
     // Descuento para todo lo de Tienda → Accesos (menos la preventa, que ya tiene su precio)
     descuento: { activa: false, pct: 10, texto: 'Oferta por tiempo limitado' },
@@ -131,7 +133,11 @@
   function precio(cfg, id, periodo) {
     var p = (cfg.planes || []).concat(cfg.extras || []).filter(function (x) { return x.id === id; })[0];
     if (!p) return null;
-    var m = +p[periodo] || 0, pv = cfg.preventa || {}, d = cfg.descuento || {};
+    // Paquetes de Descargas PDF: periodo 'p3', 'p7', 'p12'…
+    var pq = /^p(\d+)$/.exec(periodo || ''), m;
+    if (pq) { var q = (p.paquetes || []).filter(function (x) { return +x.n === +pq[1]; })[0]; m = q ? +q.precio || 0 : 0; }
+    else m = +p[periodo] || 0;
+    var pv = cfg.preventa || {}, d = cfg.descuento || {};
     if (id === 'total' && periodo === 'ciclo' && pv.activa && +pv.precio > 0) return { monto: +pv.precio, antes: m > +pv.precio ? m : null, preventa: true };
     if (d.activa && +d.pct > 0 && +d.pct < 91 && m > 0) return { monto: Math.round(m * (100 - +d.pct)) / 100, antes: m, preventa: false };
     return { monto: m, antes: null, preventa: false };
