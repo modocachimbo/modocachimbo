@@ -354,6 +354,7 @@
     c.p = c.p.filter(function (x) { return Date.now() - (+x.t || 0) < 14 * 864e5; });
     guardarCola(c);
     if (!c.p.length && !c.h) return;
+    if (!c.h && !c.p.some(function (y) { return !(y.tab === TAB && !y.cerrada && !y.v && PAG); })) return;   // solo la tanda abierta: nada que mandar aún
     try {
       if (Date.now() - (+localStorage.getItem(K_CANDADO) || 0) < 30000) return;   // otra pestaña lo está mandando
       localStorage.setItem(K_CANDADO, String(Date.now()));
@@ -364,8 +365,9 @@
       var c = leerCola();
       try { localStorage.setItem(K_CANDADO, String(Date.now())); } catch (e) {}
       if (c.h > 0) return conTiempo(rpc('perder_corazon'), 15000).then(function (e) { var d = leerCola(); d.h = Math.max(0, d.h - 1); guardarCola(d); cambiar(e); return siguiente(); });
-      if (!c.p.length) return;
-      var x = c.p[0];
+      // La tanda que esta pestaña sigue llenando no se manda (sale al terminar o al salir)
+      var x = c.p.filter(function (y) { return !(y.tab === TAB && !y.cerrada && !y.v && PAG && !saliendo); })[0];
+      if (!x) return;
       x.v = (x.v || 0) + 1; guardarCola(c);   // ya se intentó: no recibe más respuestas
       var p = { fuente: x.fuente, curso: x.curso, ok: x.ok, mal: x.mal, seguidas: x.seguidas || 0, clave: x.k };
       if (x.rep) p.repite = true;
@@ -382,10 +384,13 @@
     }
     siguiente().then(fin, fin);
   }
+  // Mientras practica, las respuestas se juntan en el teléfono (el XP sube al instante en pantalla)
+  // y se mandan todas juntas al terminar la ronda, al salir de la página o al pasar la app a segundo
+  // plano. Antes salía un pedido al servidor casi por cada respuesta: muchos registros (logs) en Supabase.
+  // Tope: una tanda llega a 50 respuestas (lo máximo que acepta sumar_xp) y ahí sí se manda.
   function programar() {
     var c = leerCola(), u = c.p[c.p.length - 1];
-    if (u && u.tab === TAB && u.ok + u.mal >= 10) { cerrarTanda(); vaciarCola(); }
-    else if (!tEnvio) tEnvio = setTimeout(function () { tEnvio = null; cerrarTanda(); vaciarCola(); }, 4000);
+    if (u && u.tab === TAB && u.ok + u.mal >= 50) { cerrarTanda(); vaciarCola(); }
   }
   function respuesta(ok) {
     if (!PAG) return;
