@@ -680,7 +680,7 @@
   // Partida a medias: se guarda en este celular y al volver sigue donde quedó (assets/partida.js)
   const PG_ID = location.pathname + '?' + year;
   // La jugó en otro dispositivo y llegó de la cuenta (assets/partida.js): se ofrece seguir
-  document.addEventListener('mc:partida-nube', ev => { if (ev.detail === PG_ID && startScreen.classList.contains('show') && !document.getElementById('pgSeguirBtn')) pgOfrecer(); });
+  document.addEventListener('mc:partida-nube', ev => { if (ev.detail !== PG_ID || !startScreen.classList.contains('show')) return; const v = document.getElementById('pgSeguirBtn'); if (v) { btnStart.className = v.className; v.remove(); } pgOfrecer(); });
   function pgGuardar() {
     if (window.MCPartida && activeQuestions.length && answers.length) MCPartida.guardar(PG_ID, activeQuestions, { current: current, score: score, lives: lives, answers: answers.slice() });
   }

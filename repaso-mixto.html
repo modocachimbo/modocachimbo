@@ -876,7 +876,7 @@ html[data-modo="claro"] .badge .curso { color: #1A1626 !important; }
   }
   pgOfrecer();
   // La jugó en otro dispositivo y llegó de la cuenta (assets/partida.js): se ofrece seguir
-  document.addEventListener('mc:partida-nube', ev => { if (ev.detail === PG_ID && elegir.classList.contains('show') && !document.getElementById('pgSeguirBtn')) pgOfrecer(); });
+  document.addEventListener('mc:partida-nube', ev => { if (ev.detail !== PG_ID || !elegir.classList.contains('show')) return; const v = document.getElementById('pgSeguirBtn'); if (v) { v.remove(); btnStart.classList.add('primary'); } pgOfrecer(); });
 
   iniciar();
 </script>
