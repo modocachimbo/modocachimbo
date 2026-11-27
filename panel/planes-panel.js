@@ -144,12 +144,13 @@ function renderPlanes(errores) {
       <h3>Extras que se compran aparte <span class="hint">Tienda → Accesos, solo en la web</span></h3>
       ${(v.extras || []).map((x, i) => `<div class="pl-extra">
         <label class="pl-sw"><input type="checkbox" data-x="${i}" data-k="activa" ${x.activa !== false ? 'checked' : ''}> A la venta</label>
-        <div class="pl-cuatro">
-          <div><label class="fld">Nombre</label><input class="inp" maxlength="30" data-x="${i}" data-k="nombre" value="${esc(x.nombre)}"></div>
-          <div><label class="fld">Mensual (S/)</label><input class="inp" type="number" min="0" step="0.10" data-x="${i}" data-k="mes" value="${x.mes}"></div>
-          <div><label class="fld">Ciclo 3 meses (S/)</label><input class="inp" type="number" min="0" step="0.10" data-x="${i}" data-k="ciclo" value="${x.ciclo}"></div>
-          <div><label class="fld">Abre</label><input class="inp" disabled value="${esc({ descarga: 'descarga-VIP', laboratorio: 'laboratorio-VIP', offline: 'offline-VIP' }[x.id] || '')}"></div>
-        </div>
+        <div><label class="fld">Nombre</label><input class="inp" maxlength="30" data-x="${i}" data-k="nombre" value="${esc(x.nombre)}"></div>
+        <label class="fld">Paquetes de 30 días <span class="hint">PDF al día · precio · etiqueta (opcional)</span></label>
+        ${(x.paquetes || []).map((q, j) => `<div class="pl-cuatro">
+          <div><input class="inp" type="number" min="1" max="500" step="1" data-pq="${i}:${j}" data-k="n" value="${q.n}" aria-label="PDF al día"></div>
+          <div><input class="inp" type="number" min="0" step="0.10" data-pq="${i}:${j}" data-k="precio" value="${q.precio}" aria-label="Precio S/"></div>
+          <div style="grid-column:span 2"><input class="inp" maxlength="24" data-pq="${i}:${j}" data-k="tag" value="${esc(q.tag || '')}" placeholder="Ej.: El más elegido"></div>
+        </div>`).join('')}
         <label class="fld">Frase corta</label><input class="inp" maxlength="90" data-x="${i}" data-k="sub" value="${esc(x.sub)}">
       </div>`).join('')}
     </div>
@@ -196,6 +197,11 @@ function renderPlanes(errores) {
     v.extras[+el.dataset.x][el.dataset.k] = el.type === 'checkbox' ? el.checked : el.value;
     plCambio();
   }));
+  body.querySelectorAll('[data-pq]').forEach(el => el.addEventListener('input', () => {
+    const [i, j] = el.dataset.pq.split(':').map(Number);
+    v.extras[i].paquetes[j][el.dataset.k] = el.value;
+    plCambio();
+  }));
   body.querySelectorAll('[data-g]').forEach(el => el.addEventListener(el.type === 'checkbox' ? 'change' : 'input', () => {
     v[el.dataset.g][el.dataset.k] = el.type === 'checkbox' ? el.checked : el.value;
     plCambio();
@@ -236,8 +242,10 @@ async function guardarPlanes() {
     if (p.id !== 'gratis' && (!p.mes || !p.ciclo)) err.push(`${p.nombre || 'Un plan'}: pon el precio mensual y el del ciclo.`);
   });
   (v.extras || []).forEach(x => {
-    x.nombre = String(x.nombre || '').trim(); x.sub = String(x.sub || '').trim(); x.mes = num(x.mes); x.ciclo = num(x.ciclo); x.activa = x.activa !== false;
-    if (x.activa && (!x.mes || !x.ciclo)) err.push(`${x.nombre || 'Un extra'}: pon el precio mensual y el del ciclo.`);
+    x.nombre = String(x.nombre || '').trim(); x.sub = String(x.sub || '').trim(); x.activa = x.activa !== false;
+    delete x.mes; delete x.ciclo;
+    x.paquetes = (x.paquetes || []).map(q => ({ n: parseInt(q.n, 10) || 0, precio: num(q.precio), tag: String(q.tag || '').trim() }));
+    if (x.activa && x.paquetes.some(q => q.n < 1 || q.n > 500 || !q.precio)) err.push(`${x.nombre || 'Descargas PDF'}: cada paquete necesita PDF al día (1 a 500) y precio.`);
   });
   v.descuento.pct = Math.max(1, Math.min(90, parseInt(v.descuento.pct, 10) || 10)); v.descuento.texto = String(v.descuento.texto || '').trim();
   v.preventa.precio = num(v.preventa.precio); v.preventa.cupos = Math.max(0, parseInt(v.preventa.cupos, 10) || 0);

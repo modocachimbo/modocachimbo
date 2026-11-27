@@ -161,7 +161,8 @@
     if (!raiz) return '';
     var x = MCAcceso.puerta(producto || ''), m = /^area-(.+)$/.exec(x), cat = x.split('-')[0], q;
     if (m && MCAcceso.AREAS[m[1]]) q = 'acc=area&a=' + m[1];
-    else if (cat === 'descarga' || cat === 'laboratorio' || cat === 'offline') q = 'acc=' + cat;
+    else if (cat === 'descarga') q = 'acc=descarga';
+    else if (cat === 'laboratorio') q = 'de=lab';
     else q = 'acc=total';
     return raiz + 'precios.html?' + q + '&p=ciclo';
   }

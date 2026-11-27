@@ -133,10 +133,10 @@
 
   function abrir(P) {
     P = P || {};
-    var nombre = P.nombre || (P.plan === 'total' ? 'Plan Total' : 'Plan'), per = P.periodo === 'mes' ? '30 días' : 'Ciclo · 90 días';
+    var nombre = P.nombre || (P.plan === 'total' ? 'Plan Total' : 'Plan'), per = P.periodo === 'mes' ? '30 días' : /^p\d+$/.test(P.periodo || '') ? P.periodo.slice(1) + ' PDF al día · 30 días' : 'Ciclo · 90 días';
     var precio = +P.precio || 0, miId = null;
     function msgWsp(extra) {
-      return 'Hola Modo Cachimbo, quiero el ' + nombre + ' (' + (P.periodo === 'mes' ? 'mensual' : 'por ciclo') + ') por ' + sol(precio) + '.\nMi ID: ' + (miId || '(sin ID)') + (extra || '');
+      return 'Hola Modo Cachimbo, quiero el ' + nombre + ' (' + (P.periodo === 'mes' ? 'mensual' : /^p\d+$/.test(P.periodo || '') ? '30 días' : 'por ciclo') + ') por ' + sol(precio) + '.\nMi ID: ' + (miId || '(sin ID)') + (extra || '');
     }
 
     // App de Play Store: no se cobra por fuera de Google Play
