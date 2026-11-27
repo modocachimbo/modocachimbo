@@ -67,6 +67,7 @@ const YP_LLAVE = 'sb_publishable_clm6obUTs_391NA7FGG1YA_-eNuj7dU';
   .yp-tag.revision, .yp-tag.esperando { color: #FFC800; border-color: rgba(255,200,0,.4); }
   .yp-tag.aprobada { color: #58CC02; border-color: rgba(88,204,2,.45); }
   .yp-tag.rechazada { color: #FF6E6E; border-color: rgba(255,110,110,.45); }
+  .yp-tag.plan { color: #1CB0F6; border-color: rgba(28,176,246,.45); }
   .yp-hora { margin-left: auto; font-size: 12px; color: var(--text-faint); }
   .yp-al { font-size: 13.5px; color: var(--text-dim); overflow-wrap: anywhere; }
   .yp-al b { color: var(--text); }
@@ -167,15 +168,16 @@ function pintarYape() {
   caja.innerHTML = F.map(x => `<div class="rcard yp-card" data-id="${x.id}">
       <div class="yp-cap" data-cap="${esc(x.captura || '')}">${x.captura ? 'Cargando…' : 'Sin captura'}</div>
       <div class="yp-info">
-        <div class="yp-l1"><span class="yp-monto">${ypSol(x.monto)} <small>→ ${(+x.diamantes).toLocaleString('es-PE')} diamantes</small></span>
+        <div class="yp-l1"><span class="yp-monto">${ypSol(x.monto)} <small>→ ${x.plan ? esc(x.detalle || 'Plan') : (+x.diamantes).toLocaleString('es-PE') + ' diamantes'}</small></span>${x.plan ? '<span class="yp-tag plan">Plan</span>' : ''}
           <span class="yp-tag ${x.estado}">${ypEst[x.estado] || x.estado}${x.como === 'auto' ? ' · verificada' : x.como === 'confianza' ? ' · sola' : x.como === 'admin' ? ' · por ti' : ''}</span>
           <span class="yp-hora">#${x.id} · ${ypHora(x.creado)}</span></div>
         <div class="yp-al"><b>${esc(x.apodo || 'Sin apodo')}</b>${x.jid ? ' · ID ' + x.jid : ''} · ${esc(x.email || '')}</div>
         <div class="yp-al">Código de seguridad: <span class="yp-cod">${String(x.codigo || '').split('').map(d => '<span>' + esc(d) + '</span>').join('')}</span></div>
         ${x.aviso ? `<div class="yp-avtx">Aviso de Yape: ${esc(x.aviso)}</div>` : ''}
         ${x.motivo && x.estado === 'revision' ? `<div class="yp-al">Por qué: <b>${esc(x.motivo)}</b></div>` : ''}
+        ${x.plan && x.prueba && x.estado === 'revision' ? '<div class="yp-al">Tiene <b>acceso de prueba hasta mañana</b>. Si rechazas, se le quita.</div>' : ''}
         ${x.nota ? `<div class="yp-al">Nota: ${esc(x.nota)}</div>` : ''}
-        ${x.estado === 'aprobada' && x.como === 'confianza' ? '<div class="yp-acc"><button class="btn-ghost rech" type="button" data-yp="quitar">No me llegó · Quitar diamantes</button></div>' : ''}
+        ${x.estado === 'aprobada' && x.como === 'confianza' ? '<div class="yp-acc"><button class="btn-ghost rech" type="button" data-yp="quitar">No me llegó · ' + (x.plan ? 'Quitar acceso' : 'Quitar diamantes') + '</button></div>' : ''}
         ${x.estado !== 'aprobada' ? `<div class="yp-acc">
           <button class="btn-main" type="button" data-yp="aprobar">Sí me llegó · Aprobar</button>
           ${x.estado !== 'rechazada' ? '<button class="btn-ghost rech" type="button" data-yp="rechazar">No me llegó · Rechazar</button>' : ''}
@@ -209,7 +211,8 @@ async function ypResolver(id, aprobar, btn) {
     const c = await MCAuth.listo;
     const r = await c.rpc('yape_resolver', { p_id: id, p_aprobar: aprobar, p_nota: null });
     if (r.error) throw r.error;
-    toast(aprobar ? 'Aprobada: los diamantes ya están en su cuenta' : btn.dataset.yp === 'quitar' ? 'Se quitaron los diamantes' : 'Recarga rechazada');
+    const esPlan = !!btn.closest('.yp-card')?.querySelector('.yp-tag.plan');
+    toast(aprobar ? (esPlan ? 'Aprobada: el plan ya está activo' : 'Aprobada: los diamantes ya están en su cuenta') : btn.dataset.yp === 'quitar' ? (esPlan ? 'Se quitó el acceso' : 'Se quitaron los diamantes') : 'Recarga rechazada');
     YP.ocupado = false;
     await cargarYape();
   } catch (e) {

@@ -161,15 +161,15 @@
   <h3 class="sec">Cómo activar tu plan</h3>
   <p class="sec">En menos de 5 minutos.</p>
   <div class="como">
-    <div class="paso"><span class="n">1</span><span><b>Elige tu plan</b><span>Toca «Lo quiero» y se abre WhatsApp con tu plan escrito.</span></span></div>
-    <div class="paso"><span class="n">2</span><span><b>Paga con Yape</b><span>Envía la captura del pago por el mismo chat.</span></span></div>
-    <div class="paso"><span class="n">3</span><span><b>Listo</b><span>Te activamos el acceso en tu cuenta (por tu ID) o te mandamos un código.</span></span></div>
+    <div class="paso"><span class="n">1</span><span><b>Elige tu plan</b><span>Toca «Lo quiero»: se abre la Tienda y yapeas al 928 030 708.</span></span></div>
+    <div class="paso"><span class="n">2</span><span><b>Sube tu captura</b><span>Y escribe los 3 números del código de seguridad de tu Yape.</span></span></div>
+    <div class="paso"><span class="n">3</span><span><b>Listo</b><span>Tu plan se activa en tu cuenta. Si el pago está en revisión, estudias desde ya con acceso de prueba.</span></span></div>
   </div>
 </main>
 
 <script src="assets/mc-config.js"></script>
 <script src="assets/auth.js"></script>
-<script src="assets/planes.js"></script>
+<script src="assets/planes.js?v=2"></script>
 <script>
 // Beta: solo el admin (public.es_admin) ve los planes
 (function () {
@@ -222,7 +222,7 @@
       (p.id === 'area' ? '<div class="area-sel">' + AREAS.map(function (a) { return '<button type="button" data-a="' + a[0] + '"' + (a[0] === area ? ' class="on"' : '') + '>' + a[1] + '</button>'; }).join('') + '</div>' : '') +
       '<ul class="lista">' + p.si.map(function (x) { return '<li class="si">' + SI + '<span>' + esc(x) + '</span></li>'; }).join('') +
         p.no.map(function (x) { return '<li class="no">' + NO + '<span>' + esc(x) + '</span></li>'; }).join('') + '</ul>' +
-      (precio ? '<a class="' + (p.top ? 'btn' : 'btn2') + '" href="' + wa(p) + '" target="_blank" rel="noopener">Lo quiero</a>'
+      (precio ? '<a class="' + (p.top ? 'btn' : 'btn2') + '" href="' + wa(p) + '" target="_blank" rel="noopener" data-comprar="' + esc(p.id) + '">Lo quiero</a>'
               : '<a class="btn2" href="index.html">Ya lo tienes</a>') +
       '</article>';
   }
@@ -239,6 +239,12 @@
     });
   }
   document.querySelectorAll('.periodo button').forEach(function (b) { b.onclick = function () { periodo = b.dataset.p; pintar(); }; });
+  // «Lo quiero» → Tienda → Accesos con ese plan (ahí se paga con Yape). En la app sigue WhatsApp.
+  document.getElementById('planes').addEventListener('click', function (e) {
+    var a = e.target.closest('[data-comprar]'); if (!a || window.MCEnApp || document.documentElement.classList.contains('mc-app')) return;
+    e.preventDefault();
+    location.href = 'tienda.html?acc=' + encodeURIComponent(a.dataset.comprar) + '&p=' + periodo + (a.dataset.comprar === 'area' ? '&a=' + area : '');
+  });
   function todo() {
     CFG.planes.forEach(function (p) { p.top = p.id === 'total'; p.mes = +p.mes || 0; p.ciclo = +p.ciclo || 0; p.si = p.si || []; p.no = p.no || []; });
     var P = CFG.preventa, tot = CFG.planes.filter(function (p) { return p.id === 'total'; })[0];

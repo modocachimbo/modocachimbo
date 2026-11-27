@@ -23,6 +23,14 @@
         si: ['Las 4 áreas con todo el material nuevo', 'Repaso, Fijas, Flashcards y Banqueo', 'Simulacro de 80 preguntas con puntaje por bloque', 'Duelos y Top de la semana', 'Seminarios, Vocabulario y Biblioteca', 'Descarga en PDF del material nuevo'],
         no: [] }
     ],
+    // Extras que se compran aparte en Tienda → Accesos (solo web). producto: lo que abre (assets/acceso.js)
+    extras: [
+      { id: 'descarga', nombre: 'Descargas PDF', sub: 'Descarga tus temas, Fijas y simulacros en PDF, con claves y ficha óptica.', mes: 5.90, ciclo: 14.90, activa: true },
+      { id: 'laboratorio', nombre: 'Laboratorio', sub: 'Todos los simuladores de Física, Química, Matemática y Biología.', mes: 4.90, ciclo: 12.90, activa: true },
+      { id: 'offline', nombre: 'Sin internet', sub: 'Descarga tus cursos al celular y estudia sin señal.', mes: 5.90, ciclo: 14.90, activa: true }
+    ],
+    // Descuento para todo lo de Tienda → Accesos (menos la preventa, que ya tiene su precio)
+    descuento: { activa: false, pct: 10, texto: 'Oferta por tiempo limitado' },
     // Ciclos que se cobran y ciclos que se descargan (assets/acceso.js · cicloAnterior / cicloDescarga)
     ciclos: { modo: 'auto', cobrados: [], descarga: { modo: 'auto', lista: [] } },
     amigos: { activa: true, titulo: 'Trae 2 amigos y te regalamos 1 mes', texto: 'Cuando 2 amigos que agregaste en Modo Cachimbo activen un plan, tu acceso suma 30 días más.' },
@@ -58,6 +66,11 @@
     if (v.amigos) b.amigos = Object.assign(b.amigos, v.amigos);
     if (v.comparar) b.comparar = Object.assign(b.comparar, v.comparar);
     if (v.tienda) b.tienda = Object.assign(b.tienda, v.tienda);
+    if (v.descuento) b.descuento = Object.assign(b.descuento, v.descuento);
+    if (Array.isArray(v.extras)) b.extras = b.extras.map(function (p) {
+      var g = v.extras.filter(function (x) { return x && x.id === p.id; })[0];
+      return g ? Object.assign(p, g) : p;
+    });
     if (Array.isArray(v.planes)) b.planes = b.planes.map(function (p) {
       var g = v.planes.filter(function (x) { return x && x.id === p.id; })[0];
       return g ? Object.assign(p, g) : p;
@@ -80,5 +93,16 @@
     return Promise.race([red, espera]).then(function (v) { return mezclar(v || guardado); });
   }
 
-  window.MCPlanes = { base: function () { return copia(BASE); }, mezclar: mezclar, cargar: cargar };
+  // Precio que se cobra (igual que supabase/146-yape-planes.sql · yape_plan_precio)
+  // → { monto, antes (sin descuento, o null), preventa: bool }
+  function precio(cfg, id, periodo) {
+    var p = (cfg.planes || []).concat(cfg.extras || []).filter(function (x) { return x.id === id; })[0];
+    if (!p) return null;
+    var m = +p[periodo] || 0, pv = cfg.preventa || {}, d = cfg.descuento || {};
+    if (id === 'total' && periodo === 'ciclo' && pv.activa && +pv.precio > 0) return { monto: +pv.precio, antes: m > +pv.precio ? m : null, preventa: true };
+    if (d.activa && +d.pct > 0 && +d.pct < 91 && m > 0) return { monto: Math.round(m * (100 - +d.pct)) / 100, antes: m, preventa: false };
+    return { monto: m, antes: null, preventa: false };
+  }
+
+  window.MCPlanes = { base: function () { return copia(BASE); }, mezclar: mezclar, cargar: cargar, precio: precio };
 })();

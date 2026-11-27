@@ -15,6 +15,7 @@ const PL = { v: null, cambios: false, cargado: false };
   .pl-card h3 { font-size: 16px; margin: 0 0 10px; display: flex; align-items: center; gap: 8px; }
   .pl-card h3 i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
   .pl-dos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .pl-extra { padding: 10px 0; border-top: 1px solid var(--border, #2a2346); } .pl-extra:first-of-type { border-top: 0; }
   .pl-cuatro { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
   .pl-card .fld { margin-top: 10px; }
   .pl-card textarea.inp { width: 100%; resize: vertical; font-family: inherit; line-height: 1.45; font-size: 13px; }
@@ -140,6 +141,28 @@ function renderPlanes(errores) {
     </div>
 
     <div class="pcard pl-card pl-sec">
+      <h3>Extras que se compran aparte <span class="hint">Tienda → Accesos, solo en la web</span></h3>
+      ${(v.extras || []).map((x, i) => `<div class="pl-extra">
+        <label class="pl-sw"><input type="checkbox" data-x="${i}" data-k="activa" ${x.activa !== false ? 'checked' : ''}> A la venta</label>
+        <div class="pl-cuatro">
+          <div><label class="fld">Nombre</label><input class="inp" maxlength="30" data-x="${i}" data-k="nombre" value="${esc(x.nombre)}"></div>
+          <div><label class="fld">Mensual (S/)</label><input class="inp" type="number" min="0" step="0.10" data-x="${i}" data-k="mes" value="${x.mes}"></div>
+          <div><label class="fld">Ciclo 3 meses (S/)</label><input class="inp" type="number" min="0" step="0.10" data-x="${i}" data-k="ciclo" value="${x.ciclo}"></div>
+          <div><label class="fld">Abre</label><input class="inp" disabled value="${esc({ descarga: 'descarga-VIP', laboratorio: 'laboratorio-VIP', offline: 'offline-VIP' }[x.id] || '')}"></div>
+        </div>
+        <label class="fld">Frase corta</label><input class="inp" maxlength="90" data-x="${i}" data-k="sub" value="${esc(x.sub)}">
+      </div>`).join('')}
+    </div>
+
+    <div class="pcard pl-card pl-sec">
+      <label class="pl-sw"><input type="checkbox" data-g="descuento" data-k="activa" ${v.descuento && v.descuento.activa ? 'checked' : ''}> Descuento para todos los accesos <span class="hint">menos la preventa</span></label>
+      <div class="pl-dos">
+        <div><label class="fld">Descuento (%)</label><input class="inp" type="number" min="1" max="90" step="1" data-g="descuento" data-k="pct" value="${(v.descuento && v.descuento.pct) || 10}"></div>
+        <div><label class="fld">Texto de la oferta</label><input class="inp" maxlength="50" data-g="descuento" data-k="texto" value="${esc((v.descuento && v.descuento.texto) || '')}"></div>
+      </div>
+    </div>
+
+    <div class="pcard pl-card pl-sec">
       <label class="pl-sw"><input type="checkbox" data-g="amigos" data-k="activa" ${A.activa ? 'checked' : ''}> Mostrar «Trae amigos»</label>
       <label class="fld">Título</label><input class="inp" maxlength="60" data-g="amigos" data-k="titulo" value="${esc(A.titulo)}">
       <label class="fld">Texto</label><input class="inp" maxlength="160" data-g="amigos" data-k="texto" value="${esc(A.texto)}">
@@ -167,6 +190,10 @@ function renderPlanes(errores) {
   body.querySelectorAll('[data-p]').forEach(el => el.addEventListener('input', () => {
     const p = v.planes[+el.dataset.p], k = el.dataset.k;
     p[k] = (k === 'si' || k === 'no') ? el.value.split('\n') : (k === 'mes' || k === 'ciclo') ? el.value : el.value;
+    plCambio();
+  }));
+  body.querySelectorAll('[data-x]').forEach(el => el.addEventListener(el.type === 'checkbox' ? 'change' : 'input', () => {
+    v.extras[+el.dataset.x][el.dataset.k] = el.type === 'checkbox' ? el.checked : el.value;
     plCambio();
   }));
   body.querySelectorAll('[data-g]').forEach(el => el.addEventListener(el.type === 'checkbox' ? 'change' : 'input', () => {
@@ -208,6 +235,11 @@ async function guardarPlanes() {
     if (!p.nombre) err.push('Falta el nombre de un plan.');
     if (p.id !== 'gratis' && (!p.mes || !p.ciclo)) err.push(`${p.nombre || 'Un plan'}: pon el precio mensual y el del ciclo.`);
   });
+  (v.extras || []).forEach(x => {
+    x.nombre = String(x.nombre || '').trim(); x.sub = String(x.sub || '').trim(); x.mes = num(x.mes); x.ciclo = num(x.ciclo); x.activa = x.activa !== false;
+    if (x.activa && (!x.mes || !x.ciclo)) err.push(`${x.nombre || 'Un extra'}: pon el precio mensual y el del ciclo.`);
+  });
+  v.descuento.pct = Math.max(1, Math.min(90, parseInt(v.descuento.pct, 10) || 10)); v.descuento.texto = String(v.descuento.texto || '').trim();
   v.preventa.precio = num(v.preventa.precio); v.preventa.cupos = Math.max(0, parseInt(v.preventa.cupos, 10) || 0);
   if (v.preventa.activa && !v.preventa.precio) err.push('Preventa: pon el precio.');
   if (v.ciclos.modo === 'lista' && !v.ciclos.cobrados.length) err.push('Ciclos: marca al menos un ciclo que se cobra, o elige Automático.');
