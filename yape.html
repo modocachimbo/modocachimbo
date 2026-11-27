@@ -62,10 +62,11 @@
           '<button class="bt no" data-a="no">No me llegó · Rechazar</button>' +
           (a === 'no' ? '<button class="bt si" data-a="si">Sí me llegó · Aprobar</button>' : '');
     } else if (r.estado === 'aprobada') {
-      b = '<button class="bt no" data-a="quitar">No me llegó · Quitar diamantes</button>';
+      b = '<button class="bt no" data-a="quitar">No me llegó · ' + (r.plan ? 'Quitar acceso' : 'Quitar diamantes') + '</button>';
     }
     c.innerHTML = LOGO + '<span class="tag ' + r.estado + '">' + (EST[r.estado] || r.estado) + (r.como === 'confianza' && r.estado === 'aprobada' ? ' sola' : '') + '</span>' +
-      '<div class="monto">' + sol(r.monto) + '</div><div class="dia">' + (+r.diamantes).toLocaleString('es-PE') + ' diamantes</div>' +
+      '<div class="monto">' + sol(r.monto) + '</div><div class="dia">' + (r.plan ? esc(r.detalle || 'Plan') : (+r.diamantes).toLocaleString('es-PE') + ' diamantes') + '</div>' +
+      (r.plan && r.prueba && r.estado === 'revision' ? '<p class="tip">Ya tiene acceso de prueba hasta mañana. Si rechazas, se le quita.</p>' : '') +
       '<div class="datos"><div><span>Alumno</span><b>' + esc(r.apodo || 'Sin apodo') + (r.jid ? ' · ID ' + r.jid : '') + '</b></div>' +
       '<div><span>Código de seguridad</span><b class="cod">' + String(r.codigo || '').split('').map(function (d) { return '<i>' + esc(d) + '</i>'; }).join('') + '</b></div>' +
       '<div><span>Pidió</span><b>' + new Date(r.creado).toLocaleString('es-PE', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) + '</b></div>' +
@@ -79,7 +80,8 @@
     [].forEach.call(c.querySelectorAll('.bt'), function (y) { y.disabled = true; });
     rpc('yape_por_token_resolver', { p_token: tok, p_accion: x.dataset.a }).then(function (r) {
       a = '';
-      pintar(r, { si: 'Listo: los diamantes ya están en su cuenta.', no: 'Listo: la recarga quedó rechazada.', quitar: 'Listo: se quitaron los diamantes.' }[x.dataset.a]);
+      pintar(r, (r && r.plan ? { si: 'Listo: el plan ya está activo en su cuenta.', no: 'Listo: quedó rechazado y se quitó la prueba.', quitar: 'Listo: se quitó el acceso.' }
+        : { si: 'Listo: los diamantes ya están en su cuenta.', no: 'Listo: la recarga quedó rechazada.', quitar: 'Listo: se quitaron los diamantes.' })[x.dataset.a]);
     }, function (er) {
       [].forEach.call(c.querySelectorAll('.bt'), function (y) { y.disabled = false; });
       var m = c.querySelector('.msg') || c.appendChild(document.createElement('p')); m.className = 'msg err'; m.textContent = er.message;

@@ -681,7 +681,7 @@
     rpc('yape_mias').then(function (l) {
       l = (l || []).filter(function (r) { return r.estado !== 'aprobada' || Date.now() - new Date(r.creado) < 864e5; }).slice(0, 3);
       caja.innerHTML = l.map(function (r) {
-        return '<div class="' + r.estado + '"><span>S/ ' + (+r.monto) + ' · ' + nf(r.diamantes) + ' diamantes' + (r.estado === 'rechazada' && r.nota ? ' · ' + esc(r.nota) : '') + '</span><em>' + EST_Y[r.estado] + '</em></div>';
+        return '<div class="' + r.estado + '"><span>S/ ' + (+r.monto) + ' · ' + (r.plan ? esc(r.detalle || 'Plan') : nf(r.diamantes) + ' diamantes') + (r.estado === 'rechazada' && r.nota ? ' · ' + esc(r.nota) : '') + '</span><em>' + EST_Y[r.estado] + '</em></div>';
       }).join('');
     }, function () {});
   }
