@@ -8,7 +8,21 @@
     jspdf: 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
     h2c: 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'
   };
-  var C = { fondo: '#0B0818', tarjeta: '#151127', caja: '#110D20', borde: '#2A2346', lima: '#C6E000', ambar: '#FBBF24', verde: '#25D366', texto: '#EEEAF7', tenue: '#A99FC8', apagado: '#6F6690' };
+  // Mismo estilo que el PDF de los temas (assets/descarga-pdf.js): hoja blanca, tinta azul oscuro y el color del área del curso
+  var C = { fondo: '#FFFFFF', tinta: '#1B2A4A', gris: '#555E70', linea: '#C9CFDA', suave: '#F4F6FA', ambar: '#B7791F', verde: '#1B6E4A', apagado: '#7D8AA0' };
+  var AREA = {
+    comunicacion: { c: '#7B3FC4', o: '#5E2A9E', s: '#F2EAFB', cursos: ['lenguaje', 'literatura', 'raz-verbal'] },
+    matematica: { c: '#0B6BCB', o: '#0A4F94', s: '#E8F1FB', cursos: ['algebra', 'aritmetica', 'geometria', 'trigonometria', 'estadistica'] },
+    ciencia: { c: '#4F7A00', o: '#3D5E00', s: '#EFF6DC', cursos: ['biologia', 'quimica', 'fisica', 'anatomia'] },
+    sociales: { c: '#C25400', o: '#9A4300', s: '#FDF0E3', cursos: ['historia-universal', 'historia-peru', 'geografia', 'psicologia', 'filosofia', 'economia', 'ciudadania'] }
+  };
+  var GENERAL = AREA.matematica;
+  function norm(t) { return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim().replace(/\s+/g, '-'); }
+  function paleta(r) {
+    var k = String(r.carpeta || '').split('/')[0], n = norm(r.curso);
+    for (var a in AREA) if (AREA[a].cursos.indexOf(k) >= 0 || AREA[a].cursos.indexOf(n) >= 0) return AREA[a];
+    return GENERAL;
+  }
   var ANCHO = 900; // px de la hoja que se fotografía
 
   var ICO = {
@@ -42,7 +56,7 @@
   var LOGO = null;
   function logo() {
     if (LOGO) return Promise.resolve(LOGO);
-    return fetch('../assets/img/logo-modo-cachimbo-horizontal.svg').then(function (r) { if (!r.ok) throw 0; return r.text(); })
+    return fetch('../assets/img/logo-modo-cachimbo-horizontal-claro.svg').then(function (r) { if (!r.ok) throw 0; return r.text(); })
       .then(function (t) {
         // Las clases del SVG (.cls-1…) se pasan a fill="" porque html2canvas no lee el <style> interno
         t = t.replace(/<\?xml[^>]*>/, '');
@@ -69,70 +83,73 @@
   }
 
   // Correos y celulares escritos dentro del comentario o la pregunta → barra tapada
-  var TAPA_IN = '<span style="display:inline-block;vertical-align:middle;width:110px;height:14px;border-radius:4px;background:#3A3260;border:1px solid #4A4178;"></span>';
+  var TAPA_IN = '<span style="display:inline-block;vertical-align:middle;width:110px;height:14px;border-radius:4px;background:#C9CFDA;border:1px solid #B4BCCB;"></span>';
   function tapar(txt) {
     return esc(txt)
       .replace(/[\w.+-]+@[\w-]+(\.[\w-]+)+/g, TAPA_IN)
       .replace(/(\+?51[\s-]?)?\b9\d{2}[\s-]?\d{3}[\s-]?\d{3}\b/g, TAPA_IN);
   }
 
-  function barra(w) { return '<span style="display:inline-block;width:' + w + 'px;height:18px;border-radius:5px;background:#3A3260;border:1px solid #4A4178;"></span>'; }
+  function barra(w) { return '<span style="display:inline-block;width:' + w + 'px;height:18px;border-radius:5px;background:#C9CFDA;border:1px solid #B4BCCB;"></span>'; }
 
   function ubicacion(r) {
     return /^examenes\//.test(r.carpeta || '') ? esc(r.anio) : esc(r.anio) + ' · Tema ' + esc(r.tema) + (r.temaNombre ? ' – ' + esc(r.temaNombre) : '');
   }
   function colorEstado(e) { return e === 'Pendiente' ? C.ambar : e === 'Corregido' ? C.verde : C.apagado; }
 
+  var BC = "'Barlow Condensed','Arial Narrow',sans-serif";
   function tarjetaHtml(r) {
-    var pill = 'display:inline-block;font-size:15px;font-weight:800;padding:6px 14px;border-radius:100px;';
-    var caja = 'background:' + C.caja + ';border:1.5px solid #251F3F;border-radius:14px;padding:14px 16px;';
-    var k = 'font-size:12.5px;letter-spacing:1.6px;text-transform:uppercase;color:' + C.apagado + ';font-weight:800;margin-bottom:6px;';
-    var ec = colorEstado(r.estado);
-    return '<div style="background:' + C.tarjeta + ';border:1.5px solid ' + C.borde + ';border-bottom:5px solid ' + (r.estado === 'Pendiente' ? C.ambar : '#2C2549') + ';border-radius:20px;padding:26px 28px;">' +
-      '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;">' +
+    var P = paleta(r), ec = colorEstado(r.estado);
+    var chip = 'display:inline-block;background:#fff;border:1.5px solid ' + C.tinta + ';border-radius:99px;padding:3px 13px;font:900 12px Nunito,Arial;letter-spacing:.06em;text-transform:uppercase;color:' + C.tinta + ';';
+    var k = 'font:800 15px ' + BC + ';letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;';
+    var caja = 'flex:1;border:1.5px solid ' + C.linea + ';border-radius:12px;padding:12px 16px;background:#fff;';
+    return '<div style="border:1.5px solid ' + C.linea + ';border-left:8px solid ' + P.c + ';border-radius:16px;padding:22px 26px;background:#fff;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;">' +
         '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
-          '<span style="' + pill + 'background:rgba(198,224,0,.12);color:' + C.lima + ';">' + esc(r.curso) + '</span>' +
-          '<span style="' + pill + 'background:#221C3B;color:' + C.tenue + ';font-weight:700;">' + ubicacion(r) + '</span>' +
-          '<span style="' + pill + 'background:#221C3B;color:' + ec + ';">' + esc(r.estado) + '</span>' +
+          '<span style="' + chip + 'background:' + P.s + ';border-color:' + P.c + ';color:' + P.o + ';">' + esc(r.curso) + '</span>' +
+          '<span style="' + chip + '">' + ubicacion(r) + '</span>' +
+          '<span style="' + chip + 'border-color:' + ec + ';color:' + ec + ';">' + esc(r.estado) + '</span>' +
         '</div>' +
-        '<span style="font-size:14px;color:' + C.apagado + ';font-weight:600;">' + fecha(r.fecha) + '</span>' +
+        '<span style="font:600 13px Nunito,Arial;color:' + C.gris + ';">Reportado el ' + fecha(r.fecha) + '</span>' +
       '</div>' +
-      '<div class="mcrd-q" style="font-size:19px;line-height:1.6;color:#ECE8F6;margin-bottom:18px;"><b style="color:' + C.lima + ';font-weight:900;margin-right:6px;">P' + esc(r.pregunta) + '</b>' + tapar(r.extracto) + '</div>' +
-      '<div style="display:flex;gap:12px;margin-bottom:' + (r.comentario ? 14 : 18) + 'px;">' +
-        '<div style="flex:1;' + caja + '"><div style="' + k + '">Clave marcada</div><div style="font-size:18px;color:' + C.texto + ';font-weight:700;">' + (tapar(r.marcada) || '—') + '</div></div>' +
-        '<div style="flex:1;' + caja + 'border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.08);"><div style="' + k + '">Alumno sugiere</div><div style="font-size:18px;color:' + C.ambar + ';font-weight:800;">' + (tapar(r.sugerida) || '—') + '</div></div>' +
+      '<div style="font:800 19px ' + BC + ';letter-spacing:.05em;color:' + P.c + ';text-transform:uppercase;margin-bottom:4px;"><span style="display:inline-block;width:10px;height:10px;background:' + C.tinta + ';border-radius:2px;margin-right:8px;vertical-align:2px;"></span>Pregunta ' + esc(r.pregunta) + '</div>' +
+      '<div style="font:400 17px/1.55 Nunito,Arial,sans-serif;color:' + C.tinta + ';margin-bottom:16px;">' + tapar(r.extracto) + '</div>' +
+      '<div style="display:flex;gap:12px;margin-bottom:' + (r.comentario ? 14 : 16) + 'px;">' +
+        '<div style="' + caja + '"><div style="' + k + 'color:' + C.gris + ';">Clave marcada</div><div style="font:800 18px Nunito,Arial;color:' + C.tinta + ';">' + (tapar(r.marcada) || '—') + '</div></div>' +
+        '<div style="' + caja + 'border-color:' + P.c + ';background:' + P.s + ';"><div style="' + k + 'color:' + P.o + ';">Alumno sugiere</div><div style="font:900 18px Nunito,Arial;color:' + P.o + ';">' + (tapar(r.sugerida) || '—') + '</div></div>' +
       '</div>' +
-      (r.comentario ? '<div style="font-size:16px;line-height:1.55;color:' + C.tenue + ';background:' + C.caja + ';border-left:4px solid #352E58;border-radius:0 12px 12px 0;padding:12px 16px;margin-bottom:18px;"><div style="' + k + '">Comentario</div>' + tapar(r.comentario) + '</div>' : '') +
+      (r.comentario ? '<div style="border-left:4px solid ' + P.c + ';background:' + C.suave + ';border-radius:0 10px 10px 0;padding:10px 16px;margin-bottom:16px;"><div style="' + k + 'color:' + C.gris + ';">Comentario del alumno</div><div style="font:400 15.5px/1.55 Nunito,Arial;color:' + C.tinta + ';">' + tapar(r.comentario) + '</div></div>' : '') +
       // Quién lo mandó: siempre tapado
-      '<div style="display:flex;align-items:center;gap:14px;background:#0F0C1C;border:1.5px dashed #3A3260;border-radius:14px;padding:12px 16px;">' +
-        '<span style="flex:none;width:34px;height:34px;border-radius:10px;background:rgba(198,224,0,.12);color:' + C.lima + ';display:flex;align-items:center;justify-content:center;"><span style="width:20px;height:20px;display:block;">' + ICO.ojo + '</span></span>' +
+      '<div style="display:flex;align-items:center;gap:14px;border:1.5px dashed #AEB7C6;border-radius:12px;padding:11px 16px;">' +
+        '<span style="flex:none;width:32px;height:32px;border-radius:9px;background:' + C.tinta + ';color:#fff;display:flex;align-items:center;justify-content:center;"><span style="width:18px;height:18px;display:block;">' + ICO.ojo + '</span></span>' +
         '<div style="flex:1;min-width:0;">' +
-          '<div style="font-size:12.5px;letter-spacing:1.6px;text-transform:uppercase;color:' + C.apagado + ';font-weight:800;margin-bottom:7px;">Reportado por</div>' +
+          '<div style="' + k + 'color:' + C.gris + ';margin-bottom:6px;">Reportado por</div>' +
           '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">' + barra(150) + barra(90) + barra(210) + '</div>' +
         '</div>' +
-        '<span style="flex:none;font-size:13px;font-weight:800;color:' + C.lima + ';">Datos ocultos</span>' +
+        '<span style="flex:none;font:900 12px Nunito,Arial;letter-spacing:.06em;text-transform:uppercase;color:' + C.tinta + ';">Datos ocultos</span>' +
       '</div>' +
     '</div>';
   }
 
-  function cabeceraHtml(titulo, sub, logoSrc) {
-    return '<div style="display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px;">' +
-      (logoSrc ? '<img src="' + logoSrc + '" style="height:46px;width:auto;display:block;">' : '<span style="font-size:26px;font-weight:900;color:' + C.lima + ';">MODO CACHIMBO</span>') +
-      '<div style="text-align:right;">' +
-        '<div style="font-family:\'Barlow Condensed\',\'Arial Narrow\',sans-serif;font-size:30px;font-weight:800;color:' + C.texto + ';text-transform:uppercase;letter-spacing:.5px;line-height:1;">' + esc(titulo) + '</div>' +
-        '<div style="font-size:14px;color:' + C.tenue + ';margin-top:4px;font-weight:600;">' + esc(sub) + '</div>' +
+  function cabeceraHtml(eti, titulo, sub, logoSrc, color) {
+    return '<div style="display:flex;align-items:flex-end;gap:16px;padding-bottom:12px;border-bottom:2.5px solid ' + color + ';margin-bottom:22px;">' +
+      '<div>' + (logoSrc ? '<img src="' + logoSrc + '" style="height:34px;width:auto;display:block;">' : '<span style="font:800 26px ' + BC + ';color:' + C.tinta + ';">MODO CACHIMBO</span>') +
+        '<div style="font:600 14px Nunito,Arial;color:' + C.gris + ';margin-top:5px;">' + esc(sub) + '</div></div>' +
+      '<div style="margin-left:auto;text-align:right;line-height:1.05;">' +
+        '<div style="font:900 11px Nunito,Arial;letter-spacing:.24em;text-transform:uppercase;color:' + color + ';margin-bottom:4px;">' + esc(eti) + '</div>' +
+        '<div style="font:800 30px ' + BC + ';text-transform:uppercase;letter-spacing:.01em;color:' + C.tinta + ';">' + esc(titulo) + '</div>' +
       '</div>' +
     '</div>';
   }
   function pieHtml() {
-    return '<div style="margin-top:20px;display:flex;justify-content:space-between;font-size:13px;color:' + C.apagado + ';font-weight:600;">' +
-      '<span>Los datos del alumno se ocultaron al descargar.</span><span>modocachimbo.github.io</span></div>';
+    return '<div style="margin-top:22px;border-top:1px solid ' + C.linea + ';padding-top:7px;display:flex;justify-content:space-between;font:400 12.5px Nunito,Arial;color:' + C.gris + ';">' +
+      '<span>Descargado el ' + new Date().toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' }) + ' · los datos del alumno se ocultaron</span><span>modocachimbo.github.io</span></div>';
   }
 
   // Arma una hoja fuera de la pantalla y la convierte en lienzo
-  function foto(interior) {
+  function foto(interior, pad) {
     var hoja = document.createElement('div');
-    hoja.style.cssText = 'position:fixed;left:-10000px;top:0;width:' + ANCHO + 'px;box-sizing:border-box;padding:34px 36px 26px;background:' + C.fondo + ';color:' + C.texto + ';font-family:Nunito,Inter,system-ui,sans-serif;';
+    hoja.style.cssText = 'position:fixed;left:-10000px;top:0;width:' + ANCHO + 'px;box-sizing:border-box;padding:' + (pad || '34px 36px 26px') + ';background:#fff;color:' + C.tinta + ';font-family:Nunito,Inter,system-ui,sans-serif;';
     hoja.innerHTML = interior;
     document.body.appendChild(hoja);
     if (window.renderMathInElement) {
@@ -155,14 +172,14 @@
     var PDF = window.jspdf.jsPDF, doc = new PDF({ unit: 'mm', format: 'a4' });
     var W = 210, H = 297, M = 10, ancho = W - 2 * M;
     var y = M, primera = true;
-    function pagina() { if (!primera) doc.addPage(); primera = false; doc.setFillColor(11, 8, 24); doc.rect(0, 0, W, H, 'F'); y = M; }
+    function pagina() { if (!primera) doc.addPage(); primera = false; y = M; }
     pagina();
     lienzos.forEach(function (cv) {
       var alto = cv.height * ancho / cv.width;
       if (alto <= H - 2 * M) {
         if (y + alto > H - M) pagina();
         doc.addImage(cv.toDataURL('image/jpeg', 0.92), 'JPEG', M, y, ancho, alto);
-        y += alto + 4;
+        y += alto;
         return;
       }
       // Muy alta: se corta en tiras del alto de la página
@@ -190,7 +207,7 @@
   function uno(r, formato, btn) {
     trabajando(btn, true);
     return Promise.all([libs(formato === 'pdf'), logo()]).then(function (x) {
-      return foto(cabeceraHtml('Reporte de clave', 'Descargado el ' + new Date().toLocaleDateString('es-PE', { day: '2-digit', month: 'long', year: 'numeric' }), x[1]) + tarjetaHtml(r) + pieHtml());
+      return foto(cabeceraHtml('Reporte de clave', esc(r.curso) ? r.curso + ' · P' + r.pregunta : 'Pregunta ' + r.pregunta, String(r.anio || '') + (r.temaNombre ? ' · ' + r.temaNombre : ''), x[1], paleta(r).c) + tarjetaHtml(r) + pieHtml());
     }).then(function (cv) {
       if (formato === 'pdf') pdfDe([cv], nombreDe(r) + '.pdf');
       else bajar(cv.toDataURL('image/png'), nombreDe(r) + '.png');
@@ -205,13 +222,13 @@
     if (rows.length > 150) { aviso('Son ' + rows.length + ' reportes. Usa un filtro (curso o estado) para bajar 150 o menos.', true); return Promise.resolve(); }
     trabajando(btn, true);
     return Promise.all([libs(true), logo()]).then(function (x) {
-      var cab = cabeceraHtml('Reportes de claves', etiqueta + ' · ' + rows.length + (rows.length === 1 ? ' reporte' : ' reportes'), x[1]);
+      var cab = cabeceraHtml('Reportes de claves', etiqueta, rows.length + (rows.length === 1 ? ' reporte' : ' reportes') + ' · datos del alumno ocultos', x[1], C.tinta);
       var lienzos = [], i = 0;
       function sig() {
         if (i >= rows.length) return lienzos;
         var html = (i === 0 ? cab : '') + tarjetaHtml(rows[i]) + (i === rows.length - 1 ? pieHtml() : '');
         i++;
-        return foto(html).then(function (cv) { lienzos.push(cv); if (btn) btn.lastChild.textContent = ' ' + i + ' de ' + rows.length + '…'; return sig(); });
+        return foto(html, (i === 1 ? '34px' : '6px') + ' 36px ' + (i === rows.length ? '26px' : '6px')).then(function (cv) { lienzos.push(cv); if (btn) btn.lastChild.textContent = ' ' + i + ' de ' + rows.length + '…'; return sig(); });
       }
       return sig();
     }).then(function (lienzos) {
