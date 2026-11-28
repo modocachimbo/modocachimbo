@@ -3,7 +3,7 @@
    Lo edita el admin en Panel → Web → Planes y precios, y se guarda en
    Supabase (tabla ajustes, clave 'planes'). Si nunca se guardó, o no hay
    internet, se usa el ejemplo de abajo (BASE).
-   Cada plan: { id, rango (nombre grande: Bronce/Amatista/Leyenda), nombre, sub, mes, ciclo, si: [...], no: [...] }
+   Cada plan: { id, rango (nombre grande: Bronce/Amatista/Leyenda), nombre, sub, mes, ciclo, vidas (semanas de vidas ilimitadas de regalo, 0 = no), si: [...], no: [...] }
    tabla: [[texto, modo, otro]]  → true = Sí, false = No, texto = detalle
    ========================================================= */
 (function () {
@@ -18,10 +18,10 @@
       { id: 'gratis', rango: 'Bronce', nombre: 'Gratis', sub: 'Para conocer la app y repasar lo del ciclo pasado.', mes: 0, ciclo: 0,
         si: ['Leer los Libros y practicar ciclos pasados', 'Exámenes pasados y Temas fijos', 'Ranking, racha, amigos y clanes', 'Laboratorio completo y test vocacional'],
         no: ['Material del ciclo actual', 'Flashcards y Búho tutor', 'Simulacro y duelos', 'Descargas PDF (paquete aparte)'] },
-      { id: 'area', rango: 'Amatista', nombre: 'Un área', sub: 'Refuerza solo el área que más te cuesta.', mes: 12.90, ciclo: 34.90,
+      { id: 'area', rango: 'Amatista', nombre: 'Un área', sub: 'Refuerza solo el área que más te cuesta.', mes: 12.90, ciclo: 34.90, vidas: 0,
         si: ['Todo lo gratis', 'Material nuevo de los cursos del área', 'Repaso, Fijas y Flashcards del área', 'Biblioteca'],
         no: ['Búho tutor', 'Simulacro y duelos', 'Descargas PDF (paquete aparte)'] },
-      { id: 'total', rango: 'Leyenda', nombre: 'Total', sub: 'Las 4 áreas y todo lo que tiene Modo Cachimbo.', mes: 19.90, ciclo: 49.90,
+      { id: 'total', rango: 'Leyenda', nombre: 'Total', sub: 'Las 4 áreas y todo lo que tiene Modo Cachimbo.', mes: 19.90, ciclo: 49.90, vidas: 2,
         si: ['Las 4 áreas con todo el material nuevo', 'Repaso, Fijas, Flashcards y Banqueo', 'Búho tutor: resolución paso a paso (beta)', 'Simulacro de 80 preguntas con puntaje por bloque', 'Duelos con amigos', 'Seminarios, Vocabulario y Biblioteca', 'Descargas sin internet'],
         no: ['Descargas PDF (paquete aparte)'] }
     ],
