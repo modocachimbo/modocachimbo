@@ -74,6 +74,9 @@
   .precio span { color: var(--d); font-weight: 600; }
   .ahorro { font-size: 12.5px; color: var(--f); min-height: 1.4em; margin-bottom: 12px; }
   .ahorro em { color: var(--l); font-style: normal; font-weight: 700; }
+  .regalo { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; padding: 9px 12px; border-radius: 14px; background: rgba(255,77,109,.10); border: 1px dashed rgba(255,77,109,.55); font-size: 13.5px; line-height: 1.25; }
+  .regalo svg { width: 30px; height: 28px; flex: none; }
+  .regalo b { color: #ff6b85; font-weight: 900; }
   .lista { list-style: none; display: grid; gap: 8px; margin-bottom: 16px; flex: 1; }
   .lista li { display: flex; gap: 9px; align-items: flex-start; font-size: 14px; }
   .lista li svg { margin-top: 1px; }
@@ -261,7 +264,7 @@
 
 <script src="assets/mc-config.js"></script>
 <script src="assets/auth.js"></script>
-<script src="assets/planes.js?v=9"></script>
+<script src="assets/planes.js?v=10"></script>
 <script src="assets/yape-plan.js?v=6"></script>
 <script>
 (function () {
@@ -276,6 +279,8 @@
     total: '<path d="M5 18h14l1.5-10-5 3.5L12 5l-3.5 6.5-5-3.5z"/><path d="M5 21h14"/>'
   };
   var SI = '<svg class="i" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  // Corazón con infinito (regalo de vidas ilimitadas del plan)
+  var CZ = '<svg viewBox="0 0 30 28" aria-hidden="true"><path d="M15 26.5S2 18.6 2 9.6C2 5.4 5.2 2.2 9.2 2.2c2.5 0 4.6 1.3 5.8 3.3 1.2-2 3.3-3.3 5.8-3.3 4 0 7.2 3.2 7.2 7.4 0 9-13 16.9-13 16.9z" fill="#ff4d6d"/><path d="M6.5 7.2c.8-1.6 2.3-2.4 3.8-2.4" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.6" stroke-linecap="round"/><path d="M15 13.2c-1.4-1.6-2.6-2.4-3.9-2.4-1.5 0-2.6 1.1-2.6 2.5s1.1 2.5 2.6 2.5c1.3 0 2.5-.8 3.9-2.6zm0 0c1.4 1.8 2.6 2.6 3.9 2.6 1.5 0 2.6-1.1 2.6-2.5s-1.1-2.5-2.6-2.5c-1.3 0-2.5.8-3.9 2.4z" fill="none" stroke="#fff" stroke-width="1.9" stroke-linejoin="round"/></svg>';
   var NO = '<svg class="i" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg>';
   var QS = new URLSearchParams(location.search);
   // Vino de la Tienda → «Volver» regresa a la Tienda
@@ -312,6 +317,7 @@
       '<div class="precio">' + (precio && x.antes ? '<s>' + sol(x.antes) + '</s>' : '') + '<b>' + (precio ? sol(precio) : 'S/ 0') + '</b><span>' + (precio ? (periodo === 'mes' ? '/ mes' : '/ 3 meses') : 'para siempre') + '</span></div>' +
       '<div class="ahorro">' + ahorro + '</div>' +
       (p.id === 'area' ? '<div class="area-sel">' + AREAS.map(function (a) { return '<button type="button" data-a="' + a[0] + '"' + (a[0] === area ? ' class="on"' : '') + '>' + a[1] + '</button>'; }).join('') + '</div>' : '') +
+      (precio && +p.vidas > 0 ? '<div class="regalo">' + CZ + '<span><b>De regalo:</b> vidas ilimitadas por ' + (+p.vidas === 1 ? '1 semana' : +p.vidas + ' semanas') + '</span></div>' : '') +
       '<ul class="lista">' + p.si.map(function (x) { return '<li class="si">' + SI + '<span>' + esc(x) + '</span></li>'; }).join('') +
         p.no.map(function (x) { return '<li class="no">' + NO + '<span>' + esc(x) + '</span></li>'; }).join('') + '</ul>' +
       (precio ? '<a class="' + (p.top ? 'btn' : 'btn2') + '" href="' + wa(p) + '" target="_blank" rel="noopener" data-comprar="' + esc(p.id) + '">Lo quiero</a>'

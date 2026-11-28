@@ -106,7 +106,9 @@ function renderPlanes(errores) {
         ${p.id === 'gratis' ? '' : `<div class="pl-dos">
           <div><label class="fld">Mensual (S/)</label><input class="inp" type="number" min="0" step="0.10" data-p="${i}" data-k="mes" value="${p.mes}"></div>
           <div><label class="fld">3 meses (S/)</label><input class="inp" type="number" min="0" step="0.10" data-p="${i}" data-k="ciclo" value="${p.ciclo}"></div>
-        </div>`}
+        </div>
+        <label class="fld">Vidas ilimitadas de regalo <span class="hint">semanas · 0 = sin regalo</span></label>
+        <input class="inp" type="number" min="0" max="52" step="1" data-p="${i}" data-k="vidas" value="${+p.vidas || 0}">`}
         <label class="fld">Incluye <span class="hint">una cosa por línea</span></label>
         <textarea class="inp" rows="5" data-p="${i}" data-k="si">${esc((p.si || []).join('\n'))}</textarea>
         <label class="fld">No incluye <span class="hint">sale tachado</span></label>
@@ -284,6 +286,7 @@ async function guardarPlanes() {
   v.planes.forEach(p => {
     p.nombre = String(p.nombre || '').trim(); p.sub = String(p.sub || '').trim();
     p.mes = p.id === 'gratis' ? 0 : num(p.mes); p.ciclo = p.id === 'gratis' ? 0 : num(p.ciclo);
+    if (p.id === 'gratis') delete p.vidas; else p.vidas = Math.max(0, Math.min(52, parseInt(p.vidas, 10) || 0));
     p.si = plLineas(Array.isArray(p.si) ? p.si.join('\n') : p.si); p.no = plLineas(Array.isArray(p.no) ? p.no.join('\n') : p.no);
     if (!p.nombre) err.push('Falta el nombre de un plan.');
     if (p.id !== 'gratis' && ((v.periodos.mes !== false && !p.mes) || (v.periodos.ciclo !== false && !p.ciclo))) err.push(`${p.nombre || 'Un plan'}: pon el precio mensual y el de 3 meses.`);
