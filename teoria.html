@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script src="assets/guardia.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0B0818">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/app/icono-32.png">
+<link rel="apple-touch-icon" href="assets/app/icono-180.png">
+<script src="assets/app.js" defer></script>
+<title>Teoría · Modo Cachimbo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900;1000&family=Barlow+Condensed:ital,wght@1,800;1,900&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" media="print" onload="this.media='all'">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="document.dispatchEvent(new Event('mc:katex'))"></script>
+<style>
+/* Teoría interactiva de CPU: lee <curso>/teoria/<código>.json (se escribe en Panel → Teoría).
+   Cada parte empieza con una pregunta de enganche; los bloques son los mismos de la teoría del Ordinario. */
+:root{--bg:#0B0818;--s:#151127;--s2:#1D1834;--b:#2C2549;--lima:#C6E000;--dim:#A99FC8;--faint:#6F6690;--t:#EEEAF7;--azul:#1CB0F6;--rosa:#FF5FA2;--nar:#FF9600;--mor:#9B6BFF;--verde:#58CC02;--rojo:#E03C3C}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t);font-family:Nunito,system-ui,sans-serif;font-weight:700;min-height:100vh}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:1080px;margin:0 auto;padding:18px max(16px,env(safe-area-inset-right)) 48px max(16px,env(safe-area-inset-left));padding-top:max(18px,env(safe-area-inset-top))}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.top .back{font-weight:900;font-size:17px;display:flex;align-items:center;gap:8px;min-width:0}
+.top .back span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top svg{width:18px;height:18px;flex:none}
+.home{margin-left:4px;width:36px;height:36px;flex:none;border-radius:12px;border:2px solid #322B52;border-bottom-width:4px;display:grid;place-items:center;background:var(--s2)}
+.home svg{width:16px;height:16px}
+.beta{margin-left:auto;font:900 11px Nunito;background:var(--rosa);color:#fff;padding:4px 8px;border-radius:8px;letter-spacing:.05em}
+.disp{font-family:'Barlow Condensed','Arial Narrow',Impact,sans-serif;font-style:italic;font-weight:900;text-transform:uppercase;line-height:.95}
+.hl{color:var(--lima)}
+b,strong{font-weight:900}
+mark{background:none;color:var(--lima);font-weight:900}
+/* inicio del tema */
+.hero{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:linear-gradient(135deg,#1F1840,#151127);border:2px solid var(--b);border-bottom-width:5px;border-radius:24px;padding:18px;position:relative;overflow:hidden}
+.hero .num{color:var(--lima);font-size:22px}
+.hero h1{font-size:40px;margin:2px 0 10px}
+.chip{display:inline-flex;align-items:center;gap:6px;font:900 12px Nunito;padding:5px 10px;border-radius:999px;border:2px solid rgba(198,224,0,.3);color:#D6F23A;background:rgba(198,224,0,.08)}
+.barra{height:12px;border-radius:99px;background:#292245;margin-top:12px;overflow:hidden}
+.barra i{display:block;height:100%;min-width:12px;background:var(--lima);border-radius:99px;position:relative;transition:width .6s ease}
+.barra i::after{content:'';position:absolute;left:6px;right:6px;top:3px;height:3px;border-radius:99px;background:rgba(255,255,255,.35)}
+.prog{font:800 12px Nunito;color:var(--dim);margin-top:6px}
+.hero img{width:110px;filter:drop-shadow(0 8px 10px rgba(0,0,0,.4))}
+.globo{position:absolute;right:170px;top:18px;background:var(--s);border:2px solid var(--b);border-bottom:4px solid var(--lima);border-radius:14px;padding:8px 10px;font-size:12.5px;max-width:170px;display:none}
+.demo{margin-top:12px;font-size:12.5px;color:var(--dim);background:var(--s);border:2px dashed #3a3360;border-radius:14px;padding:10px 12px}
+.sec{display:flex;align-items:center;gap:10px;margin:22px 0 12px}
+.sec h2{font-size:24px}
+.sec::after{content:'';flex:1;height:2px;background:linear-gradient(90deg,#3a3360,transparent)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{position:relative;background:var(--s);border:2px solid var(--b);border-bottom:5px solid var(--ac);border-radius:20px;padding:16px 14px 14px;display:flex;flex-direction:column;gap:8px;overflow:hidden;transition:transform .1s}
+.card:active{transform:translateY(3px)}
+.card::before{content:'';position:absolute;top:0;right:0;width:90px;height:90px;background:linear-gradient(225deg,color-mix(in srgb,var(--ac) 25%,transparent),transparent 60%);pointer-events:none}
+.card .ic{width:52px;height:52px;fill:var(--ac)}
+.card h3{font-size:24px;line-height:1}
+.card p{font-size:13px;color:var(--dim)}
+.mini{height:8px;border-radius:99px;background:#292245;overflow:hidden}.mini i{display:block;height:100%;background:var(--ac);border-radius:99px}
+.btn{margin-top:auto;text-align:center;font:900 14px Nunito;text-transform:uppercase;letter-spacing:.04em;padding:10px;border-radius:14px;background:var(--ac);color:#140F22;border-bottom:4px solid color-mix(in srgb,var(--ac) 60%,#000)}
+.btn.o{background:transparent;color:var(--ac);border:2px solid var(--ac);border-bottom-width:4px}
+.fuentes{display:grid;gap:10px}
+.fu{display:flex;align-items:center;gap:12px;background:var(--s);border:2px solid var(--b);border-bottom-width:4px;border-radius:16px;padding:12px;width:100%;text-align:left}
+.fu .lg{width:44px;height:44px;flex:none;border-radius:12px;display:grid;place-items:center;font:1000 16px Nunito;color:#140F22}
+.fu b{display:block;font-size:15px}.fu small{color:var(--dim);font-size:12px}
+.fu .go{margin-left:auto;color:var(--dim);font-size:20px}
+/* teoría */
+.pasos{display:flex;gap:5px;margin:4px 0 6px}.pasos i{flex:1;height:8px;border-radius:99px;background:#292245;transition:background .3s}.pasos i.on{background:var(--lima)}
+.lec{font-size:30px;margin:12px 0 14px}
+.lec small{display:block;font:900 12px Nunito;font-style:normal;letter-spacing:.08em;color:var(--dim);margin-bottom:4px}
+.blk{background:var(--s);border:2px solid var(--b);border-bottom-width:5px;border-radius:22px;padding:16px;margin-bottom:14px;opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
+.blk.ver{opacity:1;transform:none}
+.blk .et{font:900 12px Nunito;letter-spacing:.08em;text-transform:uppercase;color:var(--lima);display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.blk .et b{background:var(--lima);color:#151A03;min-width:22px;height:22px;padding:0 5px;border-radius:7px;display:grid;place-items:center}
+.blk p{font-size:16px;line-height:1.55;font-weight:800}
+.fig{background:#100C22;border-radius:16px;margin-top:12px;padding:10px;display:grid;place-items:center}
+.fig svg{width:100%;max-width:440px;height:auto;overflow:visible}
+.tjs{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:4px}
+.tj{background:var(--s2);border:2px solid var(--b);border-bottom:4px solid var(--c);border-radius:14px;padding:10px 12px;opacity:0;transform:scale(.9)}
+.tj b{display:block;font-size:15px;color:var(--c)}.tj small{font-size:12px;color:var(--dim);line-height:1.35;display:block;margin-top:3px}
+.ver .tj{animation:pop .4s ease forwards}
+.arbol{display:grid;gap:8px;margin-top:12px;position:relative}
+.raiz{justify-self:center;background:var(--lima);color:#151A03;font:900 14px Nunito;padding:8px 16px;border-radius:12px;opacity:0}
+.ver .raiz{animation:pop .4s ease forwards}
+.ramas{display:grid;gap:8px;position:relative;padding-top:14px}
+.ramas::before{content:'';position:absolute;top:2px;left:12%;right:12%;height:3px;border-radius:3px;background:#3a3360;transform:scaleX(0);transition:transform .6s .3s ease}
+.ver .ramas::before{transform:scaleX(1)}
+.ramas .tj{text-align:center}
+.ojo{border-color:#5a3a10;background:linear-gradient(180deg,#2a1c0c,#1b1328);border-bottom-color:var(--nar)}
+.ojo .et{color:var(--nar)}.ojo .et b{background:var(--nar)}
+.ojo mark{color:#FFC87A}
+.check{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center}
+.check img{width:84px}
+.check .q{font-size:15.5px;font-weight:900;margin-bottom:4px}
+.op{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--s2);border:2px solid #2F284E;border-bottom-width:4px;border-radius:14px;padding:10px 12px;margin-top:8px;font-size:14.5px;font-weight:900;transition:transform .08s}
+.op:active:not([disabled]){transform:translateY(2px)}
+.op .l{width:26px;height:26px;flex:none;border-radius:8px;border:2px solid #3A3360;display:grid;place-items:center;font-size:12px}
+.op.ok{border-color:var(--verde);background:rgba(88,204,2,.12)}.op.ok .l{background:var(--verde);border-color:var(--verde);color:#fff}
+.op.mal{border-color:var(--rojo);background:rgba(224,60,60,.1)}.op.mal .l{background:var(--rojo);border-color:var(--rojo);color:#fff}
+.op[disabled]:not(.ok):not(.mal){opacity:.55}
+.fb{margin-top:10px;font-size:13.5px;border-radius:12px;padding:10px 12px;display:none}
+.fb.si{display:block;background:rgba(88,204,2,.1);color:#9BEA5A}.fb.no{display:block;background:rgba(224,60,60,.1);color:#ffb3b3}
+.nav{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;margin-top:6px}
+.nav button,.nav a{text-align:center;padding:13px;border-radius:16px;font:900 14px Nunito;text-transform:uppercase;border:2px solid #322B52;border-bottom-width:5px;color:#cfcfcf;background:#1F1936}
+.nav .p{background:var(--lima);color:#151A03;border-color:var(--lima);border-bottom-color:#8fa300}
+.nav button:disabled{opacity:.35}
+/* ejercicios y extra */
+.ej{border-bottom-color:var(--azul)}
+.ej .et{color:var(--azul)}.ej .et b{background:var(--azul);color:#fff}
+.alts{display:grid;gap:6px;margin-top:10px}
+.alt{display:flex;gap:10px;align-items:center;background:var(--s2);border:2px solid #2F284E;border-radius:12px;padding:8px 10px;font-size:14px}
+.alt i{font-style:normal;width:24px;height:24px;flex:none;border-radius:7px;border:2px solid #3A3360;display:grid;place-items:center;font-size:12px;font-weight:900}
+.alt.clave{border-color:var(--verde);background:rgba(88,204,2,.1)}.alt.clave i{background:var(--verde);border-color:var(--verde);color:#fff}
+/* Ejercicios: Modo estudio | Practicar, ojo de claves y Descargar (como en CPU) */
+.modos{display:flex;align-items:center;gap:8px;margin:-2px 0 16px;flex-wrap:wrap}
+.seg{display:flex;background:var(--s);border:2px solid var(--b);border-bottom-width:4px;border-radius:16px;padding:4px;gap:4px}
+.seg a{display:flex;align-items:center;gap:6px;padding:8px 13px;border-radius:11px;font:900 13px Nunito;text-transform:uppercase;letter-spacing:.03em;color:var(--dim)}
+.seg a svg{width:16px;height:16px;flex:none}
+.seg a.on{background:var(--azul);color:#fff}
+.ojo-btn{width:46px;height:46px;flex:none;border-radius:14px;border:2px solid var(--b);border-bottom-width:4px;background:var(--s2);display:grid;place-items:center;color:var(--azul)}
+.ojo-btn svg{width:24px;height:24px}
+.ojo-btn.off{color:var(--faint)}
+.pdf-btn{margin-left:auto;display:inline-flex;align-items:center;gap:7px;height:46px;padding:0 14px;border-radius:14px;border:2px solid var(--azul);border-bottom-width:4px;color:var(--azul);font:900 13px Nunito;text-transform:uppercase;letter-spacing:.03em}
+.pdf-btn svg{width:18px;height:18px;flex:none}
+.sin-claves .alt.clave{border-color:#2F284E;background:var(--s2)}.sin-claves .alt.clave i{background:none;border-color:#3A3360;color:inherit}
+.ej .op.ok,.ej .op.mal{opacity:1}
+@media(max-width:520px){.seg a{padding:8px 10px}.seg .lg2{display:none}.pdf-btn{font-size:0;gap:0;padding:0 12px}.pdf-btn svg{width:20px;height:20px}}
+.ej .res{margin-top:12px}
+.paso{display:flex;gap:10px;margin-top:10px;align-items:flex-start}
+.paso>i{flex:none;width:26px;height:26px;border-radius:50%;background:var(--azul);color:#fff;display:grid;place-items:center;font:900 13px Nunito;font-style:normal}
+.paso p{font-size:14.5px}
+.paso.off{display:none}
+.paso.nuevo{animation:sube .4s ease}
+.ej .nav{margin-top:14px}
+.ej .nav .p{background:var(--azul);border-color:var(--azul);border-bottom-color:#0A6FB0;color:#fff}
+.ex{border-bottom-color:var(--c)}
+.ex .et{color:var(--c)}.ex .et b{background:var(--c);color:#140F22}
+.aviso{display:none;max-width:420px;margin:60px auto 0;padding:30px 24px;text-align:center;border-radius:24px;background:var(--s);border:2px solid #322B52;border-bottom:5px solid var(--lima)}
+.aviso b{display:block;font-size:24px;font-weight:900}.aviso p{color:var(--dim);margin:8px 0 16px}
+.aviso a{display:inline-block;background:var(--lima);color:#151A03;font-weight:900;padding:10px 18px;border-radius:12px}
+.cargando{color:var(--dim);text-align:center;padding:60px 0}
+/* animaciones de las figuras */
+.fig .dib{stroke-dasharray:900;stroke-dashoffset:900}
+.ver .fig .dib{animation:dibuja 1.6s ease forwards}
+.fig .ap{opacity:0}
+.ver .fig .ap{animation:aparece .5s ease forwards}
+.ver .fig .gota{animation:gota 2.4s 1.6s ease-in-out infinite}
+@keyframes dibuja{to{stroke-dashoffset:0}}
+@keyframes aparece{to{opacity:1}}
+@keyframes pop{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
+@keyframes sube{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes gota{0%{transform:translate(0,0);opacity:1}70%{transform:translate(0,34px);opacity:1}100%{transform:translate(0,40px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.blk,.tj,.raiz,.fig .ap{opacity:1!important;transform:none!important;animation:none!important}.fig .dib{stroke-dashoffset:0!important;animation:none!important}}
+@media(min-width:900px){
+ .grid{grid-template-columns:repeat(4,1fr)}
+ .hero{padding:24px 28px}.hero h1{font-size:54px}.hero img{width:150px}.globo{display:block}
+ .cols{display:grid;grid-template-columns:1.15fr 1fr;gap:16px;align-items:start}
+ .fuentes{grid-template-columns:repeat(3,1fr)}
+ .ramas.n3{grid-template-columns:repeat(3,1fr)}.ramas.n2{grid-template-columns:repeat(2,1fr)}
+}
+@media(min-width:520px){.ramas.n3{grid-template-columns:repeat(3,1fr)}.ramas.n2{grid-template-columns:repeat(2,1fr)}}
+/* ---- Teoría interactiva (CPU) ---- */
+.top .back{cursor:pointer}
+.ruta{display:grid;gap:10px;position:relative}
+.ruta::before{content:'';position:absolute;left:27px;top:24px;bottom:24px;width:4px;border-radius:4px;background:#2C2549}
+.pt{display:flex;gap:12px;align-items:center;position:relative;width:100%;text-align:left}
+.pt .nd{width:58px;height:58px;flex:none;border-radius:50%;display:grid;place-items:center;font:1000 20px Nunito;background:var(--s2);border:3px solid #3a3360;color:var(--faint);z-index:1}
+.pt .nd svg{width:24px;height:24px}
+.pt.ok .nd{background:var(--lima);border-color:#8fa300;color:#151A03}
+.pt.act .nd{background:var(--s);border-color:var(--lima);color:var(--lima);box-shadow:0 0 0 6px rgba(198,224,0,.15)}
+.pt .tx{flex:1;min-width:0;background:var(--s);border:2px solid var(--b);border-bottom-width:4px;border-radius:16px;padding:10px 12px}
+.pt.act .tx{border-color:var(--lima)}
+.pt .tx b{display:block;font-size:15px}.pt .tx small{color:var(--dim);font-size:12.5px;display:block;margin-top:2px;line-height:1.35}
+.pt .tx .gan{color:var(--lima);font-size:12px;margin-top:5px;font-weight:900}
+.pt.lock{opacity:.5;pointer-events:none}
+.cta{display:block;width:100%;margin-top:16px;text-align:center;padding:14px;border-radius:16px;font:900 15px Nunito;text-transform:uppercase;letter-spacing:.04em;background:var(--lima);color:#151A03;border:2px solid var(--lima);border-bottom:5px solid #8fa300}
+.cta.o{background:#1F1936;color:#e6e6e6;border-color:#322B52}
+.gancho{background:linear-gradient(160deg,#2b1a52,#151127 70%);border:2px solid #4a3a85;border-bottom:5px solid var(--rosa);border-radius:24px;padding:16px;margin-bottom:14px;animation:sube .4s ease}
+.gancho .et{font:900 12px Nunito;letter-spacing:.08em;text-transform:uppercase;color:var(--rosa);display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.gancho .et b{background:var(--rosa);color:#fff;min-width:22px;height:22px;border-radius:7px;display:grid;place-items:center}
+.gancho .q{font-size:19px;font-weight:1000;line-height:1.3;margin:2px 0 6px}
+.nose{display:block;width:100%;text-align:center;margin-top:10px;padding:11px;border-radius:14px;border:2px dashed #4a3a85;color:var(--dim);font:900 14px Nunito}
+.nota{font-size:12px;color:var(--faint);text-align:center;margin-top:8px}
+.pista{display:flex;gap:10px;align-items:center;background:rgba(255,95,162,.08);border:2px solid rgba(255,95,162,.35);border-radius:16px;padding:10px 12px;margin-bottom:14px;font-size:13.5px}
+.pista img{width:48px;flex:none}
+.pista .l{color:var(--rosa)}
+.formula{margin-top:10px;background:#100C22;border-radius:14px;padding:14px 12px;text-align:center;font:1000 22px Nunito;color:var(--lima);overflow-x:auto}
+.formula small{display:block;font:800 12.5px Nunito;color:var(--dim);margin-top:6px}
+.blk p+p{margin-top:10px}
+.pasos-l{display:grid;gap:8px;margin-top:6px;counter-reset:p}
+.pasos-l div{display:flex;gap:10px;align-items:flex-start;background:var(--s2);border:2px solid var(--b);border-radius:14px;padding:9px 11px;font-size:14.5px}
+.pasos-l div::before{counter-increment:p;content:counter(p);flex:none;width:24px;height:24px;border-radius:8px;background:var(--lima);color:#151A03;display:grid;place-items:center;font:900 12px Nunito}
+.dato{border-color:#173a5a;background:linear-gradient(180deg,#0f2236,#151127);border-bottom-color:var(--azul)}
+.dato .et{color:var(--azul)}.dato .et b{background:var(--azul);color:#fff}
+.img{margin-top:10px;border-radius:14px;overflow:hidden;background:#100C22}
+.img img{display:block;width:100%;height:auto}
+.pie{font-size:12.5px;color:var(--dim);margin-top:8px;text-align:center}
+.lab{border-bottom-color:var(--azul)}
+.lab .et{color:var(--azul)}.lab .et b{background:var(--azul);color:#fff}
+.lab a{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;padding:12px;border-radius:14px;background:var(--azul);color:#fff;font:900 14px Nunito;text-transform:uppercase;border-bottom:4px solid #0A6FB0}
+.lab a svg{width:18px;height:18px}
+.mcq-graf,.fig .mcq-graf{width:100%}
+.reve{border-radius:24px;padding:16px;margin-bottom:14px;border:2px solid #4a3a85;border-bottom:5px solid var(--rosa);background:linear-gradient(160deg,#2b1a52,#151127 75%)}
+.reve.si{background:linear-gradient(160deg,#16361a,#151127 75%);border-color:#2f6b1e;border-bottom-color:var(--verde)}
+.reve.no{background:linear-gradient(160deg,#3a1a24,#151127 75%);border-color:#6b2f3c;border-bottom-color:var(--rojo)}
+.reve .t2{display:flex;gap:12px;align-items:center}
+.reve img{width:74px;flex:none}
+.reve small{display:block;font:900 12px Nunito;letter-spacing:.08em;color:var(--dim);text-transform:uppercase}
+.reve h3{font:1000 20px Nunito}
+.reve.si h3{color:#9BEA5A}.reve.no h3{color:#ffb3b3}
+.reve p{font-size:15px;line-height:1.5;font-weight:800;margin-top:10px}
+.reve .ver-r{display:block;width:100%;margin-top:12px;padding:12px;border-radius:14px;background:var(--rosa);color:#fff;font:900 14px Nunito;text-transform:uppercase;border-bottom:4px solid #b8336e}
+.sig{background:var(--s);border:2px dashed #4a3a85;border-radius:16px;padding:12px;margin-bottom:12px;font-size:13.5px;color:var(--dim)}
+.sig b{color:var(--rosa);display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px}
+.sig span{color:var(--t);font-size:15px;font-weight:900}
+.premio{display:flex;gap:8px;margin:14px 0}
+.premio div{flex:1;background:var(--s);border:2px solid var(--b);border-bottom-width:4px;border-radius:16px;padding:12px 6px;text-align:center}
+.premio b{display:block;font:1000 24px Nunito;color:var(--lima)}
+.premio small{color:var(--dim);font-size:12px}
+.fin{text-align:center;padding-top:10px}
+.fin img{width:150px;filter:drop-shadow(0 8px 10px rgba(0,0,0,.4))}
+.fin h1{font-size:42px;margin:6px 0}
+.fin p{color:var(--dim);font-size:15px}
+.borrador{background:var(--rosa);color:#fff;font:900 12px Nunito;text-align:center;padding:6px;border-radius:10px;margin-bottom:12px;letter-spacing:.04em}
+.katex{font-size:1.05em}
+@media(min-width:900px){.ruta{max-width:760px}.fin{max-width:640px;margin:0 auto}}
+</style>
+<script src="assets/mc-config.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/pregunta.js"></script>
+<script src="assets/teoria.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <div id="app"><p class="cargando">Cargando teoría…</p></div>
+</div>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var CURSO = (q.get('curso') || '').replace(/[^a-z0-9-]/g, '');
+  var COD = (q.get('c') || '').toLowerCase().replace(/[^a-z0-9-]/g, '');
+  var BORRADOR = q.get('borrador') === '1';
+  var VOLVER = q.get('volver') || '';
+  if (!/^[a-z0-9-]+\/libros\/tema\.html\?[A-Za-z0-9=&%.-]*$/.test(VOLVER)) VOLVER = CURSO ? CURSO + '/libros/index.html' : 'index.html';
+  var app = document.getElementById('app');
+  var D = null, P = [], NOMBRE = '', AREA = 'ciencia-tecnologia';
+  var LET = 'ABCDE', COLORES = ['#C6E000', '#1CB0F6', '#9B6BFF', '#FF5FA2', '#FF9600', '#58CC02'];
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  // **negrita**, ==resaltado== (lima); las fórmulas $…$ las dibuja KaTeX después
+  function tx(s) { return esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/==(.+?)==/g, '<mark>$1</mark>').replace(/\n/g, '<br>'); }
+  function son(n) { try { if (window.MCSonido && MCSonido[n]) MCSonido[n](); } catch (e) {} }
+  function buho(c) { return 'assets/buho/disfraces/' + AREA + '-' + c + '.webp'; }
+  function av() { return BORRADOR ? (window.__avBorrador = window.__avBorrador || {}) : MCTeoria.avance(CURSO, COD); }
+  function guardarAv(a) { if (!BORRADOR) MCTeoria.guardarAvance(CURSO, COD, a); }
+  var FLECHA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>';
+  var CASA = '<svg viewBox="0 0 24 24" fill="#e6e6e6"><path d="M12 2 1 12h3v9h6v-6h4v6h6v-9h3z"/></svg>';
+  var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>';
+  var CANDADO = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 10V8a5 5 0 0 1 10 0v2h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2zm2 0h6V8a3 3 0 0 0-6 0z"/></svg>';
+  var MATRAZ = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/><path d="M7.5 15h9"/></svg>';
+
+  function ap(d) { return ' class="ap" style="animation-delay:' + d + 's"'; }
+  var FIG = {
+    glucosa: function () {
+      var ys = [50, 72, 94, 116, 138, 160], s = '<svg viewBox="0 0 440 210" role="img" aria-label="La glucosa pasa de cadena abierta a anillo">';
+      s += '<path class="dib" d="M46 50V160" stroke="#3a3360" stroke-width="4" fill="none"/>';
+      ys.forEach(function (y, i) { s += '<g' + ap(.15 * i) + '><circle cx="46" cy="' + y + '" r="7" fill="#1CB0F6"/><text x="14" y="' + (y + 5) + '" font-family="Nunito" font-weight="900" font-size="13" fill="#A99FC8">C' + (i + 1) + '</text></g>'; });
+      s += '<text x="58" y="42" font-family="Nunito" font-weight="1000" font-size="13" fill="#FF9600"' + ap(1) + '>CHO</text><text x="10" y="196" font-family="Nunito" font-weight="900" font-size="12" fill="#A99FC8">Cadena abierta</text>';
+      s += '<g' + ap(1.1) + '><path d="M104 105h66" stroke="#C6E000" stroke-width="4" stroke-linecap="round"/><path d="M162 94l12 11-12 11" stroke="#C6E000" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><text x="104" y="88" font-family="Nunito" font-weight="900" font-size="12" fill="#C6E000">en agua</text></g>';
+      s += '<g transform="translate(310 100)"><path class="dib" style="animation-delay:1.3s" d="M-62 -6 L-32 -44 L32 -44 L62 -6 L32 30 L-32 30 Z" fill="none" stroke="#C6E000" stroke-width="5" stroke-linejoin="round"/>';
+      s += '<path d="M-62 -6 L-32 -44 L32 -44 L62 -6 L32 30 L-32 30 Z" fill="#C6E000" fill-opacity=".12"' + ap(2.6) + '/>';
+      s += '<g' + ap(2.4) + '><circle cx="32" cy="-44" r="10" fill="#FF5FA2"/><text x="32" y="-40" text-anchor="middle" font-family="Nunito" font-weight="1000" font-size="12" fill="#fff">O</text></g>';
+      s += '<g font-family="Nunito" font-weight="900" font-size="12" fill="#7FD8FF"' + ap(2.6) + '><text x="68" y="-2">C1</text><text x="36" y="48">C2</text><text x="-52" y="48">C3</text><text x="-90" y="-2">C4</text><text x="-50" y="-52">C5</text></g>';
+      s += '<g' + ap(2.9) + '><path d="M-32 -44 L-40 -70" stroke="#A99FC8" stroke-width="2.5"/><text x="-78" y="-74" font-family="Nunito" font-weight="900" font-size="12" fill="#EEEAF7">CH₂OH</text></g>';
+      s += '<text x="-50" y="80" font-family="Nunito" font-weight="900" font-size="12" fill="#A99FC8"' + ap(2.9) + '>Anillo de glucosa</text></g></svg>';
+      return s;
+    },
+    enlace: function () {
+      function hexa(x, col, txt, d) {
+        return '<g transform="translate(' + x + ' 92)"' + ap(d) + '><path d="M-40 -4 L-20 -30 L20 -30 L40 -4 L20 22 L-20 22 Z" fill="' + col + '" fill-opacity=".18" stroke="' + col + '" stroke-width="4" stroke-linejoin="round"/><text y="2" text-anchor="middle" font-family="Nunito" font-weight="1000" font-size="12" fill="#EEEAF7">' + txt + '</text></g>';
+      }
+      var s = '<svg viewBox="0 0 440 190" role="img" aria-label="Dos monosacáridos se unen y sale agua">';
+      s += hexa(110, '#C6E000', 'Glucosa', 0) + hexa(330, '#FF9600', 'Fructosa', .3);
+      s += '<path class="dib" style="animation-delay:.8s" d="M150 88 H290" stroke="#EEEAF7" stroke-width="5" stroke-linecap="round" fill="none"/>';
+      s += '<g' + ap(1.6) + '><circle cx="220" cy="88" r="11" fill="#FF5FA2"/><text x="220" y="92" text-anchor="middle" font-family="Nunito" font-weight="1000" font-size="12" fill="#fff">O</text><text x="220" y="62" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="12" fill="#FF5FA2">enlace glucosídico</text></g>';
+      s += '<g class="gota"' + ap(1.6) + '><path d="M220 112 c-8 12 -10 18 -10 22 a10 10 0 0 0 20 0 c0-4 -2-10 -10-22z" fill="#1CB0F6"/><text x="238" y="132" font-family="Nunito" font-weight="1000" font-size="13" fill="#7FD8FF">H₂O</text></g>';
+      s += '<text x="220" y="184" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="12" fill="#A99FC8"' + ap(2) + '>= Sacarosa + agua</text></svg>';
+      return s;
+    },
+    trigliceridos: function () {
+      var s = '<svg viewBox="0 0 440 200" role="img" aria-label="Glicerol unido a tres ácidos grasos">';
+      s += '<g' + ap(0) + '><rect x="30" y="30" width="70" height="140" rx="14" fill="#FF9600" fill-opacity=".18" stroke="#FF9600" stroke-width="4"/><text x="65" y="105" text-anchor="middle" font-family="Nunito" font-weight="1000" font-size="13" fill="#FFC87A">Glicerol</text></g>';
+      [55, 100, 145].forEach(function (y, i) {
+        var zz = 'M110 ' + y;
+        for (var k = 0; k < 9; k++) zz += ' L' + (140 + k * 30) + ' ' + (y + (k % 2 ? 10 : -10));
+        s += '<g' + ap(.4 + .3 * i) + '><circle cx="112" cy="' + y + '" r="8" fill="#FF5FA2"/></g>';
+        s += '<path class="dib" style="animation-delay:' + (.5 + .3 * i) + 's" d="' + zz + '" stroke="#C6E000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
+      });
+      s += '<text x="112" y="24" font-family="Nunito" font-weight="900" font-size="12" fill="#FF5FA2"' + ap(1.4) + '>enlaces éster</text>';
+      s += '<text x="400" y="190" text-anchor="end" font-family="Nunito" font-weight="900" font-size="12" fill="#C6E000"' + ap(1.6) + '>3 ácidos grasos</text></svg>';
+      return s;
+    }
+  };
+
+
+  function cab(t, atras) {
+    return (BORRADOR ? '<div class="borrador">VISTA PREVIA · así lo verá el alumno</div>' : '') +
+      '<div class="top"><a class="back" href="' + esc(atras) + '">' + FLECHA + '<span>' + esc(t) + '</span></a>' +
+      (BORRADOR ? '' : '<a class="home" href="index.html" aria-label="Ir al inicio">' + CASA + '</a>') + '</div>';
+  }
+
+  // ---------- Inicio: la ruta de partes ----------
+  function inicio() {
+    var a = av(), vista = Math.min(P.length, a.vista || 0), pct = Math.round(vista / P.length * 100);
+    var H = cab(NOMBRE + ' · Teoría', BORRADOR ? '#' : VOLVER);
+    H += '<div class="hero"><div><div class="disp num">' + esc(NOMBRE) + ' · Teoría</div><h1 class="disp">' + esc(D.titulo) + '</h1>' +
+      '<span class="chip">' + P.length + (P.length === 1 ? ' parte' : ' partes') + ' con preguntas de enganche</span>' +
+      '<div class="barra"><i style="width:' + pct + '%"></i></div><div class="prog">' + vista + ' de ' + P.length + ' partes</div></div><img src="' + buho('feliz') + '" alt=""></div>';
+    H += '<div class="sec"><h2 class="disp">Tu ruta del tema</h2></div><div class="ruta">';
+    P.forEach(function (p, i) {
+      var est = i < vista ? 'ok' : i === Math.min(vista, P.length - 1) ? 'act' : 'lock';
+      if (a.fin && i === P.length - 1) est = 'ok';
+      var gan = p.enganche ? p.enganche.pregunta : '';
+      H += '<a class="pt ' + est + '" href="#p/' + i + '"><span class="nd">' + (est === 'ok' ? CHECK : est === 'lock' ? CANDADO : (i + 1)) + '</span><span class="tx"><b>' + esc(p.titulo) + '</b>' +
+        (gan ? '<small>' + tx(gan) + '</small>' : '') + (est === 'act' ? '<span class="gan">' + (gan ? 'Toca para descubrirlo' : 'Toca para empezar') + '</span>' : '') + '</span></a>';
+    });
+    H += '</div><a class="cta" href="#p/' + Math.min(vista, P.length - 1) + '">' + (a.fin ? 'Repasar desde el inicio' : vista ? 'Continuar' : 'Empezar') + '</a>';
+    return H;
+  }
+
+  // ---------- Bloques ----------
+  function et(n, t) { return '<div class="et"><b>' + n + '</b>' + esc(t) + '</div>'; }
+  function pregBtns(b, ya, correcta) {
+    return b.opciones.map(function (o, k) {
+      var cl = ya != null ? (k === correcta ? ' ok' : k === ya ? ' mal' : '') : '';
+      return '<button class="op' + cl + '" data-k="' + k + '"' + (ya != null ? ' disabled' : '') + '><span class="l">' + LET[k] + '</span>' + tx(o) + '</button>';
+    }).join('');
+  }
+  function bloque(b, i, n) {
+    if (b.tipo === 'ojo') return '<div class="blk ojo">' + et('!', 'Ojo, cae en el examen') + b.parrafos.map(function (x) { return '<p>' + tx(x) + '</p>'; }).join('') + '</div>';
+    if (b.tipo === 'dato') return '<div class="blk dato">' + et('i', '¿Sabías que…?') + b.parrafos.map(function (x) { return '<p>' + tx(x) + '</p>'; }).join('') + '</div>';
+    if (b.tipo === 'check') {
+      return '<div class="blk" data-check="' + i + '">' + et('?', '¿Entendiste?') + '<div class="check"><img src="' + buho('pensativo') + '" alt=""><div><div class="q">' + tx(b.pregunta) + '</div>' +
+        pregBtns(b) + '</div></div><div class="fb"></div></div>';
+    }
+    if (b.tipo === 'concepto') return '<div class="blk">' + et(n, b.titulo) + b.parrafos.map(function (x) { return '<p>' + tx(x) + '</p>'; }).join('') + '</div>';
+    if (b.tipo === 'formula') return '<div class="blk">' + et(n, 'Fórmula') + '<div class="formula">' + tx(b.f) + (b.nota ? '<small>' + tx(b.nota) + '</small>' : '') + '</div></div>';
+    if (b.tipo === 'tarjetas') return '<div class="blk">' + et(n, b.titulo || 'Recuerda') + '<div class="tjs">' + b.items.map(function (t, k) { return '<div class="tj" style="--c:' + COLORES[k % COLORES.length] + ';animation-delay:' + (.12 * k) + 's"><b>' + tx(t.t) + '</b>' + (t.d ? '<small>' + tx(t.d) + '</small>' : '') + '</div>'; }).join('') + '</div></div>';
+    if (b.tipo === 'arbol') return '<div class="blk">' + et(n, 'Clasificación') + '<div class="arbol"><span class="raiz">' + tx(b.raiz) + '</span><div class="ramas n' + b.items.length + '">' + b.items.map(function (t, k) { return '<div class="tj" style="--c:' + COLORES[k % COLORES.length] + ';animation-delay:' + (.5 + .15 * k) + 's"><b>' + tx(t.t) + '</b>' + (t.d ? '<small>' + tx(t.d) + '</small>' : '') + '</div>'; }).join('') + '</div></div></div>';
+    if (b.tipo === 'pasos') return '<div class="blk">' + et(n, b.titulo || 'Paso a paso') + '<div class="pasos-l">' + b.items.map(function (t) { return '<div><span>' + tx(t.d ? t.t + ': ' + t.d : t.t) + '</span></div>'; }).join('') + '</div></div>';
+    if (b.tipo === 'grafico') {
+      var g = window.MCPregunta && MCPregunta.grafico ? MCPregunta.grafico.dibujar(b.grafico, b.lineas) : { error: 'no cargó' };
+      return '<div class="blk">' + et(n, 'Míralo') + '<div class="fig">' + (g.html || '<p class="pie">Gráfico: ' + esc(g.error || '') + '</p>') + '</div></div>';
+    }
+    if (b.tipo === 'imagen') return '<div class="blk">' + et(n, 'Míralo') + '<div class="img"><img src="' + esc(b.src) + '" alt="" loading="lazy"></div>' + (b.pie ? '<div class="pie">' + tx(b.pie) + '</div>' : '') + '</div>';
+    if (b.tipo === 'figura') return '<div class="blk">' + et(n, 'Míralo') + (FIG[b.figura] ? '<div class="fig">' + FIG[b.figura]() + '</div>' : '') + (b.pie ? '<div class="pie">' + tx(b.pie) + '</div>' : '') + '</div>';
+    if (b.tipo === 'laboratorio') return '<div class="blk lab">' + et(n, 'Pruébalo tú') + (b.texto ? '<p>' + tx(b.texto) + '</p>' : '<p>Juega con el simulador y mira cómo cambia.</p>') + '<a href="lab-' + esc(b.sim) + '.html">' + MATRAZ + 'Abrir en el Laboratorio</a></div>';
+    return '';
+  }
+
+  // ---------- Una parte ----------
+  function parte(n) {
+    var p = P[n]; if (!p) return inicio();
+    var a = av(), e = p.enganche, resp = a.eng && a.eng[n];
+    var H = cab('Teoría · ' + D.titulo, '#');
+    H += '<div class="pasos">' + P.map(function (x, k) { return '<i class="' + (k <= n ? 'on' : '') + '"></i>'; }).join('') + '</div>';
+    H += '<h2 class="disp lec"><small>Parte ' + (n + 1) + ' de ' + P.length + '</small>' + esc(p.titulo) + '</h2>';
+    // 1) Primero el enganche: hasta que no responda, no se ve la teoría
+    if (e && !resp) {
+      H += '<div class="gancho" data-gancho><div class="et"><b>?</b>Antes de empezar</div><div class="q">' + tx(e.pregunta) + '</div>' + pregBtns(e) +
+        '<button class="nose" data-k="-1">No sé, quiero descubrirlo</button><div class="nota">Responde lo que creas. Aquí no se pierden corazones.</div></div>';
+      return H;
+    }
+    if ((a.vista || 0) < n + 1) { a.vista = n + 1; guardarAv(a); }
+    if (e) H += '<div class="pista"><img src="' + buho('pensativo') + '" alt=""><div>' + (resp === '?' ? 'Elegiste descubrirlo. Lee con calma: al final de esta parte está la respuesta.' : 'Elegiste la <b class="l">' + esc(resp) + '</b>. Lee y al final de esta parte te digo si acertaste.') + '</div></div>';
+    // 2) La teoría; en PC «Ojo», «¿Sabías que?» y «¿Entendiste?» van a la derecha
+    var izq = [], der = [], checks = [], num = 0;
+    p.bloques.forEach(function (b, k) {
+      var esNum = ['ojo', 'dato', 'check'].indexOf(b.tipo) < 0;
+      var html = bloque(b, k, esNum ? ++num : 0);
+      (b.tipo === 'check' ? checks : b.tipo === 'ojo' || b.tipo === 'dato' ? der : izq).push(html);
+    });
+    // La respuesta del enganche va al final de la lectura, antes del «¿Entendiste?»
+    if (e) der.push(revelar(e, resp, false));
+    der = der.concat(checks);
+    var ult = n === P.length - 1;
+    var sig = !ult && P[n + 1].enganche ? '<div class="sig"><b>Siguiente enganche</b><span>' + tx(P[n + 1].enganche.pregunta) + '</span></div>' : '';
+    var nav = '<div class="nav"><button data-ir="' + (n - 1) + '"' + (n ? '' : ' disabled') + '>Anterior</button>' + (ult ? '<a class="p" href="#fin">Terminar</a>' : '<button class="p" data-ir="' + (n + 1) + '">Siguiente parte</button>') + '</div>';
+    H += '<div class="cols"><div>' + izq.join('') + '</div><div>' + der.join('') + sig + nav + '</div></div>';
+    return H;
+  }
+  function revelar(e, resp, abierto) {
+    if (!abierto) return '<div class="reve" data-reve><div class="t2"><img src="' + buho('asombrado') + '" alt=""><div><small>El enganche</small><h3>¿Acertaste?</h3></div></div><p>' + tx(e.pregunta) + '</p><button class="ver-r" data-reve-btn>Ver la respuesta</button></div>';
+    var k = LET.indexOf(resp), bien = k === e.correcta, nose = resp === '?';
+    return '<div class="reve ' + (nose ? '' : bien ? 'si' : 'no') + '"><div class="t2"><img src="' + buho(bien ? 'feliz' : nose ? 'asombrado' : 'triste') + '" alt=""><div><small>' + (nose ? 'La respuesta' : 'Tu respuesta: ' + esc(resp)) + '</small><h3>' +
+      (nose ? 'Era la ' + LET[e.correcta] : bien ? '¡Acertaste!' : 'Era la ' + LET[e.correcta]) + '</h3></div></div><p><b>' + LET[e.correcta] + ') ' + tx(e.opciones[e.correcta]) + '.</b> ' + tx(e.explica || '') + '</p></div>';
+  }
+
+  // ---------- Final ----------
+  function fin() {
+    var a = av(); a.vista = P.length; a.fin = true; guardarAv(a);
+    var con = 0, ok = 0;
+    P.forEach(function (p, i) { if (p.enganche) { con++; if (a.eng && LET.indexOf(a.eng[i]) === p.enganche.correcta) ok++; } });
+    var H = cab('Teoría · ' + D.titulo, '#');
+    H += '<div class="fin"><img src="' + buho('feliz') + '" alt=""><h1 class="disp">¡Teoría <span class="hl">completa</span>!</h1><p>Ya sabes ' + esc(D.titulo) + '. Ahora ponlo a prueba con las preguntas del tema.</p>';
+    H += '<div class="premio"><div><b>' + P.length + '/' + P.length + '</b><small>partes</small></div>' + (con ? '<div><b style="color:var(--rosa)">' + ok + '/' + con + '</b><small>enganches acertados</small></div>' : '') + '</div>';
+    if (!BORRADOR) H += '<a class="cta" href="' + esc(VOLVER.replace('/tema.html', '/quiz.html')) + '">Practicar el tema</a><a class="cta o" href="' + esc(VOLVER) + '">Volver al tema</a>';
+    H += '<a class="cta o" href="#" data-repasar>Ver la ruta</a></div>';
+    return H;
+  }
+
+  // ---------- Router ----------
+  var vigia = null;
+  function katex(el) {
+    if (window.renderMathInElement) { try { renderMathInElement(el, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false }); } catch (e) {} }
+  }
+  function mostrar() {
+    if (!D) return;
+    var h = location.hash.slice(1).split('/'), H;
+    if (h[0] === 'p') H = parte(Math.max(0, Math.min(P.length - 1, +h[1] || 0)));
+    else if (h[0] === 'fin') H = fin();
+    else H = inicio();
+    app.innerHTML = '<div class="vista">' + H + '</div>';
+    window.scrollTo(0, 0);
+    katex(app);
+    if (vigia) vigia.disconnect();
+    var bl = app.querySelectorAll('.blk');
+    if ('IntersectionObserver' in window) {
+      vigia = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('ver'); vigia.unobserve(e.target); } }); }, { threshold: .15 });
+      bl.forEach(function (b) { vigia.observe(b); });
+    } else bl.forEach(function (b) { b.classList.add('ver'); });
+  }
+  document.addEventListener('mc:katex', function () { katex(app); });
+  app.addEventListener('click', function (ev) {
+    var t = ev.target.closest('button,a'); if (!t) return;
+    if (t.matches('.top .back') && t.getAttribute('href') === '#') { ev.preventDefault(); location.hash = ''; return; }
+    if (t.hasAttribute('data-repasar')) { ev.preventDefault(); location.hash = ''; return; }
+    if (t.hasAttribute('data-ir')) { location.hash = 'p/' + t.getAttribute('data-ir'); son('toque'); return; }
+    var n = +(location.hash.split('/')[1] || 0);
+    if (t.closest('[data-gancho]') && t.hasAttribute('data-k')) {
+      var k = +t.getAttribute('data-k'), a = av(); a.eng = a.eng || {}; a.eng[n] = k < 0 ? '?' : LET[k]; guardarAv(a);
+      son('toque'); mostrar(); return;
+    }
+    if (t.hasAttribute('data-reve-btn')) {
+      var e = P[n].enganche, r = (av().eng || {})[n], caja = t.closest('[data-reve]');
+      var div = document.createElement('div'); div.innerHTML = revelar(e, r, true);
+      caja.replaceWith(div.firstChild); katex(app);
+      son(r === '?' ? 'toque' : LET.indexOf(r) === e.correcta ? 'bien' : 'mal'); return;
+    }
+    var blk = t.closest('.blk');
+    if (t.classList.contains('op') && blk && blk.hasAttribute('data-check')) {
+      var b = P[n].bloques[+blk.getAttribute('data-check')], k2 = +t.getAttribute('data-k');
+      blk.querySelectorAll('.op').forEach(function (o, j) { o.disabled = true; if (j === b.correcta) o.classList.add('ok'); });
+      var fb = blk.querySelector('.fb');
+      if (k2 === b.correcta) { fb.className = 'fb si'; fb.innerHTML = '<b>¡Bien!</b> ' + tx(b.explica || ''); son('bien'); }
+      else { t.classList.add('mal'); fb.className = 'fb no'; fb.innerHTML = '<b>Casi.</b> ' + tx(b.explica || ''); son('mal'); }
+      katex(fb);
+    }
+  });
+  window.addEventListener('hashchange', mostrar);
+
+  function arrancar(datos, cursos) {
+    D = datos;
+    var r = MCTeoria.parsear(D.texto || '');
+    P = r.partes.filter(function (p) { return p.bloques.length; });
+    if (!P.length) { app.innerHTML = '<p class="cargando">Esta teoría todavía no tiene contenido.</p>'; return; }
+    var c = ((cursos || {}).cursos || []).filter(function (x) { return x.id === CURSO; })[0];
+    NOMBRE = c ? (c.corto || c.nombre) : CURSO;
+    AREA = c && c.area ? c.area : AREA;
+    document.title = D.titulo + ' · Teoría · Modo Cachimbo';
+    mostrar();
+  }
+  var cursos = fetch('assets/cursos.json').then(function (r) { return r.json(); }).catch(function () { return {}; });
+  if (BORRADOR) {
+    // Vista previa del panel: el texto llega por localStorage (Panel → Teoría)
+    var leerB = function () { try { return JSON.parse(localStorage.getItem('mc_teoria_borrador') || 'null'); } catch (e) { return null; } };
+    cursos.then(function (cs) {
+      var b = leerB(); if (!b) { app.innerHTML = '<p class="cargando">Escribe la teoría en el panel para ver la vista previa.</p>'; return; }
+      CURSO = b.curso || CURSO; arrancar(b, cs);
+      window.addEventListener('storage', function (e) { if (e.key === 'mc_teoria_borrador') { var b2 = leerB(); if (b2) arrancar(b2, cs); } });
+      window.addEventListener('message', function (e) { if (e.origin === location.origin && e.data === 'mc-teoria-recargar') { var b3 = leerB(); if (b3) arrancar(b3, cs); } });
+    });
+    return;
+  }
+  if (!CURSO || !COD) { app.innerHTML = '<p class="cargando">Falta la teoría.</p>'; return; }
+  Promise.all([
+    fetch(CURSO + '/teoria/' + COD + '.json', { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw 0; return r.json(); }),
+    cursos
+  ]).then(function (res) { arrancar(res[0], res[1]); })
+    .catch(function () { app.innerHTML = '<p class="cargando">No se encontró esta teoría.</p>'; });
+})();
+</script>
+<script src="assets/sonido.js"></script>
+</body>
+</html>
