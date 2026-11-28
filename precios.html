@@ -45,7 +45,7 @@
   .preventa b { font: 900 16px Nunito, sans-serif; display: block; }
   .preventa small { color: var(--d); font-size: 13px; }
   .preventa .pr { margin-left: auto; text-align: right; white-space: nowrap; }
-  .preventa .pr s { color: var(--f); font-size: 13px; display: block; }
+  .preventa .pr s { color: var(--f); font-size: 13px; display: block; text-decoration: none; text-transform: uppercase; letter-spacing: .06em; font-weight: 800; }
   .preventa .pr strong { font: 900 22px Nunito, sans-serif; color: var(--rosa); }
 
   .periodo { display: flex; justify-content: center; margin-bottom: 18px; }
@@ -153,7 +153,9 @@
   .barra .preventa { margin: 0; padding: 7px 12px; border-radius: 99px; gap: 10px; flex: 1 1 360px; max-width: 560px; }
   .barra .preventa .ic { width: 30px; height: 30px; border-radius: 50%; }
   .barra .preventa .ic svg { width: 17px; height: 17px; }
-  .barra .preventa b { font-size: 14px; }
+  .barra .preventa b { font-size: 14px; display: inline-block; margin-right: 8px; white-space: nowrap; }
+  .barra .preventa small { white-space: nowrap; }
+  .barra .preventa { flex: 0 1 auto; }
   .barra .preventa small { font-size: 12px; }
   .barra .preventa .pr strong { font-size: 18px; }
   .barra .preventa .pr s { font-size: 11.5px; }
@@ -218,12 +220,12 @@
   <div class="barra">
     <div class="periodo"><div role="tablist">
       <button type="button" data-p="mes">Mensual</button>
-      <button type="button" data-p="ciclo" class="on">Ciclo · 3 meses <span>AHORRA</span></button>
+      <button type="button" data-p="ciclo" class="on">3 meses <span>AHORRA</span></button>
     </div></div>
     <div class="preventa" id="preventa">
       <span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg></span>
-      <span><b>Preventa ciclo <span id="pvCiclo">2027-I</span></b><small id="pvTxt">Hasta el 30/11 o los primeros 100 alumnos</small></span>
-      <span class="pr"><s id="pvAntes">S/ 49.90</s><strong id="pvPrecio">S/ 39.90</strong></span>
+      <span><b>Preventa <span id="pvCiclo">2027-I</span></b><small id="pvTxt">Hasta el 30/11 o los primeros 100 alumnos</small></span>
+      <span class="pr"><s id="pvAntes" hidden></s><strong id="pvPrecio">-20%</strong></span>
     </div>
     <div class="oferta" id="oferta" hidden><svg class="i" viewBox="0 0 24 24"><path d="M20.5 13.5l-7 7a2 2 0 0 1-2.8 0L3 12.8V3h9.8l7.7 7.7a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg><span id="ofTxt"></span></div>
   </div>
@@ -258,8 +260,8 @@
 
 <script src="assets/mc-config.js"></script>
 <script src="assets/auth.js"></script>
-<script src="assets/planes.js?v=5"></script>
-<script src="assets/yape-plan.js?v=2"></script>
+<script src="assets/planes.js?v=6"></script>
+<script src="assets/yape-plan.js?v=3"></script>
 <script>
 (function () {
   // Precios y textos: Panel → Web → Planes y precios (assets/planes.js)
@@ -293,19 +295,19 @@
   function wa(p, n) {
     var t = (p.rango ? 'el plan ' + p.rango + ' - ' : '') + (p.id === 'area' ? 'Un área (' + AREAS.filter(function (a) { return a[0] === area; })[0][1] + ')' : p.nombre);
     var x = n ? MCPlanes.precio(CFG, p.id, 'p' + n) : pr(p.id);
-    return 'https://wa.me/' + WA + '?text=' + encodeURIComponent('Hola! Quiero ' + t + ' de Modo Cachimbo, ' + (n ? n + ' PDF al día por 30 días' : periodo === 'mes' ? 'mensual' : 'por ciclo (3 meses)') + (x.preventa ? ' en preventa' : '') + ': ' + sol(x.monto));
+    return 'https://wa.me/' + WA + '?text=' + encodeURIComponent('Hola! Quiero ' + t + ' de Modo Cachimbo, ' + (n ? n + ' PDF al día por 30 días' : periodo === 'mes' ? 'mensual' : 'por 3 meses') + (x.preventa ? ' en preventa' : '') + ': ' + sol(x.monto));
   }
 
   function plan(p) {
     var x = pr(p.id), precio = p.id === 'gratis' ? 0 : x.monto;
     var ahorro = '';
     if (p.mes && periodo === 'ciclo') ahorro = 'Equivale a ' + sol(precio / 3) + ' al mes · <em>ahorras ' + sol(MCPlanes.precio(CFG, p.id, 'mes').monto * 3 - precio) + '</em>';
-    else if (p.mes) ahorro = 'O ' + sol(MCPlanes.precio(CFG, p.id, 'ciclo').monto) + ' por todo el ciclo';
+    else if (p.mes) ahorro = 'O ' + sol(MCPlanes.precio(CFG, p.id, 'ciclo').monto) + ' por 3 meses';
     return '<article class="plan' + (p.top ? ' top-plan' : '') + '" style="--c:' + COLOR[p.id] + '">' +
       (p.top ? '<span class="tag">' + (x.preventa ? 'Preventa' : 'El más completo') + '</span>' : '') +
       '<div class="cab"><span class="ic"><svg class="i" viewBox="0 0 24 24">' + ICO[p.id] + '</svg></span><span class="nom"><h2>' + esc(p.rango || p.nombre) + '</h2>' + (p.rango ? '<small>' + esc(p.nombre) + '</small>' : '') + '</span></div>' +
       '<p class="sub">' + esc(p.sub) + '</p>' +
-      '<div class="precio">' + (precio && x.antes ? '<s>' + sol(x.antes) + '</s>' : '') + '<b>' + (precio ? sol(precio) : 'S/ 0') + '</b><span>' + (precio ? (periodo === 'mes' ? '/ mes' : '/ ciclo') : 'para siempre') + '</span></div>' +
+      '<div class="precio">' + (precio && x.antes ? '<s>' + sol(x.antes) + '</s>' : '') + '<b>' + (precio ? sol(precio) : 'S/ 0') + '</b><span>' + (precio ? (periodo === 'mes' ? '/ mes' : '/ 3 meses') : 'para siempre') + '</span></div>' +
       '<div class="ahorro">' + ahorro + '</div>' +
       (p.id === 'area' ? '<div class="area-sel">' + AREAS.map(function (a) { return '<button type="button" data-a="' + a[0] + '"' + (a[0] === area ? ' class="on"' : '') + '>' + a[1] + '</button>'; }).join('') + '</div>' : '') +
       '<ul class="lista">' + p.si.map(function (x) { return '<li class="si">' + SI + '<span>' + esc(x) + '</span></li>'; }).join('') +
@@ -364,12 +366,12 @@
   function todo() {
     CFG.planes.forEach(function (p) { p.top = p.id === 'total'; p.mes = +p.mes || 0; p.ciclo = +p.ciclo || 0; p.si = p.si || []; p.no = p.no || []; });
     var P = CFG.preventa, tot = CFG.planes.filter(function (p) { return p.id === 'total'; })[0];
-    P.precio = +P.precio || 0;
-    document.getElementById('preventa').hidden = !P.activa;
+    var pct = +(P.pct == null ? 20 : P.pct) || 0;
+    document.getElementById('preventa').hidden = !(P.activa && pct);
     document.getElementById('pvCiclo').textContent = P.ciclo || '';
-    document.getElementById('pvTxt').textContent = 'Plan Total por todo el ciclo' + (P.hasta ? ' · hasta el ' + P.hasta : '') + (+P.cupos ? (P.hasta ? ' o ' : ' · ') + 'los primeros ' + P.cupos + ' alumnos' : '');
-    document.getElementById('pvAntes').textContent = sol(+tot.ciclo || 0);
-    document.getElementById('pvPrecio').textContent = sol(P.precio);
+    document.getElementById('pvTxt').textContent = [P.hasta ? 'Hasta el ' + P.hasta : '', +P.cupos ? P.cupos + ' cupos' : ''].filter(Boolean).join(' · ');
+    document.getElementById('pvAntes').textContent = '';
+    document.getElementById('pvPrecio').textContent = '-' + pct + '%';
     var A = CFG.amigos;
     document.getElementById('amigos').hidden = !A.activa;
     document.getElementById('amTit').textContent = A.titulo || '';
