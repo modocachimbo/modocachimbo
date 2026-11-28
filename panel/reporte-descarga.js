@@ -1,4 +1,4 @@
-/* Panel → Reportes: descargar un reporte (o la lista filtrada) en PDF o en imagen
+/* Panel → Reportes: descargar la lista filtrada (todo o por curso) en PDF o en PNG
    con los datos del alumno que lo mandó TAPADOS.
    El nombre, apodo, correo e ID del alumno nunca se ponen en la hoja que se
    fotografía: en su lugar van barras de "dato oculto". Si el alumno escribió un
@@ -195,7 +195,6 @@
     doc.save(nombre);
   }
 
-  function nombreDe(r) { return 'reporte-' + slug(r.curso) + '-P' + slug(r.pregunta) + '-' + hoy(); }
 
   function trabajando(btn, si) {
     if (!btn) return;
@@ -204,24 +203,32 @@
   }
   function aviso(msg, err) { if (typeof window.toast === 'function') window.toast(msg, err); }
 
-  function uno(r, formato, btn) {
-    trabajando(btn, true);
-    return Promise.all([libs(formato === 'pdf'), logo()]).then(function (x) {
-      return foto(cabeceraHtml('Reporte de clave', esc(r.curso) ? r.curso + ' · P' + r.pregunta : 'Pregunta ' + r.pregunta, String(r.anio || '') + (r.temaNombre ? ' · ' + r.temaNombre : ''), x[1], paleta(r).c) + tarjetaHtml(r) + pieHtml());
-    }).then(function (cv) {
-      if (formato === 'pdf') pdfDe([cv], nombreDe(r) + '.pdf');
-      else bajar(cv.toDataURL('image/png'), nombreDe(r) + '.png');
-      aviso(formato === 'pdf' ? 'PDF descargado (datos del alumno tapados)' : 'Imagen descargada (datos del alumno tapados)');
-    }).catch(function (e) { aviso((e && e.message) || 'No se pudo descargar', true); })
-      .then(function () { trabajando(btn, false); });
+  // Pega los lienzos uno debajo del otro; si sale demasiado alto, en varias imágenes
+  function pngDe(lienzos, base) {
+    var MAX = 14000, partes = [], act = [], alto = 0;
+    lienzos.forEach(function (cv) {
+      if (act.length && alto + cv.height > MAX) { partes.push(act); act = []; alto = 0; }
+      act.push(cv); alto += cv.height;
+    });
+    if (act.length) partes.push(act);
+    partes.forEach(function (grupo, n) {
+      var w = grupo[0].width, h = grupo.reduce(function (a, c) { return a + c.height; }, 0);
+      var out = document.createElement('canvas'); out.width = w; out.height = h;
+      var g = out.getContext('2d'), y = 0;
+      g.fillStyle = '#fff'; g.fillRect(0, 0, w, h);
+      grupo.forEach(function (c) { g.drawImage(c, 0, y); y += c.height; });
+      setTimeout(function () { bajar(out.toDataURL('image/png'), base + (partes.length > 1 ? '-parte-' + (n + 1) : '') + '.png'); }, n * 400);
+    });
+    return partes.length;
   }
 
-  // Todos los reportes que se ven con el filtro actual, en un solo PDF
-  function lista(rows, etiqueta, btn) {
+  // Todos los reportes que se ven con el filtro actual (todos o por curso), en PDF o en PNG
+  function lista(rows, etiqueta, btn, formato) {
+    var png = formato === 'png';
     if (!rows || !rows.length) { aviso('No hay reportes para descargar con ese filtro.', true); return Promise.resolve(); }
     if (rows.length > 150) { aviso('Son ' + rows.length + ' reportes. Usa un filtro (curso o estado) para bajar 150 o menos.', true); return Promise.resolve(); }
     trabajando(btn, true);
-    return Promise.all([libs(true), logo()]).then(function (x) {
+    return Promise.all([libs(!png), logo()]).then(function (x) {
       var cab = cabeceraHtml('Reportes de claves', etiqueta, rows.length + (rows.length === 1 ? ' reporte' : ' reportes') + ' · datos del alumno ocultos', x[1], C.tinta);
       var lienzos = [], i = 0;
       function sig() {
@@ -232,25 +239,23 @@
       }
       return sig();
     }).then(function (lienzos) {
-      pdfDe(lienzos, 'reportes-' + slug(etiqueta) + '-' + hoy() + '.pdf');
-      aviso('PDF descargado con ' + rows.length + (rows.length === 1 ? ' reporte' : ' reportes') + ' (datos tapados)');
+      var base = 'reportes-' + slug(etiqueta) + '-' + hoy(), cuantos = rows.length + (rows.length === 1 ? ' reporte' : ' reportes');
+      if (png) {
+        var n = pngDe(lienzos, base);
+        aviso((n > 1 ? n + ' imágenes descargadas' : 'Imagen descargada') + ' con ' + cuantos + ' (datos tapados)');
+      } else {
+        pdfDe(lienzos, base + '.pdf');
+        aviso('PDF descargado con ' + cuantos + ' (datos tapados)');
+      }
     }).catch(function (e) { aviso((e && e.message) || 'No se pudo descargar', true); })
       .then(function () { trabajando(btn, false); });
   }
 
-  function botones(fila) {
-    return '<span class="mcrd-grupo"><span class="mcrd-lbl">Descargar</span>' +
-      '<button class="rbtn" type="button" data-rd="pdf" data-fila="' + esc(fila) + '" title="Descargar en PDF con los datos del alumno tapados">' + ICO.pdf + ' PDF</button>' +
-      '<button class="rbtn" type="button" data-rd="img" data-fila="' + esc(fila) + '" title="Descargar como imagen con los datos del alumno tapados">' + ICO.img + ' Imagen</button></span>';
-  }
-
   var st = document.createElement('style');
-  st.textContent = '.mcrd-grupo{display:inline-flex;align-items:center;gap:6px;margin-right:auto;flex-wrap:wrap}' +
-    '.mcrd-lbl{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;font-weight:800;color:var(--text-faint)}' +
-    '.mcrd-gira{display:inline-flex;width:13px;height:13px;animation:mcrdg 1s linear infinite}.mcrd-gira svg{width:13px;height:13px}' +
+  st.textContent = '.mcrd-gira{display:inline-flex;width:13px;height:13px;animation:mcrdg 1s linear infinite}.mcrd-gira svg{width:13px;height:13px}' +
     '@keyframes mcrdg{to{transform:rotate(360deg)}}' +
-    '#btnRepPdf[disabled],.rbtn[disabled]{opacity:.7;cursor:progress}';
+    '#btnRepPdf[disabled],#btnRepPng[disabled]{opacity:.7;cursor:progress}';
   document.head.appendChild(st);
 
-  window.MCRepDesc = { botones: botones, uno: uno, lista: lista, tarjetaHtml: tarjetaHtml };
+  window.MCRepDesc = { lista: lista, tarjetaHtml: tarjetaHtml };
 })();
