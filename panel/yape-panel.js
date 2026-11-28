@@ -68,6 +68,16 @@ const YP_LLAVE = 'sb_publishable_clm6obUTs_391NA7FGG1YA_-eNuj7dU';
   .yp-tag.aprobada { color: #58CC02; border-color: rgba(88,204,2,.45); }
   .yp-tag.rechazada { color: #FF6E6E; border-color: rgba(255,110,110,.45); }
   .yp-tag.plan { color: #1CB0F6; border-color: rgba(28,176,246,.45); }
+  .yp-reg { position: fixed; inset: 0; z-index: 210; background: rgba(5,4,12,.82); display: grid; place-items: center; padding: 16px; overflow: auto; }
+  .yp-reg-in { width: min(520px, 100%); background: var(--surface, #17142b); border: 1px solid var(--line, rgba(255,255,255,.1)); border-radius: 20px; padding: 20px; display: grid; gap: 12px; }
+  .yp-reg-in h3 { margin: 0; font: 900 20px Nunito, sans-serif; }
+  .yp-reg-in p { margin: 0; color: var(--text-faint); font-size: 13px; }
+  .yp-reg-quien { font-size: 13.5px; min-height: 1.3em; }
+  .yp-reg-quien.ok { color: var(--lime, #C6E000); } .yp-reg-quien.no { color: var(--rosa, #ff6b9a); }
+  .yp-reg-dos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .yp-reg-cap { display: flex; align-items: center; gap: 10px; }
+  .yp-reg-cap img { width: 52px; height: 88px; object-fit: cover; border-radius: 8px; border: 1px solid var(--line, rgba(255,255,255,.1)); }
+  .yp-reg-pie { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
   .yp-dia { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; padding: 10px 4px 2px; margin-top: 6px; border-bottom: 1px solid var(--line, rgba(255,255,255,.08)); }
   .yp-dia:first-child { margin-top: 0; }
   .yp-dia-t { display: flex; align-items: baseline; gap: 8px; }
@@ -422,6 +432,7 @@ document.addEventListener('click', e => {
   if (e.target.closest('#ypPausa')) { ypPausa(!(YP.d.ajustes || {}).pausa); return; }
   if (e.target.closest('#ypPausaGuardar')) { ypPausa(true); return; }
   const cp2 = e.target.closest('#ypCompensar'); if (cp2) { ypCompensar(cp2); return; }
+  if (e.target.closest('#ypRegistrar')) { ypRegistrar(); return; }
   const lr = e.target.closest('[data-leer]'); if (lr) { ypLeer(lr); return; }
   if (e.target.closest('#ypIa')) { ypConfig({ ia: !(YP.d.ajustes || {}).ia }).catch(() => {}); return; }
   const b = e.target.closest('[data-yp]');
@@ -476,4 +487,107 @@ async function ypTelegram(btn) {
   } catch (e) {
     toast(e.message && !/Failed to fetch|NetworkError/i.test(e.message) ? e.message : 'No se pudo hablar con Telegram. Revisa tu internet.', true);
   } finally { if (document.body.contains(btn)) { btn.disabled = false; btn.textContent = 'Conectar'; } }
+}
+
+// ---------- Registrar una compra a mano (el alumno te mandó la captura por WhatsApp) · supabase/158 ----------
+const YP_QUE = [
+  ['total:mes', 'Plan Leyenda · 1 mes'], ['total:ciclo', 'Plan Leyenda · 3 meses'],
+  ['area:mes', 'Plan Amatista · 1 mes'], ['area:ciclo', 'Plan Amatista · 3 meses'],
+  ['descarga:p3', 'Descargas PDF · 3 al día'], ['descarga:p7', 'Descargas PDF · 7 al día'], ['descarga:p12', 'Descargas PDF · 12 al día'],
+  ['d:0', '50 diamantes · S/ 1'], ['d:1', '110 diamantes · S/ 2'], ['d:2', '300 diamantes · S/ 5'], ['d:3', '650 diamantes · S/ 10'], ['d:4', '1 050 diamantes · S/ 15'], ['d:5', '2 000 diamantes · S/ 25']
+];
+const YP_AREAS = [['matematica', 'Matemática'], ['ciencia-tecnologia', 'Ciencia y Tecnología'], ['comunicacion', 'Comunicación'], ['ciencias-sociales', 'Ciencias Sociales']];
+function ypRegistrar() {
+  const o = document.createElement('div'); o.className = 'yp-reg';
+  o.innerHTML = `<form class="yp-reg-in" autocomplete="off">
+    <h3>Registrar compra</h3>
+    <p>Para cuando el alumno te manda la captura por WhatsApp. Se activa al instante, como si la hubieras aprobado.</p>
+    <div><label class="fld">ID del alumno <span class="hint">5 números, sale en su perfil</span></label>
+      <input class="inp" name="jid" inputmode="numeric" maxlength="5" placeholder="Ej.: 33517" required>
+      <div class="yp-reg-quien"></div></div>
+    <div><label class="fld">Qué compró</label>
+      <select class="inp" name="que">${YP_QUE.map(q => `<option value="${q[0]}">${esc(q[1])}</option>`).join('')}</select></div>
+    <div name="areaBox" hidden><label class="fld">Área</label>
+      <select class="inp" name="area">${YP_AREAS.map(a => `<option value="${a[0]}">${esc(a[1])}</option>`).join('')}</select></div>
+    <div class="yp-reg-dos">
+      <div><label class="fld">Monto que pagó (S/) <span class="hint">vacío = precio normal</span></label><input class="inp" name="monto" inputmode="decimal" placeholder="Precio normal"></div>
+      <div><label class="fld">Código de seguridad <span class="hint">opcional</span></label><input class="inp" name="codigo" inputmode="numeric" maxlength="3" placeholder="3 números"></div>
+    </div>
+    <div><label class="fld">Captura <span class="hint">opcional · la IA la lee y avisa si ya se usó</span></label>
+      <div class="yp-reg-cap"><input class="inp" type="file" name="cap" accept="image/*"><img hidden alt=""></div></div>
+    <div><label class="fld">Nota <span class="hint">opcional</span></label><input class="inp" name="nota" maxlength="200" placeholder="Ej.: me escribió por WhatsApp"></div>
+    <div class="yp-reg-pie"><button class="btn-ghost" type="button" data-cerrar>Cancelar</button><button class="btn-main" type="submit">Registrar y activar</button></div>
+  </form>`;
+  document.body.appendChild(o);
+  const f = o.querySelector('form'), quien = o.querySelector('.yp-reg-quien'), areaBox = o.querySelector('[name=areaBox]');
+  let alumno = null, tq = 0;
+  const cerrar = () => o.remove();
+  o.addEventListener('click', e => { if (e.target === o || e.target.closest('[data-cerrar]')) cerrar(); });
+  f.que.addEventListener('change', () => { areaBox.hidden = !f.que.value.startsWith('area:'); });
+  f.jid.addEventListener('input', () => {
+    f.jid.value = f.jid.value.replace(/\D/g, ''); alumno = null; quien.className = 'yp-reg-quien'; quien.textContent = '';
+    clearTimeout(tq); if (f.jid.value.length !== 5) return;
+    quien.textContent = 'Buscando…';
+    tq = setTimeout(async () => {
+      try {
+        const c = await MCAuth.listo; const { data, error } = await c.rpc('yape_admin_alumno', { p_jid: +f.jid.value });
+        if (error) throw error;
+        if (!data) { quien.className = 'yp-reg-quien no'; quien.textContent = 'No hay ningún alumno con ese ID.'; return; }
+        alumno = data; quien.className = 'yp-reg-quien ok'; quien.textContent = (data.apodo || 'Sin apodo') + ' · ' + (data.email || '');
+      } catch (e) { quien.className = 'yp-reg-quien no'; quien.textContent = /yape_admin_alumno|function/i.test(e.message || '') ? 'Falta correr el SQL 158 en Supabase.' : 'No se pudo buscar.'; }
+    }, 350);
+  });
+  f.cap.addEventListener('change', () => { const im = o.querySelector('.yp-reg-cap img'), fl = f.cap.files[0]; if (fl) { im.src = URL.createObjectURL(fl); im.hidden = false; } else im.hidden = true; });
+  f.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!alumno) { toast('Pon un ID de alumno válido.', true); f.jid.focus(); return; }
+    const cod = f.codigo.value.replace(/\D/g, '');
+    if (cod && cod.length !== 3) { toast('El código de seguridad tiene 3 números.', true); return; }
+    const [a, b] = f.que.value.split(':');
+    const btn = f.querySelector('[type=submit]'); btn.disabled = true; btn.textContent = 'Registrando…';
+    try {
+      const c = await MCAuth.listo;
+      let captura = null;
+      if (f.cap.files[0]) {
+        const blob = await ypAchicar(f.cap.files[0]);
+        const { data: s } = await c.auth.getSession();
+        const ruta = s.session.user.id + '/admin-' + Date.now() + '.jpg';
+        const up = await c.storage.from('yape').upload(ruta, blob, { contentType: 'image/jpeg', upsert: false });
+        if (up.error) throw up.error;
+        captura = ruta;
+      }
+      const p = { jid: f.jid.value, codigo: cod, captura, monto: f.monto.value.trim(), nota: f.nota.value.trim() };
+      if (a === 'd') Object.assign(p, { tipo: 'diamantes', paquete: +b }); else Object.assign(p, { tipo: 'plan', plan: a, periodo: b, area: f.area.value });
+      const { data, error } = await c.rpc('yape_admin_registrar', { p });
+      if (error) throw error;
+      cerrar();
+      toast('Compra #' + data.id + ' registrada y activada para ' + (alumno.apodo || 'el alumno') + '.');
+      if (captura) {
+        // La IA la lee para anotar el N.º de operación y avisar si esa captura ya se usó
+        const r = await c.functions.invoke('leer-yape', { body: { id: data.id, admin: true } }).catch(() => null);
+        const pr = r && r.data && r.data.problemas || [];
+        if (pr.length) toast('Ojo con la captura: ' + pr.join(' · '), true);
+      }
+      cargarYape();
+    } catch (er) {
+      const m = String(er && er.message || '');
+      toast(/yape_id/.test(m) ? 'No hay ningún alumno con ese ID.' : /yape_monto/.test(m) ? 'Revisa el monto.' : /yape_plan|yape_paquete/.test(m) ? 'Ese plan no está a la venta ahora.' : /yape_admin_registrar|function/i.test(m) ? 'Falta correr el SQL 158 en Supabase.' : 'No se pudo registrar: ' + m, true);
+      btn.disabled = false; btn.textContent = 'Registrar y activar';
+    }
+  });
+  setTimeout(() => f.jid.focus(), 50);
+}
+// Achica la captura igual que la página de compra (máx. 1280 px, JPG)
+function ypAchicar(file) {
+  return new Promise((ok, mal) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const k = Math.min(1, 1280 / Math.max(img.width, img.height)), cv = document.createElement('canvas');
+      cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k);
+      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height); URL.revokeObjectURL(url);
+      cv.toBlob(b => b ? ok(b) : mal(new Error('imagen')), 'image/jpeg', .82);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); mal(new Error('No se pudo abrir la imagen')); };
+    img.src = url;
+  });
 }
