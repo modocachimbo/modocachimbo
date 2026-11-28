@@ -57,6 +57,7 @@
 
   .planes { display: grid; gap: 14px; grid-template-columns: 1fr; }
   .plan.top-plan { order: -1; margin-top: 8px; }
+  .plan.p-gratis { order: 1; }   /* celular: Leyenda, Amatista y Bronce al final */
   @media (min-width: 820px) { .planes { grid-template-columns: repeat(3, 1fr); align-items: stretch; } .plan.top-plan { order: 0; margin-top: 0; } }
   .plan { position: relative; background: var(--s); border: 1px solid var(--b); border-radius: 22px; padding: 18px; display: flex; flex-direction: column; }
   .plan.top-plan { border: 2px solid var(--l); box-shadow: 0 0 0 4px rgba(198,224,0,.08), 0 18px 40px rgba(0,0,0,.35); }
@@ -162,7 +163,7 @@
   .barra .oferta { margin: 0; }
   .planes { max-width: 1100px; margin: 0 auto; }
   .plan.top-plan { order: -1; }
-  @media (min-width: 720px) { .planes { grid-template-columns: repeat(3, 1fr); } .plan.top-plan { order: 0; margin-top: 0; } }
+  @media (min-width: 720px) { .planes { grid-template-columns: repeat(3, 1fr); } .plan.top-plan, .plan.p-gratis { order: 0; margin-top: 0; } }
   .plan { padding: 16px; border-radius: 20px; }
   .plan .sub { min-height: 0; margin: 4px 0 8px; font-size: 13px; }
   .precio b { font-size: 30px; }
@@ -304,7 +305,7 @@
     var PER = CFG.periodos || {};
     if (p.mes && periodo === 'ciclo') ahorro = 'Equivale a ' + sol(precio / 3) + ' al mes' + (PER.mes !== false ? ' · <em>ahorras ' + sol(MCPlanes.precio(CFG, p.id, 'mes').monto * 3 - precio) + '</em>' : '');
     else if (p.mes && PER.ciclo !== false) ahorro = 'O ' + sol(MCPlanes.precio(CFG, p.id, 'ciclo').monto) + ' por 3 meses';
-    return '<article class="plan' + (p.top ? ' top-plan' : '') + '" style="--c:' + COLOR[p.id] + '">' +
+    return '<article class="plan p-' + esc(p.id) + (p.top ? ' top-plan' : '') + '" style="--c:' + COLOR[p.id] + '">' +
       (p.top ? '<span class="tag">' + (x.preventa ? 'Preventa' : 'El más completo') + '</span>' : '') +
       '<div class="cab"><span class="ic"><svg class="i" viewBox="0 0 24 24">' + ICO[p.id] + '</svg></span><span class="nom"><h2>' + esc(p.rango || p.nombre) + '</h2>' + (p.rango ? '<small>' + esc(p.nombre) + '</small>' : '') + '</span></div>' +
       '<p class="sub">' + esc(p.sub) + '</p>' +
@@ -335,7 +336,7 @@
     return '<span>' + esc(v) + '</span>';
   }
   function pintar() {
-    // Bronce · Amatista · Leyenda (en celular Leyenda va primero, por CSS)
+    // Bronce · Amatista · Leyenda (en celular: Leyenda, Amatista y Bronce, por CSS)
     var orden = { gratis: 0, area: 1, total: 2 };
     var todos = CFG.planes.slice().sort(function (a, b) { return (orden[a.id] || 0) - (orden[b.id] || 0); });
     document.getElementById('planes').innerHTML = todos.map(plan).join('');
