@@ -83,7 +83,7 @@ const YP_LLAVE = 'sb_publishable_clm6obUTs_391NA7FGG1YA_-eNuj7dU';
   .yp-av { display: flex; gap: 12px; align-items: center; }
   .yp-av .yp-avtx { flex: 1; }
   .yp-ver { position: fixed; inset: 0; z-index: 200; background: rgba(5,4,12,.9); display: grid; place-items: center; padding: 16px; cursor: zoom-out; }
-  .yp-ver img { max-width: 100%; max-height: 100%; border-radius: 12px; }
+  .yp-ver img { display: block; max-width: calc(100vw - 32px); max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px); width: auto; height: auto; object-fit: contain; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,.6); }
   @media (max-width: 560px) { .yp-card { grid-template-columns: 64px 1fr; } .yp-cap { width: 64px; height: 108px; } .yp-hora { margin-left: 0; width: 100%; } }`;
   document.head.appendChild(st);
 })();
