@@ -318,7 +318,7 @@ function fxAccHtml(x) {
   const puedeCod = x.origen === 'codigo' && x.hoja && PASS;
   let bts = '';
   if (x.origen === 'id' && puedeTab('codigos')) bts = `${x.vence ? `<button class="btn-ghost mini lima" type="button" data-ext ${ref}>${x.vencido ? 'Renovar 30 días' : '+30 días'}</button>` : ''}
-    <button class="btn-ghost mini" type="button" data-ed ${ref}>Editar</button><button class="btn-ghost mini rojo" type="button" data-qu ${ref}>Quitar</button>`;
+    <button class="btn-ghost mini" type="button" data-ed ${ref}>Editar</button><button class="btn-ghost mini" type="button" data-mv ${ref}>Pasar a otra cuenta</button><button class="btn-ghost mini rojo" type="button" data-qu ${ref}>Quitar</button>`;
   else if (x.origen === 'codigo') bts = `${puedeCod && x.estado !== 'Desactivado' ? `<button class="btn-ghost mini lima" type="button" data-ext ${ref}>${x.vencido ? 'Renovar 30 días' : '+30 días'}</button>` : ''}
     <button class="btn-ghost mini" type="button" data-vercod="${esc(x.codigo)}">Ver en Códigos</button>`;
   return `<div class="fx-acc${x.vencido ? ' paso' : ''}"><span class="fx-ico" style="background:${col}1f;color:${col}">${fxSvg(ic)}</span>
@@ -376,6 +376,29 @@ function fxExtender(x, quien, despues) {
       toast('Renovado hasta el ' + fxFecha(vence) + aviso, !!aviso);
       if (despues) despues();
     } catch (e) { b.disabled = false; b.textContent = 'Renovar'; err.textContent = fxErr(e); err.classList.add('show'); }
+  });
+}
+
+// El alumno compró con otro Gmail: el acceso pasa a la cuenta del ID que escribas (supabase/151)
+function fxMover(x, quien) {
+  const m = fxModal(`<div class="eyebrow">Pasar a otra cuenta</div><h3>${esc(fxProd(x.producto))}</h3>
+    <div class="hint" style="margin-top:2px">Ahora es de ${esc(quien.apodo || 'este alumno')}${quien.jid ? ' · ID ' + quien.jid : ''}${x.vence ? ' · vence el ' + fxFecha(x.vence) : ''}</div>
+    <label class="fld">ID de la cuenta que lo recibe <span class="hint">sale en su Mi perfil</span></label>
+    <input class="inp" id="fxMvId" inputmode="numeric" maxlength="5" placeholder="Ej.: 48213">
+    <div class="hint" style="margin-top:8px">Se le quita a esta cuenta y pasa completo (misma fecha y límite) a la otra.</div>
+    <div class="err" id="fxErr"></div>
+    <div class="mfoot"><button type="button" class="btn-ghost" data-x>Cancelar</button><button type="button" class="btn-main" id="fxOk">Pasar acceso</button></div>`);
+  m.o.querySelector('#fxOk').addEventListener('click', async () => {
+    const b = m.o.querySelector('#fxOk'), err = m.o.querySelector('#fxErr'); err.classList.remove('show');
+    const jid = parseInt(m.o.querySelector('#fxMvId').value.replace(/\D/g, ''), 10);
+    if (!(jid >= 10000 && jid <= 99999)) { err.textContent = 'Escribe el ID de 5 números.'; err.classList.add('show'); return; }
+    b.disabled = true; b.innerHTML = '<span class="spin-s"></span> Pasando…';
+    try {
+      const r = await fxRpc('acceso_id_mover', { p_id: x.id, p_jid: jid });
+      m.cerrar();
+      toast('Listo: ahora es de ' + ((r && r.apodo) || 'ID ' + jid));
+      if (r && r.usuario) abrirFicha(r.usuario);
+    } catch (e) { b.disabled = false; b.textContent = 'Pasar acceso'; err.textContent = /could not find|does not exist|schema cache/i.test(e && e.message || '') ? 'Primero corre supabase/151-panel-imprevistos.sql' : fxErr(e); err.classList.add('show'); }
   });
 }
 
@@ -477,6 +500,7 @@ document.addEventListener('click', async e => {
     darPorId(Object.assign({}, x.raw, { jid: a.jid, apodo: a.apodo, email: a.email }), { despues: () => abrirFicha(a.usuario) });
     return;
   }
+  if (b.hasAttribute('data-mv') && x) { fxMover(x, a); return; }
   if (b.hasAttribute('data-qu') && x) {
     if (b.dataset.seguro !== '1') { b.dataset.seguro = '1'; b.textContent = '¿Seguro?'; return; }
     try { await fxRpc('acceso_id_quitar', { p_id: x.id }); toast('Acceso quitado'); abrirFicha(a.usuario); } catch (er) { toast(fxErr(er), true); }

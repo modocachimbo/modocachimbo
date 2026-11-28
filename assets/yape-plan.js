@@ -131,7 +131,21 @@
   }
   function wsp(texto) { window.open('https://wa.me/' + WSP + '?text=' + encodeURIComponent(texto), '_blank'); }
 
+  // Panel → Recargas Yape → Pausar compras: se avisa antes de que yapee
+  function pausa() {
+    if (!window.MCAuth) return Promise.resolve(null);
+    return MCAuth.listo.then(function (c) { return c.rpc('yape_pausa'); }).then(function (r) { return r && !r.error ? r.data : null; }, function () { return null; });
+  }
   function abrir(P) {
+    if (window.MCEnApp) return abrirYa(P);
+    pausa().then(function (t) {
+      if (!t) return abrirYa(P);
+      ventana('<div class="ypl-est"><div class="ic oro">' + IC.reloj + '</div><h3>Compras <em>en pausa</em></h3><p>' + esc(t) + '</p>' +
+        '<button type="button" class="ypl-bt" data-cerrar>Entendido</button><small class="ypl-ayuda">¿Es urgente? <a href="#" data-ayuda>Escríbenos por WhatsApp</a></small></div>', (P || {}).color)
+        .addEventListener('click', function (e) { if (e.target.closest('[data-ayuda]')) { e.preventDefault(); wsp('Hola Modo Cachimbo, quiero comprar ' + ((P || {}).nombre || 'un plan') + '.'); } });
+    });
+  }
+  function abrirYa(P) {
     P = P || {};
     var nombre = P.nombre || (P.plan === 'total' ? 'Plan Leyenda' : 'Plan'), per = P.periodo === 'mes' ? '30 días' : /^p\d+$/.test(P.periodo || '') ? P.periodo.slice(1) + ' PDF al día · 30 días' : '3 meses · 90 días';
     var precio = +P.precio || 0, miId = null;
@@ -221,6 +235,7 @@
         if (/yape_muchas/.test(m)) return toast('Ya tienes pagos en revisión. Espera a que terminen.');
         if (/yape_dia/.test(m)) return toast('Llegaste al máximo de compras de hoy. Escríbenos por WhatsApp.');
         if (/yape_plan/.test(m)) return toast('Ese plan no está disponible ahora.');
+        if (/yape_pausa/.test(m)) return toast('Las compras con Yape están en pausa. Escríbenos por WhatsApp.');
         if (/imagen/.test(m)) return toast('No se pudo leer esa imagen. Prueba con otra captura.');
         if (/bucket|does not exist|Could not find the function/i.test(m)) { toast('La compra automática se activa pronto. Te abrimos WhatsApp.'); return wsp(msgWsp('\nYa yapeé a ' + YAPE + ' (' + YAPE_NOMBRE + '). Te paso la captura.')); }
         toast('No se pudo enviar. Revisa tu internet e intenta otra vez.');
