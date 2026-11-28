@@ -1951,7 +1951,7 @@
 
   // Búho tutor: resolución guardada de cada pregunta (assets/buho-tutor.js)
   if (!window.MCBuhoTutor && !document.querySelector('script[src*="buho-tutor.js"]')) {
-    var bt = document.createElement('script'); bt.src = RAIZ + 'assets/buho-tutor.js'; bt.async = true;
+    var bt = document.createElement('script'); bt.src = RAIZ + 'assets/buho-tutor.js?v=2'; bt.async = true;
     (document.head || document.documentElement).appendChild(bt);
   }
 

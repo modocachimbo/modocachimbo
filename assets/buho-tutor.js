@@ -72,6 +72,9 @@
     '@keyframes btVelo{from{opacity:0}}@keyframes btSube{from{transform:translateY(40px);opacity:.4}}@keyframes btLado{from{transform:translateX(40px);opacity:.4}}' +
     '@media (prefers-reduced-motion:reduce){.bt-sheet,.bt-velo{animation:none}}' +
     '.bt-asa{width:42px;height:5px;border-radius:3px;background:var(--bt-borde);margin:8px auto 0;flex:none}@media (min-width:900px){.bt-asa{display:none}}' +
+    '.bt-lk{text-align:center;padding:28px 18px;display:flex;flex-direction:column;align-items:center;gap:10px}.bt-lk h3{margin:4px 0 0;font:800 19px/1.25 "Sora","Inter",sans-serif;color:var(--bt-tx)}.bt-lk p{margin:0;color:var(--bt-dim);font-size:14px;line-height:1.5;max-width:330px}' +
+    '.bt-lk-btn{margin-top:8px;display:inline-block;font:800 15px/1 "Nunito","Inter",sans-serif;color:#0B0B0B;background:#C6E000;border-bottom:3px solid #9DB300;border-radius:14px;padding:13px 26px;text-decoration:none}' +
+    '@media (max-width:899px){.bt-sheet.bt-lock{height:auto;max-height:88vh}}' +
     '.bt-head{display:flex;align-items:center;gap:10px;padding:12px 16px 10px;flex:none}' +
     '.bt-head .bt-av{width:54px;height:54px;flex:none;display:grid;place-items:center}.bt-head .bt-av svg,.bt-head .bt-av img{width:54px;height:54px}' +
     '.bt-head b{font:800 17px "Sora","Inter",sans-serif;display:block}.bt-head small{color:var(--bt-dim);font-size:12.5px;display:block;margin-top:1px}' +
@@ -141,10 +144,44 @@
   var INTRO = { rapido: 'Va, al toque:', pasos: 'Claro, vamos paso a paso:', cero: 'Tranqui, empecemos desde cero:' };
   var lento = !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 
+  // Solo el plan Leyenda (TODO-VIP) tiene el Búho tutor: MCAcceso.cubre('TODO-VIP', 'buho')
+  function permitido() {
+    var A = window.MCAcceso;
+    if (!A || !A.accesoLocal) return Promise.resolve(true);
+    if (A.accesoLocal('buho')) return Promise.resolve(true);
+    return (A.refrescarID ? A.refrescarID(true) : Promise.resolve())
+      .then(function () { return A.accesoLocal('buho'); }, function () { return A.accesoLocal('buho'); });
+  }
+  // Ventana «Solo en Leyenda» con el mismo diseño del tutor
+  function candado(opts) {
+    cerrar(); estilos();
+    var velo = document.createElement('div'); velo.className = 'bt-velo';
+    var hoja = document.createElement('div'); hoja.className = 'bt-sheet bt-lock';
+    hoja.setAttribute('role', 'dialog'); hoja.setAttribute('aria-modal', 'true'); hoja.setAttribute('aria-label', 'Búho tutor');
+    hoja.innerHTML = '<div class="bt-asa"></div>' +
+      '<div class="bt-head"><span class="bt-av">' + buho(54) + '</span><div><b>Búho tutor</b><small>Plan Leyenda</small></div>' +
+      '<button type="button" class="bt-x" aria-label="Cerrar">✕</button></div>' +
+      '<div class="bt-body"><div class="bt-lk">' +
+      '<svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#C6E000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10.5" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.6" r="1.5" fill="#C6E000"/></svg>' +
+      '<h3>El Búho tutor es del plan Leyenda</h3>' +
+      '<p>Te explica cada pregunta al toque, paso a paso o desde cero. Actívalo con el plan Leyenda y úsalo en todas las áreas.</p>' +
+      '<a class="bt-lk-btn" href="' + RAIZ + 'precios.html">Ver planes</a></div></div>';
+    document.body.appendChild(velo); document.body.appendChild(hoja);
+    document.body.classList.add('bt-abierto');
+    var tecla = function (e) { if (e.key === 'Escape') cerrar(); };
+    document.addEventListener('keydown', tecla);
+    velo.addEventListener('click', cerrar);
+    hoja.querySelector('.bt-x').addEventListener('click', cerrar);
+    abierto = { velo: velo, hoja: hoja, tecla: tecla, desde: opts && opts.desde };
+  }
+
   function abrir(q, opts) {
     opts = opts || {};
+    if (!niveles(q).length) return;
+    permitido().then(function (ok) { if (ok) abrirYa(q, opts); else candado(opts); });
+  }
+  function abrirYa(q, opts) {
     var ns = niveles(q);
-    if (!ns.length) return;
     cerrar(); estilos();
     var velo = document.createElement('div'); velo.className = 'bt-velo';
     var hoja = document.createElement('div'); hoja.className = 'bt-sheet';
