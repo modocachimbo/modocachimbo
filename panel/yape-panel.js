@@ -68,6 +68,15 @@ const YP_LLAVE = 'sb_publishable_clm6obUTs_391NA7FGG1YA_-eNuj7dU';
   .yp-tag.aprobada { color: #58CC02; border-color: rgba(88,204,2,.45); }
   .yp-tag.rechazada { color: #FF6E6E; border-color: rgba(255,110,110,.45); }
   .yp-tag.plan { color: #1CB0F6; border-color: rgba(28,176,246,.45); }
+  .yp-dia { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; padding: 10px 4px 2px; margin-top: 6px; border-bottom: 1px solid var(--line, rgba(255,255,255,.08)); }
+  .yp-dia:first-child { margin-top: 0; }
+  .yp-dia-t { display: flex; align-items: baseline; gap: 8px; }
+  .yp-dia-t b { font: 900 17px Nunito, sans-serif; text-transform: capitalize; }
+  .yp-dia-t small { color: var(--text-faint); font-size: 12.5px; }
+  .yp-dia-n { margin-left: auto; display: flex; flex-wrap: wrap; gap: 6px; font-size: 12.5px; }
+  .yp-dia-n span { padding: 4px 10px; border-radius: 99px; background: rgba(255,255,255,.06); color: var(--text-dim, #c9c3e6); }
+  .yp-dia-n .rev { background: rgba(255,184,0,.14); color: #ffc93c; }
+  .yp-dia-n .tot b { color: var(--lime, #C6E000); }
   .yp-hora { margin-left: auto; font-size: 12px; color: var(--text-faint); }
   .yp-al { font-size: 13.5px; color: var(--text-dim); overflow-wrap: anywhere; }
   .yp-al b { color: var(--text); }
@@ -145,7 +154,8 @@ function ypLectura(x) {
     (f ? pz(esc(f) + (L.hora ? ' ' + esc(L.hora) : ''), true) : '') +
     (dd ? pz('A ***' + esc(dd.slice(-3)), true) : L.destinatario ? pz('A ' + esc(L.destinatario), true) : '') +
     (L.operacion ? pz('Op. ' + esc(dig(L.operacion)), true) : '') +
-    (L.es_yape === false ? pz('No parece Yape', false) : '') + '</div>';
+    (L.es_yape === false ? pz('No parece Yape', false) : '') +
+    (L.editada === true || L.editada === 'true' ? pz('Posible edición' + (L.senales ? ': ' + esc(String(L.senales).slice(0, 80)) : ''), false) : '') + '</div>';
 }
 async function ypLeer(b) {
   const id = +b.closest('[data-id]').dataset.id;
@@ -229,7 +239,7 @@ function pintarYape() {
   const q = String(YP.q || '').trim().toLowerCase().replace(/^#/, '');
   if (q) F = L.filter(x => [x.apodo, x.email, x.jid, x.id, x.codigo, x.detalle].some(v => String(v == null ? '' : v).toLowerCase().includes(q)));
   if (!F.length) { caja.innerHTML = `<div class="state-msg">${q ? 'Ninguna de las últimas 80 compras coincide con «' + esc(q) + '». Búscalo en Alumnos y fichas.' : YP.ver === 'revision' ? 'No hay recargas por revisar.' : YP.ver === 'solas' ? 'No hay recargas aprobadas solas esta semana.' : 'Aún no hay recargas.'}</div>`; return; }
-  caja.innerHTML = F.map(x => `<div class="rcard yp-card" data-id="${x.id}">
+  const tarjeta = x => `<div class="rcard yp-card" data-id="${x.id}">
       <div class="yp-cap" data-cap="${esc(x.captura || '')}">${x.captura ? 'Cargando…' : 'Sin captura'}</div>
       <div class="yp-info">
         <div class="yp-l1"><span class="yp-monto">${ypSol(x.monto)} <small>→ ${x.plan ? esc(x.detalle || 'Plan') : (+x.diamantes).toLocaleString('es-PE') + ' diamantes'}</small></span>${x.plan ? '<span class="yp-tag plan">Plan</span>' : ''}
@@ -250,7 +260,23 @@ function pintarYape() {
           ${x.captura ? '<button class="btn-ghost" type="button" data-leer>' + (x.lectura ? 'Leer otra vez' : 'Leer con IA') + '</button>' : ''}
         </div>` : ''}
       </div>
-    </div>`).join('');
+    </div>`;
+  // Separado por día (hora de Lima), con el total aprobado de ese día para cuadrar con tu Yape
+  const dia = f => new Date(f).toLocaleDateString('en-CA', { timeZone: 'America/Lima' });
+  const hoy = dia(Date.now()), ayer = dia(Date.now() - 864e5);
+  const grupos = [];
+  F.slice().sort((a, b) => new Date(b.creado) - new Date(a.creado)).forEach(x => {
+    const d = dia(x.creado), g = grupos[grupos.length - 1];
+    if (g && g.d === d) g.l.push(x); else grupos.push({ d, l: [x] });
+  });
+  caja.innerHTML = grupos.map(g => {
+    const ok = g.l.filter(x => x.estado === 'aprobada' && !x.quitado), rev = g.l.filter(x => x.estado === 'revision').length;
+    const suma = ok.reduce((t, x) => t + (+x.monto || 0), 0);
+    const nom = g.d === hoy ? 'Hoy' : g.d === ayer ? 'Ayer' : new Date(g.d + 'T12:00:00').toLocaleDateString('es-PE', { weekday: 'long', day: 'numeric', month: 'short' });
+    const fecha = new Date(g.d + 'T12:00:00').toLocaleDateString('es-PE', { weekday: 'short', day: 'numeric', month: 'short' });
+    return `<div class="yp-dia"><div class="yp-dia-t"><b>${esc(nom)}</b>${g.d === hoy || g.d === ayer ? '<small>' + esc(fecha) + '</small>' : ''}</div>
+      <div class="yp-dia-n"><span>${g.l.length} ${g.l.length === 1 ? 'compra' : 'compras'}</span>${rev ? '<span class="rev">' + rev + ' en revisión</span>' : ''}<span class="tot">Aprobado <b>${ypSol(suma)}</b></span></div></div>` + g.l.map(tarjeta).join('');
+  }).join('');
   ypCapturas();
 }
 
