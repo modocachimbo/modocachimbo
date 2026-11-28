@@ -23,6 +23,10 @@ const PL = { v: null, cambios: false, cargado: false };
   .pl-sw { display: flex; align-items: center; gap: 10px; font-weight: 700; cursor: pointer; }
   .pl-sw input { width: 18px; height: 18px; accent-color: var(--accent); }
   .pl-fila { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr) minmax(0, 1fr) 34px; gap: 8px; margin-top: 8px; }
+  .pl-fila6 { grid-template-columns: minmax(0, 2.2fr) repeat(3, minmax(0, 1fr)) 58px 34px; }
+  .pl-fila6 .pl-beta { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; color: var(--text-faint); }
+  .pl-grupo { display: flex; gap: 8px; align-items: center; margin-top: 16px; }
+  .pl-grupo .inp { font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
   .pl-fila.cab { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-faint); font-weight: 700; }
   .pl-op { font-weight: 600; font-size: 13.5px; margin-top: 6px; }
   .pl-ciclos { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 0 28px; }
@@ -33,7 +37,7 @@ const PL = { v: null, cambios: false, cargado: false };
   .pl-x svg { width: 14px; height: 14px; }
   .pl-x:hover { color: #ff9a9a; border-color: #5a2a2a; }
   @media (max-width: 1000px) { .pl-grid { grid-template-columns: 1fr; } .pl-cuatro { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 600px) { .pl-fila { grid-template-columns: 1fr 1fr 34px; } .pl-fila > :first-child { grid-column: 1 / -1; } .pl-fila.cab { display: none; } }`;
+  @media (max-width: 600px) { .pl-fila6 { grid-template-columns: 1fr 1fr 1fr; } .pl-fila { grid-template-columns: 1fr 1fr 34px; } .pl-fila > :first-child { grid-column: 1 / -1; } .pl-fila.cab { display: none; } }`;
   document.head.appendChild(st);
 })();
 
@@ -90,7 +94,7 @@ function plChips(marcados, apagado) {
 }
 
 function renderPlanes(errores) {
-  const v = PL.v, P = v.preventa, A = v.amigos, C = v.comparar;
+  const v = PL.v, P = v.preventa, A = v.amigos, C = v.comparar, D = v.detalle;
   const body = $('plBody');
   body.innerHTML = `
     ${errores && errores.length ? `<div class="perr pf-errs">${errores.map(esc).join('<br>')}</div>` : ''}
@@ -170,6 +174,24 @@ function renderPlanes(errores) {
     </div>
 
     <div class="pcard pl-card pl-sec">
+      <label class="pl-sw"><input type="checkbox" data-g="detalle" data-k="activa" ${D.activa ? 'checked' : ''}> Mostrar la tabla «Qué incluye cada plan»</label>
+      <label class="fld">Título</label><input class="inp" maxlength="70" data-g="detalle" data-k="titulo" value="${esc(D.titulo)}">
+      <label class="fld">Frase debajo del título</label><input class="inp" maxlength="160" data-g="detalle" data-k="sub" value="${esc(D.sub)}">
+      <label class="fld" style="margin-top:14px">Filas <span class="hint">en cada plan escribe Sí, No o un texto corto (ej. «Su área») · marca Beta si quieres la etiqueta</span></label>
+      ${(D.grupos || []).map((g, gi) => `<div class="pl-grupo">
+          <input class="inp" maxlength="30" data-dg="${gi}" value="${esc(g.nombre)}" placeholder="Nombre del grupo">
+          <button class="pl-x" type="button" data-dgq="${gi}" title="Quitar grupo" aria-label="Quitar grupo">${PL_X}</button></div>
+        <div class="pl-fila pl-fila6 cab"><span>Qué incluye</span><span>Bronce</span><span>Amatista</span><span>Leyenda</span><span>Beta</span><span></span></div>
+        ${(g.filas || []).map((f, i) => `<div class="pl-fila pl-fila6">
+          <input class="inp" maxlength="70" data-dr="${gi}:${i}" data-c="0" value="${esc(f[0])}">
+          ${[1, 2, 3].map(c => `<input class="inp" maxlength="24" data-dr="${gi}:${i}" data-c="${c}" value="${esc(plCelda(f[c]))}">`).join('')}
+          <label class="pl-beta"><input type="checkbox" data-dr="${gi}:${i}" data-c="4" ${f[4] === 'beta' ? 'checked' : ''}> Beta</label>
+          <button class="pl-x" type="button" data-drq="${gi}:${i}" title="Quitar fila" aria-label="Quitar fila">${PL_X}</button></div>`).join('')}
+        <button class="btn-ghost" type="button" data-dradd="${gi}" style="margin-top:8px">+ Fila en ${esc(g.nombre || 'este grupo')}</button>`).join('')}
+      <div><button class="btn-ghost" type="button" id="plDetGrupo" style="margin-top:14px">+ Agregar grupo</button></div>
+    </div>
+
+    <div class="pcard pl-card pl-sec">
       <label class="pl-sw"><input type="checkbox" data-g="comparar" data-k="activa" ${C.activa ? 'checked' : ''}> Mostrar la tabla de comparación</label>
       <div class="pl-dos">
         <div><label class="fld">Título</label><input class="inp" maxlength="70" data-g="comparar" data-k="titulo" value="${esc(C.titulo)}"></div>
@@ -212,6 +234,24 @@ function renderPlanes(errores) {
   body.querySelectorAll('[data-quitar]').forEach(b => b.addEventListener('click', () => {
     C.tabla.splice(+b.dataset.quitar, 1); plCambio(); renderPlanes();
   }));
+  // Tabla «Qué incluye cada plan»
+  body.querySelectorAll('[data-dg]').forEach(el => el.addEventListener('input', () => { D.grupos[+el.dataset.dg].nombre = el.value; plCambio(); }));
+  body.querySelectorAll('[data-dr]').forEach(el => el.addEventListener(el.type === 'checkbox' ? 'change' : 'input', () => {
+    const [gi, i] = el.dataset.dr.split(':').map(Number), f = D.grupos[gi].filas[i];
+    if (el.type === 'checkbox') { if (el.checked) f[4] = 'beta'; else f.length = 4; } else f[+el.dataset.c] = el.value;
+    plCambio();
+  }));
+  body.querySelectorAll('[data-drq]').forEach(b => b.addEventListener('click', () => { const [gi, i] = b.dataset.drq.split(':').map(Number); D.grupos[gi].filas.splice(i, 1); plCambio(); renderPlanes(); }));
+  body.querySelectorAll('[data-dgq]').forEach(b => b.addEventListener('click', () => {
+    const g = D.grupos[+b.dataset.dgq];
+    if ((g.filas || []).length && !confirm('¿Quitar el grupo «' + (g.nombre || '') + '» con sus filas?')) return;
+    D.grupos.splice(+b.dataset.dgq, 1); plCambio(); renderPlanes();
+  }));
+  body.querySelectorAll('[data-dradd]').forEach(b => b.addEventListener('click', () => {
+    const g = D.grupos[+b.dataset.dradd]; g.filas = g.filas || []; g.filas.push(['', 'Sí', 'Sí', 'Sí']); plCambio(); renderPlanes();
+    const t = body.querySelector(`[data-dr="${b.dataset.dradd}:${g.filas.length - 1}"][data-c="0"]`); if (t) t.focus();
+  }));
+  $('plDetGrupo').addEventListener('click', () => { D.grupos = D.grupos || []; D.grupos.push({ nombre: 'Nuevo grupo', filas: [['', 'Sí', 'Sí', 'Sí']] }); plCambio(); renderPlanes(); });
   const C2 = v.ciclos;
   body.querySelectorAll('input[name="plCobMod"]').forEach(r => r.addEventListener('change', () => { C2.modo = r.value; if (r.value === 'lista' && !C2.cobrados.length && plCiclos && plCiclos[0]) C2.cobrados = [plCiclos[0]]; plCambio(); renderPlanes(); }));
   body.querySelectorAll('input[name="plDesMod"]').forEach(r => r.addEventListener('change', () => { C2.descarga.modo = r.value; if (r.value === 'lista' && !C2.descarga.lista.length) C2.descarga.lista = C2.cobrados.slice(); plCambio(); renderPlanes(); }));
@@ -251,6 +291,10 @@ async function guardarPlanes() {
   v.preventa.pct = parseInt(v.preventa.pct, 10) || 0; delete v.preventa.precio; v.preventa.cupos = Math.max(0, parseInt(v.preventa.cupos, 10) || 0);
   if (v.preventa.activa && (v.preventa.pct < 1 || v.preventa.pct > 90)) err.push('Preventa: pon el descuento (1 a 90 %).');
   if (v.ciclos.modo === 'lista' && !v.ciclos.cobrados.length) err.push('Ciclos: marca al menos un ciclo que se cobra, o elige Automático.');
+  v.detalle.titulo = String(v.detalle.titulo || '').trim(); v.detalle.sub = String(v.detalle.sub || '').trim();
+  v.detalle.grupos = (v.detalle.grupos || []).map(g => ({ nombre: String(g.nombre || '').trim(),
+    filas: (g.filas || []).filter(f => String(f[0] || '').trim()).map(f => { const r = [String(f[0]).trim(), plValor(f[1]), plValor(f[2]), plValor(f[3])]; if (f[4] === 'beta') r.push('beta'); return r; }).slice(0, 30) }))
+    .filter(g => g.nombre || g.filas.length).slice(0, 8);
   v.comparar.tabla = (v.comparar.tabla || []).filter(f => String(f[0] || '').trim()).map(f => [String(f[0]).trim(), plValor(f[1]), plValor(f[2])]).slice(0, 20);
   if (err.length) { renderPlanes(err); window.scrollTo(0, 0); toast('Revisa lo marcado en rojo', true); return; }
   const btn = $('plGuardar'); btn.disabled = true; plEstado('Guardando…');

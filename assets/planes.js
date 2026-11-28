@@ -15,12 +15,12 @@
     planes: [
       { id: 'gratis', rango: 'Bronce', nombre: 'Gratis', sub: 'Para conocer la app y repasar lo del ciclo pasado.', mes: 0, ciclo: 0,
         si: ['Leer los Libros y practicar ciclos pasados', 'Exámenes pasados y Temas fijos', 'Ranking, racha, amigos y clanes', 'Laboratorio completo y test vocacional'],
-        no: ['Material del ciclo actual', 'Simulacro y duelos', 'Descargas PDF (paquete aparte)'] },
+        no: ['Material del ciclo actual', 'Flashcards y Búho tutor', 'Simulacro y duelos', 'Descargas PDF (paquete aparte)'] },
       { id: 'area', rango: 'Amatista', nombre: 'Un área', sub: 'Refuerza solo el área que más te cuesta.', mes: 12.90, ciclo: 34.90,
-        si: ['Todo lo gratis', 'Material nuevo de los cursos del área', 'Repaso, Fijas y Flashcards del área', 'Búho tutor en sus preguntas (beta)'],
-        no: ['Simulacro y duelos', 'Descargas PDF (paquete aparte)'] },
+        si: ['Todo lo gratis', 'Material nuevo de los cursos del área', 'Repaso, Fijas y Flashcards del área'],
+        no: ['Búho tutor', 'Simulacro y duelos', 'Descargas PDF (paquete aparte)'] },
       { id: 'total', rango: 'Leyenda', nombre: 'Total', sub: 'Las 4 áreas y todo lo que tiene Modo Cachimbo.', mes: 19.90, ciclo: 49.90,
-        si: ['Las 4 áreas con todo el material nuevo', 'Repaso, Fijas, Flashcards y Banqueo', 'Simulacro de 80 preguntas con puntaje por bloque', 'Duelos con amigos', 'Seminarios, Vocabulario y Biblioteca', 'Descargas sin internet'],
+        si: ['Las 4 áreas con todo el material nuevo', 'Repaso, Fijas, Flashcards y Banqueo', 'Búho tutor: resolución paso a paso (beta)', 'Simulacro de 80 preguntas con puntaje por bloque', 'Duelos con amigos', 'Seminarios, Vocabulario y Biblioteca', 'Descargas sin internet'],
         no: ['Descargas PDF (paquete aparte)'] }
     ],
     // Extras que se compran aparte en Tienda → Accesos (solo web). Laboratorio es gratis y Sin internet va con Leyenda
@@ -47,8 +47,9 @@
           ['Exámenes de admisión pasados', true, true, true],
           ['Temas fijos de admisión', true, true, true],
           ['Material del ciclo actual', false, 'Su área', 'Las 4 áreas'],
-          ['Repaso, Fijas y Flashcards', 'Ciclos pasados', 'Su área', 'Las 4 áreas'],
-          ['Búho tutor: resolución paso a paso', 'Ciclos pasados', 'Su área', 'Las 4 áreas', 'beta'],
+          ['Repaso y Fijas', 'Ciclos pasados', 'Su área', 'Las 4 áreas'],
+          ['Flashcards', false, 'Su área', 'Las 4 áreas'],
+          ['Búho tutor: resolución paso a paso', false, false, true, 'beta'],
           ['Seminarios y Banqueo', false, false, true],
           ['Vocabulario', false, false, true],
           ['Biblioteca universitaria', false, false, true],
