@@ -153,7 +153,9 @@
   .barra .preventa { margin: 0; padding: 7px 12px; border-radius: 99px; gap: 10px; flex: 1 1 360px; max-width: 560px; }
   .barra .preventa .ic { width: 30px; height: 30px; border-radius: 50%; }
   .barra .preventa .ic svg { width: 17px; height: 17px; }
-  .barra .preventa b { font-size: 14px; }
+  .barra .preventa b { font-size: 14px; display: inline-block; margin-right: 8px; white-space: nowrap; }
+  .barra .preventa small { white-space: nowrap; }
+  .barra .preventa { flex: 0 1 auto; }
   .barra .preventa small { font-size: 12px; }
   .barra .preventa .pr strong { font-size: 18px; }
   .barra .preventa .pr s { font-size: 11.5px; }
@@ -222,8 +224,8 @@
     </div></div>
     <div class="preventa" id="preventa">
       <span class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg></span>
-      <span><b>Preventa ciclo <span id="pvCiclo">2027-I</span></b><small id="pvTxt">Hasta el 30/11 o los primeros 100 alumnos</small></span>
-      <span class="pr"><s id="pvAntes">en todo</s><strong id="pvPrecio">-20%</strong></span>
+      <span><b>Preventa <span id="pvCiclo">2027-I</span></b><small id="pvTxt">Hasta el 30/11 o los primeros 100 alumnos</small></span>
+      <span class="pr"><s id="pvAntes" hidden></s><strong id="pvPrecio">-20%</strong></span>
     </div>
     <div class="oferta" id="oferta" hidden><svg class="i" viewBox="0 0 24 24"><path d="M20.5 13.5l-7 7a2 2 0 0 1-2.8 0L3 12.8V3h9.8l7.7 7.7a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg><span id="ofTxt"></span></div>
   </div>
@@ -367,8 +369,8 @@
     var pct = +(P.pct == null ? 20 : P.pct) || 0;
     document.getElementById('preventa').hidden = !(P.activa && pct);
     document.getElementById('pvCiclo').textContent = P.ciclo || '';
-    document.getElementById('pvTxt').textContent = 'Amatista y Leyenda, mensual o 3 meses' + (P.hasta ? ' · hasta el ' + P.hasta : '') + (+P.cupos ? (P.hasta ? ' o ' : ' · ') + 'los primeros ' + P.cupos + ' alumnos' : '');
-    document.getElementById('pvAntes').textContent = 'descuento';
+    document.getElementById('pvTxt').textContent = [P.hasta ? 'Hasta el ' + P.hasta : '', +P.cupos ? P.cupos + ' cupos' : ''].filter(Boolean).join(' · ');
+    document.getElementById('pvAntes').textContent = '';
     document.getElementById('pvPrecio').textContent = '-' + pct + '%';
     var A = CFG.amigos;
     document.getElementById('amigos').hidden = !A.activa;
