@@ -40,6 +40,8 @@ Lee SOLO lo que se ve escrito en la imagen y responde en JSON:
 - destinatario: el nombre de la persona que RECIBIÓ el pago (sale debajo del monto).
 - destino_digitos: los dígitos visibles del «Nro. de celular» del destino (ej. "708").
 - operacion: el «Nro. de operación», solo dígitos.
+- editada: true SOLO si ves señales claras de que la captura fue editada o armada: números o letras con otro tipo, tamaño, grosor o color que el resto; cifras desalineadas o encimadas; manchas, borrones o recuadros tapando algo; bordes cortados raros; partes pixeladas distintas al resto. Si se ve normal, false.
+- senales: si editada es true, en pocas palabras qué viste y dónde (ej. "el monto tiene otra letra"). Si no, "".
 Si un dato no se ve, pon "". No inventes nada.`;
 
 const ESQUEMA = {
@@ -47,8 +49,9 @@ const ESQUEMA = {
   properties: {
     es_yape: { type: 'BOOLEAN' }, monto: { type: 'STRING' }, codigo: { type: 'STRING' }, fecha: { type: 'STRING' },
     hora: { type: 'STRING' }, destinatario: { type: 'STRING' }, destino_digitos: { type: 'STRING' }, operacion: { type: 'STRING' },
+    editada: { type: 'BOOLEAN' }, senales: { type: 'STRING' },
   },
-  required: ['es_yape', 'monto', 'codigo', 'fecha', 'hora', 'destinatario', 'destino_digitos', 'operacion'],
+  required: ['es_yape', 'monto', 'codigo', 'fecha', 'hora', 'destinatario', 'destino_digitos', 'operacion', 'editada', 'senales'],
 };
 
 function base64(buf: Uint8Array): string {
