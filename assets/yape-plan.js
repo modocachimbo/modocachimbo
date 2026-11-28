@@ -17,7 +17,7 @@
     '@keyframes yplIn{from{opacity:0}}' +
     '.ypl{position:relative;width:min(420px,100%);max-height:calc(100vh - 32px);overflow:auto;background:#151127;border:1px solid #2A2346;border-radius:24px;padding:20px 18px 18px;color:#EEEAF7;font:500 14.5px/1.45 Inter,sans-serif;box-shadow:0 24px 60px rgba(0,0,0,.5);animation:yplSube .25s cubic-bezier(.2,1.3,.4,1)}' +
     '@keyframes yplSube{from{transform:translateY(18px);opacity:0}}' +
-    '.ypl *{box-sizing:border-box}' +
+    '.ypl,.ypl *{box-sizing:border-box}' +
     '.ypl-x{position:absolute;right:12px;top:12px;width:34px;height:34px;border-radius:10px;border:0;background:#1D1834;display:grid;place-items:center;cursor:pointer;color:#A99FC8}' +
     '.ypl svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;flex:none}' +
     '.ypl-top{display:flex;align-items:center;gap:12px;padding-right:40px}' +
@@ -71,6 +71,23 @@
     '.ypl-gira{width:64px;height:64px;margin:12px auto 10px;border-radius:50%;border:6px solid #2A2346;border-top-color:#C6E000;animation:yplGira 1s linear infinite}' +
     '@keyframes yplGira{to{transform:rotate(360deg)}}' +
     '.ypl-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:70;max-width:calc(100% - 32px);padding:10px 16px;border-radius:12px;background:#EEEAF7;color:#151127;font:800 14px Nunito,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.4)}' +
+    // PC (pantalla ancha): ventana más ancha en 2 columnas, sin scroll. Izq: plan, total y Yapea · Der: captura, código y Enviar
+    '@media (min-width:820px){' +
+      '.ypl.ancha{width:min(820px,100%);padding:24px 24px 20px}' +
+      '.ypl.ancha .ypl-dos{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}' +
+      '.ypl.ancha .ypl-dos .ypl-paso:first-child{margin-top:0}' +
+      '.ypl.ancha .ypl-precio{margin:16px 0 10px;padding:16px}' +
+      '.ypl.ancha .ypl-precio b{font-size:34px}' +
+      '.ypl.ancha .ypl-izq .ypl-paso{margin-top:0}' +
+      '.ypl.ancha .ypl-der{padding-top:44px}' +
+      '.ypl.ancha .ypl-num{padding:14px}' +
+      '.ypl.ancha .ypl-num b{font-size:24px}' +
+      '.ypl.ancha .ypl-sube{min-height:72px}' +
+      '.ypl.ancha .ypl-bt{margin-top:12px}' +
+      '.ypl.ancha .ypl-izq .ypl-nota{margin-top:14px}' +
+    '}' +
+    '@media (max-width:819px){.ypl-izq .ypl-nota{display:none}}' +
+    '@media (min-width:820px){.ypl-der .ypl-nota{display:none}}' +
     '@media (prefers-reduced-motion:reduce){.ypl-ov,.ypl,.ypl-gira{animation:none}}';
 
   var IC = {
@@ -106,10 +123,10 @@
     if (!window.MCAuth) return Promise.reject(new Error('sin auth'));
     return MCAuth.listo.then(function (c) { return c.rpc(fn, args || {}); }).then(function (r) { if (r.error) throw r.error; return r.data; });
   }
-  function ventana(html, color) {
+  function ventana(html, color, clase) {
     css();
     var o = document.createElement('div'); o.className = 'ypl-ov';
-    o.innerHTML = '<div class="ypl" role="dialog" aria-modal="true" style="--yc:' + (color || '#C6E000') + '"><button type="button" class="ypl-x" aria-label="Cerrar" data-cerrar>' + IC.x + '</button><div class="ypl-in">' + html + '</div></div>';
+    o.innerHTML = '<div class="ypl' + (clase ? ' ' + clase : '') + '" role="dialog" aria-modal="true" style="--yc:' + (color || '#C6E000') + '"><button type="button" class="ypl-x" aria-label="Cerrar" data-cerrar>' + IC.x + '</button><div class="ypl-in">' + html + '</div></div>';
     o.addEventListener('click', function (e) { if (e.target === o || e.target.closest('[data-cerrar]')) o.remove(); });
     document.body.appendChild(o);
     return o;
@@ -163,15 +180,19 @@
 
     var archivo = null;
     var o = ventana(
+      '<div class="ypl-dos"><div class="ypl-izq">' +
       '<div class="ypl-top"><span class="ic">' + (P.plan === 'total' ? IC.total : IC.area) + '</span><span><b>' + esc(nombre) + '</b><small>' + per + ' · se activa en tu cuenta</small></span></div>' +
       '<div class="ypl-precio"><span>Total a pagar</span><b id="yplPrecio">' + sol(precio) + '</b></div>' +
       '<div class="ypl-paso"><span class="ypl-n">1</span><div class="ypl-c"><h4>Yapea <span data-monto>' + sol(precio) + '</span></h4><div class="ypl-num"><div><b>' + YAPE + '</b><small>A nombre de ' + YAPE_NOMBRE + '</small></div><button type="button" data-copiar>Copiar</button></div></div></div>' +
+      '<div class="ypl-nota">' + IC.escudo + '<span>Revisamos cada pago. Si la captura no corresponde a un Yape real, el acceso se quita.</span></div>' +
+      '</div><div class="ypl-der">' +
       '<div class="ypl-paso" id="yplP2"><span class="ypl-n">2</span><div class="ypl-c"><h4>Sube tu captura</h4><label class="ypl-sube" id="yplSube">' + IC.sube + '<span>Elegir captura</span><input type="file" accept="image/*" id="yplFile"></label></div></div>' +
       '<div class="ypl-paso" id="yplP3"><span class="ypl-n">3</span><div class="ypl-c"><h4>Código de seguridad</h4><div class="ypl-cod"><input inputmode="numeric" maxlength="1" aria-label="Primer número"><input inputmode="numeric" maxlength="1" aria-label="Segundo número"><input inputmode="numeric" maxlength="1" aria-label="Tercer número"></div>' +
         '<div class="ypl-ej"><i><span>3</span><span>3</span><span>9</span></i>Los 3 números que salen en tu captura de Yape.</div></div></div>' +
       '<button type="button" class="ypl-bt" id="yplEnviar" disabled>Enviar y activar</button>' +
       '<div class="ypl-nota">' + IC.escudo + '<span>Revisamos cada pago. Si la captura no corresponde a un Yape real, el acceso se quita.</span></div>' +
-      '<small class="ypl-ayuda">¿Problemas? <a href="#" data-wsp>Escríbenos por WhatsApp</a></small>', P.color);
+      '<small class="ypl-ayuda">¿Problemas? <a href="#" data-wsp>Escríbenos por WhatsApp</a></small>' +
+      '</div></div>', P.color, 'ancha');
 
     // El precio de verdad lo da el servidor
     rpc('yape_plan_ver', { p_plan: P.plan, p_periodo: P.periodo, p_area: P.area || null }).then(function (d) {
@@ -246,6 +267,7 @@
       // Que la próxima página vuelva a preguntar sus accesos
       try { localStorage.removeItem('mc_accesos_id'); } catch (e) {}
       var caja = o.querySelector('.ypl-in'), h;
+      o.querySelector('.ypl').classList.remove('ancha');   // el resultado va en la ventana angosta
       d = d || {};
       if (d.estado === 'aprobada') {
         h = '<div class="ypl-est"><div class="ic">' + IC.check + '</div><h3>¡Plan <em>activado</em>!</h3><p>Tu <b>' + esc(d.detalle || nombre) + '</b> ya está en tu cuenta.</p>' +
