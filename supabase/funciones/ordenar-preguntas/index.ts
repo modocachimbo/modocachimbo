@@ -26,7 +26,9 @@ const json = (d: unknown, status = 200) =>
   new Response(JSON.stringify(d), { status, headers: { ...CORS, 'Content-Type': 'application/json' } });
 
 // Primero el que pongas en GEMINI_MODELO_TEXTO; si Google no lo tiene, prueba los siguientes
-const MODELOS = [Deno.env.get('GEMINI_MODELO_TEXTO') || '', 'gemini-flash-latest', 'gemini-2.5-flash', 'gemini-flash-lite-latest'].filter(Boolean);
+// Flash Lite primero: es el rápido (el mismo que lee los Yape). Sin «pensar» para que responda en segundos.
+const MODELOS = [Deno.env.get('GEMINI_MODELO_TEXTO') || '', 'gemini-flash-lite-latest', 'gemini-flash-latest', 'gemini-2.5-flash'].filter(Boolean);
+const LIMITE_MS = 110000; // Supabase corta la función a los 150 s
 const TIPOS = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'application/pdf'];
 const MAX_ARCHIVOS = 6, MAX_BYTES = 14 * 1024 * 1024; // base64 total
 
@@ -74,17 +76,20 @@ Deno.serve(async (req) => {
   partes.push({ text: prompt + FINAL + (texto.trim() ? '\n\nESTAS SON LAS PREGUNTAS:\n\n' + texto : '\n\nLas preguntas están en los archivos adjuntos.') });
 
   let ultimo = '';
+  const inicio = Date.now();
   for (const modelo of MODELOS) {
+    const queda = LIMITE_MS - (Date.now() - inicio);
+    if (queda < 5000) break;
     let r: Response;
     try {
       r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-goog-api-key': clave },
-        body: JSON.stringify({ contents: [{ role: 'user', parts: partes }], generationConfig: { temperature: 0.2, maxOutputTokens: 32000 } }),
-        signal: AbortSignal.timeout(130000),
+        body: JSON.stringify({ contents: [{ role: 'user', parts: partes }], generationConfig: { temperature: 0.2, maxOutputTokens: 32000, thinkingConfig: { thinkingBudget: 0 } } }),
+        signal: AbortSignal.timeout(queda),
       });
     } catch (_) { return json({ error: 'Gemini tardó demasiado. Prueba con menos preguntas a la vez.' }, 504); }
-    if (r.status === 404 || r.status === 400 && /not found|not supported/i.test(await r.clone().text())) { ultimo = modelo + ' no existe'; continue; }
+    if (r.status === 404 || r.status === 400 && /not found|not supported|thinking/i.test(await r.clone().text())) { ultimo = modelo + ' no disponible'; continue; }
     if (r.status === 429) return json({ error: 'Se llegó al límite gratis de Gemini por ahora. Intenta en un rato.' }, 429);
     if (!r.ok) return json({ error: 'Gemini ' + r.status + ': ' + (await r.text()).slice(0, 160) }, 502);
     const d = await r.json();
