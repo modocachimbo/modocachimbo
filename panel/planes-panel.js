@@ -122,7 +122,7 @@ function renderPlanes(errores) {
       <div class="pl-dos" style="gap:18px">
         <div>
           <label class="fld">Se cobran (piden código)</label>
-          <label class="pl-sw pl-op"><input type="radio" name="plCobMod" value="auto" ${v.ciclos.modo !== 'lista' ? 'checked' : ''}> Automático: solo el ciclo más nuevo de cada curso</label>
+          <label class="pl-sw pl-op"><input type="radio" name="plCobMod" value="auto" ${v.ciclos.modo !== 'lista' ? 'checked' : ''}> Automático: solo el ciclo más nuevo de cada curso (con temas)</label>
           <label class="pl-sw pl-op"><input type="radio" name="plCobMod" value="lista" ${v.ciclos.modo === 'lista' ? 'checked' : ''}> Solo los que marco:</label>
           <div class="pl-ciclos" id="plCob">${plChips(v.ciclos.cobrados, v.ciclos.modo !== 'lista')}</div>
         </div>

@@ -64,7 +64,7 @@
 
 <script>
   const TIPO = 'control-cpu', ETIQUETA = 'Examen de control';
-  // Ciclos que pueden tener examen (fijo). El manifest.json dice cuáles ya tienen preguntas.
+  // Ciclos que pueden tener examen. Los que el panel suba y no estén aquí se agregan solos (del manifest.json).
   const allYears = [
     "2027-III","2027-II","2027-I",
     "2026-II","2026-I",
@@ -105,6 +105,10 @@
     .then(manifest => {
       const hay = {};
       manifest.forEach(m => { hay[m.id] = m; });
+      // Ciclos nuevos subidos desde el panel (ej. 2028-I) entran solos a la lista, en su orden
+      const ordenC = id => { const x = String(id).match(/^(\d{4})-(III|II|I)$/); return x ? +x[1] * 10 + { I: 1, II: 2, III: 3 }[x[2]] : 0; };
+      manifest.forEach(m => { if (ordenC(m.id) && !allYears.includes(m.id)) allYears.push(m.id); });
+      allYears.sort((a, b) => ordenC(b) - ordenC(a));
       // Un examen por tarjeta, del más nuevo al más antiguo (el orden de allYears)
       const examenes = [];
       allYears.forEach(ciclo => {

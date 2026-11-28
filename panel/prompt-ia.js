@@ -446,3 +446,105 @@ function botonPromptImagen() {
   caja.append(b, menu);
   return caja;
 }
+
+/* ---------- «Ordenar con IA»: Gemini da formato directo desde el panel ----------
+   Llama a la Edge Function ordenar-preguntas (supabase/funciones/ordenar-preguntas)
+   con el mismo prompt de «Prompts ▾ → Formato de las preguntas». La clave de Gemini
+   vive en Supabase (secret GEMINI_API_KEY), nunca en la web. El resultado reemplaza
+   el texto de la caja y luego se revisa con «Revisar preguntas» como siempre. */
+(function estilosOrdenarIA() {
+  const st = document.createElement('style');
+  st.textContent = `
+  .oi-drop { margin-top: 12px; padding: 14px; border-radius: 14px; border: 2px dashed rgba(206,130,255,.45); text-align: center; color: var(--text-dim); font-weight: 700; cursor: pointer; display: block; }
+  .oi-drop:hover { border-color: #CE82FF; color: #CE82FF; }
+  .oi-files { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .oi-files span { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 10px; background: #251F3F; font-size: 12.5px; font-weight: 800; }
+  .oi-files button { border: 0; background: none; color: #FF8A8A; cursor: pointer; font-weight: 900; padding: 0 2px; }
+  .oi-estado { margin-top: 10px; font-weight: 800; color: #CE82FF; min-height: 1.2em; }`;
+  document.head.appendChild(st);
+})();
+
+function oiLeerArchivo(f) {
+  // Fotos: se achican a 1800 px en JPEG para que viajen livianas. PDF: tal cual.
+  if (f.type === 'application/pdf') return f.arrayBuffer().then(b => {
+    let s = ''; const u = new Uint8Array(b);
+    for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000));
+    return { mime: 'application/pdf', data: btoa(s), nombre: f.name };
+  });
+  return new Promise((ok, mal) => {
+    const img = new Image(), url = URL.createObjectURL(f);
+    img.onload = () => {
+      const k = Math.min(1, 1800 / Math.max(img.width, img.height));
+      const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      ok({ mime: 'image/jpeg', data: c.toDataURL('image/jpeg', 0.85).split(',')[1], nombre: f.name });
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); mal(new Error('No se pudo abrir ' + f.name)); };
+    img.src = url;
+  });
+}
+
+function botonOrdenarIA(tipo, caja) {
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'btn-ghost btn-ia';
+  b.title = 'Gemini pone las preguntas en el formato del panel, sin salir de aquí';
+  b.innerHTML = ICONO_IA + ' Ordenar con IA';
+  b.addEventListener('click', () => abrirOrdenarIA(typeof tipo === 'function' ? tipo() : tipo, caja));
+  return b;
+}
+
+function abrirOrdenarIA(tipo, caja) {
+  const archivos = [];
+  const o = document.createElement('div'); o.className = 'ov';
+  o.innerHTML = `<div class="mcard" style="max-width:620px;">
+    <h3>Ordenar con IA</h3>
+    <p class="sub" style="margin-top:6px;line-height:1.55;">Pega las preguntas como las tengas (copiadas de Word, WhatsApp o un PDF) o adjunta fotos o el PDF. Gemini las pone en el formato del panel y luego tú las revisas con <b>Revisar preguntas</b>.</p>
+    <textarea class="ta" id="oiTexto" style="margin-top:14px;min-height:200px;" spellcheck="false" placeholder="Pega aquí las preguntas…"></textarea>
+    <label class="oi-drop">Adjuntar fotos o PDF (hasta 6)<input type="file" id="oiArch" accept="image/*,application/pdf" multiple hidden></label>
+    <div class="oi-files" id="oiFiles"></div>
+    <div class="oi-estado" id="oiEstado"></div>
+    <div class="mfoot"><button type="button" class="btn-ghost" data-x>Cancelar</button><button type="button" class="btn-main" data-ok>Ordenar</button></div></div>`;
+  document.body.appendChild(o);
+  const q = s => o.querySelector(s), est = q('#oiEstado'), ok = q('[data-ok]');
+  q('#oiTexto').value = caja.value;
+  const pintar = () => {
+    q('#oiFiles').innerHTML = archivos.map((a, i) => `<span>${esc(a.nombre)}<button type="button" data-q="${i}" aria-label="Quitar">×</button></span>`).join('');
+    q('#oiFiles').querySelectorAll('[data-q]').forEach(x => x.onclick = () => { archivos.splice(+x.dataset.q, 1); pintar(); });
+  };
+  q('#oiArch').addEventListener('change', async e => {
+    const fs = Array.from(e.target.files || []); e.target.value = '';
+    for (const f of fs) {
+      if (archivos.length >= 6) { toast('Máximo 6 archivos', true); break; }
+      if (f.type === 'application/pdf' && f.size > 9e6) { toast(f.name + ' pesa más de 9 MB', true); continue; }
+      try { est.textContent = 'Preparando ' + f.name + '…'; archivos.push(await oiLeerArchivo(f)); } catch (er) { toast(er.message, true); }
+    }
+    est.textContent = ''; pintar();
+  });
+  let trabajando = false;
+  const cerrar = () => { if (!trabajando) o.remove(); };
+  q('[data-x]').onclick = cerrar;
+  ok.onclick = async () => {
+    const texto = q('#oiTexto').value.trim();
+    if (!texto && !archivos.length) { toast('Pega el texto o adjunta fotos o un PDF', true); return; }
+    trabajando = true; ok.disabled = true; q('[data-x]').disabled = true;
+    est.textContent = 'Gemini está ordenando las preguntas… puede tardar hasta 2 minutos.';
+    try {
+      const c = await MCAuth.listo;
+      if (!MCAuth.usuario()) throw new Error('Entra con tu cuenta de Google para usar la IA.');
+      const r = await c.functions.invoke('ordenar-preguntas', { body: { prompt: IA_PROMPTS[tipo](), texto, archivos: archivos.map(a => ({ mime: a.mime, data: a.data })) } });
+      if (r.error) {
+        let m = r.error.message || 'No se pudo ordenar';
+        try { const j = await r.error.context.json(); if (j && j.error) m = j.error; } catch (er) {}
+        throw new Error(/not found|Failed to send|404/i.test(m) ? 'Falta subir la función ordenar-preguntas en Supabase.' : m);
+      }
+      const t = (r.data && r.data.texto) || '';
+      if (!t) throw new Error('Gemini no devolvió nada. Intenta otra vez.');
+      caja.value = t; caja.dispatchEvent(new Event('input', { bubbles: true }));
+      trabajando = false; o.remove();
+      toast(r.data.cortado ? 'Listo, pero la respuesta salió cortada: revisa las últimas preguntas o manda menos a la vez.' : 'Listo. Revisa las preguntas antes de publicar.', !!r.data.cortado);
+    } catch (e) {
+      trabajando = false; ok.disabled = false; q('[data-x]').disabled = false;
+      est.textContent = ''; toast(e.message || 'No se pudo ordenar.', true);
+    }
+  };
+}

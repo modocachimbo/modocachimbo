@@ -2,6 +2,8 @@
    Modo Cachimbo · Avance del temario (Libros)
    El título "Curso — 10 temas" pasa a "Curso · 4 de 10 temas" y arriba
    de los temas va una barra del ancho de las tarjetas, del color del área.
+   El total sale de Panel → Ciclos («Temas del ciclo», assets/ciclos.js);
+   si no se fijó, se usa el número del título de la página.
    ========================================================= */
 (function () {
   var h1 = document.querySelector('.page-title h1');
@@ -41,4 +43,21 @@
     var obs = new MutationObserver(function () { if (pintar()) obs.disconnect(); });
     obs.observe(lista, { childList: true });
   }
+
+  // Total fijado en el panel para este ciclo
+  var year = new URLSearchParams(location.search).get('year');
+  function conCiclos(fn) {
+    if (window.MCCiclos) return fn();
+    var s = document.createElement('script');
+    s.src = (document.querySelector('script[src$="assets/avance.js"]') || {}).getAttribute('src').replace('avance.js', 'ciclos.js');
+    s.onload = fn; document.head.appendChild(s);
+  }
+  if (year) conCiclos(function () {
+    if (!window.MCCiclos || !MCCiclos.total) return;
+    MCCiclos.total(year).then(function (t) {
+      if (!t || t === total) return;
+      total = t;
+      pintar();
+    });
+  });
 })();
