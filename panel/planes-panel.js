@@ -101,7 +101,7 @@ function renderPlanes(errores) {
         <label class="fld">Frase corta</label><input class="inp" maxlength="90" data-p="${i}" data-k="sub" value="${esc(p.sub)}">
         ${p.id === 'gratis' ? '' : `<div class="pl-dos">
           <div><label class="fld">Mensual (S/)</label><input class="inp" type="number" min="0" step="0.10" data-p="${i}" data-k="mes" value="${p.mes}"></div>
-          <div><label class="fld">Ciclo 3 meses (S/)</label><input class="inp" type="number" min="0" step="0.10" data-p="${i}" data-k="ciclo" value="${p.ciclo}"></div>
+          <div><label class="fld">3 meses (S/)</label><input class="inp" type="number" min="0" step="0.10" data-p="${i}" data-k="ciclo" value="${p.ciclo}"></div>
         </div>`}
         <label class="fld">Incluye <span class="hint">una cosa por línea</span></label>
         <textarea class="inp" rows="5" data-p="${i}" data-k="si">${esc((p.si || []).join('\n'))}</textarea>
@@ -131,7 +131,7 @@ function renderPlanes(errores) {
     </div>
 
     <div class="pcard pl-card pl-sec">
-      <label class="pl-sw"><input type="checkbox" data-g="preventa" data-k="activa" ${P.activa ? 'checked' : ''}> Preventa del plan completo (por ciclo)</label>
+      <label class="pl-sw"><input type="checkbox" data-g="preventa" data-k="activa" ${P.activa ? 'checked' : ''}> Preventa del plan Leyenda (por 3 meses)</label>
       <div class="pl-cuatro">
         <div><label class="fld">Precio preventa (S/)</label><input class="inp" type="number" min="0" step="0.10" data-g="preventa" data-k="precio" value="${P.precio}"></div>
         <div><label class="fld">Ciclo</label><input class="inp" maxlength="12" data-g="preventa" data-k="ciclo" value="${esc(P.ciclo)}"></div>

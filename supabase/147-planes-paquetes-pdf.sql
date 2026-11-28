@@ -63,13 +63,13 @@ begin
   if p_plan = 'area' then
     k := array_position(areas, p_area);
     if k is null then return; end if;
-    producto := 'area-' || p_area; nombre := 'Plan ' || nom[k];
+    producto := 'area-' || p_area; nombre := 'Plan Amatista · ' || nom[k];
   else
     -- Leyenda (Total) trae también las Descargas sin internet
     producto := case p_plan when 'total' then 'TODO-VIP,offline-VIP' else 'descarga-VIP' end;
-    nombre := case p_plan when 'total' then 'Plan Total' else 'Descargas PDF' end;
+    nombre := case p_plan when 'total' then 'Plan Leyenda' else 'Descargas PDF' end;
   end if;
-  detalle := nombre || ' · ' || case when extra then n || ' al día, 30 días' when p_periodo = 'mes' then 'mes' else 'ciclo' end;
+  detalle := nombre || ' · ' || case when extra then n || ' al día, 30 días' when p_periodo = 'mes' then '1 mes' else '3 meses' end;
   monto := round(m, 2);
   return next;
 end $$;
