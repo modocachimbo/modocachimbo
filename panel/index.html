@@ -792,6 +792,7 @@
         <button class="tab disp" data-tab="vocab" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M10 14V8.5l5 5.5V8.5"/><path d="M10 5.8c.8-.6 1.7-.6 2.5 0s1.7.6 2.5 0"/></svg><span>Vocabulario</span></button>
         <button class="tab disp" data-tab="cursos" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span>Cursos</span></button>
         <button class="tab disp" data-tab="ciclos" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="m9 15 2 2 4-4"/></svg><span>Ciclos</span></button>
+        <button class="tab disp" data-tab="teoria" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v15H6.5A2.5 2.5 0 0 0 4 20.5 2.5 2.5 0 0 0 6.5 23H19"/><path d="M9 7h6M9 11h4"/></svg><span>Teoría</span></button>
         <button class="tab disp" data-tab="temasfijos" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6" rx="1"/><rect x="12" y="8" width="3" height="10" rx="1"/><rect x="17" y="5" width="3" height="13" rx="1"/></svg><span>Temas fijos</span></button>
         <div class="menu-grupo">Web</div>
         <button class="tab disp" data-tab="pausa" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg><span>Mantenimiento</span></button>
@@ -1125,6 +1126,19 @@ E) Alternativa"></textarea>
           </div>
         </div>
         <div id="mntBody"></div>
+      </div>
+
+      <!-- Teoría interactiva -->
+      <div id="tab-teoria" hidden>
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Contenido</div>
+            <h1 class="disp">Teoría</h1>
+            <p>Teoría interactiva por partes, con preguntas de enganche. Cada teoría tiene un código; luego en «Vincular a temas» eliges en qué tema de cada ciclo aparece (el orden de los temas cambia cada ciclo).</p>
+          </div>
+          <span class="hint" id="teEstado"></span>
+        </div>
+        <div id="teBody"><div class="loader">Cargando…</div></div>
       </div>
 
       <!-- Temas fijos -->
@@ -1604,7 +1618,7 @@ E) Alternativa"></textarea>
      unos segundos entre cada uno. Dos commits en el mismo segundo hacían que GitHub Pages
      se trabara y la web se quedara con la versión anterior. Después, el vigía revisa que
      la web publicada quede al día (ver vigiaPublicacion). */
-  const COMMITS = /^(corregir|corregirExamen|publicarTema|publicarExamen|borrarPregunta|borrarTema|renombrarTema|crearAnio|eliminarAnio|borrarFijas|editarCurso|ordenarCursos|configCurso|reaplicar|restaurarArchivo|repararAnios|creditoTema)$/;
+  const COMMITS = /^(corregir|corregirExamen|publicarTema|publicarExamen|borrarPregunta|borrarTema|renombrarTema|crearAnio|eliminarAnio|borrarFijas|editarCurso|ordenarCursos|configCurso|reaplicar|restaurarArchivo|repararAnios|creditoTema|guardarTeoria|borrarTeoria|vincularTeoria)$/;
   let colaCommits = Promise.resolve(), ultimoCommit = 0;
   function api(action, data = {}, pass = PASS) {
     if (!COMMITS.test(action)) return apiDirecta(action, data, pass);
@@ -1723,7 +1737,7 @@ E) Alternativa"></textarea>
   }
 
   /* ---------- ayudantes: solo ven sus pestañas ---------- */
-  const TAB_PERMISO = { reportes: 'reportes', corr: 'corr', alumnos: 'alumnos', porvencer: 'alumnos', simulacro: 'simulacro', topxp: 'topxp', agenda: 'agenda', tematicas: 'tematicas', codigos: 'codigos', subir: 'subir', examen: 'examen', avance: 'subir',
+  const TAB_PERMISO = { reportes: 'reportes', corr: 'corr', alumnos: 'alumnos', porvencer: 'alumnos', simulacro: 'simulacro', topxp: 'topxp', agenda: 'agenda', tematicas: 'tematicas', codigos: 'codigos', subir: 'subir', examen: 'examen', avance: 'subir', teoria: 'subir',
     editar: 'editar', vocab: 'vocab', cursos: 'cursos', ciclos: 'ciclos', perfil: 'perfil', alertas: 'alertas', frases: 'frases', tutorial: 'tutorial',
     recursos: 'recursos', biblioteca: 'biblioteca', regalos: 'regalos', influencers: 'regalos', resenas: 'resenas', descargas: 'descargas', verif: 'verificar' };
   function puedeTab(t) { return ROL.admin || (!!TAB_PERMISO[t] && ROL.permisos.includes(TAB_PERMISO[t])); }
@@ -1811,7 +1825,7 @@ E) Alternativa"></textarea>
   const VIGENCIA = 5 * 60 * 1000;
   const traido = {};
   const CARGAR = {
-    cursos: f => { cargarCursos(); cargarPractica(); }, perfil: f => cargarPerfilCfg(), frases: f => cargarFrases(), temasfijos: f => cargarTemasFijos(), planes: f => cargarPlanes(), vocab: f => cargarVocabulario(),
+    cursos: f => { cargarCursos(); cargarPractica(); }, perfil: f => cargarPerfilCfg(), frases: f => cargarFrases(), temasfijos: f => cargarTemasFijos(), teoria: f => cargarTeoria(f), planes: f => cargarPlanes(), vocab: f => cargarVocabulario(),
     ciclos: f => cargarCiclos(f), alumnos: f => cargarAlumnos(f), porvencer: f => cargarPorVencer(f), codigos: () => cargarCodigos(), simulacro: () => cargarTopSimulacro(), topxp: () => cargarTopXp(), clanes: () => cargarClanes(),
     agenda: () => cargarAgenda(), tematicas: () => cargarTematicas(), recursos: () => cargarRecursos(), biblioteca: () => cargarBiblioteca(), regalos: () => cargarRegalos(), influencers: () => cargarInfluencers(), descargas: () => cargarDescargas(), resenas: () => cargarResenas(), yape: () => cargarYape(), alertas: () => cargarAlertas(), anuncios: () => cargarAnuncios(), notif: () => cargarNotificaciones(), corr: () => cargarCorrecciones(),
     pausa: () => cargarPausa(), equipo: () => cargarEquipo(), historial: () => cargarHistorial(), avance: () => cargarAvance(), verif: f => cargarVerificar(f)
@@ -1830,10 +1844,10 @@ E) Alternativa"></textarea>
     window.scrollTo(0, 0);
     document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
     const pestana = t.dataset.tab === 'examen' ? 'subir' : t.dataset.tab; // "Subir examen" usa la misma pantalla que "Subir tema"
-    ['reportes', 'subir', 'editar', 'cursos', 'ciclos', 'temasfijos', 'vocab', 'perfil', 'frases', 'alertas', 'tutorial', 'codigos', 'alumnos', 'porvencer', 'corr', 'simulacro', 'topxp', 'clanes', 'agenda', 'tematicas', 'recursos', 'biblioteca', 'regalos', 'influencers', 'descargas', 'resenas', 'yape', 'equipo', 'historial', 'avance', 'verif', 'anuncios', 'notif', 'planes', 'pausa'].forEach(id => { $('tab-' + id).hidden = id !== pestana; });
+    ['reportes', 'subir', 'editar', 'cursos', 'ciclos', 'teoria', 'temasfijos', 'vocab', 'perfil', 'frases', 'alertas', 'tutorial', 'codigos', 'alumnos', 'porvencer', 'corr', 'simulacro', 'topxp', 'clanes', 'agenda', 'tematicas', 'recursos', 'biblioteca', 'regalos', 'influencers', 'descargas', 'resenas', 'yape', 'equipo', 'historial', 'avance', 'verif', 'anuncios', 'notif', 'planes', 'pausa'].forEach(id => { $('tab-' + id).hidden = id !== pestana; });
     if (t.dataset.tab === 'tutorial' && !TU.datos) cargarTutorial();
     // Las que tienen textos por guardar (Perfil, Frases, Vocabulario) no se recargan solas al tocarlas otra vez
-    cargarSeccion(t.dataset.tab, yaEstaba && !['perfil', 'frases', 'vocab', 'planes', 'temasfijos'].includes(t.dataset.tab));
+    cargarSeccion(t.dataset.tab, yaEstaba && !['perfil', 'frases', 'vocab', 'planes', 'temasfijos', 'teoria'].includes(t.dataset.tab));
     if (t.dataset.tab === 'subir' || t.dataset.tab === 'examen') initSubir(t.dataset.tab === 'examen' ? 'examen' : 'tema');
     if (t.dataset.tab === 'editar') renderPicker();
   }));
@@ -2907,6 +2921,8 @@ E) Alternativa"></textarea>
 <script src="frases-panel.js"></script>
 <script src="../assets/temas-fijos/datos.js"></script>
 <script src="temas-fijos-panel.js"></script>
+<script src="../assets/teoria.js"></script>
+<script src="teoria-panel.js"></script>
 <script src="pausa-panel.js?v=2"></script>
 <script src="../assets/planes.js?v=10"></script>
 <script src="planes-panel.js?v=11"></script>
