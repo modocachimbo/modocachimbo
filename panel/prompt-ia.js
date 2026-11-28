@@ -520,18 +520,23 @@ function abrirOrdenarIA(tipo, caja) {
     }
     est.textContent = ''; pintar();
   });
-  let trabajando = false;
-  const cerrar = () => { if (!trabajando) o.remove(); };
+  let trabajando = false, vuelta = 0, reloj = 0;
+  // Cancelar siempre cierra: si Gemini responde después, la respuesta se ignora
+  const cerrar = () => { vuelta++; clearInterval(reloj); trabajando = false; o.remove(); };
   q('[data-x]').onclick = cerrar;
   ok.onclick = async () => {
     const texto = q('#oiTexto').value.trim();
     if (!texto && !archivos.length) { toast('Pega el texto o adjunta fotos o un PDF', true); return; }
-    trabajando = true; ok.disabled = true; q('[data-x]').disabled = true;
-    est.textContent = 'Gemini está ordenando las preguntas… puede tardar hasta 2 minutos.';
+    trabajando = true; ok.disabled = true;
+    const mia = ++vuelta, t0 = Date.now();
+    reloj = setInterval(() => { est.textContent = 'Gemini está ordenando las preguntas… ' + Math.round((Date.now() - t0) / 1000) + ' s'; }, 1000);
+    est.textContent = 'Gemini está ordenando las preguntas…';
     try {
       const c = await MCAuth.listo;
       if (!MCAuth.usuario()) throw new Error('Entra con tu cuenta de Google para usar la IA.');
-      const r = await c.functions.invoke('ordenar-preguntas', { body: { prompt: IA_PROMPTS[tipo](), texto, archivos: archivos.map(a => ({ mime: a.mime, data: a.data })) } });
+      const pedido = c.functions.invoke('ordenar-preguntas', { body: { prompt: IA_PROMPTS[tipo](), texto, archivos: archivos.map(a => ({ mime: a.mime, data: a.data })) } });
+      const r = await Promise.race([pedido, new Promise((_, mal) => setTimeout(() => mal(new Error('Gemini no respondió en 2 minutos. Prueba con menos preguntas o más tarde.')), 125000))]);
+      if (mia !== vuelta) return; // se canceló
       if (r.error) {
         let m = r.error.message || 'No se pudo ordenar';
         try { const j = await r.error.context.json(); if (j && j.error) m = j.error; } catch (er) {}
@@ -540,10 +545,12 @@ function abrirOrdenarIA(tipo, caja) {
       const t = (r.data && r.data.texto) || '';
       if (!t) throw new Error('Gemini no devolvió nada. Intenta otra vez.');
       caja.value = t; caja.dispatchEvent(new Event('input', { bubbles: true }));
-      trabajando = false; o.remove();
+      clearInterval(reloj); trabajando = false; o.remove();
       toast(r.data.cortado ? 'Listo, pero la respuesta salió cortada: revisa las últimas preguntas o manda menos a la vez.' : 'Listo. Revisa las preguntas antes de publicar.', !!r.data.cortado);
     } catch (e) {
-      trabajando = false; ok.disabled = false; q('[data-x]').disabled = false;
+      clearInterval(reloj);
+      if (mia !== vuelta) return;
+      trabajando = false; ok.disabled = false;
       est.textContent = ''; toast(e.message || 'No se pudo ordenar.', true);
     }
   };
