@@ -229,7 +229,7 @@
     var lista = MCAcceso.todos(), ide = MCAcceso.idEstado ? MCAcceso.idEstado() : { lista: [] };
     pintarLimpiar(lista.filter(function (a) { return aviso(a); }));
     eq.hidden = !ide.lista.length && ide.permitido;
-    if (!ide.permitido) { eq.className = 'acc-eq fuera'; eq.innerHTML = 'Lo activado por ID se abrió en otros equipos más nuevos y ya no abre en este. Si este es tu equipo, recarga la página para usarlo aquí.'; }
+    if (!ide.permitido) { eq.className = 'acc-eq fuera'; eq.innerHTML = 'Tu plan está abierto en ' + (ide.max || 'otros') + (ide.max === 1 ? ' equipo' : ' equipos') + ' y no en este. <a href="#" data-usar-aqui style="color:#C6E000;font-weight:800">Usar aquí</a>'; var ua = eq.querySelector('[data-usar-aqui]'); if (ua) ua.onclick = function (e) { e.preventDefault(); if (MCAcceso.avisoLleno) MCAcceso.avisoLleno(); }; }
     else if (ide.lista.length) { eq.className = 'acc-eq'; eq.innerHTML = 'Lo activado por ID se abre con tu cuenta de Google' + (ide.max ? ' en <b>' + ide.equipos + ' de ' + ide.max + '</b> ' + (ide.max === 1 ? 'equipo' : 'equipos') : '') + '.'; }
     pintarHero(ide.lista.length + lista.filter(function (a) { return !aviso(a); }).length);
     if (!lista.length && !ide.lista.length) { ul.innerHTML = '<li class="vacio">Aún no tienes accesos. Activa un código abajo o pásale tu ID (arriba, en tu tarjeta) a Modo Cachimbo.</li>'; return; }
