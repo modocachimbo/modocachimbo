@@ -144,7 +144,7 @@ function renderPlanes(errores) {
     <div class="pcard pl-card pl-sec">
       <label class="pl-sw"><input type="checkbox" data-g="preventa" data-k="activa" ${P.activa ? 'checked' : ''}> Preventa: descuento en Amatista y Leyenda (mensual o 3 meses)</label>
       <div class="pl-cuatro">
-        <div><label class="fld">Descuento (%) <span class="hint">se redondea a .90</span></label><input class="inp" type="number" min="1" max="90" step="1" data-g="preventa" data-k="pct" value="${P.pct == null ? 20 : P.pct}"></div>
+        <div><label class="fld">Descuento (%) <span class="hint">se redondea a .90</span></label><input class="inp" type="number" min="1" max="90" step="0.1" data-g="preventa" data-k="pct" value="${P.pct == null ? 20 : P.pct}"></div>
         <div><label class="fld">Ciclo</label><input class="inp" maxlength="12" data-g="preventa" data-k="ciclo" value="${esc(P.ciclo)}"></div>
         <div><label class="fld">Hasta <span class="hint">ej. 30/11</span></label><input class="inp" maxlength="20" data-g="preventa" data-k="hasta" value="${esc(P.hasta)}"></div>
         <div><label class="fld">Primeros <span class="hint">alumnos · 0 = sin tope</span></label><input class="inp" type="number" min="0" data-g="preventa" data-k="cupos" value="${+P.cupos || 0}"></div>
@@ -169,7 +169,7 @@ function renderPlanes(errores) {
     <div class="pcard pl-card pl-sec">
       <label class="pl-sw"><input type="checkbox" data-g="descuento" data-k="activa" ${v.descuento && v.descuento.activa ? 'checked' : ''}> Descuento para todos los accesos <span class="hint">menos la preventa</span></label>
       <div class="pl-dos">
-        <div><label class="fld">Descuento (%)</label><input class="inp" type="number" min="1" max="90" step="1" data-g="descuento" data-k="pct" value="${(v.descuento && v.descuento.pct) || 10}"></div>
+        <div><label class="fld">Descuento (%)</label><input class="inp" type="number" min="1" max="90" step="0.1" data-g="descuento" data-k="pct" value="${(v.descuento && v.descuento.pct) || 10}"></div>
         <div><label class="fld">Texto de la oferta</label><input class="inp" maxlength="50" data-g="descuento" data-k="texto" value="${esc((v.descuento && v.descuento.texto) || '')}"></div>
       </div>
     </div>
@@ -294,8 +294,8 @@ async function guardarPlanes() {
     x.paquetes = (x.paquetes || []).map(q => ({ n: parseInt(q.n, 10) || 0, precio: num(q.precio), tag: String(q.tag || '').trim() }));
     if (x.activa && x.paquetes.some(q => q.n < 1 || q.n > 500 || !q.precio)) err.push(`${x.nombre || 'Descargas PDF'}: cada paquete necesita PDF al día (1 a 500) y precio.`);
   });
-  v.descuento.pct = Math.max(1, Math.min(90, parseInt(v.descuento.pct, 10) || 10)); v.descuento.texto = String(v.descuento.texto || '').trim();
-  v.preventa.pct = parseInt(v.preventa.pct, 10) || 0; delete v.preventa.precio; v.preventa.cupos = Math.max(0, parseInt(v.preventa.cupos, 10) || 0);
+  v.descuento.pct = Math.max(1, Math.min(90, Math.round((parseFloat(String(v.descuento.pct).replace(',', '.')) || 10) * 10) / 10)); v.descuento.texto = String(v.descuento.texto || '').trim();
+  v.preventa.pct = Math.round((parseFloat(String(v.preventa.pct).replace(',', '.')) || 0) * 10) / 10; delete v.preventa.precio; v.preventa.cupos = Math.max(0, parseInt(v.preventa.cupos, 10) || 0);
   if (v.preventa.activa && (v.preventa.pct < 1 || v.preventa.pct > 90)) err.push('Preventa: pon el descuento (1 a 90 %).');
   v.periodos = { mes: v.periodos.mes !== false, ciclo: v.periodos.ciclo !== false };
   if (!v.periodos.mes && !v.periodos.ciclo) err.push('Marca al menos una forma de venta: Mensual o Por 3 meses.');
