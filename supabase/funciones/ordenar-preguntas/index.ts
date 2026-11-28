@@ -77,26 +77,41 @@ Deno.serve(async (req) => {
 
   let ultimo = '';
   const inicio = Date.now();
+  // Cada modelo acepta ajustes distintos: si Google responde 400 por un ajuste, se prueba
+  // el siguiente juego más simple y luego el siguiente modelo.
+  const AJUSTES = [
+    { temperature: 0.2, maxOutputTokens: 8192, thinkingConfig: { thinkingBudget: 0 } },
+    { temperature: 0.2, maxOutputTokens: 8192 },
+    { temperature: 0.2 },
+  ];
   for (const modelo of MODELOS) {
-    const queda = LIMITE_MS - (Date.now() - inicio);
-    if (queda < 5000) break;
-    let r: Response;
-    try {
-      r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': clave },
-        body: JSON.stringify({ contents: [{ role: 'user', parts: partes }], generationConfig: { temperature: 0.2, maxOutputTokens: 32000, thinkingConfig: { thinkingBudget: 0 } } }),
-        signal: AbortSignal.timeout(queda),
-      });
-    } catch (_) { return json({ error: 'Gemini tardó demasiado. Prueba con menos preguntas a la vez.' }, 504); }
-    if (r.status === 404 || r.status === 400 && /not found|not supported|thinking/i.test(await r.clone().text())) { ultimo = modelo + ' no disponible'; continue; }
-    if (r.status === 429) return json({ error: 'Se llegó al límite gratis de Gemini por ahora. Intenta en un rato.' }, 429);
-    if (!r.ok) return json({ error: 'Gemini ' + r.status + ': ' + (await r.text()).slice(0, 160) }, 502);
-    const d = await r.json();
-    let t: string = d?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text || '').join('') || '';
-    t = t.replace(/^\s*```[a-z]*\s*\n?/i, '').replace(/\n?```\s*$/, '').trim();
-    if (!t) return json({ error: 'Gemini no devolvió nada' + (d?.candidates?.[0]?.finishReason ? ' (' + d.candidates[0].finishReason + ')' : '') }, 502);
-    return json({ texto: t, modelo, cortado: d?.candidates?.[0]?.finishReason === 'MAX_TOKENS' });
+    for (const cfg of AJUSTES) {
+      const queda = LIMITE_MS - (Date.now() - inicio);
+      if (queda < 5000) return json({ error: 'Gemini tardó demasiado. Prueba con menos preguntas a la vez.' }, 504);
+      let r: Response;
+      try {
+        r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': clave },
+          body: JSON.stringify({ contents: [{ role: 'user', parts: partes }], generationConfig: cfg }),
+          signal: AbortSignal.timeout(queda),
+        });
+      } catch (_) { return json({ error: 'Gemini tardó demasiado. Prueba con menos preguntas a la vez.' }, 504); }
+      if (r.status === 404) { ultimo = modelo + ' no disponible'; break; }
+      if (r.status === 400) {
+        const txt = await r.text();
+        ultimo = 'Gemini 400 (' + modelo + '): ' + txt.slice(0, 140);
+        if (/not found|not supported for generateContent/i.test(txt)) break; // modelo no existe: el siguiente
+        continue; // ajuste no aceptado: el siguiente juego de ajustes
+      }
+      if (r.status === 429) return json({ error: 'Se llegó al límite gratis de Gemini por ahora. Intenta en un rato.' }, 429);
+      if (!r.ok) return json({ error: 'Gemini ' + r.status + ': ' + (await r.text()).slice(0, 160) }, 502);
+      const d = await r.json();
+      let t: string = d?.candidates?.[0]?.content?.parts?.map((p: { text?: string; thought?: boolean }) => p.thought ? '' : p.text || '').join('') || '';
+      t = t.replace(/^\s*```[a-z]*\s*\n?/i, '').replace(/\n?```\s*$/, '').trim();
+      if (!t) return json({ error: 'Gemini no devolvió nada' + (d?.candidates?.[0]?.finishReason ? ' (' + d.candidates[0].finishReason + ')' : '') }, 502);
+      return json({ texto: t, modelo, cortado: d?.candidates?.[0]?.finishReason === 'MAX_TOKENS' });
+    }
   }
   return json({ error: ultimo || 'Sin modelo de Gemini disponible' }, 502);
 });
