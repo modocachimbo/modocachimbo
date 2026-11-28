@@ -131,9 +131,9 @@ function renderPlanes(errores) {
     </div>
 
     <div class="pcard pl-card pl-sec">
-      <label class="pl-sw"><input type="checkbox" data-g="preventa" data-k="activa" ${P.activa ? 'checked' : ''}> Preventa del plan Leyenda (por 3 meses)</label>
+      <label class="pl-sw"><input type="checkbox" data-g="preventa" data-k="activa" ${P.activa ? 'checked' : ''}> Preventa: descuento en Amatista y Leyenda (mensual o 3 meses)</label>
       <div class="pl-cuatro">
-        <div><label class="fld">Precio preventa (S/)</label><input class="inp" type="number" min="0" step="0.10" data-g="preventa" data-k="precio" value="${P.precio}"></div>
+        <div><label class="fld">Descuento (%) <span class="hint">se redondea a .90</span></label><input class="inp" type="number" min="1" max="90" step="1" data-g="preventa" data-k="pct" value="${P.pct == null ? 20 : P.pct}"></div>
         <div><label class="fld">Ciclo</label><input class="inp" maxlength="12" data-g="preventa" data-k="ciclo" value="${esc(P.ciclo)}"></div>
         <div><label class="fld">Hasta <span class="hint">ej. 30/11</span></label><input class="inp" maxlength="20" data-g="preventa" data-k="hasta" value="${esc(P.hasta)}"></div>
         <div><label class="fld">Primeros <span class="hint">alumnos · 0 = sin tope</span></label><input class="inp" type="number" min="0" data-g="preventa" data-k="cupos" value="${+P.cupos || 0}"></div>
@@ -248,8 +248,8 @@ async function guardarPlanes() {
     if (x.activa && x.paquetes.some(q => q.n < 1 || q.n > 500 || !q.precio)) err.push(`${x.nombre || 'Descargas PDF'}: cada paquete necesita PDF al día (1 a 500) y precio.`);
   });
   v.descuento.pct = Math.max(1, Math.min(90, parseInt(v.descuento.pct, 10) || 10)); v.descuento.texto = String(v.descuento.texto || '').trim();
-  v.preventa.precio = num(v.preventa.precio); v.preventa.cupos = Math.max(0, parseInt(v.preventa.cupos, 10) || 0);
-  if (v.preventa.activa && !v.preventa.precio) err.push('Preventa: pon el precio.');
+  v.preventa.pct = parseInt(v.preventa.pct, 10) || 0; delete v.preventa.precio; v.preventa.cupos = Math.max(0, parseInt(v.preventa.cupos, 10) || 0);
+  if (v.preventa.activa && (v.preventa.pct < 1 || v.preventa.pct > 90)) err.push('Preventa: pon el descuento (1 a 90 %).');
   if (v.ciclos.modo === 'lista' && !v.ciclos.cobrados.length) err.push('Ciclos: marca al menos un ciclo que se cobra, o elige Automático.');
   v.comparar.tabla = (v.comparar.tabla || []).filter(f => String(f[0] || '').trim()).map(f => [String(f[0]).trim(), plValor(f[1]), plValor(f[2])]).slice(0, 20);
   if (err.length) { renderPlanes(err); window.scrollTo(0, 0); toast('Revisa lo marcado en rojo', true); return; }

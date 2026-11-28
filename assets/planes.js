@@ -11,7 +11,7 @@
   var BASE = {
     // Tienda de descargas (descargas.html): 'vip' = solo VIP Total (TODO-VIP), 'todos' o 'apagado'
     tienda: { modo: 'vip' },
-    preventa: { activa: true, ciclo: '2027-I', hasta: '30/11', cupos: 100, precio: 39.90 },
+    preventa: { activa: true, ciclo: '2027-I', hasta: '30/11', cupos: 100, pct: 20 },   // % en Amatista y Leyenda (mes o 3 meses)
     planes: [
       { id: 'gratis', rango: 'Bronce', nombre: 'Gratis', sub: 'Para conocer la app y repasar lo del ciclo pasado.', mes: 0, ciclo: 0,
         si: ['Leer los Libros y practicar ciclos pasados', 'Exámenes pasados y Temas fijos', 'Ranking, racha, amigos y clanes', 'Laboratorio completo y test vocacional'],
@@ -29,7 +29,7 @@
         // Paquetes de 30 días: n = PDF al día (igual que supabase/147-planes-paquetes-pdf.sql)
         paquetes: [{ n: 3, precio: 4.90 }, { n: 7, precio: 6.90, tag: 'El más elegido' }, { n: 12, precio: 9.90, tag: 'Mejor precio' }] }
     ],
-    // Descuento para todo lo de Tienda → Accesos (menos la preventa, que ya tiene su precio)
+    // Descuento para todo lo de Tienda → Accesos (si hay preventa, los planes llevan la preventa)
     descuento: { activa: false, pct: 10, texto: 'Oferta por tiempo limitado' },
     // Ciclos que se cobran y ciclos que se descargan (assets/acceso.js · cicloAnterior / cicloDescarga)
     ciclos: { modo: 'auto', cobrados: [], descarga: { modo: 'auto', lista: [] } },
@@ -138,7 +138,12 @@
     if (pq) { var q = (p.paquetes || []).filter(function (x) { return +x.n === +pq[1]; })[0]; m = q ? +q.precio || 0 : 0; }
     else m = +p[periodo] || 0;
     var pv = cfg.preventa || {}, d = cfg.descuento || {};
-    if (id === 'total' && periodo === 'ciclo' && pv.activa && +pv.precio > 0) return { monto: +pv.precio, antes: m > +pv.precio ? m : null, preventa: true };
+    // Preventa: % en Amatista y Leyenda, redondeado hacia abajo a .90 (igual que supabase/147)
+    var pp = +(pv.pct == null ? 20 : pv.pct);
+    if ((id === 'total' || id === 'area') && pv.activa && pp >= 1 && pp <= 90 && m > 0) {
+      var r = Math.floor(m * (100 - pp) / 100 - 0.9 + 1e-6) + 0.9;
+      if (r > 0) return { monto: Math.round(r * 100) / 100, antes: m, preventa: true };
+    }
     if (d.activa && +d.pct > 0 && +d.pct < 91 && m > 0) return { monto: Math.round(m * (100 - +d.pct)) / 100, antes: m, preventa: false };
     return { monto: m, antes: null, preventa: false };
   }

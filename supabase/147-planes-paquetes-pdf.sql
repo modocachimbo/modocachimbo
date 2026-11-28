@@ -11,6 +11,8 @@
 --   · Plan Leyenda (Total) abre también Descargas sin internet. Las
 --     Descargas PDF NO van en ningún plan: se compran aparte.
 --   · Laboratorio y Sin internet ya no se venden como extra.
+--   · Preventa: % de descuento (ajustes planes.preventa.pct, 20 por defecto)
+--     en Amatista y Leyenda, mensual o 3 meses.
 --   · Laboratorio: todos los simuladores gratis.
 -- =========================================================
 
@@ -49,12 +51,12 @@ begin
   end if;
   if m is null or m <= 0 then return; end if;
   antes := null;
-  if p_plan = 'total' and p_periodo = 'ciclo' and coalesce(pv ->> 'activa', 'true') = 'true' and coalesce(pv ->> 'precio', '39.90') ~ '^\d+(\.\d+)?$' then
-    -- Preventa: Total por ciclo
-    if (coalesce(pv ->> 'precio', '39.90'))::numeric > 0 then
-      if m > (coalesce(pv ->> 'precio', '39.90'))::numeric then antes := m; end if;
-      m := (coalesce(pv ->> 'precio', '39.90'))::numeric;
-    end if;
+  if p_plan in ('area', 'total') and coalesce(pv ->> 'activa', 'true') = 'true' and coalesce(pv ->> 'pct', '20') ~ '^\d+(\.\d+)?$'
+     and (coalesce(pv ->> 'pct', '20'))::numeric between 1 and 90 then
+    -- Preventa: % de descuento en Amatista y Leyenda, mensual o 3 meses. Se redondea hacia abajo a .90 (49.90 → 39.90 con 20 %)
+    antes := m;
+    m := floor(m * (100 - (coalesce(pv ->> 'pct', '20'))::numeric) / 100 - 0.9 + 0.000001) + 0.9;
+    if m <= 0 then m := antes; antes := null; end if;
   elsif coalesce(de ->> 'activa', 'false') = 'true' and coalesce(de ->> 'pct', '') ~ '^\d+(\.\d+)?$' then
     pct := (de ->> 'pct')::numeric;
     if pct > 0 and pct < 91 then antes := m; m := round(m * (100 - pct) / 100, 2); end if;
