@@ -286,6 +286,7 @@ setInterval(() => { if ($('tab-avance') && !$('tab-avance').hidden && !document.
     catch (err) { toast(/administrador/i.test(err.message) ? 'Solo el administrador cambia la semana.' : err.message, true); e.target.value = AV.cfg.semana; }
   };
   $('avRecargar').onclick = () => cargarAvance();
+  if ($('avCambiarCiclo')) $('avCambiarCiclo').onclick = avCambiarCiclo;
   const pintarSel = () => { $('avSemana').innerHTML = Array.from({ length: AV.cfg.semanas || 10 }, (_, i) => `<option value="${i + 1}" ${i + 1 === AV.cfg.semana ? 'selected' : ''}>Semana ${String(i + 1).padStart(2, '0')}</option>`).join(''); };
   const orig = pintarAvance;
   pintarAvance = function () { pintarSel(); return orig.apply(this, arguments); };
@@ -338,3 +339,48 @@ async function avExportar(tipo, b) {
   caja.innerHTML = `<button class="btn-ghost" type="button" data-t="png">⬇ Imagen</button><button class="btn-ghost" type="button" data-t="pdf">⬇ PDF</button>${puede ? '<button class="btn-main" type="button" data-t="compartir">Compartir</button>' : ''}`;
   caja.querySelectorAll('button').forEach(b => b.onclick = () => avExportar(b.dataset.t, b));
 })();
+
+/* ---------- Cambiar el ciclo que sigue la tabla y cuántas semanas tiene ----------
+   Guarda con avance_cfg_guardar (supabase/82). Si se marca, el mismo número pasa a
+   «Temas del ciclo» de todas las áreas (ajustes 'ciclos', barra del Libro, assets/ciclos.js). */
+function avCambiarCiclo() {
+  const o = document.createElement('div');
+  o.className = 'ov';
+  o.innerHTML = `<div class="mcard" style="max-width:480px;">
+    <h3>Ciclo del avance</h3>
+    <p class="sub" style="margin-top:6px;line-height:1.55;">Qué ciclo sigue esta tabla y cuántas semanas (temas) tiene. Al cambiar de ciclo, la semana actual vuelve a 01.</p>
+    <label class="fld" style="margin-top:14px;">Ciclo</label><input class="inp" id="avcCiclo" maxlength="8" placeholder="Ej.: 2027-II" value="${esc(AV.cfg.ciclo)}" autocomplete="off">
+    <label class="fld" style="margin-top:12px;">Semanas / temas</label><input class="inp" id="avcN" type="number" min="1" max="30" value="${AV.cfg.semanas || 10}">
+    <label class="av-chk" style="margin-top:14px;"><input type="checkbox" id="avcBarra" checked> Usar este número en la barra del Libro de todas las áreas (Ciclos → Temas del ciclo)</label>
+    <div class="mfoot"><button type="button" class="btn-ghost" data-x>Cancelar</button><button type="button" class="btn-main" data-ok>Guardar</button></div></div>`;
+  document.body.appendChild(o);
+  const cerrar = () => o.remove();
+  o.querySelector('[data-x]').onclick = cerrar;
+  o.querySelector('[data-ok]').onclick = async e => {
+    const ciclo = $('avcCiclo').value.toUpperCase().replace(/\s+/g, '').replace(/^(\d{4})(I{1,3})$/, '$1-$2');
+    const n = parseInt($('avcN').value, 10);
+    if (!/^\d{4}-(I|II|III)$/.test(ciclo)) { toast('Escribe el ciclo como 2028-I, 2028-II o 2028-III', true); return; }
+    if (!(n >= 1 && n <= 30)) { toast('Las semanas van de 1 a 30', true); return; }
+    e.target.disabled = true;
+    try {
+      const cl = await avCliente();
+      const semana = ciclo === AV.cfg.ciclo ? Math.min(AV.cfg.semana || 1, n) : 1;
+      const r = await cl.rpc('avance_cfg_guardar', { p_ciclo: ciclo, p_semana: semana, p_semanas: n });
+      if (r.error) throw new Error(/administrador/i.test(r.error.message) ? 'Solo el administrador cambia el ciclo.' : r.error.message);
+      if ($('avcBarra').checked) {
+        const q = await cl.from('ajustes').select('valor').eq('clave', 'ciclos').maybeSingle();
+        const v = (q.data && q.data.valor) || {}; v.areas = v.areas || {};
+        ((AV.reg && AV.reg.areas) || []).forEach(a => {
+          const x = (v.areas[a.id] = v.areas[a.id] || {}); x.temas = x.temas || {};
+          if (n === 10) delete x.temas[ciclo]; else x.temas[ciclo] = n;
+        });
+        const g = await cl.rpc('guardar_ajuste', { p_clave: 'ciclos', p_valor: v });
+        if (g.error) toast('El ciclo se guardó, pero no la barra del Libro: ' + g.error.message, true);
+        else { try { localStorage.setItem('mc_ciclos', JSON.stringify(v)); } catch (er) {} if (typeof CI !== 'undefined') CI.cargado = false; }
+      }
+      cerrar();
+      toast('Avance: ' + ciclo + ' · ' + n + ' semanas');
+      cargarAvance();
+    } catch (err) { e.target.disabled = false; toast(err.message, true); }
+  };
+}

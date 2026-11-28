@@ -372,7 +372,10 @@ function initSubir(modo) {
     const b = ss('get', SUB.borrador); if (b && !ta.value) ta.value = b;
     ta.addEventListener('input', () => ss('set', SUB.borrador, ta.value));
     // Un solo botón "Prompts ▾" (prompt-ia.js): formato (tema o examen según el modo), gráfico e imagen
-    $('subArchivo').closest('label').after(botonPrompts(() => SUB.modo === 'examen' ? 'examen' : 'tema'));
+    const bPrompts = botonPrompts(() => SUB.modo === 'examen' ? 'examen' : 'tema');
+    $('subArchivo').closest('label').after(bPrompts);
+    // «Ordenar con IA» (prompt-ia.js + supabase/funciones/ordenar-preguntas): Gemini lo formatea directo
+    bPrompts.after(botonOrdenarIA(() => SUB.modo === 'examen' ? 'examen' : 'tema', ta));
     $('subArchivo').addEventListener('change', async e => {
       const f = e.target.files[0]; e.target.value = '';
       if (!f) return;

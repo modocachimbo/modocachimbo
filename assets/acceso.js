@@ -559,7 +559,7 @@
   /* ---- Ciclos gratis y ciclos que se cobran ----
      En Libros, Seminarios y Banqueo. Panel → Web → Planes y precios → «Ciclos que se cobran»
      (ajustes 'planes': { ciclos: { modo: 'auto' | 'lista', cobrados: ['2027-I'] } }):
-     - auto: solo el ciclo más nuevo del curso (data/manifest.json de la carpeta) pide código
+     - auto: solo el ciclo más nuevo del curso que ya tiene temas (data/manifest.json de la carpeta) pide código
      - lista: solo los ciclos marcados piden código; los demás se practican gratis
      Descarga PDF (assets/descarga-pdf.js), ciclos.descarga = { modo: 'auto' | 'lista', lista: [...] }:
      - auto: se descargan solo los ciclos que se cobran
@@ -591,7 +591,8 @@
       if (R.modo === 'lista' && Array.isArray(R.cobrados)) return R.cobrados.indexOf(year) < 0;
       if (!pedidoManifest) pedidoManifest = fetch('data/manifest.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; });
       return pedidoManifest.then(function (m) {
-        var max = 0; (Array.isArray(m) ? m : []).forEach(function (c) { max = Math.max(max, ordenCiclo(c && c.id)); });
+        // Un ciclo nuevo sin temas ("Próximamente") todavía no vuelve gratis al anterior
+        var max = 0; (Array.isArray(m) ? m : []).forEach(function (c) { if (c && c.temas > 0) max = Math.max(max, ordenCiclo(c.id)); });
         return max > o;
       });
     }).catch(function () { return false; });

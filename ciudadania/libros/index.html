@@ -98,7 +98,7 @@
     <div class="page-title">
       <div class="eyebrow">Ciudadanía · Libros</div>
       <h1>Elige un ciclo</h1>
-      <p>Cada ciclo trae un temario de 10 temas. Dentro de cada tema hay 10 preguntas con su respuesta marcada y un botón para practicar.</p>
+      <p>Cada ciclo trae su temario. Dentro de cada tema hay 10 preguntas con su respuesta marcada y un botón para practicar.</p>
     </div>
 
     <div class="years-grid" id="yearsGrid"></div>
@@ -127,7 +127,7 @@
         const a = document.createElement(active ? 'a' : 'div');
         a.className = 'year-card ' + (active ? 'active' : 'disabled');
         if (active) a.href = 'temario.html?year=' + encodeURIComponent(id);
-        a.innerHTML = `<div class="yr">${String((info && info.label) || id).replace(/</g, '&lt;')}</div><div class="count">${active ? info.temas + (info.temas === 1 ? ' tema' : ' temas') : 'Próximamente'}</div>`;
+        a.innerHTML = `<div class="yr">${String((info && info.label) || id).replace(/</g, '&lt;')}</div><div class="count">${active ? (info.total > info.temas ? info.temas + ' de ' + info.total + ' temas' : info.temas + (info.temas === 1 ? ' tema' : ' temas')) : 'Próximamente'}</div>`;
         grid.appendChild(a);
       });
       if (!grid.children.length) grid.innerHTML = '<div class="state-msg" style="grid-column:1/-1;">Aún no hay ciclos publicados. Vuelve pronto.</div>';
