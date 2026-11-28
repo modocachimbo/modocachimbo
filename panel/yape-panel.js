@@ -175,6 +175,7 @@ function pintarYape() {
         <div class="yp-al">Código de seguridad: <span class="yp-cod">${String(x.codigo || '').split('').map(d => '<span>' + esc(d) + '</span>').join('')}</span></div>
         ${x.aviso ? `<div class="yp-avtx">Aviso de Yape: ${esc(x.aviso)}</div>` : ''}
         ${x.motivo && x.estado === 'revision' ? `<div class="yp-al">Por qué: <b>${esc(x.motivo)}</b></div>` : ''}
+        ${x.plan && x.vence && x.estado === 'aprobada' ? `<div class="yp-al">${x.quitado ? '<b style="color:var(--rosa,#ff6b9a)">Acceso quitado</b>' : 'Activo hasta el <b style="color:var(--lime,#C6E000)">' + esc(String(x.vence).split('-').reverse().join('/')) + '</b>'}</div>` : ''}
         ${x.plan && x.prueba && x.estado === 'revision' ? '<div class="yp-al">Tiene <b>acceso de prueba hasta mañana</b>. Si rechazas, se le quita.</div>' : ''}
         ${x.nota ? `<div class="yp-al">Nota: ${esc(x.nota)}</div>` : ''}
         ${x.estado === 'aprobada' && x.como === 'confianza' ? '<div class="yp-acc"><button class="btn-ghost rech" type="button" data-yp="quitar">No me llegó · ' + (x.plan ? 'Quitar acceso' : 'Quitar diamantes') + '</button></div>' : ''}
