@@ -135,6 +135,13 @@ function renderPlanes(errores) {
     </div>
 
     <div class="pcard pl-card pl-sec">
+      <h3>Cómo se venden Amatista y Leyenda</h3>
+      <p class="hint" style="margin:0 0 6px">Marca los dos y el alumno elige con el botón Mensual / 3 meses. Si marcas solo uno, el botón se esconde.</p>
+      <label class="pl-sw"><input type="checkbox" data-g="periodos" data-k="mes" ${v.periodos.mes !== false ? 'checked' : ''}> Mensual (1 mes)</label>
+      <label class="pl-sw"><input type="checkbox" data-g="periodos" data-k="ciclo" ${v.periodos.ciclo !== false ? 'checked' : ''}> Por 3 meses</label>
+    </div>
+
+    <div class="pcard pl-card pl-sec">
       <label class="pl-sw"><input type="checkbox" data-g="preventa" data-k="activa" ${P.activa ? 'checked' : ''}> Preventa: descuento en Amatista y Leyenda (mensual o 3 meses)</label>
       <div class="pl-cuatro">
         <div><label class="fld">Descuento (%) <span class="hint">se redondea a .90</span></label><input class="inp" type="number" min="1" max="90" step="1" data-g="preventa" data-k="pct" value="${P.pct == null ? 20 : P.pct}"></div>
@@ -279,7 +286,7 @@ async function guardarPlanes() {
     p.mes = p.id === 'gratis' ? 0 : num(p.mes); p.ciclo = p.id === 'gratis' ? 0 : num(p.ciclo);
     p.si = plLineas(Array.isArray(p.si) ? p.si.join('\n') : p.si); p.no = plLineas(Array.isArray(p.no) ? p.no.join('\n') : p.no);
     if (!p.nombre) err.push('Falta el nombre de un plan.');
-    if (p.id !== 'gratis' && (!p.mes || !p.ciclo)) err.push(`${p.nombre || 'Un plan'}: pon el precio mensual y el del ciclo.`);
+    if (p.id !== 'gratis' && ((v.periodos.mes !== false && !p.mes) || (v.periodos.ciclo !== false && !p.ciclo))) err.push(`${p.nombre || 'Un plan'}: pon el precio mensual y el de 3 meses.`);
   });
   (v.extras || []).forEach(x => {
     x.nombre = String(x.nombre || '').trim(); x.sub = String(x.sub || '').trim(); x.activa = x.activa !== false;
@@ -290,6 +297,8 @@ async function guardarPlanes() {
   v.descuento.pct = Math.max(1, Math.min(90, parseInt(v.descuento.pct, 10) || 10)); v.descuento.texto = String(v.descuento.texto || '').trim();
   v.preventa.pct = parseInt(v.preventa.pct, 10) || 0; delete v.preventa.precio; v.preventa.cupos = Math.max(0, parseInt(v.preventa.cupos, 10) || 0);
   if (v.preventa.activa && (v.preventa.pct < 1 || v.preventa.pct > 90)) err.push('Preventa: pon el descuento (1 a 90 %).');
+  v.periodos = { mes: v.periodos.mes !== false, ciclo: v.periodos.ciclo !== false };
+  if (!v.periodos.mes && !v.periodos.ciclo) err.push('Marca al menos una forma de venta: Mensual o Por 3 meses.');
   if (v.ciclos.modo === 'lista' && !v.ciclos.cobrados.length) err.push('Ciclos: marca al menos un ciclo que se cobra, o elige Automático.');
   v.detalle.titulo = String(v.detalle.titulo || '').trim(); v.detalle.sub = String(v.detalle.sub || '').trim();
   v.detalle.grupos = (v.detalle.grupos || []).map(g => ({ nombre: String(g.nombre || '').trim(),

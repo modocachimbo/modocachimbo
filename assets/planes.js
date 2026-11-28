@@ -11,6 +11,8 @@
   var BASE = {
     // Tienda de descargas (descargas.html): 'vip' = solo VIP Total (TODO-VIP), 'todos' o 'apagado'
     tienda: { modo: 'vip' },
+    // Cómo se venden Amatista y Leyenda: mensual, por 3 meses o los dos (el alumno elige)
+    periodos: { mes: true, ciclo: true },
     preventa: { activa: true, ciclo: '2027-I', hasta: '30/11', cupos: 100, pct: 20 },   // % en Amatista y Leyenda (mes o 3 meses)
     planes: [
       { id: 'gratis', rango: 'Bronce', nombre: 'Gratis', sub: 'Para conocer la app y repasar lo del ciclo pasado.', mes: 0, ciclo: 0,
@@ -96,6 +98,8 @@
   function mezclar(v) {
     var b = copia(BASE);
     if (!v || typeof v !== 'object') return b;
+    if (v.periodos) b.periodos = Object.assign(b.periodos, v.periodos);
+    if (!b.periodos.mes && !b.periodos.ciclo) b.periodos = { mes: true, ciclo: true };
     if (v.preventa) b.preventa = Object.assign(b.preventa, v.preventa);
     if (v.ciclos) { b.ciclos = Object.assign(b.ciclos, v.ciclos); b.ciclos.descarga = Object.assign({ modo: 'auto', lista: [] }, v.ciclos.descarga || {}); }
     if (v.amigos) b.amigos = Object.assign(b.amigos, v.amigos);

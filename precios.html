@@ -260,7 +260,7 @@
 
 <script src="assets/mc-config.js"></script>
 <script src="assets/auth.js"></script>
-<script src="assets/planes.js?v=7"></script>
+<script src="assets/planes.js?v=8"></script>
 <script src="assets/yape-plan.js?v=3"></script>
 <script>
 (function () {
@@ -301,8 +301,9 @@
   function plan(p) {
     var x = pr(p.id), precio = p.id === 'gratis' ? 0 : x.monto;
     var ahorro = '';
-    if (p.mes && periodo === 'ciclo') ahorro = 'Equivale a ' + sol(precio / 3) + ' al mes · <em>ahorras ' + sol(MCPlanes.precio(CFG, p.id, 'mes').monto * 3 - precio) + '</em>';
-    else if (p.mes) ahorro = 'O ' + sol(MCPlanes.precio(CFG, p.id, 'ciclo').monto) + ' por 3 meses';
+    var PER = CFG.periodos || {};
+    if (p.mes && periodo === 'ciclo') ahorro = 'Equivale a ' + sol(precio / 3) + ' al mes' + (PER.mes !== false ? ' · <em>ahorras ' + sol(MCPlanes.precio(CFG, p.id, 'mes').monto * 3 - precio) + '</em>' : '');
+    else if (p.mes && PER.ciclo !== false) ahorro = 'O ' + sol(MCPlanes.precio(CFG, p.id, 'ciclo').monto) + ' por 3 meses';
     return '<article class="plan' + (p.top ? ' top-plan' : '') + '" style="--c:' + COLOR[p.id] + '">' +
       (p.top ? '<span class="tag">' + (x.preventa ? 'Preventa' : 'El más completo') + '</span>' : '') +
       '<div class="cab"><span class="ic"><svg class="i" viewBox="0 0 24 24">' + ICO[p.id] + '</svg></span><span class="nom"><h2>' + esc(p.rango || p.nombre) + '</h2>' + (p.rango ? '<small>' + esc(p.nombre) + '</small>' : '') + '</span></div>' +
@@ -365,6 +366,11 @@
   });
   function todo() {
     CFG.planes.forEach(function (p) { p.top = p.id === 'total'; p.mes = +p.mes || 0; p.ciclo = +p.ciclo || 0; p.si = p.si || []; p.no = p.no || []; });
+    // Panel → Planes y precios: solo mensual, solo 3 meses o los dos
+    var PER = CFG.periodos || {}, okMes = PER.mes !== false, okCiclo = PER.ciclo !== false || !okMes;
+    if (periodo === 'mes' && !okMes) periodo = 'ciclo';
+    if (periodo === 'ciclo' && !okCiclo) periodo = 'mes';
+    document.querySelector('.periodo').hidden = !(okMes && okCiclo);
     var P = CFG.preventa, tot = CFG.planes.filter(function (p) { return p.id === 'total'; })[0];
     var pct = +(P.pct == null ? 20 : P.pct) || 0;
     document.getElementById('preventa').hidden = !(P.activa && pct);
