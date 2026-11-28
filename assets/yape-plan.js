@@ -188,7 +188,7 @@
       '</div><div class="ypl-der">' +
       '<div class="ypl-paso" id="yplP2"><span class="ypl-n">2</span><div class="ypl-c"><h4>Sube tu captura</h4><label class="ypl-sube" id="yplSube">' + IC.sube + '<span>Elegir captura</span><input type="file" accept="image/*" id="yplFile"></label></div></div>' +
       '<div class="ypl-paso" id="yplP3"><span class="ypl-n">3</span><div class="ypl-c"><h4>Código de seguridad</h4><div class="ypl-cod"><input inputmode="numeric" maxlength="1" aria-label="Primer número"><input inputmode="numeric" maxlength="1" aria-label="Segundo número"><input inputmode="numeric" maxlength="1" aria-label="Tercer número"></div>' +
-        '<div class="ypl-ej"><i><span>3</span><span>3</span><span>9</span></i>Los 3 números que salen en tu captura de Yape.</div></div></div>' +
+        '<div class="ypl-ej"><i><span>?</span><span>?</span><span>?</span></i>Los 3 números que salen en <b>tu</b> captura, junto a «Código de seguridad».</div></div></div>' +
       '<button type="button" class="ypl-bt" id="yplEnviar" disabled>Enviar y activar</button>' +
       '<div class="ypl-nota">' + IC.escudo + '<span>Revisamos cada pago. Si la captura no corresponde a un Yape real, el acceso se quita.</span></div>' +
       '<small class="ypl-ayuda">¿Problemas? <a href="#" data-wsp>Escríbenos por WhatsApp</a></small>' +
@@ -249,10 +249,11 @@
       }).then(function (r) {
         if (r && r.error) throw r.error;
         return rpc('yape_pedir_plan', { p_plan: P.plan, p_periodo: P.periodo, p_area: P.area || null, p_codigo: codigo(), p_captura: ruta });
-      }).then(function (d) { resultado(o, d); }, function (e) {
+      }).then(function (d) { (d && d.leer ? leerCaptura(o, d) : Promise.resolve(d)).then(function (x) { resultado(o, x); }); }, function (e) {
         var m = String(e && (e.message || e) || '');
         env.disabled = false; env.textContent = 'Enviar y activar';
         if (/yape_codigo/.test(m)) return toast('Escribe los 3 números del código de seguridad.');
+        if (/yape_ejemplo/.test(m)) return toast('Escribe el código que sale en TU captura de Yape.');
         if (/yape_muchas/.test(m)) return toast('Ya tienes pagos en revisión. Espera a que terminen.');
         if (/yape_dia/.test(m)) return toast('Llegaste al máximo de compras de hoy. Escríbenos por WhatsApp.');
         if (/yape_plan/.test(m)) return toast('Ese plan no está disponible ahora.');
@@ -263,6 +264,16 @@
       });
     });
 
+    // Con «Revisar captura con IA» prendido: la Edge Function leer-yape lee la captura y decide
+    function leerCaptura(o, d) {
+      var caja = o.querySelector('.ypl-in');
+      o.querySelector('.ypl').classList.remove('ancha');
+      caja.innerHTML = '<div class="ypl-est"><div class="ypl-gira" aria-hidden="true"></div><h3>Revisando tu <em>captura</em></h3><p>Estamos leyendo tu Yape de <b>' + sol(d.monto || precio) + '</b>. Tarda unos segundos.</p></div>';
+      return MCAuth.listo.then(function (c) { return c.functions.invoke('leer-yape', { body: { id: d.id } }); })
+        .catch(function () { return null; })
+        .then(function () { return rpc('yape_ver', { p_id: d.id }); })
+        .then(function (x) { return x || d; }, function () { return d; });
+    }
     function resultado(o, d) {
       // Que la próxima página vuelva a preguntar sus accesos
       try { localStorage.removeItem('mc_accesos_id'); } catch (e) {}

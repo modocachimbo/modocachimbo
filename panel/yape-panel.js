@@ -75,6 +75,12 @@ const YP_LLAVE = 'sb_publishable_clm6obUTs_391NA7FGG1YA_-eNuj7dU';
   .yp-cod span { display: inline-grid; place-items: center; width: 24px; height: 26px; border-radius: 6px; background: #2A2346; font: 900 14px Nunito, sans-serif; color: var(--text); }
   .yp-avtx { font-size: 12.5px; color: var(--text-dim); padding: 8px 10px; border-radius: 10px; background: #120e22; border: 1px solid #2A2346; overflow-wrap: anywhere; }
   .yp-acc { display: flex; gap: 8px; flex-wrap: wrap; }
+  .yp-ia { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12.5px; color: var(--text-dim); }
+  .yp-ia b { color: var(--text); }
+  .yp-ia .ok { color: var(--lime, #C6E000); }
+  .yp-ia .no { color: #FF6E6E; }
+  .yp-ia i { font-style: normal; padding: 2px 8px; border-radius: 99px; background: #1D1834; border: 1px solid #2A2346; }
+  .yp-ia i.no { border-color: rgba(255,110,110,.5); }
   .yp-acc .rech { color: #FF6E6E; }
   .yp-imp { display: grid; gap: 10px; }
   .yp-imp .fila { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
@@ -123,6 +129,41 @@ async function cargarYape() {
   pintarYape();
 }
 
+// Lo que leyó la IA en la captura (supabase/155-yape-lectura-ia.sql), con lo que no coincide en rojo
+function ypLectura(x) {
+  if (x.ia_pend && x.estado === 'esperando') return '<div class="yp-ia">La IA está leyendo la captura…</div>';
+  const L = x.lectura; if (!L) return '';
+  if (L.error) return `<div class="yp-ia">IA: <span class="no">no pudo leer (${esc(L.error)})</span></div>`;
+  const dig = v => String(v == null ? '' : v).replace(/\D/g, '');
+  const m = parseFloat(String(L.monto || '').replace(',', '.'));
+  const c = dig(L.codigo), dd = dig(L.destino_digitos);
+  const pz = (t, ok) => `<i class="${ok ? '' : 'no'}">${t}</i>`;
+  const f = /^\d{4}-\d{2}-\d{2}$/.test(L.fecha || '') ? L.fecha.split('-').reverse().join('/') : '';
+  return '<div class="yp-ia"><b>Leído por IA:</b>' +
+    pz('S/ ' + (isNaN(m) ? '?' : m.toFixed(2)), !isNaN(m) && Math.abs(m - +x.monto) < .001) +
+    pz('Código ' + (c || '?'), c && c === String(x.codigo)) +
+    (f ? pz(esc(f) + (L.hora ? ' ' + esc(L.hora) : ''), true) : '') +
+    (dd ? pz('A ***' + esc(dd.slice(-3)), true) : L.destinatario ? pz('A ' + esc(L.destinatario), true) : '') +
+    (L.operacion ? pz('Op. ' + esc(dig(L.operacion)), true) : '') +
+    (L.es_yape === false ? pz('No parece Yape', false) : '') + '</div>';
+}
+async function ypLeer(b) {
+  const id = +b.closest('[data-id]').dataset.id;
+  b.disabled = true; const t = b.textContent; b.textContent = 'Leyendo…';
+  try {
+    const c = await MCAuth.listo;
+    const r = await c.functions.invoke('leer-yape', { body: { id, admin: true } });
+    if (r.error) {
+      let m = r.error.message || 'No se pudo leer';
+      try { const j = await r.error.context.json(); if (j && j.error) m = j.error; } catch (e) {}
+      throw new Error(/not found|Failed to send|404/i.test(m) ? 'Falta subir la función leer-yape en Supabase.' : m);
+    }
+    const p = (r.data && r.data.problemas) || [];
+    toast(r.data && r.data.lectura && r.data.lectura.error ? 'La IA no pudo leer: ' + r.data.lectura.error : p.length ? 'No coincide: ' + p.join(' · ') : 'La captura coincide.', !!p.length);
+    cargarYape();
+  } catch (e) { toast(e.message || 'No se pudo leer.', true); b.disabled = false; b.textContent = t; }
+}
+
 function pintarYape() {
   const D = YP.d, A = D.ajustes || {}, C = D.cuenta || {};
   const vivo = A.ultimo && Date.now() - new Date(A.ultimo) < 3 * 86400e3;
@@ -133,6 +174,11 @@ function pintarYape() {
       <div class="yp-num"><label>Aprobar solas hasta <span>S/</span><input id="ypTope" type="number" min="0" max="100" step="1" value="${+A.tope || 0}"></label>
         <label>Máximo por alumno al día <span>S/</span><input id="ypTopeDia" type="number" min="0" max="500" step="1" value="${+A.tope_dia || 0}"></label></div>
       <button class="btn-ghost" type="button" id="ypGuardarTope" style="justify-self:start">Guardar montos</button>
+    </div>
+    <div class="rcard">
+      <div class="yp-sw"><h3>Revisar captura con IA</h3><button type="button" class="${A.ia ? 'on' : ''}" id="ypIa" aria-label="Revisar captura con IA"></button></div>
+      <p>${A.ia ? 'Encendido: antes de aprobar sola una compra, la IA lee la captura (monto, código de seguridad, fecha, a quién se yapeó y N.º de operación). Si algo no coincide o la captura ya se usó, pasa a revisión.' : 'Apagado: las compras bajas se aprueban solas sin mirar la captura.'}</p>
+      ${A.ia !== undefined ? `<div class="yp-md${A.ia_hoy ? ' ok' : ''}"><i></i>${A.ia_hoy ? A.ia_hoy + ' captura' + (A.ia_hoy === 1 ? '' : 's') + ' leída' + (A.ia_hoy === 1 ? '' : 's') + ' en 24 h' : 'Sin lecturas en 24 h'}</div>` : '<p>Falta correr <b>supabase/155-yape-lectura-ia.sql</b>.</p>'}
     </div>
     <div class="rcard">
       <h3>Avisos a tu celular</h3>
@@ -179,7 +225,7 @@ function pintarYape() {
       : '<div class="state-msg">Aún no llegó ningún aviso de Yape. Revisa que MacroDroid esté configurado.</div>';
     return;
   }
-  let F = YP.ver === 'revision' ? L.filter(x => x.estado === 'revision') : YP.ver === 'solas' ? L.filter(x => x.como === 'confianza' && x.estado === 'aprobada') : L;
+  let F = YP.ver === 'revision' ? L.filter(x => x.estado === 'revision') : YP.ver === 'solas' ? L.filter(x => (x.como === 'confianza' || x.como === 'ia') && x.estado === 'aprobada') : L;
   const q = String(YP.q || '').trim().toLowerCase().replace(/^#/, '');
   if (q) F = L.filter(x => [x.apodo, x.email, x.jid, x.id, x.codigo, x.detalle].some(v => String(v == null ? '' : v).toLowerCase().includes(q)));
   if (!F.length) { caja.innerHTML = `<div class="state-msg">${q ? 'Ninguna de las últimas 80 compras coincide con «' + esc(q) + '». Búscalo en Alumnos y fichas.' : YP.ver === 'revision' ? 'No hay recargas por revisar.' : YP.ver === 'solas' ? 'No hay recargas aprobadas solas esta semana.' : 'Aún no hay recargas.'}</div>`; return; }
@@ -187,19 +233,21 @@ function pintarYape() {
       <div class="yp-cap" data-cap="${esc(x.captura || '')}">${x.captura ? 'Cargando…' : 'Sin captura'}</div>
       <div class="yp-info">
         <div class="yp-l1"><span class="yp-monto">${ypSol(x.monto)} <small>→ ${x.plan ? esc(x.detalle || 'Plan') : (+x.diamantes).toLocaleString('es-PE') + ' diamantes'}</small></span>${x.plan ? '<span class="yp-tag plan">Plan</span>' : ''}
-          <span class="yp-tag ${x.estado}">${ypEst[x.estado] || x.estado}${x.como === 'auto' ? ' · verificada' : x.como === 'confianza' ? ' · sola' : x.como === 'admin' ? ' · por ti' : ''}</span>
+          <span class="yp-tag ${x.estado}">${ypEst[x.estado] || x.estado}${x.como === 'auto' ? ' · verificada' : x.como === 'confianza' ? ' · sola' : x.como === 'ia' ? ' · IA' : x.como === 'admin' ? ' · por ti' : ''}</span>
           <span class="yp-hora">#${x.id} · ${ypHora(x.creado)}</span></div>
         <div class="yp-al"><b>${esc(x.apodo || 'Sin apodo')}</b>${x.jid ? ' · ID ' + x.jid : ''} · ${esc(x.email || '')}</div>
         <div class="yp-al">Código de seguridad: <span class="yp-cod">${String(x.codigo || '').split('').map(d => '<span>' + esc(d) + '</span>').join('')}</span></div>
         ${x.aviso ? `<div class="yp-avtx">Aviso de Yape: ${esc(x.aviso)}</div>` : ''}
         ${x.motivo && x.estado === 'revision' ? `<div class="yp-al">Por qué: <b>${esc(x.motivo)}</b></div>` : ''}
+        ${ypLectura(x)}
         ${x.plan && x.vence && x.estado === 'aprobada' ? `<div class="yp-al">${x.quitado ? '<b style="color:var(--rosa,#ff6b9a)">Acceso quitado</b>' : 'Activo hasta el <b style="color:var(--lime,#C6E000)">' + esc(String(x.vence).split('-').reverse().join('/')) + '</b>'}</div>` : ''}
         ${x.plan && x.prueba && x.estado === 'revision' ? '<div class="yp-al">Tiene <b>acceso de prueba hasta mañana</b>. Si rechazas, se le quita.</div>' : ''}
         ${x.nota ? `<div class="yp-al">Nota: ${esc(x.nota)}</div>` : ''}
-        ${x.estado === 'aprobada' ? '<div class="yp-acc">' + (x.usuario ? '<button class="btn-ghost" type="button" data-ficha="' + esc(x.usuario) + '">Ver ficha</button>' : '') + '<button class="btn-ghost rech" type="button" data-yp="quitar">' + (x.como === 'confianza' ? 'No me llegó · ' : '') + (x.plan ? 'Quitar acceso' : 'Quitar diamantes') + '</button></div>' : ''}
+        ${x.estado === 'aprobada' ? '<div class="yp-acc">' + (x.usuario ? '<button class="btn-ghost" type="button" data-ficha="' + esc(x.usuario) + '">Ver ficha</button>' : '') + (x.captura ? '<button class="btn-ghost" type="button" data-leer>' + (x.lectura ? 'Leer otra vez' : 'Leer con IA') + '</button>' : '') + '<button class="btn-ghost rech" type="button" data-yp="quitar">' + (x.como === 'confianza' || x.como === 'ia' ? 'No me llegó · ' : '') + (x.plan ? 'Quitar acceso' : 'Quitar diamantes') + '</button></div>' : ''}
         ${x.estado !== 'aprobada' ? `<div class="yp-acc">
           <button class="btn-main" type="button" data-yp="aprobar">Sí me llegó · Aprobar</button>
           ${x.estado !== 'rechazada' ? '<button class="btn-ghost rech" type="button" data-yp="rechazar">No me llegó · Rechazar</button>' : ''}
+          ${x.captura ? '<button class="btn-ghost" type="button" data-leer>' + (x.lectura ? 'Leer otra vez' : 'Leer con IA') + '</button>' : ''}
         </div>` : ''}
       </div>
     </div>`).join('');
@@ -348,6 +396,8 @@ document.addEventListener('click', e => {
   if (e.target.closest('#ypPausa')) { ypPausa(!(YP.d.ajustes || {}).pausa); return; }
   if (e.target.closest('#ypPausaGuardar')) { ypPausa(true); return; }
   const cp2 = e.target.closest('#ypCompensar'); if (cp2) { ypCompensar(cp2); return; }
+  const lr = e.target.closest('[data-leer]'); if (lr) { ypLeer(lr); return; }
+  if (e.target.closest('#ypIa')) { ypConfig({ ia: !(YP.d.ajustes || {}).ia }).catch(() => {}); return; }
   const b = e.target.closest('[data-yp]');
   if (b) { ypResolver(+b.closest('[data-id]').dataset.id, b.dataset.yp === 'aprobar', b); return; }
   if (e.target.closest('#ypGuardarTope')) { ypConfig({ tope: +$('ypTope').value || 0, tope_dia: +$('ypTopeDia').value || 0 }).then(() => toast('Montos guardados'), () => {}); return; }

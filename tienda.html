@@ -754,7 +754,7 @@
       '<div class="yq-paso"><span class="yq-n">1</span><div class="yq-c"><h4>Yapea S/ ' + p.s + '</h4><div class="yq-num"><div><b>' + YAPE + '</b><small>A nombre de ' + YAPE_NOMBRE + '</small></div><button type="button" class="yp-b" data-copiar>Copiar</button></div></div></div>' +
       '<div class="yq-paso" id="yqP2"><span class="yq-n">2</span><div class="yq-c"><h4>Sube tu captura</h4><label class="yq-sube" id="yqSube">' + IC_SUBE + '<span>Elegir captura</span><input type="file" accept="image/*" id="yqFile"></label></div></div>' +
       '<div class="yq-paso" id="yqP3"><span class="yq-n">3</span><div class="yq-c"><h4>Código de seguridad</h4><div class="yq-cod"><input inputmode="numeric" maxlength="1" aria-label="Primer número"><input inputmode="numeric" maxlength="1" aria-label="Segundo número"><input inputmode="numeric" maxlength="1" aria-label="Tercer número"></div>' +
-        '<div class="yq-ej"><i><span>3</span><span>3</span><span>9</span></i>Los 3 números que salen en tu captura de Yape.</div></div></div>' +
+        '<div class="yq-ej"><i><span>?</span><span>?</span><span>?</span></i>Los 3 números que salen en <b>tu</b> captura, junto a «Código de seguridad».</div></div></div>' +
       '<button type="button" class="bt" id="yqEnviar" disabled>Enviar y recargar</button>' +
       '<small class="yq-ayuda">¿Problemas? <a href="#" data-wsp>Escríbenos por WhatsApp</a></small></div>', 'yq-v', '#C07BFF');
     var cods = [].slice.call(o.querySelectorAll('.yq-cod input')), env = o.querySelector('#yqEnviar');
@@ -805,6 +805,7 @@
         var m = String(e && (e.message || e) || '');
         env.disabled = false; env.textContent = 'Enviar y recargar';
         if (/yape_codigo/.test(m)) return toast('Escribe los 3 números del código de seguridad.');
+        if (/yape_ejemplo/.test(m)) return toast('Escribe el código que sale en TU captura de Yape.');
         if (/yape_muchas/.test(m)) return toast('Ya tienes recargas verificándose. Espera a que terminen.');
         if (/yape_dia/.test(m)) return toast('Llegaste al máximo de recargas de hoy. Escríbenos por WhatsApp.');
         if (/yape_pausa/.test(m)) return toast('Las compras con Yape están en pausa. Escríbenos por WhatsApp.');
@@ -839,6 +840,9 @@
       if (e.target.closest('[data-wsp]')) wspProblema(p);
     });
     pintar(d || { estado: 'esperando' });
+    // Con «Revisar captura con IA» prendido: que la lea ya (la respuesta llega en la siguiente pregunta)
+    if (d && d.leer && id) MCAuth.listo.then(function (c) { return c.functions.invoke('leer-yape', { body: { id: id } }); })
+      .then(function () { return rpc('yape_ver', { p_id: id }); }).then(function (r) { if (r && !fin) pintar(r); }, function () {});
     (function otra() {
       if (fin || !id || !document.body.contains(o)) return;
       setTimeout(function () {
