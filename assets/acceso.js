@@ -418,7 +418,7 @@
         if (r.error || !r.data) return;   // sin supabase/70 todavía: no se toca nada
         var d = r.data, u = MCAuth.usuario();
         var lista = (d.lista || []).map(function (g) { return { id: g.id, producto: g.producto, vence: g.vence || '' }; });
-        var ahora = { uid: u ? u.id : '', t: Date.now(), ok: Date.now(), permitido: d.permitido !== false, equipos: d.equipos || 0, max: d.max || 0, lista: lista };
+        var ahora = { uid: u ? u.id : '', t: Date.now(), ok: Date.now(), permitido: d.permitido !== false, lleno: !!d.lleno, otros: d.otros || [], equipos: d.equipos || 0, max: d.max || 0, lista: lista };
         escribir(K_ID, JSON.stringify(ahora));
         var nuevos = (d.lista || []).filter(function (g) { return g.nuevo; });
         if (nuevos.length) avisoActivado(nuevos);
@@ -429,11 +429,62 @@
         var cambio = perdio || tiene.some(function (id) { return tenia.indexOf(id) < 0; });
         if (cambio) alAbiertos.forEach(function (fn) { try { fn(); } catch (e) {} });
         if (perdio && document.documentElement.classList.contains('mc-por-id')) location.reload();
+        if (ahora.lleno && !ahora.permitido && lista.length) avisoLleno(ahora);
       });
     }).catch(function () {}).then(function () { pidiendoID = null; });
     return pidiendoID;
   }
-  function idEstado() { var c = cacheID(); return { lista: idActivos(), permitido: c.permitido !== false, equipos: c.equipos || 0, max: c.max || 0, t: c.ok || 0 }; }
+  function idEstado() { var c = cacheID(); return { lista: idActivos(), permitido: c.permitido !== false, lleno: !!c.lleno, otros: c.otros || [], equipos: c.equipos || 0, max: c.max || 0, t: c.ok || 0 }; }
+
+  /* ---- «Usar aquí» (supabase/152-usar-aqui.sql) ----
+     La cuenta ya está abierta en su tope de equipos: este equipo no entra solo.
+     «Usar aquí» cierra el equipo usado hace más tiempo. Se avisa una vez cada 30 min por equipo. */
+  var K_LLENO = 'mc_lleno_aviso';
+  function usarAqui() {
+    return cuenta().then(function (c) {
+      if (!c) throw new Error('Entra con tu cuenta');
+      return c.rpc('acceso_usar_aqui', { p_dispositivo: dispositivo(), p_equipo: equipo() });
+    }).then(function (r) {
+      if (r.error) throw r.error;
+      var d = r.data || {}, u = MCAuth.usuario();
+      escribir(K_ID, JSON.stringify({ uid: u ? u.id : '', t: Date.now(), ok: Date.now(), permitido: d.permitido !== false, lleno: !!d.lleno, otros: d.otros || [], equipos: d.equipos || 0, max: d.max || 0,
+        lista: (d.lista || []).map(function (g) { return { id: g.id, producto: g.producto, vence: g.vence || '' }; }) }));
+      return d;
+    });
+  }
+  function haceCuanto(t) {
+    var m = Math.round((Date.now() - new Date(t)) / 60000);
+    return m < 2 ? 'ahora' : m < 60 ? 'hace ' + m + ' min' : m < 1440 ? 'hace ' + Math.round(m / 60) + ' h' : 'hace ' + Math.round(m / 1440) + ' d';
+  }
+  function avisoLleno(c, forzar) {
+    if (document.getElementById('mcLleno')) return;
+    if (!forzar && Date.now() - (+leer(K_LLENO) || 0) < 30 * 60 * 1000) return;
+    escribir(K_LLENO, String(Date.now()));
+    if (!document.getElementById('mcLlenoCss')) {
+      var st = document.createElement('style'); st.id = 'mcLlenoCss';
+      st.textContent = '#mcLleno{position:fixed;inset:0;z-index:99999;background:rgba(5,5,12,.72);display:grid;place-items:center;padding:16px;font-family:Nunito,Inter,system-ui,sans-serif}' +
+        '#mcLleno .c{width:min(400px,100%);background:#16142A;border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:24px 20px 18px;color:#EEEDF6;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}' +
+        '#mcLleno .ic{width:64px;height:64px;margin:0 auto 10px;border-radius:50%;background:rgba(198,224,0,.12);display:grid;place-items:center}' +
+        '#mcLleno h3{margin:0 0 6px;font:800 20px/1.25 Sora,Inter,sans-serif}#mcLleno p{margin:0 0 12px;color:#A9A6C4;font-size:14.5px;line-height:1.5}' +
+        '#mcLleno ul{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:6px;text-align:left}#mcLleno li{display:flex;justify-content:space-between;gap:8px;background:rgba(255,255,255,.05);border-radius:12px;padding:9px 12px;font-size:14px;font-weight:700}#mcLleno li small{color:#8E8AAE;font-weight:600}' +
+        '#mcLleno .si{width:100%;border:0;border-radius:14px;padding:14px;background:#C6E000;color:#0B0B0B;font:800 16px Nunito,sans-serif;border-bottom:3px solid #9DB300;cursor:pointer}' +
+        '#mcLleno .no{margin-top:8px;width:100%;border:0;background:none;color:#A9A6C4;font:700 14px Nunito,sans-serif;padding:10px;cursor:pointer}';
+      document.head.appendChild(st);
+    }
+    var o = document.createElement('div'); o.id = 'mcLleno'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-modal', 'true');
+    var n = c.max || (c.otros || []).length;
+    o.innerHTML = '<div class="c"><div class="ic"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#C6E000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="13" height="10" rx="2"/><path d="M6 18h5"/><rect x="16" y="8" width="6" height="12" rx="1.5"/></svg></div>' +
+      '<h3>Tu cuenta está abierta en ' + n + (n === 1 ? ' equipo' : ' equipos') + '</h3>' +
+      '<p>Tu plan se puede usar en ' + n + (n === 1 ? ' equipo' : ' equipos') + ' a la vez. Si tocas <b>Usar aquí</b>, se cierra el que usaste hace más tiempo.</p>' +
+      '<ul>' + (c.otros || []).map(function (e) { return '<li><span>' + String(e.equipo || 'Otro equipo').replace(/[&<>"]/g, '') + '</span><small>' + haceCuanto(e.visto) + '</small></li>'; }).join('') + '</ul>' +
+      '<button type="button" class="si">Usar aquí</button><button type="button" class="no">Ahora no</button></div>';
+    document.body.appendChild(o);
+    o.querySelector('.no').onclick = function () { o.remove(); };
+    o.querySelector('.si').onclick = function () {
+      var b = this; b.disabled = true; b.textContent = 'Abriendo…';
+      usarAqui().then(function () { location.reload(); }, function () { b.disabled = false; b.textContent = 'No se pudo. Toca otra vez'; });
+    };
+  }
 
   // «¡Acceso activado!» la primera vez que el alumno entra después de que se lo dieron
   var NOM = { 'TODO-VIP': 'Acceso total', general: 'Acceso general', 'seminario-VIP': 'Seminarios + Banqueo', 'vocabulario-VIP': 'Vocabulario', 'biblioteca-VIP': 'Biblioteca', 'descarga-VIP': 'Descargas PDF', 'offline-VIP': 'Descargas sin internet', 'laboratorio-VIP': 'Laboratorio', simulacro: 'Simulacro', duelo: 'Duelos', examenes: 'Exámenes',
@@ -556,5 +607,5 @@
     }).catch(function () { return true; });
   }
 
-  window.MCAcceso = { cicloAnterior: cicloAnterior, cicloDescarga: cicloDescarga, verificar: verificar, activar: activar, activos: activos, todos: todos, estado: estado, soltar: soltar, accesoLocal: accesoLocal, idEstado: idEstado, refrescarID: refrescarID, nombreProd: nombreProd, celebrar: celebrar, alAbiertos: function (fn) { alAbiertos.push(fn); }, antiguo: antiguo, cubre: cubre, puerta: puerta, AREAS: AREAS };
+  window.MCAcceso = { cicloAnterior: cicloAnterior, cicloDescarga: cicloDescarga, verificar: verificar, activar: activar, activos: activos, todos: todos, estado: estado, soltar: soltar, accesoLocal: accesoLocal, idEstado: idEstado, refrescarID: refrescarID, usarAqui: usarAqui, avisoLleno: function () { var c = cacheID(); if (c.lleno && !c.permitido) avisoLleno(c, true); }, nombreProd: nombreProd, celebrar: celebrar, alAbiertos: function (fn) { alAbiertos.push(fn); }, antiguo: antiguo, cubre: cubre, puerta: puerta, AREAS: AREAS };
 })();
