@@ -29,6 +29,21 @@
   })();
 </script>
 <script>
+  // Tablet horizontal y PC angosta (901–1279 px): el inicio se dibuja como en una PC de 1280 px
+  // y se achica para que entre entero (antes la cabecera empujaba todo y se cortaba a la derecha).
+  (function () {
+    var BASE = 1280, raiz = document.documentElement;
+    function ajustar() {
+      var w = window.innerWidth, z = (w > 900 && w < BASE) ? Math.max(w / BASE, .7) : 1;
+      raiz.style.setProperty('--zoom-inicio', z);
+      raiz.classList.toggle('mc-zoom', z < 1);
+    }
+    ajustar();
+    window.addEventListener('resize', ajustar);
+    window.addEventListener('orientationchange', function () { setTimeout(ajustar, 200); });
+  })();
+</script>
+<script>
   // La web va siempre en modo oscuro (ya no hay botón de modo claro)
   (function () {
     document.documentElement.setAttribute('data-modo', 'oscuro');
@@ -311,6 +326,8 @@ svg.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width
 
 /* ---------- armazón ---------- */
 .app { display: grid; grid-template-columns: 300px minmax(0, 1fr); min-height: 100vh; }
+/* Tablet horizontal: todo el inicio a escala de PC (ver --zoom-inicio arriba) */
+html.mc-zoom .app { zoom: var(--zoom-inicio, 1); min-height: calc(100vh / var(--zoom-inicio, 1)); }
 .lado { border-right: 1px solid var(--borde); display: flex; flex-direction: column; gap: 22px; padding: 26px 0 20px; background: var(--fondo); }
 .logo { padding: 0 26px; font-size: 32px; }
 .logo span { display: block; color: var(--lima-tx); }
@@ -1436,6 +1453,23 @@ html.mc-abre-cursos .hoja-fondo { background: var(--fondo); }
   .accesos:has(#novBtn:not([hidden])) { gap: 5px; }
   .accesos:has(#novBtn:not([hidden])) .acceso { height: 50px; gap: 2px; }
   .accesos:has(#novBtn:not([hidden])) .acceso svg { font-size: 19px; }
+}
+/* Celular echado (horizontal): el escenario ya no crece con el ancho (salía un búho gigante);
+   queda bajito y el búho, el halo y la plataforma se miden por el alto */
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 560px) {
+  .escena { aspect-ratio: auto; height: 350px; container-type: size; }
+  .escena .buho { width: 36cqh; bottom: 24%; }
+  .escena .halo { width: 74cqh; }
+  .escena .plat { left: calc(50% - 38cqh); right: calc(50% - 38cqh); }
+  .escena .accesos, .escena .accesos:has(#novBtn:not([hidden])) { gap: 4px; top: 10px; }
+  .escena .acceso, .escena .accesos:has(#novBtn:not([hidden])) .acceso { width: 58px; height: 50px; gap: 2px; }
+  .escena .acceso svg, .escena .accesos:has(#novBtn:not([hidden])) .acceso svg { font-size: 19px; }
+  /* la barra de abajo más bajita para que quede pantalla libre */
+  .tabbar a, .tabbar button { padding: 7px 0 6px; gap: 2px; }
+  .tabbar a svg, .tabbar button svg { font-size: 21px; }
+  .tabbar .duelo i { top: -20px; width: 52px; height: 56px; }
+  .tabbar .duelo i svg { font-size: 26px; }
+  .tabbar .duelo span { margin-top: 36px; }
 }
 </style>
 <link rel="stylesheet" href="assets/areas.css">
