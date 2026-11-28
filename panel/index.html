@@ -787,6 +787,7 @@
             <p id="lastUpdate"></p>
           </div>
           <div style="display:flex; align-items:flex-end; gap:16px;">
+            <button class="btn-ghost" id="btnRepPdf" type="button" title="Descarga en un PDF los reportes que ves con el filtro actual, con los datos de los alumnos tapados"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9 15 12 18 15 15"/></svg> Descargar PDF</button>
             <button class="btn-ghost" id="btnRefresh" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Actualizar</button>
             <div class="big-count"><div class="n disp" id="totalN">0</div><div class="l" id="totalL">reportes</div></div>
           </div>
@@ -1831,6 +1832,13 @@ E) Alternativa"></textarea>
     renderLista();
   }
 
+  let LISTA_VISIBLE = [];
+  $('btnRepPdf').addEventListener('click', () => {
+    if (!window.MCRepDesc) return toast('No se pudo cargar la descarga. Recarga el panel.', true);
+    const est = { Pendiente: 'Pendientes', Corregido: 'Corregidos', Descartado: 'Descartados', Todos: 'Todos' }[filtroEstado] || filtroEstado;
+    MCRepDesc.lista(LISTA_VISIBLE, est + (filtroCurso !== 'Todos' ? ' · ' + filtroCurso : ''), $('btnRepPdf'));
+  });
+
   function renderLista() {
     const q = $('search').value.trim().toLowerCase();
     const rows = DATA.filter(r =>
@@ -1838,6 +1846,7 @@ E) Alternativa"></textarea>
       (filtroCurso === 'Todos' || r.curso === filtroCurso) &&
       (!q || [r.extracto, r.temaNombre, r.comentario, r.curso, r.anio].join(' ').toLowerCase().includes(q))
     );
+    LISTA_VISIBLE = rows;
     $('totalN').textContent = rows.length;
     $('totalL').textContent = (rows.length === 1 ? 'reporte' : 'reportes') + (filtroEstado === 'Pendiente' ? ' pendiente' + (rows.length === 1 ? '' : 's') : '');
     if (!rows.length) {
@@ -1862,6 +1871,7 @@ E) Alternativa"></textarea>
         </div>
         ${r.comentario ? `<div class="rcom">📝 ${esc(r.comentario)}</div>` : ''}
         <div class="rfoot">
+          ${window.MCRepDesc ? MCRepDesc.botones(r.fila) : ''}
           ${r.url ? `<a class="rbtn link" href="${esc(r.url)}" target="_blank" rel="noopener">Ver en la web ${ICON_EXT}</a>` : ''}
           ${r.estado === 'Pendiente'
             ? `<button class="rbtn" type="button" data-accion="Descartado" data-fila="${r.fila}">Descartar</button>
@@ -1869,6 +1879,10 @@ E) Alternativa"></textarea>
             : `<button class="rbtn" type="button" data-accion="Pendiente" data-fila="${r.fila}">Volver a pendiente</button>`}
         </div>
       </article>`).join('');
+    $('list').querySelectorAll('[data-rd]').forEach(b => b.addEventListener('click', () => {
+      const r = DATA.find(x => String(x.fila) === b.dataset.fila);
+      if (r) MCRepDesc.uno(r, b.dataset.rd, b);
+    }));
     $('list').querySelectorAll('[data-accion]').forEach(b => b.addEventListener('click', () => cambiarEstado(+b.dataset.fila, b.dataset.accion, b)));
     $('list').querySelectorAll('[data-corregir]').forEach(b => b.addEventListener('click', () => {
       const r = DATA.find(x => x.fila === +b.dataset.corregir);
@@ -2619,6 +2633,7 @@ E) Alternativa"></textarea>
 </script>
 <script src="imagenes.js"></script>
 <script src="../assets/pregunta.js"></script>
+<script src="reporte-descarga.js"></script>
 <script src="prompt-ia.js"></script>
 <script src="subir.js"></script>
 <script src="vista-alumno-panel.js"></script>
