@@ -76,6 +76,10 @@ const YP_LLAVE = 'sb_publishable_clm6obUTs_391NA7FGG1YA_-eNuj7dU';
   .yp-avtx { font-size: 12.5px; color: var(--text-dim); padding: 8px 10px; border-radius: 10px; background: #120e22; border: 1px solid #2A2346; overflow-wrap: anywhere; }
   .yp-acc { display: flex; gap: 8px; flex-wrap: wrap; }
   .yp-acc .rech { color: #FF6E6E; }
+  .yp-imp { display: grid; gap: 10px; }
+  .yp-imp .fila { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .yp-imp .fila .inp { flex: 1 1 220px; min-width: 0; }
+  .yp-imp .pausada { color: #FBBF24; font-weight: 800; }
   .yp-av { display: flex; gap: 12px; align-items: center; }
   .yp-av .yp-avtx { flex: 1; }
   .yp-ver { position: fixed; inset: 0; z-index: 200; background: rgba(5,4,12,.9); display: grid; place-items: center; padding: 16px; cursor: zoom-out; }
@@ -149,7 +153,19 @@ function pintarYape() {
       <div class="yp-clave"><code>apikey: ${esc(YP_LLAVE)}</code><button class="btn-ghost" type="button" data-copiar="${esc(YP_LLAVE)}">Copiar</button></div>
       <div class="yp-clave"><code>{"p_secreto":"${esc(A.secreto || '')}","p_texto":"[notification_title] [notification]"}</code><button class="btn-ghost" type="button" data-copiar='${esc(JSON.stringify({ p_secreto: A.secreto || '', p_texto: '[notification_title] [notification]' }))}'>Copiar</button></div>
       <button class="btn-ghost" type="button" id="ypClave" style="justify-self:start">Cambiar clave secreta</button>
-    </details>`;
+    </details>
+    <div class="rcard yp-imp">
+      <h3>Por si pasa algo</h3>
+      <div class="yp-sw"><b>${A.pausa ? '<span class="pausada">Compras con Yape en pausa</span>' : 'Compras con Yape abiertas'}</b><button type="button" class="${A.pausa ? '' : 'on'}" id="ypPausa" aria-label="Abrir o pausar las compras con Yape"></button></div>
+      <p>${A.pausa ? 'Los alumnos ven este aviso antes de yapear, y el botón de WhatsApp.' : 'Apágalo si viajas, si Yape falla o si no puedes revisar pagos. El alumno ve el aviso antes de yapear.'}</p>
+      <div class="fila"><input class="inp" id="ypPausaTxt" maxlength="200" value="${esc(A.pausa || '')}" placeholder="Ej.: Volvemos el lunes 8 a. m. Si es urgente, escríbenos." aria-label="Aviso de la pausa">${A.pausa ? '<button class="btn-ghost" type="button" id="ypPausaGuardar">Cambiar aviso</button>' : ''}</div>
+      <hr style="border:0;border-top:1px solid var(--line,rgba(255,255,255,.08));margin:4px 0">
+      <b>Compensar a todos</b>
+      <p style="margin:0">Si la web se cayó o hubo un mantenimiento largo: suma días a todos los accesos activos.</p>
+      <div class="fila"><label>Días <input class="inp" id="ypCompDias" type="number" min="1" max="60" value="1" style="width:80px;display:inline-block"></label>
+        <label class="pl-sw" style="flex:none"><input type="checkbox" id="ypCompYape" checked> Solo los comprados con Yape</label>
+        <button class="btn-main" type="button" id="ypCompensar">Sumar días</button></div>
+    </div>`;
   const chip = (v, nom, n) => `<button class="chip${YP.ver === v ? ' on' : ''}" data-v="${v}" type="button">${nom} <span class="c">${n}</span></button>`;
   const L = D.recargas || [];
   $('ypChips').innerHTML = chip('revision', 'En revisión', C.revision || 0) + chip('solas', 'Aprobadas solas', C.solas || 0) + chip('todas', 'Todas', L.length) + chip('avisos', 'Avisos de Yape', (D.avisos || []).length) + chip('codigos', 'Códigos de diamantes', YP.cods ? YP.cods.filter(x => !x.usado).length : '·');
@@ -163,8 +179,10 @@ function pintarYape() {
       : '<div class="state-msg">Aún no llegó ningún aviso de Yape. Revisa que MacroDroid esté configurado.</div>';
     return;
   }
-  const F = YP.ver === 'revision' ? L.filter(x => x.estado === 'revision') : YP.ver === 'solas' ? L.filter(x => x.como === 'confianza' && x.estado === 'aprobada') : L;
-  if (!F.length) { caja.innerHTML = `<div class="state-msg">${YP.ver === 'revision' ? 'No hay recargas por revisar.' : YP.ver === 'solas' ? 'No hay recargas aprobadas solas esta semana.' : 'Aún no hay recargas.'}</div>`; return; }
+  let F = YP.ver === 'revision' ? L.filter(x => x.estado === 'revision') : YP.ver === 'solas' ? L.filter(x => x.como === 'confianza' && x.estado === 'aprobada') : L;
+  const q = String(YP.q || '').trim().toLowerCase().replace(/^#/, '');
+  if (q) F = L.filter(x => [x.apodo, x.email, x.jid, x.id, x.codigo, x.detalle].some(v => String(v == null ? '' : v).toLowerCase().includes(q)));
+  if (!F.length) { caja.innerHTML = `<div class="state-msg">${q ? 'Ninguna de las últimas 80 compras coincide con «' + esc(q) + '». Búscalo en Alumnos y fichas.' : YP.ver === 'revision' ? 'No hay recargas por revisar.' : YP.ver === 'solas' ? 'No hay recargas aprobadas solas esta semana.' : 'Aún no hay recargas.'}</div>`; return; }
   caja.innerHTML = F.map(x => `<div class="rcard yp-card" data-id="${x.id}">
       <div class="yp-cap" data-cap="${esc(x.captura || '')}">${x.captura ? 'Cargando…' : 'Sin captura'}</div>
       <div class="yp-info">
@@ -178,7 +196,7 @@ function pintarYape() {
         ${x.plan && x.vence && x.estado === 'aprobada' ? `<div class="yp-al">${x.quitado ? '<b style="color:var(--rosa,#ff6b9a)">Acceso quitado</b>' : 'Activo hasta el <b style="color:var(--lime,#C6E000)">' + esc(String(x.vence).split('-').reverse().join('/')) + '</b>'}</div>` : ''}
         ${x.plan && x.prueba && x.estado === 'revision' ? '<div class="yp-al">Tiene <b>acceso de prueba hasta mañana</b>. Si rechazas, se le quita.</div>' : ''}
         ${x.nota ? `<div class="yp-al">Nota: ${esc(x.nota)}</div>` : ''}
-        ${x.estado === 'aprobada' && x.como === 'confianza' ? '<div class="yp-acc"><button class="btn-ghost rech" type="button" data-yp="quitar">No me llegó · ' + (x.plan ? 'Quitar acceso' : 'Quitar diamantes') + '</button></div>' : ''}
+        ${x.estado === 'aprobada' ? '<div class="yp-acc">' + (x.usuario ? '<button class="btn-ghost" type="button" data-ficha="' + esc(x.usuario) + '">Ver ficha</button>' : '') + '<button class="btn-ghost rech" type="button" data-yp="quitar">' + (x.como === 'confianza' ? 'No me llegó · ' : '') + (x.plan ? 'Quitar acceso' : 'Quitar diamantes') + '</button></div>' : ''}
         ${x.estado !== 'aprobada' ? `<div class="yp-acc">
           <button class="btn-main" type="button" data-yp="aprobar">Sí me llegó · Aprobar</button>
           ${x.estado !== 'rechazada' ? '<button class="btn-ghost rech" type="button" data-yp="rechazar">No me llegó · Rechazar</button>' : ''}
@@ -221,6 +239,31 @@ async function ypResolver(id, aprobar, btn) {
     toast(e.message || 'No se pudo.', true);
   }
 }
+
+// ---------- Por si pasa algo (supabase/151-panel-imprevistos.sql) ----------
+async function ypPausa(pausar) {
+  const t = pausar ? ($('ypPausaTxt').value.trim() || 'Las compras con Yape están en pausa por un rato. Vuelve pronto o escríbenos por WhatsApp.') : '';
+  try {
+    const c = await MCAuth.listo; const r = await c.rpc('yape_pausa_poner', { p_texto: t });
+    if (r.error) throw r.error;
+    YP.d.ajustes = Object.assign({}, YP.d.ajustes, { pausa: r.data || null });
+    toast(pausar ? 'Compras en pausa: los alumnos ven tu aviso' : 'Compras con Yape abiertas otra vez');
+    pintarYape();
+  } catch (e) { toast(/could not find|does not exist|schema cache/i.test(e.message || '') ? 'Primero corre supabase/151-panel-imprevistos.sql' : e.message || 'No se pudo.', true); }
+}
+async function ypCompensar(btn) {
+  const dias = parseInt($('ypCompDias').value, 10) || 0, solo = $('ypCompYape').checked;
+  if (dias < 1 || dias > 60) { toast('Días: de 1 a 60', true); return; }
+  if (btn.dataset.seguro !== '1') { btn.dataset.seguro = '1'; btn.textContent = `¿Sumar ${dias} día${dias === 1 ? '' : 's'} a todos? Toca otra vez`; return; }
+  btn.disabled = true;
+  try {
+    const c = await MCAuth.listo; const r = await c.rpc('accesos_compensar', { p_dias: dias, p_solo_yape: solo });
+    if (r.error) throw r.error;
+    toast(`Listo: se sumaron ${dias} día${dias === 1 ? '' : 's'} a ${r.data} acceso${r.data === 1 ? '' : 's'}`);
+    await cargarYape();
+  } catch (e) { btn.disabled = false; btn.dataset.seguro = ''; btn.textContent = 'Sumar días'; toast(/could not find|does not exist|schema cache/i.test(e.message || '') ? 'Primero corre supabase/151-panel-imprevistos.sql' : e.message || 'No se pudo.', true); }
+}
+document.addEventListener('input', e => { if (e.target.id === 'ypBuscar') { YP.q = e.target.value; pintarYape(); const s = $('ypBuscar'); if (s && document.activeElement !== s) { s.focus(); s.setSelectionRange(s.value.length, s.value.length); } } });
 
 // ---------- Códigos de diamantes (supabase/144-diamantes-codigos.sql) ----------
 // Javier crea un código, se lo pasa al alumno por WhatsApp y el alumno lo canjea en la Tienda
@@ -300,6 +343,11 @@ document.addEventListener('click', e => {
   if (!e.target.closest('#tab-yape') && !e.target.closest('.yp-ver')) return;
   const v = e.target.closest('.yp-ver'); if (v) { v.remove(); return; }
   const ch = e.target.closest('#ypChips .chip'); if (ch) { YP.ver = ch.dataset.v; pintarYape(); return; }
+  const fi = e.target.closest('[data-ficha]');
+  if (fi) { if (typeof abrirFicha === 'function') abrirFicha(fi.dataset.ficha); return; }
+  if (e.target.closest('#ypPausa')) { ypPausa(!(YP.d.ajustes || {}).pausa); return; }
+  if (e.target.closest('#ypPausaGuardar')) { ypPausa(true); return; }
+  const cp2 = e.target.closest('#ypCompensar'); if (cp2) { ypCompensar(cp2); return; }
   const b = e.target.closest('[data-yp]');
   if (b) { ypResolver(+b.closest('[data-id]').dataset.id, b.dataset.yp === 'aprobar', b); return; }
   if (e.target.closest('#ypGuardarTope')) { ypConfig({ tope: +$('ypTope').value || 0, tope_dia: +$('ypTopeDia').value || 0 }).then(() => toast('Montos guardados'), () => {}); return; }

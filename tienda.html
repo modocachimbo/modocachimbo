@@ -734,6 +734,21 @@
         });
       return;
     }
+    // Panel → Recargas Yape → Pausar compras: se avisa antes de que yapee
+    pausaYape().then(function (t) {
+      if (!t) return pagarYa(i);
+      ventana('<div class="yq-est"><div class="ic">' + IC_RELOJ + '</div><h3>Compras <em>en pausa</em></h3><p>' + esc(t) + '</p><button type="button" class="bt" data-cerrar>Entendido</button><p class="pq-n" style="margin-top:12px">¿Es urgente? <a href="#" data-ayuda>Escríbenos por WhatsApp</a>.</p></div>', '', '#C07BFF')
+        .addEventListener('click', function (e) {
+          if (e.target.closest('[data-ayuda]')) { e.preventDefault(); window.open('https://wa.me/' + WSP + '?text=' + encodeURIComponent('Hola Modo Cachimbo, quiero comprar diamantes.\nMi ID: ' + (T && T.id ? T.id : '(sin ID)')), '_blank'); return; }
+          if (e.target.closest('[data-cerrar]')) e.currentTarget.remove();
+        });
+    });
+  }
+  function pausaYape() {
+    if (!window.MCAuth) return Promise.resolve(null);
+    return MCAuth.listo.then(function (c) { return c.rpc('yape_pausa'); }).then(function (r) { return r && !r.error ? r.data : null; }, function () { return null; });
+  }
+  function pagarYa(i) {
     var p = PAQ[i], archivo = null;
     var o = ventana('<div class="yq"><div class="yq-top"><img src="assets/diamantes/' + p.f + '.webp" alt=""><div><b>' + nf(p.n) + '</b><span>diamantes</span></div><span class="yq-precio">S/ ' + p.s + '</span></div>' +
       '<div class="yq-paso"><span class="yq-n">1</span><div class="yq-c"><h4>Yapea S/ ' + p.s + '</h4><div class="yq-num"><div><b>' + YAPE + '</b><small>A nombre de ' + YAPE_NOMBRE + '</small></div><button type="button" class="yp-b" data-copiar>Copiar</button></div></div></div>' +
@@ -792,6 +807,7 @@
         if (/yape_codigo/.test(m)) return toast('Escribe los 3 números del código de seguridad.');
         if (/yape_muchas/.test(m)) return toast('Ya tienes recargas verificándose. Espera a que terminen.');
         if (/yape_dia/.test(m)) return toast('Llegaste al máximo de recargas de hoy. Escríbenos por WhatsApp.');
+        if (/yape_pausa/.test(m)) return toast('Las compras con Yape están en pausa. Escríbenos por WhatsApp.');
         if (/imagen/.test(m)) return toast('No se pudo leer esa imagen. Prueba con otra captura.');
         if (/bucket|does not exist|Could not find the function/i.test(m)) { toast('La recarga automática se activa pronto. Te abrimos WhatsApp.'); return wspProblema(p); }
         toast('No se pudo enviar. Revisa tu internet e intenta otra vez.');
