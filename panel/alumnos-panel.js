@@ -23,7 +23,8 @@ const ALU = { lista: [], cargado: false, extras: [] };
   .al-racha.on { color: var(--accent); }
   .al-racha svg { width: 12px; height: 16px; }
   .al-nv { display: inline-flex; align-items: baseline; gap: 3px; padding: 3px 9px 2px 6px; background: linear-gradient(90deg, #FFE14D, #FFC800); color: #2a1d00; font: italic 900 11px/1 'Barlow Condensed', 'Arial Narrow', sans-serif; text-transform: uppercase; clip-path: polygon(0 0, 100% 0, 88% 100%, 0 100%); }
-  .al-rg { margin-left: 4px; padding: 2px 5px; border-radius: 8px; border: 1px solid #2F284E; background: none; cursor: pointer; font-size: 13px; line-height: 1; }
+  .al-rg { margin-left: 4px; padding: 2px 5px; border-radius: 8px; border: 1px solid #4A4170; background: none; color: #fff; cursor: pointer; font-size: 13px; line-height: 1; }
+  .al-rg svg { stroke: #fff; }
   .al-rg:hover { border-color: var(--accent); }
   .al-nv b { font-size: 16px; }
   .al-login { display: grid; justify-items: center; gap: 14px; }`;
